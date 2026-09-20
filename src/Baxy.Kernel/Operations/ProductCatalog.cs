@@ -1550,17 +1550,20 @@ public static class ProductCatalog
             "system.settings.set",
             Schema(
                 [
-                    String("setting", values: ["brightness", "do_not_disturb", "night_light"]),
+                    // REOPEN1957 H0107 «poneme el modo avión»: 1 apaga todas las
+                    // radios (Wi-Fi, Bluetooth, móvil) por la API de radios y 0 las
+                    // vuelve a encender; la postlectura mira cada radio.
+                    String("setting", values: ["airplane_mode", "brightness", "do_not_disturb", "night_light"]),
                     Integer("value", 0, 100),
                 ],
                 ["setting", "value"]),
             OperationRisks.PrivacySensitive,
             "system.settings.set.windows.postread.v1",
             ToolExposure.Public,
-            "Cambia un ajuste permitido mediante API oficial y verifica su postlectura."),
+            "Cambia un ajuste permitido mediante API oficial (brillo, no molestar, luz nocturna o modo avión sobre todas las radios) y verifica su postlectura."),
         Descriptor(
             "system.settings.status",
-            Schema([String("setting", values: ["brightness"])], ["setting"]),
+            Schema([String("setting", values: ["airplane_mode", "brightness"])], ["setting"]),
             OperationRisks.ReadOnly,
             "system.settings.status.windows.monitor.brightness.secondread.v1",
             ToolExposure.Public,

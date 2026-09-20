@@ -5133,8 +5133,14 @@ def _explicit_arguments_from_evidence(
         return {**adjustment, "setting": "brightness"} if adjustment is not None else None
 
     if operation == "system.settings.set":
+        airplane = effect_intent.airplane_mode_request(evidence)
+        if airplane is not None:
+            return {"setting": "airplane_mode", "value": airplane}
         level = effect_intent._literal_brightness_level(evidence)
         return {"setting": "brightness", "value": level} if level is not None else None
+
+    if operation == "system.settings.status" and effect_intent.airplane_mode_question(evidence):
+        return {"setting": "airplane_mode"}
 
     if operation == "window.snap":
         # ARRANGE1781: the side is the person's literal; windowId comes from window.resolve.

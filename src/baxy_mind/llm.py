@@ -3544,6 +3544,19 @@ _CAUSE_FACT = {
     "visible_button_not_found": (
         "nothing on the screen is called that, so nothing was pressed"
     ),
+    # REOPEN1957 H0107: airplane mode over the radios names its own absences.
+    "airplane_mode_radio_access_denied": (
+        "Windows did not grant access to the radios, so airplane mode was not changed"
+    ),
+    "airplane_mode_radios_not_found": (
+        "this PC exposes no radio to switch, so there is no airplane mode to set"
+    ),
+    "airplane_mode_change_rejected": (
+        "a radio refused to change state, so airplane mode is not confirmed"
+    ),
+    "airplane_mode_postread_failed": (
+        "after the change a radio is not in the requested state, so airplane mode is not confirmed"
+    ),
     # REOPEN1993 grupo S: the launchers name their own absences.
     "steam_title_not_resolved": (
         "no Steam title by that name is known here, so nothing was downloaded, installed or removed"
@@ -6795,6 +6808,20 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     game_defect = _game_library_fact_defect(text, payload)
     if game_defect:
         return game_defect
+    if (
+        payload.get("operation") in {"system.settings.set", "system.settings.status"}
+        and isinstance(seen, dict)
+        and seen.get("setting") == "airplane_mode"
+        and isinstance(seen.get("airplaneMode"), bool)
+    ):
+        # REOPEN1957 H0107: the reply states the observed airplane-mode state.
+        on = seen["airplaneMode"]
+        says_on = re.search(r"\b(?:activad|encendid|prendid|puest|on\b|activ[eo]\b)", folded) is not None and not re.search(r"\b(?:no|desactiv|apagad|off)\b", folded)
+        says_off = re.search(r"\b(?:desactivad|apagad|quitad|off\b|desactiv[eo]\b)", folded) is not None
+        if not re.search(r"modo avion|airplane mode|flight mode", folded):
+            return "missing_state"
+        if (on and says_off and not says_on) or (not on and says_on and not says_off):
+            return "extra_claim"
     if (
         payload.get("operation") == "system.power"
         and isinstance(seen, dict)
@@ -15759,6 +15786,26 @@ class LlmRuntime:
                 "en una oración, la operación y su resultado tal como se muestra (por "
                 "ejemplo que seis por siete da 42 en la Calculadora), usando sólo esos "
                 "números; no se hizo nada más."
+            )
+        if (
+            visible_situation.get("operation") in {"system.settings.set", "system.settings.status"}
+            and isinstance(visible_situation.get("seen"), dict)
+            and visible_situation["seen"].get("setting") == "airplane_mode"
+            and isinstance(visible_situation["seen"].get("airplaneMode"), bool)
+        ):
+            # REOPEN1957 H0107: airplane mode is every radio off; the reply says
+            # whether it is on now and which radios were switched.
+            instruct(
+                "\nseen.airplaneMode true means airplane mode is on (every radio — Wi-Fi, "
+                "Bluetooth — is off); false means it is off. seen.radios lists each radio "
+                "with its state. Say whether airplane mode is on or off now in one short "
+                "sentence; if seen.changed is true, say you switched it."
+                if response_language == "en"
+                else "\nseen.airplaneMode true significa que el modo avión está activado (todas "
+                "las radios —Wi-Fi, Bluetooth— apagadas); false, que está desactivado. "
+                "seen.radios lista cada radio con su estado. Di en una oración corta si el "
+                "modo avión quedó activado o desactivado; si seen.changed es true, di que lo "
+                "cambiaste."
             )
         if (
             visible_situation.get("operation") in {"game.install.named", "game.uninstall.named"}

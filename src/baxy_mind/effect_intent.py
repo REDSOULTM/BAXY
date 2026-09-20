@@ -2552,7 +2552,7 @@ def _curated_domain_is_grounded(
         return _has(
             folded,
             r"\b(?:brillo|brightness|luz nocturna|night light|"
-            r"no molestar|do not disturb|dnd)\b",
+            r"no molestar|do not disturb|dnd|modo avion|airplane mode|flight mode)\b",
         )
     if operation == "system.process.list":
         return _process_list_domain(folded)
@@ -17057,6 +17057,34 @@ def _installed_game_named(name: str, game_catalog: GameCatalogIndex) -> str | No
     return None
 
 
+def airplane_mode_request(text: str) -> int | None:
+    """REOPEN1957 H0107 «poneme el modo avión»: 1 to switch airplane mode on
+    (every radio off), 0 to switch it off; None when the text is not an
+    airplane-mode order or asks about its state."""
+
+    folded = _strip_request_envelope(_fold(text)).strip().rstrip(".!?").strip()
+    if not _has(folded, r"\b(?:modo\s+avion|airplane\s+mode|flight\s+mode)\b"):
+        return None
+    if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(folded):
+        return None
+    if _has(folded, r"^[¿?¡!\s]*(?:esta|is|tengo|do\s+i\s+have|hay)\b") or _has(folded, r"\b(?:activado|prendido|encendido|puesto|on)\s*\??$") and not _has(folded, r"^[¿?¡!\s]*(?:pon|pone|poneme|poner|activa|activame|activar|prende|prendeme|enciende|apaga|desactiva|quita|saca|turn|enable|disable|switch|put|set)\b"):
+        return None
+    if _has(folded, r"\b(?:apaga|apagame|apagar|desactiva|desactivame|desactivar|quita|quitame|quitar|saca|sacame|sacar|turn\s+off|disable|switch\s+off|off)\b"):
+        return 0
+    if _has(folded, r"\b(?:pon|pone|poneme|poner|activa|activame|activar|prende|prendeme|prender|enciende|encendeme|turn\s+on|enable|switch\s+on|put|set|on)\b"):
+        return 1
+    return None
+
+
+def airplane_mode_question(text: str) -> bool:
+    """«¿está el modo avión activado?»: a read of the radios."""
+
+    folded = _strip_request_envelope(_fold(text)).strip().rstrip(".!?").strip()
+    return _has(folded, r"\b(?:modo\s+avion|airplane\s+mode|flight\s+mode)\b") and airplane_mode_request(text) is None and (
+        _has(folded, r"^[¿?¡!\s]*(?:esta|is|tengo|do\s+i\s+have|hay)\b") or _has(folded, r"\b(?:activado|prendido|encendido|puesto|on)\b")
+    )
+
+
 def steam_library_verb(text: str) -> str | None:
     """REOPEN1993 grupo S: what a library request asks for — «install»
     (descarga, instala, baja), «uninstall» (desinstala, remove) or «launch»
@@ -18917,6 +18945,11 @@ def resolve_explicit_effects(
         and not _has_contradictory_correction(folded)
     ):
         return EffectIntent(("system.settings.adjust",), (folded,))
+    if "system.settings.set" in available and airplane_mode_request(text) is not None:
+        # REOPEN1957 H0107 «poneme el modo avión»: every radio off (or on again).
+        return EffectIntent(("system.settings.set",), (folded,))
+    if "system.settings.status" in available and airplane_mode_question(text):
+        return EffectIntent(("system.settings.status",), (folded,))
     if (
         "system.settings.set" in available
         and _literal_brightness_level(folded) is not None

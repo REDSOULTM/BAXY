@@ -475,6 +475,110 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return ExternalJson.Success(operation, result, effectObserved);
     }
 
+    // REOPEN1957 H0107 «poneme el modo avión»: el modo avión de Windows es todas
+    // las radios apagadas. La API de radios apaga y enciende cada una y la
+    // postlectura las vuelve a leer; la lectura de estado dice si están todas
+    // apagadas. Un driver que restaure enciende las que estaban encendidas.
+    private static readonly RadioKind[] AirplaneRadioKinds = [RadioKind.WiFi, RadioKind.Bluetooth, RadioKind.MobileBroadband];
+
+    private static async ValueTask<ExternalCapabilityReceipt> AirplaneModeSetAsync(
+        string operation,
+        int value,
+        ExternalEffectBoundary effectBoundary,
+        CancellationToken cancellationToken)
+    {
+        if (value is not (0 or 1))
+            return ExternalJson.FailureBeforeEffect(operation, "airplane_mode_value_invalid");
+        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        if (access != RadioAccessStatus.Allowed)
+            return ExternalJson.FailureBeforeEffect(operation, "airplane_mode_radio_access_denied");
+        Radio[] radios = (await Radio.GetRadiosAsync())
+            .Where(radio => AirplaneRadioKinds.Contains(radio.Kind))
+            .ToArray();
+        if (radios.Length == 0)
+            return ExternalJson.FailureBeforeEffect(operation, "airplane_mode_radios_not_found");
+        RadioState desired = value == 1 ? RadioState.Off : RadioState.On;
+        var before = radios.ToDictionary(radio => radio.Name + "|" + radio.Kind, radio => radio.State == RadioState.On);
+        bool effectObserved = false;
+        foreach (Radio radio in radios)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (radio.State == desired || (desired == RadioState.On && radio.State == RadioState.Disabled))
+                continue;
+            effectBoundary.Cross(cancellationToken);
+            RadioAccessStatus changed = await radio.SetStateAsync(desired);
+            effectObserved = true;
+            if (changed != RadioAccessStatus.Allowed)
+                return effectBoundary.Failure(operation, "airplane_mode_change_rejected", effectObserved);
+        }
+
+        Radio[] observed = (await Radio.GetRadiosAsync())
+            .Where(radio => AirplaneRadioKinds.Contains(radio.Kind))
+            .ToArray();
+        bool allOff = observed.All(radio => radio.State != RadioState.On);
+        bool reached = value == 1 ? allOff : observed.All(radio => radio.State is RadioState.On or RadioState.Disabled);
+        if (!reached)
+            return effectBoundary.Failure(operation, "airplane_mode_postread_failed", effectObserved);
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("setting", "airplane_mode");
+            writer.WriteNumber("value", value);
+            writer.WriteBoolean("airplaneMode", allOff);
+            writer.WriteBoolean("changed", effectObserved);
+            writer.WriteStartArray("radios");
+            foreach (Radio radio in observed)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("kind", radio.Kind.ToString());
+                writer.WriteString("name", radio.Name);
+                writer.WriteString("state", radio.State.ToString());
+                writer.WriteBoolean("wasOn", before.GetValueOrDefault(radio.Name + "|" + radio.Kind));
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndArray();
+            writer.WriteString("authority", "windows_radio_api_all_radios_postread");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved);
+    }
+
+    private static async ValueTask<ExternalCapabilityReceipt> AirplaneModeStatusAsync(string operation)
+    {
+        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        if (access != RadioAccessStatus.Allowed)
+            return ExternalJson.Failure(operation, "airplane_mode_radio_access_denied");
+        Radio[] radios = (await Radio.GetRadiosAsync())
+            .Where(radio => AirplaneRadioKinds.Contains(radio.Kind))
+            .ToArray();
+        if (radios.Length == 0)
+            return ExternalJson.Failure(operation, "airplane_mode_radios_not_found");
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("setting", "airplane_mode");
+            writer.WriteBoolean("airplaneMode", radios.All(radio => radio.State != RadioState.On));
+            writer.WriteNumber("radioCount", radios.Length);
+            writer.WriteStartArray("radios");
+            foreach (Radio radio in radios)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("kind", radio.Kind.ToString());
+                writer.WriteString("name", radio.Name);
+                writer.WriteString("state", radio.State.ToString());
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndArray();
+            writer.WriteString("authority", "windows_radio_api_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
     private static async ValueTask<ExternalCapabilityReceipt> WifiRadioStatusAsync(string operation)
     {
         RadioAccessStatus access = await Radio.RequestAccessAsync();
@@ -1568,6 +1672,11 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     {
         string setting = ExternalJson.RequiredString(arguments, "setting");
         int value = ExternalJson.OptionalInt(arguments, "value", -1);
+        if (setting == "airplane_mode")
+        {
+            return await AirplaneModeSetAsync(operation, value, effectBoundary, token).ConfigureAwait(false);
+        }
+
         if (setting == "do_not_disturb")
         {
             if (value is not (0 or 1))
@@ -1705,6 +1814,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         string operation, JsonElement arguments, CancellationToken token)
     {
         string setting = ExternalJson.RequiredString(arguments, "setting");
+        if (setting == "airplane_mode")
+            return await AirplaneModeStatusAsync(operation).ConfigureAwait(false);
         if (setting != "brightness")
             return ExternalJson.Failure(operation, "brightness_status_invalid");
         ExternalProcessResult process = await RunPowerShellAsync(
