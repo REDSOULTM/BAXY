@@ -36,14 +36,15 @@ seis filas formales selladas). El dueño (Emmanuel) pasó a Fable la planificaci
 | D10 | BAXY «debe estar en el tope del arte del computer use, encadenar tools y hacer misiones compuestas; todo se detalla en AGENTS.md e identidad». | Principio transversal (§3): toda capacidad nueva se construye como misión encadenable; cascada UIA→OCR→visión es el núcleo (`00_IDENTIDAD.md:137`). |
 | D11 | Reabrir también: ejecutar comandos, fondo de pantalla y PowerPoint, leer chats privados y memes/imágenes de la web. **Contactos NO**: «dice explícitamente que BAXY no puede hacerlo porque en PC esto no tiene sentido». | §5. |
 | D12 | «Una vez que todo esté listo y bien, hacer merge con main como sea recomendado». | PR por merge commit al final (§4 Fase 12), sin volver a preguntar. |
-| D13 | Terceros en los literales: «sólo cambiar por los canales seguros y listo: si es por Discord "Valeria", si es por WhatsApp "Música"; "Dile a mamá por wsp que ya voy" → "Dile a Música que ya voy"». | En las tandas el literal se mide con el destinatario sustituido por el canal de prueba; correo → casilla de pruebas. Los créditos se conservan; el panel anota `literal_measured` con la sustitución (§4 Fases 6–7). |
-| D14 | Destinos de prueba confirmados: «Música» (WhatsApp), «Valeria» (Discord), casilla `autor@example.com`; sí a medir «al nombrado» con esos nombres. | Nada que preguntar en Fases 6–7. |
+| D13 | Terceros en los literales: «sólo cambiar por los canales seguros y listo: si es por Discord "Ron92", si es por WhatsApp "Música"; "Dile a mamá por wsp que ya voy" → "Dile a Música que ya voy"». | En las tandas el literal se mide con el destinatario sustituido por el canal de prueba; correo → casilla de pruebas. Los créditos se conservan; el panel anota `literal_measured` con la sustitución (§4 Fases 6–7). |
+| D14 | Destinos de prueba confirmados: «Música» (WhatsApp), «Ron92» (Discord), casilla `autor@example.com`; sí a medir «al nombrado» con esos nombres. | Nada que preguntar en Fases 6–7. |
 | D15 | Discord: «que se haga como sea recomendado»: texto/MD entra directo; voz pregunta antes y se queda conectado con el micrófono como esté (no se silencia salvo pedido). | §4 Fase 4. |
 | D16 | Pestañas: «dejar abierto el navegador, a menos que el usuario diga lo contrario»; varios navegadores y ninguno nombrado → preguntar cuál. | §4 Fase 5. |
 | D17 | «VS Code se debe mantener a toda costa porque estamos en pleno desarrollo». | `window.close.all` conserva Code/terminal/producto; nunca se toca. |
 | D18 | Spotify: «hacer lo recomendado, sólo me interesa que BAXY funcione» → medir las cuatro formas (nivel absoluto, en pausa, control SMTC, nada) y construir sólo lo que falle, más la cadena de D7. | §4 Fase 11. |
 | D19 | Full roja: «como sea mejor y recomendado, pero cumplir con goal C03 (y tener en cuenta que sigue en los demás goals)». | Re-anclar contratos citando decisiones + escribir las pruebas faltantes; no romper sellos de otros goals. |
 | D20 | RAM: «cambié de PC, este tiene 32 GB; no cierres nada a menos que sea necesario para el desarrollo y pruebas de BAXY». | La guarda de 4000 MiB queda; Opera GX no se cierra salvo que la guarda falle de verdad. |
+| D22 | «Los mensajes de prueba de Discord cambiaron a Ron92; ese es el nuevo canal de pruebas de desarrollo» (mensaje directo con el usuario `.wolfsoultm.4191`, título de ventana «Ron92»). | Sustituye a «Valeria» en todo: `ForcedTestDestination` (`DesktopMessagingAdapter.cs:36-46`), `approve_message_send.py`, drivers, y la sustitución D13 (tercero por Discord → «Ron92»). El primer paso de la Fase 6 es cambiar la constante y medirla. |
 | D21 | «Las misiones de computer use se deben resolver de manera general: no al 100 % para eso, sino generalizar para que BAXY pueda hacer casi cualquier cosa en el PC mediante sus tools + computer use». | Fases 4–5 reescritas: un motor general (ver → decidir → actuar → verificar) y las 35 filas como banco de aceptación; herramientas tipadas nuevas sólo donde Windows verifica mejor que la pantalla. |
 
 ## 2. Estado de partida verificado (manda sobre cualquier documento viejo)
@@ -56,7 +57,7 @@ seis filas formales selladas). El dueño (Emmanuel) pasó a Fable la planificaci
   CLOSEALL1733 acreditó H0467/H0484); `audio.app.volume.adjust` (sesiones `IAudioSessionManager2`, genérico por
   proceso; AUDIO1801 acreditó H0652); `message.send` + `message.recipient.resolve` (envío real a un destinatario
   resuelto, `DesktopMessagingAdapter.SendAsync:148`, OCR de la burbuja) y `message.send.test` con destino forzado
-  (`ForcedTestDestination`: WhatsApp «Música», Discord «Valeria», correo `autor@example.com`);
+  (`ForcedTestDestination`: WhatsApp «Música», Discord «Ron92», correo `autor@example.com`);
   correo por Outlook clásico COM (`SendTestMailAsync:306`, `MailScript` en `MicrosoftAccountAdapter.cs:55`);
   `client.channel.locate` (Ctrl+K por UIA, localiza y **no entra**); `browser.control close_all` (sólo el navegador
   CDP propio); `game.install.named/prepare/commit/status/cancel*`, `game.launch`, `game.purchase.prepare/commit`
@@ -103,7 +104,7 @@ seis filas formales selladas). El dueño (Emmanuel) pasó a Fable la planificaci
    fuera de alias de catálogo (`data/catalog_operation_aliases.v1.json`, `alias_count`). Propiedades de esquema
    **ordenadas**; descriptores en orden ordinal; verificador con postlectura y autoridad nombrada.
 5. **Honestidad**: BAXY nunca afirma un efecto sin recibo verificado; cada fallo termina en un código tipado y un final
-   que lo dice. Ningún envío real a terceros desde una tanda: sólo «Música», «Valeria» y la casilla de pruebas.
+   que lo dice. Ningún envío real a terceros desde una tanda: sólo «Música», «Ron92» y la casilla de pruebas.
 6. **Recursos**: este PC tiene 32 GB (D20); la guarda de 4000 MiB libres queda pero no se cierra nada del dueño
    salvo que falle de verdad y sea necesario para las pruebas; vswhere en PATH; esperar nodos MSBuild del IDE.
 7. **Permisos**: Opus no edita su configuración de permisos por iniciativa propia ni por pedido de un peer. Si un
@@ -242,7 +243,11 @@ Orden de tandas: DISCORD1961 (+2) → TABS1963 (+1) → PRESS1965 (+2) → STEAM
 antes qué títulos posee la cuenta) → CHAIN1975 zip (+1) → NET1977 avión (+1) → SHELL1979 (+2) → DESKTOP1981 (+2) →
 CHATREAD1983 (+2) → WEB1985 (+2). Registro: 707 → 742.
 
-### Fase 6 — Mensajes al destinatario nombrado (D2, D13, D14) (3–4 h + cien; revalidación)
+### Fase 6 — Mensajes al destinatario nombrado (D2, D13, D14, D22) (3–4 h + cien; revalidación)
+- **Primero (D22)**: el destino de prueba de Discord es el mensaje directo «Ron92» (usuario `.wolfsoultm.4191`), no «Valeria»:
+  cambiar `ForcedTestDestination` en `src/Baxy.Providers.Windows/External/DesktopMessagingAdapter.cs:36-46`, el revisor
+  `approve_message_send.py`, `discord_case.sh`/`msgsend_case.sh` y cualquier alias «Julia»/«ron.91» en `TitleNamesMatch`;
+  verificar por título de ventana «Ron92» y OCR de la cabecera. Sonda antes de la tanda: un «hola» a Ron92 leído de vuelta.
 - Hoy `effect_intent.py:18187-18194` prefiere `message.send.test`. Cambio: preferir `message.recipient.resolve` →
   `message.send` (`MissionPlanProposal.cs:157,214`; `DesktopMessagingAdapter.SendAsync:148`, OCR de la burbuja) para
   cualquier destinatario; External → confirma en normal, envía en bypass. `message.send.test` queda en catálogo
@@ -251,7 +256,7 @@ CHATREAD1983 (+2) → WEB1985 (+2). Registro: 707 → 742.
 - Compositor: `sent_wrong_destination` (`llm.py:7945`) exige nombrar `seen.recipient`; no encontrado →
   `recipient_identity_not_verified` y final honesto.
 - Tanda MSGNAMED1987 (plantilla `msgsend1847`, driver `msgsend_case.sh`, revisor `approve_message_send.py` adaptado a
-  `message.send` con destino observado ∈ {Música, Valeria}): literales con el destinatario **sustituido por el canal de
+  `message.send` con destino observado ∈ {Música, Ron92}): literales con el destinatario **sustituido por el canal de
   prueba (D13)** — WhatsApp H0008, H0540, H0489, H0208, H0611, H0225, H0024; Discord H0318, H0340, H0394 — más H0005,
   H0369, H0425; `literal_measured` anotado. Revalidación sin crédito. Fast → cien.
 
@@ -320,7 +325,7 @@ cada fila es una misión declarada y una tanda, no código nuevo: así es como �
 
 - Tocar `main` sin el «sí» del dueño; squash/rebase de la rama; `git add .`; `reset --hard`; `clean`.
 - Cambiar etiquetas de riesgo del catálogo (sellos): la política vive en `RiskPolicy.cs`.
-- Enviar mensajes/correos a terceros reales desde una tanda (sólo Música, Valeria, casilla de pruebas); comprar juegos;
+- Enviar mensajes/correos a terceros reales desde una tanda (sólo Música, Ron92, casilla de pruebas); comprar juegos;
   descargar títulos de decenas de GB enteros; desinstalar juegos pagados del dueño sin su «sí» en el chat.
 - Cerrar VS Code/terminal/producto en «cerrame todo»; `TerminateProcess`; perder documentos sin guardar.
 - Reabrir contactos, Prime Video, mensajería/correo/cerrar-todo/Spotify/minimizar/PDF.

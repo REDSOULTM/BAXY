@@ -71,7 +71,7 @@ Lectura: en las tandas el literal se mide con el destinatario sustituido (correo
 anota la sustitución; los créditos existentes se conservan.
 
 ## D14 — Destinos de prueba
-«Sí»: «Música» (WhatsApp), «Valeria» (Discord), `autor@example.com`; sí a medir «al nombrado» con esos nombres.
+«Sí»: «Música» (WhatsApp), «Valeria» (Discord; **sustituido por «Ron92» en D22**), `autor@example.com`; sí a medir «al nombrado» con esos nombres.
 
 ## D15 — Discord
 «Realmente no me importa cómo se haga; si te unes a cualquier canal no me afecta; que se haga como sea recomendado.»
@@ -106,3 +106,9 @@ tools + computer use.»
 Lectura: el plan construye un motor general (ver → decidir → actuar → verificar, en bucle, sobre cualquier ventana)
 y usa las 35 filas reabiertas como banco de aceptación; sólo se añade una herramienta tipada cuando Windows ofrece una
 verificación mejor que la pantalla (ficheros, registro, manifiestos, COM, radios).
+
+## D22 — Canal de pruebas de Discord: «Ron92»
+«Muy importante: los mensajes de prueba de Discord cambiaron a Ron92; cambia eso, ese es el nuevo canal de pruebas
+de desarrollo.» (Captura del 2026-09-20: mensaje directo «Ron92», usuario `.wolfsoultm.4191`.)
+Lectura: «Ron92» sustituye a «Valeria» en el destino forzado del adaptador, en los revisores y drivers de tanda y en
+la sustitución de terceros (D13). WhatsApp sigue siendo el grupo «Música»; correo, la casilla de pruebas.
