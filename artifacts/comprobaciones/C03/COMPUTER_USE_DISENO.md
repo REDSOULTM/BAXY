@@ -454,6 +454,39 @@ CHECKPOINT.md y en la tabla de categorías.
 **Lección del método.** Dos sesiones raíz sobre el mismo perfil de streaming se pisan el candado
 del navegador y tumban las reproducciones: una sola corre tandas de vídeo a la vez.
 
+## 14. Las cuatro tandas de Disney+ y el cierre 742/742 (2026-09-20)
+
+Las diez filas de Disney+ costaron cuatro tandas de reproducción y una de preguntas, porque el
+buscador del servicio tiene tres carreras que sólo aparecen corriendo diez turnos seguidos:
+
+- **VIDEO1947 (9/10, 0 créditos).** La página de búsqueda muestra fichas por defecto antes de
+  escribir nada y siguen medio segundo después de escribir; la lectura tomó la primera
+  («¿Volverías con tu ex? 2»). Reparación (BUILD1949): las fichas de antes de escribir se
+  recuerdan y sólo se elige cuando el conjunto cambia; si ninguna coincide, la primera se toma
+  tras tres segundos sin cambios (así sigue valiendo «The Devil» → «El diablo viste a la moda 2»).
+- **VIDEO1949 (8/10, 0 créditos).** La ficha con el nombre exacto «Daredevil» puede ser la de
+  colección (`/browse/page-<id>`, el universo Daredevil), sin botón de reproducir. Reparación
+  (BUILD1951): entre iguales se prefiere la ficha de la obra (`/browse/entity-`) y una colección
+  se recorre con la misma lectura hasta su obra.
+- **VIDEO1951 (9/10, 5 créditos).** Una ficha puede quedarse sin renderizar el resto del minuto
+  (título «Disney+», ningún botón). Reparación (BUILD1953): diez segundos sin el control que toca
+  recargan la página una sola vez (marca en la pestaña) y el texto se reescribe si la búsqueda
+  vuelve vacía.
+- **VIDEO1953 (5/6, 1 crédito).** H0712 y sus tres variantes reproducen; un final abre con «No,
+  no se puede reproducir "The Devil"» antes de nombrar lo que se reproduce: negación inventada,
+  adjudicado fallido sin afectar al crédito. Queda anotado en APLAZADOS.
+- **VIDEO1955 (8/8, 4 créditos).** Sin cambio de código: las cuatro transcripciones sin título
+  preguntan qué ver, en su idioma, con cero operaciones.
+
+Regla del método que dejaron: un panel de diez turnos revisados con un solo fallo de variante
+no acredita nada (hacen falta dos variantes aprobadas); se adjudica honesto, se lee
+`streaming-playback-rejections.jsonl` antes de adivinar, se repara la causa y se repite el mismo
+panel como tanda siguiente. Cuando sólo queda una fila abierta, el panel es el de seis (un
+literal, tres variantes, dos límites): el sellado rechaza literales ya cubiertos.
+
+**Estado: 742/742, 35/35 categorías cerradas; cien-76 a cien-85, 100/100 (cien-85 sobre el árbol
+del cierre, HEAD 771f779df).** Detalle en CIEN.md.
+
 ## Fuentes
 
 - [OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments](https://arxiv.org/html/2404.07972v2)

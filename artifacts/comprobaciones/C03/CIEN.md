@@ -24,6 +24,29 @@
 | cien-34 | **v17 fresca** Granite 4.2-3B **registrado**, sin override | no: 12 agotes espontáneos + publicados infieles; ver abajo |
 | cien-35 | **v18 fresca** Granite 4.2-3B **registrado**, sin override | no: 7 agotes espontáneos + publicados infieles; ver abajo |
 
+## cien-76 a cien-85 (leídas, v18, Qwen3-4B registrado, 2026-09-20)
+
+Misma población congelada y mismo runtime; cada corrida sigue a un cambio de fuente de la
+mente o de la App, y la última, **cien-85**, corre sobre el árbol del cierre (HEAD `771f779df`,
+BUILD1955, 742/742). Capturas `cien-84/events.jsonl` `156e5ef86ee45a0f247c4fe40c5ed867aae9c49aa1559ffccc98943211888e2f` y
+`cien-85/events.jsonl` `e0bf2079137d6181ed757592f6034684e31e9c6f28761b6b7671a7a5e3a91111`.
+
+| Corrida | Publicadas | Agotes | Limpias | Qué la separó de la anterior |
+|---|---:|---:|---:|---|
+| cien-76 a cien-82 | 100 | 0 | 100 | las tandas del 20-09 (cadena, sitio, API, Epic, chats, léxico) |
+| cien-83 | 100 | 0 | 99 | UNRES1945 leyó «¿Estás?» como nombre suelto (091): «No sé a qué te referís» |
+| cien-84 | **100** | **0** | **100** | la lectura exige dos palabras y ninguna del diccionario (5c60bbe66) |
+| cien-85 | **100** | **0** | **100** | control del árbol final: las cuatro capas de Disney+ no tocan ningún turno de la población |
+
+### cien-85 contra cien-84
+
+Leída contra cien-84 línea a línea: veintidós líneas distintas. Doce son relojes (09:53 →
+11:35) y dos, reloj y volumen a la vez, que el dueño había bajado de 96 a 6 entre corridas y
+las dos lecturas dan tal cual. Las ocho restantes son reformulaciones del modelo con los mismos hechos («I'm
+BAXY, running on this PC», «Soy BAXY, tu compañero», «Got it, no apps opened. What's on your
+mind?»); la de la memoria caché sigue nombrando GeeksforGeeks, que es la página que leyó.
+Ningún turno pregunta donde antes contestaba ni contesta donde antes preguntaba.
+
 ## cien-45 y cien-46 (leídas, v18, Qwen3-4B registrado, 2026-09-19)
 
 Misma población congelada y mismo runtime. Capturas
