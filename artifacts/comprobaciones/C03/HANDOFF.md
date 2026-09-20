@@ -1,3 +1,9 @@
+# REOPEN1996 aplicado — 2026-09-20T22:28:51.795936+00:00
+
+**652/742 cubiertos, 90 abiertos, 0 NA; 18/35 categorías cerradas (Música 39/39, Entrada incompleta, ruido y control de diálogo 34/34, Vídeo y series 26/26, Audio y volumen 51/51, Cerrar aplicaciones y ventanas 20/20, Conocimiento, razonamiento y creatividad verbal 37/37, Estado de hardware y sistema 40/40, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Contactos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9); C03 formal 3/11. Registro SHA 2a3c2e513b56a2f2859d131832b9bb29a2827d20b074fef882299115a11e19a6.** Escritor raíz Opus 5 (D24). REOPEN1996: H0521 vuelve a abierta (candidato único en este PC); se mide en NEAR1997.
+
+---
+
 # NEAR1995 adjudicado — 2026-09-20T22:10:22.844467+00:00
 
 **653/742 cubiertos, 89 abiertos, 0 NA; 18/35 categorías cerradas (Música 39/39, Entrada incompleta, ruido y control de diálogo 34/34, Vídeo y series 26/26, Audio y volumen 51/51, Cerrar aplicaciones y ventanas 20/20, Conocimiento, razonamiento y creatividad verbal 37/37, Estado de hardware y sistema 40/40, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Contactos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9); C03 formal 3/11. Registro SHA 3a78b48c97c5b086271fa82fe772aac997384e0e693b0c797ae6834afc42aee9. Primeras altas 24 h >= 628 (+2).** Escritor raíz Opus 5 (plan post-goal, D24). Candidato: HEAD e5258858 con BUILD1995 (el unico candidato instalado de un nombre mal oido se abre sin preguntar). Turnos ordinarios con una app.open verificada por caso.

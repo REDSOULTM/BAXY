@@ -1706,3 +1706,7 @@ El dueño ordenó (D24) auditar las 742 filas contra la encuesta y reabrir lo qu
 ## Actualización 2026-09-20 (NEAR1995)
 
 Abrir aplicaciones pasa de 48/54 a 50/54 con abrir sin preguntar la aplicacion cuyo nombre mal oido tiene un solo candidato instalado (commit e5258858, BUILD1995) (HEAD e5258858): 6 aprobados de 8 (H0386 «Abre stea,» y H0522 «Sí, abre Ste.» abren Steam sin preguntar con dos variantes; H0227/H0398 «Steel» fallan por el empate con dos «Shell» del catálogo real), 2 créditos. Medición: cuatro casos con app.open de Steam completada y verificada (reutilizado, alreadyRunning) y finales que nombran Steam; dos literales «Steel» preguntaron por Google Cloud SDK Shell u OpenSSL Shell (defecto de desempate de la lectura, reparación pendiente); dos límites con cero operaciones.
+
+## Enmienda 2026-09-20 (REOPEN1996)
+
+H0521 «abres team» vuelve a abierta: la regla del candidato único depende de lo instalado en este PC y Microsoft Teams no lo está; Steam es el único candidato y se abre (NEAR1997). Estado: 652/742, 90 abiertas, 18/35 cerradas.

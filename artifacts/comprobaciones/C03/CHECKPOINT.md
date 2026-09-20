@@ -1,3 +1,13 @@
+## REOPEN1996 — estado vigente 2026-09-20T22:28:51.795936+00:00
+
+Enmienda de la auditoría semántica (D24): H0521 «abres team» vuelve a abierta. En este PC Microsoft Teams no está instalado, así que el nombre mal oído tiene un solo candidato (Steam) y la regla del dueño manda abrirlo; la pregunta acreditada por dos candidatos (APPS1499) se midió en el otro PC. Se mide en NEAR1997. Ningún crédito nuevo.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 652/742 | 90 | 0 | >=628 | 18/35 |
+
+Siguiente acción: NEAR1997 (H0227, H0398, H0521 sobre BUILD1997).
+
 ## NEAR1995 — estado vigente 2026-09-20T22:10:22.844467+00:00
 
 Parcial: 6 aprobados, 2 fallidos, 0 sin ejecutar; 2 créditos.
