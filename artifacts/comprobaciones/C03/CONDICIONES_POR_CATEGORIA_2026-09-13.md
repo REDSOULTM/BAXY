@@ -1642,3 +1642,7 @@ Vídeo y series pasa de 12/26 a 14/26 con poner la serie aunque se nombre mal, y
 ## Actualización 2026-09-20 (VIDEO1929)
 
 Vídeo y series pasa de 14/26 a 15/26 con poner la serie aunque el servicio se nombre mal, sin preguntar por lo que ya esta escrito (commit c79ee713, BUILD1929) (HEAD c79ee713): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Cuatro reproducciones con el servicio mal escrito, aprobadas por la raiz y verificadas contra el avance del video; los finales nombran Netflix y el titulo. La primera corrida de los cuatro quedo detenida por un titulo esperado heredado en el revisor; se preservo y se repitio.
+
+## Actualización 2026-09-20 (CHAIN1931)
+
+Navegación y búsqueda web pasa de 44/46 a 45/46 con encadenar abrir, buscar, capturar y cerrar sobre una aplicacion nombrada, con cada efecto revisado (commit 82d467d1, BUILD1931) (HEAD 82d467d1): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Cada caso revisado propuso tres efectos a la raíz (navegar, capturar, cerrar) y recibió tres aprobaciones (approved_3_of_3); Opera GX del dueño cerrada antes de cada caso con su autorización y ausente después (OPERA_DESPUES=0); búsqueda web verificada en DuckDuckGo lite; finales fieles que niegan el escritorio y dicen que cerraron Opera; límites con cero operaciones. Corrida sobre BUILD1931 (HEAD 82d467d) tras tres corridas preservadas por el protocolo del corredor y del adjudicador.

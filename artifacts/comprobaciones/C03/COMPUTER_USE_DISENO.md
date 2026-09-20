@@ -298,6 +298,44 @@ prueba de extremo a extremo antes de sellar. Y una habilidad de planificador esc
 «start …» no hacía nada —en la ruta del esqueleto cerrado no se lee— mientras una entrada
 en el extractor literal lo arreglaba; se midió con y sin, y la habilidad se retiró.
 
+## 10. CHAIN1931: una misión de varios efectos, cada uno revisado a su turno (2026-09-20)
+
+H0516 «Abre Opera GX, busca una receta de pizza, guarda una captura en el escritorio y luego
+cierra Opera» es la fila que el dueño llama *computer use*: cinco pasos encadenados —buscar,
+navegar en Opera GX, capturar, resolver la ventana, cerrar— de los que tres son efectos
+revisados. El mind ya la planificaba entera; lo que no existía era el camino. El conductor
+revisado admitía un solo efecto por turno y el juez de formas sólo planes de uno o dos
+pasos, así que el turno moría en `review_pending_not_supported`.
+
+**Producto (commit 82d467d, BUILD1931).** El juez de formas admite una cadena: lo hecho
+verificado, el pendiente actual, lo que queda revisable o de sólo lectura. El conductor
+propone a la raíz cada efecto con su propio nonce y sólo ejecuta con su propia aprobación;
+nunca un sufijo, y los intermedios salen con fase «request». El recibo de cada propuesta
+lleva el prefijo verificado entero. Cuatro cosas más, cada una medida con la cadena
+delante: «Opera GX» se fundamentaba como «opera» (alias de enumerado); la navegación que
+sigue a una búsqueda va al primer resultado verificado en el navegador nombrado, sin el
+modelo; el final decía «se guardó en el escritorio» sin ruta en el recibo (veto con pista,
+y las pistas de reintento acumulan); nombrar lo que se pidió cerrar exime de «ventana», no
+de decir que se cerró. Y el buscador que contesta va primero (DuckDuckGo lite, Bing de
+reserva).
+
+**Medición.** Seis de seis: el literal y tres variantes (lasaña, inglés, pizza napolitana)
+con `approved_3_of_3`, Opera GX del dueño cerrada antes de cada caso con su autorización y
+ausente después; dos límites con cero operaciones. Final del literal: «Abrí Opera GX,
+busqué una receta de pizza, tomé una captura de pantalla de toda la pantalla y la guardé de
+forma privada, pero la captura no quedó guardada en el escritorio; cerré Opera.» 1 crédito
+(H0516): Navegación y búsqueda web 45/46; 723/742.
+
+**Lección del método, tres corridas.** El corredor sellado y su adjudicador sólo conocían
+«petición, revisión, final» por caso revisado. La primera corrida paró con «terminal phase
+sequence» con las tres aprobaciones dadas; la segunda, ya con el protocolo de la cadena,
+olvidó el caso ordinario y paró los dos límites; la tercera pasó los seis y el adjudicador
+contó dos terminales donde había cuatro. Cada corrida queda preservada con su motivo
+(`C03-chain1931-first-run-preserved.json`) y los pares del panel enseñan la cadena al
+corredor y al adjudicador sin tocar el caso ordinario. Al publicar se descubrió además que
+la tabla pública de categorías había derivado (créditos sumados a la etiqueta equivocada;
+«Navegación y búsqueda web» decía 48/46): se reconstruye desde el registro canónico.
+
 ## Fuentes
 
 - [OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments](https://arxiv.org/html/2404.07972v2)

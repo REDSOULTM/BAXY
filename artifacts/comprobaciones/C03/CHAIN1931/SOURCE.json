@@ -1,0 +1,15 @@
+{
+  "schema": "c03-chain1931-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/ProductConductorHost.cs and MainWindowViewModel.cs (a mission with several reviewed effects is proposed to the root one effect at a time, with the whole verified prefix as evidence), src/baxy_mind (the named browser and the first verified result ground the dependent navigation; opera_gx grounds from «Opera GX»; a capture location the receipt does not give is vetoed; retry hints accumulate), src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs (the engine that answers is asked first), on top of the CHAIN1931 build.",
+  "patch": "artifacts/comprobaciones/C03/CHAIN1931/SOURCE.patch",
+  "commits": [
+    "82d467d1cbbdefb4678ddd6826066342dbf90b57"
+  ],
+  "build": "BUILD1931 (C03-repairs1931-build/BUILD_READY.json; mente, App y Providers)",
+  "cause_measured": "El conductor revisado admitía un solo efecto por turno y el juez de formas sólo planes de uno o dos pasos; una misión de cinco con tres efectos revisados no cabía.",
+  "change": "Cada efecto revisado de una misión se propone y aprueba a su turno; los argumentos dependientes se fundamentan sin el modelo; el final no inventa dónde quedó la captura.",
+  "measurement": "CHAIN1931: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. Cada caso revisado propuso tres efectos a la raíz (navegar, capturar, cerrar) y recibió tres aprobaciones (approved_3_of_3); Opera GX del dueño cerrada antes de cada caso con su autorización y ausente después (OPERA_DESPUES=0); búsqueda web verificada en DuckDuckGo lite; finales fieles que niegan el escritorio y dicen que cerraron Opera; límites con cero operaciones. Corrida sobre BUILD1931 (HEAD 82d467d) tras tres corridas preservadas por el protocolo del corredor y del adjudicador.",
+  "credits": 1
+}
