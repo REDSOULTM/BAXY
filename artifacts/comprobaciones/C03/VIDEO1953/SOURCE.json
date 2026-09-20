@@ -1,0 +1,15 @@
+{
+  "schema": "c03-video1953-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs (PlayDisneyAsync: stalled page reloaded once, search text retyped after a reload), on top of the VIDEO1953 build.",
+  "patch": "artifacts/comprobaciones/C03/VIDEO1953/SOURCE.patch",
+  "commits": [
+    "5801d5f79b50ba3d1389ce7f1466c3316b6dbb99"
+  ],
+  "build": "BUILD1953 (C03-repairs1953-build/BUILD_READY.json; Providers)",
+  "cause_measured": "Una ficha de Disney+ podía quedarse sin renderizar el resto del minuto, sin título ni botón.",
+  "change": "Diez segundos sin el control que toca recargan la página una sola vez; el texto de búsqueda se reescribe si vuelve vacío.",
+  "measurement": "VIDEO1953: 6 ejecutados, 5 aprobados, 1 fallido; 1 créditos. La fila y sus tres variantes reproducen «El diablo viste a la moda 2» con la ficha cargada o recargada una vez; una variante falla sólo por un final que abre con una negación inventada antes de nombrar lo que se reproduce. Un literal acredita con dos variantes aprobadas.",
+  "credits": 1
+}

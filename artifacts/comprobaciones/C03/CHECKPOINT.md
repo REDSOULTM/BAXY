@@ -1,3 +1,25 @@
+## VIDEO1953 — estado vigente 2026-09-20T14:25:37.633722+00:00
+
+Parcial: 5 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 738/742 | 4 | 0 | >=622 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 621 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); VIDEO1953 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: VIDEO1953: 6 ejecutados, 5 aprobados, 1 fallidos, 1 créditos (índices [0]). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/VIDEO1953/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 170.84 s acumulados; pico GPU 3492.93 MiB; pico RAM 3943.36 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque VIDEO1953 precedente. -->
+
 ## VIDEO1951 — estado vigente 2026-09-20T14:14:18.621899+00:00
 
 Parcial: 9 aprobados, 1 fallidos, 0 sin ejecutar; 5 créditos.

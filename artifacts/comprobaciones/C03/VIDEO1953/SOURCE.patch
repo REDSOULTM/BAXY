@@ -1,0 +1,81 @@
+commit 5801d5f79b50ba3d1389ce7f1466c3316b6dbb99
+
+C03: Disney+ recarga una vez la página que no termina de cargar
+
+VIDEO1951 acreditó cinco filas; H0712 falló por una tercera causa: el
+buscador respondió, la lectura eligió «El diablo viste a la moda 2» y su
+ficha se quedó sin renderizar el resto del minuto (título «Disney+»,
+ningún botón), como le pasa a veces a la aplicación de Disney+ con una
+carga fría. Ahora diez segundos sin el control que toca —el cuadro de
+búsqueda, las fichas de una colección o el botón de la ficha— recargan
+esa página una sola vez, con la marca en la pestaña, y el texto de la
+búsqueda se vuelve a escribir si el cuadro vuelve vacío.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+index d7da19f4b..e6492c7ad 100644
+--- a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+@@ -1794,7 +1794,8 @@ internal class CdpBrowserSession : IDisposable
+         string chosenHref = string.Empty;
+         string chosenName = string.Empty;
+         string lastObserved = string.Empty;
+-        bool typed = false;
++        // Tras una recarga de la búsqueda el cuadro vuelve vacío: se escribe de nuevo, pocas veces.
++        int typed = 0;
+         string failure = "disney_title_or_play_control_not_found";
+         for (int attempt = 0; attempt <= 240; attempt++)
+         {
+@@ -1819,6 +1820,12 @@ internal class CdpBrowserSession : IDisposable
+                 // botón de reproducir: entre iguales se prefiere la ficha de la obra.
+                 + "const clean=s=>(s||'').split(/\\s+(?:(?:Clasificaci[oó]n|Rating|Estreno|Release|G[eé]nero|Genre)\\s*:|Selecciona esta opci[oó]n|Select this option)/)[0].trim();"
+                 + "const isEntity=a=>(a.getAttribute('href')||'').includes('/browse/entity-');"
++                // VIDEO1951: una página de Disney+ puede quedarse sin renderizar (título
++                // «Disney+» y ningún control durante el resto del minuto). Diez segundos
++                // sin el control que toca —el cuadro de búsqueda, las fichas o el botón—
++                // se recarga esa página una sola vez; la marca vive en la pestaña.
++                + "const stalled=()=>{const k='baxyReload:'+p;window.__baxyStall=(window.__baxyStall||0)+1;"
++                + "if(window.__baxyStall>40&&!sessionStorage.getItem(k)){sessionStorage.setItem(k,'1');window.__baxyStall=0;location.reload();return 'reload';}return 'none';};"
+                 + "const pick=list=>list.find(x=>x.t===wanted)||list.find(x=>x.t.startsWith(wanted))||list.find(x=>x.t.includes(wanted));"
+                 + "const choose=cards=>{const named=cards.map(a=>({a,t:clean(a.getAttribute('aria-label')||a.innerText).toLowerCase(),n:clean(a.getAttribute('aria-label')||a.innerText)}));"
+                 + "const hrefs=cards.map(a=>a.getAttribute('href')||'').join(',');"
+@@ -1844,17 +1851,19 @@ internal class CdpBrowserSession : IDisposable
+                 + "const hit=choose(cards);"
+                 + "if(hit){chosenName=hit.n;chosenHref=hit.a.getAttribute('href')||'';if(chosenHref){location.href=chosenHref;action='entity_nav';}"
+                 + "return [location.href,document.title,'ok',-1,'missing',0,action,chosenHref,chosenName,'cards'].join('\\u001f');}}"
+-                + "if(input){input.focus();return [location.href,document.title,'ok',-1,'missing',0,'input_focused','','',(input.value||'').length?'typed':'empty'].join('\\u001f');}}"
++                + "if(input){window.__baxyStall=0;input.focus();return [location.href,document.title,'ok',-1,'missing',0,'input_focused','','',(input.value||'').length?'typed':'empty'].join('\\u001f');}"
++                + "action=stalled();return [location.href,document.title,'ok',-1,'missing',0,action,'','','search'].join('\\u001f');}"
+                 // La colección: si la búsqueda llevó a una página de universo, la obra
+                 // se elige entre sus fichas con la misma lectura.
+                 + "if(!auth&&p.includes('/browse/page-')){const cards=[...document.querySelectorAll('a[data-testid=\"set-item\"]')].filter(isEntity);"
+                 + "const hit=cards.length?choose(cards):null;"
+                 + "if(hit){chosenName=hit.n;chosenHref=hit.a.getAttribute('href')||'';if(chosenHref){location.href=chosenHref;action='entity_nav';}}"
++                + "else if(!cards.length){action=stalled();}"
+                 + "return [location.href,document.title,'ok',-1,'missing',0,action,chosenHref,chosenName,'page'].join('\\u001f');}"
+                 // La ficha: su botón de reproducir lleva al reproductor por la
+                 // propia aplicación (SPA), que es la ruta que arranca.
+                 + "if(!auth&&p.includes('/browse/entity-')){const play=document.querySelector('a[data-testid=\"playback-action-button\"],button[data-testid=\"playback-action-button\"]');"
+-                + "if(play){play.click();action='play_clicked';}"
++                + "if(play){play.click();action='play_clicked';}else{action=stalled();}"
+                 + "return [location.href,document.title,'ok',-1,'missing',0,action,'','','entity'].join('\\u001f');}"
+                 // El reproductor: el <video> que avanza es la prueba.
+                 + "const vids=[...document.querySelectorAll('video')];"
+@@ -1872,13 +1881,13 @@ internal class CdpBrowserSession : IDisposable
+                     "disney_authentication_required");
+             if (fields[7].Length > 0) chosenHref = fields[7];
+             if (fields[8].Length > 0) chosenName = fields[8];
+-            if (fields[6] == "input_focused" && !typed && fields[9] == "empty")
++            if (fields[6] == "input_focused" && typed < 3 && fields[9] == "empty")
+             {
+                 await CommandAsync(socket, "Input.insertText", writer =>
+                 {
+                     writer.WriteString("text", title);
+                 }, cancellationToken).ConfigureAwait(false);
+-                typed = true;
++                typed++;
+                 continue;
+             }
+             bool player = fields[9] == "player";

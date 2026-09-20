@@ -1686,3 +1686,7 @@ Vídeo y series pasa de 16/26 a 16/26 con poner una serie nombrandola en Disney+
 ## Actualización 2026-09-20 (VIDEO1951)
 
 Vídeo y series pasa de 16/26 a 21/26 con poner una serie nombrandola en Disney+ prefiriendo la ficha de la obra a la coleccion (commit 5f1be4ed, BUILD1951) (HEAD 5f1be4ed): 10 ejecutados, 9 aprobados, 1 fallido, 5 créditos. «Daredevil» elige la ficha de la obra y no la de colección, y las dos variantes reproducen; H0712 falló porque la ficha elegida («El diablo viste a la moda 2») no terminó de cargar en el minuto del turno, con final honesto. Cinco literales acreditan con dos variantes aprobadas.
+
+## Actualización 2026-09-20 (VIDEO1953)
+
+Vídeo y series pasa de 21/26 a 22/26 con poner una serie nombrandola en Disney+ recargando una vez la pagina que no termina de cargar (commit 5801d5f7, BUILD1953) (HEAD 5801d5f7): 6 ejecutados, 5 aprobados, 1 fallido, 1 créditos. La fila y sus tres variantes reproducen «El diablo viste a la moda 2» con la ficha cargada o recargada una vez; una variante falla sólo por un final que abre con una negación inventada antes de nombrar lo que se reproduce. Un literal acredita con dos variantes aprobadas.
