@@ -1,0 +1,419 @@
+# Computer use — contrato de vista y acción
+
+Fase 4 del plan post-goal C03 (`artifacts/comprobaciones/C03/PLAN_POSTGOAL_2026-09-20.md`),
+decisiones D10, D15, D16, D21, D23 y D24 (`DECISIONES_DUENO_2026-09-20.md`). Todo el
+motor se construye sobre este contrato: lo que el modelo ve, lo que puede hacer, cómo
+se verifica cada acto y cuándo termina una misión. Nada de lo que sigue conoce una
+aplicación concreta.
+
+Principios que manda la identidad (`documentacion/00_IDENTIDAD.md` §«El catálogo», §«Peligro
+y confirmación») y el diseño medido (`artifacts/comprobaciones/C03/COMPUTER_USE_DISENO.md`
+§1–§4, §10):
+
+1. **Los ojos son el árbol de accesibilidad, no la captura.** La mente es Qwen3-4B de texto,
+   4096 de contexto, temperatura 0. Ve una vista compacta: texto, nunca píxeles.
+2. **Un solo acto por paso, nombrado.** El repertorio es cerrado y cada primitiva lleva su
+   postlectura; un clic sólo cuenta si la superficie cambió, el control desapareció o quedó
+   seleccionado.
+3. **El bucle es mirar → elegir un acto → ejecutarlo con verificación → volver a mirar.**
+   Termina por comprobación de éxito, por presupuesto o porque la vista no cambia.
+4. **La mente propone, el Kernel autoriza, el provider ejecuta.** Cada paso es una operación
+   del catálogo en el journal, con el riesgo de su primitiva (`RiskPolicy`, modo normal: sólo
+   confirma lo destructivo o lo que llega a una persona).
+5. **Cero código por aplicación fuera de alias.** Lo que distingue apps son etiquetas leídas
+   en pantalla y el catálogo de aplicaciones instaladas; nada más.
+
+---
+
+## 1. La vista compacta (`input.visible.controls`, v2)
+
+Operación de sólo lectura, ya existente, que pasa de «lista de nombres» a **vista
+compacta**: lo que una persona ve en la ventana de delante, en texto, en ≤ 60 controles.
+Contrato de verificación `input.visible.controls.windows.uia.snapshot.v2`.
+
+### 1.1 Argumentos
+
+```json
+{
+  "limit": 60,            // opcional, 1..60; por defecto 60
+  "includeText": true,    // opcional; añade el texto OCR por zonas (cuesta ~1 s)
+  "waitForLabel": "Biblioteca"  // opcional; espera acotada (≤ 24 s) hasta que esa etiqueta
+                                // aparezca en controles o texto antes de devolver la vista
+}
+```
+
+### 1.2 Resultado
+
+```json
+{
+  "version": 2,
+  "ok": true,
+  "error": "",
+  "window": {
+    "title": "Calculadora",
+    "process": "CalculatorApp",
+    "processId": 1234,
+    "hwnd": 460248,
+    "rect": {"x": 100, "y": 80, "w": 640, "h": 720},
+    "focused": {"i": 7, "kind": "Edit", "name": "Búsqueda", "value": ""}
+  },
+  "controls": [
+    {
+      "i": 0,
+      "kind": "Button",              // ControlType UIA sin el prefijo
+      "name": "Cinco",               // ≤ 80 caracteres, espacios colapsados
+      "id": "42.1837.4.12",          // RuntimeId UIA; vale sólo para esta vista
+      "state": "",                   // tokens separados por espacio, ver §1.3
+      "value": null,                 // Value/RangeValue si el control lo expone (≤ 120 chars)
+      "rect": {"x": 120, "y": 500, "w": 60, "h": 48},   // píxeles de pantalla
+      "zone": "BL",                  // rejilla 3×3 sobre la ventana, ver §1.4
+      "color": "gray"                // color dominante HSV del rectángulo, ver §1.5
+    }
+  ],
+  "controlCount": 43,                // accionables visibles antes del límite
+  "text": {                          // sólo con includeText
+    "T":  ["Calculadora estándar"],
+    "C":  ["12 × 7 =", "84"],
+    "B":  []
+  },
+  "surface": "sha256-hex",           // hash de la captura de la ventana (postlecturas)
+  "elapsedMs": {"uia": 180, "ocr": 900, "color": 40},
+  "authority": "windows_uia_snapshot_ocr_zones"
+}
+```
+
+Reglas:
+
+- **Orden y selección.** Primero los accionables (`Button, MenuItem, ListItem, TabItem,
+  Hyperlink, CheckBox, RadioButton, Edit, ComboBox, TreeItem, SplitButton, Slider,
+  Document`), luego el resto hasta `limit`. Sólo elementos habilitados, con nombre y en
+  pantalla. Un mismo `kind|name` repetido se lista **una vez** con `"repeated": n`; el clic por
+  etiqueta sobre un repetido es ambiguo y exige índice.
+- **La ventana** es la de delante según `VisibleControlSurface` (raíz `GA_ROOT`, la ventana
+  ajena más alta cuando la de delante es la nuestra). Título, nombre de proceso y pid vienen
+  de Win32, no de UIA.
+- **Sin árbol útil** (≤ 1 control: CEF/SDL/canvas), `controls` trae lo que hay y `text` se
+  rellena siempre, con `authority: windows_media_ocr_lines`. Es el caso medido en Steam y
+  en el diálogo de descarga.
+- **`surface`** es el hash de la captura que se tomó para colores/OCR; sirve para comparar
+  «antes/después» sin volver a capturar.
+
+### 1.3 Estado
+
+`state` es una cadena con cero o más tokens: `selected`, `expanded`, `collapsed`,
+`on`, `off` (Toggle), `focused`, `checked`, `readonly`, `password`. `enabled` no se
+lista: todo lo listado está habilitado. Un `Edit` con `password` nunca recibe texto del
+motor.
+
+### 1.4 Zonas
+
+Rejilla 3×3 sobre el rectángulo de la ventana: `TL T TR / L C R / BL B BR`. Un control que
+cruza zonas toma la de su centro. El texto OCR se agrupa por la zona del centro de cada
+línea, en orden de lectura (arriba→abajo, izquierda→derecha).
+
+### 1.5 Color dominante
+
+Sobre la captura de la ventana, el rectángulo del control (recortado 10 % por lado) se
+reduce a un histograma HSV; el color es el nombre de la clase con más píxeles entre
+`red orange yellow green cyan blue purple pink white black gray`. Umbrales: S < 0,18 → gris/
+blanco/negro por V; hue en grados con cortes 15, 40, 70, 170, 200, 270, 330. Es lo que
+resuelve «el botón rojo» sin modelo (§3.3).
+
+### 1.6 Objetivos de latencia
+
+| Lectura | Objetivo | Cómo |
+|---|---|---|
+| Vista sin OCR | ≤ 300 ms | UIA en un worker PowerShell persistente (una sola carga de `Add-Type`; medido en la herencia: spawn 243 ms + Add-Type 385 ms por llamada) |
+| Vista con OCR | ≤ 1,5 s | captura DWM + Windows.Media.Ocr en dos pasadas (directa y oscurecida), ya existentes |
+| Tokens al modelo | ≤ 1 200 | serialización compacta §4.2, no el JSON del recibo |
+
+Se miden en `COMPUTER_USE_DISENO.md` §15 con el sondeo `cu_view_probe` (por tipo de app:
+Win32, UWP, Electron, canvas).
+
+---
+
+## 2. El conjunto cerrado de acciones
+
+| Acto | Operación | Argumentos | Postlectura (qué prueba el efecto) |
+|---|---|---|---|
+| pulsar | `input.visible.click` | `label` (obligatorio), `index?` (de la vista), `controlId?` (RuntimeId de la vista) | `selected` \| `absentOrDisabled` \| `surfaceChanged`; con índice/id, el nombre del control debe coincidir con `label` |
+| escribir | `input.text.type` | `text` | SendInput aceptado + el control enfocado no es `password` |
+| tecla | `input.key.press` | `key` (enum cerrado, ahora con combos `ctrl_a ctrl_c ctrl_f ctrl_k ctrl_t ctrl_w ctrl_z f5`), `target?` (`message_composer`) | SendInput aceptado |
+| desplazar | `input.scroll` | `direction` (`down`\|`up`), `amount` (1..10) | hash de superficie cambió; si no, `scroll_surface_unchanged` |
+| abrir / traer al frente | `app.open` | `appId` del catálogo instalado | proceso vivo + ventana visible + foco (reutiliza la instancia que ya corre) |
+| enfocar ventana | `window.focus` | `windowId` (de `window.resolve`) | identidad + foreground |
+| navegar (sesión propia) | `browser.navigate`, `browser.navigate.named` | ya existentes | ya existentes |
+| esperar | *(no es operación)* | `waitForLabel` en la vista | la etiqueta aparece antes del tope (≤ 24 s, lección UI1735/UI1775) |
+| terminar | `done` / `none` | `evidence` | la evidencia está en la vista (§4.4) |
+
+Reglas:
+
+- **Clic por identidad.** Cuando la etiqueta se repite o el control no tiene nombre útil,
+  el modelo elige por `i`; el provider resuelve `i → controlId` de la **misma vista** y
+  vuelve a leer el control antes de invocarlo. Si el nombre ya no coincide, `visible_control_stale`
+  y se vuelve a mirar. Nunca por coordenadas.
+- **Cascada por etiqueta** (sin índice): UIA → OCR → visión, como hoy; con la espera acotada
+  sólo cuando la etiqueta no está en la última vista.
+- **Nada se escribe en un campo de contraseña** (`input.text.type` → `typing_into_password_refused`).
+- **Nada fuerza procesos ni cierra VS Code**: el repertorio no tiene `alt+f4` ni cierre de
+  ventana; cerrar una pestaña es `ctrl_w`, con el navegador abierto (D16).
+
+### 2.1 Riesgo por paso
+
+El riesgo de cada paso es el de su primitiva en el catálogo, evaluado por `RiskPolicy`
+con los argumentos delante:
+
+| Paso | Modo normal | Por qué |
+|---|---|---|
+| clic, tecla, texto, scroll, abrir | directo | D3: pulsar y escribir en apps no destruye |
+| clic cuyo `label` nombra un **canal de voz / llamada** (`canal de voz`, `voice channel`, `llamar`, `call`, `unirse a la llamada`, `join call`) | **confirma** | D15: alguien te oye; «voz pregunta antes y se queda» |
+| clic cuyo `label` es **enviar** (`enviar`, `send`) o `enter` con `target: message_composer` | **confirma** | llega a una persona (misma regla que `message.send`) |
+| bypass | todo directo | identidad §«dos modos» |
+
+La regla vive en `RiskPolicy.Evaluate(risk, mode, operation, arguments)`: el Kernel decide
+sobre los argumentos exactos de la invocación, y la confirmación queda ligada a esa
+invocación (invariante 4). El bucle se detiene en el paso, pregunta con lo observado
+(«¿Entro al canal de voz Cotele?»), y sigue con el «sí».
+
+---
+
+## 3. Grounding: de lo que dijo la persona a un control
+
+Orden fijo; el primero que resuelve gana; con dos candidatos se pregunta, nunca se adivina.
+
+1. **Texto.** Nombre UIA, `aria-label` (es el nombre UIA en Electron/Chromium) o línea OCR,
+   tolerante a errata: comparación plegada (sin acentos, minúsculas) y distancia de edición
+   ≤ 1 por cada 5 caracteres; alias bilingües del catálogo (`biblioteca`/`library`,
+   `configuración`/`settings`, dígitos ↔ nombres).
+2. **Plantilla local (OpenCV).** Para «el icono de X» sin texto: el icono se obtiene del
+   sistema (`IShellItemImageFactory` para accesos directos y apps instaladas; carátulas de
+   Steam en `librarycache`) y se busca en la captura por `matchTemplate` (TM_CCOEFF_NORMED
+   ≥ 0,80, escala 0,75–1,25). Corre en CPU dentro del runtime Python de la mente
+   (`opencv-python-headless`); el provider recibe un rect y lo trata como un control OCR.
+3. **Color.** «el botón rojo/verde/azul»: el control cuyo `color` (§1.5) coincide y cuyo
+   `kind` es accionable. Uno → clic; varios → pregunta enumerando nombres.
+4. **Encoder imagen-texto pequeño** (MobileCLIP2-S0 o SigLIP 2 ≤ 150 M, CPU) y
+   **Florence-2-base** (0,23 B, MIT, CPU) para «clickea en <cosa>» sin texto y «qué imagen
+   veo»: **no se construyen** en esta fase. Se activan sólo si el banco de la encuesta lo
+   exige, con números (RAM, latencia, filas que desbloquea) presentados al dueño. Un VLM
+   grande queda fuera salvo decisión del dueño.
+
+---
+
+## 4. La misión (`mission.computer_use`)
+
+Operación nueva del catálogo, riesgo `low_reversible`, contrato
+`mission.computer_use.shell.loop.v1`, `requiresObservedEffect: false`. El core no la ejecuta
+(`computer_use_requires_shell`): la corre el shell, y cada paso que da es una operación
+journalizada por el Kernel. Así la misión aparece en el plan como un paso más
+(`CHAIN1931`: un efecto por paso, proyección de evidencia del prefijo completado,
+grounding dependiente).
+
+### 4.1 Argumentos
+
+```json
+{
+  "goal": "ir a la biblioteca",          // ≤ 512 bytes, lo pedido, normalizado
+  "application": "Steam",                // opcional; nombre del catálogo instalado
+  "successCheck": "control:Biblioteca:selected|text:Biblioteca",   // opcional, §4.3
+  "budgetSteps": 12                      // opcional, 1..12
+}
+```
+
+Presupuesto de tiempo fijo: 90 s de misión; cada vista ≤ 30 s, cada primitiva ≤ 45 s.
+
+### 4.2 Una vuelta del bucle
+
+1. **Mirar.** `input.visible.controls {includeText: true}` (con `waitForLabel` cuando el
+   paso anterior esperaba una etiqueta). Si `successCheck` ya se cumple → fin.
+2. **Recordar.** Si hay un procedimiento guardado para `(application, goal normalizado)`
+   (§5), se ejecuta su siguiente paso sin modelo; si su verificación falla o la vista no
+   trae lo que el paso espera, se abandona el procedimiento y se pasa al modelo.
+3. **Decidir.** `computer_use.step` a la mente (§4.4): un paso, JSON estricto, temperatura 0.
+4. **Actuar.** La primitiva va al Kernel como operación con sus argumentos; el Kernel
+   autoriza (§2.1), el provider ejecuta y verifica.
+5. **Registrar.** El paso queda en la misión con `{operation, args, ok, error, changed,
+   window}` y en el journal; el hito se narra a la persona («Paso 3: clic en Biblioteca»)
+   cada ≤ 3 s.
+6. **Parar** cuando: `successCheck` se cumple (o el modelo dice `done` con evidencia
+   presente en la vista); `budgetSteps` o 90 s agotados (`computer_use_budget_exhausted`);
+   dos vistas seguidas iguales tras actuar (`computer_use_surface_unchanged`); el modelo
+   dice `none` (`computer_use_no_step_visible`); una primitiva pide confirmación (la misión
+   queda pendiente y se reanuda con el «sí»).
+
+**Reintento acotado.** Una primitiva que falla sin efecto (`visible_button_not_found`,
+`scroll_surface_unchanged`) se registra y el modelo vuelve a decidir con ese fallo en el
+historial; el mismo acto sobre el mismo control se rechaza a la segunda
+(`computer_use_repeated_step`) y se pide otro. Una vista que no cambió como el paso
+esperaba (por ejemplo, tras `app.open` sigue otra ventana) es una **replanificación**:
+la mente recibe `history` y decide de nuevo; no hay plan previo que reparar.
+
+### 4.3 `successCheck`: gramática
+
+Cadena determinista evaluada por el shell sobre la última vista y sobre recibos
+independientes; nunca por el modelo.
+
+```
+check   := term ( "|" term )*          # OR de términos; un término con "&" es AND
+term    := atom ( "&" atom )*
+atom    := "text:" needle              # needle plegada dentro de algún control o línea OCR
+         | "control:" name [ ":" state ]   # control con ese nombre (plegado) y, si se da, ese estado (selected|on|off|expanded|focused)
+         | "title:" needle              # título de la ventana de delante
+         | "process:" name              # proceso de la ventana de delante
+         | "count:" kind op N           # número de controles de ese kind (op: <= < == >= >)
+         | "value:" name "=" needle     # value de un control (por ejemplo la pantalla de una calculadora)
+         | "file:" path                 # recibo independiente: existe el fichero
+         | "manifest:" appid            # recibo independiente: appmanifest_<appid>.acf existe
+         | "audio:" process             # recibo independiente: hay sesión de audio de ese proceso
+```
+
+Ejemplos de las seis misiones de CU1959:
+
+| Pedido | `successCheck` |
+|---|---|
+| ve a Cotele en Discord | `title:Cotele\|control:Cotele:selected\|text:Voz conectada` |
+| cerrá todas las pestañas de chrome | `process:chrome&count:TabItem<=1` |
+| abre Steam y ve a la biblioteca | `process:steam&(control:Biblioteca:selected\|text:Biblioteca)` — el paréntesis no existe: se escribe `process:steam&control:Biblioteca:selected\|process:steam&text:Biblioteca` |
+| en Discord apretá enter | `process:Discord` + el paso `key:enter` verificado (`stepDone:key:enter`) |
+| abrí Configuración y activá el modo avión | `control:Modo avión:on` |
+| en la calculadora calculá 12×7 | `value:Pantalla=84`? No: `84` no se afirma sin verificar. `text:12 × 7 =` y el modelo dice `done` citando la pantalla; el final cita lo observado |
+
+`stepDone:<op>[:<arg>]` es un atom más: se cumple cuando un paso verificado con esa
+operación (y ese `key`/`label`) está en la misión.
+
+### 4.4 Protocolo mente ↔ shell: `computer_use.step`
+
+Petición del shell (JSONL, mismo canal que `plan.ground`):
+
+```json
+{
+  "type": "computer_use.step",
+  "objective": "abre Steam y ve a la biblioteca",   // lo que dijo la persona
+  "goal": "ir a la biblioteca",
+  "application": "Steam",
+  "successCheck": "…",
+  "view": { …§1.2, sin surface/elapsedMs/rect… },
+  "history": [ {"step": 1, "operation": "app.open", "applicationName": "Steam", "ok": true},
+               {"step": 2, "operation": "input.visible.click", "label": "Tienda", "ok": true, "changed": true} ],
+  "budgetLeft": 10
+}
+```
+
+La mente construye el prompt compacto (una línea por control: `i·kind·name·state·zone`,
+luego el texto por zonas, ≤ 1 200 tokens) y pide al modelo **un** paso con `response_format`
+de esquema JSON (gramática, temperatura 0):
+
+```json
+{
+  "act": "click|type|key|scroll|open|done|none",
+  "i": 12,                 // índice de la vista (click); -1 cuando no aplica
+  "label": "Biblioteca",   // nombre tal como está en la vista (click)
+  "text": "…",             // type
+  "key": "enter",          // key (enum del catálogo)
+  "direction": "down",     // scroll
+  "application": "Steam",  // open
+  "evidence": "…",         // done: texto presente en la vista que prueba el objetivo
+  "why": "…"               // una frase
+}
+```
+
+Comprobaciones deterministas antes de devolver al shell (sin modelo):
+
+- `click`: `label` debe coincidir (plegado, errata ≤ 1/5) con `controls[i].name` o con una
+  línea OCR; si no, se busca por texto en la vista y se corrige `i`; si sigue sin estar →
+  `none` con `why`.
+- `done`: `evidence` debe estar (plegada) en la vista; si no, se rechaza y se pide otro paso
+  (un reintento) — «nada se afirma sin verificar».
+- `type` con el foco en `password` → `none`.
+- Un paso igual al último fallido → `none`.
+
+Respuesta:
+
+```json
+{"type": "computer_use.step.result", "id": "…", "operation": "input.visible.click",
+ "arguments": {"label": "Biblioteca", "index": 12}, "reason": "…"}
+```
+
+`operation` es la primitiva del catálogo (`app.open`, `input.visible.click`,
+`input.text.type`, `input.key.press`, `input.scroll`) o `done` / `none`.
+
+### 4.5 Resultado observado de la misión
+
+Lo que ve el compositor (proyección `seen`), y lo que va al journal como resultado del paso
+de plan:
+
+```json
+{
+  "goal": "ir a la biblioteca",
+  "application": "Steam",
+  "reached": true,
+  "successCheck": "…",
+  "satisfiedBy": "control:Biblioteca:selected",
+  "stepCount": 2,
+  "steps": [
+    {"step": 1, "operation": "app.open", "applicationName": "Steam", "ok": true, "alreadyRunning": true},
+    {"step": 2, "operation": "input.visible.click", "label": "Biblioteca", "ok": true, "changed": true, "cascadeStage": "ocr"}
+  ],
+  "window": {"title": "Steam", "process": "steamwebhelper"},
+  "joined": false,                 // sólo cuando un paso fue un canal de voz confirmado
+  "evidence": "Biblioteca",
+  "elapsedMs": 6100,
+  "modelMs": 2400,
+  "procedure": "replayed|learned|none",
+  "authority": "shell_loop_over_uia_ocr_postread"
+}
+```
+
+Vetos del compositor (mente): `joined_claimed` invertido (decir «entré al canal» sin
+`seen.joined`, o negarlo con `seen.joined: true`), pasado falso («ayer», «la semana
+pasada»), número no observado, imperativo eco, y `reached: false` narrado como logro.
+
+---
+
+## 5. Memoria de procedimientos
+
+Ruta: `<data root>/computer-use/procedures.v1.json` (el data root privado del shell,
+`MemoryOperationProtector.ResolveDataRoot()`; nunca en el repositorio).
+
+```json
+{
+  "version": 1,
+  "procedures": {
+    "steam|ir a la biblioteca": {
+      "application": "Steam",
+      "goal": "ir a la biblioteca",
+      "steps": [
+        {"operation": "app.open", "arguments": {"appId": "…"}, "expect": "window"},
+        {"operation": "input.visible.click", "arguments": {"label": "Biblioteca"},
+         "expect": "control:Biblioteca:selected|surfaceChanged"}
+      ],
+      "successCheck": "…",
+      "learnedUtc": "2026-09-21T03:10:00Z",
+      "runs": 3, "replays": 2,
+      "lastModelMs": 2400, "lastReplayMs": 900
+    }
+  }
+}
+```
+
+- **Clave**: aplicación plegada + objetivo normalizado (plegado, sin envoltura de pedido,
+  sin el nombre de la app).
+- **Aprende** sólo una misión `reached: true` sin pasos fallidos; guarda la secuencia
+  verificada con la expectativa que se observó en cada paso.
+- **Reproduce** paso a paso con su verificación; el modelo sólo interviene cuando un paso
+  falla o su `expect` no se ve (desvío), y desde ahí sigue el bucle normal. Si la
+  reproducción termina con éxito, `replays++`; si se desvió, se sustituye por la secuencia
+  nueva si esta llegó.
+- **Mide** el ahorro: `modelMs` de la primera vez frente a `lastReplayMs`.
+
+---
+
+## 6. Lo que este contrato no decide
+
+- La **lectura del pedido** (qué frases van a `mission.computer_use`) es de la mente
+  (`effect_intent`): «en <app> <hacé X>», «abre <app> y <hacé X>», «cerrá todas las
+  pestañas de <navegador>», «<hacé X> en <app>». Una petición con operación tipada que
+  Windows verifica mejor que la pantalla (ficheros, radios, manifiestos, COM) sigue yendo a
+  su operación (D21).
+- Los **modelos de visión** (§3.4) y su decisión con números.
+- La **política de cierre** de lo que la misión abrió: nada se cierra al terminar (D16).
