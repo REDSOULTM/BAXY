@@ -1630,3 +1630,7 @@ Vídeo y series pasa de 9/26 a 9/26 con poner la serie que se nombra aunque se n
 ## Actualización 2026-09-20 (VIDEO1923)
 
 Vídeo y series pasa de 9/26 a 11/26 con poner la serie que se nombra sin preguntar por lo que el pedido ya dice (commit dea4e6b2, BUILD1923) (HEAD dea4e6b2): 6 ejecutados, 6 aprobados, 0 fallidos, 2 créditos. Las dos filas y las dos variantes se reproducen de verdad, con la raiz aprobando cada propuesta y el video avanzando; los finales nombran lo que se puso sin afirmar por donde va.
+
+## Actualización 2026-09-20 (VIDEO1925)
+
+Vídeo y series pasa de 11/26 a 12/26 con preguntar por el titulo cuando es lo unico que falta, y no ejecutar nada mientras tanto (commit 8a16c93f, BUILD1925) (HEAD 8a16c93f): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Cero operaciones en los cuatro del grupo; cada final es una sola pregunta por el titulo que falta, en el idioma del pedido.

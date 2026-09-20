@@ -1,0 +1,15 @@
+{
+  "schema": "c03-video1925-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (a streaming request that names the service but nothing to watch asks for the title, the one datum that is missing), on top of the VIDEO1925 build.",
+  "patch": "artifacts/comprobaciones/C03/VIDEO1925/SOURCE.patch",
+  "commits": [
+    "8a16c93f287f6b80a569e11bd3c0493eab7a4180"
+  ],
+  "build": "BUILD1925 (C03-repairs1925-build/BUILD_READY.json; mente)",
+  "cause_measured": "La cláusula de pedido vacío excluía los servicios de streaming para no confundir un título con una canción sin nombre, así que «prende algo en netflix» no se leía como incompleto y acababa en una pregunta de sí o no.",
+  "change": "Un pedido que nombra el servicio y nada que ver pregunta por el título, y sólo por el título.",
+  "measurement": "VIDEO1925: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. Cero operaciones en los cuatro del grupo; cada final es una sola pregunta por el titulo que falta, en el idioma del pedido.",
+  "credits": 1
+}
