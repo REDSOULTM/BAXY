@@ -80,7 +80,8 @@ function Get-Root([long]$hwnd){
   return @{ hwnd=$handle; root=$AE::FromHandle($handle) }
 }
 function Get-Name($el){
-  $name=$el.Current.Name
+  # Los elementos del arbol vienen con cache; la raiz (FromHandle) no.
+  try { $name=$el.Cached.Name } catch { $name=$el.Current.Name }
   if([string]::IsNullOrWhiteSpace($name)){ return '' }
   $name=($name -replace '\s+',' ').Trim()
   if($name.Length -gt 80){ $name=$name.Substring(0,80) }
@@ -91,33 +92,33 @@ function Get-State($el){
   $value=$null
   try {
     $pattern=$null
-    if($el.TryGetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern,[ref]$pattern)){
-      $state=([System.Windows.Automation.TogglePattern]$pattern).Current.ToggleState
+    if($el.TryGetCachedPattern([System.Windows.Automation.TogglePattern]::Pattern,[ref]$pattern)){
+      $state=([System.Windows.Automation.TogglePattern]$pattern).Cached.ToggleState
       if($state -eq [System.Windows.Automation.ToggleState]::On){$parts+='on'} elseif($state -eq [System.Windows.Automation.ToggleState]::Off){$parts+='off'}
     }
-    if($el.TryGetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern,[ref]$pattern)){
-      if(([System.Windows.Automation.SelectionItemPattern]$pattern).Current.IsSelected){$parts+='selected'}
+    if($el.TryGetCachedPattern([System.Windows.Automation.SelectionItemPattern]::Pattern,[ref]$pattern)){
+      if(([System.Windows.Automation.SelectionItemPattern]$pattern).Cached.IsSelected){$parts+='selected'}
     }
-    if($el.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$pattern)){
-      $state=([System.Windows.Automation.ExpandCollapsePattern]$pattern).Current.ExpandCollapseState
+    if($el.TryGetCachedPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$pattern)){
+      $state=([System.Windows.Automation.ExpandCollapsePattern]$pattern).Cached.ExpandCollapseState
       if($state -eq [System.Windows.Automation.ExpandCollapseState]::Expanded){$parts+='expanded'} elseif($state -eq [System.Windows.Automation.ExpandCollapseState]::Collapsed){$parts+='collapsed'}
     }
-    if($el.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$pattern)){
+    if($el.TryGetCachedPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$pattern)){
       $vp=([System.Windows.Automation.ValuePattern]$pattern)
-      if($vp.Current.IsReadOnly){$parts+='readonly'}
-      $raw=[string]$vp.Current.Value
+      if($vp.Cached.IsReadOnly){$parts+='readonly'}
+      $raw=[string]$vp.Cached.Value
       if(-not [string]::IsNullOrWhiteSpace($raw)){ $raw=($raw -replace '\s+',' ').Trim(); if($raw.Length -gt 120){$raw=$raw.Substring(0,120)}; $value=$raw }
-    } elseif($el.TryGetCurrentPattern([System.Windows.Automation.RangeValuePattern]::Pattern,[ref]$pattern)){
-      $value=[string]([System.Windows.Automation.RangeValuePattern]$pattern).Current.Value
+    } elseif($el.TryGetCachedPattern([System.Windows.Automation.RangeValuePattern]::Pattern,[ref]$pattern)){
+      $value=[string]([System.Windows.Automation.RangeValuePattern]$pattern).Cached.Value
     }
-    if($el.Current.IsPassword){$parts+='password'}
-    if($el.Current.HasKeyboardFocus){$parts+='focused'}
+    if($el.Cached.IsPassword){$parts+='password'}
+    if($el.Cached.HasKeyboardFocus){$parts+='focused'}
   } catch [System.Windows.Automation.ElementNotAvailableException] {}
   return @{ state=($parts -join ' '); value=$value }
 }
 function Get-Rect($el){
   try {
-    $r=$el.Current.BoundingRectangle
+    $r=$el.Cached.BoundingRectangle
     if($r.IsEmpty -or [double]::IsInfinity($r.Width) -or [double]::IsNaN($r.X)){ return $null }
     return @{ x=[int][math]::Round($r.X); y=[int][math]::Round($r.Y); w=[int][math]::Round($r.Width); h=[int][math]::Round($r.Height) }
   } catch { return $null }
@@ -167,13 +168,30 @@ function Get-Toggle($el){
   } catch [System.Windows.Automation.ElementNotAvailableException] {}
   return $null
 }
+# Cada propiedad leida de un elemento es una llamada entre procesos; con un
+# CacheRequest el arbol llega con sus propiedades y patrones en una sola
+# (medido: VS Code 154 controles 2,2 s -> menos de 1 s).
+$script:Cache=New-Object System.Windows.Automation.CacheRequest
+foreach($prop in @($AE::NameProperty,$AE::ControlTypeProperty,$AE::IsOffscreenProperty,$AE::BoundingRectangleProperty,
+                   $AE::HasKeyboardFocusProperty,$AE::IsPasswordProperty,$AE::IsEnabledProperty,$AE::RuntimeIdProperty)){ $script:Cache.Add($prop) }
+foreach($pat in @([System.Windows.Automation.TogglePattern]::Pattern,[System.Windows.Automation.SelectionItemPattern]::Pattern,
+                  [System.Windows.Automation.ExpandCollapsePattern]::Pattern,[System.Windows.Automation.ValuePattern]::Pattern,
+                  [System.Windows.Automation.RangeValuePattern]::Pattern)){ $script:Cache.Add($pat) }
+foreach($pp in @([System.Windows.Automation.TogglePattern]::ToggleStateProperty,[System.Windows.Automation.SelectionItemPattern]::IsSelectedProperty,
+                 [System.Windows.Automation.ExpandCollapsePattern]::ExpandCollapseStateProperty,[System.Windows.Automation.ValuePattern]::ValueProperty,
+                 [System.Windows.Automation.ValuePattern]::IsReadOnlyProperty,[System.Windows.Automation.RangeValuePattern]::ValueProperty)){ $script:Cache.Add($pp) }
+$script:Cache.AutomationElementMode=[System.Windows.Automation.AutomationElementMode]::Full
+$script:Cache.TreeScope=[System.Windows.Automation.TreeScope]::Element
 function Get-Descendants($root){
   $enabled=New-Object System.Windows.Automation.PropertyCondition($AE::IsEnabledProperty,$true)
-  $all=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$enabled)
-  if($all.Count -eq 0){
-    Start-Sleep -Milliseconds 400
+  $activated=$script:Cache.Activate()
+  try {
     $all=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$enabled)
-  }
+    if($all.Count -eq 0){
+      Start-Sleep -Milliseconds 400
+      $all=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$enabled)
+    }
+  } finally { $activated.Dispose() }
   return $all
 }
 function Do-View($request){
@@ -191,9 +209,9 @@ function Do-View($request){
   $total=0
   foreach($item in $all){
     try {
-      if($item.Current.IsOffscreen){ continue }
+      if($item.Cached.IsOffscreen){ continue }
       $name=Get-Name $item
-      $kind=$item.Current.ControlType.ProgrammaticName -replace '^ControlType\.',''
+      $kind=$item.Cached.ControlType.ProgrammaticName -replace '^ControlType\.',''
       $stateInfo=Get-State $item
       # Un campo de texto sin nombre sigue siendo accionable: se identifica por su
       # valor o por su clase; el resto sin nombre no informa de nada.

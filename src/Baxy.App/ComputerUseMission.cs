@@ -592,9 +592,9 @@ internal static class ComputerUseMission
 
         foreach (JsonNode? line in lines)
         {
-            if ((string?)line is { Length: > 0 } text && text.Any(char.IsAsciiDigit) && numbers.Count < 6)
+            if ((string?)line is { Length: > 0 } written && written.Any(char.IsAsciiDigit) && numbers.Count < 6)
             {
-                numbers.Add((JsonNode?)JsonValue.Create(text));
+                numbers.Add((JsonNode?)JsonValue.Create(written));
             }
         }
 

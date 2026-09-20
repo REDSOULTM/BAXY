@@ -673,7 +673,14 @@ def decide_step(
         "chat_template_kwargs": {"enable_thinking": False},
     }
     raw = llm._post_schema_object(payload, "el paso de computer use")
-    return validate_decision(raw, view=view, last_failed=last_failed, application_names=application_names)
+    decision = validate_decision(raw, view=view, history=history, last_failed=last_failed, application_names=application_names)
+    if decision["operation"] == "none" and decision.get("code") in {"label_not_visible", "evidence_not_visible", "already_open", "application_unknown"}:
+        # One more try with the rejection in front of the model (contract §4.4).
+        payload["messages"].append({"role": "assistant", "content": as_json(raw)})
+        payload["messages"].append({"role": "user", "content": f"Ese paso no vale: {decision['reason']}. Elegí otro acto de la vista, o none si no hay ninguno."})
+        raw = llm._post_schema_object(payload, "el paso de computer use")
+        decision = validate_decision(raw, view=view, history=history, last_failed=last_failed, application_names=application_names)
+    return decision
 
 
 def _history_line(step: dict) -> str:
@@ -691,6 +698,7 @@ def validate_decision(
     view: dict,
     last_failed: dict | None,
     application_names: Iterable[str] | effect_intent.ApplicationCatalogIndex,
+    history: list[dict] | None = None,
 ) -> dict[str, object]:
     """The model's act, checked against the view without any model (contract §4.4)."""
 
@@ -747,6 +755,8 @@ def validate_decision(
         app_id = effect_intent.resolve_application_catalog_app_id(f"abre {application}", application_names) if application else None
         if app_id is None:
             return _none("la aplicación no está en el catálogo", code="application_unknown")
+        if history and _steps_ok(history, "app.open", appId=app_id):
+            return _none("esa aplicación ya se abrió en esta misión", code="already_open")
         return _guard_repeat({"operation": "app.open", "arguments": {"appId": app_id}, "reason": why}, last_failed)
     return _none(why or "el modelo no ve por dónde seguir")
 
