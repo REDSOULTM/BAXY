@@ -5259,6 +5259,33 @@ def _explicit_arguments_from_evidence(
             }
         return None
 
+    if operation == "streaming.play.named":
+        # VIDEO1921: sin entrada aquí el planificador rellenaba service y title a
+        # ciegas, y con «start Stranger Things on Netflix» o «… en nerflix» se
+        # rendía y preguntaba qué servicio y qué título, con los dos escritos
+        # delante. El servicio es siempre netflix aunque se escriba mal —lo más
+        # probable es que lo escriba mal el oído de BAXY— y el título es lo que
+        # hay entre el verbo y «en/on Netflix», tal cual: la búsqueda de Netflix
+        # es difusa y el recibo dirá el título que de verdad se puso.
+        named = re.search(
+            r"^(?:(?:quiero|quisiera|i\s+want\s+to|i\s+wanna|i'd\s+like\s+to)\s+)?"
+            r"(?:reproduc[eií]|play|pon[eé]?(?:me)?|ponme|put(?:\s+on)?|busc[aá]|find|"
+            r"inici[aá]|start|encuentra|encuentras|localiza|locate|ver|watch)\s+"
+            r"(?:(?:la|the)\s+(?:serie|series|pel[ií]cula|peli|movie|film)\s+)?"
+            r"(?P<title>.+?)\s+"
+            r"(?:en|in|on|desde|from|through|usando|using)\s+"
+            r"(?:netflix|nerflix|netlix|netfix|netflis|neflix)\b",
+            clause_literal(evidence),
+            re.IGNORECASE,
+        )
+        if named is None:
+            return None
+        title = named.group("title").strip().strip("\"'«»“”").strip()
+        if not title or len(title.encode("utf-8")) > 512:
+            return None
+        streaming_arguments: dict[str, object] = {"service": "netflix", "title": title}
+        return streaming_arguments
+
     if operation == "media.play.query":
         return _explicit_live_media_query_arguments(evidence)
 
