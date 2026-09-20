@@ -1,3 +1,9 @@
+# D3-CONFIRMACIONES (post-goal Fase 2) — 2026-09-20T20:12:58.811571+00:00
+
+**742/742, 35/35; commit b86b65bef; cien-88 100/100.** Confirmaciones sólo para lo destructivo o lo que llega a otra persona (RiskPolicy, D3); memoria privada directa; pruebas re-ancladas citando D3. Siguiente: Fase 3 REOPEN1957.
+
+---
+
 # FULL-VERDE (post-goal Fase 1) — 2026-09-20T19:27:59.462384+00:00
 
 **742/742 cubiertos, 0 abiertos, 0 NA; 35/35 categorías cerradas; C03 formal: G04.06/G06.06 CUMPLIDO en 0fa7d91a0fde.** Escritor raíz Opus 5 (plan post-goal 2026-09-20, Fable planificó). Full 2026-09-20 (plan post-goal Fase 1): Python 13107 pases/3 skips ambientales/465 subpruebas; .NET Contracts 70, Integration 3449 pases/1 skip ambiental, Kernel 164, Providers 605, Setup 477; Fast exit 0. cien-87 100/100 (0 agotes; 19 líneas distintas frente a cien-86: relojes, volumen del dueño y reformulaciones con los mismos hechos). Detalle: COMPUTER_USE_DISENO.md §15, CIEN.md.

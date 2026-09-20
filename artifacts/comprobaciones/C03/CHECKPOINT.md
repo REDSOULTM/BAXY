@@ -1,3 +1,17 @@
+## D3-CONFIRMACIONES (post-goal Fase 2) — estado vigente 2026-09-20T20:12:58.811571+00:00
+
+RiskPolicy en modo normal (D3): sólo lo destructivo (work_loss, session_disruption, monetary; system.power exento) y lo
+que llega a otra persona (message.send, message.send.test, email.latest.reply, email.send) piden confirmación; leer,
+reproducir, navegar, copiar, capturar, escribir, radios, ajustes, instalar y la memoria privada van directos. Sondas con
+el conductor: Disney+ reproduce sin pregunta; el portapapeles escribe sin pregunta; el mensaje a Música pregunta y en
+bypass se intenta sin preguntar. Fast exit 0; commit b86b65bef; cien-88 100/100 (0 agotes; relojes y reformulaciones).
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 742/742 | 0 | 0 | >=626 | 35/35 |
+
+Siguiente acción: Fase 3 REOPEN1957 (35 filas → 707/742) y la auditoría semántica para el dueño.
+
 ## FULL-VERDE (post-goal Fase 1) — estado vigente 2026-09-20T19:27:59.462384+00:00
 
 La Full vuelve a verde sin relajar nada (D8/D19): 54 rojos .NET y 222 pytest (215 fallos + 7 errores; la pytest no
