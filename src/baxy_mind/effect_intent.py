@@ -2436,6 +2436,8 @@ def _curated_domain_is_grounded(
             )
             and not _has(folded, r"\b(?:como|how|tutorial|ejemplo|example)\b")
         )
+    if operation == "shell.command.run":
+        return shell_command_request(text) is not None
     if operation == "package.uninstall":
         software = software_package_request(text, application_names)
         return software is not None and software[0] == "uninstall"
@@ -17211,6 +17213,49 @@ def software_package_request(
     return (verb, catalog_name if in_catalog else written, in_catalog)
 
 
+_SHELL_COMMAND_HEADS = (
+    r"(?:pytest|ls|dir|cd|git|npm|npx|pip|pip3|python|python3|node|dotnet|cargo|make|cmd|powershell|bash|sh|"
+    r"echo|cat|type|pwd|whoami|hostname|ipconfig|ping|tree|ver|systeminfo|tasklist|where|which|"
+    r"\S+\.(?:py|sh|bat|ps1|cmd|exe))"
+)
+
+
+def shell_command_request(text: str) -> tuple[str, str | None] | None:
+    """REOPEN1993 (comandos, D11): the command the person asked to run and the
+    folder a pasted prompt names («ejecuta ls», «corré git status», «PS C:\\x>
+    python app.py»); None for anything that is not a console command."""
+
+    raw = str(text).strip()
+    folded = _fold(raw)
+    # «ejecutá el comando git status»: the word «comando» names the thing to
+    # run, not talk about tools; the denial gate reads the request without it.
+    without_noun = re.sub(r"\b(?:el|the|este|this|un|a)\s+(?:comando|command)\s+", "", folded, count=1)
+    if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(without_noun):
+        return None
+    prompt = re.match(r"^\s*(?:PS\s+)?(?P<cwd>[A-Za-z]:\\[^>]*?)\s*>\s*(?P<command>\S.*)$", raw)
+    if prompt is not None:
+        return (prompt.group("command").strip(), prompt.group("cwd").strip())
+    if _has(folded, r"\b(?:juego|game|steam|app|aplicacion|application|programa|program)\b"):
+        return None
+    match = re.match(
+        r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
+        r"(?:ejecuta|ejecutá|ejecutame|ejecútame|corre|corré|correme|corréme|run|execute)\s+"
+        r"(?:(?:el|the|este|this|un|a)\s+)?(?:comando\s+|command\s+)?"
+        r"(?P<command>\S.*?)\s*[.!?]*$",
+        raw,
+        re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    command = match.group("command").strip().strip("`\"'")
+    command_folded = _fold(command)
+    if not re.match(rf"^{_SHELL_COMMAND_HEADS}(?:\s|$)", command_folded):
+        return None
+    if len(command.encode("utf-8")) > 512 or "\n" in command:
+        return None
+    return (command, None)
+
+
 def installed_game_title(text: str) -> str | None:
     """Read the game named by an installed question («dime si X ya está instalado»).
 
@@ -18608,6 +18653,9 @@ def resolve_explicit_effects(
         # the install effect itself needs an entitlement and a confirmation,
         # and most such requests name games the library does not hold.
         return EffectIntent(("game.entitlement.named",), (text,))
+    if "shell.command.run" in available and shell_command_request(text) is not None:
+        # REOPEN1993 (D11): a console command is run for real and its output quoted.
+        return EffectIntent(("shell.command.run",), (text,))
     software = software_package_request(text, authenticated_applications)
     if software is not None:
         # REOPEN1993 grupo G: software is installed and removed by the Windows

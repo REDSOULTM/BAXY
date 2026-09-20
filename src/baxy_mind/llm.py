@@ -3544,6 +3544,19 @@ _CAUSE_FACT = {
     "visible_button_not_found": (
         "nothing on the screen is called that, so nothing was pressed"
     ),
+    # REOPEN1993 comandos: what the console run could not do is named.
+    "shell_command_destructive": (
+        "that command would delete, kill, format or change the system, so it was not run from here"
+    ),
+    "shell_command_directory_not_found": (
+        "the folder named for the command does not exist, so the command was not run"
+    ),
+    "shell_command_timeout": (
+        "the command did not finish within 60 seconds and was stopped"
+    ),
+    "shell_command_not_started": (
+        "the console could not be started, so the command did not run"
+    ),
     # REOPEN1993 grupo G: the package manager names its own absences.
     "winget_package_not_resolved": (
         "the Windows package manager (winget) offers no package by exactly that name, so nothing was installed"
@@ -6332,6 +6345,33 @@ def _news_fact_defect(text: str, payload: dict) -> str:
     return ""
 
 
+def _shell_fact_defect(text: str, payload: dict) -> str:
+    """REOPEN1993 comandos: a quoted output line must be one the command
+    printed; a failed command is not reported as a success; a command with
+    output does not get reported as silent."""
+
+    if payload.get("operation") != "shell.command.run":
+        return ""
+    seen = payload.get("seen")
+    if not isinstance(seen, dict) or not isinstance(seen.get("exitCode"), int):
+        return ""
+    lines = [str(line) for line in seen.get("lines") or [] if isinstance(line, str)]
+    stderr = str(seen.get("stderr") or "")
+    folded_text = _reading_fold(text)
+    printed = _reading_fold("\n".join(lines) + "\n" + stderr)
+    for quoted in re.findall(r"[«\"“`]([^»\"”`\n]{4,200})[»\"”`]", text):
+        if _reading_fold(quoted) not in printed:
+            return "invented_number" if re.search(r"\d", quoted) else "extra_claim"
+    failed = seen["exitCode"] != 0
+    if failed and re.search(r"\b(?:salio bien|exito|exitosa|exitosamente|correctamente|sin problemas|succeeded|successfully|worked)\b", folded_text) and not re.search(r"\b(?:no|fall|error)\b", folded_text):
+        return "extra_claim"
+    if not failed and lines and not any(_reading_fold(line) in folded_text for line in lines[:5]):
+        return "missing_state"
+    if not failed and not lines and not re.search(r"\b(?:sin salida|no (?:imprimio|produjo|mostro|devolvio)|nada|no output|nothing|empty|vacia)\b", folded_text):
+        return "missing_state"
+    return ""
+
+
 def _package_fact_defect(text: str, payload: dict) -> str:
     """REOPEN1993 grupo G: the reply names the package and does not claim a
     finished install or removal while the process is still running."""
@@ -6682,6 +6722,9 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     package_defect = _package_fact_defect(text, payload)
     if package_defect:
         return package_defect
+    shell_defect = _shell_fact_defect(text, payload)
+    if shell_defect:
+        return shell_defect
     if (
         payload.get("operation") == "system.power"
         and isinstance(seen, dict)
@@ -15646,6 +15689,30 @@ class LlmRuntime:
                 "en una oración, la operación y su resultado tal como se muestra (por "
                 "ejemplo que seis por siete da 42 en la Calculadora), usando sólo esos "
                 "números; no se hizo nada más."
+            )
+        if (
+            visible_situation.get("operation") == "shell.command.run"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("exitCode"), int)
+        ):
+            # REOPEN1993 comandos: the command ran; the reply says so with its
+            # exit code and quotes its output lines as they came out.
+            instruct(
+                "\nseen.command ran in a console in seen.cwd and ended with seen.exitCode "
+                "(0 means it succeeded); seen.lines are its output lines exactly as printed "
+                "(seen.lineCount in total, seen.truncated true if cut) and seen.stderr its "
+                "error text. Say that you ran the command and whether it succeeded, then "
+                "quote the first few output lines verbatim (up to five), one per line; if "
+                "there was no output, say so; if it failed, quote the error text. Never "
+                "paraphrase, summarise or invent a line."
+                if response_language == "en"
+                else "\nseen.command se ejecutó en una consola en seen.cwd y terminó con "
+                "seen.exitCode (0 significa que salió bien); seen.lines son sus líneas de "
+                "salida tal cual se imprimieron (seen.lineCount en total, seen.truncated true "
+                "si se cortó) y seen.stderr su texto de error. Di que ejecutaste el comando y "
+                "si salió bien, y cita tal cual las primeras líneas de salida (hasta cinco), "
+                "una por línea; si no hubo salida, dilo; si falló, cita el texto de error. "
+                "Nunca parafrasees, resumas ni inventes una línea."
             )
         if (
             visible_situation.get("operation") == "package.uninstall"

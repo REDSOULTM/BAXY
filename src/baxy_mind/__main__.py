@@ -5970,6 +5970,11 @@ def _explicit_arguments_from_evidence(
         if effect_intent._weather_lookup_query(evidence) is not None:
             return {"location": effect_intent._weather_location(evidence)}
 
+    if operation == "shell.command.run":
+        shell = effect_intent.shell_command_request(evidence)
+        if shell is not None:
+            return {"command": shell[0], "cwd": shell[1]}
+
     if operation in {"package.install.prepare", "package.uninstall"}:
         software = effect_intent.software_package_request(evidence, application_names)
         if software is not None and (
@@ -6308,6 +6313,7 @@ def _ground_explicit_arguments(
         # name or the person's), the news topic and the weather place.
         "package.install.prepare",
         "package.uninstall",
+        "shell.command.run",
         "web.news.headlines",
         "weather.current",
         "media.control",

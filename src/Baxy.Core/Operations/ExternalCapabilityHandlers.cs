@@ -76,6 +76,7 @@ internal static class ExternalCapabilityHandlers
         "package.install.commit",
         "package.install.prepare",
         "package.uninstall",
+        "shell.command.run",
         "peripheral.list",
         "peripheral.print",
         "peripheral.scan",

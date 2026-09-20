@@ -47,6 +47,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                 root,
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BAXY")),
             new WingetPackageAdapter(root),
+            new ShellCommandAdapter(),
             new WindowsInventoryAdapter(),
             new WindowsDesktopInteractionAdapter(),
             new WindowsVisibleControlAdapter(),

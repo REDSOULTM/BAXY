@@ -1396,6 +1396,21 @@ public static class ProductCatalog
             "routine.set.enabled.local.postread.v1",
             ToolExposure.Public,
             "Activa o desactiva metadatos de una rutina bajo CAS sin ejecutarla."),
+        // Auditoría semántica 2026-09-20 (REOPEN1993, comandos; D11): «ejecuta ls»,
+        // «ejecuta pytest» se corren de verdad en una consola sin perfil, con plazo y
+        // salida acotados; lo destructivo no se corre por aquí (código propio).
+        Descriptor(
+            "shell.command.run",
+            Schema(
+                [
+                    String("command", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("cwd", types: NullableString, maximumUtf8Bytes: 260),
+                ],
+                ["command"]),
+            OperationRisks.LowReversible,
+            "shell.command.run.powershell.captured.output.v1",
+            ToolExposure.Public,
+            "Ejecuta un comando de consola en PowerShell sin perfil, en la carpeta indicada o en la del usuario, con 60 segundos de plazo, y devuelve su código de salida y su salida tal cual acotada; rechaza antes de correr los comandos que borran, matan procesos, formatean o cambian el sistema."),
         Descriptor(
             "software.python.package.status",
             Schema([String("package")], ["package"]),

@@ -42,11 +42,12 @@ public sealed class ProductCatalogTests
     internal static readonly string[] Reopen1993CatalogAdditions =
     [
         "package.uninstall",
+        "shell.command.run",
         "weather.current",
         "web.news.headlines",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 3;
+    internal const int ExpectedDescriptors = 170 + 21 + 4;
 
     internal const int ExpectedTools = ExpectedDescriptors - 1;
 

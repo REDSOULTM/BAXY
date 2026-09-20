@@ -803,8 +803,8 @@ public sealed class CoreNotesEndToEndTests
                     .Select(static item => item.GetString()),
                 Is.EqualTo(ProductCatalog.OperationNames));
             // 190 herramientas públicas tras las 21 operaciones de C03 (plan post-goal 2026-09-20, grupo B);
-            // 193 con weather.current, web.news.headlines y package.uninstall (auditoría semántica REOPEN1993, grupos W, N y G).
-            Assert.That(session.Hello.Capabilities, Has.Count.EqualTo(193));
+            // 194 con weather.current, web.news.headlines, package.uninstall y shell.command.run (auditoría semántica REOPEN1993).
+            Assert.That(session.Hello.Capabilities, Has.Count.EqualTo(194));
             Assert.That(
                 session.Hello.Capabilities.Select(static capability => capability.Name),
                 Does.Not.Contain("app.status"));
