@@ -172,6 +172,56 @@ def _weather_lookup_query(text: str) -> str | None:
     return query if query and _has(_fold(query), _WEATHER_WORDS) else None
 
 
+_WEATHER_MEDIUM = (
+    r"\b(?:google|bing|internet|la\s+web|the\s+web|online|en\s+linea)\b"
+)
+
+
+def _weather_location(text: str) -> str | None:
+    """REOPEN1993 (grupo W): the place the person named for the weather («en
+    Buenos Aires», «in Madrid»), with their own spelling; None when no place is
+    named (the read then uses this PC's own location) or the words after the
+    preposition are a medium («en google», «en internet»)."""
+
+    query = _weather_lookup_query(text)
+    if query is None:
+        return None
+    match = re.search(
+        r"\b(?:en|in|de|para|for|at)\s+(?P<place>[^,;:.!?]+?)\s*"
+        r"(?:\b(?:hoy|manana|mañana|ahora|today|tomorrow|now|right\s+now|por\s+favor|please)\b.*)?$",
+        query,
+        re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    place = match.group("place").strip(" \t\r\n.,;:")
+    place = re.sub(r"^(?:la\s+ciudad\s+de|the\s+city\s+of)\s+", "", place, flags=re.IGNORECASE)
+    folded_place = _fold(place)
+    if (
+        not folded_place
+        or _has(folded_place, _WEATHER_MEDIUM)
+        or _has(folded_place, _WEATHER_WORDS)
+        or len(place.encode("utf-8")) > 128
+    ):
+        return None
+    return place
+
+
+def _weather_read_intent(
+    text: str,
+    available_operations: Iterable[str],
+) -> EffectIntent | None:
+    """REOPEN1993 (grupo W): a live weather question is a typed weather read,
+    never a web search (twelve rows were credited with pages about the
+    weather or an honest failure instead of the weather itself)."""
+
+    if "weather.current" not in frozenset(available_operations):
+        return None
+    if _weather_lookup_query(text) is None or len(_request_clauses(_fold(text))) != 1:
+        return None
+    return EffectIntent(("weather.current",), (text.strip(),))
+
+
 _TOPIC_RESEARCH = re.compile(
     r"^[¿?¡!\s]*(?:investiga|investigá|investigar|investigue|investigame|investígame|"
     r"research|look\s+into|look\s+up)\s+"
@@ -1934,6 +1984,8 @@ def _curated_domain_is_grounded(
         return _has(folded, r"\b(?:pendrive|pen|usb|externo|externa|external|removable|flash|stick)\b")
     if operation == "calculator.expression.evaluate":
         return calculator_expression_request(folded) is not None
+    if operation == "weather.current":
+        return _weather_lookup_query(text) is not None
     if operation == "display.status":
         return _has(folded, r"\b(?:resolucion|monitor(?:es)?|pantallas?|screens?|displays?|hz|hertz|hercios|frecuencia|refresh)\b")
     if operation == "bluetooth.radio.status":
@@ -18738,6 +18790,9 @@ def resolve_explicit_effects(
             # MUSIC1559: no provider named → the local YouTube playback.
             return EffectIntent(("media.play.youtube",), (evidence,))
         return EffectIntent(("media.play.query",), (evidence,))
+    weather_read = _weather_read_intent(text, available)
+    if weather_read is not None:
+        return weather_read
     if (
         "web.search" in available
         and _public_live_lookup_request(folded)
@@ -19195,6 +19250,9 @@ def resolve_explicit_effects(
             tuple(operation for _ in targets),
             tuple(target for _, target in targets),
         )
+    weather_read = _weather_read_intent(text, available)
+    if weather_read is not None:
+        return weather_read
     if (
         len(clauses) == 1
         and "web.search" in available
@@ -19745,7 +19803,7 @@ def unresolved_compound_contract(
     )
     benign_live_lookup = (
         isinstance(resolved_intent, EffectIntent)
-        and resolved_intent.operations == ("web.search",)
+        and resolved_intent.operations in (("web.search",), ("weather.current",))
         and _public_live_lookup_request(folded)
     )
     benign_game_correction = (

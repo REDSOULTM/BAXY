@@ -116,6 +116,9 @@ internal static class Goal05CatalogObservation
                 or "software.python.package.status" or "notification.list" => Unverifiable(
                 descriptor,
                 "Lecturas de dispositivos, unidades, registro PEP 514, pip o Programador de tareas del usuario; verificadas en su tanda por doble lectura, no recorridas aquí para no inventariar la máquina del usuario."),
+            "weather.current" => Unverifiable(
+                descriptor,
+                "Lectura de un servicio público de pronóstico (Open-Meteo) y de la ubicación de este PC por su IP (REOPEN1993 grupo W); esta matriz no sale a internet ni toma un pronóstico ajeno como pass simulado."),
             "document.pdf.read" or "filesystem.known.list" => Unverifiable(
                 descriptor,
                 "Leería PDFs y carpetas conocidas (Desktop/Documents/…) del usuario; no se rellena la celda con su contenido."),

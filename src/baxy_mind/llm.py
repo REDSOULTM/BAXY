@@ -3544,6 +3544,17 @@ _CAUSE_FACT = {
     "visible_button_not_found": (
         "nothing on the screen is called that, so nothing was pressed"
     ),
+    # REOPEN1993 grupo W: the weather read names its own absences; nothing
+    # was searched in a browser and no forecast is invented.
+    "weather_place_not_found": (
+        "the weather service knows no place by that name, so no forecast was read"
+    ),
+    "weather_location_unavailable": (
+        "this PC's own location could not be determined, so no forecast was read for it"
+    ),
+    "weather_service_unavailable": (
+        "the weather service did not answer, so no forecast was read"
+    ),
     # NETWORK1721 «conectate al wifi de casa» with no saved network of that
     # name: the fact is the absence; nothing was done. Not «connected»: the
     # truncated-word lens read the draft's «connect» as a cut of it
@@ -6203,6 +6214,60 @@ def _claims_declined_means(text: str) -> bool:
 _QUOTED_NAME = re.compile("[" + chr(171) + chr(8220) + chr(34) + "]([^" + chr(187) + chr(8221) + chr(34) + "]{1,64})[" + chr(187) + chr(8221) + chr(34) + "]")
 
 
+def _weather_number_forms(value: object) -> set[str]:
+    """The ways a person writes an observed weather number: 18.8, 18,8, 19, 18."""
+
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return set()
+    forms = {str(value), str(value).replace(".", ",")}
+    if float(value).is_integer():
+        forms.add(str(int(value)))
+    else:
+        forms.add(str(round(value)))
+        forms.add(str(int(value)))
+    return forms
+
+
+def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
+    """REOPEN1993 grupo W: every number in a weather reply is an observed one
+    (temperatures, wind, humidity, rain probability) and the place is named;
+    a question about tomorrow or rain is answered with tomorrow's probability."""
+
+    if payload.get("operation") != "weather.current":
+        return ""
+    seen = payload.get("seen")
+    if not isinstance(seen, dict) or "temperatureC" not in seen:
+        return ""
+    observed: set[str] = set()
+    for key in ("temperatureC", "apparentC", "humidityPercent", "windKmh", "precipitationMm"):
+        observed |= _weather_number_forms(seen.get(key))
+    for day in ("today", "tomorrow"):
+        block = seen.get(day)
+        if isinstance(block, dict):
+            for key in ("maxC", "minC", "rainProbabilityPercent"):
+                observed |= _weather_number_forms(block.get(key))
+    for number in re.findall(r"(?<![\w.,])-?\d+(?:[.,]\d+)?(?![\w.,])", text):
+        if number not in observed and number.lstrip("-") not in observed:
+            return "invented_number"
+    folded_text = _reading_fold(text)
+    location = seen.get("location")
+    if isinstance(location, str) and location and _reading_fold(location) not in folded_text:
+        return "missing_state"
+    asks = _reading_fold(user_text or "")
+    tomorrow = seen.get("tomorrow")
+    if (
+        re.search(r"\b(?:manana|tomorrow|llover|lluvia|llueve|rain)\b", asks)
+        and isinstance(tomorrow, dict)
+        and not any(form in text for form in _weather_number_forms(tomorrow.get("rainProbabilityPercent")))
+    ):
+        return "missing_state"
+    if not any(form in text for form in _weather_number_forms(seen.get("temperatureC"))) and not re.search(
+        r"\b(?:manana|tomorrow)\b", asks
+    ):
+        return "missing_state"
+    return ""
+
+
 def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     """El texto público conserva los hechos que el payload le dio.
 
@@ -6523,6 +6588,9 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
                 return "invented_number"
         if shown_value and shown_value not in text and shown_value.replace(".", ",") not in text and shown_value.replace(",", ".") not in text:
             return "missing_state"
+    weather_defect = _weather_fact_defect(text, payload, user_text)
+    if weather_defect:
+        return weather_defect
     if (
         payload.get("operation") == "storage.removable.list"
         and isinstance(seen, dict)
@@ -15476,6 +15544,33 @@ class LlmRuntime:
                 "en una oración, la operación y su resultado tal como se muestra (por "
                 "ejemplo que seis por siete da 42 en la Calculadora), usando sólo esos "
                 "números; no se hizo nada más."
+            )
+        if (
+            visible_situation.get("operation") == "weather.current"
+            and isinstance(visible_situation.get("seen"), dict)
+            and "temperatureC" in visible_situation["seen"]
+        ):
+            # REOPEN1993 grupo W: the read is the weather itself (a public
+            # forecast service), and the reply says it with the observed numbers.
+            instruct(
+                "\nseen is the weather read from a public forecast service for seen.location "
+                "(seen.country): temperatureC now, apparentC (feels like), condition (sky), "
+                "windKmh, humidityPercent, today.maxC/minC and today.rainProbabilityPercent, "
+                "and tomorrow.maxC/minC, tomorrow.rainProbabilityPercent, tomorrow.condition. "
+                "Say the current temperature and sky for that place, in one or two short "
+                "sentences; if the person asked about tomorrow or rain, answer with tomorrow's "
+                "rain probability and temperatures. Use only those numbers with their units "
+                "(°C, km/h, %). Nothing was opened or changed."
+                if response_language == "en"
+                else "\nseen es el clima leído de un servicio público de pronóstico para "
+                "seen.location (seen.country): temperatureC ahora, apparentC (sensación "
+                "térmica), condition (cielo), windKmh, humidityPercent, today.maxC/minC y "
+                "today.rainProbabilityPercent, y tomorrow.maxC/minC, "
+                "tomorrow.rainProbabilityPercent, tomorrow.condition. Di la temperatura actual "
+                "y el cielo de ese lugar, nombrándolo, en una o dos oraciones cortas; si la "
+                "persona preguntó por mañana o por la lluvia, contesta con la probabilidad de "
+                "lluvia y las temperaturas de mañana. Sólo esos números, con sus unidades "
+                "(°C, km/h, %). No se abrió ni se cambió nada."
             )
         if (
             visible_situation.get("operation") == "storage.removable.list"

@@ -42,5 +42,6 @@ def test_candidate_contracts_preserve_catalog_identity() -> None:
 
     # 169 -> 190: the 21 public operations sealed in C03 (2026-09-12 … 2026-09-20; plan post-goal
     # 2026-09-20, Fase 1). The catalogue is still the authenticated one, only larger.
-    assert len(contracts) == 190
+    # 190 -> 191: weather.current (auditoría semántica REOPEN1993, grupo W).
+    assert len(contracts) == 191
     assert "app.open" in contracts

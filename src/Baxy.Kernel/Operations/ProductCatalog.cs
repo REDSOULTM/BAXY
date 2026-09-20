@@ -1661,6 +1661,19 @@ public static class ProductCatalog
             "vision.describe.provider.capture.binding.v1",
             ToolExposure.Public,
             "Describe una captura identificada mediante un VLM configurado sin aceptar rutas arbitrarias."),
+        // Auditoría semántica 2026-09-20 (REOPEN1993, grupo W): la encuesta pide el
+        // clima, no páginas sobre el clima. Lectura pública sin clave (Open-Meteo:
+        // geocodificación del lugar nombrado, o la ubicación de este PC por su IP) con
+        // temperatura, sensación, cielo, viento, humedad y la lluvia de hoy y mañana.
+        Descriptor(
+            "weather.current",
+            Schema(
+                [String("location", types: NullableString, maximumUtf8Bytes: 128)],
+                []),
+            OperationRisks.ReadOnly,
+            "weather.current.openmeteo.read.v1",
+            ToolExposure.Public,
+            "Lee el clima actual y el pronóstico de mañana del lugar nombrado, o de la ubicación de este PC si no se nombra ninguno, desde un servicio público sin clave, y devuelve temperatura, sensación térmica, estado del cielo, viento, humedad y probabilidad de lluvia."),
         Descriptor(
             "web.search",
             Schema(
