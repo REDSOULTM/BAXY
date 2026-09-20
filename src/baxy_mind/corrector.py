@@ -219,6 +219,24 @@ class _Lexicon:
         self._load()
         return bool(self._dictionaries)
 
+    def known_in(self, language: str, word: str) -> bool:
+        """True when the dictionary of that language (es_AR, en_US) knows the word."""
+
+        self._load()
+        candidate = word.strip()
+        if not candidate:
+            return False
+        for code, dictionary in zip(_LEXICON_LANGUAGES, self._dictionaries):
+            if code != language:
+                continue
+            for form in {candidate, candidate.casefold(), candidate.capitalize()}:
+                try:
+                    if dictionary.lookup(form):
+                        return True
+                except Exception:  # noqa: BLE001
+                    continue
+        return False
+
     def known(self, word: str) -> bool:
         """True when any dictionary or the product's own list knows the word."""
 
@@ -251,6 +269,12 @@ _LEXICON_FUNCTION_WORDS = frozenset({
 
 def lexicon_available() -> bool:
     return _LEXICON.available()
+
+
+def known_spanish(word: str) -> bool:
+    """True when the Spanish dictionary knows the word (any casing)."""
+
+    return _LEXICON.known_in("es_AR", word)
 
 
 def unknown_words(text: str, known_names: Iterable[str] = ()) -> tuple[str, ...]:

@@ -3349,6 +3349,16 @@ def _unresolved_input_kind(
     _bare = re.fullmatch(r"[¿?¡!\s]*(?P<phrase>[A-ZÁÉÍÓÚÑ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ'’-]+(?:\s+[A-ZÁÉÍÓÚÑ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ'’-]+){0,2})\s*\?[\s.!?]*", str(objective).strip())
     if (
         _bare is not None
+        # cien-83 091 «¿Estás?»: a sentence-initial capital is not a name. Two
+        # words at least, none of them a Spanish word («Hola Baxy?», «Buenos
+        # Días?» stay conversation) and not an English question opener.
+        and len(_bare.group("phrase").split()) >= 2
+        and not any(corrector.known_spanish(token) for token in _bare.group("phrase").split())
+        and _bare.group("phrase").split()[0].casefold() not in {
+            "are", "is", "do", "does", "did", "can", "could", "will", "would", "should", "what",
+            "who", "where", "when", "why", "how", "which", "still", "you", "anything", "ready",
+            "hello", "hi", "hey", "thanks", "thank", "good", "ok", "okay", "any", "got", "all",
+        }
         and not corrector.unknown_words(objective, known_names)
         # «Steam?», «Spotify?» name a catalog application on their own and
         # keep today's path; «Calendar Devil?» only shares a word with one.
