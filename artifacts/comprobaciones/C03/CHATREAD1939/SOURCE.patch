@@ -1,0 +1,43 @@
+commit b4a8ba6e4ff9dfe58c084ed0293c8b67026a320a
+
+C03: leer lo que alguien te escribió por chat es un límite honesto
+
+«qué me escribió mamá» iba a las notas con la pregunta entera como título;
+«leéme el último mensaje de Pedro» preguntaba si leer el correo; en inglés
+inventaba que no le habían pasado ningún mensaje. El dueño dejó fuera la
+lectura de chats privados (2026-09-17 §5: aplazar o límite honesto), así
+que un contrato de límite conocido cierra el pedido de leer o contar lo que
+una persona nombrada escribió —qué me escribió/mandó/dijo X; leéme o
+mostrame los mensajes de X; what did X write me—, salvo que nombre el
+correo, que tiene su propia lectura. La respuesta es la de los límites: no
+puede leer ni contar lo que esa persona escribió, nombrando el pedido.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 7b5a53fb3..b1d52538d 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -3387,6 +3387,21 @@ def known_unsupported_effect_request(
+             client_navigation_target(folded) is not None,
+             {"input.visible.click"},
+         ),
++        (
++            # H0510 «qué me escribió mamá», H0720 «leéme el último mensaje de
++            # Pedro» (owner, 2026-09-17 §5: reading private chats stays out;
++            # defer or honest limit): no operation reads what a named person
++            # wrote in a chat. The mail reader reads the latest mail of the
++            # test mailbox regardless of sender, so a request that names mail
++            # keeps that path; a chat client or no channel at all is this limit.
++            (
++                _has(folded, r"\b(?:que|what)\s+me\s+(?:escribi[oó]|escribieron|mand[oó]|mandaron|envi[oó]|enviaron|dijo|dijeron|puso|pusieron)\b"
++                             r"|\bwhat\s+did\s+\w+(?:\s+\w+)?\s+(?:write|send|say|text)\s+(?:to\s+)?me\b"
++                             r"|\b(?:lee|leeme|leer|leelo|leela|leelos|leelas|mostra|mostrame|muestra|muestrame|dime|decime|read|show)\b.{0,40}\b(?:mensajes?|messages?|chats?|dms?|texts?)\b.{0,30}\b(?:de|from|of)\s+\w+")
++                and not _has(folded, r"\b(?:correos?|mails?|e-?mails?|emails?|inbox|bandeja|gmail|outlook)\b")
++            ),
++            {"message.read.named"},
++        ),
+     )
+     return any(
+         matched and not supported & available for matched, supported in contracts

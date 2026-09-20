@@ -1658,3 +1658,7 @@ Bibliotecas y fichas de juegos pasa de 5/6 a 6/6 con buscar el dato en internet 
 ## Actualización 2026-09-20 (EPIC1937)
 
 Instalar y desinstalar software pasa de 30/31 a 31/31 con leer la biblioteca de Epic Games ante una descarga y decir el estado del juego (commit 896d647e, BUILD1937) (HEAD 896d647e): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. Los tres casos del grupo hicieron exactamente una game.entitlement.named con store=epic completada y verificada (biblioteca del lanzador de Epic Games: Fall Guys en la biblioteca y no instalado) y publicaron un final que dice ese estado y que la descarga se inicia desde el lanzador, sin inventar instalaciones ni descargas; los límites con cero operaciones. Corrida sobre BUILD1937 (HEAD 896d647). La categoría queda cerrada.
+
+## Actualización 2026-09-20 (CHATREAD1939)
+
+Mensajería pasa de 29/31 a 31/31 con decir llanamente que no lee lo que otra persona escribio por chat (commit b4a8ba6e, BUILD1939) (HEAD b4a8ba6e): 6 ejecutados, 6 aprobados, 0 fallidos, 2 créditos. Los cuatro casos del grupo cerraron con cero operaciones y un final que dice llanamente que no puede leer ni contar lo que la persona nombrada escribió (antes: note.read con la pregunta como título, pregunta por el correo, invención en inglés); los límites con cero operaciones. Corrida sobre BUILD1939 (HEAD b4a8ba6). La categoría queda cerrada.
