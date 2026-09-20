@@ -227,6 +227,52 @@ Cada caso mide en un perfil nuevo de BAXY, pero el perfil del navegador ahora es
 compartido a propósito. El paso de la raíz tendrá que cerrar los Edge que queden sobre
 ese perfil antes de cada caso, igual que hoy cierra los clientes de mensajería.
 
+## 8. Tres tandas de vídeo, y la orden del dueño sobre lo mal dicho (2026-09-19/20)
+
+**Lo que cerró.** VIDEO1919 (14 casos), VIDEO1921 (6) y VIDEO1923 (6) llevaron «Vídeo y
+series» de 2/26 a 11/26 y la cobertura de 709 a 718/742. En las tres, cada reproducción
+aprobada por la raíz se verificó viendo avanzar el vídeo en el reproductor: llegar a la
+página no cuenta.
+
+**Los tres pendientes de §7, resueltos.** (1) El buscador «intermitente» no lo era: lo que
+variaba entre corridas era el punto en que Netflix reanuda la serie, y la comprobación
+exigía que la página repitiera el título, que a 1:51 de metraje ya no está en pantalla.
+(2) El final que no se redactaba: el guardián del nombre sólo admitía las operaciones de
+transporte de medios; ahora admite ésta. (3) Disney+ sigue fuera del catálogo; queda como
+tanda propia con tres capas (catálogo, adaptador, mente).
+
+**La orden del dueño, 2026-09-19.** «Baxi debe de arreglar las cosas que el usuario diga
+mal. Porque lo más probable es que nuestro modelo de transcripción no sea tan bueno.» Es
+decir: la errata suele ser del oído de BAXY, y cobrársela a la persona es un defecto. Lo
+que se hizo, y por qué no fue una búsqueda web encima:
+
+- La búsqueda de Netflix **ya es difusa**. El adaptador, después de buscar, exigía que la
+  tarjeta contuviera literalmente lo pedido y tiraba la corrección que el servicio acababa
+  de dar. Ahora se queda con lo que Netflix pone arriba. Pidiendo «stranger thins» se
+  reproduce Stranger Things.
+- La prueba de que se abrió lo pedido es la **ficha elegida**, no el texto de la página.
+  Medido: la ficha de Stranger Things es la 80057281 y el reproductor acaba en 80077368
+  —la serie y el episodio al que Netflix redirige—; exigir el id en la URL rechazaba una
+  reproducción correcta. Y un título traducido («Wednesday» → «Merlina») ya no se
+  descarta.
+- El recibo dice **el título observado**, y el final lo nombra: la persona ve la
+  corrección en vez de que se le oculte. Eso es lo que la identidad exige.
+- Los argumentos salen del pedido: el extractor literal no tenía entrada para esta
+  operación, y el planificador, a ciegas, preguntaba «¿qué servicio y qué título?» con
+  los dos escritos delante. Se probó también una habilidad de planificador y se retiró:
+  en la ruta del esqueleto cerrado no se lee. Ley 2.
+
+**Dos lecciones de instrumento.** El revisor de la raíz llevaba un solo título fijado para
+doce casos y rechazó la propuesta fiel de un título mal escrito: defecto del instrumento,
+no del producto (VIDEO1919, dos casos). Y una variante verificada contra el lector y no
+de extremo a extremo dejó una tanda entera sin crédito (VIDEO1921): las variantes se
+prueban de extremo a extremo antes de sellar.
+
+**Lo que sigue en vídeo (15 filas).** H0355/H0377 («stranger thins») reproducen bien pero
+su final salió inestable; H0737 («nerflix») acaba preguntando pese a que en frío todo lo
+determinista lo acepta (APLAZADOS); H0010 sin título; diez de Disney+ y una de Prime
+Video, sin servicio en el catálogo; dos ininteligibles.
+
 ## Fuentes
 
 - [OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments](https://arxiv.org/html/2404.07972v2)
