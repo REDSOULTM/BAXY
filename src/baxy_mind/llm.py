@@ -6332,6 +6332,24 @@ _SEARCH_REPORT_OWN_WORDS = frozenset(
 )
 
 
+def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> list[str]:
+    """The words of the report that no result and no request shares (SEARCH2019 hint)."""
+
+    if _search_results_text(payload) is None:
+        return []
+    observed = set(
+        re.findall(r"[a-z]+", _reading_fold(_search_results_text(payload) or ""))
+    ) | set(re.findall(r"[a-z]+", _reading_fold(user_text)))
+    words: list[str] = []
+    for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip()):
+        for word in re.findall(r"[a-z]+", _reading_fold(sentence)):
+            if len(word) < 5 or word in _SEARCH_REPORT_OWN_WORDS or word in words:
+                continue
+            if not any(seen_word.startswith(word[:4]) for seen_word in observed):
+                words.append(word)
+    return words
+
+
 def _search_report_unsourced_claim(text: str, payload: dict, user_text: str) -> bool:
     """A sentence of the report states something that is neither in a result nor asked."""
 
@@ -17287,11 +17305,26 @@ class LlmRuntime:
                     else "No pegues direcciones: nombra cada página por su título entre comillas angulares y su sitio (por ejemplo steamdb.info), en prosa."
                 ),
                 "search_report_unsourced_claim": (
-                    "Say only what a result says, with its words, and name the page that "
-                    "says it; do not summarise causes of your own."
-                    if response_language == "en"
-                    else "Di sólo lo que dice algún resultado, con sus palabras, y nombra la "
-                    "página que lo dice; no resumas causas por tu cuenta."
+                    # SEARCH2019: name the words no result uses and keep the rest
+                    # of the report as it was; the generic hint made the model
+                    # paste addresses instead.
+                    (
+                        "Remove these words, which no result uses: "
+                        + ", ".join("«" + word + "»" for word in _search_report_unsourced_words(text, visible_situation, user_text)[:6])
+                        + ". Keep the rest of the report as it was: each page by its title in guillemets and its site, in prose, saying only what its result says; never paste addresses."
+                        if response_language == "en"
+                        else "Quita estas palabras, que ningún resultado usa: "
+                        + ", ".join("«" + word + "»" for word in _search_report_unsourced_words(text, visible_situation, user_text)[:6])
+                        + ". Conserva el resto del informe tal cual: cada página por su título entre comillas angulares y su sitio, en prosa, diciendo sólo lo que dice su resultado; nunca pegues direcciones."
+                    )
+                    if _search_report_unsourced_words(text, visible_situation, user_text)
+                    else (
+                        "Say only what a result says, with its words, and name the page that "
+                        "says it; do not summarise causes of your own."
+                        if response_language == "en"
+                        else "Di sólo lo que dice algún resultado, con sus palabras, y nombra la "
+                        "página que lo dice; no resumas causas por tu cuenta."
+                    )
                 ),
                 "search_report_without_source": (
                     (

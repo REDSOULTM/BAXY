@@ -56,3 +56,13 @@ def test_the_reports_own_narration_words_are_not_unsourced_claims() -> None:
     assert _search_report_unsourced_claim(report, payload, "buscá recetas de pizza") is False
     invented = "La página de directoalpaladar.com menciona que la pizza se inventó en Nápoles en 1889."
     assert _search_report_unsourced_claim(invented, payload, "buscá recetas de pizza") is True
+
+
+def test_the_unsourced_hint_names_the_words_no_result_uses() -> None:
+    # SEARCH2019: the hint names the paraphrased words so the model keeps the report and drops them.
+    from baxy_mind.llm import _search_report_unsourced_words
+    payload = {"operation": "web.search", "seen": {"results": [
+        {"title": "Cómo hacer PIZZA CASERA - Receta de masa FÁCIL", "url": "https://recetas.elperiodico.com/receta-de-pizza-casera-31391.html", "snippet": "Receta de masa perfecta explicada paso a paso."},
+    ]}}
+    report = "«Cómo hacer PIZZA CASERA» de recetas.elperiodico.com ofrece instrucciones para una masa perfecta."
+    assert _search_report_unsourced_words(report, payload, "buscá recetas de pizza") == ["instrucciones"]
