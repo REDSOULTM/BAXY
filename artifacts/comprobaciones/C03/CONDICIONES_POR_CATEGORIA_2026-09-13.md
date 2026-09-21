@@ -1734,3 +1734,7 @@ Interacción dentro de aplicaciones pasa de 12/22 a 13/22 con escribir en la app
 ## Actualización 2026-09-21 (SEARCH2005)
 
 Navegación y búsqueda web pasa de 42/46 a 42/46 con buscar recetas de pizza y Transformers con resultados pertinentes (commit e9d71375, BUILD2005) (HEAD e9d71375): 8 ejecutados, 5 aprobados (los dos literales, «search Transformers» y los dos límites), 3 fallidos (informe en inglés sin sitios; «buscame» no reconocido; «porfa» dentro de la consulta), 0 créditos. Tres defectos de la mente: la regla de fuente aceptaba títulos sin sitio, la gramática de búsqueda no tiene el clítico «buscame» y la cortesía final no se recorta de la consulta. Reparados en el commit siguiente; se vuelve a medir.
+
+## Actualización 2026-09-21 (SEARCH2011)
+
+Navegación y búsqueda web pasa de 42/46 a 43/46 con buscar recetas de pizza y Transformers con resultados pertinentes y su sitio (commit 5e6f2fbc, BUILD2011) (HEAD 5e6f2fbc): 8 ejecutados, 5 aprobados (H0380 con sus dos variantes en inglés y los dos límites), 3 fallidos (H0098 por varianza contra WEB1889; «buscame» sin web.search en el shortlist; «porfa» dentro del argumento), 1 créditos. Dos reparaciones más de la mente (web.search visible para una búsqueda pública reconocida; cortesía fuera del argumento) y re-medición de H0098; el caso 4 se re-ejecutó solo tras un abortado de preflight de la raíz.

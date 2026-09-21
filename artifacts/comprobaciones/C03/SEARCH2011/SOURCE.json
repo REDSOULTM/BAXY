@@ -1,0 +1,15 @@
+{
+  "schema": "c03-search2011-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "src/baxy_mind/effect_intent.py and llm.py, commit 408b199d1 (search clitic and clause count, trailing courtesy, site in the report), already in Fast; the tanda build is the build of HEAD.",
+  "patch": "artifacts/comprobaciones/C03/SEARCH2011/SOURCE.patch",
+  "commits": [
+    "408b199d1"
+  ],
+  "build": "BUILD2011 (C03-repairs2011-build/BUILD_READY.json; mente)",
+  "cause_measured": "La búsqueda no reconocía «buscame», arrastraba la cortesía final a la consulta y su informe en inglés no nombraba el sitio.",
+  "change": "El clítico encabeza la búsqueda, la cortesía se recorta de la consulta y el informe nombra al menos un sitio.",
+  "measurement": "SEARCH2011: 8 ejecutados, 5 aprobados (H0380 con sus dos variantes en inglés y los dos límites), 3 fallidos (H0098 por varianza contra WEB1889; «buscame» sin web.search en el shortlist; «porfa» dentro del argumento); 1 créditos. Dos reparaciones más de la mente (web.search visible para una búsqueda pública reconocida; cortesía fuera del argumento) y re-medición de H0098; el caso 4 se re-ejecutó solo tras un abortado de preflight de la raíz.",
+  "credits": 1
+}

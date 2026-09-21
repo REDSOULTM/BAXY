@@ -1,0 +1,69 @@
+commit 408b199d13530e0e86a909ebefaac5de87addd1e
+
+C03: la búsqueda admite «buscame», recorta la cortesía final y su informe nombra el sitio (BUILD2011)
+
+SEARCH2005 (H0098/H0380): (1) «dale, buscame recetas de pizza» se cerraba como no soportado: la
+alternación de cabezas de búsqueda no tenía el clítico («buscame») y el recuento de cláusulas
+contaba el abridor «dale,» como una más; ahora el clítico encabeza la búsqueda y las cláusulas
+se cuentan sobre el pedido sin envoltura. (2) «Buscá Transformers, porfa» buscaba «Transformers,
+porfa» y el final nombró «Porfa - Zumiez»: la cortesía final no es parte de la consulta. (3) El
+informe en inglés listaba títulos con resumen sin ningún sitio: la regla de fuente aceptaba una
+ventana del título como página nombrada; con hosts conocidos, el informe nombra al menos un sitio
+(los títulos solos valen sólo sin host). Pruebas: tests/test_c03_search2005_query.py.
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index a07cc5657..0527f407b 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -10630,7 +10630,8 @@ _SCHEDULING_BY_ITSELF = (
+     r"recordatorio|recordatorios|reminder|reminders|"
+     r"alarma|alarmas|alarm|alarms|temporizador|temporizadores|timer|timers)"
+ )
+-_SEARCH = r"(?:busc[aá]|buscar|encuentra|search|find|look\s+up)"
++# SEARCH2005 «dale, buscame recetas de pizza»: the clitic forms head a search too.
++_SEARCH = r"(?:busc[aá](?:me|melo|mela|mel[oa]s)?|buscar|encuentra|search|find|look\s+up)"
+ # Verbs for catalog effects that this conservative recognizer does not
+ # necessarily classify itself.  They are used only as clause boundaries: if a
+ # compound request contains one of them and the following clause cannot be
+@@ -16074,12 +16075,20 @@ def _direct_public_search_query(text: str) -> str | None:
+     if match is None:
+         return None
+     query = match.group("query").strip(" \t.,;:!?\"'“”«»")
++    # SEARCH2005 «Buscá Transformers, porfa»: a trailing courtesy is not part of the query.
++    query = re.sub(
++        r"\s*[,;]?\s*(?:por\s+favor|porfa|porfi|please|pls|plz|dale|gracias|thanks)\s*$",
++        "",
++        query,
++        flags=re.IGNORECASE,
++    ).strip(" \t.,;:!?\"'“”«»")
+     folded = _fold(text)
+     if (
+         not query
+         or _has(_fold(query), r"^(?:for|en|on)[.!?]*$")
+         or not effect_request_is_authoritative(text)
+-        or len(_request_clauses(folded)) != 1
++        # SEARCH2005 «dale, buscame recetas de pizza»: the opener is envelope, not a clause.
++        or len(_request_clauses(_fold(_strip_request_envelope(text)))) != 1
+         or _has(
+             folded,
+             r"\b(?:mi|mis|my|our|nuestros?|nuestras?|tus?|your|"
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 5021cf203..46c0f236c 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -6381,6 +6381,12 @@ def _search_report_without_source(text: str, payload: dict, user_text: str) -> b
+     if not sources:
+         return False
+     folded = _reading_fold(text)
++    # SEARCH2005: a page a person can open is named by its site. With hosts
++    # known, a report of titles alone («47 Homemade Pizza Recipes… - …») names
++    # no page; the title windows only count when no host came back.
++    hosts = [source for source in sources if " " not in source]
++    if hosts:
++        return not any(host in folded for host in hosts)
+     return not any(source in folded for source in sources)
+ 
+ 
