@@ -6319,6 +6319,15 @@ _SEARCH_REPORT_OWN_WORDS = frozenset(
         "listada", "listado", "shows", "specifies", "provides", "includes", "contains",
         "appears", "belongs", "corresponds", "titulo", "title", "lleva", "llevan",
         "carries", "carry", "datos",
+        # SEARCH2015 H0098: counting the results, ordering the pages and the
+        # verbs that say what a page offers are the report's own voice too.
+        "cinco", "cuatro", "seis", "siete", "ocho", "nueve", "sobre", "acerca",
+        "ofrece", "ofrecen", "destaca", "destacan", "presenta", "presentan",
+        "finalmente", "distintas", "distintos", "diferentes", "ultima", "ultimo",
+        "cuarta", "quinta", "reune", "reunen", "recoge", "recogen", "trata", "tratan",
+        "three", "four", "five", "six", "seven", "eight", "nine", "about", "offers",
+        "highlights", "presents", "finally", "different", "various", "fourth", "fifth",
+        "gathers", "covers", "deals",
     }
 )
 

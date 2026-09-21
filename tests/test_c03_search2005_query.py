@@ -41,3 +41,18 @@ def test_the_grounded_query_argument_drops_the_courtesy_too() -> None:
     from baxy_mind.__main__ import _explicit_arguments_from_evidence
     assert _explicit_arguments_from_evidence("web.search", "Buscá Transformers, porfa") == {"query": "Transformers"}
     assert _explicit_arguments_from_evidence("web.search", "buscame recetas de pizza, por favor") == {"query": "recetas de pizza"}
+
+
+def test_the_reports_own_narration_words_are_not_unsourced_claims() -> None:
+    # SEARCH2015 H0098: counting the results and saying what a page offers is the report's voice.
+    from baxy_mind.llm import _search_report_unsourced_claim
+    payload = {"operation": "web.search", "seen": {"results": [
+        {"title": "31 recetas de pizza casera: una pizza para cada día del mes", "url": "https://www.directoalpaladar.com/recetario/31-recetas", "snippet": "Cómo hacer pizza casera de forma fácil: las mejores recetas tradicionales y originales."},
+        {"title": "Cómo hacer PIZZA CASERA - Receta de masa FÁCIL - RecetasGratis", "url": "https://recetas.elperiodico.com/receta-de-pizza-casera-31391.html", "snippet": "Receta de masa perfecta explicada paso a paso."},
+    ]}}
+    report = ("Se encontraron cinco resultados sobre recetas de pizza. Una página titulada «31 recetas de pizza casera» de "
+              "directoalpaladar.com menciona cómo hacer pizza casera de forma fácil. Finalmente, «Cómo hacer PIZZA CASERA» "
+              "de recetas.elperiodico.com ofrece una receta de masa perfecta explicada paso a paso.")
+    assert _search_report_unsourced_claim(report, payload, "buscá recetas de pizza") is False
+    invented = "La página de directoalpaladar.com menciona que la pizza se inventó en Nápoles en 1889."
+    assert _search_report_unsourced_claim(invented, payload, "buscá recetas de pizza") is True
