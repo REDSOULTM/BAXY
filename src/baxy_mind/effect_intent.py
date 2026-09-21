@@ -5654,12 +5654,15 @@ def _authenticated_game_target(
         (
             r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*|"
             r"(?:puedes|podrias|can you|could you|would you)\s+)?"
-            rf"(?:(?:vamos\s+a\s+)?(?:juega|jugar|juguemos|play)|"
+            rf"(?:(?:vamos\s+a\s+)?(?:juega|juga|jugar|juguemos|play)|"
+            # H0682 «Ve a Mad de Rivals.», H0083 «lanzá Mortal Kombat en Steam»:
+            # a go-to or start order on an installed title launches it too.
+            r"(?:ve|anda|andate|entra|go)\s+(?:a|al|to)|inicia|iniciame|start|"
             rf"(?:{_OPEN}|lanza|launch|ejecuta|run))\b\s+"
             r"(?:(?:al|el|the)\s+)?(?:(?:juego|game)\s+)?"
             r"(?P<title>.+?)"
             r"(?:\s+(?:modo|mode)\s+(?:multijugador|multiplayer))?"
-            r"(?:\s+(?:desde|en|from|on)\s+steam)?[\s?!.]*$"
+            r"(?:\s+(?:desde|en|from|on)\s+(?:steam|epic(?:\s+games)?))?[\s?!.]*$"
         ),
     )
     if request is None or _is_negated_match(text, request):
@@ -5674,6 +5677,17 @@ def _authenticated_game_target(
         if entry[0].startswith(target_key + " ")
         and re.fullmatch(r"\d+", entry[0][len(target_key) + 1 :]) is not None
     ]
+    if not candidates:
+        # A title named without its edition suffix («PICO PARK» for «PICO
+        # PARK:Classic Edition», «Plants vs. Zombies» for the GOTY edition) is
+        # that game when exactly one installed title starts so (D24: unique
+        # candidate → act).
+        candidates = [
+            entry
+            for entry in game_catalog.entries
+            if entry[0].startswith(target_key + " ")
+            or re.match(re.escape(target_key) + r"\s*[:(\-–]", _fold(entry[3]).strip()) is not None
+        ]
     identities = {(entry[1], entry[2]) for entry in candidates}
     if len(identities) != 1:
         return None
