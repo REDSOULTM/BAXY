@@ -108,12 +108,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 post-goal: fusión de Fase 6/7 y BUILD2003 (otra ventana, ventana activa).
 # C03 post-goal: BUILD2005 (displayName en finales de app.open).
 # C03 post-goal: BUILD2007 (finales de app.open y de tecleo; prohibición con clítico).
+# C03 post-goal: BUILD2009 (alias bilingüe de apps).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
         "4eebc6534e2c1b0efd37b47a74bd2fee2ee1457d8933403ea1877b7796d223e5"
     ),
     "src/baxy_mind/llm.py": (
-        "cf7fcaffc27b2a3dfb6b455059c6b732331d94972e5f5547e12d267b06ddecf2"
+        "2442d74a383bc604a4b26eb0316e6166e3b49d87903b737c4f8d6c7708a51cab"
     ),
 }
 
