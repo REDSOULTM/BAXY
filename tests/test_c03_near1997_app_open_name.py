@@ -25,6 +25,16 @@ def test_app_open_receipt_names_the_app_by_its_id() -> None:
     assert _app_open_observed_name({"observed": {"processId": 1}}) is None
 
 
+def test_store_app_receipts_name_the_app_by_display_name_not_catalog_id() -> None:
+    # THEN2001 H0097: «windows.notepad» is the catalog id; «Bloc de notas» is what the person calls it.
+    observed = {"appId": "windows.notepad", "displayName": "Bloc de notas", "alreadyRunning": False}
+    assert _app_open_observed_name({"observed": observed}) == "Bloc de notas"
+    assert _app_open_observed_name({"observed": {"appId": "windows.notepad"}}) is None
+    facts = {"situation": {**SITUATION, "observed": observed}}
+    assert compose_visible_defect("Abrí el Bloc de notas.", "operation", "abrí el bloc de notas", facts) != "missing_name"
+    assert compose_visible_defect("Ya está abierto.", "operation", "abrí el bloc de notas", facts) == "missing_name"
+
+
 @pytest.mark.parametrize("reply", ["La app ya estaba abierta.", "Ya estaba abierta."])
 def test_app_open_final_without_the_app_name_is_rejected(reply: str) -> None:
     assert compose_visible_defect(reply, "operation", "abre Steel.", FACTS) == "missing_name"

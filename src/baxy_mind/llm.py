@@ -7544,16 +7544,24 @@ def _app_open_was_already_running(situation: dict) -> bool:
 
 
 def _app_open_observed_name(situation: dict) -> str | None:
-    """The catalog name an app.open receipt reports (`appId`), or None."""
+    """The name an app.open receipt reports for what opened, or None.
+
+    THEN2001 H0097 «abrí el bloc de notas»: a Store application opens under a
+    catalog id («windows.notepad») with the person's name in `displayName`
+    («Bloc de notas»); the id is a name only when it is a plain one (Steam).
+    """
 
     for source in (situation.get("observed"), situation.get("seen"),
                    _merged_observed(situation)):
         if not isinstance(source, dict):
             continue
-        for key in ("app", "appId"):
+        for key in ("displayName", "app", "appId"):
             value = source.get(key)
-            if isinstance(value, str) and value.strip():
-                return value.strip()
+            if not (isinstance(value, str) and value.strip()):
+                continue
+            if key == "appId" and "." in value:
+                continue
+            return value.strip()
     return None
 
 
