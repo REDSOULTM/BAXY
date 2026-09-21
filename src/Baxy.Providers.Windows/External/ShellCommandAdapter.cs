@@ -19,8 +19,58 @@ internal sealed partial class ShellCommandAdapter : IExternalOperationAdapter
     private readonly string _defaultWorkingDirectory;
 
     internal ShellCommandAdapter()
-        : this(new ExternalProcessRunner(), Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+        // Decisión de adaptador (Fase 5, 2026-09-21; H0048 «ejecuta pytest»): sin carpeta
+        // nombrada, el comando corre en una carpeta de trabajo propia y vacía del producto
+        // (<datos>/shell-cwd), nunca en el perfil del usuario, donde «pytest» o «dir /s»
+        // recorrerían y ejecutarían cosas ajenas. Una carpeta conocida se nombra en `cwd`.
+        : this(new ExternalProcessRunner(), DefaultWorkingDirectory())
     {
+    }
+
+    private static string DefaultWorkingDirectory()
+    {
+        string root = Environment.GetEnvironmentVariable("BAXY_DATA_DIR") is { Length: > 0 } configured
+            ? configured
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BAXY", "development");
+        string directory = Path.Combine(root, "shell-cwd");
+        try
+        {
+            Directory.CreateDirectory(directory);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return Path.GetTempPath();
+        }
+
+        return directory;
+    }
+
+    private static readonly Dictionary<string, Environment.SpecialFolder> KnownFolders = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["desktop"] = Environment.SpecialFolder.DesktopDirectory,
+        ["escritorio"] = Environment.SpecialFolder.DesktopDirectory,
+        ["documents"] = Environment.SpecialFolder.MyDocuments,
+        ["documentos"] = Environment.SpecialFolder.MyDocuments,
+        ["downloads"] = Environment.SpecialFolder.UserProfile,
+        ["descargas"] = Environment.SpecialFolder.UserProfile,
+    };
+
+    // «cwd» may be a known folder name (desktop/documents/downloads, or a subfolder of
+    // one as «documents/proyecto») or an absolute path; anything else is refused.
+    private static string? ResolveWorkingDirectory(string cwd)
+    {
+        string trimmed = cwd.Trim().Replace('/', Path.DirectorySeparatorChar);
+        if (Path.IsPathFullyQualified(trimmed))
+            return trimmed;
+        string[] parts = trimmed.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 0 || !KnownFolders.TryGetValue(parts[0], out Environment.SpecialFolder folder))
+            return null;
+        string root = Environment.GetFolderPath(folder);
+        if (parts[0].Equals("downloads", StringComparison.OrdinalIgnoreCase) || parts[0].Equals("descargas", StringComparison.OrdinalIgnoreCase))
+            root = Path.Combine(root, "Downloads");
+        if (parts.Skip(1).Any(part => part is "." or ".."))
+            return null;
+        return Path.Combine([root, .. parts.Skip(1)]);
     }
 
     internal ShellCommandAdapter(IExternalProcessRunner runner, string defaultWorkingDirectory)
@@ -56,8 +106,8 @@ internal sealed partial class ShellCommandAdapter : IExternalOperationAdapter
         if (IsDestructive(command))
             return ExternalJson.FailureBeforeEffect(operation, "shell_command_destructive");
 
-        string workingDirectory = cwd ?? _defaultWorkingDirectory;
-        if (!Directory.Exists(workingDirectory))
+        string? workingDirectory = cwd is null ? _defaultWorkingDirectory : ResolveWorkingDirectory(cwd);
+        if (workingDirectory is null || !Directory.Exists(workingDirectory))
             return ExternalJson.FailureBeforeEffect(operation, "shell_command_directory_not_found");
 
         // La consola se coloca en la carpeta antes del comando, dentro de la misma

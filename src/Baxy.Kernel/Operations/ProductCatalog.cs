@@ -1545,7 +1545,7 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "shell.command.run.powershell.captured.output.v1",
             ToolExposure.Public,
-            "Ejecuta un comando de consola en PowerShell sin perfil, en la carpeta indicada o en la del usuario, con 60 segundos de plazo, y devuelve su código de salida y su salida tal cual acotada; rechaza antes de correr los comandos que borran, matan procesos, formatean o cambian el sistema."),
+            "Ejecuta un comando de consola en PowerShell sin perfil, en la carpeta conocida indicada (desktop, documents, downloads o una subcarpeta) o, sin carpeta, en una carpeta de trabajo propia y vacía del producto, con 60 segundos de plazo, y devuelve su código de salida y su salida tal cual acotada; rechaza antes de correr los comandos que borran, matan procesos, formatean o cambian el sistema."),
         Descriptor(
             "software.python.package.status",
             Schema([String("package")], ["package"]),

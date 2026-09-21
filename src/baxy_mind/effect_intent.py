@@ -10699,7 +10699,7 @@ _COVERAGE_ACTION_HEAD = (
     r"envia|enviar|enviale|enviales|manda|mandar|mandale|mandales|"
     r"dile|decile|tell|send|"
     r"elimina|eliminar|borra|borrar|delete|"
-    r"remove|apaga|apagar|shutdown|reinicia|reiniciar|restart|suspende|"
+    r"remove|apaga|apagar|shutdown|shut\s+down|turn\s+off|power\s+off|reinicia|reiniciar|restart|reboot|suspende|"
     r"suspender|sleep|cierra|cerra|cerrar|cerrame|cierrame|cierres|close|instala|instalar|install|"
     r"desinstala|desinstalar|uninstall|imprime|imprimir|print|escanea|"
     r"escanear|scan|conecta|conectar|connect|desconecta|disconnect|"
@@ -12213,6 +12213,8 @@ def _is_direct_request(text: str) -> bool:
         # modo que el pedido ni llegaba a resolverse y el turno decía «No puedo
         # reiniciar la PC» sin haberlo intentado. Es la misma orden.
         r"reinicia|reiniciar|reiniciame|reboot|restart|"
+        # H0714 variants «shut down the computer», «turn off the pc», «power off»: the English shutdown is the same order.
+        r"shutdown|shut\s+down|turn\s+off|power\s+off|switch\s+off|"
         # LIMITS1677 «Run pytest.», «Execute ls.»: a command run is a request speech act.
         r"run|execute|"
         # LIMITS1683: downloads, arithmetic and scans are request speech acts too.
@@ -17527,7 +17529,13 @@ def _installed_game_named(name: str, game_catalog: GameCatalogIndex) -> str | No
     for normalized, _provider, _app_id, display in game_catalog.entries:
         if normalized == wanted or _fold(display).strip() == wanted:
             return display
-    return None
+    # A title named without its edition suffix («Plants vs. Zombies» for «Plants
+    # vs. Zombies: Game of the Year») is that game when exactly one starts so.
+    prefixed = [
+        display for normalized, _provider, _app_id, display in game_catalog.entries
+        if normalized.startswith(wanted + " ") or re.match(re.escape(wanted) + r"\s*[:(\-–]", _fold(display).strip())
+    ]
+    return prefixed[0] if len(prefixed) == 1 else None
 
 
 def airplane_mode_request(text: str) -> int | None:
@@ -17826,7 +17834,9 @@ def steam_library_title(text: str) -> str | None:
 
 _CATALOG_INSTALL_VERB = (
     r"(?:instala|instalar|instalame|instalate|install|descarga|descargar|descargame|download|baja|bajar|bajame|"
-    r"desinstala|desinstalar|desinstalame|desinstalate|uninstall)"
+    r"desinstala|desinstalar|desinstalame|desinstalate|uninstall|"
+    # «quitá 7-Zip», «sacá VLC», «eliminá 7-Zip», «remove 7zip»: the same removal.
+    r"quita|quitar|quitame|saca|sacar|sacame|elimina|eliminar|eliminame|remove|remueve)"
 )
 
 
@@ -17907,14 +17917,15 @@ def software_package_request(
     )
     if match is None:
         return None
-    verb = "uninstall" if match.group("verb").startswith(("desinstal", "uninstall")) else "install"
+    verb = "uninstall" if match.group("verb").startswith(("desinstal", "uninstall", "quit", "sac", "elimin", "remov", "remuev")) else "install"
     name = match.group("name").strip()
     if not name or re.fullmatch(r"(?:todo|todos|todas|eso|esto|aquello|algo|nada|lo|la|el|it|this|that|everything|all)", name):
         return None
     catalog_name = resolve_application_catalog_app_id("abre " + name, application_names)
     in_catalog = catalog_name is not None
     known = re.fullmatch(_KNOWN_SOFTWARE, name) is not None
-    plain = re.fullmatch(r"[a-z0-9][a-z0-9'+-]*(?:\s+[a-z0-9][a-z0-9'+-]*){0,3}", name) is not None and not _has(
+    # «Plants vs. Zombies», «Node.js»: a dot inside a word is part of the name.
+    plain = re.fullmatch(r"[a-z0-9][a-z0-9'+.-]*(?:\s+[a-z0-9][a-z0-9'+.-]*){0,3}", name) is not None and not _has(
         name, r"\b(?:programas?|aplicaciones?|apps?|juegos?|cosas?|archivos?|programs?|applications?|games?|files?)\b",
     )
     if not (in_catalog or known or plain):
@@ -17961,12 +17972,25 @@ def shell_command_request(text: str) -> tuple[str, str | None] | None:
     if match is None:
         return None
     command = match.group("command").strip().strip("`\"'")
+    cwd: str | None = None
+    # «ejecutá dir en el escritorio», «run ls in downloads», «corré git status en
+    # documentos/proyecto»: a known folder named after the command is its cwd.
+    tail = re.search(
+        r"\s+(?:en|in|on|dentro\s+de|desde|from)\s+(?:(?:el|la|mi|my|the)\s+)?(?:(?:carpeta|folder)\s+(?:de\s+)?)?"
+        r"(?P<folder>escritorio|desktop|documentos|documents|descargas|downloads)(?:[/\\](?P<sub>[^\s/\\][^\n]{0,120}?))?\s*$",
+        command,
+        re.IGNORECASE,
+    )
+    if tail is not None:
+        folder = {"escritorio": "desktop", "documentos": "documents", "descargas": "downloads"}.get(_fold(tail.group("folder")), _fold(tail.group("folder")))
+        cwd = folder + ("/" + tail.group("sub").strip() if tail.group("sub") else "")
+        command = command[: tail.start()].strip()
     command_folded = _fold(command)
     if not re.match(rf"^{_SHELL_COMMAND_HEADS}(?:\s|$)", command_folded):
         return None
     if len(command.encode("utf-8")) > 512 or "\n" in command:
         return None
-    return (command, None)
+    return (command, cwd)
 
 
 def installed_game_title(text: str) -> str | None:
@@ -20325,13 +20349,23 @@ def resolve_explicit_effects(
             # misma transición, con otra acción. El nombre del equipo, que se
             # exige más abajo, es lo que impide que «reiniciá el router» entre
             # por aquí.
-            r"^(?:apaga|apagame|shutdown|shut\s+down|"
+            r"^(?:apaga|apagame|apagar|shutdown|shut\s+down|turn\s+off|power\s+off|switch\s+off|"
             r"reinicia|reiniciame|reiniciar|reboot|restart)\b",
         )
-        and _has(
-            folded,
-            r"\b(?:equipo|pc|compu|computador(?:a)?|computer|maquina|"
-            r"machine|windows)\b",
+        and (
+            (
+                _has(
+                    folded,
+                    r"\b(?:equipo|pc|compu|computador(?:a)?|computer|maquina|"
+                    r"machine|windows|sistema|system)\b",
+                )
+                # «apaga el sonido del sistema», «turn off the system volume»: the
+                # object is the audio, not the machine.
+                and not _has(folded, r"\b(?:sonido|audio|volumen|volume|sound|musica|music|luz|luces|light|lights|pantalla|screen|monitor|wifi|bluetooth|radio)\b")
+            )
+            # H0401 variant «reiniciá» alone: a bare restart order names nothing
+            # else on this PC but the PC itself (a bare «apagá» stays ambiguous).
+            or re.fullmatch(r"(?:reinicia|reiniciame|reiniciar|reboot|restart)(?:\s+(?:ya|ahora|now|please|por\s+favor))?", folded.strip(" .!?"))
         )
         and not _has(
             folded,

@@ -155,4 +155,26 @@ public sealed class ShellCommandAdapterTests
             return ValueTask.FromResult(new ExternalProcessResult(exitCode, output, error));
         }
     }
+
+    [Test]
+    public async Task AKnownFolderNamesTheWorkingDirectoryAndAnythingElseIsRefused()
+    {
+        // Fase 5 (2026-09-21, H0048 «ejecuta pytest»): «cwd» is a known folder name (or a
+        // subfolder of one) or an absolute path; a bare word is refused before running.
+        var runner = new RecordingRunner(0, "ok", "");
+        var adapter = new ShellCommandAdapter(runner, Path.GetTempPath());
+
+        ExternalCapabilityReceipt known = await adapter.InvokeAsync(
+            "shell.command.run", JsonSerializer.SerializeToElement(new { command = "dir", cwd = "desktop" }), CancellationToken.None);
+        ExternalCapabilityReceipt refused = await adapter.InvokeAsync(
+            "shell.command.run", JsonSerializer.SerializeToElement(new { command = "dir", cwd = "perfil" }), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(known.Verified, Is.True, known.ErrorCode);
+            Assert.That(known.Result?.GetProperty("cwd").GetString(), Is.EqualTo(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)));
+            Assert.That(refused.Verified, Is.False);
+            Assert.That(refused.ErrorCode, Is.EqualTo("shell_command_directory_not_found"));
+        });
+    }
 }

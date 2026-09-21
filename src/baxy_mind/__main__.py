@@ -5375,6 +5375,15 @@ def _explicit_arguments_from_evidence(
         if extension is not None:
             return {"extension": extension}
 
+    if operation == "system.power":
+        # H0401/H0714: the transition is the verb the person used; nothing else
+        # in the request names a power action.
+        folded_power = effect_intent._strip_request_envelope(effect_intent._fold(evidence)).strip()
+        if re.match(r"^(?:reinicia|reiniciame|reiniciar|reboot|restart)\b", folded_power):
+            return {"action": "restart"}
+        if re.match(r"^(?:apaga|apagame|apagar|shutdown|shut\s+down|turn\s+off|power\s+off|switch\s+off)\b", folded_power):
+            return {"action": "shutdown"}
+
     if operation == "message.recipient.resolve":
         any_channel = effect_intent.message_request_any_channel(evidence)
         if any_channel is not None:
