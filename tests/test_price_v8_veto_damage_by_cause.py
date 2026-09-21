@@ -104,12 +104,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 post-goal 2026-09-20 (Fase 1): pytest verde sin relajar; 5pm/volumen de app/envoltura social/investigar el propio equipo reparados en la mente.
 # REOPEN1993: lecturas de la mente (candidato único, alarma de la sesión, otra ventana, mirar la pantalla, ponle texto)
 # C03 REOPEN1957 typed tools (opus/typed-tools): re-pin after the mind readings of the fifteen typed capabilities.
+# C03 post-goal: fusión de opus/typed-tools y BUILD2001 (nombre de app en app.open, turn.playback-then ordinario).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
         "8c8bf9335a89b434a2b63b19390697928a79f718f00b1a4ae37c1507db16b429"
     ),
     "src/baxy_mind/llm.py": (
-        "ed4585ef1fc4c94069532f3f4edeec3b132c959df608b26e59e25c9ab72a940a"
+        "858dc664cc818c2c1263e478ab187f0743b1759b0b993831a90d6dc768c89098"
     ),
 }
 
