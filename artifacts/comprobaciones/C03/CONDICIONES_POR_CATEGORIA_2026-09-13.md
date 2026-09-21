@@ -1762,3 +1762,7 @@ Información web actual pasa de 6/17 a 6/17 con las noticias de hoy son titulare
 ## Actualización 2026-09-21 (NEWS2029)
 
 Información web actual pasa de 6/17 a 9/17 con los titulares se citan con su fuente aunque la fuente sea un dominio (commit f764e171, BUILD2029) (HEAD f764e171): 7/8 aprobados (3 literales, 2 variantes, 2 límites), 3 créditos. Tres créditos: H0033, H0374, H0509 (Información web actual 9/17); «dame los titulares de deportes» falla por el tope de 4096 del mensaje de hechos visibles (enlaces largos en el resultado) y se repara en el commit siguiente.
+
+## Actualización 2026-09-21 (WEATHER2031)
+
+Información web actual pasa de 9/17 a 9/17 con el clima se lee de un servicio de pronóstico: las filas restantes (commit a52833f1, BUILD2031) (HEAD a52833f1): 7/8 aprobados (4 literales, 1 variante, 2 límites), 0 créditos. Sin crédito: sólo una variante aprobada; «how's the weather in Santiago» muere por exigir el nombre geocodificado entero («Santiago de Chile»); reparación en el commit siguiente y re-medición del panel.
