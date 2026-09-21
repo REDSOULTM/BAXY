@@ -5706,6 +5706,13 @@ def _explicit_arguments_from_evidence(
                 count=1,
                 flags=re.IGNORECASE,
             )
+            # SEARCH2011 «Buscá Transformers, porfa»: the courtesy is not part of the query.
+            query = re.sub(
+                r"\s*[,;]?\s*(?:por\s+favor|porfa|porfi|please|pls|plz|dale|gracias|thanks)\s*$",
+                "",
+                query,
+                flags=re.IGNORECASE,
+            ).strip(" \t.,;:!?")
         else:
             opened_page = re.match(
                 (
@@ -7767,6 +7774,19 @@ def _prepare_turn_result(
             shortlist = _shortlist_with_required_effects(
                 shortlist,
                 required,
+                planner_catalog,
+            )
+        elif (
+            planner_catalog.get("web.search") is not None
+            and effect_intent._direct_public_search_query(routing_objective) is not None
+        ):
+            # SEARCH2011 «dale, buscame recetas de pizza»: the retrieval left
+            # web.search out of the shortlist and the decider took
+            # filesystem.search, vetoed as unsupported. A direct public search
+            # the reader recognizes keeps web.search visible to the decider.
+            shortlist = _shortlist_with_required_effects(
+                shortlist,
+                ("web.search",),
                 planner_catalog,
             )
         clause_shortlist = _compound_clause_shortlist(

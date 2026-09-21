@@ -34,3 +34,10 @@ def test_a_search_report_names_a_site_not_only_titles() -> None:
     assert _search_report_without_source(titles_only, payload, "search for pizza recipes") is True
     with_site = "I found «47 Homemade Pizza Recipes That Are Faster Than Delivery» on tasteofhome.com and «15 Homemade Pizza Recipes» on allrecipes.com."
     assert _search_report_without_source(with_site, payload, "search for pizza recipes") is False
+
+
+def test_the_grounded_query_argument_drops_the_courtesy_too() -> None:
+    # SEARCH2011: the argument grounder has its own search regex.
+    from baxy_mind.__main__ import _explicit_arguments_from_evidence
+    assert _explicit_arguments_from_evidence("web.search", "Buscá Transformers, porfa") == {"query": "Transformers"}
+    assert _explicit_arguments_from_evidence("web.search", "buscame recetas de pizza, por favor") == {"query": "recetas de pizza"}
