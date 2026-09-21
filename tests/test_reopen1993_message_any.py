@@ -56,8 +56,10 @@ def test_a_client_at_the_end_of_the_text_is_the_client_and_one_before_stays_the_
     assert mind._ground_explicit_arguments("message.recipient.resolve", trailing, RESOLVE_SCHEMA) == {"channel": "whatsapp", "recipient": "Ana"}
     leading = "mandale por whatsapp a Música que ya voy"
     assert effect_intent.message_request_any_channel(leading) is None
+    # Owner 2026-09-21: a client named before the text is the named-client send (looked up there, confirmed).
+    assert effect_intent.message_request_named_client(leading) == ("Música", "ya voy", "whatsapp")
     intent = effect_intent.resolve_explicit_effects(leading, AVAILABLE, (), ())
-    assert intent is not None and intent.operations == ("message.send.test",)
+    assert intent is not None and intent.operations == ("message.recipient.resolve", "message.send")
 
 
 @pytest.mark.parametrize("text", ["tell me a joke", "dile que si", "contestale que si", "no le mandes nada a Lucas", "manda flores a mi madre", "mandale a Música un ramo de rosas"])

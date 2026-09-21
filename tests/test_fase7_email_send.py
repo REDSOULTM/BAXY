@@ -44,7 +44,11 @@ def test_without_email_send_the_old_test_mailbox_send_stays_and_chats_are_untouc
     without = frozenset({"message.send.test", "message.draft", "app.open"})
     intent = effect_intent.resolve_explicit_effects("mandale un correo a ana@gmail.com diciendo que llego tarde", without, (), ())
     assert intent is not None and intent.operations == ("message.send.test",)
+    # Owner 2026-09-21: with the resolve/send pair served, a chat message to a named person in a named
+    # client is sent to that person (confirmed); the forced test destination stays only without the pair.
     chat = effect_intent.resolve_explicit_effects("mandale por whatsapp a Música que ya voy", AVAILABLE, (), ())
-    assert chat is not None and chat.operations == ("message.send.test",)
+    assert chat is not None and chat.operations == ("message.recipient.resolve", "message.send")
+    forced = effect_intent.resolve_explicit_effects("mandale por whatsapp a Música que ya voy", AVAILABLE - {"message.recipient.resolve"}, (), ())
+    assert forced is not None and forced.operations == ("message.send.test",)
     for code in ("mail_address_invalid", "outlook_profile_not_configured", "outlook_mail_send_failed", "mail_delivery_not_verified"):
         assert code in llm._CAUSE_FACT

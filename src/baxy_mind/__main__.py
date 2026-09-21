@@ -1030,6 +1030,9 @@ def _verified_message_send_arguments(
     if any_channel is not None:
         # REOPEN1993 grupo E: the text is the person's own words after the recipient.
         return {"recipientId": next(iter(recipient_ids)), "text": any_channel[1]}
+    named_client = effect_intent.message_request_named_client(objective)
+    if named_client is not None:
+        return {"recipientId": next(iter(recipient_ids)), "text": named_client[1]}
     quoted = re.search(r"[\"“](?P<text>[^\"”]{1,16384})[\"”]", objective)
     if quoted is not None:
         body = quoted.group("text")
@@ -4655,7 +4658,7 @@ def _explicit_browser_navigation_arguments(
         if operation != "browser.navigate":
             return None
         return {"url": "https://www.youtube.com/results?" + urlencode({"search_query": youtube_query})}
-    installed_query = effect_intent._installed_browser_search_query(evidence)
+    installed_query = effect_intent._installed_browser_search_query(evidence) or effect_intent._browser_search_query(evidence)
     if installed_query is not None:
         # WEB1455 «abre un navegador que tengas instalado y busca …»: the
         # product's public search page (Bing) with the person's literal query,
@@ -5389,6 +5392,10 @@ def _explicit_arguments_from_evidence(
         if any_channel is not None:
             # REOPEN1993 grupo E: no client named → looked up in the clients.
             return {"channel": any_channel[2] or "any", "recipient": any_channel[0]}
+        named_client = effect_intent.message_request_named_client(evidence)
+        if named_client is not None:
+            # Owner 2026-09-21: the client named → the person is looked up there.
+            return {"channel": named_client[2], "recipient": named_client[0]}
 
     if operation in {"document.text.read", "document.pdf.read"}:
         # REOPEN1957 H0299: the pasted path names the folder, the subfolder and the file.
@@ -6434,6 +6441,22 @@ def _ground_explicit_arguments(
         completed = effect_intent._completed_missing_app_volume_request(
             answer.strip(), (previous or "").strip() or None, (operation,), application_names,
         )
+        if completed is not None:
+            explicit = _explicit_arguments_from_evidence(
+                operation, completed, application_names, game_catalog,
+            )
+    if explicit is None and isinstance(history, list):
+        items = [item for item in history if isinstance(item, dict)]
+        recent = [str(item.get("content") or "") for item in reversed(items) if item.get("role") == "user" and item.get("content") != evidence]
+        completed = None
+        if operation == "browser.navigate":
+            # «abrelo en mi navegador» after «qué es X»: the arguments read the completed request.
+            completed = effect_intent._completed_browser_search_pronoun_request(evidence, recent)
+        if completed is None:
+            # «hazla» after a cancelled request: the previous request's own arguments.
+            completed = effect_intent._redo_previous_request(
+                evidence, recent, frozenset({operation}), application_names, game_catalog,
+            )
         if completed is not None:
             explicit = _explicit_arguments_from_evidence(
                 operation, completed, application_names, game_catalog,
@@ -7617,11 +7640,19 @@ def _prepare_turn_result(
     wifi_place_answer = effect_intent.wifi_place_answer_intent(
         objective, history, available_operations
     )
+    browser_search_pronoun = effect_intent.browser_search_pronoun_intent(
+        objective, history, available_operations
+    )
+    redo_previous_request = effect_intent.redo_previous_request_intent(
+        objective, history, available_operations, application_names, game_catalog
+    )
     explicit_intent = (
         None
         if non_target_language is not None or stable_no_effect_is_closed
         else accepted_wifi_offer
         or wifi_place_answer
+        or browser_search_pronoun
+        or redo_previous_request
         or live_public_intent
         or resolve_explicit_effects(
             objective,

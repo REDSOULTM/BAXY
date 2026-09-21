@@ -414,7 +414,7 @@ def _research_question_query(text: str) -> str | None:
 _ENTITY_LOOKUP = re.compile(
     r"^[¿?¡!\s]*(?:"
     r"(?:quien|quién|quienes|quiénes|who)\s+(?:es|fue|era|son|fueron|eran|is|was|are|were)|"
-    r"(?:que|qué|what)\s+(?:es|fue|era|is|was)|"
+    r"(?:(?:dime|decime|explicame|explícame|contame|cuentame|cuéntame|tell\s+me)\s+)?(?:que|qué|what)\s+(?:es|fue|era|is|was)|"
     r"(?:hablame|háblame|hablarme|contame|cuentame|cuéntame|explicame|explícame|tell\s+me)\s+"
     r"(?:(?:un\s+poco|algo|mas|más|a\s+bit|a\s+little|more)\s+)?(?:de|sobre|acerca\s+de|about)"
     r")\s+(?P<entity>[^?¿!¡]+?)\s*[.!?¿¡=\s]*$",
@@ -484,6 +484,14 @@ def _entity_lookup_query(text: str) -> str | None:
     if len(entity.encode("utf-8")) > 80 or len(folded_entity.split()) > 8:
         return None
     if _has(folded_entity, r"^(?:un|una|unos|unas|a|an|el|la|los|las|the|lo)\b"):
+        return None
+    if _has(
+        folded_entity,
+        # «tell me what is currently playing», «dime qué es lo que está sonando»:
+        # a state of this PC, not a named thing to look up.
+        r"^(?:currently|now|actualmente|ahora|playing|sonando|reproduciendo|open|abierto|abierta|"
+        r"running|corriendo|going\s+on|happening|pasando|on|up|today|hoy|wrong|mal)\b",
+    ):
         return None
     if _has(
         folded_entity,
@@ -1590,6 +1598,24 @@ _MSG_PRONOUN_RECIPIENTS = frozenset({
 })
 
 
+def message_request_named_client(text: str) -> tuple[str, str, str] | None:
+    """(recipient, body, client) of a message for a named person or group in a
+    NAMED chat client (WhatsApp or Discord): «mandale un mensaje a vicho por wsp
+    diciéndole hola», «escribile a Lucas en whatsapp que llego tarde». None for
+    mail, for a client without a person, or for a body without recipient."""
+
+    draft = message_draft_request(text)
+    if draft is None or draft[0] not in {"whatsapp", "discord"}:
+        return None
+    recipient = re.sub(r"^(?:el\s+grupo|la\s+|el\s+|the\s+group|the\s+)\s*", "", (draft[1] or "").strip(), flags=re.IGNORECASE).strip(" .")
+    body = (draft[2] or "").strip()
+    if not recipient or not body or _fold(recipient) in _MSG_PRONOUN_RECIPIENTS:
+        return None
+    if len(recipient.encode("utf-8")) > 512 or len(body.encode("utf-8")) > 16_384 or len(recipient.split()) > 6:
+        return None
+    return recipient, body, draft[0]
+
+
 def message_request_any_channel(text: str) -> tuple[str, str, str | None] | None:
     """(recipient, body, client or None) of a message request whose client is
     not named before the text; None when a client leads (message_draft_request
@@ -2581,7 +2607,7 @@ def _curated_domain_is_grounded(
                 # inglés es también el reloj inteligente y los lectores de
                 # dispositivos la reclaman antes. No acompañar una palabra
                 # ambigua es lo seguro; ninguna fila abierta la necesita.
-                r"\b(?:reproduce|play|pon|busca|find|encuentra|encuentras|"
+                r"\b(?:reproduce|play|pon|ponme|poneme|pone|busca|find|encuentra|encuentras|"
                 r"arranca|arrancala|start|ver|watch)\b",
             )
             and not _has(folded, r"\b(?:como|how|tutorial|ejemplo|example)\b")
@@ -3724,6 +3750,14 @@ def known_unsupported_effect_request(
             _has(folded, r"\b(?:volumen|volume)\s+(?:de|del|of)\s+(?:(?:la|el|the)\s+)?(?:app\s+)?(?:spotify|chrome|discord|youtube|steam|zoom|teams|vlc|firefox|opera|edge|whatsapp)\b"
                          r"|\b(?:spotify|chrome|discord|youtube|steam|zoom|teams|vlc|firefox|opera|edge|whatsapp)(?:\'s)?\s+volume\b"),
             {"audio.app.volume.adjust", "audio.app.volume.set"},
+        ),
+        (
+            # Owner 2026-09-21 «qué fue lo último que me dijo vicho en wsp», «leé lo
+            # último que me dijo X», «qué me escribió mamá» (H0510/H0720): reading a
+            # chat needs the computer-use engine (deferred); a plain limit, not
+            # «no pude entender».
+            chat_read_request(folded),
+            {"message.latest.read"},
         ),
         (
             # AGENDA1669 H0666 «resumime informe.pdf»: the text reader opens text
@@ -8102,6 +8136,22 @@ def _is_past_or_hypothetical_state(text: str) -> bool:
             r"\bva\s+a\s+(?:usar|ocupar|necesitar|quedar|tener)\b"
         ),
     )
+
+
+def chat_read_request(folded: str) -> bool:
+    """A request to read what someone wrote in a chat client or to read a chat:
+    «qué (fue lo último que) me dijo/escribió X (en wsp)», «leé/leeme lo último
+    que me dijo X», «puedes leer una conversación mía de whatsapp», «read my
+    last message from X». False for mail (its own reader) and for sending."""
+
+    return _has(
+        folded,
+        r"\b(?:que|qué)\s+(?:fue\s+lo\s+ultimo\s+que\s+)?me\s+(?:dijo|escribio|mando|envio|puso)\b"
+        r"|\b(?:lee|leeme|leer|leas|leerme|read)\s+(?:me\s+)?(?:lo\s+ultimo\s+que\s+me\s+(?:dijo|escribio|mando)|"
+        r"(?:una|la|mi|my|a|the)\s+(?:conversacion|conversation|chat)|(?:el|los|mis|the|my)\s+(?:ultimos?\s+)?(?:mensajes?|messages?)|"
+        r"(?:the\s+)?last\s+message)\b"
+        r"|\bwhat\s+did\s+\S+\s+(?:say|write|text)\s+(?:to\s+)?me\b",
+    ) and not _has(folded, r"\b(?:correo|mail|email|gmail|outlook)\b")
 
 
 def _is_machine_knowledge_or_diagnosis(text: str) -> bool:
@@ -13371,9 +13421,9 @@ def _strict_catalog_request(
                 r"install|installation|instalar|instalarse|ready|list[oa])\b"
             ),
             "streaming.play.named": (
-                r"\b(?:pon|put|play|start|reproduce|ver|watch|find|encuentra|encuentras)\b"
+                r"\b(?:pon|ponme|poneme|pone|put|play|start|reproduce|ver|watch|find|encuentra|encuentras)\b"
                 r".{0,120}\b" + _NETFLIX_SPELLED + r"\b|\b" + _NETFLIX_SPELLED + r"\b.{0,120}"
-                r"\b(?:pon|put|play|start|reproduce|ver|watch)\b"
+                r"\b(?:pon|ponme|poneme|pone|put|play|start|reproduce|ver|watch)\b"
             ),
         }
         action_contracts_grounded = all(
@@ -14404,7 +14454,7 @@ def _strict_catalog_request(
 
     netflix_weekday_title = _has(
         text,
-        r"^(?:reproduce|play|pon|pone|put\s+on|busca|find|inicia|start|encuentra|encuentras|"
+        r"^(?:reproduce|play|pon|ponme|poneme|pone|put\s+on|busca|find|inicia|start|encuentra|encuentras|"
         r"localiza|locate)\s+wednesday\s+(?:en|in|on|desde|from|through|"
         r"usando|using)\s+netflix\b",
     )
@@ -14422,7 +14472,7 @@ def _strict_catalog_request(
             # misma operación ya daba «ver» y «watch» por formas legítimas de
             # pedirla, y esta cabeza las rechazaba. La asimetría entre las dos
             # listas era el defecto; «quiero ver …» resolvía por otro camino.
-            r"^(?:reproduce|play|pon|pone|put\s+on|busca|find|inicia|start|encuentra|encuentras|"
+            r"^(?:reproduce|play|pon|ponme|poneme|pone|put\s+on|busca|find|inicia|start|encuentra|encuentras|"
             r"localiza|locate|ver|watch)\b",
         )
         and _has(
@@ -16399,6 +16449,143 @@ def _installed_browser_search_query(text: str) -> str | None:
     return query
 
 
+_BROWSER_SEARCH_IN_BROWSER = re.compile(
+    r"^[¿?¡!\s]*(?:(?:por\s+favor|please|podes|podrias|puedes|can\s+you|could\s+you)\s*,?\s*)?"
+    r"(?:"
+    # «abrí una búsqueda de X en mi navegador», «open a search for X in my browser»
+    r"(?:abre|abrí|abri|abrir|abrime|open)\s+(?:una|la|a|the)\s+(?:busqueda|búsqueda|search)\s+(?:de|sobre|for|of|on)\s+(?P<q1>.+?)|"
+    # «buscá X en mi navegador», «search X in the browser»
+    r"(?:busca|buscá|buscar|buscame|buscáme|search(?:\s+for)?|look\s+up)\s+(?P<q2>.+?)|"
+    # «abrí X en mi navegador» (a topic, not a site: sites keep their own reader)
+    r"(?:abre|abrí|abri|abrir|abrime|open)\s+(?P<q3>.+?)"
+    r")"
+    r"\s+(?:en|in|on)\s+(?:mi|el|tu|the|my|your|un|a)\s+(?:navegador|browser)"
+    r"(?:\s*,?\s*(?:por\s+favor|please))?\s*[.!?]*$",
+    re.IGNORECASE,
+)
+_BROWSER_SEARCH_PRONOUN = re.compile(
+    r"^[¿?¡!\s]*(?:.*?\b(?:o\s+mejor|mejor|or\s+better|or)\s+)?"
+    r"(?:abrelo|ábrelo|abrilo|abrila|abrela|ábrela|abre\s+eso|abrí\s+eso|abre\s+esto|open\s+it|open\s+that|buscalo|búscalo|buscala|búscala|search\s+it|search\s+that|look\s+it\s+up)"
+    r"\s+(?:en|in|on)\s+(?:mi|el|tu|the|my|your|un|a)\s+(?:navegador|browser)"
+    r"(?:\s*,?\s*(?:por\s+favor|please))?\s*[.!?]*$",
+    re.IGNORECASE,
+)
+
+
+def _browser_search_query(text: str) -> str | None:
+    """Owner session 2026-09-21 «abre una busqueda de power automate en mi
+    navegador»: a search the person wants in their own browser is the reviewed
+    navigation to the public search page with that query (as the installed-
+    browser shape of WEB1455). The query keeps its spelling; a URL, a bare site
+    or a named browser keep their own readers; None for any other shape."""
+
+    match = _BROWSER_SEARCH_IN_BROWSER.match(text.strip())
+    if match is None:
+        return None
+    query = (match.group("q1") or match.group("q2") or match.group("q3") or "").strip().strip("\"'“”«»").strip()
+    folded = _fold(query)
+    if (
+        not query
+        or len(query.encode("utf-8")) > 200
+        or any(ord(character) < 32 for character in query)
+        or _has(folded, r"https?://|www\.|\.(?:com|net|org|es|cl|ar|io|gov|edu)\b")
+        or _has(folded, r"\b(?:google|opera|chrome|edge|firefox|brave|youtube|gmail|github|chatgpt)\b")
+        or _has(folded, r"^(?:lo|la|los|las|eso|esto|it|that|this|algo|something|nada|nothing|una\s+pestana|una\s+pestaña|a\s+tab|un\s+link|a\s+link)$")
+        or (match.group("q3") and _has(folded, r"^(?:el|la|los|las|un|una|the|a|an)\s+(?:navegador|browser|link|enlace|pagina|página|page|pestana|pestaña|tab)\b"))
+    ):
+        return None
+    return query
+
+
+def _browser_search_pronoun_request(text: str) -> bool:
+    """«pasame un link para verlo yo mismo, o mejor abrelo en mi navegador»,
+    «abrilo en mi navegador»: the thing to open in the browser is what the
+    conversation was about; the caller supplies it from the previous turn."""
+
+    return _BROWSER_SEARCH_PRONOUN.match(text.strip()) is not None
+
+
+def _completed_browser_search_pronoun_request(
+    text: str, previous_user_text: str | Iterable[str] | None,
+) -> str | None:
+    """The pronoun form completed with the entity of the last question about a
+    thing («Dime que es power automate» → «buscá power automate en mi
+    navegador»); `previous_user_text` may be the last user text or the recent
+    user texts, most recent first (the entity may sit two turns back)."""
+
+    if not previous_user_text or not _browser_search_pronoun_request(text):
+        return None
+    candidates = [previous_user_text] if isinstance(previous_user_text, str) else list(previous_user_text)
+    for candidate in candidates[:4]:
+        entity = _entity_lookup_query(str(candidate))
+        if entity is not None:
+            return "buscá " + entity + " en mi navegador"
+    return None
+
+
+_REDO_REQUEST = re.compile(
+    r"^[¿?¡!\s]*(?:hazla|hazlo|hacela|hacelo|hacelo\s+ya|hazlo\s+ya|hazla\s+ya|dale|dale\s+ya|hace\s+eso|haz\s+eso|hacé\s+eso|"
+    r"hacelo\s+igual|hazlo\s+igual|hazla\s+igual|do\s+it|just\s+do\s+it|go\s+ahead|do\s+that)"
+    r"(?:\s*[,.!]?\s*(?:te\s+dije|ya\s+te\s+dije|te\s+lo\s+dije|i\s+told\s+you|i\s+said).{0,80})?\s*[.!?]*$",
+    re.IGNORECASE,
+)
+
+
+def _redo_previous_request(text: str, recent_user_texts: Iterable[str], available: frozenset[str],
+                           application_names: Iterable[str] | ApplicationCatalogIndex,
+                           game_catalog: Iterable[tuple[str, str, str]] | GameCatalogIndex) -> str | None:
+    """Owner 2026-09-21 «Hazla, te dije que si mil veces» after a cancelled
+    search: «do it» takes the most recent user request that reads as an
+    effect (skipping yes/no answers and the redo itself). None otherwise."""
+
+    if _REDO_REQUEST.match(_fold(text).strip()) is None:
+        return None
+    for previous in list(recent_user_texts)[:6]:
+        candidate = str(previous).strip()
+        if not candidate or _REDO_REQUEST.match(_fold(candidate)) is not None:
+            continue
+        if re.fullmatch(r"[¿?¡!\s]*(?:si|sí|no|confirmo|confirmar|confirm|cancela|cancelar|cancel|ok|dale|yes|nope|yep|claro)\s*[.!]*", _fold(candidate)):
+            continue
+        resolved = resolve_explicit_effects(candidate, available, application_names, game_catalog)
+        if resolved is not None:
+            return candidate
+    return None
+
+
+def redo_previous_request_intent(
+    text: str, history: object, available_operations: Iterable[str],
+    application_names: Iterable[str] | ApplicationCatalogIndex = (),
+    game_catalog: Iterable[tuple[str, str, str]] | GameCatalogIndex = (),
+) -> EffectIntent | None:
+    """«hazla» read against the recent user turns: the previous request again."""
+
+    if not isinstance(history, list):
+        return None
+    available = frozenset(available_operations)
+    items = [item for item in history if isinstance(item, dict)]
+    if items and items[-1].get("role") == "user" and items[-1].get("content") == text:
+        items = items[:-1]
+    recent = [str(item.get("content") or "") for item in reversed(items) if item.get("role") == "user"]
+    previous = _redo_previous_request(text, recent, available, application_names, game_catalog)
+    if previous is None:
+        return None
+    resolved = resolve_explicit_effects(previous, available, application_names, game_catalog)
+    return EffectIntent(resolved.operations, tuple(previous for _ in resolved.operations)) if resolved is not None else None
+
+
+def browser_search_pronoun_intent(text: str, history: object, available_operations: Iterable[str]) -> EffectIntent | None:
+    """«abrelo en mi navegador» read against the recent user turns of the history."""
+
+    if "browser.navigate" not in frozenset(available_operations) or not isinstance(history, list):
+        return None
+    items = [item for item in history if isinstance(item, dict)]
+    if items and items[-1].get("role") == "user" and items[-1].get("content") == text:
+        items = items[:-1]
+    recent = [str(item.get("content") or "") for item in reversed(items) if item.get("role") == "user"]
+    completed = _completed_browser_search_pronoun_request(text, recent)
+    return EffectIntent(("browser.navigate",), (completed,)) if completed is not None else None
+
+
 def _explicit_google_search_query(text: str) -> str | None:
     """Read an explicit Google search without folding its literal query."""
 
@@ -16442,6 +16629,13 @@ def _review_web_and_browser_effects(
         # WEB1455: any installed browser and a search in it is one reviewed
         # navigation to the product's public search page with that query.
         if _append(matches, folded, "browser.navigate", r"\b(?:abre|abri|abrir|open)\b"):
+            _, priority, operation = matches[-1]
+            matches[-1] = (0, priority, operation)
+        return
+    if _browser_search_query(folded) is not None and context_browser is None:
+        # Owner 2026-09-21 «abre una busqueda de power automate en mi navegador»,
+        # «buscá X en mi navegador»: the same reviewed navigation to the search page.
+        if _append(matches, folded, "browser.navigate", r"\b(?:abre|abri|abrir|abrime|open|busca|buscar|buscame|search|look)\b"):
             _, priority, operation = matches[-1]
             matches[-1] = (0, priority, operation)
         return
@@ -19442,6 +19636,14 @@ def resolve_explicit_effects(
         return resolve_explicit_effects(
             completed_music_request, available, application_names, game_catalog,
         )
+    if "browser.navigate" in available:
+        # Owner 2026-09-21 «Dime que es power automate» → «pasame un link…, o
+        # mejor abrelo en mi navegador»: the pronoun takes the entity just asked.
+        completed_browser_search = _completed_browser_search_pronoun_request(text, previous_user_text)
+        if completed_browser_search is not None:
+            return resolve_explicit_effects(
+                completed_browser_search, available, application_names, game_catalog,
+            )
     if {"web.download", "file.open"} <= available:
         completed_image_request = _completed_missing_image_subject_request(text, previous_user_text)
         if completed_image_request is not None:
@@ -19486,6 +19688,12 @@ def resolve_explicit_effects(
     if {"message.recipient.resolve", "message.send"} <= available and message_request_any_channel(text) is not None:
         # REOPEN1993 grupo E: no client named → the recipient is looked up in the
         # clients and, when unique, the message is sent (confirmed in normal mode).
+        return EffectIntent(("message.recipient.resolve", "message.send"), (text, text))
+    if {"message.recipient.resolve", "message.send"} <= available and message_request_named_client(text) is not None:
+        # Owner 2026-09-21 «Mandale un mensaje a vicho por wsp diciendole hola»: the
+        # client IS named → the person is looked up in that client and the message
+        # is sent to them (confirmed in normal mode); the forced test destination
+        # of message.send.test stays for the measurement panels only.
         return EffectIntent(("message.recipient.resolve", "message.send"), (text, text))
     if "message.send.test" in available and message_draft_request(text) is not None and not (
         "email.send" in available and message_draft_request(text)[0] == "email"

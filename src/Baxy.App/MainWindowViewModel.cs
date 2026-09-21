@@ -181,9 +181,20 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 LastMessageCompositionFailure = failure;
                 HasCompositionError = true;
                 CompositionFailed?.Invoke(pending, failure);
+                // Owner session 2026-09-21 16:08 «que es una verga»: the composition
+                // failed and the transcript stayed empty, twice. The person always
+                // sees a line (and the private log keeps the cause for diagnosis).
+                AddMessageCore(
+                    "BAXY",
+                    CompositionFailureFallback(failure),
+                    isUser: false,
+                    PublicResponseRoute.Error);
                 RestorePresentationState();
             }).ConfigureAwait(false);
     }
+
+    internal static string CompositionFailureFallback(string failure) =>
+        "No pude armar una respuesta a eso. Decímelo de otra forma. (" + failure + ")";
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
