@@ -80,6 +80,8 @@ public sealed class MessagingAnyChannelTests
                 "message.recipient.resolve", Json("""{"channel":"any","recipient":"Lucas"}"""), CancellationToken.None);
             ExternalCapabilityReceipt ambiguous = await both.InvokeAsync(
                 "message.recipient.resolve", Json("""{"channel":"any","recipient":"Lucas"}"""), CancellationToken.None);
+            // Nothing is remembered from a miss or an ambiguity.
+            bool storedBeforeNamed = File.Exists(store);
             ExternalCapabilityReceipt named = await both.InvokeAsync(
                 "message.recipient.resolve", Json("""{"channel":"discord","recipient":"Lucas"}"""), CancellationToken.None);
 
@@ -89,9 +91,11 @@ public sealed class MessagingAnyChannelTests
                 Assert.That(missing.ErrorCode, Is.EqualTo("recipient_not_found_in_clients"));
                 Assert.That(ambiguous.Verified, Is.False);
                 Assert.That(ambiguous.ErrorCode, Is.EqualTo("recipient_channel_ambiguous"));
-                Assert.That(File.Exists(store), Is.False);
+                Assert.That(storedBeforeNamed, Is.False);
                 Assert.That(named.Verified, Is.True);
                 Assert.That(named.Result?.GetProperty("channel").GetString(), Is.EqualTo("discord"));
+                // H0024 (owner): once the person names the client, the association is learned.
+                Assert.That(File.ReadAllText(store), Does.Contain("discord"));
             });
         }
         finally

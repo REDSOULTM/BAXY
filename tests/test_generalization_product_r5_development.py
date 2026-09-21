@@ -7,6 +7,7 @@ import pytest
 
 from baxy_mind.__main__ import _explicit_stable_no_effect_turn_decision
 from baxy_mind.effect_intent import (
+    message_request_any_channel,
     resolve_explicit_clarification_intent,
     resolve_explicit_effects,
     unresolved_compound_contract,
@@ -111,12 +112,20 @@ def test_every_opened_r5_mind_action_has_a_deterministic_contract_oracle(
 def test_every_opened_r5_clarification_preserves_zero_effects(
     row: dict[str, object],
 ) -> None:
-    text = str(row["text"])
-    assert resolve_explicit_effects(text, AVAILABLE, APPLICATIONS) is None
-    clarification = resolve_explicit_clarification_intent(text, AVAILABLE)
-    assert clarification is not None
-    assert clarification.operations == ("message.send",)
-    assert "channel" in clarification.missing_fields
+    effect = resolve_explicit_effects(str(row["text"]), AVAILABLE, APPLICATIONS)
+    clarification = resolve_explicit_clarification_intent(str(row["text"]), AVAILABLE)
+    if message_request_any_channel(str(row["text"])) is not None:
+        # REOPEN1993 grupo E (D24, 3bba9bdc3): a message naming a recipient and no
+        # client is looked up in the clients (WhatsApp, Discord) and sent when the
+        # hit is unique; the client is asked only when the person is in none or both.
+        assert effect is not None
+        assert effect.operations == ("message.recipient.resolve", "message.send")
+        assert clarification is None
+    else:
+        assert effect is None
+        assert clarification is not None
+        assert clarification.operations == ("message.send",)
+        assert "channel" in clarification.missing_fields
 
 
 @pytest.mark.parametrize(
