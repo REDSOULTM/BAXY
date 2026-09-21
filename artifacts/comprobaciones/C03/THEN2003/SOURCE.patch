@@ -1,0 +1,48 @@
+commit c122dbe118c9f8c7fa89d2625e8a230cef57bb77
+
+C03: el nombre de una app de la Tienda en el final de app.open es su displayName, no su id de catálogo (BUILD2005)
+
+THEN2001 H0097 «abrí el bloc de notas»: el recibo de app.open de una app de la Tienda trae el
+id de catálogo en appId («windows.notepad») y el nombre de la persona en displayName («Bloc de
+notas»); el chequeo de nombre añadido en BUILD2001 tomó el id como nombre y vetó como
+missing_name los tres borradores fieles («Abrí el Bloc de notas»), así que el primer turno
+terminó sin respuesta y el seguimiento «ponle hola» no corrió. El nombre que exige el final es
+displayName, luego app, y el id sólo cuando es un nombre plano (Steam). Prueba en
+tests/test_c03_near1997_app_open_name.py.
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 9c4d6d0d6..2c66bda24 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -7544,16 +7544,24 @@ def _app_open_was_already_running(situation: dict) -> bool:
+ 
+ 
+ def _app_open_observed_name(situation: dict) -> str | None:
+-    """The catalog name an app.open receipt reports (`appId`), or None."""
++    """The name an app.open receipt reports for what opened, or None.
++
++    THEN2001 H0097 «abrí el bloc de notas»: a Store application opens under a
++    catalog id («windows.notepad») with the person's name in `displayName`
++    («Bloc de notas»); the id is a name only when it is a plain one (Steam).
++    """
+ 
+     for source in (situation.get("observed"), situation.get("seen"),
+                    _merged_observed(situation)):
+         if not isinstance(source, dict):
+             continue
+-        for key in ("app", "appId"):
++        for key in ("displayName", "app", "appId"):
+             value = source.get(key)
+-            if isinstance(value, str) and value.strip():
+-                return value.strip()
++            if not (isinstance(value, str) and value.strip()):
++                continue
++            if key == "appId" and "." in value:
++                continue
++            return value.strip()
+     return None
+ 
+ 

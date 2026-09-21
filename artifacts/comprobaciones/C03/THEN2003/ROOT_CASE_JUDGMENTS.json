@@ -1,0 +1,448 @@
+[
+  {
+    "index": 0,
+    "case_id": "H0097",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Falló: preguntó, no completó los dos turnos, o el final no fue fiel.",
+    "observation_note": "Caso de dos turnos: el primero abrió el Bloc de notas y no publicó final (los borradores «Abrí el Bloc de notas» se vetaron por la regla de estado); el segundo no corrió; pins intactos.",
+    "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-00\\EXIT.json": "35a8a7a114da34b314153cf5ce9ce9fee94706699112f2994b01d91d2f43732c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-00\\RESOURCES.json": "17423d6225b924f483c29f76d3fbaf0adac60074d22617777e4f6f33f4efb08c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\profile-owner-00.json": "3d0d96eb0a04b93981e4e15b2f6fb75e2ada6d55c1cd5c8217181f65a7fa2739",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-00\\PREREG.json": "4bd01eb39ace2063e7eb212888ea77e25aa92757de471e8c6b0dd5b399ecfdf5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-00\\capture\\events.jsonl": "8ad8c174cd95064fd4fb99ad9fa45fa02bb3eeac781467f6fc446c3a95e9e770",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-00\\turns.jsonl": "13daa0b4cb519942fc99bdb83df3900f34e499fbd997bd9218fbcbcb434a28ca",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\fixture-00.json": "1b71e1d71f741574c5a5b5e01b140ef6b641686f92ed56d3acc1b7b08814e9a8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\context-00.json": "10d4a3affd79343a3a93b62bf98d052100eef66400acf2fc387018900e724fa4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\context-prelaunch-00.json": "13efad2890af5515e1e47388e97bc207ccd5cb9304401059b549f2a466d14482",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-00\\case-observations.json": "e3db07601b840c4a74f838cb89ba68f2931bf2f4841b2624e5661b01ec3fcc6c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-00\\journal-before.json": "58214f467beb1fcd34665d9ccc24114374240ecf189b224bee068ac80319d1fb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-00\\journal-after.json": "1ebc5200167b70b66eac172871780aaf4f89f2023de0da0f71cc391af1028662",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "6d4cb61dec30a9919583157cdf8be50b369176a6d36432a574c230ab404aa9e0"
+    },
+    "terminal_kind": "composition_failed",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": true,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "47a91664-aaf9-4c6b-8087-357b06fd5d8c",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "aa2b808b-abac-4e64-94d9-73c8e0719aa4",
+        "operation": "app.open",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "case_id": "then2003-dev-01",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Falló: preguntó, no completó los dos turnos, o el final no fue fiel.",
+    "observation_note": "Caso de dos turnos: el primero abrió el Bloc de notas y no publicó final; el segundo no corrió; pins intactos.",
+    "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-01\\EXIT.json": "f6d8d1a0f8ddf85b2bf9632d85474278060bc8027082d2170f5835746605c24a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-01\\RESOURCES.json": "082b9f3a831c0e3e7c5632cb69d59634325da8f979c3389c5e0458d725f70f6f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\profile-owner-01.json": "9c7dd3eb803416dd11f9d2e73ccef7bfe64de19082cf6f798fc2bd50696fa040",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-01\\PREREG.json": "d3789040f9e13142f9dd17e4949e9e26db46f03252bb86c193095e8a86eb36c7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-01\\capture\\events.jsonl": "d91c6023c34aa3c1b8e84de3b51fab69241509046efc2e895309a1e9e78d5cea",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-01\\turns.jsonl": "62a5a95163e9b6918806f1df8f0723a9591da79a8d91f247734287b3d1cefc25",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\fixture-01.json": "2e90f8f4dc77b54a69064ba66dbb60484135a45d48ea173d6af1764c8ffb1d26",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\context-01.json": "748a25c455f81753fa734229b2e5964e348162c9a29af6781347c64df993b7a3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\context-prelaunch-01.json": "0371851c6c999fd6bd751dc20b3f00d1db7b520756dc6119185dc3c800577565",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-01\\case-observations.json": "1f679814a20239f7117e764207d4e1515bc7bed695090112f8863b2444b08aac",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-01\\journal-before.json": "8a6e4c1abd908ec224e8cd6d3e6301bef233beca934f52c9f8a47e41d68bc46a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-01\\journal-after.json": "feb2eaca0e9c8bc1fff8c7687cd9703f0e78c9fa6c947537327ff50367f140ee",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "63c25f10cfcbc30d903d896e5d5e74d72d2e01dc2c93da386243121ab197ceaf"
+    },
+    "terminal_kind": "composition_failed",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": true,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "a2358917-6f11-46d8-96f1-f9bf9add14ab",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "8e8fee44-79d0-40e0-8aac-5ae123842b33",
+        "operation": "app.open",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "case_id": "then2003-dev-02",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Falló: preguntó, no completó los dos turnos, o el final no fue fiel.",
+    "observation_note": "Caso de dos turnos: Bloc de notas abierto y texto escrito en él (verificado), pero el final sólo repitió el texto sin decir que lo escribió; pins intactos.",
+    "final_sha256": "5961a5085089ade6ed3c9b4d083a16039c432ddd0fa58dcdc6ae29b33ee0698f",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-02\\EXIT.json": "c48b420f6057ea833f3aeda1a32a66e77d472a3b53474cebae18ad6938cdc72c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-02\\RESOURCES.json": "1346143e104956c72e7b365f87087ae525a6fb5fb63c443df02925b8d36c1a9f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\profile-owner-02.json": "7401bec986d026d9164ea09876c94890d6e116998d4c42db29b3d74c6a5e4eb1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-02\\PREREG.json": "3f57f6fc323b2b8dba90698014e9a876339d77573226524f9697aea2fd5a16e6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-02\\capture\\events.jsonl": "f204b54e6c69425dfdc30ddfb0f1d3bd9be2ee125bcad2ba0bd11c5ccf431f46",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-02\\turns.jsonl": "348b250095a05e93bc4713aa4df5f638f8daa2a9f8fb7f805cb42d7524fa2d5d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\fixture-02.json": "b4d0619247c7eccc64c4680f04ca3e9bf0d492dc0b2e2083fe58aaf61ea1273a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\context-02.json": "33a05cc8685082760ad5d60c6ead61f903efa52ce4458878eb7e81eb05b22b5c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\context-prelaunch-02.json": "5d481c2ada93269805aad21dfe682e911c8dd2b4c32a6e9b0b4071d64e23ec15",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-02\\case-observations.json": "43f74799dde1e5198b27c525044b727a64937aa195b091dc66cebc586bea2c8a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-02\\journal-before.json": "2fa3075bde65de684dc9ce276c2342a6b18c3c7a2eab49b226b296de894774a1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-02\\journal-after.json": "612f1cc5fadbeef497f73ec38d88d362d2df13bd07ece9f6f54882fd6ff7d3f5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "270991fffb8c9e54437b49c3c46e0e091b24b2306a482a1be4e3c620b2ac35de"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "dbdc6970-304b-4578-9333-8b9559afda6d",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "8cc9ce60-9203-4a92-b6de-923e5d6bd49b",
+        "operation": "app.open",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "0921f436-b443-46a8-a236-437a7e829b64",
+        "operation": "input.text.type",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "case_id": "then2003-dev-03",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Falló: preguntó, no completó los dos turnos, o el final no fue fiel.",
+    "observation_note": "Caso de dos turnos: el primero abrió el Bloc de notas y no publicó final; el segundo no corrió; pins intactos.",
+    "final_sha256": "dc937b59892604f5a86ac96936cd7ff09e25f18ae6b758e8014a24c7fa039e91",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-03\\EXIT.json": "fb29c9ac49309a1a3dbff90a7a76ea9e1ff9f474d51b6bafef3539fc73d1ced7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-03\\RESOURCES.json": "b3a9c8b4d8ff1e03f70319b72f444f4916e6337958a8659e84343066a026134e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\profile-owner-03.json": "43740b753a0babab8cbe00e08b77e20d4b26393bffefa138bbe36ddcf51a8e2e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-03\\PREREG.json": "5f10859b97597d938743a7a4a14c93c4d681aebe142051dcd8f8aa5b2b7fda9d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-03\\capture\\events.jsonl": "8f3369e329a93009997076319f892cf209f3783827903697564c09a6e1809221",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-03\\turns.jsonl": "62eca762e75288efd14ba7a0a1e32dc316a58d41d23b4fbe5f8ce5aeda6923ec",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\fixture-03.json": "3f1e5a656aa1fef0f0c05158162b2f313120c4e22452c6588941391c19a60ea1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\context-03.json": "9ead35b67687aae20944cca966e658946d2ad4a458da165d2dacf8e52632a527",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\context-prelaunch-03.json": "2b43888a7499101e44f1f1a3c4badb652c784b73cc31163b9fdb9cfc27b2c50d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-03\\case-observations.json": "5be245f346c4a132b080a32a47ee0eb66af60c65c3c8655a7f122ea737c8e995",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-03\\journal-before.json": "ba3604ff951e1b7aba200659083da7ad82537054bb8093710dfb9727a72762f4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-03\\journal-after.json": "cb37f5be0cd770b5703c2d03f95674faab41f7fbd37cc77a5bf4c178a9bee3d6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "c13bbf7626f1ff94c8622e5ec7a8cdc8f3b7433ee7705f622642842f45247381"
+    },
+    "terminal_kind": "filtered",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": true,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "58307f8d-8e7f-4e79-8888-ce1fc86fde3c",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "7b2ecd1f-b77c-43e2-b95d-0ff4b89add17",
+        "operation": "app.open",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "case_id": "then2003-dev-04",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Falló: preguntó, no completó los dos turnos, o el final no fue fiel.",
+    "observation_note": "Caso de dos turnos: el primero abrió el Bloc de notas y no publicó final; el segundo no corrió; pins intactos.",
+    "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-04\\EXIT.json": "948d538c5c6a87fdfe8fb4253be85415c903009d87f85aec83ae787fa7329c87",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-04\\RESOURCES.json": "eb92a90a7e8a93d38d85968af11d57cf42be794c628ab1d96ee2d3f6281b73d8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\profile-owner-04.json": "5c038e88f48ef5e012b703f83b752f0a946e5141c35ce335ededca1abc7bb759",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-04\\PREREG.json": "670923cfcb84b1ebbb20beebd63555beaa3e402561aa1727804dba6be69f62a7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-04\\capture\\events.jsonl": "795230c9ad3e19c807d2ca1438850609f7148d0f658581c4084d0d6274758a48",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-04\\turns.jsonl": "8e9fc1cbad037cccbbc54f2328d491f4ccb4742ce1c4fe97bbc53ac3d3f966e8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\fixture-04.json": "4bfb570e5fa1c51a5a33ac0f941e02e4616909d0e33f101650a99dbbe4e034f1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\context-04.json": "b2afa730ac49182102078abf37abe5b4d75c8b06b2fa3efae78dc18344c3bf20",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\context-prelaunch-04.json": "d217442a4a8247d65692a16970803d7f25482685cf10d858a14e69b41f00d3ab",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-04\\case-observations.json": "8c777f7a8e62a7d6d3f589c1908c60d104f58845ac066783c67bce0c1035103b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-04\\journal-before.json": "9bdfddc7ca50ac2d7d9591f578566e58c3eebde3b42656b2537f5a744c7cbe8a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-04\\journal-after.json": "74d570aae169af9dc650a090027a9de0b9eb0a9d83dda2b0289a9b96cea6a732",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "099a9e8e82739b29b57eb8586e521f2d4d3191d9e2f45cf880acfd67383dec44"
+    },
+    "terminal_kind": "composition_failed",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": true,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "e278a4d6-a202-4ab0-a7dd-4c0636cf19af",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "a7018873-d534-43b7-80a2-38d7fe1b4cf7",
+        "operation": "app.open",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "case_id": "then2003-boundary-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "e634d5d0318b1612f07c6e1d7d8dcfaae98b6a53d0f4bb23f9dd50e70a8b6bd3",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-05\\EXIT.json": "28101e4ecceb4f1b4d00bdf6b24a67da7935b92ff482d105009c6118807a077c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-05\\RESOURCES.json": "7f174911aefb5e6d83fd9479abc4278cd3aa2b9d7075ddccef16aaa5ec514cf3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\profile-owner-05.json": "7063b56e40bd3509e73a279ad15a592e2083759ac113f1c65ac931ecca40deb3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-05\\PREREG.json": "e3f30d2a40b5189c8f92bba6aae1b751c52f37c128781d24da91bcdc9208bd02",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-05\\capture\\events.jsonl": "f7edbca4791f805c2fa63d7143431227396d6ef0e31de62382d245e4705705c1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-05\\turns.jsonl": "397dc0a2c720f8cce59e55e71d0bc3844d89831f3801a3787cc57610d2551b5a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\fixture-05.json": "d49b799fb1f20de2e7f2870c846af22e210e461b811e150889c144d1eb3407fa",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\context-05.json": "e379b8da6f738c8f98e231078159f807ea90ccbf8d567f588edfb3bd957c6820",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\context-prelaunch-05.json": "e29e3e1d868dd108b9940f35ea7cb7cf18df40a47fed0b7225872e0eb5b34c8a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-05\\case-observations.json": "01dc378491dab4c484b5ffce76b5ecca324423e3d33c5ffbfed39cb2b113b7b5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-05\\journal-before.json": "1d28c1713312978b9a12247e818eca05a9181a2294c6b6288ce959516a7d6db2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-05\\journal-after.json": "f8f58e6578cdda8c33ec2304bdfa06b26205a208c7fe12862b6dc4fb68ae0545",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "a5cf6c510d805e1005539942cd3fa83009fe873889aacf85b9d1f5e872560c2e"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "fd535f29-dee6-4e23-82e8-29203278d54a",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 6,
+    "case_id": "then2003-boundary-02",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite fallido: cero operaciones, pero la respuesta no fue fiel o útil.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "9ee32f2d6d2e7e14099437e1290d8c4e41e6c92ed6f91294e6f3cf6831a93828",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-06\\EXIT.json": "a7f020c0af376e7ddca7cdf574ead61d32a71429729bc4ab80b3a011151da7cf",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-06\\RESOURCES.json": "1352a88e1a5fc4e230de4fdfdde17262fa3df64c3b49bcdccfe1bc20189584bf",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\profile-owner-06.json": "6603af619c307d85f05db8818c4d35cf93b7c3178c5f1a5e3d631194467be89e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-06\\PREREG.json": "e4e19939c66d3223f3bc5843e2c27a625f8f2831ae6e10292ac51f3f6b97f6c0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-06\\capture\\events.jsonl": "46fc5d3ccaf9c4424f665cdd86ed6e2563bd05144c44360fd7acdd66a9be3ead",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-06\\turns.jsonl": "a55e622417488e691a1c04442fac7af22afef4b12e26ec08d37cc32a8c746ece",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\fixture-06.json": "9a0d0cf1f9d1f57f5db45afa1702ba7d6bd23c549211166b5f63400cbd03d174",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\context-06.json": "7c7e6d66d5dd632e9fdfa6bcfc942b78922414175493d062ee0be15386211776",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\context-prelaunch-06.json": "4a873d83a334a6cff1452e5c83e73bae7f8f82dfa03be812c4cd76c1bb8e734e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-06\\case-observations.json": "1227d799afd1b1c73d2ef9505ce63fa87d0bb416de8bd92cf253d73a491abfe3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-06\\journal-before.json": "05c30629489c6b4e06b70194019701be9e33bcb4ea8ea42a37bd2745c76dbeba",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-06\\journal-after.json": "cf02647ac6ced0eed60a59f30dbbcd170da638ead1a10f534b6e079573d3824d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-06\\journal.snapshot.jsonl": "283b09d6297b2786ec7575aee7247c516d24f0f20944cd67ecf690df91f70da1"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "331e6468-aab0-401f-931a-ca196a17e2d1",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 7,
+    "case_id": "then2003-boundary-03",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "1026f757f1610d2f691d8ffb319a6e43c2133298c7bd7dbdfd8903317098a76c",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-07\\EXIT.json": "aa0059bcd594235d4cbbeaafa6beb8b3cc7fe8a8f97babcf40b00ba1f6e19d98",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-07\\RESOURCES.json": "ceb30ce7c3b9772a240b4c87f31380d979c7396d7f1e713c804355c6ee7fe97f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\profile-owner-07.json": "6cc6ef5de6d67f049c944340dd5cf2cc86ab6ef5459ffa339e1ca3bd20b42dab",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\results\\case-07\\PREREG.json": "6b3b4e108436e621f3a5c3c8abac5eb4d9ed249f2891a181cc21cadb862686cb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-07\\capture\\events.jsonl": "732bb559555866cba04c7da8b198c6314c0c43a592fbbfb0565cb521932ac733",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-07\\turns.jsonl": "a3e7cea01c6f2c5eddc3b9c346c3799b44d9f626bb8e139ed3b55912f1cae3fb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\fixture-07.json": "ca59adb686df4bdb95b1276e87ab90a786f76b91c0a024a6885c65b5217e2d12",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\context-07.json": "22b0d76b98f95676ed983021cf93c233733ea91e9ce814ed8a1eb35649befe7c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\context-prelaunch-07.json": "82e4b45fcd06cb2ccfa8b615fdf0b9fd4db1466c26a8cb93bd838c939fb85dfc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-07\\case-observations.json": "cebfd8d69cc6d42531b3f8bf0bba0ab1a9d4afb523d36bc7b3a4f4b9b87871e6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-07\\journal-before.json": "38c3835d3b5371ce0ebd036bc5dace15de14436fcf8d02c3370889892c8e3dc0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-07\\journal-after.json": "e8eaf2c12a15d6b177e4954d1839af34d9317c7e124a3d02869d09c4a09f464a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-then2003-instrument-v1\\private\\run-07\\journal.snapshot.jsonl": "c4dee7dc8b7c4ac0bb290c638ce3d62ca4d6380abc9f7e933b556187d481e4e2"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "cc9fc888-42ae-4a8d-8c9b-46332488b134",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  }
+]

@@ -1722,3 +1722,7 @@ Organizar ventanas y pestañas pasa de 11/13 a 11/13 con cambiar a la ventana de
 ## Actualización 2026-09-21 (THEN2001)
 
 Alarmas, recordatorios, tareas y agenda pasa de 37/38 a 38/38 con cancelar la alarma de la sesion y escribir en la app recien abierta sin preguntar (commit b3b29bd0, BUILD2001) (HEAD b3b29bd0): 8 ejecutados, 5 aprobados (H0011 con sus dos variantes y los dos límites), 3 fallidos (los tres de «ponle hola»: el primer turno abrió el Bloc de notas y no publicó final por el nombre de catálogo windows.notepad), 1 créditos. Regresión de la mente descubierta: el chequeo de nombre en finales de app.open (BUILD2001) tomó el id de catálogo de las apps de la Tienda como nombre; se repara (displayName primero) y se vuelve a medir H0097. La categoría queda cerrada.
+
+## Actualización 2026-09-21 (THEN2003)
+
+Interacción dentro de aplicaciones pasa de 12/22 a 12/22 con escribir en la app recien abierta sin preguntar (commit 6bce0d97, BUILD2003) (HEAD 6bce0d97): 8 ejecutados, 2 aprobados (dos límites), 6 fallidos (cuatro sin final tras abrir el Bloc de notas por la regla de estado; uno con el tecleo verificado pero el final como eco; un límite de prohibición no reconocido), 0 créditos. Dos defectos del composer: la regla de estado veta «Abrí el Bloc de notas.» y el final del tecleo repite el texto sin decir que lo escribió. Reparados en el commit siguiente; se vuelve a medir H0097.

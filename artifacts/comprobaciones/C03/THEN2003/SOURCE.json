@@ -1,0 +1,15 @@
+{
+  "schema": "c03-then2003-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "src/baxy_mind/llm.py, commit c122dbe11 (_app_open_observed_name: displayName before the catalog id), already in Fast; the tanda build is the build of HEAD.",
+  "patch": "artifacts/comprobaciones/C03/THEN2003/SOURCE.patch",
+  "commits": [
+    "c122dbe11"
+  ],
+  "build": "BUILD2003 (C03-repairs2003-build/BUILD_READY.json; mente)",
+  "cause_measured": "El chequeo de nombre de app.open tomaba el id de catálogo de las apps de la Tienda como nombre y el primer turno de «ponle hola» terminaba sin respuesta.",
+  "change": "El nombre que exige el final de app.open es displayName, luego app, y el id sólo cuando es un nombre plano.",
+  "measurement": "THEN2003: 8 ejecutados, 2 aprobados (dos límites), 6 fallidos (cuatro sin final tras abrir el Bloc de notas por la regla de estado; uno con el tecleo verificado pero el final como eco; un límite de prohibición no reconocido); 0 créditos. Dos defectos del composer: la regla de estado veta «Abrí el Bloc de notas.» y el final del tecleo repite el texto sin decir que lo escribió. Reparados en el commit siguiente; se vuelve a medir H0097.",
+  "credits": 0
+}
