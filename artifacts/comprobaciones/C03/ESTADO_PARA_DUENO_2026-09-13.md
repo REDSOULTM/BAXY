@@ -1,3 +1,25 @@
+## WEATHER2035 — estado vigente 2026-09-21T17:38:45.853585+00:00
+
+Parcial: 8 aprobados, 0 fallidos, 0 sin ejecutar; 4 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 671/742 | 71 | 0 | >=647 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 643 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WEATHER2035 añade 4. No se cuentan revalidaciones.
+
+Siguiente acción: WEATHER2035: 8 ejecutados, 8 aprobados, 0 fallidos, 4 créditos (índices [0, 1, 2, 3]). Siguiente: las tipadas de la Fase 5 (fondo de escritorio, zip, ruta pegada, conteo del Explorador, modo avión, descarga, meme, presentación) y luego winget/Steam.
+
+Evidencia: `artifacts/comprobaciones/C03/WEATHER2035/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 238.78 s acumulados; pico GPU 3492.93 MiB; pico RAM 2420.86 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WEATHER2035 precedente. -->
+
 ## WEATHER2033 — estado vigente 2026-09-21T15:32:05.955163+00:00
 
 Parcial: 8 aprobados, 0 fallidos, 0 sin ejecutar; 4 créditos.

@@ -1770,3 +1770,7 @@ Información web actual pasa de 9/17 a 9/17 con el clima se lee de un servicio d
 ## Actualización 2026-09-21 (WEATHER2033)
 
 Información web actual pasa de 9/17 a 13/17 con el clima se lee de un servicio de pronóstico: las filas restantes (commit bd18c32e, BUILD2033) (HEAD bd18c32e): 8/8 aprobados (4 literales, 2 variantes, 2 límites), 4 créditos. Cuatro créditos: H0061, H0478, H0590, H0699 (Información web actual 13/17); las dos variantes leen la ciudad pedida y contestan lluvia y mañana con los valores leídos.
+
+## Actualización 2026-09-21 (WEATHER2035)
+
+Información web actual pasa de 13/17 a 17/17 con el clima se lee de un servicio de pronóstico: re-medición del panel de WEATHER2031 (commit 1fc33f44, BUILD2035) (HEAD 1fc33f44): 8/8 aprobados (4 literales, 2 variantes, 2 límites), 4 créditos. Cuatro créditos: H0034, H0431, H0664, H0689; Información web actual 17/17 queda cerrada (20/35 categorías). La categoría queda cerrada.

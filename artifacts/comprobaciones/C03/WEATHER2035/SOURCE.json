@@ -1,0 +1,15 @@
+{
+  "schema": "c03-weather2035-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "src/baxy_mind/llm.py (build 2033, db310b5a1) sobre la tipada weather.current de opus/typed-tools (8edf110ac) y el build 2025 (c3c03dc31).",
+  "patch": "artifacts/comprobaciones/C03/WEATHER2035/SOURCE.patch",
+  "commits": [
+    "db310b5a1"
+  ],
+  "build": "BUILD2035 (C03-repairs2035-build/BUILD_READY.json; mente)",
+  "cause_measured": "«how's the weather in Santiago» moría por exigir el nombre geocodificado entero («Santiago de Chile») en el final.",
+  "change": "La comprobación de hechos del clima acepta la cabeza del nombre geocodificado; el resto del panel no cambia.",
+  "measurement": "WEATHER2035: 8/8 aprobados (4 literales, 2 variantes, 2 límites); 4 créditos. Cuatro créditos: H0034, H0431, H0664, H0689; Información web actual 17/17 queda cerrada (20/35 categorías).",
+  "credits": 4
+}
