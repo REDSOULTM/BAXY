@@ -94,8 +94,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 post-goal: BUILD2021b (guarda de get en el shortlist).
 # C03 post-goal: BUILD2025 (frio/calor y clima del pasado).
 # C03 post-goal: BUILD2027 (cabezas de pregunta en noticias).
+# C03 post-goal: fusion opus/typed-tools 8c268599b + BUILD2029 (fuentes de titulares observadas).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "5a5a5283dd449ce37864b914d2ad5960b0da444b602870b10ee3ab47670324f4"
+    "96314805307197f0bba7d06c28a0f5112a7e0fe887e2a2c0ee495e5fbcbb4bc7"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
