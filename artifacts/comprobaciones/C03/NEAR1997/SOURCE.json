@@ -1,0 +1,15 @@
+{
+  "schema": "c03-near1997-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "src/baxy_mind/effect_intent.py (near_catalog_application_candidates: the shared leading letters break a tie at the same distance; names kept only by the short-word tolerance still ask), on top of the NEAR1997 build.",
+  "patch": "artifacts/comprobaciones/C03/NEAR1997/SOURCE.patch",
+  "commits": [
+    "47a3f4573daaf772c9599c9e40e05c85b21f08cd"
+  ],
+  "build": "BUILD1997 (C03-repairs1997-build/BUILD_READY.json; mente)",
+  "cause_measured": "Un nombre mal oído empatado a la misma distancia con otros nombres instalados preguntaba por los nombres equivocados.",
+  "change": "Entre nombres empatados a la misma distancia, el único que comparte el prefijo oído se abre; la tolerancia de las palabras cortas sigue preguntando.",
+  "measurement": "NEAR1997: 8 ejecutados, 4 aprobados (2 variantes y 2 límites), 4 fallidos (3 literales y 1 variante: app.open de Steam verificada pero final sin nombrar Steam); 0 créditos. Defecto determinista del composer: el recibo de app.open trae appId y el chequeo de nombre sólo mira observed.app; la pista de reintento no llevaba el nombre. Reparación pendiente en la mente; se vuelve a medir en la próxima tanda de nombres mal oídos.",
+  "credits": 0
+}

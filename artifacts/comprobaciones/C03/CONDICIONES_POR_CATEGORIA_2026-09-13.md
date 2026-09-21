@@ -1710,3 +1710,7 @@ Abrir aplicaciones pasa de 48/54 a 50/54 con abrir sin preguntar la aplicacion c
 ## Enmienda 2026-09-20 (REOPEN1996)
 
 H0521 «abres team» vuelve a abierta: la regla del candidato único depende de lo instalado en este PC y Microsoft Teams no lo está; Steam es el único candidato y se abre (NEAR1997). Estado: 652/742, 90 abiertas, 18/35 cerradas.
+
+## Actualización 2026-09-21 (NEAR1997)
+
+Abrir aplicaciones pasa de 49/54 a 49/54 con abrir sin preguntar el nombre mal oido que comparte el prefijo con un solo nombre instalado (commit 1a3ced2a, BUILD1997) (HEAD 1a3ced2a): 8 ejecutados, 4 aprobados (2 variantes y 2 límites), 4 fallidos (3 literales y 1 variante: app.open de Steam verificada pero final sin nombrar Steam), 0 créditos. Defecto determinista del composer: el recibo de app.open trae appId y el chequeo de nombre sólo mira observed.app; la pista de reintento no llevaba el nombre. Reparación pendiente en la mente; se vuelve a medir en la próxima tanda de nombres mal oídos.
