@@ -19466,12 +19466,15 @@ def resolve_explicit_effects(
         # window.focus; window.resolve (its prerequisite) binds the window.
         return EffectIntent(("window.focus",), (folded,))
     if (
-        {"capture.screenshot", "ocr.read"} <= available
+        {"capture.active.window", "ocr.read"} <= available
         and deictic_look_request(text)
         and previous_user_text is None
     ):
-        # REOPEN1993 H0528: nothing named earlier, so «lo» is the screen.
-        return EffectIntent(("capture.screenshot", "ocr.read"), (folded, folded))
+        # REOPEN1993 H0528: nothing named earlier, so «lo» is what is in
+        # front of the person. CONTEXT1999: the whole screen read Steam's menu
+        # bar and an editor before the dialog in front; the active window is
+        # what «lo» names, and the rest of the desktop is not read.
+        return EffectIntent(("capture.active.window", "ocr.read"), (folded, folded))
     if (
         "input.text.type" in available
         and deictic_text_to_type(text, previous_user_text, authenticated_applications) is not None

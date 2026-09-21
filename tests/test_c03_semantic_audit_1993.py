@@ -26,7 +26,7 @@ GAMES = effect_intent.build_game_catalog_index(
 )
 OPERATIONS = (
     "app.open", "game.launch", "app.installed", "web.search", "browser.navigate", "window.focus",
-    "window.resolve", "game.entitlement.named", "capture.screenshot", "ocr.read", "input.text.type",
+    "window.resolve", "game.entitlement.named", "capture.screenshot", "capture.active.window", "ocr.read", "input.text.type",
     "notification.cancel.latest", "notification.cancel.at", "notification.list", "notification.schedule",
 )
 
@@ -126,9 +126,11 @@ def test_the_other_window_switches_to_the_window_behind_the_foreground(text: str
     observations = [{
         "stepId": "step_1", "operation": "window.resolve", "verified": True, "status": "completed",
         "result": {"windows": [
-            {"windowId": "front", "foreground": True, "state": "normal"},
-            {"windowId": "hidden", "foreground": False, "state": "minimized"},
-            {"windowId": "behind", "foreground": False, "state": "normal"},
+            # CONTEXT1999: only titled, sizable windows count as windows a person sees.
+            {"windowId": "widget", "title": "", "foreground": False, "state": "normal", "width": 33, "height": 29},
+            {"windowId": "front", "title": "Bloc de notas", "foreground": True, "state": "normal", "width": 1200, "height": 700},
+            {"windowId": "hidden", "title": "Steam", "foreground": False, "state": "minimized", "width": 1200, "height": 700},
+            {"windowId": "behind", "title": "Calculadora", "foreground": False, "state": "normal", "width": 1200, "height": 700},
         ]},
     }]
     tool = {"function": {"canonical_name": "window.focus", "parameters": {
@@ -146,7 +148,8 @@ def test_the_best_window_and_the_other_tab_keep_asking(text: str) -> None:
 @pytest.mark.parametrize("text", ["Quiero que lo veas y de que se trata?", "Miralo y decime de qué se trata", "look at it and tell me what it is"])
 def test_look_at_it_with_nothing_said_before_reads_the_screen(text: str) -> None:
     intent = effect_intent.resolve_explicit_effects(text, OPERATIONS, previous_user_text=None)
-    assert intent is not None and intent.operations == ("capture.screenshot", "ocr.read")
+    # CONTEXT1999: «lo» is what is in front (the active window), not the whole desktop.
+    assert intent is not None and intent.operations == ("capture.active.window", "ocr.read")
     # With an antecedent the reader steps aside and the question «qué debo mirar» stands (DIALOGUE1487).
     assert effect_intent.resolve_explicit_effects(text, OPERATIONS, previous_user_text="abrí el informe.pdf") is None
     assert _unresolved_input_kind(text, APPLICATIONS) == "deictic_look"

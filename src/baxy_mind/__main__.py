@@ -772,6 +772,15 @@ def _collect_dependency_field_values(value: object, field: str) -> list[object]:
     return values
 
 
+def _window_is_sizable(window: dict) -> bool:
+    """A window a person could see as one: at least 200x100 when sizes are reported."""
+
+    width, height = window.get("width"), window.get("height")
+    if not isinstance(width, (int, float)) or not isinstance(height, (int, float)):
+        return True
+    return width >= 200 and height >= 100
+
+
 def _verified_dependency_identity_arguments(
     operation: str,
     objective: str,
@@ -863,13 +872,26 @@ def _verified_dependency_identity_arguments(
             windows = observation["result"].get("windows")
             if not isinstance(windows, list):
                 continue
-            for window in windows:
-                if (
-                    isinstance(window, dict)
-                    and window.get("foreground") is not True
-                    and window.get("state") != "minimized"
-                    and isinstance(window.get("windowId"), str)
-                ):
+            # CONTEXT1999: the inventory also lists untitled tool windows
+            # (DisplayFusion widgets 33x29, an explorer 0x0 shell window,
+            # the taskbar) ahead of the real ones; a person sees as «la
+            # otra ventana» the first titled, sizable, non-minimized window
+            # behind the one in the foreground.
+            visible = [
+                window for window in windows
+                if isinstance(window, dict)
+                and isinstance(window.get("windowId"), str)
+                and str(window.get("title") or "").strip()
+                and window.get("state") != "minimized"
+                and _window_is_sizable(window)
+            ]
+            behind = visible
+            for index, window in enumerate(visible):
+                if window.get("foreground") is True:
+                    behind = visible[index + 1:] + visible[:index]
+                    break
+            for window in behind:
+                if window.get("foreground") is not True:
                     return {"windowId": window["windowId"]}
         return None
     fields = _DETERMINISTIC_DEPENDENCY_FIELDS.get(operation, ())
