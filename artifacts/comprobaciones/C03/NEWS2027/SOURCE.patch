@@ -1,0 +1,75 @@
+commit dac91efe24693a48903841003df9f5d48f7f6e16
+
+C03: «qué noticias hay de tecnología» y «top news today» son lecturas de titulares (BUILD2027)
+
+Sondeo en seco del panel de noticias (REOPEN1993 grupo N): la compuerta de lectura viva sólo
+conocía las cabezas news/noticias/titulares/headlines y los verbos de consumo, así que una
+pregunta por las noticias («qué noticias hay…», «cuáles son los titulares…», «what's the
+latest news») o un «top news» no eran lecturas web.news.headlines. Ahora esas cabezas entran
+(siempre con la palabra noticias/news/titulares en el pedido; «qué es una noticia» sigue
+siendo definición) y el tema puede venir tras «hay» («noticias hay de tecnología» → tecnología).
+Pruebas en tests/test_reopen1993_news.py.
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index e91990d54..e0508989c 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -267,7 +267,10 @@ def _news_topic(text: str) -> str | None:
+         return None
+     stripped = _strip_request_envelope(text.strip())
+     match = re.search(
+-        r"\b(?:noticias?|news|titulares|headlines)\s+(?:de|del|sobre|acerca\s+de|about|on|of)\s+"
++        # NEWS2027 «qué noticias hay de tecnología»: «hay» may sit between the
++        # news word and its topic.
++        r"\b(?:noticias?|news|titulares|headlines)\s+(?:hay\s+|tenes\s+|tienes\s+|are\s+there\s+|is\s+there\s+)?"
++        r"(?:de|del|sobre|acerca\s+de|about|on|of)\s+"
+         r"(?P<topic>[^,;:.!?]+?)\s*(?:\b(?:de\s+hoy|hoy|today|ahora|now)\b)?\s*[.!?]*$",
+         stripped,
+         re.IGNORECASE,
+@@ -679,6 +682,17 @@ def _public_live_lookup_request(folded: str) -> bool:
+             "news",
+             "noticias",
+             "titulares",
++            # NEWS2027 «qué noticias hay de tecnología», «top news today»,
++            # «what's the news», «cuáles son los titulares», «últimas noticias»
++            "que",
++            "cuales",
++            "what",
++            "which",
++            "top",
++            "latest",
++            "ultimas",
++            "hay",
++            "any",
+         }
+         or news_consumption
+     ) and _has(
+diff --git a/tests/test_reopen1993_news.py b/tests/test_reopen1993_news.py
+index 087579a9b..035676270 100644
+--- a/tests/test_reopen1993_news.py
++++ b/tests/test_reopen1993_news.py
+@@ -21,6 +21,11 @@ AVAILABLE = frozenset({"web.search", "weather.current", "web.news.headlines", "s
+         ("dame los titulares", None),
+         ("noticias de tecnología", "tecnología"),
+         ("news about Chile today", "Chile"),
++        # NEWS2027 variants: a question about the news and a bare «top news».
++        ("top news today", None),
++        ("qué noticias hay de tecnología", "tecnología"),
++        ("what's the latest news", None),
++        ("cuáles son los titulares de deportes", "deportes"),
+     ],
+ )
+ def test_news_requests_are_a_typed_headlines_read(text: str, topic: str | None) -> None:
+@@ -37,6 +42,9 @@ def test_news_requests_are_a_typed_headlines_read(text: str, topic: str | None)
+         "busca el archivo noticias.txt",
+         "buscá noticias de hoy y decime la hora",
+         "qué significa la palabra noticias",
++        "qué es una noticia",
++        "qué pasó ayer en mi casa",
++        "no quiero noticias",
+     ],
+ )
+ def test_other_requests_keep_their_own_reader(text: str) -> None:

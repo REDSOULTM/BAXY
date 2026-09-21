@@ -1754,3 +1754,7 @@ Información web actual pasa de 3/17 a 3/17 con el clima se lee de un servicio d
 ## Actualización 2026-09-21 (WEATHER2025)
 
 Información web actual pasa de 3/17 a 6/17 con el frío y el calor de afuera son el clima; el clima del pasado es un límite (commit 2ecbaff1, BUILD2025) (HEAD 2ecbaff1): 8/8 aprobados (4 literales, 2 variantes, 2 límites), 4 créditos. Cuatro créditos: H0415, H0339, H0617 (Información web actual 6/17) y H0708 (Navegación y búsqueda web 45/46); «¿hace frío afuera?» lee el clima y el clima de 1990 es un límite honesto.
+
+## Actualización 2026-09-21 (NEWS2027)
+
+Información web actual pasa de 6/17 a 6/17 con las noticias de hoy son titulares leídos, no una búsqueda (commit 5aca1a37, BUILD2027) (HEAD 5aca1a37): 2/8 aprobados (0 literales, 0 variantes, 2 límites), 0 créditos. Sin crédito: las seis lecturas de titulares se verifican pero los finales mueren por internal_code (fuentes con dominio); reparación en BUILD2029 y re-medición como NEWS2029.
