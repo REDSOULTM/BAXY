@@ -1,6 +1,6 @@
 # TRASPASO al notebook — 2026-09-21T23:32:07.452264+00:00
 
-**671/742 cubiertos, 71 abiertos, 0 NA; 20/35 categorías cerradas. Registro SHA 3a2ef0bc4caee5736d39d928d733c3a83864144b9f34c090d0cf212985362738.** Escritora raíz y runner sellado: la sesión única de Opus 5 en el notebook (dueño, 2026-09-21 noche). Ninguna tanda corriendo; WALLPAPER2037 quedó preparada en REDPC sin correr y se regenera allá.
+**671/742 cubiertos, 71 abiertos, 0 NA; 20/35 categorías cerradas. Registro SHA 3a2ef0bc4caee5736d39d928d733c3a83864144b9f34c090d0cf212985362738.** Goal C03 cerrado el 2026-09-20 (742/742); lo que sigue es el plan post-goal (comprobación) con las filas reabiertas por el dueño. Escritora raíz y runner sellado: la sesión única de Opus 5 en el notebook (dueño, 2026-09-21 noche). Ninguna tanda corriendo; WALLPAPER2037 quedó preparada en REDPC sin correr y se regenera allá.
 
 REANUDACIÓN: seguir `artifacts/comprobaciones/C03/TRASPASO_NOTEBOOK_2026-09-21.md` (paquete `BAXY-traspaso-2026-09-21`, espejo de rutas, comprobaciones, receta y regla de reparación) y correr las 16 tandas tipadas de su §5 en orden, empezando por wallpaper2037 regenerada sobre WEATHER2035 (BEFORE 671). De las 71 abiertas, 45 son tipadas, 14 de lectura (Fase 3.5, Fable: `PROMPT_FABLE_SEMANTICA_2026-09-23.md`, corpus en `SEMANTICA_CORPUS_PENDIENTE.md`) y 12 del motor (Fase 4/5). El wall del notebook termina con Full verde, cien final y push; sin fusión a main.
 

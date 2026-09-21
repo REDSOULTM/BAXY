@@ -1,7 +1,9 @@
 # Traspaso REDPC → notebook — 2026-09-21 (noche)
 
-El dueño decidió (2026-09-21, ~20:30) que la campaña C03 sigue en el **notebook desatendido, 24/7**, con una
-sola sesión de Claude (Opus 5) como escritora raíz y runner sellado. Este documento dice qué se lleva, cómo se
+El goal C03 se cerró el 2026-09-20 a 742/742; lo que sigue es el **plan post-goal** (la comprobación:
+`PLAN_POSTGOAL_2026-09-20.md`, que por decisión del dueño reabrió filas y hoy deja el registro en 671/742). El dueño
+decidió (2026-09-21, ~20:30) que ese plan sigue en el **notebook desatendido, 24/7**, con una sola sesión de Claude
+(Opus 5) como escritora raíz y runner sellado. Este documento dice qué se lleva, cómo se
 restaura y qué tiene que hacer esa sesión hasta cerrar su «wall». El texto del GOAL para pegar está al final (§8).
 
 ## 1. Estado que se traspasa
@@ -164,7 +166,8 @@ relajar pruebas; no editar `src` con algo corriendo; no inventar efectos; fixtur
 
 ```
 Eres la única sesión de Claude (Opus 5) sobre el repositorio de BAXY en el notebook del dueño, rama
-`codex/kiro-goal-c03`: escritora raíz y runner sellado de la campaña C03. El dueño trabaja en otra máquina y este
+`codex/kiro-goal-c03`: escritora raíz y runner sellado del PLAN POST-GOAL C03 (la comprobación posterior al cierre
+del goal C03 el 2026-09-20; el plan reabrió filas por decisión del dueño). El dueño trabaja en otra máquina y este
 notebook está desatendido 24/7: no esperes respuestas suyas; con permisos totales, decide tú y deja evidencia.
 
 Objetivo (cerrado cuando lo demuestres, no antes): correr y adjudicar con honestidad las 16 tandas tipadas
