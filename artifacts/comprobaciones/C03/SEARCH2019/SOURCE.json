@@ -1,0 +1,15 @@
+{
+  "schema": "c03-search2019-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "src/baxy_mind/llm.py, commit b5158039b (the search report's own narration words are not unsourced claims), already in Fast; the tanda build is the build of HEAD.",
+  "patch": "artifacts/comprobaciones/C03/SEARCH2019/SOURCE.patch",
+  "commits": [
+    "b5158039b"
+  ],
+  "build": "BUILD2019 (C03-repairs2019-build/BUILD_READY.json; mente)",
+  "cause_measured": "La regla de afirmación sin fuente vetaba las palabras de narración del propio informe de búsqueda.",
+  "change": "El recuento de resultados, el orden de las páginas y los verbos de lo que cada página ofrece son vocabulario propio del informe.",
+  "measurement": "SEARCH2019: 8 ejecutados, 7 aprobados (H0098 con tres variantes y los tres límites), 1 fallido (una variante sin final: una palabra sin fuente y reintentos con direcciones pegadas); 1 créditos. La pista de reintento del veto de afirmación sin fuente se repara para nombrar las palabras y conservar el informe; la lectura de búsqueda queda medida.",
+  "credits": 1
+}

@@ -1742,3 +1742,7 @@ Navegación y búsqueda web pasa de 42/46 a 43/46 con buscar recetas de pizza y 
 ## Actualización 2026-09-21 (SEARCH2015)
 
 Navegación y búsqueda web pasa de 43/46 a 43/46 con buscar recetas de pizza con resultados pertinentes y su sitio (commit 7910c610, BUILD2015) (HEAD 7910c610): 8 ejecutados, 7 aprobados (las cuatro variantes y los tres límites), 1 fallido (el literal: borrador correcto vetado por WEB1889 por palabras de narración del informe), 0 créditos. La regla de afirmación sin fuente veta las palabras de narración del propio informe; se amplía su vocabulario propio y se vuelve a medir H0098.
+
+## Actualización 2026-09-21 (SEARCH2019)
+
+Navegación y búsqueda web pasa de 43/46 a 44/46 con buscar recetas de pizza con resultados pertinentes y su sitio (commit a17670a8, BUILD2019) (HEAD a17670a8): 8 ejecutados, 7 aprobados (H0098 con tres variantes y los tres límites), 1 fallido (una variante sin final: una palabra sin fuente y reintentos con direcciones pegadas), 1 créditos. La pista de reintento del veto de afirmación sin fuente se repara para nombrar las palabras y conservar el informe; la lectura de búsqueda queda medida.
