@@ -1,3 +1,25 @@
+## THEN2001 — estado vigente 2026-09-21T07:45:21.312659+00:00
+
+Parcial: 5 aprobados, 3 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 653/742 | 89 | 0 | >=629 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 628 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); THEN2001 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: THEN2001: 8 ejecutados, 5 aprobados, 3 fallidos, 1 créditos (índices [0]). Siguiente: la re-medición de «ponle hola» tras reparar el nombre de las apps de la Tienda en los finales de app.open, y SEARCH2003.
+
+Evidencia: `artifacts/comprobaciones/C03/THEN2001/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 199.75 s acumulados; pico GPU 3492.93 MiB; pico RAM 2395.56 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque THEN2001 precedente. -->
+
 ## CONTEXT1999 — estado vigente 2026-09-21T05:59:48.978896+00:00
 
 Parcial: 2 aprobados, 6 fallidos, 0 sin ejecutar; 0 créditos.
