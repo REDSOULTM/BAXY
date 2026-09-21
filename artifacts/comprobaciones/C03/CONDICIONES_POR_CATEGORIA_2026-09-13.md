@@ -1766,3 +1766,7 @@ Información web actual pasa de 6/17 a 9/17 con los titulares se citan con su fu
 ## Actualización 2026-09-21 (WEATHER2031)
 
 Información web actual pasa de 9/17 a 9/17 con el clima se lee de un servicio de pronóstico: las filas restantes (commit a52833f1, BUILD2031) (HEAD a52833f1): 7/8 aprobados (4 literales, 1 variante, 2 límites), 0 créditos. Sin crédito: sólo una variante aprobada; «how's the weather in Santiago» muere por exigir el nombre geocodificado entero («Santiago de Chile»); reparación en el commit siguiente y re-medición del panel.
+
+## Actualización 2026-09-21 (WEATHER2033)
+
+Información web actual pasa de 9/17 a 13/17 con el clima se lee de un servicio de pronóstico: las filas restantes (commit bd18c32e, BUILD2033) (HEAD bd18c32e): 8/8 aprobados (4 literales, 2 variantes, 2 límites), 4 créditos. Cuatro créditos: H0061, H0478, H0590, H0699 (Información web actual 13/17); las dos variantes leen la ciudad pedida y contestan lluvia y mañana con los valores leídos.

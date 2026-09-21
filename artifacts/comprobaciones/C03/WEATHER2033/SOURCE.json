@@ -1,0 +1,15 @@
+{
+  "schema": "c03-weather2033-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "src/baxy_mind/effect_intent.py (build 2025, commit c3c03dc31) sobre la tipada weather.current de opus/typed-tools (8edf110ac).",
+  "patch": "artifacts/comprobaciones/C03/WEATHER2033/SOURCE.patch",
+  "commits": [
+    "db310b5a1"
+  ],
+  "build": "BUILD2033 (C03-repairs2033-build/BUILD_READY.json; mente)",
+  "cause_measured": "Las filas de clima restantes seguían abiertas; en WEATHER2031 la variante en inglés murió por exigir el nombre geocodificado entero.",
+  "change": "La comprobación de hechos del clima acepta la cabeza del nombre geocodificado («Santiago» por «Santiago de Chile»); weather.current elegida por la mente y valores leídos citados por el compositor.",
+  "measurement": "WEATHER2033: 8/8 aprobados (4 literales, 2 variantes, 2 límites); 4 créditos. Cuatro créditos: H0061, H0478, H0590, H0699 (Información web actual 13/17); las dos variantes leen la ciudad pedida y contestan lluvia y mañana con los valores leídos.",
+  "credits": 4
+}

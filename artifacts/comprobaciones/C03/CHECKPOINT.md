@@ -1,3 +1,25 @@
+## WEATHER2033 — estado vigente 2026-09-21T15:32:05.955163+00:00
+
+Parcial: 8 aprobados, 0 fallidos, 0 sin ejecutar; 4 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 667/742 | 75 | 0 | >=643 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 639 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WEATHER2033 añade 4. No se cuentan revalidaciones.
+
+Siguiente acción: WEATHER2033: 8 ejecutados, 8 aprobados, 0 fallidos, 4 créditos (índices [0, 1, 2, 3]). Siguiente: las filas de clima restantes y las tipadas de la Fase 5.
+
+Evidencia: `artifacts/comprobaciones/C03/WEATHER2033/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 169.95 s acumulados; pico GPU 3492.93 MiB; pico RAM 1995.56 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WEATHER2033 precedente. -->
+
 ## WEATHER2031 — estado vigente 2026-09-21T15:08:13.533394+00:00
 
 Parcial: 7 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.

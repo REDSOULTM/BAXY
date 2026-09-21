@@ -1,0 +1,105 @@
+{
+  "schema": "weather2033-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1",
+  "seal_sha256": "0118e04618425ef703eeb243b158d836cef0d830dfbd47627d8b762f8170afb1",
+  "runner_sha256": "b9c42e56b7a8c10d93a0066410e050fdd2b21ef0dda6b6c3e7ad5170ae450355",
+  "transport_seal_sha256": "b36a5cbec822ea67906ef337427cdd139eaa9b84408f96eaa55dfe90a7a838e4",
+  "files": {
+    "panel.json": "200305d71198117a9854d5384782237968b599c6a07238326b44ef3255617ef2",
+    "turns.jsonl": "0a0d67a8458a886cd5221396aabb1a6ca198a45019fbab82bf6c52b92981ce37",
+    "case-map.json": "6f94a33885d4cdddeb60af174e0f7ce20aa64f93897f997a84622f9d3e3330cf",
+    "PLAN.md": "7e5c307551669a1320d35f21405194044001f2b7259116c6509abc7307266d72"
+  },
+  "counts": {
+    "cases": 8,
+    "historical_literals": 4,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 16,
+    "session_controls": 8,
+    "ordinary_turns": 8,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 8,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 4,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0061",
+      "kind": "historical_literal",
+      "group": "weather_read",
+      "credit_behavior": "weather_read",
+      "text_sha256": "13741f59c198f481a38e6a2fbb59e1a3f205b66e9eb311518893b4082f5aec72",
+      "criterion_sha256": "26dc1ad27547ff36f463a62fdf3ade4fdcefd71049bcdfba45d1f3b28f3ec77c"
+    },
+    {
+      "index": 1,
+      "case_id": "H0478",
+      "kind": "historical_literal",
+      "group": "weather_read",
+      "credit_behavior": "weather_read",
+      "text_sha256": "a090d1f50763ec26d5e0dd1130e2e86130a9c06252c1f4965fe3084b48eb4a01",
+      "criterion_sha256": "26dc1ad27547ff36f463a62fdf3ade4fdcefd71049bcdfba45d1f3b28f3ec77c"
+    },
+    {
+      "index": 2,
+      "case_id": "H0590",
+      "kind": "historical_literal",
+      "group": "weather_read",
+      "credit_behavior": "weather_read",
+      "text_sha256": "cc7b0a29051133cfa779c29be82e5c942e472fdb0226a301cf14136b820dbf8c",
+      "criterion_sha256": "26dc1ad27547ff36f463a62fdf3ade4fdcefd71049bcdfba45d1f3b28f3ec77c"
+    },
+    {
+      "index": 3,
+      "case_id": "H0699",
+      "kind": "historical_literal",
+      "group": "weather_read",
+      "credit_behavior": "weather_read",
+      "text_sha256": "f2a3202f85ea9f529315e72bfb05d5ab2df60f438e141caa72364ff10fa7d2b6",
+      "criterion_sha256": "26dc1ad27547ff36f463a62fdf3ade4fdcefd71049bcdfba45d1f3b28f3ec77c"
+    },
+    {
+      "index": 4,
+      "case_id": "weather2033-dev-01",
+      "kind": "original_development_variant",
+      "group": "weather_read",
+      "credit_behavior": "weather_read",
+      "text_sha256": "e0761aac24d9de59d2871714175ad9a7a1d021b11161658e8a5e10199d721e4d",
+      "criterion_sha256": "26dc1ad27547ff36f463a62fdf3ade4fdcefd71049bcdfba45d1f3b28f3ec77c"
+    },
+    {
+      "index": 5,
+      "case_id": "weather2033-dev-02",
+      "kind": "original_development_variant",
+      "group": "weather_read",
+      "credit_behavior": "weather_read",
+      "text_sha256": "4300d79c471ba5fa5500d809b7e7a79d30c2cfb75d988a7f452aa6a739c5b56c",
+      "criterion_sha256": "26dc1ad27547ff36f463a62fdf3ade4fdcefd71049bcdfba45d1f3b28f3ec77c"
+    },
+    {
+      "index": 6,
+      "case_id": "weather2033-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "aa3f691fa306738b20f0c62f50a5e34c322bcb1d814fa658c3aa9b8d4949e403",
+      "criterion_sha256": "031153cb155d4fd6216825f753dc315529c6a33cdc1329a8ed51b2593af70750"
+    },
+    {
+      "index": 7,
+      "case_id": "weather2033-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "59c0584e0673ddd705dad4c4ea565cbc6bb45fe989d8e504453c63a41033381f",
+      "criterion_sha256": "28b390fabb1d60fed13be5880c5a0d8e559e2e2743ddacd53e79e8e4a2ef27a2"
+    }
+  ]
+}

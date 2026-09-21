@@ -1,0 +1,460 @@
+[
+  {
+    "index": 0,
+    "case_id": "H0061",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      4,
+      5
+    ],
+    "reason": "weather.current verificada sin buscar ni preguntar; el final dice temperatura y estado y nombra la ciudad; crédito con dos variantes aprobadas del mismo grupo.",
+    "observation_note": "Turno ordinario: exactamente una weather.current completada y verificada (ubicación del pedido o la de este PC), sin navegar ni buscar; el final dice temperatura y estado leídos y nombra la ciudad; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "fb4f0196ba1f72f6d051b5f8c974c343d8673288cbed1c9efac41d972bc89b4f",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-00\\EXIT.json": "b5d914dc9993a208919a3ba5739c7e3c449b9299537c589c60e63a64b74bada4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-00\\RESOURCES.json": "2f9dec4fb2c1f7731d25fd6aaa6199d6ccab613a16f84110ac90698d6b47d92d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\profile-owner-00.json": "b15cb8b43d7614ce93c64ccbe6275cc45aa95726dcbdb4f5f9c557310bf6b829",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-00\\PREREG.json": "83e4edd159cfcedef29c760fa1d67a956ed05395cc4ba86caded54126b638e56",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-00\\capture\\events.jsonl": "1f6bfa5a94fb2d1393540d0467a6251431c65980b43b95b80989a6bd638c2ae9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-00\\turns.jsonl": "954c7f0c48d6d8cdb75f5b3ff92c71197e867d06eb53f0bb7b3f6856de12aa2d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\fixture-00.json": "7a912f8ec3d8ae63486061455315717b76e19b91b7723b72569c8ec62b9c4725",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\context-00.json": "dee00cf447c2f3b7172cd55bdaa0a79ce14a51da6ae73361d3fb7b3baa5b32b7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\context-prelaunch-00.json": "db624a69d493963c9ad9984cf2a6b80a2a35d440cba4f13b2ad55464decfa64f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-00\\case-observations.json": "d27a6fc4b2f7b3bb6c6e8eb4777577d7c2cd5ff1fcb0dc21be7e475adc953211",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-00\\journal-before.json": "884fc4453fe95db83038d622d039af78cb7b1b04c1b8db82eb56f7a5fa14f037",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-00\\journal-after.json": "7436029b708be852780205e2f03279700501bfee0611f96306488e28e54bc5e9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "5dce8f08e6a25cea3022afe0ddc85481bceb7d9335a94c9593d048aae92f05be"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "22cac8ab-44e0-4d20-96cd-82d4b8d966e7",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "c24a8d8b-393f-494c-9364-d53e4315ef48",
+        "operation": "weather.current",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "case_id": "H0478",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      4,
+      5
+    ],
+    "reason": "weather.current verificada sin buscar ni preguntar; el final dice temperatura y estado y nombra la ciudad; crédito con dos variantes aprobadas del mismo grupo.",
+    "observation_note": "Turno ordinario: exactamente una weather.current completada y verificada (ubicación del pedido o la de este PC), sin navegar ni buscar; el final dice temperatura y estado leídos y nombra la ciudad; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "d7b71548e84f8c207fdef50aa80b527e11907db107609edc46f1814fef17d0b3",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-01\\EXIT.json": "e6fbe1c1b2ecbc79e636f3b882d6d22136780df7c2b47b42f75b249e58fccb80",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-01\\RESOURCES.json": "b31a05a25d1876fd62edb59eac8ed7ba0a96d97636b82ab85e3374cffb54ed71",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\profile-owner-01.json": "f6a1a1e9fc79a4a18c0fe2a07848f8140bf7255fe728b07ebfc46d6ff1131121",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-01\\PREREG.json": "68dda69ed387fedd4cb51845b4f4eb6d03e3a91304ae0aa53b934a1b4b4bae5a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-01\\capture\\events.jsonl": "15aed0f3558af42693b941670f259e26ea2e7e32f37803b10578f0ad3db2615a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-01\\turns.jsonl": "e86620f95d9131c052dcdcd795f9ddb1ec981dd9e2e0237e5c9cbf180550d7a8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\fixture-01.json": "839ab7b22cb642ab3529fa276bcd535595a6fc65cc1d9437879d7e0cf332f613",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\context-01.json": "d7e791d5dd095effe350d0ef08a1484eabc6e0d40940a6dd20aef5b53fa1eb19",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\context-prelaunch-01.json": "360cfae86eb91dd767824335073b336c48763902d0336cad5e68ce65ef6a91d2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-01\\case-observations.json": "dc092c0717848c4bcc84b8cd13ffe93e7f2b17016567bdc3013a0ba596e0aabb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-01\\journal-before.json": "cac26abbffaa64d22675d5722f5be9013e50361a6f76d1e864dc1b2c6307b1e3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-01\\journal-after.json": "405cd57bab2c061982917fabc5835bd3608fd5529d10bd36c8dc12502ecf48c4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "eacf201239cf735aa316cc8435186a47e6b4fa8529fe700de5f723c5ba20db04"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "d9df2da7-eb03-49df-8eb2-b0c3e655e67b",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "1c2b42e8-0646-46ff-8436-948f3e6d1976",
+        "operation": "weather.current",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "case_id": "H0590",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      4,
+      5
+    ],
+    "reason": "weather.current verificada sin buscar ni preguntar; el final dice temperatura y estado y nombra la ciudad; crédito con dos variantes aprobadas del mismo grupo.",
+    "observation_note": "Turno ordinario: exactamente una weather.current completada y verificada (ubicación del pedido o la de este PC), sin navegar ni buscar; el final dice temperatura y estado leídos y nombra la ciudad; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "a9342a9ed82e7b2032f66a5e94405f733bf62707d09306475ecc6bf8a8d0950d",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-02\\EXIT.json": "1ba84dfd174b67e06b347817441ed2dee9ca1de75c17992364c9f6f61d7f857a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-02\\RESOURCES.json": "b0bd6a6e60c3959d584830b1841802af8384d37d1714cfbbd88f5670aef60972",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\profile-owner-02.json": "cd531d1697bfb5088cd84cd38b2197f2e2411d4e7cd97dccb0961082d4f53ff4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-02\\PREREG.json": "b489c147da198b4be4242a6425a75613d47f2bc2f939d76f8339b5cbf94dae28",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-02\\capture\\events.jsonl": "e29bf80bbf2402d52ba288f7b1a8005dba1604cbd702a336a51c0a1932dfaca7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-02\\turns.jsonl": "087fd3d8242093cd1fe471acd53ade28d37953df4a7a53cc39987b4486269ebd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\fixture-02.json": "1e8c23c174204954fccc5b0e0964f055f979330b2feb7ba7163d7f3cd9c791d2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\context-02.json": "074ed4590b76ac265475122071d30cfb959fb2bb3ef598323b135cf436a67fb3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\context-prelaunch-02.json": "e17e96822a14cbb8f0453a9f72885d912009b51e0233ee7247a6fca76ac03cff",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-02\\case-observations.json": "90fd071579eee56ed537f719510fe7bdb275c55fe39855af81f9dbff937fec59",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-02\\journal-before.json": "3fd66de7161b89379f4c0baf3152dc6d9db35d4e18ef5bfac8af6caece694978",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-02\\journal-after.json": "b24c72cfc197d033012662d32bbdfe13075b6ce66d812d56543c7ee76305c772",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "08cfeaf32ffbe2fda3d6587bbd156a526610141c9e6f619b932526a9514ce6b9"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "9dbd793b-b495-4a8f-940b-349baab7b7ea",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "b8398d11-6026-4054-9d07-19683400863e",
+        "operation": "weather.current",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "case_id": "H0699",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      4,
+      5
+    ],
+    "reason": "weather.current verificada sin buscar ni preguntar; el final dice temperatura y estado y nombra la ciudad; crédito con dos variantes aprobadas del mismo grupo.",
+    "observation_note": "Turno ordinario: exactamente una weather.current completada y verificada (ubicación del pedido o la de este PC), sin navegar ni buscar; el final dice temperatura y estado leídos y nombra la ciudad; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "2cd6016868c1007f8f1acd37cfa47f7d1f70fed7e5268c0d621539f32bd4cfa0",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-03\\EXIT.json": "0b29e0e08c3c600953ca7b97c1066bab97d4a6915c4e8109dcddeae01c0ce32a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-03\\RESOURCES.json": "0e68153ae257a69bc3af5ec542a63015fd36aad06426522cfe88d7eecd3e3a90",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\profile-owner-03.json": "4a11859e30089f867687285e38977e987a3168da1ab8c4a65b68a42894e91dc1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-03\\PREREG.json": "33e1b166be46ebc396a65c267172281ffd546a97cda34c38e4052d8b5457b49e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-03\\capture\\events.jsonl": "bcf726abe52e1f9c6e9cfb5f2ca738ca569ffd34a1d99da3d8208c425488d598",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-03\\turns.jsonl": "320e94ff1a02826fc53e86fddcd4a794fd3167280b453c64173942ee49c3909e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\fixture-03.json": "f2cf90757f45031bb3b728194a00a80bc6ef12cea5533b6d7c0829972d0cb33c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\context-03.json": "904d0f3cb529cfb11a2b40e4314bf83ded1a36ad7490af90d4f6c013fb48d979",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\context-prelaunch-03.json": "b8dcb673d79269193c58b32abe6f3fea6b73b513650c84fe382207b9137a2e05",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-03\\case-observations.json": "48a8fe1ab9d92fc6426d55803250c574949ae5893e18a775bc610e8a465ebcbd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-03\\journal-before.json": "fead823d73dc0f9f23831e78260cff83bddf9e410eb6224d86e4d910c145c98d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-03\\journal-after.json": "ab45147a02786daba450e87a3e24bbee1969bf222828b4c02e6f8f1215bd35be",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "e004e681b18b0da0ad0c51243443eb34bfd95f02aa874ec260fa814120c7312d"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "00169955-b18c-48b7-8e4d-4ca4775dce37",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "8c6ba05b-5168-4bb3-8ee9-aaf441fcea8c",
+        "operation": "weather.current",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "case_id": "weather2033-dev-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "weather.current verificada sin buscar ni preguntar; el final dice temperatura y estado y nombra la ciudad.",
+    "observation_note": "Turno ordinario: exactamente una weather.current completada y verificada (ubicación del pedido o la de este PC), sin navegar ni buscar; el final dice temperatura y estado leídos y nombra la ciudad; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "b4df035c8f343c89996f17603ec758bbb19a60e4d7d35c81f48f6e95f4dc4b9c",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-04\\EXIT.json": "bed01b545e1238d79c2cfb481de74b5b96e0c8672d4153a15cdbaec4a39b35fd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-04\\RESOURCES.json": "0b856e99ff75f6a6bbd39a34ce323c0a65b4b8054a2dcb88e8390cda386fc230",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\profile-owner-04.json": "1668bffa291ce05b4793f9a6d80d018140409a1d51f2aee1493a5571a0cf997e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-04\\PREREG.json": "8d264dd17cf836db4859e09d20a3b27f78c49493fd3658c68b0899d2626ced45",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-04\\capture\\events.jsonl": "9526ac98c5c173845fc1ff5795885638d8548367fe1c4088fce65197f3977383",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-04\\turns.jsonl": "e9fb4e055f3661c1101a053b6919ecddbb8a53ee4ec2129aa7d7042c19c8f3bc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\fixture-04.json": "9c028637e5e99e5b738353f3b130a03e189babf72b3b812c44fe6151f8a147df",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\context-04.json": "b4c00ef6cf3da7d8abf9c4eee0b069b34c3b962ddeb7469f58829f1df7c17804",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\context-prelaunch-04.json": "a8c5ff886d72ef01706da00605a6bcc3b8e4cf2b4614db504f17ab5fa6d14c6b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-04\\case-observations.json": "287169f2be24383593ce662623fbb38338f88c6c323447c7ffcbe4d863753ea8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-04\\journal-before.json": "5f68ec85984e864b9065caa148303774a8c4e124612032c5951a71cb6f2d2fbd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-04\\journal-after.json": "8241141728d48c3c394fae7cbe49e1ed71a2d8ac08df203d611d1841a2fc5227",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "3231cb795e5cb1418a3124f94b56595377e425a8819454f9445a1114c41b207c"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "bd079acd-80b9-4f8d-9a62-a108dabd3afc",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "4229ea78-3880-44db-87c5-83c0b24d35b8",
+        "operation": "weather.current",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "case_id": "weather2033-dev-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "weather.current verificada sin buscar ni preguntar; el final dice temperatura y estado y nombra la ciudad.",
+    "observation_note": "Turno ordinario: exactamente una weather.current completada y verificada (ubicación del pedido o la de este PC), sin navegar ni buscar; el final dice temperatura y estado leídos y nombra la ciudad; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "931227bf7908dcf0df6a68e82c79316a461998ad2f94c99650b0daa2fa28fd65",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-05\\EXIT.json": "e6fe7e1af6dff3be74f4201c0608d8cc202853f06c62c84a7920983381074ba1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-05\\RESOURCES.json": "4ab2b827e944735d48e47efe06ae5170a3673f47efe6dd5c692ba66601c9000e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\profile-owner-05.json": "150eb1bf61ef4489ce6cd9cfe6d180001797015f38678085f395625682e03a43",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-05\\PREREG.json": "52036bd3c38f66c80aa508836121f8ca84fda763d085952b14d114141a8a92b0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-05\\capture\\events.jsonl": "f46a63e4f64b27506850d222821e5631ed12ec4686304af494d337da6b28f1dd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-05\\turns.jsonl": "0308ffd610e62ccd5f891f6198141fa9daa35ae13a014435d193e469988e93dd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\fixture-05.json": "a9404cfa5d71736eb7c6eb61e21569537207671e69ab1176c99c79f1197e28fe",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\context-05.json": "cad7a225092f6fdb1c545d1550ce8f68b32fe722b48883f44cac78e5eab06535",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\context-prelaunch-05.json": "e0c52c17d89a7d6771e6b447392f6928f3beda080d8a1d1f444abeb522984429",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-05\\case-observations.json": "d7bb12d3bb615de485022b9b8b2e6c5658bc47e17911122b19be7f286e4d19c4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-05\\journal-before.json": "26ea6bf39aa2215bacf39c1ab592eec3e38c3cb5163dcde5117fee1a326ab71c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-05\\journal-after.json": "386d597e7ced3988a0abf5cbdb5abf82723a98f97d3718986a5cc3315b4802bd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "182cdbca1b8f3fb6f77c6dfe4220c37dc770abe9dc9e7e2bb95d1cd62007d1b2"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "f71e9402-e58e-4a00-b7c3-caa95c0a4d2a",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "8f60f9d7-8639-4270-a062-b07374df80eb",
+        "operation": "weather.current",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 6,
+    "case_id": "weather2033-boundary-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "f372e1d66c713cddf00d44224f258592aafe4a3d3fb17f548bae65ca1fa2b37b",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-06\\EXIT.json": "4e354ef331afcfa164c62cb848b735b44b04e64fc69edbf584e7f963bd0c0600",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-06\\RESOURCES.json": "4d17fe432552512bc0dee66ce4559c8cac647362c3dbcef19e84ab6060f6c8ce",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\profile-owner-06.json": "667965319c0056b561b277da7d7c9570f6cd0204fac3d93d05410a103d151fac",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-06\\PREREG.json": "b24da8ebc337107d43ea9e151e4d24ee2ecb6f3643ef7b5eb0748816887d1b13",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-06\\capture\\events.jsonl": "a3ea8a7171447487de12d6cb57d6dbc9a5902bc88e0bd58dbab027923123101f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-06\\turns.jsonl": "573fbe2e50b98299755df044e940f659ce13c2a2f82e75f864ccf8df485d063b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\fixture-06.json": "be357d0ff8ecb6e2ed764840aa7faa36216752ed15a452bca1a1c80ec2469811",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\context-06.json": "6985ff24b0f77c7288b7ec006c7424811406681e779f0aafa314f6b2686302df",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\context-prelaunch-06.json": "a4025758eacd93cf03e03e9d5311e210dbeaa7f23c3bcf6f536b666cce87ad1d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-06\\case-observations.json": "e65ba1c74745cb81fbf981cabf5a22195e9aa0b623055cb1816462280d74b9d1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-06\\journal-before.json": "da3b4a6bde795b42321de4c0be00bd17088b1e079fbfe94b44a3e3d19d9eb30f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-06\\journal-after.json": "9585f19985e43b39747c186e8762fa003b6a8457bf47e152b8548b301fe873d8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-06\\journal.snapshot.jsonl": "aad36350da64d28834aba677c533ba74db010f65528e500a288b9864b8a3724f"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "0d318ff5-9cf1-4aae-827d-e0c035d18561",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 7,
+    "case_id": "weather2033-boundary-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "45733ea90df3d741edf03ae0a593591de674b67e5b9b9c9580c1d1ae624f0e6b",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-07\\EXIT.json": "db608483eefb3ca2f05d5a1e494454e1ecd01b3c27a7dfef972a43dc3a142011",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-07\\RESOURCES.json": "c588b844c84e8437aee83c2b7304b7b590dc6ecdc08c85e206febbe98ff0152c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\profile-owner-07.json": "d0b2fabad36d5dc8ead2e19e2ed1c8135e336ab6b1885af3c75fddf1c50da286",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\results\\case-07\\PREREG.json": "5962b6d4e66b38b3f3d9234dba213c81dee1f4710345ea22ac83d8ae29a65c6c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-07\\capture\\events.jsonl": "c9cbdb1dd91e0907948e7fcd1d780f72a2283467549ae76bfa1c36a210dcd6dc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-07\\turns.jsonl": "28fcae85a98a05283b077af85b5469a332947e42162f22e7730af384fab55621",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\fixture-07.json": "279758689aad80c9274e9fca29836e548eb53757a9d17c383ce5a2bdf7c39ca9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\context-07.json": "0112e3d7f536616cd8688ef5e9c32a9681d0376a23d15fbb1f661cb50c3875e0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\context-prelaunch-07.json": "879e47dce7172c050b9f0ae320822f4af355e56b064b5dc4a87563de0dfa361c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-07\\case-observations.json": "6b5954ba9e276a9c33188bf32d8d3994185180e465765d9a9dba07a7c3e45ede",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-07\\journal-before.json": "6707824f69895a0d2979917a3265cb20de6768f8d7f7125e7ca74498e80a8ea9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-07\\journal-after.json": "9e5caf646fc2748b61a47ee385486a3e323230a3f9cb24ff89b4e04f3617d823",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2033-instrument-v1\\private\\run-07\\journal.snapshot.jsonl": "0de92c35c988ec4bda4699f5347a36755a7e9e3bb84d86164f19f9913543dcac"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "62e3f3f9-70e5-4bf9-b2b7-6afd02b0691d",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  }
+]
