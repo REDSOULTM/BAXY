@@ -85,8 +85,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 post-goal: fusión de opus/typed-tools y BUILD2001 (nombre de app en app.open, turn.playback-then ordinario).
 # C03 post-goal: fusión de Fase 6/7 y BUILD2003 (otra ventana, ventana activa).
 # C03 post-goal: BUILD2005 (displayName en finales de app.open).
+# C03 post-goal: BUILD2007 (finales de app.open y de tecleo; prohibición con clítico).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "7d22326a1df8ac53e8d7d710a5bb245e662b01e14271998697051332472832a3"
+    "68c28cf6b5ae03738b5cb75700650930163ab3d0cb269dc575afd3878ff5c3b1"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

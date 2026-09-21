@@ -107,12 +107,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 post-goal: fusión de opus/typed-tools y BUILD2001 (nombre de app en app.open, turn.playback-then ordinario).
 # C03 post-goal: fusión de Fase 6/7 y BUILD2003 (otra ventana, ventana activa).
 # C03 post-goal: BUILD2005 (displayName en finales de app.open).
+# C03 post-goal: BUILD2007 (finales de app.open y de tecleo; prohibición con clítico).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
         "4eebc6534e2c1b0efd37b47a74bd2fee2ee1457d8933403ea1877b7796d223e5"
     ),
     "src/baxy_mind/llm.py": (
-        "0b86e5deb2063b3cf34702b764b99e6338e6555a45a0a5d3c2cc95d8fe2bebd5"
+        "cf7fcaffc27b2a3dfb6b455059c6b732331d94972e5f5547e12d267b06ddecf2"
     ),
 }
 
