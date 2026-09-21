@@ -137,3 +137,58 @@ def test_do_it_after_a_cancelled_request_redoes_that_request() -> None:
     assert intent is not None and intent.operations == ("browser.navigate",)
     assert mind._ground_explicit_arguments("browser.navigate", text, URL_SCHEMA, APPS, history=history) == {"url": "https://www.bing.com/search?q=power+automate"}
     assert effect_intent.redo_previous_request_intent("dale", [{"role": "user", "content": "hola"}], AVAILABLE, APPS, ()) is None
+
+
+# --- The owner's mother, 19:27–19:41 (same profile) -------------------------------------------------------------
+
+@pytest.mark.parametrize("text", ["Si tuvieras un sueno, cual te gustaria que fuera", "Pero imagina que tuvieras uno, como seria?"])
+def test_a_counterfactual_question_to_the_assistant_is_answered_not_refused(text: str) -> None:
+    decision = mind._explicit_stable_no_effect_turn_decision(text, None)
+    assert decision is not None and decision["conversation_kind"] == "knowledge"
+
+
+@pytest.mark.parametrize(("text", "topic"), [("dame info de la migrana", "la migrana"), ("dame información sobre la migraña", "la migraña"), ("give me information about Mars", "Mars")])
+def test_information_about_a_topic_is_the_public_lookup(text: str, topic: str) -> None:
+    assert effect_intent._topic_research_query(text) == topic
+    intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, APPS, ())
+    assert intent is not None and intent.operations == ("web.search",)
+
+
+def test_the_clock_and_this_pc_are_not_topics() -> None:
+    for text in ("dame la hora", "dame info de mi pc"):
+        assert effect_intent._topic_research_query(text) is None
+
+
+@pytest.mark.parametrize("text", ["hazme un curriculum", "formato de curriculum en word", "buscame un formato de oficiio en word", "hazme un triangulo con las estaciones del ano", "buscame palabras con a"])
+def test_drafted_text_and_word_games_are_written_in_the_conversation(text: str) -> None:
+    assert effect_intent.conversation_only_content_request(text)
+    decision = mind._explicit_stable_no_effect_turn_decision(text, None)
+    assert decision is not None and decision["conversation_kind"] == "knowledge"
+
+
+@pytest.mark.parametrize("text", ["escribe una nota llamada lista con el texto pan", "hazme una lista de compras y guardala en el escritorio", "crea una nota llamada sol con el texto hola", "hazme un curriculum y guardalo", "abre word"])
+def test_notes_files_and_openings_are_not_drafting(text: str) -> None:
+    assert not effect_intent.conversation_only_content_request(text)
+
+
+@pytest.mark.parametrize(("text", "app"), [("ponme word", "Word"), ("ponme el word por favor", "Word"), ("poneme spotify", "Spotify")])
+def test_ponme_an_installed_app_opens_it(text: str, app: str) -> None:
+    apps = ("Word", "Excel", "Spotify", "Discord", "Steam")
+    available = frozenset({"app.open", "media.play.query", "memory.status", "web.search", "audio.volume"})
+    intent = effect_intent.resolve_explicit_effects(text, available, apps, ())
+    assert intent is not None and intent.operations == ("app.open",)
+    assert mind._explicit_arguments_from_evidence("app.open", text, apps, effect_intent.build_game_catalog_index(())) == {"appId": app}
+
+
+def test_ponme_music_and_the_volume_keep_their_readers() -> None:
+    apps = ("Word", "Spotify")
+    available = frozenset({"app.open", "media.play.query", "memory.status", "audio.volume"})
+    assert effect_intent.resolve_explicit_clarification_intent("ponme una cancion", available, apps).operations == ("media.play.query",)
+    assert effect_intent.resolve_explicit_effects("pon el volumen al 40", available, apps, ()).operations == ("audio.volume",)
+
+
+def test_a_plain_yes_to_a_yes_no_clarification_closes_the_base_request() -> None:
+    objective = "buscame un formato de oficiio en word aclaracion confiable del usuario: si"
+    decision = mind._explicit_stable_no_effect_turn_decision(objective, [{"role": "user", "content": "x"}], pending_clarification=True)
+    assert decision is not None and decision["conversation_kind"] == "knowledge"
+    assert mind._explicit_stable_no_effect_turn_decision("subí el volumen de spotify aclaracion confiable del usuario: 20", [{"role": "user", "content": "x"}], pending_clarification=True) is None

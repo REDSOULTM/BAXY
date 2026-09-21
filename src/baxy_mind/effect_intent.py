@@ -305,9 +305,13 @@ def _news_read_intent(
 
 _TOPIC_RESEARCH = re.compile(
     r"^[¿?¡!\s]*(?:investiga|investigá|investigar|investigue|investigame|investígame|"
-    r"research|look\s+into|look\s+up)\s+"
+    r"research|look\s+into|look\s+up|"
+    # Owner's mother 2026-09-21 «dame info de la migraña»: information about a
+    # topic is the same public lookup.
+    r"(?:dame|dáme|pasame|pásame|quiero|necesito|busca|buscá|buscame|búscame|give\s+me|find\s+me|i\s+want|i\s+need)\s+"
+    r"(?:(?:un\s+poco\s+de|algo\s+de|mas|más|some|more)\s+)?(?:info|informacion|información|datos|information|data))\s+"
     r"(?:(?:en\s+internet|en\s+la\s+web|online|on\s+the\s+internet|on\s+the\s+web)\s+)?"
-    r"(?:(?:sobre|acerca\s+de|about|a)\s+)?"
+    r"(?:(?:sobre|acerca\s+de|about|a|de|del|on)\s+)?"
     r"(?P<topic>.+?)"
     r"(?:\s+(?:en\s+internet|en\s+la\s+web|online|on\s+the\s+internet|on\s+the\s+web))?"
     r"\s*[.!?]*$",
@@ -3365,7 +3369,22 @@ def conversation_only_content_request(text: str) -> bool:
         r"^(?:pon|put)\s+into\s+(?:english|ingles|spanish|espanol|italian|italiano)"
         r"\b.{0,160}\b(?:frase|phrase|sentence)\b|"
         r"^(?:pon|put)\b.{0,32}\b(?:ingles|english)\b.{0,48}"
-        r"\b(?:frase|phrase|sentence)\b.{1,128}$",
+        r"\b(?:frase|phrase|sentence)\b.{1,128}$|"
+        # Owner's mother 2026-09-21 «hazme un currículum», «formato de currículum en word»,
+        # «buscame un formato de oficio en word», «hazme un triángulo con las estaciones
+        # del año», «buscame palabras con a»: drafted text or a word game, written in the
+        # conversation (no operation creates a Word file; the text is given here).
+        r"^(?![^\n]{0,160}\b(?:archivo|archivos|file|files|carpeta|folder|nota|notas|note|notes|"
+        r"guarda|guardala|guardalo|guardame|guardar|save|escritorio|desktop|documentos|downloads|descargas|"
+        r"abre|abri|abrilo|abrila|open|envia|enviar|mandalo|mandala|mandaselo|mandasela|manda|send|imprime|print)\b)"
+        r"(?:hazme|haceme|hace|haz|armame|arma|escribime|escribeme|escribe|redactame|redacta|"
+        r"dame|pasame|buscame|busca|quiero|necesito|make\s+me|write\s+me|write|draft|give\s+me|find\s+me)\b"
+        r".{0,48}\b(?:curriculum|curriculums|cv|carta|oficio|texto|poema|cuento|resumen|ensayo|"
+        r"lista|triangulo|tabla|esquema|discurso|mensaje\s+de\s+cumpleanos|formato|plantilla|"
+        r"resume|cover\s+letter|essay|poem|letter|template|outline|table)\b|"
+        r"^(?:formato|plantilla|ejemplo|modelo|template|example)\s+(?:de|of)\b.{1,96}$|"
+        r"^(?:buscame|busca|dame|decime|dime|find\s+me|give\s+me)\b.{0,32}"
+        r"\b(?:palabras|words|sinonimos|synonyms|antonimos|antonyms|rimas|rhymes)\b.{0,96}$",
     )
 
 
@@ -6263,6 +6282,8 @@ def resolve_application_catalog_app_id(
 
     catalog = build_application_catalog_index(application_names)
     folded = _strip_request_envelope(_fold(text))
+    # «ponme word» (owner's mother 2026-09-21): the same opening as «abre word».
+    folded = re.sub(r"^[¿?¡!\s]*(?:pon|ponme|poneme|pone)\s+(?:me\s+)?", "abre ", folded, count=1)
     target = _authenticated_application_target(folded, catalog)
     if target is None:
         target = _authenticated_application_desired_open(folded, catalog)
@@ -7249,6 +7270,18 @@ def _authenticated_application_request(
     bare_target = _application_name_key(text.rstrip(" ?!."))
     if bare_target in names.keys:
         return "app.open", ((0, bare_target),)
+    # Owner's mother 2026-09-21 «ponme word»: «pon/ponme/poneme <installed app>»
+    # is the opening (not a song, not a wallpaper) when the whole text is that.
+    put_app = re.fullmatch(
+        r"[¿?¡!\s]*(?:pon|ponme|poneme|pone|poneme)\s+(?:me\s+)?(?:el\s+|la\s+|the\s+)?(?P<app>[^,;:]{1,60}?)"
+        r"(?:\s*,?\s*(?:por\s+favor|porfa|please))?[\s?!.]*",
+        text,
+        re.IGNORECASE,
+    )
+    if put_app is not None:
+        put_key = _application_name_key(put_app.group("app"))
+        if put_key in names.keys:
+            return "app.open", ((put_app.start("app"), put_key),)
     for installed_query, operation in (
         (False, "app.open"),
         (True, "app.installed"),

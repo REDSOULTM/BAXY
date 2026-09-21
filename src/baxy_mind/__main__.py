@@ -3867,6 +3867,19 @@ def _explicit_stable_no_effect_turn_decision(
             "effect_verification": "not_applicable",
             "response_language": _explicit_response_language(objective),
         }
+    marker = "aclaracion confiable del usuario:"
+    if marker in effect_intent._fold(objective):
+        # Owner's mother 2026-09-21 «buscame un formato de oficio en word» →
+        # «¿Quieres que te cree un documento en Word?» → «si» → the same question
+        # again. A plain assent to a yes/no clarification re-reads the base
+        # request on its own: when it is a stable no-effect turn, that answer
+        # closes it here instead of going back to the model for another question.
+        base, _, answer = effect_intent._fold(objective).partition(marker)
+        if re.fullmatch(r"[\s¿?¡!]*(?:si|sí|dale|ok|okey|claro|obvio|confirmo|yes|yeah|yep|sure|por favor)[\s.!?]*", answer or ""):
+            resumed = _explicit_stable_no_effect_turn_decision(base.strip(), None, pending_clarification=False)
+            if resumed is not None:
+                return resumed
+        return None
     if _history_has_pending_clarification(history, pending_clarification):
         return None
     folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
@@ -4090,10 +4103,15 @@ def _explicit_stable_no_effect_turn_decision(
     )
     counterfactual_hypothetical = effect_intent._has(
         hypothesis_folded,
-        r"^(?:si|if)\b.{0,160}\b(?:tuviera|tuviese|comprara|comprase|"
-        r"compraria|abriria|podria|had|bought|would)\b|"
+        # Owner's mother 2026-09-21 «Si tuvieras un sueño, cuál te gustaría que
+        # fuera», «imagina que tuvieras uno»: the second-person subjunctive is
+        # the same counterfactual, a question to answer, not a state to refuse.
+        r"^(?:si|if)\b.{0,160}\b(?:tuviera|tuvieras|tuviese|tuvieses|pudiera|pudieras|"
+        r"fuera|fueras|quisiera|quisieras|comprara|comprase|compraria|abriria|"
+        r"podria|podrias|gustaria|had|bought|would|could|were)\b|"
         r"^(?:que\s+ocurriria\s+si|what\s+(?:would\s+happen|pasaria)\s+"
-        r"(?:si|if))\b",
+        r"(?:si|if))\b|"
+        r"^(?:pero\s+)?(?:imagina|imaginate|imagine)\b",
     )
     nominal_effect_observation = (
         re.match(
