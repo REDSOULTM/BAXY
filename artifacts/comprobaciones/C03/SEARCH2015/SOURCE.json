@@ -1,0 +1,15 @@
+{
+  "schema": "c03-search2015-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "src/baxy_mind/__main__.py, commit 07d484e38 (web.search kept in the shortlist for a recognized public search; trailing courtesy stripped from the query argument), already in Fast; the tanda build is the build of HEAD.",
+  "patch": "artifacts/comprobaciones/C03/SEARCH2015/SOURCE.patch",
+  "commits": [
+    "07d484e38"
+  ],
+  "build": "BUILD2015 (C03-repairs2015-build/BUILD_READY.json; mente)",
+  "cause_measured": "La recuperación dejaba web.search fuera del shortlist para «dale, buscame …» y el argumento de la consulta arrastraba la cortesía final.",
+  "change": "Una búsqueda pública reconocida mantiene web.search a la vista del decisor; la cortesía queda fuera del argumento.",
+  "measurement": "SEARCH2015: 8 ejecutados, 7 aprobados (las cuatro variantes y los tres límites), 1 fallido (el literal: borrador correcto vetado por WEB1889 por palabras de narración del informe); 0 créditos. La regla de afirmación sin fuente veta las palabras de narración del propio informe; se amplía su vocabulario propio y se vuelve a medir H0098.",
+  "credits": 0
+}

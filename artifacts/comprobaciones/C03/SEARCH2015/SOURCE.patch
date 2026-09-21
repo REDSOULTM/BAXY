@@ -1,0 +1,52 @@
+commit 07d484e38261b843ee3614e437f7e040453611b6
+
+C03: una búsqueda pública reconocida mantiene web.search a la vista del decisor; la cortesía queda fuera del argumento (BUILD2013)
+
+SEARCH2011 (H0098): (1) «dale, buscame recetas de pizza»: la lectura ya extraía la consulta, pero
+la recuperación léxica dejaba web.search fuera del shortlist y el decisor tomaba
+filesystem.search, vetado como no soportado; cuando la lectura reconoce una búsqueda pública
+directa, web.search entra en el shortlist como efecto requerido. (2) «Buscá Transformers,
+porfa»: el argumento query se fundamenta con su propia expresión en __main__, que no recortaba
+la cortesía final; ahora la recorta como el lector. Pruebas en tests/test_c03_search2005_query.py.
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 87c840cf9..d891af32b 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -5706,6 +5706,13 @@ def _explicit_arguments_from_evidence(
+                 count=1,
+                 flags=re.IGNORECASE,
+             )
++            # SEARCH2011 «Buscá Transformers, porfa»: the courtesy is not part of the query.
++            query = re.sub(
++                r"\s*[,;]?\s*(?:por\s+favor|porfa|porfi|please|pls|plz|dale|gracias|thanks)\s*$",
++                "",
++                query,
++                flags=re.IGNORECASE,
++            ).strip(" \t.,;:!?")
+         else:
+             opened_page = re.match(
+                 (
+@@ -7769,6 +7776,19 @@ def _prepare_turn_result(
+                 required,
+                 planner_catalog,
+             )
++        elif (
++            planner_catalog.get("web.search") is not None
++            and effect_intent._direct_public_search_query(routing_objective) is not None
++        ):
++            # SEARCH2011 «dale, buscame recetas de pizza»: the retrieval left
++            # web.search out of the shortlist and the decider took
++            # filesystem.search, vetoed as unsupported. A direct public search
++            # the reader recognizes keeps web.search visible to the decider.
++            shortlist = _shortlist_with_required_effects(
++                shortlist,
++                ("web.search",),
++                planner_catalog,
++            )
+         clause_shortlist = _compound_clause_shortlist(
+             routing_objective,
+             planner_catalog,

@@ -1,3 +1,25 @@
+## SEARCH2015 — estado vigente 2026-09-21T10:58:05.436971+00:00
+
+Parcial: 7 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 655/742 | 87 | 0 | >=631 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 631 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SEARCH2015 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: SEARCH2015: 8 ejecutados, 7 aprobados, 1 fallidos, 0 créditos (índices []). Siguiente: las tandas de las tipadas de la Fase 5 y msgany.
+
+Evidencia: `artifacts/comprobaciones/C03/SEARCH2015/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 275.14 s acumulados; pico GPU 3492.93 MiB; pico RAM 2519.56 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SEARCH2015 precedente. -->
+
 ## SEARCH2011 — estado vigente 2026-09-21T10:30:47.491377+00:00
 
 Parcial: 5 aprobados, 3 fallidos, 0 sin ejecutar; 1 créditos.

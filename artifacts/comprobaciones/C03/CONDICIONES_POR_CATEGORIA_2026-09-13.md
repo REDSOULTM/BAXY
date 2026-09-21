@@ -1738,3 +1738,7 @@ Navegación y búsqueda web pasa de 42/46 a 42/46 con buscar recetas de pizza y 
 ## Actualización 2026-09-21 (SEARCH2011)
 
 Navegación y búsqueda web pasa de 42/46 a 43/46 con buscar recetas de pizza y Transformers con resultados pertinentes y su sitio (commit 5e6f2fbc, BUILD2011) (HEAD 5e6f2fbc): 8 ejecutados, 5 aprobados (H0380 con sus dos variantes en inglés y los dos límites), 3 fallidos (H0098 por varianza contra WEB1889; «buscame» sin web.search en el shortlist; «porfa» dentro del argumento), 1 créditos. Dos reparaciones más de la mente (web.search visible para una búsqueda pública reconocida; cortesía fuera del argumento) y re-medición de H0098; el caso 4 se re-ejecutó solo tras un abortado de preflight de la raíz.
+
+## Actualización 2026-09-21 (SEARCH2015)
+
+Navegación y búsqueda web pasa de 43/46 a 43/46 con buscar recetas de pizza con resultados pertinentes y su sitio (commit 7910c610, BUILD2015) (HEAD 7910c610): 8 ejecutados, 7 aprobados (las cuatro variantes y los tres límites), 1 fallido (el literal: borrador correcto vetado por WEB1889 por palabras de narración del informe), 0 créditos. La regla de afirmación sin fuente veta las palabras de narración del propio informe; se amplía su vocabulario propio y se vuelve a medir H0098.
