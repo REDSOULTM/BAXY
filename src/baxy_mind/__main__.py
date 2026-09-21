@@ -7777,8 +7777,9 @@ def _prepare_turn_result(
                 planner_catalog,
             )
         elif (
-            planner_catalog.get("web.search") is not None
-            and effect_intent._direct_public_search_query(routing_objective) is not None
+            effect_intent._direct_public_search_query(routing_objective) is not None
+            and getattr(planner_catalog, "get", None) is not None
+            and planner_catalog.get("web.search") is not None
         ):
             # SEARCH2011 «dale, buscame recetas de pizza»: the retrieval left
             # web.search out of the shortlist and the decider took
