@@ -2119,6 +2119,41 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
+    public async Task EmailSendGoesToTheFreeAddressAndIsVerifiedInSentItems()
+    {
+        // Fase 7 (D4): a mail to any address from the classic Outlook profile; the
+        // subject defaults to the text's opening; the address is checked first.
+        const string output = "{\"ok\":true,\"effectObserved\":true,\"sentEntryId\":\"private-sent-entry\"," +
+            "\"sentUtc\":\"2026-09-21T02:10:00Z\",\"sentTo\":\"autor@example.com\",\"subject\":\"llego tarde\"}";
+        using TemporaryDirectory temporary = new();
+        var runner = new StubProcessRunner(output);
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, runner);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "email.send",
+            Json("""{"to":"autor@example.com","text":"llego tarde"}"""),
+            CancellationToken.None);
+        ExternalCapabilityReceipt invalid = await adapter.InvokeAsync(
+            "email.send",
+            Json("""{"to":"juan","text":"hola"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.EffectObserved, Is.True);
+            Assert.That(receipt.Result?.GetProperty("to").GetString(), Is.EqualTo("autor@example.com"));
+            Assert.That(receipt.Result?.GetProperty("subject").GetString(), Is.EqualTo("llego tarde"));
+            Assert.That(receipt.Result?.GetProperty("sent").GetBoolean(), Is.True);
+            Assert.That(receipt.Result?.GetProperty("sentMessageId").GetString(), Does.StartWith("email_"));
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("private-sent-entry"));
+            Assert.That(invalid.Verified, Is.False);
+            Assert.That(invalid.EffectObserved, Is.False);
+            Assert.That(invalid.ErrorCode, Is.EqualTo("mail_address_invalid"));
+        });
+    }
+
+    [Test]
     public async Task OutlookLatestReplyRequiresASentFolderPostread()
     {
         const string output = "{\"ok\":true,\"effectObserved\":true," +

@@ -1004,6 +1004,10 @@ def _verified_message_send_arguments(
     }
     if len(recipient_ids) != 1:
         return None
+    any_channel = effect_intent.message_request_any_channel(objective)
+    if any_channel is not None:
+        # REOPEN1993 grupo E: the text is the person's own words after the recipient.
+        return {"recipientId": next(iter(recipient_ids)), "text": any_channel[1]}
     quoted = re.search(r"[\"“](?P<text>[^\"”]{1,16384})[\"”]", objective)
     if quoted is not None:
         body = quoted.group("text")
@@ -5277,6 +5281,11 @@ def _explicit_arguments_from_evidence(
         draft = effect_intent.message_draft_request(evidence)
         return {"channel": draft[0], "recipient": draft[1], "text": draft[2]} if draft is not None else None
 
+    if operation == "email.send":
+        # Fase 7 (D4): the address, the text and the subject are the person's literals.
+        mail = effect_intent.email_send_request(evidence)
+        return dict(mail) if mail is not None else None
+
     if operation == "message.send.test":
         # MSG §6: channel, the requested recipient and text are the person's
         # literal; the adapter forces the real destination to the owner's test
@@ -5343,6 +5352,12 @@ def _explicit_arguments_from_evidence(
         extension = effect_intent.explorer_count_request(evidence)
         if extension is not None:
             return {"extension": extension}
+
+    if operation == "message.recipient.resolve":
+        any_channel = effect_intent.message_request_any_channel(evidence)
+        if any_channel is not None:
+            # REOPEN1993 grupo E: no client named → looked up in the clients.
+            return {"channel": any_channel[2] or "any", "recipient": any_channel[0]}
 
     if operation in {"document.text.read", "document.pdf.read"}:
         # REOPEN1957 H0299: the pasted path names the folder, the subfolder and the file.
@@ -6490,6 +6505,8 @@ def _ground_explicit_arguments(
         "web.news.headlines",
         "weather.current",
         "wifi.connect.named",
+        "message.recipient.resolve",
+        "email.send",
         "media.control",
         "media.play.query",
         "media.play.youtube",
