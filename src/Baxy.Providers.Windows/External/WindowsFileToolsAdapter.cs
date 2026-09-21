@@ -342,23 +342,53 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         JsonElement arguments,
         CancellationToken cancellationToken)
     {
-        string url = ExternalJson.RequiredString(arguments, "url").Trim();
+        string url = arguments.TryGetProperty("url", out JsonElement urlElement) && urlElement.ValueKind == JsonValueKind.String
+            ? urlElement.GetString()?.Trim() ?? string.Empty : string.Empty;
+        string query = arguments.TryGetProperty("query", out JsonElement queryElement) && queryElement.ValueKind == JsonValueKind.String
+            ? queryElement.GetString()?.Trim() ?? string.Empty : string.Empty;
         string folder = arguments.TryGetProperty("folder", out JsonElement folderElement) && folderElement.ValueKind == JsonValueKind.String
             ? folderElement.GetString() ?? "downloads" : "downloads";
         string? requestedName = arguments.TryGetProperty("name", out JsonElement nameElement) && nameElement.ValueKind == JsonValueKind.String
             ? nameElement.GetString()?.Trim() : null;
-        if (!url.Contains("://", StringComparison.Ordinal))
-            url = "https://" + url;
-        if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? uri) || uri.Scheme is not ("http" or "https"))
-            return ExternalJson.FailureBeforeEffect(operation, "download_url_invalid");
+        if (url.Length == 0 && query.Length == 0)
+            return ExternalJson.FailureBeforeEffect(operation, "download_source_missing");
         string? root = ResolveKnownFolder(folder);
         if (root is null)
             return ExternalJson.FailureBeforeEffect(operation, "known_folder_missing");
 
+        Uri? uri = null;
         byte[] body;
         string contentType;
         try
         {
+            if (url.Length == 0)
+            {
+                // REOPEN1957 H0069 «Tienes algun meme?»: the image search lists
+                // its results with each picture's own address (murl); the first
+                // one is the meme. Measured with the product's User-Agent.
+                Uri search = new("https://www.bing.com/images/search?q=" + Uri.EscapeDataString(query) + "&first=1");
+                (byte[] page, _) = await FetchAsync(search, cancellationToken).ConfigureAwait(false);
+                string html = Encoding.UTF8.GetString(page);
+                foreach (Match candidate in Regex.Matches(html, "&quot;murl&quot;:&quot;(https?://[^&]+?)&quot;", RegexOptions.IgnoreCase))
+                {
+                    if (Uri.TryCreate(candidate.Groups[1].Value, UriKind.Absolute, out Uri? image) && image.Scheme is "http" or "https")
+                    {
+                        uri = image;
+                        break;
+                    }
+                }
+
+                if (uri is null)
+                    return ExternalJson.FailureBeforeEffect(operation, "download_query_without_image");
+            }
+            else
+            {
+                if (!url.Contains("://", StringComparison.Ordinal))
+                    url = "https://" + url;
+                if (!Uri.TryCreate(url, UriKind.Absolute, out uri) || uri.Scheme is not ("http" or "https"))
+                    return ExternalJson.FailureBeforeEffect(operation, "download_url_invalid");
+            }
+
             (body, contentType) = await FetchAsync(uri, cancellationToken).ConfigureAwait(false);
             // H0077 «descarga la imagen de portada de wikipedia.org»: a page is
             // not an image; its cover is the image the page itself announces.
@@ -413,6 +443,8 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("sourceUrl", uri.AbsoluteUri);
+            if (query.Length > 0)
+                writer.WriteString("query", query);
             writer.WriteString("folder", folder);
             writer.WriteString("name", Path.GetFileName(path));
             writer.WriteNumber("bytes", bytes);

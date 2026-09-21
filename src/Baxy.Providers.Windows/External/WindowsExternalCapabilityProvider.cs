@@ -49,6 +49,8 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new WingetPackageAdapter(root),
             new ShellCommandAdapter(),
             new WindowsFileToolsAdapter(),
+            new PresentationDocumentAdapter(),
+            new ExplorerFolderAdapter(),
             new WindowsInventoryAdapter(),
             new WindowsDesktopInteractionAdapter(),
             new WindowsVisibleControlAdapter(),
@@ -174,6 +176,8 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                 "windows_known_folder_authority_required",
             "filesystem.path.ensure.absent" => "windows_absolute_path_absence_authority_required",
             "document.pdf.read" => "windows_known_pdf_text_authority_required",
+            "document.text.read" => "windows_known_text_file_authority_required",
+            "filesystem.explorer.count" => "windows_shell_explorer_folder_authority_required",
             "filesystem.sandbox.append.named" or "filesystem.sandbox.diff.named"
                 or "filesystem.sandbox.move.named" => "sandbox_named_file_authority_required",
             "backup.known.create" or "backup.known.list" or "backup.known.restore.latest"

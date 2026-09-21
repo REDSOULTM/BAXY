@@ -25,7 +25,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     public bool CanHandle(string operation) => operation is
         "filesystem.known.duplicates" or "filesystem.known.list" or "filesystem.known.search"
         or "filesystem.known.trash.named" or "filesystem.path.ensure.absent"
-        or "document.pdf.read";
+        or "document.pdf.read" or "document.text.read";
 
     public ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,
@@ -55,6 +55,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 "filesystem.known.trash.named" => Trash(
                     operation, roots, arguments, effectBoundary),
                 "document.pdf.read" => ReadPdf(operation, roots, arguments, cancellationToken),
+                "document.text.read" => ReadText(operation, roots, arguments),
                 _ => ExternalJson.Failure(operation, "known_file_operation_invalid"),
             });
         }
@@ -386,6 +387,66 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     // the known folders (ambiguity refused) and the text it already carries
     // is extracted by the mind runtime's pypdf; no OCR, no rendering, no
     // effect. The receipt carries the bounded text, the counts and its hash.
+    private const long MaximumTextBytes = 4L * 1024 * 1024;
+
+    // REOPEN1957 H0299: a text file of a known folder, read as UTF-8 (BOM
+    // honoured); a file with control bytes in its head is not text and says so.
+    private static ExternalCapabilityReceipt ReadText(
+        string operation,
+        IReadOnlyList<(string Label, string Root)> roots,
+        JsonElement arguments)
+    {
+        string fileName = ExternalJson.RequiredString(arguments, "fileName").Trim();
+        if (fileName != Path.GetFileName(fileName)
+            || fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
+            || fileName.Contains('*') || fileName.Contains('?'))
+            return ExternalJson.Failure(operation, "known_file_name_invalid");
+        int maximumCharacters = Math.Clamp(
+            ExternalJson.OptionalInt(arguments, "maximumCharacters", 4_000), 200, 200_000);
+        var matches = Enumerate(roots)
+            .Where(item => string.Equals(
+                Path.GetFileName(item.Path), fileName, StringComparison.OrdinalIgnoreCase))
+            .Take(2)
+            .ToArray();
+        if (matches.Length == 0) return ExternalJson.Failure(operation, "known_file_not_found");
+        if (matches.Length > 1) return ExternalJson.Failure(operation, "known_file_ambiguous");
+        (string label, string source) = matches[0];
+        var file = new FileInfo(source);
+        if (file.Length > MaximumTextBytes) return ExternalJson.Failure(operation, "known_text_too_large");
+        byte[] bytes = File.ReadAllBytes(source);
+        int probe = Math.Min(bytes.Length, 4_096);
+        int control = 0;
+        for (int index = 0; index < probe; index++)
+        {
+            byte value = bytes[index];
+            if (value == 0 || (value < 0x20 && value is not (0x09 or 0x0A or 0x0D or 0x0C)))
+                control++;
+        }
+        if (probe > 0 && control * 100 > probe)
+            return ExternalJson.Failure(operation, "known_file_not_text");
+        Encoding encoding = bytes.Length >= 2 && bytes[0] == 0xFF && bytes[1] == 0xFE ? Encoding.Unicode
+            : bytes.Length >= 2 && bytes[0] == 0xFE && bytes[1] == 0xFF ? Encoding.BigEndianUnicode
+            : new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: false);
+        string full = encoding.GetString(bytes).TrimStart('\uFEFF');
+        int lineCount = full.Length == 0 ? 0 : full.Split('\n').Length;
+        bool truncated = full.Length > maximumCharacters;
+        string text = truncated ? full[..maximumCharacters] : full;
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("reviewLabel", fileName); writer.WriteString("folder", label);
+            writer.WriteNumber("bytes", file.Length);
+            writer.WriteNumber("lines", lineCount);
+            writer.WriteNumber("characters", full.Length);
+            writer.WriteBoolean("truncated", truncated);
+            writer.WriteString("text", text);
+            writer.WriteString("fileSha256", Hash(file.FullName));
+            writer.WriteString("authority", "windows_known_text_file_utf8_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
     private static ExternalCapabilityReceipt ReadPdf(
         string operation,
         IReadOnlyList<(string Label, string Root)> roots,

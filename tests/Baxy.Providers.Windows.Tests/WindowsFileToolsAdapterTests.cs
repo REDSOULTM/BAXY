@@ -137,6 +137,41 @@ public sealed class WindowsFileToolsAdapterTests
     }
 
     [Test]
+    public async Task AQueryDownloadsTheFirstImageTheSearchEngineLists()
+    {
+        const string page = "<div class=\"iusc\" m=\"{&quot;murl&quot;:&quot;https://i.kym-cdn.com/photos/a5d.png&quot;,&quot;turl&quot;:&quot;x&quot;}\"></div>";
+        byte[] png = [0x89, 0x50, 0x4E, 0x47, 9, 9];
+        var asked = new List<string>();
+        var adapter = Adapter((url, _) =>
+        {
+            asked.Add(url);
+            return Task.FromResult(url.EndsWith(".png", StringComparison.Ordinal)
+                ? (png, "image/png")
+                : (Encoding.UTF8.GetBytes(page), "text/html"));
+        });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.download",
+            JsonSerializer.SerializeToElement(new { query = "meme de gatos", folder = "pictures", name = "meme" }),
+            CancellationToken.None);
+        ExternalCapabilityReceipt none = await adapter.InvokeAsync(
+            "web.download",
+            JsonSerializer.SerializeToElement(new { folder = "pictures" }),
+            CancellationToken.None);
+
+        Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked[0], Does.StartWith("https://www.bing.com/images/search?q=meme%20de%20gatos"));
+            Assert.That(asked[1], Is.EqualTo("https://i.kym-cdn.com/photos/a5d.png"));
+            Assert.That(receipt.Result!.Value.GetProperty("name").GetString(), Is.EqualTo("meme.png"));
+            Assert.That(receipt.Result!.Value.GetProperty("query").GetString(), Is.EqualTo("meme de gatos"));
+            Assert.That(File.Exists(Path.Combine(_root, "meme.png")), Is.True);
+            Assert.That(none.ErrorCode, Is.EqualTo("download_source_missing"));
+        });
+    }
+
+    [Test]
     public async Task APageGivesItsAnnouncedCoverImageNotItsHtml()
     {
         const string html = "<html><head><meta property=\"og:image\" content=\"https://upload.wikimedia.org/portada.png\"></head></html>";

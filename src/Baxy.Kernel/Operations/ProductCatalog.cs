@@ -369,6 +369,46 @@ public static class ProductCatalog
             "document.pdf.read.windows.known.pypdf.text.v1",
             ToolExposure.Public,
             "Localiza un PDF nombrado de forma única en las carpetas conocidas de Windows y extrae el texto que ya contiene (sin OCR) para resumirlo o citarlo; sin efecto."),
+        // Auditoría semántica 2026-09-20 (REOPEN1957 H0188 «Haz un powerpoint hablando
+        // de amor de 6 diapositivas», D11): la presentación se escribe como paquete
+        // Open XML, una diapositiva por entrada («Título\nviñeta\nviñeta»), en una
+        // carpeta conocida; la postlectura cuenta las diapositivas del paquete.
+        Descriptor(
+            "document.presentation.create",
+            Schema(
+                [
+                    String("folder", types: NullableString, values: ["desktop", "documents", "downloads"]),
+                    new OperationArgumentProperty(
+                        "slides",
+                        OperationJsonType.Array,
+                        itemTypes: OperationJsonType.String,
+                        maximumItems: 12,
+                        itemMaximumUtf8Bytes: 1_024,
+                        itemNonWhitespace: true),
+                    String("title", maximumUtf8Bytes: 200, nonWhitespace: true),
+                ],
+                ["slides", "title"]),
+            OperationRisks.LowReversible,
+            "document.presentation.create.openxml.slidecount.postread.v1",
+            ToolExposure.Public,
+            "Crea una presentación .pptx con el título dado y una diapositiva por entrada (primera línea título, las demás viñetas) en una carpeta conocida y verifica cuántas diapositivas tiene el paquete escrito."),
+        // Auditoría semántica 2026-09-20 (REOPEN1957 H0299, ruta pegada de un
+        // ROADMAP.md, D24): un archivo de texto de una carpeta conocida se lee para
+        // decir de qué trata; fuera de esas carpetas no es accesible y se dice.
+        Descriptor(
+            "document.text.read",
+            Schema(
+                [
+                    String("fileName", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("folder", values: ["all_known", "desktop", "documents", "downloads"]),
+                    Integer("maximumCharacters", 200, 200_000),
+                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
+                ],
+                ["fileName", "folder"]),
+            OperationRisks.ReadOnly,
+            "document.text.read.windows.known.utf8.text.v1",
+            ToolExposure.Public,
+            "Localiza un archivo de texto (txt, md, código, json…) nombrado de forma única en una carpeta conocida de Windows (o en la subcarpeta indicada) y devuelve su comienzo para decir de qué trata o citarlo; sin efecto."),
         Descriptor(
             "email.latest.read",
             EmptySchema(),
@@ -432,6 +472,16 @@ public static class ProductCatalog
             "filesystem.create.directory.sandbox.postread.v1",
             ToolExposure.Public,
             "Crea un directorio relativo confinado al sandbox o a una carpeta conocida (escritorio, documentos, descargas) y verifica su identidad sin aceptar rutas absolutas."),
+        // Auditoría semántica 2026-09-20 (REOPEN1957 H0701 «Dime cuantos archivos .py
+        // hay en el directorio actual», D24): el directorio actual es la carpeta del
+        // Explorador en primer plano; sin Explorador delante, el escritorio.
+        Descriptor(
+            "filesystem.explorer.count",
+            Schema([String("extension", maximumUtf8Bytes: 16, nonWhitespace: true)], ["extension"]),
+            OperationRisks.ReadOnly,
+            "filesystem.explorer.count.foreground.folder.toplevel.v1",
+            ToolExposure.Public,
+            "Cuenta los archivos de primer nivel con la extensión dada en la carpeta que muestra la ventana del Explorador en primer plano (o en el escritorio si no hay un Explorador delante) y nombra esa carpeta sin revelar su ruta."),
         Descriptor(
             "filesystem.file.open.latest",
             Schema([String("folder", values: ["desktop", "documents", "downloads", "pictures"])], ["folder"]),
@@ -1781,13 +1831,16 @@ public static class ProductCatalog
                 [
                     String("folder", types: NullableString, values: ["desktop", "documents", "downloads", "pictures"]),
                     String("name", types: NullableString, maximumUtf8Bytes: 200),
-                    String("url", maximumUtf8Bytes: 2_048, nonWhitespace: true),
+                    // REOPEN1957 H0069 «Tienes algun meme?» (D11): with a query and no
+                    // address, the first image the search engine lists is downloaded.
+                    String("query", types: NullableString, maximumUtf8Bytes: 200),
+                    String("url", types: NullableString, maximumUtf8Bytes: 2_048),
                 ],
-                ["url"]),
+                []),
             OperationRisks.PrivacySensitive,
             "web.download.http.file.size.postread.v1",
             ToolExposure.Public,
-            "Descarga un archivo o una imagen de una dirección web a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia."),
+            "Descarga un archivo o una imagen de una dirección web (o, con una consulta y sin dirección, la primera imagen que lista el buscador) a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia."),
         Descriptor(
             "web.news.headlines",
             Schema(
@@ -1819,13 +1872,22 @@ public static class ProductCatalog
             "wifi.connect.wlan.profile.postread.v1",
             ToolExposure.Public,
             "Conecta un perfil WLAN ya guardado y verifica el estado sin exponer SSID ni credenciales."),
+        // Auditoría semántica 2026-09-20 (REOPEN1957 H0170/H0376 «conectate al wifi de
+        // casa», D24): «casa» no es un SSID. Con `place`, el proveedor conecta la red
+        // que la persona asoció antes a ese lugar; si nombra el perfil y el lugar a la
+        // vez, conecta ese perfil y recuerda la asociación en los datos privados.
         Descriptor(
             "wifi.connect.named",
-            Schema([String("profileName", maximumUtf8Bytes: 256, nonWhitespace: true)], ["profileName"]),
+            Schema(
+                [
+                    String("place", types: NullableString, values: ["casa", "oficina", "trabajo"]),
+                    String("profileName", maximumUtf8Bytes: 256, nonWhitespace: true),
+                ],
+                ["profileName"]),
             OperationRisks.PrivacySensitive,
             "wifi.connect.named.wlan.profile.postread.v1",
             ToolExposure.Public,
-            "Resuelve de forma única un perfil WLAN guardado por el nombre indicado, lo conecta y verifica el estado sin exponer credenciales."),
+            "Resuelve de forma única un perfil WLAN guardado por el nombre indicado (o por el lugar asociado antes: casa, trabajo, oficina), lo conecta, verifica el estado sin exponer credenciales y recuerda la asociación lugar→red cuando se dan ambos."),
         Descriptor(
             "wifi.disconnect",
             EmptySchema(),

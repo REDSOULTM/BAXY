@@ -1407,6 +1407,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         CancellationToken token)
     {
         string requested = ExternalJson.RequiredString(arguments, "profileName");
+        string? place = arguments.TryGetProperty("place", out JsonElement placeValue)
+            && placeValue.ValueKind == JsonValueKind.String
+            ? placeValue.GetString()
+            : null;
         ExternalProcessResult process = await RunPowerShellAsync(WifiProfilesScript, [], token);
         using JsonDocument source = JsonDocument.Parse(process.Output);
         string[] profiles = source.RootElement.TryGetProperty("profiles", out JsonElement values)
@@ -1440,6 +1444,24 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                         && (candidate.Contains(folded, StringComparison.Ordinal)
                             || folded.Contains(candidate, StringComparison.Ordinal));
                 }).ToArray();
+        bool byPlace = false;
+        if (matches.Length == 0 && place is not null)
+        {
+            // REOPEN1957 H0170/H0376: «casa» names a place, not a profile. The
+            // profile the person associated with it earlier is the one.
+            string? remembered = ReadWifiPlace(place);
+            if (remembered is not null)
+            {
+                matches = profiles.Where(profile => string.Equals(profile, remembered, StringComparison.Ordinal)).ToArray();
+                byPlace = matches.Length == 1;
+            }
+
+            if (matches.Length == 0)
+            {
+                return ExternalJson.Failure(operation, "wifi_place_unknown");
+            }
+        }
+
         if (matches.Length == 0)
         {
             return ExternalJson.Failure(operation, "wifi_profile_not_found");
@@ -1453,7 +1475,79 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         string profile = matches[0];
         string id = Opaque("wifi", profile);
         _wifi[id] = profile;
-        return await ConnectWifiProfileAsync(operation, id, profile, effectBoundary, token);
+        ExternalCapabilityReceipt receipt = await ConnectWifiProfileAsync(operation, id, profile, effectBoundary, token, place);
+        if (receipt.Verified && place is not null && !byPlace)
+        {
+            WriteWifiPlace(place, profile);
+        }
+
+        return receipt;
+    }
+
+    private string WifiPlacesPath => Path.Combine(_scanRoot, "wifi-places.v1.json");
+
+    private string? ReadWifiPlace(string place)
+    {
+        try
+        {
+            if (!File.Exists(WifiPlacesPath))
+            {
+                return null;
+            }
+
+            using JsonDocument document = JsonDocument.Parse(File.ReadAllBytes(WifiPlacesPath));
+            return document.RootElement.ValueKind == JsonValueKind.Object
+                && document.RootElement.TryGetProperty(place, out JsonElement value)
+                && value.ValueKind == JsonValueKind.String
+                ? value.GetString()
+                : null;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+        {
+            return null;
+        }
+    }
+
+    private void WriteWifiPlace(string place, string profile)
+    {
+        var places = new SortedDictionary<string, string>(StringComparer.Ordinal);
+        try
+        {
+            if (File.Exists(WifiPlacesPath))
+            {
+                using JsonDocument document = JsonDocument.Parse(File.ReadAllBytes(WifiPlacesPath));
+                if (document.RootElement.ValueKind == JsonValueKind.Object)
+                {
+                    foreach (JsonProperty property in document.RootElement.EnumerateObject())
+                    {
+                        if (property.Value.ValueKind == JsonValueKind.String)
+                        {
+                            places[property.Name] = property.Value.GetString() ?? string.Empty;
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+        {
+            places.Clear();
+        }
+
+        places[place] = profile;
+        Directory.CreateDirectory(_scanRoot);
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            foreach ((string key, string value) in places)
+            {
+                writer.WriteString(key, value);
+            }
+
+            writer.WriteEndObject();
+        }
+
+        File.WriteAllBytes(WifiPlacesPath, stream.ToArray());
     }
 
     private async ValueTask<ExternalCapabilityReceipt> ConnectWifiProfileAsync(
@@ -1461,7 +1555,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         string id,
         string profile,
         ExternalEffectBoundary effectBoundary,
-        CancellationToken token)
+        CancellationToken token,
+        string? place = null)
     {
         effectBoundary.Cross(token);
         ExternalProcessResult dispatch = await _runner.RunAsync(
@@ -1483,7 +1578,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                     profile,
                     StringComparison.OrdinalIgnoreCase))
             {
-                return ExternalJson.Success(operation, WifiResult(id, true), true);
+                return ExternalJson.Success(operation, WifiResult(id, true, place), true);
             }
 
             if (observation < 30)
@@ -1919,11 +2014,17 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             token);
     }
 
-    private static JsonElement WifiResult(string? id, bool connected) =>
+    private static JsonElement WifiResult(string? id, bool connected, string? place = null) =>
         ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
+            if (place is not null)
+            {
+                // The place word is the person's; the SSID stays out of the result.
+                writer.WriteString("place", place);
+            }
+
             if (id is null)
             {
                 writer.WriteNull("profileId");

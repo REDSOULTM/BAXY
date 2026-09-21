@@ -61,14 +61,14 @@ def test_wallpaper_colour_and_picture() -> None:
 
 
 def test_web_download_of_a_page_cover_and_of_a_file() -> None:
-    schema = {"type": "object", "properties": {"url": {"type": "string"}, "folder": {"type": ["string", "null"]}, "name": {"type": ["string", "null"]}}, "required": ["url"], "additionalProperties": False}
+    schema = {"type": "object", "properties": {"url": {"type": ["string", "null"]}, "query": {"type": ["string", "null"]}, "folder": {"type": ["string", "null"]}, "name": {"type": ["string", "null"]}}, "required": [], "additionalProperties": False}
     cover = "descarga la imagen de portada de wikipedia.org y guardala en el escritorio"
     file = "descarga https://example.com/a.pdf en descargas"
     for text in (cover, file):
         intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, ("Steam",), ())
         assert intent is not None and intent.operations == ("web.download",)
-    assert mind._ground_explicit_arguments("web.download", cover, schema) == {"url": "wikipedia.org", "folder": "desktop", "name": None}
-    assert mind._ground_explicit_arguments("web.download", file, schema) == {"url": "https://example.com/a.pdf", "folder": "downloads", "name": None}
+    assert mind._ground_explicit_arguments("web.download", cover, schema) == {"url": "wikipedia.org", "folder": "desktop", "name": None, "query": None}
+    assert mind._ground_explicit_arguments("web.download", file, schema) == {"url": "https://example.com/a.pdf", "folder": "downloads", "name": None, "query": None}
     assert effect_intent.known_unsupported_effect_request(cover, {"browser.navigate"}) is True
 
 

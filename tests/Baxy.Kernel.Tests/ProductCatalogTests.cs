@@ -42,7 +42,10 @@ public sealed class ProductCatalogTests
     internal static readonly string[] Reopen1993CatalogAdditions =
     [
         "desktop.wallpaper.set",
+        "document.presentation.create",
+        "document.text.read",
         "file.compress",
+        "filesystem.explorer.count",
         "file.open",
         "game.uninstall.named",
         "package.uninstall",
@@ -52,7 +55,7 @@ public sealed class ProductCatalogTests
         "web.news.headlines",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 9;
+    internal const int ExpectedDescriptors = 170 + 21 + 12;
 
     internal const int ExpectedTools = ExpectedDescriptors - 1;
 

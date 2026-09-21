@@ -116,6 +116,9 @@ internal static class Goal05CatalogObservation
                 or "software.python.package.status" or "notification.list" => Unverifiable(
                 descriptor,
                 "Lecturas de dispositivos, unidades, registro PEP 514, pip o Programador de tareas del usuario; verificadas en su tanda por doble lectura, no recorridas aquí para no inventariar la máquina del usuario."),
+            "document.presentation.create" => Unverifiable(
+                descriptor,
+                "Escribiría un .pptx en Documentos del usuario (REOPEN1957 H0188); su postlectura cuenta las diapositivas del paquete, no se recorre aquí."),
             "file.compress" or "file.open" or "desktop.wallpaper.set" or "web.download" => Unverifiable(
                 descriptor,
                 "Escribiría un zip, abriría un archivo, cambiaría el fondo del escritorio o guardaría una descarga en las carpetas del usuario (REOPEN1957 H0542/H0459/H0077); no restaurable desde esta matriz."),
@@ -134,6 +137,9 @@ internal static class Goal05CatalogObservation
             "weather.current" => Unverifiable(
                 descriptor,
                 "Lectura de un servicio público de pronóstico (Open-Meteo) y de la ubicación de este PC por su IP (REOPEN1993 grupo W); esta matriz no sale a internet ni toma un pronóstico ajeno como pass simulado."),
+            "document.text.read" or "filesystem.explorer.count" => Unverifiable(
+                descriptor,
+                "Leería archivos de texto de carpetas conocidas y la carpeta del Explorador del usuario (REOPEN1957 H0299/H0701); no se rellena la celda con su contenido."),
             "document.pdf.read" or "filesystem.known.list" => Unverifiable(
                 descriptor,
                 "Leería PDFs y carpetas conocidas (Desktop/Documents/…) del usuario; no se rellena la celda con su contenido."),

@@ -3544,6 +3544,10 @@ _CAUSE_FACT = {
     "visible_button_not_found": (
         "nothing on the screen is called that, so nothing was pressed"
     ),
+    # REOPEN1957 H0188: the presentation writer names its own absences.
+    "presentation_slides_invalid": ("the slides received were empty or too many, so no presentation was written"),
+    "presentation_write_failed": ("the presentation file could not be written in that folder, so nothing was created"),
+    "presentation_postread_failed": ("the presentation was written but its slides could not be counted back, so it is not confirmed"),
     # REOPEN1957 H0542/H0459/H0077: the file tools name their own absences.
     "zip_already_exists": ("a zip with that name already exists there, so nothing was compressed"),
     "zip_create_failed": ("the zip could not be created, so nothing was compressed"),
@@ -3562,6 +3566,12 @@ _CAUSE_FACT = {
     "download_page_without_image": ("that page announces no cover image, so nothing was saved"),
     "download_too_large": ("that file is larger than the 50 MB this download allows, so nothing was saved"),
     "download_empty": ("the address returned an empty file, so nothing was saved"),
+    "download_source_missing": ("neither an address nor a search was given, so nothing was saved"),
+    "known_file_not_text": ("that file is not a text file (it holds binary data), so it was not read"),
+    "known_text_too_large": ("that text file is larger than the 4 MB this reading allows, so it was not read"),
+    "explorer_folder_unavailable": ("the folder of the Explorer window in front could not be read, so nothing was counted"),
+    "extension_invalid": ("that is not a file extension, so nothing was counted"),
+    "download_query_without_image": ("the image search listed no picture for that, so nothing was saved"),
     "download_write_failed": ("the file could not be written in that folder, so nothing was saved"),
     # REOPEN1957 H0107: airplane mode over the radios names its own absences.
     "airplane_mode_radio_access_denied": (
@@ -3687,6 +3697,13 @@ _CAUSE_FACT = {
     # (NETWORK1723 probe) and every English final died.
     "wifi_profile_not_found": (
         "no saved Wi-Fi network has that name, so nothing was done"
+    ),
+    # REOPEN1957 H0170/H0376 «conectate al wifi de casa»: no network is
+    # associated with that place yet; the saved networks were listed and the
+    # person has to say which one it is. Nothing was connected.
+    "wifi_place_unknown": (
+        "no saved Wi-Fi network is associated with that place yet, so nothing was connected; "
+        "the saved networks are listed and the person has to say which one it is"
     ),
     # MUSIC1753: the Spotify desktop client did not give a result to play.
     "spotify_exact_result_not_found": (
@@ -4446,8 +4463,15 @@ def _compose_situation_payload(
             visible_seen = _project_game_listing(visible_seen, language)
         elif operation == "browser.page.read":
             visible_seen = _project_page_read(visible_seen, language)
-        elif operation == "document.pdf.read":
+        elif operation in {"document.pdf.read", "document.text.read"}:
             visible_seen = _project_pdf_read(visible_seen, language)
+        elif operation == "filesystem.explorer.count":
+            # REOPEN1957 H0701: the folder's own name, where it was taken from and the figures.
+            visible_seen = {
+                key: visible_seen[key]
+                for key in ("folderName", "source", "extension", "count", "filesInFolder")
+                if key in visible_seen
+            }
         elif operation == "media.play.youtube":
             # MUSIC1553: the process id and the IPC authority are not for the
             # person; the query, the observed title and the state are.
@@ -4613,6 +4637,18 @@ def _compose_situation_payload(
         )
         if reason_facts:
             payload["reason"] = reason_facts
+        if reason_facts.get("cause") == _CAUSE_FACT["wifi_place_unknown"]:
+            # REOPEN1957 H0170/H0376: the labels of the saved networks are the
+            # facts the question needs; the opaque ids are not words.
+            profiles = _merged_observed(situation).get("profiles")
+            payload.pop("completedStepsInOrder", None)
+            labels = [
+                str(item.get("label")).strip()
+                for item in (profiles if isinstance(profiles, list) else [])
+                if isinstance(item, dict) and str(item.get("label") or "").strip()
+            ]
+            place = effect_intent.wifi_place_request(user_text or "")
+            payload["seen"] = {"savedNetworks": labels[:20], "place": place or "casa"}
     elif isinstance(reason, str) and reason.strip():
         payload["reason"] = _cause_in_prose(reason, language)
     step = situation.get("step")
@@ -5764,9 +5800,11 @@ def _project_pdf_read(observed: dict, language: str) -> dict:
         if cut >= 120:
             lead = lead[: cut + 1]
     pages = observed.get("pages") if type(observed.get("pages")) is int else None
+    lines_read = observed.get("lines") if type(observed.get("lines")) is int else None
     projected: dict = {
         "document": (observed.get("reviewLabel") if isinstance(observed.get("reviewLabel"), str) else "").strip(),
         "pages": pages,
+        **({"lines": lines_read} if pages is None and lines_read is not None else {}),
         "hasText": bool(flat),
         "headings": headings,
         "lead": lead.strip(),
@@ -5778,7 +5816,7 @@ def _project_pdf_read(observed: dict, language: str) -> dict:
 def _pdf_read_in_payload(payload: dict) -> dict | None:
     """The projected PDF («seen» with a lead) of a verified document.pdf.read."""
 
-    if payload.get("operation") != "document.pdf.read":
+    if payload.get("operation") not in {"document.pdf.read", "document.text.read"}:
         return None
     seen = payload.get("seen")
     if isinstance(seen, dict) and isinstance(seen.get("lead"), str):
@@ -5793,7 +5831,7 @@ def _pdf_read_quote_defect(text: str, seen: dict) -> str:
     lead = re.sub(r"\s+", " ", _reading_fold(str(seen.get("lead") or "")))
     headings = [re.sub(r"\s+", " ", _reading_fold(str(h))) for h in (seen.get("headings") or [])]
     name = re.sub(r"\s+", " ", _reading_fold(str(seen.get("document") or "")))
-    pages = str(seen.get("pages")) if type(seen.get("pages")) is int else ""
+    pages = str(seen.get("pages")) if type(seen.get("pages")) is int else str(seen.get("lines")) if type(seen.get("lines")) is int else ""
     if not seen.get("hasText"):
         return ""
     quoted_any = False
@@ -6492,6 +6530,29 @@ def _package_fact_defect(text: str, payload: dict) -> str:
     return ""
 
 
+def _wifi_place_fact_defect(text: str, payload: dict) -> str:
+    """REOPEN1957 H0170/H0376: when no network is associated with the place
+    yet, the reply asks which of the saved networks it is, naming them, and
+    never claims a connection. A verified connect by place says so."""
+
+    seen = payload.get("seen")
+    reason = payload.get("reason")
+    folded_text = _reading_fold(text)
+    if isinstance(reason, dict) and reason.get("cause") == _CAUSE_FACT["wifi_place_unknown"]:
+        if "?" not in text:
+            return "missing_state"
+        if re.search(r"(?<!\bno )(?<!\bnot )\b(?:conecte|conectado|conectada|connected|te conecte|listo)\b", folded_text):
+            return "reversed_polarity"
+        labels = seen.get("savedNetworks") if isinstance(seen, dict) else None
+        if isinstance(labels, list) and labels and not any(_reading_fold(str(label)) in folded_text for label in labels):
+            return "missing_state"
+        return ""
+    if payload.get("operation") == "wifi.connect.named" and isinstance(seen, dict) and seen.get("place") and seen.get("connected") is True:
+        if not re.search(r"\b(?:conect|connect)", folded_text):
+            return "missing_state"
+    return ""
+
+
 def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     """El texto público conserva los hechos que el payload le dio.
 
@@ -6827,6 +6888,37 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     game_defect = _game_library_fact_defect(text, payload)
     if game_defect:
         return game_defect
+    wifi_place_defect = _wifi_place_fact_defect(text, payload)
+    if wifi_place_defect:
+        return wifi_place_defect
+    if payload.get("operation") == "filesystem.explorer.count" and isinstance(seen, dict) and type(seen.get("count")) is int:
+        # REOPEN1957 H0701: the figure and the folder's name are the facts; any
+        # other number is invented.
+        folded_count = _reading_fold(text)
+        allowed = {str(seen["count"])} | ({str(seen["filesInFolder"])} if type(seen.get("filesInFolder")) is int else set())
+        numbers = re.findall(r"(?<![\w.,])\d+(?![\w.,])", text)
+        if any(number not in allowed for number in numbers):
+            return "invented_number"
+        if str(seen["count"]) not in numbers and not (seen["count"] <= 10 and re.search(
+            r"\b(?:cero|ning[uú]n[oa]?|zero|none|no hay|uno?|una|one|dos|two|tres|three|cuatro|four|cinco|five|seis|six|siete|seven|ocho|eight|nueve|nine|diez|ten)\b", folded_count,
+        )):
+            return "missing_state"
+        folder_name = seen.get("folderName")
+        if isinstance(folder_name, str) and folder_name.strip() and _reading_fold(folder_name) not in folded_count:
+            return "missing_state"
+    if (
+        payload.get("operation") == "document.presentation.create"
+        and isinstance(seen, dict)
+        and isinstance(seen.get("slideCount"), int)
+    ):
+        # REOPEN1957 H0188: the file and the slide count are the facts.
+        if isinstance(seen.get("name"), str) and _reading_fold(seen["name"]) not in folded and _reading_fold(seen["name"]).removesuffix(".pptx") not in folded:
+            return "missing_state"
+        for number in re.findall(r"(?<![\w.,])\d+(?![\w.,])", text):
+            if number != str(seen["slideCount"]):
+                return "invented_number"
+        if str(seen["slideCount"]) not in text and not re.search(r"\b(?:seis|six|cinco|five|cuatro|four|tres|three|dos|two|siete|seven|ocho|eight|diez|ten)\b", folded):
+            return "missing_state"
     if payload.get("operation") in {"file.compress", "file.open", "desktop.wallpaper.set", "web.download"} and isinstance(seen, dict):
         # REOPEN1957 H0542/H0459/H0077: the reply names what the postread saw.
         named = [str(seen.get(key)) for key in ("zipName", "name", "color") if isinstance(seen.get(key), str) and seen.get(key)]
@@ -15035,6 +15127,49 @@ class LlmRuntime:
         except ArgumentGroundingAbstention:
             return None
 
+    def compose_presentation_slides(self, topic: str, count: int) -> list[str]:
+        """REOPEN1957 H0188: `count` slides about `topic`, each a string whose
+        first line is the slide title and the next lines its bullets (two to
+        four), in the language of the topic; strict JSON, temperature 0."""
+
+        schema = {
+            "type": "object",
+            "properties": {
+                "slides": {
+                    "type": "array",
+                    "minItems": count,
+                    "maxItems": count,
+                    "items": {"type": "string", "minLength": 4, "maxLength": 400},
+                }
+            },
+            "required": ["slides"],
+            "additionalProperties": False,
+        }
+        payload = {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "Escribes el contenido de una presentación de diapositivas. Devuelve JSON "
+                        f"{{\"slides\": [...]}} con exactamente {count} cadenas, una por diapositiva. "
+                        "En cada cadena la primera línea es el título de la diapositiva y las "
+                        "siguientes dos a cuatro líneas son viñetas cortas (una idea por línea, sin "
+                        "guiones ni números delante), separadas por \\n. La primera diapositiva es "
+                        "la portada (título del tema y un subtítulo); la última cierra. Escribe en el "
+                        "idioma del tema. Sin datos inventados: ideas generales, sin fechas ni cifras."
+                    ),
+                },
+                {"role": "user", "content": f"Tema: {topic}. Diapositivas: {count}."},
+            ],
+            "response_format": {"type": "json_schema", "json_schema": {"name": "slides", "schema": schema}},
+            "temperature": 0.0,
+            "max_tokens": 1200,
+            "chat_template_kwargs": {"enable_thinking": False},
+        }
+        result = self._post_schema_object(payload, "presentation_slides")
+        slides = result.get("slides")
+        return slides if isinstance(slides, list) else []
+
     def narrate(self, user_text: str, operation: str, outcome: dict) -> str:
         verified = bool(
             isinstance(outcome, dict)
@@ -15815,6 +15950,22 @@ class LlmRuntime:
                 "ejemplo que seis por siete da 42 en la Calculadora), usando sólo esos "
                 "números; no se hizo nada más."
             )
+        if (
+            visible_situation.get("operation") == "document.presentation.create"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("slideCount"), int)
+        ):
+            # REOPEN1957 H0188: the deck exists with the slides the package holds.
+            instruct(
+                "\nseen.name is the presentation file written in seen.folder with seen.slideCount "
+                "slides (seen.slideTitles lists their titles). Say that you created it, naming the "
+                "file and the number of slides, in one short sentence; no other numbers."
+                if response_language == "en"
+                else "\nseen.name es el archivo de presentación escrito en seen.folder con "
+                "seen.slideCount diapositivas (seen.slideTitles lista sus títulos). Di que la "
+                "creaste, nombrando el archivo y la cantidad de diapositivas, en una oración corta; "
+                "sin otros números."
+            )
         if visible_situation.get("operation") in {"file.compress", "file.open", "desktop.wallpaper.set", "web.download"} and isinstance(visible_situation.get("seen"), dict):
             # REOPEN1957 H0542/H0459/H0077: each file tool leaves its own
             # postread; the reply names the file, folder, colour or address seen.
@@ -16235,7 +16386,41 @@ class LlmRuntime:
                 "nombrándolos por su nombre de proceso sin PID y con sus valores "
                 "observados; no se hizo nada más."
             )
-        if _pdf_read_in_payload(visible_situation) is not None:
+        if visible_situation.get("operation") == "document.text.read" and _pdf_read_in_payload(visible_situation) is not None:
+            # REOPEN1957 H0299: the pasted file is named, what it is about is
+            # said by its headings as read, and its opening is quoted verbatim.
+            text_seen = _pdf_read_in_payload(visible_situation) or {}
+            if not text_seen.get("hasText"):
+                instruct(
+                    "\nseen.document is the text file that was found and read; it is empty. Say so in one sentence, no question."
+                    if response_language == "en"
+                    else "\nseen.document es el archivo de texto que se encontró y se leyó; está vacío. Dilo en una oración, sin pregunta."
+                )
+            else:
+                instruct(
+                    "\nseen.document is the name of the text file that was read, seen.lines its "
+                    "line count, seen.headings its heading-like lines exactly as read and "
+                    "seen.lead the beginning of its text exactly as read. Write two or three "
+                    "plain sentences of prose, with no labels and no list: say that the file "
+                    "named in seen.document was read and how many lines it has, say what it is "
+                    "about by naming its headings (all of seen.headings, in order, inside "
+                    "quotation marks, if any) and quote, inside quotation marks, its first one "
+                    "or two sentences from seen.lead exactly as they are; if seen.moreNotShown "
+                    "is true, say the file continues. No summary in your own words, no facts or "
+                    "numbers outside seen.headings and seen.lead, no question."
+                    if response_language == "en"
+                    else "\nseen.document es el nombre del archivo de texto leído, seen.lines su "
+                    "cantidad de líneas, seen.headings sus títulos tal cual se leyeron y seen.lead "
+                    "el comienzo de su texto tal cual se leyó. Escribe dos o tres oraciones llanas "
+                    "en prosa, sin etiquetas y sin lista: di que se leyó el archivo nombrado en "
+                    "seen.document y cuántas líneas tiene, di de qué trata nombrando sus títulos "
+                    "tal cual (todos los de seen.headings, en orden, entre comillas, si los hay) y "
+                    "cita entre comillas su primera o sus dos primeras oraciones de seen.lead tal "
+                    "cual están; si seen.moreNotShown es true, di que el archivo sigue. Sin resumen "
+                    "en tus palabras, sin datos ni números fuera de seen.headings y seen.lead, sin "
+                    "pregunta."
+                )
+        elif _pdf_read_in_payload(visible_situation) is not None:
             # PDF1689 «resumime informe.pdf»: the report names the document,
             # says what it covers by its headings as read and quotes its
             # opening verbatim; nothing is summarized in the model's own words.
