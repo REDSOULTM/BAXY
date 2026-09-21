@@ -110,6 +110,28 @@ internal static class ObservedResponseLiterals
                 }
             }
         }
+        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+            && IsString(node, "operation", "web.news.headlines")
+            && node.TryGetProperty("verified", out JsonElement newsVerified) && newsVerified.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("succeeded", out JsonElement newsSucceeded) && newsSucceeded.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("observed", out JsonElement newsObserved) && newsObserved.ValueKind == JsonValueKind.Object
+            && newsObserved.TryGetProperty("headlines", out JsonElement headlines) && headlines.ValueKind == JsonValueKind.Array)
+        {
+            // NEWS2027 «buscá noticias de hoy»: a headline's title and its source
+            // («cooperativa.cl», «dw.com») are observed data, not dotted codes.
+            foreach (JsonElement entry in headlines.EnumerateArray())
+            {
+                if (entry.ValueKind != JsonValueKind.Object) continue;
+                foreach (string field in new[] { "title", "source" })
+                {
+                    if (entry.TryGetProperty(field, out JsonElement value) && value.ValueKind == JsonValueKind.String
+                        && value.GetString() is { Length: > 0 and <= 4096 } text && !string.IsNullOrWhiteSpace(text))
+                    {
+                        names.Add(text.Trim());
+                    }
+                }
+            }
+        }
         if (IsString(node, "kind", "confirmation")
             && node.TryGetProperty("pendingAction", out JsonElement pendingAction) && pendingAction.ValueKind == JsonValueKind.Object
             && pendingAction.TryGetProperty("arguments", out JsonElement pendingArguments) && pendingArguments.ValueKind == JsonValueKind.Object
