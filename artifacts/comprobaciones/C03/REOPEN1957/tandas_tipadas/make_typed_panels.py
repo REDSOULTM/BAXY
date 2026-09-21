@@ -67,9 +67,9 @@ CAPS: dict[str, dict] = {
     "steam": {
         "group": "game_library_manage",
         "reviewed": True,
-        "crit": "Descargar/desinstalar juegos (REOPEN1993 grupo S; H0456 «Descarga Worms Rumble en Steam», H0571 «Descarga diin eternal de steam», H0578 «Descarga Fall guys en epic games», H0620 «Desinstala Worms Rumble»): primero game.entitlement.named lee la biblioteca (Steam o Epic según la tienda nombrada; la palabra mal oída se corrige con el catálogo); si el título está en la biblioteca y no instalado, game.install.named lo inicia por steam://install con confirmación y lo verifica por el manifiesto; desinstalar es game.uninstall.named con confirmación (WorkLoss). Final: estado leído y efecto iniciado, sin inventar instalaciones. Títulos de prueba: los que el dueño indique (PREGUNTAR del plan).",
+        "crit": "Descargar/desinstalar juegos (REOPEN1993 grupo S; H0456 «Descarga Worms Rumble en Steam», H0571 «Descarga diin eternal de steam», H0578 «Descarga Fall guys en epic games», H0620 «Desinstala Worms Rumble»): primero game.entitlement.named lee la biblioteca (Steam o Epic según la tienda nombrada; la palabra mal oída se corrige con el catálogo); si el título está en la biblioteca y no instalado, game.install.named lo inicia por steam://install con confirmación y lo verifica por el manifiesto; desinstalar es game.uninstall.named con confirmación (WorkLoss). Final: estado leído y efecto iniciado, sin inventar instalaciones. Títulos de prueba (decisión del dueño 2026-09-20): Plants vs. Zombies: Game of the Year y PICO PARK: Classic Edition, ambos en su cuenta e instalados; Worms Rumble se sustituye por Plants vs. Zombies (D13).",
         "literals": [("H0456", None), ("H0571", None), ("H0578", None), ("H0620", None)],
-        "variants": ["bajá Portal 2 de Steam", "uninstall Portal 2"],
+        "variants": ["desinstalá Plants vs. Zombies", "instalá Plants vs. Zombies de Steam"],
         "boundaries": [("no descargues nada", "Prohibición: reconocimiento, cero operaciones."),
                        ("descargá el aire de Steam", "Título inexistente: la lectura de biblioteca lo dice; nada iniciado.")],
         "allowed": ["game.entitlement.named", "game.install.named", "game.uninstall.named"],
@@ -78,7 +78,7 @@ CAPS: dict[str, dict] = {
         "plan_body": "REOPEN1993 (D24) reabrió cuatro filas de Steam/Epic acreditadas como lectura o límite. Con game.install.named (store) y game.uninstall.named la mente encadena la lectura de biblioteca con el efecto y el final dice lo iniciado y verificado por manifiesto. Turnos revisados; títulos que posee la cuenta del dueño (pendiente de su respuesta); restore reinstalando lo desinstalado.",
         "cause": "Descargar/desinstalar en Steam o Epic terminaba en la lectura de biblioteca o en un límite.",
         "change": "instalación por steam:// verificada por manifiesto y desinstalación por el lanzador, ambas con confirmación; Epic por su esquema com.epicgames.launcher.",
-        "preset": "títulos del dueño (PREGUNTAR); restore: reinstalar el desinstalado",
+        "preset": "decisión del dueño 2026-09-20 («control total»): títulos chicos instalados de su cuenta, Plants vs. Zombies: Game of the Year (49 MB) y PICO PARK: Classic Edition (76 MB); el caso «desinstalá» va antes del «instalá» del mismo título en la misma tanda; H0456/H0620 se miden con Plants vs. Zombies en lugar de Worms Rumble (no está en la cuenta; D13), H0571 con la corrección Doom Eternal como lectura de biblioteca, H0578 Fall Guys en Epic como lectura; restore: dejar Plants vs. Zombies instalado",
     },
     "power": {
         "group": "power_transition",

@@ -38,6 +38,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private readonly PendingNoteInteractionState _pendingNoteInteraction = new();
     private PreparedOperation? _pendingAudioOperation;
     private string? _pendingMindClarificationObjective;
+    private readonly ConversationLog? _conversationLog = ConversationLog.CreateDefault();
     private Action? _coreDisconnectedHandler;
     private int _coreDisconnectObserved;
     private int _voiceCommandBusy;
@@ -3335,6 +3336,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             route);
         Messages.Add(message);
         MessageAdded?.Invoke(message);
+        // Registro privado de la conversación (dueño, 2026-09-20): texto, ruta y
+        // latencia de cada turno, sólo en el perfil local.
+        _conversationLog?.Append(message);
         MindSidecarClient? mind = _mindClient;
         if (mind is { IsReady: true })
         {
