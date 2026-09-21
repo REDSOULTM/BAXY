@@ -1,0 +1,25 @@
+{
+ "prev": "<prev>",
+ "new": "<new: typedzipNNNN>",
+ "grandparent": "<GRANDPARENT>",
+ "registry_parent": "<REGISTRY_PARENT>",
+ "template": "video1955",
+ "sources": [],
+ "plan_title": "carpeta, txt, zip y abrir: una misión de cuatro tipadas",
+ "plan_body": "REOPEN1957 (D11) reabrió H0542, acreditada como límite. Con file.compress y file.open la mente encadena crear carpeta → escribir txt → comprimir → abrir y el final nombra lo creado. Turnos ordinarios sobre el escritorio redirigido; restore borrando lo creado y cerrando el Explorador.",
+ "note": "H0542 executed on the merged opus/typed-tools build: file.compress (zip de una carpeta conocida) y file.open (abrir con la app asociada) más la lectura de misión de la mente.",
+ "owner": "opus/typed-tools (catalog, Core list, Providers adapter, mind readings, composer) merged into codex/kiro-goal-c03.",
+ "build_kind": "Kernel, Core, Providers y mente",
+ "cause": "Comprimir y abrir el zip no existían: la misión terminaba en un límite.",
+ "change": "file.compress (zip de una carpeta conocida) y file.open (abrir con la app asociada) más la lectura de misión de la mente.",
+ "sentence": "carpeta, txt, zip y abrir: una misión de cuatro tipadas",
+ "build_sentence": "herramientas tipadas de opus/typed-tools fusionadas",
+ "reviewed": false,
+ "reviewed_group": null,
+ "literal_substitutions": {},
+ "case_fixture_steps": {},
+ "preset_restore": "restore: borrar «Nueva carpeta*» y «Nueva carpeta.zip» del escritorio; cerrar el Explorador del zip",
+ "derive_extra": [
+  "exec(open(\"panel_typed_zip.py\", encoding=\"utf-8\").read())"
+ ]
+}

@@ -1,0 +1,25 @@
+{
+ "prev": "<prev>",
+ "new": "<new: typedairplaneNNNN>",
+ "grandparent": "<GRANDPARENT>",
+ "registry_parent": "<REGISTRY_PARENT>",
+ "template": "video1955",
+ "sources": [],
+ "plan_title": "el modo avión es todas las radios apagadas y releídas",
+ "plan_body": "REOPEN1957 (D11) reabrió H0107, acreditada como límite sin mecanismo. Con airplane_mode en system.settings.set/status (API de radios de Windows) la mente lo lee como un ajuste y el final dice el estado releído. Turnos ordinarios; preset/restore de las radios.",
+ "note": "H0107 executed on the merged opus/typed-tools build: system.settings.set airplane_mode apaga/enciende todas las radios y las relee; status las lee.",
+ "owner": "opus/typed-tools (catalog, Core list, Providers adapter, mind readings, composer) merged into codex/kiro-goal-c03.",
+ "build_kind": "Kernel, Core, Providers y mente",
+ "cause": "El modo avión no tenía mecanismo y terminaba en un límite.",
+ "change": "system.settings.set airplane_mode apaga/enciende todas las radios y las relee; status las lee.",
+ "sentence": "el modo avión es todas las radios apagadas y releídas",
+ "build_sentence": "herramientas tipadas de opus/typed-tools fusionadas",
+ "reviewed": false,
+ "reviewed_group": null,
+ "literal_substitutions": {},
+ "case_fixture_steps": {},
+ "preset_restore": "preset/restore: estado de las radios wifi/bluetooth (script tipo bt_radio.ps1)",
+ "derive_extra": [
+  "exec(open(\"panel_typed_airplane.py\", encoding=\"utf-8\").read())"
+ ]
+}

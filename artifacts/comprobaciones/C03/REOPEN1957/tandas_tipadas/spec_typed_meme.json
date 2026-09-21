@@ -1,0 +1,25 @@
+{
+ "prev": "<prev>",
+ "new": "<new: typedmemeNNNN>",
+ "grandparent": "<GRANDPARENT>",
+ "registry_parent": "<REGISTRY_PARENT>",
+ "template": "video1955",
+ "sources": [],
+ "plan_title": "un meme se busca, se descarga y se abre con el visor",
+ "plan_body": "REOPEN1957 (D11) reabrió H0069, acreditada como límite («no puedo mostrar memes»). Con `query` en web.download (buscador de imágenes) y file.open dependiente de la descarga la mente lo encadena y el visor muestra la imagen. Turnos ordinarios con internet real; restore borrando la imagen y cerrando el visor.",
+ "note": "H0069 executed on the merged opus/typed-tools build: web.download acepta una consulta y baja la primera imagen listada; file.open la abre; la mente lee memes e imágenes con sujeto y pregunta el sujeto cuando falta.",
+ "owner": "opus/typed-tools (catalog, Core list, Providers adapter, mind readings, composer) merged into codex/kiro-goal-c03.",
+ "build_kind": "Kernel, Core, Providers y mente",
+ "cause": "Un meme terminaba en «no puedo mostrar contenido visual».",
+ "change": "web.download acepta una consulta y baja la primera imagen listada; file.open la abre; la mente lee memes e imágenes con sujeto y pregunta el sujeto cuando falta.",
+ "sentence": "un meme se busca, se descarga y se abre con el visor",
+ "build_sentence": "herramientas tipadas de opus/typed-tools fusionadas",
+ "reviewed": false,
+ "reviewed_group": null,
+ "literal_substitutions": {},
+ "case_fixture_steps": {},
+ "preset_restore": "restore: borrar la imagen de Imágenes; cerrar el visor",
+ "derive_extra": [
+  "exec(open(\"panel_typed_meme.py\", encoding=\"utf-8\").read())"
+ ]
+}
