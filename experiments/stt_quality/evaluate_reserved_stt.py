@@ -87,8 +87,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 post-goal: BUILD2005 (displayName en finales de app.open).
 # C03 post-goal: BUILD2007 (finales de app.open y de tecleo; prohibición con clítico).
 # C03 post-goal: BUILD2009 (alias bilingüe de apps).
+# C03 post-goal: BUILD2011 (busqueda: clitico, cortesia, sitio).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "df6ddfb8fabfca6224eb4bf4ad4fe81235eb253f7da052a475bd392d59d8cd08"
+    "0a3af463220e872ff069cae32dd7595a6df81301dfc75360c997471cd540ae8d"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

@@ -109,12 +109,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 post-goal: BUILD2005 (displayName en finales de app.open).
 # C03 post-goal: BUILD2007 (finales de app.open y de tecleo; prohibición con clítico).
 # C03 post-goal: BUILD2009 (alias bilingüe de apps).
+# C03 post-goal: BUILD2011 (busqueda: clitico, cortesia, sitio).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
         "4eebc6534e2c1b0efd37b47a74bd2fee2ee1457d8933403ea1877b7796d223e5"
     ),
     "src/baxy_mind/llm.py": (
-        "2442d74a383bc604a4b26eb0316e6166e3b49d87903b737c4f8d6c7708a51cab"
+        "9435943d0c5f23b1e1c14b892fd4c25cad2343bcb8267ce0fa4b40b253a08e58"
     ),
 }
 
