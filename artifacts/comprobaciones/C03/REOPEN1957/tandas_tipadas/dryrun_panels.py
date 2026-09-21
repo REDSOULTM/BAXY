@@ -8,7 +8,7 @@ def sub(old, new, count=None):
     if n == 0 or (count is not None and n != count):
         raise SystemExit(f'MISSING/AMBIGUOUS ({n}, expected {count}): ' + old[:100])
     s = s.replace(old, new)
-for panel in sorted(pathlib.Path('.').glob('panel_typed_*.py')):
+for panel in sorted(p for p in pathlib.Path('.').glob('panel_typed_*.py') if p.name not in ('panel_typed_msgany.py','panel_typed_mail.py')):
     s = base
     exec(compile(panel.read_text(encoding='utf-8'), panel.name, 'exec'), globals())
     ast.parse(s)

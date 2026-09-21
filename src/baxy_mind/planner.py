@@ -120,8 +120,9 @@ _ENUM_EVIDENCE_ALIASES = {
     "brightness": ("brightness", "brillo"),
     "night_light": ("night light", "luz nocturna"),
     "lock": ("lock", "bloquea", "bloquear"),
-    "restart": ("restart", "reinicia", "reiniciar"),
-    "shutdown": ("shutdown", "apaga", "apagar"),
+    "restart": ("restart", "reboot", "reinicia", "reiniciar", "reiniciame"),
+    # H0714 variants: «shut down the computer», «turn off the pc», «power off».
+    "shutdown": ("shutdown", "shut down", "turn off", "power off", "switch off", "apaga", "apagar", "apagame"),
     "sleep": ("sleep", "suspende", "suspender"),
     "up": (
         "up",
