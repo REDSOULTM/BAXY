@@ -21,6 +21,11 @@ AVAILABLE = frozenset({"web.search", "weather.current", "web.news.headlines", "s
         ("dame los titulares", None),
         ("noticias de tecnología", "tecnología"),
         ("news about Chile today", "Chile"),
+        # NEWS2027 variants: a question about the news and a bare «top news».
+        ("top news today", None),
+        ("qué noticias hay de tecnología", "tecnología"),
+        ("what's the latest news", None),
+        ("cuáles son los titulares de deportes", "deportes"),
     ],
 )
 def test_news_requests_are_a_typed_headlines_read(text: str, topic: str | None) -> None:
@@ -37,6 +42,9 @@ def test_news_requests_are_a_typed_headlines_read(text: str, topic: str | None) 
         "busca el archivo noticias.txt",
         "buscá noticias de hoy y decime la hora",
         "qué significa la palabra noticias",
+        "qué es una noticia",
+        "qué pasó ayer en mi casa",
+        "no quiero noticias",
     ],
 )
 def test_other_requests_keep_their_own_reader(text: str) -> None:

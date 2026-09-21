@@ -267,7 +267,10 @@ def _news_topic(text: str) -> str | None:
         return None
     stripped = _strip_request_envelope(text.strip())
     match = re.search(
-        r"\b(?:noticias?|news|titulares|headlines)\s+(?:de|del|sobre|acerca\s+de|about|on|of)\s+"
+        # NEWS2027 «qué noticias hay de tecnología»: «hay» may sit between the
+        # news word and its topic.
+        r"\b(?:noticias?|news|titulares|headlines)\s+(?:hay\s+|tenes\s+|tienes\s+|are\s+there\s+|is\s+there\s+)?"
+        r"(?:de|del|sobre|acerca\s+de|about|on|of)\s+"
         r"(?P<topic>[^,;:.!?]+?)\s*(?:\b(?:de\s+hoy|hoy|today|ahora|now)\b)?\s*[.!?]*$",
         stripped,
         re.IGNORECASE,
@@ -679,6 +682,17 @@ def _public_live_lookup_request(folded: str) -> bool:
             "news",
             "noticias",
             "titulares",
+            # NEWS2027 «qué noticias hay de tecnología», «top news today»,
+            # «what's the news», «cuáles son los titulares», «últimas noticias»
+            "que",
+            "cuales",
+            "what",
+            "which",
+            "top",
+            "latest",
+            "ultimas",
+            "hay",
+            "any",
         }
         or news_consumption
     ) and _has(
