@@ -7759,7 +7759,8 @@ def _negative_action_forms(folded: str) -> tuple[str, ...]:
 
     found = re.match(
         r"^[¡!\s]*(?:(?P<es>no|nunca|jamas)\s+"
-        r"(?:(?:me|lo|la|los|las|nos)\s+)?|(?:never|don't|dont|do\s+not)\s+)"
+        # THEN2003 «No le pongas nada.»: the dative clitic (le/les) sits before the verb too.
+        r"(?:(?:me|te|le|les|lo|la|los|las|nos)\s+)?|(?:never|don't|dont|do\s+not)\s+)"
         r"(?P<verb>[a-z]+)\b",
         folded,
     )
@@ -19055,6 +19056,20 @@ def deictic_text_to_type(
         text.strip(),
     )
     literal = (original.group("text") if original is not None else order.group("text")).strip()
+    return literal or None
+
+
+def deictic_typed_literal(text: str) -> str | None:
+    """The literal a «ponle X» / «write on it X» order asks to type, from the
+    request alone (the composer has no history; the reader verified the
+    application before the effect ran)."""
+
+    original = re.search(
+        r"(?i)(?:pon[eé]?le|ponele|pon[eé]?melo|put\s+on\s+it|write\s+on\s+it)\s+(?P<text>.+?)"
+        r"(?:\s+(?:ahora|ya|now|please|por\s+favor|porfa))*[\s.!?]*$",
+        (text or "").strip(),
+    )
+    literal = original.group("text").strip() if original is not None else ""
     return literal or None
 
 

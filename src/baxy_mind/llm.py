@@ -4429,6 +4429,19 @@ def _compose_situation_payload(
                 and situation.get("succeeded") is True
             ):
                 visible_seen["writtenText"] = written
+        elif operation == "input.text.type" and visible_seen.get("ok") is True:
+            # THEN2003 «ponle hola mundo»: the receipt carries counts and the
+            # window it typed into, not the text, so the narrator echoed «Hola
+            # mundo». The typed literal comes from the request; the window from
+            # the receipt.
+            typed = effect_intent.deictic_typed_literal(user_text) if user_text else None
+            projected = {}
+            if isinstance(typed, str) and situation.get("verified") is True and situation.get("succeeded") is True:
+                projected["typedText"] = typed
+            title = visible_seen.get("foregroundTitleBefore")
+            if isinstance(title, str) and title.strip():
+                projected["typedInto"] = title.strip()
+            visible_seen = projected
         elif operation == "input.visible.click" and visible_seen.get("ok") is True:
             # UI1635 «clic en el botón Aceptar»: the receipt's absentOrDisabled
             # is a post-read — the control was gone after the click because
@@ -6844,6 +6857,16 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
             folded,
         ) is None:
             return "echo_without_report"
+    typed = seen.get("typedText") if isinstance(seen, dict) else None
+    if payload.get("operation") == "input.text.type" and isinstance(typed, str) and typed:
+        # THEN2003: «Hola mundo» alone was published after a verified typing.
+        if _reading_fold(typed) not in folded:
+            return "missing_typed_text"
+        if re.search(
+            r"\b(?:escrib\w*|tecle\w*|tipe\w*|puse|coloqu\w*|typed?|wrote|written|entered|put)\b",
+            folded,
+        ) is None:
+            return "typed_echo_without_report"
     if (
         payload.get("operation") == "window.close.all"
         and isinstance(seen, dict)
@@ -8985,6 +9008,10 @@ def compose_visible_defect(
             if not closed_request and not re.search(
                 r"abiert|open|running|cerrad|closed|playing|reproduc|ejecuci",
                 folded,
+            ) and not (
+                # THEN2003 «abrí el bloc de notas»: «Abrí el Bloc de notas.» tells
+                # the state of an app that was closed and opened now.
+                operation == "app.open" and _claims_it_performed_the_open(folded)
             ):
                 return "missing_state"
         verified_media_transport = (
@@ -16614,6 +16641,20 @@ class LlmRuntime:
                 "abrió. Nada más: sin descripciones, sin otros números, sin nombres "
                 "que no estén en seen.names."
             )
+        elif isinstance(visible_situation.get("seen"), dict) and isinstance(visible_situation["seen"].get("typedText"), str):
+            # THEN2003 «ponle hola mundo»: report the typing, quote the text and
+            # name the window; a bare echo of the text is not a report.
+            instruct(
+                "\nYou typed seen.typedText into the window seen.typedInto. Say, in the "
+                "first person past tense, that you wrote or typed it, quote seen.typedText "
+                "exactly inside quotation marks, and name the window or app it went into. "
+                "Nothing else: no echo of the text alone, no saving, no closing."
+                if response_language == "en"
+                else "\nEscribiste seen.typedText en la ventana seen.typedInto. Di, en pasado y "
+                "en primera persona, que lo escribiste, cita seen.typedText exacto entre "
+                "comillas y nombra la ventana o app donde quedó. Nada más: ni el texto solo "
+                "como eco, ni guardar, ni cerrar."
+            )
         elif _known_listing_in_payload(visible_situation) is not None:
             # FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:
             # the report is the count and a few names exactly as listed.
@@ -17540,6 +17581,16 @@ class LlmRuntime:
                     "You took the screenshot: say so in the first person past tense, without repeating the request, without identifiers, and without inventing where it was saved."
                     if response_language == "en"
                     else "Sacaste la captura de pantalla: dilo en pasado y en primera persona («Saqué/Tomé una captura de pantalla»), sin repetir la orden, sin identificadores y sin inventar dónde quedó."
+                ),
+                "missing_typed_text": (
+                    "Quote the exact text from seen.typedText and say you typed it into seen.typedInto."
+                    if response_language == "en"
+                    else "Cita el texto exacto de seen.typedText y di que lo escribiste en seen.typedInto."
+                ),
+                "typed_echo_without_report": (
+                    "Do not just repeat the text: say that you typed it into seen.typedInto."
+                    if response_language == "en"
+                    else "No repitas sólo el texto: di que lo escribiste en seen.typedInto."
                 ),
                 "missing_written_text": (
                     "Quote the exact text from writtenText and say you copied it to the clipboard."

@@ -52,3 +52,11 @@ def test_app_open_final_may_name_a_multiword_app_by_one_of_its_words() -> None:
     facts = {"situation": {**SITUATION, "observed": {"appId": "Google Chrome", "alreadyRunning": False}}}
     assert compose_visible_defect("Abrí Chrome.", "operation", "abrí chrome", facts) != "missing_name"
     assert compose_visible_defect("Ya está abierto.", "operation", "abrí chrome", facts) == "missing_name"
+
+
+def test_opening_a_closed_app_in_the_past_tense_is_its_state() -> None:
+    # THEN2003: «Abrí el Bloc de notas.» carries no «abierto» but says the app was opened now.
+    observed = {"appId": "windows.notepad", "displayName": "Bloc de notas", "alreadyRunning": False}
+    facts = {"situation": {**SITUATION, "observed": observed}}
+    assert compose_visible_defect("Abrí el Bloc de notas.", "operation", "abrí el bloc de notas", facts) == ""
+    assert compose_visible_defect("El Bloc de notas.", "operation", "abrí el bloc de notas", facts) == "missing_state"
