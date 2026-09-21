@@ -408,7 +408,7 @@ public static class ProductCatalog
             OperationRisks.ReadOnly,
             "document.text.read.windows.known.utf8.text.v1",
             ToolExposure.Public,
-            "Localiza un archivo de texto (txt, md, código, json…) nombrado de forma única en una carpeta conocida de Windows (o en la subcarpeta indicada) y devuelve su comienzo para decir de qué trata o citarlo; sin efecto."),
+            "Localiza un archivo de texto (txt, md, código, json…) nombrado de forma única en una carpeta conocida de Windows (o en la subcarpeta indicada) y devuelve su comienzo para presentar su tema o citarlo; sin efecto."),
         Descriptor(
             "email.latest.read",
             EmptySchema(),
