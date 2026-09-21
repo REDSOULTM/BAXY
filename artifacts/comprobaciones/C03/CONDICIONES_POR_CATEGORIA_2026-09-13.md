@@ -1758,3 +1758,7 @@ Información web actual pasa de 3/17 a 6/17 con el frío y el calor de afuera so
 ## Actualización 2026-09-21 (NEWS2027)
 
 Información web actual pasa de 6/17 a 6/17 con las noticias de hoy son titulares leídos, no una búsqueda (commit 5aca1a37, BUILD2027) (HEAD 5aca1a37): 2/8 aprobados (0 literales, 0 variantes, 2 límites), 0 créditos. Sin crédito: las seis lecturas de titulares se verifican pero los finales mueren por internal_code (fuentes con dominio); reparación en BUILD2029 y re-medición como NEWS2029.
+
+## Actualización 2026-09-21 (NEWS2029)
+
+Información web actual pasa de 6/17 a 9/17 con los titulares se citan con su fuente aunque la fuente sea un dominio (commit f764e171, BUILD2029) (HEAD f764e171): 7/8 aprobados (3 literales, 2 variantes, 2 límites), 3 créditos. Tres créditos: H0033, H0374, H0509 (Información web actual 9/17); «dame los titulares de deportes» falla por el tope de 4096 del mensaje de hechos visibles (enlaces largos en el resultado) y se repara en el commit siguiente.

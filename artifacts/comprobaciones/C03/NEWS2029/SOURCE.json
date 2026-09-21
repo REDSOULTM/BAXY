@@ -1,0 +1,15 @@
+{
+  "schema": "c03-news2029-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "src/baxy_mind/observed_response_literals.py y src/Baxy.App/ObservedResponseLiterals.cs sobre la tipada web.news.headlines de opus/typed-tools (8edf110ac) y las cabezas de pregunta del build 2027 (dac91efe2).",
+  "patch": "artifacts/comprobaciones/C03/NEWS2029/SOURCE.patch",
+  "commits": [
+    "71e51792b"
+  ],
+  "build": "BUILD2029 (C03-repairs2029-build/BUILD_READY.json; App y mente)",
+  "cause_measured": "Los finales de noticias morían por internal_code: la fuente de un titular («cooperativa.cl») parecía un código con puntos.",
+  "change": "El título y la fuente de cada titular leído son vocabulario observado en los dos guardianes; el compositor puede citarlos tal cual.",
+  "measurement": "NEWS2029: 7/8 aprobados (3 literales, 2 variantes, 2 límites); 3 créditos. Tres créditos: H0033, H0374, H0509 (Información web actual 9/17); «dame los titulares de deportes» falla por el tope de 4096 del mensaje de hechos visibles (enlaces largos en el resultado) y se repara en el commit siguiente.",
+  "credits": 3
+}
