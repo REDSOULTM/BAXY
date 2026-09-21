@@ -98,7 +98,9 @@ internal sealed class GoogleNewsHeadlinesAdapter : IExternalOperationAdapter, ID
                 writer.WriteString("title", headline.Title);
                 writer.WriteString("source", headline.Source);
                 writer.WriteString("publishedAt", headline.PublishedAt);
-                writer.WriteString("url", headline.Url);
+                // NEWS2029: the Google News redirect link (hundreds of bytes each) pushed five
+                // headlines past the visible-facts cap and the mind saw no headlines at all;
+                // the link says nothing to the person, so the result keeps only what is read aloud.
                 writer.WriteEndObject();
             }
 

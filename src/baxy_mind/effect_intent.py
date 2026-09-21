@@ -17581,17 +17581,21 @@ def folder_txt_zip_open_mission(text: str) -> str | None:
     if _is_negative_effect_clause(folded):
         return None
     match = re.search(
-        rf"\b(?:crea|crear|creame|create|make|haz|hace)\s+(?:una\s+|a\s+)?(?:carpeta|folder|directorio|directory)"
+        # ZIP (typed tandas): «armá una carpeta en el escritorio con un txt, comprimila y
+        # abrí el zip», «make a folder on the desktop with a txt inside, zip it and open the zip».
+        rf"\b(?:crea|crear|creame|create|make|haz|hace|arma|armar|armame)\s+(?:una\s+|a\s+)?(?:carpeta|folder|directorio|directory)"
         rf"(?:\s+(?:nueva|new))?\s+(?:en|on|in)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS})\b",
         folded,
     )
     if match is None:
         return None
-    if not _has(folded, r"\b(?:mete|meter|pone|pon|poner|crea|crear|guarda|put|add|create)\b.{0,20}\b(?:txt|archivo\s+de\s+texto|text\s+file|archivo\s+txt)\b"):
+    if not _has(folded, r"\b(?:mete|meter|pone|pon|poner|crea|crear|guarda|put|add|create|con|with)\b.{0,20}\b(?:txt|archivo\s+de\s+texto|text\s+file|archivo\s+txt)\b"):
         return None
     if not _has(folded, r"\b(?:comprim\w+|zip\w*|compress\w*)\b"):
         return None
-    if not _has(folded, r"\b(?:abre|abri|abrir|abrilo|abrila|open)\b.{0,12}\b(?:zip|comprimid[oa]|archive)\b"):
+    if not _has(folded, r"\b(?:abre|abri|abrir|abrilo|abrila|open)\b.{0,12}\b(?:zip|comprimid[oa]|archive)\b") and not _has(
+        folded, r"\b(?:comprim\w+|zip\w*|compress\w*)\b.{0,12}\b(?:y|and|,)?\s*(?:abrila|abrilo|abrela|abrelo|open\s+it)\s*$"
+    ):
         return None
     return _KNOWN_FOLDER_ENUM.get(match.group("folder"))
 
@@ -17654,7 +17658,10 @@ def wallpaper_request(text: str) -> dict[str, str | None] | None:
     if not _has(folded, r"\b(?:cambia|cambiar|cambiame|pon|pone|poneme|poner|establece|coloca|usa|change|set|put|use|make)\b"):
         return None
     colour = re.search(
-        r"\b(?:a|al|de\s+color|en|to|color)\s+(?P<color>azul|rojo|verde|negro|blanco|gris|amarillo|naranja|violeta|morado|rosa|celeste|marron|"
+        # WALLPAPER (typed tandas): «poné el fondo de escritorio verde» names the
+        # colour right after the noun, without «a» or «de color».
+        r"(?:\b(?:a|al|de\s+color|en|to|color)\s+|\b(?:pantalla|escritorio|fondo|wallpaper|background)\s+)"
+        r"(?P<color>azul|rojo|verde|negro|blanco|gris|amarillo|naranja|violeta|morado|rosa|celeste|marron|"
         r"blue|red|green|black|white|gray|grey|yellow|orange|purple|pink|lightblue|brown|#?[0-9a-f]{6})\b",
         folded,
     )
