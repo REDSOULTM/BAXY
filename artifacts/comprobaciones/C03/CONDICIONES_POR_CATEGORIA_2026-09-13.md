@@ -1726,3 +1726,7 @@ Alarmas, recordatorios, tareas y agenda pasa de 37/38 a 38/38 con cancelar la al
 ## Actualización 2026-09-21 (THEN2003)
 
 Interacción dentro de aplicaciones pasa de 12/22 a 12/22 con escribir en la app recien abierta sin preguntar (commit 6bce0d97, BUILD2003) (HEAD 6bce0d97): 8 ejecutados, 2 aprobados (dos límites), 6 fallidos (cuatro sin final tras abrir el Bloc de notas por la regla de estado; uno con el tecleo verificado pero el final como eco; un límite de prohibición no reconocido), 0 créditos. Dos defectos del composer: la regla de estado veta «Abrí el Bloc de notas.» y el final del tecleo repite el texto sin decir que lo escribió. Reparados en el commit siguiente; se vuelve a medir H0097.
+
+## Actualización 2026-09-21 (THEN2007)
+
+Interacción dentro de aplicaciones pasa de 12/22 a 13/22 con escribir en la app recien abierta sin preguntar (commit 6ff50ec8, BUILD2007) (HEAD 6ff50ec8): 8 ejecutados, 6 aprobados (H0097 con dos variantes en español y los tres límites), 2 fallidos (las variantes en inglés: «I opened Notepad.» vetado por el nombre español de la app), 1 créditos. Arista del chequeo de nombre: el displayName es español y la respuesta inglesa nombra Notepad; se añade el alias bilingüe. La limpieza de la raíz restaura los bytes de TabState del Bloc de notas.

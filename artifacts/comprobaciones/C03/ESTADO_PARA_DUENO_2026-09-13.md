@@ -1,3 +1,25 @@
+## THEN2007 — estado vigente 2026-09-21T08:57:16.400208+00:00
+
+Parcial: 6 aprobados, 2 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 654/742 | 88 | 0 | >=630 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 629 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); THEN2007 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: THEN2007: 8 ejecutados, 6 aprobados, 2 fallidos, 1 créditos (índices [0]). Siguiente: SEARCH2005 y las tandas de las tipadas.
+
+Evidencia: `artifacts/comprobaciones/C03/THEN2007/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 197.50 s acumulados; pico GPU 3492.93 MiB; pico RAM 2412.73 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque THEN2007 precedente. -->
+
 ## THEN2003 — estado vigente 2026-09-21T08:18:24.663658+00:00
 
 Parcial: 2 aprobados, 6 fallidos, 0 sin ejecutar; 0 créditos.
