@@ -1,6 +1,6 @@
 # Root fixtures, presets and restores for the typed-tool tandas (opus/typed-tools).
 # usage: typed_fixtures.ps1 <cap> before|after [caseProfileDir]
-#   cap: textread | explorer_count | wallpaper | airplane | zip | download | meme | pptx | wifi_place | winget | steam | power
+#   cap: textread | explorer_count | wallpaper | airplane | zip | download | meme | pptx | wifi_place | winget | steam | steam_dl | steam_inst | launch | power
 # Every step prints one JSON line; "after" never fails the case (restore is best effort, reported).
 # Runs OUTSIDE the turn (before the observe, after the collect). Owner rule: never touch the owner's own
 # documents; fixtures live under the known folders with distinctive names and are removed afterwards.
@@ -13,7 +13,21 @@ $documents = [Environment]::GetFolderPath('MyDocuments')
 $downloads = Join-Path ([Environment]::GetFolderPath('UserProfile')) 'Downloads'
 $pictures = [Environment]::GetFolderPath('MyPictures')
 function Out($o) { $o | ConvertTo-Json -Compress -Depth 4 }
-function RemoveIf($p) { if ($p -notmatch 'raiz_|Nueva carpeta|New folder|\.(png|jpe?g|gif|webp|pdf|html?|pptx)$|wifi-places') { throw "refusing to remove a path outside the fixtures: $p" }; if (Test-Path -LiteralPath $p) { Remove-Item -LiteralPath $p -Recurse -Force -ErrorAction SilentlyContinue; return $true } return $false }
+# INCIDENTS 2026-09-20 22:42 and 2026-09-21 12:33: fixtures deleted the owner's own folders. Rules: (1) only paths
+# under an own «raiz_*» folder are ever removed permanently; (2) anything else (a «Nueva carpeta» the case created)
+# is removed ONLY when it did not exist at the `before` step and was created after it, and goes to the Recycle Bin.
+function RemoveIf($p) { if ($p -notmatch 'raiz_|\.(png|jpe?g|gif|webp|pdf|html?|pptx)$|wifi-places') { throw "refusing to remove a path outside the fixtures: $p" }; if (Test-Path -LiteralPath $p) { Remove-Item -LiteralPath $p -Recurse -Force -ErrorAction SilentlyContinue; return $true } return $false }
+Add-Type -AssemblyName Microsoft.VisualBasic
+function RecycleNewOnly($p, $since, $preexisting) {
+  # Sends $p to the Recycle Bin only if it was NOT in $preexisting and its creation time is after $since.
+  if (-not (Test-Path -LiteralPath $p)) { return $false }
+  if ($preexisting -contains $p) { return $false }
+  $item = Get-Item -LiteralPath $p -Force
+  if ($item.CreationTime -lt $since) { return $false }
+  if ($item.PSIsContainer) { [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteDirectory($p, 'OnlyErrorDialogs', 'SendToRecycleBin') }
+  else { [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile($p, 'OnlyErrorDialogs', 'SendToRecycleBin') }
+  return $true
+}
 
 switch ("$Cap/$Phase") {
   'textread/before' {
@@ -111,29 +125,62 @@ switch ("$Cap/$Phase") {
     }
     Out @{ ok = $true; restored = $restored }
   }
+  'zip/before' {
+    # H0542 creates «Nueva carpeta» + txt + zip on the Desktop. Record what already exists so `after` never touches it.
+    $names = @('Nueva carpeta','Nueva carpeta.zip','New folder','New folder.zip')
+    $pre = @(); foreach ($n in $names) { $q = Join-Path $desktop $n; if (Test-Path -LiteralPath $q) { $pre += $q } }
+    @{ since = (Get-Date).ToString('o'); preexisting = $pre } | ConvertTo-Json -Compress | Set-Content (Join-Path $state 'zip.json')
+    Out @{ ok = $true; preexisting = $pre }
+  }
   'zip/after' {
+    $st = Get-Content (Join-Path $state 'zip.json') | ConvertFrom-Json
+    $since = [DateTime]::Parse($st.since); $pre = @($st.preexisting)
     $removed = @()
-    foreach ($root in @($desktop, $documents)) { foreach ($n in 'Nueva carpeta','Nueva carpeta.zip','New folder','New folder.zip') { if (RemoveIf (Join-Path $root $n)) { $removed += (Join-Path $root $n) } } }
+    foreach ($n in 'Nueva carpeta','Nueva carpeta.zip','New folder','New folder.zip') { $q = Join-Path $desktop $n; if (RecycleNewOnly $q $since $pre) { $removed += $q } }
     $shell = New-Object -ComObject Shell.Application
     foreach ($w in @($shell.Windows())) { try { if ([string]$w.LocationURL -like "*Nueva*carpeta*" -or [string]$w.LocationURL -like "*New*folder*") { $w.Quit() } } catch {} }
-    Out @{ ok = $true; removed = $removed }
+    Out @{ ok = $true; recycled = $removed; preexistingKept = $pre }
+  }
+  'download/before' {
+    $roots = @($desktop, $downloads, $pictures)
+    $pre = @(); foreach ($r in $roots) { $pre += @(Get-ChildItem -LiteralPath $r -File -Force -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName }) }
+    @{ since = (Get-Date).ToString('o'); preexisting = $pre } | ConvertTo-Json -Compress -Depth 3 | Set-Content (Join-Path $state 'download.json')
+    Out @{ ok = $true; snapshotFiles = $pre.Count }
   }
   'download/after' {
+    $st = Get-Content (Join-Path $state 'download.json') | ConvertFrom-Json
+    $since = [DateTime]::Parse($st.since); $pre = @($st.preexisting)
     $removed = @()
-    foreach ($root in @($desktop, $downloads, $pictures)) { Get-ChildItem -LiteralPath $root -File -ErrorAction SilentlyContinue | Where-Object { $_.LastWriteTime -gt (Get-Date).AddMinutes(-20) -and $_.Name -match '\.(png|jpe?g|gif|webp|pdf|html?)$' -and $_.Name -notmatch '^raiz' } | ForEach-Object { $removed += $_.FullName; Remove-Item -LiteralPath $_.FullName -Force -ErrorAction SilentlyContinue } }
-    Out @{ ok = $true; removed = $removed }
+    foreach ($r in @($desktop, $downloads, $pictures)) { Get-ChildItem -LiteralPath $r -File -Force -ErrorAction SilentlyContinue | Where-Object { $_.Name -match '\.(png|jpe?g|gif|webp|pdf|html?)$' } | ForEach-Object { if (RecycleNewOnly $_.FullName $since $pre) { $removed += $_.FullName } } }
+    Out @{ ok = $true; recycled = $removed }
+  }
+  'meme/before' {
+    $pre = @(Get-ChildItem -LiteralPath $pictures -File -Force -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName })
+    $pre += @(Get-ChildItem -LiteralPath $desktop -File -Force -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName })
+    @{ since = (Get-Date).ToString('o'); preexisting = $pre } | ConvertTo-Json -Compress -Depth 3 | Set-Content (Join-Path $state 'meme.json')
+    Out @{ ok = $true; snapshotFiles = $pre.Count }
   }
   'meme/after' {
     Get-Process -Name 'Photos','PhotosApp','Microsoft.Photos','mspaint','PhotoViewer' -ErrorAction SilentlyContinue | ForEach-Object { $_.CloseMainWindow() | Out-Null }
+    $st = Get-Content (Join-Path $state 'meme.json') | ConvertFrom-Json
+    $since = [DateTime]::Parse($st.since); $pre = @($st.preexisting)
     $removed = @()
-    Get-ChildItem -LiteralPath $pictures -File -ErrorAction SilentlyContinue | Where-Object { $_.LastWriteTime -gt (Get-Date).AddMinutes(-20) -and $_.Name -match '^(meme|foto|imagen|gif|sticker|dibujo|picture|image|photo)' } | ForEach-Object { $removed += $_.FullName; Remove-Item -LiteralPath $_.FullName -Force -ErrorAction SilentlyContinue }
-    Out @{ ok = $true; removed = $removed }
+    foreach ($r in @($pictures, $desktop)) { Get-ChildItem -LiteralPath $r -File -Force -ErrorAction SilentlyContinue | Where-Object { $_.Name -match '\.(png|jpe?g|gif|webp)$' } | ForEach-Object { if (RecycleNewOnly $_.FullName $since $pre) { $removed += $_.FullName } } }
+    Out @{ ok = $true; recycled = $removed }
+  }
+  'pptx/before' {
+    $pre = @(Get-ChildItem -LiteralPath $documents -File -Force -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName })
+    $pre += @(Get-ChildItem -LiteralPath $desktop -File -Force -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName })
+    @{ since = (Get-Date).ToString('o'); preexisting = $pre } | ConvertTo-Json -Compress -Depth 3 | Set-Content (Join-Path $state 'pptx.json')
+    Out @{ ok = $true; snapshotFiles = $pre.Count }
   }
   'pptx/after' {
     Get-Process -Name 'POWERPNT' -ErrorAction SilentlyContinue | ForEach-Object { $_.CloseMainWindow() | Out-Null; Start-Sleep -Seconds 2; if (-not $_.HasExited) { $_.Kill() } }
+    $st = Get-Content (Join-Path $state 'pptx.json') | ConvertFrom-Json
+    $since = [DateTime]::Parse($st.since); $pre = @($st.preexisting)
     $removed = @()
-    Get-ChildItem -LiteralPath $documents -Filter '*.pptx' -File -ErrorAction SilentlyContinue | Where-Object { $_.LastWriteTime -gt (Get-Date).AddMinutes(-20) } | ForEach-Object { $removed += $_.FullName; Remove-Item -LiteralPath $_.FullName -Force -ErrorAction SilentlyContinue }
-    Out @{ ok = $true; removed = $removed }
+    foreach ($r in @($documents, $desktop)) { Get-ChildItem -LiteralPath $r -Filter '*.pptx' -File -Force -ErrorAction SilentlyContinue | ForEach-Object { if (RecycleNewOnly $_.FullName $since $pre) { $removed += $_.FullName } } }
+    Out @{ ok = $true; recycled = $removed }
   }
   'wifi_place/before' {
     $cur = (netsh wlan show interfaces | Select-String '^\s*Perfil\s*:|^\s*Profile\s*:' | Select-Object -First 1) -replace '.*:\s*',''
@@ -226,6 +273,34 @@ switch ("$Cap/$Phase") {
     foreach ($mf in $missing) { $id = ($mf -replace 'appmanifest_(\d+)\.acf','$1'); if ($id -in @('3590', '461040')) { $results += (& $PSCommandPath steam install $id) } }
     Out @{ ok = $true; reinstalled = $results; missingAtEnd = $missing }
   }
+  'steam/pvz-absent' {
+    # Per-case precondition for an install/download case: Plants vs. Zombies (3590) absent.
+    $r = & $PSCommandPath steam uninstall 3590; Write-Output $r
+  }
+  'steam/pvz-present' {
+    # Per-case precondition for an uninstall or launch case: Plants vs. Zombies (3590) present.
+    $r = & $PSCommandPath steam install 3590; Write-Output $r
+  }
+  'launch/before' {
+    $pvz = Test-Path 'C:\Program Files (x86)\Steam\steamapps\appmanifest_3590.acf'
+    $pico = Test-Path 'C:\Program Files (x86)\Steam\steamapps\appmanifest_461040.acf'
+    if (-not $pvz) { & $PSCommandPath steam install 3590 | Out-Null }
+    if (-not $pico) { & $PSCommandPath steam install 461040 | Out-Null }
+    Out @{ ok = ((Test-Path 'C:\Program Files (x86)\Steam\steamapps\appmanifest_3590.acf') -and (Test-Path 'C:\Program Files (x86)\Steam\steamapps\appmanifest_461040.acf')); pvzWasPresent = $pvz; picoWasPresent = $pico }
+  }
+  'launch/close' {
+    # Closes a game launched by the previous case (PvZ GOTY: PlantsVsZombies / popcapgame1; PICO PARK: PICO PARK).
+    $names = @('PlantsVsZombies', 'popcapgame1', 'PICO PARK', 'PicoPark')
+    $closed = @()
+    foreach ($n in $names) { Get-Process -Name $n -ErrorAction SilentlyContinue | ForEach-Object { $closed += $_.ProcessName; Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue } }
+    Start-Sleep -Milliseconds 800
+    Out @{ ok = $true; closed = $closed }
+  }
+  'launch/after' {
+    $r = & $PSCommandPath launch close; Write-Output $r
+  }
+  { $_ -in @('steam_dl/before', 'steam_inst/before') } { $r = & $PSCommandPath steam before; Write-Output $r }
+  { $_ -in @('steam_dl/after', 'steam_inst/after') } { $r = & $PSCommandPath steam after; Write-Output $r }
   'power/after' {
     $out = (shutdown /a 2>&1 | Out-String).Trim()
     Out @{ ok = $true; abort = $out }
