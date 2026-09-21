@@ -422,16 +422,10 @@ public sealed class MemoryHandlersTests
             journal,
                                new MissionEngineOptions { PrivateEnvelopeAuthenticator = new MemoryEnvelopeAuthenticator(harness.Codec, harness.ExportWriter) });
 
-        OperationResponse challenge = await engine.ExecuteAsync(
-            request,
-            CancellationToken.None);
-        string token = challenge.Result!.Value.GetProperty("token").GetString()!;
+        // D3 (DECISIONES_DUENO_2026-09-20): memory.export is privacy_sensitive and
+        // runs directly in normal mode; no confirmation challenge precedes it.
         OperationResponse completed = await engine.ExecuteAsync(
-            request with
-            {
-                RequestId = Guid.NewGuid().ToString("D"),
-                ConfirmationToken = token,
-            },
+            request,
             CancellationToken.None);
         using OpenedBoundProtectedJson opened = harness.Codec.OpenResult(
             completed.Result!.Value,
