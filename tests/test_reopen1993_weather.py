@@ -89,3 +89,16 @@ def test_the_reply_carries_only_observed_numbers_and_the_place(text: str, asked:
 def test_the_absences_have_their_own_cause_facts() -> None:
     for code in ("weather_place_not_found", "weather_location_unavailable", "weather_service_unavailable"):
         assert code in llm._CAUSE_FACT
+
+
+def test_the_cold_outside_is_a_weather_read() -> None:
+    # WEATHER2023 variant «¿hace frío afuera?»: a yes/no question about the cold outside reads the weather.
+    from baxy_mind import effect_intent
+    for text in ("¿hace frío afuera?", "hace calor hoy?", "is it cold outside?"):
+        intent = effect_intent.resolve_explicit_effects(text, ("weather.current", "web.search"), ("Steam",), ())
+        assert intent is not None and intent.operations == ("weather.current",), text
+    # WEATHER2023 boundary: the past has no live read.
+    for text in ("qué clima hacía en Buenos Aires en 1990", "llovió ayer?", "what was the weather in 2001"):
+        intent = effect_intent.resolve_explicit_effects(text, ("weather.current", "web.search"), ("Steam",), ())
+        assert intent is None or intent.operations != ("weather.current",), text
+        assert effect_intent.known_unsupported_effect_request(text, {"weather.current", "web.search"}), text

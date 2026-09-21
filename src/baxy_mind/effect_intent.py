@@ -135,7 +135,8 @@ def _public_calendar_fact_lookup_request(folded: str) -> bool:
 
 _WEATHER_WORDS = (
     r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|llover|"
-    r"llovera|temperature|temperatura)\b"
+    # WEATHER2023 «¿hace frío afuera?»: the cold or the heat outside is the weather too.
+    r"llovera|llovio|temperature|temperatura|frio|fria|calor|cold|hot|caluroso|calurosa)\b"
 )
 
 
@@ -148,6 +149,15 @@ def _weather_lookup_query(text: str) -> str | None:
     if not _public_live_lookup_request(folded) or not _has(folded, _WEATHER_WORDS):
         return None
     if _has(folded, r"^[¿?¡!\s]*(?:que|what)\s+(?:es|son|is|are|significa|means)\b"):
+        return None
+    # WEATHER2023 boundary «qué clima hacía en Buenos Aires en 1990»: the past
+    # (a past-tense verb or a year) has no live read; the turn says so instead
+    # of reading today's weather.
+    if _has(
+        folded,
+        r"\b(?:hacia|hizo|hubo|estuvo|estaba|fue|llovio|was|were|did|rained)\b|"
+        r"\b(?:19|20)\d\d\b|\b(?:ayer|anteayer|yesterday|la\s+semana\s+pasada|last\s+week)\b",
+    ):
         return None
     query = text.strip(" \t\r\n¿?¡!.,;:")
     query = re.sub(r"^(?:por favor|please)\s*[,:]?\s*", "", query, flags=re.IGNORECASE)
@@ -613,6 +623,8 @@ def _public_live_lookup_request(folded: str) -> bool:
     head = _request_head(folded)
     weather_heads = {
         "are",
+        # WEATHER2023 «¿hace frío afuera?», «hace calor hoy?»
+        "hace",
         "busca",
         "buscame",
         "buscar",
@@ -685,7 +697,12 @@ def _public_live_lookup_request(folded: str) -> bool:
         folded,
         r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|llover|"
         r"umbrella|paraguas|temperature|temperatura|hot|caluroso|calurosa|"
-        r"cold|frio|fria)\b",
+        r"cold|frio|fria|calor)\b",
+    ) and not _has(
+        # WEATHER2023 boundary: the weather of the past is no live lookup.
+        folded,
+        r"\b(?:hacia|hizo|hubo|estuvo|estaba|fue|llovio|was|were|did|rained)\b|"
+        r"\b(?:19|20)\d\d\b|\b(?:ayer|anteayer|yesterday|la\s+semana\s+pasada|last\s+week)\b",
     )
     # WEB1451 «qué pasó hoy en el mundo»: what happened today is the news.
     todays_events = (
@@ -3754,6 +3771,18 @@ def known_unsupported_effect_request(
             _has(folded, r"\b(?:pon|pone|poneme|ponme|poné|reproduce|reproduci|reprodúceme|play|put(?:\s+on)?|start|inicia|dale|ver|mira|mirar|watch|quiero\s+ver|quisiera\s+ver)\b")
             and _has(folded, r"\b(?:en|on|in)\s+(?:amazon\s+)?(?:prime\s*video|primevideo|prime)\b"),
             {"streaming.play.prime_video"},
+        ),
+        (
+            # WEATHER2023 boundary «qué clima hacía en Buenos Aires en 1990»:
+            # the weather of the past (a past-tense verb or a year) has no
+            # live read; weather.current reads today and tomorrow only.
+            _has(folded, _WEATHER_WORDS)
+            and _has(
+                folded,
+                r"\b(?:hacia|hizo|hubo|estuvo|estaba|fue|llovio|was|were|did|rained)\b|"
+                r"\b(?:19|20)\d\d\b|\b(?:ayer|anteayer|yesterday|la\s+semana\s+pasada|last\s+week)\b",
+            ),
+            {"weather.history"},
         ),
     )
     return any(
