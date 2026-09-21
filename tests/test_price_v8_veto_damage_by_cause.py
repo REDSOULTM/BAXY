@@ -113,9 +113,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 post-goal: BUILD2013 (web.search en el shortlist; cortesia fuera del argumento).
 # C03 post-goal: BUILD2017 (vocabulario propio del informe de busqueda).
 # C03 post-goal: BUILD2021 (pista del veto de afirmacion sin fuente).
+# C03 post-goal: BUILD2021b (guarda de get en el shortlist).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "cc1b687073e581766501c8598c2e5b821c8d0064ee3fd42593a2d169d0ed6cb7"
+        "00c892d2fd2a6d44f5f57e543ed65d7a5fbc94657222e6d325fc00b88a86f360"
     ),
     "src/baxy_mind/llm.py": (
         "9f8019c86ba13f4653960f79c27e5a7b61d6d0c2b75986e394397497e66c2be2"
