@@ -1746,3 +1746,7 @@ Navegación y búsqueda web pasa de 43/46 a 43/46 con buscar recetas de pizza co
 ## Actualización 2026-09-21 (SEARCH2019)
 
 Navegación y búsqueda web pasa de 43/46 a 44/46 con buscar recetas de pizza con resultados pertinentes y su sitio (commit a17670a8, BUILD2019) (HEAD a17670a8): 8 ejecutados, 7 aprobados (H0098 con tres variantes y los tres límites), 1 fallido (una variante sin final: una palabra sin fuente y reintentos con direcciones pegadas), 1 créditos. La pista de reintento del veto de afirmación sin fuente se repara para nombrar las palabras y conservar el informe; la lectura de búsqueda queda medida.
+
+## Actualización 2026-09-21 (WEATHER2023)
+
+Información web actual pasa de 3/17 a 3/17 con el clima se lee de un servicio de pronóstico, no de una búsqueda (commit be90f56b, BUILD2023) (HEAD be90f56b): 8 ejecutados, 6 aprobados (los cuatro literales, la variante en inglés y el límite de prohibición), 2 fallidos («¿hace frío afuera?» preguntó; el límite del pasado leyó el clima de hoy), 0 créditos. La lectura de clima gana la cabeza «hace» y las palabras frío/calor, y excluye el pasado (verbo en pasado o año); se vuelve a medir el panel.
