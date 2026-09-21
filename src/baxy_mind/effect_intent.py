@@ -10630,7 +10630,8 @@ _SCHEDULING_BY_ITSELF = (
     r"recordatorio|recordatorios|reminder|reminders|"
     r"alarma|alarmas|alarm|alarms|temporizador|temporizadores|timer|timers)"
 )
-_SEARCH = r"(?:busc[aá]|buscar|encuentra|search|find|look\s+up)"
+# SEARCH2005 «dale, buscame recetas de pizza»: the clitic forms head a search too.
+_SEARCH = r"(?:busc[aá](?:me|melo|mela|mel[oa]s)?|buscar|encuentra|search|find|look\s+up)"
 # Verbs for catalog effects that this conservative recognizer does not
 # necessarily classify itself.  They are used only as clause boundaries: if a
 # compound request contains one of them and the following clause cannot be
@@ -16074,12 +16075,20 @@ def _direct_public_search_query(text: str) -> str | None:
     if match is None:
         return None
     query = match.group("query").strip(" \t.,;:!?\"'“”«»")
+    # SEARCH2005 «Buscá Transformers, porfa»: a trailing courtesy is not part of the query.
+    query = re.sub(
+        r"\s*[,;]?\s*(?:por\s+favor|porfa|porfi|please|pls|plz|dale|gracias|thanks)\s*$",
+        "",
+        query,
+        flags=re.IGNORECASE,
+    ).strip(" \t.,;:!?\"'“”«»")
     folded = _fold(text)
     if (
         not query
         or _has(_fold(query), r"^(?:for|en|on)[.!?]*$")
         or not effect_request_is_authoritative(text)
-        or len(_request_clauses(folded)) != 1
+        # SEARCH2005 «dale, buscame recetas de pizza»: the opener is envelope, not a clause.
+        or len(_request_clauses(_fold(_strip_request_envelope(text)))) != 1
         or _has(
             folded,
             r"\b(?:mi|mis|my|our|nuestros?|nuestras?|tus?|your|"

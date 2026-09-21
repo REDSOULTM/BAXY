@@ -6381,6 +6381,12 @@ def _search_report_without_source(text: str, payload: dict, user_text: str) -> b
     if not sources:
         return False
     folded = _reading_fold(text)
+    # SEARCH2005: a page a person can open is named by its site. With hosts
+    # known, a report of titles alone («47 Homemade Pizza Recipes… - …») names
+    # no page; the title windows only count when no host came back.
+    hosts = [source for source in sources if " " not in source]
+    if hosts:
+        return not any(host in folded for host in hosts)
     return not any(source in folded for source in sources)
 
 
