@@ -1,0 +1,47 @@
+{
+ "prev": "<prev>",
+ "new": "<new: typedsteam_dlNNNN>",
+ "grandparent": "<GRANDPARENT>",
+ "registry_parent": "<REGISTRY_PARENT>",
+ "template": "video1955",
+ "sources": [],
+ "plan_title": "descargar en Steam: diez filas de descarga con el título de prueba",
+ "plan_body": "D11 reabrió diez filas de «Descarga X en Steam» acreditadas como lectura de biblioteca. Con game.install.named la descarga empieza de verdad por steam://install, verificada por manifiesto, y el final dice que empezó. Panel de 13: diez literales (títulos del dueño sustituidos por Plants vs. Zombies, D13; «seam» y «de steam» se leen como Steam), una variante, dos límites; antes de cada descarga el fixture deja el título ausente (steam/pvz-absent).",
+ "note": "H0049, H0118, H0272, H0382, H0390, H0434, H0482, H0659, H0671, H0680 executed on the merged opus/typed-tools build: descarga real por steam://install verificada por manifiesto, ordinaria (Installation).",
+ "owner": "opus/typed-tools (catalog, Core list, Providers adapter, mind readings, composer) merged into codex/kiro-goal-c03.",
+ "build_kind": "Kernel, Core, Providers y mente",
+ "cause": "«Descarga X en Steam» terminaba en una lectura de biblioteca sin descargar.",
+ "change": "descarga real por steam://install verificada por manifiesto, ordinaria (Installation).",
+ "sentence": "descargar en Steam: diez filas de descarga con el título de prueba",
+ "build_sentence": "herramientas tipadas de opus/typed-tools fusionadas",
+ "reviewed": false,
+ "reviewed_group": null,
+ "literal_substitutions": {
+  "H0049": "Descarga Plants vs. Zombies en seam",
+  "H0118": "Descarga Plants vs. Zombies de steam",
+  "H0272": "Descarga Plants vs. Zombies en steam",
+  "H0382": "descarga Plants vs. Zombies en steam",
+  "H0390": "Descarga Plants vs. Zombies en steam",
+  "H0434": "Descarga Plants vs. Zombies en steam",
+  "H0482": "Descarga Plants vs. Zombies en Steam",
+  "H0659": "Descarga Plants vs. Zombies en steam",
+  "H0671": "Descarga Plants vs. Zombies en steam",
+  "H0680": "Descarga Plants vs. Zombies en steam"
+ },
+ "case_fixture_steps": {
+  "H0118": "steam/pvz-absent",
+  "H0272": "steam/pvz-absent",
+  "H0382": "steam/pvz-absent",
+  "H0390": "steam/pvz-absent",
+  "H0434": "steam/pvz-absent",
+  "H0482": "steam/pvz-absent",
+  "H0659": "steam/pvz-absent",
+  "H0671": "steam/pvz-absent",
+  "H0680": "steam/pvz-absent",
+  "typedsteam_dl-dev-01": "steam/pvz-absent"
+ },
+ "preset_restore": "steam/before (registra manifiestos, deja PvZ ausente) y steam/after (reinstala lo que falte); pasos por caso CASE_FIXTURE_STEPS steam/pvz-absent antes de cada descarga salvo la primera",
+ "derive_extra": [
+  "exec(open(\"panel_typed_steam_dl.py\", encoding=\"utf-8\").read())"
+ ]
+}

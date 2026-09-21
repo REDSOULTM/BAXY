@@ -1,6 +1,6 @@
 # Root fixtures, presets and restores for the typed-tool tandas (opus/typed-tools).
 # usage: typed_fixtures.ps1 <cap> before|after [caseProfileDir]
-#   cap: textread | explorer_count | wallpaper | airplane | zip | download | meme | pptx | wifi_place | winget | steam | steam_dl | steam_inst | launch | power
+#   cap: textread | explorer_count | wallpaper | airplane | zip | download | meme | pptx | wifi_place | winget | steam | steam_dl | steam_inst | launch | appvolume | power
 # Every step prints one JSON line; "after" never fails the case (restore is best effort, reported).
 # Runs OUTSIDE the turn (before the observe, after the collect). Owner rule: never touch the owner's own
 # documents; fixtures live under the known folders with distinctive names and are removed afterwards.
@@ -301,6 +301,29 @@ switch ("$Cap/$Phase") {
   }
   { $_ -in @('steam_dl/before', 'steam_inst/before') } { $r = & $PSCommandPath steam before; Write-Output $r }
   { $_ -in @('steam_dl/after', 'steam_inst/after') } { $r = & $PSCommandPath steam after; Write-Output $r }
+  'appvolume/before' {
+    # Fase 8 (D18): Spotify with an audio session (played once, then paused) and its own level recorded.
+    $helper = Join-Path $PSScriptRoot 'app_volume.ps1'
+    if (-not (Get-Process Spotify -ErrorAction SilentlyContinue)) { Start-Process 'spotify:'; Start-Sleep -Seconds 8 }
+    $st = (& powershell -NoProfile -File $helper get Spotify | ConvertFrom-Json)
+    if (@($st.sessions).Count -eq 0) {
+      # No session yet: play through SMTC for three seconds, then pause; the session survives paused.
+      & powershell -NoProfile -File $helper smtc-play Spotify | Out-Null; Start-Sleep -Seconds 3
+      & powershell -NoProfile -File $helper smtc-pause Spotify | Out-Null; Start-Sleep -Seconds 1
+      $st = (& powershell -NoProfile -File $helper get Spotify | ConvertFrom-Json)
+    }
+    $level = $(if (@($st.sessions).Count -gt 0) { ($st.sessions | Measure-Object -Property level -Maximum).Maximum } else { $null })
+    @{ level = $level } | ConvertTo-Json -Compress | Set-Content (Join-Path $state 'appvolume.json')
+    Out @{ ok = (@($st.sessions).Count -gt 0); sessions = @($st.sessions).Count; level = $level }
+  }
+  'appvolume/after' {
+    $helper = Join-Path $PSScriptRoot 'app_volume.ps1'
+    $st = Get-Content (Join-Path $state 'appvolume.json') | ConvertFrom-Json
+    & powershell -NoProfile -File $helper smtc-pause Spotify | Out-Null
+    $restored = $null
+    if ($null -ne $st.level) { $restored = (& powershell -NoProfile -File $helper set Spotify ([int]$st.level)) }
+    Out @{ ok = $true; restoredTo = $st.level; readback = $restored }
+  }
   'power/after' {
     $out = (shutdown /a 2>&1 | Out-String).Trim()
     Out @{ ok = $true; abort = $out }

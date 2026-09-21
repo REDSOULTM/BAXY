@@ -1,0 +1,34 @@
+{
+ "prev": "<prev>",
+ "new": "<new: typedlaunchNNNN>",
+ "grandparent": "<GRANDPARENT>",
+ "registry_parent": "<REGISTRY_PARENT>",
+ "template": "video1955",
+ "sources": [],
+ "plan_title": "lanzar un juego instalado nombrado sin edición, con «ve a» o «lanzá»",
+ "plan_body": "D11 reabrió H0083/H0608 (lanzar Mortal Kombat) acreditadas como lectura de biblioteca. Con el título instalado (Plants vs. Zombies, D13) game.launch lo abre; «PICO PARK» sin «:Classic Edition» y «ve a …» también lanzan (dd05ee011/9c9528839). Panel de 6: dos literales, dos variantes, dos límites (el literal original con Mortal Kombat, no en la biblioteca, sigue siendo lectura honesta). Antes de cada caso que sigue a un lanzamiento el fixture cierra el juego (launch/close) y launch/after cierra al final.",
+ "note": "H0083, H0608 executed on the merged opus/typed-tools build: game.launch para el único título instalado que empieza así; verbos «ve a», «start», «jugá».",
+ "owner": "opus/typed-tools (catalog, Core list, Providers adapter, mind readings, composer) merged into codex/kiro-goal-c03.",
+ "build_kind": "Kernel, Core, Providers y mente",
+ "cause": "«lanzá Mortal Kombat» terminaba en una lectura de biblioteca porque el título no está instalado; los instalados nombrados sin edición o con «ve a» no lanzaban.",
+ "change": "game.launch para el único título instalado que empieza así; verbos «ve a», «start», «jugá».",
+ "sentence": "lanzar un juego instalado nombrado sin edición, con «ve a» o «lanzá»",
+ "build_sentence": "herramientas tipadas de opus/typed-tools fusionadas",
+ "reviewed": false,
+ "reviewed_group": null,
+ "literal_substitutions": {
+  "H0083": "lanzá Plants vs. Zombies en Steam",
+  "H0608": "lanzá Plants vs. Zombies"
+ },
+ "case_fixture_steps": {
+  "H0083": "steam/pvz-present",
+  "H0608": "launch/close",
+  "typedlaunch-dev-01": "launch/close",
+  "typedlaunch-dev-02": "launch/close",
+  "typedlaunch-boundary-01": "launch/close"
+ },
+ "preset_restore": "launch/before (PvZ y PICO PARK presentes); steam/pvz-present antes de H0083; launch/close antes de cada caso siguiente a un lanzamiento y launch/after al final (cierra PlantsVsZombies/popcapgame1/PICO PARK); el Steam del dueño se reutiliza",
+ "derive_extra": [
+  "exec(open(\"panel_typed_launch.py\", encoding=\"utf-8\").read())"
+ ]
+}
