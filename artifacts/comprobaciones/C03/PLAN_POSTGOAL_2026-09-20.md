@@ -184,6 +184,26 @@ Encuesta 742/0/0.» Commit + push. Aceptación: `source_quality_gate_passed: mod
   «cancelá la alarma» cuando hay una sola) y las presenta al dueño en un bloque al final de la Fase 3. **PREGUNTAR**
   sólo eso, una vez.
 
+### Fase 3.5 — Semántica al estado del arte, unificada (Fable 5.1, desde el 2026-09-23) (2–4 días + cien)
+**Añadida por el dueño el 2026-09-21 (noche).** Antes de construir el motor de computer use, una sesión Fable 5.1
+(Hive) lleva la capa semántica de BAXY —regex y detectores repartidos entre `src/baxy_mind/effect_intent.py`,
+`__main__.py`, `llm.py`, `planner.py` y los parsers de `src/Baxy.App/`— a un solo paquete `src/baxy_mind/semantic/`
+con una puerta de entrada, gramáticas por intención, normalización única, `documentacion/SEMANTICA.md` y un
+harness de regresión offline (`scripts/semantic_replay.py`) sobre los 742 literales, las cien y las conversaciones
+reales del registro privado. El prompt completo es
+`artifacts/comprobaciones/C03/PROMPT_FABLE_SEMANTICA_2026-09-23.md`. Motivo del dueño: cada fallo real se venía
+parchando con un regex más y el siguiente pedido con otra redacción volvía a fallar; la detección «se ha vuelto muy
+compleja» y tiene que quedar «en un solo lugar, fácil de leer y de entender para cualquier agente».
+- **Regla de reparación de las tandas de la Fase 5-tipada (desde el 2026-09-21):** un fallo de adaptador o de
+  fixture se arregla y se re-mide en la misma tanda; un fallo de **lectura** (la mente no entendió la forma) NO se
+  parcha con otro regex: se registra como corpus para esta fase (literal, lo que hizo, lo que debía hacer) en
+  `artifacts/comprobaciones/C03/SEMANTICA_CORPUS_PENDIENTE.md` y la fila queda abierta hasta que Fable la cubra.
+- Filas abiertas que dependen de esta fase (lectura, no motor): H0019, H0024, H0045, H0074, H0198, H0231, H0408,
+  H0536 (mensajería al destinatario único), H0227, H0398, H0521 (nombre de app mal oído con un solo candidato),
+  H0263 (la otra ventana), H0528 («lo» sin antecedente = la pantalla), H0682 (el único juego parecido).
+- Cierre: Full verde, cien 100/100, sellos re-anclados, `SEMANTICA.md`, informe `SEMANTICA_<fecha>.md` con
+  aciertos del harness antes/después. Recién entonces arranca la Fase 4.
+
 ### Fase 4 — Motor general de computer use (D10, D21) (3–4 días + cien)
 **Reparto (decisión del dueño 2026-09-20, tarde): esta fase la construye una sesión Fable 5.1 high; Opus 5 NO la
 toca.** Fable trabaja en un worktree propio sobre la rama `fable/computer-use-engine` (creada desde
@@ -333,6 +353,7 @@ camino nuevo se revalida sin crédito); cerrar todo (real), Spotify (real), mini
 |---|---|---|---|---|
 | Fases 0–2 | 0 | 2 | 1–2 | 1 día |
 | Fase 3 (reapertura) | 0 | 0 | 0 | 1 h |
+| Fase 3.5 (semántica unificada, Fable) | 0–2 | 2–4 | 1 | 2–4 días |
 | Fase 4 (motor general de computer use) | 1 | 1–2 | 0 | 3–4 días |
 | Fase 5 (banco de 35 filas sobre el motor) | 10 | 6–8 | 0 | 5–6 días |
 | Fases 6–8 (mensajes, correo, Spotify) | 3 | 3 | 0 | 1–2 días |

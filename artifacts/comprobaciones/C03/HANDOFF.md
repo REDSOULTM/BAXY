@@ -1,3 +1,11 @@
+# TRASPASO al notebook — 2026-09-21T23:32:07.452264+00:00
+
+**671/742 cubiertos, 71 abiertos, 0 NA; 20/35 categorías cerradas. Registro SHA 3a2ef0bc4caee5736d39d928d733c3a83864144b9f34c090d0cf212985362738.** Escritora raíz y runner sellado: la sesión única de Opus 5 en el notebook (dueño, 2026-09-21 noche). Ninguna tanda corriendo; WALLPAPER2037 quedó preparada en REDPC sin correr y se regenera allá.
+
+REANUDACIÓN: seguir `artifacts/comprobaciones/C03/TRASPASO_NOTEBOOK_2026-09-21.md` (paquete `BAXY-traspaso-2026-09-21`, espejo de rutas, comprobaciones, receta y regla de reparación) y correr las 16 tandas tipadas de su §5 en orden, empezando por wallpaper2037 regenerada sobre WEATHER2035 (BEFORE 671). De las 71 abiertas, 45 son tipadas, 14 de lectura (Fase 3.5, Fable: `PROMPT_FABLE_SEMANTICA_2026-09-23.md`, corpus en `SEMANTICA_CORPUS_PENDIENTE.md`) y 12 del motor (Fase 4/5). El wall del notebook termina con Full verde, cien final y push; sin fusión a main.
+
+---
+
 # WEATHER2035 adjudicado — 2026-09-21T17:38:45.853585+00:00
 
 **671/742 cubiertos, 71 abiertos, 0 NA; 20/35 categorías cerradas (Música 39/39, Entrada incompleta, ruido y control de diálogo 34/34, Vídeo y series 26/26, Audio y volumen 51/51, Alarmas, recordatorios, tareas y agenda 38/38, Cerrar aplicaciones y ventanas 20/20, Conocimiento, razonamiento y creatividad verbal 37/37, Información web actual 17/17, Estado de hardware y sistema 40/40, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Contactos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9); C03 formal 3/11. Registro SHA 3a2ef0bc4caee5736d39d928d733c3a83864144b9f34c090d0cf212985362738. Primeras altas 24 h >= 647 (+4).** Escritor raíz Opus 5 (plan post-goal, D24). Candidato: HEAD 1fc33f44 con BUILD2035 (cabeza del lugar geocodificado en el final de clima)))))). Turnos ordinarios sobre ventanas propias de la raíz (Bloc de notas delante, Calculadora detrás; diálogo «Prueba raiz»).
