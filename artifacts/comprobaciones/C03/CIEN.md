@@ -24,7 +24,7 @@
 | cien-34 | **v17 fresca** Granite 4.2-3B **registrado**, sin override | no: 12 agotes espontáneos + publicados infieles; ver abajo |
 | cien-35 | **v18 fresca** Granite 4.2-3B **registrado**, sin override | no: 7 agotes espontáneos + publicados infieles; ver abajo |
 
-## cien-76 a cien-88 (leídas, v18, Qwen3-4B registrado, 2026-09-20)
+## cien-76 a cien-90 (leídas, v18, Qwen3-4B registrado, 2026-09-20/21)
 
 Misma población congelada y mismo runtime; cada corrida sigue a un cambio de fuente de la
 mente o de la App, y la última, **cien-85**, corre sobre el árbol del cierre (HEAD `771f779df`,
@@ -40,6 +40,8 @@ BUILD1955, 742/742). Capturas `cien-84/events.jsonl` `156e5ef86ee45a0f247c4fe40c
 | cien-86 | **100** | **0** | **100** | el veto `playback_denied` (3a506dec4): una reproducción verificada no admite «no se puede reproducir»; leída contra cien-85 (relojes y reformulaciones con los mismos hechos). Captura `cien-86/events.jsonl` `a1b3565fa37255d7d0e0121e15adef0ab158a0b1132f664377a5fa0e16ad69b2` |
 | cien-87 | **100** | **0** | **100** | post-goal Fase 1 (0fa7d91a0): Full verde; en la mente, «5pm», volumen de app, envoltura social, investigar el propio equipo, compuestos y «sound» reparados. Leída contra cien-86: 19 líneas distintas —12 relojes (11:51 → 16:25), 2 volumen (6 → 50, el dueño lo cambió entre corridas) y 5 reformulaciones con los mismos hechos («un compañero» → «tu compañero», la explicación del sistema operativo, «What specifically do you want me to open for you?», el abridor de charla)—. Captura `cien-87/events.jsonl` `d6ab4884e821d709abf8e1653aa1816c5a4fde28bb14facff49881dc8d23725d` |
 | cien-88 | **100** | **0** | **100** | post-goal Fase 2 (b86b65bef): en modo normal sólo confirma lo destructivo o lo que llega a otra persona (D3). Leída contra cien-87: 17 líneas distintas, todas relojes (16:25 → 17:10) y reformulaciones con los mismos hechos (la explicación del sistema operativo, «What do you want me to open?», el orden hora/volumen). Ningún turno de la población pedía confirmación antes ni la pide ahora. Captura `cien-88/events.jsonl` `d8cad315ca604f0b64b797a80ac089cafaffdf1d6e427f70d0ddaafd7ea98be1` |
+| cien-89 | 98 | 2 | 98 | árbol fusionado (c4576126c: tipadas de la Fase 5, registro de conversación, nombre de la app en finales de app.open, turn.playback-then ordinario). **No cuenta**: los turnos 001 «Buenas» (110 s: carga del modelo) y 005 «¿Qué hora es?» (reintentos agotados en 30 s) cayeron mientras un robocopy de 49,7 GB ajeno saturaba el disco (02:05–02:13); sondeados aislados con la auditoría del composer pasan («¡Buenas! ¿Cómo estás?», «Son las 02:11.»). Captura `cien-89/events.jsonl` `2d75dc08b166492523ce7b7f539c9573c32ae9f1ceb91c5b0f0b72937bde9c0c` |
+| cien-90 | **100** | **0** | **100** | misma población sobre el mismo árbol (c4576126c; HEAD 11deb5a8d sólo añade artifacts) con el disco libre. Leída contra cien-88: 24 líneas distintas, todas relojes (17:1x → 02:1x), el volumen (50 → 98, el dueño lo cambió) y reformulaciones con los mismos hechos («¿Cómo estás?» → «What's on your mind?», «tu compañero» → «un compañero», la explicación del kernel, «What specifically do you want me to open for you?»). Ninguna línea nueva de app.open ni de dos turnos en la población. Captura `cien-90/events.jsonl` `24894c9e852e43adefd8405b05587595f6826b4a1add6f964504ea6880ed7fea` |
 
 ### cien-85 contra cien-84
 
