@@ -83,8 +83,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # REOPEN1993: lecturas de la mente (candidato único, alarma de la sesión, otra ventana, mirar la pantalla, ponle texto)
 # C03 REOPEN1957 typed tools (opus/typed-tools): re-pin after the mind readings of the fifteen typed capabilities.
 # C03 post-goal: fusión de opus/typed-tools y BUILD2001 (nombre de app en app.open, turn.playback-then ordinario).
+# C03 post-goal: fusión de Fase 6/7 y BUILD2003 (otra ventana, ventana activa).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "a51c4e7dddce72de9e35c1d14e9af8d6ab321b43ef8cb6db1abcd6487dd2e213"
+    "8ed3689c37c2883b3b9218c1327864440f78c4a01f407622be092df066391e5c"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

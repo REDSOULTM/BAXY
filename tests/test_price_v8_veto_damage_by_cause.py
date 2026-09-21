@@ -105,12 +105,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # REOPEN1993: lecturas de la mente (candidato único, alarma de la sesión, otra ventana, mirar la pantalla, ponle texto)
 # C03 REOPEN1957 typed tools (opus/typed-tools): re-pin after the mind readings of the fifteen typed capabilities.
 # C03 post-goal: fusión de opus/typed-tools y BUILD2001 (nombre de app en app.open, turn.playback-then ordinario).
+# C03 post-goal: fusión de Fase 6/7 y BUILD2003 (otra ventana, ventana activa).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "8c8bf9335a89b434a2b63b19390697928a79f718f00b1a4ae37c1507db16b429"
+        "4eebc6534e2c1b0efd37b47a74bd2fee2ee1457d8933403ea1877b7796d223e5"
     ),
     "src/baxy_mind/llm.py": (
-        "858dc664cc818c2c1263e478ab187f0743b1759b0b993831a90d6dc768c89098"
+        "3e828331487a31f849837d4db8a7fb1b6080fe8824abf2385877bd0364c4528a"
     ),
 }
 

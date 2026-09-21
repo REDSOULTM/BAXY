@@ -56,7 +56,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
 
             using JsonDocument document = JsonDocument.Parse(File.ReadAllBytes(_recipientChannelsPath));
             return document.RootElement.ValueKind == JsonValueKind.Object
-                && document.RootElement.TryGetProperty(Fold(recipient), out JsonElement value)
+                && document.RootElement.TryGetProperty(WindowsDesktopMessagingAutomation.Fold(recipient), out JsonElement value)
                 && value.ValueKind == JsonValueKind.String
                 ? value.GetString()
                 : null;
@@ -87,7 +87,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 }
             }
 
-            channels[Fold(recipient)] = channel;
+            channels[WindowsDesktopMessagingAutomation.Fold(recipient)] = channel;
             Directory.CreateDirectory(Path.GetDirectoryName(_recipientChannelsPath)!);
             using var stream = new MemoryStream();
             using (var writer = new Utf8JsonWriter(stream))
@@ -1417,7 +1417,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
     }
 
-    private static string Fold(string value)
+    internal static string Fold(string value)
     {
         string normalized = value.Normalize(NormalizationForm.FormD).ToLowerInvariant();
         var result = new StringBuilder(normalized.Length);

@@ -66,8 +66,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # REOPEN1993: lecturas de la mente (candidato único, alarma de la sesión, otra ventana, mirar la pantalla, ponle texto)
 # C03 REOPEN1957 typed tools (opus/typed-tools): re-pin after the mind readings of the fifteen typed capabilities.
 # C03 post-goal: fusión de opus/typed-tools y BUILD2001 (nombre de app en app.open, turn.playback-then ordinario).
+# C03 post-goal: fusión de Fase 6/7 y BUILD2003 (otra ventana, ventana activa).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "a51c4e7dddce72de9e35c1d14e9af8d6ab321b43ef8cb6db1abcd6487dd2e213"
+    "8ed3689c37c2883b3b9218c1327864440f78c4a01f407622be092df066391e5c"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
