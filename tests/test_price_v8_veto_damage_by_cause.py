@@ -115,12 +115,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 post-goal: BUILD2021 (pista del veto de afirmacion sin fuente).
 # C03 post-goal: BUILD2021b (guarda de get en el shortlist).
 # C03 post-goal: fusion opus/typed-tools 8c268599b + BUILD2029 (fuentes de titulares observadas).
+# C03 post-goal: fusion e97802c9f + BUILD2033 (cabeza del lugar geocodificado).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
         "2adc79658dc7f706fbcc70c29e60a2b102333d380a3f38928db6b2c3d56a217a"
     ),
     "src/baxy_mind/llm.py": (
-        "9f8019c86ba13f4653960f79c27e5a7b61d6d0c2b75986e394397497e66c2be2"
+        "13bcc095dbd747184edd6cd98041db014ade7c928d68cbacf30b8da68f37f8ae"
     ),
 }
 

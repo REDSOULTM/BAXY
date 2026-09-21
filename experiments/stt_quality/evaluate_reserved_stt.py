@@ -96,8 +96,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 post-goal: BUILD2027 (cabezas de pregunta en noticias).
 # C03 post-goal: fusion opus/typed-tools 8c268599b + BUILD2029 (fuentes de titulares observadas).
 # C03 post-goal: BUILD2031 (resultado de titulares sin enlace; fondo y zip).
+# C03 post-goal: fusion e97802c9f + BUILD2033 (cabeza del lugar geocodificado).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "ce0e089b9978762e3a8c0feeeaef4da0352e3e9bf2eb185679fb8a0e770baf83"
+    "2f120fd1a897332cd0207e657d274eeacf4b4c30f300ea12a0dbfca9e38e4c76"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
