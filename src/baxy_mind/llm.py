@@ -3701,6 +3701,11 @@ _CAUSE_FACT = {
     # REOPEN1957 H0170/H0376 «conectate al wifi de casa»: no network is
     # associated with that place yet; the saved networks were listed and the
     # person has to say which one it is. Nothing was connected.
+    # Fase 7 (D4): mail to a free address from the owner's classic Outlook.
+    "mail_address_invalid": ("that is not a mail address, so nothing was sent"),
+    "outlook_profile_not_configured": ("this PC has no classic Outlook profile to send mail from, so nothing was sent"),
+    "outlook_mail_send_failed": ("Outlook did not send the mail, so nothing went out"),
+    "mail_delivery_not_verified": ("Outlook accepted the mail but its copy in Sent Items was not found, so the delivery is not verified"),
     # REOPEN1993 grupo E: the recipient was looked up in WhatsApp and Discord.
     "recipient_not_found_in_clients": (
         "no chat with that name was found in WhatsApp or Discord, so nothing was sent; the person can say which client to use"
@@ -4848,6 +4853,20 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
                 "client, quoting the text sent exactly; never say it was drafted, never name another "
                 "recipient or client, no question."
             )
+    if (
+        situation.get("operation") == "email.send"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+    ):
+        # Fase 7 (D4): the mail really went to seen.to with seen.subject.
+        bits.append(
+            "This result really SENT a mail from the owner's Outlook: seen.to is the "
+            "address it went to, seen.subject its subject and seen.text its body, "
+            "seen.sent is true (the copy in Sent Items was found). Say in one or two "
+            "sentences, in the person's language, that you sent that mail to seen.to "
+            "with that subject, quoting seen.text exactly; never say it was drafted, "
+            "never name another address, no question."
+        )
     if (
         situation.get("operation") == "message.send.test"
         and situation.get("verified") is True

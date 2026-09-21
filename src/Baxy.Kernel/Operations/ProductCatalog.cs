@@ -423,6 +423,22 @@ public static class ProductCatalog
             "email.latest.reply.outlook.sent.postread.v1",
             ToolExposure.Public,
             "Responde al mensaje mas reciente de Outlook y verifica la copia enviada por contenido y hora."),
+        // Fase 7 (D4, 2026-09-20): correo a una dirección libre desde el perfil clásico de
+        // Outlook del dueño, confirmado en modo normal; la copia en Elementos enviados
+        // (destinatario, texto, hora) es la prueba. Sin Outlook clásico se dice el límite.
+        Descriptor(
+            "email.send",
+            Schema(
+                [
+                    String("subject", types: NullableString, maximumUtf8Bytes: 200),
+                    String("text", maximumUtf8Bytes: 16_384, nonWhitespace: true),
+                    String("to", maximumUtf8Bytes: 254, nonWhitespace: true),
+                ],
+                ["text", "to"]),
+            OperationRisks.ExternalCommunication,
+            "email.send.outlook.sent.postread.v1",
+            ToolExposure.Public,
+            "Envía un correo a la dirección indicada (asunto opcional; sin asunto, el comienzo del texto) desde el perfil clásico de Outlook del dueño y verifica la copia en Elementos enviados por destinatario, texto y hora."),
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0542 «… comprímela y luego abre
         // el zip», D11): comprimir un archivo o carpeta de una carpeta conocida a un
         // zip al lado, verificado abriendo el zip; y abrir por nombre un archivo seguro

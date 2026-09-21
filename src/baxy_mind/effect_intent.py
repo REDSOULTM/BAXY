@@ -1607,6 +1607,49 @@ def message_request_any_channel(text: str) -> tuple[str, str, str | None] | None
     return None
 
 
+_MAIL_ADDRESS = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$")
+_MAIL_SUBJECT = re.compile(
+    r"^(?P<rec>.+?)\s+(?:con\s+(?:el\s+)?asunto|asunto|with\s+(?:the\s+)?subject|subject)\s*:?\s*(?P<subject>.+)$",
+    re.IGNORECASE,
+)
+
+
+def email_send_request(text: str) -> dict[str, str | None] | None:
+    """Fase 7 (D4): a mail to a free address («mandale un correo a ana@gmail.com
+    diciendo que llego tarde», «send an email to x@y.com saying hi», «… con
+    asunto reunión que diga …»). Returns {to, text, subject}; None when the
+    channel is not mail, or the recipient is not an address (the question asks
+    it), or there is no text."""
+
+    draft = message_draft_request(text)
+    if draft is None or draft[0] != "email":
+        return None
+    recipient, body = draft[1].strip(), draft[2]
+    subject: str | None = None
+    with_subject = _MAIL_SUBJECT.match(recipient)
+    if with_subject is not None:
+        recipient, subject = with_subject.group("rec").strip(), with_subject.group("subject").strip(" .:")
+    if _MAIL_ADDRESS.match(recipient) is None:
+        return None
+    return {"to": recipient, "text": body, "subject": subject or None}
+
+
+def email_request_without_address(text: str) -> bool:
+    """«enviá un correo a juan», «escribile un mail a Lucas que diga hola»: mail
+    asked for a name that is not an address → the address is what is missing."""
+
+    if email_send_request(text) is not None:
+        return False
+    draft = message_draft_request(text)
+    if draft is not None:
+        return draft[0] == "email" and _MAIL_ADDRESS.match(draft[1].strip()) is None
+    folded = _strip_request_envelope(_fold(text)).strip(" .!?")
+    return (
+        _has(folded, r"^(?:" + _MSG_VERB + r")\s+(?:un\s+|una\s+|el\s+|a\s+|an\s+|the\s+)?(?:correo(?:\s+electronico)?|(?:e-?)?mail)\s+(?:a|al|para|to)\s+\S")
+        and "@" not in folded
+    )
+
+
 def client_channel_request(text: str) -> tuple[str, str] | None:
     """DISCORD1839 «ve a Cotele en Discord», «Go to Cotele in Discord», «Andá al canal
     Cotele en Discord»: the client and the place named by a go-to order scoped to a
@@ -2730,6 +2773,8 @@ def _curated_domain_is_grounded(
         )
     if operation == "reminder.resolve.exact":
         return _nominal_reminder_lookup_title(folded) is not None
+    if operation == "email.send":
+        return email_send_request(text) is not None or email_request_without_address(text)
     if operation in {"message.recipient.resolve", "message.send"} and message_request_any_channel(text) is not None:
         # REOPEN1993 grupo E: the request names a recipient and a text to say.
         return True
@@ -4403,6 +4448,9 @@ def resolve_explicit_clarification_intent(
         # LIMITS1677 «subí el volumen de spotify»: a known effect with no
         # operation has no field to clarify; the limit answers it.
         return None
+    if "email.send" in available and email_request_without_address(text):
+        # Fase 7: a mail for a name and no address asks the address (never guesses one).
+        return ClarificationIntent(("email.send",), ("to",))
     if {"web.download", "file.open"} <= available and (image := web_image_request(text)) is not None and image[1]:
         # REOPEN1957 H0069: an image or a photo of nothing in particular is asked
         # what it should show; a meme needs no subject.
@@ -19235,16 +19283,25 @@ def resolve_explicit_effects(
     if "client.channel.locate" in available and channel_request is not None and channel_request[0] == "discord":
         # DISCORD1839: the channel is located and the person asked before any join.
         return EffectIntent(("client.channel.locate",), (text,))
+    if "email.send" in available and email_send_request(text) is not None:
+        # Fase 7 (D4): mail to the address named, from the owner's Outlook, confirmed in normal mode.
+        return EffectIntent(("email.send",), (text,))
     if {"message.recipient.resolve", "message.send"} <= available and message_request_any_channel(text) is not None:
         # REOPEN1993 grupo E: no client named → the recipient is looked up in the
         # clients and, when unique, the message is sent (confirmed in normal mode).
         return EffectIntent(("message.recipient.resolve", "message.send"), (text, text))
-    if "message.send.test" in available and message_draft_request(text) is not None:
+    if "message.send.test" in available and message_draft_request(text) is not None and not (
+        "email.send" in available and message_draft_request(text)[0] == "email"
+    ):
+        # Fase 7: with email.send served, a mail request without an address is asked
+        # its address instead of being forced to the test mailbox.
         # MSG §6 (owner decision 2026-09-17): a messaging request is sent for real,
         # but the destination is forced to the owner's own test channel; the final
         # says the truth about where it went.
         return EffectIntent(("message.send.test",), (text,))
-    if "message.draft" in available and message_draft_request(text) is not None:
+    if "message.draft" in available and message_draft_request(text) is not None and not (
+        "email.send" in available and message_draft_request(text)[0] == "email"
+    ):
         # MSG1837: the message is left written in the named client, never sent.
         return EffectIntent(("message.draft",), (text,))
     if "web.search" in available and _research_question_query(text) is not None:

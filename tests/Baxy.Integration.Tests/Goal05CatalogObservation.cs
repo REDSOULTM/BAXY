@@ -179,7 +179,7 @@ internal static class Goal05CatalogObservation
                 descriptor,
                 "Segunda lectura de la secuencia del portapapeles de Windows.",
                 "isolated_store"),
-            "email.latest.read" or "email.latest.reply" => Unverifiable(
+            "email.latest.read" or "email.latest.reply" or "email.send" => Unverifiable(
                 descriptor,
                 "Exige un perfil Outlook autenticado."),
             "filesystem.file.open.latest" or "filesystem.folder.open" => Unverifiable(

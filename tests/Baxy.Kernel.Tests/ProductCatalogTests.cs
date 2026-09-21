@@ -44,6 +44,7 @@ public sealed class ProductCatalogTests
         "desktop.wallpaper.set",
         "document.presentation.create",
         "document.text.read",
+        "email.send",
         "file.compress",
         "filesystem.explorer.count",
         "file.open",
@@ -55,7 +56,7 @@ public sealed class ProductCatalogTests
         "web.news.headlines",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 12;
+    internal const int ExpectedDescriptors = 170 + 21 + 13;
 
     internal const int ExpectedTools = ExpectedDescriptors - 1;
 

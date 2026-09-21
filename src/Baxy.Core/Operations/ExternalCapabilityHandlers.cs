@@ -38,6 +38,7 @@ internal static class ExternalCapabilityHandlers
         "document.presentation.create",
         "document.text.read",
         "email.latest.read",
+        "email.send",
         "email.latest.reply",
         "game.catalog.list",
         "game.entitlement.named",

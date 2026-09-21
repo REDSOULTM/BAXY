@@ -5281,6 +5281,11 @@ def _explicit_arguments_from_evidence(
         draft = effect_intent.message_draft_request(evidence)
         return {"channel": draft[0], "recipient": draft[1], "text": draft[2]} if draft is not None else None
 
+    if operation == "email.send":
+        # Fase 7 (D4): the address, the text and the subject are the person's literals.
+        mail = effect_intent.email_send_request(evidence)
+        return dict(mail) if mail is not None else None
+
     if operation == "message.send.test":
         # MSG §6: channel, the requested recipient and text are the person's
         # literal; the adapter forces the real destination to the owner's test
@@ -6501,6 +6506,7 @@ def _ground_explicit_arguments(
         "weather.current",
         "wifi.connect.named",
         "message.recipient.resolve",
+        "email.send",
         "media.control",
         "media.play.query",
         "media.play.youtube",

@@ -198,7 +198,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                 "streaming_authenticated_session_required",
             "web.search" => "web_search_provider_not_configured",
             "calendar.event.create" or "calendar.event.list" => "calendar_account_adapter_required",
-            "email.latest.read" or "email.latest.reply" => "outlook_authenticated_profile_required",
+            "email.latest.read" or "email.latest.reply" or "email.send" => "outlook_authenticated_profile_required",
             "office.document.create" or "office.document.read" =>
                 "office_authenticated_adapter_required",
             "message.recipient.resolve" or "message.send" =>
