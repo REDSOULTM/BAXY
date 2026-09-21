@@ -78,8 +78,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # C03 post-goal: BUILD2025 (frio/calor y clima del pasado).
 # C03 post-goal: BUILD2027 (cabezas de pregunta en noticias).
 # C03 post-goal: fusion opus/typed-tools 8c268599b + BUILD2029 (fuentes de titulares observadas).
+# C03 post-goal: BUILD2031 (resultado de titulares sin enlace; fondo y zip).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "96314805307197f0bba7d06c28a0f5112a7e0fe887e2a2c0ee495e5fbcbb4bc7"
+    "ce0e089b9978762e3a8c0feeeaef4da0352e3e9bf2eb185679fb8a0e770baf83"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
