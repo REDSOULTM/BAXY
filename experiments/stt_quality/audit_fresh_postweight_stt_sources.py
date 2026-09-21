@@ -80,8 +80,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # C03 post-goal: fusion opus/typed-tools 8c268599b + BUILD2029 (fuentes de titulares observadas).
 # C03 post-goal: BUILD2031 (resultado de titulares sin enlace; fondo y zip).
 # C03 post-goal: fusion e97802c9f + BUILD2033 (cabeza del lugar geocodificado).
+# C03 Fase 8 (D18) audio.app.volume.set y verbos de desinstalación en Steam (b5fd9e50b + fusión 28432af9e): re-anclaje de identidad de programa.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "2f120fd1a897332cd0207e657d274eeacf4b4c30f300ea12a0dbfca9e38e4c76"
+    "41a290563dced450d51a9cf34f817ae8b42bb65b97b610fd465f7dd4e84f4154"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
