@@ -1750,3 +1750,7 @@ Navegación y búsqueda web pasa de 43/46 a 44/46 con buscar recetas de pizza co
 ## Actualización 2026-09-21 (WEATHER2023)
 
 Información web actual pasa de 3/17 a 3/17 con el clima se lee de un servicio de pronóstico, no de una búsqueda (commit be90f56b, BUILD2023) (HEAD be90f56b): 8 ejecutados, 6 aprobados (los cuatro literales, la variante en inglés y el límite de prohibición), 2 fallidos («¿hace frío afuera?» preguntó; el límite del pasado leyó el clima de hoy), 0 créditos. La lectura de clima gana la cabeza «hace» y las palabras frío/calor, y excluye el pasado (verbo en pasado o año); se vuelve a medir el panel.
+
+## Actualización 2026-09-21 (WEATHER2025)
+
+Información web actual pasa de 3/17 a 6/17 con el frío y el calor de afuera son el clima; el clima del pasado es un límite (commit 2ecbaff1, BUILD2025) (HEAD 2ecbaff1): 8/8 aprobados (4 literales, 2 variantes, 2 límites), 4 créditos. Cuatro créditos: H0415, H0339, H0617 (Información web actual 6/17) y H0708 (Navegación y búsqueda web 45/46); «¿hace frío afuera?» lee el clima y el clima de 1990 es un límite honesto.

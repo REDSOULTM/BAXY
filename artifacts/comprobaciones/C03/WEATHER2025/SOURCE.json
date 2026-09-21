@@ -1,0 +1,15 @@
+{
+  "schema": "c03-weather2025-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "src/baxy_mind/effect_intent.py (commit c3c03dc31, BUILD2025).",
+  "patch": "artifacts/comprobaciones/C03/WEATHER2025/SOURCE.patch",
+  "commits": [
+    "c3c03dc31"
+  ],
+  "build": "BUILD2025 (C03-repairs2025-build/BUILD_READY.json; mente)",
+  "cause_measured": "«¿hace frío afuera?» preguntaba en vez de leer, y el clima del pasado disparaba la lectura de hoy.",
+  "change": "La lectura de clima gana la cabeza «hace» y las palabras frío/calor/cold/hot; un verbo en pasado o un año quedan fuera de la lectura y de la búsqueda viva, y «weather.history» es un límite conocido.",
+  "measurement": "WEATHER2025: 8/8 aprobados (4 literales, 2 variantes, 2 límites); 4 créditos. Cuatro créditos: H0415, H0339, H0617 (Información web actual 6/17) y H0708 (Navegación y búsqueda web 45/46); «¿hace frío afuera?» lee el clima y el clima de 1990 es un límite honesto.",
+  "credits": 4
+}

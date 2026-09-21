@@ -1,0 +1,24 @@
+{
+  "index": 5,
+  "case_id": "weather2025-dev-02",
+  "terminal_kind": "published_final",
+  "final_sha256": "e57b7b4f204287ac3ab7007c8daa55c6cb232db321d5d01719f7d9a6365d9691",
+  "clients_absent_before": true,
+  "verdict": "passed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 22.047000000005937,
+    "gpu_peak_mib": 3490.9296875,
+    "ram_peak_mib": 1819.33203125,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2025-instrument-v1\\results\\case-05\\EXIT.json": "d4561ee9a2804452bf99ad280c7e02118fe750945aeaa56e78f7a4a0d94eb28d",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2025-instrument-v1\\results\\case-05\\RESOURCES.json": "4e7068edba384cc4c47aedf29e6ea490d30e20ee33728502baf51391c5a53197",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-weather2025-instrument-v1\\private\\run-05\\case-observations.json": "25da80616fef61486ebb3f2ba3ac0d4929f3e21ccd0910eef123d8b53461ea30"
+  }
+}
