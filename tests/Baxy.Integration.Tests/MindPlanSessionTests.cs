@@ -202,11 +202,11 @@ public sealed class MindPlanSessionTests
 
     // 2026-09-21: a message.send.test left awaiting confirmation the evening before was restored at the next
     // start and re-prompted at every new request; the «sí» meant for the new request confirmed the stale one.
-    // A restored plan whose pending step never ran is dropped (outbox and store cleared) and announced as
-    // cancelled; a step whose effect may have occurred is still restored for its truthful recovery prompt.
+    // A restored plan is dropped (outbox and store cleared) and announced at start: cancelled, or «may have
+    // happened, check it» when its effect is uncertain. It never hijacks the new session's requests.
     [TestCase(false)]
     [TestCase(true)]
-    public void RestoringAPreviousSessionPlanDropsANeverRunStepAndKeepsAnUncertainOne(bool uncertainEffect)
+    public void RestoringAPreviousSessionPlanDropsItAndOnlyTheAnnouncementDependsOnTheEffect(bool uncertainEffect)
     {
         string root = Path.Combine(Path.GetTempPath(), "baxy-restore-stale-plan-" + Guid.NewGuid());
         Directory.CreateDirectory(root);
@@ -237,19 +237,12 @@ public sealed class MindPlanSessionTests
             var restoredRegistry = new RetryableOperationRegistry(outbox);
             session.TryRestore(restoredRegistry);
 
-            if (uncertainEffect)
-            {
-                Assert.That(session.HasPending, Is.True);
-                Assert.That(session.DroppedRestoredPlan, Is.Null);
-                Assert.That(new DurableRetryStore(outbox).Load().Single().InvocationId, Is.EqualTo(prepared.InvocationId));
-            }
-            else
-            {
-                Assert.That(session.HasPending, Is.False);
-                Assert.That(session.DroppedRestoredPlan!.Objective, Is.EqualTo("escribile a amor en WhatsApp que la amo"));
-                Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
-                Assert.That(store.Load(restoredRegistry), Is.Null);
-            }
+            // Either way the plan is dropped; the uncertain flag only changes the start announcement.
+            Assert.That(session.HasPending, Is.False);
+            Assert.That(session.DroppedRestoredPlan!.Objective, Is.EqualTo("escribile a amor en WhatsApp que la amo"));
+            Assert.That(session.DroppedRestoredPlan.PendingEffectMayHaveOccurred, Is.EqualTo(uncertainEffect));
+            Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+            Assert.That(store.Load(restoredRegistry), Is.Null);
         }
         finally
         {

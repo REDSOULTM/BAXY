@@ -528,20 +528,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 messageEvent: UserMessageEvent.Welcome);
             if (_mindPlans.DroppedRestoredPlan is { } droppedPlan)
             {
-                // A step never run in the previous session is not resumed: the
-                // person is told what was left pending and cancelled.
+                // A plan of a previous session is never resumed: the person is
+                // told what was dropped (or that its effect may have occurred).
                 AddMessage(
                     "BAXY",
-                    MissionNarration.CreateCancellationMessage(droppedPlan),
+                    droppedPlan.PendingEffectMayHaveOccurred
+                        ? MissionNarration.CreateUncertainEffectMessage(droppedPlan)
+                        : MissionNarration.CreateCancellationMessage(droppedPlan),
                     isUser: false);
-            }
-            else if (_mindPlans.Current is { } restoredPlan)
-            {
-                AddMessage(
-                    "BAXY",
-                    MissionNarration.CreateRecoveryPrompt(restoredPlan),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Confirmation);
             }
             RecoverPendingAudioOperation(announce: true);
             _memoryTurns.RecoverFrom(registry, announce: true);

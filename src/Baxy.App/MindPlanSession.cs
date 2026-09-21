@@ -49,11 +49,13 @@ internal sealed class MindPlanSession
     }
 
     /// <summary>
-    /// The plan of a previous session that this start dropped because its pending
-    /// step had never run (2026-09-21: a message.send.test awaiting confirmation the
-    /// evening before re-prompted at every new request, and a «sí» meant for the
-    /// new request confirmed the stale one). The person's consent must be fresh;
-    /// a step whose effect may have occurred is kept and recovered truthfully.
+    /// The unfinished plan of a previous session that this start dropped (2026-09-21:
+    /// a message.send.test left awaiting confirmation the evening before re-prompted
+    /// at every new request of the next session, and a «sí» meant for the new
+    /// request confirmed the stale one). A plan never resumes across sessions: the
+    /// person's consent must be fresh and the app must be usable at once. The start
+    /// announces what was dropped; when the step's effect may have occurred, the
+    /// announcement says so instead of claiming it did not happen.
     /// </summary>
     internal PendingMindPlanExecution? DroppedRestoredPlan { get; private set; }
 
@@ -62,8 +64,7 @@ internal sealed class MindPlanSession
         ArgumentNullException.ThrowIfNull(registry);
         EnsureStore();
         _pending ??= _store!.Load(registry);
-        if (_pending is { PendingEffectMayHaveOccurred: false } restored
-            && restored.NextIndex < restored.Steps.Count)
+        if (_pending is { } restored)
         {
             if (restored.PendingOperation is { } pending)
             {
