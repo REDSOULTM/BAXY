@@ -90,8 +90,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 post-goal: BUILD2011 (busqueda: clitico, cortesia, sitio).
 # C03 post-goal: BUILD2013 (web.search en el shortlist; cortesia fuera del argumento).
 # C03 post-goal: BUILD2017 (vocabulario propio del informe de busqueda).
+# C03 post-goal: BUILD2021 (pista del veto de afirmacion sin fuente).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "3d50cea4717a78611c560119ed0d4156331122e11cb9198811253291c4a67478"
+    "41efcd183af9e03d910392ebe9aa6cfd073d8557389de81043446715b8a8c8cd"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

@@ -112,12 +112,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 post-goal: BUILD2011 (busqueda: clitico, cortesia, sitio).
 # C03 post-goal: BUILD2013 (web.search en el shortlist; cortesia fuera del argumento).
 # C03 post-goal: BUILD2017 (vocabulario propio del informe de busqueda).
+# C03 post-goal: BUILD2021 (pista del veto de afirmacion sin fuente).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
         "cc1b687073e581766501c8598c2e5b821c8d0064ee3fd42593a2d169d0ed6cb7"
     ),
     "src/baxy_mind/llm.py": (
-        "034e82bee4a202a3703bd996de3eb2c3e99077f2334432a55789a2ca3351020c"
+        "9f8019c86ba13f4653960f79c27e5a7b61d6d0c2b75986e394397497e66c2be2"
     ),
 }
 
