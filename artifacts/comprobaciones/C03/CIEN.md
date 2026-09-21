@@ -24,7 +24,7 @@
 | cien-34 | **v17 fresca** Granite 4.2-3B **registrado**, sin override | no: 12 agotes espontáneos + publicados infieles; ver abajo |
 | cien-35 | **v18 fresca** Granite 4.2-3B **registrado**, sin override | no: 7 agotes espontáneos + publicados infieles; ver abajo |
 
-## cien-76 a cien-91 (leídas, v18, Qwen3-4B registrado, 2026-09-20/21)
+## cien-76 a cien-92 (leídas, v18, Qwen3-4B registrado, 2026-09-20/21)
 
 Misma población congelada y mismo runtime; cada corrida sigue a un cambio de fuente de la
 mente o de la App, y la última, **cien-85**, corre sobre el árbol del cierre (HEAD `771f779df`,
@@ -43,6 +43,7 @@ BUILD1955, 742/742). Capturas `cien-84/events.jsonl` `156e5ef86ee45a0f247c4fe40c
 | cien-89 | 98 | 2 | 98 | árbol fusionado (c4576126c: tipadas de la Fase 5, registro de conversación, nombre de la app en finales de app.open, turn.playback-then ordinario). **No cuenta**: los turnos 001 «Buenas» (110 s: carga del modelo) y 005 «¿Qué hora es?» (reintentos agotados en 30 s) cayeron mientras un robocopy de 49,7 GB ajeno saturaba el disco (02:05–02:13); sondeados aislados con la auditoría del composer pasan («¡Buenas! ¿Cómo estás?», «Son las 02:11.»). Captura `cien-89/events.jsonl` `2d75dc08b166492523ce7b7f539c9573c32ae9f1ceb91c5b0f0b72937bde9c0c` |
 | cien-90 | **100** | **0** | **100** | misma población sobre el mismo árbol (c4576126c; HEAD 11deb5a8d sólo añade artifacts) con el disco libre. Leída contra cien-88: 24 líneas distintas, todas relojes (17:1x → 02:1x), el volumen (50 → 98, el dueño lo cambió) y reformulaciones con los mismos hechos («¿Cómo estás?» → «What's on your mind?», «tu compañero» → «un compañero», la explicación del kernel, «What specifically do you want me to open for you?»). Ninguna línea nueva de app.open ni de dos turnos en la población. Captura `cien-90/events.jsonl` `24894c9e852e43adefd8405b05587595f6826b4a1add6f964504ea6880ed7fea` |
 | cien-91 | **100** | **0** | **100** | árbol fa2ce0d97: Fases 6/7 fusionadas (destinatario sin cliente resuelto en los clientes; email.send) y lecturas de CONTEXT1999 («la otra ventana» = la ventana visible de detrás; «lo» sin antecedente = la ventana activa). Leída contra cien-90: 17 líneas distintas, 14 relojes (02:1x → 04:1x) y tres reformulaciones con los mismos hechos («What's on your mind?» → «How can I help you out?», «Me presento: soy BAXY» → «Soy BAXY», la explicación del kernel). Ningún turno de la población es un mensaje sin cliente ni una ventana. Captura `cien-91/events.jsonl` `964935bee40702bf80ce4f6e3d1da768e22914e577ab52e9fccd355dd43c9c47` |
+| cien-92 | **100** | **0** | **100** | árbol 930d2d77c: los finales de app.open nombran la app (displayName de la Tienda, alias bilingüe, apertura en pasado como estado), el final del tecleo cita el texto y la ventana, «no le pongas» es prohibición. Leída contra cien-91: 18 líneas distintas, 14 relojes (04:1x → 06:2x) y cuatro reformulaciones con los mismos hechos («What do you want me to open?», «What's on your mind?», «tu compañero», la explicación del kernel). Ningún turno de la población abre una app ni teclea. Captura `cien-92/events.jsonl` `45a4da5563c113db37f44b1441215bb55b5f50ff39cf1fa6b6bd0708b634ba53` |
 
 ### cien-85 contra cien-84
 
