@@ -359,9 +359,16 @@ internal static class ProductConductorHost
         {
             // A genuine non-confirming result has one admission/final, not a
             // fabricated extra rejection just because there is no challenge.
-            await EmitTurnAsync(initial, capture, cancellationToken, caseId, "final")
+            // THEN2001: when a follow-up turn comes after this one (D3 left
+            // the first turn of «pon una alarma… / cancelá la alarma» and
+            // «abrí el bloc de notas / ponle hola» without a confirmation),
+            // the phase the caller asked for («request») is kept, so the case
+            // reads request → final like any other dialogue; the follow-up
+            // only runs after a published first turn.
+            await EmitTurnAsync(initial, capture, cancellationToken, caseId, completionPhase)
                 .ConfigureAwait(true);
-            return !initial.TimedOut && !initial.Posterior.HasPendingPlan && !initial.Posterior.IsBusy;
+            return !initial.TimedOut && !initial.Posterior.HasPendingPlan && !initial.Posterior.IsBusy
+                && (completionPhase == "final" || initial.Terminal == ProductTurnTerminal.PublishedFinal);
         }
 
         await EmitTurnAsync(initial, capture, cancellationToken, caseId, "request")

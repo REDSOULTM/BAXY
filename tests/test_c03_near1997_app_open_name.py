@@ -1,0 +1,44 @@
+"""NEAR1997 (H0227 «abre Steel.»): an app.open final names the application the receipt
+opened. The receipt carries the catalog name as `appId`; «La app ya estaba abierta.» left the
+person who said «Steel» without knowing what BAXY understood."""
+
+from __future__ import annotations
+
+import pytest
+
+from baxy_mind.llm import _app_open_observed_name, compose_visible_defect
+
+SITUATION = {
+    "kind": "operation",
+    "operation": "app.open",
+    "polarity": "success",
+    "verified": True,
+    "succeeded": True,
+    "observed": {"appId": "Steam", "alreadyRunning": True, "processId": 21132},
+}
+FACTS = {"situation": SITUATION}
+
+
+def test_app_open_receipt_names_the_app_by_its_id() -> None:
+    assert _app_open_observed_name(SITUATION) == "Steam"
+    assert _app_open_observed_name({"observed": {"app": "Calculadora"}}) == "Calculadora"
+    assert _app_open_observed_name({"observed": {"processId": 1}}) is None
+
+
+@pytest.mark.parametrize("reply", ["La app ya estaba abierta.", "Ya estaba abierta."])
+def test_app_open_final_without_the_app_name_is_rejected(reply: str) -> None:
+    assert compose_visible_defect(reply, "operation", "abre Steel.", FACTS) == "missing_name"
+
+
+@pytest.mark.parametrize(
+    "reply",
+    ["Steam ya estaba abierto.", "Dale, ya está abierto el Steam.", "Opened Steam. It was already running before."],
+)
+def test_app_open_final_naming_the_app_passes_the_name_check(reply: str) -> None:
+    assert compose_visible_defect(reply, "operation", "abre Steel.", FACTS) != "missing_name"
+
+
+def test_app_open_final_may_name_a_multiword_app_by_one_of_its_words() -> None:
+    facts = {"situation": {**SITUATION, "observed": {"appId": "Google Chrome", "alreadyRunning": False}}}
+    assert compose_visible_defect("Abrí Chrome.", "operation", "abrí chrome", facts) != "missing_name"
+    assert compose_visible_defect("Ya está abierto.", "operation", "abrí chrome", facts) == "missing_name"

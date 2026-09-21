@@ -7498,6 +7498,20 @@ def _app_open_was_already_running(situation: dict) -> bool:
     return False
 
 
+def _app_open_observed_name(situation: dict) -> str | None:
+    """The catalog name an app.open receipt reports (`appId`), or None."""
+
+    for source in (situation.get("observed"), situation.get("seen"),
+                   _merged_observed(situation)):
+        if not isinstance(source, dict):
+            continue
+        for key in ("app", "appId"):
+            value = source.get(key)
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+    return None
+
+
 def _claims_it_performed_the_open(folded: str) -> bool:
     """True when the reply attributes the opening to BAXY in this turn."""
 
@@ -8874,6 +8888,12 @@ def compose_visible_defect(
     # AUDIO1793: the application of a volume adjustment is the audio target,
     # not an opened application whose open/closed state the final must state.
     app_name = None if operation == "audio.app.volume.adjust" else observed_dict.get("app")
+    # NEAR1997 H0227 «abre Steel.»: the app.open receipt names what opened as
+    # `appId`; a final that says «La app ya estaba abierta» leaves the person
+    # who said «Steel» without knowing what BAXY understood. The observed id is
+    # the name the final has to carry.
+    if app_name is None and operation == "app.open":
+        app_name = _app_open_observed_name(situation)
     if isinstance(app_name, str) and app_name.strip():
         feminine = _app_is_feminine(app_name)
         if (
@@ -8898,6 +8918,10 @@ def compose_visible_defect(
         }
         if isinstance(app_name, str) and app_name.strip():
             names = {app_name.casefold(), *aliases.get(app_name.casefold(), ())}
+            if operation == "app.open":
+                # NEAR1997: «Abrí Chrome» names «Google Chrome»; any word of the
+                # catalog name of four letters or more counts as naming it.
+                names |= {word for word in app_name.casefold().split() if len(word) >= 4}
             if not any(name in folded for name in names):
                 return "missing_name"
             closed_request = re.search(
@@ -17332,7 +17356,14 @@ class LlmRuntime:
                     # paraphrased as the request on every retry; any verified playback
                     # with an observed title gets the title to quote.
                     or _verified_media_playing_title(situation)
-                    else "Include names and numbers from seen."
+                    # NEAR1997 H0227: an app.open final names the app the receipt opened.
+                    else (
+                        ("Name the app you opened: «" + str(_app_open_observed_name(situation)) + "»."
+                         if response_language == "en"
+                         else "Nombra la app que abriste: «" + str(_app_open_observed_name(situation)) + "».")
+                        if situation.get("operation") == "app.open" and _app_open_observed_name(situation)
+                        else "Include names and numbers from seen."
+                    )
                 ),
                 "promised_effect": (
                     "It already happened: say you opened the site, in the past."
@@ -17497,11 +17528,13 @@ class LlmRuntime:
                     else "Name the failure cause in prose."
                 ),
                 "unstated_already_running": (
-                    "Name the app. Say it was already open. Never say you opened, launched "
-                    "or reopened it."
+                    ("Name the app" + (" («" + str(_app_open_observed_name(situation)) + "»)" if _app_open_observed_name(situation) else "")
+                     + ". Say it was already open. Never say you opened, launched "
+                     "or reopened it.")
                     if response_language == "en"
-                    else "Nombra la app. Di que ya estaba abierta. Nunca digas que la abriste "
-                         "ni que la volviste a abrir."
+                    else ("Nombra la app" + (" («" + str(_app_open_observed_name(situation)) + "»)" if _app_open_observed_name(situation) else "")
+                          + ". Di que ya estaba abierta. Nunca digas que la abriste "
+                          "ni que la volviste a abrir.")
                 ),
                 "invented_prior_open_state": (
                     "The app was closed and you opened it now. Do not say it was already open."
