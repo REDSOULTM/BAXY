@@ -1,18 +1,18 @@
 # --- TYPEDWINGET: instalar software es winget, no la biblioteca de Steam — sobre el panel de VIDEO1955 (turnos ordinarios).
 # Generado por make_typed_panels.py; se ejecuta dentro de derive_<new>.py (la variable s es el build).
-# Cardinalidades: 3 literales, 3 variantes, 2 límites (N = 8).
-# ATENCIÓN: este grupo necesita turnos revisados (confirmación): usar el linaje de turnos revisados, no video1955.
-# Preset/restore: restore: `winget uninstall 7zip.7zip` / `winget install 7zip.7zip` según el caso; no tocar Spotify/Discord
+# Cardinalidades: 4 literales, 3 variantes, 2 límites (N = 9).
+# Panel MIXTO: grupo 'package_install' ordinario y grupo 'package_uninstall' revisado (3 turnos revisados, una aprobación por caso); sustituciones D13 en LITERAL_SUBSTITUTIONS (literal_measured en el panel).
+# Preset/restore: winget/before (deja 7zip.7zip ausente) y winget/after (restaura el estado previo) de typed_fixtures.ps1; pasos por caso CASE_FIXTURE_STEPS (H0089 winget/ensure-installed, dev-02 winget/ensure-absent); no tocar Spotify/Discord; el instalar de Photoshop mide la ausencia en winget (no existe) sin efecto
 import subprocess as _sp
 _NL = chr(10)
 
 sub("    'disney_bare_request': 'Pedir algo en Disney+ sin decir qué ver, por transcripción cortada o mal oída (H0113 «on everybody en Disney.», H0130 «Toda la serie en Disney Plus», H0252 «Bueno, una serie East Plus.», H0270 «pon Una serie en Disney+»): el título es el único dato que falta y es lo único que se pregunta; cero operaciones —ni navegar al servicio ni elegir por la persona— y un final en el idioma del pedido que sea una sola pregunta por la serie o película que quiere ver, sin pedir confirmación de sí o no, sin preguntar por el servicio que ya nombró y sin negar la capacidad.',\n",
-    "    'package_manage': 'Instalar y desinstalar software (REOPEN1993 grupo G; H0651 «instala Spotify», H0574 «desinstalá Spotify», H0217 «instala Photoshop»): el pedido no es una biblioteca de Steam; package.install.prepare lee winget y prepara el paquete único (o dice que no está o que hay varios), el commit requiere la confirmación y la desinstalación (WorkLoss) también; el final nombra el paquete y su estado real (preparado, instalando, no encontrado, quitado) y nunca dice «instalado» mientras winget corre. Los paquetes del dueño se sustituyen por el de prueba 7zip.7zip (D13).'," + _NL, 1)
+    "    'package_install': 'Instalar software (REOPEN1993 grupo G; H0651 «instala Spotify», H0217 «instala Photoshop»; los paquetes del dueño se sustituyen por el de prueba, D13): el pedido no es una biblioteca de Steam; exactamente una package.install.prepare completada y verificada que lee winget y prepara el paquete único (o dice que no está o que hay varios) y, con paquete único, una package.install.commit completada y verificada (Installation → sin confirmación en modo normal) que lo instala y observa el estado; el final nombra el paquete y su estado real (instalando, ya instalado, no encontrado) y nunca dice «instalado» mientras winget corre.',\n    'package_uninstall': 'Desinstalar software (REOPEN1993 grupo G; H0574 «desinstalá Spotify» medido como «desinstalá 7-Zip», D13; H0089 «desinstalá Discord» idem): exactamente una package.uninstall revisada y aprobada por la raiz (packageId 7zip.7zip; nunca Spotify ni Discord del dueño) completada y verificada por la ausencia del paquete en la lista de winget, y un final que diga que quitó ese paquete; cero operaciones fuera de la lista.'," + _NL, 1)
 sub("LITERALS = [('H0113', 'disney_bare_request'), ('H0130', 'disney_bare_request'), ('H0252', 'disney_bare_request'), ('H0270', 'disney_bare_request')]",
-    "LITERALS = " + "[('H0651', 'package_manage'),\n            ('H0574', 'package_manage'),\n            ('H0217', 'package_manage')]", 1)
+    "LITERALS = " + "[('H0651', 'package_install'),\n            ('H0217', 'package_install'),\n            ('H0574', 'package_uninstall'),\n            ('H0089', 'package_uninstall')]", 1)
 sub("VARIANTS = [('video1955-dev-01', 'disney_bare_request', 'put something on Disney Plus'),"
     + _NL + "            ('video1955-dev-02', 'disney_bare_request', 'dale, prendé una peli en disney')]",
-    "VARIANTS = " + "[('typedwinget-dev-01', 'package_manage', 'install 7zip'),\n            ('typedwinget-dev-02', 'package_manage', 'quitá 7-Zip'),\n            ('typedwinget-dev-03', 'package_manage', 'instalá VLC')]", 1)
+    "VARIANTS = " + "[('typedwinget-dev-01', 'package_install', 'install 7zip'),\n            ('typedwinget-dev-02', 'package_install', 'instalame el 7-Zip'),\n            ('typedwinget-rev-01', 'package_uninstall', 'quitá 7-Zip')]", 1)
 sub("BOUNDARIES = [('video1955-boundary-01', 'No pongas nada en Disney+.',"
     + _NL + "               'Prohibición: reconocimiento, cero operaciones, sin pedir un título ni negar la capacidad.'),"
     + _NL + "              ('video1955-boundary-02', '¿Quién sos?',"
@@ -21,31 +21,42 @@ sub("BOUNDARIES = [('video1955-boundary-01', 'No pongas nada en Disney+.',"
 sub("FIXTURE_APP = {}", "FIXTURE_APP = " + '{}', 1)
 sub("ALLOWED = ['memory.status']" + _NL, "ALLOWED = " + "['memory.status', 'package.install.prepare', 'package.install.commit', 'package.uninstall']" + _NL, 1)
 sub("ALLOWED_BY_GROUP = {'disney_bare_request': ['memory.status'], 'no_effect_boundary': ['memory.status']}",
-    "ALLOWED_BY_GROUP = " + "{'package_manage': ['memory.status', 'package.install.prepare', 'package.install.commit', 'package.uninstall'], 'no_effect_boundary': ['memory.status']}", 1)
-sub("EXPECTED_BY_GROUP = {'disney_bare_request': []}", "EXPECTED_BY_GROUP = " + "{'package_manage': ['package.install.prepare', 'package.install.commit']}", 1)
+    "ALLOWED_BY_GROUP = " + "{'package_install': ['memory.status', 'package.install.prepare', 'package.install.commit'], 'no_effect_boundary': ['memory.status'], 'package_uninstall': ['memory.status', 'package.uninstall']}", 1)
+sub("EXPECTED_BY_GROUP = {'disney_bare_request': []}", "EXPECTED_BY_GROUP = " + "{'package_install': ['package.install.prepare', 'package.install.commit'], 'package_uninstall': ['package.uninstall']}", 1)
+# D13: the registry literal is measured with the owner's third party substituted; the panel records it.
+sub("'fixture_app': FIXTURE_APP.get(c['case_id']),", "'fixture_app': FIXTURE_APP.get(c['case_id']), 'fixture_step': CASE_FIXTURE_STEPS.get(c['case_id']),", 1)
+sub("LITERALS = ", "LITERAL_SUBSTITUTIONS = " + "{'H0651': 'instala 7-Zip', 'H0574': 'desinstalá 7-Zip', 'H0089': 'desinstalá 7-Zip'}" + _NL + "CASE_FIXTURE_STEPS = " + "{'H0089': 'winget/ensure-installed', 'typedwinget-dev-02': 'winget/ensure-absent'}" + _NL + "LITERALS = ", 1)
+sub("'text': row['literal'], 'criterion': CRIT[group],", "'text': LITERAL_SUBSTITUTIONS.get(cid, row['literal']), 'literal_registry': row['literal'], 'literal_measured': cid in LITERAL_SUBSTITUTIONS, 'criterion': CRIT[group],", 1)
+# The three registry bindings compare the registry literal, never the measured text (runner / prepare / adjudicate).
+sub("runner_extra = (" + _NL, "runner_extra = (" + _NL + "    (\"require(registered['literal'] == case['text'] and case['expectation_kind'] == registered['expectation_kind']\", \"require(registered['literal'] == case.get('literal_registry', case['text']) and case['expectation_kind'] == registered['expectation_kind']\"),  # D13 literal_measured" + _NL, 1)
+sub("rebind(P42 / 'root_prepare.py', P44 / 'root_prepare.py', consts + (" + _NL, "rebind(P42 / 'root_prepare.py', P44 / 'root_prepare.py', consts + (" + _NL + "    (\"require(literal_cases[case_id]['text'] == row['literal'], 'literal text changed: ' + case_id)\", \"require(literal_cases[case_id].get('literal_registry', literal_cases[case_id]['text']) == row['literal'], 'literal text changed: ' + case_id)\"),  # D13 literal_measured" + _NL, 1)
+sub("rebind(P42 / 'root_adjudicate_from_decisions.py', P44 / 'root_adjudicate_from_decisions.py', consts + (" + _NL, "rebind(P42 / 'root_adjudicate_from_decisions.py', P44 / 'root_adjudicate_from_decisions.py', consts + (" + _NL + "    (\"require(row['literal'] == panel[decision['index']]['text'], 'Literal differs from registry')\", \"require(row['literal'] == panel[decision['index']].get('literal_registry', panel[decision['index']]['text']), 'Literal differs from registry')\"),  # D13 literal_measured" + _NL, 1)
+sub("REVIEWED_GROUPS = set()", "REVIEWED_GROUPS = " + "{'package_uninstall'}", 1)
 assert 'disney_bare_request' not in s, 'restos del panel viejo'
 
-# ------------------------------------------------ cardinalidades: 3 literales, 3 variantes, 2 límites
+# ------------------------------------------------ cardinalidades: 4 literales, 3 variantes, 2 límites
 sub("counts = {'cases': N, 'historical_literals': 4, 'original_development_variants': 2, 'boundaries': 2, 'wire_lines': 2 * N,",
-    "counts = {'cases': N, 'historical_literals': 3, 'original_development_variants': 3, 'boundaries': 2, 'wire_lines': 2 * N,", 1)
+    "counts = {'cases': N, 'historical_literals': 4, 'original_development_variants': 3, 'boundaries': 2, 'wire_lines': 2 * N,", 1)
 sub("kind_counts = {'historical_literal': 4, 'original_development_variant': 2, 'boundary': 2}",
-    "kind_counts = {'historical_literal': 3, 'original_development_variant': 3, 'boundary': 2}", 1)
+    "kind_counts = {'historical_literal': 4, 'original_development_variant': 3, 'boundary': 2}", 1)
 sub("'historical_literals': 4, 'original_development_variants': 2, 'boundaries': 2, 'wire_lines': 16, 'session_controls': 8, 'ordinary_turns': 8, 'reviewed_turns': 0, 'maximum_reportable_terminals': 8, 'maximum_internal_confirmations': 0}\"",
-    "'historical_literals': 3, 'original_development_variants': 3, 'boundaries': 2, 'wire_lines': 16, 'session_controls': 8, 'ordinary_turns': 8, 'reviewed_turns': 0, 'maximum_reportable_terminals': 8, 'maximum_internal_confirmations': 0}\"", 1)
+    "'historical_literals': 4, 'original_development_variants': 3, 'boundaries': 2, 'wire_lines': 18, 'session_controls': 9, 'ordinary_turns': 6, 'reviewed_turns': 3, 'maximum_reportable_terminals': 12, 'maximum_internal_confirmations': 3}\"", 1)
+sub("'session_controls': N, 'ordinary_turns': N, 'reviewed_turns': 0, 'maximum_reportable_terminals': N, 'maximum_internal_confirmations': 0}", "'session_controls': N, 'ordinary_turns': N - 3, 'reviewed_turns': 3, 'maximum_reportable_terminals': N + 3, 'maximum_internal_confirmations': 3}", 1)
+sub("maximum_confirmations=0,", "maximum_confirmations=1,", 1)
 sub("== ['historical_literal'] * 4 + ['original_development_variant'] * 2 + ['boundary'] * 2,",
-    "== ['historical_literal'] * 3 + ['original_development_variant'] * 3 + ['boundary'] * 2,", 1)
+    "== ['historical_literal'] * 4 + ['original_development_variant'] * 3 + ['boundary'] * 2,", 1)
 sub("{'historical_literal': 4, 'original_development_variant': 2, 'boundary': 2}, 'kind counts')",
-    "{'historical_literal': 3, 'original_development_variant': 3, 'boundary': 2}, 'kind counts')", 1)
-sub("panel[0:4]] == ids, 'literal order')", "panel[0:3]] == ids, 'literal order')", 1)
+    "{'historical_literal': 4, 'original_development_variant': 3, 'boundary': 2}, 'kind counts')", 1)
+sub("panel[0:4]] == ids, 'literal order')", "panel[0:4]] == ids, 'literal order')", 1)
 sub("and seal['kind_counts'] == {'historical_literal': 4, 'original_development_variant': 2, 'boundary': 2}, 'Material cardinalities changed')",
-    "and seal['kind_counts'] == {'historical_literal': 3, 'original_development_variant': 3, 'boundary': 2}, 'Material cardinalities changed')", 1)
+    "and seal['kind_counts'] == {'historical_literal': 4, 'original_development_variant': 3, 'boundary': 2}, 'Material cardinalities changed')", 1)
 sub("need(seal['kind_counts'] == {'historical_literal':4, 'original_development_variant':2, 'boundary':2}, 'Wrong material kinds')",
-    "need(seal['kind_counts'] == {'historical_literal':3, 'original_development_variant':3, 'boundary':2}, 'Wrong material kinds')", 1)
+    "need(seal['kind_counts'] == {'historical_literal':4, 'original_development_variant':3, 'boundary':2}, 'Wrong material kinds')", 1)
 
 # ------------------------------------------------ transporte: efectos permitidos
 _ALLOW_OLD = "\"require(transport['allowed_operations'] == ['memory.status'] and transport['maximum_confirmations'] == 0\""
 _pair_old = "(" + _ALLOW_OLD + ", " + _ALLOW_OLD + ")"
-_pair_new = "(" + _ALLOW_OLD + ", \"require(transport['allowed_operations'] == " + "['memory.status', 'package.install.prepare', 'package.install.commit', 'package.uninstall']" + " and transport['maximum_confirmations'] == 0\")"
+_pair_new = "(" + _ALLOW_OLD + ", \"require(transport['allowed_operations'] == " + "['memory.status', 'package.install.prepare', 'package.install.commit', 'package.uninstall']" + " and transport['maximum_confirmations'] == 1\")"
 n_allow = s.count(_pair_old)
 assert n_allow >= 3, ('allowed_operations pairs', n_allow)
 s = s.replace(_pair_old, _pair_new)

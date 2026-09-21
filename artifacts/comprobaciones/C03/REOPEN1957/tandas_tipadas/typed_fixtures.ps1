@@ -148,9 +148,27 @@ switch ("$Cap/$Phase") {
     Out @{ ok = $true; reconnected = $st.profile; netsh = $out.Trim() }
   }
   'winget/before' {
+    # Mixed panel (install ordinary / uninstall reviewed) on the test package 7zip.7zip only (D13). The first
+    # case installs it, so the tanda starts with the package absent; the previous state is restored in after.
     $has = (winget list --id 7zip.7zip --exact --accept-source-agreements 2>$null | Select-String '7zip.7zip') -ne $null
     @{ installed = [bool]$has } | ConvertTo-Json -Compress | Set-Content (Join-Path $state 'winget.json')
-    Out @{ ok = $true; sevenZipInstalled = [bool]$has }
+    if ($has) { winget uninstall --id 7zip.7zip --exact --silent | Out-Null }
+    $now = (winget list --id 7zip.7zip --exact --accept-source-agreements 2>$null | Select-String '7zip.7zip') -ne $null
+    Out @{ ok = (-not $now); sevenZipWasInstalled = [bool]$has; sevenZipInstalledNow = [bool]$now }
+  }
+  'winget/ensure-installed' {
+    # Per-case precondition for an uninstall case that follows another uninstall (H0089 after H0574).
+    $has = (winget list --id 7zip.7zip --exact --accept-source-agreements 2>$null | Select-String '7zip.7zip') -ne $null
+    if (-not $has) { winget install --id 7zip.7zip --exact --silent --accept-package-agreements --accept-source-agreements | Out-Null }
+    $now = (winget list --id 7zip.7zip --exact --accept-source-agreements 2>$null | Select-String '7zip.7zip') -ne $null
+    Out @{ ok = [bool]$now; action = $(if ($has) { 'none' } else { 'installed' }) }
+  }
+  'winget/ensure-absent' {
+    # Per-case precondition for an install case that follows another install (dev-02 after dev-01).
+    $has = (winget list --id 7zip.7zip --exact --accept-source-agreements 2>$null | Select-String '7zip.7zip') -ne $null
+    if ($has) { winget uninstall --id 7zip.7zip --exact --silent | Out-Null }
+    $now = (winget list --id 7zip.7zip --exact --accept-source-agreements 2>$null | Select-String '7zip.7zip') -ne $null
+    Out @{ ok = (-not $now); action = $(if ($has) { 'uninstalled' } else { 'none' }) }
   }
   'winget/after' {
     $st = Get-Content (Join-Path $state 'winget.json') | ConvertFrom-Json
@@ -161,17 +179,52 @@ switch ("$Cap/$Phase") {
     Out @{ ok = $true; action = $action }
   }
   'steam/before' {
-    # Plants vs. Zombies GOTY = appid 3590, PICO PARK Classic = 1509960; both installed in the owner's account (2026-09-20).
-    $m = Get-ChildItem 'C:\Program Files (x86)\Steam\steamapps' -Filter 'appmanifest_*.acf' | ForEach-Object { $_.Name }
+    # Plants vs. Zombies GOTY = appid 3590, PICO PARK Classic = 461040; both owned by the owner (2026-09-20).
+    # Case order: H0456 installs PvZ (must be absent), H0620 uninstalls it, dev-01 installs it again, rev-01
+    # uninstalls PICO PARK (must be present). Steam of the owner stays open (driver steam_owner).
+    $m = @(Get-ChildItem 'C:\Program Files (x86)\Steam\steamapps' -Filter 'appmanifest_*.acf' | ForEach-Object { $_.Name })
     @{ manifests = $m } | ConvertTo-Json -Compress | Set-Content (Join-Path $state 'steam.json')
-    Out @{ ok = $true; pvz = ($m -contains 'appmanifest_3590.acf'); pico = ($m -contains 'appmanifest_1509960.acf') }
+    $pvz = ($m -contains 'appmanifest_3590.acf'); $pico = ($m -contains 'appmanifest_461040.acf')
+    $removed = $false
+    if ($pvz) { & $PSCommandPath steam uninstall 3590 | Out-Null; $removed = -not (Test-Path 'C:\Program Files (x86)\Steam\steamapps\appmanifest_3590.acf') }
+    Out @{ ok = ($pico -and ((-not $pvz) -or $removed)); pvzWasInstalled = $pvz; pvzRemovedForTanda = $removed; picoInstalled = $pico }
+  }
+  'steam/uninstall' {
+    # $Profile = appid. Same route as game.uninstall.named: the Steam console command app_uninstall, verified by
+    # the manifest disappearing (no dialog). Refuses anything but the two test titles.
+    if ($Profile -notin @('3590', '461040')) { throw "refusing to uninstall appid $Profile (only 3590 / 461040)" }
+    $manifest = "C:\Program Files (x86)\Steam\steamapps\appmanifest_$Profile.acf"
+    if (-not (Test-Path $manifest)) { Out @{ ok = $true; action = 'already_absent'; appid = $Profile }; break }
+    Start-Process 'steam://open/console'; Start-Sleep -Milliseconds 1500
+    $shell = New-Object -ComObject WScript.Shell
+    $helper = Get-Process steamwebhelper -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1
+    if ($null -eq $helper) { Out @{ ok = $false; error = 'steam window not found' }; break }
+    $shell.AppActivate($helper.Id) | Out-Null; Start-Sleep -Milliseconds 300
+    $shell.SendKeys("app_uninstall $Profile{ENTER}")
+    $deadline = (Get-Date).AddSeconds(90)
+    while ((Test-Path $manifest) -and ((Get-Date) -lt $deadline)) { Start-Sleep -Milliseconds 500 }
+    Out @{ ok = (-not (Test-Path $manifest)); action = 'app_uninstall'; appid = $Profile }
+  }
+  'steam/install' {
+    # $Profile = appid. steam://install opens the install dialog; Enter accepts the defaults. Verified by manifest.
+    if ($Profile -notin @('3590', '461040')) { throw "refusing to install appid $Profile (only 3590 / 461040)" }
+    $manifest = "C:\Program Files (x86)\Steam\steamapps\appmanifest_$Profile.acf"
+    if (Test-Path $manifest) { Out @{ ok = $true; action = 'already_present'; appid = $Profile }; break }
+    Start-Process "steam://install/$Profile"; Start-Sleep -Milliseconds 2500
+    $shell = New-Object -ComObject WScript.Shell
+    $helper = Get-Process steamwebhelper -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1
+    if ($null -ne $helper) { $shell.AppActivate($helper.Id) | Out-Null; Start-Sleep -Milliseconds 300; $shell.SendKeys('{ENTER}') }
+    $deadline = (Get-Date).AddSeconds(60)
+    while (-not (Test-Path $manifest) -and ((Get-Date) -lt $deadline)) { Start-Sleep -Milliseconds 500 }
+    Out @{ ok = (Test-Path $manifest); action = 'steam_install'; appid = $Profile }
   }
   'steam/after' {
     $st = Get-Content (Join-Path $state 'steam.json') | ConvertFrom-Json
-    $now = Get-ChildItem 'C:\Program Files (x86)\Steam\steamapps' -Filter 'appmanifest_*.acf' | ForEach-Object { $_.Name }
+    $now = @(Get-ChildItem 'C:\Program Files (x86)\Steam\steamapps' -Filter 'appmanifest_*.acf' | ForEach-Object { $_.Name })
     $missing = @($st.manifests | Where-Object { $now -notcontains $_ })
-    foreach ($mf in $missing) { $id = ($mf -replace 'appmanifest_(\d+)\.acf','$1'); Start-Process "steam://install/$id" }
-    Out @{ ok = $true; reinstallRequested = $missing }
+    $results = @()
+    foreach ($mf in $missing) { $id = ($mf -replace 'appmanifest_(\d+)\.acf','$1'); if ($id -in @('3590', '461040')) { $results += (& $PSCommandPath steam install $id) } }
+    Out @{ ok = $true; reinstalled = $results; missingAtEnd = $missing }
   }
   'power/after' {
     $out = (shutdown /a 2>&1 | Out-String).Trim()

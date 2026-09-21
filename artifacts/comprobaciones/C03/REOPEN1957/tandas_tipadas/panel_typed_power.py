@@ -1,7 +1,6 @@
 # --- TYPEDPOWER: Windows acepta el apagado y el reinicio con el privilegio habilitado — sobre el panel de VIDEO1955 (turnos ordinarios).
 # Generado por make_typed_panels.py; se ejecuta dentro de derive_<new>.py (la variable s es el build).
 # Cardinalidades: 2 literales, 2 variantes, 2 límites (N = 6).
-# ATENCIÓN: este grupo necesita turnos revisados (confirmación): usar el linaje de turnos revisados, no video1955.
 # Preset/restore: abort: `shutdown /a` por la raíz tras verificar la programación
 import subprocess as _sp
 _NL = chr(10)
@@ -23,6 +22,15 @@ sub("ALLOWED = ['memory.status']" + _NL, "ALLOWED = " + "['memory.status', 'syst
 sub("ALLOWED_BY_GROUP = {'disney_bare_request': ['memory.status'], 'no_effect_boundary': ['memory.status']}",
     "ALLOWED_BY_GROUP = " + "{'power_transition': ['memory.status', 'system.power'], 'no_effect_boundary': ['memory.status']}", 1)
 sub("EXPECTED_BY_GROUP = {'disney_bare_request': []}", "EXPECTED_BY_GROUP = " + "{'power_transition': ['system.power']}", 1)
+# D13: the registry literal is measured with the owner's third party substituted; the panel records it.
+sub("'fixture_app': FIXTURE_APP.get(c['case_id']),", "'fixture_app': FIXTURE_APP.get(c['case_id']), 'fixture_step': CASE_FIXTURE_STEPS.get(c['case_id']),", 1)
+sub("LITERALS = ", "LITERAL_SUBSTITUTIONS = " + '{}' + _NL + "CASE_FIXTURE_STEPS = " + '{}' + _NL + "LITERALS = ", 1)
+sub("'text': row['literal'], 'criterion': CRIT[group],", "'text': LITERAL_SUBSTITUTIONS.get(cid, row['literal']), 'literal_registry': row['literal'], 'literal_measured': cid in LITERAL_SUBSTITUTIONS, 'criterion': CRIT[group],", 1)
+# The three registry bindings compare the registry literal, never the measured text (runner / prepare / adjudicate).
+sub("runner_extra = (" + _NL, "runner_extra = (" + _NL + "    (\"require(registered['literal'] == case['text'] and case['expectation_kind'] == registered['expectation_kind']\", \"require(registered['literal'] == case.get('literal_registry', case['text']) and case['expectation_kind'] == registered['expectation_kind']\"),  # D13 literal_measured" + _NL, 1)
+sub("rebind(P42 / 'root_prepare.py', P44 / 'root_prepare.py', consts + (" + _NL, "rebind(P42 / 'root_prepare.py', P44 / 'root_prepare.py', consts + (" + _NL + "    (\"require(literal_cases[case_id]['text'] == row['literal'], 'literal text changed: ' + case_id)\", \"require(literal_cases[case_id].get('literal_registry', literal_cases[case_id]['text']) == row['literal'], 'literal text changed: ' + case_id)\"),  # D13 literal_measured" + _NL, 1)
+sub("rebind(P42 / 'root_adjudicate_from_decisions.py', P44 / 'root_adjudicate_from_decisions.py', consts + (" + _NL, "rebind(P42 / 'root_adjudicate_from_decisions.py', P44 / 'root_adjudicate_from_decisions.py', consts + (" + _NL + "    (\"require(row['literal'] == panel[decision['index']]['text'], 'Literal differs from registry')\", \"require(row['literal'] == panel[decision['index']].get('literal_registry', panel[decision['index']]['text']), 'Literal differs from registry')\"),  # D13 literal_measured" + _NL, 1)
+# sin grupo revisado
 assert 'disney_bare_request' not in s, 'restos del panel viejo'
 
 # ------------------------------------------------ cardinalidades: 2 literales, 2 variantes, 2 límites
@@ -32,6 +40,8 @@ sub("kind_counts = {'historical_literal': 4, 'original_development_variant': 2, 
     "kind_counts = {'historical_literal': 2, 'original_development_variant': 2, 'boundary': 2}", 1)
 sub("'historical_literals': 4, 'original_development_variants': 2, 'boundaries': 2, 'wire_lines': 16, 'session_controls': 8, 'ordinary_turns': 8, 'reviewed_turns': 0, 'maximum_reportable_terminals': 8, 'maximum_internal_confirmations': 0}\"",
     "'historical_literals': 2, 'original_development_variants': 2, 'boundaries': 2, 'wire_lines': 12, 'session_controls': 6, 'ordinary_turns': 6, 'reviewed_turns': 0, 'maximum_reportable_terminals': 6, 'maximum_internal_confirmations': 0}\"", 1)
+# turnos ordinarios
+
 sub("== ['historical_literal'] * 4 + ['original_development_variant'] * 2 + ['boundary'] * 2,",
     "== ['historical_literal'] * 2 + ['original_development_variant'] * 2 + ['boundary'] * 2,", 1)
 sub("{'historical_literal': 4, 'original_development_variant': 2, 'boundary': 2}, 'kind counts')",

@@ -1,0 +1,25 @@
+{
+ "prev": "<prev>",
+ "new": "<new: typedtextreadNNNN>",
+ "grandparent": "<GRANDPARENT>",
+ "registry_parent": "<REGISTRY_PARENT>",
+ "template": "video1955",
+ "sources": [],
+ "plan_title": "una ruta pegada bajo una carpeta conocida se lee y se dice de qué trata",
+ "plan_body": "REOPEN1993 (D24) reabrió H0299, acreditada con la pregunta «¿qué hago con ese archivo?». Con document.text.read la mente lee la ruta como carpeta+subcarpeta+nombre y el final dice de qué trata citando su comienzo. Turnos ordinarios sobre fixtures del root en las carpetas conocidas.",
+ "note": "H0299 executed on the merged opus/typed-tools build: document.text.read lee texto de una carpeta conocida (subcarpeta opcional); la mente lo elige para rutas pegadas y presenta el comienzo como con los PDF.",
+ "owner": "opus/typed-tools (catalog, Core list, Providers adapter, mind readings, composer) merged into codex/kiro-goal-c03.",
+ "build_kind": "Kernel, Core, Providers y mente",
+ "cause": "Una ruta pegada terminaba en una pregunta aunque el archivo era accesible.",
+ "change": "document.text.read lee texto de una carpeta conocida (subcarpeta opcional); la mente lo elige para rutas pegadas y presenta el comienzo como con los PDF.",
+ "sentence": "una ruta pegada bajo una carpeta conocida se lee y se dice de qué trata",
+ "build_sentence": "herramientas tipadas de opus/typed-tools fusionadas",
+ "reviewed": false,
+ "reviewed_group": null,
+ "literal_substitutions": {},
+ "case_fixture_steps": {},
+ "preset_restore": "fixtures del root: ROADMAP.md bajo Desktop\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent, notas.txt en Documentos, lista.csv en Descargas, raiz\\LEEME.md en el escritorio; restore: borrarlos",
+ "derive_extra": [
+  "exec(open(\"panel_typed_textread.py\", encoding=\"utf-8\").read())"
+ ]
+}

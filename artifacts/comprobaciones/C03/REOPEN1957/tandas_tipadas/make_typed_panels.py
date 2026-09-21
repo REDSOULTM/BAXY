@@ -49,40 +49,58 @@ CAPS: dict[str, dict] = {
         "preset": "internet real; sin preset ni restore",
     },
     "winget": {
-        "group": "package_manage",
-        "reviewed": True,
-        "crit": "Instalar y desinstalar software (REOPEN1993 grupo G; H0651 «instala Spotify», H0574 «desinstalá Spotify», H0217 «instala Photoshop»): el pedido no es una biblioteca de Steam; package.install.prepare lee winget y prepara el paquete único (o dice que no está o que hay varios), el commit requiere la confirmación y la desinstalación (WorkLoss) también; el final nombra el paquete y su estado real (preparado, instalando, no encontrado, quitado) y nunca dice «instalado» mientras winget corre. Los paquetes del dueño se sustituyen por el de prueba 7zip.7zip (D13).",
-        "literals": [("H0651", None), ("H0574", None), ("H0217", None)],
-        "variants": ["install 7zip", "quitá 7-Zip", "instalá VLC"],
+        "group": "package_install",
+        "crit": "Instalar software (REOPEN1993 grupo G; H0651 «instala Spotify», H0217 «instala Photoshop»; los paquetes del dueño se sustituyen por el de prueba, D13): el pedido no es una biblioteca de Steam; exactamente una package.install.prepare completada y verificada que lee winget y prepara el paquete único (o dice que no está o que hay varios) y, con paquete único, una package.install.commit completada y verificada (Installation → sin confirmación en modo normal) que lo instala y observa el estado; el final nombra el paquete y su estado real (instalando, ya instalado, no encontrado) y nunca dice «instalado» mientras winget corre.",
+        "literals": [("H0651", None), ("H0217", None)],
+        "variants": ["install 7zip", "instalame el 7-Zip"],
+        "case_fixture_steps": {"H0089": "winget/ensure-installed", "typedwinget-dev-02": "winget/ensure-absent"},
         "boundaries": [("no instales nada", "Prohibición: reconocimiento, cero operaciones."),
-                       ("instala el amor", "No es un paquete: winget no lo lista; final honesto de ausencia sin inventar.")],
-        "allowed": ["package.install.prepare", "package.install.commit", "package.uninstall"],
+                       ("¿qué es winget?", "Pregunta de definición: explicación, cero operaciones.")],
+        "allowed": ["package.install.prepare", "package.install.commit"],
         "expected": ["package.install.prepare", "package.install.commit"],
+        "reviewed_group": {
+            "group": "package_uninstall",
+            "crit": "Desinstalar software (REOPEN1993 grupo G; H0574 «desinstalá Spotify» medido como «desinstalá 7-Zip», D13; H0089 «desinstalá Discord» idem): exactamente una package.uninstall revisada y aprobada por la raiz (packageId 7zip.7zip; nunca Spotify ni Discord del dueño) completada y verificada por la ausencia del paquete en la lista de winget, y un final que diga que quitó ese paquete; cero operaciones fuera de la lista.",
+            "literals": [("H0574", None), ("H0089", None)],
+            "variants": ["quitá 7-Zip"],
+            "allowed": ["package.uninstall"],
+            "expected": ["package.uninstall"],
+        },
+        "literal_substitutions": {"H0651": "instala 7-Zip", "H0574": "desinstalá 7-Zip", "H0089": "desinstalá 7-Zip"},
         "plan_title": "instalar software es winget, no la biblioteca de Steam",
-        "plan_body": "REOPEN1993 (D24) reabrió siete filas de instalar/desinstalar programas leídas como biblioteca de Steam. Con package.install.prepare/commit y package.uninstall (winget) la mente distingue programa de juego, prepara el paquete único, el commit y la desinstalación pasan por la confirmación, y el final dice el estado real. Turnos revisados (confirmación) con el paquete de prueba 7zip.7zip en lugar de Spotify/Discord del dueño (D13).",
+        "plan_body": "REOPEN1993 (D24) reabrió siete filas de instalar/desinstalar programas leídas como biblioteca de Steam. Con package.install.prepare/commit y package.uninstall (winget) la mente distingue programa de juego, prepara el paquete único, instala sin confirmación (Installation) y desinstala con confirmación (WorkLoss), y el final dice el estado real. Panel mixto de 9: instalar como turnos ordinarios (2 literales + 2 variantes) y desinstalar como turnos revisados (2 literales + 1 variante) con el paquete de prueba 7zip.7zip en lugar de Spotify/Discord del dueño (D13); 2 límites.",
         "cause": "«Instala Photoshop/Spotify» se leía como descarga de Steam y terminaba en una biblioteca vacía.",
-        "change": "winget por tipadas: preparar (lectura), confirmar, instalar/desinstalar con espera corta y estado observado; la mente distingue programas de juegos.",
-        "preset": "restore: `winget uninstall 7zip.7zip` / `winget install 7zip.7zip` según el caso; no tocar Spotify/Discord",
+        "change": "winget por tipadas: preparar (lectura), instalar (ordinario) y desinstalar (revisado) con espera corta y estado observado; la mente distingue programas de juegos.",
+        "preset": "winget/before (deja 7zip.7zip ausente) y winget/after (restaura el estado previo) de typed_fixtures.ps1; pasos por caso CASE_FIXTURE_STEPS (H0089 winget/ensure-installed, dev-02 winget/ensure-absent); no tocar Spotify/Discord; el instalar de Photoshop mide la ausencia en winget (no existe) sin efecto",
     },
     "steam": {
-        "group": "game_library_manage",
-        "reviewed": True,
-        "crit": "Descargar/desinstalar juegos (REOPEN1993 grupo S; H0456 «Descarga Worms Rumble en Steam», H0571 «Descarga diin eternal de steam», H0578 «Descarga Fall guys en epic games», H0620 «Desinstala Worms Rumble»): primero game.entitlement.named lee la biblioteca (Steam o Epic según la tienda nombrada; la palabra mal oída se corrige con el catálogo); si el título está en la biblioteca y no instalado, game.install.named lo inicia por steam://install con confirmación y lo verifica por el manifiesto; desinstalar es game.uninstall.named con confirmación (WorkLoss). Final: estado leído y efecto iniciado, sin inventar instalaciones. Títulos de prueba (decisión del dueño 2026-09-20): Plants vs. Zombies: Game of the Year y PICO PARK: Classic Edition, ambos en su cuenta e instalados; Worms Rumble se sustituye por Plants vs. Zombies (D13).",
-        "literals": [("H0456", None), ("H0571", None), ("H0578", None), ("H0620", None)],
-        "variants": ["desinstalá Plants vs. Zombies", "instalá Plants vs. Zombies de Steam"],
+        "group": "game_install",
+        "crit": "Descargar/instalar juegos (REOPEN1993 grupo S; H0456 «Descarga Worms Rumble en Steam» medido con Plants vs. Zombies, D13; H0571 «Descarga diin eternal de steam» = Doom Eternal mal oído; H0578 «Descarga Fall guys en epic games»): primero game.entitlement.named lee la biblioteca (Steam o Epic según la tienda nombrada; la palabra mal oída se corrige con el catálogo); con el título en la biblioteca y no instalado, exactamente una game.install.named completada y verificada (Installation → sin confirmación) que lo inicia por steam://install y lo verifica por el manifiesto; sin entitlement, el final dice que no está en la biblioteca; nada inventado.",
+        "literals": [("H0456", None), ("H0571", None), ("H0578", None)],
+        "variants": ["instalá Plants vs. Zombies de Steam"],
         "boundaries": [("no descargues nada", "Prohibición: reconocimiento, cero operaciones."),
                        ("descargá el aire de Steam", "Título inexistente: la lectura de biblioteca lo dice; nada iniciado.")],
-        "allowed": ["game.entitlement.named", "game.install.named", "game.uninstall.named"],
+        "allowed": ["game.entitlement.named", "game.install.named"],
         "expected": ["game.entitlement.named", "game.install.named"],
+        "reviewed_group": {
+            "group": "game_uninstall",
+            "crit": "Desinstalar un juego instalado (REOPEN1993 grupo S; H0620 «Desinstala Worms Rumble» medido como «Desinstala Plants vs. Zombies», D13): exactamente una game.uninstall.named revisada y aprobada por la raiz (sólo Plants vs. Zombies GOTY o PICO PARK) completada y verificada porque el manifiesto local ya no lo declara instalado, y un final que diga que lo desinstaló; cero operaciones fuera de la lista.",
+            "literals": [("H0620", None)],
+            "variants": ["desinstalá PICO PARK"],
+            "allowed": ["game.uninstall.named"],
+            "expected": ["game.uninstall.named"],
+        },
+        "literal_substitutions": {"H0456": "Descarga Plants vs. Zombies en Steam. IMPORTANTE: primero busca el AppID via https://store.steampowered.co", "H0620": "Desinstala Plants vs. Zombies"},
         "plan_title": "Steam y Epic: descargar e instalar por el lanzador, desinstalar con confirmación",
-        "plan_body": "REOPEN1993 (D24) reabrió cuatro filas de Steam/Epic acreditadas como lectura o límite. Con game.install.named (store) y game.uninstall.named la mente encadena la lectura de biblioteca con el efecto y el final dice lo iniciado y verificado por manifiesto. Turnos revisados; títulos que posee la cuenta del dueño (pendiente de su respuesta); restore reinstalando lo desinstalado.",
+        "plan_body": "REOPEN1993 (D24) reabrió cuatro filas de Steam/Epic acreditadas como lectura o límite. Con game.install.named (store) y game.uninstall.named la mente encadena la lectura de biblioteca con el efecto y el final dice lo iniciado y verificado por manifiesto. Panel mixto de 8: instalar como turnos ordinarios (3 literales + 1 variante), desinstalar como turnos revisados (1 literal + 1 variante), 2 límites; títulos que posee la cuenta del dueño (decisión 2026-09-20: Plants vs. Zombies GOTY appid 3590, PICO PARK appid 461040); el caso «desinstalá» va antes del «instalá» del mismo título; restore reinstalando lo desinstalado.",
         "cause": "Descargar/desinstalar en Steam o Epic terminaba en la lectura de biblioteca o en un límite.",
-        "change": "instalación por steam:// verificada por manifiesto y desinstalación por el lanzador, ambas con confirmación; Epic por su esquema com.epicgames.launcher.",
-        "preset": "decisión del dueño 2026-09-20 («control total»): títulos chicos instalados de su cuenta, Plants vs. Zombies: Game of the Year (49 MB) y PICO PARK: Classic Edition (76 MB); el caso «desinstalá» va antes del «instalá» del mismo título en la misma tanda; H0456/H0620 se miden con Plants vs. Zombies en lugar de Worms Rumble (no está en la cuenta; D13), H0571 con la corrección Doom Eternal como lectura de biblioteca, H0578 Fall Guys en Epic como lectura; restore: dejar Plants vs. Zombies instalado",
+        "change": "instalación por steam:// verificada por manifiesto (ordinaria) y desinstalación por el lanzador con confirmación (revisada); Epic por su esquema com.epicgames.launcher.",
+        "preset": "steam/before (registra manifiestos y deja PvZ 3590 ausente por app_uninstall) y steam/after (reinstala lo que falte por steam://install) de typed_fixtures.ps1; el orden de casos ya encadena instalar→desinstalar→instalar de PvZ y PICO PARK se desinstala al final; driver near_case steam_owner (el Steam del dueño se reutiliza, nunca se cierra)",
     },
     "power": {
         "group": "power_transition",
-        "reviewed": True,
+        # RiskPolicy (D3): system.power is Allow → ordinary turn; the catalog label work_loss is historical.
+        "reviewed": False,
         "crit": "Apagar/reiniciar (REOPEN1993 grupo P; H0401 «reiniciá la PC», H0714 «apagá la computadora»): exactamente una system.power completada y verificada con retraso de 30 s (privilegio de apagado habilitado en el proceso), tras la confirmación de la persona; el final dice que la transición quedó programada. La raíz la aborta con shutdown /a tras verificar la programación.",
         "literals": [("H0401", None), ("H0714", None)],
         "variants": ["shut down the computer", "reiniciá"],
@@ -261,24 +279,50 @@ def py_list(items: list[tuple]) -> str:
 def panel_source(cap: str, spec: dict) -> str:
     group = spec["group"]
     tag = f"typed{cap}"
+    reviewed_spec = spec.get("reviewed_group")
     literals = [(cid, group) for cid, _ in spec["literals"]]
     variants = [(f"{tag}-dev-{i:02d}", group, text) for i, text in enumerate(spec["variants"], 1)]
+    reviewed_group = reviewed_spec["group"] if reviewed_spec else None
+    if reviewed_spec:
+        literals += [(cid, reviewed_group) for cid, _ in reviewed_spec["literals"]]
+        variants += [(f"{tag}-rev-{i:02d}", reviewed_group, text) for i, text in enumerate(reviewed_spec["variants"], 1)]
     boundaries = [(f"{tag}-boundary-{i:02d}", text, why) for i, (text, why) in enumerate(spec["boundaries"], 1)]
     n_lit, n_var, n_bnd = len(literals), len(variants), len(boundaries)
     n = n_lit + n_var + n_bnd
-    allowed = ["memory.status"] + spec["allowed"]
-    allowed_by_group = {group: allowed, "no_effect_boundary": ["memory.status"]}
+    n_rev = sum(1 for _, g in literals if g == reviewed_group) + sum(1 for _, g, _ in variants if g == reviewed_group) if reviewed_spec else 0
+    allowed = ["memory.status"] + spec["allowed"] + (reviewed_spec["allowed"] if reviewed_spec else [])
+    allowed_by_group = {group: ["memory.status"] + spec["allowed"], "no_effect_boundary": ["memory.status"]}
     expected_by_group = {group: spec["expected"]}
+    if reviewed_spec:
+        allowed_by_group[reviewed_group] = ["memory.status"] + reviewed_spec["allowed"]
+        expected_by_group[reviewed_group] = reviewed_spec["expected"]
+    substitutions = spec.get("literal_substitutions", {})
+    case_fixture_steps = spec.get("case_fixture_steps", {})
     fixture_app = {}
     if spec.get("fixture_app"):
         fixture_app = {cid: spec["fixture_app"] for cid, _ in literals} | {vid: spec["fixture_app"] for vid, _, _ in variants}
     crit_line = f"    {group!r}: {spec['crit']!r},"
-    reviewed = spec.get("reviewed", False)
+    if reviewed_spec:
+        crit_line += NL + f"    {reviewed_group!r}: {reviewed_spec['crit']!r},"
+    reviewed = spec.get("reviewed", False) or bool(reviewed_spec)
+    if reviewed_spec:
+        rev_groups_line = 'sub("REVIEWED_GROUPS = set()", "REVIEWED_GROUPS = " + ' + repr(repr({reviewed_group})) + ', 1)'
+        _counts_old = "'session_controls': N, 'ordinary_turns': N, 'reviewed_turns': 0, 'maximum_reportable_terminals': N, 'maximum_internal_confirmations': 0}"
+        _counts_new = "'session_controls': N, 'ordinary_turns': N - " + str(n_rev) + ", 'reviewed_turns': " + str(n_rev) + ", 'maximum_reportable_terminals': N + " + str(n_rev) + ", 'maximum_internal_confirmations': " + str(n_rev) + "}"
+        rev_counts_line = 'sub(' + repr(_counts_old) + ', ' + repr(_counts_new) + ', 1)'
+        rev_maxconf_line = 'sub("maximum_confirmations=0,", "maximum_confirmations=1,", 1)'
+        rev_pair_conf = 1
+    else:
+        rev_groups_line = "# sin grupo revisado"
+        rev_counts_line = "# turnos ordinarios"
+        rev_maxconf_line = ""
+        rev_pair_conf = 0
     header = (
         f"# --- {tag.upper()}: {spec['plan_title']} — sobre el panel de VIDEO1955 (turnos ordinarios).{NL}"
         f"# Generado por make_typed_panels.py; se ejecuta dentro de derive_<new>.py (la variable s es el build).{NL}"
         f"# Cardinalidades: {n_lit} literales, {n_var} variantes, {n_bnd} límites (N = {n}).{NL}"
-        + (f"# ATENCIÓN: este grupo necesita turnos revisados (confirmación): usar el linaje de turnos revisados, no video1955.{NL}" if reviewed else "")
+        + (f"# Panel MIXTO: grupo {group!r} ordinario y grupo {reviewed_group!r} revisado ({n_rev} turnos revisados, una aprobación por caso); sustituciones D13 en LITERAL_SUBSTITUTIONS (literal_measured en el panel).{NL}" if reviewed_spec else "")
+        + (f"# ATENCIÓN: este grupo necesita turnos revisados (confirmación): usar un grupo revisado (reviewed_group) o el linaje de turnos revisados, no video1955 a secas.{NL}" if reviewed and not reviewed_spec else "")
         + (f"# ATENCIÓN: plantilla {spec['template']} (app lanzada / turnos then) en vez de video1955.{NL}" if spec.get("template") else "")
         + f"# Preset/restore: {spec['preset']}{NL}"
     )
@@ -302,6 +346,15 @@ sub("ALLOWED = ['memory.status']" + _NL, "ALLOWED = " + {repr(allowed)!r} + _NL,
 sub("ALLOWED_BY_GROUP = {{'disney_bare_request': ['memory.status'], 'no_effect_boundary': ['memory.status']}}",
     "ALLOWED_BY_GROUP = " + {repr(allowed_by_group)!r}, 1)
 sub("EXPECTED_BY_GROUP = {{'disney_bare_request': []}}", "EXPECTED_BY_GROUP = " + {repr(expected_by_group)!r}, 1)
+# D13: the registry literal is measured with the owner's third party substituted; the panel records it.
+sub("'fixture_app': FIXTURE_APP.get(c['case_id']),", "'fixture_app': FIXTURE_APP.get(c['case_id']), 'fixture_step': CASE_FIXTURE_STEPS.get(c['case_id']),", 1)
+sub("LITERALS = ", "LITERAL_SUBSTITUTIONS = " + {repr(substitutions)!r} + _NL + "CASE_FIXTURE_STEPS = " + {repr(case_fixture_steps)!r} + _NL + "LITERALS = ", 1)
+sub("'text': row['literal'], 'criterion': CRIT[group],", "'text': LITERAL_SUBSTITUTIONS.get(cid, row['literal']), 'literal_registry': row['literal'], 'literal_measured': cid in LITERAL_SUBSTITUTIONS, 'criterion': CRIT[group],", 1)
+# The three registry bindings compare the registry literal, never the measured text (runner / prepare / adjudicate).
+sub("runner_extra = (" + _NL, "runner_extra = (" + _NL + "    (\\"require(registered['literal'] == case['text'] and case['expectation_kind'] == registered['expectation_kind']\\", \\"require(registered['literal'] == case.get('literal_registry', case['text']) and case['expectation_kind'] == registered['expectation_kind']\\"),  # D13 literal_measured" + _NL, 1)
+sub("rebind(P42 / 'root_prepare.py', P44 / 'root_prepare.py', consts + (" + _NL, "rebind(P42 / 'root_prepare.py', P44 / 'root_prepare.py', consts + (" + _NL + "    (\\"require(literal_cases[case_id]['text'] == row['literal'], 'literal text changed: ' + case_id)\\", \\"require(literal_cases[case_id].get('literal_registry', literal_cases[case_id]['text']) == row['literal'], 'literal text changed: ' + case_id)\\"),  # D13 literal_measured" + _NL, 1)
+sub("rebind(P42 / 'root_adjudicate_from_decisions.py', P44 / 'root_adjudicate_from_decisions.py', consts + (" + _NL, "rebind(P42 / 'root_adjudicate_from_decisions.py', P44 / 'root_adjudicate_from_decisions.py', consts + (" + _NL + "    (\\"require(row['literal'] == panel[decision['index']]['text'], 'Literal differs from registry')\\", \\"require(row['literal'] == panel[decision['index']].get('literal_registry', panel[decision['index']]['text']), 'Literal differs from registry')\\"),  # D13 literal_measured" + _NL, 1)
+{rev_groups_line}
 assert 'disney_bare_request' not in s, 'restos del panel viejo'
 
 # ------------------------------------------------ cardinalidades: {n_lit} literales, {n_var} variantes, {n_bnd} límites
@@ -310,7 +363,9 @@ sub("counts = {{'cases': N, 'historical_literals': 4, 'original_development_vari
 sub("kind_counts = {{'historical_literal': 4, 'original_development_variant': 2, 'boundary': 2}}",
     "kind_counts = {{'historical_literal': {n_lit}, 'original_development_variant': {n_var}, 'boundary': {n_bnd}}}", 1)
 sub("'historical_literals': 4, 'original_development_variants': 2, 'boundaries': 2, 'wire_lines': 16, 'session_controls': 8, 'ordinary_turns': 8, 'reviewed_turns': 0, 'maximum_reportable_terminals': 8, 'maximum_internal_confirmations': 0}}\\"",
-    "'historical_literals': {n_lit}, 'original_development_variants': {n_var}, 'boundaries': {n_bnd}, 'wire_lines': {2 * n}, 'session_controls': {n}, 'ordinary_turns': {n}, 'reviewed_turns': 0, 'maximum_reportable_terminals': {n}, 'maximum_internal_confirmations': 0}}\\"", 1)
+    "'historical_literals': {n_lit}, 'original_development_variants': {n_var}, 'boundaries': {n_bnd}, 'wire_lines': {2 * n}, 'session_controls': {n}, 'ordinary_turns': {n - n_rev}, 'reviewed_turns': {n_rev}, 'maximum_reportable_terminals': {n + n_rev}, 'maximum_internal_confirmations': {n_rev}}}\\"", 1)
+{rev_counts_line}
+{rev_maxconf_line}
 sub("== ['historical_literal'] * 4 + ['original_development_variant'] * 2 + ['boundary'] * 2,",
     "== ['historical_literal'] * {n_lit} + ['original_development_variant'] * {n_var} + ['boundary'] * {n_bnd},", 1)
 sub("{{'historical_literal': 4, 'original_development_variant': 2, 'boundary': 2}}, 'kind counts')",
@@ -324,7 +379,7 @@ sub("need(seal['kind_counts'] == {{'historical_literal':4, 'original_development
 # ------------------------------------------------ transporte: efectos permitidos
 _ALLOW_OLD = "\\"require(transport['allowed_operations'] == ['memory.status'] and transport['maximum_confirmations'] == 0\\""
 _pair_old = "(" + _ALLOW_OLD + ", " + _ALLOW_OLD + ")"
-_pair_new = "(" + _ALLOW_OLD + ", \\"require(transport['allowed_operations'] == " + {repr(allowed)!r} + " and transport['maximum_confirmations'] == 0\\")"
+_pair_new = "(" + _ALLOW_OLD + ", \\"require(transport['allowed_operations'] == " + {repr(allowed)!r} + " and transport['maximum_confirmations'] == {rev_pair_conf}\\")"
 n_allow = s.count(_pair_old)
 assert n_allow >= 3, ('allowed_operations pairs', n_allow)
 s = s.replace(_pair_old, _pair_new)
@@ -382,7 +437,10 @@ def spec_json(cap: str, spec: dict) -> dict:
         "change": spec["change"],
         "sentence": spec["plan_title"],
         "build_sentence": "herramientas tipadas de opus/typed-tools fusionadas",
-        "reviewed": spec.get("reviewed", False),
+        "reviewed": spec.get("reviewed", False) or bool(spec.get("reviewed_group")),
+        "reviewed_group": (spec.get("reviewed_group") or {}).get("group"),
+        "literal_substitutions": spec.get("literal_substitutions", {}),
+        "case_fixture_steps": spec.get("case_fixture_steps", {}),
         "preset_restore": spec["preset"],
         "derive_extra": [f'exec(open("panel_typed_{cap}.py", encoding="utf-8").read())'],
     }

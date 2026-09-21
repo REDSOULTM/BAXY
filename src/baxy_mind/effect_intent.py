@@ -5697,12 +5697,15 @@ def _authenticated_game_target(
         (
             r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*|"
             r"(?:puedes|podrias|can you|could you|would you)\s+)?"
-            rf"(?:(?:vamos\s+a\s+)?(?:juega|jugar|juguemos|play)|"
+            rf"(?:(?:vamos\s+a\s+)?(?:juega|juga|jugar|juguemos|play)|"
+            # H0682 «Ve a Mad de Rivals.», H0083 «lanzá Mortal Kombat en Steam»:
+            # a go-to or start order on an installed title launches it too.
+            r"(?:ve|anda|andate|entra|go)\s+(?:a|al|to)|inicia|iniciame|start|"
             rf"(?:{_OPEN}|lanza|launch|ejecuta|run))\b\s+"
             r"(?:(?:al|el|the)\s+)?(?:(?:juego|game)\s+)?"
             r"(?P<title>.+?)"
             r"(?:\s+(?:modo|mode)\s+(?:multijugador|multiplayer))?"
-            r"(?:\s+(?:desde|en|from|on)\s+steam)?[\s?!.]*$"
+            r"(?:\s+(?:desde|en|from|on)\s+(?:steam|epic(?:\s+games)?))?[\s?!.]*$"
         ),
     )
     if request is None or _is_negated_match(text, request):
@@ -5717,6 +5720,17 @@ def _authenticated_game_target(
         if entry[0].startswith(target_key + " ")
         and re.fullmatch(r"\d+", entry[0][len(target_key) + 1 :]) is not None
     ]
+    if not candidates:
+        # A title named without its edition suffix («PICO PARK» for «PICO
+        # PARK:Classic Edition», «Plants vs. Zombies» for the GOTY edition) is
+        # that game when exactly one installed title starts so (D24: unique
+        # candidate → act).
+        candidates = [
+            entry
+            for entry in game_catalog.entries
+            if entry[0].startswith(target_key + " ")
+            or re.match(re.escape(target_key) + r"\s*[:(\-–]", _fold(entry[3]).strip()) is not None
+        ]
     identities = {(entry[1], entry[2]) for entry in candidates}
     if len(identities) != 1:
         return None
@@ -17801,11 +17815,17 @@ def steam_library_title(text: str) -> str | None:
         # INSTALL1627 H0396/H0456: the request is followed by instructions
         # about the same install (an AppID, a steam:// URL, the store page);
         # the first sentence is the request, the rest names no other effect.
-        head, separator, rest = folded.partition(". ")
-        if separator and _has(rest, r"\bapp\s*id\b|steam://|store\.steampowered\.com") and not _has(
-            rest, r"\b(?:luego|despues|then|y\s+(?:abre|lanza|abri|ejecuta|open|launch|run)|cierra|close)\b",
-        ):
+        # The sentence boundary is the first «. » after which the request
+        # matches: «Plants vs. Zombies» carries a dot of its own (D13).
+        for boundary in re.finditer(r"\. ", folded):
+            head, rest = folded[: boundary.start()], folded[boundary.end():]
+            if not _has(rest, r"\bapp\s*id\b|steam://|store\.steampowered\.com") or _has(
+                rest, r"\b(?:luego|despues|then|y\s+(?:abre|lanza|abri|ejecuta|open|launch|run)|cierra|close)\b",
+            ):
+                continue
             match = _STEAM_LIBRARY_REQUEST.fullmatch(head.rstrip(".!?").strip())
+            if match is not None:
+                break
         if match is None:
             # INSTALL1633 H0608 «lanzá Mortal Kombat»: a launch of a bare name
             # with no platform; games are launched from Steam here, so the

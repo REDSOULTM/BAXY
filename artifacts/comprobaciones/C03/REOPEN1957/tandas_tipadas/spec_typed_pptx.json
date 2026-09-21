@@ -1,0 +1,25 @@
+{
+ "prev": "<prev>",
+ "new": "<new: typedpptxNNNN>",
+ "grandparent": "<GRANDPARENT>",
+ "registry_parent": "<REGISTRY_PARENT>",
+ "template": "video1955",
+ "sources": [],
+ "plan_title": "el powerpoint se escribe como paquete Open XML y se abre",
+ "plan_body": "REOPEN1957 (D11) reabrió H0188, acreditada como límite. Con document.presentation.create (título, diapositivas del modelo, postlectura del paquete) y file.open la mente lo encadena y el final dice archivo y cantidad. Turnos ordinarios; restore borrando el .pptx y cerrando PowerPoint.",
+ "note": "H0188 executed on the merged opus/typed-tools build: document.presentation.create escribe un .pptx mínimo válido con N diapositivas y cuenta las escritas; el modelo redacta el contenido.",
+ "owner": "opus/typed-tools (catalog, Core list, Providers adapter, mind readings, composer) merged into codex/kiro-goal-c03.",
+ "build_kind": "Kernel, Core, Providers y mente",
+ "cause": "Crear una presentación no tenía mecanismo y terminaba en un límite.",
+ "change": "document.presentation.create escribe un .pptx mínimo válido con N diapositivas y cuenta las escritas; el modelo redacta el contenido.",
+ "sentence": "el powerpoint se escribe como paquete Open XML y se abre",
+ "build_sentence": "herramientas tipadas de opus/typed-tools fusionadas",
+ "reviewed": false,
+ "reviewed_group": null,
+ "literal_substitutions": {},
+ "case_fixture_steps": {},
+ "preset_restore": "restore: borrar el .pptx de Documentos; cerrar PowerPoint",
+ "derive_extra": [
+  "exec(open(\"panel_typed_pptx.py\", encoding=\"utf-8\").read())"
+ ]
+}
