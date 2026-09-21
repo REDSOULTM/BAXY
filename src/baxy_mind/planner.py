@@ -216,6 +216,9 @@ _CONDITIONAL_IDENTITY_PREDECESSORS = {
     # that verified ID is stronger than repeating a title or emitting an empty
     # selector that Core must reject.
     "note.read": ("note.create",),
+    # REOPEN1957 H0069: the picture a download writes is the file the viewer
+    # opens; its name is known only from the verified download.
+    "file.open": ("web.download",),
 }
 _OPAQUE_ID_EVIDENCE = {
     "browser.navigate": re.compile(r"https?://[^\s]+", re.IGNORECASE),

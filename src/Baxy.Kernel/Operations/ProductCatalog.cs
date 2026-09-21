@@ -332,6 +332,23 @@ public static class ProductCatalog
             "clipboard.write.text.sequence.postread.v1",
             ToolExposure.Public,
             "Reemplaza texto del portapapeles y verifica contenido y secuencia mediante postlectura."),
+        // Auditoría semántica 2026-09-20 (REOPEN1957 H0459 «cambiá el fondo de
+        // pantalla a azul», D11): un color liso o una imagen de una carpeta conocida
+        // como fondo de escritorio, verificado por la postlectura del sistema; el
+        // recibo guarda el fondo anterior para restaurarlo.
+        Descriptor(
+            "desktop.wallpaper.set",
+            Schema(
+                [
+                    String("color", types: NullableString, maximumUtf8Bytes: 32),
+                    String("folder", types: NullableString, values: ["desktop", "documents", "downloads", "pictures"]),
+                    String("name", types: NullableString, maximumUtf8Bytes: 200),
+                ],
+                []),
+            OperationRisks.LowReversible,
+            "desktop.wallpaper.set.spi.registry.postread.v1",
+            ToolExposure.Public,
+            "Cambia el fondo de escritorio a un color liso nombrado o a una imagen de una carpeta conocida y verifica la postlectura del sistema; devuelve el fondo anterior."),
         Descriptor(
             "display.status",
             EmptySchema(),
@@ -352,6 +369,46 @@ public static class ProductCatalog
             "document.pdf.read.windows.known.pypdf.text.v1",
             ToolExposure.Public,
             "Localiza un PDF nombrado de forma única en las carpetas conocidas de Windows y extrae el texto que ya contiene (sin OCR) para resumirlo o citarlo; sin efecto."),
+        // Auditoría semántica 2026-09-20 (REOPEN1957 H0188 «Haz un powerpoint hablando
+        // de amor de 6 diapositivas», D11): la presentación se escribe como paquete
+        // Open XML, una diapositiva por entrada («Título\nviñeta\nviñeta»), en una
+        // carpeta conocida; la postlectura cuenta las diapositivas del paquete.
+        Descriptor(
+            "document.presentation.create",
+            Schema(
+                [
+                    String("folder", types: NullableString, values: ["desktop", "documents", "downloads"]),
+                    new OperationArgumentProperty(
+                        "slides",
+                        OperationJsonType.Array,
+                        itemTypes: OperationJsonType.String,
+                        maximumItems: 12,
+                        itemMaximumUtf8Bytes: 1_024,
+                        itemNonWhitespace: true),
+                    String("title", maximumUtf8Bytes: 200, nonWhitespace: true),
+                ],
+                ["slides", "title"]),
+            OperationRisks.LowReversible,
+            "document.presentation.create.openxml.slidecount.postread.v1",
+            ToolExposure.Public,
+            "Crea una presentación .pptx con el título dado y una diapositiva por entrada (primera línea título, las demás viñetas) en una carpeta conocida y verifica cuántas diapositivas tiene el paquete escrito."),
+        // Auditoría semántica 2026-09-20 (REOPEN1957 H0299, ruta pegada de un
+        // ROADMAP.md, D24): un archivo de texto de una carpeta conocida se lee para
+        // decir de qué trata; fuera de esas carpetas no es accesible y se dice.
+        Descriptor(
+            "document.text.read",
+            Schema(
+                [
+                    String("fileName", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("folder", values: ["all_known", "desktop", "documents", "downloads"]),
+                    Integer("maximumCharacters", 200, 200_000),
+                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
+                ],
+                ["fileName", "folder"]),
+            OperationRisks.ReadOnly,
+            "document.text.read.windows.known.utf8.text.v1",
+            ToolExposure.Public,
+            "Localiza un archivo de texto (txt, md, código, json…) nombrado de forma única en una carpeta conocida de Windows (o en la subcarpeta indicada) y devuelve su comienzo para presentar su tema o citarlo; sin efecto."),
         Descriptor(
             "email.latest.read",
             EmptySchema(),
@@ -366,6 +423,34 @@ public static class ProductCatalog
             "email.latest.reply.outlook.sent.postread.v1",
             ToolExposure.Public,
             "Responde al mensaje mas reciente de Outlook y verifica la copia enviada por contenido y hora."),
+        // Auditoría semántica 2026-09-20 (REOPEN1957 H0542 «… comprímela y luego abre
+        // el zip», D11): comprimir un archivo o carpeta de una carpeta conocida a un
+        // zip al lado, verificado abriendo el zip; y abrir por nombre un archivo seguro
+        // de una carpeta conocida, verificado por la ventana o el proceso que aparece.
+        Descriptor(
+            "file.compress",
+            Schema(
+                [
+                    String("folder", values: ["desktop", "documents", "downloads", "pictures"]),
+                    String("name", maximumUtf8Bytes: 200, nonWhitespace: true),
+                ],
+                ["folder", "name"]),
+            OperationRisks.LowReversible,
+            "file.compress.zip.archive.postread.v1",
+            ToolExposure.Public,
+            "Comprime un archivo o una carpeta de una carpeta conocida en un zip con el mismo nombre al lado y verifica que el zip existe y tiene entradas."),
+        Descriptor(
+            "file.open",
+            Schema(
+                [
+                    String("folder", values: ["desktop", "documents", "downloads", "pictures"]),
+                    String("name", maximumUtf8Bytes: 200, nonWhitespace: true),
+                ],
+                ["folder", "name"]),
+            OperationRisks.LowReversible,
+            "file.open.shell.window.process.postread.v1",
+            ToolExposure.Public,
+            "Abre por nombre un archivo seguro de una carpeta conocida con su aplicación predeterminada y verifica la ventana o el proceso que aparece."),
         Descriptor(
             "filesystem.copy",
             FilesystemTransferSchema(),
@@ -387,6 +472,16 @@ public static class ProductCatalog
             "filesystem.create.directory.sandbox.postread.v1",
             ToolExposure.Public,
             "Crea un directorio relativo confinado al sandbox o a una carpeta conocida (escritorio, documentos, descargas) y verifica su identidad sin aceptar rutas absolutas."),
+        // Auditoría semántica 2026-09-20 (REOPEN1957 H0701 «Dime cuantos archivos .py
+        // hay en el directorio actual», D24): el directorio actual es la carpeta del
+        // Explorador en primer plano; sin Explorador delante, el escritorio.
+        Descriptor(
+            "filesystem.explorer.count",
+            Schema([String("extension", maximumUtf8Bytes: 16, nonWhitespace: true)], ["extension"]),
+            OperationRisks.ReadOnly,
+            "filesystem.explorer.count.foreground.folder.toplevel.v1",
+            ToolExposure.Public,
+            "Cuenta los archivos de primer nivel con la extensión dada en la carpeta que muestra la ventana del Explorador en primer plano (o en el escritorio si no hay un Explorador delante) y nombra esa carpeta sin revelar su ruta."),
         Descriptor(
             "filesystem.file.open.latest",
             Schema([String("folder", values: ["desktop", "documents", "downloads", "pictures"])], ["folder"]),
@@ -639,11 +734,17 @@ public static class ProductCatalog
             "Confirma una instalación preparada en una sesión Steam autenticada y verifica su job."),
         Descriptor(
             "game.install.named",
-            Schema([String("title", maximumUtf8Bytes: 256, nonWhitespace: true)], ["title"]),
+            // REOPEN1993 grupo S: la tienda nombrada tras el título (Steam o Epic).
+            Schema(
+                [
+                    String("store", types: NullableString, values: ["epic", "steam"]),
+                    String("title", maximumUtf8Bytes: 256, nonWhitespace: true),
+                ],
+                ["title"]),
             OperationRisks.Installation,
             "game.install.named.steam.manifest.postread.v1",
             ToolExposure.Public,
-            "Resuelve un título cerrado de Steam a su AppID, exige entitlement autenticado, inicia la instalación confirmada y verifica la transición del manifest."),
+            "Resuelve un título cerrado de Steam (o de Epic Games) a su identidad, exige entitlement autenticado, inicia la instalación y verifica la transición del manifiesto local."),
         Descriptor(
             "game.install.prepare",
             Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
@@ -696,6 +797,21 @@ public static class ProductCatalog
             "game.purchase.prepare.steam.selection.v1",
             ToolExposure.Public,
             "Prepara una selección monetaria exacta y devuelve precio y autoridad revisables."),
+        // Auditoría semántica 2026-09-20 (REOPEN1993, grupo S): «Desinstala Worms
+        // Rumble en Steam» es una desinstalación real por la consola de Steam,
+        // verificada por el manifiesto local; pierde lo instalado, así que confirma.
+        Descriptor(
+            "game.uninstall.named",
+            Schema(
+                [
+                    String("store", types: NullableString, values: ["epic", "steam"]),
+                    String("title", maximumUtf8Bytes: 256, nonWhitespace: true),
+                ],
+                ["title"]),
+            OperationRisks.WorkLoss,
+            "game.uninstall.named.steam.manifest.absence.postread.v1",
+            ToolExposure.Public,
+            "Resuelve un título instalado de Steam a su AppID, lo desinstala por la consola del cliente y verifica que el manifiesto local ya no lo declare instalado."),
         Descriptor(
             "input.key.press",
             Schema([String("key", values:
@@ -1229,7 +1345,17 @@ public static class ProductCatalog
             OperationRisks.ReadOnly,
             "package.install.prepare.winget.selection.v1",
             ToolExposure.Public,
-            "Resuelve un paquete winget exacto y prepara una confirmación sin instalar."),
+            "Resuelve un paquete winget exacto, o el único paquete que lleva el nombre pedido, y prepara una confirmación sin instalar."),
+        // Auditoría semántica 2026-09-20 (REOPEN1993, grupo G): «desinstalá Discord»
+        // es una desinstalación real por el gestor de paquetes, verificada por su
+        // ausencia después; pierde lo instalado, así que confirma en modo normal.
+        Descriptor(
+            "package.uninstall",
+            Schema([String("packageId", maximumUtf8Bytes: 256, nonWhitespace: true)], ["packageId"]),
+            OperationRisks.WorkLoss,
+            "package.uninstall.winget.absence.postread.v1",
+            ToolExposure.Public,
+            "Desinstala mediante winget el paquete instalado que se nombra (por su id exacto o su nombre único) y verifica su ausencia en la lista de paquetes instalados."),
         Descriptor(
             "peripheral.list",
             Schema([String("kind", values:
@@ -1386,6 +1512,21 @@ public static class ProductCatalog
             "routine.set.enabled.local.postread.v1",
             ToolExposure.Public,
             "Activa o desactiva metadatos de una rutina bajo CAS sin ejecutarla."),
+        // Auditoría semántica 2026-09-20 (REOPEN1993, comandos; D11): «ejecuta ls»,
+        // «ejecuta pytest» se corren de verdad en una consola sin perfil, con plazo y
+        // salida acotados; lo destructivo no se corre por aquí (código propio).
+        Descriptor(
+            "shell.command.run",
+            Schema(
+                [
+                    String("command", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("cwd", types: NullableString, maximumUtf8Bytes: 260),
+                ],
+                ["command"]),
+            OperationRisks.LowReversible,
+            "shell.command.run.powershell.captured.output.v1",
+            ToolExposure.Public,
+            "Ejecuta un comando de consola en PowerShell sin perfil, en la carpeta indicada o en la del usuario, con 60 segundos de plazo, y devuelve su código de salida y su salida tal cual acotada; rechaza antes de correr los comandos que borran, matan procesos, formatean o cambian el sistema."),
         Descriptor(
             "software.python.package.status",
             Schema([String("package")], ["package"]),
@@ -1504,17 +1645,20 @@ public static class ProductCatalog
             "system.settings.set",
             Schema(
                 [
-                    String("setting", values: ["brightness", "do_not_disturb", "night_light"]),
+                    // REOPEN1957 H0107 «poneme el modo avión»: 1 apaga todas las
+                    // radios (Wi-Fi, Bluetooth, móvil) por la API de radios y 0 las
+                    // vuelve a encender; la postlectura mira cada radio.
+                    String("setting", values: ["airplane_mode", "brightness", "do_not_disturb", "night_light"]),
                     Integer("value", 0, 100),
                 ],
                 ["setting", "value"]),
             OperationRisks.PrivacySensitive,
             "system.settings.set.windows.postread.v1",
             ToolExposure.Public,
-            "Cambia un ajuste permitido mediante API oficial y verifica su postlectura."),
+            "Cambia un ajuste permitido mediante API oficial (brillo, no molestar, luz nocturna o modo avión sobre todas las radios) y verifica su postlectura."),
         Descriptor(
             "system.settings.status",
-            Schema([String("setting", values: ["brightness"])], ["setting"]),
+            Schema([String("setting", values: ["airplane_mode", "brightness"])], ["setting"]),
             OperationRisks.ReadOnly,
             "system.settings.status.windows.monitor.brightness.secondread.v1",
             ToolExposure.Public,
@@ -1661,6 +1805,54 @@ public static class ProductCatalog
             "vision.describe.provider.capture.binding.v1",
             ToolExposure.Public,
             "Describe una captura identificada mediante un VLM configurado sin aceptar rutas arbitrarias."),
+        // Auditoría semántica 2026-09-20 (REOPEN1993, grupo W): la encuesta pide el
+        // clima, no páginas sobre el clima. Lectura pública sin clave (Open-Meteo:
+        // geocodificación del lugar nombrado, o la ubicación de este PC por su IP) con
+        // temperatura, sensación, cielo, viento, humedad y la lluvia de hoy y mañana.
+        Descriptor(
+            "weather.current",
+            Schema(
+                [String("location", types: NullableString, maximumUtf8Bytes: 128)],
+                []),
+            OperationRisks.ReadOnly,
+            "weather.current.openmeteo.read.v1",
+            ToolExposure.Public,
+            "Lee el clima actual y el pronóstico de mañana del lugar nombrado, o de la ubicación de este PC si no se nombra ninguno, desde un servicio público sin clave, y devuelve temperatura, sensación térmica, estado del cielo, viento, humedad y probabilidad de lluvia."),
+        // Auditoría semántica 2026-09-20 (REOPEN1993, grupo N): la encuesta pide las
+        // noticias, no nombres de portales. Titulares del día o de un tema nombrado
+        // desde un canal RSS público, cada uno con su medio y su hora.
+        // Auditoría semántica 2026-09-20 (REOPEN1957 H0077 «descarga la imagen de
+        // portada de wikipedia.org y guardala en el escritorio», H0069; D11): bajar un
+        // archivo o imagen de una dirección a una carpeta conocida, verificado por el
+        // tamaño del archivo escrito; una página entrega la imagen que ella misma anuncia.
+        Descriptor(
+            "web.download",
+            Schema(
+                [
+                    String("folder", types: NullableString, values: ["desktop", "documents", "downloads", "pictures"]),
+                    String("name", types: NullableString, maximumUtf8Bytes: 200),
+                    // REOPEN1957 H0069 «Tienes algun meme?» (D11): with a query and no
+                    // address, the first image the search engine lists is downloaded.
+                    String("query", types: NullableString, maximumUtf8Bytes: 200),
+                    String("url", types: NullableString, maximumUtf8Bytes: 2_048),
+                ],
+                []),
+            OperationRisks.PrivacySensitive,
+            "web.download.http.file.size.postread.v1",
+            ToolExposure.Public,
+            "Descarga un archivo o una imagen de una dirección web (o, con una consulta y sin dirección, la primera imagen que lista el buscador) a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia."),
+        Descriptor(
+            "web.news.headlines",
+            Schema(
+                [
+                    Integer("limit", 1, 10, types: NullableInteger),
+                    String("topic", types: NullableString, maximumUtf8Bytes: 128),
+                ],
+                []),
+            OperationRisks.ReadOnly,
+            "web.news.headlines.googlenews.rss.read.v1",
+            ToolExposure.Public,
+            "Lee los titulares del día, o los de un tema nombrado, desde un canal público de noticias y devuelve cada titular tal cual con su medio, su hora y su enlace."),
         Descriptor(
             "web.search",
             Schema(
@@ -1680,13 +1872,22 @@ public static class ProductCatalog
             "wifi.connect.wlan.profile.postread.v1",
             ToolExposure.Public,
             "Conecta un perfil WLAN ya guardado y verifica el estado sin exponer SSID ni credenciales."),
+        // Auditoría semántica 2026-09-20 (REOPEN1957 H0170/H0376 «conectate al wifi de
+        // casa», D24): «casa» no es un SSID. Con `place`, el proveedor conecta la red
+        // que la persona asoció antes a ese lugar; si nombra el perfil y el lugar a la
+        // vez, conecta ese perfil y recuerda la asociación en los datos privados.
         Descriptor(
             "wifi.connect.named",
-            Schema([String("profileName", maximumUtf8Bytes: 256, nonWhitespace: true)], ["profileName"]),
+            Schema(
+                [
+                    String("place", types: NullableString, values: ["casa", "oficina", "trabajo"]),
+                    String("profileName", maximumUtf8Bytes: 256, nonWhitespace: true),
+                ],
+                ["profileName"]),
             OperationRisks.PrivacySensitive,
             "wifi.connect.named.wlan.profile.postread.v1",
             ToolExposure.Public,
-            "Resuelve de forma única un perfil WLAN guardado por el nombre indicado, lo conecta y verifica el estado sin exponer credenciales."),
+            "Resuelve de forma única un perfil WLAN guardado por el nombre indicado (o por el lugar asociado antes: casa, trabajo, oficina), lo conecta, verifica el estado sin exponer credenciales y recuerda la asociación lugar→red cuando se dan ambos."),
         Descriptor(
             "wifi.disconnect",
             EmptySchema(),

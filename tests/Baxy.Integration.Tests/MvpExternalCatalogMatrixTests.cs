@@ -33,7 +33,8 @@ public sealed class MvpExternalCatalogMatrixTests
         "wifi.scan",
     ];
 
-    private const int ExpectedExternalHandlers = 85 + 17;
+    // + las doce herramientas tipadas de la auditoría semántica REOPEN1957/1993.
+    private const int ExpectedExternalHandlers = 85 + 17 + 12;
     private static readonly JsonSerializerOptions EvidenceJsonOptions = new()
     {
         WriteIndented = true,

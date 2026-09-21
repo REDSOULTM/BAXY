@@ -116,6 +116,30 @@ internal static class Goal05CatalogObservation
                 or "software.python.package.status" or "notification.list" => Unverifiable(
                 descriptor,
                 "Lecturas de dispositivos, unidades, registro PEP 514, pip o Programador de tareas del usuario; verificadas en su tanda por doble lectura, no recorridas aquí para no inventariar la máquina del usuario."),
+            "document.presentation.create" => Unverifiable(
+                descriptor,
+                "Escribiría un .pptx en Documentos del usuario (REOPEN1957 H0188); su postlectura cuenta las diapositivas del paquete, no se recorre aquí."),
+            "file.compress" or "file.open" or "desktop.wallpaper.set" or "web.download" => Unverifiable(
+                descriptor,
+                "Escribiría un zip, abriría un archivo, cambiaría el fondo del escritorio o guardaría una descarga en las carpetas del usuario (REOPEN1957 H0542/H0459/H0077); no restaurable desde esta matriz."),
+            "game.uninstall.named" => Unverifiable(
+                descriptor,
+                "Desinstalaría un juego instalado del usuario por la consola de Steam y verificaría la ausencia de su manifiesto (REOPEN1993 grupo S); no restaurable desde esta sesión."),
+            "shell.command.run" => Unverifiable(
+                descriptor,
+                "Correría un comando en una consola del usuario y capturaría su salida (REOPEN1993 comandos, D11); esta matriz no ejecuta comandos ni toma una salida ajena como pass simulado."),
+            "package.uninstall" => Unverifiable(
+                descriptor,
+                "Desinstalaría por winget un paquete del usuario y verificaría su ausencia (REOPEN1993 grupo G); no restaurable desde esta sesión."),
+            "web.news.headlines" => Unverifiable(
+                descriptor,
+                "Lectura de un canal RSS público de noticias (REOPEN1993 grupo N); esta matriz no sale a internet ni toma titulares ajenos como pass simulado."),
+            "weather.current" => Unverifiable(
+                descriptor,
+                "Lectura de un servicio público de pronóstico (Open-Meteo) y de la ubicación de este PC por su IP (REOPEN1993 grupo W); esta matriz no sale a internet ni toma un pronóstico ajeno como pass simulado."),
+            "document.text.read" or "filesystem.explorer.count" => Unverifiable(
+                descriptor,
+                "Leería archivos de texto de carpetas conocidas y la carpeta del Explorador del usuario (REOPEN1957 H0299/H0701); no se rellena la celda con su contenido."),
             "document.pdf.read" or "filesystem.known.list" => Unverifiable(
                 descriptor,
                 "Leería PDFs y carpetas conocidas (Desktop/Documents/…) del usuario; no se rellena la celda con su contenido."),

@@ -172,6 +172,124 @@ def _weather_lookup_query(text: str) -> str | None:
     return query if query and _has(_fold(query), _WEATHER_WORDS) else None
 
 
+_WEATHER_MEDIUM = (
+    r"\b(?:google|bing|internet|la\s+web|the\s+web|online|en\s+linea)\b"
+)
+
+
+def _weather_location(text: str) -> str | None:
+    """REOPEN1993 (grupo W): the place the person named for the weather («en
+    Buenos Aires», «in Madrid»), with their own spelling; None when no place is
+    named (the read then uses this PC's own location) or the words after the
+    preposition are a medium («en google», «en internet»)."""
+
+    query = _weather_lookup_query(text)
+    if query is None:
+        return None
+    match = re.search(
+        r"\b(?:en|in|de|para|for|at)\s+(?P<place>[^,;:.!?]+?)\s*"
+        r"(?:\b(?:hoy|manana|mañana|ahora|today|tomorrow|now|right\s+now|por\s+favor|please)\b.*)?$",
+        query,
+        re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    place = match.group("place").strip(" \t\r\n.,;:")
+    place = re.sub(r"^(?:la\s+ciudad\s+de|the\s+city\s+of)\s+", "", place, flags=re.IGNORECASE)
+    folded_place = _fold(place)
+    if (
+        not folded_place
+        or _has(folded_place, _WEATHER_MEDIUM)
+        or _has(folded_place, _WEATHER_WORDS)
+        or len(place.encode("utf-8")) > 128
+    ):
+        return None
+    return place
+
+
+def _weather_read_intent(
+    text: str,
+    available_operations: Iterable[str],
+) -> EffectIntent | None:
+    """REOPEN1993 (grupo W): a live weather question is a typed weather read,
+    never a web search (twelve rows were credited with pages about the
+    weather or an honest failure instead of the weather itself)."""
+
+    if "weather.current" not in frozenset(available_operations):
+        return None
+    if _weather_lookup_query(text) is None or len(_request_clauses(_fold(text))) != 1:
+        return None
+    return EffectIntent(("weather.current",), (text.strip(),))
+
+
+_NEWS_SCOPE_WORDS = (
+    r"^(?:de\s+|del\s+|sobre\s+|about\s+|on\s+|of\s+)?"
+    r"(?:hoy|today|ahora|now|actuales?|latest|ultimas?|recientes?|recent|"
+    r"el\s+dia|the\s+day|el\s+mundo|the\s+world|internacionales?|international|"
+    r"en\s+el\s+mundo|in\s+the\s+world|del\s+mundo|de\s+hoy|de\s+ahora|"
+    r"breaking|principales|top|nuevas?|new)(?:\s+(?:hoy|today|en\s+el\s+mundo|in\s+the\s+world|de\s+hoy))*$"
+)
+
+
+def _news_headlines_request(text: str) -> bool:
+    """REOPEN1993 (grupo N): a request for today's news or headlines («buscá
+    noticias de hoy», «qué pasó hoy en el mundo», «dame los titulares»)."""
+
+    folded = _strip_request_envelope(_fold(text))
+    if not folded or not _public_live_lookup_request(folded):
+        return False
+    if _has(folded, _WEATHER_WORDS):
+        return False
+    return _has(folded, r"\b(?:news|headlines|noticias|titulares|breaking\s+news)\b") or re.match(
+        r"^[¿?¡!\s]*(?:que|what)\s+"
+        r"(?:paso|pasa|ha\s+pasado|esta\s+pasando|ocurrio|ocurre|sucedio|"
+        r"happened|is\s+happening|has\s+happened)\s+(?:hoy|today)\b",
+        folded,
+    ) is not None
+
+
+def _news_topic(text: str) -> str | None:
+    """The topic the person named for the news («noticias de tecnología»,
+    «news about Chile»), with their own spelling; None for the day's news
+    («noticias de hoy», «qué pasó hoy en el mundo»)."""
+
+    if not _news_headlines_request(text):
+        return None
+    stripped = _strip_request_envelope(text.strip())
+    match = re.search(
+        r"\b(?:noticias?|news|titulares|headlines)\s+(?:de|del|sobre|acerca\s+de|about|on|of)\s+"
+        r"(?P<topic>[^,;:.!?]+?)\s*(?:\b(?:de\s+hoy|hoy|today|ahora|now)\b)?\s*[.!?]*$",
+        stripped,
+        re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    topic = match.group("topic").strip(" \t\r\n.,;:")
+    folded_topic = _fold(topic)
+    if (
+        not folded_topic
+        or re.match(_NEWS_SCOPE_WORDS, folded_topic) is not None
+        or _has(folded_topic, r"\b(?:google|internet|la\s+web|the\s+web|online)\b")
+        or len(topic.encode("utf-8")) > 128
+    ):
+        return None
+    return topic
+
+
+def _news_read_intent(
+    text: str,
+    available_operations: Iterable[str],
+) -> EffectIntent | None:
+    """REOPEN1993 (grupo N): the news are read as headlines, never as a web
+    search that ends listing portal names (H0033, H0374, H0509)."""
+
+    if "web.news.headlines" not in frozenset(available_operations):
+        return None
+    if not _news_headlines_request(text) or len(_request_clauses(_fold(text))) != 1:
+        return None
+    return EffectIntent(("web.news.headlines",), (text.strip(),))
+
+
 _TOPIC_RESEARCH = re.compile(
     r"^[¿?¡!\s]*(?:investiga|investigá|investigar|investigue|investigame|investígame|"
     r"research|look\s+into|look\s+up)\s+"
@@ -1934,6 +2052,10 @@ def _curated_domain_is_grounded(
         return _has(folded, r"\b(?:pendrive|pen|usb|externo|externa|external|removable|flash|stick)\b")
     if operation == "calculator.expression.evaluate":
         return calculator_expression_request(folded) is not None
+    if operation == "weather.current":
+        return _weather_lookup_query(text) is not None
+    if operation == "web.news.headlines":
+        return _news_headlines_request(text)
     if operation == "display.status":
         return _has(folded, r"\b(?:resolucion|monitor(?:es)?|pantallas?|screens?|displays?|hz|hertz|hercios|frecuencia|refresh)\b")
     if operation == "bluetooth.radio.status":
@@ -2314,7 +2436,29 @@ def _curated_domain_is_grounded(
             )
             and not _has(folded, r"\b(?:como|how|tutorial|ejemplo|example)\b")
         )
+    if operation == "shell.command.run":
+        return shell_command_request(text) is not None
+    if operation == "document.presentation.create":
+        return presentation_request(text) is not None
+    if operation == "file.compress":
+        return compress_named_request(text) is not None or folder_txt_zip_open_mission(text) is not None
+    if operation == "file.open":
+        return open_named_file_request(text) is not None or folder_txt_zip_open_mission(text) is not None or presentation_request(text) is not None or web_image_request(text) is not None
+    if operation == "desktop.wallpaper.set":
+        return wallpaper_request(text) is not None
+    if operation == "web.download":
+        return web_download_request(text) is not None or web_image_request(text) is not None
+    if operation == "game.install.named":
+        return steam_library_verb(text) == "install"
+    if operation == "game.uninstall.named":
+        return steam_library_verb(text) == "uninstall"
+    if operation == "package.uninstall":
+        software = software_package_request(text, application_names)
+        return software is not None and software[0] == "uninstall"
     if operation == "package.install.prepare":
+        software = software_package_request(text, application_names)
+        if software is not None and software[0] == "install":
+            return True
         return (
             _spoken_package_id(folded) is not None
             and _has(
@@ -2418,7 +2562,7 @@ def _curated_domain_is_grounded(
         return _has(
             folded,
             r"\b(?:brillo|brightness|luz nocturna|night light|"
-            r"no molestar|do not disturb|dnd)\b",
+            r"no molestar|do not disturb|dnd|modo avion|airplane mode|flight mode)\b",
         )
     if operation == "system.process.list":
         return _process_list_domain(folded)
@@ -2453,10 +2597,10 @@ def _curated_domain_is_grounded(
             # whitelist-absence defect. Domain named is enough here.
             return True
         if operation == "wifi.profile.list":
-            return _has(folded, r"\b(?:perfiles?|profiles?)\b") and _has(
-                folded,
-                rf"\b(?:{_LIST}|guardad[oa]s?|saved)\b",
-            )
+            return (
+                _has(folded, r"\b(?:perfiles?|profiles?)\b")
+                and _has(folded, rf"\b(?:{_LIST}|guardad[oa]s?|saved)\b")
+            ) or wifi_place_request(folded) is not None
         if operation == "wifi.status":
             # «decime si el wifi está prendido» and «qué onda con el wifi» ask
             # for the same reading as «estado del wifi»; without these words the
@@ -2748,7 +2892,11 @@ def _curated_domain_is_grounded(
     if operation == "window.close.all":
         return close_all_request(folded)
     if operation == "document.pdf.read":
-        return _pdf_summary_request(folded) is not None
+        return _pdf_summary_request(folded) is not None or (known_folder_file_path(text) or ("",))[0] == "document.pdf.read"
+    if operation == "document.text.read":
+        return (known_folder_file_path(text) or ("",))[0] == "document.text.read"
+    if operation == "filesystem.explorer.count":
+        return explorer_count_request(text) is not None
     if operation == "audio.app.volume.adjust":
         return app_volume_request(folded, application_names) is not None
     if operation == "window.snap":
@@ -3161,6 +3309,62 @@ def visual_content_request(text: str) -> bool:
     return _VISUAL_CONTENT_REQUEST.match(_strip_request_envelope(_fold(text)).strip()) is not None
 
 
+_WEB_IMAGE_NOUN = r"(?:meme|memes|imagen|imagenes|foto|fotos|gif|gifs|sticker|stickers|dibujo|dibujos|picture|pictures|image|images|photo|photos)"
+
+
+def web_image_request(text: str) -> tuple[str, bool] | None:
+    """REOPEN1957 H0069 «Tienes algun meme?» (D11): a meme or an image of the
+    web is searched, downloaded to Pictures and opened with the viewer.
+    Returns (image query, subject missing). A meme needs no subject; an
+    image or a photo without one («tienes alguna foto?») is asked about."""
+
+    if not visual_content_request(text):
+        return None
+    folded = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.")
+    if _negative_action_forms(folded):
+        return None
+    match = re.search(
+        rf"(?:(?P<before>(?:[a-z]+\s+){{0,2}}?))\b(?P<noun>{_WEB_IMAGE_NOUN})\b"
+        rf"(?:\s+(?P<subject>(?:de|del|de\s+la|de\s+los|de\s+las|of|about|sobre|con|with)\s+.+?))?\s*$",
+        folded,
+    )
+    if match is None:
+        return None
+    noun = match.group("noun")
+    subject = (match.group("subject") or "").strip()
+    before = " ".join(
+        word for word in (match.group("before") or "").split()
+        if word not in {"un", "una", "unos", "unas", "algun", "alguna", "algunos", "algunas", "el", "la", "los", "las", "a", "an", "any", "some", "the", "me", "mandame", "pasame", "mostrame", "muestrame", "dame", "tirame", "enviame", "tienes", "tenes", "hay", "tendras", "tendrias", "send", "show", "give", "you", "got", "have"}
+    )
+    query = " ".join(part for part in (before, noun, subject) if part)
+    meme_like = noun in {"meme", "memes", "gif", "gifs", "sticker", "stickers"}
+    return query, not (meme_like or subject or before)
+
+
+def _completed_missing_image_subject_request(
+    text: str, previous_user_text: str | None,
+) -> str | None:
+    """«tienes alguna foto?» → «¿de qué?» → «de un gato»: the answer names the
+    subject of the image asked before."""
+
+    if not previous_user_text:
+        return None
+    previous = web_image_request(previous_user_text)
+    if previous is None or previous[1] is False:
+        return None
+    answer = text.strip().strip("\"'“”«»").strip(" .!")
+    folded = _strip_request_envelope(_fold(answer))
+    if not folded or "?" in answer or len(folded.split()) > 8:
+        return None
+    if _head_is(_request_head(folded), _COVERAGE_ACTION_HEAD) or _negative_action_forms(folded):
+        return None
+    if re.fullmatch(r"(?:no|nada|ninguna?|none|nothing|cancela|cancelar|cancel|olvidalo|dejalo)\b.*", folded):
+        return None
+    subject = re.sub(r"^(?:de|del|of|about|sobre)\s+", "", answer, flags=re.IGNORECASE).strip()
+    noun = visual_content_noun(previous_user_text) or "imagen"
+    return f"mostrame una {noun} de {subject}" if noun in {"imagen", "imagenes", "foto", "fotos", "dibujo", "dibujos"} else f"show me a {noun} of {subject}"
+
+
 def unsupported_live_machine_query(text: str) -> bool:
     """Recognize a live-machine question outside the observed status schema."""
 
@@ -3267,7 +3471,8 @@ def known_unsupported_effect_request(
                 r"|\b(?:un|el|la|the|a)\s+zip\b"
                 r"|\.zip\b",
             ),
-            {"archive.create", "archive.extract"},
+            # REOPEN1957 H0542: file.compress and file.open now serve it.
+            {"file.compress", "file.open"},
         ),
         (
             # LIMITS1683 H0302 «qué redes wifi hay»: saved profiles and the current
@@ -3965,6 +4170,78 @@ def _task_without_title(folded: str) -> bool:
     return _TASK_DATE_ONLY.match(_strip_request_envelope(folded).strip(" ¿?¡!.,")) is not None
 
 
+_KNOWN_FOLDER_PATH = re.compile(
+    r"^\s*(?:%USERPROFILE%|%HOMEPATH%|~|[A-Za-z]:[\\/]+Users[\\/]+[^\\/:*?\"<>|\r\n]+)?[\\/]*"
+    r"(?P<folder>Desktop|Escritorio|Documents|Documentos|Downloads|Descargas)"
+    r"(?P<rest>(?:[\\/][^\\/:*?\"<>|\r\n]+)+)\s*$",
+    re.IGNORECASE,
+)
+_TEXT_FILE_EXTENSIONS = frozenset({
+    ".txt", ".md", ".markdown", ".rst", ".py", ".json", ".jsonl", ".csv", ".tsv", ".log", ".ini", ".cfg", ".conf",
+    ".toml", ".yaml", ".yml", ".xml", ".html", ".htm", ".css", ".js", ".ts", ".cs", ".ps1", ".bat", ".cmd", ".sh",
+    ".sql", ".java", ".c", ".h", ".cpp", ".hpp", ".go", ".rs", ".rb", ".php", ".tex", ".bib", ".env", ".gitignore",
+})
+
+
+def known_folder_file_path(text: str) -> tuple[str, dict[str, object]] | None:
+    """REOPEN1957 H0299 «%USERPROFILE%\\Desktop\\…\\ROADMAP.md»: a pasted path
+    under a known folder names the file to read. Returns the reading
+    operation and its arguments (a PDF goes to the PDF reader); a path
+    outside the known folders, or a file that is not text, abstains and
+    the pasted path keeps its honest question."""
+
+    match = _KNOWN_FOLDER_PATH.match(text.strip())
+    if match is None or len(text) > 512:
+        return None
+    folder = _KNOWN_FOLDER_ENUM.get(_fold(match.group("folder")))
+    parts = [part for part in re.split(r"[\\/]+", match.group("rest")) if part]
+    if folder is None or not parts or any(part in {".", ".."} for part in parts):
+        return None
+    name = parts[-1].strip()
+    extension = ("." + name.rsplit(".", 1)[-1].lower()) if "." in name.strip(".") else ""
+    subdirectory = "\\".join(parts[:-1]) or None
+    if extension == ".pdf":
+        return "document.pdf.read", {"fileName": name, "folder": folder}
+    if extension not in _TEXT_FILE_EXTENSIONS:
+        return None
+    arguments: dict[str, object] = {"fileName": name, "folder": folder}
+    if subdirectory is not None:
+        arguments["subdirectory"] = subdirectory
+    return "document.text.read", arguments
+
+
+_EXTENSION_COUNT = re.compile(
+    r"\b(?:archivos?|ficheros?|files?)?\s*(?:con\s+extension\s+|de\s+extension\s+|with\s+(?:the\s+)?extension\s+)?"
+    r"(?P<extension>\*?\.[a-z0-9]{1,15})\b"
+)
+
+
+def explorer_count_request(text: str) -> str | None:
+    """REOPEN1957 H0701 «Dime cuantos archivos .py hay en el directorio actual»
+    (D24): the current directory is the Explorer folder in front (the Desktop
+    with none); the count is by the extension named. Returns the extension."""
+
+    folded = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.")
+    if _negative_action_forms(folded):
+        return None
+    current = _current_directory_file_count(folded) or (
+        _has(folded, r"\b(?:cuantos|cuantas|how many|count|cuenta|conta|contame|cuentame)\b")
+        and _has(
+            folded,
+            r"\b(?:directorio|carpeta|folder|directory)\s+(?:actual|current|de trabajo|en (?:el|la) que estoy)\b"
+            r"|\b(?:current|working|present|this)\s+(?:directory|folder)\b|\bcwd\b"
+            r"|\b(?:esta|este)\s+(?:carpeta|directorio)\b",
+        )
+        and not _has(folded, r"\b(?:escritorio|desktop|descargas|downloads|documentos|documents)\b")
+    )
+    if not current:
+        return None
+    match = _EXTENSION_COUNT.search(folded)
+    if match is None:
+        return None
+    return match.group("extension").lstrip("*")
+
+
 def _current_directory_file_count(folded: str) -> bool:
     """FILES1437 «dime cuántos archivos .py hay en el directorio actual»: a
     file count over «the current directory», which BAXY does not have."""
@@ -4047,7 +4324,11 @@ def resolve_explicit_clarification_intent(
         # LIMITS1677 «subí el volumen de spotify»: a known effect with no
         # operation has no field to clarify; the limit answers it.
         return None
-    if "filesystem.known.search" in available and _current_directory_file_count(folded):
+    if {"web.download", "file.open"} <= available and (image := web_image_request(text)) is not None and image[1]:
+        # REOPEN1957 H0069: an image or a photo of nothing in particular is asked
+        # what it should show; a meme needs no subject.
+        return ClarificationIntent(("web.download",), ("query",))
+    if "filesystem.known.search" in available and "filesystem.explorer.count" not in available and _current_directory_file_count(folded):
         # FILES1437 «dime cuántos archivos .py hay en el directorio actual»: BAXY
         # has no working directory; the count needs the person's folder.
         return ClarificationIntent(("filesystem.known.search",), ("folder",))
@@ -5055,6 +5336,7 @@ def resolve_explicit_clarification_intent(
         )
     if (
         "office.document.create" in available
+        and "document.presentation.create" not in available
         and _has(folded, r"\b(?:powerpoint|presentacion|presentation)\b")
         and _has(folded, r"\b(?:crea|crear|haz|hacer|make|create)\b")
         and not _has(folded, r"\b(?:sobre|about|titulad[oa]|called|named)\b")
@@ -11415,6 +11697,112 @@ def _accepted_wifi_offer_evidence(evidence: str) -> bool:
     return evidence == _ACCEPTED_WIFI_OFFER_EVIDENCE
 
 
+# REOPEN1957 H0170/H0376 «conectate al wifi de casa» (D24): «casa» names a
+# place, not a saved network. The words the person may use for each place; the
+# canonical key is what the provider remembers the association under.
+_WIFI_PLACE_ALIASES = {
+    "casa": "casa", "mi casa": "casa", "la casa": "casa", "home": "casa", "my home": "casa",
+    "my house": "casa", "the house": "casa", "house": "casa",
+    "trabajo": "trabajo", "mi trabajo": "trabajo", "el trabajo": "trabajo", "work": "trabajo",
+    "my work": "trabajo", "the job": "trabajo",
+    "oficina": "oficina", "la oficina": "oficina", "mi oficina": "oficina", "office": "oficina",
+    "my office": "oficina", "the office": "oficina",
+}
+_WIFI_PLACE_REQUEST = re.compile(
+    r"^[¿?¡!\s]*(?:por\s+favor[,\s]+)?(?:baxy[,\s]+)?(?:podes|podrias|puedes|can\s+you|could\s+you)?\s*"
+    r"(?:"
+    r"(?:conecta|conectar|conectarme|conectarte|conectame|conectate|connect(?:\s+me)?)\s+"
+    r"(?:(?:al|a\s+la|a|to|to\s+the|to\s+my)\s+)?(?:(?:red|network)\s+)?wi[\s-]?fi(?:\s+(?:network|red))?\s+"
+    r"(?:de|del|de\s+la|of|of\s+the|of\s+my)\s+(?P<place_a>[a-z ]+?)"
+    r"|(?:conecta|conectar|conectarme|conectarte|conectame|conectate|connect(?:\s+me)?)\s+"
+    r"(?:(?:al|a\s+la|a|to|to\s+the|to\s+my)\s+)?(?:the\s+|my\s+)?(?P<place_b>home|work|office|house)\s+"
+    r"(?:wi[\s-]?fi|network|red)(?:\s+(?:network|red))?"
+    r"|(?:cambia|cambiar|cambiate|change|switch)\s+(?:(?:el|the)\s+)?wi[\s-]?fi\s+(?:al|a|to)\s+"
+    r"(?:(?:el|la|the)\s+)?(?:(?:de|of)\s+)?(?P<place_c>[a-z ]+?)"
+    r")[\s.!?]*$"
+)
+
+
+def wifi_place_request(text: str) -> str | None:
+    """«conectate al wifi de casa», «connect to my home wifi», «cambia el wifi
+    al de casa» → the canonical place («casa»); a name that is not a place
+    («wifi de la luna», «wifi de Galaxy») abstains and stays a profile name."""
+
+    folded = _strip_request_envelope(_fold(text)).strip()
+    if not folded or _negative_action_forms(folded):
+        return None
+    match = _WIFI_PLACE_REQUEST.match(folded)
+    if match is None:
+        return None
+    raw = next(
+        group for group in (match.group("place_a"), match.group("place_b"), match.group("place_c")) if group
+    )
+    return _WIFI_PLACE_ALIASES.get(" ".join(raw.split()))
+
+
+_WIFI_PLACE_QUESTION = re.compile(
+    r"\b(?:cual|cuales|which|what)\b.{0,80}\b(?:red(?:es)?|wi[\s-]?fi|network|networks)\b|"
+    r"\b(?:red(?:es)?|wi[\s-]?fi|network|networks)\b.{0,80}\b(?:cual|cuales|which|what)\b|"
+    r"\b(?:como\s+se\s+llama|what(?:'s| is)\s+(?:it|the\s+name))\b"
+)
+
+
+def wifi_place_answer(text: str, history: object) -> tuple[str, str] | None:
+    """REOPEN1957 H0170/H0376: after «conectate al wifi de casa» BAXY listed the
+    saved networks and asked which one is the home one; the person's short
+    answer names it («Fibertel-2G», «es la Fibertel», «se llama Vecino 5G»).
+    The explicit forms stand on the previous request alone; a bare name needs
+    the assistant's question in the history, so a greeting after the request
+    is never read as a network name."""
+
+    if not isinstance(history, list):
+        return None
+    items = [item for item in history if isinstance(item, dict)]
+    if items and items[-1].get("role") == "user" and items[-1].get("content") == text:
+        items = items[:-1]
+    previous = next((str(item.get("content") or "") for item in reversed(items) if item.get("role") == "user"), "")
+    assistant = next((str(item.get("content") or "") for item in reversed(items) if item.get("role") == "assistant"), "")
+    place = wifi_place_request(previous) if previous else None
+    if place is None:
+        return None
+    answer = text.strip().strip("\"'“”«»").strip()
+    folded = _strip_request_envelope(_fold(answer))
+    if not folded or "?" in answer or len(folded.split()) > 6:
+        return None
+    if _head_is(_request_head(folded), _COVERAGE_ACTION_HEAD) or _negative_action_forms(folded):
+        return None
+    if re.fullmatch(
+        r"(?:no|nada|ninguna?|none|nothing|cancela|cancelar|cancel|olvidalo|dejalo|si|dale|ok|okey|bueno|gracias|hola|thanks)\b.*",
+        folded,
+    ):
+        return None
+    explicit = re.match(
+        r"^(?:es|se\s+llama|it'?s|it\s+is|its\s+name\s+is|the\s+(?:network|wifi)\s+is|"
+        r"(?:la|el)\s+(?:red|wifi)(?:\s+de\s+\w+)?\s+(?:es|se\s+llama)|(?:la|el)\s+de\s+\w+\s+(?:es|se\s+llama))\s+(?P<name>.+)$",
+        answer,
+        re.IGNORECASE,
+    )
+    if explicit is not None:
+        name = explicit.group("name")
+    elif assistant and _WIFI_PLACE_QUESTION.search(_fold(assistant)) is not None:
+        name = answer
+    else:
+        return None
+    name = re.sub(r"^(?:la|el|the)\s+(?=\S)", "", name.strip(), flags=re.IGNORECASE).strip(" .!\"'“”«»")
+    if not name or len(name.encode("utf-8")) > 256 or re.search(r"\b(?:y|and|or|o)\b|[&,/\\]", _fold(name)):
+        return None
+    return name, place
+
+
+def wifi_place_answer_intent(text: str, history: object, available_operations: Iterable[str]) -> EffectIntent | None:
+    """The answer alone is the evidence of one wifi.connect.named; the arguments
+    are grounded from the same surface (name + place) with the history."""
+
+    if "wifi.connect.named" not in frozenset(available_operations):
+        return None
+    return EffectIntent(("wifi.connect.named",), (text,)) if wifi_place_answer(text, history) is not None else None
+
+
 def accepted_wifi_offer(
     text: str,
     history: object,
@@ -16941,6 +17329,242 @@ _STEAM_LIBRARY_REQUEST = re.compile(
 )
 
 
+def _installed_game_named(name: str, game_catalog: GameCatalogIndex) -> str | None:
+    """The display name of the installed game that a bare name matches
+    exactly (folded), or None."""
+
+    wanted = _fold(name).strip()
+    for normalized, _provider, _app_id, display in game_catalog.entries:
+        if normalized == wanted or _fold(display).strip() == wanted:
+            return display
+    return None
+
+
+def airplane_mode_request(text: str) -> int | None:
+    """REOPEN1957 H0107 «poneme el modo avión»: 1 to switch airplane mode on
+    (every radio off), 0 to switch it off; None when the text is not an
+    airplane-mode order or asks about its state."""
+
+    folded = _strip_request_envelope(_fold(text)).strip().rstrip(".!?").strip()
+    if not _has(folded, r"\b(?:modo\s+avion|airplane\s+mode|flight\s+mode)\b"):
+        return None
+    if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(folded):
+        return None
+    if _has(folded, r"^[¿?¡!\s]*(?:esta|is|tengo|do\s+i\s+have|hay)\b") or _has(folded, r"\b(?:activado|prendido|encendido|puesto|on)\s*\??$") and not _has(folded, r"^[¿?¡!\s]*(?:pon|pone|poneme|poner|activa|activame|activar|prende|prendeme|enciende|apaga|desactiva|quita|saca|turn|enable|disable|switch|put|set)\b"):
+        return None
+    if _has(folded, r"\b(?:apaga|apagame|apagar|desactiva|desactivame|desactivar|quita|quitame|quitar|saca|sacame|sacar|turn\s+off|disable|switch\s+off|off)\b"):
+        return 0
+    if _has(folded, r"\b(?:pon|pone|poneme|poner|activa|activame|activar|prende|prendeme|prender|enciende|encendeme|turn\s+on|enable|switch\s+on|put|set|on)\b"):
+        return 1
+    return None
+
+
+def airplane_mode_question(text: str) -> bool:
+    """«¿está el modo avión activado?»: a read of the radios."""
+
+    folded = _strip_request_envelope(_fold(text)).strip().rstrip(".!?").strip()
+    return _has(folded, r"\b(?:modo\s+avion|airplane\s+mode|flight\s+mode)\b") and airplane_mode_request(text) is None and (
+        _has(folded, r"^[¿?¡!\s]*(?:esta|is|tengo|do\s+i\s+have|hay)\b") or _has(folded, r"\b(?:activado|prendido|encendido|puesto|on)\b")
+    )
+
+
+_ZIP_MISSION_FOLDER = "Nueva carpeta"
+_ZIP_MISSION_FILE = "Nuevo documento de texto.txt"
+
+
+def folder_txt_zip_open_mission(text: str) -> str | None:
+    """REOPEN1957 H0542 «Crea una carpeta en el escritorio, mete un txt dentro,
+    comprímela y luego abre el zip»: the known folder of a four-step mission
+    (create the folder, put a text file in it, zip it, open the zip). The
+    folder and the file are unnamed, so they take Windows' own default
+    names («Nueva carpeta», «Nuevo documento de texto.txt»)."""
+
+    folded = _strip_request_envelope(_fold(text)).strip()
+    if _is_negative_effect_clause(folded):
+        return None
+    match = re.search(
+        rf"\b(?:crea|crear|creame|create|make|haz|hace)\s+(?:una\s+|a\s+)?(?:carpeta|folder|directorio|directory)"
+        rf"(?:\s+(?:nueva|new))?\s+(?:en|on|in)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS})\b",
+        folded,
+    )
+    if match is None:
+        return None
+    if not _has(folded, r"\b(?:mete|meter|pone|pon|poner|crea|crear|guarda|put|add|create)\b.{0,20}\b(?:txt|archivo\s+de\s+texto|text\s+file|archivo\s+txt)\b"):
+        return None
+    if not _has(folded, r"\b(?:comprim\w+|zip\w*|compress\w*)\b"):
+        return None
+    if not _has(folded, r"\b(?:abre|abri|abrir|abrilo|abrila|open)\b.{0,12}\b(?:zip|comprimid[oa]|archive)\b"):
+        return None
+    return _KNOWN_FOLDER_ENUM.get(match.group("folder"))
+
+
+def compress_named_request(text: str) -> tuple[str, str] | None:
+    """«comprimí la carpeta Fotos del escritorio», «zip the file informe.pdf in
+    documents» → (known folder, name). Unnamed targets abstain."""
+
+    raw = _strip_request_envelope(str(text).strip()).rstrip(".!?")
+    folded = _fold(raw)
+    if _is_negative_effect_clause(folded) or folder_txt_zip_open_mission(text) is not None:
+        return None
+    match = re.match(
+        rf"^[¿?¡!\s]*(?:comprim[eií](?:me|la|lo)?|comprimir|zip(?:ea|pea)?(?:me)?|compress)\s+"
+        rf"(?:(?:la|el|the|a)\s+)?(?:(?:carpeta|folder|directorio|archivo|file|fichero)\s+)?"
+        rf"(?P<name>[^\s/\\:*?\"<>|]+(?:\s+[^\s/\\:*?\"<>|]+){{0,4}}?)\s+"
+        rf"(?:del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}|imagenes|pictures)\b",
+        raw,
+        re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    folder = _KNOWN_FOLDER_ENUM.get(_fold(match.group("folder")), "pictures")
+    name = match.group("name").strip()
+    return (folder, name) if name and not _has(_fold(name), r"^(?:todo|todos|todas|eso|esto|it|this|that|all)$") else None
+
+
+def open_named_file_request(text: str) -> tuple[str, str] | None:
+    """«abre el zip Nueva carpeta.zip del escritorio», «abrí informe.pdf de
+    documentos» → (known folder, file name with extension)."""
+
+    raw = _strip_request_envelope(str(text).strip()).rstrip(".!?")
+    folded = _fold(raw)
+    if _is_negative_effect_clause(folded) or folder_txt_zip_open_mission(text) is not None:
+        return None
+    match = re.match(
+        rf"^[¿?¡!\s]*(?:abr[eií](?:me|lo|la)?|abrir|open)\s+"
+        rf"(?:(?:el|la|the|a)\s+)?(?:(?:archivo|file|fichero|zip|pdf|documento|document|imagen|image|foto|photo)\s+)?"
+        rf"(?P<name>[^\s/\\:*?\"<>|]+(?:\s+[^\s/\\:*?\"<>|]+){{0,4}}?\.[a-z0-9]{{1,5}})\s+"
+        rf"(?:del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}|imagenes|pictures)\b",
+        raw,
+        re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    folder = _KNOWN_FOLDER_ENUM.get(_fold(match.group("folder")), "pictures")
+    return (folder, match.group("name").strip())
+
+
+def wallpaper_request(text: str) -> dict[str, str | None] | None:
+    """REOPEN1957 H0459 «cambiá el fondo de pantalla a azul»: a solid colour
+    or a picture from a known folder as the desktop background."""
+
+    raw = _strip_request_envelope(str(text).strip()).rstrip(".!?")
+    folded = _fold(raw)
+    if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(folded):
+        return None
+    if not _has(folded, r"\b(?:fondo\s+de\s+(?:pantalla|escritorio)|fondo|wallpaper|papel\s+tapiz|desktop\s+background|background)\b"):
+        return None
+    if not _has(folded, r"\b(?:cambia|cambiar|cambiame|pon|pone|poneme|poner|establece|coloca|usa|change|set|put|use|make)\b"):
+        return None
+    colour = re.search(
+        r"\b(?:a|al|de\s+color|en|to|color)\s+(?P<color>azul|rojo|verde|negro|blanco|gris|amarillo|naranja|violeta|morado|rosa|celeste|marron|"
+        r"blue|red|green|black|white|gray|grey|yellow|orange|purple|pink|lightblue|brown|#?[0-9a-f]{6})\b",
+        folded,
+    )
+    if colour is not None:
+        return {"color": colour.group("color"), "folder": None, "name": None}
+    picture = re.search(
+        rf"(?P<name>[^\s/\\:*?\"<>|]+\.(?:png|jpg|jpeg|bmp|gif|webp))\s+(?:del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}|imagenes|pictures)\b",
+        folded,
+    )
+    if picture is not None:
+        return {"color": None, "folder": _KNOWN_FOLDER_ENUM.get(_fold(picture.group("folder")), "pictures"), "name": picture.group("name")}
+    return None
+
+
+def web_download_request(text: str) -> dict[str, str | None] | None:
+    """REOPEN1957 H0077 «descarga la imagen de portada de wikipedia.org y
+    guardala en el escritorio»: the address (a host counts) and the known
+    folder named as destination (Downloads when none)."""
+
+    raw = _strip_request_envelope(str(text).strip()).rstrip(".!?")
+    folded = _fold(raw)
+    if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(folded):
+        return None
+    if not _has(folded, r"^[¿?¡!\s]*(?:descarga|descargar|descargame|baja|bajar|bajame|download|guarda|guardar|save)\b"):
+        return None
+    if _has(folded, r"\b(?:steam|epic|juego|game|app|aplicacion|programa|winget)\b"):
+        return None
+    address = re.search(
+        r"(?P<url>https?://[^\s\"'<>]+|(?:[a-z0-9-]+\.)+(?:com|org|net|edu|gov|io|es|cl|ar|mx|info|wiki|dev|app)(?:/[^\s\"'<>]*)?)",
+        raw,
+        re.IGNORECASE,
+    )
+    if address is None:
+        return None
+    destination = re.search(
+        rf"\b(?:en|on|in|a|to)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}|imagenes|pictures)\b",
+        folded,
+    )
+    folder = _KNOWN_FOLDER_ENUM.get(destination.group("folder"), "pictures") if destination is not None else None
+    return {"url": address.group("url"), "folder": folder, "name": None}
+
+
+_NUMBER_WORDS = {
+    "una": 1, "un": 1, "uno": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5, "seis": 6, "siete": 7, "ocho": 8,
+    "nueve": 9, "diez": 10, "once": 11, "doce": 12, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
+    "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
+}
+
+
+def presentation_request(text: str) -> tuple[str, int] | None:
+    """REOPEN1957 H0188 «Haz un powerpoint hablando de amor de 6 diapositivas»:
+    (topic as the person wrote it, slide count; 6 when none is given)."""
+
+    raw = _strip_request_envelope(str(text).strip()).rstrip(".!?")
+    folded = _fold(raw)
+    if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(folded):
+        return None
+    if not _has(folded, r"\b(?:powerpoint|power\s+point|presentacion(?:es)?|diapositivas?|slides?|slideshow|slide\s+deck)\b"):
+        return None
+    if not _has(folded, r"^[¿?¡!\s]*(?:haz|hace|haceme|hazme|crea|creame|crear|arma|armame|armar|genera|generame|generar|prepara|preparame|make|create|build|prepare)\b"):
+        return None
+    count_match = re.search(r"\b(?P<n>\d{1,2}|" + "|".join(_NUMBER_WORDS) + r")\s+(?:diapositivas?|slides?|laminas?|paginas?)\b", folded)
+    count = 6
+    if count_match is not None:
+        token = count_match.group("n")
+        count = int(token) if token.isdigit() else _NUMBER_WORDS[token]
+    if not 1 <= count <= 12:
+        return None
+    numbers = "|".join(_NUMBER_WORDS)
+    count_phrase = rf"(?:\d{{1,2}}|{numbers})\s+(?:diapositivas?|slides?|laminas?|paginas?)"
+    topic_body = (
+        rf"(?P<topic>(?!{count_phrase})(?!(?:una|un|el|la|los|las|a|an|the)\s+(?:diapositiva|slide|presentacion))[^,;:.!?]+?)"
+        rf"(?=\s+(?:de|con|of|with)\s+{count_phrase}\b|\s*$)"
+    )
+    # «sobre», «hablando de», «acerca de», «about» name the topic outright; a
+    # bare «de» only when none of them is there («powerpoint de gatos»).
+    topic_match = re.search(
+        r"\b(?:hablando\s+(?:de|sobre|del|de\s+la|de\s+los|de\s+las)|sobre|acerca\s+de|about|titulad[oa]|called|named)\s+" + topic_body,
+        raw,
+        re.IGNORECASE,
+    ) or re.search(r"\b(?:de|del|on)\s+" + topic_body, raw, re.IGNORECASE)
+    if topic_match is None:
+        return None
+    topic = topic_match.group("topic").strip(" \t\r\n.,;:")
+    if not topic or _has(_fold(topic), r"^(?:el|la|los|las|un|una|the|a|an|esto|eso|it|this|that)$") or len(topic.encode("utf-8")) > 120:
+        return None
+    return (topic, count)
+
+
+def steam_library_verb(text: str) -> str | None:
+    """REOPEN1993 grupo S: what a library request asks for — «install»
+    (descarga, instala, baja), «uninstall» (desinstala, remove) or «launch»
+    (lanza, abre, juega); None when the text is not a library request."""
+
+    if steam_library_title(text) is None:
+        return None
+    folded = _strip_request_envelope(_fold(text)).strip()
+    head = re.search(rf"\b{_STEAM_LIBRARY_VERB}\b", folded)
+    if head is None:
+        return None
+    verb = head.group(0)
+    if verb.startswith(("desinstal", "uninstall", "remove")):
+        return "uninstall"
+    if verb.startswith(("descarg", "baja", "instal", "install", "download")):
+        return "install"
+    return "launch"
+
+
 def game_library_store(text: str) -> str:
     """The store a library request names after the title: «epic» or «steam»."""
 
@@ -17067,6 +17691,92 @@ def installed_catalog_application_name(
         position = folded_raw.find(name) if len(folded_raw) == len(raw) else -1
         return raw[position:position + len(name)] if position >= 0 else name
     return None
+
+
+def software_package_request(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> tuple[str, str, bool] | None:
+    """REOPEN1993 grupo G: an install or uninstall of software by name
+    («instala Spotify», «instalá Photoshop», «desinstalá Discord») →
+    (verb, name as written, whether the Start catalog holds it). Games named
+    with their store and Python packages keep their own readers; a name the
+    catalog does not hold and that is not known software abstains."""
+
+    folded = _strip_request_envelope(_fold(text)).strip().rstrip(".!?").strip()
+    if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(folded):
+        return None
+    if _has(folded, r"\b(?:pip|steam|epic|juego|game|python)\b|https?://"):
+        return None
+    match = re.fullmatch(
+        rf"[¿?¡!\s]*(?:(?:necesito|quiero|quisiera|podes|podrias|puedes|can\s+you|could\s+you|please)\s+(?:que\s+)?)?"
+        rf"(?:me\s+)?(?P<verb>{_CATALOG_INSTALL_VERB})\s+(?:(?:el|la|the|a)\s+)?(?:(?:app|aplicacion|programa|application)\s+)?"
+        r"(?P<name>[a-z0-9][a-z0-9 .+'&-]{0,60}?)"
+        r"(?:[\s,]+(?:por\s+favor|please|ahora|now|de\s+nuevo|again))?",
+        folded,
+    )
+    if match is None:
+        return None
+    verb = "uninstall" if match.group("verb").startswith(("desinstal", "uninstall")) else "install"
+    name = match.group("name").strip()
+    if not name or re.fullmatch(r"(?:todo|todos|todas|eso|esto|aquello|algo|nada|lo|la|el|it|this|that|everything|all)", name):
+        return None
+    catalog_name = resolve_application_catalog_app_id("abre " + name, application_names)
+    in_catalog = catalog_name is not None
+    known = re.fullmatch(_KNOWN_SOFTWARE, name) is not None
+    plain = re.fullmatch(r"[a-z0-9][a-z0-9'+-]*(?:\s+[a-z0-9][a-z0-9'+-]*){0,3}", name) is not None and not _has(
+        name, r"\b(?:programas?|aplicaciones?|apps?|juegos?|cosas?|archivos?|programs?|applications?|games?|files?)\b",
+    )
+    if not (in_catalog or known or plain):
+        return None
+    raw = str(text)
+    folded_raw = _fold(raw)
+    position = folded_raw.find(name) if len(folded_raw) == len(raw) else -1
+    written = raw[position:position + len(name)] if position >= 0 else name
+    return (verb, catalog_name if in_catalog else written, in_catalog)
+
+
+_SHELL_COMMAND_HEADS = (
+    r"(?:pytest|ls|dir|cd|git|npm|npx|pip|pip3|python|python3|node|dotnet|cargo|make|cmd|powershell|bash|sh|"
+    r"echo|cat|type|pwd|whoami|hostname|ipconfig|ping|tree|ver|systeminfo|tasklist|where|which|"
+    r"\S+\.(?:py|sh|bat|ps1|cmd|exe))"
+)
+
+
+def shell_command_request(text: str) -> tuple[str, str | None] | None:
+    """REOPEN1993 (comandos, D11): the command the person asked to run and the
+    folder a pasted prompt names («ejecuta ls», «corré git status», «PS C:\\x>
+    python app.py»); None for anything that is not a console command."""
+
+    raw = str(text).strip()
+    folded = _fold(raw)
+    # «ejecutá el comando git status»: the word «comando» names the thing to
+    # run, not talk about tools; the denial gate reads the request without it.
+    without_noun = re.sub(r"\b(?:el|the|este|this|un|a)\s+(?:comando|command)\s+", "", folded, count=1)
+    if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(without_noun):
+        return None
+    prompt = re.match(r"^\s*(?:PS\s+)?(?P<cwd>[A-Za-z]:\\[^>]*?)\s*>\s*(?P<command>\S.*)$", raw)
+    if prompt is not None:
+        return (prompt.group("command").strip(), prompt.group("cwd").strip())
+    if _has(folded, r"\b(?:juego|game|steam|app|aplicacion|application|programa|program)\b"):
+        return None
+    match = re.match(
+        r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
+        r"(?:ejecuta|ejecutá|ejecutame|ejecútame|corre|corré|correme|corréme|run|execute)\s+"
+        r"(?:(?:el|the|este|this|un|a)\s+)?(?:comando\s+|command\s+)?"
+        r"(?P<command>\S.*?)\s*[.!?]*$",
+        raw,
+        re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    command = match.group("command").strip().strip("`\"'")
+    command_folded = _fold(command)
+    if not re.match(rf"^{_SHELL_COMMAND_HEADS}(?:\s|$)", command_folded):
+        return None
+    if len(command.encode("utf-8")) > 512 or "\n" in command:
+        return None
+    return (command, None)
 
 
 def installed_game_title(text: str) -> str | None:
@@ -18398,6 +19108,12 @@ def resolve_explicit_effects(
         return resolve_explicit_effects(
             completed_music_request, available, application_names, game_catalog,
         )
+    if {"web.download", "file.open"} <= available:
+        completed_image_request = _completed_missing_image_subject_request(text, previous_user_text)
+        if completed_image_request is not None:
+            return resolve_explicit_effects(
+                completed_image_request, available, application_names, game_catalog,
+            )
     contextual_read = (
         "system.time" if _nominal_datetime_query(folded) else
         "window.active" if re.fullmatch(
@@ -18461,11 +19177,75 @@ def resolve_explicit_effects(
         and not near_catalog_application_candidates(text, authenticated_applications)
         and resolve_application_catalog_app_id(text, authenticated_applications) is None
     ):
+        # REOPEN1993 grupo S (D1/D11: the survey is the specification): a
+        # download or install is the real install (the adapter says «not in
+        # the library» or «already installed» when that is the case), an
+        # uninstall is the real uninstall; launching what is not installed
+        # keeps the library read (INSTALL1633).
+        library_verb = steam_library_verb(text)
+        if library_verb == "install" and "game.install.named" in available:
+            return EffectIntent(("game.install.named",), (text,))
+        if library_verb == "uninstall" and "game.uninstall.named" in available:
+            return EffectIntent(("game.uninstall.named",), (text,))
         # INSTALL1617: a Steam download, install or uninstall of a named game
         # first reads whether the title is in the person's library and on disk;
         # the install effect itself needs an entitlement and a confirmation,
         # and most such requests name games the library does not hold.
         return EffectIntent(("game.entitlement.named",), (text,))
+    if "filesystem.explorer.count" in available and explorer_count_request(text) is not None:
+        # REOPEN1957 H0701: the Explorer folder in front is the current directory.
+        return EffectIntent(("filesystem.explorer.count",), (text,))
+    if (known_path := known_folder_file_path(text)) is not None and known_path[0] in available:
+        # REOPEN1957 H0299: the pasted path under a known folder is read to say what it is about.
+        return EffectIntent((known_path[0],), (text,))
+    if {"web.download", "file.open"} <= available and (image := web_image_request(text)) is not None and not image[1]:
+        # REOPEN1957 H0069: the first image the search lists is downloaded
+        # and opened; the viewer shows it (the chat cannot).
+        return EffectIntent(("web.download", "file.open"), (text, text))
+    if {"wifi.profile.list", "wifi.connect.named"} <= available and wifi_place_request(text) is not None:
+        # REOPEN1957 H0170/H0376: the saved networks are read first so the final
+        # can list them when no network is associated with that place yet.
+        return EffectIntent(("wifi.profile.list", "wifi.connect.named"), (text, text))
+    if {"document.presentation.create", "file.open"} <= available and presentation_request(text) is not None:
+        # REOPEN1957 H0188: the deck is written and then opened.
+        return EffectIntent(("document.presentation.create", "file.open"), (text, text))
+    if {"filesystem.create.directory", "filesystem.write.text", "file.compress", "file.open"} <= available and folder_txt_zip_open_mission(text) is not None:
+        # REOPEN1957 H0542: create the folder, put a text file in it, zip it, open the zip.
+        return EffectIntent(("filesystem.create.directory", "filesystem.write.text", "file.compress", "file.open"), (text, text, text, text))
+    if "file.compress" in available and compress_named_request(text) is not None:
+        return EffectIntent(("file.compress",), (text,))
+    if "file.open" in available and open_named_file_request(text) is not None:
+        return EffectIntent(("file.open",), (text,))
+    if "desktop.wallpaper.set" in available and wallpaper_request(text) is not None:
+        # REOPEN1957 H0459: a solid colour or a picture as the desktop background.
+        return EffectIntent(("desktop.wallpaper.set",), (text,))
+    if "web.download" in available and web_download_request(text) is not None:
+        # REOPEN1957 H0077: the file or the page's cover image lands in the folder named.
+        return EffectIntent(("web.download",), (text,))
+    if "shell.command.run" in available and shell_command_request(text) is not None:
+        # REOPEN1993 (D11): a console command is run for real and its output quoted.
+        return EffectIntent(("shell.command.run",), (text,))
+    software = software_package_request(text, authenticated_applications)
+    if software is not None:
+        # REOPEN1993 grupo G: software is installed and removed by the Windows
+        # package manager. Installing what the Start catalog already holds is
+        # answered by its presence (INSTALL1625); removing it is a real
+        # uninstall; installing what is absent resolves the package and
+        # installs it, or says winget does not offer it.
+        verb, _name, in_catalog = software
+        if verb == "uninstall" and in_catalog and "package.uninstall" in available:
+            return EffectIntent(("package.uninstall",), (text,))
+        if (
+            verb == "uninstall"
+            and not in_catalog
+            and "game.uninstall.named" in available
+            and _installed_game_named(_name, authenticated_games) is not None
+        ):
+            # REOPEN1993 grupo S (H0620 «Desinstala Worms Rumble»): a bare name
+            # that is an installed game is uninstalled from its launcher.
+            return EffectIntent(("game.uninstall.named",), (text,))
+        if verb == "install" and not in_catalog and {"package.install.prepare", "package.install.commit"} <= available:
+            return EffectIntent(("package.install.prepare", "package.install.commit"), (text, text))
     if (
         "app.installed" in available
         and installed_catalog_application_name(text, authenticated_applications) is not None
@@ -18662,6 +19442,11 @@ def resolve_explicit_effects(
         and not _has_contradictory_correction(folded)
     ):
         return EffectIntent(("system.settings.adjust",), (folded,))
+    if "system.settings.set" in available and airplane_mode_request(text) is not None:
+        # REOPEN1957 H0107 «poneme el modo avión»: every radio off (or on again).
+        return EffectIntent(("system.settings.set",), (folded,))
+    if "system.settings.status" in available and airplane_mode_question(text):
+        return EffectIntent(("system.settings.status",), (folded,))
     if (
         "system.settings.set" in available
         and _literal_brightness_level(folded) is not None
@@ -18767,6 +19552,12 @@ def resolve_explicit_effects(
             # MUSIC1559: no provider named → the local YouTube playback.
             return EffectIntent(("media.play.youtube",), (evidence,))
         return EffectIntent(("media.play.query",), (evidence,))
+    weather_read = _weather_read_intent(text, available)
+    if weather_read is not None:
+        return weather_read
+    news_read = _news_read_intent(text, available)
+    if news_read is not None:
+        return news_read
     if (
         "web.search" in available
         and _public_live_lookup_request(folded)
@@ -19224,6 +20015,12 @@ def resolve_explicit_effects(
             tuple(operation for _ in targets),
             tuple(target for _, target in targets),
         )
+    weather_read = _weather_read_intent(text, available)
+    if weather_read is not None:
+        return weather_read
+    news_read = _news_read_intent(text, available)
+    if news_read is not None:
+        return news_read
     if (
         len(clauses) == 1
         and "web.search" in available
@@ -19774,7 +20571,7 @@ def unresolved_compound_contract(
     )
     benign_live_lookup = (
         isinstance(resolved_intent, EffectIntent)
-        and resolved_intent.operations == ("web.search",)
+        and resolved_intent.operations in (("web.search",), ("weather.current",), ("web.news.headlines",))
         and _public_live_lookup_request(folded)
     )
     benign_game_correction = (

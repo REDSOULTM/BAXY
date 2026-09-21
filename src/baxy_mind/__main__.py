@@ -134,6 +134,9 @@ TURN_DECIDE_RECOVERY_BUDGET_SECONDS = 2.5
 TURN_DECIDE_TRANSPORT_SLA_SECONDS = 22.0
 DEICTIC_CLARIFICATION_CPU_BUDGET_SECONDS = 15.0
 TURN_AUDIT_ENV = "BAXY_MIND_TURN_AUDIT_PATH"
+# Failures whose final is a question to the person: a replan of the same
+# suffix would only repeat the failed step (REOPEN1957 H0170/H0376).
+_NO_REPLAN_ERROR_CODES = frozenset({"wifi_place_unknown"})
 TURN_AUDIT_MAX_BYTES = 128 * 1024
 # The shell owns one 120-second startup cancellation window. Keep the model
 # warmup and the catalog request inside it, with explicit time left for JSONL
@@ -790,6 +793,23 @@ def _verified_dependency_identity_arguments(
         report = effect_intent.process_report_file_request(effect_intent._fold(objective))
         if report is not None:
             return _process_report_file_arguments(report, observations, tool)
+    if operation == "file.open":
+        # REOPEN1957 H0069: the file to open is the one the download just wrote.
+        downloads = [
+            observation["result"]
+            for observation in observations
+            if isinstance(observation, dict)
+            and observation.get("operation") == "web.download"
+            and observation.get("verified") is True
+            and observation.get("status") == "completed"
+            and isinstance(observation.get("result"), dict)
+        ]
+        if len(downloads) == 1 and isinstance(downloads[0].get("name"), str) and isinstance(downloads[0].get("folder"), str):
+            candidate = {"folder": downloads[0]["folder"], "name": downloads[0]["name"]}
+            function = tool.get("function")
+            schema = function.get("parameters") if isinstance(function, dict) else None
+            if isinstance(schema, dict) and validate_json_schema_instance(candidate, schema):
+                return candidate
     if operation == "browser.navigate.named":
         # H0516 «Abre Opera GX, busca una receta de pizza, …»: la navegación
         # que sigue a una búsqueda va al primer resultado verificado, en el
@@ -4678,6 +4698,11 @@ def _explicit_browser_navigation_arguments(
 def _explicit_wifi_profile_arguments(evidence: str) -> dict[str, object] | None:
     """Preserve one explicitly named saved Wi-Fi profile."""
 
+    place = effect_intent.wifi_place_request(evidence)
+    if place is not None:
+        # REOPEN1957 H0170/H0376: the place word travels as the name (a profile
+        # literally called «Casa» still matches) and as the place to resolve.
+        return {"profileName": place, "place": place}
     patterns = (
         (
             r"^[ż?Ą!\s]*(?:cambia|cambiar|change|switch)\s+"
@@ -5063,6 +5088,51 @@ def _todays_news_query(text: str) -> str | None:
     return ("news " if scope.casefold().startswith("today") else "noticias de ") + scope
 
 
+def _presentation_title(topic: str) -> str:
+    """«hablando de amor» → «Amor»: the topic with its first letter up."""
+
+    cleaned = " ".join(topic.split())
+    return cleaned[:1].upper() + cleaned[1:] if cleaned else "Presentación"
+
+
+def _presentation_file_name(topic: str) -> str:
+    """The .pptx name the presentation adapter derives from the title."""
+
+    title = _presentation_title(topic)
+    safe = "".join(character for character in title if character not in '<>:"/\\|?*').strip()
+    return (safe or "Presentacion") + ".pptx"
+
+
+def _presentation_arguments(
+    llm_runtime: object,
+    objective: str,
+) -> dict[str, object] | None:
+    """REOPEN1957 H0188: the slides are authored by the local model (one
+    entry per slide: title line and bullet lines) for the topic and count the
+    person asked; the title and the count come from the request, never from
+    the model."""
+
+    request = effect_intent.presentation_request(objective)
+    if request is None:
+        return None
+    topic, count = request
+    compose = getattr(llm_runtime, "compose_presentation_slides", None)
+    if compose is None:
+        return None
+    slides = compose(topic, count)
+    if not isinstance(slides, list) or len(slides) != count:
+        return None
+    cleaned: list[str] = []
+    for slide in slides:
+        if not isinstance(slide, str):
+            return None
+        lines = [line.strip() for line in slide.replace("\r\n", "\n").split("\n") if line.strip()]
+        if not lines:
+            return None
+        cleaned.append("\n".join(lines[:9]))
+    return {"title": _presentation_title(topic), "slides": cleaned, "folder": "documents"}
+
+
 def _explicit_arguments_from_evidence(
     operation: str,
     evidence: str,
@@ -5133,8 +5203,14 @@ def _explicit_arguments_from_evidence(
         return {**adjustment, "setting": "brightness"} if adjustment is not None else None
 
     if operation == "system.settings.set":
+        airplane = effect_intent.airplane_mode_request(evidence)
+        if airplane is not None:
+            return {"setting": "airplane_mode", "value": airplane}
         level = effect_intent._literal_brightness_level(evidence)
         return {"setting": "brightness", "value": level} if level is not None else None
+
+    if operation == "system.settings.status" and effect_intent.airplane_mode_question(evidence):
+        return {"setting": "airplane_mode"}
 
     if operation == "window.snap":
         # ARRANGE1781: the side is the person's literal; windowId comes from window.resolve.
@@ -5263,6 +5339,17 @@ def _explicit_arguments_from_evidence(
             return {}
         return None
 
+    if operation == "filesystem.explorer.count":
+        extension = effect_intent.explorer_count_request(evidence)
+        if extension is not None:
+            return {"extension": extension}
+
+    if operation in {"document.text.read", "document.pdf.read"}:
+        # REOPEN1957 H0299: the pasted path names the folder, the subfolder and the file.
+        known_path = effect_intent.known_folder_file_path(evidence)
+        if known_path is not None and known_path[0] == operation:
+            return dict(known_path[1])
+
     if operation == "document.pdf.read":
         # PDF1689 «resumime informe.pdf»: the file name is the person's
         # literal; the folder is a catalog root, or every known folder when
@@ -5306,6 +5393,24 @@ def _explicit_arguments_from_evidence(
             "folder": effect_intent._KNOWN_FOLDER_ENUM[effect_intent._fold(folder_word)]
             if folder_word else "all_known",
         }
+
+    presentation = effect_intent.presentation_request(evidence)
+    if presentation is not None and operation == "file.open":
+        # REOPEN1957 H0188: the deck lands in Documents under its topic's name.
+        return {"folder": "documents", "name": _presentation_file_name(presentation[0])}
+
+    zip_mission_folder = effect_intent.folder_txt_zip_open_mission(evidence)
+    if zip_mission_folder is not None and operation in {"filesystem.create.directory", "filesystem.write.text", "file.compress", "file.open"}:
+        # REOPEN1957 H0542: Windows' own default names for the unnamed folder and file.
+        folder_name = effect_intent._ZIP_MISSION_FOLDER
+        file_name = effect_intent._ZIP_MISSION_FILE
+        if operation == "filesystem.create.directory":
+            return {"folder": zip_mission_folder, "relativePath": folder_name}
+        if operation == "filesystem.write.text":
+            return {"folder": zip_mission_folder, "relativePath": folder_name + "/" + file_name, "text": "", "expectedSha256": None}
+        if operation == "file.compress":
+            return {"folder": zip_mission_folder, "name": folder_name}
+        return {"folder": zip_mission_folder, "name": folder_name + ".zip"}
 
     if operation == "filesystem.create.directory":
         # «crea una carpeta llamada CarterTest en el escritorio»: the name is
@@ -5966,6 +6071,67 @@ def _explicit_arguments_from_evidence(
         if effect_intent._bluetooth_state_question(evidence):
             return {}
 
+    if operation == "weather.current":
+        if effect_intent._weather_lookup_query(evidence) is not None:
+            return {"location": effect_intent._weather_location(evidence)}
+
+    if operation in {"game.install.named", "game.uninstall.named"}:
+        library_title = effect_intent.steam_library_title(evidence)
+        library_verb = effect_intent.steam_library_verb(evidence)
+        if library_title is not None and library_verb == ("uninstall" if operation == "game.uninstall.named" else "install"):
+            # REOPEN1993 grupo S: the title as the person named it (the adapter
+            # resolves it) and the store named after it.
+            return {"title": library_title, "store": effect_intent.game_library_store(evidence)}
+        if operation == "game.uninstall.named":
+            software = effect_intent.software_package_request(evidence, application_names)
+            if software is not None and software[0] == "uninstall" and not software[2]:
+                installed = effect_intent._installed_game_named(software[1], game_catalog)
+                if installed is not None:
+                    return {"title": installed, "store": "steam"}
+
+    if operation == "file.compress":
+        compress = effect_intent.compress_named_request(evidence)
+        if compress is not None:
+            return {"folder": compress[0], "name": compress[1]}
+
+    if operation == "file.open":
+        opened = effect_intent.open_named_file_request(evidence)
+        if opened is not None:
+            return {"folder": opened[0], "name": opened[1]}
+
+    if operation == "desktop.wallpaper.set":
+        wallpaper = effect_intent.wallpaper_request(evidence)
+        if wallpaper is not None:
+            return dict(wallpaper)
+
+    if operation == "web.download":
+        download = effect_intent.web_download_request(evidence)
+        if download is not None:
+            return {"url": download["url"], "folder": download["folder"], "name": download["name"], "query": None}
+        image = effect_intent.web_image_request(evidence)
+        if image is not None and not image[1]:
+            # REOPEN1957 H0069: the picture lands in Pictures under the noun asked.
+            return {"url": None, "query": image[0], "folder": "pictures", "name": effect_intent.visual_content_noun(evidence) or "imagen"}
+
+    if operation == "shell.command.run":
+        shell = effect_intent.shell_command_request(evidence)
+        if shell is not None:
+            return {"command": shell[0], "cwd": shell[1]}
+
+    if operation in {"package.install.prepare", "package.uninstall"}:
+        software = effect_intent.software_package_request(evidence, application_names)
+        if software is not None and (
+            (operation == "package.uninstall") == (software[0] == "uninstall")
+        ):
+            # REOPEN1993 grupo G: the package is the name as the person wrote
+            # it (or the catalog name when the catalog holds it); winget
+            # resolves the exact id.
+            return {"packageId": software[1]} if operation == "package.uninstall" else {"packageId": software[1], "version": None}
+
+    if operation == "web.news.headlines":
+        if effect_intent._news_headlines_request(evidence):
+            return {"topic": effect_intent._news_topic(evidence), "limit": 5}
+
     if operation == "display.status":
         if effect_intent._display_status_question(evidence):
             return {}
@@ -6188,6 +6354,13 @@ def _ground_explicit_arguments(
             explicit = _explicit_arguments_from_evidence(
                 operation, completed, application_names, game_catalog,
             )
+    if explicit is None and operation == "wifi.connect.named":
+        # REOPEN1957 H0170/H0376 «conectate al wifi de casa» → «¿cuál de las
+        # guardadas es la de casa?» → «Fibertel-2G»: the answer names the
+        # profile; the place comes from the previous request in the history.
+        answer = effect_intent.wifi_place_answer(evidence, history)
+        if answer is not None:
+            explicit = {"profileName": answer[0], "place": answer[1]}
     if explicit is None and operation == "audio.app.volume.adjust":
         # AUDIO1791 «subí el volumen de spotify» → «¿cuánto?» → «20»: the
         # decision read the answer as the completed request; the arguments
@@ -6207,6 +6380,13 @@ def _ground_explicit_arguments(
             )
     if explicit is None:
         return None
+    if (
+        operation in {"filesystem.create.directory", "filesystem.write.text", "file.compress", "file.open"}
+        and effect_intent.folder_txt_zip_open_mission(evidence) is not None
+    ):
+        # REOPEN1957 H0542: the unnamed folder and file take Windows' default
+        # names, which the person never spelled.
+        return explicit if validate_json_schema_instance(explicit, schema) else None
     if operation == "web.search" and explicit.get("query") == _todays_news_query(evidence):
         # WEB1451 «qué pasó hoy en el mundo»: the news reader supplies the
         # word «noticias»; the scope words are the person's own.
@@ -6240,6 +6420,16 @@ def _ground_explicit_arguments(
     ):
         # UI1725: the expression is composed from the person's own numbers and
         # operator word («6 por 7» -> 6*7); the symbol is not a literal token.
+        return explicit if validate_json_schema_instance(explicit, schema) else None
+    if (
+        operation in {"document.text.read", "document.pdf.read", "filesystem.explorer.count"}
+        and (
+            effect_intent.known_folder_file_path(evidence) is not None
+            or effect_intent.explorer_count_request(evidence) is not None
+        )
+    ):
+        # REOPEN1957 H0299/H0701: the folder enum, the subfolder and the
+        # extension come from the path or the count request as read.
         return explicit if validate_json_schema_instance(explicit, schema) else None
     if (
         operation == "document.pdf.read"
@@ -6286,6 +6476,20 @@ def _ground_explicit_arguments(
         "message.draft",
         "message.send.test",
         "game.launch",
+        # REOPEN1993 grupo G/N/W: the readers own the package name (catalog
+        # name or the person's), the news topic and the weather place.
+        "desktop.wallpaper.set",
+        "file.compress",
+        "file.open",
+        "game.install.named",
+        "game.uninstall.named",
+        "package.install.prepare",
+        "package.uninstall",
+        "shell.command.run",
+        "web.download",
+        "web.news.headlines",
+        "weather.current",
+        "wifi.connect.named",
         "media.control",
         "media.play.query",
         "media.play.youtube",
@@ -7159,6 +7363,11 @@ def _prepare_turn_result(
         )
         else _unresolved_input_kind(objective, application_names)
     )
+    if unresolved_input_kind == "bare_path":
+        known_path = effect_intent.known_folder_file_path(objective)
+        if known_path is not None and known_path[0] in available_operations:
+            # REOPEN1957 H0299: a pasted path under a known folder is read, not asked about.
+            unresolved_input_kind = None
     if unresolved_input_kind == "deictic_look" and _previous_user_request(history, objective) is None:
         # REOPEN1993 H0528: with nothing said before, the screen is what to look at.
         unresolved_input_kind = None
@@ -7326,7 +7535,11 @@ def _prepare_turn_result(
             )
         )
     )
-    live_public_intent = (
+    live_public_intent = effect_intent._weather_read_intent(
+        effect_intent._strip_request_envelope(objective), available_operations
+    ) or effect_intent._news_read_intent(
+        effect_intent._strip_request_envelope(objective), available_operations
+    ) or (
         EffectIntent(("web.search",), (objective,))
         if "web.search" in available_operations
         and effect_intent._public_live_lookup_request(
@@ -7337,10 +7550,15 @@ def _prepare_turn_result(
     accepted_wifi_offer = effect_intent.accepted_wifi_offer(
         objective, history, available_operations
     )
+    # REOPEN1957 H0170/H0376: the name answered after «¿cuál es la de casa?».
+    wifi_place_answer = effect_intent.wifi_place_answer_intent(
+        objective, history, available_operations
+    )
     explicit_intent = (
         None
         if non_target_language is not None or stable_no_effect_is_closed
         else accepted_wifi_offer
+        or wifi_place_answer
         or live_public_intent
         or resolve_explicit_effects(
             objective,
@@ -9354,7 +9572,18 @@ def _run_sidecar(
                         llm=llm,
                         phase="preparing_steps",
                     )
-                raw = (
+                recovery_contract = message.get("recovery")
+                if (
+                    not expected_operations
+                    and isinstance(recovery_contract, dict)
+                    and recovery_contract.get("errorCode") in _NO_REPLAN_ERROR_CODES
+                ):
+                    # REOPEN1957 H0170/H0376: the failed step already carries the
+                    # question for the person (which saved network is the home
+                    # one); repeating the same step cannot answer it.
+                    raw = {"kind": "conversation", "question": "", "steps": []}
+                else:
+                    raw = (
                     _explicit_plan_skeleton(
                         expected_operations,
                         expected_evidence,
@@ -9368,7 +9597,7 @@ def _run_sidecar(
                         history=history,
                         recovery=message.get("recovery"),
                     )
-                )
+                    )
                 proposal = validate_skeleton(
                     raw,
                     planner_catalog,
@@ -9482,6 +9711,12 @@ def _run_sidecar(
                         if explicit_arguments is not None:
                             arguments_by_step[step.step_id] = explicit_arguments
                             continue
+                        if step.operation == "document.presentation.create":
+                            # REOPEN1957 H0188: the local model writes the slides.
+                            authored = _presentation_arguments(llm, step.purpose)
+                            if authored is not None and validate_json_schema_instance(authored, schema):
+                                arguments_by_step[step.step_id] = authored
+                                continue
                     argument_requests.append(
                         {
                             "id": step.step_id,

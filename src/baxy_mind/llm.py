@@ -3544,12 +3544,166 @@ _CAUSE_FACT = {
     "visible_button_not_found": (
         "nothing on the screen is called that, so nothing was pressed"
     ),
+    # REOPEN1957 H0188: the presentation writer names its own absences.
+    "presentation_slides_invalid": ("the slides received were empty or too many, so no presentation was written"),
+    "presentation_write_failed": ("the presentation file could not be written in that folder, so nothing was created"),
+    "presentation_postread_failed": ("the presentation was written but its slides could not be counted back, so it is not confirmed"),
+    # REOPEN1957 H0542/H0459/H0077: the file tools name their own absences.
+    "zip_already_exists": ("a zip with that name already exists there, so nothing was compressed"),
+    "zip_create_failed": ("the zip could not be created, so nothing was compressed"),
+    "zip_postread_failed": ("the zip was written but could not be read back, so the compression is not confirmed"),
+    "file_not_found": ("no file or folder with that name is in that folder, so nothing was done"),
+    "file_name_invalid": ("that name is not a plain file name, so nothing was done"),
+    "file_extension_not_openable": ("that kind of file is not opened from here, so it stays closed"),
+    "file_open_dispatch_rejected": ("Windows did not open the file, so nothing appeared"),
+    "file_open_not_verified": ("the file was sent to its application but no window or process appeared, so the opening is not confirmed"),
+    "wallpaper_color_unknown": ("that colour is not one the desktop can be set to from here, so the background was not changed"),
+    "wallpaper_file_not_an_image": ("that file is not an image, so the background was not changed"),
+    "wallpaper_set_failed": ("Windows did not accept the new background, so it was not changed"),
+    "wallpaper_postread_failed": ("after the change the desktop does not show the requested background, so the change is not confirmed"),
+    "download_url_invalid": ("that is not a web address that can be downloaded, so nothing was saved"),
+    "download_source_unavailable": ("the address did not answer, so nothing was saved"),
+    "download_page_without_image": ("that page announces no cover image, so nothing was saved"),
+    "download_too_large": ("that file is larger than the 50 MB this download allows, so nothing was saved"),
+    "download_empty": ("the address returned an empty file, so nothing was saved"),
+    "download_source_missing": ("neither an address nor a search was given, so nothing was saved"),
+    "known_file_not_text": ("that file is not a text file (it holds binary data), so it was not read"),
+    "known_text_too_large": ("that text file is larger than the 4 MB this reading allows, so it was not read"),
+    "explorer_folder_unavailable": ("the folder of the Explorer window in front could not be read, so nothing was counted"),
+    "extension_invalid": ("that is not a file extension, so nothing was counted"),
+    "download_query_without_image": ("the image search listed no picture for that, so nothing was saved"),
+    "download_write_failed": ("the file could not be written in that folder, so nothing was saved"),
+    # REOPEN1957 H0107: airplane mode over the radios names its own absences.
+    "airplane_mode_radio_access_denied": (
+        "Windows did not grant access to the radios, so airplane mode was not changed"
+    ),
+    "airplane_mode_radios_not_found": (
+        "this PC exposes no radio to switch, so there is no airplane mode to set"
+    ),
+    "airplane_mode_change_rejected": (
+        "a radio refused to change state, so airplane mode is not confirmed"
+    ),
+    "airplane_mode_postread_failed": (
+        "after the change a radio is not in the requested state, so airplane mode is not confirmed"
+    ),
+    # REOPEN1993 grupo S: the launchers name their own absences.
+    "steam_title_not_resolved": (
+        "no Steam title by that name is known here, so nothing was downloaded, installed or removed"
+    ),
+    "steam_entitlement_not_verified": (
+        "that game is not in the Steam library of the account on this PC, so it was not installed (it can be bought first)"
+    ),
+    "steam_game_not_installed": (
+        "that game is not installed on this PC, so there was nothing to uninstall"
+    ),
+    "steam_install_dispatch_rejected": (
+        "the Steam client did not accept the install request, so nothing started"
+    ),
+    "steam_uninstall_dispatch_rejected": (
+        "the Steam client did not accept the uninstall request, so nothing was removed"
+    ),
+    "steam_uninstall_not_verified": (
+        "the uninstall was requested but the game still shows as installed, so the removal is not confirmed"
+    ),
+    "steam_install_not_verified": (
+        "the install was requested but the download did not start in time, so nothing is confirmed"
+    ),
+    "epic_entitlement_not_verified": (
+        "that game is not in the Epic Games library of the account on this PC, so it was not installed"
+    ),
+    "epic_launcher_data_not_found": (
+        "the Epic Games launcher data is not on this PC, so nothing was installed"
+    ),
+    "epic_install_link_not_resolved": (
+        "the Epic Games launcher gave no install identity for that game, so nothing started"
+    ),
+    "epic_install_dispatch_rejected": (
+        "the Epic Games launcher did not accept the install request, so nothing started"
+    ),
+    "epic_install_not_verified": (
+        "the install was requested in the Epic Games launcher but the download did not start in time, so nothing is confirmed"
+    ),
+    "epic_uninstall_not_supported": (
+        "games are not uninstalled from the Epic Games launcher from here, so nothing was removed"
+    ),
+    # REOPEN1993 comandos: what the console run could not do is named.
+    "shell_command_destructive": (
+        "that command would delete, kill, format or change the system, so it was not run from here"
+    ),
+    "shell_command_directory_not_found": (
+        "the folder named for the command does not exist, so the command was not run"
+    ),
+    "shell_command_timeout": (
+        "the command did not finish within 60 seconds and was stopped"
+    ),
+    "shell_command_not_started": (
+        "the console could not be started, so the command did not run"
+    ),
+    # REOPEN1993 grupo G: the package manager names its own absences.
+    "winget_package_not_resolved": (
+        "the Windows package manager (winget) offers no package by exactly that name, so nothing was installed"
+    ),
+    "winget_package_ambiguous": (
+        "the Windows package manager (winget) offers several packages by that name, so none was chosen and nothing was installed"
+    ),
+    "winget_package_not_installed": (
+        "no installed package has that name, so nothing was removed"
+    ),
+    "winget_install_not_verified": (
+        "the installer finished but the package is not in the installed list, so the installation is not confirmed"
+    ),
+    "winget_uninstall_not_verified": (
+        "the uninstaller finished but the package is still in the installed list, so the removal is not confirmed"
+    ),
+    "winget_install_not_started": (
+        "the installer could not be started, so nothing was installed"
+    ),
+    "winget_uninstall_not_started": (
+        "the uninstaller could not be started, so nothing was removed"
+    ),
+    "winget_confirmation_not_prepared": (
+        "the installation was not prepared, so nothing was installed"
+    ),
+    "winget_adapter_unavailable": (
+        "the Windows package manager (winget) is not available on this PC, so nothing was installed or removed"
+    ),
+    # REOPEN1993 grupo N: the headlines feed names its own absences.
+    "news_feed_unavailable": (
+        "the news feed did not answer, so no headlines were read"
+    ),
+    "news_feed_unreadable": (
+        "the news feed answered something that is not a feed, so no headlines were read"
+    ),
+    "news_feed_empty": (
+        "the news feed had no headlines right now, so none was read"
+    ),
+    "news_topic_without_headlines": (
+        "the news feed has no headlines about that topic right now, so none was read"
+    ),
+    # REOPEN1993 grupo W: the weather read names its own absences; nothing
+    # was searched in a browser and no forecast is invented.
+    "weather_place_not_found": (
+        "the weather service knows no place by that name, so no forecast was read"
+    ),
+    "weather_location_unavailable": (
+        "this PC's own location could not be determined, so no forecast was read for it"
+    ),
+    "weather_service_unavailable": (
+        "the weather service did not answer, so no forecast was read"
+    ),
     # NETWORK1721 «conectate al wifi de casa» with no saved network of that
     # name: the fact is the absence; nothing was done. Not «connected»: the
     # truncated-word lens read the draft's «connect» as a cut of it
     # (NETWORK1723 probe) and every English final died.
     "wifi_profile_not_found": (
         "no saved Wi-Fi network has that name, so nothing was done"
+    ),
+    # REOPEN1957 H0170/H0376 «conectate al wifi de casa»: no network is
+    # associated with that place yet; the saved networks were listed and the
+    # person has to say which one it is. Nothing was connected.
+    "wifi_place_unknown": (
+        "no saved Wi-Fi network is associated with that place yet, so nothing was connected; "
+        "the saved networks are listed and the person has to say which one it is"
     ),
     # MUSIC1753: the Spotify desktop client did not give a result to play.
     "spotify_exact_result_not_found": (
@@ -4309,8 +4463,15 @@ def _compose_situation_payload(
             visible_seen = _project_game_listing(visible_seen, language)
         elif operation == "browser.page.read":
             visible_seen = _project_page_read(visible_seen, language)
-        elif operation == "document.pdf.read":
+        elif operation in {"document.pdf.read", "document.text.read"}:
             visible_seen = _project_pdf_read(visible_seen, language)
+        elif operation == "filesystem.explorer.count":
+            # REOPEN1957 H0701: the folder's own name, where it was taken from and the figures.
+            visible_seen = {
+                key: visible_seen[key]
+                for key in ("folderName", "source", "extension", "count", "filesInFolder")
+                if key in visible_seen
+            }
         elif operation == "media.play.youtube":
             # MUSIC1553: the process id and the IPC authority are not for the
             # person; the query, the observed title and the state are.
@@ -4476,6 +4637,18 @@ def _compose_situation_payload(
         )
         if reason_facts:
             payload["reason"] = reason_facts
+        if reason_facts.get("cause") == _CAUSE_FACT["wifi_place_unknown"]:
+            # REOPEN1957 H0170/H0376: the labels of the saved networks are the
+            # facts the question needs; the opaque ids are not words.
+            profiles = _merged_observed(situation).get("profiles")
+            payload.pop("completedStepsInOrder", None)
+            labels = [
+                str(item.get("label")).strip()
+                for item in (profiles if isinstance(profiles, list) else [])
+                if isinstance(item, dict) and str(item.get("label") or "").strip()
+            ]
+            place = effect_intent.wifi_place_request(user_text or "")
+            payload["seen"] = {"savedNetworks": labels[:20], "place": place or "casa"}
     elif isinstance(reason, str) and reason.strip():
         payload["reason"] = _cause_in_prose(reason, language)
     step = situation.get("step")
@@ -5627,9 +5800,11 @@ def _project_pdf_read(observed: dict, language: str) -> dict:
         if cut >= 120:
             lead = lead[: cut + 1]
     pages = observed.get("pages") if type(observed.get("pages")) is int else None
+    lines_read = observed.get("lines") if type(observed.get("lines")) is int else None
     projected: dict = {
         "document": (observed.get("reviewLabel") if isinstance(observed.get("reviewLabel"), str) else "").strip(),
         "pages": pages,
+        **({"lines": lines_read} if pages is None and lines_read is not None else {}),
         "hasText": bool(flat),
         "headings": headings,
         "lead": lead.strip(),
@@ -5641,7 +5816,7 @@ def _project_pdf_read(observed: dict, language: str) -> dict:
 def _pdf_read_in_payload(payload: dict) -> dict | None:
     """The projected PDF («seen» with a lead) of a verified document.pdf.read."""
 
-    if payload.get("operation") != "document.pdf.read":
+    if payload.get("operation") not in {"document.pdf.read", "document.text.read"}:
         return None
     seen = payload.get("seen")
     if isinstance(seen, dict) and isinstance(seen.get("lead"), str):
@@ -5656,7 +5831,7 @@ def _pdf_read_quote_defect(text: str, seen: dict) -> str:
     lead = re.sub(r"\s+", " ", _reading_fold(str(seen.get("lead") or "")))
     headings = [re.sub(r"\s+", " ", _reading_fold(str(h))) for h in (seen.get("headings") or [])]
     name = re.sub(r"\s+", " ", _reading_fold(str(seen.get("document") or "")))
-    pages = str(seen.get("pages")) if type(seen.get("pages")) is int else ""
+    pages = str(seen.get("pages")) if type(seen.get("pages")) is int else str(seen.get("lines")) if type(seen.get("lines")) is int else ""
     if not seen.get("hasText"):
         return ""
     quoted_any = False
@@ -6203,6 +6378,181 @@ def _claims_declined_means(text: str) -> bool:
 _QUOTED_NAME = re.compile("[" + chr(171) + chr(8220) + chr(34) + "]([^" + chr(187) + chr(8221) + chr(34) + "]{1,64})[" + chr(187) + chr(8221) + chr(34) + "]")
 
 
+def _weather_number_forms(value: object) -> set[str]:
+    """The ways a person writes an observed weather number: 18.8, 18,8, 19, 18."""
+
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return set()
+    forms = {str(value), str(value).replace(".", ",")}
+    if float(value).is_integer():
+        forms.add(str(int(value)))
+    else:
+        forms.add(str(round(value)))
+        forms.add(str(int(value)))
+    return forms
+
+
+def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
+    """REOPEN1993 grupo W: every number in a weather reply is an observed one
+    (temperatures, wind, humidity, rain probability) and the place is named;
+    a question about tomorrow or rain is answered with tomorrow's probability."""
+
+    if payload.get("operation") != "weather.current":
+        return ""
+    seen = payload.get("seen")
+    if not isinstance(seen, dict) or "temperatureC" not in seen:
+        return ""
+    observed: set[str] = set()
+    for key in ("temperatureC", "apparentC", "humidityPercent", "windKmh", "precipitationMm"):
+        observed |= _weather_number_forms(seen.get(key))
+    for day in ("today", "tomorrow"):
+        block = seen.get(day)
+        if isinstance(block, dict):
+            for key in ("maxC", "minC", "rainProbabilityPercent"):
+                observed |= _weather_number_forms(block.get(key))
+    for number in re.findall(r"(?<![\w.,])-?\d+(?:[.,]\d+)?(?![\w.,])", text):
+        if number not in observed and number.lstrip("-") not in observed:
+            return "invented_number"
+    folded_text = _reading_fold(text)
+    location = seen.get("location")
+    if isinstance(location, str) and location and _reading_fold(location) not in folded_text:
+        return "missing_state"
+    asks = _reading_fold(user_text or "")
+    tomorrow = seen.get("tomorrow")
+    if (
+        re.search(r"\b(?:manana|tomorrow|llover|lluvia|llueve|rain)\b", asks)
+        and isinstance(tomorrow, dict)
+        and not any(form in text for form in _weather_number_forms(tomorrow.get("rainProbabilityPercent")))
+    ):
+        return "missing_state"
+    if not any(form in text for form in _weather_number_forms(seen.get("temperatureC"))) and not re.search(
+        r"\b(?:manana|tomorrow)\b", asks
+    ):
+        return "missing_state"
+    return ""
+
+
+def _news_fact_defect(text: str, payload: dict) -> str:
+    """REOPEN1993 grupo N: the reply quotes the observed headlines (at least
+    three when the feed gave that many) and names no portal listing instead."""
+
+    if payload.get("operation") != "web.news.headlines":
+        return ""
+    seen = payload.get("seen")
+    if not isinstance(seen, dict) or not isinstance(seen.get("headlines"), list):
+        return ""
+    titles = [
+        str(item.get("title")).strip()
+        for item in seen["headlines"]
+        if isinstance(item, dict) and isinstance(item.get("title"), str) and item.get("title").strip()
+    ]
+    if not titles:
+        return ""
+    folded_text = _reading_fold(text)
+    quoted = sum(1 for title in titles if _reading_fold(title) in folded_text)
+    if quoted < min(3, len(titles)):
+        return "missing_state"
+    return ""
+
+
+def _game_library_fact_defect(text: str, payload: dict) -> str:
+    """REOPEN1993 grupo S: the reply names the game and matches the manifest
+    state: a started download is not «installed», an already-installed game
+    was not downloaded, an uninstall says the game is gone."""
+
+    if payload.get("operation") not in {"game.install.named", "game.uninstall.named"}:
+        return ""
+    seen = payload.get("seen")
+    if not isinstance(seen, dict) or not isinstance(seen.get("state"), str):
+        return ""
+    folded_text = _reading_fold(text)
+    name = seen.get("name")
+    if isinstance(name, str) and name.strip() and _reading_fold(name) not in folded_text:
+        return "missing_state"
+    state = seen["state"]
+    if state == "downloading":
+        if re.search(r"\b(?:ya\s+(?:esta|quedo)\s+instalad|instalad[oa]\s+(?:correctamente|con exito)|installed successfully|is now installed)\w*", folded_text):
+            return "extra_claim"
+        if not re.search(r"\b(?:descarg|download|instalando|installing|empez|comenz|started|inici)\w*", folded_text):
+            return "missing_state"
+    if state == "already_installed" and re.search(r"\b(?:descarg(?:ue|ando|a\b)|download(?:ed|ing)|empez|started)\w*", folded_text) and not re.search(r"\bno\b", folded_text):
+        return "extra_claim"
+    if state in {"manifest_removed", "manifest_not_installed"} and not re.search(r"\b(?:desinstal|quit|elimin|borr|uninstall|removed|ya no)\w*", folded_text):
+        return "missing_state"
+    return ""
+
+
+def _shell_fact_defect(text: str, payload: dict) -> str:
+    """REOPEN1993 comandos: a quoted output line must be one the command
+    printed; a failed command is not reported as a success; a command with
+    output does not get reported as silent."""
+
+    if payload.get("operation") != "shell.command.run":
+        return ""
+    seen = payload.get("seen")
+    if not isinstance(seen, dict) or not isinstance(seen.get("exitCode"), int):
+        return ""
+    lines = [str(line) for line in seen.get("lines") or [] if isinstance(line, str)]
+    stderr = str(seen.get("stderr") or "")
+    folded_text = _reading_fold(text)
+    printed = _reading_fold("\n".join(lines) + "\n" + stderr)
+    for quoted in re.findall(r"[«\"“`]([^»\"”`\n]{4,200})[»\"”`]", text):
+        if _reading_fold(quoted) not in printed:
+            return "invented_number" if re.search(r"\d", quoted) else "extra_claim"
+    failed = seen["exitCode"] != 0
+    if failed and re.search(r"\b(?:salio bien|exito|exitosa|exitosamente|correctamente|sin problemas|succeeded|successfully|worked)\b", folded_text) and not re.search(r"\b(?:no|fall|error)\b", folded_text):
+        return "extra_claim"
+    if not failed and lines and not any(_reading_fold(line) in folded_text for line in lines[:5]):
+        return "missing_state"
+    if not failed and not lines and not re.search(r"\b(?:sin salida|no (?:imprimio|produjo|mostro|devolvio)|nada|no output|nothing|empty|vacia)\b", folded_text):
+        return "missing_state"
+    return ""
+
+
+def _package_fact_defect(text: str, payload: dict) -> str:
+    """REOPEN1993 grupo G: the reply names the package and does not claim a
+    finished install or removal while the process is still running."""
+
+    operation = payload.get("operation")
+    seen = payload.get("seen")
+    if operation not in {"package.install.commit", "package.uninstall"} or not isinstance(seen, dict):
+        return ""
+    name = seen.get("name")
+    folded_text = _reading_fold(text)
+    if isinstance(name, str) and name.strip() and _reading_fold(name) not in folded_text:
+        return "missing_state"
+    running = seen.get("installing") is True or seen.get("uninstalling") is True
+    if running and re.search(
+        r"\b(?:instal(?:e|ado|ada)|desinstal(?:e|ado|ada)|quit(?:e|ado|ada)|elimin(?:e|ado|ada)|removed|installed|uninstalled)\b",
+        folded_text,
+    ) and not re.search(r"\b(?:sigue|todavia|aun|still|empez|comenz|started|running|corriendo|en curso|en marcha)\b", folded_text):
+        return "extra_claim"
+    return ""
+
+
+def _wifi_place_fact_defect(text: str, payload: dict) -> str:
+    """REOPEN1957 H0170/H0376: when no network is associated with the place
+    yet, the reply asks which of the saved networks it is, naming them, and
+    never claims a connection. A verified connect by place says so."""
+
+    seen = payload.get("seen")
+    reason = payload.get("reason")
+    folded_text = _reading_fold(text)
+    if isinstance(reason, dict) and reason.get("cause") == _CAUSE_FACT["wifi_place_unknown"]:
+        if "?" not in text:
+            return "missing_state"
+        if re.search(r"(?<!\bno )(?<!\bnot )\b(?:conecte|conectado|conectada|connected|te conecte|listo)\b", folded_text):
+            return "reversed_polarity"
+        labels = seen.get("savedNetworks") if isinstance(seen, dict) else None
+        if isinstance(labels, list) and labels and not any(_reading_fold(str(label)) in folded_text for label in labels):
+            return "missing_state"
+        return ""
+    if payload.get("operation") == "wifi.connect.named" and isinstance(seen, dict) and seen.get("place") and seen.get("connected") is True:
+        if not re.search(r"\b(?:conect|connect)", folded_text):
+            return "missing_state"
+    return ""
+
+
 def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     """El texto público conserva los hechos que el payload le dio.
 
@@ -6523,6 +6873,86 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
                 return "invented_number"
         if shown_value and shown_value not in text and shown_value.replace(".", ",") not in text and shown_value.replace(",", ".") not in text:
             return "missing_state"
+    weather_defect = _weather_fact_defect(text, payload, user_text)
+    if weather_defect:
+        return weather_defect
+    news_defect = _news_fact_defect(text, payload)
+    if news_defect:
+        return news_defect
+    package_defect = _package_fact_defect(text, payload)
+    if package_defect:
+        return package_defect
+    shell_defect = _shell_fact_defect(text, payload)
+    if shell_defect:
+        return shell_defect
+    game_defect = _game_library_fact_defect(text, payload)
+    if game_defect:
+        return game_defect
+    wifi_place_defect = _wifi_place_fact_defect(text, payload)
+    if wifi_place_defect:
+        return wifi_place_defect
+    if payload.get("operation") == "filesystem.explorer.count" and isinstance(seen, dict) and type(seen.get("count")) is int:
+        # REOPEN1957 H0701: the figure and the folder's name are the facts; any
+        # other number is invented.
+        folded_count = _reading_fold(text)
+        allowed = {str(seen["count"])} | ({str(seen["filesInFolder"])} if type(seen.get("filesInFolder")) is int else set())
+        numbers = re.findall(r"(?<![\w.,])\d+(?![\w.,])", text)
+        if any(number not in allowed for number in numbers):
+            return "invented_number"
+        if str(seen["count"]) not in numbers and not (seen["count"] <= 10 and re.search(
+            r"\b(?:cero|ning[uú]n[oa]?|zero|none|no hay|uno?|una|one|dos|two|tres|three|cuatro|four|cinco|five|seis|six|siete|seven|ocho|eight|nueve|nine|diez|ten)\b", folded_count,
+        )):
+            return "missing_state"
+        folder_name = seen.get("folderName")
+        if isinstance(folder_name, str) and folder_name.strip() and _reading_fold(folder_name) not in folded_count:
+            return "missing_state"
+    if (
+        payload.get("operation") == "document.presentation.create"
+        and isinstance(seen, dict)
+        and isinstance(seen.get("slideCount"), int)
+    ):
+        # REOPEN1957 H0188: the file and the slide count are the facts.
+        if isinstance(seen.get("name"), str) and _reading_fold(seen["name"]) not in folded and _reading_fold(seen["name"]).removesuffix(".pptx") not in folded:
+            return "missing_state"
+        for number in re.findall(r"(?<![\w.,])\d+(?![\w.,])", text):
+            if number != str(seen["slideCount"]):
+                return "invented_number"
+        if str(seen["slideCount"]) not in text and not re.search(r"\b(?:seis|six|cinco|five|cuatro|four|tres|three|dos|two|siete|seven|ocho|eight|diez|ten)\b", folded):
+            return "missing_state"
+    if payload.get("operation") in {"file.compress", "file.open", "desktop.wallpaper.set", "web.download"} and isinstance(seen, dict):
+        # REOPEN1957 H0542/H0459/H0077: the reply names what the postread saw.
+        named = [str(seen.get(key)) for key in ("zipName", "name", "color") if isinstance(seen.get(key), str) and seen.get(key)]
+        if named and not any(_reading_fold(value) in folded for value in named):
+            return "missing_state"
+        observed_numbers = {str(seen.get(key)) for key in ("entryCount", "bytes") if isinstance(seen.get(key), int)}
+        for number in re.findall(r"(?<![\w.,])\d{2,}(?![\w.,])", text):
+            if number not in observed_numbers:
+                return "invented_number"
+    if (
+        payload.get("operation") in {"system.settings.set", "system.settings.status"}
+        and isinstance(seen, dict)
+        and seen.get("setting") == "airplane_mode"
+        and isinstance(seen.get("airplaneMode"), bool)
+    ):
+        # REOPEN1957 H0107: the reply states the observed airplane-mode state.
+        on = seen["airplaneMode"]
+        says_on = re.search(r"\b(?:activad|encendid|prendid|puest|on\b|activ[eo]\b)", folded) is not None and not re.search(r"\b(?:no|desactiv|apagad|off)\b", folded)
+        says_off = re.search(r"\b(?:desactivad|apagad|quitad|off\b|desactiv[eo]\b)", folded) is not None
+        if not re.search(r"modo avion|airplane mode|flight mode", folded):
+            return "missing_state"
+        if (on and says_off and not says_on) or (not on and says_on and not says_off):
+            return "extra_claim"
+    if (
+        payload.get("operation") == "system.power"
+        and isinstance(seen, dict)
+        and isinstance(seen.get("delaySeconds"), int)
+    ):
+        # REOPEN1993 grupo P: the announced delay is the fact; a past-tense
+        # «se apagó»/«se reinició» claims what has not happened yet.
+        if str(seen["delaySeconds"]) not in text:
+            return "missing_state"
+        if re.search(r"\b(?:se\s+(?:apago|reinicio)|ya\s+(?:esta|se)\s+(?:apagad|reiniciad)|was\s+(?:shut\s+down|restarted)|has\s+(?:shut\s+down|restarted))\b", _reading_fold(text)):
+            return "extra_claim"
     if (
         payload.get("operation") == "storage.removable.list"
         and isinstance(seen, dict)
@@ -14697,6 +15127,49 @@ class LlmRuntime:
         except ArgumentGroundingAbstention:
             return None
 
+    def compose_presentation_slides(self, topic: str, count: int) -> list[str]:
+        """REOPEN1957 H0188: `count` slides about `topic`, each a string whose
+        first line is the slide title and the next lines its bullets (two to
+        four), in the language of the topic; strict JSON, temperature 0."""
+
+        schema = {
+            "type": "object",
+            "properties": {
+                "slides": {
+                    "type": "array",
+                    "minItems": count,
+                    "maxItems": count,
+                    "items": {"type": "string", "minLength": 4, "maxLength": 400},
+                }
+            },
+            "required": ["slides"],
+            "additionalProperties": False,
+        }
+        payload = {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "Escribes el contenido de una presentación de diapositivas. Devuelve JSON "
+                        f"{{\"slides\": [...]}} con exactamente {count} cadenas, una por diapositiva. "
+                        "En cada cadena la primera línea es el título de la diapositiva y las "
+                        "siguientes dos a cuatro líneas son viñetas cortas (una idea por línea, sin "
+                        "guiones ni números delante), separadas por \\n. La primera diapositiva es "
+                        "la portada (título del tema y un subtítulo); la última cierra. Escribe en el "
+                        "idioma del tema. Sin datos inventados: ideas generales, sin fechas ni cifras."
+                    ),
+                },
+                {"role": "user", "content": f"Tema: {topic}. Diapositivas: {count}."},
+            ],
+            "response_format": {"type": "json_schema", "json_schema": {"name": "slides", "schema": schema}},
+            "temperature": 0.0,
+            "max_tokens": 1200,
+            "chat_template_kwargs": {"enable_thinking": False},
+        }
+        result = self._post_schema_object(payload, "presentation_slides")
+        slides = result.get("slides")
+        return slides if isinstance(slides, list) else []
+
     def narrate(self, user_text: str, operation: str, outcome: dict) -> str:
         verified = bool(
             isinstance(outcome, dict)
@@ -15478,6 +15951,206 @@ class LlmRuntime:
                 "números; no se hizo nada más."
             )
         if (
+            visible_situation.get("operation") == "document.presentation.create"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("slideCount"), int)
+        ):
+            # REOPEN1957 H0188: the deck exists with the slides the package holds.
+            instruct(
+                "\nseen.name is the presentation file written in seen.folder with seen.slideCount "
+                "slides (seen.slideTitles lists their titles). Say that you created it, naming the "
+                "file and the number of slides, in one short sentence; no other numbers."
+                if response_language == "en"
+                else "\nseen.name es el archivo de presentación escrito en seen.folder con "
+                "seen.slideCount diapositivas (seen.slideTitles lista sus títulos). Di que la "
+                "creaste, nombrando el archivo y la cantidad de diapositivas, en una oración corta; "
+                "sin otros números."
+            )
+        if visible_situation.get("operation") in {"file.compress", "file.open", "desktop.wallpaper.set", "web.download"} and isinstance(visible_situation.get("seen"), dict):
+            # REOPEN1957 H0542/H0459/H0077: each file tool leaves its own
+            # postread; the reply names the file, folder, colour or address seen.
+            instruct(
+                "\nseen is the postread of a file tool: file.compress gives zipName, entryCount and "
+                "bytes in seen.folder; file.open gives name and the windowTitle or processId that "
+                "appeared; desktop.wallpaper.set gives mode (solid_color with color, or picture with "
+                "name); web.download gives name, bytes, folder and sourceUrl. Say what was done in one "
+                "or two short sentences with those exact names; no sizes unless present; nothing else "
+                "was changed."
+                if response_language == "en"
+                else "\nseen es la postlectura de una herramienta de archivos: file.compress da zipName, "
+                "entryCount y bytes en seen.folder; file.open da name y el windowTitle o processId que "
+                "apareció; desktop.wallpaper.set da mode (solid_color con color, o picture con name); "
+                "web.download da name, bytes, folder y sourceUrl. Di qué se hizo en una o dos oraciones "
+                "cortas con esos nombres exactos; sin tamaños que no estén; no se cambió nada más."
+            )
+        if (
+            visible_situation.get("operation") in {"system.settings.set", "system.settings.status"}
+            and isinstance(visible_situation.get("seen"), dict)
+            and visible_situation["seen"].get("setting") == "airplane_mode"
+            and isinstance(visible_situation["seen"].get("airplaneMode"), bool)
+        ):
+            # REOPEN1957 H0107: airplane mode is every radio off; the reply says
+            # whether it is on now and which radios were switched.
+            instruct(
+                "\nseen.airplaneMode true means airplane mode is on (every radio — Wi-Fi, "
+                "Bluetooth — is off); false means it is off. seen.radios lists each radio "
+                "with its state. Say whether airplane mode is on or off now in one short "
+                "sentence; if seen.changed is true, say you switched it."
+                if response_language == "en"
+                else "\nseen.airplaneMode true significa que el modo avión está activado (todas "
+                "las radios —Wi-Fi, Bluetooth— apagadas); false, que está desactivado. "
+                "seen.radios lista cada radio con su estado. Di en una oración corta si el "
+                "modo avión quedó activado o desactivado; si seen.changed es true, di que lo "
+                "cambiaste."
+            )
+        if (
+            visible_situation.get("operation") in {"game.install.named", "game.uninstall.named"}
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("state"), str)
+        ):
+            # REOPEN1993 grupo S: the launcher's manifest is the fact; the reply
+            # names the game and its state (downloading, already installed,
+            # removed) and never a progress it did not see.
+            instruct(
+                "\nseen.name is the game and seen.state what its launcher's manifest says: "
+                "'downloading' (the download started), 'already_installed' (it was already "
+                "installed, nothing was downloaded), 'manifest_removed' or "
+                "'manifest_not_installed' (it was uninstalled). Say that in one short sentence "
+                "naming the game; seen.bytesDownloaded/bytesTotal may be quoted only if present."
+                if response_language == "en"
+                else "\nseen.name es el juego y seen.state lo que dice el manifiesto de su lanzador: "
+                "'downloading' (empezó la descarga), 'already_installed' (ya estaba instalado, "
+                "no se descargó nada), 'manifest_removed' o 'manifest_not_installed' (quedó "
+                "desinstalado). Dilo en una oración corta nombrando el juego; "
+                "seen.bytesDownloaded/bytesTotal sólo se citan si están."
+            )
+        if (
+            visible_situation.get("operation") == "shell.command.run"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("exitCode"), int)
+        ):
+            # REOPEN1993 comandos: the command ran; the reply says so with its
+            # exit code and quotes its output lines as they came out.
+            instruct(
+                "\nseen.command ran in a console in seen.cwd and ended with seen.exitCode "
+                "(0 means it succeeded); seen.lines are its output lines exactly as printed "
+                "(seen.lineCount in total, seen.truncated true if cut) and seen.stderr its "
+                "error text. Say that you ran the command and whether it succeeded, then "
+                "quote the first few output lines verbatim (up to five), one per line; if "
+                "there was no output, say so; if it failed, quote the error text. Never "
+                "paraphrase, summarise or invent a line."
+                if response_language == "en"
+                else "\nseen.command se ejecutó en una consola en seen.cwd y terminó con "
+                "seen.exitCode (0 significa que salió bien); seen.lines son sus líneas de "
+                "salida tal cual se imprimieron (seen.lineCount en total, seen.truncated true "
+                "si se cortó) y seen.stderr su texto de error. Di que ejecutaste el comando y "
+                "si salió bien, y cita tal cual las primeras líneas de salida (hasta cinco), "
+                "una por línea; si no hubo salida, dilo; si falló, cita el texto de error. "
+                "Nunca parafrasees, resumas ni inventes una línea."
+            )
+        if (
+            visible_situation.get("operation") == "package.uninstall"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("removed"), bool)
+        ):
+            # REOPEN1993 grupo G: a real uninstall through winget; the reply names
+            # the package and says whether it is already gone or still being removed.
+            instruct(
+                "\nseen.name is the package that was uninstalled through the Windows package "
+                "manager; seen.removed true means it is no longer in the installed list, "
+                "seen.uninstalling true means the uninstaller is still running. Say which it "
+                "is, naming the package, in one short sentence; no version numbers unless asked."
+                if response_language == "en"
+                else "\nseen.name es el paquete desinstalado por el gestor de paquetes de Windows; "
+                "seen.removed true significa que ya no está en la lista de instalados, "
+                "seen.uninstalling true que el desinstalador sigue corriendo. Di cuál de las "
+                "dos, nombrando el paquete, en una oración corta; sin versiones salvo que las pidan."
+            )
+        if (
+            visible_situation.get("operation") == "package.install.commit"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("installed"), bool)
+        ):
+            # REOPEN1993 grupo G: a real install through winget.
+            instruct(
+                "\nseen.name is the package installed through the Windows package manager; "
+                "seen.installed true means it is now in the installed list, seen.installing "
+                "true means the installer is still running. Say which it is, naming the "
+                "package, in one short sentence."
+                if response_language == "en"
+                else "\nseen.name es el paquete instalado por el gestor de paquetes de Windows; "
+                "seen.installed true significa que ya está en la lista de instalados, "
+                "seen.installing true que el instalador sigue corriendo. Di cuál de las dos, "
+                "nombrando el paquete, en una oración corta."
+            )
+        if (
+            visible_situation.get("operation") == "system.power"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("delaySeconds"), int)
+        ):
+            # REOPEN1993 grupo P (H0401, H0714): Windows accepted the transition
+            # with a delay it announces; the reply says what will happen and when.
+            delay = visible_situation["seen"]["delaySeconds"]
+            action = str(visible_situation["seen"].get("action") or "")
+            instruct(
+                f"\nWindows accepted the request: the PC will {'restart' if action == 'restart' else 'shut down'} "
+                f"in {delay} seconds (seen.delaySeconds). Say exactly that, in one short sentence, "
+                "with that number; do not say it already restarted or shut down."
+                if response_language == "en"
+                else f"\nWindows aceptó el pedido: el PC se va a {'reiniciar' if action == 'restart' else 'apagar'} "
+                f"en {delay} segundos (seen.delaySeconds). Dilo así, en una oración corta, con ese "
+                "número; no digas que ya se reinició ni que ya se apagó."
+            )
+        if (
+            visible_situation.get("operation") == "web.news.headlines"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("headlines"), list)
+        ):
+            # REOPEN1993 grupo N: the read is the headlines themselves; the
+            # reply quotes them as they are, each with its medium.
+            instruct(
+                "\nseen.headlines are today's headlines read from a public news feed "
+                "(title, source, publishedAt) and seen.count their number. Say that these "
+                "are today's headlines and quote three to five of them exactly as written, "
+                "each followed by its source in parentheses, one per line or separated by "
+                "semicolons. Do not summarise, rank or add anything of your own; no numbers "
+                "that are not in a title."
+                if response_language == "en"
+                else "\nseen.headlines son los titulares de hoy leídos de un canal público de "
+                "noticias (title, source, publishedAt) y seen.count su cantidad. Di que son "
+                "los titulares de hoy y cita de tres a cinco tal cual están escritos, cada uno "
+                "seguido de su medio entre paréntesis, uno por línea o separados por punto y "
+                "coma. No resumas, no ordenes ni agregues nada propio; sin números que no "
+                "estén en un titular."
+            )
+        if (
+            visible_situation.get("operation") == "weather.current"
+            and isinstance(visible_situation.get("seen"), dict)
+            and "temperatureC" in visible_situation["seen"]
+        ):
+            # REOPEN1993 grupo W: the read is the weather itself (a public
+            # forecast service), and the reply says it with the observed numbers.
+            instruct(
+                "\nseen is the weather read from a public forecast service for seen.location "
+                "(seen.country): temperatureC now, apparentC (feels like), condition (sky), "
+                "windKmh, humidityPercent, today.maxC/minC and today.rainProbabilityPercent, "
+                "and tomorrow.maxC/minC, tomorrow.rainProbabilityPercent, tomorrow.condition. "
+                "Say the current temperature and sky for that place, in one or two short "
+                "sentences; if the person asked about tomorrow or rain, answer with tomorrow's "
+                "rain probability and temperatures. Use only those numbers with their units "
+                "(°C, km/h, %). Nothing was opened or changed."
+                if response_language == "en"
+                else "\nseen es el clima leído de un servicio público de pronóstico para "
+                "seen.location (seen.country): temperatureC ahora, apparentC (sensación "
+                "térmica), condition (cielo), windKmh, humidityPercent, today.maxC/minC y "
+                "today.rainProbabilityPercent, y tomorrow.maxC/minC, "
+                "tomorrow.rainProbabilityPercent, tomorrow.condition. Di la temperatura actual "
+                "y el cielo de ese lugar, nombrándolo, en una o dos oraciones cortas; si la "
+                "persona preguntó por mañana o por la lluvia, contesta con la probabilidad de "
+                "lluvia y las temperaturas de mañana. Sólo esos números, con sus unidades "
+                "(°C, km/h, %). No se abrió ni se cambió nada."
+            )
+        if (
             visible_situation.get("operation") == "storage.removable.list"
             and isinstance(visible_situation.get("seen"), dict)
             and isinstance(visible_situation["seen"].get("drives"), list)
@@ -15713,7 +16386,41 @@ class LlmRuntime:
                 "nombrándolos por su nombre de proceso sin PID y con sus valores "
                 "observados; no se hizo nada más."
             )
-        if _pdf_read_in_payload(visible_situation) is not None:
+        if visible_situation.get("operation") == "document.text.read" and _pdf_read_in_payload(visible_situation) is not None:
+            # REOPEN1957 H0299: the pasted file is named, what it is about is
+            # said by its headings as read, and its opening is quoted verbatim.
+            text_seen = _pdf_read_in_payload(visible_situation) or {}
+            if not text_seen.get("hasText"):
+                instruct(
+                    "\nseen.document is the text file that was found and read; it is empty. Say so in one sentence, no question."
+                    if response_language == "en"
+                    else "\nseen.document es el archivo de texto que se encontró y se leyó; está vacío. Dilo en una oración, sin pregunta."
+                )
+            else:
+                instruct(
+                    "\nseen.document is the name of the text file that was read, seen.lines its "
+                    "line count, seen.headings its heading-like lines exactly as read and "
+                    "seen.lead the beginning of its text exactly as read. Write two or three "
+                    "plain sentences of prose, with no labels and no list: say that the file "
+                    "named in seen.document was read and how many lines it has, say what it is "
+                    "about by naming its headings (all of seen.headings, in order, inside "
+                    "quotation marks, if any) and quote, inside quotation marks, its first one "
+                    "or two sentences from seen.lead exactly as they are; if seen.moreNotShown "
+                    "is true, say the file continues. No summary in your own words, no facts or "
+                    "numbers outside seen.headings and seen.lead, no question."
+                    if response_language == "en"
+                    else "\nseen.document es el nombre del archivo de texto leído, seen.lines su "
+                    "cantidad de líneas, seen.headings sus títulos tal cual se leyeron y seen.lead "
+                    "el comienzo de su texto tal cual se leyó. Escribe dos o tres oraciones llanas "
+                    "en prosa, sin etiquetas y sin lista: di que se leyó el archivo nombrado en "
+                    "seen.document y cuántas líneas tiene, di de qué trata nombrando sus títulos "
+                    "tal cual (todos los de seen.headings, en orden, entre comillas, si los hay) y "
+                    "cita entre comillas su primera o sus dos primeras oraciones de seen.lead tal "
+                    "cual están; si seen.moreNotShown es true, di que el archivo sigue. Sin resumen "
+                    "en tus palabras, sin datos ni números fuera de seen.headings y seen.lead, sin "
+                    "pregunta."
+                )
+        elif _pdf_read_in_payload(visible_situation) is not None:
             # PDF1689 «resumime informe.pdf»: the report names the document,
             # says what it covers by its headings as read and quotes its
             # opening verbatim; nothing is summarized in the model's own words.

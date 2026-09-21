@@ -38,6 +38,19 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Result?.GetProperty("authority").GetString(),
                 Is.EqualTo(authority));
             Assert.That(platform.RequestedAction, Is.EqualTo(action));
+            // REOPEN1993 grupo P (H0401, H0714): a restart or shutdown is asked with
+            // the delay Windows announces and `shutdown /a` can still abort; the
+            // other transitions have no delay.
+            if (action is "restart" or "shutdown")
+            {
+                Assert.That(receipt.Result?.GetProperty("delaySeconds").GetUInt32(),
+                    Is.EqualTo(WindowsPowerTransitionPlatform.TransitionDelaySeconds));
+                Assert.That(WindowsPowerTransitionPlatform.TransitionDelaySeconds, Is.EqualTo(30u));
+            }
+            else
+            {
+                Assert.That(receipt.Result?.TryGetProperty("delaySeconds", out _), Is.False);
+            }
         });
     }
 
@@ -336,7 +349,8 @@ public sealed class ExternalAdaptersTests
     {
         var runner = new ThrowingProcessRunner(
             new System.ComponentModel.Win32Exception(2, "winget.exe was not found"));
-        var adapter = new WindowsInventoryAdapter(runner);
+        // REOPEN1993 grupo G: the package operations moved to WingetPackageAdapter.
+        var adapter = new WingetPackageAdapter(runner, Path.Combine(Path.GetTempPath(), "baxy-winget-tests"), _ => null);
 
         ExternalCapabilityReceipt? receipt = null;
         Assert.DoesNotThrowAsync(async () =>

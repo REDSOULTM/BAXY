@@ -37,7 +37,25 @@ public sealed class ProductCatalogTests
         "window.snap",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21;
+    // Auditoría semántica 2026-09-20 (REOPEN1993): herramientas tipadas que la
+    // encuesta pedía y el catálogo no tenía.
+    internal static readonly string[] Reopen1993CatalogAdditions =
+    [
+        "desktop.wallpaper.set",
+        "document.presentation.create",
+        "document.text.read",
+        "file.compress",
+        "filesystem.explorer.count",
+        "file.open",
+        "game.uninstall.named",
+        "package.uninstall",
+        "shell.command.run",
+        "weather.current",
+        "web.download",
+        "web.news.headlines",
+    ];
+
+    internal const int ExpectedDescriptors = 170 + 21 + 12;
 
     internal const int ExpectedTools = ExpectedDescriptors - 1;
 
@@ -90,6 +108,9 @@ public sealed class ProductCatalogTests
             Assert.That(
                 descriptors.Select(static descriptor => descriptor.Name),
                 Is.SupersetOf(C03CatalogAdditions));
+            Assert.That(
+                descriptors.Select(static descriptor => descriptor.Name),
+                Is.SupersetOf(Reopen1993CatalogAdditions));
             Assert.That(
                 descriptors.Select(static descriptor => descriptor.Name),
                 Is.EqualTo(descriptors.Select(static descriptor => descriptor.Name)
