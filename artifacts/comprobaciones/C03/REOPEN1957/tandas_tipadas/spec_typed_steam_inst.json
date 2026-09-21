@@ -1,0 +1,42 @@
+{
+ "prev": "<prev>",
+ "new": "<new: typedsteam_instNNNN>",
+ "grandparent": "<GRANDPARENT>",
+ "registry_parent": "<REGISTRY_PARENT>",
+ "template": "video1955",
+ "sources": [],
+ "plan_title": "instalar y desinstalar en Steam: las filas restantes con el título de prueba",
+ "plan_body": "D11 reabrió seis filas de «instala X en Steam» (dos dicen «Teams»: Steam mal oído, regla del dueño 2026-09-19) y dos de «Desinstala X en Steam». Panel mixto de 12: seis instalaciones ordinarias (Installation) + una variante, dos desinstalaciones revisadas + una variante, dos límites; títulos sustituidos por Plants vs. Zombies (D13); fixtures por caso dejan el título ausente antes de instalar y presente antes de desinstalar.",
+ "note": "H0295, H0345, H0387, H0396, H0643, H0721 executed on the merged opus/typed-tools build: instalación por steam:// verificada por manifiesto (ordinaria) y desinstalación por la consola de Steam con confirmación (revisada).",
+ "owner": "opus/typed-tools (catalog, Core list, Providers adapter, mind readings, composer) merged into codex/kiro-goal-c03.",
+ "build_kind": "Kernel, Core, Providers y mente",
+ "cause": "Instalar/desinstalar en Steam terminaba en una lectura de biblioteca.",
+ "change": "instalación por steam:// verificada por manifiesto (ordinaria) y desinstalación por la consola de Steam con confirmación (revisada).",
+ "sentence": "instalar y desinstalar en Steam: las filas restantes con el título de prueba",
+ "build_sentence": "herramientas tipadas de opus/typed-tools fusionadas",
+ "reviewed": true,
+ "reviewed_group": "game_uninstall",
+ "literal_substitutions": {
+  "H0295": "instala Plants vs. Zombies en steam",
+  "H0345": "instala Plants vs. Zombies en steam",
+  "H0387": "instala Plants vs. Zombies en Teams",
+  "H0396": "Instala Plants vs. Zombies en Steam. El AppID es 3590. Usa steam://install/3590 para abrir el dialogo,",
+  "H0643": "Necesito que instalaes Plants vs. Zombies en steam",
+  "H0721": "Instala Plants vs. Zombies en Teams",
+  "H0039": "Desinstala Plants vs. Zombies en Steam",
+  "H0612": "Desinstala Plants vs. Zombies en steam"
+ },
+ "case_fixture_steps": {
+  "H0345": "steam/pvz-absent",
+  "H0387": "steam/pvz-absent",
+  "H0396": "steam/pvz-absent",
+  "H0643": "steam/pvz-absent",
+  "H0721": "steam/pvz-absent",
+  "typedsteam_inst-dev-01": "steam/pvz-absent",
+  "H0612": "steam/pvz-present"
+ },
+ "preset_restore": "steam/before y steam/after de typed_fixtures.ps1; pasos por caso CASE_FIXTURE_STEPS (steam/pvz-absent antes de cada instalación salvo la primera; steam/pvz-present antes de H0612 porque H0039 ya lo quitó)",
+ "derive_extra": [
+  "exec(open(\"panel_typed_steam_inst.py\", encoding=\"utf-8\").read())"
+ ]
+}

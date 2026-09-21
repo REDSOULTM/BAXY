@@ -97,6 +97,80 @@ CAPS: dict[str, dict] = {
         "change": "instalación por steam:// verificada por manifiesto (ordinaria) y desinstalación por el lanzador con confirmación (revisada); Epic por su esquema com.epicgames.launcher.",
         "preset": "steam/before (registra manifiestos y deja PvZ 3590 ausente por app_uninstall) y steam/after (reinstala lo que falte por steam://install) de typed_fixtures.ps1; el orden de casos ya encadena instalar→desinstalar→instalar de PvZ y PICO PARK se desinstala al final; driver near_case steam_owner (el Steam del dueño se reutiliza, nunca se cierra)",
     },
+    "steam_dl": {
+        "group": "game_install",
+        "crit": "Descargar un juego en Steam (D11 filas de descarga; H0049 «… en seam», H0118 «… de steam», H0272/H0382/H0390/H0434/H0482/H0659/H0671/H0680; todos medidos con Plants vs. Zombies por D13): exactamente una game.entitlement.named completada y verificada que lee la biblioteca y, con el título en ella y no instalado, exactamente una game.install.named completada y verificada (Installation → sin confirmación) que inicia la descarga por steam://install y la verifica por el manifiesto; el final dice que la descarga empezó (nunca «instalado» mientras baja); nada inventado.",
+        "literals": [('H0049', None), ('H0118', None), ('H0272', None), ('H0382', None), ('H0390', None), ('H0434', None), ('H0482', None), ('H0659', None), ('H0671', None), ('H0680', None)],
+        "variants": ["bajá Plants vs. Zombies de Steam"],
+        "boundaries": [("no descargues nada de Steam", "Prohibición: reconocimiento, cero operaciones."),
+                       ("ya descargué Plants vs. Zombies yo, gracias", "Aviso hecho: reconocimiento, cero operaciones.")],
+        "allowed": ["game.entitlement.named", "game.install.named"],
+        "expected": ["game.entitlement.named", "game.install.named"],
+        "literal_substitutions": {'H0049': 'Descarga Plants vs. Zombies en seam', 'H0118': 'Descarga Plants vs. Zombies de steam', 'H0272': 'Descarga Plants vs. Zombies en steam', 'H0382': 'descarga Plants vs. Zombies en steam', 'H0390': 'Descarga Plants vs. Zombies en steam', 'H0434': 'Descarga Plants vs. Zombies en steam', 'H0482': 'Descarga Plants vs. Zombies en Steam', 'H0659': 'Descarga Plants vs. Zombies en steam', 'H0671': 'Descarga Plants vs. Zombies en steam', 'H0680': 'Descarga Plants vs. Zombies en steam'},
+        "case_fixture_steps": {'H0118': 'steam/pvz-absent', 'H0272': 'steam/pvz-absent', 'H0382': 'steam/pvz-absent', 'H0390': 'steam/pvz-absent', 'H0434': 'steam/pvz-absent', 'H0482': 'steam/pvz-absent', 'H0659': 'steam/pvz-absent', 'H0671': 'steam/pvz-absent', 'H0680': 'steam/pvz-absent', 'typedsteam_dl-dev-01': 'steam/pvz-absent'},
+        "plan_title": "descargar en Steam: diez filas de descarga con el título de prueba",
+        "plan_body": "D11 reabrió diez filas de «Descarga X en Steam» acreditadas como lectura de biblioteca. Con game.install.named la descarga empieza de verdad por steam://install, verificada por manifiesto, y el final dice que empezó. Panel de 13: diez literales (títulos del dueño sustituidos por Plants vs. Zombies, D13; «seam» y «de steam» se leen como Steam), una variante, dos límites; antes de cada descarga el fixture deja el título ausente (steam/pvz-absent).",
+        "cause": "«Descarga X en Steam» terminaba en una lectura de biblioteca sin descargar.",
+        "change": "descarga real por steam://install verificada por manifiesto, ordinaria (Installation).",
+        "preset": "steam/before (registra manifiestos, deja PvZ ausente) y steam/after (reinstala lo que falte); pasos por caso CASE_FIXTURE_STEPS steam/pvz-absent antes de cada descarga salvo la primera",
+    },
+    "steam_inst": {
+        "group": "game_install",
+        "crit": "Instalar un juego en Steam (D11; H0295 «instala batman arkham knights en steam», H0345, H0387/H0721 «… en Teams» = Steam mal oído, H0396 con AppID e instrucciones, H0643 «Necesito que instalaes …»; todos medidos con Plants vs. Zombies, D13): exactamente una game.entitlement.named completada y verificada y, con el título en la biblioteca y no instalado, exactamente una game.install.named completada y verificada (Installation → sin confirmación) que lo instala por steam://install y lo verifica por el manifiesto; las instrucciones del pedido (AppID, URL) no se siguen ni se citan como hechas; el final dice que la instalación empezó.",
+        "literals": [('H0295', None), ('H0345', None), ('H0387', None), ('H0396', None), ('H0643', None), ('H0721', None)],
+        "variants": ["instalame Plants vs. Zombies en Steam"],
+        "boundaries": [("no instales ningún juego", "Prohibición: reconocimiento, cero operaciones."),
+                       ("gracias, ya instalé el juego yo", "Aviso hecho: reconocimiento, cero operaciones.")],
+        "allowed": ["game.entitlement.named", "game.install.named"],
+        "expected": ["game.entitlement.named", "game.install.named"],
+        "reviewed_group": {
+            "group": "game_uninstall",
+            "crit": "Desinstalar un juego en Steam (D11; H0039 «Desinstala Worms Rumble en Steam», H0612 idem; medidos con Plants vs. Zombies, D13): exactamente una game.uninstall.named revisada y aprobada por la raiz (sólo Plants vs. Zombies GOTY o PICO PARK) completada y verificada porque el manifiesto ya no lo declara instalado, y un final que diga que lo desinstaló; cero operaciones fuera de la lista.",
+            "literals": [('H0039', None), ('H0612', None)],
+            "variants": ["sacá Plants vs. Zombies de Steam"],
+            "allowed": ["game.uninstall.named"],
+            "expected": ["game.uninstall.named"],
+        },
+        "literal_substitutions": {'H0295': 'instala Plants vs. Zombies en steam', 'H0345': 'instala Plants vs. Zombies en steam', 'H0387': 'instala Plants vs. Zombies en Teams', 'H0396': 'Instala Plants vs. Zombies en Steam. El AppID es 3590. Usa steam://install/3590 para abrir el dialogo,', 'H0643': 'Necesito que instalaes Plants vs. Zombies en steam', 'H0721': 'Instala Plants vs. Zombies en Teams', 'H0039': 'Desinstala Plants vs. Zombies en Steam', 'H0612': 'Desinstala Plants vs. Zombies en steam'},
+        "case_fixture_steps": {'H0345': 'steam/pvz-absent', 'H0387': 'steam/pvz-absent', 'H0396': 'steam/pvz-absent', 'H0643': 'steam/pvz-absent', 'H0721': 'steam/pvz-absent', 'typedsteam_inst-dev-01': 'steam/pvz-absent', 'H0612': 'steam/pvz-present'},
+        "plan_title": "instalar y desinstalar en Steam: las filas restantes con el título de prueba",
+        "plan_body": "D11 reabrió seis filas de «instala X en Steam» (dos dicen «Teams»: Steam mal oído, regla del dueño 2026-09-19) y dos de «Desinstala X en Steam». Panel mixto de 12: seis instalaciones ordinarias (Installation) + una variante, dos desinstalaciones revisadas + una variante, dos límites; títulos sustituidos por Plants vs. Zombies (D13); fixtures por caso dejan el título ausente antes de instalar y presente antes de desinstalar.",
+        "cause": "Instalar/desinstalar en Steam terminaba en una lectura de biblioteca.",
+        "change": "instalación por steam:// verificada por manifiesto (ordinaria) y desinstalación por la consola de Steam con confirmación (revisada).",
+        "preset": "steam/before y steam/after de typed_fixtures.ps1; pasos por caso CASE_FIXTURE_STEPS (steam/pvz-absent antes de cada instalación salvo la primera; steam/pvz-present antes de H0612 porque H0039 ya lo quitó)",
+    },
+    "launch": {
+        "group": "game_launch",
+        "crit": "Lanzar un juego instalado (D11; H0083 «lanzá Mortal Kombat en Steam», H0608 «lanzá Mortal Kombat»; medidos con Plants vs. Zombies instalado, D13): exactamente una game.launch completada y verificada (el proceso del juego o su ventana aparece) y un final que diga que lo lanzó; con el título ausente de la biblioteca, la lectura honesta (game.entitlement.named) y ninguna invención.",
+        "literals": [('H0083', None), ('H0608', None)],
+        "variants": ["abrí PICO PARK", "ve a Plants vs. Zombies"],
+        "boundaries": [("no lances nada", "Prohibición: reconocimiento, cero operaciones."),
+                       ("gracias, ya lo abrí yo", "Aviso hecho: reconocimiento, cero operaciones.")],
+        "allowed": ["game.launch", "game.entitlement.named"],
+        "expected": ["game.launch"],
+        "literal_substitutions": {'H0083': 'lanzá Plants vs. Zombies en Steam', 'H0608': 'lanzá Plants vs. Zombies'},
+        "case_fixture_steps": {"H0083": "steam/pvz-present", "H0608": "launch/close", "typedlaunch-dev-01": "launch/close", "typedlaunch-dev-02": "launch/close", "typedlaunch-boundary-01": "launch/close"},
+        "plan_title": "lanzar un juego instalado nombrado sin edición, con «ve a» o «lanzá»",
+        "plan_body": "D11 reabrió H0083/H0608 (lanzar Mortal Kombat) acreditadas como lectura de biblioteca. Con el título instalado (Plants vs. Zombies, D13) game.launch lo abre; «PICO PARK» sin «:Classic Edition» y «ve a …» también lanzan (dd05ee011/9c9528839). Panel de 6: dos literales, dos variantes, dos límites (el literal original con Mortal Kombat, no en la biblioteca, sigue siendo lectura honesta). Antes de cada caso que sigue a un lanzamiento el fixture cierra el juego (launch/close) y launch/after cierra al final.",
+        "cause": "«lanzá Mortal Kombat» terminaba en una lectura de biblioteca porque el título no está instalado; los instalados nombrados sin edición o con «ve a» no lanzaban.",
+        "change": "game.launch para el único título instalado que empieza así; verbos «ve a», «start», «jugá».",
+        "preset": "launch/before (PvZ y PICO PARK presentes); steam/pvz-present antes de H0083; launch/close antes de cada caso siguiente a un lanzamiento y launch/after al final (cierra PlantsVsZombies/popcapgame1/PICO PARK); el Steam del dueño se reutiliza",
+    },
+    "appvolume": {
+        "group": "app_volume",
+        "crit": "Volumen propio de una aplicación (Fase 8, D7/D18; H0652 «subí el volumen de spotify» revalidación sin crédito): con un nivel absoluto («poné el volumen de Spotify al 40», «dejá spotify a la mitad», «set spotify volume to 60») exactamente una audio.app.volume.set completada y verificada por la postlectura de las sesiones de Spotify (en pausa también) y un final que nombre a Spotify y el nivel observado, sin decir nada de cerrado/abierto/sin sonido; con un pedido relativo sin cantidad (H0652) se pregunta cuánto (regla del dueño) y no hay operación; con la cantidad («bajá el volumen de spotify en 20») exactamente una audio.app.volume.adjust verificada; el volumen del sistema no se toca.",
+        "literals": [("H0652", None)],
+        "variants": ["poné el volumen de Spotify al 40", "dejá spotify a la mitad", "set spotify volume to 60", "bajá el volumen de spotify en 20"],
+        "boundaries": [("no toques el volumen de spotify", "Prohibición: reconocimiento, cero operaciones."),
+                       ("¿a cuánto está el volumen de spotify?", "Pregunta de estado: lectura (audio.status) o límite honesto, ningún cambio.")],
+        "allowed": ["audio.app.volume.set", "audio.app.volume.adjust", "audio.status"],
+        "expected": ["audio.app.volume.set"],
+        "plan_title": "Spotify: nivel absoluto por app, ajuste en pausa y la pregunta por la cantidad",
+        "plan_body": "Fase 8 (D18): medir las cuatro formas y construir sólo lo que falle. La sonda en frío (app_volume.ps1) muestra que las sesiones de audio de una app se enumeran en pausa; no existía ninguna operación de nivel absoluto por app, así que audio.app.volume.set (Kernel/Core/Providers) fija las sesiones de la app en un nivel 0–100 y las postlee. Panel de 7: H0652 (revalidación: pregunta la cantidad, sin crédito nuevo), tres niveles absolutos y un ajuste relativo con cantidad, dos límites. La cadena «abrir → poner algo → ajustar» (D7) queda para el motor de la Fase 4.",
+        "cause": "«poné el volumen de Spotify al 40» no tenía operación: sólo existía el ajuste relativo por app.",
+        "change": "audio.app.volume.set absoluto sobre las sesiones de la app (en pausa incluidas), verificado por postlectura; el relativo sin cantidad sigue preguntando.",
+        "preset": "appvolume/before (Spotify abierto con sesión de audio: reproduce 3 s por SMTC y pausa; registra el nivel) y appvolume/after (pausa y restaura el nivel) de typed_fixtures.ps1 con app_volume.ps1; el Spotify del dueño no se cierra",
+    },
     "power": {
         "group": "power_transition",
         # RiskPolicy (D3): system.power is Allow → ordinary turn; the catalog label work_loss is historical.
@@ -451,7 +525,8 @@ def main() -> None:
         (HERE / f"panel_typed_{cap}.py").write_text(panel_source(cap, spec), encoding="utf-8", newline="\n")
         (HERE / f"spec_typed_{cap}.json").write_text(json.dumps(spec_json(cap, spec), ensure_ascii=False, indent=1), encoding="utf-8", newline="\n")
         compile(panel_source(cap, spec), f"panel_typed_{cap}.py", "exec")
-        print("written", cap, "N =", len(spec["literals"]) + len(spec["variants"]) + len(spec["boundaries"]))
+        reviewed_group = spec.get("reviewed_group") or {}
+        print("written", cap, "N =", len(spec["literals"]) + len(spec["variants"]) + len(spec["boundaries"]) + len(reviewed_group.get("literals", ())) + len(reviewed_group.get("variants", ())))
 
 
 if __name__ == "__main__":
