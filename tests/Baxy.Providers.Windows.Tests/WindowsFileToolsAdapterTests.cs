@@ -152,11 +152,11 @@ public sealed class WindowsFileToolsAdapterTests
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "web.download",
-            JsonSerializer.SerializeToElement(new { query = "meme de gatos", folder = "pictures", name = "meme" }),
+            JsonSerializer.SerializeToElement(new { query = "meme de gatos", folder = "desktop", name = "meme" }),
             CancellationToken.None);
         ExternalCapabilityReceipt none = await adapter.InvokeAsync(
             "web.download",
-            JsonSerializer.SerializeToElement(new { folder = "pictures" }),
+            JsonSerializer.SerializeToElement(new { folder = "desktop" }),
             CancellationToken.None);
 
         Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
