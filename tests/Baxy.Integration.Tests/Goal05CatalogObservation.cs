@@ -94,7 +94,7 @@ internal static class Goal05CatalogObservation
             // Operaciones de C03 (2026-09-12 … 2026-09-20): cada una se verifica en su tanda sellada con su
             // postlectura; esta matriz no las recorre porque tocan apps, radios o carpetas del usuario, o
             // exigen un cliente con sesión (plan post-goal 2026-09-20, Fase 1 grupo B).
-            "audio.app.volume.adjust" => Unverifiable(
+            "audio.app.volume.adjust" or "audio.app.volume.set" => Unverifiable(
                 descriptor,
                 "Postlectura de la sesión de audio de la app (autoridad windows_core_audio_session_postread, AUDIO1801); la matriz no muta el volumen de una app del usuario ni tiene una app con sesión de audio garantizada."),
             "bluetooth.radio.status" or "wifi.radio.status" => Unverifiable(

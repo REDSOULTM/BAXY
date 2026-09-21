@@ -33,8 +33,8 @@ public sealed class MvpExternalCatalogMatrixTests
         "wifi.scan",
     ];
 
-    // + las trece herramientas tipadas de la auditoría semántica REOPEN1957/1993.
-    private const int ExpectedExternalHandlers = 85 + 17 + 13;
+    // + las trece herramientas tipadas de la auditoría semántica REOPEN1957/1993 y audio.app.volume.set (Fase 8).
+    private const int ExpectedExternalHandlers = 85 + 17 + 14;
     private static readonly JsonSerializerOptions EvidenceJsonOptions = new()
     {
         WriteIndented = true,

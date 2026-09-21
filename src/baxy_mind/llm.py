@@ -698,6 +698,10 @@ _NATIVE_SELECTION_DESCRIPTION_SUFFIXES = {
         "Increase or decrease one application's own volume (its audio "
         "sessions) by a relative amount; never the system volume."
     ),
+    "audio.app.volume.set": (
+        "Set one application's own volume (its audio sessions) to an absolute "
+        "level from 0 to 100, even while it is paused; never the system volume."
+    ),
     "filesystem.sandbox.append.named": (
         "Append only to an existing file; never create or replace a file."
     ),
@@ -3724,6 +3728,12 @@ _CAUSE_FACT = {
     "app_audio_session_not_found": (
         "the application has no audio session on the default output right now (it is not playing sound), so its volume could not be changed"
     ),
+    "volume_level_invalid": (
+        "the requested level is not a whole number from 0 to 100, so the application's volume was not changed"
+    ),
+    "volume_postread_mismatch": (
+        "the application's volume was set but the post-read did not show the requested level, so the change is not verified"
+    ),
     "spotify_play_clicked_not_verified": (
         "the Spotify play control was pressed but the client did not start playing in time, so nothing verified is playing"
     ),
@@ -4573,7 +4583,7 @@ def _compose_situation_payload(
                     if isinstance(monitor, dict) else monitor
                     for monitor in visible_seen["monitors"]
                 ]
-        if operation == "audio.app.volume.adjust":
+        if operation in {"audio.app.volume.adjust", "audio.app.volume.set"}:
             # AUDIO1795: the application's volume fact is the app, the direction,
             # the amount and the levels; the sessions' mute flag, process name and
             # session count invited claims about silence and open/closed state.
@@ -7696,7 +7706,7 @@ def _claims_the_target_was_open_before(folded: str) -> bool:
 # the composer re-reads the person's text with this closed set only.
 _DEFERRED_COMPOSE_OPERATIONS = (
     "system.time", "window.resolve", "audio.volume.adjust", "audio.volume",
-    "audio.app.volume.adjust",
+    "audio.app.volume.adjust", "audio.app.volume.set",
 )
 _DEFERRED_QUESTION_WORDS = {
     "volume_amount": re.compile(
@@ -9002,7 +9012,7 @@ def compose_visible_defect(
         return "wrong_gender"
     # AUDIO1793: the application of a volume adjustment is the audio target,
     # not an opened application whose open/closed state the final must state.
-    app_name = None if operation == "audio.app.volume.adjust" else observed_dict.get("app")
+    app_name = None if operation in {"audio.app.volume.adjust", "audio.app.volume.set"} else observed_dict.get("app")
     # NEAR1997 H0227 «abre Steel.»: the app.open receipt names what opened as
     # `appId`; a final that says «La app ya estaba abierta» leaves the person
     # who said «Steel» without knowing what BAXY understood. The observed id is
@@ -9337,7 +9347,7 @@ def compose_visible_defect(
                 if not names_observed_state:
                     return "missing_state"
         if (
-            operation == "audio.app.volume.adjust"
+            operation in {"audio.app.volume.adjust", "audio.app.volume.set"}
             and situation.get("verified") is True
             and situation.get("succeeded") is True
         ):
@@ -17482,6 +17492,19 @@ class LlmRuntime:
                               + " y que ahora está en " + str(_merged_observed(situation).get("level")) + "; nada sobre que esté cerrado o sin sonido.")
                     )
                     if situation.get("operation") == "audio.app.volume.adjust"
+                    and situation.get("verified") is True
+                    and isinstance(_merged_observed(situation), dict)
+                    else
+                    # Fase 8 (D18): the absolute application level final names the
+                    # app and the level the sessions now have.
+                    (
+                        ("Say that you set " + str(_merged_observed(situation).get("app")) + "'s own volume to "
+                         + str(_merged_observed(situation).get("level")) + "; nothing about it being closed or silent.")
+                        if response_language == "en"
+                        else ("Di que dejaste el volumen propio de " + str(_merged_observed(situation).get("app"))
+                              + " en " + str(_merged_observed(situation).get("level")) + "; nada sobre que esté cerrado o sin sonido.")
+                    )
+                    if situation.get("operation") == "audio.app.volume.set"
                     and situation.get("verified") is True
                     and isinstance(_merged_observed(situation), dict)
                     else

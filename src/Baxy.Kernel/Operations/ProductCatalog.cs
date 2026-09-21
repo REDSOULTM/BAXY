@@ -60,6 +60,18 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Sube o baja el volumen propio de una aplicación (sus sesiones de audio en la salida predeterminada, el control por aplicación del mezclador) una cantidad acotada desde su nivel observado y verifica la postlectura; no toca el volumen del sistema."),
         Descriptor(
+            "audio.app.volume.set",
+            Schema(
+                [
+                    String("app", maximumUtf8Bytes: 256, nonWhitespace: true),
+                    Integer("level", 0, 100),
+                ],
+                ["app", "level"]),
+            OperationRisks.LowReversible,
+            "audio.app.volume.set.session.postread.v1",
+            ToolExposure.Public,
+            "Fija el volumen propio de una aplicación (sus sesiones de audio en la salida predeterminada, el control por aplicación del mezclador) en un nivel absoluto de 0 a 100, aunque esté en pausa, y verifica la postlectura; no toca el volumen del sistema."),
+        Descriptor(
             "audio.microphone.mute",
             Schema([Boolean("state")], ["state"]),
             OperationRisks.LowReversible,

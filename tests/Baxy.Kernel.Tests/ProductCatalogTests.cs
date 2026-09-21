@@ -15,6 +15,7 @@ public sealed class ProductCatalogTests
     internal static readonly string[] C03CatalogAdditions =
     [
         "audio.app.volume.adjust",
+        "audio.app.volume.set",
         "bluetooth.radio.status",
         "calculator.expression.evaluate",
         "client.channel.locate",
@@ -56,7 +57,7 @@ public sealed class ProductCatalogTests
         "web.news.headlines",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 13;
+    internal const int ExpectedDescriptors = 170 + 21 + 14;
 
     internal const int ExpectedTools = ExpectedDescriptors - 1;
 

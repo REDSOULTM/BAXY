@@ -3054,6 +3054,8 @@ def _curated_domain_is_grounded(
         return explorer_count_request(text) is not None
     if operation == "audio.app.volume.adjust":
         return app_volume_request(folded, application_names) is not None
+    if operation == "audio.app.volume.set":
+        return app_volume_set_request(folded, application_names) is not None
     if operation == "window.snap":
         return _authenticated_application_snap_target(folded, application_names) is not None
     if operation in {
@@ -3721,7 +3723,7 @@ def known_unsupported_effect_request(
             # volume.
             _has(folded, r"\b(?:volumen|volume)\s+(?:de|del|of)\s+(?:(?:la|el|the)\s+)?(?:app\s+)?(?:spotify|chrome|discord|youtube|steam|zoom|teams|vlc|firefox|opera|edge|whatsapp)\b"
                          r"|\b(?:spotify|chrome|discord|youtube|steam|zoom|teams|vlc|firefox|opera|edge|whatsapp)(?:\'s)?\s+volume\b"),
-            {"audio.app.volume.adjust"},
+            {"audio.app.volume.adjust", "audio.app.volume.set"},
         ),
         (
             # AGENDA1669 H0666 «resumime informe.pdf»: the text reader opens text
@@ -8700,6 +8702,72 @@ def _completed_missing_app_volume_request(
     previous_folded = _strip_request_envelope(_fold(previous_user_text))
     joiner = " by " if (_APP_VOLUME_ENGLISH.match(previous_folded) or _APP_VOLUME_ENGLISH_SPLIT.match(previous_folded)) else " en "
     return previous_user_text.strip().rstrip(" .!?") + joiner + found.group("amount")
+
+_APP_VOLUME_SET_LEVEL = (
+    r"(?P<level>100|[0-9]{1,2})\s*(?:%|por\s+ciento|percent|puntos?|points?)?"
+    r"|(?P<word>maximo|max|tope|full|minimo|min|cero|zero|mitad|half)"
+)
+_APP_VOLUME_SET_SPANISH = re.compile(
+    rf"^[¿?¡!\s]*(?:(?:necesito|quiero|queria|quisiera|podes|podrias|podria|me\s+(?:podes|podrias|podria))\s+(?:que\s+)?)?"
+    rf"(?:{_SET_VOLUME_VERB})\s+(?:me\s+)?"
+    r"(?:(?:el\s+|la\s+)?(?:volumen|sonido|audio)\s+(?:de|del|en)\s+)?(?:la\s+|el\s+)?(?:app\s+|aplicacion\s+)?"
+    r"(?P<app>[a-z0-9][a-z0-9 .+_-]{0,60}?)"
+    r"(?:\s+(?:el\s+|la\s+)?(?:volumen|sonido|audio))?"
+    rf"\s+(?:a|al|en)\s+(?:la\s+|el\s+)?(?:{_APP_VOLUME_SET_LEVEL})(?:\s*,?\s*(?:please|por\s+favor|porfa))?[\s.!?]*$",
+)
+_APP_VOLUME_SET_ENGLISH = re.compile(
+    r"^[¿?¡!\s]*(?:(?:please|can\s+you|could\s+you|i\s+need\s+you\s+to|i\s+want\s+you\s+to)\s+)?"
+    r"(?:set|put|leave|change|adjust|fix)\s+(?:the\s+)?"
+    r"(?:(?:volume|audio|sound)\s+(?:of|on|in)\s+(?:the\s+)?)?(?:app\s+)?"
+    r"(?P<app>[a-z0-9][a-z0-9 .+_-]{0,60}?)(?:'s)?"
+    r"(?:\s+(?:volume|audio|sound)(?:\s+level)?)?"
+    rf"\s+(?:to|at)\s+(?:{_APP_VOLUME_SET_LEVEL})(?:\s*,?\s*please)?[\s.!?]*$",
+)
+_APP_VOLUME_LEVEL_WORDS = {"maximo": 100, "max": 100, "tope": 100, "full": 100, "minimo": 0, "min": 0, "cero": 0, "zero": 0, "mitad": 50, "half": 50}
+
+
+def app_volume_set_request(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> tuple[str, int] | None:
+    """Fase 8 (D18) «poné el volumen de Spotify al 40», «set Spotify volume to
+    40», «dejá spotify al máximo»: (catalog display name, absolute level 0–100)
+    when a setting verb gives one authenticated application's volume one
+    absolute target; the relative readers keep «subí/bajá … en 20» and the
+    system readers keep every request that names no application."""
+
+    if (
+        not effect_request_is_authoritative(text)
+        or _other_device_effect_scope(_fold(text))
+        or _is_negative_effect_clause(_fold(text))
+    ):
+        return None
+    folded = _strip_request_envelope(_fold(text))
+    if _has(folded, r"\b(?:o|or)\b") or len(_request_clauses(folded)) != 1:
+        return None
+    match = _APP_VOLUME_SET_SPANISH.match(folded) or _APP_VOLUME_SET_ENGLISH.match(folded)
+    if match is None:
+        return None
+    raw_app = match.group("app").strip(" ,;:")
+    if _has(raw_app, r"\b(?:sistema|equipo|pc|computador(?:a)?|ordenador|system|computer|windows|todo|everything|musica|music|volumen|volume|sonido|sound|audio|brillo|brightness|pantalla|screen)\b"):
+        return None
+    catalog = build_application_catalog_index(application_names)
+    keys = {_authenticated_close_key(form, catalog) for form, _ in _application_target_forms(raw_app)}
+    keys.discard(None)
+    if len(keys) != 1:
+        return None
+    key = next(iter(keys))
+    names = {name for name, entry_key in catalog.entries if entry_key == key}
+    if len(names) != 1:
+        return None
+    if match.group("level") is not None:
+        level = int(match.group("level"))
+    else:
+        level = _APP_VOLUME_LEVEL_WORDS[match.group("word")]
+    if not 0 <= level <= 100:
+        return None
+    return (next(iter(names)), level)
+
 
 # Señales de que se pregunta por el nivel actual de audio, no por cambiarlo.
 _AUDIO_LEVEL_CUE = (
@@ -17517,6 +17585,10 @@ _STEAM_LIBRARY_VERB = (
     r"(?:descarga|descargar|descargame|descargate|baja|bajar|bajame|bajate|"
     r"instala|instalar|instalame|instalate|instalaes|install|download|"
     r"desinstala|desinstalar|desinstalame|desinstalate|uninstall|remove|"
+    # «sacá X de Steam», «quitá X de Steam», «borrá X de Steam»: the same
+    # removal named with the everyday verbs (the store after the title keeps a
+    # screenshot or a photo out: see steam_library_title).
+    r"saca|sacar|sacame|quita|quitar|quitame|elimina|eliminar|eliminame|borra|borrar|borrame|"
     # INSTALL1625 H0083 «lanzá Mortal Kombat en Steam»: launching a game the
     # library does not hold is answered by the same read.
     r"lanza|lanzar|lanzame|launch|run|juega|jugar|play|start|abre|abrir|abrime|open)"
@@ -17777,7 +17849,7 @@ def steam_library_verb(text: str) -> str | None:
     if head is None:
         return None
     verb = head.group(0)
-    if verb.startswith(("desinstal", "uninstall", "remove")):
+    if verb.startswith(("desinstal", "uninstall", "remove", "saca", "quita", "elimina", "borra")):
         return "uninstall"
     if verb.startswith(("descarg", "baja", "instal", "install", "download")):
         return "install"
@@ -17790,8 +17862,10 @@ def game_library_store(text: str) -> str:
     folded = _strip_request_envelope(_fold(text)).strip()
     match = _STEAM_LIBRARY_REQUEST.fullmatch(folded.rstrip(".!?").strip())
     if match is None:
-        head, separator, _rest = folded.partition(". ")
-        match = _STEAM_LIBRARY_REQUEST.fullmatch(head.rstrip(".!?").strip()) if separator else None
+        for boundary in re.finditer(r"\. ", folded):
+            match = _STEAM_LIBRARY_REQUEST.fullmatch(folded[: boundary.start()].rstrip(".!?").strip())
+            if match is not None:
+                break
     store = (match.group("store") if match is not None else "") or ""
     return "epic" if store.startswith(("epic", "egs")) else "steam"
 
@@ -17849,6 +17923,11 @@ def steam_library_title(text: str) -> str | None:
             return None
     title = match.group("title").strip(" .")
     if not title or _has(title, r"^(?:el|la|the|un|una|a|an|juego|game|algo|something)$"):
+        return None
+    if _has(folded, r"^[¿?¡!\s]*(?:(?:necesito|quiero|quisiera|podes|podrias|puedes|podria|please)\s+(?:que\s+)?)?(?:me\s+)?(?:saca|sacar|sacame|quita|quitar|quitame|elimina|eliminar|eliminame|borra|borrar|borrame)\b") and _has(
+        title, r"^(?:un|una|unos|unas|los|las|mi|mis|tu|tus|captura|foto|screenshot|pantallazo|imagen|dinero|plata|fondos|saldo)\b"
+    ):
+        # «sacá una captura de Steam», «sacá la plata de Steam»: not a game.
         return None
     raw = str(text)
     folded_raw = _fold(raw)
@@ -20400,6 +20479,10 @@ def resolve_explicit_effects(
         )
     ):
         return EffectIntent(("system.power",), (folded,))
+    if "audio.app.volume.set" in available and app_volume_set_request(text, authenticated_applications) is not None:
+        # Fase 8 (D18) «poné el volumen de spotify al 40»: one application's
+        # volume at an absolute level, paused or not, verified by post-read.
+        return EffectIntent(("audio.app.volume.set",), (folded,))
     if "audio.app.volume.adjust" in available:
         app_volume = app_volume_request(text, authenticated_applications)
         if app_volume is not None and app_volume[2] is not None:

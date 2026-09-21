@@ -63,3 +63,21 @@ def test_a_title_with_its_own_dot_followed_by_install_instructions_is_installed(
     assert effect_intent.steam_library_title(text) == "Plants vs. Zombies"
     intent = effect_intent.resolve_explicit_effects(text, AVAILABLE | {"game.install.named"}, APPS, GAMES)
     assert intent is not None and intent.operations == ("game.install.named",)
+
+
+@pytest.mark.parametrize("text", ["sacá Plants vs. Zombies de Steam", "quitá Worms Rumble de Steam", "borrá PICO PARK de steam"])
+def test_everyday_removal_verbs_with_the_store_after_the_title_uninstall(text: str) -> None:
+    assert effect_intent.steam_library_verb(text) == "uninstall"
+    intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, APPS, GAMES)
+    assert intent is not None and intent.operations == ("game.uninstall.named",)
+
+
+@pytest.mark.parametrize("text", ["sacá una captura de Steam", "sacá la plata de Steam", "sacame una foto de steam"])
+def test_a_capture_or_money_taken_from_steam_is_not_a_game_removal(text: str) -> None:
+    assert effect_intent.steam_library_title(text) is None
+
+
+def test_the_store_is_read_past_a_title_with_its_own_dot() -> None:
+    text = "Instala Plants vs. Zombies en Steam. El AppID es 3590. Usa steam://install/3590 para abrir el dialogo,"
+    assert effect_intent.game_library_store(text) == "steam"
+    assert effect_intent.game_library_store("Descarga Plants vs. Zombies en epic games. El AppID es 3590.") == "epic"
