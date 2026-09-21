@@ -1730,3 +1730,7 @@ Interacción dentro de aplicaciones pasa de 12/22 a 12/22 con escribir en la app
 ## Actualización 2026-09-21 (THEN2007)
 
 Interacción dentro de aplicaciones pasa de 12/22 a 13/22 con escribir en la app recien abierta sin preguntar (commit 6ff50ec8, BUILD2007) (HEAD 6ff50ec8): 8 ejecutados, 6 aprobados (H0097 con dos variantes en español y los tres límites), 2 fallidos (las variantes en inglés: «I opened Notepad.» vetado por el nombre español de la app), 1 créditos. Arista del chequeo de nombre: el displayName es español y la respuesta inglesa nombra Notepad; se añade el alias bilingüe. La limpieza de la raíz restaura los bytes de TabState del Bloc de notas.
+
+## Actualización 2026-09-21 (SEARCH2005)
+
+Navegación y búsqueda web pasa de 42/46 a 42/46 con buscar recetas de pizza y Transformers con resultados pertinentes (commit e9d71375, BUILD2005) (HEAD e9d71375): 8 ejecutados, 5 aprobados (los dos literales, «search Transformers» y los dos límites), 3 fallidos (informe en inglés sin sitios; «buscame» no reconocido; «porfa» dentro de la consulta), 0 créditos. Tres defectos de la mente: la regla de fuente aceptaba títulos sin sitio, la gramática de búsqueda no tiene el clítico «buscame» y la cortesía final no se recorta de la consulta. Reparados en el commit siguiente; se vuelve a medir.

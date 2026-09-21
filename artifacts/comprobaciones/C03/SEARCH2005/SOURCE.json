@@ -1,0 +1,15 @@
+{
+  "schema": "c03-search2005-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "no source change (re-measurement of web.search after the engine repair 53e1ff92); the tanda build is the build of HEAD.",
+  "patch": "artifacts/comprobaciones/C03/SEARCH2005/SOURCE.patch",
+  "commits": [
+    "e9d71375ef37ef1dd792286c180d93674714c633"
+  ],
+  "build": "BUILD2005 (C03-repairs2005-build/BUILD_READY.json; sin cambio de codigo)",
+  "cause_measured": "Dos búsquedas se acreditaron como fallo honesto por resultados no pertinentes cuando la encuesta pide resultados sobre lo pedido.",
+  "change": "Ninguno en el código: se vuelve a medir la búsqueda sobre BUILD2005.",
+  "measurement": "SEARCH2005: 8 ejecutados, 5 aprobados (los dos literales, «search Transformers» y los dos límites), 3 fallidos (informe en inglés sin sitios; «buscame» no reconocido; «porfa» dentro de la consulta); 0 créditos. Tres defectos de la mente: la regla de fuente aceptaba títulos sin sitio, la gramática de búsqueda no tiene el clítico «buscame» y la cortesía final no se recorta de la consulta. Reparados en el commit siguiente; se vuelve a medir.",
+  "credits": 0
+}
