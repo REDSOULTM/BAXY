@@ -60,3 +60,10 @@ def test_opening_a_closed_app_in_the_past_tense_is_its_state() -> None:
     facts = {"situation": {**SITUATION, "observed": observed}}
     assert compose_visible_defect("Abrí el Bloc de notas.", "operation", "abrí el bloc de notas", facts) == ""
     assert compose_visible_defect("El Bloc de notas.", "operation", "abrí el bloc de notas", facts) == "missing_state"
+
+
+def test_the_english_name_of_a_spanish_store_app_counts() -> None:
+    # THEN2007 «open notepad»: «I opened Notepad.» names «Bloc de notas».
+    observed = {"appId": "windows.notepad", "displayName": "Bloc de notas", "alreadyRunning": False}
+    facts = {"situation": {**SITUATION, "observed": observed}}
+    assert compose_visible_defect("I opened Notepad.", "operation", "open notepad", facts) == ""

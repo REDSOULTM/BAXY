@@ -8989,7 +8989,13 @@ def compose_visible_defect(
     if polarity == "success" and cause != "acting" and kind in {"operation", "status"}:
         aliases = {
             "calculadora": ("calculator", "calculadora"),
+            "calculator": ("calculator", "calculadora"),
             "notepad": ("notepad", "bloc"),
+            # THEN2007 «open notepad»: the Store app is «Bloc de notas» in this
+            # Windows and «Notepad» in an English reply; both name it.
+            "bloc de notas": ("notepad", "bloc"),
+            "explorador de archivos": ("explorer", "explorador"),
+            "file explorer": ("explorer", "explorador"),
             "terminal": ("terminal",),
         }
         if isinstance(app_name, str) and app_name.strip():
