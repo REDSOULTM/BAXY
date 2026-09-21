@@ -17,12 +17,97 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     private readonly SemaphoreSlim _interaction = new(1, 1);
 
     internal DesktopMessagingAdapter()
-        : this(new WindowsDesktopMessagingAutomation())
+        : this(new WindowsDesktopMessagingAutomation(), null)
     {
     }
 
-    internal DesktopMessagingAdapter(IDesktopMessagingAutomation automation) =>
+    internal DesktopMessagingAdapter(IDesktopMessagingAutomation automation)
+        : this(automation, null)
+    {
+    }
+
+    internal DesktopMessagingAdapter(IDesktopMessagingAutomation automation, string? recipientChannelsPath)
+    {
         _automation = automation ?? throw new ArgumentNullException(nameof(automation));
+        _recipientChannelsPath = recipientChannelsPath ?? DefaultRecipientChannelsPath();
+    }
+
+    // REOPEN1993 grupo E (H0024 «escribile a Lucas»; nota del dueño: aprender en
+    // qué cliente está cada persona): the channel a recipient was found in, by
+    // name, in the product's private data; read first on the next «any» resolve.
+    private readonly string _recipientChannelsPath;
+
+    private static string DefaultRecipientChannelsPath()
+    {
+        string root = Environment.GetEnvironmentVariable("BAXY_DATA_DIR") is { Length: > 0 } configured
+            ? configured
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BAXY", "development");
+        return Path.Combine(root, "messaging", "recipient-channels.v1.json");
+    }
+
+    private string? ReadRecipientChannel(string recipient)
+    {
+        try
+        {
+            if (!File.Exists(_recipientChannelsPath))
+            {
+                return null;
+            }
+
+            using JsonDocument document = JsonDocument.Parse(File.ReadAllBytes(_recipientChannelsPath));
+            return document.RootElement.ValueKind == JsonValueKind.Object
+                && document.RootElement.TryGetProperty(Fold(recipient), out JsonElement value)
+                && value.ValueKind == JsonValueKind.String
+                ? value.GetString()
+                : null;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+        {
+            return null;
+        }
+    }
+
+    private void WriteRecipientChannel(string recipient, string channel)
+    {
+        var channels = new SortedDictionary<string, string>(StringComparer.Ordinal);
+        try
+        {
+            if (File.Exists(_recipientChannelsPath))
+            {
+                using JsonDocument document = JsonDocument.Parse(File.ReadAllBytes(_recipientChannelsPath));
+                if (document.RootElement.ValueKind == JsonValueKind.Object)
+                {
+                    foreach (JsonProperty property in document.RootElement.EnumerateObject())
+                    {
+                        if (property.Value.ValueKind == JsonValueKind.String)
+                        {
+                            channels[property.Name] = property.Value.GetString() ?? string.Empty;
+                        }
+                    }
+                }
+            }
+
+            channels[Fold(recipient)] = channel;
+            Directory.CreateDirectory(Path.GetDirectoryName(_recipientChannelsPath)!);
+            using var stream = new MemoryStream();
+            using (var writer = new Utf8JsonWriter(stream))
+            {
+                writer.WriteStartObject();
+                foreach ((string key, string value) in channels)
+                {
+                    writer.WriteString(key, value);
+                }
+
+                writer.WriteEndObject();
+            }
+
+            File.WriteAllBytes(_recipientChannelsPath, stream.ToArray());
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+        {
+            // Remembering is a convenience; the resolved recipient stands on its own.
+        }
+    }
 
     public bool CanHandle(string operation) =>
         operation is "message.recipient.resolve" or "message.send" or "message.draft"
@@ -37,7 +122,9 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         new(StringComparer.Ordinal)
         {
             ["whatsapp"] = "Música",
-            ["discord"] = "Valeria",
+            // D22 (owner, 2026-09-20): the Discord test destination is the direct
+            // message «Ron92» (user .wolfsoultm.4191), no longer «Valeria».
+            ["discord"] = "Ron92",
             // Owner decision 2026-09-18 (DECISIONES_DUENO_2026-09-18 §3): the mail
             // test destination is the owner's own test mailbox; the send goes out
             // through the owner's classic Outlook profile and is verified by the
@@ -115,16 +202,67 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     {
         string channel = RequiredString(arguments, "channel");
         string recipient = RequiredString(arguments, "recipient");
-        DesktopRecipientObservation observation = await _automation.ResolveAsync(
-            channel,
-            recipient,
-            cancellationToken).ConfigureAwait(false);
+        DesktopRecipientObservation observation;
+        bool remembered = false;
+        if (string.Equals(channel, "any", StringComparison.Ordinal))
+        {
+            // REOPEN1993 grupo E: no client named. The remembered client first;
+            // otherwise both, and only a single hit is the person meant.
+            string? known = ReadRecipientChannel(recipient);
+            if (known is "whatsapp" or "discord")
+            {
+                DesktopRecipientObservation knownObservation = await _automation.ResolveAsync(known, recipient, cancellationToken).ConfigureAwait(false);
+                if (knownObservation.Verified)
+                {
+                    channel = known;
+                    observation = knownObservation;
+                    remembered = true;
+                    goto Resolved;
+                }
+            }
+
+            var hits = new List<(string Channel, DesktopRecipientObservation Observation)>();
+            foreach (string candidate in new[] { "whatsapp", "discord" })
+            {
+                DesktopRecipientObservation probe = await _automation.ResolveAsync(candidate, recipient, cancellationToken).ConfigureAwait(false);
+                if (probe.Verified)
+                {
+                    hits.Add((candidate, probe));
+                }
+            }
+
+            if (hits.Count == 0)
+            {
+                return Failure("message.recipient.resolve", "recipient_not_found_in_clients", false);
+            }
+
+            if (hits.Count > 1)
+            {
+                return Failure("message.recipient.resolve", "recipient_channel_ambiguous", false);
+            }
+
+            (channel, observation) = hits[0];
+        }
+        else
+        {
+            observation = await _automation.ResolveAsync(
+                channel,
+                recipient,
+                cancellationToken).ConfigureAwait(false);
+        }
+
+    Resolved:
         if (!observation.Verified)
         {
             return Failure(
                 "message.recipient.resolve",
                 observation.ErrorCode ?? "recipient_identity_not_verified",
                 observation.EffectObserved);
+        }
+
+        if (!remembered)
+        {
+            WriteRecipientChannel(recipient, channel);
         }
 
         string recipientId = "recipient_" + Guid.NewGuid().ToString("N");
@@ -1329,7 +1467,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private static readonly Dictionary<string, string> ForcedTestDestinationTitle =
         new(StringComparer.Ordinal)
         {
-            ["discord"] = "Julia",
+            // D22: the Ron92 direct message is titled by that same name; the
+            // username is the search fallback.
+            ["discord"] = ".wolfsoultm.4191",
         };
 
     private static bool TitleNamesMatch(string title, string channel, string name)

@@ -1531,6 +1531,82 @@ _MSG_DRAFT_PATTERNS = tuple(
 )
 
 
+# REOPEN1993 grupo E (D24; H0019 «mandale a Música que ya voy», H0408, H0198 «mandale al
+# grupo Musica: …», H0231, H0536, H0024 «escribile a Lucas que llego tarde»): a message for
+# a named person or group with NO client named. The recipient is looked up in the clients
+# (the remembered one, WhatsApp, Discord); unique → sent (confirmed in normal mode).
+_MSG_ANY_PATTERNS = tuple(
+    re.compile(pattern, re.IGNORECASE)
+    for pattern in (
+        # «manda un mensaje a Música que diga hola», «enviale un mensaje al grupo Musica que diga: prueba 2»
+        rf"^\s*{_MSG_VERB}\s+{_MSG_OBJECT}\s+{_MSG_TO}\s+{_MSG_REC}\s+{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
+        # «mandale a Música que ya voy», «mandale al grupo Musica: prueba 1», «escribile a Lucas que llego tarde», «text Lucas that I'm late»
+        rf"^\s*{_MSG_VERB}\s+{_MSG_TO}\s+{_MSG_REC}\s*{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
+        rf"^\s*(?:text|message)\s+{_MSG_REC}\s+{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
+        # «send Lucas a message saying I'm late»
+        rf"^\s*send\s+{_MSG_REC}\s+{_MSG_OBJECT}\s+{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
+        # «dile a Lucas que llego tarde», «avisale a Música que ya voy», «hazle saber a Lucas que…», «contale a Ana que…»
+        rf"^\s*(?:dile|decile|avisale|avisa|contale|cuentale|hazle\s+saber|hacele\s+saber|hazle\s+llegar)\s+(?:a|al\s+grupo|al)\s+{_MSG_REC}\s+(?:que|el\s+mensaje)\s*{_MSG_BODY}{_MSG_END}",
+        # «let Lucas know that I'm late», «tell Lucas that I'm late»
+        rf"^\s*let\s+{_MSG_REC}\s+know\s+(?:that\s+)?{_MSG_BODY}{_MSG_END}",
+        rf"^\s*tell\s+{_MSG_REC}\s+that\s+{_MSG_BODY}{_MSG_END}",
+    )
+)
+
+
+_MSG_PRONOUN_RECIPIENTS = frozenset({
+    "me", "us", "him", "her", "them", "you", "yo", "mi", "nos", "le", "les", "el", "ella", "ellos", "ellas", "vos", "usted",
+})
+
+
+def message_request_any_channel(text: str) -> tuple[str, str, str | None] | None:
+    """(recipient, body, client or None) of a message request whose client is
+    not named before the text; None when a client leads (message_draft_request
+    owns it), or without recipient or body. A client named at the END of the
+    text («… por WhatsApp») is the client; «que dija» (H0408) is «que diga»."""
+
+    raw = _strip_request_envelope(text).strip()
+    if not raw or len(raw.encode("utf-8")) > 2048 or "aclaracion confiable del usuario:" in _fold(raw):
+        return None
+    if message_draft_request(text) is not None:
+        return None
+    if _negative_action_forms(_fold(raw)):
+        return None
+    raw = re.sub(r"\bque\s+dija\b", "que diga", raw, flags=re.IGNORECASE)
+    for pattern in _MSG_ANY_PATTERNS:
+        match = pattern.match(raw)
+        if match is None:
+            continue
+        groups = match.groupdict()
+        head = raw[: match.start("body")]
+        if re.search(r"\b" + _MSG_CHANNEL_WORDS + r"\b", _fold(head)):
+            # A client named before the text belongs to message_draft_request; a
+            # client named INSIDE the text («prueba 1 de WhatsApp») is just words.
+            continue
+        recipient = re.sub(r"^(?:el\s+grupo|la\s+|el\s+|the\s+group|the\s+)\s*", "", (groups.get("rec") or "").strip(), flags=re.IGNORECASE).strip(" .")
+        body = (groups.get("body") or "").strip().lstrip(":").strip()
+        body = re.sub(
+            r"^(?:que\s+diga\s+|que\s+dice\s+|diciendo(?:le)?\s+(?:que\s+)?|dici[eé]ndole\s+(?:que\s+)?|saying\s+|that\s+says\s+|que\s+|that\s+)",
+            "", body, flags=re.IGNORECASE,
+        ).strip()
+        body = body.rstrip(" .!?") if len(body) > 1 else body
+        if not recipient or not body or _fold(recipient) in {"mensaje", "message", "un mensaje", "a message"}:
+            continue
+        if _fold(recipient) in _MSG_PRONOUN_RECIPIENTS:
+            continue
+        if len(recipient.encode("utf-8")) > 512 or len(body.encode("utf-8")) > 16_384 or len(recipient.split()) > 6:
+            continue
+        channel: str | None = None
+        trailing = re.search(r"\s+(?:por|en|via|v[ií]a|on|through)\s+(?P<ch>whatsapp|wsp|discord)\s*$", body, re.IGNORECASE)
+        if trailing is not None:
+            channel = _message_channel_name(trailing.group("ch"))
+            body = body[: trailing.start()].rstrip(" ,")
+            if not body:
+                continue
+        return recipient, body, channel
+    return None
+
+
 def client_channel_request(text: str) -> tuple[str, str] | None:
     """DISCORD1839 «ve a Cotele en Discord», «Go to Cotele in Discord», «Andá al canal
     Cotele en Discord»: the client and the place named by a go-to order scoped to a
@@ -2654,6 +2730,9 @@ def _curated_domain_is_grounded(
         )
     if operation == "reminder.resolve.exact":
         return _nominal_reminder_lookup_title(folded) is not None
+    if operation in {"message.recipient.resolve", "message.send"} and message_request_any_channel(text) is not None:
+        # REOPEN1993 grupo E: the request names a recipient and a text to say.
+        return True
     if operation in {"message.recipient.resolve", "message.send"}:
         # A bare "manda"/"send" grounded this family, so any errand that shares
         # the verb -- a parcel, a bouquet, a box -- could be answered by sending
@@ -4738,6 +4817,9 @@ def resolve_explicit_clarification_intent(
         "message.send" in available
         and channel_free_conveyance
         and not _has(folded, r"\b(?:whatsapp|wsp|discord)\b")
+        # REOPEN1993 grupo E: with the resolve/send pair the recipient is looked
+        # up in the clients instead of asking which one.
+        and not ("message.recipient.resolve" in available and message_request_any_channel(text) is not None)
     ):
         return ClarificationIntent(("message.send",), ("channel",))
     # MESSAGING1363: a reply with content but no addressee and no antecedent
@@ -4995,7 +5077,14 @@ def resolve_explicit_clarification_intent(
             ("message.send",),
             ("recipient", "message_text"),
         )
-    if "message.send" in available and incomplete_message_shape and message_draft_request(text) is None:
+    if (
+        "message.send" in available
+        and incomplete_message_shape
+        and message_draft_request(text) is None
+        # REOPEN1993 grupo E: a recipient and a text with no client named is complete;
+        # the client is looked up in WhatsApp and Discord.
+        and not ("message.recipient.resolve" in available and message_request_any_channel(text) is not None)
+    ):
         # MSGCLAR «mandale al grupo Musica: prueba 1 de WhatsApp, ya funciona
         # de nuevo»: a client named inside the dictated text is part of the
         # message, not the channel; the channel counts in the instruction
@@ -19146,6 +19235,10 @@ def resolve_explicit_effects(
     if "client.channel.locate" in available and channel_request is not None and channel_request[0] == "discord":
         # DISCORD1839: the channel is located and the person asked before any join.
         return EffectIntent(("client.channel.locate",), (text,))
+    if {"message.recipient.resolve", "message.send"} <= available and message_request_any_channel(text) is not None:
+        # REOPEN1993 grupo E: no client named → the recipient is looked up in the
+        # clients and, when unique, the message is sent (confirmed in normal mode).
+        return EffectIntent(("message.recipient.resolve", "message.send"), (text, text))
     if "message.send.test" in available and message_draft_request(text) is not None:
         # MSG §6 (owner decision 2026-09-17): a messaging request is sent for real,
         # but the destination is forced to the owner's own test channel; the final
