@@ -1,0 +1,105 @@
+commit 71e51792beed2c90c915dcc980e5c5ece34bdbc6
+
+C03: la fuente de un titular leído es dato observado, no un código con puntos (BUILD2029)
+
+NEWS2027: las seis lecturas web.news.headlines se completaron y verificaron, pero ningún final se
+publicó: el borrador citaba cada titular con su fuente tal cual la da el RSS («cooperativa.cl»,
+«dw.com») y los dos guardianes (mente y App) lo vetaban como internal_code hasta agotar los
+reintentos. Como el host de un resultado de búsqueda, el título y la fuente de un titular leído
+son vocabulario observado en observed_response_literals.py y ObservedResponseLiterals.cs.
+Prueba de regresión en tests/test_reopen1993_news.py (falla sin el parche).
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/ObservedResponseLiterals.cs b/src/Baxy.App/ObservedResponseLiterals.cs
+index 720644841..2b1f6534d 100644
+--- a/src/Baxy.App/ObservedResponseLiterals.cs
++++ b/src/Baxy.App/ObservedResponseLiterals.cs
+@@ -110,6 +110,28 @@ internal static class ObservedResponseLiterals
+                 }
+             }
+         }
++        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
++            && IsString(node, "operation", "web.news.headlines")
++            && node.TryGetProperty("verified", out JsonElement newsVerified) && newsVerified.ValueKind == JsonValueKind.True
++            && node.TryGetProperty("succeeded", out JsonElement newsSucceeded) && newsSucceeded.ValueKind == JsonValueKind.True
++            && node.TryGetProperty("observed", out JsonElement newsObserved) && newsObserved.ValueKind == JsonValueKind.Object
++            && newsObserved.TryGetProperty("headlines", out JsonElement headlines) && headlines.ValueKind == JsonValueKind.Array)
++        {
++            // NEWS2027 «buscá noticias de hoy»: a headline's title and its source
++            // («cooperativa.cl», «dw.com») are observed data, not dotted codes.
++            foreach (JsonElement entry in headlines.EnumerateArray())
++            {
++                if (entry.ValueKind != JsonValueKind.Object) continue;
++                foreach (string field in new[] { "title", "source" })
++                {
++                    if (entry.TryGetProperty(field, out JsonElement value) && value.ValueKind == JsonValueKind.String
++                        && value.GetString() is { Length: > 0 and <= 4096 } text && !string.IsNullOrWhiteSpace(text))
++                    {
++                        names.Add(text.Trim());
++                    }
++                }
++            }
++        }
+         if (IsString(node, "kind", "confirmation")
+             && node.TryGetProperty("pendingAction", out JsonElement pendingAction) && pendingAction.ValueKind == JsonValueKind.Object
+             && pendingAction.TryGetProperty("arguments", out JsonElement pendingArguments) && pendingArguments.ValueKind == JsonValueKind.Object
+diff --git a/src/baxy_mind/observed_response_literals.py b/src/baxy_mind/observed_response_literals.py
+index 451923d6f..a022dae96 100644
+--- a/src/baxy_mind/observed_response_literals.py
++++ b/src/baxy_mind/observed_response_literals.py
+@@ -62,6 +62,18 @@ def without_observed_names(text: str, situation: object) -> str:
+                         host = re.match(r"^(?:https?://)?(?:www\.)?([^/?#]+)", url)
+                         if host and 0 < len(host.group(1)) <= 253:
+                             names.add(host.group(1))
++        if (node.get("kind") == "operation" and operation == "web.news.headlines"
++                and node.get("verified") is True and node.get("succeeded") is True
++                and node.get("polarity") == "success"):
++            # NEWS2027 «buscá noticias de hoy»: a headline's title and its source
++            # («cooperativa.cl», «dw.com») are observed data, not dotted codes.
++            observed = node.get("observed")
++            found = observed.get("headlines") if isinstance(observed, dict) else None
++            if isinstance(found, list):
++                for entry in found:
++                    if isinstance(entry, dict):
++                        names.update(value.strip() for key in ("title", "source")
++                                     if isinstance(value := entry.get(key), str) and 0 < len(value.strip()) <= 4096)
+         if node.get("kind") == "confirmation":
+             # H0081 «quiero que abras opera gx y entras a pivigames» → «¿Quieres
+             # confirmar o cancelar que abra Opera GX y entre a pivigames.es?»: the
+diff --git a/tests/test_reopen1993_news.py b/tests/test_reopen1993_news.py
+index 035676270..90ac2859e 100644
+--- a/tests/test_reopen1993_news.py
++++ b/tests/test_reopen1993_news.py
+@@ -83,3 +83,30 @@ def test_a_portal_listing_instead_of_headlines_is_missing_state() -> None:
+ def test_the_absences_have_their_own_cause_facts() -> None:
+     for code in ("news_feed_unavailable", "news_feed_unreadable", "news_feed_empty", "news_topic_without_headlines"):
+         assert code in llm._CAUSE_FACT
++
++
++def test_a_dotted_source_name_is_observed_data_not_an_internal_code() -> None:
++    # NEWS2027 case 0: «… (cooperativa.cl); … (dw.com).» was vetoed as internal_code by both guards.
++    from baxy_mind.observed_response_literals import without_observed_names
++    from test_c03_window_state_facts import Recorder
++    seen = {
++        "edition": "es-419/CL",
++        "count": 3,
++        "headlines": [
++            {"title": "Mulas, cuatrimotos y extraños uniformes: las curiosidades de la Parada Militar 2026", "source": "cooperativa.cl", "publishedAt": "Mon, 21 Sep 2026 12:00:00 GMT"},
++            {"title": "Alternativa para Alemania: muchos votos, poco poder", "source": "dw.com", "publishedAt": "Mon, 21 Sep 2026 11:00:00 GMT"},
++            {"title": "Sube el dólar tras el anuncio", "source": "Emol", "publishedAt": "Mon, 21 Sep 2026 10:00:00 GMT"},
++        ],
++    }
++    situation = {"kind": "operation", "operation": "web.news.headlines", "polarity": "success", "verified": True,
++                 "succeeded": True, "observed": seen}
++    masked = without_observed_names("Alternativa para Alemania: muchos votos, poco poder (dw.com).", situation)
++    assert "dw.com" not in masked and "Alternativa" not in masked
++    answer = (
++        "Mulas, cuatrimotos y extraños uniformes: las curiosidades de la Parada Militar 2026 (cooperativa.cl); "
++        "Alternativa para Alemania: muchos votos, poco poder (dw.com); Sube el dólar tras el anuncio (Emol)."
++    )
++    client = Recorder([answer])
++    facts = {"situation": situation, "operation": "web.news.headlines", "seen": seen}
++    assert client.compose_user_message("buscá noticias de hoy", "status", facts) == answer
++    assert len(client.requests) == 1

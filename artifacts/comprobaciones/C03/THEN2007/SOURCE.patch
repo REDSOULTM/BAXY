@@ -1,0 +1,143 @@
+commit 03adcfe36c8383502c1164b3f7ffe526f7c8528a
+
+C03: el final de app.open acepta la apertura en pasado como estado; el final del tecleo dice qué escribió y dónde; «no le pongas» es prohibición (BUILD2007)
+
+THEN2003 (H0097 «ponle hola» tras «abrí el bloc de notas»): (1) con el nombre de la app ya
+reconocido, la regla de estado del composer exigía «abierto/open…» y vetó «Abrí el Bloc de
+notas.» como missing_state; una app cerrada que se abre ahora se cuenta en pasado, y eso es su
+estado. (2) El recibo de input.text.type no trae el texto (sólo eventos aceptados y la ventana
+del foco), así que el narrador publicó el eco «Hola mundo»; el payload lleva ahora typedText
+(el literal del pedido) y typedInto (la ventana observada), la instrucción pide decir que lo
+escribió, citarlo y nombrar la ventana, y los vetos missing_typed_text / typed_echo_without_report
+con sus pistas cierran el eco (como CLIPBOARD1359). (3) «No le pongas nada.» no se reconocía
+como prohibición: la gramática admite el clítico dativo (le/les/te) antes del verbo. Pruebas:
+tests/test_c03_then2003_typed_final.py.
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 6e9af682f..a07cc5657 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -7759,7 +7759,8 @@ def _negative_action_forms(folded: str) -> tuple[str, ...]:
+ 
+     found = re.match(
+         r"^[¡!\s]*(?:(?P<es>no|nunca|jamas)\s+"
+-        r"(?:(?:me|lo|la|los|las|nos)\s+)?|(?:never|don't|dont|do\s+not)\s+)"
++        # THEN2003 «No le pongas nada.»: the dative clitic (le/les) sits before the verb too.
++        r"(?:(?:me|te|le|les|lo|la|los|las|nos)\s+)?|(?:never|don't|dont|do\s+not)\s+)"
+         r"(?P<verb>[a-z]+)\b",
+         folded,
+     )
+@@ -19058,6 +19059,20 @@ def deictic_text_to_type(
+     return literal or None
+ 
+ 
++def deictic_typed_literal(text: str) -> str | None:
++    """The literal a «ponle X» / «write on it X» order asks to type, from the
++    request alone (the composer has no history; the reader verified the
++    application before the effect ran)."""
++
++    original = re.search(
++        r"(?i)(?:pon[eé]?le|ponele|pon[eé]?melo|put\s+on\s+it|write\s+on\s+it)\s+(?P<text>.+?)"
++        r"(?:\s+(?:ahora|ya|now|please|por\s+favor|porfa))*[\s.!?]*$",
++        (text or "").strip(),
++    )
++    literal = original.group("text").strip() if original is not None else ""
++    return literal or None
++
++
+ def other_window_switch_request(text: str) -> bool:
+     """True for a switch to «la otra/anterior/siguiente ventana» with no other clause."""
+ 
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 2c66bda24..54b89187f 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4429,6 +4429,19 @@ def _compose_situation_payload(
+                 and situation.get("succeeded") is True
+             ):
+                 visible_seen["writtenText"] = written
++        elif operation == "input.text.type" and visible_seen.get("ok") is True:
++            # THEN2003 «ponle hola mundo»: the receipt carries counts and the
++            # window it typed into, not the text, so the narrator echoed «Hola
++            # mundo». The typed literal comes from the request; the window from
++            # the receipt.
++            typed = effect_intent.deictic_typed_literal(user_text) if user_text else None
++            projected = {}
++            if isinstance(typed, str) and situation.get("verified") is True and situation.get("succeeded") is True:
++                projected["typedText"] = typed
++            title = visible_seen.get("foregroundTitleBefore")
++            if isinstance(title, str) and title.strip():
++                projected["typedInto"] = title.strip()
++            visible_seen = projected
+         elif operation == "input.visible.click" and visible_seen.get("ok") is True:
+             # UI1635 «clic en el botón Aceptar»: the receipt's absentOrDisabled
+             # is a post-read — the control was gone after the click because
+@@ -6844,6 +6857,16 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+             folded,
+         ) is None:
+             return "echo_without_report"
++    typed = seen.get("typedText") if isinstance(seen, dict) else None
++    if payload.get("operation") == "input.text.type" and isinstance(typed, str) and typed:
++        # THEN2003: «Hola mundo» alone was published after a verified typing.
++        if _reading_fold(typed) not in folded:
++            return "missing_typed_text"
++        if re.search(
++            r"\b(?:escrib\w*|tecle\w*|tipe\w*|puse|coloqu\w*|typed?|wrote|written|entered|put)\b",
++            folded,
++        ) is None:
++            return "typed_echo_without_report"
+     if (
+         payload.get("operation") == "window.close.all"
+         and isinstance(seen, dict)
+@@ -8985,6 +9008,10 @@ def compose_visible_defect(
+             if not closed_request and not re.search(
+                 r"abiert|open|running|cerrad|closed|playing|reproduc|ejecuci",
+                 folded,
++            ) and not (
++                # THEN2003 «abrí el bloc de notas»: «Abrí el Bloc de notas.» tells
++                # the state of an app that was closed and opened now.
++                operation == "app.open" and _claims_it_performed_the_open(folded)
+             ):
+                 return "missing_state"
+         verified_media_transport = (
+@@ -16614,6 +16641,20 @@ class LlmRuntime:
+                 "abrió. Nada más: sin descripciones, sin otros números, sin nombres "
+                 "que no estén en seen.names."
+             )
++        elif isinstance(visible_situation.get("seen"), dict) and isinstance(visible_situation["seen"].get("typedText"), str):
++            # THEN2003 «ponle hola mundo»: report the typing, quote the text and
++            # name the window; a bare echo of the text is not a report.
++            instruct(
++                "\nYou typed seen.typedText into the window seen.typedInto. Say, in the "
++                "first person past tense, that you wrote or typed it, quote seen.typedText "
++                "exactly inside quotation marks, and name the window or app it went into. "
++                "Nothing else: no echo of the text alone, no saving, no closing."
++                if response_language == "en"
++                else "\nEscribiste seen.typedText en la ventana seen.typedInto. Di, en pasado y "
++                "en primera persona, que lo escribiste, cita seen.typedText exacto entre "
++                "comillas y nombra la ventana o app donde quedó. Nada más: ni el texto solo "
++                "como eco, ni guardar, ni cerrar."
++            )
+         elif _known_listing_in_payload(visible_situation) is not None:
+             # FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:
+             # the report is the count and a few names exactly as listed.
+@@ -17541,6 +17582,16 @@ class LlmRuntime:
+                     if response_language == "en"
+                     else "Sacaste la captura de pantalla: dilo en pasado y en primera persona («Saqué/Tomé una captura de pantalla»), sin repetir la orden, sin identificadores y sin inventar dónde quedó."
+                 ),
++                "missing_typed_text": (
++                    "Quote the exact text from seen.typedText and say you typed it into seen.typedInto."
++                    if response_language == "en"
++                    else "Cita el texto exacto de seen.typedText y di que lo escribiste en seen.typedInto."
++                ),
++                "typed_echo_without_report": (
++                    "Do not just repeat the text: say that you typed it into seen.typedInto."
++                    if response_language == "en"
++                    else "No repitas sólo el texto: di que lo escribiste en seen.typedInto."
++                ),
+                 "missing_written_text": (
+                     "Quote the exact text from writtenText and say you copied it to the clipboard."
+                     if response_language == "en"

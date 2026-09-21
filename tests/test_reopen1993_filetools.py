@@ -89,3 +89,43 @@ def test_the_reply_names_what_the_postread_saw(text: str, payload: dict, defect:
 def test_the_absences_have_their_own_cause_facts() -> None:
     for code in ("zip_already_exists", "file_not_found", "file_open_not_verified", "wallpaper_color_unknown", "download_page_without_image", "download_source_unavailable"):
         assert code in llm._CAUSE_FACT
+
+
+@pytest.mark.parametrize(
+    ("text", "folder"),
+    [
+        # ZIP typed tanda variants: «armá», «with/con un txt», bare «abrila» at the end.
+        ("make a folder on the desktop with a txt inside, zip it and open the zip", "desktop"),
+        ("armá una carpeta en el escritorio con un txt, comprimila y abrí el zip", "desktop"),
+        ("creá una carpeta en documentos, poné un txt, comprimila y abrila", "documents"),
+    ],
+)
+def test_the_zip_mission_variants_read_the_same_four_steps(text: str, folder: str) -> None:
+    intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, ("Steam",), ())
+    assert intent is not None and intent.operations == ("filesystem.create.directory", "filesystem.write.text", "file.compress", "file.open")
+    assert effect_intent.folder_txt_zip_open_mission(text) == folder
+
+
+@pytest.mark.parametrize("text", ["no crees nada en el escritorio", "comprimí el escritorio entero"])
+def test_the_zip_mission_boundaries_abstain(text: str) -> None:
+    assert effect_intent.folder_txt_zip_open_mission(text) is None
+    assert effect_intent.resolve_explicit_effects(text, AVAILABLE, ("Steam",), ()) is None
+
+
+@pytest.mark.parametrize(
+    ("text", "color"),
+    [
+        ("cambiá el fondo de pantalla a azul", "azul"),
+        ("set the wallpaper to red", "red"),
+        # WALLPAPER typed tanda variant: the colour right after the noun.
+        ("poné el fondo de escritorio verde", "verde"),
+        ("cambiá el fondo a negro", "negro"),
+    ],
+)
+def test_wallpaper_colours_with_or_without_preposition(text: str, color: str) -> None:
+    assert effect_intent.wallpaper_request(text) == {"color": color, "folder": None, "name": None}
+
+
+@pytest.mark.parametrize("text", ["no cambies el fondo", "cambiá el fondo a transparente", "cambia el fondo de pantalla"])
+def test_wallpaper_without_a_supported_colour_abstains(text: str) -> None:
+    assert effect_intent.wallpaper_request(text) is None

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-weather2023-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "opus/typed-tools (catalog, Core list, Providers adapter OpenMeteoWeatherAdapter.cs, mind readings, composer) merged into codex/kiro-goal-c03 (8edf110ac); the tanda build is the build of HEAD.",
+  "patch": "artifacts/comprobaciones/C03/WEATHER2023/SOURCE.patch",
+  "commits": [
+    "8edf110ac"
+  ],
+  "build": "BUILD2023 (C03-repairs2023-build/BUILD_READY.json; Kernel, Core, Providers y mente)",
+  "cause_measured": "El clima terminaba en una búsqueda web o en un límite: nunca se leía un pronóstico.",
+  "change": "weather.current lee el pronóstico actual (o del día siguiente) de la ubicación pedida o de este PC; la mente lo elige y el compositor cita los valores leídos.",
+  "measurement": "WEATHER2023: 8 ejecutados, 6 aprobados (los cuatro literales, la variante en inglés y el límite de prohibición), 2 fallidos («¿hace frío afuera?» preguntó; el límite del pasado leyó el clima de hoy); 0 créditos. La lectura de clima gana la cabeza «hace» y las palabras frío/calor, y excluye el pasado (verbo en pasado o año); se vuelve a medir el panel.",
+  "credits": 0
+}

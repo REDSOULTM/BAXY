@@ -62,6 +62,18 @@ def without_observed_names(text: str, situation: object) -> str:
                         host = re.match(r"^(?:https?://)?(?:www\.)?([^/?#]+)", url)
                         if host and 0 < len(host.group(1)) <= 253:
                             names.add(host.group(1))
+        if (node.get("kind") == "operation" and operation == "web.news.headlines"
+                and node.get("verified") is True and node.get("succeeded") is True
+                and node.get("polarity") == "success"):
+            # NEWS2027 «buscá noticias de hoy»: a headline's title and its source
+            # («cooperativa.cl», «dw.com») are observed data, not dotted codes.
+            observed = node.get("observed")
+            found = observed.get("headlines") if isinstance(observed, dict) else None
+            if isinstance(found, list):
+                for entry in found:
+                    if isinstance(entry, dict):
+                        names.update(value.strip() for key in ("title", "source")
+                                     if isinstance(value := entry.get(key), str) and 0 < len(value.strip()) <= 4096)
         if node.get("kind") == "confirmation":
             # H0081 «quiero que abras opera gx y entras a pivigames» → «¿Quieres
             # confirmar o cancelar que abra Opera GX y entre a pivigames.es?»: the

@@ -1,0 +1,18 @@
+commit 8edf110ac38819f485fbedb01ae7d59f9fc286f0
+
+C03: fusión de opus/typed-tools (herramientas tipadas de la Fase 5 sin motor, registro de conversación)
+
+Merge de opus/typed-tools (1433c61f1) en codex/kiro-goal-c03 por merge commit (D24: el
+ejecutor de tipadas construye en su rama; el de tandas fusiona y mide). Trae weather.current,
+web.news.headlines, winget (instalar/desinstalar), privilegio de apagado/reinicio,
+shell.command.run, file.compress/file.open, airplane_mode, desktop.wallpaper.set,
+document.presentation.create, web.download, wifi «de casa» (wifi place + memoria), memes,
+document.text.read (H0299) y filesystem.explorer.count (H0701), Steam desinstalar/instalar
+con los títulos decididos por el dueño (Plants vs. Zombies GOTY / PICO PARK), el registro
+privado de conversación en el perfil (ConversationLog, BAXY_CONVERSATION_LOG=0 lo apaga) y
+el re-anclaje D3 de MemoryHandlersTests. Fast y cien sobre el árbol fusionado en el commit
+siguiente; las tandas de cada tipada se miden una por una.
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+

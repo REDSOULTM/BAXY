@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from baxy_mind.effect_intent import (
+    message_request_any_channel,
     resolve_explicit_clarification_intent,
     resolve_explicit_effects,
 )
@@ -108,20 +109,20 @@ def test_opened_r2_action_failures_are_deterministic_regressions(
 def test_opened_r2_channel_less_messages_ask_only_for_missing_data(
     row: dict[str, object],
 ) -> None:
-    effect = resolve_explicit_effects(
-        str(row["text"]),
-        AVAILABLE,
-        APPLICATIONS,
-    )
-    clarification = resolve_explicit_clarification_intent(
-        str(row["text"]),
-        AVAILABLE,
-    )
-
-    assert effect is None
-    assert clarification is not None
-    assert clarification.operations == ("message.send",)
-    assert "channel" in clarification.missing_fields
+    effect = resolve_explicit_effects(str(row["text"]), AVAILABLE, APPLICATIONS)
+    clarification = resolve_explicit_clarification_intent(str(row["text"]), AVAILABLE)
+    if message_request_any_channel(str(row["text"])) is not None:
+        # REOPEN1993 grupo E (D24, 3bba9bdc3): a message naming a recipient and no
+        # client is looked up in the clients (WhatsApp, Discord) and sent when the
+        # hit is unique; the client is asked only when the person is in none or both.
+        assert effect is not None
+        assert effect.operations == ("message.recipient.resolve", "message.send")
+        assert clarification is None
+    else:
+        assert effect is None
+        assert clarification is not None
+        assert clarification.operations == ("message.send",)
+        assert "channel" in clarification.missing_fields
 
 
 @pytest.mark.parametrize(
@@ -156,18 +157,20 @@ def test_every_r2_mind_action_has_a_deterministic_contract_oracle(
 def test_every_r2_mind_clarification_preserves_zero_effects(
     row: dict[str, object],
 ) -> None:
-    assert resolve_explicit_effects(
-        str(row["text"]),
-        AVAILABLE,
-        APPLICATIONS,
-    ) is None
-    clarification = resolve_explicit_clarification_intent(
-        str(row["text"]),
-        AVAILABLE,
-    )
-    assert clarification is not None
-    assert clarification.operations == ("message.send",)
-    assert "channel" in clarification.missing_fields
+    effect = resolve_explicit_effects(str(row["text"]), AVAILABLE, APPLICATIONS)
+    clarification = resolve_explicit_clarification_intent(str(row["text"]), AVAILABLE)
+    if message_request_any_channel(str(row["text"])) is not None:
+        # REOPEN1993 grupo E (D24, 3bba9bdc3): a message naming a recipient and no
+        # client is looked up in the clients (WhatsApp, Discord) and sent when the
+        # hit is unique; the client is asked only when the person is in none or both.
+        assert effect is not None
+        assert effect.operations == ("message.recipient.resolve", "message.send")
+        assert clarification is None
+    else:
+        assert effect is None
+        assert clarification is not None
+        assert clarification.operations == ("message.send",)
+        assert "channel" in clarification.missing_fields
 
 
 @pytest.mark.parametrize(

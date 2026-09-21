@@ -1,0 +1,35 @@
+commit b5158039b904afc90c08e5e0e242c2f10e791c2b
+
+C03: las palabras de narración del informe de búsqueda no son afirmaciones sin fuente (BUILD2017)
+
+SEARCH2011 y SEARCH2015 (H0098): el informe correcto de la búsqueda («Se encontraron cinco
+resultados sobre … de directoalpaladar.com menciona …; otra ofrece …; … destaca …; finalmente
+…») lo vetaba dos veces la regla WEB1889 de afirmación sin fuente por palabras que ningún
+fragmento comparte y que son la voz del propio informe: el recuento de resultados, el orden de
+las páginas y los verbos que dicen qué ofrece cada una. Entran en el vocabulario propio del
+informe; una afirmación inventada sobre el mundo sigue vetada (prueba en
+tests/test_c03_search2005_query.py).
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 46c0f236c..76b3c9b15 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -6319,6 +6319,15 @@ _SEARCH_REPORT_OWN_WORDS = frozenset(
+         "listada", "listado", "shows", "specifies", "provides", "includes", "contains",
+         "appears", "belongs", "corresponds", "titulo", "title", "lleva", "llevan",
+         "carries", "carry", "datos",
++        # SEARCH2015 H0098: counting the results, ordering the pages and the
++        # verbs that say what a page offers are the report's own voice too.
++        "cinco", "cuatro", "seis", "siete", "ocho", "nueve", "sobre", "acerca",
++        "ofrece", "ofrecen", "destaca", "destacan", "presenta", "presentan",
++        "finalmente", "distintas", "distintos", "diferentes", "ultima", "ultimo",
++        "cuarta", "quinta", "reune", "reunen", "recoge", "recogen", "trata", "tratan",
++        "three", "four", "five", "six", "seven", "eight", "nine", "about", "offers",
++        "highlights", "presents", "finally", "different", "various", "fourth", "fifth",
++        "gathers", "covers", "deals",
+     }
+ )
+ 

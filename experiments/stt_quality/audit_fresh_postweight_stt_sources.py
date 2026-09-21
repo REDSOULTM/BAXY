@@ -66,8 +66,22 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # REOPEN1993: lecturas de la mente (candidato único, alarma de la sesión, otra ventana, mirar la pantalla, ponle texto)
 # C03 REOPEN1957 typed tools (opus/typed-tools): re-pin after the mind readings of the fifteen typed capabilities.
 # C03 post-goal: fusión de opus/typed-tools y BUILD2001 (nombre de app en app.open, turn.playback-then ordinario).
+# C03 post-goal: fusión de Fase 6/7 y BUILD2003 (otra ventana, ventana activa).
+# C03 post-goal: BUILD2005 (displayName en finales de app.open).
+# C03 post-goal: BUILD2007 (finales de app.open y de tecleo; prohibición con clítico).
+# C03 post-goal: BUILD2009 (alias bilingüe de apps).
+# C03 post-goal: BUILD2011 (busqueda: clitico, cortesia, sitio).
+# C03 post-goal: BUILD2013 (web.search en el shortlist; cortesia fuera del argumento).
+# C03 post-goal: BUILD2017 (vocabulario propio del informe de busqueda).
+# C03 post-goal: BUILD2021 (pista del veto de afirmacion sin fuente).
+# C03 post-goal: BUILD2021b (guarda de get en el shortlist).
+# C03 post-goal: BUILD2025 (frio/calor y clima del pasado).
+# C03 post-goal: BUILD2027 (cabezas de pregunta en noticias).
+# C03 post-goal: fusion opus/typed-tools 8c268599b + BUILD2029 (fuentes de titulares observadas).
+# C03 post-goal: BUILD2031 (resultado de titulares sin enlace; fondo y zip).
+# C03 post-goal: fusion e97802c9f + BUILD2033 (cabeza del lugar geocodificado).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "a51c4e7dddce72de9e35c1d14e9af8d6ab321b43ef8cb6db1abcd6487dd2e213"
+    "2f120fd1a897332cd0207e657d274eeacf4b4c30f300ea12a0dbfca9e38e4c76"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"

@@ -1,0 +1,487 @@
+{
+  "schema": "search2011-root-adjudication-v2",
+  "decided_at_utc": "2026-09-21T10:30:47.491377+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "5e6f2fbc10fa53a48f47a8f9f61550dd33bacf39",
+  "decisions_sha256": "b185f282896ecbdac92ae1b9fdf273ec9ba816efa4a66775dd5a6ad2715f0613",
+  "registry_before_sha256": "e6ce99f2d7c642d6ee9aead768d62b30469d3cdcf3310e8e5ddfb9d8a259c154",
+  "registry_before_counts": {
+    "covered": 654,
+    "open": 88,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "3c1d273b2d57d0a4f634feeca6a76956874e26e88ef2c400849553c6baa5a885",
+  "preparation_sha256": "6e1888efdc53205ee24dc3be0af4f92abfe4151be02393be016ac4e91a578515",
+  "passed": 5,
+  "failed": 3,
+  "unexecuted": 0,
+  "executed": 8,
+  "segments_started": 8,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [
+    "H0380"
+  ],
+  "counters": {
+    "covered": 655,
+    "open": 87,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 630,
+    "categories_total": 35,
+    "categories_closed_after": 29,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 630 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SEARCH2011 añade 1. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 631
+  },
+  "resources": {
+    "seconds_sum": 330.4850000000006,
+    "gpu_peak_mib": 3492.9296875,
+    "ram_peak_mib": 2539.5390625
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0098",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no buscó, navegó, preguntó, o el final no nombró resultados pertinentes con su sitio.",
+      "observation_note": "Turno ordinario: una web.search verificada con resultados pertinentes; ningún final publicado (borradores vetados); pins intactos.",
+      "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-00\\EXIT.json": "3de8d1f0e717c4534b0cd36c39de481ca56f9f420c13fdc8584e332acadb23f4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-00\\RESOURCES.json": "8ece8a978ca80b57afe9e9a9c312cd95d71d9386a0dc206f486d5252db651115",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\profile-owner-00.json": "ecdc4c76fea77fcbf15cf2d38de196942eb35010c6a3ae604addd0c9662d2359",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-00\\PREREG.json": "252327fb8bea8cb6fdb69c1046ffd9583e2ed0d12665adf12f46dfaa45efd27a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-00\\capture\\events.jsonl": "9cd444258b2c552f5692dbe53392f6b2a1791932b8197b83133d7912b118cbc2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-00\\turns.jsonl": "7f0403e512988fe609ba09ab85dc543e06c325c9da35cc0153d03be454ac592e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\fixture-00.json": "87db6cc3ade3cfe3a20d1682d2483230ee38a9a3c783f578d33393225cdece94",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\context-00.json": "5041f1a31425cc4999980c9cb510ee2a0d4d87c9cc56d9187311ed288fb2db61",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\context-prelaunch-00.json": "6fbf098d5bc1be59421b30d46f852bb7e6fd23d40e36d3dc69fac9c202ab07d4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-00\\case-observations.json": "b09227ae24580bc6bd5fcf8d5131761e629b1ade7714f356117cf9db30136264",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-00\\journal-before.json": "e79325ca850b1e4eed3918bfc28e041f54f45f5209bed5ebacb175aadd72e826",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-00\\journal-after.json": "8d8302f641c3382789b14383feb86854e9819b00f9e5c86f8f8beeafd24bc4b1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "766859c1e0e1d7ce362f91da35c0540ef9e2b49facc5081739a7d6827093ea26"
+      },
+      "terminal_kind": "composition_failed",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "b64d8adc-2fbb-4ce3-b472-733237700d25",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "b48b7c10-edb8-4bdd-b35e-8709072c6bd7",
+          "operation": "web.search",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "H0380",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        2,
+        4
+      ],
+      "reason": "web.search verificada sin preguntar; el final nombra al menos dos resultados pertinentes con su sitio; crédito con dos variantes aprobadas del mismo grupo.",
+      "observation_note": "Turno ordinario: exactamente una web.search completada y verificada con resultados sobre lo pedido, sin navegar ni preguntar; el final nombra al menos dos resultados pertinentes con su sitio y lo que dicen; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "b47e98bbe3461cf2fbadb9da299902b727809b2507d953454b343f978ce67034",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-01\\EXIT.json": "40a6c2a3849ac52be81ce9e70bb926d5844fb0b9b04de1f2580236f14dca7a77",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-01\\RESOURCES.json": "e69a1e7b23f3b8f9e1ebced8790feace66025ba03bedc16bbc7b0980edb938f1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\profile-owner-01.json": "d877b16d5fe98b64add5bce5ab989b8fe17609d43b622ece9c8a8b0de3f1e00d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-01\\PREREG.json": "5d113874bcbcf3723bdc6e7e7df597171018b0963bb9de1bfc7f76b5ab290887",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-01\\capture\\events.jsonl": "46f27183a8884fa03a078e6c2d8563cdc914d89c608a71ad819dab13a843f663",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-01\\turns.jsonl": "3f4b3ad8e44d3c6967115f68af1752e892d8926af039c09542dd2cd1a4965cfd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\fixture-01.json": "206490f24b12c85c412f91f6b879beace4289e747eec16d2550723171d785b2d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\context-01.json": "20be12a27a348e458ceb3b4d8e98739dfb255227a8017044a2b18e93762ee3c3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\context-prelaunch-01.json": "e833a79c4e8d852495e0d18a8319ab6250906344fefcb5d4fe3f186da25c22dc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-01\\case-observations.json": "1d9e18bc25ae5efc8dfb1740b6790aa09a7f52b997f327f1e7fa46ca6d808f09",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-01\\journal-before.json": "c5e1df18aec151345c2214e347e3b02e4e2c16d5874fe82eea25dbbe383f6516",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-01\\journal-after.json": "1afe73a11f7a7996e587d82642c40945c8464a66fe9633302f1927ffcd39ac69",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "d4fdf71a0862448191d06dec37a813d4c4e4a68fea17775ea2d1e74e31c3fc10"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "c227feea-a3bb-4536-a8e6-e63af7b980bf",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "112757d4-12dd-425d-a6db-0e5f04ee9ab7",
+          "operation": "web.search",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "search2011-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "web.search verificada sin preguntar; el final nombra al menos dos resultados pertinentes con su sitio.",
+      "observation_note": "Turno ordinario: exactamente una web.search completada y verificada con resultados sobre lo pedido, sin navegar ni preguntar; el final nombra al menos dos resultados pertinentes con su sitio y lo que dicen; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "41ad8e332e3070bba0e3ea121b7a82934de0479bb5e922a4ceae5df76d547f87",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-02\\EXIT.json": "6ed3187ac0582228466e5545d14ed4709a1d06ba396c257f197b245d11fa7e9b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-02\\RESOURCES.json": "d285f49f54217aa6f10ad14e8692505efc878c32a40f080ebe3903456206d464",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\profile-owner-02.json": "80ebbda59ba4502324c9444bbcc07f2577ba00345c87000fb42ad31f277b8b20",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-02\\PREREG.json": "f900c446518d4fd2a0b76d52413052e33bcd34773bbb614f55d120df7918298b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-02\\capture\\events.jsonl": "6b83d73121ec7b8e6b73949efb456255866eee89834096d5278f84264e73891f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-02\\turns.jsonl": "8b435e7b2b7d118a3ad11e65105715c241b60ffada759be1956b3d7ed84d8f04",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\fixture-02.json": "e5b0858cf456d3d283e006de0ee44e9a8c6df6bb4f1267079bf84cf1003a75f4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\context-02.json": "0921a8b2c47a1e1e01e298c6327def22f1cb517b423660bd3e4ed5bbc7a4cc9b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\context-prelaunch-02.json": "6f46d17b7fff2fffc19e85a131789c95496400ae5c73c0b3f70b87ac8c26d5d3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-02\\case-observations.json": "e211c8e509d570768b2813b868882bd9a3b5b467efeb1fccd14c976b90a4d5ed",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-02\\journal-before.json": "ce45e80396f9bd6266aa4935a8590a0114f2f58d9094b2c6dd5c1908b23c97bf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-02\\journal-after.json": "2d71c625234a8eb4150de40d58b3c3a6a3d9a4dc7a097a8a9f28f8b632b0e8f9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "5801429205070e4cc12bb1cc355e19acace293c601ee35f8f8aaa296c22f88ed"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "3953e853-ea9b-4989-ac21-9b4d47bdcb40",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "1233bea3-d7e7-4ba4-97eb-cd2da5b2d3ff",
+          "operation": "web.search",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "search2011-dev-02",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no buscó, navegó, preguntó, o el final no nombró resultados pertinentes con su sitio.",
+      "observation_note": "Turno ordinario: cero operaciones; el final dijo que no podía buscar; pins intactos.",
+      "final_sha256": "2aea3d449e50648a7e27a60c7b4e54689328ea1627f6380767a145cdfc7e22f2",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-03\\EXIT.json": "7dc0519616f00dc8cf6e693922c219468201c417e5dcadea4d0267d71aa7a5a7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-03\\RESOURCES.json": "e743352a4eaaa5eee06e2eb5a52db01b1d091b8ff5a26d90afcd2c69f82d85b3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\profile-owner-03.json": "71a7f817af6933fa81853a581633fb91a7516ede07f6943ecf4edb8d5649f374",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-03\\PREREG.json": "15f4af69826f54f5f35b27cff23c696a3967ae0db5c8832e8edc0d7c6e2ce5b9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-03\\capture\\events.jsonl": "63085af49e6661379fd1b8051d47aae87efd03d20bddbaf8078a2269faa4cfad",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-03\\turns.jsonl": "8cc121d442a590553fd2c1eade3bae3b127f8a897ed27eeae094e21e1b516194",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\fixture-03.json": "3832defb376f064c5f87bb205a09ddbbc4414f1179518371b7cff5710bf8ad76",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\context-03.json": "6bfb5417d94f52ffed3bdddf5d5d61e06768669d7291e39daf160eab49bf4302",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\context-prelaunch-03.json": "c671d5d688d9a097c7bcf410484765ddcc03bf400de2f058cfd807d919cd5311",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-03\\case-observations.json": "35d8616b80bd18b8bbbecf05573a2b2d53dd976adadc3e61d2868ce632c789c3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-03\\journal-before.json": "a7f6b54d8fbbfcaafe65655bbc9f824e184b917707960df71e310a1482f7e92e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-03\\journal-after.json": "a947aed3a79b00812a90254244ec2bf3a316c349c88141796f1ff8e716967257",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "a153310daa4be72d8361caaaa60ced69527550ebcd3c9fd2f64e1ea6a29d2260"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "4df30356-29a3-494a-89cb-40518301964f",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "search2011-dev-03",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "web.search verificada sin preguntar; el final nombra al menos dos resultados pertinentes con su sitio.",
+      "observation_note": "Turno ordinario: exactamente una web.search completada y verificada con resultados sobre lo pedido, sin navegar ni preguntar; el final nombra al menos dos resultados pertinentes con su sitio y lo que dicen; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "341a704b12163ab23abfd12a3f90c314b4c6bc82d5dcc2f1f994a0735b7fd1fa",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-04\\EXIT.json": "c1704ff5e5eec7ce55953fc567bb9caa3621908000f537d782178b3c3815d309",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-04\\RESOURCES.json": "582f017b0e0a9855b0a661b1d6943558e743b8d54fc466b00734131387c8531f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\profile-owner-04.json": "d95429731b7be007aecb599675d74de4daa8d39cec25a75597b34e5d8d919f3f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-04\\PREREG.json": "64b897590df4b9f3c54fe44b72ce9723d610796ad85ef4dfa0de2613e15fb4e8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-04\\capture\\events.jsonl": "58119b940b10c25870e003a4a0162c14f7be0c43b56d4b08218c59e92a5624a9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-04\\turns.jsonl": "4030520c23dc73334a9e064b8ac168efe76f75b887abe208458b5c132ae470f0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\fixture-04.json": "d3b02cd68f3db45498a4a7553f9f4d80ea56ed27e853e0cf577f0c1897a2fa4e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\context-04.json": "3bf25c1d645603fc8c908854c37555ab4a0e36c95c636861f0258ea5d544d18b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\context-prelaunch-04.json": "ff2baf93faa8579164868747e26da14110b160b67e7255e4c2d55e507f29f27f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-04\\case-observations.json": "e834b53d7d43e2112b1ac907ff4d115f0387c960fd81b8d02bfb3f8a41918937",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-04\\journal-before.json": "3fd94b945e4705b6ad521cfdecb4e89657d0dddad4751e549fdf299ad5cc8610",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-04\\journal-after.json": "2ed77beb345dc4164fde5ee08c29d2f7d7437efb33a0af97d2257211dc235ba4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "e9613efecc2f0a5bc385446bb90cb8110f834e9ad7eca1bf4d5975cdd07e503f"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "de3c63f6-1269-4c47-9f4e-a1fd31133a61",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "56307902-bbad-4bc6-8fa6-e8f71663f821",
+          "operation": "web.search",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "search2011-dev-04",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no buscó, navegó, preguntó, o el final no nombró resultados pertinentes con su sitio.",
+      "observation_note": "Turno ordinario: una web.search verificada cuya consulta arrastró la cortesía; ningún final publicado; pins intactos.",
+      "final_sha256": "89c6b5fefee82f9de23c8b83979e704342b7fbd8f77935444f01d0a1776c911d",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-05\\EXIT.json": "6fb6ff4f6fcba709799f3fb182e3904988046df251a17adf776e6d76e8cb484d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-05\\RESOURCES.json": "cccd90a0dd0dd80f8470e68d9d3b327253fda736229b6f541025b8e8aa81b545",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\profile-owner-05.json": "07ca9dba2f4098927544de0b48dabf0c051d55211ef21ae2b503cc05c3454342",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-05\\PREREG.json": "c0c15dfef18b18dd1446637841c9accb3becf7a024a3dfcc07f2ee078f5749e2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-05\\capture\\events.jsonl": "e2af34fef3d2e3e4f659304eba25db6390e68d373e7d131e5fdba370a39c9ffe",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-05\\turns.jsonl": "996f8a4a8b648b1979896aa2626a7e76619b8ff6768946aeb860ee86fd3a9333",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\fixture-05.json": "dc8609826a750b9ec9e368df4e155aa2e904d851094faf608d152df2a7788b77",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\context-05.json": "14b4e84f37218a05589c0b0d2866ccef8ad4d941eec9969f74dfbed29d378fde",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\context-prelaunch-05.json": "cb1311e2e75de9715bac97c9745a4b4986836601e25beaaa6c757a7ea931dc6b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-05\\case-observations.json": "b428de39fff16988032bf094f02b9e544f6145d4bbe21cb05797d5fb969d0b28",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-05\\journal-before.json": "47b6c2d57419fba4d43ef53d6117f580086f318b804cd67951e802c3db94a344",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-05\\journal-after.json": "c401483e12b4790e4fdb68525b6fe837c5a55c6a82d146c52c156ce24e7ce782",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "249e921eebb338994cf5be78777d9a9a161865a69d0367c41786a025a992921b"
+      },
+      "terminal_kind": "composition_failed",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "0e876552-ca51-4c46-862b-88cf6140f0bb",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "1fe00cff-54e2-456d-a80f-19cb3a72a808",
+          "operation": "web.search",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "search2011-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "9ac43ddf407c58b5801a0a6741d3eba555d005b76d6a8b977ca5266b88f9cbcb",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-06\\EXIT.json": "b172c74c6126d8f8c9e0d44859d997f7909863e23bf99ad9c9dbcde9bacfb614",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-06\\RESOURCES.json": "8b2063d9ee4056a628e9b2fb7bb75fdcaad512575006e13c9b350412cfab0da9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\profile-owner-06.json": "e962ed597f21bc7012c3a503008a2cb20f264f7c0c52a0faf97aed96eb1b3c9e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-06\\PREREG.json": "b640f5fcd214dcda0f3ce08e99d9e1c5e78d56b51bf0b34c2e2f1c7c1004ae72",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-06\\capture\\events.jsonl": "a5d69ea11c895ce2bc03dbf318ac716ae4b6c99221b8b0a16375c58981485be1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-06\\turns.jsonl": "71dc9976ce9d2f33c51f69e85110a6f5733ee9e641e039349c5d64c89cf46911",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\fixture-06.json": "f122e07e3dc7a1a6fe84337618e0b09d914affc789a3e17afb1456d363ddb606",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\context-06.json": "c7c652dc736b6281abe800f109d2c5a3ade7f1d062c957c189a14bd1bafe3f3e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\context-prelaunch-06.json": "2486c44b51de4bd33ce8cb5e11327ff9c8fa1a4ee1acfd31b94d03bd5a8e72fc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-06\\case-observations.json": "d16f86f9fb8cd112cacd387ff3366d813538e7674fc4f8a663c890f7ad10c3e3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-06\\journal-before.json": "359c6b0657530103d02ecf277be947da8881c10579829ff1dd4cfc1feb7d297a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-06\\journal-after.json": "5567502fb73c461c530d9672acfeb4d14d5b96bb87853e083033829f4e65c4c4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-06\\journal.snapshot.jsonl": "dbe0ee369a7e6124f4ef0e4e872f6ff22d39396961f0d04eeefd0a2b5125e361"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "60d1d5e6-db82-4f34-89c7-14d2c609bb70",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "case_id": "search2011-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "1026f757f1610d2f691d8ffb319a6e43c2133298c7bd7dbdfd8903317098a76c",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-07\\EXIT.json": "f70132a2e79a8b4325d9a67a37e2145bb210a185c5a7b88ac1074bd2f47f7a3f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-07\\RESOURCES.json": "10ef6e1901a8d518491727482878ef64e2d999b08f43ee5ca90b8de577ab7585",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\profile-owner-07.json": "8b4f3b77cc80d7ae22920232026b3e3685f434704005346af481201f1ae10243",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\results\\case-07\\PREREG.json": "dfc67aac935d25180ad3a3a7797fca2c477e4f8422567e1150cc521802bce245",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-07\\capture\\events.jsonl": "d2e05fb4be5efdd00f37650f928b7123a70d03297da389d1316fc6991355fbe2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-07\\turns.jsonl": "a3e7cea01c6f2c5eddc3b9c346c3799b44d9f626bb8e139ed3b55912f1cae3fb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\fixture-07.json": "b1ef02c5f796e508e5624c36debcef362fdd1f9a75db8123d96ae1d70f92bed2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\context-07.json": "c8e8d18e29f9e335abd8f245cb223afa578bf28cbd00e70e56be8bd6cbe51893",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\context-prelaunch-07.json": "e7d81e3fd0c65f1ad1a883e9b26f39639fb1ef074eec3c3a9d808d965b54f4cc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-07\\case-observations.json": "3934167ac831b3fd401379d47a4954e19c0e9110467b285a6cff29e4a31d9da1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-07\\journal-before.json": "61d4024c521e5d724d20158e3b2c0aef3eb3b39c08b814d0a21acf8771e131c7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-07\\journal-after.json": "065ee873f6596a37f5fb6ebf2ca4a320f9bdce300d0e3803a254a6c8c3feafbb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-search2011-instrument-v1\\private\\run-07\\journal.snapshot.jsonl": "497c84e27c1c01640e5eaa0f83ceed5515ada2b8aef730512e45ecc9e7256e6e"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "b26b7671-8b09-4ba1-8808-e1af52f65ead",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "SEARCH2011: 8 ejecutados, 5 aprobados, 3 fallidos, 1 créditos (índices [1]). Siguiente: las tandas de las tipadas de la Fase 5 y msgany.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

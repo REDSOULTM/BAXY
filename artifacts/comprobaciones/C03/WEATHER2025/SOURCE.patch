@@ -1,0 +1,107 @@
+commit c3c03dc31a0bbc01610bbb04b2aba1dba966e903
+
+C03: «¿hace frío afuera?» lee el clima; el clima del pasado es un límite, no una lectura de hoy (BUILD2025)
+
+WEATHER2023: (1) «¿hace frío afuera?» preguntaba si quería el clima: la compuerta de lectura
+viva no tenía la cabeza «hace» ni las palabras frío/calor/cold/hot; ahora el frío o el calor de
+afuera es una lectura de clima. (2) El límite «qué clima hacía en Buenos Aires en 1990» disparó
+weather.current (el runner lo detuvo): un verbo en pasado o un año quedan fuera de la lectura y de
+la búsqueda viva, y el contrato de límites conocidos («weather.history») cierra el turno con la
+verdad: no hay lectura histórica. Pruebas en tests/test_reopen1993_weather.py.
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 0527f407b..e91990d54 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -135,7 +135,8 @@ def _public_calendar_fact_lookup_request(folded: str) -> bool:
+ 
+ _WEATHER_WORDS = (
+     r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|llover|"
+-    r"llovera|temperature|temperatura)\b"
++    # WEATHER2023 «¿hace frío afuera?»: the cold or the heat outside is the weather too.
++    r"llovera|llovio|temperature|temperatura|frio|fria|calor|cold|hot|caluroso|calurosa)\b"
+ )
+ 
+ 
+@@ -149,6 +150,15 @@ def _weather_lookup_query(text: str) -> str | None:
+         return None
+     if _has(folded, r"^[¿?¡!\s]*(?:que|what)\s+(?:es|son|is|are|significa|means)\b"):
+         return None
++    # WEATHER2023 boundary «qué clima hacía en Buenos Aires en 1990»: the past
++    # (a past-tense verb or a year) has no live read; the turn says so instead
++    # of reading today's weather.
++    if _has(
++        folded,
++        r"\b(?:hacia|hizo|hubo|estuvo|estaba|fue|llovio|was|were|did|rained)\b|"
++        r"\b(?:19|20)\d\d\b|\b(?:ayer|anteayer|yesterday|la\s+semana\s+pasada|last\s+week)\b",
++    ):
++        return None
+     query = text.strip(" \t\r\n¿?¡!.,;:")
+     query = re.sub(r"^(?:por favor|please)\s*[,:]?\s*", "", query, flags=re.IGNORECASE)
+     query = re.sub(
+@@ -613,6 +623,8 @@ def _public_live_lookup_request(folded: str) -> bool:
+     head = _request_head(folded)
+     weather_heads = {
+         "are",
++        # WEATHER2023 «¿hace frío afuera?», «hace calor hoy?»
++        "hace",
+         "busca",
+         "buscame",
+         "buscar",
+@@ -685,7 +697,12 @@ def _public_live_lookup_request(folded: str) -> bool:
+         folded,
+         r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|llover|"
+         r"umbrella|paraguas|temperature|temperatura|hot|caluroso|calurosa|"
+-        r"cold|frio|fria)\b",
++        r"cold|frio|fria|calor)\b",
++    ) and not _has(
++        # WEATHER2023 boundary: the weather of the past is no live lookup.
++        folded,
++        r"\b(?:hacia|hizo|hubo|estuvo|estaba|fue|llovio|was|were|did|rained)\b|"
++        r"\b(?:19|20)\d\d\b|\b(?:ayer|anteayer|yesterday|la\s+semana\s+pasada|last\s+week)\b",
+     )
+     # WEB1451 «qué pasó hoy en el mundo»: what happened today is the news.
+     todays_events = (
+@@ -3755,6 +3772,18 @@ def known_unsupported_effect_request(
+             and _has(folded, r"\b(?:en|on|in)\s+(?:amazon\s+)?(?:prime\s*video|primevideo|prime)\b"),
+             {"streaming.play.prime_video"},
+         ),
++        (
++            # WEATHER2023 boundary «qué clima hacía en Buenos Aires en 1990»:
++            # the weather of the past (a past-tense verb or a year) has no
++            # live read; weather.current reads today and tomorrow only.
++            _has(folded, _WEATHER_WORDS)
++            and _has(
++                folded,
++                r"\b(?:hacia|hizo|hubo|estuvo|estaba|fue|llovio|was|were|did|rained)\b|"
++                r"\b(?:19|20)\d\d\b|\b(?:ayer|anteayer|yesterday|la\s+semana\s+pasada|last\s+week)\b",
++            ),
++            {"weather.history"},
++        ),
+     )
+     return any(
+         matched and not supported & available for matched, supported in contracts
+diff --git a/tests/test_reopen1993_weather.py b/tests/test_reopen1993_weather.py
+index be60fb622..4005d2b67 100644
+--- a/tests/test_reopen1993_weather.py
++++ b/tests/test_reopen1993_weather.py
+@@ -89,3 +89,16 @@ def test_the_reply_carries_only_observed_numbers_and_the_place(text: str, asked:
+ def test_the_absences_have_their_own_cause_facts() -> None:
+     for code in ("weather_place_not_found", "weather_location_unavailable", "weather_service_unavailable"):
+         assert code in llm._CAUSE_FACT
++
++
++def test_the_cold_outside_is_a_weather_read() -> None:
++    # WEATHER2023 variant «¿hace frío afuera?»: a yes/no question about the cold outside reads the weather.
++    from baxy_mind import effect_intent
++    for text in ("¿hace frío afuera?", "hace calor hoy?", "is it cold outside?"):
++        intent = effect_intent.resolve_explicit_effects(text, ("weather.current", "web.search"), ("Steam",), ())
++        assert intent is not None and intent.operations == ("weather.current",), text
++    # WEATHER2023 boundary: the past has no live read.
++    for text in ("qué clima hacía en Buenos Aires en 1990", "llovió ayer?", "what was the weather in 2001"):
++        intent = effect_intent.resolve_explicit_effects(text, ("weather.current", "web.search"), ("Steam",), ())
++        assert intent is None or intent.operations != ("weather.current",), text
++        assert effect_intent.known_unsupported_effect_request(text, {"weather.current", "web.search"}), text

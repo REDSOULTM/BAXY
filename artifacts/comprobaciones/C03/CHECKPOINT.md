@@ -1,3 +1,289 @@
+## WEATHER2033 — estado vigente 2026-09-21T15:32:05.955163+00:00
+
+Parcial: 8 aprobados, 0 fallidos, 0 sin ejecutar; 4 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 667/742 | 75 | 0 | >=643 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 639 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WEATHER2033 añade 4. No se cuentan revalidaciones.
+
+Siguiente acción: WEATHER2033: 8 ejecutados, 8 aprobados, 0 fallidos, 4 créditos (índices [0, 1, 2, 3]). Siguiente: las filas de clima restantes y las tipadas de la Fase 5.
+
+Evidencia: `artifacts/comprobaciones/C03/WEATHER2033/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 169.95 s acumulados; pico GPU 3492.93 MiB; pico RAM 1995.56 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WEATHER2033 precedente. -->
+
+## WEATHER2031 — estado vigente 2026-09-21T15:08:13.533394+00:00
+
+Parcial: 7 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 663/742 | 79 | 0 | >=639 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 639 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WEATHER2031 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: WEATHER2031: 8 ejecutados, 7 aprobados, 1 fallidos, 0 créditos (índices []). Siguiente: las filas de clima restantes y las tipadas de la Fase 5.
+
+Evidencia: `artifacts/comprobaciones/C03/WEATHER2031/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 196.95 s acumulados; pico GPU 3492.93 MiB; pico RAM 2492.89 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WEATHER2031 precedente. -->
+
+## NEWS2029 — estado vigente 2026-09-21T14:32:43.233558+00:00
+
+Parcial: 7 aprobados, 1 fallidos, 0 sin ejecutar; 3 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 663/742 | 79 | 0 | >=639 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 636 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); NEWS2029 añade 3. No se cuentan revalidaciones.
+
+Siguiente acción: NEWS2029: 8 ejecutados, 7 aprobados, 1 fallidos, 3 créditos (índices [0, 1, 2]). Siguiente: WEATHER2031/2033 (las ocho filas de clima restantes) y las tipadas de la Fase 5.
+
+Evidencia: `artifacts/comprobaciones/C03/NEWS2029/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 247.34 s acumulados; pico GPU 3492.93 MiB; pico RAM 2458.44 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque NEWS2029 precedente. -->
+
+## NEWS2027 — estado vigente 2026-09-21T14:03:34.564035+00:00
+
+Parcial: 2 aprobados, 6 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 660/742 | 82 | 0 | >=636 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 636 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); NEWS2027 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: NEWS2027: 8 ejecutados, 2 aprobados, 6 fallidos, 0 créditos (índices []). Siguiente: WEATHER2029/2031 (las ocho filas de clima restantes) y las tipadas de la Fase 5.
+
+Evidencia: `artifacts/comprobaciones/C03/NEWS2027/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 348.25 s acumulados; pico GPU 3492.93 MiB; pico RAM 2539.16 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque NEWS2027 precedente. -->
+
+## WEATHER2025 — estado vigente 2026-09-21T13:27:04.963531+00:00
+
+Parcial: 8 aprobados, 0 fallidos, 0 sin ejecutar; 4 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 660/742 | 82 | 0 | >=636 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 632 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WEATHER2025 añade 4. No se cuentan revalidaciones.
+
+Siguiente acción: WEATHER2025: 8 ejecutados, 8 aprobados, 0 fallidos, 4 créditos (índices [0, 1, 2, 3]). Siguiente: las tipadas restantes (winget, Steam, noticias, energía, wifi de casa, zip, avión, fondo…) y msgany.
+
+Evidencia: `artifacts/comprobaciones/C03/WEATHER2025/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 180.88 s acumulados; pico GPU 3492.93 MiB; pico RAM 1819.33 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WEATHER2025 precedente. -->
+
+## WEATHER2023 — estado vigente 2026-09-21T12:49:46.499840+00:00
+
+Parcial: 6 aprobados, 2 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 656/742 | 86 | 0 | >=632 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 632 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WEATHER2023 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: WEATHER2023: 8 ejecutados, 6 aprobados, 2 fallidos, 0 créditos (índices []). Siguiente: las demás tipadas (noticias, winget, Steam, energía, wifi de casa…) y msgany.
+
+Evidencia: `artifacts/comprobaciones/C03/WEATHER2023/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 166.12 s acumulados; pico GPU 3492.93 MiB; pico RAM 1882.36 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WEATHER2023 precedente. -->
+
+## SEARCH2019 — estado vigente 2026-09-21T11:25:00.592397+00:00
+
+Parcial: 7 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 656/742 | 86 | 0 | >=632 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 631 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SEARCH2019 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: SEARCH2019: 8 ejecutados, 7 aprobados, 1 fallidos, 1 créditos (índices [0]). Siguiente: las tandas de las tipadas de la Fase 5 y msgany.
+
+Evidencia: `artifacts/comprobaciones/C03/SEARCH2019/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 283.06 s acumulados; pico GPU 3492.93 MiB; pico RAM 2546.20 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SEARCH2019 precedente. -->
+
+## SEARCH2015 — estado vigente 2026-09-21T10:58:05.436971+00:00
+
+Parcial: 7 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 655/742 | 87 | 0 | >=631 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 631 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SEARCH2015 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: SEARCH2015: 8 ejecutados, 7 aprobados, 1 fallidos, 0 créditos (índices []). Siguiente: las tandas de las tipadas de la Fase 5 y msgany.
+
+Evidencia: `artifacts/comprobaciones/C03/SEARCH2015/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 275.14 s acumulados; pico GPU 3492.93 MiB; pico RAM 2519.56 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SEARCH2015 precedente. -->
+
+## SEARCH2011 — estado vigente 2026-09-21T10:30:47.491377+00:00
+
+Parcial: 5 aprobados, 3 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 655/742 | 87 | 0 | >=631 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 630 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SEARCH2011 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: SEARCH2011: 8 ejecutados, 5 aprobados, 3 fallidos, 1 créditos (índices [1]). Siguiente: las tandas de las tipadas de la Fase 5 y msgany.
+
+Evidencia: `artifacts/comprobaciones/C03/SEARCH2011/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 330.49 s acumulados; pico GPU 3492.93 MiB; pico RAM 2539.54 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SEARCH2011 precedente. -->
+
+## SEARCH2005 — estado vigente 2026-09-21T09:59:47.664978+00:00
+
+Parcial: 5 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 654/742 | 88 | 0 | >=630 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 630 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SEARCH2005 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: SEARCH2005: 8 ejecutados, 5 aprobados, 3 fallidos, 0 créditos (índices []). Siguiente: las tandas de las tipadas de la Fase 5 y msgany.
+
+Evidencia: `artifacts/comprobaciones/C03/SEARCH2005/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 221.20 s acumulados; pico GPU 3492.93 MiB; pico RAM 2546.51 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SEARCH2005 precedente. -->
+
+## THEN2007 — estado vigente 2026-09-21T08:57:16.400208+00:00
+
+Parcial: 6 aprobados, 2 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 654/742 | 88 | 0 | >=630 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 629 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); THEN2007 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: THEN2007: 8 ejecutados, 6 aprobados, 2 fallidos, 1 créditos (índices [0]). Siguiente: SEARCH2005 y las tandas de las tipadas.
+
+Evidencia: `artifacts/comprobaciones/C03/THEN2007/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 197.50 s acumulados; pico GPU 3492.93 MiB; pico RAM 2412.73 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque THEN2007 precedente. -->
+
+## THEN2003 — estado vigente 2026-09-21T08:18:24.663658+00:00
+
+Parcial: 2 aprobados, 6 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 653/742 | 89 | 0 | >=629 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 629 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); THEN2003 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: THEN2003: 8 ejecutados, 2 aprobados, 6 fallidos, 0 créditos (índices []). Siguiente: SEARCH2005 y las tandas de las tipadas.
+
+Evidencia: `artifacts/comprobaciones/C03/THEN2003/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 209.11 s acumulados; pico GPU 3492.93 MiB; pico RAM 2524.80 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque THEN2003 precedente. -->
+
+## THEN2001 — estado vigente 2026-09-21T07:45:21.312659+00:00
+
+Parcial: 5 aprobados, 3 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 653/742 | 89 | 0 | >=629 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 628 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); THEN2001 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: THEN2001: 8 ejecutados, 5 aprobados, 3 fallidos, 1 créditos (índices [0]). Siguiente: la re-medición de «ponle hola» tras reparar el nombre de las apps de la Tienda en los finales de app.open, y SEARCH2003.
+
+Evidencia: `artifacts/comprobaciones/C03/THEN2001/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 199.75 s acumulados; pico GPU 3492.93 MiB; pico RAM 2395.56 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque THEN2001 precedente. -->
+
 ## CONTEXT1999 — estado vigente 2026-09-21T05:59:48.978896+00:00
 
 Parcial: 2 aprobados, 6 fallidos, 0 sin ejecutar; 0 créditos.

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-weather2031-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "src/baxy_mind/effect_intent.py (build 2025, commit c3c03dc31) sobre la tipada weather.current de opus/typed-tools (8edf110ac).",
+  "patch": "artifacts/comprobaciones/C03/WEATHER2031/SOURCE.patch",
+  "commits": [
+    "156727788"
+  ],
+  "build": "BUILD2031 (C03-repairs2031-build/BUILD_READY.json; mente)",
+  "cause_measured": "Las filas de clima restantes seguían abiertas tras WEATHER2025 (sólo cuatro literales por panel).",
+  "change": "Mismo motor: weather.current elegida por la mente, valores leídos citados por el compositor; sin cambio de fuente respecto del build 2025 (c3c03dc31).",
+  "measurement": "WEATHER2031: 7/8 aprobados (4 literales, 1 variante, 2 límites); 0 créditos. Sin crédito: sólo una variante aprobada; «how's the weather in Santiago» muere por exigir el nombre geocodificado entero («Santiago de Chile»); reparación en el commit siguiente y re-medición del panel.",
+  "credits": 0
+}

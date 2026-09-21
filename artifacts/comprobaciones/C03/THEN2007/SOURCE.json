@@ -1,0 +1,15 @@
+{
+  "schema": "c03-then2007-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "src/baxy_mind/llm.py and effect_intent.py, commit 03adcfe36 (opening in the past tense as state; typedText/typedInto and the echo veto; dative clitic prohibitions), already in Fast; the tanda build is the build of HEAD.",
+  "patch": "artifacts/comprobaciones/C03/THEN2007/SOURCE.patch",
+  "commits": [
+    "03adcfe36"
+  ],
+  "build": "BUILD2007 (C03-repairs2007-build/BUILD_READY.json; mente)",
+  "cause_measured": "Los finales de apertura y de tecleo no contaban lo hecho: veto de estado sobre «Abrí el Bloc de notas.» y eco del texto tecleado.",
+  "change": "La apertura en pasado es el estado; el final del tecleo cita el texto y nombra la ventana; «no le pongas» se reconoce como prohibición.",
+  "measurement": "THEN2007: 8 ejecutados, 6 aprobados (H0097 con dos variantes en español y los tres límites), 2 fallidos (las variantes en inglés: «I opened Notepad.» vetado por el nombre español de la app); 1 créditos. Arista del chequeo de nombre: el displayName es español y la respuesta inglesa nombra Notepad; se añade el alias bilingüe. La limpieza de la raíz restaura los bytes de TabState del Bloc de notas.",
+  "credits": 1
+}

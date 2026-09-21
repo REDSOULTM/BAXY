@@ -1,0 +1,105 @@
+{
+  "schema": "news2029-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-news2029-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-news2029-instrument-v1",
+  "seal_sha256": "e914f42bd6ed5e6e3d85b696831e92b1e14dbc61128f3d483256fea21d6346ac",
+  "runner_sha256": "5ac68f7212de75271cda5a9d6d2e61adafc44525bfb89cdc79b47f76d0cfc9a7",
+  "transport_seal_sha256": "154ceaf5b6ad36a15a307c1b77c42da42380a9e4546c70dae0587ff13a67eff5",
+  "files": {
+    "panel.json": "b3ac284b471610079cf4de46cf16adb6f2b4dbcacfe51d2dedbf115c4731b9a6",
+    "turns.jsonl": "f69f2bfed030dd8ceed513ab986f676c888952785dae9905410b76e024d723c8",
+    "case-map.json": "477f2128e0f33cea28fc8c0a680f4c2c28e03db074af6c49c00ba544acfc1bcb",
+    "PLAN.md": "899411541872301c9fc676a7f805503ce8a83ddc4f2cefdfc5dd968623fd86b8"
+  },
+  "counts": {
+    "cases": 8,
+    "historical_literals": 3,
+    "original_development_variants": 3,
+    "boundaries": 2,
+    "wire_lines": 16,
+    "session_controls": 8,
+    "ordinary_turns": 8,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 8,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 3,
+    "original_development_variant": 3,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0033",
+      "kind": "historical_literal",
+      "group": "news_read",
+      "credit_behavior": "news_read",
+      "text_sha256": "0b05fd6fbb73ae50223e788676a3719db35fc4399de117fbe92eb7925233c879",
+      "criterion_sha256": "d0b2786b7940f9ccb08946f77bfdb2c6e6bc5955d6803b7f62db5dd32e88375f"
+    },
+    {
+      "index": 1,
+      "case_id": "H0374",
+      "kind": "historical_literal",
+      "group": "news_read",
+      "credit_behavior": "news_read",
+      "text_sha256": "7c93412bc1d5c12b95ae143bd5ccf0bb7394c2cc86a24b7363ee1b8276bd5bbc",
+      "criterion_sha256": "d0b2786b7940f9ccb08946f77bfdb2c6e6bc5955d6803b7f62db5dd32e88375f"
+    },
+    {
+      "index": 2,
+      "case_id": "H0509",
+      "kind": "historical_literal",
+      "group": "news_read",
+      "credit_behavior": "news_read",
+      "text_sha256": "af0ec3207330ad02aabd51f5c1517e9a7a6d923fa129cff76a32208c0694a276",
+      "criterion_sha256": "d0b2786b7940f9ccb08946f77bfdb2c6e6bc5955d6803b7f62db5dd32e88375f"
+    },
+    {
+      "index": 3,
+      "case_id": "news2029-dev-01",
+      "kind": "original_development_variant",
+      "group": "news_read",
+      "credit_behavior": "news_read",
+      "text_sha256": "45880a80d0b84eaf5b0089b48e7d6e644bf34fd7c06e31c0c121bca2c202df4e",
+      "criterion_sha256": "d0b2786b7940f9ccb08946f77bfdb2c6e6bc5955d6803b7f62db5dd32e88375f"
+    },
+    {
+      "index": 4,
+      "case_id": "news2029-dev-02",
+      "kind": "original_development_variant",
+      "group": "news_read",
+      "credit_behavior": "news_read",
+      "text_sha256": "6bfd432770eee2bda720ba06ee5081e93d9bc7383a2020b46d79e904f546bb3c",
+      "criterion_sha256": "d0b2786b7940f9ccb08946f77bfdb2c6e6bc5955d6803b7f62db5dd32e88375f"
+    },
+    {
+      "index": 5,
+      "case_id": "news2029-dev-03",
+      "kind": "original_development_variant",
+      "group": "news_read",
+      "credit_behavior": "news_read",
+      "text_sha256": "b80bfb3875a5e8fc0bbaa69c60adf3dabe630d69d43168d3db7fab664e1d3140",
+      "criterion_sha256": "d0b2786b7940f9ccb08946f77bfdb2c6e6bc5955d6803b7f62db5dd32e88375f"
+    },
+    {
+      "index": 6,
+      "case_id": "news2029-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "cd969d08ed699a808413788847a3e03fc730dcb7b5631ba88923015957ac0356",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    },
+    {
+      "index": 7,
+      "case_id": "news2029-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "b017fc1ec068b31560ffdedf9327b5aff18896d100cda75c5fbec84117bc7702",
+      "criterion_sha256": "af0c0f71eba3a4406eb52cdb063fc8c1632724792c8141537da266bb3612c41c"
+    }
+  ]
+}

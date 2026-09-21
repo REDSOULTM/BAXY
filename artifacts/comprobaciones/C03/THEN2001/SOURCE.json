@@ -1,0 +1,15 @@
+{
+  "schema": "c03-then2001-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "src/Baxy.App/ProductConductorHost.cs, commit d71a228f4 (ExecuteReviewedAsync keeps the completionPhase asked by turn.playback-then when the first turn confirms nothing) and src/baxy_mind/llm.py (app.open finals name the app), already built and measured by Full; BUILD2001 is the build of HEAD.",
+  "patch": "artifacts/comprobaciones/C03/THEN2001/SOURCE.patch",
+  "commits": [
+    "d71a228f4a2b1c5fdf1b46fab022b05d9ad880d9"
+  ],
+  "build": "BUILD2001 (C03-repairs2001-build/BUILD_READY.json; App (instrumento))",
+  "cause_measured": "«Cancelá la alarma» tras poner una y «ponle hola» tras abrir el Bloc de notas terminaban en una pregunta aunque el contexto de la conversación era determinista; el conductor no servía un caso ordinario de dos turnos.",
+  "change": "turn.playback-then emite el primer turno sin confirmación como fase request y el literal como final; las lecturas de la auditoría semántica (e5258858f) (alarma de la sesión, texto deíctico) se miden.",
+  "measurement": "THEN2001: 8 ejecutados, 5 aprobados (H0011 con sus dos variantes y los dos límites), 3 fallidos (los tres de «ponle hola»: el primer turno abrió el Bloc de notas y no publicó final por el nombre de catálogo windows.notepad); 1 créditos. Regresión de la mente descubierta: el chequeo de nombre en finales de app.open (BUILD2001) tomó el id de catálogo de las apps de la Tienda como nombre; se repara (displayName primero) y se vuelve a medir H0097.",
+  "credits": 1
+}

@@ -105,12 +105,23 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # REOPEN1993: lecturas de la mente (candidato único, alarma de la sesión, otra ventana, mirar la pantalla, ponle texto)
 # C03 REOPEN1957 typed tools (opus/typed-tools): re-pin after the mind readings of the fifteen typed capabilities.
 # C03 post-goal: fusión de opus/typed-tools y BUILD2001 (nombre de app en app.open, turn.playback-then ordinario).
+# C03 post-goal: fusión de Fase 6/7 y BUILD2003 (otra ventana, ventana activa).
+# C03 post-goal: BUILD2005 (displayName en finales de app.open).
+# C03 post-goal: BUILD2007 (finales de app.open y de tecleo; prohibición con clítico).
+# C03 post-goal: BUILD2009 (alias bilingüe de apps).
+# C03 post-goal: BUILD2011 (busqueda: clitico, cortesia, sitio).
+# C03 post-goal: BUILD2013 (web.search en el shortlist; cortesia fuera del argumento).
+# C03 post-goal: BUILD2017 (vocabulario propio del informe de busqueda).
+# C03 post-goal: BUILD2021 (pista del veto de afirmacion sin fuente).
+# C03 post-goal: BUILD2021b (guarda de get en el shortlist).
+# C03 post-goal: fusion opus/typed-tools 8c268599b + BUILD2029 (fuentes de titulares observadas).
+# C03 post-goal: fusion e97802c9f + BUILD2033 (cabeza del lugar geocodificado).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "8c8bf9335a89b434a2b63b19390697928a79f718f00b1a4ae37c1507db16b429"
+        "2adc79658dc7f706fbcc70c29e60a2b102333d380a3f38928db6b2c3d56a217a"
     ),
     "src/baxy_mind/llm.py": (
-        "858dc664cc818c2c1263e478ab187f0743b1759b0b993831a90d6dc768c89098"
+        "13bcc095dbd747184edd6cd98041db014ade7c928d68cbacf30b8da68f37f8ae"
     ),
 }
 

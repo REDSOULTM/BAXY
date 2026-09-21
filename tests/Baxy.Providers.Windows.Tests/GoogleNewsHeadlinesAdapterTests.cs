@@ -49,6 +49,9 @@ public sealed class GoogleNewsHeadlinesAdapterTests
             Assert.That(headlines[0].GetProperty("publishedAt").GetString(), Is.EqualTo("Sun, 20 Sep 2026 21:10:00 GMT"));
             Assert.That(headlines[1].GetProperty("source").GetString(), Is.EqualTo("Emol"));
             Assert.That(result.GetProperty("authority").GetString(), Is.EqualTo("google_news_rss_es419_cl"));
+            // NEWS2029: the redirect link is not part of the result (it blew the visible-facts cap).
+            Assert.That(headlines[0].TryGetProperty("url", out _), Is.False);
+            Assert.That(result.GetRawText().Length, Is.LessThan(2048));
         });
     }
 

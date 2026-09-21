@@ -21,6 +21,11 @@ AVAILABLE = frozenset({"web.search", "weather.current", "web.news.headlines", "s
         ("dame los titulares", None),
         ("noticias de tecnología", "tecnología"),
         ("news about Chile today", "Chile"),
+        # NEWS2027 variants: a question about the news and a bare «top news».
+        ("top news today", None),
+        ("qué noticias hay de tecnología", "tecnología"),
+        ("what's the latest news", None),
+        ("cuáles son los titulares de deportes", "deportes"),
     ],
 )
 def test_news_requests_are_a_typed_headlines_read(text: str, topic: str | None) -> None:
@@ -37,6 +42,9 @@ def test_news_requests_are_a_typed_headlines_read(text: str, topic: str | None) 
         "busca el archivo noticias.txt",
         "buscá noticias de hoy y decime la hora",
         "qué significa la palabra noticias",
+        "qué es una noticia",
+        "qué pasó ayer en mi casa",
+        "no quiero noticias",
     ],
 )
 def test_other_requests_keep_their_own_reader(text: str) -> None:
@@ -75,3 +83,30 @@ def test_a_portal_listing_instead_of_headlines_is_missing_state() -> None:
 def test_the_absences_have_their_own_cause_facts() -> None:
     for code in ("news_feed_unavailable", "news_feed_unreadable", "news_feed_empty", "news_topic_without_headlines"):
         assert code in llm._CAUSE_FACT
+
+
+def test_a_dotted_source_name_is_observed_data_not_an_internal_code() -> None:
+    # NEWS2027 case 0: «… (cooperativa.cl); … (dw.com).» was vetoed as internal_code by both guards.
+    from baxy_mind.observed_response_literals import without_observed_names
+    from test_c03_window_state_facts import Recorder
+    seen = {
+        "edition": "es-419/CL",
+        "count": 3,
+        "headlines": [
+            {"title": "Mulas, cuatrimotos y extraños uniformes: las curiosidades de la Parada Militar 2026", "source": "cooperativa.cl", "publishedAt": "Mon, 21 Sep 2026 12:00:00 GMT"},
+            {"title": "Alternativa para Alemania: muchos votos, poco poder", "source": "dw.com", "publishedAt": "Mon, 21 Sep 2026 11:00:00 GMT"},
+            {"title": "Sube el dólar tras el anuncio", "source": "Emol", "publishedAt": "Mon, 21 Sep 2026 10:00:00 GMT"},
+        ],
+    }
+    situation = {"kind": "operation", "operation": "web.news.headlines", "polarity": "success", "verified": True,
+                 "succeeded": True, "observed": seen}
+    masked = without_observed_names("Alternativa para Alemania: muchos votos, poco poder (dw.com).", situation)
+    assert "dw.com" not in masked and "Alternativa" not in masked
+    answer = (
+        "Mulas, cuatrimotos y extraños uniformes: las curiosidades de la Parada Militar 2026 (cooperativa.cl); "
+        "Alternativa para Alemania: muchos votos, poco poder (dw.com); Sube el dólar tras el anuncio (Emol)."
+    )
+    client = Recorder([answer])
+    facts = {"situation": situation, "operation": "web.news.headlines", "seen": seen}
+    assert client.compose_user_message("buscá noticias de hoy", "status", facts) == answer
+    assert len(client.requests) == 1

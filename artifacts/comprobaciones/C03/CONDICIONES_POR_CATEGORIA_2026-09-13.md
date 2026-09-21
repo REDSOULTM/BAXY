@@ -1718,3 +1718,55 @@ Abrir aplicaciones pasa de 49/54 a 49/54 con abrir sin preguntar el nombre mal o
 ## Actualización 2026-09-21 (CONTEXT1999)
 
 Organizar ventanas y pestañas pasa de 11/13 a 11/13 con cambiar a la ventana de atras y mirar la pantalla cuando el contexto es determinista (commit b720e9a8, BUILD1999) (HEAD b720e9a8): 8 ejecutados, 2 aprobados (los límites), 6 fallidos (3 de otra ventana: enfocó un widget sin título de DisplayFusion; 3 de mirar: leyó toda la pantalla y citó la barra de Steam, no el diálogo de delante), 0 créditos. Dos defectos de fundamentación de la mente: la otra ventana debe ser la primera ventana con título y de tamaño visible por detrás de la del foco; «lo» sin antecedente es la ventana activa, no todo el escritorio. Reparados en el commit siguiente; se vuelve a medir.
+
+## Actualización 2026-09-21 (THEN2001)
+
+Alarmas, recordatorios, tareas y agenda pasa de 37/38 a 38/38 con cancelar la alarma de la sesion y escribir en la app recien abierta sin preguntar (commit b3b29bd0, BUILD2001) (HEAD b3b29bd0): 8 ejecutados, 5 aprobados (H0011 con sus dos variantes y los dos límites), 3 fallidos (los tres de «ponle hola»: el primer turno abrió el Bloc de notas y no publicó final por el nombre de catálogo windows.notepad), 1 créditos. Regresión de la mente descubierta: el chequeo de nombre en finales de app.open (BUILD2001) tomó el id de catálogo de las apps de la Tienda como nombre; se repara (displayName primero) y se vuelve a medir H0097. La categoría queda cerrada.
+
+## Actualización 2026-09-21 (THEN2003)
+
+Interacción dentro de aplicaciones pasa de 12/22 a 12/22 con escribir en la app recien abierta sin preguntar (commit 6bce0d97, BUILD2003) (HEAD 6bce0d97): 8 ejecutados, 2 aprobados (dos límites), 6 fallidos (cuatro sin final tras abrir el Bloc de notas por la regla de estado; uno con el tecleo verificado pero el final como eco; un límite de prohibición no reconocido), 0 créditos. Dos defectos del composer: la regla de estado veta «Abrí el Bloc de notas.» y el final del tecleo repite el texto sin decir que lo escribió. Reparados en el commit siguiente; se vuelve a medir H0097.
+
+## Actualización 2026-09-21 (THEN2007)
+
+Interacción dentro de aplicaciones pasa de 12/22 a 13/22 con escribir en la app recien abierta sin preguntar (commit 6ff50ec8, BUILD2007) (HEAD 6ff50ec8): 8 ejecutados, 6 aprobados (H0097 con dos variantes en español y los tres límites), 2 fallidos (las variantes en inglés: «I opened Notepad.» vetado por el nombre español de la app), 1 créditos. Arista del chequeo de nombre: el displayName es español y la respuesta inglesa nombra Notepad; se añade el alias bilingüe. La limpieza de la raíz restaura los bytes de TabState del Bloc de notas.
+
+## Actualización 2026-09-21 (SEARCH2005)
+
+Navegación y búsqueda web pasa de 42/46 a 42/46 con buscar recetas de pizza y Transformers con resultados pertinentes (commit e9d71375, BUILD2005) (HEAD e9d71375): 8 ejecutados, 5 aprobados (los dos literales, «search Transformers» y los dos límites), 3 fallidos (informe en inglés sin sitios; «buscame» no reconocido; «porfa» dentro de la consulta), 0 créditos. Tres defectos de la mente: la regla de fuente aceptaba títulos sin sitio, la gramática de búsqueda no tiene el clítico «buscame» y la cortesía final no se recorta de la consulta. Reparados en el commit siguiente; se vuelve a medir.
+
+## Actualización 2026-09-21 (SEARCH2011)
+
+Navegación y búsqueda web pasa de 42/46 a 43/46 con buscar recetas de pizza y Transformers con resultados pertinentes y su sitio (commit 5e6f2fbc, BUILD2011) (HEAD 5e6f2fbc): 8 ejecutados, 5 aprobados (H0380 con sus dos variantes en inglés y los dos límites), 3 fallidos (H0098 por varianza contra WEB1889; «buscame» sin web.search en el shortlist; «porfa» dentro del argumento), 1 créditos. Dos reparaciones más de la mente (web.search visible para una búsqueda pública reconocida; cortesía fuera del argumento) y re-medición de H0098; el caso 4 se re-ejecutó solo tras un abortado de preflight de la raíz.
+
+## Actualización 2026-09-21 (SEARCH2015)
+
+Navegación y búsqueda web pasa de 43/46 a 43/46 con buscar recetas de pizza con resultados pertinentes y su sitio (commit 7910c610, BUILD2015) (HEAD 7910c610): 8 ejecutados, 7 aprobados (las cuatro variantes y los tres límites), 1 fallido (el literal: borrador correcto vetado por WEB1889 por palabras de narración del informe), 0 créditos. La regla de afirmación sin fuente veta las palabras de narración del propio informe; se amplía su vocabulario propio y se vuelve a medir H0098.
+
+## Actualización 2026-09-21 (SEARCH2019)
+
+Navegación y búsqueda web pasa de 43/46 a 44/46 con buscar recetas de pizza con resultados pertinentes y su sitio (commit a17670a8, BUILD2019) (HEAD a17670a8): 8 ejecutados, 7 aprobados (H0098 con tres variantes y los tres límites), 1 fallido (una variante sin final: una palabra sin fuente y reintentos con direcciones pegadas), 1 créditos. La pista de reintento del veto de afirmación sin fuente se repara para nombrar las palabras y conservar el informe; la lectura de búsqueda queda medida.
+
+## Actualización 2026-09-21 (WEATHER2023)
+
+Información web actual pasa de 3/17 a 3/17 con el clima se lee de un servicio de pronóstico, no de una búsqueda (commit be90f56b, BUILD2023) (HEAD be90f56b): 8 ejecutados, 6 aprobados (los cuatro literales, la variante en inglés y el límite de prohibición), 2 fallidos («¿hace frío afuera?» preguntó; el límite del pasado leyó el clima de hoy), 0 créditos. La lectura de clima gana la cabeza «hace» y las palabras frío/calor, y excluye el pasado (verbo en pasado o año); se vuelve a medir el panel.
+
+## Actualización 2026-09-21 (WEATHER2025)
+
+Información web actual pasa de 3/17 a 6/17 con el frío y el calor de afuera son el clima; el clima del pasado es un límite (commit 2ecbaff1, BUILD2025) (HEAD 2ecbaff1): 8/8 aprobados (4 literales, 2 variantes, 2 límites), 4 créditos. Cuatro créditos: H0415, H0339, H0617 (Información web actual 6/17) y H0708 (Navegación y búsqueda web 45/46); «¿hace frío afuera?» lee el clima y el clima de 1990 es un límite honesto.
+
+## Actualización 2026-09-21 (NEWS2027)
+
+Información web actual pasa de 6/17 a 6/17 con las noticias de hoy son titulares leídos, no una búsqueda (commit 5aca1a37, BUILD2027) (HEAD 5aca1a37): 2/8 aprobados (0 literales, 0 variantes, 2 límites), 0 créditos. Sin crédito: las seis lecturas de titulares se verifican pero los finales mueren por internal_code (fuentes con dominio); reparación en BUILD2029 y re-medición como NEWS2029.
+
+## Actualización 2026-09-21 (NEWS2029)
+
+Información web actual pasa de 6/17 a 9/17 con los titulares se citan con su fuente aunque la fuente sea un dominio (commit f764e171, BUILD2029) (HEAD f764e171): 7/8 aprobados (3 literales, 2 variantes, 2 límites), 3 créditos. Tres créditos: H0033, H0374, H0509 (Información web actual 9/17); «dame los titulares de deportes» falla por el tope de 4096 del mensaje de hechos visibles (enlaces largos en el resultado) y se repara en el commit siguiente.
+
+## Actualización 2026-09-21 (WEATHER2031)
+
+Información web actual pasa de 9/17 a 9/17 con el clima se lee de un servicio de pronóstico: las filas restantes (commit a52833f1, BUILD2031) (HEAD a52833f1): 7/8 aprobados (4 literales, 1 variante, 2 límites), 0 créditos. Sin crédito: sólo una variante aprobada; «how's the weather in Santiago» muere por exigir el nombre geocodificado entero («Santiago de Chile»); reparación en el commit siguiente y re-medición del panel.
+
+## Actualización 2026-09-21 (WEATHER2033)
+
+Información web actual pasa de 9/17 a 13/17 con el clima se lee de un servicio de pronóstico: las filas restantes (commit bd18c32e, BUILD2033) (HEAD bd18c32e): 8/8 aprobados (4 literales, 2 variantes, 2 límites), 4 créditos. Cuatro créditos: H0061, H0478, H0590, H0699 (Información web actual 13/17); las dos variantes leen la ciudad pedida y contestan lluvia y mañana con los valores leídos.

@@ -89,3 +89,29 @@ def test_the_reply_carries_only_observed_numbers_and_the_place(text: str, asked:
 def test_the_absences_have_their_own_cause_facts() -> None:
     for code in ("weather_place_not_found", "weather_location_unavailable", "weather_service_unavailable"):
         assert code in llm._CAUSE_FACT
+
+
+def test_the_cold_outside_is_a_weather_read() -> None:
+    # WEATHER2023 variant «¿hace frío afuera?»: a yes/no question about the cold outside reads the weather.
+    from baxy_mind import effect_intent
+    for text in ("¿hace frío afuera?", "hace calor hoy?", "is it cold outside?"):
+        intent = effect_intent.resolve_explicit_effects(text, ("weather.current", "web.search"), ("Steam",), ())
+        assert intent is not None and intent.operations == ("weather.current",), text
+    # WEATHER2023 boundary: the past has no live read.
+    for text in ("qué clima hacía en Buenos Aires en 1990", "llovió ayer?", "what was the weather in 2001"):
+        intent = effect_intent.resolve_explicit_effects(text, ("weather.current", "web.search"), ("Steam",), ())
+        assert intent is None or intent.operations != ("weather.current",), text
+        assert effect_intent.known_unsupported_effect_request(text, {"weather.current", "web.search"}), text
+
+
+def test_the_head_of_the_geocoded_place_names_it() -> None:
+    # WEATHER2031 «how's the weather in Santiago»: observed location «Santiago de Chile», reply says «Santiago».
+    from baxy_mind import llm
+    seen = {"location": "Santiago de Chile", "region": "Región Metropolitana", "country": "Chile", "temperatureC": 15.3,
+            "apparentC": 15.2, "humidityPercent": 60, "windKmh": 3.4, "precipitationMm": 0, "condition": "mayormente despejado",
+            "today": {"maxC": 20.4, "minC": 9, "rainProbabilityPercent": 78},
+            "tomorrow": {"date": "2026-09-22", "maxC": 24.1, "minC": 11, "rainProbabilityPercent": 0}}
+    payload = {"operation": "weather.current", "seen": seen}
+    reply = "The weather in Santiago is 15.3°C, mostly clear. Wind is 3.4 km/h, humidity is 60%."
+    assert llm._weather_fact_defect(reply, payload, "how's the weather in Santiago") == ""
+    assert llm._weather_fact_defect("It is 15.3°C, mostly clear.", payload, "how's the weather in Santiago") == "missing_state"

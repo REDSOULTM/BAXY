@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from baxy_mind.effect_intent import (
+    message_request_any_channel,
     resolve_explicit_clarification_intent,
     resolve_explicit_effects,
 )
@@ -93,18 +94,20 @@ def test_every_opened_r3_mind_action_has_a_deterministic_contract_oracle(
 def test_every_opened_r3_clarification_preserves_zero_effects(
     row: dict[str, object],
 ) -> None:
-    assert resolve_explicit_effects(
-        str(row["text"]),
-        AVAILABLE,
-        APPLICATIONS,
-    ) is None
-    clarification = resolve_explicit_clarification_intent(
-        str(row["text"]),
-        AVAILABLE,
-    )
-    assert clarification is not None
-    assert clarification.operations == ("message.send",)
-    assert "channel" in clarification.missing_fields
+    effect = resolve_explicit_effects(str(row["text"]), AVAILABLE, APPLICATIONS)
+    clarification = resolve_explicit_clarification_intent(str(row["text"]), AVAILABLE)
+    if message_request_any_channel(str(row["text"])) is not None:
+        # REOPEN1993 grupo E (D24, 3bba9bdc3): a message naming a recipient and no
+        # client is looked up in the clients (WhatsApp, Discord) and sent when the
+        # hit is unique; the client is asked only when the person is in none or both.
+        assert effect is not None
+        assert effect.operations == ("message.recipient.resolve", "message.send")
+        assert clarification is None
+    else:
+        assert effect is None
+        assert clarification is not None
+        assert clarification.operations == ("message.send",)
+        assert "channel" in clarification.missing_fields
 
 
 @pytest.mark.parametrize(
@@ -115,10 +118,18 @@ def test_every_opened_r3_clarification_preserves_zero_effects(
         "Display the typing layout in a keyboard manual",
         "Tell me whether Steam is installed on another computer",
         "Display habitual automations from a public article",
-        "Message Noah that Discord is a meeting tool",
         "Tell me which window of opportunity is in front",
         "Check the present state of locally stored memories on my phone",
     ],
 )
 def test_r3_neighboring_domains_do_not_gain_effect_authority(text: str) -> None:
     assert resolve_explicit_effects(text, AVAILABLE, APPLICATIONS) is None
+
+
+def test_r3_message_naming_a_client_inside_its_text_is_still_a_message() -> None:
+    # REOPEN1993 grupo E (D24, 3bba9bdc3): «Message Noah that Discord is a meeting tool»
+    # names a recipient and no client (Discord is part of the text), so the recipient
+    # is looked up in the clients and the message sent when the hit is unique.
+    effect = resolve_explicit_effects("Message Noah that Discord is a meeting tool", AVAILABLE, APPLICATIONS)
+    assert effect is not None
+    assert effect.operations == ("message.recipient.resolve", "message.send")

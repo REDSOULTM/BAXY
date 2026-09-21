@@ -135,7 +135,8 @@ def _public_calendar_fact_lookup_request(folded: str) -> bool:
 
 _WEATHER_WORDS = (
     r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|llover|"
-    r"llovera|temperature|temperatura)\b"
+    # WEATHER2023 «¿hace frío afuera?»: the cold or the heat outside is the weather too.
+    r"llovera|llovio|temperature|temperatura|frio|fria|calor|cold|hot|caluroso|calurosa)\b"
 )
 
 
@@ -148,6 +149,15 @@ def _weather_lookup_query(text: str) -> str | None:
     if not _public_live_lookup_request(folded) or not _has(folded, _WEATHER_WORDS):
         return None
     if _has(folded, r"^[¿?¡!\s]*(?:que|what)\s+(?:es|son|is|are|significa|means)\b"):
+        return None
+    # WEATHER2023 boundary «qué clima hacía en Buenos Aires en 1990»: the past
+    # (a past-tense verb or a year) has no live read; the turn says so instead
+    # of reading today's weather.
+    if _has(
+        folded,
+        r"\b(?:hacia|hizo|hubo|estuvo|estaba|fue|llovio|was|were|did|rained)\b|"
+        r"\b(?:19|20)\d\d\b|\b(?:ayer|anteayer|yesterday|la\s+semana\s+pasada|last\s+week)\b",
+    ):
         return None
     query = text.strip(" \t\r\n¿?¡!.,;:")
     query = re.sub(r"^(?:por favor|please)\s*[,:]?\s*", "", query, flags=re.IGNORECASE)
@@ -257,7 +267,10 @@ def _news_topic(text: str) -> str | None:
         return None
     stripped = _strip_request_envelope(text.strip())
     match = re.search(
-        r"\b(?:noticias?|news|titulares|headlines)\s+(?:de|del|sobre|acerca\s+de|about|on|of)\s+"
+        # NEWS2027 «qué noticias hay de tecnología»: «hay» may sit between the
+        # news word and its topic.
+        r"\b(?:noticias?|news|titulares|headlines)\s+(?:hay\s+|tenes\s+|tienes\s+|are\s+there\s+|is\s+there\s+)?"
+        r"(?:de|del|sobre|acerca\s+de|about|on|of)\s+"
         r"(?P<topic>[^,;:.!?]+?)\s*(?:\b(?:de\s+hoy|hoy|today|ahora|now)\b)?\s*[.!?]*$",
         stripped,
         re.IGNORECASE,
@@ -613,6 +626,8 @@ def _public_live_lookup_request(folded: str) -> bool:
     head = _request_head(folded)
     weather_heads = {
         "are",
+        # WEATHER2023 «¿hace frío afuera?», «hace calor hoy?»
+        "hace",
         "busca",
         "buscame",
         "buscar",
@@ -667,6 +682,17 @@ def _public_live_lookup_request(folded: str) -> bool:
             "news",
             "noticias",
             "titulares",
+            # NEWS2027 «qué noticias hay de tecnología», «top news today»,
+            # «what's the news», «cuáles son los titulares», «últimas noticias»
+            "que",
+            "cuales",
+            "what",
+            "which",
+            "top",
+            "latest",
+            "ultimas",
+            "hay",
+            "any",
         }
         or news_consumption
     ) and _has(
@@ -685,7 +711,12 @@ def _public_live_lookup_request(folded: str) -> bool:
         folded,
         r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|llover|"
         r"umbrella|paraguas|temperature|temperatura|hot|caluroso|calurosa|"
-        r"cold|frio|fria)\b",
+        r"cold|frio|fria|calor)\b",
+    ) and not _has(
+        # WEATHER2023 boundary: the weather of the past is no live lookup.
+        folded,
+        r"\b(?:hacia|hizo|hubo|estuvo|estaba|fue|llovio|was|were|did|rained)\b|"
+        r"\b(?:19|20)\d\d\b|\b(?:ayer|anteayer|yesterday|la\s+semana\s+pasada|last\s+week)\b",
     )
     # WEB1451 «qué pasó hoy en el mundo»: what happened today is the news.
     todays_events = (
@@ -3756,6 +3787,18 @@ def known_unsupported_effect_request(
             _has(folded, r"\b(?:pon|pone|poneme|ponme|poné|reproduce|reproduci|reprodúceme|play|put(?:\s+on)?|start|inicia|dale|ver|mira|mirar|watch|quiero\s+ver|quisiera\s+ver)\b")
             and _has(folded, r"\b(?:en|on|in)\s+(?:amazon\s+)?(?:prime\s*video|primevideo|prime)\b"),
             {"streaming.play.prime_video"},
+        ),
+        (
+            # WEATHER2023 boundary «qué clima hacía en Buenos Aires en 1990»:
+            # the weather of the past (a past-tense verb or a year) has no
+            # live read; weather.current reads today and tomorrow only.
+            _has(folded, _WEATHER_WORDS)
+            and _has(
+                folded,
+                r"\b(?:hacia|hizo|hubo|estuvo|estaba|fue|llovio|was|were|did|rained)\b|"
+                r"\b(?:19|20)\d\d\b|\b(?:ayer|anteayer|yesterday|la\s+semana\s+pasada|last\s+week)\b",
+            ),
+            {"weather.history"},
         ),
     )
     return any(
@@ -7775,7 +7818,8 @@ def _negative_action_forms(folded: str) -> tuple[str, ...]:
 
     found = re.match(
         r"^[¡!\s]*(?:(?P<es>no|nunca|jamas)\s+"
-        r"(?:(?:me|lo|la|los|las|nos)\s+)?|(?:never|don't|dont|do\s+not)\s+)"
+        # THEN2003 «No le pongas nada.»: the dative clitic (le/les) sits before the verb too.
+        r"(?:(?:me|te|le|les|lo|la|los|las|nos)\s+)?|(?:never|don't|dont|do\s+not)\s+)"
         r"(?P<verb>[a-z]+)\b",
         folded,
     )
@@ -10711,7 +10755,8 @@ _SCHEDULING_BY_ITSELF = (
     r"recordatorio|recordatorios|reminder|reminders|"
     r"alarma|alarmas|alarm|alarms|temporizador|temporizadores|timer|timers)"
 )
-_SEARCH = r"(?:busc[aá]|buscar|encuentra|search|find|look\s+up)"
+# SEARCH2005 «dale, buscame recetas de pizza»: the clitic forms head a search too.
+_SEARCH = r"(?:busc[aá](?:me|melo|mela|mel[oa]s)?|buscar|encuentra|search|find|look\s+up)"
 # Verbs for catalog effects that this conservative recognizer does not
 # necessarily classify itself.  They are used only as clause boundaries: if a
 # compound request contains one of them and the following clause cannot be
@@ -16157,12 +16202,20 @@ def _direct_public_search_query(text: str) -> str | None:
     if match is None:
         return None
     query = match.group("query").strip(" \t.,;:!?\"'“”«»")
+    # SEARCH2005 «Buscá Transformers, porfa»: a trailing courtesy is not part of the query.
+    query = re.sub(
+        r"\s*[,;]?\s*(?:por\s+favor|porfa|porfi|please|pls|plz|dale|gracias|thanks)\s*$",
+        "",
+        query,
+        flags=re.IGNORECASE,
+    ).strip(" \t.,;:!?\"'“”«»")
     folded = _fold(text)
     if (
         not query
         or _has(_fold(query), r"^(?:for|en|on)[.!?]*$")
         or not effect_request_is_authoritative(text)
-        or len(_request_clauses(folded)) != 1
+        # SEARCH2005 «dale, buscame recetas de pizza»: the opener is envelope, not a clause.
+        or len(_request_clauses(_fold(_strip_request_envelope(text)))) != 1
         or _has(
             folded,
             r"\b(?:mi|mis|my|our|nuestros?|nuestras?|tus?|your|"
@@ -17614,17 +17667,21 @@ def folder_txt_zip_open_mission(text: str) -> str | None:
     if _is_negative_effect_clause(folded):
         return None
     match = re.search(
-        rf"\b(?:crea|crear|creame|create|make|haz|hace)\s+(?:una\s+|a\s+)?(?:carpeta|folder|directorio|directory)"
+        # ZIP (typed tandas): «armá una carpeta en el escritorio con un txt, comprimila y
+        # abrí el zip», «make a folder on the desktop with a txt inside, zip it and open the zip».
+        rf"\b(?:crea|crear|creame|create|make|haz|hace|arma|armar|armame)\s+(?:una\s+|a\s+)?(?:carpeta|folder|directorio|directory)"
         rf"(?:\s+(?:nueva|new))?\s+(?:en|on|in)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS})\b",
         folded,
     )
     if match is None:
         return None
-    if not _has(folded, r"\b(?:mete|meter|pone|pon|poner|crea|crear|guarda|put|add|create)\b.{0,20}\b(?:txt|archivo\s+de\s+texto|text\s+file|archivo\s+txt)\b"):
+    if not _has(folded, r"\b(?:mete|meter|pone|pon|poner|crea|crear|guarda|put|add|create|con|with)\b.{0,20}\b(?:txt|archivo\s+de\s+texto|text\s+file|archivo\s+txt)\b"):
         return None
     if not _has(folded, r"\b(?:comprim\w+|zip\w*|compress\w*)\b"):
         return None
-    if not _has(folded, r"\b(?:abre|abri|abrir|abrilo|abrila|open)\b.{0,12}\b(?:zip|comprimid[oa]|archive)\b"):
+    if not _has(folded, r"\b(?:abre|abri|abrir|abrilo|abrila|open)\b.{0,12}\b(?:zip|comprimid[oa]|archive)\b") and not _has(
+        folded, r"\b(?:comprim\w+|zip\w*|compress\w*)\b.{0,12}\b(?:y|and|,)?\s*(?:abrila|abrilo|abrela|abrelo|open\s+it)\s*$"
+    ):
         return None
     return _KNOWN_FOLDER_ENUM.get(match.group("folder"))
 
@@ -17687,7 +17744,10 @@ def wallpaper_request(text: str) -> dict[str, str | None] | None:
     if not _has(folded, r"\b(?:cambia|cambiar|cambiame|pon|pone|poneme|poner|establece|coloca|usa|change|set|put|use|make)\b"):
         return None
     colour = re.search(
-        r"\b(?:a|al|de\s+color|en|to|color)\s+(?P<color>azul|rojo|verde|negro|blanco|gris|amarillo|naranja|violeta|morado|rosa|celeste|marron|"
+        # WALLPAPER (typed tandas): «poné el fondo de escritorio verde» names the
+        # colour right after the noun, without «a» or «de color».
+        r"(?:\b(?:a|al|de\s+color|en|to|color)\s+|\b(?:pantalla|escritorio|fondo|wallpaper|background)\s+)"
+        r"(?P<color>azul|rojo|verde|negro|blanco|gris|amarillo|naranja|violeta|morado|rosa|celeste|marron|"
         r"blue|red|green|black|white|gray|grey|yellow|orange|purple|pink|lightblue|brown|#?[0-9a-f]{6})\b",
         folded,
     )
@@ -19181,6 +19241,20 @@ def deictic_text_to_type(
     return literal or None
 
 
+def deictic_typed_literal(text: str) -> str | None:
+    """The literal a «ponle X» / «write on it X» order asks to type, from the
+    request alone (the composer has no history; the reader verified the
+    application before the effect ran)."""
+
+    original = re.search(
+        r"(?i)(?:pon[eé]?le|ponele|pon[eé]?melo|put\s+on\s+it|write\s+on\s+it)\s+(?P<text>.+?)"
+        r"(?:\s+(?:ahora|ya|now|please|por\s+favor|porfa))*[\s.!?]*$",
+        (text or "").strip(),
+    )
+    literal = original.group("text").strip() if original is not None else ""
+    return literal or None
+
+
 def other_window_switch_request(text: str) -> bool:
     """True for a switch to «la otra/anterior/siguiente ventana» with no other clause."""
 
@@ -19589,12 +19663,15 @@ def resolve_explicit_effects(
         # window.focus; window.resolve (its prerequisite) binds the window.
         return EffectIntent(("window.focus",), (folded,))
     if (
-        {"capture.screenshot", "ocr.read"} <= available
+        {"capture.active.window", "ocr.read"} <= available
         and deictic_look_request(text)
         and previous_user_text is None
     ):
-        # REOPEN1993 H0528: nothing named earlier, so «lo» is the screen.
-        return EffectIntent(("capture.screenshot", "ocr.read"), (folded, folded))
+        # REOPEN1993 H0528: nothing named earlier, so «lo» is what is in
+        # front of the person. CONTEXT1999: the whole screen read Steam's menu
+        # bar and an editor before the dialog in front; the active window is
+        # what «lo» names, and the rest of the desktop is not read.
+        return EffectIntent(("capture.active.window", "ocr.read"), (folded, folded))
     if (
         "input.text.type" in available
         and deictic_text_to_type(text, previous_user_text, authenticated_applications) is not None
