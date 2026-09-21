@@ -72,8 +72,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # C03 post-goal: BUILD2009 (alias bilingüe de apps).
 # C03 post-goal: BUILD2011 (busqueda: clitico, cortesia, sitio).
 # C03 post-goal: BUILD2013 (web.search en el shortlist; cortesia fuera del argumento).
+# C03 post-goal: BUILD2017 (vocabulario propio del informe de busqueda).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "8a8670fc3d0bcd51bdad07fb3bd913a1402f72b892ebd74b4e087ed2947203ca"
+    "3d50cea4717a78611c560119ed0d4156331122e11cb9198811253291c4a67478"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
