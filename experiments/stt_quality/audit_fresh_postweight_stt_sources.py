@@ -75,8 +75,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # C03 post-goal: BUILD2017 (vocabulario propio del informe de busqueda).
 # C03 post-goal: BUILD2021 (pista del veto de afirmacion sin fuente).
 # C03 post-goal: BUILD2021b (guarda de get en el shortlist).
+# C03 post-goal: BUILD2025 (frio/calor y clima del pasado).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "3034058d8a73f4d23e8c9bbeaf4f29b3571cba0cb225fb65d5c8b8fb808f7ba9"
+    "3f65e9758e22928684a509a6f5d14095be74dffd8b405e1f1afdb433e38d28e7"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
