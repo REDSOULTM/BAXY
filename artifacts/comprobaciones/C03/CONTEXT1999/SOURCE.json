@@ -1,0 +1,15 @@
+{
+  "schema": "c03-context1999-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "no source change (measurement of the BUILD1995 readings other_window_switch_request and deictic_look_request, and of the window.focus grounding from the window.resolve observation).",
+  "patch": "artifacts/comprobaciones/C03/CONTEXT1999/SOURCE.patch",
+  "commits": [
+    "b720e9a8ecc426872699ca04fcac22463dbb96b1"
+  ],
+  "build": "BUILD1999 (C03-repairs1999-build/BUILD_READY.json; sin cambio de codigo)",
+  "cause_measured": "«La otra ventana» y «lo» sin antecedente terminaban en una pregunta aunque el contexto era determinista.",
+  "change": "Ninguno en el código: se mide la lectura de BUILD1995.",
+  "measurement": "CONTEXT1999: 8 ejecutados, 2 aprobados (los límites), 6 fallidos (3 de otra ventana: enfocó un widget sin título de DisplayFusion; 3 de mirar: leyó toda la pantalla y citó la barra de Steam, no el diálogo de delante); 0 créditos. Dos defectos de fundamentación de la mente: la otra ventana debe ser la primera ventana con título y de tamaño visible por detrás de la del foco; «lo» sin antecedente es la ventana activa, no todo el escritorio. Reparados en el commit siguiente; se vuelve a medir.",
+  "credits": 0
+}

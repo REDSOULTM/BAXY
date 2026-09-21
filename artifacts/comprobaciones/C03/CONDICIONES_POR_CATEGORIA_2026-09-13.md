@@ -1714,3 +1714,7 @@ H0521 «abres team» vuelve a abierta: la regla del candidato único depende de 
 ## Actualización 2026-09-21 (NEAR1997)
 
 Abrir aplicaciones pasa de 49/54 a 49/54 con abrir sin preguntar el nombre mal oido que comparte el prefijo con un solo nombre instalado (commit 1a3ced2a, BUILD1997) (HEAD 1a3ced2a): 8 ejecutados, 4 aprobados (2 variantes y 2 límites), 4 fallidos (3 literales y 1 variante: app.open de Steam verificada pero final sin nombrar Steam), 0 créditos. Defecto determinista del composer: el recibo de app.open trae appId y el chequeo de nombre sólo mira observed.app; la pista de reintento no llevaba el nombre. Reparación pendiente en la mente; se vuelve a medir en la próxima tanda de nombres mal oídos.
+
+## Actualización 2026-09-21 (CONTEXT1999)
+
+Organizar ventanas y pestañas pasa de 11/13 a 11/13 con cambiar a la ventana de atras y mirar la pantalla cuando el contexto es determinista (commit b720e9a8, BUILD1999) (HEAD b720e9a8): 8 ejecutados, 2 aprobados (los límites), 6 fallidos (3 de otra ventana: enfocó un widget sin título de DisplayFusion; 3 de mirar: leyó toda la pantalla y citó la barra de Steam, no el diálogo de delante), 0 créditos. Dos defectos de fundamentación de la mente: la otra ventana debe ser la primera ventana con título y de tamaño visible por detrás de la del foco; «lo» sin antecedente es la ventana activa, no todo el escritorio. Reparados en el commit siguiente; se vuelve a medir.
