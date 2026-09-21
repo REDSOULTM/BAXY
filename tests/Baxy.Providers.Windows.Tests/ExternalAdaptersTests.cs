@@ -2154,6 +2154,41 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
+    public async Task AppVolumeSetFixesTheSessionsAtAnAbsoluteLevelAndReportsThePostread()
+    {
+        // Fase 8 (D18) «poné Spotify al 40»: the sessions (paused or not) are set to the level and read back.
+        var requested = new List<(string App, int Level)>();
+        var adapter = new WindowsAppVolumeSetAdapter((app, level, beforeEffect, _) =>
+        {
+            beforeEffect?.Invoke();
+            requested.Add((app, level));
+            return new ApplicationSessionAdjustment("Spotify", 2, 85, level, false, "endpoint-1");
+        });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "audio.app.volume.set", Json("""{"app":"Spotify","level":40}"""), CancellationToken.None);
+        ExternalCapabilityReceipt tooHigh = await adapter.InvokeAsync(
+            "audio.app.volume.set", Json("""{"app":"Spotify","level":140}"""), CancellationToken.None);
+        ExternalCapabilityReceipt noSession = await new WindowsAppVolumeSetAdapter((_, _, _, _) => null).InvokeAsync(
+            "audio.app.volume.set", Json("""{"app":"Spotify","level":40}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.EffectObserved, Is.True);
+            Assert.That(receipt.Result?.GetProperty("level").GetInt32(), Is.EqualTo(40));
+            Assert.That(receipt.Result?.GetProperty("baselineLevel").GetInt32(), Is.EqualTo(85));
+            Assert.That(receipt.Result?.GetProperty("requestedLevel").GetInt32(), Is.EqualTo(40));
+            Assert.That(receipt.Result?.GetProperty("app").GetString(), Is.EqualTo("Spotify"));
+            Assert.That(requested, Is.EqualTo(new[] { ("Spotify", 40) }));
+            Assert.That(tooHigh.Verified, Is.False);
+            Assert.That(tooHigh.ErrorCode, Is.EqualTo("volume_level_invalid"));
+            Assert.That(noSession.Verified, Is.False);
+            Assert.That(noSession.ErrorCode, Is.EqualTo("app_audio_session_not_found"));
+        });
+    }
+
+    [Test]
     public async Task OutlookLatestReplyRequiresASentFolderPostread()
     {
         const string output = "{\"ok\":true,\"effectObserved\":true," +

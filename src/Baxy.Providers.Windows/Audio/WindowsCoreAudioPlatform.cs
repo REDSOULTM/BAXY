@@ -577,11 +577,24 @@ internal sealed partial class WindowsCoreAudioPlatform
     /// signed percentage delta from its own current level; null when the
     /// application has no audio session on the default output.
     /// </summary>
+    /// <summary>
+    /// Fase 8 (D18) audio.app.volume.set: every session of the application is set to
+    /// one absolute level (0–100), paused sessions included; same post-read as the
+    /// relative adjustment.
+    /// </summary>
+    internal static ApplicationSessionAdjustment? SetApplicationSessions(
+        string applicationName,
+        int level,
+        Func<CancellationToken>? beforeEffect = null,
+        CancellationToken cancellationToken = default) =>
+        AdjustApplicationSessions(applicationName, 0, beforeEffect, cancellationToken, Math.Clamp(level, 0, 100));
+
     internal static ApplicationSessionAdjustment? AdjustApplicationSessions(
         string applicationName,
         int delta,
         Func<CancellationToken>? beforeEffect = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        int? absoluteLevel = null)
     {
         using ComInitialization initialization = InitializeCom();
         int result = CoCreateInstance(
@@ -633,7 +646,8 @@ internal sealed partial class WindowsCoreAudioPlatform
                             delta,
                             endpointId,
                             beforeEffect,
-                            cancellationToken);
+                            cancellationToken,
+                            absoluteLevel);
                     }
                 }
             }
@@ -646,7 +660,8 @@ internal sealed partial class WindowsCoreAudioPlatform
         int delta,
         string endpointId,
         Func<CancellationToken>? beforeEffect,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        int? absoluteLevel = null)
     {
         int result = sessions.GetCount(out int count);
         ThrowForHResult(result, AudioControlErrorCodes.EndpointUnavailable);
@@ -730,7 +745,7 @@ internal sealed partial class WindowsCoreAudioPlatform
             foreach ((ISimpleAudioVolume volume, _, _) in volumes)
             {
                 ThrowForHResult(volume.GetMasterVolume(out float scalar), AudioControlErrorCodes.EndpointUnavailable);
-                int requested = Math.Clamp(Percent(scalar) + delta, 0, 100);
+                int requested = absoluteLevel ?? Math.Clamp(Percent(scalar) + delta, 0, 100);
                 Guid context = Guid.NewGuid();
                 ThrowForHResult(volume.SetMasterVolume(requested / 100f, in context), AudioControlErrorCodes.EndpointUnavailable);
             }

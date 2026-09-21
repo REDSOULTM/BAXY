@@ -6254,6 +6254,13 @@ def _explicit_arguments_from_evidence(
             return None
         return {"app": app_volume[0], "amount": app_volume[2], "direction": app_volume[1]}
 
+    if operation == "audio.app.volume.set":
+        # Fase 8 (D18): the application and its absolute level are the person's literal.
+        app_level = effect_intent.app_volume_set_request(evidence, application_names)
+        if app_level is None:
+            return None
+        return {"app": app_level[0], "level": app_level[1]}
+
     if operation == "audio.mute":
         false_pattern = (
             rf"\b(?:{effect_intent._UNMUTE_VERB}|reactiva|reactivar)\b|"
@@ -6489,6 +6496,7 @@ def _ground_explicit_arguments(
         "app.installed",
         "app.open",
         "audio.app.volume.adjust",
+        "audio.app.volume.set",
         "audio.mute",
         "audio.volume",
         "audio.volume.adjust",
