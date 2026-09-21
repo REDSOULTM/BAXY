@@ -93,8 +93,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 post-goal: BUILD2021 (pista del veto de afirmacion sin fuente).
 # C03 post-goal: BUILD2021b (guarda de get en el shortlist).
 # C03 post-goal: BUILD2025 (frio/calor y clima del pasado).
+# C03 post-goal: BUILD2027 (cabezas de pregunta en noticias).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "3f65e9758e22928684a509a6f5d14095be74dffd8b405e1f1afdb433e38d28e7"
+    "5a5a5283dd449ce37864b914d2ad5960b0da444b602870b10ee3ab47670324f4"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
