@@ -587,14 +587,21 @@ internal sealed partial class WindowsCoreAudioPlatform
         int level,
         Func<CancellationToken>? beforeEffect = null,
         CancellationToken cancellationToken = default) =>
-        AdjustApplicationSessions(applicationName, 0, beforeEffect, cancellationToken, Math.Clamp(level, 0, 100));
+        AdjustApplicationSessions(applicationName, 0, beforeEffect, Math.Clamp(level, 0, 100), cancellationToken);
 
     internal static ApplicationSessionAdjustment? AdjustApplicationSessions(
         string applicationName,
         int delta,
         Func<CancellationToken>? beforeEffect = null,
-        CancellationToken cancellationToken = default,
-        int? absoluteLevel = null)
+        CancellationToken cancellationToken = default) =>
+        AdjustApplicationSessions(applicationName, delta, beforeEffect, null, cancellationToken);
+
+    private static ApplicationSessionAdjustment? AdjustApplicationSessions(
+        string applicationName,
+        int delta,
+        Func<CancellationToken>? beforeEffect,
+        int? absoluteLevel,
+        CancellationToken cancellationToken)
     {
         using ComInitialization initialization = InitializeCom();
         int result = CoCreateInstance(
@@ -646,8 +653,8 @@ internal sealed partial class WindowsCoreAudioPlatform
                             delta,
                             endpointId,
                             beforeEffect,
-                            cancellationToken,
-                            absoluteLevel);
+                            absoluteLevel,
+                            cancellationToken);
                     }
                 }
             }
@@ -660,8 +667,8 @@ internal sealed partial class WindowsCoreAudioPlatform
         int delta,
         string endpointId,
         Func<CancellationToken>? beforeEffect,
-        CancellationToken cancellationToken,
-        int? absoluteLevel = null)
+        int? absoluteLevel,
+        CancellationToken cancellationToken)
     {
         int result = sessions.GetCount(out int count);
         ThrowForHResult(result, AudioControlErrorCodes.EndpointUnavailable);

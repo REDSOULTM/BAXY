@@ -199,4 +199,61 @@ public sealed class MindPlanSessionTests
             Directory.Delete(root, recursive: true);
         }
     }
+
+    // 2026-09-21: a message.send.test left awaiting confirmation the evening before was restored at the next
+    // start and re-prompted at every new request; the «sí» meant for the new request confirmed the stale one.
+    // A restored plan whose pending step never ran is dropped (outbox and store cleared) and announced as
+    // cancelled; a step whose effect may have occurred is still restored for its truthful recovery prompt.
+    [TestCase(false)]
+    [TestCase(true)]
+    public void RestoringAPreviousSessionPlanDropsANeverRunStepAndKeepsAnUncertainOne(bool uncertainEffect)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-restore-stale-plan-" + Guid.NewGuid());
+        Directory.CreateDirectory(root);
+        try
+        {
+            var store = new DurablePlanStore(Path.Combine(root, "plan.bin"), Path.Combine(root, "plan.key"));
+            string outbox = Path.Combine(root, "outbox.bin");
+            var registry = new RetryableOperationRegistry(outbox);
+            var arguments = new JsonObject { ["channel"] = "whatsapp", ["requestedRecipient"] = "amor", ["text"] = "la amo" };
+            PreparedOperation prepared = registry.GetOrAdd(new RoutedOperation("message.send.test", arguments));
+            var execution = new PendingMindPlanExecution("escribile a amor en WhatsApp que la amo",
+                [new MindPlanStep("send", "message.send.test", "Envía el mensaje.", [], "literal", arguments)])
+            {
+                PendingOperation = prepared,
+                PendingEffectMayHaveOccurred = uncertainEffect,
+            };
+            store.Save(execution);
+
+            var session = new MindPlanSession(new MindPlanSession.Host
+            {
+                Core = static () => throw new AssertionException("Restoring cannot execute Core."),
+                Mind = static () => throw new AssertionException("Restoring cannot execute the mind."),
+                Publish = static (_, _) => throw new AssertionException("Restoring does not publish."),
+                SetStatus = static _ => { },
+                TryMarkResolved = static (_, _) => true,
+            });
+            session.UseStore(store);
+            var restoredRegistry = new RetryableOperationRegistry(outbox);
+            session.TryRestore(restoredRegistry);
+
+            if (uncertainEffect)
+            {
+                Assert.That(session.HasPending, Is.True);
+                Assert.That(session.DroppedRestoredPlan, Is.Null);
+                Assert.That(new DurableRetryStore(outbox).Load().Single().InvocationId, Is.EqualTo(prepared.InvocationId));
+            }
+            else
+            {
+                Assert.That(session.HasPending, Is.False);
+                Assert.That(session.DroppedRestoredPlan!.Objective, Is.EqualTo("escribile a amor en WhatsApp que la amo"));
+                Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+                Assert.That(store.Load(restoredRegistry), Is.Null);
+            }
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
 }

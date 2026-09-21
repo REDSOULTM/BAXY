@@ -48,11 +48,31 @@ internal sealed class MindPlanSession
         _store = store ?? throw new ArgumentNullException(nameof(store));
     }
 
+    /// <summary>
+    /// The plan of a previous session that this start dropped because its pending
+    /// step had never run (2026-09-21: a message.send.test awaiting confirmation the
+    /// evening before re-prompted at every new request, and a «sí» meant for the
+    /// new request confirmed the stale one). The person's consent must be fresh;
+    /// a step whose effect may have occurred is kept and recovered truthfully.
+    /// </summary>
+    internal PendingMindPlanExecution? DroppedRestoredPlan { get; private set; }
+
     internal void TryRestore(RetryableOperationRegistry registry)
     {
         ArgumentNullException.ThrowIfNull(registry);
         EnsureStore();
         _pending ??= _store!.Load(registry);
+        if (_pending is { PendingEffectMayHaveOccurred: false } restored
+            && restored.NextIndex < restored.Steps.Count)
+        {
+            if (restored.PendingOperation is { } pending)
+            {
+                registry.MarkResolved(pending);
+            }
+
+            DroppedRestoredPlan = restored;
+            Clear();
+        }
     }
 
     internal void Begin(PendingMindPlanExecution execution)

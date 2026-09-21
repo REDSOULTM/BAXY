@@ -526,7 +526,16 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 TurnVisibleFacts.Welcome(),
                 isUser: false,
                 messageEvent: UserMessageEvent.Welcome);
-            if (_mindPlans.Current is { } restoredPlan)
+            if (_mindPlans.DroppedRestoredPlan is { } droppedPlan)
+            {
+                // A step never run in the previous session is not resumed: the
+                // person is told what was left pending and cancelled.
+                AddMessage(
+                    "BAXY",
+                    MissionNarration.CreateCancellationMessage(droppedPlan),
+                    isUser: false);
+            }
+            else if (_mindPlans.Current is { } restoredPlan)
             {
                 AddMessage(
                     "BAXY",
