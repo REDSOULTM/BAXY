@@ -49,3 +49,17 @@ def test_a_title_absent_from_the_library_is_read_not_launched(text: str) -> None
 def test_go_to_orders_that_name_no_installed_game_are_not_launches(text: str) -> None:
     intent = effect_intent.resolve_explicit_effects(text, AVAILABLE, APPS, GAMES)
     assert intent is None or "game.launch" not in intent.operations
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Instala Plants vs. Zombies en Steam. El AppID es 3590. Usa steam://install/3590 para abrir el dialogo,",
+        "Descarga Plants vs. Zombies en Steam. IMPORTANTE: primero busca el AppID via https://store.steampowered.co",
+    ],
+)
+def test_a_title_with_its_own_dot_followed_by_install_instructions_is_installed(text: str) -> None:
+    # D13: H0396/H0456 measured with Plants vs. Zombies; «vs.» is not the sentence boundary.
+    assert effect_intent.steam_library_title(text) == "Plants vs. Zombies"
+    intent = effect_intent.resolve_explicit_effects(text, AVAILABLE | {"game.install.named"}, APPS, GAMES)
+    assert intent is not None and intent.operations == ("game.install.named",)

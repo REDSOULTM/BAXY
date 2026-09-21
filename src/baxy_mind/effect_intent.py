@@ -17755,11 +17755,17 @@ def steam_library_title(text: str) -> str | None:
         # INSTALL1627 H0396/H0456: the request is followed by instructions
         # about the same install (an AppID, a steam:// URL, the store page);
         # the first sentence is the request, the rest names no other effect.
-        head, separator, rest = folded.partition(". ")
-        if separator and _has(rest, r"\bapp\s*id\b|steam://|store\.steampowered\.com") and not _has(
-            rest, r"\b(?:luego|despues|then|y\s+(?:abre|lanza|abri|ejecuta|open|launch|run)|cierra|close)\b",
-        ):
+        # The sentence boundary is the first «. » after which the request
+        # matches: «Plants vs. Zombies» carries a dot of its own (D13).
+        for boundary in re.finditer(r"\. ", folded):
+            head, rest = folded[: boundary.start()], folded[boundary.end():]
+            if not _has(rest, r"\bapp\s*id\b|steam://|store\.steampowered\.com") or _has(
+                rest, r"\b(?:luego|despues|then|y\s+(?:abre|lanza|abri|ejecuta|open|launch|run)|cierra|close)\b",
+            ):
+                continue
             match = _STEAM_LIBRARY_REQUEST.fullmatch(head.rstrip(".!?").strip())
+            if match is not None:
+                break
         if match is None:
             # INSTALL1633 H0608 «lanzá Mortal Kombat»: a launch of a bare name
             # with no platform; games are launched from Steam here, so the
