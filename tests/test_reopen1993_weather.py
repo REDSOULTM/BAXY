@@ -102,3 +102,16 @@ def test_the_cold_outside_is_a_weather_read() -> None:
         intent = effect_intent.resolve_explicit_effects(text, ("weather.current", "web.search"), ("Steam",), ())
         assert intent is None or intent.operations != ("weather.current",), text
         assert effect_intent.known_unsupported_effect_request(text, {"weather.current", "web.search"}), text
+
+
+def test_the_head_of_the_geocoded_place_names_it() -> None:
+    # WEATHER2031 «how's the weather in Santiago»: observed location «Santiago de Chile», reply says «Santiago».
+    from baxy_mind import llm
+    seen = {"location": "Santiago de Chile", "region": "Región Metropolitana", "country": "Chile", "temperatureC": 15.3,
+            "apparentC": 15.2, "humidityPercent": 60, "windKmh": 3.4, "precipitationMm": 0, "condition": "mayormente despejado",
+            "today": {"maxC": 20.4, "minC": 9, "rainProbabilityPercent": 78},
+            "tomorrow": {"date": "2026-09-22", "maxC": 24.1, "minC": 11, "rainProbabilityPercent": 0}}
+    payload = {"operation": "weather.current", "seen": seen}
+    reply = "The weather in Santiago is 15.3°C, mostly clear. Wind is 3.4 km/h, humidity is 60%."
+    assert llm._weather_fact_defect(reply, payload, "how's the weather in Santiago") == ""
+    assert llm._weather_fact_defect("It is 15.3°C, mostly clear.", payload, "how's the weather in Santiago") == "missing_state"

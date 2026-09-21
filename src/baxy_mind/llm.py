@@ -6506,8 +6506,14 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
             return "invented_number"
     folded_text = _reading_fold(text)
     location = seen.get("location")
-    if isinstance(location, str) and location and _reading_fold(location) not in folded_text:
-        return "missing_state"
+    if isinstance(location, str) and location:
+        # WEATHER2031 «how's the weather in Santiago»: the geocoder says «Santiago
+        # de Chile»; the head of that name (before « de …» or a comma) names the
+        # place as well as the whole.
+        folded_location = _reading_fold(location)
+        head = re.split(r"\s+de\s+|,", folded_location, maxsplit=1)[0].strip()
+        if folded_location not in folded_text and not (len(head) >= 3 and head in folded_text):
+            return "missing_state"
     asks = _reading_fold(user_text or "")
     tomorrow = seen.get("tomorrow")
     if (
