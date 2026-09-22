@@ -86,3 +86,12 @@ WIFI_PLACE (H0170/H0376) no se midió en el notebook (2026-09-22): este equipo n
 —`netsh wlan show interfaces` responde «No hay ninguna interfaz inalámbrica en el sistema» y el adaptador MediaTek
 Wi-Fi 6 MT7921 figura como «Not Present»; la máquina está en Ethernet—, así que no hay redes guardadas ni conexión que
 pedir. Las dos filas siguen abiertas y se medirán donde haya radio wifi. No es corpus ni defecto del producto.
+
+WINGET (H0651, H0217, H0167, H0457, H0583, H0574, H0089) tras WINGET2083–2087 (2026-09-22): el lector de la tabla de
+winget y la ruta de desinstalación quedaron arreglados (0b0740bc) y las filas de Photoshop pasan con el comportamiento
+de «paquete ausente», pero no acreditan porque su grupo no tiene variantes propias en el panel. Las filas de 7-Zip no
+son medibles en este notebook sin un fixture elevado: la instalación 26.03 x64 que quedó es de máquina y su
+desinstalación silenciosa pide elevación, así que el fixture no puede dejar el paquete ausente; y las desinstalaciones
+piden confirmación por una ruta cuya propuesta el aprobador de la raíz no encuentra. Queda también un defecto de
+presentación visto ahí: cuando la lectura dice installed:true el plan sigue al paso de instalación y el final filtra
+«falta datos del paso» en vez de decir que ya estaba instalado.
