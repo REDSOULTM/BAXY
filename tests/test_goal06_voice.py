@@ -815,6 +815,24 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         "youtube_playback_not_verified_watch_ready0_playing_network2_source_none", "es"
     )
     assert not _has_cause_fact("some_unknown_code")
+    # WALLPAPER2037 (notebook): the narrator's copy of the wallpaper receipt has no
+    # RGB code and no previous-wallpaper path; the checks still see the colour.
+    from baxy_mind.llm import _compose_situation_payload
+    wallpaper = {
+        "kind": "operation", "operation": "desktop.wallpaper.set", "polarity": "success",
+        "verified": True, "succeeded": True,
+        "observed": {"mode": "solid_color", "color": "red", "rgb": "170 20 20",
+                     "previousWallpaper": "C:/private/prev.jpg", "authority": "spi_registry_postread"},
+    }
+    projected = _compose_situation_payload(wallpaper, "en")
+    assert projected["seen"]["color"] == "red"
+    assert "rgb" not in projected["seen"] and "previousWallpaper" not in projected["seen"]
+    assert compose_visible_defect(
+        "I set the wallpaper to solid red.",
+        "status",
+        "set the wallpaper to red",
+        {"situation": json.dumps(wallpaper)},
+    ) == ""
     unmuted = (
         '{"kind":"operation","operation":"audio.microphone.mute","polarity":"success","verified":true,'
         '"succeeded":true,"observed":{"version":1,"baselineMuted":true,"muted":false,'

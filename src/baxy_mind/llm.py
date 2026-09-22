@@ -4621,6 +4621,15 @@ def _compose_situation_payload(
             # The receipt records whether it was running BEFORE this invocation.
             # False must not tell the narrator that the app is still closed.
             visible_seen["was_running_before_open"] = visible_seen.pop("alreadyRunning")
+        elif operation == "desktop.wallpaper.set":
+            # WALLPAPER2037 (notebook, 2026-09-22): the receipt's RGB triple
+            # («170 20 20») and the previous wallpaper's path reached the
+            # narrator, which wrote the code into the final and died in
+            # invented_number three times for two of four cases; the colour name
+            # is the fact the person asked for, the code and the path are the
+            # adapter's. The checks keep the whole receipt.
+            visible_seen.pop("rgb", None)
+            visible_seen.pop("previousWallpaper", None)
         elif operation == "clipboard.write.text":
             # CLIPBOARD1359 H0199/H0356: the receipt carries only the sequence
             # number and the character count, so the narrator echoed the text
