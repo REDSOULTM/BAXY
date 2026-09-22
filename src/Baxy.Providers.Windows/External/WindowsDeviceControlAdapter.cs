@@ -499,6 +499,14 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return ExternalJson.FailureBeforeEffect(operation, "airplane_mode_radios_not_found");
         RadioState desired = value == 1 ? RadioState.Off : RadioState.On;
         var before = radios.ToDictionary(radio => radio.Name + "|" + radio.Kind, radio => radio.State == RadioState.On);
+        // AIRPLANE2043 «sacá el modo avión» with every radio already on: nothing to
+        // switch cannot be observed as an effect; the honest fact is the state,
+        // said before any boundary is crossed (same contract as the microphone).
+        if (radios.All(radio => radio.State == desired || (desired == RadioState.On && radio.State == RadioState.Disabled)))
+        {
+            return ExternalJson.FailureBeforeEffect(
+                operation, value == 1 ? "airplane_mode_already_on" : "airplane_mode_already_off");
+        }
         bool effectObserved = false;
         foreach (Radio radio in radios)
         {

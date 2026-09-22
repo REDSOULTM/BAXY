@@ -3864,6 +3864,12 @@ _CAUSE_FACT = {
     "microphone_already_muted": (
         "the microphone was already muted, so nothing changed"
     ),
+    "airplane_mode_already_on": (
+        "airplane mode was already on (every radio off), so nothing changed"
+    ),
+    "airplane_mode_already_off": (
+        "airplane mode was already off (the radios were on), so nothing changed"
+    ),
     "microphone_already_unmuted": (
         "the microphone was already active, not muted, so nothing changed"
     ),

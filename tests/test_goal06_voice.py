@@ -815,6 +815,9 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         "youtube_playback_not_verified_watch_ready0_playing_network2_source_none", "es"
     )
     assert not _has_cause_fact("some_unknown_code")
+    # AIRPLANE2043: the radios already in the requested state are a named fact.
+    assert "already off" in _cause_in_prose("airplane_mode_already_off", "es")
+    assert "already on" in _cause_in_prose("airplane_mode_already_on", "es")
     # WALLPAPER2037 (notebook): the narrator's copy of the wallpaper receipt has no
     # RGB code and no previous-wallpaper path; the checks still see the colour.
     from baxy_mind.llm import _compose_situation_payload
