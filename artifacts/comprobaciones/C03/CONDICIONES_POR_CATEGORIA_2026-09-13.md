@@ -1781,17 +1781,17 @@ Brillo y pantalla pasa de 16/17 a 17/17 con el fondo de escritorio se cambia y s
 
 ## Actualización 2026-09-22 (ZIP2041)
 
-Archivos y carpetas pasa de 31/32 a 32/32 con carpeta, txt, zip y abrir: una misión de cuatro tipadas (commit 4a4ebc9a, BUILD2041) (HEAD 4a4ebc9a): 5/6 aprobados (el literal H0542, 2 variantes y los 2 límites); la variante en inglés cayó en la guarda «sin pedido» (lectura; corpus de la Fase 3.5), 1 créditos. Un crédito: H0542 (Archivos y carpetas 31/32); las cuatro tipadas verificadas en orden con los nombres por defecto de Windows y el final dice que el zip quedó abierto. La categoría queda cerrada.
+Archivos y carpetas pasa de 29/32 a 30/32 con carpeta, txt, zip y abrir: una misión de cuatro tipadas (commit 4a4ebc9a, BUILD2041) (HEAD 4a4ebc9a): 5/6 aprobados (el literal H0542, 2 variantes y los 2 límites); la variante en inglés cayó en la guarda «sin pedido» (lectura; corpus de la Fase 3.5), 1 créditos. Un crédito: H0542 (Archivos y carpetas 31/32); las cuatro tipadas verificadas en orden con los nombres por defecto de Windows y el final dice que el zip quedó abierto.
 
 ## Actualización 2026-09-22 (AIRPLANE2045)
 
-Red y Bluetooth pasa de 20/21 a 21/21 con el modo avión es todas las radios apagadas y releídas (commit de119824, BUILD2045) (HEAD de119824): 4/6 aprobados (el literal H0107, 2 variantes y el límite de prohibición); «sacá el modo avión» con las radios ya encendidas no tuvo efecto que verificar (lo dice con verdad) y el límite de conocimiento se leyó como orden (lectura; corpus), 1 créditos. Un crédito: H0107; el modo avión se pone por la API de radios y se relee; el final dice el estado leído. La categoría queda cerrada.
+Red y Bluetooth pasa de 18/21 a 19/21 con el modo avión es todas las radios apagadas y releídas (commit de119824, BUILD2045) (HEAD de119824): 4/6 aprobados (el literal H0107, 2 variantes y el límite de prohibición); «sacá el modo avión» con las radios ya encendidas no tuvo efecto que verificar (lo dice con verdad) y el límite de conocimiento se leyó como orden (lectura; corpus), 1 créditos. Un crédito: H0107; el modo avión se pone por la API de radios y se relee; el final dice el estado leído.
 
 ## Actualización 2026-09-22 (DOWNLOAD2047)
 
 Navegación y búsqueda web pasa de 674/46 a 674/46 con descargar un archivo o la portada de una página a una carpeta conocida (commit d0a17256, BUILD2047) (HEAD d0a17256): 2/6 aprobados (una variante y el límite de prohibición); el literal descargó y verificó pero el narrador tomó el nombre del archivo por jerga; dos variantes fallaron con verdad (sin og:image; 404) y sus fallos no se pudieron narrar; el límite sin dirección se leyó como instalación (lectura; corpus), 0 créditos. Sin crédito: reparación del narrador (nombres observados de las herramientas de archivos, marcadores de fallo, causa «no respondió») y re-medición con dos variantes válidas como DOWNLOAD2049.
 
-Nota 2026-09-22 (raíz, notebook): las tres actualizaciones anteriores (WALLPAPER2039, ZIP2041, AIRPLANE2045) decían «pasa de 671/17», «672/32» y «673/21» porque el escritor recibió el total del registro en vez del cubierto de la categoría; corregidas a 16/17→17/17, 31/32→32/32 y 20/21→21/21 (la tabla de CURRENT_CATEGORY_COUNTS ya venía del registro y no cambia).
+Nota 2026-09-22 (raíz, notebook): las tres actualizaciones anteriores (WALLPAPER2039, ZIP2041, AIRPLANE2045) decían «pasa de 671/17», «672/32» y «673/21» porque el escritor recibió el total del registro en vez del cubierto de la categoría; corregidas a 16/17→17/17 (cerrada), 29/32→30/32 y 18/21→19/21 según la tabla de CURRENT_CATEGORY_COUNTS de cada commit, que ya venía del registro y no cambia; la primera corrección (165065e0) escribió 31/32→32/32 y 20/21→21/21 y cerraba las dos categorías por error: enmendado aquí.
 
 ## Actualización 2026-09-22 (DOWNLOAD2049)
 
