@@ -258,7 +258,8 @@ internal static class ModelMessageComposer
             && !UserMessagePolicy.IsSafeConversationReply(
                 userText, accepted, priorUserText: priorUserText,
                 clarification: draft.Intent == "clarification",
-                hasRequiredInput: UserMessagePolicy.HasRequiredInput(draft)))
+                hasRequiredInput: UserMessagePolicy.HasRequiredInput(draft),
+                missingFields: UserMessagePolicy.DeclaredMissingFields(draft)))
         {
             return null;
         }

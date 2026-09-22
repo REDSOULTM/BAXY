@@ -150,6 +150,8 @@ public sealed class C03FactPreservationTests
                 "tienes alguna foto?", reply, hasRequiredInput: true, missingFields: missing), Is.Null);
             Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(
                 "tienes alguna foto?", reply, hasRequiredInput: true), Is.EqualTo("out_of_world_question"));
+            Assert.That(UserMessagePolicy.IsSafeConversationReply(
+                "tienes alguna foto?", reply, clarification: true, hasRequiredInput: true, missingFields: missing), Is.True);
         });
     }
 

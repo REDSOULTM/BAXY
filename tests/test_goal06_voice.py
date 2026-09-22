@@ -840,6 +840,27 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         "set the wallpaper to red",
         {"situation": json.dumps(wallpaper)},
     ) == ""
+    # MEME2055 «Tienes algun meme?»: the picture the viewer shows is named by its file.
+    _meme_mission = {"situation": json.dumps({
+        "kind": "status", "cause": "mission_completed", "polarity": "success", "stepCount": 2,
+        "steps": [
+            json.dumps({"kind": "operation", "operation": "web.download", "polarity": "success", "verified": True,
+                        "succeeded": True, "observed": {"version": 1, "sourceUrl": "https://example.org/i/meme.jpg",
+                                                         "query": "meme", "folder": "pictures", "name": "meme.jpg",
+                                                         "bytes": 12345, "contentType": "image/jpeg"}}),
+            json.dumps({"kind": "operation", "operation": "file.open", "polarity": "success", "verified": True,
+                        "succeeded": True, "observed": {"version": 1, "folder": "pictures", "name": "meme.jpg",
+                                                         "windowTitle": "meme.jpg", "processId": 9276}}),
+        ],
+    })}
+    assert compose_visible_defect(
+        "Sí, ya tengo un meme descargado y abierto en la carpeta de imágenes.",
+        "status", "Tienes algun meme?", _meme_mission,
+    ) == "missing_name"
+    assert compose_visible_defect(
+        "Descargué meme.jpg en Imágenes y lo abrí en el visor.",
+        "status", "Tienes algun meme?", _meme_mission,
+    ) == ""
     # PPTX2051 «make a presentation about dogs with 5 slides»: the package was
     # written and file.open could not be verified; the English final that says
     # both is neither reversed nor missing the failure.

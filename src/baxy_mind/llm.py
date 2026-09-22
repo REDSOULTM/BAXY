@@ -4138,6 +4138,22 @@ def _situation_steps(situation: dict) -> list[dict]:
     return decoded
 
 
+def _downloaded_and_opened_picture(situation: dict) -> tuple[str, str] | None:
+    """MEME2055: the (name, folder) of the picture a completed mission downloaded
+    (web.download) and then opened (file.open); None for any other mission."""
+
+    steps = _situation_steps(situation)
+    if not any(step.get("operation") == "file.open" for step in steps):
+        return None
+    download = next((step for step in steps if step.get("operation") == "web.download"), None)
+    observed = download.get("observed") if download and isinstance(download.get("observed"), dict) else None
+    if not isinstance(observed, dict):
+        return None
+    name = str(observed.get("name") or "").strip()
+    folder = str(observed.get("folder") or "pictures").strip()
+    return (name, folder) if name else None
+
+
 def _completed_step_operation(situation: dict, operation: str) -> bool:
     """True when the mission's completed steps (MissionNarration `steps`, each a
     serialized operation result) include a verified success of `operation`."""
@@ -5118,6 +5134,18 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
                 "client, quoting the text sent exactly; never say it was drafted, never name another "
                 "recipient or client, no question."
             )
+    if situation.get("cause") == "mission_completed" and (
+        picture := _downloaded_and_opened_picture(situation)
+    ) is not None:
+        # MEME2055 «Tienes algun meme?»: the first image the search listed was
+        # written and the viewer opened it; the reply names that file.
+        name, folder = picture
+        bits.append(
+            f"This mission downloaded the picture «{name}» into the {folder} folder and opened "
+            "it in the image viewer, which is showing it now. Say so in one or two sentences, "
+            f"in the person's language, naming the file «{name}» exactly and saying it is open; "
+            "never say you sent, mailed or attached it; no question."
+        )
     if (
         situation.get("operation") == "email.send"
         and situation.get("verified") is True
@@ -9815,6 +9843,12 @@ def compose_visible_defect(
             # final que abre Opera GX y calla el cierre no cuenta la misión.
             if not re.search(r"cerrad|closed|\bcerr[eé]\b|\bcerramos\b", folded):
                 return "missing_state"
+    if cause == "mission_completed" and (picture := _downloaded_and_opened_picture(situation)) is not None:
+        # MEME2055: the picture the viewer shows is named by its file.
+        # The stem alone («meme») is the noun asked, not the file: the name
+        # with its extension is what the viewer shows.
+        if _reading_fold(picture[0]) not in folded:
+            return "missing_name"
     if cause == "mission_completed":
         skip = {
             "abri",

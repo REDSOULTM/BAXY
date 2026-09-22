@@ -508,8 +508,9 @@ internal static class UserMessagePolicy
         string? mindLanguage = null,
         string? priorUserText = null,
         bool clarification = false,
-        bool hasRequiredInput = false) =>
-        ConversationReplyRejectionReason(userText, reply, mindLanguage, priorUserText, clarification, hasRequiredInput) is null;
+        bool hasRequiredInput = false,
+        IReadOnlyList<string>? missingFields = null) =>
+        ConversationReplyRejectionReason(userText, reply, mindLanguage, priorUserText, clarification, hasRequiredInput, missingFields) is null;
 
     /// <summary>
     /// Por qué no se puede publicar una respuesta de la mente, o null si sí.
