@@ -27,6 +27,17 @@ cerraban; «Hazla, te dije que si mil veces» → «No pude entender»; «ponme 
 entender»; «ponme word» → pregunta absurda; «hazme un currículum» → rechazo; «¿Quieres que te cree un documento
 en Word?» → «si» → la misma pregunta.
 
+## Lo que la prueba del dueño del 2026-09-21 (noche) demostró — léelo primero
+
+`artifacts/comprobaciones/C03/PRUEBA_DUENO_2026-09-21_NOCHE.md`: 60 turnos reales, 38 mal. El fallo dominante NO es
+un literal sin leer: es el **contexto**. BAXY pregunta «¿cuánto?», el dueño dice «20», y BAXY pregunta «¿quieres
+que ajuste el volumen?» y luego no entiende «sí»; dice «no, en YouTube» a una pregunta de BAXY y BAXY vuelve a
+preguntar; «investigala» / «activalo» / «súbelo a 100» pierden el antecedente de uno o dos turnos atrás; frases de
+charla («me gusta crear cosas como tú») disparan «En eso no encuentro un pedido para mí». Y lo peor: «Claro, ya le
+hice click» con cero operaciones (efecto inventado). Regla del dueño (turno 164): «BAXY debe funcionar de forma
+generalizada, no sólo para los 742 casos: esos son ejemplos de los cuales se debe generalizar». Por eso `read(text,
+history, catalog)` recibe el historial de verdad y el harness corre **conversaciones enteras**, no literales sueltos.
+
 ## Dónde vive hoy la semántica (inventario de partida; verificalo con `Grep`)
 
 - `src/baxy_mind/effect_intent.py` (~20 000 líneas): lectores por regex (`*_request`, `resolve_explicit_effects`,
@@ -62,8 +73,11 @@ en Word?» → «si» → la misma pregunta.
    frase, y un corpus de regresión que se ejecute offline en segundos: los 742 literales del registro privado
    (`%LOCALAPPDATA%\BAXY\C03-survey-requirements336-private\requirements.jsonl`), las cien, y las conversaciones
    reales del registro privado del perfil `dev-mente-v2` (agregá un lector que las convierta en casos
-   esperados; los finales que fueron malos son el «no debe» de cada caso). Publicá el harness
-   (`scripts/semantic_replay.py`) y su tabla de aciertos antes y después.
+   esperados; los finales que fueron malos son el «no debe» de cada caso). El harness corre cada conversación
+   **turno a turno con el historial acumulado** (pregunta de BAXY → respuesta corta → pedido completado; anáforas
+   «lo/la/eso/investigala/activalo»; «ahora lo mismo en X»; «para/deshazlo»), no los literales aislados; los
+   guiones contextuales del notebook (`artifacts/comprobaciones/C03/contexto/*.turns.jsonl`) son parte del corpus.
+   Publicá el harness (`scripts/semantic_replay.py`) y su tabla de aciertos antes y después, por conversación.
 4. **Sin regresiones y con sellos.** Fast/Full verdes sin relajar nada (`scripts/test_source_quality.ps1 -Mode
    Full`, tier pytest con el python del runtime `%LOCALAPPDATA%\BAXYRuntime\python\mind-runtime-v1\Scripts\
    python.exe -X utf8 -m pytest -p no:cacheprovider tests`), `repin_program_identity.py` antes de cada Full

@@ -201,6 +201,10 @@ compleja» y tiene que quedar «en un solo lugar, fácil de leer y de entender p
 - Filas abiertas que dependen de esta fase (lectura, no motor): H0019, H0024, H0045, H0074, H0198, H0231, H0408,
   H0536 (mensajería al destinatario único), H0227, H0398, H0521 (nombre de app mal oído con un solo candidato),
   H0263 (la otra ventana), H0528 («lo» sin antecedente = la pantalla), H0682 (el único juego parecido).
+- **Contexto, no literales (dueño, 2026-09-21 noche, `PRUEBA_DUENO_2026-09-21_NOCHE.md`):** las tandas midieron
+  literales sueltos; en conversación BAXY pregunta lo ya contestado y pierde la anáfora. La lectura recibe el
+  historial de verdad y el harness corre conversaciones enteras; el notebook aporta los guiones contextuales
+  (`artifacts/comprobaciones/C03/contexto/`) y sus cifras. Principio: generalizar, no ajustarse a los 742.
 - Cierre: Full verde, cien 100/100, sellos re-anclados, `SEMANTICA.md`, informe `SEMANTICA_<fecha>.md` con
   aciertos del harness antes/después. Recién entonces arranca la Fase 4.
 

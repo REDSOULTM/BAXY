@@ -143,10 +143,39 @@ preparar; por «directories already exist»: mover el instrumento viejo a `%LOCA
 - Cambio de mente o de App → cien nueva (`run_cien9N.sh` + `cien_score.py` contra la anterior; 100 published_final,
   0 operaciones) documentada en CIEN.md antes de la siguiente tanda.
 
+### 5b. Lo que dejó la prueba del dueño (2026-09-21 23:46–00:06) — obligatorio para el notebook
+
+Auditoría completa, turno a turno, en `PRUEBA_DUENO_2026-09-21_NOCHE.md` (60 turnos: 22 bien, 38 mal). El registro
+privado de esa conversación viaja en el paquete como `private-logs/conversation.v1.jsonl` (turnos 111–231). Tres
+cosas salen de ahí para el notebook, ANTES de las tandas tipadas (van primero porque tocan la App/mente y las tandas
+se sellan sobre el HEAD resultante):
+
+1. **Arreglos de adaptador/estado/presentación (sí los hace el notebook):**
+   - Final que afirma un efecto sin operación (turno 189 «Claro, ya le hice click» con cero operaciones): veto duro
+     en el compositor/App — sin operación completada no hay afirmación de efecto; se responde el límite honesto.
+   - «para la canción» justo después de reproducir en YouTube → «No estoy escuchando nada» (148): el estado de
+     reproducción del turno anterior tiene que persistir y `media.stop` (o el cierre del reproductor) aplicarse.
+   - Texto de confirmación mal formado «¿confirmar o cancelar la cerrado de Edge?» (151).
+   - Fallo del compositor de 45 s «no_response; retry_exhausted» (195): tope corto y respuesta de límite inmediata.
+   - «activa mi micrófono» → «no pude observar el efecto» (205): la post-lectura de reactivar el micrófono.
+   - «BAXY, cierra BAXY» → «no tiene ventana abierta» (211): cerrarse a sí misma o decir la verdad de cómo cerrarla.
+   Cada uno con su test, Fast verde, cien nueva (cambió mente/App) y re-medición sellada si toca una lectura acreditada.
+2. **Medida contextual (nueva, la pide el dueño):** las tandas midieron literales sueltos y en conversación BAXY
+   se rompe (pregunta lo ya contestado, pierde la anáfora, no une la respuesta a su propia pregunta con el pedido).
+   El notebook construye `artifacts/comprobaciones/C03/contexto/dueno-2026-09-21.turns.jsonl` (la conversación del
+   dueño como guion del conductor, esperado por turno = la tabla de la auditoría) y la corre antes y después de sus
+   arreglos (cifra «turnos bien / 60», documentada en CIEN.md como `ctx-dueno-NN`), y después arma los bancos
+   contextuales por categoría del §«Medida contextual» de la auditoría (`contexto/<categoria>.turns.jsonl`, 15–25
+   turnos con dependencias reales, sólo efectos reversibles) y los corre como `cien-ctx-NN`. Los fallos de lectura o
+   de contexto que aparezcan NO se parchan: van al corpus (`SEMANTICA_CORPUS_PENDIENTE.md`) con el guion y el turno.
+3. **Corpus para Fable:** todo lo L/C/K de la auditoría ya está en `SEMANTICA_CORPUS_PENDIENTE.md`; el notebook añade
+   lo que salga de sus tandas y de los bancos contextuales.
+
 ## 6. Cierre del wall del notebook
 
-1. Las 16 tandas corridas y adjudicadas (la 17 sólo si hiciera falta); registro esperado ≈ 716/742 si todas
-   acreditan (los 26 restantes son de Fase 3.5 y Fase 4/5, y NO se fuerzan).
+1. Los arreglos del §5b.1 hechos y medidos; `ctx-dueno` antes/después; las 16 tandas corridas y adjudicadas (la 17
+   sólo si hiciera falta); registro esperado ≈ 716/742 si todas acreditan (los 26 restantes son de Fase 3.5 y
+   Fase 4/5, y NO se fuerzan); los bancos contextuales por categoría corridos al menos una vez con su cifra.
 2. `repin_program_identity.py "<motivo>" <repo>` y **Full verde** (`scripts/test_source_quality.ps1 -Mode Full`,
    tier pytest con el python del runtime), sin skip/xfail/umbrales.
 3. cien final 100/100 sobre el HEAD final, documentada.
@@ -170,10 +199,13 @@ Eres la única sesión de Claude (Opus 5) sobre el repositorio de BAXY en el not
 del goal C03 el 2026-09-20; el plan reabrió filas por decisión del dueño). El dueño trabaja en otra máquina y este
 notebook está desatendido 24/7: no esperes respuestas suyas; con permisos totales, decide tú y deja evidencia.
 
-Objetivo (cerrado cuando lo demuestres, no antes): correr y adjudicar con honestidad las 16 tandas tipadas
-pendientes de `artifacts/comprobaciones/C03/TRASPASO_NOTEBOOK_2026-09-21.md` §5 (wallpaper2037 … steaminst2067),
-dejar Full verde con los sellos re-anclados, una cien final 100/100, los documentos de estado y la memoria al
-día, todo commiteado y pusheado. Las 71 filas abiertas del registro son 45 tipadas (tuyas), 14 de lectura
+Objetivo (cerrado cuando lo demuestres, no antes): (a) los seis arreglos de adaptador/estado/presentación del
+§5b.1 de `artifacts/comprobaciones/C03/TRASPASO_NOTEBOOK_2026-09-21.md` (el primero, el veto al efecto inventado,
+es el más grave), con la conversación del dueño (`PRUEBA_DUENO_2026-09-21_NOCHE.md`) convertida en guion del
+conductor y medida antes y después; (b) correr y adjudicar con honestidad las 16 tandas tipadas pendientes del §5
+(wallpaper2037 … steaminst2067); (c) los bancos contextuales por categoría (§5b.2) corridos con su cifra; (d) Full
+verde con los sellos re-anclados, una cien final 100/100, los documentos de estado y la memoria al día, todo
+commiteado y pusheado. Principio del dueño (turno 164 de su prueba): BAXY debe generalizar, no ajustarse a los 742. Las 71 filas abiertas del registro son 45 tipadas (tuyas), 14 de lectura
 (Fase 3.5, de Fable, NO las toques) y 12 del motor (Fase 4/5, NO las toques). Tu wall termina ANTES de la
 Fase 3.5 y del computer use; no fusiones a main.
 
