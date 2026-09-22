@@ -1,0 +1,15 @@
+{
+  "schema": "c03-meme2059-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "opus/typed-tools (catalog, Core list, Providers adapter web.download{query} over the Bing image search, file.open, mind reading, composer; merged in 8edf110ac).",
+  "patch": "artifacts/comprobaciones/C03/MEME2059/SOURCE.patch",
+  "commits": [
+    "e77134ebe8437810fd89ca1fb5a8062f2586a7e9"
+  ],
+  "build": "BUILD2059 (C03-repairs2059-build/BUILD_READY.json; mente)",
+  "cause_measured": "«Tienes algun meme?» se acreditó como conversación: no buscaba ni mostraba ninguna imagen.",
+  "change": "web.download{query} baja la primera imagen del buscador de imágenes a Imágenes y file.open la abre con el visor; el final la nombra.",
+  "measurement": "MEME2059: 6/6 aprobados (el literal H0069, las 3 variantes y los 2 límites); 1 créditos. Cuatro misiones web.download (query) + file.open verificadas por la ventana del visor, imágenes recicladas por el fixture; cada final nombra el archivo y dice que está abierto.",
+  "credits": 1
+}

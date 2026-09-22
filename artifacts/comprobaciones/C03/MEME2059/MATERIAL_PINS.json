@@ -1,0 +1,87 @@
+{
+  "schema": "meme2059-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2059-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2059-instrument-v1",
+  "seal_sha256": "fd28e0c1adfb090510c35dffc369cf96436d7fd9e5575372544d1a127a19a2b7",
+  "runner_sha256": "c21a679b032b8f291853ff09db3601977e96f96bd911d6a38c16992fceb4b303",
+  "transport_seal_sha256": "f6f10f6fefe20bb821ccd85d8e81550d0cb53004cdabecba38370db7fdd8499b",
+  "files": {
+    "panel.json": "d00fa9d4b8fb3b531e82bf195ce7ac091722db5dff34dbdac73dfa306cfedd88",
+    "turns.jsonl": "5100db288874397da759872efc37ae54ba963a3f8e50e1d815051a3d2878d191",
+    "case-map.json": "4448f13f3e7722ced631f46c115ae457550c7f894d0545592630896ef2270a82",
+    "PLAN.md": "39d8a95564657178880c197b748eec98d885bfac4a992e800b9c8de863b901ac"
+  },
+  "counts": {
+    "cases": 6,
+    "historical_literals": 1,
+    "original_development_variants": 3,
+    "boundaries": 2,
+    "wire_lines": 12,
+    "session_controls": 6,
+    "ordinary_turns": 6,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 6,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 3,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0069",
+      "kind": "historical_literal",
+      "group": "web_image",
+      "credit_behavior": "web_image",
+      "text_sha256": "15e8889f40cd329d544c50be0b7d699bbb57d43a8316c75e1f95a094791ef874",
+      "criterion_sha256": "e166ab7eca320ace09ff27706ee1645b3be4bda2fc1e88054fde837e9b320218"
+    },
+    {
+      "index": 1,
+      "case_id": "meme2059-dev-01",
+      "kind": "original_development_variant",
+      "group": "web_image",
+      "credit_behavior": "web_image",
+      "text_sha256": "12542f85458f0cfc8f819fdd3c45369e87a9f1bc929f1b70a917c149b9457676",
+      "criterion_sha256": "e166ab7eca320ace09ff27706ee1645b3be4bda2fc1e88054fde837e9b320218"
+    },
+    {
+      "index": 2,
+      "case_id": "meme2059-dev-02",
+      "kind": "original_development_variant",
+      "group": "web_image",
+      "credit_behavior": "web_image",
+      "text_sha256": "af380870fb98cc08234cce76be1c56607c2e3e467fa5681be4e1846aff2c07f1",
+      "criterion_sha256": "e166ab7eca320ace09ff27706ee1645b3be4bda2fc1e88054fde837e9b320218"
+    },
+    {
+      "index": 3,
+      "case_id": "meme2059-dev-03",
+      "kind": "original_development_variant",
+      "group": "web_image",
+      "credit_behavior": "web_image",
+      "text_sha256": "86586e4f6a7fcd993887534b2635fca6018e0eee8149e39bbac69c6200159da5",
+      "criterion_sha256": "e166ab7eca320ace09ff27706ee1645b3be4bda2fc1e88054fde837e9b320218"
+    },
+    {
+      "index": 4,
+      "case_id": "meme2059-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "09b8a0b6655d8132a2395e4bbf73aefd2db9991d26556d7a9dd01a2bdf0a4f07",
+      "criterion_sha256": "6b62892e23a5a0da1e0c07696c9428d6a71ec1f5b48f4db392b969ea3d09cdbd"
+    },
+    {
+      "index": 5,
+      "case_id": "meme2059-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "6fb16fb5c60d55ff2064cba4c55498af429ead5e29343054e8dfc546b0853334",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    }
+  ]
+}

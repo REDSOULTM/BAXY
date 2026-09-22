@@ -1,0 +1,115 @@
+commit e77134ebe8437810fd89ca1fb5a8062f2586a7e9
+
+C03 MEME2057 (notebook): la rama de conversación del compositor comprueba el vocabulario enmascarado en los borradores de estado y error
+
+Sobre 104fdc1c. En MEME2057 la mente compuso «Ya tengo el meme, se llama meme.jpg y está abierto en el visor de
+imágenes» y la App lo rechazó en internal_code: el clasificador de reserva lee «tienes algún meme» como fuera de
+catálogo y por esa rama AcceptPublishedConversation corre las comprobaciones de conversación sobre el texto sin
+enmascarar, donde el archivo observado pasa por código. Ahora, para un borrador de estado o de error, esa rama
+comprueba el vocabulario enmascarado (ObservedResponseLiterals), como ya hacían las comprobaciones de respuesta; el
+texto publicado conserva cada palabra. Prueba: PlannerAppBoundaryTests.ImageMissionReplyMayNameTheDownloadedFile
+(la misión real por ComposeAsync; la misma frase por la ruta de conversación sin máscara sigue siendo internal_code).
+Fast en verde; App 265/265.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/ModelMessageComposer.cs b/src/Baxy.App/ModelMessageComposer.cs
+index ba02e7a4..c9857f2e 100644
+--- a/src/Baxy.App/ModelMessageComposer.cs
++++ b/src/Baxy.App/ModelMessageComposer.cs
+@@ -255,8 +255,18 @@ internal static class ModelMessageComposer
+             // without this flag the check read it as a catalog action nobody
+             // asked for and the turn exhausted, while the Spanish «¿Qué querés
+             // que abra?» passed.
++            // MEME2057 «Tienes algun meme?»: the fallback still reads an image
++            // ask as out of catalog, so a verified mission's status reply crossed
++            // these conversation checks with its raw words and «meme.jpg» — the
++            // observed file the viewer shows — died in internal_code. A status or
++            // error draft is checked on its masked vocabulary, as the response
++            // checks already do; the published text keeps every word.
+             && !UserMessagePolicy.IsSafeConversationReply(
+-                userText, accepted, priorUserText: priorUserText,
++                userText,
++                draft.Intent is "status" or "error"
++                    ? ObservedResponseLiterals.WithoutObservedNames(accepted, draft.Source)
++                    : accepted,
++                priorUserText: priorUserText,
+                 clarification: draft.Intent == "clarification",
+                 hasRequiredInput: UserMessagePolicy.HasRequiredInput(draft),
+                 missingFields: UserMessagePolicy.DeclaredMissingFields(draft)))
+diff --git a/tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs b/tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs
+index 3ef86d95..234a8b5b 100644
+--- a/tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs
++++ b/tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs
+@@ -1104,6 +1104,70 @@ public sealed class PlannerAppBoundaryTests
+         });
+     }
+ 
++    // MEME2057 «Tienes algun meme?»: the mission's status reply names the observed file even
++    // though the fallback classifier still reads the ask as out of catalog.
++    [Test]
++    public async Task ImageMissionReplyMayNameTheDownloadedFile()
++    {
++        string download = new JsonObject
++        {
++            ["kind"] = "operation",
++            ["operation"] = "web.download",
++            ["polarity"] = "success",
++            ["verified"] = true,
++            ["succeeded"] = true,
++            ["observed"] = new JsonObject
++            {
++                ["version"] = 1,
++                ["sourceUrl"] = "http://images.example.org/UPLOADED/6413dfac6a8c7.jpeg",
++                ["query"] = "meme",
++                ["folder"] = "pictures",
++                ["name"] = "meme.jpg",
++                ["bytes"] = 166693,
++                ["contentType"] = "image/jpeg",
++                ["authority"] = "downloaded_file_size_postread",
++            },
++        }.ToJsonString();
++        string opened = new JsonObject
++        {
++            ["kind"] = "operation",
++            ["operation"] = "file.open",
++            ["polarity"] = "success",
++            ["verified"] = true,
++            ["succeeded"] = true,
++            ["observed"] = new JsonObject
++            {
++                ["version"] = 1,
++                ["folder"] = "pictures",
++                ["name"] = "meme.jpg",
++                ["windowTitle"] = "meme.jpg",
++                ["authority"] = "shell_open_window_title_postread",
++            },
++        }.ToJsonString();
++        UserMessageDraft draft = UserMessagePolicy.Create(
++            MissionNarration.CreateCompletionMessage([download, opened], "Tienes algun meme?"),
++            UserMessageEvent.Status);
++        var facts = new JsonObject { ["situation"] = draft.Source };
++        const string authored = "Ya tengo el meme, se llama meme.jpg y está abierto en el visor de imágenes.";
++
++        ModelMessageCompositionOutcome outcome =
++            await ModelMessageComposer.ComposeAsync(
++                draft,
++                "Tienes algun meme?",
++                facts,
++                (_, _, _, _, _) => Task.FromResult<MindComposedMessage?>(new MindComposedMessage(authored)),
++                cpuFallback: false,
++                allowRecovery: false,
++                CancellationToken.None);
++
++        Assert.Multiple(() =>
++        {
++            Assert.That(UserMessagePolicy.ConversationFallbackIntent("Tienes algun meme?"), Is.EqualTo("out_of_catalog"));
++            Assert.That(UserMessagePolicy.ConversationReplyRejectionReason("Tienes algun meme?", authored), Is.EqualTo("internal_code"));
++            Assert.That(outcome.Text, Is.EqualTo(authored));
++        });
++    }
++
+     [Test]
+     public async Task RejectedVisibleMessageRetriesTheSameVerifiedFacts()
+     {
