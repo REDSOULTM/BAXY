@@ -1,3 +1,25 @@
+## TEXTREAD2061 — estado vigente 2026-09-22T11:01:18.930296+00:00
+
+Parcial: 4 aprobados, 2 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 676/742 | 66 | 0 | >=652 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 652 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); TEXTREAD2061 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: TEXTREAD2061: 6 ejecutados, 4 aprobados, 2 fallidos, 0 créditos (índices []). Siguiente: el conteo del Explorador (H0701) y las tipadas de red.
+
+Evidencia: `artifacts/comprobaciones/C03/TEXTREAD2061/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 94.98 s acumulados; pico GPU 3485.56 MiB; pico RAM 1712.68 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque TEXTREAD2061 precedente. -->
+
 ## MEME2059 — estado vigente 2026-09-22T10:39:22.426290+00:00
 
 Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

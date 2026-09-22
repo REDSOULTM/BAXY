@@ -1,0 +1,15 @@
+{
+  "schema": "c03-textread2061-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "opus/typed-tools (catalog, Core list, Providers adapter document.text.read, mind reading of a pasted path under a known folder, composer; merged in 8edf110ac).",
+  "patch": "artifacts/comprobaciones/C03/TEXTREAD2061/SOURCE.patch",
+  "commits": [
+    "5f83a34244a93d6e7cc680bc0c7af53527c7860a"
+  ],
+  "build": "BUILD2061 (C03-repairs2061-build/BUILD_READY.json; mente)",
+  "cause_measured": "Una ruta pegada sin verbo terminaba en una pregunta («¿qué querés hacer con ese archivo?») en vez de leerlo.",
+  "change": "document.text.read lee la ruta pegada bajo una carpeta conocida y el final dice de qué trata; fuera de las carpetas conocidas sigue preguntando.",
+  "measurement": "TEXTREAD2061: 4/6 aprobados (2 variantes y los 2 límites); el literal H0299 y la variante del escritorio fallaron con verdad porque el panel no usaba las rutas del fixture raiz_textos; 0 créditos. Dos lecturas verificadas con final fiel (archivo, líneas, comienzo); dos rutas del panel ausentes en este PC (defecto del panel). Re-medición con las rutas del fixture como TEXTREAD2063.",
+  "credits": 0
+}

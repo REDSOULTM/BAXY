@@ -1812,3 +1812,7 @@ Conversación social y ayuda general pasa de 30/31 a 30/31 con un meme se busca,
 ## Actualización 2026-09-22 (MEME2059)
 
 Conversación social y ayuda general pasa de 30/31 a 31/31 con un meme se busca, se descarga y se abre con el visor (commit e77134eb, BUILD2059) (HEAD e77134eb): 6/6 aprobados (el literal H0069, las 3 variantes y los 2 límites), 1 créditos. Cuatro misiones web.download (query) + file.open verificadas por la ventana del visor, imágenes recicladas por el fixture; cada final nombra el archivo y dice que está abierto. La categoría queda cerrada.
+
+## Actualización 2026-09-22 (TEXTREAD2061)
+
+Archivos y carpetas pasa de 30/32 a 30/32 con una ruta pegada bajo una carpeta conocida se lee y se dice de qué trata (commit 5f83a342, BUILD2061) (HEAD 5f83a342): 4/6 aprobados (2 variantes y los 2 límites); el literal H0299 y la variante del escritorio fallaron con verdad porque el panel no usaba las rutas del fixture raiz_textos, 0 créditos. Dos lecturas verificadas con final fiel (archivo, líneas, comienzo); dos rutas del panel ausentes en este PC (defecto del panel). Re-medición con las rutas del fixture como TEXTREAD2063.
