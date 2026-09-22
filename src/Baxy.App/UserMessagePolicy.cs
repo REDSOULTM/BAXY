@@ -1926,7 +1926,9 @@ internal static class UserMessagePolicy
             normalized,
             @"\b(?:no\s+cambi[oe]\s+nada|no\s+se\s+cambio\s+nada|no\s+hubo\s+cambios?|nothing\s+(?:was\s+)?changed|no\s+change\s+was\s+made)\b"
             + @"|\b(?:no\s+se\s+realizo|no\s+se\s+hizo|no\s+fue\s+posible|no\s+realice|was\s+not\s+(?:done|performed|carried\s+out)|could\s+not\s+be\s+(?:done|performed))\b"
-            + @"|\b(?:no\s+se\s+(?:guardo|bajo|descargo)\s|nada\s+se\s+guardo|nada\s+fue\s+guardad[oa]|no\s+guarde\s+nada|nothing\s+was\s+saved|was\s+not\s+saved)\b",
+            + @"|\b(?:no\s+se\s+(?:guardo|bajo|descargo)\s|nada\s+se\s+guardo|nada\s+fue\s+guardad[oa]|no\s+guarde\s+nada|nothing\s+was\s+saved|was\s+not\s+saved)\b"
+            // PPTX2051: «the opening is not confirmed» / «cannot be verified» say the failure entire.
+            + @"|\b(?:(?:is|was|were|could)\s+not\s+(?:be\s+)?(?:confirmed|verified)|cannot\s+be\s+(?:confirmed|verified)|not\s+confirmed|unconfirmed|unverified|no\s+(?:esta|quedo|queda)\s+confirmad[oa]|sin\s+confirmar)\b",
             RegexOptions.CultureInvariant);
     }
 

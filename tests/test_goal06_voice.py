@@ -840,6 +840,29 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         "set the wallpaper to red",
         {"situation": json.dumps(wallpaper)},
     ) == ""
+    # PPTX2051 «make a presentation about dogs with 5 slides»: the package was
+    # written and file.open could not be verified; the English final that says
+    # both is neither reversed nor missing the failure.
+    _pptx_open_unverified = json.dumps({
+        "kind": "failure", "polarity": "failure", "cause": "mission_failed", "stepCount": 1,
+        "steps": [json.dumps({"kind": "operation", "operation": "document.presentation.create", "polarity": "success",
+                              "verified": True, "succeeded": True,
+                              "observed": {"version": 1, "title": "Dogs", "folder": "documents", "name": "Dogs.pptx", "slideCount": 5}})],
+        "reason": json.dumps({"kind": "operation", "operation": "file.open", "polarity": "failure", "verified": False,
+                              "succeeded": False, "error": "file_open_not_verified"}),
+    })
+    assert compose_visible_defect(
+        "The file was created and sent to the application, but no window or process appeared to confirm it opened, so the opening cannot be verified.",
+        "error", "make a presentation about dogs with 5 slides", {"situation": _pptx_open_unverified},
+    ) == ""
+    assert compose_visible_defect(
+        "The file was sent to its application but no window or process appeared, so the opening is not confirmed.",
+        "error", "make a presentation about dogs with 5 slides", {"situation": _pptx_open_unverified},
+    ) == ""
+    assert compose_visible_defect(
+        "I opened the presentation in PowerPoint.",
+        "error", "make a presentation about dogs with 5 slides", {"situation": _pptx_open_unverified},
+    ) == "reversed_polarity"
     # DOWNLOAD2047: the typed download causes narrated in the person's words.
     def _download_failure(err: str) -> str:
         step = json.dumps({"kind": "operation", "operation": "web.download", "polarity": "failure",

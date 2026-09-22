@@ -3586,7 +3586,12 @@ _FAILURE_MARKERS = re.compile(
     r"was not (?:done|performed|carried out)|could not be (?:done|performed)|"
     # DOWNLOAD2047: «no se guardó nada», «no se bajó la portada» say the failure.
     r"no se (?:guard[oó]|baj[oó]|descarg[oó]) |nada se guard[oó]|nada fue guardad[oa]|no guard[eé] nada|"
-    r"nothing was saved|was not saved)",
+    r"nothing was saved|was not saved|"
+    # PPTX2051 «make a presentation about dogs with 5 slides» with file.open not
+    # verified: «the opening is not confirmed», «cannot be verified» say the
+    # failure entire; the Spanish «no pude confirmar» already counted.
+    r"(?:is|was|were|could)\s+not\s+(?:be\s+)?(?:confirmed|verified)|cannot\s+be\s+(?:confirmed|verified)|"
+    r"not\s+confirmed|unconfirmed|unverified|no\s+(?:est[aá]|qued[oó]|queda)\s+confirmad[oa]|sin\s+confirmar)",
     re.IGNORECASE,
 )
 _NEGATED_FAILURE = re.compile(
@@ -9014,7 +9019,15 @@ def compose_visible_defect(
         # nothing. Only a mission whose open did not complete keeps the veto.
         if (
             cause == "mission_failed"
-            and re.search(r"\bopened\b|\babrí\b|\babri\b", folded)
+            and re.search(
+                # PPTX2051 «no window or process appeared to confirm it opened»:
+                # «opened» inside a verification or negation clause claims
+                # nothing; only the bare affirmation reverses the polarity.
+                r"(?<!\bconfirm )(?<!\bconfirm it )(?<!\bconfirm that it )(?<!\bverify it )(?<!\bverify that it )"
+                r"(?<!\bwhether it )(?<!\bif it )(?<!\bnot )(?<!\bnever )(?<!\bhaving )"
+                r"\bopened\b|\babrí\b|\babri\b",
+                folded,
+            )
             and not _completed_step_operation(situation, "app.open")
         ):
             return "reversed_polarity"

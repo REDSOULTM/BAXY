@@ -128,6 +128,34 @@ public sealed class C03FactPreservationTests
         Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "Dime algo"), Is.Null);
     }
 
+    // PPTX2051: «the opening is not confirmed» states the failure in English.
+    [Test]
+    public void OpeningNotConfirmedIsAFailureStatement()
+    {
+        string created = new JsonObject
+        {
+            ["kind"] = "operation",
+            ["operation"] = "document.presentation.create",
+            ["polarity"] = "success",
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = new JsonObject { ["version"] = 1, ["title"] = "Dogs", ["folder"] = "documents", ["name"] = "Dogs.pptx", ["slideCount"] = 5 },
+        }.ToJsonString();
+        string notOpened = new JsonObject
+        {
+            ["kind"] = "operation",
+            ["operation"] = "file.open",
+            ["polarity"] = "failure",
+            ["verified"] = false,
+            ["succeeded"] = false,
+            ["error"] = "file_open_not_verified",
+        }.ToJsonString();
+        string facts = MissionNarration.CreateFailureMessage([created], notOpened);
+        UserMessageDraft draft = UserMessagePolicy.Create(facts, UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+        const string reply = "Dogs.pptx was created in Documents with 5 slides, but no window or process appeared, so the opening is not confirmed.";
+        Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "make a presentation about dogs with 5 slides"), Is.Null);
+    }
+
     // DOWNLOAD2047: the file just written and the source host are observed data, not codes.
     [Test]
     public void DownloadedFileNameIsObservedVocabulary()
