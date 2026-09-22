@@ -68,3 +68,5 @@ el final ya lo dice con verdad); Steam abre a veces en la pantalla de inicio de 
 | Tanda / caso | Forma del pedido (literal o variante) | Qué hizo BAXY | Qué debía hacer | Fila(s) |
 |---|---|---|---|---|
 | ZIP2041 / dev-01 | «make a folder on the desktop with a txt inside, zip it and open the zip» (variante en inglés de H0542) | «In that I don't see a request for me; do you need something?» (guarda «sin pedido», cero operaciones) | la misión de cuatro tipadas (carpeta, txt, zip, abrir) como en español | H0542 (acreditada por el literal y dos variantes en español) |
+| AIRPLANE2043 / boundary-02 | «¿está activado el modo avión?» | «¿Estás preguntando si el modo avión está activado en este dispositivo o en el avión?» (aclaración, cero operaciones) | system.settings.status y decir el estado leído | — (límite) |
+| AIRPLANE2045 / boundary-02 | «¿el modo avión apaga también el bluetooth?» | leyó la pregunta como orden y lanzó system.settings.set (el runner la detuvo) | contestar la pregunta, cero operaciones | — (límite) |
