@@ -1816,3 +1816,7 @@ Conversación social y ayuda general pasa de 30/31 a 31/31 con un meme se busca,
 ## Actualización 2026-09-22 (TEXTREAD2061)
 
 Archivos y carpetas pasa de 30/32 a 30/32 con una ruta pegada bajo una carpeta conocida se lee y se dice de qué trata (commit 5f83a342, BUILD2061) (HEAD 5f83a342): 4/6 aprobados (2 variantes y los 2 límites); el literal H0299 y la variante del escritorio fallaron con verdad porque el panel no usaba las rutas del fixture raiz_textos, 0 créditos. Dos lecturas verificadas con final fiel (archivo, líneas, comienzo); dos rutas del panel ausentes en este PC (defecto del panel). Re-medición con las rutas del fixture como TEXTREAD2063.
+
+## Actualización 2026-09-22 (TEXTREAD2063)
+
+Archivos y carpetas pasa de 30/32 a 30/32 con una ruta pegada bajo una carpeta conocida se lee y se dice de qué trata (commit e7f0a0b3, BUILD2063) (HEAD e7f0a0b3): 5/6 aprobados (3 variantes y los 2 límites); el literal H0299 leyó y verificó el archivo y su final murió en forbidden_term porque el texto del propio archivo dice «catalogo», 0 créditos. Cuatro lecturas verificadas; tres finales fieles (archivo, líneas, comienzo) y el del literal no se pudo publicar. Reparación en el commit siguiente y re-medición como TEXTREAD2065.

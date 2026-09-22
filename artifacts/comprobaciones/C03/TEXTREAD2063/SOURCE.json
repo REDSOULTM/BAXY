@@ -1,0 +1,15 @@
+{
+  "schema": "c03-textread2063-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "opus/typed-tools (catalog, Core list, Providers adapter document.text.read, mind reading of a pasted path under a known folder, composer; merged in 8edf110ac).",
+  "patch": "artifacts/comprobaciones/C03/TEXTREAD2063/SOURCE.patch",
+  "commits": [
+    "e7f0a0b38925744da376500632f8bd0de6d90e6c"
+  ],
+  "build": "BUILD2063 (C03-repairs2063-build/BUILD_READY.json; mente)",
+  "cause_measured": "Una ruta pegada sin verbo terminaba en una pregunta («¿qué querés hacer con ese archivo?») en vez de leerlo.",
+  "change": "document.text.read lee la ruta pegada bajo una carpeta conocida y el final dice de qué trata; fuera de las carpetas conocidas sigue preguntando.",
+  "measurement": "TEXTREAD2063: 5/6 aprobados (3 variantes y los 2 límites); el literal H0299 leyó y verificó el archivo y su final murió en forbidden_term porque el texto del propio archivo dice «catalogo»; 0 créditos. Cuatro lecturas verificadas; tres finales fieles (archivo, líneas, comienzo) y el del literal no se pudo publicar. Reparación en el commit siguiente y re-medición como TEXTREAD2065.",
+  "credits": 0
+}
