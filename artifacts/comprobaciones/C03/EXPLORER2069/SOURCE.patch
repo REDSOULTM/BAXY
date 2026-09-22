@@ -1,0 +1,2222 @@
+commit 660024bf574cf4375453037388e72cba13a3ffd1
+
+C03: EXPLORER2067 — cuántos archivos de una extensión hay en la carpeta del Explorador (H0701): 2 ejecutados, 2/2 aprobados, 0 créditos; 4 filas sin ejecutar
+
+Sobre 4150e5ea. Sólo corrieron los dos límites y los dos pasan: «no cuentes nada» se reconoce sin operaciones y
+«cuántos .py hay en el escritorio» pregunta si contarlos, sin usar la lectura del Explorador. Las cuatro filas del
+fixture (el literal H0701 y las tres variantes) quedaron sin ejecutar: el panel las declara casos de fixture —el
+runner exige una ventana del Explorador propia de la raíz con su recibo de observación— y el conductor genérico
+(typed_case.sh) no lo produce, así que la ejecución se rechazó antes de admitir el turno. El fixture abrió y cerró
+su carpeta raiz_conteo en las seis; cero operaciones, cero violaciones, pins intactos. Sin crédito. Conductor propio
+del Explorador y re-medición como EXPLORER2069. 677/742, 65 abiertas. Registro padre TEXTREAD2065.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/GoalC03.txt b/GoalC03.txt
+index 319c1ac1..070a66c7 100644
+--- a/GoalC03.txt
++++ b/GoalC03.txt
+@@ -68,7 +68,7 @@ Trabaja autónomamente hasta el cierre demostrado del goal completo. No pares en
+ 
+ - Relevo asumido como único escritor (RELEVO_ACTIVO.json con la identidad real de sesión); rama `codex/kiro-goal-c03`, `main` intacto; todo comprometido y empujado (último commit: ver HANDOFF.md).
+ - **Cobertura: 203 → 677/742 cubiertos, 65 abiertos, 0 NA; 23/35 categorías cerradas (Música 39/39, Navegación y búsqueda web 46/46, Entrada incompleta, ruido y control de diálogo 34/34, Vídeo y series 26/26, Audio y volumen 51/51, Alarmas, recordatorios, tareas y agenda 38/38, Cerrar aplicaciones y ventanas 20/20, Conocimiento, razonamiento y creatividad verbal 37/37, Brillo y pantalla 17/17, Información web actual 17/17, Estado de hardware y sistema 40/40, Conversación social y ayuda general 31/31, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Contactos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9); C03 formal 3/11.** Registro canónico SHA256 `2a8c33d45375113cb79f1299148ab6bd1969fb488b51f69a835c507ed9d7f08b`. Primeras altas 24 h ≥ 169.
+-- Tandas adjudicadas en este relevo: TIME1134 (papeleo), MESSAGING1136 adoptado, MESSAGING1140, NOTES1141/1142, BUILD1143, KNOWLEDGE1144/1149, IDENTITY1145/1146/1148, CONVERSATION1150/1152/1160, CLOCK1155/1156/1157/1159, NETWORK1161/1163/1165/1167, SYSTEM1169/1171/1173/1175/1177, KNOWLEDGE1179, SYSTEM1181, SYSTEM1183, TIME1185, TIME1187, TIME1189, TIME1191, TIME1193, TIME1195, TIME1197, TIME1199, NETWORK1201, NETWORK1203, FILES1205, WINDOWS1207, WINDOWS1209, WINDOWS1211, WINDOWS1213, CLOSE1215, CLOSE1217, CLOSE1219, CLOSE1221, CLOSE1223, CLOSE1225, CLOSE1227, ARRANGE1229, APPS1231, APPS1237, AUDIO1239, FILES1243, MEMORY1245, MEMORY1247, MEMORY1249, MEMORY1251, MEMORY1253, MEMORY1255, WEB1257, WEB1259, WEB1261, WEB1263, WEB1265, WEB1267, WEB1269, WEB1271, UI1275, DIALOGUE1277 (medición, 0 créditos), DIALOGUE1279, DIALOGUE1281, BRIGHT1283 (medición, 0 créditos), BRIGHT1285, BRIGHT1287, BRIGHT1289, WEB1291 (medición, 0 créditos), NETWORK1293, NETWORK1295, NETWORK1297, NETWORK1299, NETWORK1301, SYSTEM1303, SYSTEM1305, SYSTEM1307, NEGATIVE1309, NEGATIVE1311, PROCESS1313, WINDOWS1315, WINDOWS1317, BRIGHT1319, BRIGHT1321, IDENTITY1323, IDENTITY1325, IDENTITY1327, CLOCK1329, CLOCK1331, CLOCK1333, CLOCK1335, AGENDA1337, AGENDA1339, AGENDA1341, CONVERSATION1343, CONVERSATION1345, CONVERSATION1347, CONVERSATION1349, AUDIO1351, KNOWLEDGE1353, KNOWLEDGE1355, KNOWLEDGE1357, CLIPBOARD1359, CLIPBOARD1361, MESSAGING1363, MESSAGING1365, SYSTEM1367, CLOSE1369, CLOSE1371, UI1373, UI1377, AUDIO1375, AUDIO1379, AUDIO1381, APPS1383, APPS1387, APPS1391, UI1389, WINDOWS1385, UI1393, UI1395, UI1397, SCREEN1399, SCREEN1401, SCREEN1403, SCREEN1405, SCREEN1407, SCREEN1409, SCREEN1411, SCREEN1413, SCREEN1415, SCREEN1417, SCREEN1419, SCREEN1421, SCREEN1423, FILES1427, NEGATIVE1429, NEGATIVE1431, FILES1433, AGENDA1435, FILES1437, FILES1439, FILES1441, FILES1443, WEB1445, WEB1447, WEB1449, WEB1451, WEB1453, WEB1455, NETWORK1457, SYSTEM1459, AUDIO1461, AUDIO1463, WEB1465, WEB1467, WEB1471, KNOWLEDGE1473, KNOWLEDGE1475, WEB1477, WEB1479, WEB1481, WEB1483, SCREEN1485, DIALOGUE1487, DIALOGUE1489, DIALOGUE1491, BROWSER1493, APPS1495, APPS1497, APPS1499, MEMORY1501, MEMORY1503, KNOWLEDGE1505, KNOWLEDGE1507, KNOWLEDGE1509, KNOWLEDGE1511, DIALOGUE1513, DIALOGUE1515, DIALOGUE1517, DIALOGUE1519, DIALOGUE1521, KNOWLEDGE1523, KNOWLEDGE1525, KNOWLEDGE1527, KNOWLEDGE1529, GAMES1531, GAMES1533, APPS1535, WINDOWS1537, WEB1539, WEB1541, WEB1543, SYSTEM1545, SYSTEM1547, APPS1549, APPS1551, MUSIC1553, MUSIC1555, MUSIC1557, MUSIC1559, MUSIC1561, MUSIC1563, MUSIC1565, MUSIC1567, MUSIC1569, MUSIC1573, MUSIC1575, AUDIO1577, AUDIO1579, WINDOWS1581, MUSIC1583, CONVERSATION1585, FILES1587, FILES1589, FILES1591, MUSIC1593, MUSIC1595, MUSIC1597, MEMORY1599, MEMORY1601, FILES1603, FILES1605, APPS1607, APPS1609, APPS1611, APPS1613, CLOSE1615, INSTALL1619, INSTALL1621, INSTALL1623, INSTALL1625, INSTALL1627, INSTALL1629, INSTALL1631, INSTALL1633, UI1635, UI1637, UI1639, UI1641, UI1643, UI1645, UI1647, CLOSE1649, CLOSE1651, CLOSE1653, UI1655, UI1657, UI1659, UI1661, UI1663, LIMITS1665, LIMITS1667, AGENDA1669, APPS1671, APPS1673, MUSIC1675, LIMITS1677, LIMITS1679, LIMITS1681, REOPEN1685 (reapertura de 10 por decisión del dueño 2026-09-16), MINALL1687, REOPEN1689, PDF1691, PDF1693, WINDOWS1695, SYSTEM1697, LIMITS1699, LIMITS1701, LIMITS1703, FILES1707, FILES1709, FILES1711, FILES1713, VIDEO1715, VIDEO1717, VIDEO1719, NETWORK1721, NETWORK1723, UI1725, LIMITS1727, NETWORK1729, UI1731, CLOSEALL1733, UI1735, NETWORK1737, NETWORK1739, NETWORK1741, NETWORK1743, WEB1745, MUSIC1747, MUSIC1749, MUSIC1751, MUSIC1753, MUSIC1755, MUSIC1757, MUSIC1759, MUSIC1761, MUSIC1763, UI1765, UI1767, MUSIC1769, UI1771, MUSIC1773, UI1775, MUSIC1777, MUSIC1779, ARRANGE1781, ARRANGE1783, ARRANGE1785, AUDIO1787, AUDIO1789, AUDIO1791, AUDIO1793, AUDIO1795, AUDIO1797, AUDIO1799, AUDIO1801, WEB1803, WEB1805, SCREEN1807, SCREEN1809, SCREEN1811, MIC1813, MIC1815, PIP1817, PIP1819, PIP1821, USB1823, STEAM1825, MUSIC1827, MUSIC1829, WEB1831, KNOW1833, KNOW1835, DISCORD1839, CHROMETABS1843, MSGSEND1845, MSGSEND1847, MSGSEND1849, MSGCLAR1851, UNRES1855, MAIL1859, MAIL1863, MAIL1867, DISCORD1869, DISCORD1871, UNRES1873, UNRES1875, WEB1877, WEB1879, WEB1881, WEB1883, WEB1885, WEB1887, WEB1889, WEB1891, LIMITS1893, LIMITS1895, LIMITS1897, WEB1899, LIMITS1901, LIMITS1903, UI1907, LANG1909, UI1911, APPS1913, LIMITS1915, POWER1917, VIDEO1919, VIDEO1921, VIDEO1923, VIDEO1925, VIDEO1927, VIDEO1929, CHAIN1931, SITE1933, APIID1935, EPIC1937, CHATREAD1939, UNRES1941, PRIME1943, UNRES1945, VIDEO1947, VIDEO1949, VIDEO1951, VIDEO1953, VIDEO1955, REOPEN1957 (reapertura de 35 por decisión del dueño 2026-09-20: la encuesta es la especificación), REOPEN1993 (reapertura de 56 por la auditoría semántica completa, D24), NEAR1995, REOPEN1996 (enmienda: H0521 vuelve a abierta, candidato único en este PC), NEAR1997, CONTEXT1999, THEN2001, THEN2003, THEN2007, SEARCH2005, SEARCH2011, SEARCH2015, SEARCH2019, WEATHER2023, WEATHER2025, NEWS2027, NEWS2029, WEATHER2031, WEATHER2033, WEATHER2035, WALLPAPER2039, ZIP2041, AIRPLANE2045, DOWNLOAD2047, DOWNLOAD2049, MEME2053, MEME2055, MEME2057, MEME2059, TEXTREAD2061, TEXTREAD2063, TEXTREAD2065. Registro por campaña en artifacts/comprobaciones/C03/<CAMPAÑA>/ (ROOT_ADJUDICATION, SOURCE/APP_SOURCE con parche y medición).
++- Tandas adjudicadas en este relevo: TIME1134 (papeleo), MESSAGING1136 adoptado, MESSAGING1140, NOTES1141/1142, BUILD1143, KNOWLEDGE1144/1149, IDENTITY1145/1146/1148, CONVERSATION1150/1152/1160, CLOCK1155/1156/1157/1159, NETWORK1161/1163/1165/1167, SYSTEM1169/1171/1173/1175/1177, KNOWLEDGE1179, SYSTEM1181, SYSTEM1183, TIME1185, TIME1187, TIME1189, TIME1191, TIME1193, TIME1195, TIME1197, TIME1199, NETWORK1201, NETWORK1203, FILES1205, WINDOWS1207, WINDOWS1209, WINDOWS1211, WINDOWS1213, CLOSE1215, CLOSE1217, CLOSE1219, CLOSE1221, CLOSE1223, CLOSE1225, CLOSE1227, ARRANGE1229, APPS1231, APPS1237, AUDIO1239, FILES1243, MEMORY1245, MEMORY1247, MEMORY1249, MEMORY1251, MEMORY1253, MEMORY1255, WEB1257, WEB1259, WEB1261, WEB1263, WEB1265, WEB1267, WEB1269, WEB1271, UI1275, DIALOGUE1277 (medición, 0 créditos), DIALOGUE1279, DIALOGUE1281, BRIGHT1283 (medición, 0 créditos), BRIGHT1285, BRIGHT1287, BRIGHT1289, WEB1291 (medición, 0 créditos), NETWORK1293, NETWORK1295, NETWORK1297, NETWORK1299, NETWORK1301, SYSTEM1303, SYSTEM1305, SYSTEM1307, NEGATIVE1309, NEGATIVE1311, PROCESS1313, WINDOWS1315, WINDOWS1317, BRIGHT1319, BRIGHT1321, IDENTITY1323, IDENTITY1325, IDENTITY1327, CLOCK1329, CLOCK1331, CLOCK1333, CLOCK1335, AGENDA1337, AGENDA1339, AGENDA1341, CONVERSATION1343, CONVERSATION1345, CONVERSATION1347, CONVERSATION1349, AUDIO1351, KNOWLEDGE1353, KNOWLEDGE1355, KNOWLEDGE1357, CLIPBOARD1359, CLIPBOARD1361, MESSAGING1363, MESSAGING1365, SYSTEM1367, CLOSE1369, CLOSE1371, UI1373, UI1377, AUDIO1375, AUDIO1379, AUDIO1381, APPS1383, APPS1387, APPS1391, UI1389, WINDOWS1385, UI1393, UI1395, UI1397, SCREEN1399, SCREEN1401, SCREEN1403, SCREEN1405, SCREEN1407, SCREEN1409, SCREEN1411, SCREEN1413, SCREEN1415, SCREEN1417, SCREEN1419, SCREEN1421, SCREEN1423, FILES1427, NEGATIVE1429, NEGATIVE1431, FILES1433, AGENDA1435, FILES1437, FILES1439, FILES1441, FILES1443, WEB1445, WEB1447, WEB1449, WEB1451, WEB1453, WEB1455, NETWORK1457, SYSTEM1459, AUDIO1461, AUDIO1463, WEB1465, WEB1467, WEB1471, KNOWLEDGE1473, KNOWLEDGE1475, WEB1477, WEB1479, WEB1481, WEB1483, SCREEN1485, DIALOGUE1487, DIALOGUE1489, DIALOGUE1491, BROWSER1493, APPS1495, APPS1497, APPS1499, MEMORY1501, MEMORY1503, KNOWLEDGE1505, KNOWLEDGE1507, KNOWLEDGE1509, KNOWLEDGE1511, DIALOGUE1513, DIALOGUE1515, DIALOGUE1517, DIALOGUE1519, DIALOGUE1521, KNOWLEDGE1523, KNOWLEDGE1525, KNOWLEDGE1527, KNOWLEDGE1529, GAMES1531, GAMES1533, APPS1535, WINDOWS1537, WEB1539, WEB1541, WEB1543, SYSTEM1545, SYSTEM1547, APPS1549, APPS1551, MUSIC1553, MUSIC1555, MUSIC1557, MUSIC1559, MUSIC1561, MUSIC1563, MUSIC1565, MUSIC1567, MUSIC1569, MUSIC1573, MUSIC1575, AUDIO1577, AUDIO1579, WINDOWS1581, MUSIC1583, CONVERSATION1585, FILES1587, FILES1589, FILES1591, MUSIC1593, MUSIC1595, MUSIC1597, MEMORY1599, MEMORY1601, FILES1603, FILES1605, APPS1607, APPS1609, APPS1611, APPS1613, CLOSE1615, INSTALL1619, INSTALL1621, INSTALL1623, INSTALL1625, INSTALL1627, INSTALL1629, INSTALL1631, INSTALL1633, UI1635, UI1637, UI1639, UI1641, UI1643, UI1645, UI1647, CLOSE1649, CLOSE1651, CLOSE1653, UI1655, UI1657, UI1659, UI1661, UI1663, LIMITS1665, LIMITS1667, AGENDA1669, APPS1671, APPS1673, MUSIC1675, LIMITS1677, LIMITS1679, LIMITS1681, REOPEN1685 (reapertura de 10 por decisión del dueño 2026-09-16), MINALL1687, REOPEN1689, PDF1691, PDF1693, WINDOWS1695, SYSTEM1697, LIMITS1699, LIMITS1701, LIMITS1703, FILES1707, FILES1709, FILES1711, FILES1713, VIDEO1715, VIDEO1717, VIDEO1719, NETWORK1721, NETWORK1723, UI1725, LIMITS1727, NETWORK1729, UI1731, CLOSEALL1733, UI1735, NETWORK1737, NETWORK1739, NETWORK1741, NETWORK1743, WEB1745, MUSIC1747, MUSIC1749, MUSIC1751, MUSIC1753, MUSIC1755, MUSIC1757, MUSIC1759, MUSIC1761, MUSIC1763, UI1765, UI1767, MUSIC1769, UI1771, MUSIC1773, UI1775, MUSIC1777, MUSIC1779, ARRANGE1781, ARRANGE1783, ARRANGE1785, AUDIO1787, AUDIO1789, AUDIO1791, AUDIO1793, AUDIO1795, AUDIO1797, AUDIO1799, AUDIO1801, WEB1803, WEB1805, SCREEN1807, SCREEN1809, SCREEN1811, MIC1813, MIC1815, PIP1817, PIP1819, PIP1821, USB1823, STEAM1825, MUSIC1827, MUSIC1829, WEB1831, KNOW1833, KNOW1835, DISCORD1839, CHROMETABS1843, MSGSEND1845, MSGSEND1847, MSGSEND1849, MSGCLAR1851, UNRES1855, MAIL1859, MAIL1863, MAIL1867, DISCORD1869, DISCORD1871, UNRES1873, UNRES1875, WEB1877, WEB1879, WEB1881, WEB1883, WEB1885, WEB1887, WEB1889, WEB1891, LIMITS1893, LIMITS1895, LIMITS1897, WEB1899, LIMITS1901, LIMITS1903, UI1907, LANG1909, UI1911, APPS1913, LIMITS1915, POWER1917, VIDEO1919, VIDEO1921, VIDEO1923, VIDEO1925, VIDEO1927, VIDEO1929, CHAIN1931, SITE1933, APIID1935, EPIC1937, CHATREAD1939, UNRES1941, PRIME1943, UNRES1945, VIDEO1947, VIDEO1949, VIDEO1951, VIDEO1953, VIDEO1955, REOPEN1957 (reapertura de 35 por decisión del dueño 2026-09-20: la encuesta es la especificación), REOPEN1993 (reapertura de 56 por la auditoría semántica completa, D24), NEAR1995, REOPEN1996 (enmienda: H0521 vuelve a abierta, candidato único en este PC), NEAR1997, CONTEXT1999, THEN2001, THEN2003, THEN2007, SEARCH2005, SEARCH2011, SEARCH2015, SEARCH2019, WEATHER2023, WEATHER2025, NEWS2027, NEWS2029, WEATHER2031, WEATHER2033, WEATHER2035, WALLPAPER2039, ZIP2041, AIRPLANE2045, DOWNLOAD2047, DOWNLOAD2049, MEME2053, MEME2055, MEME2057, MEME2059, TEXTREAD2061, TEXTREAD2063, TEXTREAD2065, EXPLORER2067. Registro por campaña en artifacts/comprobaciones/C03/<CAMPAÑA>/ (ROOT_ADJUDICATION, SOURCE/APP_SOURCE con parche y medición).
+ - Reparaciones causales adoptadas y medidas: notas (léxico), App palabra completa, prompt (SIEMPRE/idioma), voseo (lector y shell, BUILD1147), pregunta de recuperación publicada (BUILD1151), reloj (reconocedor y proyección de fecha; shell día/day, BUILD1158), wifi (dominio y validador de conectividad), GPU (scope), disco («espacio», elipsis nominal), claves de medidas total/free/used (autorizado), alarmas relativas al segundo entero publicado (decisión del dueño, TIME1139), duraciones compactas y «media hora», despertar como alarma, recordatorios con duración al inicio, alarmas y recordatorios con hora explícita, aclaraciones deterministas de agenda (hora imposible, aviso sin contenido), «contá N minutos», IP propia sin confirmación (BUILD1201, decisión del dueño), proveedor de carpetas conocidas para crear archivos y carpetas en escritorio/Documentos (BUILD1205, decisión del dueño, infraestructura ≥10 abiertos). Un validador retirado tras medir agotamiento (mislabeled_memory, 0e8edfec).
+ - Sin tests/dueñas/Fast/Full, por orden vigente: ningún criterio formal de validación se declara cumplido. Guardas intactas.
+ - Decisiones del dueño recibidas el 2026-09-13 (artifacts/comprobaciones/C03/DECISIONES_DUENO_2026-09-13.md): poder total en este PC, cierre de apps sin autorización por app, proveedor de carpetas conocidas, renombrado de claves de medidas, IP sin confirmación, TIME1139 a elección de raíz con obligación de cumplirlo, y saltar lo que exija sesiones ausentes (Netflix). Reanudación exacta en HANDOFF.md y CONDICIONES_POR_CATEGORIA_2026-09-13.md.
+diff --git a/artifacts/comprobaciones/C03/CHECKPOINT.md b/artifacts/comprobaciones/C03/CHECKPOINT.md
+index 363cec5b..f2f7da84 100644
+--- a/artifacts/comprobaciones/C03/CHECKPOINT.md
++++ b/artifacts/comprobaciones/C03/CHECKPOINT.md
+@@ -1,3 +1,25 @@
++## EXPLORER2067 — estado vigente 2026-09-22T12:06:13.058321+00:00
++
++Parcial: 2 aprobados, 0 fallidos, 4 sin ejecutar; 0 créditos.
++
++| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
++|---:|---:|---:|---:|---:|
++| 677/742 | 65 | 0 | >=653 | 29/35 |
++
++Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 653 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); EXPLORER2067 añade 0. No se cuentan revalidaciones.
++
++Siguiente acción: EXPLORER2067: 2 ejecutados (los dos límites; las 4 filas del fixture quedaron sin ejecutar), 2 aprobados, 0 fallidos, 0 créditos (índices []). Siguiente: las tipadas de red (modo avión, wifi de casa) y las de descarga.
++
++Evidencia: `artifacts/comprobaciones/C03/EXPLORER2067/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
++
++Recursos de los segmentos: 32.47 s acumulados; pico GPU 3485.56 MiB; pico RAM 1510.68 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
++
++Segmentos iniciados: 2; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
++
++---
++
++<!-- Historial anterior conservado; rige el bloque EXPLORER2067 precedente. -->
++
+ ## TEXTREAD2065 — estado vigente 2026-09-22T11:50:21.902198+00:00
+ 
+ Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+diff --git a/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md b/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md
+index 4b316e41..9174584e 100644
+--- a/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md
++++ b/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md
+@@ -1824,3 +1824,7 @@ Archivos y carpetas pasa de 30/32 a 30/32 con una ruta pegada bajo una carpeta c
+ ## Actualización 2026-09-22 (TEXTREAD2065)
+ 
+ Archivos y carpetas pasa de 30/32 a 31/32 con una ruta pegada bajo una carpeta conocida se lee y se dice de qué trata (commit 83499642, BUILD2065) (HEAD 83499642): 6/6 aprobados (el literal H0299, las 3 variantes y los 2 límites), 1 créditos. Cuatro lecturas verificadas con final fiel (archivo, líneas y comienzo citado tal cual); dos límites con cero operaciones.
++
++## Actualización 2026-09-22 (EXPLORER2067)
++
++Archivos y carpetas pasa de 31/32 a 31/32 con el directorio actual es la carpeta del Explorador en primer plano (commit 4150e5ea, BUILD2067) (HEAD 4150e5ea): 2 ejecutados de 6; los dos límites aprobados; las 4 filas del fixture sin ejecutar (el conductor genérico no entrega la ventana del Explorador propia que el runner exige), 0 créditos. Cero operaciones en las dos ejecutadas; el fixture abrió y cerró raiz_conteo en las seis. Conductor propio del Explorador y re-medición como EXPLORER2069.
+diff --git a/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md b/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md
+index 7eb574df..bb133a8c 100644
+--- a/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md
++++ b/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md
+@@ -1,4 +1,4 @@
+-# Categorías actuales — adjudicación TEXTREAD2065 (tras las reaperturas REOPEN1957 y REOPEN1993 por decisión del dueño 2026-09-20)
++# Categorías actuales — adjudicación EXPLORER2067 (tras las reaperturas REOPEN1957 y REOPEN1993 por decisión del dueño 2026-09-20)
+ 
+ Reapertura 2026-09-20 (REOPEN1996, enmienda de la auditoría): H0521 «abres team» vuelve a abierta (en este PC Teams no está instalado: candidato único); 652/742. Detalle en REOPEN1996/REGISTRY_UPDATE.json.
+ 
+diff --git a/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md b/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md
+index a950f8f4..c9b9a456 100644
+--- a/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md
++++ b/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md
+@@ -1,3 +1,25 @@
++## EXPLORER2067 — estado vigente 2026-09-22T12:06:13.058321+00:00
++
++Parcial: 2 aprobados, 0 fallidos, 4 sin ejecutar; 0 créditos.
++
++| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
++|---:|---:|---:|---:|---:|
++| 677/742 | 65 | 0 | >=653 | 29/35 |
++
++Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 653 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); EXPLORER2067 añade 0. No se cuentan revalidaciones.
++
++Siguiente acción: EXPLORER2067: 2 ejecutados (los dos límites; las 4 filas del fixture quedaron sin ejecutar), 2 aprobados, 0 fallidos, 0 créditos (índices []). Siguiente: las tipadas de red (modo avión, wifi de casa) y las de descarga.
++
++Evidencia: `artifacts/comprobaciones/C03/EXPLORER2067/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
++
++Recursos de los segmentos: 32.47 s acumulados; pico GPU 3485.56 MiB; pico RAM 1510.68 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
++
++Segmentos iniciados: 2; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
++
++---
++
++<!-- Historial anterior conservado; rige el bloque EXPLORER2067 precedente. -->
++
+ ## TEXTREAD2065 — estado vigente 2026-09-22T11:50:21.902198+00:00
+ 
+ Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+diff --git a/artifacts/comprobaciones/C03/EXPLORER2067/MATERIAL_PINS.json b/artifacts/comprobaciones/C03/EXPLORER2067/MATERIAL_PINS.json
+new file mode 100644
+index 00000000..9789d4aa
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/EXPLORER2067/MATERIAL_PINS.json
+@@ -0,0 +1,87 @@
++{
++  "schema": "explorer2067-public-material-pins-v1",
++  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-proposal",
++  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1",
++  "seal_sha256": "de22154538487ef383194ddb73fcd07b7f189ccb0a6a911a72a4a7a11016e7a9",
++  "runner_sha256": "bde97f19da910d1d9c3bcb52e90da9fd487882029d948891333afdff67194b3b",
++  "transport_seal_sha256": "91968f076df7de73fc283b2eea6d97c13a5164f02ccff138fc5632890f54b3c5",
++  "files": {
++    "panel.json": "f494349c895b1dc896451372a81bf7dc703659de0ba5f26e647fa3993b77fe6f",
++    "turns.jsonl": "40c9fdb03297b1cd7fa229f53fa02ee91409c4570a052e0b165560098be7a010",
++    "case-map.json": "5fc6fb95af7e844db77b20590d39df0db05f9948cc9959ade2adbb159c8b6feb",
++    "PLAN.md": "c305bc6283989f6e1fe0e109ea06dc0ec2929233441e8a3b0b5742400e2549c1"
++  },
++  "counts": {
++    "cases": 6,
++    "historical_literals": 1,
++    "original_development_variants": 3,
++    "boundaries": 2,
++    "wire_lines": 12,
++    "session_controls": 6,
++    "ordinary_turns": 6,
++    "reviewed_turns": 0,
++    "maximum_reportable_terminals": 6,
++    "maximum_internal_confirmations": 0
++  },
++  "kind_counts": {
++    "historical_literal": 1,
++    "original_development_variant": 3,
++    "boundary": 2
++  },
++  "case_identities": [
++    {
++      "index": 0,
++      "case_id": "H0701",
++      "kind": "historical_literal",
++      "group": "explorer_count",
++      "credit_behavior": "explorer_count",
++      "text_sha256": "f30b96e2884b7bc307aa1c8908a552a0b3d41fced6a08ef0c03fb1d9226db284",
++      "criterion_sha256": "0f8ef8fe744ce3c4ec2a12baf1f0bd8fbc86d3cef85e98a2dc0cb3eb0d0980d8"
++    },
++    {
++      "index": 1,
++      "case_id": "explorer2067-dev-01",
++      "kind": "original_development_variant",
++      "group": "explorer_count",
++      "credit_behavior": "explorer_count",
++      "text_sha256": "018171f768025597758a614cf6aa903663f3e0fe065e4d827300fc31cf6af450",
++      "criterion_sha256": "0f8ef8fe744ce3c4ec2a12baf1f0bd8fbc86d3cef85e98a2dc0cb3eb0d0980d8"
++    },
++    {
++      "index": 2,
++      "case_id": "explorer2067-dev-02",
++      "kind": "original_development_variant",
++      "group": "explorer_count",
++      "credit_behavior": "explorer_count",
++      "text_sha256": "b53aef85750433e59d91755d5133369bb42094a6cf38670926ab3800477d5c75",
++      "criterion_sha256": "0f8ef8fe744ce3c4ec2a12baf1f0bd8fbc86d3cef85e98a2dc0cb3eb0d0980d8"
++    },
++    {
++      "index": 3,
++      "case_id": "explorer2067-dev-03",
++      "kind": "original_development_variant",
++      "group": "explorer_count",
++      "credit_behavior": "explorer_count",
++      "text_sha256": "e2b1031a341f7b2b44d2b510fa72637bbca9940865b1919b55fe2c2969f2dd18",
++      "criterion_sha256": "0f8ef8fe744ce3c4ec2a12baf1f0bd8fbc86d3cef85e98a2dc0cb3eb0d0980d8"
++    },
++    {
++      "index": 4,
++      "case_id": "explorer2067-boundary-01",
++      "kind": "boundary",
++      "group": "no_effect_boundary",
++      "credit_behavior": "no_effect_boundary",
++      "text_sha256": "b7e761ef9a01eca4eecbe2567b1af38e9c60451dac1c791ce284a45fb60150ee",
++      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
++    },
++    {
++      "index": 5,
++      "case_id": "explorer2067-boundary-02",
++      "kind": "boundary",
++      "group": "no_effect_boundary",
++      "credit_behavior": "no_effect_boundary",
++      "text_sha256": "81f2a0e868514c9c1ed3a25b327c99029f8c3b38383e2c2a33577b70d4485865",
++      "criterion_sha256": "74f58e5edaf4f66c9c160809ff820ee2af75e4ee4f2429b8a7cefeb0ab6b88a7"
++    }
++  ]
++}
+diff --git a/artifacts/comprobaciones/C03/EXPLORER2067/REGISTRY_UPDATE.json b/artifacts/comprobaciones/C03/EXPLORER2067/REGISTRY_UPDATE.json
+new file mode 100644
+index 00000000..53e664f2
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/EXPLORER2067/REGISTRY_UPDATE.json
+@@ -0,0 +1,14 @@
++{
++  "registry_before_sha256": "2a8c33d45375113cb79f1299148ab6bd1969fb488b51f69a835c507ed9d7f08b",
++  "registry_after_sha256": "2a8c33d45375113cb79f1299148ab6bd1969fb488b51f69a835c507ed9d7f08b",
++  "touched_ids": [],
++  "credited_ids": [],
++  "counters": {
++    "covered": 677,
++    "open": 65,
++    "not_applicable": 0,
++    "total": 742
++  },
++  "decisions_sha256": "2347b440d047c88f2119ab7c8c593734e8e2a54f324dce157f831fd07a3887c6",
++  "updated_at": "2026-09-22T12:06:13.058321+00:00"
++}
+diff --git a/artifacts/comprobaciones/C03/EXPLORER2067/ROOT_ADJUDICATION.json b/artifacts/comprobaciones/C03/EXPLORER2067/ROOT_ADJUDICATION.json
+new file mode 100644
+index 00000000..91eb3d30
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/EXPLORER2067/ROOT_ADJUDICATION.json
+@@ -0,0 +1,146 @@
++{
++  "schema": "explorer2067-root-adjudication-v2",
++  "decided_at_utc": "2026-09-22T12:06:13.058321+00:00",
++  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
++  "head": "4150e5eac61af37be261d55becfa05adc69ca5a7",
++  "decisions_sha256": "2347b440d047c88f2119ab7c8c593734e8e2a54f324dce157f831fd07a3887c6",
++  "registry_before_sha256": "2a8c33d45375113cb79f1299148ab6bd1969fb488b51f69a835c507ed9d7f08b",
++  "registry_before_counts": {
++    "covered": 677,
++    "open": 65,
++    "not_applicable": 0,
++    "total": 742
++  },
++  "candidate_manifest_sha256": "4a4677b53222779e69042b1bdf252dcef78721c7d92d46b9948e62827c621d58",
++  "preparation_sha256": "8a60996dab5b91403df15a59c4b726495015bd3a5a84969f9f88dcfc0bc472a5",
++  "passed": 2,
++  "failed": 0,
++  "unexecuted": 4,
++  "executed": 2,
++  "segments_started": 2,
++  "aborted_before_admission": 0,
++  "aborted_before_admission_indices": [],
++  "credits": [],
++  "counters": {
++    "covered": 677,
++    "open": 65,
++    "not_applicable": 0,
++    "total": 742
++  },
++  "metrics": {
++    "first_covered_last24h_is_lower_bound": true,
++    "first_covered_last24h_before": 653,
++    "categories_total": 35,
++    "categories_closed_after": 29,
++    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 653 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); EXPLORER2067 añade 0. No se cuentan revalidaciones.",
++    "first_covered_last24h_after": 653
++  },
++  "resources": {
++    "seconds_sum": 32.4690000000046,
++    "gpu_peak_mib": 3485.55859375,
++    "ram_peak_mib": 1510.68359375
++  },
++  "cases": [
++    {
++      "index": 4,
++      "case_id": "explorer2067-boundary-01",
++      "verdict": "passed",
++      "credit": false,
++      "pair_indices": [],
++      "reason": "Límite aprobado.",
++      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++      "final_sha256": "80b70fbfe3546a132aec7f5289681718ee0a9d62ef4b5bd838e5d430f82d5769",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\results\\case-04\\EXIT.json": "8246f50b06cc68e6a0f76290df83a87dd0bb7e419dae10c8782de802e573b2f8",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\results\\case-04\\RESOURCES.json": "124c7172ea27a3427f3c2b48e2cdcfcc0d00abca36a06bd85825e13c317d5264",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\profile-owner-04.json": "f5b0d927d5278e06c4a7f89d31d677c82d842633541b5cc2ac2c6dc025819565",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\results\\case-04\\PREREG.json": "a7a5e82e38e707727832b97705fff041ba0b35663bc3411f207e375a386a70eb",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-04\\capture\\events.jsonl": "85d7cf062831608bcc66da0f2bbb2ea769cb706b55833a8c5140d8b58a741f15",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-04\\turns.jsonl": "4255485810aa9e39ceca3093d6a9588d5d72164f5b41c65bc9d489ae4f2a522f",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\fixture-04.json": "e21167c467954244406286553a15d0a66fbc62ac6ea7624b39ffc2a26b09fe11",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\context-04.json": "de3e8edbc499cd1add0de0195c5e9226b223fbd748e9a076f2294cadc9241c44",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\context-prelaunch-04.json": "e55896abf4098707852f575c82903af3de88445c0705ea15d2056d0f8c13e4d7",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-04\\case-observations.json": "4c3fcb4d2284987ec876049920933667f6beb10ea129b7cccf07cac002060729",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-04\\journal-before.json": "26a509332ca78fdf520e09c917cb851611a82c73160e10754576a03790acf628",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-04\\journal-after.json": "1fa29fa9115b13a880171f23841d64ba34bcc76c3a158a6a40fc3fedec8adfac",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "bafe5e744c4e0f3558fe871f42e98d955ce5fdba8de227552b4fa5068d0cff5d"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "4f2ea62c-1668-4c7a-85c5-672389723e2d",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    },
++    {
++      "index": 5,
++      "case_id": "explorer2067-boundary-02",
++      "verdict": "passed",
++      "credit": false,
++      "pair_indices": [],
++      "reason": "Límite aprobado.",
++      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++      "final_sha256": "1a78cc90cf7ce3acfd96a007de2cbcc573363389a27874868097438b87091bb8",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\results\\case-05\\EXIT.json": "d6cffe9fa38ff95f11c481aba6c2b7d1e862f2515e707f7a549a2caf78c1b13f",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\results\\case-05\\RESOURCES.json": "fe5c2602f3dd0a2709db533cfdf2e02a03485f8c0bcd50329199d3fd0625c17f",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\profile-owner-05.json": "8e9234cec157f0e9a901b2199a39632c794257db52cc5486090fcea7bc3ae120",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\results\\case-05\\PREREG.json": "ef87fe6720c3147185567e8d30ff91ff8164679bd71cfaa8d5d82fcf84c358fe",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-05\\capture\\events.jsonl": "3f7f767ccbcbd27724b0c1ec1d0cda6c804cb7b01f9de5296cd1347aaf70d5ac",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-05\\turns.jsonl": "67f66c543994a1c6cf46e5aa4cf12cf954baf420c7615ecb76cf891073b522bb",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\fixture-05.json": "459a18998fe4f09604c2e9f4a8dda83e59928b85ed899b7f96493ab9b82f71be",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\context-05.json": "a55fe352bc880eb491f45f73104477fceafe76b3c02c27a324d1a74d30cad1bc",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\context-prelaunch-05.json": "ef659ed195e205261d1da6e09a52c00a0a42784711f37a2555d561e0b12b8be6",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-05\\case-observations.json": "cd69a0905779e9f9b1eeba597f4eee3639d79a15f34ef5ed211a3e7e54fb6d49",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-05\\journal-before.json": "df6bc84cb19689ddcf81e93405ea0c2bbc4c38a415ddfea5550d7ad8bdcf80eb",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-05\\journal-after.json": "f5710ae5f92086a01706464a2c7bd678ab6c955dbcfa588bb58e0eb0fd68f2c0",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "7e0ca79dee5286f35bd8a6e3ea9cc8f713b91307dc72221e53415e62bfdc8a66"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "7c3787be-5183-44c0-8d3e-e99f7ecd6cc3",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    }
++  ],
++  "unexecuted_indices": [
++    0,
++    1,
++    2,
++    3
++  ],
++  "next_action": "EXPLORER2067: 2 ejecutados (los dos límites; las 4 filas del fixture quedaron sin ejecutar), 2 aprobados, 0 fallidos, 0 créditos (índices []). Siguiente: las tipadas de red (modo avión, wifi de casa) y las de descarga.",
++  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
++  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
++}
+diff --git a/artifacts/comprobaciones/C03/EXPLORER2067/ROOT_ADJUDICATION.md b/artifacts/comprobaciones/C03/EXPLORER2067/ROOT_ADJUDICATION.md
+new file mode 100644
+index 00000000..b26c658f
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/EXPLORER2067/ROOT_ADJUDICATION.md
+@@ -0,0 +1,28 @@
++# EXPLORER2067 — adjudicación de la raíz
++
++## EXPLORER2067 — estado vigente 2026-09-22T12:06:13.058321+00:00
++
++Parcial: 2 aprobados, 0 fallidos, 4 sin ejecutar; 0 créditos.
++
++| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
++|---:|---:|---:|---:|---:|
++| 677/742 | 65 | 0 | >=653 | 29/35 |
++
++Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 653 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); EXPLORER2067 añade 0. No se cuentan revalidaciones.
++
++Siguiente acción: EXPLORER2067: 2 ejecutados (los dos límites; las 4 filas del fixture quedaron sin ejecutar), 2 aprobados, 0 fallidos, 0 créditos (índices []). Siguiente: las tipadas de red (modo avión, wifi de casa) y las de descarga.
++
++Evidencia: `artifacts/comprobaciones/C03/EXPLORER2067/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
++
++Recursos de los segmentos: 32.47 s acumulados; pico GPU 3485.56 MiB; pico RAM 1510.68 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
++
++Segmentos iniciados: 2; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
++
++| Índice | Caso | Veredicto | Causa de la raíz | Observación |
++|---:|---|---|---|---|
++| 4 | explorer2067-boundary-01 | passed | Límite aprobado. | Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos. |
++| 5 | explorer2067-boundary-02 | passed | Límite aprobado. | Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos. |
++
++Recursos: 32.47 s de segmentos; pico GPU 3485.56 MiB; pico RAM 1510.68 MiB. La muestra del árbol de procesos puede incluir descendientes ajenos a BAXY; no equivale a consumo exclusivo del modelo.
++
++Sólo se atribuyen invocaciones nuevas de cada segmento. El aislamiento de contexto o la ausencia de operaciones no acredita por sí sola una respuesta útil. Los casos no ejecutados conservan sus datos y estado.
+diff --git a/artifacts/comprobaciones/C03/EXPLORER2067/ROOT_CASE_JUDGMENTS.json b/artifacts/comprobaciones/C03/EXPLORER2067/ROOT_CASE_JUDGMENTS.json
+new file mode 100644
+index 00000000..1526db5e
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/EXPLORER2067/ROOT_CASE_JUDGMENTS.json
+@@ -0,0 +1,94 @@
++[
++  {
++    "index": 4,
++    "case_id": "explorer2067-boundary-01",
++    "verdict": "passed",
++    "credit": false,
++    "pair_indices": [],
++    "reason": "Límite aprobado.",
++    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++    "final_sha256": "80b70fbfe3546a132aec7f5289681718ee0a9d62ef4b5bd838e5d430f82d5769",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\results\\case-04\\EXIT.json": "8246f50b06cc68e6a0f76290df83a87dd0bb7e419dae10c8782de802e573b2f8",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\results\\case-04\\RESOURCES.json": "124c7172ea27a3427f3c2b48e2cdcfcc0d00abca36a06bd85825e13c317d5264",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\profile-owner-04.json": "f5b0d927d5278e06c4a7f89d31d677c82d842633541b5cc2ac2c6dc025819565",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\results\\case-04\\PREREG.json": "a7a5e82e38e707727832b97705fff041ba0b35663bc3411f207e375a386a70eb",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-04\\capture\\events.jsonl": "85d7cf062831608bcc66da0f2bbb2ea769cb706b55833a8c5140d8b58a741f15",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-04\\turns.jsonl": "4255485810aa9e39ceca3093d6a9588d5d72164f5b41c65bc9d489ae4f2a522f",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\fixture-04.json": "e21167c467954244406286553a15d0a66fbc62ac6ea7624b39ffc2a26b09fe11",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\context-04.json": "de3e8edbc499cd1add0de0195c5e9226b223fbd748e9a076f2294cadc9241c44",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\context-prelaunch-04.json": "e55896abf4098707852f575c82903af3de88445c0705ea15d2056d0f8c13e4d7",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-04\\case-observations.json": "4c3fcb4d2284987ec876049920933667f6beb10ea129b7cccf07cac002060729",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-04\\journal-before.json": "26a509332ca78fdf520e09c917cb851611a82c73160e10754576a03790acf628",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-04\\journal-after.json": "1fa29fa9115b13a880171f23841d64ba34bcc76c3a158a6a40fc3fedec8adfac",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "bafe5e744c4e0f3558fe871f42e98d955ce5fdba8de227552b4fa5068d0cff5d"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "4f2ea62c-1668-4c7a-85c5-672389723e2d",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  },
++  {
++    "index": 5,
++    "case_id": "explorer2067-boundary-02",
++    "verdict": "passed",
++    "credit": false,
++    "pair_indices": [],
++    "reason": "Límite aprobado.",
++    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++    "final_sha256": "1a78cc90cf7ce3acfd96a007de2cbcc573363389a27874868097438b87091bb8",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\results\\case-05\\EXIT.json": "d6cffe9fa38ff95f11c481aba6c2b7d1e862f2515e707f7a549a2caf78c1b13f",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\results\\case-05\\RESOURCES.json": "fe5c2602f3dd0a2709db533cfdf2e02a03485f8c0bcd50329199d3fd0625c17f",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\profile-owner-05.json": "8e9234cec157f0e9a901b2199a39632c794257db52cc5486090fcea7bc3ae120",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\results\\case-05\\PREREG.json": "ef87fe6720c3147185567e8d30ff91ff8164679bd71cfaa8d5d82fcf84c358fe",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-05\\capture\\events.jsonl": "3f7f767ccbcbd27724b0c1ec1d0cda6c804cb7b01f9de5296cd1347aaf70d5ac",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-05\\turns.jsonl": "67f66c543994a1c6cf46e5aa4cf12cf954baf420c7615ecb76cf891073b522bb",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\fixture-05.json": "459a18998fe4f09604c2e9f4a8dda83e59928b85ed899b7f96493ab9b82f71be",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\context-05.json": "a55fe352bc880eb491f45f73104477fceafe76b3c02c27a324d1a74d30cad1bc",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\context-prelaunch-05.json": "ef659ed195e205261d1da6e09a52c00a0a42784711f37a2555d561e0b12b8be6",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-05\\case-observations.json": "cd69a0905779e9f9b1eeba597f4eee3639d79a15f34ef5ed211a3e7e54fb6d49",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-05\\journal-before.json": "df6bc84cb19689ddcf81e93405ea0c2bbc4c38a415ddfea5550d7ad8bdcf80eb",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-05\\journal-after.json": "f5710ae5f92086a01706464a2c7bd678ab6c955dbcfa588bb58e0eb0fd68f2c0",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "7e0ca79dee5286f35bd8a6e3ea9cc8f713b91307dc72221e53415e62bfdc8a66"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "7c3787be-5183-44c0-8d3e-e99f7ecd6cc3",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  }
++]
+diff --git a/artifacts/comprobaciones/C03/EXPLORER2067/ROOT_DECISION_PINS.json b/artifacts/comprobaciones/C03/EXPLORER2067/ROOT_DECISION_PINS.json
+new file mode 100644
+index 00000000..1eecf925
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/EXPLORER2067/ROOT_DECISION_PINS.json
+@@ -0,0 +1,6 @@
++{
++  "decisions_sha256": "2347b440d047c88f2119ab7c8c593734e8e2a54f324dce157f831fd07a3887c6",
++  "candidate_manifest_sha256": "4a4677b53222779e69042b1bdf252dcef78721c7d92d46b9948e62827c621d58",
++  "preparation_sha256": "8a60996dab5b91403df15a59c4b726495015bd3a5a84969f9f88dcfc0bc472a5",
++  "head": "4150e5eac61af37be261d55becfa05adc69ca5a7"
++}
+diff --git a/artifacts/comprobaciones/C03/EXPLORER2067/SOURCE.json b/artifacts/comprobaciones/C03/EXPLORER2067/SOURCE.json
+new file mode 100644
+index 00000000..d32294db
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/EXPLORER2067/SOURCE.json
+@@ -0,0 +1,15 @@
++{
++  "schema": "c03-explorer2067-source-adoption-v1",
++  "status": "adopted_measured",
++  "adopted_by": "root (Claude Opus 5)",
++  "owner": "opus/typed-tools (catalog, Core list, Providers adapter filesystem.explorer.count via Shell.Application, mind reading, composer; merged in 8edf110ac).",
++  "patch": "artifacts/comprobaciones/C03/EXPLORER2067/SOURCE.patch",
++  "commits": [
++    "4150e5eac61af37be261d55becfa05adc69ca5a7"
++  ],
++  "build": "BUILD2067 (C03-repairs2067-build/BUILD_READY.json; mente)",
++  "cause_measured": "«Cuántos .py hay en el directorio actual» preguntaba cuál carpeta; el dueño decidió (D24) que el directorio actual es la carpeta del Explorador en primer plano.",
++  "change": "filesystem.explorer.count cuenta en la carpeta del Explorador en primer plano (escritorio si no hay ninguno) y el final dice la cantidad leída.",
++  "measurement": "EXPLORER2067: 2 ejecutados de 6; los dos límites aprobados; las 4 filas del fixture sin ejecutar (el conductor genérico no entrega la ventana del Explorador propia que el runner exige); 0 créditos. Cero operaciones en las dos ejecutadas; el fixture abrió y cerró raiz_conteo en las seis. Conductor propio del Explorador y re-medición como EXPLORER2069.",
++  "credits": 0
++}
+diff --git a/artifacts/comprobaciones/C03/EXPLORER2067/SOURCE.patch b/artifacts/comprobaciones/C03/EXPLORER2067/SOURCE.patch
+new file mode 100644
+index 00000000..ce35808d
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/EXPLORER2067/SOURCE.patch
+@@ -0,0 +1,1513 @@
++commit 4150e5eac61af37be261d55becfa05adc69ca5a7
++
++C03: TEXTREAD2065 — una ruta pegada bajo una carpeta conocida se lee y se cuenta (H0299), re-medición de 2063: 6/6, 1 crédito
++
++Sobre 83499642. El literal H0299 (ROADMAP.md bajo Escritorio\raiz_textos\Probando Gemma 4\gemma4_agent, 11 líneas) y
++las tres variantes (notas.txt en Documentos\raiz_textos, lista.csv en Descargas\raiz_textos, LEEME.md en el
++escritorio) se leyeron y verificaron, y cada final nombra el archivo, dice cuántas líneas tiene y cita su comienzo
++tal cual —incluida la frase del propio ROADMAP que antes hacía morir el turno en forbidden_term—. Los dos límites
++pasan: la ruta fuera de las carpetas conocidas y el setup.exe se preguntan con verdad, cero operaciones.
++Crédito H0299; Archivos y carpetas 31/32. 677/742, 65 abiertas. Registro padre TEXTREAD2063.
++
++Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
++
++
++diff --git a/GoalC03.txt b/GoalC03.txt
++index ea5b8f78..319c1ac1 100644
++--- a/GoalC03.txt
+++++ b/GoalC03.txt
++@@ -67,8 +67,8 @@ Trabaja autónomamente hasta el cierre demostrado del goal completo. No pares en
++ ## Estado de avance (Fable, 2026-09-13 04:20 local) — anexo del relevo, no altera las órdenes anteriores
++ 
++ - Relevo asumido como único escritor (RELEVO_ACTIVO.json con la identidad real de sesión); rama `codex/kiro-goal-c03`, `main` intacto; todo comprometido y empujado (último commit: ver HANDOFF.md).
++-- **Cobertura: 203 → 676/742 cubiertos, 66 abiertos, 0 NA; 23/35 categorías cerradas (Música 39/39, Navegación y búsqueda web 46/46, Entrada incompleta, ruido y control de diálogo 34/34, Vídeo y series 26/26, Audio y volumen 51/51, Alarmas, recordatorios, tareas y agenda 38/38, Cerrar aplicaciones y ventanas 20/20, Conocimiento, razonamiento y creatividad verbal 37/37, Brillo y pantalla 17/17, Información web actual 17/17, Estado de hardware y sistema 40/40, Conversación social y ayuda general 31/31, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Contactos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9); C03 formal 3/11.** Registro canónico SHA256 `415d8bb9307287bce8b489729741f96885083bda9c2e5809671a5c49e53804d6`. Primeras altas 24 h ≥ 169.
++-- Tandas adjudicadas en este relevo: TIME1134 (papeleo), MESSAGING1136 adoptado, MESSAGING1140, NOTES1141/1142, BUILD1143, KNOWLEDGE1144/1149, IDENTITY1145/1146/1148, CONVERSATION1150/1152/1160, CLOCK1155/1156/1157/1159, NETWORK1161/1163/1165/1167, SYSTEM1169/1171/1173/1175/1177, KNOWLEDGE1179, SYSTEM1181, SYSTEM1183, TIME1185, TIME1187, TIME1189, TIME1191, TIME1193, TIME1195, TIME1197, TIME1199, NETWORK1201, NETWORK1203, FILES1205, WINDOWS1207, WINDOWS1209, WINDOWS1211, WINDOWS1213, CLOSE1215, CLOSE1217, CLOSE1219, CLOSE1221, CLOSE1223, CLOSE1225, CLOSE1227, ARRANGE1229, APPS1231, APPS1237, AUDIO1239, FILES1243, MEMORY1245, MEMORY1247, MEMORY1249, MEMORY1251, MEMORY1253, MEMORY1255, WEB1257, WEB1259, WEB1261, WEB1263, WEB1265, WEB1267, WEB1269, WEB1271, UI1275, DIALOGUE1277 (medición, 0 créditos), DIALOGUE1279, DIALOGUE1281, BRIGHT1283 (medición, 0 créditos), BRIGHT1285, BRIGHT1287, BRIGHT1289, WEB1291 (medición, 0 créditos), NETWORK1293, NETWORK1295, NETWORK1297, NETWORK1299, NETWORK1301, SYSTEM1303, SYSTEM1305, SYSTEM1307, NEGATIVE1309, NEGATIVE1311, PROCESS1313, WINDOWS1315, WINDOWS1317, BRIGHT1319, BRIGHT1321, IDENTITY1323, IDENTITY1325, IDENTITY1327, CLOCK1329, CLOCK1331, CLOCK1333, CLOCK1335, AGENDA1337, AGENDA1339, AGENDA1341, CONVERSATION1343, CONVERSATION1345, CONVERSATION1347, CONVERSATION1349, AUDIO1351, KNOWLEDGE1353, KNOWLEDGE1355, KNOWLEDGE1357, CLIPBOARD1359, CLIPBOARD1361, MESSAGING1363, MESSAGING1365, SYSTEM1367, CLOSE1369, CLOSE1371, UI1373, UI1377, AUDIO1375, AUDIO1379, AUDIO1381, APPS1383, APPS1387, APPS1391, UI1389, WINDOWS1385, UI1393, UI1395, UI1397, SCREEN1399, SCREEN1401, SCREEN1403, SCREEN1405, SCREEN1407, SCREEN1409, SCREEN1411, SCREEN1413, SCREEN1415, SCREEN1417, SCREEN1419, SCREEN1421, SCREEN1423, FILES1427, NEGATIVE1429, NEGATIVE1431, FILES1433, AGENDA1435, FILES1437, FILES1439, FILES1441, FILES1443, WEB1445, WEB1447, WEB1449, WEB1451, WEB1453, WEB1455, NETWORK1457, SYSTEM1459, AUDIO1461, AUDIO1463, WEB1465, WEB1467, WEB1471, KNOWLEDGE1473, KNOWLEDGE1475, WEB1477, WEB1479, WEB1481, WEB1483, SCREEN1485, DIALOGUE1487, DIALOGUE1489, DIALOGUE1491, BROWSER1493, APPS1495, APPS1497, APPS1499, MEMORY1501, MEMORY1503, KNOWLEDGE1505, KNOWLEDGE1507, KNOWLEDGE1509, KNOWLEDGE1511, DIALOGUE1513, DIALOGUE1515, DIALOGUE1517, DIALOGUE1519, DIALOGUE1521, KNOWLEDGE1523, KNOWLEDGE1525, KNOWLEDGE1527, KNOWLEDGE1529, GAMES1531, GAMES1533, APPS1535, WINDOWS1537, WEB1539, WEB1541, WEB1543, SYSTEM1545, SYSTEM1547, APPS1549, APPS1551, MUSIC1553, MUSIC1555, MUSIC1557, MUSIC1559, MUSIC1561, MUSIC1563, MUSIC1565, MUSIC1567, MUSIC1569, MUSIC1573, MUSIC1575, AUDIO1577, AUDIO1579, WINDOWS1581, MUSIC1583, CONVERSATION1585, FILES1587, FILES1589, FILES1591, MUSIC1593, MUSIC1595, MUSIC1597, MEMORY1599, MEMORY1601, FILES1603, FILES1605, APPS1607, APPS1609, APPS1611, APPS1613, CLOSE1615, INSTALL1619, INSTALL1621, INSTALL1623, INSTALL1625, INSTALL1627, INSTALL1629, INSTALL1631, INSTALL1633, UI1635, UI1637, UI1639, UI1641, UI1643, UI1645, UI1647, CLOSE1649, CLOSE1651, CLOSE1653, UI1655, UI1657, UI1659, UI1661, UI1663, LIMITS1665, LIMITS1667, AGENDA1669, APPS1671, APPS1673, MUSIC1675, LIMITS1677, LIMITS1679, LIMITS1681, REOPEN1685 (reapertura de 10 por decisión del dueño 2026-09-16), MINALL1687, REOPEN1689, PDF1691, PDF1693, WINDOWS1695, SYSTEM1697, LIMITS1699, LIMITS1701, LIMITS1703, FILES1707, FILES1709, FILES1711, FILES1713, VIDEO1715, VIDEO1717, VIDEO1719, NETWORK1721, NETWORK1723, UI1725, LIMITS1727, NETWORK1729, UI1731, CLOSEALL1733, UI1735, NETWORK1737, NETWORK1739, NETWORK1741, NETWORK1743, WEB1745, MUSIC1747, MUSIC1749, MUSIC1751, MUSIC1753, MUSIC1755, MUSIC1757, MUSIC1759, MUSIC1761, MUSIC1763, UI1765, UI1767, MUSIC1769, UI1771, MUSIC1773, UI1775, MUSIC1777, MUSIC1779, ARRANGE1781, ARRANGE1783, ARRANGE1785, AUDIO1787, AUDIO1789, AUDIO1791, AUDIO1793, AUDIO1795, AUDIO1797, AUDIO1799, AUDIO1801, WEB1803, WEB1805, SCREEN1807, SCREEN1809, SCREEN1811, MIC1813, MIC1815, PIP1817, PIP1819, PIP1821, USB1823, STEAM1825, MUSIC1827, MUSIC1829, WEB1831, KNOW1833, KNOW1835, DISCORD1839, CHROMETABS1843, MSGSEND1845, MSGSEND1847, MSGSEND1849, MSGCLAR1851, UNRES1855, MAIL1859, MAIL1863, MAIL1867, DISCORD1869, DISCORD1871, UNRES1873, UNRES1875, WEB1877, WEB1879, WEB1881, WEB1883, WEB1885, WEB1887, WEB1889, WEB1891, LIMITS1893, LIMITS1895, LIMITS1897, WEB1899, LIMITS1901, LIMITS1903, UI1907, LANG1909, UI1911, APPS1913, LIMITS1915, POWER1917, VIDEO1919, VIDEO1921, VIDEO1923, VIDEO1925, VIDEO1927, VIDEO1929, CHAIN1931, SITE1933, APIID1935, EPIC1937, CHATREAD1939, UNRES1941, PRIME1943, UNRES1945, VIDEO1947, VIDEO1949, VIDEO1951, VIDEO1953, VIDEO1955, REOPEN1957 (reapertura de 35 por decisión del dueño 2026-09-20: la encuesta es la especificación), REOPEN1993 (reapertura de 56 por la auditoría semántica completa, D24), NEAR1995, REOPEN1996 (enmienda: H0521 vuelve a abierta, candidato único en este PC), NEAR1997, CONTEXT1999, THEN2001, THEN2003, THEN2007, SEARCH2005, SEARCH2011, SEARCH2015, SEARCH2019, WEATHER2023, WEATHER2025, NEWS2027, NEWS2029, WEATHER2031, WEATHER2033, WEATHER2035, WALLPAPER2039, ZIP2041, AIRPLANE2045, DOWNLOAD2047, DOWNLOAD2049, MEME2053, MEME2055, MEME2057, MEME2059, TEXTREAD2061, TEXTREAD2063. Registro por campaña en artifacts/comprobaciones/C03/<CAMPAÑA>/ (ROOT_ADJUDICATION, SOURCE/APP_SOURCE con parche y medición).
+++- **Cobertura: 203 → 677/742 cubiertos, 65 abiertos, 0 NA; 23/35 categorías cerradas (Música 39/39, Navegación y búsqueda web 46/46, Entrada incompleta, ruido y control de diálogo 34/34, Vídeo y series 26/26, Audio y volumen 51/51, Alarmas, recordatorios, tareas y agenda 38/38, Cerrar aplicaciones y ventanas 20/20, Conocimiento, razonamiento y creatividad verbal 37/37, Brillo y pantalla 17/17, Información web actual 17/17, Estado de hardware y sistema 40/40, Conversación social y ayuda general 31/31, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Contactos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9); C03 formal 3/11.** Registro canónico SHA256 `2a8c33d45375113cb79f1299148ab6bd1969fb488b51f69a835c507ed9d7f08b`. Primeras altas 24 h ≥ 169.
+++- Tandas adjudicadas en este relevo: TIME1134 (papeleo), MESSAGING1136 adoptado, MESSAGING1140, NOTES1141/1142, BUILD1143, KNOWLEDGE1144/1149, IDENTITY1145/1146/1148, CONVERSATION1150/1152/1160, CLOCK1155/1156/1157/1159, NETWORK1161/1163/1165/1167, SYSTEM1169/1171/1173/1175/1177, KNOWLEDGE1179, SYSTEM1181, SYSTEM1183, TIME1185, TIME1187, TIME1189, TIME1191, TIME1193, TIME1195, TIME1197, TIME1199, NETWORK1201, NETWORK1203, FILES1205, WINDOWS1207, WINDOWS1209, WINDOWS1211, WINDOWS1213, CLOSE1215, CLOSE1217, CLOSE1219, CLOSE1221, CLOSE1223, CLOSE1225, CLOSE1227, ARRANGE1229, APPS1231, APPS1237, AUDIO1239, FILES1243, MEMORY1245, MEMORY1247, MEMORY1249, MEMORY1251, MEMORY1253, MEMORY1255, WEB1257, WEB1259, WEB1261, WEB1263, WEB1265, WEB1267, WEB1269, WEB1271, UI1275, DIALOGUE1277 (medición, 0 créditos), DIALOGUE1279, DIALOGUE1281, BRIGHT1283 (medición, 0 créditos), BRIGHT1285, BRIGHT1287, BRIGHT1289, WEB1291 (medición, 0 créditos), NETWORK1293, NETWORK1295, NETWORK1297, NETWORK1299, NETWORK1301, SYSTEM1303, SYSTEM1305, SYSTEM1307, NEGATIVE1309, NEGATIVE1311, PROCESS1313, WINDOWS1315, WINDOWS1317, BRIGHT1319, BRIGHT1321, IDENTITY1323, IDENTITY1325, IDENTITY1327, CLOCK1329, CLOCK1331, CLOCK1333, CLOCK1335, AGENDA1337, AGENDA1339, AGENDA1341, CONVERSATION1343, CONVERSATION1345, CONVERSATION1347, CONVERSATION1349, AUDIO1351, KNOWLEDGE1353, KNOWLEDGE1355, KNOWLEDGE1357, CLIPBOARD1359, CLIPBOARD1361, MESSAGING1363, MESSAGING1365, SYSTEM1367, CLOSE1369, CLOSE1371, UI1373, UI1377, AUDIO1375, AUDIO1379, AUDIO1381, APPS1383, APPS1387, APPS1391, UI1389, WINDOWS1385, UI1393, UI1395, UI1397, SCREEN1399, SCREEN1401, SCREEN1403, SCREEN1405, SCREEN1407, SCREEN1409, SCREEN1411, SCREEN1413, SCREEN1415, SCREEN1417, SCREEN1419, SCREEN1421, SCREEN1423, FILES1427, NEGATIVE1429, NEGATIVE1431, FILES1433, AGENDA1435, FILES1437, FILES1439, FILES1441, FILES1443, WEB1445, WEB1447, WEB1449, WEB1451, WEB1453, WEB1455, NETWORK1457, SYSTEM1459, AUDIO1461, AUDIO1463, WEB1465, WEB1467, WEB1471, KNOWLEDGE1473, KNOWLEDGE1475, WEB1477, WEB1479, WEB1481, WEB1483, SCREEN1485, DIALOGUE1487, DIALOGUE1489, DIALOGUE1491, BROWSER1493, APPS1495, APPS1497, APPS1499, MEMORY1501, MEMORY1503, KNOWLEDGE1505, KNOWLEDGE1507, KNOWLEDGE1509, KNOWLEDGE1511, DIALOGUE1513, DIALOGUE1515, DIALOGUE1517, DIALOGUE1519, DIALOGUE1521, KNOWLEDGE1523, KNOWLEDGE1525, KNOWLEDGE1527, KNOWLEDGE1529, GAMES1531, GAMES1533, APPS1535, WINDOWS1537, WEB1539, WEB1541, WEB1543, SYSTEM1545, SYSTEM1547, APPS1549, APPS1551, MUSIC1553, MUSIC1555, MUSIC1557, MUSIC1559, MUSIC1561, MUSIC1563, MUSIC1565, MUSIC1567, MUSIC1569, MUSIC1573, MUSIC1575, AUDIO1577, AUDIO1579, WINDOWS1581, MUSIC1583, CONVERSATION1585, FILES1587, FILES1589, FILES1591, MUSIC1593, MUSIC1595, MUSIC1597, MEMORY1599, MEMORY1601, FILES1603, FILES1605, APPS1607, APPS1609, APPS1611, APPS1613, CLOSE1615, INSTALL1619, INSTALL1621, INSTALL1623, INSTALL1625, INSTALL1627, INSTALL1629, INSTALL1631, INSTALL1633, UI1635, UI1637, UI1639, UI1641, UI1643, UI1645, UI1647, CLOSE1649, CLOSE1651, CLOSE1653, UI1655, UI1657, UI1659, UI1661, UI1663, LIMITS1665, LIMITS1667, AGENDA1669, APPS1671, APPS1673, MUSIC1675, LIMITS1677, LIMITS1679, LIMITS1681, REOPEN1685 (reapertura de 10 por decisión del dueño 2026-09-16), MINALL1687, REOPEN1689, PDF1691, PDF1693, WINDOWS1695, SYSTEM1697, LIMITS1699, LIMITS1701, LIMITS1703, FILES1707, FILES1709, FILES1711, FILES1713, VIDEO1715, VIDEO1717, VIDEO1719, NETWORK1721, NETWORK1723, UI1725, LIMITS1727, NETWORK1729, UI1731, CLOSEALL1733, UI1735, NETWORK1737, NETWORK1739, NETWORK1741, NETWORK1743, WEB1745, MUSIC1747, MUSIC1749, MUSIC1751, MUSIC1753, MUSIC1755, MUSIC1757, MUSIC1759, MUSIC1761, MUSIC1763, UI1765, UI1767, MUSIC1769, UI1771, MUSIC1773, UI1775, MUSIC1777, MUSIC1779, ARRANGE1781, ARRANGE1783, ARRANGE1785, AUDIO1787, AUDIO1789, AUDIO1791, AUDIO1793, AUDIO1795, AUDIO1797, AUDIO1799, AUDIO1801, WEB1803, WEB1805, SCREEN1807, SCREEN1809, SCREEN1811, MIC1813, MIC1815, PIP1817, PIP1819, PIP1821, USB1823, STEAM1825, MUSIC1827, MUSIC1829, WEB1831, KNOW1833, KNOW1835, DISCORD1839, CHROMETABS1843, MSGSEND1845, MSGSEND1847, MSGSEND1849, MSGCLAR1851, UNRES1855, MAIL1859, MAIL1863, MAIL1867, DISCORD1869, DISCORD1871, UNRES1873, UNRES1875, WEB1877, WEB1879, WEB1881, WEB1883, WEB1885, WEB1887, WEB1889, WEB1891, LIMITS1893, LIMITS1895, LIMITS1897, WEB1899, LIMITS1901, LIMITS1903, UI1907, LANG1909, UI1911, APPS1913, LIMITS1915, POWER1917, VIDEO1919, VIDEO1921, VIDEO1923, VIDEO1925, VIDEO1927, VIDEO1929, CHAIN1931, SITE1933, APIID1935, EPIC1937, CHATREAD1939, UNRES1941, PRIME1943, UNRES1945, VIDEO1947, VIDEO1949, VIDEO1951, VIDEO1953, VIDEO1955, REOPEN1957 (reapertura de 35 por decisión del dueño 2026-09-20: la encuesta es la especificación), REOPEN1993 (reapertura de 56 por la auditoría semántica completa, D24), NEAR1995, REOPEN1996 (enmienda: H0521 vuelve a abierta, candidato único en este PC), NEAR1997, CONTEXT1999, THEN2001, THEN2003, THEN2007, SEARCH2005, SEARCH2011, SEARCH2015, SEARCH2019, WEATHER2023, WEATHER2025, NEWS2027, NEWS2029, WEATHER2031, WEATHER2033, WEATHER2035, WALLPAPER2039, ZIP2041, AIRPLANE2045, DOWNLOAD2047, DOWNLOAD2049, MEME2053, MEME2055, MEME2057, MEME2059, TEXTREAD2061, TEXTREAD2063, TEXTREAD2065. Registro por campaña en artifacts/comprobaciones/C03/<CAMPAÑA>/ (ROOT_ADJUDICATION, SOURCE/APP_SOURCE con parche y medición).
++ - Reparaciones causales adoptadas y medidas: notas (léxico), App palabra completa, prompt (SIEMPRE/idioma), voseo (lector y shell, BUILD1147), pregunta de recuperación publicada (BUILD1151), reloj (reconocedor y proyección de fecha; shell día/day, BUILD1158), wifi (dominio y validador de conectividad), GPU (scope), disco («espacio», elipsis nominal), claves de medidas total/free/used (autorizado), alarmas relativas al segundo entero publicado (decisión del dueño, TIME1139), duraciones compactas y «media hora», despertar como alarma, recordatorios con duración al inicio, alarmas y recordatorios con hora explícita, aclaraciones deterministas de agenda (hora imposible, aviso sin contenido), «contá N minutos», IP propia sin confirmación (BUILD1201, decisión del dueño), proveedor de carpetas conocidas para crear archivos y carpetas en escritorio/Documentos (BUILD1205, decisión del dueño, infraestructura ≥10 abiertos). Un validador retirado tras medir agotamiento (mislabeled_memory, 0e8edfec).
++ - Sin tests/dueñas/Fast/Full, por orden vigente: ningún criterio formal de validación se declara cumplido. Guardas intactas.
++ - Decisiones del dueño recibidas el 2026-09-13 (artifacts/comprobaciones/C03/DECISIONES_DUENO_2026-09-13.md): poder total en este PC, cierre de apps sin autorización por app, proveedor de carpetas conocidas, renombrado de claves de medidas, IP sin confirmación, TIME1139 a elección de raíz con obligación de cumplirlo, y saltar lo que exija sesiones ausentes (Netflix). Reanudación exacta en HANDOFF.md y CONDICIONES_POR_CATEGORIA_2026-09-13.md.
++diff --git a/artifacts/comprobaciones/C03/CHECKPOINT.md b/artifacts/comprobaciones/C03/CHECKPOINT.md
++index 6da4c42b..363cec5b 100644
++--- a/artifacts/comprobaciones/C03/CHECKPOINT.md
+++++ b/artifacts/comprobaciones/C03/CHECKPOINT.md
++@@ -1,3 +1,25 @@
+++## TEXTREAD2065 — estado vigente 2026-09-22T11:50:21.902198+00:00
+++
+++Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+++
+++| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+++|---:|---:|---:|---:|---:|
+++| 677/742 | 65 | 0 | >=653 | 29/35 |
+++
+++Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 652 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); TEXTREAD2065 añade 1. No se cuentan revalidaciones.
+++
+++Siguiente acción: TEXTREAD2065: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]). Siguiente: el conteo del Explorador (H0701) y las tipadas de red.
+++
+++Evidencia: `artifacts/comprobaciones/C03/TEXTREAD2065/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+++
+++Recursos de los segmentos: 93.00 s acumulados; pico GPU 3485.56 MiB; pico RAM 1602.19 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+++
+++Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+++
+++---
+++
+++<!-- Historial anterior conservado; rige el bloque TEXTREAD2065 precedente. -->
+++
++ ## TEXTREAD2063 — estado vigente 2026-09-22T11:16:44.679516+00:00
++ 
++ Parcial: 5 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.
++diff --git a/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md b/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md
++index 8b2b2437..4b316e41 100644
++--- a/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md
+++++ b/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md
++@@ -1820,3 +1820,7 @@ Archivos y carpetas pasa de 30/32 a 30/32 con una ruta pegada bajo una carpeta c
++ ## Actualización 2026-09-22 (TEXTREAD2063)
++ 
++ Archivos y carpetas pasa de 30/32 a 30/32 con una ruta pegada bajo una carpeta conocida se lee y se dice de qué trata (commit e7f0a0b3, BUILD2063) (HEAD e7f0a0b3): 5/6 aprobados (3 variantes y los 2 límites); el literal H0299 leyó y verificó el archivo y su final murió en forbidden_term porque el texto del propio archivo dice «catalogo», 0 créditos. Cuatro lecturas verificadas; tres finales fieles (archivo, líneas, comienzo) y el del literal no se pudo publicar. Reparación en el commit siguiente y re-medición como TEXTREAD2065.
+++
+++## Actualización 2026-09-22 (TEXTREAD2065)
+++
+++Archivos y carpetas pasa de 30/32 a 31/32 con una ruta pegada bajo una carpeta conocida se lee y se dice de qué trata (commit 83499642, BUILD2065) (HEAD 83499642): 6/6 aprobados (el literal H0299, las 3 variantes y los 2 límites), 1 créditos. Cuatro lecturas verificadas con final fiel (archivo, líneas y comienzo citado tal cual); dos límites con cero operaciones.
++diff --git a/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md b/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md
++index 2e4e0c5b..7eb574df 100644
++--- a/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md
+++++ b/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md
++@@ -1,4 +1,4 @@
++-# Categorías actuales — adjudicación TEXTREAD2063 (tras las reaperturas REOPEN1957 y REOPEN1993 por decisión del dueño 2026-09-20)
+++# Categorías actuales — adjudicación TEXTREAD2065 (tras las reaperturas REOPEN1957 y REOPEN1993 por decisión del dueño 2026-09-20)
++ 
++ Reapertura 2026-09-20 (REOPEN1996, enmienda de la auditoría): H0521 «abres team» vuelve a abierta (en este PC Teams no está instalado: candidato único); 652/742. Detalle en REOPEN1996/REGISTRY_UPDATE.json.
++ 
++@@ -12,14 +12,14 @@ Corrección 2026-09-17 (raíz, segunda): H0652 «subí el volumen de spotify» e
++ 
++ Corrección 2026-09-17 (raíz): H0052 «instala requests con pip» es software_installation en SURVEY_TAXONOMY846, es decir «Instalar y desinstalar software», no «Abrir aplicaciones»; las tandas PIP1817, PIP1819 y PIP1821 documentaron la categoría equivocada (sus textos next_action sellados la conservan) y las cuentas de esta tabla y de los documentos vivos quedan corregidas: Instalar y desinstalar software 27→28/31 (PIP1821), Abrir aplicaciones sigue 50/54.
++ 
++-676/742 cubiertos; 66 abiertos; 0 no aplican; 23/35 categorías cerradas (Música 39/39, Navegación y búsqueda web 46/46, Entrada incompleta, ruido y control de diálogo 34/34, Vídeo y series 26/26, Audio y volumen 51/51, Alarmas, recordatorios, tareas y agenda 38/38, Cerrar aplicaciones y ventanas 20/20, Conocimiento, razonamiento y creatividad verbal 37/37, Brillo y pantalla 17/17, Información web actual 17/17, Estado de hardware y sistema 40/40, Conversación social y ayuda general 31/31, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Contactos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9). Últimas 24 h: al menos 652 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335 + 1 en AGENDA1337 + 1 en AGENDA1341 + 1 en CONVERSATION1343 + 1 en CONVERSATION1347 + 1 en CONVERSATION1349 + 2 en AUDIO1351 + 1 en KNOWLEDGE1353 + 1 en KNOWLEDGE1357 + 1 en CLIPBOARD1359 + 2 en CLIPBOARD1361 + 1 en MESSAGING1363 + 2 en MESSAGING1365 + 2 en SYSTEM1367 + 4 en CLOSE1371 + 1 en AUDIO1379 + 1 en AUDIO1381 + 1 en APPS1391 + 1 en UI1389 + 1 en WINDOWS1385 + 1 en UI1397 + 1 en SCREEN1401 + 3 en SCREEN1415 + 3 en SCREEN1419 + 5 en SCREEN1421 + 2 en SCREEN1423 + 4 en FILES1427 + 1 en NEGATIVE1429 + 1 en NEGATIVE1431 + 1 en FILES1433 + 1 en AGENDA1435 + 1 en FILES1443 + 3 en WEB1449 + 2 en WEB1451 + 1 en WEB1453 + 4 en WEB1455 + 2 en NETWORK1457 + 4 en SYSTEM1459 + 1 en AUDIO1461 + 1 en AUDIO1463 + 8 en WEB1465 + 2 en WEB1467 + 2 en WEB1471 + 2 en KNOWLEDGE1473 + 1 en KNOWLEDGE1475 + 2 en WEB1477 + 1 en WEB1479 + 2 en WEB1483 + 1 en SCREEN1485 + 1 en DIALOGUE1489 + 2 en DIALOGUE1491 + 1 en BROWSER1493 + 2 en APPS1497 + 3 en APPS1499 + 1 en MEMORY1503 + 3 en KNOWLEDGE1507 + 1 en KNOWLEDGE1511 + 7 en DIALOGUE1513 + 1 en DIALOGUE1515 + 1 en DIALOGUE1521 + 2 en KNOWLEDGE1523 + 2 en KNOWLEDGE1525 + 1 en KNOWLEDGE1529 + 1 en GAMES1531 + 1 en GAMES1533 + 2 en WINDOWS1537 + 2 en WEB1543 + 1 en SYSTEM1547 + 1 en APPS1551 + 2 en MUSIC1557 + 5 en MUSIC1569 + 5 en MUSIC1573 + 1 en MUSIC1575 + 1 en AUDIO1579 + 1 en WINDOWS1581 + 1 en MUSIC1583 + 1 en CONVERSATION1585 + 1 en FILES1589 + 1 en FILES1591 + 3 en MUSIC1593 + 1 en MUSIC1595 + 1 en MUSIC1597 + 2 en MEMORY1601 + 1 en FILES1605 + 2 en APPS1611 + 1 en APPS1613 + 15 en INSTALL1623 + 5 en INSTALL1625 + 3 en INSTALL1627 + 4 en INSTALL1629 + 1 en INSTALL1631 + 1 en INSTALL1633 + 1 en UI1637 + 1 en UI1639 + 1 en UI1641 + 1 en UI1643 + 1 en UI1647 + 2 en CLOSE1649 + 1 en CLOSE1653 + 4 en UI1657 + 2 en UI1663 + 2 en LIMITS1665 + 2 en LIMITS1667 + 2 en AGENDA1669 + 1 en APPS1673 + 1 en MUSIC1675 + 4 en LIMITS1677 + 5 en LIMITS1679 + 3 en LIMITS1681 + 2 en MINALL1687 + 1 en REOPEN1689 + 1 en PDF1693 + 1 en WINDOWS1695 + 1 en SYSTEM1697 + 1 en LIMITS1703 + 1 en FILES1713 + 1 en VIDEO1715 + 1 en VIDEO1719 + 3 en NETWORK1723 + 2 en UI1725 + 1 en LIMITS1727 + 1 en NETWORK1729 + 1 en UI1731 + 2 en CLOSEALL1733 + 1 en NETWORK1737 + 1 en WEB1745 + 1 en MUSIC1749 + 4 en MUSIC1751 + 3 en MUSIC1763 + 2 en MUSIC1769 + 1 en UI1775 + 1 en MUSIC1779 + 1 en ARRANGE1785 + 1 en AUDIO1801 + 1 en WEB1805 + 3 en SCREEN1811 + 1 en MIC1815 + 1 en PIP1821 + 1 en USB1823 + 1 en STEAM1825 + 1 en MUSIC1829 + 1 en KNOW1835 + 2 en DISCORD1839 + 1 en CHROMETABS1843 + 1 en MSGSEND1845 + 10 en MSGSEND1847 + 2 en MSGSEND1849 + 4 en MSGCLAR1851 + 1 en MAIL1859 + 4 en MAIL1863 + 1 en MAIL1867 + 2 en DISCORD1869 + 1 en DISCORD1871 + 3 en UNRES1873 + 1 en UNRES1875 + 1 en WEB1891 + 3 en LIMITS1893 + 2 en LIMITS1897 + 10 en LIMITS1901 + 2 en LIMITS1903 + 1 en UI1907 + 2 en LANG1909 + 1 en UI1911 + 1 en APPS1913 + 1 en LIMITS1915 + 2 en POWER1917 + 7 en VIDEO1919 + 2 en VIDEO1923 + 1 en VIDEO1925 + 2 en VIDEO1927 + 1 en VIDEO1929 + 1 en CHAIN1931 + 1 en SITE1933 + 1 en APIID1935 + 1 en EPIC1937 + 2 en CHATREAD1939 + 1 en UNRES1941 + 1 en PRIME1943 + 2 en UNRES1945 + 5 en VIDEO1951 + 1 en VIDEO1953 + 4 en VIDEO1955 + 2 en NEAR1995 + 1 en THEN2001 + 1 en THEN2007 + 1 en SEARCH2011 + 1 en SEARCH2019 + 4 en WEATHER2025 + 3 en NEWS2029 + 4 en WEATHER2033 + 4 en WEATHER2035 + 1 en WALLPAPER2039 + 1 en ZIP2041 + 1 en AIRPLANE2045 + 1 en DOWNLOAD2049 + 1 en MEME2059; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 415d8bb9307287bce8b489729741f96885083bda9c2e5809671a5c49e53804d6.
+++677/742 cubiertos; 65 abiertos; 0 no aplican; 23/35 categorías cerradas (Música 39/39, Navegación y búsqueda web 46/46, Entrada incompleta, ruido y control de diálogo 34/34, Vídeo y series 26/26, Audio y volumen 51/51, Alarmas, recordatorios, tareas y agenda 38/38, Cerrar aplicaciones y ventanas 20/20, Conocimiento, razonamiento y creatividad verbal 37/37, Brillo y pantalla 17/17, Información web actual 17/17, Estado de hardware y sistema 40/40, Conversación social y ayuda general 31/31, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Contactos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9). Últimas 24 h: al menos 653 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335 + 1 en AGENDA1337 + 1 en AGENDA1341 + 1 en CONVERSATION1343 + 1 en CONVERSATION1347 + 1 en CONVERSATION1349 + 2 en AUDIO1351 + 1 en KNOWLEDGE1353 + 1 en KNOWLEDGE1357 + 1 en CLIPBOARD1359 + 2 en CLIPBOARD1361 + 1 en MESSAGING1363 + 2 en MESSAGING1365 + 2 en SYSTEM1367 + 4 en CLOSE1371 + 1 en AUDIO1379 + 1 en AUDIO1381 + 1 en APPS1391 + 1 en UI1389 + 1 en WINDOWS1385 + 1 en UI1397 + 1 en SCREEN1401 + 3 en SCREEN1415 + 3 en SCREEN1419 + 5 en SCREEN1421 + 2 en SCREEN1423 + 4 en FILES1427 + 1 en NEGATIVE1429 + 1 en NEGATIVE1431 + 1 en FILES1433 + 1 en AGENDA1435 + 1 en FILES1443 + 3 en WEB1449 + 2 en WEB1451 + 1 en WEB1453 + 4 en WEB1455 + 2 en NETWORK1457 + 4 en SYSTEM1459 + 1 en AUDIO1461 + 1 en AUDIO1463 + 8 en WEB1465 + 2 en WEB1467 + 2 en WEB1471 + 2 en KNOWLEDGE1473 + 1 en KNOWLEDGE1475 + 2 en WEB1477 + 1 en WEB1479 + 2 en WEB1483 + 1 en SCREEN1485 + 1 en DIALOGUE1489 + 2 en DIALOGUE1491 + 1 en BROWSER1493 + 2 en APPS1497 + 3 en APPS1499 + 1 en MEMORY1503 + 3 en KNOWLEDGE1507 + 1 en KNOWLEDGE1511 + 7 en DIALOGUE1513 + 1 en DIALOGUE1515 + 1 en DIALOGUE1521 + 2 en KNOWLEDGE1523 + 2 en KNOWLEDGE1525 + 1 en KNOWLEDGE1529 + 1 en GAMES1531 + 1 en GAMES1533 + 2 en WINDOWS1537 + 2 en WEB1543 + 1 en SYSTEM1547 + 1 en APPS1551 + 2 en MUSIC1557 + 5 en MUSIC1569 + 5 en MUSIC1573 + 1 en MUSIC1575 + 1 en AUDIO1579 + 1 en WINDOWS1581 + 1 en MUSIC1583 + 1 en CONVERSATION1585 + 1 en FILES1589 + 1 en FILES1591 + 3 en MUSIC1593 + 1 en MUSIC1595 + 1 en MUSIC1597 + 2 en MEMORY1601 + 1 en FILES1605 + 2 en APPS1611 + 1 en APPS1613 + 15 en INSTALL1623 + 5 en INSTALL1625 + 3 en INSTALL1627 + 4 en INSTALL1629 + 1 en INSTALL1631 + 1 en INSTALL1633 + 1 en UI1637 + 1 en UI1639 + 1 en UI1641 + 1 en UI1643 + 1 en UI1647 + 2 en CLOSE1649 + 1 en CLOSE1653 + 4 en UI1657 + 2 en UI1663 + 2 en LIMITS1665 + 2 en LIMITS1667 + 2 en AGENDA1669 + 1 en APPS1673 + 1 en MUSIC1675 + 4 en LIMITS1677 + 5 en LIMITS1679 + 3 en LIMITS1681 + 2 en MINALL1687 + 1 en REOPEN1689 + 1 en PDF1693 + 1 en WINDOWS1695 + 1 en SYSTEM1697 + 1 en LIMITS1703 + 1 en FILES1713 + 1 en VIDEO1715 + 1 en VIDEO1719 + 3 en NETWORK1723 + 2 en UI1725 + 1 en LIMITS1727 + 1 en NETWORK1729 + 1 en UI1731 + 2 en CLOSEALL1733 + 1 en NETWORK1737 + 1 en WEB1745 + 1 en MUSIC1749 + 4 en MUSIC1751 + 3 en MUSIC1763 + 2 en MUSIC1769 + 1 en UI1775 + 1 en MUSIC1779 + 1 en ARRANGE1785 + 1 en AUDIO1801 + 1 en WEB1805 + 3 en SCREEN1811 + 1 en MIC1815 + 1 en PIP1821 + 1 en USB1823 + 1 en STEAM1825 + 1 en MUSIC1829 + 1 en KNOW1835 + 2 en DISCORD1839 + 1 en CHROMETABS1843 + 1 en MSGSEND1845 + 10 en MSGSEND1847 + 2 en MSGSEND1849 + 4 en MSGCLAR1851 + 1 en MAIL1859 + 4 en MAIL1863 + 1 en MAIL1867 + 2 en DISCORD1869 + 1 en DISCORD1871 + 3 en UNRES1873 + 1 en UNRES1875 + 1 en WEB1891 + 3 en LIMITS1893 + 2 en LIMITS1897 + 10 en LIMITS1901 + 2 en LIMITS1903 + 1 en UI1907 + 2 en LANG1909 + 1 en UI1911 + 1 en APPS1913 + 1 en LIMITS1915 + 2 en POWER1917 + 7 en VIDEO1919 + 2 en VIDEO1923 + 1 en VIDEO1925 + 2 en VIDEO1927 + 1 en VIDEO1929 + 1 en CHAIN1931 + 1 en SITE1933 + 1 en APIID1935 + 1 en EPIC1937 + 2 en CHATREAD1939 + 1 en UNRES1941 + 1 en PRIME1943 + 2 en UNRES1945 + 5 en VIDEO1951 + 1 en VIDEO1953 + 4 en VIDEO1955 + 2 en NEAR1995 + 1 en THEN2001 + 1 en THEN2007 + 1 en SEARCH2011 + 1 en SEARCH2019 + 4 en WEATHER2025 + 3 en NEWS2029 + 4 en WEATHER2033 + 4 en WEATHER2035 + 1 en WALLPAPER2039 + 1 en ZIP2041 + 1 en AIRPLANE2045 + 1 en DOWNLOAD2049 + 1 en MEME2059 + 1 en TEXTREAD2065; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 2a8c33d45375113cb79f1299148ab6bd1969fb488b51f69a835c507ed9d7f08b.
++ 
++ | Categoría | Total | Cubiertos | Abiertos |
++ |---|---:|---:|---:|
++ | Música | 39 | 39 | 0 |
++ | Instalar y desinstalar software | 31 | 2 | 29 |
++ | Navegación y búsqueda web | 46 | 46 | 0 |
++-| Archivos y carpetas | 32 | 30 | 2 |
+++| Archivos y carpetas | 32 | 31 | 1 |
++ | Entrada incompleta, ruido y control de diálogo | 34 | 34 | 0 |
++ | Vídeo y series | 26 | 26 | 0 |
++ | Mensajería | 31 | 21 | 10 |
++diff --git a/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md b/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md
++index 77e18726..a950f8f4 100644
++--- a/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md
+++++ b/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md
++@@ -1,3 +1,25 @@
+++## TEXTREAD2065 — estado vigente 2026-09-22T11:50:21.902198+00:00
+++
+++Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+++
+++| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+++|---:|---:|---:|---:|---:|
+++| 677/742 | 65 | 0 | >=653 | 29/35 |
+++
+++Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 652 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); TEXTREAD2065 añade 1. No se cuentan revalidaciones.
+++
+++Siguiente acción: TEXTREAD2065: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]). Siguiente: el conteo del Explorador (H0701) y las tipadas de red.
+++
+++Evidencia: `artifacts/comprobaciones/C03/TEXTREAD2065/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+++
+++Recursos de los segmentos: 93.00 s acumulados; pico GPU 3485.56 MiB; pico RAM 1602.19 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+++
+++Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+++
+++---
+++
+++<!-- Historial anterior conservado; rige el bloque TEXTREAD2065 precedente. -->
+++
++ ## TEXTREAD2063 — estado vigente 2026-09-22T11:16:44.679516+00:00
++ 
++ Parcial: 5 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.
++diff --git a/artifacts/comprobaciones/C03/HANDOFF.md b/artifacts/comprobaciones/C03/HANDOFF.md
++index 9d4cb427..f20b6c7e 100644
++--- a/artifacts/comprobaciones/C03/HANDOFF.md
+++++ b/artifacts/comprobaciones/C03/HANDOFF.md
++@@ -1,3 +1,11 @@
+++# TEXTREAD2065 adjudicado — 2026-09-22T11:50:21.902198+00:00
+++
+++**677/742 cubiertos, 65 abiertos, 0 NA; 23/35 categorías cerradas (Música 39/39, Navegación y búsqueda web 46/46, Entrada incompleta, ruido y control de diálogo 34/34, Vídeo y series 26/26, Audio y volumen 51/51, Alarmas, recordatorios, tareas y agenda 38/38, Cerrar aplicaciones y ventanas 20/20, Conocimiento, razonamiento y creatividad verbal 37/37, Brillo y pantalla 17/17, Información web actual 17/17, Estado de hardware y sistema 40/40, Conversación social y ayuda general 31/31, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Contactos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9); C03 formal 3/11. Registro SHA 2a8c33d45375113cb79f1299148ab6bd1969fb488b51f69a835c507ed9d7f08b. Primeras altas 24 h >= 653 (+1).** Escritor raíz Opus 5 (plan post-goal, D24). Candidato: HEAD 83499642 con BUILD2065 (lectura tipada de la ruta pegada (misma mente que la tanda anterior)))))))))))))))). Turnos ordinarios sobre ventanas propias de la raíz (Bloc de notas delante, Calculadora detrás; diálogo «Prueba raiz»).
+++
+++TEXTREAD2065 («Archivos y carpetas», una ruta pegada bajo una carpeta conocida se lee y se dice de qué trata): 6/6 aprobados (el literal H0299, las 3 variantes y los 2 límites), 1 créditos. Adjudicación 0ee3d76e2c0a57ba30743c1b1d7f35d8c59beb98159c470038d76183b1e6367f. Cuatro lecturas verificadas con final fiel (archivo, líneas y comienzo citado tal cual); dos límites con cero operaciones.
+++
+++---
+++
++ # TEXTREAD2063 adjudicado — 2026-09-22T11:16:44.679516+00:00
++ 
++ **676/742 cubiertos, 66 abiertos, 0 NA; 23/35 categorías cerradas (Música 39/39, Navegación y búsqueda web 46/46, Entrada incompleta, ruido y control de diálogo 34/34, Vídeo y series 26/26, Audio y volumen 51/51, Alarmas, recordatorios, tareas y agenda 38/38, Cerrar aplicaciones y ventanas 20/20, Conocimiento, razonamiento y creatividad verbal 37/37, Brillo y pantalla 17/17, Información web actual 17/17, Estado de hardware y sistema 40/40, Conversación social y ayuda general 31/31, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Contactos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9); C03 formal 3/11. Registro SHA 415d8bb9307287bce8b489729741f96885083bda9c2e5809671a5c49e53804d6. Primeras altas 24 h >= 652 (sin cambio).** Escritor raíz Opus 5 (plan post-goal, D24). Candidato: HEAD e7f0a0b3 con BUILD2063 (lectura tipada de la ruta pegada (misma mente que la tanda anterior))))))))))))))). Turnos ordinarios sobre ventanas propias de la raíz (Bloc de notas delante, Calculadora detrás; diálogo «Prueba raiz»).
++diff --git a/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json b/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json
++index ce2d4e96..31572eda 100644
++--- a/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json
+++++ b/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json
++@@ -152,26 +152,26 @@
++     "modelBlockerResolvedEarlier": true
++   },
++   "goalStatus": "active",
++-  "workStatus": "TEXTREAD2063 adjudicado: 5 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.",
+++  "workStatus": "TEXTREAD2065 adjudicado: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.",
++   "executionPausedByOwner": false,
++   "branch": "codex/kiro-goal-c03",
++-  "checkpoint": "676/742 cubiertos, 66 abiertos, 0 no aplican. TEXTREAD2063: 0 créditos explícitos de raíz.",
+++  "checkpoint": "677/742 cubiertos, 65 abiertos, 0 no aplican. TEXTREAD2065: 1 créditos explícitos de raíz.",
++   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
++   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
++   "surveyVerificationCounts": {
++-    "covered": 676,
++-    "open": 66,
+++    "covered": 677,
+++    "open": 65,
++     "not_applicable": 0,
++     "total": 742
++   },
++-  "surveyRegistrySha256": "415d8bb9307287bce8b489729741f96885083bda9c2e5809671a5c49e53804d6",
+++  "surveyRegistrySha256": "2a8c33d45375113cb79f1299148ab6bd1969fb488b51f69a835c507ed9d7f08b",
++   "surveyRegistryPresentOnDestination": true,
++   "surveyCategories": {
++     "closed": 29,
++     "total": 35
++   },
++-  "surveyCoverageLast24h": 652,
++-  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–14 septiembre: 652 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); TEXTREAD2063 añade 0. No se cuentan revalidaciones.",
+++  "surveyCoverageLast24h": 653,
+++  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–14 septiembre: 652 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); TEXTREAD2065 añade 1. No se cuentan revalidaciones.",
++   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
++   "testsRun": false,
++   "testsOmittedByOwner": true,
++@@ -196,7 +196,7 @@
++     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
++     "agenda1024": "parche recibido y revisado, sin integrar"
++   },
++-  "utcUpdated": "2026-09-22T11:16:44.679516+00:00",
+++  "utcUpdated": "2026-09-22T11:50:21.902198+00:00",
++   "batchesThisSession": [
++     {
++       "batch": 1029,
++@@ -621,7 +621,7 @@
++     "freeze_ended_at": "2026-09-12T13:33:18.245252-03:00",
++     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
++   },
++-  "updatedAtUtc": "2026-09-22T11:16:44.679516+00:00",
+++  "updatedAtUtc": "2026-09-22T11:50:21.902198+00:00",
++   "currentContinuation1065": {
++     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
++     "quality": {
++@@ -2298,27 +2298,29 @@
++     "next": "FILES1205 completa: 19 ejecutados, 19 aprobados, 12 créditos (8 archivos en escritorio/Documentos, 3 carpetas en el escritorio, 1 carpeta en el sandbox), cada uno con dos pares aprobados. El proveedor de carpetas conocidas (BUILD1205) y los lectores de creación se demuestran: 18 creaciones verificadas por el producto y comprobadas en disco por raíz (existencia, tipo y hash del contenido literal), ninguna preexistente, todas eliminadas tras la postlectura. Archivos queda 15/32; restan borrados (fixtures en carpetas personales), listados del escritorio, contenido dinámico («que contenga la fecha», procesos), rutas absolutas, comprimir/abrir, resumir PDF y copia a pendrive."
++   },
++   "currentContinuation1207": {
++-    "head": "e7f0a0b38925744da376500632f8bd0de6d90e6c",
+++    "head": "83499642b56329bfceb763f83ab6091a615d2cd3",
++     "quality": {
++-      "passed": 5,
++-      "failed": 1,
+++      "passed": 6,
+++      "failed": 0,
++       "executed": 6,
++       "not_executed": 0,
++       "sealed_total": 8,
++       "segments_started": 6,
++       "aborted_before_admission": 0
++     },
++-    "new_credits": 0,
++-    "credited_ids": [],
++-    "registry_sha256": "415d8bb9307287bce8b489729741f96885083bda9c2e5809671a5c49e53804d6",
++-    "survey": 676,
++-    "adjudication": "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY Definitivo\\artifacts\\comprobaciones\\C03\\TEXTREAD2063\\ROOT_ADJUDICATION.json",
+++    "new_credits": 1,
+++    "credited_ids": [
+++      "H0299"
+++    ],
+++    "registry_sha256": "2a8c33d45375113cb79f1299148ab6bd1969fb488b51f69a835c507ed9d7f08b",
+++    "survey": 677,
+++    "adjudication": "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY Definitivo\\artifacts\\comprobaciones\\C03\\TEXTREAD2065\\ROOT_ADJUDICATION.json",
++     "resources": {
++-      "seconds_sum": 115.7019999999975,
+++      "seconds_sum": 93.00000000000728,
++       "gpu_peak_mib": 3485.55859375,
++-      "ram_peak_mib": 2408.53125
+++      "ram_peak_mib": 1602.1875
++     },
++-    "next": "TEXTREAD2063: 6 ejecutados, 5 aprobados, 1 fallidos, 0 créditos (índices []). Siguiente: el conteo del Explorador (H0701) y las tipadas de red."
+++    "next": "TEXTREAD2065: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]). Siguiente: el conteo del Explorador (H0701) y las tipadas de red."
++   },
++   "currentContinuation1685": {
++     "registry_sha256": "afbc64b2c2f284c4f5f35dc37816760b6c703c0127fd660dc2a2b1e8d7316090",
++diff --git a/artifacts/comprobaciones/C03/TEXTREAD2065/MATERIAL_PINS.json b/artifacts/comprobaciones/C03/TEXTREAD2065/MATERIAL_PINS.json
++new file mode 100644
++index 00000000..b12e06d0
++--- /dev/null
+++++ b/artifacts/comprobaciones/C03/TEXTREAD2065/MATERIAL_PINS.json
++@@ -0,0 +1,87 @@
+++{
+++  "schema": "textread2065-public-material-pins-v1",
+++  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-proposal",
+++  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1",
+++  "seal_sha256": "7dc9eb8c98defb986abd8fd7eaed966e5ccf1e004e77209c9d9744b38727b776",
+++  "runner_sha256": "a18181f4e10fb7ddae5da3216e5243c40ba6490be4a04788001e43c15cd18b30",
+++  "transport_seal_sha256": "08246952b9681296256af0ee6e38587e26277bb19f1e29307a0924f23805971e",
+++  "files": {
+++    "panel.json": "f8e73fc806d7c95a5aa31011d16318702f702a947650ef5a90384bf8baac494b",
+++    "turns.jsonl": "d25a1968888e7f99445b76c86bf2d48e7cd7e18d20523c4a35dd6eb78123bea8",
+++    "case-map.json": "a8bb5082d04a90b78ae9b352cd8bff8e37a5863bc1e49b2cdf0f74bc822510fc",
+++    "PLAN.md": "c7c2f6bd27ffd2edb7226c40b671b764ecef000e2ce368d8d852ac5f629f18d7"
+++  },
+++  "counts": {
+++    "cases": 6,
+++    "historical_literals": 1,
+++    "original_development_variants": 3,
+++    "boundaries": 2,
+++    "wire_lines": 12,
+++    "session_controls": 6,
+++    "ordinary_turns": 6,
+++    "reviewed_turns": 0,
+++    "maximum_reportable_terminals": 6,
+++    "maximum_internal_confirmations": 0
+++  },
+++  "kind_counts": {
+++    "historical_literal": 1,
+++    "original_development_variant": 3,
+++    "boundary": 2
+++  },
+++  "case_identities": [
+++    {
+++      "index": 0,
+++      "case_id": "H0299",
+++      "kind": "historical_literal",
+++      "group": "pasted_path_read",
+++      "credit_behavior": "pasted_path_read",
+++      "text_sha256": "afee7b34f583d87fbbd9ee116d2bcc27905b7f5a60162f3ac68b53f851552054",
+++      "criterion_sha256": "f3b519ba21593eff28461cd51e3091abe500d05ec1b70265a75c38802137be18"
+++    },
+++    {
+++      "index": 1,
+++      "case_id": "textread2065-dev-01",
+++      "kind": "original_development_variant",
+++      "group": "pasted_path_read",
+++      "credit_behavior": "pasted_path_read",
+++      "text_sha256": "58d194d3f9849cb98bece0cd2bfa20a92fdfe41ecf5739cbeec180554019fca3",
+++      "criterion_sha256": "f3b519ba21593eff28461cd51e3091abe500d05ec1b70265a75c38802137be18"
+++    },
+++    {
+++      "index": 2,
+++      "case_id": "textread2065-dev-02",
+++      "kind": "original_development_variant",
+++      "group": "pasted_path_read",
+++      "credit_behavior": "pasted_path_read",
+++      "text_sha256": "881d91995afb2a2da98cf7d7c137473ea74cd02d64433eb58c447c4903067473",
+++      "criterion_sha256": "f3b519ba21593eff28461cd51e3091abe500d05ec1b70265a75c38802137be18"
+++    },
+++    {
+++      "index": 3,
+++      "case_id": "textread2065-dev-03",
+++      "kind": "original_development_variant",
+++      "group": "pasted_path_read",
+++      "credit_behavior": "pasted_path_read",
+++      "text_sha256": "10401d93f9a5192ab176a8501c87356c91229b88613709b16efd5d3f011450b8",
+++      "criterion_sha256": "f3b519ba21593eff28461cd51e3091abe500d05ec1b70265a75c38802137be18"
+++    },
+++    {
+++      "index": 4,
+++      "case_id": "textread2065-boundary-01",
+++      "kind": "boundary",
+++      "group": "no_effect_boundary",
+++      "credit_behavior": "no_effect_boundary",
+++      "text_sha256": "3eb250bb0d9896e59b0459b98193feeb9c5d2b5e20eeacfd36fb8c339920b9c1",
+++      "criterion_sha256": "14acc0d8dc8f2e9be71cee4030eb18e51ccf28805db0301ae06bd5a2f8b62108"
+++    },
+++    {
+++      "index": 5,
+++      "case_id": "textread2065-boundary-02",
+++      "kind": "boundary",
+++      "group": "no_effect_boundary",
+++      "credit_behavior": "no_effect_boundary",
+++      "text_sha256": "55484f33e769c154ecfcd8236c3dc5dd5d014586b81f56971f58771eb13b0b56",
+++      "criterion_sha256": "c28e177243997604cf99c38222706d98ae24c9ccdb22d0ddee5f22f8455a2070"
+++    }
+++  ]
+++}
++diff --git a/artifacts/comprobaciones/C03/TEXTREAD2065/REGISTRY_UPDATE.json b/artifacts/comprobaciones/C03/TEXTREAD2065/REGISTRY_UPDATE.json
++new file mode 100644
++index 00000000..9e92cc1a
++--- /dev/null
+++++ b/artifacts/comprobaciones/C03/TEXTREAD2065/REGISTRY_UPDATE.json
++@@ -0,0 +1,18 @@
+++{
+++  "registry_before_sha256": "415d8bb9307287bce8b489729741f96885083bda9c2e5809671a5c49e53804d6",
+++  "registry_after_sha256": "2a8c33d45375113cb79f1299148ab6bd1969fb488b51f69a835c507ed9d7f08b",
+++  "touched_ids": [
+++    "H0299"
+++  ],
+++  "credited_ids": [
+++    "H0299"
+++  ],
+++  "counters": {
+++    "covered": 677,
+++    "open": 65,
+++    "not_applicable": 0,
+++    "total": 742
+++  },
+++  "decisions_sha256": "32ebeec4220c027c42696d1aba49b197f9d712ef8b932b25c74d692c93ff72c6",
+++  "updated_at": "2026-09-22T11:50:21.902198+00:00"
+++}
++diff --git a/artifacts/comprobaciones/C03/TEXTREAD2065/ROOT_ADJUDICATION.json b/artifacts/comprobaciones/C03/TEXTREAD2065/ROOT_ADJUDICATION.json
++new file mode 100644
++index 00000000..1f0343ba
++--- /dev/null
+++++ b/artifacts/comprobaciones/C03/TEXTREAD2065/ROOT_ADJUDICATION.json
++@@ -0,0 +1,382 @@
+++{
+++  "schema": "textread2065-root-adjudication-v2",
+++  "decided_at_utc": "2026-09-22T11:50:21.902198+00:00",
+++  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+++  "head": "83499642b56329bfceb763f83ab6091a615d2cd3",
+++  "decisions_sha256": "32ebeec4220c027c42696d1aba49b197f9d712ef8b932b25c74d692c93ff72c6",
+++  "registry_before_sha256": "415d8bb9307287bce8b489729741f96885083bda9c2e5809671a5c49e53804d6",
+++  "registry_before_counts": {
+++    "covered": 676,
+++    "open": 66,
+++    "not_applicable": 0,
+++    "total": 742
+++  },
+++  "candidate_manifest_sha256": "6861c4cc347715040ad9182619469f630fdaed7b7d4540a8f4e38093467c0d2e",
+++  "preparation_sha256": "296ec1603c585f4ff9c23dc2f8eb6667342a602f3c6edf65432cc1c33db9b21f",
+++  "passed": 6,
+++  "failed": 0,
+++  "unexecuted": 0,
+++  "executed": 6,
+++  "segments_started": 6,
+++  "aborted_before_admission": 0,
+++  "aborted_before_admission_indices": [],
+++  "credits": [
+++    "H0299"
+++  ],
+++  "counters": {
+++    "covered": 677,
+++    "open": 65,
+++    "not_applicable": 0,
+++    "total": 742
+++  },
+++  "metrics": {
+++    "first_covered_last24h_is_lower_bound": true,
+++    "first_covered_last24h_before": 652,
+++    "categories_total": 35,
+++    "categories_closed_after": 29,
+++    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 652 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); TEXTREAD2065 añade 1. No se cuentan revalidaciones.",
+++    "first_covered_last24h_after": 653
+++  },
+++  "resources": {
+++    "seconds_sum": 93.00000000000728,
+++    "gpu_peak_mib": 3485.55859375,
+++    "ram_peak_mib": 1602.1875
+++  },
+++  "cases": [
+++    {
+++      "index": 0,
+++      "case_id": "H0299",
+++      "verdict": "passed",
+++      "credit": true,
+++      "pair_indices": [
+++        1,
+++        2
+++      ],
+++      "reason": "document.text.read verificada sobre la ruta pegada; el final nombra el archivo, sus líneas y de qué trata; crédito con dos variantes aprobadas del mismo grupo.",
+++      "observation_note": "Turno ordinario: exactamente una document.text.read completada y verificada (carpeta conocida, subcarpeta y nombre de la ruta pegada); el final nombra el archivo, dice cuántas líneas tiene y de qué trata citando sus títulos o su comienzo tal cual; cero confirmaciones y violaciones; pins intactos.",
+++      "final_sha256": "6bccc90ecf32ab494d36cdc9b8b3ae7a628cec588fa0d1f03af12c9f0a8cf2e9",
+++      "evidence_pins": {
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-00\\EXIT.json": "f40d05e3dac90097790db1bfe8af8f99ffefa08f63cdd4ca7fb568ed4e2cc04c",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-00\\RESOURCES.json": "acdb16acd0fe5e0c18819d3f7de0f71f2a2a9bba591d7d3eed041a4340d2d26e",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\profile-owner-00.json": "b3f32f67339b2c5ebbcb6b8c71211fcd0588984075892074b1846415034ec886",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-00\\PREREG.json": "f98655027a37ea803c06130c9b27711595b0db755481db4a1cfec5090f6dca0f",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-00\\capture\\events.jsonl": "f48728160276e3e63cba052423c8f9f0c67c7898c6408a5b2aa5427258ba9d7c",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-00\\turns.jsonl": "630f81eaf11050e94b596d0c274e3a547b68b40d4f34f01e91a71b8e39e236f6",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\fixture-00.json": "118a3492198be98e672a8dddbe3fee83f44b5697d5535943020f0512999ed14a",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-00.json": "b92f25045b0b9bab0cea416f44794e73bee67238db7bc0e5bfa73682b7cfe512",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-prelaunch-00.json": "cc8cc08ca301f19693ad4d0714d138e16c0fdf5acd976a5dde777472c48138cf",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-00\\case-observations.json": "75be6fa4d38702dcd425e0f0ca6f6e0e1913e3999a260256c03a3569de1cee00",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-00\\journal-before.json": "c3344cf810870be8159d0b6a346faccac1711f4b8abb9875c17382993313881b",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-00\\journal-after.json": "c0cd676dbc8c8ea395ad37af51e62014087d15c0c78b2de7573f086f94162c79",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "38c6680af52d689956dbd6a7a179904caac368b99908f743a1bdb407df7e1078"
+++      },
+++      "terminal_kind": "published_final",
+++      "clients_absent_before": true,
+++      "aborted_before_admission": false,
+++      "remaining_execution_uncertain_after_stop": false,
+++      "cause_kind": null,
+++      "violations": [],
+++      "new_invocations": [
+++        {
+++          "invocation_id": "e22a9250-28be-48dc-b29a-a530afa2830a",
+++          "operation": "memory.status",
+++          "status": "completed",
+++          "verified": true,
+++          "error_code": null,
+++          "effect_may_have_occurred": null,
+++          "phases": [
+++            "started",
+++            "completed"
+++          ],
+++          "replayed": false
+++        },
+++        {
+++          "invocation_id": "4262e317-4107-4fcc-8982-4911e5c0ea75",
+++          "operation": "document.text.read",
+++          "status": "completed",
+++          "verified": true,
+++          "error_code": null,
+++          "effect_may_have_occurred": null,
+++          "phases": [
+++            "started",
+++            "completed"
+++          ],
+++          "replayed": false
+++        }
+++      ]
+++    },
+++    {
+++      "index": 1,
+++      "case_id": "textread2065-dev-01",
+++      "verdict": "passed",
+++      "credit": false,
+++      "pair_indices": [],
+++      "reason": "document.text.read verificada sobre la ruta pegada; el final nombra el archivo, sus líneas y de qué trata.",
+++      "observation_note": "Turno ordinario: exactamente una document.text.read completada y verificada (carpeta conocida, subcarpeta y nombre de la ruta pegada); el final nombra el archivo, dice cuántas líneas tiene y de qué trata citando sus títulos o su comienzo tal cual; cero confirmaciones y violaciones; pins intactos.",
+++      "final_sha256": "4060fce18a390ea9f5401650409b414bf332912928dcbd06c8039c82155be9ff",
+++      "evidence_pins": {
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-01\\EXIT.json": "3519e0add7eaf559d54156c4d58237112e8d219e2d1c495694c9e3aa1dc517bc",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-01\\RESOURCES.json": "ef4efc57e060acf0338ecb33909ed8a450f1fae1a6393b7e785b7e2870708f67",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\profile-owner-01.json": "ba59a46cf87816c3c94e6325d58be704c030b3a43a9bfac627f8e2fe3b7a0eb2",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-01\\PREREG.json": "724181ef41ea7ccac64e2de8735f303acf9d90c4d9f5821ba28231f11fa0ce5d",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-01\\capture\\events.jsonl": "7801fd90ab54ccd315cff9d7a45ae3596e29e2ce4c047599b66fed938bc58e53",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-01\\turns.jsonl": "7f2215ef18543712d33cf8273edd6f2876a870422df97279d38409d61bef1965",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\fixture-01.json": "67a3408015446f427b878bc138cf8099750da82cb660066d1f2a65e0cff21d7c",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-01.json": "5eb10c90c2fcecc8e851bf323c92a09479f389468e8cfbb673845087f1c0dbdb",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-prelaunch-01.json": "82e36ab1fa0762f57221a617316e7d59cdca92688c24d2056df5c5649ca855bf",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-01\\case-observations.json": "88a307189ad749725b25de4ebdb2b601533f748cf1c2fb0dc9790d1e1ed27a8c",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-01\\journal-before.json": "060d9bbfdd0772949433417ca7862eb5192cc36423b0cd97de6303079db53f42",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-01\\journal-after.json": "bc681d864a4b97deafc6cb576e7c032e0a35f9b78245d59fd31b9f07fa9aae1e",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "3d7823ac286fe26faedda36bda95857d8aa1351e68102671d991706a119801e4"
+++      },
+++      "terminal_kind": "published_final",
+++      "clients_absent_before": true,
+++      "aborted_before_admission": false,
+++      "remaining_execution_uncertain_after_stop": false,
+++      "cause_kind": null,
+++      "violations": [],
+++      "new_invocations": [
+++        {
+++          "invocation_id": "252395e1-f6da-43e8-8ae7-093ad3b40ec3",
+++          "operation": "memory.status",
+++          "status": "completed",
+++          "verified": true,
+++          "error_code": null,
+++          "effect_may_have_occurred": null,
+++          "phases": [
+++            "started",
+++            "completed"
+++          ],
+++          "replayed": false
+++        },
+++        {
+++          "invocation_id": "b5634b9b-ed01-48db-a8a5-d93f1fbe4dee",
+++          "operation": "document.text.read",
+++          "status": "completed",
+++          "verified": true,
+++          "error_code": null,
+++          "effect_may_have_occurred": null,
+++          "phases": [
+++            "started",
+++            "completed"
+++          ],
+++          "replayed": false
+++        }
+++      ]
+++    },
+++    {
+++      "index": 2,
+++      "case_id": "textread2065-dev-02",
+++      "verdict": "passed",
+++      "credit": false,
+++      "pair_indices": [],
+++      "reason": "document.text.read verificada sobre la ruta pegada; el final nombra el archivo, sus líneas y de qué trata.",
+++      "observation_note": "Turno ordinario: exactamente una document.text.read completada y verificada (carpeta conocida, subcarpeta y nombre de la ruta pegada); el final nombra el archivo, dice cuántas líneas tiene y de qué trata citando sus títulos o su comienzo tal cual; cero confirmaciones y violaciones; pins intactos.",
+++      "final_sha256": "6a52f2300f84c0cc833354e3bedaa8a8218a42b3459dac730ecc580484826ece",
+++      "evidence_pins": {
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-02\\EXIT.json": "3938921c03d6dde196a450ef94729081ac0668d560749107a18153bf12554de4",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-02\\RESOURCES.json": "0cf4a0dc29d4d588492c198a3c0c5f04f613b0c93426df5f12b474312c9de993",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\profile-owner-02.json": "ed5e5b442929b14ff952cf57e8c396879c98d4bb597c3bb74ecacbc6819a08ce",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-02\\PREREG.json": "87c0b76c01a24ef4c2c77ca8273bc4d37b12b6f5e50e3d580566cf5a6d7ba8a0",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-02\\capture\\events.jsonl": "94716efb2caa161bf5d19db2e15cdeb3adabd99ba1cc283fde6868213758f894",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-02\\turns.jsonl": "27d2caae569d1410ad663700b985c1521c296ce99b2a4b11f5f202d34caa4cc5",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\fixture-02.json": "ab710af58632eb3f3c711895e5cf030b2b68cc710d39549367144aa5c4a062a9",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-02.json": "46c3a565ecfd740b33d42705f9f523e3f339ce4af337e6f18992de9e6e2d6899",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-prelaunch-02.json": "35f9670f93b27bf62d6e822d9a2292dd8ef60de476b4d76496e304dd2134264b",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-02\\case-observations.json": "49046f9eede70aae0dc008fac010177f7f4d81a525cae3ac34733c606345ffc1",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-02\\journal-before.json": "5a2d094fc5477ca2d42adc6a8d3b2d80535abdfc422b214e2a08fe002ebcd21e",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-02\\journal-after.json": "162537025aa65858dac2bbad1117c46a45a52792d2d82dbeb177e79dd141bb7f",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "b7d9181dedcbbf85e69f65f965666a3950d618a4c71aa9d7c0ee5517fda2552e"
+++      },
+++      "terminal_kind": "published_final",
+++      "clients_absent_before": true,
+++      "aborted_before_admission": false,
+++      "remaining_execution_uncertain_after_stop": false,
+++      "cause_kind": null,
+++      "violations": [],
+++      "new_invocations": [
+++        {
+++          "invocation_id": "b66b3ce9-1422-4a11-b2b6-70293b377f7c",
+++          "operation": "memory.status",
+++          "status": "completed",
+++          "verified": true,
+++          "error_code": null,
+++          "effect_may_have_occurred": null,
+++          "phases": [
+++            "started",
+++            "completed"
+++          ],
+++          "replayed": false
+++        },
+++        {
+++          "invocation_id": "a373a94e-6fe5-4bb3-9384-71de042258d4",
+++          "operation": "document.text.read",
+++          "status": "completed",
+++          "verified": true,
+++          "error_code": null,
+++          "effect_may_have_occurred": null,
+++          "phases": [
+++            "started",
+++            "completed"
+++          ],
+++          "replayed": false
+++        }
+++      ]
+++    },
+++    {
+++      "index": 3,
+++      "case_id": "textread2065-dev-03",
+++      "verdict": "passed",
+++      "credit": false,
+++      "pair_indices": [],
+++      "reason": "document.text.read verificada sobre la ruta pegada; el final nombra el archivo, sus líneas y de qué trata.",
+++      "observation_note": "Turno ordinario: exactamente una document.text.read completada y verificada (carpeta conocida, subcarpeta y nombre de la ruta pegada); el final nombra el archivo, dice cuántas líneas tiene y de qué trata citando sus títulos o su comienzo tal cual; cero confirmaciones y violaciones; pins intactos.",
+++      "final_sha256": "aab61f8725f56a15b3503cddc357cb9b9bbf9d900e1b5064362cee5060043555",
+++      "evidence_pins": {
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-03\\EXIT.json": "28d3018057c3091e6cd0c196967765faf942f14dedd564cfbaa58cb35d1d4b91",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-03\\RESOURCES.json": "2ca3c53dd7eda15b97deca583b29a76b0b267a8b0ad5b612feb3a0bee69e6d40",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\profile-owner-03.json": "c60e83923b79adfa4ec0d3889ae4d556782437abd4cf86159ae8cf5f33ba6baa",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-03\\PREREG.json": "955f698b05337edc8be6348791c03d150afc9f0605b0429eaaad263412fc8166",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-03\\capture\\events.jsonl": "8d6f64d539d5df0660fd783530df584c61741700877b608c3df1027fe0cb9992",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-03\\turns.jsonl": "48b87d1649d5d913da767dacd824c86511b577e53f664370d510f6cd3143f67e",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\fixture-03.json": "bbd193ce5a3499182f4be7b4b4358ceac2888eac2752d1779da7254c30d34867",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-03.json": "726ddebd6bdac86163ce7f71067d98984e71c2d5585f7c06d93e3e91045da1a6",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-prelaunch-03.json": "ec40dda719e0e1ea3c4e09539e2d03a4730ed0f14f28d1a10ef1b79f0833f885",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-03\\case-observations.json": "63b6d2f07ea585a87784d953bd33d351a919856080f2644b87807218e66274c7",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-03\\journal-before.json": "c5b57107a89caef13486bab21811247247cfcba89575985a7bf97d61c526da03",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-03\\journal-after.json": "09688b77be0937db0051d417104716bbbafea238e4f06eaf05593b6575a6dca7",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "8b67916a9cb9fec985fa548b069c7b558f40dcd1b6dc8d4c08dbf2cb743f692f"
+++      },
+++      "terminal_kind": "published_final",
+++      "clients_absent_before": true,
+++      "aborted_before_admission": false,
+++      "remaining_execution_uncertain_after_stop": false,
+++      "cause_kind": null,
+++      "violations": [],
+++      "new_invocations": [
+++        {
+++          "invocation_id": "e881460a-1ae5-4b57-9aa8-87c822ed0f21",
+++          "operation": "memory.status",
+++          "status": "completed",
+++          "verified": true,
+++          "error_code": null,
+++          "effect_may_have_occurred": null,
+++          "phases": [
+++            "started",
+++            "completed"
+++          ],
+++          "replayed": false
+++        },
+++        {
+++          "invocation_id": "d4d2c6f5-2a3d-422b-9323-05136d9aa280",
+++          "operation": "document.text.read",
+++          "status": "completed",
+++          "verified": true,
+++          "error_code": null,
+++          "effect_may_have_occurred": null,
+++          "phases": [
+++            "started",
+++            "completed"
+++          ],
+++          "replayed": false
+++        }
+++      ]
+++    },
+++    {
+++      "index": 4,
+++      "case_id": "textread2065-boundary-01",
+++      "verdict": "passed",
+++      "credit": false,
+++      "pair_indices": [],
+++      "reason": "Límite aprobado.",
+++      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+++      "final_sha256": "5474ef8deed5267cdfb4a0ea459c5b6db47ddeb33a91f20591b24c5deee7e371",
+++      "evidence_pins": {
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-04\\EXIT.json": "d5145a85383ee058739253f82dd6f6fa496853e38d53cf0c37144b9bb28d1a61",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-04\\RESOURCES.json": "7e6af3be3c69a83967ef331b8c7af9bc22b3228669730c3d4aa56f3387094ace",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\profile-owner-04.json": "01ad692da8726a60de5f5a6418812a21145cecefa097a4e3a3ce03061305ba72",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-04\\PREREG.json": "76d51c46e09dbce108b85cde900fc7eb3708d0210bdcfad07c35a7025d52cfd9",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-04\\capture\\events.jsonl": "83be77fa77ad5d49165f00cac4c0cbf7af8e9f9904119b2ba0ccee1ce69868f2",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-04\\turns.jsonl": "4e0277966bc946ee9723473cecdb51c2928cc8d85eba2618cb9c47e9eda203a7",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\fixture-04.json": "f8b6f2821ca983e2ded8568bc50da277a721b29ef6b6319a11db9c849e8a1f60",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-04.json": "fc19207cf83f9d828ba6bc6646c92d01fdb94c9f9f22aeeac0d8f9ee5c70d611",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-prelaunch-04.json": "e5e1a2f0777e44823251f3624302b209c22e460db4f27cf83ca4a9036bdd3be1",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-04\\case-observations.json": "f6e1ed0b845c3de776ae0b11bd9281d421902fcd4d89477f6f7acb0d5641eab0",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-04\\journal-before.json": "89fbc3957161000d99d8ebfb935956984a674f9adc2a54c7fa30721239eaa20d",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-04\\journal-after.json": "c9ac0a2eb904363f3e00e23840a2bd7d9b6f2b5b258cf42b476d99353f7031b8",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "cef9e0eb41a7d008de1b9786db8eeb5ec93f3877c3765ee64be398bdb1ab15c7"
+++      },
+++      "terminal_kind": "published_final",
+++      "clients_absent_before": true,
+++      "aborted_before_admission": false,
+++      "remaining_execution_uncertain_after_stop": false,
+++      "cause_kind": null,
+++      "violations": [],
+++      "new_invocations": [
+++        {
+++          "invocation_id": "924c0a23-9f2a-4a56-89c9-2a5be8e3eab7",
+++          "operation": "memory.status",
+++          "status": "completed",
+++          "verified": true,
+++          "error_code": null,
+++          "effect_may_have_occurred": null,
+++          "phases": [
+++            "started",
+++            "completed"
+++          ],
+++          "replayed": false
+++        }
+++      ]
+++    },
+++    {
+++      "index": 5,
+++      "case_id": "textread2065-boundary-02",
+++      "verdict": "passed",
+++      "credit": false,
+++      "pair_indices": [],
+++      "reason": "Límite aprobado.",
+++      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+++      "final_sha256": "9433c5cdd40530773c5215ae2ecd6b923eff8f87a46f71f3f59a84e9d577add6",
+++      "evidence_pins": {
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-05\\EXIT.json": "15b389b762075e52cd24049eb7cebcc3a99002f3a79e965ad5d54b762c7a2360",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-05\\RESOURCES.json": "6e490e9a847ba598ee2288e5f2603abe484fb47dfef7cd10305182c8ab6b71d7",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\profile-owner-05.json": "8412a6c2e613cb2e11fe4800fd69596d582bc9730a3230d74f7c15f2b86f0a00",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-05\\PREREG.json": "9b8f4deaa0a10f96a2cbef310615f29e7c9c68835979b25cf6cc644ffdfcb1c5",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-05\\capture\\events.jsonl": "c38172f4d2f1c4e6e7f1237966b5c0b1c59ccaba22f3036fe59255df9bba49fe",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-05\\turns.jsonl": "a06344ed42e5253952d3d100944eb4cc36c9ccc787415a24c78ac075d79eacda",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\fixture-05.json": "fe6a943ef2d70d9e5e921e3765f039702b197a69abc9847495e80e7092f1146b",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-05.json": "d06a4273a743c0b882cfe090a244c995b200b720329c8041d7dcd3e452a26446",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-prelaunch-05.json": "adee159da61ef8a5661921a2a44b3278845e99a57aa497ce062632642fa68b5b",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-05\\case-observations.json": "a0c8228a32e70b9ddc152c1fef128554ee6223c7a019b8dccc8d6cccd95f4707",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-05\\journal-before.json": "46a8978041d94d1df44d9dd4f39b34642c1d7cdf981d8c0bfca72a40b8a43d69",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-05\\journal-after.json": "ef79329b49455773aa24f3b81ab5be5601f5055068bd7ae8be770d42943ebd72",
+++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "60c2746cfb1b52cebd31c4bd0dfaf421a751da5bc4d0a685fca6d21963ee67f1"
+++      },
+++      "terminal_kind": "published_final",
+++      "clients_absent_before": true,
+++      "aborted_before_admission": false,
+++      "remaining_execution_uncertain_after_stop": false,
+++      "cause_kind": null,
+++      "violations": [],
+++      "new_invocations": [
+++        {
+++          "invocation_id": "af8a9d36-92f6-46ba-90c9-ce46a7a89c60",
+++          "operation": "memory.status",
+++          "status": "completed",
+++          "verified": true,
+++          "error_code": null,
+++          "effect_may_have_occurred": null,
+++          "phases": [
+++            "started",
+++            "completed"
+++          ],
+++          "replayed": false
+++        }
+++      ]
+++    }
+++  ],
+++  "unexecuted_indices": [],
+++  "next_action": "TEXTREAD2065: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]). Siguiente: el conteo del Explorador (H0701) y las tipadas de red.",
+++  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+++  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+++}
++diff --git a/artifacts/comprobaciones/C03/TEXTREAD2065/ROOT_ADJUDICATION.md b/artifacts/comprobaciones/C03/TEXTREAD2065/ROOT_ADJUDICATION.md
++new file mode 100644
++index 00000000..3d7ca9b7
++--- /dev/null
+++++ b/artifacts/comprobaciones/C03/TEXTREAD2065/ROOT_ADJUDICATION.md
++@@ -0,0 +1,32 @@
+++# TEXTREAD2065 — adjudicación de la raíz
+++
+++## TEXTREAD2065 — estado vigente 2026-09-22T11:50:21.902198+00:00
+++
+++Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+++
+++| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+++|---:|---:|---:|---:|---:|
+++| 677/742 | 65 | 0 | >=653 | 29/35 |
+++
+++Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 652 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); TEXTREAD2065 añade 1. No se cuentan revalidaciones.
+++
+++Siguiente acción: TEXTREAD2065: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]). Siguiente: el conteo del Explorador (H0701) y las tipadas de red.
+++
+++Evidencia: `artifacts/comprobaciones/C03/TEXTREAD2065/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+++
+++Recursos de los segmentos: 93.00 s acumulados; pico GPU 3485.56 MiB; pico RAM 1602.19 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+++
+++Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+++
+++| Índice | Caso | Veredicto | Causa de la raíz | Observación |
+++|---:|---|---|---|---|
+++| 0 | H0299 | passed | document.text.read verificada sobre la ruta pegada; el final nombra el archivo, sus líneas y de qué trata; crédito con dos variantes aprobadas del mismo grupo. | Turno ordinario: exactamente una document.text.read completada y verificada (carpeta conocida, subcarpeta y nombre de la ruta pegada); el final nombra el archivo, dice cuántas líneas tiene y de qué trata citando sus títulos o su comienzo tal cual; cero confirmaciones y violaciones; pins intactos. |
+++| 1 | textread2065-dev-01 | passed | document.text.read verificada sobre la ruta pegada; el final nombra el archivo, sus líneas y de qué trata. | Turno ordinario: exactamente una document.text.read completada y verificada (carpeta conocida, subcarpeta y nombre de la ruta pegada); el final nombra el archivo, dice cuántas líneas tiene y de qué trata citando sus títulos o su comienzo tal cual; cero confirmaciones y violaciones; pins intactos. |
+++| 2 | textread2065-dev-02 | passed | document.text.read verificada sobre la ruta pegada; el final nombra el archivo, sus líneas y de qué trata. | Turno ordinario: exactamente una document.text.read completada y verificada (carpeta conocida, subcarpeta y nombre de la ruta pegada); el final nombra el archivo, dice cuántas líneas tiene y de qué trata citando sus títulos o su comienzo tal cual; cero confirmaciones y violaciones; pins intactos. |
+++| 3 | textread2065-dev-03 | passed | document.text.read verificada sobre la ruta pegada; el final nombra el archivo, sus líneas y de qué trata. | Turno ordinario: exactamente una document.text.read completada y verificada (carpeta conocida, subcarpeta y nombre de la ruta pegada); el final nombra el archivo, dice cuántas líneas tiene y de qué trata citando sus títulos o su comienzo tal cual; cero confirmaciones y violaciones; pins intactos. |
+++| 4 | textread2065-boundary-01 | passed | Límite aprobado. | Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos. |
+++| 5 | textread2065-boundary-02 | passed | Límite aprobado. | Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos. |
+++
+++Recursos: 93.00 s de segmentos; pico GPU 3485.56 MiB; pico RAM 1602.19 MiB. La muestra del árbol de procesos puede incluir descendientes ajenos a BAXY; no equivale a consumo exclusivo del modelo.
+++
+++Sólo se atribuyen invocaciones nuevas de cada segmento. El aislamiento de contexto o la ausencia de operaciones no acredita por sí sola una respuesta útil. Los casos no ejecutados conservan sus datos y estado.
++diff --git a/artifacts/comprobaciones/C03/TEXTREAD2065/ROOT_CASE_JUDGMENTS.json b/artifacts/comprobaciones/C03/TEXTREAD2065/ROOT_CASE_JUDGMENTS.json
++new file mode 100644
++index 00000000..afe166ae
++--- /dev/null
+++++ b/artifacts/comprobaciones/C03/TEXTREAD2065/ROOT_CASE_JUDGMENTS.json
++@@ -0,0 +1,333 @@
+++[
+++  {
+++    "index": 0,
+++    "case_id": "H0299",
+++    "verdict": "passed",
+++    "credit": true,
+++    "pair_indices": [
+++      1,
+++      2
+++    ],
+++    "reason": "document.text.read verificada sobre la ruta pegada; el final nombra el archivo, sus líneas y de qué trata; crédito con dos variantes aprobadas del mismo grupo.",
+++    "observation_note": "Turno ordinario: exactamente una document.text.read completada y verificada (carpeta conocida, subcarpeta y nombre de la ruta pegada); el final nombra el archivo, dice cuántas líneas tiene y de qué trata citando sus títulos o su comienzo tal cual; cero confirmaciones y violaciones; pins intactos.",
+++    "final_sha256": "6bccc90ecf32ab494d36cdc9b8b3ae7a628cec588fa0d1f03af12c9f0a8cf2e9",
+++    "evidence_pins": {
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-00\\EXIT.json": "f40d05e3dac90097790db1bfe8af8f99ffefa08f63cdd4ca7fb568ed4e2cc04c",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-00\\RESOURCES.json": "acdb16acd0fe5e0c18819d3f7de0f71f2a2a9bba591d7d3eed041a4340d2d26e",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\profile-owner-00.json": "b3f32f67339b2c5ebbcb6b8c71211fcd0588984075892074b1846415034ec886",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-00\\PREREG.json": "f98655027a37ea803c06130c9b27711595b0db755481db4a1cfec5090f6dca0f",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-00\\capture\\events.jsonl": "f48728160276e3e63cba052423c8f9f0c67c7898c6408a5b2aa5427258ba9d7c",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-00\\turns.jsonl": "630f81eaf11050e94b596d0c274e3a547b68b40d4f34f01e91a71b8e39e236f6",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\fixture-00.json": "118a3492198be98e672a8dddbe3fee83f44b5697d5535943020f0512999ed14a",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-00.json": "b92f25045b0b9bab0cea416f44794e73bee67238db7bc0e5bfa73682b7cfe512",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-prelaunch-00.json": "cc8cc08ca301f19693ad4d0714d138e16c0fdf5acd976a5dde777472c48138cf",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-00\\case-observations.json": "75be6fa4d38702dcd425e0f0ca6f6e0e1913e3999a260256c03a3569de1cee00",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-00\\journal-before.json": "c3344cf810870be8159d0b6a346faccac1711f4b8abb9875c17382993313881b",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-00\\journal-after.json": "c0cd676dbc8c8ea395ad37af51e62014087d15c0c78b2de7573f086f94162c79",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "38c6680af52d689956dbd6a7a179904caac368b99908f743a1bdb407df7e1078"
+++    },
+++    "terminal_kind": "published_final",
+++    "clients_absent_before": true,
+++    "aborted_before_admission": false,
+++    "remaining_execution_uncertain_after_stop": false,
+++    "cause_kind": null,
+++    "violations": [],
+++    "new_invocations": [
+++      {
+++        "invocation_id": "e22a9250-28be-48dc-b29a-a530afa2830a",
+++        "operation": "memory.status",
+++        "status": "completed",
+++        "verified": true,
+++        "error_code": null,
+++        "effect_may_have_occurred": null,
+++        "phases": [
+++          "started",
+++          "completed"
+++        ],
+++        "replayed": false
+++      },
+++      {
+++        "invocation_id": "4262e317-4107-4fcc-8982-4911e5c0ea75",
+++        "operation": "document.text.read",
+++        "status": "completed",
+++        "verified": true,
+++        "error_code": null,
+++        "effect_may_have_occurred": null,
+++        "phases": [
+++          "started",
+++          "completed"
+++        ],
+++        "replayed": false
+++      }
+++    ]
+++  },
+++  {
+++    "index": 1,
+++    "case_id": "textread2065-dev-01",
+++    "verdict": "passed",
+++    "credit": false,
+++    "pair_indices": [],
+++    "reason": "document.text.read verificada sobre la ruta pegada; el final nombra el archivo, sus líneas y de qué trata.",
+++    "observation_note": "Turno ordinario: exactamente una document.text.read completada y verificada (carpeta conocida, subcarpeta y nombre de la ruta pegada); el final nombra el archivo, dice cuántas líneas tiene y de qué trata citando sus títulos o su comienzo tal cual; cero confirmaciones y violaciones; pins intactos.",
+++    "final_sha256": "4060fce18a390ea9f5401650409b414bf332912928dcbd06c8039c82155be9ff",
+++    "evidence_pins": {
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-01\\EXIT.json": "3519e0add7eaf559d54156c4d58237112e8d219e2d1c495694c9e3aa1dc517bc",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-01\\RESOURCES.json": "ef4efc57e060acf0338ecb33909ed8a450f1fae1a6393b7e785b7e2870708f67",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\profile-owner-01.json": "ba59a46cf87816c3c94e6325d58be704c030b3a43a9bfac627f8e2fe3b7a0eb2",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-01\\PREREG.json": "724181ef41ea7ccac64e2de8735f303acf9d90c4d9f5821ba28231f11fa0ce5d",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-01\\capture\\events.jsonl": "7801fd90ab54ccd315cff9d7a45ae3596e29e2ce4c047599b66fed938bc58e53",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-01\\turns.jsonl": "7f2215ef18543712d33cf8273edd6f2876a870422df97279d38409d61bef1965",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\fixture-01.json": "67a3408015446f427b878bc138cf8099750da82cb660066d1f2a65e0cff21d7c",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-01.json": "5eb10c90c2fcecc8e851bf323c92a09479f389468e8cfbb673845087f1c0dbdb",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-prelaunch-01.json": "82e36ab1fa0762f57221a617316e7d59cdca92688c24d2056df5c5649ca855bf",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-01\\case-observations.json": "88a307189ad749725b25de4ebdb2b601533f748cf1c2fb0dc9790d1e1ed27a8c",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-01\\journal-before.json": "060d9bbfdd0772949433417ca7862eb5192cc36423b0cd97de6303079db53f42",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-01\\journal-after.json": "bc681d864a4b97deafc6cb576e7c032e0a35f9b78245d59fd31b9f07fa9aae1e",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "3d7823ac286fe26faedda36bda95857d8aa1351e68102671d991706a119801e4"
+++    },
+++    "terminal_kind": "published_final",
+++    "clients_absent_before": true,
+++    "aborted_before_admission": false,
+++    "remaining_execution_uncertain_after_stop": false,
+++    "cause_kind": null,
+++    "violations": [],
+++    "new_invocations": [
+++      {
+++        "invocation_id": "252395e1-f6da-43e8-8ae7-093ad3b40ec3",
+++        "operation": "memory.status",
+++        "status": "completed",
+++        "verified": true,
+++        "error_code": null,
+++        "effect_may_have_occurred": null,
+++        "phases": [
+++          "started",
+++          "completed"
+++        ],
+++        "replayed": false
+++      },
+++      {
+++        "invocation_id": "b5634b9b-ed01-48db-a8a5-d93f1fbe4dee",
+++        "operation": "document.text.read",
+++        "status": "completed",
+++        "verified": true,
+++        "error_code": null,
+++        "effect_may_have_occurred": null,
+++        "phases": [
+++          "started",
+++          "completed"
+++        ],
+++        "replayed": false
+++      }
+++    ]
+++  },
+++  {
+++    "index": 2,
+++    "case_id": "textread2065-dev-02",
+++    "verdict": "passed",
+++    "credit": false,
+++    "pair_indices": [],
+++    "reason": "document.text.read verificada sobre la ruta pegada; el final nombra el archivo, sus líneas y de qué trata.",
+++    "observation_note": "Turno ordinario: exactamente una document.text.read completada y verificada (carpeta conocida, subcarpeta y nombre de la ruta pegada); el final nombra el archivo, dice cuántas líneas tiene y de qué trata citando sus títulos o su comienzo tal cual; cero confirmaciones y violaciones; pins intactos.",
+++    "final_sha256": "6a52f2300f84c0cc833354e3bedaa8a8218a42b3459dac730ecc580484826ece",
+++    "evidence_pins": {
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-02\\EXIT.json": "3938921c03d6dde196a450ef94729081ac0668d560749107a18153bf12554de4",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-02\\RESOURCES.json": "0cf4a0dc29d4d588492c198a3c0c5f04f613b0c93426df5f12b474312c9de993",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\profile-owner-02.json": "ed5e5b442929b14ff952cf57e8c396879c98d4bb597c3bb74ecacbc6819a08ce",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-02\\PREREG.json": "87c0b76c01a24ef4c2c77ca8273bc4d37b12b6f5e50e3d580566cf5a6d7ba8a0",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-02\\capture\\events.jsonl": "94716efb2caa161bf5d19db2e15cdeb3adabd99ba1cc283fde6868213758f894",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-02\\turns.jsonl": "27d2caae569d1410ad663700b985c1521c296ce99b2a4b11f5f202d34caa4cc5",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\fixture-02.json": "ab710af58632eb3f3c711895e5cf030b2b68cc710d39549367144aa5c4a062a9",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-02.json": "46c3a565ecfd740b33d42705f9f523e3f339ce4af337e6f18992de9e6e2d6899",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-prelaunch-02.json": "35f9670f93b27bf62d6e822d9a2292dd8ef60de476b4d76496e304dd2134264b",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-02\\case-observations.json": "49046f9eede70aae0dc008fac010177f7f4d81a525cae3ac34733c606345ffc1",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-02\\journal-before.json": "5a2d094fc5477ca2d42adc6a8d3b2d80535abdfc422b214e2a08fe002ebcd21e",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-02\\journal-after.json": "162537025aa65858dac2bbad1117c46a45a52792d2d82dbeb177e79dd141bb7f",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "b7d9181dedcbbf85e69f65f965666a3950d618a4c71aa9d7c0ee5517fda2552e"
+++    },
+++    "terminal_kind": "published_final",
+++    "clients_absent_before": true,
+++    "aborted_before_admission": false,
+++    "remaining_execution_uncertain_after_stop": false,
+++    "cause_kind": null,
+++    "violations": [],
+++    "new_invocations": [
+++      {
+++        "invocation_id": "b66b3ce9-1422-4a11-b2b6-70293b377f7c",
+++        "operation": "memory.status",
+++        "status": "completed",
+++        "verified": true,
+++        "error_code": null,
+++        "effect_may_have_occurred": null,
+++        "phases": [
+++          "started",
+++          "completed"
+++        ],
+++        "replayed": false
+++      },
+++      {
+++        "invocation_id": "a373a94e-6fe5-4bb3-9384-71de042258d4",
+++        "operation": "document.text.read",
+++        "status": "completed",
+++        "verified": true,
+++        "error_code": null,
+++        "effect_may_have_occurred": null,
+++        "phases": [
+++          "started",
+++          "completed"
+++        ],
+++        "replayed": false
+++      }
+++    ]
+++  },
+++  {
+++    "index": 3,
+++    "case_id": "textread2065-dev-03",
+++    "verdict": "passed",
+++    "credit": false,
+++    "pair_indices": [],
+++    "reason": "document.text.read verificada sobre la ruta pegada; el final nombra el archivo, sus líneas y de qué trata.",
+++    "observation_note": "Turno ordinario: exactamente una document.text.read completada y verificada (carpeta conocida, subcarpeta y nombre de la ruta pegada); el final nombra el archivo, dice cuántas líneas tiene y de qué trata citando sus títulos o su comienzo tal cual; cero confirmaciones y violaciones; pins intactos.",
+++    "final_sha256": "aab61f8725f56a15b3503cddc357cb9b9bbf9d900e1b5064362cee5060043555",
+++    "evidence_pins": {
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-03\\EXIT.json": "28d3018057c3091e6cd0c196967765faf942f14dedd564cfbaa58cb35d1d4b91",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-03\\RESOURCES.json": "2ca3c53dd7eda15b97deca583b29a76b0b267a8b0ad5b612feb3a0bee69e6d40",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\profile-owner-03.json": "c60e83923b79adfa4ec0d3889ae4d556782437abd4cf86159ae8cf5f33ba6baa",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-03\\PREREG.json": "955f698b05337edc8be6348791c03d150afc9f0605b0429eaaad263412fc8166",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-03\\capture\\events.jsonl": "8d6f64d539d5df0660fd783530df584c61741700877b608c3df1027fe0cb9992",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-03\\turns.jsonl": "48b87d1649d5d913da767dacd824c86511b577e53f664370d510f6cd3143f67e",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\fixture-03.json": "bbd193ce5a3499182f4be7b4b4358ceac2888eac2752d1779da7254c30d34867",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-03.json": "726ddebd6bdac86163ce7f71067d98984e71c2d5585f7c06d93e3e91045da1a6",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-prelaunch-03.json": "ec40dda719e0e1ea3c4e09539e2d03a4730ed0f14f28d1a10ef1b79f0833f885",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-03\\case-observations.json": "63b6d2f07ea585a87784d953bd33d351a919856080f2644b87807218e66274c7",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-03\\journal-before.json": "c5b57107a89caef13486bab21811247247cfcba89575985a7bf97d61c526da03",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-03\\journal-after.json": "09688b77be0937db0051d417104716bbbafea238e4f06eaf05593b6575a6dca7",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "8b67916a9cb9fec985fa548b069c7b558f40dcd1b6dc8d4c08dbf2cb743f692f"
+++    },
+++    "terminal_kind": "published_final",
+++    "clients_absent_before": true,
+++    "aborted_before_admission": false,
+++    "remaining_execution_uncertain_after_stop": false,
+++    "cause_kind": null,
+++    "violations": [],
+++    "new_invocations": [
+++      {
+++        "invocation_id": "e881460a-1ae5-4b57-9aa8-87c822ed0f21",
+++        "operation": "memory.status",
+++        "status": "completed",
+++        "verified": true,
+++        "error_code": null,
+++        "effect_may_have_occurred": null,
+++        "phases": [
+++          "started",
+++          "completed"
+++        ],
+++        "replayed": false
+++      },
+++      {
+++        "invocation_id": "d4d2c6f5-2a3d-422b-9323-05136d9aa280",
+++        "operation": "document.text.read",
+++        "status": "completed",
+++        "verified": true,
+++        "error_code": null,
+++        "effect_may_have_occurred": null,
+++        "phases": [
+++          "started",
+++          "completed"
+++        ],
+++        "replayed": false
+++      }
+++    ]
+++  },
+++  {
+++    "index": 4,
+++    "case_id": "textread2065-boundary-01",
+++    "verdict": "passed",
+++    "credit": false,
+++    "pair_indices": [],
+++    "reason": "Límite aprobado.",
+++    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+++    "final_sha256": "5474ef8deed5267cdfb4a0ea459c5b6db47ddeb33a91f20591b24c5deee7e371",
+++    "evidence_pins": {
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-04\\EXIT.json": "d5145a85383ee058739253f82dd6f6fa496853e38d53cf0c37144b9bb28d1a61",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-04\\RESOURCES.json": "7e6af3be3c69a83967ef331b8c7af9bc22b3228669730c3d4aa56f3387094ace",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\profile-owner-04.json": "01ad692da8726a60de5f5a6418812a21145cecefa097a4e3a3ce03061305ba72",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-04\\PREREG.json": "76d51c46e09dbce108b85cde900fc7eb3708d0210bdcfad07c35a7025d52cfd9",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-04\\capture\\events.jsonl": "83be77fa77ad5d49165f00cac4c0cbf7af8e9f9904119b2ba0ccee1ce69868f2",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-04\\turns.jsonl": "4e0277966bc946ee9723473cecdb51c2928cc8d85eba2618cb9c47e9eda203a7",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\fixture-04.json": "f8b6f2821ca983e2ded8568bc50da277a721b29ef6b6319a11db9c849e8a1f60",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-04.json": "fc19207cf83f9d828ba6bc6646c92d01fdb94c9f9f22aeeac0d8f9ee5c70d611",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-prelaunch-04.json": "e5e1a2f0777e44823251f3624302b209c22e460db4f27cf83ca4a9036bdd3be1",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-04\\case-observations.json": "f6e1ed0b845c3de776ae0b11bd9281d421902fcd4d89477f6f7acb0d5641eab0",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-04\\journal-before.json": "89fbc3957161000d99d8ebfb935956984a674f9adc2a54c7fa30721239eaa20d",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-04\\journal-after.json": "c9ac0a2eb904363f3e00e23840a2bd7d9b6f2b5b258cf42b476d99353f7031b8",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "cef9e0eb41a7d008de1b9786db8eeb5ec93f3877c3765ee64be398bdb1ab15c7"
+++    },
+++    "terminal_kind": "published_final",
+++    "clients_absent_before": true,
+++    "aborted_before_admission": false,
+++    "remaining_execution_uncertain_after_stop": false,
+++    "cause_kind": null,
+++    "violations": [],
+++    "new_invocations": [
+++      {
+++        "invocation_id": "924c0a23-9f2a-4a56-89c9-2a5be8e3eab7",
+++        "operation": "memory.status",
+++        "status": "completed",
+++        "verified": true,
+++        "error_code": null,
+++        "effect_may_have_occurred": null,
+++        "phases": [
+++          "started",
+++          "completed"
+++        ],
+++        "replayed": false
+++      }
+++    ]
+++  },
+++  {
+++    "index": 5,
+++    "case_id": "textread2065-boundary-02",
+++    "verdict": "passed",
+++    "credit": false,
+++    "pair_indices": [],
+++    "reason": "Límite aprobado.",
+++    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+++    "final_sha256": "9433c5cdd40530773c5215ae2ecd6b923eff8f87a46f71f3f59a84e9d577add6",
+++    "evidence_pins": {
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-05\\EXIT.json": "15b389b762075e52cd24049eb7cebcc3a99002f3a79e965ad5d54b762c7a2360",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-05\\RESOURCES.json": "6e490e9a847ba598ee2288e5f2603abe484fb47dfef7cd10305182c8ab6b71d7",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\profile-owner-05.json": "8412a6c2e613cb2e11fe4800fd69596d582bc9730a3230d74f7c15f2b86f0a00",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-05\\PREREG.json": "9b8f4deaa0a10f96a2cbef310615f29e7c9c68835979b25cf6cc644ffdfcb1c5",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-05\\capture\\events.jsonl": "c38172f4d2f1c4e6e7f1237966b5c0b1c59ccaba22f3036fe59255df9bba49fe",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-05\\turns.jsonl": "a06344ed42e5253952d3d100944eb4cc36c9ccc787415a24c78ac075d79eacda",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\fixture-05.json": "fe6a943ef2d70d9e5e921e3765f039702b197a69abc9847495e80e7092f1146b",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-05.json": "d06a4273a743c0b882cfe090a244c995b200b720329c8041d7dcd3e452a26446",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\context-prelaunch-05.json": "adee159da61ef8a5661921a2a44b3278845e99a57aa497ce062632642fa68b5b",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-05\\case-observations.json": "a0c8228a32e70b9ddc152c1fef128554ee6223c7a019b8dccc8d6cccd95f4707",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-05\\journal-before.json": "46a8978041d94d1df44d9dd4f39b34642c1d7cdf981d8c0bfca72a40b8a43d69",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-05\\journal-after.json": "ef79329b49455773aa24f3b81ab5be5601f5055068bd7ae8be770d42943ebd72",
+++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "60c2746cfb1b52cebd31c4bd0dfaf421a751da5bc4d0a685fca6d21963ee67f1"
+++    },
+++    "terminal_kind": "published_final",
+++    "clients_absent_before": true,
+++    "aborted_before_admission": false,
+++    "remaining_execution_uncertain_after_stop": false,
+++    "cause_kind": null,
+++    "violations": [],
+++    "new_invocations": [
+++      {
+++        "invocation_id": "af8a9d36-92f6-46ba-90c9-ce46a7a89c60",
+++        "operation": "memory.status",
+++        "status": "completed",
+++        "verified": true,
+++        "error_code": null,
+++        "effect_may_have_occurred": null,
+++        "phases": [
+++          "started",
+++          "completed"
+++        ],
+++        "replayed": false
+++      }
+++    ]
+++  }
+++]
++diff --git a/artifacts/comprobaciones/C03/TEXTREAD2065/ROOT_DECISION_PINS.json b/artifacts/comprobaciones/C03/TEXTREAD2065/ROOT_DECISION_PINS.json
++new file mode 100644
++index 00000000..6f5f2005
++--- /dev/null
+++++ b/artifacts/comprobaciones/C03/TEXTREAD2065/ROOT_DECISION_PINS.json
++@@ -0,0 +1,6 @@
+++{
+++  "decisions_sha256": "32ebeec4220c027c42696d1aba49b197f9d712ef8b932b25c74d692c93ff72c6",
+++  "candidate_manifest_sha256": "6861c4cc347715040ad9182619469f630fdaed7b7d4540a8f4e38093467c0d2e",
+++  "preparation_sha256": "296ec1603c585f4ff9c23dc2f8eb6667342a602f3c6edf65432cc1c33db9b21f",
+++  "head": "83499642b56329bfceb763f83ab6091a615d2cd3"
+++}
++diff --git a/artifacts/comprobaciones/C03/TEXTREAD2065/SOURCE.json b/artifacts/comprobaciones/C03/TEXTREAD2065/SOURCE.json
++new file mode 100644
++index 00000000..5bb807fd
++--- /dev/null
+++++ b/artifacts/comprobaciones/C03/TEXTREAD2065/SOURCE.json
++@@ -0,0 +1,15 @@
+++{
+++  "schema": "c03-textread2065-source-adoption-v1",
+++  "status": "adopted_measured",
+++  "adopted_by": "root (Claude Opus 5)",
+++  "owner": "opus/typed-tools (catalog, Core list, Providers adapter document.text.read, mind reading of a pasted path under a known folder, composer; merged in 8edf110ac).",
+++  "patch": "artifacts/comprobaciones/C03/TEXTREAD2065/SOURCE.patch",
+++  "commits": [
+++    "83499642b56329bfceb763f83ab6091a615d2cd3"
+++  ],
+++  "build": "BUILD2065 (C03-repairs2065-build/BUILD_READY.json; mente)",
+++  "cause_measured": "Una ruta pegada sin verbo terminaba en una pregunta («¿qué querés hacer con ese archivo?») en vez de leerlo.",
+++  "change": "document.text.read lee la ruta pegada bajo una carpeta conocida y el final dice de qué trata; fuera de las carpetas conocidas sigue preguntando.",
+++  "measurement": "TEXTREAD2065: 6/6 aprobados (el literal H0299, las 3 variantes y los 2 límites); 1 créditos. Cuatro lecturas verificadas con final fiel (archivo, líneas y comienzo citado tal cual); dos límites con cero operaciones.",
+++  "credits": 1
+++}
++diff --git a/artifacts/comprobaciones/C03/TEXTREAD2065/SOURCE.patch b/artifacts/comprobaciones/C03/TEXTREAD2065/SOURCE.patch
++new file mode 100644
++index 00000000..7bce55f3
++--- /dev/null
+++++ b/artifacts/comprobaciones/C03/TEXTREAD2065/SOURCE.patch
++@@ -0,0 +1,171 @@
+++commit 83499642b56329bfceb763f83ab6091a615d2cd3
+++
+++C03 TEXTREAD2063 (notebook): lo que dice el archivo leído es vocabulario observado, no jerga del asistente
+++
+++Sobre 052a9744. El literal H0299 leyó y verificó el ROADMAP.md del fixture y su final murió seis veces en
+++forbidden_term: el archivo dice «El agente corre en la PC y lee el catalogo» y «catalogo» es término prohibido.
+++Lo que el archivo dice es dato observado, como ya lo era el texto reconocido de la pantalla (SCREEN1411): las dos
+++gemelas (observed_response_literals.py y ObservedResponseLiterals.cs) enmascaran ahora el texto, el comienzo, los
+++títulos y la etiqueta de una document.text.read o document.pdf.read verificada —el texto entero y cada una de sus
+++líneas, para que la cita que colapsa los saltos siga siendo observada—. El texto publicado conserva cada palabra.
+++Pruebas: test_goal06_voice.py y C03FactPreservationTests.ReadFileTextIsObservedVocabulary. Fast en verde; App 266/266.
+++
+++Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+++
+++
+++diff --git a/src/Baxy.App/ObservedResponseLiterals.cs b/src/Baxy.App/ObservedResponseLiterals.cs
+++index fb077d0b..992e7991 100644
+++--- a/src/Baxy.App/ObservedResponseLiterals.cs
++++++ b/src/Baxy.App/ObservedResponseLiterals.cs
+++@@ -209,6 +209,49 @@ internal static class ObservedResponseLiterals
+++             // («procesos-memoria.txt») is observed data the report must say.
+++             names.Add(writtenText);
+++         }
++++        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
++++            && (IsString(node, "operation", "document.text.read") || IsString(node, "operation", "document.pdf.read"))
++++            && node.TryGetProperty("verified", out JsonElement documentVerified) && documentVerified.ValueKind == JsonValueKind.True
++++            && node.TryGetProperty("succeeded", out JsonElement documentSucceeded) && documentSucceeded.ValueKind == JsonValueKind.True
++++            && node.TryGetProperty("observed", out JsonElement documentObserved) && documentObserved.ValueKind == JsonValueKind.Object)
++++        {
++++            // TEXTREAD2063 H0299: what the file says is the file's own words,
++++            // not the assistant's vocabulary.
++++            foreach (string key in new[] { "text", "lead" })
++++            {
++++                if (documentObserved.TryGetProperty(key, out JsonElement documentText) && documentText.ValueKind == JsonValueKind.String
++++                    && documentText.GetString() is { Length: > 0 } body && !string.IsNullOrWhiteSpace(body))
++++                {
++++                    names.Add(body.Trim());
++++                    foreach (string line in body.Split('\n'))
++++                    {
++++                        string trimmed = line.Trim();
++++                        if (trimmed.Length >= 3)
++++                        {
++++                            names.Add(trimmed);
++++                        }
++++                    }
++++                }
++++            }
++++
++++            if (documentObserved.TryGetProperty("headings", out JsonElement headings) && headings.ValueKind == JsonValueKind.Array)
++++            {
++++                foreach (JsonElement heading in headings.EnumerateArray())
++++                {
++++                    if (heading.ValueKind == JsonValueKind.String
++++                        && heading.GetString() is { Length: > 0 } text && !string.IsNullOrWhiteSpace(text))
++++                    {
++++                        names.Add(text.Trim());
++++                    }
++++                }
++++            }
++++
++++            if (documentObserved.TryGetProperty("reviewLabel", out JsonElement documentLabel) && documentLabel.ValueKind == JsonValueKind.String
++++                && documentLabel.GetString() is { Length: > 0 and <= 4096 } label && !string.IsNullOrWhiteSpace(label))
++++            {
++++                names.Add(label.Trim());
++++            }
++++        }
+++         if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+++             && (IsString(node, "operation", "web.download") || IsString(node, "operation", "file.compress")
+++                 || IsString(node, "operation", "file.open") || IsString(node, "operation", "filesystem.create.directory"))
+++diff --git a/src/baxy_mind/observed_response_literals.py b/src/baxy_mind/observed_response_literals.py
+++index 4d1ce149..6aed6385 100644
+++--- a/src/baxy_mind/observed_response_literals.py
++++++ b/src/baxy_mind/observed_response_literals.py
+++@@ -151,6 +151,33 @@ def without_observed_names(text: str, situation: object) -> str:
+++             written = observed.get("name") if isinstance(observed, dict) else None
+++             if isinstance(written, str) and 0 < len(written.strip()) <= 4096:
+++                 names.add(written.strip())
++++        if (node.get("kind") == "operation"
++++                and operation in {"document.text.read", "document.pdf.read"}
++++                and node.get("verified") is True and node.get("succeeded") is True
++++                and node.get("polarity") == "success"):
++++            # TEXTREAD2063 H0299: what the file says is the file's own words.
++++            # The ROADMAP the person pasted reads «lee el catalogo» and the
++++            # final that quotes it died in forbidden_term. The read text, its
++++            # headings and each of its lines are observed data, not the
++++            # assistant's vocabulary.
++++            observed = node.get("observed")
++++            if isinstance(observed, dict):
++++                for key in ("text", "lead"):
++++                    value = observed.get(key)
++++                    if isinstance(value, str) and value.strip():
++++                        names.add(value.strip())
++++                        names.update(
++++                            line.strip() for line in value.splitlines() if len(line.strip()) >= 3
++++                        )
++++                headings = observed.get("headings")
++++                if isinstance(headings, list):
++++                    names.update(
++++                        item.strip() for item in headings
++++                        if isinstance(item, str) and item.strip()
++++                    )
++++                label = observed.get("reviewLabel")
++++                if isinstance(label, str) and 0 < len(label.strip()) <= 4096:
++++                    names.add(label.strip())
+++         if (node.get("kind") == "operation"
+++                 and operation in {"web.download", "file.compress", "file.open", "filesystem.create.directory"}
+++                 and node.get("verified") is True and node.get("succeeded") is True
+++diff --git a/tests/Baxy.Integration.Tests/C03FactPreservationTests.cs b/tests/Baxy.Integration.Tests/C03FactPreservationTests.cs
+++index 545174bb..1fdee04c 100644
+++--- a/tests/Baxy.Integration.Tests/C03FactPreservationTests.cs
++++++ b/tests/Baxy.Integration.Tests/C03FactPreservationTests.cs
+++@@ -128,6 +128,33 @@ public sealed class C03FactPreservationTests
+++         Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "Dime algo"), Is.Null);
+++     }
+++ 
++++    // TEXTREAD2063 H0299: the read file's own words are observed data, even a forbidden term.
++++    [Test]
++++    public void ReadFileTextIsObservedVocabulary()
++++    {
++++        string facts = new JsonObject
++++        {
++++            ["kind"] = "operation",
++++            ["operation"] = "document.text.read",
++++            ["polarity"] = "success",
++++            ["verified"] = true,
++++            ["succeeded"] = true,
++++            ["observed"] = new JsonObject
++++            {
++++                ["version"] = 1,
++++                ["reviewLabel"] = "ROADMAP.md",
++++                ["folder"] = "desktop",
++++                ["lines"] = 11,
++++                ["text"] = "# ROADMAP\n\n## Fase 1: agente local\nEl agente corre en la PC y lee el catalogo.\n",
++++                ["authority"] = "windows_known_text_file_utf8_read",
++++            },
++++        }.ToJsonString();
++++        UserMessageDraft draft = UserMessagePolicy.Create(facts, UserMessageEvent.Status);
++++        const string reply = "Leí ROADMAP.md, que tiene 11 líneas y empieza así: \"# ROADMAP ## Fase 1: agente local El agente corre en la PC y lee el catalogo.\"";
++++        Assert.That(UserMessagePolicy.ModelResponseRejectionReason(
++++            reply, draft, "%USERPROFILE%\\Desktop\\raiz_textos\\ROADMAP.md"), Is.Null);
++++    }
++++
+++     // MEME2053 «tienes alguna foto?»: the picture's subject is the declared missing field;
+++     // asking what the picture should show is the clarification, not an out-of-world question.
+++     [Test]
+++diff --git a/tests/test_goal06_voice.py b/tests/test_goal06_voice.py
+++index f357d288..62292150 100644
+++--- a/tests/test_goal06_voice.py
++++++ b/tests/test_goal06_voice.py
+++@@ -840,6 +840,21 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
+++         "set the wallpaper to red",
+++         {"situation": json.dumps(wallpaper)},
+++     ) == ""
++++    # TEXTREAD2063 H0299: the file's own words are observed data, even a forbidden term.
++++    _roadmap = json.dumps({
++++        "kind": "operation", "operation": "document.text.read", "polarity": "success",
++++        "verified": True, "succeeded": True,
++++        "observed": {"version": 1, "reviewLabel": "ROADMAP.md", "folder": "desktop", "bytes": 186,
++++                     "lines": 11, "characters": 183, "truncated": False,
++++                     "text": "# ROADMAP\n\n## Fase 1: agente local\nEl agente corre en la PC y lee el catalogo.\n",
++++                     "authority": "windows_known_text_file_utf8_read"},
++++    })
++++    assert compose_visible_defect(
++++        'Se leyó el archivo nombrado ROADMAP.md, que tiene 11 líneas. Empieza así: "# ROADMAP ## Fase 1: agente local '
++++        'El agente corre en la PC y lee el catalogo."',
++++        "status", "%USERPROFILE%\\Desktop\\raiz_textos\\ROADMAP.md", {"situation": _roadmap},
++++    ) == ""
++++
+++     # MEME2055 «Tienes algun meme?»: the picture the viewer shows is named by its file.
+++     _meme_mission = {"situation": json.dumps({
+++         "kind": "status", "cause": "mission_completed", "polarity": "success", "stepCount": 2,
++diff --git a/artifacts/comprobaciones/C03/TEXTREAD2065/case-00.json b/artifacts/comprobaciones/C03/TEXTREAD2065/case-00.json
++new file mode 100644
++index 00000000..81dc8f4e
++--- /dev/null
+++++ b/artifacts/comprobaciones/C03/TEXTREAD2065/case-00.json
++@@ -0,0 +1,24 @@
+++{
+++  "index": 0,
+++  "case_id": "H0299",
+++  "terminal_kind": "published_final",
+++  "final_sha256": "6bccc90ecf32ab494d36cdc9b8b3ae7a628cec588fa0d1f03af12c9f0a8cf2e9",
+++  "clients_absent_before": true,
+++  "verdict": "passed",
+++  "aborted_before_admission": false,
+++  "remaining_execution_uncertain_after_stop": false,
+++  "exit_code": 0,
+++  "pins_unchanged": true,
+++  "violations": [],
+++  "resources": {
+++    "seconds": 15.796999999998661,
+++    "gpu_peak_mib": 3483.55859375,
+++    "ram_peak_mib": 1602.1875,
+++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+++  },
+++  "receipt_pins": {
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-00\\EXIT.json": "f40d05e3dac90097790db1bfe8af8f99ffefa08f63cdd4ca7fb568ed4e2cc04c",
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-00\\RESOURCES.json": "acdb16acd0fe5e0c18819d3f7de0f71f2a2a9bba591d7d3eed041a4340d2d26e",
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-00\\case-observations.json": "75be6fa4d38702dcd425e0f0ca6f6e0e1913e3999a260256c03a3569de1cee00"
+++  }
+++}
++diff --git a/artifacts/comprobaciones/C03/TEXTREAD2065/case-01.json b/artifacts/comprobaciones/C03/TEXTREAD2065/case-01.json
++new file mode 100644
++index 00000000..8c3e4048
++--- /dev/null
+++++ b/artifacts/comprobaciones/C03/TEXTREAD2065/case-01.json
++@@ -0,0 +1,24 @@
+++{
+++  "index": 1,
+++  "case_id": "textread2065-dev-01",
+++  "terminal_kind": "published_final",
+++  "final_sha256": "4060fce18a390ea9f5401650409b414bf332912928dcbd06c8039c82155be9ff",
+++  "clients_absent_before": true,
+++  "verdict": "passed",
+++  "aborted_before_admission": false,
+++  "remaining_execution_uncertain_after_stop": false,
+++  "exit_code": 0,
+++  "pins_unchanged": true,
+++  "violations": [],
+++  "resources": {
+++    "seconds": 15.0,
+++    "gpu_peak_mib": 3485.55859375,
+++    "ram_peak_mib": 1563.0078125,
+++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+++  },
+++  "receipt_pins": {
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-01\\EXIT.json": "3519e0add7eaf559d54156c4d58237112e8d219e2d1c495694c9e3aa1dc517bc",
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-01\\RESOURCES.json": "ef4efc57e060acf0338ecb33909ed8a450f1fae1a6393b7e785b7e2870708f67",
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-01\\case-observations.json": "88a307189ad749725b25de4ebdb2b601533f748cf1c2fb0dc9790d1e1ed27a8c"
+++  }
+++}
++diff --git a/artifacts/comprobaciones/C03/TEXTREAD2065/case-02.json b/artifacts/comprobaciones/C03/TEXTREAD2065/case-02.json
++new file mode 100644
++index 00000000..db57b761
++--- /dev/null
+++++ b/artifacts/comprobaciones/C03/TEXTREAD2065/case-02.json
++@@ -0,0 +1,24 @@
+++{
+++  "index": 2,
+++  "case_id": "textread2065-dev-02",
+++  "terminal_kind": "published_final",
+++  "final_sha256": "6a52f2300f84c0cc833354e3bedaa8a8218a42b3459dac730ecc580484826ece",
+++  "clients_absent_before": true,
+++  "verdict": "passed",
+++  "aborted_before_admission": false,
+++  "remaining_execution_uncertain_after_stop": false,
+++  "exit_code": 0,
+++  "pins_unchanged": true,
+++  "violations": [],
+++  "resources": {
+++    "seconds": 14.75,
+++    "gpu_peak_mib": 3483.55859375,
+++    "ram_peak_mib": 1587.17578125,
+++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+++  },
+++  "receipt_pins": {
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-02\\EXIT.json": "3938921c03d6dde196a450ef94729081ac0668d560749107a18153bf12554de4",
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-02\\RESOURCES.json": "0cf4a0dc29d4d588492c198a3c0c5f04f613b0c93426df5f12b474312c9de993",
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-02\\case-observations.json": "49046f9eede70aae0dc008fac010177f7f4d81a525cae3ac34733c606345ffc1"
+++  }
+++}
++diff --git a/artifacts/comprobaciones/C03/TEXTREAD2065/case-03.json b/artifacts/comprobaciones/C03/TEXTREAD2065/case-03.json
++new file mode 100644
++index 00000000..dce04a76
++--- /dev/null
+++++ b/artifacts/comprobaciones/C03/TEXTREAD2065/case-03.json
++@@ -0,0 +1,24 @@
+++{
+++  "index": 3,
+++  "case_id": "textread2065-dev-03",
+++  "terminal_kind": "published_final",
+++  "final_sha256": "aab61f8725f56a15b3503cddc357cb9b9bbf9d900e1b5064362cee5060043555",
+++  "clients_absent_before": true,
+++  "verdict": "passed",
+++  "aborted_before_admission": false,
+++  "remaining_execution_uncertain_after_stop": false,
+++  "exit_code": 0,
+++  "pins_unchanged": true,
+++  "violations": [],
+++  "resources": {
+++    "seconds": 14.844000000004598,
+++    "gpu_peak_mib": 3485.55859375,
+++    "ram_peak_mib": 1560.3515625,
+++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+++  },
+++  "receipt_pins": {
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-03\\EXIT.json": "28d3018057c3091e6cd0c196967765faf942f14dedd564cfbaa58cb35d1d4b91",
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-03\\RESOURCES.json": "2ca3c53dd7eda15b97deca583b29a76b0b267a8b0ad5b612feb3a0bee69e6d40",
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-03\\case-observations.json": "63b6d2f07ea585a87784d953bd33d351a919856080f2644b87807218e66274c7"
+++  }
+++}
++diff --git a/artifacts/comprobaciones/C03/TEXTREAD2065/case-04.json b/artifacts/comprobaciones/C03/TEXTREAD2065/case-04.json
++new file mode 100644
++index 00000000..512aaff3
++--- /dev/null
+++++ b/artifacts/comprobaciones/C03/TEXTREAD2065/case-04.json
++@@ -0,0 +1,24 @@
+++{
+++  "index": 4,
+++  "case_id": "textread2065-boundary-01",
+++  "terminal_kind": "published_final",
+++  "final_sha256": "5474ef8deed5267cdfb4a0ea459c5b6db47ddeb33a91f20591b24c5deee7e371",
+++  "clients_absent_before": true,
+++  "verdict": "passed",
+++  "aborted_before_admission": false,
+++  "remaining_execution_uncertain_after_stop": false,
+++  "exit_code": 0,
+++  "pins_unchanged": true,
+++  "violations": [],
+++  "resources": {
+++    "seconds": 17.781000000002678,
+++    "gpu_peak_mib": 3483.55859375,
+++    "ram_peak_mib": 1504.20703125,
+++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+++  },
+++  "receipt_pins": {
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-04\\EXIT.json": "d5145a85383ee058739253f82dd6f6fa496853e38d53cf0c37144b9bb28d1a61",
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-04\\RESOURCES.json": "7e6af3be3c69a83967ef331b8c7af9bc22b3228669730c3d4aa56f3387094ace",
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-04\\case-observations.json": "f6e1ed0b845c3de776ae0b11bd9281d421902fcd4d89477f6f7acb0d5641eab0"
+++  }
+++}
++diff --git a/artifacts/comprobaciones/C03/TEXTREAD2065/case-05.json b/artifacts/comprobaciones/C03/TEXTREAD2065/case-05.json
++new file mode 100644
++index 00000000..0fc4511a
++--- /dev/null
+++++ b/artifacts/comprobaciones/C03/TEXTREAD2065/case-05.json
++@@ -0,0 +1,24 @@
+++{
+++  "index": 5,
+++  "case_id": "textread2065-boundary-02",
+++  "terminal_kind": "published_final",
+++  "final_sha256": "9433c5cdd40530773c5215ae2ecd6b923eff8f87a46f71f3f59a84e9d577add6",
+++  "clients_absent_before": true,
+++  "verdict": "passed",
+++  "aborted_before_admission": false,
+++  "remaining_execution_uncertain_after_stop": false,
+++  "exit_code": 0,
+++  "pins_unchanged": true,
+++  "violations": [],
+++  "resources": {
+++    "seconds": 14.828000000001339,
+++    "gpu_peak_mib": 3483.55859375,
+++    "ram_peak_mib": 1500.40625,
+++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+++  },
+++  "receipt_pins": {
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-05\\EXIT.json": "15b389b762075e52cd24049eb7cebcc3a99002f3a79e965ad5d54b762c7a2360",
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\results\\case-05\\RESOURCES.json": "6e490e9a847ba598ee2288e5f2603abe484fb47dfef7cd10305182c8ab6b71d7",
+++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-textread2065-instrument-v1\\private\\run-05\\case-observations.json": "a0c8228a32e70b9ddc152c1fef128554ee6223c7a019b8dccc8d6cccd95f4707"
+++  }
+++}
+diff --git a/artifacts/comprobaciones/C03/EXPLORER2067/case-04.json b/artifacts/comprobaciones/C03/EXPLORER2067/case-04.json
+new file mode 100644
+index 00000000..5b546b9e
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/EXPLORER2067/case-04.json
+@@ -0,0 +1,24 @@
++{
++  "index": 4,
++  "case_id": "explorer2067-boundary-01",
++  "terminal_kind": "published_final",
++  "final_sha256": "80b70fbfe3546a132aec7f5289681718ee0a9d62ef4b5bd838e5d430f82d5769",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 15.01600000000326,
++    "gpu_peak_mib": 3483.55859375,
++    "ram_peak_mib": 1510.68359375,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\results\\case-04\\EXIT.json": "8246f50b06cc68e6a0f76290df83a87dd0bb7e419dae10c8782de802e573b2f8",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\results\\case-04\\RESOURCES.json": "124c7172ea27a3427f3c2b48e2cdcfcc0d00abca36a06bd85825e13c317d5264",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-04\\case-observations.json": "4c3fcb4d2284987ec876049920933667f6beb10ea129b7cccf07cac002060729"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/EXPLORER2067/case-05.json b/artifacts/comprobaciones/C03/EXPLORER2067/case-05.json
+new file mode 100644
+index 00000000..ad582348
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/EXPLORER2067/case-05.json
+@@ -0,0 +1,24 @@
++{
++  "index": 5,
++  "case_id": "explorer2067-boundary-02",
++  "terminal_kind": "published_final",
++  "final_sha256": "1a78cc90cf7ce3acfd96a007de2cbcc573363389a27874868097438b87091bb8",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 17.45300000000134,
++    "gpu_peak_mib": 3485.55859375,
++    "ram_peak_mib": 1499.0078125,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\results\\case-05\\EXIT.json": "d6cffe9fa38ff95f11c481aba6c2b7d1e862f2515e707f7a549a2caf78c1b13f",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\results\\case-05\\RESOURCES.json": "fe5c2602f3dd0a2709db533cfdf2e02a03485f8c0bcd50329199d3fd0625c17f",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2067-instrument-v1\\private\\run-05\\case-observations.json": "cd69a0905779e9f9b1eeba597f4eee3639d79a15f34ef5ed211a3e7e54fb6d49"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/HANDOFF.md b/artifacts/comprobaciones/C03/HANDOFF.md
+index f20b6c7e..e3b931a2 100644
+--- a/artifacts/comprobaciones/C03/HANDOFF.md
++++ b/artifacts/comprobaciones/C03/HANDOFF.md
+@@ -1,3 +1,11 @@
++# EXPLORER2067 adjudicado — 2026-09-22T12:06:13.058321+00:00
++
++**677/742 cubiertos, 65 abiertos, 0 NA; 23/35 categorías cerradas (Música 39/39, Navegación y búsqueda web 46/46, Entrada incompleta, ruido y control de diálogo 34/34, Vídeo y series 26/26, Audio y volumen 51/51, Alarmas, recordatorios, tareas y agenda 38/38, Cerrar aplicaciones y ventanas 20/20, Conocimiento, razonamiento y creatividad verbal 37/37, Brillo y pantalla 17/17, Información web actual 17/17, Estado de hardware y sistema 40/40, Conversación social y ayuda general 31/31, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Contactos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9); C03 formal 3/11. Registro SHA 2a8c33d45375113cb79f1299148ab6bd1969fb488b51f69a835c507ed9d7f08b. Primeras altas 24 h >= 653 (sin cambio).** Escritor raíz Opus 5 (plan post-goal, D24). Candidato: HEAD 4150e5ea con BUILD2067 (conteo tipado del Explorador en primer plano (misma mente que la tanda anterior))))))))))))))))). Turnos ordinarios sobre ventanas propias de la raíz (Bloc de notas delante, Calculadora detrás; diálogo «Prueba raiz»).
++
++EXPLORER2067 («Archivos y carpetas», el directorio actual es la carpeta del Explorador en primer plano): 2 ejecutados de 6; los dos límites aprobados; las 4 filas del fixture sin ejecutar (el conductor genérico no entrega la ventana del Explorador propia que el runner exige), 0 créditos. Adjudicación ff127fc67ba2a10fbf88cec355efb0b7ac31e9fd97674622d32769c3baf7f89d. Cero operaciones en las dos ejecutadas; el fixture abrió y cerró raiz_conteo en las seis. Conductor propio del Explorador y re-medición como EXPLORER2069.
++
++---
++
+ # TEXTREAD2065 adjudicado — 2026-09-22T11:50:21.902198+00:00
+ 
+ **677/742 cubiertos, 65 abiertos, 0 NA; 23/35 categorías cerradas (Música 39/39, Navegación y búsqueda web 46/46, Entrada incompleta, ruido y control de diálogo 34/34, Vídeo y series 26/26, Audio y volumen 51/51, Alarmas, recordatorios, tareas y agenda 38/38, Cerrar aplicaciones y ventanas 20/20, Conocimiento, razonamiento y creatividad verbal 37/37, Brillo y pantalla 17/17, Información web actual 17/17, Estado de hardware y sistema 40/40, Conversación social y ayuda general 31/31, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Contactos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9); C03 formal 3/11. Registro SHA 2a8c33d45375113cb79f1299148ab6bd1969fb488b51f69a835c507ed9d7f08b. Primeras altas 24 h >= 653 (+1).** Escritor raíz Opus 5 (plan post-goal, D24). Candidato: HEAD 83499642 con BUILD2065 (lectura tipada de la ruta pegada (misma mente que la tanda anterior)))))))))))))))). Turnos ordinarios sobre ventanas propias de la raíz (Bloc de notas delante, Calculadora detrás; diálogo «Prueba raiz»).
+diff --git a/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json b/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json
+index 31572eda..67d292c4 100644
+--- a/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json
++++ b/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json
+@@ -152,10 +152,10 @@
+     "modelBlockerResolvedEarlier": true
+   },
+   "goalStatus": "active",
+-  "workStatus": "TEXTREAD2065 adjudicado: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.",
++  "workStatus": "EXPLORER2067 adjudicado: 2 aprobados, 0 fallidos, 4 sin ejecutar; 0 créditos.",
+   "executionPausedByOwner": false,
+   "branch": "codex/kiro-goal-c03",
+-  "checkpoint": "677/742 cubiertos, 65 abiertos, 0 no aplican. TEXTREAD2065: 1 créditos explícitos de raíz.",
++  "checkpoint": "677/742 cubiertos, 65 abiertos, 0 no aplican. EXPLORER2067: 0 créditos explícitos de raíz.",
+   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
+   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
+   "surveyVerificationCounts": {
+@@ -171,7 +171,7 @@
+     "total": 35
+   },
+   "surveyCoverageLast24h": 653,
+-  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–14 septiembre: 652 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); TEXTREAD2065 añade 1. No se cuentan revalidaciones.",
++  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–14 septiembre: 653 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); EXPLORER2067 añade 0. No se cuentan revalidaciones.",
+   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
+   "testsRun": false,
+   "testsOmittedByOwner": true,
+@@ -196,7 +196,7 @@
+     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
+     "agenda1024": "parche recibido y revisado, sin integrar"
+   },
+-  "utcUpdated": "2026-09-22T11:50:21.902198+00:00",
++  "utcUpdated": "2026-09-22T12:06:13.058321+00:00",
+   "batchesThisSession": [
+     {
+       "batch": 1029,
+@@ -621,7 +621,7 @@
+     "freeze_ended_at": "2026-09-12T13:33:18.245252-03:00",
+     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
+   },
+-  "updatedAtUtc": "2026-09-22T11:50:21.902198+00:00",
++  "updatedAtUtc": "2026-09-22T12:06:13.058321+00:00",
+   "currentContinuation1065": {
+     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
+     "quality": {
+@@ -2298,29 +2298,27 @@
+     "next": "FILES1205 completa: 19 ejecutados, 19 aprobados, 12 créditos (8 archivos en escritorio/Documentos, 3 carpetas en el escritorio, 1 carpeta en el sandbox), cada uno con dos pares aprobados. El proveedor de carpetas conocidas (BUILD1205) y los lectores de creación se demuestran: 18 creaciones verificadas por el producto y comprobadas en disco por raíz (existencia, tipo y hash del contenido literal), ninguna preexistente, todas eliminadas tras la postlectura. Archivos queda 15/32; restan borrados (fixtures en carpetas personales), listados del escritorio, contenido dinámico («que contenga la fecha», procesos), rutas absolutas, comprimir/abrir, resumir PDF y copia a pendrive."
+   },
+   "currentContinuation1207": {
+-    "head": "83499642b56329bfceb763f83ab6091a615d2cd3",
++    "head": "4150e5eac61af37be261d55becfa05adc69ca5a7",
+     "quality": {
+-      "passed": 6,
++      "passed": 2,
+       "failed": 0,
+-      "executed": 6,
+-      "not_executed": 0,
++      "executed": 2,
++      "not_executed": 4,
+       "sealed_total": 8,
+-      "segments_started": 6,
++      "segments_started": 2,
+       "aborted_before_admission": 0
+     },
+-    "new_credits": 1,
+-    "credited_ids": [
+-      "H0299"
+-    ],
++    "new_credits": 0,
++    "credited_ids": [],
+     "registry_sha256": "2a8c33d45375113cb79f1299148ab6bd1969fb488b51f69a835c507ed9d7f08b",
+     "survey": 677,
+-    "adjudication": "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY Definitivo\\artifacts\\comprobaciones\\C03\\TEXTREAD2065\\ROOT_ADJUDICATION.json",
++    "adjudication": "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY Definitivo\\artifacts\\comprobaciones\\C03\\EXPLORER2067\\ROOT_ADJUDICATION.json",
+     "resources": {
+-      "seconds_sum": 93.00000000000728,
++      "seconds_sum": 32.4690000000046,
+       "gpu_peak_mib": 3485.55859375,
+-      "ram_peak_mib": 1602.1875
++      "ram_peak_mib": 1510.68359375
+     },
+-    "next": "TEXTREAD2065: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]). Siguiente: el conteo del Explorador (H0701) y las tipadas de red."
++    "next": "EXPLORER2067: 2 ejecutados (los dos límites; las 4 filas del fixture quedaron sin ejecutar), 2 aprobados, 0 fallidos, 0 créditos (índices []). Siguiente: las tipadas de red (modo avión, wifi de casa) y las de descarga."
+   },
+   "currentContinuation1685": {
+     "registry_sha256": "afbc64b2c2f284c4f5f35dc37816760b6c703c0127fd660dc2a2b1e8d7316090",

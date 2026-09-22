@@ -1828,3 +1828,7 @@ Archivos y carpetas pasa de 30/32 a 31/32 con una ruta pegada bajo una carpeta c
 ## Actualización 2026-09-22 (EXPLORER2067)
 
 Archivos y carpetas pasa de 31/32 a 31/32 con el directorio actual es la carpeta del Explorador en primer plano (commit 4150e5ea, BUILD2067) (HEAD 4150e5ea): 2 ejecutados de 6; los dos límites aprobados; las 4 filas del fixture sin ejecutar (el conductor genérico no entrega la ventana del Explorador propia que el runner exige), 0 créditos. Cero operaciones en las dos ejecutadas; el fixture abrió y cerró raiz_conteo en las seis. Conductor propio del Explorador y re-medición como EXPLORER2069.
+
+## Actualización 2026-09-22 (EXPLORER2069)
+
+Archivos y carpetas pasa de 31/32 a 31/32 con el directorio actual es la carpeta del Explorador en primer plano (commit 660024bf, BUILD2069) (HEAD 660024bf): 2/6 aprobados (los dos límites); las cuatro lecturas del Explorador se verificaron y ningún final se publicó (el contrato exige nombrar la carpeta y no había instrucción que lo pidiera), 0 créditos. Cuatro filesystem.explorer.count verificadas sobre la ventana propia del fixture (3 .py, 1 .txt, 3, 3); finales rechazados en missing_state. Reparación en el commit siguiente y re-medición como EXPLORER2071.

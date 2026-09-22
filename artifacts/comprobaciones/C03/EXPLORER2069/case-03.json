@@ -1,0 +1,24 @@
+{
+  "index": 3,
+  "case_id": "explorer2069-dev-03",
+  "terminal_kind": "composition_failed",
+  "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+  "clients_absent_before": true,
+  "verdict": "failed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 23.56199999999808,
+    "gpu_peak_mib": 3485.55859375,
+    "ram_peak_mib": 2358.2890625,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2069-instrument-v1\\results\\case-03\\EXIT.json": "3984a935c725891842cafcad14eecd55f5e8fd91f0e5a06acf130fcd8ca0d162",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2069-instrument-v1\\results\\case-03\\RESOURCES.json": "6e37f2cadeb21e5bf68f191e7f460c3fdb5a55b5282a37ab033e7ad087d0d382",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-explorer2069-instrument-v1\\private\\run-03\\case-observations.json": "9103ab3844069162bf8055f43569768b5a5a1abb8404cff912e5a0ba50f559b1"
+  }
+}
