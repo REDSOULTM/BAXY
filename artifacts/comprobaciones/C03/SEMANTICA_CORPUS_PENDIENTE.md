@@ -81,3 +81,8 @@ y `shutdown.exe /r /t 60` sí programe y `shutdown /a` anule. Las cuatro filas d
 quedó programado y el final lo dijo con verdad; H0401 y H0714 siguen abiertas y se medirán donde Windows la acepte.
 Lo mismo vale para la ventana del Explorador en primer plano: si el foco cambia entre la adopción de la ventana y el
 turno, la cuenta leída es la de la carpeta que esté delante (EXPLORER2073, variante en inglés).
+
+WIFI_PLACE (H0170/H0376) no se midió en el notebook (2026-09-22): este equipo no tiene interfaz inalámbrica disponible
+—`netsh wlan show interfaces` responde «No hay ninguna interfaz inalámbrica en el sistema» y el adaptador MediaTek
+Wi-Fi 6 MT7921 figura como «Not Present»; la máquina está en Ethernet—, así que no hay redes guardadas ni conexión que
+pedir. Las dos filas siguen abiertas y se medirán donde haya radio wifi. No es corpus ni defecto del producto.
