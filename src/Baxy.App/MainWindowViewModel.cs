@@ -958,7 +958,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             if (_mindPlans.HasPending)
             {
                 bool startsNewObjective = false;
-                if (_mindPlans.Current is { CanAbandonConfirmation: true }
+                // A plan that waits on the recovery challenge of an uncertain effect
+                // (no confirmation staged) is superseded the same way as an unstarted
+                // confirmation: the uncertainty was said once; nothing repeats itself.
+                bool supersedable = _mindPlans.Current is { CanAbandonConfirmation: true }
+                    or { PendingEffectMayHaveOccurred: true, Confirmation: null };
+                if (supersedable
                     && ConfirmationReplyParser.Parse(text) == ConfirmationReplyKind.Invalid)
                 {
                     // Private typed requests stay on their private route. Other
@@ -977,7 +982,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     }
                 }
 
-                if (!startsNewObjective || !_mindPlans.TrySupersedeUnstartedConfirmation(registry))
+                if (!startsNewObjective
+                    || !(_mindPlans.TrySupersedeUnstartedConfirmation(registry)
+                        || _mindPlans.TrySupersedeUncertainEffect(registry)))
                 {
                     await _mindPlans.HandlePendingAsync(text, registry, cancellationToken);
                     return;

@@ -144,16 +144,23 @@ internal static class MissionNarration
         };
     }
 
-    internal static string CreateUncertainEffectMessage(PendingMindPlanExecution execution) =>
+    /// <summary>
+    /// The step's effect may have occurred and was not verified. Pending (the
+    /// default) keeps the evidence for the recovery challenge of a confirmed step;
+    /// terminal says it once and closes the mission (ctx-dueno-01, 2026-09-22).
+    /// </summary>
+    internal static string CreateUncertainEffectMessage(
+        PendingMindPlanExecution execution,
+        bool terminal = false) =>
         TurnVisibleFacts.Failure("result_unverified", new JsonObject
         {
             ["step"] = execution.NextIndex + 1,
             ["pendingRequest"] = execution.Objective,
             ["effectUncertain"] = true,
             ["verified"] = false,
-            ["pending"] = true,
-            ["canRepeat"] = false,
-            ["evidenceRetained"] = true,
+            ["pending"] = !terminal,
+            ["canRepeat"] = terminal,
+            ["evidenceRetained"] = !terminal,
         });
 
     private static JsonObject? MergeObserved(IReadOnlyList<string> messages)

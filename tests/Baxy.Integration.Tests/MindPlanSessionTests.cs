@@ -79,6 +79,10 @@ public sealed class MindPlanSessionTests
         }
     }
 
+    // ctx-dueno-01 (2026-09-22): an uncertain effect used to keep the plan pending on
+    // «cancelar» too, and the whole conversation stayed hostage. Cancel now closes it
+    // with one terminal uncertain message; only an unrecognised reply keeps the
+    // recovery challenge (the view model supersedes it with a self-contained request).
     [TestCase(false, "cancelar")]
     [TestCase(true, "cancelar")]
     [TestCase(true, "cierra la calculadora")]
@@ -119,18 +123,19 @@ public sealed class MindPlanSessionTests
 
             await session.HandlePendingAsync(text, registry, CancellationToken.None);
 
+            bool cancelled = text == "cancelar";
             Assert.Multiple(() =>
             {
-                Assert.That(session.HasPending, Is.EqualTo(uncertain));
+                Assert.That(session.HasPending, Is.EqualTo(uncertain && !cancelled));
                 Assert.That(published, Has.Count.EqualTo(1));
                 if (uncertain)
                 {
                     var facts = JsonNode.Parse(published[0].Body)!;
                     Assert.That((string?)facts["polarity"], Is.EqualTo("failure"));
                     Assert.That((bool?)facts["effectUncertain"], Is.True);
-                    Assert.That((bool?)facts["pending"], Is.True);
-                    Assert.That((bool?)facts["canRepeat"], Is.False);
-                    Assert.That((bool?)facts["evidenceRetained"], Is.True);
+                    Assert.That((bool?)facts["pending"], Is.EqualTo(!cancelled));
+                    Assert.That((bool?)facts["canRepeat"], Is.EqualTo(cancelled));
+                    Assert.That((bool?)facts["evidenceRetained"], Is.EqualTo(!cancelled));
                     Assert.That((string?)facts["pendingRequest"], Is.EqualTo("abre notepad"));
                     Assert.That(published[0].Event?.Type, Is.EqualTo(UserMessageEventType.Error));
                 }
@@ -148,6 +153,91 @@ public sealed class MindPlanSessionTests
         {
             Directory.Delete(root, recursive: true);
         }
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void SelfContainedRequestSupersedesUncertainEffectOnlyWithoutStagedConfirmation(bool staged)
+    {
+        // ctx-dueno-01 (2026-09-22): the recovery challenge of an uncertain effect never
+        // blocks the next request; a staged confirmation still has to be answered.
+        string root = Path.Combine(Path.GetTempPath(), "baxy-supersede-uncertain-" + Guid.NewGuid());
+        Directory.CreateDirectory(root);
+        try
+        {
+            var session = new MindPlanSession(new MindPlanSession.Host
+            {
+                Core = static () => throw new AssertionException("Superseding cannot execute Core."),
+                Mind = static () => throw new AssertionException("Superseding cannot execute the mind."),
+                Publish = static (_, _) => throw new AssertionException("Superseding does not claim an effect."),
+                SetStatus = static _ => { },
+                TryMarkResolved = static (_, _) => true,
+            });
+            var store = new DurablePlanStore(Path.Combine(root, "plan.bin"), Path.Combine(root, "plan.key"));
+            session.UseStore(store);
+            string outbox = Path.Combine(root, "outbox.bin");
+            var registry = new RetryableOperationRegistry(outbox);
+            var arguments = new JsonObject { ["query"] = "cancion de amor" };
+            PreparedOperation prepared = registry.GetOrAdd(new RoutedOperation("media.play.youtube", arguments));
+            var execution = new PendingMindPlanExecution("pon una cancion de amor en youtube",
+                [new MindPlanStep("play", "media.play.youtube", "Reproduce.", [], "literal", arguments)])
+            {
+                PendingOperation = prepared,
+                PendingEffectMayHaveOccurred = true,
+            };
+            if (staged)
+            {
+                var response = new OperationResponse(
+                    ProtocolTypes.OperationResponse, Guid.NewGuid().ToString("D"),
+                    prepared.MissionId, prepared.InvocationId, OperationStatuses.Pending,
+                    "Confirmación requerida.", false, false,
+                    JsonSerializer.SerializeToElement(new
+                    {
+                        version = 1,
+                        token = Convert.ToBase64String(new byte[32]).TrimEnd('='),
+                        expiresAtUtc = DateTimeOffset.UtcNow.AddMinutes(2)
+                            .ToString("O", System.Globalization.CultureInfo.InvariantCulture),
+                        reconciliationRequired = true,
+                    }), "confirmation_required");
+                Assert.That(PendingOperationConfirmation.TryCreate(
+                    response, prepared, TimeProvider.System, out PendingOperationConfirmation? confirmation), Is.True);
+                execution.RequireConfirmation(confirmation!);
+            }
+
+            session.Begin(execution);
+
+            Assert.That(session.TrySupersedeUncertainEffect(registry), Is.EqualTo(!staged));
+            Assert.That(session.HasPending, Is.EqualTo(staged));
+            if (!staged)
+            {
+                Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+                Assert.That(store.Load(registry), Is.Null);
+            }
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public void TerminalUncertainEffectMessageClosesTheMission()
+    {
+        var execution = new PendingMindPlanExecution("pon una cancion de amor en youtube",
+            [new MindPlanStep("play", "media.play.youtube", "Reproduce.", [], "literal", new JsonObject())]);
+        var pending = JsonNode.Parse(MissionNarration.CreateUncertainEffectMessage(execution))!;
+        var terminal = JsonNode.Parse(MissionNarration.CreateUncertainEffectMessage(execution, terminal: true))!;
+        Assert.Multiple(() =>
+        {
+            Assert.That((bool?)pending["pending"], Is.True);
+            Assert.That((bool?)pending["evidenceRetained"], Is.True);
+            Assert.That((bool?)terminal["effectUncertain"], Is.True);
+            Assert.That((bool?)terminal["verified"], Is.False);
+            Assert.That((bool?)terminal["pending"], Is.False);
+            Assert.That((bool?)terminal["canRepeat"], Is.True);
+            Assert.That((bool?)terminal["evidenceRetained"], Is.False);
+            Assert.That((string?)terminal["pendingRequest"], Is.EqualTo("pon una cancion de amor en youtube"));
+        });
     }
 
     [Test]

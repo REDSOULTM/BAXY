@@ -940,6 +940,59 @@ public sealed class PlannerAppBoundaryTests
     }
 
     [Test]
+    public async Task RejectedFailureFinalStopsAfterOneCompositionAttempt()
+    {
+        // Owner's test 2026-09-21 (turn 195): the facts of a failure do not change
+        // between attempts; one attempt is the budget and the honest limit follows.
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            TurnVisibleFacts.Failure("mission_failed", new JsonObject { ["reason"] = "external_verification_failed" }),
+            UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+        var pending = new PendingModelMessage(
+            draft,
+            string.Empty,
+            ModelMessageComposer.CreateFacts(draft),
+            "bounded-failure-composition-test");
+        var settled = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        int compositions = 0;
+        await using var mind = new MindSidecarClient();
+        var exhausted = new List<string>();
+        var queue = new PendingModelMessageQueue(
+            _ => Task.FromResult<MindSidecarClient?>(mind),
+            (_, _, _) => throw new AssertionException("A rejected draft must not publish BAXY prose."),
+            _ => Task.CompletedTask,
+            () => { },
+            () =>
+            {
+                settled.TrySetResult(true);
+                return Task.CompletedTask;
+            },
+            (_, _, _) =>
+            {
+                compositions++;
+                return Task.FromResult(
+                    new ModelMessageCompositionOutcome(null, "invented", UsedRecovery: true));
+            },
+            (_, _) => Task.CompletedTask,
+            (_, failure) =>
+            {
+                exhausted.Add(failure);
+                return Task.CompletedTask;
+            });
+
+        queue.Enqueue(pending, CancellationToken.None);
+        await settled.Task.WaitAsync(TimeSpan.FromSeconds(2));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(PendingModelMessageQueue.MaximumAttemptsFor(draft), Is.EqualTo(1));
+            Assert.That(compositions, Is.EqualTo(1));
+            Assert.That(queue.Count, Is.Zero);
+            Assert.That(exhausted, Is.EqualTo(new[] { "invented;retry_exhausted" }));
+        });
+    }
+
+    [Test]
     public async Task RejectedModelMessageStopsAfterTheBoundedRetryBudget()
     {
         UserMessageDraft draft = UserMessagePolicy.Create(

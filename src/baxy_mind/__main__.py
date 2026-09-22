@@ -6108,7 +6108,31 @@ def _explicit_arguments_from_evidence(
     if operation == "notification.schedule":
         return _explicit_notification_schedule_arguments(evidence)
 
-    if operation in {"bluetooth.radio.set", "audio.microphone.mute"}:
+    if operation == "audio.microphone.mute":
+        # Owner's test 2026-09-21 (turn 205): «activa mi micrófono» was bound to
+        # state=true through the radio grammar (activate = on) and muted an
+        # already muted microphone, which then died as an unobserved effect.
+        # For the microphone the state is «muted»: activating, enabling or
+        # unmuting it is state=false; silencing, muting or turning it off is true.
+        unmute_signal = bool(
+            re.search(
+                r"\b(?:activa|activá|reactiva|reactivá|enciende|encende|prende|prendé|habilita|habilitá|"
+                r"desmutea|desmuteá|desilencia|dessilencia|unmute|enable|reactivate|activate|"
+                r"turn\s+(?:it\s+)?(?:back\s+)?on)\w*\b",
+                folded,
+            )
+        )
+        mute_signal = bool(
+            re.search(
+                r"\b(?:mutea|muteá|silencia|silenciá|apaga|apagá|desactiva|desactivá|calla|callá|"
+                r"deshabilita|deshabilitá|mute|silence|disable|turn\s+(?:it\s+)?off)\w*\b",
+                folded,
+            )
+        )
+        if mute_signal != unmute_signal:
+            return {"state": mute_signal}
+
+    if operation == "bluetooth.radio.set":
         false_signal = bool(
             re.search(
                 r"\b(?:off|disable|desactiva|apaga|unmute|reactiva)\w*\b",

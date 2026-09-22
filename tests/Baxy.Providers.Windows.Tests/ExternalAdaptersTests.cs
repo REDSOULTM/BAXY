@@ -1551,6 +1551,50 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Owner's test 2026-09-21 (turn 205): «activa mi micrófono» on an already
+    // active microphone ended in an unobserved effect. The state is the fact,
+    // said before any boundary is crossed.
+    [TestCase(true, "microphone_already_muted")]
+    [TestCase(false, "microphone_already_unmuted")]
+    public async Task MicrophoneStateAlreadySatisfiedIsANamedFactBeforeTheEffectBoundary(
+        bool state, string expectedError)
+    {
+        var endpoint = new FakeAudioEndpoint("capture-private", muted: state);
+        var adapter = new WindowsMicrophoneAdapter(() => endpoint);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "audio.microphone.mute", Json($$"""{"state":{{(state ? "true" : "false")}}}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(expectedError));
+            Assert.That(endpoint.ReadMuted(), Is.EqualTo(state));
+        });
+    }
+
+    [Test]
+    public async Task MicrophoneUnmuteIsVerifiedByTheCaptureEndpointPostread()
+    {
+        var endpoint = new FakeAudioEndpoint("capture-private", muted: true);
+        var adapter = new WindowsMicrophoneAdapter(() => endpoint);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "audio.microphone.mute", Json("""{"state":false}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.EffectObserved, Is.True);
+            Assert.That(endpoint.ReadMuted(), Is.False);
+            Assert.That(receipt.Result?.GetProperty("muted").GetBoolean(), Is.False);
+        });
+    }
+
     [Test]
     public async Task RelativeVolumeUsesObservedOutputEndpointAndPreservesMute()
     {
@@ -2606,6 +2650,92 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // 2026-09-22 (owner's turn 148): with no Spotify process the automation died
+    // after crossing the boundary and the failure travelled as an ambiguous effect.
+    [Test]
+    public async Task SpotifyDesktopControlStandsAsideWithoutAClientProcess()
+    {
+        var runner = new StubProcessRunner("{\"ok\":true}");
+        var adapter = new SpotifyDesktopAdapter(runner, processExists: static _ => false);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.control", Json("""{"action":"stop"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("spotify_client_not_running"));
+            Assert.That(runner.LastArguments, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task YouTubeTabControlPausesTheVideoOfTheSessionTab()
+    {
+        using TemporaryDirectory temporary = new();
+        var browser = new StubYouTubeTabSession(
+            temporary.Path,
+            new CdpMediaControlResult(true, true, "pause", "Amor (Letra) - YouTube",
+                "https://www.youtube.com/watch?v=abc", "t1", "paused", string.Empty));
+        using var http = new HttpClient();
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.control", Json("""{"action":"stop"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.EffectObserved, Is.True);
+            Assert.That(browser.LastAction, Is.EqualTo("stop"));
+            Assert.That(receipt.Result?.GetProperty("playbackStatus").GetString(), Is.EqualTo("paused"));
+            Assert.That(receipt.Result?.GetProperty("title").GetString(), Is.EqualTo("Amor (Letra) - YouTube"));
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
+                Is.EqualTo("youtube_cdp_video_postread"));
+        });
+    }
+
+    [TestCase("media.control", """{"action":"pause"}""")]
+    [TestCase("media.status", "{}")]
+    public async Task YouTubeTabControlStandsAsideWithoutASessionTab(string operation, string arguments)
+    {
+        using TemporaryDirectory temporary = new();
+        var browser = new StubYouTubeTabSession(temporary.Path, result: null);
+        using var http = new HttpClient();
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            operation, Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_tab_not_found"));
+        });
+    }
+
+    [Test]
+    public async Task YouTubeTabControlNeverLaunchesABrowserToLookForATab()
+    {
+        using TemporaryDirectory temporary = new();
+        var browser = new StubYouTubeTabSession(temporary.Path, result: null, hasEndpoint: false);
+        using var http = new HttpClient();
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.control", Json("""{"action":"pause"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_tab_not_found"));
+            Assert.That(browser.Calls, Is.Zero);
+        });
+    }
+
     [Test]
     public async Task SpotifyDesktopControlRequiresUiaPostreadBeforeSuccess()
     {
@@ -2712,6 +2842,26 @@ public sealed class ExternalAdaptersTests
             string query, Uri watchUri, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            return ValueTask.FromResult(result);
+        }
+    }
+
+    private sealed class StubYouTubeTabSession(
+        string profile, CdpMediaControlResult? result, bool hasEndpoint = true)
+        : CdpBrowserSession(profile)
+    {
+        internal string? LastAction { get; private set; }
+
+        internal int Calls { get; private set; }
+
+        internal override bool HasEndpoint => hasEndpoint;
+
+        internal override ValueTask<CdpMediaControlResult?> ControlYouTubeAsync(
+            string? action, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Calls++;
+            LastAction = action;
             return ValueTask.FromResult(result);
         }
     }

@@ -2464,6 +2464,10 @@ def _shaped_conversation_answer_violates_contract(
         return True
     if visible_reply_asserts_an_unread_machine_state(value, request=request):
         return True
+    # No operation ran in a conversation turn: a claimed effect is invented
+    # (owner's test 2026-09-21, turn 189 «Claro, ya le hice click.»).
+    if visible_reply_claims_a_completed_effect(value):
+        return True
     if visible_reply_restates_the_request(value, request):
         return True
     if visible_reply_invents_a_spanish_infinitive(value):
@@ -3122,6 +3126,58 @@ def _accent_folded_with_punctuation(value: object) -> str:
     ).casefold()
 
 
+_COMPLETED_EFFECT_CLAIM = re.compile(
+    r"(?<![\w])(?:"
+    # Spanish first-person preterite of a PC action, alone or with a clitic:
+    # «ya le hice click», «lo abrí», «cerré Edge», «puse la canción».
+    r"(?:ya\s+)?(?:se\s+)?(?:lo|la|los|las|le|les|te)?\s*"
+    r"(?:hice|hize|cliqueé|cliqué|pulsé|apreté|abrí|cerré|puse|activé|desactivé|"
+    r"silencié|muteé|desmuteé|subí|bajé|reproduje|pausé|detuve|paré|instalé|"
+    r"desinstalé|envié|mandé|borré|eliminé|guardé|minimicé|maximicé|escribí|"
+    r"pegué|copié|apagué|reinicié|conecté|desconecté|entré|ejecuté|descargué|"
+    r"cambié|configuré|busqué)(?![\w])"
+    r"|ya\s+(?:esta|está|queda|quedo|quedó)\s+(?:hecho|listo|abierto|cerrado|activado|desactivado|"
+    r"silenciado|instalado|enviado|reproduciendo|puesto)"
+    r"|i\s+(?:just\s+)?(?:clicked|opened|closed|played|muted|unmuted|installed|uninstalled|sent|deleted|"
+    r"saved|turned\s+(?:it\s+)?(?:on|off)|set\s+it|did\s+it|pressed|launched|paused|stopped)(?![\w])"
+    r"|it(?:'s|\s+is)\s+(?:done|open|closed|muted|playing)\s+now"
+    r")"
+)
+_EFFECT_CLAIM_NEGATED = re.compile(
+    r"\b(?:no|nunca|jamas|jamás|tampoco|sin|ni|not|never|didn'?t|couldn'?t|cannot|can'?t|haven'?t|"
+    r"aun\s+no|aún\s+no|todavia\s+no|todavía\s+no)\b"
+)
+
+
+def visible_reply_claims_a_completed_effect(value: object) -> bool:
+    """Reject a conversation reply that claims an effect no operation produced.
+
+    Owner's test 2026-09-21, turn 189: «Pero quiero que le hagas click» was
+    answered «Claro, ya le hice click.» with zero operations. A conversation
+    turn executes nothing by construction, so a first-person, completed-action
+    claim about the PC in it is invented every time. Negated forms («no lo
+    hice», «no pude abrirlo») are the honest reply and survive; general
+    knowledge in the third person («Romero publicó…») is untouched because the
+    grammar only matches the first person singular of PC actions.
+    """
+
+    text = str(value or "").strip()
+    if not text:
+        return False
+    # Accents stay: «paré» is the claim, «pare» («que pare la canción») is not.
+    for sentence in re.split(r"(?<=[.!?…])\s+|\n+", text.casefold()):
+        clause_start = 0
+        for match in _COMPLETED_EFFECT_CLAIM.finditer(sentence):
+            # A negation earlier in the same clause makes it a denial, not a claim.
+            clause = sentence[clause_start:match.start()]
+            for boundary in (",", ";", " pero ", " but ", " aunque "):
+                if boundary in clause:
+                    clause = clause.rsplit(boundary, 1)[-1]
+            if _EFFECT_CLAIM_NEGATED.search(clause) is None:
+                return True
+    return False
+
+
 def visible_reply_asserts_an_unread_machine_state(
     value: object,
     *,
@@ -3468,6 +3524,12 @@ _SUCCESS_OPENERS = re.compile(
     r"^\s*(?:listo\b|ready\b|done\b|¡?\s*listo)",
     re.IGNORECASE,
 )
+# «la cerrado de Edge», «el abierta de Steam»: a participle used as the action
+# noun with the article of the other gender (owner's test 2026-09-21, turn 151).
+_MISMATCHED_ACTION_NOUN = re.compile(
+    r"\b(?:(?:la|una|esta|esa)\s+\w{3,}[ai]do|(?:el|un|este|ese)\s+(?!hada\b)\w{3,}[ai]da)\b(?!s)",
+    re.IGNORECASE,
+)
 _FAILURE_MARKERS = re.compile(
     r"(?:no pude|no puedo|couldn't|could not|can't|cannot|"
     r"eso no lo hago|i don't do that|i do not do that|"
@@ -3743,6 +3805,30 @@ _CAUSE_FACT = {
     "spotify_client_not_running": (
         "the Spotify desktop client is not open, so nothing could be played there"
     ),
+    # ctx-dueno-01/02 (2026-09-22): codes that reached the narrator with no fact
+    # behind them, so every draft echoed the code or invented a cause.
+    "media_session_not_found": (
+        "nothing is playing right now that could be controlled, so nothing was changed"
+    ),
+    "youtube_tab_not_found": (
+        "no YouTube video opened by the assistant is playing, so nothing was changed"
+    ),
+    "youtube_playback_not_verified": (
+        "the YouTube page opened in the browser but the video did not start playing, "
+        "so playback is not confirmed"
+    ),
+    "youtube_tab_playback_state_not_verified": (
+        "the YouTube video did not reach the requested state, so the change is not confirmed"
+    ),
+    "microphone_already_muted": (
+        "the microphone was already muted, so nothing changed"
+    ),
+    "microphone_already_unmuted": (
+        "the microphone was already active, not muted, so nothing changed"
+    ),
+    "external_verification_failed": (
+        "the change could not be observed afterwards, so it is not confirmed"
+    ),
     "spotify_uia_process_failed": (
         "the Spotify client could not be driven, so nothing is playing"
     ),
@@ -3786,7 +3872,14 @@ def _cause_in_prose(cause: str, language: str) -> str:
     key = cause.strip()
     if not key:
         return ""
-    return _CAUSE_FACT.get(key, key.replace("_", " "))
+    if key in _CAUSE_FACT:
+        return _CAUSE_FACT[key]
+    # Diagnostic suffixes («youtube_playback_not_verified_watch_ready0_…») name
+    # the probe's last reading; the fact is the family's.
+    for family in ("youtube_playback_not_verified",):
+        if key.startswith(family + "_"):
+            return _CAUSE_FACT[family]
+    return key.replace("_", " ")
 
 
 def _parse_core_utc(value: str) -> datetime | None:
@@ -8909,6 +9002,12 @@ def compose_visible_defect(
             not re.search(r"confirm", folded) or not re.search(r"cancel", folded)
         ):
             return "missing_confirmation_choice"
+        # Prueba del dueño 2026-09-21 (turno 151): «¿confirmar o cancelar la
+        # cerrado de Edge?». El participio del paso («cerrado») usado como
+        # sustantivo con el artículo del otro género no es castellano; la
+        # pregunta se rehace nombrando la acción con el verbo o su sustantivo.
+        if _MISMATCHED_ACTION_NOUN.search(folded) is not None:
+            return "malformed_action_noun"
     if cause == "acting":
         if (
             _SUCCESS_OPENERS.match(stripped) is not None
@@ -11610,6 +11709,22 @@ class LlmRuntime:
                         + "»: devuelve exactamente eso."
                         if presentation_shape == "translation"
                         and (_set_phrase := _set_phrase_translation(text))
+                        else ""
+                    ) + (
+                        # Owner's test 2026-09-21 (turns 210-213): the limit says
+                        # how BAXY is closed, in the same single sentence.
+                        (
+                            " The person asks you to close BAXY itself: in that one"
+                            " sentence say you do not close yourself from the chat and"
+                            " that BAXY closes with the X of its window or Alt+F4."
+                            if response_language == "en"
+                            else " La persona pide cerrar a BAXY: en esa misma oración"
+                            " di que no te cerrás desde el chat y que BAXY se cierra con"
+                            " la X de su ventana o con Alt+F4."
+                        )
+                        if conversation_kind == "unsupported"
+                        and presentation_shape is None
+                        and effect_intent.self_close_request(text)
                         else ""
                     ),
                 },
@@ -17382,6 +17497,12 @@ class LlmRuntime:
                 "missing_confirmation_choice": (
                     "Pregunta con todas estas opciones literales: "
                     f"{', '.join(required_words) or 'confirmar, cancelar'}."
+                ),
+                "malformed_action_noun": (
+                    "Name the action with its verb (close Edge), not with a participle as a noun."
+                    if response_language == "en"
+                    else "Nombra la acción con el verbo («que cierre Edge») o con su sustantivo "
+                    "correcto («el cierre de Edge»); nunca un participio como sustantivo."
                 ),
                 "wrong_language": "Same language as the request.",
                 "joined_claimed": (

@@ -41,6 +41,11 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             // active player it stands aside and the SMTC adapter answers.
             new YouTubeMpvAdapter(),
             new WindowsMediaSessionAdapter(),
+            // 2026-09-22 (owner's turn 148): the YouTube tab this session plays answers
+            // media.control/media.status after SMTC and before the Spotify automation,
+            // so «para la canción» stops what was just played instead of reaching for
+            // a player that is not running.
+            new WebBrowserAdapter(root, browserSessionContext),
             new SpotifyDesktopAdapter(),
             new SteamLocalAdapter(),
             new WindowsGameInstallationAdapter(),
@@ -65,7 +70,6 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new WindowsRecycleBinAdapter(),
             new CaptureVisionAdapter(Path.Combine(root, "captures")),
             new NamedBrowserAdapter(root, browserSessionContext),
-            new WebBrowserAdapter(root, browserSessionContext),
             new OpenMeteoWeatherAdapter(),
             new GoogleNewsHeadlinesAdapter(),
             new MicrosoftGraphCalendarAdapter(),

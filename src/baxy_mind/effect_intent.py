@@ -3578,6 +3578,27 @@ def unsupported_live_machine_query(text: str) -> bool:
     )
 
 
+# Owner's test 2026-09-21 (turns 210-213): «BAXY, cierra BAXY» / «cierra BAXY»
+# went to window.close on an application named BAXY and ended «no tiene ventana
+# abierta». The target is the assistant itself: a vocative before the order is
+# not the target, the object after the verb is.
+_SELF_CLOSE = re.compile(
+    r"(?:^|[\s,;:.!¡¿?]+)"
+    r"(?:(?:cierra|cerra|cerrá|cerrar|cerrame|cierrame|cerrate|cierrate|apaga|apagá|apagame|apagate|"
+    r"desconecta|desconectate|termina|terminate|sal|salte|salí|close|quit|exit|shut\s+down|shut)\s+"
+    r"(?:a\s+)?(?:baxy|la\s+app(?:licacion)?\s+(?:de\s+)?baxy|el\s+asistente|the\s+assistant|"
+    r"ti\s+mism[ao]|vos\s+mism[ao]|yourself)"
+    r"|(?:cierrate|cerrate|apagate|desconectate|salte|close\s+yourself|shut\s+yourself\s+down|quit\s+yourself))"
+    r"(?=$|[\s,;:.!¡¿?])"
+)
+
+
+def self_close_request(text: str) -> bool:
+    """«cierra BAXY», «BAXY, cerrate»: the assistant itself is the close target."""
+
+    return _SELF_CLOSE.search(_fold(text)) is not None
+
+
 def known_unsupported_effect_request(
     text: str,
     available_operations: Iterable[str],
@@ -3587,6 +3608,12 @@ def known_unsupported_effect_request(
     folded = _fold(text)
     available = frozenset(available_operations)
     contracts = (
+        (
+            # Owner's test 2026-09-21 (turns 210-213): BAXY does not close itself
+            # from the chat; the honest reply says so and how it is closed.
+            self_close_request(text),
+            {"self.close"},
+        ),
         (
             _has(folded, r"\b(?:arrastra|drag)\b")
             and _has(folded, r"\b(?:archivo|file|carpeta|folder)\b")

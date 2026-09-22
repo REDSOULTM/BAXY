@@ -85,6 +85,7 @@ from baxy_mind.llm import (
     canonicalize_turn_decision,
     derive_semantic_effect_state,
     visible_reply_asserts_an_unread_machine_state,
+    visible_reply_claims_a_completed_effect,
     visible_reply_denies_a_served_capability,
     visible_reply_invents_a_spanish_infinitive,
     visible_reply_is_a_fixed_stall,
@@ -399,6 +400,42 @@ def test_a_conversation_reply_may_not_describe_a_machine_it_never_read(
 )
 def test_the_fabrication_guard_does_not_forbid_general_knowledge(reply: str) -> None:
     assert not visible_reply_asserts_an_unread_machine_state(reply)
+
+
+@pytest.mark.parametrize(
+    "reply",
+    [
+        # Owner's test 2026-09-21, turn 189: zero operations, a claimed click.
+        "Claro, ya le hice click.",
+        "Listo, ya lo abrí.",
+        "Cerré Edge.",
+        "Puse la canción de amor en YouTube.",
+        "Ya está hecho, el micrófono quedó silenciado.",
+        "I clicked it for you.",
+        "Done, I opened Steam.",
+    ],
+)
+def test_a_conversation_reply_may_not_claim_an_effect_no_operation_produced(reply: str) -> None:
+    assert visible_reply_claims_a_completed_effect(reply)
+
+
+@pytest.mark.parametrize(
+    "reply",
+    [
+        # Denials are the honest reply and must survive.
+        "No le hice click: no puedo pulsar dentro de Steam todavía.",
+        "No pude abrirlo porque no tengo esa capacidad.",
+        "Todavía no lo cerré; decime si querés que lo cierre.",
+        "I didn't click it; I cannot press inside Steam yet.",
+        # Third person and general knowledge are untouched.
+        "George A. Romero dirigió La noche de los muertos vivientes en 1968.",
+        "El primer libro de zombis se publicó hace décadas.",
+        "Un zombi es un ser ficticio que se mueve sin conciencia.",
+        "¿Querés que la reproduzca en YouTube?",
+    ],
+)
+def test_the_effect_claim_guard_keeps_denials_and_general_knowledge(reply: str) -> None:
+    assert not visible_reply_claims_a_completed_effect(reply)
 
 
 @pytest.mark.parametrize(
@@ -2600,6 +2637,17 @@ def test_identity_literal_extraction_abstains_on_non_unique_requests(
             "silenciame el micrófono",
             {"state": True},
         ),
+        # Owner's test 2026-09-21 (turn 205): for the microphone the state is
+        # «muted», so activating it is state=false and muting it state=true.
+        ("audio.microphone.mute", "activa mi micrófono", {"state": False}),
+        ("audio.microphone.mute", "activá el micrófono de nuevo", {"state": False}),
+        ("audio.microphone.mute", "desmutea mi microfono", {"state": False}),
+        ("audio.microphone.mute", "prende el micrófono", {"state": False}),
+        ("audio.microphone.mute", "unmute my microphone", {"state": False}),
+        ("audio.microphone.mute", "mutea mi microfono", {"state": True}),
+        ("audio.microphone.mute", "apaga el micrófono", {"state": True}),
+        ("audio.microphone.mute", "desactiva el micrófono", {"state": True}),
+        ("audio.microphone.mute", "mute the microphone", {"state": True}),
         (
             "filesystem.file.open.latest",
             "Abre el último archivo que descargué",

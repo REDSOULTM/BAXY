@@ -757,6 +757,26 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         "borra la nota",
         {"situation": '{"kind":"confirmation","polarity":"pending","choices":["confirmar","cancelar"]}'},
     ) == "missing_confirmation_choice"
+    # Prueba del dueño 2026-09-21, turno 151: el participio como sustantivo con el
+    # artículo del otro género no es una pregunta bien formada.
+    assert compose_visible_defect(
+        "¿Quieres confirmar o cancelar la cerrado de Edge?",
+        "confirmation",
+        "cierra edge",
+        {"situation": '{"kind":"confirmation","polarity":"pending","choices":["confirmar","cancelar"]}'},
+    ) == "malformed_action_noun"
+    assert compose_visible_defect(
+        "¿Quieres confirmar o cancelar el cierre de Edge?",
+        "confirmation",
+        "cierra edge",
+        {"situation": '{"kind":"confirmation","polarity":"pending","choices":["confirmar","cancelar"]}'},
+    ) == ""
+    assert compose_visible_defect(
+        "¿Confirmas o cancelas que cierre la ventana abierta de Edge?",
+        "confirmation",
+        "cierra edge",
+        {"situation": '{"kind":"confirmation","polarity":"pending","choices":["confirmar","cancelar"]}'},
+    ) == ""
     assert compose_visible_defect(
         "No pude: Spotify no responde.",
         "error",

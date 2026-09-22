@@ -102,6 +102,29 @@ internal sealed class MindPlanSession
         return true;
     }
 
+    /// <summary>
+    /// A self-contained new request supersedes a plan that only waits on the
+    /// recovery challenge of an uncertain effect: the uncertainty was already
+    /// said, the step is never repeated on its own, and the conversation goes on
+    /// (ctx-dueno-01, 2026-09-22).
+    /// </summary>
+    internal bool TrySupersedeUncertainEffect(RetryableOperationRegistry registry)
+    {
+        ArgumentNullException.ThrowIfNull(registry);
+        if (_pending is not { PendingEffectMayHaveOccurred: true, Confirmation: null } execution)
+        {
+            return false;
+        }
+
+        if (execution.PendingOperation is { } pending)
+        {
+            registry.MarkResolved(pending);
+        }
+
+        Clear();
+        return true;
+    }
+
     internal async Task ExecuteAsync(
         PendingMindPlanExecution execution,
         RetryableOperationRegistry registry,
@@ -255,10 +278,32 @@ internal sealed class MindPlanSession
             {
                 execution.PendingOperation = prepared;
                 execution.PendingEffectMayHaveOccurred = true;
-                _pending = execution;
-                Persist(execution);
+                if (MindPlanBoundary.CanRefreshConfirmationChallenge(execution))
+                {
+                    // Un paso de riesgo (confirmado) cuyo efecto pudo ocurrir no se repite
+                    // solo: la evidencia queda y la persona decide con el desafío.
+                    _pending = execution;
+                    Persist(execution);
+                    _host.Publish(
+                        MissionNarration.CreateUncertainEffectMessage(execution),
+                        UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+                    return;
+                }
+
+                // ctx-dueno-01 (2026-09-22): una reproducción de YouTube sin verificar
+                // dejó el plan pendiente y los 42 turnos siguientes de la conversación
+                // recibieron el mismo «no pude confirmar»; ni «cancelar» lo soltaba. Un
+                // efecto incierto de una operación sin confirmación de riesgo es un
+                // estado terminal honesto: se dice una vez, con la causa de la
+                // operación cuando la trae, y la conversación sigue.
+                _ = _host.TryMarkResolved(registry, prepared);
+                execution.PendingOperation = null;
+                Clear();
                 _host.Publish(
-                    MissionNarration.CreateUncertainEffectMessage(execution),
+                    OperationResponseProjection.CarriesOperationFacts(response.Message)
+                        ? MissionNarration.CreateFailureMessage(
+                            execution.CompletedMessages, response.Message)
+                        : MissionNarration.CreateUncertainEffectMessage(execution, terminal: true),
                     UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
                 return;
             }
@@ -436,24 +481,21 @@ internal sealed class MindPlanSession
         ConfirmationReplyKind reply = ConfirmationReplyParser.Parse(text);
         if (reply == ConfirmationReplyKind.Cancel)
         {
-            if (execution.PendingEffectMayHaveOccurred)
+            if (execution.PendingOperation is not null)
             {
-                Persist(execution);
-                _host.Publish(
-                    MissionNarration.CreateUncertainEffectMessage(execution),
-                    UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
-            }
-            else
-            {
-                if (execution.PendingOperation is not null)
-                {
-                    registry.MarkResolved(execution.PendingOperation);
-                }
-
-                Clear();
-                _host.Publish(MissionNarration.CreateCancellationMessage(execution), null);
+                registry.MarkResolved(execution.PendingOperation);
             }
 
+            // «Cancelar» cierra el plan también cuando el efecto pudo ocurrir: se dice
+            // la incertidumbre una última vez y no se vuelve a preguntar (2026-09-22).
+            Clear();
+            _host.Publish(
+                execution.PendingEffectMayHaveOccurred
+                    ? MissionNarration.CreateUncertainEffectMessage(execution, terminal: true)
+                    : MissionNarration.CreateCancellationMessage(execution),
+                execution.PendingEffectMayHaveOccurred
+                    ? UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted)
+                    : null);
             return;
         }
 

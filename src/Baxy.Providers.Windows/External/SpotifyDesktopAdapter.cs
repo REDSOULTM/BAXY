@@ -8,22 +8,28 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
     private readonly IExternalProcessRunner _runner;
     private readonly string _scriptPath;
     private readonly string _controlScriptPath;
+    private readonly Func<string, bool> _processExists;
 
     internal SpotifyDesktopAdapter()
         : this(new ExternalProcessRunner(), Path.Combine(
             AppContext.BaseDirectory, "SpotifyDesktopAutomation.ps1"), Path.Combine(
-            AppContext.BaseDirectory, "SpotifyMediaControl.ps1"))
+            AppContext.BaseDirectory, "SpotifyMediaControl.ps1"),
+            static name => System.Diagnostics.Process.GetProcessesByName(name).Length > 0)
     {
     }
 
     internal SpotifyDesktopAdapter(
         IExternalProcessRunner runner,
         string? scriptPath = null,
-        string? controlScriptPath = null)
+        string? controlScriptPath = null,
+        Func<string, bool>? processExists = null)
     {
         _runner = runner ?? throw new ArgumentNullException(nameof(runner));
         _scriptPath = scriptPath ?? "SpotifyDesktopAutomation.ps1";
         _controlScriptPath = controlScriptPath ?? "SpotifyMediaControl.ps1";
+        // Test doubles drive the script with fixture output; only the product
+        // constructor looks for the real client.
+        _processExists = processExists ?? (static _ => true);
     }
 
     public bool CanHandle(string operation) => operation is
@@ -156,6 +162,14 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
         if (!File.Exists(_controlScriptPath))
         {
             return ExternalJson.Failure(operation, "spotify_uia_control_script_missing");
+        }
+        // 2026-09-22 (owner's turn 148): with no Spotify process the script died at
+        // its first stage after the boundary was crossed, and the failure travelled
+        // as an ambiguous effect that held the whole conversation. Nothing can have
+        // happened in a client that is not running.
+        if (!_processExists("Spotify"))
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "spotify_client_not_running");
         }
         var effectBoundary = new ExternalEffectBoundary();
         try

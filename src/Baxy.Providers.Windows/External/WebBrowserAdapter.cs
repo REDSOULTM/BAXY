@@ -68,7 +68,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
 
     public bool CanHandle(string operation) => operation is
         "browser.control" or "browser.navigate" or "browser.page.read" or "browser.tabs.list"
-        or "media.play.youtube"
+        or "media.play.youtube" or "media.control" or "media.status"
         or "streaming.navigate" or "streaming.play.named" or "web.search";
 
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
@@ -93,6 +93,10 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                     .ConfigureAwait(false),
                 "media.play.youtube" => await PlayYouTubeAsync(
                     operation, arguments, effectBoundary, cancellationToken).ConfigureAwait(false),
+                "media.control" => await ControlYouTubeTabAsync(
+                    operation, arguments, effectBoundary, cancellationToken).ConfigureAwait(false),
+                "media.status" => await ReadYouTubeTabAsync(operation, cancellationToken)
+                    .ConfigureAwait(false),
                 "streaming.navigate" => await StreamingAsync(
                     operation, arguments, effectBoundary, cancellationToken)
                     .ConfigureAwait(false),
@@ -391,6 +395,104 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, playback.EffectObserved);
+    }
+
+    // Owner's test 2026-09-21 (turn 148, «para la canción» right after a YouTube
+    // playback): the playback lives in a tab of this session and SMTC may not see
+    // it, so the request fell to the Spotify automation and ended in an ambiguous
+    // failure. The tab this session plays is driven and read here; with no such
+    // tab the adapter stands aside (no effect, no browser launched) and the chain
+    // goes on to the next player.
+    private async ValueTask<ExternalCapabilityReceipt> ControlYouTubeTabAsync(
+        string operation,
+        JsonElement arguments,
+        ExternalEffectBoundary effectBoundary,
+        CancellationToken cancellationToken)
+    {
+        string action;
+        try
+        {
+            action = ExternalJson.RequiredString(arguments, "action");
+        }
+        catch (InvalidDataException)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "media_control_action_invalid");
+        }
+        if (arguments.TryGetProperty("sourceApp", out JsonElement sourceApp)
+            && sourceApp.ValueKind == JsonValueKind.String
+            && sourceApp.GetString() is { Length: > 0 } requestedSource
+            && !requestedSource.Contains("youtube", StringComparison.OrdinalIgnoreCase)
+            && !requestedSource.Contains("edge", StringComparison.OrdinalIgnoreCase)
+            && !requestedSource.Contains("browser", StringComparison.OrdinalIgnoreCase))
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "media_source_app_not_youtube_tab");
+        }
+        if (action is not ("play" or "pause" or "stop" or "toggle"))
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "youtube_tab_action_unsupported");
+        }
+        if (!_browser.HasEndpoint)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "youtube_tab_not_found");
+        }
+        effectBoundary.Cross(cancellationToken);
+        CdpMediaControlResult? control = await _browser.ControlYouTubeAsync(action, cancellationToken)
+            .ConfigureAwait(false);
+        if (control is null)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "youtube_tab_not_found");
+        }
+        if (!control.Verified)
+        {
+            return effectBoundary.Failure(operation, control.ErrorCode, control.EffectObserved);
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("provider", "youtube");
+            writer.WriteString("sourceAppUserModelId", "BAXY YouTube (Edge)");
+            writer.WriteString("action", action);
+            writer.WriteString("title", control.Title);
+            writer.WriteBoolean("titleObserved", control.Title.Length > 0);
+            writer.WriteString("finalUrl", control.Url);
+            writer.WriteString("targetId", control.TargetId);
+            writer.WriteString("playbackStatus", control.PlaybackStatus);
+            writer.WriteString("authority", "youtube_cdp_video_postread");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, control.EffectObserved);
+    }
+
+    private async ValueTask<ExternalCapabilityReceipt> ReadYouTubeTabAsync(
+        string operation,
+        CancellationToken cancellationToken)
+    {
+        if (!_browser.HasEndpoint)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "youtube_tab_not_found");
+        }
+        CdpMediaControlResult? status = await _browser.ControlYouTubeAsync(null, cancellationToken)
+            .ConfigureAwait(false);
+        if (status is null || !status.Verified)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "youtube_tab_not_found");
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("provider", "youtube");
+            writer.WriteString("sourceAppUserModelId", "BAXY YouTube (Edge)");
+            writer.WriteString("title", status.Title);
+            writer.WriteBoolean("titleObserved", status.Title.Length > 0);
+            writer.WriteString("artist", string.Empty);
+            writer.WriteString("finalUrl", status.Url);
+            writer.WriteString("playbackStatus", status.PlaybackStatus);
+            writer.WriteString("authority", "youtube_cdp_video_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
     // WEB1831 / H0060: Bing's RSS feed answered a Spanish question («por qué suele
@@ -1032,6 +1134,21 @@ internal sealed record CdpMediaPlaybackResult(
     string TargetId,
     string ErrorCode);
 
+/// <summary>
+/// A YouTube tab of this session read or driven through its &lt;video&gt; element
+/// (owner's test 2026-09-21, turn 148: «para la canción» right after a YouTube
+/// playback must stop what was just played, not fall to another player).
+/// </summary>
+internal sealed record CdpMediaControlResult(
+    bool Verified,
+    bool EffectObserved,
+    string Action,
+    string Title,
+    string Url,
+    string TargetId,
+    string PlaybackStatus,
+    string ErrorCode);
+
 internal sealed record CdpStreamingPlaybackResult(
     bool Verified,
     bool EffectObserved,
@@ -1527,6 +1644,84 @@ internal class CdpBrowserSession : IDisposable
             tabs.Add(new(id.GetString()!, observedTitle, parsed.AbsoluteUri));
         }
         return new(true, tabs, webTargetCount, webTargetCount > tabs.Count, string.Empty);
+    }
+
+    internal virtual bool HasEndpoint => _endpoint is not null;
+
+    /// <summary>
+    /// Drives (pause/stop/play/toggle) or, with a null action, reads the first
+    /// YouTube watch tab of this session that carries a &lt;video&gt;. Null when the
+    /// session never started or no such tab exists: the adapter then stands aside
+    /// and never launches a browser to look for one.
+    /// </summary>
+    internal virtual async ValueTask<CdpMediaControlResult?> ControlYouTubeAsync(
+        string? action,
+        CancellationToken cancellationToken)
+    {
+        if (_endpoint is not { } endpoint)
+            return null;
+        using Stream stream = await _http.GetStreamAsync(new Uri(endpoint, "json/list"), cancellationToken)
+            .ConfigureAwait(false);
+        using JsonDocument targets = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+        var candidates = new List<(string TargetId, Uri WebSocket)>();
+        foreach (JsonElement target in targets.RootElement.EnumerateArray())
+        {
+            if (target.TryGetProperty("type", out JsonElement type) && type.GetString() == "page"
+                && target.TryGetProperty("url", out JsonElement url)
+                && url.GetString() is { } pageUrl
+                && (pageUrl.Contains("youtube.com/watch", StringComparison.OrdinalIgnoreCase)
+                    || pageUrl.Contains("youtube.com/embed/", StringComparison.OrdinalIgnoreCase))
+                && target.TryGetProperty("id", out JsonElement id)
+                && target.TryGetProperty("webSocketDebuggerUrl", out JsonElement socketUrl)
+                && Uri.TryCreate(socketUrl.GetString(), UriKind.Absolute, out Uri? webSocket))
+            {
+                candidates.Add((id.GetString()!, webSocket));
+            }
+        }
+        const string probe = "(()=>{const v=document.querySelector('video');if(!v)return 'video_missing';"
+            + "return [location.href,document.title,v.paused?'paused':'playing',v.ended?'ended':'live'].join('\\u001f');})()";
+        foreach ((string targetId, Uri webSocket) in candidates)
+        {
+            using var socket = new ClientWebSocket();
+            await socket.ConnectAsync(webSocket, cancellationToken).ConfigureAwait(false);
+            string[] before = (await EvaluateStringAsync(socket, probe, cancellationToken).ConfigureAwait(false))
+                .Split('\u001f');
+            if (before.Length != 4)
+                continue;
+            string status = before[3] == "ended" ? "stopped" : before[2];
+            if (action is null)
+                return new(true, false, "status", before[1], before[0], targetId, status, string.Empty);
+            string wanted = action switch
+            {
+                "pause" or "stop" => "paused",
+                "play" => "playing",
+                "toggle" => before[2] == "playing" ? "paused" : "playing",
+                _ => string.Empty,
+            };
+            if (wanted.Length == 0)
+                return new(false, false, action, before[1], before[0], targetId, status,
+                    "youtube_tab_action_unsupported");
+            string command = wanted == "paused"
+                ? "(()=>{const v=document.querySelector('video');if(v)v.pause();return 'ok';})()"
+                : "(()=>{const v=document.querySelector('video');if(v)v.play().catch(()=>{});return 'ok';})()";
+            await EvaluateStringAsync(socket, command, cancellationToken, userGesture: true).ConfigureAwait(false);
+            string[] after = before;
+            for (int attempt = 0; attempt < 12; attempt++)
+            {
+                if (attempt > 0)
+                    await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+                after = (await EvaluateStringAsync(socket, probe, cancellationToken).ConfigureAwait(false))
+                    .Split('\u001f');
+                if (after.Length == 4 && after[2] == wanted)
+                    break;
+            }
+            bool verified = after.Length == 4 && after[2] == wanted;
+            string observed = after.Length == 4 ? (action == "stop" && verified ? "stopped" : after[2]) : "unknown";
+            return new(verified, verified && before[2] != after[2], action, before[1], before[0], targetId,
+                observed, verified ? string.Empty : "youtube_tab_playback_state_not_verified");
+        }
+        return null;
     }
 
     internal virtual async ValueTask<CdpMediaPlaybackResult> PlayYouTubeAsync(

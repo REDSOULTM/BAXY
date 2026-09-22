@@ -14,6 +14,21 @@ internal sealed class PendingModelMessageQueue
 {
     internal const int MaximumCompositionAttempts = 3;
 
+    // Owner's test 2026-09-21 (turn 195): a failure final that the narrator could
+    // not phrase went through three attempts, each with its recovery and the
+    // narrator's own retries, and the person waited 45 s for «No pude armar una
+    // respuesta». The facts of a failure do not change between attempts: one
+    // attempt (with its recovery) is the budget, and the honest limit follows.
+    internal const int MaximumFailureCompositionAttempts = 1;
+
+    internal static int MaximumAttemptsFor(UserMessageDraft draft)
+    {
+        ArgumentNullException.ThrowIfNull(draft);
+        return draft.Intent == "error"
+            ? MaximumFailureCompositionAttempts
+            : MaximumCompositionAttempts;
+    }
+
     private readonly object _lock = new();
     private readonly Queue<PendingModelMessage> _pending = new();
     private readonly Func<CancellationToken, Task<MindSidecarClient?>> _waitForMind;
@@ -169,7 +184,7 @@ internal sealed class PendingModelMessageQueue
             {
                 pending.Attempts++;
                 await _reportFailureAsync(outcome.Failure).ConfigureAwait(false);
-                if (pending.Attempts >= MaximumCompositionAttempts)
+                if (pending.Attempts >= MaximumAttemptsFor(pending.Draft))
                 {
                     RemoveHead(pending);
                     string exhausted =

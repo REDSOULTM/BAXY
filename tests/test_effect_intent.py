@@ -4,6 +4,7 @@ from time import perf_counter
 
 import pytest
 
+from baxy_mind import effect_intent
 from baxy_mind.effect_intent import (
     CompoundEffectContract,
     build_application_catalog_index,
@@ -7292,3 +7293,34 @@ def test_explicit_need_after_acknowledgement_cannot_add_an_absent_operation() ->
     assert resolve_explicit_effects(
         "perfecto, necesito lo dessilencies pls", ("audio.volume", "audio.status"),
     ) is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # Owner's test 2026-09-21 (turns 210-213).
+        "baxy, cierra baxy",
+        "cierra BAXY",
+        "Cerrate, BAXY",
+        "apagate baxy",
+        "close yourself",
+        "BAXY, cierra la app de baxy",
+    ],
+)
+def test_closing_the_assistant_itself_is_a_known_limit(text: str) -> None:
+    assert effect_intent.self_close_request(text)
+    assert effect_intent.known_unsupported_effect_request(text, ("window.close", "app.close"))
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "baxy, cierra edge",
+        "BAXY cierra el bloc de notas",
+        "cierra la ventana de steam",
+        "baxy apaga la pantalla",
+        "close Spotify",
+    ],
+)
+def test_closing_another_application_is_not_a_self_close(text: str) -> None:
+    assert not effect_intent.self_close_request(text)
