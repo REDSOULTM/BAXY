@@ -1,0 +1,15 @@
+{
+  "schema": "c03-explorer2067-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "opus/typed-tools (catalog, Core list, Providers adapter filesystem.explorer.count via Shell.Application, mind reading, composer; merged in 8edf110ac).",
+  "patch": "artifacts/comprobaciones/C03/EXPLORER2067/SOURCE.patch",
+  "commits": [
+    "4150e5eac61af37be261d55becfa05adc69ca5a7"
+  ],
+  "build": "BUILD2067 (C03-repairs2067-build/BUILD_READY.json; mente)",
+  "cause_measured": "«Cuántos .py hay en el directorio actual» preguntaba cuál carpeta; el dueño decidió (D24) que el directorio actual es la carpeta del Explorador en primer plano.",
+  "change": "filesystem.explorer.count cuenta en la carpeta del Explorador en primer plano (escritorio si no hay ninguno) y el final dice la cantidad leída.",
+  "measurement": "EXPLORER2067: 2 ejecutados de 6; los dos límites aprobados; las 4 filas del fixture sin ejecutar (el conductor genérico no entrega la ventana del Explorador propia que el runner exige); 0 créditos. Cero operaciones en las dos ejecutadas; el fixture abrió y cerró raiz_conteo en las seis. Conductor propio del Explorador y re-medición como EXPLORER2069.",
+  "credits": 0
+}

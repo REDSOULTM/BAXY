@@ -1,4 +1,4 @@
-# Categorías actuales — adjudicación TEXTREAD2065 (tras las reaperturas REOPEN1957 y REOPEN1993 por decisión del dueño 2026-09-20)
+# Categorías actuales — adjudicación EXPLORER2067 (tras las reaperturas REOPEN1957 y REOPEN1993 por decisión del dueño 2026-09-20)
 
 Reapertura 2026-09-20 (REOPEN1996, enmienda de la auditoría): H0521 «abres team» vuelve a abierta (en este PC Teams no está instalado: candidato único); 652/742. Detalle en REOPEN1996/REGISTRY_UPDATE.json.
 

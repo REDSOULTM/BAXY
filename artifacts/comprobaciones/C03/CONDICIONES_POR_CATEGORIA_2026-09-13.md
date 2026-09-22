@@ -1824,3 +1824,7 @@ Archivos y carpetas pasa de 30/32 a 30/32 con una ruta pegada bajo una carpeta c
 ## Actualización 2026-09-22 (TEXTREAD2065)
 
 Archivos y carpetas pasa de 30/32 a 31/32 con una ruta pegada bajo una carpeta conocida se lee y se dice de qué trata (commit 83499642, BUILD2065) (HEAD 83499642): 6/6 aprobados (el literal H0299, las 3 variantes y los 2 límites), 1 créditos. Cuatro lecturas verificadas con final fiel (archivo, líneas y comienzo citado tal cual); dos límites con cero operaciones.
+
+## Actualización 2026-09-22 (EXPLORER2067)
+
+Archivos y carpetas pasa de 31/32 a 31/32 con el directorio actual es la carpeta del Explorador en primer plano (commit 4150e5ea, BUILD2067) (HEAD 4150e5ea): 2 ejecutados de 6; los dos límites aprobados; las 4 filas del fixture sin ejecutar (el conductor genérico no entrega la ventana del Explorador propia que el runner exige), 0 créditos. Cero operaciones en las dos ejecutadas; el fixture abrió y cerró raiz_conteo en las seis. Conductor propio del Explorador y re-medición como EXPLORER2069.
