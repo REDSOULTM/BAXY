@@ -4077,6 +4077,23 @@ def _observed_maps_from_situation(situation: dict) -> list[dict]:
     return maps
 
 
+# Typed tools whose verified receipt is the postread of an effect (REOPEN1957
+# family): the change is the fact even though the receipt has no «applied» flag.
+_TYPED_TRANSITION_OPERATIONS = frozenset({
+    "desktop.wallpaper.set",
+    "file.compress",
+    "file.open",
+    "filesystem.create.directory",
+    "filesystem.write.text",
+    "web.download",
+    "audio.microphone.mute",
+    "wifi.radio.set",
+    "system.settings.set",
+    "shell.command.run",
+    "document.presentation.create",
+})
+
+
 def _lift_observed_blob(blob: dict) -> dict:
     lifted = dict(blob)
     state = blob.get("state")
@@ -4800,7 +4817,14 @@ def _compose_situation_payload(
         if (
             situation.get("verified") is True
             and situation.get("succeeded") is True
-            and merged_seen.get("applied") is True
+            and (
+                merged_seen.get("applied") is True
+                # WALLPAPER2039 (notebook, 2026-09-22): the typed tools' receipts
+                # are the postread of the change (colour, zip, file, radio…) and
+                # carry no «applied» flag, so «I set the wallpaper to solid red»
+                # died as reversed_result under the read-only heuristic.
+                or operation in _TYPED_TRANSITION_OPERATIONS
+            )
         ):
             # An observed, verified transition is not a read-only snapshot.
             # Preserve its authority before internal status fields are removed.

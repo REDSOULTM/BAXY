@@ -827,6 +827,10 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
     projected = _compose_situation_payload(wallpaper, "en")
     assert projected["seen"]["color"] == "red"
     assert "rgb" not in projected["seen"] and "previousWallpaper" not in projected["seen"]
+    # WALLPAPER2039: the verified change is an effect, not a read («I set …» stays).
+    assert projected.get("effect") == "applied"
+    from baxy_mind.llm import _payload_fact_defect
+    assert _payload_fact_defect("I set the wallpaper to solid red.", projected, "set the wallpaper to red") == ""
     assert compose_visible_defect(
         "I set the wallpaper to solid red.",
         "status",

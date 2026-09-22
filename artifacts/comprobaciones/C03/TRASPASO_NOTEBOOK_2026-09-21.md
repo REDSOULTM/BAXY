@@ -227,3 +227,31 @@ no bajar decenas de GB; Steam sólo con PvZ GOTY (3590) y PICO PARK (461040); no
 Reporta con cifras, no con narrativa: registro N/742, tandas hechas/pendientes, cien, Full. Si algo queda fuera,
 dilo y por qué. No marques completado por cansancio ni por un fallo aislado.
 ```
+
+## 9. Aclaración del dueño (2026-09-22) — sustituye el reparto del §5 y del GOAL
+
+Texto del dueño, pegado en la sesión del notebook el 2026-09-22 (madrugada), después de los seis arreglos del §5b.1,
+del arreglo de estado, de ctx-dueno (12/60 → 33/60), de cien-97 y del arreglo del recibo RGB del fondo (e2724587):
+
+> El camino es lineal y estas tres fases no se pisan: (1) Notebook (ahora): operaciones que Windows comprueba sin
+> mirar una ventana. (2) Fase 3.5 (Fable, después del wall): la lectura y el contexto
+> (`PROMPT_FABLE_SEMANTICA_2026-09-23.md`). (3) Fase 4 y luego la 5: el motor de computer use (a medias en la rama
+> local `fable/computer-use-engine`) y el banco de misiones de pantalla; el notebook no lo construye, no lo fusiona y
+> no toca esa rama.
+>
+> Lo ya hecho se queda. Terminar WALLPAPER2039 (re-medición del mismo panel, padre WEATHER2035, BEFORE 671) y
+> adjudicarla. Después, una tanda por vez, sólo: zip, airplane (por la API de radios, no por la ventana de
+> Configuración), download, pptx, meme, textread, explorer_count, shell, power (apagar y reiniciar se cancelan en el
+> fixture), wifi_place, winget y steam2063 (las 4 de lectura de biblioteca: H0456, H0571, H0578, H0620).
+>
+> No correr, ni ahora ni al final, launch2059, steamdl2065 ni steaminst2067: esas 18 filas (H0083, H0608, las 10 de
+> descarga y las 8 de instalar/desinstalar) son el banco de la Fase 5 —se resuelven recorriendo la ventana de Steam y
+> el recibo es el manifiesto—; acreditarlas por `steam://` las cierra antes de que el motor exista. No bajar ni
+> instalar PvZ ni PICO PARK. Tampoco tocar las 14 de lectura ni las 12 del motor. Un fallo de lectura se anota en
+> `SEMANTICA_CORPUS_PENDIENTE.md` y la fila queda abierta. Un click que la pantalla no tiene se dice con verdad y se
+> deja; sin caminos nuevos de Steam, Discord ni Chrome.
+>
+> Siguen vigentes la receta, la regla de reparación, los bancos contextuales por categoría, el Full, la cien final y
+> el push. El handoff de cierre dice que lo siguiente es la Fase 3.5, con ese prompt. Sin Fase 3.5, sin motor, sin
+> fusión a main, sin tocar `fable/computer-use-engine`. Si todas las tandas propias acreditan, el registro queda
+> alrededor de 698/742, no 716; lo que falta es lectura, motor y el banco de Steam.
