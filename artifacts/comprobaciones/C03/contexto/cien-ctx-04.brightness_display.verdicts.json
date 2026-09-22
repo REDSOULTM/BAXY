@@ -1,0 +1,164 @@
+{
+ "label": "cien-ctx-04",
+ "bank": "brightness_display",
+ "head": "edd1778e",
+ "good": 8,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "¿cuánto brillo tiene la pantalla?",
+   "expected": "lectura display.status|system.settings.status",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación display.status|system.settings.status"
+   ]
+  },
+  {
+   "n": 2,
+   "text": "poné el brillo en 60",
+   "expected": "efecto reversible system.settings",
+   "route": "result",
+   "ops": [
+    "system.settings.set"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 3,
+   "text": "bajalo a 50",
+   "expected": "«lo» = el brillo",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación system.settings"
+   ]
+  },
+  {
+   "n": 4,
+   "text": "¿en cuánto quedó?",
+   "expected": "lectura display.status|system.settings.status",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación display.status|system.settings.status"
+   ]
+  },
+  {
+   "n": 5,
+   "text": "subí un poco el brillo",
+   "expected": "efecto reversible system.settings",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación system.settings"
+   ]
+  },
+  {
+   "n": 6,
+   "text": "un poco más",
+   "expected": "efecto reversible system.settings",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación system.settings"
+   ]
+  },
+  {
+   "n": 7,
+   "text": "cambiá el brillo",
+   "expected": "pregunta lo que falta, sin actuar",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "no dice ?"
+   ]
+  },
+  {
+   "n": 8,
+   "text": "a 55",
+   "expected": "une la cifra al pedido",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación system.settings"
+   ]
+  },
+  {
+   "n": 9,
+   "text": "no cambies más el brillo",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 10,
+   "text": "perfecto",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "¿qué resolución tiene la pantalla?",
+   "expected": "lectura display.status",
+   "route": "result",
+   "ops": [
+    "display.status"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "¿cuántas pantallas tengo?",
+   "expected": "lectura display.status",
+   "route": "result",
+   "ops": [
+    "display.status"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "¿el brillo alto gasta más batería?",
+   "expected": "responde la pregunta",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "text": "dejalo así",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

@@ -1,0 +1,168 @@
+{
+ "label": "cien-ctx-03",
+ "bank": "audio_volume",
+ "head": "edd1778e",
+ "good": 7,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "poné el volumen en 30",
+   "expected": "efecto reversible audio.volume",
+   "route": "result",
+   "ops": [
+    "audio.volume"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "subilo a 40",
+   "expected": "«lo» = el volumen",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación audio.volume"
+   ]
+  },
+  {
+   "n": 3,
+   "text": "¿en cuánto quedó?",
+   "expected": "lee el volumen",
+   "route": "error",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación audio.status"
+   ]
+  },
+  {
+   "n": 4,
+   "text": "bajá el volumen",
+   "expected": "efecto reversible audio.volume",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación audio.volume"
+   ]
+  },
+  {
+   "n": 5,
+   "text": "un poco más",
+   "expected": "sigue bajando",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación audio.volume"
+   ]
+  },
+  {
+   "n": 6,
+   "text": "silenciá el sonido",
+   "expected": "efecto reversible audio.mute",
+   "route": "result",
+   "ops": [
+    "audio.mute"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "volvé a activarlo",
+   "expected": "«lo» = el sonido",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación audio.mute"
+   ]
+  },
+  {
+   "n": 8,
+   "text": "cambiá el volumen",
+   "expected": "pregunta lo que falta, sin actuar",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 9,
+   "text": "a 35",
+   "expected": "une la cifra al pedido",
+   "route": "result",
+   "ops": [
+    "audio.volume"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 10,
+   "text": "¿está silenciado?",
+   "expected": "lectura audio.status",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación audio.status"
+   ]
+  },
+  {
+   "n": 11,
+   "text": "no toques más el volumen",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "gracias, así está bien",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "silenciá el micrófono",
+   "expected": "efecto reversible audio.microphone.mute",
+   "route": "result",
+   "ops": [
+    "audio.microphone.mute"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "text": "activalo de nuevo",
+   "expected": "«lo» = el micrófono",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación audio.microphone.mute"
+   ]
+  },
+  {
+   "n": 15,
+   "text": "¿cómo está el micrófono?",
+   "expected": "lectura audio.status|audio.microphone",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación audio.status|audio.microphone"
+   ]
+  }
+ ]
+}

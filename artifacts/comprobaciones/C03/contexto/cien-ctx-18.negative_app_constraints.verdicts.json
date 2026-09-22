@@ -1,0 +1,156 @@
+{
+ "label": "cien-ctx-18",
+ "bank": "negative_app_constraints",
+ "head": "edd1778e",
+ "good": 13,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "no abras Chrome",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "tampoco Edge",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 3,
+   "text": "¿entendiste?",
+   "expected": "confirma la restricción",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 4,
+   "text": "abrí la calculadora",
+   "expected": "efecto reversible app.open",
+   "route": "result",
+   "ops": [
+    "app.open"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 5,
+   "text": "cerrala",
+   "expected": "efecto reversible app.close|window.resolve",
+   "route": "confirmation",
+   "ops": [
+    "window.active"
+   ],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación app.close|window.resolve (hubo window.active)"
+   ]
+  },
+  {
+   "n": 6,
+   "text": "no abras nada más",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "confirmation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "no cierres Spotify",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "confirmation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 8,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "confirmation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 9,
+   "text": "no abras el bloc de notas",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "confirmation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 10,
+   "text": "ok",
+   "expected": "seguir la charla",
+   "route": "confirmation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "abrí paint",
+   "expected": "efecto reversible app.open",
+   "route": "error",
+   "ops": [
+    "app.open"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "cerralo",
+   "expected": "efecto reversible app.close|window.resolve",
+   "route": "confirmation",
+   "ops": [
+    "window.active"
+   ],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación app.close|window.resolve (hubo window.active)"
+   ]
+  },
+  {
+   "n": 13,
+   "text": "no abras ninguna app",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "confirmation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "text": "bien",
+   "expected": "seguir la charla",
+   "route": "confirmation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "listo",
+   "expected": "seguir la charla",
+   "route": "confirmation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

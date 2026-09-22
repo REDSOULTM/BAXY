@@ -1,0 +1,162 @@
+{
+ "label": "cien-ctx-19",
+ "bank": "network_bluetooth",
+ "head": "edd1778e",
+ "good": 13,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "¿tengo internet?",
+   "expected": "lectura network.status",
+   "route": "result",
+   "ops": [
+    "network.status"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "¿cuál es mi IP?",
+   "expected": "lectura network.ip.list|network.status",
+   "route": "result",
+   "ops": [
+    "network.ip.list"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 3,
+   "text": "¿y la wifi?",
+   "expected": "sigue el tema de red",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación wifi.status|wifi.radio.status|network.status"
+   ]
+  },
+  {
+   "n": 4,
+   "text": "¿el bluetooth está prendido?",
+   "expected": "lectura bluetooth.radio.status",
+   "route": "result",
+   "ops": [
+    "bluetooth.radio.status"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 5,
+   "text": "¿qué dispositivos bluetooth hay?",
+   "expected": "lectura bluetooth.device.list",
+   "route": "result",
+   "ops": [
+    "bluetooth.device.list"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 6,
+   "text": "hacé un ping a google",
+   "expected": "lectura network.ping",
+   "route": "error",
+   "ops": [
+    "network.ping"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "¿funciona el DNS?",
+   "expected": "lectura network.dns.status",
+   "route": "result",
+   "ops": [
+    "network.dns.status"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 8,
+   "text": "no apagues el bluetooth",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 9,
+   "text": "no desconectes nada",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 10,
+   "text": "¿está el modo avión?",
+   "expected": "lectura system.settings.status|wifi.radio.status",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación system.settings.status|wifi.radio.status"
+   ]
+  },
+  {
+   "n": 11,
+   "text": "ok",
+   "expected": "seguir la charla",
+   "route": "error",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "¿por qué no tengo wifi?",
+   "expected": "responde con lo leído",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "text": "¿qué redes hay cerca?",
+   "expected": "lectura wifi.scan|wifi.status",
+   "route": "error",
+   "ops": [
+    "wifi.scan"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "listo",
+   "expected": "seguir la charla",
+   "route": "error",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

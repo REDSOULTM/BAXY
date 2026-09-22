@@ -1,0 +1,158 @@
+{
+ "label": "cien-ctx-07",
+ "bank": "clock",
+ "head": "edd1778e",
+ "good": 12,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "¿qué hora es?",
+   "expected": "lectura system.time",
+   "route": "result",
+   "ops": [
+    "system.time"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "¿y la fecha?",
+   "expected": "«y la fecha» sigue al pedido anterior",
+   "route": "result",
+   "ops": [
+    "system.time"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 3,
+   "text": "¿qué día de la semana es hoy?",
+   "expected": "lectura system.time",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación system.time"
+   ]
+  },
+  {
+   "n": 4,
+   "text": "¿cuántos días tiene este mes?",
+   "expected": "responde con la fecha leída o el calendario",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 5,
+   "text": "¿cuánto falta para las 11 de la noche?",
+   "expected": "lectura system.time",
+   "route": "result",
+   "ops": [
+    "system.time"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 6,
+   "text": "¿y para medianoche?",
+   "expected": "sigue la cuenta",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "decime la hora otra vez",
+   "expected": "lectura system.time",
+   "route": "result",
+   "ops": [
+    "system.time"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 8,
+   "text": "¿en qué zona horaria estoy?",
+   "expected": "responde con la zona leída o pregunta",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 9,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 10,
+   "text": "¿qué fecha será en 10 días?",
+   "expected": "lectura system.time",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación system.time"
+   ]
+  },
+  {
+   "n": 11,
+   "text": "¿y en 30?",
+   "expected": "sigue la cuenta",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "¿el año que viene es bisiesto?",
+   "expected": "responde",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "¿es de mañana o de tarde?",
+   "expected": "lectura system.time",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación system.time"
+   ]
+  },
+  {
+   "n": 14,
+   "text": "ok",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "listo, eso era todo",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

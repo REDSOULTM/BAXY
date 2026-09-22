@@ -1,0 +1,154 @@
+{
+ "label": "cien-ctx-24",
+ "bank": "software_installation",
+ "head": "edd1778e",
+ "good": 13,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "instalá Photoshop",
+   "expected": "winget no lo ofrece y lo dice",
+   "route": "error",
+   "ops": [
+    "package.install.prepare"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "¿está instalado Steam?",
+   "expected": "lectura app.installed",
+   "route": "result",
+   "ops": [
+    "app.installed"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 3,
+   "text": "¿y Spotify?",
+   "expected": "misma lectura para otra app",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación app.installed"
+   ]
+  },
+  {
+   "n": 4,
+   "text": "instalá algo",
+   "expected": "pregunta lo que falta, sin actuar",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "no dice ?"
+   ]
+  },
+  {
+   "n": 5,
+   "text": "no, nada",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 6,
+   "text": "no instales nada",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "¿cómo instalás programas?",
+   "expected": "responde con verdad (winget)",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 8,
+   "text": "ok",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 9,
+   "text": "¿tengo Python instalado?",
+   "expected": "lectura software.python.status|app.installed",
+   "route": "result",
+   "ops": [
+    "software.python.status"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 10,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "no desinstales nada",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "¿podés actualizar programas?",
+   "expected": "responde con verdad",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "bien",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "text": "dejalo así",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "listo",
+   "expected": "seguir la charla",
+   "route": "error",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

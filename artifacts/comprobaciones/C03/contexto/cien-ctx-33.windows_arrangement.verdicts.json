@@ -1,0 +1,166 @@
+{
+ "label": "cien-ctx-33",
+ "bank": "windows_arrangement",
+ "head": "edd1778e",
+ "good": 9,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "abrí el bloc de notas",
+   "expected": "efecto reversible app.open",
+   "route": "error",
+   "ops": [
+    "app.open"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "maximizá el bloc de notas",
+   "expected": "efecto reversible window.",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación window."
+   ]
+  },
+  {
+   "n": 3,
+   "text": "ahora minimizalo",
+   "expected": "«lo» = el bloc de notas",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación window."
+   ]
+  },
+  {
+   "n": 4,
+   "text": "restauralo",
+   "expected": "efecto reversible window.",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación window."
+   ]
+  },
+  {
+   "n": 5,
+   "text": "ponelo a la izquierda",
+   "expected": "efecto reversible window.",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación window."
+   ]
+  },
+  {
+   "n": 6,
+   "text": "ahora a la derecha",
+   "expected": "sigue la misma ventana",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación window."
+   ]
+  },
+  {
+   "n": 7,
+   "text": "¿qué ventana está activa?",
+   "expected": "lectura window.active|window.",
+   "route": "result",
+   "ops": [
+    "window.active"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 8,
+   "text": "no muevas más ventanas",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 9,
+   "text": "abrí la calculadora",
+   "expected": "efecto reversible app.open",
+   "route": "result",
+   "ops": [
+    "app.open"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 10,
+   "text": "maximizala",
+   "expected": "«la» = la calculadora",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación window."
+   ]
+  },
+  {
+   "n": 11,
+   "text": "cerrá la calculadora",
+   "expected": "efecto reversible app.close|window.resolve",
+   "route": "confirmation",
+   "ops": [
+    "window.resolve"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "cerrá el bloc de notas",
+   "expected": "efecto reversible app.close|window.resolve",
+   "route": "error",
+   "ops": [
+    "window.resolve"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "text": "¿podés ordenar ventanas en dos pantallas?",
+   "expected": "responde con verdad",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "ok",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

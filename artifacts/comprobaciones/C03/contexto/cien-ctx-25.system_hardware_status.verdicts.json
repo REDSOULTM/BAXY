@@ -1,0 +1,166 @@
+{
+ "label": "cien-ctx-25",
+ "bank": "system_hardware_status",
+ "head": "edd1778e",
+ "good": 10,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "¿cuánta RAM estoy usando?",
+   "expected": "lectura system.status",
+   "route": "result",
+   "ops": [
+    "system.status"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "¿y la CPU?",
+   "expected": "sigue el tema",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación system.status"
+   ]
+  },
+  {
+   "n": 3,
+   "text": "¿cuánto espacio libre queda en el disco?",
+   "expected": "lectura system.status",
+   "route": "result",
+   "ops": [
+    "system.status"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 4,
+   "text": "¿cuánta batería tengo?",
+   "expected": "lectura system.status",
+   "route": "result",
+   "ops": [
+    "system.status"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 5,
+   "text": "¿está enchufada?",
+   "expected": "sigue la batería",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación system.status"
+   ]
+  },
+  {
+   "n": 6,
+   "text": "¿qué placa de video tengo?",
+   "expected": "lectura system.status|system.identity",
+   "route": "result",
+   "ops": [
+    "system.status"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "¿qué Windows tengo?",
+   "expected": "lectura system.identity|system.status",
+   "route": "result",
+   "ops": [
+    "window.resolve"
+   ],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación system.identity|system.status (hubo window.resolve)"
+   ]
+  },
+  {
+   "n": 8,
+   "text": "¿es mucho?",
+   "expected": "interpreta lo leído",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 9,
+   "text": "¿cómo se llama esta PC?",
+   "expected": "lectura system.identity",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación system.identity"
+   ]
+  },
+  {
+   "n": 10,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "¿hay pendrives conectados?",
+   "expected": "lectura storage.removable.list",
+   "route": "result",
+   "ops": [
+    "storage.removable.list"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "¿qué impresoras hay?",
+   "expected": "lectura peripheral.list",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación peripheral.list"
+   ]
+  },
+  {
+   "n": 13,
+   "text": "no imprimas nada",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "text": "ok",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "listo",
+   "expected": "seguir la charla",
+   "route": "error",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

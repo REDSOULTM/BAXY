@@ -1,0 +1,144 @@
+{
+ "label": "cien-ctx-15",
+ "bank": "knowledge_reasoning",
+ "head": "edd1778e",
+ "good": 15,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "¿cuál es la capital de Australia?",
+   "expected": "responde",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "¿y la de Nueva Zelanda?",
+   "expected": "sigue el patrón",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 3,
+   "text": "¿cuánto es 17 por 23?",
+   "expected": "responde 391",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 4,
+   "text": "¿y si le sumo 9?",
+   "expected": "400",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 5,
+   "text": "explicame qué es la fotosíntesis",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 6,
+   "text": "más corto",
+   "expected": "resume la respuesta anterior",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "dame un sinónimo de rápido",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 8,
+   "text": "otro",
+   "expected": "otro sinónimo",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 9,
+   "text": "¿qué es más pesado, un kilo de plumas o uno de hierro?",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 10,
+   "text": "¿por qué?",
+   "expected": "explica lo anterior",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "escribime un haiku sobre la lluvia",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "ahora uno sobre el sol",
+   "expected": "mismo formato",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "¿cuántas patas tiene una araña?",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "text": "¿y un insecto?",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "gracias, muy bien",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

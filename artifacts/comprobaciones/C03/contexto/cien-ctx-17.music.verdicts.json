@@ -1,0 +1,164 @@
+{
+ "label": "cien-ctx-17",
+ "bank": "music",
+ "head": "edd1778e",
+ "good": 11,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "poné música tranquila en youtube",
+   "expected": "efecto reversible media.play.youtube",
+   "route": "error",
+   "ops": [
+    "media.play.youtube"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "pausala",
+   "expected": "«la» = la música",
+   "route": "error",
+   "ops": [
+    "media.control"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 3,
+   "text": "seguí",
+   "expected": "efecto reversible media.control",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación media.control"
+   ]
+  },
+  {
+   "n": 4,
+   "text": "¿qué está sonando?",
+   "expected": "lectura media.status",
+   "route": "error",
+   "ops": [
+    "media.status"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 5,
+   "text": "pausá",
+   "expected": "efecto reversible media.control",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación media.control"
+   ]
+  },
+  {
+   "n": 6,
+   "text": "no pongas nada en Spotify",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "poné una canción de amor en youtube",
+   "expected": "efecto reversible media.play.youtube",
+   "route": "error",
+   "ops": [
+    "media.play.youtube"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 8,
+   "text": "pará la música",
+   "expected": "efecto reversible media.control",
+   "route": "error",
+   "ops": [
+    "media.control"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 9,
+   "text": "poné música",
+   "expected": "pregunta lo que falta, sin actuar",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 10,
+   "text": "en youtube, algo de jazz",
+   "expected": "une la respuesta al pedido",
+   "route": "error",
+   "ops": [
+    "media.play.youtube"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "pausala",
+   "expected": "efecto reversible media.control",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación media.control"
+   ]
+  },
+  {
+   "n": 12,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "¿quedó pausada?",
+   "expected": "lectura media.status",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación media.status"
+   ]
+  },
+  {
+   "n": 14,
+   "text": "ok",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "no pongas más música",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

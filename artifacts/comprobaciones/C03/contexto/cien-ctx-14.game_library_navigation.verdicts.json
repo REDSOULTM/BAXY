@@ -1,0 +1,154 @@
+{
+ "label": "cien-ctx-14",
+ "bank": "game_library_navigation",
+ "head": "edd1778e",
+ "good": 11,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "¿qué juegos tengo?",
+   "expected": "lectura game.catalog.list|game.installed.named",
+   "route": "result",
+   "ops": [
+    "game.catalog.list"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "¿cuáles están instalados?",
+   "expected": "sigue la lista",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación game.catalog.list|game.installed.named"
+   ]
+  },
+  {
+   "n": 3,
+   "text": "¿tengo Rocket League?",
+   "expected": "lectura game.installed.named|game.catalog.list|game.entitlement.named",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación game.installed.named|game.catalog.list|game.entitlement.named"
+   ]
+  },
+  {
+   "n": 4,
+   "text": "¿de qué trata?",
+   "expected": "responde sobre el juego",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 5,
+   "text": "no abras ningún juego",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 6,
+   "text": "no instales juegos",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "¿cuántos juegos hay en Steam?",
+   "expected": "lectura game.catalog.list",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación game.catalog.list"
+   ]
+  },
+  {
+   "n": 8,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 9,
+   "text": "¿cuál me recomendás de los que tengo?",
+   "expected": "elige de la lista",
+   "route": "error",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "dice «no pude entender»"
+   ]
+  },
+  {
+   "n": 10,
+   "text": "ok",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "¿podés abrir juegos?",
+   "expected": "responde con verdad",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "mejor no",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "bien",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "text": "eso es todo",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "listo",
+   "expected": "seguir la charla",
+   "route": "error",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

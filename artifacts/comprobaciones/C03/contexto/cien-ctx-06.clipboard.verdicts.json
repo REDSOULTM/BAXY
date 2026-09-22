@@ -1,0 +1,155 @@
+{
+ "label": "cien-ctx-06",
+ "bank": "clipboard",
+ "head": "edd1778e",
+ "good": 11,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "copiá esto: prueba de portapapeles",
+   "expected": "efecto reversible clipboard.write.text|clipboard.copy",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación clipboard.write.text|clipboard.copy"
+   ]
+  },
+  {
+   "n": 2,
+   "text": "¿qué hay en el portapapeles?",
+   "expected": "lectura clipboard.read.text",
+   "route": "error",
+   "ops": [
+    "clipboard.read.text"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 3,
+   "text": "¿cuántas letras tiene?",
+   "expected": "cuenta del texto leído",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 4,
+   "text": "copiá esto otro: segunda prueba",
+   "expected": "efecto reversible clipboard.write.text|clipboard.copy",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación clipboard.write.text|clipboard.copy"
+   ]
+  },
+  {
+   "n": 5,
+   "text": "leémelo",
+   "expected": "«lo» = el portapapeles",
+   "route": "error",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación clipboard.read.text",
+    "dice «no pude entender»"
+   ]
+  },
+  {
+   "n": 6,
+   "text": "no pegues nada",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 8,
+   "text": "copiá",
+   "expected": "pregunta lo que falta, sin actuar",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "no dice ?"
+   ]
+  },
+  {
+   "n": 9,
+   "text": "nada, olvidalo",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 10,
+   "text": "¿el portapapeles guarda historial?",
+   "expected": "responde con verdad",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "ok",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "no copies nada más",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "bien",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "text": "eso es todo",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "listo",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

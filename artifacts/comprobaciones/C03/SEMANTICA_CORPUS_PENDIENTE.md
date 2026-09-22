@@ -104,3 +104,15 @@ así que «Descarga Fall guys en epic games» (H0578) iniciaría una descarga re
 prohíben (no bajar decenas de GB; ninguna descarga de juegos antes del motor). H0456 (Plants vs. Zombies no se resuelve
 aquí: la instalación se rechaza antes de cualquier despacho) y H0620 (PvZ no está instalado) sí serían lecturas; las
 cuatro filas siguen abiertas y se medirán en REDPC o donde la biblioteca las deje ser lecturas.
+
+## Bancos contextuales por categoría — cien-ctx-01…35 (notebook, 2026-09-22; 396/525 turnos bien)
+
+Veredictos por turno en `contexto/cien-ctx-NN.<categoria>.verdicts.json`. Ningún fallo se parchó.
+
+| Clase | Turnos | Forma (ejemplos de los guiones) | Qué hizo BAXY | Qué debía hacer |
+|---|---:|---|---|---|
+| contexto: la continuación vuelve a preguntar | 48 | «poné el volumen en 30» → «subilo a 40»; «abrí paint» → «cerralo»; «maximizá el bloc de notas» → «ahora minimizalo» | «¿Qué querés poner en 40: el volumen, el brillo…?», «¿Quieres confirmar o cancelar?» | resolver «lo/la/eso» con el turno anterior y actuar |
+| contexto: la continuación no se entiende | 22 | «¿en cuánto quedó?», «volvé a activarlo», «leémelo» | «No pude armar una respuesta a eso», «No puedo activar el sonido tal como fue pedido» | leer o actuar sobre el objeto del turno anterior |
+| lectura: contesta estado sin leerlo | 20 | «¿en cuánto quedó?» (brillo), «¿cómo está el micrófono?», «¿qué día de la semana es hoy?» | «Quedó en 50», «El micrófono está activado», «Hoy es viernes» (era martes) | leer el estado (display.status, audio.status, system.time) antes de afirmarlo |
+| otras respuestas sin operación | 17 | «¿qué fecha será en 10 días?», «seguí», «borrala» | respuestas inventadas («En 10 días será el 10 de octubre»), eco del pedido («Borrala.»); entre ellas 3 que afirman un efecto que no corrió con la memoria apagada («Ya, olvidé lo del perro») | leer o actuar; nunca afirmar un efecto sin operación |
+| no es falta de operación | 22 | pedidos incompletos, prohibiciones | 11 sin la pregunta que faltaba, 4 «no pude entender», 7 con una operación que el turno no pedía (dos intentos de clic que el banco prohibía, una búsqueda, una lectura de periféricos, una de energía) | preguntar lo que falta; no actuar si se prohibió |

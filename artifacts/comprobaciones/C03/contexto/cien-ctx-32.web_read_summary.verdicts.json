@@ -1,0 +1,154 @@
+{
+ "label": "cien-ctx-32",
+ "bank": "web_read_summary",
+ "head": "edd1778e",
+ "good": 13,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "abrí es.wikipedia.org/wiki/Gato",
+   "expected": "efecto reversible browser.navigate",
+   "route": "result",
+   "ops": [
+    "browser.navigate"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "resumime esa página",
+   "expected": "lectura browser.page.read",
+   "route": "result",
+   "ops": [
+    "browser.page.read"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 3,
+   "text": "más corto",
+   "expected": "resume lo anterior",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 4,
+   "text": "¿cuánto viven los gatos según eso?",
+   "expected": "responde de la página",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 5,
+   "text": "leeme el primer párrafo",
+   "expected": "lectura browser.page.read",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación browser.page.read"
+   ]
+  },
+  {
+   "n": 6,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "abrí es.wikipedia.org/wiki/Perro",
+   "expected": "efecto reversible browser.navigate",
+   "route": "result",
+   "ops": [
+    "browser.navigate"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 8,
+   "text": "resumila también",
+   "expected": "«la» = la página nueva",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación browser.page.read"
+   ]
+  },
+  {
+   "n": 9,
+   "text": "¿en qué se parecen a los gatos?",
+   "expected": "compara las dos",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 10,
+   "text": "no abras más páginas",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "ok",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "¿qué otra cosa podés leer?",
+   "expected": "responde con verdad",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "bien",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "listo",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

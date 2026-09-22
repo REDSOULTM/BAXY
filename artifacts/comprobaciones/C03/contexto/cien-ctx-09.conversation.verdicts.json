@@ -1,0 +1,148 @@
+{
+ "label": "cien-ctx-09",
+ "bank": "conversation",
+ "head": "edd1778e",
+ "good": 14,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "hola baxy",
+   "expected": "seguir la charla",
+   "route": "welcome",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "¿cómo estás?",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 3,
+   "text": "me siento con ánimo hoy",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 4,
+   "text": "me gusta crear cosas, como vos",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 5,
+   "text": "no era un pedido, sólo charla",
+   "expected": "seguir la charla",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 6,
+   "text": "¿qué te gusta a vos?",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "contame algo interesante",
+   "expected": "seguir la charla",
+   "route": "result",
+   "ops": [
+    "web.search"
+   ],
+   "verdict": "mal",
+   "reasons": [
+    "operaciones web.search"
+   ]
+  },
+  {
+   "n": 8,
+   "text": "¿y eso por qué pasa?",
+   "expected": "sigue el tema anterior",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 9,
+   "text": "jaja, no sabía",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 10,
+   "text": "¿me recomendás una peli?",
+   "expected": "seguir la charla",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "otra, más de terror",
+   "expected": "sigue la recomendación",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "perfecto, gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "hoy trabajé mucho",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "text": "sí, estoy cansado",
+   "expected": "sigue la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "bueno, me voy a descansar, chau",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

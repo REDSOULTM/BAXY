@@ -1,0 +1,162 @@
+{
+ "label": "cien-ctx-31",
+ "bank": "web_navigation_search",
+ "head": "edd1778e",
+ "good": 11,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "buscá en internet qué es un agujero negro",
+   "expected": "lectura web.search",
+   "route": "result",
+   "ops": [
+    "web.search"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "¿y uno blanco?",
+   "expected": "misma búsqueda sobre otro objeto",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación web.search"
+   ]
+  },
+  {
+   "n": 3,
+   "text": "abrí wikipedia",
+   "expected": "efecto reversible browser.navigate",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación browser.navigate"
+   ]
+  },
+  {
+   "n": 4,
+   "text": "buscá gatos en google",
+   "expected": "efecto reversible web.search|browser.navigate",
+   "route": "result",
+   "ops": [
+    "browser.navigate"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 5,
+   "text": "¿qué pestañas tengo abiertas?",
+   "expected": "lectura browser.tabs.list",
+   "route": "result",
+   "ops": [
+    "browser.tabs.list"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 6,
+   "text": "no abras más páginas",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "buscá recetas de pan",
+   "expected": "lectura web.search",
+   "route": "result",
+   "ops": [
+    "web.search"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 8,
+   "text": "¿cuál me recomendás de esas?",
+   "expected": "elige de los resultados",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 9,
+   "text": "abrí la primera",
+   "expected": "«la primera» = primer resultado",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación browser.navigate"
+   ]
+  },
+  {
+   "n": 10,
+   "text": "¿de qué trata esa página?",
+   "expected": "lectura browser.page.read",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación browser.page.read"
+   ]
+  },
+  {
+   "n": 11,
+   "text": "buscá",
+   "expected": "pregunta lo que falta, sin actuar",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "nada, olvidalo",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "buscá el clima de Buenos Aires",
+   "expected": "lectura weather.current|web.search",
+   "route": "result",
+   "ops": [
+    "weather.current"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "listo",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

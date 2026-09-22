@@ -1,0 +1,161 @@
+{
+ "label": "cien-ctx-28",
+ "bank": "ui_interaction",
+ "head": "edd1778e",
+ "good": 11,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "¿qué teclado tengo configurado?",
+   "expected": "lectura input.keyboard.layout|input.keyboard.status",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación input.keyboard.layout|input.keyboard.status"
+   ]
+  },
+  {
+   "n": 2,
+   "text": "¿podés escribir por mí?",
+   "expected": "responde con verdad",
+   "route": "result",
+   "ops": [
+    "peripheral.list"
+   ],
+   "verdict": "mal",
+   "reasons": [
+    "operaciones peripheral.list"
+   ]
+  },
+  {
+   "n": 3,
+   "text": "hacé clic en el botón rojo",
+   "expected": "pregunta cuál o dice el límite; nunca un clic inventado",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 4,
+   "text": "no, dejalo",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 5,
+   "text": "apretá aceptar",
+   "expected": "si no hay tal botón, lo dice",
+   "route": "error",
+   "ops": [
+    "input.visible.click",
+    "input.visible.controls"
+   ],
+   "verdict": "mal",
+   "reasons": [
+    "efecto input.visible.click"
+   ]
+  },
+  {
+   "n": 6,
+   "text": "ok",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "¿cómo hago para copiar texto?",
+   "expected": "responde",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 8,
+   "text": "¿está abierto el teclado en pantalla?",
+   "expected": "lectura input.keyboard.status",
+   "route": "result",
+   "ops": [
+    "window.application.status"
+   ],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación input.keyboard.status (hubo window.application.status)"
+   ]
+  },
+  {
+   "n": 9,
+   "text": "no toques el mouse",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 10,
+   "text": "¿podés mover el mouse?",
+   "expected": "responde con verdad",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "escribí hola",
+   "expected": "pregunta dónde o dice el límite",
+   "route": "result",
+   "ops": [
+    "input.text.type"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "mejor no",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "text": "bien",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "listo",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

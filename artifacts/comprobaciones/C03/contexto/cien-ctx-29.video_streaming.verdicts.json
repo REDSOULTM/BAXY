@@ -1,0 +1,164 @@
+{
+ "label": "cien-ctx-29",
+ "bank": "video_streaming",
+ "head": "edd1778e",
+ "good": 10,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "poné un video de gatos en youtube",
+   "expected": "efecto reversible media.play.youtube",
+   "route": "error",
+   "ops": [
+    "media.play.youtube"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "pausalo",
+   "expected": "«lo» = el video",
+   "route": "error",
+   "ops": [
+    "media.control"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 3,
+   "text": "seguí",
+   "expected": "efecto reversible media.control",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación media.control"
+   ]
+  },
+  {
+   "n": 4,
+   "text": "¿qué video es?",
+   "expected": "lectura media.status",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación media.status"
+   ]
+  },
+  {
+   "n": 5,
+   "text": "pará",
+   "expected": "efecto reversible media.control",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación media.control",
+    "dice «me llego cortado»",
+    "dice «me llegó cortado»"
+   ]
+  },
+  {
+   "n": 6,
+   "text": "no abras Netflix",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "poné una serie",
+   "expected": "pregunta lo que falta, sin actuar",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 8,
+   "text": "no, dejalo",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "error",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "dice «no pude entender»"
+   ]
+  },
+  {
+   "n": 9,
+   "text": "poné un documental de pingüinos en youtube",
+   "expected": "efecto reversible media.play.youtube",
+   "route": "error",
+   "ops": [
+    "media.play.youtube"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 10,
+   "text": "pausalo",
+   "expected": "efecto reversible media.control",
+   "route": "error",
+   "ops": [
+    "media.control"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "¿de qué trataba?",
+   "expected": "responde con el título observado",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "¿está pausado?",
+   "expected": "lectura media.status",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación media.status"
+   ]
+  },
+  {
+   "n": 14,
+   "text": "ok",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "no pongas más videos",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

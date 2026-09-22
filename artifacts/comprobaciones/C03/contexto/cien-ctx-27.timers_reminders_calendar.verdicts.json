@@ -1,0 +1,166 @@
+{
+ "label": "cien-ctx-27",
+ "bank": "timers_reminders_calendar",
+ "head": "edd1778e",
+ "good": 9,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "creá una tarea: revisar el correo",
+   "expected": "efecto reversible task.create",
+   "route": "result",
+   "ops": [
+    "task.create"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "agregá otra: ordenar el escritorio",
+   "expected": "efecto reversible task.create",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación task.create"
+   ]
+  },
+  {
+   "n": 3,
+   "text": "¿qué tareas tengo?",
+   "expected": "lectura task.list",
+   "route": "result",
+   "ops": [
+    "task.list"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 4,
+   "text": "marcá la del correo como hecha",
+   "expected": "efecto reversible task.complete",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación task.complete"
+   ]
+  },
+  {
+   "n": 5,
+   "text": "¿cuáles quedan?",
+   "expected": "sigue la lista",
+   "route": "error",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación task.list"
+   ]
+  },
+  {
+   "n": 6,
+   "text": "borrá la de ordenar",
+   "expected": "efecto reversible task.delete",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación task.delete"
+   ]
+  },
+  {
+   "n": 7,
+   "text": "restaurala",
+   "expected": "«la» = la tarea borrada",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación task.restore"
+   ]
+  },
+  {
+   "n": 8,
+   "text": "creá una tarea",
+   "expected": "pregunta lo que falta, sin actuar",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 9,
+   "text": "llamar al médico",
+   "expected": "une el título",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación task.create"
+   ]
+  },
+  {
+   "n": 10,
+   "text": "¿qué recordatorios tengo?",
+   "expected": "lectura reminder.list|notification.list",
+   "route": "result",
+   "ops": [
+    "reminder.list"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "¿tengo algo en el calendario hoy?",
+   "expected": "lectura calendar.event.list",
+   "route": "error",
+   "ops": [
+    "calendar.event.list"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "no crees nada más",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "listame todas las tareas",
+   "expected": "lectura task.list",
+   "route": "result",
+   "ops": [
+    "task.list"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "listo",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

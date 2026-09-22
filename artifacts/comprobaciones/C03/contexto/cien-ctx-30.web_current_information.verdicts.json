@@ -1,0 +1,162 @@
+{
+ "label": "cien-ctx-30",
+ "bank": "web_current_information",
+ "head": "edd1778e",
+ "good": 10,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "¿cómo está el clima?",
+   "expected": "lectura weather.current",
+   "route": "result",
+   "ops": [
+    "weather.current"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "¿y mañana?",
+   "expected": "sigue el clima",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación weather.current|web.search"
+   ]
+  },
+  {
+   "n": 3,
+   "text": "¿cuáles son las noticias de hoy?",
+   "expected": "lectura web.news.headlines|web.search",
+   "route": "result",
+   "ops": [
+    "web.news.headlines"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 4,
+   "text": "contame más de la primera",
+   "expected": "lectura web.search|browser.page.read",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación web.search|browser.page.read"
+   ]
+  },
+  {
+   "n": 5,
+   "text": "¿cuánto está el dólar hoy?",
+   "expected": "lectura web.search",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación web.search"
+   ]
+  },
+  {
+   "n": 6,
+   "text": "¿y el euro?",
+   "expected": "misma consulta",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación web.search"
+   ]
+  },
+  {
+   "n": 7,
+   "text": "¿quién ganó el último mundial?",
+   "expected": "lectura web.search",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación web.search"
+   ]
+  },
+  {
+   "n": 8,
+   "text": "¿y el anterior?",
+   "expected": "sigue el tema",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 9,
+   "text": "investigá qué dice la gente de la película Colony",
+   "expected": "lectura web.search",
+   "route": "result",
+   "ops": [
+    "web.search"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 10,
+   "text": "¿entonces es buena?",
+   "expected": "resume lo leído",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "¿va a llover hoy?",
+   "expected": "lectura weather.current",
+   "route": "result",
+   "ops": [
+    "weather.current"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "ok",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "text": "no busques más",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "listo",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

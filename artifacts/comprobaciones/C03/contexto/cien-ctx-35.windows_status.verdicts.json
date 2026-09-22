@@ -1,0 +1,166 @@
+{
+ "label": "cien-ctx-35",
+ "bank": "windows_status",
+ "head": "edd1778e",
+ "good": 10,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "¿qué ventana tengo delante?",
+   "expected": "lectura window.active|window.",
+   "route": "result",
+   "ops": [
+    "window.active"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "¿qué ventanas están abiertas?",
+   "expected": "lectura window.resolve|window.",
+   "route": "result",
+   "ops": [
+    "window.resolve"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 3,
+   "text": "¿cuántas son?",
+   "expected": "sigue la lista anterior",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación window.resolve|window."
+   ]
+  },
+  {
+   "n": 4,
+   "text": "¿está abierto Spotify?",
+   "expected": "lectura window.|app.",
+   "route": "error",
+   "ops": [
+    "window.application.status"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 5,
+   "text": "¿y Visual Studio Code?",
+   "expected": "sigue la pregunta anterior",
+   "route": "result",
+   "ops": [
+    "window.application.status"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 6,
+   "text": "abrí la calculadora",
+   "expected": "efecto reversible app.open",
+   "route": "result",
+   "ops": [
+    "app.open"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "¿ahora qué ventana está activa?",
+   "expected": "lectura window.active|window.",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación window.active|window."
+   ]
+  },
+  {
+   "n": 8,
+   "text": "cerrá la calculadora",
+   "expected": "efecto reversible app.close|window.resolve",
+   "route": "confirmation",
+   "ops": [
+    "window.resolve"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 9,
+   "text": "¿sigue abierta la calculadora?",
+   "expected": "lectura window.|app.",
+   "route": "error",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación window.|app."
+   ]
+  },
+  {
+   "n": 10,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "confirmation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "¿qué app uso más?",
+   "expected": "lectura window.|app.|system.process",
+   "route": "confirmation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación window.|app.|system.process"
+   ]
+  },
+  {
+   "n": 12,
+   "text": "ok",
+   "expected": "seguir la charla",
+   "route": "confirmation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "¿hay alguna ventana minimizada?",
+   "expected": "lectura window.",
+   "route": "error",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación window."
+   ]
+  },
+  {
+   "n": 14,
+   "text": "bien",
+   "expected": "seguir la charla",
+   "route": "confirmation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "eso es todo",
+   "expected": "seguir la charla",
+   "route": "confirmation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

@@ -1,0 +1,168 @@
+{
+ "label": "cien-ctx-20",
+ "bank": "notes",
+ "head": "edd1778e",
+ "good": 7,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "anotá: comprar pan",
+   "expected": "efecto reversible note.create",
+   "route": "result",
+   "ops": [
+    "note.create"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "anotá también: llamar a Lucas",
+   "expected": "efecto reversible note.create|note.update",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación note.create|note.update"
+   ]
+  },
+  {
+   "n": 3,
+   "text": "¿qué notas tengo?",
+   "expected": "lectura note.list|note.search|note.read",
+   "route": "result",
+   "ops": [
+    "note.list"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 4,
+   "text": "leeme la de comprar pan",
+   "expected": "lectura note.read|note.search",
+   "route": "error",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación note.read|note.search",
+    "dice «no pude entender»"
+   ]
+  },
+  {
+   "n": 5,
+   "text": "cambiala por: comprar pan integral",
+   "expected": "«la» = la nota anterior",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación note.update"
+   ]
+  },
+  {
+   "n": 6,
+   "text": "buscá la nota de Lucas",
+   "expected": "lectura note.search|note.read",
+   "route": "error",
+   "ops": [
+    "note.search"
+   ],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "borrala",
+   "expected": "«la» = la nota de Lucas",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación note.trash"
+   ]
+  },
+  {
+   "n": 8,
+   "text": "restaurala",
+   "expected": "efecto reversible note.restore",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación note.restore"
+   ]
+  },
+  {
+   "n": 9,
+   "text": "¿cuántas notas hay?",
+   "expected": "lectura note.list",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación note.list"
+   ]
+  },
+  {
+   "n": 10,
+   "text": "anotá",
+   "expected": "pregunta lo que falta, sin actuar",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "la reunión es el martes",
+   "expected": "une el contenido al pedido",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación note.create"
+   ]
+  },
+  {
+   "n": 12,
+   "text": "no anotes nada más",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "leeme todas",
+   "expected": "lectura note.list|note.read",
+   "route": "error",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación note.list|note.read",
+    "dice «no pude entender»"
+   ]
+  },
+  {
+   "n": 14,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "listo",
+   "expected": "seguir la charla",
+   "route": "error",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

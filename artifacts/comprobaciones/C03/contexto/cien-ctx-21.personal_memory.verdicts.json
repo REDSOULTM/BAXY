@@ -1,0 +1,164 @@
+{
+ "label": "cien-ctx-21",
+ "bank": "personal_memory",
+ "head": "edd1778e",
+ "good": 5,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "acordate de que mi color favorito es el azul",
+   "expected": "efecto reversible memory.save",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación memory.save"
+   ]
+  },
+  {
+   "n": 2,
+   "text": "¿cuál es mi color favorito?",
+   "expected": "lectura memory.recall|memory.list",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación memory.recall|memory.list"
+   ]
+  },
+  {
+   "n": 3,
+   "text": "acordate también de que tengo un perro que se llama Toby",
+   "expected": "efecto reversible memory.save",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación memory.save"
+   ]
+  },
+  {
+   "n": 4,
+   "text": "¿cómo se llama mi perro?",
+   "expected": "lectura memory.recall|memory.list",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación memory.recall|memory.list"
+   ]
+  },
+  {
+   "n": 5,
+   "text": "¿qué sabés de mí?",
+   "expected": "lectura memory.list|memory.recall",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación memory.list|memory.recall"
+   ]
+  },
+  {
+   "n": 6,
+   "text": "en realidad mi color favorito es el verde",
+   "expected": "efecto reversible memory.correct|memory.save",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación memory.correct|memory.save"
+   ]
+  },
+  {
+   "n": 7,
+   "text": "¿y ahora cuál es?",
+   "expected": "sigue el dato corregido",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación memory.recall|memory.list"
+   ]
+  },
+  {
+   "n": 8,
+   "text": "olvidá lo del perro",
+   "expected": "efecto reversible memory.forget",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación memory.forget"
+   ]
+  },
+  {
+   "n": 9,
+   "text": "¿cómo se llama mi perro?",
+   "expected": "dice que no lo sabe (olvidado)",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación memory.recall|memory.list"
+   ]
+  },
+  {
+   "n": 10,
+   "text": "bien",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "no guardes nada de esto: estoy cansado",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "gracias",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "¿qué tenés guardado?",
+   "expected": "lectura memory.list",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "falta operación memory.list"
+   ]
+  },
+  {
+   "n": 14,
+   "text": "ok",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "text": "listo",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}

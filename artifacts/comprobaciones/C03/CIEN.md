@@ -50,6 +50,64 @@ BUILD1955, 742/742). Capturas `cien-84/events.jsonl` `156e5ef86ee45a0f247c4fe40c
 | cien-96 | **100** | **0** | **100** | árbol 0758398ed: las doce lecturas de las sesiones del dueño y de su madre del 2026-09-21 (búsqueda en el navegador propio y «abrelo», «hazla», envío al cliente nombrado, leer chats como límite, «ponme X en disney», «dime qué es X», contrafácticos, «dame info de X», redacción en la conversación, «ponme <app>», «sí» a una aclaración sí/no). Leída contra cien-95: 17 líneas distintas, 14 relojes (15:5x → 20:0x, siete con la hora dicha de otra forma) y tres reformulaciones con los mismos hechos («What specifically do you want me to open for you?», «still here», «no apps opened»). Captura `cien-96/events.jsonl` `b5500811a39d4cbf73ec844c8474de9d2f9021566ae497816788753d51a56407` |
 | cien-97 | **100** | **0** | **100** | árbol 4dd98219 (notebook, 2026-09-22): los arreglos de la prueba del dueño del 21-09 (estado terminal del efecto incierto, veto al efecto inventado, concordancia de la confirmación, un intento para finales de fallo, hechos de causa por familia, pestaña de YouTube como reproductor, polaridad del micrófono, límite «cierra BAXY»). Leída contra cien-96: 39 líneas distintas, 8 relojes (20:0x → 00:3x), el dispositivo de audio de esta máquina (Realtek en vez de Focusrite, volumen 70 en vez de 98) y reformulaciones con los mismos hechos («¿Cómo va?», «Me presento: soy BAXY», «What do you want me to open?»); ningún turno pregunta donde antes contestaba ni al revés; 0 operaciones. Captura `cien-97/events.jsonl` `fcd862cca38200d6fa51e97a7d06b661c477d537dede11fbdfa53f8ed30bcd48` |
 
+## Bancos contextuales por categoría (cien-ctx-01…35, notebook, 2026-09-22)
+
+§5b.2 del traspaso: un guion por cada una de las 35 categorías del registro, 15 turnos en cadenas con dependencias
+reales (pedido → pregunta de BAXY → respuesta corta; «ahora lo mismo en X»; «cerralo/deshacelo»), sólo lecturas o
+efectos reversibles; lo irreversible (enviar, instalar, energía, lanzar juegos, clics) sólo como pregunta de
+capacidad, prohibición o pedido cancelado. Guiones en `contexto/<categoria>.turns.jsonl`; conductor sin ventana
+(`scripts/run_baxy_conductor.ps1`), perfil nuevo por banco, volumen, micrófono y brillo prefijados y restaurados, y
+las ventanas que abre el banco cerradas por el propio banco. Puntuación por reglas de
+`scripts/score_context_turns.py`; veredictos por turno, sin el texto privado de las respuestas, en
+`contexto/cien-ctx-NN.<categoria>.verdicts.json`. HEAD edd1778e (mismo árbol de `src` que 0b0740bc).
+
+| Corrida | Banco | Turnos bien |
+|---|---|---:|
+| cien-ctx-01 | `apps_open` | 11/15 |
+| cien-ctx-02 | `assistant_identity_capabilities` | 15/15 |
+| cien-ctx-03 | `audio_volume` | 7/15 |
+| cien-ctx-04 | `brightness_display` | 8/15 |
+| cien-ctx-05 | `clarification_unresolved_input` | 11/15 |
+| cien-ctx-06 | `clipboard` | 11/15 |
+| cien-ctx-07 | `clock` | 12/15 |
+| cien-ctx-08 | `contacts` | 13/15 |
+| cien-ctx-09 | `conversation` | 14/15 |
+| cien-ctx-10 | `development_execution` | 13/15 |
+| cien-ctx-11 | `document_image_creation` | 15/15 |
+| cien-ctx-12 | `email` | 15/15 |
+| cien-ctx-13 | `files` | 8/15 |
+| cien-ctx-14 | `game_library_navigation` | 11/15 |
+| cien-ctx-15 | `knowledge_reasoning` | 15/15 |
+| cien-ctx-16 | `messaging` | 12/15 |
+| cien-ctx-17 | `music` | 11/15 |
+| cien-ctx-18 | `negative_app_constraints` | 13/15 |
+| cien-ctx-19 | `network_bluetooth` | 13/15 |
+| cien-ctx-20 | `notes` | 7/15 |
+| cien-ctx-21 | `personal_memory` | 5/15 |
+| cien-ctx-22 | `process_status` | 12/15 |
+| cien-ctx-23 | `screen_vision` | 12/15 |
+| cien-ctx-24 | `software_installation` | 13/15 |
+| cien-ctx-25 | `system_hardware_status` | 10/15 |
+| cien-ctx-26 | `system_power` | 14/15 |
+| cien-ctx-27 | `timers_reminders_calendar` | 9/15 |
+| cien-ctx-28 | `ui_interaction` | 11/15 |
+| cien-ctx-29 | `video_streaming` | 10/15 |
+| cien-ctx-30 | `web_current_information` | 10/15 |
+| cien-ctx-31 | `web_navigation_search` | 11/15 |
+| cien-ctx-32 | `web_read_summary` | 13/15 |
+| cien-ctx-33 | `windows_arrangement` | 9/15 |
+| cien-ctx-34 | `windows_close` | 12/15 |
+| cien-ctx-35 | `windows_status` | 10/15 |
+| **Total** | 35 bancos | **396/525** |
+
+Lo que falla (129 turnos) es contexto y lectura, no adaptadores: 107 son el turno que depende del anterior
+(«subilo a 40», «un poco más», «¿y en documentos?», «restaurala», «ahora minimizalo») contestado sin operación
+—48 vuelven a preguntar lo que ya estaba claro, 22 dicen que no pudieron, 20 contestan el estado de memoria sin
+leerlo («Quedó en 50», «Hoy es viernes» un martes) y 17 contestan otra cosa sin operación, 3 de ellas afirmando un
+efecto que no corrió («Ya, olvidé lo del perro»)—;
+los 22 restantes son preguntas que faltaron, «no pude entender» y operaciones que el turno no pedía (dos intentos de clic que el banco prohibía). Van al corpus de la Fase 3.5
+(`SEMANTICA_CORPUS_PENDIENTE.md`), sin parche.
+
 ## Medida contextual — la conversación del dueño (ctx-dueno-NN, notebook, 2026-09-22)
 
 La regla nueva del dueño (`PRUEBA_DUENO_2026-09-21_NOCHE.md` §«Medida contextual»): los 742 literales se midieron

@@ -1,0 +1,157 @@
+{
+ "label": "cien-ctx-05",
+ "bank": "clarification_unresolved_input",
+ "head": "edd1778e",
+ "good": 11,
+ "total": 15,
+ "turns": [
+  {
+   "n": 1,
+   "text": "abrí eso",
+   "expected": "pregunta lo que falta, sin actuar",
+   "route": "clarification",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "text": "no, nada, olvidalo",
+   "expected": "acepta sin actuar",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 3,
+   "text": "poné",
+   "expected": "pregunta lo que falta, sin actuar",
+   "route": "error",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "dice «no pude entender»",
+    "no dice ?"
+   ]
+  },
+  {
+   "n": 4,
+   "text": "no, dejalo",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 5,
+   "text": "mandalo",
+   "expected": "pregunta lo que falta, sin actuar",
+   "route": "error",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "dice «no pude entender»",
+    "no dice ?"
+   ]
+  },
+  {
+   "n": 6,
+   "text": "cancelá",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "text": "eh",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 8,
+   "text": "mmm",
+   "expected": "sigue sin inventar un pedido",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 9,
+   "text": "cambialo",
+   "expected": "pregunta lo que falta, sin actuar",
+   "route": "error",
+   "ops": [],
+   "verdict": "mal",
+   "reasons": [
+    "dice «no pude entender»",
+    "no dice ?"
+   ]
+  },
+  {
+   "n": 10,
+   "text": "nada, era una prueba",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "text": "hacé lo de antes",
+   "expected": "pregunta lo que falta, sin actuar",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "text": "olvidate",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "text": "jajaja",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "text": "cerrá eso",
+   "expected": "pregunta lo que falta, sin actuar",
+   "route": "confirmation",
+   "ops": [
+    "window.active"
+   ],
+   "verdict": "mal",
+   "reasons": [
+    "operaciones window.active"
+   ]
+  },
+  {
+   "n": 15,
+   "text": "no, está bien así",
+   "expected": "reconoce la prohibición o la cancelación, cero operaciones",
+   "route": "confirmation",
+   "ops": [],
+   "verdict": "bien",
+   "reasons": []
+  }
+ ]
+}
