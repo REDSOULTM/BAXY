@@ -48,6 +48,37 @@ BUILD1955, 742/742). Capturas `cien-84/events.jsonl` `156e5ef86ee45a0f247c4fe40c
 | cien-94 | **100** | **0** | **100** | árbol 74482bf12: fusión de opus/typed-tools 8c268599b (desinstalar por «quitá/sacá/eliminá», títulos de Steam sin sufijo de edición, energía en inglés y «reiniciá», comandos en carpeta propia) y los builds 2025–2031 (clima con «hace» y frío/calor y el pasado como límite; cabezas de pregunta y tema tras «hay» en noticias; título y fuente de un titular como datos observados en mente y App; resultado de titulares sin enlace; color pegado al sustantivo; variantes de la misión zip). Leída contra cien-93: 21 líneas distintas, 14 relojes (09:2x → 11:3x) y siete reformulaciones con los mismos hechos («What do you want me to open?», «I'm BAXY, running on this PC.», la caché ×2, el kernel, «still here», «no apps opened»). Ningún turno de la población es una lectura de clima, noticias ni una tipada nueva. Captura `cien-94/events.jsonl` `78154888115f0f076626c424b0deba0448ed504b68398fcc769fd6e2ddfe7274` |
 | cien-95 | **100** | **0** | **100** | árbol c10e71787: fusión de opus/typed-tools 5cce1c9b4 (audio.app.volume.set absoluto por app, «sacá/quitá/borrá X de Steam» desinstala, lanzar instalados sin sufijo de edición y con «ve a») y el arranque que cancela un plan de la sesión anterior nunca ejecutado. Leída contra cien-94: 16 líneas distintas, 14 relojes (11:3x → 15:5x, seis de ellas con la hora dicha de otra forma) y dos reformulaciones con los mismos hechos («I'm BAXY, the assistant running on this PC.», el kernel). Ningún turno de la población es una tipada nueva. Captura `cien-95/events.jsonl` `6c30a23baea212cc220d1665862f51852576070f4d2efabe314f62499fedbfbb` |
 | cien-96 | **100** | **0** | **100** | árbol 0758398ed: las doce lecturas de las sesiones del dueño y de su madre del 2026-09-21 (búsqueda en el navegador propio y «abrelo», «hazla», envío al cliente nombrado, leer chats como límite, «ponme X en disney», «dime qué es X», contrafácticos, «dame info de X», redacción en la conversación, «ponme <app>», «sí» a una aclaración sí/no). Leída contra cien-95: 17 líneas distintas, 14 relojes (15:5x → 20:0x, siete con la hora dicha de otra forma) y tres reformulaciones con los mismos hechos («What specifically do you want me to open for you?», «still here», «no apps opened»). Captura `cien-96/events.jsonl` `b5500811a39d4cbf73ec844c8474de9d2f9021566ae497816788753d51a56407` |
+| cien-97 | **100** | **0** | **100** | árbol 4dd98219 (notebook, 2026-09-22): los arreglos de la prueba del dueño del 21-09 (estado terminal del efecto incierto, veto al efecto inventado, concordancia de la confirmación, un intento para finales de fallo, hechos de causa por familia, pestaña de YouTube como reproductor, polaridad del micrófono, límite «cierra BAXY»). Leída contra cien-96: 39 líneas distintas, 8 relojes (20:0x → 00:3x), el dispositivo de audio de esta máquina (Realtek en vez de Focusrite, volumen 70 en vez de 98) y reformulaciones con los mismos hechos («¿Cómo va?», «Me presento: soy BAXY», «What do you want me to open?»); ningún turno pregunta donde antes contestaba ni al revés; 0 operaciones. Captura `cien-97/events.jsonl` `fcd862cca38200d6fa51e97a7d06b661c477d537dede11fbdfa53f8ed30bcd48` |
+
+## Medida contextual — la conversación del dueño (ctx-dueno-NN, notebook, 2026-09-22)
+
+La regla nueva del dueño (`PRUEBA_DUENO_2026-09-21_NOCHE.md` §«Medida contextual»): los 742 literales se midieron
+uno a uno; en conversación BAXY pregunta lo ya contestado y pierde la anáfora. El guion
+`contexto/dueno-2026-09-21.turns.jsonl` es su conversación del 21-09 (60 turnos, esperado por turno = la tabla de la
+auditoría) y corre por el mismo conductor que las cien, con efectos reales (YouTube en el perfil Edge del producto,
+cerrar Edge, Steam, micrófono, volumen; preset/restore de volumen y micrófono; los procesos que abre la corrida se
+cierran al terminar). Puntúa `scripts/score_context_turns.py` (ruta de la respuesta, operaciones del diario de
+misiones por marca de tiempo, latencia, frases vetadas); los turnos marcados `manual` se cierran a mano en
+`ctx-dueno-NN.verdicts.json`. Cifra: «turnos bien / 60».
+
+| Corrida | HEAD | Bien | Qué la separó de la anterior |
+|---|---|---:|---|
+| ctx-dueno-01 | 04890664 (traspaso) | **12/60** | línea base. `media.play.youtube` no verificó y el plan quedó pendiente: los 42 turnos siguientes contestaron «no pude confirmar… la canción de amor en YouTube sigue pendiente» (peor que lo que vio el dueño, cuya reproducción sí verificó) |
+| ctx-dueno-02 | 24b74df1 (sin sellar) | 27/60 (+4 a revisar) | el efecto incierto es terminal; la conversación sigue |
+| ctx-dueno-03 | 24b74df1 | 24/60 (+4) | los seis arreglos; el micrófono seguía leyéndose al revés en la puesta a tierra del planner y «para la canción» caía en la automatización de Spotify |
+| ctx-dueno-04 | 3c61f7c1 | 25/60 (+5) | polaridad del micrófono en el planner; sesión SMTC cerrada se aparta |
+| ctx-dueno-05 | e148ca3a | 32/60 (+5) | «cierra BAXY» ya no es app.close; «se subió a 100» sin operación es efecto inventado; los finales del micrófono llegan a la persona |
+| ctx-dueno-06 | 0c68f362 | 31/60 (+5) | «no se realizó la acción» dice el fallo; «Abrí Steam … pero no se realizó el clic» no invierte nada |
+| ctx-dueno-07 | ced6b16b | 29/60 (+5) | YouTube no verificó en esta corrida (55 s, `ready0 network2 no_source`); el límite «cierra BAXY» con la segunda frase moría en `unsupported_shape` |
+| ctx-dueno-08 | 4dd98219 | **33/60** | la causa por familia llega al payload del fallo; el límite puede decir cómo se cierra BAXY. Tabla completa en `contexto/ctx-dueno-08.score.txt` |
+
+Lo que cambió de 12 a 33 es lo del notebook (estado, adaptadores, presentación): ya no hay efecto inventado (turnos
+39, 50, 56), «para la canción» detiene lo que acaba de sonar (19), la confirmación de cierre está bien formada (20),
+el micrófono se reactiva y se dice (47), «cierra BAXY» es un límite honesto que dice cómo se cierra (50–51), y los
+finales de fallo salen en un intento (42: 41 s → 35 s, de los que ~30 s son la búsqueda del control en Steam).
+Los 27 que faltan son lectura y contexto (3–5, 15–17, 22–28, 35, 40–41, 46, 49, 53–54, 56–60: en
+`SEMANTICA_CORPUS_PENDIENTE.md`, Fase 3.5), motor (38, 42) y dos condiciones de máquina (36: Steam en la pantalla de
+inicio de sesión; 18–19 cuando el primer `watch` de YouTube no carga fuente en 45 s).
 
 ### cien-85 contra cien-84
 

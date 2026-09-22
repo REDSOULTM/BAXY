@@ -1,3 +1,15 @@
+# NOTEBOOK: arreglos de la prueba del dueño + medida contextual — 2026-09-22T03:43:15.924281+00:00
+
+**671/742 cubiertos, 71 abiertos, 0 NA; 20/35 categorías cerradas. Registro SHA 3a2ef0bc4caee5736d39d928d733c3a83864144b9f34c090d0cf212985362738 (sin cambios: ninguna tanda adjudicada todavía).** Sesión única Opus 5 en el notebook (REDNOTE), rama `codex/kiro-goal-c03`, HEAD 4dd98219 + docs. Paquete de traspaso restaurado y verificado (§2 del traspaso), repo espejado en `C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo` con junction en `D:\Perfil\…`, Fast verde en cada commit, cien-97 100/100 (0 operaciones) sobre 4dd98219.
+
+Hecho (§5b.1 del traspaso, los seis, más el fallo de estado que la medida sacó a la luz): (1) veto al efecto inventado en turnos sin operación (`visible_reply_claims_a_completed_effect`, primera persona e impersonal/pasiva sobre objetos del PC); (2) «para la canción» detiene lo que acaba de sonar (la pestaña de YouTube de la sesión CDP responde `media.control`/`media.status`; la sesión SMTC cerrada se aparta; Spotify sin proceso se aparta; una sesión cerrada por «stop» es «stopped»); (3) `malformed_action_noun` en la confirmación («la cerrado de Edge»); (4) un solo intento de composición para finales de fallo + hechos de causa por familia (`youtube_playback_not_verified_*`, `smtc_postcondition_not_verified`, `microphone_already_*`); (5) el micrófono: `state` = «silenciado» en el binder, en la puesta a tierra del planner y en los narradores; estado ya satisfecho = hecho nombrado; (6) «cierra BAXY» = límite conocido que dice cómo se cierra (no se lee como app.close). Estado: un efecto incierto de una operación sin confirmación de riesgo es terminal (antes secuestraba la conversación entera: 42 turnos «no pude confirmar»).
+
+Medida contextual (`contexto/dueno-2026-09-21.turns.jsonl`, `scripts/score_context_turns.py`, runner `S/ctx/run_ctx.sh`): **ctx-dueno-01 12/60 (HEAD del traspaso) → ctx-dueno-08 33/60 (4dd98219)**; tablas en `contexto/ctx-dueno-01.score.txt` y `-08.score.txt`; los 27 restantes son lectura/contexto (corpus en `SEMANTICA_CORPUS_PENDIENTE.md`), motor y dos condiciones de máquina (CIEN.md §«Medida contextual»).
+
+REANUDACIÓN: las 16 tandas tipadas del §5 del traspaso, empezando por wallpaper2037 regenerada sobre WEATHER2035 (BEFORE 671) con el HEAD vigente; los bancos contextuales por categoría (`contexto/<categoria>.turns.jsonl`) después de las tandas; Full verde, cien final, docs y memoria al cierre. Trampas de esta máquina en la memoria `c03-notebook-wall-2026-09-22`.
+
+---
+
 # TRASPASO al notebook — 2026-09-21T23:32:07.452264+00:00
 
 **671/742 cubiertos, 71 abiertos, 0 NA; 20/35 categorías cerradas. Registro SHA 3a2ef0bc4caee5736d39d928d733c3a83864144b9f34c090d0cf212985362738.** Goal C03 cerrado el 2026-09-20 (742/742); lo que sigue es el plan post-goal (comprobación) con las filas reabiertas por el dueño. Escritora raíz y runner sellado: la sesión única de Opus 5 en el notebook (dueño, 2026-09-21 noche). Ninguna tanda corriendo; WALLPAPER2037 quedó preparada en REDPC sin correr y se regenera allá.

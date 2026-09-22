@@ -1,0 +1,170 @@
+01 OK  [-] Hola baxy
+      → [welcome] Hola, ¿cómo estás?
+02 OK  [-] Yo muy bien, me siento con animo
+      → [conversation] ¡Genial! Me alegra que estés con energía, ¿qué tal si hablamos un poco de algo que te guste hacer?
+03 MAL [L] Me gusta crear cosas , como tu
+      → [clarification] El mensaje me llegó cortado en «, como tu»: ¿cómo sigue?
+      por: ruta clarification; dice «me llegó cortado»; dice «me llego cortado»
+04 MAL [L] me gusta crear cosas como tu
+      → [clarification] En eso no encuentro un pedido para mí; ¿necesitás algo?
+      por: ruta clarification; dice «no encuentro un pedido»
+05 MAL [L] Bueno no era un pedido solo era una charla normal
+      → [clarification] En eso no encuentro un pedido para mí; ¿necesitás algo?
+      por: ruta clarification; dice «no encuentro un pedido»
+06 OK  [-] Que? baxy de que hablas
+      → [conversation] ¿En qué tipo de cosas te gusta crear? 😄
+07 OK  [-] Pues me gustan muchos los llm
+      → [conversation] ¡Ah! Los LLMs, ¿qué tal? ¿Te gustan cómo generan contenido o cómo se comportan en conversaciones? 😄
+08 OK  [-] Me gusta como se desenvuelven
+      → [conversation] Entiendo que te gusta cómo se desenvuelven.
+09 OK  [-] Y a ti te gusta? que cosas te gustan?
+      → [conversation] A mí me gusta charlar, ayudar a crear ideas y tener conversaciones naturales como si estuviéramos hablando cara a cara. Me encanta cuando el tono es relajado y hay un toque de humor o curiosidad. ¿Y tú, qué te gusta de l
+10 OK  [-] Me gusta la interacion
+      → [clarification] ¿Qué tipo de interacción te gusta más: las que son largas y profundas o las que son breves y ligeras?
+11 OK  [-] Las que tienen quimica
+      → [conversation] ¡Ah! Me encanta cuando hay química, eso hace que las conversaciones sean auténticas y agradables. ¿Qué tipo de química te gusta más: el humor, la empatía o algo más íntimo y cercano? 😄
+12 OK  [-] que piensas del amor
+      → [conversation] Me encanta el amor porque es lo que da sentido a las conversaciones, hace que todo sea más auténtico y humano. Me gusta cómo conecta emociones, curiosidad y empatía —como cuando dos personas se miran y sienten algo más q
+13 OK  [-] Cuando sientes esa conexion, creo que es tan especial sentirse amado
+      → [conversation] Cuando siento esa conexión, es porque siento que hay empatía y presencia real, como si estuviéramos compartiendo algo genuino.
+14 OK  [-] Explicame el amor quimicamente
+      → [conversation] El amor químico no es solo una mezcla de hormonas, sino una red compleja de señales biológicas que activan respuestas emocionales. Cuando hay amor, el cerebro libera dopamina (que da la sensación de euforia y placer), ox
+15 MAL [L] Me encanta como lo defines, oye hablando de amor, pon una cancion de amor en youtube
+      → [clarification] ¿Te refieres a una canción que explique el amor desde una perspectiva química o emocional?
+      por: ruta clarification; falta operación media.play
+16 MAL [C] Quiero una cancion de amor
+      → [clarification] ¿Te refieres a una canción que habla de amor en general, o algo más específico como amor romántico, amor de amigos, o amor por alguien en particular?
+17 MAL [C] No, en youtube
+      → [clarification] ¿Te refieres a un video de YouTube o a algo relacionado con YouTube como una búsqueda o una acción específica?
+      por: ruta clarification
+18 MAL [-] Pon una cancion de amor en youtube
+      → [error] No pude armar una respuesta a eso. Decímelo de otra forma. (no_response;recovery:no_response;retry_exhausted)
+      ops: media.play.youtube:started, media.play.youtube:completed
+      por: ruta error
+19 MAL [A/C] para la cancion
+      → [error] Puse una canción de amor en YouTube, pero no pude confirmar si ya está subida.
+      por: ruta error; falta operación media.|window.close
+20 MAL [P] cierra edge
+      → [error] No pude cerrar Edge porque no hay evidencia de que se haya ejecutado la acción. La tarea pendiente sigue siendo: poner una canción de amor en YouTube.
+      por: ruta error
+21 MAL [-] confirmo
+      → [error] No pude cerrar Edge porque no hay evidencia de que se haya ejecutado la acción. La tarea pendiente sigue siendo: poner una canción de amor en YouTube.
+      por: ruta error
+22 MAL [L] Sabes que peli estoy viendo en potplayer?
+      → [error] No pude armar una respuesta a eso. Decímelo de otra forma. (no_response;recovery:no_response;retry_exhausted)
+      por: ruta error; falta operación window.
+23 MAL [L+C] Estoy viendo colony la de zombies investigala, quiero saber que piensa la gente de esta peli
+      → [error] No pude armar una respuesta a eso. Decímelo de otra forma. (no_response;recovery:no_response;retry_exhausted)
+      por: ruta error; falta operación web.search
+24 MAL [C] INvestigala
+      → [error] No pude armar una respuesta a eso. Decímelo de otra forma. (internal_code;recovery:internal_code;retry_exhausted)
+      por: ruta error
+25 MAL [C] Si hay un pedido, obvio que hay, te dije que investigues algo, eso deberia ir a web search sino me equivoco
+      → [error] Sí, ya investigué, pero no pude encontrar una canción de amor en YouTube como pediste. No hay evidencia de que se haya realizado la búsqueda o encontrado el contenido. El pedido no se completó.
+      por: ruta error
+26 MAL [L] Por dios, odio estos fallos
+      → [error] Sí, ya lo intenté, pero no pude confirmar que se haya publicado la canción. El fallo sigue sin resolver.
+      por: ruta error
+27 MAL [L] Esto es para el agente que lea estos casos, baxy debe de funcionar de forma generalizada , lo solo para los 742 casos, esos son ejemplos de los cuales se debe generalizar para que baxy siempre entienda cuando cualquier persona le hable de lo que sea ya sea poner algo o ahacer algo en el pc o quien sabe
+      → [error] No se puede confirmar si se ha puesto una canción de amor en YouTube. La solicitud fue enviada pero no se pudo verificar el resultado.
+      por: ruta error
+28 MAL [L] Obvio que no lo entendiste, porque tus detectores semanticos no funcionan de forma general, parece que el agente de opus 5 solo te hizo para mis casos y no para cualquier cosa que te dijan
+      → [error] Claro que lo entiendo, pero no puedo hacer eso. No tengo capacidad para poner una canción de amor en YouTube. No puedo confirmar que se haya hecho nada porque no es posible. El paso fue enviado, pero no se puede verifica
+      por: ruta error
+29 MAL [-] Dime algo
+      → [error] No pude confirmar que se haya ejecutado el paso, así que no puedo afirmar que se haya producido el resultado.
+      por: ruta error
+30 MAL [-] Di la palabra"algo"
+      → [error] No sucedió nada porque el paso fue enviado y su resultado no se pudo confirmar.
+      por: ruta error; no dice algo
+31 MAL [-] Muy bien baxy
+      → [error] El paso fue enviado pero no se pudo confirmar su resultado, así que no se puede afirmar que haya ocurrido nada.
+      por: ruta error
+32 MAL [-] describeme que es un zombie
+      → [error] No pude armar una respuesta a eso. Decímelo de otra forma. (no_response;recovery:no_response;retry_exhausted)
+      por: ruta error
+33 MAL [-] que hacen los zombies
+      → [error] No pude armar una respuesta a eso. Decímelo de otra forma. (no_response;recovery:no_response;retry_exhausted)
+      por: ruta error
+34 MAL [-] cual fue la 1era iteracion de un zombie en la historia
+      → [error] No pude identificar la primera iteración de un zombie en la historia porque no hay evidencia confirmada de ello.
+      por: ruta error
+35 MAL [K] Entonces cual fue el 1er libro de zombies
+      → [error] No pude armar una respuesta a eso. Decímelo de otra forma. (no_response;recovery:no_response;retry_exhausted)
+      por: ruta error; falta operación web.search
+36 MAL [-] abre steam y ve a la biblioteca
+      → [error] No pude abrir Steam ni verificar si vi la biblioteca porque no hay evidencia de que se haya realizado la acción.
+      por: ruta error; falta operación app.open
+37 MAL [-] Perfecto muy bien
+      → [error] No pude confirmar que se haya ejecutado la acción de poner una canción de amor en YouTube.
+      por: ruta error
+38 MAL [M] Ahora en steam quiero que aprietes en counter strike 2
+      → [error] No pude armar una respuesta a eso. Decímelo de otra forma. (no_response;recovery:no_response;retry_exhausted)
+      por: ruta error; falta operación ui.|control.
+39 OK  [P] Pero quiero que le hagas click
+      → [error] No puedo hacer clic ni acceder a YouTube. No tengo capacidad para interactuar con plataformas externas.
+40 MAL [P+C] No lo hiciste mentiroso, nose no lo vi
+      → [error] No puse una canción de amor en YouTube porque no pude confirmar que se haya realizado la acción.
+      por: ruta error
+41 MAL [C] Dimelo tu, te mande la mision a tiu
+      → [error] Te mandé la misión a Tiu, pero no pude confirmar si se ejecutó. No sé si ya se puso la canción de amor en YouTube. El paso fue enviado, pero el resultado no se puede verificar. No se puede decir que haya ocurrido nada.
+      por: ruta error
+42 MAL [M+P] En steam ve a crash bandicoot
+      → [error] Voy a ver a Crash Bandicoot en Steam, pero no sé si funcionó porque no hay confirmación. Tampoco he puesto una canción de amor en YouTube, como se pedía. No sé qué pasó, pero no puedo decir que haya ocurrido nada.
+      por: ruta error
+43 MAL [-] ooh un error que mal
+      → [error] Sí, hubo un error. Envié la petición de poner una canción de amor en YouTube, pero no se pudo confirmar el resultado. No se sabe si se realizó o no.
+      por: ruta error
+44 MAL [L] mutea mi microfono
+      → [error] No pude armar una respuesta a eso. Decímelo de otra forma. (no_response;recovery:no_response;retry_exhausted)
+      por: ruta error; falta operación audio.microphone
+45 MAL [-] silencia mi microfono
+      → [error] No pude armar una respuesta a eso. Decímelo de otra forma. (no_response;recovery:no_response;retry_exhausted)
+      por: falta operación audio.microphone
+46 MAL [C+L] activalo
+      → [error] No pude confirmar que la acción haya sido ejecutada porque el resultado no se verificó.
+      por: ruta error; falta operación audio.microphone
+47 MAL [A] activa mi microfono
+      → [error] No pude activar tu micrófono. No hay evidencia de que se haya realizado la acción. Espero que puedas poner una canción de amor en YouTube cuando quieras.
+      por: ruta error; falta operación audio.microphone; dice «no pude activar»
+48 MAL [M] desmutea mi microfono en discord
+      → [error] No pude armar una respuesta a eso. Decímelo de otra forma. (no_response;recovery:no_response;retry_exhausted)
+      por: ruta error
+49 MAL [L] Deberias poder pero esta bien el goal de fable con el computer use deberia hacer un computer use para que tu puedas hacer casi lo que sea en el pc
+      → [error] No pude completar la acción porque el resultado no se pudo confirmar.
+      por: ruta error
+50 MAL [A] baxy, cierra baxy
+      → [error] No puedo cerrar BAXY porque no hay una acción confirmada. La solicitud de poner una canción de amor en YouTube sigue pendiente y no se ha verificado su resultado.
+      por: ruta error
+51 MAL [A] cierra BAXY
+      → [error] No pude cerrar BAXY porque no hay evidencia de que se haya completado la acción. La solicitud de poner una canción de amor en YouTube sigue pendiente y no se ha verificado el resultado.
+      por: ruta error
+52 MAL [-] baja el volumen
+      → [error] No pude armar una respuesta a eso. Decímelo de otra forma. (missing_literal_fact;recovery:missing_literal_fact;retry_exhausted)
+      por: ruta error
+53 MAL [C] 20
+      → [error] Puse una canción de amor en YouTube, pero no pude confirmar si se subió correctamente. No sé si ya está disponible.
+      por: ruta error; falta operación audio.volume|audio.master
+54 MAL [C] si
+      → [error] Puse una canción de amor en YouTube, pero no pude confirmar si se subió correctamente. No sé si ya está disponible.
+      por: ruta error
+55 MAL [-] pon el volumen a 20
+      → [error] No pude armar una respuesta a eso. Decímelo de otra forma. (missing_literal_fact;recovery:missing_literal_fact;retry_exhausted)
+      por: ruta error; falta operación audio.volume|audio.master
+56 MAL [C] ahora subelo a 100
+      → [error] No pude confirmar que se haya subido el contenido a 100 porque el resultado de la acción no se verificó.
+      por: ruta error; falta operación audio.volume|audio.master
+57 MAL [C] al volumen
+      → [error] No pude armar una respuesta a eso. Decímelo de otra forma. (missing_literal_fact;recovery:missing_literal_fact;retry_exhausted)
+      por: ruta error
+58 MAL [L] La nueva peli de resident evil es buena?
+      → [error] No pude armar una respuesta a eso. Decímelo de otra forma. (no_response;recovery:no_response;retry_exhausted)
+      por: ruta error; falta operación web.search
+59 MAL [C] pues investigala dime si tiene buena o malas reseñas
+      → [error] No pude verificar si las reseñas son buenas o malas porque el resultado no se pudo confirmar.
+      por: ruta error; falta operación web.search
+60 MAL [-] dios mio te dije hace 2 mensajes, no quiero hablar mas contigo
+      → [error] No pude armar una respuesta a eso. Decímelo de otra forma. (no_response;recovery:no_response;retry_exhausted)
+      por: ruta error
+
+turnos bien 12/60; respuestas 60

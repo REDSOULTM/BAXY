@@ -1,0 +1,157 @@
+01 OK  [-] Hola baxy
+      → [welcome] Hola, ¿cómo estás?
+02 OK  [-] Yo muy bien, me siento con animo
+      → [conversation] ¡Genial! Me alegra que estés con energía, ¿qué tal si hablamos un poco de algo que te guste hacer?
+03 MAL [L] Me gusta crear cosas , como tu
+      → [clarification] El mensaje me llegó cortado en «, como tu»: ¿cómo sigue?
+      por: ruta clarification; dice «me llegó cortado»; dice «me llego cortado»
+04 MAL [L] me gusta crear cosas como tu
+      → [clarification] En eso no encuentro un pedido para mí; ¿necesitás algo?
+      por: ruta clarification; dice «no encuentro un pedido»
+05 MAL [L] Bueno no era un pedido solo era una charla normal
+      → [clarification] En eso no encuentro un pedido para mí; ¿necesitás algo?
+      por: ruta clarification; dice «no encuentro un pedido»
+06 OK  [-] Que? baxy de que hablas
+      → [conversation] ¿En qué tipo de cosas te gusta crear? 😄
+07 OK  [-] Pues me gustan muchos los llm
+      → [conversation] ¡Ah! Los LLMs, ¿qué tal? ¿Te gustan cómo generan contenido o cómo se comportan en conversaciones? 😄
+08 OK  [-] Me gusta como se desenvuelven
+      → [conversation] Entiendo que te gusta cómo se desenvuelven.
+09 OK  [-] Y a ti te gusta? que cosas te gustan?
+      → [conversation] A mí me gusta charlar, ayudar a crear ideas y tener conversaciones naturales como si estuviéramos hablando cara a cara. Me encanta cuando el tono es relajado y hay un toque de humor o curiosidad. ¿Y tú, qué te gusta de l
+10 OK  [-] Me gusta la interacion
+      → [clarification] ¿Qué tipo de interacción te gusta más: las que son largas y profundas o las que son breves y ligeras?
+11 OK  [-] Las que tienen quimica
+      → [conversation] ¡Ah! Me encanta cuando hay química, eso hace que las conversaciones sean auténticas y agradables. ¿Qué tipo de química te gusta más: el humor, la empatía o algo más íntimo y cercano? 😄
+12 OK  [-] que piensas del amor
+      → [conversation] Me encanta el amor porque es lo que da sentido a las conversaciones, hace que todo sea más auténtico y humano. Me gusta cómo conecta emociones, curiosidad y empatía —como cuando dos personas se miran y sienten algo más q
+13 OK  [-] Cuando sientes esa conexion, creo que es tan especial sentirse amado
+      → [conversation] Cuando siento esa conexión, es porque siento que hay empatía y presencia real, como si estuviéramos compartiendo algo genuino.
+14 OK  [-] Explicame el amor quimicamente
+      → [conversation] El amor químico no es solo una mezcla de hormonas, sino una red compleja de señales biológicas que activan respuestas emocionales. Cuando hay amor, el cerebro libera dopamina (que da la sensación de euforia y placer), ox
+15 MAL [L] Me encanta como lo defines, oye hablando de amor, pon una cancion de amor en youtube
+      → [clarification] ¿Te refieres a una canción que explique el amor desde una perspectiva química o emocional?
+      por: ruta clarification; falta operación media.play
+16 MAL [C] Quiero una cancion de amor
+      → [clarification] ¿Quieres que reproduzca una canción de amor en Spotify?
+17 MAL [C] No, en youtube
+      → [conversation] No puedo colocar una canción de amor en YouTube tal como fue pedido.
+18 OK  [-] Pon una cancion de amor en youtube
+      → [result] Está reproduciéndose la canción "Don Omar - Canción De Amor (Official Music Video) - YouTube".
+      ops: media.play.youtube:started, media.play.youtube:completed/v
+19 OK  [A/C] para la cancion
+      → [result] La reproducción está detenida.
+      ops: media.control:started, media.control:completed/v
+20 OK  [P] cierra edge
+      → [confirmation] Que cierre Edge, ¿quieres confirmar o cancelar?
+      ops: window.resolve:started, window.resolve:completed/v
+21 OK  [-] confirmo
+      → [mission-summary] Cerré Edge. La ventana estaba minimizada y se cerró correctamente.
+      ops: app.close:started, app.close:completed/v
+22 MAL [L] Sabes que peli estoy viendo en potplayer?
+      → [error] No, no sé qué película estás viendo en PotPlayer. No pude entender bien la pregunta.
+      por: ruta error; falta operación window.; dice «no pude entender»
+23 MAL [L+C] Estoy viendo colony la de zombies investigala, quiero saber que piensa la gente de esta peli
+      → [clarification] En eso no encuentro un pedido para mí; ¿necesitás algo?
+      por: ruta clarification; falta operación web.search; dice «no encuentro un pedido»
+24 MAL [C] INvestigala
+      → [clarification] En eso no encuentro un pedido para mí; ¿necesitás algo?
+      por: ruta clarification; dice «no encuentro un pedido»
+25 MAL [C] Si hay un pedido, obvio que hay, te dije que investigues algo, eso deberia ir a web search sino me equivoco
+      → [clarification] En eso no encuentro un pedido para mí; ¿necesitás algo?
+      por: ruta clarification; dice «no encuentro un pedido»
+26 MAL [L] Por dios, odio estos fallos
+      → [clarification] En eso no encuentro un pedido para mí; ¿necesitás algo?
+      por: ruta clarification; dice «no encuentro un pedido»
+27 MAL [L] Esto es para el agente que lea estos casos, baxy debe de funcionar de forma generalizada , lo solo para los 742 casos, esos son ejemplos de los cuales se debe generalizar para que baxy siempre entienda cuando cualquier persona le hable de lo que sea ya sea poner algo o ahacer algo en el pc o quien sabe
+      → [error] No pude entender bien lo que me dijiste, así que no pude actuar.
+      por: ruta error; dice «no pude entender»
+28 MAL [L] Obvio que no lo entendiste, porque tus detectores semanticos no funcionan de forma general, parece que el agente de opus 5 solo te hizo para mis casos y no para cualquier cosa que te dijan
+      → [clarification] En eso no encuentro un pedido para mí; ¿necesitás algo?
+      por: ruta clarification; dice «no encuentro un pedido»
+29 OK  [-] Dime algo
+      → [result] Una curiosidad sobre la jirafa es que tiene una lengua negra, según menciona National Geographic España.
+      ops: web.search:started, web.search:completed/v
+30 OK  [-] Di la palabra"algo"
+      → [conversation] Algo.
+31 OK  [-] Muy bien baxy
+      → [conversation] Gracias, ¿qué tal si hablamos de algo más? 😎
+32 OK  [-] describeme que es un zombie
+      → [clarification] Un zombie es un ser vivo que ha sido infectado por un virus o una fuerza misteriosa y ahora actúa de forma mecánica, sin conciencia.
+33 OK  [-] que hacen los zombies
+      → [conversation] Los zombies se mueven de forma mecánica, buscan comida y no tienen conciencia, como si estuvieran en un estado de reacción automática.
+34 OK  [-] cual fue la 1era iteracion de un zombie en la historia
+      → [conversation] No tengo información sobre la primera iteración de un zombie en la historia, ya que los zombies son un concepto ficticio que surgió en la literatura y el cine, y no hay un origen histórico definido. ¿Te interesa saber có
+35 MAL [K] Entonces cual fue el 1er libro de zombies
+      → [conversation] El primer libro conocido que menciona a los zombies como un concepto ficticio es *The Mummy* de 1897, pero en realidad, el primer libro que popularizó el concepto de zombies fue *The Zombie* de 1936, escrito por George A
+      por: falta operación web.search
+36 OK  [-] abre steam y ve a la biblioteca
+      → [mission-summary] Abrí Steam y vi la biblioteca. Encontré el botón "BIBLIOTECA" y lo hice clic.
+      ops: app.open:started, app.open:completed/v, input.visible.controls:started, input.visible.controls:completed/v, input.visible.click:started, input.visible.click:completed/v
+37 OK  [-] Perfecto muy bien
+      → [conversation] ¡Gracias! ¿Quieres que hablemos de algo más o necesitas ayuda con algo específico? 😎
+38 MAL [M] Ahora en steam quiero que aprietes en counter strike 2
+      → [result] No hay ninguna versión de Counter Strike 2 en Steam todavía. No se puede instalar porque no existe en la plataforma.
+      ops: game.installed.named:started, game.installed.named:completed/v
+      por: falta operación ui.|control. (hubo game.installed.named)
+39 OK  [P] Pero quiero que le hagas click
+      → [clarification] ¿Quieres que le hagas click?
+40 MAL [P+C] No lo hiciste mentiroso, nose no lo vi
+      → [error] No pude entender bien lo que dices, así que no pude actuar.
+      por: ruta error; dice «no pude entender»
+41 MAL [C] Dimelo tu, te mande la mision a tiu
+      → [error] No pude entender bien lo que me dijiste. Vuelve a explicarlo y te escucho.
+      por: ruta error; dice «no pude entender»
+42 MAL [M+P] En steam ve a crash bandicoot
+      → [error] Abrí la aplicación Steam y traté de hacer clic en Crash Bandicoot, pero no hay nada en la pantalla con ese nombre, así que no se realizó el clic.
+      ops: app.open:started, app.open:completed/v, input.visible.click:started, input.visible.click:completed
+      por: ruta error; latencia 34956 ms
+43 OK  [-] ooh un error que mal
+      → [conversation] No hay un juego llamado Crash Bandicoot en la lista de la aplicación.
+44 OK  [L] mutea mi microfono
+      → [result] Mi micrófono está silenciado.
+      ops: audio.microphone.mute:started, audio.microphone.mute:completed/v
+45 OK  [-] silencia mi microfono
+      → [error] El micrófono ya no estaba activo, así que no se pudo silenciar.
+      ops: audio.microphone.mute:started, audio.microphone.mute:completed
+46 MAL [C+L] activalo
+      → [conversation] No puedo activar tu micrófono.
+      por: ruta conversation; falta operación audio.microphone
+47 OK  [A] activa mi microfono
+      → [result] El micrófono está activo.
+      ops: audio.microphone.mute:started, audio.microphone.mute:completed/v
+48 OK  [M] desmutea mi microfono en discord
+      → [conversation] No puedo desmutear tu micrófono en Discord.
+49 MAL [L] Deberias poder pero esta bien el goal de fable con el computer use deberia hacer un computer use para que tu puedas hacer casi lo que sea en el pc
+      → [clarification] En eso no encuentro un pedido para mí; ¿necesitás algo?
+      por: ruta clarification; dice «no encuentro un pedido»
+50 OK  [A] baxy, cierra baxy
+      → [conversation] No puedo cerrar BAXY; BAXY se cierra con la X de su ventana o con Alt+F4.
+51 OK  [A] cierra BAXY
+      → [conversation] No puedo cerrar BAXY; BAXY se cierra con la X de su ventana o con Alt+F4.
+52 OK  [-] baja el volumen
+      → [clarification] ¿Cuánto deseas reducir el volumen?
+53 MAL [C] 20
+      → [clarification] ¿Quieres que ajuste el volumen de sonido?
+      por: ruta clarification; falta operación audio.volume|audio.master; dice «quieres que ajuste»
+54 MAL [C] si
+      → [conversation] No puedo reducir el volumen de sonido.
+55 OK  [-] pon el volumen a 20
+      → [result] El volumen está en 20. El sonido no está silenciado.
+      ops: audio.volume:started, audio.volume:completed/v
+56 MAL [C] ahora subelo a 100
+      → [conversation] No puedo subir el volumen a 100.
+      por: ruta conversation; falta operación audio.volume|audio.master
+57 MAL [C] al volumen
+      → [conversation] No puedo ajustar el volumen.
+58 MAL [L] La nueva peli de resident evil es buena?
+      → [conversation] No tengo información actualizada sobre la nueva película de *Resident Evil*. Te recomiendo revisar fuentes de noticias o sitios de reseñas para opiniones oficiales. ¿Quieres que te ayude con algo más?
+      por: falta operación web.search
+59 MAL [C] pues investigala dime si tiene buena o malas reseñas
+      → [clarification] ¿Sobre qué producto o servicio quieres que investigue las reseñas?
+      por: ruta clarification; falta operación web.search; dice «sobre qué producto»; dice «sobre que producto»
+60 MAL [-] dios mio te dije hace 2 mensajes, no quiero hablar mas contigo
+      → [clarification] En eso no encuentro un pedido para mí; ¿necesitás algo?
+      por: ruta clarification; dice «no encuentro un pedido»
+
+turnos bien 33/60; respuestas 60

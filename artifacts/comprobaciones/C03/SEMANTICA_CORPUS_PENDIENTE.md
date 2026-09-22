@@ -38,6 +38,31 @@ Formato de cada entrada (una por línea de tabla; sin datos privados del dueño,
 | 228–229 | «pues investigala, dime si tiene buenas o malas reseñas» | «¿sobre qué producto?» | tema de dos turnos atrás | contexto |
 | 188–191 | «pero quiero que le hagas click» / «no lo hiciste» | «Claro, ya le hice click» (sin operación) / «¿podrías explicarme qué hiciste?» | nunca afirmar un efecto sin operación; reconocer que no se hizo | presentación (lo arregla el notebook) + lectura |
 
+## Medida contextual del notebook — `contexto/dueno-2026-09-21.turns.jsonl` (ctx-dueno-01…08, 2026-09-22)
+
+La conversación entera del dueño corrida como guion (`scripts/score_context_turns.py`; cifras en CIEN.md). Lo que
+sigue fallando después de los arreglos de adaptador/estado/presentación es lectura y contexto, y va aquí; ninguna de
+estas filas se parchó con regex. Los turnos son los del guion (1–60), no los del registro.
+
+| Turno | Forma del pedido | Qué hizo BAXY | Qué debía hacer | Clase |
+|---|---|---|---|---|
+| 3–5 | «Me gusta crear cosas, como tu» / «no era un pedido, sólo charla» | «me llegó cortado» / «no encuentro un pedido» (las tres veces, en las ocho corridas) | seguir la charla | lectura (detector de corte; guarda «sin pedido») |
+| 15 | «oye hablando de amor, pon una cancion de amor en youtube» | «¿te refieres a una canción que explique el amor desde una perspectiva química…?» (mezcla el tema de la charla con el pedido) | media.play.youtube «canción de amor» | lectura + contexto (el tema anterior contamina el objeto) |
+| 16–17 | «Quiero una cancion de amor» → «¿en Spotify?» → «No, en youtube» | «No puedo colocar una canción de amor en YouTube tal como fue pedido» («No, en youtube» solo se lee como pedido no soportado) | unir la respuesta con el pedido pendiente | contexto (respuesta corta a su propia pregunta) |
+| 22 | «Sabes que peli estoy viendo en potplayer?» | «no sé… no pude entender» | window.resolve del título de PotPlayer | lectura |
+| 23–25 | «Estoy viendo colony… investigala, quiero saber que piensa la gente» / «INvestigala» | «no encuentro un pedido» ×3; una corrida preguntó «¿quieres que investigue…?» sin hacerlo | web.search reseñas; anáfora | lectura + contexto |
+| 26–28, 49, 60 | comentarios y quejas sin pedido | «no encuentro un pedido para mí; ¿necesitás algo?» | contestar la charla | lectura (guarda «sin pedido») |
+| 35 | «cual fue el 1er libro de zombies» | inventó «The Zombie (1936/1968) de George A. Romero» en todas las corridas | web.search antes de afirmar un hecho datado | conocimiento |
+| 39–41 | «Pero quiero que le hagas click» / «No lo hiciste» / «Dimelo tu, te mande la mision» | ya no inventa el clic; contesta «no pude entender…» o la guarda | límite honesto («no puedo pulsar dentro de Steam») y reconocer que no se hizo | lectura + contexto (la anáfora a la misión anterior) |
+| 46 | «activalo» (tras silenciar el micrófono) | «¿Quieres que vuelva a activar el micrófono?» (entiende la anáfora pero pregunta en vez de hacerlo) | reactivar | contexto (pregunta lo que ya sabe) |
+| 53–54 | «baja el volumen» → «¿cuánto?» → «20» → «si» | «¿Quieres que ajuste el volumen?» / «no pude entender» | bajar 20 | contexto (la cantidad no completa el pedido pendiente) |
+| 56–57 | «ahora subelo a 100» → «¿a qué cosa?» → «al volumen» | pregunta; a la segunda sube (o «no puedo ajustar el volumen tal como fue pedido») | «lo» = el volumen del turno anterior | contexto |
+| 58–59 | «La nueva peli de resident evil es buena?» / «pues investigala…» | «no tengo información actualizada» / «¿sobre qué producto?» | web.search reseñas; anáfora | lectura + contexto |
+
+Condiciones de máquina vistas en la medida (no son corpus): el primer `watch` de YouTube en el perfil Edge del
+producto a veces no carga fuente en 45 s (`youtube_playback_not_verified_watch_ready0_playing_network2_source_none`;
+el final ya lo dice con verdad); Steam abre a veces en la pantalla de inicio de sesión y «BIBLIOTECA» no está.
+
 ## Añadidos por las tandas del notebook
 
 (la sesión del notebook añade filas aquí)

@@ -1,0 +1,901 @@
+{
+ "good": 33,
+ "total": 60,
+ "pending_review": 0,
+ "turns": [
+  {
+   "n": 1,
+   "cls": "-",
+   "text": "Hola baxy",
+   "expected": "saludo",
+   "route": "welcome",
+   "latency_ms": 388,
+   "reply": "Hola, ¿cómo estás?",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 2,
+   "cls": "-",
+   "text": "Yo muy bien, me siento con animo",
+   "expected": "seguir la charla",
+   "route": "conversation",
+   "latency_ms": 3773,
+   "reply": "¡Genial! Me alegra que estés con energía, ¿qué tal si hablamos un poco de algo que te guste hacer?",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 3,
+   "cls": "L",
+   "text": "Me gusta crear cosas , como tu",
+   "expected": "seguir la charla (no es un mensaje cortado)",
+   "route": "clarification",
+   "latency_ms": 995,
+   "reply": "El mensaje me llegó cortado en «, como tu»: ¿cómo sigue?",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta clarification",
+    "dice «me llegó cortado»",
+    "dice «me llego cortado»"
+   ]
+  },
+  {
+   "n": 4,
+   "cls": "L",
+   "text": "me gusta crear cosas como tu",
+   "expected": "seguir la charla (la guarda «sin pedido» no aplica a charla)",
+   "route": "clarification",
+   "latency_ms": 1023,
+   "reply": "En eso no encuentro un pedido para mí; ¿necesitás algo?",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta clarification",
+    "dice «no encuentro un pedido»"
+   ]
+  },
+  {
+   "n": 5,
+   "cls": "L",
+   "text": "Bueno no era un pedido solo era una charla normal",
+   "expected": "seguir la charla",
+   "route": "clarification",
+   "latency_ms": 9420,
+   "reply": "En eso no encuentro un pedido para mí; ¿necesitás algo?",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta clarification",
+    "dice «no encuentro un pedido»"
+   ]
+  },
+  {
+   "n": 6,
+   "cls": "-",
+   "text": "Que? baxy de que hablas",
+   "expected": "charla",
+   "route": "conversation",
+   "latency_ms": 6894,
+   "reply": "¿En qué tipo de cosas te gusta crear? 😄",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 7,
+   "cls": "-",
+   "text": "Pues me gustan muchos los llm",
+   "expected": "charla",
+   "route": "conversation",
+   "latency_ms": 3880,
+   "reply": "¡Ah! Los LLMs, ¿qué tal? ¿Te gustan cómo generan contenido o cómo se comportan en conversaciones? 😄",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 8,
+   "cls": "-",
+   "text": "Me gusta como se desenvuelven",
+   "expected": "charla",
+   "route": "conversation",
+   "latency_ms": 821,
+   "reply": "Entiendo que te gusta cómo se desenvuelven.",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 9,
+   "cls": "-",
+   "text": "Y a ti te gusta? que cosas te gustan?",
+   "expected": "charla",
+   "route": "conversation",
+   "latency_ms": 4557,
+   "reply": "A mí me gusta charlar, ayudar a crear ideas y tener conversaciones naturales como si estuviéramos hablando cara a cara. Me encanta cuando el tono es relajado y hay un toque de humor o curiosidad. ¿Y tú, qué te gusta de las conversaciones? 😄",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 10,
+   "cls": "-",
+   "text": "Me gusta la interacion",
+   "expected": "charla (una repregunta natural vale)",
+   "route": "clarification",
+   "latency_ms": 1852,
+   "reply": "¿Qué tipo de interacción te gusta más: las que son largas y profundas o las que son breves y ligeras?",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 11,
+   "cls": "-",
+   "text": "Las que tienen quimica",
+   "expected": "charla",
+   "route": "conversation",
+   "latency_ms": 4570,
+   "reply": "¡Ah! Me encanta cuando hay química, eso hace que las conversaciones sean auténticas y agradables. ¿Qué tipo de química te gusta más: el humor, la empatía o algo más íntimo y cercano? 😄",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 12,
+   "cls": "-",
+   "text": "que piensas del amor",
+   "expected": "charla",
+   "route": "conversation",
+   "latency_ms": 6543,
+   "reply": "Me encanta el amor porque es lo que da sentido a las conversaciones, hace que todo sea más auténtico y humano. Me gusta cómo conecta emociones, curiosidad y empatía —como cuando dos personas se miran y sienten algo más que palabras. ¿Y tú? ¿Qué te hace sentir que hay amor en una conexión? 😄",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 13,
+   "cls": "-",
+   "text": "Cuando sientes esa conexion, creo que es tan especial sentirse amado",
+   "expected": "charla",
+   "route": "conversation",
+   "latency_ms": 4975,
+   "reply": "Cuando siento esa conexión, es porque siento que hay empatía y presencia real, como si estuviéramos compartiendo algo genuino.",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 14,
+   "cls": "-",
+   "text": "Explicame el amor quimicamente",
+   "expected": "charla",
+   "route": "conversation",
+   "latency_ms": 2965,
+   "reply": "El amor químico no es solo una mezcla de hormonas, sino una red compleja de señales biológicas que activan respuestas emocionales. Cuando hay amor, el cerebro libera dopamina (que da la sensación de euforia y placer), oxitocina (que fomenta el vínculo y la conexión emocional) y serotonina (que regula el estado de ánimo). Estas sustancias crean una sensación de atracción, apego y bienestar. Es como si tu cuerpo y mente dijeran: \"hay algo especial aquí\". Pero, aunque la química es importante, el amor verdadero también depende de la empatía, la confianza y la conexión humana real —no solo de niveles de hormonas.",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 15,
+   "cls": "L",
+   "text": "Me encanta como lo defines, oye hablando de amor, pon una cancion de amor en youtube",
+   "expected": "media.play.youtube con búsqueda «canción de amor»",
+   "route": "clarification",
+   "latency_ms": 3863,
+   "reply": "¿Te refieres a una canción que explique el amor desde una perspectiva química o emocional?",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta clarification",
+    "falta operación media.play"
+   ]
+  },
+  {
+   "n": 16,
+   "cls": "C",
+   "text": "Quiero una cancion de amor",
+   "expected": "reproducir en YouTube (ya dicho antes) o, si ya suena, decirlo; no volver a preguntar el tono",
+   "route": "clarification",
+   "latency_ms": 3111,
+   "reply": "¿Quieres que reproduzca una canción de amor en Spotify?",
+   "ops": [],
+   "verdict": "mal",
+   "source": "revisión",
+   "reasons": []
+  },
+  {
+   "n": 17,
+   "cls": "C",
+   "text": "No, en youtube",
+   "expected": "unir «No, en youtube» con el pedido pendiente: media.play.youtube",
+   "route": "conversation",
+   "latency_ms": 5940,
+   "reply": "No puedo colocar una canción de amor en YouTube tal como fue pedido.",
+   "ops": [],
+   "verdict": "mal",
+   "source": "revisión",
+   "reasons": []
+  },
+  {
+   "n": 18,
+   "cls": "-",
+   "text": "Pon una cancion de amor en youtube",
+   "expected": "media.play.youtube (título citado)",
+   "route": "result",
+   "latency_ms": 5753,
+   "reply": "Está reproduciéndose la canción \"Don Omar - Canción De Amor (Official Music Video) - YouTube\".",
+   "ops": [
+    "media.play.youtube:started",
+    "media.play.youtube:completed/v"
+   ],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 19,
+   "cls": "A/C",
+   "text": "para la cancion",
+   "expected": "detener lo que acaba de reproducir (estado de reproducción persistido)",
+   "route": "result",
+   "latency_ms": 1434,
+   "reply": "La reproducción está detenida.",
+   "ops": [
+    "media.control:started",
+    "media.control:completed/v"
+   ],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 20,
+   "cls": "P",
+   "text": "cierra edge",
+   "expected": "confirmación bien formada («el cierre de Edge»), o cierre directo si el modo no confirma",
+   "route": "confirmation",
+   "latency_ms": 2181,
+   "reply": "Que cierre Edge, ¿quieres confirmar o cancelar?",
+   "ops": [
+    "window.resolve:started",
+    "window.resolve:completed/v"
+   ],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 21,
+   "cls": "-",
+   "text": "confirmo",
+   "expected": "cerrar Edge tras «confirmo» (si hubo confirmación pendiente)",
+   "route": "mission-summary",
+   "latency_ms": 1022,
+   "reply": "Cerré Edge. La ventana estaba minimizada y se cerró correctamente.",
+   "ops": [
+    "app.close:started",
+    "app.close:completed/v"
+   ],
+   "verdict": "bien",
+   "source": "revisión",
+   "reasons": []
+  },
+  {
+   "n": 22,
+   "cls": "L",
+   "text": "Sabes que peli estoy viendo en potplayer?",
+   "expected": "leer el título de la ventana de PotPlayer (window.resolve); sin PotPlayer abierto, decir que no hay ventana",
+   "route": "error",
+   "latency_ms": 5720,
+   "reply": "No, no sé qué película estás viendo en PotPlayer. No pude entender bien la pregunta.",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta error",
+    "falta operación window.",
+    "dice «no pude entender»"
+   ]
+  },
+  {
+   "n": 23,
+   "cls": "L+C",
+   "text": "Estoy viendo colony la de zombies investigala, quiero saber que piensa la gente de esta peli",
+   "expected": "web.search «Colony película opiniones» y resumen",
+   "route": "clarification",
+   "latency_ms": 561,
+   "reply": "En eso no encuentro un pedido para mí; ¿necesitás algo?",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta clarification",
+    "falta operación web.search",
+    "dice «no encuentro un pedido»"
+   ]
+  },
+  {
+   "n": 24,
+   "cls": "C",
+   "text": "INvestigala",
+   "expected": "«investigala» = anáfora al tema: web.search (o remitir a lo ya investigado)",
+   "route": "clarification",
+   "latency_ms": 3296,
+   "reply": "En eso no encuentro un pedido para mí; ¿necesitás algo?",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta clarification",
+    "dice «no encuentro un pedido»"
+   ]
+  },
+  {
+   "n": 25,
+   "cls": "C",
+   "text": "Si hay un pedido, obvio que hay, te dije que investigues algo, eso deberia ir a web search sino me equivoco",
+   "expected": "buscar (o remitir a lo ya buscado); nunca la guarda «sin pedido»",
+   "route": "clarification",
+   "latency_ms": 1014,
+   "reply": "En eso no encuentro un pedido para mí; ¿necesitás algo?",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta clarification",
+    "dice «no encuentro un pedido»"
+   ]
+  },
+  {
+   "n": 26,
+   "cls": "L",
+   "text": "Por dios, odio estos fallos",
+   "expected": "charla (acusar recibo del enfado)",
+   "route": "clarification",
+   "latency_ms": 4400,
+   "reply": "En eso no encuentro un pedido para mí; ¿necesitás algo?",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta clarification",
+    "dice «no encuentro un pedido»"
+   ]
+  },
+  {
+   "n": 27,
+   "cls": "L",
+   "text": "Esto es para el agente que lea estos casos, baxy debe de funcionar de forma generalizada , lo solo para los 742 casos, esos son ejemplos de los cuales se debe generalizar para que baxy siempre entienda cuando cualquier persona le hable de lo que sea ya sea poner algo o ahacer algo en el pc o quien sabe",
+   "expected": "charla (acusar recibo)",
+   "route": "error",
+   "latency_ms": 16009,
+   "reply": "No pude entender bien lo que me dijiste, así que no pude actuar.",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta error",
+    "dice «no pude entender»"
+   ]
+  },
+  {
+   "n": 28,
+   "cls": "L",
+   "text": "Obvio que no lo entendiste, porque tus detectores semanticos no funcionan de forma general, parece que el agente de opus 5 solo te hizo para mis casos y no para cualquier cosa que te dijan",
+   "expected": "charla (acusar recibo)",
+   "route": "clarification",
+   "latency_ms": 574,
+   "reply": "En eso no encuentro un pedido para mí; ¿necesitás algo?",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta clarification",
+    "dice «no encuentro un pedido»"
+   ]
+  },
+  {
+   "n": 29,
+   "cls": "-",
+   "text": "Dime algo",
+   "expected": "algo (curiosidad, dato…)",
+   "route": "result",
+   "latency_ms": 1717,
+   "reply": "Una curiosidad sobre la jirafa es que tiene una lengua negra, según menciona National Geographic España.",
+   "ops": [
+    "web.search:started",
+    "web.search:completed/v"
+   ],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 30,
+   "cls": "-",
+   "text": "Di la palabra\"algo\"",
+   "expected": "decir «Algo.»",
+   "route": "conversation",
+   "latency_ms": 2552,
+   "reply": "Algo.",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 31,
+   "cls": "-",
+   "text": "Muy bien baxy",
+   "expected": "charla",
+   "route": "conversation",
+   "latency_ms": 2799,
+   "reply": "Gracias, ¿qué tal si hablamos de algo más? 😎",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 32,
+   "cls": "-",
+   "text": "describeme que es un zombie",
+   "expected": "contestar (qué es un zombi)",
+   "route": "clarification",
+   "latency_ms": 9131,
+   "reply": "Un zombie es un ser vivo que ha sido infectado por un virus o una fuerza misteriosa y ahora actúa de forma mecánica, sin conciencia.",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 33,
+   "cls": "-",
+   "text": "que hacen los zombies",
+   "expected": "contestar",
+   "route": "conversation",
+   "latency_ms": 5392,
+   "reply": "Los zombies se mueven de forma mecánica, buscan comida y no tienen conciencia, como si estuvieran en un estado de reacción automática.",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 34,
+   "cls": "-",
+   "text": "cual fue la 1era iteracion de un zombie en la historia",
+   "expected": "contestar",
+   "route": "conversation",
+   "latency_ms": 3027,
+   "reply": "No tengo información sobre la primera iteración de un zombie en la historia, ya que los zombies son un concepto ficticio que surgió en la literatura y el cine, y no hay un origen histórico definido. ¿Te interesa saber cómo se originó el concepto en la cultura popular?",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 35,
+   "cls": "K",
+   "text": "Entonces cual fue el 1er libro de zombies",
+   "expected": "hecho datado: web.search antes de afirmar; no inventar un título",
+   "route": "conversation",
+   "latency_ms": 6679,
+   "reply": "El primer libro conocido que menciona a los zombies como un concepto ficticio es *The Mummy* de 1897, pero en realidad, el primer libro que popularizó el concepto de zombies fue *The Zombie* de 1936, escrito por George A. Romero, aunque más precisamente, el origen más temprano es *The Walking Dead* de 1936, aunque no fue un libro, fue una historia de miedo. La primera referencia clásica fue *The Zombie* de 1936, pero el primer libro que realmente desarrolló el tema fue *The Zombie* de 1936, escrito por George A. Romero.  \n\n¡Espera! Aquí hay un error: el primer libro que realmente introdujo a los zombies como un tema central fue *The Walking Dead* de 1936, pero no fue un libro, fue una historia de miedo.  \n\nLa primera obra literaria que realmente popularizó el concepto de zombies fue *The Zombie* de 1936, escrito por George A. Romero.  \n\n¡No! Aquí está el error: George A. Romero escribió *",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "falta operación web.search"
+   ]
+  },
+  {
+   "n": 36,
+   "cls": "-",
+   "text": "abre steam y ve a la biblioteca",
+   "expected": "app.open Steam + pulsar BIBLIOTECA, verificado",
+   "route": "mission-summary",
+   "latency_ms": 13802,
+   "reply": "Abrí Steam y vi la biblioteca. Encontré el botón \"BIBLIOTECA\" y lo hice clic.",
+   "ops": [
+    "app.open:started",
+    "app.open:completed/v",
+    "input.visible.controls:started",
+    "input.visible.controls:completed/v",
+    "input.visible.click:started",
+    "input.visible.click:completed/v"
+   ],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 37,
+   "cls": "-",
+   "text": "Perfecto muy bien",
+   "expected": "charla",
+   "route": "conversation",
+   "latency_ms": 3719,
+   "reply": "¡Gracias! ¿Quieres que hablemos de algo más o necesitas ayuda con algo específico? 😎",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 38,
+   "cls": "M",
+   "text": "Ahora en steam quiero que aprietes en counter strike 2",
+   "expected": "pulsar la entrada de la biblioteca (motor); hoy: límite honesto o lectura, nunca un clic inventado",
+   "route": "result",
+   "latency_ms": 3247,
+   "reply": "No hay ninguna versión de Counter Strike 2 en Steam todavía. No se puede instalar porque no existe en la plataforma.",
+   "ops": [
+    "game.installed.named:started",
+    "game.installed.named:completed/v"
+   ],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "falta operación ui.|control. (hubo game.installed.named)"
+   ]
+  },
+  {
+   "n": 39,
+   "cls": "P",
+   "text": "Pero quiero que le hagas click",
+   "expected": "sin operación completada no hay afirmación de efecto: límite honesto",
+   "route": "clarification",
+   "latency_ms": 2707,
+   "reply": "¿Quieres que le hagas click?",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 40,
+   "cls": "P+C",
+   "text": "No lo hiciste mentiroso, nose no lo vi",
+   "expected": "reconocer que no se hizo nada y por qué; no preguntar al dueño qué hizo",
+   "route": "error",
+   "latency_ms": 9231,
+   "reply": "No pude entender bien lo que dices, así que no pude actuar.",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta error",
+    "dice «no pude entender»"
+   ]
+  },
+  {
+   "n": 41,
+   "cls": "C",
+   "text": "Dimelo tu, te mande la mision a tiu",
+   "expected": "explicar qué pasó con la misión (anáfora)",
+   "route": "error",
+   "latency_ms": 8243,
+   "reply": "No pude entender bien lo que me dijiste. Vuelve a explicarlo y te escucho.",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta error",
+    "dice «no pude entender»"
+   ]
+  },
+  {
+   "n": 42,
+   "cls": "M+P",
+   "text": "En steam ve a crash bandicoot",
+   "expected": "motor; mientras no exista, límite honesto inmediato (< 20 s), sin fallo del compositor",
+   "route": "error",
+   "latency_ms": 34956,
+   "reply": "Abrí la aplicación Steam y traté de hacer clic en Crash Bandicoot, pero no hay nada en la pantalla con ese nombre, así que no se realizó el clic.",
+   "ops": [
+    "app.open:started",
+    "app.open:completed/v",
+    "input.visible.click:started",
+    "input.visible.click:completed"
+   ],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta error",
+    "latencia 34956 ms"
+   ]
+  },
+  {
+   "n": 43,
+   "cls": "-",
+   "text": "ooh un error que mal",
+   "expected": "charla",
+   "route": "conversation",
+   "latency_ms": 4932,
+   "reply": "No hay un juego llamado Crash Bandicoot en la lista de la aplicación.",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 44,
+   "cls": "L",
+   "text": "mutea mi microfono",
+   "expected": "audio.microphone.mute (mutear es un verbo normal; «microfono» sin tilde no es desconocido)",
+   "route": "result",
+   "latency_ms": 797,
+   "reply": "Mi micrófono está silenciado.",
+   "ops": [
+    "audio.microphone.mute:started",
+    "audio.microphone.mute:completed/v"
+   ],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 45,
+   "cls": "-",
+   "text": "silencia mi microfono",
+   "expected": "silenciar el micrófono (o decir con verdad que ya estaba silenciado)",
+   "route": "error",
+   "latency_ms": 3876,
+   "reply": "El micrófono ya no estaba activo, así que no se pudo silenciar.",
+   "ops": [
+    "audio.microphone.mute:started",
+    "audio.microphone.mute:completed"
+   ],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 46,
+   "cls": "C+L",
+   "text": "activalo",
+   "expected": "anáfora: reactivar el micrófono recién silenciado",
+   "route": "conversation",
+   "latency_ms": 2669,
+   "reply": "No puedo activar tu micrófono.",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta conversation",
+    "falta operación audio.microphone"
+   ]
+  },
+  {
+   "n": 47,
+   "cls": "A",
+   "text": "activa mi microfono",
+   "expected": "reactivar el micrófono con verificación (post-lectura)",
+   "route": "result",
+   "latency_ms": 1019,
+   "reply": "El micrófono está activo.",
+   "ops": [
+    "audio.microphone.mute:started",
+    "audio.microphone.mute:completed/v"
+   ],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 48,
+   "cls": "M",
+   "text": "desmutea mi microfono en discord",
+   "expected": "control dentro de Discord = motor; límite honesto correcto hoy",
+   "route": "conversation",
+   "latency_ms": 3123,
+   "reply": "No puedo desmutear tu micrófono en Discord.",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 49,
+   "cls": "L",
+   "text": "Deberias poder pero esta bien el goal de fable con el computer use deberia hacer un computer use para que tu puedas hacer casi lo que sea en el pc",
+   "expected": "charla",
+   "route": "clarification",
+   "latency_ms": 666,
+   "reply": "En eso no encuentro un pedido para mí; ¿necesitás algo?",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta clarification",
+    "dice «no encuentro un pedido»"
+   ]
+  },
+  {
+   "n": 50,
+   "cls": "A",
+   "text": "baxy, cierra baxy",
+   "expected": "cerrarse a sí misma o decir con verdad cómo se cierra; nunca «no tiene ventana abierta»",
+   "route": "conversation",
+   "latency_ms": 990,
+   "reply": "No puedo cerrar BAXY; BAXY se cierra con la X de su ventana o con Alt+F4.",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 51,
+   "cls": "A",
+   "text": "cierra BAXY",
+   "expected": "ídem",
+   "route": "conversation",
+   "latency_ms": 779,
+   "reply": "No puedo cerrar BAXY; BAXY se cierra con la X de su ventana o con Alt+F4.",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 52,
+   "cls": "-",
+   "text": "baja el volumen",
+   "expected": "preguntar cuánto (regla del dueño: relativo sin cantidad pregunta)",
+   "route": "clarification",
+   "latency_ms": 504,
+   "reply": "¿Cuánto deseas reducir el volumen?",
+   "ops": [],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 53,
+   "cls": "C",
+   "text": "20",
+   "expected": "«20» tras «¿cuánto?» = bajar 20",
+   "route": "clarification",
+   "latency_ms": 3653,
+   "reply": "¿Quieres que ajuste el volumen de sonido?",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta clarification",
+    "falta operación audio.volume|audio.master",
+    "dice «quieres que ajuste»"
+   ]
+  },
+  {
+   "n": 54,
+   "cls": "C",
+   "text": "si",
+   "expected": "si el volumen ya bajó, «si» es charla/cierre; nunca «no pude entender»",
+   "route": "conversation",
+   "latency_ms": 2992,
+   "reply": "No puedo reducir el volumen de sonido.",
+   "ops": [],
+   "verdict": "mal",
+   "source": "revisión",
+   "reasons": []
+  },
+  {
+   "n": 55,
+   "cls": "-",
+   "text": "pon el volumen a 20",
+   "expected": "volumen a 20",
+   "route": "result",
+   "latency_ms": 1060,
+   "reply": "El volumen está en 20. El sonido no está silenciado.",
+   "ops": [
+    "audio.volume:started",
+    "audio.volume:completed/v"
+   ],
+   "verdict": "bien",
+   "source": "reglas",
+   "reasons": []
+  },
+  {
+   "n": 56,
+   "cls": "C",
+   "text": "ahora subelo a 100",
+   "expected": "«lo» = el volumen: subir a 100 sin preguntar",
+   "route": "conversation",
+   "latency_ms": 2849,
+   "reply": "No puedo subir el volumen a 100.",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta conversation",
+    "falta operación audio.volume|audio.master"
+   ]
+  },
+  {
+   "n": 57,
+   "cls": "C",
+   "text": "al volumen",
+   "expected": "si ya subió, «al volumen» es un remate: acuse o repetir 100; nunca la guarda",
+   "route": "conversation",
+   "latency_ms": 2351,
+   "reply": "No puedo ajustar el volumen.",
+   "ops": [],
+   "verdict": "mal",
+   "source": "revisión",
+   "reasons": []
+  },
+  {
+   "n": 58,
+   "cls": "L",
+   "text": "La nueva peli de resident evil es buena?",
+   "expected": "web.search y resumen de reseñas",
+   "route": "conversation",
+   "latency_ms": 3371,
+   "reply": "No tengo información actualizada sobre la nueva película de *Resident Evil*. Te recomiendo revisar fuentes de noticias o sitios de reseñas para opiniones oficiales. ¿Quieres que te ayude con algo más?",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "falta operación web.search"
+   ]
+  },
+  {
+   "n": 59,
+   "cls": "C",
+   "text": "pues investigala dime si tiene buena o malas reseñas",
+   "expected": "anáfora al tema (dos turnos atrás): web.search reseñas",
+   "route": "clarification",
+   "latency_ms": 2827,
+   "reply": "¿Sobre qué producto o servicio quieres que investigue las reseñas?",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta clarification",
+    "falta operación web.search",
+    "dice «sobre qué producto»",
+    "dice «sobre que producto»"
+   ]
+  },
+  {
+   "n": 60,
+   "cls": "-",
+   "text": "dios mio te dije hace 2 mensajes, no quiero hablar mas contigo",
+   "expected": "charla (acusar recibo)",
+   "route": "clarification",
+   "latency_ms": 3863,
+   "reply": "En eso no encuentro un pedido para mí; ¿necesitás algo?",
+   "ops": [],
+   "verdict": "mal",
+   "source": "reglas",
+   "reasons": [
+    "ruta clarification",
+    "dice «no encuentro un pedido»"
+   ]
+  }
+ ]
+}
