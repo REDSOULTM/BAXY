@@ -1864,3 +1864,7 @@ Instalar y desinstalar software pasa de 2/31 a 2/31 con instalar software es win
 ## Actualización 2026-09-22 (WINGET2085)
 
 Instalar y desinstalar software pasa de 2/31 a 2/31 con instalar software es winget, no la biblioteca de Steam (commit 3acb52e3, BUILD2085) (HEAD 3acb52e3): 2/12 aprobados (los 2 límites); las 4 filas de Photoshop contestaron bien y el adjudicador aún no tiene el comportamiento de paquete ausente; instalaciones reales mal releídas por el lector de la tabla; desinstalaciones detenidas por el catálogo de Inicio ambiguo, 0 créditos. Tres instalaciones reales de 7zip.7zip; el fixture restauró el estado previo del paquete. Tres arreglos y re-medición como WINGET2087.
+
+## Actualización 2026-09-22 (WINGET2087)
+
+Instalar y desinstalar software pasa de 2/31 a 2/31 con instalar software es winget, no la biblioteca de Steam (commit 0b0740bc, BUILD2087) (HEAD 0b0740bc): 6/12 aprobados (las 4 filas de Photoshop y los 2 límites); desinstalaciones detenidas por el aprobador sin propuesta e instalaciones con 7-Zip ya presente por un fixture que no puede quitarlo sin elevación, 0 créditos. Cuatro lecturas de winget sin paquete, cero instalaciones; ninguna desinstalación ejecutada. Las filas de 7-Zip no son medibles en este notebook sin un fixture elevado.

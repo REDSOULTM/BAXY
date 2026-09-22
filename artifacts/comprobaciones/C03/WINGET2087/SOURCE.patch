@@ -1,0 +1,63 @@
+commit 0b0740bcac05fbeb45387d048854ee7fa4881cb4
+
+C03 WINGET2085 (notebook): el id de winget se lee desde su columna, y quitar un paquete no depende de un Inicio ambiguo
+
+Sobre el commit de WINGET2085. (1) El lector de la tabla de winget tomaba como id el primer token con punto tras un
+espacio; en «7-Zip 26.03 (x64 edition) 7zip.7zip 26.03.00.0 winget» ése era «26.03», la versión dentro del nombre, así
+que un 7-Zip recién instalado se daba por ausente y ninguna instalación quedaba verificada. Ahora el id se busca desde
+la columna Id que marca la cabecera, con la línea entera como respaldo. (2) «desinstalá 7-Zip»: Inicio tiene «7-Zip
+File Manager» y «7-Zip Help», ninguna entrada resolvía sola y el turno se quedaba en una consulta de presencia
+ambigua sin llegar a quitar nada. Cuando el nombre abre más de una entrada de Inicio, el pedido va a
+package.uninstall, que resuelve el paquete en winget por su propio nombre e id. Pruebas:
+WingetPackageAdapterTests.WingetTableReadsTheIdFromItsColumnNotFromANameVersion y
+test_uninstall_of_a_package_with_several_start_entries_goes_to_winget. Fast en verde; winget 11/11; effect_intent 1971.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 42a3220d..d4b21d71 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -18256,6 +18256,23 @@ def installed_catalog_application_name(
+     return None
+ 
+ 
++def _catalog_entries_named(
++    name: str,
++    application_names: Iterable[str] | ApplicationCatalogIndex,
++) -> tuple[str, ...]:
++    """WINGET2085: the catalog entries whose name begins with the whole
++    requested name («7-Zip» → «7-Zip File Manager», «7-Zip Help»)."""
++
++    key = _application_name_key(name)
++    if not key:
++        return ()
++    catalog = build_application_catalog_index(application_names)
++    return tuple(
++        display for display, entry in catalog.entries
++        if entry == key or entry.startswith(key + " ")
++    )
++
++
+ def software_package_request(
+     text: str,
+     application_names: Iterable[str] | ApplicationCatalogIndex,
+@@ -19853,6 +19870,17 @@ def resolve_explicit_effects(
+         verb, _name, in_catalog = software
+         if verb == "uninstall" and in_catalog and "package.uninstall" in available:
+             return EffectIntent(("package.uninstall",), (text,))
++        if (
++            verb == "uninstall"
++            and not in_catalog
++            and "package.uninstall" in available
++            and len(_catalog_entries_named(_name, authenticated_applications)) > 1
++        ):
++            # WINGET2085 «desinstalá 7-Zip»: Start holds «7-Zip File Manager» and
++            # «7-Zip Help», so no single catalog entry resolved and the turn
++            # stopped at an ambiguous presence read. What gets removed is the
++            # package, and winget resolves it by its own name and id.
++            return EffectIntent(("package.uninstall",), (text,))
+         if (
+             verb == "uninstall"
+             and not in_catalog

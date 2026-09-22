@@ -1,0 +1,15 @@
+{
+  "schema": "c03-winget2087-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "opus/typed-tools (catalog, Core list, Providers adapter, mind readings, composer) merged into codex/kiro-goal-c03 (d89c626d3).",
+  "patch": "artifacts/comprobaciones/C03/WINGET2087/SOURCE.patch",
+  "commits": [
+    "0b0740bcac05fbeb45387d048854ee7fa4881cb4"
+  ],
+  "build": "BUILD2087 (C03-repairs2087-build/BUILD_READY.json; mente)",
+  "cause_measured": "«instala Spotify/Photoshop» y «desinstalá Spotify/Discord» se leían como biblioteca de Steam (INSTALL1625/1629).",
+  "change": "package.install.prepare/commit y package.uninstall por winget; la mente distingue programa de juego y «quitá/sacá/eliminá» desinstala; D13: 7zip.7zip en lugar de Spotify/Discord.",
+  "measurement": "WINGET2087: 6/12 aprobados (las 4 filas de Photoshop y los 2 límites); desinstalaciones detenidas por el aprobador sin propuesta e instalaciones con 7-Zip ya presente por un fixture que no puede quitarlo sin elevación; 0 créditos. Cuatro lecturas de winget sin paquete, cero instalaciones; ninguna desinstalación ejecutada. Las filas de 7-Zip no son medibles en este notebook sin un fixture elevado.",
+  "credits": 0
+}
