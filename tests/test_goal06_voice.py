@@ -840,6 +840,21 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         "set the wallpaper to red",
         {"situation": json.dumps(wallpaper)},
     ) == ""
+    # EXPLORER2069 H0701: the count names the folder the Explorer had in front.
+    _counted = _compose_situation_payload({
+        "kind": "operation", "operation": "filesystem.explorer.count", "polarity": "success",
+        "verified": True, "succeeded": True,
+        "observed": {"version": 1, "folderName": "raiz_conteo", "source": "explorer_foreground",
+                     "extension": ".py", "count": 3, "filesInFolder": 4},
+    }, "es")
+    assert _counted["seen"]["folderName"] == "raiz_conteo"
+    assert _payload_fact_defect(
+        "Hay 3 archivos .py en el directorio actual.", _counted,
+        "Dime cuantos archivos .py hay en el directorio actual") == "missing_state"
+    assert _payload_fact_defect(
+        "En raiz_conteo, la carpeta que tenés delante, hay 3 archivos .py.", _counted,
+        "Dime cuantos archivos .py hay en el directorio actual") == ""
+
     # TEXTREAD2063 H0299: the file's own words are observed data, even a forbidden term.
     _roadmap = json.dumps({
         "kind": "operation", "operation": "document.text.read", "polarity": "success",

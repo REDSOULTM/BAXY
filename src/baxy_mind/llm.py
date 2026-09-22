@@ -16470,6 +16470,25 @@ class LlmRuntime:
                 "creaste, nombrando el archivo y la cantidad de diapositivas, en una oración corta; "
                 "sin otros números."
             )
+        if (
+            visible_situation.get("operation") == "filesystem.explorer.count"
+            and isinstance(visible_situation.get("seen"), dict)
+            and type(visible_situation["seen"].get("count")) is int
+        ):
+            # EXPLORER2069 H0701: the figure is the count of the folder the
+            # Explorer has in front; naming that folder is how the person knows
+            # which one was read. The contract demands the name and no
+            # instruction asked for it, so six faithful drafts died.
+            instruct(
+                "\nseen.count is how many files with seen.extension the folder seen.folderName holds "
+                "(seen.filesInFolder is how many files it holds in all), read from the Explorer window in "
+                "front. Say the count and name that folder, in one short sentence; no other numbers."
+                if response_language == "en"
+                else "\nseen.count es cuántos archivos con seen.extension tiene la carpeta seen.folderName "
+                "(seen.filesInFolder son los archivos que tiene en total), leída de la ventana del "
+                "Explorador que está delante. Di la cantidad y nombrá esa carpeta, en una oración corta; "
+                "sin otros números."
+            )
         if visible_situation.get("operation") in {"file.compress", "file.open", "desktop.wallpaper.set", "web.download"} and isinstance(visible_situation.get("seen"), dict):
             # REOPEN1957 H0542/H0459/H0077: each file tool leaves its own
             # postread; the reply names the file, folder, colour or address seen.
