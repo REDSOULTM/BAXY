@@ -95,3 +95,12 @@ desinstalación silenciosa pide elevación, así que el fixture no puede dejar e
 piden confirmación por una ruta cuya propuesta el aprobador de la raíz no encuentra. Queda también un defecto de
 presentación visto ahí: cuando la lectura dice installed:true el plan sigue al paso de instalación y el final filtra
 «falta datos del paso» en vez de decir que ya estaba instalado.
+
+STEAM2063 (H0456, H0571, H0578, H0620) no se corrió en el notebook (2026-09-22): en este equipo dos de las cuatro filas
+no son lecturas. Comprobado sin efectos con la propia game.entitlement.named del producto y leyendo la caché del
+catálogo de Epic: Doom Eternal (782330) está en la biblioteca de Steam sin instalar, así que «Descarga diin eternal
+de steam» (H0571) despacharía steam://install de decenas de GB; y Fall Guys está en el catálogo del lanzador de Epic,
+así que «Descarga Fall guys en epic games» (H0578) iniciaría una descarga real por Epic. Las reglas del dueño lo
+prohíben (no bajar decenas de GB; ninguna descarga de juegos antes del motor). H0456 (Plants vs. Zombies no se resuelve
+aquí: la instalación se rechaza antes de cualquier despacho) y H0620 (PvZ no está instalado) sí serían lecturas; las
+cuatro filas siguen abiertas y se medirán en REDPC o donde la biblioteca las deje ser lecturas.
