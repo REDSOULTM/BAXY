@@ -1856,3 +1856,7 @@ Energía del sistema pasa de 1/3 a 1/3 con Windows acepta el apagado y el reinic
 ## Actualización 2026-09-22 (POWER2081)
 
 Energía del sistema pasa de 1/3 a 1/3 con Windows acepta el apagado y el reinicio con el privilegio habilitado (commit 7010c24a, BUILD2081) (HEAD 7010c24a): 2/6 aprobados (los dos límites); Windows rechazó la transición por las dos puertas y los finales lo dijeron con verdad, 0 créditos. Nada quedó programado en las seis; condición de esta máquina (Windows niega la transición programática al proceso del producto), no defecto ni lectura. H0401 y H0714 siguen abiertas.
+
+## Actualización 2026-09-22 (WINGET2083)
+
+Instalar y desinstalar software pasa de 2/31 a 2/31 con instalar software es winget, no la biblioteca de Steam (commit b3f172d3, BUILD2083) (HEAD b3f172d3): 2/12 aprobados (los dos límites); las 4 filas de Photoshop hicieron lo correcto y el panel no puede aprobarlas, las 3 de desinstalación las detuvo el runner por app.installed y las 3 de instalación corrieron sin verificarse a tiempo, 0 créditos. Tres instalaciones reales de 7zip.7zip sin verificación a tiempo y finales honestos; el fixture restauró el estado previo del paquete. Arreglos en el commit siguiente y re-medición como WINGET2085.

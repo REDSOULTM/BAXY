@@ -1,3 +1,25 @@
+## WINGET2083 — estado vigente 2026-09-22T16:31:45.990321+00:00
+
+Parcial: 2 aprobados, 10 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 680/742 | 62 | 0 | >=656 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 656 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WINGET2083 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: WINGET2083: 12 ejecutados, 2 aprobados, 10 fallidos, 0 créditos (índices []). Siguiente: Steam (descargar, instalar, desinstalar, lanzar).
+
+Evidencia: `artifacts/comprobaciones/C03/WINGET2083/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 249.20 s acumulados; pico GPU 3485.56 MiB; pico RAM 2459.68 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 12; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WINGET2083 precedente. -->
+
 ## POWER2081 — estado vigente 2026-09-22T15:49:21.680289+00:00
 
 Parcial: 2 aprobados, 4 fallidos, 0 sin ejecutar; 0 créditos.

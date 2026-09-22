@@ -1,0 +1,776 @@
+{
+  "schema": "winget2083-root-adjudication-v2",
+  "decided_at_utc": "2026-09-22T16:31:45.990321+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "b3f172d3389977833d1948400793b057e184dbce",
+  "decisions_sha256": "c5ee2f191d29287d7008ef1c7940b02dbb72ac269e41145132a49073ea3d3019",
+  "registry_before_sha256": "d5598b9518dd746099ab1a1ac64207679d536d7fdb156b057ad96168aa9b05de",
+  "registry_before_counts": {
+    "covered": 680,
+    "open": 62,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "8a2c596dcaaf131b336260fd867de561022f5d2bcada9c2e5f7ec98b1ba18491",
+  "preparation_sha256": "1d0df02782e6ed2a239b5745d951f1a4a9732d5a902e89fa98ddcb97bb547556",
+  "passed": 2,
+  "failed": 10,
+  "unexecuted": 0,
+  "executed": 12,
+  "segments_started": 12,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [],
+  "counters": {
+    "covered": 680,
+    "open": 62,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 656,
+    "categories_total": 35,
+    "categories_closed_after": 29,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 656 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WINGET2083 añade 0. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 656
+  },
+  "resources": {
+    "seconds_sum": 249.20000000001164,
+    "gpu_peak_mib": 3485.55859375,
+    "ram_peak_mib": 2459.68359375
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0651",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no leyó winget, no instaló/desinstaló el paquete único, o el final inventó el estado.",
+      "observation_note": "Turno ordinario: el instalador corrió y la relectura no confirmó la instalación; el final que lo decía no se pudo publicar; pins intactos. Reparación en el commit siguiente.",
+      "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-00\\EXIT.json": "73aad62c59efaf6517f3b46b8711520a2176847d74da237120229289af246b89",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-00\\RESOURCES.json": "ff295a1d0c29248acf6cc919d388a7c8032a4237fff9c4527f16310e6597d02e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\profile-owner-00.json": "dd9dda3387daf59846b3cb92d9e62ee09a79111e1052ce26ebf9395f8f65e2da",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-00\\PREREG.json": "6a7208f2df94ba5f68c5fa16906309ac587167d1c1600b9fdae1dcb8d7e726ca",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-00\\capture\\events.jsonl": "954efa892254488468f8350fb5d1573e8df62c6453ac64203c33a18c8c1e1951",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-00\\turns.jsonl": "f065ebbd3d64fe500bf3fc4099a4ea8eb0468284066de9517c69466c30302324",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\fixture-00.json": "e39ed256b5f5cc647e417beafcad981a6f977bc405718bbad9117fe13b9710cf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-00.json": "764c99d68880a2a1d4e39d50fe7e86bfec482df187480e5e97f7302117bf07dd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-prelaunch-00.json": "52453e7a1689ac0429302bf796a5e613e372cadc0b37a9a2300129c9b2e9bee7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-00\\case-observations.json": "72a91999206bf4d9c4ad2a5276c60626ca6f1d692b8cabf1abc878630a78971d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-00\\journal-before.json": "be23a1aab3c5580047e3aad5f6c3f145efae23cb49ef194896ccf487408761c5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-00\\journal-after.json": "aa7275d185832b207ab55dd7757e621f93a82efd7dda39211f66e6801ab0e2fb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "01d417641b7437906a89c458a800e83c87ad7097108fb10ba95e3feed7b7c340"
+      },
+      "terminal_kind": "composition_failed",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "3dfb5148-49bc-4ef0-a7dc-0c44bc6bcfe4",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "6bd57a13-2763-44fd-a821-c1586c2273ca",
+          "operation": "package.install.prepare",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "dfb37bca-b723-44bf-9cf4-6f1ef6b90d7d",
+          "operation": "package.install.commit",
+          "status": "failed",
+          "verified": false,
+          "error_code": "winget_install_not_verified",
+          "effect_may_have_occurred": true,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "H0217",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no leyó winget, no instaló/desinstaló el paquete único, o el final inventó el estado.",
+      "observation_note": "Turno ordinario: winget no ofrece ese paquete; cero instalaciones y final fiel; pins intactos.",
+      "final_sha256": "372c151271564118a3c04376ea5dc122587b4cff181484f0733834a608b47ee0",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-01\\EXIT.json": "2973da396c44640db54b14d450ab649c54321818ca8ef837c2e440b266ec1850",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-01\\RESOURCES.json": "5beb1285616aa4c60af32b88d418859422a17ad8e718bb44e5bc59ff05fe5466",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\profile-owner-01.json": "0dd096719b016a3421847515665f0d0180a132b5ba586f2d0e2b10d32fadf962",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-01\\PREREG.json": "7e5e5e4da9c090c3b55594770af7e584a52d476d769d2f6b1f5c17159dae40de",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-01\\capture\\events.jsonl": "aad64be44404f757196479ea2f91e28ad58ba1ca50a7f14a85c8c7cafeda6b96",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-01\\turns.jsonl": "032c71d14f5db3068ff2c965e0e74300358fdd7c3683e8933d3c5308e39a0cd7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\fixture-01.json": "601ae42b06576252b69b1199255f9de9ca4c14a990abf99971989b16ff91a9d0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-01.json": "c33666b44516291f3e24098e76a06f89527fb5bd369870eeb3f4cc98b6bff41a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-prelaunch-01.json": "efac73429dff2691678bd7ed3155ec0c6f21cebb3d745f2b3b1b0131474296ba",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-01\\case-observations.json": "a282267900f0b73fd0a6548705a8ed762f550270dec9bc49c3524ec0415afe5d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-01\\journal-before.json": "bfdc9ab200187f8cfe95537c608c18ce2937154290660bce630851b217b2f453",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-01\\journal-after.json": "810b391054b53c5aea06246388c49c38636b8f612ddc49bc790d4d2498234698",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "5564739d129b195ee84cae6c825b1685d82654b90e5c6ee58222185d0b56dc5c"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "dd606086-1193-4de7-a37d-647583212b8c",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "ac5f88c3-a414-43a0-bc00-13d24d09b2c4",
+          "operation": "package.install.prepare",
+          "status": "failed",
+          "verified": false,
+          "error_code": "winget_package_not_resolved",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "H0167",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no leyó winget, no instaló/desinstaló el paquete único, o el final inventó el estado.",
+      "observation_note": "Turno ordinario: winget no ofrece ese paquete; cero instalaciones y final fiel; pins intactos.",
+      "final_sha256": "372c151271564118a3c04376ea5dc122587b4cff181484f0733834a608b47ee0",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-02\\EXIT.json": "9d70a44222bedb52a1ab2e08580a4113d1b5ca76fd12618ba26d9fb40f1ab606",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-02\\RESOURCES.json": "2fc0b1bd1edf6a4ca63fce1d1b6f1b93e337323dc89afb14abfa995ef4bdcbdb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\profile-owner-02.json": "35f0e95328598124137748f345443b028257c0f9f90916c69edccad4ba79d6fc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-02\\PREREG.json": "5e35eb3287fcc9147ca6808d8dbc03573d083ac996251f53e4faf3bd86643a69",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-02\\capture\\events.jsonl": "d8e886d92cb57be94b5810c41bf36429693238ec95140981e72daae995167a78",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-02\\turns.jsonl": "d441daf578fe55e4dc1c95fe29dea1e6ad87a4d483b175e362e088bc66d1756a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\fixture-02.json": "1b64ee9c89654e0831929dd84fe2079c94552daa49c9aafb30bac259fb045fc3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-02.json": "3275fa20386974f3efe21b6a0254b82aaad95c19c8356bb3f60f6dd18fc833b5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-prelaunch-02.json": "3eb07d122146527f7a4f50f57a514ca494bcd2a1ef93374e6092a3dc39e41590",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-02\\case-observations.json": "7675c3723ea101f69d4252747acff58ced56fea183534cba9841e7a6ae186522",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-02\\journal-before.json": "8a107875f9dac1fa8ffc48c16bbc01e6bb63116759ce84d01b1e611b16143349",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-02\\journal-after.json": "c86b6ecef14f0aa3ca438597f62bc1f40d6c1a68131462cea7b12d9807bfef64",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "4dc7ce8a9f4b060d5db976c2d54e8b25d2756a68595b34529dcd959309b302a1"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "b48233a9-d29f-44d4-8145-1877f64d57d2",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "15b3dc15-306b-4b4c-a456-47194fba2a7a",
+          "operation": "package.install.prepare",
+          "status": "failed",
+          "verified": false,
+          "error_code": "winget_package_not_resolved",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "H0457",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no leyó winget, no instaló/desinstaló el paquete único, o el final inventó el estado.",
+      "observation_note": "Turno ordinario: winget no ofrece ese paquete; cero instalaciones y final fiel; pins intactos.",
+      "final_sha256": "01ed8104bae033c3523572d2dd0765c33ef6be9da9605e01e79968008eb433b5",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-03\\EXIT.json": "c46178580fb88f212ede9e44e657804ffbde2e8262789734650a5a4aa414edcc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-03\\RESOURCES.json": "2caa8524bba180d029a8f2f091139a219c33c0373073df2be71899b3bf82c714",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\profile-owner-03.json": "ea77a73a93a289920509812794b44847c9abf04c2ad75411a875ae64261001ac",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-03\\PREREG.json": "9da7b9d9a408f563ad8c1c848998fa7cd380b2bcf4b6cbca02886b7051f4feeb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-03\\capture\\events.jsonl": "df07e672631c4391d386d1a049c80d75bcf649062475623b7f876873b1cc06ea",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-03\\turns.jsonl": "698e540f6782cb8ef82eaa1e3ceb9cccdaa51a7c2b179aa11de8eb48fb87e338",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\fixture-03.json": "64e560b2eeacb57fd143fb2192ca09e3958e3ece793454b68c84ac07bdec6819",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-03.json": "a731e6702831266e565aab4e8e18145aaccfc37cc6c4faf1ddb52d4b7c125755",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-prelaunch-03.json": "83b8533aec42fe71fa81b7c72f2e150c5543c18f19115e8634fed7ca77eb01a0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-03\\case-observations.json": "379d72d7d9009f4aa0691895fa7e121ee1fa84381b2a5bfb9a9ff586804f5a5d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-03\\journal-before.json": "0b68700a4cfbd28477bcd51e2040317d2e3c813a28bdb969ff602911b7fe28b3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-03\\journal-after.json": "bf0a7f6166821b465c7cc8e4d717c92dc61f2d9fb5e9438caf2733ae9813ee05",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "a2f378b334ca7bedbe2b49aaa3a04131fbcb9720215152a4320971c6a6997282"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "44d03593-ac00-433a-90d9-efd464f41829",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "126f4dc3-1ed8-4e7c-a258-09435fda3c78",
+          "operation": "package.install.prepare",
+          "status": "failed",
+          "verified": false,
+          "error_code": "winget_package_not_resolved",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "H0583",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no leyó winget, no instaló/desinstaló el paquete único, o el final inventó el estado.",
+      "observation_note": "Turno ordinario: winget no ofrece ese paquete; cero instalaciones y final fiel; pins intactos.",
+      "final_sha256": "01ed8104bae033c3523572d2dd0765c33ef6be9da9605e01e79968008eb433b5",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-04\\EXIT.json": "9cc8685dfc07b1f568e24e404661a7e1dcca694da1463c8e3c441f0e0472775b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-04\\RESOURCES.json": "a3630b8f2e0cc216be6cff720a4ab82e9b96a068f81d58e0489ebba2e0ba20c5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\profile-owner-04.json": "f28a1fdff73d527d97c6f265dc1e65e47b1fa7457a7f3deb5be2fdaecffd6ecf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-04\\PREREG.json": "9f329f4403763b3f1d490c2525fe0b46e351261cbf096e2096d735c67347701b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-04\\capture\\events.jsonl": "4806ec87a78df72ac44ff9d0c7452dd6c4b1920e5aef4706b2a938fca4fa7ed1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-04\\turns.jsonl": "f4d8d647f174ab7b6f327909da592bc5d37ab41530b851af64b62c77bf803526",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\fixture-04.json": "22fef33028790297b3b8b1dbe6b048106d12753f8895bc9a8705d23b3bf75b95",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-04.json": "1e18236d285bd4761362d7d7691d549f5d0245de21324f114ee4924779ca9fe0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-prelaunch-04.json": "a315210ea5021b4a889a435546a0d9fad152eebe18a364e13e2115216ba26fcc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-04\\case-observations.json": "5dba7bdc74e73ecf30f9d9d10634ac647d3304239f9d1b9c134217ae8d111460",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-04\\journal-before.json": "63b7422e084a5ae6fa7810a808905de266475fa9aacf51478d4337c0f2d580fd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-04\\journal-after.json": "1a1835ed4b6dbc2893120dcebcff75010419f661a84b722277501ef076777606",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "842afd5aa9319efb4fe8f7fcfcb7244d205df0bee751c9cb9d3ca4d6865f8d50"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "84f66e47-3de9-4a26-b217-6b7784ff321f",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "e6a764fc-054b-4a3c-8193-37dc1fe994fa",
+          "operation": "package.install.prepare",
+          "status": "failed",
+          "verified": false,
+          "error_code": "winget_package_not_resolved",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "H0574",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no leyó winget, no instaló/desinstaló el paquete único, o el final inventó el estado.",
+      "observation_note": "Turno ordinario: el runner detuvo una operación que el panel no permitía; cero efectos; pins intactos. Defecto del panel.",
+      "final_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-05\\EXIT.json": "51902b6e3938d219b60fdc9c5b398e185e034a2e787ab42d855fd4f53ec08fa1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-05\\RESOURCES.json": "8ec5509ee860c33c1269c96c723a8a51980f3c3302564713bc8b82fed05aa75a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\profile-owner-05.json": "7887a67861cea3ff34397261a2dd7c6095786308df0c8fb5f08dc0a2b1839a4c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-05\\PREREG.json": "9c74c7c188c178a90c19d9da1c035f7ae46e7e9af3e6a09797931e60080ff397",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-05\\capture\\events.jsonl": "e995a3bf9729503004de8002b9cae1f34779824f2d50e40b1a250a5891c26865",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-05\\turns.jsonl": "975acdf7bc7c48dd6e090ffdb1df6dc415914bdd6b31e03b24a2386047ed4b70",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\fixture-05.json": "9f5270f1ef2f562278ede2151ed383be2b6efbe9d00a1b6118cd51a40bb49930",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-05.json": "abe425d6d9bf164d0349cc6d382fdc6ec9701170d907c9dc9eea6d9c4dfa0d99",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-prelaunch-05.json": "e012024ada483640f1b0bfe59458b3554e4e1ee772ad357ce9ded46ff7818679",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-05\\case-observations.json": "3aa23ed89f876a26b053f8ec1c1fa3e8c2f9b5f79fd545a83c8961c133e42630",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-05\\journal-before.json": "16ed32cd7c7c0e5d6685f349815d432b343e540bc9d93cf22b68b25f90f6048e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-05\\journal-after.json": "99cfa61a982c7c552020de8ae0a5d3fa8a7fa2e1968beddbb6f75ab591357a19",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "f99cfa691619b4eb5810fc4dbe4e7d2961f37a6745dee9978d7f508d04bcd086"
+      },
+      "terminal_kind": null,
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": true,
+      "cause_kind": null,
+      "violations": [
+        "unexpected_operation_started:app.installed"
+      ],
+      "new_invocations": [
+        {
+          "invocation_id": "9c50f408-24cb-4209-8a58-86e8fd15a428",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "6daa5bb7-7c24-4e0b-be07-8272941c8d21",
+          "operation": "app.installed",
+          "status": "failed",
+          "verified": false,
+          "error_code": "app_ambiguous",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "H0089",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no leyó winget, no instaló/desinstaló el paquete único, o el final inventó el estado.",
+      "observation_note": "Turno ordinario: el runner detuvo una operación que el panel no permitía; cero efectos; pins intactos.",
+      "final_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-06\\EXIT.json": "56f1ffb72574be9b3b7e765a1a41ab70333ae368457044517edcc44e14db34d9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-06\\RESOURCES.json": "d5705094d9f4990b49f3910080521bebf7f6da7523808ab8297461d3f71d01d5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\profile-owner-06.json": "53282b280d5ecefd1af7f2d7df25e679b97a0ba57233b790ab27a6d0b5879186",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-06\\PREREG.json": "12d4f320629b8f3b64da5c98772a20ff8dbc0399e3f089a38c26cf9106cc5d60",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-06\\capture\\events.jsonl": "a40f1f2f22ea46ef22490f345f46562fca281767c6968d3e3f574025c0c30784",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-06\\turns.jsonl": "fa13a4d5290359f69fdf2873fa9adebb4fe696b48c5cb8407f585c6e616a016c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\fixture-06.json": "395db1fb37dd8310bf32f1fb7970dd3ea4dc3abdaf638a605354b779d17d8588",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-06.json": "1cd820e4a3059b1d2534954062111da18b19f342c526838434e3b82209562dd9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-prelaunch-06.json": "d0af91c39cf6015759b8d435b825fbd638bb2335fe4531facb5a63ff5c1d4a85",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-06\\case-observations.json": "00adb817517f8fb8846f5e2120a21a40f2beba57b2cbd5b164a21548292979f4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-06\\journal-before.json": "08bd76a6fc05842f4d51558b375013747dc467e332c07c38d8959482879aa290",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-06\\journal-after.json": "26bf2af076be3dbb3e1ed7bbd56f33647e56b3d9785c6e88a40a20e3806bd2b1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-06\\journal.snapshot.jsonl": "b9d8f7866f77074fd64341e0301726bc9023b46c55c8c0c3cc70dd8e73a9a18c"
+      },
+      "terminal_kind": null,
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": true,
+      "cause_kind": null,
+      "violations": [
+        "unexpected_operation_started:app.installed"
+      ],
+      "new_invocations": [
+        {
+          "invocation_id": "4fa38a3b-78ed-41d0-a2e3-c55fa09b86f0",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "bdd77e92-7e9f-40da-9f31-89c4b6cf22e0",
+          "operation": "app.installed",
+          "status": "failed",
+          "verified": false,
+          "error_code": "app_ambiguous",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "case_id": "winget2083-dev-01",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no leyó winget, no instaló/desinstaló el paquete único, o el final inventó el estado.",
+      "observation_note": "Turno ordinario: el instalador corrió y la relectura no confirmó la instalación; el final no se pudo publicar; pins intactos.",
+      "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-07\\EXIT.json": "db9d1f4164287c0a54903eaaaee1168c20f8c6396e2307ff5d080b968c445583",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-07\\RESOURCES.json": "c72cdc294f11a8ec2e724ade38e92b75ca733ad399c0bb338d336dc6d40a8f52",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\profile-owner-07.json": "5c7912bb1a57b95886e0b25621544895d99d8c85a635540114fdb19979fb4f14",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-07\\PREREG.json": "10e0fef209f3e0273b587eec6c477fa1da00ad60142e6a7485921635aea3e3cc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-07\\capture\\events.jsonl": "5ae4a274135bbab09e450b91f406f8cb8528e00e34a543712770985727aad151",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-07\\turns.jsonl": "d8748a282ea6ff091db7dbea2f2c120a16c237a7b5a33a8ad0a793e67e420611",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\fixture-07.json": "b90d68a9e7f91b2fdf3ea2129d4685f9cd6ba5f4502690123367306fe6e3e623",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-07.json": "b9bf7fc424fb62dfa013b381d224f5e33dc84b1c913ddc8e25ead84f2ad03b07",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-prelaunch-07.json": "fe48d8543127d4c65073b58049062b32c7c1c6d629c1bb3ff1e6251f0d012452",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-07\\case-observations.json": "e67f6e3160bc42449507ee164d1535f2871d72b5f02a10d657a9fec958f54789",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-07\\journal-before.json": "5e9dca3068584f7642503b14dff0b9157cb86c9f1ac427d7998cd8ed34c07241",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-07\\journal-after.json": "1378c228ea5aa217212f2ae8326ea14a22b46a8aa7b770711c1527c81887db81",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-07\\journal.snapshot.jsonl": "42536a6dddb163b4c03b59130b99f2d35dd870899507b8b36fb0255490165be6"
+      },
+      "terminal_kind": "composition_failed",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "14b8d68a-49d4-4773-aeba-edd65ddcd76e",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "5359a2b2-f619-4669-b7c0-6a00ca339d4c",
+          "operation": "package.install.prepare",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "77e64466-6aa6-4586-8bfe-c6f4d91d9e53",
+          "operation": "package.install.commit",
+          "status": "failed",
+          "verified": false,
+          "error_code": "winget_install_not_verified",
+          "effect_may_have_occurred": true,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "case_id": "winget2083-dev-02",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no leyó winget, no instaló/desinstaló el paquete único, o el final inventó el estado.",
+      "observation_note": "Turno ordinario: el instalador corrió, la relectura no confirmó la instalación y el final lo dijo con verdad; pins intactos.",
+      "final_sha256": "c32198cfc062253b5c8097afcd5a6d6113d549c0aceb14f37503bb3a8d0f6322",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-08\\EXIT.json": "daae6629ce92c871494e94a58a84ab22c97477ba1d73a3328d086666e468db4b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-08\\RESOURCES.json": "cf4fc14695b7fefd901de82f2bc810887faaf3a2719246db0128f3bf58852876",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\profile-owner-08.json": "35de7b39e5d7024304afb9bc85516cf01e9c035a6eb74ed49f71957da8b168de",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-08\\PREREG.json": "4bd3c4115e52e56da5f3e156494bd5daadab8b6a2d8d7c9129c275e555162de1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-08\\capture\\events.jsonl": "260388df4842e7e0f9aed1897e91895d2f520331aaba20204f820e69b29947bd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-08\\turns.jsonl": "27dfff13458b81ed7ea79d3e19ad72123a5f5f538f1f2948efca81e20704b9bc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\fixture-08.json": "809be26663f532a6f3a13c9d6aaac83246c4cc40303e99bcbba3d46a87b32549",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-08.json": "6ce378437c1653aa9d1d28a9bba0456692f6052a39b142375d50e13325c716e0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-prelaunch-08.json": "97bb3dc507ea8a4b453487f6307e2538177079be4e585c0d8b449c9c8b1e09d7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-08\\case-observations.json": "97d9a3c74701c43a73375ded141649c58169dae73affb978eaa36228e2bedd0c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-08\\journal-before.json": "72e920b97be3e590f97662964a6b43f57aec505ef8b0a54ae7933be8638aeb31",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-08\\journal-after.json": "43fef9ac3c4ccad73413fa8523c6875093829fd5b52ce23ea66249cacb183364",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-08\\journal.snapshot.jsonl": "83d0d3153180e9763bc8a5ba4ae537170abf7239c7df9d43f1b1186bd58ff706"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "640b6037-efc2-42c1-a87d-6ecafc551ec5",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "ae98a3c6-2fa0-460a-9948-9f3fe951c838",
+          "operation": "package.install.prepare",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "e38fc3b4-1d10-4340-8397-39944f3c75ac",
+          "operation": "package.install.commit",
+          "status": "failed",
+          "verified": false,
+          "error_code": "winget_install_not_verified",
+          "effect_may_have_occurred": true,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "case_id": "winget2083-rev-01",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no leyó winget, no instaló/desinstaló el paquete único, o el final inventó el estado.",
+      "observation_note": "Turno ordinario: el runner detuvo una operación que el panel no permitía; cero efectos; pins intactos.",
+      "final_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-09\\EXIT.json": "1f94da09cbb354691329d2abc240b441b86d25fc7ba8e0dd89b6e4ecaf2e63fe",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-09\\RESOURCES.json": "66f34c1ca4bf7250592967153cbc8cba7ddce24b47f2e3c5d13d7f35167f2067",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\profile-owner-09.json": "4d1775b80452ac06fa2256e331f83e4adcd132d4f00633998ba5daacc275291f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-09\\PREREG.json": "dcd853c8f6411b3c967d7871c10d5986b32574686c2fc18f825147c6966b1de6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-09\\capture\\events.jsonl": "cf07aec520454c165f2ea3e306b0fb247aac9280d88847688f7361786ab63bc3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-09\\turns.jsonl": "646df465a0b6e954ec26b60a28104d3785c598cdcd1a0d8679ae0f5e678519a3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\fixture-09.json": "999046b0956017d3acbc577258b53a072d09f321c59f936a22aafe7d0d3bb13a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-09.json": "a280af9786d585a7efee4c5312e76a964ffdf1b61f97492731644c8d413ca46b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-prelaunch-09.json": "69afaee37e6228a7b08a8ecb3cc06b5bef7e7d72b2e4de397140a0fb1b6b24b8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-09\\case-observations.json": "7df48159a677e9e31127f917ed110371ed7131a6ccf72bb5dc5b651a81b57576",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-09\\journal-before.json": "6afd182f875e619232934e5076d01c4fef8c61bbde21c4ca1a2971bf60f9346a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-09\\journal-after.json": "f78cdf1b905e8fdf254163635bf3024113e0ffc5b4a704683a6d348d939ba873",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-09\\journal.snapshot.jsonl": "d1767331084cc47f35205e61ccc245c94bdd93a20108c1ce175aac2ced1e9f72"
+      },
+      "terminal_kind": null,
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": true,
+      "cause_kind": null,
+      "violations": [
+        "unexpected_operation_started:app.installed"
+      ],
+      "new_invocations": [
+        {
+          "invocation_id": "f22bf822-1153-4c08-b42f-6a23a2439379",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "3b0e106d-286a-47d0-b5c8-5b69f46f25fb",
+          "operation": "app.installed",
+          "status": "failed",
+          "verified": false,
+          "error_code": "app_ambiguous",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "case_id": "winget2083-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "c3fa9729eaf31d72c3eba804be67a990c984c5a6f3a6ba26cf8aff066e20e00c",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-10\\EXIT.json": "db41bd86a6ca3e70b0e8ae9e8c5aa2173bc0c3c87d78404ef64c080ce38cc477",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-10\\RESOURCES.json": "d0373ade80a93751444d66e7c1459322230c21fb1aff3a5a03bf02c921bfb2cd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\profile-owner-10.json": "7d277d0ab6bd1e82e850f3e5223365cc8b870a56adf749dfb05262363ffae298",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-10\\PREREG.json": "bea124d50e50994ac36e40fbf508742823195fff7c7cfe0191fcb5a5b92a030a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-10\\capture\\events.jsonl": "0419892d137a81c2ff118ecad60532e725afa23ff8b4f1fd3f9cd81dc4a2c48d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-10\\turns.jsonl": "3ac99bde875113d8423d92e696a23961e8966eede23d365a8f26bd9262f2068c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\fixture-10.json": "aeb34e1b49ed18783ce7c4362f303ce5beedfb402de5394caae64a13aaf3b47b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-10.json": "025be4d3e3cb2f0fd307adaa54e2995ff211aeac653055e155d92a9207c5ed12",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-prelaunch-10.json": "33cfbdfb65ca4832af7371c802f4eac8db4d9fd55012ef2844011795d01fc909",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-10\\case-observations.json": "d01b321c600d3fdadaf9ede4a28edcc31cd8b94ab6f08127f69c455210df10d3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-10\\journal-before.json": "62964d12924b5b4fab6dba7928b6168a86240413a36516d2c7b1557de0d79916",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-10\\journal-after.json": "eeea8786bc4da557b86c7958d81fa7676b1c9d3ee6f2696268ebeaf1f8f62993",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-10\\journal.snapshot.jsonl": "2d7314d77fa4a17a1c0f361ae8b2961f596f4d6343803ae9ca08d46b0c1c0ce8"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "743a351d-1a8c-48bd-90b8-70d1426dcab0",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "case_id": "winget2083-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "5571def6d74b2e2a7fcf3e855aa4e8231cc88f3d3caa5526e25a1db72218e11e",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-11\\EXIT.json": "62d3d2282774e9acb90543ca1021696a1028ddd8bfda5728b40bab6bdd926e17",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-11\\RESOURCES.json": "9dbc6de25c5048191d1f2d3327a566a97946b48666efd30cf34beece5d88dbbe",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\profile-owner-11.json": "809cc3a5efd3846e884d997c7ebd1d0fa7dd0c7c1d946c578abd11bfa7399c96",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\results\\case-11\\PREREG.json": "447fc7c93b0f5012c2921c5e29378ccad29b62741bcd8c7fb3ec2fbdf3d0ac15",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-11\\capture\\events.jsonl": "741ea38620982a45b25f9e7e9a4871db14abf79aadd696be58c34746b0989991",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-11\\turns.jsonl": "dfaef04cec0beb631767c0178281171a10e51500317e2680894ebedc09b6723d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\fixture-11.json": "58b9abf994285e08a86378e03c92018bed4533ae58eeda6548691f5ecee51ecf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-11.json": "2a2d42aa07dd19eda3c96c37d1feb67023d73a1ce497a73dc6c9ba1fa6a049c7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\context-prelaunch-11.json": "4744fbe8c8baa94d97208c7525520ef4b07d16a435a8894ead79cdca62df9c21",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-11\\case-observations.json": "af5718d57e6de963f4883a1fe8bf63039cf6929553c4b00b53ae1fe82cdcc643",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-11\\journal-before.json": "601f4fa91a75b38fc2bae9c5de3e89dffa92173698564cfb45bc7112c61bdf93",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-11\\journal-after.json": "c1da33fabad473facccac445bf0dbec718c17c11b6e70dadef2d7b256bd662bd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2083-instrument-v1\\private\\run-11\\journal.snapshot.jsonl": "313bea38423615f25ec4d5fb24145349c130efa5cc9446774248d3b2acdc6597"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "8a96b0a1-52ff-4789-8552-a012550724d9",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "WINGET2083: 12 ejecutados, 2 aprobados, 10 fallidos, 0 créditos (índices []). Siguiente: Steam (descargar, instalar, desinstalar, lanzar).",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}
