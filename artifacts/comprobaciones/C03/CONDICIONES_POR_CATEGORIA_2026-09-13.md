@@ -1840,3 +1840,7 @@ Archivos y carpetas pasa de 31/32 a 31/32 con el directorio actual es la carpeta
 ## Actualización 2026-09-22 (EXPLORER2073)
 
 Archivos y carpetas pasa de 31/32 a 32/32 con el directorio actual es la carpeta del Explorador en primer plano (commit 9859718f, BUILD2073) (HEAD 9859718f): 5/6 aprobados (el literal H0701, 2 variantes y los 2 límites); la variante en inglés leyó con verdad la ventana del Escritorio, que estaba delante en ese instante, 1 créditos. Cuatro filesystem.explorer.count verificadas sobre la ventana del Explorador en primer plano; los finales dicen la cantidad y nombran la carpeta leída. La categoría queda cerrada.
+
+## Actualización 2026-09-22 (SHELL2075)
+
+Desarrollo y ejecución de comandos pasa de 3/5 a 4/5 con un comando de consola se corre y su salida se cita (commit 0a0aa2f3, BUILD2075) (HEAD 0a0aa2f3): 5/8 aprobados (el literal H0048, 2 variantes y los 2 límites); H0245 corrió sin salida y su final no se pudo publicar, «git status» se leyó como pregunta y «dir en el escritorio» no dijo lo que salió, 1 créditos. Cinco shell.command.run verificadas en la carpeta propia o en la nombrada; los finales que se publicaron citan la salida tal cual.

@@ -1,0 +1,105 @@
+{
+  "schema": "shell2075-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-shell2075-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-shell2075-instrument-v1",
+  "seal_sha256": "fedf50365778dee3cae563a74333bab08a9eddff15c9155414f9bcac5fe37335",
+  "runner_sha256": "af7cbbd157812c8a546ee8060cb351a9cbbe07fc2f3e1794f449943e032f858e",
+  "transport_seal_sha256": "c21fdfbbaf34f3df110423c684be1da19ae4ca9f3881fe1383a0562f57cbc48f",
+  "files": {
+    "panel.json": "8574931d5276fda6064672b1c49046368cb4f30fc5cde95a47d8d0d87a37011d",
+    "turns.jsonl": "fe58361377bc62e97448679b8c3e4f93389493cc28c4b0449f771d5da3b1d4c7",
+    "case-map.json": "110daadf599d89325c16226d784df7683aa0a46235f498279e7e40d1211a7abf",
+    "PLAN.md": "6b09c1a7222d42d651a15dbe53e581d28fc5be51f656166e6e545c0268c81387"
+  },
+  "counts": {
+    "cases": 8,
+    "historical_literals": 2,
+    "original_development_variants": 4,
+    "boundaries": 2,
+    "wire_lines": 16,
+    "session_controls": 8,
+    "ordinary_turns": 8,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 8,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 2,
+    "original_development_variant": 4,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0048",
+      "kind": "historical_literal",
+      "group": "shell_command",
+      "credit_behavior": "shell_command",
+      "text_sha256": "0eb4f8226f1cae94fdb103d37d0ff4fb913d8ba71745de1774ca4a51660b7246",
+      "criterion_sha256": "218fe7436a26055190b3fc0130ad16828041ab807812a9b46b8644d39dd5cb25"
+    },
+    {
+      "index": 1,
+      "case_id": "H0245",
+      "kind": "historical_literal",
+      "group": "shell_command",
+      "credit_behavior": "shell_command",
+      "text_sha256": "4f5f0cb18f8976d2542a3b8a5abf9963a425dfb1e5de526981a08a4a98636dda",
+      "criterion_sha256": "218fe7436a26055190b3fc0130ad16828041ab807812a9b46b8644d39dd5cb25"
+    },
+    {
+      "index": 2,
+      "case_id": "shell2075-dev-01",
+      "kind": "original_development_variant",
+      "group": "shell_command",
+      "credit_behavior": "shell_command",
+      "text_sha256": "2bfed882c444cf4d4c50728a541525b59e031a4b766427d21cb8cee252a1bd28",
+      "criterion_sha256": "218fe7436a26055190b3fc0130ad16828041ab807812a9b46b8644d39dd5cb25"
+    },
+    {
+      "index": 3,
+      "case_id": "shell2075-dev-02",
+      "kind": "original_development_variant",
+      "group": "shell_command",
+      "credit_behavior": "shell_command",
+      "text_sha256": "9e253f5ac83e3b17fdd294dfde47c0fd32ac14f70a0f1a9424a8cf5c4ca1593d",
+      "criterion_sha256": "218fe7436a26055190b3fc0130ad16828041ab807812a9b46b8644d39dd5cb25"
+    },
+    {
+      "index": 4,
+      "case_id": "shell2075-dev-03",
+      "kind": "original_development_variant",
+      "group": "shell_command",
+      "credit_behavior": "shell_command",
+      "text_sha256": "4cf5e490e9e93f2229d04efce9520b029c1834399e6ac61742b195d7098e4d2a",
+      "criterion_sha256": "218fe7436a26055190b3fc0130ad16828041ab807812a9b46b8644d39dd5cb25"
+    },
+    {
+      "index": 5,
+      "case_id": "shell2075-dev-04",
+      "kind": "original_development_variant",
+      "group": "shell_command",
+      "credit_behavior": "shell_command",
+      "text_sha256": "ea72f9583da9a0c52c8f4a41d169b9bd3e42064493fb8fe7db041d8a1537a172",
+      "criterion_sha256": "218fe7436a26055190b3fc0130ad16828041ab807812a9b46b8644d39dd5cb25"
+    },
+    {
+      "index": 6,
+      "case_id": "shell2075-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "8d348966f5aa61e77682501dd48341597359a7bf4abccd5ad32b8afc76799c1e",
+      "criterion_sha256": "2a0fe038ee090a709c1cc7ac360c3584f673ef0a6d8e8ec349d6403d5f0a6006"
+    },
+    {
+      "index": 7,
+      "case_id": "shell2075-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "2c603e2a2e480bc4bd205b01b67c0fa97659add6168a92ab433b23d29c84ce1b",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    }
+  ]
+}
