@@ -1,0 +1,15 @@
+{
+  "schema": "c03-meme2057-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "opus/typed-tools (catalog, Core list, Providers adapter web.download{query} over the Bing image search, file.open, mind reading, composer; merged in 8edf110ac).",
+  "patch": "artifacts/comprobaciones/C03/MEME2057/SOURCE.patch",
+  "commits": [
+    "993936193c8d4e1348929b5f6c1846e6157d1dab"
+  ],
+  "build": "BUILD2057 (C03-repairs2057-build/BUILD_READY.json; mente)",
+  "cause_measured": "«Tienes algun meme?» se acreditó como conversación: no buscaba ni mostraba ninguna imagen.",
+  "change": "web.download{query} baja la primera imagen del buscador de imágenes a Imágenes y file.open la abre con el visor; el final la nombra.",
+  "measurement": "MEME2057: 2/6 aprobados (los dos límites); las cuatro misiones se verificaron y el final que nombra el archivo fue rechazado por la App en internal_code (rama de conversación sin enmascarar); 0 créditos. Cuatro misiones web.download + file.open verificadas; el final compuesto por la mente nombra el archivo y la App lo rechaza. Reparación en el commit siguiente y re-medición como MEME2059.",
+  "credits": 0
+}
