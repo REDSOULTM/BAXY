@@ -98,8 +98,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 post-goal: BUILD2031 (resultado de titulares sin enlace; fondo y zip).
 # C03 post-goal: fusion e97802c9f + BUILD2033 (cabeza del lugar geocodificado).
 # C03 Fase 8 (D18) audio.app.volume.set y verbos de desinstalación en Steam (b5fd9e50b + fusión 28432af9e): re-anclaje de identidad de programa.
+# C03 notebook (cierre 2026-09-22): re-pin tras las tandas y reparaciones del notebook (WALLPAPER2039…WINGET2087)
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "41a290563dced450d51a9cf34f817ae8b42bb65b97b610fd465f7dd4e84f4154"
+    "74d43f25d734e465acf36f92e64b8164e124743f8acd4ef0f144f34a05c79602"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
