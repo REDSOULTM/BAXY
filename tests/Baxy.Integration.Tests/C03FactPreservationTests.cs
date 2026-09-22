@@ -128,6 +128,33 @@ public sealed class C03FactPreservationTests
         Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "Dime algo"), Is.Null);
     }
 
+    // TEXTREAD2063 H0299: the read file's own words are observed data, even a forbidden term.
+    [Test]
+    public void ReadFileTextIsObservedVocabulary()
+    {
+        string facts = new JsonObject
+        {
+            ["kind"] = "operation",
+            ["operation"] = "document.text.read",
+            ["polarity"] = "success",
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = new JsonObject
+            {
+                ["version"] = 1,
+                ["reviewLabel"] = "ROADMAP.md",
+                ["folder"] = "desktop",
+                ["lines"] = 11,
+                ["text"] = "# ROADMAP\n\n## Fase 1: agente local\nEl agente corre en la PC y lee el catalogo.\n",
+                ["authority"] = "windows_known_text_file_utf8_read",
+            },
+        }.ToJsonString();
+        UserMessageDraft draft = UserMessagePolicy.Create(facts, UserMessageEvent.Status);
+        const string reply = "Leí ROADMAP.md, que tiene 11 líneas y empieza así: \"# ROADMAP ## Fase 1: agente local El agente corre en la PC y lee el catalogo.\"";
+        Assert.That(UserMessagePolicy.ModelResponseRejectionReason(
+            reply, draft, "%USERPROFILE%\\Desktop\\raiz_textos\\ROADMAP.md"), Is.Null);
+    }
+
     // MEME2053 «tienes alguna foto?»: the picture's subject is the declared missing field;
     // asking what the picture should show is the clarification, not an out-of-world question.
     [Test]

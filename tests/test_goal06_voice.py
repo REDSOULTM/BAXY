@@ -840,6 +840,21 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         "set the wallpaper to red",
         {"situation": json.dumps(wallpaper)},
     ) == ""
+    # TEXTREAD2063 H0299: the file's own words are observed data, even a forbidden term.
+    _roadmap = json.dumps({
+        "kind": "operation", "operation": "document.text.read", "polarity": "success",
+        "verified": True, "succeeded": True,
+        "observed": {"version": 1, "reviewLabel": "ROADMAP.md", "folder": "desktop", "bytes": 186,
+                     "lines": 11, "characters": 183, "truncated": False,
+                     "text": "# ROADMAP\n\n## Fase 1: agente local\nEl agente corre en la PC y lee el catalogo.\n",
+                     "authority": "windows_known_text_file_utf8_read"},
+    })
+    assert compose_visible_defect(
+        'Se leyó el archivo nombrado ROADMAP.md, que tiene 11 líneas. Empieza así: "# ROADMAP ## Fase 1: agente local '
+        'El agente corre en la PC y lee el catalogo."',
+        "status", "%USERPROFILE%\\Desktop\\raiz_textos\\ROADMAP.md", {"situation": _roadmap},
+    ) == ""
+
     # MEME2055 «Tienes algun meme?»: the picture the viewer shows is named by its file.
     _meme_mission = {"situation": json.dumps({
         "kind": "status", "cause": "mission_completed", "polarity": "success", "stepCount": 2,

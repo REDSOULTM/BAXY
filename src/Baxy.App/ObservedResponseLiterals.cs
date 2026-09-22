@@ -210,6 +210,49 @@ internal static class ObservedResponseLiterals
             names.Add(writtenText);
         }
         if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+            && (IsString(node, "operation", "document.text.read") || IsString(node, "operation", "document.pdf.read"))
+            && node.TryGetProperty("verified", out JsonElement documentVerified) && documentVerified.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("succeeded", out JsonElement documentSucceeded) && documentSucceeded.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("observed", out JsonElement documentObserved) && documentObserved.ValueKind == JsonValueKind.Object)
+        {
+            // TEXTREAD2063 H0299: what the file says is the file's own words,
+            // not the assistant's vocabulary.
+            foreach (string key in new[] { "text", "lead" })
+            {
+                if (documentObserved.TryGetProperty(key, out JsonElement documentText) && documentText.ValueKind == JsonValueKind.String
+                    && documentText.GetString() is { Length: > 0 } body && !string.IsNullOrWhiteSpace(body))
+                {
+                    names.Add(body.Trim());
+                    foreach (string line in body.Split('\n'))
+                    {
+                        string trimmed = line.Trim();
+                        if (trimmed.Length >= 3)
+                        {
+                            names.Add(trimmed);
+                        }
+                    }
+                }
+            }
+
+            if (documentObserved.TryGetProperty("headings", out JsonElement headings) && headings.ValueKind == JsonValueKind.Array)
+            {
+                foreach (JsonElement heading in headings.EnumerateArray())
+                {
+                    if (heading.ValueKind == JsonValueKind.String
+                        && heading.GetString() is { Length: > 0 } text && !string.IsNullOrWhiteSpace(text))
+                    {
+                        names.Add(text.Trim());
+                    }
+                }
+            }
+
+            if (documentObserved.TryGetProperty("reviewLabel", out JsonElement documentLabel) && documentLabel.ValueKind == JsonValueKind.String
+                && documentLabel.GetString() is { Length: > 0 and <= 4096 } label && !string.IsNullOrWhiteSpace(label))
+            {
+                names.Add(label.Trim());
+            }
+        }
+        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
             && (IsString(node, "operation", "web.download") || IsString(node, "operation", "file.compress")
                 || IsString(node, "operation", "file.open") || IsString(node, "operation", "filesystem.create.directory"))
             && node.TryGetProperty("verified", out JsonElement fileVerified) && fileVerified.ValueKind == JsonValueKind.True

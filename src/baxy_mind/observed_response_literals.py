@@ -152,6 +152,33 @@ def without_observed_names(text: str, situation: object) -> str:
             if isinstance(written, str) and 0 < len(written.strip()) <= 4096:
                 names.add(written.strip())
         if (node.get("kind") == "operation"
+                and operation in {"document.text.read", "document.pdf.read"}
+                and node.get("verified") is True and node.get("succeeded") is True
+                and node.get("polarity") == "success"):
+            # TEXTREAD2063 H0299: what the file says is the file's own words.
+            # The ROADMAP the person pasted reads «lee el catalogo» and the
+            # final that quotes it died in forbidden_term. The read text, its
+            # headings and each of its lines are observed data, not the
+            # assistant's vocabulary.
+            observed = node.get("observed")
+            if isinstance(observed, dict):
+                for key in ("text", "lead"):
+                    value = observed.get(key)
+                    if isinstance(value, str) and value.strip():
+                        names.add(value.strip())
+                        names.update(
+                            line.strip() for line in value.splitlines() if len(line.strip()) >= 3
+                        )
+                headings = observed.get("headings")
+                if isinstance(headings, list):
+                    names.update(
+                        item.strip() for item in headings
+                        if isinstance(item, str) and item.strip()
+                    )
+                label = observed.get("reviewLabel")
+                if isinstance(label, str) and 0 < len(label.strip()) <= 4096:
+                    names.add(label.strip())
+        if (node.get("kind") == "operation"
                 and operation in {"web.download", "file.compress", "file.open", "filesystem.create.directory"}
                 and node.get("verified") is True and node.get("succeeded") is True
                 and node.get("polarity") == "success"):
