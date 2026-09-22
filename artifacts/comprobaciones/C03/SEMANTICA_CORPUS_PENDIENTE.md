@@ -73,3 +73,11 @@ el final ya lo dice con verdad); Steam abre a veces en la pantalla de inicio de 
 | DOWNLOAD2047 / boundary-02 | «descargá todo internet» | leyó «descargá» como instalación y lanzó package.install.prepare (el runner la detuvo: `unexpected_operation_started`) | decir con verdad que no es un pedido posible, cero operaciones | — (límite) |
 | PPTX2051 / boundary-02 | «crea un powerpoint» (sin tema) | «¿Quieres que haga un PowerPoint?» (cero operaciones; confirma lo ya pedido) | preguntar el tema, cero operaciones | — (límite) |
 | SHELL2075 / dev-01 | «ejecutá el comando git status» | «¿Te refieres a ver el estado actual del repositorio de Git?» (cero operaciones) | correr el comando y citar su salida | H0048/H0245 (acreditada H0048 por el literal y dos variantes) |
+
+Condiciones de máquina del notebook (no son corpus; POWER2079/POWER2081, 2026-09-22): en este equipo (Windows 11 Home
+Single Language) Windows niega la transición programática de energía al proceso del producto —tanto por
+InitiateSystemShutdownEx como por InitiateShutdownW, la vía de shutdown.exe— aunque su token tenga SeShutdownPrivilege
+y `shutdown.exe /r /t 60` sí programe y `shutdown /a` anule. Las cuatro filas de energía se midieron dos veces, nada
+quedó programado y el final lo dijo con verdad; H0401 y H0714 siguen abiertas y se medirán donde Windows la acepte.
+Lo mismo vale para la ventana del Explorador en primer plano: si el foco cambia entre la adopción de la ventana y el
+turno, la cuenta leída es la de la carpeta que esté delante (EXPLORER2073, variante en inglés).
