@@ -1751,7 +1751,10 @@ internal class CdpBrowserSession : IDisposable
         await socket.ConnectAsync(webSocket, cancellationToken).ConfigureAwait(false);
 
         string playbackFailure = "youtube_playback_not_verified_video_missing";
-        for (int attempt = 0; attempt <= 120; attempt++)
+        // ctx-dueno-01..03 (2026-09-22, notebook): the first watch page of a fresh
+        // profile stayed «ready0 network2 no_source» for the whole 30 s and the
+        // same query verified in 6 s a minute later; the probe now waits 45 s.
+        for (int attempt = 0; attempt <= 180; attempt++)
         {
             if (attempt > 0)
             {

@@ -771,6 +771,27 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         "cierra edge",
         {"situation": '{"kind":"confirmation","polarity":"pending","choices":["confirmar","cancelar"]}'},
     ) == ""
+    # Prueba del dueño 2026-09-21, turno 205: el micrófono ya en el estado pedido
+    # es la causa tipada del fallo; nombrarla no es una afirmación de más, y «no
+    # cambió nada» dice el fallo entero.
+    already_muted = (
+        '{"kind":"failure","polarity":"failure","cause":"mission_failed","stepCount":0,"steps":[],'
+        '"reason":"{\\"kind\\":\\"operation\\",\\"operation\\":\\"audio.microphone.mute\\",'
+        '\\"polarity\\":\\"failure\\",\\"verified\\":false,\\"succeeded\\":false,'
+        '\\"error\\":\\"microphone_already_muted\\"}"}'
+    )
+    assert compose_visible_defect(
+        "El micrófono ya estaba silenciado, así que no cambió nada.",
+        "error",
+        "silencia mi microfono",
+        {"situation": already_muted},
+    ) == ""
+    assert compose_visible_defect(
+        "No pude silenciar el micrófono porque ya estaba silenciado.",
+        "error",
+        "silencia mi microfono",
+        {"situation": already_muted},
+    ) == ""
     assert compose_visible_defect(
         "¿Confirmas o cancelas que cierre la ventana abierta de Edge?",
         "confirmation",

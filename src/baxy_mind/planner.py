@@ -203,6 +203,22 @@ _FALSE_CUES = frozenset(
     {"false", "off", "disable", "disabled", "desactiva", "desactivame", "desactivalo", "desactivar",
      "apaga", "apagame", "apagalo", "apagar", "unmute", "reactiva"}
 )
+# Owner's test 2026-09-21 (turn 205): a microphone's boolean is «muted», so the
+# generic on/off cues read «activa mi micrófono» as state=true and muted an
+# already muted microphone. Activating, enabling or unmuting a microphone is
+# false; silencing, muting or turning it off is true.
+_MICROPHONE_TOKENS = frozenset({"microfono", "microphone", "mic", "micro"})
+_MICROPHONE_MUTED_CUES = frozenset(
+    {"true", "mute", "mutea", "muteame", "mutealo", "mutear", "silencia", "silenciame", "silencialo",
+     "silenciar", "silence", "apaga", "apagame", "apagalo", "apagar", "desactiva", "desactivame",
+     "desactivalo", "desactivar", "calla", "callalo", "deshabilita", "disable", "off"}
+)
+_MICROPHONE_ACTIVE_CUES = frozenset(
+    {"false", "activa", "activame", "activalo", "activar", "activate", "reactiva", "reactivalo",
+     "reactivar", "reactivate", "enciende", "enciendelo", "encende", "encendelo", "prende", "prendeme",
+     "prendelo", "prender", "habilita", "habilitalo", "enable", "desmutea", "desmutealo", "desmutear",
+     "unmute", "desilencia", "on"}
+)
 _CONDITIONAL_IDENTITY_PREDECESSORS = {
     # Search returns the authenticated URL that a following navigation must
     # consume. A named page is not itself an exact URL and must never be
@@ -1083,6 +1099,10 @@ def _value_is_grounded(
             # not an on/off effect requiring "enable" or "disable" vocabulary.
             return value is has_named_window_target(identity_text(source))
         tokens = _tokens(source)
+        if property_name == "state" and tokens & _MICROPHONE_TOKENS:
+            muted_signal = bool(tokens & _MICROPHONE_MUTED_CUES)
+            active_signal = bool(tokens & _MICROPHONE_ACTIVE_CUES)
+            return muted_signal != active_signal and value is muted_signal
         true_signal = bool(tokens & _TRUE_CUES)
         false_signal = bool(tokens & _FALSE_CUES)
         return true_signal != false_signal and value is true_signal

@@ -3545,7 +3545,12 @@ _FAILURE_MARKERS = re.compile(
     r"didn't find|did not find|didn't respond|did not respond|"
     r"time ran out|not found|"
     r"irrelevant|irrelevantes?|no useful results|nothing useful|"
-    r"sin resultados|no (?:hubo|hay) resultados|no encontr[eé] resultados|no results)",
+    r"sin resultados|no (?:hubo|hay) resultados|no encontr[eé] resultados|no results|"
+    # Owner's test 2026-09-21 (turn 205): «ya estaba silenciado, así que no cambió
+    # nada» states the failure entire — nothing changed — and died in
+    # missing_failure; that nothing changed is affirming it did not happen.
+    r"no cambi[oó] nada|no cambi[eé] nada|no se cambi[oó] nada|no hubo cambios?|"
+    r"nothing (?:was )?changed|no change was made)",
     re.IGNORECASE,
 )
 _NEGATED_FAILURE = re.compile(
@@ -4047,6 +4052,27 @@ def _situation_steps(situation: dict) -> list[dict]:
         if isinstance(step, dict):
             decoded.append(step)
     return decoded
+
+
+def _situation_error_codes(situation: dict) -> tuple[str, ...]:
+    """The typed error codes of a situation and of the step failure it wraps
+    (MissionNarration serializes the step's facts inside `reason`)."""
+
+    codes: list[str] = []
+    if not isinstance(situation, dict):
+        return ()
+    error = situation.get("error")
+    if isinstance(error, str) and error.strip():
+        codes.append(error.strip().lower())
+    reason = situation.get("reason")
+    if isinstance(reason, str) and reason.lstrip().startswith("{"):
+        try:
+            reason = json.loads(reason)
+        except json.JSONDecodeError:
+            reason = None
+    if isinstance(reason, dict):
+        codes.extend(_situation_error_codes(reason))
+    return tuple(codes)
 
 
 def _merged_observed(situation: dict) -> dict:
@@ -9069,7 +9095,14 @@ def compose_visible_defect(
     ):
         return "wrong_machine_actor"
     mentions_mute = re.search(r"silenci|\bmuted\b|\bunmuted\b|\bmute\b", folded)
-    if mentions_mute and "muted" not in observed_dict and operation != "audio.mute":
+    # Owner's test 2026-09-21 (turn 205): «el micrófono ya estaba silenciado» is
+    # the typed cause of the failure (microphone_already_muted), not a claim
+    # beyond the facts; the mute words of that cause are the fact.
+    mute_is_the_cause = any(
+        str(code).startswith("microphone_already_")
+        for code in _situation_error_codes(situation)
+    )
+    if mentions_mute and "muted" not in observed_dict and operation != "audio.mute" and not mute_is_the_cause:
         return "extra_claim"
     if "muted" in observed_dict:
         muted = observed_dict.get("muted") is True

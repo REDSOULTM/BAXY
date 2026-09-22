@@ -88,6 +88,22 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                         candidate.SourceAppUserModelId.Contains(
                             requestedSource, StringComparison.OrdinalIgnoreCase));
                 }
+                // Owner's test 2026-09-21 (turn 148, «para la canción» right after a
+                // YouTube playback): Edge kept a session whose status was Closed, so
+                // «stop» was verified against nothing and the final said nothing was
+                // playing. A closed session is not a player: it stands aside so the
+                // tab that actually plays answers.
+                if (session is not null
+                    && session.GetPlaybackInfo().PlaybackStatus
+                        == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Closed)
+                {
+                    string closedSource = session.SourceAppUserModelId;
+                    session = sessions.FirstOrDefault(candidate =>
+                        candidate.GetPlaybackInfo().PlaybackStatus
+                            != GlobalSystemMediaTransportControlsSessionPlaybackStatus.Closed
+                        && candidate.SourceAppUserModelId.Contains(
+                            closedSource, StringComparison.OrdinalIgnoreCase));
+                }
             }
             else
             {

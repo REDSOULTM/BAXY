@@ -4744,3 +4744,26 @@ class PlannerGroundingNormalizationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_microphone_state_is_grounded_as_muted_not_as_on() -> None:
+    # Owner's test 2026-09-21 (turn 205): the microphone's boolean is «muted».
+    schema = {
+        "type": "object",
+        "properties": {"state": {"type": "boolean"}},
+        "required": ["state"],
+        "additionalProperties": False,
+    }
+    cases = [
+        ("activa mi micrófono", False),
+        ("prende el micrófono", False),
+        ("desmutea mi microfono", False),
+        ("unmute my microphone", False),
+        ("silencia mi microfono", True),
+        ("mutea el micrófono", True),
+        ("apaga el micrófono", True),
+        ("mute the mic", True),
+    ]
+    for text, state in cases:
+        assert normalize_grounded_arguments({"state": state}, schema, text) == {"state": state}, text
+        assert normalize_grounded_arguments({"state": not state}, schema, text) is None, text
