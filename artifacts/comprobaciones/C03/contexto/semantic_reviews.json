@@ -1,0 +1,36 @@
+{
+ "dueno-2026-09-21": {
+  "21": {
+   "verdict": "bien",
+   "reply": "Cerré Edge.",
+   "head": "b5c9fe72"
+  },
+  "16": {
+   "verdict": "mal",
+   "reply": "¿Quieres que reproduzca una canción de amor en Spotify?",
+   "head": "b5c9fe72"
+  },
+  "17": {
+   "verdict": "mal",
+   "reply": "No puedo colocar una canción de amor en YouTube tal como fue pedido.",
+   "head": "b5c9fe72"
+  },
+  "54": {
+   "verdict": "mal",
+   "reply": "No puedo reducir el volumen de sonido en este entorno.",
+   "head": "b5c9fe72"
+  },
+  "57": {
+   "verdict": "mal",
+   "reply": "No puedo ajustar el volumen tal como fue solicitado.",
+   "head": "b5c9fe72"
+  }
+ },
+ "heldout-2026-09-22": {
+  "29": {
+   "verdict": "bien",
+   "reply": "No, no la llamé. No tengo la capacidad de realizar llamadas telefónicas.",
+   "head": "b5c9fe72"
+  }
+ }
+}
