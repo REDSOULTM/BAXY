@@ -1,0 +1,87 @@
+{
+  "schema": "power2079-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-power2079-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-power2079-instrument-v1",
+  "seal_sha256": "9f37e17d8f4625b927ae268a8c2531e746919d0bb8a7338f1a435279f7e92f56",
+  "runner_sha256": "4d01d3868c57f54709fc0a735cafb2c2eb7b576d2115e7eff122fe0e3b1b1c7b",
+  "transport_seal_sha256": "a74804bb8cde86f7b3fe79598aa3ab42943c714dc6aa6bc66cc6b60dfc53a32b",
+  "files": {
+    "panel.json": "de110d9d7e411ed08c0c9ba6d32cce5d20d4236bbeaaeac8991efb1445cb7eb2",
+    "turns.jsonl": "176c70752fe1d6ba93eff8d66467807979af6c4b5cf75048e7c3bc682028bc8c",
+    "case-map.json": "e2fd4c22af57a285eb68dcaad63dc4e63fad1cfad7d3454c802b13ecb059e3ac",
+    "PLAN.md": "4a98b871ab9bafd19e75bb9473f05ba66e98d72a9eda26d473958859bbbca1b0"
+  },
+  "counts": {
+    "cases": 6,
+    "historical_literals": 2,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 12,
+    "session_controls": 6,
+    "ordinary_turns": 6,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 6,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 2,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0401",
+      "kind": "historical_literal",
+      "group": "power_transition",
+      "credit_behavior": "power_transition",
+      "text_sha256": "89801c2c8430f69e52739ad42b93362c128d6dd42317f302261caadb531b066e",
+      "criterion_sha256": "652775f2153a4bf7fc8efdb32f948a80c5870497036aeff7054d5c79626cdebd"
+    },
+    {
+      "index": 1,
+      "case_id": "H0714",
+      "kind": "historical_literal",
+      "group": "power_transition",
+      "credit_behavior": "power_transition",
+      "text_sha256": "f692ff292e7d1b924f478c21b69129e356923b8476ee7e80d59616f085c2aff8",
+      "criterion_sha256": "652775f2153a4bf7fc8efdb32f948a80c5870497036aeff7054d5c79626cdebd"
+    },
+    {
+      "index": 2,
+      "case_id": "power2079-dev-01",
+      "kind": "original_development_variant",
+      "group": "power_transition",
+      "credit_behavior": "power_transition",
+      "text_sha256": "d28a2de111e5dd4ed1e6833e2adcd0b403c9537ba7f46574952e68cd1cc814ac",
+      "criterion_sha256": "652775f2153a4bf7fc8efdb32f948a80c5870497036aeff7054d5c79626cdebd"
+    },
+    {
+      "index": 3,
+      "case_id": "power2079-dev-02",
+      "kind": "original_development_variant",
+      "group": "power_transition",
+      "credit_behavior": "power_transition",
+      "text_sha256": "a6981ae5e3d4e5a5df4269f68cc0dddff638c01023b806ec13e8ea4ccfa84fc2",
+      "criterion_sha256": "652775f2153a4bf7fc8efdb32f948a80c5870497036aeff7054d5c79626cdebd"
+    },
+    {
+      "index": 4,
+      "case_id": "power2079-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "6e30f66f70d054320fe3b7ab5605c960a253973966a1a1db480adea51e8605b4",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    },
+    {
+      "index": 5,
+      "case_id": "power2079-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "38b4bb9f5bc57935ee88b106802add6a139d3e8fac221f78aae63204cd1dc9a9",
+      "criterion_sha256": "48de2f16b346f323716ea8010da079e3b6fe7b41f9e7d75478110c7e5d2dd03e"
+    }
+  ]
+}

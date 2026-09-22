@@ -1,0 +1,15 @@
+{
+  "schema": "c03-power2079-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "opus/typed-tools (catalog, Core list, Providers adapter, mind readings, composer) merged into codex/kiro-goal-c03 (d89c626d3).",
+  "patch": "artifacts/comprobaciones/C03/POWER2079/SOURCE.patch",
+  "commits": [
+    "3971e3ca4907fee26431f24be40e676f2ccbf971"
+  ],
+  "build": "BUILD2079 (C03-repairs2079-build/BUILD_READY.json; mente)",
+  "cause_measured": "«reiniciá la PC» y «apagá la computadora» se acreditaron con «Windows no aceptó» (POWER1917).",
+  "change": "system.power habilita SeShutdownPrivilege y programa la transición con 30 s; la mente lee «shut down the computer», «turn off the pc» y «reiniciá» a secas.",
+  "measurement": "POWER2079: 2/6 aprobados (los dos límites); las cuatro filas de energía fueron rechazadas por Windows y los finales lo dijeron con verdad; 0 créditos. Nada quedó programado en las seis (el fixture confirmó que no había apagado que anular); el equipo siguió encendido. Reparación del adaptador en el commit siguiente y re-medición como POWER2081.",
+  "credits": 0
+}
