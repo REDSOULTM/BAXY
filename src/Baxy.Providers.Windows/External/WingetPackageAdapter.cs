@@ -362,19 +362,41 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
     {
         var rows = new List<PackageRow>();
         bool body = false;
+        string header = string.Empty;
+        int idColumn = -1;
         foreach (string rawLine in output.Split('\n'))
         {
             string line = rawLine.TrimEnd('\r');
             if (!body)
             {
                 if (line.TrimStart().StartsWith("---", StringComparison.Ordinal))
+                {
                     body = true;
+                    // WINGET2085: the table is aligned under its header; the Id
+                    // column starts where the header's «Id» does.
+                    Match idHeader = Regex.Match(header, @"(?<=\s)Id(?=\s)");
+                    idColumn = idHeader.Success ? idHeader.Index : -1;
+                }
+                else if (!string.IsNullOrWhiteSpace(line))
+                {
+                    header = line;
+                }
+
                 continue;
             }
 
             if (string.IsNullOrWhiteSpace(line))
                 continue;
-            Match id = Regex.Match(line, @"(?<=\s)(?<id>[A-Za-z0-9][A-Za-z0-9.+_-]*\.[A-Za-z0-9.+_-]+|[0-9A-Z]{12,14}|ARP\\[^\s]+|MSIX\\[^\s]+)(?=\s|$)");
+            // WINGET2085 «instala 7-Zip»: in «7-Zip 26.03 (x64 edition) 7zip.7zip
+            // 26.03.00.0 winget» the version inside the display name matched the
+            // dotted-id pattern first, the row read as id «26.03», and an
+            // installed 7-Zip was reported absent. The id is searched from the
+            // header's Id column on; the whole line is the fallback.
+            Match id = idColumn > 0 && idColumn < line.Length
+                ? IdToken.Match(line, idColumn)
+                : Match.Empty;
+            if (!id.Success)
+                id = IdToken.Match(line);
             if (!id.Success)
                 continue;
             string name = line[..id.Index].Trim();
@@ -387,6 +409,10 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
 
         return rows;
     }
+
+    private static readonly Regex IdToken = new(
+        @"(?<=\s)(?<id>[A-Za-z0-9][A-Za-z0-9.+_-]*\.[A-Za-z0-9.+_-]+|[0-9A-Z]{12,14}|ARP\\[^\s]+|MSIX\\[^\s]+)(?=\s|$)",
+        RegexOptions.CultureInvariant);
 
     private static int? LaunchDetached(IReadOnlyList<string> arguments)
     {

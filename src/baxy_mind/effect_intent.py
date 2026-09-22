@@ -18256,6 +18256,23 @@ def installed_catalog_application_name(
     return None
 
 
+def _catalog_entries_named(
+    name: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> tuple[str, ...]:
+    """WINGET2085: the catalog entries whose name begins with the whole
+    requested name («7-Zip» → «7-Zip File Manager», «7-Zip Help»)."""
+
+    key = _application_name_key(name)
+    if not key:
+        return ()
+    catalog = build_application_catalog_index(application_names)
+    return tuple(
+        display for display, entry in catalog.entries
+        if entry == key or entry.startswith(key + " ")
+    )
+
+
 def software_package_request(
     text: str,
     application_names: Iterable[str] | ApplicationCatalogIndex,
@@ -19852,6 +19869,17 @@ def resolve_explicit_effects(
         # installs it, or says winget does not offer it.
         verb, _name, in_catalog = software
         if verb == "uninstall" and in_catalog and "package.uninstall" in available:
+            return EffectIntent(("package.uninstall",), (text,))
+        if (
+            verb == "uninstall"
+            and not in_catalog
+            and "package.uninstall" in available
+            and len(_catalog_entries_named(_name, authenticated_applications)) > 1
+        ):
+            # WINGET2085 «desinstalá 7-Zip»: Start holds «7-Zip File Manager» and
+            # «7-Zip Help», so no single catalog entry resolved and the turn
+            # stopped at an ambiguous presence read. What gets removed is the
+            # package, and winget resolves it by its own name and id.
             return EffectIntent(("package.uninstall",), (text,))
         if (
             verb == "uninstall"

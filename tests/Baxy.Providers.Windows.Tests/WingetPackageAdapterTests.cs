@@ -61,6 +61,25 @@ public sealed class WingetPackageAdapterTests
         });
     }
 
+    // WINGET2085 «instala 7-Zip»: a version inside the display name is not the id.
+    [Test]
+    public void WingetTableReadsTheIdFromItsColumnNotFromANameVersion()
+    {
+        const string output =
+            "Nombre                    Id        Versión    Origen\r\n"
+            + "------------------------------------------------------\r\n"
+            + "7-Zip 26.03 (x64 edition) 7zip.7zip 26.03.00.0 winget\r\n";
+
+        List<WingetPackageAdapter.PackageRow> rows = WingetPackageAdapter.ParseTable(output);
+
+        Assert.That(rows, Has.Count.EqualTo(1));
+        Assert.Multiple(() =>
+        {
+            Assert.That(rows[0].Id, Is.EqualTo("7zip.7zip"));
+            Assert.That(rows[0].Name, Is.EqualTo("7-Zip 26.03 (x64 edition)"));
+        });
+    }
+
     [Test]
     public async Task ANameWithOneExactMatchIsPreparedWithItsIdAndRecorded()
     {

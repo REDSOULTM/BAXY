@@ -7324,3 +7324,14 @@ def test_closing_the_assistant_itself_is_a_known_limit(text: str) -> None:
 )
 def test_closing_another_application_is_not_a_self_close(text: str) -> None:
     assert not effect_intent.self_close_request(text)
+
+
+
+def test_uninstall_of_a_package_with_several_start_entries_goes_to_winget():
+    """WINGET2085 «desinstalá 7-Zip»: Start holds «7-Zip File Manager» and «7-Zip Help»."""
+    catalog = ["7-Zip File Manager", "7-Zip Help", "Steam", "Spotify"]
+    available = {"package.uninstall", "app.installed", "package.install.prepare", "package.install.commit"}
+    intent = resolve_explicit_effects("desinstalá 7-Zip", available, catalog)
+    assert intent is not None and intent.operations == ("package.uninstall",)
+    # A name with a single Start entry keeps the catalog route; a name with none is unchanged.
+    assert resolve_explicit_effects("desinstalá Spotify", available, catalog).operations == ("package.uninstall",)
