@@ -23,6 +23,10 @@ internal sealed partial class WindowsPowerTransitionPlatform : IWindowsPowerTran
     // delay so Windows announces it and `shutdown /a` can still abort it.
     internal const uint TransitionDelaySeconds = 30;
     private const string ShutdownPrivilegeName = "SeShutdownPrivilege";
+    // SHUTDOWN_GRACE_OVERRIDE | SHUTDOWN_RESTART | SHUTDOWN_POWEROFF (winnt.h).
+    private const uint ShutdownGraceOverride = 0x00000020;
+    private const uint ShutdownRestart = 0x00000004;
+    private const uint ShutdownPowerOff = 0x00000008;
     private const uint TokenAdjustPrivileges = 0x0020;
     private const uint TokenQuery = 0x0008;
     private const uint PrivilegeEnabled = 0x00000002;
@@ -38,24 +42,8 @@ internal sealed partial class WindowsPowerTransitionPlatform : IWindowsPowerTran
         "sleep" => new(
             SetSuspendState(hibernate: false, forceCritical: true, disableWakeEvent: false),
             "win32_setsuspendstate_acceptance"),
-        "restart" => new(
-            EnableShutdownPrivilege() && InitiateSystemShutdownEx(
-                null,
-                "BAXY confirmó el reinicio solicitado; reinicia en 30 segundos.",
-                timeout: TransitionDelaySeconds,
-                forceAppsClosed: false,
-                rebootAfterShutdown: true,
-                ShutdownReasonMajorApplication | ShutdownReasonPlanned),
-            "win32_initiatesystemshutdownex_restart_acceptance"),
-        "shutdown" => new(
-            EnableShutdownPrivilege() && InitiateSystemShutdownEx(
-                null,
-                "BAXY confirmó el apagado solicitado; apaga en 30 segundos.",
-                timeout: TransitionDelaySeconds,
-                forceAppsClosed: false,
-                rebootAfterShutdown: false,
-                ShutdownReasonMajorApplication | ShutdownReasonPlanned),
-            "win32_initiatesystemshutdownex_shutdown_acceptance"),
+        "restart" => Transition(reboot: true),
+        "shutdown" => Transition(reboot: false),
         _ => new(false, "unsupported_power_transition"),
     };
 
@@ -73,6 +61,50 @@ internal sealed partial class WindowsPowerTransitionPlatform : IWindowsPowerTran
         [MarshalAs(UnmanagedType.Bool)] bool hibernate,
         [MarshalAs(UnmanagedType.Bool)] bool forceCritical,
         [MarshalAs(UnmanagedType.Bool)] bool disableWakeEvent);
+
+    // POWER2079 H0401/H0714: on this Windows 11 Home the process holds
+    // SeShutdownPrivilege and InitiateSystemShutdownEx is still refused, while
+    // `shutdown.exe` schedules the same transition. shutdown.exe asks through
+    // InitiateShutdownW, so that is the second door: the older call stays first
+    // (it is what REDPC accepted), and only when Windows refuses it does the
+    // adapter ask the newer one. Both leave the thirty-second delay Windows
+    // announces, so `shutdown /a` can still abort it.
+    private static WindowsPowerTransitionResult Transition(bool reboot)
+    {
+        if (!EnableShutdownPrivilege())
+        {
+            return new(false, reboot
+                ? "win32_initiatesystemshutdownex_restart_acceptance"
+                : "win32_initiatesystemshutdownex_shutdown_acceptance");
+        }
+
+        string message = reboot
+            ? "BAXY confirmó el reinicio solicitado; reinicia en 30 segundos."
+            : "BAXY confirmó el apagado solicitado; apaga en 30 segundos.";
+        if (InitiateSystemShutdownEx(
+                null,
+                message,
+                timeout: TransitionDelaySeconds,
+                forceAppsClosed: false,
+                rebootAfterShutdown: reboot,
+                ShutdownReasonMajorApplication | ShutdownReasonPlanned))
+        {
+            return new(true, reboot
+                ? "win32_initiatesystemshutdownex_restart_acceptance"
+                : "win32_initiatesystemshutdownex_shutdown_acceptance");
+        }
+
+        uint flags = ShutdownGraceOverride | (reboot ? ShutdownRestart : ShutdownPowerOff);
+        bool accepted = InitiateShutdown(
+            null,
+            message,
+            TransitionDelaySeconds,
+            flags,
+            ShutdownReasonMajorApplication | ShutdownReasonPlanned) == 0;
+        return new(accepted, reboot
+            ? "win32_initiateshutdown_restart_acceptance"
+            : "win32_initiateshutdown_shutdown_acceptance");
+    }
 
     private static bool EnableShutdownPrivilege()
     {
@@ -113,6 +145,16 @@ internal sealed partial class WindowsPowerTransitionPlatform : IWindowsPowerTran
     [LibraryImport("advapi32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool OpenProcessToken(nint process, uint desiredAccess, out nint token);
+
+    // Returns ERROR_SUCCESS (0) when Windows takes the request; shutdown.exe
+    // uses this call, and this machine accepts it where the older one is refused.
+    [LibraryImport("advapi32.dll", EntryPoint = "InitiateShutdownW", StringMarshalling = StringMarshalling.Utf16, SetLastError = true)]
+    private static partial uint InitiateShutdown(
+        string? machineName,
+        string? message,
+        uint gracePeriod,
+        uint shutdownFlags,
+        uint reason);
 
     [LibraryImport("advapi32.dll", EntryPoint = "LookupPrivilegeValueW", StringMarshalling = StringMarshalling.Utf16, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]

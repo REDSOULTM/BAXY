@@ -16,6 +16,10 @@ public sealed class ExternalAdaptersTests
     [TestCase("lock", "win32_lockworkstation_acceptance")]
     [TestCase("restart", "win32_initiatesystemshutdownex_restart_acceptance")]
     [TestCase("shutdown", "win32_initiatesystemshutdownex_shutdown_acceptance")]
+    // POWER2079: when Windows refuses the older call the transition is asked through
+    // InitiateShutdownW, the door shutdown.exe uses, and its authority is reported.
+    [TestCase("restart", "win32_initiateshutdown_restart_acceptance")]
+    [TestCase("shutdown", "win32_initiateshutdown_shutdown_acceptance")]
     [TestCase("signout", "win32_exitwindowsex_logoff_acceptance")]
     [TestCase("sleep", "win32_setsuspendstate_acceptance")]
     public async Task PowerTransitionsDispatchToTheExactOfficialWindowsAuthority(
