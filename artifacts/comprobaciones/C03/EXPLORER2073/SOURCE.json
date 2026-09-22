@@ -1,0 +1,15 @@
+{
+  "schema": "c03-explorer2073-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "opus/typed-tools (catalog, Core list, Providers adapter filesystem.explorer.count via Shell.Application, mind reading, composer; merged in 8edf110ac).",
+  "patch": "artifacts/comprobaciones/C03/EXPLORER2073/SOURCE.patch",
+  "commits": [
+    "9859718f25434985d961c0d52ddc7373d68981cc"
+  ],
+  "build": "BUILD2073 (C03-repairs2073-build/BUILD_READY.json; mente)",
+  "cause_measured": "«Cuántos .py hay en el directorio actual» preguntaba cuál carpeta; el dueño decidió (D24) que el directorio actual es la carpeta del Explorador en primer plano.",
+  "change": "filesystem.explorer.count cuenta en la carpeta del Explorador en primer plano (escritorio si no hay ninguno) y el final dice la cantidad leída.",
+  "measurement": "EXPLORER2073: 5/6 aprobados (el literal H0701, 2 variantes y los 2 límites); la variante en inglés leyó con verdad la ventana del Escritorio, que estaba delante en ese instante; 1 créditos. Cuatro filesystem.explorer.count verificadas sobre la ventana del Explorador en primer plano; los finales dicen la cantidad y nombran la carpeta leída.",
+  "credits": 1
+}

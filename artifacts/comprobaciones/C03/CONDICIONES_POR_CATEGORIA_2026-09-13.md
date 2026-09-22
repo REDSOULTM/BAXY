@@ -1836,3 +1836,7 @@ Archivos y carpetas pasa de 31/32 a 31/32 con el directorio actual es la carpeta
 ## Actualización 2026-09-22 (EXPLORER2071)
 
 Archivos y carpetas pasa de 31/32 a 31/32 con el directorio actual es la carpeta del Explorador en primer plano (commit 56c31485, BUILD2071) (HEAD 56c31485): 2/6 aprobados (los dos límites); las cuatro lecturas se verificaron y el final que ya nombra la carpeta murió en internal_code (el nombre observado lleva guion bajo), 0 créditos. Cuatro filesystem.explorer.count verificadas; la instrucción nueva hace que el final nombre la carpeta y la comprobación de jerga lo rechaza. Reparación en el commit siguiente y re-medición como EXPLORER2073.
+
+## Actualización 2026-09-22 (EXPLORER2073)
+
+Archivos y carpetas pasa de 31/32 a 32/32 con el directorio actual es la carpeta del Explorador en primer plano (commit 9859718f, BUILD2073) (HEAD 9859718f): 5/6 aprobados (el literal H0701, 2 variantes y los 2 límites); la variante en inglés leyó con verdad la ventana del Escritorio, que estaba delante en ese instante, 1 créditos. Cuatro filesystem.explorer.count verificadas sobre la ventana del Explorador en primer plano; los finales dicen la cantidad y nombran la carpeta leída. La categoría queda cerrada.
