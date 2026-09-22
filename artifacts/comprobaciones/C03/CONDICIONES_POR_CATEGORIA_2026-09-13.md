@@ -1778,3 +1778,7 @@ Información web actual pasa de 13/17 a 17/17 con el clima se lee de un servicio
 ## Actualización 2026-09-22 (WALLPAPER2039)
 
 Brillo y pantalla pasa de 671/17 a 672/17 con el fondo de escritorio se cambia y se relee del registro: re-medición del panel de WALLPAPER2039 (commit e2724587, BUILD2039) (HEAD e2724587): 5/6 aprobados (el literal H0459, 2 variantes y los 2 límites); la variante en inglés cambió el fondo pero su final murió por la heurística de lectura del narrador (reparación en el commit siguiente), 1 créditos. Un crédito: H0459 (Brillo y pantalla 16/17); el fondo se escribe como color liso, se aplica por SPI y se relee del registro; el final dice el color aplicado.
+
+## Actualización 2026-09-22 (ZIP2041)
+
+Archivos y carpetas pasa de 672/32 a 673/32 con carpeta, txt, zip y abrir: una misión de cuatro tipadas (commit 4a4ebc9a, BUILD2041) (HEAD 4a4ebc9a): 5/6 aprobados (el literal H0542, 2 variantes y los 2 límites); la variante en inglés cayó en la guarda «sin pedido» (lectura; corpus de la Fase 3.5), 1 créditos. Un crédito: H0542 (Archivos y carpetas 31/32); las cuatro tipadas verificadas en orden con los nombres por defecto de Windows y el final dice que el zip quedó abierto.
