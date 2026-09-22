@@ -3858,6 +3858,9 @@ _CAUSE_FACT = {
     "youtube_tab_playback_state_not_verified": (
         "the YouTube video did not reach the requested state, so the change is not confirmed"
     ),
+    "smtc_postcondition_not_verified": (
+        "the player did not reach the requested state, so the change is not confirmed"
+    ),
     "microphone_already_muted": (
         "the microphone was already muted, so nothing changed"
     ),
@@ -3906,17 +3909,34 @@ def _situation_from_facts(facts: dict) -> dict:
     return {}
 
 
+_CAUSE_FACT_FAMILIES = ("youtube_playback_not_verified",)
+
+
+def _cause_fact_key(cause: str) -> str | None:
+    """The `_CAUSE_FACT` key of a code: exact, or its family when the code
+    carries a diagnostic suffix («youtube_playback_not_verified_watch_ready0_…»
+    names the probe's last reading; the fact is the family's)."""
+
+    key = cause.strip().lower()
+    if key in _CAUSE_FACT:
+        return key
+    for family in _CAUSE_FACT_FAMILIES:
+        if key.startswith(family + "_"):
+            return family
+    return None
+
+
+def _has_cause_fact(cause: str) -> bool:
+    return _cause_fact_key(cause) is not None
+
+
 def _cause_in_prose(cause: str, language: str) -> str:
     key = cause.strip()
     if not key:
         return ""
-    if key in _CAUSE_FACT:
-        return _CAUSE_FACT[key]
-    # Diagnostic suffixes («youtube_playback_not_verified_watch_ready0_…») name
-    # the probe's last reading; the fact is the family's.
-    for family in ("youtube_playback_not_verified",):
-        if key.startswith(family + "_"):
-            return _CAUSE_FACT[family]
+    fact_key = _cause_fact_key(key)
+    if fact_key is not None:
+        return _CAUSE_FACT[fact_key]
     return key.replace("_", " ")
 
 
@@ -4460,7 +4480,7 @@ def _compose_situation_payload(
         kind == "operation"
         and polarity == "failure"
         and isinstance(situation.get("error"), str)
-        and situation["error"].strip().lower() in _CAUSE_FACT
+        and _has_cause_fact(situation["error"])
     ):
         # MUSIC1755: a typed client error («spotify_exact_result_not_found»)
         # says what happened; the generic mission cause
@@ -9898,12 +9918,17 @@ def _unsupported_answer_contract_failure(
     """Return one bounded reason for rejecting unsupported prose."""
 
     content = str(value or "").strip()
+    # Owner's test 2026-09-21 (turns 210-213): the self-close limit says how
+    # BAXY is closed in a second sentence («… se cierra con la X de su ventana
+    # o con Alt+F4»); ctx-dueno-07 killed every such draft as unsupported_shape.
+    sentence_breaks = len(re.findall(r"[.!…]\s+\S", content))
+    allowed_breaks = 1 if effect_intent.self_close_request(str(request or "")) else 0
     if (
         not content
         or "\n" in content
         or "\r" in content
         or any(marker in content for marker in ("?", "¿", "？"))
-        or re.search(r"[.!…]\s+\S", content) is not None
+        or sentence_breaks > allowed_breaks
     ):
         return "unsupported_shape"
     # A small local model sometimes stutters ("No puedo puedo encargar..."),

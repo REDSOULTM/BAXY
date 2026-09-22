@@ -12358,3 +12358,11 @@ def test_missing_level_context_argument_rejects_unrelated_or_multiple_values(evi
 def test_unmute_clitic_argument_uses_the_same_polarity_as_its_effect(evidence: str) -> None:
     assert _explicit_arguments_from_evidence("audio.mute", evidence) == {"state": False}
     assert _explicit_arguments_from_evidence("audio.mute", f"mute and {evidence}") is None
+
+
+def test_the_self_close_limit_may_say_how_baxy_closes() -> None:
+    # Owner's test 2026-09-21 (turns 210-213) / ctx-dueno-07.
+    from baxy_mind.llm import _unsupported_answer_contract_failure
+    reply = "No puedo cerrar BAXY tal como fue pedido. BAXY se cierra con la X de su ventana o con Alt+F4."
+    assert _unsupported_answer_contract_failure(reply, "cierra BAXY") == ""
+    assert _unsupported_answer_contract_failure(reply, "cierra Edge") == "unsupported_shape"

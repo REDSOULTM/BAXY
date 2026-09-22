@@ -808,6 +808,13 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         "en steam ve a crash bandicoot",
         {"situation": click_failed},
     ) == ""
+    # ctx-dueno-07: the family code carries its fact into the failure payload.
+    from baxy_mind.llm import _cause_in_prose, _has_cause_fact
+    assert _has_cause_fact("youtube_playback_not_verified_watch_ready0_playing_network2_source_none")
+    assert "did not start playing" in _cause_in_prose(
+        "youtube_playback_not_verified_watch_ready0_playing_network2_source_none", "es"
+    )
+    assert not _has_cause_fact("some_unknown_code")
     unmuted = (
         '{"kind":"operation","operation":"audio.microphone.mute","polarity":"success","verified":true,'
         '"succeeded":true,"observed":{"version":1,"baselineMuted":true,"muted":false,'
