@@ -72,6 +72,86 @@ public sealed class C03FactPreservationTests
             "me llamo emmanuel, dime hola emmanuel"), Is.Null);
     }
 
+    // Owner's test 2026-09-21 (turn 205) / ctx-dueno-04: the microphone already in
+    // the requested state is a typed failure whose honest finals name the state.
+    [TestCase("El micrófono ya no estaba activo, así que no se pudo silenciar.")]
+    [TestCase("El micrófono ya estaba silenciado, así que no cambié nada.")]
+    [TestCase("No pude silenciar el micrófono porque ya estaba silenciado.")]
+    public void MicrophoneAlreadyMutedFailureCanReachThePerson(string reply)
+    {
+        string step = TurnVisibleFacts.Failure("mission_failed", new JsonObject
+        {
+            ["stepCount"] = 0,
+            ["steps"] = new JsonArray(),
+            ["reason"] = new JsonObject
+            {
+                ["kind"] = "operation",
+                ["operation"] = "audio.microphone.mute",
+                ["polarity"] = "failure",
+                ["verified"] = false,
+                ["succeeded"] = false,
+                ["error"] = "microphone_already_muted",
+            },
+        });
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            step, UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+        Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "silencia mi microfono"), Is.Null);
+    }
+
+    // ctx-dueno-04 (2026-09-22, «Dime algo»): the observed snippet says «volumen de
+    // agua»; reporting it is not an invented volume level.
+    [Test]
+    public void VolumeWordCarriedByObservedSearchDataCanReachThePerson()
+    {
+        string facts = new JsonObject
+        {
+            ["kind"] = "operation",
+            ["operation"] = "web.search",
+            ["polarity"] = "success",
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = new JsonObject
+            {
+                ["version"] = 1,
+                ["query"] = "Tsunami",
+                ["count"] = 1,
+                ["results"] = new JsonArray(new JsonObject
+                {
+                    ["title"] = "Tsunami - Wikipedia",
+                    ["url"] = "https://en.wikipedia.org/wiki/Tsunami",
+                    ["snippet"] = "A tsunami is a series of waves caused by the displacement of a large volume of water.",
+                }),
+            },
+        }.ToJsonString();
+        UserMessageDraft draft = UserMessagePolicy.Create(facts, UserMessageEvent.Status);
+        const string reply = "La curiosidad es sobre Tsunami. Un fragmento de Wikipedia (Tsunami - Wikipedia) dice que es una serie de olas causada por el desplazamiento de un volumen grande de agua.";
+        Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "Dime algo"), Is.Null);
+    }
+
+    // Owner's test 2026-09-21 (turn 205): the verified unmute final.
+    [TestCase("Tu micrófono está activo de nuevo.")]
+    [TestCase("Activé el micrófono; ya no está silenciado.")]
+    public void MicrophoneUnmuteSuccessCanReachThePerson(string reply)
+    {
+        string facts = new JsonObject
+        {
+            ["kind"] = "operation",
+            ["operation"] = "audio.microphone.mute",
+            ["polarity"] = "success",
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = new JsonObject
+            {
+                ["version"] = 1,
+                ["baselineMuted"] = true,
+                ["muted"] = false,
+                ["authority"] = "windows_core_audio_capture_endpoint_postread",
+            },
+        }.ToJsonString();
+        UserMessageDraft draft = UserMessagePolicy.Create(facts, UserMessageEvent.Status);
+        Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "activa mi microfono"), Is.Null);
+    }
+
     [Test]
     public void PriorFilenameRemainsHumanVocabularyInAConversationRecovery()
     {

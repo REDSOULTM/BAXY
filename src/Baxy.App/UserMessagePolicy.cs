@@ -1918,6 +1918,13 @@ internal static class UserMessagePolicy
             normalized,
             @"\b(?:no\s+(?:la\s+|lo\s+)?acepto|no\s+fue\s+aceptad[ao]|rechazo|rechazad[ao]|refused|rejected)\b"
             + @"|\b(?:did\s*not|didn[’']?t|does\s*not|doesn[’']?t|was\s+not|wasn[’']?t)\s+accept(?:ed)?\b",
+            RegexOptions.CultureInvariant)
+        // Owner's test 2026-09-21 (turn 205): «ya estaba silenciado, así que no
+        // cambié nada» states the failure entire — nothing changed. Twin of the
+        // same marker in the mind's _FAILURE_MARKERS.
+        || Regex.IsMatch(
+            normalized,
+            @"\b(?:no\s+cambi[oe]\s+nada|no\s+se\s+cambio\s+nada|no\s+hubo\s+cambios?|nothing\s+(?:was\s+)?changed|no\s+change\s+was\s+made)\b",
             RegexOptions.CultureInvariant);
     }
 
@@ -2126,10 +2133,12 @@ internal static class UserMessagePolicy
         }
 
         string folded = FoldForPolicy(result);
+        // Owner's test 2026-09-21 (turn 205): «Tu micrófono está activo de nuevo»
+        // reports the observed unmute by naming the microphone, not a mute word.
         return !ContainsAny(
             folded,
             ["volumen", "volume", "silenci", "muted", "unmuted", "mute",
-                "audio", "altavoc"]);
+                "audio", "altavoc", "microfono", "microphone", " mic "]);
     }
 
     private static bool ObservedHasAudio(string source)
@@ -2258,9 +2267,21 @@ internal static class UserMessagePolicy
             return true;
         }
 
+        // ctx-dueno-04 (2026-09-22, «Dime algo» → a Wikipedia snippet about a
+        // tsunami's «volumen de agua»): a volume word the observed data carries
+        // is reported, not invented.
+        string foldedSource = FoldForPolicy(source);
+        if (ContainsAny(foldedSource, ["volumen", "volume"]))
+        {
+            return false;
+        }
+
         return !source.Contains("\"level\"", StringComparison.Ordinal)
             && !source.Contains("\"muted\"", StringComparison.Ordinal)
-            && !source.Contains("\"volumePercent\"", StringComparison.Ordinal);
+            && !source.Contains("\"volumePercent\"", StringComparison.Ordinal)
+            // Owner's test 2026-09-21 (turn 205): the typed cause of the failure
+            // («microphone_already_muted») is the mute state the final names.
+            && !source.Contains("\"microphone_already_", StringComparison.Ordinal);
     }
 
     private static string WithoutTrailingQuestion(string result)

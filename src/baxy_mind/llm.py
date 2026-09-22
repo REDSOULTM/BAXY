@@ -3143,6 +3143,30 @@ _COMPLETED_EFFECT_CLAIM = re.compile(
     r"|it(?:'s|\s+is)\s+(?:done|open|closed|muted|playing)\s+now"
     r")"
 )
+# ctx-dueno-04 (2026-09-22, turn 56): «El volumen se subió a 100.» in a
+# conversation turn with no operation. An impersonal or passive completed
+# change of a PC object is the same invented effect as the first person.
+_PC_OBJECT = (
+    r"(?:volumen|volume|micr[oó]fono|microphone|mic|ventana|window|pesta[ñn]a|tab|app|aplicaci[oó]n|"
+    r"application|programa|program|archivo|file|carpeta|folder|reproductor|player|canci[oó]n|song|"
+    r"m[uú]sica|music|v[ií]deo|video|wifi|bluetooth|brillo|brightness|pantalla|screen|edge|chrome|"
+    r"steam|spotify|discord|youtube|whatsapp|notepad|bloc de notas|calculadora|calculator|"
+    r"pc|computadora|computador|ordenador|equipo|computer|sonido|sound|nota|note|alarma|alarm|"
+    r"recordatorio|reminder|mensaje|message|correo|email)"
+)
+_IMPERSONAL_EFFECT_CLAIM = re.compile(
+    r"(?<![\w])(?:"
+    r"(?:ya\s+)?se\s+(?:abri[oó]|cerr[oó]|subi[oó]|baj[oó]|activ[oó]|desactiv[oó]|silenci[oó]|"
+    r"instal[oó]|desinstal[oó]|envi[oó]|mand[oó]|puso|reprodujo|paus[oó]|detuvo|apag[oó]|reinici[oó]|"
+    r"conect[oó]|desconect[oó]|guard[oó]|borr[oó]|elimin[oó]|minimiz[oó]|maximiz[oó]|ajust[oó]|"
+    r"cambi[oó]|configur[oó]|cre[oó]|program[oó])(?![\w])"
+    r"|(?:ya\s+)?qued[oó]\s+(?:abiert|cerrad|silenciad|activad|desactivad|puest|subid|bajad|"
+    r"instalad|enviad|guardad|borrad|eliminad|minimizad|maximizad|configurad|programad)"
+    r"|(?:has|have|is|was|got)\s+been\s+(?:opened|closed|raised|lowered|muted|unmuted|installed|"
+    r"uninstalled|sent|played|paused|stopped|saved|deleted|minimi[sz]ed|maximi[sz]ed|set|changed|created)"
+    r"|is\s+now\s+(?:at|open|closed|muted|unmuted|playing|paused|installed|set)"
+    r")"
+)
 _EFFECT_CLAIM_NEGATED = re.compile(
     r"\b(?:no|nunca|jamas|jamás|tampoco|sin|ni|not|never|didn'?t|couldn'?t|cannot|can'?t|haven'?t|"
     r"aun\s+no|aún\s+no|todavia\s+no|todavía\s+no)\b"
@@ -3167,7 +3191,10 @@ def visible_reply_claims_a_completed_effect(value: object) -> bool:
     # Accents stay: «paré» is the claim, «pare» («que pare la canción») is not.
     for sentence in re.split(r"(?<=[.!?…])\s+|\n+", text.casefold()):
         clause_start = 0
-        for match in _COMPLETED_EFFECT_CLAIM.finditer(sentence):
+        matches = list(_COMPLETED_EFFECT_CLAIM.finditer(sentence))
+        if re.search(r"(?<![\w])" + _PC_OBJECT + r"(?![\w])", sentence) is not None:
+            matches.extend(_IMPERSONAL_EFFECT_CLAIM.finditer(sentence))
+        for match in matches:
             # A negation earlier in the same clause makes it a denial, not a claim.
             clause = sentence[clause_start:match.start()]
             for boundary in (",", ";", " pero ", " but ", " aunque "):
@@ -9119,9 +9146,11 @@ def compose_visible_defect(
         if not muted:
             if re.search(r"silenci|\bmuted\b", folded) and unmuted_ok is None:
                 return "reversed_mute"
+        # Owner's test 2026-09-21 (turn 205): «Tu micrófono está activo» names
+        # the observed unmute by its device; the state word need not be «mute».
         if not re.search(
             r"silenci|\bmuted\b|\bunmuted\b|\bmute\b|audio|speaker|altavoc|"
-            r"volumen|volume",
+            r"volumen|volume|micr[oó]fono|microphone|\bmic\b",
             folded,
         ):
             return "missing_name"

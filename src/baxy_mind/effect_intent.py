@@ -15822,6 +15822,9 @@ def _review_application_and_window_effects(
         and not _has(
             folded, r"\b(?:forzar|force|kill|termina el proceso|terminate process)\b"
         )
+        # Owner's test 2026-09-21 (turns 210-213): «cierra BAXY» names the
+        # assistant, not an application with a window; the known limit answers.
+        and not self_close_request(folded)
     ):
         _append(
             matches,

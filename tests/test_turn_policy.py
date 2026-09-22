@@ -413,6 +413,11 @@ def test_the_fabrication_guard_does_not_forbid_general_knowledge(reply: str) -> 
         "Ya está hecho, el micrófono quedó silenciado.",
         "I clicked it for you.",
         "Done, I opened Steam.",
+        # ctx-dueno-04 (2026-09-22, turn 56): impersonal and passive forms.
+        "El volumen se subió a 100.",
+        "La ventana de Edge ya se cerró.",
+        "El micrófono quedó activado.",
+        "The volume has been raised to 100.",
     ],
 )
 def test_a_conversation_reply_may_not_claim_an_effect_no_operation_produced(reply: str) -> None:
@@ -432,6 +437,9 @@ def test_a_conversation_reply_may_not_claim_an_effect_no_operation_produced(repl
         "El primer libro de zombis se publicó hace décadas.",
         "Un zombi es un ser ficticio que se mueve sin conciencia.",
         "¿Querés que la reproduzca en YouTube?",
+        # Impersonal forms about the world, not about a PC object, stay.
+        "La fábrica se cerró en 1990 y el pueblo se quedó sin trabajo.",
+        "El volumen no se subió: no tengo esa capacidad desde el chat.",
     ],
 )
 def test_the_effect_claim_guard_keeps_denials_and_general_knowledge(reply: str) -> None:

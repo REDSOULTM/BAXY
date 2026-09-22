@@ -792,6 +792,23 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         "silencia mi microfono",
         {"situation": already_muted},
     ) == ""
+    unmuted = (
+        '{"kind":"operation","operation":"audio.microphone.mute","polarity":"success","verified":true,'
+        '"succeeded":true,"observed":{"version":1,"baselineMuted":true,"muted":false,'
+        '"authority":"windows_core_audio_capture_endpoint_postread"}}'
+    )
+    assert compose_visible_defect(
+        "Tu micrófono está activo de nuevo.",
+        "status",
+        "activa mi microfono",
+        {"situation": unmuted},
+    ) == ""
+    assert compose_visible_defect(
+        "Mi micrófono está silenciado.",
+        "status",
+        "activa mi microfono",
+        {"situation": unmuted},
+    ) == "reversed_mute"
     assert compose_visible_defect(
         "¿Confirmas o cancelas que cierre la ventana abierta de Edge?",
         "confirmation",

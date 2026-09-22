@@ -519,10 +519,18 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                     .ConfigureAwait(false);
             }
 
+            // Owner's test 2026-09-21 (turn 148): a session that closed on «stop» is
+            // the stopped playback, not «nothing was playing»; the narrator reads
+            // playing/paused/stopped and the observed status said «closed».
+            string observedStatus = verified
+                && action == "stop"
+                && status == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Closed
+                    ? "stopped"
+                    : status.ToString().ToLowerInvariant();
             return verified
                 ? ExternalJson.Success(
                     operation,
-                    MediaResult(after, status.ToString().ToLowerInvariant(), session.SourceAppUserModelId))
+                    MediaResult(after, observedStatus, session.SourceAppUserModelId))
                 : ExternalJson.Failure(operation, "smtc_postcondition_not_verified", effectObserved: true);
         }
         catch when (!cancellationToken.IsCancellationRequested)
