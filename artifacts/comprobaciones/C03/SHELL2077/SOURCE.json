@@ -1,0 +1,15 @@
+{
+  "schema": "c03-shell2077-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "opus/typed-tools (catalog, Core list, Providers adapter, mind readings, composer) merged into codex/kiro-goal-c03 (d89c626d3).",
+  "patch": "artifacts/comprobaciones/C03/SHELL2077/SOURCE.patch",
+  "commits": [
+    "d48d9c566f19696ca8f4cfe7c34aa0584025d6e1"
+  ],
+  "build": "BUILD2077 (C03-repairs2077-build/BUILD_READY.json; mente)",
+  "cause_measured": "«ejecuta pytest» y «ejecuta ls» se acreditaron como límite (LIMITS1677/1679).",
+  "change": "shell.command.run corre el comando en una carpeta propia vacía del producto o en la carpeta conocida nombrada («en el escritorio»), con salida y código observados.",
+  "measurement": "SHELL2077: 6/8 aprobados (el literal H0245, 3 variantes y los 2 límites); «git status» se leyó como pregunta (corpus) y el «dir» con listado murió en extra_claim; 1 créditos. Cinco shell.command.run verificadas; los finales citan la salida tal cual, incluida la forma «no hubo salida» que el arreglo anterior dejó publicar.",
+  "credits": 1
+}

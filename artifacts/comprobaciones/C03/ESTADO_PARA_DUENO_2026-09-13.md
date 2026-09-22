@@ -1,3 +1,25 @@
+## SHELL2077 — estado vigente 2026-09-22T14:59:08.855965+00:00
+
+Parcial: 6 aprobados, 2 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 680/742 | 62 | 0 | >=656 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 655 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SHELL2077 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: SHELL2077: 8 ejecutados, 6 aprobados, 2 fallidos, 1 créditos (índices [0]). Siguiente: energía del sistema y las de winget/Steam.
+
+Evidencia: `artifacts/comprobaciones/C03/SHELL2077/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 148.33 s acumulados; pico GPU 3485.56 MiB; pico RAM 2429.25 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SHELL2077 precedente. -->
+
 ## SHELL2075 — estado vigente 2026-09-22T13:59:29.509486+00:00
 
 Parcial: 5 aprobados, 3 fallidos, 0 sin ejecutar; 1 créditos.
