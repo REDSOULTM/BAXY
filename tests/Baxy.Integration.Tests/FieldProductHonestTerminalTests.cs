@@ -162,8 +162,15 @@ public sealed class FieldProductHonestTerminalTests
             Assert.That(sink.Snapshot().Any(item =>
                 (string?)item["type"] == "composition_failed"
                 && (string?)item["cause"] == "retry_exhausted"), Is.True);
-            Assert.That(sink.Snapshot().Any(item =>
-                (string?)item["type"] == "activity"), Is.False);
+            // d8eb8836 (owner session 2026-09-21 16:08): a failed composition leaves
+            // exactly one BAXY line, the fixed fallback with its diagnostic code;
+            // nothing else is written and no prose is invented.
+            List<JsonObject> activity = sink.Snapshot().Where(item =>
+                (string?)item["type"] == "activity").ToList();
+            Assert.That(activity, Has.Count.EqualTo(1));
+            Assert.That((string?)activity[0]["entry"]?["src"], Is.EqualTo("BAXY"));
+            Assert.That((string?)activity[0]["entry"]?["msg"],
+                Is.EqualTo(MainWindowViewModel.CompositionFailureFallback("retry_exhausted")));
         });
 
         if (recoverWithNewTurn)
