@@ -151,6 +151,23 @@ def without_observed_names(text: str, situation: object) -> str:
             written = observed.get("name") if isinstance(observed, dict) else None
             if isinstance(written, str) and 0 < len(written.strip()) <= 4096:
                 names.add(written.strip())
+        if (node.get("kind") == "operation"
+                and operation in {"web.download", "file.compress", "file.open", "filesystem.create.directory"}
+                and node.get("verified") is True and node.get("succeeded") is True
+                and node.get("polarity") == "success"):
+            # DOWNLOAD2047 «descarga la imagen de portada de wikipedia.org»: the
+            # file just written («250px-Wikipedia-logo-v2.svg.png»), the zip
+            # («Nueva carpeta.zip») and the source's host are observed data the
+            # report must say, not dotted operation names.
+            observed = node.get("observed")
+            if isinstance(observed, dict):
+                names.update(value.strip() for key in ("name", "zipName")
+                             if isinstance(value := observed.get(key), str) and 0 < len(value.strip()) <= 4096)
+                url = observed.get("sourceUrl")
+                if isinstance(url, str):
+                    host = re.match(r"^(?:https?://)?(?:www\.)?([^/?#]+)", url)
+                    if host and 0 < len(host.group(1)) <= 253:
+                        names.add(host.group(1))
         if (node.get("kind") == "operation" and operation == "wifi.scan"
                 and node.get("verified") is True and node.get("succeeded") is True
                 and node.get("polarity") == "success"):

@@ -210,6 +210,30 @@ internal static class ObservedResponseLiterals
             names.Add(writtenText);
         }
         if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+            && (IsString(node, "operation", "web.download") || IsString(node, "operation", "file.compress")
+                || IsString(node, "operation", "file.open") || IsString(node, "operation", "filesystem.create.directory"))
+            && node.TryGetProperty("verified", out JsonElement fileVerified) && fileVerified.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("succeeded", out JsonElement fileSucceeded) && fileSucceeded.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("observed", out JsonElement fileObserved) && fileObserved.ValueKind == JsonValueKind.Object)
+        {
+            // DOWNLOAD2047: the file just written («250px-Wikipedia-logo-v2.svg.png»),
+            // the zip and the source's host are observed data the report must say.
+            foreach (string key in new[] { "name", "zipName" })
+            {
+                if (fileObserved.TryGetProperty(key, out JsonElement fileName) && fileName.ValueKind == JsonValueKind.String
+                    && fileName.GetString() is { Length: > 0 and <= 4096 } fileText && !string.IsNullOrWhiteSpace(fileText))
+                {
+                    names.Add(fileText.Trim());
+                }
+            }
+
+            if (fileObserved.TryGetProperty("sourceUrl", out JsonElement sourceUrl) && sourceUrl.ValueKind == JsonValueKind.String
+                && Uri.TryCreate(sourceUrl.GetString(), UriKind.Absolute, out Uri? source) && source.Host.Length is > 0 and <= 253)
+            {
+                names.Add(source.Host.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ? source.Host[4..] : source.Host);
+            }
+        }
+        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
             && IsString(node, "operation", "wifi.scan")
             && node.TryGetProperty("verified", out JsonElement scanVerified) && scanVerified.ValueKind == JsonValueKind.True
             && node.TryGetProperty("succeeded", out JsonElement scanSucceeded) && scanSucceeded.ValueKind == JsonValueKind.True

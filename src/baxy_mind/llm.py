@@ -3583,7 +3583,10 @@ _FAILURE_MARKERS = re.compile(
     # realizó la acción» died in missing_failure after the two drafts that named
     # the failure differently died in missing_prior_open and reversed_polarity.
     r"no se realiz[oó]|no se hizo|no se pudo|no se pudieron|no fue posible|no realic[eé]|"
-    r"was not (?:done|performed|carried out)|could not be (?:done|performed))",
+    r"was not (?:done|performed|carried out)|could not be (?:done|performed)|"
+    # DOWNLOAD2047: «no se guardó nada», «no se bajó la portada» say the failure.
+    r"no se (?:guard[oó]|baj[oó]|descarg[oó]) |nada se guard[oó]|nada fue guardad[oa]|no guard[eé] nada|"
+    r"nothing was saved|was not saved)",
     re.IGNORECASE,
 )
 _NEGATED_FAILURE = re.compile(
@@ -9033,8 +9036,13 @@ def compose_visible_defect(
             folded,
         ):
             return "reversed_polarity"
-        if cause in {"mission_failed", "out_of_catalog"} and re.search(
-            r"no respond|didn't respond|did not respond|no respondo", folded
+        if (
+            cause in {"mission_failed", "out_of_catalog"}
+            and re.search(r"no respond|didn't respond|did not respond|no respondo", folded)
+            # DOWNLOAD2047 «descargá https://example.com/index.html»: «la dirección
+            # no respondió» is the typed cause (download_source_unavailable), not
+            # an invented non-answer.
+            and "download_source_unavailable" not in _situation_error_codes(situation)
         ):
             return "extra_claim"
         # Fuera de catálogo no se intentó nada: «No pude reservar la mesa en

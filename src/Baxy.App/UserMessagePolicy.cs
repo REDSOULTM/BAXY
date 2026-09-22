@@ -1925,7 +1925,8 @@ internal static class UserMessagePolicy
         || Regex.IsMatch(
             normalized,
             @"\b(?:no\s+cambi[oe]\s+nada|no\s+se\s+cambio\s+nada|no\s+hubo\s+cambios?|nothing\s+(?:was\s+)?changed|no\s+change\s+was\s+made)\b"
-            + @"|\b(?:no\s+se\s+realizo|no\s+se\s+hizo|no\s+fue\s+posible|no\s+realice|was\s+not\s+(?:done|performed|carried\s+out)|could\s+not\s+be\s+(?:done|performed))\b",
+            + @"|\b(?:no\s+se\s+realizo|no\s+se\s+hizo|no\s+fue\s+posible|no\s+realice|was\s+not\s+(?:done|performed|carried\s+out)|could\s+not\s+be\s+(?:done|performed))\b"
+            + @"|\b(?:no\s+se\s+(?:guardo|bajo|descargo)\s|nada\s+se\s+guardo|nada\s+fue\s+guardad[oa]|no\s+guarde\s+nada|nothing\s+was\s+saved|was\s+not\s+saved)\b",
             RegexOptions.CultureInvariant);
     }
 

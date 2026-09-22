@@ -128,6 +128,33 @@ public sealed class C03FactPreservationTests
         Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "Dime algo"), Is.Null);
     }
 
+    // DOWNLOAD2047: the file just written and the source host are observed data, not codes.
+    [Test]
+    public void DownloadedFileNameIsObservedVocabulary()
+    {
+        string facts = new JsonObject
+        {
+            ["kind"] = "operation",
+            ["operation"] = "web.download",
+            ["polarity"] = "success",
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = new JsonObject
+            {
+                ["version"] = 1,
+                ["sourceUrl"] = "https://upload.wikimedia.org/wikipedia/en/thumb/8/80/Wikipedia-logo-v2.svg/250px-Wikipedia-logo-v2.svg.png",
+                ["folder"] = "desktop",
+                ["name"] = "250px-Wikipedia-logo-v2.svg.png",
+                ["bytes"] = 59357,
+                ["contentType"] = "image/png",
+                ["authority"] = "downloaded_file_size_postread",
+            },
+        }.ToJsonString();
+        UserMessageDraft draft = UserMessagePolicy.Create(facts, UserMessageEvent.Status);
+        const string reply = "Descargué la imagen de portada de wikipedia.org y la guardé en el escritorio con el nombre 250px-Wikipedia-logo-v2.svg.png.";
+        Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "descarga la imagen de portada de wikipedia.org y guardala en el escritorio"), Is.Null);
+    }
+
     // Owner's test 2026-09-21 (turn 205): the verified unmute final.
     [TestCase("Tu micrófono está activo de nuevo.")]
     [TestCase("Activé el micrófono; ya no está silenciado.")]

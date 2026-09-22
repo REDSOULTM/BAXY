@@ -840,6 +840,33 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         "set the wallpaper to red",
         {"situation": json.dumps(wallpaper)},
     ) == ""
+    # DOWNLOAD2047: the typed download causes narrated in the person's words.
+    def _download_failure(err: str) -> str:
+        step = json.dumps({"kind": "operation", "operation": "web.download", "polarity": "failure",
+                           "verified": False, "succeeded": False, "error": err})
+        return json.dumps({"kind": "failure", "polarity": "failure", "cause": "mission_failed",
+                           "stepCount": 0, "steps": [], "reason": step})
+    assert compose_visible_defect(
+        "No se pudo descargar porque la dirección no respondió, así que nada se guardó.",
+        "error", "descargá https://example.com/index.html en descargas",
+        {"situation": _download_failure("download_source_unavailable")},
+    ) == ""
+    assert compose_visible_defect(
+        "La página no tiene imagen de portada, por eso no se guardó nada.",
+        "error", "bajá la portada de es.wikipedia.org a imágenes",
+        {"situation": _download_failure("download_page_without_image")},
+    ) == ""
+    # DOWNLOAD2047: the file just written is observed data, never a dotted code.
+    downloaded = json.dumps({"kind": "operation", "operation": "web.download", "polarity": "success",
+                             "verified": True, "succeeded": True,
+                             "observed": {"version": 1, "sourceUrl": "https://upload.wikimedia.org/wikipedia/en/thumb/8/80/Wikipedia-logo-v2.svg/250px-Wikipedia-logo-v2.svg.png",
+                                          "folder": "desktop", "name": "250px-Wikipedia-logo-v2.svg.png", "bytes": 59357,
+                                          "contentType": "image/png", "authority": "downloaded_file_size_postread"}})
+    assert compose_visible_defect(
+        "Descargué la imagen de portada de wikipedia.org y la guardé en el escritorio con el nombre 250px-Wikipedia-logo-v2.svg.png.",
+        "status", "descarga la imagen de portada de wikipedia.org y guardala en el escritorio",
+        {"situation": downloaded},
+    ) == ""
     unmuted = (
         '{"kind":"operation","operation":"audio.microphone.mute","polarity":"success","verified":true,'
         '"succeeded":true,"observed":{"version":1,"baselineMuted":true,"muted":false,'
