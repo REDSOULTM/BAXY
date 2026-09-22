@@ -116,3 +116,10 @@ Veredictos por turno en `contexto/cien-ctx-NN.<categoria>.verdicts.json`. Ningú
 | lectura: contesta estado sin leerlo | 20 | «¿en cuánto quedó?» (brillo), «¿cómo está el micrófono?», «¿qué día de la semana es hoy?» | «Quedó en 50», «El micrófono está activado», «Hoy es viernes» (era martes) | leer el estado (display.status, audio.status, system.time) antes de afirmarlo |
 | otras respuestas sin operación | 17 | «¿qué fecha será en 10 días?», «seguí», «borrala» | respuestas inventadas («En 10 días será el 10 de octubre»), eco del pedido («Borrala.»); entre ellas 3 que afirman un efecto que no corrió con la memoria apagada («Ya, olvidé lo del perro») | leer o actuar; nunca afirmar un efecto sin operación |
 | no es falta de operación | 22 | pedidos incompletos, prohibiciones | 11 sin la pregunta que faltaba, 4 «no pude entender», 7 con una operación que el turno no pedía (dos intentos de clic que el banco prohibía, una búsqueda, una lectura de periféricos, una de energía) | preguntar lo que falta; no actuar si se prohibió |
+
+PPTX (H0188) en el notebook (PPTX2051, 2026-09-22): la presentación se escribe y se verifica (paquete Open XML con las
+diapositivas pedidas) y su apertura no: `.pptx` no tiene aplicación elegida por el usuario y hay un segundo manejador
+registrado, así que el shell abre el selector «Selecciona una aplicación» (que se cierra al perder el foco) en vez de
+PowerPoint. Condición de máquina que se arregla eligiendo PowerPoint una vez en Configuración › Aplicaciones
+predeterminadas › .pptx. PPTX2051 quedó sin adjudicar (el HEAD se movió antes de su cadena); el final en inglés que
+murió ahí se reparó en 2691db9f. La fila sigue abierta.

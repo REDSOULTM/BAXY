@@ -1,3 +1,38 @@
+# NOTEBOOK: cierre del wall — 2026-09-22T22:56:48.182994+00:00
+
+**680/742 cubiertos, 62 abiertos, 0 NA; 25/35 categorías cerradas** (tabla de `CURRENT_CATEGORY_COUNTS.md`,
+reconstruida del registro; el «29/35» de las cabeceras de adjudicación es la métrica heredada de la plantilla del linaje,
+no el recuento vigente). Escritor raíz Opus 5 (notebook REDNOTE, rama `codex/kiro-goal-c03`, sin fusión a main,
+`fable/computer-use-engine` sin tocar).
+
+Tandas del notebook (aclaración del dueño 2026-09-22, sólo las trece asignadas): **+9 créditos (671 → 680)** —
+WALLPAPER2039 (H0459), ZIP2041 (H0542), AIRPLANE2045 (H0107), DOWNLOAD2049 (H0077), MEME2059 (H0069), TEXTREAD2065 (H0299),
+EXPLORER2073 (H0701), SHELL2075 (H0048) y SHELL2077 (H0245)—; cada una re-medida tras reparar lo que la tanda mostró
+(nombres observados de archivos, carpetas y textos leídos como vocabulario; productor de file.open en la frontera del
+plan; finales de la misión de imagen; salida de consola entera en los hechos visibles; «no hubo salida»; el conteo del
+Explorador nombra su carpeta; conductor propio del Explorador; lector de la tabla de winget; desinstalar sin depender de
+un Inicio ambiguo). Sin crédito y con la causa escrita en `SEMANTICA_CORPUS_PENDIENTE.md`: pptx (H0188: `.pptx` sin
+aplicación elegida en este equipo), power (H0401, H0714: Windows niega la transición al producto por las dos vías),
+wifi_place (H0170, H0376: el notebook no tiene interfaz inalámbrica), winget (H0651, H0217, H0167, H0457, H0583, H0574,
+H0089: las filas de Photoshop pasan pero no tienen variantes propias; las de 7-Zip piden un fixture elevado) y
+steam2063 (H0456, H0571, H0578, H0620: no se corrió porque aquí H0571 y H0578 iniciarían descargas reales). No se
+corrió launch2059, steamdl2065 ni steaminst2067 (banco de la Fase 5), ni nada de PvZ o PICO PARK.
+
+Medida contextual: `ctx-dueno` 12/60 → 33/60; bancos por categoría `cien-ctx-01…35` **396/525** turnos bien (los 129
+fallos son contexto y lectura, al corpus sin parche). Full verde en cf0f4ef6 (`source_quality_gate_passed: mode=Full`;
+.NET 4 900 pasadas y 2 omitidas por entorno —el libro histórico exhaustivo privado y «el core local no está disponible en
+este entorno»—; pytest 13 563 pasadas y 4 omitidas por entorno: el repositorio heredado FunctionGemma no está al lado, el libro exhaustivo privado, las entradas ciegas de la campaña de STT y el árbol oficial de la ronda B de WPF, todos sólo en REDPC). cien-98 **100/100** sobre cf0f4ef6.
+Para llegar al Full verde se corrigió en el cierre un choque heredado de REDPC (d8eb8836): la línea de composición
+fallida era prosa fija de la App y rompía el censo de voz visible; ahora es un aviso neutro con el código (la línea
+sigue apareciendo).
+
+REANUDACIÓN: **Fase 3.5, Fable, prompt `PROMPT_FABLE_SEMANTICA_2026-09-23.md`**, con el corpus de
+`SEMANTICA_CORPUS_PENDIENTE.md` (lo del traspaso, la prueba del dueño, `ctx-dueno`, las tandas del notebook y los
+bancos contextuales). No arrancar el motor (Fase 4/5) ni tocar `fable/computer-use-engine`; no fusionar a main.
+Condiciones de máquina del notebook y trampas de sus herramientas en la memoria `c03-notebook-wall-2026-09-22`.
+
+---
+
 ## WINGET2087 — estado vigente 2026-09-22T19:28:29.292840+00:00
 
 Parcial: 6 aprobados, 6 fallidos, 0 sin ejecutar; 0 créditos.
