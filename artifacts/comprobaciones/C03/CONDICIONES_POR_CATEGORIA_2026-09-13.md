@@ -1860,3 +1860,7 @@ Energía del sistema pasa de 1/3 a 1/3 con Windows acepta el apagado y el reinic
 ## Actualización 2026-09-22 (WINGET2083)
 
 Instalar y desinstalar software pasa de 2/31 a 2/31 con instalar software es winget, no la biblioteca de Steam (commit b3f172d3, BUILD2083) (HEAD b3f172d3): 2/12 aprobados (los dos límites); las 4 filas de Photoshop hicieron lo correcto y el panel no puede aprobarlas, las 3 de desinstalación las detuvo el runner por app.installed y las 3 de instalación corrieron sin verificarse a tiempo, 0 créditos. Tres instalaciones reales de 7zip.7zip sin verificación a tiempo y finales honestos; el fixture restauró el estado previo del paquete. Arreglos en el commit siguiente y re-medición como WINGET2085.
+
+## Actualización 2026-09-22 (WINGET2085)
+
+Instalar y desinstalar software pasa de 2/31 a 2/31 con instalar software es winget, no la biblioteca de Steam (commit 3acb52e3, BUILD2085) (HEAD 3acb52e3): 2/12 aprobados (los 2 límites); las 4 filas de Photoshop contestaron bien y el adjudicador aún no tiene el comportamiento de paquete ausente; instalaciones reales mal releídas por el lector de la tabla; desinstalaciones detenidas por el catálogo de Inicio ambiguo, 0 créditos. Tres instalaciones reales de 7zip.7zip; el fixture restauró el estado previo del paquete. Tres arreglos y re-medición como WINGET2087.

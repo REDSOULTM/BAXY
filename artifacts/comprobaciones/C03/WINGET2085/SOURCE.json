@@ -1,0 +1,15 @@
+{
+  "schema": "c03-winget2085-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "opus/typed-tools (catalog, Core list, Providers adapter, mind readings, composer) merged into codex/kiro-goal-c03 (d89c626d3).",
+  "patch": "artifacts/comprobaciones/C03/WINGET2085/SOURCE.patch",
+  "commits": [
+    "3acb52e3614add5cfc451c06b82cdcdddf54e2b7"
+  ],
+  "build": "BUILD2085 (C03-repairs2085-build/BUILD_READY.json; mente)",
+  "cause_measured": "«instala Spotify/Photoshop» y «desinstalá Spotify/Discord» se leían como biblioteca de Steam (INSTALL1625/1629).",
+  "change": "package.install.prepare/commit y package.uninstall por winget; la mente distingue programa de juego y «quitá/sacá/eliminá» desinstala; D13: 7zip.7zip en lugar de Spotify/Discord.",
+  "measurement": "WINGET2085: 2/12 aprobados (los 2 límites); las 4 filas de Photoshop contestaron bien y el adjudicador aún no tiene el comportamiento de paquete ausente; instalaciones reales mal releídas por el lector de la tabla; desinstalaciones detenidas por el catálogo de Inicio ambiguo; 0 créditos. Tres instalaciones reales de 7zip.7zip; el fixture restauró el estado previo del paquete. Tres arreglos y re-medición como WINGET2087.",
+  "credits": 0
+}

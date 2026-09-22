@@ -1,0 +1,141 @@
+{
+  "schema": "winget2085-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2085-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-winget2085-instrument-v1",
+  "seal_sha256": "33f229c6a8824eac7019ae40ecfe9810e95fbd162064d39dbc65659ea4ad145c",
+  "runner_sha256": "e83c76686417fa5e656286d91ad7edd0197aa79ecd1fc09e0d3356efe084599d",
+  "transport_seal_sha256": "f38755dd194680cdc366b735e3afc8ef4436bc77cb2227b486eba710631dbc96",
+  "files": {
+    "panel.json": "ca8b003c6b681da55b89c28f3a03117a3ec4ec42d6b6fc53de6fe3c97e5028a3",
+    "turns.jsonl": "dcf27b9f793b9f8eba15a678a9e596e8d4c39e800276038c7661907489e6335d",
+    "case-map.json": "14a5cad0f5bf42b49f39640fd0ded439547251d52247cf7adbc134cb6ccab19d",
+    "PLAN.md": "c6a2b771f404e28569f75c0b394dde5e3c3d5bd42aba39ca5fa1a99dccf95ab3"
+  },
+  "counts": {
+    "cases": 12,
+    "historical_literals": 7,
+    "original_development_variants": 3,
+    "boundaries": 2,
+    "wire_lines": 24,
+    "session_controls": 12,
+    "ordinary_turns": 9,
+    "reviewed_turns": 3,
+    "maximum_reportable_terminals": 15,
+    "maximum_internal_confirmations": 3
+  },
+  "kind_counts": {
+    "historical_literal": 7,
+    "original_development_variant": 3,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0651",
+      "kind": "historical_literal",
+      "group": "package_install",
+      "credit_behavior": "package_install",
+      "text_sha256": "1f574be9c81ad56eba4e5584a71cb04aa37da0083c6c8f6aa3ad96107aaa97cf",
+      "criterion_sha256": "a038412e5e01bf1d6f25866b71bc39e267afe55ccb7b625d09bf5c1151e44554"
+    },
+    {
+      "index": 1,
+      "case_id": "H0217",
+      "kind": "historical_literal",
+      "group": "package_absent",
+      "credit_behavior": "package_absent",
+      "text_sha256": "45569e656a1cee72a57723e092630135112622d122f57e4e3cdb82ee4ce220f0",
+      "criterion_sha256": "3e1b014d6e12feb983738412e8f6d72d8a3299203813d8da511e9c72b90e795c"
+    },
+    {
+      "index": 2,
+      "case_id": "H0167",
+      "kind": "historical_literal",
+      "group": "package_absent",
+      "credit_behavior": "package_absent",
+      "text_sha256": "341c33ae5993ac02ec95486958b3344e97d5a68d3188f7a7ff7f9d70f3d396ae",
+      "criterion_sha256": "3e1b014d6e12feb983738412e8f6d72d8a3299203813d8da511e9c72b90e795c"
+    },
+    {
+      "index": 3,
+      "case_id": "H0457",
+      "kind": "historical_literal",
+      "group": "package_absent",
+      "credit_behavior": "package_absent",
+      "text_sha256": "9a8de91f91065b1fe521302ad6444f0d6308620c878fbd580d7b61bc2173c60e",
+      "criterion_sha256": "3e1b014d6e12feb983738412e8f6d72d8a3299203813d8da511e9c72b90e795c"
+    },
+    {
+      "index": 4,
+      "case_id": "H0583",
+      "kind": "historical_literal",
+      "group": "package_absent",
+      "credit_behavior": "package_absent",
+      "text_sha256": "caac9cad6c8a96d151748093b71192ce77d8fab8b19bbb95e925c69d88089a00",
+      "criterion_sha256": "3e1b014d6e12feb983738412e8f6d72d8a3299203813d8da511e9c72b90e795c"
+    },
+    {
+      "index": 5,
+      "case_id": "H0574",
+      "kind": "historical_literal",
+      "group": "package_uninstall",
+      "credit_behavior": "package_uninstall",
+      "text_sha256": "2ec23c379a75c6412e78a2d32fdf123caa29fc11ae63836a9b22389cfd4b4666",
+      "criterion_sha256": "cf544bf9e0ff2fe1cb9c8042e75bd206423a65266650efbcc45a8d955a40b1a8"
+    },
+    {
+      "index": 6,
+      "case_id": "H0089",
+      "kind": "historical_literal",
+      "group": "package_uninstall",
+      "credit_behavior": "package_uninstall",
+      "text_sha256": "2ec23c379a75c6412e78a2d32fdf123caa29fc11ae63836a9b22389cfd4b4666",
+      "criterion_sha256": "cf544bf9e0ff2fe1cb9c8042e75bd206423a65266650efbcc45a8d955a40b1a8"
+    },
+    {
+      "index": 7,
+      "case_id": "winget2085-dev-01",
+      "kind": "original_development_variant",
+      "group": "package_install",
+      "credit_behavior": "package_install",
+      "text_sha256": "5f01e448ad5f9f9d9268febbf4fa4b740fc51a657eb9730f4159ce6c4e5b378d",
+      "criterion_sha256": "a038412e5e01bf1d6f25866b71bc39e267afe55ccb7b625d09bf5c1151e44554"
+    },
+    {
+      "index": 8,
+      "case_id": "winget2085-dev-02",
+      "kind": "original_development_variant",
+      "group": "package_install",
+      "credit_behavior": "package_install",
+      "text_sha256": "32bbd1757d88892d3264491c6e3af8b5b88a4f04bfb0e01437dcb4fc3c15bfda",
+      "criterion_sha256": "a038412e5e01bf1d6f25866b71bc39e267afe55ccb7b625d09bf5c1151e44554"
+    },
+    {
+      "index": 9,
+      "case_id": "winget2085-rev-01",
+      "kind": "original_development_variant",
+      "group": "package_uninstall",
+      "credit_behavior": "package_uninstall",
+      "text_sha256": "3a5460d7e56f3162e2e13143ef5df4dd8a44581a4e23769dd1647e2b03a14370",
+      "criterion_sha256": "cf544bf9e0ff2fe1cb9c8042e75bd206423a65266650efbcc45a8d955a40b1a8"
+    },
+    {
+      "index": 10,
+      "case_id": "winget2085-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "ec8932b5c201c9b9a41ad18098c8b27193521270beebb2827d210dcda6849bb6",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    },
+    {
+      "index": 11,
+      "case_id": "winget2085-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "42038444a1e863c8b0db4f2e8d592a32ebb9d11f4fe8cdddb6ef9bf0beffc557",
+      "criterion_sha256": "921c534891b82c162532282b45afefa436616cfcf018f7ccbae05b3101d0d42e"
+    }
+  ]
+}
