@@ -210,6 +210,24 @@ internal static class ObservedResponseLiterals
             names.Add(writtenText);
         }
         if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+            && (IsString(node, "operation", "filesystem.explorer.count") || IsString(node, "operation", "filesystem.known.list")
+                || IsString(node, "operation", "filesystem.known.search"))
+            && node.TryGetProperty("verified", out JsonElement folderVerified) && folderVerified.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("succeeded", out JsonElement folderSucceeded) && folderSucceeded.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("observed", out JsonElement folderObserved) && folderObserved.ValueKind == JsonValueKind.Object)
+        {
+            // EXPLORER2071 H0701: the folder the Explorer had in front is what the
+            // person sees; the reply has to name it.
+            foreach (string key in new[] { "folderName", "folder", "extension" })
+            {
+                if (folderObserved.TryGetProperty(key, out JsonElement folderValue) && folderValue.ValueKind == JsonValueKind.String
+                    && folderValue.GetString() is { Length: > 0 and <= 4096 } folderText && !string.IsNullOrWhiteSpace(folderText))
+                {
+                    names.Add(folderText.Trim());
+                }
+            }
+        }
+        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
             && (IsString(node, "operation", "document.text.read") || IsString(node, "operation", "document.pdf.read"))
             && node.TryGetProperty("verified", out JsonElement documentVerified) && documentVerified.ValueKind == JsonValueKind.True
             && node.TryGetProperty("succeeded", out JsonElement documentSucceeded) && documentSucceeded.ValueKind == JsonValueKind.True

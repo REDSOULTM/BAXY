@@ -855,6 +855,21 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         "En raiz_conteo, la carpeta que tenés delante, hay 3 archivos .py.", _counted,
         "Dime cuantos archivos .py hay en el directorio actual") == ""
 
+    # EXPLORER2071 H0701: the folder's observed name is not internal jargon.
+    from baxy_mind.observed_response_literals import without_observed_names
+    _counted_situation = json.dumps({
+        "kind": "operation", "operation": "filesystem.explorer.count", "polarity": "success",
+        "verified": True, "succeeded": True,
+        "observed": {"version": 1, "folderName": "raiz_conteo", "source": "explorer_foreground",
+                     "extension": ".py", "count": 3, "filesInFolder": 4},
+    })
+    assert "raiz_conteo" not in without_observed_names(
+        "En el directorio raiz_conteo hay 3 archivos .py.", json.loads(_counted_situation))
+    assert compose_visible_defect(
+        "En el directorio raiz_conteo hay 3 archivos .py.",
+        "status", "Dime cuantos archivos .py hay en el directorio actual", {"situation": _counted_situation},
+    ) == ""
+
     # TEXTREAD2063 H0299: the file's own words are observed data, even a forbidden term.
     _roadmap = json.dumps({
         "kind": "operation", "operation": "document.text.read", "polarity": "success",

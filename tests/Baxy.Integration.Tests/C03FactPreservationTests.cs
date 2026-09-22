@@ -128,6 +128,33 @@ public sealed class C03FactPreservationTests
         Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "Dime algo"), Is.Null);
     }
 
+    // EXPLORER2071 H0701: the counted folder's observed name is not internal jargon.
+    [Test]
+    public void CountedFolderNameIsObservedVocabulary()
+    {
+        string facts = new JsonObject
+        {
+            ["kind"] = "operation",
+            ["operation"] = "filesystem.explorer.count",
+            ["polarity"] = "success",
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = new JsonObject
+            {
+                ["version"] = 1,
+                ["folderName"] = "raiz_conteo",
+                ["source"] = "explorer_foreground",
+                ["extension"] = ".py",
+                ["count"] = 3,
+                ["filesInFolder"] = 4,
+            },
+        }.ToJsonString();
+        UserMessageDraft draft = UserMessagePolicy.Create(facts, UserMessageEvent.Status);
+        const string reply = "En el directorio raiz_conteo hay 3 archivos .py.";
+        Assert.That(UserMessagePolicy.ModelResponseRejectionReason(
+            reply, draft, "Dime cuantos archivos .py hay en el directorio actual"), Is.Null);
+    }
+
     // TEXTREAD2063 H0299: the read file's own words are observed data, even a forbidden term.
     [Test]
     public void ReadFileTextIsObservedVocabulary()

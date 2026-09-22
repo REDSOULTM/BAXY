@@ -152,6 +152,19 @@ def without_observed_names(text: str, situation: object) -> str:
             if isinstance(written, str) and 0 < len(written.strip()) <= 4096:
                 names.add(written.strip())
         if (node.get("kind") == "operation"
+                and operation in {"filesystem.explorer.count", "filesystem.known.list", "filesystem.known.search"}
+                and node.get("verified") is True and node.get("succeeded") is True
+                and node.get("polarity") == "success"):
+            # EXPLORER2071 H0701: «raiz_conteo», the folder the Explorer had in
+            # front, is what the person sees on screen; the reply has to name it
+            # and its underscore was read as internal jargon.
+            observed = node.get("observed")
+            if isinstance(observed, dict):
+                for key in ("folderName", "folder", "extension"):
+                    value = observed.get(key)
+                    if isinstance(value, str) and 0 < len(value.strip()) <= 4096:
+                        names.add(value.strip())
+        if (node.get("kind") == "operation"
                 and operation in {"document.text.read", "document.pdf.read"}
                 and node.get("verified") is True and node.get("succeeded") is True
                 and node.get("polarity") == "success"):
