@@ -1,0 +1,15 @@
+{
+  "schema": "c03-wallpaper2039-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "src/baxy_mind/llm.py (build 2039, e2724587) sobre la tipada desktop.wallpaper.set de opus/typed-tools (8edf110ac).",
+  "patch": "artifacts/comprobaciones/C03/WALLPAPER2039/SOURCE.patch",
+  "commits": [
+    "e2724587"
+  ],
+  "build": "BUILD2039 (C03-repairs2039-build/BUILD_READY.json; mente)",
+  "cause_measured": "El recibo llevaba el código RGB y la ruta del fondo anterior al narrador, que escribía el código en el final y moría en invented_number.",
+  "change": "La copia del narrador del recibo de desktop.wallpaper.set pierde rgb y previousWallpaper; las comprobaciones siguen viendo el recibo entero; el resto del panel no cambia.",
+  "measurement": "WALLPAPER2039: 5/6 aprobados (el literal H0459, 2 variantes y los 2 límites); la variante en inglés cambió el fondo pero su final murió por la heurística de lectura del narrador (reparación en el commit siguiente); 1 créditos. Un crédito: H0459 (Brillo y pantalla 16/17); el fondo se escribe como color liso, se aplica por SPI y se relee del registro; el final dice el color aplicado.",
+  "credits": 1
+}

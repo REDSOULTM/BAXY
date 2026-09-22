@@ -1,0 +1,87 @@
+{
+  "schema": "wallpaper2039-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1",
+  "seal_sha256": "e1d49120bbde59c39e321d28e54c2accf763467acbf3cd221bafaebe2f6f0fd1",
+  "runner_sha256": "e5da21abf60f0ddd8768a30a0b9779b5fb130d7d938e834f5de6c13d1004490b",
+  "transport_seal_sha256": "02d1e5066372bfe315c06d4caa997713b8f8919481c2efa4b8c14511925339bb",
+  "files": {
+    "panel.json": "75e6b673706e4a99769cafb8823c99bc2b93026b90b2b451fb62c68e541bf6db",
+    "turns.jsonl": "864ee525f273cae80503ce6a2ec65147bf4de77518b1bc3afed89e2c46852f71",
+    "case-map.json": "3402d5a4727e5f2be1bd6fa7660ec7030adfa1be00c4082f705c8896db461216",
+    "PLAN.md": "e527a16ee9005874d154a7c5b95b35d58847c4d9a3af573c94bcf2d1ea3d0a0d"
+  },
+  "counts": {
+    "cases": 6,
+    "historical_literals": 1,
+    "original_development_variants": 3,
+    "boundaries": 2,
+    "wire_lines": 12,
+    "session_controls": 6,
+    "ordinary_turns": 6,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 6,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 3,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0459",
+      "kind": "historical_literal",
+      "group": "wallpaper_set",
+      "credit_behavior": "wallpaper_set",
+      "text_sha256": "9afaaebcd4b5579ebdd7d5f0da00743d709e2dd04e368000660d22edb7aa7c89",
+      "criterion_sha256": "85caa49fcf153b159579ff11b6979a6987f23c680b92c9a665b492f073a79945"
+    },
+    {
+      "index": 1,
+      "case_id": "wallpaper2039-dev-01",
+      "kind": "original_development_variant",
+      "group": "wallpaper_set",
+      "credit_behavior": "wallpaper_set",
+      "text_sha256": "06ea091972a24eb8aa05be05f0b53894a475ede232d931a0fc801cc6cc4c83a4",
+      "criterion_sha256": "85caa49fcf153b159579ff11b6979a6987f23c680b92c9a665b492f073a79945"
+    },
+    {
+      "index": 2,
+      "case_id": "wallpaper2039-dev-02",
+      "kind": "original_development_variant",
+      "group": "wallpaper_set",
+      "credit_behavior": "wallpaper_set",
+      "text_sha256": "45dd0255145f062b52087809c5c6a153f7a3a334c0dcda99edbbd7811780744e",
+      "criterion_sha256": "85caa49fcf153b159579ff11b6979a6987f23c680b92c9a665b492f073a79945"
+    },
+    {
+      "index": 3,
+      "case_id": "wallpaper2039-dev-03",
+      "kind": "original_development_variant",
+      "group": "wallpaper_set",
+      "credit_behavior": "wallpaper_set",
+      "text_sha256": "f8bdd03e8bad1acf903ccb08f7e3f3d1be2fed96279df0e8af277ebc7f565039",
+      "criterion_sha256": "85caa49fcf153b159579ff11b6979a6987f23c680b92c9a665b492f073a79945"
+    },
+    {
+      "index": 4,
+      "case_id": "wallpaper2039-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "ae0e1ca2c9d66183867ed05398fa21be0a8aac243c3ed8a5343a444227e154ec",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    },
+    {
+      "index": 5,
+      "case_id": "wallpaper2039-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "2086ece146c52131f5793e58505236b77cd878076131de921c1c22377b14dbb9",
+      "criterion_sha256": "0e09f69a7a38410893f1fd1f86a1d28dd2796b78a1fceb0092d0fd2368e7d34a"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "index": 4,
+  "case_id": "wallpaper2039-boundary-01",
+  "terminal_kind": "published_final",
+  "final_sha256": "e7f5284a40a7a15172891d2cda76e49e21465cceaa51d3a232613dfbbc16e60b",
+  "clients_absent_before": true,
+  "verdict": "passed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 14.421999999998661,
+    "gpu_peak_mib": 3481.55859375,
+    "ram_peak_mib": 1549.6640625,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-04\\EXIT.json": "0b2673202429e269007246537b65e29495b152efb7afb5cc6122edc9c66447a1",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-04\\RESOURCES.json": "59ad14ebfa00954cb50b36e013fb50e5f2799997f07a14e622ef9a0acaaa1f6a",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-04\\case-observations.json": "fa847224c3f0e44931c8bf75ca9c8379f6ebdf3e63ddb13cbad5356e7c6ca66c"
+  }
+}

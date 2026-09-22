@@ -1,0 +1,60 @@
+commit e27245873d7f688c6cf267f3fd1ce116ea99fc62
+
+C03 WALLPAPER2037 (notebook): el recibo del fondo de pantalla no lleva el codigo RGB ni la ruta anterior al narrador
+
+WALLPAPER2037 corrio 6/6 sobre e81b0c9d: el literal H0459, la variante «cambia el fondo a negro» y los dos limites aprobados; «set the wallpaper to red» y «pone el fondo de escritorio verde» cambiaron y releyeron el fondo pero el narrador copio «170 20 20» / «20 120 50» del recibo y los tres borradores murieron (invented_number, imperative_echo). La tanda no se adjudico: la raiz recompilo la App para una prueba entre la ejecucion y la adjudicacion y los pins binarios del candidato dejaron de coincidir (error de la raiz, anotado en la memoria); el panel se vuelve a medir como WALLPAPER2039 sobre este commit.
+
+llm._compose_situation_payload: para desktop.wallpaper.set la copia del narrador pierde rgb y previousWallpaper (las comprobaciones siguen viendo el recibo entero). Prueba en test_goal06_voice. Fast verde.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 7a6c20a4..6949da7e 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4621,6 +4621,15 @@ def _compose_situation_payload(
+             # The receipt records whether it was running BEFORE this invocation.
+             # False must not tell the narrator that the app is still closed.
+             visible_seen["was_running_before_open"] = visible_seen.pop("alreadyRunning")
++        elif operation == "desktop.wallpaper.set":
++            # WALLPAPER2037 (notebook, 2026-09-22): the receipt's RGB triple
++            # («170 20 20») and the previous wallpaper's path reached the
++            # narrator, which wrote the code into the final and died in
++            # invented_number three times for two of four cases; the colour name
++            # is the fact the person asked for, the code and the path are the
++            # adapter's. The checks keep the whole receipt.
++            visible_seen.pop("rgb", None)
++            visible_seen.pop("previousWallpaper", None)
+         elif operation == "clipboard.write.text":
+             # CLIPBOARD1359 H0199/H0356: the receipt carries only the sequence
+             # number and the character count, so the narrator echoed the text
+diff --git a/tests/test_goal06_voice.py b/tests/test_goal06_voice.py
+index 35de8c9a..3f229536 100644
+--- a/tests/test_goal06_voice.py
++++ b/tests/test_goal06_voice.py
+@@ -815,6 +815,24 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
+         "youtube_playback_not_verified_watch_ready0_playing_network2_source_none", "es"
+     )
+     assert not _has_cause_fact("some_unknown_code")
++    # WALLPAPER2037 (notebook): the narrator's copy of the wallpaper receipt has no
++    # RGB code and no previous-wallpaper path; the checks still see the colour.
++    from baxy_mind.llm import _compose_situation_payload
++    wallpaper = {
++        "kind": "operation", "operation": "desktop.wallpaper.set", "polarity": "success",
++        "verified": True, "succeeded": True,
++        "observed": {"mode": "solid_color", "color": "red", "rgb": "170 20 20",
++                     "previousWallpaper": "C:/private/prev.jpg", "authority": "spi_registry_postread"},
++    }
++    projected = _compose_situation_payload(wallpaper, "en")
++    assert projected["seen"]["color"] == "red"
++    assert "rgb" not in projected["seen"] and "previousWallpaper" not in projected["seen"]
++    assert compose_visible_defect(
++        "I set the wallpaper to solid red.",
++        "status",
++        "set the wallpaper to red",
++        {"situation": json.dumps(wallpaper)},
++    ) == ""
+     unmuted = (
+         '{"kind":"operation","operation":"audio.microphone.mute","polarity":"success","verified":true,'
+         '"succeeded":true,"observed":{"version":1,"baselineMuted":true,"muted":false,'

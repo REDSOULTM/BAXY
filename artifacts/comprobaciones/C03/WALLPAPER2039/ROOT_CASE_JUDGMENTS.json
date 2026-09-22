@@ -1,0 +1,333 @@
+[
+  {
+    "index": 0,
+    "case_id": "H0459",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      2,
+      3
+    ],
+    "reason": "desktop.wallpaper.set verificada sin preguntar; el final dice el color aplicado; crédito con dos variantes aprobadas del mismo grupo.",
+    "observation_note": "Turno ordinario: exactamente una desktop.wallpaper.set completada y verificada (color liso aplicado por SPI y releído del registro); el final dice el color aplicado; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "abdb0d9c656862a4a609905b606a445063655b132dae82bf17ccd264ac99b3b8",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-00\\EXIT.json": "415c75096e5b22a0f40d1c01e18e45c56a8916cb71b111e8ff63d341ab2f0120",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-00\\RESOURCES.json": "3f1cc7631a38460f935a27920403549015f57290c121016d22e8431d71ad8141",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\profile-owner-00.json": "9f334c200b5c4343d12a1ff6f338cd31a0cd3655110508d61fe805046f96017f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-00\\PREREG.json": "e2333fd3d4bd03a2dcd9bf181c326f5386d99790ea1a603a642ef7e788226fd2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-00\\capture\\events.jsonl": "f08a252ac65fae70726f1095527d31d8687bf05bf7d1a68fb6ed0fb9e6a1748d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-00\\turns.jsonl": "7166a916b3266d881409cc09260655385c54f51ffb6d62fc5bf3e13993f7d4f6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\fixture-00.json": "afc76017ce75fda81dbfc3ea507c872c23236d56ccc9bfb979c8e6c9b0fd2368",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\context-00.json": "3db0035c0aa07c8a41f18c5b802d08048b909b2396ac5acb14152ab6da656d80",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\context-prelaunch-00.json": "ec4264845102411fe60bebeeb275695f69ffede65caaa1dddcf3cd77ad7402f4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-00\\case-observations.json": "2c6555ccbdf6a5303bd283f31ce50820e57b6893ef349a5a15e356b9c596263b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-00\\journal-before.json": "3dab158771953209c1f00509dd62d0c73fb764318c9308c382203ef944b9031b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-00\\journal-after.json": "d6304cece681098f1e3db9f26d4b7878ae77c19eb3de86e916ae08ad3bd1d303",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "9086b9cff8c3efd71c2ad90e885518482fbe16094f43b9473d1bf171ad2e6491"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "3d164284-c5ec-40d3-8836-9e494024e140",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "225156ca-aa04-4c24-87f1-b213eb6c2d8b",
+        "operation": "desktop.wallpaper.set",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "case_id": "wallpaper2039-dev-01",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Falló: no cambió el fondo, preguntó, o el final no dijo el color aplicado.",
+    "observation_note": "Turno ordinario: el fondo cambió y se releyó; el final no se pudo componer (heurística de lectura del narrador; reparación en el commit siguiente).",
+    "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-01\\EXIT.json": "2b21c88190dd1d030dda8686a26259668c68bb32dfb658e28ac9110a0603cada",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-01\\RESOURCES.json": "de462945cc1173a6e2a1f0e345c51d66d44afc35d8339638a44a698c95c5e21d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\profile-owner-01.json": "ebf7eb9ca9e200e19192083e12cb0d180f41c34190a4801a2ae84f4c7d6a46af",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-01\\PREREG.json": "a988a57614c4555a480af202587f4fbe6cb413047911e0e973c452c109c2e618",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-01\\capture\\events.jsonl": "6193024388bd5127a28ccfed3458f380201bc39618bd8a0529ad46ce175a9651",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-01\\turns.jsonl": "926983cdea1a544aeffb0233e66cf4c7cc0b170974ad959c374f9c96ee34bbfd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\fixture-01.json": "bfb23a6dc4bac8b88bd68798b37de45673bfcdb859f46ca20b01b4606d5d0955",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\context-01.json": "ba873b318a1a878fd8239a69299325d008d19d6e32d7f8eafd90442a11840804",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\context-prelaunch-01.json": "975b08025ed269c4dcc9dfb1e80f58da76f5458ca3673078937ded8a81766b61",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-01\\case-observations.json": "a352e412a91bd3c8a8241d09fa74ae27e516d1e9a080a2f5008a2f13856ac663",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-01\\journal-before.json": "b68554f2726f507e1ade4f44bde41b1e7ed2a2553535fb950072a30b513d9c97",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-01\\journal-after.json": "2b964a94452cb1bbbbb9148e7831f5286cd7d87b3425316eeecd72b5da0efe43",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "898269ae45a914a53b6f576146974f5c46ca4d209d99884f779c24032e27cfea"
+    },
+    "terminal_kind": "composition_failed",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "a5a18899-493a-49c6-baf9-a36f2bd06380",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "985c90d7-3639-429e-848e-f2a155f9d49b",
+        "operation": "desktop.wallpaper.set",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "case_id": "wallpaper2039-dev-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "desktop.wallpaper.set verificada sin preguntar; el final dice el color aplicado.",
+    "observation_note": "Turno ordinario: exactamente una desktop.wallpaper.set completada y verificada (color liso aplicado por SPI y releído del registro); el final dice el color aplicado; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "ca764b2082f64ba9e096c7233fffb4d14568f6577d16c9f24da27fa908f14658",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-02\\EXIT.json": "c9342be956852490a0774e6b1df23ca5f7f6f3cf27a254655aa78f7e79e6a015",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-02\\RESOURCES.json": "c8e3f6378141da5bf5bbb7538736ea6a0dc14b15fb86ca11cb56bb873ac5212b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\profile-owner-02.json": "0bd486f9e6dee907a17faf3f5bf32cb571ebd1c3bebe02207206dc96f0f77574",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-02\\PREREG.json": "7600454dcb373dda2ca9200a3ef2422b447a293940678cdf8941be812967ccfc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-02\\capture\\events.jsonl": "8efc31a4d5e729b3472635163c069f298be54a238ac448f4ab6dcc9a62c64462",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-02\\turns.jsonl": "99845ffeb0304854cdd3b6882ef1b5ba0411a96bf0d0dddd05d06ed9ebaa532d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\fixture-02.json": "0495ef4eca547caab3d7ddd362aefdeb248616e602a88326198e5bf4005b5713",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\context-02.json": "486cfde06173d6e56b9d86cacc8d8359cf3688217929917874e515de7049a42c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\context-prelaunch-02.json": "b780389dbfaeaa19a283390e24f0ed8de6a50fe04e61457f2e16ecf80c448158",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-02\\case-observations.json": "5b11ae4992b32b97f97666a202f3cde902602a8433e0e3647b816140622d9c9c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-02\\journal-before.json": "d359dc7d3165bed6e878a4e148b265df9311071e3991c2125262092087ca35c6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-02\\journal-after.json": "94f94be850ecba15fc0d8dcc319c772f43d1901eb02961c2f42018af624de632",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "6db26bcd413f8a5a4b02f60ea1ed035572e8d4e9e5279d9bc309a545ba6d7a48"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "d11d2f38-3fe5-4001-9dbc-36f67f3d58a6",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "0cc06701-3382-4847-8842-8e0d0f8270c0",
+        "operation": "desktop.wallpaper.set",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "case_id": "wallpaper2039-dev-03",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "desktop.wallpaper.set verificada sin preguntar; el final dice el color aplicado.",
+    "observation_note": "Turno ordinario: exactamente una desktop.wallpaper.set completada y verificada (color liso aplicado por SPI y releído del registro); el final dice el color aplicado; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "e830370534af7c429629e71eb870bdac83bbbc8824a58140724fba2ebed55d3f",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-03\\EXIT.json": "54de5a0dc5ae237238fbf1dfcbfe7639b68690663776181e96e04654ce2badcf",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-03\\RESOURCES.json": "625d8f227bc8d9988716a9d3e151231fe00047e22cca578996af319a4ebd2c3b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\profile-owner-03.json": "fe6129393d4edd830918b1ce0c9a9d05a9bd1592e21e58554e9ce1b3235a6f2e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-03\\PREREG.json": "9a26854be8428fc57740d23fb7a45964d1342b3ffaeebb160609da30fb9ac0ec",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-03\\capture\\events.jsonl": "b27ac7ffc2f148cf523561ebc1e0ba077a29d1656fd85bf13670ea38dc6d3c00",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-03\\turns.jsonl": "83f61ebecec120c921755ada959b62273b5d01b7d5f2bf843f66a520ee6cfe82",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\fixture-03.json": "16a4879f710e44eb1b8e43abdb0a2c060885ed7644775e68ee9690b89edc53a6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\context-03.json": "1b1890a7e7ff234db88e937be7609a9ba849b103d7e2dbbccd47bd81f6d99714",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\context-prelaunch-03.json": "4781e77550b430d70818d7dd77124970813efd24660ef963867c759c656e9a7e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-03\\case-observations.json": "d220fe15e3cc90e990ab4c854f5a55f3611359f6f1956b009b76eb346e9393b7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-03\\journal-before.json": "43b3469e43f8b3de834519bf5e8b1acd0999c6f1e5389c52b8289d7a4ea3f46a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-03\\journal-after.json": "c028f23435bb190308080141b9c172c10a9df39ebeed093e5ad1fcd4d2c59815",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "fce8d604adfe684061815bcd32f16df46471e3e05c3c1c9c0c4f538c0e0033c5"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "4e6d149d-2e70-4abd-9e78-5fa654f98a4a",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "fd1bcc31-4813-4b42-aeb1-d4b4cb2092a9",
+        "operation": "desktop.wallpaper.set",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "case_id": "wallpaper2039-boundary-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "e7f5284a40a7a15172891d2cda76e49e21465cceaa51d3a232613dfbbc16e60b",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-04\\EXIT.json": "0b2673202429e269007246537b65e29495b152efb7afb5cc6122edc9c66447a1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-04\\RESOURCES.json": "59ad14ebfa00954cb50b36e013fb50e5f2799997f07a14e622ef9a0acaaa1f6a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\profile-owner-04.json": "ce91549415402c289076b88878fdc0b076cd3a0bbd3061c0f2082f47ed742fd8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-04\\PREREG.json": "43f995b3c009910bfa50e6dd6791b5f3105705ae0c83182304ed49deb9899d07",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-04\\capture\\events.jsonl": "7092ae80392cff881c8dee4622c119176d521713a964c66c608c2b824b7009d2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-04\\turns.jsonl": "1dc3b2bfe5ce98c2e59607502fc5cc9226fb045b9581203258d10ec6a34805b6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\fixture-04.json": "65b804bb373d3e90ba478386e6cd5623540fadcd4a2c7a3584ba1227f55e88ac",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\context-04.json": "213a0c18cc748ac888d3fec5ca241215ef439fd144e4b97efa5f58b6bb92359d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\context-prelaunch-04.json": "177d37a78f123940f2cd9ed13f19c06d92e9ee4e488e7a7514ad4260fa211326",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-04\\case-observations.json": "fa847224c3f0e44931c8bf75ca9c8379f6ebdf3e63ddb13cbad5356e7c6ca66c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-04\\journal-before.json": "973a5343a9b81605686dd7501e6f8477f0c2649bf9c2a8f128cab25b578036ce",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-04\\journal-after.json": "0af21d4d4d61cb41217ff92af8880c5cea03e13caa4039ac3a4b4c905088ec19",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "82e84607250e7f5a999987e9dabfc1bbc60d47b13cd715413308451d15f05202"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "aef1fc31-dc9e-4db9-a132-70f9ece2067b",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "case_id": "wallpaper2039-boundary-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "2a7bc79844f10693d413d61c9b3153a8b2a2eb0842dc9ef134180caacd01cc22",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-05\\EXIT.json": "491b0967bd2f026f9a0f06a9fa0a616bf2731734b4afb7154ada4919b402dc72",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-05\\RESOURCES.json": "a53bce3596291249fe86ffb40ee4f2ebe6cfd33076c441ec58ad590ed5f50f6b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\profile-owner-05.json": "48af9ed9063f7d291d4d0b97829494e593651614a9cdf0b379f1b41cee173948",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\results\\case-05\\PREREG.json": "2d8d1633dffe8c2a5780e0ac0984a8e8628412840b5692c262f933b61bba303f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-05\\capture\\events.jsonl": "b58d04150a7eaba3a68ecf23df84b94c625683b2fcddea58e45532eb98ab1c65",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-05\\turns.jsonl": "4026806f573562a7cb118253d09817dee5775b3bf98d2a2846b7b896bf5281b1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\fixture-05.json": "ad85687c436eb28c21cf04b24c8972aa0d2bc564848b9d25cf8f24129b4490be",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\context-05.json": "2962dc461f811227f0940d7300cd51c4c4d7f8b5123e33f41e790fa94caddac4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\context-prelaunch-05.json": "9e596c3ccd3b970b7f4cdbaf19203595a3926e573c3cbff5369f8ee5c2b2e10c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-05\\case-observations.json": "3674d3a7637de2183eb004a9c9713e100a4e813ac8179bf56ecbdc567ab2d25e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-05\\journal-before.json": "414669774ec1393e33dae15deb7f4bd88f27c3613f1f96a50d845a87723252c3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-05\\journal-after.json": "2cda18c4cf012d294cfec3599fc7773ac1dec8d7b833c6d65d90c27e897170f9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-wallpaper2039-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "320e7de13d9ce5f384c9969d7aa114709750d623788510c6514c1f14a5e3b0be"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "93bf889b-8151-4345-9630-97193ea3d6ae",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  }
+]

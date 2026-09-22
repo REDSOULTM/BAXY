@@ -1,3 +1,11 @@
+# WALLPAPER2039 adjudicado — 2026-09-22T04:39:31.355759+00:00
+
+**672/742 cubiertos, 70 abiertos, 0 NA; 21/35 categorías cerradas (Música 39/39, Entrada incompleta, ruido y control de diálogo 34/34, Vídeo y series 26/26, Audio y volumen 51/51, Alarmas, recordatorios, tareas y agenda 38/38, Cerrar aplicaciones y ventanas 20/20, Conocimiento, razonamiento y creatividad verbal 37/37, Brillo y pantalla 17/17, Información web actual 17/17, Estado de hardware y sistema 40/40, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Contactos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9); C03 formal 3/11. Registro SHA ba8c7ae48947fcecd8fad9ba18ce5c3a87bb13212788857b081e9c8ea4d9724e. Primeras altas 24 h >= 648 (+1).** Escritor raíz Opus 5 (plan post-goal, D24). Candidato: HEAD e2724587 con BUILD2039 (recibo del fondo sin el codigo RGB en el narrador)))))). Turnos ordinarios sobre ventanas propias de la raíz (Bloc de notas delante, Calculadora detrás; diálogo «Prueba raiz»).
+
+WALLPAPER2039 («Brillo y pantalla», el fondo de escritorio se cambia y se relee del registro: re-medición del panel de WALLPAPER2039): 5/6 aprobados (el literal H0459, 2 variantes y los 2 límites); la variante en inglés cambió el fondo pero su final murió por la heurística de lectura del narrador (reparación en el commit siguiente), 1 créditos. Adjudicación 07d05dce699a63a9347f7f680fd882e5d6c3149acfe953cac96c4bd441531ce0. Un crédito: H0459 (Brillo y pantalla 16/17); el fondo se escribe como color liso, se aplica por SPI y se relee del registro; el final dice el color aplicado.
+
+---
+
 # NOTEBOOK: arreglos de la prueba del dueño + medida contextual — 2026-09-22T03:43:15.924281+00:00
 
 **671/742 cubiertos, 71 abiertos, 0 NA; 20/35 categorías cerradas. Registro SHA 3a2ef0bc4caee5736d39d928d733c3a83864144b9f34c090d0cf212985362738 (sin cambios: ninguna tanda adjudicada todavía).** Sesión única Opus 5 en el notebook (REDNOTE), rama `codex/kiro-goal-c03`, HEAD 4dd98219 + docs. Paquete de traspaso restaurado y verificado (§2 del traspaso), repo espejado en `C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo` con junction en `D:\Perfil\…`, Fast verde en cada commit, cien-97 100/100 (0 operaciones) sobre 4dd98219.
