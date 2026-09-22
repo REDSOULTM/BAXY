@@ -1,3 +1,25 @@
+## AIRPLANE2045 — estado vigente 2026-09-22T06:14:50.556191+00:00
+
+Parcial: 4 aprobados, 2 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 674/742 | 68 | 0 | >=650 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 649 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AIRPLANE2045 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: AIRPLANE2045: 6 ejecutados, 4 aprobados, 2 fallidos, 1 créditos (índices [0]). Siguiente: las tipadas de descarga (imagen de portada, meme) y la presentación.
+
+Evidencia: `artifacts/comprobaciones/C03/AIRPLANE2045/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 93.49 s acumulados; pico GPU 3485.56 MiB; pico RAM 1774.94 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque AIRPLANE2045 precedente. -->
+
 ## ZIP2041 — estado vigente 2026-09-22T05:10:47.476170+00:00
 
 Parcial: 5 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.

@@ -1782,3 +1782,7 @@ Brillo y pantalla pasa de 671/17 a 672/17 con el fondo de escritorio se cambia y
 ## Actualización 2026-09-22 (ZIP2041)
 
 Archivos y carpetas pasa de 672/32 a 673/32 con carpeta, txt, zip y abrir: una misión de cuatro tipadas (commit 4a4ebc9a, BUILD2041) (HEAD 4a4ebc9a): 5/6 aprobados (el literal H0542, 2 variantes y los 2 límites); la variante en inglés cayó en la guarda «sin pedido» (lectura; corpus de la Fase 3.5), 1 créditos. Un crédito: H0542 (Archivos y carpetas 31/32); las cuatro tipadas verificadas en orden con los nombres por defecto de Windows y el final dice que el zip quedó abierto.
+
+## Actualización 2026-09-22 (AIRPLANE2045)
+
+Red y Bluetooth pasa de 673/21 a 674/21 con el modo avión es todas las radios apagadas y releídas (commit de119824, BUILD2045) (HEAD de119824): 4/6 aprobados (el literal H0107, 2 variantes y el límite de prohibición); «sacá el modo avión» con las radios ya encendidas no tuvo efecto que verificar (lo dice con verdad) y el límite de conocimiento se leyó como orden (lectura; corpus), 1 créditos. Un crédito: H0107; el modo avión se pone por la API de radios y se relee; el final dice el estado leído.

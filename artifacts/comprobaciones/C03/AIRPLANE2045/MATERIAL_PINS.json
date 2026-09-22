@@ -1,0 +1,87 @@
+{
+  "schema": "airplane2045-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-airplane2045-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-airplane2045-instrument-v1",
+  "seal_sha256": "23b58c1c1fd67e2ab3dff17a2fb74677b0234c491e4ad536095febed60d1782b",
+  "runner_sha256": "9fe05f1c592af6f1203a59b4df7c943a4b3ba1e03a0d469ecfdab1b016b35145",
+  "transport_seal_sha256": "50c769278e6244139879677fefc7837f8c91f7347fc25f64079223cd6c4c1737",
+  "files": {
+    "panel.json": "ea997a75eb0e0a3ffa9379a2014eb38394b6f4d85a31b1f085377061a99e6955",
+    "turns.jsonl": "f1945cef44a36163e80c17823fc73b944d91e165deb38fa4c6de5c43ca713681",
+    "case-map.json": "31c8191863ab7e9dde850eabfe543ef822afbddba57cbb2426acc79402a00c9a",
+    "PLAN.md": "5836c0a634a9160dd9b45ff04f19319bf0339037260995f4a3b33a66446a756a"
+  },
+  "counts": {
+    "cases": 6,
+    "historical_literals": 1,
+    "original_development_variants": 3,
+    "boundaries": 2,
+    "wire_lines": 12,
+    "session_controls": 6,
+    "ordinary_turns": 6,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 6,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 3,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0107",
+      "kind": "historical_literal",
+      "group": "airplane_mode",
+      "credit_behavior": "airplane_mode",
+      "text_sha256": "21ca15e970fe69d9b60ec9d60cf25f74e0e932c8a86d18b9c690375b9ceb74d1",
+      "criterion_sha256": "a3c78647ca33e642a49200c907fd98f44631858ab908dd0169cfd64077537b01"
+    },
+    {
+      "index": 1,
+      "case_id": "airplane2045-dev-01",
+      "kind": "original_development_variant",
+      "group": "airplane_mode",
+      "credit_behavior": "airplane_mode",
+      "text_sha256": "2b5698279993f1bb51d0513723a183055d18b101cbc1770847a1de1ef306e066",
+      "criterion_sha256": "a3c78647ca33e642a49200c907fd98f44631858ab908dd0169cfd64077537b01"
+    },
+    {
+      "index": 2,
+      "case_id": "airplane2045-dev-02",
+      "kind": "original_development_variant",
+      "group": "airplane_mode",
+      "credit_behavior": "airplane_mode",
+      "text_sha256": "b39ab0b2d972142c968a696281e63213411d231ebb7fe42ad41ca3379720c723",
+      "criterion_sha256": "a3c78647ca33e642a49200c907fd98f44631858ab908dd0169cfd64077537b01"
+    },
+    {
+      "index": 3,
+      "case_id": "airplane2045-dev-03",
+      "kind": "original_development_variant",
+      "group": "airplane_mode",
+      "credit_behavior": "airplane_mode",
+      "text_sha256": "a1a222fe71a8dd4087d3137c3f86fe5b7ace81fafe431b79d1a7bee859665ce9",
+      "criterion_sha256": "a3c78647ca33e642a49200c907fd98f44631858ab908dd0169cfd64077537b01"
+    },
+    {
+      "index": 4,
+      "case_id": "airplane2045-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "fb1161ee350433f3d9b3b47d0c249efe2f83571494e9e40ac90530b954708756",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    },
+    {
+      "index": 5,
+      "case_id": "airplane2045-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "520b3cf3fdece9fd644076e0cda97a2437ff3a87fa9cf66661d5c7c76f824913",
+      "criterion_sha256": "1b1a838346d9ef87024c1784b52b5bc86d12731f849e813e96547363a9e92c45"
+    }
+  ]
+}

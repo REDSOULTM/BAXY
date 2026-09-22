@@ -1,0 +1,24 @@
+{
+  "index": 4,
+  "case_id": "airplane2045-boundary-01",
+  "terminal_kind": "published_final",
+  "final_sha256": "25acc8148a6dce9a8e7b1036c8dfea03aa8f4c70538dc48e91b2a046980b34af",
+  "clients_absent_before": true,
+  "verdict": "passed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 14.25,
+    "gpu_peak_mib": 3481.55859375,
+    "ram_peak_mib": 1586.0546875,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-airplane2045-instrument-v1\\results\\case-04\\EXIT.json": "b6d66d5100c72f19face9eb7745d4359d99ed1225f348c6161a47d75a32500e7",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-airplane2045-instrument-v1\\results\\case-04\\RESOURCES.json": "abfe1f647106326cac0591292eea06096bdf82680ceae19ddc6246d9cd0d82e0",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-airplane2045-instrument-v1\\private\\run-04\\case-observations.json": "419966781477b94a875596cdcbad3f8e66eeb4e0e7c0e6609598fcfc618ad571"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-airplane2045-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "opus/typed-tools (catalog, Core list, Providers adapter airplane_mode over Windows.Devices.Radios, mind reading, composer; merged in 8edf110ac).",
+  "patch": "artifacts/comprobaciones/C03/AIRPLANE2045/SOURCE.patch",
+  "commits": [
+    "de119824"
+  ],
+  "build": "BUILD2045 (C03-repairs2045-build/BUILD_READY.json; mente)",
+  "cause_measured": "«Poneme el modo avión» se acreditó como límite: no había efecto que apagara todas las radios.",
+  "change": "system.settings.set{airplane_mode} apaga o enciende todas las radios por la API de radios y las relee; el final dice el estado leído.",
+  "measurement": "AIRPLANE2045: 4/6 aprobados (el literal H0107, 2 variantes y el límite de prohibición); «sacá el modo avión» con las radios ya encendidas no tuvo efecto que verificar (lo dice con verdad) y el límite de conocimiento se leyó como orden (lectura; corpus); 1 créditos. Un crédito: H0107; el modo avión se pone por la API de radios y se relee; el final dice el estado leído.",
+  "credits": 1
+}

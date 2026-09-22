@@ -1,0 +1,64 @@
+commit de11982426c11588525688c16590cd2f4fe6e9cc
+
+C03 AIRPLANE2043 (notebook): las radios ya en el estado pedido son un hecho nombrado, no un efecto no observado
+
+AIRPLANE2043 corrio 6/6 sobre 4a4ebc9a: «poneme el modo avion» (H0107), «turn on airplane mode» y «activa el modo avion» apagaron las radios por la API y releyeron; «saca el modo avion» con las radios ya encendidas termino en external_verification_failed y el final dijo «no pude activar»; la pregunta de estado se leyo como ambigua (corpus). La tanda no se pudo adjudicar: la lista permitida del panel (set, status, wifi.radio.set, bluetooth.radio.set) hacia que el adjudicador exigiera las cuatro operaciones en cada caso aprobado; el panel queda con la lista exacta ([memory.status, system.settings.set]) y un limite de conocimiento en vez de la lectura, y se vuelve a medir como AIRPLANE2045.
+
+- WindowsDeviceControlAdapter.AirplaneModeSetAsync: si ninguna radio tiene que cambiar, airplane_mode_already_on/off antes de cruzar el limite (contrato del microfono).
+- llm: hechos de causa para esos dos codigos.
+
+Fast verde.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs b/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
+index 64214dc7..3dfb082d 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
+@@ -499,6 +499,14 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+             return ExternalJson.FailureBeforeEffect(operation, "airplane_mode_radios_not_found");
+         RadioState desired = value == 1 ? RadioState.Off : RadioState.On;
+         var before = radios.ToDictionary(radio => radio.Name + "|" + radio.Kind, radio => radio.State == RadioState.On);
++        // AIRPLANE2043 «sacá el modo avión» with every radio already on: nothing to
++        // switch cannot be observed as an effect; the honest fact is the state,
++        // said before any boundary is crossed (same contract as the microphone).
++        if (radios.All(radio => radio.State == desired || (desired == RadioState.On && radio.State == RadioState.Disabled)))
++        {
++            return ExternalJson.FailureBeforeEffect(
++                operation, value == 1 ? "airplane_mode_already_on" : "airplane_mode_already_off");
++        }
+         bool effectObserved = false;
+         foreach (Radio radio in radios)
+         {
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index f36a21b5..efb13755 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3864,6 +3864,12 @@ _CAUSE_FACT = {
+     "microphone_already_muted": (
+         "the microphone was already muted, so nothing changed"
+     ),
++    "airplane_mode_already_on": (
++        "airplane mode was already on (every radio off), so nothing changed"
++    ),
++    "airplane_mode_already_off": (
++        "airplane mode was already off (the radios were on), so nothing changed"
++    ),
+     "microphone_already_unmuted": (
+         "the microphone was already active, not muted, so nothing changed"
+     ),
+diff --git a/tests/test_goal06_voice.py b/tests/test_goal06_voice.py
+index f26db272..4347cd42 100644
+--- a/tests/test_goal06_voice.py
++++ b/tests/test_goal06_voice.py
+@@ -815,6 +815,9 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
+         "youtube_playback_not_verified_watch_ready0_playing_network2_source_none", "es"
+     )
+     assert not _has_cause_fact("some_unknown_code")
++    # AIRPLANE2043: the radios already in the requested state are a named fact.
++    assert "already off" in _cause_in_prose("airplane_mode_already_off", "es")
++    assert "already on" in _cause_in_prose("airplane_mode_already_on", "es")
+     # WALLPAPER2037 (notebook): the narrator's copy of the wallpaper receipt has no
+     # RGB code and no previous-wallpaper path; the checks still see the colour.
+     from baxy_mind.llm import _compose_situation_payload
