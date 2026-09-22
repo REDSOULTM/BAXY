@@ -1777,16 +1777,22 @@ Información web actual pasa de 13/17 a 17/17 con el clima se lee de un servicio
 
 ## Actualización 2026-09-22 (WALLPAPER2039)
 
-Brillo y pantalla pasa de 671/17 a 672/17 con el fondo de escritorio se cambia y se relee del registro: re-medición del panel de WALLPAPER2039 (commit e2724587, BUILD2039) (HEAD e2724587): 5/6 aprobados (el literal H0459, 2 variantes y los 2 límites); la variante en inglés cambió el fondo pero su final murió por la heurística de lectura del narrador (reparación en el commit siguiente), 1 créditos. Un crédito: H0459 (Brillo y pantalla 16/17); el fondo se escribe como color liso, se aplica por SPI y se relee del registro; el final dice el color aplicado.
+Brillo y pantalla pasa de 16/17 a 17/17 con el fondo de escritorio se cambia y se relee del registro: re-medición del panel de WALLPAPER2039 (commit e2724587, BUILD2039) (HEAD e2724587): 5/6 aprobados (el literal H0459, 2 variantes y los 2 límites); la variante en inglés cambió el fondo pero su final murió por la heurística de lectura del narrador (reparación en el commit siguiente), 1 créditos. Un crédito: H0459 (Brillo y pantalla 16/17); el fondo se escribe como color liso, se aplica por SPI y se relee del registro; el final dice el color aplicado. La categoría queda cerrada.
 
 ## Actualización 2026-09-22 (ZIP2041)
 
-Archivos y carpetas pasa de 672/32 a 673/32 con carpeta, txt, zip y abrir: una misión de cuatro tipadas (commit 4a4ebc9a, BUILD2041) (HEAD 4a4ebc9a): 5/6 aprobados (el literal H0542, 2 variantes y los 2 límites); la variante en inglés cayó en la guarda «sin pedido» (lectura; corpus de la Fase 3.5), 1 créditos. Un crédito: H0542 (Archivos y carpetas 31/32); las cuatro tipadas verificadas en orden con los nombres por defecto de Windows y el final dice que el zip quedó abierto.
+Archivos y carpetas pasa de 31/32 a 32/32 con carpeta, txt, zip y abrir: una misión de cuatro tipadas (commit 4a4ebc9a, BUILD2041) (HEAD 4a4ebc9a): 5/6 aprobados (el literal H0542, 2 variantes y los 2 límites); la variante en inglés cayó en la guarda «sin pedido» (lectura; corpus de la Fase 3.5), 1 créditos. Un crédito: H0542 (Archivos y carpetas 31/32); las cuatro tipadas verificadas en orden con los nombres por defecto de Windows y el final dice que el zip quedó abierto. La categoría queda cerrada.
 
 ## Actualización 2026-09-22 (AIRPLANE2045)
 
-Red y Bluetooth pasa de 673/21 a 674/21 con el modo avión es todas las radios apagadas y releídas (commit de119824, BUILD2045) (HEAD de119824): 4/6 aprobados (el literal H0107, 2 variantes y el límite de prohibición); «sacá el modo avión» con las radios ya encendidas no tuvo efecto que verificar (lo dice con verdad) y el límite de conocimiento se leyó como orden (lectura; corpus), 1 créditos. Un crédito: H0107; el modo avión se pone por la API de radios y se relee; el final dice el estado leído.
+Red y Bluetooth pasa de 20/21 a 21/21 con el modo avión es todas las radios apagadas y releídas (commit de119824, BUILD2045) (HEAD de119824): 4/6 aprobados (el literal H0107, 2 variantes y el límite de prohibición); «sacá el modo avión» con las radios ya encendidas no tuvo efecto que verificar (lo dice con verdad) y el límite de conocimiento se leyó como orden (lectura; corpus), 1 créditos. Un crédito: H0107; el modo avión se pone por la API de radios y se relee; el final dice el estado leído. La categoría queda cerrada.
 
 ## Actualización 2026-09-22 (DOWNLOAD2047)
 
 Navegación y búsqueda web pasa de 674/46 a 674/46 con descargar un archivo o la portada de una página a una carpeta conocida (commit d0a17256, BUILD2047) (HEAD d0a17256): 2/6 aprobados (una variante y el límite de prohibición); el literal descargó y verificó pero el narrador tomó el nombre del archivo por jerga; dos variantes fallaron con verdad (sin og:image; 404) y sus fallos no se pudieron narrar; el límite sin dirección se leyó como instalación (lectura; corpus), 0 créditos. Sin crédito: reparación del narrador (nombres observados de las herramientas de archivos, marcadores de fallo, causa «no respondió») y re-medición con dos variantes válidas como DOWNLOAD2049.
+
+Nota 2026-09-22 (raíz, notebook): las tres actualizaciones anteriores (WALLPAPER2039, ZIP2041, AIRPLANE2045) decían «pasa de 671/17», «672/32» y «673/21» porque el escritor recibió el total del registro en vez del cubierto de la categoría; corregidas a 16/17→17/17, 31/32→32/32 y 20/21→21/21 (la tabla de CURRENT_CATEGORY_COUNTS ya venía del registro y no cambia).
+
+## Actualización 2026-09-22 (DOWNLOAD2049)
+
+Navegación y búsqueda web pasa de 45/46 a 46/46 con descargar un archivo o la portada de una página a una carpeta conocida (commit 426a5f1c, BUILD2049) (HEAD 426a5f1c): 5/6 aprobados (el literal H0077, las 3 variantes y el límite de prohibición); «descargá todo internet» leído como instalación (corpus), 1 créditos. Cuatro web.download verificadas (59 357, 15 770, 5 990 y 38 692 bytes) en la carpeta pedida y recicladas por el fixture; cada final nombra el archivo y la carpeta, ninguno el tamaño. La categoría queda cerrada.

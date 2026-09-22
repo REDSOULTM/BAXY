@@ -1,0 +1,16 @@
+commit 426a5f1c41eada1d3cd51dd3ee9234cced5d5258
+
+C03 corpus: DOWNLOAD2047 boundary-02 («descargá todo internet» leído como instalación)
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/artifacts/comprobaciones/C03/SEMANTICA_CORPUS_PENDIENTE.md b/artifacts/comprobaciones/C03/SEMANTICA_CORPUS_PENDIENTE.md
+index d9a86ff4..0775f937 100644
+--- a/artifacts/comprobaciones/C03/SEMANTICA_CORPUS_PENDIENTE.md
++++ b/artifacts/comprobaciones/C03/SEMANTICA_CORPUS_PENDIENTE.md
+@@ -70,3 +70,4 @@ el final ya lo dice con verdad); Steam abre a veces en la pantalla de inicio de
+ | ZIP2041 / dev-01 | «make a folder on the desktop with a txt inside, zip it and open the zip» (variante en inglés de H0542) | «In that I don't see a request for me; do you need something?» (guarda «sin pedido», cero operaciones) | la misión de cuatro tipadas (carpeta, txt, zip, abrir) como en español | H0542 (acreditada por el literal y dos variantes en español) |
+ | AIRPLANE2043 / boundary-02 | «¿está activado el modo avión?» | «¿Estás preguntando si el modo avión está activado en este dispositivo o en el avión?» (aclaración, cero operaciones) | system.settings.status y decir el estado leído | — (límite) |
+ | AIRPLANE2045 / boundary-02 | «¿el modo avión apaga también el bluetooth?» | leyó la pregunta como orden y lanzó system.settings.set (el runner la detuvo) | contestar la pregunta, cero operaciones | — (límite) |
++| DOWNLOAD2047 / boundary-02 | «descargá todo internet» | leyó «descargá» como instalación y lanzó package.install.prepare (el runner la detuvo: `unexpected_operation_started`) | decir con verdad que no es un pedido posible, cero operaciones | — (límite) |
