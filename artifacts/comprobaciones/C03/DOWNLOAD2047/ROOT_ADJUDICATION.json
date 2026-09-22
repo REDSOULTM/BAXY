@@ -1,0 +1,391 @@
+{
+  "schema": "download2047-root-adjudication-v2",
+  "decided_at_utc": "2026-09-22T06:33:29.789241+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "d0a172569765dcb5120a68a10e4e2c0631974ef5",
+  "decisions_sha256": "e084124ccc5e2c41de2120a06d4fc2260c45f026db581df5999393ca5b082b9a",
+  "registry_before_sha256": "1a85855a48ef59ee3e9e87019b3652a3cd3268aab1b60c8ceefcdb9267ada89f",
+  "registry_before_counts": {
+    "covered": 674,
+    "open": 68,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "fa32aed80b71f86627c7e0f0d07095323d805bfba106946ccadf645827e931ea",
+  "preparation_sha256": "1cea9302b875144c779abcd959c1842cde2f546f03b4309302a61d832e0fa414",
+  "passed": 2,
+  "failed": 4,
+  "unexecuted": 0,
+  "executed": 6,
+  "segments_started": 6,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [],
+  "counters": {
+    "covered": 674,
+    "open": 68,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 650,
+    "categories_total": 35,
+    "categories_closed_after": 29,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 650 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); DOWNLOAD2047 añade 0. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 650
+  },
+  "resources": {
+    "seconds_sum": 122.72000000000116,
+    "gpu_peak_mib": 3485.55859375,
+    "ram_peak_mib": 2415.390625
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0077",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no descargó, navegó o preguntó, o el final no nombró el archivo escrito.",
+      "observation_note": "Turno ordinario: la imagen se descargó y se verificó; el final no se pudo componer (el nombre observado del archivo se leyó como jerga; reparación en el commit siguiente).",
+      "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-00\\EXIT.json": "b61746bd201b9c09d45207a66dba8735731a765883b8b0a6dfe1f51cc4b1b9b6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-00\\RESOURCES.json": "ddb4c7ad2c9e0d55ecf56611f00f734164024c6724faf51ca49a921251a42a80",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\profile-owner-00.json": "437f4d6e18d5513259df5cdfaa03309bb3ac692d0ec14448cc1303ca41e0f689",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-00\\PREREG.json": "2711590850b2d3541aa6e362a3d25218f0a845750bd9bb6cf0415e27c4b7114b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-00\\capture\\events.jsonl": "973babfc4ddf0faa533e0fffe8a2591b9a65cede55638cddf6b211a1f6949355",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-00\\turns.jsonl": "2d821085d3268bd876d3cb31c8dae630929d59a617373158e7302c67affd5ead",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\fixture-00.json": "2109d950d62d07f49b0796d628c2c4f21c018e3112e3d53a4baeefcfc6de0c3c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\context-00.json": "f21ca61932e9c3f71aba571b1100ec580abb28007786f622a5ef607d3662afe4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\context-prelaunch-00.json": "0acfaf9f89bc4773d1b1837f51093bdb45fd87a87747a9e22874fab6b8299ff4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-00\\case-observations.json": "ae272a700bcec47340eac7e1ccf35bed1ba43e48d96cc49c61a5d18c0013ea0d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-00\\journal-before.json": "23ea3f2a0fdeac64ffeb50055173c60bc39a7fc3dbd26969ee16d58fb0251169",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-00\\journal-after.json": "462a21041437dd2c18a872b4d76d2e69a31e027719d3b67522698a0330625f41",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "fa16c8db96d5612fdb8478f961c1cff6942c3326dbd4faf718d873578367b9a0"
+      },
+      "terminal_kind": "composition_failed",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "42607c96-eef7-409a-9b4b-ba179fd7de40",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "dd45b568-fc7f-4f0d-ad41-3ff42ef2e6ac",
+          "operation": "web.download",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "download2047-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "web.download verificada en la carpeta nombrada; el final nombra el archivo escrito y su tamaño.",
+      "observation_note": "Turno ordinario: exactamente una web.download completada y verificada (de una página, la imagen og:image que anuncia; de un archivo, el archivo) escrita en la carpeta nombrada; el final nombra el archivo escrito y su tamaño; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "7a2eab42622a25bd0200375af0589ec0f61c27b00bc5444fccec2ba670be4115",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-01\\EXIT.json": "a7111d5f93c02b7f0caf563ef9d83c5bb9b611916d3232c45be09e9b00f72e62",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-01\\RESOURCES.json": "3c0217f492db3704dc21f35998b67fea2bf8e211db12aad9d5a313df0c346692",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\profile-owner-01.json": "dcb104083eb23b4cab1cad70749c288e8236a9c3c877647d90986106c566a50b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-01\\PREREG.json": "f0c9be3513754ce18f5e1d2baaccdc4b64462a2009406e3fc1caad5b2ffd4241",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-01\\capture\\events.jsonl": "19299ee901ed5a62d080e57071c1279ad61a2846f1c3cd4a79d20b3cdec1c0ef",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-01\\turns.jsonl": "e7003a1d555889ca8c068fdb5ae26120573b71c358e6fb229b07426f49fc86ee",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\fixture-01.json": "8513f3d84a1091ef57890f53ebfd466fd293cc700ca6a8e7273215f314e6aba6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\context-01.json": "6466202184ef7dd8e210eee7795376e9cc67c9894779895f6b8021edc6f7f2a9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\context-prelaunch-01.json": "21f68cd78178bfc86ec92362f839fe765d632476bfc20f3fc474b16d0ec85fb0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-01\\case-observations.json": "e2dfc708141eaa5fbe18d4738bc1cc798963db8ea48b0d9b5cd130a64ddc3cd1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-01\\journal-before.json": "c461b4ca5f039cd4374c86d6d2ed3c19bbf6dde04b348ac42da160c0319ac056",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-01\\journal-after.json": "4a32805071f2f237d6841cdfd8653f5f8ca738799f366662c30d1495e8240acd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "99fa3e2995134fb9ed35129ec1ae2de2385ea35e4b3f32e7a2c39d5bdc989d1c"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "c5b9700e-af99-4198-80ec-05956873bede",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "533c91b7-12f8-49cb-b00f-e4537dcca187",
+          "operation": "web.download",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "download2047-dev-02",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no descargó, navegó o preguntó, o el final no nombró el archivo escrito.",
+      "observation_note": "Turno ordinario: la página no anuncia imagen de portada; el fallo tipado no se pudo narrar (reparación en el commit siguiente).",
+      "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-02\\EXIT.json": "022cd0e6335c511927edec9860ed96ae985349eb590dde8945d97b8f0f48256b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-02\\RESOURCES.json": "b99d63713ded1dcb7b643836e19882e40eabab17f2cffed4f9e30903c724ff9a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\profile-owner-02.json": "d1d79f7aa241cf87673878155573f2a994facbb67cc9800432c477f8481c6079",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-02\\PREREG.json": "5817cc220fbc85dd2d16f3911787b0ab9cbb6d1dc9fbd3453d625d6661aa12b7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-02\\capture\\events.jsonl": "4c282dd34cf28a3ec7f923cd52240700ebafcb8d9c004864c1b92a7b616f67da",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-02\\turns.jsonl": "a96bfb188523f0c5dbf9e711d8300e25910ed6b9c5e8968b3379fa64929af15d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\fixture-02.json": "f712069f53c6558d3279b1777e78ae4584c316dc71f72eee98e357efa0757bae",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\context-02.json": "c4f1da9ab4a91108507d88b56a4ccc3bb54173ad3c5e4047dad3b1c99f591b07",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\context-prelaunch-02.json": "ecfc2c925f3b18ab188ba0fba18a65a1d1893f1c00bfa415a0abbc2d7f497de5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-02\\case-observations.json": "a2dd0f83e961adcf68ed0f9e1fdc7ee17b835185676e4dec66d3986c29da915c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-02\\journal-before.json": "2914a74c294363d84fd722fed07d72bc247ee86ce9a63444afcabe4df209d93e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-02\\journal-after.json": "1925e94706c52c702d9802711314f2f394e5fa6cfc638a857877d8e066a8b41b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "1ec26a52265eff939ca97bd18cf1a975959c79048a0fcc89f647c4cb29772ddf"
+      },
+      "terminal_kind": "composition_failed",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "104c05af-3dc1-4249-b24b-7a6c9b3c51d8",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "643377ae-37ac-4237-9e72-39869f439758",
+          "operation": "web.download",
+          "status": "failed",
+          "verified": false,
+          "error_code": "download_page_without_image",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "download2047-dev-03",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no descargó, navegó o preguntó, o el final no nombró el archivo escrito.",
+      "observation_note": "Turno ordinario: la dirección no respondió (404); el fallo tipado no se pudo narrar (reparación en el commit siguiente).",
+      "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-03\\EXIT.json": "62f8a89f15fe113351bde76a2fec68d8c31e1a2093becebb6fa97b1e21d8a4f2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-03\\RESOURCES.json": "5f4523624b69502acb1721ca2efdbca0af08042badd08d3541d8ae79e8afd119",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\profile-owner-03.json": "b22cad1cda1577d9605f489653d706cba4ce85b530a7f2c72c7c2da3a7380e23",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-03\\PREREG.json": "db76e4e298e6a2dec30970d0263c3d327479459630aeb995f1ea5aaf105c4d71",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-03\\capture\\events.jsonl": "8000920f76adbf44f0507c940ac3aa69e039ee8fb57e52657f2e2618240c047f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-03\\turns.jsonl": "4398d1d1ed31cf413ea6f52900c87823524e18f0a07600812d7fbd669bf5e461",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\fixture-03.json": "4f3da91125774cf2097b09f955656eb855a1293765c23429416d796110a1d648",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\context-03.json": "466af56bc3b240c897d968d79c9b3a8ce3044a316aef7c57ec7f4c71a7a7b2be",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\context-prelaunch-03.json": "af3426f40a913c82267b91c19ab0ada360163909be999664999e0eea75428ee0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-03\\case-observations.json": "f8baee06d73a9729e2958bf7ded2dc0142afdce7a836059868bf5e7281ebe7b0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-03\\journal-before.json": "43931f740c28980907b7fddf03d93f521ccf81539766e1b77b63c39e5afc2170",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-03\\journal-after.json": "3a63046abc589851dc7f07a723c994a4097303ed8362d980a44c019951b4d770",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "118c91e239e5c89941b33c42d3d9c148d32ed5990df623f9b5aad2d72f87d33d"
+      },
+      "terminal_kind": "composition_failed",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "9ab84244-3496-4325-b9ef-8790b69d4e9e",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "19f98a85-3899-4250-9b03-d5a88a22bb7f",
+          "operation": "web.download",
+          "status": "failed",
+          "verified": false,
+          "error_code": "download_source_unavailable",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "download2047-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "68f9307ad285aece5f80838eaecee2275336772cab84a0564e36859035073466",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-04\\EXIT.json": "51ef233ab92e14f9c29bdf7b9e8357d0ccd9731a645ddc149a4dc4684d2a0fc1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-04\\RESOURCES.json": "28ee944cb1ccc817a3ce4077fbc66d9b07268c05a73ad0885a12e73bb4f58dde",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\profile-owner-04.json": "70f5bf181654a2c946594acbf6e11daa12e9440915f7d643c301e59f4660fd40",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-04\\PREREG.json": "cfeca2e8664c52035b4d8eb0eaef791e57e5ceeff695ccbdad599c0af19e55c5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-04\\capture\\events.jsonl": "ad72ff491e33c8f210d4fb643e9db0b0cc14be332ac9051d881831f0e5403b46",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-04\\turns.jsonl": "260d906c401e9d3eba04827f73ec4d3096af669f122695c8f51f3381a1cbd928",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\fixture-04.json": "64a8ee3c55461ef8cc3feb428c38047c2cdde6d6942ac49737d3582c1a25dff4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\context-04.json": "a4a232024263b32c89e70bd227be2f236e4cbad65a8222e878c230e52fed37fd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\context-prelaunch-04.json": "bfc2400b79880c031ccbc7b1259b4696c1d57a8fb38ff5ece8ffcfd1db9eae8b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-04\\case-observations.json": "7918157ed813c9cbc54db8cf0532e45a727c3d0fa4700f5c35002fd1ef6f2211",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-04\\journal-before.json": "d9d84d3f3c017039c405d43f5d947b2418f3eb87619efce4dc4c9d9fd1180fba",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-04\\journal-after.json": "249ab65b8fdb16135a81133a932836309be4d9566df1a39478f3d3ffc15f3500",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "fd6eb0219674dc8ce6200ee65492a7533271fac64ae0fdb85dc57855bc82eff5"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "9836f1d5-4125-4215-9b87-9c9bda225ac4",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "download2047-boundary-02",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite fallido: cero operaciones, pero la respuesta no fue fiel o útil.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-05\\EXIT.json": "3751d37b3ec9266901a71cf96dc29da1c1e9844e6fd3c1305cba55e9a6948b8c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-05\\RESOURCES.json": "2af95cb56ff3f44959ea2fd0f3d64975c2050cfd1eedbfe32617fc0a2473d514",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\profile-owner-05.json": "bb39e5ecb154231c73ce446e61f98601d79c340f5cdc607c5d419782d87b1e73",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\results\\case-05\\PREREG.json": "7e714df39fdbcb1a4c697844e89f797cda99e0f0c71cf0e48a05e5a6b4a94ea9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-05\\capture\\events.jsonl": "3af7288558fefeec1519698bea79c6ea69f443b709d6ec19322fdfd4e644e154",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-05\\turns.jsonl": "3542ce5741aa5ac8096b474c0dda97a6f97fa6ecec8942b3d950388d7e9cc8ab",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\fixture-05.json": "ba055023a63daf03cb72fef427c0ea96925d75f4f02aab12a40993eecd5f4f37",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\context-05.json": "bcb197a0f94d678372a071beb6c7f34d0838a4b3afa643f432ed34acfc0abe1b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\context-prelaunch-05.json": "15729edf76e54b334c532b8a48886f593ea53c68082c720a17fcb5882680bd74",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-05\\case-observations.json": "1d8ad37cdb59b17f63bd891692feec4230484a9b169e9fd8dee621a5892a841e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-05\\journal-before.json": "85120a084e13181c8d34d10ba1158ab801bdb1fc5326d672e34f1f61f4b52fec",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-05\\journal-after.json": "0d63c2621d9b67c0dd66c698cc3eb30acaeb42ef0d3f6b751c9ab057510426a1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-download2047-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "7c3df36eec233501c58eeae8762eb26cbc9a58d1927cf212b381697eac92ae34"
+      },
+      "terminal_kind": null,
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": true,
+      "cause_kind": null,
+      "violations": [
+        "unexpected_operation_started:package.install.prepare"
+      ],
+      "new_invocations": [
+        {
+          "invocation_id": "ed7f08df-40e3-42f2-a933-43e66ab5f3e5",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "a18d1bc0-cd48-4142-b518-30f1561aa69c",
+          "operation": "package.install.prepare",
+          "status": null,
+          "verified": null,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started"
+          ],
+          "replayed": null
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "DOWNLOAD2047: 6 ejecutados, 2 aprobados, 4 fallidos, 0 créditos (índices []). Siguiente: el meme (H0069) y la presentación (H0188).",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

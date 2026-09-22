@@ -1,0 +1,15 @@
+{
+  "schema": "c03-download2047-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "opus/typed-tools (catalog, Core list, Providers adapter web.download with og:image, mind reading web_download_request, composer; merged in 8edf110ac).",
+  "patch": "artifacts/comprobaciones/C03/DOWNLOAD2047/SOURCE.patch",
+  "commits": [
+    "d0a17256"
+  ],
+  "build": "BUILD2047 (C03-repairs2047-build/BUILD_READY.json; mente)",
+  "cause_measured": "«Descarga la imagen de portada de wikipedia.org» se acreditó como límite: no había descarga a una carpeta conocida.",
+  "change": "web.download baja la imagen de portada de una página (og:image) o el archivo de una dirección a la carpeta conocida nombrada y el final nombra el archivo escrito.",
+  "measurement": "DOWNLOAD2047: 2/6 aprobados (una variante y el límite de prohibición); el literal descargó y verificó pero el narrador tomó el nombre del archivo por jerga; dos variantes fallaron con verdad (sin og:image; 404) y sus fallos no se pudieron narrar; el límite sin dirección se leyó como instalación (lectura; corpus); 0 créditos. Sin crédito: reparación del narrador (nombres observados de las herramientas de archivos, marcadores de fallo, causa «no respondió») y re-medición con dos variantes válidas como DOWNLOAD2049.",
+  "credits": 0
+}

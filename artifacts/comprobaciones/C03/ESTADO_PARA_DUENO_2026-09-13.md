@@ -1,3 +1,25 @@
+## DOWNLOAD2047 — estado vigente 2026-09-22T06:33:29.789241+00:00
+
+Parcial: 2 aprobados, 4 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 674/742 | 68 | 0 | >=650 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 650 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); DOWNLOAD2047 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: DOWNLOAD2047: 6 ejecutados, 2 aprobados, 4 fallidos, 0 créditos (índices []). Siguiente: el meme (H0069) y la presentación (H0188).
+
+Evidencia: `artifacts/comprobaciones/C03/DOWNLOAD2047/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 122.72 s acumulados; pico GPU 3485.56 MiB; pico RAM 2415.39 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque DOWNLOAD2047 precedente. -->
+
 ## AIRPLANE2045 — estado vigente 2026-09-22T06:14:50.556191+00:00
 
 Parcial: 4 aprobados, 2 fallidos, 0 sin ejecutar; 1 créditos.
