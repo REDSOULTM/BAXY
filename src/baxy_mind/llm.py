@@ -5353,6 +5353,20 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
                     "such as playing or stopped in English, no artist unless observed, "
                     "and never translate any part of the title."
                 )
+            elif (
+                situation.get("operation") == "media.control"
+                and observed.get("playbackStatus") in {"paused", "stopped"}
+            ):
+                # ctx-dueno-06 (2026-09-22, «para la canción»): the verified stop
+                # came out as «No se observó título ni artista. El estado de
+                # reproducción es "stopped"»; one sentence in the person's words.
+                bits.append(
+                    "The control was verified. Answer in one natural sentence in the "
+                    "person's language saying that you stopped or paused the playback "
+                    "(whichever playbackStatus says), quoting the title only when one "
+                    "was observed; if title and artist are empty, do not mention them "
+                    "at all. No field list and no internal status words in English."
+                )
         if isinstance(observed.get("app"), str) and observed["app"].strip():
             bits.append(
                 "Name observed.app. State open, closed or playing from the facts."

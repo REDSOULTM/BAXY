@@ -8545,6 +8545,14 @@ def _prepare_turn_result(
             )
             or read_request(objective).intents
             & {INTENT_IDENTITY, INTENT_CAPABILITY, INTENT_REFUSE}
+            # ctx-dueno-06 (2026-09-22, turn 50 after the «sin pedido» guard):
+            # a known limit closed for an authoritative request («cierra BAXY»)
+            # is a request of its own; resumed onto the earlier clarification it
+            # was re-decided as knowledge and «Entendido, cierro BAXY» went out.
+            or (
+                presentation_conversation_kind == "unsupported"
+                and effect_request_is_authoritative(objective)
+            )
         ):
             # A closed standalone explanation or negative constraint is a new
             # request, not a value for an earlier clarification. Reuse the

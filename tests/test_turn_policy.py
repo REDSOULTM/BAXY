@@ -1821,6 +1821,32 @@ def test_actual_pending_clarification_keeps_the_dialogue_open(text: str) -> None
         assert classify(text, history, pending_clarification=True) is None
 
 
+@pytest.mark.parametrize("text", ["cierra BAXY", "baxy, cierra baxy"])
+def test_known_limit_for_an_authoritative_request_supersedes_a_pending_slot(text: str) -> None:
+    # ctx-dueno-06 (2026-09-22, turn 50): after a «¿necesitás algo?» clarification the
+    # self-close limit must not be resumed onto that objective.
+    tool = _goal03c_catalog_tool("app.close")
+
+    class Runtime:
+        @staticmethod
+        def chat(current: str, **kwargs: object) -> tuple[str, list]:
+            assert kwargs["conversation_kind"] == "unsupported"
+            return "No puedo cerrar BAXY desde el chat; se cierra con la X de su ventana o con Alt+F4.", []
+
+    result = _prepare_turn_result(
+        {"id": "self-close", "text": text, "pendingClarification": True, "history": []},
+        llm=Runtime(),
+        planner_catalog=PlannerCatalog([tool]),
+        turn_evidence=_NoEvidence(),
+        encoder=lambda _texts: (),
+        tool_by_name={"app.close": tool},
+    )
+    assert result["kind"] == "conversation"
+    assert result["conversationKind"] == "unsupported"
+    assert result["effectOperations"] == []
+    assert result["preserveObjective"] is False
+
+
 @pytest.mark.parametrize("text", ["no subas el volumen", "no silencies el audio"])
 def test_isolated_negative_request_supersedes_a_pending_slot(text: str) -> None:
     tool = _goal03c_catalog_tool("audio.mute")
