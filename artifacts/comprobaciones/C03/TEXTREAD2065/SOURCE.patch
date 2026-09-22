@@ -1,0 +1,171 @@
+commit 83499642b56329bfceb763f83ab6091a615d2cd3
+
+C03 TEXTREAD2063 (notebook): lo que dice el archivo leído es vocabulario observado, no jerga del asistente
+
+Sobre 052a9744. El literal H0299 leyó y verificó el ROADMAP.md del fixture y su final murió seis veces en
+forbidden_term: el archivo dice «El agente corre en la PC y lee el catalogo» y «catalogo» es término prohibido.
+Lo que el archivo dice es dato observado, como ya lo era el texto reconocido de la pantalla (SCREEN1411): las dos
+gemelas (observed_response_literals.py y ObservedResponseLiterals.cs) enmascaran ahora el texto, el comienzo, los
+títulos y la etiqueta de una document.text.read o document.pdf.read verificada —el texto entero y cada una de sus
+líneas, para que la cita que colapsa los saltos siga siendo observada—. El texto publicado conserva cada palabra.
+Pruebas: test_goal06_voice.py y C03FactPreservationTests.ReadFileTextIsObservedVocabulary. Fast en verde; App 266/266.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/ObservedResponseLiterals.cs b/src/Baxy.App/ObservedResponseLiterals.cs
+index fb077d0b..992e7991 100644
+--- a/src/Baxy.App/ObservedResponseLiterals.cs
++++ b/src/Baxy.App/ObservedResponseLiterals.cs
+@@ -209,6 +209,49 @@ internal static class ObservedResponseLiterals
+             // («procesos-memoria.txt») is observed data the report must say.
+             names.Add(writtenText);
+         }
++        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
++            && (IsString(node, "operation", "document.text.read") || IsString(node, "operation", "document.pdf.read"))
++            && node.TryGetProperty("verified", out JsonElement documentVerified) && documentVerified.ValueKind == JsonValueKind.True
++            && node.TryGetProperty("succeeded", out JsonElement documentSucceeded) && documentSucceeded.ValueKind == JsonValueKind.True
++            && node.TryGetProperty("observed", out JsonElement documentObserved) && documentObserved.ValueKind == JsonValueKind.Object)
++        {
++            // TEXTREAD2063 H0299: what the file says is the file's own words,
++            // not the assistant's vocabulary.
++            foreach (string key in new[] { "text", "lead" })
++            {
++                if (documentObserved.TryGetProperty(key, out JsonElement documentText) && documentText.ValueKind == JsonValueKind.String
++                    && documentText.GetString() is { Length: > 0 } body && !string.IsNullOrWhiteSpace(body))
++                {
++                    names.Add(body.Trim());
++                    foreach (string line in body.Split('\n'))
++                    {
++                        string trimmed = line.Trim();
++                        if (trimmed.Length >= 3)
++                        {
++                            names.Add(trimmed);
++                        }
++                    }
++                }
++            }
++
++            if (documentObserved.TryGetProperty("headings", out JsonElement headings) && headings.ValueKind == JsonValueKind.Array)
++            {
++                foreach (JsonElement heading in headings.EnumerateArray())
++                {
++                    if (heading.ValueKind == JsonValueKind.String
++                        && heading.GetString() is { Length: > 0 } text && !string.IsNullOrWhiteSpace(text))
++                    {
++                        names.Add(text.Trim());
++                    }
++                }
++            }
++
++            if (documentObserved.TryGetProperty("reviewLabel", out JsonElement documentLabel) && documentLabel.ValueKind == JsonValueKind.String
++                && documentLabel.GetString() is { Length: > 0 and <= 4096 } label && !string.IsNullOrWhiteSpace(label))
++            {
++                names.Add(label.Trim());
++            }
++        }
+         if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+             && (IsString(node, "operation", "web.download") || IsString(node, "operation", "file.compress")
+                 || IsString(node, "operation", "file.open") || IsString(node, "operation", "filesystem.create.directory"))
+diff --git a/src/baxy_mind/observed_response_literals.py b/src/baxy_mind/observed_response_literals.py
+index 4d1ce149..6aed6385 100644
+--- a/src/baxy_mind/observed_response_literals.py
++++ b/src/baxy_mind/observed_response_literals.py
+@@ -151,6 +151,33 @@ def without_observed_names(text: str, situation: object) -> str:
+             written = observed.get("name") if isinstance(observed, dict) else None
+             if isinstance(written, str) and 0 < len(written.strip()) <= 4096:
+                 names.add(written.strip())
++        if (node.get("kind") == "operation"
++                and operation in {"document.text.read", "document.pdf.read"}
++                and node.get("verified") is True and node.get("succeeded") is True
++                and node.get("polarity") == "success"):
++            # TEXTREAD2063 H0299: what the file says is the file's own words.
++            # The ROADMAP the person pasted reads «lee el catalogo» and the
++            # final that quotes it died in forbidden_term. The read text, its
++            # headings and each of its lines are observed data, not the
++            # assistant's vocabulary.
++            observed = node.get("observed")
++            if isinstance(observed, dict):
++                for key in ("text", "lead"):
++                    value = observed.get(key)
++                    if isinstance(value, str) and value.strip():
++                        names.add(value.strip())
++                        names.update(
++                            line.strip() for line in value.splitlines() if len(line.strip()) >= 3
++                        )
++                headings = observed.get("headings")
++                if isinstance(headings, list):
++                    names.update(
++                        item.strip() for item in headings
++                        if isinstance(item, str) and item.strip()
++                    )
++                label = observed.get("reviewLabel")
++                if isinstance(label, str) and 0 < len(label.strip()) <= 4096:
++                    names.add(label.strip())
+         if (node.get("kind") == "operation"
+                 and operation in {"web.download", "file.compress", "file.open", "filesystem.create.directory"}
+                 and node.get("verified") is True and node.get("succeeded") is True
+diff --git a/tests/Baxy.Integration.Tests/C03FactPreservationTests.cs b/tests/Baxy.Integration.Tests/C03FactPreservationTests.cs
+index 545174bb..1fdee04c 100644
+--- a/tests/Baxy.Integration.Tests/C03FactPreservationTests.cs
++++ b/tests/Baxy.Integration.Tests/C03FactPreservationTests.cs
+@@ -128,6 +128,33 @@ public sealed class C03FactPreservationTests
+         Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "Dime algo"), Is.Null);
+     }
+ 
++    // TEXTREAD2063 H0299: the read file's own words are observed data, even a forbidden term.
++    [Test]
++    public void ReadFileTextIsObservedVocabulary()
++    {
++        string facts = new JsonObject
++        {
++            ["kind"] = "operation",
++            ["operation"] = "document.text.read",
++            ["polarity"] = "success",
++            ["verified"] = true,
++            ["succeeded"] = true,
++            ["observed"] = new JsonObject
++            {
++                ["version"] = 1,
++                ["reviewLabel"] = "ROADMAP.md",
++                ["folder"] = "desktop",
++                ["lines"] = 11,
++                ["text"] = "# ROADMAP\n\n## Fase 1: agente local\nEl agente corre en la PC y lee el catalogo.\n",
++                ["authority"] = "windows_known_text_file_utf8_read",
++            },
++        }.ToJsonString();
++        UserMessageDraft draft = UserMessagePolicy.Create(facts, UserMessageEvent.Status);
++        const string reply = "Leí ROADMAP.md, que tiene 11 líneas y empieza así: \"# ROADMAP ## Fase 1: agente local El agente corre en la PC y lee el catalogo.\"";
++        Assert.That(UserMessagePolicy.ModelResponseRejectionReason(
++            reply, draft, "%USERPROFILE%\\Desktop\\raiz_textos\\ROADMAP.md"), Is.Null);
++    }
++
+     // MEME2053 «tienes alguna foto?»: the picture's subject is the declared missing field;
+     // asking what the picture should show is the clarification, not an out-of-world question.
+     [Test]
+diff --git a/tests/test_goal06_voice.py b/tests/test_goal06_voice.py
+index f357d288..62292150 100644
+--- a/tests/test_goal06_voice.py
++++ b/tests/test_goal06_voice.py
+@@ -840,6 +840,21 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
+         "set the wallpaper to red",
+         {"situation": json.dumps(wallpaper)},
+     ) == ""
++    # TEXTREAD2063 H0299: the file's own words are observed data, even a forbidden term.
++    _roadmap = json.dumps({
++        "kind": "operation", "operation": "document.text.read", "polarity": "success",
++        "verified": True, "succeeded": True,
++        "observed": {"version": 1, "reviewLabel": "ROADMAP.md", "folder": "desktop", "bytes": 186,
++                     "lines": 11, "characters": 183, "truncated": False,
++                     "text": "# ROADMAP\n\n## Fase 1: agente local\nEl agente corre en la PC y lee el catalogo.\n",
++                     "authority": "windows_known_text_file_utf8_read"},
++    })
++    assert compose_visible_defect(
++        'Se leyó el archivo nombrado ROADMAP.md, que tiene 11 líneas. Empieza así: "# ROADMAP ## Fase 1: agente local '
++        'El agente corre en la PC y lee el catalogo."',
++        "status", "%USERPROFILE%\\Desktop\\raiz_textos\\ROADMAP.md", {"situation": _roadmap},
++    ) == ""
++
+     # MEME2055 «Tienes algun meme?»: the picture the viewer shows is named by its file.
+     _meme_mission = {"situation": json.dumps({
+         "kind": "status", "cause": "mission_completed", "polarity": "success", "stepCount": 2,
