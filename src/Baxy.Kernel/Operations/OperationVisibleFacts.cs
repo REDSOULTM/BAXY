@@ -26,8 +26,13 @@ public static class OperationVisibleFacts
         bool processInventory = operation == "system.process.list";
         bool ocrObservation = operation == "ocr.read";
         bool captureObservation = operation is "capture.active.window" or "capture.screenshot";
-        int observedLimit = processInventory || ocrObservation ? ProtocolLimits.MaximumOperationResponseMessageChars : MaximumObservedUtf8Bytes;
-        int messageLimit = processInventory || ocrObservation ? ProtocolLimits.MaximumOperationResponseMessageChars : MaximumMessageChars;
+        // SHELL2075 «ejecutá dir en el escritorio»: the console adapter already
+        // bounds what it returns (8 KiB of output and sixty lines), and with the
+        // lines beside the text that bundle crosses 8 KiB, so the observation was
+        // dropped whole and the final could say nothing of what came out.
+        bool consoleOutput = operation == "shell.command.run";
+        int observedLimit = processInventory || ocrObservation || consoleOutput ? ProtocolLimits.MaximumOperationResponseMessageChars : MaximumObservedUtf8Bytes;
+        int messageLimit = processInventory || ocrObservation || consoleOutput ? ProtocolLimits.MaximumOperationResponseMessageChars : MaximumMessageChars;
         var payload = new JsonObject
         {
             ["kind"] = "operation",

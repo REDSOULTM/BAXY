@@ -194,6 +194,50 @@ public sealed class C03OcrObservationProjectionTests
         });
     }
 
+    // SHELL2075 «ejecutá dir en el escritorio»: a bounded console result (8 KiB of
+    // output and sixty lines) crosses 16 KiB of JSON; cutting it left the mind
+    // without «seen» and the final said nothing of what came out.
+    [Test]
+    public void ABoundedShellResultKeepsItsObservationWhole()
+    {
+        var lines = new JsonArray();
+        var text = new System.Text.StringBuilder();
+        for (int line = 0; line < 60; line++)
+        {
+            string row = $"{line:D2}/09/2026  10:43         1.234.567 archivo-de-prueba-{line:D2}-con-un-nombre-deliberadamente-largo-como-los-que-deja-una-carpeta-de-trabajo-real.txt";
+            lines.Add(row);
+            text.Append(row).Append('\n');
+        }
+        var observation = new JsonObject
+        {
+            ["version"] = 1,
+            ["command"] = "dir",
+            ["cwd"] = "D:/Perfil/Escritorio",
+            ["exitCode"] = 0,
+            ["succeeded"] = true,
+            ["stdout"] = text.ToString(),
+            ["stderr"] = string.Empty,
+            ["lineCount"] = lines.Count,
+            ["lines"] = lines,
+            ["truncated"] = false,
+            ["authority"] = "shell_process_exit_and_captured_output",
+        };
+
+        string projected = Project("shell.command.run", observation);
+
+        // Past the 8 KiB observed ceiling the facts used to arrive without «observed» at all.
+        Assert.That(projected.Length, Is.GreaterThan(8_192), "the case only bites past the generic observed ceiling");
+        using JsonDocument document = JsonDocument.Parse(projected);
+        Assert.Multiple(() =>
+        {
+            Assert.That(document.RootElement.TryGetProperty("observed", out JsonElement observed), Is.True);
+            // The generic array cap keeps twenty rows, well above the five the reply quotes.
+            Assert.That(document.RootElement.GetProperty("observed").GetProperty("lines").GetArrayLength(), Is.GreaterThanOrEqualTo(5));
+            Assert.That(document.RootElement.GetProperty("observed").GetProperty("lineCount").GetInt32(), Is.EqualTo(60));
+            Assert.That(document.RootElement.GetProperty("observed").GetProperty("exitCode").GetInt32(), Is.EqualTo(0));
+        });
+    }
+
     private static string Project(string operation, JsonObject observation)
     {
         using JsonDocument document = JsonDocument.Parse(observation.ToJsonString());

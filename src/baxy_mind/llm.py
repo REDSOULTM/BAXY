@@ -6895,7 +6895,14 @@ def _shell_fact_defect(text: str, payload: dict) -> str:
         return "extra_claim"
     if not failed and lines and not any(_reading_fold(line) in folded_text for line in lines[:5]):
         return "missing_state"
-    if not failed and not lines and not re.search(r"\b(?:sin salida|no (?:imprimio|produjo|mostro|devolvio)|nada|no output|nothing|empty|vacia)\b", folded_text):
+    if not failed and not lines and not re.search(
+        # SHELL2075 H0245 «ejecuta ls» with an empty folder: the instruction says
+        # «si no hubo salida, dilo» and «No hubo salida» — the plainest way to say
+        # it — was not among the accepted forms, so three faithful drafts died.
+        r"\b(?:sin salida|ninguna salida|no hubo salida|no (?:imprimio|produjo|mostro|devolvio|escribio)|"
+        r"nada|no output|no lines|nothing|printed nothing|empty|vacia)\b",
+        folded_text,
+    ):
         return "missing_state"
     return ""
 

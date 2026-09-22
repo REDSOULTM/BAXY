@@ -48,8 +48,12 @@ internal sealed record OperationResponseProjection(string Message)
             }
             // The process catalog allows fifty verified rows. Keep its bounded
             // structured facts whole; cutting JSON makes every observation vanish.
+            // SHELL2075 «ejecutá dir en el escritorio»: the console adapter already
+            // bounds its output (8 KiB and sixty lines), and the listing crossed
+            // 16 KiB of JSON, so the cut left the mind without «seen» and the final
+            // said nothing of what came out.
             return new OperationResponseProjection(TruncateMessage(response.Message.Trim(),
-                maximumLength: operationName == "system.process.list"
+                maximumLength: operationName is "system.process.list" or "shell.command.run"
                     ? ProtocolLimits.MaximumOperationResponseMessageChars : MaximumMessageLength));
         }
 

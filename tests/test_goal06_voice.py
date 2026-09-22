@@ -840,6 +840,19 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         "set the wallpaper to red",
         {"situation": json.dumps(wallpaper)},
     ) == ""
+    # SHELL2075 H0245 «ejecuta ls» with no output: «No hubo salida» says there was none.
+    _ran_silent = _compose_situation_payload({
+        "kind": "operation", "operation": "shell.command.run", "polarity": "success",
+        "verified": True, "succeeded": True,
+        "observed": {"version": 1, "command": "ls", "cwd": "C:/perfil/shell-cwd", "exitCode": 0,
+                     "stdout": "", "stderr": "", "lineCount": 0, "lines": [], "truncated": False,
+                     "authority": "shell_process_exit_and_captured_output"},
+    }, "es")
+    assert _payload_fact_defect(
+        "Ejecuté ls en la carpeta actual y salió bien. No hubo salida.", _ran_silent, "ejecuta ls") == ""
+    assert _payload_fact_defect(
+        "Ejecuté ls en la carpeta actual y salió bien.", _ran_silent, "ejecuta ls") == "missing_state"
+
     # EXPLORER2069 H0701: the count names the folder the Explorer had in front.
     _counted = _compose_situation_payload({
         "kind": "operation", "operation": "filesystem.explorer.count", "polarity": "success",
