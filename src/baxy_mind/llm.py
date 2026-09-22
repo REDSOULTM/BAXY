@@ -3577,7 +3577,13 @@ _FAILURE_MARKERS = re.compile(
     # nada» states the failure entire — nothing changed — and died in
     # missing_failure; that nothing changed is affirming it did not happen.
     r"no cambi[oó] nada|no cambi[eé] nada|no se cambi[oó] nada|no hubo cambios?|"
-    r"nothing (?:was )?changed|no change was made)",
+    r"nothing (?:was )?changed|no change was made|"
+    # ctx-dueno-05 (2026-09-22, «en Steam ve a Crash Bandicoot»): «Intenté hacer
+    # clic … pero no hay nada en la pantalla con ese nombre, así que no se
+    # realizó la acción» died in missing_failure after the two drafts that named
+    # the failure differently died in missing_prior_open and reversed_polarity.
+    r"no se realiz[oó]|no se hizo|no se pudo|no se pudieron|no fue posible|no realic[eé]|"
+    r"was not (?:done|performed|carried out)|could not be (?:done|performed))",
     re.IGNORECASE,
 )
 _NEGATED_FAILURE = re.compile(
@@ -4079,6 +4085,29 @@ def _situation_steps(situation: dict) -> list[dict]:
         if isinstance(step, dict):
             decoded.append(step)
     return decoded
+
+
+def _completed_step_operation(situation: dict, operation: str) -> bool:
+    """True when the mission's completed steps (MissionNarration `steps`, each a
+    serialized operation result) include a verified success of `operation`."""
+
+    steps = situation.get("steps") if isinstance(situation, dict) else None
+    if not isinstance(steps, list):
+        return False
+    for step in steps:
+        if isinstance(step, str) and step.lstrip().startswith("{"):
+            try:
+                step = json.loads(step)
+            except json.JSONDecodeError:
+                continue
+        if (
+            isinstance(step, dict)
+            and step.get("operation") == operation
+            and step.get("polarity") == "success"
+            and step.get("succeeded") is True
+        ):
+            return True
+    return False
 
 
 def _situation_error_codes(situation: dict) -> tuple[str, ...]:
@@ -8903,8 +8932,14 @@ def compose_visible_defect(
             folded,
         ):
             return "reversed_polarity"
-        if cause == "mission_failed" and re.search(
-            r"\bopened\b|\babrí\b|\babri\b", folded
+        # ctx-dueno-05 (2026-09-22, «en Steam ve a Crash Bandicoot»): the open
+        # is a completed step of the same mission and missing_prior_open
+        # demands it be said; «Abrí Steam … pero no se realizó el clic» reverses
+        # nothing. Only a mission whose open did not complete keeps the veto.
+        if (
+            cause == "mission_failed"
+            and re.search(r"\bopened\b|\babrí\b|\babri\b", folded)
+            and not _completed_step_operation(situation, "app.open")
         ):
             return "reversed_polarity"
         if cause == "mission_failed" and re.search(

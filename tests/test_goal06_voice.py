@@ -792,6 +792,22 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         "silencia mi microfono",
         {"situation": already_muted},
     ) == ""
+    # ctx-dueno-05: a failure said as «no se realizó la acción» after a completed
+    # first step is a failure said entire.
+    click_failed = (
+        '{"kind":"failure","polarity":"failure","cause":"mission_failed","stepCount":1,'
+        '"steps":["{\\"kind\\":\\"operation\\",\\"operation\\":\\"app.open\\",\\"polarity\\":\\"success\\",'
+        '\\"verified\\":true,\\"succeeded\\":true,\\"observed\\":{\\"appId\\":\\"Steam\\",\\"displayName\\":\\"Steam\\"}}"],'
+        '"reason":"{\\"kind\\":\\"operation\\",\\"operation\\":\\"input.visible.click\\",'
+        '\\"polarity\\":\\"failure\\",\\"verified\\":false,\\"succeeded\\":false,'
+        '\\"error\\":\\"visible_button_not_found\\"}"}'
+    )
+    assert compose_visible_defect(
+        "Abrí Steam e intenté hacer clic en «Crash Bandicoot», pero no hay nada en la pantalla con ese nombre, así que no se realizó la acción.",
+        "error",
+        "en steam ve a crash bandicoot",
+        {"situation": click_failed},
+    ) == ""
     unmuted = (
         '{"kind":"operation","operation":"audio.microphone.mute","polarity":"success","verified":true,'
         '"succeeded":true,"observed":{"version":1,"baselineMuted":true,"muted":false,'

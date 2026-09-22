@@ -1924,7 +1924,8 @@ internal static class UserMessagePolicy
         // same marker in the mind's _FAILURE_MARKERS.
         || Regex.IsMatch(
             normalized,
-            @"\b(?:no\s+cambi[oe]\s+nada|no\s+se\s+cambio\s+nada|no\s+hubo\s+cambios?|nothing\s+(?:was\s+)?changed|no\s+change\s+was\s+made)\b",
+            @"\b(?:no\s+cambi[oe]\s+nada|no\s+se\s+cambio\s+nada|no\s+hubo\s+cambios?|nothing\s+(?:was\s+)?changed|no\s+change\s+was\s+made)\b"
+            + @"|\b(?:no\s+se\s+realizo|no\s+se\s+hizo|no\s+fue\s+posible|no\s+realice|was\s+not\s+(?:done|performed|carried\s+out)|could\s+not\s+be\s+(?:done|performed))\b",
             RegexOptions.CultureInvariant);
     }
 
