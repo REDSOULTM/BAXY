@@ -1104,6 +1104,70 @@ public sealed class PlannerAppBoundaryTests
         });
     }
 
+    // MEME2057 «Tienes algun meme?»: the mission's status reply names the observed file even
+    // though the fallback classifier still reads the ask as out of catalog.
+    [Test]
+    public async Task ImageMissionReplyMayNameTheDownloadedFile()
+    {
+        string download = new JsonObject
+        {
+            ["kind"] = "operation",
+            ["operation"] = "web.download",
+            ["polarity"] = "success",
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = new JsonObject
+            {
+                ["version"] = 1,
+                ["sourceUrl"] = "http://images.example.org/UPLOADED/6413dfac6a8c7.jpeg",
+                ["query"] = "meme",
+                ["folder"] = "pictures",
+                ["name"] = "meme.jpg",
+                ["bytes"] = 166693,
+                ["contentType"] = "image/jpeg",
+                ["authority"] = "downloaded_file_size_postread",
+            },
+        }.ToJsonString();
+        string opened = new JsonObject
+        {
+            ["kind"] = "operation",
+            ["operation"] = "file.open",
+            ["polarity"] = "success",
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = new JsonObject
+            {
+                ["version"] = 1,
+                ["folder"] = "pictures",
+                ["name"] = "meme.jpg",
+                ["windowTitle"] = "meme.jpg",
+                ["authority"] = "shell_open_window_title_postread",
+            },
+        }.ToJsonString();
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            MissionNarration.CreateCompletionMessage([download, opened], "Tienes algun meme?"),
+            UserMessageEvent.Status);
+        var facts = new JsonObject { ["situation"] = draft.Source };
+        const string authored = "Ya tengo el meme, se llama meme.jpg y está abierto en el visor de imágenes.";
+
+        ModelMessageCompositionOutcome outcome =
+            await ModelMessageComposer.ComposeAsync(
+                draft,
+                "Tienes algun meme?",
+                facts,
+                (_, _, _, _, _) => Task.FromResult<MindComposedMessage?>(new MindComposedMessage(authored)),
+                cpuFallback: false,
+                allowRecovery: false,
+                CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(UserMessagePolicy.ConversationFallbackIntent("Tienes algun meme?"), Is.EqualTo("out_of_catalog"));
+            Assert.That(UserMessagePolicy.ConversationReplyRejectionReason("Tienes algun meme?", authored), Is.EqualTo("internal_code"));
+            Assert.That(outcome.Text, Is.EqualTo(authored));
+        });
+    }
+
     [Test]
     public async Task RejectedVisibleMessageRetriesTheSameVerifiedFacts()
     {

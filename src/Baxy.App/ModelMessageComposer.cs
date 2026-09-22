@@ -255,8 +255,18 @@ internal static class ModelMessageComposer
             // without this flag the check read it as a catalog action nobody
             // asked for and the turn exhausted, while the Spanish «¿Qué querés
             // que abra?» passed.
+            // MEME2057 «Tienes algun meme?»: the fallback still reads an image
+            // ask as out of catalog, so a verified mission's status reply crossed
+            // these conversation checks with its raw words and «meme.jpg» — the
+            // observed file the viewer shows — died in internal_code. A status or
+            // error draft is checked on its masked vocabulary, as the response
+            // checks already do; the published text keeps every word.
             && !UserMessagePolicy.IsSafeConversationReply(
-                userText, accepted, priorUserText: priorUserText,
+                userText,
+                draft.Intent is "status" or "error"
+                    ? ObservedResponseLiterals.WithoutObservedNames(accepted, draft.Source)
+                    : accepted,
+                priorUserText: priorUserText,
                 clarification: draft.Intent == "clarification",
                 hasRequiredInput: UserMessagePolicy.HasRequiredInput(draft),
                 missingFields: UserMessagePolicy.DeclaredMissingFields(draft)))
