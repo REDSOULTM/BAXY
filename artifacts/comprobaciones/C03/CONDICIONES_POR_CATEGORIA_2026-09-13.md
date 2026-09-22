@@ -1852,3 +1852,7 @@ Desarrollo y ejecución de comandos pasa de 4/5 a 5/5 con un comando de consola 
 ## Actualización 2026-09-22 (POWER2079)
 
 Energía del sistema pasa de 1/3 a 1/3 con Windows acepta el apagado y el reinicio con el privilegio habilitado (commit 3971e3ca, BUILD2079) (HEAD 3971e3ca): 2/6 aprobados (los dos límites); las cuatro filas de energía fueron rechazadas por Windows y los finales lo dijeron con verdad, 0 créditos. Nada quedó programado en las seis (el fixture confirmó que no había apagado que anular); el equipo siguió encendido. Reparación del adaptador en el commit siguiente y re-medición como POWER2081.
+
+## Actualización 2026-09-22 (POWER2081)
+
+Energía del sistema pasa de 1/3 a 1/3 con Windows acepta el apagado y el reinicio con el privilegio habilitado (commit 7010c24a, BUILD2081) (HEAD 7010c24a): 2/6 aprobados (los dos límites); Windows rechazó la transición por las dos puertas y los finales lo dijeron con verdad, 0 créditos. Nada quedó programado en las seis; condición de esta máquina (Windows niega la transición programática al proceso del producto), no defecto ni lectura. H0401 y H0714 siguen abiertas.
