@@ -193,8 +193,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }).ConfigureAwait(false);
     }
 
+    // Notebook closure 2026-09-22: the line stays (the transcript is never left
+    // empty), but the App does not author BAXY's prose — every sentence BAXY
+    // says comes from the model (scripts/censo_voz_visible.py, zero fixed
+    // visible literals). A failed composition shows a neutral marker with its
+    // diagnostic code instead of a fixed Spanish sentence.
     internal static string CompositionFailureFallback(string failure) =>
-        "No pude armar una respuesta a eso. Decímelo de otra forma. (" + failure + ")";
+        "⚠ (" + failure + ")";
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
