@@ -65,4 +65,6 @@ el final ya lo dice con verdad); Steam abre a veces en la pantalla de inicio de 
 
 ## Añadidos por las tandas del notebook
 
-(la sesión del notebook añade filas aquí)
+| Tanda / caso | Forma del pedido (literal o variante) | Qué hizo BAXY | Qué debía hacer | Fila(s) |
+|---|---|---|---|---|
+| ZIP2041 / dev-01 | «make a folder on the desktop with a txt inside, zip it and open the zip» (variante en inglés de H0542) | «In that I don't see a request for me; do you need something?» (guarda «sin pedido», cero operaciones) | la misión de cuatro tipadas (carpeta, txt, zip, abrir) como en español | H0542 (acreditada por el literal y dos variantes en español) |
