@@ -1,0 +1,222 @@
+commit 7c9ee162ebc221ba8a175f27c316fd8f8324e303
+
+C03 MEME2053 (notebook): la frontera del plan admite la descarga como productor de file.open; la pregunta por el sujeto de la imagen no es de otro mundo
+
+Sobre b1767b54. En MEME2053 la mente propuso web.download (query) y file.open diferida a la descarga para las cuatro
+peticiones y el Kernel las rechazó (plan_unverified): MissionPlanProposal no tenía a web.download como productor de
+file.open. Ahora lo admite con folder y name como campos de autoridad; la App proyecta folder y name del resultado de
+la descarga y aterriza la apertura de forma determinista desde ellos (PlannerExecutionSupport). Y «tienes alguna foto?»
+declaraba query como campo faltante y la pregunta «¿De qué tipo de foto te refieres?» moría en out_of_world_question
+(la regla de CONVERSATION1150, de cuando los memes eran un límite): el compositor pasa ahora el campo declarado y la
+pregunta por el sujeto de la imagen queda fuera de esa regla. Pruebas: MissionPlanValidatorTests
+(AcceptsAFileOpenDeferredToTheDownloadThatWroteIt), PlannerAppBoundaryTests (FileOpenIsGroundedFromTheVerifiedDownload)
+y C03FactPreservationTests (ImageSubjectQuestionIsNotAnOutOfWorldQuestion). Fast en verde; Kernel 13/13; App 264/264.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/ModelMessageComposer.cs b/src/Baxy.App/ModelMessageComposer.cs
+index 04b866ae..e7ab018b 100644
+--- a/src/Baxy.App/ModelMessageComposer.cs
++++ b/src/Baxy.App/ModelMessageComposer.cs
+@@ -228,7 +228,8 @@ internal static class ModelMessageComposer
+                 userText,
+                 modelText,
+                 priorUserText: priorUserText,
+-                hasRequiredInput: UserMessagePolicy.HasRequiredInput(draft)))
++                hasRequiredInput: UserMessagePolicy.HasRequiredInput(draft),
++                missingFields: UserMessagePolicy.DeclaredMissingFields(draft)))
+         ?? "model_response_rejected";
+ 
+     private static string? AcceptPublishedConversation(
+diff --git a/src/Baxy.App/PlannerExecutionSupport.cs b/src/Baxy.App/PlannerExecutionSupport.cs
+index 14c5a786..736fc850 100644
+--- a/src/Baxy.App/PlannerExecutionSupport.cs
++++ b/src/Baxy.App/PlannerExecutionSupport.cs
+@@ -409,6 +409,10 @@ internal static class PlanObservationProjector
+             // the listing's names and measures.
+             ["system.process.list"] = new(StringComparer.Ordinal)
+                 { "cpuUsagePercent", "name", "processes", "sort", "totalProcessorSeconds", "workingSetBytes" },
++            // MEME2053 «Tienes algun meme?»: the open that follows copies the
++            // folder and the name of the file the download wrote.
++            ["web.download"] = new(StringComparer.Ordinal)
++                { "folder", "name" },
+             ["web.search"] = new(StringComparer.Ordinal)
+                 { "url" },
+             ["wifi.profile.list"] = new(StringComparer.Ordinal)
+@@ -575,6 +579,7 @@ internal static class PlanObservationProjector
+                 or "window.minimize" or "window.move" or "window.resize"
+                 or "window.restore" or "window.snap" => ["windowId"],
+             "bluetooth.device.pair" or "peripheral.scan" => ["deviceId"],
++            "file.open" => ["folder", "name"],
+             "filesystem.read.text" => ["resourceId"],
+             "game.install.commit" or "package.install.commit" =>
+                 ["confirmationId"],
+diff --git a/src/Baxy.App/UserMessagePolicy.cs b/src/Baxy.App/UserMessagePolicy.cs
+index a03028e0..50316025 100644
+--- a/src/Baxy.App/UserMessagePolicy.cs
++++ b/src/Baxy.App/UserMessagePolicy.cs
+@@ -594,9 +594,15 @@ internal static class UserMessagePolicy
+             ("unusable_answer",
+                 said.Contains("usar esa respuesta", StringComparison.Ordinal)
+                 || said.Contains("unusable answer", StringComparison.Ordinal)),
++            // MEME2053 «tienes alguna foto?»: an image with no subject is now
++            // downloadable (web.download + file.open); the mind declares the
++            // query as the missing field and asks what the picture should
++            // show. That question names the picture; it is not a question
++            // about something this world cannot do.
+             ("out_of_world_question",
+                 LooksLikeOutOfWorldRequest(user)
+-                && AsksAboutTheOutOfWorldRequest(user, reply)),
++                && AsksAboutTheOutOfWorldRequest(user, reply)
++                && !AsksForDeclaredImageSubject(user, said, missingFields)),
+             ("restates_definition_ask", LooksLikeRestatingDefinitionAsk(said)),
+             ("definition_as_action", RestatesDefinitionAsAction(userText, reply)),
+             ("broken_modal_gerund", HasBrokenModalGerund(reply)),
+@@ -1037,6 +1043,24 @@ internal static class UserMessagePolicy
+     // A noun in an explanation is not a request for a parameter. C03's
+     // encryption answer mentioned a recipient and was needlessly rewritten.
+     // Preserve the slot guard only for an actual question or direct request.
++    private static bool AsksForDeclaredImageSubject(string user, string folded, IReadOnlyList<string>? missingFields) =>
++        missingFields is not null
++        && missingFields.Contains("query")
++        && AsksForVisualContent(user)
++        && (folded.Contains('?', StringComparison.Ordinal) || folded.Contains('¿', StringComparison.Ordinal));
++
++    /// <summary>
++    /// The field a clarification draft declares as missing, for the reply
++    /// checks that read the declared field («folder», «text», «query»).
++    /// </summary>
++    internal static IReadOnlyList<string>? DeclaredMissingFields(UserMessageDraft draft) =>
++        HasRequiredInput(draft)
++        && TryReadJson(draft.Source, out JsonElement root)
++        && root.TryGetProperty("missingValue", out JsonElement missing)
++        && missing.GetString() is { Length: > 0 } value
++            ? [value]
++            : null;
++
+     private static bool AsksForDeclaredFolder(string folded, IReadOnlyList<string>? missingFields) =>
+         missingFields is not null
+         && missingFields.Contains("folder")
+diff --git a/src/Baxy.Kernel/Planning/MissionPlanProposal.cs b/src/Baxy.Kernel/Planning/MissionPlanProposal.cs
+index a2cabc5c..5330a97e 100644
+--- a/src/Baxy.Kernel/Planning/MissionPlanProposal.cs
++++ b/src/Baxy.Kernel/Planning/MissionPlanProposal.cs
+@@ -191,6 +191,10 @@ public static class MissionPlanValidator
+             // memoria usan»: the file's text is projected from the verified
+             // process listing, so the write may defer its arguments to it.
+             "filesystem.write.text" => ["system.process.list"],
++            // MEME2053 «Tienes algun meme?»: the picture the image search
++            // downloads is the file the viewer opens; its name exists only in
++            // the verified download, so the open defers its arguments to it.
++            "file.open" => ["web.download"],
+             _ => [],
+         };
+     }
+@@ -217,6 +221,7 @@ public static class MissionPlanValidator
+             "ocr.read" or "vision.describe" => ["captureId"],
+             "office.document.read" => ["documentId"],
+             "wifi.connect" => ["profileId"],
++            "file.open" => ["folder", "name"],
+             _ => [],
+         };
+ 
+diff --git a/tests/Baxy.Integration.Tests/C03FactPreservationTests.cs b/tests/Baxy.Integration.Tests/C03FactPreservationTests.cs
+index 6fea14f5..f6340c91 100644
+--- a/tests/Baxy.Integration.Tests/C03FactPreservationTests.cs
++++ b/tests/Baxy.Integration.Tests/C03FactPreservationTests.cs
+@@ -128,6 +128,31 @@ public sealed class C03FactPreservationTests
+         Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "Dime algo"), Is.Null);
+     }
+ 
++    // MEME2053 «tienes alguna foto?»: the picture's subject is the declared missing field;
++    // asking what the picture should show is the clarification, not an out-of-world question.
++    [Test]
++    public void ImageSubjectQuestionIsNotAnOutOfWorldQuestion()
++    {
++        string facts = new JsonObject
++        {
++            ["kind"] = "clarification",
++            ["polarity"] = "pending",
++            ["cause"] = "ambiguous_request",
++            ["missingValue"] = "query",
++        }.ToJsonString();
++        UserMessageDraft draft = UserMessagePolicy.Create(facts, UserMessageEvent.Clarification);
++        IReadOnlyList<string>? missing = UserMessagePolicy.DeclaredMissingFields(draft);
++        const string reply = "¿De qué tipo de foto te refieres?";
++        Assert.Multiple(() =>
++        {
++            Assert.That(missing, Is.EqualTo(new[] { "query" }));
++            Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(
++                "tienes alguna foto?", reply, hasRequiredInput: true, missingFields: missing), Is.Null);
++            Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(
++                "tienes alguna foto?", reply, hasRequiredInput: true), Is.EqualTo("out_of_world_question"));
++        });
++    }
++
+     // PPTX2051: «the opening is not confirmed» states the failure in English.
+     [Test]
+     public void OpeningNotConfirmedIsAFailureStatement()
+diff --git a/tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs b/tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs
+index b33f99cf..3ef86d95 100644
+--- a/tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs
++++ b/tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs
+@@ -74,6 +74,33 @@ public sealed class PlannerAppBoundaryTests
+         }
+     }
+ 
++    // MEME2053 «Tienes algun meme?»: the open is grounded from the verified download's folder and name.
++    [Test]
++    public void FileOpenIsGroundedFromTheVerifiedDownload()
++    {
++        var step = new MindPlanStep("open", "file.open", "Abre la imagen descargada.",
++            ["download"], "after_dependencies", null);
++        var observations = new JsonArray(PlanObservationProjector.Create(
++            "download",
++            "web.download",
++            new OperationResponse(
++                "operation.response", "req_download", "mission_meme", "inv_download", OperationStatuses.Completed,
++                "downloaded", true, false,
++                JsonDocument.Parse("""
++                    {"version":1,"sourceUrl":"https://example.org/i/meme.jpg","query":"meme","folder":"pictures","name":"meme.jpg","bytes":12345,"contentType":"image/jpeg","authority":"downloaded_file_size_postread"}
++                    """).RootElement,
++                null)));
++        Assert.That(PlanObservationProjector.TryGroundIdentityArguments(step, observations, out JsonObject? arguments), Is.True);
++        Assert.Multiple(() =>
++        {
++            Assert.That((string?)arguments!["folder"], Is.EqualTo("pictures"));
++            Assert.That((string?)arguments["name"], Is.EqualTo("meme.jpg"));
++            Assert.That(arguments.ContainsKey("sourceUrl"), Is.False);
++            Assert.That(PlanObservationProjector.ArgumentsUseVerifiedDependencyAuthority("file.open", arguments, observations), Is.True);
++            Assert.That(MindPlanBoundary.ArgumentsSatisfyExactSchema("file.open", arguments), Is.True);
++        });
++    }
++
+     [TestCase("filesystem.search")]
+     [TestCase("filesystem.list")]
+     public void FileReadPlanRetainsItsVerifiedProducerAcrossTheAppBoundary(string producer)
+diff --git a/tests/Baxy.Kernel.Tests/MissionPlanValidatorTests.cs b/tests/Baxy.Kernel.Tests/MissionPlanValidatorTests.cs
+index a6bb93f4..ec0b34dd 100644
+--- a/tests/Baxy.Kernel.Tests/MissionPlanValidatorTests.cs
++++ b/tests/Baxy.Kernel.Tests/MissionPlanValidatorTests.cs
+@@ -32,6 +32,20 @@ public sealed class MissionPlanValidatorTests
+         Assert.That(() => MissionPlanValidator.Validate(plan), Throws.Nothing);
+     }
+ 
++    // MEME2053 «Tienes algun meme?»: the open defers its arguments to the verified download.
++    [Test]
++    public void AcceptsAFileOpenDeferredToTheDownloadThatWroteIt()
++    {
++        MissionPlanProposal plan = Plan(
++            Step("download", "web.download", "Descarga la primera imagen que lista el buscador.", [], "literal", Json("""
++                {"query":"meme","folder":"pictures"}
++                """)),
++            Step("open", "file.open", "Abre la imagen descargada.", ["download"], "after_dependencies", null));
++
++        Assert.That(() => MissionPlanValidator.Validate(plan), Throws.Nothing);
++        Assert.That(MissionPlanValidator.DependencyAuthorityFields("file.open"), Is.EqualTo(new[] { "folder", "name" }));
++    }
++
+     [Test]
+     public void RejectsPrivateAndInternalOperations()
+     {

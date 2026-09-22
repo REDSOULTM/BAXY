@@ -1,0 +1,15 @@
+{
+  "schema": "c03-meme2055-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "opus/typed-tools (catalog, Core list, Providers adapter web.download{query} over the Bing image search, file.open, mind reading, composer; merged in 8edf110ac).",
+  "patch": "artifacts/comprobaciones/C03/MEME2055/SOURCE.patch",
+  "commits": [
+    "7c9ee162ebc221ba8a175f27c316fd8f8324e303"
+  ],
+  "build": "BUILD2055 (C03-repairs2055-build/BUILD_READY.json; mente)",
+  "cause_measured": "«Tienes algun meme?» se acreditó como conversación: no buscaba ni mostraba ninguna imagen.",
+  "change": "web.download{query} baja la primera imagen del buscador de imágenes a Imágenes y file.open la abre con el visor; el final la nombra.",
+  "measurement": "MEME2055: 1/6 aprobados (el límite de prohibición); las cuatro peticiones descargaron y abrieron la imagen (verificado) pero el final no nombra el archivo; «tienes alguna foto?» rechazada en la ruta de aceptación de la App; 0 créditos. Cuatro misiones web.download + file.open verificadas (ventana del visor), imágenes recicladas por el fixture; ningún final nombra el archivo. Reparación en el commit siguiente y re-medición como MEME2057.",
+  "credits": 0
+}

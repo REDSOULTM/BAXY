@@ -1,0 +1,429 @@
+{
+  "schema": "meme2055-root-adjudication-v2",
+  "decided_at_utc": "2026-09-22T09:33:20.285268+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "7c9ee162ebc221ba8a175f27c316fd8f8324e303",
+  "decisions_sha256": "ff461d7c7bfc7fd42f866bfb1a7e7f64a1e235efe1f4d38b3629305d60c91aa6",
+  "registry_before_sha256": "9d99ebb8e53490d19b52e1ec37226754df64eec09e343e90057c657acc7e774c",
+  "registry_before_counts": {
+    "covered": 675,
+    "open": 67,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "56d3f5f5724ef79b9cf48e95ebd0d759075bc3b9bd5c922f7010060f877fc054",
+  "preparation_sha256": "1cd01032814629a9f59d33b29c6f29e97f6e8a90842f4f9c9885e2b126dd6383",
+  "passed": 1,
+  "failed": 5,
+  "unexecuted": 0,
+  "executed": 6,
+  "segments_started": 6,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [],
+  "counters": {
+    "covered": 675,
+    "open": 67,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 651,
+    "categories_total": 35,
+    "categories_closed_after": 29,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 651 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MEME2055 añade 0. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 651
+  },
+  "resources": {
+    "seconds_sum": 102.4369999999908,
+    "gpu_peak_mib": 3594.5703125,
+    "ram_peak_mib": 2027.6484375
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0069",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no descargó ni abrió una imagen, preguntó, o el final no la nombró.",
+      "observation_note": "Turno ordinario: la imagen se descargó y se abrió con el visor (verificado); el final dice que está abierta pero no nombra el archivo; pins intactos. Reparación en el commit siguiente.",
+      "final_sha256": "842814625c4ac1c726bde5448fdadbbc6a01efa33ac5104935d00cabcfa62675",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-00\\EXIT.json": "aedb0fca8d3ef68203dcaecb9c8bbb3932b99186ee404057835cf9d62ac09d9c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-00\\RESOURCES.json": "cc94131db7aed2e6786fbe97e7c003d94fdb6bd31659d95fa4777140f9a57eb0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\profile-owner-00.json": "403b538ef49d28a9dbb9d23249117c669b1b57721b061195ab99c7ba3149b6c7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-00\\PREREG.json": "cc5abedc4872bef4cca53077766d6fb3afc4c73264e26248d72a472146b31dff",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-00\\capture\\events.jsonl": "d602ba5fd27367a8f73c8d45aca2c0355142bd82cadd1cba16f40ac682ca5097",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-00\\turns.jsonl": "9139edfdb891af3570dca15ec82334a5c94f25ffd3b67b909840a64195d5e80b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\fixture-00.json": "355653e8d1c68e4fb46cc2c1e378975084525ef422420d9596d869c5d3e98d5a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\context-00.json": "fb227c4d806e96f700ef99137f9f1bc9468308ba985c4c8e0fd6582dd595d4e5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\context-prelaunch-00.json": "c21218c3f50e379c7ab05fe8c59f623fd15edf9dcca9247f2aa4f23086f31547",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-00\\case-observations.json": "ee709281616a4a8d8ea89162a0e607a675020918d10bea9b81cbf17ce3bcb9c5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-00\\journal-before.json": "5359e727ebd3feaf15ddd3f927de5e318ac411582610d98b1031b3e7e708876f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-00\\journal-after.json": "19972cc8b316517c6f2fa5225ba9d2f377b90ac36ca71cb1dc6883623c0ecd9b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "c1ee850d27c363d4b66b1cc3151540c21ec74871ce4eee31c47829695f247fe3"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "358688a0-5b49-4a90-962d-24253214b636",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "e963ff4a-abca-4701-92b6-4cc34040b750",
+          "operation": "web.download",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "e5843ae1-0e50-48fb-9254-2fb74a976bc4",
+          "operation": "file.open",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "meme2055-dev-01",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no descargó ni abrió una imagen, preguntó, o el final no la nombró.",
+      "observation_note": "Turno ordinario: la imagen se descargó y se abrió con el visor (verificado); el final no nombra el archivo; pins intactos.",
+      "final_sha256": "abfdf3b636a99db83b75e9b281b20ac11ba5d1354c433f373217f451e5d4b235",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-01\\EXIT.json": "9d4208e61558d187898696dc446afc0110baa823fae2db2cfffdac7a7e4a0f43",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-01\\RESOURCES.json": "c68b5ec663819e083657547bb4fbc9fee904a1ef4daeaacce45fc331319dbe3d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\profile-owner-01.json": "ed853f8f884658d5be33704e7f11c2464f7573dbf42509e4318ee7bea6c81002",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-01\\PREREG.json": "36416b019c456a30ca2511c40ba16467e8ce72a9b6666308e70227c0ee4c7a69",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-01\\capture\\events.jsonl": "0cbd705399a3d24e3d3ac0ab848827ec983977d4a9ed7897cf17af9e57a12b2e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-01\\turns.jsonl": "86f292174a0331c16ae9c7db2cba30cd24033bd3fb581f0c7938539ae946dcf2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\fixture-01.json": "09e7546ec8b4de3d8ae5b84875889ea44f98881dd3c0df69ec8cd3736ce7a49f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\context-01.json": "b1ffe0b43f69a5df19b0d29d13915154eee55c2d32d394953025693ba3a046f4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\context-prelaunch-01.json": "c29b260502a6ef00a619f3367e4d18c5d320efa09dc1149ee05c31c9d0166cfb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-01\\case-observations.json": "b25db7af3520af896ebc17f7c2b797e776b690849922e38e7252529e4eab4be5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-01\\journal-before.json": "f4190e090d79b71ee4e10b5a3d30aa3ced632bc620268ad00a1d7fffede33f41",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-01\\journal-after.json": "e68d777413c89263603b0d705d60d722b923ced832cda64211eb3a491bb2a854",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "d23289b650d7ad23f60ba034933f4ed6e2a2d2f1439048e49d69e8ab1e490978"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "f4200e17-cbb7-42f2-a34c-8c17066c6fed",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "1c8fcd6f-fdf4-4000-8edf-fa3fbc5a813e",
+          "operation": "web.download",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "399a7086-ba40-48af-a9a1-4738eed865a0",
+          "operation": "file.open",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "meme2055-dev-02",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no descargó ni abrió una imagen, preguntó, o el final no la nombró.",
+      "observation_note": "Turno ordinario: la imagen se descargó y se abrió con el visor (verificado); el final no nombra el archivo; pins intactos.",
+      "final_sha256": "ed09c465f278e281980e0bf362c66f899357f589a38d998324fc3d55c7a7b5f8",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-02\\EXIT.json": "7544582590cbe20da16656556d91cf473f0e4d7e11790b266b153172f6888820",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-02\\RESOURCES.json": "65b8bf499a7476c60918a2555473602837dd4db57cd9d8a640a87bbf79a08462",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\profile-owner-02.json": "ca64757e49463abbe4c84a30e5a4465af01990fdbc3e64d86cec5807187a1577",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-02\\PREREG.json": "456e3b75b09dcb38f51c2a2c67d25a1ebe2e5f351b6e1aa34b68a6d362c511fe",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-02\\capture\\events.jsonl": "017c553306bc1d0e939bb19d8b926e23f8d5b4e466b5cafe1de3d015e08bccd4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-02\\turns.jsonl": "6e69a6cc2cc30262434060091dbd26d91497fd773019637247bfb96096895fcb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\fixture-02.json": "fa34855399f03643ab67797c2c01c4ef60a7e39a1a272da09821e524e485479d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\context-02.json": "1b368301f60e1d1504969af6d5f57490bea6ed766ec39a525f06ef71c8dbeae4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\context-prelaunch-02.json": "88f21a90561f2df958a85d9963f50e7e8c1b8db7030c0c577731b330d9fa9237",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-02\\case-observations.json": "450ec5ab14b174c9c1e782fff3d62a9c0e57fe26563eb94802190d39a8612ca5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-02\\journal-before.json": "8183b002f0ac57ac04bf0dc6855e27e982340a89b00c1ca27173334217f87e03",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-02\\journal-after.json": "fe2b7f5a09c3b5b400dfc4b561b141318e63386a2e30339a0e37e14ecf2a141c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "9d58dcc0ce491cda235c8208cf604ad7817877e143c603e778df0f486e39deba"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "4f650ce0-2499-4aa2-8328-c722f0cc2987",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "f5f34258-0efa-47d4-bc54-1b8d1fcb3331",
+          "operation": "web.download",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "3bd23d93-64be-443d-b793-0a6963d84d18",
+          "operation": "file.open",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "meme2055-dev-03",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: no descargó ni abrió una imagen, preguntó, o el final no la nombró.",
+      "observation_note": "Turno ordinario: la imagen se descargó y se abrió con el visor (verificado); el final no nombra el archivo; pins intactos.",
+      "final_sha256": "fa03c6d4db5d69cb755b128afdc7921860c9e334b4df976e174d275132346887",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-03\\EXIT.json": "a615a669d92c37d529cd7124fa7a3c26be47689f52185cd77cea9fc33b870f78",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-03\\RESOURCES.json": "508a39d8f54fdbbaa9c57b06f5952cb1776eb90ba58ec632d83a5c980e90e594",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\profile-owner-03.json": "9c381a044470f121ecb97e7b800a6051060a0ad0dc342aac247997febd270a74",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-03\\PREREG.json": "8ef6ec3877d625eb2aeb32a3a7e9a84bb9edfec3c16d6462a0417c4b4dd2af71",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-03\\capture\\events.jsonl": "742bcd70ab98f194ad702334bd275fd7ba6f1ae95d2b69d2caea27d1edc79f8c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-03\\turns.jsonl": "9dfa8f374f3acaef6b2c2fe3c77547174f7ad5264e1a51e0b578e5f2fde35268",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\fixture-03.json": "684ef2b70448abd1ede081fa261dc15090d28a065ac37758a249dfede22a9241",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\context-03.json": "c5a27636b6c868079da615bf8199234e179e1aed8c9dc1b6db15faea555a5f68",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\context-prelaunch-03.json": "4986f302395857ac841615793b1fc264f33be3267d87829a7338628b781bfdb6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-03\\case-observations.json": "f02a9f1d6dbf87c4f2c1e5d667e5252b67b4584a1ac532b3e5078f11d1c8ece2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-03\\journal-before.json": "869d8eee90efe1df733286e273a7ee6e8c116f6daa1eef5a71467bb27676e47e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-03\\journal-after.json": "df842348981d85d398c1da04908cd9fbddf9d5c030db1d0575056f1d03e2adf3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "aa28bbb36a15b47ce762f9978ceaa824791c7e1b9d7e41289e01dea693e68738"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "324c18db-a0a5-4695-9706-32946f8b2b9c",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "37c7d6a4-c2f2-4d0f-8657-73a71242934e",
+          "operation": "web.download",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "092a3956-a8e4-4cb5-ae69-138eababe0fc",
+          "operation": "file.open",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "meme2055-boundary-01",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite fallido: cero operaciones, pero la respuesta no fue fiel o útil.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "ed88e6ca88426dddc35392c60ff319b81d5199e33d1e032bf2c52c83d4829e39",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-04\\EXIT.json": "1641e86828c8ab2c364501a9e02106ce493f0b86c3fc0d1d97cee157f8600b31",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-04\\RESOURCES.json": "3c6a37ffb9bcb637203b7d5de9e9d9f09209b97bed05ce368be52cbbc3d4912e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\profile-owner-04.json": "0200a3c884a0f13e2217fbbff3dd2d02baa6897bc9d6cfa4518e6ca9c26c40f4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-04\\PREREG.json": "58f28e5c9e6716feaed1e7ad20049ac09b832be79b3a427f6192a57a43740a8d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-04\\capture\\events.jsonl": "4ea855dfde04cdedea291aaf27200ff6c36e4913a261ef85f8cda931d9c76acf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-04\\turns.jsonl": "59bae0481c4555132c559604306306e039cd4ee3c9024d8ec2bf7ab707063ae7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\fixture-04.json": "427bfe7b553951e639f503a11fa600873b890728d4c4c7f2d3968f950fd2758c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\context-04.json": "9677a205f73a5c11278411c783d0639c9dd8043d10115c5cb60347e2c214ade8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\context-prelaunch-04.json": "d19f9634a8f7296bbf0f5fe4b97e141896028e64c47efc389adec92e47a70c20",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-04\\case-observations.json": "bfc8af57d3f6d53087bebf73908271622ee361c71f8e0002552c7e97d507751c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-04\\journal-before.json": "1ef1bd6fe1a9e3a21eb6949291e80b2a3b54b8883a95c06b0a080e774a53fdf5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-04\\journal-after.json": "1a7cb16a714f1bea6c72d11d481638d78b8abeb59cf9b5f8516df4c2def3390a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "266eb4384296f5394b2a95b1d0e2c7623af5f14b014fc630fd5ba20f2a3ad78d"
+      },
+      "terminal_kind": "composition_failed",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "7ea98229-3ab5-4e95-89fc-ada1baffab8a",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "meme2055-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "6946554362e45c76def3ac0c59741d21bcdc200be5fb40c0db2ff1b09d9929f7",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-05\\EXIT.json": "8fe39f123f107490d9dbc7067e982c6a17f262f101f26ea97f78fc5e2f55046a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-05\\RESOURCES.json": "04c37f67d60339b68e2698f4303388f4371e2f54c8e3ac01de17fb861017bb43",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\profile-owner-05.json": "040cfcc84517569e6847bdd6da675a1cd4f7542e5564f92c9fb037274f149230",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\results\\case-05\\PREREG.json": "48792c5f35599878e878db0d8fd45cda45ff672f8e6e41e5842dfd1a264623c9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-05\\capture\\events.jsonl": "19b23d07d708c21ba0446b346136ae750f7408f77272a49bb8648bd4c0ec4335",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-05\\turns.jsonl": "96843e9bb1698b1a7bd56b5693d5b3714c4178b3bd13145b789424a1b8f956e5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\fixture-05.json": "b80a3c0945539c32649e3ae221293d7660fb239e3be972342336a54d0630dbe4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\context-05.json": "a43cab849dd90d23f7dd99904772ef9e4ff7846148ad88eb5b3396648aa6a8c1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\context-prelaunch-05.json": "791354e8418195ace58f428c5b6b3eb561f36339f87342f79263b6de103a24b7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-05\\case-observations.json": "ac728d3af080dacb07d42f6e649e1de8d09364feaac84bd98de6dc1ca37121b3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-05\\journal-before.json": "7702a40c3996ec946593a25623bb1b544475746ad77dc118b5e987f623ac0d9f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-05\\journal-after.json": "11a1bf06b197706bde8f989805f59a1dec7133bd53d906955b2c018e8ee50e1f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-meme2055-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "7c763f413838e5c0fea8c7a1ea8db612bed3903b544bec86f3230e98e84ac555"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "6176a9e1-7f5f-43fa-a071-11e50bcd5fd7",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "MEME2055: 6 ejecutados, 1 aprobados, 5 fallidos, 0 créditos (índices []). Siguiente: la presentación (H0188) y las tipadas revisadas (winget, Steam).",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

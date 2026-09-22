@@ -1,3 +1,25 @@
+## MEME2055 — estado vigente 2026-09-22T09:33:20.285268+00:00
+
+Parcial: 1 aprobados, 5 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 675/742 | 67 | 0 | >=651 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 651 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MEME2055 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: MEME2055: 6 ejecutados, 1 aprobados, 5 fallidos, 0 créditos (índices []). Siguiente: la presentación (H0188) y las tipadas revisadas (winget, Steam).
+
+Evidencia: `artifacts/comprobaciones/C03/MEME2055/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 102.44 s acumulados; pico GPU 3594.57 MiB; pico RAM 2027.65 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MEME2055 precedente. -->
+
 ## MEME2053 — estado vigente 2026-09-22T08:57:07.367058+00:00
 
 Parcial: 1 aprobados, 5 fallidos, 0 sin ejecutar; 0 créditos.
