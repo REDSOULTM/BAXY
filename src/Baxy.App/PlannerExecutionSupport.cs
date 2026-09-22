@@ -409,6 +409,10 @@ internal static class PlanObservationProjector
             // the listing's names and measures.
             ["system.process.list"] = new(StringComparer.Ordinal)
                 { "cpuUsagePercent", "name", "processes", "sort", "totalProcessorSeconds", "workingSetBytes" },
+            // MEME2053 «Tienes algun meme?»: the open that follows copies the
+            // folder and the name of the file the download wrote.
+            ["web.download"] = new(StringComparer.Ordinal)
+                { "folder", "name" },
             ["web.search"] = new(StringComparer.Ordinal)
                 { "url" },
             ["wifi.profile.list"] = new(StringComparer.Ordinal)
@@ -575,6 +579,7 @@ internal static class PlanObservationProjector
                 or "window.minimize" or "window.move" or "window.resize"
                 or "window.restore" or "window.snap" => ["windowId"],
             "bluetooth.device.pair" or "peripheral.scan" => ["deviceId"],
+            "file.open" => ["folder", "name"],
             "filesystem.read.text" => ["resourceId"],
             "game.install.commit" or "package.install.commit" =>
                 ["confirmationId"],

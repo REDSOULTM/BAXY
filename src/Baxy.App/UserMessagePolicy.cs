@@ -594,9 +594,15 @@ internal static class UserMessagePolicy
             ("unusable_answer",
                 said.Contains("usar esa respuesta", StringComparison.Ordinal)
                 || said.Contains("unusable answer", StringComparison.Ordinal)),
+            // MEME2053 «tienes alguna foto?»: an image with no subject is now
+            // downloadable (web.download + file.open); the mind declares the
+            // query as the missing field and asks what the picture should
+            // show. That question names the picture; it is not a question
+            // about something this world cannot do.
             ("out_of_world_question",
                 LooksLikeOutOfWorldRequest(user)
-                && AsksAboutTheOutOfWorldRequest(user, reply)),
+                && AsksAboutTheOutOfWorldRequest(user, reply)
+                && !AsksForDeclaredImageSubject(user, said, missingFields)),
             ("restates_definition_ask", LooksLikeRestatingDefinitionAsk(said)),
             ("definition_as_action", RestatesDefinitionAsAction(userText, reply)),
             ("broken_modal_gerund", HasBrokenModalGerund(reply)),
@@ -1037,6 +1043,24 @@ internal static class UserMessagePolicy
     // A noun in an explanation is not a request for a parameter. C03's
     // encryption answer mentioned a recipient and was needlessly rewritten.
     // Preserve the slot guard only for an actual question or direct request.
+    private static bool AsksForDeclaredImageSubject(string user, string folded, IReadOnlyList<string>? missingFields) =>
+        missingFields is not null
+        && missingFields.Contains("query")
+        && AsksForVisualContent(user)
+        && (folded.Contains('?', StringComparison.Ordinal) || folded.Contains('¿', StringComparison.Ordinal));
+
+    /// <summary>
+    /// The field a clarification draft declares as missing, for the reply
+    /// checks that read the declared field («folder», «text», «query»).
+    /// </summary>
+    internal static IReadOnlyList<string>? DeclaredMissingFields(UserMessageDraft draft) =>
+        HasRequiredInput(draft)
+        && TryReadJson(draft.Source, out JsonElement root)
+        && root.TryGetProperty("missingValue", out JsonElement missing)
+        && missing.GetString() is { Length: > 0 } value
+            ? [value]
+            : null;
+
     private static bool AsksForDeclaredFolder(string folded, IReadOnlyList<string>? missingFields) =>
         missingFields is not null
         && missingFields.Contains("folder")

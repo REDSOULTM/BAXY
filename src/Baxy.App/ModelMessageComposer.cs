@@ -228,7 +228,8 @@ internal static class ModelMessageComposer
                 userText,
                 modelText,
                 priorUserText: priorUserText,
-                hasRequiredInput: UserMessagePolicy.HasRequiredInput(draft)))
+                hasRequiredInput: UserMessagePolicy.HasRequiredInput(draft),
+                missingFields: UserMessagePolicy.DeclaredMissingFields(draft)))
         ?? "model_response_rejected";
 
     private static string? AcceptPublishedConversation(

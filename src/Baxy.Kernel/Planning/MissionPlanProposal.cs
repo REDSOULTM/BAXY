@@ -191,6 +191,10 @@ public static class MissionPlanValidator
             // memoria usan»: the file's text is projected from the verified
             // process listing, so the write may defer its arguments to it.
             "filesystem.write.text" => ["system.process.list"],
+            // MEME2053 «Tienes algun meme?»: the picture the image search
+            // downloads is the file the viewer opens; its name exists only in
+            // the verified download, so the open defers its arguments to it.
+            "file.open" => ["web.download"],
             _ => [],
         };
     }
@@ -217,6 +221,7 @@ public static class MissionPlanValidator
             "ocr.read" or "vision.describe" => ["captureId"],
             "office.document.read" => ["documentId"],
             "wifi.connect" => ["profileId"],
+            "file.open" => ["folder", "name"],
             _ => [],
         };
 

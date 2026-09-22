@@ -74,6 +74,33 @@ public sealed class PlannerAppBoundaryTests
         }
     }
 
+    // MEME2053 «Tienes algun meme?»: the open is grounded from the verified download's folder and name.
+    [Test]
+    public void FileOpenIsGroundedFromTheVerifiedDownload()
+    {
+        var step = new MindPlanStep("open", "file.open", "Abre la imagen descargada.",
+            ["download"], "after_dependencies", null);
+        var observations = new JsonArray(PlanObservationProjector.Create(
+            "download",
+            "web.download",
+            new OperationResponse(
+                "operation.response", "req_download", "mission_meme", "inv_download", OperationStatuses.Completed,
+                "downloaded", true, false,
+                JsonDocument.Parse("""
+                    {"version":1,"sourceUrl":"https://example.org/i/meme.jpg","query":"meme","folder":"pictures","name":"meme.jpg","bytes":12345,"contentType":"image/jpeg","authority":"downloaded_file_size_postread"}
+                    """).RootElement,
+                null)));
+        Assert.That(PlanObservationProjector.TryGroundIdentityArguments(step, observations, out JsonObject? arguments), Is.True);
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)arguments!["folder"], Is.EqualTo("pictures"));
+            Assert.That((string?)arguments["name"], Is.EqualTo("meme.jpg"));
+            Assert.That(arguments.ContainsKey("sourceUrl"), Is.False);
+            Assert.That(PlanObservationProjector.ArgumentsUseVerifiedDependencyAuthority("file.open", arguments, observations), Is.True);
+            Assert.That(MindPlanBoundary.ArgumentsSatisfyExactSchema("file.open", arguments), Is.True);
+        });
+    }
+
     [TestCase("filesystem.search")]
     [TestCase("filesystem.list")]
     public void FileReadPlanRetainsItsVerifiedProducerAcrossTheAppBoundary(string producer)

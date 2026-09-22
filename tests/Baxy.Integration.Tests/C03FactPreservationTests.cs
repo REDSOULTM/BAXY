@@ -128,6 +128,31 @@ public sealed class C03FactPreservationTests
         Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "Dime algo"), Is.Null);
     }
 
+    // MEME2053 «tienes alguna foto?»: the picture's subject is the declared missing field;
+    // asking what the picture should show is the clarification, not an out-of-world question.
+    [Test]
+    public void ImageSubjectQuestionIsNotAnOutOfWorldQuestion()
+    {
+        string facts = new JsonObject
+        {
+            ["kind"] = "clarification",
+            ["polarity"] = "pending",
+            ["cause"] = "ambiguous_request",
+            ["missingValue"] = "query",
+        }.ToJsonString();
+        UserMessageDraft draft = UserMessagePolicy.Create(facts, UserMessageEvent.Clarification);
+        IReadOnlyList<string>? missing = UserMessagePolicy.DeclaredMissingFields(draft);
+        const string reply = "¿De qué tipo de foto te refieres?";
+        Assert.Multiple(() =>
+        {
+            Assert.That(missing, Is.EqualTo(new[] { "query" }));
+            Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(
+                "tienes alguna foto?", reply, hasRequiredInput: true, missingFields: missing), Is.Null);
+            Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(
+                "tienes alguna foto?", reply, hasRequiredInput: true), Is.EqualTo("out_of_world_question"));
+        });
+    }
+
     // PPTX2051: «the opening is not confirmed» states the failure in English.
     [Test]
     public void OpeningNotConfirmedIsAFailureStatement()

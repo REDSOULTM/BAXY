@@ -32,6 +32,20 @@ public sealed class MissionPlanValidatorTests
         Assert.That(() => MissionPlanValidator.Validate(plan), Throws.Nothing);
     }
 
+    // MEME2053 «Tienes algun meme?»: the open defers its arguments to the verified download.
+    [Test]
+    public void AcceptsAFileOpenDeferredToTheDownloadThatWroteIt()
+    {
+        MissionPlanProposal plan = Plan(
+            Step("download", "web.download", "Descarga la primera imagen que lista el buscador.", [], "literal", Json("""
+                {"query":"meme","folder":"pictures"}
+                """)),
+            Step("open", "file.open", "Abre la imagen descargada.", ["download"], "after_dependencies", null));
+
+        Assert.That(() => MissionPlanValidator.Validate(plan), Throws.Nothing);
+        Assert.That(MissionPlanValidator.DependencyAuthorityFields("file.open"), Is.EqualTo(new[] { "folder", "name" }));
+    }
+
     [Test]
     public void RejectsPrivateAndInternalOperations()
     {
