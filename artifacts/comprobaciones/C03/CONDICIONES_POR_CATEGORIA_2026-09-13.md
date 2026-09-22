@@ -1832,3 +1832,7 @@ Archivos y carpetas pasa de 31/32 a 31/32 con el directorio actual es la carpeta
 ## Actualización 2026-09-22 (EXPLORER2069)
 
 Archivos y carpetas pasa de 31/32 a 31/32 con el directorio actual es la carpeta del Explorador en primer plano (commit 660024bf, BUILD2069) (HEAD 660024bf): 2/6 aprobados (los dos límites); las cuatro lecturas del Explorador se verificaron y ningún final se publicó (el contrato exige nombrar la carpeta y no había instrucción que lo pidiera), 0 créditos. Cuatro filesystem.explorer.count verificadas sobre la ventana propia del fixture (3 .py, 1 .txt, 3, 3); finales rechazados en missing_state. Reparación en el commit siguiente y re-medición como EXPLORER2071.
+
+## Actualización 2026-09-22 (EXPLORER2071)
+
+Archivos y carpetas pasa de 31/32 a 31/32 con el directorio actual es la carpeta del Explorador en primer plano (commit 56c31485, BUILD2071) (HEAD 56c31485): 2/6 aprobados (los dos límites); las cuatro lecturas se verificaron y el final que ya nombra la carpeta murió en internal_code (el nombre observado lleva guion bajo), 0 créditos. Cuatro filesystem.explorer.count verificadas; la instrucción nueva hace que el final nombre la carpeta y la comprobación de jerga lo rechaza. Reparación en el commit siguiente y re-medición como EXPLORER2073.

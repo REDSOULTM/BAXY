@@ -1,0 +1,71 @@
+commit 56c314850d394d3fc72a34e5bc58f50712b01a63
+
+C03 EXPLORER2069 (notebook): el conteo del Explorador nombra la carpeta que leyó
+
+Sobre 6f6ff47c. En EXPLORER2069 las cuatro lecturas se verificaron y ningún final se publicó: el contrato de
+filesystem.explorer.count exige nombrar seen.folderName y ninguna instrucción se lo pedía, así que «Hay 3 archivos
+.py en el directorio actual» —fiel pero sin la carpeta— murió seis veces por caso en missing_state. La instrucción
+del compositor dice ahora que seen.count son los archivos con seen.extension de la carpeta seen.folderName leída de
+la ventana del Explorador que está delante, y pide decir la cantidad y nombrar esa carpeta, sin otros números.
+Prueba: test_goal06_voice.py (el borrador sin la carpeta sigue siendo missing_state; el que la nombra pasa).
+Fast en verde.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 69e12c83..7f5c966c 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -16470,6 +16470,25 @@ class LlmRuntime:
+                 "creaste, nombrando el archivo y la cantidad de diapositivas, en una oración corta; "
+                 "sin otros números."
+             )
++        if (
++            visible_situation.get("operation") == "filesystem.explorer.count"
++            and isinstance(visible_situation.get("seen"), dict)
++            and type(visible_situation["seen"].get("count")) is int
++        ):
++            # EXPLORER2069 H0701: the figure is the count of the folder the
++            # Explorer has in front; naming that folder is how the person knows
++            # which one was read. The contract demands the name and no
++            # instruction asked for it, so six faithful drafts died.
++            instruct(
++                "\nseen.count is how many files with seen.extension the folder seen.folderName holds "
++                "(seen.filesInFolder is how many files it holds in all), read from the Explorer window in "
++                "front. Say the count and name that folder, in one short sentence; no other numbers."
++                if response_language == "en"
++                else "\nseen.count es cuántos archivos con seen.extension tiene la carpeta seen.folderName "
++                "(seen.filesInFolder son los archivos que tiene en total), leída de la ventana del "
++                "Explorador que está delante. Di la cantidad y nombrá esa carpeta, en una oración corta; "
++                "sin otros números."
++            )
+         if visible_situation.get("operation") in {"file.compress", "file.open", "desktop.wallpaper.set", "web.download"} and isinstance(visible_situation.get("seen"), dict):
+             # REOPEN1957 H0542/H0459/H0077: each file tool leaves its own
+             # postread; the reply names the file, folder, colour or address seen.
+diff --git a/tests/test_goal06_voice.py b/tests/test_goal06_voice.py
+index 62292150..b8899392 100644
+--- a/tests/test_goal06_voice.py
++++ b/tests/test_goal06_voice.py
+@@ -840,6 +840,21 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
+         "set the wallpaper to red",
+         {"situation": json.dumps(wallpaper)},
+     ) == ""
++    # EXPLORER2069 H0701: the count names the folder the Explorer had in front.
++    _counted = _compose_situation_payload({
++        "kind": "operation", "operation": "filesystem.explorer.count", "polarity": "success",
++        "verified": True, "succeeded": True,
++        "observed": {"version": 1, "folderName": "raiz_conteo", "source": "explorer_foreground",
++                     "extension": ".py", "count": 3, "filesInFolder": 4},
++    }, "es")
++    assert _counted["seen"]["folderName"] == "raiz_conteo"
++    assert _payload_fact_defect(
++        "Hay 3 archivos .py en el directorio actual.", _counted,
++        "Dime cuantos archivos .py hay en el directorio actual") == "missing_state"
++    assert _payload_fact_defect(
++        "En raiz_conteo, la carpeta que tenés delante, hay 3 archivos .py.", _counted,
++        "Dime cuantos archivos .py hay en el directorio actual") == ""
++
+     # TEXTREAD2063 H0299: the file's own words are observed data, even a forbidden term.
+     _roadmap = json.dumps({
+         "kind": "operation", "operation": "document.text.read", "polarity": "success",
