@@ -22,6 +22,9 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
     // se lanza, se le da este plazo por si termina enseguida (paquetes chicos)
     // y, si sigue, el recibo dice que empezó y con qué proceso.
     private static readonly TimeSpan QuickCompletionWait = TimeSpan.FromSeconds(12);
+    // WINGET2083: how long the installed list may lag the installer's exit.
+    private static readonly TimeSpan InstalledListSettleWait = TimeSpan.FromSeconds(20);
+    private static readonly TimeSpan InstalledListPollInterval = TimeSpan.FromSeconds(2);
 
     private readonly IExternalProcessRunner _runner;
     private readonly string _preparedRoot;
@@ -187,7 +190,11 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
             return effectBoundary.Failure(operation, "winget_install_not_started");
 
         bool exited = await WaitForExitAsync(processId.Value, QuickCompletionWait, cancellationToken).ConfigureAwait(false);
-        bool installed = exited && await IsInstalledAsync(packageId, cancellationToken).ConfigureAwait(false);
+        // WINGET2083 «instala 7-Zip»: the installer exits before the package
+        // appears in winget's installed list, and a single read right after it
+        // said «not installed» about a package that was in fact installed.
+        // The list is read again for a few seconds before answering.
+        bool installed = exited && await IsInstalledSoonAsync(packageId, cancellationToken).ConfigureAwait(false);
         if (exited && !installed)
             return effectBoundary.Failure(operation, "winget_install_not_verified", effectObserved: true);
 
@@ -207,6 +214,25 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
         });
         File.Delete(recordPath);
         return ExternalJson.Success(operation, result, effectObserved: true);
+    }
+
+    private async ValueTask<bool> IsInstalledSoonAsync(string packageId, CancellationToken cancellationToken)
+    {
+        DateTimeOffset deadline = DateTimeOffset.UtcNow + InstalledListSettleWait;
+        while (true)
+        {
+            if (await IsInstalledAsync(packageId, cancellationToken).ConfigureAwait(false))
+            {
+                return true;
+            }
+
+            if (DateTimeOffset.UtcNow >= deadline)
+            {
+                return false;
+            }
+
+            await Task.Delay(InstalledListPollInterval, cancellationToken).ConfigureAwait(false);
+        }
     }
 
     private async ValueTask<ExternalCapabilityReceipt> UninstallAsync(

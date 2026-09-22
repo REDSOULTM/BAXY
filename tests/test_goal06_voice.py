@@ -840,6 +840,18 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         "set the wallpaper to red",
         {"situation": json.dumps(wallpaper)},
     ) == ""
+    # WINGET2083 «instala 7-Zip»: «no se puede confirmar» states the failure.
+    _install_unverified = json.dumps({
+        "kind": "failure", "polarity": "failure", "cause": "mission_failed", "stepCount": 0, "steps": [],
+        "reason": json.dumps({"kind": "operation", "operation": "package.install.commit", "polarity": "failure",
+                              "verified": False, "succeeded": False, "error": "winget_install_not_verified"}),
+    })
+    assert compose_visible_defect(
+        "El instalador de 7-Zip terminó, pero el paquete no aparece en la lista de instalados, así que no se puede "
+        "confirmar que se haya instalado.",
+        "error", "instala 7-Zip", {"situation": _install_unverified},
+    ) == ""
+
     # SHELL2075 H0245 «ejecuta ls» with no output: «No hubo salida» says there was none.
     _ran_silent = _compose_situation_payload({
         "kind": "operation", "operation": "shell.command.run", "polarity": "success",

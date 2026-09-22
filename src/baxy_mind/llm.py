@@ -3591,7 +3591,10 @@ _FAILURE_MARKERS = re.compile(
     # verified: «the opening is not confirmed», «cannot be verified» say the
     # failure entire; the Spanish «no pude confirmar» already counted.
     r"(?:is|was|were|could)\s+not\s+(?:be\s+)?(?:confirmed|verified)|cannot\s+be\s+(?:confirmed|verified)|"
-    r"not\s+confirmed|unconfirmed|unverified|no\s+(?:est[aá]|qued[oó]|queda)\s+confirmad[oa]|sin\s+confirmar)",
+    r"not\s+confirmed|unconfirmed|unverified|no\s+(?:est[aá]|qued[oó]|queda)\s+confirmad[oa]|sin\s+confirmar|"
+    # WINGET2083 «instala 7-Zip»: «no se puede confirmar que se haya instalado»
+    # and «no se confirma la instalación» say the failure as plainly.
+    r"no\s+(?:se\s+)?(?:puede|pude|puedo|podemos|logro|logr[oó])\s+confirmar|no\s+se\s+confirma)",
     re.IGNORECASE,
 )
 _NEGATED_FAILURE = re.compile(
