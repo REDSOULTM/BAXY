@@ -15,17 +15,6 @@ allow-list of audited sentences.
 
 from __future__ import annotations
 
-import hashlib
-import random
-import re
-import time
-import unicodedata
-from dataclasses import dataclass, field
-from typing import Iterable, Iterator, Sequence
-
-from .catalog_operation_aliases import exact_catalog_operation_plan
-from .semantic import lexicon
-from .semantic.normalize import fold
 from .semantic.grammar import (  # noqa: F401 - moved to baxy_mind.semantic.grammar; callers migrate
     _CLOCK_READ_HEAD,
     INSTRUCTION_NOUN_COGNATES,
@@ -274,8 +263,6 @@ from .semantic.web import (  # noqa: F401 - moved to baxy_mind.semantic.web; cal
     web_image_request,
     _NAVIGATION_CLIENT,
     client_navigation_target,
-    _KNOWN_FOLDER_WORDS,
-    _KNOWN_FOLDER_ENUM,
     _authenticated_application_identity_conflict,
     _browser_page_domain,
     browser_back_arguments,

@@ -60,6 +60,11 @@ _REFUSAL = re.compile(
     r"dejemoslo|olvidalo|olvidate|olvida|cancela|cancelalo|cancelar|para|basta|ninguno|ninguna|tranqui|"
     r"no\s+thanks|never\s+mind|forget\s+it|cancel|stop|leave\s+it|no\s+need)[\s,.!]*){1,4}$"
 )
+# A prohibition is an instruction of its own, never the answer to a pending question (cien-99 097: «don't
+# open the calculator» after «¿Qué quieres que abra?» was rearmed onto «ábreme eso» and answered in Spanish).
+_PROHIBITION = re.compile(r"^(?:no|nunca|jamas|tampoco|don'?t|do\s+not|never)\s+(?:(?:me|te|lo|la|los|las|le|les|it)\s+)?[a-z]{3,}")
+# A request whose only object is a demonstrative («haz eso», «ábreme eso porfa», «do that»).
+_BARE_DEICTIC_REQUEST = re.compile(r"[a-z]+(?:\s+(?:me|lo|la))?\s+(?:eso|esto|aquello|that|this|it)(?:\s+(?:porfa|por\s+favor|please))?")
 # Talk that never answers a slot, even with a question pending.
 _SOCIAL = re.compile(
     r"^(?:gracias|muchas\s+gracias|genial|perfecto|buenisimo|jaja\w*|uf+|ah+|oh+|wow|que\s+bien|"
@@ -167,10 +172,14 @@ def dependency(text: str, slot: DialogueSlot) -> str | None:
     if not slot.has_context:
         return None
     folded = _fold(text).strip(" ¿?¡!.,")
-    if not folded or _SOCIAL.match(folded) or _REFUSAL.fullmatch(folded):
+    if not folded or _SOCIAL.match(folded) or _REFUSAL.fullmatch(folded) or _PROHIBITION.match(folded):
         return None
     words = folded.split()
     if slot.pending_request:
+        if _ASSENT.fullmatch(folded) and _BARE_DEICTIC_REQUEST.fullmatch(_fold(slot.pending_request).strip(" ¿?¡!.,")):
+            # cien-99 049: «hazlo» after «haz eso» → «¿Qué es eso?». Agreeing to a request
+            # with no object completes nothing; the message is read on its own.
+            return None
         if _ASSENT.fullmatch(folded) or _NUMBER_ANSWER.fullmatch(folded):
             return "answer"
         if len(words) <= 5 and _DESTINATION_ONLY.fullmatch(folded):

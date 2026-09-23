@@ -3199,6 +3199,11 @@ _FIRST_PERSON_PRETERITE = re.compile(r"(?<![\w])[a-zñ]{2,}(?:é|í)(?![\w])")
 _NOT_A_PRETERITE = frozenset({
     "aquí", "allí", "ahí", "así", "acá", "allá", "café", "bebé", "puré", "josé", "maní", "rubí", "jabalí",
     "esquí", "colibrí", "bisturí", "tabú", "menú", "según", "también", "quizá", "quizás",
+    # cien-99 074: «la memoria caché … cuando abres un programa» was read as «caché» (I cached)
+    # and the explanation was vetoed. Nouns and demonyms that end in a stressed é/í.
+    "caché", "comité", "cliché", "chalé", "canapé", "consomé", "frappé", "té", "qué", "fé",
+    "ají", "manatí", "alhelí", "zahorí", "iraní", "iraquí", "israelí", "marroquí", "paquistaní", "saudí",
+    "yemení", "sí", "mí",
 })
 _EFFECT_CLAIM_NEGATED = re.compile(
     r"\b(?:no|nunca|jamas|jamás|tampoco|sin|ni|not|never|didn'?t|couldn'?t|cannot|can'?t|haven'?t|"
@@ -3963,8 +3968,8 @@ _CAUSE_FACT = {
     # «No pude entender» is the phrase the owner rejects on every turn (dueño
     # 2026-09-21): the fact is what was not done and what is needed to do it.
     "request_analysis_failed": (
-        "nothing was done on this PC for this message. "
-        "Ask the person, as one short question, what exactly they want done"
+        "BAXY could not put a reply together for this message and did nothing on the PC. "
+        "Say it in a few natural words and ask the person, as one short question, to say it again another way"
     ),
     "memory_forget_irreversible": "cannot be undone",
     "memory_none": "no matching memories",

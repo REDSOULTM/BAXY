@@ -68,3 +68,17 @@ def _resolve(order: str) -> EffectIntent | None:
 def test_listening_to_a_bare_name_or_genre_is_its_music(text, order):
     found = mind._desired_media_request(text, _resolve)
     assert found is not None and found.evidence == (order,)
+
+
+@pytest.mark.parametrize(
+    ("reply", "claims"),
+    [
+        ("La caché del navegador guarda las páginas que ya viste, así el programa abre más rápido.", False),
+        ("Un comité decide qué archivos se guardan en el programa.", False),
+        ("Vacié la caché del programa.", True),
+    ],
+)
+def test_nouns_ending_in_a_stressed_vowel_are_not_a_first_person_claim(reply, claims):
+    from baxy_mind import llm
+
+    assert llm.visible_reply_claims_a_completed_effect(reply) is claims

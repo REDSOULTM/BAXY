@@ -125,12 +125,14 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 Fase 3.5 semantic S4 (2026-09-23): acto de charla, deseo de escuchar, antecedente de pregunta pública, lecturas sin confirmar, volumen/brillo/medios/pantalla.
 # C03 Fase 3.5 semantic S6 (2026-09-23): puerta semantic.reading.read(); verbo reproducir con voseo en un solo lugar (_PLAY_HEAD).
 # C03 Fase 3.5 semantic S7 (2026-09-23): re-armado de destino por patrón.
+# C03 Fase 3.5 semantic S8 (2026-09-23): lectura de la cien-99 (caché no es pretérito, hecho de request_analysis_failed natural, prohibición y asentimiento a un pedido vacío fuera del hueco).
+# C03 Fase 3.5 semantic S8 (2026-09-23): lectura de la cien-99 y limpieza de ruff tras los traslados.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "c7cbd27f63212c2ec864f61bbf052e21d2a9d0115cb2f4e8d598fe40eed32335"
+        "3733434579c0d1db4601611f13714765ddb884851e704a940bfc5e4d975bc9da"
     ),
     "src/baxy_mind/llm.py": (
-        "129f511c85361471b1019533f70c46429839fa6d6af9dfcdcf796ccf5f307b56"
+        "d1e3f5f15946947bdaaeb33cb7b071a6530d625e032749299096038e2c587744"
     ),
 }
 

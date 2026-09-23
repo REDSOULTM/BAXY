@@ -112,6 +112,11 @@ distinta de S2 (H0506); capas en curso (`S/layers-s8.jsonl`). Después, sin comm
 (held-out 18). Antes de la cien: comprobar con una decisión real que «close that» / «cierra aquello» siguen
 preguntando el referente (el patrón ya daba app.close en opus55-inicio; lo convierte en pregunta el turno).
 
+cien-99 sobre c47377c6: 100 publicadas, 0 agotes, 97 limpias (074 veto por «caché», 097 prohibición re-armada,
+049 asentimiento a «haz eso»); arreglado en S8. Full (`scripts/test_source_quality.ps1 -Mode Full`) **verde**: ruff
+(tras quitar importaciones duplicadas de los traslados; `_KNOWN_FOLDER_*` definido una vez, en display, que era el valor
+que regía en el módulo original), .NET 4 903 pruebas, pytest 13 728. Siguiente: cien-100 sobre el commit S8.
+
 ## Próximo paso
 
 Medir S5 (= S4 + veto «análisis de la solicitud», vocativos Gemma/Carter/Alexa, silenciar el PC, «sacá una captura», destino delante; capa B §12) desde `S/snap-s5` (`lit-s5`, `layers-s5`). S4 era: S3 + lectores de opinión/hecho fechado, orden tras charla, comilla sin cerrar) desde `S/snap-s4`: `literals --src S/snap-s4 --out S/lit-s4.jsonl` (S3: 1 decisión distinta vs S2, H0506 memoria), capas `--out S/layers-s4.jsonl`,

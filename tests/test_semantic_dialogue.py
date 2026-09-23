@@ -212,3 +212,18 @@ def test_a_new_destination_rearms_the_last_request_by_pattern(previous, text, re
         message, llm=_NoModel(), available_operations=("media.play.youtube", "media.play.query"),
     )
     assert result == (rearmed, "pattern")
+
+
+@pytest.mark.parametrize(
+    ("pending", "text", "expected"),
+    [
+        ("hacé eso", "dale", None),  # agreeing to a request with no object completes nothing
+        ("abrime eso porfa", "sí", None),
+        ("bajá el brillo", "dale", "answer"),
+        ("never open that", "don't open Paint", None),  # a prohibition is its own instruction
+        ("poné algo", "no pongas nada todavía", None),
+    ],
+)
+def test_assent_to_an_empty_request_and_prohibitions_do_not_fill_the_slot(pending, text, expected):
+    slot = _slot(pending, [pending], "¿Qué querés?")
+    assert dialogue_slot.dependency(text, slot) == expected

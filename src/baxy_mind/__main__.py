@@ -40,7 +40,6 @@ from . import corrector
 from .semantic import dialogue as dialogue_slot
 from .semantic import lexicon as semantic_lexicon
 from .semantic import reading as semantic_reading
-from .semantic.grammar import _ASSISTANT_NAME, _head_forms
 from .corrector import catalog_correction_terms
 from .first_signal import (
     PATH_MODEL,

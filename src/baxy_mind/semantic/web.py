@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import re
 from typing import Iterable
+from .display import _KNOWN_FOLDER_ENUM, _KNOWN_FOLDER_WORDS
 from .grammar import _fold, _match, _has, _strip_request_envelope, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _is_meta_or_tool_denial, _OPEN, _LIST, _READ, _SEARCH, _explicit_google_search_query
 from .intent import EffectIntent, _entity_key, _append, _append_all
 from .catalog import ApplicationCatalogIndex, _application_name_key, build_application_catalog_index
@@ -1281,15 +1282,7 @@ def client_navigation_target(folded: str) -> str | None:
 # «crea un archivo llamado hola.txt en el escritorio con el texto Hola Mundo»,
 # «Crea una carpeta en el escritorio llamada CarterTest»: literal file and
 # folder creation, in the sandbox or in a known folder (owner decision
-# 2026-09-13, point 2). The name and the content stay the person's words.
-_KNOWN_FOLDER_WORDS = r"escritorio|desktop|documentos|documents|descargas|downloads"
-
-
-_KNOWN_FOLDER_ENUM = {
-    "escritorio": "desktop", "desktop": "desktop",
-    "documentos": "documents", "documents": "documents",
-    "descargas": "downloads", "downloads": "downloads",
-}
+# 2026-09-13, point 2). The known-folder words are display's (one definition).
 
 
 def _authenticated_application_identity_conflict(
