@@ -21,6 +21,7 @@ import unicodedata
 from dataclasses import dataclass
 from typing import Any, Callable, Iterable, Sequence
 
+from .semantic import lexicon
 from .effect_intent import (
     _fold,
     enumerated_note_dependency_order,
@@ -199,7 +200,7 @@ _TRUE_CUES = frozenset(
         "silencio",
     }
 )
-_FALSE_CUES = frozenset(
+_FALSE_CUES = lexicon.AUDIO_RESTORE_WORDS | frozenset(
     {"false", "off", "disable", "disabled", "desactiva", "desactivame", "desactivalo", "desactivar",
      "apaga", "apagame", "apagalo", "apagar", "unmute", "reactiva"}
 )
@@ -207,18 +208,9 @@ _FALSE_CUES = frozenset(
 # generic on/off cues read «activa mi micrófono» as state=true and muted an
 # already muted microphone. Activating, enabling or unmuting a microphone is
 # false; silencing, muting or turning it off is true.
-_MICROPHONE_TOKENS = frozenset({"microfono", "microphone", "mic", "micro"})
-_MICROPHONE_MUTED_CUES = frozenset(
-    {"true", "mute", "mutea", "muteame", "mutealo", "mutear", "silencia", "silenciame", "silencialo",
-     "silenciar", "silence", "apaga", "apagame", "apagalo", "apagar", "desactiva", "desactivame",
-     "desactivalo", "desactivar", "calla", "callalo", "deshabilita", "disable", "off"}
-)
-_MICROPHONE_ACTIVE_CUES = frozenset(
-    {"false", "activa", "activame", "activalo", "activar", "activate", "reactiva", "reactivalo",
-     "reactivar", "reactivate", "enciende", "enciendelo", "encende", "encendelo", "prende", "prendeme",
-     "prendelo", "prender", "habilita", "habilitalo", "enable", "desmutea", "desmutealo", "desmutear",
-     "unmute", "desilencia", "on"}
-)
+_MICROPHONE_TOKENS = lexicon.MICROPHONE_NOUNS
+_MICROPHONE_MUTED_CUES = lexicon.MICROPHONE_MUTE_WORDS | {"true"}
+_MICROPHONE_ACTIVE_CUES = lexicon.MICROPHONE_UNMUTE_WORDS | {"false"}
 _CONDITIONAL_IDENTITY_PREDECESSORS = {
     # Search returns the authenticated URL that a following navigation must
     # consume. A named page is not itself an exact URL and must never be

@@ -37,7 +37,7 @@ os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 from . import protocol
 from . import effect_intent
 from . import corrector
-from . import dialogue_slot
+from .semantic import dialogue as dialogue_slot
 from .corrector import catalog_correction_terms
 from .first_signal import (
     PATH_MODEL,
@@ -3481,7 +3481,10 @@ def _unresolved_input_kind(
         return "echoed_words"
     if bare_path_file_name(objective) is not None:
         return "bare_path"
-    if cut_request_tail(objective) is not None:
+    if cut_request_tail(objective) is not None and _OVERHEARD_ACTION_WORDS.search(folded) is not None:
+        # Fase 3.5 (owner 2026-09-21, turn 116 «me gusta crear cosas como tu»):
+        # only a *request* can arrive cut; talk ending on «tu» («como tú», the
+        # accent dropped) is talk. H0088 and H0426 keep their order head.
         return "cut_request"
     if (
         effect_intent.INDETERMINATE_WINDOW_CLAUSE.fullmatch(folded) is not None
@@ -3587,6 +3590,18 @@ _OVERHEARD_ACTION_WORDS = re.compile(
     # period is a discourse marker in talk, not an order with an object.
     r"(?!\s*[,.;])"
 )
+
+
+def _conversation_in_progress(history: object) -> bool:
+    """BAXY spoke in the last exchange: the next message is addressed to it."""
+
+    if not isinstance(history, list):
+        return False
+    recent = [item for item in history[-3:] if isinstance(item, dict)]
+    return any(
+        item.get("role") == "assistant" and str(item.get("content") or "").strip()
+        for item in recent
+    )
 
 
 def _overheard_speech(folded: str) -> bool:
@@ -7396,7 +7411,7 @@ def _rearm_in_context(
     """Fill the dialogue slot: the request this message completes, or None.
 
     Returns (rearmed request, how) when the message depends on the previous turns
-    (``dialogue_slot.dependency``) and a rearmed request stays inside what was
+    (``semantic.dialogue.dependency``) and a rearmed request stays inside what was
     said. The pattern path is tried first (pending request + answer); the model
     rewrites only what the patterns cannot join. Talk is never rewritten.
     """
@@ -7641,6 +7656,11 @@ def _decide_turn_result(
         )
         else _unresolved_input_kind(objective, application_names)
     )
+    if unresolved_input_kind == "overheard_speech" and _conversation_in_progress(history):
+        # Fase 3.5 (owner 2026-09-21, turns 156–167, 208): a long message right
+        # after BAXY spoke is the person talking to BAXY, not a conversation the
+        # microphone overheard (DIALOGUE1513's rows all arrive with no dialogue).
+        unresolved_input_kind = None
     if unresolved_input_kind == "bare_path":
         known_path = effect_intent.known_folder_file_path(objective)
         if known_path is not None and known_path[0] in available_operations:
@@ -7741,6 +7761,10 @@ def _decide_turn_result(
             # A new command can lack a value without supplying one for the
             # preceding request. Keep its own objective for the next answer.
             result["startsNewObjective"] = True
+        if unresolved_input_kind in {"overheard_speech", "noise", "echoed_words"}:
+            # Nothing in it was a request: there is no objective for the next
+            # message to complete, so talk after it is never joined to it.
+            result["preserveObjective"] = False
         clarification_path = (
             "near_application_clarification"
             if near_application_candidates

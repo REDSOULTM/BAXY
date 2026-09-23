@@ -17,7 +17,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import re
-import unicodedata
+
+from .semantic.normalize import fold
 
 LANGUAGES = ("es", "en", "mixed")
 
@@ -260,16 +261,6 @@ _ASK_TRIM = " .,!?¿¡…-–—"
 _LEADING_SEPARATORS = " ,;:.-–—"
 
 
-def fold(text: str) -> str:
-    """Minúsculas sin diacríticos, con los espacios colapsados."""
-
-    decomposed = unicodedata.normalize("NFKD", (text or "").casefold())
-    stripped = "".join(
-        character
-        for character in decomposed
-        if not unicodedata.combining(character)
-    )
-    return " ".join(stripped.split())
 
 
 def _contains_any(folded: str, tokens: tuple[str, ...]) -> bool:

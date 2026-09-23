@@ -38,6 +38,7 @@ from typing import Any, Callable
 from urllib.parse import parse_qs, urlparse
 
 from . import corrector
+from .semantic.normalize import fold
 from . import effect_intent
 from .effect_intent import (
     _PERCENTAGE_WORD_VALUES,
@@ -3189,6 +3190,16 @@ _IMPERSONAL_EFFECT_CLAIM = re.compile(
     r"|is\s+now\s+(?:at|open|closed|muted|unmuted|playing|paused|installed|set)"
     r")"
 )
+# Fase 3.5 (held-out 2026-09-22): «Reducí el brillo de la pantalla a 45.» with
+# no operation. The first person singular preterite is a form, not a list: a
+# word ending in a stressed «-é»/«-í» next to a PC object. The future («subiré»,
+# «abriré») promises and is not a claim; adverbs and nouns with that ending are
+# kept out by name.
+_FIRST_PERSON_PRETERITE = re.compile(r"(?<![\w])[a-zñ]{2,}(?:é|í)(?![\w])")
+_NOT_A_PRETERITE = frozenset({
+    "aquí", "allí", "ahí", "así", "acá", "allá", "café", "bebé", "puré", "josé", "maní", "rubí", "jabalí",
+    "esquí", "colibrí", "bisturí", "tabú", "menú", "según", "también", "quizá", "quizás",
+})
 _EFFECT_CLAIM_NEGATED = re.compile(
     r"\b(?:no|nunca|jamas|jamás|tampoco|sin|ni|not|never|didn'?t|couldn'?t|cannot|can'?t|haven'?t|"
     r"aun\s+no|aún\s+no|todavia\s+no|todavía\s+no)\b"
@@ -3216,12 +3227,30 @@ def visible_reply_claims_a_completed_effect(value: object) -> bool:
         matches = list(_COMPLETED_EFFECT_CLAIM.finditer(sentence))
         if re.search(r"(?<![\w])" + _PC_OBJECT + r"(?![\w])", sentence) is not None:
             matches.extend(_IMPERSONAL_EFFECT_CLAIM.finditer(sentence))
+            matches.extend(
+                match
+                for match in _FIRST_PERSON_PRETERITE.finditer(sentence)
+                if match.group(0) not in _NOT_A_PRETERITE
+                and not match.group(0).endswith(("aré", "eré", "iré"))
+            )
         for match in matches:
             # A negation earlier in the same clause makes it a denial, not a claim.
             clause = sentence[clause_start:match.start()]
             for boundary in (",", ";", " pero ", " but ", " aunque "):
                 if boundary in clause:
                     clause = clause.rsplit(boundary, 1)[-1]
+            # «lo que hice fue decir la verdad»: a pseudo-cleft describes the act
+            # it names; it does not claim that an effect happened.
+            cleft = re.match(r"\s*(?:fue|es|era)\s+(?P<act>[a-záéíóúñ]+)(?P<rest>[^.!?]*)", sentence[match.end():])
+            if (
+                re.search(r"\blo que\s+(?:(?:ya|solo|sólo)\s+)?$", sentence[:match.start()])
+                and cleft is not None
+                and not (
+                    re.search(r"(?:ar|er|ir)$", cleft.group("act"))
+                    and re.search(r"(?<![\w])" + _PC_OBJECT + r"(?![\w])", cleft.group("rest"))
+                )
+            ):
+                continue
             if _EFFECT_CLAIM_NEGATED.search(clause) is None:
                 return True
     return False
@@ -10283,13 +10312,7 @@ _NOISE_ACKNOWLEDGED = re.compile(
 )
 
 
-def _fold_dialogue_text(value: object) -> str:
-    """Lowercase without accents, for closed dialogue-shape matches."""
-
-    decomposed = unicodedata.normalize("NFKD", str(value or "").casefold())
-    return " ".join(
-        "".join(c for c in decomposed if not unicodedata.combining(c)).split()
-    )
+_fold_dialogue_text = fold  # the single normalization (semantic.normalize)
 
 
 def _clarification_style_messages(text: str) -> list[dict[str, str]]:
@@ -11740,7 +11763,12 @@ class LlmRuntime:
                     1 for message in prior_messages if message.get("role") == "user"
                 ),
             )
-            return (contextual, [])
+            # Fase 3.5 (owner 2026-09-21, turn 56 «El volumen se subió a 100.»):
+            # a conversation turn completed no operation, so the contextual
+            # answer may not claim an effect either. Only that veto applies
+            # here; a violating draft falls through to the ordinary generation.
+            if not visible_reply_claims_a_completed_effect(contextual):
+                return (contextual, [])
 
         # A newly named definition must not inherit an unrelated explanation.
         # Keep the stored dialogue intact, and retain it for references and
@@ -13531,10 +13559,10 @@ class LlmRuntime:
     ) -> str:
         """Rewrite a message that depends on the dialogue as a request that stands alone.
 
-        The dialogue slot (``dialogue_slot.dependency``) already decided that the
+        The dialogue slot (``semantic.dialogue.dependency``) already decided that the
         message points back: an answer to BAXY's question, «sí», a new destination,
         a pronoun object or a lookup without its topic. The model only joins the
-        message with what was said; ``dialogue_slot.rewrite_stays_in_context``
+        message with what was said; ``semantic.dialogue.rewrite_stays_in_context``
         rejects any word nobody said, so it can never add an object or an effect.
         """
 

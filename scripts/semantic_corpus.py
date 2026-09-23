@@ -23,12 +23,14 @@ are not an acceptance commitment and are out. Everything written here is private
 
 usage:
   semantic_corpus.py build
+  semantic_corpus.py sample [--size 1000]
   semantic_corpus.py score DECISIONS.jsonl [--survey-reference LIT.jsonl] [--json OUT]
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import pathlib
@@ -62,6 +64,13 @@ CODE = re.compile(
     r"(?:\bdef \w+\(|\bimport \w|\breturn \w|=>|\w+\(\)|\{[^}]*\}|\bpytest\b|\bgit (?:commit|push|pull)\b|"
     r"\.(?:py|cs|ts|tsx|json|md|ps1)\b|\bsrc/|\bnpm\b)"
 )
+# Documentation fragments are notes about BAXY, not things said to it: metrics with units, bold markers,
+# code identifiers («system.shutdown/restart», «restore_backup»), verdict words.
+TECHNICAL = re.compile(
+    r"\*\*|\b\d+(?:[.,]\d+)?\s?(?:ms|mib|gib|mb|gb|kb|s)\b|\b[a-z]+_[a-z_]+\b|\b[a-z]+\.[a-z]+(?:\.[a-z]+)*\b|"
+    r"\b(?:PASS|FAIL|WER|p50|p95|VRAM|KV|mmproj|handle|flag|router|routing|parsers?|dataset|fine-?tun\w*|bench\w*)\b"
+)
+_WRAPPING_QUOTES = "«»\"“”„'‘’`"
 AGENT_WORDS = re.compile(
     r"\b(?:codex|claude|opus|sonnet|gpt|fable|el agente|al agente|refactor\w*|commit\w*|implementa\w*|"
     r"el repo\b|la rama|goal\b|prompt\b|el c[oó]digo|tests?\b|debug\w*)",
@@ -126,7 +135,22 @@ def addressee_of(row: dict[str, Any]) -> str | None:
         return "code"
     if AGENT_WORDS.search(text) and len(text.split()) > 12:
         return "agent_talk"
+    if row.get("origin") != "observed_user" and TECHNICAL.search(text):
+        return "technical_note"
     return None
+
+
+def clean(text: str) -> str:
+    """The utterance as said: documents quote their examples («sube el volumen», "Baxy, pon música”.)."""
+    text = " ".join(str(text).split())
+    for _ in range(2):
+        stripped = text.strip().strip(_WRAPPING_QUOTES).strip()
+        stripped = re.sub(r"[" + re.escape(_WRAPPING_QUOTES) + r"]+([.!?]?)$", r"\1", stripped).strip()
+        stripped = re.sub(r"^[" + re.escape(_WRAPPING_QUOTES) + r"]+", "", stripped).strip()
+        if stripped == text:
+            break
+        text = stripped
+    return text
 
 
 def layer_of(row: dict[str, Any]) -> str:
@@ -240,6 +264,36 @@ def families_of(operation: str) -> tuple[str, ...]:
     return (operation,)
 
 
+# Re-labels of the old oracle, applied in the open (DECISIONES_OPUS_2026-09-22 §9) and counted in every score:
+# RL1  an information question the oracle calls conversation may also be answered with a public search
+#      (sealed KNOWLEDGE1473 / d8eb88367: «dime qué es X» searches the entity).
+# RL2  an order to the PC the oracle calls conversation («abre el panel de control», «click the OK button») is an
+#      effect request: any effect or a single question counts; a conversation does not.
+RL1_QUESTION = re.compile(
+    r"^[¿?¡!\s]*(?:(?:dime|decime|explicame|explica|tell me)\s+)?(?:que|qué|quien|quién|como|cómo|cual|cuál|"
+    r"what|who|how|which)\s+(?:es|son|fue|era|funciona|is|are|was|does)\b",
+    re.IGNORECASE,
+)
+RL2_ORDER = re.compile(
+    r"^[¿?¡!\s]*(?:abre|abri|abrí|cierra|cerra|cerrá|borra|borrá|elimina|copia|copiá|mueve|move|open|close|click|"
+    r"clic|haz\s+clic|pulsa|presiona|press|type|escribe|escribí|minimiza|maximiza|sube|subí|baja|bajá|silencia|"
+    r"mutea|apaga|apagá|enciende|prende|pon|poné|ponme|busca|buscá|search|play|reproduce|captura|toma|take|"
+    r"delete|copy|guarda|save|crea|creá|create|instala|install|descarga|download|lanza|launch|conecta|connect)\b",
+    re.IGNORECASE,
+)
+
+
+def relabel(entry: dict[str, Any]) -> tuple[dict[str, Any], str | None]:
+    if entry.get("expect") != "conversation":
+        return entry, None
+    text = str(entry.get("text") or "").strip()
+    if RL1_QUESTION.search(text):
+        return {**entry, "expect": "effect_or_conversation", "families": ["web.search"]}, "RL1"
+    if RL2_ORDER.search(text):
+        return {**entry, "expect": "any_effect_or_question", "families": []}, "RL2"
+    return entry, None
+
+
 def verdict(entry: dict[str, Any], decision: dict[str, Any]) -> tuple[bool, str]:
     """(understood, failure type) of one decision against the row's oracle."""
 
@@ -259,6 +313,8 @@ def verdict(entry: dict[str, Any], decision: dict[str, Any]) -> tuple[bool, str]
     if expect == "any_honest":
         # The motor's rows (Fase 4/5): any honest turn counts; only an invented effect or an error does not.
         return True, "bien"
+    if expect == "any_effect_or_question":
+        return (kind in {"action", "plan", "clarify"}), ("bien" if kind in {"action", "plan", "clarify"} else "no_leido")
     if expect == "no_effect":
         return (kind in {"conversation", "clarify"}), ("bien" if kind in {"conversation", "clarify"} else "efecto_no_pedido")
     if expect == "effect_or_clarify" and kind == "clarify":
@@ -345,7 +401,7 @@ def build() -> None:
         if row.get("dedup_status") != "canonical_source":
             continue
         layer = layer_of(row)
-        text = str(row.get("text_literal") or "")
+        text = clean(row.get("text_literal") or "")
         counts[layer]["seen_canonical"] += 1
         language = language_of(text)
         if language not in {"es", "en", "mixed"}:
@@ -400,17 +456,26 @@ def score(decisions_path: pathlib.Path, survey_reference: pathlib.Path | None, j
     table: dict[str, Counter[str]] = defaultdict(Counter)
     by_family: dict[tuple[str, str], Counter[str]] = defaultdict(Counter)
     detail = []
+    relabels: list[dict[str, Any]] = []
     for entry in corpus:
         layer = entry["layer"]
         decision = decisions.get(entry["id"])
+        digest = hashlib.sha256(entry["text"].encode("utf-8")).hexdigest()
+        if decision is not None and decision.get("text_sha256") not in (None, digest):
+            decision = None  # decided on another text (the corpus was cleaned since)
         if decision is None:
             table[layer]["sin_decision"] += 1
             continue
-        if entry["expect"] == "survey":
+        if entry["expect"] == "survey" and entry["id"] in labels:
+            # A covered row whose reference run already decided against its credit (e.g. H0086 «bajá el
+            # volumen a 20» read as an install since REOPEN1993) is judged by its hand label.
+            ok, why = verdict({**entry, **labels[entry["id"]]}, decision)
+            family = "survey"
+        elif entry["expect"] == "survey":
             credited = reference.get(entry["id"])
             key = lambda row: (row.get("kind"), row.get("operation"), tuple(row.get("effects") or ()))  # noqa: E731
             if entry.get("status") != "covered":
-                ok, why = False, "abierta_en_registro"
+                ok, why = False, "abierta_sin_etiqueta"
             elif credited is None:
                 ok, why = False, "sin_referencia"
             else:
@@ -427,22 +492,39 @@ def score(decisions_path: pathlib.Path, survey_reference: pathlib.Path | None, j
             ok, why = verdict({**entry, **label}, decision)
             family = (label.get("families") or [label.get("expect")])[0]
         else:
-            ok, why = verdict(entry, decision)
             family = (entry["families"] or [entry["expect"]])[0]
+            if layer != "A":
+                relabelled, rule = relabel(entry)
+                if rule:
+                    table[layer]["reetiqueta:" + rule] += 1
+                    relabels.append({"id": entry["id"], "rule": rule, "text": entry["text"][:200],
+                                     "old": entry["expect"], "new": relabelled["expect"]})
+                    entry = relabelled
+            ok, why = verdict(entry, decision)
         table[layer]["total"] += 1
         table[layer]["bien" if ok else "mal"] += 1
+        # Layer A is two populations: the survey (judged against what it credited) and real conversations.
+        part = f"{layer}:{entry.get('source') if layer == 'A' else layer}"
+        table[part]["total"] += 1
+        table[part]["bien" if ok else "mal"] += 1
         table[layer]["fallo:" + why] += 0 if ok else 1
         by_family[(layer, family)]["total"] += 1
         by_family[(layer, family)]["bien"] += ok
         detail.append({"id": entry["id"], "layer": layer, "ok": ok, "why": why, "family": family,
                        "kind": decision.get("kind"), "effects": decision.get("effects")})
+    if relabels:
+        random.seed(20260923)
+        (OUT / "relabel_sample.json").write_text(
+            json.dumps(random.sample(relabels, min(50, len(relabels))), ensure_ascii=False, indent=1), encoding="utf-8"
+        )
     for layer in sorted(table):
         row = table[layer]
         total = row["total"] or 1
         failures = ", ".join(f"{key[6:]} {count}" for key, count in row.most_common() if key.startswith("fallo:") and count)
         print(f"capa {layer}: {row['bien']}/{row['total']} = {100 * row['bien'] / total:.1f} %"
               + (f"  (sin decisión {row['sin_decision']})" if row["sin_decision"] else "")
-              + (f"  (sin etiqueta {row['sin_etiqueta']})" if row["sin_etiqueta"] else ""))
+              + (f"  (sin etiqueta {row['sin_etiqueta']})" if row["sin_etiqueta"] else "")
+              + "".join(f"  ({key} {count})" for key, count in row.items() if key.startswith("reetiqueta:")))
         print(f"    fallos: {failures}")
         worst = sorted(((key[1], value) for key, value in by_family.items() if key[0] == layer),
                        key=lambda item: item[1]["bien"] / item[1]["total"])[:12]
@@ -455,10 +537,36 @@ def score(decisions_path: pathlib.Path, survey_reference: pathlib.Path | None, j
         }, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
+def sample(size: int) -> None:
+    """``corpus_run.jsonl``: layers A and B whole, layer C as a stratified sample (seeded, proportional to each
+    expected family, at least three rows per stratum). The model path is ~2.4 s a turn; C whole would take hours."""
+
+    corpus = _load_jsonl(OUT / "corpus.jsonl")
+    strata: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
+    kept = [entry for entry in corpus if entry["layer"] != "C"]
+    for entry in corpus:
+        if entry["layer"] == "C":
+            strata[(entry["expect"], (entry["families"] or ["-"])[0])].append(entry)
+    total = sum(len(rows) for rows in strata.values())
+    rng = random.Random(20260923)
+    chosen = 0
+    for key in sorted(strata):
+        rows = strata[key]
+        take = min(len(rows), max(3, round(size * len(rows) / total)))
+        kept.extend(rng.sample(rows, take))
+        chosen += take
+    with (OUT / "corpus_run.jsonl").open("w", encoding="utf-8", newline="\n") as handle:
+        for entry in kept:
+            handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    print(f"corpus_run: {len(kept)} filas (C muestreada {chosen} de {total} en {len(strata)} estratos)")
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("build")
+    sm = sub.add_parser("sample")
+    sm.add_argument("--size", type=int, default=1000)
     sc = sub.add_parser("score")
     sc.add_argument("decisions", type=pathlib.Path)
     sc.add_argument("--survey-reference", type=pathlib.Path)
@@ -466,6 +574,8 @@ def main(argv: list[str]) -> int:
     args = parser.parse_args(argv)
     if args.command == "build":
         build()
+    elif args.command == "sample":
+        sample(args.size)
     elif args.command == "score":
         score(args.decisions, args.survey_reference, args.json)
     return 0

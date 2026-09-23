@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import argparse
 import ctypes
+import hashlib
 import ctypes.wintypes as wintypes
 import json
 import os
@@ -442,7 +443,10 @@ def literals(
             if case_id in done:
                 continue
             started = time.perf_counter()
-            record: dict[str, Any] = {"case_id": case_id}
+            record: dict[str, Any] = {
+                "case_id": case_id,
+                "text_sha256": hashlib.sha256(row["literal"].encode("utf-8")).hexdigest(),
+            }
             try:
                 reply = _decide(
                     client,

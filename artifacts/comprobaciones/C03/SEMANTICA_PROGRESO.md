@@ -10,9 +10,9 @@ Un comando largo a medias se vuelve a correr entero.
 | # | Entregable | Estado |
 |---|---|---|
 | 1 | Clase 1 (hueco de diálogo) cerrada y commiteada con la cifra de c1c | hecho (dueño 39/60, held-out 22/30, 742 sin cambios, pytest 13 591 verdes tras re-anclar sellos) |
-| 2 | Baseline por capas (A, B, C por dominio y tipo de fallo) sobre b5c9fe72 y sobre el HEAD con la clase 1 | pendiente |
-| 3 | `src/baxy_mind/semantic/` (puerta `read()`, dominios, normalización única, identidad/límites); lectores viejos retirados; commit por dominio | pendiente |
-| 4 | `documentacion/SEMANTICA.md` (diez minutos; de qué BAXY anterior se heredó cada pieza) | pendiente |
+| 2 | Baseline por capas (A, B, C por dominio y tipo de fallo) sobre b5c9fe72 y sobre el HEAD con la clase 1 | hecho: `SEMANTICA_CAPAS_2026-09-23.md` (por commitear) |
+| 3 | `src/baxy_mind/semantic/` (puerta `read()`, dominios, normalización única, identidad/límites); lectores viejos retirados; commit por dominio | en curso: normalize, lexicon (micrófono, volumen, ajustes), dialogue, grammar (1 608 líneas fuera de effect_intent); guardas de clase 2 y veto de clase 5 aplicados; midiendo S1 |
+| 4 | `documentacion/SEMANTICA.md` (diez minutos; de qué BAXY anterior se heredó cada pieza) | borrador escrito (por commitear) |
 | 5 | Cierre: capa A ≥ 95 %, held-out nuevo del dueño ≥ 95 %, Full verde, cien 100/100, sellos, `SEMANTICA_<fecha>.md` | pendiente |
 
 Heredado y hecho: harness `scripts/semantic_replay.py` (+ guardia de VS Code), held-out del 22 congelado,
@@ -23,17 +23,17 @@ preparados siguen en el scratchpad (`patch_guard.py`, `patch_veto.py`).
 
 | Capa | Filas tras filtros (es/en + dirigido a BAXY) | Bien | Comando |
 |---|---|---|---|
-| A — real del dueño | pendiente | pendiente | — |
-| B — herencia curada | pendiente | pendiente | — |
-| C — corpus sintéticos | pendiente | pendiente | — |
+| A — real del dueño | 772 (encuesta 676 + registro real 95 + 1) | b5c9fe72 96,1 % (real 74,7 %) → clase 1 97,1 % (real 83,5 %) → S2 98,0 % (real 89,0 %) | `semantic_corpus.py score <742+capas> --survey-reference S/lit-base.jsonl` |
+| B — herencia curada | 108 | 26,9 % → 26,9 % → S2 en curso | ídem |
+| C — corpus sintéticos | 4 066 (muestra 1 017) | 53,5 % → 53,5 % → S2 en curso | ídem (`sample --size 1000`) |
 | Held-out nuevo del dueño | se pide al final | — | — |
 
 ## Guiones contextuales (heredados)
 
 | Guion | Baseline b5c9fe72 | Clase 1 (c1c) |
 |---|---|---|
-| dueño 2026-09-21 (60) | 33/60 | 39/60 (contexto 5/12, guarda 2/8, paráfrasis 1/5, familia 1/1, efecto inventado 0/1, fuera de alcance 5/8) |
-| held-out 2026-09-22 (30) | 15/30 | 22/30 (contexto 5/9, guarda 5/6, paráfrasis 0/1, familia 2/4, efecto inventado 1/1, fuera 2/2) |
+| dueño 2026-09-21 (60) | 33/60 | 39/60 → S2 45/60 (contexto 9/12, guarda 4/8, paráfrasis 0/5, familia 1/1, efecto inventado 1/1, fuera de alcance 5/8) |
+| held-out 2026-09-22 (30) | 15/30 | 22/30 → S2 26/30 (contexto 6/9, guarda 6/6, paráfrasis 0/1, familia 4/4, efecto inventado 1/1, fuera 2/2) |
 | 35 bancos | 398/525 | sin medir |
 | 742 sólo-decisión | 0 errores; determinista (dos corridas idénticas) | 0 decisiones distintas (`S/lit-c1.jsonl`) |
 
@@ -54,5 +54,6 @@ Clase 1 entera (shell + mente + harness con guardia + pruebas), baseline con ban
 
 ## Próximo paso
 
-diff de los 742 → commit y push de la clase 1 → filtros de idioma y destinatario sobre
-`tests/data/historical_messages.jsonl` → baseline por capas.
+Commit «semantic S2» → reanudar capas S2 (B, C) desde S/snap-s2 → siguiente: misiones compuestas con una parte difícil
+(límite falso que niega lo posible: «abre Word y ayúdame a escribir…»), dominios acíclicos de effect_intent a
+semantic/<dominio>.py (S/move.py, S/deps.py), memoria = ruta del shell en la puntuación.

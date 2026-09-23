@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import pytest
 
-from baxy_mind import dialogue_slot
-from baxy_mind.dialogue_slot import DialogueSlot
+from baxy_mind.semantic import dialogue as dialogue_slot
+from baxy_mind.semantic.dialogue import DialogueSlot
 
 
 def _slot(pending: str | None = None, antecedents=(), reply: str | None = None) -> DialogueSlot:

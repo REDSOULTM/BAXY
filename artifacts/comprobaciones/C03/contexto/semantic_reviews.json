@@ -12,30 +12,30 @@
   },
   "17": {
    "verdict": "bien",
-   "reply": "Está reproduciéndose «Emmanuell Cortess - Amor (Letra/Lyrics) - YouTube».",
-   "head": "clase1-c1c"
+   "reply": "Está reproduciéndose «Don Omar - Canción De Amor (Official Music Video) - YouTube».",
+   "head": "semantic-s2"
   },
   "54": {
-   "verdict": "mal",
-   "reply": "No puedo reducir el volumen de sonido en este entorno.",
-   "head": "b5c9fe72"
+   "verdict": "bien",
+   "reply": "¡Claro! ¿Qué necesitas ahora? ¿Quieres que haga algo en el PC o necesitas ayuda con algo específico?",
+   "head": "semantic-s2"
   },
   "57": {
-   "verdict": "mal",
-   "reply": "cuánto y en qué dirección se debe ajustar el volumen?",
-   "head": "clase1-c1c"
+   "verdict": "bien",
+   "reply": "El volumen ya está en el 100%.",
+   "head": "semantic-s2"
   },
   "24": {
    "verdict": "mal",
-   "reply": "No puedo investigar la película \"Colony\" de zombies tal como fue pedido.",
-   "head": "clase1-c1c"
+   "reply": "No puedo investigar la película *Colony* de zombies tal como fue pedido.",
+   "head": "semantic-s2"
   }
  },
  "heldout-2026-09-22": {
   "29": {
    "verdict": "bien",
-   "reply": "No, todavía no la llamé.",
-   "head": "clase1-c1c"
+   "reply": "No, todavía no la llamé. No tengo la capacidad de realizar llamadas por teléfono.",
+   "head": "semantic-s2"
   }
  }
 }

@@ -64,3 +64,26 @@ según la tabla de PRUEBA_DUENO_2026-09-21_NOCHE.md, los commits sellados d8eb88
 turno honesto vale; «pon algo en Netflix» puede preguntar); los «sí/no» a una confirmación del shell quedan fuera
 (los decide el shell, no la mente). Se reproducen con su historial original. Privado:
 `semantic-corpus-v1\labels_real_log.json`. Revertir: borrar ese fichero.
+
+## 9. Re-etiquetas del oráculo viejo (sólo capas B y C; la A nunca se re-etiqueta)
+Situación: `historical_message_mapping.jsonl` llama «conversación» a pedidos claros al PC («abre el panel de control»,
+«click the OK button») y a preguntas de información que la política sellada contesta buscando (KNOWLEDGE1473,
+d8eb88367). Elegido, a la vista y contado en cada puntuación (`semantic_corpus.relabel`): RL1 — pregunta de
+información esperada como conversación: también vale `web.search`; RL2 — orden al PC esperada como conversación:
+vale cualquier efecto o una sola pregunta, no una conversación. Muestra de 50 re-etiquetas al azar para el dueño en
+`%LOCALAPPDATA%\BAXY\semantic-corpus-v1\relabel_sample.json`. Baseline b5c9fe72: B 4 re-etiquetas, C 153. Revertir:
+quitar `relabel` (cambia la cifra, no el producto).
+
+## 10. «Ponme daredevil en disney»: reproducir, no límite
+Situación: el prompt de la sesión pedía límite honesto «mientras no exista el motor»; pero el catálogo sirve
+`streaming.play.named` con `disney_plus` (VIDEO1947/1949, verifica que el video avanza) y el commit sellado d8eb88367
+hizo que «ponme/poneme/pone» reproduzcan. Elegido lo sellado: se espera reproducir (no se inventa ninguna operación y
+un fallo de reproducción se dice como fallo verificado). Revertir: la etiqueta de `log:56` en
+`labels_real_log.json`.
+
+## 11. Filas acreditadas que la referencia ya decidía mal
+Situación: la réplica sólo-decisión de los 742 sobre b5c9fe72 decide H0086, H0254 y H0690 («bajá/baja el volumen a N»)
+como `package.install` (el lector de winget de REOPEN1993 toma «bajar» por «descargar»), aunque el registro las
+acreditó como volumen. Elegido: esas filas se juzgan contra lo acreditado (etiqueta `audio.volume`), no contra la
+decisión rota de la referencia; así el baseline las cuenta mal y el arreglo (léxico de ajustes: nada llamado
+«volumen» se instala) las cuenta bien. Revertir: quitar las tres etiquetas.

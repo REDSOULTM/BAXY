@@ -21,8 +21,9 @@ the rewritten request the mind returns. Neither side re-reads the other's text.
 from __future__ import annotations
 
 import re
-import unicodedata
 from dataclasses import dataclass
+
+from .normalize import fold
 
 _WORD = re.compile(r"[a-z0-9ñ]+")
 
@@ -77,9 +78,7 @@ _STOPWORDS = frozenset(
 )
 
 
-def _fold(text: str) -> str:
-    folded = unicodedata.normalize("NFKD", str(text).casefold())
-    return " ".join("".join(ch for ch in folded if not unicodedata.combining(ch)).split())
+_fold = fold
 
 
 def _words(text: str) -> list[str]:

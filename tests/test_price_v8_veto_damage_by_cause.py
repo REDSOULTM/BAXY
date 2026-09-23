@@ -119,12 +119,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 Fase 8 (D18) audio.app.volume.set y verbos de desinstalación en Steam (b5fd9e50b + fusión 28432af9e): re-anclaje de identidad de programa.
 # C03 notebook (cierre 2026-09-22): re-pin tras las tandas y reparaciones del notebook (WALLPAPER2039…WINGET2087)
 # Fase 3.5 clase 1 (2026-09-22): dialogue_slot, reescritura contextual y harness semantic_replay/semantic_corpus.
+# Fase 3.5 semantic S1–S2 (2026-09-23): normalize, lexicon, grammar, dialogue; guardas y veto.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "350c43234cceadabd3e7edb92dd543f50192bd4ebe51c7ecaacfe1807ba8312d"
+        "351b614227636990071d9e0df4d6de56abd742f2b3b4416a3d03f541c2b68e4f"
     ),
     "src/baxy_mind/llm.py": (
-        "7566bead8ff3874dfb90e8a624a8e9eb516db3f30d6166774d186bf6715a4783"
+        "386bc3546bf261bd028be51bdad999f358e986c70740b41fd41a749b1798cbd7"
     ),
 }
 
