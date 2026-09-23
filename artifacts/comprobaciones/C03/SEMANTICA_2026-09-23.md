@@ -19,7 +19,7 @@ cómo funciona: `documentacion/SEMANTICA.md`.
 | Guion del dueño 2026-09-21 (60) | 33 | 39 | **53** | producto, `semantic_replay.py conv` + revisiones |
 | Held-out 2026-09-22, congelado (30) | 15 | 22 | **29** | ídem |
 | 742 sólo-decisión | — | 0 distintas | 1 distinta (H0506, memoria que toma el shell) | `semantic_replay.py literals` |
-| cien (población v18) | cien-98 100/0/100 | — | **cien-100 100/0/100** | conductor; lectura en `CIEN.md` |
+| cien (población v18) | cien-98 100/0/100 | — | **cien-101 100/0/100** (árbol final 9277c10e) | conductor; lectura en `CIEN.md` |
 | Full (`test_source_quality.ps1 -Mode Full`) | verde | — | **verde**: ruff, .NET 4 903, pytest 13 728 | |
 
 Capas medidas sobre el corpus actual (filtro §12, etiquetas §14) para las cuatro columnas. Guiones medidos sobre
