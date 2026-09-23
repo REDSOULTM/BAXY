@@ -104,8 +104,10 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 Fase 3.5 semantic S3 (2026-09-23): trece dominios de effect_intent a src/baxy_mind/semantic/, oferta parcial de misiones compuestas, lectores de opinión/hecho fechado, vocativos, rechazo en el hueco.
 # C03 Fase 3.5 semantic S3 (2026-09-23): trece dominios de effect_intent a src/baxy_mind/semantic/, oferta parcial de misiones compuestas, lectores de opinión/hecho fechado, vocativos, rechazo en el hueco.
 # C03 Fase 3.5 semantic S4 (2026-09-23): acto de charla, deseo de escuchar, antecedente de pregunta pública, lecturas sin confirmar, volumen/brillo/medios/pantalla.
+# C03 Fase 3.5 semantic S5 (2026-09-23): el orquestador del patrón pasa de effect_intent a src/baxy_mind/semantic/patterns.py (traslado puro).
+# C03 Fase 3.5 semantic S5 (2026-09-23): orquestador a semantic/patterns.py; «averigua» fuera del lector de investigación (se usa para comprobaciones locales).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "d4eaa24edc836642575de28a0d7b38a4808770f95bcd5b9760fcfc6f26e0b93f"
+    "3f4801a18feab5754555a2b6ff6b7fe8ff3e7b4f18b39d2238386b6494ed68d7"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

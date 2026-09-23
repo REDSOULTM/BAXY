@@ -98,7 +98,6 @@ def _weather_lookup_query(text: str) -> str | None:
 
 _TOPIC_RESEARCH = re.compile(
     r"^[¿?¡!\s]*(?:investiga|investigá|investigar|investigue|investigame|investígame|"
-    r"averigua|averiguá|averiguar|averiguame|averiguame|"
     r"research|look\s+into|look\s+up|"
     # Owner's mother 2026-09-21 «dame info de la migraña»: information about a
     # topic is the same public lookup.
