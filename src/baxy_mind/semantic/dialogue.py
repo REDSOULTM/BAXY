@@ -53,6 +53,13 @@ _ASSENT = re.compile(
     r"^(?:(?:si|sip|sep|dale|ok|okay|okey|claro|confirmo|de\s+una|obvio|por\s+favor|porfa|bueno|va|vale|"
     r"hacelo|hazlo|adelante|yes|yeah|yep|sure|do\s+it|go\s+ahead|please)[\s,.!]*){1,4}$"
 )
+# A refusal: the whole message only declines («no, dejalo», «mejor no», «olvidalo», «no thanks»).
+# It never completes the pending request; «no, en YouTube» carries a destination and is not one.
+_REFUSAL = re.compile(
+    r"^(?:(?:no|nop|nope|nah|nel|nada|mejor\s+no|no\s+gracias|no\s+hace\s+falta|ya\s+no|dejalo|deja|dejala|"
+    r"dejemoslo|olvidalo|olvidate|olvida|cancela|cancelalo|cancelar|para|basta|ninguno|ninguna|tranqui|"
+    r"no\s+thanks|never\s+mind|forget\s+it|cancel|stop|leave\s+it|no\s+need)[\s,.!]*){1,4}$"
+)
 # Talk that never answers a slot, even with a question pending.
 _SOCIAL = re.compile(
     r"^(?:gracias|muchas\s+gracias|genial|perfecto|buenisimo|jaja\w*|uf+|ah+|oh+|wow|que\s+bien|"
@@ -141,7 +148,7 @@ def dependency(text: str, slot: DialogueSlot) -> str | None:
     if not slot.has_context:
         return None
     folded = _fold(text).strip(" ¿?¡!.,")
-    if not folded or _SOCIAL.match(folded):
+    if not folded or _SOCIAL.match(folded) or _REFUSAL.fullmatch(folded):
         return None
     words = folded.split()
     if slot.pending_request:

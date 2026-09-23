@@ -87,3 +87,36 @@ como `package.install` (el lector de winget de REOPEN1993 toma «bajar» por «d
 acreditó como volumen. Elegido: esas filas se juzgan contra lo acreditado (etiqueta `audio.volume`), no contra la
 decisión rota de la referencia; así el baseline las cuenta mal y el arreglo (léxico de ajustes: nada llamado
 «volumen» se instala) las cuenta bien. Revertir: quitar las tres etiquetas.
+
+## 12. Capa B: un ejemplo de documento cuenta sólo si tiene forma de turno
+Situación: tras los filtros de idioma y destinatario, 88 de las 108 filas de la capa B eran criterios de aceptación y
+notas técnicas cosechadas como «misión» («OCR PaddleOCR crop 600×200», «Offload parcial CPU+GPU», «monitoreo de GPU»);
+el oráculo esperaba un efecto porque nombran una familia, y la capa medía eso (S2: 30/106). Nadie se lo dijo a BAXY.
+Elegido (meta: «filtrado … a lo dicho a BAXY»): en la capa B, una fila es un turno sólo si abre —tras un vocativo o
+muletilla— con una pregunta, un pedido o un verbo en imperativo y no lleva notación técnica
+(`semantic_corpus.speech_act_of`, escrita para el corpus, independiente de los lectores del producto). Salen 89 filas
+(`addressee_document_not_a_turn` 49, `addressee_document_technical_notation` 40); quedan 20. La capa C (frases dichas a
+asistentes) no se toca: la regla tiraba 1 276 frases reales («clickeá aceptar», «avre spotify»). Muestra de 50 al azar
+para el dueño: `%LOCALAPPDATA%\BAXY\semantic-corpus-v1\speech_rule_sample.json`. S2 con el corpus nuevo: B 10/20.
+Revertir: quitar la rama `layer_of(row) == "B"` de `addressee_of` y reconstruir (cambia la cifra, no el producto).
+
+## 13. Misión compuesta con una parte que BAXY no hace: ofrecer la parte posible
+Situación: «abre Steam, ve a biblioteca y busca Batman», «abre Paint y dibuja un gato», «abre Spotify y baja el
+volumen» terminaban en «no puedo abrir Steam ni…»: negaban la cláusula posible (límite falso, contrario a «cero
+afirmaciones falsas»). La causa principal: `_catalog_unavailable_turn_decision` leía la frase entera como nombre de juego.
+Opciones: (a) ejecutar la parte posible sin preguntar — descartada: hace sólo una parte de lo pedido sin que la persona
+lo sepa (la conservación compuesta sellada lo prohíbe); (b) límite plano — es falso; (c) aclaración que cita las dos
+partes con las palabras de la persona y pregunta si hace la posible. Elegido (c), lo más reversible: nada corre en ese
+turno; el `objective` devuelto es sólo la parte probada, así un «sí» ejecuta eso y un «no, dejalo» no hace nada (el hueco
+ya no toma un rechazo como respuesta). La frase no afirma que el resto sea imposible («no lo hago en el mismo pedido»),
+porque puede ser posible por separado («cuánto es 25 por 4»). El cierre de catálogo ya no aplica a una compuesta.
+Revertir: quitar `partial_offer` en `_decide_turn_result` y la condición `compound_clauses` del cierre de catálogo.
+
+## 14. Dos etiquetas mías del registro real que contradecían la tabla del dueño
+Situación: en §8 etiqueté log:177 («cuál fue la 1era iteración de un zombie en la historia») y log:70 (la fecha de
+lanzamiento de un videojuego y su autor) como conversación, y log:179 («cuál fue el 1er libro de zombies»), con la misma forma, como
+`web.search`. La tabla del dueño (PRUEBA_DUENO_2026-09-21_NOCHE.md, turnos 174–181, «primera iteración / primer libro»)
+dice: «para hechos verificables, web.search antes de afirmar; hechos datados → búsqueda». Elegido: las dos pasan a
+`web.search`, como la tabla. No tapa una regresión: la etiqueta vieja era la que contradecía la especificación; el
+lector nuevo (`record_fact_query`) es el que la cumple. Cuenta: 2 filas de la capa A, ambas a la vista aquí. Revertir:
+devolver las dos claves de `labels_real_log.json` a `conversation`.

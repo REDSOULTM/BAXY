@@ -120,12 +120,14 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 notebook (cierre 2026-09-22): re-pin tras las tandas y reparaciones del notebook (WALLPAPER2039…WINGET2087)
 # Fase 3.5 clase 1 (2026-09-22): dialogue_slot, reescritura contextual y harness semantic_replay/semantic_corpus.
 # Fase 3.5 semantic S1–S2 (2026-09-23): normalize, lexicon, grammar, dialogue; guardas y veto.
+# C03 Fase 3.5 semantic S3 (2026-09-23): trece dominios de effect_intent a src/baxy_mind/semantic/, oferta parcial de misiones compuestas, lectores de opinión/hecho fechado, vocativos, rechazo en el hueco.
+# C03 Fase 3.5 semantic S3 (2026-09-23): trece dominios de effect_intent a src/baxy_mind/semantic/, oferta parcial de misiones compuestas, lectores de opinión/hecho fechado, vocativos, rechazo en el hueco.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "351b614227636990071d9e0df4d6de56abd742f2b3b4416a3d03f541c2b68e4f"
+        "a11dce865bc09ceba1ff835f966135885a90963db3e050133544b130556448ef"
     ),
     "src/baxy_mind/llm.py": (
-        "386bc3546bf261bd028be51bdad999f358e986c70740b41fd41a749b1798cbd7"
+        "4b9d53f4398f5c393da41f89ab12378f6ddc2fc3eb6f0b4826c809e709940255"
     ),
 }
 

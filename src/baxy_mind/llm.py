@@ -8666,6 +8666,10 @@ def compose_visible_defect(
         r"\bthe status is\b|"
         r"\bstatus update\b|\bstatus:\s*success\b|\bpolarity\b|"
         r"request analysis|failure in request|"
+        # Fase 3.5 (corpus A/C: «Sí, pero el análisis de la solicitud falló»):
+        # the cause code request_analysis_failed read aloud in Spanish.
+        r"an[aá]lisis de (?:la|tu) (?:solicitud|petici[oó]n)|an[aá]lisis del pedido|"
+        r"(?:la|tu) solicitud fall[oó]|el an[aá]lisis fall[oó]|"
         r"one english sentence|^una frase\b|\bcontrato\b|"
         r"responder en espa|con una frase|dato adicional|no tengo acceso|"
         r"idioma obligatorio|mandatory language|situacion del turno|"

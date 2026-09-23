@@ -38,6 +38,7 @@ from . import protocol
 from . import effect_intent
 from . import corrector
 from .semantic import dialogue as dialogue_slot
+from .semantic.grammar import _head_forms
 from .corrector import catalog_correction_terms
 from .first_signal import (
     PATH_MODEL,
@@ -2736,6 +2737,181 @@ def _explicit_unsupported_turn_decision(objective: str) -> dict[str, object]:
         "effect_verification": "not_applicable",
         "response_language": _explicit_response_language(objective),
     }
+
+
+_CLAUSE_EDGE_PUNCTUATION = " \t,.;:!?¿¡«»\"'"
+
+
+def _original_clause(objective: str, folded_clause: str) -> str:
+    """The clause as the person wrote it (case and accents), found by folded words."""
+
+    words = folded_clause.split()
+    tokens = list(re.finditer(r"\S+", objective))
+    folded = [effect_intent._fold(token.group()).strip(_CLAUSE_EDGE_PUNCTUATION) for token in tokens]
+    for start in range(len(tokens) - len(words) + 1):
+        if folded[start : start + len(words)] == words:
+            span = objective[tokens[start].start() : tokens[start + len(words) - 1].end()]
+            return span.strip(_CLAUSE_EDGE_PUNCTUATION)
+    return folded_clause
+
+
+# Coordination between clauses: a comma, «y/e», «después/luego», «and/then».
+_CLAUSE_COORDINATION = re.compile(
+    r"\s*[,;]\s*(?:(?:y|e|and)\s+)?(?:(?:despues|después|luego|then)\s+)?"
+    r"|\s+(?:y\s+despues|y\s+después|y\s+luego|and\s+then|y|e|and|then|luego|despues|después)\s+",
+    re.IGNORECASE,
+)
+
+
+def _coordinated_clauses(objective: str) -> list[str]:
+    """The coordinated clauses of a request, as written."""
+
+    return [
+        part.strip(_CLAUSE_EDGE_PUNCTUATION)
+        for part in _CLAUSE_COORDINATION.split(objective)
+        if part.strip(_CLAUSE_EDGE_PUNCTUATION)
+    ]
+
+
+def _clause_starts_with_order(clause: str) -> bool:
+    """A coordinated clause is an order: an order verb, or an imperative by its form with an object."""
+
+    folded = effect_intent._fold(clause)
+    if _OVERHEARD_ACTION_WORDS.match(folded) is not None:
+        return True
+    words = folded.split()
+    return len(words) >= 2 and any(
+        form != words[0] and form.endswith(("ar", "er", "ir")) for form in _head_forms(words[0])
+    )
+
+
+# A lead that makes the order after it not a plain order: a condition («si
+# llueve, …»; a bare «sí» folds to «si» and is assent) or reported speech.
+_LEAD_NOT_TALK = re.compile(
+    r"\b(?:si|cuando|apenas|en\s+cuanto|mientras|if|when|once|while)\s+\w|"
+    r"\b(?:dice|dijo|decia|dicen|me\s+dijo|says|said|told)\b"
+)
+
+
+def _order_after_talk(
+    objective: str,
+    resolve: Callable[[str], EffectIntent | None],
+) -> EffectIntent | None:
+    """The order said after talk («Me encanta cómo lo definís, oye, hablando de amor,
+    pon una canción de amor en YouTube»): owner test 2026-09-21 turn 15.
+
+    The pattern reads whole requests; talk before the order hid it. The tail from
+    the first clause the pattern resolves on its own is the request, when no earlier
+    clause is an order, a condition, reported speech or a negation.
+    """
+
+    parts = re.split(r"(?<=[,.;!?])\s+", objective.strip())
+    if len(parts) < 2 or len(parts) > 8:
+        return None
+    for index in range(1, len(parts)):
+        lead = " ".join(parts[:index])
+        folded_lead = effect_intent._fold(lead)
+        if _LEAD_NOT_TALK.search(folded_lead) or _OVERHEARD_ACTION_WORDS.search(folded_lead):
+            return None
+        tail = " ".join(parts[index:]).strip()
+        found = resolve(tail)
+        if found is not None:
+            return found
+    return None
+
+
+_FRONTED_PLACE = re.compile(
+    r"^[¿¡\s]*(?P<prep>en|on|in|por|desde)\s+(?P<place>[^\s,]+(?:\s+[^\s,]+){0,2}?)\s*,?\s+(?P<order>\S.*)$",
+    re.IGNORECASE,
+)
+
+
+def _fronted_place_request(
+    objective: str,
+    resolve: Callable[[str], EffectIntent | None],
+) -> EffectIntent | None:
+    """«en YouTube pon una canción» read as «pon una canción en YouTube» (layer C).
+
+    The pattern reads the place after the order; said first, it hid the order.
+    Only when what follows the place is an order and the reordered request
+    resolves on its own; the words are the person's.
+    """
+
+    match = _FRONTED_PLACE.match(objective.strip())
+    if match is None or not _clause_starts_with_order(match.group("order")):
+        return None
+    order = match.group("order").strip().rstrip(".!?")
+    return resolve(f"{order} {match.group('prep')} {match.group('place')}")
+
+
+def _leading_proved_clauses(
+    objective: str,
+    contract: CompoundEffectContract | None,
+    resolve: Callable[[str], object | None],
+) -> tuple[list[str], list[str]] | None:
+    """(proved, pending) clauses of a compound, in the person's words, or None.
+
+    The compound contract's clause reading wins; without one, the coordinated
+    clauses are read one by one and the leading ones the pattern resolves on
+    their own are the proved part («abre Word» in «abre Word y ayudame a…»).
+    """
+
+    if contract is not None and contract.clause_requirements:
+        proved = [_original_clause(objective, c) for c, ops in contract.clause_requirements if ops]
+        pending = [_original_clause(objective, c) for c, ops in contract.clause_requirements if not ops]
+        if not all(_clause_starts_with_order(clause) for clause in pending):
+            # «buenas, phrase_hook_test_… y dime la hora»: a token that is not an
+            # order is not a part BAXY declines; it is not offered around.
+            return None
+    else:
+        clauses = _coordinated_clauses(objective)
+        if len(clauses) < 2:
+            return None
+        if not all(_clause_starts_with_order(clause) for clause in clauses[1:]):
+            # «abre Ratchet y Clank», «juga Dungeons and Dragons»: a title with a
+            # conjunction is one name, not two clauses.
+            return None
+        count = 0
+        for clause in clauses:
+            if resolve(clause) is None:
+                break
+            count += 1
+        proved, pending = clauses[:count], clauses[count:]
+    return (proved, pending) if proved and pending else None
+
+
+def _compound_partial_offer(
+    objective: str,
+    clauses: tuple[list[str], list[str]] | None,
+    response_language: str | None,
+) -> tuple[str, str] | None:
+    """(question, objective) offering the proved clauses of a compound BAXY cannot finish.
+
+    Fase 3.5: «abre Steam, ve a biblioteca y busca Batman» ended as «no puedo
+    abrir Steam ni…», denying the clause BAXY can do. When the whole mission
+    cannot keep authority but some clauses were proved on their own, the honest
+    turn names both parts in the person's own words and asks before doing the
+    proved part; the proved part is the objective an assent resumes. It does not
+    claim the rest is impossible (it may be a separate request, «cuánto es 25
+    por 4»), only that it is not done in this one. Nothing runs in this turn.
+    """
+
+    if clauses is None:
+        return None
+    proved, pending = clauses
+    if response_language == "en":
+        question = (
+            "I can do " + " and ".join(f"“{clause}”" for clause in proved) + " now; "
+            + " and ".join(f"“{clause}”" for clause in pending)
+            + " I can't do in the same request. Shall I do the first part?"
+        )
+    else:
+        question = (
+            "Ahora puedo hacer " + " y ".join(f"«{clause}»" for clause in proved) + ". Lo de "
+            + " y ".join(f"«{clause}»" for clause in pending)
+            + " no lo hago en el mismo pedido. ¿Hago lo primero?"
+        )
+    return question, " y ".join(proved)
 
 
 # Un acto social completo no pide nada: saludar, despedirse, agradecer o
@@ -5675,6 +5851,11 @@ def _explicit_arguments_from_evidence(
             # WEB1831: the engine answers the question in the person's words
             # (the lead-in supplies the subject when the question names none).
             return {"query": research_question}
+        opinion = effect_intent.public_opinion_query(evidence) or effect_intent.record_fact_query(evidence)
+        if opinion is not None:
+            # Fase 3.5: opinions of a public work («… opiniones») and a dated fact
+            # (the question in the person's words) are looked up before answering.
+            return {"query": opinion}
         destination = effect_intent._symbolic_web_destination(evidence)
         if destination is not None:
             return {"query": destination}
@@ -7545,7 +7726,8 @@ def _prepare_turn_result(
         on_signal=on_signal,
     )
     if rearmed is not None:
-        result["objective"] = rearmed[0]
+        # A partial offer's objective (the proved clauses) outranks the rearmed request.
+        result.setdefault("objective", rearmed[0])
     return result
 
 
@@ -7877,6 +8059,18 @@ def _decide_turn_result(
             game_catalog,
             previous_user_text=_previous_user_request(history, objective),
         )
+        or _order_after_talk(
+            objective,
+            lambda tail: resolve_explicit_effects(
+                tail, available_operations, application_names, game_catalog
+            ),
+        )
+        or _fronted_place_request(
+            objective,
+            lambda reordered: resolve_explicit_effects(
+                reordered, available_operations, application_names, game_catalog
+            ),
+        )
         or (
             EffectIntent(("window.application.status",), (objective,))
             if "window.application.status" in available_operations
@@ -7890,12 +8084,6 @@ def _decide_turn_result(
     # them, and only one false sister (audio.status for a volume request).
     # Domain grounding still vetoes ungrounded families. Keep the recogniser.
     recogniser_declined: list[str] = []
-    catalog_unavailable_decision = _catalog_unavailable_turn_decision(
-        objective,
-        explicit_intent,
-        application_names,
-        game_catalog,
-    )
     unresolved_compound_effects = unresolved_compound_contract(
         objective,
         available_operations,
@@ -7904,15 +8092,42 @@ def _decide_turn_result(
         resolved_intent=explicit_intent,
         previous_user_text=_previous_user_request(history, objective),
     )
+    # Fase 3.5: the catalog closes a single app/game name that is not installed.
+    # A compound is not a name: «abre Spotify y baja el volumen» was read whole
+    # as a game title, missed the library and became «no puedo abrir Spotify ni
+    # bajar el volumen». Each clause of a compound is proved by its own path.
+    compound_clauses = (
+        None
+        if non_target_language is not None
+        else _leading_proved_clauses(
+            objective,
+            unresolved_compound_effects,
+            lambda clause: resolve_explicit_effects(
+                clause, available_operations, application_names, game_catalog
+            ),
+        )
+    )
+    catalog_unavailable_decision = (
+        None
+        if unresolved_compound_effects is not None or compound_clauses is not None
+        else _catalog_unavailable_turn_decision(
+            objective,
+            explicit_intent,
+            application_names,
+            game_catalog,
+        )
+    )
     explicit_conversation_decision = (
         _explicit_unsupported_turn_decision(objective)
         if non_target_language is not None
+        # Fase 3.5: an incomplete compound («abre Steam y busca Batman») used to
+        # become a flat «no puedo abrir Steam ni…», denying the clause BAXY can do.
+        # It now reaches the model with the recognized operations forced into the
+        # shortlist; compound conservation still vetoes a partial plan. Only a
+        # request to demonstrate an unsupported effect is a limit here.
         or (
             unresolved_compound_effects is not None
-            and (
-                effect_request_is_authoritative(objective)
-                or unsupported_effect_demonstration_request(objective)
-            )
+            and unsupported_effect_demonstration_request(objective)
         )
         or (
             effect_request_is_authoritative(objective)
@@ -8540,6 +8755,33 @@ def _decide_turn_result(
             _turn_audit_stage("deictic_referent_clarification", decision)
         )
 
+    partial_offer = (
+        _compound_partial_offer(
+            objective,
+            compound_clauses,
+            _decisive_request_language(objective) or str(decision.get("response_language") or ""),
+        )
+        if decision["mode"] == "conversation"
+        and decision.get("conversation_kind") == "unsupported"
+        and non_target_language is None
+        else None
+    )
+    if partial_offer is not None:
+        decision = {
+            "mode": "clarify",
+            "operation": None,
+            "question": partial_offer[0],
+            "conversation_kind": "",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "response_language": decision.get("response_language"),
+        }
+        intent_operations = []
+        turn_audit["stages"].append(
+            _turn_audit_stage("compound_partial_offer", decision)
+        )
+
     reply_text = ""
     # El idioma con el que se redacta la respuesta viaja con ella: el shell no
     # vuelve a adivinarlo para vetarla.
@@ -8709,6 +8951,8 @@ def _decide_turn_result(
         "question": decision["question"],
         "reply": reply_text,
     }
+    if partial_offer is not None:
+        result["objective"] = partial_offer[1]
     if decision["mode"] == "conversation":
         result["conversationKind"] = presentation_conversation_kind
         if (

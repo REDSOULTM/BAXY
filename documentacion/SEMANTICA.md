@@ -72,7 +72,11 @@ con antecedente es el objeto de ese antecedente, nunca «lo que esté delante».
 - `scripts/semantic_replay.py literals` — sólo `turn.decide`, sin ejecutar nada (742, capas A/B/C).
 - `scripts/semantic_corpus.py` — corpus por capas del histórico de todos los BAXY (filtros de idioma y destinatario,
   oráculo proyectado a familias) y puntuación por tipo de fallo. Todo lo que contiene texto del dueño es privado
-  (`%LOCALAPPDATA%\BAXY\semantic-corpus-v1`).
+  (`%LOCALAPPDATA%\BAXY\semantic-corpus-v1`). Capa A = lo dicho de verdad a BAXY (encuesta de 742 y registro real);
+  B = ejemplos de los documentos de los BAXY anteriores, sólo los que tienen forma de turno (`speech_act_of`, decisión
+  §12: los criterios de aceptación y notas técnicas no son turnos); C = corpus de frases dichas a asistentes (muestra de
+  1 000). El oráculo de B y C es heredado y ruidoso (espera «conversación» para «silenciá el sonido»): sus
+  re-etiquetas son públicas y contadas (RL1, RL2), y la capa A nunca se re-etiqueta.
 
 ## `src/baxy_mind/semantic/` — lo que ya está
 
@@ -81,7 +85,33 @@ con antecedente es el objeto de ese antecedente, nunca «lo que esté delante».
 | `normalize.py` | el único fold (minúsculas, sin tildes, espacios) | antes había cuatro copias idénticas en effect_intent, request_reading, llm y el hueco |
 | `lexicon.py` | las palabras de cada familia, dichas una vez: micrófono (sustantivos, verbos de silenciar / activar), volumen, brillo, ajustes del PC, restaurar el sonido | el lector del patrón, la guarda de dominio, las pistas de estado del planner y el veto importan lo mismo; un sinónimo se añade una vez («micro», «prender», «devolver el sonido») |
 | `grammar.py` | la gramática compartida del pedido: sobre (saludos, cortesía, «¿podés…?», «volvé a…», «ahora/luego…» + verbo), cabeza, cláusulas, negación | `_head_is` reconoce **formas**, no entradas: la cabeza tal cual, sin clíticos («cerralo» → «cerra»), y el voseo como infinitivo («cerra» → «cerrar»). Una lista de verbos ya no necesita «cerralo», «abrilo», «devolvele» |
-| `dialogue.py` | el hueco de diálogo (arriba) | |
+| `dialogue.py` | el hueco de diálogo (arriba) | un rechazo («no, dejalo», «mejor no», «never mind») nunca completa el pedido pendiente; «no, en YouTube» lleva destino y sí |
+| `intent.py`, `catalog.py`, `temporal.py` | el tipo de lectura (`EffectIntent`), los índices de apps y juegos instalados, las palabras de tiempo | compartidos por varios dominios: ningún dominio importa de otro para esto |
+| dominios | `audio`, `display`, `windows`, `media`, `web`, `files`, `games`, `network`, `system`, `notes`, `messaging`, `ui`, `apps` | los lectores acíclicos que estaban en `effect_intent` (19 140 → 13 133 líneas). Traslado puro: las 4 946 lecturas del patrón del corpus son idénticas antes y después (`pattern_dump`) |
+
+Formas nuevas (Fase 3.5, cada una con pruebas de frases que no son las que la originaron):
+
+- **Misión compuesta con una parte imposible** (`__main__._leading_proved_clauses`, `_compound_partial_offer`): antes
+  «abre Steam, ve a biblioteca y busca Batman» terminaba en «no puedo abrir Steam ni…» (el cierre de catálogo leía la
+  frase entera como nombre de juego). Ahora BAXY cita las dos partes con las palabras de la persona y pregunta si hace
+  la posible; un «sí» retoma sólo esa parte. No afirma que el resto sea imposible, sólo que no lo hace en ese pedido.
+  Cláusulas por coordinación: heredado de Carter v4 (`mission_goal._MULTISTEP_SEPARATORS`); una cláusula cuenta si
+  empieza por una orden, por lista o por la forma del imperativo (idea de Carter v3, `request_patterns.looks_imperative`),
+  así «abre Ratchet y Clank» sigue siendo un nombre.
+- **Orden después de charla** (`_order_after_talk`): «Me encanta cómo lo definís, oye, hablando de amor, pon una canción
+  de amor en YouTube» → la cola con la orden; no si lo anterior es una condición («si llueve, …») o habla citada.
+- **Destino delante** (`_fronted_place_request`): «en YouTube pon una canción» se lee como «pon una canción en YouTube».
+- **Opinión de una obra pública y hecho fechado** (`semantic/web.public_opinion_query`, `record_fact_query`):
+  «¿la nueva peli de X es buena?», «¿X vale la pena?», «qué piensa la gente de X», «cuál fue el primer libro de…»,
+  «cuándo sale…» → `web.search` antes de afirmar. Exige pregunta (la opinión de la persona no es un pedido), una obra con
+  nombre y nada personal, deíctico ni de este PC.
+- **Vocativo con otro nombre** (`grammar._ASSISTANT_NAME`): «Gemma, …», «Carter, …», «Alexa, …» son sólo la dirección.
+  Gemma y Carter fueron nombres de los BAXY anteriores (`Probando Gemma 4/_tesis_curso/_rebrand_carter_to_baxy.py`).
+- **El PC como objeto de silenciar** («silenciá la notebook», «unmute the pc») es el audio global; «apagá el PC» sigue
+  siendo apagar. **«Sacá una captura»** a secas es una captura de pantalla. **Comilla sin cerrar** al dictar un texto
+  para el portapapeles abre el literal.
+- **Veto de código interno**: la causa `request_analysis_failed` leída en voz alta («el análisis de la solicitud falló»)
+  se veta también en castellano.
 
 Guardas de entrada sin pedido (`__main__._unresolved_input_kind`, pasan a `dialogue` al migrar): «mensaje cortado»
 sólo para un **pedido** (con cabeza de orden: «como tú» al final de una charla no está cortado); «habla ajena» sólo
@@ -101,7 +131,8 @@ entre sí) va a `patterns.py` al final; antes salen los lectores acíclicos de c
 | `normalize.py` | fold único (tildes, mayúsculas), clíticos, voseo, número en palabras, typos ≤2 contra el catálogo | `effect_intent._fold`, `request_reading.fold`, `corrector`, `dialogue_slot._fold` |
 | `dialogue.py` | hueco, re-armado, guardas de entrada sin pedido (corte, habla ajena) | `dialogue_slot.py`, `__main__._unresolved_input_kind` |
 | `identity.py` | qué es BAXY, qué no hace y por qué (límites de primera clase) | `request_reading` (identidad/capacidad), `known_unsupported_effect_request`, `_closed_unsupported_request` |
-| dominios | `audio`, `display`, `apps`, `windows`, `media`, `web`, `files`, `messaging`, `system`, `games`, `notes_tasks`, `memory`, `network` | `effect_intent.resolve_explicit_effects` / `_strict_catalog_request` / `resolve_explicit_clarification_intent` y sus `_review_*` |
+| `patterns.py` | el orquestador del patrón (lo que queda en `effect_intent`: `resolve_explicit_effects`, `_strict_catalog_request`, `resolve_explicit_clarification_intent`, los `_review_*` cíclicos) | `effect_intent` (13 133 líneas; los lectores acíclicos ya salieron a sus dominios) |
+| `memory.py` | guardar, recordar y olvidar datos de la persona | hoy la ruta es del shell (`NaturalMemoryRequestParser`); la puntuación de capas la deja fuera |
 
 Cada dominio: tabla de formas aceptadas (rioplatense y neutro, voseo/tú, inglés, sin tildes, errores típicos del oído),
 guardas (qué NO es), ejemplos como tests, y de qué BAXY anterior se heredó (ley 1).

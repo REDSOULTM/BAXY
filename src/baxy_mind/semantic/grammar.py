@@ -208,8 +208,12 @@ _LOCAL_TASK_FRAME = (
 # instruction nouns even though they read like ones. They name catalog objects,
 # and "crea una tarea en el equipo: comprar pan" would be stripped down to
 # "comprar pan", destroying the very request it was meant to unwrap.
+# The names people call the assistant by (Fase 3.5, ley 1): the owner called the earlier BAXYs
+# «Gemma» and «Carter», and people say «Alexa», «Siri» or «Jarvis» out of habit. As a vocative
+# before a request each is only an address, never part of the request.
+_ASSISTANT_NAME = r"(?:baxy|gemma|carter|alexa|siri|jarvis)"
 _COMPUTER_INSTRUCTION_FRAME = (
-    r"(?:baxy\s*[,;:]?\s*)?"
+    rf"(?:{_ASSISTANT_NAME}\s*[,;:]?\s*)?"
     r"(?![^:]{0,90}\b(?:no|not|sin|without|s[oó]lo|solo|only|nada|"
     r"ning[uú]n|ninguna|ningunos|ningunas|ninguno|tampoco|nunca|jam[aá]s|"
     r"neither|none|never)\b[^:]{0,90}:)"
@@ -293,7 +297,7 @@ _REQUEST_PREFIX = (
     rf"good morning|good afternoon|good evening|hello|hi|hey)\s*[,;:.!?]{_PREFIX_GAP}|"
     r"(?:(?:che|oye|oiga|hey|ey|ok|okay|hola|hello|hi|escucha|listen|"
     r"a ver)\s+)?"
-    rf"baxy\s*[,;:.!?\-\u2013\u2014]?{_PREFIX_GAP})?)"
+    rf"{_ASSISTANT_NAME}\s*[,;:.!?\-\u2013\u2014]?{_PREFIX_GAP})?)"
 )
 
 

@@ -101,8 +101,10 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 notebook (cierre 2026-09-22): re-pin tras las tandas y reparaciones del notebook (WALLPAPER2039…WINGET2087)
 # Fase 3.5 clase 1 (2026-09-22): dialogue_slot, reescritura contextual y harness semantic_replay/semantic_corpus.
 # Fase 3.5 semantic S1–S2 (2026-09-23): normalize, lexicon, grammar, dialogue; guardas y veto.
+# C03 Fase 3.5 semantic S3 (2026-09-23): trece dominios de effect_intent a src/baxy_mind/semantic/, oferta parcial de misiones compuestas, lectores de opinión/hecho fechado, vocativos, rechazo en el hueco.
+# C03 Fase 3.5 semantic S3 (2026-09-23): trece dominios de effect_intent a src/baxy_mind/semantic/, oferta parcial de misiones compuestas, lectores de opinión/hecho fechado, vocativos, rechazo en el hueco.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "dcc34197276cf8716b7328f2cb4d13640cbc9957a1626565ec49206c9edf31c4"
+    "fcc01d7b13a7051dafe4f9bf5c964d632da35d9521bc40c0cf265ca9162ab51d"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

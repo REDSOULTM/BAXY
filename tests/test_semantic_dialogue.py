@@ -120,3 +120,17 @@ def test_a_pronoun_takes_the_object_of_the_previous_order(text, antecedent, rear
 def test_an_indirect_pronoun_or_a_question_is_not_substituted():
     assert dialogue_slot.substituted_reference("devolvele el sonido", "silenciá el sonido") is None
     assert dialogue_slot.substituted_reference("cerralo", "¿qué hora es?") is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["no", "no, dejalo", "mejor no", "nah, olvidalo", "no gracias", "no hace falta", "no thanks", "never mind", "cancelá"],
+)
+def test_a_refusal_never_completes_the_pending_request(text):
+    slot = _slot("abrí Photoshop", ["abrí Photoshop"], "¿Lo abro?")
+    assert dialogue_slot.dependency(text, slot) is None
+
+
+def test_a_correction_with_a_destination_is_not_a_refusal():
+    slot = _slot("poné la de Queen en Spotify", ["poné la de Queen en Spotify"], "¿La pongo?")
+    assert dialogue_slot.dependency("no, en YouTube", slot) == "answer"

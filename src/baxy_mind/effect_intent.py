@@ -124,22 +124,381 @@ from .semantic.grammar import (  # noqa: F401 - moved to baxy_mind.semantic.gram
     _strip_clause_conjunction,
     _normalize_dependent_clauses,
 )
+from .semantic.audio import (  # noqa: F401 - moved to baxy_mind.semantic.audio; callers migrate
+    _MICROPHONE_CLIENT,
+    app_scoped_microphone_mute,
+    _LOCAL_VOLUME_DEVICE,
+    _LOCAL_OUTPUT_VOLUME_OBJECT,
+    _VOLUME_OBJECT,
+    _bare_music_volume_request,
+    _volume_domain,
+    _MUTE_PREDICATIVE_VERB,
+    _MUTE_VERB,
+    _STRICT_AUDIO_OBJECT_VERB,
+    _audio_mute_domain,
+    _APP_VOLUME_AMOUNT,
+    _APP_VOLUME_SPANISH,
+    _APP_VOLUME_ENGLISH,
+    _APP_VOLUME_ENGLISH_SPLIT,
+    _APP_VOLUME_SET_LEVEL,
+    _APP_VOLUME_SET_SPANISH,
+    _APP_VOLUME_SET_ENGLISH,
+    _APP_VOLUME_LEVEL_WORDS,
+    _AUDIO_LEVEL_CUE,
+    _is_audio_mute_state_query,
+    _AUDIO_APPLICATION_SCOPE,
+    _has_app_scoped_audio,
+    _PERCENTAGE_WORD_PATTERN,
+)
+from .semantic.windows import (  # noqa: F401 - moved to baxy_mind.semantic.windows; callers migrate
+    _CLOSE_WINDOW_WRAPPER,
+    _DEICTIC_WINDOW_MUTATION,
+    deictic_window_mutation,
+    _FOCUS_HEAD_ONLY,
+    _FOCUS_HEAD_WITH_TAIL,
+    _FOCUS_TAIL,
+    _MINIMIZE_HEAD,
+    _SNAP_HEAD,
+    _SNAP_SIDE,
+    explicit_window_title,
+    has_named_window_target,
+    _window_domain,
+    _MINIMIZE_ALL_REQUEST,
+    minimize_all_request,
+    INDETERMINATE_WINDOW_CLAUSE,
+    _OTHER_WINDOW_SWITCH,
+    other_window_switch_request,
+)
+from .semantic.display import (  # noqa: F401 - moved to baxy_mind.semantic.display; callers migrate
+    _KNOWN_FOLDER_WORDS,
+    _KNOWN_FOLDER_ENUM,
+    _SCREEN_INVENTORY,
+    screen_inventory_request,
+    _DISPLAY_STATUS_QUESTION,
+    _display_status_question,
+    _without_screen_state_preface,
+    _BRIGHTNESS_SCREEN,
+    _BRIGHTNESS_OBJECT,
+    _BRIGHTNESS_UP_VERB,
+    _BRIGHTNESS_DOWN_VERB,
+    _BRIGHTNESS_ABSOLUTE,
+    _BRIGHTNESS_ENGLISH_TURN,
+    _BRIGHTNESS_RELATIVE_WORDS,
+    brightness_status_request,
+    _BRIGHTNESS_SET_VERB,
+    _BRIGHTNESS_EXTREME_VALUES,
+    wallpaper_request,
+)
+from .semantic.intent import (  # noqa: F401 - moved to baxy_mind.semantic.intent; callers migrate
+    EffectIntent,
+    _entity_key,
+    _is_negated_match,
+    _append,
+    _append_all,
+)
+from .semantic.catalog import (  # noqa: F401 - moved to baxy_mind.semantic.catalog; callers migrate
+    MAX_APPLICATION_CATALOG_ENTRIES,
+    MAX_APPLICATION_CATALOG_PATTERN_CHARS,
+    MAX_GAME_CATALOG_ENTRIES,
+    ApplicationCatalogIndex,
+    GameCatalogIndex,
+    build_game_catalog_index,
+    _authenticated_game_target,
+    resolve_game_catalog_app_id,
+    _application_name_key,
+    build_application_catalog_index,
+    _CATALOG_NAME_ALIASES,
+    _catalog_alias_key,
+    _installed_game_named,
+    installed_game_title,
+    installed_game_provider,
+    _MESSAGING_CLIENT_KEY,
+)
+from .semantic.temporal import (  # noqa: F401 - moved to baxy_mind.semantic.temporal; callers migrate
+    _COUNTDOWN_HOUR_WORDS,
+    _COUNTDOWN_TARGET,
+    countdown_target,
+    _CALENDAR_MONTH_TOKEN,
+    _absolute_calendar_range_parts,
+    _DEICTIC_DAY,
+    _CLOCK_TIME_SELECTOR,
+    _BOUNDED_TEMPORAL_SELECTOR,
+)
+from .semantic.media import (  # noqa: F401 - moved to baxy_mind.semantic.media; callers migrate
+    _YOUTUBE_SEARCH,
+    _youtube_search_query,
+    _YOUTUBE_PLAY,
+    youtube_play_query,
+    _direct_media_discovery_or_play_request,
+    _MUSIC_BROWSER,
+    _MUSIC_PLAY_HEAD,
+    _MUSIC_BROWSER_REQUEST,
+    _named_browser_music_request,
+    _NETFLIX_SPELLED,
+    _underspecified_video_request,
+    _title_case_media_title,
+    _media_transport_action,
+    _resume_existing_media,
+    _REMOVABLE_MEDIA,
+    _bare_spoken_number_media_query,
+)
+from .semantic.web import (  # noqa: F401 - moved to baxy_mind.semantic.web; callers migrate
+    public_opinion_query,
+    record_fact_query,
+    _public_route_lookup_request,
+    _public_calendar_fact_lookup_request,
+    _WEATHER_WORDS,
+    _weather_lookup_query,
+    _TOPIC_RESEARCH,
+    _topic_research_query,
+    _RESEARCH_VERBS,
+    _RESEARCH_LEAD_IN,
+    _RESEARCH_QUESTION,
+    _RESEARCH_FUNCTION_WORDS,
+    _research_question_query,
+    _ENTITY_LOOKUP,
+    _entity_lookup_query,
+    _RESEARCH_QUESTION_SUBJECT,
+    _research_question_subject,
+    _public_live_lookup_request,
+    _public_product_correction_lookup_request,
+    _public_commerce_lookup_request,
+    _FILESYSTEM_OBJECT_NOUN,
+    operation_identity_is_a_near_miss,
+    _VISUAL_CONTENT_REQUEST,
+    _CURIOSITY_REQUEST,
+    curiosity_request,
+    visual_content_request,
+    _WEB_IMAGE_NOUN,
+    web_image_request,
+    _NAVIGATION_CLIENT,
+    client_navigation_target,
+    _KNOWN_FOLDER_WORDS,
+    _KNOWN_FOLDER_ENUM,
+    _authenticated_application_identity_conflict,
+    _browser_page_domain,
+    browser_back_arguments,
+    browser_new_tab_arguments,
+    browser_close_all_tabs_arguments,
+    _historical_note_search_request,
+    _stored_note_search_query,
+    _nominal_reminder_lookup_title,
+    _literal_known_file_search,
+    _location_recommendation_request,
+    _NAMED_BROWSER_SITE_BROWSER,
+    _NAMED_BROWSER_SITE_ENTRY,
+    _NAMED_BROWSER_SITE_HEAD,
+    _NAMED_BROWSER_SITE_REQUEST,
+    _INSTALLED_BROWSER_SEARCH,
+    _installed_browser_search_query,
+    _BROWSER_SEARCH_IN_BROWSER,
+    _BROWSER_SEARCH_PRONOUN,
+    _browser_search_query,
+    _browser_search_pronoun_request,
+    _completed_browser_search_pronoun_request,
+    browser_search_pronoun_intent,
+    _NAMED_PUBLIC_SITE,
+    _review_web_and_browser_effects,
+    web_download_request,
+    NAMED_CDP_BROWSERS,
+    _named_browser_match,
+    _named_browser,
+    _VISIBLE_CLICK_NAVIGATE,
+    _VISIBLE_CLICK_WEB_DESTINATION,
+)
+from .semantic.files import (  # noqa: F401 - moved to baxy_mind.semantic.files; callers migrate
+    _FILE_CREATION_REQUEST,
+    _FILE_TRASH_REQUEST,
+    _PDF_SUMMARY_REQUEST,
+    _pdf_summary_request,
+    _file_trash_request,
+    _PROCESS_REPORT_FILE_REQUEST,
+    process_report_file_request,
+    _file_creation_request,
+    _KNOWN_FOLDER_PATH,
+    _TEXT_FILE_EXTENSIONS,
+    known_folder_file_path,
+    _current_directory_file_count,
+    _DUPLICATE_FILES,
+    _KNOWN_FOLDER_LISTING,
+    _KNOWN_FOLDER_RECENT,
+    _known_folder_recent_listing,
+    _known_folder_listing_request,
+    _review_file_and_game_effects,
+    _ZIP_MISSION_FOLDER,
+    _ZIP_MISSION_FILE,
+    folder_txt_zip_open_mission,
+    open_named_file_request,
+    _office_document_roundtrip_intent,
+)
+from .semantic.games import (  # noqa: F401 - moved to baxy_mind.semantic.games; callers migrate
+    _corrected_game_launch_title,
+    _edit_distance,
+    _NEAR_GAME_ORDER,
+    near_catalog_game_candidates,
+    _STEAM_LIBRARY_VERB,
+    _STEAM_LIBRARY_REQUEST,
+    steam_library_verb,
+    game_library_store,
+    steam_library_title,
+    _steam_install_status_intent,
+    _steam_install_cancel_active_intent,
+    _steam_catalog_list_intent,
+)
+from .semantic.network import (  # noqa: F401 - moved to baxy_mind.semantic.network; callers migrate
+    _direct_current_time_request,
+    _direct_process_inventory_request,
+    _local_internet_connection_query,
+    _DATIVE_STATE_OPENING,
+    _HARDWARE_MODEL_OPENING,
+    _WIFI_STATE_QUESTION,
+    _BLUETOOTH_STATE_QUESTION,
+    _bluetooth_state_question,
+    _WIFI_SCAN_QUESTION,
+    _WIFI_RADIO_SET_REQUEST,
+    _WIFI_OFF_OFFER,
+    _ASSENT_TO_OFFER,
+    _ACCEPTED_WIFI_OFFER_EVIDENCE,
+    _accepted_wifi_offer_evidence,
+    _WIFI_PLACE_ALIASES,
+    _WIFI_PLACE_REQUEST,
+    wifi_place_request,
+    _WIFI_PLACE_QUESTION,
+    wifi_place_answer,
+    wifi_place_answer_intent,
+    accepted_wifi_offer,
+    wifi_radio_set_request,
+    _wifi_scan_question,
+    _wifi_state_question,
+    _review_system_and_network_effects,
+    _wifi_email_intent,
+)
+from .semantic.system import (  # noqa: F401 - moved to baxy_mind.semantic.system; callers migrate
+    _WEATHER_MEDIUM,
+    _weather_location,
+    _weather_read_intent,
+    process_inventory_arguments,
+)
+from .semantic.notes import (  # noqa: F401 - moved to baxy_mind.semantic.notes; callers migrate
+    _relative_calendar_read_request,
+    _time_only_reminder_request,
+    _COUNT_DOWN_REQUEST,
+    _count_down_request,
+    _reminder_has_actionable_due,
+    _multiple_alarm_schedule_intent,
+    _TASK_DATE_ONLY,
+    _task_without_title,
+    _bare_note_inventory_request,
+    _note_inventory_object,
+    _wake_alarm_request,
+    _bounded_calendar_list_query,
+    _ORDINAL_INDEX,
+    _CARDINAL_NUMBER,
+    _ORDINAL_WORD,
+    _NOTE_CONTENT_INTRODUCER,
+    _fully_enumerated_named_note_titles,
+    _fully_enumerated_note_create_count,
+    _fully_enumerated_note_read_order,
+    _named_note_dependency_order,
+    _individually_authored_note_create_clauses,
+    _has_fully_enumerated_note_cardinality,
+    enumerated_note_dependency_order,
+    _NOTEPAD_OBJECT,
+    _latest_notification_selector,
+    _active_alarm_stop_request,
+    session_single_alarm_rewrite,
+    _alarm_turn_off_request,
+    _exact_local_reminder_title,
+    _review_calendar_message_and_direct_reminder_effects,
+    _AGENDA_LISTING,
+)
+from .semantic.messaging import (  # noqa: F401 - moved to baxy_mind.semantic.messaging; callers migrate
+    _MSG_VERB,
+    _MSG_OBJECT,
+    _MSG_OBJECT_CHANNEL,
+    _MSG_CHANNEL,
+    _MSG_CHANNEL_WORDS,
+    _message_channel_name,
+    _MSG_TO,
+    _MSG_ON,
+    _MSG_SEP,
+    _MSG_REC,
+    _MSG_BODY,
+    _MSG_END,
+    _MSG_DRAFT_PATTERNS,
+    _MSG_ANY_PATTERNS,
+    _MSG_PRONOUN_RECIPIENTS,
+    message_request_named_client,
+    message_request_any_channel,
+    _MAIL_ADDRESS,
+    _MAIL_SUBJECT,
+    email_send_request,
+    email_request_without_address,
+    message_draft_request,
+    _latest_email_domain,
+    _NOTIFICATION_LISTING,
+    _notification_listing_request,
+)
+from .semantic.ui import (  # noqa: F401 - moved to baxy_mind.semantic.ui; callers migrate
+    _clipboard_selection_domain,
+    _clipboard_copy_domain,
+    _clipboard_paste_domain,
+    _CALC_NUMBER,
+    _CALC_MENTION,
+    _CALC_VERB_OPERATORS,
+    _CALC_INFIX,
+    calculator_expression_request,
+    _CLIPBOARD_WRITE_HEAD,
+    _CLIPBOARD_QUOTED,
+    literal_clipboard_write_text,
+    _review_input_and_capture_effects,
+    _VISIBLE_CLICK_POINTING,
+    _VISIBLE_CLICK_APP_CONTEXT,
+    _VISIBLE_CLICK_CONTROL_NOUN,
+    _GERUND_CLICK,
+    _gerund_click_label,
+    _visible_click_label,
+    _click_in_application,
+    _visible_click_intent,
+)
+from .semantic.apps import (  # noqa: F401 - moved to baxy_mind.semantic.apps; callers migrate
+    _SELF_CLOSE,
+    self_close_request,
+    _APPLICATION_TRAILING_REQUEST,
+    _application_target_forms,
+    _CLOSE_TRAILING_COURTESY,
+    _close_target_forms,
+    _DEICTIC_CLOSE_REQUEST,
+    deictic_close_request,
+    _bounded_application_literal,
+    _authenticated_application_list,
+    _OPEN_STATE_CONDITION,
+    _CLOSE_ALL_REQUEST,
+    close_all_request,
+    _has_multiple_installed_entities,
+    _append_domain_actions,
+    _open_application_spans,
+    _CATALOG_INSTALL_VERB,
+    _opened_applications,
+)
 
 
 
-MAX_APPLICATION_CATALOG_ENTRIES = 2_048
-MAX_APPLICATION_CATALOG_PATTERN_CHARS = 1_048_576
-MAX_GAME_CATALOG_ENTRIES = 4_096
 
 
-@dataclass(frozen=True, slots=True)
-class EffectIntent:
-    operations: tuple[str, ...]
-    evidence: tuple[str, ...] = ()
 
-    @property
-    def kind(self) -> str:
-        return "action" if len(self.operations) == 1 else "plan"
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @dataclass(frozen=True, slots=True)
@@ -169,168 +528,10 @@ class CompoundEffectContract:
     clause_requirements: tuple[tuple[str, tuple[str, ...]], ...] = ()
 
 
-@dataclass(frozen=True, slots=True)
-class ApplicationCatalogIndex:
-    """Bounded, reusable view of one authenticated application snapshot."""
-
-    entries: tuple[tuple[str, str], ...]
-    keys: frozenset[str] = field(repr=False)
-    entity_identities: tuple[tuple[str, str], ...] = field(repr=False)
-    occurrence_pattern: re.Pattern[str] | None = field(
-        repr=False,
-        compare=False,
-    )
-
-    def __iter__(self) -> Iterator[str]:
-        return (name for name, _ in self.entries)
-
-    def __len__(self) -> int:
-        return len(self.entries)
-
-
-@dataclass(frozen=True, slots=True)
-class GameCatalogIndex:
-    """Bounded authenticated identities for locally installed games."""
-
-    # normalized name, provider, app id, display name
-    entries: tuple[tuple[str, str, str, str], ...] = ()
-
 
 _EXPLICIT_EFFECTS_NOT_RESOLVED = object()
 
 
-def _public_route_lookup_request(folded: str) -> bool:
-    """Recognize a standalone request for directions to a public destination."""
-
-    return (
-        re.fullmatch(
-            r"[^\w]*(?:"
-            r"directions?\s+(?:to|from\s+.{1,80}\s+to)\s+\S.{0,120}|"
-            r"direcciones?\s+(?:a|desde\s+.{1,80}\s+a)\s+\S.{0,120}|"
-            r"indicaciones\s+para\s+llegar\s+a\s+\S.{0,120}"
-            r")[\s.!?]*",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-
-
-def _public_calendar_fact_lookup_request(folded: str) -> bool:
-    """Recognize year-dependent public calendar facts outside local state."""
-
-    return (
-        re.fullmatch(
-            r"[^\w]*(?:"
-            r"(?:que|cual)\s+dia\s+de\s+la\s+semana\s+cae\s+"
-            r"\S.{0,96}\s+(?:este|el\s+presente)\s+ano|"
-            r"what\s+day\s+of\s+the\s+week\s+(?:is|does)\s+"
-            r"\S.{0,96}\s+(?:fall\s+on\s+)?this\s+year"
-            r")[\s.!?]*",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-
-
-_WEATHER_WORDS = (
-    r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|llover|"
-    # WEATHER2023 «¿hace frío afuera?»: the cold or the heat outside is the weather too.
-    r"llovera|llovio|temperature|temperatura|frio|fria|calor|cold|hot|caluroso|calurosa)\b"
-)
-
-
-def _weather_lookup_query(text: str) -> str | None:
-    """WEB1445: the person's weather request without its request verbs, accents
-    kept (the engine answers «va a llover mañana» and «clima hoy», not the folded
-    or verb-laden forms); None when the request is not a live weather lookup."""
-
-    folded = _fold(text)
-    if not _public_live_lookup_request(folded) or not _has(folded, _WEATHER_WORDS):
-        return None
-    if _has(folded, r"^[¿?¡!\s]*(?:que|what)\s+(?:es|son|is|are|significa|means)\b"):
-        return None
-    # WEATHER2023 boundary «qué clima hacía en Buenos Aires en 1990»: the past
-    # (a past-tense verb or a year) has no live read; the turn says so instead
-    # of reading today's weather.
-    if _has(
-        folded,
-        r"\b(?:hacia|hizo|hubo|estuvo|estaba|fue|llovio|was|were|did|rained)\b|"
-        r"\b(?:19|20)\d\d\b|\b(?:ayer|anteayer|yesterday|la\s+semana\s+pasada|last\s+week)\b",
-    ):
-        return None
-    query = text.strip(" \t\r\n¿?¡!.,;:")
-    query = re.sub(r"^(?:por favor|please)\s*[,:]?\s*", "", query, flags=re.IGNORECASE)
-    query = re.sub(
-        r"^(?:mostrame|muéstrame|muestrame|muestra|decime|dime|contame|cuéntame|cuentame|"
-        r"busca|buscá|buscame|buscar|search|find|show\s+me|tell\s+me|dame|give\s+me|"
-        r"necesito|need|quiero|i\s+want)\s+(?:saber\s+|to\s+know\s+)?(?:el|la|the|los|las)?\s*",
-        "", query, count=1, flags=re.IGNORECASE)
-    query = re.sub(
-        r"^(?:qué|que|what|cuál|cual|what's|cómo|como|how)\s+(?:es\s+|is\s+|está\s+|esta\s+|estará\s+|estara\s+|va\s+a\s+estar\s+)?"
-        r"(?:el\s+|la\s+|the\s+)?"
-        r"(?P<noun>clima|tiempo|weather|forecast|pronóstico|pronostico)\s*"
-        r"(?:hace|hay|is\s+it\s+like|is\s+it|is|like)?\s*",
-        lambda m: m.group("noun") + " ", query, count=1, flags=re.IGNORECASE)
-    # «is it going to rain tomorrow» / «will it rain tomorrow»: the auxiliaries
-    # never appear in a forecast page; the engine answers «rain tomorrow».
-    query = re.sub(r"^(?:is\s+it\s+going\s+to|will\s+it|is\s+it|does\s+it)\s+", "", query, count=1, flags=re.IGNORECASE)
-    # WEB1455 «busca en internet el clima»: the medium may precede the noun.
-    query = re.sub(r"(?:^|\s+)(?:en|in|on)\s+(?:google|internet|la\s+web|the\s+web)\b\s*", " ", query, flags=re.IGNORECASE)
-    query = re.sub(r"^\s*(?:el|la|los|las|the)\s+", "", query, count=1, flags=re.IGNORECASE)
-    query = re.sub(r"\s+", " ", query).strip(" ?!.,;:")
-    return query if query and _has(_fold(query), _WEATHER_WORDS) else None
-
-
-_WEATHER_MEDIUM = (
-    r"\b(?:google|bing|internet|la\s+web|the\s+web|online|en\s+linea)\b"
-)
-
-
-def _weather_location(text: str) -> str | None:
-    """REOPEN1993 (grupo W): the place the person named for the weather («en
-    Buenos Aires», «in Madrid»), with their own spelling; None when no place is
-    named (the read then uses this PC's own location) or the words after the
-    preposition are a medium («en google», «en internet»)."""
-
-    query = _weather_lookup_query(text)
-    if query is None:
-        return None
-    match = re.search(
-        r"\b(?:en|in|de|para|for|at)\s+(?P<place>[^,;:.!?]+?)\s*"
-        r"(?:\b(?:hoy|manana|mañana|ahora|today|tomorrow|now|right\s+now|por\s+favor|please)\b.*)?$",
-        query,
-        re.IGNORECASE,
-    )
-    if match is None:
-        return None
-    place = match.group("place").strip(" \t\r\n.,;:")
-    place = re.sub(r"^(?:la\s+ciudad\s+de|the\s+city\s+of)\s+", "", place, flags=re.IGNORECASE)
-    folded_place = _fold(place)
-    if (
-        not folded_place
-        or _has(folded_place, _WEATHER_MEDIUM)
-        or _has(folded_place, _WEATHER_WORDS)
-        or len(place.encode("utf-8")) > 128
-    ):
-        return None
-    return place
-
-
-def _weather_read_intent(
-    text: str,
-    available_operations: Iterable[str],
-) -> EffectIntent | None:
-    """REOPEN1993 (grupo W): a live weather question is a typed weather read,
-    never a web search (twelve rows were credited with pages about the
-    weather or an honest failure instead of the weather itself)."""
-
-    if "weather.current" not in frozenset(available_operations):
-        return None
-    if _weather_lookup_query(text) is None or len(_request_clauses(_fold(text))) != 1:
-        return None
-    return EffectIntent(("weather.current",), (text.strip(),))
 
 
 _NEWS_SCOPE_WORDS = (
@@ -404,128 +605,6 @@ def _news_read_intent(
     return EffectIntent(("web.news.headlines",), (text.strip(),))
 
 
-_TOPIC_RESEARCH = re.compile(
-    r"^[¿?¡!\s]*(?:investiga|investigá|investigar|investigue|investigame|investígame|"
-    r"research|look\s+into|look\s+up|"
-    # Owner's mother 2026-09-21 «dame info de la migraña»: information about a
-    # topic is the same public lookup.
-    r"(?:dame|dáme|pasame|pásame|quiero|necesito|busca|buscá|buscame|búscame|give\s+me|find\s+me|i\s+want|i\s+need)\s+"
-    r"(?:(?:un\s+poco\s+de|algo\s+de|mas|más|some|more)\s+)?(?:info|informacion|información|datos|information|data))\s+"
-    r"(?:(?:en\s+internet|en\s+la\s+web|online|on\s+the\s+internet|on\s+the\s+web)\s+)?"
-    r"(?:(?:sobre|acerca\s+de|about|a|de|del|on)\s+)?"
-    r"(?P<topic>.+?)"
-    r"(?:\s+(?:en\s+internet|en\s+la\s+web|online|on\s+the\s+internet|on\s+the\s+web))?"
-    r"\s*[.!?]*$",
-    re.IGNORECASE,
-)
-
-
-def _topic_research_query(text: str) -> str | None:
-    """WEB1451 «Investiga Spider-Man»: the topic the person asked to research,
-    with its own spelling; None when the request is not a research order or
-    the topic is a question («investiga qué es…»), a local thing or empty."""
-
-    match = _TOPIC_RESEARCH.match(text.strip())
-    if match is None:
-        return None
-    topic = match.group("topic").strip(" \t\r\n.,;:")
-    folded_topic = _fold(topic)
-    if not folded_topic or len(topic.encode("utf-8")) > 200:
-        return None
-    subject = _research_question_subject(text)
-    if subject is not None:
-        # WEB1481 «Investiga en internet que es el h2o»: the topic is the
-        # subject of the question, not the question's words.
-        return subject
-    if _has(folded_topic, r"^(?:que|quien|quienes|como|cual|cuales|donde|cuando|por\s+que|porque|what|who|how|which|where|when|why)\b"):
-        return None
-    if _has(folded_topic, r"\b(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|documents?|mi\s+pc|my\s+pc|este\s+equipo)\b"):
-        return None
-    return topic
-
-
-_RESEARCH_VERBS = (
-    r"(?:investiga(?:r|me)?|research|look\s+(?:into|up)|busca(?:r|me)?|search|averigua(?:r|me)?|find\s+out)"
-)
-_RESEARCH_LEAD_IN = re.compile(
-    r"^[¿?¡!\s]*(?:(?:muy\s+bien|bueno|buenas|mira|sabes|oye|oime|che|hola|ok|okay|escucha|a\s+ver)[,.!\s]+)*"
-    r"(?P<lead>[^,.;?!]{3,140}?)\s*[,.;]\s*"
-    r"(?:(?:me\s+|te\s+)?(?:puedes|podes|podrias|can\s+you|could\s+you|would\s+you|please)\s+)?"
-    rf"(?P<request>{_RESEARCH_VERBS}\b.*)$",
-    re.IGNORECASE,
-)
-_RESEARCH_QUESTION = re.compile(
-    r"^[¿?¡!\s]*(?:(?:me\s+|te\s+)?(?:puedes|podes|podrias|can\s+you|could\s+you|would\s+you|please)\s+)?"
-    rf"{_RESEARCH_VERBS}\s+"
-    r"(?:(?:en\s+internet|en\s+la\s+web|en\s+google|online|on\s+the\s+internet|on\s+the\s+web|the\s+internet|the\s+web)\s+)?"
-    r"(?:(?:for|sobre|acerca\s+de|about)\s+)?"
-    r"(?P<question>(?:por\s*que|porq\w*|why|como|how|que|what|cual(?:es)?|which|donde|where|cuando|when|quien(?:es)?|who)\b.+?)\s*[.!?]*$",
-    re.IGNORECASE,
-)
-_RESEARCH_FUNCTION_WORDS = (
-    r"\b(?:por\s*que|porq\w*|why|como|how|que|what|cual|cuales|which|donde|where|cuando|when|quien|quienes|who|"
-    r"suele|suelen|se|me|te|le|nos|lo|la|los|las|el|un|una|de|del|a|al|en|y|o|falla|fallar|fallan|cae|caer|pasa|pasar|"
-    r"funciona|funcionar|anda|andar|no|si|es|esta|estan|hay|tanto|tan|mucho|siempre|does|do|is|are|it|keeps|keep|"
-    r"failing|fails|fail|crashing|crashes|crash|working|work|the|so|much|always|often)\b"
-)
-
-
-def _research_question_query(text: str) -> str | None:
-    """WEB1831 «me falla mucho whatsapp, puedes investigar en internet porqeu suele
-    fallar», «Investigá en internet por qué falla WhatsApp.»: the question the person
-    wants researched, in their own words, as the public search query; a
-    conversational lead-in supplies the subject when the question names none.
-    None for a who/what question (its subject is looked up instead) or a local thing."""
-
-    raw = _strip_request_envelope(text).strip()
-    lead = None
-    opened = _RESEARCH_LEAD_IN.match(_fold(raw))
-    if opened is not None:
-        lead = opened.group("lead").strip()
-        raw = raw[len(raw) - len(opened.group("request")):] if len(opened.group("request")) <= len(raw) else raw
-    question_match = _RESEARCH_QUESTION.match(_fold(raw))
-    if question_match is None or _research_question_subject(raw) is not None:
-        return None
-    folded_question = question_match.group("question").strip(" .!?,;")
-    if not folded_question or len(folded_question.encode("utf-8")) > 300:
-        return None
-    if _has(folded_question, r"\b(?:archivos?|files?|carpetas?|folders?|documentos?|documents?|notas?|notes?|mi\s+pc|my\s+pc|este\s+equipo)\b"):
-        return None
-    # «averigua cómo quedó el audio del equipo», «find out how computer audio is
-    # set»: the state of this machine is read here, not researched online; only
-    # a question that names the internet keeps the public search.
-    if not _has(_fold(raw), r"\b(?:internet|web|google|online)\b") and _has(
-        folded_question,
-        r"\b(?:audio|volumen|volume|sonido|sound|brillo|brightness|wifi|wi-fi|bateria|battery|"
-        r"ventanas?|windows?|pantalla|screen|cpu|ram|memoria|memory|disco|disk|"
-        r"equipo|computer|computadora|computador|ordenador|pc|laptop|notebook|"
-        r"maquina|machine|cacharro|aparato|dispositivo|device|contraption|"
-        r"(?:este|esta|this)\s+(?:trasto|chisme|bicho|thing|box|rig))\b",
-    ):
-        return None
-    # The person's own spelling: the question as written in the request.
-    start = _fold(raw).find(folded_question)
-    question = raw[start:start + len(folded_question)].strip(" .!?,;") if start >= 0 and len(_fold(raw)) == len(raw) else folded_question
-    content = re.sub(_RESEARCH_FUNCTION_WORDS, " ", folded_question)
-    if lead is not None and not re.search(r"\b[a-z0-9]{3,}\b", content):
-        # «me falla mucho whatsapp, … porqeu suele fallar»: the question names
-        # no subject; the lead-in states it, in the person's words.
-        lead_start = _fold(text).find(lead)
-        lead_text = text[lead_start:lead_start + len(lead)] if lead_start >= 0 and len(_fold(text)) == len(text) else lead
-        return f"{lead_text.strip()} {question}".strip()
-    return question
-
-
-_ENTITY_LOOKUP = re.compile(
-    r"^[¿?¡!\s]*(?:"
-    r"(?:quien|quién|quienes|quiénes|who)\s+(?:es|fue|era|son|fueron|eran|is|was|are|were)|"
-    r"(?:(?:dime|decime|explicame|explícame|contame|cuentame|cuéntame|tell\s+me)\s+)?(?:que|qué|what)\s+(?:es|fue|era|is|was)|"
-    r"(?:hablame|háblame|hablarme|contame|cuentame|cuéntame|explicame|explícame|tell\s+me)\s+"
-    r"(?:(?:un\s+poco|algo|mas|más|a\s+bit|a\s+little|more)\s+)?(?:de|sobre|acerca\s+de|about)"
-    r")\s+(?P<entity>[^?¿!¡]+?)\s*[.!?¿¡=\s]*$",
-    re.IGNORECASE,
-)
-
 
 # cien-37 030 «send flowers to Deimos», 040 «hire a guide on Ceres», 060 «ship a
 # piano to Charon», 090 «rent a studio on Haumea»: no operation of this PC
@@ -558,644 +637,6 @@ def out_of_world_request(text: str) -> bool:
     return _OUT_OF_WORLD_DESTINATION.search(_fold(text)) is not None
 
 
-def _entity_lookup_query(text: str) -> str | None:
-    """KNOWLEDGE1473 «¿Quién es Daredevil?», «Que es doom eternal=», «Hablame
-    un poco de Marvel vs. Capcom.»: the named thing the person asks about, with
-    its own spelling, when who or what it is can be looked up in public pages;
-    None for a definition with an article («qué es una GPU»), the assistant or
-    the person («quién eres», «quién es de verdad»), a possessed or pointed
-    thing («quién es mi mamá», «qué es este archivo»), a word's meaning, a
-    local thing, or a question folded into the name («…, quien gana?»)."""
-
-    match = _ENTITY_LOOKUP.match(text.strip())
-    if match is None:
-        return None
-    entity = match.group("entity").strip(" \t\r\n.,;:")
-    # cien-39 073 «what is cache memory, one sentence»: the length the person
-    # asks for is not part of the name. It travelled inside the entity, the
-    # public search was made for that whole string, and the page found was a
-    # grammar site about using the phrase in a sentence, cited as the source.
-    entity = re.sub(
-        r"[,;]?\s*(?:in|en)?\s*(?:one|a|1|una?)\s+(?:short\s+)?"
-        r"(?:sentence|line|phrase|frase|linea|oracion)\s*[.!?]*$|"
-        r"[,;]?\s*(?:briefly|brevemente|en\s+corto|nada\s+mas|solo\s+eso)\s*[.!?]*$",
-        "",
-        entity,
-        flags=re.IGNORECASE,
-    ).strip(" \t\r\n.,;:")
-    folded_entity = _fold(entity)
-    if not folded_entity or not re.search(r"[a-z]", folded_entity):
-        return None
-    if len(entity.encode("utf-8")) > 80 or len(folded_entity.split()) > 8:
-        return None
-    if _has(folded_entity, r"^(?:un|una|unos|unas|a|an|el|la|los|las|the|lo)\b"):
-        return None
-    if _has(
-        folded_entity,
-        # «tell me what is currently playing», «dime qué es lo que está sonando»:
-        # a state of this PC, not a named thing to look up.
-        r"^(?:currently|now|actualmente|ahora|playing|sonando|reproduciendo|open|abierto|abierta|"
-        r"running|corriendo|going\s+on|happening|pasando|on|up|today|hoy|wrong|mal)\b",
-    ):
-        return None
-    if _has(
-        folded_entity,
-        r"^(?:tu|vos|usted|ustedes|ti|yo|el|ella|ellos|ellas|nosotros|nosotras|you|me|i|he|she|"
-        r"they|it|esto|eso|esta|este|ese|esa|aquel|aquello|aquella|this|that|these|those|"
-        r"mi|mis|tus|su|sus|nuestro|nuestra|nuestros|nuestras|my|your|his|her|their|our|"
-        r"de\s+verdad|realmente|really|en\s+realidad)\b",
-    ):
-        return None
-    if _has(
-        folded_entity,
-        r"\b(?:que|quien|quienes|como|cual|cuales|donde|cuando|por\s+que|porque|"
-        r"what|who|how|which|where|when|why)\b",
-    ):
-        return None
-    # cien-36 032 «who is speaking»: a bare present participle after «who is»
-    # is a predicate, not a name. Read as an entity it sent the turn to a
-    # public page about the language skill «speaking», while the Spanish
-    # «quién está hablando» answered with the assistant identity (089).
-    if _has(
-        folded_entity,
-        r"^(?:speaking|talking|writing|typing|answering|replying|responding|"
-        r"listening|calling|asking|reading|hablando|escribiendo|respondiendo|"
-        r"contestando|escuchando|llamando|preguntando|leyendo)$",
-    ):
-        return None
-    if _has(
-        folded_entity,
-        r"\b(?:bax[yi]|olly|alexa|siri|asistente|assistant|palabra|word|significa|"
-        r"significado|definicion|define|definition|meaning|means|archivos?|files?|"
-        r"carpetas?|folders?|notas?|notes?|documentos?|documents?|mi\s+pc|my\s+pc|"
-        r"este\s+equipo|ventanas?|windows?|pantalla|screen|volumen|volume|brillo|"
-        r"brightness|bluetooth|wifi|red|bateria|battery|procesos?|process(?:es)?|"
-        r"programas?|apps?|aplicaci(?:on|ones)|calculadora|portapapeles|clipboard|"
-        r"alarmas?|alarms?|timers?|temporizador|recordatorios?|reminders?|hora|fecha|"
-        r"clima|tiempo|weather|noticias?|news)\b",
-    ):
-        return None
-    return entity
-
-
-_RESEARCH_QUESTION_SUBJECT = re.compile(
-    r"^[¿?¡!\s]*(?:que|qué|quien|quién|what|who)\s+(?:es|son|fue|era|is|are|was)\s+"
-    r"(?:(?:el|la|los|las|the|un|una|unos|unas|a|an)\s+)?(?P<subject>[^?¿!¡]+?)\s*[.!?¿¡=\s]*$",
-    re.IGNORECASE,
-)
-
-
-def _research_question_subject(text: str) -> str | None:
-    """WEB1481 «Investiga en internet que es el h2o»: the subject of the
-    who/what question that a research order carries («h2o»), with its own
-    spelling; None when the order carries no such question, or the subject is
-    the assistant, a pointed or possessed thing, a word's meaning or a local
-    thing (the same exclusions as _entity_lookup_query)."""
-
-    order = _TOPIC_RESEARCH.match(text.strip())
-    if order is None:
-        return None
-    question = _RESEARCH_QUESTION_SUBJECT.match(order.group("topic").strip(" \t\r\n.,;:"))
-    if question is None:
-        return None
-    subject = question.group("subject").strip(" \t\r\n.,;:")
-    if not subject or len(subject.encode("utf-8")) > 80 or len(subject.split()) > 8:
-        return None
-    if _entity_lookup_query("quién es " + subject) is None:
-        return None
-    return subject
-
-
-_YOUTUBE_SEARCH = re.compile(
-    r"^[¿?¡!\s]*(?:busca|buscá|buscar|buscame|buscáme|búscame|search(?:\s+for)?|find)\s+"
-    r"(?:(?P<query>.+?)\s+(?:en|on)\s+youtube|(?:en|on)\s+youtube\s+(?P<query_after>.+?))\s*[.!?]*$",
-    re.IGNORECASE,
-)
-
-
-def _youtube_search_query(text: str) -> str | None:
-    """WEB1481 «buscá videos de gatos en youtube»: a search on YouTube is one
-    reviewed navigation to YouTube's results page with the person's query,
-    kept with its own spelling; None for any other shape, a playback request
-    («reproduce … en youtube») or a query that names a local thing."""
-
-    match = _YOUTUBE_SEARCH.match(text.strip())
-    if match is None:
-        return None
-    query = (match.group("query") or match.group("query_after") or "").strip().strip("\"'“”«»").strip()
-    folded_query = _fold(query)
-    if (
-        not query
-        or len(query.encode("utf-8")) > 512
-        or any(ord(character) < 32 for character in query)
-        or _has(folded_query, r"\b(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|documents?|mi\s+pc|my\s+pc|este\s+equipo)\b")
-    ):
-        return None
-    return query
-
-
-_YOUTUBE_PLAY = re.compile(
-    r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
-    r"(?:pon|poné|pone|ponme|poneme|reproduce|reproducí|reproduci|reproducime|play|put on)\s+"
-    r"(?:(?P<query>.+?)\s+(?:en|on|in|de|from)\s+youtube|(?:en|on|in)\s+youtube\s+(?P<query_after>.+?))"
-    r"(?:\s*[,;:]?\s+(?:por favor|please|porfa|porfi|pls|plz|dale|ahora|now))?\s*[.!?]*$",
-    re.IGNORECASE,
-)
-
-
-def youtube_play_query(text: str) -> str | None:
-    """MUSIC1553 «pon un video de lofi en youtube», «pon una cancion de michael
-    jackson en youtube»: the thing to play, in the person's own words with only
-    a leading article dropped («video de lofi», «cancion de michael jackson»),
-    as the search query for the local YouTube playback; None for any other shape,
-    for a generic «pon youtube» and for a query that names a local thing."""
-
-    match = _YOUTUBE_PLAY.match(text.strip())
-    if match is None:
-        return None
-    query = (match.group("query") or match.group("query_after") or "").strip().strip("\"'“”«»").strip()
-    query = re.sub(
-        r"^(?:un|una|el|la|algun|alguna|algún|some|a|an|the)\s+(?=\S)",
-        "",
-        query,
-        count=1,
-        flags=re.IGNORECASE,
-    ).strip()
-    folded_query = _fold(query)
-    if (
-        not query
-        or len(query.encode("utf-8")) > 512
-        or any(ord(character) < 32 for character in query)
-        or re.fullmatch(r"(?:algo|something|musica|music|videos?|a\s+video|cancion(?:es)?|songs?|temas?|un\s+tema)", folded_query)
-        or _has(folded_query, r"\b(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|documents?|mi\s+pc|my\s+pc|este\s+equipo)\b")
-    ):
-        return None
-    return query
-
-
-def _public_live_lookup_request(folded: str) -> bool:
-    """Recognize live feeds that require a public lookup to answer."""
-
-    head = _request_head(folded)
-    weather_heads = {
-        "are",
-        # WEATHER2023 «¿hace frío afuera?», «hace calor hoy?»
-        "hace",
-        "busca",
-        "buscame",
-        "buscar",
-        "clima",
-        "como",
-        "cual",
-        "decime",
-        "dime",
-        "find",
-        "mostrame",
-        "muestra",
-        "muestrame",
-        "que",
-        "search",
-        "do",
-        "does",
-        "forecast",
-        "how",
-        "is",
-        "llovera",
-        "llueve",
-        "necesito",
-        "need",
-        "pronostico",
-        "reporte",
-        "temperature",
-        "va",
-        "weather",
-        "what",
-        "will",
-        "voy",
-        "yes",
-    }
-    news_consumption = (
-        re.match(
-            (
-                r"^(?:(?:alexa|olly|bax[yi])\s+)?(?:"
-                r"i\s+(?:want|would\s+like)\s+to\s+(?:hear|know|see)|"
-                r"(?:pon|ponme|muestra|muestrame|show|play|"
-                r"busca|buscame|buscar|search|find|dame|decime|dime|investiga)\b"
-                r")"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    news = (
-        head
-        in {
-            "headlines",
-            "news",
-            "noticias",
-            "titulares",
-            # NEWS2027 «qué noticias hay de tecnología», «top news today»,
-            # «what's the news», «cuáles son los titulares», «últimas noticias»
-            "que",
-            "cuales",
-            "what",
-            "which",
-            "top",
-            "latest",
-            "ultimas",
-            "hay",
-            "any",
-        }
-        or news_consumption
-    ) and _has(
-        folded,
-        r"\b(?:news|headlines|noticias|titulares|breaking\s+news)\b",
-    )
-    vocative_weather = re.match(
-        r"^(?:olly|bax[yi])\s+(?P<head>[a-z]+)\b",
-        folded,
-        re.IGNORECASE,
-    )
-    weather_head = head in weather_heads or (
-        vocative_weather is not None and vocative_weather.group("head") in weather_heads
-    )
-    weather = weather_head and _has(
-        folded,
-        r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|llover|"
-        r"umbrella|paraguas|temperature|temperatura|hot|caluroso|calurosa|"
-        r"cold|frio|fria|calor)\b",
-    ) and not _has(
-        # WEATHER2023 boundary: the weather of the past is no live lookup.
-        folded,
-        r"\b(?:hacia|hizo|hubo|estuvo|estaba|fue|llovio|was|were|did|rained)\b|"
-        r"\b(?:19|20)\d\d\b|\b(?:ayer|anteayer|yesterday|la\s+semana\s+pasada|last\s+week)\b",
-    )
-    # WEB1451 «qué pasó hoy en el mundo»: what happened today is the news.
-    todays_events = (
-        re.match(
-            r"^[¿?¡!\s]*(?:que|what)\s+"
-            r"(?:paso|pasa|ha\s+pasado|esta\s+pasando|ocurrio|ocurre|sucedio|"
-            r"happened|is\s+happening|has\s+happened)\s+(?:hoy|today)\b",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    # WEB1451 «Investiga Spider-Man»: a research order about a named topic
-    # is a public lookup of that topic.
-    topic_research = _topic_research_query(folded) is not None
-    # KNOWLEDGE1473 «¿Quién es Daredevil?»: who or what a named thing is gets
-    # looked up in public pages instead of recited from the model's memory.
-    entity_lookup = _entity_lookup_query(folded) is not None
-    # KNOWLEDGE1505 «decime una curiosidad»: a curiosity with no topic is
-    # looked up about a subject BAXY picks, never invented (KNOWLEDGE1353).
-    curiosity = curiosity_request(folded)
-    # WEB1453 «¿Qué es un pronóstico del tiempo?»: a question about what a
-    # forecast, a news item or the weather is (indefinite article) asks for a
-    # definition; «what is the weather» keeps its article and stays a lookup.
-    definition_question = (
-        re.match(
-            r"^[¿?¡!\s]*(?:que|what)\s+(?:es|son|is|are)\s+(?:un|una|unos|unas|a|an)\s+",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    if definition_question:
-        weather = False
-        news = False
-        todays_events = False
-        topic_research = False
-        entity_lookup = False
-    # A file, note or document named after the weather, or a question about the
-    # word itself («¿qué significa la palabra clima?»), is not a live lookup.
-    if (weather or news or todays_events or topic_research or entity_lookup) and _has(
-        folded,
-        r"\b(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|"
-        r"documents?|txt|pdf|docx|significa|significado|definicion|define|"
-        r"definition|meaning|means)\b",
-    ):
-        weather = False
-        news = False
-        todays_events = False
-        topic_research = False
-        entity_lookup = False
-    market_direction = (
-        re.match(
-            (
-                r"^(?:are|did|do|how|is|was|were|esta|estaba|estaban|estan|"
-                r"subieron|bajaron)\b.{0,96}"
-                r"\b(?:stocks?|shares?|stock\s+market|acciones|bolsa|"
-                r"mercado\s+bursatil)\b.{0,96}"
-                r"\b(?:up|down|rising|falling|rise|fall|subiendo|bajando|"
-                r"subieron|bajaron|alza|baja)\b"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    market_price = (
-        re.match(
-            (
-                r"^(?:averigua|averigue|consulta|consultar|busca|buscar|"
-                r"find\s+out|look\s+up|check)\b.{0,96}"
-                r"\b(?:precio|price|cotizacion|quote)\b.{0,96}"
-                r"\b(?:acciones|stocks?|shares?)\b"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    local_events = (
-        re.match(
-            (
-                r"^(?:anything\s+(?:interesting\s+)?(?:going\s+on|happening)|"
-                r"what(?:'s|\s+is)\s+(?:going\s+on|happening)|"
-                r"what\s+events?\s+are\s+happening|"
-                r"hay\s+algo\s+(?:interesante\s+)?(?:pasando|ocurriendo))"
-                r"\b.{0,80}\b(?:in|near|around|en|cerca\s+de)\b\s+\S"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    local_fair = (
-        re.match(
-            (
-                r"^(?:hay|habra|existen?)\s+(?:ferias?|mercados?|eventos?)\b"
-                r".{0,96}\b(?:en|cerca\s+de|por)\s+(?:esta|mi|la)\s+"
-                r"(?:zona|area|barrio|ciudad)\b"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    nearest_public_place = (
-        re.match(
-            (
-                r"^(?:cual|donde)\b.{0,48}\b(?:zoo|zoologico|hospital|farmacia|"
-                r"gasolinera|parking|aparcamiento|estacionamiento|restaurant)\b"
-                r".{0,96}\b(?:mas\s+cercan[oa]|cerca\s+de|donde\s+(?:yo\s+)?estoy)\b|"
-                r"^(?:where|what)\b.{0,48}\b(?:nearest|closest)\b.{0,48}"
-                r"\b(?:zoo|hospital|pharmacy|parking|gas station|restaurant)\b"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    parking_lookup = (
-        re.match(
-            (
-                r"^(?:donde|where)\s+(?:puedo|can\s+i)\s+"
-                r"(?:aparcar|estacionar|park)\b.{0,120}\b(?:cerca|near)\b\s+\S"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    trending_public_articles = (
-        re.match(
-            (
-                r"^(?:cuales|which|what)\b.{0,48}"
-                r"\b(?:articulos?|articles?)\b.{0,48}"
-                r"\b(?:tendencia|trending|populares?|popular)\b"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    underspecified_market_price = (
-        re.match(
-            (
-                r"^(?:mas\s+)?(?:precio|precios|cotizacion|cotizaciones)\b.{0,48}"
-                r"\b(?:acciones|stocks?|shares?)\b|"
-                r"^(?:mas\s+)?(?:acciones|stocks?|shares?)\b.{0,48}"
-                r"\b(?:precio|precios|price|prices|quote|quotes)\b"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    nearby_store = (
-        re.match(
-            (
-                r"^(?:(?:solo\s+)?(?:estoy\s+)?buscando|busco|encuentra|"
-                r"puedes\s+encontrar|i(?:'m|\s+am)\s+(?:just\s+)?looking|"
-                r"find|show)\b.{0,160}"
-                r"\b(?:tiendas?|stores?|shops?)\b.{0,96}"
-                r"\b(?:dentro\s+de|a|within|near|nearby)\b.{0,32}"
-                r"\b(?:milla|millas|mile|miles|km|kilometros?)\b"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    nearby_weekend_event = (
-        re.match(
-            (
-                r"^(?:hay|habra|is\s+there|are\s+there)\b.{0,80}"
-                r"\b(?:evento|eventos|event|events)\b.{0,96}"
-                r"\b(?:cerca\s+de\s+mi|near\s+me|nearby|en\s+mi\s+zona)\b"
-                r".{0,80}\b(?:fin\s+de\s+semana|weekend)\b"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    business_delivery = (
-        re.match(
-            (
-                r"^(?:hace|ofrece|tiene|does|do|is)\b.{0,96}"
-                r"\b(?:envios?|entregas?|delivery|deliver)\b.{0,48}"
-                r"\b(?:domicilio|home|nearby|disponible|available)?\b"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    takeaway_availability = (
-        re.fullmatch(
-            (
-                r"(?:(?:can|could)\s+i|puedo|podria)\b.{0,96}"
-                r"\b(?:carry\s+out|take\s+out|takeaway|takeout|para\s+llevar)\b"
-                r".{0,96}\b(?:restaurant|restaurante)\b.{0,32}[\s.!?]*|"
-                r"(?:does|do|is|hace|ofrece|tiene)\b.{0,96}"
-                r"\b(?:restaurant|restaurante)\b.{0,96}"
-                r"\b(?:carry\s*out|take\s*out|takeaway|takeout|para\s+llevar)\b"
-                r".{0,32}[\s.!?]*"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    publisher_top_stories = (
-        re.match(
-            (
-                r"^(?:cuales|which|what)\b.{0,48}"
-                r"\b(?:historias?|stories|titulares?|headlines|noticias?)\b"
-                r".{0,48}\b(?:principales|top|latest|recientes)\b|"
-                r"^(?:cuales|which|what)\b.{0,48}\b(?:principales|top|latest)\b"
-                r".{0,48}\b(?:historias?|stories|titulares?|headlines|noticias?)\b"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    attributed_parking = (
-        re.match(
-            (
-                r"^(?:muestra|muestrame|show|find|encuentra|quiero\s+encontrar|"
-                r"i\s+want\s+to\s+find)\b.{0,96}"
-                r"\b(?:parking|aparcamiento|estacionamiento|valet\s+parking)\b"
-                r".{0,120}\b(?:en|in|near|by|cerca\s+de|con|with)\b\s+\S"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    generic_parking_discovery = (
-        re.fullmatch(
-            (
-                r"(?:(?:i\s+)?(?:want|would\s+like)\s+to\s+find|find|show|"
-                r"busca|encuentra|muestra|usa\s+[a-z0-9._-]+\s+para\s+encontrar)"
-                r"\b.{0,120}\b(?:garage\s+parking|parking|aparcamientos?|"
-                r"estacionamientos?)\b.{0,120}[\s.!?]*"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    retail_recommendation = (
-        re.fullmatch(
-            r"(?:(?:me\s+)?recomiendas?|recommend(?:\s+me)?)\s+"
-            r"(?:(?:un|una|some|a|an)\s+)?(?:paraguas|umbrella)"
-            r"[\s.!?]*",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    culinary_discovery = (
-        re.fullmatch(
-            r"(?:muestra|muestrame|show)(?:\s+me)?\s+"
-            r"(?:(?:las|the|some)\s+)?(?:recetas|recipes)\s+"
-            r"(?:famosas|populares|famous|popular|best|mejores)\b.{0,160}"
-            r"[\s.!?]*",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    transit_schedule = (
-        re.fullmatch(
-            r"(?:list|show|find|search|lista|muestra|busca)\b.{0,80}"
-            r"\b(?:train\s+times?|train\s+schedules?|horarios?\s+de\s+trenes?)\b"
-            r".{0,96}[\s.!?]*",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    weekly_weather_report = (
-        re.fullmatch(
-            r"(?:(?:weekly|semanal)\s+(?:weather|clima|tiempo)\s+(?:report|reporte)|"
-            r"(?:weather|clima|tiempo)\s+(?:report|reporte)\s+(?:weekly|semanal)|"
-            r"reporte\s+del\s+tiempo\s+semanal)[\s.!?]*",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    future_clothing_weather = (
-        re.fullmatch(
-            r"(?:voy\s+a\s+necesitar|necesitare|will\s+i\s+need|do\s+i\s+need)\b"
-            r".{0,96}\b(?:chaqueta|abrigo|jacket|coat|paraguas|umbrella)\b"
-            r".{0,96}\b(?:hoy|today|manana|tomorrow|next|proximo|proxima|"
-            r"lunes|martes|miercoles|jueves|viernes|sabado|domingo|"
-            r"monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b"
-            r".{0,48}[\s.!?]*",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    public_parking_discovery = (
-        _has(
-            folded,
-            r"\b(?:parking|aparcamiento|estacionamiento)\b",
-        )
-        and _has(
-            folded,
-            r"\b(?:localiza|localizar|localizaras|encuentra|encontrar|find|"
-            r"donde|where|cerca|near|nearby|ubicacion|location|gratis|"
-            r"gratuito|adaptado|accessible)\b",
-        )
-        and not _has(folded, r"\b(?:paga|pagar|pay|tarjeta|card|visa|bizum)\b")
-    )
-    retailer_product_discovery = (
-        _has(
-            folded,
-            r"\b(?:walmart|amazon|oysho|safeway|target|costco|ikea)\b",
-        )
-        # H0646: «quiero ver The Boys en Amazon Prime» names the streaming
-        # service, not the store; the Prime Video limit answers it.
-        and not _has(folded, r"\bamazon\s+prime\b|\bprime\s*video\b")
-        and _has(
-            folded,
-            r"^(?:i\s+need|i\s+want|let(?:'s|\s+us)\s+get|necesito|quiero|"
-            r"voy\s+a\s+necesitar)\b|\b(?:deliver|delivery|envio|entrega)\b",
-        )
-        and not _has(folded, r"\b(?:paga|pagar|pay|tarjeta|card|visa|bizum)\b")
-    )
-    return any(
-        (
-            news,
-            weather,
-            todays_events,
-            topic_research,
-            entity_lookup,
-            curiosity,
-            market_direction,
-            market_price,
-            local_events,
-            local_fair,
-            nearest_public_place,
-            parking_lookup,
-            trending_public_articles,
-            underspecified_market_price,
-            nearby_store,
-            nearby_weekend_event,
-            business_delivery,
-            takeaway_availability,
-            publisher_top_stories,
-            attributed_parking,
-            generic_parking_discovery,
-            retail_recommendation,
-            culinary_discovery,
-            transit_schedule,
-            weekly_weather_report,
-            future_clothing_weather,
-            public_parking_discovery,
-            retailer_product_discovery,
-        )
-    )
-
 
 def _nominal_datetime_query(folded: str) -> bool:
     return re.fullmatch(
@@ -1206,109 +647,6 @@ def _nominal_datetime_query(folded: str) -> bool:
 
 
 
-_COUNTDOWN_HOUR_WORDS = {
-    "una": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5, "seis": 6, "siete": 7, "ocho": 8,
-    "nueve": 9, "diez": 10, "once": 11, "doce": 12, "one": 1, "two": 2, "three": 3, "four": 4,
-    "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
-}
-_COUNTDOWN_TARGET = re.compile(
-    r"^(?:cuanto\s+(?:tiempo\s+)?(?:falta|queda|resta)\s+(?:para|hasta)|"
-    r"how\s+(?:long|much\s+time)\s+(?:until|till|before|to|is\s+left\s+(?:until|till|before)))\s+"
-    r"(?:(?:el|la|las|the)\s+)?"
-    r"(?:(?P<noon>mediodia|noon|midday)|(?P<midnight>medianoche|midnight)|"
-    r"(?P<hour>\d{1,2}|" + "|".join(sorted(_COUNTDOWN_HOUR_WORDS, key=len, reverse=True)) + r")"
-    r"(?:[:.h](?P<minute>\d{2}))?"
-    r"(?:\s+(?:y\s+(?P<spoken_minute>media|cuarto|\d{1,2}))?)?"
-    r"(?:\s*(?P<ampm>[ap])\.?\s*m\.?|\s+(?:de\s+la\s+|en\s+la\s+|in\s+the\s+|)"
-    r"(?P<part>manana|madrugada|tarde|noche|morning|afternoon|evening|night))?"
-    r"(?:\s+(?:de\s+hoy|today|hoy))?"
-    r")\s*$"
-)
-
-
-def countdown_target(text: str) -> str | None:
-    """«cuánto falta para las 3 de la tarde» → «15:00»: the clock time asked about.
-
-    CLOCK1327 H0399: a countdown resolves by reading the clock; the
-    remaining time is computed by the mind, never by the narrator.
-    """
-
-    folded = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.,")
-    match = _COUNTDOWN_TARGET.match(folded)
-    if match is None:
-        return None
-    if match.group("noon"):
-        return "12:00"
-    if match.group("midnight"):
-        return "00:00"
-    raw_hour = match.group("hour")
-    hour = int(raw_hour) if raw_hour.isdecimal() else _COUNTDOWN_HOUR_WORDS[raw_hour]
-    minute = int(match.group("minute") or 0)
-    spoken = match.group("spoken_minute")
-    if spoken == "media":
-        minute = 30
-    elif spoken == "cuarto":
-        minute = 15
-    elif spoken and spoken.isdecimal():
-        minute = int(spoken)
-    part = match.group("part") or ""
-    ampm = match.group("ampm") or ""
-    if hour > 23 or minute > 59:
-        return None
-    if ampm == "p" or part in {"tarde", "noche", "afternoon", "evening", "night"}:
-        if hour < 12:
-            hour += 12
-    elif ampm == "a" or part in {"manana", "madrugada", "morning"}:
-        if hour == 12:
-            hour = 0
-    return f"{hour:02d}:{minute:02d}"
-
-
-def _direct_current_time_request(folded: str) -> bool:
-    """Recognize a whole request for the local clock, shared by all three gates.
-
-    Only present/local modifiers belong to this reading. Event dates, elapsed
-    CPU time, other places and literal content must not match a trailing noun.
-    """
-
-    if countdown_target(folded) is not None:
-        return True
-    # CLOCK1327 H0054/H0312 «Tiempo»/«tiempo»: the bare word asks for the
-    # time; the weather is not something this PC reads.
-    if re.fullmatch(r"(?:el\s+)?tiempo(?:\s*,?\s*(?:por\s+favor|porfa|please))?",
-                    _strip_request_envelope(folded).strip(" ¿?¡!.,")):
-        return True
-    current = r"(?:actual|local|(?:de\s+)?hoy|ahora(?:\s+mismo)?|(?:right\s+)?now)"
-    nominal = (
-        r"(?:(?:la|el|the)\s+)?"
-        r"(?:(?:current|local)\s+){0,2}(?:hora|fecha|time|date)"
-        rf"(?:\s+{current}){{0,2}}|today(?:['’]s)?\s+date"
-    )
-    observation = (
-        rf"(?:{_CLOCK_READ_HEAD}|"
-        r"(?:necesito|quiero|quisiera)\s+saber|"
-        r"(?:i\s+)?(?:need|want)\s+to\s+know)"
-    )
-    return re.fullmatch(
-        rf"(?:{observation}\s+(?:{nominal})|"
-        rf"(?:what(?:\s+is|'s|’s|s)\s+(?=(?:the|current|local|today)\b)|"
-        rf"(?:que|cual)\s+es\s+)(?:{nominal})|"
-        rf"(?:{observation}\s+)?(?:"
-        r"(?:que|qe)\s+(?:hora|ora|fecha|dia)\s+es(?:\s+(?:ahora|hoy|ya))?|"
-        r"what\s+(?:time|date|day)\s+is\s+it(?:\s+(?:(?:right\s+)?now|today))?)|"
-        rf"(?:hora|fecha)\s+{current}|(?:current|local)\s+(?:local\s+)?(?:time|date)|"
-        rf"today(?:['’]s)?\s+date|(?:{observation}\s+)?"
-        r"(?:the\s+)?time\s+(?:right\s+now|now)"
-        r"(?:\s*[,;:]?\s*what\s+is\s+it)?|"
-        r"que\s+hora\s+(?:marca|muestra|tiene)\s+(?:este|el|mi)\s+"
-        r"(?:computador|equipo|pc)|"
-        r"what\s+time\s+does\s+(?:this|the|my)\s+(?:computer|pc)\s+(?:show|display)|"
-        r"(?:search|look|busca)\s+(?:to\s+)?(?:find|encontrar)\s+"
-        r"(?:(?:the|la)\s+)?(?:current|actual)\s+(?:local\s+)?"
-        r"(?:time|hora)(?:\s+(?:and|y)\s+(?:time\s+zone|zona\s+horaria))?)",
-        _strip_request_envelope(folded).strip(" ¿?¡!."),
-        re.IGNORECASE,
-    ) is not None
 
 
 def datetime_followup_antecedent(
@@ -1329,138 +667,6 @@ def datetime_followup_antecedent(
     return None
 
 
-def _direct_media_discovery_or_play_request(folded: str) -> bool:
-    """Recognize one requested audio title or bounded audio discovery query."""
-
-    direct_listen = (
-        re.fullmatch(
-            r"i\s+(?:want|would\s+like)\s+to\s+(?:listen\s+to|hear)\s+"
-            r"\S(?:.{0,180}?\S)?[\s.!?]*",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    rated_audio_discovery = (
-        re.fullmatch(
-            r"(?:show|find|recommend)(?:\s+me)?\s+(?:the\s+)?(?:best|top)\s+"
-            r"(?:podcasts?|albums?|songs?|playlists?)\b\S?.{0,180}"
-            r"(?:rating|rated|reviews?|good|popular)\b.{0,48}[\s.!?]*",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    return (direct_listen or rated_audio_discovery) and not _has(
-        folded,
-        r"\b(?:with|against|conmigo|contra\s+mi|juego|game|"
-        r"jokes?|chistes?)\b",
-    )
-
-
-def _relative_calendar_read_request(folded: str) -> bool:
-    """Recognize a read-only calendar query with a relative bounded range."""
-
-    return (
-        re.fullmatch(
-            r"(?:is|are)\s+there\s+(?:any\s+)?(?:events?|meetings?|appointments?)\s+"
-            r"(?:planned|scheduled|booked)\s+(?:for|in|over)\s+the\s+next\s+"
-            r"(?:\d+|one|two|three|four|five|six|several|few)\s+"
-            r"(?:days?|weeks?|months?)[\s.!?]*",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-
-
-def _public_product_correction_lookup_request(folded: str) -> bool:
-    """Recognize a corrected nominal product request as a safe public lookup."""
-
-    nominal_request = (
-        re.match(
-            (
-                r"^(?:"
-                r"(?:quiero|necesito|busco)\s+(?:un|una|unos|unas|algo)\b|"
-                r"voy\s+a\s+(?:obtener|conseguir|buscar)\s+\S|"
-                r"i\s+(?:want|need)\s+(?:(?:to\s+get)\s+)?(?:a|an|some)\b|"
-                r"i(?:'m|\s+am)\s+going\s+to\s+(?:get|find|pick\s+up)\s+\S|"
-                r"(?:get|find|pick\s+up)\s+(?:me\s+)?(?:a|an|some)\b"
-                r")"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    correction = _has(
-        folded,
-        (
-            r"(?:[.;!?]|\b(?:bueno|well)\b)[^.;!?]{0,48}"
-            r"\b(?:mejor|quiero\s+decir|i\s+mean|make\s+that)\b|"
-            r"\bno\b\s*,?\s*(?:quiero\s+decir|mejor|i\s+mean|make\s+that)\b|"
-            r"\b(?:quiero\s+decir|i\s+mean|make\s+that)\b\s+\S"
-        ),
-    )
-    transactional = _has(
-        folded,
-        (
-            r"\b(?:compra|comprar|buy|purchase|order|ordena|paga|pagar|pay|"
-            r"tarjeta|card|visa|mastercard|bizum|cash|efectivo|deliver|"
-            r"delivery|entrega|envia|enviar|send)\b"
-        ),
-    )
-    return nominal_request and correction and not transactional
-
-
-def _public_commerce_lookup_request(folded: str) -> bool:
-    """Recognize read-only restaurant and delivered-product discovery."""
-
-    takeaway = (
-        re.match(
-            (
-                r"^(?:can|could)\s+i\s+(?:get|order)\s+"
-                r"(?:take-?out|takeaway|delivery)\s+from\s+\S|"
-                r"^(?:puedo|podria)\s+(?:pedir|obtener)\s+"
-                r"(?:comida\s+para\s+llevar|delivery)\s+de\s+\S"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    delivered_product = (
-        re.match(
-            (
-                r"^(?:quiero|necesito|busco)\s+(?:un|una|unos|unas)\s+"
-                r"\S.{0,120}\b(?:envien|envio|entrega)\b.{0,32}"
-                r"\b(?:casa|domicilio)\b|"
-                r"^i\s+(?:want|need|am\s+looking\s+for)\s+(?:a|an|some)\s+"
-                r"\S.{0,120}\b(?:delivered|delivery)\b.{0,32}\bhome\b"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    gift_discovery = (
-        re.match(
-            (
-                r"^i\s+(?:need|want)\s+to\s+(?:find|look\s+for)\s+"
-                r"(?:a\s+)?(?:present|gift)\s+for\s+\S|"
-                r"^(?:necesito|quiero)\s+(?:encontrar|buscar)\s+"
-                r"(?:un\s+)?regalo\s+para\s+\S"
-            ),
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    payment = _has(
-        folded,
-        r"\b(?:paga|pagar|pay|checkout|tarjeta|card|visa|mastercard|bizum)\b",
-    )
-    return (takeaway or delivered_product or gift_discovery) and not payment
 
 
 def operation_domain_is_grounded(
@@ -1624,186 +830,6 @@ def _completed_missing_message_text_request(
     return completed if message_draft_request(completed) is not None else None
 
 
-_MSG_VERB = r"(?:m[aá]nd[aá](?:le|me|les)?|env[ií]a(?:le|me|les)?|envi[aá](?:le|me|les)?|escrib[ií](?:le|me)?|escr[ií]be(?:le|me)?|send|write|text|message)"
-_MSG_OBJECT = r"(?:(?:un|una|el|a|an|the)\s+)?(?:mensaje|message|texto|text)"
-_MSG_OBJECT_CHANNEL = r"(?:(?:un|una|el|a|an|the)\s+)?(?P<och>whatsapp|wsp|discord|correo(?:\s+electr[oó]nico)?|(?:e-?)?mail)(?:\s+(?:mensaje|message))?"
-_MSG_CHANNEL = r"(?P<ch>whatsapp|wsp|discord|correo(?:\s+electr[oó]nico)?|(?:e-?)?mail)"
-_MSG_CHANNEL_WORDS = r"(?:whatsapp|wsp|discord|correo|(?:e-?)?mail)"
-
-
-def _message_channel_name(word: str) -> str:
-    """The catalog channel for a client word: WhatsApp, Discord or email (owner
-    decision 2026-09-18 §3: «correo», «mail», «email»)."""
-
-    folded = _fold(word)
-    if folded in {"whatsapp", "wsp"}:
-        return "whatsapp"
-    if folded.startswith(("correo", "mail", "email", "e-mail")):
-        return "email"
-    return folded
-_MSG_TO = r"(?:a|al\s+grupo|al|para|to|en\s+el\s+grupo|en)"
-_MSG_ON = r"(?:en|por|via|v[ií]a|on|through)"
-_MSG_SEP = r"(?:que\s+diga|que\s+dice|diciendo(?:le)?|dici[eé]ndole|saying|that\s+says|que|that|:)"
-_MSG_REC = r"(?P<rec>[^\s,:;][^,:;]{0,60}?)"
-_MSG_BODY = r"(?P<body>.+?)"
-_MSG_END = r"\s*[.!?]*$"
-_MSG_DRAFT_PATTERNS = tuple(
-    re.compile(pattern, re.IGNORECASE)
-    for pattern in (
-        # «manda un mensaje a Musica en whatsapp que diga hola», «Write to Musica on WhatsApp saying test»
-        rf"^\s*{_MSG_VERB}\s+(?:{_MSG_OBJECT}\s+)?{_MSG_TO}\s+{_MSG_REC}\s+{_MSG_ON}\s+{_MSG_CHANNEL}\s+{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
-        # «mándale un mensaje por discord a ShooterCock que diga hola»
-        rf"^\s*{_MSG_VERB}\s+(?:{_MSG_OBJECT}\s+)?{_MSG_ON}\s+{_MSG_CHANNEL}\s+{_MSG_TO}\s+{_MSG_REC}\s+{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
-        # «manda un mensaje a whatsapp a amor diciendo te amo»
-        rf"^\s*{_MSG_VERB}\s+(?:{_MSG_OBJECT}\s+)?(?:a|to)\s+{_MSG_CHANNEL}\s+{_MSG_TO}\s+{_MSG_REC}\s+{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
-        # «mandale un whatsapp a mamá diciendo que ya voy», «Send a WhatsApp message to Musica saying test»
-        rf"^\s*{_MSG_VERB}\s+{_MSG_OBJECT_CHANNEL}\s+{_MSG_TO}\s+{_MSG_REC}\s+{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
-        # «Escribe hola a musica en whatsapp», «mandale hola a Lucas por whatsapp», «Escribe hola en musica en whatsapp»
-        rf"^\s*{_MSG_VERB}\s+{_MSG_BODY}\s+{_MSG_TO}\s+{_MSG_REC}\s+{_MSG_ON}\s+{_MSG_CHANNEL}{_MSG_END}",
-        # «escribele a shootercock hola en discord»
-        rf"^\s*{_MSG_VERB}\s+(?:a|to)\s+(?P<rec>[^\s,:;]+)\s+{_MSG_BODY}\s+{_MSG_ON}\s+{_MSG_CHANNEL}{_MSG_END}",
-        # «Escribe hola en whatsapp en el grupo musica»
-        rf"^\s*{_MSG_VERB}\s+{_MSG_BODY}\s+{_MSG_ON}\s+{_MSG_CHANNEL}\s+{_MSG_TO}\s+{_MSG_REC}{_MSG_END}",
-    )
-)
-
-
-# REOPEN1993 grupo E (D24; H0019 «mandale a Música que ya voy», H0408, H0198 «mandale al
-# grupo Musica: …», H0231, H0536, H0024 «escribile a Lucas que llego tarde»): a message for
-# a named person or group with NO client named. The recipient is looked up in the clients
-# (the remembered one, WhatsApp, Discord); unique → sent (confirmed in normal mode).
-_MSG_ANY_PATTERNS = tuple(
-    re.compile(pattern, re.IGNORECASE)
-    for pattern in (
-        # «manda un mensaje a Música que diga hola», «enviale un mensaje al grupo Musica que diga: prueba 2»
-        rf"^\s*{_MSG_VERB}\s+{_MSG_OBJECT}\s+{_MSG_TO}\s+{_MSG_REC}\s+{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
-        # «mandale a Música que ya voy», «mandale al grupo Musica: prueba 1», «escribile a Lucas que llego tarde», «text Lucas that I'm late»
-        rf"^\s*{_MSG_VERB}\s+{_MSG_TO}\s+{_MSG_REC}\s*{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
-        rf"^\s*(?:text|message)\s+{_MSG_REC}\s+{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
-        # «send Lucas a message saying I'm late»
-        rf"^\s*send\s+{_MSG_REC}\s+{_MSG_OBJECT}\s+{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
-        # «dile a Lucas que llego tarde», «avisale a Música que ya voy», «hazle saber a Lucas que…», «contale a Ana que…»
-        rf"^\s*(?:dile|decile|avisale|avisa|contale|cuentale|hazle\s+saber|hacele\s+saber|hazle\s+llegar)\s+(?:a|al\s+grupo|al)\s+{_MSG_REC}\s+(?:que|el\s+mensaje)\s*{_MSG_BODY}{_MSG_END}",
-        # «let Lucas know that I'm late», «tell Lucas that I'm late»
-        rf"^\s*let\s+{_MSG_REC}\s+know\s+(?:that\s+)?{_MSG_BODY}{_MSG_END}",
-        rf"^\s*tell\s+{_MSG_REC}\s+that\s+{_MSG_BODY}{_MSG_END}",
-    )
-)
-
-
-_MSG_PRONOUN_RECIPIENTS = frozenset({
-    "me", "us", "him", "her", "them", "you", "yo", "mi", "nos", "le", "les", "el", "ella", "ellos", "ellas", "vos", "usted",
-})
-
-
-def message_request_named_client(text: str) -> tuple[str, str, str] | None:
-    """(recipient, body, client) of a message for a named person or group in a
-    NAMED chat client (WhatsApp or Discord): «mandale un mensaje a vicho por wsp
-    diciéndole hola», «escribile a Lucas en whatsapp que llego tarde». None for
-    mail, for a client without a person, or for a body without recipient."""
-
-    draft = message_draft_request(text)
-    if draft is None or draft[0] not in {"whatsapp", "discord"}:
-        return None
-    recipient = re.sub(r"^(?:el\s+grupo|la\s+|el\s+|the\s+group|the\s+)\s*", "", (draft[1] or "").strip(), flags=re.IGNORECASE).strip(" .")
-    body = (draft[2] or "").strip()
-    if not recipient or not body or _fold(recipient) in _MSG_PRONOUN_RECIPIENTS:
-        return None
-    if len(recipient.encode("utf-8")) > 512 or len(body.encode("utf-8")) > 16_384 or len(recipient.split()) > 6:
-        return None
-    return recipient, body, draft[0]
-
-
-def message_request_any_channel(text: str) -> tuple[str, str, str | None] | None:
-    """(recipient, body, client or None) of a message request whose client is
-    not named before the text; None when a client leads (message_draft_request
-    owns it), or without recipient or body. A client named at the END of the
-    text («… por WhatsApp») is the client; «que dija» (H0408) is «que diga»."""
-
-    raw = _strip_request_envelope(text).strip()
-    if not raw or len(raw.encode("utf-8")) > 2048 or "aclaracion confiable del usuario:" in _fold(raw):
-        return None
-    if message_draft_request(text) is not None:
-        return None
-    if _negative_action_forms(_fold(raw)):
-        return None
-    raw = re.sub(r"\bque\s+dija\b", "que diga", raw, flags=re.IGNORECASE)
-    for pattern in _MSG_ANY_PATTERNS:
-        match = pattern.match(raw)
-        if match is None:
-            continue
-        groups = match.groupdict()
-        head = raw[: match.start("body")]
-        if re.search(r"\b" + _MSG_CHANNEL_WORDS + r"\b", _fold(head)):
-            # A client named before the text belongs to message_draft_request; a
-            # client named INSIDE the text («prueba 1 de WhatsApp») is just words.
-            continue
-        recipient = re.sub(r"^(?:el\s+grupo|la\s+|el\s+|the\s+group|the\s+)\s*", "", (groups.get("rec") or "").strip(), flags=re.IGNORECASE).strip(" .")
-        body = (groups.get("body") or "").strip().lstrip(":").strip()
-        body = re.sub(
-            r"^(?:que\s+diga\s+|que\s+dice\s+|diciendo(?:le)?\s+(?:que\s+)?|dici[eé]ndole\s+(?:que\s+)?|saying\s+|that\s+says\s+|que\s+|that\s+)",
-            "", body, flags=re.IGNORECASE,
-        ).strip()
-        body = body.rstrip(" .!?") if len(body) > 1 else body
-        if not recipient or not body or _fold(recipient) in {"mensaje", "message", "un mensaje", "a message"}:
-            continue
-        if _fold(recipient) in _MSG_PRONOUN_RECIPIENTS:
-            continue
-        if len(recipient.encode("utf-8")) > 512 or len(body.encode("utf-8")) > 16_384 or len(recipient.split()) > 6:
-            continue
-        channel: str | None = None
-        trailing = re.search(r"\s+(?:por|en|via|v[ií]a|on|through)\s+(?P<ch>whatsapp|wsp|discord)\s*$", body, re.IGNORECASE)
-        if trailing is not None:
-            channel = _message_channel_name(trailing.group("ch"))
-            body = body[: trailing.start()].rstrip(" ,")
-            if not body:
-                continue
-        return recipient, body, channel
-    return None
-
-
-_MAIL_ADDRESS = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$")
-_MAIL_SUBJECT = re.compile(
-    r"^(?P<rec>.+?)\s+(?:con\s+(?:el\s+)?asunto|asunto|with\s+(?:the\s+)?subject|subject)\s*:?\s*(?P<subject>.+)$",
-    re.IGNORECASE,
-)
-
-
-def email_send_request(text: str) -> dict[str, str | None] | None:
-    """Fase 7 (D4): a mail to a free address («mandale un correo a ana@gmail.com
-    diciendo que llego tarde», «send an email to x@y.com saying hi», «… con
-    asunto reunión que diga …»). Returns {to, text, subject}; None when the
-    channel is not mail, or the recipient is not an address (the question asks
-    it), or there is no text."""
-
-    draft = message_draft_request(text)
-    if draft is None or draft[0] != "email":
-        return None
-    recipient, body = draft[1].strip(), draft[2]
-    subject: str | None = None
-    with_subject = _MAIL_SUBJECT.match(recipient)
-    if with_subject is not None:
-        recipient, subject = with_subject.group("rec").strip(), with_subject.group("subject").strip(" .:")
-    if _MAIL_ADDRESS.match(recipient) is None:
-        return None
-    return {"to": recipient, "text": body, "subject": subject or None}
-
-
-def email_request_without_address(text: str) -> bool:
-    """«enviá un correo a juan», «escribile un mail a Lucas que diga hola»: mail
-    asked for a name that is not an address → the address is what is missing."""
-
-    if email_send_request(text) is not None:
-        return False
-    draft = message_draft_request(text)
-    if draft is not None:
-        return draft[0] == "email" and _MAIL_ADDRESS.match(draft[1].strip()) is None
-    folded = _strip_request_envelope(_fold(text)).strip(" .!?")
-    return (
-        _has(folded, r"^(?:" + _MSG_VERB + r")\s+(?:un\s+|una\s+|el\s+|a\s+|an\s+|the\s+)?(?:correo(?:\s+electronico)?|(?:e-?)?mail)\s+(?:a|al|para|to)\s+\S")
-        and "@" not in folded
-    )
-
 
 def client_channel_request(text: str) -> tuple[str, str] | None:
     """DISCORD1839 «ve a Cotele en Discord», «Go to Cotele in Discord», «Andá al canal
@@ -1832,76 +858,6 @@ def client_channel_request(text: str) -> tuple[str, str] | None:
     literal = raw[start:start + len(place)] if start >= 0 and len(_fold(raw)) == len(raw) else place
     return client, literal.strip(" \"'«».!?")
 
-
-def message_draft_request(text: str) -> tuple[str, str, str] | None:
-    """MSG1837 (owner decision 2026-09-17): a message for a named chat in a named
-    desktop client (WhatsApp or Discord) is LEFT WRITTEN in the client's composer
-    and never sent. Returns (channel, recipient, body) in the person's own words;
-    None without a channel (the existing clarification asks it), a recipient or
-    a body."""
-
-    raw = _strip_request_envelope(text).strip()
-    if not raw or len(raw.encode("utf-8")) > 2048:
-        return None
-    if "aclaracion confiable del usuario:" in _fold(raw):
-        # MSGCLAR1851: a resumed objective «<request> <trusted prefix> <answer>»
-        # is read as request plus answer by the completion, never as one draft
-        # whose text would swallow the prefix.
-        return None
-    for pattern in _MSG_DRAFT_PATTERNS:
-        match = pattern.match(raw)
-        if match is None:
-            continue
-        groups = match.groupdict()
-        channel = _message_channel_name(groups.get("ch") or groups.get("och") or "")
-        recipient = re.sub(r"^(?:el\s+grupo|la\s+|el\s+|the\s+group|the\s+)\s*", "", (groups.get("rec") or "").strip(), flags=re.IGNORECASE).strip(" .")
-        # MSGCLAR «que diga: prueba 2, todo OK»: the dictation colon after the
-        # separator is punctuation, never part of the text.
-        body = (groups.get("body") or "").strip().lstrip(":").strip()
-        body = re.sub(
-            r"^(?:que\s+diga\s+|que\s+dice\s+|diciendo(?:le)?\s+(?:que\s+)?|dici[eé]ndole\s+(?:que\s+)?|saying\s+|that\s+says\s+|que\s+|that\s+)",
-            "", body, flags=re.IGNORECASE,
-        ).strip()
-        body = body.rstrip(" .!?") if len(body) > 1 else body
-        if channel not in {"whatsapp", "discord", "email"} or not recipient or not body:
-            continue
-        if re.search(r"\b" + _MSG_CHANNEL_WORDS + r"\b", _fold(recipient)) or _fold(recipient) in {"mensaje", "message"}:
-            continue
-        if len(recipient.encode("utf-8")) > 512 or len(body.encode("utf-8")) > 16_384:
-            continue
-        return channel, recipient, body
-    return None
-
-
-_MUSIC_BROWSER = r"(?:opera gx|opera|google chrome|chrome|microsoft edge|edge|brave)"
-_MUSIC_PLAY_HEAD = r"(?:pone|poneme|pon|ponme|reproduci|reproduce|play|toca|tocame)"
-_MUSIC_BROWSER_REQUEST = (
-    re.compile(
-        rf"^(?:abri|abre|abrime|open)\s+(?:el\s+|the\s+)?(?P<b>{_MUSIC_BROWSER})\s+(?:y|and)\s+{_MUSIC_PLAY_HEAD}\s+(?P<q>.+)$"
-    ),
-    re.compile(
-        rf"^{_MUSIC_PLAY_HEAD}\s+(?P<q>.+?)\s+(?:en|in|usando|using|with|con)\s+(?:el\s+|the\s+)?(?P<b>{_MUSIC_BROWSER})$"
-    ),
-)
-
-
-def _named_browser_music_request(text: str) -> tuple[str, str | None] | None:
-    """MUSIC1827 «abrí chrome y poné música», «pon música de rock en chrome», «open
-    Edge and play some music»: music asked of a named browser. Returns the
-    browser and the music named (None when only «música» was said)."""
-
-    folded = _strip_request_envelope(_fold(text)).strip(" .!?¿¡")
-    match = next((m for m in (p.match(folded) for p in _MUSIC_BROWSER_REQUEST) if m is not None), None)
-    if match is None:
-        return None
-    browser = {"opera gx": "opera_gx", "google chrome": "chrome", "microsoft edge": "edge"}.get(match.group("b"), match.group("b"))
-    query = re.sub(r"^(?:algo\s+de\s+|un\s+poco\s+de\s+|some\s+|something\s+)", "", match.group("q").strip())
-    if re.fullmatch(r"(?:musica|music|una\s+cancion|a\s+song|canciones|songs|algo|something)", query):
-        return browser, None
-    query = re.sub(r"^(?:musica\s+de|music\s+(?:by|of|from)|una\s+cancion\s+de|a\s+song\s+by)\s+", "", query).strip()
-    if not query or len(query.encode("utf-8")) > 200 or "?" in query:
-        return None
-    return browser, query
 
 
 def _completed_missing_music_request(
@@ -1980,16 +936,6 @@ def _contextual_output_level_target(
     )
 
 
-_FILESYSTEM_OBJECT_NOUN = (
-    r"\b(?:archivos?|file|files|fichero|ficheros|carpetas?|folders?|"
-    r"directorios?|directory|directories|ruta|rutas|path|paths|"
-    r"documento|documentos|document|documents|sandbox|papelera|trash|"
-    r"recycle|escritorio|desktop|descargas|downloads|imagenes|pictures|"
-    r"copia|copias|backup|backups|respaldo|respaldos|"
-    r"txt|csv|json|pdf|docx|xlsx|md|log)\b"
-    r"|(?:^|\s)[a-z]:[\\/]|\.[a-z0-9]{2,4}\b"
-)
-
 
 # A weighted comparative veto was written here and measured and rejected. It
 # weighed each term by how few operations the alias corpus attaches it to, and
@@ -2018,174 +964,6 @@ def _uncovered_family_floor(folded: str, operation: str) -> bool | None:
         return _has(folded, _FILESYSTEM_OBJECT_NOUN)
     return None
 
-
-def operation_identity_is_a_near_miss(text: str, operation: str) -> bool:
-    """True when the spoken request names a different effect than this leaf.
-
-    Domain grounding is one-sided and lexical: False both when the person
-    paraphrased a real catalogue effect and when they asked for a nearby
-    substitute. The identity verifier may revive the paraphrase. Publishing
-    the substitute as ``intent_operations`` would execute it if they say yes
-    — a taxi is not ``task.create``, a PDF conversion is not a blank Office
-    document. This is the contradiction side of that split.
-    """
-
-    folded = _fold(text)
-    # Physical errands this machine cannot do: any leaf is a substitute.
-    if _has(folded, r"\b(?:taxi|uber|cab|lyft)\b") and not _has(
-        folded,
-        r"\b(?:tarea|task|to-do|todo|pendiente)\b",
-    ):
-        return True
-    if _has(
-        folded,
-        r"\b(?:riega|regar|watering|plantas?|plants?)\b",
-    ) and not _has(folded, r"\b(?:rutina|routine|automation)\b"):
-        return True
-    if operation == "media.play.youtube":
-        return _has(
-            folded,
-            r"\b(?:upload|sube|subir|subime|publica|publicar|publish)\b",
-        ) and not _has(
-            folded,
-            r"\b(?:reproduce|reproducir|play|pon|poner)\b",
-        )
-    if operation.startswith("capture."):
-        return (
-            _has(
-                folded,
-                r"\b(?:graba|grabar|grabame|record|recording|filma|filmar)\b",
-            )
-            and _has(folded, r"\b(?:pantalla|screen|video)\b")
-            and not _has(
-                folded,
-                r"\b(?:captura de pantalla|screenshot|pantallazo|"
-                r"window capture|captura (?:de )?(?:la )?ventana)\b",
-            )
-        )
-    if operation in {
-        "wifi.connect.named",
-        "wifi.connect",
-        "wifi.ensure.connected",
-    }:
-        return _has(folded, r"\b(?:vpn|virtual\s+private)\b") and not _has(
-            folded,
-            r"\b(?:wi[\s-]?fi|red\s+inalambrica|wireless)\b",
-        )
-    if operation.startswith("filesystem."):
-        return (
-            (
-                _has(folded, r"\b(?:clon(?:a|ar|ame)|clone)\b")
-                and _has(folded, r"\b(?:disco|disk|drive|hdd|ssd)\b")
-                and not _has(folded, _FILESYSTEM_OBJECT_NOUN)
-            )
-            or (
-                operation in {"filesystem.trash.restore", "filesystem.trash.commit"}
-                and _has(folded, r"\b(?:desfragmenta|desfragmentar|defrag)\b")
-            )
-            or (
-                operation == "filesystem.write.text"
-                and _has(folded, r"\b(?:formatea|formatear|format)\b")
-                and _has(folded, r"\b(?:pendrive|usb|disco|disk)\b")
-            )
-        )
-    if operation in {"media.seek.relative", "media.control"}:
-        return _has(
-            folded,
-            r"\b(?:edita|editar|editame|edit|recorta|recortar|trim|"
-            r"corta|cortar|cut|quita|quitar|quitale)\b",
-        ) and not _has(
-            folded,
-            r"\b(?:adelanta|atrasa|retrocede|rewind|forward|jump|skip|seek)\b",
-        )
-    if operation == "office.document.create":
-        return _has(
-            folded,
-            r"\b(?:convierte|convertir|convierteme|convert|conversion)\b",
-        ) or (
-            _has(folded, r"\bpdf\b")
-            and _has(
-                folded,
-                r"\b(?:word|docx|excel|documento|document)\b",
-            )
-            and not _has(
-                folded,
-                r"\b(?:crea|crear|creame|create|nuevo|new|blanco|blank)\b",
-            )
-        )
-    if operation == "system.power":
-        return _has(
-            folded,
-            r"\b(?:telefono|movil|celular|phone|smartphone|iphone|tablet)\b",
-        ) and not _has(
-            folded,
-            r"\b(?:equipo|pc|compu|computador(?:a)?|computer|"
-            r"maquina|machine|windows)\b",
-        )
-    if operation.startswith("peripheral."):
-        return _has(
-            folded,
-            r"\b(?:3d|tres\s+dimensiones|tridimensional|three[\s-]?d)\b",
-        )
-    if operation in {"game.install.cancel.active", "game.install.cancel"}:
-        return _has(
-            folded,
-            r"\b(?:torrent|series|pelicula|movie)\b",
-        ) and not _has(folded, r"\b(?:steam|juego|game)\b")
-    if operation.startswith("game.purchase"):
-        return _has(
-            folded,
-            r"\b(?:pizza|comida|food|hamburguesa|burger|"
-            r"dolares?|dollars?|transfer(?:e|ir|iere)?|transfiere)\b",
-        ) and not _has(folded, r"\b(?:steam|juego|game)\b")
-    if operation == "note.create":
-        return (
-            _has(
-                folded,
-                r"\b(?:call|llama|llamame|phone)\b",
-            )
-            and _has(
-                folded,
-                r"\b(?:madre|mother|mom|papa|father|dad)\b",
-            )
-            and not _has(folded, r"\b(?:nota|note|notas|notes)\b")
-        )
-    if operation == "system.status":
-        return _has(folded, r"\b(?:antivirus|virus)\b") and not _has(
-            folded,
-            r"\b(?:estado|status|salud|health)\b",
-        )
-    if operation == "system.settings.set":
-        return _has(
-            folded,
-            r"\b(?:fondo de escritorio|wallpaper|desktop background)\b",
-        ) and not _has(
-            folded,
-            r"\b(?:brillo|brightness|luz nocturna|night light|"
-            r"no molestar|do not disturb|dnd)\b",
-        )
-    if operation in {"message.send", "message.recipient.resolve"}:
-        return _has(
-            folded,
-            r"\b(?:flores?|flowers?|plomero|plumber|madre|mother|"
-            r"taxi|pizza)\b",
-        ) and not _has(
-            folded,
-            r"\b(?:mensaje|message|whatsapp|discord|sms|chat|"
-            r"correo|email)\b",
-        )
-    if operation.startswith("backup."):
-        return _has(
-            folded,
-            r"\b(?:particion|partition|fondo de escritorio|wallpaper|"
-            r"desktop background)\b",
-        )
-    if operation.startswith(("game.install", "package.install")):
-        return _has(folded, r"\b(?:git|github|gitlab)\b") and _has(
-            folded,
-            r"\b(?:commit|push|pull|clone)\b",
-        )
-    return False
 
 
 def _curated_domain_is_grounded(
@@ -3421,16 +2199,6 @@ def conversation_only_content_request(text: str) -> bool:
     )
 
 
-_VISUAL_CONTENT_REQUEST = re.compile(
-    r"^[\s¿?¡!]*(?:(?:oye|che|baxy)\s*,?\s+)?"
-    r"(?:(?:tienes|tenes|tendras|tendrias|hay|tenis|do\s+you\s+have|got|have\s+you\s+got|"
-    r"(?:me\s+)?(?:mandas|manda|mandame|mandame|envias|envia|enviame|pasas|pasa|pasame|muestras|muestra|muestrame|mostras|mostrame|das|da|dame|tiras|tirame)|"
-    r"(?:can|could)\s+you\s+(?:send|show|give)(?:\s+me)?|send(?:\s+me)?|show(?:\s+me)?|give(?:\s+me)?)\s+"
-    r"(?:(?:un|una|unos|unas|algun|alguna|algunos|algunas|el|la|los|las|a|an|any|some|the|me)\s+)*"
-    r"(?:\w+\s+){0,2}?(?:meme|memes|imagen|imagenes|foto|fotos|gif|gifs|sticker|stickers|dibujo|dibujos|picture|pictures|image|images|photo|photos)\b"
-    r".{0,40}$)"
-)
-
 
 _REASSURANCE_STATEMENT = re.compile(
     r"^[\s¿?¡!]*(?:(?:no|nunca)\s+(?:te|se)\s+preocup\w*|tranqui(?:lo|la|los|las)?\b|no\s+pasa\s+nada|"
@@ -3458,18 +2226,6 @@ _PREFERENCE_REQUEST_HEAD = re.compile(
 )
 
 
-_CURIOSITY_REQUEST = re.compile(
-    r"^(?:baxy\s*[,:]?\s*)?(?:(?:contame|cuentame|conta|cuenta|decime|dime|tirame|tira|explicame|explica|"
-    r"tell\s+me|give\s+me)\s+"
-    r"(?:(?:un|una|algun|alguna|otra|otro|a|an|another|some)\s+)?"
-    r"(?:curiosidad|curiosidades|dato\s+curioso|datos\s+curiosos|fun\s+fact|fun\s+facts|"
-    r"interesting\s+fact|random\s+fact|algo|something)"
-    r"(?:\s+(?:interesante|curioso|curiosa|nuevo|nueva|interesting|curious|cool|random|new))?"
-    r"(?:\s*,?\s*(?:por\s+favor|porfa|please))?[\s.!?]*$"
-    r"|^(?:estoy|ando|me\s+siento)\s+(?:re\s+|muy\s+|super\s+)?aburrid[oa][\s.!?]*$"
-    r"|^i(?:'?m|\s+am)\s+(?:so\s+)?bored[\s.!?]*$)",
-    re.IGNORECASE,
-)
 # KNOWLEDGE1505: the engine returns the public page of a bare, well-known name
 # (its Wikipedia article or an encyclopedic page first); the names below are
 # subjects verified against the engine's relevance rule on 2026-09-15, never
@@ -3483,11 +2239,6 @@ _CURIOSITY_TOPICS_EN = (
     "Moon", "Whale", "Jupiter", "Tsunami", "Titanic", "Koala", "Chocolate", "Cactus",
 )
 
-
-def curiosity_request(text: str) -> bool:
-    """KNOWLEDGE1505 «decime una curiosidad», «contame algo», «estoy aburrido»: a curiosity with no topic."""
-
-    return _CURIOSITY_REQUEST.match(_strip_request_envelope(_fold(text)).strip()) is not None
 
 
 def curiosity_topic(text: str) -> str | None:
@@ -3534,47 +2285,6 @@ def visual_content_noun(text: str) -> str:
     return match.group("noun") if match is not None else ""
 
 
-def visual_content_request(text: str) -> bool:
-    """CONVERSATION1150 H0069 «Tienes algun meme?»: memes and images cannot be shown here.
-
-    A request to have, send or show visual content is answered as an honest
-    boundary of this PC, never with a promised meme.
-    """
-
-    return _VISUAL_CONTENT_REQUEST.match(_strip_request_envelope(_fold(text)).strip()) is not None
-
-
-_WEB_IMAGE_NOUN = r"(?:meme|memes|imagen|imagenes|foto|fotos|gif|gifs|sticker|stickers|dibujo|dibujos|picture|pictures|image|images|photo|photos)"
-
-
-def web_image_request(text: str) -> tuple[str, bool] | None:
-    """REOPEN1957 H0069 «Tienes algun meme?» (D11): a meme or an image of the
-    web is searched, downloaded to Pictures and opened with the viewer.
-    Returns (image query, subject missing). A meme needs no subject; an
-    image or a photo without one («tienes alguna foto?») is asked about."""
-
-    if not visual_content_request(text):
-        return None
-    folded = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.")
-    if _negative_action_forms(folded):
-        return None
-    match = re.search(
-        rf"(?:(?P<before>(?:[a-z]+\s+){{0,2}}?))\b(?P<noun>{_WEB_IMAGE_NOUN})\b"
-        rf"(?:\s+(?P<subject>(?:de|del|de\s+la|de\s+los|de\s+las|of|about|sobre|con|with)\s+.+?))?\s*$",
-        folded,
-    )
-    if match is None:
-        return None
-    noun = match.group("noun")
-    subject = (match.group("subject") or "").strip()
-    before = " ".join(
-        word for word in (match.group("before") or "").split()
-        if word not in {"un", "una", "unos", "unas", "algun", "alguna", "algunos", "algunas", "el", "la", "los", "las", "a", "an", "any", "some", "the", "me", "mandame", "pasame", "mostrame", "muestrame", "dame", "tirame", "enviame", "tienes", "tenes", "hay", "tendras", "tendrias", "send", "show", "give", "you", "got", "have"}
-    )
-    query = " ".join(part for part in (before, noun, subject) if part)
-    meme_like = noun in {"meme", "memes", "gif", "gifs", "sticker", "stickers"}
-    return query, not (meme_like or subject or before)
-
 
 def _completed_missing_image_subject_request(
     text: str, previous_user_text: str | None,
@@ -3610,26 +2320,6 @@ def unsupported_live_machine_query(text: str) -> bool:
         r"\b.{0,100}\b(?:use|usa|uses|using|utilice|utiliza)\b.{0,40}\bgpu\b",
     )
 
-
-# Owner's test 2026-09-21 (turns 210-213): «BAXY, cierra BAXY» / «cierra BAXY»
-# went to window.close on an application named BAXY and ended «no tiene ventana
-# abierta». The target is the assistant itself: a vocative before the order is
-# not the target, the object after the verb is.
-_SELF_CLOSE = re.compile(
-    r"(?:^|[\s,;:.!¡¿?]+)"
-    r"(?:(?:cierra|cerra|cerrá|cerrar|cerrame|cierrame|cerrate|cierrate|apaga|apagá|apagame|apagate|"
-    r"desconecta|desconectate|termina|terminate|sal|salte|salí|close|quit|exit|shut\s+down|shut)\s+"
-    r"(?:a\s+)?(?:baxy|la\s+app(?:licacion)?\s+(?:de\s+)?baxy|el\s+asistente|the\s+assistant|"
-    r"ti\s+mism[ao]|vos\s+mism[ao]|yourself)"
-    r"|(?:cierrate|cerrate|apagate|desconectate|salte|close\s+yourself|shut\s+yourself\s+down|quit\s+yourself))"
-    r"(?=$|[\s,;:.!¡¿?])"
-)
-
-
-def self_close_request(text: str) -> bool:
-    """«cierra BAXY», «BAXY, cerrate»: the assistant itself is the close target."""
-
-    return _SELF_CLOSE.search(_fold(text)) is not None
 
 
 def known_unsupported_effect_request(
@@ -3919,28 +2609,6 @@ def known_unsupported_effect_request(
     )
 
 
-_NAVIGATION_CLIENT = r"(?:discord|whatsapp|teams|telegram|slack|skype|zoom|signal|messenger)"
-
-
-def client_navigation_target(folded: str) -> str | None:
-    """Name the messaging client of a go-to-a-place order scoped to it, or nothing."""
-
-    found = re.fullmatch(
-        r"[¿?¡!\s]*(?:(?:por\s+favor|please)[,]?\s+)?"
-        r"(?:(?:en|in|on)\s+(?P<client_a>" + _NAVIGATION_CLIENT + r")[,]?\s+)?"
-        r"(?:ve|anda|andate|entra|entrale|metete|navega|llevame|go|navigate|switch|cambia|cambiate|take\s+me)\s+"
-        r"(?:a(?:l)?|to|hacia|into)\s+(?P<place>\S.{0,60}?)"
-        r"(?:\s+(?:en|in|on|de|del|of)\s+(?:el\s+)?(?P<client_b>" + _NAVIGATION_CLIENT + r"))?"
-        r"(?:\s+(?:por\s+favor|please))?[\s.!?]*",
-        folded,
-    )
-    if found is None:
-        return None
-    client = found.group("client_a") or found.group("client_b")
-    if client is None or _has(found.group("place"), r"https?://|\b(?:[a-z0-9-]+\.)+[a-z]{2,63}\b"):
-        return None
-    return client
-
 
 def resolve_explicit_clarification(
     text: str,
@@ -3953,29 +2621,6 @@ def resolve_explicit_clarification(
         intent.operation if intent is not None and len(intent.operations) == 1 else None
     )
 
-
-def _time_only_reminder_request(folded: str) -> bool:
-    direct_clock = _has(
-        folded,
-        r"\b(?:recordatorio|reminder)\s+(?:para|for)\s+"
-        r"(?:(?:las?|at)\s+)?(?:[0-9]|one|two|three|four|five|six|"
-        r"seven|eight|nine|ten|eleven|twelve|una?|dos|tres|cuatro|"
-        r"cinco|seis|siete|ocho|nueve|diez|once|doce)\b",
-    )
-    dated_clock = _has(
-        folded,
-        (
-            r"\b(?:recordatorio|reminder)\s+(?:para|for)\s+"
-            r"(?:hoy|today|manana|tomorrow|esta noche|tonight)"
-            r"(?:\s+(?:a las?|at)\s+(?:las\s+)?"
-            r"(?:[0-2]?\d|one|two|three|four|five|six|seven|eight|nine|"
-            r"ten|eleven|twelve|una?|dos|tres|cuatro|cinco|seis|siete|"
-            r"ocho|nueve|diez|once|doce)(?::[0-5]\d)?"
-            r"\s*(?:a\.?\s*m\.?|p\.?\s*m\.?)?)?"
-            r"[\s.!?]*$"
-        ),
-    )
-    return direct_clock or dated_clock
 
 
 _TEMPORAL_NUMBER_WORDS = {
@@ -4019,18 +2664,6 @@ _TEMPORAL_NUMBER_WORDS = {
 
 
 
-# «contá 10 minutos», «count down 4 minutes»: the count head names a timer only
-# when a duration follows it at once, so «cuenta» (account) never qualifies.
-_COUNT_DOWN_REQUEST = re.compile(
-    rf"^[¿?¡!\s]*(?:conta|cuenta|contame|cuentame|count(?:\s+down)?)\s+{_RELATIVE_DURATION_PATTERN}\b"
-)
-
-
-def _count_down_request(folded: str) -> bool:
-    """Recognize a bare countdown request that names its duration first."""
-
-    return _COUNT_DOWN_REQUEST.match(_strip_request_envelope(folded)) is not None
-
 
 # «cuál es mi ip», «what's my ip address», «decime qué dirección IP tiene esta
 # compu»: the machine's own address, read from the catalog (NETWORK1161/1201).
@@ -4052,26 +2685,6 @@ def _ip_list_request(folded: str) -> bool:
     return _IP_LIST_REQUEST.match(_strip_request_envelope(folded)) is not None
 
 
-# «crea un archivo llamado hola.txt en el escritorio con el texto Hola Mundo»,
-# «Crea una carpeta en el escritorio llamada CarterTest»: literal file and
-# folder creation, in the sandbox or in a known folder (owner decision
-# 2026-09-13, point 2). The name and the content stay the person's words.
-_KNOWN_FOLDER_WORDS = r"escritorio|desktop|documentos|documents|descargas|downloads"
-_KNOWN_FOLDER_ENUM = {
-    "escritorio": "desktop", "desktop": "desktop",
-    "documentos": "documents", "documents": "documents",
-    "descargas": "downloads", "downloads": "downloads",
-}
-_FILE_CREATION_REQUEST = re.compile(
-    r"^[¿?¡!\s]*(?:cre[aá]|crear|cre[aá]me|create|guard[aá]|guardar|escrib[eí]|escribir|write|save)(?:me)?\s+"
-    r"(?:(?:un|una|a|the|el)\s+)?(?:archivo|fichero|file)(?:\s+(?:de\s+texto|txt|text))?"
-    rf"(?:\s+(?:en|on|in|dentro\s+de|inside)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder_a>{_KNOWN_FOLDER_WORDS}))?"
-    r"\s+(?:llamad[oa]|named|called|con\s+(?:el\s+)?nombre)\s+(?P<name>\"[^\"]+\"|'[^']+'|\S+)"
-    rf"(?:\s+(?:en|on|in|dentro\s+de|inside)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder_b>{_KNOWN_FOLDER_WORDS}))?"
-    r"\s+(?:que\s+diga|que\s+contenga|con\s+(?:el\s+)?(?:texto|contenido)|with\s+(?:the\s+)?(?:text|content)|containing|that\s+says|saying)\s+"
-    r"(?P<content>.+?)\s*$",
-    re.IGNORECASE,
-)
 _DIRECTORY_CREATION_REQUEST = re.compile(
     r"^[¿?¡!\s]*(?:cre[aá]|crear|cre[aá]me|create|haz|hac[eé]|hazme|make)(?:me)?\s+"
     r"(?:(?:una|un|a|the)\s+)?(?:carpeta|directorio|folder|directory)"
@@ -4083,146 +2696,12 @@ _DIRECTORY_CREATION_REQUEST = re.compile(
 )
 
 
-# «borra el archivo hola.txt del escritorio», «borrá el archivo viejo.txt»,
-# «delete old.txt from the desktop»: one named file, optionally in one known
-# folder, goes to the product's recoverable private trash
-# (filesystem.known.trash.named). A bare name must look like a file (an
-# extension) unless the request says «archivo/file», so «borra el mensaje»
-# and folders stay outside; a folder deletion has no operation.
-_FILE_TRASH_REQUEST = re.compile(
-    r"^[¿?¡!\s]*(?:borr[aá]|borrar|borr[aá]me|elimin[aá]|eliminar|elimin[aá]me|"
-    r"delete|remove|"
-    r"(?:mand[aá]|manda|envi[aá]|envia|tir[aá]|tira)(?:me)?\s+a\s+la\s+papelera)(?:me)?\s+"
-    r"(?:(?:el|la|the)\s+)?(?P<noun>(?:archivo|fichero|file|carpeta|folder|directorio|directory)\s+)?"
-    r"(?:(?:llamad[oa]|named|called)\s+)?"
-    r"(?P<name>\"[^\"]+\"|'[^']+'|[^\s\"']+)"
-    rf"(?:\s+(?:del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}))?"
-    r"(?:\s*,?\s+(?:por\s+favor|please|porfa))?[\s.!?]*$",
-    re.IGNORECASE,
-)
-
-
-# PDF1689 H0666 «resumime informe.pdf», «hazme un resumen de informe.pdf»,
-# «summarize report.pdf»: one named PDF in the known folders is read for its
-# text (document.pdf.read) and the reply presents it; a bare name must be
-# a .pdf file or the request must say «pdf».
-_PDF_SUMMARY_REQUEST = re.compile(
-    r"^[¿?¡!\s]*(?:(?:por\s+favor|please|porfa)\s*[,;:]?\s*)?"
-    r"(?:(?:hac[eé]|hace|hazme|haceme|hac[eé]me|arm[aá]|arm[aá]me|dame|make|give\s+me|write|escrib[ií])(?:me)?\s+"
-    r"(?:(?:un|una|el|a|the)\s+)?(?:resumen|summary)\s+(?:de|del|of)(?:\s+(?:el|la|the))?"
-    r"|(?:resum[ií]|resumime|resum[ií]me|resumeme|resumir|resume|summari[sz]e|sum\s+up)(?:me)?"
-    r"(?:\s+(?:el|la|the))?)\s+"
-    r"(?P<noun>(?:archivo|fichero|file|documento|document|pdf)\s+)?"
-    r"(?:(?:llamad[oa]|named|called)\s+)?"
-    r"(?P<name>\"[^\"]+\"|'[^']+'|[^\s\"']+)"
-    rf"(?:\s+(?:del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}))?"
-    r"(?:\s*,?\s+(?:por\s+favor|please|porfa))?[\s.!?]*$",
-    re.IGNORECASE,
-)
-
-
-def _pdf_summary_request(text: str) -> re.Match[str] | None:
-    """Match one summary or reading request of a named PDF in the known folders."""
-
-    found = _PDF_SUMMARY_REQUEST.match(text.strip())
-    if found is None:
-        return None
-    name = found.group("name").strip("\"'").rstrip(".!?,")
-    if not name or name.lower() in {"todo", "esto", "eso", "this", "that", "it", "pagina", "página", "page"}:
-        return None
-    if re.fullmatch(r"[^\\/:*?\"<>|]+\.pdf", name, re.IGNORECASE) is None:
-        noun = found.group("noun")
-        if noun is None or noun.strip().lower() != "pdf" or "." in name:
-            return None
-    return found
-
-
-def _file_trash_request(text: str) -> re.Match[str] | None:
-    """Match one literal deletion of a named file (or, FILES1603 H0327 «Borra la
-    carpeta CarterTest del escritorio», a named folder) in the person's known folders."""
-
-    found = _FILE_TRASH_REQUEST.match(text.strip())
-    if found is None:
-        return None
-    name = found.group("name").strip("\"'").rstrip(".!?,")
-    if not name or name.lower() in {"todo", "todos", "everything", "all", "eso", "esto", "it", "that", "this"}:
-        return None
-    looks_like_file = re.fullmatch(r"[^\\/:*?\"<>|]+\.[a-z0-9]{1,8}", name, re.IGNORECASE) is not None
-    if not looks_like_file and found.group("noun") is None:
-        return None
-    return found
-
-
-# FILES1705 H0334 «crea un archivo de texto con los 5 procesos que mas memoria
-# usan»: a text file whose content is a process listing read from this
-# machine — system.process.list (limit, sort) then filesystem.write.text
-# with the listing projected deterministically from the verified result.
-_PROCESS_REPORT_FILE_REQUEST = re.compile(
-    r"^[¿?¡!\s]*(?:crea|crear|creame|genera|generame|generar|guarda|guardame|guardar|"
-    r"escribe|escribime|escribir|arma|armame|make|create|save|write|generate)(?:me)?\s+"
-    r"(?:(?:un|una|a|el|the)\s+)?(?:(?:text|txt)\s+)?(?:archivo|fichero|file)(?:\s+(?:de\s+texto|txt|text))?"
-    r"(?:\s+(?:llamad[oa]|named|called)\s+(?P<name>[^\s\"']+))?\s+"
-    r"(?:con|que\s+(?:tenga|liste|contenga|muestre)|with|listing|containing|of)\s+"
-    r"(?P<desc>(?:(?:los|las|the|mis|my)\s+)?(?:(?P<n>\d{1,2})\s+)?(?:procesos|processes)\s+"
-    r"(?:que\s+mas\s+(?P<res_a>memoria|cpu|procesador|ram)\s+(?:usan|consumen|ocupan|gastan)|"
-    r"que\s+(?:usan|consumen|ocupan|gastan)\s+mas\s+(?P<res_b>memoria|cpu|procesador|ram)|"
-    r"(?:that\s+)?(?:use|using|consume|consuming)\s+(?:the\s+)?most\s+(?P<res_c>memory|cpu|ram)|"
-    r"with\s+(?:the\s+)?(?:highest|most)\s+(?P<res_d>memory|cpu|ram)(?:\s+usage)?))"
-    r"(?:\s*,?\s+(?:por\s+favor|please))?[\s.!?]*$",
-    re.IGNORECASE,
-)
-
-
-def process_report_file_request(folded: str) -> dict[str, object] | None:
-    """Read one request for a text file listing the top processes by memory or CPU."""
-
-    found = _PROCESS_REPORT_FILE_REQUEST.match(_strip_request_envelope(folded).strip())
-    if found is None:
-        return None
-    resource = next(
-        (found.group(key) for key in ("res_a", "res_b", "res_c", "res_d") if found.group(key)),
-        "",
-    ).lower()
-    sort = "cpu" if resource in {"cpu", "procesador"} else "memory"
-    report: dict[str, object] = {"sort": sort, "resource_word": resource}
-    if found.group("n"):
-        limit = int(found.group("n"))
-        if not 1 <= limit <= 50:
-            return None
-        report["limit"] = limit
-    if found.group("name"):
-        report["name"] = found.group("name")
-    # The file header repeats the request's own description of the listing
-    # («los 5 procesos que mas memoria usan»), so every header token is evidence.
-    report["description"] = " ".join(found.group("desc").split())
-    return report
-
-
-def _file_creation_request(text: str) -> re.Match[str] | None:
-    """Match one literal file creation with a name and its content."""
-
-    return _FILE_CREATION_REQUEST.match(text.strip())
-
 
 def _directory_creation_request(text: str) -> re.Match[str] | None:
     """Match one literal folder creation with a name."""
 
     return _DIRECTORY_CREATION_REQUEST.match(text.strip())
 
-
-def _reminder_has_actionable_due(folded: str) -> bool:
-    """Require a literal instant or duration, not merely a calendar day."""
-
-    return bool(
-        _has(folded, _CLOCK_TIME_SELECTOR)
-        or _has(
-            folded,
-            r"\b(?:(?:en|in|dentro de|within)\s+)?"
-            rf"{_RELATIVE_DURATION_PATTERN}"
-            r"(?:\s+(?:from now|desde ahora))?\b",
-        )
-        or _has(folded, r"\b\d{4}-\d{2}-\d{2}t\d{2}:\d{2}(?::\d{2})?\S*\b")
-    )
 
 
 def _incomplete_scheduled_request(
@@ -4356,114 +2835,6 @@ def _incomplete_scheduled_request(
     return None
 
 
-def _multiple_alarm_schedule_intent(
-    folded: str,
-    available: frozenset[str],
-) -> EffectIntent | None:
-    """Expand one explicit plural alarm request into its literal clock effects."""
-
-    if "notification.schedule" not in available or _has(
-        folded,
-        r"\b(?:recurrente|recurrentes|repeating|recurring|cada|every)\b",
-    ):
-        return None
-    clock_token = (
-        r"(?:[0-9]{1,2}|one|two|three|four|five|six|seven|eight|nine|"
-        r"ten|eleven|twelve|una?|dos|tres|cuatro|cinco|seis|siete|"
-        r"ocho|nueve|diez|once|doce)(?::[0-5][0-9])?"
-    )
-    request = re.match(
-        (
-            r"^[^\w]*(?:record|create|set|schedule|crea|crear|programa|"
-            r"programar|pon|ponme)\s+(?:(?:the|las?)\s+)?"
-            r"(?:alarms|alarmas)\s+(?:(?:for|at|a|para)\s+(?:las?\s+)?)?"
-            rf"(?P<clocks>{clock_token}(?:\s*(?:,|and|y)\s*{clock_token})+)\s*"
-            r"(?P<period>a\.?\s*m\.?|p\.?\s*m\.?|de la manana|"
-            r"de la tarde|de la noche|in the morning|in the afternoon|"
-            r"in the evening)[\s.!?]*$"
-        ),
-        folded,
-        re.IGNORECASE,
-    )
-    if request is None:
-        return None
-    clocks = tuple(
-        token.strip()
-        for token in re.split(r"\s*(?:,|and|y)\s*", request.group("clocks"))
-        if token.strip()
-    )
-    if not 2 <= len(clocks) <= 8 or len(set(clocks)) != len(clocks):
-        return None
-    for clock in clocks:
-        hour_text = clock.split(":", 1)[0]
-        if hour_text.isdigit() and not 1 <= int(hour_text) <= 12:
-            return None
-    period = request.group("period")
-    noun = "alarma a las" if _has(folded, r"\balarmas\b") else "alarm at"
-    evidence = tuple(f"{noun} {clock} {period}" for clock in clocks)
-    return EffectIntent(
-        tuple("notification.schedule" for _ in clocks),
-        evidence,
-    )
-
-
-_TASK_DATE_ONLY = re.compile(
-    r"^(?:crea|creame|crear|agrega|agregame|anade|anadime|add|create|make|haz|hazme|pon|ponme|poneme|nueva|new)\s+"
-    r"(?:(?:una|la|a|the)\s+)?(?:tarea|task|to-do|todo|pendiente)(?:\s+(?:nueva|new))?"
-    r"(?:\s+(?:para|for|el|la|on|por|by|due|hasta|until)\s+(?:(?:el|la|este|esta|next|this|el\s+proximo|la\s+proxima)\s+)?"
-    r"(?:lunes|martes|miercoles|jueves|viernes|sabado|domingo|monday|tuesday|wednesday|thursday|friday|saturday|sunday|"
-    r"manana|tomorrow|hoy|today|pasado\s+manana|semana|week|mes|month|fin\s+de\s+semana|weekend)"
-    r"(?:\s+(?:que\s+viene|proxim[oa]))?"
-    r"(?:\s+(?:a\s+las?|at)\s+\d{1,2}(?::\d{2})?\s*(?:am|pm|h|hs)?)?)?"
-    r"[\s.!?]*$"
-)
-
-
-def _task_without_title(folded: str) -> bool:
-    """«crea una tarea para el viernes»: a creation with at most a date, no content."""
-
-    return _TASK_DATE_ONLY.match(_strip_request_envelope(folded).strip(" ¿?¡!.,")) is not None
-
-
-_KNOWN_FOLDER_PATH = re.compile(
-    r"^\s*(?:%USERPROFILE%|%HOMEPATH%|~|[A-Za-z]:[\\/]+Users[\\/]+[^\\/:*?\"<>|\r\n]+)?[\\/]*"
-    r"(?P<folder>Desktop|Escritorio|Documents|Documentos|Downloads|Descargas)"
-    r"(?P<rest>(?:[\\/][^\\/:*?\"<>|\r\n]+)+)\s*$",
-    re.IGNORECASE,
-)
-_TEXT_FILE_EXTENSIONS = frozenset({
-    ".txt", ".md", ".markdown", ".rst", ".py", ".json", ".jsonl", ".csv", ".tsv", ".log", ".ini", ".cfg", ".conf",
-    ".toml", ".yaml", ".yml", ".xml", ".html", ".htm", ".css", ".js", ".ts", ".cs", ".ps1", ".bat", ".cmd", ".sh",
-    ".sql", ".java", ".c", ".h", ".cpp", ".hpp", ".go", ".rs", ".rb", ".php", ".tex", ".bib", ".env", ".gitignore",
-})
-
-
-def known_folder_file_path(text: str) -> tuple[str, dict[str, object]] | None:
-    """REOPEN1957 H0299 «%USERPROFILE%\\Desktop\\…\\ROADMAP.md»: a pasted path
-    under a known folder names the file to read. Returns the reading
-    operation and its arguments (a PDF goes to the PDF reader); a path
-    outside the known folders, or a file that is not text, abstains and
-    the pasted path keeps its honest question."""
-
-    match = _KNOWN_FOLDER_PATH.match(text.strip())
-    if match is None or len(text) > 512:
-        return None
-    folder = _KNOWN_FOLDER_ENUM.get(_fold(match.group("folder")))
-    parts = [part for part in re.split(r"[\\/]+", match.group("rest")) if part]
-    if folder is None or not parts or any(part in {".", ".."} for part in parts):
-        return None
-    name = parts[-1].strip()
-    extension = ("." + name.rsplit(".", 1)[-1].lower()) if "." in name.strip(".") else ""
-    subdirectory = "\\".join(parts[:-1]) or None
-    if extension == ".pdf":
-        return "document.pdf.read", {"fileName": name, "folder": folder}
-    if extension not in _TEXT_FILE_EXTENSIONS:
-        return None
-    arguments: dict[str, object] = {"fileName": name, "folder": folder}
-    if subdirectory is not None:
-        arguments["subdirectory"] = subdirectory
-    return "document.text.read", arguments
-
 
 _EXTENSION_COUNT = re.compile(
     r"\b(?:archivos?|ficheros?|files?)?\s*(?:con\s+extension\s+|de\s+extension\s+|with\s+(?:the\s+)?extension\s+)?"
@@ -4496,58 +2867,6 @@ def explorer_count_request(text: str) -> str | None:
         return None
     return match.group("extension").lstrip("*")
 
-
-def _current_directory_file_count(folded: str) -> bool:
-    """FILES1437 «dime cuántos archivos .py hay en el directorio actual»: a
-    file count over «the current directory», which BAXY does not have."""
-
-    return (
-        _has(folded, r"\b(?:cuantos|cuantas|how many|count|cuenta|conta|contame|cuentame)\b")
-        and _has(folded, r"\b(?:archivos?|ficheros?|files?)\b")
-        and _has(
-            folded,
-            r"\b(?:directorio|carpeta|folder|directory)\s+(?:actual|current|de trabajo|en (?:el|la) que estoy)\b"
-            r"|\b(?:current|working|present)\s+(?:directory|folder)\b|\bcwd\b",
-        )
-        and not _has(folded, r"\b(?:escritorio|desktop|descargas|downloads|documentos|documents)\b")
-    )
-
-
-_MICROPHONE_CLIENT = r"(?:discord|teams|zoom|skype|meet|google\s+meet|whatsapp|slack)"
-
-
-def app_scoped_microphone_mute(folded: str) -> str | None:
-    """Name the voice client of a microphone-mute order scoped to it, or nothing.
-
-    «silencia mi micrófono en discord», «mutea el micrófono en discord», «Sí.
-    Silencia mi micrófono en Discord», «en Discord apretá silenciar»: the
-    person wants to be muted in a client whose controls BAXY does not
-    operate. A bare «silencia mi micrófono» stays the system mute.
-    """
-
-    prefix = r"^[¿?¡!\s]*(?:(?:si|ok|bueno|dale|listo)[.,!]?\s+)?(?:(?:por\s+favor|please)[,]?\s+)?"
-    mute = re.fullmatch(
-        prefix
-        + r"(?:silencia|silenciame|silencialo|mutea|muteame|mutealo|mute|apaga|apagame|desactiva|desactivame|turn\s+off)\s+"
-        + r"(?:(?:mi|el|the|my|mis)\s+)?(?:microfono|micro|mic|microphone)\s+"
-        + r"(?:en|in|on|de|del|of|dentro\s+de)\s+(?:(?:el|la|the)\s+)?(?P<client>" + _MICROPHONE_CLIENT + r")"
-        + r"(?:\s+(?:por\s+favor|please))?[\s.!?]*",
-        folded,
-    )
-    if mute is not None:
-        return mute.group("client")
-    press = re.fullmatch(
-        prefix
-        + r"(?:(?:en|in|on)\s+(?P<client_a>" + _MICROPHONE_CLIENT + r")[,]?\s+)?"
-        + r"(?:apreta|apretale|apretalo|pulsa|pulsale|presiona|presionale|clickea|click|hace\s+clic\s+en|haz\s+clic\s+en|press|hit|toca)\s+"
-        + r"(?:(?:el|la|the|en)\s+)?(?:boton\s+(?:de\s+)?)?(?:silenciar|silencio|silenciarme|mutear|mute|muteo)"
-        + r"(?:\s+(?:el|mi|the|my)\s+(?:microfono|micro|mic|microphone))?"
-        + r"(?:\s+(?:en|in|on)\s+(?P<client_b>" + _MICROPHONE_CLIENT + r"))?[\s.!?]*",
-        folded,
-    )
-    if press is None:
-        return None
-    return press.group("client_a") or press.group("client_b")
 
 
 def resolve_explicit_clarification_intent(
@@ -5680,17 +3999,6 @@ def resolve_explicit_clarification_intent(
 
 
 
-# VIDEO1921 H0737: el nombre del servicio se escribe mal —o lo escribe mal el
-# oído de BAXY, que es lo más probable— y eso no lo convierte en otro servicio.
-# Alternancia corta y cerrada, no distancia de edición: el catálogo de servicios
-# es cerrado y una tolerancia genérica leería «Netflix» donde se dijo otra cosa.
-# VIDEO1947: Disney+ joins the closed streaming catalog; the same short, closed
-# alternation of misspellings (the owner's ear, not another service).
-_NETFLIX_SPELLED = (
-    r"(?:netflix|nerflix|netlix|netfix|netflis|neflix|"
-    r"disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|dinsey|dizney|east\s*plus)"
-)
-
 
 def streaming_service_named(text: str) -> str:
     """The catalog value of the streaming service the text names: disney_plus or netflix."""
@@ -5701,221 +4009,8 @@ def streaming_service_named(text: str) -> str:
     return "netflix"
 
 
-def _entity_key(value: str) -> str:
-    return " ".join(re.findall(r"[a-z0-9]+", _fold(value)))
 
 
-def build_game_catalog_index(
-    entries: Iterable[tuple[str, str, str]] | GameCatalogIndex,
-) -> GameCatalogIndex:
-    """Validate and normalize a bounded Core-authenticated game snapshot."""
-
-    if isinstance(entries, GameCatalogIndex):
-        return entries
-    retained: list[tuple[str, str, str, str]] = []
-    identities: set[tuple[str, str]] = set()
-    provider_names: set[tuple[str, str]] = set()
-    for entry in entries:
-        if (
-            not isinstance(entry, (tuple, list))
-            or len(entry) != 3
-            or not all(isinstance(value, str) for value in entry)
-        ):
-            raise ValueError("invalid game catalog entry")
-        provider, app_id, name = entry
-        if len(retained) >= MAX_GAME_CATALOG_ENTRIES:
-            raise ValueError("game catalog entry limit exceeded")
-        if provider not in {"steam", "epic"}:
-            raise ValueError("invalid game catalog provider")
-        if (
-            not app_id
-            or len(app_id) > 16
-            or re.fullmatch(r"[A-Za-z0-9._-]+", app_id) is None
-        ):
-            raise ValueError("invalid game catalog app id")
-        display_name = name
-        key = _entity_key(display_name)
-        identity = (provider, app_id)
-        provider_name = (provider, key)
-        if (
-            not display_name.strip()
-            or "\ufffd" in display_name
-            or any(
-                unicodedata.category(character) == "Cc"
-                or character.isspace()
-                and character != " "
-                for character in display_name
-            )
-            or not key
-            or len(display_name.encode("utf-8")) > 512
-            or identity in identities
-            or provider_name in provider_names
-        ):
-            raise ValueError("ambiguous game catalog entry")
-        identities.add(identity)
-        provider_names.add(provider_name)
-        retained.append((key, provider, app_id, display_name))
-    retained.sort(key=lambda item: (item[0], item[1], item[2]))
-    return GameCatalogIndex(tuple(retained))
-
-
-def _authenticated_game_target(
-    text: str,
-    game_catalog: GameCatalogIndex,
-) -> tuple[str, str, str] | None:
-    """Resolve one exact or numeric-edition-prefix installed game title."""
-
-    request = _match(
-        text,
-        (
-            r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*|"
-            r"(?:puedes|podrias|can you|could you|would you)\s+)?"
-            rf"(?:(?:vamos\s+a\s+)?(?:juega|juga|jugar|juguemos|play)|"
-            # H0682 «Ve a Mad de Rivals.», H0083 «lanzá Mortal Kombat en Steam»:
-            # a go-to or start order on an installed title launches it too.
-            r"(?:ve|anda|andate|entra|go)\s+(?:a|al|to)|inicia|iniciame|start|"
-            rf"(?:{_OPEN}|lanza|launch|ejecuta|run))\b\s+"
-            r"(?:(?:al|el|the)\s+)?(?:(?:juego|game)\s+)?"
-            r"(?P<title>.+?)"
-            r"(?:\s+(?:modo|mode)\s+(?:multijugador|multiplayer))?"
-            r"(?:\s+(?:desde|en|from|on)\s+(?:steam|epic(?:\s+games)?))?[\s?!.]*$"
-        ),
-    )
-    if request is None or _is_negated_match(text, request):
-        return None
-    target_key = _entity_key(request.group("title"))
-    if not target_key:
-        return None
-    exact = [entry for entry in game_catalog.entries if entry[0] == target_key]
-    candidates = exact or [
-        entry
-        for entry in game_catalog.entries
-        if entry[0].startswith(target_key + " ")
-        and re.fullmatch(r"\d+", entry[0][len(target_key) + 1 :]) is not None
-    ]
-    if not candidates:
-        # A title named without its edition suffix («PICO PARK» for «PICO
-        # PARK:Classic Edition», «Plants vs. Zombies» for the GOTY edition) is
-        # that game when exactly one installed title starts so (D24: unique
-        # candidate → act).
-        candidates = [
-            entry
-            for entry in game_catalog.entries
-            if entry[0].startswith(target_key + " ")
-            or re.match(re.escape(target_key) + r"\s*[:(\-–]", _fold(entry[3]).strip()) is not None
-        ]
-    identities = {(entry[1], entry[2]) for entry in candidates}
-    if len(identities) != 1:
-        return None
-    selected = candidates[0]
-    return selected[1], selected[2], selected[3]
-
-
-def _corrected_game_launch_title(text: str) -> str | None:
-    """Extract the final positive game title from one explicit self-correction."""
-
-    corrected = re.fullmatch(
-        (
-            r"[¿?¡!\s]*(?:quitar|quita|remove|delete|uninstall)\b[^.;!?]{0,64}"
-            r"\b(?:quiero\s+decir|i\s+mean|meant|mejor)\b\s*[,;:]?\s*"
-            r"(?:poner|pon|play|launch|lanza|abrir|abre)\s+"
-            r"(?:(?:el|the)\s+)?(?:(?:juego|game)\s+)?"
-            r"(?P<title>[^.;!?]{1,120})[\s.!?]*"
-        ),
-        _fold(text),
-        re.IGNORECASE,
-    )
-    if corrected is None:
-        return None
-    title = corrected.group("title").strip()
-    return title if title else None
-
-
-def resolve_game_catalog_app_id(
-    text: str,
-    game_catalog: Iterable[tuple[str, str, str]] | GameCatalogIndex,
-) -> str | None:
-    """Return one authenticated local AppID for a request or exact title."""
-
-    index = build_game_catalog_index(game_catalog)
-    request_target = _authenticated_game_target(_fold(text), index)
-    if request_target is not None:
-        return request_target[1]
-    key = _entity_key(text)
-    matches = [entry for entry in index.entries if entry[0] == key]
-    identities = {(entry[1], entry[2]) for entry in matches}
-    return matches[0][2] if len(identities) == 1 else None
-
-
-def _application_name_key(value: str) -> str:
-    """Normalize case/spacing while preserving an app name's punctuation."""
-
-    return _fold(value)
-
-
-def build_application_catalog_index(
-    application_names: Iterable[str] | ApplicationCatalogIndex,
-) -> ApplicationCatalogIndex:
-    """Normalize and compile an authenticated catalog exactly once."""
-
-    if isinstance(application_names, ApplicationCatalogIndex):
-        return application_names
-    retained: list[tuple[str, str]] = []
-    seen: set[str] = set()
-    for name in application_names:
-        if not isinstance(name, str):
-            continue
-        key = _application_name_key(name)
-        if not key or key in seen:
-            continue
-        if len(retained) >= MAX_APPLICATION_CATALOG_ENTRIES:
-            raise ValueError("application catalog exceeds entry limit")
-        seen.add(key)
-        retained.append((name, key))
-    retained.sort(key=lambda item: (-len(item[1]), item[1]))
-    escaped_names = tuple(re.escape(key) for _, key in retained)
-    pattern_chars = sum(len(name) + 1 for name in escaped_names)
-    if pattern_chars > MAX_APPLICATION_CATALOG_PATTERN_CHARS:
-        raise ValueError("application catalog exceeds pattern limit")
-    occurrence_pattern = (
-        re.compile(
-            (r"(?<![a-z0-9])(?P<target>" + "|".join(escaped_names) + r")(?![a-z0-9])"),
-            re.IGNORECASE,
-        )
-        if escaped_names
-        else None
-    )
-    return ApplicationCatalogIndex(
-        entries=tuple(retained),
-        keys=frozenset(seen),
-        entity_identities=tuple((_entity_key(name), key) for name, key in retained),
-        occurrence_pattern=occurrence_pattern,
-    )
-
-
-_APPLICATION_TRAILING_REQUEST = re.compile(
-    r"\s*[,;:]?\s+(?:por favor|please|para mi|for me|ahora|now|"
-    r"dale|porfa|porfi|porfis|pls|plz)$",
-    re.IGNORECASE,
-)
-
-
-def _edit_distance(left: str, right: str) -> int:
-    """Levenshtein distance with adjacent transpositions counted once."""
-
-    previous = list(range(len(right) + 1))
-    rows = [previous]
-    for i, a in enumerate(left, 1):
-        current = [i]
-        for j, b in enumerate(right, 1):
-            cost = 0 if a == b else 1
-            value = min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + cost)
-            if i > 1 and j > 1 and a == right[j - 2] and left[i - 2] == b:
-                value = min(value, rows[i - 2][j - 2] + 1)
-            current.append(value)
-        rows.append(current)
-        previous = current
-    return previous[-1]
 
 
 def near_catalog_application_candidates(
@@ -6012,63 +4107,6 @@ def _common_prefix_length(left: str, right: str) -> int:
     return count
 
 
-_NEAR_GAME_ORDER = re.compile(
-    r"^[\s¡!¿?]*(?:abre|abri|abrime|abris|lanza|lanzame|inicia|iniciame|pone|pon|poneme|juga|jugar\s+a|jugar|"
-    r"ve\s+a|anda\s+a|andate\s+a|entra\s+a|vamos\s+a|open|launch|play|go\s+to|start)\s+"
-    r"(?:(?:el|la|los|las|the|a|al)\s+)?(?P<target>[a-z0-9][a-z0-9 .'+-]{1,40}?)[\s.!?,]*$"
-)
-
-
-def near_catalog_game_candidates(
-    text: str,
-    games: Iterable[tuple[str, str, str]] | GameCatalogIndex,
-) -> tuple[str, ...]:
-    """GAMES1533 «Ve a Mad de Rivals.»: the installed game names (at most two)
-    that an open, launch or go-to order almost names — a word of five or more
-    letters shared with the title, or the whole target one or two edits away —
-    when the target matches no game exactly. Empty for anything else."""
-
-    index = build_game_catalog_index(games)
-    if not index.entries:
-        return ()
-    folded = _strip_request_envelope(_fold(text))
-    if not folded or _has(folded, r"\b(?:no|nunca|jamas|never|don't|do\s+not)\b|\b(?:si|if|cuando|when)\b.{0,20}\b(?:termine|acabe|finish)\b"):
-        return ()
-    folded = re.sub(r"^(?:si|ok|dale|bueno|y|and)\s*[,.]?\s*(?:quema\s*,?\s*)?", "", folded, count=1).strip()
-    request = _NEAR_GAME_ORDER.match(folded)
-    if request is None:
-        return ()
-    target = request.group("target").strip(" ¿?¡!,:;.-")
-    target = re.sub(r"\s*,?\s*(?:por\s+favor|porfa|please|pls)$", "", target).strip(" ,.")
-    key = _entity_key(target)
-    if not key or len(key) < 3 or len(key.split()) > 3:
-        return ()
-    if key in {"eso", "esto", "aquello", "ese", "esa", "este", "esta", "algo", "todo", "that", "this", "it"}:
-        # «abrí eso» is a deictic, never a near miss of a short title (DSX).
-        return ()
-    if any(entry[0] == key for entry in index.entries):
-        return ()
-    target_tokens = {token for token in key.split() if len(token) >= 5}
-    scored: list[tuple[int, str]] = []
-    for normalized, _provider, _app_id, display in index.entries:
-        name_tokens = set(normalized.split())
-        if target_tokens & name_tokens:
-            score = 0
-        else:
-            if len(key) < 5:
-                continue
-            distance = _edit_distance(key, normalized)
-            if distance > 2:
-                continue
-            score = distance
-        scored.append((score, display))
-    scored.sort(key=lambda item: (item[0], item[1]))
-    names: list[str] = []
-    for score, name in scored:
-        if score <= scored[0][0] and name not in names:
-            names.append(name)
-    return tuple(names[:2])
-
 
 def near_single_open_candidate(
     text: str,
@@ -6093,92 +4131,6 @@ def near_single_open_candidate(
         return ("game.launch", titles[0])
     return None
 
-
-def _application_target_forms(
-    raw_target: str,
-) -> tuple[tuple[str, int], ...]:
-    """Return bounded exact-name candidates before stripping request wrappers."""
-
-    punctuation_forms: list[str] = []
-    candidate = raw_target.strip()
-    if candidate:
-        punctuation_forms.append(candidate)
-    for _ in range(8):
-        compact = candidate.rstrip()
-        if not compact or compact[-1] not in "?!.":
-            break
-        candidate = compact[:-1].rstrip()
-        if candidate and candidate not in punctuation_forms:
-            punctuation_forms.append(candidate)
-    without_punctuation = raw_target.rstrip(" ?!.")
-    if without_punctuation and without_punctuation not in punctuation_forms:
-        punctuation_forms.append(without_punctuation)
-
-    execution_hint = re.compile(
-        r"\s+(?:(?:con\s+)?maximo\s+\d+\s+intentos?|[0-2])$",
-        re.IGNORECASE,
-    )
-    wrapper = re.compile(
-        (
-            r"^(?:(?:el|la|los|las|un|una|the|a|an)\s+)?"
-            r"(?:(?:aplicacion|application|app|programa|program)\s+)?"
-        ),
-        re.IGNORECASE,
-    )
-    forms: list[tuple[str, int]] = []
-    for punctuation_form in punctuation_forms:
-        bases = [punctuation_form]
-        without_trailing = _APPLICATION_TRAILING_REQUEST.sub("", punctuation_form).rstrip()
-        if without_trailing and without_trailing != punctuation_form:
-            bases.append(without_trailing)
-        without_execution_hint = execution_hint.sub("", punctuation_form).rstrip()
-        if (
-            without_execution_hint
-            and without_execution_hint != punctuation_form
-            and without_execution_hint not in bases
-        ):
-            bases.append(without_execution_hint)
-        for base in bases:
-            if (base, 0) not in forms:
-                forms.append((base, 0))
-            wrapped = wrapper.match(base)
-            if wrapped is None or wrapped.end() <= 0:
-                continue
-            unwrapped = base[wrapped.end() :].strip()
-            if unwrapped and (unwrapped, wrapped.end()) not in forms:
-                forms.append((unwrapped, wrapped.end()))
-    return tuple(forms)
-
-
-_CATALOG_NAME_ALIASES: tuple[tuple[frozenset[str], tuple[str, ...]], ...] = (
-    (frozenset({"calc", "calculator", "calculadora"}), ("calculadora", "calculator")),
-    (frozenset({"notepad", "bloc de notas", "app de notas", "coso de notas",
-                "editor de texto"}), ("bloc de notas", "notepad")),
-    (frozenset({"explorador", "explorador de archivos", "explorador de windows",
-                "file explorer", "files explorer", "explorer", "windows explorer"}),
-     ("explorador de archivos", "file explorer")),
-    # UI1731 «Abre Epic Games y navega hasta la biblioteca»: the Start catalog
-    # names the client «Epic Games Launcher»; people say «Epic Games» or «Epic».
-    (frozenset({"epic", "epic games", "epic launcher", "epic games launcher", "launcher de epic"}),
-     ("epic games launcher",)),
-    # UI1735 «en Opera hacé clic en …»: the Start catalog names the browser
-    # «Navegador Opera GX»; people say «Opera» or «Opera GX».
-    (frozenset({"opera", "opera gx", "navegador opera", "navegador opera gx", "opera browser"}),
-     ("navegador opera gx", "opera gx", "opera")),
-)
-
-
-def _catalog_alias_key(target_key: str, keys: frozenset[str]) -> str | None:
-    """Map a bilingual alias to the one catalog key it names, if installed."""
-
-    if target_key in keys:
-        return target_key
-    for aliases, catalog_names in _CATALOG_NAME_ALIASES:
-        if target_key in aliases:
-            for name in catalog_names:
-                if name in keys:
-                    return name
-    return None
 
 
 def _indexed_authenticated_application_target(
@@ -6437,34 +4389,6 @@ def _authenticated_application_close_target(
     return min(matches, key=lambda item: item[0])
 
 
-_CLOSE_WINDOW_WRAPPER = re.compile(
-    r"^(?:(?:la|el|the)\s+)?(?:ventana|window|app|aplicacion|programa|application|program)\s+(?:de|del|of)\s+(?P<name>.+)$"
-    r"|^(?:the\s+)?(?P<name_before>.+?)\s+(?:window|app|application)$",
-    re.IGNORECASE,
-)
-_CLOSE_TRAILING_COURTESY = re.compile(r"\s*[,;:]?\s+(?:pls|plis|porfa|porfis|for me|para mi)$", re.IGNORECASE)
-
-
-def _close_target_forms(raw_target: str) -> tuple[tuple[str, int], ...]:
-    """Bounded close-target forms: the open forms plus «la ventana de X» / «the X window».
-
-    Offsets index the original target so trailing-courtesy checks stay exact.
-    """
-    forms = list(_application_target_forms(raw_target))
-    stripped = raw_target.rstrip(" ?!.")
-    courtesy = _CLOSE_TRAILING_COURTESY.search(stripped)
-    if courtesy is not None:
-        core = stripped[:courtesy.start()]
-        forms.extend((form, offset) for form, offset in _application_target_forms(core))
-    for form, offset in list(forms):
-        wrapped = _CLOSE_WINDOW_WRAPPER.fullmatch(form)
-        if wrapped is None:
-            continue
-        name = wrapped.group("name") or wrapped.group("name_before")
-        start = wrapped.start("name") if wrapped.group("name") else wrapped.start("name_before")
-        forms.extend((inner, offset + start + inner_offset) for inner, inner_offset in _application_target_forms(name))
-    return tuple(dict.fromkeys(forms))
-
 
 def _authenticated_close_key(target: str, catalog: ApplicationCatalogIndex) -> str | None:
     """Resolve one target form to an exact catalog key, through the shared alias resolver.
@@ -6486,71 +4410,6 @@ def _authenticated_close_key(target: str, catalog: ApplicationCatalogIndex) -> s
     keys = {_application_name_key(name) for name in candidates}
     return next(iter(keys)) if len(keys) == 1 else None
 
-
-_DEICTIC_CLOSE_REQUEST = re.compile(
-    r"^[¿?¡!\s]*(?:"
-    r"(?:cierra|cerra|cerrar|cerrame|cierrame|close)\s+"
-    r"(?:"
-    r"(?:(?:la|the|esta|this|esa|that)\s+)?(?:ventana|window)\s+(?:activa|active|actual|current)|"
-    r"(?:the\s+)?(?:active|current|foreground|front)\s+window|"
-    r"(?:esta|this|esa|that)\s+(?:ventana|window)|"
-    r"(?:la\s+)?ventana\s+(?:que\s+(?:esta|tengo)\s+)?(?:en\s+)?(?:primer\s+plano|adelante|al\s+frente)|"
-    r"(?:the\s+)?window\s+(?:in\s+front|in\s+the\s+foreground|on\s+top)|"
-    r"esto|eso|this|that|it"
-    r")|"
-    r"cierrala|cierralo|cerrala|cerralo|close\s+it"
-    r")[\s?!.]*$",
-    re.IGNORECASE,
-)
-
-
-_DEICTIC_WINDOW_MUTATION = re.compile(
-    r"^[¿?¡!\s]*(?:maximiza|maximizar|maximize|minimiza|minimizar|minimize|"
-    r"restaura|restaurar|restore)(?:me|la|lo)?\s+"
-    r"(?:"
-    r"(?:(?:la|the|esta|this|esa|that)\s+)?(?:ventana|window)"
-    r"(?:\s+(?:activa|active|actual|current))?|"
-    r"(?:the\s+)?(?:active|current|foreground|front)\s+window|"
-    r"(?:la\s+)?ventana\s+(?:que\s+(?:esta|tengo)\s+)?(?:en\s+)?"
-    r"(?:primer\s+plano|adelante|al\s+frente)|"
-    r"(?:the\s+)?window\s+(?:in\s+front|in\s+the\s+foreground|on\s+top)"
-    r")[\s?!.]*$",
-    re.IGNORECASE,
-)
-
-
-def deictic_window_mutation(folded: str) -> bool:
-    """«maximizá esta ventana», «minimize the window»: change the window in front.
-
-    A maximize/minimize/restore whose only referent is «la ventana», «esta
-    ventana» or the foreground window binds window.active, never a window
-    inventory from which some other window could be chosen. A named window
-    («la ventana de Chrome») keeps its named resolution.
-    """
-
-    return _DEICTIC_WINDOW_MUTATION.match(folded) is not None
-
-
-def deictic_close_request(folded: str) -> bool:
-    """«cerrá esta ventana», «cerrala», «close the active window»: close what is in front.
-
-    The referent is the foreground window, which window.active observes and
-    the reviewed confirmation names before anything closes. A referent from
-    earlier dialogue («la que te mencioné antes») is not deictic here.
-    """
-
-    return _DEICTIC_CLOSE_REQUEST.match(folded) is not None
-
-
-_FOCUS_HEAD_ONLY = r"(?:enfoca|enfocame|enfocar|focus|switch\s+to|cambia\s+a|cambiame\s+a)"
-_FOCUS_HEAD_WITH_TAIL = (
-    r"(?:trae|traeme|traer|pone|poneme|pon|ponme|poner|lleva|llevame|llevar|"
-    r"activa|activame|mostra|mostrame|muestra|muestrame|bring|show|put)"
-)
-_FOCUS_TAIL = (
-    r"(?:al\s+frente|adelante|al\s+primer\s+plano|en\s+primer\s+plano|"
-    r"to\s+the\s+front|forward|in\s+front|up\s+front)"
-)
 
 
 def _authenticated_application_focus_target(
@@ -6611,8 +4470,6 @@ def resolve_application_focus_name(
     return next(iter(names)) if len(names) == 1 else None
 
 
-_MINIMIZE_HEAD = r"(?:minimiza|minimizame|minimizar|minimise|minimize|minimisa|minimisame)"
-
 
 def _authenticated_application_minimize_target(
     text: str,
@@ -6671,17 +4528,6 @@ def resolve_application_minimize_name(
     names = {name for name, key in catalog.entries if key == target[1]}
     return next(iter(names)) if len(names) == 1 else None
 
-
-_SNAP_HEAD = (
-    r"(?:pon|pone|poneme|poner|ponla|ponlo|mueve|mover|moveme|muevela|muevelo|lleva|llevame|llevar|"
-    r"coloca|colocame|colocar|acomoda|acomodame|acomodar|arrastra|arrastrame|arrastrar|"
-    r"put|move|snap|dock|place|drag)"
-)
-_SNAP_SIDE = (
-    r"(?P<side>(?:a|hacia|en|para)\s+(?:la\s+)?(?:mitad\s+)?(?:izquierda|derecha)(?:\s+de\s+la\s+pantalla)?|"
-    r"(?:on|to|at)\s+the\s+(?:left|right)(?:\s+(?:side|half))?(?:\s+of\s+the\s+screen)?|"
-    r"(?:left|right))"
-)
 
 
 def _authenticated_application_snap_target(
@@ -7159,124 +5005,6 @@ def resolve_application_installed_name(
     return _bounded_application_literal(forms[-1][0])
 
 
-def _bounded_application_literal(candidate: str) -> str | None:
-    """Keep literal presence queries bounded without asserting membership."""
-
-    # A pronoun without catalog identity is not an application-name query.
-    # Keep it unresolved rather than asking the provider about a literal "it".
-    if _has(
-        _fold(candidate),
-        r"^(?:(?:esta|esa|aquella|this|that)\s+"
-        r"(?:app|aplicacion|application|programa|program)|"
-        r"esto|eso|esta|esa|aquella|it|this|that|them|esas|aquellas)$",
-    ):
-        return None
-    # A relative clause or its subject still needs an antecedent; it is not
-    # an unfamiliar literal identifier that a catalog can prove absent.
-    if _has(
-        _fold(candidate),
-        r"^(?:(?:el|la|lo|los|las|the)\s+)?"
-        r"(?:que|cual|cuales|quien|which|that|who|you|i|we|he|she|they)\b",
-    ):
-        return None
-
-    # The provider's schema accepts at most 256 UTF-8 bytes and independently
-    # verifies both presence and absence.  Reject clause syntax, control
-    # characters and generic nouns so only one bounded literal reaches it.
-    literal = candidate.strip(" \t\r\n\"'“”")
-    if (
-        not literal
-        or len(literal.encode("utf-8")) > 256
-        or any(ord(character) < 32 for character in literal)
-        or _has(literal, r"(?:[;,]|\b(?:y|and|then|luego|despues)\b)")
-        or _has(
-            literal,
-            r"^(?:app|application|aplicacion|program|programa|software|"
-            r"installed\s+apps?|aplicaciones?\s+instaladas?)$",
-        )
-    ):
-        return None
-    return literal
-
-
-def _authenticated_application_list(
-    text: str,
-    application_names: Iterable[str] | ApplicationCatalogIndex,
-    *,
-    installed_query: bool = False,
-) -> tuple[tuple[int, str], ...]:
-    """Recognize an exact coordinated list of authenticated app names."""
-
-    occurrence_pattern = build_application_catalog_index(
-        application_names,
-    ).occurrence_pattern
-    spans = (
-        [
-            (found.start(), found.end(), found.group("target"))
-            for found in occurrence_pattern.finditer(text)
-        ]
-        if occurrence_pattern is not None
-        else []
-    )
-    if len(spans) < 2:
-        return ()
-    connector = (
-        r"\s*(?:"
-        r",\s*(?:(?:y|and)(?:\s+(?:luego|despues|then|afterwards))?)?"
-        r"|(?:y|and)(?:\s+(?:luego|despues|then|afterwards))?"
-        r")\s*"
-        r"(?:(?:el|la|los|las|the)\s+)?"
-        r"(?:(?:aplicacion|application|app|programa|program)\s+)?"
-    )
-    if any(
-        re.fullmatch(
-            connector,
-            text[prior[1] : later[0]],
-            re.IGNORECASE,
-        )
-        is None
-        for prior, later in zip(spans, spans[1:])
-    ):
-        return ()
-    prefix = text[: spans[0][0]]
-    suffix = text[spans[-1][1] :]
-    if installed_query:
-        prefix_first = _has(
-            prefix,
-            (
-                r"^[¿?¡!\s]*(?:esta|estan|is|are)\s+"
-                r"(?:instalad[oa]s?|installed)\s+"
-                r"(?:(?:el|la|los|las|the)\s+)?$"
-            ),
-        ) and _has(suffix, r"^[\s?!.]*$")
-        suffix_last = _has(
-            prefix,
-            r"^[¿?¡!\s]*(?:esta|estan|is|are)\s+$",
-        ) and _has(
-            suffix,
-            r"^\s+(?:instalad[oa]s?|installed)[\s?!.]*$",
-        )
-        valid = prefix_first or suffix_last
-    else:
-        valid = _has(
-            prefix,
-            (
-                r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*|"
-                r"(?:puedes|podrias|can you|could you|would you)\s+)?"
-                rf"{_OPEN}\b\s+(?:(?:el|la|the)\s+)?"
-                r"(?:(?:aplicacion|application|app|programa|program)\s+)?$"
-            ),
-        ) and _has(
-            suffix,
-            (
-                r"^(?:\s+(?:por favor|please|para mi|for me|ahora|now))?"
-                r"[\s?!.]*$"
-            ),
-        )
-    if not valid:
-        return ()
-    return tuple((start, key) for start, _, key in spans)
-
 
 def _authenticated_application_request(
     text: str,
@@ -7365,72 +5093,6 @@ def _authenticated_application_desired_open(
         return None
     return target.start(), _application_name_key(target.group("target"))
 
-
-def _authenticated_application_identity_conflict(
-    text: str,
-    application_names: Iterable[str] | ApplicationCatalogIndex,
-) -> bool:
-    """Detect a request that token-collides with, but is not, an exact name."""
-
-    raw_targets: list[str] = []
-    open_request = _match(
-        text,
-        (
-            r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*|"
-            r"(?:puedes|podrias|can you|could you|would you)\s+)?"
-            rf"{_OPEN}\b\s+(?P<target>.+?)"
-            r"(?:\s+(?:por favor|please|para mi|for me|ahora|now))?"
-            r"[\s?!.]*$"
-        ),
-    )
-    if open_request is not None:
-        raw_targets.append(open_request.group("target"))
-    for pattern in (
-        (
-            r"^[¿?¡!\s]*(?:esta|estan|is|are)\s+"
-            r"(?:instalad[oa]s?|installed)\s+"
-            r"(?P<target>.+?)[\s?!.]*$"
-        ),
-        (
-            r"^[¿?¡!\s]*(?:esta|estan|is|are)\s+"
-            r"(?P<target>.+?)\s+"
-            r"(?:instalad[oa]s?|installed)[\s?!.]*$"
-        ),
-    ):
-        installed_request = _match(text, pattern)
-        if installed_request is not None:
-            raw_targets.append(installed_request.group("target"))
-
-    wrappers = re.compile(
-        (
-            r"^(?:(?:el|la|los|las|the)\s+)?"
-            r"(?:(?:aplicacion|application|app|programa|program)\s+)?"
-        ),
-        re.IGNORECASE,
-    )
-    separator = re.compile(
-        (
-            r"\s*(?:,\s*(?:(?:y|and)(?:\s+(?:luego|despues|then|afterwards))?)?"
-            r"|(?:y|and)(?:\s+(?:luego|despues|then|afterwards))?)\s*"
-        ),
-        re.IGNORECASE,
-    )
-    catalog_identities = build_application_catalog_index(
-        application_names,
-    ).entity_identities
-    for raw_target in raw_targets:
-        for item in separator.split(raw_target):
-            candidate = wrappers.sub("", item.strip(), count=1)
-            candidate_key = _application_name_key(candidate)
-            candidate_entity = _entity_key(candidate)
-            if not candidate_key or not candidate_entity:
-                continue
-            if any(
-                candidate_entity == entity and candidate_key != name_key
-                for entity, name_key in catalog_identities
-            ):
-                return True
-    return False
 
 
 _EXPLICIT_NON_ACTION_FRAME = (
@@ -7623,82 +5285,6 @@ def chat_read_request(folded: str) -> bool:
 
 
 
-def _bare_note_inventory_request(text: str) -> bool:
-    """Recognize a complete, verbless request for the person's own notes."""
-
-    folded = _strip_request_envelope(_fold(text))
-    return _note_inventory_object(folded) and re.fullmatch(
-        r"[¿?¡!\s]*(?:(?:mis|my)\s+(?:notas|notes)(?:\s+(?:guardadas|saved))?|"
-        r"(?:tengo|do\s+i\s+have)\s+(?:alguna|algunas|any)?\s*(?:notas?|notes?)"
-        r"(?:\s+(?:guardadas?|saved))?)[\s.!?]*",
-        folded,
-        re.IGNORECASE,
-    ) is not None
-
-
-def _note_inventory_object(text: str) -> bool:
-    """True when the person is listing notes, not asking for Notepad."""
-
-    remainder = re.sub(_NOTEPAD_OBJECT, " ", text, flags=re.IGNORECASE)
-    return bool(
-        re.search(
-            r"\b(?:notas?|notes?|apuntes?|anotaciones?|memos?)\b",
-            remainder,
-            re.IGNORECASE,
-        )
-    )
-
-
-
-def _direct_process_inventory_request(text: str) -> bool:
-    return _process_list_domain(text) and _has(
-        text, rf"^[¿?¡!\s]*{_REQUEST_PREFIX}(?:{_LIST}|mostrame|dime|dame|tell|"
-        r"cuenta|count|ordena|sort|quiero|which|what|que|cual|cuales|cuantos|how)\b",
-    )
-
-
-def process_inventory_arguments(text: str) -> dict[str, object] | None:
-    """Keep rank, metric and spoken page size bound to the process request."""
-    text = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.")
-    if not _process_list_domain(text):
-        return None
-    sorts = {
-        sort for sort, pattern in (
-            ("cpu", r"\b(?:cpu|procesador|processor)\b"),
-            ("memory", r"\b(?:ram|memoria|memory|working set)\b"),
-            ("name", r"\b(?:por nombre|by name)\b"),
-        ) if _has(text, pattern)
-    }
-    if len(sorts) > 1:
-        return None
-    result: dict[str, object] = {"sort": next(iter(sorts))} if sorts else {}
-    number = r"(?:\d+|" + "|".join(
-        re.escape(word) for word in sorted(_PERCENTAGE_WORD_VALUES, key=len, reverse=True)
-    ) + r")"
-    sizes = list(re.finditer(
-        rf"\b(?:top|primeros|first|hasta|up\s+to)\s+(?P<rank>{number})\b|"
-        rf"\b(?P<count>{number})\s+(?:(?:running|active|activos)\s+)?"
-        r"(?:procesos?|process(?:es)?)\b", text,
-    ))
-    values = set()
-    for match in sizes:
-        raw = match.group("rank") or match.group("count")
-        values.add(int(raw) if raw.isdecimal() else _PERCENTAGE_WORD_VALUES[raw])
-    # A number outside a rank frame may be a PID, threshold or another action.
-    remainder = text
-    for match in reversed(sizes):
-        remainder = remainder[:match.start()] + remainder[match.end():]
-    if len(values) > 1 or _has(remainder, r"\d"):
-        return None
-    if values:
-        value = next(iter(values))
-        if not 1 <= value <= 50:
-            return None
-        result["limit"] = value
-    elif _has(text, r"\b(?:que proceso|which process|what process)\b"):
-        result["limit"] = 1
-    return result
-
 
 def _other_device_effect_scope(text: str) -> bool:
     """Reject effects explicitly scoped to a separate personal device."""
@@ -7718,225 +5304,6 @@ def _other_device_effect_scope(text: str) -> bool:
         ),
     )
 
-
-def _local_internet_connection_query(text: str) -> bool:
-    """A current local connection check is not a request for internet content."""
-    machine_en = r"(?:this|the|my)\s+(?:computer|pc|machine)"
-    machine_es = r"(?:este|el|mi)\s+(?:equipo|pc|computador(?:a)?|ordenador)"
-    state_en = r"(?:connected\s+to\s+(?:the\s+)?internet|online)"
-    state_es = r"conectad[oa]\s+a\s+internet"
-    return re.fullmatch(
-        rf"[¿?\s]*(?:"
-        rf"(?:is\s+{machine_en}|am\s+i)\s+{state_en}|"
-        rf"(?:check|verify)\s+(?:whether|if)\s+{machine_en}\s+is\s+{state_en}|"
-        rf"esta\s+{machine_es}\s+{state_es}|"
-        rf"(?:comprueba|revisa|verifica)\s+si\s+{machine_es}\s+esta\s+{state_es}"
-        r")(?:\s+(?:right\s+now|now|ahora|actualmente))?[.!?\s]*",
-        text,
-        re.IGNORECASE,
-    ) is not None
-
-
-
-_LOCAL_VOLUME_DEVICE = (
-    r"(?:sistema|equipo|pc|compu|computador(?:a)?|ordenador|system|computer)"
-)
-_LOCAL_OUTPUT_VOLUME_OBJECT = (
-    rf"(?:salida(?:\s+de\s+(?:audio|sonido))?\s+del?\s+{_LOCAL_VOLUME_DEVICE}|"
-    rf"{_LOCAL_VOLUME_DEVICE}(?:'s)?\s+output|"
-    r"nivel\s+(?:actual\s+)?de\s+salida)"
-)
-_VOLUME_OBJECT = (
-    rf"(?:volumen|volume|sonido|sound|{_LOCAL_OUTPUT_VOLUME_OBJECT})"
-    rf"(?:\s+(?:del?|of|on)\s+(?:(?:el|the|my)\s+)?{_LOCAL_VOLUME_DEVICE})?"
-)
-
-
-def _bare_music_volume_request(folded: str) -> bool:
-    """AUDIO1461 «bajá la música», «subí la música»: a volume verb whose only
-    object is the music, with no amount, player or level."""
-
-    return _has(
-        folded,
-        rf"^[¿?¡!\s]*(?:{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB})\s+"
-        r"(?:un\s+poco\s+|un\s+poquito\s+|a\s+)?(?:la\s+|el\s+|the\s+)?(?:musica|music)\s*[.!?]*$",
-    )
-
-
-def _volume_domain(text: str) -> bool:
-    if _has_app_scoped_audio(text):
-        return False
-    if _has(text, r"\b(?:data\s+volume|volumen\s+de\s+datos)\b"):
-        return False
-    if _has(text, r"\b(?:audio|sonido|sound)\b"):
-        return True
-    if _has(text, rf"\b{_LOCAL_OUTPUT_VOLUME_OBJECT}\b") and _has(
-        text, r"\b(?:nivel|level|volumen|volume|puntos?|points?|por ciento|percent)\b|%",
-    ):
-        return True
-    if _has(
-        text,
-        r"\b(?:bajito|mas\s+bajo|turn\s+it\s+up|turn\s+it\s+down|"
-        r"barely\s+hear)\b",
-    ) and not _has(text, r"\b(?:brillo|brightness|luz\s+de\s+la\s+pantalla)\b"):
-        return True
-    if _has(text, r"\b(?:musica|music)\b"):
-        # AUDIO1461 «bajá la música»: a bare volume verb with the music as its
-        # only object is the everyday way of asking for less (or more) volume;
-        # without an amount it takes the relative-volume clarification (H0027).
-        if _bare_music_volume_request(text):
-            return True
-        # Music is primarily a media object. It denotes the global audio
-        # level only when a local numeric level/adjustment construction says
-        # so; decades, track numbers and genre names carry no volume authority.
-        return _has(
-            text,
-            r"\b(?:musica|music)\b\s+(?:a(?:l)?|to|at)\s*\d{1,3}"
-            r"\s*(?:%|por ciento|percent)?\b|"
-            r"\b(?:sube|subir|baja|bajar|aumenta|reduce|increase|decrease|"
-            r"raise|lower)\b.{0,48}\b(?:musica|music)\b.{0,24}"
-            r"\b(?:en|by)\s*\d{1,3}\s*(?:%|por ciento|percent|puntos?|points?)\b",
-        )
-    volume = _match(text, r"\b(?:volumen|volume)\b")
-    if volume is None:
-        return False
-    # A comma/semicolon separates the same modifiers already handled below;
-    # it does not turn "volume, please" into an unknown non-audio domain.
-    # Keep the modifier checks: "volumen, de ventas" is still not PC audio.
-    suffix = text[volume.end() :].lstrip(" \t,;")
-    if not suffix or re.match(r"^[?!.]", suffix):
-        return True
-    modifier = _match(
-        suffix,
-        (
-            r"^(?:de|del|of)\s+"
-            r"(?:(?:la|el|los|las|the|mi|mis|my|este|esta|this)\s+)?"
-            r"(?P<object>[a-z]+)"
-        ),
-    )
-    if modifier is not None:
-        return modifier.group("object") in {
-            "audio",
-            "sonido",
-            "salida",
-            "sistema",
-            "system",
-            "equipo",
-            "compu",
-            "computador",
-            "computadora",
-            "computer",
-            "notebook",
-            "laptop",
-            "maquina",
-            "machine",
-            "pc",
-            "dispositivo",
-            "device",
-            "altavoz",
-            "altavoces",
-            "speaker",
-            "speakers",
-            "parlante",
-            "parlantes",
-            "auriculares",
-            "headphones",
-            "musica",
-            "music",
-        }
-    # Continuaciones que mantienen «volumen» como el nivel de audio del
-    # equipo. Una continuación desconocida se abstiene: el volumen de un
-    # libro, de datos o de ventas no puede heredar autoridad de audio.
-    return _has(
-        suffix,
-        (
-            r"^(?:al?|en|hasta|esta|estan|actual|actualmente|ahora|ahorita|"
-            r"quedo|puesto|configurado|tiene|tienes|tengo|hay|"
-            r"to|at|by|up|down|level|is|are|now|currently|set|there|"
-            r"\d{1,3}\s*(?:%|por ciento|percent|puntos?|points?)?|"
-            rf"por favor|please|que\s+tenga\s+(?:ahora\s+)?(?:el\s+)?{_LOCAL_VOLUME_DEVICE})\b"
-        ),
-    )
-
-
-_MUTE_PREDICATIVE_VERB = r"(?:deja|dejar|pon|poner|ponle)\s+mudo"
-_MUTE_VERB = (
-    r"(?:silencia|silenciar|silenciame|silencialo|silenciala|mutea|mutear|muteame|"
-    rf"mute|{_UNMUTE_VERB}|reactiva|reactivar|reactivalo|"
-    rf"reactivala|apaga|apagar|activa|activar|{_MUTE_PREDICATIVE_VERB})"
-)
-# «apaga»/«activa» también gobiernan el equipo, la pantalla o la radio; solo
-# valen para el silencio global con un objeto de audio literal. «apaga la
-# música» detiene la reproducción y pertenece a media.control.
-_STRICT_AUDIO_OBJECT_VERB = r"(?:apaga|apagar|activa|activar)"
-
-
-def _audio_mute_domain(text: str) -> bool:
-    if _has_app_scoped_audio(text):
-        return False
-    if _has(
-        text,
-        rf"\b{_STRICT_AUDIO_OBJECT_VERB}\s+"
-        r"(?:(?:el|la|los|las|the|mi|my)\s+)?"
-        r"(?:musica|music|cancion|song|video|pelicula|movie|"
-        r"reproduccion|playback)\b",
-    ):
-        return False
-    return _has(
-        text,
-        (
-            rf"\b{_MUTE_VERB}\s+"
-            r"(?:(?:el|la|los|las|the|mi|my)\s+)?"
-            r"(?:(?:computador|computadora|computer|equipo|pc|sistema|"
-            r"system|notebook|laptop)\s+)?"
-            r"(?:audio|sonido|sound|musica|music)\b|"
-            rf"\b{_MUTE_VERB}\s+"
-            r"(?:(?:el|la|los|las|the|mi|my)\s+)?"
-            r"(?:(?:computador|computadora|computer|equipo|pc)\s+)?"
-            r"(?:altavoz|altavoces|parlante|parlantes|speaker|speakers)\b|"
-            # Un objeto total («todo»/«everything») también nombra el audio
-            # global: el fixture canónico de argumentos usa exactamente
-            # «mute everything please» para audio.mute.
-            r"\b(?:silencia|silenciar|mutea|mutear|mute)\s+"
-            r"(?:todo|everything)(?:\s+(?:please|por favor))?\b|"
-            # Poner o quitar el estado de silencio, sin nombrar el verbo.
-            r"\b(?:quita|quitar|saca|sacar|remove)\s+(?:el\s+)?"
-            r"(?:silencio|mute|mudo)\b|"
-            # Devolver o restaurar el sonido es quitarle el silencio (semantic.lexicon).
-            rf"\b{lexicon.AUDIO_RESTORE}\s+(?:(?:el|la|the|mi|my)\s+)?(?:sonido|audio|sound)\b|"
-            r"\b(?:pon|poner|ponle|deja|dejar|put|leave)\s+"
-            r"(?:(?:el|la|the)\s+)?(?:\w+\s+){0,2}"
-            r"(?:en|in|on)\s+(?:mudo|silencio|mute|silent)\b|"
-            r"\bturn\s+(?:the\s+)?(?:audio|sound|volume)\s+back\s+on\b|"
-            # Órdenes elípticas inequívocas: sólo existe un silencio global.
-            rf"^[¿?¡!\s]*{_UNMUTE_VERB}"
-            r"(?:\s+(?:it|please|pls|plz|por favor|porfa|todo|everything|el audio|"
-            r"the audio))?[\s?!.]*$"
-        ),
-    )
-
-
-
-_APP_VOLUME_AMOUNT = (
-    r"(?:\s+(?:en|by|a|al|to)\s+(?P<amount>\d{1,3})\s*(?:%|por\s+ciento|percent|puntos?|points?)?"
-    r"|\s+(?P<amount2>\d{1,3})\s*(?:%|por\s+ciento|percent|puntos?|points?))?"
-)
-_APP_VOLUME_SPANISH = re.compile(
-    rf"^[¿?¡!\s]*(?:(?:necesito|quiero|queria|quisiera|podes|podrias|podria|me\s+(?:podes|podrias|podria))\s+(?:que\s+)?)?"
-    rf"(?P<verb>{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB})\s+(?:me\s+)?(?:un\s+poco\s+|un\s+toque\s+|a\s+little\s+)?"
-    r"(?:el\s+|la\s+|the\s+)?(?:volumen|volume|sonido|sound|audio)\s+(?:de|del|of|en|in|on)\s+(?:la\s+|el\s+|the\s+)?(?:app\s+|aplicacion\s+|application\s+)?"
-    rf"(?P<app>[a-z0-9][a-z0-9 .+_-]{{0,60}}?)(?:\s+(?:un\s+poco|un\s+toque|un\s+poquito|a\s+bit|a\s+little))?{_APP_VOLUME_AMOUNT}(?:\s*,?\s*(?:please|por\s+favor|porfa))?[\s.!?]*$",
-)
-_APP_VOLUME_ENGLISH = re.compile(
-    r"^[¿?¡!\s]*(?:(?:please|can\s+you|could\s+you|i\s+need\s+you\s+to|i\s+want\s+you\s+to)\s+)?"
-    r"(?P<verb>turn\s+up|turn\s+down|raise|lower|increase|decrease|bump\s+up|crank\s+up)\s+(?:the\s+)?"
-    rf"(?P<app>[a-z0-9][a-z0-9 .+_-]{{0,60}}?)(?:'s)?\s+(?:volume|audio|sound)(?:\s+(?:level|a\s+bit|a\s+little))?{_APP_VOLUME_AMOUNT}(?:\s*,?\s*please)?[\s.!?]*$",
-)
-
-_APP_VOLUME_ENGLISH_SPLIT = re.compile(
-    r"^[¿?¡!\s]*(?:(?:please|can\s+you|could\s+you)\s+)?turn\s+(?:the\s+)?"
-    rf"(?P<app>[a-z0-9][a-z0-9 .+_-]{{0,60}}?)(?:'s)?\s+(?:volume|audio|sound)\s+(?P<verb>up|down)(?:\s+(?:a\s+bit|a\s+little))?{_APP_VOLUME_AMOUNT}(?:\s*,?\s*please)?[\s.!?]*$",
-)
 
 
 def app_volume_request(
@@ -8012,28 +5379,6 @@ def _completed_missing_app_volume_request(
     joiner = " by " if (_APP_VOLUME_ENGLISH.match(previous_folded) or _APP_VOLUME_ENGLISH_SPLIT.match(previous_folded)) else " en "
     return previous_user_text.strip().rstrip(" .!?") + joiner + found.group("amount")
 
-_APP_VOLUME_SET_LEVEL = (
-    r"(?P<level>100|[0-9]{1,2})\s*(?:%|por\s+ciento|percent|puntos?|points?)?"
-    r"|(?P<word>maximo|max|tope|full|minimo|min|cero|zero|mitad|half)"
-)
-_APP_VOLUME_SET_SPANISH = re.compile(
-    rf"^[¿?¡!\s]*(?:(?:necesito|quiero|queria|quisiera|podes|podrias|podria|me\s+(?:podes|podrias|podria))\s+(?:que\s+)?)?"
-    rf"(?:{_SET_VOLUME_VERB})\s+(?:me\s+)?"
-    r"(?:(?:el\s+|la\s+)?(?:volumen|sonido|audio)\s+(?:de|del|en)\s+)?(?:la\s+|el\s+)?(?:app\s+|aplicacion\s+)?"
-    r"(?P<app>[a-z0-9][a-z0-9 .+_-]{0,60}?)"
-    r"(?:\s+(?:el\s+|la\s+)?(?:volumen|sonido|audio))?"
-    rf"\s+(?:a|al|en)\s+(?:la\s+|el\s+)?(?:{_APP_VOLUME_SET_LEVEL})(?:\s*,?\s*(?:please|por\s+favor|porfa))?[\s.!?]*$",
-)
-_APP_VOLUME_SET_ENGLISH = re.compile(
-    r"^[¿?¡!\s]*(?:(?:please|can\s+you|could\s+you|i\s+need\s+you\s+to|i\s+want\s+you\s+to)\s+)?"
-    r"(?:set|put|leave|change|adjust|fix)\s+(?:the\s+)?"
-    r"(?:(?:volume|audio|sound)\s+(?:of|on|in)\s+(?:the\s+)?)?(?:app\s+)?"
-    r"(?P<app>[a-z0-9][a-z0-9 .+_-]{0,60}?)(?:'s)?"
-    r"(?:\s+(?:volume|audio|sound)(?:\s+level)?)?"
-    rf"\s+(?:to|at)\s+(?:{_APP_VOLUME_SET_LEVEL})(?:\s*,?\s*please)?[\s.!?]*$",
-)
-_APP_VOLUME_LEVEL_WORDS = {"maximo": 100, "max": 100, "tope": 100, "full": 100, "minimo": 0, "min": 0, "cero": 0, "zero": 0, "mitad": 50, "half": 50}
-
 
 def app_volume_set_request(
     text: str,
@@ -8078,411 +5423,7 @@ def app_volume_set_request(
     return (next(iter(names)), level)
 
 
-# Señales de que se pregunta por el nivel actual de audio, no por cambiarlo.
-_AUDIO_LEVEL_CUE = (
-    r"\b(?:en que|a que|cuanto|cuanta|estado|status|actual|current|"
-    r"nivel|level|quedo|how much)\b|"
-    r"\b(?:que|what|cual|which)\s+(?:volumen|volume)\b"
-)
 
-
-def _is_audio_mute_state_query(text: str, head: str) -> bool:
-    """Recognize a question about the current mute state, never an order.
-
-    ``audio.status`` already reports mute together with the level, so a
-    "is the sound muted?" question is the same read-only observation as
-    "how loud is it?".  An imperative head, a microphone target, an
-    application scope or a report about someone else stays out.
-    """
-
-    if _indirect_audio_mute_state_query(text):
-        return True
-    if _has_app_scoped_audio(text) or _is_past_or_hypothetical_state(text):
-        return False
-    if _head_is(
-        head,
-        (
-            r"(?:silencia|silenciar|silencialo|silenciala|mute|unmute|"
-            r"desmutea|mutea|reactiva|reactivar|reactivalo|reactivala|"
-            r"quita|quitar|pon|poner|apaga|apagar|activa|activar)"
-        ),
-    ):
-        return False
-    if not _head_is(
-        head,
-        (
-            r"(?:esta|estan|is|are|como|how|que|what|cual|which|"
-            r"dime|decime|muestra|muestrame|mostrame|show|ver|"
-            r"revisa|revisar|chequea|checa|verifica|fijate|mira|check|"
-            r"audio|sonido|sound|volumen|volume|estado|status)"
-        ),
-    ):
-        return False
-    if _has(
-        text,
-        r"\b(?:microfono|microphone|mic|micro|camara|camera|tele|tv)\b",
-    ):
-        return False
-    # Un reporte sobre terceros («me silenciaron», «le puse mute a la tele»)
-    # describe un hecho pasado y no solicita una observación del equipo.
-    if _has(
-        text,
-        (
-            r"\b(?:silenciaron|silencie|silencio yo|mutearon|mutee|"
-            r"puse|pusieron|apreté|apreto|toque|di al)\b"
-        ),
-    ):
-        return False
-    return _has(
-        text,
-        (
-            r"\b(?:silenciad[oa]s?|mutead[oa]s?|muted|en\s+mudo|"
-            r"en\s+silencio)\b|"
-            r"\b(?:esta|estan|is|are)\s+(?:el\s+|la\s+|the\s+)?"
-            r"(?:audio|sonido|sound|volumen|volume)?\s*"
-            r"(?:mute|mudo|silencio)\b"
-        ),
-    )
-
-
-_AUDIO_APPLICATION_SCOPE = (
-    r"(?:spotify|chrome|opera|edge|firefox|discord|zoom|teams|youtube|"
-    r"netflix|video|pelicula|movie|juego|game|navegador|browser|"
-    r"aplicacion|application|app|pestana|tab|notificacion|notificaciones|"
-    r"notification|notifications|llamada|call|reunion|meeting|tele|tv|"
-    r"microfono|microphone|mic)"
-)
-
-
-def _has_app_scoped_audio(text: str) -> bool:
-    return _has(
-        text,
-        (
-            rf"\b(?:audio|sonido|sound|musica|music|volumen|volume)\s+"
-            rf"(?:a|al|de|del|of|to)\s+(?:la\s+|el\s+|the\s+|mi\s+|my\s+)?"
-            rf"{_AUDIO_APPLICATION_SCOPE}\b|"
-            rf"\b(?:en|on)\s+(?:spotify|chrome|opera|edge|firefox|discord|"
-            rf"zoom|teams|youtube|netflix)\b|"
-            rf"\b(?:the\s+|la\s+|el\s+|mi\s+|my\s+)?{_AUDIO_APPLICATION_SCOPE}"
-            rf"\s+(?:audio|sonido|sound|volumen|volume)\b|"
-            rf"\b{_AUDIO_APPLICATION_SCOPE}\s+(?:only|solamente|nada mas|"
-            rf"nomas|unicamente)\b"
-        ),
-    )
-
-
-def _browser_page_domain(text: str) -> bool:
-    if not _has(text, r"\b(?:pagina|page)\b"):
-        return False
-    document_domain = _has(
-        text,
-        (
-            r"\b(?:documento|document|libro|book|revista|magazine|excel|"
-            r"word|pdf|manual|novela|novel|hoja de calculo|spreadsheet|"
-            r"presentacion|presentation|powerpoint|archivo|file)\b"
-        ),
-    )
-    explicit_browser = _has(
-        text,
-        r"\b(?:navegador|browser|sitio|site|web)\b|https?://",
-    )
-    return not document_domain or explicit_browser
-
-
-def browser_back_arguments(text: str) -> dict[str, str] | None:
-    """Ground one complete browser-history request, preserving its full scope.
-
-    The closed grammar supplies the enum identity, not rewritten user text.
-    Quotes, prohibitions, document pages, extra effects and deferred requests
-    do not match; their existing interpretation and conservation remain.
-    """
-
-    # Keep the complete speech act. Broad request envelopes are not needed
-    # for this closed grammar and must not erase qualifiers or conditions.
-    if not text or len(text) > 16_384:
-        return None
-    folded = _fold(text).strip(" ¿?¡!. ")
-    if not _browser_page_domain(folded):
-        return None
-    spanish_head = (
-        r"(?:regresa|regrese|vuelve|volve|retrocede|"
-        r"(?:quiero|necesito)\s+(?:volver|regresar|retroceder))"
-    )
-    spanish_target = (
-        r"(?:a\s+)?(?:la\s+)?pagina\s+(?:anterior|previa|de\s+antes)|"
-        r"(?:una|1)\s+pagina"
-    )
-    english_request = (
-        r"(?:go|move)\s+back\s+(?:(?:one|a(?:\s+single)?)\s+page|"
-        r"to\s+the\s+(?:previous|prior)\s+page)|"
-        r"return\s+to\s+the\s+(?:previous|prior)\s+page"
-    )
-    context = (
-        r"(?:\s+(?:en\s+(?:el|este)\s+navegador|"
-        r"in\s+(?:the|this|current)\s+(?:browser|tab)))?"
-    )
-    prefix = r"(?:(?:por\s+favor|please)\s*[,;:]?\s+)?"
-    courtesy = r"(?:\s*,?\s*(?:por\s+favor|please))?"
-    if re.fullmatch(
-        rf"{prefix}(?:{spanish_head}\s+(?:{spanish_target})|{english_request})"
-        rf"{context}{courtesy}",
-        folded,
-    ) is None:
-        return None
-    return {"action": "back"}
-
-
-def browser_new_tab_arguments(text: str) -> dict[str, str] | None:
-    """BROWSER1493 «abrí una pestaña nueva», «abre una nueva pestaña», «open a
-    new tab»: one complete new-tab request in the product's browser; None for
-    anything else (a named browser, a URL, a tab to close, a deferred or
-    prohibited request keep their own reading)."""
-
-    if not text or len(text) > 16_384:
-        return None
-    folded = _fold(text).strip(" ¿?¡!. ")
-    if _has(folded, r"\b(?:chrome|opera|edge|firefox|brave|no\b|nunca|jamas|never|don't|do\s+not|cierra|cerra|close)\b|https?://|www\."):
-        return None
-    prefix = r"(?:(?:por\s+favor|please)\s*[,;:]?\s+)?(?:(?:podes|puedes|podrias|can\s+you|could\s+you)\s+)?"
-    courtesy = r"(?:\s*,?\s*(?:por\s+favor|please|porfa))?"
-    spanish = (
-        r"(?:abri|abre|abrime|abreme|abrir|crea|creame|creá|nueva)\s+"
-        r"(?:(?:una|otra)\s+)?(?:(?:nueva|otra)\s+)?pestana(?:\s+nueva)?"
-        r"(?:\s+(?:en\s+(?:el|este)\s+navegador))?"
-    )
-    english = (
-        r"open\s+(?:a\s+)?(?:new|another)\s+tab(?:\s+in\s+(?:the|this)\s+browser)?|new\s+tab"
-    )
-    if re.fullmatch(rf"{prefix}(?:{spanish}|{english}){courtesy}", folded) is None:
-        return None
-    return {"action": "new_tab"}
-
-
-def browser_close_all_tabs_arguments(text: str) -> dict[str, str] | None:
-    """H0444 «cerrá todas las pestañas de chrome», «close all tabs»: close every
-    open tab in the product's own browser (owner decision 2026-09-17: on the tabs
-    the tanda itself opened, never the owner's own sessions).  None for a single
-    tab, for closing the browser application, for a prohibition or a quoted
-    literal; the named browser is the person's word, the product uses its own
-    controlled browser."""
-
-    if not text or len(text) > 16_384:
-        return None
-    folded = _fold(text).strip(" ¿?¡!. ")
-    if _has(folded, r"\bno\b|\bnunca\b|\bjamas\b|\bnever\b|don't|do\s+not"):
-        return None
-    prefix = r"(?:(?:por\s+favor|please)\s*[,;:]?\s+)?(?:(?:podes|puedes|podrias|can\s+you|could\s+you)\s+)?"
-    courtesy = r"(?:\s*,?\s*(?:por\s+favor|please|porfa))?"
-    named = r"(?:\s+(?:de|del|of|in)\s+(?:el\s+|the\s+|mi\s+|my\s+)?(?:navegador|browser|chrome|opera(?:\s*gx)?|edge|brave|firefox))?"
-    spanish = (
-        r"(?:cierra|cierre|cerra|cerrame|cierrame|cerrar)\s+"
-        r"(?:todas\s+)?(?:las\s+)?pestanas(?:\s+abiertas)?" + named
-    )
-    english = (
-        r"close\s+(?:all\s+)?(?:the\s+|my\s+)?(?:open\s+)?tabs" + named
-    )
-    if re.fullmatch(rf"{prefix}(?:{spanish}|{english}){courtesy}", folded) is None:
-        return None
-    return {"action": "close_all"}
-
-
-def explicit_window_title(text: str) -> str | None:
-    """Copy one explicitly named window title; never infer a process or HWND."""
-    matches = tuple(
-        re.finditer(
-            r"\b(?:ventana|window)\s+(?:titulada|titled|llamada|called|named|"
-            r"(?:con|with)(?:\s+(?:el|the))?\s+(?:t[ií]tulo|title|nombre|name))\s+",
-            text,
-            re.IGNORECASE,
-        )
-    )
-    if len(matches) != 1:
-        return None
-    title = text[matches[0].end() :].strip()
-    if not title:
-        return None
-    quotes = {'"': '"', "'": "'", "«": "»", "“": "”", "‘": "’"}
-    closing = quotes.get(title[0])
-    if closing is not None:
-        end = title.find(closing, 1)
-        if end < 0 or title[end + 1 :].strip(" .!?"):
-            return None
-        title = title[1:end]
-    return title if title.strip() and len(title) <= 260 and "\0" not in title else None
-
-
-def has_named_window_target(text: str) -> bool:
-    # The same literal relation serves recognition and argument grounding.
-    # It supplies a query, never authority over an unobserved window.
-    return explicit_window_title(text) is not None
-
-
-# Los ojos del computer use: preguntar que hay en la pantalla. Sin esta lectura
-# el modelo tiene que adivinar como se llama exactamente el control que quiere
-# pulsar, que es justo donde fallan los agentes de interfaz.
-_SCREEN_INVENTORY = re.compile(
-    r"^[\s¿?¡!]*(?:(?:que|cuales|cuantos|what|which|how\s+many)\s+"
-    r"(?:cosas\s+|elementos?\s+|controles?\s+|botones?\s+|opciones?\s+|"
-    r"things\s+|elements?\s+|controls?\s+|buttons?\s+|options?\s+)?"
-    r"(?:hay|tengo|ves|se\s+ven|aparecen|puedo\s+(?:pulsar|apretar|tocar)|"
-    r"are\s+there|do\s+you\s+see|can\s+i\s+(?:click|press))"
-    r"\s+(?:en\s+|on\s+|in\s+)?(?:la\s+|the\s+)?"
-    r"(?:pantalla|ventana|screen|window)"
-    r"|^[\s¿?¡!]*(?:mira|mirate|revisa|lee|leeme|look\s+at|read)"
-    r"\s+(?:(?:lo\s+)?que\s+(?:hay|ves|se\s+ve)\s+en\s+|what(?:'s|\s+is)?\s+on\s+)?"
-    r"(?:la\s+|the\s+)?(?:pantalla|ventana|screen|window)"
-    # «dime la ventana que tiene el foco» names a window, not its contents: a
-    # telling verb needs «lo que hay en» / «what's on» before the noun.
-    r"|^[\s¿?¡!]*(?:dime|decime|tell\s+me)"
-    r"\s+(?:(?:lo\s+)?que\s+(?:hay|ves|se\s+ve)\s+en\s+|what(?:'s|\s+is)?\s+on\s+)"
-    r"(?:la\s+|the\s+)?(?:pantalla|ventana|screen|window)"
-    # «what's on the screen» sin verbo delante es como la persona lo dice de
-    # verdad; el plegado conserva el apostrofo, asi que va escrito.
-    r"|^[\s¿?¡!]*what(?:'s)?\s+(?:is\s+)?on\s+(?:the\s+)?(?:screen|window)"
-    r")\b",
-    re.IGNORECASE,
-)
-
-
-def screen_inventory_request(text: str) -> bool:
-    """La persona pregunta que hay delante, no pide tocar nada."""
-
-    folded = _fold(_strip_request_envelope(str(text or "")))
-    if _has(folded, r"\b(?:archivo|file|carpeta|folder|nota|note|tarea|task)\b"):
-        return False
-    return _SCREEN_INVENTORY.search(folded) is not None
-
-
-
-def _window_domain(text: str) -> bool:
-    if not _has(text, r"\b(?:ventana|window)\b"):
-        return False
-    if has_named_window_target(text):
-        return True
-    if _has(
-        text,
-        (
-            r"\b(?:navegador|browser|aplicacion|application|programa|program|"
-            r"spotify|opera|chrome|edge|firefox|notepad|bloc de notas|"
-            r"calculadora|calculator)\b"
-        ),
-    ):
-        return True
-    if _has(
-        text,
-        (
-            r"\b(?:ventana|window)\s+(?:activa|active|actual|current)\b"
-            r"(?!\s+(?:de|del|of|para|for)\b)|"
-            r"\b(?:ventana|window)\s+(?:esta|is)\s+(?:activa|active)\b"
-            r"|\b(?:ventana|window)\s+(?:que\s+(?:esta|tengo)\s+)?(?:en\s+)?"
-            r"primer\s+plano\b"
-            r"|\bforeground\s+window\b"
-        ),
-    ):
-        return True
-    if _has(
-        text,
-        r"\b(?:esta|this)\s+(?:ventana|window)\b(?!\s+of\s+opportunity)",
-    ):
-        return True
-    return _has(
-        text,
-        (
-            r"\b(?:ventana|window)\b"
-            r"(?=\s*(?:[\s?!.]*$|,?\s+(?:y luego|y despues|and then|then)\b))"
-        ),
-    )
-
-
-def _clipboard_selection_domain(text: str) -> bool:
-    return _has(text, r"\b(?:seleccion|selection)\b") and not _has(
-        text,
-        (
-            r"\b(?:seleccion|selection)\s+(?:nacional|national|electoral|"
-            r"deportiva|sports?|de|del|of)\b"
-        ),
-    )
-
-
-def _clipboard_copy_domain(text: str) -> bool:
-    """Recognize a literal local source copied into the OS clipboard."""
-
-    return _clipboard_selection_domain(text) or (
-        _has(text, r"\b(?:copia|copiar|copy)\b")
-        and _has(
-            text,
-            r"\b(?:texto|text)\b.{0,100}\b(?:al|to the)\s+"
-            r"(?:portapapeles|clipboard)\b",
-        )
-    )
-
-
-def _clipboard_paste_domain(text: str) -> bool:
-    """Recognize a paste of the OS clipboard rather than physical gluing.
-
-    ``pegar`` means both "paste" and "glue", so the verb alone proved nothing:
-    "pega la etiqueta en el frasco de mermelada" resolved to clipboard.paste
-    and would have pasted into whatever had focus. The clipboard has to be
-    named, or the pasted thing has to be what was copied, or the target has to
-    be the focused control. Its sibling ``_clipboard_copy_domain`` already
-    guarded copying this way; only pasting was left open.
-    """
-
-    return (
-        _has(text, r"\bportapapeles\b|\bclipboard\b")
-        or _has(
-            text,
-            r"\b(?:lo|el\s+texto|la\s+seleccion|what)\s+que\s+"
-            r"(?:copie|copiaste|copiamos)\b"
-            r"|\b(?:copie|copiaste|copiado|copiada|copied)\b",
-        )
-        or _has(
-            text,
-            r"\b(?:pegalo|pegala|paste\s+it)\b.{0,24}"
-            r"\b(?:aca|aqui|ahi|here|there)\b|"
-            r"\b(?:aca|aqui|ahi|here|there)\b.{0,16}\b(?:pegalo|pegala|paste)\b",
-        )
-        or _has(
-            text,
-            r"\b(?:campo|control|cuadro|casilla|field|box)\b"
-            r".{0,24}\b(?:enfocad[oa]|activ[oa]|focused|active)\b"
-            r"|\b(?:enfocad[oa]|focused)\b.{0,24}\b(?:campo|control|field)\b",
-        )
-        # A destination that belongs to the machine also settles the sense:
-        # "pega esto en el bloc de notas" is a paste, "pega el patch en la
-        # mochila" is not.
-        or _has(
-            text,
-            rf"\b(?:en|into|in|on)\b.{{0,24}}\b(?:{_KNOWN_APPLICATION}|"
-            r"documento|documentos|document|documents|nota|notas|note|notes|"
-            r"archivo|archivos|file|files|chat|navegador|browser|correo|email|"
-            r"terminal|consola|console|editor|celda|cell|formulario|form|"
-            r"buscador|barra\s+de\s+direcciones|address\s+bar)\b",
-        )
-    )
-
-
-def _latest_email_domain(text: str) -> bool:
-    return (
-        _has(
-            text,
-            r"\b(?:correos?|emails?|mails?|buzon|inbox|inbox\s+messages?)\b",
-        )
-        and _has(
-            text,
-            r"\b(?:reciente|latest|ultimo|ultima|newest|most\s+recent)\b|"
-            r"\b(?:newly\s+arrived|just\s+arrived|just\s+received|"
-            r"acaba\s+de\s+llegar|"
-            r"recien\s+llego|nullier\s+i[dt]|era\s+(?:y|ive)\s+blast)\b",
-        )
-        and not _has(
-            text,
-            (
-                r"\b(?:frase|phrase|palabras?|words?|texto|text)\b"
-                r".{0,80}\b(?:correo|email|mail)\b"
-            ),
-        )
-    )
 
 
 def _spoken_package_id(text: str) -> str | None:
@@ -8508,21 +5449,6 @@ def _spoken_package_id(text: str) -> str | None:
     )
     return package.group("id") if package is not None else None
 
-
-def _underspecified_video_request(text: str) -> bool:
-    """Recognize a bare content type with no source, title, or query."""
-
-    return (
-        re.fullmatch(
-            (
-                r"[¿?¡!\s]*(?:pon|pone|reproduce|play|put\s+on)\s+"
-                r"(?:(?:un|uno|unos|el|los|the|some)\s+)?videos?[\s.!?]*"
-            ),
-            _fold(text),
-            re.IGNORECASE,
-        )
-        is not None
-    )
 
 
 def _spoken_radio_station_request(text: str) -> bool:
@@ -8612,24 +5538,6 @@ def _desired_music_query_raw(text: str) -> str | None:
     return query
 
 
-def _title_case_media_title(query: str) -> bool:
-    """«Tom and Jerry», «Tom y Jerry», «Bad Bunny»: at least two capitalised
-    words in the person's own writing, joined only by connectors; never a
-    single word, a known application name or something with digits."""
-
-    words = query.strip().strip("\"'“”«»").split()
-    if len(words) < 2 or any(re.search(r"\d", word) for word in words):
-        return False
-    connectors = {"y", "and", "&", "the", "of", "de", "del", "la", "el", "los", "las", "a", "en", "in"}
-    capitalised = [word for word in words if word[0].isupper()]
-    if len(capitalised) < 2 or not words[0][0].isupper():
-        return False
-    if any(word[0].islower() and word.lower() not in connectors for word in words):
-        return False
-    if _has(_fold(query), rf"^(?:{_KNOWN_APPLICATION})$"):
-        return False
-    return True
-
 
 def _explicit_named_music_query(text: str) -> str | None:
     """Keep the supplied artist/title of one current imperative verbatim."""
@@ -8695,30 +5603,6 @@ def _explicit_named_music_query(text: str) -> str | None:
     return query or None
 
 
-def _wake_alarm_request(text: str) -> bool:
-    """Recognize a direct wake-up alarm with one explicit clock."""
-
-    folded = _strip_request_envelope(_fold(text))
-    return (
-        re.fullmatch(
-            r"(?:i\s+need\s+you\s+to\s+)?"
-            r"(?:(?:wake|get)\s+me(?:\s+up)?|despiertame|despertame|levantame)\s+"
-            r"(?:"
-            rf"(?:in|en|dentro\s+de|within)\s+{_RELATIVE_DURATION_PATTERN}|"
-            r"(?:at|a\s+las?|para\s+las?)\s+"
-            r"(?:[0-2]?\d|one|two|three|four|five|six|seven|eight|nine|ten|"
-            r"eleven|twelve|una?|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|"
-            r"diez|once|doce)(?::[0-5]\d)?\s*"
-            r"(?:a\.?\s*m\.?|p\.?\s*m\.?|de\s+la\s+manana|de\s+la\s+tarde|"
-            r"de\s+la\s+noche|in\s+the\s+morning|in\s+the\s+afternoon|"
-            r"in\s+the\s+evening)"
-            r")[\s.!?]*",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-
 
 def _direct_alarm_schedule_request(text: str) -> bool:
     """Read an alarm speech act, allowing its bounded time before the verb."""
@@ -8779,100 +5663,6 @@ def _literal_memo_payload(text: str) -> str | None:
         else None
     )
 
-
-def _historical_note_search_request(text: str) -> bool:
-    """Recognize a request to retrieve old/overdue notes by their topic."""
-
-    folded = _strip_request_envelope(_fold(text))
-    return (
-        re.fullmatch(
-            r"(?:puedes\s+)?(?:tomar|traer|buscar|encuentra)\s+"
-            r"(?:mis\s+)?(?:notas?|apuntes?)\s+\S.{0,120}"
-            r"\b(?:atrasad[oa]s?|antigu[oa]s?|pasad[oa]s?)\b.{0,80}"
-            r"\b(?:pasado|anteriores?|antes)\b[\s.!?]*",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-
-
-def _stored_note_search_query(text: str) -> str | None:
-    """Return the literal title/topic of one explicitly stored note lookup."""
-
-    folded = _strip_request_envelope(_fold(text))
-    match = re.fullmatch(
-        r"(?:sacar|saca|traer|trae|recuperar|recupera|retrieve|get|find)\s+"
-        r"(?:(?:la|the)\s+)?(?:nota|note)\s+"
-        r"(?P<query>\S(?:.{0,160}?\S)?)\s+"
-        r"(?:que\s+(?:tengo|esta)\s+guardad[oa]|that\s+i\s+saved|saved)"
-        r"[\s.!?]*",
-        folded,
-        re.IGNORECASE,
-    )
-    return match.group("query").strip() if match is not None else None
-
-
-def _media_transport_action(text: str) -> str | None:
-    """Read one transport action from a complete request with an explicit media object."""
-
-    folded = _fold(text)
-    if not _request_head(folded):
-        return None
-    if _has(
-        folded,
-        r"^[^\w]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
-        r"(?:deten(?:e|er)?|para|parar|stop)\s+(?:(?:el|la|the)\s+)?"
-        r"(?:current\s+)?(?:audio|musica|music|reproduccion|playback|cancion|song|pista|track)"
-        r"(?:\s+actual)?(?:\s*[,;:]?\s*(?:por favor|please))?[\s.!?]*$",
-    ):
-        return "stop"
-    media_object = r"(?:podcast|episodio|episode|cancion|song|pista|track)"
-    for action, direction, movement, relative in (
-        ("next", r"(?:siguiente|next)",
-         r"(?:skip(?:\s+forward)?|salta|saltar|saltea|saltear|pasa|pasar)",
-         r"(?:viene|sigue)"),
-        ("previous", r"(?:anterior|previous)",
-         r"(?:skip(?:\s+back)?|go\s+back|ve|vuelve|pasa|pasar)",
-         r"(?:iba|estaba)\s+antes"),
-    ):
-        nominal = (
-            rf"(?:(?:el|la|the)\s+)?(?:{direction}\s+{media_object}|"
-            rf"{media_object}\s+{direction})"
-        )
-        step_direction = "forward" if action == "next" else "back"
-        destination = rf"(?:{nominal}|(?:el|la)\s+{media_object}\s+que\s+{relative})"
-        if _has(
-            folded,
-            r"^[^\w]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
-            rf"(?:(?:(?:pon|pone|ponme|reproduce|reproducir|play)\s+)?{nominal}|"
-            rf"{movement}\s+(?:(?:to|a)\s+{destination}|al\s+"
-            rf"(?:{direction}\s+{media_object}|{media_object}\s+que\s+{relative}))|"
-            rf"(?:go|skip)\s+{step_direction}\s+one\s+{media_object}"
-            r"(?:\s+in\s+(?:the\s+)?(?:current\s+)?queue)?)"
-            r"(?:\s*[,;:]?\s*(?:por favor|please))?[\s.!?]*$",
-        ):
-            return action
-    return None
-
-
-def _resume_existing_media(text: str) -> bool:
-    """Distinguish continuation of loaded media from selecting new content."""
-
-    folded = _fold(text)
-    head = _request_head(folded)
-    return (
-        _head_is(head, rf"(?:{_MEDIA_RESUME_VERB}|reproduce|reproducir|reproduzca|play)")
-        and (
-            _head_is(head, _MEDIA_RESUME_VERB)
-            or _has(folded, r"\b(?:pausad[oa]|paused|en\s+pausa|detenid[oa]|stopped)\b")
-        )
-        and _has(
-            folded,
-            r"\b(?:audio|media|musica|music|reproduccion|playback|cancion|song|pista|track)\b",
-        )
-        and not _has(folded, r"\b(?:grabacion|recording|microfono|microphone|mic)\b")
-    )
 
 
 def _media_play_domain(text: str) -> bool:
@@ -8947,44 +5737,6 @@ def _media_play_domain(text: str) -> bool:
         and not interactive_play
     )
 
-
-_OPEN_STATE_CONDITION = (
-    r"^[¿?¡!\s]*(?:si|if)\s+(?:(?:tengo|esta|hay|i\s+have|there\s+is|is)\s+)?"
-    r"(?:(?:el|la|the)\s+)?(?P<app>[a-z0-9][a-z0-9 .+-]{1,30}?)\s+"
-    r"(?:(?:esta|is)\s+)?(?:abiert[oa]|open|running|corriendo|prendid[oa]|activ[oa])\s*,?\s*"
-)
-
-
-_MINIMIZE_ALL_REQUEST = re.compile(
-    r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
-    r"(?:minimiza|minimizame|minimizar|minimise|minimize)\s+(?:me\s+)?"
-    r"(?:todas\s+(?:las\s+)?(?:ventanas|apps|aplicaciones)|todas|todo|"
-    r"all(?:\s+(?:the|my|of\s+the))?(?:\s+(?:windows|apps|applications))?|everything)"
-    r"(?:\s+(?:abiertas|open))?(?:\s*,?\s*(?:por\s+favor|please))?[\s.!?]*$"
-)
-
-
-_CLOSE_ALL_REQUEST = re.compile(
-    r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
-    r"(?:cierra|cerra|cerrar|cerrame|cierrame|close)\s+(?:me\s+)?"
-    r"(?:todas\s+(?:las\s+)?(?:ventanas|apps|aplicaciones|cosas)|todo|todo\s+lo\s+que\s+(?:esta|tengo)\s+abierto|"
-    r"all(?:\s+(?:the|my|of\s+the))?(?:\s+(?:windows|apps|applications))?|everything(?:\s+(?:that\s+is\s+)?open)?)"
-    r"(?:\s+(?:abiertas|abierto|open))?(?:\s*,?\s*(?:por\s+favor|please))?[\s.!?]*$"
-)
-
-
-def close_all_request(folded: str) -> bool:
-    """CLOSEALL1733 «cerrame todo», «cerrá todas las ventanas», «close everything»:
-    one order over every desktop window (never a named one, never tabs)."""
-
-    return _CLOSE_ALL_REQUEST.match(_strip_request_envelope(folded)) is not None
-
-
-def minimize_all_request(folded: str) -> bool:
-    """MINALL1687 «minimizá todas las ventanas», «minimizá todo»: one order
-    over every desktop window, never a named one."""
-
-    return _MINIMIZE_ALL_REQUEST.match(_strip_request_envelope(folded)) is not None
 
 
 def conditional_open_pause_app(
@@ -9183,81 +5935,6 @@ def _has_unsupported_deferred_effect(text: str) -> bool:
 
 
 
-_CALENDAR_MONTH_TOKEN = (
-    r"(?:january|february|march|april|may|june|july|august|september|"
-    r"october|november|december|enero|febrero|marzo|abril|mayo|junio|"
-    r"julio|agosto|septiembre|octubre|noviembre|diciembre)"
-)
-
-
-def _absolute_calendar_range_parts(
-    text: str,
-) -> tuple[str, str, str, str] | None:
-    """Return the two literal month/day endpoints of one bounded range."""
-
-    folded = _fold(text)
-    match = re.search(
-        rf"\b(?:timeframe\s+of|between|from|entre|desde)\s+"
-        rf"(?P<start_month>{_CALENDAR_MONTH_TOKEN})\s+"
-        rf"(?P<start_day>{_PERCENTAGE_WORD_PATTERN}|\d{{1,2}})\s+"
-        rf"(?:and|to|through|y|a|hasta)\s+"
-        rf"(?P<end_month>{_CALENDAR_MONTH_TOKEN})\s+"
-        rf"(?P<end_day>{_PERCENTAGE_WORD_PATTERN}|\d{{1,2}})\b",
-        folded,
-        re.IGNORECASE,
-    )
-    if match is None:
-        return None
-    return (
-        match.group("start_month"),
-        match.group("start_day"),
-        match.group("end_month"),
-        match.group("end_day"),
-    )
-
-
-def _bounded_calendar_list_query(text: str) -> bool:
-    """Recognize a read-only calendar question with one bounded time scope."""
-
-    folded = _fold(text)
-    absolute_range = _absolute_calendar_range_parts(folded)
-    if not _has(folded, _BOUNDED_TEMPORAL_SELECTOR) and absolute_range is None:
-        return False
-    head = _request_head(folded)
-    calendar_domain = _has(
-        folded,
-        r"\b(?:calendario|calendar|evento|eventos|event|events|"
-        r"reunion|reuniones|meeting|meetings|cita|citas|"
-        r"appointment|appointments)\b",
-    )
-    if calendar_domain and (
-        _head_is(head, _LIST)
-        or _head_is(
-            head,
-            r"(?:cuando|when|revisa|revisar|review|check|consulta|consultar)",
-        )
-    ):
-        return True
-    if (
-        absolute_range is not None
-        and calendar_domain
-        and _has(
-            folded,
-            r"\b(?:what|which)\s+(?:meetings|events|appointments)\s+"
-            r"(?:occurred|happened|took\s+place)\b",
-        )
-    ):
-        return True
-    if _head_is(head, r"(?:eventos|events)"):
-        return True
-    return _has(
-        folded,
-        (
-            r"^[^\w]*(?:what is going on|que (?:sucede|pasa)|"
-            r"anything i should do|tengo algo que hacer|"
-            r"hay algo que (?:hacer|tenga que hacer))\b"
-        ),
-    )
 
 
 def _has_unresolved_shared_head_coordination(text: str) -> bool:
@@ -9380,14 +6057,6 @@ def _coordinated_effect_domain_minimum(text: str) -> int | None:
     return len(coordinated) if len(coordinated) >= 2 else None
 
 
-def _has_multiple_installed_entities(text: str) -> bool:
-    return (
-        _has(text, r"\b(?:instalad[oa]s?|installed)\b")
-        and _has(text, r"\b(?:en|on)\s+steam\b")
-        and _has(text, r"\b(?:y|and)\b")
-        and not _has(text, r"\b(?:juegos|games)\b")
-    )
-
 
 def _unresolved_explicit_cardinality(text: str) -> int | None:
     """Return a requested effect count that the argument binder cannot split."""
@@ -9434,336 +6103,6 @@ def _unresolved_explicit_cardinality(text: str) -> int | None:
     return 2 if repeated_domain is not None else None
 
 
-_ORDINAL_INDEX = {
-    "primera": 1,
-    "primero": 1,
-    "first": 1,
-    "segunda": 2,
-    "segundo": 2,
-    "second": 2,
-    "tercera": 3,
-    "tercero": 3,
-    "third": 3,
-    "cuarta": 4,
-    "cuarto": 4,
-    "fourth": 4,
-    "quinta": 5,
-    "quinto": 5,
-    "fifth": 5,
-    "sexta": 6,
-    "sexto": 6,
-    "sixth": 6,
-    "septima": 7,
-    "septimo": 7,
-    "seventh": 7,
-    "octava": 8,
-    "octavo": 8,
-    "eighth": 8,
-}
-_CARDINAL_NUMBER = {
-    "dos": 2,
-    "two": 2,
-    "tres": 3,
-    "three": 3,
-    "cuatro": 4,
-    "four": 4,
-    "cinco": 5,
-    "five": 5,
-    "seis": 6,
-    "six": 6,
-    "siete": 7,
-    "seven": 7,
-    "ocho": 8,
-    "eight": 8,
-}
-_ORDINAL_WORD = "|".join(_ORDINAL_INDEX)
-
-
-# The same note body can be introduced by a preposition or by a participle.
-# ``Cedar containing north`` and ``Cedar con contenido norte`` name one note
-# each; treating only the prepositional form as enumerable made an otherwise
-# complete four-note mission collapse to a single create.
-# Spanglish mixes the preposition and the noun freely, so ``con content`` and
-# ``with contenido`` name a body just as ``con contenido`` does.
-_NOTE_CONTENT_INTRODUCER = (
-    r"(?:(?:con|with)\s+(?:contenido|content)|containing|conteniendo|"
-    r"que\s+(?:contenga|diga))"
-)
-
-
-def _fully_enumerated_named_note_titles(text: str) -> tuple[str, ...]:
-    """Extract a bounded ``title + content`` list without inventing labels."""
-
-    head = _request_head(text)
-    if not _head_is(head, _CREATE):
-        return ()
-    count_match = _match(
-        text,
-        r"\b(?P<count>dos|two|tres|three|cuatro|four|cinco|five|"
-        r"seis|six|siete|seven|ocho|eight|[2-8])\s+"
-        r"(?:(?:private|local|privadas?|locales?)\s+)?(?:notas|notes)\s*:\s*",
-    )
-    if count_match is None:
-        return ()
-    raw_count = count_match.group("count")
-    count = _CARDINAL_NUMBER.get(
-        raw_count, int(raw_count) if raw_count.isdigit() else 0
-    )
-    body = text[count_match.end() :]
-    titles = tuple(
-        " ".join(found.group("title").strip(" ,.;:").split())
-        for found in re.finditer(
-            # A serial comma keeps its conjunction: ``, and Birch`` must not
-            # name a note ``and birch``.
-            r"(?:^|,\s*(?:(?:y|and)\s+)?|\s+(?:y|and)\s+)"
-            r"(?P<title>[a-z0-9][a-z0-9 _-]{0,79}?)\s+"
-            rf"(?:{_NOTE_CONTENT_INTRODUCER})\s+\S",
-            body,
-            re.IGNORECASE,
-        )
-    )
-    if (
-        len(titles) != count
-        or any(not title for title in titles)
-        or len(set(titles)) != len(titles)
-    ):
-        return ()
-    return titles
-
-
-def _fully_enumerated_note_create_count(text: str) -> int | None:
-    """Return an exact bounded count only for individually labelled notes."""
-
-    head = _request_head(text)
-    if not _head_is(head, _CREATE):
-        return None
-    count_match = _match(
-        text,
-        r"\b(?P<count>dos|two|tres|three|cuatro|four|cinco|five|"
-        r"seis|six|siete|seven|ocho|eight|[2-8])\s+"
-        r"(?:(?:private|local|privadas?|locales?)\s+)?(?:notas|notes)\b",
-    )
-    if count_match is None:
-        return None
-    raw_count = count_match.group("count")
-    count = _CARDINAL_NUMBER.get(
-        raw_count, int(raw_count) if raw_count.isdigit() else 0
-    )
-    labelled = [
-        _ORDINAL_INDEX[found.group("ordinal")]
-        for found in re.finditer(
-            rf"\b(?:la|el|the)?\s*(?P<ordinal>{_ORDINAL_WORD})\s+"
-            r"(?:titulad[oa]|llamad[oa]|titled|entitled|named|called)\b",
-            text,
-            re.IGNORECASE,
-        )
-    ]
-    if labelled != list(range(1, count + 1)):
-        named = _fully_enumerated_named_note_titles(text)
-        if len(named) != count:
-            return None
-    return count
-
-
-def _fully_enumerated_note_read_order(
-    text: str,
-    total_count: int | None = None,
-) -> tuple[int, ...]:
-    """Return an explicit, duplicate-free ordinal read order."""
-
-    head = _request_head(text)
-    if not _head_is(head, _READ):
-        return ()
-    ordered: list[int] = []
-    for found in re.finditer(
-        rf"\b(?:la|el|the)?\s*(?P<ordinal>{_ORDINAL_WORD}|middle|last)\s+"
-        r"(?:nota|note)\b",
-        text,
-        re.IGNORECASE,
-    ):
-        word = found.group("ordinal")
-        if word == "middle":
-            if total_count is None or total_count < 3 or total_count % 2 == 0:
-                return ()
-            ordered.append((total_count + 1) // 2)
-        elif word == "last":
-            if total_count is None:
-                return ()
-            ordered.append(total_count)
-        else:
-            ordered.append(_ORDINAL_INDEX[word])
-    if len(ordered) < 2 or len(set(ordered)) != len(ordered):
-        return ()
-    return tuple(ordered)
-
-
-def _named_note_dependency_order(text: str) -> tuple[int, ...]:
-    """Map a complete named read list to its unique named creation list."""
-
-    clauses = _request_clauses(text)
-    created: tuple[str, ...] = ()
-    create_index = -1
-    for index, clause in enumerate(clauses):
-        titles = _fully_enumerated_named_note_titles(clause)
-        if titles:
-            if created:
-                return ()
-            created = titles
-            create_index = index
-    if not created or create_index + 1 >= len(clauses):
-        return ()
-    read_text = " y ".join(clauses[create_index + 1 :])
-    if not _head_is(_request_head(read_text), _READ):
-        return ()
-    references = tuple(
-        " ".join(found.group("title").strip(" ,.;:").split())
-        for found in re.finditer(
-            r"\b(?:la|the)?\s*(?:nota|note)\s+"
-            r"(?P<title>[a-z0-9][a-z0-9 _-]{0,79}?)"
-            r"(?=\s*(?:,|[.!?]|$|\b(?:y|and)\b))",
-            read_text,
-            re.IGNORECASE,
-        )
-    )
-    if len(references) != len(created):
-        return ()
-    order: list[int] = []
-    for reference in references:
-        matches = [
-            index
-            for index, title in enumerate(created, 1)
-            if title == reference or title.startswith(reference + " ")
-        ]
-        if len(matches) != 1:
-            return ()
-        order.append(matches[0])
-    if set(order) != set(range(1, len(created) + 1)):
-        return ()
-    return tuple(order)
-
-
-def _individually_authored_note_create_clauses(clauses: Iterable[str]) -> int:
-    """Count clauses that each author exactly one note with its own body."""
-
-    return sum(
-        1
-        for clause in clauses
-        if _head_is(_request_head(clause), _CREATE)
-        and _has(clause, r"\b(?:nota|note)s?\b")
-        and _has(clause, rf"\b{_NOTE_CONTENT_INTRODUCER}\b")
-    )
-
-
-def _has_fully_enumerated_note_cardinality(
-    clauses: Iterable[str],
-    expected_count: int,
-) -> bool:
-    clauses = tuple(clauses)
-    if any(
-        _fully_enumerated_note_create_count(clause) == expected_count
-        for clause in clauses
-    ):
-        return True
-    # ``una nota Luna con content claro y otra nota Sol con content brillante``
-    # states the same cardinality as one enumerated list of two, only spread
-    # across two clauses that each carry their own title and body. Requiring a
-    # single enumerating clause rejected a request that was fully authored, so
-    # conserve the count when every note is individually written out.
-    return _individually_authored_note_create_clauses(clauses) == expected_count
-
-
-def enumerated_note_dependency_order(text: str) -> tuple[int, ...]:
-    """Return a complete user-authored mapping from reads to created notes.
-
-    The mapping is available only when one bounded creation list labels every
-    note in ascending ordinal order and one later read list names every label
-    exactly once. Partial, duplicate, or standalone ordinal references remain
-    untrusted and return an empty tuple.
-    """
-
-    folded = _fold(text)
-    clauses = _request_clauses(folded)
-    named_order = _named_note_dependency_order(folded)
-    if named_order:
-        return named_order
-    creates = tuple(
-        (index, count)
-        for index, clause in enumerate(clauses)
-        if (count := _fully_enumerated_note_create_count(clause)) is not None
-    )
-    if len(creates) != 1:
-        return ()
-    create_index, count = creates[0]
-    read_text = " y ".join(clauses[create_index + 1 :])
-    order = _fully_enumerated_note_read_order(read_text, count)
-    if len(order) != count or set(order) != set(range(1, count + 1)):
-        return ()
-    return order
-
-
-
-def _is_negated_match(text: str, found: re.Match[str]) -> bool:
-    """Treat a nearby clause-local negation as a veto, never as an effect."""
-
-    state_question = _negative_state_question_body(text)
-    if state_question is not None:
-        # Keep character offsets: the matched observation belongs to the
-        # original evidence, and any later prohibition remains visible.
-        text = " " * (len(text) - len(state_question)) + state_question
-    prefix = text[max(0, found.start() - 80) : found.start()]
-    boundary = max(
-        prefix.rfind(","),
-        prefix.rfind(";"),
-        prefix.rfind("."),
-        prefix.rfind("?"),
-        prefix.rfind("!"),
-        prefix.rfind(":"),
-    )
-    clause_prefix = prefix[boundary + 1 :]
-    return _has(
-        clause_prefix,
-        (
-            r"(?:\bno\b|\bnunca\b|\bjamas\b|\bnever\b|"
-            r"\bdon'?t\b|\bdo\s+not\b|\bsin\b|\bwithout\b)"
-            r"(?:\s+[a-z0-9_-]+){0,4}\s*$"
-        ),
-    )
-
-
-def _append(
-    matches: list[tuple[int, int, str]],
-    text: str,
-    operation: str,
-    pattern: str,
-    *,
-    priority: int = 0,
-) -> bool:
-    for found in re.finditer(pattern, text, re.IGNORECASE):
-        if _is_negated_match(text, found):
-            continue
-        matches.append((found.start(), priority, operation))
-        return True
-    return False
-
-
-def _append_all(
-    matches: list[tuple[int, int, str]],
-    text: str,
-    operation: str,
-    pattern: str,
-    *,
-    priority: int = 0,
-) -> int:
-    """Append each distinct, non-negated verb/object occurrence in order."""
-
-    count = 0
-    for found in re.finditer(pattern, text, re.IGNORECASE):
-        if _is_negated_match(text, found):
-            continue
-        matches.append((found.start(), priority, operation))
-        count += 1
-    return count
-
 
 # Software people ask to open by name. Membership here never opens anything:
 # it only lets an opening whose target is absent from the verified catalog be
@@ -9782,12 +6121,6 @@ _KNOWN_SOFTWARE = (
     r"camtasia|davinci\s+resolve|canva|dropbox|google\s+drive|onedrive|autocad|matlab|"
     r"rstudio|anaconda|jupyter|kodi|plex|handbrake|thunderbird|evernote|trello|origin|"
     r"battle\.net|ubisoft\s+connect|gog\s+galaxy)"
-)
-_NOTEPAD_OBJECT = r"\b(?:(?:bloc|app|coso)\s+de\s+notas|notepad)\b"
-_DUPLICATE_FILES = r"\b(?:duplicad[oa]s?|repetid[oa]s?|duplicates?)\b"
-_DEICTIC_DAY = (
-    r"\b(?:ese\s+dia|esa\s+fecha|el\s+mismo\s+dia|"
-    r"that\s+day|that\s+date|that\s+same\s+day)\b"
 )
 # Diferir un efecto no es lo mismo que no poder diferirlo. El catálogo tiene
 # `notification.schedule`, `reminder.create` y `calendar.event.create`: para
@@ -9944,83 +6277,6 @@ def _has_contradictory_correction(
     )
 
 
-def _append_domain_actions(
-    matches: list[tuple[int, int, str]],
-    text: str,
-    action_pattern: str,
-    operation_by_domain: dict[str, str],
-) -> int:
-    """Bind an action to each explicitly coordinated local-data domain."""
-
-    domain_patterns = {
-        "note": r"\b(?:nota|notas|note|notes|memo|memos)\b",
-        "task": r"\b(?:tarea|tareas|task|tasks|pendiente|pendientes)\b",
-        "reminder": r"\b(?:recordatorio|recordatorios|reminder|reminders)\b",
-        "routine": r"\b(?:rutina|rutinas|routine|routines)\b",
-    }
-    next_action = (
-        rf"(?:{_CREATE}|{_SEARCH}|{_LIST}|{_READ}|{_OPEN}|"
-        r"maximiza|minimiza|restaura|navigate|navega)"
-    )
-    boundary_pattern = (
-        rf"[,;.!?]|\b(?:despues|luego|then|and then|y despues|y luego)\b|"
-        rf"\by\s+(?={next_action}\b)"
-    )
-    appended = 0
-    for action in re.finditer(rf"\b{action_pattern}\b", text, re.IGNORECASE):
-        if _is_negated_match(text, action):
-            continue
-        suffix = text[action.end() :]
-        boundary = re.search(boundary_pattern, suffix, re.IGNORECASE)
-        fragment = suffix[: boundary.start()] if boundary is not None else suffix[:160]
-        candidates: list[tuple[int, int, str]] = []
-        for domain, noun_pattern in domain_patterns.items():
-            if domain not in operation_by_domain:
-                continue
-            for noun in re.finditer(noun_pattern, fragment, re.IGNORECASE):
-                candidates.append((noun.start(), noun.end(), domain))
-        if not candidates:
-            continue
-        candidates.sort(key=lambda item: item[0])
-        first_start, first_end, first_domain = candidates[0]
-        selected = [(first_start, first_end, first_domain)]
-        seen_domains = {first_domain}
-        previous_end = first_end
-        for start, end, domain in candidates[1:]:
-            if domain in seen_domains:
-                continue
-            connector = fragment[previous_end:start]
-            plain_coordination = _has(
-                connector,
-                (
-                    r"^\s*(?:,\s*)?(?:y|and)\s+"
-                    r"(?:(?:una?|an?|el|la|los|las|the|mis?|my)\s+)*$"
-                ),
-            )
-            labeled_coordination = action_pattern == _CREATE and _has(
-                connector,
-                (
-                    r"^\s+(?:llamad[oa]|titulad[oa]|named|called)\s+"
-                    r"[^,;.!?]{1,80}\s+(?:y|and)\s+"
-                    r"(?:(?:una?|an?|el|la|los|las|the|mis?|my)\s+)*$"
-                ),
-            )
-            if not (plain_coordination or labeled_coordination):
-                break
-            selected.append((start, end, domain))
-            seen_domains.add(domain)
-            previous_end = end
-        for index, (start, _, domain) in enumerate(selected):
-            matches.append(
-                (
-                    action.start() if index == 0 else action.end() + start,
-                    0,
-                    operation_by_domain[domain],
-                )
-            )
-            appended += 1
-    return appended
-
 
 def _review_local_data_effects(
     matches: list[tuple[int, int, str]],
@@ -10154,502 +6410,7 @@ def _review_local_data_effects(
     return web_search_requested
 
 
-_CLOCK_TIME_SELECTOR = (
-    r"\b(?:[01]?[0-9]|2[0-3]):[0-5][0-9]\b|"
-    r"\b(?:a las?|para las?|at)\s+(?:las\s+)?"
-    r"(?:\d{1,2}|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|"
-    r"once|doce|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)"
-    r"(?::[0-5][0-9])?\s*(?:a\.?\s*m\.?|p\.?\s*m\.?|"
-    r"de la manana|de la tarde|de la noche|in the morning|"
-    r"in the afternoon|in the evening)?(?=\s|$|[,;:.?!])|"
-    r"\b(?:\d{1,2}|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|"
-    r"once|doce|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)"
-    r"(?::[0-5][0-9])?\s*(?:a\.?\s*m\.?|p\.?\s*m\.?|"
-    r"de la manana|de la tarde|de la noche|in the morning|"
-    r"in the afternoon|in the evening)(?=\s|$|[,;:.?!])"
-)
 
-
-_BOUNDED_TEMPORAL_SELECTOR = (
-    r"\b(?:hoy|today|manana|tomorrow|esta noche|tonight|"
-    r"despues del trabajo hoy|after work today|"
-    r"ano nuevo|dia de ano nuevo|new year's day|new year day|"
-    r"esta semana|this week|"
-    r"la proxima semana|next week|este mes|this month|"
-    r"lunes|martes|miercoles|jueves|viernes|sabado|domingo|"
-    r"monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b|"
-    r"\b\d{4}-\d{2}-\d{2}(?:t\S+)?\b|"
-    r"\b(?:a las?|para las?|at|from|de|desde)\s+(?:las\s+)?"
-    r"(?:\d{1,2}(?::\d{2})?|una|dos|tres|cuatro|cinco|seis|siete|ocho|"
-    r"nueve|diez|once|doce|one|two|three|four|five|six|seven|eight|nine|"
-    r"ten|eleven|twelve)(?:\s*(?:a\.?\s*m\.?|p\.?\s*m\.?))?\b|"
-    rf"\b{_RELATIVE_DURATION_PATTERN}\b"
-)
-
-
-def _latest_notification_selector(text: str) -> bool:
-    return _has(
-        _fold(text),
-        r"\b(?:latest|last|most recent|newest|ultima|ultimo|mas reciente|"
-        r"recien (?:cread[ao]|programad[ao])|just (?:set|created|scheduled))\b",
-    )
-
-
-def _active_alarm_stop_request(text: str) -> bool:
-    """Recognize only a standalone imperative to stop the active alarm."""
-
-    return _has(
-        _fold(text),
-        r"^[^\w]*para\s+(?:(?:la|el)\s+)?alarma"
-        r"(?:\s*[,;:]?\s+(?:por favor|please))?[\s,;:.!?]*$",
-    )
-
-
-def session_single_alarm_rewrite(
-    text: str,
-    previous_user_texts: Sequence[str],
-) -> str | None:
-    """REOPEN1993 H0011 «cancelá la alarma» (owner: ask which alarm «unless BAXY
-    already set one in this session»): when exactly one previous request of
-    this conversation set an alarm and none cancelled one since, «la alarma» is
-    that alarm and the order reads as the latest-alarm cancellation. Returns the
-    text with the selector made explicit, or None when the question stands."""
-
-    folded = _fold(text)
-    if not folded or _has(folded, r"\b(?:alarms|alarmas)\b") or not _has(folded, r"\b(?:alarm|alarma)\b"):
-        return None
-    if _has(folded, _CLOCK_TIME_SELECTOR) or _latest_notification_selector(folded):
-        return None
-    if re.search(r"\d", folded) or _has(
-        folded,
-        r"\b(?:de|a|para|at|for)\s+(?:las?\s+)?(?:una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce)\b",
-    ):
-        # «cancelá la alarma de las 7» names its alarm; nothing to resolve.
-        return None
-    head_cancel = _head_is(
-        _request_head(folded),
-        r"(?:delete|remove|cancel|erase|elimina|eliminar|borra|borrar|quita|quitar|cancela|cancelar|"
-        r"cancelame|cancelamela|cancelala|borrame|borrala|quitame|quitala|eliminame|eliminala)",
-    )
-    if not head_cancel and not _alarm_turn_off_request(folded):
-        return None
-    alarms_set = 0
-    for previous in previous_user_texts[:6]:
-        previous_folded = _fold(previous)
-        if not previous_folded:
-            continue
-        if _has(
-            previous_folded,
-            r"\b(?:cancel|cancela|cancelar|cancelame|borra|quita|elimina|delete|remove|apaga|desactiva)\b",
-        ) and _has(previous_folded, r"\b(?:alarm|alarma|alarms|alarmas)\b"):
-            # The most recent request wins: a cancellation after the setting
-            # leaves nothing that «la alarma» could name.
-            return None
-        if _has(
-            previous_folded,
-            r"\b(?:alarma|alarm|despertame|despiertame|wake\s+me|timer|temporizador|conta|cuenta)\b",
-        ) and _has(
-            previous_folded,
-            r"\b(?:pon|pone|ponme|poneme|programa|crea|set|put|despertame|despiertame|wake|conta|cuenta|start)\b",
-        ):
-            alarms_set += 1
-    if alarms_set != 1:
-        return None
-    rewritten = re.sub(r"\b(la|una|mi|el)\s+(alarma)\b", r"\1 ultima \2", text, count=1, flags=re.IGNORECASE)
-    if rewritten == text:
-        rewritten = re.sub(r"\b(the|my|an?)\s+(alarm)\b", r"\1 last \2", text, count=1, flags=re.IGNORECASE)
-    return rewritten if rewritten != text else None
-
-
-def _alarm_turn_off_request(text: str) -> bool:
-    """Recognize an alarm cancellation paraphrase even with a modal head."""
-
-    folded = _fold(text)
-    return _has(folded, r"\b(?:alarm|alarma)\b") and _has(
-        folded,
-        r"\b(?:turn(?:ed)?\s+of+|turn(?:ed)?\s+off|apaga|apagar|"
-        r"deactivate|deactivates|desactiva|desactivar)\b",
-    )
-
-
-def _exact_local_reminder_title(text: str) -> str | None:
-    """Return a bounded literal title only for one exact local reminder."""
-
-    folded = _fold(text).strip()
-    if _has(folded, r"\b(?:recordatorios|reminders)\b") or _has(
-        folded, _CLOCK_TIME_SELECTOR
-    ):
-        return None
-    patterns = (
-        (
-            r"^[¿?¡!\s]*(?:(?:please|por favor)\s+)?"
-            r"(?:delete|remove|cancel|erase|elimina|eliminar|borra|borrar|"
-            r"quita|quitar|cancela|cancelar)\s+"
-            r"(?:(?:the|a|an|el|la|un|una)\s+)?"
-            r"(?:reminder|recordatorio)\s+"
-            r"(?:(?:to|for|about|de|para|sobre)\s+)?"
-            r"(?P<title>.+?)[\s.!?]*$"
-        ),
-        (
-            r"^[¿?¡!\s]*(?:(?:the|el|la)\s+)?"
-            r"(?:reminder|recordatorio)\s+"
-            r"(?:(?:to|for|about|de|para|sobre)\s+)?"
-            r"(?P<title>.+?)\s+"
-            r"(?:needs?\s+to\s+be|has\s+to\s+be|"
-            r"necesita\s+(?:ser\s+)?|se\s+(?:tiene|debe)\s+que\s+)"
-            r"\s*"
-            r"(?:deleted|removed|cancelled|canceled|eliminad[oa]|borrad[oa]|"
-            r"cancelad[oa]|eliminar|borrar|cancelar)[\s.!?]*$"
-        ),
-        (
-            r"^[¿?¡!\s]*(?:find|busca|buscar|encuentra|encontrar)\s+"
-            r"(?:(?:the|el|la)\s+)?(?:reminder|recordatorio)\s+"
-            r"(?:(?:to|for|about|de|para|sobre)\s+)?"
-            r"(?P<title>.+?)\s+(?:and|y)\s+"
-            r"(?:delete|remove|cancel|erase|eliminalo|borrarlo|quitarlo|"
-            r"cancelarlo|remove\s+it|delete\s+it|cancel\s+it)[\s.!?]*$"
-        ),
-        (
-            r"^[^\w]*(?:no necesito|i (?:do not|don't) need)\s+"
-            r"(?P<title>.+?)[,;]\s*"
-            r"(?:cancela|elimina|borra|cancel|delete|remove)\s+"
-            r"(?:(?:este|el|this|the)\s+)?(?:recordatorio|reminder)[\s.!?]*$"
-        ),
-        (
-            r"^[^\w]*(?P<title>.+?)\s+"
-            r"(?:se\s+(?:cancelo|cancelaron)|(?:was|were)\s+cancelled)\s+"
-            r"(?:asi que|por lo que|so)\s+"
-            r"(?:(?:este|el|this|the)\s+)?(?:recordatorio|reminder)\s+"
-            r"(?:se\s+(?:tiene|debe)\s+que\s+|needs?\s+to\s+be\s+)?"
-            r"(?:eliminar|borrar|cancelar|deleted|removed|cancelled)[\s.!?]*$"
-        ),
-    )
-    for pattern in patterns:
-        found = re.match(pattern, folded, re.IGNORECASE)
-        if found is None:
-            continue
-        title = re.sub(
-            r"(?:\s+please|\s+por favor)$",
-            "",
-            found.group("title").strip(" \t\r\n.,;:!?\"'"),
-            flags=re.IGNORECASE,
-        ).strip()
-        if title and title not in {
-            "a reminder",
-            "el recordatorio",
-            "it",
-            "one",
-            "please",
-            "por favor",
-            "that",
-            "this",
-        }:
-            return title
-    return None
-
-
-def _nominal_reminder_lookup_title(text: str) -> str | None:
-    """Return the topic in a standalone plural reminder lookup."""
-
-    folded = _fold(text).strip()
-    if _has(folded, _BOUNDED_TEMPORAL_SELECTOR):
-        return None
-    found = re.match(
-        r"^[^\w]*(?:reminders\s+(?:for|about)|"
-        r"recordatorios\s+(?:de|para|sobre))\s+"
-        r"(?P<title>.+?)[\s.!?]*$",
-        folded,
-    )
-    if found is None:
-        return None
-    title = found.group("title").strip(" \t\r\n.,;:!?\"'")
-    return title if title and len(title.encode("utf-8")) <= 1_024 else None
-
-
-def _review_calendar_message_and_direct_reminder_effects(
-    matches: list[tuple[int, int, str]],
-    folded: str,
-    head: str,
-) -> None:
-    """Append complete scheduling and messaging requests with literal data."""
-
-    calendar_domain = _has(
-        folded,
-        r"\b(?:calendario|calendar|evento|eventos|event|events|"
-        r"reunion|reuniones|meeting|meetings|cita|citas|appointment|appointments)\b",
-    )
-    temporal = (
-        _has(
-            folded,
-            _BOUNDED_TEMPORAL_SELECTOR,
-        )
-        or _absolute_calendar_range_parts(folded) is not None
-    )
-    if temporal and _bounded_calendar_list_query(folded):
-        _append(
-            matches,
-            folded,
-            "calendar.event.list",
-            (
-                rf"\b(?:{_LIST}|cuando|when|eventos|events)\b|"
-                r"\bduring(?=\s+the\s+timeframe)\b|"
-                r"\b(?:revisa|revisar|review|check|consulta|consultar)\b|"
-                r"\b(?:what is going on|que (?:sucede|pasa)|"
-                r"what\s+(?:meetings|events|appointments)\s+"
-                r"(?:occurred|happened|took\s+place)|"
-                r"anything i should do|tengo algo que hacer|"
-                r"hay algo que (?:hacer|tenga que hacer))\b"
-            ),
-        )
-    if (
-        calendar_domain
-        and temporal
-        and _head_is(
-            head,
-            rf"(?:{_CREATE}|programa|programar|programame|schedule|"
-            r"agenda|agendar|agendame)",
-        )
-        and (
-            _has(
-                folded,
-                r"\b(?:llamad[oa]|titulad[oa]|called|named)\s+\S+",
-            )
-            or _has(folded, r"\b(?:reunion|meeting|evento|event)\b")
-        )
-        and _has(
-            folded,
-            r"\b(?:de|desde|from)\s+(?:las\s+)?(?:\d{1,2}|"
-            r"una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|"
-            r"one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)"
-            r"(?:\s*(?:am|pm))?\s+(?:a|hasta|to)\s+(?:las\s+)?"
-            r"(?:\d{1,2}|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|"
-            r"diez|once|doce|one|two|three|four|five|six|seven|eight|nine|ten|"
-            r"eleven|twelve)\b",
-        )
-    ):
-        _append(
-            matches,
-            folded,
-            "calendar.event.create",
-            rf"\b(?:{_CREATE}|programa|programar|programame|schedule|"
-            r"agenda|agendar|agendame)\b",
-        )
-
-    if (
-        _head_is(
-            head,
-            r"(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind)",
-        )
-        and (temporal or _has(folded, _DEICTIC_DAY))
-        and _has(
-            folded,
-            r"^[¿?¡!\s]*(?:recuerdame|recuerdamelo|recordame|recordamelo|"
-            r"avisame|remind\s+me)\b.+",
-        )
-    ):
-        _append(
-            matches,
-            folded,
-            "reminder.create",
-            r"\b(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind)\b",
-        )
-
-    if (
-        temporal
-        and not any(entry[2] == "reminder.create" for entry in matches)
-        and re.match(
-            # «Dentro de doce minutos, recordame …»: the duration leads and the
-            # reminder head follows it (TIME1189/011).
-            rf"^[¿?¡!\s]*(?:en|in|dentro\s+de|within)\s+{_RELATIVE_DURATION_PATTERN},?\s+"
-            r"(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind\s+me)\b.+",
-            folded,
-        )
-    ):
-        _append(
-            matches,
-            folded,
-            "reminder.create",
-            r"\b(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind)\b",
-        )
-
-    if (
-        temporal
-        and _count_down_request(folded)
-        and not any(entry[2] == "notification.schedule" for entry in matches)
-    ):
-        _append(
-            matches,
-            folded,
-            "notification.schedule",
-            r"\b(?:conta|cuenta|contame|cuentame|count)\b",
-        )
-
-    if (
-        temporal
-        and _head_is(
-            head,
-            r"(?:programa|programar|programame|schedule|pon|poner|ponme|pone|"
-            r"poneme|pongame|set|arranca|inicia|start|alarma|alarm|"
-            r"temporizador|timer)",
-        )
-        and _has(
-            folded,
-            r"\b(?:alarma|alarmas|alarm|alarms|temporizador|"
-            r"temporizadores|timer|timers|aviso|avisos)\b",
-        )
-    ):
-        _append(
-            matches,
-            folded,
-            "notification.schedule",
-            r"\b(?:programa|programar|programame|schedule|pon|poner|ponme|pone|"
-            r"poneme|pongame|set|arranca|inicia|start|alarma|alarm|"
-            r"temporizador|timer)\b",
-        )
-
-    if (
-        temporal
-        and _has(folded, r"\b(?:recordatorio|reminder)\b")
-        and not any(entry[2] == "reminder.create" for entry in matches)
-        and _head_is(
-            head,
-            r"(?:pon|ponme|pone|poneme|pongame|crea|crear|programa|programar|"
-            r"set|schedule|recordatorio|reminder)",
-        )
-    ):
-        _append(
-            matches,
-            folded,
-            "reminder.create",
-            r"\b(?:pon|ponme|pone|poneme|pongame|crea|crear|programa|programar|"
-            r"set|schedule|recordatorio|reminder)\b",
-        )
-
-    cancel_notification = (
-        (
-            _head_is(
-                head,
-                r"(?:cancela|cancelar|cancel|quita|quitar|remove|remueve|"
-                r"elimina|eliminar|delete|borra|borrar)",
-            )
-            or _has(folded, r"^get\s+rid\s+of\b")
-        )
-        and _has(folded, r"\b(?:alarma|alarm|recordatorio|reminder)\b")
-        and not _has(
-            folded,
-            r"\b(?:alarmas|alarms|recordatorios|reminders)\b",
-        )
-    )
-    exact_local_reminder_title = _exact_local_reminder_title(folded)
-    exact_local_reminder_lookup = (
-        (
-            _head_is(
-                head,
-                r"(?:ver|ve|muestra|muestrame|ensena|show|see|view|find|busca)",
-            )
-            or _has(folded, r"^can i (?:see|view)\b")
-        )
-        and _has(folded, r"\b(?:recordatorio|reminder)\b")
-        and _has(folded, r"\b(?:otra vez|de nuevo|nuevamente|again)\b")
-        and _has(
-            folded,
-            r"\b(?:recordatorio|reminder)\s+(?:de|para|sobre|for|about)\s+\S",
-        )
-    )
-    if exact_local_reminder_lookup:
-        _append(
-            matches,
-            folded,
-            "reminder.resolve.exact",
-            r"\b(?:ver|ve|muestra|muestrame|ensena|show|see|view|find|busca)\b",
-        )
-    if exact_local_reminder_title is not None:
-        _append(
-            matches,
-            folded,
-            "reminder.delete",
-            r"\b(?:cancela|cancelar|cancel|quita|quitar|remove|remueve|"
-            r"elimina|eliminar|delete|borra|borrar|find|busca|encuentra)\b",
-        )
-    elif cancel_notification and (
-        _has(folded, _CLOCK_TIME_SELECTOR) or _latest_notification_selector(folded)
-    ):
-        operation = (
-            "notification.cancel.at"
-            if _has(folded, _CLOCK_TIME_SELECTOR)
-            else "notification.cancel.latest"
-        )
-        _append(
-            matches,
-            folded,
-            operation,
-            r"\b(?:cancela|cancelar|cancel|quita|quitar|remove|remueve|"
-            r"elimina|eliminar|delete|borra|borrar|get rid of)\b",
-        )
-
-    send_head = _head_is(
-        head,
-        r"(?:envia|enviar|manda|mandar|dile|decile|tell|send)",
-    )
-    explicit_channel = _has(
-        folded,
-        r"\b(?:whatsapp|wsp|discord|signal|telegram)\b",
-    )
-    explicit_payload = _has(
-        folded,
-        r"\b(?:mensaje|message)\s+[«\"'‘“]?[a-z0-9].+",
-    )
-    explicit_recipient = _has(
-        folded,
-        r"\b(?:a|para|to)\s+[a-z0-9][a-z0-9 ._-]{0,80}\s+"
-        r"(?:el\s+|the\s+)?(?:mensaje|message)\b|"
-        r"\b(?:envia|manda|send)\s+[a-z0-9][a-z0-9 ._-]{0,80}\s+"
-        r"(?:el\s+|the\s+)?(?:whatsapp\s+)?(?:mensaje|message)\b",
-    ) and not _has(
-        folded,
-        r"\b(?:a|para|to)\s+(?:ellos|ellas|les|them)\b|"
-        r"\b(?:send|envia|manda)\s+(?:them|les)\b",
-    )
-    tell_shape = _has(
-        folded,
-        r"^[¿?¡!\s]*(?:(?:dile|decile)\s+a\s+"
-        r"[a-z0-9][a-z0-9 ._-]{0,80}?\s+"
-        r"(?:(?:en|por)\s+(?:whatsapp|wsp|discord)\s+)?que|"
-        r"tell\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+"
-        r"(?:on\s+(?:whatsapp|discord)\s+)?that)\s+\S.+",
-    ) and not _has(
-        folded,
-        r"^[¿?¡!\s]*(?:dile|decile)\s+a\s+(?:ellos|ellas|les)\b",
-    )
-    if (
-        send_head
-        and explicit_channel
-        and ((explicit_payload and explicit_recipient) or tell_shape)
-    ):
-        _append(
-            matches,
-            folded,
-            "message.send",
-            r"\b(?:envia|enviar|manda|mandar|dile|decile|tell|send)\b",
-        )
-
-
-# «me queda…», «me alcanza…»: el clítico dativo abre una pregunta de estado
-# solo con uno de estos verbos. «Me interesa…» o «me gustaría…» no lo son, así
-# que el clítico nunca entra suelto en la lista de cabezas.
-_DATIVE_STATE_OPENING = (
-    r"me\s+(?:queda|quedan|quedaba|alcanza|alcanzan|sobra|sobran|falta|faltan|"
-    r"dices|dice|decis|puedes decir|podrias decir)"
-)
-
-# «modelo» abre una pregunta de estado solo cuando el objeto es una pieza de
-# este equipo. Suelto encabeza notas de configuración («Modelo FT Q4_K_M…»).
-_HARDWARE_MODEL_OPENING = (
-    r"(?:modelo|model)\s+(?:de\s+)?"
-    r"(?:(?:mi|la|el|este|esta|my|the|this)\s+)?"
-    r"(?:gpu|vram|tarjeta|placa|procesador|processor|cpu|video|"
-    r"graphics|equipo|pc|computador|computadora|computer)"
-)
 
 # Aperturas de una pregunta de estado en ES/EN, incluidas las nominales
 # («nivel de batería», «gpu usage») que no llevan verbo. Es solo una compuerta
@@ -10673,45 +6434,6 @@ _STATE_QUERY_HEAD = (
 )
 
 
-_WIFI_STATE_QUESTION = re.compile(
-    r"\bwi[\s-]?fi\s+(?:esta|is|anda)\s+(?:prendid[oa]|encendid[oa]|apagad[oa]|"
-    r"activ[oa]|activad[oa]|desactivad[oa]|conectad[oa]|funcionando|on|off|"
-    r"enabled|disabled|connected|working)\b|"
-    r"\b(?:esta|is)\s+(?:prendid[oa]|encendid[oa]|apagad[oa]|activ[oa]|on|off|enabled)\s+"
-    r"(?:el\s+|the\s+)?wi[\s-]?fi\b",
-    re.IGNORECASE,
-)
-
-
-_BLUETOOTH_STATE_QUESTION = re.compile(
-    r"^[¿?¡!\s]*(?:"
-    # «tengo el bluetooth encendido», «¿tengo el bluetooth prendido?»
-    r"(?:tengo|tenes|tienes|dejaste|deje|do\s+i\s+have)\s+(?:el\s+|the\s+)?bluetooth\s+"
-    r"(?:prendid[oa]|encendid[oa]|apagad[oa]|activ[oa]|activad[oa]|desactivad[oa]|on|off|enabled|disabled)|"
-    # «el bluetooth está prendido?», «bluetooth is on?»
-    r"(?:el\s+|the\s+)?bluetooth\s+(?:esta|is|anda|queda|quedo)\s+"
-    r"(?:prendid[oa]|encendid[oa]|apagad[oa]|activ[oa]|activad[oa]|desactivad[oa]|on|off|enabled|disabled)|"
-    # «está encendido el bluetooth?», «is the bluetooth on?»
-    r"(?:esta|is)\s+(?:prendid[oa]|encendid[oa]|apagad[oa]|activ[oa]|activad[oa]|on|off|enabled)\s+(?:el\s+|the\s+)?bluetooth|"
-    # «y el bluetooth?», «and bluetooth?»: the state question with no antecedent.
-    r"(?:y|and)\s+(?:el\s+|the\s+)?bluetooth"
-    r")\b[\s?!.,]*$",
-    re.IGNORECASE,
-)
-
-
-_DISPLAY_STATUS_QUESTION = re.compile(
-    r"^[¿?¡!\s]*(?:"
-    # «qué resolución tengo», «qué resolución de pantalla tengo», «cuál es la resolución de mi pantalla»
-    r"(?:que|cual\s+es\s+la|what|what's|whats|dime\s+(?:que|la|cual)|decime\s+(?:que|la|cual))\s+resolucion(?:\s+(?:de|del)\s+(?:la\s+|mi\s+|el\s+|the\s+|my\s+)?(?:pantalla|monitor|screen|display))?(?:\s+(?:tengo|tiene|uso|estoy\s+usando|do\s+i\s+have|is|am\s+i\s+using))?|"
-    # «cuántos monitores tengo», «how many monitors do i have»
-    r"(?:cuantos|cuantas|how\s+many)\s+(?:monitores|pantallas|monitors|screens|displays)(?:\s+(?:tengo|hay|tiene|do\s+i\s+have|are\s+there|are\s+connected))?|"
-    # «qué Hz tiene el monitor», «a cuántos Hz va la pantalla», «qué frecuencia de refresco tiene el monitor»
-    r"(?:que|cuantos|a\s+cuantos|what|how\s+many)\s+(?:hz|hertz|hercios|frecuencia(?:\s+de\s+(?:refresco|actualizacion))?|refresh\s+rate)\s+(?:tiene|va|corre|tengo|has|is|does)?\s*(?:el\s+|la\s+|mi\s+|the\s+|my\s+)?(?:monitor|pantalla|screen|display)?(?:\s+(?:have|run\s+at|running\s+at))?"
-    r")\b[\s?!.,]*$",
-    re.IGNORECASE,
-)
-
 
 _PYTHON_STATUS_QUESTION = re.compile(
     r"^[¿?¡!\s]*(?:"
@@ -10727,47 +6449,6 @@ _PYTHON_STATUS_QUESTION = re.compile(
     re.IGNORECASE,
 )
 
-
-_CALC_NUMBER = r"\d{1,12}(?:[.,]\d{1,6})?"
-_CALC_MENTION = r"\b(?:calc|calcu|calculadora|calculator)\b"
-_CALC_VERB_OPERATORS = (
-    (r"(?:multiplic[aá]|multiplicame|multiplicar|multiply)", r"(?:por|x|×|\*|by|times)", "*"),
-    (r"(?:sum[aá]|sumame|sumar|add)", r"(?:m[aá]s|mas|y|\+|and|plus|to)", "+"),
-    (r"(?:rest[aá]|restame|restar|subtract)", r"(?:menos|-|minus|from)", "-"),
-    (r"(?:divid[ií]|divideme|dividir|divide)", r"(?:entre|por|÷|/|by)", "/"),
-)
-_CALC_INFIX = {"por": "*", "x": "*", "×": "*", "*": "*", "mas": "+", "más": "+", "+": "+", "menos": "-", "-": "-", "entre": "/", "÷": "/", "/": "/", "times": "*", "plus": "+", "minus": "-"}
-
-
-def calculator_expression_request(text: str) -> str | None:
-    """UI1725 «multiplicá 6 por 7 en la calc», «Suma 2 más 2 en la Calculadora»,
-    «cuánto es 6 por 7 en la calculadora»: the arithmetic the person wants typed
-    into the open Calculator, as an expression over the person's own numbers;
-    None without a Calculator mention or a readable binary operation."""
-
-    folded = _strip_request_envelope(_fold(text)).strip()
-    if not _has(folded, _CALC_MENTION) or _has(folded, r"\b(?:abre|abrir|abri|cierra|cerra|open|close)\b"):
-        return None
-    for verb, operator, symbol in _CALC_VERB_OPERATORS:
-        found = re.search(
-            rf"\b{verb}\s+(?P<a>{_CALC_NUMBER})\s*{operator}\s*(?P<b>{_CALC_NUMBER})\b",
-            folded,
-        )
-        if found is not None:
-            a, b = found.group("a"), found.group("b")
-            if symbol == "-" and re.search(r"\bfrom\b", found.group(0)):
-                a, b = b, a
-            return f"{a}{symbol}{b}"
-    infix = re.search(
-        rf"(?P<a>{_CALC_NUMBER})\s*(?P<op>por|x|×|\*|mas|\+|menos|-|entre|÷|/|times|plus|minus)\s*(?P<b>{_CALC_NUMBER})\b",
-        folded,
-    )
-    if infix is not None and (
-        _head_is(_request_head(folded), r"(?:calcula|calculame|calcular|calculate|compute|cuanto|cuanto|resolve|resolvé|resolver)")
-        or _has(folded, r"^[¿?¡!\s]*(?:cuanto|cuánto|what)\s+(?:es|is|da|sale)\b")
-    ):
-        return f"{infix.group('a')}{_CALC_INFIX[infix.group('op')]}{infix.group('b')}"
-    return None
 
 
 _PYTHON_PACKAGE_REQUEST = re.compile(
@@ -10786,11 +6467,6 @@ _PYTHON_PACKAGE_REQUEST = re.compile(
 )
 
 
-_REMOVABLE_MEDIA = (
-    r"(?:pendrive|pen\s+drive|pen|usb|memoria\s+usb|memoria\s+externa|disco\s+externo|disco\s+usb|"
-    r"unidad\s+externa|unidad\s+usb|usb\s+stick|flash\s+drive|thumb\s+drive|external\s+(?:drive|disk)|"
-    r"removable\s+(?:drive|disk)|memory\s+stick)"
-)
 _REMOVABLE_STORAGE_REQUEST = re.compile(
     r"^[¿?¡!\s]*(?:"
     # «hacé un backup de mis documentos a un pendrive», «copiá mis fotos al usb», «back up my documents to a USB stick»
@@ -10841,227 +6517,6 @@ def _python_status_question(text: str) -> bool:
     )
 
 
-def _display_status_question(text: str) -> bool:
-    """SYSTEM1459 «qué resolución tengo», «cuántos monitores tengo», «qué Hz tiene el
-    monitor»: a display.status read of the attached monitors — never a change."""
-
-    folded = _strip_request_envelope(_fold(text)).strip()
-    return (
-        _DISPLAY_STATUS_QUESTION.match(folded) is not None
-        and not _has(folded, r"\b(?:cambia|cambiar|pone|poner|ajusta|ajustar|sube|baja|set|change|brillo|brightness)\b")
-    )
-
-
-def _bluetooth_state_question(text: str) -> bool:
-    """NETWORK1457 «tengo el bluetooth encendido», «y el bluetooth?»: a
-    bluetooth.radio.status read — the radio's state, never a device list."""
-
-    folded = _strip_request_envelope(_fold(text)).strip()
-    return (
-        _BLUETOOTH_STATE_QUESTION.match(folded) is not None
-        and not _has(folded, r"\b(?:dispositivo|device|auriculares?|headphones?|parlante|speaker)\b")
-    )
-
-
-_WIFI_SCAN_QUESTION = re.compile(
-    r"(?:^|\b)(?:que|cuales|cuantas|what|which|how many)\s+(?:(?:wifi|wi[\s-]*fi|wireless)\s+)?(?:redes|networks)(?:\s+(?:wifi|wi[\s-]*fi|inalambricas|wireless))?\s+(?:are\s+)?(?:hay|existen|veo|ves|detectas|encontras|encuentras|alcanzas|disponibles|cerca|cercanas|around|nearby|available|there|can you see|do you see)\b"
-    r"|\b(?:escanea|escaneame|escanear|scan|busca|buscame|buscar|search for|list|lista|listame|listar|mostrame|muestrame|show)\b.{0,24}\b(?:redes|networks)(?:\s+(?:wifi|wi[\s-]*fi|inalambricas|wireless))?\b"
-    r"|\b(?:redes|networks)\s+(?:wifi|wi[\s-]*fi|inalambricas|wireless)\s+(?:disponibles|cercanas|visibles|available|nearby|visible|around)\b"
-)
-
-
-_WIFI_RADIO_SET_REQUEST = re.compile(
-    r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
-    r"(?P<verb>prende|prendeme|prender|encende|encendeme|encender|enciende|activa|activame|activar|turn\s+on|switch\s+on|enable|"
-    r"apaga|apagame|apagar|desactiva|desactivame|desactivar|turn\s+off|switch\s+off|disable)\s+"
-    r"(?:me\s+)?(?:el\s+|la\s+|the\s+)?(?:radio\s+)?(?:wifi|wi[\s-]*fi|wireless|red\s+inalambrica)"
-    r"(?:\s+(?:del\s+|de\s+la\s+|of\s+the\s+)?(?:pc|computadora|compu|equipo|laptop|notebook|computer))?[\s.!?]*$"
-)
-
-
-_WIFI_OFF_OFFER = re.compile(
-    r"(?:wifi|wi[\s-]*fi|radio|antena).{0,80}(?:apagad|off).{0,160}\?|(?:apagad|off).{0,80}(?:wifi|wi[\s-]*fi).{0,160}\?"
-)
-_ASSENT_TO_OFFER = re.compile(
-    r"^[¿?¡!\s]*(?:si|sí|dale|ok|okey|okay|bueno|claro|obvio|por\s+favor|yes|yeah|yep|sure|please|go\s+ahead|do\s+it|hacelo|hazlo|prendelo|encendelo|enciendelo|prende|encende|turn\s+it\s+on)"
-    r"(?:[,\s]+(?:si|sí|dale|por\s+favor|please|hacelo|hazlo|prendelo|encendelo|enciendelo|y\s+busca|y\s+escanea|and\s+scan|prende\s+el\s+wifi|encende\s+el\s+wifi|turn\s+it\s+on|turn\s+on\s+the\s+wifi))*[\s.!?]*$"
-)
-_ACCEPTED_WIFI_OFFER_EVIDENCE = "encender el wifi y buscar redes (oferta aceptada)"
-
-
-def _accepted_wifi_offer_evidence(evidence: str) -> bool:
-    return evidence == _ACCEPTED_WIFI_OFFER_EVIDENCE
-
-
-# REOPEN1957 H0170/H0376 «conectate al wifi de casa» (D24): «casa» names a
-# place, not a saved network. The words the person may use for each place; the
-# canonical key is what the provider remembers the association under.
-_WIFI_PLACE_ALIASES = {
-    "casa": "casa", "mi casa": "casa", "la casa": "casa", "home": "casa", "my home": "casa",
-    "my house": "casa", "the house": "casa", "house": "casa",
-    "trabajo": "trabajo", "mi trabajo": "trabajo", "el trabajo": "trabajo", "work": "trabajo",
-    "my work": "trabajo", "the job": "trabajo",
-    "oficina": "oficina", "la oficina": "oficina", "mi oficina": "oficina", "office": "oficina",
-    "my office": "oficina", "the office": "oficina",
-}
-_WIFI_PLACE_REQUEST = re.compile(
-    r"^[¿?¡!\s]*(?:por\s+favor[,\s]+)?(?:baxy[,\s]+)?(?:podes|podrias|puedes|can\s+you|could\s+you)?\s*"
-    r"(?:"
-    r"(?:conecta|conectar|conectarme|conectarte|conectame|conectate|connect(?:\s+me)?)\s+"
-    r"(?:(?:al|a\s+la|a|to|to\s+the|to\s+my)\s+)?(?:(?:red|network)\s+)?wi[\s-]?fi(?:\s+(?:network|red))?\s+"
-    r"(?:de|del|de\s+la|of|of\s+the|of\s+my)\s+(?P<place_a>[a-z ]+?)"
-    r"|(?:conecta|conectar|conectarme|conectarte|conectame|conectate|connect(?:\s+me)?)\s+"
-    r"(?:(?:al|a\s+la|a|to|to\s+the|to\s+my)\s+)?(?:the\s+|my\s+)?(?P<place_b>home|work|office|house)\s+"
-    r"(?:wi[\s-]?fi|network|red)(?:\s+(?:network|red))?"
-    r"|(?:cambia|cambiar|cambiate|change|switch)\s+(?:(?:el|the)\s+)?wi[\s-]?fi\s+(?:al|a|to)\s+"
-    r"(?:(?:el|la|the)\s+)?(?:(?:de|of)\s+)?(?P<place_c>[a-z ]+?)"
-    r")[\s.!?]*$"
-)
-
-
-def wifi_place_request(text: str) -> str | None:
-    """«conectate al wifi de casa», «connect to my home wifi», «cambia el wifi
-    al de casa» → the canonical place («casa»); a name that is not a place
-    («wifi de la luna», «wifi de Galaxy») abstains and stays a profile name."""
-
-    folded = _strip_request_envelope(_fold(text)).strip()
-    if not folded or _negative_action_forms(folded):
-        return None
-    match = _WIFI_PLACE_REQUEST.match(folded)
-    if match is None:
-        return None
-    raw = next(
-        group for group in (match.group("place_a"), match.group("place_b"), match.group("place_c")) if group
-    )
-    return _WIFI_PLACE_ALIASES.get(" ".join(raw.split()))
-
-
-_WIFI_PLACE_QUESTION = re.compile(
-    r"\b(?:cual|cuales|which|what)\b.{0,80}\b(?:red(?:es)?|wi[\s-]?fi|network|networks)\b|"
-    r"\b(?:red(?:es)?|wi[\s-]?fi|network|networks)\b.{0,80}\b(?:cual|cuales|which|what)\b|"
-    r"\b(?:como\s+se\s+llama|what(?:'s| is)\s+(?:it|the\s+name))\b"
-)
-
-
-def wifi_place_answer(text: str, history: object) -> tuple[str, str] | None:
-    """REOPEN1957 H0170/H0376: after «conectate al wifi de casa» BAXY listed the
-    saved networks and asked which one is the home one; the person's short
-    answer names it («Fibertel-2G», «es la Fibertel», «se llama Vecino 5G»).
-    The explicit forms stand on the previous request alone; a bare name needs
-    the assistant's question in the history, so a greeting after the request
-    is never read as a network name."""
-
-    if not isinstance(history, list):
-        return None
-    items = [item for item in history if isinstance(item, dict)]
-    if items and items[-1].get("role") == "user" and items[-1].get("content") == text:
-        items = items[:-1]
-    previous = next((str(item.get("content") or "") for item in reversed(items) if item.get("role") == "user"), "")
-    assistant = next((str(item.get("content") or "") for item in reversed(items) if item.get("role") == "assistant"), "")
-    place = wifi_place_request(previous) if previous else None
-    if place is None:
-        return None
-    answer = text.strip().strip("\"'“”«»").strip()
-    folded = _strip_request_envelope(_fold(answer))
-    if not folded or "?" in answer or len(folded.split()) > 6:
-        return None
-    if _head_is(_request_head(folded), _COVERAGE_ACTION_HEAD) or _negative_action_forms(folded):
-        return None
-    if re.fullmatch(
-        r"(?:no|nada|ninguna?|none|nothing|cancela|cancelar|cancel|olvidalo|dejalo|si|dale|ok|okey|bueno|gracias|hola|thanks)\b.*",
-        folded,
-    ):
-        return None
-    explicit = re.match(
-        r"^(?:es|se\s+llama|it'?s|it\s+is|its\s+name\s+is|the\s+(?:network|wifi)\s+is|"
-        r"(?:la|el)\s+(?:red|wifi)(?:\s+de\s+\w+)?\s+(?:es|se\s+llama)|(?:la|el)\s+de\s+\w+\s+(?:es|se\s+llama))\s+(?P<name>.+)$",
-        answer,
-        re.IGNORECASE,
-    )
-    if explicit is not None:
-        name = explicit.group("name")
-    elif assistant and _WIFI_PLACE_QUESTION.search(_fold(assistant)) is not None:
-        name = answer
-    else:
-        return None
-    name = re.sub(r"^(?:la|el|the)\s+(?=\S)", "", name.strip(), flags=re.IGNORECASE).strip(" .!\"'“”«»")
-    if not name or len(name.encode("utf-8")) > 256 or re.search(r"\b(?:y|and|or|o)\b|[&,/\\]", _fold(name)):
-        return None
-    return name, place
-
-
-def wifi_place_answer_intent(text: str, history: object, available_operations: Iterable[str]) -> EffectIntent | None:
-    """The answer alone is the evidence of one wifi.connect.named; the arguments
-    are grounded from the same surface (name + place) with the history."""
-
-    if "wifi.connect.named" not in frozenset(available_operations):
-        return None
-    return EffectIntent(("wifi.connect.named",), (text,)) if wifi_place_answer(text, history) is not None else None
-
-
-def accepted_wifi_offer(
-    text: str,
-    history: object,
-    available_operations: Iterable[str],
-) -> EffectIntent | None:
-    """NETWORK1737: the person asked which networks there are, the assistant said the
-    Wi-Fi radio is off and offered to turn it on, and the person now assents
-    → turn the radio on (confirmed) and scan. Nothing else reads an assent."""
-
-    available = frozenset(available_operations)
-    if not {"wifi.radio.set", "wifi.scan"} <= available or not isinstance(history, list):
-        return None
-    if _ASSENT_TO_OFFER.match(_strip_request_envelope(_fold(text)).strip()) is None:
-        return None
-    items = [item for item in history if isinstance(item, dict)]
-    if items and items[-1].get("role") == "user" and items[-1].get("content") == text:
-        items = items[:-1]
-    assistant = next((str(item.get("content") or "") for item in reversed(items) if item.get("role") == "assistant"), "")
-    previous = next((str(item.get("content") or "") for item in reversed(items) if item.get("role") == "user"), "")
-    if not assistant or not previous:
-        return None
-    if _WIFI_OFF_OFFER.search(_fold(assistant)) is None or not _wifi_scan_question(previous):
-        return None
-    return EffectIntent(("wifi.radio.set", "wifi.scan"), (_ACCEPTED_WIFI_OFFER_EVIDENCE, _ACCEPTED_WIFI_OFFER_EVIDENCE))
-
-
-def wifi_radio_set_request(text: str) -> bool | None:
-    """NETWORK1737 «prendé el wifi», «apagá el wifi», «turn on the wifi»: the desired
-    radio state, or None when the text is not that order."""
-
-    folded = _strip_request_envelope(_fold(text)).strip()
-    found = _WIFI_RADIO_SET_REQUEST.match(folded)
-    if found is None:
-        return None
-    return not _has(found.group("verb"), r"^(?:apaga|apagame|apagar|desactiva|desactivame|desactivar|turn\s+off|switch\s+off|disable)$")
-
-
-def _wifi_scan_question(text: str) -> bool:
-    """NETWORK1729 «qué redes wifi hay», «escaneá las redes wifi», «what wifi networks
-    are there»: a wifi.scan read of the networks the adapter sees — never a
-    connection, a change of the radio, nor the saved-profile listing."""
-
-    folded = _strip_request_envelope(_fold(text)).strip()
-    return (
-        _WIFI_SCAN_QUESTION.search(folded) is not None
-        and _has(folded, r"\b(?:wifi|wi[\s-]*fi|inalambric\w*|wireless|redes|networks)\b")
-        and not _has(folded, r"\b(?:conecta\w*|desconecta\w*|connect|apaga\w*|prende\w*|enciende\w*|turn|guardad\w*|saved|perfiles?|profiles?|olvida\w*|forget|borra\w*|delete)\b")
-    )
-
-
-def _wifi_state_question(text: str) -> bool:
-    """«decime si el wifi está prendido», «¿el wifi está encendido?»: a wifi.status read."""
-
-    return (
-        _WIFI_STATE_QUESTION.search(text) is not None
-        and not _has(
-            text,
-            r"\b(?:apaga\w*|prende\w*|enciende\w*|encende\w*|activa\w*|desactiva\w*|"
-            r"conecta\w*|desconecta\w*|turn|enable|disable)\b",
-        )
-        # «… y apagalo»: a second action makes it a compound, not a bare read.
-        and not _has(text, r"\b(?:y|and)\s+\w")
-    )
 
 
 # H0475: una linea de consola pegada con su prompt —«PS C:\\...> python x.py»,
@@ -11121,6 +6576,8 @@ def _is_direct_request(text: str) -> bool:
         or _python_package_request(text) is not None
         or _removable_storage_request(text)
         or _research_question_query(text) is not None
+        or public_opinion_query(text) is not None
+        or record_fact_query(text) is not None
         or message_draft_request(text) is not None
         or client_channel_request(text) is not None
     ):
@@ -11256,119 +6713,6 @@ def _is_direct_request(text: str) -> bool:
     ) or _head_is(_request_head(text), request_head)  # the head's forms: clitics, voseo (semantic.grammar)
 
 
-_KNOWN_FOLDER_LISTING = (
-    r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
-    r"(?:(?:lista|listame|list|enumera|enumerame|mostrame|muestrame|muestra|show me|show|"
-    r"decime|dime|contame|cuentame|tell me)\s+(?:me\s+)?(?:que\s+|what\s+)?(?:los|las|the|mis|my|todos los|all the|all)?\s*"
-    r"(?:archivos|ficheros|files|documentos|cosas|things)\s+(?:(?:que\s+)?(?:hay|tengo|are|is)\s+)?"
-    r"(?:de|del|en|in|on|of|from)\s+|"
-    r"(?:que|what)\s+(?:(?:archivos?|ficheros?|files?|cosas?|things?)\s+)?"
-    r"(?:hay|tengo|is|is there|are|are there|do i have|i have)\s+(?:en|in|on)\s+)"
-    r"(?:mi|el|la|my|the)?\s*(?:carpeta\s+(?:de\s+)?|folder\s+)?"
-    r"(?P<folder>escritorio|desktop|descargas|downloads|documentos|documents)"
-    r"(?:\s+(?:folder|carpeta))?[\s?!.]*$"
-)
-_KNOWN_FOLDER_ENUM = {
-    "escritorio": "desktop", "desktop": "desktop",
-    "descargas": "downloads", "downloads": "downloads",
-    "documentos": "documents", "documents": "documents",
-}
-
-
-_KNOWN_FOLDER_WORDS = r"(?:escritorio|desktop|descargas|downloads|documentos|documents)"
-_KNOWN_FOLDER_RECENT = (
-    r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
-    r"(?:(?:cuenta|conta|count)\s+(?:los\s+|the\s+)?(?:archivos|ficheros|files)\s+(?:de|del|en|in|on|of)\s+"
-    r"(?:mi|el|la|my|the)?\s*(?P<folder_a>" + _KNOWN_FOLDER_WORDS + r")\s+(?:y|and)\s+)?"
-    r"(?:lista|listame|list|mostrame|muestrame|muestra|show me|show|dame|give me|decime|dime|tell me)\s+(?:me\s+)?"
-    r"(?:los|las|the)?\s*(?P<n>[1-9]|1[0-9]|20)\s+(?:(?:archivos|ficheros|files|entradas|entries)\s+)?"
-    r"(?:mas|most)\s+(?:recientes?|nuevos?|recent|newest)(?:\s+(?:archivos|ficheros|files|entradas|entries))?"
-    r"(?:\s+(?:de|del|en|in|on|of)\s+(?:mi|el|la|my|the)?\s*(?P<folder_b>" + _KNOWN_FOLDER_WORDS + r"))?[\s?!.]*$"
-)
-
-
-def _known_folder_recent_listing(text: str) -> tuple[str, int] | None:
-    """FILES1433 «cuenta los archivos en el escritorio y lista los 5 mas recientes»,
-    «listá los 5 archivos más recientes del escritorio»: (folder enum, count)."""
-
-    folded = _fold(text)
-    match = re.match(_KNOWN_FOLDER_RECENT, folded)
-    if match is None:
-        return None
-    folder = match.group("folder_a") or match.group("folder_b")
-    if folder is None or (match.group("folder_a") and match.group("folder_b")
-                          and match.group("folder_a") != match.group("folder_b")):
-        return None
-    enum = _KNOWN_FOLDER_ENUM.get(folder)
-    return (enum, int(match.group("n"))) if enum else None
-
-
-_NOTIFICATION_LISTING = (
-    r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
-    r"(?:(?:lista|listame|list|enumera|enumerame|mostrame|muestrame|muestra|show me|show|decime|dime|"
-    r"contame|cuentame|tell me)\s+(?:me\s+)?(?:cuales\s+son\s+|which\s+are\s+|what\s+are\s+)?"
-    r"(?:los|las|mis|my|the|todos los|todas las|all my|all the|all)?\s*|"
-    r"(?:cuales|which|what)\s+(?:son\s+)?(?:los|las|mis|my|the)?\s*|"
-    r"(?:que|what)\s+)"
-    r"(?:(?:programad[oa]s?|activ[oa]s?|scheduled|active)\s+)?"
-    r"(?:timers?|temporizadores?|alarmas?|alarms?|cuentas?\s+(?:atras|regresivas?)|countdowns?)"
-    r"(?:\s+(?:y|and)\s+(?:timers?|temporizadores?|alarmas?|alarms?|recordatorios?|reminders?))?"
-    r"(?:\s+(?:programad[oa]s?|activ[oa]s?|pendientes|scheduled|active|set))?"
-    r"(?:\s+(?:que\s+)?(?:tengo|hay|do i have|are (?:there|set)|i have))?"
-    r"(?:\s+(?:programad[oa]s?|activ[oa]s?|pendientes|scheduled|active|set))?[\s?!.]*$"
-)
-
-
-_AGENDA_LISTING = (
-    r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
-    r"(?:(?:que|what)\s+(?:tengo|hay|do i have|have i got|is there|do i have got)|"
-    r"(?:decime|dime|contame|cuentame|tell me|mostrame|muestrame|show me)\s+(?:que\s+(?:tengo|hay)|what\s+(?:i have|there is|is)))\s+"
-    r"(?:(?:agendad[oa]s?|programad[oa]s?|planead[oa]s?|planificad[oa]s?|anotad[oa]s?|scheduled|planned|on\s+(?:my|the)\s+agenda|en\s+(?:la|mi)\s+agenda)"
-    r"(?:\s+(?:para|for)\s+(?:hoy|manana|today|tomorrow|esta\s+semana|this\s+week))?"
-    r"|(?:para|for)\s+(?:hoy|today)\s+(?:agendad[oa]s?|programad[oa]s?|scheduled|planned|en\s+(?:la|mi)\s+agenda))[\s?!.]*$"
-)
-
-
-def _notification_listing_request(text: str) -> bool:
-    """AGENDA1435 «listá los timers», «qué alarmas tengo»: the scheduled
-    alarms and reminders, never the due ones (those keep notification.list.due)."""
-
-    folded = _fold(text)
-    if _has(folded, r"\b(?:vencid[oa]s?|due|overdue|expired|pendientes\s+de\s+descartar)\b"):
-        return False
-    if re.match(_AGENDA_LISTING, folded) is not None:
-        # AGENDA1669 H0660 «qué tengo agendado para hoy»: what BAXY has on
-        # the agenda is what it scheduled (alarms, reminders); there is no
-        # calendar, and the listing says so by what it contains.
-        return True
-    return re.match(_NOTIFICATION_LISTING, folded) is not None
-
-
-def _known_folder_listing_request(text: str) -> str | None:
-    """FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:
-    the known-folder enum of a whole-folder listing request, else None."""
-
-    folded = _fold(text)
-    match = re.match(_KNOWN_FOLDER_LISTING, folded)
-    if match is None:
-        return None
-    return _KNOWN_FOLDER_ENUM.get(match.group("folder"))
-
-
-def _without_screen_state_preface(text: str) -> str:
-    """SCREEN1807: «hay un diálogo de Steam abierto para instalar X, toca …» /
-    «there is a Steam dialog open; take …»: the leading statement of what is
-    open frames the request; the clause after it is the speech act."""
-
-    stripped = re.sub(
-        r"^[¿?¡!\s]*(?:hay|there\s+is|there's|tengo|i\s+have)\s+(?:un|una|unos|unas|el|la|a|an|the)\b"
-        r"[^,.;]*?\b(?:abiert[oa]s?|open)\b[^,.;]*[,.;]\s*",
-        "",
-        text,
-        count=1,
-        flags=re.IGNORECASE,
-    ).strip()
-    return stripped or text
 
 
 def _strict_catalog_request(
@@ -13450,210 +8794,6 @@ def _finalize_effect_matches(
     return EffectIntent(operations, tuple(evidence))
 
 
-def _review_system_and_network_effects(
-    matches: list[tuple[int, int, str]],
-    folded: str,
-    head: str,
-) -> None:
-    """Append read-only system, network, and nearby-device effects."""
-
-    if _direct_current_time_request(folded):
-        _append(matches, folded, "system.time", r"\b(?:hora|time|fecha|date)\b")
-    process_domain = _process_list_domain(folded)
-    if _direct_process_inventory_request(folded):
-        _append(
-            matches,
-            folded,
-            "system.process.list",
-            r"^",
-        )
-    if (
-        not any(entry[2] == "system.process.list" for entry in matches)
-        and process_domain
-        and _has(folded, r"\b(?:programas?|programs?|apps?|aplicaciones?)\b")
-        and _has(
-            folded,
-            r"\b(?:memoria|memory|cpu|ram|comiendo|eating)\b",
-        )
-        and not _has(folded, r"\b(?:instalad[oa]s?|installed)\b")
-    ):
-        _append(
-            matches,
-            folded,
-            "system.process.list",
-            r"^",
-        )
-    if (
-        not any(entry[2] == "system.process.list" for entry in matches)
-        and (
-            _head_is(head, rf"(?:{_MACHINE_STATUS_HEAD}|tell)")
-            or _has(
-                folded,
-                rf"^[¿?¡!\s]*(?:{_DATIVE_STATE_OPENING}|"
-                rf"{_HARDWARE_MODEL_OPENING})\b",
-            )
-        )
-        and _system_status_domain(folded)
-        and _machine_status_scopes_are_one_reading(folded)
-        and _machine_status_is_the_whole_clause(folded)
-        # «el volumen del sistema» nombra el equipo solo como poseedor del
-        # audio: esa lectura pertenece a audio.status, no a system.status.
-        and not _volume_domain(folded)
-        and (
-            _has(folded, r"\b(?:como|health)\b")
-            or _has(folded, _MACHINE_STATUS_OBSERVATION)
-            or _head_is(head, _MACHINE_STATUS_OBSERVATION_HEAD)
-        )
-    ):
-        _append(
-            matches,
-            folded,
-            "system.status",
-            # Identity/usage can precede the hardware noun. Retain the whole
-            # request for the existing scope extractor, not just its noun.
-            r"^",
-        )
-
-    if _head_is(head, r"(?:haz|hacer|ejecuta|run|ping)") and _has(
-        folded,
-        r"\b(?:haz|hacer|ejecuta|run)\s+(?:un\s+)?ping\b|\bping\s+(?:a|to)\b",
-    ):
-        _append(
-            matches,
-            folded,
-            "network.ping",
-            r"\b(?:haz|hacer|ejecuta|run|ping)\b",
-        )
-    elif (
-        _head_is(head, r"(?:see|check|ping|haz|hacer|ejecuta|run)")
-        and _has(folded, r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
-        and _has(
-            folded,
-            r"\b(?:answers?|responde|contest|ping|alcanza|reach)\b",
-        )
-        and not _has(
-            folded,
-            r"\b(?:en|on)\s+(?:la\s+|the\s+)?(?:web|internet)\b",
-        )
-    ):
-        _append(
-            matches,
-            folded,
-            "network.ping",
-            r"\b(?:\d{1,3}\.){3}\d{1,3}\b",
-        )
-    elif (
-        _head_is(head, r"(?:como|how|muestra|show|dime|que|what)")
-        and _network_status_domain(folded)
-        and _has(folded, r"\b(?:como|estado|status|health)\b")
-    ):
-        _append(matches, folded, "network.status", r"\bred\b|\bnetwork\b")
-    if (
-        _head_is(head, r"(?:lista|listar|muestra|muestrame|show|list)")
-        and _has(folded, r"\bbluetooth\b")
-        and _has(folded, rf"\b{_LIST}\b")
-    ):
-        _append(
-            matches,
-            folded,
-            "bluetooth.device.list",
-            r"\bbluetooth\b",
-        )
-    bluetooth_radio_verb = (
-        r"(?:activa(?:me|lo)?|activar|desactiva(?:me|lo)?|desactivar|enciende(?:me|lo)?|"
-        # NETWORK1293: voseo «encendé el bluetooth» folds to «encende».
-        r"encende(?:me|lo)?|encender|prende(?:me|lo)?|"
-        r"prender|apaga(?:me|lo)?|apagar|enable|disable|turn)"
-    )
-    if (
-        _head_is(head, bluetooth_radio_verb)
-        and _has(folded, r"\bbluetooth\b")
-        and _has(folded, rf"\b{bluetooth_radio_verb}\b")
-        and not _has(folded, r"\b(?:dispositivo|device|auriculares?|headphones?)\b")
-        and not _has(
-            folded,
-            r"\b(?:del|de mi|on my|of my)\s+"
-            r"(?:auto|car|telefono|celular|movil|phone|smartphone|tablet)\b",
-        )
-    ):
-        _append(
-            matches,
-            folded,
-            "bluetooth.radio.set",
-            rf"\b{bluetooth_radio_verb}\b",
-        )
-    if (
-        _head_is(head, r"(?:lista|listar|muestra|muestrame|show|list)")
-        and _has(folded, r"\b(?:perifericos?|peripherals?)\b")
-        and _has(folded, rf"\b{_LIST}\b|\bconectad")
-    ):
-        _append(
-            matches,
-            folded,
-            "peripheral.list",
-            r"\b(?:perifericos?|peripherals?)\b",
-        )
-    if _has(folded, r"\bwi[\s-]?fi\b") and not _has(
-        folded,
-        r"\b(?:del|de mi|on my|of my)\s+"
-        r"(?:router|telefono|celular|movil|phone|smartphone|tablet|auto|car)\b",
-    ):
-        if (
-            _has(folded, r"\b(?:perfiles?|profiles?)\b")
-            and _has(folded, rf"\b{_LIST}\b|\bguardad")
-            and _head_is(
-                head,
-                r"(?:lista|listar|muestra|muestrame|show|list)",
-            )
-        ):
-            _append(matches, folded, "wifi.profile.list", r"\bwi[\s-]?fi\b")
-        elif _head_is(
-            head,
-            r"(?:a|como|how|muestra|show|dime|que|what)",
-        ) and _has(
-            folded,
-            r"\b(?:como|estado|status|health|conectad[oa]|connected)\b",
-        ):
-            _append(matches, folded, "wifi.status", r"\bwi[\s-]?fi\b")
-        elif _wifi_state_question(folded):
-            # NETWORK1293 H0230 «decime si el wifi está prendido», «¿el wifi
-            # está encendido?»: a state question is the read, not an effect.
-            _append(matches, folded, "wifi.status", r"\bwi[\s-]?fi\b")
-        elif _head_is(head, r"(?:apaga|apagar|desconecta|disconnect)") and _has(
-            folded, r"\b(?:apaga|apagar|desconecta|disconnect)\b"
-        ):
-            _append(
-                matches,
-                folded,
-                "wifi.disconnect",
-                r"\b(?:apaga|apagar|desconecta|disconnect)\b",
-            )
-        elif _head_is(
-            head,
-            # NETWORK1721 «conectate al wifi de casa»: the voseo reflexive is
-            # the same order, and «al» is «a» + «el».
-            r"(?:conecta|conectar|conectame|conectate|cambia|change|connect)",
-        ) and _has(
-            folded,
-            r"\b(?:conecta|conectar|conectame|conectate|cambia|change|connect)\b",
-        ):
-            named_profile = _has(
-                folded,
-                r"\b(?:cambia|change)\s+(?:el\s+|la\s+)?wi[\s-]?fi\s+"
-                r"(?:a|to)\s+\S|"
-                r"\b(?:conecta|conectame|conectate|connect)\s+(?:a|al|to)\s+"
-                r"(?:la\s+|the\s+)?(?:red\s+|network\s+)?wi[\s-]?fi\s+"
-                r"(?:de|llamad[oa]|named|called)\s+\S|"
-                r"\bconnect\s+to\s+(?:the\s+)?wi[\s-]?fi\s+network\s+"
-                r"(?:named|called)\s+\S",
-            )
-            _append(
-                matches,
-                folded,
-                "wifi.connect.named" if named_profile else "wifi.ensure.connected",
-                r"\b(?:conecta|conectar|conectame|conectate|cambia|change|connect)\b",
-            )
-
 
 def _review_audio_effects(
     matches: list[tuple[int, int, str]],
@@ -13888,15 +9028,6 @@ def _review_audio_effects(
 
 
 
-_PERCENTAGE_WORD_PATTERN = (
-    "(?:"
-    + "|".join(
-        re.escape(value)
-        for value in sorted(_PERCENTAGE_WORD_VALUES, key=len, reverse=True)
-    )
-    + ")"
-)
-
 
 def _literal_percentage_word_value(text: str) -> int | None:
     """Read one bounded ES/EN word-valued literal beside the volume domain."""
@@ -13973,66 +9104,6 @@ def _literal_volume_adjustment(text: str) -> dict[str, object] | None:
     return {"amount": value, "direction": "up" if up else "down"}
 
 
-# BRIGHT1283: no brightness literal had a deterministic reader, so «qué brillo
-# tengo» became a clarification, «subí el brillo» asked for the direction it
-# already carried and «turn the brightness down» denied the capability. The
-# readers below mirror the volume grammar: a status question, a relative
-# adjustment with an authored amount, and a relative request without amount
-# that keeps its direction and asks how much (owner rule on H0027).
-_BRIGHTNESS_SCREEN = (
-    r"(?:\s+(?:de\s+(?:la\s+|mi\s+)?|del\s+|of\s+(?:the\s+|my\s+)?)"
-    r"(?:pantalla|monitor|screen|display))?"
-)
-_BRIGHTNESS_OBJECT = (
-    rf"(?:(?:nivel\s+de\s+)?(?:brillo|brightness){_BRIGHTNESS_SCREEN}"
-    rf"(?:\s+actual)?{_BRIGHTNESS_SCREEN})"
-)
-_BRIGHTNESS_UP_VERB = (
-    r"(?:sube(?:me|lo|la)?|subi(?:me|lo|la)?|subir|aumenta(?:me|lo|la)?|aumentar|"
-    r"incrementa|incrementar|increase|raise|brighten)"
-)
-_BRIGHTNESS_DOWN_VERB = (
-    r"(?:baja(?:me|lo|la)?|bajar|reduce(?:me|lo|la)?|reducir|disminui(?:me|lo|la)?|"
-    r"disminuye|disminuir|decrease|lower|dim)"
-)
-_BRIGHTNESS_ABSOLUTE = (
-    r"\b(?:a|al|to|at|hasta)\s*(?:100|[0-9]{1,2})\b|"
-    r"\b(?:al\s+|to\s+(?:the\s+)?)?(?:maximo|minimo|max|min|tope|full|maximum|minimum)\b"
-)
-_BRIGHTNESS_ENGLISH_TURN = r"\bturn\s+(?:the\s+|my\s+)?(?:screen\s+)?brightness\s+(?P<dir>up|down)\b"
-_BRIGHTNESS_RELATIVE_WORDS = (
-    r"\b(?:un\s+(?:poco|toque|poquito|cacho|pelin)|bastante|mucho|algo|"
-    r"a\s+little|a\s+bit|slightly)\b"
-)
-
-
-def brightness_status_request(text: str) -> bool:
-    """«qué brillo tengo», «mostrame el brillo», «what's the brightness»: read it."""
-
-    folded = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.,")
-    if re.search(r"\d", folded) or _is_past_or_hypothetical_state(folded):
-        return False
-    obj = _BRIGHTNESS_OBJECT
-    return re.fullmatch(
-        rf"(?:(?:y|and)\s+)?(?:"
-        rf"(?:que|cual|cuanto|cuanta|como)\s+(?:es\s+|esta\s+|tengo\s+(?:de\s+)?)?"
-        rf"(?:el\s+|mi\s+)?{obj}(?:\s+(?:tengo|hay|tiene|esta|puesto|ahora))*|"
-        rf"(?:a|en)\s+(?:cuanto|que|que\s+nivel)\s+(?:esta|tengo|tiene)\s+(?:el\s+|mi\s+)?{obj}|"
-        rf"(?:dime|decime|mostrame|muestrame|muestra|mostra|ver|quiero\s+ver|"
-        rf"show(?:\s+me)?|tell\s+me|check|revisa|chequea|fijate)\s+"
-        rf"(?:el\s+|mi\s+|the\s+|my\s+)?(?:nivel\s+(?:actual\s+)?de\s+)?{obj}|"
-        rf"what(?:'s|\s+is)\s+(?:the\s+|my\s+)?(?:current\s+)?{obj}(?:\s+(?:level|at|now|set\s+to))*|"
-        rf"how\s+bright\s+is\s+(?:the\s+|my\s+)?(?:screen|display|monitor)|"
-        # BRIGHT1319 H0674 «tengo el brillo al máximo»: a claim about the
-        # present level is answered by reading it, never by agreeing.
-        rf"(?:tengo|esta|tiene|is)\s+(?:el\s+|mi\s+|the\s+|my\s+)?{obj}\s+"
-        rf"(?:(?:al|a|en\s+el|at|on)\s+(?:maximo|minimo|max|min|tope|full|maximum|minimum)|a\s+tope|alto|bajo|high|low)"
-        rf"(?:\s+(?:ahora|now))?|"
-        rf"(?:el\s+|mi\s+)?{obj}\s+(?:esta|lo\s+tengo)\s+(?:al|a|en\s+el)\s+(?:maximo|minimo|max|min|tope)"
-        rf")(?:\s*,?\s*(?:por\s+favor|please|no|verdad|cierto|right))?",
-        folded,
-    ) is not None
-
 
 def _literal_brightness_adjustment(text: str) -> dict[str, object] | None:
     """Bind a relative quantity to its authored direction and the brightness object."""
@@ -14101,67 +9172,6 @@ def brightness_relative_without_amount(text: str) -> bool:
     )
 
 
-_BRIGHTNESS_SET_VERB = (
-    r"(?:pon(?:me|le|e|elo|ele|lo)?|poner|fija(?:me|lo)?|ajusta(?:me|lo)?|adjust|"
-    r"establece|set|cambia(?:me|lo)?|change|deja(?:me|lo)?|leave|"
-    rf"{_BRIGHTNESS_UP_VERB}|{_BRIGHTNESS_DOWN_VERB}|turn)"
-)
-_BRIGHTNESS_EXTREME_VALUES = {
-    "maximo": 100, "max": 100, "tope": 100, "full": 100, "maximum": 100, "the max": 100,
-    "minimo": 0, "min": 0, "minimum": 0,
-}
-
-
-_CLIPBOARD_WRITE_HEAD = (
-    r"(?:copia|copiar|copiame|copy|pon|pone|poneme|ponme|ponelo|ponlo|put|"
-    r"escribe|escribi|escribime|write|guarda|guardame|save|deja|dejame|leave|"
-    r"mete|meteme|carga|cargame|load)"
-)
-_CLIPBOARD_QUOTED = re.compile(r'"([^"\n]+)"|“([^”\n]+)”|«([^»\n]+)»|‘([^’\n]+)’')
-
-
-def literal_clipboard_write_text(text: str) -> str | None:
-    """Return the literal a person asked to put on the OS clipboard, or None.
-
-    «Copia a mi portapapeles "Hola"», «copiá esto al portapapeles: hola mundo»,
-    «Copy "hello" to my clipboard»: the head is a copy/put verb, the clipboard
-    is named and the literal is either quoted or introduced by a colon after
-    the clipboard noun. The literal keeps its case and accents. Nothing is
-    inferred when no literal is given («copiá este texto al portapapeles» stays
-    a clarification) or when the clause is a prohibition.
-    """
-
-    collapsed = " ".join(text.split())
-    folded = _strip_request_envelope(_fold(collapsed))
-    if not _has(folded, r"\b(?:portapapeles|clipboard)\b"):
-        return None
-    if not _head_is(_request_head(folded), _CLIPBOARD_WRITE_HEAD):
-        return None
-    if _is_negative_effect_clause(folded):
-        return None
-    quoted = [
-        group
-        for found in _CLIPBOARD_QUOTED.finditer(collapsed)
-        for group in found.groups()
-        if group
-    ]
-    if len(quoted) > 1:
-        return None
-    if quoted:
-        literal = quoted[0].strip()
-        return literal or None
-    colon = re.search(
-        r"\b(?:portapapeles|clipboard)\b[^:]*:\s*(?P<literal>.+)$",
-        collapsed,
-        re.IGNORECASE,
-    )
-    if colon is None:
-        return None
-    literal = colon.group("literal").strip()
-    if literal.endswith(".") and literal.count(".") == 1:
-        # The sentence's own full stop is not part of a dictated fragment.
-        literal = literal[:-1].rstrip()
-    return literal or None
 
 
 def _literal_brightness_level(text: str) -> int | None:
@@ -14197,22 +9207,6 @@ def _literal_brightness_level(text: str) -> int | None:
         return _BRIGHTNESS_EXTREME_VALUES.get(extreme.group("word"))
     return None
 
-
-def _bare_spoken_number_media_query(text: str) -> str | None:
-    """Preserve a word-valued media title without inventing volume context."""
-
-    folded = _strip_request_envelope(_fold(text))
-    match = re.fullmatch(
-        r"(?:pon|ponme|pone|poneme|reproduce|reproducir|play)\s+"
-        r"(?P<query>[a-z]+(?:\s+(?:y\s+)?[a-z]+)?)"
-        r"(?:\s+(?:por favor|please))?[\s.!?]*",
-        folded,
-        re.IGNORECASE,
-    )
-    if match is None:
-        return None
-    query = match.group("query").strip()
-    return query if query in _PERCENTAGE_WORD_VALUES else None
 
 
 def _review_installed_catalog_effects(
@@ -14328,121 +9322,6 @@ def _review_installed_catalog_effects(
         )
 
 
-def _literal_known_file_search(text: str) -> dict[str, object] | None:
-    """Bind a direct file-name request to the existing known-folder scopes."""
-    body = _strip_request_envelope(text).strip()
-    if _is_negative_effect_clause(_fold(body)) or _is_meta_or_tool_denial(_fold(body)):
-        return None
-    found = re.fullmatch(
-        rf"{_SEARCH}\s+(?:(?:el|un|the|a)\s+)?(?:archivo|file)\s+"
-        r"(?:(?:llamado|named)\s+)?"
-        r"(?P<query>[^\s\"'“”‘’«»<>:/\\|?*;,]+\.[\w-]+)"
-        r"(?:\s+(?:en|in)\s+(?:(?:el|la|las|mis|the|my)\s+)?"
-        r"(?P<scope>(?:usual\s+)?Windows\s+folders|carpetas\s+(?:habituales\s+de\s+)?Windows|"
-        r"documents?(?:\s+folder)?|documentos|downloads?(?:\s+folder)?|descargas|"
-        r"desktop(?:\s+folder)?|escritorio))?"
-        r"(?:,?\s+(?:por\s+favor|please))?[.!]?",
-        body,
-        re.IGNORECASE,
-    )
-    if found is None:
-        return None
-    scope = _fold(found.group("scope") or "")
-    folder = "all_known"
-    for canonical, pattern in (
-        ("documents", r"(?:documents?(?: folder)?|documentos)"),
-        ("downloads", r"(?:downloads?(?: folder)?|descargas)"),
-        ("desktop", r"(?:desktop(?: folder)?|escritorio)"),
-    ):
-        if re.fullmatch(pattern, scope):
-            folder = canonical
-            break
-    return {"folder": folder, "query": found.group("query")}
-
-
-def _review_file_and_game_effects(
-    matches: list[tuple[int, int, str]],
-    folded: str,
-    head: str,
-) -> None:
-    """Append closed file-discovery and explicitly Steam-scoped game effects."""
-
-    if (
-        _head_is(head, _OPEN)
-        and _has(folded, r"\b(?:archivo|file)\b")
-        and _has(
-            folded,
-            r"\b(?:ultimo|ultima|mas reciente|latest|most recent|last)\b",
-        )
-        and _has(
-            folded,
-            r"\b(?:descargas|downloads?|escritorio|desktop|documentos?|"
-            r"documents?|imagenes|pictures|descargue|downloaded)\b",
-        )
-    ):
-        _append(
-            matches,
-            folded,
-            "filesystem.file.open.latest",
-            rf"\b{_OPEN}\b",
-        )
-    if _has(folded, r"\bhash\b") and _has(folded, r"\b(?:archivo|file)\b"):
-        _append(matches, folded, "filesystem.hash", r"\bhash\b")
-    if (
-        _head_is(head, r"(?:que|cuales|what|which)")
-        and _has(folded, r"\b(?:archivos?|files?)\b")
-        and _has(folded, r"\b(?:carpeta|folder|directorio|directory)\b")
-        and not _has(folded, r"\b(?:busca|buscar|search|find|hash)\b")
-    ):
-        _append(
-            matches,
-            folded,
-            "filesystem.list",
-            r"\b(?:archivos?|files?)\b",
-        )
-    if _literal_known_file_search(folded) is not None or (
-        _head_is(head, _SEARCH)
-        and _has(folded, r"\b(?:archivos?|files?)\b")
-        and _has(
-            folded,
-            r"\b(?:contengan?|contiene|containing|contain|llamad[oa]s?|named)\b",
-        )
-        and not _has(
-            folded,
-            r"\b(?:google|bing|web|internet|online)\b",
-        )
-    ):
-        _append(
-            matches,
-            folded,
-            "filesystem.known.search",
-            rf"\b{_SEARCH}\b",
-        )
-    if (
-        _head_is(head, _OPEN)
-        and _has(folded, r"\b(?:biblioteca|library)\b")
-        and _has(folded, r"\bsteam\b")
-    ):
-        _append(
-            matches,
-            folded,
-            "game.catalog.list",
-            rf"\b{_OPEN}\b",
-        )
-    if (
-        _head_is(head, rf"(?:{_OPEN}|lanza|launch|ejecuta|run)")
-        and _has(folded, r"\b(?:desde|en|on|from)\s+steam\b")
-        and _has(
-            folded,
-            rf"^[¿?¡!\s]*(?:{_OPEN}|lanza|launch|ejecuta|run)\b\s+\S.+",
-        )
-    ):
-        _append(
-            matches,
-            folded,
-            "game.launch",
-            rf"\b(?:{_OPEN}|lanza|launch|ejecuta|run)\b",
-        )
 
 
 def _review_application_and_window_effects(
@@ -14654,307 +9533,6 @@ def _review_application_and_window_effects(
         _append(matches, folded, "window.active", r"\b(?:ventana|window)\b")
 
 
-def _review_input_and_capture_effects(
-    matches: list[tuple[int, int, str]],
-    folded: str,
-    head: str,
-    *,
-    context_capture: bool,
-    context_open_application: bool,
-) -> None:
-    """Append keyboard, clipboard, screenshot, and OCR effects."""
-
-    if _head_is(head, r"(?:dale|press|hit)") and _has(
-        folded,
-        r"\b(?:dale|press|hit)\s+(?:enter|intro|return)\b",
-    ):
-        _append(
-            matches,
-            folded,
-            "input.key.press",
-            r"\b(?:enter|intro|return)\b",
-        )
-    if (
-        _head_is(head, r"(?:escribe|escribir|escribi|type)")
-        and _has(folded, r"\b(?:escribe|escribir|escribi|type)\b")
-        and (
-            _has(folded, r"\b(?:literalmente|literally)\b")
-            or context_open_application
-            or _has(
-                folded,
-                r"\b(?:en|into|in)\s+(?:la\s+|the\s+)?"
-                r"(?:busqueda|search|campo|field|cuadro|box|control)\b",
-            )
-            or _has(
-                folded,
-                r"\b(?:type|escribe|escribi)\s+\S.{0,80}\b(?:for\s+me|por\s+mi)\b",
-            )
-        )
-    ):
-        _append(
-            matches,
-            folded,
-            "input.text.type",
-            r"\b(?:escribe|escribir|escribi|type)\b",
-        )
-    if _head_is(head, r"(?:selecciona|seleccionar|select)") and _has(
-        folded, r"\b(?:selecciona|seleccionar|select)\s+(?:todo|all)\b"
-    ):
-        _append(
-            matches,
-            folded,
-            "input.select.all",
-            r"\b(?:selecciona|seleccionar|select)\b",
-        )
-    if (
-        _head_is(head, _OPEN)
-        and _has(folded, r"\b(?:teclado en pantalla|on[ -]screen keyboard)\b")
-        and _has(folded, rf"\b{_OPEN}\b")
-    ):
-        _append(
-            matches,
-            folded,
-            "input.keyboard.open",
-            r"\b(?:teclado en pantalla|on[ -]screen keyboard)\b",
-        )
-    if (
-        _head_is(head, _READ)
-        and _has(folded, r"\b(?:portapapeles|clipboard)\b")
-        and _has(folded, rf"\b{_READ}\b")
-    ):
-        _append(
-            matches,
-            folded,
-            "clipboard.read.text",
-            r"\b(?:portapapeles|clipboard)\b",
-        )
-    if _has(folded, r"\b(?:portapapeles|clipboard)\b") and _has(
-        folded,
-        r"^(?:que hay|que tengo|what(?:'s| is)(?: there)?|dime que hay)\b",
-    ):
-        _append(
-            matches,
-            folded,
-            "clipboard.read.text",
-            r"\b(?:portapapeles|clipboard)\b",
-        )
-    if _has(
-        folded,
-        r"^(?:what\s+did\s+i\s+copy(?:\s+last)?|"
-        r"last\s+(?:thing\s+)?(?:i\s+)?copied|"
-        r"que\s+(?:fue\s+lo\s+que\s+)?(?:copie|copié)\s+"
-        r"(?:ultimo|ayer|recien|last))\b",
-    ):
-        _append(
-            matches,
-            folded,
-            "clipboard.read.text",
-            r"\b(?:copy|copied|copie|copié)\b",
-        )
-    if (
-        _head_is(head, r"(?:pega|pegar|pegalo|pegala|paste)")
-        and _has(folded, r"\b(?:pega|pegar|pegalo|pegala|paste)\b")
-        and _clipboard_paste_domain(folded)
-    ):
-        paste = _match(folded, r"\b(?:pega|pegar|pegalo|pegala|paste)\b")
-        if paste is not None and _has(
-            folded,
-            rf"\b(?:en|into)\b.{{0,80}}\b(?:archivo\s+nuevo|new\s+file)\b"
-            rf".{{0,80}}\b(?:{_KNOWN_APPLICATION})\b",
-        ):
-            matches.append((paste.start(), -1, "app.open"))
-        _append(
-            matches,
-            folded,
-            "clipboard.paste",
-            r"\b(?:pega|pegar|pegalo|pegala|paste)\b",
-        )
-    if _head_is(head, r"(?:copia|copiar|copy)") and _clipboard_copy_domain(folded):
-        _append(matches, folded, "clipboard.copy", r"\b(?:copia|copy)\b")
-    active_window_capture = (
-        _head_is(head, r"(?:captura|capture|toma|tomar|take)")
-        and _has(folded, r"\b(?:captura|capture|toma|tomar|take)\b")
-        and _has(
-            folded,
-            r"\b(?:ventana\s+(?:activa|actual)|active\s+window|current\s+window)\b",
-        )
-    )
-    if active_window_capture:
-        _append(
-            matches,
-            folded,
-            "capture.active.window",
-            r"\b(?:captura|capture|toma|tomar|take)\b",
-        )
-    capture_object = _has(
-        folded,
-        r"\b(?:captura de (?:toda )?la pantalla|captura de pantalla|"
-        r"foto de captura|pantallazo|screenshot|screen capture)\b",
-    ) or (_has(folded, r"\b(?:captura|capture)\b") and _has(folded, r"\bocr\b"))
-    capture_requested = (
-        capture_object
-        and _has(
-            folded,
-            (
-                r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*|"
-                r"(?:puedes|podrias|can you|could you|would you)\s+)?"
-                r"(?:haz|hacer|toma|tomar|saca|sacale|crea|capture|take)\s+"
-                r"(?:(?:una|un|a|the)\s+)?"
-                r"(?:foto de captura|captura|pantallazo|screenshot|screen capture)\b"
-            ),
-        )
-        and not active_window_capture
-    )
-    if capture_requested:
-        _append(
-            matches,
-            folded,
-            "capture.screenshot",
-            r"\b(?:foto de captura|captura|pantallazo|screenshot|screen capture)\b",
-        )
-        if _has(
-            folded,
-            r"\b(?:que\s+se\s+ve|what(?:'s| is)\s+visible|"
-            r"describe(?:me)?|describe it|que hay en la imagen)\b",
-        ) and not _has(folded, r"\blo que ves\b|\bque ves\b|\bwhat you see\b"):
-            # SCREEN1485: «describeme lo que ves» after a capture is the
-            # screen-content reading below, not an image description.
-            _append(
-                matches,
-                folded,
-                "vision.describe",
-                r"\b(?:que\s+se\s+ve|what(?:'s| is)\s+visible|"
-                r"describe(?:me)?|describe it|que hay en la imagen)\b",
-                priority=1,
-            )
-    # SCREEN1417 «leé la pantalla», «qué hay en la pantalla», «describime la
-    # pantalla», «qué ves en mi pantalla»: without a vision provider the truthful
-    # reading of a screen is its recognized text, which the composer frames as
-    # what it can read. The phone/car exclusion below still applies.
-    bare_screen_read = (
-        _head_is(head, _READ)
-        and _has(folded, r"^[¿?¡!\s]*(?:por favor\s*[,:]?\s*)?(?:lee|leer|leeme|read)\s+(?:me\s+)?(?:la|mi|the|my)\s+(?:pantalla|screen)[\s?!.]*$")
-    )
-    screen_content_question = _has(
-        folded,
-        r"^[¿?¡!\s]*(?:(?:decime|dime|contame|cuentame|tell me)\s+)?"
-        r"(?:que|what)\s+(?:hay|se ve|aparece|ves|estas viendo|is|is there|do you see|are you seeing|can you see)"
-        r"(?:\s+(?:ahora|now))?\s+(?:en|on)\s+(?:mi|la|tu|my|the)\s+(?:pantalla|screen)[\s?!.]*$|"
-        r"^[¿?¡!\s]*(?:describe|describi|describime|describeme|describi?la|describila)\s+"
-        r"(?:(?:mi|la|my|the)\s+(?:pantalla|screen)|lo que ves(?:\s+(?:en|on)\s+(?:mi|la|my|the)\s+(?:pantalla|screen))?|"
-        r"what you see(?:\s+on\s+(?:my|the)\s+screen)?)[\s?!.]*$|"
-        # SCREEN1485 «Toma un screenshot de la pantalla ahora mismo y describeme
-        # lo que ves»: a capture order followed by the description of what is
-        # seen is the same screen-content reading.
-        r"^[¿?¡!\s]*(?:toma|tomame|saca|sacame|hace|haceme|haz|hazme|take|capture)\s+(?:(?:un|una|a)\s+)?"
-        r"(?:screenshot|screen\s*shot|screen\s+capture|captura(?:\s+de\s+pantalla)?|pantallazo)"
-        r"(?:\s+(?:de|of)\s+(?:la|mi|the|my)\s+(?:pantalla|screen))?(?:\s+(?:ahora(?:\s+mismo)?|now|right\s+now))?"
-        r"\s*(?:,\s*|\s+(?:y|and)\s+)(?:describe|describi|describime|describeme|decime|dime|contame|cuentame|tell\s+me)\s+"
-        r"(?:lo\s+que\s+ves|que\s+ves|que\s+hay|what\s+you\s+see|what(?:'s|\s+is)\s+(?:there|on\s+it))"
-        r"(?:\s+(?:en|on)\s+(?:mi|la|my|the)\s+(?:pantalla|screen))?[\s?!.]*$",
-    )
-    implicit_screen_read = (
-        (
-            _head_is(head, _READ)
-            and _has(folded, r"\b(?:pantalla|screen)\b")
-            and _has(
-                folded,
-                r"\b(?:mensaje|message|error|texto|text|lo que|what)\b",
-            )
-        )
-        or bare_screen_read
-        or screen_content_question
-    ) and (
-        not _has(
-            folded,
-            r"\b(?:como|how)\s+(?:puedo|podria|can i|could i|to)\b",
-        )
-        and not _has(
-            folded,
-            r"\b(?:pantalla|screen)\s+(?:del|de mi|of my)\s+"
-            r"(?:telefono|celular|movil|phone|smartphone|tablet|auto|car)\b",
-        )
-    )
-    if implicit_screen_read:
-        if not any(operation == "capture.screenshot" for _, _, operation in matches):
-            # SCREEN1485: an explicit capture order («Toma un screenshot … y
-            # describeme lo que ves») already appended the capture above.
-            _append(
-                matches,
-                folded,
-                "capture.screenshot",
-                rf"\b{_READ}\b|\b(?:que|what|describ\w*)\b",
-            )
-        _append(
-            matches,
-            folded,
-            "ocr.read",
-            r"\b(?:pantalla|screen)\b|\blo que ves\b|\bwhat you see\b",
-            priority=1,
-        )
-    if context_capture and _has(
-        folded,
-        r"^(?:describe|describelo|describela)"
-        r"(?:\s+(?:it|that|the|same|esto|eso|esa|la|misma))?"
-        r"(?:\s+(?:scene|image|capture|escena|imagen|captura|vista))?"
-        r"[\s?!.]*$",
-    ):
-        _append(
-            matches,
-            folded,
-            "vision.describe",
-            r"\b(?:describe|describelo|describela)\b",
-        )
-    contextual_capture_read = (
-        context_capture
-        and _head_is(head, _READ)
-        and _has(folded, r"\b(?:text|texto|words?|palabras?)\b")
-        and _has(
-            folded,
-            r"\b(?:image|imagen|capture|captura|screenshot|screen|pantalla)\b",
-        )
-        and _has(
-            folded,
-            r"\b(?:that|same|the|esa|misma|la|from|de|en)\b",
-        )
-    )
-    if contextual_capture_read:
-        _append(matches, folded, "ocr.read", rf"\b{_READ}\b", priority=1)
-    ocr_requested = (
-        _head_is(head, _READ)
-        and _has(
-            folded,
-            rf"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*|"
-            rf"(?:puedes|podrias|can you|could you|would you)\s+)?"
-            rf"{_READ}\b.{{0,80}}\bocr\b",
-        )
-        and not _has(
-            folded,
-            r"\b(?:nota|note|tarea|task|portapapeles|clipboard|pagina|page)\b",
-        )
-    ) or (
-        capture_requested
-        and _has(
-            folded,
-            r"\b(?:y|and)\s+(?:leela|leelo|leerla|leerlo|read it)\s+"
-            r"(?:con|with)\s+ocr\b",
-        )
-    )
-    if ocr_requested and (capture_requested or context_capture):
-        _append(matches, folded, "ocr.read", r"\bocr\b", priority=1)
-
-
-def _location_recommendation_request(text: str) -> bool:
-    """Recognize a standalone request for public place recommendations."""
-
-    return _has(
-        text,
-        r"^[^\w]*(?:lugares?|sitios?)\s+(?:para|a\s+donde)\s+"
-        r"(?:ir|salir|comer|visitar)\b.+|"
-        r"^[^\w]*(?:places?|restaurants?|things?)\s+to\s+"
-        r"(?:go|visit|eat|do)\b.+",
-    )
-
 
 def _symbolic_web_destination(text: str) -> str | None:
     """Preserve a public site operand without manufacturing its URL."""
@@ -15066,43 +9644,6 @@ def _direct_public_search_query(text: str) -> str | None:
     return query
 
 
-# H0081 «Toma control de mi pc, quiero que abras opera gx y entras a pivigames»
-# (WEB1883/1885 la dejaron abierta: el destino llega sin dominio, no hay URL que
-# fundamentar y el turno preguntaba «¿Quieres que abra Opera GX y entre en
-# pivigames?» en vez de entrar). Un sitio nombrado con una sola palabra sin
-# punto, en un navegador nombrado, se resuelve como el destino simbólico sin
-# navegador: la búsqueda verificada da la URL y la navegación nombrada la abre
-# (CHAIN1931 ya fundamenta browser.navigate.named con el primer resultado
-# verificado). Formas: «abre <navegador> y entra a <sitio>», «quiero que abras
-# <navegador> y entres a <sitio>», «entra a <sitio> en <navegador>», «open
-# <browser> and go to <site>». Un dominio, una URL, un nombre público cerrado
-# (youtube, gmail…) o una aplicación del catálogo no pasan por aquí.
-_NAMED_BROWSER_SITE_BROWSER = (
-    r"(?:el\s+|the\s+)?(?:navegador\s+|browser\s+)?"
-    r"(?P<browser>opera\s*gx|opera|google\s+chrome|chrome|microsoft\s+edge|edge|brave)"
-)
-_NAMED_BROWSER_SITE_ENTRY = (
-    r"(?:entr(?:a|as|e|es|ale|ate|ame)|entrar|ve|anda|andate|andá|navega|navegar|"
-    r"metete|meteme|llevame|go|navigate|take\s+me|head)\s+(?:a|al|to|en|into|over\s+to)\s+"
-    r"(?:la\s+pagina\s+(?:de\s+)?|the\s+(?:site|page)\s+(?:of\s+)?)?"
-    r"(?P<site>[a-z0-9][a-z0-9_-]{2,40})"
-)
-_NAMED_BROWSER_SITE_HEAD = (
-    r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
-    r"(?:(?:quiero|necesito|quisiera|i\s+want|i\s+need|i'd\s+like)\s+"
-    r"(?:que\s+|you\s+to\s+)?)?(?:me\s+)?"
-)
-_NAMED_BROWSER_SITE_REQUEST = re.compile(
-    _NAMED_BROWSER_SITE_HEAD
-    + r"(?:abr(?:e|i|as|is|ime|ir|a|an)|open|launch)\s+" + _NAMED_BROWSER_SITE_BROWSER
-    + r"\s*(?:,|;|\s+y\s+(?:luego\s+|despues\s+)?(?:que\s+)?|\s+and\s+(?:then\s+)?|\s+luego\s+|\s+then\s+)\s*"
-    + _NAMED_BROWSER_SITE_ENTRY + r"[\s.!?]*$"
-    + r"|" + _NAMED_BROWSER_SITE_HEAD + _NAMED_BROWSER_SITE_ENTRY.replace("(?P<site>", "(?P<site2>")
-    + r"\s+(?:en|in|con|with|usando|using)\s+" + _NAMED_BROWSER_SITE_BROWSER.replace("(?P<browser>", "(?P<browser2>")
-    + r"[\s.!?]*$",
-    re.IGNORECASE,
-)
-
 
 def _named_browser_site_request(
     text: str,
@@ -15209,107 +9750,6 @@ def _named_browser_search(text: str) -> tuple[str, str] | None:
     return browser, query
 
 
-_INSTALLED_BROWSER_SEARCH = re.compile(
-    r"^[¿?¡!\s]*(?:abre|abrí|abri|abrir|open)\s+(?:un|el|a|the|any)\s+(?:navegador|browser)"
-    r"(?:\s+(?:que\s+tengas(?:\s+instalado)?|que\s+tengas\s+a\s+mano|instalado|cualquiera|"
-    r"(?:that\s+)?(?:you\s+have\s+)?installed|you\s+have))?"
-    r"\s*(?:,\s*|\s+(?:y|and)\s+)(?:busca|buscá|buscar|search(?:\s+for)?)\s+(?P<query>.+?)\s*[.!?]*$",
-    re.IGNORECASE,
-)
-
-
-def _installed_browser_search_query(text: str) -> str | None:
-    """WEB1455 «Abre un navegador que tengas instalado y busca Windows 11 settings»:
-    the person asks for any installed browser and a search in it; the query keeps
-    its own spelling (quotation marks removed). None for any other shape."""
-
-    match = _INSTALLED_BROWSER_SEARCH.match(text.strip())
-    if match is None:
-        return None
-    query = match.group("query").strip().strip("\"'“”«»").strip()
-    if (
-        not query
-        or len(query.encode("utf-8")) > 512
-        or any(ord(character) < 32 for character in query)
-        or _has(_fold(query), r"\b(?:en|on)\s+(?:google|opera|chrome|edge|firefox|brave)\b")
-    ):
-        return None
-    return query
-
-
-_BROWSER_SEARCH_IN_BROWSER = re.compile(
-    r"^[¿?¡!\s]*(?:(?:por\s+favor|please|podes|podrias|puedes|can\s+you|could\s+you)\s*,?\s*)?"
-    r"(?:"
-    # «abrí una búsqueda de X en mi navegador», «open a search for X in my browser»
-    r"(?:abre|abrí|abri|abrir|abrime|open)\s+(?:una|la|a|the)\s+(?:busqueda|búsqueda|search)\s+(?:de|sobre|for|of|on)\s+(?P<q1>.+?)|"
-    # «buscá X en mi navegador», «search X in the browser»
-    r"(?:busca|buscá|buscar|buscame|buscáme|search(?:\s+for)?|look\s+up)\s+(?P<q2>.+?)|"
-    # «abrí X en mi navegador» (a topic, not a site: sites keep their own reader)
-    r"(?:abre|abrí|abri|abrir|abrime|open)\s+(?P<q3>.+?)"
-    r")"
-    r"\s+(?:en|in|on)\s+(?:mi|el|tu|the|my|your|un|a)\s+(?:navegador|browser)"
-    r"(?:\s*,?\s*(?:por\s+favor|please))?\s*[.!?]*$",
-    re.IGNORECASE,
-)
-_BROWSER_SEARCH_PRONOUN = re.compile(
-    r"^[¿?¡!\s]*(?:.*?\b(?:o\s+mejor|mejor|or\s+better|or)\s+)?"
-    r"(?:abrelo|ábrelo|abrilo|abrila|abrela|ábrela|abre\s+eso|abrí\s+eso|abre\s+esto|open\s+it|open\s+that|buscalo|búscalo|buscala|búscala|search\s+it|search\s+that|look\s+it\s+up)"
-    r"\s+(?:en|in|on)\s+(?:mi|el|tu|the|my|your|un|a)\s+(?:navegador|browser)"
-    r"(?:\s*,?\s*(?:por\s+favor|please))?\s*[.!?]*$",
-    re.IGNORECASE,
-)
-
-
-def _browser_search_query(text: str) -> str | None:
-    """Owner session 2026-09-21 «abre una busqueda de power automate en mi
-    navegador»: a search the person wants in their own browser is the reviewed
-    navigation to the public search page with that query (as the installed-
-    browser shape of WEB1455). The query keeps its spelling; a URL, a bare site
-    or a named browser keep their own readers; None for any other shape."""
-
-    match = _BROWSER_SEARCH_IN_BROWSER.match(text.strip())
-    if match is None:
-        return None
-    query = (match.group("q1") or match.group("q2") or match.group("q3") or "").strip().strip("\"'“”«»").strip()
-    folded = _fold(query)
-    if (
-        not query
-        or len(query.encode("utf-8")) > 200
-        or any(ord(character) < 32 for character in query)
-        or _has(folded, r"https?://|www\.|\.(?:com|net|org|es|cl|ar|io|gov|edu)\b")
-        or _has(folded, r"\b(?:google|opera|chrome|edge|firefox|brave|youtube|gmail|github|chatgpt)\b")
-        or _has(folded, r"^(?:lo|la|los|las|eso|esto|it|that|this|algo|something|nada|nothing|una\s+pestana|una\s+pestaña|a\s+tab|un\s+link|a\s+link)$")
-        or (match.group("q3") and _has(folded, r"^(?:el|la|los|las|un|una|the|a|an)\s+(?:navegador|browser|link|enlace|pagina|página|page|pestana|pestaña|tab)\b"))
-    ):
-        return None
-    return query
-
-
-def _browser_search_pronoun_request(text: str) -> bool:
-    """«pasame un link para verlo yo mismo, o mejor abrelo en mi navegador»,
-    «abrilo en mi navegador»: the thing to open in the browser is what the
-    conversation was about; the caller supplies it from the previous turn."""
-
-    return _BROWSER_SEARCH_PRONOUN.match(text.strip()) is not None
-
-
-def _completed_browser_search_pronoun_request(
-    text: str, previous_user_text: str | Iterable[str] | None,
-) -> str | None:
-    """The pronoun form completed with the entity of the last question about a
-    thing («Dime que es power automate» → «buscá power automate en mi
-    navegador»); `previous_user_text` may be the last user text or the recent
-    user texts, most recent first (the entity may sit two turns back)."""
-
-    if not previous_user_text or not _browser_search_pronoun_request(text):
-        return None
-    candidates = [previous_user_text] if isinstance(previous_user_text, str) else list(previous_user_text)
-    for candidate in candidates[:4]:
-        entity = _entity_lookup_query(str(candidate))
-        if entity is not None:
-            return "buscá " + entity + " en mi navegador"
-    return None
-
 
 _REDO_REQUEST = re.compile(
     r"^[¿?¡!\s]*(?:hazla|hazlo|hacela|hacelo|hacelo\s+ya|hazlo\s+ya|hazla\s+ya|dale|dale\s+ya|hace\s+eso|haz\s+eso|hacé\s+eso|"
@@ -15360,310 +9800,6 @@ def redo_previous_request_intent(
     resolved = resolve_explicit_effects(previous, available, application_names, game_catalog)
     return EffectIntent(resolved.operations, tuple(previous for _ in resolved.operations)) if resolved is not None else None
 
-
-def browser_search_pronoun_intent(text: str, history: object, available_operations: Iterable[str]) -> EffectIntent | None:
-    """«abrelo en mi navegador» read against the recent user turns of the history."""
-
-    if "browser.navigate" not in frozenset(available_operations) or not isinstance(history, list):
-        return None
-    items = [item for item in history if isinstance(item, dict)]
-    if items and items[-1].get("role") == "user" and items[-1].get("content") == text:
-        items = items[:-1]
-    recent = [str(item.get("content") or "") for item in reversed(items) if item.get("role") == "user"]
-    completed = _completed_browser_search_pronoun_request(text, recent)
-    return EffectIntent(("browser.navigate",), (completed,)) if completed is not None else None
-
-
-
-# Public web services whose canonical destination the argument builder knows
-# (`_explicit_browser_navigation_arguments`). A closed list, never a guess.
-_NAMED_PUBLIC_SITE = r"(?:youtube|gmail|github|chatgpt)"
-
-
-def _review_web_and_browser_effects(
-    matches: list[tuple[int, int, str]],
-    folded: str,
-    head: str,
-    *,
-    context_browser: str | None,
-    web_search_requested: bool,
-) -> None:
-    """Append explicit web-search, navigation, page, and tab effects."""
-
-    if _installed_browser_search_query(folded) is not None and context_browser is None:
-        # WEB1455: any installed browser and a search in it is one reviewed
-        # navigation to the product's public search page with that query.
-        if _append(matches, folded, "browser.navigate", r"\b(?:abre|abri|abrir|open)\b"):
-            _, priority, operation = matches[-1]
-            matches[-1] = (0, priority, operation)
-        return
-    if _browser_search_query(folded) is not None and context_browser is None:
-        # Owner 2026-09-21 «abre una busqueda de power automate en mi navegador»,
-        # «buscá X en mi navegador»: the same reviewed navigation to the search page.
-        if _append(matches, folded, "browser.navigate", r"\b(?:abre|abri|abrir|abrime|open|busca|buscar|buscame|search|look)\b"):
-            _, priority, operation = matches[-1]
-            matches[-1] = (0, priority, operation)
-        return
-    if _youtube_search_query(folded) is not None and context_browser is None:
-        # WEB1481 «buscá videos de gatos en youtube»: one reviewed navigation
-        # to YouTube's results page with that query.
-        if _append(matches, folded, "browser.navigate", r"\b(?:busca|buscar|buscame|search|find)\b"):
-            _, priority, operation = matches[-1]
-            matches[-1] = (0, priority, operation)
-        return
-    if _explicit_google_search_query(folded) is not None:
-        browser = _named_browser(folded) or context_browser
-        if browser is None or browser in NAMED_CDP_BROWSERS:
-            if _append(
-                matches,
-                folded,
-                "browser.navigate.named" if browser else "browser.navigate",
-                rf"\b{_SEARCH}\b",
-            ):
-                # Check negation at the real verb before retaining the Google
-                # heading as part of the same evidence clause.
-                _, priority, operation = matches[-1]
-                matches[-1] = (0, priority, operation)
-        # A named browser has no generic substitute. Do not fall through to
-        # Bing RSS when the public navigation contract cannot represent it.
-        return
-
-    explicit_public_lookup = (
-        _head_is(head, _SEARCH)
-        and _has(folded, rf"\b{_SEARCH}\b")
-        and _has(
-            folded,
-            r"\b(?:api\s+publica|public\s+api|app\s*id|steam\s+store|"
-            r"en\s+internet|on\s+the\s+internet)\b",
-        )
-        and not _has(folded, r"\b(?:archivos?|files?|boton|button)\b")
-    )
-    entertainment_lookup = (
-        _head_is(head, r"(?:donde|where|hablame)")
-        and _has(folded, r"\b(?:pelicula|peliculas|movie|movies|film)\b")
-        and _has(
-            folded,
-            r"\b(?:ver|watch|stream|hablame|about|buena|good|donde|where)\b",
-        )
-    )
-    location_recommendation = _location_recommendation_request(folded)
-    if (
-        (explicit_public_lookup and not web_search_requested)
-        or entertainment_lookup
-        or location_recommendation
-    ):
-        _append(
-            matches,
-            folded,
-            "web.search",
-            (
-                rf"\b{_SEARCH}\b"
-                if explicit_public_lookup
-                else (
-                    r"\b(?:lugares?|sitios?|places?|restaurants?|things?)\b"
-                    if location_recommendation
-                    else r"\b(?:donde|where|hablame)\b"
-                )
-            ),
-        )
-
-    google_search_in_open_browser = (
-        context_browser is not None
-        and _head_is(head, _SEARCH)
-        and _has(folded, rf"\b{_SEARCH}\b")
-        and _has(folded, r"\b(?:en|on)\s+google\b")
-    )
-    browser_search = (
-        context_browser is not None
-        and _head_is(head, _SEARCH)
-        and _has(folded, rf"\b{_SEARCH}\b")
-        and not _has(
-            folded,
-            r"\b(?:spotify|notas?|notes?|tareas?|tasks?|archivos?|files?)\b",
-        )
-    )
-    if (
-        web_search_requested or google_search_in_open_browser or browser_search
-    ) and _has(folded, rf"\b{_SEARCH}\b"):
-        _append(matches, folded, "web.search", rf"\b{_SEARCH}\b")
-        if browser_search:
-            _append(
-                matches,
-                folded,
-                (
-                    "browser.navigate.named"
-                    if context_browser in NAMED_CDP_BROWSERS
-                    else "browser.navigate"
-                ),
-                rf"\b{_SEARCH}\b",
-                priority=1,
-            )
-    has_url = _has(folded, r"https?://\S+")
-    has_bare_domain = _has(
-        folded,
-        r"\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+"
-        r"[a-z]{2,63}(?:/\S*)?\b",
-    ) and not _has(
-        folded,
-        r"\b(?:archivo|file|carpeta|folder|escritorio|desktop|"
-        r"documentos|documents|descargas|downloads)\b",
-    )
-    navigation_verbs = rf"(?:{_OPEN}|navega|navegar|navigate|ve|go|llevame|anda|andar|entra|entrar|vete)"
-    navigate = _head_is(
-        head,
-        navigation_verbs,
-    ) and _has(
-        folded,
-        rf"\b{navigation_verbs}\b",
-    )
-    named_browser = _named_browser(folded) is not None or context_browser is not None
-    if has_url and navigate:
-        streaming_url = _has(
-            folded,
-            r"https?://(?:www\.)?(?:youtube\.com|youtu\.be|netflix\.com|primevideo\.com)(?:[/?:#]|$)",
-        )
-        _append_all(
-            matches,
-            folded,
-            (
-                "streaming.navigate"
-                if streaming_url
-                else "browser.navigate.named"
-                if named_browser
-                else "browser.navigate"
-            ),
-            (
-                rf"\b{navigation_verbs}\b"
-                r"(?:(?!https?://)[^,;\r\n]){0,160}https?://\S+"
-            ),
-        )
-    elif has_bare_domain and navigate:
-        _append(
-            matches,
-            folded,
-            "browser.navigate.named" if named_browser else "browser.navigate",
-            rf"\b{navigation_verbs}\b",
-        )
-    elif (
-        navigate
-        and _has(folded, r"\b(?:pagina|page|sitio|site|website)\b")
-        and _has(
-            folded,
-            r"\b(?:pagina|page|sitio|site|website)\b.{1,120}\S",
-        )
-    ):
-        _append(
-            matches,
-            folded,
-            "web.search",
-            rf"\b{navigation_verbs}\b",
-        )
-        _append(
-            matches,
-            folded,
-            "browser.navigate.named" if named_browser else "browser.navigate",
-            rf"\b{navigation_verbs}\b",
-            priority=1,
-        )
-    elif (
-        navigate
-        and _has(folded, r"\b(?:youtube)\b")
-        and _has(folded, r"\b(?:navegador|browser|web)\b")
-    ):
-        _append(
-            matches,
-            folded,
-            "browser.navigate",
-            rf"\b{navigation_verbs}\b",
-        )
-    elif (
-        _head_is(head, r"(?:llevame|take|ve|go|navega|navigate)")
-        and _has(folded, r"\bwikipedia\b")
-        and not _has(folded, r"\b(?:archivo|file|carpeta|folder)\b")
-    ):
-        _append(
-            matches,
-            folded,
-            "browser.navigate",
-            r"\bwikipedia\b",
-        )
-    elif (
-        navigate
-        and _has(folded, rf"\b{navigation_verbs}\s+(?:a\s+|al\s+|to\s+)?{_NAMED_PUBLIC_SITE}\b")
-        and not _has(
-            folded,
-            r"\b(?:archivo|file|carpeta|folder|nota|note|app|aplicacion|application|"
-            r"programa|program|video|videos|cancion|song|musica|music)\b",
-        )
-    ):
-        # WEB1257: «Abre youtube», «abrí gmail», «andá a github.com» name a public
-        # web service, not an installed application; the argument builder owns
-        # the closed canonical destination for each name. WEB1745 «abre youtube
-        # en Chrome»: when the person names the browser, it is the named navigation.
-        _append(
-            matches,
-            folded,
-            "browser.navigate.named" if named_browser else "browser.navigate",
-            rf"\b{navigation_verbs}\b",
-        )
-    browser_page_context = context_browser is not None or _has(
-        folded,
-        r"\b(?:actual|current|navegador|browser|web|sitio|site)\b",
-    )
-    browser_page_grounded = _browser_page_domain(folded)
-    if (
-        _head_is(head, _READ)
-        and browser_page_context
-        and browser_page_grounded
-        and _has(folded, r"\b(?:pagina|page)\b")
-        and _has(folded, rf"\b{_READ}\b")
-    ):
-        _append(
-            matches,
-            folded,
-            "browser.page.read",
-            r"\b(?:lee|leer|read)\b",
-            priority=1,
-        )
-    # WEB1539 H0561 «resumime esta página», H0738 «resumime la página actual»:
-    # summarizing this or the current page is reading the page open in the
-    # browser session; «esta página» without a document word is that page.
-    summary_heads = r"(?:resume|resumeme|resumime|resumi|resumir|resumelo|resumela|summarize|summarise|sum\s+up)"
-    if (
-        _head_is(head, summary_heads)
-        and browser_page_grounded
-        and _has(
-            folded,
-            r"\b(?:esta|this|the|la)\s+(?:pagina|page)\b"
-            r"(?:\s+(?:actual|current|abierta|open|de\s+ahora))?",
-        )
-        and not _has(folded, r"\b(?:pdf|docx?|archivo|file|libro|book|documento|document)\b")
-    ):
-        _append(
-            matches,
-            folded,
-            "browser.page.read",
-            rf"\b{summary_heads}\b",
-            priority=1,
-        )
-    if (
-        _head_is(head, _LIST)
-        and _has(folded, r"\b(?:pestanas|tabs)\b")
-        and _has(folded, rf"\b{_LIST}\b")
-    ):
-        _append(matches, folded, "browser.tabs.list", r"\b(?:pestanas|tabs)\b")
-    if (
-        _head_is(head, r"(?:recarga|recargar|reload|refresh)")
-        and browser_page_grounded
-        and _has(folded, r"\b(?:recarga|recargar|reload|refresh)\b")
-        and _has(folded, r"\b(?:pagina|page)\b")
-    ):
-        _append(
-            matches,
-            folded,
-            "browser.control",
-            r"\b(?:recarga|recargar|reload|refresh)\b",
-        )
 
 
 def _review_media_and_email_effects(
@@ -16223,77 +10359,6 @@ def _strict_composition_segments_are_grounded(
     return tuple(operations) == expected.operations
 
 
-def _open_application_spans(text: str) -> tuple[tuple[int, str], ...]:
-    request = _match(
-        text,
-        (
-            r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*|"
-            r"(?:puedes|podrias|can you|could you|would you)\s+)?"
-            rf"(?:{_OPEN}|necesito|quiero|i\s+need|i\s+want)\b(?:\s+(?:el|la|the|un|una|a))?\s+"
-            rf"(?:(?:aplicacion|application|app|programa|program)\s+)?"
-            rf"(?P<body>{_KNOWN_APPLICATION}"
-            rf"(?:\s*,\s*(?:el|la|the)?\s*{_KNOWN_APPLICATION})*)"
-            r"(?:,?\s+(?:por favor|please|ahora|now))?[\s?!.]*$"
-        ),
-    )
-    if request is None or _is_negated_match(text, request):
-        return ()
-    body = request.group("body")
-    base = request.start("body")
-    applications: list[tuple[int, str]] = []
-    for found in re.finditer(_KNOWN_APPLICATION, body, re.IGNORECASE):
-        app = found.group(0).casefold()
-        app = {
-            "opera gx": "opera_gx",
-            "google chrome": "chrome",
-            "microsoft edge": "edge",
-        }.get(app, app)
-        applications.append((base + found.start(), app))
-    return tuple(applications)
-
-
-_STEAM_LIBRARY_VERB = (
-    r"(?:descarga|descargar|descargame|descargate|baja|bajar|bajame|bajate|"
-    r"instala|instalar|instalame|instalate|instalaes|install|download|"
-    r"desinstala|desinstalar|desinstalame|desinstalate|uninstall|remove|"
-    # «sacá X de Steam», «quitá X de Steam», «borrá X de Steam»: the same
-    # removal named with the everyday verbs (the store after the title keeps a
-    # screenshot or a photo out: see steam_library_title).
-    r"saca|sacar|sacame|quita|quitar|quitame|elimina|eliminar|eliminame|borra|borrar|borrame|"
-    # INSTALL1625 H0083 «lanzá Mortal Kombat en Steam»: launching a game the
-    # library does not hold is answered by the same read.
-    r"lanza|lanzar|lanzame|launch|run|juega|jugar|play|start|abre|abrir|abrime|open)"
-)
-_STEAM_LIBRARY_REQUEST = re.compile(
-    r"[¿?¡!\s]*(?:(?:necesito|quiero|quisiera|podes|podrias|puedes|podria|can\s+you|could\s+you|please)\s+(?:que\s+)?)?"
-    rf"(?:me\s+)?{_STEAM_LIBRARY_VERB}\s+(?:(?:el|la|the)\s+)?(?:(?:juego|game)\s+)?"
-    r"(?P<title>[a-z0-9][a-z0-9 .:'&+-]{0,80}?)"
-    # INSTALL1625 H0387/H0721 «… en Teams»: the owner's transcriptions write
-    # Steam as «Teams» (H0386/H0522); a game platform, never the meeting app.
-    # H0578 «Descarga Fall guys en epic games»: the Epic Games launcher keeps the
-    # same two facts locally; the store named after the title picks the library.
-    r"\s+(?:en|de|desde|por|from|on|in|via|through)\s+"
-    r"(?:(?:el|la|the)\s+)?(?P<store>steam|seam|stim|estim|teams|team|epic(?:\s+games)?(?:\s+(?:store|launcher))?|egs)"
-    r"(?:\s+(?:por\s+favor|please|ahora|now))?[\s.!?]*"
-)
-
-
-def _installed_game_named(name: str, game_catalog: GameCatalogIndex) -> str | None:
-    """The display name of the installed game that a bare name matches
-    exactly (folded), or None."""
-
-    wanted = _fold(name).strip()
-    for normalized, _provider, _app_id, display in game_catalog.entries:
-        if normalized == wanted or _fold(display).strip() == wanted:
-            return display
-    # A title named without its edition suffix («Plants vs. Zombies» for «Plants
-    # vs. Zombies: Game of the Year») is that game when exactly one starts so.
-    prefixed = [
-        display for normalized, _provider, _app_id, display in game_catalog.entries
-        if normalized.startswith(wanted + " ") or re.match(re.escape(wanted) + r"\s*[:(\-–]", _fold(display).strip())
-    ]
-    return prefixed[0] if len(prefixed) == 1 else None
-
 
 def airplane_mode_request(text: str) -> int | None:
     """REOPEN1957 H0107 «poneme el modo avión»: 1 to switch airplane mode on
@@ -16323,39 +10388,6 @@ def airplane_mode_question(text: str) -> bool:
     )
 
 
-_ZIP_MISSION_FOLDER = "Nueva carpeta"
-_ZIP_MISSION_FILE = "Nuevo documento de texto.txt"
-
-
-def folder_txt_zip_open_mission(text: str) -> str | None:
-    """REOPEN1957 H0542 «Crea una carpeta en el escritorio, mete un txt dentro,
-    comprímela y luego abre el zip»: the known folder of a four-step mission
-    (create the folder, put a text file in it, zip it, open the zip). The
-    folder and the file are unnamed, so they take Windows' own default
-    names («Nueva carpeta», «Nuevo documento de texto.txt»)."""
-
-    folded = _strip_request_envelope(_fold(text)).strip()
-    if _is_negative_effect_clause(folded):
-        return None
-    match = re.search(
-        # ZIP (typed tandas): «armá una carpeta en el escritorio con un txt, comprimila y
-        # abrí el zip», «make a folder on the desktop with a txt inside, zip it and open the zip».
-        rf"\b(?:crea|crear|creame|create|make|haz|hace|arma|armar|armame)\s+(?:una\s+|a\s+)?(?:carpeta|folder|directorio|directory)"
-        rf"(?:\s+(?:nueva|new))?\s+(?:en|on|in)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS})\b",
-        folded,
-    )
-    if match is None:
-        return None
-    if not _has(folded, r"\b(?:mete|meter|pone|pon|poner|crea|crear|guarda|put|add|create|con|with)\b.{0,20}\b(?:txt|archivo\s+de\s+texto|text\s+file|archivo\s+txt)\b"):
-        return None
-    if not _has(folded, r"\b(?:comprim\w+|zip\w*|compress\w*)\b"):
-        return None
-    if not _has(folded, r"\b(?:abre|abri|abrir|abrilo|abrila|open)\b.{0,12}\b(?:zip|comprimid[oa]|archive)\b") and not _has(
-        folded, r"\b(?:comprim\w+|zip\w*|compress\w*)\b.{0,12}\b(?:y|and|,)?\s*(?:abrila|abrilo|abrela|abrelo|open\s+it)\s*$"
-    ):
-        return None
-    return _KNOWN_FOLDER_ENUM.get(match.group("folder"))
-
 
 def compress_named_request(text: str) -> tuple[str, str] | None:
     """«comprimí la carpeta Fotos del escritorio», «zip the file informe.pdf in
@@ -16379,86 +10411,6 @@ def compress_named_request(text: str) -> tuple[str, str] | None:
     name = match.group("name").strip()
     return (folder, name) if name and not _has(_fold(name), r"^(?:todo|todos|todas|eso|esto|it|this|that|all)$") else None
 
-
-def open_named_file_request(text: str) -> tuple[str, str] | None:
-    """«abre el zip Nueva carpeta.zip del escritorio», «abrí informe.pdf de
-    documentos» → (known folder, file name with extension)."""
-
-    raw = _strip_request_envelope(str(text).strip()).rstrip(".!?")
-    folded = _fold(raw)
-    if _is_negative_effect_clause(folded) or folder_txt_zip_open_mission(text) is not None:
-        return None
-    match = re.match(
-        rf"^[¿?¡!\s]*(?:abr[eií](?:me|lo|la)?|abrir|open)\s+"
-        rf"(?:(?:el|la|the|a)\s+)?(?:(?:archivo|file|fichero|zip|pdf|documento|document|imagen|image|foto|photo)\s+)?"
-        rf"(?P<name>[^\s/\\:*?\"<>|]+(?:\s+[^\s/\\:*?\"<>|]+){{0,4}}?\.[a-z0-9]{{1,5}})\s+"
-        rf"(?:del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}|imagenes|pictures)\b",
-        raw,
-        re.IGNORECASE,
-    )
-    if match is None:
-        return None
-    folder = _KNOWN_FOLDER_ENUM.get(_fold(match.group("folder")), "pictures")
-    return (folder, match.group("name").strip())
-
-
-def wallpaper_request(text: str) -> dict[str, str | None] | None:
-    """REOPEN1957 H0459 «cambiá el fondo de pantalla a azul»: a solid colour
-    or a picture from a known folder as the desktop background."""
-
-    raw = _strip_request_envelope(str(text).strip()).rstrip(".!?")
-    folded = _fold(raw)
-    if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(folded):
-        return None
-    if not _has(folded, r"\b(?:fondo\s+de\s+(?:pantalla|escritorio)|fondo|wallpaper|papel\s+tapiz|desktop\s+background|background)\b"):
-        return None
-    if not _has(folded, r"\b(?:cambia|cambiar|cambiame|pon|pone|poneme|poner|establece|coloca|usa|change|set|put|use|make)\b"):
-        return None
-    colour = re.search(
-        # WALLPAPER (typed tandas): «poné el fondo de escritorio verde» names the
-        # colour right after the noun, without «a» or «de color».
-        r"(?:\b(?:a|al|de\s+color|en|to|color)\s+|\b(?:pantalla|escritorio|fondo|wallpaper|background)\s+)"
-        r"(?P<color>azul|rojo|verde|negro|blanco|gris|amarillo|naranja|violeta|morado|rosa|celeste|marron|"
-        r"blue|red|green|black|white|gray|grey|yellow|orange|purple|pink|lightblue|brown|#?[0-9a-f]{6})\b",
-        folded,
-    )
-    if colour is not None:
-        return {"color": colour.group("color"), "folder": None, "name": None}
-    picture = re.search(
-        rf"(?P<name>[^\s/\\:*?\"<>|]+\.(?:png|jpg|jpeg|bmp|gif|webp))\s+(?:del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}|imagenes|pictures)\b",
-        folded,
-    )
-    if picture is not None:
-        return {"color": None, "folder": _KNOWN_FOLDER_ENUM.get(_fold(picture.group("folder")), "pictures"), "name": picture.group("name")}
-    return None
-
-
-def web_download_request(text: str) -> dict[str, str | None] | None:
-    """REOPEN1957 H0077 «descarga la imagen de portada de wikipedia.org y
-    guardala en el escritorio»: the address (a host counts) and the known
-    folder named as destination (Downloads when none)."""
-
-    raw = _strip_request_envelope(str(text).strip()).rstrip(".!?")
-    folded = _fold(raw)
-    if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(folded):
-        return None
-    if not _has(folded, r"^[¿?¡!\s]*(?:descarga|descargar|descargame|baja|bajar|bajame|download|guarda|guardar|save)\b"):
-        return None
-    if _has(folded, r"\b(?:steam|epic|juego|game|app|aplicacion|programa|winget)\b"):
-        return None
-    address = re.search(
-        r"(?P<url>https?://[^\s\"'<>]+|(?:[a-z0-9-]+\.)+(?:com|org|net|edu|gov|io|es|cl|ar|mx|info|wiki|dev|app)(?:/[^\s\"'<>]*)?)",
-        raw,
-        re.IGNORECASE,
-    )
-    if address is None:
-        return None
-    destination = re.search(
-        rf"\b(?:en|on|in|a|to)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}|imagenes|pictures)\b",
-        folded,
-    )
-    folder = _KNOWN_FOLDER_ENUM.get(destination.group("folder"), "pictures") if destination is not None else None
-    return {"url": address.group("url"), "folder": folder, "name": None}
 
 
 _NUMBER_WORDS = {
@@ -16508,113 +10460,6 @@ def presentation_request(text: str) -> tuple[str, int] | None:
     return (topic, count)
 
 
-def steam_library_verb(text: str) -> str | None:
-    """REOPEN1993 grupo S: what a library request asks for — «install»
-    (descarga, instala, baja), «uninstall» (desinstala, remove) or «launch»
-    (lanza, abre, juega); None when the text is not a library request."""
-
-    if steam_library_title(text) is None:
-        return None
-    folded = _strip_request_envelope(_fold(text)).strip()
-    head = re.search(rf"\b{_STEAM_LIBRARY_VERB}\b", folded)
-    if head is None:
-        return None
-    verb = head.group(0)
-    if verb.startswith(("desinstal", "uninstall", "remove", "saca", "quita", "elimina", "borra")):
-        return "uninstall"
-    if verb.startswith(("descarg", "baja", "instal", "install", "download")):
-        return "install"
-    return "launch"
-
-
-def game_library_store(text: str) -> str:
-    """The store a library request names after the title: «epic» or «steam»."""
-
-    folded = _strip_request_envelope(_fold(text)).strip()
-    match = _STEAM_LIBRARY_REQUEST.fullmatch(folded.rstrip(".!?").strip())
-    if match is None:
-        for boundary in re.finditer(r"\. ", folded):
-            match = _STEAM_LIBRARY_REQUEST.fullmatch(folded[: boundary.start()].rstrip(".!?").strip())
-            if match is not None:
-                break
-    store = (match.group("store") if match is not None else "") or ""
-    return "epic" if store.startswith(("epic", "egs")) else "steam"
-
-
-def steam_library_title(text: str) -> str | None:
-    """The game named by a Steam download/install/uninstall request.
-
-    INSTALL1617 H0482 «Descarga Worms Rumble en Steam», H0049 «… en seam»,
-    H0118 «Descarga doom eternal de steam», H0643 «Necesito que instalaes worms
-    rumble en steam»: one verb, one title, Steam named after it. The title is
-    returned with the person's own spelling and case; instructions after the
-    request (AppIDs, URLs, a second sentence) keep the request out of this
-    reader. Negations and meta talk abstain.
-    """
-
-    folded = _strip_request_envelope(_fold(text)).strip()
-    if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(folded):
-        return None
-    match = _STEAM_LIBRARY_REQUEST.fullmatch(folded.rstrip(".!?").strip())
-    if match is None:
-        # INSTALL1627 H0396/H0456: the request is followed by instructions
-        # about the same install (an AppID, a steam:// URL, the store page);
-        # the first sentence is the request, the rest names no other effect.
-        # The sentence boundary is the first «. » after which the request
-        # matches: «Plants vs. Zombies» carries a dot of its own (D13).
-        for boundary in re.finditer(r"\. ", folded):
-            head, rest = folded[: boundary.start()], folded[boundary.end():]
-            if not _has(rest, r"\bapp\s*id\b|steam://|store\.steampowered\.com") or _has(
-                rest, r"\b(?:luego|despues|then|y\s+(?:abre|lanza|abri|ejecuta|open|launch|run)|cierra|close)\b",
-            ):
-                continue
-            match = _STEAM_LIBRARY_REQUEST.fullmatch(head.rstrip(".!?").strip())
-            if match is not None:
-                break
-        if match is None:
-            # INSTALL1633 H0608 «lanzá Mortal Kombat»: a launch of a bare name
-            # with no platform; games are launched from Steam here, so the
-            # library read answers when no installed game or catalog entry
-            # claims the name (the caller checks those before reading).
-            match = re.fullmatch(
-                r"[¿?¡!\s]*(?:(?:necesito|quiero|quisiera|podes|podrias|puedes|can\s+you|could\s+you|please)\s+(?:que\s+)?)?"
-                r"(?:me\s+)?(?:lanza|lanzame|lanzar|launch|juega|juga|jugar|jugame|jugemos)\s+"
-                r"(?:(?:el|la|the|a|al)\s+)?(?:(?:juego|game)\s+)?"
-                r"(?P<title>[a-z0-9][a-z0-9'&+-]*(?:\s+[a-z0-9][a-z0-9'&+-]*){0,3})"
-                r"(?:[\s,]+(?:por\s+favor|please|ahora|now))?",
-                folded.rstrip(".!?").strip(),
-            )
-            if match is not None and _has(
-                match.group("title"),
-                r"^(?:todo|todos|todas|eso|esto|aquello|algo|nada|lo|la|el|ese|esa|este|esta|los|las|un|una|mi|mis|"
-                r"it|this|that|them|my|the|something|anything|un\s+juego|a\s+game|algun\s+juego|any\s+game)$",
-            ):
-                match = None
-        if match is None:
-            return None
-    title = match.group("title").strip(" .")
-    if not title or _has(title, r"^(?:el|la|the|un|una|a|an|juego|game|algo|something)$"):
-        return None
-    if _has(folded, r"^[¿?¡!\s]*(?:(?:necesito|quiero|quisiera|podes|podrias|puedes|podria|please)\s+(?:que\s+)?)?(?:me\s+)?(?:saca|sacar|sacame|quita|quitar|quitame|elimina|eliminar|eliminame|borra|borrar|borrame)\b") and _has(
-        title, r"^(?:un|una|unos|unas|los|las|mi|mis|tu|tus|captura|foto|screenshot|pantallazo|imagen|dinero|plata|fondos|saldo)\b"
-    ):
-        # «sacá una captura de Steam», «sacá la plata de Steam»: not a game.
-        return None
-    raw = str(text)
-    folded_raw = _fold(raw)
-    if len(folded_raw) == len(raw):
-        position = folded_raw.find(title)
-        if position >= 0:
-            return raw[position:position + len(title)]
-    return title
-
-
-_CATALOG_INSTALL_VERB = (
-    r"(?:instala|instalar|instalame|instalate|install|descarga|descargar|descargame|download|baja|bajar|bajame|"
-    r"desinstala|desinstalar|desinstalame|desinstalate|uninstall|"
-    # «quitá 7-Zip», «sacá VLC», «eliminá 7-Zip», «remove 7zip»: the same removal.
-    r"quita|quitar|quitame|saca|sacar|sacame|elimina|eliminar|eliminame|remove|remueve)"
-)
 
 
 def installed_catalog_application_name(
@@ -16790,92 +10635,6 @@ def shell_command_request(text: str) -> tuple[str, str | None] | None:
     return (command, cwd)
 
 
-def installed_game_title(text: str) -> str | None:
-    """Read the game named by an installed question («dime si X ya está instalado»).
-
-    APPS1613 H0275: the clause is the person's folded surface; the title is
-    everything between the question head and the installed predicate, without
-    the article, «el juego» or «ya».  Free mentions and other shapes abstain.
-    """
-
-    folded = _strip_request_envelope(_fold(text)).strip().rstrip(".?!").strip()
-    match = re.fullmatch(
-        r"(?:[¿?¡!\s]*(?:y|and|luego|then)\s+)?"
-        r"(?:decime|dime|contame|cuentame|tell\s+me|fijate|chequea|check|"
-        r"comprueba|verifica|revisa|verify|confirm|confirma)\s+"
-        r"(?:si|if|whether)\s+"
-        r"(?:tengo\s+(?:instalado\s+)?|i\s+have\s+(?:installed\s+)?)?"
-        r"(?:(?:el|la|the)\s+)?(?:(?:juego|game)\s+)?"
-        r"(?P<title>[a-z0-9][a-z0-9 .:'&+-]{0,80}?)"
-        r"(?:\s+(?:ya|already|esta|is)){0,2}"
-        r"\s+(?:instalad[oa]|installed)"
-        r"(?:\s+(?:en|on)\s+(?:steam|epic(?:\s+games)?))?",
-        folded,
-    )
-    if match is None:
-        return None
-    title = match.group("title").strip()
-    if not title or _has(title, r"^(?:el|la|the|un|una|a|an|ya|already|esta|is)$"):
-        return None
-    return title
-
-
-def installed_game_provider(text: str) -> str:
-    """The manifest family the installed question names; ``any`` otherwise."""
-
-    folded = _fold(text)
-    if _has(folded, r"\bsteam\b"):
-        return "steam"
-    if _has(folded, r"\bepic\b"):
-        return "epic"
-    return "any"
-
-
-def _opened_applications(text: str) -> tuple[str, ...]:
-    applications = [application for _, application in _open_application_spans(text)]
-    return tuple(applications)
-
-
-# WEB1739: the browsers browser.navigate.named can drive over CDP (Chromium family). Firefox is
-# recognised as a name but has no CDP endpoint, so it never becomes a named navigation.
-NAMED_CDP_BROWSERS = frozenset({"opera", "opera_gx", "chrome", "edge", "brave"})
-
-
-def _named_browser_match(text: str) -> re.Match[str] | None:
-    browser = r"(?:opera gx|opera|google chrome|chrome|microsoft edge|edge|brave|firefox)"
-    return _match(
-        text,
-        (
-            # H0516 «Abre Opera GX, busca una receta …»: abrir un navegador por
-            # su nombre al frente de la misión lo nombra igual que «navega con».
-            rf"^[¿?¡!\s]*(?:navega|navegar|navigate|ve|go|abre|abri|abrime|abrí|open|launch)\s+"
-            rf"(?:el|la|the)?\s*(?P<leading>{browser})\b|"
-            rf"\b(?:usando|mediante|via|with|using)\s+"
-            rf"(?:el|la|the)?\s*(?P<instrument>{browser})\b|"
-            rf"\b(?:en|in)\s+(?:el|la|the)?\s*"
-            rf"(?P<located>{browser})\b[\s?!.]*$"
-        ),
-    )
-
-
-def _named_browser(text: str) -> str | None:
-    found = _named_browser_match(text)
-    if found is None:
-        return None
-    name = next(
-        group
-        for group in (
-            found.group("leading"),
-            found.group("instrument"),
-            found.group("located"),
-        )
-        if group is not None
-    )
-    return {
-        "opera gx": "opera_gx",
-        "google chrome": "chrome",
-        "microsoft edge": "edge",
-    }.get(name.casefold(), name.casefold())
 
 
 def _dependent_web_navigation_intent(
@@ -16911,259 +10670,6 @@ def _dependent_web_navigation_intent(
     )
 
 
-_VISIBLE_CLICK_POINTING = (
-    r"(?:haz\s+clic(?:\s+en)?|hace\s+clic(?:k)?(?:\s+en)?|clic(?:k)?\s+en"
-    r"|click(?:ea|ear)?(?:\s+(?:on|it))?"
-    r"|apreta(?:le|lo|la)?(?:\s+en)?|apretar|aprieta(?:\s+en)?"
-    r"|pulsa(?:lo|la|le)?|presiona(?:lo|la|le)?|press(?:\s+it)?)"
-)
-# «en la calculadora apretá el 5» / «apretá el 5 en la calculadora»: the app
-# names where the control lives; the label is the control alone (UI1273).
-_VISIBLE_CLICK_APP_CONTEXT = (
-    r"(?:en|in|on)\s+(?:la|el|the)\s+(?:calculadora|calc|calculator|app|"
-    r"aplicacion|application|ventana|window|pantalla|screen)"
-)
-_VISIBLE_CLICK_NAVIGATE = (
-    # UI1731 «Abre Steam y luego navega por la gui hasta biblioteca», «Abre Epic
-    # Games y navega hasta la biblioteca»: walking the open client's interface
-    # to a named section is a verified click on that visible label.
-    r"(?:ve\s+a|vete\s+a|anda\s+a|andate\s+a|entra\s+(?:a|en)|metete\s+en|go\s+to|go\s+into|"
-    r"navega(?:\s+por\s+(?:la\s+|el\s+|los\s+)?(?:gui|interfaz|interface|menu|menus|pantalla|ventana|app|aplicacion))?\s+(?:a|hacia|hasta)|"
-    r"navigate(?:\s+(?:through|via)\s+the\s+(?:gui|interface|menus?))?\s+to)"
-)
-_VISIBLE_CLICK_CONTROL_NOUN = (
-    r"(?:boton|button|control|enlace|link|pestana|tab|seccion|section)"
-)
-_VISIBLE_CLICK_WEB_DESTINATION = re.compile(
-    r"wikipedia|https?://|www\.|\.com\b|\.org\b|\.net\b|\.io\b",
-    re.IGNORECASE,
-)
-# H0101 «Hay un diálogo de descarga de doom eternal abierto en steam, completalo
-# haciendo click en instalar»: el verbo principal —«completalo»— no nombra
-# ninguna operación, y el pedido moría sin leerse. Pero la frase sí dice qué
-# hacer: la cláusula de gerundio nombra el clic y su etiqueta. Cuando está, es
-# ella el acto de habla, venga el verbo principal que venga.
-_GERUND_CLICK = re.compile(
-    r"\b(?:haciendo|dando|pulsando|apretando|presionando)\s+(?:un\s+|el\s+)?"
-    r"(?:clic|click|clics|clicks)\s+(?:en|sobre|a)\s+"
-    r"(?:(?:el|la|los|las)\s+)?"
-    r"(?:(?:boton|button|control|enlace|link|pestana|tab|seccion|section)\s+)?"
-    r"(?:(?:el|la|los|las)\s+)?"
-    r"(?P<label>[^,;.!?]{1,80}?)"
-    r"(?:\s+(?:boton|button|control|enlace|link|pestana|tab|seccion|section))?"
-    r"[\s?!.]*$"
-    r"|\bby\s+clicking\s+(?:on\s+)?"
-    r"(?:the\s+)?(?:(?:button|control|link|tab|section)\s+)?(?:the\s+)?"
-    r"(?P<label_en>[^,;.!?]{1,80}?)"
-    r"(?:\s+(?:button|control|link|tab|section))?"
-    r"[\s?!.]*$",
-)
-
-
-def _gerund_click_label(text: str) -> str | None:
-    """Name the control of a «haciendo click en X» clause, or nothing."""
-
-    folded = _fold(text)
-    if _has(folded, r"\bno\s+(?:lo|la|los|las)?\s*\w*\s*haciendo\s+cl"):
-        return None
-    found = _GERUND_CLICK.search(folded)
-    if found is None:
-        return None
-    label = (found.group("label") or found.group("label_en") or "").strip(" \t\"'`")
-    if (
-        not label
-        or len(label.split()) > 6
-        or _VISIBLE_CLICK_WEB_DESTINATION.search(label) is not None
-        or re.search(r"\b(?:tecla|teclas|key|keys|teclado|keyboard)\b", label) is not None
-    ):
-        return None
-    return label
-
-
-def _visible_click_label(
-    text: str,
-    *,
-    allow_navigate: bool = False,
-) -> str | None:
-    """Extract the unique visible-control label, or nothing.
-
-    Navigate heads (``ve a`` / ``go to``) are click only after an app is
-    already open. Bare web destinations stay with the browser family.
-    """
-
-    head = _VISIBLE_CLICK_POINTING
-    if allow_navigate:
-        head = rf"(?:{head}|{_VISIBLE_CLICK_NAVIGATE})"
-    text = re.sub(
-        rf"^([¿?¡!\s]*){_VISIBLE_CLICK_APP_CONTEXT}\s+", r"\1", _fold(text), count=1,
-    )
-    text = re.sub(rf"\s+{_VISIBLE_CLICK_APP_CONTEXT}(?=[\s?!.]*$)", "", text, count=1)
-    gerund = _gerund_click_label(text)
-    if gerund is not None:
-        return gerund
-    request = _match(
-        text,
-        (
-            rf"^[¿?¡!\s]*{_REQUEST_PREFIX}{head}\s+"
-            r"(?:(?:el|la|los|las|the)\s+)?"
-            rf"(?:{_VISIBLE_CLICK_CONTROL_NOUN}\s+)?"
-            r"(?P<label>[^,;.!?]{1,80}?)"
-            rf"(?:\s+{_VISIBLE_CLICK_CONTROL_NOUN})?"
-            r"[\s?!.]*$"
-        ),
-    )
-    if request is None or _is_negated_match(text, request):
-        return None
-    label = request.group("label").strip(" \t\"'`")
-    label = re.sub(
-        r"^(?:el|la|los|las|the)\s+",
-        "",
-        label,
-        flags=re.IGNORECASE,
-    ).strip()
-    if (
-        not label
-        or len(label.split()) > 6
-        or _VISIBLE_CLICK_WEB_DESTINATION.search(label) is not None
-        # «pulsá la tecla enter» / «presioná enter» are key presses, not
-        # visible controls (UI1273).
-        or re.search(r"\b(?:tecla|teclas|key|keys|teclado|keyboard)\b", label, re.IGNORECASE) is not None
-        or re.fullmatch(
-            r"(?:enter|intro|return|escape|esc|tab|espacio|space|supr|delete|backspace|retroceso|"
-            r"ctrl|control|alt|shift|win|windows|inicio|home|fin|end)",
-            label,
-            re.IGNORECASE,
-        ) is not None
-    ):
-        return None
-    return label[:80]
-
-
-def _click_in_application(
-    folded: str,
-    application_names: Iterable[str] | ApplicationCatalogIndex,
-) -> tuple[str, str] | None:
-    """UI1735: a click or navigation order framed by «en/in/on <catalog app>»
-    at either end of the clause → (catalog key, clause without the frame).
-    Generic frames («en la calculadora», «en la app») keep the UI1273 path."""
-
-    catalog = build_application_catalog_index(application_names)
-    occurrence = catalog.occurrence_pattern
-    if occurrence is None:
-        return None
-    text = folded.strip()
-    for pattern in (
-        r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?(?:en|in|on)\s+(?:la\s+|el\s+|the\s+)?(?P<app>.+?)\s*[,;:]?\s+(?P<clause>(?:ve|vete|anda|andate|entra|metete|navega|apreta|pulsa|presiona|hace|haz|toca|clickea|clica|go|navigate|click|press|tap|open)\b.+)$",
-        r"^(?P<clause>.+?)\s+(?:en|in|on)\s+(?:la\s+|el\s+|the\s+)?(?P<app>[a-z0-9][a-z0-9 .+-]{1,40}?)[\s?!.]*$",
-    ):
-        found = re.match(pattern, text)
-        if found is None:
-            continue
-        candidate = found.group("app").strip(" ,.;:!?")
-        hit = occurrence.fullmatch(candidate)
-        # A catalog name as written, or a bilingual alias of one («Opera» for
-        # «Navegador Opera GX», «Epic Games» for «Epic Games Launcher»).
-        key = _catalog_alias_key(
-            _application_name_key(hit.group("target") if hit is not None else candidate),
-            catalog.keys,
-        )
-        if key is None:
-            continue
-        clause = found.group("clause").strip(" ,;:")
-        if not clause:
-            continue
-        if _MESSAGING_CLIENT_KEY.search(key) is not None and not _has(
-            clause, r"^(?:ve|vete|anda|andate|entra|metete|go|navigate|navega)\b"
-        ):
-            # LIMITS1681 «apretá enviar en WhatsApp», «en Discord apretá enter»,
-            # and the microphone reading of «en Discord apretá silenciar» stay as
-            # they are: inside a messaging client only going to a chat or a
-            # channel is a click on its interface; pressing its controls is not.
-            return None
-        return key, clause
-    return None
-
-
-_MESSAGING_CLIENT_KEY = re.compile(
-    r"\b(?:discord|whatsapp|telegram|teams|slack|skype|zoom|signal|messenger)\b"
-)
-
-
-def _visible_click_intent(
-    text: str,
-    available_operations: frozenset[str],
-    *,
-    allow_navigate: bool = False,
-) -> EffectIntent | None:
-    """Resolve find-and-activate as one grounded visible-control effect."""
-
-    if "input.visible.click" not in available_operations:
-        return None
-    request = _match(
-        text,
-        (
-            rf"^[¿?¡!\s]*{_REQUEST_PREFIX}{_SEARCH}\b\s+"
-            r"(?:(?:(?:el|la|the)\s+)?(?:boton|button|control|enlace|link)\b"
-            r"[^,;.!?]{1,120}|(?:(?:el|la|the)\s+)?[^,;.!?]{1,100}\s+"
-            r"(?:boton|button|control|enlace|link))\s+\b(?:y|and)\b\s+"
-            r"(?:presionalo|presionala|pulsa(?:lo|la)?|haz\s+clic|"
-            r"click(?:\s+it)?|press(?:\s+it)?)[\s?!.]*$"
-        ),
-    )
-    if request is not None and not _is_negated_match(text, request):
-        evidence = request.group(0).strip(" ,;:-")[:240]
-        return EffectIntent(("input.visible.click",), (evidence,))
-    if _visible_click_label(text, allow_navigate=allow_navigate) is None:
-        return None
-    if _has(_fold(text), r"\b(?:en|in|on)\s+(?:discord|whatsapp|teams|telegram|slack|skype|zoom|signal|messenger)\b") and _has(
-        _fold(text), r"\b(?:enviar|envia|send|submit|mandar|manda|publicar|post)\b"
-    ):
-        # LIMITS1681 «apretá enviar en WhatsApp»: a send control inside a
-        # messaging client is a known limit (never a real message). Going to
-        # a channel or a chat («ve a Cotele en Discord») is navigation of the
-        # client's interface (UI1735) and stays a click.
-        return None
-    evidence = text.strip(" ,;:-")[:240]
-    # H0096: mirar antes de pulsar. La lectura de controles es de solo lectura,
-    # no cruza frontera de efecto y le da al redactor lo que hay delante, que es
-    # lo que hace falta para decir la verdad cuando la etiqueta no aparece en
-    # ninguna parte —Among Us no esta instalado en este PC—.
-    if "input.visible.controls" in available_operations:
-        return EffectIntent(
-            ("input.visible.controls", "input.visible.click"), (evidence, evidence),
-        )
-    return EffectIntent(("input.visible.click",), (evidence,))
-
-
-def _wifi_email_intent(
-    text: str,
-    available_operations: frozenset[str],
-) -> EffectIntent | None:
-    """Resolve Wi-Fi availability followed by reading the latest email."""
-
-    required = {"wifi.ensure.connected", "email.latest.read"}
-    if not required <= available_operations:
-        return None
-    request = _match(
-        text,
-        (
-            r"^[¿?¡!\s]*(?:conecta|conectar|connect)\s+"
-            r"(?:(?:el|the)\s+)?wi[\s-]?fi\b[^.;!?]{0,80}"
-            r"\b(?:abre|open)\s+(?:(?:el|the)\s+)?(?:correo|email|mail)\b"
-            r"[^.;!?]{0,80}\b(?:lee|leeme|read)\b[^.;!?]{0,80}"
-            r"\b(?:ultimo|ultima|latest|most recent)\b"
-            r"(?:\s+(?:mensaje|message|correo|email|mail))?"
-            r"(?:\s+(?:por favor|please))?[\s?!.]*$"
-        ),
-    )
-    if request is None or _is_negated_match(text, request):
-        return None
-    evidence = request.group(0).strip(" ,;:-")[:240]
-    return EffectIntent(
-        ("wifi.ensure.connected", "email.latest.read"),
-        (evidence, evidence),
-    )
-
 
 def _new_notepad_paste_intent(
     text: str,
@@ -17198,90 +10704,6 @@ def _new_notepad_paste_intent(
     )
 
 
-def _office_document_roundtrip_intent(
-    text: str,
-    available: frozenset[str],
-) -> EffectIntent | None:
-    """Create one named Office document and read its verified identity."""
-
-    if not {"office.document.create", "office.document.read"} <= available:
-        return None
-    request = _match(
-        text,
-        (
-            r"^[¿?¡!\s]*(?:crea|crear|create|make)\s+"
-            r"(?:(?:un|una|a)\s+)?"
-            r"(?:(?:documento|document)\s+)?"
-            r"(?:word|excel|documento|document|hoja de calculo|spreadsheet)\b"
-            r".{0,80}\b(?:llamad[oa]|named|called)\b\s+"
-            r"[^,;.!?]{1,120}?\s+(?:y|and)\s+"
-            r"(?:lee|leer|read)\s+"
-            r"(?:(?:ese|este|el|that|this|the)\s+)?"
-            r"(?:mismo|same)\s+(?:documento|document)\b"
-            r"(?:\s+(?:que\s+acabas\s+de\s+crear|you\s+just\s+created))?"
-            r"[\s?!.]*$"
-        ),
-    )
-    if request is None or _is_negated_match(text, request):
-        return None
-    evidence = request.group(0).strip(" ,;:-")[:240]
-    return EffectIntent(
-        ("office.document.create", "office.document.read"),
-        (evidence, evidence),
-    )
-
-
-def _steam_install_status_intent(
-    text: str,
-    available: frozenset[str],
-) -> EffectIntent | None:
-    """Read installation status only for one literal Steam AppID."""
-
-    if "game.install.status" not in available:
-        return None
-    request = _match(
-        text,
-        (
-            r"^[¿?¡!\s]*(?:comprueba|comprobar|verifica|verificar|consulta|"
-            r"check|verify|show|read)\b\s+"
-            r"(?:(?:el|the)\s+)?"
-            r"(?:estado|status)\s+(?:de\s+|of\s+)?"
-            r"(?:la\s+|the\s+)?(?:instalacion|installation)\s+"
-            r"(?:del?|of\s+the)\s+(?:appid|app id)\s+\d{1,16}[\s?!.]*$"
-        ),
-    )
-    if request is None or _is_negated_match(text, request):
-        return None
-    return EffectIntent(
-        ("game.install.status",),
-        (request.group(0).strip(" ,;:-")[:240],),
-    )
-
-
-def _steam_install_cancel_active_intent(
-    text: str,
-    available: frozenset[str],
-) -> EffectIntent | None:
-    """Stop the download Steam is already running, not a torrent or a listing."""
-
-    if "game.install.cancel.active" not in available:
-        return None
-    if _has(text, r"\b(?:torrent|series|pelicula|movie)\b"):
-        return None
-    request = _match(
-        text,
-        (
-            r"^[¿?¡!\s]*(?:para|cancela|cancelar|cancel|stop|detene|"
-            r"detener)\b.{0,96}\b(?:descarga|download|instalacion|install)"
-            r"\b.{0,96}\bsteam\b.{0,48}$"
-        ),
-    )
-    if request is None or _is_negated_match(text, request):
-        return None
-    return EffectIntent(
-        ("game.install.cancel.active",),
-        (request.group(0).strip(" ,;:-")[:240],),
-    )
 
 
 def _pointer_scroll_intent(
@@ -17306,39 +10728,6 @@ def _pointer_scroll_intent(
         (request.group(0).strip(" ,;:-")[:240],),
     )
 
-
-def _steam_catalog_list_intent(
-    text: str,
-    available: frozenset[str],
-) -> EffectIntent | None:
-    """List the authenticated local Steam catalog from an explicit clause."""
-
-    if "game.catalog.list" not in available:
-        return None
-    request = _match(
-        text,
-        (
-            # GAMES1531 H0274 «Ver la biblioteca de Steam»: seeing or being shown
-            # the library is the same read-only listing of the local manifests.
-            r"^[¿?¡!\s]*(?:(?:primero|first)\s+)?"
-            r"(?:enumera|enumerar|enumerate|lista|listar|list|muestra|show|"
-            r"ver|mirar|mostrame|muestrame|ensename|dame|quiero\s+ver|see|view)\b"
-            r"(?P<scope>[^.;!?]{0,100})"
-            r"\b(?:catalogo|catalog|biblioteca|library)\b"
-            r"[^.;!?]{0,80}\bsteam\b[\s?!.]*$"
-        ),
-    )
-    if request is None or _is_negated_match(text, request):
-        return None
-    if _has(
-        request.group("scope"),
-        rf"\b(?:y|and)\s+(?:{_COVERAGE_ACTION_HEAD})\b",
-    ):
-        return None
-    return EffectIntent(
-        ("game.catalog.list",),
-        (request.group(0).strip(" ,;:-")[:240],),
-    )
 
 
 def _resolve_clause_local_special_effects(
@@ -17827,37 +11216,6 @@ def _bounded_status_sequence_intent(
     )
 
 
-# WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá la mejor»: a
-# window named only by «la otra», «la mejor», «la siguiente» with nothing
-# before it; the honest turn asks which. Shared with __main__'s input kinds
-# and with the deferred clause reader below.
-INDETERMINATE_WINDOW_CLAUSE = re.compile(
-    r"[\s¡!¿?]*(?:"
-    r"(?:cambia|cambiame|pasa|pasame|anda|andate|ve|salta|volve|vuelve|switch|go|jump|move)"
-    r"(?:\s+(?:a|to))?\s+(?:la|the)\s+(?:otra|other|next|siguiente|anterior|previous|ultima|last|mejor|best)"
-    r"(?:\s+(?:ventana|window|pestana|tab))?|"
-    r"(?:enfoca|enfocame|foca|activa|activame|trae|traeme|pone|poneme|lleva|llevame|focus|bring|put)"
-    r"\s+(?:la|the)\s+(?:otra|other|mejor|best|siguiente|next|anterior|previous|ultima|last|"
-    r"mas\s+grande|biggest|largest|mas\s+chica|smallest|mas\s+importante|principal|main)"
-    r"(?:\s+(?:ventana|window))?(?:\s+(?:al\s+frente|adelante|to\s+the\s+front|forward))?"
-    r")[\s.!?¿¡]*"
-)
-
-# REOPEN1993 H0263 «cambiá a la otra ventana»: «la otra» (or «la anterior»,
-# «la siguiente») with nothing named before it is the window right behind
-# the one in front — deterministic, so the turn switches and says to which.
-# «la mejor», «la más grande» keep asking (WINDOWS1537).
-_OTHER_WINDOW_SWITCH = re.compile(
-    r"[\s¡!¿?]*(?:"
-    r"(?:cambia|cambiame|pasa|pasame|anda|andate|ve|salta|volve|vuelve|switch|go|jump|move|"
-    r"enfoca|enfocame|activa|activame|trae|traeme|pone|poneme|lleva|llevame|focus|bring|put)"
-    r"(?:\s+(?:a|to))?\s+(?:la|the)\s+(?:"
-    r"(?:otra|other|anterior|previous|siguiente|next)(?:\s+(?:ventana|window))?|"
-    r"(?:ventana|window)\s+(?:anterior|previous|siguiente|next))"
-    r"(?:\s+(?:al\s+frente|adelante|to\s+the\s+front|forward))?"
-    r")[\s.!?¿¡]*"
-)
-
 
 # DIALOGUE1487/1489 H0528 «Quiero que lo veas y de que se trata?», «Miralo y
 # decime de qué se trata»: a request to look at «it/this/that» and say what it
@@ -17945,12 +11303,6 @@ def deictic_typed_literal(text: str) -> str | None:
     literal = original.group("text").strip() if original is not None else ""
     return literal or None
 
-
-def other_window_switch_request(text: str) -> bool:
-    """True for a switch to «la otra/anterior/siguiente ventana» with no other clause."""
-
-    folded = _strip_request_envelope(_fold(text)).strip()
-    return bool(folded) and _OTHER_WINDOW_SWITCH.fullmatch(folded) is not None
 
 
 # Reads a turn may run before asking about the other clause.
@@ -18209,6 +11561,13 @@ def resolve_explicit_effects(
     if "web.search" in available and _research_question_query(text) is not None:
         # WEB1831: a research order carrying a question is the public search
         # for that question, in the person's words.
+        return EffectIntent(("web.search",), (text,))
+    if "web.search" in available and (
+        public_opinion_query(text) is not None or record_fact_query(text) is not None
+    ):
+        # Fase 3.5 (owner test 2026-09-21, turns 23/35/58): what people think of a
+        # public work and a record or dated fact come from public pages, not from
+        # the model's memory.
         return EffectIntent(("web.search",), (text,))
     if "storage.removable.list" in available and _removable_storage_request(text):
         # USB1823: a backup or copy to a pendrive first reads which removable

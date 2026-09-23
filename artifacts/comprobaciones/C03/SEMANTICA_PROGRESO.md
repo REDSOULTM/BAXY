@@ -11,7 +11,7 @@ Un comando largo a medias se vuelve a correr entero.
 |---|---|---|
 | 1 | Clase 1 (hueco de diálogo) cerrada y commiteada con la cifra de c1c | hecho (dueño 39/60, held-out 22/30, 742 sin cambios, pytest 13 591 verdes tras re-anclar sellos) |
 | 2 | Baseline por capas (A, B, C por dominio y tipo de fallo) sobre b5c9fe72 y sobre el HEAD con la clase 1 | hecho: `SEMANTICA_CAPAS_2026-09-23.md` (por commitear) |
-| 3 | `src/baxy_mind/semantic/` (puerta `read()`, dominios, normalización única, identidad/límites); lectores viejos retirados; commit por dominio | en curso: normalize, lexicon (micrófono, volumen, ajustes), dialogue, grammar (1 608 líneas fuera de effect_intent); guardas de clase 2 y veto de clase 5 aplicados; midiendo S1 |
+| 3 | `src/baxy_mind/semantic/` (puerta `read()`, dominios, normalización única, identidad/límites); lectores viejos retirados; commit por dominio | en curso: S2 commiteado; S3 sin commitear = 13 dominios acíclicos trasladados (intent, catalog, temporal, audio, windows, display, media, web, files, games, network, system, notes, messaging, ui, apps; effect_intent 19 140 → 13 133 líneas; traslado puro: 0 diferencias en 4 946 lecturas del patrón, 3 275 pruebas) + misiones compuestas (oferta parcial) + rechazo en el hueco |
 | 4 | `documentacion/SEMANTICA.md` (diez minutos; de qué BAXY anterior se heredó cada pieza) | borrador escrito (por commitear) |
 | 5 | Cierre: capa A ≥ 95 %, held-out nuevo del dueño ≥ 95 %, Full verde, cien 100/100, sellos, `SEMANTICA_<fecha>.md` | pendiente |
 
@@ -24,8 +24,8 @@ preparados siguen en el scratchpad (`patch_guard.py`, `patch_veto.py`).
 | Capa | Filas tras filtros (es/en + dirigido a BAXY) | Bien | Comando |
 |---|---|---|---|
 | A — real del dueño | 772 (encuesta 676 + registro real 95 + 1) | b5c9fe72 96,1 % (real 74,7 %) → clase 1 97,1 % (real 83,5 %) → S2 98,0 % (real 89,0 %) | `semantic_corpus.py score <742+capas> --survey-reference S/lit-base.jsonl` |
-| B — herencia curada | 108 | 26,9 % → 26,9 % → S2 en curso | ídem |
-| C — corpus sintéticos | 4 066 (muestra 1 017) | 53,5 % → 53,5 % → S2 en curso | ídem (`sample --size 1000`) |
+| B — herencia curada | 106 | 27,4 % → 27,4 % → S2 28,3 % | ídem |
+| C — corpus sintéticos | 4 066 (muestra 1 000) | 54,4 % → 54,4 % → S2 54,7 % | ídem (`sample --size 1000`) |
 | Held-out nuevo del dueño | se pide al final | — | — |
 
 ## Guiones contextuales (heredados)
@@ -48,12 +48,27 @@ lo confirmó. Arreglos: el pronombre con antecedente toma el objeto del pedido a
 el harness pone una ventana guardia propia en primer plano y aborta si el proceso raíz de VS Code desaparece.
 Las capas A/B/C se corren sólo-decisión, nunca con efectos.
 
-## Cambios sin commitear
+## Incidente 2026-09-23 04:44 (no fue BAXY)
 
-Clase 1 entera (shell + mente + harness con guardia + pruebas), baseline con bancos y 742, decisiones §3–4, la meta.
+Windows Update reinició el PC (`MoUsoCoreWorker.exe` y `TrustedInstaller.exe`, evento 1074, «actualización
+(planeada)») con la réplica de capas S5 en 1 055/1 221. El dueño avisó: nada de reinicios, apagados ni cierres de
+sesión. Las réplicas sólo-decisión no ejecutan efectos. Antes de un comando largo se mira si hay un reinicio pendiente.
+S5 se completó corriendo sólo las filas que faltaban (`S/corpus_rest_s5.jsonl` → `S/layers-s5b.jsonl`, más
+`S/layers-s5a.jsonl`). S5 742: 2 decisiones distintas de S2 (H0506 memoria; H0175 «en Discord apretá enter» → clic,
+arreglado después de la instantánea: una tecla nunca es un control visible).
+
+## Cambios sin commitear (S3)
+
+- Traslado de dominios (arriba). Pureza: `S/pattern_dump.py` sobre snap-s2 y el árbol → 0 diferencias.
+- Misiones compuestas: `_catalog_unavailable_turn_decision` leía «abre Spotify y baja el volumen» entero como nombre de
+  juego → «no puedo». Ahora no aplica a una compuesta (contrato o cláusulas coordinadas con la primera probada). Un final
+  «unsupported» con cláusulas probadas y otras no → aclaración que cita ambas partes y pregunta; `objective` = parte
+  probada (un «sí» la retoma). Pruebas `tests/test_semantic_compound_offer.py`.
+- Hueco: `_REFUSAL` («no, dejalo», «mejor no») nunca completa el pedido pendiente.
+- `semantic_corpus.py`: familias memory.* fuera de la puntuación (ruta del shell).
 
 ## Próximo paso
 
-Commit «semantic S2» → reanudar capas S2 (B, C) desde S/snap-s2 → siguiente: misiones compuestas con una parte difícil
-(límite falso que niega lo posible: «abre Word y ayúdame a escribir…»), dominios acíclicos de effect_intent a
-semantic/<dominio>.py (S/move.py, S/deps.py), memoria = ruta del shell en la puntuación.
+Medir S5 (= S4 + veto «análisis de la solicitud», vocativos Gemma/Carter/Alexa, silenciar el PC, «sacá una captura», destino delante; capa B §12) desde `S/snap-s5` (`lit-s5`, `layers-s5`). S4 era: S3 + lectores de opinión/hecho fechado, orden tras charla, comilla sin cerrar) desde `S/snap-s4`: `literals --src S/snap-s4 --out S/lit-s4.jsonl` (S3: 1 decisión distinta vs S2, H0506 memoria), capas `--out S/layers-s4.jsonl`,
+(`--corpus corpus_run.jsonl --skip-survey --out S/layers-s3.jsonl`), conv dueño+held-out con guardia; commit «semantic S3».
+Luego: dominio de memoria, paráfrasis/fechas (web.search), aclaraciones sin sentido (dueño 28), B/C por tipo de fallo.

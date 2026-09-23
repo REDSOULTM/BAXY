@@ -120,6 +120,61 @@ def language_of(text: str) -> str:
     return "en"
 
 
+# Speech-act opening of a turn said to an assistant (DECISIONES §12). Written for the corpus, independent
+# of the product's readers on purpose: BAXY is not measured with its own grammar.
+_SPEECH_VOCATIVE = r"(?:(?:baxy|carter|oye|oiga|che|hey|hola|bueno|ok|okay|dale|porfa|por\s+favor|please|y|ahora|entonces)[\s,.!]+)*"
+_SPEECH_QUESTION = (
+    r"(?:[¿?]|que|quien|quienes|como|cual|cuales|cuando|donde|adonde|por\s*que|cuanto|cuanta|cuantos|cuantas|"
+    r"hay|tengo|tenes|tienes|sabes|sabias|puedes|podes|podrias|puede|what|who|how|which|when|where|why|"
+    r"is|are|do|does|did|can|could|would|will|should|have|has)\b"
+)
+_SPEECH_REQUEST = (
+    r"(?:quiero|quisiera|necesito|me\s+gustaria|ayudame|ayudarme|dame|decime|dime|contame|cuentame|mostrame|"
+    r"muestrame|i\s+want|i\s+need|i'd\s+like|let's|lets|gracias|thanks|thank\s+you|perdon|sorry|buenas|buenos|"
+    r"hola|hello|hi|chao|chau|adios|bye)\b"
+)
+_SPEECH_IMPERATIVE = (
+    r"(?:abr[ie]\w*|abre\w*|cerr?a\w*|cierr?a\w*|pon\w*|pone\w*|busc\w*|reproduc\w*|toca\w*|sub[ei]\w*|baj[ae]\w*|"
+    r"apag\w*|prend\w*|enciend\w*|silenci\w*|mut\w*|activ\w*|desactiv\w*|manda\w*|envi\w*|escrib\w*|crea\w*|"
+    r"guard\w*|borr\w*|elimin\w*|instal\w*|desinstal\w*|descarg\w*|copi\w*|peg\w*|mov\w*|renombr\w*|lanz\w*|"
+    r"inici\w*|ejecut\w*|jug\w*|jueg\w*|mir\w*|ve|anda|entra\w*|naveg\w*|muestr\w*|lee\w*|le[ei]\w*|resum\w*|"
+    r"traduc\w*|calcul\w*|recuerd\w*|record\w*|avis\w*|agend\w*|program\w*|configur\w*|conect\w*|desconect\w*|"
+    r"minimiz\w*|maximiz\w*|restaur\w*|cambi\w*|haz|hace\w*|hacelo|saca\w*|toma\w*|captur\w*|investig\w*|"
+    r"averigu\w*|fija\w*|revis\w*|chequea\w*|explic\w*|llam\w*|contest\w*|respond\w*|par[ae]|pausa\w*|"
+    r"segu\w*|sigue\w*|salt\w*|repet\w*|repit\w*|actualiz\w*|reinici\w*|suspend\w*|bloque\w*|"
+    r"open|close|play|pause|stop|search|find|show|tell|turn|set|send|write|create|delete|remove|install|"
+    r"uninstall|download|copy|paste|move|rename|launch|start|run|take|read|summarize|translate|remind|mute|"
+    r"unmute|minimize|maximize|restore|lock|restart|shut|go|look|check|call|reply|skip|type|click|save|put|"
+    r"make|give|help|list|switch|change|increase|decrease|lower|raise)"
+)
+_SPEECH_TECHNICAL = re.compile(
+    r"[`*→=<>#|]|\b\d+\s*[x×/]\s*\d+|\b\d+(?:[.,]\d+)?\s*(?:mb|gb|ms|tok|tokens)\b|"
+    r"\b(?:bug|issue|regex|cache|runtime|runtimes|backend|prefill|offload|vram|llm|stt|tts|json|sqlite|uia|"
+    r"roi|pattern|payload|handoff|fallback|pipeline|benchmark|dataset|finetune|gemma\d*|qwen|whisper|onnx|"
+    r"cuda|directml|false_pass|r\d{1,2})\b",
+    re.IGNORECASE,
+)
+
+
+def speech_act_of(text: str) -> str | None:
+    """None when the text has the form of a turn said to an assistant; otherwise why not.
+
+    A turn opens (after a vocative or a filler) with a question, a request or an imperative verb, and
+    carries no technical notation. A document's acceptance criterion or note («OCR PaddleOCR crop
+    600×200», «Offload parcial CPU+GPU», «monitoreo de GPU») is not a turn, whatever family it names.
+    """
+
+    folded = unicodedata.normalize("NFKD", str(text).casefold())
+    folded = " ".join("".join(ch for ch in folded if not unicodedata.combining(ch)).split())
+    if _SPEECH_TECHNICAL.search(folded):
+        return "technical_notation"
+    opening = re.match(
+        rf"^[¡!\s\"'“«-]*{_SPEECH_VOCATIVE}(?:{_SPEECH_QUESTION}|{_SPEECH_REQUEST}|{_SPEECH_IMPERATIVE}\b)",
+        folded,
+    )
+    return None if opening is not None else "not_a_turn"
+
+
 def addressee_of(row: dict[str, Any]) -> str | None:
     """None when the text was said to BAXY; otherwise why it was not."""
 
@@ -137,6 +192,12 @@ def addressee_of(row: dict[str, Any]) -> str | None:
         return "agent_talk"
     if row.get("origin") != "observed_user" and TECHNICAL.search(text):
         return "technical_note"
+    if layer_of(row) == "B":
+        # DECISIONES §12: a document's example is a turn only in the form of one; acceptance
+        # criteria and notes are not. Layer C is phrases said to assistants and keeps its rows.
+        reason = speech_act_of(clean(text))
+        if reason is not None:
+            return "document_" + reason
     return None
 
 
@@ -493,6 +554,11 @@ def score(decisions_path: pathlib.Path, survey_reference: pathlib.Path | None, j
             family = (label.get("families") or [label.get("expect")])[0]
         else:
             family = (entry["families"] or [entry["expect"]])[0]
+            if entry["families"] and all(f.startswith("memory.") for f in entry["families"]):
+                # «recuerda que…» is taken by the shell's private memory route before the mind is asked
+                # (NaturalMemoryRequestParser); a mind-only replay cannot judge it.
+                table[layer]["fuera_ruta_memoria_del_shell"] += 1
+                continue
             if layer != "A":
                 relabelled, rule = relabel(entry)
                 if rule:
