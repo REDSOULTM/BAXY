@@ -560,8 +560,10 @@ internal static partial class ConfirmationReplyParser
             : ConfirmationReplyKind.Invalid;
     }
 
+    // A reply made only of assent words confirms («sí, dale», «ok, confirmo»);
+    // anything else in it («sí, pero abrí Paint») is not a bare confirmation.
     [GeneratedRegex(
-        "^(?:s[i\\u00ed]|confirmo|confirmar|dale|adelante|yes|confirm|go[ \\t]+ahead|do[ \\t]+it)[.!]?$",
+        "^(?:(?:s[i\\u00ed]|sip|confirmo|confirmar|dale|adelante|ok|okay|claro|de[ \\t]+una|hacelo|hazlo|yes|yeah|yep|sure|confirm|go[ \\t]+ahead|do[ \\t]+it|por[ \\t]+favor|porfa)[ \\t]*[,.!]*[ \\t]*){1,4}$",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex ConfirmPattern();
 

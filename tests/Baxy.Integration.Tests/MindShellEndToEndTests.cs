@@ -579,9 +579,6 @@ public sealed class MindShellEndToEndTests
     [Test]
     public async Task ClarificationFragmentPreservesAndResumesTheObjective()
     {
-        const string clarifiedObjective =
-            "Haz eso\nAclaración confiable del usuario: mañana a las 9";
-
         await WithContractMindAsync(async (viewModel, _, tracePath) =>
         {
             Assert.That(
@@ -599,18 +596,14 @@ public sealed class MindShellEndToEndTests
                 .ToArray();
             Assert.Multiple(() =>
             {
-                Assert.That(turns, Has.Length.EqualTo(3));
+                // Fase 3.5: one decision per message. The fragment travels with
+                // the pending request and the mind returns the request it completes.
+                Assert.That(turns, Has.Length.EqualTo(2));
                 Assert.That(
                     turns.Select(static entry => Property(entry, "text")),
-                    Is.EqualTo(new[]
-                    {
-                        "Haz eso",
-                        "mañana a las 9",
-                        clarifiedObjective,
-                    }));
-                // Context is preserved while the first reading remains
-                // independent of pending-objective authorization.
+                    Is.EqualTo(new[] { "Haz eso", "mañana a las 9" }));
                 AssertHistoryContainsUser(turns[1], "Haz eso");
+                Assert.That(Property(turns[1], "pendingObjective"), Is.EqualTo("Haz eso"));
                 Assert.That(turns[1].GetProperty("pendingClarification").GetBoolean(), Is.False);
             });
         });
@@ -630,12 +623,10 @@ public sealed class MindShellEndToEndTests
                 first + " | " + string.Join(" | ", ReadTrace(tracePath)
                     .Select(static entry => Property(entry, "type") + ":" + Property(entry, "text"))));
             await SubmitAsync(viewModel, "Al 40%, please.");
-            string?[] requests = ReadTrace(tracePath)
-                .Where(static entry => Property(entry, "type") == "turn.decide")
-                .Select(static entry => Property(entry, "text"))
-                .ToArray();
-            Assert.That(requests, Does.Contain(
-                request + "\nAclaración confiable del usuario: Al 40%, please."));
+            JsonElement answer = ReadTrace(tracePath)
+                .Last(static entry => Property(entry, "type") == "turn.decide");
+            Assert.That(Property(answer, "text"), Is.EqualTo("Al 40%, please."));
+            Assert.That(Property(answer, "pendingObjective"), Is.EqualTo(request));
         });
     }
 

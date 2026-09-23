@@ -11,9 +11,9 @@
    "head": "b5c9fe72"
   },
   "17": {
-   "verdict": "mal",
-   "reply": "No puedo colocar una canción de amor en YouTube tal como fue pedido.",
-   "head": "b5c9fe72"
+   "verdict": "bien",
+   "reply": "Está reproduciéndose «Emmanuell Cortess - Amor (Letra/Lyrics) - YouTube».",
+   "head": "clase1-c1c"
   },
   "54": {
    "verdict": "mal",
@@ -22,15 +22,20 @@
   },
   "57": {
    "verdict": "mal",
-   "reply": "No puedo ajustar el volumen tal como fue solicitado.",
-   "head": "b5c9fe72"
+   "reply": "cuánto y en qué dirección se debe ajustar el volumen?",
+   "head": "clase1-c1c"
+  },
+  "24": {
+   "verdict": "mal",
+   "reply": "No puedo investigar la película \"Colony\" de zombies tal como fue pedido.",
+   "head": "clase1-c1c"
   }
  },
  "heldout-2026-09-22": {
   "29": {
    "verdict": "bien",
-   "reply": "No, no la llamé. No tengo la capacidad de realizar llamadas telefónicas.",
-   "head": "b5c9fe72"
+   "reply": "No, todavía no la llamé.",
+   "head": "clase1-c1c"
   }
  }
 }

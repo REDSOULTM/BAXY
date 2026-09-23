@@ -1,0 +1,122 @@
+"""Fase 3.5: the dialogue slot decides when a message depends on the previous turns.
+
+The phrases here are deliberately not the owner's test nor the held-out script: the slot is a
+rule about the shape of dialogue (a bare answer, «sí», a new destination, a pronoun object, a
+lookup without topic), not a list of sentences.
+"""
+
+from __future__ import annotations
+
+import pytest
+
+from baxy_mind import dialogue_slot
+from baxy_mind.dialogue_slot import DialogueSlot
+
+
+def _slot(pending: str | None = None, antecedents=(), reply: str | None = None) -> DialogueSlot:
+    return DialogueSlot(pending, reply if pending else None, tuple(antecedents), reply)
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["35", "treinta", "al 80%", "unos diez", "sí", "dale, sí", "ok", "no, en Spotify", "por WhatsApp mejor"],
+)
+def test_a_short_answer_to_the_pending_question_depends_on_it(text):
+    slot = _slot("subí el brillo", ["subí el brillo"], "¿Cuánto lo subo?")
+    assert dialogue_slot.dependency(text, slot) == "answer"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "gracias",
+        "jaja qué bueno",
+        "ayer me quedé dormido viendo una serie larguísima",
+        "la verdad es que hoy no tengo ganas de nada",
+    ],
+)
+def test_talk_never_fills_the_slot_even_with_a_question_pending(text):
+    slot = _slot("subí el brillo", ["subí el brillo"], "¿Cuánto lo subo?")
+    assert dialogue_slot.dependency(text, slot) is None
+
+
+@pytest.mark.parametrize(
+    "text, antecedent",
+    [
+        ("apagalo", "prendé el bluetooth"),
+        ("ahora cerrala", "abrí la calculadora"),
+        ("buscalo en internet", "me recomendaron un libro que se llama Dune"),
+        ("lo subís a 60", "poné el volumen en 30"),
+    ],
+)
+def test_a_pronoun_object_is_a_reference(text, antecedent):
+    assert dialogue_slot.dependency(text, _slot(None, [antecedent], "Listo.")) == "reference"
+
+
+@pytest.mark.parametrize(
+    "text, antecedent",
+    [
+        ("averiguá quién ganó", "anoche jugó Boca contra River"),
+        ("fijate si ya salió el tráiler", "estoy esperando la nueva de Dune"),
+    ],
+)
+def test_a_lookup_without_its_topic_depends_on_the_last_one(text, antecedent):
+    assert dialogue_slot.dependency(text, _slot(None, [antecedent], "Qué bueno.")) == "topic"
+
+
+def test_without_context_nothing_depends_on_it():
+    assert dialogue_slot.dependency("apagalo", _slot()) is None
+    assert dialogue_slot.dependency("35", _slot()) is None
+
+
+@pytest.mark.parametrize(
+    "pending, answer, joined",
+    [
+        ("subí el brillo", "treinta", "subí el brillo 30"),
+        ("bajá la música", "a 10", "bajá la música a 10"),
+        ("poné algo de jazz en Spotify", "no, en YouTube", "poné algo de jazz en YouTube"),
+        ("abrí una canción de rock", "en YouTube mejor", "abrí una canción de rock en YouTube"),
+        ("abrí el explorador", "sí, dale", "abrí el explorador"),
+    ],
+)
+def test_the_pending_request_is_completed_in_the_persons_own_words(pending, answer, joined):
+    assert dialogue_slot.joined_answer(pending, answer) == joined
+
+
+def test_a_rewrite_may_only_use_words_already_said():
+    slot = _slot(None, ["prendé el bluetooth"], "Listo, el Bluetooth está encendido.")
+    assert dialogue_slot.rewrite_stays_in_context("apagá el bluetooth", "apagalo", slot)
+    assert not dialogue_slot.rewrite_stays_in_context("apagá el wifi", "apagalo", slot)
+    assert not dialogue_slot.rewrite_stays_in_context("abrí Spotify y apagá el bluetooth", "apagalo", slot)
+
+
+def test_the_slot_reads_the_shell_pending_request_and_the_last_two_user_turns():
+    history = [
+        {"role": "user", "content": "hola"},
+        {"role": "assistant", "content": "¡Hola!"},
+        {"role": "user", "content": "subí el brillo"},
+        {"role": "assistant", "content": "¿Cuánto lo subo?"},
+        {"role": "user", "content": "treinta"},
+    ]
+    slot = dialogue_slot.read_slot({"pendingObjective": "subí el brillo"}, history, "treinta")
+    assert slot.pending_request == "subí el brillo"
+    assert slot.pending_question == "¿Cuánto lo subo?"
+    assert slot.antecedents == ("subí el brillo", "hola")
+
+
+@pytest.mark.parametrize(
+    "text, antecedent, rearmed",
+    [
+        ("apagalo", "prendé el bluetooth", "apaga el bluetooth"),
+        ("ahora bajala a 10", "poné la música de fondo a 40", "ahora baja la música de fondo a 10"),
+        ("cerrala", "abrí la calculadora", "cerra la calculadora"),
+    ],
+)
+def test_a_pronoun_takes_the_object_of_the_previous_order(text, antecedent, rearmed):
+    # 2026-09-22: with an antecedent the pronoun is never "whatever window is in front".
+    assert dialogue_slot.substituted_reference(text, antecedent) == rearmed
+
+
+def test_an_indirect_pronoun_or_a_question_is_not_substituted():
+    assert dialogue_slot.substituted_reference("devolvele el sonido", "silenciá el sonido") is None
+    assert dialogue_slot.substituted_reference("cerralo", "¿qué hora es?") is None

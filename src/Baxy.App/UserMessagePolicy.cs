@@ -93,9 +93,6 @@ internal static class UserMessageDiagnosticCodes
 
 internal static class MindClarificationPolicy
 {
-    private const string TrustedClarificationPrefix =
-        "\nAclaración confiable del usuario: ";
-
     public static bool IsSelfContainedRequest(
         string userText,
         MindTurnDecision decision)
@@ -130,23 +127,6 @@ internal static class MindClarificationPolicy
         };
     }
 
-    public static bool ShouldResumePendingObjective(
-        string userText,
-        MindTurnDecision decision) =>
-        decision.PreserveObjective
-        && !IsSelfContainedRequest(userText, decision);
-
-    public static string ResumeObjective(
-        string pendingObjective,
-        string clarification)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(pendingObjective);
-        ArgumentException.ThrowIfNullOrWhiteSpace(clarification);
-        return string.Concat(
-            pendingObjective,
-            TrustedClarificationPrefix,
-            clarification);
-    }
 }
 
 internal static class UserMessagePolicy

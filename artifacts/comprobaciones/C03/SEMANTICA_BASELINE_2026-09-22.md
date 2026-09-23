@@ -17,6 +17,12 @@ python -X utf8 scripts/semantic_replay.py rescore --out <S>/base --reviews artif
 |---|---|---|---|---|---|---|---|---|
 | dueño 2026-09-21 | **33/60** | 0/12 | 0/8 | 0/5 | 1/1 | 1/1 | 6/8 | 25/25 |
 | held-out 2026-09-22 | **15/30** | 1/9 | 3/6 | 0/1 | 2/4 | 1/1 | 2/2 | 6/7 |
+| 35 bancos contextuales (`contexto/<categoría>.turns.jsonl`) | **398/525** | — | — | — | — | — | — | — |
+
+742 literales del registro privado, sólo decisión (`semantic_replay.py literals`, un `turn.decide` aislado por
+literal, 0,58 s de media): 0 errores; action 404, conversation 118, clarify 116, plan 104. Es la referencia del
+`diff` de cada clase (las decisiones que cambien se revisan una a una). Bancos: 398/525 (el notebook midió 396/525
+sobre HEADs anteriores).
 
 Igual que ctx-dueno-08 del notebook (33/60 sobre 4dd98219). Efectos afirmados sin operación fuera de la clase
 «efecto inventado»: **dos** — dueño 56 «ahora súbelo a 100» → «El volumen se subió a 100.» y held-out 5 «y ahora

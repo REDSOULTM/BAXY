@@ -462,6 +462,12 @@ public sealed class MemoryOperationProtectionTests
     [TestCase("confirmo", "Confirm")]
     [TestCase("yes", "Confirm")]
     [TestCase("go ahead", "Confirm")]
+    // Fase 3.5 (DECISIONES_OPUS_2026-09-22 §4): a reply made only of assent words confirms.
+    [TestCase("s\u00ed, dale", "Confirm")]
+    [TestCase("dale, confirmo.", "Confirm")]
+    [TestCase("ok", "Confirm")]
+    [TestCase("s\u00ed, pero abr\u00ed Paint", "Invalid")]
+    [TestCase("s\u00ed no", "Invalid")]
     [TestCase("no", "Cancel")]
     [TestCase("cancelar", "Cancel")]
     [TestCase("never mind", "Cancel")]

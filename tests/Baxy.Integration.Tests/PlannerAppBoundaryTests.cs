@@ -221,23 +221,9 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(
                 clarification.IntentOperations,
                 Is.EqualTo(new[] { "system.power" }));
-            Assert.That(
-                MindClarificationPolicy.ResumeObjective(
-                    "Crea un recordatorio",
-                    "mañana a las 9"),
-                Is.EqualTo(
-                    "Crea un recordatorio\n"
-                    + "Aclaración confiable del usuario: mañana a las 9"));
-            Assert.That(
-                MindClarificationPolicy.ShouldResumePendingObjective(
-                    "mañana a las 9",
-                    clarification),
-                Is.True);
-            Assert.That(
-                MindClarificationPolicy.ShouldResumePendingObjective(
-                    "Explícame la fotosíntesis",
-                    recoveryClarification),
-                Is.False);
+            // Fase 3.5: the shell no longer rebuilds «pedido + aclaración»; the
+            // mind fills the dialogue slot and returns the request (Objective).
+            Assert.That(recoveryClarification.PreserveObjective, Is.False);
         });
     }
 
@@ -283,12 +269,12 @@ public sealed class PlannerAppBoundaryTests
         };
         Assert.Multiple(() =>
         {
-            Assert.That(MindClarificationPolicy.ShouldResumePendingObjective(text, decision), Is.False);
+            Assert.That(MindClarificationPolicy.IsSelfContainedRequest(text, decision), Is.True);
             Assert.That(decision.PreserveObjective, Is.True,
                 "The next slot value must still be able to complete this new request.");
             Assert.That(decision.EffectOperations, Is.Empty);
-            Assert.That(MindClarificationPolicy.ShouldResumePendingObjective("37",
-                new MindTurnDecision("conversation", null, [], string.Empty, "Entendido.")), Is.True);
+            Assert.That(MindClarificationPolicy.IsSelfContainedRequest("37",
+                new MindTurnDecision("conversation", null, [], string.Empty, "Entendido.")), Is.False);
         });
     }
 

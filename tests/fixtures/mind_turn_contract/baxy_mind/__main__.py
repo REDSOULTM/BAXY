@@ -36,6 +36,7 @@ def _trace(message: dict[str, Any]) -> None:
         "purpose",
         "expectedOperations",
         "pendingClarification",
+        "pendingObjective",
     ):
         if key in message:
             selected[key] = message[key]
@@ -56,6 +57,14 @@ def _turn(message: dict[str, Any]) -> dict[str, Any]:
     history = message.get("history")
     if not isinstance(history, list):
         history = []
+    # Fase 3.5: the mind owns the dialogue slot. A slot value answering the
+    # shell's pending request is decided as that request, which travels back
+    # as ``objective`` for the shell to execute and keep.
+    pending = str(message.get("pendingObjective") or "").strip()
+    if pending and text in {"mañana a las 9", "Al 40%, please."}:
+        objective = f"{pending} {text}"
+        decided = _turn({**message, "text": objective, "pendingObjective": None})
+        return {**decided, "objective": objective}
 
     if text == "What is on my to do list?":
         return {

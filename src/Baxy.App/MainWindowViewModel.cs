@@ -982,8 +982,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     {
                         preclassifiedTurn = await DecideMindTurnAsync(
                             readyMind, route, BuildMindHistory(), cancellationToken);
+                        // Talk while a confirmation waits is talk: it replaces the
+                        // unstarted confirmation (nothing ran) instead of re-asking it.
                         startsNewObjective = preclassifiedTurn is { RecoveryFailureCode: null }
-                            && MindClarificationPolicy.IsSelfContainedRequest(text, preclassifiedTurn);
+                            && (MindClarificationPolicy.IsSelfContainedRequest(text, preclassifiedTurn)
+                                || preclassifiedTurn is { Kind: "conversation", Reply.Length: > 0 });
                     }
                 }
 
@@ -2179,7 +2182,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         MindSidecarClient mind,
         MissionInputRoute route,
         IReadOnlyList<(string Role, string Content)> decisionHistory,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        string? pendingObjective = null)
     {
         StatusDescription = "understanding";
         string decisionTraceId = _currentTurnTraceId;
@@ -2192,7 +2196,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             decisionHistory,
             MindSidecarClient.TurnDecisionRequestTimeout,
             cancellationToken,
-            pendingClarification: false);
+            pendingClarification: false,
+            pendingObjective: pendingObjective);
         ShellTraceSink.Record(
             ShellTraceScopes.Turn,
             decisionTraceId,
@@ -2317,8 +2322,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         // The pendingClarification flag below owns the independent reading;
         // dialogue remains reference data, not permission to resume an effect.
         IReadOnlyList<(string Role, string Content)> decisionHistory = BuildMindHistory();
+        // The mind owns the dialogue slot: it receives the pending request and
+        // returns the request this message completes, if it completes one.
         MindTurnDecision? turn = preclassifiedTurn ?? await DecideMindTurnAsync(
-            mind, route, decisionHistory, cancellationToken);
+            mind, route, decisionHistory, cancellationToken, pendingClarificationObjective);
         LastMindResponseLanguage = turn?.ResponseLanguage;
         if (turn is null)
         {
@@ -2416,22 +2423,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return true;
         }
 
-        if (pendingClarificationObjective is not null
-            && MindClarificationPolicy.ShouldResumePendingObjective(
-                route.Text,
-                turn))
+        if (turn.Objective is { } rearmedObjective
+            && !string.Equals(rearmedObjective, route.Text, StringComparison.Ordinal))
         {
-            string clarifiedObjective = MindClarificationPolicy.ResumeObjective(
-                pendingClarificationObjective,
-                route.Text);
-            var clarifiedRoute = new MissionInputRoute(
-                clarifiedObjective,
+            route = new MissionInputRoute(
+                rearmedObjective,
                 route.Source,
-                NaturalMemoryRequestParser.Classify(clarifiedObjective));
-            return await TryExecuteWithMindAsync(
-                clarifiedRoute,
-                registry,
-                cancellationToken);
+                NaturalMemoryRequestParser.Classify(rearmedObjective));
         }
 
         if (turn.Kind is "conversation" or "clarify"

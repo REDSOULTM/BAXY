@@ -3126,6 +3126,28 @@ def _accent_folded_with_punctuation(value: object) -> str:
     ).casefold()
 
 
+# Fase 3.5: the dialogue slot already knows why the message depends on the
+# conversation; saying which dependency it is keeps the 4B model from returning
+# «activalo» or «investigala» unchanged.
+_REWRITE_DEPENDENCY_HINTS = {
+    "answer": (
+        "El último mensaje responde a la pregunta que BAXY acaba de hacer: escribe el pedido de la "
+        "persona completado con esa respuesta."
+    ),
+    "destination": (
+        "El último mensaje sólo cambia dónde hacerlo (otra aplicación o sitio): repite el último pedido de "
+        "la persona con ese destino."
+    ),
+    "reference": (
+        "El último mensaje usa un pronombre (lo, la, le) que nombra algo que la persona dijo antes: "
+        "escríbelo con esa cosa en lugar del pronombre."
+    ),
+    "topic": (
+        "El último mensaje pide buscar o averiguar algo sin decir sobre qué: agrégale el tema que la "
+        "persona nombró antes."
+    ),
+}
+
 _COMPLETED_EFFECT_CLAIM = re.compile(
     r"(?<![\w])(?:"
     # Spanish first-person preterite of a PC action, alone or with a clitic:
@@ -13498,6 +13520,93 @@ class LlmRuntime:
                 result,
             )
         return result
+
+    def rewrite_in_context(
+        self,
+        text: str,
+        context: list[tuple[str, str]],
+        *,
+        dependency: str = "",
+        timeout: float = 2.5,
+    ) -> str:
+        """Rewrite a message that depends on the dialogue as a request that stands alone.
+
+        The dialogue slot (``dialogue_slot.dependency``) already decided that the
+        message points back: an answer to BAXY's question, «sí», a new destination,
+        a pronoun object or a lookup without its topic. The model only joins the
+        message with what was said; ``dialogue_slot.rewrite_stays_in_context``
+        rejects any word nobody said, so it can never add an object or an effect.
+        """
+
+        current = str(text).strip()[:1_024]
+        lines = "\n".join(
+            f"{'BAXY' if speaker == 'BAXY' else 'persona'}: {str(line).strip()[:400]}"
+            for speaker, line in list(context)[-4:]
+        )
+        payload = {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "Reescribes el último mensaje que una persona le escribe a BAXY, su "
+                        "asistente de PC, para que se entienda solo, sin leer la conversación. "
+                        "Usa sólo palabras que ya están en la conversación o en el mensaje: no "
+                        "agregues cosas, nombres, cantidades ni acciones que nadie dijo. "
+                        "Si el mensaje responde a la pregunta de BAXY, junta la respuesta con el "
+                        "pedido al que responde (pedido «pon una alarma», pregunta «¿a qué hora?», "
+                        "respuesta «a las 7» → «pon una alarma a las 7»). Si el mensaje sólo dice "
+                        "que sí a lo que BAXY ofreció, escribe ese ofrecimiento como pedido de la "
+                        "persona. Si sólo cambia el lugar o la aplicación («no, en X»), repite el "
+                        "pedido anterior con ese lugar en vez del otro. Si usa un pronombre (lo, "
+                        "la, le, eso) o no nombra de qué habla, pon en su lugar la cosa o el tema "
+                        "que se nombró antes. Si el mensaje ya se entiende solo, o es un "
+                        "comentario, una queja, un agradecimiento o charla, devuélvelo exactamente "
+                        "igual. Conserva el idioma y el trato de la persona. Devuelve sólo el JSON."
+                    ),
+                },
+                *(
+                    [{"role": "system", "content": _REWRITE_DEPENDENCY_HINTS[dependency]}]
+                    if dependency in _REWRITE_DEPENDENCY_HINTS
+                    else []
+                ),
+                {
+                    "role": "user",
+                    "content": "Conversación:\n" + lines + "\n\nÚltimo mensaje: " + current,
+                },
+            ],
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "baxy_contextual_rewrite",
+                    "strict": True,
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "request": {"type": "string", "minLength": 1, "maxLength": 600}
+                        },
+                        "required": ["request"],
+                        "additionalProperties": False,
+                    },
+                },
+            },
+            "temperature": 0.0,
+            "max_tokens": 128,
+            "seed": 0,
+            "chat_template_kwargs": {"enable_thinking": False},
+        }
+        maximum_timeout = 15.0 if os.environ.get("BAXY_MIND_NGL", "").strip() == "0" else 2.5
+        response = self._post(
+            payload,
+            timeout=min(maximum_timeout, self._normalize_request_budget(timeout)),
+        )
+        try:
+            content = response["choices"][0]["message"].get("content") or ""
+            raw = json.loads(content)
+        except (json.JSONDecodeError, KeyError, IndexError, TypeError) as error:
+            raise ValueError("reescritura contextual con JSON inválido") from error
+        if not isinstance(raw, dict) or set(raw) != {"request"} or not isinstance(raw["request"], str):
+            raise ValueError("reescritura contextual con forma inválida")
+        return " ".join(raw["request"].split())
 
     def clarify_missing_referent(
         self,

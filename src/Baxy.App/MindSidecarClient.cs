@@ -55,6 +55,13 @@ internal sealed record MindTurnDecision(
     public string? ConversationKind { get; init; }
 
     public string? RecoveryFailureCode { get; init; }
+
+    /// <summary>
+    /// The request this turn decided when the message completed the dialogue
+    /// slot (an answer to the pending question, a pronoun, a new destination).
+    /// The shell executes and keeps this text; it never rebuilds it itself.
+    /// </summary>
+    public string? Objective { get; init; }
 }
 
 internal sealed record MindArgumentResult(
@@ -509,7 +516,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         IReadOnlyList<(string Role, string Content)> history,
         TimeSpan timeout,
         CancellationToken cancellationToken,
-        bool pendingClarification = false)
+        bool pendingClarification = false,
+        string? pendingObjective = null)
     {
         if (!IsTurnDecisionAvailable)
         {
@@ -526,16 +534,22 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             });
         }
 
+        var decideRequest = new JsonObject
+        {
+            ["type"] = "turn.decide",
+            ["text"] = text,
+            ["history"] = historyArray,
+            ["pendingClarification"] = pendingClarification,
+            ["uiLanguage"] =
+                CultureInfo.CurrentUICulture.TwoLetterISOLanguageName,
+        };
+        if (!string.IsNullOrWhiteSpace(pendingObjective))
+        {
+            decideRequest["pendingObjective"] = pendingObjective;
+        }
+
         JsonObject? reply = await RequestAsync(
-            new JsonObject
-            {
-                ["type"] = "turn.decide",
-                ["text"] = text,
-                ["history"] = historyArray,
-                ["pendingClarification"] = pendingClarification,
-                ["uiLanguage"] =
-                    CultureInfo.CurrentUICulture.TwoLetterISOLanguageName,
-            },
+            decideRequest,
             timeout,
             cancellationToken).ConfigureAwait(false);
         if (reply is null || (string?)reply["type"] != "turn.result")
@@ -607,6 +621,17 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         {
             return null;
         }
+        string? objective = reply["objective"] is JsonNode objectiveNode
+            ? objectiveNode is JsonValue objectiveValue
+                && objectiveValue.TryGetValue(out string? objectiveText)
+                && objectiveText is { Length: > 0 and <= 2_048 }
+                    ? objectiveText
+                    : null
+            : null;
+        if (reply["objective"] is not null && objective is null)
+        {
+            return null;
+        }
         string? recoveryFailureCode = (string?)reply["failure_code"];
         if (recoveryFailureCode is not null
             && (recoveryFailureCode is not ("turn_contract_failure" or "turn_runtime_failure" or "turn_unavailable")
@@ -657,6 +682,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 ResponseLanguage = responseLanguage,
                 ConversationKind = conversationKind,
                 RecoveryFailureCode = recoveryFailureCode,
+                Objective = objective,
             }
             : null;
     }

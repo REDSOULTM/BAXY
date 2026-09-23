@@ -118,12 +118,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 post-goal: fusion e97802c9f + BUILD2033 (cabeza del lugar geocodificado).
 # C03 Fase 8 (D18) audio.app.volume.set y verbos de desinstalación en Steam (b5fd9e50b + fusión 28432af9e): re-anclaje de identidad de programa.
 # C03 notebook (cierre 2026-09-22): re-pin tras las tandas y reparaciones del notebook (WALLPAPER2039…WINGET2087)
+# Fase 3.5 clase 1 (2026-09-22): dialogue_slot, reescritura contextual y harness semantic_replay/semantic_corpus.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "2972ab4b9503694a440ea3ef5b7d4fcfa89e18d67e4d8aedcbe7e4de8ac2f3fc"
+        "350c43234cceadabd3e7edb92dd543f50192bd4ebe51c7ecaacfe1807ba8312d"
     ),
     "src/baxy_mind/llm.py": (
-        "1c692ae3a76e78d93888687a1d6affafbdb0eabc7693ac20a1df1388c6019998"
+        "7566bead8ff3874dfb90e8a624a8e9eb516db3f30d6166774d186bf6715a4783"
     ),
 }
 

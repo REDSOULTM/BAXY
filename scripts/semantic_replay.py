@@ -24,7 +24,7 @@ usage:
   semantic_replay.py conv --out DIR [--label L] [--idle S] [--reviews F] TURNS...
   semantic_replay.py summary --out DIR
   semantic_replay.py rescore --out DIR --reviews F
-  semantic_replay.py literals --out FILE [--limit N]
+  semantic_replay.py literals --out FILE [--limit N] [--corpus corpus.jsonl --skip-survey]
   semantic_replay.py diff BASE.jsonl NEW.jsonl
 """
 
@@ -122,6 +122,60 @@ def _wait_gates(idle: float, log) -> bool:
         time.sleep(10)
     log("GATES_TIMEOUT busy=" + ",".join(_busy()))
     return False
+
+
+GUARD_TITLE = "BAXY semantic replay guard"
+_GUARD_FORM = (
+    "Add-Type -AssemblyName System.Windows.Forms; $f = New-Object Windows.Forms.Form; "
+    f"$f.Text = '{GUARD_TITLE}'; $f.Width = 420; $f.Height = 160; $f.ShowDialog() | Out-Null"
+)
+
+
+def _code_pids() -> set[int]:
+    import psutil
+
+    roots = set()
+    for process in psutil.process_iter(["pid", "name"]):
+        if (process.info["name"] or "").lower() != "code.exe":
+            continue
+        try:
+            parent = process.parent()
+        except psutil.Error:
+            continue
+        if parent is None or parent.name().lower() != "code.exe":
+            roots.add(process.info["pid"])  # the editor itself; helpers come and go
+    return roots
+
+
+def _guard_window() -> subprocess.Popen:
+    """Put a disposable window of our own in the foreground before a script runs.
+
+    2026-09-22: a replay read «cerralo» as "close the active window" while VS Code was
+    in front, and «sí, dale» confirmed it — VS Code (and the agent inside it) closed
+    twice. Whatever a script's turns do to "the active window" lands on this window.
+    """
+
+    user32 = ctypes.windll.user32
+    process = subprocess.Popen(["powershell", "-NoProfile", "-Command", _GUARD_FORM])
+    hwnd = 0
+    for _ in range(100):
+        hwnd = user32.FindWindowW(None, GUARD_TITLE)
+        if hwnd:
+            break
+        time.sleep(0.1)
+    if not hwnd:
+        process.kill()
+        raise RuntimeError("no apareció la ventana guardia")
+    for _ in range(20):
+        user32.keybd_event(0x12, 0, 0, 0)  # ALT down lets a background process take the foreground
+        user32.keybd_event(0x12, 0, 2, 0)
+        user32.ShowWindow(hwnd, 9)
+        user32.SetForegroundWindow(hwnd)
+        time.sleep(0.2)
+        if user32.GetForegroundWindow() == hwnd:
+            return process
+    process.kill()
+    raise RuntimeError("la ventana guardia no quedó en primer plano")
 
 
 def _run_processes() -> set[int]:
@@ -255,6 +309,13 @@ def run_conversation(turns_path: pathlib.Path, out: pathlib.Path, label: str, id
     environment["BAXY_MIND_MESSAGE_COMPOSE_AUDIT_CONTENT"] = "1"
     for name in ("raw-replies.jsonl", "compose-audit.jsonl", "turn-audit.jsonl"):
         (work / name).unlink(missing_ok=True)
+    vscode_before = _code_pids()
+    try:
+        guard = _guard_window()
+    except RuntimeError as error:
+        log(f"GUARD_FAILED {error}")
+        return {"script": turns_path.name, "error": "guard"}
+    log(f"GUARD_FOREGROUND code_pids={len(vscode_before)}")
     with (work / "conductor.log").open("w", encoding="utf-8") as conductor_log:
         exit_code = subprocess.run(
             [
@@ -265,6 +326,11 @@ def run_conversation(turns_path: pathlib.Path, out: pathlib.Path, label: str, id
             cwd=REPO, env=environment, stdout=conductor_log, stderr=subprocess.STDOUT,
         ).returncode
     log(f"conductor_exit={exit_code}")
+    guard.kill()
+    lost = vscode_before - _code_pids()
+    if vscode_before and lost:
+        log(f"VSCODE_CLOSED {sorted(lost)} — se aborta la corrida")
+        return {"script": turns_path.name, "error": "vscode_closed"}
     if "level" in volume:
         _state("volume", "set", int(volume["level"]))
         _state("volume", "mute", int(bool(volume.get("muted"))))
@@ -330,10 +396,29 @@ def _decide(client, message: dict[str, Any], timeout: float = 120.0) -> dict[str
         return reply
 
 
-def literals(out: pathlib.Path, limit: int | None) -> None:
+def literals(
+    out: pathlib.Path,
+    limit: int | None,
+    corpus: pathlib.Path | None = None,
+    skip_survey: bool = False,
+    src: pathlib.Path | None = None,
+) -> None:
     import run_turn_policy_gate as gate
 
-    rows = [json.loads(line) for line in REGISTRY.read_text(encoding="utf-8").splitlines() if line.strip()]
+    if src is not None:
+        # Measure another commit's mind (a worktree of it) against today's core catalog.
+        gate.SRC = src.resolve()
+
+    if corpus is None:
+        rows = [json.loads(line) for line in REGISTRY.read_text(encoding="utf-8").splitlines() if line.strip()]
+    else:
+        # semantic_corpus.py rows: {"id", "text", ...}; survey rows already have their own replay.
+        rows = [
+            {"case_id": row["id"], "literal": row["text"], "history": row.get("history") or [],
+             "pendingObjective": row.get("pendingObjective")}
+            for row in map(json.loads, filter(str.strip, corpus.read_text(encoding="utf-8").splitlines()))
+            if not (skip_survey and row.get("expect") == "survey")
+        ]
     if limit:
         rows = rows[:limit]
     manifest = gate.read_runtime_manifest(pathlib.Path(os.environ["LOCALAPPDATA"]) / "BAXYRuntime" / "mind-runtime-v1.json")
@@ -361,8 +446,11 @@ def literals(out: pathlib.Path, limit: int | None) -> None:
             try:
                 reply = _decide(
                     client,
-                    {"type": "turn.decide", "id": f"replay-{case_id}", "text": row["literal"], "history": [],
-                     "pendingClarification": False, "uiLanguage": "es"},
+                    {"type": "turn.decide", "id": f"replay-{case_id}", "text": row["literal"],
+                     "history": [*row.get("history", []), {"role": "user", "content": row["literal"]}]
+                     if row.get("history") else [],
+                     "pendingClarification": False, "uiLanguage": "es",
+                     **({"pendingObjective": row["pendingObjective"]} if row.get("pendingObjective") else {})},
                 )
                 record.update(
                     {
@@ -428,6 +516,9 @@ def main(argv: list[str]) -> int:
     lit = sub.add_parser("literals")
     lit.add_argument("--out", required=True, type=pathlib.Path)
     lit.add_argument("--limit", type=int)
+    lit.add_argument("--corpus", type=pathlib.Path, help="semantic_corpus.py corpus.jsonl instead of the 742")
+    lit.add_argument("--skip-survey", action="store_true")
+    lit.add_argument("--src", type=pathlib.Path, help="mind sources to run (e.g. a worktree of the baseline tag)")
     dif = sub.add_parser("diff")
     dif.add_argument("base", type=pathlib.Path)
     dif.add_argument("new", type=pathlib.Path)
@@ -445,7 +536,7 @@ def main(argv: list[str]) -> int:
     elif args.command == "rescore":
         rescore(args.out, args.reviews)
     elif args.command == "literals":
-        literals(args.out, args.limit)
+        literals(args.out, args.limit, args.corpus, args.skip_survey, args.src)
     else:
         diff(args.base, args.new)
     return 0

@@ -37,6 +37,7 @@ os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 from . import protocol
 from . import effect_intent
 from . import corrector
+from . import dialogue_slot
 from .corrector import catalog_correction_terms
 from .first_signal import (
     PATH_MODEL,
@@ -7384,6 +7385,107 @@ def _emit_early_turn_signal(
     already_signaled.append(True)
 
 
+def _rearm_in_context(
+    message: dict[str, Any],
+    *,
+    llm: Any,
+    available_operations: tuple[str, ...],
+    application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
+    game_catalog: GameCatalogIndex = GameCatalogIndex(),
+) -> tuple[str, str] | None:
+    """Fill the dialogue slot: the request this message completes, or None.
+
+    Returns (rearmed request, how) when the message depends on the previous turns
+    (``dialogue_slot.dependency``) and a rearmed request stays inside what was
+    said. The pattern path is tried first (pending request + answer); the model
+    rewrites only what the patterns cannot join. Talk is never rewritten.
+    """
+
+    objective = str(message.get("text", "")).strip()
+    history = message.get("history") or []
+    slot = dialogue_slot.read_slot(message, history, objective)
+    dependency = dialogue_slot.dependency(objective, slot)
+    if dependency is None:
+        return None
+
+    def audited(rearmed: str | None, how: str, proposal: str | None = None) -> tuple[str, str] | None:
+        _append_turn_audit(
+            {
+                "schema": "baxy.mind-turn-audit.v1",
+                "request_id": message.get("id"),
+                "phase": "dialogue_slot",
+                "dependency": dependency,
+                "rearmed_by": how,
+                "rearmed": rearmed,
+                "model_proposal": proposal,
+            }
+        )
+        return None if rearmed is None else (rearmed, how)
+
+    if dependency == "reference" and slot.antecedents and not dialogue_slot.asks_to_look_up(objective):
+        # 2026-09-22: «cerralo» after «abrí el bloc de notas» was read alone as
+        # "close the active window" and closed VS Code. With an antecedent, the
+        # pronoun is that antecedent's object, never whatever is in front.
+        substituted = dialogue_slot.substituted_reference(objective, slot.antecedents[0])
+        if substituted is not None and resolve_explicit_effects(
+            substituted, available_operations, application_names, game_catalog,
+        ) is not None:
+            return audited(substituted, "pattern")
+    if (
+        dependency == "answer"
+        and slot.pending_request
+        and dialogue_slot.is_assent(objective)
+        and _explicit_stable_no_effect_turn_decision(
+            slot.pending_request, None, pending_clarification=False,
+        ) is not None
+    ):
+        # 0758398ed: a plain «sí» to a yes/no question about a stable no-effect
+        # request closes that request; it does not turn the offer into an effect.
+        return audited(slot.pending_request, "pattern")
+    if dependency == "answer" and slot.pending_request:
+        try:
+            asked = resolve_explicit_clarification_intent(
+                slot.pending_request, available_operations, application_names,
+            )
+        except (TypeError, ValueError):
+            asked = None
+        joined = dialogue_slot.joined_answer(
+            slot.pending_request,
+            objective,
+            percentage=asked is not None and bool({"amount", "level"} & set(asked.missing_fields)),
+        )
+        if joined is not None:
+            try:
+                resolved = resolve_explicit_effects(
+                    joined, available_operations, application_names, game_catalog,
+                )
+                still_missing = resolve_explicit_clarification_intent(
+                    joined, available_operations, application_names,
+                )
+            except (TypeError, ValueError):
+                resolved, still_missing = None, None
+            # The answer completes the question that was asked: the joined
+            # request must land in the family of that question, never next to it.
+            same_family = asked is None or (
+                resolved is not None and bool(set(resolved.operations) & set(asked.operations))
+            )
+            if resolved is not None and still_missing is None and same_family:
+                return audited(joined, "pattern")
+    try:
+        rewritten = llm.rewrite_in_context(objective, slot.context_lines(), dependency=dependency)
+    except Exception:  # noqa: BLE001 - a failed rewrite leaves the message as it arrived
+        rewritten = None
+    if rewritten is not None and not dialogue_slot.differs(rewritten, objective):
+        return audited(None, "model_kept", rewritten)
+    if rewritten and dialogue_slot.rewrite_stays_in_context(rewritten, objective, slot):
+        return audited(rewritten, "model", rewritten)
+    if dependency == "answer" and slot.pending_request and rewritten is None:
+        # The model was unavailable: the pending request and its answer travel
+        # together in the form the grounding readers already join (AUDIO1789).
+        return audited(f"{slot.pending_request}\nAclaración confiable del usuario: {objective}", "joined")
+    return audited(None, "model_rejected" if rewritten else "model_failed", rewritten)
+
+
 def _prepare_turn_result(
     message: dict[str, Any],
     *,
@@ -7396,7 +7498,55 @@ def _prepare_turn_result(
     game_catalog: GameCatalogIndex = GameCatalogIndex(),
     on_signal: Callable[[dict[str, Any]], None] | None = None,
 ) -> dict[str, Any]:
-    """Prepare one side-effect-free turn result from the current request."""
+    """Prepare one side-effect-free turn result, after filling the dialogue slot."""
+
+    rearmed = _rearm_in_context(
+        message,
+        llm=llm,
+        available_operations=tuple(tool.name for tool in planner_catalog.tools),
+        application_names=application_names,
+        game_catalog=game_catalog,
+    )
+    if rearmed is not None:
+        request = rearmed[0]
+        history = list(message.get("history") or [])
+        if (
+            history
+            and isinstance(history[-1], dict)
+            and history[-1].get("role") == "user"
+            and history[-1].get("content") == message.get("text")
+        ):
+            history[-1] = {**history[-1], "content": request}
+        message = {**message, "text": request, "history": history, "pendingObjective": None}
+    result = _decide_turn_result(
+        message,
+        llm=llm,
+        planner_catalog=planner_catalog,
+        turn_evidence=turn_evidence,
+        encoder=encoder,
+        tool_by_name=tool_by_name,
+        application_names=application_names,
+        game_catalog=game_catalog,
+        on_signal=on_signal,
+    )
+    if rearmed is not None:
+        result["objective"] = rearmed[0]
+    return result
+
+
+def _decide_turn_result(
+    message: dict[str, Any],
+    *,
+    llm: Any,
+    planner_catalog: PlannerCatalog,
+    turn_evidence: TurnEvidenceService,
+    encoder: Callable[[Any], Any],
+    tool_by_name: dict[str, dict],
+    application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
+    game_catalog: GameCatalogIndex = GameCatalogIndex(),
+    on_signal: Callable[[dict[str, Any]], None] | None = None,
+) -> dict[str, Any]:
+    """Decide one side-effect-free turn result from the (rearmed) request."""
     already_signaled: list[bool] = []
 
     objective = str(message.get("text", ""))
