@@ -147,7 +147,7 @@ Formas nuevas (Fase 3.5, cada una con pruebas de frases que no son las que la or
 - **Una cláusula es una orden**: en una misión compuesta el vocativo («baxy, …», «Carter, …») no es una cláusula, y
   toda cláusula —la probada y la pendiente— tiene que empezar por una orden.
 
-Guardas de entrada sin pedido (`__main__._unresolved_input_kind`, pasan a `dialogue` al migrar): «mensaje cortado»
+Guardas de entrada sin pedido (`semantic/guards.py`, `_unresolved_input_kind`; salieron de `__main__`): «mensaje cortado»
 sólo para un **pedido** (con cabeza de orden: «como tú» al final de una charla no está cortado); «habla ajena» sólo
 sin conversación en curso (los literales que la justificaron llegan sin diálogo); tras ellas no queda objetivo
 pendiente. Veto de efecto inventado: un turno sin operaciones no afirma un efecto (primera persona del pretérito por
@@ -163,7 +163,7 @@ entre sí) va a `patterns.py` al final; antes salen los lectores acíclicos de c
 | Módulo | Qué lee | De dónde sale hoy |
 |---|---|---|
 | `normalize.py` | fold único (tildes, mayúsculas), clíticos, voseo, número en palabras, typos ≤2 contra el catálogo | `effect_intent._fold`, `request_reading.fold`, `corrector`, `dialogue_slot._fold` |
-| `dialogue.py` | hueco, re-armado, guardas de entrada sin pedido (corte, habla ajena) | `dialogue_slot.py`, `__main__._unresolved_input_kind` |
+| `guards.py` | guardas de entrada sin pedido (corte, habla ajena, ruido, eco, ruta suelta) | ya trasladadas desde `__main__` |
 | `identity.py` | qué es BAXY, qué no hace y por qué (límites de primera clase) | `request_reading` (identidad/capacidad), `known_unsupported_effect_request`, `_closed_unsupported_request` |
 | lectores con historial | oferta de Wi-Fi pendiente, respuesta de lugar, pronombre de búsqueda del navegador, «repetilo», estado de una ventana nombrada antes | siguen en `__main__` antes de `read()`; pasan a `reading` cuando `read()` reciba el historial |
 | `memory.py` | guardar, recordar y olvidar datos de la persona | hoy la ruta es del shell (`NaturalMemoryRequestParser`); la puntuación de capas la deja fuera |

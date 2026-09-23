@@ -110,8 +110,10 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 Fase 3.5 semantic S7 (2026-09-23): re-armado de destino por patrón.
 # C03 Fase 3.5 semantic S8 (2026-09-23): lectura de la cien-99 (caché no es pretérito, hecho de request_analysis_failed natural, prohibición y asentimiento a un pedido vacío fuera del hueco).
 # C03 Fase 3.5 semantic S8 (2026-09-23): lectura de la cien-99 y limpieza de ruff tras los traslados.
+# C03 Fase 3.5 semantic S9 (2026-09-23): guardas de entrada sin pedido a semantic/guards.py (traslado puro).
+# C03 Fase 3.5 semantic S9 (2026-09-23): guardas de entrada sin pedido a semantic/guards.py (traslado puro).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "c3faf4dd6dd834a178035c3508678851d8ec0ea438d22b1278e7fae36662efd4"
+    "15c042fafa6724e7d7ecddec7d1c1fc7b53f04596e5e26b121d110abd81ff595"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

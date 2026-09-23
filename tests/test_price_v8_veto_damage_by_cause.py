@@ -127,9 +127,11 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 Fase 3.5 semantic S7 (2026-09-23): re-armado de destino por patrón.
 # C03 Fase 3.5 semantic S8 (2026-09-23): lectura de la cien-99 (caché no es pretérito, hecho de request_analysis_failed natural, prohibición y asentimiento a un pedido vacío fuera del hueco).
 # C03 Fase 3.5 semantic S8 (2026-09-23): lectura de la cien-99 y limpieza de ruff tras los traslados.
+# C03 Fase 3.5 semantic S9 (2026-09-23): guardas de entrada sin pedido a semantic/guards.py (traslado puro).
+# C03 Fase 3.5 semantic S9 (2026-09-23): guardas de entrada sin pedido a semantic/guards.py (traslado puro).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "3733434579c0d1db4601611f13714765ddb884851e704a940bfc5e4d975bc9da"
+        "3c3ae7cc596f07841861b523dbe5c3b88f92c2be1a177f0941fc11222eb6733e"
     ),
     "src/baxy_mind/llm.py": (
         "d1e3f5f15946947bdaaeb33cb7b071a6530d625e032749299096038e2c587744"
