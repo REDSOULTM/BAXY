@@ -101,6 +101,12 @@ queda en 687 líneas de re-exportación. pytest completo (`PYTHONPATH=src … -m
 «averiguá si tengo Krita / la distribución de entrada…» iban a la web porque S4 añadió «averigua» al lector de
 investigación de temas; revertido (se usa para comprobaciones locales) → 13 711 verdes, 0 rojos.
 
+S6: puerta `semantic.reading.read() -> Reading` (efectos del patrón y de las formas de enunciado, aclaración, charla)
+consumida por `__main__._decide_turn_result`; 19 nombres de __main__ a `semantic/reading.py`. `_PLAY_HEAD` único con
+voseo: «poné/poneme/reproducí … en youtube» no se leía (5 filas del corpus cambian, las 5 a media.play.youtube, igual
+que «pon…»). pytest completo 13 718 verdes. Siguiente: medir S8 (guiones + 742 + capas), luego Full (.NET + pytest) y
+cien 100/100, y pedir al dueño el held-out nuevo.
+
 ## Próximo paso
 
 Medir S5 (= S4 + veto «análisis de la solicitud», vocativos Gemma/Carter/Alexa, silenciar el PC, «sacá una captura», destino delante; capa B §12) desde `S/snap-s5` (`lit-s5`, `layers-s5`). S4 era: S3 + lectores de opinión/hecho fechado, orden tras charla, comilla sin cerrar) desde `S/snap-s4`: `literals --src S/snap-s4 --out S/lit-s4.jsonl` (S3: 1 decisión distinta vs S2, H0506 memoria), capas `--out S/layers-s4.jsonl`,

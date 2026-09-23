@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from typing import Iterable
 from ..catalog_operation_aliases import exact_catalog_operation_plan
 from . import lexicon
-from .grammar import _INSTRUCTION_NOUNS, _MACHINE_NOUNS, _without_leading_duration_preface, _fold, _match, _has, _REQUEST_PREFIX, _EXPLICIT_DESIRE_REQUEST, _TRAILING_MEANS_DIRECTIVE, _strip_request_envelope, _explicit_desire_request, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _negative_state_question_body, _machine_status_scopes, _machine_status_scopes_are_one_reading, _machine_status_is_the_whole_clause, _is_past_or_hypothetical_state, _is_machine_knowledge_or_diagnosis, _system_status_domain, _process_list_domain, _network_status_domain, _SET_VOLUME_VERB, _VOLUME_UP_VERB, _VOLUME_DOWN_VERB, _AUDIO_OBSERVATION_HEAD, _indirect_audio_mute_state_query, window_inventory_arguments, _literal_note_payload_request, _is_meta_or_tool_denial, _is_explicit_meta_or_tool_denial, _KNOWN_APPLICATION, _CONNECTED_INVENTORY, _OPEN, _MEDIA_RESUME_VERB, _LIST, _READ, _CREATE, _SEARCH, _COVERAGE_ACTION_HEAD, _SEQUENCE_NOMINAL_HEAD, _machine_status_topic, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, _PERCENTAGE_WORD_VALUES, _explicit_google_search_query, _request_clauses
+from .grammar import _INSTRUCTION_NOUNS, _MACHINE_NOUNS, _without_leading_duration_preface, _fold, _match, _has, _REQUEST_PREFIX, _EXPLICIT_DESIRE_REQUEST, _TRAILING_MEANS_DIRECTIVE, _strip_request_envelope, _explicit_desire_request, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _negative_state_question_body, _machine_status_scopes, _machine_status_scopes_are_one_reading, _machine_status_is_the_whole_clause, _is_past_or_hypothetical_state, _is_machine_knowledge_or_diagnosis, _system_status_domain, _process_list_domain, _network_status_domain, _SET_VOLUME_VERB, _VOLUME_UP_VERB, _VOLUME_DOWN_VERB, _AUDIO_OBSERVATION_HEAD, _indirect_audio_mute_state_query, window_inventory_arguments, _literal_note_payload_request, _is_meta_or_tool_denial, _is_explicit_meta_or_tool_denial, _KNOWN_APPLICATION, _CONNECTED_INVENTORY, _OPEN, _MEDIA_RESUME_VERB, _LIST, _READ, _CREATE, _SEARCH, _COVERAGE_ACTION_HEAD, _SEQUENCE_NOMINAL_HEAD, _machine_status_topic, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, _PERCENTAGE_WORD_VALUES, _explicit_google_search_query, _request_clauses, _PLAY_HEAD
 from .audio import app_scoped_microphone_mute, _LOCAL_VOLUME_DEVICE, _VOLUME_OBJECT, _bare_music_volume_request, _volume_domain, _MUTE_VERB, _audio_mute_domain, _APP_VOLUME_SPANISH, _APP_VOLUME_ENGLISH, _APP_VOLUME_ENGLISH_SPLIT, _APP_VOLUME_SET_SPANISH, _APP_VOLUME_SET_ENGLISH, _APP_VOLUME_LEVEL_WORDS, _AUDIO_LEVEL_CUE, _is_audio_mute_state_query, _PERCENTAGE_WORD_PATTERN
 from .windows import deictic_window_mutation, _FOCUS_HEAD_ONLY, _FOCUS_HEAD_WITH_TAIL, _FOCUS_TAIL, _MINIMIZE_HEAD, _SNAP_HEAD, _SNAP_SIDE, has_named_window_target, _window_domain, minimize_all_request, INDETERMINATE_WINDOW_CLAUSE, other_window_switch_request
 from .display import screen_light_as_brightness, _KNOWN_FOLDER_WORDS, _KNOWN_FOLDER_ENUM, screen_inventory_request, _display_status_question, _without_screen_state_preface, _BRIGHTNESS_OBJECT, _BRIGHTNESS_UP_VERB, _BRIGHTNESS_DOWN_VERB, _BRIGHTNESS_ABSOLUTE, _BRIGHTNESS_ENGLISH_TURN, _BRIGHTNESS_RELATIVE_WORDS, brightness_status_request, _BRIGHTNESS_SET_VERB, _BRIGHTNESS_EXTREME_VALUES, wallpaper_request
@@ -9356,7 +9356,7 @@ def _review_media_and_email_effects(
             matches,
             folded,
             "media.play.exact",
-            r"\b(?:reproduce|reproducir|play|pon)\b",
+            rf"\b{_PLAY_HEAD}\b",
         )
     elif (
         (
@@ -9397,10 +9397,10 @@ def _review_media_and_email_effects(
             matches,
             folded,
             "media.play.query",
-            rf"\b{_SEARCH}\b|\b(?:reproduce|reproducir|play|pon)\b",
+            rf"\b{_SEARCH}\b|\b{_PLAY_HEAD}\b",
         )
     if (
-        _head_is(head, r"(?:reproduce|reproducir|reproduzca|play|pon)")
+        _head_is(head, _PLAY_HEAD)
         and _has(folded, r"\byoutube\b")
         and not _has(
             folded,
@@ -9409,13 +9409,13 @@ def _review_media_and_email_effects(
         )
         and not resume_existing_media
         and not media_transport
-        and _has(folded, r"\b(?:reproduce|reproducir|play|pon)\b")
+        and _has(folded, rf"\b{_PLAY_HEAD}\b")
     ):
         _append(
             matches,
             folded,
             "media.play.youtube",
-            r"\b(?:reproduce|reproducir|play|pon)\b",
+            rf"\b{_PLAY_HEAD}\b",
         )
     if (
         media_transport

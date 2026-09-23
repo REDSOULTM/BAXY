@@ -123,9 +123,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 Fase 3.5 semantic S3 (2026-09-23): trece dominios de effect_intent a src/baxy_mind/semantic/, oferta parcial de misiones compuestas, lectores de opinión/hecho fechado, vocativos, rechazo en el hueco.
 # C03 Fase 3.5 semantic S3 (2026-09-23): trece dominios de effect_intent a src/baxy_mind/semantic/, oferta parcial de misiones compuestas, lectores de opinión/hecho fechado, vocativos, rechazo en el hueco.
 # C03 Fase 3.5 semantic S4 (2026-09-23): acto de charla, deseo de escuchar, antecedente de pregunta pública, lecturas sin confirmar, volumen/brillo/medios/pantalla.
+# C03 Fase 3.5 semantic S6 (2026-09-23): puerta semantic.reading.read(); verbo reproducir con voseo en un solo lugar (_PLAY_HEAD).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "c867b1b489de4a37817b00f818295c856063d06db227054475c2f583bae64ee8"
+        "dd24b26b59306d3bd3d0bf89d1712e13703ca4485fb8388f6f7a8a9affa6da64"
     ),
     "src/baxy_mind/llm.py": (
         "129f511c85361471b1019533f70c46429839fa6d6af9dfcdcf796ccf5f307b56"

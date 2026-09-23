@@ -987,6 +987,14 @@ _SET_VOLUME_VERB = (
 )
 
 
+# The play verb in every form people use (Fase 3.5, «poné música de Brasil en youtube» was not read:
+# the lists said «pon|reproduce|play» and the voseo «poné/reproducí» fell through). One place.
+_PLAY_HEAD = (
+    r"(?:pon|pone|poner|ponme|poneme|ponele|reproduce|reproduci|reproducir|reproducime|reproduceme|"
+    r"reproduzca|play)"
+)
+
+
 _VOLUME_UP_VERB = r"(?:sube(?:lo|la|le)?|subi(?:le)?|suvi|subir(?:le)?|aumenta(?:le)?|aumentar|incrementa|incrementar|increase|raise|up)"
 
 

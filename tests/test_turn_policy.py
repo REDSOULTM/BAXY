@@ -4245,6 +4245,15 @@ def test_turn_resolves_explicit_effects_only_once(
         "resolve_explicit_effects",
         counted_resolver,
     )
+    # Fase 3.5: the turn reads the message through the reading gate, which
+    # resolves the explicit effects; the invariant (once per turn) is the same.
+    from baxy_mind.semantic import reading as semantic_reading_module
+
+    monkeypatch.setattr(
+        semantic_reading_module,
+        "resolve_explicit_effects",
+        counted_resolver,
+    )
 
     def encoder_should_not_run(_texts: object) -> None:
         raise AssertionError("lexical catalog must not call the encoder")

@@ -30,9 +30,13 @@ Todo pasa por `turn.decide` → `src/baxy_mind/__main__.py::_prepare_turn_result
    shell (`ConfirmationReplyParser`: una respuesta hecha sólo de palabras afirmativas confirma esa invocación exacta).
 1. **Hueco de diálogo** (`dialogue_slot.py` + `_rearm_in_context`). Antes de clasificar, si el mensaje depende del turno
    anterior se re-arma como pedido autónomo; ver la sección siguiente.
-2. **Patrón** (`effect_intent.py`): verbo + objeto contra el catálogo y las apps/juegos instalados. Un efecto → action,
-   varios → plan, falta un dato → clarify (`resolve_explicit_clarification_intent`), límite conocido / fuera del
-   mundo / charla estable → conversation. Si no cuadra, calla (`None`).
+2. **Lectura** (`semantic.reading.read()` → `Reading`): el patrón (`semantic/patterns.py`, verbo + objeto contra el
+   catálogo y las apps/juegos instalados) y las formas de enunciado que el patrón solo no lee (orden después de
+   charla, destino delante, deseo de escuchar) devuelven `effects` y de qué forma salieron (`source`); un efecto
+   reconocido sin su valor es `clarification`; la charla que no pide nada es `talk`. Un efecto → action, varios →
+   plan, falta un dato → clarify, límite conocido / fuera del mundo / charla → conversation. Antes de la lectura
+   quedan en `__main__` los lectores que necesitan el historial (una oferta pendiente, «repetilo», el pronombre de
+   una búsqueda del navegador).
 3. **Recuperación + modelo**: `PlannerCatalog.shortlist` (E5 consulta contra el pasaje de cada operación; ordenar
    por familia se midió y se rechazó, 73/124 contra 102/124), `llm.decide_turn` (Qwen3-4B, temperatura 0, esquema
    cerrado: conversation | clarify | action | plan sobre la lista corta). La segunda lectura sin catálogo
@@ -88,6 +92,7 @@ con antecedente es el objeto de ese antecedente, nunca «lo que esté delante».
 | `dialogue.py` | el hueco de diálogo (arriba) | un rechazo («no, dejalo», «mejor no», «never mind») nunca completa el pedido pendiente; «no, en YouTube» lleva destino y sí |
 | `intent.py`, `catalog.py`, `temporal.py` | el tipo de lectura (`EffectIntent`), los índices de apps y juegos instalados, las palabras de tiempo | compartidos por varios dominios: ningún dominio importa de otro para esto |
 | dominios | `audio`, `display`, `windows`, `media`, `web`, `files`, `games`, `network`, `system`, `notes`, `messaging`, `ui`, `apps` | los lectores acíclicos que estaban en `effect_intent` (19 140 → 13 133 líneas). Traslado puro: las 4 946 lecturas del patrón del corpus son idénticas antes y después (`pattern_dump`) |
+| `reading.py` | la puerta `read(text, …) -> Reading` y las formas de enunciado (orden tras charla, destino delante, deseo de escuchar, cláusulas de una compuesta y su oferta parcial, charla que no pide nada) | `__main__._decide_turn_result` consume la lectura; el conteo «una sola resolución por turno» sigue probado (`test_turn_resolves_explicit_effects_only_once`) |
 | `patterns.py` | el orquestador del patrón: `resolve_explicit_effects`, `resolve_explicit_clarification_intent`, las revisiones por dominio que se llaman entre sí, los contratos compuestos | salió entero de `effect_intent` (traslado puro, 0 diferencias en 4 946 lecturas); `effect_intent` queda como capa de re-exportación de 687 líneas mientras los llamadores migran |
 
 Formas nuevas (Fase 3.5, cada una con pruebas de frases que no son las que la originaron):
@@ -159,7 +164,7 @@ entre sí) va a `patterns.py` al final; antes salen los lectores acíclicos de c
 | `normalize.py` | fold único (tildes, mayúsculas), clíticos, voseo, número en palabras, typos ≤2 contra el catálogo | `effect_intent._fold`, `request_reading.fold`, `corrector`, `dialogue_slot._fold` |
 | `dialogue.py` | hueco, re-armado, guardas de entrada sin pedido (corte, habla ajena) | `dialogue_slot.py`, `__main__._unresolved_input_kind` |
 | `identity.py` | qué es BAXY, qué no hace y por qué (límites de primera clase) | `request_reading` (identidad/capacidad), `known_unsupported_effect_request`, `_closed_unsupported_request` |
-| puerta `read()` | una sola lectura (`Reading`) que `__main__` y `llm` consumen en vez de leer texto | hoy `__main__._decide_turn_result` llama a los lectores uno por uno |
+| lectores con historial | oferta de Wi-Fi pendiente, respuesta de lugar, pronombre de búsqueda del navegador, «repetilo», estado de una ventana nombrada antes | siguen en `__main__` antes de `read()`; pasan a `reading` cuando `read()` reciba el historial |
 | `memory.py` | guardar, recordar y olvidar datos de la persona | hoy la ruta es del shell (`NaturalMemoryRequestParser`); la puntuación de capas la deja fuera |
 
 Cada dominio: tabla de formas aceptadas (rioplatense y neutro, voseo/tú, inglés, sin tildes, errores típicos del oído),
