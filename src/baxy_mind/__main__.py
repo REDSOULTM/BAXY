@@ -7537,6 +7537,24 @@ def _rearm_in_context(
             )
             if resolved is not None and still_missing is None and same_family:
                 return audited(joined, "pattern")
+    if dependency == "destination" and slot.antecedents:
+        # Fase 3.5 (held-out turn 18 «en YouTube mejor» after «tengo ganas de
+        # escuchar reggaetón»): only the destination of the last request changes.
+        # The model read «mejor» as «mejorar»; the pattern joins the destination
+        # to the request as said and keeps it when the gate reads an effect.
+        joined = dialogue_slot.joined_answer(slot.antecedents[0], objective)
+        if joined is not None and dialogue_slot.differs(joined, slot.antecedents[0]):
+            try:
+                destination_reading = semantic_reading.read(
+                    joined,
+                    available_operations=available_operations,
+                    application_names=application_names,
+                    game_catalog=game_catalog,
+                )
+            except (TypeError, ValueError):
+                destination_reading = None
+            if destination_reading is not None and destination_reading.effects is not None:
+                return audited(joined, "pattern")
     try:
         rewritten = llm.rewrite_in_context(objective, slot.context_lines(), dependency=dependency)
     except Exception:  # noqa: BLE001 - a failed rewrite leaves the message as it arrived

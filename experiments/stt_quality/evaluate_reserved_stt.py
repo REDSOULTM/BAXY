@@ -107,8 +107,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 Fase 3.5 semantic S5 (2026-09-23): el orquestador del patrón pasa de effect_intent a src/baxy_mind/semantic/patterns.py (traslado puro).
 # C03 Fase 3.5 semantic S5 (2026-09-23): orquestador a semantic/patterns.py; «averigua» fuera del lector de investigación (se usa para comprobaciones locales).
 # C03 Fase 3.5 semantic S6 (2026-09-23): puerta semantic.reading.read(); verbo reproducir con voseo en un solo lugar (_PLAY_HEAD).
+# C03 Fase 3.5 semantic S7 (2026-09-23): re-armado de destino por patrón.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "398cace2950989dacc94b53f858ce75d78ba9a3b3df900c2566a5cdaf9ee5989"
+    "ea37152921c67f78b8e1316d1d3507b2198406c51103300febf12312430b2e61"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

@@ -107,6 +107,11 @@ voseo: «poné/poneme/reproducí … en youtube» no se leía (5 filas del corpu
 que «pon…»). pytest completo 13 718 verdes. Siguiente: medir S8 (guiones + 742 + capas), luego Full (.NET + pytest) y
 cien 100/100, y pedir al dueño el held-out nuevo.
 
+S8 (HEAD 10dbcf34): guiones con el producto dueño 53/60 tras revisar el 35, held-out **29/30**; 742 con 1 decisión
+distinta de S2 (H0506); capas en curso (`S/layers-s8.jsonl`). Después, sin commitear: re-armado de destino por patrón
+(held-out 18). Antes de la cien: comprobar con una decisión real que «close that» / «cierra aquello» siguen
+preguntando el referente (el patrón ya daba app.close en opus55-inicio; lo convierte en pregunta el turno).
+
 ## Próximo paso
 
 Medir S5 (= S4 + veto «análisis de la solicitud», vocativos Gemma/Carter/Alexa, silenciar el PC, «sacá una captura», destino delante; capa B §12) desde `S/snap-s5` (`lit-s5`, `layers-s5`). S4 era: S3 + lectores de opinión/hecho fechado, orden tras charla, comilla sin cerrar) desde `S/snap-s4`: `literals --src S/snap-s4 --out S/lit-s4.jsonl` (S3: 1 decisión distinta vs S2, H0506 memoria), capas `--out S/layers-s4.jsonl`,

@@ -183,3 +183,32 @@ def test_talk_with_an_order_a_request_or_the_pc_is_left_to_the_reading(text):
 def test_a_dative_clitic_with_its_object_said_is_not_a_reference(text, expected):
     slot = _slot(None, ["silenciá los parlantes"], "Listo.")
     assert dialogue_slot.dependency(text, slot) == expected
+
+
+class _NoModel:
+    def rewrite_in_context(self, *args, **kwargs):
+        raise AssertionError("the pattern rearms a destination change without the model")
+
+
+@pytest.mark.parametrize(
+    ("previous", "text", "rearmed"),
+    [
+        ("quiero escuchar cumbia", "en YouTube mejor", "quiero escuchar cumbia en YouTube"),
+        ("poné Soda Stereo en Spotify", "no, en YouTube", "poné Soda Stereo en YouTube"),
+    ],
+)
+def test_a_new_destination_rearms_the_last_request_by_pattern(previous, text, rearmed):
+    from baxy_mind import __main__ as mind
+
+    message = {
+        "text": text,
+        "history": [
+            {"role": "user", "content": previous},
+            {"role": "assistant", "content": "Listo, está sonando."},
+            {"role": "user", "content": text},
+        ],
+    }
+    result = mind._rearm_in_context(
+        message, llm=_NoModel(), available_operations=("media.play.youtube", "media.play.query"),
+    )
+    assert result == (rearmed, "pattern")

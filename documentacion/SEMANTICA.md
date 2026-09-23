@@ -59,8 +59,9 @@ Un turno deja como mucho un hueco. `dialogue_slot.dependency` dice por qué el m
 | `topic` | verbo de búsqueda sin su tema | «averiguá qué dijeron», «fijate cuándo sale» |
 
 Re-armado, en este orden: (1) patrón — pedido pendiente + respuesta (un número se une como porcentaje si la pregunta
-pedía cantidad; tiene que caer en la misma familia que la pregunta), o el clítico sustituido por el objeto del pedido
-anterior; (2) modelo — `llm.rewrite_in_context` con la instrucción del tipo de dependencia, aceptado sólo si cada
+pedía cantidad; tiene que caer en la misma familia que la pregunta), el clítico sustituido por el objeto del pedido
+anterior (o por la obra de una pregunta pública, «investigala»), o el pedido anterior con su destino cambiado («en
+YouTube mejor», aceptado si `read()` lo lee como efecto); (2) modelo — `llm.rewrite_in_context` con la instrucción del tipo de dependencia, aceptado sólo si cada
 palabra de contenido ya la dijo la persona o BAXY. El pedido re-armado se clasifica por el camino de siempre y vuelve
 al shell como `objective`; el shell lo ejecuta y lo guarda si hace falta otra pregunta. **Un solo lector**: el shell
 ya no concatena nada. Charla, «gracias» y quejas nunca se re-arman.
