@@ -4295,14 +4295,20 @@ def test_state_questions_are_recognized_across_languages_and_forms(
         "VRAM crece > 5.5 GB con --swa-full y OOM",
         "Me interesa el mobile, investiga cuanta vram usara realmente",
         "Dime qué dispositivo de audio está activo",
-        # «apagar la música» detiene la reproducción; no silencia el equipo.
-        "Apaga la musica",
         # Una coordinación con otro dominio no puede ejecutarse a medias.
         "mute the sound and dim the screen",
     ],
 )
 def test_state_lookalikes_never_gain_deterministic_authority(text: str) -> None:
     assert resolve_explicit_effects(text, AVAILABLE) is None
+
+
+@pytest.mark.parametrize("text", ["Apaga la musica", "apaga la música", "para de reproducir"])
+def test_turning_off_the_music_stops_playback_never_the_system_sound(text: str) -> None:
+    # «apagar la música» detiene la reproducción; no silencia el equipo
+    # (uso real 2026-09-23: «apaga la música» quedaba en una pregunta).
+    result = resolve_explicit_effects(text, AVAILABLE | {"media.control", "audio.mute"})
+    assert result is not None and result.operations == ("media.control",)
 
 
 @pytest.mark.parametrize("text", [

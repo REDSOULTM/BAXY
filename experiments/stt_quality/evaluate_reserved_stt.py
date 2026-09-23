@@ -112,8 +112,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 Fase 3.5 semantic S8 (2026-09-23): lectura de la cien-99 y limpieza de ruff tras los traslados.
 # C03 Fase 3.5 semantic S9 (2026-09-23): guardas de entrada sin pedido a semantic/guards.py (traslado puro).
 # C03 Fase 3.5 semantic S9 (2026-09-23): guardas de entrada sin pedido a semantic/guards.py (traslado puro).
+# C03 Fase 3.5 uso real 2026-09-23: guardia público/propio, vetos por familia, alarmas en hora local.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "15c042fafa6724e7d7ecddec7d1c1fc7b53f04596e5e26b121d110abd81ff595"
+    "d2632750336088df604e37f12eacf9fc4ee33da4a1c5373d29d87ac8611e5b1d"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

@@ -749,16 +749,26 @@ def _native_selection_description(operation: str, description: str) -> str:
 
 SEMANTIC_EFFECT_GUARD_PROMPT = (
     "Clasifica semánticamente el pedido actual. request_type es "
-    "stable_conversation para charla, reacciones o conocimiento estable "
-    "contestable sin consultar fuentes ni estado; external_read si exige "
-    "consultar información vigente, una fuente nombrada, datos personales o "
-    "estado del equipo; environment_change si pide crear, abrir, reproducir, "
+    "stable_conversation para charla, saludos, reacciones, opiniones, consejos, "
+    "chistes, cálculos, definiciones y conocimiento general estable que se "
+    "contesta sin consultar nada; public_lookup si la respuesta es información "
+    "pública del mundo que hay que consultar porque cambia o es un dato concreto "
+    "que conviene verificar: precios, cotizaciones, tipos de cambio, clima, "
+    "noticias, resultados, tráfico, horarios, transporte, estrenos, eventos, "
+    "lugares, negocios y si abren o reparten, reseñas, recetas, o datos concretos "
+    "sobre personas, obras, fechas o cifras; own_data_read si pide leer datos "
+    "propios de la persona o el estado de este equipo: sus alarmas, agenda, "
+    "reuniones, recordatorios, notas, listas, contactos o archivos, lo que está "
+    "sonando o lo que señala («esta canción», «este artista»), el volumen, la "
+    "batería, la hora o fecha actual, ventanas o programas; "
+    "environment_change si pide crear, abrir, reproducir, "
     "cambiar o controlar algo, incluida cualquier acción del mundo real fuera "
     "del equipo como pedir, comprar, reservar, encargar, enviar o regar: esta "
     "clasificación no juzga si el asistente puede realizarla, sólo si se pidió "
     "una acción; incomplete_effect si sólo hay una referencia o "
-    "falta un objetivo o valor humano esencial para external_read o "
-    "environment_change. Un nombre natural inequívoco cuenta como resuelto. "
+    "falta un objetivo o valor humano esencial para public_lookup, "
+    "own_data_read o environment_change. Un nombre natural inequívoco cuenta "
+    "como resuelto. "
     "effect_count es zero, one o multiple según los efectos atómicos pedidos; "
     "para stable_conversation su valor no concede autoridad. No identifiques "
     "operaciones ni inventes contexto."
@@ -1490,6 +1500,20 @@ def _primary_action_compatibility_target(
     return primary_operation, contract
 
 
+# Uso real 2026-09-23: one «external_read» mixed a public fact to look up with the
+# person's own data and this PC's state, so nothing could tell «busca el tipo de
+# cambio» from «qué grupos hay en mis contactos». Both still count as a complete
+# effect; only a public lookup may become a web search (the line of 00_IDENTIDAD:
+# information may come in, the person's content does not go out).
+SEMANTIC_REQUEST_TYPES = (
+    "stable_conversation",
+    "public_lookup",
+    "own_data_read",
+    "environment_change",
+    "incomplete_effect",
+)
+
+
 def derive_semantic_effect_state(raw: object) -> str:
     """Reduce a candidate-free guard response to a one-sided state.
 
@@ -1506,12 +1530,7 @@ def derive_semantic_effect_state(raw: object) -> str:
         return "invalid"
     request_type = raw.get("request_type")
     effect_count = raw.get("effect_count")
-    if request_type not in {
-        "stable_conversation",
-        "external_read",
-        "environment_change",
-        "incomplete_effect",
-    } or effect_count not in {"zero", "one", "multiple"}:
+    if request_type not in SEMANTIC_REQUEST_TYPES or effect_count not in {"zero", "one", "multiple"}:
         return "invalid"
     if request_type == "stable_conversation":
         return "no_effect"
@@ -5384,13 +5403,18 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             "absence beyond that catalog, a launch attempt, or a completed opening."
         )
     if observed:
-        if _verified_notification_due(situation) is not None:
+        scheduled_local = _verified_notification_due(situation)
+        if scheduled_local is not None:
+            # Uso real 2026-09-23: «a las seis de la mañana» was confirmed as
+            # «09:00 UTC». The person hears their own clock; the conversion is
+            # done here, never left to the model.
+            scheduled_local = scheduled_local.astimezone()
             bits.append(
                 "Briefly confirm the alarm or timer was scheduled and give its "
-                "scheduled time as HH:MM in UTC, explicitly naming UTC. This is "
-                "not the current time or a new relative countdown. Use nextRunUtc, "
-                "the observed next run, rather than dueUtc, the requested time; "
-                "do not expose these internal field names. "
+                f"scheduled local time, {scheduled_local:%H:%M}, as HH:MM; never "
+                "mention UTC or a time zone. This is "
+                "not the current time or a new relative countdown. "
+                "Do not expose internal field names. "
                 "Preserve any explicitly named title; a descriptive alarm label "
                 "may be paraphrased. Address the person naturally in their language."
             )
@@ -7645,10 +7669,16 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
             return "missing_name"
     seen = payload.get("seen")
     if isinstance(seen, dict) and seen and "effect" not in payload:
-        # El turno leyó un estado; no lo cambió.
+        # El turno leyó un estado; no lo cambió. Uso real 2026-09-23: «el cambio
+        # del peso chileno», «bajo la lluvia», «el silencio» son sustantivos o
+        # preposiciones de lo leído, no «yo cambio»; sólo el verbo en primera
+        # persona afirma un efecto (y cayeron todas las búsquedas de divisas).
         if (
             re.search(
+                r"(?<!\bel )(?<!\bdel )(?<!\bal )(?<!\bun )(?<!\bsu )(?<!\btu )(?<!\bmi )(?<!\bde )"
+                r"(?<!\ben )(?<!\bpor )(?<!\bsin )(?<!\bmas )(?<!\bmuy )(?<!\besta )(?<!\bestan )(?<!\bes )"
                 r"\b(?:hago|pongo|ajusto|subo|bajo|silencio|cambio|configuro)\b"
+                r"(?!\s+(?:de|del)\b)"
                 r"|\bi (?:set|turn|adjust|change|raise|lower|mute)\b",
                 folded,
             )
@@ -9815,15 +9845,16 @@ def compose_visible_defect(
         ):
             return "extra_claim"
         if scheduled_due is not None:
+            scheduled_local = scheduled_due.astimezone()
             scheduled_defect = _clock_fact_defect(
-                stripped, f"{scheduled_due.hour:02d}:{scheduled_due.minute:02d}"
+                stripped, f"{scheduled_local.hour:02d}:{scheduled_local.minute:02d}"
             )
             if scheduled_defect:
                 return "missing_state" if scheduled_defect == "missing_name" else scheduled_defect
-            if not re.search(r"\bUTC\b", stripped, re.IGNORECASE):
+            if re.search(r"\bUTC\b|\bGMT\b", stripped, re.IGNORECASE):
                 return "missing_state"
             if any(pattern.search(folded) for pattern in _CALENDAR_DATE_PATTERNS):
-                if not _preserves_calendar_date(stripped, scheduled_due):
+                if not _preserves_calendar_date(stripped, scheduled_local):
                     return "extra_claim"
         elif not clock and re.search(r"(?<!\d)\d{1,2}:\d{2}(?!\d)", stripped):
             return "extra_claim"
@@ -13393,6 +13424,36 @@ class LlmRuntime:
             speculative_count_cancellation.cancel()
         return canonical
 
+    def _remember_semantic_request_type(self, text: str, request_type: str) -> None:
+        remembered = self.__dict__.setdefault("_semantic_request_types", OrderedDict())
+        remembered[text] = request_type
+        remembered.move_to_end(text)
+        while len(remembered) > 256:
+            remembered.popitem(last=False)
+
+    def public_lookup_requested(self, text: str) -> bool:
+        """Whether the guard read ``text`` as public information to look up.
+
+        Reuses the guard's own reading of the same text when the turn already ran
+        it; otherwise runs the guard once. Never selects an operation.
+        """
+
+        remembered = self.__dict__.get("_semantic_request_types") or {}
+        if text not in remembered:
+            cache = getattr(self, "_semantic_effect_cache", None)
+            if cache is not None:
+                cache.pop(text, None)
+            reuse = getattr(self, "_semantic_effect_reuse_cache", None)
+            if reuse is not None:
+                with self._validated_classifier_reuse_lock:
+                    reuse.pop(text, None)
+            try:
+                self._verify_semantic_effect_shape(text)
+            except ValueError:
+                return False
+            remembered = self.__dict__.get("_semantic_request_types") or {}
+        return remembered.get(text) == "public_lookup"
+
     def _verify_semantic_effect_shape(
         self,
         text: str,
@@ -13434,12 +13495,7 @@ class LlmRuntime:
                         "properties": {
                             "request_type": {
                                 "type": "string",
-                                "enum": [
-                                    "stable_conversation",
-                                    "external_read",
-                                    "environment_change",
-                                    "incomplete_effect",
-                                ],
+                                "enum": list(SEMANTIC_REQUEST_TYPES),
                             },
                             "effect_count": {
                                 "type": "string",
@@ -13461,6 +13517,8 @@ class LlmRuntime:
         }
         raw = self._post_schema_object(payload, "el veto semántico de efectos")
         state = derive_semantic_effect_state(raw)
+        if state != "invalid" and isinstance(raw, dict):
+            self._remember_semantic_request_type(text, str(raw.get("request_type")))
         effect_count = None
         if state != "invalid" and isinstance(raw, dict):
             effect_count = "zero" if state == "no_effect" else raw.get("effect_count")
@@ -18265,7 +18323,7 @@ class LlmRuntime:
                     else "La app estaba cerrada y la abriste ahora. No digas que ya estaba abierta."
                 ),
                 "missing_state": (
-                    "Give the scheduled time in UTC, not the current time or a restarted countdown."
+                    "Give the scheduled local time as HH:MM without UTC, not the current time or a restarted countdown."
                     if _verified_notification_due(situation) is not None
                     else (
                         "State the observed playbackStatus; a loaded title does not imply playback."

@@ -230,6 +230,10 @@ def _audio_mute_domain(text: str) -> bool:
             r"(?:(?:el|la|the)\s+)?(?:\w+\s+){0,2}"
             r"(?:en|in|on)\s+(?:mudo|silencio|mute|silent)\b|"
             r"\bturn\s+(?:the\s+)?(?:audio|sound|volume)\s+back\s+on\b|"
+            # Uso real 2026-09-23 «silencio», «vuelve el sonido»: the bare silence
+            # order and the sound coming back are the global mute state.
+            r"^[¿?¡!\s]*(?:silencio|mudo|silence|quiet)(?:\s+(?:total|por\s+favor|porfa|please|ya|ahora))?[\s.!?]*$|"
+            r"\b(?:vuelve|volve|que\s+vuelva|regresa|regresame|devuelve)\s+(?:el\s+)?(?:sonido|audio|sound)\b|"
             # Órdenes elípticas inequívocas: sólo existe un silencio global.
             rf"^[¿?¡!\s]*{_UNMUTE_VERB}"
             r"(?:\s+(?:it|please|pls|plz|por favor|porfa|todo|everything|el audio|"

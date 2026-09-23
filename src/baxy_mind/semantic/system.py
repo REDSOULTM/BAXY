@@ -39,10 +39,21 @@ def _weather_location(text: str) -> str | None:
         not folded_place
         or _has(folded_place, _WEATHER_MEDIUM)
         or _has(folded_place, _WEATHER_WORDS)
+        # Uso real 2026-09-23 «va a llover el fin de semana?» read the weather of
+        # «Sémana» (Mali): a time is not a place.
+        or _has(folded_place, _WEATHER_TIME_WORDS)
         or len(place.encode("utf-8")) > 128
     ):
         return None
     return place
+
+
+_WEATHER_TIME_WORDS = (
+    r"^(?:(?:el|la|los|las|este|esta|the|this|next|proximo|proxima)\s+)?(?:semana|finde|fin\s+de\s+semana|"
+    r"week|weekend|manana|tarde|noche|morning|afternoon|evening|night|hoy|today|tomorrow|"
+    r"lunes|martes|miercoles|jueves|viernes|sabado|domingo|monday|tuesday|wednesday|thursday|"
+    r"friday|saturday|sunday|dia|dias|day|days|mes|month|ano|year)\b"
+)
 
 
 def _weather_read_intent(

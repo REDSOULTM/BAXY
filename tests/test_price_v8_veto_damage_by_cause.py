@@ -129,12 +129,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 Fase 3.5 semantic S8 (2026-09-23): lectura de la cien-99 y limpieza de ruff tras los traslados.
 # C03 Fase 3.5 semantic S9 (2026-09-23): guardas de entrada sin pedido a semantic/guards.py (traslado puro).
 # C03 Fase 3.5 semantic S9 (2026-09-23): guardas de entrada sin pedido a semantic/guards.py (traslado puro).
+# C03 Fase 3.5 uso real 2026-09-23: guardia público/propio, vetos por familia, alarmas en hora local.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "3c3ae7cc596f07841861b523dbe5c3b88f92c2be1a177f0941fc11222eb6733e"
+        "56b588a33c825df98548212172a31098eb4ed2e08ec628d548c42e8738f9291d"
     ),
     "src/baxy_mind/llm.py": (
-        "d1e3f5f15946947bdaaeb33cb7b071a6530d625e032749299096038e2c587744"
+        "ffd48c5b48a3d4aec0e917d566b0aef3c5c909053feb682f18532051f5a544d0"
     ),
 }
 

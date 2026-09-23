@@ -9266,7 +9266,8 @@ def test_one_sided_conversation_veto_precedes_argument_grounding() -> None:
     }
     assert guard_schema["properties"]["request_type"]["enum"] == [
         "stable_conversation",
-        "external_read",
+        "public_lookup",
+        "own_data_read",
         "environment_change",
         "incomplete_effect",
     ]

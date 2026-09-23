@@ -2606,6 +2606,59 @@ def _domain_confirmation_question(
     return question if _recovery_question_is_valid(question, objective) else ""
 
 
+def _public_lookup_decision(response_language: object) -> dict[str, object]:
+    """A web search of the person's own words, for public information the model would recite."""
+
+    return {
+        "mode": "action",
+        "operation": "web.search",
+        "question": "",
+        "conversation_kind": "",
+        "effect_count": "one",
+        "effect_operations": ["web.search"],
+        "effect_verification": "recovered",
+        "response_language": response_language,
+    }
+
+
+# What is never a public search, whatever the guard reads: the person's own
+# things and what is playing (the words would leave the PC; 00_IDENTIDAD:
+# information comes in, content does not go out); someone pointed at and not
+# named; a level for this PC; a sentence cut off before its object («hora
+# actual en», «hay algún concierto próximo de») — that one is asked, not guessed.
+_NOT_A_PUBLIC_LOOKUP = re.compile(
+    r"\b(?:mi|mis|mio|mia|mios|mias|my|mine|nuestr[oa]s?|our)\b|"
+    r"\b(?:este|esta|this)\s+(?:cancion|tema|song|track|artista|artist|disco|album|video|podcast)\b|"
+    r"\b(?:that|this)\s+(?:person|guy|man|woman)\b|\b(?:esa|esta|aquella)\s+persona\b|"
+    r"\d\s*%|\bpor\s*ciento\b|\bpercent\b|"
+    r"\b(?:de|del|en|a|al|el|la|los|las|un|una|para|con|por|sobre|entre|"
+    r"the|of|in|at|to|for|on|with|about|a|an)[\s?.!¿¡]*$"
+)
+
+
+def _names_own_data(objective: str) -> bool:
+    return _NOT_A_PUBLIC_LOOKUP.search(effect_intent._fold(objective)) is not None
+
+
+def _public_lookup_applies(
+    objective: str,
+    routing_objective: str,
+    llm: object,
+    available_operations: tuple[str, ...],
+    planner_catalog: PlannerCatalog,
+) -> bool:
+    """The request is public information to look up on the web (the guard's reading)."""
+
+    reads = getattr(llm, "public_lookup_requested", None)
+    return (
+        "web.search" in available_operations
+        and planner_catalog.get("web.search") is not None
+        and not _names_own_data(objective)
+        and callable(reads)
+        and bool(reads(routing_objective))
+    )
+
+
 def _shortlist_with_required_effects(
     shortlist: tuple[PlannerTool, ...],
     required_operations: tuple[str, ...],
@@ -8019,6 +8072,30 @@ def _decide_turn_result(
         withdrawn_effects
         and not decision["effect_operations"]
         and decision["mode"] == "conversation"
+        and non_target_language is None
+        and all(
+            ((tool_by_name.get(operation) or {}).get("function") or {}).get("risk") == "read_only"
+            for operation in withdrawn_effects
+        )
+        and _public_lookup_applies(
+            objective, routing_objective, llm, available_operations, planner_catalog,
+        )
+    ):
+        # Uso real 2026-09-23 «qué hora es en tokio» (system.time reads only this
+        # PC's clock), «cuánto está el dólar hoy en chile», «dime alguna noticia de
+        # negocios»: a withdrawn read of public information is looked up on the
+        # web instead of offered back as «¿Quieres que…?».
+        shortlist = _shortlist_with_required_effects(shortlist, ("web.search",), planner_catalog)
+        decision = validate_turn_decision(
+            _public_lookup_decision(decision.get("response_language")),
+            {tool.name for tool in shortlist},
+        )
+        intent_operations = ["web.search"]
+        turn_audit["stages"].append(_turn_audit_stage("public_lookup", decision))
+    if (
+        withdrawn_effects
+        and not decision["effect_operations"]
+        and decision["mode"] == "conversation"
     ):
         # Two stages withdraw an effect the model proposed, and both of them
         # publish the withdrawal as a *conversation* -- which the presentation
@@ -8287,6 +8364,28 @@ def _decide_turn_result(
         turn_audit["stages"].append(
             _turn_audit_stage("deictic_referent_clarification", decision)
         )
+
+    # Uso real 2026-09-23: «cuál es la tasa de cambio entre los pesos y el yen»,
+    # «qué películas salen esta semana», «cómo está el tráfico» were answered
+    # from memory («no tengo información en tiempo real») or refused. What the
+    # person asks about the public world is looked up (00_IDENTIDAD: «si no sabe
+    # algo, lo busca»); the guard alone decides it is public, never the person's
+    # own data, and the search runs on the words the person said.
+    if (
+        decision["mode"] == "conversation"
+        and decision.get("conversation_kind") in {"knowledge", "unsupported"}
+        and non_target_language is None
+        and _public_lookup_applies(
+            objective, routing_objective, llm, available_operations, planner_catalog,
+        )
+    ):
+        shortlist = _shortlist_with_required_effects(shortlist, ("web.search",), planner_catalog)
+        decision = validate_turn_decision(
+            _public_lookup_decision(decision.get("response_language")),
+            {tool.name for tool in shortlist},
+        )
+        intent_operations = ["web.search"]
+        turn_audit["stages"].append(_turn_audit_stage("public_lookup", decision))
 
     partial_offer = (
         _compound_partial_offer(

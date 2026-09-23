@@ -482,6 +482,14 @@ def _uncovered_family_floor(folded: str, operation: str) -> bool | None:
     return None
 
 
+_POINTED_MEDIA = (
+    r"\b(?:esta|este|this)\s+(?:cancion|tema|song|track|artista|artist|musica|music)\b|"
+    r"\b(?:cancion|tema|song|track|artista|artist)\s+(?:es\s+|is\s+)?(?:esta|este|esto|this)\b|"
+    r"\bque\s+(?:cancion|tema|musica|artista)\s+(?:suena|esta\s+sonando|hay\s+en\s+la\s+radio)\b|"
+    r"\b(?:quien|who)\s+(?:canta|sings|is\s+singing)\b"
+)
+
+
 def _curated_domain_is_grounded(
     text: str,
     operation: str,
@@ -708,7 +716,9 @@ def _curated_domain_is_grounded(
             folded,
             r"\b(?:que|cuales|cuando|cuantas|muestra|muestrame|dime|ver|"
             r"lista|listar|list|show|tell|revisa|consulta|tengo|hay|"
-            r"what|which|when|how\s+many)\b",
+            r"what|which|when|how\s+many|"
+            # Uso real 2026-09-23 «do i have appointments today».
+            r"do\s+i\s+have|have\s+i\s+got|any|upcoming|proxim[oa]s?|pendientes?)\b",
         )
         if operation == "calendar.event.create":
             return creation
@@ -1432,6 +1442,10 @@ def _curated_domain_is_grounded(
                 _has(folded, r"\b(?:titulo|title|artista|artist|pista|track)\b")
                 and _has(folded, r"\b(?:sonando|reproduciendo|playing)\b")
             )
+            # Uso real 2026-09-23: «qué canción es esta», «cómo se llama esta
+            # canción», «qué artista es este», «quién canta»: what is playing,
+            # pointed at instead of named.
+            or _has(folded, _POINTED_MEDIA)
         ) and not _has(
             folded,
             r"\b(?:netflix|youtube|spotify)\b|"
@@ -5068,6 +5082,15 @@ def _explicit_named_music_query(text: str) -> str | None:
             r"^(?:(?:el|la|the|un|una|a|an)\s+)?(?:audio|volumen|volume|sonido|sound|"
             r"recordatorio|reminder|alarma|alarm|temporizador|timer|nota|note|tarea|task|evento|event)\b",
         )
+        # Uso real 2026-09-23 «pon hamburguesa en mi lista de comestibles» (a list
+        # entry), «ponme lo último sobre el precio de las acciones de mercadona»
+        # (information): neither object is something to play.
+        or _has(
+            _fold(query),
+            r"\b(?:en|a|al|to|in|on)\s+(?:mi|mis|la|el|my|the)\s+(?:lista|list|carrito|cart|agenda|calendario|notas?)\b|"
+            r"^(?:(?:lo|las?)\s+)?ultim[oa]s?\s+(?:sobre|de|del|about|on)\b|"
+            r"\b(?:precios?|cotizacion|acciones|stocks?|noticias|news|informacion|information)\b",
+        )
         or _has(
             _fold(query),
             r"\b(?:archivo|file|carpeta|folder|pagina|page|fondo|wallpaper|"
@@ -5212,10 +5235,28 @@ def _media_play_domain(text: str) -> bool:
             or _spoken_radio_station_request(text)
             or _bare_spoken_number_media_query(text) is not None
             or bool(live_music_query)
+            # Uso real 2026-09-23 «iniciar canciones de celine dion», «encuentra
+            # algo de jazz suave», «iniciar podcasts de nfl»: a play or start
+            # order whose object names music.
+            or (
+                _has(text, _MUSIC_ORDER)
+                # «Pon la música al 20%»: a level, not something to play.
+                and not _has(text, r"\d{1,3}\s*(?:%|por\s*ciento|percent)|\bpor\s*ciento\b")
+            )
         )
         and not audio_setting
         and not interactive_play
     )
+
+
+_MUSIC_ORDER = (
+    r"\b(?:pon|ponme|pone|poneme|toca|tocame|inicia|iniciar|empieza|empezar|arranca|reproduce|"
+    r"reproducir|reproduceme|play|start|encuentra|encuentrame|busca|buscame|quiero\s+escuchar|"
+    r"i\s+want\s+to\s+hear|let\s+me\s+hear)\b.{0,60}"
+    r"\b(?:canciones|cancion|musica|temas|album|disco|podcasts?|emisora|playlist|songs?|music|tracks?|"
+    r"jazz|rock|pop|reggaeton|salsa|lofi|clasica|classical|cumbia|bachata|trap|rap|hip\s+hop|"
+    r"boleros?|tango|metal|blues|reggae|electronica|techno|house)\b"
+)
 
 
 def conditional_open_pause_app(
@@ -9282,6 +9323,44 @@ def redo_previous_request_intent(
     return EffectIntent(resolved.operations, tuple(previous for _ in resolved.operations)) if resolved is not None else None
 
 
+def _everyday_media_control(folded: str, head: str) -> bool:
+    """Uso real 2026-09-23 «salta al siguiente episodio de podcast», «cambia a la
+    siguiente canción de la lista», «para de reproducir», «apaga la música»:
+    moving through or stopping what plays, said the everyday way."""
+
+    if _is_negative_effect_clause(folded):
+        return False
+    return (
+        (
+            _head_is(head, r"(?:salta|saltate|saltar|cambia|cambiar|pasa|pasate|skip|go)")
+            and _has(folded, r"\b(?:siguiente|next|anterior|previous|otra|another)\b")
+            and _has(folded, r"\b(?:cancion|song|pista|track|tema|episodio|episode|capitulo|podcast)\b")
+        )
+        or re.fullmatch(
+            r"(?:para|pare|deja|dejar|stop)\s+(?:de\s+)?(?:reproducir|sonar|tocar|playing)\b.{0,24}",
+            folded,
+        ) is not None
+        or re.fullmatch(
+            r"(?:apaga|apagame|quita|quitame|corta|cortame|para|pausa|deten|turn\s+off|stop)\s+"
+            r"(?:(?:la|el|esta|este|the|this)\s+)?(?:musica|music|cancion|song|reproduccion|playback)"
+            r"(?:\s+(?:por\s+favor|please|porfa|ya|ahora))?[\s.!?]*",
+            folded,
+        ) is not None
+    )
+
+
+def _pointed_media_question(folded: str, head: str) -> bool:
+    """Uso real 2026-09-23 «qué canción es esta», «cómo se llama esta canción»,
+    «quién es el cantante de esta canción»: what plays, pointed at."""
+
+    return (
+        _head_is(head, r"(?:que|what|cual|which|como|how|quien|who|dime|tell|decime)")
+        and _has(folded, _POINTED_MEDIA)
+        # «¿Qué canción está sonando en mi cabeza?» is not this PC's playback.
+        and not _has(folded, r"\b(?:en|inside)\s+(?:mi|my)\s+(?:cabeza|mente|head|mind)\b")
+    )
+
+
 def _review_media_and_email_effects(
     matches: list[tuple[int, int, str]],
     folded: str,
@@ -9515,6 +9594,19 @@ def _review_media_and_email_effects(
             r"\b(?:pasa|pasar|skip|siguiente|next)\b",
         )
     if (
+        not any(entry[2] == "media.control" for entry in matches)
+        and _everyday_media_control(folded, head)
+    ):
+        _append(
+            matches,
+            folded,
+            "media.control",
+            r"\b(?:salta|saltate|saltar|cambia|cambiar|pasa|pasate|skip|go|para|pare|deja|dejar|stop|"
+            r"apaga|apagame|quita|quitame|corta|cortame|pausa|deten|turn)\b",
+        )
+    if _pointed_media_question(folded, head) and not any(entry[2] == "media.status" for entry in matches):
+        _append(matches, folded, "media.status", _POINTED_MEDIA)
+    if (
         _head_is(head, r"(?:que|what|cual|which|dime|show|muestra)")
         and _has(folded, r"\b(?:musica|music|cancion|song)\b")
         and not _has(
@@ -9617,6 +9709,8 @@ def _resolve_explicit_effects_single(
             or _count_down_request(folded)
             or _bounded_calendar_list_query(folded)
             or _location_recommendation_request(folded)
+            or _everyday_media_control(folded, _request_head(folded))
+            or _pointed_media_question(folded, _request_head(folded))
             or (
                 _has(folded, r"^can i (?:see|view)\b")
                 and _has(folded, r"\b(?:reminder|recordatorio)\b")
@@ -10046,6 +10140,11 @@ def software_package_request(
         name, r"\b(?:programas?|aplicaciones?|apps?|juegos?|cosas?|archivos?|programs?|applications?|games?|files?)\b",
     )
     if not (in_catalog or known or plain):
+        return None
+    if match.group("verb").startswith("baj") and not (in_catalog or known):
+        # Uso real 2026-09-23 «baja un veinte por ciento», «baja las luces del
+        # techo» prepared a winget install: «bajar» lowers far more often than it
+        # downloads, so only software the catalog or the known list names is a download.
         return None
     raw = str(text)
     folded_raw = _fold(raw)
@@ -11976,6 +12075,8 @@ def resolve_explicit_effects(
                 and _has(folded, r"\b(?:again|otra vez|de nuevo)\b")
             )
             and not _active_alarm_stop_request(folded)
+            and not _everyday_media_control(folded, _request_head(folded))
+            and not _pointed_media_question(folded, _request_head(folded))
             and not any(
                 _authenticated_application_desired_open(
                     clause,

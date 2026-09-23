@@ -51,8 +51,34 @@ def _public_calendar_fact_lookup_request(folded: str) -> bool:
 _WEATHER_WORDS = (
     r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|llover|"
     # WEATHER2023 «¿hace frío afuera?»: the cold or the heat outside is the weather too.
-    r"llovera|llovio|temperature|temperatura|frio|fria|calor|cold|hot|caluroso|calurosa)\b"
+    r"llovera|llovio|temperature|temperatura|frio|fria|calor|cold|hot|caluroso|calurosa|"
+    # Uso real 2026-09-23 (MASSIVE weather_query): «necesitaré protector solar», «nieve», «viento».
+    r"nieve|nevar|nevara|nevando|snow|snowing|viento|wind|windy|humedad|humidity|soleado|sunny|"
+    r"nublado|cloudy|tormenta|storm|granizo|paraguas|umbrella|protector\s+solar|sunscreen|lloviendo|"
+    r"lluvias|precipitacion|precipitaciones|chubascos?)\b"
 )
+# Uso real 2026-09-23: «qué tiempo hace en santiago», «cómo va a estar el tiempo hoy
+# en ñuñoa»: «el tiempo» is the weather inside a weather frame only; «cuánto
+# tiempo», a cooking or travel time, or «hace tiempo» (long ago) are not.
+_WEATHER_TIEMPO = (
+    r"\b(?:que|como)\s+(?:tiempo\s+(?:hace|hara|va\s+a\s+hacer)|"
+    r"(?:esta|estara|sera|va\s+a\s+estar|va\s+a\s+ser|viene)\s+el\s+tiempo)\b|"
+    r"\bel\s+tiempo\s+(?:(?:de|para)\s+(?:hoy|manana|este|esta|el\s+fin)|hoy|manana|ahora|"
+    r"este\s+\w+|esta\s+(?:tarde|noche|semana|manana)|en\s+(?!el\s+horno|la\s+olla|el\s+microondas)\w)|"
+    r"^\s*tiempo\s+(?:en|para|hoy|manana)\b"
+)
+_NOT_WEATHER_TIEMPO = (
+    r"\b(?:cuanto|cuantos|mucho|poco|a|hace)\s+tiempo\b|\btiempo\s+(?:libre|de\s+(?:coccion|espera|viaje|carga|"
+    r"respuesta|entrega|juego|pantalla))\b|\b(?:horno|olla|microondas|coccion|cocinar|receta)\b"
+)
+
+
+def _names_weather(folded: str) -> bool:
+    """The weather is named: a weather word, or «el tiempo» inside a weather frame."""
+
+    return _has(folded, _WEATHER_WORDS) or (
+        _has(folded, _WEATHER_TIEMPO) and not _has(folded, _NOT_WEATHER_TIEMPO)
+    )
 
 
 def _weather_lookup_query(text: str) -> str | None:
@@ -61,7 +87,7 @@ def _weather_lookup_query(text: str) -> str | None:
     or verb-laden forms); None when the request is not a live weather lookup."""
 
     folded = _fold(text)
-    if not _public_live_lookup_request(folded) or not _has(folded, _WEATHER_WORDS):
+    if not _public_live_lookup_request(folded) or not _names_weather(folded):
         return None
     if _has(folded, r"^[¿?¡!\s]*(?:que|what)\s+(?:es|son|is|are|significa|means)\b"):
         return None
@@ -94,7 +120,7 @@ def _weather_lookup_query(text: str) -> str | None:
     query = re.sub(r"(?:^|\s+)(?:en|in|on)\s+(?:google|internet|la\s+web|the\s+web)\b\s*", " ", query, flags=re.IGNORECASE)
     query = re.sub(r"^\s*(?:el|la|los|las|the)\s+", "", query, count=1, flags=re.IGNORECASE)
     query = re.sub(r"\s+", " ", query).strip(" ?!.,;:")
-    return query if query and _has(_fold(query), _WEATHER_WORDS) else None
+    return query if query and _names_weather(_fold(query)) else None
 
 
 _TOPIC_RESEARCH = re.compile(
@@ -490,6 +516,16 @@ def _public_live_lookup_request(folded: str) -> bool:
         "will",
         "voy",
         "yes",
+        # Uso real 2026-09-23: «cuándo va a llover», «necesitaré protector solar»,
+        # «tengo que llevarme gafas de sol», «report weather for …».
+        "cuando",
+        "when",
+        "necesitare",
+        "tengo",
+        "hara",
+        "habra",
+        "report",
+        "i",
     }
     news_consumption = (
         re.match(
@@ -537,12 +573,13 @@ def _public_live_lookup_request(folded: str) -> bool:
     weather_head = head in weather_heads or (
         vocative_weather is not None and vocative_weather.group("head") in weather_heads
     )
-    weather = weather_head and _has(
-        folded,
-        r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|llover|"
-        r"umbrella|paraguas|temperature|temperatura|hot|caluroso|calurosa|"
-        r"cold|frio|fria|calor)\b",
-    ) and not _has(
+    # «i wish to know the weather in san francisco»: an unambiguous weather noun
+    # names the lookup when the sentence has no other order head («escribe …
+    # clima» types words, it does not look anything up).
+    weather_noun = not head and _has(folded, r"\b(?:weather|forecast|pronostico|clima)\b") and not _has(
+        folded, r"\bclima\s+(?:laboral|politico|social|economico|de\s+trabajo|organizacional|familiar)\b"
+    )
+    weather = (weather_head and _names_weather(folded) or weather_noun) and not _has(
         # WEATHER2023 boundary: the weather of the past is no live lookup.
         folded,
         r"\b(?:hacia|hizo|hubo|estuvo|estaba|fue|llovio|was|were|did|rained)\b|"
