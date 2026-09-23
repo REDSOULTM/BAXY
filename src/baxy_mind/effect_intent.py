@@ -170,6 +170,7 @@ from .semantic.windows import (  # noqa: F401 - moved to baxy_mind.semantic.wind
     other_window_switch_request,
 )
 from .semantic.display import (  # noqa: F401 - moved to baxy_mind.semantic.display; callers migrate
+    screen_light_as_brightness,
     _KNOWN_FOLDER_WORDS,
     _KNOWN_FOLDER_ENUM,
     _SCREEN_INVENTORY,
@@ -2879,6 +2880,7 @@ def resolve_explicit_clarification_intent(
     if explicit_non_action_frame(text):
         return None
     folded = _strip_request_envelope(_strip_request_envelope(_fold(text)))
+    folded = screen_light_as_brightness(folded)
     # MUSIC1571 H0656 «no me molesta, poné música»: the idiom accepts, it does
     # not negate the order that follows.
     folded = re.sub(r"^no\s+me\s+molesta\s*[,;:]?\s+(?=\S)", "", folded, count=1)
@@ -8880,7 +8882,8 @@ def _review_audio_effects(
             )
             and _has(
                 folded,
-                r"\b(?:sube|subir|baja|bajar|bajalo|subelo|aumenta|reduce|"
+                # Fase 3.5 (layer C «subí el volumen 10 puntos»): voseo «subí/bajá».
+                r"\b(?:sube|subi|subir|baja|baji|bajar|bajalo|subelo|aumenta|reduce|"
                 r"increment|decrease)\b",
             )
             and _has(
@@ -8892,7 +8895,7 @@ def _review_audio_effects(
                 matches,
                 folded,
                 "audio.volume.adjust",
-                r"\b(?:sube|subir|baja|bajar|aumenta|reduce|increment|decrease)\b",
+                r"\b(?:sube|subi|subir|baja|baji|bajar|aumenta|reduce|increment|decrease)\b",
             )
         elif (
             _head_is(head, _SET_VOLUME_VERB)
@@ -8944,7 +8947,7 @@ def _review_audio_effects(
                 not _has(
                     folded,
                     r"\b(?:pon|poner|fija|ajusta|adjust|establece|set|cambia|change|"
-                    r"sube|subir|baja|bajar|bajalo|subelo|aumenta|reduce)\b",
+                    r"sube|subi|subir|baja|baji|bajar|bajalo|subelo|aumenta|reduce)\b",
                 )
                 or _has(folded, r"\b(?:luego|despues|then|after|quedo)\b")
             )
@@ -9043,7 +9046,7 @@ def _literal_percentage_word_value(text: str) -> int | None:
         or _literal_volume_adjustment(text) is not None
     ):
         return None
-    value = rf"(?P<level>{_PERCENTAGE_WORD_PATTERN}|mitad|half|maximo|maximum)"
+    value = rf"(?P<level>{_PERCENTAGE_WORD_PATTERN}|mitad|half|maximo|maximum|minimo|minimum)"
     patterns = (
         rf"\b{_VOLUME_OBJECT}\s+(?:justo\s+|exactly\s+)?"
         rf"(?:a(?:l)?|en|to|at)\s*(?:la\s+|the\s+)?{value}"
@@ -9062,6 +9065,9 @@ def _literal_percentage_word_value(text: str) -> int | None:
         return 50
     if level in {"maximo", "maximum"}:
         return 100
+    if level in {"minimo", "minimum"}:
+        # Fase 3.5 (layer C): the same word the per-app reader maps to 0.
+        return 0
     return _PERCENTAGE_WORD_VALUES.get(level)
 
 
@@ -9109,6 +9115,7 @@ def _literal_brightness_adjustment(text: str) -> dict[str, object] | None:
     """Bind a relative quantity to its authored direction and the brightness object."""
 
     folded = _strip_request_envelope(_fold(text))
+    folded = screen_light_as_brightness(folded)
     if (
         _is_negative_effect_clause(folded)
         or _is_meta_or_tool_denial(folded)
@@ -9531,6 +9538,23 @@ def _review_application_and_window_effects(
         and _has(folded, r"\b(?:que|cual|what|dime)\b")
     ):
         _append(matches, folded, "window.active", r"\b(?:ventana|window)\b")
+    elif (
+        not window_mutations
+        and _has(folded, r"^[¿?¡!\s]*(?:que|cual|what|which|dime|decime)\b")
+        and _has(
+            folded,
+            r"\b(?:app|aplicacion|programa|proceso|application|program|process)\b.{0,24}"
+            r"\b(?:activ[ao]|active|en\s+primer\s+plano|al\s+frente|en\s+foco|in\s+(?:the\s+)?foreground|focused)\b",
+        )
+    ):
+        # Fase 3.5 (layer C «qué app está activa ahora», «qué proceso está en primer plano»):
+        # the application in front is read from the active window.
+        _append(
+            matches,
+            folded,
+            "window.active",
+            r"\b(?:app|aplicacion|programa|proceso|application|program|process)\b",
+        )
 
 
 
@@ -9956,7 +9980,8 @@ def _review_media_and_email_effects(
                 spotify
                 or _has(
                     folded,
-                    r"\b(?:audio|media|musica|music|reproduccion|playback)\b",
+                    # Fase 3.5: «pausá el video», «pause the movie» control the same session.
+                    r"\b(?:audio|media|musica|music|reproduccion|playback|video|videos|peli|pelicula|serie|episodio|capitulo|movie)\b",
                 )
                 or exact_play
             )
@@ -11419,6 +11444,7 @@ def resolve_explicit_effects(
     if explicit_non_action_frame(text):
         return None
     folded = _strip_request_envelope(_fold(re.sub(r"[\r\n]+", " . ", text)))
+    folded = screen_light_as_brightness(folded)
     # H0461 «che, abrime el navegador chrome»: «navegador» delante de un
     # navegador con nombre es una aposición, no un destino. Sin quitarla el
     # pedido no resolvía nada y el turno acababa preguntando qué URL abrir,

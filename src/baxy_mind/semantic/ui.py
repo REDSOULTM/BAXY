@@ -377,7 +377,15 @@ def _review_input_and_capture_effects(
         _head_is(head, _READ)
         and _has(folded, r"^[¿?¡!\s]*(?:por favor\s*[,:]?\s*)?(?:lee|leer|leeme|read)\s+(?:me\s+)?(?:la|mi|the|my)\s+(?:pantalla|screen)[\s?!.]*$")
     )
-    screen_content_question = _has(
+    # Fase 3.5 (layer C «que dice el mensaje en la pantalla»): what a text on the screen says is read
+    # like «leé el mensaje de la pantalla».
+    screen_text_question = _has(
+        folded,
+        r"^[¿?¡!\s]*(?:(?:decime|dime|contame|cuentame|tell me)\s+)?(?:que|what)\s+(?:dice|pone|says|does)\s+"
+        r"(?:(?:el|la|lo|the)\s+)?(?:mensaje|message|error|texto|text|aviso|cartel|ventana|dialogo|dialog|popup)\b"
+        r".{0,24}\b(?:en|on|de|of)\s+(?:la|mi|the|my)\s+(?:pantalla|screen)(?:\s+say)?[\s?!.]*$",
+    )
+    screen_content_question = screen_text_question or _has(
         folded,
         r"^[¿?¡!\s]*(?:(?:decime|dime|contame|cuentame|tell me)\s+)?"
         r"(?:que|what)\s+(?:hay|se ve|aparece|ves|estas viendo|is|is there|do you see|are you seeing|can you see)"

@@ -67,6 +67,34 @@ arreglado después de la instantánea: una tecla nunca es un control visible).
 - Hueco: `_REFUSAL` («no, dejalo», «mejor no») nunca completa el pedido pendiente.
 - `semantic_corpus.py`: familias memory.* fuera de la puntuación (ruta del shell).
 
+## Después de bdbd0e66 (S3 commiteado)
+
+Guiones con el producto sobre bdbd0e66 (`S/s3c`): held-out 26→27/30; dueño 45→41/60 (+3 revisar). Regresiones
+de contexto analizadas: 50 «baxy, cierra baxy» (la oferta tomaba el vocativo como cláusula), 29/40 (la causa
+`request_analysis_failed` sin hecho → el modelo la leía y el veto nuevo la rechazaba tres veces), 59 «investigala»
+tras una pregunta por una obra (sin antecedente). Arreglos sin commitear: vocativo fuera de las cláusulas y toda
+cláusula debe ser orden; hecho para `request_analysis_failed` en `_CAUSE_FACT`; `dialogue.asked_about` como
+antecedente de un pronombre tras una pregunta pública; lecturas (hora «exacta»/«porfa», «quiero saber quién es»,
+app activa). `S/s4c` con revisiones: dueño 47/60, held-out 27/30 (74/90). 742 sobre `S/snap-s6`: 1 decisión
+distinta de S2 (H0506, memoria del shell). Después de S6, sin medir aún: hecho de `request_analysis_failed` sin «no
+entendí»; acto de charla (`dialogue.talk_act` + `__main__._talk_act_turn_decision`: afirmación en primera persona,
+queja sobre BAXY, reacción → conversación social con historial; nunca con una orden, un pedido leído, deseo o
+reproche que repite un pedido, verbo de búsqueda o, en una afirmación, una palabra del PC). Pendiente conocido: turno
+23 (el compositor del informe de búsqueda rechaza y corta el borrador: `search_report_unsourced_claim`,
+`cut_by_length`), turno 22 (título de la ventana de PotPlayer), 16 (canción de amor: pregunta Spotify).
+
+S5c (con acto de charla y deseo de música): dueño 52/60, held-out 27/30 (79/90; guarda 13/14, efecto inventado
+2/2). Capas S6: A 98,6 % (real 93,4 %), B 55 %, C 55,1 %. Después: volumen «al mínimo» y voseo «subí … N puntos»,
+verbo de búsqueda delante de una pregunta datada o de opinión, dativo con objeto dicho no es referencia («devolvele el
+sonido»). Midiendo S7 desde `S/snap-s7`: `lit-s7`, `layers-s7` (`S/corpus_run_s6.jsonl`), luego conv `S/s6c`.
+
+S7 medido (`S/snap-s7`): 742 con 1 decisión distinta de S2 (H0506); capas A 98,3 % (real 83/91: log:115/117
+«me gusta crear cosas como tú» con el historial real viejo, que contiene la respuesta mala de BAXY; en el producto
+—s6c— el mismo turno sale bien), B 55 %, C 55,5 %; guiones s6c con revisiones: dueño 54/60, held-out 27/30 (81/90).
+Commit «semantic S4». Sin medir en capas (probado con 3 404 pruebas): argumento de «devolvele el sonido», léxico de
+restaurar con clíticos generados, palabras función en la contención, «escuchar X» como música, control de video,
+«qué dice … en la pantalla», oscurecer/aclarar la pantalla.
+
 ## Próximo paso
 
 Medir S5 (= S4 + veto «análisis de la solicitud», vocativos Gemma/Carter/Alexa, silenciar el PC, «sacá una captura», destino delante; capa B §12) desde `S/snap-s5` (`lit-s5`, `layers-s5`). S4 era: S3 + lectores de opinión/hecho fechado, orden tras charla, comilla sin cerrar) desde `S/snap-s4`: `literals --src S/snap-s4 --out S/lit-s4.jsonl` (S3: 1 decisión distinta vs S2, H0506 memoria), capas `--out S/layers-s4.jsonl`,

@@ -3956,6 +3956,16 @@ _CAUSE_FACT = {
     "mission_failed": "mission unfinished",
     "acting": "still working",
     "ambiguous_request": "unclear request",
+    # Fase 3.5 (dueño 2026-09-21 turns 22/25/26, corpus A/C): without a fact the
+    # code reached the writer as «request analysis failed» and was read aloud
+    # («el análisis de la solicitud falló»). What happened to the person is that
+    # BAXY did not understand; nothing was done.
+    # «No pude entender» is the phrase the owner rejects on every turn (dueño
+    # 2026-09-21): the fact is what was not done and what is needed to do it.
+    "request_analysis_failed": (
+        "nothing was done on this PC for this message. "
+        "Ask the person, as one short question, what exactly they want done"
+    ),
     "memory_forget_irreversible": "cannot be undone",
     "memory_none": "no matching memories",
     "memory_updated": "saved in the private local memory",

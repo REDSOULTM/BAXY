@@ -134,3 +134,52 @@ def test_a_refusal_never_completes_the_pending_request(text):
 def test_a_correction_with_a_destination_is_not_a_refusal():
     slot = _slot("poné la de Queen en Spotify", ["poné la de Queen en Spotify"], "¿La pongo?")
     assert dialogue_slot.dependency("no, en YouTube", slot) == "answer"
+
+
+def _talk(text):
+    from baxy_mind import __main__ as mind
+
+    return mind._talk_act_turn_decision(text, None, None)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "me encanta cocinar los domingos",
+        "ayer fui al cine con mi hermana",
+        "uf, qué semana pesada tuve",
+        "la verdad a veces creo que la tecnología nos cansa",
+        "otra vez fallaste, qué bronca",
+        "no lo hiciste, no me mientas",
+        "jeje qué gracioso eso",
+        "i feel tired today",
+    ],
+)
+def test_talk_that_asks_nothing_is_answered_as_talk(text):
+    decision = _talk(text)
+    assert decision is not None and decision["mode"] == "conversation" and decision["conversation_kind"] == "social"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "me aburro, poné algo de rock",  # an order after the talk
+        "odio esta canción, saltala",  # an order
+        "yo quiero escuchar jazz",  # a desire is a request
+        "te dije que cierres Chrome",  # a reproach that repeats a request
+        "estoy con el brillo muy bajo",  # a statement about the PC may be a request
+        "otra vez fallaste, buscá bien esta vez",  # a lookup
+        "¿me extrañaste?",  # a question is left to the ordinary reading
+    ],
+)
+def test_talk_with_an_order_a_request_or_the_pc_is_left_to_the_reading(text):
+    assert _talk(text) is None
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [("devolvele el volumen", None), ("mandale un audio a Pedro", None), ("prendelo", "reference"), ("devolvele", "reference")],
+)
+def test_a_dative_clitic_with_its_object_said_is_not_a_reference(text, expected):
+    slot = _slot(None, ["silenciá los parlantes"], "Listo.")
+    assert dialogue_slot.dependency(text, slot) == expected

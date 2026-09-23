@@ -122,12 +122,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # Fase 3.5 semantic S1–S2 (2026-09-23): normalize, lexicon, grammar, dialogue; guardas y veto.
 # C03 Fase 3.5 semantic S3 (2026-09-23): trece dominios de effect_intent a src/baxy_mind/semantic/, oferta parcial de misiones compuestas, lectores de opinión/hecho fechado, vocativos, rechazo en el hueco.
 # C03 Fase 3.5 semantic S3 (2026-09-23): trece dominios de effect_intent a src/baxy_mind/semantic/, oferta parcial de misiones compuestas, lectores de opinión/hecho fechado, vocativos, rechazo en el hueco.
+# C03 Fase 3.5 semantic S4 (2026-09-23): acto de charla, deseo de escuchar, antecedente de pregunta pública, lecturas sin confirmar, volumen/brillo/medios/pantalla.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "a11dce865bc09ceba1ff835f966135885a90963db3e050133544b130556448ef"
+        "c867b1b489de4a37817b00f818295c856063d06db227054475c2f583bae64ee8"
     ),
     "src/baxy_mind/llm.py": (
-        "4b9d53f4398f5c393da41f89ab12378f6ddc2fc3eb6f0b4826c809e709940255"
+        "129f511c85361471b1019533f70c46429839fa6d6af9dfcdcf796ccf5f307b56"
     ),
 }
 

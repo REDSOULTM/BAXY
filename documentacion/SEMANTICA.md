@@ -110,8 +110,35 @@ Formas nuevas (Fase 3.5, cada una con pruebas de frases que no son las que la or
 - **El PC como objeto de silenciar** («silenciá la notebook», «unmute the pc») es el audio global; «apagá el PC» sigue
   siendo apagar. **«Sacá una captura»** a secas es una captura de pantalla. **Comilla sin cerrar** al dictar un texto
   para el portapapeles abre el literal.
-- **Veto de código interno**: la causa `request_analysis_failed` leída en voz alta («el análisis de la solicitud falló»)
-  se veta también en castellano.
+- **Código interno**: la causa `request_analysis_failed` llegaba al redactor como «request analysis failed» y se leía
+  en voz alta («el análisis de la solicitud falló»). Ahora tiene su hecho en `llm._CAUSE_FACT` (BAXY no entendió, no
+  hizo nada, pide decirlo de otra forma) y el veto la rechaza también en castellano.
+- **El pronombre tras una pregunta pública** (`dialogue.asked_about`): «¿la nueva peli de X es buena?» → «investigala»
+  busca X. Sólo palabras que dijo la persona; el pedido re-armado se clasifica como siempre.
+- **Lecturas que no se confirman**: la hora con calificativo o cortesía («la hora exacta, porfa»), «quiero saber /
+  ¿sabés quién es X?», «qué app / proceso está activo o en primer plano». Antes llegaban al modelo, la guarda de
+  dominio retiraba la operación y BAXY preguntaba «¿Quieres que te diga la hora?»; leer no cambia nada del PC (D24).
+- **Charla que no pide nada** (`dialogue.talk_act`, `__main__._talk_act_turn_decision`): una afirmación en primera
+  persona («me gusta crear cosas como tú», «anoche vi Oppenheimer»), una queja o comentario sobre BAXY («odio estos
+  fallos», «no lo hiciste», «tus detectores no funcionan») o una reacción («jajaja qué respuesta más rara») se
+  contesta como charla y conserva el historial. Nunca si hay una orden, un pedido que el patrón lee, un deseo o
+  reproche que repite un pedido («yo quiero ver Netflix», «te dije que abras Spotify»), un verbo de búsqueda o, en una
+  afirmación, una palabra del PC («estoy con el volumen muy alto» puede ser un pedido). Guarda del dueño 4/8 → 13/14.
+- **Deseo de escuchar = orden de reproducir** (`_desired_media_request`): «quiero una canción de amor», «tengo ganas
+  de escuchar a Soda Stereo», «I want to listen to…» se leen como «pon …» con las palabras de la persona.
+- **Dativo con objeto dicho no es referencia** (`dialogue._object_pronoun`): «devolvele el sonido» se entiende solo;
+  «devolvele» a secas sí apunta al turno anterior.
+- **Verbo de búsqueda delante de la pregunta**: «fijate cuándo sale…», «averiguá qué dijo la crítica de X» piden la
+  misma búsqueda que la pregunta sola.
+- **Volumen**: «al mínimo» (0, como ya hacía el volumen por aplicación) y el voseo «subí/bajá … N puntos».
+- **Medios y pantalla**: pausar o reanudar «el video / la peli / la serie» controla la misma sesión que la música;
+  «qué dice el mensaje en la pantalla» se lee de la pantalla como «leé el mensaje de la pantalla»; oscurecer o
+  aclarar la pantalla es su brillo (`display.screen_light_as_brightness`, un solo punto de normalización; sin cantidad
+  pregunta cuánto); «escuchar X» con un nombre o género a secas es «pon música de X».
+- **Un sinónimo, un lugar**: devolver/restaurar/recuperar el sonido se genera con sus clíticos una vez en
+  `lexicon.AUDIO_RESTORE_WORDS` y lo usan el lector, el argumento (`state: false`) y las pistas del planner.
+- **Una cláusula es una orden**: en una misión compuesta el vocativo («baxy, …», «Carter, …») no es una cláusula, y
+  toda cláusula —la probada y la pendiente— tiene que empezar por una orden.
 
 Guardas de entrada sin pedido (`__main__._unresolved_input_kind`, pasan a `dialogue` al migrar): «mensaje cortado»
 sólo para un **pedido** (con cabeza de orden: «como tú» al final de una charla no está cortado); «habla ajena» sólo

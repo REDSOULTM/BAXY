@@ -20,12 +20,15 @@ def _direct_current_time_request(folded: str) -> bool:
 
     if countdown_target(folded) is not None:
         return True
+    # Fase 3.5: trailing courtesy («decime la hora porfa») is not part of the reading.
+    folded = re.sub(r"[\s,]*(?:por\s+favor|porfa|porfis|please|pls|plz)[\s.!?]*$", "", folded)
     # CLOCK1327 H0054/H0312 «Tiempo»/«tiempo»: the bare word asks for the
     # time; the weather is not something this PC reads.
     if re.fullmatch(r"(?:el\s+)?tiempo(?:\s*,?\s*(?:por\s+favor|porfa|please))?",
                     _strip_request_envelope(folded).strip(" ¿?¡!.,")):
         return True
-    current = r"(?:actual|local|(?:de\s+)?hoy|ahora(?:\s+mismo)?|(?:right\s+)?now)"
+    # Fase 3.5 (layer C «Dime la hora exacta»): «exacta/precisa» also ask for the present clock.
+    current = r"(?:actual|local|exacta|exactamente|precisa|exact|(?:de\s+)?hoy|ahora(?:\s+mismo)?|(?:right\s+)?now)"
     nominal = (
         r"(?:(?:la|el|the)\s+)?"
         r"(?:(?:current|local)\s+){0,2}(?:hora|fecha|time|date)"
@@ -41,7 +44,7 @@ def _direct_current_time_request(folded: str) -> bool:
         rf"(?:what(?:\s+is|'s|’s|s)\s+(?=(?:the|current|local|today)\b)|"
         rf"(?:que|cual)\s+es\s+)(?:{nominal})|"
         rf"(?:{observation}\s+)?(?:"
-        r"(?:que|qe)\s+(?:hora|ora|fecha|dia)\s+es(?:\s+(?:ahora|hoy|ya))?|"
+        r"(?:que|qe)\s+(?:hora|ora|fecha|dia)\s+es(?:\s+(?:ahora|hoy|ya|exactamente))?|"
         r"what\s+(?:time|date|day)\s+is\s+it(?:\s+(?:(?:right\s+)?now|today))?)|"
         rf"(?:hora|fecha)\s+{current}|(?:current|local)\s+(?:local\s+)?(?:time|date)|"
         rf"today(?:['’]s)?\s+date|(?:{observation}\s+)?"

@@ -241,7 +241,8 @@ def _resume_existing_media(text: str) -> bool:
         )
         and _has(
             folded,
-            r"\b(?:audio|media|musica|music|reproduccion|playback|cancion|song|pista|track)\b",
+            # Fase 3.5 (layer C «resume the video»): a video, film or series session resumes the same way.
+            r"\b(?:audio|media|musica|music|reproduccion|playback|cancion|song|pista|track|video|videos|peli|pelicula|serie|episodio|capitulo|movie)\b",
         )
         and not _has(folded, r"\b(?:grabacion|recording|microfono|microphone|mic)\b")
     )

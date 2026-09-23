@@ -123,6 +123,26 @@ _BRIGHTNESS_DOWN_VERB = (
 )
 
 
+# Fase 3.5 (layer C «oscurece la pantalla»): darkening or lightening the screen is its brightness.
+# The verb carries the meaning, so «la pantalla» is enough; the request is read as the ordinary
+# brightness request with the rest of the person's words unchanged.
+_SCREEN_LIGHT = re.compile(
+    r"\b(?:(?P<down>oscurece(?:me|la|lo)?|oscurecer|atenua(?:me|la|lo)?|atenuar|darken)|"
+    r"(?P<up>aclara(?:me|la|lo)?|aclarar|ilumina(?:me|la|lo)?|iluminar|brighten))\s+"
+    r"(?:(?:la|el|mi|the|my)\s+)?(?:pantalla|monitor|screen|display)\b"
+)
+
+
+def screen_light_as_brightness(folded: str) -> str:
+    """«oscurece la pantalla un 20%» → «baja el brillo de la pantalla un 20%» (folded text in, folded out)."""
+
+    return _SCREEN_LIGHT.sub(
+        lambda found: ("baja" if found.group("down") else "sube") + " el brillo de la pantalla",
+        folded,
+        count=1,
+    )
+
+
 _BRIGHTNESS_ABSOLUTE = (
     r"\b(?:a|al|to|at|hasta)\s*(?:100|[0-9]{1,2})\b|"
     r"\b(?:al\s+|to\s+(?:the\s+)?)?(?:maximo|minimo|max|min|tope|full|maximum|minimum)\b"

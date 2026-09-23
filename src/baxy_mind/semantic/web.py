@@ -98,6 +98,7 @@ def _weather_lookup_query(text: str) -> str | None:
 
 _TOPIC_RESEARCH = re.compile(
     r"^[¿?¡!\s]*(?:investiga|investigá|investigar|investigue|investigame|investígame|"
+    r"averigua|averiguá|averiguar|averiguame|averiguame|"
     r"research|look\s+into|look\s+up|"
     # Owner's mother 2026-09-21 «dame info de la migraña»: information about a
     # topic is the same public lookup.
@@ -215,7 +216,10 @@ def _research_question_query(text: str) -> str | None:
 
 
 _ENTITY_LOOKUP = re.compile(
-    r"^[¿?¡!\s]*(?:"
+    r"^[¿?¡!\s]*"
+    # Fase 3.5 (layer C «quiero saber quién es Batman»): a knowledge lead-in before the question.
+    r"(?:(?:quiero|quisiera|necesito|me\s+gustar[ií]a)\s+saber\s+|(?:sab[eé]s|sabes|me\s+dec[ií]s|me\s+dices|decime|dime|do\s+you\s+know)\s+|i\s+(?:want|need)\s+to\s+know\s+)?"
+    r"(?:"
     r"(?:quien|quién|quienes|quiénes|who)\s+(?:es|fue|era|son|fueron|eran|is|was|are|were)|"
     r"(?:(?:dime|decime|explicame|explícame|contame|cuentame|cuéntame|tell\s+me)\s+)?(?:que|qué|what)\s+(?:es|fue|era|is|was)|"
     r"(?:hablame|háblame|hablarme|contame|cuentame|cuéntame|explicame|explícame|tell\s+me)\s+"
@@ -311,6 +315,12 @@ def _entity_lookup_query(text: str) -> str | None:
 # de X», «reseñas de X», «is X any good») looks up opinions of X; «cuál fue el primer libro de
 # zombies», «cuándo sale X» looks up the question. Personal, deictic and local things are not public.
 _TALK_OPENING = r"^[¿?¡!\s]*(?:(?:y|e|entonces|che|oye|oime|bueno|pero|ah|and|so|hey)[\s,]+)*"
+# A lookup verb before the question asks for the same lookup («fijate cuándo sale…», «averiguá qué
+# dijo la crítica de X»; held-out 14/16 after the dialogue slot names the topic).
+_LOOKUP_LEAD = (
+    r"^(?:(?:fijate|fijese|averigua|averiguame|investiga|investigame|busca|buscame|decime|dime|sabes|"
+    r"check|find\s+out|look\s+up)\s+(?:si\s+|if\s+|whether\s+)?)?"
+)
 _WORK_NOUN = (
     r"\b(?:peli|pelis|pelicula|peliculas|serie|series|libro|libros|novela|novelas|saga|juego|juegos|videojuego|"
     r"videojuegos|disco|album|temporada|documental|anime|manga|comic|obra|show|movie|movies|film|films|book|"
@@ -353,7 +363,22 @@ def _original_words(text: str, folded_part: str) -> str:
 def public_opinion_query(text: str) -> str | None:
     """«¿La nueva peli de Resident Evil es buena?» → «nueva peli de Resident Evil opiniones»; None otherwise."""
 
-    folded = re.sub(_TALK_OPENING, "", _fold(text)).strip(" ¿?¡!.,")
+    found = _public_opinion_work(text)
+    if found is None:
+        return None
+    work, english = found
+    return f"{work} {'reviews' if english else 'opiniones'}"
+
+
+def public_opinion_subject(text: str) -> str | None:
+    """The public work an opinion question is about, in the person's words («nueva peli de Resident Evil»)."""
+
+    found = _public_opinion_work(text)
+    return None if found is None else found[0]
+
+
+def _public_opinion_work(text: str) -> tuple[str, bool] | None:
+    folded = re.sub(_LOOKUP_LEAD, "", re.sub(_TALK_OPENING, "", _fold(text))).strip(" ¿?¡!.,")
     asked = re.match(_ASKED_OPINION, folded) is not None or "?" in text or "¿" in text
     folded = re.sub(_ASKED_OPINION, "", folded)
     for form, needs_work_noun, needs_to_be_asked in _OPINION_FORMS:
@@ -369,7 +394,7 @@ def public_opinion_query(text: str) -> str | None:
             # «¿el juego es bueno?»: a bare noun names no work to look up.
             return None
         english = form.startswith((r"(?:is|are", r"what\s+do")) or folded.startswith("reviews")
-        return f"{_original_words(text, work).strip()} {'reviews' if english else 'opiniones'}"
+        return _original_words(text, work).strip(), english
     return None
 
 
@@ -388,7 +413,7 @@ def record_fact_query(text: str) -> str | None:
 
     A first, last, best or release date is a dated fact: looked up before it is stated."""
 
-    folded = re.sub(_TALK_OPENING, "", _fold(text)).strip(" ¿?¡!.,")
+    folded = re.sub(_LOOKUP_LEAD, "", re.sub(_TALK_OPENING, "", _fold(text))).strip(" ¿?¡!.,")
     if _RECORD_FACT.fullmatch(folded) is None or len(folded.split()) > 16:
         return None
     subject = re.sub(r"^(?:cual|quien|cuando|what|who|which|when)\s+\S+\s+", "", folded)

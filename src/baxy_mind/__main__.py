@@ -38,7 +38,8 @@ from . import protocol
 from . import effect_intent
 from . import corrector
 from .semantic import dialogue as dialogue_slot
-from .semantic.grammar import _head_forms
+from .semantic import lexicon as semantic_lexicon
+from .semantic.grammar import _ASSISTANT_NAME, _head_forms
 from .corrector import catalog_correction_terms
 from .first_signal import (
     PATH_MODEL,
@@ -2763,12 +2764,18 @@ _CLAUSE_COORDINATION = re.compile(
 )
 
 
+_LEADING_VOCATIVE = re.compile(
+    rf"^[\s¡¿]*(?:(?:hey|oye|oiga|che|hola|ok|okay)[\s,]+)?{_ASSISTANT_NAME}\b[\s,.:;!]*",
+    re.IGNORECASE,
+)
+
+
 def _coordinated_clauses(objective: str) -> list[str]:
-    """The coordinated clauses of a request, as written."""
+    """The coordinated clauses of a request, as written; a leading vocative is an address, not a clause."""
 
     return [
         part.strip(_CLAUSE_EDGE_PUNCTUATION)
-        for part in _CLAUSE_COORDINATION.split(objective)
+        for part in _CLAUSE_COORDINATION.split(_LEADING_VOCATIVE.sub("", objective, count=1))
         if part.strip(_CLAUSE_EDGE_PUNCTUATION)
     ]
 
@@ -2776,7 +2783,9 @@ def _coordinated_clauses(objective: str) -> list[str]:
 def _clause_starts_with_order(clause: str) -> bool:
     """A coordinated clause is an order: an order verb, or an imperative by its form with an object."""
 
-    folded = effect_intent._fold(clause)
+    folded = _LEADING_VOCATIVE.sub("", effect_intent._fold(clause), count=1)
+    if not folded:
+        return False
     if _OVERHEARD_ACTION_WORDS.match(folded) is not None:
         return True
     words = folded.split()
@@ -2826,6 +2835,41 @@ _FRONTED_PLACE = re.compile(
 )
 
 
+_DESIRED_MEDIA = re.compile(
+    r"^[¿¡\s]*(?:(?:yo|che|bueno|y)\s+)?(?:quiero|quisiera|me\s+gustar[ií]a|tengo\s+ganas\s+de|necesito)\s+"
+    r"(?:(?:escuchar|o[ií]r|poner)\s+(?P<listen>\S.*)|(?P<object>(?:una?\s+|el\s+|la\s+|algo\s+de\s+)?"
+    r"(?:canci[oó]n|canciones|tema|temas|m[uú]sica|playlist|video|videos|disco)\b.*))$"
+    r"|^[¿¡\s]*i\s+(?:want|would\s+like|'d\s+like)\s+to\s+(?:listen\s+to|hear)\s+(?P<english>\S.*)$",
+    re.IGNORECASE,
+)
+
+
+def _desired_media_request(
+    objective: str,
+    resolve: Callable[[str], EffectIntent | None],
+) -> EffectIntent | None:
+    """«Quiero una canción de amor», «quiero escuchar algo de Queen» read as «pon …» (owner test turn 16).
+
+    A desire to listen is the same request as the order to play; the words after
+    the desire are the person's and stay the query. Only when the rewritten order
+    resolves on its own.
+    """
+
+    match = _DESIRED_MEDIA.match(objective.strip())
+    if match is None:
+        return None
+    if match.group("english"):
+        return resolve("play " + match.group("english").strip().rstrip(".!?"))
+    rest = (match.group("listen") or match.group("object") or "").strip().rstrip(".!?")
+    if match.group("listen"):
+        # «escuchar a Soda Stereo»: the personal «a» is not part of what to play.
+        rest = re.sub(r"^a\s+", "", rest, flags=re.IGNORECASE)
+        # «escuchar reggaetón»: listening is music; a bare name or genre is its music.
+        if not re.match(r"(?:algo|una?|el|la|los|las|mi|tu)\b|.*\b(?:canci[oó]n|canciones|tema|temas|m[uú]sica|playlist|disco|album|video)\b", rest, re.IGNORECASE):
+            rest = "música de " + rest
+    return resolve("pon " + rest) if rest else None
+
+
 def _fronted_place_request(
     objective: str,
     resolve: Callable[[str], EffectIntent | None],
@@ -2844,6 +2888,72 @@ def _fronted_place_request(
     return resolve(f"{order} {match.group('prep')} {match.group('place')}")
 
 
+# Words that make a statement about the PC a possible indirect request («estoy con el volumen
+# muy alto»): such a statement is left to the ordinary reading.
+_TALK_PC_DOMAIN = re.compile(
+    r"\b(?:volumen|sonido|audio|brillo|pantalla|ventana|archivo|carpeta|microfono|micro|wifi|bluetooth|"
+    r"musica|cancion|video|app|aplicacion|programa|juego|steam|spotify|youtube|chrome|edge|navegador|"
+    r"volume|sound|brightness|screen|window|file|folder|music|song)\b"
+)
+_TALK_LOOKUP = re.compile(r"\b(?:investig\w*|busc\w*|averigu\w*|fijate|googlea\w*|search|look\s+up)\b")
+# A request said as a desire or as a reproach is still a request: «yo quiero ver Netflix»,
+# «te dije que abras Spotify», «me gustaría que pongas algo».
+_TALK_DESIRED_REQUEST = re.compile(
+    r"(?<!\bno\s)\b(?:quiero|quisiera|queria|necesito|me\s+gustaria|i\s+want|i\s+need|i'?d\s+like)\s+(?:to\s+)?"
+    r"(?:\w+(?:ar|er|ir)\b(?!\s+que)|que\s+\w+(?:as|es|ais|eis)\b)|"
+    r"\b(?:te\s+(?:dije|pedi|estoy\s+diciendo)|you\s+(?:were\s+)?told)\s+(?:que\s+)?\w+(?:as|es)\b"
+)
+# Verbs of media and navigation said as an order at a clause start («pasá a la siguiente»).
+_TALK_EXTRA_ORDER = re.compile(
+    r"(?:^|[,.;:!]\s*|\b(?:y|e|o)\s+)(?:pasa|pasame|salta|saltea|adelanta|atrasa|repeti|repite|vuelve|volve|"
+    r"skip|next|mute|mutea|sube|subi|baja|baji)(?:me|te|lo|la|los|las|le|les)?\b"
+)
+
+
+def _talk_act_turn_decision(
+    objective: str,
+    explicit_intent: EffectIntent | None,
+    asked: EffectIntent | None,
+) -> dict[str, object] | None:
+    """Talk that asks nothing is answered as talk (Fase 3.5, guard class).
+
+    «Me gusta crear cosas, como tú» got «¿Qué tipo de cosas te gustaría crear?»;
+    «odio estos fallos» got the recovery error; «tus detectores no funcionan…»
+    got a question in planner vocabulary. The form is read by
+    ``dialogue.talk_act``; here a message with an order, a request the pattern
+    reads, a lookup verb, or (for a statement) a PC domain word is left to the
+    ordinary reading. Feedback keeps the dialogue history; it is about it.
+    """
+
+    if explicit_intent is not None or asked is not None:
+        return None
+    act = dialogue_slot.talk_act(objective)
+    if act is None:
+        return None
+    folded = effect_intent._fold(objective)
+    # «baxy» counts as an address in the overheard-speech list; here it is not an order.
+    orders = re.sub(r"\bbaxy\b", "", folded)
+    if (
+        _OVERHEARD_ACTION_WORDS.search(orders)
+        or _TALK_EXTRA_ORDER.search(orders)
+        or _TALK_DESIRED_REQUEST.search(folded)
+        or _TALK_LOOKUP.search(folded)
+    ):
+        return None
+    if act == "statement" and _TALK_PC_DOMAIN.search(folded):
+        return None
+    return {
+        "mode": "conversation",
+        "operation": None,
+        "question": "",
+        "conversation_kind": "social",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "response_language": _explicit_response_language(objective),
+    }
+
+
 def _leading_proved_clauses(
     objective: str,
     contract: CompoundEffectContract | None,
@@ -2859,7 +2969,7 @@ def _leading_proved_clauses(
     if contract is not None and contract.clause_requirements:
         proved = [_original_clause(objective, c) for c, ops in contract.clause_requirements if ops]
         pending = [_original_clause(objective, c) for c, ops in contract.clause_requirements if not ops]
-        if not all(_clause_starts_with_order(clause) for clause in pending):
+        if not all(_clause_starts_with_order(clause) for clause in (*proved, *pending)):
             # «buenas, phrase_hook_test_… y dime la hora»: a token that is not an
             # order is not a part BAXY declines; it is not offered around.
             return None
@@ -2867,7 +2977,8 @@ def _leading_proved_clauses(
         clauses = _coordinated_clauses(objective)
         if len(clauses) < 2:
             return None
-        if not all(_clause_starts_with_order(clause) for clause in clauses[1:]):
+        if not all(_clause_starts_with_order(clause) for clause in clauses):
+            # «baxy, cierra baxy» (dueño turn 50): a vocative is not a clause.
             # «abre Ratchet y Clank», «juga Dungeons and Dragons»: a title with a
             # conjunction is one name, not two clauses.
             return None
@@ -6539,7 +6650,10 @@ def _explicit_arguments_from_evidence(
     if operation == "audio.mute":
         false_pattern = (
             rf"\b(?:{effect_intent._UNMUTE_VERB}|reactiva|reactivar)\b|"
-            r"\bquita(?:r)?\s+(?:el\s+)?(?:mute|silencio)\b"
+            r"\bquita(?:r)?\s+(?:el\s+)?(?:mute|silencio)\b|"
+            # Fase 3.5 (held-out turn 9 «devolvele el sonido»): the reader takes
+            # restoring the sound from the shared lexicon; so does the argument.
+            rf"\b{semantic_lexicon.AUDIO_RESTORE}\s+(?:(?:el|la|the|mi|my)\s+)?(?:sonido|audio|sound)\b"
         )
         false_signal = bool(re.search(false_pattern, folded))
         # The noun ``mute`` inside "quita el mute" is evidence for the
@@ -7618,6 +7732,17 @@ def _rearm_in_context(
         )
         return None if rearmed is None else (rearmed, how)
 
+    if (
+        dependency == "reference"
+        and slot.antecedents
+        and dialogue_slot.asks_to_look_up(objective)
+        and dialogue_slot.asked_about(slot.antecedents[0])
+    ):
+        # Fase 3.5 (dueño turn 59): «investigala» after «¿la nueva peli de X es buena?» looks up X.
+        # Only words the person said; the rearmed request is classified as usual.
+        substituted = dialogue_slot.substituted_reference(objective, slot.antecedents[0])
+        if substituted is not None:
+            return audited(substituted, "pattern")
     if dependency == "reference" and slot.antecedents and not dialogue_slot.asks_to_look_up(objective):
         # 2026-09-22: «cerralo» after «abrí el bloc de notas» was read alone as
         # "close the active window" and closed VS Code. With an antecedent, the
@@ -8071,6 +8196,12 @@ def _decide_turn_result(
                 reordered, available_operations, application_names, game_catalog
             ),
         )
+        or _desired_media_request(
+            objective,
+            lambda order: resolve_explicit_effects(
+                order, available_operations, application_names, game_catalog
+            ),
+        )
         or (
             EffectIntent(("window.application.status",), (objective,))
             if "window.application.status" in available_operations
@@ -8117,6 +8248,15 @@ def _decide_turn_result(
             game_catalog,
         )
     )
+    talk_act_decision = (
+        None
+        if non_target_language is not None
+        else _talk_act_turn_decision(
+            objective,
+            explicit_intent,
+            resolve_explicit_clarification_intent(objective, available_operations, application_names),
+        )
+    )
     explicit_conversation_decision = (
         _explicit_unsupported_turn_decision(objective)
         if non_target_language is not None
@@ -8147,6 +8287,7 @@ def _decide_turn_result(
             history,
             pending_clarification=message.get("pendingClarification"),
         )
+        or talk_act_decision
         or stable_no_effect_decision
     )
     # Resolve the speech act before catalog candidates can prime a related
@@ -8865,6 +9006,9 @@ def _decide_turn_result(
                     []
                     if explicit_conversation_decision is not None
                     and presentation_conversation_kind == "social"
+                    # Talk about the dialogue («no lo hiciste», «odio estos
+                    # fallos») is about the earlier turns: it keeps them.
+                    and explicit_conversation_decision is not talk_act_decision
                     else history
                 ),
                 tools=None,

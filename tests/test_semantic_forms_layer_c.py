@@ -69,3 +69,79 @@ def test_a_key_is_never_a_visible_control_to_click(text):
     from baxy_mind.semantic.ui import _visible_click_label
 
     assert _visible_click_label(text) is None
+
+
+@pytest.mark.parametrize(
+    ("text", "operation"),
+    [
+        ("decime la hora exacta porfa", "system.time"),
+        ("quisiera saber quién es Rosalía", "web.search"),
+        ("¿sabés qué es Hollow Knight?", "web.search"),
+        ("qué programa está en primer plano", "window.active"),
+    ],
+)
+def test_plain_reads_are_read_not_confirmed(text, operation):
+    from baxy_mind.semantic.network import _direct_current_time_request
+    from baxy_mind.semantic.web import _entity_lookup_query
+
+    if operation == "system.time":
+        assert _direct_current_time_request(_fold(text).strip(" ."))
+    elif operation == "web.search":
+        assert _entity_lookup_query(text) is not None
+    else:
+        from baxy_mind.effect_intent import resolve_explicit_effects
+
+        found = resolve_explicit_effects(text, ("window.active",))
+        assert found is not None and found.operations == ("window.active",)
+
+
+def test_the_pronoun_after_a_question_about_a_public_work_is_that_work():
+    from baxy_mind.semantic import dialogue
+
+    assert dialogue.asked_about("¿La última temporada de Dark vale la pena?") == "última temporada de Dark"
+    assert dialogue.substituted_reference("bueno, averigualo", "¿Dune 2 vale la pena?") == "averigua Dune 2"
+    assert dialogue.asked_about("abrí Spotify") is None
+
+
+def _resolve_play(order: str) -> EffectIntent | None:
+    folded = _fold(order)
+    return EffectIntent(("stub.play",), (order,)) if folded.startswith(("pon ", "play ")) and len(folded.split()) > 2 else None
+
+
+@pytest.mark.parametrize(
+    ("text", "order"),
+    [
+        ("quiero una canción de Bad Bunny", "pon una canción de Bad Bunny"),
+        ("tengo ganas de escuchar a Los Redondos", "pon Los Redondos"),
+        ("I would like to listen to some jazz", "play some jazz"),
+    ],
+)
+def test_a_desire_to_listen_is_the_order_to_play(text, order):
+    found = mind._desired_media_request(text, _resolve_play)
+    assert found is not None and found.evidence == (order,)
+
+
+@pytest.mark.parametrize("text", ["quiero que me escuches", "quiero escuchar tu opinión sobre esto"])
+def test_a_desire_that_is_not_media_stays_as_it_was(text):
+    found = mind._desired_media_request(text, lambda order: None)
+    assert found is None
+
+
+@pytest.mark.parametrize(
+    ("text", "operation"),
+    [
+        ("dejá el volumen al mínimo", "audio.volume"),
+        ("bajá el volumen 15 puntos", "audio.volume.adjust"),
+        ("subí el volumen 5 puntos porfa", "audio.volume.adjust"),
+    ],
+)
+def test_volume_levels_and_voseo_amounts(text, operation):
+    from baxy_mind.effect_intent import resolve_explicit_effects
+
+    found = resolve_explicit_effects(text, ("audio.volume", "audio.volume.adjust"))
+    assert found is not None and found.operations == (operation,)
+
+
+@pytest.mark.parametrize(("text", "state"), [("devolveme el audio", False), ("recuperá el sonido", False), ("silenciá todo", True)])
+def test_restoring_the_sound_is_unmute_in_the_arguments_too(text, state):
+    assert mind._explicit_arguments_from_evidence("audio.mute", text) == {"state": state}

@@ -79,7 +79,7 @@ _NUMBER_ANSWER = re.compile(
 _STOPWORDS = frozenset(
     """
     a al algo ante con de del el en entre es esa ese eso esta este esto hasta la las le les lo los me mi mis
-    muy no o para pero por que se si sin su sus te tu tus un una uno unos y ya yo vos
+    muy no o para pero por que se si sin su sus te tu tus un una uno unos y ya yo vos sobre acerca about
     the a an and or to of in on at for with it this that is are be my your me you
     """.split()
 )
@@ -136,6 +136,25 @@ def read_slot(message: dict, history: object, current: str) -> DialogueSlot:
     return DialogueSlot(pending_request, pending_question, tuple(antecedents), last_reply)
 
 
+def _object_pronoun(folded: str) -> bool:
+    """A verb with a fused object pronoun whose object is not said.
+
+    «apagalo», «subila a 20»: the object is the pronoun. «devolvele el sonido», «mandale un
+    mensaje»: «le» is the dative (to whom); the object («el sonido») is said, so the message
+    stands on its own (held-out turn 9).
+    """
+
+    for found in _ENCLITIC.finditer(folded):
+        tail = _CLITIC_TAIL.search(found.group(0))
+        rest = folded[found.end():].split()
+        if tail is not None and tail.group("clitic") in {"le", "les"} and rest and rest[0] in {
+            "el", "la", "los", "las", "un", "una", "unos", "unas", "mi", "mis", "su", "sus", "algo", "que",
+        }:
+            continue
+        return True
+    return False
+
+
 def dependency(text: str, slot: DialogueSlot) -> str | None:
     """Why this message needs the context to be understood, or None.
 
@@ -162,7 +181,7 @@ def dependency(text: str, slot: DialogueSlot) -> str | None:
         return "destination"
     if len(words) > 16:
         return None
-    if _ENCLITIC.search(folded) or (len(words) <= 6 and _PROCLITIC_START.match(folded)):
+    if _object_pronoun(folded) or (len(words) <= 6 and _PROCLITIC_START.match(folded)):
         return "reference"
     if slot.antecedents and _RESEARCH_VERB.search(folded):
         return "topic"
@@ -255,10 +274,68 @@ _TRAILING_VALUE = re.compile(
 _TRAILING_POLITE = re.compile(r"[\s,]*(?:por\s+favor|porfa|please|ya|ahora)?[\s.!?¿¡]*$", re.IGNORECASE)
 
 
+# Talk that asks nothing (Fase 3.5, guard class of the owner's test and the held-out): the person
+# tells something about themselves, reacts, or comments on BAXY. Three forms, read at the start
+# of the message after fillers; the caller also requires that no order or request is read.
+_TALK_FILLER = r"^(?:(?:bueno|pues|y|e|che|oye|mira|la\s+verdad|no\s+se|nose|uf+|ah+|ay|jaja\w*|jeje\w*|"
+_TALK_FILLER += r"por\s+dios|dios\s+mio|obvio(?:\s+que)?|ok|okay|si|no)[\s,.!]+)*"
+_FIRST_PERSON_TALK = re.compile(
+    _TALK_FILLER
+    + r"(?:me\s+(?:gusta|gustan|gusto|gustaba|encanta|encantan|encanto|siento|senti|parece|pasa|pone|cae|"
+    r"aburre|preocupa|cuesta|duele)|estoy|estaba|estuve|yo\s+\w+|anoche|ayer|esta\s+manana|hoy\s+(?:tuve|fue|"
+    r"estuve|me)|a\s+veces|creo\s+que|pienso\s+que|siento\s+que|solo\s+estaba|no\s+te\s+pedi|no\s+era\s+un\s+"
+    r"pedido|tuve|fui|vi|i\s+(?:like|love|feel|felt|was|think|had|saw)|yesterday|last\s+night|today\s+i)\b"
+)
+_FEEDBACK_TALK = re.compile(
+    r"\b(?:fall(?:o|os|as|aste|aron|a|an|ó)|errores|no\s+funcion\w*|no\s+sirve\w*|no\s+(?:lo\s+|me\s+)?entend\w*|mentiros\w*|odio|"
+    r"no\s+lo\s+hiciste|te\s+dije|no\s+quiero\s+hablar|deberias?\s+poder|baxy\s+debe\w*|el\s+agente|"
+    r"tus\s+detectores|tu\s+respuesta|que\s+respuesta|respuesta\s+(?:mas\s+)?rara|you\s+(?:didn'?t|never|"
+    r"don'?t)\s+(?:understand|do|listen)|i\s+hate\s+(?:this|these|that))\b"
+)
+_REACTION_TALK = re.compile(r"^(?:jaja\w*|jeje\w*|jsjs\w*|lol|xd+|wow|uf+|que\s+(?:raro|bueno|lindo|loco|risa))\b")
+
+
+def talk_act(text: str) -> str | None:
+    """«statement», «feedback» or «reaction» when the message is talk in form; None otherwise.
+
+    «me gusta crear cosas como tú», «anoche vi Oppenheimer y me gustó», «no te pedí nada, solo estaba
+    pensando en voz alta» (statement); «odio estos fallos», «no lo hiciste, mentiroso», «tus detectores
+    no funcionan» (feedback); «jajaja qué respuesta más rara» (reaction). A question is not talk here.
+    """
+
+    raw = str(text or "")
+    folded = _fold(raw).strip(" .!")
+    if not folded or "?" in raw or "¿" in raw or len(folded.split()) > 80:
+        return None
+    if _REACTION_TALK.match(folded):
+        return "reaction"
+    if _FEEDBACK_TALK.search(folded):
+        return "feedback"
+    if _FIRST_PERSON_TALK.match(folded):
+        return "statement"
+    return None
+
+
+def asked_about(antecedent: str) -> str | None:
+    """The public work or named thing a question was about («¿La nueva peli de Resident Evil es buena?» →
+    «nueva peli de Resident Evil»), in the person's words; None when the turn was not such a question.
+
+    Fase 3.5 (dueño turn 59, «investigala» after that question): the pronoun's antecedent is that thing.
+    """
+
+    from .web import _entity_lookup_query, public_opinion_subject
+
+    text = str(antecedent or "")
+    return public_opinion_subject(text) or _entity_lookup_query(text)
+
+
 def antecedent_object(antecedent: str) -> str | None:
     """The object of the previous order, in the person's words: «silencia mi micrófono» → «mi micrófono»,
     «pon el volumen a 20» → «el volumen». None when the antecedent is not a short order."""
 
+    asked = asked_about(antecedent)
+    if asked:
+        return asked
     text = _LEADING_FILLER.sub("", " ".join(str(antecedent or "").split())).strip(" ¿?¡!.,")
     words = text.split()
     if len(words) < 2 or len(words) > 10 or "?" in str(antecedent):
@@ -283,7 +360,9 @@ def substituted_reference(text: str, antecedent: str) -> str | None:
         if tail is None or tail.group("clitic") in {"le", "les"}:
             return None
         verb = bare[: len(bare) - len(tail.group(0))]
-        return " ".join([*words[:index], verb, obj, *words[index + 1:]]).strip(" .!?")
+        joined = " ".join([*words[:index], verb, obj, *words[index + 1:]]).strip(" .!?")
+        # «pues investigala…» → «investiga …»: a talk filler is not part of the request («ahora» is).
+        return re.sub(r"^(?:(?:pues|bueno|oye|che)\b[\s,]*)+", "", joined, flags=re.IGNORECASE).strip() or joined
     return None
 
 

@@ -103,3 +103,15 @@ def test_conditions_and_reported_speech_do_not_become_orders(text):
 def test_a_dictated_literal_without_its_closing_quote_is_still_the_literal():
     assert literal_clipboard_write_text('copiá al portapapeles "nos vemos a las 8') == "nos vemos a las 8"
     assert literal_clipboard_write_text('copiá "uno" y "dos al portapapeles') is None
+
+
+@pytest.mark.parametrize(
+    ("text", "kind"),
+    [
+        ("fijate cuándo se estrena la segunda de Arcane", "record"),
+        ("averiguá qué dice la crítica de Wicked", "opinion"),
+        ("buscame cuál fue el primer Pokémon", "record"),
+    ],
+)
+def test_a_lookup_verb_before_the_question_asks_the_same_lookup(text, kind):
+    assert (record_fact_query(text) if kind == "record" else public_opinion_query(text)) is not None

@@ -103,8 +103,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # Fase 3.5 semantic S1–S2 (2026-09-23): normalize, lexicon, grammar, dialogue; guardas y veto.
 # C03 Fase 3.5 semantic S3 (2026-09-23): trece dominios de effect_intent a src/baxy_mind/semantic/, oferta parcial de misiones compuestas, lectores de opinión/hecho fechado, vocativos, rechazo en el hueco.
 # C03 Fase 3.5 semantic S3 (2026-09-23): trece dominios de effect_intent a src/baxy_mind/semantic/, oferta parcial de misiones compuestas, lectores de opinión/hecho fechado, vocativos, rechazo en el hueco.
+# C03 Fase 3.5 semantic S4 (2026-09-23): acto de charla, deseo de escuchar, antecedente de pregunta pública, lecturas sin confirmar, volumen/brillo/medios/pantalla.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "fcc01d7b13a7051dafe4f9bf5c964d632da35d9521bc40c0cf265ca9162ab51d"
+    "d4eaa24edc836642575de28a0d7b38a4808770f95bcd5b9760fcfc6f26e0b93f"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

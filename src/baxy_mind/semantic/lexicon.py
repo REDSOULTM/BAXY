@@ -47,8 +47,9 @@ SETTING_NOUN = alternation(SETTING_NOUNS)
 
 # ---------------------------------------------------------------- restoring the system sound (audio.mute, muted = false)
 # Held-out 2026-09-22 «devolvele el sonido»: giving the sound back is unmuting it.
+# Each verb with the clitics people fuse to it («devolveme», «devuélvenos», «restaurale»), generated once.
+_AUDIO_RESTORE_VERBS = ("devuelve", "devolve", "devolver", "restaura", "restaurar", "recupera", "recuperar")
 AUDIO_RESTORE_WORDS = frozenset(
-    {"devuelve", "devolve", "devolver", "devuelvele", "devolvele", "devolverle", "restaura", "restaurar",
-     "restauralo", "recupera", "recuperar"}
+    {verb + clitic for verb in _AUDIO_RESTORE_VERBS for clitic in ("", "me", "le", "les", "nos", "lo")}
 )
 AUDIO_RESTORE = alternation(AUDIO_RESTORE_WORDS)
