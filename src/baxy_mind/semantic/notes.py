@@ -492,16 +492,20 @@ def _task_without_title(folded: str) -> bool:
 # so «qué hay en mi lista de la compra» finds it by that name (task.search reads
 # titles and details). No list store is added to the catalog.
 _LIST_NAME = (
-    r"(?P<list>(?:lista|list)(?:\s+(?:de(?:\s+la|\s+los|\s+las|l)?|para(?:\s+la|\s+el)?|of|for)\s+[^,;.!?]{1,60}?)?"
+    r"(?P<list>(?:listas?|lists?)(?:\s+(?:de(?:\s+la|\s+los|\s+las|l)?|para(?:\s+la|\s+el)?|of|for)\s+[^,;.!?]{1,60}?)?"
     # Tanda 4 2026-09-24 «please put the meeting with carla on my to do list»: the ear writes «to do» apart.
-    r"|(?:shopping|grocery|to[\s-]?do|todo|task|packing)\s+list)"
+    # Dev set 2 «add buy groceries to my to do list for today»: the day said after the list is part of its name.
+    r"|(?:shopping|grocery|to[\s-]?do|todo|task|packing)\s+list(?:\s+(?:for|from)\s+(?:today|tomorrow|tonight|this\s+week))?)"
 )
+# The list an entry goes on or comes off: whose it is, or a new one («put pencil on a new grocery list»).
+_LIST_DETERMINER = r"(?:(?:mi|la|tu|nuestra|una|esta|my|the|our|a|this)\s+)?(?:(?:nueva|new)\s+)?"
 _LIST_ENTRY = re.compile(
     r"^(?:(?:por\s+favor|please)\s*,?\s+)?"
-    r"(?:a[nñ]ad[eií](?:me|r)?|a[nñ][aá]deme|agreg[aá](?:me|r)?|agr[eé]game|p[oó]n(?:me|er)?|pone(?:me)?|"
-    r"met[eé](?:me|r)?|m[eé]teme|apunt[aá](?:me|r)?|ap[uú]ntame|anot[aá](?:me|r)?|an[oó]tame|"
-    r"inclu(?:ye|ir)|sum[aá](?:le|r)?|add|put)\s+"
-    r"(?P<item>\S.{0,200}?)\s+(?:a|al|en|to|on|in|into)\s+(?:(?:mi|la|tu|nuestra|my|the|our)\s+)?"
+    # The person's verb as said to a friend or with «usted» («por favor agregue este artículo a la lista»).
+    r"(?:a[nñ]ad[eií](?:me|r)?|a[nñ][aá]deme|a[nñ]ada|agreg[aá](?:me|r)?|agr[eé]game|agregue|p[oó]n(?:me|er)?|pone(?:me)?|ponga|"
+    r"met[eé](?:me|r)?|m[eé]teme|meta|apunt[aá](?:me|r)?|ap[uú]ntame|apunte|anot[aá](?:me|r)?|an[oó]tame|anote|"
+    r"inclu(?:ye|ir|ya)|sum[aá](?:le|r)?|add|put|include|insert)\s+"
+    r"(?P<item>\S.{0,200}?)\s+(?:a|al|en|to|on|in|into)\s+" + _LIST_DETERMINER
     + _LIST_NAME
     + r"(?:\s*,?\s*(?:please|pls|plz|por\s+favor|porfa))?[\s.!?]*$",
     re.IGNORECASE,
@@ -515,6 +519,9 @@ _LIST_NOT_TASKS = (
 _UNNAMED_LIST_ENTRY = (
     r"(?:(?:un|una|unos|unas|el|la|otro|otra|algun|alguna|a|an|another|the|some)\s+)?(?:(?:nuev[oa]s?|new)\s+)?"
     r"(?:elementos?|articulos?|items?|cosas?|algo|productos?|entradas?|something|things?|entry|entries|products?)"
+    # Dev set 2 «añade esto a la lista», «por favor agregue este artículo a la lista»: an entry only pointed at
+    # names nothing either.
+    r"|(?:esto|eso|aquello|it|this|that)|(?:este|esta|ese|esa|estos|estas|esos|esas|this|that|these|those)\s+\S+"
 )
 
 
@@ -557,9 +564,10 @@ def list_entry_request(text: str) -> tuple[str, str] | None:
 _LIST_CREATION = re.compile(
     r"^(?:(?:por\s+favor|please)\s*,?\s+)?"
     r"(?:(?:quiero|quisiera|necesito|tengo\s+que|i\s+(?:need|want)\s+to|let's)\s+)?"
-    r"(?:crea|creame|crear|haz|hazme|hacer|arma|armame|armar|empieza|empezar|comienza|comenzar|"
-    r"inicia|iniciar|abre|abrir|create|make|start|nueva|new)\s+"
-    r"(?:(?:una|un|la|a|the)\s+)?(?:(?:nueva|new)\s+)?(?:lista|list)"
+    r"(?:(?:crea|creame|crear|haz|hazme|hacer|arma|armame|armar|empieza|empezar|comienza|comenzar|"
+    r"inicia|iniciar|create|make|start|nueva|new)\s+(?:(?:una|un|la|a|the)\s+)?"
+    # Dev set 2: «abre la lista de la compra» opens the one there is (a read); a list is opened new only as one.
+    r"|(?:abre|abrir)\s+(?:(?:una|un)\s+|la\s+(?=nueva\s)))(?:(?:nueva|new)\s+)?(?:lista|list)"
     r"(?:\s+(?:nueva|new))?(?P<name>\s+(?:de(?:\s+la|\s+los|\s+las|l)?|para(?:\s+la|\s+el)?|of|for)\s+[^,;.!?]{1,60})?"
     r"[\s.!?]*$"
 )
@@ -584,6 +592,74 @@ def list_creation_without_items(folded: str) -> str | None:
     return None
 
 
+# Dev set 2 (2026-09-24): «we're out of paint so take bathroom painting off the list» and «eliminar mi lista de
+# tareas pendientes» read the list instead. An entry taken off a list is its task sent to the recoverable trash
+# (task.delete, after task.resolve.exact finds it by the title it was added with); a whole list removed is every
+# entry at once, which no operation does (``known_unsupported_effect_request``).
+# The reason said first («we're out of paint so …», «ya compré el pan, así que …»); a condition is not a reason.
+_REMOVAL_LEAD = (
+    r"^(?:(?!(?:si|if|cuando|when)\b)[^.!?]{1,160}?[\s,;]+(?:so|as[ií]\s+que|entonces|por\s+eso)[\s,]+)?"
+    r"(?:(?:por\s+favor|please)\s*,?\s+)?"
+)
+# The verbs as written, with or without the accent of an attached pronoun («quítame el arroz de la lista»).
+_ENTRY_OFF_VERB = (
+    r"(?:elim[ií]n[ae](?:me|r)?|elimine|b[oó]rr[ae](?:me|r)?|borre|qu[ií]t[ae](?:me|r)?|quite|s[aá]c[ae](?:me|r)?|saque|"
+    r"t[aá]ch[ae](?:me|r)?|tache|remove|delete|erase|scratch|cross|take|drop)"
+)
+_WHOLE_LIST_OFF_VERB = (
+    r"(?:elim[ií]n[ae](?:me|r)?|elimine|b[oó]rr[ae](?:me|r)?|borre|qu[ií]t[ae](?:me|r)?|quite|vac[ií]a(?:me|r)?|vac[ií]e|"
+    r"limpi[ae](?:me|r)?|deshazte\s+de|deshacerme\s+de|remove|delete|erase|clear(?:\s+out)?|empty|get\s+rid\s+of)"
+)
+_REMOVAL_END = r"(?:\s*,?\s*(?:please|pls|plz|por\s+favor|porfa))?[\s.!?]*$"
+_LIST_REMOVAL = (
+    re.compile(
+        _REMOVAL_LEAD + _ENTRY_OFF_VERB + r"\s+(?P<item>\S.{0,120}?)\s+(?:off(?:\s+of)?|from|out\s+of|de|del)\s+"
+        r"(?:(?:mi|la|tu|nuestra|esta|esa|my|the|our|this|that)\s+)?" + _LIST_NAME + _REMOVAL_END,
+        re.IGNORECASE,
+    ),
+    re.compile(
+        _REMOVAL_LEAD + r"(?:" + _WHOLE_LIST_OFF_VERB
+        + r"\s+(?:(?:toda\s+)?(?:mi|mis|la|las|esta|esa|my|the|this|that)\s+|all\s+(?:of\s+)?(?:my|the)\s+)?|"
+        r"(?:i\s+(?:don'?t|do\s+not)\s+(?:want|need)|ya\s+no\s+(?:quiero|necesito))\s+(?:mi|la|esta|esa|my|the|this|that)\s+)"
+        + _LIST_NAME + r"(?:\s+(?:any\s*more|ya|m[aá]s))?" + _REMOVAL_END,
+        re.IGNORECASE,
+    ),
+)
+
+
+@dataclass(frozen=True, slots=True)
+class ListRemoval:
+    """An entry taken off one of the person's lists, as said (None when the whole list is removed), and the list."""
+
+    entry: str | None
+    list_name: str
+
+
+def list_removal_request(text: str) -> ListRemoval | None:
+    """«take bathroom painting off the list», «quita la leche de mi lista de la compra» (an entry), «eliminar la
+    lista de cosas por hacer», «i don't want this list any more» (the whole list), in the person's own writing;
+    None for a playlist, another store («borra mi lista de alarmas»), a pointed or unnamed entry, or any other
+    shape (a negation never matches: the order opens the request)."""
+
+    surface = _request_body_surface(text).strip()
+    for pattern in _LIST_REMOVAL:
+        found = pattern.match(surface)
+        if found is None:
+            continue
+        listed = found.group("list").strip(" ,;:\"'«»“”")
+        item = (found.groupdict().get("item") or "").strip(" ,;:\"'«»“”")
+        folded_item = _fold(item)
+        if (
+            _has(f"{folded_item} {_fold(listed)}", _LIST_NOT_TASKS)
+            or _has(_fold(listed), _LIST_OF_ANOTHER_STORE)
+            or (item and re.fullmatch(_UNNAMED_LIST_ENTRY, folded_item) is not None)
+        ):
+            return None
+        entry = re.sub(r"^(?:el|la|los|las|un|una|unos|unas|the|an?|some)\s+(?=\S)", "", item, flags=re.IGNORECASE)
+        return ListRemoval(entry or None, listed)
+    return None
+
+
 # Uso real 2026-09-23 (tanda 2): the person's lists read back. «do i have cheese on my
 # shopping list if not please add it» became a conversation answering «No, no hay queso …
 # Se añadirá.» with nothing read or added; «decir la lista», «is my todo list free» and
@@ -591,9 +667,10 @@ def list_creation_without_items(folded: str) -> str | None:
 # A list is its entries (``list_entry_request``): the to-do list with no other name is
 # every open task (task.list); a list named otherwise is the tasks that name it
 # (task.search reads titles and details), and one entry asked about is searched by itself.
+# Dev set 2: every list the person keeps («dime qué listas tengo», «puedo comprobar mis listas») is every entry.
 _TODO_LIST = (
     r"(?:(?:to[\s-]?do|todo|task|tasks|chores?)\s+list|list\s+of\s+(?:things\s+to\s+do|tasks|to[\s-]?dos|chores)|"
-    r"lista\s+de\s+(?:tareas|pendientes|quehaceres|to-?dos?|cosas\s+(?:por|que|para)\s+hacer)|lista|list)"
+    r"lista\s+de\s+(?:tareas|pendientes|quehaceres|to-?dos?|cosas\s+(?:por|que|para)\s+hacer)|listas|lista|lists|list)"
 )
 _NAMED_LIST = (
     r"(?:lista|list)\s+(?:de(?:\s+la|\s+los|\s+las|l)?|para(?:\s+la|\s+el)?|of|for)\s+[a-z0-9'-]+(?:\s+[a-z0-9'-]+){0,3}"
@@ -605,8 +682,13 @@ _HOUSEHOLD_LIST = (
     r"lista\s+de(?:\s+la|\s+las)?\s+(?:compras?|supermercado|super|mercado|comestibles)|(?:shopping|grocery|groceries)\s+list"
 )
 _OWN_LIST = (
-    rf"(?:(?:mi|my)\s+(?P<list>{_TODO_LIST}|{_NAMED_LIST})|(?:la|the)\s+(?P<the_list>{_HOUSEHOLD_LIST}|{_TODO_LIST}))"
+    rf"(?:(?:mi|mis|my)\s+(?P<list>{_TODO_LIST}|{_NAMED_LIST})|(?:la|las|the)\s+(?P<the_list>{_HOUSEHOLD_LIST}|{_TODO_LIST})"
+    # Dev set 2 «que esta en esta lista especifica», «what is on this specific list»: the list pointed at is
+    # the person's list, with no other name.
+    r"|(?:esta|esa|this|that)\s+(?:(?:specific|particular)\s+)?(?P<this_list>lista|list)(?:\s+(?:especifica|en\s+particular))?)"
 )
+# The day the list is for («what is on the list for today»): the whole list is read, its dates with it.
+_LIST_DAY = r"(?:\s+(?:for|from|de|para)\s+(?:today|tomorrow|tonight|this\s+week|hoy|manana|esta\s+semana))?"
 # Another store the person keeps is read by its own operation («my list of reminders»).
 _LIST_OF_ANOTHER_STORE = (
     r"\b(?:recordatorios?|reminders?|alarmas?|alarms?|notas?|notes?|eventos?|events?|citas?|appointments?|"
@@ -615,26 +697,59 @@ _LIST_OF_ANOTHER_STORE = (
     r"redes|networks?|wifi|dispositivos?|devices?|pestanas?|tabs?)\b"
 )
 _ANYTHING = r"(?:algo|alguna\s+cosa|cosas|algun\s+pendiente|pendientes|tareas|anything|something|stuff|any\s+(?:items?|things?|tasks?))"
+# The verbs that ask to see a list, as said to a friend or with «usted» (dev set 2 «comprueba mi lista», «reúne
+# mi lista», «abrir mi lista», «bing up my list» — the ear's «bring up»).
+_LIST_READ_VERB = (
+    r"(?:dime|decime|di|decir|dame|diga|digame|lee|leeme|leer|lea|repite|repiteme|repetir|repasa|repasame|muestra|"
+    r"muestrame|mostrame|mostrar|muestre|ensename|revisa|revisame|revisar|revise|consulta|consultar|consulte|recita|"
+    r"comprueba|comprobar|compruebe|chequea|chequear|abre|abreme|abrir|abra|reune|reuneme|reunir|trae|traeme|saca|"
+    r"sacame|ver)"
+)
+_LIST_READ_VERB_EN = (
+    r"(?:read|tell|show|repeat|say|give|recite|check|review|open|display|(?:bring|pull|bing)\s+up|go\s+over|look\s+at)"
+)
+# «dime qué listas tengo», «que listas están disponibles ahora», «display available lists», «cuáles fueron las
+# últimas cinco listas que hice»: the lists the person keeps, which are their entries.
+_LIST_INVENTORY = (
+    rf"(?:(?:{_LIST_READ_VERB}|{_LIST_READ_VERB_EN}|list)(?:\s+me)?\s+)?(?:que|cuales|cuantas|what|which|how\s+many)\s+(?P<list>listas|lists)\s+"
+    r"(?:tengo|hay|he\s+hecho|hice|he\s+creado|cree|guarde|(?:estan|hay|tengo)\s+disponibles|(?:do\s+)?i\s+have|"
+    r"have\s+i\s+(?:made|got|created)|did\s+i\s+(?:make|create)|are\s+(?:there|available|saved))"
+    r"(?:\s+(?:ahora(?:\s+mismo)?|(?:right\s+)?now))?",
+    rf"(?:{_LIST_READ_VERB}|{_LIST_READ_VERB_EN}|list)(?:\s+me)?\s+(?:(?:all\s+)?(?:my|the)\s+|(?:todas\s+)?(?:mis|las)\s+)?"
+    r"(?:available\s+)?(?P<list>lists|listas)(?:\s+(?:disponibles|available))?"
+    # «enséñame las listas que tengo», «show me the lists i made».
+    r"(?:\s+(?:que\s+(?:tengo|hice|he\s+hecho|cree|he\s+creado|guarde)|(?:that\s+)?i\s+(?:have|made|created|saved)))?",
+    r"(?:que|cuales)\s+(?:fueron|son|eran)\s+(?:las|mis)\s+(?:(?:ultimas|primeras)\s+)?(?:\S+\s+)?(?P<list>listas)\s+que\s+"
+    r"(?:hice|he\s+hecho|cree|he\s+creado|tengo|guarde)",
+    r"what\s+(?:were|are)\s+(?:the|my)\s+(?:(?:last|latest|first)\s+)?(?:\S+\s+)?(?P<list>lists)\s+(?:that\s+)?i\s+"
+    r"(?:made|created|have|saved)",
+    # «check list»: the list said bare after the verb.
+    r"(?:check|review|open|show|display|read|comprueba|revisa|abre|muestra|lee)\s+(?P<list>lista|list)",
+)
 _WHOLE_LIST_READ = (
-    rf"que\s+(?:hay|tengo|queda|quedan|llevo|puse|anote)\s+(?:en|dentro\s+de)\s+{_OWN_LIST}",
+    rf"que\s+(?:mas\s+)?(?:hay|tengo|queda|quedan|llevo|puse|anote|esta|estan)\s+(?:en|dentro\s+de)\s+{_OWN_LIST}",
     rf"(?:que|cual)\s+es\s+(?:lo|la\s+(?:cosa|tarea))\s+(?:siguiente|proxim[oa]|primer[oa]?|ultim[oa])\s+(?:en|de)\s+{_OWN_LIST}",
-    rf"(?:dime|decime|di|decir|dame|lee|leeme|leer|repite|repiteme|repetir|repasa|repasame|muestra|muestrame|mostrame|"
-    rf"mostrar|ensename|revisa|revisame|revisar|consulta|consultar|recita)\s+(?:lo\s+que\s+(?:hay|tengo)\s+en\s+)?"
-    rf"{_OWN_LIST}(?:\s+(?:otra\s+vez|de\s+nuevo))?",
-    rf"(?:dejame|quiero|quisiera|me\s+gustaria|necesito|puedo)\s+(?:escuchar|oir|ver|saber|revisar|leer|consultar|repasar)\s+"
-    rf"(?:lo\s+que\s+(?:hay|tengo)\s+en\s+)?{_OWN_LIST}",
+    rf"(?:que\s+es\s+(?:esto|eso)|what(?:'s|s|\s+is)\s+(?:this|that))\s+(?:en|de|on|in)\s+{_OWN_LIST}",
+    rf"{_LIST_READ_VERB}\s+(?:lo\s+que\s+(?:hay|tengo)\s+en\s+|el\s+contenido\s+de\s+)?{_OWN_LIST}(?:\s+(?:otra\s+vez|de\s+nuevo))?",
+    rf"(?:dejame|quiero|quisiera|me\s+gustaria|necesito|puedo)\s+(?:escuchar|oir|ver|saber|revisar|leer|consultar|repasar|"
+    rf"comprobar|chequear|abrir)\s+(?:lo\s+que\s+(?:hay|tengo)\s+en\s+)?{_OWN_LIST}",
     rf"(?:tengo|hay)\s+{_ANYTHING}\s+(?:en|dentro\s+de)\s+{_OWN_LIST}",
     rf"tengo\s+(?=mi\s){_OWN_LIST}",
     rf"(?:esta|sigue)\s+(?:vacia|libre|llena)\s+{_OWN_LIST}",
     rf"{_OWN_LIST}\s+(?:esta|sigue)\s+(?:vacia|libre|llena)",
-    rf"(?:what(?:'s|s|\s+is|\s+are)|what\s+(?:do|did)\s+i\s+(?:have|put)|what\s+have\s+i\s+got)\s+(?:(?:left|still)\s+)?"
-    rf"(?:on|in)\s+{_OWN_LIST}",
+    rf"(?:what(?:'s|s|\s+is|\s+are)|what\s+(?:do|did)\s+i\s+(?:have|put)|what\s+have\s+i\s+got|"
+    rf"what\s+else\s+(?:is|are|do\s+i\s+have|have\s+i\s+got))\s+(?:(?:left|still)\s+)?(?:on|in)\s+{_OWN_LIST}",
     rf"what(?:'s|s|\s+is)\s+(?:the\s+)?(?:next|first|last|top)(?:\s+(?:thing|item|task|entry))?\s+(?:on|in)\s+{_OWN_LIST}",
-    rf"(?:read|tell|show|repeat|say|give|recite|check|review)(?:\s+(?:me|out))?\s+(?:what(?:'s|\s+is)\s+(?:on|in)\s+)?"
+    rf"{_LIST_READ_VERB_EN}(?:\s+(?:me|out))?\s+(?:what(?:'s|\s+is)\s+(?:on|in)\s+|the\s+contents?\s+of\s+)?"
     rf"{_OWN_LIST}(?:\s+(?:back|out|again|aloud))*(?:\s+to\s+me)?",
-    rf"(?:let\s+me|i\s+(?:want|need|would\s+like)\s+to|can\s+i)\s+(?:hear|see|check|review|read)\s+{_OWN_LIST}",
+    rf"(?:let\s+me|i\s+(?:want|need|would\s+like)\s+to|can\s+i)\s+(?:hear|see|check|review|read|open)\s+{_OWN_LIST}",
     rf"(?:is|are)\s+{_OWN_LIST}\s+(?:free|empty|clear|done|full|finished|complete)",
     rf"(?:do\s+i\s+have|have\s+i\s+got|is\s+there|are\s+there)\s+{_ANYTHING}\s+(?:(?:left|still)\s+)?(?:on|in)\s+{_OWN_LIST}",
+    *_LIST_INVENTORY,
+    # Dev set 2 «did i make a shopping list», «hice una lista de compra»: whether a named list exists is a search
+    # for its name.
+    rf"(?:did\s+i\s+(?:make|create|write|start)|have\s+i\s+(?:made|created|got)|do\s+i\s+have|hice|he\s+hecho|cree|"
+    rf"he\s+creado|tengo|existe)\s+(?:a|an|una|un|alguna|any)\s+(?P<list>{_NAMED_LIST})",
 )
 _ENTRY = r"(?P<item>(?!(?:que|de|a|en|para|to|of)\b)\S.{0,80}?)"
 _LIST_ENTRY_PRESENCE = (
@@ -701,7 +816,7 @@ def list_read_request(text: str) -> ListRead | None:
     found = None
     entry: str | None = None
     for pattern in _WHOLE_LIST_READ:
-        found = re.fullmatch(pattern + r"(?:\s*,?\s*(?:please|por\s+favor|porfa))?[\s.!?]*", body)
+        found = re.fullmatch(pattern + _LIST_DAY + r"(?:\s*,?\s*(?:please|por\s+favor|porfa))?[\s.!?]*", body)
         if found is not None:
             break
     if found is None:
@@ -712,16 +827,16 @@ def list_read_request(text: str) -> ListRead | None:
         if found is None:
             return _list_entry_if_absent(body, literal)
         item = found.group("item")
+        if re.match(r"(?:esto|eso|esta|este|esa|ese|estas|estos|esas|esos|aquello|it|this|that|these|those)\b", item):
+            return None
         if re.fullmatch(_ANYTHING + r"|" + _UNNAMED_LIST_ENTRY, item) is not None:
             entry = None
-        elif re.match(r"(?:esto|eso|esta|este|esa|ese|estas|estos|esas|esos|aquello|it|this|that|these|those)\b", item):
-            return None
         else:
             entry = re.sub(
                 r"^(?:el|la|los|las|un|una|unos|unas|the|an?|some|any)\s+(?=\S)", "",
                 literal(found.start("item"), found.end("item")), flags=re.IGNORECASE,
             )
-    group = "list" if found.group("list") is not None else "the_list"
+    group = next(name for name in ("list", "the_list", "this_list") if found.groupdict().get(name) is not None)
     listed = found.group(group)
     if _has(f"{entry or ''} {listed}", _LIST_NOT_TASKS) or _has(listed, _LIST_OF_ANOTHER_STORE):
         return None

@@ -24,7 +24,7 @@ from .files import _pdf_summary_request, _file_trash_request, process_report_fil
 from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
 from .system import _weather_read_intent, physical_world_request
-from .notes import list_entry_request, list_read_request, list_creation_without_items, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder
+from .notes import list_entry_request, list_read_request, list_removal_request, list_creation_without_items, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder
 from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, _latest_email_domain, _notification_listing_request, inbox_read_request, social_network_request
 from .ui import _clipboard_copy_domain, _clipboard_paste_domain, calculator_expression_request, literal_clipboard_write_text, _review_input_and_capture_effects, _VISIBLE_CLICK_APP_CONTEXT, _gerund_click_label, _visible_click_label, _click_in_application, _visible_click_intent
 from .apps import self_close_request, _APPLICATION_TRAILING_REQUEST, _application_target_forms, _CLOSE_TRAILING_COURTESY, _close_target_forms, deictic_close_request, _bounded_application_literal, _authenticated_application_list, _OPEN_STATE_CONDITION, close_all_request, _has_multiple_installed_entities, _append_domain_actions, _open_application_spans, _CATALOG_INSTALL_VERB, _opened_applications
@@ -595,7 +595,11 @@ def _curated_domain_is_grounded(
         )
     if operation == "task.delete":
         # "Bota los papers viejos al contenedor" reached task.delete. Throwing
-        # paper away is not deleting a task, so the task domain has to be named.
+        # paper away is not deleting a task, so the task domain has to be named
+        # (or the list the entry comes off, «take bathroom painting off the list»).
+        removal = list_removal_request(text)
+        if removal is not None and removal.entry is not None:
+            return True
         return _has(
             folded,
             r"\b(?:tarea|tareas|task|tasks|pendiente|pendientes|todo|to-?do)\b",
@@ -2013,6 +2017,12 @@ def known_unsupported_effect_request(
             )
             and not _has(folded, r"\b(?:alarmas?|alarms?|recordatorios?|reminders?|notas?|notes?|archivos?|files?)\b"),
             {"calendar.event.delete"},
+        ),
+        (
+            # Dev set 2 «eliminar la lista de cosas por hacer», «i don't want this list any more»: a list is its
+            # entries, and no operation removes them all at once; one entry named is taken off (task.delete).
+            (removal := list_removal_request(text)) is not None and removal.entry is None,
+            {"task.list.delete"},
         ),
         (
             _has(folded, rf"\b{_OPEN}\b")
@@ -6565,6 +6575,12 @@ def _is_direct_request(text: str) -> bool:
         # Uso real 2026-09-23 «vuelve el sonido», «Turn off silenciar», «¡detén este horrible ruido!», «silencio»:
         # the message opens with the mute switched or the sound asked back; that is the request.
         or _has(text, lexicon.MUTE_REQUEST)
+        # Dev set 2 «incluir un elemento en una lista», «por favor agregue este artículo a la lista», «por favor
+        # elimine mi lista de tareas pendientes»: an entry put on or taken off a list, or a list emptied, is
+        # the request whatever the verb's person.
+        or list_entry_request(text) is not None
+        or list_creation_without_items(text) is not None
+        or list_removal_request(text) is not None
     ):
         return True
     request_head = (
@@ -11688,6 +11704,11 @@ def _resolve_clause_effects(
     if "task.create" in available and list_entry_request(text) is not None:
         # «añadir el brócoli a mi lista de la compra»: the entry is a task on that list.
         return EffectIntent(("task.create",), (text,))
+    removal = list_removal_request(text)
+    if removal is not None and removal.entry is not None and {"task.resolve.exact", "task.delete"} <= available:
+        # «take bathroom painting off the list»: the entry's task is found by its title and sent to the trash
+        # (the plan puts task.resolve.exact first, planner._required_predecessors).
+        return EffectIntent(("task.delete",), (text,))
     list_read = list_read_request(text)
     if list_read is not None and list_read.operation in available:
         # «decir la lista», «qué hay en mi lista de la compra», «do i have cheese on my

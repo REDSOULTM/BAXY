@@ -251,6 +251,7 @@ _IDENTITY_CONSUMERS = frozenset(
         "peripheral.print",
         "peripheral.scan",
         "reminder.delete",
+        "task.delete",
         "vision.describe",
         "window.focus",
         "window.maximize",
@@ -811,6 +812,7 @@ _DETERMINISTIC_DEPENDENCY_FIELDS = {
     "office.document.read": ("documentId",),
     "peripheral.print": ("deviceId",),
     "reminder.delete": ("reminderId", "expectedVersion", "reviewLabel"),
+    "task.delete": ("taskId", "expectedVersion", "reviewLabel"),
     "vision.describe": ("captureId",),
     "wifi.connect": ("profileId",),
 }
@@ -5731,6 +5733,10 @@ def _explicit_arguments_from_evidence(
     if operation == "reminder.resolve.exact":
         title = _explicit_local_reminder_title(evidence)
         return {"title": title} if title is not None else None
+
+    if operation == "task.resolve.exact" and (removal := effect_intent.list_removal_request(evidence)) is not None:
+        # «take bathroom painting off the list»: the entry is the title it was put on the list with.
+        return {"title": removal.entry} if removal.entry else None
 
     if operation == "note.create":
         # This closed form carries both required literals in one atomic effect

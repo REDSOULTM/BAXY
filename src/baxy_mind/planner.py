@@ -1043,6 +1043,7 @@ def _required_predecessors(operation: str) -> tuple[str, ...]:
         "peripheral.print": ("peripheral.list",),
         "peripheral.scan": ("peripheral.list",),
         "reminder.delete": ("reminder.resolve.exact",),
+        "task.delete": ("task.resolve.exact",),
         "vision.describe": ("capture.screenshot",),
         "window.focus": ("window.resolve", "window.active"),
         "window.maximize": ("window.resolve", "window.active"),
