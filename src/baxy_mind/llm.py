@@ -45,6 +45,7 @@ from .effect_intent import (
     _entity_lookup_query,
     _research_question_subject,
     _strip_request_envelope,
+    _weather_location,
     conversation_only_content_request,
     countdown_target,
     curiosity_request,
@@ -4297,6 +4298,25 @@ def _completed_step_operation(situation: dict, operation: str) -> bool:
     return False
 
 
+def _failure_is_an_absence(situation: dict) -> bool:
+    """The typed failure is that something was not found («youtube_tab_not_found»,
+    «media_session_not_found»). Twin of UserMessagePolicy.IsNotFoundFailure."""
+
+    return any("not_found" in code for code in _situation_error_codes(situation))
+
+
+# Saying that the thing is not there: «no hay», «ningún», «no está sonando»,
+# «nothing is playing», «there is no …», «isn't playing». Twin of
+# UserMessagePolicy.AbsenceStatement.
+_ABSENCE_STATEMENT = re.compile(
+    r"\bno\s+hay\b|\bningun[oa]?\b|\bno\s+(?:se\s+)?(?:esta|estan|estaba)\s+"
+    r"(?:sonando|reproduciendo|reproduciendose|abiert[oa]s?|en\s+(?:ejecucion|reproduccion))\b|"
+    r"\bno\s+suena\b|\bnothing\s+(?:is|was)\b|\bthere\s+(?:is|are|was|were)\s+no\b|"
+    r"\b(?:isn't|is\s+not|aren't|are\s+not|wasn't|was\s+not)\s+(?:playing|open|running)\b|"
+    r"\bno\s+\w+(?:\s+\w+)?\s+(?:is|was)\s+(?:playing|open|running)\b"
+)
+
+
 def _situation_error_codes(situation: dict) -> tuple[str, ...]:
     """The typed error codes of a situation and of the step failure it wraps
     (MissionNarration serializes the step's facts inside `reason`)."""
@@ -5366,6 +5386,24 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             "person's language, plain noun (ventanas / windows), no process names "
             "other than Visual Studio Code, no other numbers. If closedWindows is 0 "
             "and windowsStillOpenAfterAsking is 0, say there was no window to close."
+        )
+    if (
+        situation.get("operation") in {"capture.screenshot", "capture.active.window"}
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+    ):
+        # Uso real 2026-09-23 «haz una captura de pantalla»: with the capture
+        # taken and verified, eighteen drafts answered from the model's own
+        # belief — «No puedo hacer una captura… no tengo acceso a la pantalla».
+        bits.append(
+            "This result is a screenshot you have just taken and verified: "
+            "seen.captured is what it shows (the whole screen or the active "
+            "window), width and height its size in pixels, and storedPrivately "
+            "means it stays private on this PC. Say in the first person, in the "
+            "past, that you took it and what it captured, in one or two sentences, "
+            "in the person's language. Never say you cannot take screenshots or "
+            "have no access to the screen, and do not name a folder or file: no "
+            "path was given."
         )
     if (
         situation.get("operation") == "window.minimize.all"
@@ -6454,6 +6492,25 @@ def _local_clock_text(iso_utc: str) -> str | None:
     return instant.astimezone().strftime("%Y-%m-%d %H:%M")
 
 
+def _listed_notification_clocks(situation: dict) -> frozenset[str]:
+    """The local «HH:MM» of every alarm or reminder a verified listing observed."""
+
+    if (
+        situation.get("operation") != "notification.list"
+        or situation.get("verified") is not True
+        or situation.get("succeeded") is not True
+    ):
+        return frozenset()
+    entries = _merged_observed(situation).get("notifications")
+    return frozenset(
+        local[-5:]
+        for entry in (entries if isinstance(entries, list) else [])
+        if isinstance(entry, dict)
+        and isinstance(entry.get("nextRunUtc"), str)
+        and (local := _local_clock_text(entry["nextRunUtc"])) is not None
+    )
+
+
 def _known_listing_in_payload(payload: dict) -> dict | None:
     """The projected listing («seen» with names) of a verified known-folder listing."""
 
@@ -6747,33 +6804,99 @@ _SEARCH_REPORT_OWN_WORDS = frozenset(
         "three", "four", "five", "six", "seven", "eight", "nine", "about", "offers",
         "highlights", "presents", "finally", "different", "various", "fourth", "fifth",
         "gathers", "covers", "deals",
+        # Uso real 2026-09-23 (tipo de cambio, pastel de choclo, chistes): «se
+        # encuentra», «una lista de», «define», «está disponible en», «se puede
+        # consultar en» say where a page is and what it does, not a fact of the world.
+        "encuentra", "encuentran", "lista", "listas", "define", "definen",
+        "disponible", "disponibles", "available", "consulta", "consultar",
+        "sugiere", "sugieren", "suggests", "repite", "repiten", "enlace", "enlaces",
+        "links", "texto", "textos", "fragmento", "fragmentos", "snippet", "snippets",
+        "website", "websites", "webpage", "portal", "portales",
+    }
+)
+
+# Uso real 2026-09-23: the closed classes of the language (determiners,
+# pronouns, auxiliaries, quantifiers, connectives) carry no fact of their own.
+# «Exchange-Rates.org también tiene un conversor», «Calculaya permite convertir
+# pesos chilenos a diversas divisas» died because «tiene» and «diversas» were in
+# no snippet. Content words (nouns, adjectives, full verbs) are still grounded.
+_SEARCH_REPORT_GRAMMAR_WORDS = frozenset(
+    {
+        "tiene", "tienen", "tenia", "tener", "puede", "pueden", "podria", "podrian",
+        "poder", "deben", "hacer", "estar", "estan", "estaba", "estaban", "siendo",
+        "haber", "habia", "habian", "seria", "serian", "permite", "permiten",
+        "todos", "todas", "alguno", "alguna", "algunos", "algunas", "alguien",
+        "ninguno", "ninguna", "nadie", "mismo", "misma", "mismos", "mismas",
+        "cuando", "donde", "mientras", "aunque", "porque", "entre", "hasta", "desde",
+        "hacia", "durante", "cuales", "quien", "quienes", "cuanto", "cuanta",
+        "cuantos", "cuantas", "tanto", "tanta", "tantos", "tantas", "mucho", "mucha",
+        "muchos", "muchas", "pocos", "pocas", "diversos", "diversas", "estos", "esos",
+        "esas", "aquel", "aquella", "aquellos", "aquellas", "ellos", "ellas", "usted",
+        "ustedes", "siempre", "nunca", "luego", "despues", "antes", "ahora",
+        "todavia", "solamente", "incluso", "asimismo", "entonces", "cualquier",
+        "cualquiera", "demas", "ambos", "ambas", "llamado", "llamada", "llamados",
+        "llamadas", "dicho", "dicha", "respecto", "mediante",
+        "which", "where", "there", "their", "those", "after", "before", "being",
+        "would", "could", "should", "might", "other", "others", "every", "while",
+        "since", "until", "through", "within", "without", "among", "because",
+        "again", "still", "whose", "either", "neither", "called", "named", "having",
     }
 )
 
 
 def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> list[str]:
-    """The words of the report that no result and no request shares (SEARCH2019 hint)."""
+    """The words of the report that no result and no request shares.
 
-    if _search_results_text(payload) is None:
+    Judged sentence by sentence, the same for a named page as for an unnamed
+    one (WEB1889: naming the page vouched for «problemas de conexion», which no
+    result carried). The SEARCH2019 hint names these words back to the model.
+    """
+
+    results_text = _search_results_text(payload)
+    if results_text is None:
         return []
-    observed = set(
-        re.findall(r"[a-z]+", _reading_fold(_search_results_text(payload) or ""))
-    ) | set(re.findall(r"[a-z]+", _reading_fold(user_text)))
+    observed = set(re.findall(r"[a-z]+", _reading_fold(results_text))) | set(
+        re.findall(r"[a-z]+", _reading_fold(user_text))
+    )
+    # «El artículo de El Tiempo» names eltiempo.com with the site's own words.
+    site_labels = [
+        label
+        for host in _search_result_hosts(payload, limit=len(_search_results_of(payload)))
+        for label in host.split(".")
+        if len(label) >= 5
+    ]
     words: list[str] = []
     for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip()):
         for word in re.findall(r"[a-z]+", _reading_fold(sentence)):
-            if len(word) < 5 or word in _SEARCH_REPORT_OWN_WORDS or word in words:
+            if (
+                len(word) < 5
+                or word in words
+                or word in _SEARCH_REPORT_GRAMMAR_WORDS
+                # The report's own voice, conjugated: «incluyendo», «explicando».
+                or any(
+                    word.startswith(own) and len(word) - len(own) <= 4
+                    for own in _SEARCH_REPORT_OWN_WORDS
+                    if len(own) >= 5
+                )
+                # Inflection is tolerated by the first four letters («enviar» for
+                # «envío»), and a short observed word may take its plural
+                # («yenes» for «yen»); a word no result shares that much is the
+                # model's.
+                or any(
+                    seen_word.startswith(word[:4])
+                    or (len(seen_word) >= 3 and word.startswith(seen_word) and len(word) - len(seen_word) <= 2)
+                    for seen_word in observed
+                )
+                or any(word in label for label in site_labels)
+            ):
                 continue
-            if not any(seen_word.startswith(word[:4]) for seen_word in observed):
-                words.append(word)
+            words.append(word)
     return words
 
 
 def _search_report_unsourced_claim(text: str, payload: dict, user_text: str) -> bool:
     """A sentence of the report states something that is neither in a result nor asked."""
 
-    if _search_results_text(payload) is None:
-        return False
     if (
         _entity_lookup_query(user_text or "") is not None
         # WEB1889: la pregunta de investigacion SI es un informe, y esta
@@ -6783,26 +6906,30 @@ def _search_report_unsourced_claim(text: str, payload: dict, user_text: str) -> 
         or curiosity_request(user_text or "")
     ):
         return False
-    observed = set(
-        re.findall(r"[a-z]+", _reading_fold(_search_results_text(payload) or ""))
-    ) | set(re.findall(r"[a-z]+", _reading_fold(user_text)))
-    if not observed:
+    return bool(_search_report_unsourced_words(text, payload, user_text))
+
+
+# Uso real 2026-09-23 «cuál es la tasa de cambio entre el peso chileno y el yen»:
+# «Nuestro conversor de moneda le permite conocer el cambio…» pasted a snippet
+# and made the page's «we» BAXY's own; «le decimos en cuánto está el dólar»
+# the same. BAXY reports pages in its own voice; a quoted title may keep theirs.
+# A bare «we» stays out: «AI as we know it today» is the generic we, not a page.
+_PAGE_FIRST_PERSON_PLURAL = re.compile(
+    r"\b(?:nuestr[oa]s?|nosotr[oa]s|hemos|(?:le|les|te|os)\s+[a-z]+mos|our|ours)\b"
+)
+
+
+def _search_report_speaks_as_a_page(text: str, payload: dict, user_text: str) -> bool:
+    """The report of a verified search speaks in the first person plural of a page."""
+
+    if _search_results_text(payload) is None:
         return False
-    # WEB1889: toda oracion se mide igual. Nombrar la pagina la avalaba y por
-    # ahi pasaba «...fallas.mx y downdetector.mx, que mencionan problemas de
-    # conexion», con «conexion» ausente de los cinco resultados. Que el
-    # informe nombre sus paginas lo exige la otra regla.
-    for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip()):
-        if not _reading_fold(sentence):
-            continue
-        for word in re.findall(r"[a-z]+", _reading_fold(sentence)):
-            if len(word) < 5 or word in _SEARCH_REPORT_OWN_WORDS:
-                continue
-            # Inflection is tolerated by the first four letters («enviar» for
-            # «envío»); a word no result shares even that much is the model's.
-            if not any(seen_word.startswith(word[:4]) for seen_word in observed):
-                return True
-    return False
+    unquoted = _reading_fold(re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(text)))
+    asked = _reading_fold(user_text or "")
+    return any(
+        re.search(r"\b" + re.escape(found[0]) + r"\b", asked) is None
+        for found in _PAGE_FIRST_PERSON_PLURAL.finditer(unquoted)
+    )
 
 
 def _search_report_without_source(text: str, payload: dict, user_text: str) -> bool:
@@ -6931,7 +7058,15 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         # place as well as the whole.
         folded_location = _reading_fold(location)
         head = re.split(r"\s+de\s+|,", folded_location, maxsplit=1)[0].strip()
-        if folded_location not in folded_text and not (len(head) >= 3 and head in folded_text):
+        # Uso real 2026-09-23 «what's the weather like in london»: the geocoder
+        # names the place in Spanish («Londres»); the English reply names it as
+        # the person did, and that is the same place named.
+        asked_place = _reading_fold(_weather_location(user_text or "") or "")
+        if (
+            folded_location not in folded_text
+            and not (len(head) >= 3 and head in folded_text)
+            and not (len(asked_place) >= 3 and re.search(r"\b" + re.escape(asked_place) + r"\b", folded_text))
+        ):
             return "missing_state"
     asks = _reading_fold(user_text or "")
     tomorrow = seen.get("tomorrow")
@@ -7090,6 +7225,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     window_defect = window_fact_defect(text, payload, user_text)
     if window_defect:
         return window_defect
+    if _search_report_speaks_as_a_page(text, payload, user_text):
+        return "search_report_page_voice"
     if _search_report_without_source(text, payload, user_text):
         # WEB1877 H0060: the pages were found and reported, but none was named.
         return "search_report_without_source"
@@ -7750,11 +7887,14 @@ def _truncated_fact_word(text: str, facts: dict) -> bool:
             # A search result snippet is prose, not a name: «clima actual» is
             # not a cut of the snippet word «actualizada» (WEB1447/001). A
             # result URL glues words together («atlasanimal.com»): «Atlas» is
-            # not a cut of it (KNOWLEDGE1509/000).
+            # not a cut of it (KNOWLEDGE1509/000). The title of a search
+            # result is that page's prose too: «se actualiza durante el día» is
+            # not a cut of the title word «Actualizado» (uso real 2026-09-23).
+            page_prose = {"snippet", "url", "title"} if "snippet" in value else {"snippet", "url"}
             return [
                 text
                 for key, child in value.items()
-                if key not in {"observationScope", "unit", "operation", "authority", "snippet", "url"}
+                if key not in {"observationScope", "unit", "operation", "authority"} | page_prose
                 for text in values_only(child)
             ]
         if isinstance(value, (list, tuple)):
@@ -9242,7 +9382,13 @@ def compose_visible_defect(
             if not _names_the_boundary(folded):
                 return "missing_failure"
             return ""
-        if not _asserts_failure(stripped):
+        if not _asserts_failure(stripped) and not (
+            # Uso real 2026-09-23 «qué música se está reproduciendo» with no player
+            # found: «No hay un video de YouTube en ejecución» IS the failure told,
+            # when the failure is that absence. Twelve such drafts died wanting «no pude».
+            _failure_is_an_absence(situation)
+            and _ABSENCE_STATEMENT.search(_accent_folded_with_punctuation(stripped)) is not None
+        ):
             return "missing_failure"
         parts = stripped.split(":", 1)
         if len(parts) == 2:
@@ -9789,8 +9935,12 @@ def compose_visible_defect(
                     # video «…» en YouTube» states the playback of the video the
                     # product itself announced; watching is the playing state here.
                     + (r"|viendo|watching" if operation == "media.play.youtube" else "") + r")|"
-                    r"(?P<paused>pausad[oa]s?|en\s+pausa|paused)|"
-                    r"(?P<stopped>detenid[oa]s?|parad[oa]s?|stopped))\b",
+                    # Uso real 2026-09-23 «para de reproducir»: «La reproducción
+                    # se detuvo», «Dejé de reproducir» say the verified stop with a
+                    # verb, not an adjective, and both drafts died in missing_state.
+                    r"(?P<paused>pausad[oa]s?|en\s+pausa|paused|paus[eé]|paus[oó])|"
+                    r"(?P<stopped>detenid[oa]s?|parad[oa]s?|stopped|detuv(?:e|o|ieron)|"
+                    r"par[eé]|dej[eé]\s+de\s+(?:reproducir|sonar)|dej[oó]\s+de\s+(?:reproducirse|reproducir|sonar)))\b",
                     playback_text,
                     re.IGNORECASE,
                 ))
@@ -9888,7 +10038,13 @@ def compose_visible_defect(
             if any(pattern.search(folded) for pattern in _CALENDAR_DATE_PATTERNS):
                 if not _preserves_calendar_date(stripped, scheduled_local):
                     return "extra_claim"
-        elif not clock and re.search(r"(?<!\d)\d{1,2}:\d{2}(?!\d)", stripped):
+        elif not clock and any(
+            # Uso real 2026-09-23 «qué alarmas hay puestas»: the listing gives each
+            # alarm's next run in local time and the answer has to say it; only a
+            # clock that no listed alarm has is invented.
+            f"{int(hour):02d}:{minute}" not in _listed_notification_clocks(situation)
+            for hour, minute in re.findall(r"(?<!\d)(\d{1,2}):(\d{2})(?!\d)", stripped)
+        ):
             return "extra_claim"
         question_text = stripped
         if _recalled_records(situation) and _RECALLED_AS_OWN.match(stripped) is not None:
@@ -17104,21 +17260,6 @@ class LlmRuntime:
                 "ningún dato que ningún fragmento contenga; si ningún fragmento "
                 "dice qué es, nombra las páginas encontradas. Sin pregunta al final."
             )
-            # H0060: sin los sitios delante, el modelo escribe «múltiples fuentes»
-            # y no nombra ninguna, que es justo lo que esta fila pide.
-            _entity_hosts = _search_result_hosts(visible_situation)
-            if _entity_hosts:
-                instruct(
-                    " The sites of those pages are: "
-                    + ", ".join(_entity_hosts)
-                    + ". Write the one you use exactly like that; never say "
-                    "«several sources» without naming one."
-                    if response_language == "en"
-                    else " Los sitios de esas páginas son: "
-                    + ", ".join(_entity_hosts)
-                    + ". Escribe tal cual el que uses; nunca digas "
-                    "«múltiples fuentes» sin nombrar ninguna."
-                )
         elif _search_results_text(visible_situation) is not None:
             # WEB1445: the person asked a live question; the results are pages,
             # not the answer itself. Say what was found, never what it might say.
@@ -17171,6 +17312,37 @@ class LlmRuntime:
                     "llanamente al principio («No usé la API; busqué en internet») y "
                     "luego nombra las páginas."
                 )
+        search_hosts = (
+            _search_result_hosts(visible_situation)
+            if _search_results_text(visible_situation) is not None
+            else []
+        )
+        if search_hosts:
+            # H0060: sin los sitios delante, el modelo escribe «múltiples fuentes»
+            # y no nombra ninguna. Uso real 2026-09-23: el informe general no los
+            # recibía (sólo quién-o-qué-es) y moría en search_report_without_source;
+            # y pegaba el fragmento con la voz de la página («Nuestro conversor le
+            # permite…», «¿A cuánto está el dólar?»), que BAXY no puede decir como suya.
+            instruct(
+                " The sites of those pages are: "
+                + ", ".join(search_hosts)
+                + ". Write the one you use exactly like that; never say "
+                "«several sources» without naming one. Speak in your own voice, "
+                "in the third person about each page («… on that site says that …»): "
+                "never as the page («we», «our», «you can»), never copying its "
+                "questions or its instructions to the reader; what a snippet states "
+                "is repeated with the snippet's own words, not reworded."
+                if response_language == "en"
+                else " Los sitios de esas páginas son: "
+                + ", ".join(search_hosts)
+                + ". Escribe tal cual el que uses; nunca digas "
+                "«múltiples fuentes» sin nombrar ninguna. Habla con tu propia voz, "
+                "en tercera persona sobre cada página («… en ese sitio dice que …»): "
+                "nunca como la página («nuestro», «le decimos», «utiliza», «descubre»), "
+                "sin copiar sus preguntas ni sus instrucciones al lector; lo que "
+                "afirma un fragmento se repite con las palabras del fragmento, sin "
+                "cambiarlas por otras."
+            )
         if _written_file_after_listing(visible_situation) is not None:
             # FILES1707 «crea un archivo de texto con los 5 procesos que más
             # memoria usan»: the listing was read and written to a file; the
@@ -17965,6 +18137,11 @@ class LlmRuntime:
                     if response_language == "en"
                     else "No pegues direcciones: nombra cada página por su título entre comillas angulares y su sitio (por ejemplo steamdb.info), en prosa."
                 ),
+                "search_report_page_voice": (
+                    "Speak in your own voice: say what each page says in the third person, naming it by its title in guillemets and its site («… on example.com says that …»); never speak as the page («we», «our», «we tell you»), never copy its questions or its instructions to the reader."
+                    if response_language == "en"
+                    else "Habla con tu propia voz: di en tercera persona lo que dice cada página, nombrándola por su título entre comillas angulares y su sitio («… en ejemplo.com dice que …»); nunca hables como la página («nuestro», «le decimos», «te garantizamos»), ni copies sus preguntas ni sus instrucciones al lector."
+                ),
                 "search_report_unsourced_claim": (
                     # SEARCH2019: name the words no result uses and keep the rest
                     # of the report as it was; the generic hint made the model
@@ -18099,6 +18276,19 @@ class LlmRuntime:
                         "without naming an unobserved folder or claiming the file "
                         "is absent everywhere. Do not describe a failed search."
                         if _verified_empty_known_file_query(situation) is not None
+                        else (
+                            # Uso real 2026-09-23 «quiero que te rías como Satán»:
+                            # «Success. State what was seen.» gave a conversation
+                            # nothing to say, and the retry repeated «No puedo».
+                            "Nothing failed: this is a conversation. Answer the person "
+                            "in your own words, in character; a playful request is "
+                            "played along in words. Do not say you cannot."
+                            if response_language == "en"
+                            else "No falló nada: es una conversación. Contesta a la "
+                            "persona con tus palabras, con tu carácter; a un pedido de "
+                            "juego se le sigue el juego con palabras. No digas que no puedes."
+                        )
+                        if intent == "conversation" or situation.get("kind") == "conversation"
                         else "Success. State what was seen."
                     )
                 ),

@@ -61,7 +61,10 @@ def without_observed_names(text: str, situation: object) -> str:
                     if isinstance(url, str):
                         host = re.match(r"^(?:https?://)?(?:www\.)?([^/?#]+)", url)
                         if host and 0 < len(host.group(1)) <= 253:
-                            names.add(host.group(1))
+                            # Uso real 2026-09-23: «elmundo.es» names the site of
+                            # recetasdecocina.elmundo.es as much as the full host.
+                            labels = host.group(1).split(".")
+                            names.update(".".join(labels[start:]) for start in range(max(1, len(labels) - 1)))
         if (node.get("kind") == "operation" and operation == "web.news.headlines"
                 and node.get("verified") is True and node.get("succeeded") is True
                 and node.get("polarity") == "success"):

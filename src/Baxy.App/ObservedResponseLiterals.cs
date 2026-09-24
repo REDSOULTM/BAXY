@@ -106,7 +106,13 @@ internal static class ObservedResponseLiterals
                     && Uri.TryCreate(resultUrl.GetString(), UriKind.Absolute, out Uri? resultUri)
                     && resultUri.Host is { Length: > 0 } hostName)
                 {
-                    names.Add(hostName.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ? hostName[4..] : hostName);
+                    // Uso real 2026-09-23: «elmundo.es» names the site of
+                    // recetasdecocina.elmundo.es as much as the full host.
+                    string[] labels = (hostName.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ? hostName[4..] : hostName).Split('.');
+                    for (int start = 0; start < Math.Max(1, labels.Length - 1); start++)
+                    {
+                        names.Add(string.Join('.', labels[start..]));
+                    }
                 }
             }
         }

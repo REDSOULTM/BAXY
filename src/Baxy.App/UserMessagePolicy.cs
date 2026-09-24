@@ -995,7 +995,10 @@ internal static class UserMessagePolicy
         ["teclado", "keyboard", "win32"],
         ["backup", "sha-256", "sha256"],
         ["cdp"],
-        ["volumen", "audio", "silencio", "mute", "salida predeterminada"],
+        // Uso real 2026-09-23 «Volume más alto please»: the person's English word
+        // for the same family; without it the clarification about the volume
+        // they asked for read as a proposal of their own.
+        ["volumen", "volume", "audio", "silencio", "mute", "salida predeterminada"],
         ["notificacion", "notification"],
         ["bitcoin", "neptuno"],
         ["busque", "buscar en la web", "search the web"],
@@ -3100,7 +3103,65 @@ internal static class UserMessagePolicy
             return ClaimsUnverifiedSuccess(result);
         }
 
+        // Uso real 2026-09-23 «qué música se está reproduciendo» with no player
+        // found: «No hay un video de YouTube en ejecución» IS the failure told
+        // when the failure is that absence. Twin of the mind's _ABSENCE_STATEMENT.
+        if (IsNotFoundFailure(source)
+            && Regex.IsMatch(FoldForPolicy(result), AbsenceStatement,
+                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+        {
+            return false;
+        }
+
         return !LooksLikeFailure(result);
+    }
+
+    private const string AbsenceStatement =
+        @"\bno\s+hay\b|\bningun[oa]?\b|\bno\s+(?:se\s+)?(?:esta|estan|estaba)\s+"
+        + @"(?:sonando|reproduciendo|reproduciendose|abiert[oa]s?|en\s+(?:ejecucion|reproduccion))\b|"
+        + @"\bno\s+suena\b|\bnothing\s+(?:is|was)\b|\bthere\s+(?:is|are|was|were)\s+no\b|"
+        + @"\b(?:isn't|is\s+not|aren't|are\s+not|wasn't|was\s+not)\s+(?:playing|open|running)\b|"
+        + @"\bno\s+\w+(?:\s+\w+)?\s+(?:is|was)\s+(?:playing|open|running)\b";
+
+    /// <summary>
+    /// The typed failure is that something was not found («youtube_tab_not_found»,
+    /// «media_session_not_found»), in the failure or in the step failure it wraps.
+    /// Twin of the mind's _failure_is_an_absence.
+    /// </summary>
+    private static bool IsNotFoundFailure(string source)
+    {
+        return TryReadJson(source, out JsonElement root) && HasNotFoundError(root, 0);
+
+        static bool HasNotFoundError(JsonElement node, int depth)
+        {
+            if (depth > 4 || node.ValueKind != JsonValueKind.Object)
+            {
+                return false;
+            }
+            foreach (JsonProperty property in node.EnumerateObject())
+            {
+                if (property.Value.ValueKind == JsonValueKind.Object
+                    && HasNotFoundError(property.Value, depth + 1))
+                {
+                    return true;
+                }
+                if (property.Value.ValueKind != JsonValueKind.String)
+                {
+                    continue;
+                }
+                string text = property.Value.GetString() ?? string.Empty;
+                if (property.NameEquals("error") && text.Contains("not_found", StringComparison.Ordinal))
+                {
+                    return true;
+                }
+                if (property.NameEquals("reason") && TryReadJson(text, out JsonElement wrapped)
+                    && HasNotFoundError(wrapped, depth + 1))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     private static bool IsOutOfCatalogFailure(string source)
