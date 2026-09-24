@@ -1402,13 +1402,30 @@ _VISUAL_CONTENT_REQUEST = re.compile(
 )
 
 
+# Uso real 2026-09-23 (tanda 2) «cuéntame un artículo random» was answered with an
+# invented discovery «en 2023, un equipo de científicos…»: a random article, a fact or
+# page picked at random, is the same curiosity with no topic, looked up and never made up.
+_CURIOSITY_ADJECTIVE = (
+    r"(?:interesante|curios[oa]|nuev[oa]|random|aleatori[oa]|al\s+azar|cualquiera|interesting|curious|cool|new)"
+)
 _CURIOSITY_REQUEST = re.compile(
     r"^(?:baxy\s*[,:]?\s*)?(?:(?:contame|cuentame|conta|cuenta|decime|dime|tirame|tira|explicame|explica|"
-    r"tell\s+me|give\s+me)\s+"
+    r"dame|da|compart[ie]me|comparte|leeme|lee|ensename|muestrame|mostrame|"
+    r"tell\s+me|give\s+me|share|read\s+me|show\s+me)\s+"
     r"(?:(?:un|una|algun|alguna|otra|otro|a|an|another|some)\s+)?"
-    r"(?:curiosidad|curiosidades|dato\s+curioso|datos\s+curiosos|fun\s+fact|fun\s+facts|"
-    r"interesting\s+fact|random\s+fact|algo|something)"
-    r"(?:\s+(?:interesante|curioso|curiosa|nuevo|nueva|interesting|curious|cool|random|new))?"
+    r"(?:(?:curiosidad|curiosidades|dato\s+curioso|datos\s+curiosos|fun\s+fact|fun\s+facts|"
+    r"interesting\s+fact|random\s+fact)"
+    rf"(?:\s+{_CURIOSITY_ADJECTIVE})?"
+    r"|(?:algo|something)" + rf"\s+{_CURIOSITY_ADJECTIVE}"
+    r"|(?:articulos?|articles?|paginas?|pages?|temas?|topics?|datos?|facts?)"
+    rf"(?:\s+(?:de|from|on)\s+wikipedia)?\s+{_CURIOSITY_ADJECTIVE}(?:\s+(?:de|from|on)\s+wikipedia)?"
+    r"|(?:random|interesting|curious)\s+(?:wikipedia\s+)?(?:articles?|pages?|topics?|facts?)"
+    r"(?:\s+(?:from|on)\s+wikipedia)?)"
+    r"(?:\s*,?\s*(?:por\s+favor|porfa|please))?[\s.!?]*$"
+    r"|^(?:baxy\s*[,:]?\s*)?(?:contame|cuentame|conta|cuenta|decime|dime|tirame|tira|explicame|explica|"
+    r"tell\s+me|give\s+me)\s+(?:algo|something)"
+    r"(?:\s*,?\s*(?:por\s+favor|porfa|please))?[\s.!?]*$"
+    r"|^(?:sorprendeme|surprise\s+me)(?:\s+(?:con|with)\s+(?:algo|something)(?:\s+" + _CURIOSITY_ADJECTIVE + r")?)?"
     r"(?:\s*,?\s*(?:por\s+favor|porfa|please))?[\s.!?]*$"
     r"|^(?:estoy|ando|me\s+siento)\s+(?:re\s+|muy\s+|super\s+)?aburrid[oa][\s.!?]*$"
     r"|^i(?:'?m|\s+am)\s+(?:so\s+)?bored[\s.!?]*$)",

@@ -24,7 +24,7 @@ from .files import _pdf_summary_request, _file_trash_request, process_report_fil
 from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
 from .system import _weather_read_intent
-from .notes import list_entry_request, list_creation_without_items, _relative_calendar_read_request, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects
+from .notes import list_entry_request, list_read_request, list_creation_without_items, _relative_calendar_read_request, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects
 from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, _latest_email_domain, _notification_listing_request
 from .ui import _clipboard_copy_domain, _clipboard_paste_domain, calculator_expression_request, literal_clipboard_write_text, _review_input_and_capture_effects, _VISIBLE_CLICK_APP_CONTEXT, _gerund_click_label, _visible_click_label, _click_in_application, _visible_click_intent
 from .apps import self_close_request, _APPLICATION_TRAILING_REQUEST, _application_target_forms, _CLOSE_TRAILING_COURTESY, _close_target_forms, deictic_close_request, _bounded_application_literal, _authenticated_application_list, _OPEN_STATE_CONDITION, close_all_request, _has_multiple_installed_entities, _append_domain_actions, _open_application_spans, _CATALOG_INSTALL_VERB, _opened_applications
@@ -450,6 +450,31 @@ def _completed_missing_list_entries_request(
     ):
         return None
     return f"añade {answer} a la {listed}"
+
+
+# A yes to «¿lo añado?»; «ok», «vale», «dale» or «bueno» also just acknowledge a found entry.
+_AGREEMENT = (
+    r"(?:si|sip|por\s+favor|porfa|hazlo|agregal[oa]|anadel[oa]|ponl[oa]|"
+    r"yes|yeah|yep|sure|please(?:\s+do)?|do\s+it|go\s+ahead|add\s+it)"
+)
+
+
+def _completed_list_entry_if_absent_request(text: str, previous_user_text: str | None) -> str | None:
+    """«do i have cheese on my shopping list if not please add it» → the read finds no
+    cheese and the final asks whether to add it → «sí»: the entry goes on the list asked
+    about, read like «add cheese to my shopping list». Only a bare agreement right after
+    that request completes it; the assistant's prose authorizes nothing."""
+
+    if not previous_user_text:
+        return None
+    prior = list_read_request(previous_user_text)
+    if prior is None or not prior.absent_clause or prior.entry is None:
+        return None
+    if re.fullmatch(rf"{_AGREEMENT}(?:[\s,.!]+{_AGREEMENT})*", _fold(text).strip(" .,!¡¿?")) is None:
+        return None
+    if re.search(r"\blista\b", _fold(prior.list_name)) is not None:
+        return f"añade {prior.entry} a mi {prior.list_name}"
+    return f"add {prior.entry} to my {prior.list_name}"
 
 
 def _contextual_output_level_target(
@@ -1815,7 +1840,7 @@ def curiosity_topic(text: str) -> str | None:
     if not curiosity_request(text):
         return None
     folded = _strip_request_envelope(_fold(text)).strip()
-    english = re.match(r"^(?:baxy\s*[,:]?\s*)?(?:tell|give|i)\b", folded, re.IGNORECASE) is not None
+    english = re.match(r"^(?:baxy\s*[,:]?\s*)?(?:tell|give|share|read|show|surprise|i)\b", folded, re.IGNORECASE) is not None
     # The pick is stable for one request within the same hour, so every
     # reading of the turn (planning, verification) names the same subject.
     seed = hashlib.sha256(f"{folded}|{int(time.time() // 3600)}".encode("utf-8")).hexdigest()
@@ -11179,10 +11204,18 @@ def deferred_clarification_split(
 
     if explicit_non_action_frame(text):
         return None
+    available = frozenset(available_operations)
+    list_read = list_read_request(text)
+    if list_read is not None and list_read.absent_clause:
+        # Uso real 2026-09-23 «do i have cheese on my shopping list if not please add
+        # it»: the list is read now; whether the entry goes on it depends on what the
+        # read finds, so an absent entry is asked about in the final.
+        if "task.search" not in available:
+            return None
+        return DeferredClarification(list_read.read_text, "list_entry_if_absent", list_read.absent_clause)
     parts = re.split(r"\s*(?:,\s*)?(?<![\w])(?:y|e|and)(?![\w])\s+", text.strip(), maxsplit=1)
     if len(parts) != 2 or not parts[0].strip() or not parts[1].strip():
         return None
-    available = frozenset(available_operations)
     for read, other in ((parts[0], parts[1]), (parts[1], parts[0])):
         kind = _deferred_clause_kind(other, available)
         if kind is None:
@@ -11375,7 +11408,9 @@ def _resolve_clause_effects(
         return resolve_explicit_effects(
             completed_app_volume_request, available, application_names, game_catalog,
         )
-    completed_list_request = _completed_missing_list_entries_request(text, previous_user_text, available)
+    completed_list_request = _completed_missing_list_entries_request(
+        text, previous_user_text, available,
+    ) or _completed_list_entry_if_absent_request(text, previous_user_text)
     if completed_list_request is not None:
         return resolve_explicit_effects(
             completed_list_request, available, application_names, game_catalog,
@@ -11437,6 +11472,11 @@ def _resolve_clause_effects(
     if "task.create" in available and list_entry_request(text) is not None:
         # «añadir el brócoli a mi lista de la compra»: the entry is a task on that list.
         return EffectIntent(("task.create",), (text,))
+    list_read = list_read_request(text)
+    if list_read is not None and list_read.operation in available:
+        # «decir la lista», «qué hay en mi lista de la compra», «do i have cheese on my
+        # shopping list»: the list is read, never answered from the model's memory.
+        return EffectIntent((list_read.operation,), (text,))
     browser_music = _named_browser_music_request(text)
     if "browser.navigate.named" in available and browser_music is not None and browser_music[1] is None:
         # MUSIC1827 «open Edge and play some music»: which music is asked first

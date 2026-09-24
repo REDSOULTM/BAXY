@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 from typing import Iterable, Sequence
 from .grammar import TASK_REMINDER_HEAD, _RELATIVE_DURATION_PATTERN, _fold, _match, _has, _strip_request_envelope, _request_body_surface, _request_head, _head_is, _LIST, _READ, _CREATE, _request_clauses
 from .intent import EffectIntent, _append
@@ -234,6 +235,165 @@ def list_creation_without_items(folded: str) -> str | None:
     if entry is not None and re.fullmatch(_UNNAMED_LIST_ENTRY, entry.group("item").strip()) is not None:
         return entry.group("list").strip()
     return None
+
+
+# Uso real 2026-09-23 (tanda 2): the person's lists read back. «do i have cheese on my
+# shopping list if not please add it» became a conversation answering «No, no hay queso …
+# Se añadirá.» with nothing read or added; «decir la lista», «is my todo list free» and
+# «tengo algo en mi lista de cosas por hacer» were asked back or answered with nonsense.
+# A list is its entries (``list_entry_request``): the to-do list with no other name is
+# every open task (task.list); a list named otherwise is the tasks that name it
+# (task.search reads titles and details), and one entry asked about is searched by itself.
+_TODO_LIST = (
+    r"(?:(?:to-?do|todo|task|tasks|chores?)\s+list|list\s+of\s+(?:things\s+to\s+do|tasks|to-?dos|chores)|"
+    r"lista\s+de\s+(?:tareas|pendientes|quehaceres|to-?dos?|cosas\s+(?:por|que|para)\s+hacer)|lista|list)"
+)
+_NAMED_LIST = (
+    r"(?:lista|list)\s+(?:de(?:\s+la|\s+los|\s+las|l)?|para(?:\s+la|\s+el)?|of|for)\s+[a-z0-9'-]+(?:\s+[a-z0-9'-]+){0,3}"
+    r"|[a-z0-9'-]+(?:\s+[a-z0-9'-]+)?\s+list"
+)
+# «la lista de los planetas» is public knowledge; with the article only the to-do list
+# and the shopping list are the person's.
+_HOUSEHOLD_LIST = (
+    r"lista\s+de(?:\s+la|\s+las)?\s+(?:compras?|supermercado|super|mercado|comestibles)|(?:shopping|grocery|groceries)\s+list"
+)
+_OWN_LIST = (
+    rf"(?:(?:mi|my)\s+(?P<list>{_TODO_LIST}|{_NAMED_LIST})|(?:la|the)\s+(?P<the_list>{_HOUSEHOLD_LIST}|{_TODO_LIST}))"
+)
+# Another store the person keeps is read by its own operation («my list of reminders»).
+_LIST_OF_ANOTHER_STORE = (
+    r"\b(?:recordatorios?|reminders?|alarmas?|alarms?|notas?|notes?|eventos?|events?|citas?|appointments?|"
+    r"calendario|calendar|correos?|e-?mails?|mails?|archivos?|files?|carpetas?|folders?|ventanas?|windows?|"
+    r"procesos?|process(?:es)?|apps?|aplicaciones?|programas?|programs?|descargas?|downloads?|juegos?|games?|"
+    r"redes|networks?|wifi|dispositivos?|devices?|pestanas?|tabs?)\b"
+)
+_ANYTHING = r"(?:algo|alguna\s+cosa|cosas|algun\s+pendiente|pendientes|tareas|anything|something|stuff|any\s+(?:items?|things?|tasks?))"
+_WHOLE_LIST_READ = (
+    rf"que\s+(?:hay|tengo|queda|quedan|llevo|puse|anote)\s+(?:en|dentro\s+de)\s+{_OWN_LIST}",
+    rf"(?:que|cual)\s+es\s+(?:lo|la\s+(?:cosa|tarea))\s+(?:siguiente|proxim[oa]|primer[oa]?|ultim[oa])\s+(?:en|de)\s+{_OWN_LIST}",
+    rf"(?:dime|decime|di|decir|dame|lee|leeme|leer|repite|repiteme|repetir|repasa|repasame|muestra|muestrame|mostrame|"
+    rf"mostrar|ensename|revisa|revisame|revisar|consulta|consultar|recita)\s+(?:lo\s+que\s+(?:hay|tengo)\s+en\s+)?"
+    rf"{_OWN_LIST}(?:\s+(?:otra\s+vez|de\s+nuevo))?",
+    rf"(?:dejame|quiero|quisiera|me\s+gustaria|necesito|puedo)\s+(?:escuchar|oir|ver|saber|revisar|leer|consultar|repasar)\s+"
+    rf"(?:lo\s+que\s+(?:hay|tengo)\s+en\s+)?{_OWN_LIST}",
+    rf"(?:tengo|hay)\s+{_ANYTHING}\s+(?:en|dentro\s+de)\s+{_OWN_LIST}",
+    rf"tengo\s+(?=mi\s){_OWN_LIST}",
+    rf"(?:esta|sigue)\s+(?:vacia|libre|llena)\s+{_OWN_LIST}",
+    rf"{_OWN_LIST}\s+(?:esta|sigue)\s+(?:vacia|libre|llena)",
+    rf"(?:what(?:'s|s|\s+is|\s+are)|what\s+(?:do|did)\s+i\s+(?:have|put)|what\s+have\s+i\s+got)\s+(?:(?:left|still)\s+)?"
+    rf"(?:on|in)\s+{_OWN_LIST}",
+    rf"what(?:'s|s|\s+is)\s+(?:the\s+)?(?:next|first|last|top)(?:\s+(?:thing|item|task|entry))?\s+(?:on|in)\s+{_OWN_LIST}",
+    rf"(?:read|tell|show|repeat|say|give|recite|check|review)(?:\s+(?:me|out))?\s+(?:what(?:'s|\s+is)\s+(?:on|in)\s+)?"
+    rf"{_OWN_LIST}(?:\s+(?:back|out|again|aloud))*(?:\s+to\s+me)?",
+    rf"(?:let\s+me|i\s+(?:want|need|would\s+like)\s+to|can\s+i)\s+(?:hear|see|check|review|read)\s+{_OWN_LIST}",
+    rf"(?:is|are)\s+{_OWN_LIST}\s+(?:free|empty|clear|done|full|finished|complete)",
+    rf"(?:do\s+i\s+have|have\s+i\s+got|is\s+there|are\s+there)\s+{_ANYTHING}\s+(?:(?:left|still)\s+)?(?:on|in)\s+{_OWN_LIST}",
+)
+_ENTRY = r"(?P<item>(?!(?:que|de|a|en|para|to|of)\b)\S.{0,80}?)"
+_LIST_ENTRY_PRESENCE = (
+    rf"(?:(?:revisa|mira|fijate|comprueba|verifica|chequea)\s+si\s+)?(?:tengo|hay|esta|estan|puse|anote|apunte)\s+"
+    rf"{_ENTRY}\s+(?:en|dentro\s+de)\s+{_OWN_LIST}",
+    rf"(?:do\s+i\s+have|have\s+i\s+got|did\s+i\s+(?:put|add|write\s+down))\s+{_ENTRY}\s+(?:on|in)\s+{_OWN_LIST}",
+    rf"(?:check|see|find\s+out|tell\s+me)\s+(?:if|whether)\s+(?:i\s+have\s+)?{_ENTRY}\s+(?:(?:is|are)\s+)?(?:on|in)\s+{_OWN_LIST}",
+    rf"(?:is|are)\s+{_ENTRY}\s+(?:on|in)\s+{_OWN_LIST}",
+)
+# «if not please add it», «y si no está, agrégalo»: the entry goes on the list only when
+# the read finds it absent.
+_ADD_IF_ABSENT = (
+    r"(?P<tail>\s*[,;?.]?\s*[¿¡]?(?:(?:y|and)\s+)?"
+    r"(?:if\s+not|if\s+(?:it|they)(?:'s|'re|\s+is|\s+are)\s+not(?:\s+there)?|if\s+(?:it|they)\s+(?:isn'?t|aren'?t)(?:\s+there)?|"
+    r"otherwise|si\s+no(?:\s+(?:esta|estan|lo\s+tengo|la\s+tengo|hay|es\s+asi))?|sino|de\s+lo\s+contrario|en\s+caso\s+contrario)"
+    r"\s*[,;]?\s*(?:(?:please|por\s+favor)\s*,?\s+)?"
+    r"(?:add|put|include|anade(?:l[oa]s?)?|agrega(?:l[oa]s?)?|pon(?:l[oa]s?)?|apunta(?:l[oa]s?)?|anota(?:l[oa]s?)?|"
+    r"suma(?:l[oa]s?)?|incluye(?:l[oa]s?)?)"
+    r"(?:\s+(?:it|them|lo|la|los|las))?(?:\s+(?:to|on|a|en)\s+(?:it|the\s+list|la\s+lista|ella|my\s+list|mi\s+lista))?"
+    r"(?:\s*,?\s*(?:please|por\s+favor))?)?"
+)
+_LIST_READ_OPENER = r"^[¿?¡!\s]*(?:(?:olly|alexa|bax[yi]|oye|hey)\s*,?\s+)?(?:(?:please|por\s+favor)\s*,?\s+)?"
+
+
+@dataclass(frozen=True, slots=True)
+class ListRead:
+    """A read of one of the person's lists: its operation, the search query (None for
+    the whole to-do list), the list and the entry asked about as said, the clause that
+    puts that entry on the list when the read finds it absent («if not please add it»,
+    empty when none) and the read without that clause."""
+
+    operation: str
+    query: str | None
+    list_name: str
+    entry: str | None
+    absent_clause: str
+    read_text: str
+
+
+def list_read_request(text: str) -> ListRead | None:
+    """«qué hay en mi lista de la compra», «decir la lista», «is my todo list free», «do i
+    have cheese on my shopping list if not please add it», in the person's own writing;
+    None for a playlist, another store («my list of reminders»), a pointed entry or any
+    other shape."""
+
+    surface = _request_body_surface(text).strip()
+    tokens = surface.split()
+    folded = " ".join(_fold(token) for token in tokens)
+    opener = re.match(_LIST_READ_OPENER, folded)
+    body = folded[opener.end():] if opener is not None else folded
+    offset = len(folded) - len(body)
+
+    starts = [found.start() for found in re.finditer(r"\S+", folded)]
+
+    def literal(start: int, end: int) -> str:
+        # The folded body keeps the surface's words one for one, so the words a span
+        # touches are the person's own words.
+        rest = folded[offset + start:]
+        start += len(rest) - len(rest.lstrip(" ,;:?.!¿¡"))
+        first = sum(1 for index in starts if index <= offset + start) - 1
+        last = sum(1 for index in starts if index < offset + end)
+        return " ".join(tokens[max(first, 0):last]).strip(" ,;:\"'«»“”¿?¡!.")
+
+    found = None
+    entry: str | None = None
+    for pattern in _WHOLE_LIST_READ:
+        found = re.fullmatch(pattern + r"(?:\s*,?\s*(?:please|por\s+favor|porfa))?[\s.!?]*", body)
+        if found is not None:
+            break
+    if found is None:
+        for pattern in _LIST_ENTRY_PRESENCE:
+            found = re.fullmatch(pattern + _ADD_IF_ABSENT + r"(?:\s*,?\s*(?:please|por\s+favor|porfa))?[\s.!?]*", body)
+            if found is not None:
+                break
+        if found is None:
+            return None
+        item = found.group("item")
+        if re.fullmatch(_ANYTHING + r"|" + _UNNAMED_LIST_ENTRY, item) is not None:
+            entry = None
+        elif re.match(r"(?:esto|eso|esta|este|esa|ese|estas|estos|esas|esos|aquello|it|this|that|these|those)\b", item):
+            return None
+        else:
+            entry = re.sub(
+                r"^(?:el|la|los|las|un|una|unos|unas|the|an?|some|any)\s+(?=\S)", "",
+                literal(found.start("item"), found.end("item")), flags=re.IGNORECASE,
+            )
+    group = "list" if found.group("list") is not None else "the_list"
+    listed = found.group(group)
+    if _has(f"{entry or ''} {listed}", _LIST_NOT_TASKS) or _has(listed, _LIST_OF_ANOTHER_STORE):
+        return None
+    tail = found.groupdict().get("tail")
+    if tail and entry is None:
+        return None
+    list_name = literal(found.start(group), found.end(group))
+    if entry is not None:
+        operation, query = "task.search", entry
+    elif re.fullmatch(_TODO_LIST, listed) is not None:
+        operation, query = "task.list", None
+    else:
+        operation, query = "task.search", list_name
+    if tail:
+        return ListRead(
+            operation, query, list_name, entry,
+            literal(found.start("tail"), found.end("tail")), literal(0, found.start("tail")),
+        )
+    return ListRead(operation, query, list_name, entry, "", surface)
 
 
 def _bare_note_inventory_request(text: str) -> bool:

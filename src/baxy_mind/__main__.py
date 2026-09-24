@@ -5664,6 +5664,11 @@ def _explicit_arguments_from_evidence(
         title = re.sub(r"^(?:el|la|los|las|un|una|unos|unas|the|an?|some)\s+(?=\S)", "", entry, flags=re.IGNORECASE)
         return {"title": title, "details": listed}
 
+    if operation == "task.search" and (list_read := effect_intent.list_read_request(evidence)) is not None:
+        # «qué hay en mi lista de la compra» searches the list's name; «do i have
+        # cheese on my shopping list» searches the entry asked about.
+        return {"query": list_read.query} if list_read.query else None
+
     if operation == "task.create":
         task_pattern = (
             r"\b(?:tarea|task)(?:\s*:\s*|"
@@ -6278,6 +6283,17 @@ def _ground_explicit_arguments(
             explicit = _explicit_arguments_from_evidence(
                 operation, completed, application_names, game_catalog,
             )
+    if explicit is None and operation == "task.create" and isinstance(history, list):
+        # Uso real 2026-09-23: «do i have cheese on my shopping list if not please add
+        # it» → no cheese, «¿lo añado?» → «sí»: the decision read the agreement as the
+        # entry on that list; the arguments, and their literal check, read that same
+        # completed request.
+        completed = effect_intent._completed_list_entry_if_absent_request(
+            evidence, _previous_user_request(history, evidence),
+        )
+        if completed is not None:
+            evidence = completed
+            explicit = _explicit_arguments_from_evidence(operation, completed, application_names, game_catalog)
     if explicit is None and operation == "wifi.connect.named":
         # REOPEN1957 H0170/H0376 «conectate al wifi de casa» → «¿cuál de las
         # guardadas es la de casa?» → «Fibertel-2G»: the answer names the

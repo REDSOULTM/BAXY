@@ -375,6 +375,7 @@ from .semantic.system import (  # noqa: F401 - moved to baxy_mind.semantic.syste
 )
 from .semantic.notes import (  # noqa: F401 - moved to baxy_mind.semantic.notes; callers migrate
     list_entry_request,
+    list_read_request,
     _relative_calendar_read_request,
     _time_only_reminder_request,
     _COUNT_DOWN_REQUEST,
@@ -496,6 +497,7 @@ from .semantic.patterns import (  # noqa: F401 - moved to baxy_mind.semantic.pat
     _completed_missing_message_text_request,
     client_channel_request,
     _completed_missing_music_request,
+    _completed_list_entry_if_absent_request,
     _contextual_output_level_target,
     _uncovered_family_floor,
     _curated_domain_is_grounded,

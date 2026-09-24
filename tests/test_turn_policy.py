@@ -85,7 +85,7 @@ from baxy_mind.llm import (
     canonicalize_turn_decision,
     derive_semantic_effect_state,
     visible_reply_asserts_an_unread_machine_state,
-    visible_reply_claims_a_completed_effect,
+    visible_reply_claims_an_effect,
     visible_reply_denies_a_served_capability,
     visible_reply_invents_a_spanish_infinitive,
     visible_reply_is_a_fixed_stall,
@@ -421,7 +421,7 @@ def test_the_fabrication_guard_does_not_forbid_general_knowledge(reply: str) -> 
     ],
 )
 def test_a_conversation_reply_may_not_claim_an_effect_no_operation_produced(reply: str) -> None:
-    assert visible_reply_claims_a_completed_effect(reply)
+    assert visible_reply_claims_an_effect(reply)
 
 
 @pytest.mark.parametrize(
@@ -443,7 +443,7 @@ def test_a_conversation_reply_may_not_claim_an_effect_no_operation_produced(repl
     ],
 )
 def test_the_effect_claim_guard_keeps_denials_and_general_knowledge(reply: str) -> None:
-    assert not visible_reply_claims_a_completed_effect(reply)
+    assert not visible_reply_claims_an_effect(reply)
 
 
 @pytest.mark.parametrize(

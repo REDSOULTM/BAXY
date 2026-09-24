@@ -367,9 +367,9 @@ def verdict(entry: dict[str, Any], decision: dict[str, Any]) -> tuple[bool, str]
     expect = entry["expect"]
     if kind == "conversation" and reply:
         sys.path.insert(0, str(REPO / "src"))
-        from baxy_mind.llm import visible_reply_claims_a_completed_effect
+        from baxy_mind.llm import visible_reply_claims_an_effect
 
-        if visible_reply_claims_a_completed_effect(reply):
+        if visible_reply_claims_an_effect(reply):
             return False, "efecto_inventado"
     if expect == "any_honest":
         # The motor's rows (Fase 4/5): any honest turn counts; only an invented effect or an error does not.

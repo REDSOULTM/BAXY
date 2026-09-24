@@ -81,4 +81,4 @@ def test_listening_to_a_bare_name_or_genre_is_its_music(text, order):
 def test_nouns_ending_in_a_stressed_vowel_are_not_a_first_person_claim(reply, claims):
     from baxy_mind import llm
 
-    assert llm.visible_reply_claims_a_completed_effect(reply) is claims
+    assert llm.visible_reply_claims_an_effect(reply) is claims
