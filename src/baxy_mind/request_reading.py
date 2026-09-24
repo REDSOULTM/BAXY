@@ -209,42 +209,116 @@ _IDENTITY_EXPLETIVE = re.compile(
     r"\bwho\s+(?:the\s+\w+\s+|on\s+earth\s+)are\s+you\b"
 )
 
-# Uso real 2026-09-23 «the creator of your ai, what is their name» went to a web
-# search on the history of AI; «¿cuál es tu lugar de origen?», «can you tell me
-# the age of the ai», «who made you» are the same act: a question about the one
-# answering. It is read as a trait bound to BAXY —a possessive («tu origen», «your
-# creator»), the object of a making verb («quién te creó», «who built you»), a
-# closed question to «tú»/«you» («de dónde eres», «how old are you»), or the
-# trait of «this AI»/BAXY— never as «you» anywhere in the sentence («can you tell
-# me who made the iPhone» asks about the iPhone).
+# --- Questions about BAXY himself -----------------------------------------------------------------
 #
-# tanda-02 widened it to every trait of BAXY himself: when and how he was made
-# («¿cuándo te crearon?», «¿quién ha tenido la idea de crearte?» — searched or
-# answered «no sé quién me ha creado»), what he does with his time or likes
-# («what keeps you busy in your free time» — an invented hobby), where he
-# lives, and whether he is real, a person or a machine («¿existes en el mundo
-# real?» — «no existo»). A creation verb binds to «te» only after a question
-# word («no te creo» is «I don't believe you»); «hacerte» is left out («¿puedo
-# hacerte una pregunta?»).
-_SELF_TRAIT = (
-    r"(?:creador|creadora|creadores|autor|autores|desarrollador|desarrolladores|programador|"
-    r"programadores|fabricante|dueno|duena|empresa|compania|origen|lugar\s+de\s+origen|"
-    r"lugar\s+de\s+nacimiento|nacimiento|cumpleanos|edad|nombre|modelo|creacion|"
-    r"creators?|makers?|authors?|developers?|programmers?|owners?|company|origins?|"
-    r"place\s+of\s+origin|birthplace|birthday|age|name|model|creation)"
+# Uso real 2026-09-23 and tandas 2 and 3: «the creator of your ai, what is their name», «¿cuál es tu
+# lugar de origen?», «¿cuándo te crearon?», «¿existes en el mundo real?» and, after two widenings of a
+# list of phrases, «who made you» said in the perfect tense still went to a web search. The list grew one wording at a time.
+#
+# A question about the one answering is read by its form. It is a question (a question mark, an
+# interrogative, a yes/no order of words, or «dime/cuéntame/tell me») whose subject or object is BAXY
+# —a second-person verb, the clitic «te», «ti», «tu/tus», «you/your/yourself», or BAXY or «this AI» named
+# as an argument— and whose predicate is one of his own traits: who made him and how, where he comes
+# from or lives, his age, what he is, his body, his feelings, his likes, his name, his purpose. What he
+# can do is a capability and is read by ``_DOING`` below, not here.
+#
+# Two uses of the second person are not about him. «te» as the one an action is for («te pido que…»,
+# «¿te puedo preguntar…?») carries no trait of his, so it never meets a trait predicate. A second person
+# inside a relayed message («dile a Juan que tú…», «escríbele: ¿cuántos años tienes?») addresses someone
+# else. «no te creo» is not a question and «creo» is also «I believe»; «hacer» is causative before an
+# infinitive or an object («¿cómo te hizo sentir?», «¿quién te hizo daño?»), and so is «make you» before
+# what it makes him («how can I make you louder»).
+
+# A question: its marks, an English interrogative anywhere, a Spanish one first or after a comma (inside
+# a sentence «que» and «como» are also a conjunction and a verb), a yes/no order of words, or an order to
+# tell.
+_ASKING = re.compile(
+    r"[?¿]|\b(?:what|who|whom|whose|which|where|when|why|how)\b|"
+    r",\s*(?:que|quien|quienes|cual|cuales|como|cuando|donde|cuanto|cuantos|cuantas)\b|"
+    r"^(?:(?:y|e|and|pero|but|oye|hey|baxy|entonces|so|ok|bueno|a\s+ver|por\s+cierto|by\s+the\s+way|"
+    r"por\s+curiosidad|just\s+curious)\s*,?\s+)*"
+    r"(?:que|quien|quienes|cual|cuales|como|cuando|donde|cuanto|cuanta|cuantos|cuantas|por\s*que|para\s+que|"
+    r"de\s+donde|en\s+que|de\s+que|a\s+quien|de\s+quien|desde\s+cuando|hace\s+cuanto|"
+    r"are|is|do|does|did|were|was|have|has|can|could|will|"
+    r"eres|sos|tienes|tenes|estas|existes|vives|naciste|sientes|te|"
+    r"dime|decime|digame|cuentame|contame|hablame|explicame|describe|describete|presentate|"
+    r"tell|explain|talk|puedes|podes|podrias|me\s+puedes|me\s+podes|me\s+podrias|quiero\s+saber|"
+    r"quisiera\s+saber|me\s+gustaria\s+saber|sabes|i\s+want\s+to\s+know|i\s+would\s+like\s+to\s+know|"
+    r"i['’]?d\s+like\s+to\s+know)\b"
 )
-_SELF_MAKING = (
-    r"(?:creo|crearon|hizo|hicieron|programo|programaron|diseno|disenaron|desarrollo|"
-    r"desarrollaron|construyo|construyeron|invento|inventaron|entreno|entrenaron|fabrico|fabricaron)"
+# A message for someone else: what it says in the second person is said to them.
+_RELAYED = re.compile(
+    r"\b(?:dile|diles|decile|decirle|digale|cuentale|contale|preguntale|preguntales|pregunta\s+a|"
+    r"(?<!se\s)escribe|escribele|escribeles|escribi|escribile|manda|mandale|mandales|envia|enviale|envie|"
+    r"respondele|contestale|mensaje|message|text|write|send|reply|"
+    r"(?:tell|ask)\s+(?!(?:me|us|you|who|what|where|when|why|how|which|if|whether|a|about)\b)\w+)\b"
 )
-# «¿cómo te hizo sentir?» is not about being made: after «cuándo/dónde/cómo»
-# only a creation verb binds.
-_SELF_CREATION = (
-    r"(?:creo|crearon|programaron|diseno|disenaron|desarrollo|desarrollaron|construyo|"
-    r"construyeron|invento|inventaron|entrenaron|fabrico|fabricaron)"
+
+# The traits, as nouns. «de/of» after one gives it another owner: «tu nombre de usuario», «your name of
+# the file» are not about him.
+_TRAIT_NOUN = (
+    r"(?:creador(?:a|es)?|autor(?:a|es)?|desarrollador(?:a|es)?|programador(?:a|es)?|fabricante|"
+    r"dueno|duena|jefe|empresa|compania|origen|lugar\s+de\s+origen|lugar\s+de\s+nacimiento|nacimiento|"
+    r"cumpleanos|edad|nombre|modelo|version|creacion|proposito|mision|objetivo|funcion|razon\s+de\s+ser|"
+    r"naturaleza|personalidad|cuerpo|cara|aspecto|apariencia|genero|sexo|sentimientos|emociones|gustos|"
+    r"pasatiempos?|hobbies|hobby|aficiones|tiempo\s+libre|familia|padres|papa|mama|madre|padre|novia|"
+    r"novio|pareja|hermanos?|amigos?|casa|hogar|historia|"
+    r"creators?|makers?|authors?|developers?|programmers?|owners?|boss|company|origins?|place\s+of\s+origin|"
+    r"birthplace|birthday|age|name|model|version|creation|purpose|mission|goal|function|nature|personality|"
+    r"body|face|looks|appearance|gender|sex|feelings|emotions|tastes|hobbies|hobby|pastimes?|interests|"
+    r"free\s+time|spare\s+time|family|parents|dad|mom|mother|father|girlfriend|boyfriend|partner|siblings|"
+    r"friends?|story|backstory)"
 )
-# What BAXY does for fun or with his free time asks about him, not about what he
-# can do on the PC: «what do you do for fun» is not «what do you do».
+_OTHER_OWNER = r"(?!\s+(?:de|del|of)\s+(?!ti\b|you\b|baxy\b))"
+# What one has of his own: «¿tienes nombre?», «do you have feelings?».
+_HAVE_NOUN = (
+    r"(?:nombre|edad|cuerpo|cara|ojos|manos|forma\s+fisica|sentimientos|emociones|conciencia|alma|"
+    r"corazon|miedo|suenos?|hambre|frio|calor|novia|novio|pareja|esposa|esposo|familia|hermanos|padres|"
+    r"papa|mama|hijos|amigos|mascota|hobbies|hobby|pasatiempos?|aficiones|tiempo\s+libre|vida|genero|sexo|"
+    r"cumpleanos|creador|dueno|jefe|casa|hogar|personalidad|gustos|"
+    r"name|age|body|face|eyes|hands|feelings|emotions|consciousness|soul|heart|fears?|dreams|girlfriend|"
+    r"boyfriend|partner|wife|husband|family|siblings|parents|kids|children|friends|pets?|hobbies|hobby|"
+    r"free\s+time|life|gender|birthday|creator|owner|boss|personality)"
+)
+# Fear takes what is feared after «de/of» («¿tienes miedo de algo?»), not another owner.
+_HELD = rf"(?:(?:miedo|fears?)\b|{_HAVE_NOUN}\b{_OTHER_OWNER})"
+# What one is: «¿eres una IA?», «are you human?», «¿eres de Chile?». Praise or skill («¿eres bueno en
+# matemáticas?», «¿eres capaz de…?») is not a nature: the capability reading answers it.
+_NATURE = (
+    r"(?:real|reales|ser\s+humano|ser\s+vivo|human\s+being|humano|humana|human|persona|person|gente|people|"
+    r"robot|bot|chatbot|maquina|machine|"
+    r"computadora|computer|ordenador|programa|program|software|app|aplicacion|ia|ai|inteligencia\s+artificial|"
+    r"artificial\s+intelligence|asistente|assistant|modelo|model|llm|chatgpt|gpt|gemini|siri|alexa|cortana|"
+    r"copilot|claude|llama|qwen|mistral|deepseek|google|openai|microsoft|hombre|mujer|man|woman|chico|chica|"
+    r"boy|girl|nino|nina|masculino|femenino|male|female|consciente|conciente|conscious|sentient|vivo|viva|"
+    r"alive|nuevo|nueva|new|viejo|vieja|old|joven|young|inteligente|intelligent|smart|alien|extraterrestre|"
+    r"de\s+verdad|de\s+carne\s+y\s+hueso|(?:de|from)\s+\w+)"
+)
+_FEELING = (
+    r"(?:feliz|triste|cansad[oa]|aburrid[oa]|enojad[oa]|enfadad[oa]|sol[oa]|content[oa]|enamorad[oa]|"
+    r"asustad[oa]|nervios[oa]|celos[oa]|molest[oa]|estresad[oa]|de\s+(?:buen|mal)\s+humor|"
+    r"happy|sad|tired|bored|lonely|angry|mad|afraid|scared|jealous|in\s+love|stressed|single|married)"
+)
+# Made, in the forms a question uses: preterite, participle after «ha/han», and the passive.
+_MADE = (
+    r"(?:crearon|creaste|creado|creada|hizo|hicieron|hecho|hecha|programo|programaron|programado|"
+    r"diseno|disenaron|disenado|desarrollo|desarrollaron|desarrollado|construyo|construyeron|construido|"
+    r"invento|inventaron|inventado|entreno|entrenaron|entrenado|fabrico|fabricaron|fabricado|"
+    r"ideo|idearon|ideado|bautizo|bautizaron|trajo\s+al\s+mundo|trajeron\s+al\s+mundo|dio\s+vida|"
+    r"dieron\s+vida|puso\s+(?:ese\s+|el\s+)?nombre|pusieron\s+(?:ese\s+|el\s+)?nombre)"
+)
+_NOT_CAUSATIVE = r"(?!\s+(?:\w+(?:ar|er|ir)\b|dano|caso|falta|gracia|una?\b|el\b|la\b|los\b|las\b|algo\b))"
+_WH = (
+    r"(?:quien|quienes|que\s+(?:empresa|compania|persona|equipo|gente)|cuando|donde|como|por\s*que|"
+    r"para\s+que|en\s+que\s+\w+|de\s+que\s+\w+|con\s+que|who|what|which|when|where|why|how|whose)"
+)
+_MADE_EN = (
+    r"(?:made|created|built|programmed|designed|developed|invented|trained|coded|owns|powers|runs|"
+    r"launched|released|named|came\s+up\s+with)"
+)
+_MAKE_EN = r"(?:make|create|build|design|develop|train|creating|building|designing|developing)"
+# What he does for fun or with his time asks about him, not about what he can do on the PC: «what do you
+# do for fun» is not «what do you do».
 _SELF_LEISURE = (
     r"\b(?:tu|tus|your)\s+(?:tiempo\s+libre|pasatiempos?|hobbies|hobby|aficiones|gustos|"
     r"free\s+time|spare\s+time|pastimes?|interests)\b|"
@@ -254,32 +328,82 @@ _SELF_LEISURE = (
     r"\btienes\s+(?:algun\s+|algunos\s+)?(?:hobby|hobbies|pasatiempos?|tiempo\s+libre)\b"
 )
 _SELF_LEISURE_QUESTION = re.compile(_SELF_LEISURE)
-_SELF_QUESTION = re.compile(
-    rf"\b(?:tu|tus|your)\s+(?:propi[oa]\s+|own\s+)?{_SELF_TRAIT}\b|"
-    r"\b(?:the\s+)?(?:creators?|makers?|developers?)\s+of\s+(?:you|your\s+(?:ai|ia))\b|"
-    rf"\b(?:quien|quienes|que\s+(?:empresa|compania|persona))\s+te\s+{_SELF_MAKING}\b|"
-    rf"\b(?:cuando|donde|como|por\s+que|para\s+que|en\s+que\s+ano)\s+te\s+{_SELF_CREATION}\b|"
-    r"\b(?:crear|programar|disenar|desarrollar|construir|inventar|fabricar)te\b|"
-    r"\b(?:who|what\s+company|which\s+company)\s+(?:made|created|built|programmed|designed|"
-    r"developed|invented|trained|owns)\s+you\b|"
-    r"\b(?:who|when|where|why|how|whose)\b.{0,60}\b(?:create|creating|created|build|building|"
-    r"built|design|designing|designed|develop|developing|developed|invent|invented)\s+you\b"
-    r"(?!\s+(?:a|an|the|some|my|this|that)\b)|"
-    r"\bde\s+donde\s+(?:eres|sos|vienes|venis)\b|\bdonde\s+naciste\b|\bcuando\s+naciste\b|"
-    r"\b(?:cuantos\s+anos|que\s+edad)\s+tienes\b|\bcomo\s+te\s+llamas\b|"
-    r"\bdesde\s+cuando\s+(?:existes|funcionas)\b|"
-    r"\bwhere\s+(?:are|do)\s+you\s+(?:from|come\s+from)\b|\bwhere\s+were\s+you\s+(?:born|made|created)\b|"
-    r"\bhow\s+old\s+are\s+you\b|\bwhen\s+were\s+you\s+(?:born|made|created)\b|"
-    r"\bdonde\s+(?:vives|vivis|estas\s+instalado)\b|\bwhere\s+do\s+you\s+(?:live|run)\b|"
-    r"\b(?:eres|sos)\s+(?:real|humano|humana|una\s+persona|un\s+robot|un\s+bot|una\s+maquina|"
-    r"una\s+ia|una\s+inteligencia\s+artificial)\b|\bexistes\b|"
-    r"\bare\s+you\s+(?:real|human|alive|a\s+(?:person|human|robot|bot|machine)|an\s+ai)\b|"
-    r"\bdo\s+you\s+(?:really\s+)?exist\b|"
-    rf"{_SELF_LEISURE}|"
-    r"^[¿?¡!\s]*(?:y\s+|and\s+|pero\s+|but\s+)?(?:que|what)\s+(?:eres|sos|are\s+you)(?:\s+exactamente|\s+exactly)?[\s?!.]*$|"
-    rf"\b{_SELF_TRAIT}\s+(?:de|of)\s+(?:(?:the|this|esta|este)\s+(?:ai|ia|assistant|asistente|bot|chatbot)|baxy)\b|"
-    rf"\b(?:(?:the|this)\s+(?:ai|assistant|bot)|baxy)['’]?s\s+{_SELF_TRAIT}\b"
+_SELF_FORMS = tuple(
+    re.compile(pattern)
+    for pattern in (
+        # His trait, owned: «tu creador», «your own name», «tu canción favorita», «la edad de BAXY».
+        rf"\b(?:tu|tus|your)\s+(?:(?:propi[oa]s?|own|verdader[oa]s?|real|actual|current|true)\s+)?"
+        rf"{_TRAIT_NOUN}\b{_OTHER_OWNER}",
+        r"\b(?:tu|tus|your)\s+(?:\w+\s+){0,2}(?:favorit[oa]s?|favou?rites?|preferid[oa]s?|preferred)\b",
+        rf"\b{_TRAIT_NOUN}\s+(?:de|of)\s+(?:(?:the|this|esta|este)\s+(?:ai|ia|assistant|asistente|bot|chatbot)|baxy)\b",
+        rf"\b(?:(?:the|this)\s+(?:ai|assistant|bot)|baxy)['’]?s\s+{_TRAIT_NOUN}\b",
+        r"\b(?:the\s+)?(?:creators?|makers?|developers?)\s+of\s+(?:you|your\s+(?:ai|ia))\b",
+        # Who made him, when, where, how and why: «¿quién te ha programado?», «¿en qué país te hicieron?».
+        rf"\b{_WH}\b.{{0,40}}?\bte\s+(?:(?:ha|han|habia|habian|hubo)\s+)?(?:creo|{_MADE})\b{_NOT_CAUSATIVE}",
+        rf"\bte\s+(?:(?:ha|han|habia|habian)\s+)?(?!hizo\b|hicieron\b){_MADE}\b{_NOT_CAUSATIVE}",
+        rf"\b(?:fuiste|has\s+sido|eres|estas|sos)\s+(?:{_MADE}|escrit[oa])\b",
+        r"\b(?:crear|programar|disenar|desarrollar|construir|inventar|fabricar|entrenar|idear)te\b",
+        rf"\b{_WH}\b.{{0,60}}?\b{_MADE_EN}\s+you\b"
+        r"(?=\s*(?:$|[?.!,]|(?:in|at|for|to|and|from|originally|exactly|really|first)\b))",
+        rf"\b{_WH}\b.{{0,60}}?\b{_MAKE_EN}\s+you\s*(?:[?.!]|$)",
+        rf"\b(?:were|was)\s+you\s+(?:born|{_MADE_EN})\b|\bhave\s+you\s+been\s+(?:{_MADE_EN}|around|alive)\b",
+        r"\b(?:a\s+quien|de\s+quien)\s+(?:perteneces|eres|sos)\b|\bperteneces\b|\bpara\s+quien\s+trabajas\b|"
+        r"\bdetras\s+de\s+ti\b|\bbehind\s+you\b|\bwho\s+do\s+you\s+(?:belong\s+to|work\s+for|answer\s+to)\b",
+        rf"\b(?:creo|{_MADE}|{_MADE_EN})\s+(?:a\s+)?(?:baxy|(?:esta|este|this)\s+(?:ia|ai|asistente|assistant|bot|app))\b",
+        r"\b(?:que|quien|what|who)(?:\s+(?:es|is)|['’]?s)\s+baxy\s*[?.!]*$",
+        # Where he comes from and lives: «¿de dónde eres?», «¿vives en mi PC?», «where are you from?».
+        r"\bde\s+donde\s+(?:eres|sos|vienes|venis)\b|\b(?:naciste|vives|vivis|habitas)\b|"
+        r"\bdonde\s+(?:estas|te\s+encuentras)(?:\s+(?:instalad[oa]|ubicad[oa]|alojad[oa]|ahora|ahorita|"
+        r"ahora\s+mismo|exactamente|fisicamente|realmente|en\s+este\s+momento))?\s*[?.!]*$",
+        r"\bwhere\s+are\s+you(?:\s+(?:from|located|based|hosted|running|installed|right\s+now|now|exactly|"
+        r"physically))?\s*[?.!]*$|\b(?:are\s+you|you\s+are)\s+from\b|"
+        r"\b(?:do\s+)?you\s+(?:live\b(?!\s+(?:stream|streaming|chat|captions?|translat\w*))|reside|come\s+from)|"
+        r"\bwhere\s+do\s+you\s+(?:run|stay|exist)\b",
+        # His age: «¿cuántos años tienes?», «how old are you», «¿desde cuándo existes?».
+        r"\b(?:cuantos\s+anos|que\s+edad|how\s+old)\s+(?:tienes|tenes|eres|sos|are\s+you)\b|"
+        r"\b(?:existes|existis)\b|\bdo\s+you\s+(?:really\s+|even\s+|actually\s+)?exist\b|"
+        r"\bhow\s+long\s+have\s+you\s+(?:been\s+(?:around|alive|here|working)|existed)\b",
+        # What he is: «¿eres una IA?», «are you human?», «¿qué tipo de IA eres?», «what are you made of».
+        rf"\b(?:eres|sos|es\s+usted|are\s+you|you\s+are)\s+(?:(?:un|una|el|la|a|an|the|realmente|really|"
+        rf"actually|de\s+verdad|solo|just|only)\s+){{0,2}}{_NATURE}\b",
+        r"\b(?:que|quien|cual|como|de\s+que)\b(?:\s+\w+){0,4}?\s+(?:eres|sos|es\s+usted)"
+        r"(?:\s+(?:tu|exactamente|realmente|en\s+realidad|de\s+verdad|fisicamente|por\s+dentro))?\s*[?.!]*$",
+        r"\b(?:what|who|which)\b(?:\s+\w+){0,4}?\s+are\s+you(?:\s+(?:exactly|really|actually|anyway))?\s*[?.!]*$",
+        r"\bare\s+you\s+made\s+of\b|\bwhat\s+do\s+you\s+look\s+like\b|\bcomo\s+te\s+ves\b",
+        # His body and his feelings: «¿tienes cuerpo?», «¿te sientes solo?», «are you happy?».
+        rf"\b(?:tienes|tenes|tiene\s+usted)\s+(?:(?:un|una|algun|alguna|algunos|algunas|mucho|mucha|muchos|"
+        rf"muchas|tu|propio|propia)\s+)?{_HELD}",
+        rf"\b(?:do\s+you\s+have|have\s+you\s+got|you\s+have)\s+(?:(?:a|an|any|some|your\s+own|a\s+real)\s+)?"
+        rf"{_HELD}",
+        rf"\b(?:estas|are\s+you)\s+(?:muy\s+|un\s+poco\s+|really\s+|ever\s+)?{_FEELING}\b",
+        r"\b(?:te\s+)?(?:sientes|sentis)\b|\bte\s+(?:aburres|cansas|enojas|enfadas|asustas|enamoras|"
+        r"pones\s+(?:triste|nervios[oa]|celos[oa]))\b|\b(?:duermes|respiras|envejeces|mueres)\b|"
+        r"\bhow\s+do\s+you\s+feel\b|\bdo\s+you\s+(?:ever\s+)?(?:feel\b(?!\s+like)|dream|sleep|eat|breathe|age|die|"
+        r"get\s+(?:tired|bored|lonely|angry|sad|mad|scared))",
+        # His likes: «¿te gusta el rock?», «¿qué prefieres?», «do you like dogs?». A wish («¿te gustaría…?»,
+        # «would you like…?») offers something to him and is not a taste of his.
+        r"\bte\s+(?:gusta|gustan|encanta|encantan|fascina|fascinan|interesa|interesan|apasiona|apasionan|"
+        r"divierte|divierten)\b|\b(?:prefieres|preferis|odias)\b|"
+        r"\b(?:do|did)\s+you\s+(?:really\s+)?(?:like|love|hate|enjoy|prefer)\b|\bwhat\s+do\s+you\s+(?:like|love|enjoy)\b",
+        _SELF_LEISURE,
+        # His name: «¿cómo te llamas?», «what should I call you?».
+        r"\bcomo\s+te\s+(?:llamas|llamo|digo|nombro|dicen|llaman)\b|\bte\s+llamas\b|"
+        r"\bwhat\s+(?:are\s+you|should\s+i|do\s+i|can\s+i|do\s+people)\s+call(?:ed)?\b",
+        # About himself as a whole: «háblame de ti», «tell me about yourself».
+        r"\b(?:dime|decime|cuentame|contame|hablame|habla|hablar|sabes|cuentas|contar(?:me)?|decir(?:me)?)\b.{0,20}"
+        r"\b(?:de|sobre|acerca\s+de)\s+ti\b|"
+        r"\b(?:tell|talk|know|say|share)\b.{0,20}\babout\s+(?:you|yourself)\b",
+    )
 )
+
+
+def _about_baxy(folded: str) -> bool:
+    """Whether the request is a question about BAXY himself (see the note above ``_ASKING``)."""
+
+    if _ASKING.search(folded) is None or _RELAYED.search(folded) is not None:
+        return False
+    return any(form.search(folded) for form in _SELF_FORMS)
+
 
 _REFUSE_TOKENS = (
     "what will you", "what do you refuse", "que rechazas", "never do",
@@ -297,7 +421,7 @@ _REFUSE_TOKENS = (
 # —segunda persona— y por lo que hace, o por el borde de lo que hace. Se lee
 # componiendo tres vocabularios cerrados en vez de enumerando frases.
 _SECOND_PERSON = re.compile(
-    r"\b(?:tu|tus|te|ti|contigo|eres|sos|vos|estas|haces|puedes|podes|sabes|sueles|"
+    r"\b(?:tu|tus|te|ti|contigo|eres|sos|vos|estas|haces|puedes|podes|sabes|sueles|sirves|"
     r"you|your|yours|yourself)\b"
 )
 _DOING = re.compile(
@@ -588,7 +712,7 @@ def _read_intents(ask: str) -> frozenset[str]:
     # A trait of BAXY himself («where do you live», «what do you do for fun») is
     # not a question about what he does on the PC; only a capability named in
     # so many words («who are you and what can you do») still asks for both.
-    self_question = _SELF_QUESTION.search(folded) is not None
+    self_question = _about_baxy(folded)
     if not continue_constraint and _SELF_LEISURE_QUESTION.search(folded) is None and (
         _contains_any(folded, _CAPABILITY_TOKENS)
         or (about_you and not marks_a_limit and not self_question)
