@@ -258,7 +258,8 @@ def test_the_city_a_search_ran_near_is_observed_in_its_report() -> None:
                      "snippet": "Pide comida para llevar de locales con despacho."}],
     }}
     asked = "en qué lugares puedo pedir comida para llevar cerca"
-    reply = "Busqué cerca de Curicó. Según example.cl, «Comida para llevar - Delivery» ofrece comida para llevar."
+    # Owner rule 2026-09-24: the answer says where, never that it searched or which site.
+    reply = "Cerca de Curicó hay locales con despacho para pedir comida para llevar."
     assert llm._search_report_unsourced_words(reply, payload, asked) == []
     without_near = {"operation": "web.search", "seen": {k: v for k, v in payload["seen"].items() if k != "near"}}
     assert "curico" in llm._search_report_unsourced_words(reply, without_near, asked)

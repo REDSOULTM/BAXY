@@ -78,12 +78,10 @@ def test_the_page_voice_inside_a_quotation_or_the_persons_own_words_is_not_baxys
 
 
 def test_an_honest_report_with_grammar_words_and_plurals_is_grounded() -> None:
+    # Owner rule 2026-09-24: the answer names no page; the grammar words and plurals are what is judged here.
     honest = (
-        "La página Diario Divisas ofrece un conversor para conocer el cambio del peso chileno "
-        "en relación con el yen con tasas actualizadas en tiempo real. tasas-hoy.org también tiene "
-        "un conversor de yenes a pesos chilenos con datos en tiempo real. calculadora.cl permite "
-        "convertir pesos chilenos a diversas divisas, incluyendo el yen, con tasas actualizadas "
-        "diariamente."
+        "Hay conversores que tienen el cambio del peso chileno en relación con el yen, en tiempo real, "
+        "y permiten convertir yenes a pesos chilenos y a diversas divisas con tasas actualizadas diariamente."
     )
     assert llm._search_report_unsourced_words(honest, _search_payload(_RATE_RESULTS), _RATE_ASK) == []
     assert llm._payload_fact_defect(honest, _search_payload(_RATE_RESULTS), _RATE_ASK) == ""
@@ -106,13 +104,18 @@ def test_a_claim_no_result_carries_still_falls_even_named_after_a_page() -> None
     assert llm._search_report_unsourced_claim(reworded, _search_payload(_RATE_RESULTS), _RATE_ASK) is True
 
 
-def test_a_site_named_by_its_own_words_is_the_site() -> None:
+def test_a_site_named_by_its_own_words_shows_the_search() -> None:
+    # This test once let «El Tiempo» name eltiempo.com. Owner rule 2026-09-24 reverses that intent: a source
+    # named by its proper name shows the lookup, and the answer itself is grounded without it.
     results = [
         {"title": "Última: la canción final del disco", "url": "https://www.eltiempo.com/cultura/ultima",
          "snippet": "La canción final del disco."},
     ]
-    report = "El artículo de El Tiempo afirma que es la canción final del disco."
-    assert llm._search_report_unsourced_words(report, _search_payload(results), "busca la canción última") == []
+    asked = "busca la canción última"
+    assert llm._payload_fact_defect(
+        "Según El Tiempo, es la canción final del disco.", _search_payload(results), asked
+    ) == "search_report_shows_the_search"
+    assert llm._payload_fact_defect("Es la canción final del disco.", _search_payload(results), asked) == ""
 
 
 def test_a_search_title_is_page_prose_not_a_name_to_cut() -> None:
@@ -139,22 +142,22 @@ def test_the_registrable_site_of_a_result_host_is_observed_not_code() -> None:
     assert llm.compose_visible_defect(report + " Usé media.status.", "status", "cómo se hacen las lentejas", facts) == "internal_code"
 
 
-def test_a_generic_search_report_is_given_the_sites_and_publishes_on_the_first_stage() -> None:
-    honest = (
-        "En diariodivisas.com, «Peso chileno a Yen. Cambio de CLP a JPY | Diario Divisas» ofrece un "
-        "conversor para conocer el cambio del peso chileno en relación con el yen en tiempo real."
-    )
+def test_a_generic_search_answer_publishes_on_the_first_stage_without_its_sites() -> None:
+    # Owner rule 2026-09-24 reverses the former intent (hand the writer the sites to name): the answer is said
+    # as something BAXY knows, so the writer is told never to name a source, and still never to speak as a page.
+    honest = "Hay conversores para conocer el cambio del peso chileno en relación con el yen en tiempo real."
     client = Recorder([honest])
     assert client.compose_user_message(_RATE_ASK, "status", {"situation": _search_situation(_RATE_RESULTS)}) == honest
     assert len(client.payloads) == 1
     sent = client.payloads[0]["messages"][-1]["content"]
-    assert "diariodivisas.com, tasas-hoy.org, calculadora.cl" in sent
+    assert "diariodivisas.com, tasas-hoy.org, calculadora.cl" not in sent
+    assert "Nunca menciones la búsqueda, las páginas, los sitios ni ninguna fuente" in sent
     assert "nunca como la página" in sent
 
 
 def test_a_page_voice_draft_is_repaired_with_its_own_hint() -> None:
     pasted = "Nuestro conversor de moneda le permite conocer el cambio del peso chileno en relación con el yen."
-    honest = "En diariodivisas.com hay un conversor para conocer el cambio del peso chileno en relación con el yen."
+    honest = "Hay un conversor para conocer el cambio del peso chileno en relación con el yen."
     client = Recorder([pasted, honest])
     assert client.compose_user_message(_RATE_ASK, "status", {"situation": _search_situation(_RATE_RESULTS)}) == honest
     retry_system = client.payloads[1]["messages"][0]["content"]

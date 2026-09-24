@@ -7,7 +7,8 @@ private literals:
 - A report of English pages written in Spanish (or the other way round) died word by
   word as «unsourced» and every search in another language ended in the bare list of
   titles; one paraphrased verb among many sourced words cost a second draft. A claim
-  still falls, and a number is now checked against the page the sentence cites.
+  still falls, and a number must be one a page writes. Owner rule 2026-09-24: the answers
+  name no page or site (the lookup is invisible), so the drafts below carry none.
 - «las páginas que encontré tratan de otra cosa» was the instruction's own example and
   preceded reports of pages that were about the request.
 - «convertir nueve de la mañana huso horario a madrid» was searched on the web; the time
@@ -48,11 +49,10 @@ _AIR_ASK = "cómo está el air quality hoy?"
 @pytest.mark.parametrize(
     "report",
     [
-        # A Spanish report of English pages: every content word is a translation.
-        "Según airwatch.example.gov, AirWatch es la fuente única de datos de calidad del aire, "
-        "con el pronóstico y consejos de salud para tu zona. Según aqi-today.example.com, se "
-        "ofrece el índice actual, el pronóstico por hora y los niveles de contaminantes.",
-        "aqi-today.example.com informa que el PM2.5 marcó 12 en la última lectura.",
+        # A Spanish answer from English pages: every content word is a translation.
+        "Hay datos de calidad del aire con el pronóstico y consejos de salud para tu zona, "
+        "con el índice actual, el pronóstico por hora y los niveles de contaminantes.",
+        "El índice de calidad del aire indica que el PM2.5 marcó 12 en la última lectura.",
     ],
 )
 def test_a_report_in_the_other_language_of_its_pages_is_not_unsourced(report: str) -> None:
@@ -62,7 +62,7 @@ def test_a_report_in_the_other_language_of_its_pages_is_not_unsourced(report: st
 
 
 def test_a_translated_report_still_owes_the_pages_numbers() -> None:
-    invented = "Según aqi-today.example.com, el PM2.5 marcó 35 en la última lectura."
+    invented = "El índice de calidad del aire indica que el PM2.5 marcó 35 en la última lectura."
     payload = _search_payload(_AIR_RESULTS)
     assert llm._search_report_unsourced_words(invented, payload, _AIR_ASK) == ["35"]
     assert llm._payload_fact_defect(invented, payload, _AIR_ASK) == "search_report_unsourced_claim"
@@ -80,10 +80,10 @@ _GAME_RESULTS = [
 @pytest.mark.parametrize(
     "report",
     [
-        "According to videos.example.com, the rules of charades are learned quickly in an "
-        "explanation with no distractions, just the rules of the game.",
-        "Según howtoplay.example.com, la guía completa abarca las reglas y consejos de estrategia "
-        "para jugar charades con un grupo de amigos en una fiesta.",
+        "The rules of charades are learned quickly in two minutes, in an explanation with no "
+        "distractions, just the rules of the game.",
+        "La guía completa abarca las reglas y consejos de estrategia para jugar charades con un "
+        "grupo de amigos en una fiesta.",
     ],
 )
 def test_one_paraphrased_word_among_many_sourced_ones_is_the_reports_wording(report: str) -> None:
@@ -95,9 +95,9 @@ def test_one_paraphrased_word_among_many_sourced_ones_is_the_reports_wording(rep
     "claim",
     [
         # A cause of its own, two words no page carries.
-        "According to howtoplay.example.com, charades was invented in Victorian England.",
+        "Charades was invented in Victorian England.",
         # A short sentence whose one content word is the model's.
-        "Según videos.example.com, está prohibido.",
+        "Está prohibido.",
     ],
 )
 def test_a_claim_of_the_models_own_still_falls(claim: str) -> None:
@@ -113,19 +113,20 @@ _NUTRITION_RESULTS = [
 ]
 
 
-def test_a_number_belongs_to_the_page_the_sentence_cites() -> None:
+def test_a_number_must_be_one_a_page_writes() -> None:
+    # This test once also bound a number to the page its sentence cited. Owner rule 2026-09-24: no page is cited
+    # any more, so a number is grounded against the pages together and an invented one still falls.
     payload = _search_payload(_NUTRITION_RESULTS)
     asked = "nutrition facts for lasagna please"
-    honest = "According to eatstats.example.org, one serving of lasagna contains 480 Calories with 40% carbs."
-    misattributed = "According to foodfacts.example.com, one serving of lasagna contains 480 Calories with 40% carbs."
+    honest = "One serving of lasagna contains 480 Calories with 40% carbs."
+    invented = "One serving of lasagna contains 620 Calories with 40% carbs."
     assert llm._payload_fact_defect(honest, payload, asked) == ""
-    assert llm._payload_fact_defect(misattributed, payload, asked) == "search_report_unsourced_claim"
-    # A number glued to a name is the name («24hours.example.com»), and a number
-    # the page writes in words is the page's («three countries»).
+    assert llm._payload_fact_defect(invented, payload, asked) == "search_report_unsourced_claim"
+    # A number the page writes in words is the page's («three countries»).
     worded = [{"title": "Three flags that are not rectangles", "url": "https://24flags.example.com/",
                "snippet": "Only three countries have a flag that is not a rectangle."}]
     assert llm._payload_fact_defect(
-        "According to 24flags.example.com, only 3 countries have a flag that is not a rectangle.",
+        "Only 3 countries have a flag that is not a rectangle.",
         _search_payload(worded), "is there a flag that is not a rectangle",
     ) == ""
 
@@ -138,8 +139,8 @@ def test_the_report_instruction_answers_first_and_never_offers_the_other_thing_e
     source = inspect.getsource(llm.LlmRuntime.compose_user_message)
     assert "tratan de otra cosa" not in source
     assert "about something else" not in source
-    assert "dilo primero con las palabras de esa" in source
-    assert "say it first with that page's words" in source
+    assert "la respuesta misma, con las palabras del" in source
+    assert "the answer itself, with the words of the result" in source
 
 
 # --- 3. The time of another place is this clock read with that place's zone ---------------

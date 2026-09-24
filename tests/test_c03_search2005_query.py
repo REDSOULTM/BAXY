@@ -23,17 +23,18 @@ def test_search_query_drops_the_clitic_and_the_courtesy(text: str, query: str) -
     assert _direct_public_search_query(text) == query
 
 
-def test_a_search_report_names_a_site_not_only_titles() -> None:
-    # SEARCH2005 case 2: five titles with snippets and no site name no page a person can open.
-    from baxy_mind.llm import _search_report_without_source
+def test_a_search_answer_neither_lists_pages_nor_names_sites() -> None:
+    # SEARCH2005 case 2 asked for the site of each page. Owner rule 2026-09-24 reverses that intent: the lookup
+    # is invisible, so a list of pages with their sites is the search shown; the answer itself is what is said.
+    from baxy_mind.llm import _payload_fact_defect
     payload = {"operation": "web.search", "seen": {"results": [
         {"title": "47 Homemade Pizza Recipes That Are Faster Than Delivery", "url": "https://www.tasteofhome.com/collection/homemade-pizza-recipes/", "snippet": "skip the delivery"},
         {"title": "15 Homemade Pizza Recipes That Taste Better Than Delivery", "url": "https://www.allrecipes.com/pizza/", "snippet": "Detroit-style"},
     ]}}
-    titles_only = "47 Homemade Pizza Recipes That Are Faster Than Delivery - skip the delivery. 15 Homemade Pizza Recipes That Taste Better Than Delivery - Detroit-style."
-    assert _search_report_without_source(titles_only, payload, "search for pizza recipes") is True
     with_site = "I found «47 Homemade Pizza Recipes That Are Faster Than Delivery» on tasteofhome.com and «15 Homemade Pizza Recipes» on allrecipes.com."
-    assert _search_report_without_source(with_site, payload, "search for pizza recipes") is False
+    assert _payload_fact_defect(with_site, payload, "search for pizza recipes") == "search_report_shows_the_search"
+    answer = "There are homemade pizza recipes that are faster than delivery, including a Detroit-style one."
+    assert _payload_fact_defect(answer, payload, "search for pizza recipes") == ""
 
 
 def test_the_grounded_query_argument_drops_the_courtesy_too() -> None:

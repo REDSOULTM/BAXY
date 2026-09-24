@@ -19,6 +19,10 @@ _GENERIC_PLACE = (
     r"piscina|stadium|estadio|school|colegio|escuela|work|trabajo|home|casa|river|rio|field|campo|golf\s+course|"
     r"cancha|centro|downtown|calle|street)$"
 )
+_PART_OF_TOWN = (
+    r"^(?:(?:la\s+ciudad|el\s+centro|centro|las\s+afueras|the\s+city|the\s+cent(?:er|re)|the\s+outskirts)\s+(?:de|del|of)\s+|"
+    r"(?:down\s*town|mid\s*town|up\s*town)\s+)"
+)
 
 
 def _weather_location(text: str) -> str | None:
@@ -47,10 +51,17 @@ def _weather_location(text: str) -> str | None:
             # MASSIVE weather_query «es necesario llevar paraguas para salir»: «para» before a verb says what for.
             continue
         place = _without_trailing_time(candidate)
-        place = re.sub(r"^(?:la\s+ciudad\s+de|the\s+city\s+of)\s+", "", place, flags=re.IGNORECASE)
+        # Uso real tanda 5 «wat level of air pollution hay en downtown Houston»: the weather service
+        # knows no «downtown Houston»; the part of the town is not its name.
+        place = re.sub(_PART_OF_TOWN, "", place, flags=re.IGNORECASE)
         folded_place = _fold(place)
         if (
-            not folded_place
+            # Tanda 5 «en tus aplicaciones del tiempo», tanda 4f «en una terraza en Sevilla»: a thing said with «tu»,
+            # «mi» or «una» is not the name of a town, and the next preposition may still name one. «a» is an
+            # article only before another place («at a cafe in Paris»); «A Coruña» is a town.
+            re.match(r"(?:mis?|tus?|sus?|nuestr[oa]s?|my|your|our|un|una|unos|unas|an|some)\s", folded_place)
+            or re.match(r"a\s+\w+(?:\s+\w+)?\s+(?:in|en|at)\s", folded_place)
+            or not folded_place
             or _has(folded_place, _WEATHER_MEDIUM)
             or _has(folded_place, _WEATHER_WORDS)
             or _has(folded_place, AIR_QUALITY_WORDS)
@@ -104,7 +115,7 @@ _WEATHER_TIME_WORDS = (
     r"^(?:(?:el|la|los|las|este|esta|estos|estas|the|this|these|next|coming|"
     r"proximo|proxima|proximos|proximas|siguiente|siguientes|dentro\s+de)\s+){0,2}"
     rf"(?:{_WEATHER_SPAN_COUNT}\s+)?(?:semanas?|finde|fin\s+de\s+semana|"
-    r"weeks?|weekend|manana|tarde|noche|morning|afternoon|evening|night|hoy|today|tomorrow|"
+    r"weeks?|weekend|manana|tarde|noche|morning|afternoon|evening|night|hoy|today|tomorrow|ahora|now|"
     r"lunes|martes|miercoles|jueves|viernes|sabado|domingo|monday|tuesday|wednesday|thursday|"
     r"friday|saturday|sunday|dia|dias|days?|mes|meses|months?|ano|anos|years?|"
     r"navidad|nochebuena|nochevieja|ano\s+nuevo|san\s+valentin|halloween|pascua|semana\s+santa|"

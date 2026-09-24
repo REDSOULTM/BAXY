@@ -24,6 +24,39 @@ public sealed class C03UsoRealComposeTests
             Is.Null);
     }
 
+    private const string PlaceNotFound =
+        """{"kind":"failure","polarity":"failure","cause":"mission_failed","stepCount":0,"steps":[],"reason":{"kind":"operation","operation":"weather.current","polarity":"failure","verified":false,"succeeded":false,"error":"weather_place_not_found"}}""";
+
+    // Uso real tanda 5: the weather service knows no such place, and saying so is the failure told.
+    [TestCase("qué tan contaminado está el aire en Nowhereville",
+        "El servicio del clima no reconoce ese lugar, así que no tengo la contaminación de allí.",
+        "El aire en Nowhereville está limpio hoy.")]
+    [TestCase("how polluted is the air in Nowhereville",
+        "The weather service doesn't recognize that place, so I have no air reading for it.",
+        "The air in Nowhereville is clean today.")]
+    public void TheUnknownPlaceToldIsTheFailureTold(string request, string reply, string hidden)
+    {
+        var draft = new UserMessageDraft(PlaceNotFound, "error", null);
+        Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, request), Is.Null);
+        Assert.That(UserMessagePolicy.ModelResponseRejectionReason(hidden, draft, request), Is.EqualTo("reversed_result"));
+    }
+
+    private const string VerifiedSearch =
+        """{"kind":"operation","operation":"web.search","polarity":"success","verified":true,"succeeded":true,"observed":{"query":"me pongo bufanda esta noche","results":[{"title":"Vocabulario de ropa","url":"https://fichas.example.org/ropa","snippet":"Estudia fichas con términos de ropa."}]}}""";
+
+    // Owner rule 2026-09-24: the lookup is invisible; when no page answers, saying it was not found is the
+    // scope of the read, not a failed search.
+    [TestCase("No encontré si debes ponerte bufanda esta noche.", "¿me pongo bufanda esta noche?")]
+    [TestCase("I couldn't find whether you need a scarf tonight.", "do I need a scarf tonight?")]
+    public void ANotFoundAboutAVerifiedSearchIsItsScope(string reply, string request)
+    {
+        var draft = new UserMessageDraft(VerifiedSearch, "status", null);
+        Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, request), Is.Null);
+        // An own failure other than not finding it still reverses the verified search.
+        Assert.That(UserMessagePolicy.ModelResponseRejectionReason("No pude hacer la búsqueda.", draft, request),
+            Is.EqualTo("reversed_result"));
+    }
+
     [Test]
     public void AnAbsenceCannotStandForAFailureThatIsNotOne()
     {

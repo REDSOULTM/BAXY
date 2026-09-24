@@ -6,7 +6,7 @@ from __future__ import annotations
 import re
 from typing import Iterable
 from .display import _KNOWN_FOLDER_ENUM, _KNOWN_FOLDER_WORDS
-from .grammar import _fold, _match, _has, _strip_request_envelope, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _is_meta_or_tool_denial, _OPEN, _LIST, _READ, _SEARCH, _explicit_google_search_query, ARITHMETIC_EXPRESSION, _request_body_surface
+from .grammar import _fold, _match, _has, _strip_request_envelope, _request_head, _head_forms, _head_is, _negative_action_forms, _is_negative_effect_clause, _is_meta_or_tool_denial, _OPEN, _LIST, _READ, _SEARCH, _explicit_google_search_query, ARITHMETIC_EXPRESSION, _request_body_surface
 from .intent import EffectIntent, _entity_key, _append, _append_all
 from .catalog import ApplicationCatalogIndex, _application_name_key, build_application_catalog_index
 from .temporal import _BOUNDED_TEMPORAL_SELECTOR, _DAY, _MONTH, _WEEKDAYS, is_window_phrase
@@ -94,7 +94,10 @@ _WEATHER_WORDS = (
     # MASSIVE weather_query (dev corpus 2026-09-24) «va a estar ventoso el jueves», «is my golf game going to get
     # rained out»: the weather said by the adjective of the day, or by the rain calling something off.
     r"ventos[oa]|lluvios[oa]|nublad[oa]s?|despejad[oa]|rainy|stormy|foggy|niebla|neblina|heladas?|frost|"
-    r"rain(?:ed)?\s+out|rainout)\b"
+    r"rain(?:ed)?\s+out|rainout|"
+    # Uso real tanda 5 «¿qué pronostican tus aplicaciones del tiempo para mañana?»: the
+    # forecast named by its adjective, and the weather app named by what it tells.
+    r"meteorologic[oa]s?|(?:apps?|aplicacion(?:es)?)\s+del\s+tiempo)\b"
 )
 # The weather of the past has no live read («qué clima hacía en 1990», «did it rain yesterday»); rained out is not
 # the past («is my game going to get rained out»).
@@ -109,11 +112,13 @@ _WEATHER_TIEMPO = (
     r"\b(?:que|como)\s+(?:tiempo\s+(?:hace|hara|va\s+a\s+hacer)|"
     r"(?:esta|estara|sera|va\s+a\s+estar|va\s+a\s+ser|viene)\s+el\s+tiempo)\b|"
     # MASSIVE weather_query «mira el tiempo de la semana que viene»: a day or a week to come is a weather frame too.
-    r"\bel\s+tiempo\s+(?:(?:de|para)\s+(?:hoy|manana|este|esta|el\s+fin|"
+    # Uso real tanda 5 «infórmanos del tiempo actual en Lugo»: «del tiempo» and the weather «actual» are the
+    # same frame; «el tiempo en que vivías» is a time, not the weather.
+    r"\b(?:el|del)\s+tiempo\s+(?:(?:de|para)\s+(?:hoy|manana|este|esta|el\s+fin|"
     r"(?:la|el)\s+(?:semana|proxim[oa]|siguiente|lunes|martes|miercoles|jueves|viernes|sabado|domingo))|"
-    r"hoy|manana|ahora|"
-    r"este\s+\w+|esta\s+(?:tarde|noche|semana|manana)|en\s+(?!el\s+horno|la\s+olla|el\s+microondas)\w)|"
-    r"^\s*tiempo\s+(?:en|para|hoy|manana)\b"
+    r"hoy|manana|ahora|actual|de\s+ahora|"
+    r"este\s+\w+|esta\s+(?:tarde|noche|semana|manana)|en\s+(?!el\s+horno|la\s+olla|el\s+microondas|que\b)\w)|"
+    r"^\s*tiempo\s+(?:en|para|hoy|manana|actual|de\s+(?:hoy|manana|ahora))\b"
 )
 _NOT_WEATHER_TIEMPO = (
     r"\b(?:cuanto|cuantos|mucho|poco|a|hace)\s+tiempo\b|\btiempo\s+(?:libre|de\s+(?:coccion|espera|viaje|carga|"
@@ -138,6 +143,9 @@ _AIR_TOPIC = (
     r"por\s*que|why|definicion|definition|significa|means?|historia|history|noticias|news|articulos?|articles?|"
     r"estudios?|stud(?:y|ies)|ensayo|essay|tarea|homework|soluci\w*|solutions?)\b"
 )
+
+
+_AIR_LEVEL = r"\b(?:nivel(?:es)?|level|levels|leve|cuanto|cuanta|how\s+(?:much|bad|good)|indice|index)\b"
 
 
 def _asks_air(folded: str) -> bool:
@@ -216,13 +224,43 @@ _WEATHER_DAY_QUESTION = (
 )
 
 
+# Uso real tanda 4f «¿el sábado podremos comer en una terraza en Sevilla?» searched pages about the food:
+# whether a plan in the open air can be done on a day to come hangs on that day's weather, so it asks the forecast.
+# Booking it, its price or whether a place opens is not the weather.
+_OUTDOOR_SETTING = (
+    r"\b(?:terrazas?|al\s+aire\s+libre|a\s+la\s+intemperie|afuera|playa|picnic|barbacoa|asado|parrillada|"
+    r"piscina|patio|jardin|outside|outdoors|open\s+air|terrace|beach|barbecue|bbq|cookout|pool|garden)\b"
+)
+_PLAN_ASKED = (
+    r"\b(?:podremos|podre|podra|podran|podriamos|se\s+podra|se\s+puede|sera\s+posible|da\s+para|"
+    r"(?:can|could|will)\s+(?:we|i)(?:\s+be\s+able\s+to)?|should\s+(?:we|i))\b"
+)
+_PLAN_ELSEWHERE = (
+    r"\b(?:reserv\w*|book\w*|abiert[oa]s?|abre|abren|cierra|cierran|open|opens|closed|closes|precio|price|cuesta|"
+    r"costs?|entradas?|tickets?|horarios?|fumar|smoke|smoking|mascotas?|pets?|dogs?|perros?)\b"
+)
+
+
+def _outdoor_plan_question(folded: str) -> bool:
+    """Whether a plan in the open air can be done on a day to come (see above)."""
+
+    return (
+        _has(folded, _OUTDOOR_SETTING)
+        and _has(folded, _PLAN_ASKED)
+        and (_has(folded, WEATHER_WHEN) or _has(folded, rf"\b{_WEEKDAY_NAME}\b"))
+        and not _has(folded, _PLAN_ELSEWHERE)
+    )
+
+
 def _forecast_question(folded: str) -> bool:
-    """The forecast asked by naming it as the subject of a time to come, or whether the weather holds."""
+    """The forecast asked by naming it as the subject of a time to come, whether the weather holds, or whether
+    a plan in the open air can be done on a day to come."""
 
     if _has(folded, _NOT_WEATHER_TEMPERATURE):
         return False
     return (
-        (_has(folded, _WEATHER_SUBJECT_QUESTION) and _has(folded, WEATHER_WHEN))
+        _outdoor_plan_question(folded)
+        or (_has(folded, _WEATHER_SUBJECT_QUESTION) and _has(folded, WEATHER_WHEN))
         or _has(folded, _WEATHER_HOLDS_QUESTION)
         or (
             _has(folded, _WEATHER_DAY_QUESTION)
@@ -230,6 +268,9 @@ def _forecast_question(folded: str) -> bool:
         )
         # Tanda 4c «el aire está limpio hoy?»: the air said as the subject, asked without an asking word.
         or (_asks_air(folded) and _has(folded, r"^[¿¡\s]*(?:el|la|the)\b"))
+        # Uso real tanda 5 «wat level of air pollution hay en downtown Houston»: the air asked by its
+        # level or amount, whatever the asking word («wat level», «cuánto smog hay»).
+        or (_asks_air(folded) and _has(folded, _AIR_LEVEL))
     )
 
 
@@ -328,6 +369,12 @@ def weather_asks_later_day(text: str) -> bool:
     return counted is not None and counted.group("count") not in {"un", "uno", "one", "a", "1"}
 
 
+_WHAT_IS_THE_WEATHER = (
+    r"^[¿?¡!\s]*what\s+(?:is|are)\s+(?:the|today'?s|tomorrow'?s|tonight'?s)\s+(?:weather|forecast|temperature|"
+    r"humidity|air\s+quality|air\s+pollution|aqi|pollution\s+levels?|wind|rain|chance\s+of\s+rain)\b"
+)
+
+
 def _weather_lookup_query(text: str) -> str | None:
     """WEB1445: the person's weather request without its request verbs, accents
     kept (the engine answers «va a llover mañana» and «clima hoy», not the folded
@@ -340,7 +387,11 @@ def _weather_lookup_query(text: str) -> str | None:
     indirect = _asks_weather_indirectly(folded) or _forecast_question(folded)
     if not _live_weather_request(folded):
         return None
-    if _has(folded, r"^[¿?¡!\s]*(?:que|what)\s+(?:es|son|is|are|significa|means)\b"):
+    if _has(folded, r"^[¿?¡!\s]*(?:que|what)\s+(?:es|son|is|are|significa|means)\b") and not (
+        # «what is the weather in Paris», «what is the air quality in Denver» ask it as «what's» does; «qué es el
+        # clima», «what is air pollution» ask what the thing is, unless a time to come is named with it.
+        _has(folded, _WHAT_IS_THE_WEATHER) or (_has(folded, WEATHER_WHEN) and not _has(folded, r"\b(?:significa|means)\b"))
+    ):
         return None
     # WEATHER2023 boundary «qué clima hacía en Buenos Aires en 1990»: the past
     # (a past-tense verb or a year) has no live read; the turn says so instead
@@ -360,7 +411,8 @@ def _weather_lookup_query(text: str) -> str | None:
         r"^(?:qué|que|what|cuál|cual|what's|cómo|como|how)\s+(?:es\s+|is\s+|está\s+|esta\s+|estará\s+|estara\s+|va\s+a\s+estar\s+)?"
         r"(?:el\s+|la\s+|the\s+)?"
         r"(?P<noun>clima|tiempo|weather|forecast|pronóstico|pronostico)\s*"
-        r"(?:hace|hay|is\s+it\s+like|is\s+it|is|like)?\s*",
+        # «qué tiempo hará en Madrid mañana»: the weather to come asked like the weather now.
+        r"(?:hace|hay|hará|hara|va\s+a\s+hacer|habrá|habra|is\s+it\s+like|is\s+it|is|like)?\s*",
         lambda m: m.group("noun") + " ", query, count=1, flags=re.IGNORECASE)
     # «is it going to rain tomorrow» / «will it rain tomorrow»: the auxiliaries
     # never appear in a forecast page; the engine answers «rain tomorrow».
@@ -1137,6 +1189,11 @@ _WEATHER_HEADS = frozenset(
         "fijate",
         "averigua",
         "chequea",
+        # Uso real tanda 5 «infórmanos del tiempo actual en Lugo»: informing the person of it («cuéntame»
+        # stays out: «cuéntame un chiste del clima» tells a joke).
+        "informa",
+        "inform",
+        "update",
     }
 )
 # WEB1453 «¿Qué es un pronóstico del tiempo?»: what a forecast is (indefinite article) asks for a definition; «what
@@ -1163,7 +1220,9 @@ def _live_weather_request(folded: str) -> bool:
         re.IGNORECASE,
     )
     weather_head = (
-        head in _WEATHER_HEADS
+        # Uso real tanda 5 «infórmanos del tiempo actual en Lugo»: a head with its clitic («infórmanos»,
+        # «dímelo») is the same head.
+        any(form in _WEATHER_HEADS for form in _head_forms(head))
         or (vocative_weather is not None and vocative_weather.group("head") in _WEATHER_HEADS)
         or _has(folded, _KNOWLEDGE_LEAD_IN)
     )

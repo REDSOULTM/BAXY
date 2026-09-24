@@ -2,11 +2,11 @@
 
 Replayed here with paraphrased requests and synthetic pages, never the private literals:
 
-- web.search reports: the writer copied the example «… en ese sitio dice que …» without
-  the site, pasted whole snippets with their questions, and seven of eleven searches spent
-  three drafts and ended in the list of pages; a results title with brackets or a host
-  label that prefixes a query word blocked even that list, and a budget run out on the way
-  to the third draft ended the turn in ⚠.
+- web.search reports: the writer copied the example «… en ese sitio dice que …», pasted
+  whole snippets with their questions, and seven of eleven searches spent three drafts and
+  ended in the list of pages. Owner rule 2026-09-24: the lookup is invisible — the answer
+  itself, never a source, a site, the search or a list of pages — so the list of pages is
+  no longer a final and a budget run out with nothing publishable raises like any turn.
 - limits: «Pido leer …», «… no es una acción que realice BAXY», «Abrir … no está en lo que
   hago»: BAXY's no is his, in the first person.
 - language: a new bare request in a Spanish word keeps Spanish after an English turn; only an
@@ -63,42 +63,38 @@ def _payload(results: list[dict], query: str = _PARK_ASK) -> dict:
     return {"operation": "web.search", "seen": {"query": query, "count": len(results), "results": results}}
 
 
-def test_the_report_instruction_names_a_real_site_in_its_example_and_never_that_site() -> None:
-    honest = (
-        "Según parquelandia.parque.com, «Cómo llegar a Parquelandia Resort» da indicaciones de "
-        "manejo e información sobre estacionamientos."
-    )
+def test_the_report_instruction_asks_for_the_answer_itself_never_its_sources() -> None:
+    # Owner rule 2026-09-24 reverses this test's former intent (name a real site in the example): the answer
+    # is said as something BAXY knows, and the instruction names no site at all.
+    honest = "Para llegar a Parquelandia Resort hay indicaciones de manejo e información sobre estacionamientos."
     client = Recorder([honest])
     assert client.compose_user_message(_PARK_ASK, "status", {"situation": _situation(_PARK_RESULTS)}) == honest
     assert len(client.payloads) == 1
     sent = client.payloads[0]["messages"][-1]["content"]
-    assert "«Según parquelandia.parque.com, …»" in sent
-    assert "en ese sitio dice que" not in sent
-    assert "nunca «ese sitio»" in sent
+    assert "Nunca menciones la búsqueda, las páginas, los sitios ni ninguna fuente" in sent
+    assert "parquelandia.parque.com" not in sent.split("seen.results son")[1]
     assert "no el fragmento entero" in sent
-    # Tanda 4: the no-answer example says none of the pages says it; «tratan de
-    # otra cosa» was copied before reports of pages that were about the request.
-    assert "ninguna de estas páginas lo dice" in sent
-    assert "tratan de otra cosa" not in sent
 
-    english = Recorder(["According to parquelandia.parque.com, «Cómo llegar a Parquelandia Resort»."] * 3)
+    english = Recorder(["Parquelandia Resort has driving directions and parking information."] * 3)
     english.compose_user_message("how do I get to parquelandia", "status", {"situation": _situation(_PARK_RESULTS)})
     sent_en = english.payloads[0]["messages"][-1]["content"]
-    assert "«According to parquelandia.parque.com, …»" in sent_en
-    assert "on that site says that" not in sent_en
-    assert "none of these pages says it" in sent_en
-    assert "about something else" not in sent_en
+    assert "Never mention the search, the pages, the sites or any source" in sent_en
 
 
-def test_the_copied_example_without_its_site_still_names_no_page() -> None:
-    copied = (
-        "En ese sitio dice que se obtienen indicaciones de manejo e información sobre "
-        "estacionamientos para tu viaje a Parquelandia Resort."
-    )
-    assert llm._payload_fact_defect(copied, _payload(_PARK_RESULTS), _PARK_ASK) == "search_report_without_source"
+@pytest.mark.parametrize(
+    "shown",
+    [
+        # The copied example, with or without its site.
+        "En ese sitio dice que se obtienen indicaciones de manejo e información sobre estacionamientos.",
+        "Según parquelandia.parque.com, se obtienen indicaciones de manejo para tu viaje a Parquelandia Resort.",
+        "Busqué en internet y encontré estas páginas: «Cómo llegar a Parquelandia Resort».",
+    ],
+)
+def test_an_answer_that_shows_the_search_falls(shown: str) -> None:
+    assert llm._payload_fact_defect(shown, _payload(_PARK_RESULTS), _PARK_ASK) == "search_report_shows_the_search"
 
 
-def test_an_honest_report_of_pages_that_do_not_answer_publishes() -> None:
+def test_an_honest_answer_that_the_pages_do_not_answer_publishes() -> None:
     results = [
         {"title": "Vocabulario de ropa | Fichas", "url": "https://fichas.example.org/ropa",
          "snippet": "Estudia fichas con términos como ¿Debo ponerme algo elegante esta noche?"},
@@ -106,16 +102,12 @@ def test_an_honest_report_of_pages_that_do_not_answer_publishes() -> None:
          "snippet": "Completa la conversación usando pronombres: ¿Debo ponerme esta corbata? Sí, la debes poner."},
     ]
     asked = "¿me pongo bufanda esta noche?"
-    honest = (
-        "Las páginas que encontré tratan de otra cosa: según fichas.example.org, «Vocabulario de "
-        "ropa | Fichas» tiene fichas con términos de ropa, y según tareas.example.net hay una "
-        "conversación para completar usando pronombres."
-    )
+    honest = "No encontré si debes ponerte bufanda esta noche."
     facts = {"situation": _situation(results, asked)}
     assert llm.compose_visible_defect(honest, "status", asked, facts) == ""
     assert llm._payload_fact_defect(honest, _payload(results, asked), asked) == ""
     # Answering the question anyway is still a claim no page makes.
-    invented = "Según fichas.example.org, esta noche hará frío, así que sí, ponte la bufanda."
+    invented = "Esta noche hará frío, así que sí, ponte la bufanda."
     assert llm._payload_fact_defect(invented, _payload(results, asked), asked) == "search_report_unsourced_claim"
 
 
@@ -136,28 +128,28 @@ def test_a_question_quoted_verbatim_from_a_page_is_not_the_assistant_asking() ->
 
 def test_a_bracketed_result_title_is_observed_text_not_a_template_hole() -> None:
     facts = {"situation": _situation(_PARK_RESULTS)}
-    report = llm._search_pages_report(_situation(_PARK_RESULTS), "es")
-    assert "[GRATIS]" in report
+    answer = "Hay una guía [GRATIS] para hacer el traslado a Parquelandia de la forma más fácil."
     assert llm._bracket_is_observed("[GRATIS]", facts) is True
-    assert llm.compose_visible_defect(report, "status", _PARK_ASK, facts) == ""
+    assert llm.compose_visible_defect(answer, "status", _PARK_ASK, facts) == ""
     assert llm.compose_visible_defect(
-        "Según viajeroslibres.com, la guía cuesta [precio del tren].", "status", _PARK_ASK, facts
+        "La guía cuesta [precio del tren].", "status", _PARK_ASK, facts
     ) == "copied_instruction"
 
 
 def test_a_host_label_that_prefixes_a_query_word_is_the_page_name_not_a_cut() -> None:
-    report = llm._search_pages_report(_situation(_PARK_RESULTS), "es")
-    assert "parquelandia.parque.com" in report
-    assert llm._truncated_fact_word(report, _payload(_PARK_RESULTS)) is False
+    assert llm._truncated_fact_word("Parquelandia.parque.com da indicaciones de manejo.", _payload(_PARK_RESULTS)) is False
     # A word the model cut from the query is still a cut.
     assert llm._truncated_fact_word("Busqué cómo llegar a parquelan.", _payload(_PARK_RESULTS)) is True
 
 
-def test_three_rejected_drafts_end_in_the_named_pages() -> None:
-    unnamed = "En ese sitio dice que hay indicaciones de manejo."
-    client = Recorder([unnamed] * 3)
+def test_three_rejected_drafts_no_longer_end_in_a_list_of_pages() -> None:
+    # Owner rule 2026-09-24 reverses this test's former intent: the list of pages was a fixed final that showed
+    # the search; three drafts that fall now publish nothing, like any other turn.
+    shown = "En ese sitio dice que hay indicaciones de manejo."
+    client = Recorder([shown] * 3)
     reply = client.compose_user_message(_PARK_ASK, "status", {"situation": _situation(_PARK_RESULTS)})
-    assert reply.startswith("Busqué en internet y encontré estas páginas: «Cómo llegar a Parquelandia Resort»")
+    assert "encontré estas páginas" not in reply
+    assert "parquelandia.parque.com" not in reply
 
 
 class _SlowRecorder(Recorder):
@@ -175,11 +167,12 @@ class _SlowRecorder(Recorder):
 
 
 @pytest.mark.parametrize("fail_at", [2, 3])
-def test_a_budget_run_out_before_the_last_draft_still_reports_the_verified_pages(fail_at: int) -> None:
-    unnamed = "En ese sitio dice que hay indicaciones de manejo."
-    client = _SlowRecorder([unnamed] * 3, fail_at)
-    reply = client.compose_user_message(_PARK_ASK, "status", {"situation": _situation(_PARK_RESULTS)}, timeout=20)
-    assert reply.startswith("Busqué en internet y encontré estas páginas:")
+def test_a_budget_run_out_before_the_last_draft_raises_instead_of_listing_pages(fail_at: int) -> None:
+    # Owner rule 2026-09-24: the verified pages are no final of their own any more.
+    shown = "En ese sitio dice que hay indicaciones de manejo."
+    client = _SlowRecorder([shown] * 3, fail_at)
+    with pytest.raises(TimeoutError):
+        client.compose_user_message(_PARK_ASK, "status", {"situation": _situation(_PARK_RESULTS)}, timeout=20)
     assert len(client.payloads) == fail_at
 
 

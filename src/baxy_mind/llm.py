@@ -5147,7 +5147,11 @@ _ABSENCE_STATEMENT = re.compile(
     r"(?:sonando|reproduciendo|reproduciendose|abiert[oa]s?|en\s+(?:ejecucion|reproduccion))\b|"
     r"\bno\s+suena\b|\bnothing\s+(?:is|was)\b|\bthere\s+(?:is|are|was|were)\s+no\b|"
     r"\b(?:isn't|is\s+not|aren't|are\s+not|wasn't|was\s+not)\s+(?:playing|open|running)\b|"
-    r"\bno\s+\w+(?:\s+\w+)?\s+(?:is|was)\s+(?:playing|open|running)\b"
+    r"\bno\s+\w+(?:\s+\w+)?\s+(?:is|was)\s+(?:playing|open|running)\b|"
+    # Uso real tanda 5 «wat level of air pollution hay en downtown Houston» (weather_place_not_found): «el servicio
+    # meteorológico no reconoce ese lugar» tells that absence; three such drafts died wanting «no pude».
+    r"\bno\s+(?:se\s+)?(?:reconoce|reconocio|conoce|conocio|encuentra|encontro)\b|"
+    r"\b(?:doesn't|does\s+not|didn't|did\s+not)\s+(?:recognize|recognise|know|find)\b"
 )
 
 
@@ -7381,9 +7385,10 @@ def _local_clock_text(iso_utc: str) -> str | None:
 
 def _observed_local_clocks(situation: dict) -> frozenset[str]:
     """Every local «HH:MM» a verified reading observed: the next run of each
-    listed alarm or reminder, and the sunrise and sunset of a weather read
+    listed alarm or reminder, the sunrise and sunset of a weather read
     (Uso real tanda 2 «el horario de la caída del sol para mañana»: the
-    observed 19:45 was refused as an invented clock)."""
+    observed 19:45 was refused as an invented clock), and the times the pages
+    of a web search write."""
 
     if situation.get("verified") is not True or situation.get("succeeded") is not True:
         return frozenset()
@@ -7404,6 +7409,17 @@ def _observed_local_clocks(situation: dict) -> frozenset[str]:
             if isinstance(block := observed.get(day), dict)
             for key in ("sunrise", "sunset")
             if isinstance(clock := block.get(key), str) and re.fullmatch(r"\d\d:\d\d", clock)
+        )
+    if situation.get("operation") == "web.search":
+        # Uso real tanda 4f «¿el sábado podremos comer en una terraza en Sevilla?»: the three
+        # drafts reported «entre las 12:00 y las 14:00» from a page and died as invented clocks, and the turn
+        # ended in the bare list of titles. A time a page writes is the page's, reported as the page's.
+        return frozenset(
+            f"{int(hour):02d}:{minute}"
+            for item in _search_results_of(situation)
+            if isinstance(item, dict)
+            for key in ("title", "snippet")
+            for hour, minute in re.findall(r"(?<!\d)(\d{1,2}):(\d{2})(?!\d)", str(item.get(key) or ""))
         )
     return frozenset()
 
@@ -7546,51 +7562,6 @@ def _search_results_text(payload: dict) -> str | None:
     return "\n".join(parts) if parts else None
 
 
-# WEB1877 H0060: «Se encontraron varios artículos… Una de las páginas indica…
-# Otras fuentes describen…» reported what the pages say and named none of them,
-# so nothing in it can be checked; the two variants of the same shape named
-# «laverdadnoticias.com», «problemashoy.es» and the titles. The instruction
-# already asked for the title and the site of each fact; this is what enforces
-# it. A site label the person used themself («whatsapp» in «me falla mucho
-# whatsapp») is their word, not an attribution, so it does not count.
-_SEARCH_SOURCE_GENERIC_LABELS = frozenset(
-    {"www", "com", "net", "org", "edu", "gov", "web", "site", "blog", "news", "page", "pages"}
-)
-
-
-def _search_report_sources(payload: dict, user_text: str) -> list[str]:
-    """Every way the report may name one of the pages the search returned."""
-
-    seen = payload.get("seen")
-    results = seen.get("results") if isinstance(seen, dict) else None
-    if not isinstance(results, list):
-        return []
-    folded_user = _reading_fold(user_text)
-    sources: list[str] = []
-    for item in results:
-        if not isinstance(item, dict):
-            continue
-        url = item.get("url")
-        if isinstance(url, str) and url.strip():
-            host = (urlparse(url.strip()).hostname or "").casefold()
-            host = host[4:] if host.startswith("www.") else host
-            if host:
-                sources.append(host)
-                for label in host.split("."):
-                    if (
-                        len(label) >= 5
-                        and label not in _SEARCH_SOURCE_GENERIC_LABELS
-                        and label not in folded_user
-                    ):
-                        sources.append(label)
-        title = item.get("title")
-        if isinstance(title, str) and title.strip():
-            words = [word for word in _reading_fold(title).split() if len(word) >= 3]
-            for start in range(max(0, len(words) - 3)):
-                sources.append(" ".join(words[start:start + 4]))
-    return sources
-
-
 def _search_results_of(situation: dict) -> list:
     """Los resultados de una busqueda, venga la situacion entera o el payload visible."""
 
@@ -7599,41 +7570,6 @@ def _search_results_of(situation: dict) -> list:
         seen = situation.get("seen") if isinstance(situation, dict) else None
         results = seen.get("results") if isinstance(seen, dict) else None
     return results if isinstance(results, list) else []
-
-
-def _search_pages_report(situation: dict, language: str, limit: int = 3) -> str:
-    """Las paginas que la busqueda devolvio, nombradas: titulo y sitio."""
-
-    results = _search_results_of(situation)
-    if not results:
-        return ""
-    named: list[str] = []
-    for item in results:
-        if not isinstance(item, dict):
-            continue
-        title = " ".join(str(item.get("title") or "").split())
-        title = title.strip(" " + chr(34) + chr(171) + chr(187) + chr(8220) + chr(8221))[:90]
-        url = str(item.get("url") or "").strip()
-        host = (urlparse(url).hostname or "").casefold() if url else ""
-        host = host[4:] if host.startswith("www.") else host
-        if not title or not host:
-            continue
-        named.append(
-            chr(171) + title + chr(187)
-            + (" on " if language == "en" else " en ")
-            + host
-        )
-        if len(named) >= limit:
-            break
-    if not named:
-        return ""
-    joiner = " and " if language == "en" else " y "
-    listed = (", ".join(named[:-1]) + joiner + named[-1]) if len(named) > 1 else named[0]
-    return (
-        "I searched the web and found these pages: " + listed + "."
-        if language == "en"
-        else "Busqué en internet y encontré estas páginas: " + listed + "."
-    )
 
 
 def _search_result_hosts(situation: dict, limit: int = 3) -> list[str]:
@@ -7663,10 +7599,6 @@ def _search_result_hosts(situation: dict, limit: int = 3) -> list[str]:
 # or snippet of the five results carried either.
 _SEARCH_REPORT_OWN_WORDS = frozenset(
     {
-        # El informe que el turno arma de los resultados cuando todo candidato
-        # cae usa estas tres: sin ellas la red de seguridad se vetaba sola.
-        "busque", "estas", "internet",
-        "searched", "these",
         "encontre", "encontro", "encontraron", "encontrada", "encontradas",
         "encontrado", "encontrados", "varios", "varias", "articulo", "articulos",
         "pagina", "paginas", "resultado", "resultados", "busqueda", "menciona",
@@ -7713,6 +7645,9 @@ _SEARCH_REPORT_OWN_WORDS = frozenset(
         # about ties and flashcards; «the pages I found are about something
         # else» is the honest report of results that do not answer it.
         "something",
+        # Uso real tanda 4f «¿el sábado podremos comer en una terraza?»: «ninguna de estas páginas
+        # lo dice explícitamente sobre terrazas» says how far the pages go, and «se puede encontrar» where.
+        "explicitamente", "explicitly", "especificamente", "specifically", "encontrar",
     }
 )
 
@@ -7737,6 +7672,9 @@ _SEARCH_REPORT_GRAMMAR_WORDS = frozenset(
         "todavia", "solamente", "incluso", "asimismo", "entonces", "cualquier",
         "cualquiera", "demas", "ambos", "ambas", "llamado", "llamada", "llamados",
         "llamadas", "dicho", "dicha", "respecto", "mediante",
+        # Uso real tanda 4f «existen varios podcasts», «puedes escuchar»: that a thing exists, or that the
+        # person can do it, is said with «hay» and «puede» too.
+        "existe", "existen", "puedes", "podemos",
         "which", "where", "there", "their", "those", "after", "before", "being",
         "would", "could", "should", "might", "other", "others", "every", "while",
         "since", "until", "through", "within", "without", "among", "because",
@@ -7816,41 +7754,13 @@ def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> 
         re.findall(r"[a-z]+", _reading_fold(f"{user_text} {near_voice}"))
     )
     results = [item for item in _search_results_of(payload) if isinstance(item, dict)]
-    # «El artículo de El Tiempo» names eltiempo.com with the site's own words.
-    site_labels = [
-        label
-        for host in _search_result_hosts(payload, limit=len(results))
-        for label in host.split(".")
-        if len(label) >= 5
-    ]
-
-    def host_of(item: dict) -> str:
-        host = (urlparse(str(item.get("url") or "")).hostname or "").casefold()
-        return host[4:] if host.startswith("www.") else host
-
-    # A page is cited by its site, or by a word of its site no other page shares
-    # («El Tiempo» for eltiempo.com; not «google» for two google.com sites).
-    shared_labels = {
-        label for label in site_labels if sum(label in host_of(item).split(".") for item in results) > 1
-    }
-
-    def cited(sentence: str) -> list[dict]:
-        folded = _reading_fold(sentence)
-        named = []
-        for item in results:
-            host = host_of(item)
-            labels = [label for label in host.split(".") if len(label) >= 5 and label not in shared_labels]
-            if host and (host in folded or any(re.search(r"\b" + label + r"\b", folded) for label in labels)):
-                named.append(item)
-        return named or results
 
     def page_text(items: list[dict]) -> str:
         return "\n".join(str(item.get(key) or "") for item in items for key in ("title", "snippet"))
 
     words: list[str] = []
     for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip()):
-        basis = cited(sentence)
-        numbers = _search_report_unsourced_numbers(sentence, page_text(basis) + "\n" + (user_text or ""))
+        numbers = _search_report_unsourced_numbers(sentence, page_text(results) + "\n" + (user_text or ""))
         content = 0
         lettered: list[str] = []
         for word in re.findall(r"[a-z]+", _reading_fold(sentence)):
@@ -7874,7 +7784,7 @@ def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> 
                 seen_word.startswith(word[:4])
                 or (len(seen_word) >= 3 and word.startswith(seen_word) and len(word) - len(seen_word) <= 2)
                 for seen_word in observed
-            ) or any(word in label for label in site_labels):
+            ):
                 continue
             lettered.append(word)
         language = _text_language(sentence)
@@ -7883,7 +7793,7 @@ def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> 
             # A translation says what the page says; a bare verdict («está
             # prohibido») is no translation of a page and is judged by its words.
             and content >= 4
-            and all(_text_language(page_text([item])) not in (None, language) for item in basis)
+            and all(_text_language(page_text([item])) not in (None, language) for item in results)
         )
         if translated or (len(lettered) == 1 and content >= 8):
             lettered = []
@@ -7929,35 +7839,84 @@ def _search_report_speaks_as_a_page(text: str, payload: dict, user_text: str) ->
     )
 
 
-def _search_report_without_source(text: str, payload: dict, user_text: str) -> bool:
-    """A verified search was reported without naming a single page of it."""
+# Owner rule 2026-09-24: a web lookup is invisible. «¿Qué son las Tortugas
+# Ninja?» is answered «Las Tortugas Ninja son cuatro tortugas mutantes…»,
+# never «Según ejemplo.com…», «Busqué en internet y encontré…» or a list of
+# pages: the person must not notice that BAXY looked it up. What the answer
+# says is still only what the pages say (_search_report_unsourced_words).
+_SEARCH_ATTRIBUTION = re.compile(
+    r"\b(?:segun|according\s+to|de\s+acuerdo\s+con|citing|cita\s+a)\s+(?:(?:el|la|los|las|un|una|the|an?)\s+)?"
+    r"(?:[\w-]+\.(?:com|org|net|es|cl|mx|ar|co|info|gov|edu|io|uk|de|fr|cat|pe|us)\b|"
+    r"(?:pagina|paginas|sitio|sitios|web|articulo|articulos|fuente|fuentes|wikipedia|page|pages|site|sites|"
+    r"website|article|articles|source|sources|result|results|resultado|resultados)\b)"
+)
+_SEARCH_MECHANICS = re.compile(
+    r"\b(?:busque|he\s+buscado|estuve\s+buscando|hice\s+una\s+busqueda|la\s+busqueda|mi\s+busqueda|"
+    r"(?:encontre|halle|vi)\s+(?:estas|esta|varias|algunas|unas|tres|dos|cinco)\s+(?:paginas?|resultados?|fuentes?|sitios?)|"
+    r"(?:estas|esas|las|varias|algunas)\s+(?:paginas|fuentes|sitios\s+web)|"
+    r"(?:en|de)\s+(?:ese|este|un|otro)\s+sitio|(?:en|de)\s+(?:esa|esta|una|otra)\s+pagina|"
+    r"ninguna\s+de\s+(?:estas|las)\s+paginas|resultados\s+de\s+(?:la\s+)?busqueda|"
+    r"i\s+searched|i\s+looked\s+(?:it\s+)?up|my\s+search|the\s+search|search\s+results?|"
+    r"i\s+found\s+(?:these|this|some|several|a\s+few|three|two|five)\s+(?:pages?|results?|sources?|sites?)|"
+    r"(?:these|those|the|several|some)\s+(?:pages|sources|websites)|(?:on|from)\s+(?:that|this|one|another)\s+(?:site|page)|"
+    r"none\s+of\s+(?:these|the)\s+pages)\b"
+)
+# «según Tripadvisor», «according to BBC Mundo»: a source named by its proper name.
+_SEARCH_NAMED_SOURCE = re.compile(
+    r"\b(?:[Ss]eg[uú]n|[Aa]ccording\s+to|[Dd]e\s+acuerdo\s+con)\s+(?:(?:el|la|los|las|the)\s+)?[A-ZÁÉÍÓÚÑ][\w.-]*"
+)
+
+
+def _search_report_shows_the_search(text: str, payload: dict, user_text: str) -> bool:
+    """The answer to a verified search tells the search: a source cited, a result's site named, or how it was
+    found. The person's own words and a snippet's own words are not the search showing."""
+
+    results_text = _search_results_text(payload)
+    if results_text is None:
+        return False
+    folded = _reading_fold(re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(text)))
+    grounds = _reading_fold(f"{user_text or ''}\n" + "\n".join(
+        str(item.get(key) or "") for item in _search_results_of(payload) if isinstance(item, dict)
+        for key in ("title", "snippet")
+    ))
+    named_source = (
+        _reading_fold(found.group(0))
+        for found in _SEARCH_NAMED_SOURCE.finditer(re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(text)))
+    )
+    for found in (
+        *(match.group(0) for match in _SEARCH_ATTRIBUTION.finditer(folded)),
+        *(match.group(0) for match in _SEARCH_MECHANICS.finditer(folded)),
+        *named_source,
+    ):
+        # A snippet that itself says «según la OMS» may be repeated with its words.
+        if found not in grounds:
+            return True
+    for host in _search_result_hosts(payload, limit=len(_search_results_of(payload))):
+        if host in folded:
+            return True
+        for label in host.split("."):
+            # «tripadvisor»: a site said by its name. A label the person or the pages use as a word
+            # («curico» of curico.cl in a snippet about Curicó) is that word, not the site.
+            word = r"\b" + re.escape(label) + r"\b"
+            if (
+                len(label) >= 5
+                and re.search(word, folded) is not None
+                and re.search(word, grounds) is None
+            ):
+                return True
+    return False
+
+
+# Owner rule 2026-09-24: a web answer is short, like Jarvis: one or two sentences.
+
+
+def _search_report_runs_long(text: str, payload: dict, user_text: str) -> bool:
+    """The answer to a verified search runs past two sentences."""
 
     if _search_results_text(payload) is None:
         return False
-    # Only the search REPORT is judged here. A who/what-is question and a
-    # request for a curiosity are composed by their own branches, whose finals
-    # answer with a snippet instead of listing pages (KNOWLEDGE1475, 1509,
-    # 1511, credited that way), and this rule never reaches them.
-    if (
-        _entity_lookup_query(user_text or "") is not None
-        # WEB1889: la pregunta de investigacion SI es un informe, y esta
-        # exencion era lo que dejaba pasar un final sin una sola pagina
-        # nombrada. Quien-o-que-es y la curiosidad siguen fuera: esas
-        # contestan con el fragmento, no informan de paginas.
-        or curiosity_request(user_text or "")
-    ):
-        return False
-    sources = _search_report_sources(payload, user_text)
-    if not sources:
-        return False
-    folded = _reading_fold(text)
-    # SEARCH2005: a page a person can open is named by its site. With hosts
-    # known, a report of titles alone («47 Homemade Pizza Recipes… - …») names
-    # no page; the title windows only count when no host came back.
-    hosts = [source for source in sources if " " not in source]
-    if hosts:
-        return not any(host in folded for host in hosts)
-    return not any(source in folded for source in sources)
+    sentences = [part for part in re.split(r"(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÑ¿¡«\"])", str(text).strip()) if part.strip()]
+    return len(sentences) > 2
 
 
 def _verified_search_results(situation: dict) -> bool:
@@ -8330,14 +8289,16 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         return window_defect
     if _search_report_speaks_as_a_page(text, payload, user_text):
         return "search_report_page_voice"
-    if _search_report_without_source(text, payload, user_text):
-        # WEB1877 H0060: the pages were found and reported, but none was named.
-        return "search_report_without_source"
+    if _search_report_shows_the_search(text, payload, user_text):
+        # Owner rule 2026-09-24: the lookup is invisible (see _search_report_shows_the_search).
+        return "search_report_shows_the_search"
     if _search_report_unsourced_claim(text, payload, user_text):
         # WEB1879 H0060: a sentence of the report summarised causes in its own
         # voice; no result contains them. Reinstated in WEB1889: the turn no
         # longer dies when every candidate falls, so the rule has a way out.
         return "search_report_unsourced_claim"
+    if _search_report_runs_long(text, payload, user_text):
+        return "search_report_runs_long"
     if (
         _search_results_text(payload) is not None
         and _entity_lookup_query(user_text or "") is None
@@ -10498,9 +10459,14 @@ def compose_visible_defect(
         # los resultados solo proporcionan pronósticos» states that scope
         # truthfully. Mask only that predicate in the failure lens; an invented
         # forecast or a denial of the results is still vetoed on the payload.
+        # Owner rule 2026-09-24: when no page answers, the lookup stays invisible
+        # and the answer says only that it was not found («No lo encontré», «I
+        # couldn't find it»); that is the scope of the read, not a failed mission.
         failure_assertions = re.sub(
-            r"\b(?:no\s+(?:puedo|podria|se\s+puede|es\s+posible)|(?:i\s+)?(?:can't|cannot|can\s+not|am\s+unable\s+to|it\s+is\s+not\s+possible\s+to))"
-            r"\s+(?:confirmar|confirmarte|asegurar|asegurarte|determinar|precisar|saber|decir|decirte|confirm|determine|tell|say|know)"
+            r"\b(?:(?:no\s+(?:puedo|podria|se\s+puede|es\s+posible)|(?:i\s+)?(?:can't|cannot|can\s+not|am\s+unable\s+to|it\s+is\s+not\s+possible\s+to))"
+            r"\s+(?:confirmar|confirmarte|asegurar|asegurarte|determinar|precisar|saber|decir|decirte|confirm|determine|tell|say|know)|"
+            r"no\s+(?:(?:lo|la|los|las)\s+)?(?:encontre|halle|pude\s+encontrar(?:lo|la|los|las)?)|"
+            r"(?:i\s+)?(?:couldn't|could\s+not|didn't|did\s+not|wasn't\s+able\s+to|was\s+not\s+able\s+to)\s+find)"
             r"[^.;]{0,120}",
             "",
             _accent_folded_with_punctuation(failure_assertions),
@@ -11458,7 +11424,8 @@ def compose_visible_defect(
         )
         if (
             closed_request
-            and operation != "browser.control"
+            # «¿a qué hora cierra el museo?» asks a page, not to close anything.
+            and operation not in {"browser.control", "web.search"}
             and not (isinstance(app_name, str) and app_name.strip())
         ):
             # BROWSER1841 «close all tabs»: closing tabs names «pestañas»/«tabs»,
@@ -17768,15 +17735,12 @@ class LlmRuntime:
                 # call; the public search ran instead. Say so and name the pages.
                 scope = (
                     " The request asks to use a public API that the assistant does"
-                    " not call: a public web search ran instead. Say plainly that"
-                    " you did not use the API and searched the web, and name the"
-                    " pages found (their titles and sites); do not claim the API."
+                    " not call. Say plainly that you did not use the API and then"
+                    " answer; do not claim the API."
                     if response_language == "en"
                     else " El pedido pide usar una API pública que el asistente no"
-                    " consulta: en su lugar corrió una búsqueda pública en internet."
-                    " Di llanamente que no usaste la API y que buscaste en internet,"
-                    " y nombra las páginas encontradas (sus títulos y sitios); no"
-                    " digas que usaste la API."
+                    " consulta. Di llanamente que no usaste la API y luego contesta;"
+                    " no digas que usaste la API."
                 )
             else:
                 scope = (
@@ -18300,6 +18264,9 @@ class LlmRuntime:
         # the dense output allowance, keeping their existing prompt unchanged.
         if dense_fact_contract or dense_inventory:
             payload["max_tokens"] = 512
+        elif _search_results_text(visible_situation) is not None:
+            # Owner rule 2026-09-24: a web answer is one or two sentences.
+            payload["max_tokens"] = 160
         if (
             visible_situation.get("operation") == "notification.list"
             and isinstance(visible_situation.get("seen"), dict)
@@ -18575,16 +18542,14 @@ class LlmRuntime:
                 "\nseen.headlines are today's headlines read from a public news feed "
                 "(title, source, publishedAt) and seen.count their number. Say that these "
                 "are today's headlines and quote three to five of them exactly as written, "
-                "each followed by its source in parentheses, one per line or separated by "
-                "semicolons. Do not summarise, rank or add anything of your own; no numbers "
-                "that are not in a title."
+                "separated by semicolons, without naming their media or the feed. Do not "
+                "summarise, rank or add anything of your own; no numbers that are not in a title."
                 if response_language == "en"
                 else "\nseen.headlines son los titulares de hoy leídos de un canal público de "
                 "noticias (title, source, publishedAt) y seen.count su cantidad. Di que son "
-                "los titulares de hoy y cita de tres a cinco tal cual están escritos, cada uno "
-                "seguido de su medio entre paréntesis, uno por línea o separados por punto y "
-                "coma. No resumas, no ordenes ni agregues nada propio; sin números que no "
-                "estén en un titular."
+                "los titulares de hoy y cita de tres a cinco tal cual están escritos, "
+                "separados por punto y coma, sin nombrar sus medios ni el canal. No resumas, "
+                "no ordenes ni agregues nada propio; sin números que no estén en un titular."
             )
         if (
             visible_situation.get("operation") == "weather.current"
@@ -18746,20 +18711,20 @@ class LlmRuntime:
                 f"topic. You searched the public web for «{subject}» and seen.results "
                 "are the pages returned (title, url, snippet). Answer in one or two "
                 f"sentences: say the curiosity is about «{subject}» and tell one thing a "
-                "snippet states about it, in its words, naming the page or site it "
-                "comes from (for example Wikipedia). Never add a date, number, place "
+                "snippet states about it, in its words, as something you know: never "
+                "name a page, a site or the search. Never add a date, number, place "
                 "or any fact that no snippet contains; if no snippet states anything "
-                "about it, name the pages found instead. No question at the end."
+                "about it, say briefly that you could not find one. No question at the end."
                 if response_language == "en"
                 else f"\nLa persona pidió una curiosidad o algo interesante, sin tema. "
                 f"Buscaste en la web pública «{subject}» y seen.results son las páginas "
                 "devueltas (título, url, fragmento). Responde en una o dos oraciones: "
                 f"di que la curiosidad es sobre «{subject}» y cuenta una cosa que un "
-                "fragmento afirma sobre ello, con sus palabras, nombrando la página o "
-                "el sitio de donde sale (por ejemplo Wikipedia). Nunca añadas una "
+                "fragmento afirma sobre ello, con sus palabras, como algo que sabes: "
+                "nunca nombres una página, un sitio ni la búsqueda. Nunca añadas una "
                 "fecha, cifra, lugar ni ningún dato que ningún fragmento contenga; si "
-                "ningún fragmento afirma nada, nombra las páginas encontradas. Sin "
-                "pregunta al final."
+                "ningún fragmento afirma nada, di brevemente que no encontraste una. "
+                "Sin pregunta al final."
             )
         elif entity_asked is not None:
             # KNOWLEDGE1473 «¿Quién es Daredevil?»: the person asked who or what
@@ -18769,19 +18734,19 @@ class LlmRuntime:
                 f"\nThe person asked who or what «{entity_asked}» is. seen.results "
                 "are the pages the public search returned (title, url, snippet). "
                 "Answer in one or two sentences with what a snippet states about "
-                f"«{entity_asked}», in its words, naming the page or site it comes "
-                "from (for example Wikipedia). Never add a creator, studio, date, "
+                f"«{entity_asked}», in its words, as something you know: never name a "
+                "page, a site or the search. Never add a creator, studio, date, "
                 "number or any fact that no snippet contains; if no snippet says "
-                "what it is, name the pages found instead. No question at the end."
+                "what it is, say briefly that you could not find it. No question at the end."
                 if response_language == "en"
                 else f"\nLa persona preguntó quién o qué es «{entity_asked}». "
                 "seen.results son las páginas que devolvió la búsqueda pública "
                 "(título, url, fragmento). Responde en una o dos oraciones con lo "
                 f"que un fragmento afirma sobre «{entity_asked}», con sus palabras, "
-                "nombrando la página o el sitio de donde sale (por ejemplo "
-                "Wikipedia). Nunca añadas un creador, estudio, fecha, cifra ni "
+                "como algo que sabes: nunca nombres una página, un sitio ni la "
+                "búsqueda. Nunca añadas un creador, estudio, fecha, cifra ni "
                 "ningún dato que ningún fragmento contenga; si ningún fragmento "
-                "dice qué es, nombra las páginas encontradas. Sin pregunta al final."
+                "dice qué es, di brevemente que no lo encontraste. Sin pregunta al final."
             )
         elif _search_results_text(visible_situation) is not None:
             # WEB1445: the person asked a live question; the results are pages,
@@ -18790,101 +18755,73 @@ class LlmRuntime:
             # the model answered from its own memory (connection, servers,
             # «restart the device») and dropped the pages; a research request is
             # reported the same way, each fact with the page that states it.
+            # Owner rule 2026-09-24: a web lookup is invisible and short, like
+            # Jarvis — the answer itself in one or two sentences, as something
+            # BAXY knows; never a source, a site or the search told.
             instruct(
                 "\nseen.results are the pages the public search returned (title, url, "
-                "snippet). Report what was found in at most three sentences: name at "
-                "most three pages by title and site and, if a snippet states a fact, "
-                "you may repeat it with its words, saying which page states it. Never "
-                "state a temperature, forecast, condition, cause, explanation, advice or "
-                "any fact that no result contains, even if you know it; if the results "
-                "only point to forecast pages, say that. If a result states what the "
-                "person asked, say it first with that page's words. If none does, say "
-                "that first («none of these pages says it») and then name the pages."
+                "snippet). Answer like a companion who knows it, in one or two short "
+                "sentences: the answer itself, with the words of the result that states "
+                "it. Never mention the search, the pages, the sites or any source "
+                "(«according to …», «I searched», «I found these pages»). Never state a "
+                "temperature, forecast, condition, cause, explanation, advice or any fact "
+                "that no result contains, even if you know it. If none states what the "
+                "person asked, say briefly that you could not find it."
                 if response_language == "en"
                 else "\nseen.results son las páginas que devolvió la búsqueda pública "
-                "(título, url, fragmento). Informa lo encontrado en tres oraciones como "
-                "máximo: nombra como máximo tres páginas por título y sitio y, si un "
-                "fragmento afirma un dato, puedes repetirlo con sus palabras diciendo "
-                "qué página lo afirma. Nunca afirmes una temperatura, un pronóstico, un "
-                "estado del tiempo, una causa, una explicación, un consejo ni ningún "
-                "dato que ningún resultado contenga, aunque lo sepas; si los resultados "
-                "sólo remiten a páginas de pronóstico, dilo. Si un resultado afirma "
-                "lo que la persona preguntó, dilo primero con las palabras de esa "
-                "página. Si ninguno lo afirma, dilo primero («ninguna de estas páginas "
-                "lo dice») y luego nombra las páginas."
+                "(título, url, fragmento). Contesta como un compañero que lo sabe, en una "
+                "o dos oraciones cortas: la respuesta misma, con las palabras del "
+                "resultado que la afirma. Nunca menciones la búsqueda, las páginas, los "
+                "sitios ni ninguna fuente («según …», «busqué», «encontré estas "
+                "páginas»). Nunca afirmes una temperatura, un pronóstico, un estado del "
+                "tiempo, una causa, una explicación, un consejo ni ningún dato que ningún "
+                "resultado contenga, aunque lo sepas. Si ninguno afirma lo que la persona "
+                "preguntó, di brevemente que no lo encontraste."
             )
             # H0463 «Busca el App ID de Doom Eternal en Steam usando la API
             # publica»: the three drafts judged the results («no es el correcto
             # para la versión de campaña», «se asocia a una versión diferente»)
-            # and died as unsourced claims. A report names pages; it does not
-            # rank them. And the API the person named was not used: say so.
+            # and died as unsourced claims. A report does not rank pages. And the
+            # API the person named was not used: say so.
             instruct(
                 " Do not judge, compare or rank the results (never say which one is "
-                "the right one, a different version or not confirmed): one short "
-                "sentence per page, quoting its title exactly as written and naming "
-                "its site, is enough. Prose only: no line breaks, no list, no URLs."
+                "the right one, a different version or not confirmed). Prose only: no "
+                "line breaks, no list, no URLs."
                 if response_language == "en"
                 else " No juzgues, compares ni ordenes los resultados (nunca digas cuál "
-                "es el correcto, otra versión o no confirmado): basta una oración corta "
-                "por página, citando su título tal cual está escrito y nombrando su "
-                "sitio. Sólo prosa: sin saltos de línea, sin lista, sin URLs."
+                "es el correcto, otra versión o no confirmado). Sólo prosa: sin saltos "
+                "de línea, sin lista, sin URLs."
             )
             near = (visible_situation.get("seen") or {}).get("near")
             if isinstance(near, str) and near.strip():
                 # Uso real tanda 4c «comida para llevar cerca»: the search ran near this PC's city.
                 instruct(
-                    f" The search was made near {near}, where this PC is; say it was near {near}."
+                    f" The places are near {near}, where this PC is; say they are near {near}."
                     if response_language == "en"
-                    else f" La búsqueda se hizo cerca de {near}, donde está este PC; di que fue cerca de {near}."
+                    else f" Los lugares son cerca de {near}, donde está este PC; di que son cerca de {near}."
                 )
             if "api" in str(declined_means(user_text or "") or ""):
                 instruct(
-                    " The person asked to use a public API; you did not call any API: "
-                    "the public web search ran instead. Say that plainly at the start "
-                    "(«I did not use the API; I searched the web») and then name the pages."
+                    " The person asked to use a public API; you did not call any API. "
+                    "Say that plainly at the start («I did not use the API») and then answer."
                     if response_language == "en"
                     else " La persona pidió usar una API pública; no consultaste ninguna "
-                    "API: en su lugar corrió la búsqueda pública en internet. Dilo "
-                    "llanamente al principio («No usé la API; busqué en internet») y "
-                    "luego nombra las páginas."
+                    "API. Dilo llanamente al principio («No usé la API») y luego contesta."
                 )
-        search_hosts = (
-            _search_result_hosts(visible_situation)
-            if _search_results_text(visible_situation) is not None
-            else []
-        )
-        if search_hosts:
-            # H0060: sin los sitios delante, el modelo escribe «múltiples fuentes»
-            # y no nombra ninguna. Uso real 2026-09-23: el informe general no los
-            # recibía (sólo quién-o-qué-es) y moría en search_report_without_source;
-            # y pegaba el fragmento con la voz de la página («Nuestro conversor le
-            # permite…», «¿A cuánto está el dólar?»), que BAXY no puede decir como suya.
-            # tanda-02: el ejemplo «… en ese sitio dice que …» se copiaba tal cual,
-            # sin el sitio delante («En ese sitio dice que …», «On that site says
-            # that …»), y siete de once búsquedas gastaban los
-            # tres intentos y terminaban en la lista de páginas. El ejemplo lleva
-            # ahora el sitio real, y del fragmento se repite la frase que
-            # responde, no el fragmento entero con sus preguntas.
+        if _search_results_text(visible_situation) is not None:
+            # Uso real 2026-09-23: the snippet pasted with the page's own voice
+            # («Nuestro conversor le permite…», «¿A cuánto está el dólar?») is
+            # not something BAXY can say as its own.
             instruct(
-                " The sites of those pages are: "
-                + ", ".join(search_hosts)
-                + ". Every sentence names its site written exactly like that, for "
-                "example «According to " + search_hosts[0] + ", …»; never «that "
-                "site», «that page» or «several sources» instead of the name. Speak "
-                "in your own voice: never as the page («we», «our», «you can»), never "
-                "copying its questions or its instructions to the reader; from a "
-                "snippet repeat only the phrase that answers, with its own words, "
-                "not the whole snippet."
+                " Speak in your own voice: never as the page («we», «our», «you can»), "
+                "never copying its questions or its instructions to the reader; from a "
+                "snippet repeat only the phrase that answers, with its own words, not "
+                "the whole snippet."
                 if response_language == "en"
-                else " Los sitios de esas páginas son: "
-                + ", ".join(search_hosts)
-                + ". Cada oración nombra su sitio escrito tal cual, por ejemplo "
-                "«Según " + search_hosts[0] + ", …»; nunca «ese sitio», «esa página» "
-                "ni «múltiples fuentes» en lugar del nombre. Habla con tu propia voz: "
-                "nunca como la página («nuestro», «le decimos», «utiliza», «descubre»), "
-                "sin copiar sus preguntas ni sus instrucciones al lector; de un "
-                "fragmento repite sólo la frase que responde, con sus palabras, no el "
-                "fragmento entero."
+                else " Habla con tu propia voz: nunca como la página («nuestro», «le "
+                "decimos», «utiliza», «descubre»), sin copiar sus preguntas ni sus "
+                "instrucciones al lector; de un fragmento repite sólo la frase que "
+                "responde, con sus palabras, no el fragmento entero."
             )
         if _written_file_after_listing(visible_situation) is not None:
             # FILES1707 «crea un archivo de texto con los 5 procesos que más
@@ -19677,14 +19614,14 @@ class LlmRuntime:
                 # candidatos caen en la misma regla. La pista nombra los sitios que
                 # esta búsqueda devolvió, que el turno ya tiene delante.
                 "search_report_pasted_urls": (
-                    "Do not paste addresses: name each page by its title in guillemets and its site (for example steamdb.info), in prose."
+                    "Do not paste addresses: give the answer itself in one or two sentences, in prose, without naming any site."
                     if response_language == "en"
-                    else "No pegues direcciones: nombra cada página por su título entre comillas angulares y su sitio (por ejemplo steamdb.info), en prosa."
+                    else "No pegues direcciones: da la respuesta misma en una o dos oraciones, en prosa, sin nombrar ningún sitio."
                 ),
                 "search_report_page_voice": (
-                    "Speak in your own voice: say what each page says in the third person, naming it by its title in guillemets and its site («according to example.com, …»); never speak as the page («we», «our», «we tell you»), never copy its questions or its instructions to the reader."
+                    "Speak in your own voice: say the answer as something you know, in one or two sentences, without naming any page or site; never speak as the page («we», «our», «we tell you»), never copy its questions or its instructions to the reader."
                     if response_language == "en"
-                    else "Habla con tu propia voz: di en tercera persona lo que dice cada página, nombrándola por su título entre comillas angulares y su sitio («según ejemplo.com, …»); nunca hables como la página («nuestro», «le decimos», «te garantizamos»), ni copies sus preguntas ni sus instrucciones al lector."
+                    else "Habla con tu propia voz: di la respuesta como algo que sabes, en una o dos oraciones, sin nombrar ninguna página ni sitio; nunca hables como la página («nuestro», «le decimos», «te garantizamos»), ni copies sus preguntas ni sus instrucciones al lector."
                 ),
                 "search_report_unsourced_claim": (
                     # SEARCH2019: name the words no result uses and keep the rest
@@ -19693,43 +19630,34 @@ class LlmRuntime:
                     (
                         "Remove these words, which no result uses: "
                         + ", ".join("«" + word + "»" for word in _search_report_unsourced_words(text, visible_situation, user_text)[:6])
-                        + ". Keep the rest of the report as it was: each page by its title in guillemets and its site, in prose, saying only what its result says; never paste addresses."
+                        + ". Keep the rest as it was: one or two sentences, in prose, saying only what a result says, without naming any page or site."
                         if response_language == "en"
                         else "Quita estas palabras, que ningún resultado usa: "
                         + ", ".join("«" + word + "»" for word in _search_report_unsourced_words(text, visible_situation, user_text)[:6])
-                        + ". Conserva el resto del informe tal cual: cada página por su título entre comillas angulares y su sitio, en prosa, diciendo sólo lo que dice su resultado; nunca pegues direcciones."
+                        + ". Conserva el resto tal cual: una o dos oraciones, en prosa, diciendo sólo lo que dice algún resultado, sin nombrar ninguna página ni sitio."
                     )
                     if _search_report_unsourced_words(text, visible_situation, user_text)
                     else (
-                        "Say only what a result says, with its words, and name the page that "
-                        "says it; do not summarise causes of your own."
+                        "Say only what a result says, with its words; do not summarise causes "
+                        "of your own."
                         if response_language == "en"
-                        else "Di sólo lo que dice algún resultado, con sus palabras, y nombra la "
-                        "página que lo dice; no resumas causas por tu cuenta."
+                        else "Di sólo lo que dice algún resultado, con sus palabras; no resumas "
+                        "causas por tu cuenta."
                     )
                 ),
-                "search_report_without_source": (
-                    (
-                        "Name the pages: give the title and the site of each page whose "
-                        "fact you report, writing the site exactly as it reads here: "
-                        + ", ".join(_hosts_for_hint)
-                        + ". Say nothing no result states."
-                        if response_language == "en"
-                        else "Nombra las páginas: da el título y el sitio de cada página "
-                        "cuyo dato cuentes, escribiendo el sitio tal cual se lee aquí: "
-                        + ", ".join(_hosts_for_hint)
-                        + ". No digas nada que ningún resultado afirme."
-                    )
-                    if (_hosts_for_hint := _search_result_hosts(situation))
-                    else (
-                        "Name the pages: give the title and the site of each page whose fact "
-                        "you report (for example «according to example.com»); say nothing no "
-                        "result states."
-                        if response_language == "en"
-                        else "Nombra las páginas: da el título y el sitio de cada página cuyo dato "
-                        "cuentes (por ejemplo «según ejemplo.com»); no digas nada que ningún "
-                        "resultado afirme."
-                    )
+                "search_report_runs_long": (
+                    "Too long: answer in one or two short sentences with the answer itself."
+                    if response_language == "en"
+                    else "Demasiado largo: contesta en una o dos oraciones cortas con la respuesta misma."
+                ),
+                "search_report_shows_the_search": (
+                    "Say the answer as something you know, in one or two sentences: never "
+                    "mention the search, a page, a site or a source («according to …», «I "
+                    "searched», «I found these pages»)."
+                    if response_language == "en"
+                    else "Di la respuesta como algo que sabes, en una o dos oraciones: nunca "
+                    "menciones la búsqueda, una página, un sitio ni una fuente («según …», "
+                    "«busqué», «encontré estas páginas»)."
                 ),
                 "recalled_as_own": (
                     "The record is about the person: say it in the second person («your name is …», «you like …»)."
@@ -20262,10 +20190,10 @@ class LlmRuntime:
             retry_payload = _machine_actor_repair_payload(payload, text, gguf)
             sent_instructions.append(_MACHINE_ACTOR_FEEDBACK)
         def last_resort(response: object) -> str:
-            # Los tres candidatos cayeron. Si lo que hubo fue una busqueda
-            # verificada, sus paginas bastan para decir la verdad sin el modelo:
-            # el turno informa lo encontrado en vez de morir. Pasa por las mismas
-            # reglas que cualquier candidato.
+            # Los tres candidatos cayeron. Una pregunta ambigua todavía se puede
+            # hacer; la lista de páginas de una búsqueda ya no es un final (regla
+            # del dueño 2026-09-24: la búsqueda no se ve), así que sin ella el
+            # turno termina como cualquier otro sin borrador publicable.
             ambiguous_question = _ambiguous_action_question(user_text, response_language)
             if ambiguous_question and publishable(ambiguous_question):
                 record_stage(
@@ -20273,24 +20201,11 @@ class LlmRuntime:
                     response, "", True,
                 )
                 return ambiguous_question
-            pages_report = _search_pages_report(visible_situation, response_language)
-            if pages_report and "api" in str(declined_means(user_text or "") or ""):
-                # H0463 «… usando la API publica»: the safety-net report keeps the
-                # same honesty the drafts were asked for — no API was called.
-                pages_report = (
-                    "I did not use the API. " if response_language == "en"
-                    else "No usé la API. "
-                ) + pages_report
-            if pages_report and publishable(pages_report):
-                record_stage("pages_fallback", pages_report, pages_report, response, "", True)
-                return pages_report
             return ""
 
-        # tanda-02 (how to get to a theme park): the composition budget ran out on
-        # the way to the third draft and the verified search ended in ⚠ with its
-        # pages in hand. A model that does not answer in time (a timeout or a
-        # dropped local connection, both OSError) reaches the same last resort
-        # as three rejected drafts; with nothing to report it still raises.
+        # tanda-02: a model that does not answer in time (a timeout or a dropped
+        # local connection, both OSError) reaches the same last resort as three
+        # rejected drafts; with nothing to say it still raises.
         try:
             retry = post(retry_payload)
         except OSError:

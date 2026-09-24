@@ -3050,8 +3050,19 @@ internal static class UserMessagePolicy
             return result;
         }
 
-        return Regex.Replace(
+        // Owner rule 2026-09-24: when no page answers, the lookup stays invisible
+        // and the answer says only that it was not found («No lo encontré», «I
+        // couldn't find it»); that is the scope of the read, not a failed search.
+        // Twin of the mind's mask in compose_visible_defect.
+        string withoutNotFound = Regex.Replace(
             FoldForPolicy(result),
+            @"\b(?:no\s+(?:(?:lo|la|los|las)\s+)?(?:encontre|halle|pude\s+encontrar(?:lo|la|los|las)?)"
+            + @"|(?:i\s+)?(?:couldn[’']?t|could\s+not|didn[’']?t|did\s+not|wasn[’']?t\s+able\s+to|was\s+not\s+able\s+to)\s+find)"
+            + @"[^.;]{0,120}",
+            " ",
+            RegexOptions.CultureInvariant);
+        return Regex.Replace(
+            withoutNotFound,
             @"(?<![a-z0-9])[a-z0-9]{3,}(?![a-z0-9])",
             match => vocabulary.Contains(match.Value) ? " " : match.Value,
             RegexOptions.CultureInvariant);
@@ -3229,7 +3240,10 @@ internal static class UserMessagePolicy
         + @"(?:sonando|reproduciendo|reproduciendose|abiert[oa]s?|en\s+(?:ejecucion|reproduccion))\b|"
         + @"\bno\s+suena\b|\bnothing\s+(?:is|was)\b|\bthere\s+(?:is|are|was|were)\s+no\b|"
         + @"\b(?:isn't|is\s+not|aren't|are\s+not|wasn't|was\s+not)\s+(?:playing|open|running)\b|"
-        + @"\bno\s+\w+(?:\s+\w+)?\s+(?:is|was)\s+(?:playing|open|running)\b";
+        + @"\bno\s+\w+(?:\s+\w+)?\s+(?:is|was)\s+(?:playing|open|running)\b|"
+        // Uso real tanda 5 (weather_place_not_found): «el servicio no reconoce ese lugar» tells that absence.
+        + @"\bno\s+(?:se\s+)?(?:reconoce|reconocio|conoce|conocio|encuentra|encontro)\b|"
+        + @"\b(?:doesn't|does\s+not|didn't|did\s+not)\s+(?:recognize|recognise|know|find)\b";
 
     /// <summary>
     /// The typed failure is that something was not found («youtube_tab_not_found»,
