@@ -8584,7 +8584,9 @@ def test_knowledge_request_keeps_its_question_after_a_temporal_prefix(
     assert len(payloads) == 1
     assert payloads[0]["messages"][-1]["content"] == text
     assert "conocimiento o explicación" in repr(payloads[0]["messages"])
-    assert payloads[0]["max_tokens"] == 256
+    # Owner 2026-09-24 (concise): a plain explanation is one or two sentences,
+    # so its budget is 128; a request for detail keeps 256 (test_concision_2026_09_24).
+    assert payloads[0]["max_tokens"] == 128
 
 
 @pytest.mark.parametrize("text,language,answer", [

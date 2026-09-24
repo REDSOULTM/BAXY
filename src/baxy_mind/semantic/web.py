@@ -358,6 +358,25 @@ def weather_asks_sun_time(text: str) -> bool:
     return _has(_fold(text), _WEATHER_SUN_TIME)
 
 
+# Owner 2026-09-24 «tiene que ser conciso… que te responda de una»; tanda-05 «¿Cuál es la tasa de humedad de hoy?»
+# was answered with temperature, sky and humidity because the reply had to carry the temperature. One measure
+# asked by its name is the answer; the rest of the read is not asked.
+_WEATHER_MEASURES = (
+    ("humidity", r"\b(?:humedad|humed[oa]|humidity|humid)\b"),
+    ("wind", r"\b(?:viento|vientos|ventos[oa]|rachas?|wind|winds|windy|gusts?)\b"),
+    ("apparent", r"\b(?:sensacion\s+termica|se\s+siente|feels?\s+like|real\s*feel|wind\s*chill)\b"),
+    ("temperature", r"\b(?:temperatura|temperature|grados|degrees|(?:que\s+tanto?|cuanto)\s+(?:frio|calor)|"
+                    r"how\s+(?:hot|cold|warm|chilly))\b"),
+)
+
+
+def weather_asked_measures(text: str) -> frozenset[str]:
+    """The measures of the weather read the question names («humedad», «wind», «sensación térmica», «grados»)."""
+
+    folded = _fold(text)
+    return frozenset(name for name, pattern in _WEATHER_MEASURES if _has(folded, pattern))
+
+
 def weather_asks_later_day(text: str) -> bool:
     """The weather question is about a day after tomorrow («dentro de dos días», «el fin de semana»,
     «pasado mañana»): the read covers today and tomorrow, and the answer says so."""

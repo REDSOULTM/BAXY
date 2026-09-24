@@ -43,7 +43,9 @@ from .semantic.normalize import alternation, fold
 from .semantic import dialogue as dialogue_slot
 from .semantic.grammar import spoken_number_request
 from .semantic.network import WEEK_PERIOD, asks_calendar_part, calendar_parts_asked
-from .semantic.web import weather_asks_later_day, weather_asks_sun_time, asks_own_place, weather_asks_air
+from .semantic.web import (
+    weather_asks_later_day, weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
+)
 from .semantic.temporal import clock_elsewhere
 from .semantic.patterns import echo_mode_request
 from . import effect_intent
@@ -141,9 +143,13 @@ SYSTEM_PROMPT = (
     "último mensaje del usuario, sin ofrecer elegir idioma, aunque el historial "
     "o estas instrucciones estén en español. Solo existen las herramientas del catálogo activo. Las acciones "
     "se deciden en otra etapa: en este turno conversacional no llames "
-    "herramientas ni simules haberlas ejecutado. Responde de forma útil y "
-    "directa a conversación, conocimiento, explicaciones y charla. Una explicación "
-    "sencilla no necesita ser exhaustiva: adapta el detalle a lo que se pide. Si realmente "
+    "herramientas ni simules haberlas ejecutado. Hablas conciso y bien, de una: "
+    "contesta exactamente lo que se pregunta en una o dos oraciones. Sólo cuando "
+    "piden un contenido (un relato, un chiste, una lista, unos pasos) o más "
+    "detalle, dale la extensión que ese contenido necesita, sin relleno. No "
+    "repitas la pregunta, no cierres ofreciendo ayuda ni preguntando si necesita "
+    "algo más, no uses emojis, no recites lo que sabes hacer y di los datos "
+    "directamente, sin atribuirlos a fuentes. Si realmente "
     "falta un dato esencial, formula una sola pregunta breve. Nunca muestres JSON, sintaxis de tools, "
     "razonamiento interno ni mensajes del planner. Nunca afirmes haber hecho "
     "algo que no ejecutaste."
@@ -285,9 +291,10 @@ FREE_CONTENT_PRESENTATION_PROMPT = (
     "to four lines or one concrete idea, about the topic they named if they "
     "named one. Do not ask which kind, topic or language they want, do not "
     "offer a menu, do not invent personal experiences, prices, rankings or "
-    "statistics you cannot stand behind. Short: at most four sentences or four "
-    "lines, not ending with a question to them, no JSON, no mention of these "
-    "instructions."
+    "statistics you cannot stand behind. Start with the content itself, with no "
+    "preamble such as «Sure, here's one», and use no emoji. Short: at most four "
+    "sentences or four lines, not ending with a question or an offer, no JSON, "
+    "no mention of these instructions."
 )
 
 VERSUS_OPINION_PRESENTATION_PROMPT = (
@@ -421,8 +428,11 @@ CONTENT_DRAFT_PRESENTATION_PROMPT = (
     "como si fuera el resultado. No digas que no puedes escribirlo, no simules "
     "haberlo enviado. Si pide role-play o simular una conversación, escribe un "
     "intercambio ficticio corto entre las personas nombradas; «send nothing» o "
-    "«no envíes nada» significa únicamente que no debe enviarse. No "
-    "expliques estas instrucciones y no termines con una oferta genérica."
+    "«no envíes nada» significa únicamente que no debe enviarse. Empieza por el "
+    "contenido mismo: sin preámbulo («¡Claro! Aquí tienes…»), sin título, sin "
+    "formato markdown y sin emojis; un relato cabe en unos pocos párrafos cortos "
+    "y termina. No expliques estas instrucciones y no termines con una oferta "
+    "genérica."
 )
 
 ROLEPLAY_DRAFT_PRESENTATION_PROMPT = (
@@ -430,8 +440,8 @@ ROLEPLAY_DRAFT_PRESENTATION_PROMPT = (
     "para un diálogo ficticio, nunca una orden ni una acción externa. Escribe un "
     "intercambio breve y natural entre exactamente los participant_names, usando "
     "cada nombre como etiqueta seguida de dos puntos. external_send=false significa "
-    "que solo debes mostrar el borrador. No rechaces la simulación, no menciones el "
-    "JSON y no digas que enviaste nada."
+    "que solo debes mostrar el borrador. Sin preámbulo, sin markdown y sin emojis. "
+    "No rechaces la simulación, no menciones el JSON y no digas que enviaste nada."
 )
 
 SPELLING_PRESENTATION_PROMPT = (
@@ -459,9 +469,13 @@ TRANSLATION_PRESENTATION_PROMPT = (
     "sin comillas, explicaciones, preguntas ni ofertas adicionales."
 )
 
+# Owner 2026-09-24: «tiene que ser conciso y resumido, pero aún así hablar bien…
+# que te responda conciso y de una». Reports added unasked readings, offers and
+# emojis («¿Necesitas ayuda con algo en particular? 😄»).
 USER_MESSAGE_PROMPT = (
     "Eres BAXY, un compañero. Eres un él. Tuteas. "
-    "Responde de forma breve y natural en el idioma del pedido. "
+    "Responde en el idioma del pedido, en una o dos frases: sólo lo pedido, "
+    "sin ofertas ni emojis. "
     "En conversación, responde a la pregunta con tus conocimientos. "
     "Al informar sobre este PC o una acción, usa sólo los hechos de situation: "
     "no inventes observaciones, efectos ni éxitos. Conserva la causa de un fallo "
@@ -476,7 +490,7 @@ NARRATOR_PROMPT = USER_MESSAGE_PROMPT
 
 CPU_USER_MESSAGE_PROMPT = USER_MESSAGE_PROMPT
 _PROGRESS_MESSAGE_INSTRUCTION = (
-    "For this turn, write a brief first-person progress update about working on the request. "
+    "For this turn, write one short first-person sentence saying you are working on the request. "
     "The requested results are not available yet. Do not answer the request, report measurements "
     "or claim completed effects. Do not ask the person to perform the work."
 )
@@ -2607,6 +2621,52 @@ _CONDUCT_DIRECTIVE = re.compile(
     r"|(?:imitame|copiame|imitate\s+me|copy\s+me|mimic\s+me)(?:\s+.{0,60})?"
     r")$"
 )
+
+
+# Owner 2026-09-24 («conciso… de una»): a plain answer is one or two sentences,
+# so its budget is sized to that; a request that asks for more (detail, steps,
+# a list, a story) keeps room for the content it asked for.
+_EXTENDED_ANSWER_ASK = re.compile(
+    r"\b(?:en\s+detalle|detallad\w*|a\s+fondo|profundi\w*|paso\s+a\s+paso|pasos|reglas|listas?|enumer\w*|"
+    r"ejemplos|todo\s+(?:sobre|lo\s+que)|relato|cuento|historia|poema|ensayo|carta|resum\w*|"
+    r"in\s+detail|detailed|step\s+by\s+step|steps|rules|lists?|listing|examples|everything\s+about|"
+    r"story|poem|essay|letter|summar\w*|elaborat\w*)\b"
+)
+_CONTENT_SHAPES = frozenset({"content_draft", "roleplay_draft"})
+_BRIEF_SHAPES = frozenset({
+    "constraint_ack", "reassurance_ack", "preference_ack", "versus_opinion", "sarcastic_answer",
+    "assistant_desire", "misnamed_greeting", "identity", "visual_content_boundary", "spelling",
+})
+
+
+def _conversation_max_tokens(
+    presentation_shape: str | None, conversation_kind: str | None, text: str, *, retry: bool = False,
+) -> int:
+    """The output budget of a conversational reply, sized to the reply's shape."""
+
+    if presentation_shape in _CONTENT_SHAPES:
+        # Tanda 4f «haz un relato basado en el año 2090»: 128 tokens cut the
+        # story mid-sentence («…del norte de la Antártida, donde»).
+        return 320
+    if presentation_shape in {"how_it_works", "free_content"}:
+        return 160
+    if presentation_shape in _BRIEF_SHAPES:
+        return 128
+    if presentation_shape is not None:
+        return 64
+    if retry:
+        return 96
+    if conversation_kind in {"knowledge", None}:
+        return 256 if _EXTENDED_ANSWER_ASK.search(_reading_fold(text)) else 128
+    return {"social": 64, "unsupported": 96, "unsupported_language": 96}.get(conversation_kind, 128)
+
+
+def _complete_sentences(text: str) -> str:
+    """The reply up to its last finished sentence: a decode stopped by its
+    budget never publishes half a sentence (the words kept are the model's)."""
+
+    ends = list(re.finditer(r"[.!?…](?:[»\"'”)\]*_]*)(?=\s|$)", text))
+    return text[: ends[-1].end()].strip() if ends else ""
 
 
 def _conversation_presentation_shape(
@@ -6503,12 +6563,15 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
     ):
         # MINALL1687 «minimizá todas las ventanas»: the desktop windows were
         # minimized and re-observed iconic; nothing was closed.
+        # Owner 2026-09-24 (concise): «…se minimizaron 6 ventanas y no se cerró
+        # ninguna» said a thing nobody asked; nothing closed is a limit on the
+        # claim, not a fact to recite.
         bits.append(
             "This result minimized every visible desktop window and verified "
-            "each is now minimized: say that all the windows were minimized "
-            "(with the count from minimized if it is present), that nothing "
-            "was closed, in one sentence, in the person's language, calling "
-            "them by the plain noun (ventanas / windows) and no other word. If "
+            "each is now minimized: say that the windows were minimized "
+            "(with the count from minimized if it is present), in one short "
+            "sentence, in the person's language, calling them by the plain noun "
+            "(ventanas / windows) and no other word; never say any was closed. If "
             "minimized is 0, say there was no open window to minimize."
         )
     if (
@@ -8278,6 +8341,134 @@ def _weather_clock_forms(value: object) -> set[str]:
     return {hour, str(int(hour)), minute, str(int(minute))}
 
 
+def _weather_asks_rain(user_text: str) -> bool:
+    """The weather question asks about rain, rain gear or an amount of it
+    («¿lloverá?», «¿me llevo el paraguas?», «how many inches»)."""
+
+    return re.search(
+        r"\b(?:llov\w*|lluvi\w*|llueve|rain\w*|paraguas|umbrella|chubasquero|impermeable|"
+        r"pulgadas|inches|milimetros|millimeters)\b",
+        _reading_fold(user_text),
+    ) is not None
+
+
+def _weather_asks_tomorrow(user_text: str) -> bool:
+    """The weather question is about tomorrow or a later day."""
+
+    return weather_asks_later_day(user_text) or re.search(
+        r"(?<!esta )\b(?:manana|tomorrow)\b", _reading_fold(user_text)
+    ) is not None
+
+
+_WEATHER_MEASURE_FIELDS = {
+    "humidity": ("humidityPercent", "the humidity", "la humedad"),
+    "wind": ("windKmh", "the wind", "el viento"),
+    "apparent": ("apparentC", "the feels-like temperature", "la sensación térmica"),
+}
+
+
+def _weather_answer_instruction(user_text: str, language: str) -> str:
+    """What a weather reply says: the one thing the question asks of the read.
+
+    Owner 2026-09-24 («conciso… que te responda de una»): the old instruction
+    always asked for the temperature and the sky and then added the asked
+    thing, so «¿Cuál es la tasa de humedad de hoy?» got three facts and «my
+    current location» got the weather too. Only the asked focus is sent now;
+    the other readings stay in seen and are not mentioned.
+    """
+
+    english = language == "en"
+    fields = (
+        "seen is the weather of seen.location (seen.country) now: temperatureC, apparentC (feels like), "
+        "condition (sky), windKmh, humidityPercent, today.maxC/minC and today.rainProbabilityPercent, "
+        "tomorrow.maxC/minC, tomorrow.rainProbabilityPercent and tomorrow.condition; today/tomorrow "
+        "sunrise and sunset are local sun times; seen.airQuality is the air now (usAqi with its category, "
+        "pm25 and pm10 in µg/m³). "
+        if english
+        else "seen es el clima de seen.location (seen.country) ahora: temperatureC, apparentC (sensación "
+        "térmica), condition (cielo), windKmh, humidityPercent, today.maxC/minC y "
+        "today.rainProbabilityPercent, tomorrow.maxC/minC, tomorrow.rainProbabilityPercent y "
+        "tomorrow.condition; sunrise y sunset de today/tomorrow son las horas locales del sol; "
+        "seen.airQuality es el aire ahora (usAqi con su category, pm25 y pm10 en µg/m³). "
+    )
+    measures = weather_asked_measures(user_text) - {"temperature"}
+    if asks_own_place(user_text):
+        focus = (
+            "The person asked where they are: say seen.location with seen.region and seen.country as "
+            "the approximate place of this PC, and nothing about the weather."
+            if english
+            else "La persona preguntó dónde está: di seen.location con seen.region y seen.country como "
+            "el lugar aproximado de este PC, y nada del clima."
+        )
+    elif weather_asks_air(user_text):
+        focus = (
+            "The person asked about the air: give the index, its category and PM2.5; if "
+            "seen.airQuality is null, say the air quality could not be read."
+            if english
+            else "La persona preguntó por el aire: da el índice, su categoría y el PM2.5; si "
+            "seen.airQuality es null, di que no se pudo leer la calidad del aire."
+        )
+    elif weather_asks_sun_time(user_text):
+        focus = (
+            "The person asked when the sun rises or sets: give that time for the day asked "
+            "(tomorrow's for tomorrow or a later day)."
+            if english
+            else "La persona preguntó a qué hora sale o se pone el sol: da esa hora del día preguntado "
+            "(la de mañana para mañana o un día posterior)."
+        )
+    elif _weather_asks_rain(user_text):
+        focus = (
+            "The person asked about rain (or rain gear, or an amount of rain): answer with the rain "
+            "probability of the day asked, tomorrow's for tomorrow or a later day."
+            if english
+            else "La persona preguntó por la lluvia (o por algo para la lluvia, o una cantidad): contesta "
+            "con la probabilidad de lluvia del día preguntado, la de mañana para mañana o un día posterior."
+        )
+    elif _weather_asks_tomorrow(user_text):
+        focus = (
+            "The person asked about tomorrow or a later day: give tomorrow's sky, maximum and minimum and "
+            "rain probability."
+            if english
+            else "La persona preguntó por mañana o un día posterior: da el cielo, la máxima, la mínima y la "
+            "probabilidad de lluvia de mañana."
+        )
+    elif measures:
+        asked = [
+            _WEATHER_MEASURE_FIELDS[name][1 if english else 2] + f" ({_WEATHER_MEASURE_FIELDS[name][0]})"
+            for name in ("humidity", "wind", "apparent")
+            if name in measures
+        ]
+        focus = (
+            "The person asked about " + " and ".join(asked) + ": give that value."
+            if english
+            else "La persona preguntó por " + " y ".join(asked) + ": da ese valor."
+        )
+    elif "temperature" in weather_asked_measures(user_text):
+        focus = (
+            "The person asked about the temperature: give the current temperature of seen.location, naming it."
+            if english
+            else "La persona preguntó por la temperatura: da la temperatura actual de seen.location, nombrándolo."
+        )
+    else:
+        focus = (
+            "Say the current temperature and sky of seen.location, naming it; if the person asked what to "
+            "wear or carry, answer that from the temperature."
+            if english
+            else "Di la temperatura actual y el cielo de seen.location, nombrándolo; si la persona preguntó "
+            "qué ponerse o llevar, contéstalo desde la temperatura."
+        )
+    closing = (
+        " Answer only that, in one short sentence (two at most), with the observed numbers and their units "
+        "(°C, km/h, %); no other readings. The read covers today and tomorrow only: for a later day, say so. "
+        "Say it directly, without naming where it was read. Nothing was opened or changed."
+        if english
+        else " Contesta sólo eso, en una oración corta (dos como máximo), con los números observados y sus "
+        "unidades (°C, km/h, %); sin otras lecturas. La lectura cubre sólo hoy y mañana: para un día "
+        "posterior, dilo. Dilo directamente, sin nombrar de dónde se leyó. No se abrió ni se cambió nada."
+    )
+    return fields + focus + closing
+
+
 def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     """REOPEN1993 grupo W: every number in a weather reply is an observed one
     (temperatures, wind, humidity, rain probability) and the place is named;
@@ -8331,20 +8522,20 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
             return "invented_number"
     asks = _reading_fold(user_text or "")
     tomorrow = seen.get("tomorrow")
-    later_day = weather_asks_later_day(user_text or "")
-    asks_tomorrow = later_day or re.search(r"(?<!esta )\b(?:manana|tomorrow)\b", asks) is not None
+    asks_tomorrow = _weather_asks_tomorrow(user_text or "")
     sun_time = weather_asks_sun_time(user_text or "")
-    rain_asked = re.search(
-        r"\b(?:llover|lluvia|llueve|rain|paraguas|umbrella|chubasquero|impermeable|"
-        r"raincoat|pulgadas|inches|milimetros|millimeters)\b",
-        asks,
-    ) is not None
+    rain_asked = _weather_asks_rain(user_text or "")
     location = seen.get("location")
+    # Owner 2026-09-24 (concise, «de una»): a measure asked by its name is the
+    # answer; the temperature and the sky are not demanded next to it.
+    narrow_measures = weather_asked_measures(user_text or "") - {"temperature"}
     # Uso real tanda 2 «¿Cuántas pulgadas are we getting today?»: a narrow
-    # question about here (rain, the sun) is answered by its value; the place
-    # must be named when the person named one, or for a general report.
+    # question about here (rain, the sun, the air, one measure) is answered by
+    # its value; the place must be named when the person named one, or for a
+    # general report.
     asked_place = _reading_fold(_weather_location(user_text or "") or "")
-    if isinstance(location, str) and location and (asked_place or not (rain_asked or sun_time)):
+    narrow = rain_asked or sun_time or bool(narrow_measures) or weather_asks_air(user_text or "")
+    if isinstance(location, str) and location and (asked_place or not narrow):
         # WEATHER2031 «how's the weather in Santiago»: the geocoder says «Santiago
         # de Chile»; the head of that name (before « de …» or a comma) names the
         # place as well as the whole.
@@ -8396,10 +8587,14 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         ]
         if probabilities and not any(_states_weather_number(text, value) for value in probabilities):
             return "missing_state"
+    for measure, key in (("humidity", "humidityPercent"), ("wind", "windKmh"), ("apparent", "apparentC")):
+        if measure in narrow_measures and seen.get(key) is not None and not _states_weather_number(text, seen.get(key)):
+            return "missing_state"
     if (
         not any(form in text for form in _weather_number_forms(seen.get("temperatureC")))
         and not rain_asked
         and not asks_tomorrow
+        and not narrow_measures
     ):
         return "missing_state"
     return ""
@@ -13502,7 +13697,8 @@ class LlmRuntime:
         conversation_policies = {
             "social": (
                 "Política interna del turno: interacción social. Responde de "
-                "forma natural y breve, sin proponer una acción no solicitada."
+                "forma natural y breve, en una oración, sin proponer una acción "
+                "no solicitada ni ofrecer ayuda."
             ),
             "knowledge": (
                 "Política interna del turno: conocimiento o explicación. "
@@ -13781,26 +13977,9 @@ class LlmRuntime:
         }
         logical_attempt = max(0, int(getattr(self, "_request_attempt", 0)))
         presentation_seed = logical_attempt * 1_009
-        presentation_max_tokens = (
-            # NEGATIVE1309: the constraint acknowledgement's structured reply hit
-            # the 64-token ceiling twice («truncated_structured_reply») and the
-            # turn fell back to a clarification.
-            # CONVERSATION1345: the reassurance acknowledgement truncated twice
-            # at 64 tokens (truncated_structured_reply) like constraint_ack did.
-            (160 if presentation_shape in {"how_it_works", "free_content"} else 128 if presentation_shape in {
-                "content_draft", "roleplay_draft", "constraint_ack", "reassurance_ack", "preference_ack",
-                "versus_opinion", "sarcastic_answer", "assistant_desire",
-                "misnamed_greeting", "identity", "visual_content_boundary", "spelling",
-            } else 64)
-            if presentation_shape is not None
-            else {
-                "social": 64,
-                "unsupported": 96,
-                "unsupported_language": 96,
-                "followup": 128,
-                "knowledge": 256,
-            }.get(conversation_kind, 192)
-        )
+        # NEGATIVE1309 / CONVERSATION1345: the acknowledgement shapes truncated
+        # at 64 tokens (truncated_structured_reply); their budget is 128.
+        presentation_max_tokens = _conversation_max_tokens(presentation_shape, conversation_kind, text)
         cpu_fallback = os.environ.get("BAXY_MIND_NGL", "99").strip() == "0"
         cpu_brief_presentation = cpu_fallback and presentation_shape not in {
             "content_draft",
@@ -13990,6 +14169,12 @@ class LlmRuntime:
                 1 for message in presentation_history if message.get("role") == "user"
             ),
         )
+        if response["choices"][0].get("finish_reason") == "length":
+            # Tanda 4f: a story stopped by its budget was published ending in
+            # «…donde». Keep the finished sentences; none left means no answer
+            # yet, and the bounded retry below writes one.
+            content = _complete_sentences(content)
+            message = {**message, "content": content}
         # Un acto social puede responderse legítimamente con un espejo: la
         # respuesta natural a «nos vemos» es «¡nos vemos!», y a «chau», «chau».
         # El guard anti-eco existe para atrapar a un modelo que repite la
@@ -14158,17 +14343,8 @@ class LlmRuntime:
                 ]
             retry_payload["temperature"] = min(0.2, temperature)
             retry_payload["seed"] = presentation_seed + 1
-            retry_payload["max_tokens"] = (
-                160 if presentation_shape in {"how_it_works", "free_content"} else
-                128
-                if presentation_shape in {
-                    "content_draft", "roleplay_draft", "constraint_ack", "reassurance_ack", "preference_ack",
-                    "versus_opinion", "sarcastic_answer", "assistant_desire",
-                    "misnamed_greeting", "identity", "visual_content_boundary", "spelling",
-                }
-                else 64
-                if presentation_shape is not None
-                else 96
+            retry_payload["max_tokens"] = _conversation_max_tokens(
+                presentation_shape, conversation_kind, text, retry=True,
             )
             if cpu_brief_presentation:
                 retry_payload["max_tokens"] = min(
@@ -18845,67 +19021,29 @@ class LlmRuntime:
             and isinstance(visible_situation["seen"].get("headlines"), list)
         ):
             # REOPEN1993 grupo N: the read is the headlines themselves; the
-            # reply quotes them as they are, each with its medium.
+            # reply quotes them as they are. Owner 2026-09-24: concise, and the
+            # lookup is invisible — three titles, no outlet or feed named.
             instruct(
-                "\nseen.headlines are today's headlines read from a public news feed "
-                "(title, source, publishedAt) and seen.count their number. Say that these "
-                "are today's headlines and quote three to five of them exactly as written, "
-                "separated by semicolons, without naming their media or the feed. Do not "
+                "\nseen.headlines are today's headlines (title, source, publishedAt) and "
+                "seen.count their number. Say briefly that these are today's headlines and "
+                "quote three of them exactly as written, one per line or separated by "
+                "semicolons, without naming outlets or where they were read. Do not "
                 "summarise, rank or add anything of your own; no numbers that are not in a title."
                 if response_language == "en"
-                else "\nseen.headlines son los titulares de hoy leídos de un canal público de "
-                "noticias (title, source, publishedAt) y seen.count su cantidad. Di que son "
-                "los titulares de hoy y cita de tres a cinco tal cual están escritos, "
-                "separados por punto y coma, sin nombrar sus medios ni el canal. No resumas, "
-                "no ordenes ni agregues nada propio; sin números que no estén en un titular."
+                else "\nseen.headlines son los titulares de hoy (title, source, publishedAt) y "
+                "seen.count su cantidad. Di en pocas palabras que son los titulares de hoy y "
+                "cita tres tal cual están escritos, uno por línea o separados por punto y coma, "
+                "sin nombrar medios ni de dónde se leyeron. No resumas, no ordenes ni agregues "
+                "nada propio; sin números que no estén en un titular."
             )
         if (
             visible_situation.get("operation") == "weather.current"
             and isinstance(visible_situation.get("seen"), dict)
             and "temperatureC" in visible_situation["seen"]
         ):
-            # REOPEN1993 grupo W: the read is the weather itself (a public
-            # forecast service), and the reply says it with the observed numbers.
-            instruct(
-                "\nseen is the weather read from a public forecast service for seen.location "
-                "(seen.country): temperatureC now, apparentC (feels like), condition (sky), "
-                "windKmh, humidityPercent, today.maxC/minC and today.rainProbabilityPercent, "
-                "and tomorrow.maxC/minC, tomorrow.rainProbabilityPercent, tomorrow.condition; "
-                "today.sunrise/sunset and tomorrow.sunrise/sunset are the local sun times. "
-                "Say the current temperature and sky for that place, in one or two short "
-                "sentences; if the person asked about tomorrow or rain, answer with tomorrow's "
-                "rain probability and temperatures; if they asked when the sun rises or sets, "
-                "give that time for the day asked; if they asked what to wear or carry, or an "
-                "amount, answer from these readings. The read covers today and tomorrow only: "
-                "for a later day, say so and give tomorrow's. seen.airQuality is the air of that "
-                "place now (usAqi, the US air quality index, with its category, and pm25 and pm10 "
-                "in µg/m³); if they asked about the air, answer with the index, its category and "
-                "PM2.5, and if seen.airQuality is null say the air quality could not be read. If "
-                "they asked where they are, say seen.location with seen.region and seen.country, "
-                "the approximate place of this PC read from its public internet address, and "
-                "nothing about the weather. Use only those numbers with their "
-                "units (°C, km/h, %). Nothing was opened or changed."
-                if response_language == "en"
-                else "\nseen es el clima leído de un servicio público de pronóstico para "
-                "seen.location (seen.country): temperatureC ahora, apparentC (sensación "
-                "térmica), condition (cielo), windKmh, humidityPercent, today.maxC/minC y "
-                "today.rainProbabilityPercent, y tomorrow.maxC/minC, "
-                "tomorrow.rainProbabilityPercent, tomorrow.condition; today.sunrise/sunset y "
-                "tomorrow.sunrise/sunset son las horas locales de salida y puesta del sol. Di "
-                "la temperatura actual y el cielo de ese lugar, nombrándolo, en una o dos "
-                "oraciones cortas; si la persona preguntó por mañana o por la lluvia, contesta "
-                "con la probabilidad de lluvia y las temperaturas de mañana; si preguntó a qué "
-                "hora sale o se pone el sol, da esa hora del día preguntado; si preguntó qué "
-                "ponerse o llevar, o una cantidad, contesta desde estas lecturas. La lectura "
-                "cubre sólo hoy y mañana: para un día posterior, dilo y da la de mañana. "
-                "seen.airQuality es el aire de ese lugar ahora (usAqi, el índice de calidad del "
-                "aire de EE. UU., con su category, y pm25 y pm10 en µg/m³); si preguntó por el "
-                "aire, contesta con el índice, su categoría y el PM2.5, y si seen.airQuality es "
-                "null di que no se pudo leer la calidad del aire. Si preguntó dónde está, di "
-                "seen.location con seen.region y seen.country, el lugar aproximado de este PC "
-                "leído de su dirección pública de internet, y nada del clima. Sólo "
-                "esos números, con sus unidades (°C, km/h, %). No se abrió ni se cambió nada."
-            )
+            # REOPEN1993 grupo W: the read is the weather itself; the reply says
+            # what was asked of it with the observed numbers (owner 2026-09-24: only that).
+            instruct("\n" + _weather_answer_instruction(user_text or "", response_language))
         if (
             visible_situation.get("operation") == "storage.removable.list"
             and isinstance(visible_situation.get("seen"), dict)
