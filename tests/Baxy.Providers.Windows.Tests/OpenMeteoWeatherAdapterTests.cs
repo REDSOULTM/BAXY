@@ -21,6 +21,15 @@ public sealed class OpenMeteoWeatherAdapterTests
     private const string Forecast =
         """
         {"timezone":"America/Argentina/Buenos_Aires",
+         "current":{"time":"2026-09-20T19:15","temperature_2m":18.8,"apparent_temperature":20.2,"relative_humidity_2m":92,"weather_code":3,"wind_speed_10m":8.0,"precipitation":0.0,"uv_index":0.42,"dew_point_2m":17.44},
+         "daily":{"time":["2026-09-20","2026-09-21"],"temperature_2m_max":[22.1,21.0],"temperature_2m_min":[14.0,12.5],"precipitation_probability_max":[10,65],"weather_code":[3,61],
+                  "sunrise":["2026-09-20T07:05","2026-09-21T07:04"],"sunset":["2026-09-20T19:02","2026-09-21T19:03"],"uv_index_max":[5.86,3.1]}}
+        """;
+
+    // A service answer from before the UV index and the dew point were asked: the other readings still stand.
+    private const string ForecastWithoutUv =
+        """
+        {"timezone":"America/Santiago",
          "current":{"time":"2026-09-20T19:15","temperature_2m":18.8,"apparent_temperature":20.2,"relative_humidity_2m":92,"weather_code":3,"wind_speed_10m":8.0,"precipitation":0.0},
          "daily":{"time":["2026-09-20","2026-09-21"],"temperature_2m_max":[22.1,21.0],"temperature_2m_min":[14.0,12.5],"precipitation_probability_max":[10,65],"weather_code":[3,61],
                   "sunrise":["2026-09-20T07:05","2026-09-21T07:04"],"sunset":["2026-09-20T19:02","2026-09-21T19:03"]}}
@@ -265,6 +274,51 @@ public sealed class OpenMeteoWeatherAdapterTests
 
         Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
         Assert.That(receipt.Result!.Value.GetProperty("airQuality").ValueKind, Is.EqualTo(JsonValueKind.Null));
+    }
+
+    // Uso real tanda 6 «Dime el UV index», «¿Cómo está el dew point ahora?» went to web pages
+    // that define them: the UV index (now and today's and tomorrow's peak) and the dew point
+    // are readings of the same service, asked in the same forecast read.
+    [Test]
+    public async Task TheUvIndexAndTheDewPointAreReadWithTheWeather()
+    {
+        var urls = new List<string>();
+        var adapter = new OpenMeteoWeatherAdapter(Service(Geocoded, Geocoded, asked: urls));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current", JsonSerializer.SerializeToElement(new { location = "Buenos Aires" }), CancellationToken.None);
+
+        Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+        JsonElement result = receipt.Result!.Value;
+        Assert.Multiple(() =>
+        {
+            Assert.That(urls.Single(url => url.StartsWith("https://api.open-meteo.com/", StringComparison.Ordinal)),
+                Does.Contain("uv_index,dew_point_2m").And.Contain("uv_index_max"));
+            Assert.That(result.GetProperty("uvIndex").GetDouble(), Is.EqualTo(0.4));
+            Assert.That(result.GetProperty("dewPointC").GetDouble(), Is.EqualTo(17.4));
+            Assert.That(result.GetProperty("today").GetProperty("uvIndexMax").GetDouble(), Is.EqualTo(5.9));
+            Assert.That(result.GetProperty("tomorrow").GetProperty("uvIndexMax").GetDouble(), Is.EqualTo(3.1));
+        });
+    }
+
+    [Test]
+    public async Task AServiceAnswerWithoutUvOrDewPointNamesTheirAbsence()
+    {
+        var adapter = new OpenMeteoWeatherAdapter((url, _) => Task.FromResult(
+            url.Contains("geocoding", StringComparison.Ordinal) ? Geocoded : ForecastWithoutUv));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current", JsonSerializer.SerializeToElement(new { location = "Buenos Aires" }), CancellationToken.None);
+
+        Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+        JsonElement result = receipt.Result!.Value;
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.GetProperty("temperatureC").GetDouble(), Is.EqualTo(18.8));
+            Assert.That(result.GetProperty("uvIndex").ValueKind, Is.EqualTo(JsonValueKind.Null));
+            Assert.That(result.GetProperty("dewPointC").ValueKind, Is.EqualTo(JsonValueKind.Null));
+            Assert.That(result.GetProperty("today").GetProperty("uvIndexMax").ValueKind, Is.EqualTo(JsonValueKind.Null));
+        });
     }
 
     [TestCase(12, "buena")]

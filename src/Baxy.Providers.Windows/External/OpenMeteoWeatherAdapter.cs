@@ -69,9 +69,13 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
 
             string coordinates = "?latitude=" + place.Value.Latitude.ToString("F4", CultureInfo.InvariantCulture)
                 + "&longitude=" + place.Value.Longitude.ToString("F4", CultureInfo.InvariantCulture);
+            // Uso real tanda 6 «Dime el UV index», «¿Cómo está el dew point ahora?»
+            // buscaron definiciones y mapas en la web: el índice UV y el punto de
+            // rocío son del mismo servicio y vienen en la misma lectura.
             string forecastUrl = ForecastAuthority + coordinates
-                + "&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,precipitation"
-                + "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code,sunrise,sunset"
+                + "&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,precipitation,"
+                + "uv_index,dew_point_2m"
+                + "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code,sunrise,sunset,uv_index_max"
                 + "&timezone=auto&forecast_days=2";
             // Uso real tanda 4c «Whats the air quality hoy?» buscó páginas de
             // otro país: la calidad del aire del mismo lugar es otra lectura del
@@ -110,12 +114,15 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
                 WriteNumber(writer, "humidityPercent", ReadDouble(current, "relative_humidity_2m"));
                 WriteNumber(writer, "windKmh", ReadDouble(current, "wind_speed_10m"));
                 WriteNumber(writer, "precipitationMm", ReadDouble(current, "precipitation"));
+                WriteNumber(writer, "uvIndex", ReadDouble(current, "uv_index"));
+                WriteNumber(writer, "dewPointC", ReadDouble(current, "dew_point_2m"));
                 writer.WriteNumber("weatherCode", weatherCode);
                 writer.WriteString("condition", Condition(weatherCode));
                 writer.WriteStartObject("today");
                 WriteNumber(writer, "maxC", ReadDoubleAt(daily, "temperature_2m_max", 0));
                 WriteNumber(writer, "minC", ReadDoubleAt(daily, "temperature_2m_min", 0));
                 WriteNumber(writer, "rainProbabilityPercent", ReadDoubleAt(daily, "precipitation_probability_max", 0));
+                WriteNumber(writer, "uvIndexMax", ReadDoubleAt(daily, "uv_index_max", 0));
                 WriteClock(writer, "sunrise", ReadStringAt(daily, "sunrise", 0));
                 WriteClock(writer, "sunset", ReadStringAt(daily, "sunset", 0));
                 writer.WriteEndObject();
@@ -124,6 +131,7 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
                 WriteNumber(writer, "maxC", ReadDoubleAt(daily, "temperature_2m_max", 1));
                 WriteNumber(writer, "minC", ReadDoubleAt(daily, "temperature_2m_min", 1));
                 WriteNumber(writer, "rainProbabilityPercent", ReadDoubleAt(daily, "precipitation_probability_max", 1));
+                WriteNumber(writer, "uvIndexMax", ReadDoubleAt(daily, "uv_index_max", 1));
                 writer.WriteString("condition", Condition(tomorrowCode ?? -1));
                 WriteClock(writer, "sunrise", ReadStringAt(daily, "sunrise", 1));
                 WriteClock(writer, "sunset", ReadStringAt(daily, "sunset", 1));

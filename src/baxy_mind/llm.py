@@ -8468,7 +8468,94 @@ _WEATHER_MEASURE_FIELDS = {
     "humidity": ("humidityPercent", "the humidity", "la humedad"),
     "wind": ("windKmh", "the wind", "el viento"),
     "apparent": ("apparentC", "the feels-like temperature", "la sensación térmica"),
+    "dew_point": ("dewPointC", "the dew point", "el punto de rocío"),
 }
+
+
+def _weather_focus(user_text: str, english: bool) -> str:
+    """The one thing the weather question asks of the read (owner 2026-09-24, «conciso… que te responda de
+    una»); the composer instruction and the retry hint say the same focus."""
+
+    measures = weather_asked_measures(user_text) - {"temperature"}
+    if asks_own_place(user_text):
+        return (
+            "The person asked where they are: say seen.location with seen.region and seen.country as "
+            "the approximate place of this PC, and nothing about the weather."
+            if english
+            else "La persona preguntó dónde está: di seen.location con seen.region y seen.country como "
+            "el lugar aproximado de este PC, y nada del clima."
+        )
+    if weather_asks_air(user_text):
+        return (
+            "The person asked about the air: give the index, its category and PM2.5; if "
+            "seen.airQuality is null, say the air quality could not be read."
+            if english
+            else "La persona preguntó por el aire: da el índice, su categoría y el PM2.5; si "
+            "seen.airQuality es null, di que no se pudo leer la calidad del aire."
+        )
+    if weather_asks_sun_time(user_text):
+        return (
+            "The person asked when the sun rises or sets: give that time for the day asked "
+            "(tomorrow's for tomorrow or a later day)."
+            if english
+            else "La persona preguntó a qué hora sale o se pone el sol: da esa hora del día preguntado "
+            "(la de mañana para mañana o un día posterior)."
+        )
+    if "uv" in measures:
+        # Uso real tanda 6 «Dime el UV index»: the index now and the day's peak are both read.
+        if _weather_asks_tomorrow(user_text):
+            return (
+                "The person asked about the UV index tomorrow: give tomorrow.uvIndexMax, tomorrow's peak UV index."
+                if english
+                else "La persona preguntó por el índice UV de mañana: da tomorrow.uvIndexMax, el máximo UV de mañana."
+            )
+        return (
+            "The person asked about the UV index: give seen.uvIndex (now) and today.uvIndexMax (today's peak); "
+            "if they are null, say the UV index could not be read."
+            if english
+            else "La persona preguntó por el índice UV: da seen.uvIndex (ahora) y today.uvIndexMax (el máximo de "
+            "hoy); si son null, di que no se pudo leer el índice UV."
+        )
+    if _weather_asks_rain(user_text):
+        return (
+            "The person asked about rain (or rain gear, or an amount of rain): answer with the rain "
+            "probability of the day asked, tomorrow's for tomorrow or a later day."
+            if english
+            else "La persona preguntó por la lluvia (o por algo para la lluvia, o una cantidad): contesta "
+            "con la probabilidad de lluvia del día preguntado, la de mañana para mañana o un día posterior."
+        )
+    if _weather_asks_tomorrow(user_text):
+        return (
+            "The person asked about tomorrow or a later day: give tomorrow's sky, maximum and minimum and "
+            "rain probability."
+            if english
+            else "La persona preguntó por mañana o un día posterior: da el cielo, la máxima, la mínima y la "
+            "probabilidad de lluvia de mañana."
+        )
+    if measures:
+        asked = [
+            _WEATHER_MEASURE_FIELDS[name][1 if english else 2] + f" ({_WEATHER_MEASURE_FIELDS[name][0]})"
+            for name in ("humidity", "wind", "apparent", "dew_point")
+            if name in measures
+        ]
+        return (
+            "The person asked about " + " and ".join(asked) + ": give that value."
+            if english
+            else "La persona preguntó por " + " y ".join(asked) + ": da ese valor."
+        )
+    if "temperature" in weather_asked_measures(user_text):
+        return (
+            "The person asked about the temperature: give the current temperature of seen.location, naming it."
+            if english
+            else "La persona preguntó por la temperatura: da la temperatura actual de seen.location, nombrándolo."
+        )
+    return (
+        "Say the current temperature and sky of seen.location, naming it; if the person asked what to "
+        "wear or carry, answer that from the temperature."
+        if english
+        else "Di la temperatura actual y el cielo de seen.location, nombrándolo; si la persona preguntó "
+        "qué ponerse o llevar, contéstalo desde la temperatura."
+    )
 
 
 def _weather_answer_instruction(user_text: str, language: str) -> str:
@@ -8484,83 +8571,19 @@ def _weather_answer_instruction(user_text: str, language: str) -> str:
     english = language == "en"
     fields = (
         "seen is the weather of seen.location (seen.country) now: temperatureC, apparentC (feels like), "
-        "condition (sky), windKmh, humidityPercent, today.maxC/minC and today.rainProbabilityPercent, "
-        "tomorrow.maxC/minC, tomorrow.rainProbabilityPercent and tomorrow.condition; today/tomorrow "
+        "condition (sky), windKmh, humidityPercent, dewPointC (dew point), uvIndex (UV index now), "
+        "today.maxC/minC, today.rainProbabilityPercent and today.uvIndexMax (peak UV), tomorrow.maxC/minC, "
+        "tomorrow.rainProbabilityPercent, tomorrow.uvIndexMax and tomorrow.condition; today/tomorrow "
         "sunrise and sunset are local sun times; seen.airQuality is the air now (usAqi with its category, "
         "pm25 and pm10 in µg/m³). "
         if english
         else "seen es el clima de seen.location (seen.country) ahora: temperatureC, apparentC (sensación "
-        "térmica), condition (cielo), windKmh, humidityPercent, today.maxC/minC y "
-        "today.rainProbabilityPercent, tomorrow.maxC/minC, tomorrow.rainProbabilityPercent y "
-        "tomorrow.condition; sunrise y sunset de today/tomorrow son las horas locales del sol; "
+        "térmica), condition (cielo), windKmh, humidityPercent, dewPointC (punto de rocío), uvIndex (índice "
+        "UV ahora), today.maxC/minC, today.rainProbabilityPercent y today.uvIndexMax (máximo UV), "
+        "tomorrow.maxC/minC, tomorrow.rainProbabilityPercent, tomorrow.uvIndexMax y tomorrow.condition; "
+        "sunrise y sunset de today/tomorrow son las horas locales del sol; "
         "seen.airQuality es el aire ahora (usAqi con su category, pm25 y pm10 en µg/m³). "
     )
-    measures = weather_asked_measures(user_text) - {"temperature"}
-    if asks_own_place(user_text):
-        focus = (
-            "The person asked where they are: say seen.location with seen.region and seen.country as "
-            "the approximate place of this PC, and nothing about the weather."
-            if english
-            else "La persona preguntó dónde está: di seen.location con seen.region y seen.country como "
-            "el lugar aproximado de este PC, y nada del clima."
-        )
-    elif weather_asks_air(user_text):
-        focus = (
-            "The person asked about the air: give the index, its category and PM2.5; if "
-            "seen.airQuality is null, say the air quality could not be read."
-            if english
-            else "La persona preguntó por el aire: da el índice, su categoría y el PM2.5; si "
-            "seen.airQuality es null, di que no se pudo leer la calidad del aire."
-        )
-    elif weather_asks_sun_time(user_text):
-        focus = (
-            "The person asked when the sun rises or sets: give that time for the day asked "
-            "(tomorrow's for tomorrow or a later day)."
-            if english
-            else "La persona preguntó a qué hora sale o se pone el sol: da esa hora del día preguntado "
-            "(la de mañana para mañana o un día posterior)."
-        )
-    elif _weather_asks_rain(user_text):
-        focus = (
-            "The person asked about rain (or rain gear, or an amount of rain): answer with the rain "
-            "probability of the day asked, tomorrow's for tomorrow or a later day."
-            if english
-            else "La persona preguntó por la lluvia (o por algo para la lluvia, o una cantidad): contesta "
-            "con la probabilidad de lluvia del día preguntado, la de mañana para mañana o un día posterior."
-        )
-    elif _weather_asks_tomorrow(user_text):
-        focus = (
-            "The person asked about tomorrow or a later day: give tomorrow's sky, maximum and minimum and "
-            "rain probability."
-            if english
-            else "La persona preguntó por mañana o un día posterior: da el cielo, la máxima, la mínima y la "
-            "probabilidad de lluvia de mañana."
-        )
-    elif measures:
-        asked = [
-            _WEATHER_MEASURE_FIELDS[name][1 if english else 2] + f" ({_WEATHER_MEASURE_FIELDS[name][0]})"
-            for name in ("humidity", "wind", "apparent")
-            if name in measures
-        ]
-        focus = (
-            "The person asked about " + " and ".join(asked) + ": give that value."
-            if english
-            else "La persona preguntó por " + " y ".join(asked) + ": da ese valor."
-        )
-    elif "temperature" in weather_asked_measures(user_text):
-        focus = (
-            "The person asked about the temperature: give the current temperature of seen.location, naming it."
-            if english
-            else "La persona preguntó por la temperatura: da la temperatura actual de seen.location, nombrándolo."
-        )
-    else:
-        focus = (
-            "Say the current temperature and sky of seen.location, naming it; if the person asked what to "
-            "wear or carry, answer that from the temperature."
-            if english
-            else "Di la temperatura actual y el cielo de seen.location, nombrándolo; si la persona preguntó "
-            "qué ponerse o llevar, contéstalo desde la temperatura."
-        )
     closing = (
         " Answer only that, in one short sentence (two at most), with the observed numbers and their units "
         "(°C, km/h, %); no other readings. The read covers today and tomorrow only: for a later day, say so. "
@@ -8570,7 +8593,7 @@ def _weather_answer_instruction(user_text: str, language: str) -> str:
         "unidades (°C, km/h, %); sin otras lecturas. La lectura cubre sólo hoy y mañana: para un día "
         "posterior, dilo. Dilo directamente, sin nombrar de dónde se leyó. No se abrió ni se cambió nada."
     )
-    return fields + focus + closing
+    return fields + _weather_focus(user_text, english) + closing
 
 
 def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
@@ -8584,12 +8607,12 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     if not isinstance(seen, dict) or "temperatureC" not in seen:
         return ""
     observed: set[str] = set()
-    for key in ("temperatureC", "apparentC", "humidityPercent", "windKmh", "precipitationMm"):
+    for key in ("temperatureC", "apparentC", "humidityPercent", "windKmh", "precipitationMm", "uvIndex", "dewPointC"):
         observed |= _weather_number_forms(seen.get(key))
     for day in ("today", "tomorrow"):
         block = seen.get(day)
         if isinstance(block, dict):
-            for key in ("maxC", "minC", "rainProbabilityPercent"):
+            for key in ("maxC", "minC", "rainProbabilityPercent", "uvIndexMax"):
                 observed |= _weather_number_forms(block.get(key))
             for key in ("sunrise", "sunset"):
                 observed |= _weather_clock_forms(block.get(key))
@@ -8672,6 +8695,16 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         if clocks and not any(clock in text or clock.lstrip("0") in text for clock in clocks):
             return "missing_state"
         return ""
+    if "uv" in narrow_measures:
+        # Uso real tanda 6 «Dime el UV index»: the index now or the peak of the day asked is the answer.
+        values = (
+            [tomorrow.get("uvIndexMax")] if asks_tomorrow and isinstance(tomorrow, dict)
+            else [seen.get("uvIndex"), (seen.get("today") or {}).get("uvIndexMax")]
+        )
+        values = [value for value in values if value is not None]
+        if values and not any(_states_weather_number(text, value) for value in values):
+            return "missing_state"
+        return ""
     if rain_asked or asks_tomorrow:
         # Uso real tanda 2 «¿Me llevo el chubasquero?», «¿Cuántas pulgadas are we
         # getting today?», «dentro de dos días»: rain, rain gear, a rain amount
@@ -8691,7 +8724,9 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         ]
         if probabilities and not any(_states_weather_number(text, value) for value in probabilities):
             return "missing_state"
-    for measure, key in (("humidity", "humidityPercent"), ("wind", "windKmh"), ("apparent", "apparentC")):
+    for measure, key in (
+        ("humidity", "humidityPercent"), ("wind", "windKmh"), ("apparent", "apparentC"), ("dew_point", "dewPointC"),
+    ):
         if measure in narrow_measures and seen.get(key) is not None and not _states_weather_number(text, seen.get(key)):
             return "missing_state"
     if (
@@ -20815,6 +20850,10 @@ class LlmRuntime:
                     f"Give the scheduled local time, {_verified_notification_due(situation).astimezone():%H:%M}, "
                     "without UTC, not the current time or a restarted countdown."
                     if _verified_notification_due(situation) is not None
+                    # Uso real tanda 6: a weather draft that missed the asked value got the window hint
+                    # («abierto/open»); the hint is the asked focus itself.
+                    else _weather_focus(user_text or "", response_language == "en")
+                    if situation.get("operation") == "weather.current"
                     else (
                         "State the observed playbackStatus; a loaded title does not imply playback."
                         if situation.get("operation") == "media.status"

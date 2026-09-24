@@ -8,7 +8,7 @@ from typing import Iterable
 from .grammar import _fold, _has, _strip_request_envelope, _process_list_domain, _PERCENTAGE_WORD_VALUES, _request_clauses, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, SPOKEN_NUMBER
 from .intent import EffectIntent
 from .temporal import is_window_phrase
-from .web import AIR_QUALITY_WORDS, _WEATHER_WORDS, _names_weather, _weather_lookup_query, asks_own_place
+from .web import AIR_QUALITY_WORDS, _SKY_MEASURE_WORDS, _WEATHER_WORDS, _names_weather, _weather_lookup_query, asks_own_place
 
 
 _WEATHER_MEDIUM = (
@@ -65,6 +65,9 @@ def _weather_location(text: str) -> str | None:
             or _has(folded_place, _WEATHER_MEDIUM)
             or _has(folded_place, _WEATHER_WORDS)
             or _has(folded_place, AIR_QUALITY_WORDS)
+            # Uso real tanda 6: «punto de rocío» and «índice de radiación UV» are one measure, not «de» a place.
+            or _has(" ".join([*_fold(query[:match.start()]).split()[-1:], _fold(match.group(0)), folded_place]),
+                    _SKY_MEASURE_WORDS)
             # Uso real 2026-09-23 «va a llover el fin de semana?» read the weather of
             # «Sémana» (Mali), tanda 3 «para la semana del 5 al 12 de julio» the weather
             # of «Júlio» (Mozambique): a time is not a place.

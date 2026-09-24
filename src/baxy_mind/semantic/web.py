@@ -142,7 +142,7 @@ AIR_QUALITY_WORDS = (
 _AIR_TOPIC = (
     r"\b(?:causa\w*|cause\w*|reduc\w*|evitar|prevenir|prevent\w*|combat\w*|efectos?|effects?|impact\w*|"
     r"por\s*que|why|definicion|definition|significa|means?|historia|history|noticias|news|articulos?|articles?|"
-    r"estudios?|stud(?:y|ies)|ensayo|essay|tarea|homework|soluci\w*|solutions?)\b"
+    r"estudios?|stud(?:y|ies)|ensayo|essay|tarea|homework|soluci\w*|solutions?|proteg\w*|protect\w*)\b"
 )
 
 
@@ -153,10 +153,25 @@ def _asks_air(folded: str) -> bool:
     return _has(folded, AIR_QUALITY_WORDS) and not _has(folded, _AIR_TOPIC)
 
 
-def _names_weather(folded: str) -> bool:
-    """The weather is named: a weather word, the air, or «el tiempo» inside a weather frame."""
+# Uso real tanda 6 «Dime el UV index», «¿Cómo esta el dew point ahora» went to pages that define them: the UV index
+# and the dew point are readings of the same weather read. A UV lamp or a UV filter is not the sky, and what the
+# index is, why it matters or how to protect oneself is a topic (``_AIR_TOPIC``), looked up, not read.
+_SKY_MEASURE_WORDS = (
+    r"\b(?:(?:indice|index|nivel(?:es)?|levels?|radiacion|radiation)\s+(?:de\s+(?:la\s+)?)?(?:uv|ultravioleta|ultraviolet)|"
+    r"uv\s+(?:index|indice|level|nivel|hoy|today|ahora|now|forecast|pronostico)|uvi|"
+    r"dew\s*points?|punto\s+de\s+rocio|temperatura\s+de\s+rocio)\b"
+)
 
-    return _has(folded, _WEATHER_WORDS) or _asks_air(folded) or (
+
+def _asks_sky_measure(folded: str) -> bool:
+    return _has(folded, _SKY_MEASURE_WORDS) and not _has(folded, _AIR_TOPIC)
+
+
+def _names_weather(folded: str) -> bool:
+    """The weather is named: a weather word, the air, the UV index or the dew point, or «el tiempo» inside a
+    weather frame."""
+
+    return _has(folded, _WEATHER_WORDS) or _asks_air(folded) or _asks_sky_measure(folded) or (
         _has(folded, _WEATHER_TIEMPO) and not _has(folded, _NOT_WEATHER_TIEMPO)
     )
 
@@ -272,6 +287,9 @@ def _forecast_question(folded: str) -> bool:
         # Uso real tanda 5 «wat level of air pollution hay en downtown Houston»: the air asked by its
         # level or amount, whatever the asking word («wat level», «cuánto smog hay»).
         or (_asks_air(folded) and _has(folded, _AIR_LEVEL))
+        # Uso real tanda 6: «el índice UV de hoy?», «radiación UV en Madrid hoy» name the UV index or the dew point
+        # about a time, without an asking word.
+        or (_asks_sky_measure(folded) and _has(folded, WEATHER_WHEN))
     )
 
 
@@ -365,6 +383,9 @@ _WEATHER_MEASURES = (
     ("humidity", r"\b(?:humedad|humed[oa]|humidity|humid)\b"),
     ("wind", r"\b(?:viento|vientos|ventos[oa]|rachas?|wind|winds|windy|gusts?)\b"),
     ("apparent", r"\b(?:sensacion\s+termica|se\s+siente|feels?\s+like|real\s*feel|wind\s*chill)\b"),
+    # Uso real tanda 6: the UV index and the dew point are measures of the same read.
+    ("uv", r"\b(?:uv|uvi|ultravioleta|ultraviolet)\b"),
+    ("dew_point", r"\b(?:dew\s*points?|punto\s+de\s+rocio|temperatura\s+de\s+rocio)\b"),
     ("temperature", r"\b(?:temperatura|temperature|grados|degrees|(?:que\s+tanto?|cuanto)\s+(?:frio|calor)|"
                     r"how\s+(?:hot|cold|warm|chilly))\b"),
 )
@@ -1253,7 +1274,7 @@ def _live_weather_request(folded: str) -> bool:
     # names the lookup when the sentence has no other order head («escribe …
     # clima» types words, it does not look anything up).
     weather_noun = not head and (
-        _has(folded, r"\b(?:weather|forecast|pronostico|clima)\b") or _asks_air(folded)
+        _has(folded, r"\b(?:weather|forecast|pronostico|clima)\b") or _asks_air(folded) or _asks_sky_measure(folded)
     ) and not _has(
         folded, r"\bclima\s+(?:laboral|politico|social|economico|de\s+trabajo|organizacional|familiar)\b"
     )
