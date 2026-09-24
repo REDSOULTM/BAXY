@@ -2039,6 +2039,8 @@ def known_unsupported_effect_request(
             # entries, and no operation removes them all at once; one entry named is taken off (task.delete).
             (removal := list_removal_request(text)) is not None and removal.entry is None,
             {"task.list.delete"},
+        ),
+        (
             # Uso real 2026-09-24 «alter lunch event to repeat every friday», «alterar el evento del almuerzo
             # para repetir cada viernes»: events are listed and created, never edited; the limit says so.
             _has(
