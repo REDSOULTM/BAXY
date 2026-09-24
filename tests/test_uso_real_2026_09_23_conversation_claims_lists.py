@@ -3,7 +3,8 @@ facts, and the person's lists answered from the model's memory.
 
 - «do i have cheese on my shopping list if not please add it» → «No, no hay queso en la
   lista de compras. Se añadirá.» with nothing read or added. The list is read (task.search
-  for the entry); an absent entry is asked about in the final, and «sí» puts it on the list.
+  for the entry) and, in the same plan, the entry goes on it only when the read did not find
+  it (tanda 4c: it used to be asked about in the final, and «sí» put it on the list).
 - «decir la lista», «is my todo list free», «tengo algo en mi lista de cosas por hacer»…:
   a list read is task.list (the to-do list) or task.search (a list with another name).
 - «cuéntame un artículo random» → an invented discovery: a random article or fact is the
@@ -170,13 +171,15 @@ def test_other_lists_and_other_acts_are_not_a_read_of_the_persons_list(text):
     ],
 )
 def test_a_conditional_add_reads_the_list_and_defers_the_add(text, query, clause):
+    # Tanda 4c: the add is still deferred to the read, now inside the same plan (read, then add only what the
+    # read did not find) instead of a question in the final.
     reading = read(text, available_operations=OPERATIONS)
-    assert reading.effects is not None and reading.effects.operations == ("task.search",)
-    deferred = deferred_clarification_split(text, OPERATIONS)
-    assert deferred is not None and deferred.kind == "list_entry_if_absent"
-    assert deferred.clause == clause
-    # The App asks the arguments with the whole message: the read carries them alone.
+    assert reading.effects is not None and reading.effects.operations == ("task.search", "task.create")
+    assert deferred_clarification_split(text, OPERATIONS) is None
+    assert list_read_request(text).absent_clause == clause
+    # The App asks the arguments with the whole message: each step reads its own.
     assert sidecar._ground_explicit_arguments("task.search", text, SCHEMAS["task.search"]) == {"query": query}
+    assert sidecar._ground_explicit_arguments("task.create", text, SCHEMAS["task.create"])["title"] == query
 
 
 class _InventingLlm:
@@ -235,7 +238,6 @@ def _turn(text, history=()):
 @pytest.mark.parametrize(
     ("text", "operation"),
     [
-        (CHEESE, "task.search"),
         ("decir la lista", "task.list"),
         ("is my todo list free", "task.list"),
         ("tengo algo en mi lista de cosas por hacer", "task.list"),
@@ -249,6 +251,14 @@ def test_the_list_turn_reads_instead_of_answering_from_memory(text, operation):
     assert result["reply"] == ""
 
 
+def test_the_conditional_add_turn_reads_then_adds_instead_of_answering_from_memory():
+    # Tanda 4c: the read and the add it guards are one plan; nothing is answered from memory.
+    result = _turn(CHEESE)
+    assert result["kind"] == "plan"
+    assert result["effectOperations"] == ["task.search", "task.create"]
+    assert result["reply"] == ""
+
+
 def _search_situation(count):
     tasks = [{"title": "cheese", "details": "shopping list"}] * count
     return {
@@ -258,46 +268,25 @@ def _search_situation(count):
 
 
 @pytest.mark.parametrize(
-    ("count", "reply", "defect"),
+    ("reply", "defect"),
     [
-        (0, "Cheese is not on your shopping list. Should I add it?", ""),
-        (0, "I didn't add it: cheese isn't on your shopping list. Want me to add it?", ""),
-        (0, "Cheese is not on your shopping list.", "missing_deferred_question"),
-        (0, "Cheese is not on your shopping list, so I added it.", "extra_claim"),
-        (0, "Cheese wasn't there; it will be added to your shopping list.", "extra_claim"),
-        (1, "Cheese is already on your shopping list.", ""),
-        (1, "Cheese is on your shopping list, so I added it again.", "extra_claim"),
+        ("Cheese is already on your shopping list.", ""),
+        ("I didn't add cheese: it's already on your shopping list.", ""),
+        ("Cheese is on your shopping list, so I added it again.", "extra_claim"),
+        ("Cheese is already there; it will be added to your shopping list.", "extra_claim"),
     ],
 )
-def test_the_final_asks_only_about_an_absent_entry_and_never_claims_the_add(count, reply, defect):
-    facts = {"situation": json.dumps(_search_situation(count))}
+def test_the_read_published_alone_found_the_entry_and_never_claims_the_add(reply, defect):
+    # Tanda 4c: the App publishes the read alone only when it found the entry; the add never ran.
+    facts = {"situation": json.dumps(_search_situation(1))}
     assert llm.compose_visible_defect(reply, "status", CHEESE, facts) == defect
 
 
 @pytest.mark.parametrize(
-    ("prior", "answer", "arguments"),
-    [
-        (CHEESE, "sí", {"title": "cheese", "details": "shopping list"}),
-        (CHEESE, "yes please", {"title": "cheese", "details": "shopping list"}),
-        ("¿tengo queso en mi lista de la compra? si no, agrégalo", "sí, agrégalo",
-         {"title": "queso", "details": "lista de la compra"}),
-    ],
+    # Tanda 4c: nothing is asked any more, so no answer afterwards adds the entry a second time.
+    "answer", ["sí", "yes please", "sí, agrégalo", "no", "no, déjalo", "¿qué más hay?", "ok", "vale, gracias", "dale"],
 )
-def test_agreeing_after_the_question_puts_the_entry_on_that_list(prior, answer, arguments):
-    history = [{"role": "user", "content": prior}, {"role": "assistant", "content": "No está. ¿Lo añado?"}]
-    result = _turn(answer, history)
-    assert result["kind"] == "action"
-    assert result["effectOperations"] == ["task.create"]
-    assert sidecar._ground_explicit_arguments(
-        "task.create", answer, SCHEMAS["task.create"], history=history,
-    ) == arguments
-
-
-@pytest.mark.parametrize(
-    # «ok», «vale», «dale» also acknowledge an entry that was found.
-    "answer", ["no", "no, déjalo", "añade también pan", "¿qué más hay?", "ok", "vale, gracias", "dale"],
-)
-def test_anything_but_a_bare_agreement_adds_nothing(answer):
+def test_no_answer_afterwards_adds_the_entry_again(answer):
     history = [{"role": "user", "content": CHEESE}, {"role": "assistant", "content": "No está. ¿Lo añado?"}]
     effects = resolve_explicit_effects(answer, OPERATIONS, previous_user_text=CHEESE)
     assert effects is None or effects.evidence != ("add cheese to my shopping list",)

@@ -140,6 +140,12 @@ internal sealed class MindPlanSession
         while (execution.NextIndex < execution.Steps.Count)
         {
             MindPlanStep step = execution.CurrentStep;
+            if (PlanObservationProjector.IsGuardedByAFoundEntry(step, execution.Observations))
+            {
+                // The read that guards this add found the entry: the plan ends with that read.
+                break;
+            }
+
             _host.SetStatus(
                 execution.Steps.Count == 1
                     ? "acting"

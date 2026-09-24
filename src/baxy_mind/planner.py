@@ -26,6 +26,7 @@ from .effect_intent import (
     _fold,
     enumerated_note_dependency_order,
     has_named_window_target,
+    list_read_request,
     process_report_file_request,
 )
 
@@ -275,6 +276,20 @@ def conditional_predecessors(
     ):
         return ()
     return predecessors
+
+
+def guarding_predecessors(operation: str, objective: str = "") -> tuple[str, ...]:
+    """The read that decides whether this step runs at all; its literal arguments stay the person's.
+
+    Tanda 4c «add flour to my shopping list if it's not already on it»: the entry goes on the list
+    only when the search of that list did not find it. The App ends the plan after that read when
+    it found the entry (``PlanObservationProjector.IsGuardedByAFoundEntry``)."""
+
+    if operation == "task.create" and objective:
+        read = list_read_request(objective)
+        if read is not None and read.absent_clause and read.entry:
+            return ("task.search",)
+    return ()
 
 
 class PlannerContractError(ValueError):

@@ -498,7 +498,6 @@ from .semantic.patterns import (  # noqa: F401 - moved to baxy_mind.semantic.pat
     _completed_missing_message_text_request,
     client_channel_request,
     _completed_missing_music_request,
-    _completed_list_entry_if_absent_request,
     _contextual_output_level_target,
     _uncovered_family_floor,
     _curated_domain_is_grounded,

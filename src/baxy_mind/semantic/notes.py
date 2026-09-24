@@ -928,7 +928,8 @@ _ADD_IF_ABSENT = (
     r"\s*[,;]?\s*(?:(?:please|por\s+favor)\s*,?\s+)?"
     r"(?:add|put|include|anade(?:l[oa]s?)?|agrega(?:l[oa]s?)?|pon(?:l[oa]s?)?|apunta(?:l[oa]s?)?|anota(?:l[oa]s?)?|"
     r"suma(?:l[oa]s?)?|incluye(?:l[oa]s?)?)"
-    r"(?:\s+(?:it|them|lo|la|los|las))?(?:\s+(?:to|on|a|en)\s+(?:it|the\s+list|la\s+lista|ella|my\s+list|mi\s+lista))?"
+    r"(?:\s+(?:it|them|lo|la|los|las))?(?:\s+(?:to|on|a|en)\s+(?:it|the\s+list|la\s+lista|ella|my\s+list|mi\s+lista)|"
+    r"\s+(?:on|there|ahi|alli))?"
     r"(?:\s*,?\s*(?:please|por\s+favor))?)?"
 )
 _LIST_READ_OPENER = r"^[¿?¡!\s]*(?:(?:olly|alexa|bax[yi]|oye|hey)\s*,?\s+)?(?:(?:please|por\s+favor)\s*,?\s+)?"
@@ -937,16 +938,15 @@ _LIST_READ_OPENER = r"^[¿?¡!\s]*(?:(?:olly|alexa|bax[yi]|oye|hey)\s*,?\s+)?(?:
 @dataclass(frozen=True, slots=True)
 class ListRead:
     """A read of one of the person's lists: its operation, the search query (None for
-    the whole to-do list), the list and the entry asked about as said, the clause that
+    the whole to-do list), the list and the entry asked about as said, and the clause that
     puts that entry on the list when the read finds it absent («if not please add it»,
-    empty when none) and the read without that clause."""
+    empty when none)."""
 
     operation: str
     query: str | None
     list_name: str
     entry: str | None
     absent_clause: str
-    read_text: str
 
 
 def list_read_request(text: str) -> ListRead | None:
@@ -1010,12 +1010,7 @@ def list_read_request(text: str) -> ListRead | None:
         operation, query = "task.list", None
     else:
         operation, query = "task.search", list_name
-    if tail:
-        return ListRead(
-            operation, query, list_name, entry,
-            literal(found.start("tail"), found.end("tail")), literal(0, found.start("tail")),
-        )
-    return ListRead(operation, query, list_name, entry, "", surface)
+    return ListRead(operation, query, list_name, entry, literal(found.start("tail"), found.end("tail")) if tail else "")
 
 
 def _list_entry_if_absent(body: str, literal: Callable[[int, int], str]) -> ListRead | None:
@@ -1040,14 +1035,9 @@ def _list_entry_if_absent(body: str, literal: Callable[[int, int], str]) -> List
         r"^(?:el|la|los|las|un|una|unos|unas|the|an?|some|any)\s+(?=\S)", "",
         literal(found.start("item"), found.end("item")), flags=re.IGNORECASE,
     )
-    list_name = literal(found.start("list"), found.end("list"))
-    # The read, said as the presence question the list reader already knows.
-    read_text = (
-        f"¿tengo {entry} en mi {list_name}?" if _has(listed, r"\blista\b") else f"do i have {entry} on my {list_name}?"
-    )
     return ListRead(
-        "task.search", entry, list_name, entry,
-        literal(condition.start("condition"), condition.end("condition")), read_text,
+        "task.search", entry, literal(found.start("list"), found.end("list")), entry,
+        literal(condition.start("condition"), condition.end("condition")),
     )
 
 

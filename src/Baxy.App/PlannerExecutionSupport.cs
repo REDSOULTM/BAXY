@@ -552,6 +552,35 @@ internal static class PlanObservationProjector
             && count.TryGetValue<int>(out int value) && value == 0);
     }
 
+    /// <summary>
+    /// Tanda 4c «add flour to my shopping list if it's not already on it»: the
+    /// add waits on the verified search of that list (a literal step that
+    /// depends on it) and runs only when the search found nothing. A search
+    /// that found the entry ends the plan with that read; a missing,
+    /// unverified or unreadable count never skips the add.
+    /// </summary>
+    internal static bool IsGuardedByAFoundEntry(MindPlanStep step, JsonArray observations)
+    {
+        ArgumentNullException.ThrowIfNull(step);
+        ArgumentNullException.ThrowIfNull(observations);
+        if (step.Operation != "task.create"
+            || step.ArgumentsMode != "literal"
+            || step.DependsOn.Count == 0)
+        {
+            return false;
+        }
+
+        var dependencies = new HashSet<string>(step.DependsOn, StringComparer.Ordinal);
+        return observations.OfType<JsonObject>().Any(observation =>
+            (string?)observation["stepId"] is { } stepId && dependencies.Contains(stepId)
+            && string.Equals((string?)observation["operation"], "task.search", StringComparison.Ordinal)
+            && (bool?)observation["verified"] == true
+            && string.Equals((string?)observation["status"], OperationStatuses.Completed, StringComparison.Ordinal)
+            && observation["result"] is JsonObject { } result
+            && result["count"] is JsonValue count
+            && count.TryGetValue<int>(out int value) && value > 0);
+    }
+
     private static JsonObject[] VerifiedIdentityProducerResults(MindPlanStep step, JsonArray observations)
     {
         if (step.ArgumentsMode != "after_dependencies" || step.DependsOn.Count == 0)

@@ -97,6 +97,7 @@ from .planner import (
     PlannerTool,
     attach_arguments,
     conditional_predecessors,
+    guarding_predecessors,
     is_required_predecessor,
     normalize_grounded_arguments,
     required_predecessors,
@@ -5058,6 +5059,9 @@ def _explicit_media_control_arguments(evidence: str) -> dict[str, object] | None
     }
     if transport is not None:
         actions.add(transport)
+    if not actions and resuming:
+        # Tanda 4c «pon mi playlist reciente»: resuming with no other verb is playing.
+        actions.add("play")
     if len(actions) != 1:
         return None
     arguments: dict[str, object] = {"action": next(iter(actions))}
@@ -5833,6 +5837,16 @@ def _explicit_arguments_from_evidence(
         title = re.sub(r"^(?:el|la|los|las|un|una|unos|unas|the|an?|some)\s+(?=\S)", "", entry, flags=re.IGNORECASE)
         return {"title": title, "details": listed}
 
+    if (
+        operation == "task.create"
+        and (list_read := effect_intent.list_read_request(evidence)) is not None
+        and list_read.absent_clause
+        and list_read.entry
+    ):
+        # Tanda 4c «add flour to my shopping list if it's not already on it»: the add that waits on the read
+        # puts the entry asked about on that list.
+        return {"title": list_read.entry, "details": list_read.list_name}
+
     if operation == "task.search" and (list_read := effect_intent.list_read_request(evidence)) is not None:
         # «qué hay en mi lista de la compra» searches the list's name; «do i have
         # cheese on my shopping list» searches the entry asked about.
@@ -6518,17 +6532,6 @@ def _ground_explicit_arguments(
             explicit = _explicit_arguments_from_evidence(
                 operation, completed, application_names, game_catalog,
             )
-    if explicit is None and operation == "task.create" and isinstance(history, list):
-        # Uso real 2026-09-23: «do i have cheese on my shopping list if not please add
-        # it» → no cheese, «¿lo añado?» → «sí»: the decision read the agreement as the
-        # entry on that list; the arguments, and their literal check, read that same
-        # completed request.
-        completed = effect_intent._completed_list_entry_if_absent_request(
-            evidence, _previous_user_request(history, evidence),
-        )
-        if completed is not None:
-            evidence = completed
-            explicit = _explicit_arguments_from_evidence(operation, completed, application_names, game_catalog)
     if explicit is None and operation == "wifi.connect.named":
         # REOPEN1957 H0170/H0376 «conectate al wifi de casa» → «¿cuál de las
         # guardadas es la de casa?» → «Fibertel-2G»: the answer names the
@@ -7152,9 +7155,10 @@ def _explicit_plan_skeleton(
     for index, (operation, purpose) in enumerate(expanded, 1):
         step_id = f"step_{index}"
         dependencies: list[str] = []
+        # A guarding read (tanda 4c, add only if absent) orders the step after it; its arguments stay literal.
         prerequisites = required_predecessors(operation) or conditional_predecessors(
             operation, purpose
-        )
+        ) or guarding_predecessors(operation, purpose)
         candidate_indexes = [
             prior_index
             for prior_index in range(1, index)

@@ -7,9 +7,11 @@
    limit). Owner: semantic/windows (minimize_all_request, start_menu_request). Tanda 4c: the PC's applications
    shown are the open windows read aloud (test_uso_real_tanda04c_compose_finals).
 3. The person's own music collection is asked, never searched («pon cualquier cosa de mi playlist reciente»
-   played an unrelated video). Owner: semantic/patterns._OWN_FAVOURITE.
+   played an unrelated video). Owner: semantic/patterns._OWN_FAVOURITE. (Tanda 4c: a free choice within it, or
+   what was played last, is complete — test_c03_tanda04c_complete_requests.)
 4. An entry added only if the list lacks it reads the list first, in English as in Spanish («add flour to my
-   shopping list if it's not already on it» was asked back). Owner: semantic/notes._ABSENCE_CONDITION.
+   shopping list if it's not already on it» was asked back). Owner: semantic/notes._ABSENCE_CONDITION. (Tanda 4c:
+   the add follows the read in the same plan.)
 5. The words that ask to be told are not looked up, and what happens in the person's city is local news
    («dime que esta pasando en mi ciudad» found the song «Dime»). Owner: semantic/web.public_query_body /
    news_lookup_query.
@@ -42,7 +44,6 @@ from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.network import asks_calendar_part
 from baxy_mind.semantic.notes import list_entry_request, list_read_request
 from baxy_mind.semantic.patterns import (
-    _completed_list_entry_if_absent_request,
     _explicit_named_music_query,
     deferred_clarification_split,
     resolve_explicit_effects,
@@ -136,16 +137,17 @@ class _NoModel:
 
 
 @pytest.mark.parametrize(
-    ("text", "operation"),
+    ("text", "operations"),
     [
-        ("Enciende el sound", "audio.mute"),  # tanda 4 t33, a limit before
-        ("Abre el start screen", "window.minimize.all"),  # tanda 4 t6, a limit before
-        ("show me las aplicaciones", "window.resolve"),  # tanda 4 t40: Google Play, then the Windows key (4c)
-        ("add flour to my shopping list if it's not already on it", "task.search"),  # tanda 4 t11
-        ("¿qué mes sale ahora mismo en el calendario de mi casa?", "system.time"),  # tanda 4 t34, Outlook before
+        ("Enciende el sound", ["audio.mute"]),  # tanda 4 t33, a limit before
+        ("Abre el start screen", ["window.minimize.all"]),  # tanda 4 t6, a limit before
+        ("show me las aplicaciones", ["window.resolve"]),  # tanda 4 t40: Google Play, then the Windows key (4c)
+        # tanda 4 t11; tanda 4c: the read and the add it guards are one plan.
+        ("add flour to my shopping list if it's not already on it", ["task.search", "task.create"]),
+        ("¿qué mes sale ahora mismo en el calendario de mi casa?", ["system.time"]),  # tanda 4 t34, Outlook before
     ],
 )
-def test_the_tanda_turns_are_read_without_the_model(text, operation):
+def test_the_tanda_turns_are_read_without_the_model(text, operations):
     tools = [_tool(name) for name in OPERATIONS]
     result = sidecar._prepare_turn_result(
         {"id": "tanda-04", "text": text, "history": []},
@@ -155,8 +157,8 @@ def test_the_tanda_turns_are_read_without_the_model(text, operation):
         encoder=lambda _texts: (),
         tool_by_name={tool["function"]["canonical_name"]: tool for tool in tools},
     )
-    assert result["kind"] == "action"
-    assert result["effectOperations"] == [operation]
+    assert result["kind"] == ("action" if len(operations) == 1 else "plan")
+    assert result["effectOperations"] == operations
 
 
 # ---------------------------------------------------------------- 1. the sound as a switch
@@ -258,16 +260,18 @@ def test_other_asks_do_not_press_the_windows_key(text):
 # ---------------------------------------------------------------- 3. the person's own music collection
 
 
+# Tanda 4c moved the free choice within the collection («cualquier cosa de mi playlist reciente», «anything from my
+# playlist», «algo de mi biblioteca») and what was played last out of this list: they are complete, and resume the
+# player or are a plain limit (test_c03_tanda04c_complete_requests). A collection named with nothing chosen is still
+# asked, and none of them is ever searched.
 @pytest.mark.parametrize(
     "text",
     [
-        "pon cualquier cosa de mi playlist reciente",  # tanda 4 t9
-        "play something from my recently played",
-        "play anything from my playlist",
-        "pon una canción de mi lista de reproducción",
         "play my liked songs",
-        "ponme algo de mi biblioteca de spotify",
         "reproduce mis canciones guardadas",
+        "pon mi playlist de gym",
+        "reproduce mi biblioteca de spotify",
+        "play my saved music",
     ],
 )
 def test_the_own_collection_is_asked_never_searched(text):
@@ -300,16 +304,16 @@ def test_named_music_still_plays(text):
     ],
 )
 def test_an_add_if_absent_reads_the_list_first(text, entry, list_name, clause):
+    # Tanda 4c: the read still comes first; the add now follows it in the same plan instead of being asked
+    # (test_c03_tanda04c_complete_requests owns the plan and the App's skip).
     listed = list_read_request(text)
     assert listed is not None and (listed.operation, listed.entry, listed.list_name) == ("task.search", entry, list_name)
+    assert listed.absent_clause == clause
     assert list_entry_request(text) is None
-    deferred = deferred_clarification_split(text, OPERATIONS)
-    assert deferred is not None and deferred.kind == "list_entry_if_absent" and deferred.clause == clause
+    assert deferred_clarification_split(text, OPERATIONS) is None
     effects = resolve_explicit_effects(text, OPERATIONS)
-    assert effects is not None and effects.operations == ("task.search",)
+    assert effects is not None and effects.operations == ("task.search", "task.create")
     assert sidecar._ground_explicit_arguments("task.search", text, SCHEMAS["task.search"]) == {"query": entry}
-    completed = _completed_list_entry_if_absent_request("sí", text)
-    assert completed is not None and entry in completed and list_name in completed
 
 
 @pytest.mark.parametrize("text", ["add flour to my shopping list", "añade harina a mi lista de la compra"])

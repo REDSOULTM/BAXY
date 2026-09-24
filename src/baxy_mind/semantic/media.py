@@ -231,11 +231,38 @@ def _media_transport_action(text: str) -> str | None:
     return None
 
 
+# Tanda 4c 2026-09-24 «pon cualquier cosa de mi playlist reciente» was asked what to play: what the person played
+# last is their player's own session, and playing it is resuming that session (no operation opens their
+# playlists; a search would find someone else's music).
+_OWN_RECENT_LISTENING = (
+    r"\b(?:(?:mi|mis)\s+(?:\S+\s+){0,2}?(?:playlists?|listas?|musica|canciones|temas|mix)\b(?:\s+\S+){0,3}?\s+"
+    r"(?:recientes?|ultim[oa]s?)|"
+    r"(?:mi|mis)\s+(?:ultim[oa]s?|recientes?)\s+(?:canciones|temas|playlists?|listas?|mix)|"
+    r"(?:my\s+)?(?:recently|last)\s+played|my\s+(?:most\s+)?(?:recent|latest|last)\s+(?:playlists?|music|songs|tracks|mix)|"
+    r"lo\s+(?:ultimo\s+)?que\s+(?:(?:estaba|estuve|he\s+estado)\s+)?(?:escuchando|escuche|oi|puse)|"
+    r"what\s+i\s+(?:was\s+(?:listening\s+to|playing)|listened\s+to\s+last|last\s+(?:listened\s+to|played)|"
+    r"played\s+last))\b"
+)
+_OWN_LISTENING_PLAY_HEAD = (
+    r"(?:pon|pone|ponme|poneme|reproduce|reproducir|reproduci|reproducime|reproduzca|play|toca|tocame|put|start)"
+)
+
+
+def own_recent_listening_request(text: str) -> bool:
+    """«pon mi playlist reciente», «play what I was listening to», «pon lo último que escuché»: the person's own
+    recent listening asked to play, which resumes their player."""
+
+    folded = _strip_request_envelope(_fold(text)).strip(" .!?¿¡")
+    return _head_is(_request_head(folded), _OWN_LISTENING_PLAY_HEAD) and _has(folded, _OWN_RECENT_LISTENING)
+
+
 def _resume_existing_media(text: str) -> bool:
     """Distinguish continuation of loaded media from selecting new content."""
 
     folded = _fold(text)
     head = _request_head(folded)
+    if own_recent_listening_request(folded):
+        return True
     return (
         _head_is(head, rf"(?:{_MEDIA_RESUME_VERB}|reproduce|reproducir|reproduzca|play)")
         and (

@@ -43,6 +43,40 @@ public sealed class PlannerAppBoundaryTests
             step with { Operation = "note.read" }, observations), Is.False);
     }
 
+    // Tanda 4c «add flour to my shopping list if it's not already on it»: the add
+    // runs only when the search it waits on found nothing.
+    [TestCase("task.search", true, "read", 1, true)]
+    [TestCase("task.search", true, "read", 3, true)]
+    [TestCase("task.search", true, "read", 0, false)]
+    [TestCase("task.search", false, "read", 1, false)]
+    [TestCase("task.search", true, "other", 1, false)]
+    [TestCase("task.list", true, "read", 1, false)]
+    [TestCase("task.search", true, "read", null, false)]
+    public void AnAddGuardedByItsListReadIsSkippedOnlyWhenTheEntryWasFound(
+        string producer, bool verified, string stepId, int? count, bool expected)
+    {
+        var step = new MindPlanStep("add", "task.create", "add flour to my shopping list if it's not already on it",
+            ["read"], "literal", new JsonObject { ["title"] = "flour", ["details"] = "shopping list" });
+        var result = new JsonObject { ["tasks"] = new JsonArray(), ["mode"] = "search" };
+        if (count is { } value)
+        {
+            result["count"] = value;
+        }
+        var observations = new JsonArray(new JsonObject
+        {
+            ["stepId"] = stepId,
+            ["operation"] = producer,
+            ["verified"] = verified,
+            ["status"] = OperationStatuses.Completed,
+            ["result"] = result,
+        });
+        Assert.That(PlanObservationProjector.IsGuardedByAFoundEntry(step, observations), Is.EqualTo(expected));
+        // An add that does not wait on the read, or another effect, is never skipped.
+        Assert.That(PlanObservationProjector.IsGuardedByAFoundEntry(step with { DependsOn = [] }, observations), Is.False);
+        Assert.That(PlanObservationProjector.IsGuardedByAFoundEntry(
+            step with { Operation = "note.create" }, observations), Is.False);
+    }
+
     [TestCase("filesystem.search", true, 1, true)]
     [TestCase("filesystem.list", true, 1, true)]
     [TestCase("filesystem.known.search", true, 1, false)]

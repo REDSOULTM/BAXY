@@ -18,7 +18,7 @@ from .display import screen_light_as_brightness, _KNOWN_FOLDER_WORDS, _KNOWN_FOL
 from .intent import EffectIntent, _entity_key, _is_negated_match, _append, _append_all
 from .catalog import ApplicationCatalogIndex, GameCatalogIndex, build_game_catalog_index, _authenticated_game_target, resolve_game_catalog_app_id, _application_name_key, build_application_catalog_index, _catalog_alias_key, _installed_game_named, installed_game_title
 from .temporal import _CALENDAR_MONTH_TOKEN, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, spoken_clock
-from .media import _youtube_search_query, youtube_play_query, _direct_media_discovery_or_play_request, _named_browser_music_request, _NETFLIX_SPELLED, _underspecified_video_request, _title_case_media_title, _media_transport_action, _resume_existing_media, _REMOVABLE_MEDIA, _bare_spoken_number_media_query, radio_station_query, spoken_media_order, MUSIC_GENRE, _RADIO_PLAY
+from .media import _youtube_search_query, youtube_play_query, _direct_media_discovery_or_play_request, _named_browser_music_request, _NETFLIX_SPELLED, _underspecified_video_request, _title_case_media_title, _media_transport_action, _resume_existing_media, _REMOVABLE_MEDIA, _bare_spoken_number_media_query, radio_station_query, spoken_media_order, MUSIC_GENRE, _RADIO_PLAY, own_recent_listening_request
 from .web import asks_for_information, other_place_clock_question, public_opinion_query, record_fact_query, _public_route_lookup_request, _public_calendar_fact_lookup_request, _WEATHER_WORDS, _weather_lookup_query, _research_question_query, _public_live_lookup_request, _public_product_correction_lookup_request, _public_commerce_lookup_request, _FILESYSTEM_OBJECT_NOUN, operation_identity_is_a_near_miss, curiosity_request, web_image_request, _NAVIGATION_CLIENT, client_navigation_target, _authenticated_application_identity_conflict, _browser_page_domain, browser_back_arguments, browser_new_tab_arguments, browser_close_all_tabs_arguments, _historical_note_search_request, _stored_note_search_query, _nominal_reminder_lookup_title, _location_recommendation_request, _NAMED_BROWSER_SITE_REQUEST, _installed_browser_search_query, _completed_browser_search_pronoun_request, _NAMED_PUBLIC_SITE, _review_web_and_browser_effects, web_download_request, NAMED_CDP_BROWSERS, _named_browser_match, _named_browser, public_event_subject, cinema_listing
 from .files import _pdf_summary_request, _file_trash_request, process_report_file_request, _file_creation_request, known_folder_file_path, _current_directory_file_count, _DUPLICATE_FILES, _known_folder_recent_listing, _known_folder_listing_request, _review_file_and_game_effects, folder_txt_zip_open_mission, open_named_file_request, _office_document_roundtrip_intent
 from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
@@ -461,31 +461,6 @@ def _completed_missing_list_entries_request(
     ):
         return None
     return f"añade {answer} a la {listed}"
-
-
-# A yes to «¿lo añado?»; «ok», «vale», «dale» or «bueno» also just acknowledge a found entry.
-_AGREEMENT = (
-    r"(?:si|sip|por\s+favor|porfa|hazlo|agregal[oa]|anadel[oa]|ponl[oa]|"
-    r"yes|yeah|yep|sure|please(?:\s+do)?|do\s+it|go\s+ahead|add\s+it)"
-)
-
-
-def _completed_list_entry_if_absent_request(text: str, previous_user_text: str | None) -> str | None:
-    """«do i have cheese on my shopping list if not please add it» → the read finds no
-    cheese and the final asks whether to add it → «sí»: the entry goes on the list asked
-    about, read like «add cheese to my shopping list». Only a bare agreement right after
-    that request completes it; the assistant's prose authorizes nothing."""
-
-    if not previous_user_text:
-        return None
-    prior = list_read_request(previous_user_text)
-    if prior is None or not prior.absent_clause or prior.entry is None:
-        return None
-    if re.fullmatch(rf"{_AGREEMENT}(?:[\s,.!]+{_AGREEMENT})*", _fold(text).strip(" .,!¡¿?")) is None:
-        return None
-    if re.search(r"\blista\b", _fold(prior.list_name)) is not None:
-        return f"añade {prior.entry} a mi {prior.list_name}"
-    return f"add {prior.entry} to my {prior.list_name}"
 
 
 def _contextual_output_level_target(
@@ -2016,6 +1991,11 @@ def known_unsupported_effect_request(
             # from the chat; the honest reply says so and how it is closed.
             self_close_request(text),
             {"self.close"},
+        ),
+        (
+            # Tanda 4c «ponme algo de mi biblioteca»: no operation opens the person's own collection.
+            own_collection_free_choice(text) and not own_recent_listening_request(text),
+            {"media.library.play"},
         ),
         (
             _has(folded, r"\b(?:arrastra|drag)\b")
@@ -3638,6 +3618,9 @@ def _clarification_intent_of(
             or re.fullmatch(r"(?:pon|ponme|poneme|toca|tocame)[\s.!?]*", clause) is not None
         )
         and _desired_music_query(clause) is None
+        # Tanda 4c: a free choice within the person's own collection, or what they played last, is complete.
+        and not own_recent_listening_request(clause)
+        and not own_collection_free_choice(clause)
         # «pon la canción anterior», «pon el siguiente tema»: a transport order
         # names the song by its place in the queue; nothing is missing.
         and _media_transport_action(clause) is None
@@ -5417,6 +5400,33 @@ _OWN_FAVOURITE = (
     r"(?:canciones|temas|musica)\s+(?:guardad[oa]s|que\s+me\s+gustan)|me\s+gusta|liked\s+songs|saved\s+(?:songs|music)|"
     r"recientes?|recently\s+played|recent)\b"
 )
+# Tanda 4c 2026-09-24 «pon cualquier cosa de mi playlist reciente» was asked «¿Qué quieres que reproduzca de tu
+# playlist reciente?»: «cualquier cosa», «lo que sea», «algo», «whatever», «anything», «a song» leave the choice
+# to BAXY, so nothing is missing. What the person played last resumes their player
+# (media.own_recent_listening_request); any other collection of theirs no operation opens, so it is a plain limit.
+_FREE_CHOICE_IN_OWN_COLLECTION = (
+    r"\b(?:cualquier\s+(?:cosa|cancion|tema|musica)|lo\s+que\s+(?:sea|quieras)|algo|alguna\s+cancion|una\s+cancion|"
+    r"un\s+tema|whatever|anything|something|any\s+(?:song|track|music)|a\s+(?:song|track)|some\s+(?:songs?|music|tracks?)|"
+    r"random(?:\s+(?:songs?|tracks?))?)\s+(?:de|del|desde|from|of|in|en|on)\s+(?:(?:la|el|the)\s+)?"
+    r"(?:mi|mis|my|nuestr[oa]s?|our)\b"
+)
+
+
+def own_collection_free_choice(text: str) -> bool:
+    """«ponme algo de mi biblioteca», «play anything from my playlist»: a play request that leaves the choice free
+    within the person's own collection."""
+
+    folded = _strip_request_envelope(_fold(text)).strip(" .!?¿¡")
+    return (
+        _head_is(
+            _request_head(folded),
+            r"(?:pon|pone|ponme|poneme|reproduce|reproducir|reproduci|reproducime|play|toca|tocame|put|start)",
+        )
+        and _has(folded, _FREE_CHOICE_IN_OWN_COLLECTION)
+        and _has(folded, _OWN_FAVOURITE)
+    )
+
+
 # Uso real 2026-09-23 «pon mi lista wacky en mi aplicación gaana», «play me playlist wacky in my gaana
 # application»: an application named as the place to play is that application's session, never the
 # local playback nor Spotify.
@@ -10182,7 +10192,8 @@ def _review_media_and_email_effects(
                 if media_transport
                 else r"\b(?:cambia|cambiar|change|switch)\b"
                 if change_current_artist
-                else rf"\b(?:{_MEDIA_RESUME_VERB}|reproduce|reproducir|reproduzca|play)\b"
+                else rf"\b(?:{_MEDIA_RESUME_VERB}|reproduce|reproducir|reproduzca|play|pon|pone|ponme|poneme|toca|tocame|"
+                r"put|start)\b"
                 if resume_existing_media
                 else r"\b(?:pausa|pausar|pause|deten|detener|stop|siguiente|next|anterior|previous|"
                 r"reanuda|reanudar|resume|reproduce|reproducir|reproduzca|play)\b"
@@ -11558,12 +11569,9 @@ def deferred_clarification_split(
     available = frozenset(available_operations)
     list_read = list_read_request(text)
     if list_read is not None and list_read.absent_clause:
-        # Uso real 2026-09-23 «do i have cheese on my shopping list if not please add
-        # it»: the list is read now; whether the entry goes on it depends on what the
-        # read finds, so an absent entry is asked about in the final.
-        if "task.search" not in available:
-            return None
-        return DeferredClarification(list_read.read_text, "list_entry_if_absent", list_read.absent_clause)
+        # Tanda 4c: an add that waits on the read of the list asks nothing; it is a plan (read, then add only
+        # what the read did not find), see resolve_explicit_effects.
+        return None
     parts = re.split(r"\s*(?:,\s*)?(?<![\w])(?:y|e|and)(?![\w])\s+", text.strip(), maxsplit=1)
     if len(parts) != 2 or not parts[0].strip() or not parts[1].strip():
         return None
@@ -11768,7 +11776,7 @@ def _resolve_clause_effects(
         )
     completed_list_request = _completed_missing_list_entries_request(
         text, previous_user_text, available,
-    ) or _completed_list_entry_if_absent_request(text, previous_user_text)
+    )
     if completed_list_request is not None:
         return resolve_explicit_effects(
             completed_list_request, available, application_names, game_catalog,
@@ -11837,6 +11845,12 @@ def _resolve_clause_effects(
         return EffectIntent(("task.delete",), (text,))
     list_read = list_read_request(text)
     if list_read is not None and list_read.operation in available:
+        if list_read.absent_clause and "task.create" in available:
+            # Tanda 4c «add flour to my shopping list if it's not already on it» read the list and then asked
+            # «Should I add it?»: the person already said what to do when it is missing. The list is read and
+            # the add waits on that read (planner.guarding_predecessors); the App skips it when the read found
+            # the entry.
+            return EffectIntent((list_read.operation, "task.create"), (text, text))
         # «decir la lista», «qué hay en mi lista de la compra», «do i have cheese on my
         # shopping list»: the list is read, never answered from the model's memory.
         return EffectIntent((list_read.operation,), (text,))
