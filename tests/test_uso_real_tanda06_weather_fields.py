@@ -8,6 +8,9 @@
    read (``laterDays`` after tomorrow, each with its weekday), are sent to the composer only when the question asks
    the coming days, and the reply sums them up. Owners: semantic/web.weather_asks_week / weather_asks_coming_days;
    provider OpenMeteoWeatherAdapter (C# tests); llm._compose_situation_payload / _weather_focus / _weather_fact_defect.
+3. «let me know my current location» was answered with the place and then the temperature, humidity and wind: the
+   weather in a place reply is an unasked claim, repaired with the place focus. Owner: llm._weather_fact_defect and
+   the extra_claim hint.
 
 Every list mixes Spanish, English and Spanglish and holds phrasings never seen in a run; negative controls keep what
 is not the live reading out of it.
@@ -292,3 +295,44 @@ def test_the_days_after_tomorrow_are_sent_only_when_asked(asked: str, sent: bool
     payload = llm._compose_situation_payload(_weather_situation(_WEEK_SEEN), "es", asked)
     assert ("laterDays" in payload["seen"]) is sent
     assert payload["seen"]["temperatureC"] == 16.4
+
+
+# --- 3. where the person is: only the place ------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("asked", "reply"),
+    [
+        ("let me know my current location", "You are in Curicó, Región de Curicó, Chile."),
+        ("¿dónde estoy ahora mismo?", "Estás en Curicó, Chile."),
+        ("where am i rn", "Around Curicó, Chile."),
+        ("en qué ciudad estoy", "En Curicó, en la Región de Curicó."),
+    ],
+)
+def test_the_place_reply_is_the_place_alone(asked: str, reply: str) -> None:
+    assert llm._weather_fact_defect(reply, _WEATHER, asked) == ""
+
+
+@pytest.mark.parametrize(
+    ("asked", "reply"),
+    [
+        # The t21 reply: the place and then the weather nobody asked for.
+        ("let me know my current location",
+         "You are currently in Curico, Region de Curico, Chile. The temperature is 16.4°C, with a humidity "
+         "of 74% and wind speed of 2.3 km/h."),
+        ("¿dónde estoy?", "Estás en Curicó, Chile, y está nublado."),
+        ("where am i", "You're in Curicó, Chile, where the weather is mild."),
+    ],
+)
+def test_the_weather_added_to_the_place_is_an_extra_claim(asked: str, reply: str) -> None:
+    assert llm._weather_fact_defect(reply, _WEATHER, asked) == "extra_claim"
+
+
+def test_a_place_reply_with_the_weather_is_repaired_with_the_place_focus() -> None:
+    added = "Estás en Curicó, Chile. Hay 16,4 °C."
+    answer = "Estás en Curicó, Chile."
+    client = Recorder([added, answer])
+    reply = client.compose_user_message("¿dónde estoy?", "status", {"situation": json.dumps(_weather_situation(_SEEN))})
+    assert reply == answer
+    retry = json.dumps(client.payloads[1]["messages"], ensure_ascii=False)
+    assert "nada del clima" in retry

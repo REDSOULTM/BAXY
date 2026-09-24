@@ -191,7 +191,7 @@ _OWN_PLACE_QUESTION = re.compile(
     r"(?:ubicacion|localizacion|location|posicion|position|ciudad|city)"
     r"(?:\s+(?:actual|exacta|aproximada|ahora|now|right\s+now|currently))*|"
     r"(?:en\s+)?(?:donde|where)\s+(?:estoy|me\s+encuentro|estamos|am\s+i|are\s+we|i\s+am|we\s+are)"
-    r"(?:\s+(?:ahora|ahorita|ahora\s+mismo|en\s+este\s+momento|now|right\s+now|located|currently))*|"
+    r"(?:\s+(?:ahora|ahorita|ahora\s+mismo|en\s+este\s+momento|now|right\s+now|rn|located|currently))*|"
     r"(?:donde|where)\s+(?:esta|is)\s+(?:este|this)\s+(?:pc|equipo|computador|computadora|ordenador|computer)"
     r"(?:\s+(?:located|ubicad[oa]))?|"
     r"(?:en\s+)?(?:que|cual|what|which)\s+(?:ciudad|pais|region|comuna|lugar|city|country|town|state|place)\s+"

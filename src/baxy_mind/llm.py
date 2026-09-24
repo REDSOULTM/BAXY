@@ -8732,7 +8732,20 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
             return "missing_state"
     if asks_own_place(user_text or ""):
         # Tanda 4c «i'd like to know my current location»: the place read is the
-        # answer (named above); the weather was not asked.
+        # answer (named above); the weather was not asked. Uso real tanda 6 «let me
+        # know my current location» still added the temperature, humidity and wind:
+        # a reading of the weather in the reply is a claim nobody asked for.
+        condition = _reading_fold(str(seen.get("condition") or ""))
+        if (
+            re.search(r"\d", text)
+            or re.search(
+                r"\b(?:temperatura|temperature|grados|degrees|humedad|humidity|viento|wind|clima|weather|"
+                r"lluvia|rain|cielo|sky)\b",
+                folded_text,
+            )
+            or (condition not in ("", "sin dato") and re.search(r"\b" + re.escape(condition) + r"\b", folded_text))
+        ):
+            return "extra_claim"
         return ""
     if weather_asks_air(user_text or ""):
         # Tanda 4c «Whats the air quality hoy?»: the air is answered with its index.
@@ -20556,6 +20569,10 @@ class LlmRuntime:
                 "extra_claim": (
                     "Answer what you will not do, in your own words."
                     if _looks_like_refuse_question(user_text)
+                    # Uso real tanda 6 «let me know my current location»: a weather reply that says more than was
+                    # asked is told the asked focus again.
+                    else _weather_focus(user_text or "", response_language == "en")
+                    if situation.get("operation") == "weather.current"
                     else (
                         ""
                         if _looks_like_continue_constraint(user_text)
