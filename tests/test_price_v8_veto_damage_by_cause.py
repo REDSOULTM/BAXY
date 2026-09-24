@@ -141,12 +141,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # uso real sexta y séptima ola: agenda, correo/contactos/redes, composición 4c, lugar de la persona
 # uso real: preguntas inútiles 4c y arreglos 4d
 # uso real: web, hora de otro lugar, 4e
+# uso real ola 8: tanda 5, latencia, concisión, búsqueda invisible
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "86ed176fa09a7ec7a3dda8f582f9277e096865a07b5987c434c8a9351477e7fd"
+        "5751ee5664570df2d95334b96f092a209093a2612cd5f399f0a25bdc41fbc5e5"
     ),
     "src/baxy_mind/llm.py": (
-        "9e4715046e5c93602c7c8d7a3d4c9b784bb8c8f65502133c4ae34333f42e4c11"
+        "63d26f6481b76c31d5f676bea0e2558fb550e5ec8529b94aac6047e0a3351b5f"
     ),
 }
 

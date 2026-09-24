@@ -125,8 +125,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # uso real sexta y séptima ola: agenda, correo/contactos/redes, composición 4c, lugar de la persona
 # uso real: preguntas inútiles 4c y arreglos 4d
 # uso real: web, hora de otro lugar, 4e
+# uso real ola 8: tanda 5, latencia, concisión, búsqueda invisible
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "c6ec260fbd1a2be63122d55219c195556c1b863c71051bab66d86115e58d8782"
+    "e94d30579e414dc95d979483abcaf796e830f5ae44d7afea35029a941f74a919"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
