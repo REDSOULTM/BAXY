@@ -39,6 +39,7 @@ from urllib.parse import parse_qs, urlparse
 
 from . import corrector
 from .semantic.normalize import alternation, fold
+from .semantic import dialogue as dialogue_slot
 from .semantic.web import weather_asks_later_day, weather_asks_sun_time
 from . import effect_intent
 from .effect_intent import (
@@ -80,6 +81,7 @@ from .process_lifecycle import (
 from .request_reading import (
     fold as _reading_fold,
     followup_topic,
+    is_elliptical_followup,
     INTENT_AMBIGUOUS_ACTION,
     INTENT_CAPABILITY,
     INTENT_CONTINUE_CONSTRAINT,
@@ -6852,23 +6854,33 @@ def _local_clock_text(iso_utc: str) -> str | None:
     return instant.astimezone().strftime("%Y-%m-%d %H:%M")
 
 
-def _listed_notification_clocks(situation: dict) -> frozenset[str]:
-    """The local «HH:MM» of every alarm or reminder a verified listing observed."""
+def _observed_local_clocks(situation: dict) -> frozenset[str]:
+    """Every local «HH:MM» a verified reading observed: the next run of each
+    listed alarm or reminder, and the sunrise and sunset of a weather read
+    (Uso real tanda 2 «el horario de la caída del sol para mañana»: the
+    observed 19:45 was refused as an invented clock)."""
 
-    if (
-        situation.get("operation") != "notification.list"
-        or situation.get("verified") is not True
-        or situation.get("succeeded") is not True
-    ):
+    if situation.get("verified") is not True or situation.get("succeeded") is not True:
         return frozenset()
-    entries = _merged_observed(situation).get("notifications")
-    return frozenset(
-        local[-5:]
-        for entry in (entries if isinstance(entries, list) else [])
-        if isinstance(entry, dict)
-        and isinstance(entry.get("nextRunUtc"), str)
-        and (local := _local_clock_text(entry["nextRunUtc"])) is not None
-    )
+    observed = _merged_observed(situation)
+    if situation.get("operation") == "notification.list":
+        entries = observed.get("notifications")
+        return frozenset(
+            local[-5:]
+            for entry in (entries if isinstance(entries, list) else [])
+            if isinstance(entry, dict)
+            and isinstance(entry.get("nextRunUtc"), str)
+            and (local := _local_clock_text(entry["nextRunUtc"])) is not None
+        )
+    if situation.get("operation") == "weather.current":
+        return frozenset(
+            clock
+            for day in ("today", "tomorrow")
+            if isinstance(block := observed.get(day), dict)
+            for key in ("sunrise", "sunset")
+            if isinstance(clock := block.get(key), str) and re.fullmatch(r"\d\d:\d\d", clock)
+        )
+    return frozenset()
 
 
 def _known_listing_in_payload(payload: dict) -> dict | None:
@@ -7393,6 +7405,22 @@ def _weather_number_forms(value: object) -> set[str]:
     return forms
 
 
+def _states_weather_number(text: str, value: object) -> bool:
+    """The reply states this observed number on its own, not inside another («8» in «18»)."""
+
+    return any(
+        re.search(r"(?<![\d.,])" + re.escape(form) + r"(?![\d]|[.,]\d)", text) is not None
+        for form in _weather_number_forms(value)
+    )
+
+
+# A rain amount as a reply writes it (folded): «0 mm», «2,5 milimetros», «1 pulgada».
+_RAIN_AMOUNT = re.compile(
+    r"(?<![\w.,])(\d+(?:[.,]\d+)?)\s*(mm|milimetros?|millimet(?:er|re)s?|pulgadas?|inch(?:es)?|"
+    r"cm|centimetros?|centimet(?:er|re)s?|litros?|lit(?:er|re)s?)\b"
+)
+
+
 def _weather_clock_forms(value: object) -> set[str]:
     """The numbers of an observed sun clock «07:05» as a reply writes them: 07, 7, 05, 5."""
 
@@ -7422,12 +7450,38 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
                 observed |= _weather_number_forms(block.get(key))
             for key in ("sunrise", "sunset"):
                 observed |= _weather_clock_forms(block.get(key))
-    for number in re.findall(r"(?<![\w.,])-?\d+(?:[.,]\d+)?(?![\w.,])", text):
+    # A number that ends the sentence («a las 20:15.») is still a number said.
+    for number in re.findall(r"(?<![\w.,])-?\d+(?:[.,]\d+)?(?!\w|[.,]\d)", text):
         if number not in observed and number.lstrip("-") not in observed:
             return "invented_number"
     folded_text = _reading_fold(text)
+    # An amount of rain is only the observed precipitation, in its millimetres
+    # (none is none in any unit): an observed temperature or percentage said
+    # as «14 pulgadas» is an invented amount even though the number was read.
+    rain_mm = seen.get("precipitationMm")
+    for amount, unit in _RAIN_AMOUNT.findall(folded_text):
+        value = float(amount.replace(",", "."))
+        if not (
+            (value == 0 and rain_mm == 0)
+            or (unit.startswith(("mm", "mil")) and amount in _weather_number_forms(rain_mm))
+        ):
+            return "invented_number"
+    asks = _reading_fold(user_text or "")
+    tomorrow = seen.get("tomorrow")
+    later_day = weather_asks_later_day(user_text or "")
+    asks_tomorrow = later_day or re.search(r"(?<!esta )\b(?:manana|tomorrow)\b", asks) is not None
+    sun_time = weather_asks_sun_time(user_text or "")
+    rain_asked = re.search(
+        r"\b(?:llover|lluvia|llueve|rain|paraguas|umbrella|chubasquero|impermeable|"
+        r"raincoat|pulgadas|inches|milimetros|millimeters)\b",
+        asks,
+    ) is not None
     location = seen.get("location")
-    if isinstance(location, str) and location:
+    # Uso real tanda 2 «¿Cuántas pulgadas are we getting today?»: a narrow
+    # question about here (rain, the sun) is answered by its value; the place
+    # must be named when the person named one, or for a general report.
+    asked_place = _reading_fold(_weather_location(user_text or "") or "")
+    if isinstance(location, str) and location and (asked_place or not (rain_asked or sun_time)):
         # WEATHER2031 «how's the weather in Santiago»: the geocoder says «Santiago
         # de Chile»; the head of that name (before « de …» or a comma) names the
         # place as well as the whole.
@@ -7436,45 +7490,44 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         # Uso real 2026-09-23 «what's the weather like in london»: the geocoder
         # names the place in Spanish («Londres»); the English reply names it as
         # the person did, and that is the same place named.
-        asked_place = _reading_fold(_weather_location(user_text or "") or "")
         if (
             folded_location not in folded_text
             and not (len(head) >= 3 and head in folded_text)
             and not (len(asked_place) >= 3 and re.search(r"\b" + re.escape(asked_place) + r"\b", folded_text))
         ):
             return "missing_state"
-    asks = _reading_fold(user_text or "")
-    tomorrow = seen.get("tomorrow")
-    later_day = weather_asks_later_day(user_text or "")
-    if weather_asks_sun_time(user_text or ""):
+    if sun_time:
         # Uso real tanda 2 «el horario de la caída del sol para mañana»: the asked
         # day's sun time is the answer (tomorrow's for tomorrow or a later day).
-        block = tomorrow if later_day or re.search(r"\b(?:manana|tomorrow)\b", asks) else seen.get("today")
+        block = tomorrow if asks_tomorrow else seen.get("today")
         clocks = [block.get(key) for key in ("sunrise", "sunset")] if isinstance(block, dict) else []
         clocks = [clock for clock in clocks if isinstance(clock, str) and clock]
         if clocks and not any(clock in text or clock.lstrip("0") in text for clock in clocks):
             return "missing_state"
         return ""
-    if (
-        # Uso real tanda 2 «¿Me llevo el chubasquero?», «¿Cuántas pulgadas…?», «dentro de
-        # dos días»: rain gear, a rain amount and a later day are answered with the
-        # furthest rain probability read, tomorrow's.
-        (
-            re.search(
-                r"\b(?:manana|tomorrow|llover|lluvia|llueve|rain|paraguas|umbrella|chubasquero|impermeable|"
-                r"raincoat|pulgadas|inches|milimetros|millimeters)\b",
-                asks,
-            )
-            or later_day
-        )
-        and isinstance(tomorrow, dict)
-        and not any(form in text for form in _weather_number_forms(tomorrow.get("rainProbabilityPercent")))
-    ):
-        return "missing_state"
+    if rain_asked or asks_tomorrow:
+        # Uso real tanda 2 «¿Me llevo el chubasquero?», «¿Cuántas pulgadas are we
+        # getting today?», «dentro de dos días»: rain, rain gear, a rain amount
+        # and a later day are answered with the rain probability of the day
+        # asked — tomorrow's for tomorrow or later, today's for today, either
+        # read when no day is named.
+        if asks_tomorrow:
+            days = (tomorrow,)
+        elif re.search(r"\b(?:hoy|today|tonight|esta\s+(?:noche|tarde|manana))\b", asks):
+            days = (seen.get("today"),)
+        else:
+            days = (seen.get("today"), tomorrow)
+        probabilities = [
+            day.get("rainProbabilityPercent")
+            for day in days
+            if isinstance(day, dict) and day.get("rainProbabilityPercent") is not None
+        ]
+        if probabilities and not any(_states_weather_number(text, value) for value in probabilities):
+            return "missing_state"
     if (
         not any(form in text for form in _weather_number_forms(seen.get("temperatureC")))
-        and not re.search(r"\b(?:manana|tomorrow)\b", asks)
-        and not later_day
+        and not rain_asked
+        and not asks_tomorrow
     ):
         return "missing_state"
     return ""
@@ -8884,6 +8937,85 @@ def _denies_the_destination(folded_reply: str, folded_destination: str) -> bool:
     return False
 
 
+# The HTML elements (WHATWG) whose names a template hole could be confused with:
+# «<iframe>» in a technical answer is markup, «<hora actual>» is a hole.
+_HTML_ELEMENT_NAMES = frozenset(
+    "abbr address area article aside audio base bdi bdo blockquote body button canvas caption cite "
+    "code col colgroup data datalist del details dfn dialog div embed fieldset figcaption figure "
+    "footer form head header hgroup html iframe img input ins kbd label legend link main map mark "
+    "menu meta meter nav noscript object optgroup option output param picture pre progress ruby "
+    "samp script search section select slot small source span strong style sub summary sup svg "
+    "table tbody template textarea tfoot thead time title track var video wbr".split()
+)
+
+
+def _referenced_previous_answer(user_text: str, facts: dict) -> str:
+    """BAXY's previous answer, when this message cannot be understood without it.
+
+    tanda-02b t28 «¡ave, cesar!» after a search about «the date in 64 days»: the
+    recomposed conversation got the previous answer as its only fact and
+    answered the previous topic with an invented date. The previous answer is
+    reference data for an elliptical follow-up («¿y eso qué significa?») or a
+    message that points back («explícamelo mejor»); a message that stands on
+    its own is answered on its own.
+    """
+
+    previous = str(facts.get("context") or "").strip()[:320]
+    if not previous:
+        return ""
+    prior = facts.get("priorRequests")
+    antecedents = tuple(
+        str(item) for item in reversed(prior if isinstance(prior, list) else []) if str(item or "").strip()
+    )[:2]
+    slot = dialogue_slot.DialogueSlot(None, None, antecedents or (previous,), previous)
+    if is_elliptical_followup(user_text) or dialogue_slot.dependency(user_text, slot) is not None:
+        return previous
+    return ""
+
+
+_PRESENT_ANCHOR = re.compile(
+    r"\b(?:hoy|ahora|actualmente|today|now|currently|tonight|esta\s+noche|manana|tomorrow|ayer|yesterday|"
+    r"dentro\s+de|a\s+partir\s+de\s+hoy|desde\s+hoy|from\s+(?:now|today)|este\s+(?:ano|mes)|esta\s+semana|"
+    r"this\s+(?:year|month|week))\b"
+)
+_CALENDAR_WORDS = (
+    r"enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre|"
+    r"january|february|march|april|june|july|august|september|october|november|december|"
+    r"lunes|martes|miercoles|jueves|viernes|sabado|domingo|"
+    r"monday|tuesday|wednesday|thursday|friday|saturday|sunday"
+)
+_PRESENT_CLAIM = re.compile(
+    r"(?<![\w.,])\d+(?:[.,:/-]\d+)*(?!\w)|\b(?:" + _CALENDAR_WORDS + r")\b"
+)
+
+
+def _unverified_present_fact(text: str, user_text: str, facts: dict) -> str | None:
+    """A date, weekday or figure about now that no one said and nothing read.
+
+    A conversation carries no observation: the calendar, the clock and today's
+    figures are not known to it. A sentence anchored to the present («hoy»,
+    «dentro de», «this week») may only restate what the person said, what the
+    referenced previous answer said, or what this turn's situation observed.
+    """
+
+    said = _reading_fold(
+        " ".join(
+            (
+                user_text or "",
+                _referenced_previous_answer(user_text, facts),
+                str(facts.get("situation") or ""),
+            )
+        )
+    )
+    for sentence in re.split(r"(?<=[.!?;])\s+|\n", _reading_fold(text)):
+        if _PRESENT_ANCHOR.search(sentence) is None:
+            continue
+        for claim in _PRESENT_CLAIM.finditer(sentence):
+            if re.search(r"(?<![\w.,])" + re.escape(claim.group(0)) + r"(?!\w)", said) is None:
+                return claim.group(0)
+    return None
+
+
 def compose_visible_defect(
     text: str,
     intent: str,
@@ -8968,6 +9100,10 @@ def compose_visible_defect(
     if placeholder is not None and re.match(
         r"\{\s*\"|\{[^}]*\"\s*:", placeholder.group(0)
     ) is not None:
+        placeholder = None
+    # Uso real tanda 2 «¿Cómo incluir un archivo HTML en otro HTML?»: «<iframe>»
+    # names a markup element, the answer itself; a template hole is a phrase.
+    if placeholder is not None and placeholder.group(0)[1:-1] in _HTML_ELEMENT_NAMES:
         placeholder = None
     if placeholder is not None and not _bracket_is_observed(placeholder.group(0), facts):
         # MAIL1853 «escribile un mail a [EMAIL_REDACTED]»: a bracket the person
@@ -9901,6 +10037,8 @@ def compose_visible_defect(
             ) or folded_reply in {"hi", "hey", "hello"}:
                 return "knowledge_greeting"
     if intent == "conversation" or kind == "conversation":
+        if _unverified_present_fact(stripped, user_text, facts) is not None:
+            return "unverified_present_fact"
         followup_subject = followup_topic(user_text, facts.get("priorRequests"))
         # Lo que la persona pidió decide si una pregunta puede ser la respuesta.
         # Por sus capacidades, sus límites o por seguir hablando se contesta con
@@ -10502,8 +10640,9 @@ def compose_visible_defect(
         elif not clock and any(
             # Uso real 2026-09-23 «qué alarmas hay puestas»: the listing gives each
             # alarm's next run in local time and the answer has to say it; only a
-            # clock that no listed alarm has is invented.
-            f"{int(hour):02d}:{minute}" not in _listed_notification_clocks(situation)
+            # clock that no listed alarm has is invented. The same holds for the
+            # sun times a weather read observed.
+            f"{int(hour):02d}:{minute}" not in _observed_local_clocks(situation)
             for hour, minute in re.findall(r"(?<!\d)(\d{1,2}):(\d{2})(?!\d)", stripped)
         ):
             return "extra_claim"
@@ -16683,7 +16822,7 @@ class LlmRuntime:
             # MUSIC1755: a bare answer («Queen») keeps the conversation language.
             response_language = _conversation_response_language(user_text, facts)
         trace_id = str(facts.get("traceId") or "")[:128]
-        previous_answer = str(facts.get("context") or "").strip()[:320]
+        previous_answer = _referenced_previous_answer(user_text, facts)
         situation = _situation_from_facts(facts)
         # Progress has no request text to interpret. For mixed input, Spanish
         # is a valid output language; the full conversation policy instead
@@ -19239,6 +19378,11 @@ class LlmRuntime:
                     "Answer it. Do not ask."
                     if response_language == "en"
                     else "Contéstala. No preguntes."
+                ),
+                "unverified_present_fact": (
+                    "Answer this message. Nothing was read this turn: state no date, day or figure about now."
+                    if response_language == "en"
+                    else "Contesta este mensaje. No se leyó nada en este turno: no afirmes fechas, días ni cifras de ahora."
                 ),
             }.get(defect, "")
 

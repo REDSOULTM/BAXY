@@ -1530,7 +1530,19 @@ internal static class UserMessagePolicy
             return false;
         }
 
-        return FoldForPolicy(reply).Contains(asked, StringComparison.Ordinal);
+        // tanda-02b t28 «¡ave, cesar!» → «¡Ave, César! ¿Cómo estás?»: returning a
+        // salutation in its own exclamation and then asking something else is
+        // an answer; only a question that carries the request echoes it.
+        foreach (string sentence in Regex.Split(reply, @"(?<=[.!?…])\s+"))
+        {
+            if (sentence.Contains('?', StringComparison.Ordinal)
+                && FoldForPolicy(sentence).Contains(asked, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static bool GreetsOutOfWorldTarget(string folded) =>
