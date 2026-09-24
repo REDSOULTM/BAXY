@@ -115,6 +115,12 @@ def _operations(text: str) -> tuple[str, ...]:
     [(label, text) for label, texts in ABSTAIN_POOLS.items() for text in texts],
 )
 def test_distractor_pools_never_gain_a_state_effect(label: str, text: str) -> None:
+    if label == "ABSTAIN__relative_volume" and any(character.isdigit() for character in text):
+        # The pool predates audio.volume.adjust and the owner rule H0027: a relative change that says how much
+        # («sube el volumen unos 10 puntos», «bájale 20 puntos al volumen») is that adjustment, like «sube el
+        # volumen 10 puntos» already was. It must be exactly that effect, never a reading, a level or a mute.
+        assert _operations(text) == ("audio.volume.adjust",), label
+        return
     assert not STATE_OPERATIONS.intersection(_operations(text)), label
 
 
