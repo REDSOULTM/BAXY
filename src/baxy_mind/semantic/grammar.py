@@ -757,7 +757,8 @@ def _is_past_or_hypothetical_state(text: str) -> bool:
             r"era|eran|fue|fueron|quedaba|quedaban|had|was|were|"
             r"used\s+to)\b|"
             r"\b(?:tendria|tendrias|seria|serian|tuviera|tuvieras|tuviese|"
-            r"abriria|abririas|quedaria(?:s|mos|n)?|would(?!\s+you\b)|hipoteticamente|"
+            # «i would like a timer set» is a polite desire, not a hypothesis.
+            r"abriria|abririas|quedaria(?:s|mos|n)?|would(?!\s+(?:you|like|love)\b)|hipoteticamente|"
             r"hypothetically|supongamos|suponiendo|imagina|imagine)\b|"
             r"\bif\b.{0,64}\b(?:another|other)\s+(?:computer|device)\b|"
             r"\b(?:si|if)\b.{0,64}\b(?:otro|otra|another|other)\s+"

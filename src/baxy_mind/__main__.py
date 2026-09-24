@@ -2654,6 +2654,12 @@ def _public_lookup_applies(
         "web.search" in available_operations
         and planner_catalog.get("web.search") is not None
         and not _names_own_data(objective)
+        # Uso real 2026-09-23 «the creator of your ai, what is their name»: a
+        # question about BAXY itself is answered as BAXY, never searched.
+        and not read_request(objective).intents
+        & {INTENT_IDENTITY, INTENT_CAPABILITY, INTENT_REFUSE}
+        # «prepárame una taza de café»: a known limit is an order, not information.
+        and not known_unsupported_effect_request(objective, available_operations)
         and callable(reads)
         and bool(reads(routing_objective))
     )
@@ -3751,6 +3757,9 @@ def _explicit_stable_no_effect_turn_decision(
         is not None
     )
     general_factoid_prompt = _general_factoid_prompt(objective)
+    # Uso real 2026-09-23 «who made you», «¿cuál es tu lugar de origen?»: a
+    # question about the one answering carries no effect and no public lookup.
+    self_question = read_request(objective).has(INTENT_IDENTITY)
     joke_request = (
         re.match(
             (
@@ -3987,6 +3996,7 @@ def _explicit_stable_no_effect_turn_decision(
         or content_drafting
         or stable_knowledge_prompt
         or general_factoid_prompt
+        or self_question
         or joke_request
         or knowledge_after_negated_effect
         or opinion_prompt
@@ -4024,6 +4034,7 @@ def _explicit_stable_no_effect_turn_decision(
                 or content_drafting
                 or stable_knowledge_prompt
                 or general_factoid_prompt
+                or self_question
                 or joke_request
                 or knowledge_after_negated_effect
                 or opinion_prompt
@@ -7188,6 +7199,12 @@ def _rearm_in_context(
         substituted = dialogue_slot.substituted_reference(objective, slot.antecedents[0])
         if substituted is not None:
             return audited(substituted, "pattern")
+    if dependency == "subject":
+        # Uso real 2026-09-23: «cuántos años tiene» after «quién es el presidente
+        # de chile» is that person's age, looked up, never recited from memory.
+        completed = dialogue_slot.subject_completed(objective, slot.antecedents[0])
+        if completed is not None:
+            return audited(completed, "pattern")
     if dependency == "reference" and slot.antecedents and not dialogue_slot.asks_to_look_up(objective):
         # 2026-09-22: «cerralo» after «abrí el bloc de notas» was read alone as
         # "close the active window" and closed VS Code. With an antecedent, the

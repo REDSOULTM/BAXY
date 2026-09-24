@@ -166,6 +166,7 @@ def dependency(text: str, slot: DialogueSlot) -> str | None:
     ``answer``      a short answer or «sí» to the question BAXY just asked;
     ``destination`` «no, en YouTube»: only the destination of the last request changes;
     ``reference``   a pronoun object («súbelo», «cerralo»);
+    ``subject``     a person's age asked without the person («¿y cuántos años tiene?», «how old is he»);
     ``topic``       a lookup verb whose topic may have been named before («averiguá qué dijo la crítica»).
     """
 
@@ -190,6 +191,8 @@ def dependency(text: str, slot: DialogueSlot) -> str | None:
         return "destination"
     if len(words) > 16:
         return None
+    if slot.antecedents and _SUBJECTLESS_PERSON_FACT.fullmatch(folded):
+        return "subject"
     if _object_pronoun(folded) or (len(words) <= 6 and _PROCLITIC_START.match(folded)):
         return "reference"
     if slot.antecedents and _RESEARCH_VERB.search(folded):
@@ -336,6 +339,35 @@ def asked_about(antecedent: str) -> str | None:
 
     text = str(antecedent or "")
     return public_opinion_subject(text) or _entity_lookup_query(text)
+
+
+# Uso real 2026-09-23 «quién es el presidente de chile» → «cuántos años tiene» →
+# an age recited from memory: the question names nobody, so the person asked
+# about just before is its subject, and the completed question is looked up.
+_SUBJECTLESS_PERSON_FACT = re.compile(
+    r"(?:(?:y|e|and|pero|but)\s+)?(?:"
+    r"(?:cuantos\s+anos|que\s+edad)\s+tiene(?:\s+(?:el|ella|ahora|actualmente|hoy))?|"
+    r"(?:how\s+old|what\s+age)\s+is\s+(?:he|she|they|him|her)(?:\s+now)?|"
+    r"how\s+old(?:\s+(?:is\s+)?(?:he|she))?"
+    r")"
+)
+
+
+def subject_completed(text: str, antecedent: str) -> str | None:
+    """«cuántos años tiene» after «¿quién es el presidente de Chile?» → «cuántos años tiene el
+    presidente de Chile»; the subject is the public person the antecedent asked about, in the
+    person's words. None when the antecedent asked about no such person."""
+
+    from .web import person_fact_subject
+
+    subject = person_fact_subject(antecedent) or asked_about(antecedent)
+    if not subject:
+        return None
+    folded = _fold(text).strip(" ¿?¡!.,")
+    folded = re.sub(r"^(?:(?:y|e|and|pero|but)\s+)", "", folded)
+    if folded.startswith(("how", "what")):
+        return f"how old is {subject}"
+    return f"cuántos años tiene {subject}"
 
 
 def antecedent_object(antecedent: str) -> str | None:

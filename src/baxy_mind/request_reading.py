@@ -198,6 +198,39 @@ _IDENTITY_EXPLETIVE = re.compile(
     r"\bwho\s+(?:the\s+\w+\s+|on\s+earth\s+)are\s+you\b"
 )
 
+# Uso real 2026-09-23 «the creator of your ai, what is their name» went to a web
+# search on the history of AI; «¿cuál es tu lugar de origen?», «can you tell me
+# the age of the ai», «who made you» are the same act: a question about the one
+# answering. It is read as a trait bound to BAXY —a possessive («tu origen», «your
+# creator»), the object of a making verb («quién te creó», «who built you»), a
+# closed question to «tú»/«you» («de dónde eres», «how old are you»), or the
+# trait of «this AI»/BAXY— never as «you» anywhere in the sentence («can you tell
+# me who made the iPhone» asks about the iPhone).
+_SELF_TRAIT = (
+    r"(?:creador|creadora|creadores|autor|autores|desarrollador|desarrolladores|programador|"
+    r"programadores|fabricante|dueno|duena|empresa|compania|origen|lugar\s+de\s+origen|"
+    r"lugar\s+de\s+nacimiento|nacimiento|cumpleanos|edad|nombre|modelo|"
+    r"creators?|makers?|authors?|developers?|programmers?|owners?|company|origins?|"
+    r"place\s+of\s+origin|birthplace|birthday|age|name|model)"
+)
+_SELF_MAKING = (
+    r"(?:creo|crearon|hizo|hicieron|programo|programaron|diseno|disenaron|desarrollo|"
+    r"desarrollaron|construyo|construyeron|invento|inventaron|entreno|entrenaron|fabrico|fabricaron)"
+)
+_SELF_QUESTION = re.compile(
+    rf"\b(?:tu|tus|your)\s+(?:propi[oa]\s+|own\s+)?{_SELF_TRAIT}\b|"
+    r"\b(?:the\s+)?(?:creators?|makers?|developers?)\s+of\s+(?:you|your\s+(?:ai|ia))\b|"
+    rf"\b(?:quien|quienes|que\s+(?:empresa|compania|persona))\s+te\s+{_SELF_MAKING}\b|"
+    r"\b(?:who|what\s+company|which\s+company)\s+(?:made|created|built|programmed|designed|"
+    r"developed|invented|trained|owns)\s+you\b|"
+    r"\bde\s+donde\s+(?:eres|sos|vienes|venis)\b|\bdonde\s+naciste\b|\bcuando\s+naciste\b|"
+    r"\b(?:cuantos\s+anos|que\s+edad)\s+tienes\b|\bcomo\s+te\s+llamas\b|"
+    r"\bwhere\s+(?:are|do)\s+you\s+(?:from|come\s+from)\b|\bwhere\s+were\s+you\s+(?:born|made|created)\b|"
+    r"\bhow\s+old\s+are\s+you\b|\bwhen\s+were\s+you\s+(?:born|made|created)\b|"
+    rf"\b{_SELF_TRAIT}\s+(?:de|of)\s+(?:(?:the|this|esta|este)\s+(?:ai|ia|assistant|asistente|bot|chatbot)|baxy)\b|"
+    rf"\b(?:(?:the|this)\s+(?:ai|assistant|bot)|baxy)['’]?s\s+{_SELF_TRAIT}\b"
+)
+
 _REFUSE_TOKENS = (
     "what will you", "what do you refuse", "que rechazas", "never do",
     "cannot do", "que no haces", "what don't you", "what dont you",
@@ -487,7 +520,11 @@ def _read_intents(ask: str) -> frozenset[str]:
         or (about_you and not marks_a_limit)
     ):
         intents.add(INTENT_CAPABILITY)
-    if _contains_any(folded, _IDENTITY_TOKENS) or _IDENTITY_EXPLETIVE.search(folded):
+    if (
+        _contains_any(folded, _IDENTITY_TOKENS)
+        or _IDENTITY_EXPLETIVE.search(folded)
+        or _SELF_QUESTION.search(folded)
+    ):
         intents.add(INTENT_IDENTITY)
     if (
         _contains_any(folded, _REFUSE_TOKENS)

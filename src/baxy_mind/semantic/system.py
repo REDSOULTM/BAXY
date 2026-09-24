@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import re
 from typing import Iterable
-from .grammar import _fold, _has, _strip_request_envelope, _process_list_domain, _PERCENTAGE_WORD_VALUES, _request_clauses
+from .grammar import _fold, _has, _strip_request_envelope, _process_list_domain, _PERCENTAGE_WORD_VALUES, _request_clauses, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS
 from .intent import EffectIntent
 from .web import _WEATHER_WORDS, _weather_lookup_query
 
@@ -24,35 +24,61 @@ def _weather_location(text: str) -> str | None:
     query = _weather_lookup_query(text)
     if query is None:
         return None
-    match = re.search(
-        r"\b(?:en|in|de|para|for|at)\s+(?P<place>[^,;:.!?]+?)\s*"
-        r"(?:\b(?:hoy|manana|mañana|ahora|today|tomorrow|now|right\s+now|por\s+favor|please)\b.*)?$",
-        query,
-        re.IGNORECASE,
-    )
-    if match is None:
-        return None
-    place = match.group("place").strip(" \t\r\n.,;:")
-    place = re.sub(r"^(?:la\s+ciudad\s+de|the\s+city\s+of)\s+", "", place, flags=re.IGNORECASE)
-    folded_place = _fold(place)
-    if (
-        not folded_place
-        or _has(folded_place, _WEATHER_MEDIUM)
-        or _has(folded_place, _WEATHER_WORDS)
-        # Uso real 2026-09-23 «va a llover el fin de semana?» read the weather of
-        # «Sémana» (Mali): a time is not a place.
-        or _has(folded_place, _WEATHER_TIME_WORDS)
-        or len(place.encode("utf-8")) > 128
-    ):
-        return None
+    # Each preposition opens a candidate: «clima de la semana en Buenos Aires»
+    # names its time first and its place after.
+    for match in re.finditer(r"\b(?:en|in|de|para|for|at)\s+(?=(?P<place>[^,;:.!?]+))", query, re.IGNORECASE):
+        candidate = match.group("place").strip(" \t\r\n.,;:")
+        if _has(_fold(candidate), _WEATHER_TIME_WORDS):
+            continue
+        place = _without_trailing_time(candidate)
+        place = re.sub(r"^(?:la\s+ciudad\s+de|the\s+city\s+of)\s+", "", place, flags=re.IGNORECASE)
+        folded_place = _fold(place)
+        if (
+            not folded_place
+            or _has(folded_place, _WEATHER_MEDIUM)
+            or _has(folded_place, _WEATHER_WORDS)
+            # Uso real 2026-09-23 «va a llover el fin de semana?» read the weather of
+            # «Sémana» (Mali): a time is not a place.
+            or _has(folded_place, _WEATHER_TIME_WORDS)
+            or len(place.encode("utf-8")) > 128
+        ):
+            continue
+        return place
+    return None
+
+
+def _without_trailing_time(place: str) -> str:
+    """«Buenos Aires para mañana» → «Buenos Aires»: a time or courtesy after the
+    place (with or without its own preposition) is not part of the name."""
+
+    words = place.split()
+    for index in range(1, len(words)):
+        tail = _fold(" ".join(words[index:]))
+        tail = re.sub(r"^(?:para|for|de|del|en|in|on|a|al|this|este|esta)\s+", "", tail)
+        if _has(tail, _WEATHER_TIME_WORDS) or _has(
+            tail, r"^(?:ahora|now|right\s+now|por\s+favor|please)\b"
+        ):
+            return " ".join(words[:index])
     return place
 
 
+# Uso real 2026-09-23 «pronóstico de diez días» asked the weather service for a
+# place called «diez días», and «el weather para San Valentín» for a place
+# called like the holiday: a span («los próximos 5 días», «the next 7 days») or
+# a named day of the year is a time, not a place.
+_WEATHER_SPAN_COUNT = r"(?:\d{1,3}|" + "|".join(
+    sorted({*_SPANISH_SMALL_NUMBERS, *_ENGLISH_SMALL_NUMBERS}, key=len, reverse=True)
+) + r")"
 _WEATHER_TIME_WORDS = (
-    r"^(?:(?:el|la|los|las|este|esta|the|this|next|proximo|proxima)\s+)?(?:semana|finde|fin\s+de\s+semana|"
-    r"week|weekend|manana|tarde|noche|morning|afternoon|evening|night|hoy|today|tomorrow|"
+    r"^(?:(?:el|la|los|las|este|esta|estos|estas|the|this|these|next|coming|"
+    r"proximo|proxima|proximos|proximas|siguiente|siguientes)\s+){0,2}"
+    rf"(?:{_WEATHER_SPAN_COUNT}\s+)?(?:semanas?|finde|fin\s+de\s+semana|"
+    r"weeks?|weekend|manana|tarde|noche|morning|afternoon|evening|night|hoy|today|tomorrow|"
     r"lunes|martes|miercoles|jueves|viernes|sabado|domingo|monday|tuesday|wednesday|thursday|"
-    r"friday|saturday|sunday|dia|dias|day|days|mes|month|ano|year)\b"
+    r"friday|saturday|sunday|dia|dias|days?|mes|meses|months?|ano|anos|years?|"
+    r"navidad|nochebuena|nochevieja|ano\s+nuevo|san\s+valentin|halloween|pascua|semana\s+santa|"
+    r"dia\s+de\s+(?:los\s+)?(?:enamorados|muertos|la\s+madre|el\s+padre)|"
+    r"christmas|new\s+year|valentine|easter|thanksgiving)\b"
 )
 
 

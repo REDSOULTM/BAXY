@@ -434,12 +434,51 @@ _RECORD_FACT = re.compile(
 )
 
 
+# Uso real 2026-09-23 «cuantos años tiene jennifer lopez» → «53 años en 2024»,
+# «quién es el presidente de chile» → a president out of office: a person's age
+# and who holds an office today change with the calendar, so the model's memory
+# is stale by construction. Both are looked up, like a record or a release date.
+_PERSON_FACT = re.compile(
+    r"(?:cuantos\s+anos\s+tiene|que\s+edad\s+tiene|cual\s+es\s+la\s+edad\s+de|"
+    r"how\s+old\s+is|what\s+age\s+is|what(?:\s+is|'s|’s)\s+the\s+age\s+of)\s+(?P<person>\S.*)|"
+    r"(?:quien|who)\s+(?:es|is|son|are)\s+"
+    r"(?P<office>(?:(?:el|la|los|las|the)\s+)?(?:actual(?:es)?\s+|current\s+)?"
+    r"(?:presidente|presidenta|president|vicepresidente|vicepresidenta|vice\s+president|"
+    r"primer\s+ministro|primera\s+ministra|prime\s+minister|rey|reina|king|queen|papa|pope|canciller|"
+    r"chancellor|gobernador|gobernadora|governor|alcalde|alcaldesa|mayor|ceo|jefe\s+de\s+estado|"
+    r"head\s+of\s+state|dueno|duena|owner|entrenador|entrenadora|coach|dt|campeon|campeona|champion)"
+    r"(?:\s+actual)?\s+(?:de|del|of|en)\s+\S.*)"
+)
+# Who the age is asked of: nobody named («él», «she»), the person or BAXY is not a public person.
+_NOT_A_PUBLIC_PERSON = (
+    r"^(?:el|ella|ellos|ellas|usted|he|she|him|her|they|them|it|eso|esto|that|this)$|"
+    r"^(?:mi|mis|tu|tus|nuestro|nuestra|my|your|our)\b|\b(?:bax[yi]|asistente|assistant|ia|ai)$"
+)
+
+
+def person_fact_subject(text: str) -> str | None:
+    """«cuántos años tiene Jennifer López» → «Jennifer López»; «quién es el presidente de
+    Chile» → «el presidente de Chile»; None when the question is not about a public person."""
+
+    folded = re.sub(_LOOKUP_LEAD, "", re.sub(_TALK_OPENING, "", _fold(text))).strip(" ¿?¡!.,")
+    match = _PERSON_FACT.fullmatch(folded)
+    if match is None or len(folded.split()) > 16:
+        return None
+    subject = (match.group("person") or match.group("office") or "").strip(" ,.")
+    if not subject or _has(subject, _NOT_A_PUBLIC_PERSON) or _has(subject, _NOT_PUBLIC_WORK):
+        return None
+    return _original_words(text, subject).strip()
+
+
 def record_fact_query(text: str) -> str | None:
     """«Entonces cuál fue el 1er libro de zombies» → the question as the search query; None otherwise.
 
-    A first, last, best or release date is a dated fact: looked up before it is stated."""
+    A first, last, best or release date is a dated fact: looked up before it is stated;
+    so is a public person's age or who holds an office now."""
 
     folded = re.sub(_LOOKUP_LEAD, "", re.sub(_TALK_OPENING, "", _fold(text))).strip(" ¿?¡!.,")
+    if person_fact_subject(text) is not None:
+        return _original_words(text, folded).strip()
     if _RECORD_FACT.fullmatch(folded) is None or len(folded.split()) > 16:
         return None
     subject = re.sub(r"^(?:cual|quien|cuando|what|who|which|when)\s+\S+\s+", "", folded)
@@ -474,6 +513,52 @@ def _research_question_subject(text: str) -> str | None:
     if _entity_lookup_query("quién es " + subject) is None:
         return None
     return subject
+
+
+# Uso real 2026-09-23 «in the eastern timezone, what time is it now» → «20:19»
+# (this PC's clock; Eastern was 19:19), «qué hora es en tokio», «hora entre aquí
+# y canadá»: system.time reads only this PC's clock and the mind has no zone
+# database, so the time somewhere else is public information to look up, never
+# this clock recited. A clock question names another place when it carries a
+# zone («timezone», «GMT», «hora del Pacífico»), a difference between places, or
+# «en/in <lugar>» after the clock words — «aquí», «este PC», a part of the day
+# and «en una hora» are this clock or a duration, not a place.
+_CLOCK_QUESTION = (
+    r"\b(?:que\s+hora|la\s+hora|hora\s+(?:es|actual|local|exacta|entre)|"
+    r"diferencia\s+horaria|time\s+difference|"
+    r"what\s+time|the\s+time|current\s+time|local\s+time|time\s+(?:is\s+it|now|right\s+now))\b"
+)
+_OTHER_ZONE = (
+    r"\b(?:time\s*zones?|zona\s+horaria|zonas\s+horarias|huso\s+horario|"
+    r"diferencia\s+horaria|diferencia\s+de\s+hora(?:rio)?|time\s+difference|"
+    r"gmt|utc|est|edt|pst|pdt|cst|cdt|mst|mdt|cet|cest|bst|jst|"
+    r"(?:eastern|pacific|central|mountain|atlantic)\s+(?:time|standard|daylight)|"
+    r"hora\s+(?:del\s+(?:pacifico|este|atlantico|centro)|de\s+la\s+costa\s+\w+)|"
+    r"hora\s+entre)\b"
+)
+_CLOCK_ELSEWHERE = (
+    r"\b(?:hora|time)\b.{0,32}?\b(?:en|in|at|over\s+in)\s+"
+    r"(?!(?:este|esta|mi|my|this|the\s+(?:pc|computer|morning|afternoon|evening|night)|"
+    r"el\s+(?:pc|equipo|computador|ordenador)|la\s+(?:pc|computadora|manana|tarde|noche)|"
+    r"casa|home|aqui|aca|here|punto|una|un|one|an?|\d)\b)"
+    r"[a-z]"
+)
+# «¿a qué hora es la cita?», «what time does the bank open in London»: the time
+# of an event is not a clock reading; neither is a scheduling order.
+_CLOCK_NOT_A_READ = (
+    r"\b(?:alarma|alarm|timer|temporizador|recuerda\w*|recorda\w*|remind|avisa\w*|horario|schedule|"
+    r"a\s+que\s+hora|what\s+time\s+(?:does|do|did|will|should|shall|is\s+the|are\s+the))\b"
+)
+
+
+def other_place_clock_question(folded: str) -> bool:
+    """A question for the time in another zone or place (never this PC's clock)."""
+
+    return (
+        _has(folded, _CLOCK_QUESTION)
+        and (_has(folded, _OTHER_ZONE) or _has(folded, _CLOCK_ELSEWHERE))
+        and not _has(folded, _CLOCK_NOT_A_READ)
+    )
 
 
 def _public_live_lookup_request(folded: str) -> bool:
@@ -526,6 +611,19 @@ def _public_live_lookup_request(folded: str) -> bool:
         "habra",
         "report",
         "i",
+        # Uso real 2026-09-23 «Dígame el weather para San Valentín», «tell me the
+        # weather in Paris»: the formal and English asking heads went to a web
+        # search of the whole sentence instead of the weather read.
+        "digame",
+        "diganme",
+        "dame",
+        "deme",
+        "tell",
+        "give",
+        "check",
+        "show",
+        "revisa",
+        "consulta",
     }
     news_consumption = (
         re.match(
@@ -947,6 +1045,7 @@ def _public_live_lookup_request(folded: str) -> bool:
             future_clothing_weather,
             public_parking_discovery,
             retailer_product_discovery,
+            other_place_clock_question(folded),
         )
     )
 

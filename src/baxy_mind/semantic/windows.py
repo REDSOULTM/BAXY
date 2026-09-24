@@ -153,11 +153,32 @@ _MINIMIZE_ALL_REQUEST = re.compile(
 )
 
 
+# Uso real 2026-09-23 «Ve al homescreen», «Go to the home screen» opened a
+# website called homescreen: on a PC the home screen is the desktop, and going
+# to it (Win+D) is every window minimized. «abre el escritorio» stays the
+# Desktop folder: only a movement or showing verb reads as the desktop view.
+PC_HOME_PLACE = r"(?:escritorio|desktop|home\s*screen|pantalla\s+(?:de\s+inicio|principal))"
+_SHOW_DESKTOP_REQUEST = re.compile(
+    r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
+    r"(?:ve|vete|anda|andate|vuelve|volve|volvamos|regresa|ir|vamos|llevame|"
+    r"muestrame|mostrame|muestra|ensename|"
+    r"go(?:\s+back)?|return|take\s+me(?:\s+back)?|bring\s+me(?:\s+back)?|show(?:\s+me)?)"
+    r"\s+(?:(?:a|al|to)\s+)?(?:(?:el|la|the|my|mi)\s+)?"
+    rf"{PC_HOME_PLACE}"
+    r"(?:\s*,?\s*(?:por\s+favor|please))?[\s.!?]*$"
+)
+
+
 def minimize_all_request(folded: str) -> bool:
     """MINALL1687 «minimizá todas las ventanas», «minimizá todo»: one order
-    over every desktop window, never a named one."""
+    over every desktop window, never a named one; going to or showing the
+    desktop (the PC's home screen) is the same order."""
 
-    return _MINIMIZE_ALL_REQUEST.match(_strip_request_envelope(folded)) is not None
+    request = _strip_request_envelope(folded)
+    return (
+        _MINIMIZE_ALL_REQUEST.match(request) is not None
+        or _SHOW_DESKTOP_REQUEST.match(request) is not None
+    )
 
 
 # WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá la mejor»: a
