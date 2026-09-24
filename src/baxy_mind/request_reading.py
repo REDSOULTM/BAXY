@@ -439,6 +439,17 @@ _NEGATED_DOING = re.compile(
     r"(?:(?:me|te|le|nos|os|les|suelo|sueles|suele|suelen)\s+)*"
     + _DOING.pattern
 )
+# Tanda 6 «que sabes sobre la el ángel caído» → a recital of what BAXY does: «sabes» and «puedes» are also how a
+# question about a topic is asked of him («qué sabes de la revolución francesa», «what can you tell me about
+# Rome»). What he knows or can tell about a named subject asks for that subject; only himself as the subject
+# («qué sabes de ti») or what he does («qué sabes hacer») is about him.
+_KNOWING_ABOUT_A_TOPIC = re.compile(
+    r"\b(?:sabes|sabe|sabeis|conoces|conoce|know|knows|decir|decirme|contar|contarme|explicar|explicarme|"
+    r"tell|say|share)\b(?:\s+(?:me|us|nos|algo|anything|something|much|mucho))*\s+"
+    r"(?:sobre|de|del|acerca\s+de|respecto\s+(?:a|de)|about|on|regarding)\s+"
+    r"(?!(?:ti|vos|usted|ti\s+mismo|you|yourself|yourselves|baxy|tu|tus|your|lo\s+que\s+(?:haces|puedes)|"
+    r"what\s+you)\b)[a-z0-9]"
+)
 
 _CAPABILITY_OVERRIDE_TOKENS = (
     "que puedes hacer", "que sabes hacer", "what can you do",
@@ -699,6 +710,7 @@ def _read_intents(ask: str) -> frozenset[str]:
         and (_DOING.search(folded) is not None or _LIMIT.search(folded) is not None)
         and not continue_constraint
         and not _contains_any(folded, _NEGATIVE_TOKENS)
+        and _KNOWING_ABOUT_A_TOPIC.search(folded) is None
     )
     # «Qué puedes hacer y qué no haces» pide capacidades: el override que ya
     # gobernaba las frases enteras gobierna también la forma.
