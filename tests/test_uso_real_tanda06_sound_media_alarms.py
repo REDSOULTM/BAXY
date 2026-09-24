@@ -4,6 +4,9 @@
   particle takes a Spanish light verb with its clitic («dale up», «ponle down», «métele up»); the particle is the
   direction, so only the amount is asked (owner rule H0027: no default step, and a direction said is never asked
   again).
+- «Quiero el sound de nuevo please» was answered «No lo hago: no reparto sonidos antiguos»: the sound wanted, asked
+  for or given back again is the sound coming back (audio.mute, state false), in Spanish, English or both; with
+  «dame»/«necesito» in front it is that order, not a request to observe the audio.
 
 The phrases here are not the literals of the real window; they are other ways of saying the same things, with
 controls that must keep their own reading.
@@ -70,3 +73,52 @@ def test_a_light_verb_with_a_particle_on_the_brightness_is_the_brightness() -> N
 @pytest.mark.parametrize("text", ["dale up", "dale play", "dale up al video", "dale, sube a la azotea"])
 def test_a_light_verb_without_a_level_object_is_not_a_level(text: str) -> None:
     assert levels.read(text) is None
+
+
+# --- 2. the sound wanted back is the sound unmuted ----------------------------------------------------------------
+
+
+def _unmute_arguments(text: str) -> dict[str, object] | None:
+    effects = resolve_explicit_effects(text, AVAILABLE)
+    assert effects is not None and effects.operations == ("audio.mute",), (text, effects)
+    return mind._explicit_arguments_from_evidence("audio.mute", effects.evidence[0], (), ())
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "quiero el sonido de nuevo",
+        "necesito el audio otra vez, porfa",
+        "dame el sonido de vuelta",
+        "quiero de vuelta el sonido",
+        "I want my sound back",
+        "can I have the audio back please?",
+        "bring back the sound",
+        "give me the sound back",
+        "i need the sound again",
+    ],
+)
+def test_the_sound_wanted_back_is_unmuted(text: str) -> None:
+    assert _unmute_arguments(text) == {"state": False}
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # A level, another sound, or listening to something again: never the unmute.
+        "quiero el sonido más alto",
+        "quiero el sonido de las notificaciones de nuevo",
+        "quiero escuchar el sonido de nuevo",
+        "I want the sound back at 50",
+    ],
+)
+def test_the_sound_with_something_else_is_not_the_unmute(text: str) -> None:
+    effects = resolve_explicit_effects(text, AVAILABLE)
+    assert effects is None or "audio.mute" not in effects.operations
+
+
+@pytest.mark.parametrize("text", ["dame el estado del audio", "necesito saber el volumen"])
+def test_observing_the_audio_is_still_a_read(text: str) -> None:
+    effects = resolve_explicit_effects(text, AVAILABLE)
+    assert effects is not None and effects.operations == ("audio.status",)
+

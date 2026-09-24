@@ -62,8 +62,20 @@ AUDIO_RESTORE = alternation(AUDIO_RESTORE_WORDS)
 # Uso real 2026-09-23 «vuelve el sonido»: the sound coming back, with the sound as its subject. «vuelve» and
 # «regresa» say nothing about the sound on their own («vuelve a abrir Spotify»), so they are not restore words
 # (which the planner also reads as «off» cues). They count only together with the sound.
+# Tanda 6 «Quiero el sound de nuevo please» was answered as a limit: the sound wanted, asked for or given back
+# again («quiero el sonido de nuevo», «dame el audio otra vez», «I want my sound back», «bring back the sound»,
+# «quiero de vuelta el sonido») is the sound coming back too. The «again» word is what says it: «quiero el sonido
+# más alto» is a level, and «el sonido de las notificaciones» another sound.
+_SOUND_WANTED = (
+    r"(?:quiero|quisiera|necesito|dame|damelo|devuelveme|give\s+me|i\s+(?:want|need)|i'?d\s+like|"
+    r"(?:can|could)\s+i\s+(?:have|get)|bring|get)"
+)
+_SOUND_WORD = r"(?:(?:el|la|the|mi|my)\s+)?(?:sonido|audio|sound)"
+_AGAIN = r"(?:de\s+nuevo|otra\s+vez|de\s+vuelta|back(?:\s+on)?|again)"
 SOUND_BACK = (
-    rf"(?:{AUDIO_RESTORE}|vuelve|volve|vuelva|regresa|regrese)\s+(?:(?:el|la|the|mi|my)\s+)?(?:sonido|audio|sound)"
+    rf"(?:(?:{AUDIO_RESTORE}|vuelve|volve|vuelva|regresa|regrese)\s+{_SOUND_WORD}|"
+    rf"{_SOUND_WANTED}\s+(?:{_SOUND_WORD}\s+{_AGAIN}|(?:de\s+vuelta|back)\s+{_SOUND_WORD})"
+    r"(?=\s*(?:[,.;:!?]|$|\s(?:por\s+favor|porfa|please|ya|ahora|now)\b)))"
 )
 
 # ---------------------------------------------------------------- the mute as a switch (audio.mute)

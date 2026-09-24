@@ -7278,6 +7278,9 @@ def _strict_catalog_request(
             )
         )
     )
+    # Tanda 6 «dame el audio otra vez», «necesito el sonido de nuevo»: the sound asked back is an unmute order
+    # (lexicon.SOUND_BACK), not a request to observe the audio.
+    request_observation = request_observation and not _has(text, lexicon.MUTE_REQUEST)
     action_composition_head = _has(
         text,
         r"^(?:deja|leave|crea|create|construye|construct|captura|capture|"
