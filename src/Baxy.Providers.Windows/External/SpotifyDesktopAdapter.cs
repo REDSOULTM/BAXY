@@ -149,11 +149,15 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
             return ExternalJson.FailureBeforeEffect(
                 operation, "media_control_action_invalid");
         }
+        bool spotifyNamed = false;
         if (arguments.TryGetProperty("sourceApp", out JsonElement sourceApp)
-            && sourceApp.ValueKind == JsonValueKind.String
-            && !sourceApp.GetString()!.Contains("spotify", StringComparison.OrdinalIgnoreCase))
+            && sourceApp.ValueKind == JsonValueKind.String)
         {
-            return ExternalJson.Failure(operation, "media_source_app_not_spotify");
+            if (!sourceApp.GetString()!.Contains("spotify", StringComparison.OrdinalIgnoreCase))
+            {
+                return ExternalJson.Failure(operation, "media_source_app_not_spotify");
+            }
+            spotifyNamed = true;
         }
         if (action is not ("play" or "pause" or "next" or "previous" or "stop" or "toggle"))
         {
@@ -167,9 +171,16 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
         // its first stage after the boundary was crossed, and the failure travelled
         // as an ambiguous effect that held the whole conversation. Nothing can have
         // happened in a client that is not running.
+        // Tanda 6 «pasar al siguiente episodio» with nothing playing was told «el
+        // cliente de Spotify no estaba abierto»: this automation is the last player
+        // of the chain, reached only when no media session, local player or YouTube
+        // tab answered. With Spotify not named and not running, what was found is
+        // that nothing is playing; Spotify's absence is the answer only when the
+        // person asked for Spotify.
         if (!_processExists("Spotify"))
         {
-            return ExternalJson.FailureBeforeEffect(operation, "spotify_client_not_running");
+            return ExternalJson.FailureBeforeEffect(
+                operation, spotifyNamed ? "spotify_client_not_running" : "media_session_not_found");
         }
         var effectBoundary = new ExternalEffectBoundary();
         try

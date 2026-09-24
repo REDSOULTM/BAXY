@@ -2729,21 +2729,26 @@ public sealed class ExternalAdaptersTests
 
     // 2026-09-22 (owner's turn 148): with no Spotify process the automation died
     // after crossing the boundary and the failure travelled as an ambiguous effect.
-    [Test]
-    public async Task SpotifyDesktopControlStandsAsideWithoutAClientProcess()
+    // Tanda 6 «pasar al siguiente episodio» with nothing playing was told Spotify was
+    // not open: the last player of the chain found nothing playing, and Spotify's
+    // absence is the cause only when the person named Spotify.
+    [TestCase("""{"action":"stop"}""", "media_session_not_found")]
+    [TestCase("""{"action":"next","sourceApp":null}""", "media_session_not_found")]
+    [TestCase("""{"action":"next","sourceApp":"spotify"}""", "spotify_client_not_running")]
+    public async Task SpotifyDesktopControlStandsAsideWithoutAClientProcess(string arguments, string error)
     {
         var runner = new StubProcessRunner("{\"ok\":true}");
         var adapter = new SpotifyDesktopAdapter(runner, processExists: static _ => false);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "media.control", Json("""{"action":"stop"}"""), CancellationToken.None);
+            "media.control", Json(arguments), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
-            Assert.That(receipt.ErrorCode, Is.EqualTo("spotify_client_not_running"));
+            Assert.That(receipt.ErrorCode, Is.EqualTo(error));
             Assert.That(runner.LastArguments, Is.Empty);
         });
     }
