@@ -1803,8 +1803,14 @@ def conversation_only_content_request(text: str) -> bool:
         r"^(?:dame|give\s+me|write|draft)\b.{0,96}"
         r"\b(?:receta|recipe)\b|"
         r"^dame\s+a\s+currir\s+ese\s+pi\s+para\b.{1,96}$|"
-        r"^(?:inventa|crea|escribe|make\s+up|write)\b.{0,96}"
-        r"\b(?:adivinanza|riddle|poema|poem|cuento|story)\b|"
+        # Tanda 4c «Actúa como Julio Berne y haz un relato basado en el año 2090» died twice as a
+        # knowledge answer that only asked back: a piece of fiction asked for is written, in a persona
+        # too. Writing verbs make any story; telling or making ones a story with an indefinite article
+        # («cuéntame la historia de Roma» stays a question about Roma).
+        rf"^{_PERSONA_FRAME}(?:{_WRITING_VERB}\b.{{0,96}}\b(?:historia|story|leyenda|legend)|"
+        rf"(?:{_WRITING_VERB}|{_TELLING_VERB})\b.{{0,96}}\b(?:adivinanza|riddle|poema|poem|cuento|relato|"
+        r"fabula|fable|tale|(?:un|una|a|an|another|otro|otra)\s+(?:\w+\s+)?(?:historia|story|leyenda|legend))"
+        r")\b|"
         r"^(?:escribe|write)\b.{0,64}\b(?:lista|checklist)\b.{0,64}"
         r"\b(?:teorica|theoretical)\b|"
         r"^(?:escribe|write)\b.{0,64}\b(?:teorica|theoretical)\b.{0,64}"
@@ -1858,6 +1864,19 @@ def conversation_only_content_request(text: str) -> bool:
         rf"(?:programa|program|codigo|code|app|aplicacion|clase|class)\b.{{0,32}}\b(?:en|in)\s+{_CODE_LANGUAGE}|"
         rf"{_CODE_LANGUAGE}\s+(?:program|programs|code|app|class|script|function)\b)",
     )
+
+
+# «actúa como Julio Verne y …», «pretend you're a pirate and …», «como si fueras Borges, …»: the voice a
+# piece of fiction is written in, before the order that asks for it.
+_PERSONA_FRAME = (
+    r"(?:(?:actua|act|habla|talk|pretend|finge|fingi|imagina|imagine|como\s+si\s+fueras|as\s+if\s+you\s+were)"
+    r"\b[^,.;]{0,64}?(?:\s+y\s+|\s+and\s+|\s*,\s*))?"
+)
+_WRITING_VERB = (
+    r"(?:inventa|inventame|crea|creame|escribe|escribeme|escribime|redacta|redactame|make\s+up|write(?:\s+me)?|"
+    r"create)"
+)
+_TELLING_VERB = r"(?:haz|hazme|haceme|cuentame|contame|narra|narrame|narrate|tell\s+me|make\s+me)"
 
 
 _REASSURANCE_STATEMENT = re.compile(
@@ -2807,6 +2826,8 @@ def _clarification_intent_of(
             re.IGNORECASE,
         )
         is not None
+        # Tanda 4c: «show me the apps», «show me my open apps» name no category; the open ones are read.
+        and window_inventory_arguments(folded) is None
     )
     if "app.installed" in available and categorized_application_request:
         return ClarificationIntent(

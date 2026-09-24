@@ -1189,13 +1189,16 @@ def window_inventory_arguments(text: str) -> dict[str, object] | None:
         r"(?:(?:lo\s+)?que\s+tengo\s+abierto|what\s+i\s+have\s+open|"
         r"what(?:'s|\s+is)\s+open|what\s+do\s+i\s+have\s+open)"
     )
-    if not _has(text, rf"\b(?:ventanas?|windows?)\b|\b{open_things}\b"):
+    # Tanda 4c «show me las aplicaciones»: the applications shown are the ones open, one window each. Installed
+    # or downloaded ones are not a window read (no operation lists them).
+    applications = r"aplicaciones|apps|applications|programas|programs"
+    if not _has(text, rf"\b(?:ventanas?|windows?|{applications})\b|\b{open_things}\b"):
         return None
     number = r"(?:\d+|" + "|".join(
         re.escape(word) for word in sorted(_PERCENTAGE_WORD_VALUES, key=len, reverse=True)
     ) + r")"
-    determiner = r"(?:(?:todas(?:\s+las)?|all(?:\s+the)?|las|mis|the|my)\s+)?"
-    state = r"(?:abiertas|visibles|open|visible)"
+    determiner = r"(?:(?:todas(?:\s+las)?|todos(?:\s+los)?|all(?:\s+(?:the|my))?|las|los|mis|the|my)\s+)?"
+    state = r"(?:abiertas|abiertos|visibles|open|visible)"
     local = (
         r"(?:(?:de|del|en)\s+(?:(?:mi|el|este)\s+)?"
         r"(?:pc|equipo|computador(?:a)?|escritorio)|"
@@ -1203,7 +1206,7 @@ def window_inventory_arguments(text: str) -> dict[str, object] | None:
     )
     noun = (
         rf"{determiner}(?:(?:primeras|first|hasta|up\s+to)\s+{number}\s+)?"
-        rf"(?:{state}\s+)?(?:ventanas|windows)"
+        rf"(?:{state}\s+)?(?:ventanas|windows|{applications})"
         rf"(?:\s+(?:{state}|{local}|(?:que\s+tengo|that\s+(?:i\s+have|are)|"
         rf"i\s+have|tengo|hay|estan|are)(?:\s+{state})?)){{0,3}}"
     )
@@ -1213,7 +1216,7 @@ def window_inventory_arguments(text: str) -> dict[str, object] | None:
     )
     read_head = (
         rf"(?:{_LIST}|{_MACHINE_STATUS_OBSERVATION_HEAD}|enumera|enumerate|"
-        r"ensename|cuenta|count|tell\s+me|give\s+me|necesito|"
+        r"ensename|ensenarme|mostrarme|cuenta|count|tell\s+me|give\s+me|necesito|"
         r"quiero\s+ver|i\s+want\s+to\s+see|i\s+need\s+to\s+see|"
         r"fijate(?:\s+en)?|mira|mirame|chequea|checkea|revisa)"
     )
@@ -1236,7 +1239,7 @@ def window_inventory_arguments(text: str) -> dict[str, object] | None:
         r"(?:\s+(?:que\s+tengo\s+abierta|abierta|open|que\s+tengo|i\s+have\s+open))?"
     )
     if not re.fullmatch(
-        rf"(?:(?:{read_head}\s+(?:{question_head}\s+)?|{question_head}\s+)(?:{object_phrase}|{open_things})|"
+        rf"(?:(?:{read_head}(?:\s+me)?\s+(?:{question_head}\s+)?|{question_head}\s+)(?:{object_phrase}|{open_things})|"
         rf"{object_phrase}\s*[,;]\s*(?:muestramelas|enumeralas|list\s+them|show\s+them)|"
         rf"{size_question})"
         rf"{ending}", text, re.IGNORECASE,

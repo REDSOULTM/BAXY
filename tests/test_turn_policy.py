@@ -11246,7 +11246,8 @@ def test_focal_effect_arguments_preserve_literal_user_content(
         "rápido",
         "I want to play Mario on the switch I mean the Wii.",
         "Muestra las las apps instaladas.",
-        "Enseñarme las apps.",
+        # Tanda 4c: «Enseñarme las apps.» is the open windows read aloud; the installed ones have no operation.
+        "Enseñarme las apps instaladas.",
     ],
 )
 def test_requests_without_executable_local_authority_close_as_conversation(

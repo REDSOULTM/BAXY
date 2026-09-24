@@ -40,7 +40,7 @@ from urllib.parse import parse_qs, urlparse
 from . import corrector
 from .semantic.normalize import alternation, fold
 from .semantic import dialogue as dialogue_slot
-from .semantic.network import asks_calendar_part
+from .semantic.network import asks_calendar_part, calendar_parts_asked
 from .semantic.web import weather_asks_later_day, weather_asks_sun_time
 from . import effect_intent
 from .effect_intent import (
@@ -4102,6 +4102,46 @@ _MISMATCHED_ACTION_NOUN = re.compile(
     r"\b(?:(?:la|una|esta|esa)\s+\w{3,}[ai]do|(?:el|un|este|ese)\s+(?!hada\b)\w{3,}[ai]da)\b(?!s)",
     re.IGNORECASE,
 )
+# Tanda 4c «Please decrease el brillo del screen un poco» → «¿Cuánto deseas reducir el brillo del pantalla?» and
+# tanda-02 «Reducí el brillo del pantalla un 20 por ciento»: the person's Spanish article stayed in front of the
+# English noun the model translated. The PC's own nouns carry their gender and the determiner agrees with it.
+# Nouns that are also a verb form after an object clitic («la archivo», «que la ajuste») are left out.
+# Folded determiner → the one of the other gender.
+_AGREEING_DETERMINER = {
+    "el": "la", "del": "de la", "al": "a la", "un": "una", "este": "esta", "ese": "esa",
+    "ningun": "ninguna", "algun": "alguna",
+    "la": "el", "una": "un", "esta": "este", "esa": "ese", "ninguna": "ningún", "alguna": "algún",
+}
+_FEMININE_PC_NOUNS = (
+    r"pantalla|m[uú]sica|ventana|carpeta|aplicaci[oó]n|computadora|p[aá]gina|canci[oó]n|bater[ií]a|luz|"
+    r"c[aá]mara|impresora|lista|alarma|nota|tecla|foto|imagen|pesta[nñ]a|configuraci[oó]n|conexi[oó]n|hora|"
+    r"fecha|calculadora|papelera|memoria|contrase[nñ]a|tarea|b[uú]squeda|descarga|unidad"
+)
+_MASCULINE_PC_NOUNS = (
+    r"volumen|brillo|sonido|nivel|teclado|navegador|micr[oó]fono|escritorio|sistema|correo|mensaje|v[ií]deo|"
+    r"rat[oó]n|men[uú]|audio|portapapeles|recordatorio|clima|altavoz|parlante|disco|dispositivo|mapa|problema|"
+    r"tema|perfil|programa|equipo"
+)
+_MISMATCHED_ARTICLE = re.compile(
+    r"(?<!\w)(?:(?P<masculine>(?i:el|del|al|un|este|ese|ning[uú]n|alg[uú]n))\s+(?P<feminine_noun>"
+    + _FEMININE_PC_NOUNS
+    + r")|(?P<feminine>(?i:la|una|esta|esa|ninguna|alguna))\s+(?P<masculine_noun>"
+    + _MASCULINE_PC_NOUNS
+    + r"))(?!\w)"
+)
+
+
+def visible_reply_breaks_article_agreement(value: object) -> str:
+    """The agreeing form («de la pantalla») of the first determiner that disagrees with its noun, or ``""``.
+
+    Nouns are matched in lower case only: a capitalised word after the article is a name («el Red Dead»)."""
+
+    match = _MISMATCHED_ARTICLE.search(str(value or ""))
+    if match is None:
+        return ""
+    determiner = _reading_fold(match["masculine"] or match["feminine"])
+    noun = match["feminine_noun"] or match["masculine_noun"]
+    return f"{_AGREEING_DETERMINER[determiner]} {noun}"
 _FAILURE_MARKERS = re.compile(
     r"(?:no pude|no puedo|couldn't|could not|can't|cannot|"
     r"eso no lo hago|i don't do that|i do not do that|"
@@ -4646,6 +4686,73 @@ def _preserves_calendar_date(text: str, local: datetime) -> bool:
                     or match["year"] is not None and int(match["year"]) != local.year):
                 return False
     return found
+
+
+def _calendar_facts(local: datetime, user_text: str, language: str) -> dict[str, str]:
+    """The part of the observed date the question asks for (semantic.network.calendar_parts_asked).
+
+    Tanda 4c: «¿qué mes sale…?» carried the whole date and every «Este mes es septiembre.» was rejected for
+    lacking the day. A month or a year asked is carried alone; the date keeps its weekday when that is asked."""
+
+    parts = calendar_parts_asked(user_text)
+    facts: dict[str, str] = {}
+    if "date" in parts:
+        facts["date"] = local.date().isoformat()
+        if _requests_weekday(user_text):
+            facts["weekday"] = _weekday_name(local, language)
+    if "month" in parts:
+        names = _CALENDAR_MONTHS[local.month - 1].split()
+        facts["month"] = names[-1].capitalize() if language == "en" else names[0]
+    if "year" in parts:
+        facts["year"] = str(local.year)
+    return facts
+
+
+def _calendar_instruction(user_text: str) -> str:
+    """What the narrator states from the calendar facts _calendar_facts carries."""
+
+    parts = calendar_parts_asked(user_text)
+    if "date" not in parts:
+        named = " and ".join(parts)
+        return f"State only the {named} from {named}; say no day. Do not guess."
+    if _requests_weekday(user_text):
+        return "State the weekday from weekday and the local calendar date from date. Do not guess either."
+    return "State the local calendar date from date. Do not guess a date."
+
+
+def _misses_calendar_facts(text: str, facts: dict) -> bool:
+    """The draft states each calendar fact carried (date, weekday, month, year) and no other.
+
+    Without a carried date, any day stated is a guess; the month named is the carried one and no other («may»
+    counts only as the capitalised month, not the English modal); the year likewise."""
+
+    date = facts.get("date")
+    if isinstance(date, str) and date:
+        try:
+            local = datetime.fromisoformat(date)
+        except ValueError:
+            return True
+        if not _preserves_calendar_date(text, local):
+            return True
+        if facts.get("weekday") and not _states_only_the_weekday(text, local):
+            return True
+    elif any(pattern.search(text.casefold()) for pattern in _CALENDAR_DATE_PATTERNS):
+        return True
+    month = facts.get("month")
+    if isinstance(month, str) and month:
+        folded = _reading_fold(text)
+        named = {
+            number
+            for word, number in _CALENDAR_MONTH_NUMBERS.items()
+            if re.search(rf"\b{word}\b", folded) and (word != "may" or re.search(r"\bMay\b", text))
+        }
+        if named != {_CALENDAR_MONTH_NUMBERS.get(month.casefold())}:
+            return True
+    year = facts.get("year")
+    if isinstance(year, str) and year:
+        if set(re.findall(r"(?<!\d)\d{4}(?!\d)", text)) != {year}:
+            return True
+    return False
 
 
 def _observed_maps_from_situation(situation: dict) -> list[dict]:
@@ -5301,6 +5408,11 @@ def _compose_situation_payload(
             if isinstance(title, str) and title.strip():
                 projected["typedInto"] = title.strip()
             visible_seen = projected
+        elif operation == "input.key.press" and visible_seen.get("ok") is True:
+            # Tanda 4c «show me las aplicaciones»: the receipt's title of the window that had the focus before the
+            # press (an update dialog) reached the narrator, which told it as an error the system had shown. The
+            # key pressed is the fact; focus bookkeeping and event counts are the adapter's verification.
+            visible_seen = {"keyPressed": visible_seen.get("key")}
         elif operation == "input.visible.click" and visible_seen.get("ok") is True:
             # UI1635 «clic en el botón Aceptar»: the receipt's absentOrDisabled
             # is a post-read — the control was gone after the click because
@@ -5503,9 +5615,7 @@ def _compose_situation_payload(
             if asks_calendar_part(user_text):
                 local = _local_datetime_from_observed(merged_seen)
                 if local is not None:
-                    payload["date"] = local.date().isoformat()
-                    if _requests_weekday(user_text):
-                        payload["weekday"] = _weekday_name(local, language)
+                    payload.update(_calendar_facts(local, user_text, language))
         if visible_seen:
             payload["seen"] = visible_seen
     _ = seen
@@ -6096,7 +6206,7 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
         if "muted" in observed:
             bits.append("Describe whether sound is silenced.")
         if clock and asks_calendar_part(user_text):
-            bits.append("State the local calendar date from date.")
+            bits.append(_calendar_instruction(user_text))
         elif clock and has_audio:
             bits.append("Name the local clock.")
         elif clock:
@@ -6446,6 +6556,53 @@ def _observed_brightness_values(seen: dict) -> list[int]:
         if isinstance(monitor, dict) and isinstance(monitor.get("value"), (int, float)) and not isinstance(monitor.get("value"), bool):
             values.append(int(monitor["value"]))
     return values
+
+
+_LEVEL_OPERATIONS = frozenset({"system.settings.set", "system.settings.adjust", "audio.volume", "audio.volume.adjust"})
+_RAISED_CLAIM = re.compile(
+    r"(?<!\w)(?:subí|subió|subid[oa]|aument[éó]|aumentad[oa]|increment[éó]|incrementad[oa]|elev[éó]|elevad[oa]|"
+    r"raised|increased|brightened|turned\s+(?:[\w']+\s+){0,3}up|went\s+up)(?!\w)",
+    re.IGNORECASE,
+)
+_LOWERED_CLAIM = re.compile(
+    r"(?<!\w)(?:bajé|bajó|bajad[oa]|reduj[eo]|reducí|reducid[oa]|disminuí|disminuyó|disminuid[oa]|atenu[éó]|"
+    r"atenuad[oa]|lowered|decreased|reduced|dimmed|turned\s+(?:[\w']+\s+){0,3}down|went\s+down)(?!\w)",
+    re.IGNORECASE,
+)
+
+
+def _observed_level_change(seen: dict) -> tuple[int, int] | None:
+    """The level before and after an observed set or adjustment, when the receipt read both."""
+
+    def first_number(*values: object) -> int | None:
+        for value in values:
+            if isinstance(value, list) and value:
+                value = value[0]
+            if isinstance(value, dict):
+                value = value.get("volumePercent")
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                return int(value)
+        return None
+
+    before = first_number(seen.get("before"), seen.get("baselineValues"), seen.get("baselineLevel"), seen.get("baseline"))
+    after = first_number(seen.get("values"), seen.get("final"), seen.get("value"), seen.get("level"))
+    return None if before is None or after is None else (before, after)
+
+
+def _unobserved_direction(text: str, seen: dict) -> bool:
+    """Tanda 4c «Incrementa el brightness al level 8» (the brightness was 100) → «El brightness se incrementó al
+    nivel 8.»: the direction was the person's verb, not an observation. A raise or a lowering is said only as the
+    observed levels show it; when the receipt did not read the level before, no direction is said at all."""
+
+    raised = _RAISED_CLAIM.search(text) is not None
+    lowered = _LOWERED_CLAIM.search(text) is not None
+    if not (raised or lowered):
+        return False
+    change = _observed_level_change(seen)
+    if change is None:
+        return True
+    before, after = change
+    return (raised and not after > before) or (lowered and not after < before)
 
 
 def _contradicted_brightness_extreme(text: str, seen: dict) -> str:
@@ -7860,6 +8017,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         and _contradicted_brightness_extreme(text, seen)
     ):
         return _contradicted_brightness_extreme(text, seen)
+    if payload.get("operation") in _LEVEL_OPERATIONS and isinstance(seen, dict) and _unobserved_direction(text, seen):
+        return "unobserved_direction"
     prior_steps = payload.get("completedStepsInOrder")
     written = _written_file_after_listing(payload)
     if written is not None and _reading_fold(written).casefold() not in folded:
@@ -8386,16 +8545,10 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         )
         if clock_defect:
             return clock_defect
-    calendar_date = payload.get("date")
-    if isinstance(calendar_date, str) and calendar_date:
-        try:
-            local = datetime.fromisoformat(calendar_date)
-        except ValueError:
-            return "missing_name"
-        if not _preserves_calendar_date(text, local):
-            return "missing_name"
-        if payload.get("weekday") and not _states_only_the_weekday(text, local):
-            return "missing_name"
+    if any(isinstance(payload.get(key), str) and payload[key] for key in ("date", "month", "year")) and (
+        _misses_calendar_facts(text, payload)
+    ):
+        return "missing_name"
     seen = payload.get("seen")
     if isinstance(seen, dict) and seen and "effect" not in payload:
         # El turno leyó un estado; no lo cambió. Uso real 2026-09-23: «el cambio
@@ -8672,6 +8825,28 @@ def repeats_a_sent_instruction(
                 continue
             return True
     return False
+
+
+# Tanda 4c «Incrementa el brightness al level 8» → «El brightness se incrementó al nivel 8.»: the Spanish contract
+# («Fuera de los literales del contrato, no introduzcas palabras inglesas») was checked only sentence by sentence,
+# so the person's English noun echoed inside Spanish prose passed. These are the PC's own nouns with the Spanish
+# word a Spanish reply uses; a quoted literal, an observed name, a host («weather.com») or a capitalised title
+# word («Official Music Video») keeps its words.
+_ENGLISH_PC_NOUNS = {
+    "brightness": "brillo", "level": "nivel", "volume": "volumen", "sound": "sonido", "screen": "pantalla",
+    "music": "música", "song": "canción", "folder": "carpeta", "file": "archivo", "files": "archivos",
+    "settings": "configuración", "keyboard": "teclado", "battery": "batería", "wallpaper": "fondo de pantalla",
+    "desktop": "escritorio", "clipboard": "portapapeles", "alarm": "alarma", "reminder": "recordatorio",
+    "weather": "clima", "microphone": "micrófono", "speakers": "parlantes", "window": "ventana",
+}
+_ENGLISH_PC_NOUN = re.compile(r"(?<![\w-])(?<!\w\.)(?:" + "|".join(_ENGLISH_PC_NOUNS) + r")(?![\w-])(?!\.\w)")
+
+
+def _english_pc_nouns(text: str) -> list[str]:
+    """The PC nouns written in English (lower case) in a reply, outside quoted literals."""
+
+    prose = re.sub(r'"[^"]*"|«[^»]*»|“[^”]*”', "", text)
+    return list(dict.fromkeys(_ENGLISH_PC_NOUN.findall(prose)))
 
 
 def _reply_uses_opposite_language(text: str, language: str | None) -> bool:
@@ -9689,6 +9864,10 @@ def compose_visible_defect(
         r"\bstill\b|\bworking\b|\bcouldn't\b|\bcould not\b", vocabulary_text.casefold()
     ):
         return "wrong_language"
+    if language == "es" and _english_pc_nouns(vocabulary_text):
+        return "english_word"
+    if visible_reply_breaks_article_agreement(vocabulary_text):
+        return "wrong_gender"
     failure_assertions = stripped
     presence = _merged_observed(situation)
     if (
@@ -10322,8 +10501,6 @@ def compose_visible_defect(
     lead = vocabulary_text.lstrip("¿¡\"'")
     if lead and lead[0].isalpha() and lead[0].islower() and not _opens_with_observed_identifier(lead, situation):
         return "lowercase"
-    if re.search(r"\bla volumen\b", folded):
-        return "wrong_gender"
     # AUDIO1793: the application of a volume adjustment is the audio target,
     # not an opened application whose open/closed state the final must state.
     app_name = None if operation in {"audio.app.volume.adjust", "audio.app.volume.set"} else observed_dict.get("app")
@@ -10703,9 +10880,7 @@ def compose_visible_defect(
         date_requested = clock and asks_calendar_part(user_text)
         if date_requested:
             local = _local_datetime_from_observed(_merged_observed(situation))
-            if local is None or not _preserves_calendar_date(stripped, local):
-                return "missing_name"
-            if _requests_weekday(user_text) and not _states_only_the_weekday(stripped, local):
+            if local is None or _misses_calendar_facts(stripped, _calendar_facts(local, user_text, "es")):
                 return "missing_name"
         clock_required = not date_requested or re.search(
             r"\b(?:hora|time)\b", user_text, re.IGNORECASE
@@ -16506,7 +16681,11 @@ class LlmRuntime:
             # BRIGHT1287 «Subí bastante el brillo.» → «¿Cuánto subiste el
             # brillo?»: the amount question attributed the action to the
             # user's past. One corrected retry; a repeat is a failure.
-            if _PAST_ACTION_ATTRIBUTED_TO_USER.search(str(question)) is None:
+            # Tanda 4c «Please decrease el brillo del screen un poco» → «¿Cuánto deseas reducir el brillo del
+            # pantalla?»: the person's article stayed on the translated noun. Same corrected retry.
+            past_action = _PAST_ACTION_ATTRIBUTED_TO_USER.search(str(question)) is not None
+            agreeing = visible_reply_breaks_article_agreement(question)
+            if not past_action and not agreeing:
                 return question
             if attempt == 0:
                 payload["messages"].insert(
@@ -16517,10 +16696,13 @@ class LlmRuntime:
                             "Corrección: el usuario no hizo nada todavía; te pide "
                             "la acción ahora. No uses «subiste», «bajaste» ni otro "
                             "pasado del usuario: pregunta cuánto debes hacerlo tú."
+                            if past_action
+                            else "Corrección: el artículo concuerda con el sustantivo; "
+                            f"escribe «{agreeing}»."
                         ),
                     },
                 )
-        raise ValueError("aclaración explícita atribuye la acción al usuario")
+        raise ValueError("aclaración explícita atribuye la acción al usuario o no concuerda el artículo")
 
     def ground_plan_arguments(
         self,
@@ -17507,12 +17689,7 @@ class LlmRuntime:
                 "Do not set the clock. Do not introduce yourself."
             )
         elif clock and asks_calendar_part(user_text):
-            instruct(
-                "\nState the weekday from weekday and the local calendar date from date. "
-                "Do not guess either."
-                if "weekday" in (visible_situation or {})
-                else "\nState the local calendar date from date. Do not guess a date."
-            )
+            instruct("\n" + _calendar_instruction(user_text))
         elif clock and has_audio:
             instruct(
                 "\nName the local clock and mute or volume from seen. "
@@ -18995,7 +19172,8 @@ class LlmRuntime:
             _accent_folded_with_punctuation(str(seen_send_for_hint.get("requestedRecipient") or ""))
             == _accent_folded_with_punctuation(str(seen_send_for_hint.get("forcedDestination") or ""))
         )
-        def hint_for(defect: str) -> str:
+        def hint_for(defect: str, candidate: str = "") -> str:
+            candidate = candidate or text
             return {
                 "broken_person_conjugation": (
                     "Say it in the first person present: «me ocupo de …», never "
@@ -19200,7 +19378,31 @@ class LlmRuntime:
                     "other networks, or being online or offline."
                 ),
                 "too_many_sentences": "Una sola frase.",
-                "wrong_gender": "Masculine abierto/cerrado. Feminine abierta/cerrada.",
+                "wrong_gender": (
+                    "El artículo concuerda con el sustantivo: escribe «"
+                    + visible_reply_breaks_article_agreement(candidate) + "»."
+                    if visible_reply_breaks_article_agreement(candidate)
+                    else "Masculine abierto/cerrado. Feminine abierta/cerrada."
+                ),
+                "english_word": (
+                    "Todo en español, también el sustantivo que la persona dijo en inglés: "
+                    + ", ".join(
+                        f"«{_ENGLISH_PC_NOUNS[word]}» y no «{word}»" for word in _english_pc_nouns(candidate)
+                    ) + "."
+                ),
+                "unobserved_direction": (
+                    (
+                        "Say only the level it is at now; the level before was not read, so do not say it went up or down."
+                        if response_language == "en"
+                        else "Di sólo el nivel en que quedó; el nivel anterior no se leyó, así que no digas que subió ni que bajó."
+                    )
+                    if _observed_level_change(_merged_observed(situation)) is None
+                    else (
+                        "It went from {} to {}: say the direction those two levels show, not the verb of the request."
+                        if response_language == "en"
+                        else "Pasó de {} a {}: di la dirección que muestran esos dos niveles, no el verbo del pedido."
+                    ).format(*_observed_level_change(_merged_observed(situation)))
+                ),
                 "missing_name": (
                     # AUDIO1793: the application volume final names the app and the
                     # level the sessions now have.
@@ -19643,7 +19845,7 @@ class LlmRuntime:
         third_defect = rejection_reason(retry_text) or defect
         third_hint = " ".join(
             part for part in dict.fromkeys(
-                (hint_for(defect), hint_for(third_defect), contract_hint(retry_text))
+                (hint_for(defect), hint_for(third_defect, retry_text), contract_hint(retry_text))
             ) if part
         )
         sent_instructions.append(third_hint)

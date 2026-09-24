@@ -3,9 +3,9 @@
 1. The sound switched on or off is the mute («Enciende el sound» was a limit). Owner: semantic/lexicon
    SOUND_SWITCH_ON / SOUND_SWITCH_OFF (UNMUTE_WORDS / MUTE_WORDS), read by the audio reader, the domain gate
    and the argument binder.
-2. The home screen opened is the desktop view; the Start menu, or the PC's applications shown, is the Windows
-   key («Abre el start screen» was a limit, «show me las aplicaciones» searched Google Play). Owner:
-   semantic/windows (minimize_all_request, start_menu_request).
+2. The home screen opened is the desktop view; the Start menu is the Windows key («Abre el start screen» was a
+   limit). Owner: semantic/windows (minimize_all_request, start_menu_request). Tanda 4c: the PC's applications
+   shown are the open windows read aloud (test_uso_real_tanda04c_compose_finals).
 3. The person's own music collection is asked, never searched («pon cualquier cosa de mi playlist reciente»
    played an unrelated video). Owner: semantic/patterns._OWN_FAVOURITE.
 4. An entry added only if the list lacks it reads the list first, in English as in Spanish («add flour to my
@@ -54,7 +54,7 @@ OPERATIONS = (
     "audio.mute", "audio.volume", "audio.volume.adjust", "audio.status", "media.control", "media.play.query",
     "media.play.youtube", "window.minimize.all", "input.key.press", "app.installed", "app.open",
     "filesystem.folder.open", "task.search", "task.create", "task.list", "web.search", "system.time",
-    "calendar.event.list", "weather.current",
+    "calendar.event.list", "weather.current", "window.resolve",
 )
 
 SCHEMAS = {
@@ -136,7 +136,7 @@ class _NoModel:
     [
         ("Enciende el sound", "audio.mute"),  # tanda 4 t33, a limit before
         ("Abre el start screen", "window.minimize.all"),  # tanda 4 t6, a limit before
-        ("show me las aplicaciones", "input.key.press"),  # tanda 4 t40, a Google Play search before
+        ("show me las aplicaciones", "window.resolve"),  # tanda 4 t40: Google Play, then the Windows key (4c)
         ("add flour to my shopping list if it's not already on it", "task.search"),  # tanda 4 t11
         ("¿qué mes sale ahora mismo en el calendario de mi casa?", "system.time"),  # tanda 4 t34, Outlook before
     ],
@@ -218,13 +218,10 @@ def test_the_desktop_folder_opened_is_still_not_the_desktop_view():
         "open the start menu",
         "muéstrame el menú de inicio de windows",
         "pull up the start menu please",
-        "show me las aplicaciones",  # tanda 4 t40
-        "muéstrame mis apps",
-        "show me all my programs",
-        "enséñame las aplicaciones de este pc",
+        "despliega el menu de inicio",
     ],
 )
-def test_the_start_menu_or_the_pc_applications_is_the_windows_key(text):
+def test_the_start_menu_is_the_windows_key(text):
     assert _effects(text) == ("input.key.press",)
     assert operation_domain_is_grounded(text, "input.key.press", ())
     assert sidecar._ground_explicit_arguments("input.key.press", text, SCHEMAS["input.key.press"]) == {"key": "win"}
@@ -235,7 +232,7 @@ def test_the_start_menu_or_the_pc_applications_is_the_windows_key(text):
     [
         ("show me las aplicaciones", False),
         ("muéstrame mis apps", False),
-        ("lista las aplicaciones", True),
+        ("lista las aplicaciones", False),  # tanda 4c: the open ones, read by the window inventory
         ("list the apps installed", True),
         ("Mostrar todas ah todas las aplicaciones descargadas hoy.", True),
     ],
@@ -446,17 +443,19 @@ _CLOCK = {
 }
 
 
+# Tanda 4c: the month asked is carried and answered alone (test_uso_real_tanda04c_compose_finals); the calendar
+# part, never the time, is what these questions get.
 @pytest.mark.parametrize(
-    ("text", "time_only", "date"),
+    ("text", "time_only", "date", "carried"),
     [
-        ("¿estamos a enero o febrero?", "Son las 02:54.", "Hoy es 24 de septiembre de 2026."),
-        ("a cuántos estamos", "Son las 02:54.", "Estamos a 24 de septiembre."),
-        ("what month is it", "It is 02:54.", "Today is September 24, 2026."),
+        ("¿estamos a enero o febrero?", "Son las 02:54.", "Estamos en septiembre.", {"month": "septiembre"}),
+        ("a cuántos estamos", "Son las 02:54.", "Estamos a 24 de septiembre.", {"date": "2026-09-24"}),
+        ("what month is it", "It is 02:54.", "It is September.", {"month": "septiembre"}),
     ],
 )
-def test_the_month_asked_is_answered_with_the_date_not_the_time(text, time_only, date):
+def test_the_month_asked_is_answered_with_the_date_not_the_time(text, time_only, date, carried):
     payload = llm._compose_situation_payload(_CLOCK, "es", text)
-    assert payload["date"] == "2026-09-24"
+    assert {key: payload[key] for key in ("date", "month") if key in payload} == carried
     assert "clock" not in payload
     facts = {"situation": json.dumps(_CLOCK)}
     assert llm.compose_visible_defect(time_only, "status", text, facts) != ""

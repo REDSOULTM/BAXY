@@ -3809,7 +3809,7 @@ def _closed_unsupported_request(objective: str) -> bool:
             r"(?:muestra|mostrar|muestrame|ensena|ensename|ensenarme|lista|"
             r"listame|show|list|ver)\s+"
             r"(?:(?:me|the|las?|todas?|all|ah)\s+)*(?:apps?|aplicaciones?)"
-            r"(?:\s+(?:instalad[oa]s?|descargad[oa]s?|installed|downloaded))?"
+            r"\s+(?:instalad[oa]s?|descargad[oa]s?|installed|downloaded)"
             r"(?:\s+(?:hoy|today))?[\s.!?]*|"
             r"(?:ver|show)\s+(?:(?:las?|the)\s+)?(?:apps?|aplicaciones?)\s+"
             r"(?:instalad[oa]s?|installed)\s*[,;]?\s*"
@@ -3818,9 +3818,8 @@ def _closed_unsupported_request(objective: str) -> bool:
             re.IGNORECASE,
         )
         is not None
-        # Tanda 4 «show me las aplicaciones»: the PC's applications shown are the Start menu (the Windows key);
-        # a listing read aloud, or the ones downloaded today, still has no operation.
-        and not start_menu_request(folded)
+        # Tanda 4c «show me las aplicaciones»: the applications shown are the open ones (the window inventory);
+        # the installed or downloaded ones listed have no operation.
     )
     unsupported_open_game_status = (
         re.fullmatch(
@@ -5173,7 +5172,7 @@ def _explicit_arguments_from_evidence(
         return {} if effect_intent.minimize_all_request(effect_intent._fold(evidence)) else None
 
     if operation == "input.key.press" and start_menu_request(effect_intent._fold(evidence)):
-        # Tanda 4 «abre el menú inicio», «show me las aplicaciones»: the Start menu opens with the Windows key.
+        # Tanda 4 «abre el menú inicio», «open the start menu»: the Start menu opens with the Windows key.
         return {"key": "win"}
 
     if operation == "clipboard.read.text":

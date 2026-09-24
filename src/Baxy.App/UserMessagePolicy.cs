@@ -380,7 +380,7 @@ internal static class UserMessagePolicy
             {
                 return "missing_literal_fact";
             }
-            if (dateRequested && !PreservesObservedDate(draft.Source, modelText))
+            if (dateRequested && !PreservesObservedDate(draft.Source, modelText, userText))
             {
                 return "missing_literal_fact";
             }
@@ -2274,12 +2274,59 @@ internal static class UserMessagePolicy
 
     private static bool AsksCalendarPart(string? userText) => CalendarPartAsked.IsMatch(userText ?? string.Empty);
 
-    private static bool PreservesObservedDate(string source, string result)
+    // Tanda 4c «¿qué mes sale ahora mismo en el calendario de mi casa?» → «Este mes es septiembre.» was rejected
+    // for lacking the day: a day, date, weekday, number or «a cuántos estamos» asks for the whole date; otherwise
+    // the month and/or the year asked is the answer, and any day stated is a guess. The same reading as the mind's
+    // semantic.network.calendar_parts_asked; the two must not diverge.
+    private static readonly Regex CalendarDayAsked = new(
+        @"\b(?:d[ií]a|fecha|day|date|weekday|lunes|monday|martes|tuesday|mi[ée]rcoles|wednesday|jueves|thursday|"
+        + @"viernes|friday|s[áa]bado|saturday|domingo|sunday|a\s+cu[áa]ntos\s+estamos)\b|\d",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+    private static readonly Regex CalendarYearAsked = new(
+        @"\b(?:a[ñn]o|year)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+    private static readonly string[][] CalendarMonthNames =
+    [
+        ["enero", "january"], ["febrero", "february"], ["marzo", "march"], ["abril", "april"],
+        ["mayo", "may"], ["junio", "june"], ["julio", "july"], ["agosto", "august"],
+        ["septiembre", "setiembre", "september"], ["octubre", "october"], ["noviembre", "november"],
+        ["diciembre", "december"],
+    ];
+
+    // The months named in a text; the English «may» counts only as the capitalised month, never the modal.
+    private static HashSet<int> CalendarMonthsNamed(string text, bool asked)
+    {
+        HashSet<int> named = [];
+        for (int index = 0; index < CalendarMonthNames.Length; index++)
+        {
+            foreach (string name in CalendarMonthNames[index])
+            {
+                bool matched = name == "may"
+                    ? !asked && Regex.IsMatch(text, @"\bMay\b", RegexOptions.CultureInvariant)
+                    : Regex.IsMatch(text, @"\b" + name + @"\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+                if (matched)
+                {
+                    named.Add(index + 1);
+                }
+            }
+        }
+
+        return named;
+    }
+
+    private static bool PreservesObservedDate(string source, string result, string? userText)
     {
         if (!TryDerivedLocalMoment(source, out DateTimeOffset local))
         {
             return true;
         }
+
+        string user = userText ?? string.Empty;
+        bool monthAsked = CalendarMonthsNamed(user, asked: true).Count > 0
+            || Regex.IsMatch(user, @"\b(?:mes|month)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        bool yearAsked = CalendarYearAsked.IsMatch(user);
+        bool dateAsked = CalendarDayAsked.IsMatch(user) || !(monthAsked || yearAsked);
 
         const string month = "(?:enero|january|febrero|february|marzo|march|abril|april|"
             + "mayo|may|junio|june|julio|july|agosto|august|septiembre|setiembre|"
@@ -2298,13 +2345,22 @@ internal static class UserMessagePolicy
                     DateTimeStyles.AllowWhiteSpaces, out DateOnly date)
                 && date.Month == local.Month && date.Day == local.Day
                 && (!hasYear || date.Year == local.Year));
-            if (!sameDate)
+            if (!sameDate || !dateAsked)
             {
                 return false;
             }
         }
 
-        return found;
+        if (dateAsked)
+        {
+            return found;
+        }
+
+        HashSet<int> months = CalendarMonthsNamed(result, asked: false);
+        HashSet<string> years = Regex.Matches(result, @"(?<!\d)\d{4}(?!\d)", RegexOptions.CultureInvariant)
+            .Select(static match => match.Value).ToHashSet(StringComparer.Ordinal);
+        return (!monthAsked || months.SetEquals([local.Month]))
+            && (!yearAsked || years.SetEquals([local.Year.ToString(CultureInfo.InvariantCulture)]));
     }
 
     private static bool InventedVolume(string source, string result, string? userText = null)

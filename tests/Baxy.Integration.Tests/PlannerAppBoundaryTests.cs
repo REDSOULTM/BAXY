@@ -734,15 +734,25 @@ public sealed class PlannerAppBoundaryTests
     }
 
     // Tanda 3 «¿estamos a enero o febrero?» was answered «Son 02:54.»: the month, a month or weekday name or
-    // «a cuántos estamos» ask for the date, as in the mind (semantic.network.asks_calendar_part).
-    [TestCase("¿estamos a enero o febrero?", "Hoy es 6 de septiembre de 2026.", true)]
+    // «a cuántos estamos» ask for the calendar, as in the mind (semantic.network.asks_calendar_part). Tanda 4c
+    // «¿qué mes sale ahora mismo en el calendario de mi casa?» → «Este mes es septiembre.» was rejected for lacking
+    // the day: a month or a year asked is answered with that part (calendar_parts_asked), and a day the narrator
+    // was never given is a guess.
+    [TestCase("¿estamos a enero o febrero?", "Estamos en septiembre.", true)]
+    [TestCase("¿estamos a enero o febrero?", "Estamos en enero.", false)]
     [TestCase("¿estamos a enero o febrero?", "Son las 22:04.", false)]
-    [TestCase("¿qué mes sale ahora mismo en el calendario de mi casa?", "Estamos a 6 de septiembre.", true)]
+    [TestCase("¿qué mes sale ahora mismo en el calendario de mi casa?", "Este mes es septiembre.", true)]
+    [TestCase("¿qué mes sale ahora mismo en el calendario de mi casa?", "Estamos a 6 de septiembre.", false)]
     [TestCase("a cuántos estamos", "Es 6 de septiembre.", true)]
-    [TestCase("what month is it", "It is September 6, 2026.", true)]
+    [TestCase("a cuántos estamos", "Estamos en septiembre.", false)]
+    [TestCase("what month is it", "It is September.", true)]
+    [TestCase("what month is it", "It is October.", false)]
+    [TestCase("what year is it", "It is 2026.", true)]
+    [TestCase("what year is it", "It is 2025.", false)]
+    [TestCase("¿qué mes y año es?", "Es septiembre de 2026.", true)]
     [TestCase("is today friday", "It is 22:04.", false)]
     [TestCase("may I know the time", "It is 22:04.", true)]
-    public void AMonthOrADayNamedAsksForTheDate(string userText, string answer, bool valid)
+    public void AMonthOrADayNamedAsksForTheCalendarPart(string userText, string answer, bool valid)
     {
         const string source = """
             {"kind":"operation","operation":"system.time","polarity":"success","verified":true,"succeeded":true,"observed":{"utc":"2026-09-07T01:04:11.4543673+00:00","localUtcOffsetMinutes":-180}}

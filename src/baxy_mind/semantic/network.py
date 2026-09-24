@@ -138,6 +138,34 @@ def asks_calendar_part(text: str) -> bool:
     return _has(_fold(text), rf"\b(?:{_CALENDAR_UNIT}|{_CALENDAR_PART_NAME}|a\s+cuantos\s+estamos)\b")
 
 
+_CALENDAR_MONTH_ASKED = alternation(("mes", "month") + tuple(name for name in MONTH_NUMBERS if name != "may"))
+_CALENDAR_DAY_ASKED = alternation(
+    ("dia", "fecha", "day", "date", "weekday") + tuple(name for names in _WEEKDAYS for name in names)
+)
+
+
+def calendar_parts_asked(text: str) -> tuple[str, ...]:
+    """The part of the date a calendar question asks for: ``("date",)``, or only ``month`` and/or ``year``.
+
+    Tanda 4c «¿qué mes sale ahora mismo en el calendario de mi casa?» was answered «Este mes es septiembre.»
+    three times and every draft was rejected for lacking the day: a question about the month (or the year) is
+    answered with that part, never made to carry the whole date. A day, a date, a weekday, a number or «a
+    cuántos estamos» asks for the date. The App's visible policy (UserMessagePolicy.PreservesObservedDate) reads
+    the same words; the two must not diverge."""
+
+    if not asks_calendar_part(text):
+        return ()
+    folded = _fold(text)
+    if _has(folded, rf"\b(?:{_CALENDAR_DAY_ASKED}|a\s+cuantos\s+estamos)\b|\d"):
+        return ("date",)
+    parts = tuple(
+        part
+        for part, words in (("month", _CALENDAR_MONTH_ASKED), ("year", r"(?:ano|year)"))
+        if _has(folded, rf"\b{words}\b")
+    )
+    return parts or ("date",)
+
+
 def _direct_process_inventory_request(text: str) -> bool:
     return _process_list_domain(text) and _has(
         text, rf"^[¿?¡!\s]*{_REQUEST_PREFIX}(?:{_LIST}|mostrame|dime|dame|tell|"

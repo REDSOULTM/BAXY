@@ -178,26 +178,21 @@ _SHOW_DESKTOP_REQUEST = re.compile(
 )
 
 
-# Tanda 4 «show me las aplicaciones» searched Google Play: the Start menu is where Windows shows what this PC has,
-# opened with the Windows key (input.key.press «win»); asked to open or show it, or to show the PC's applications
-# («muéstrame mis apps»), that key is pressed. A question about one app stays app.installed.
+# Tanda 4 «abre el menú inicio»: the Start menu opens with the Windows key (input.key.press «win»); asked to open
+# or show it by name, that key is pressed. Tanda 4c «show me las aplicaciones» pressed it and the final narrated the
+# title of the window that had the focus: the applications shown are the ones open, read aloud by the window
+# inventory (grammar.window_inventory_arguments), never a menu the person has to look at.
 _START_MENU = r"(?:(?:el\s+)?menu\s+(?:de\s+)?(?:inicio|start)|(?:the\s+)?start\s+menu)(?:\s+(?:de|of)\s+windows)?"
-_PC_APPLICATIONS = (
-    r"(?:(?:las|mis|todas\s+las|the|my|all\s+(?:the|my)|all)\s+)?(?:aplicaciones|apps|applications|programas|programs)"
-    r"(?:\s+(?:instalad[oa]s|installed|de\s+(?:este|mi|el)\s+(?:pc|equipo|computador(?:a)?|ordenador)|"
-    r"(?:on|in)\s+(?:this|my|the)\s+(?:pc|computer)))?"
-)
 _START_MENU_REQUEST = re.compile(
     r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
-    r"(?:(?:abre|abreme|abri|abrime|abrir|open|despliega|desplega|muestrame|mostrame|muestra|ensename|show(?:\s+me)?|"
-    rf"pull\s+up|bring\s+up)\s+{_START_MENU}|"
-    rf"(?:muestrame|mostrame|muestra|ensename|show(?:\s+me)?|pull\s+up|bring\s+up)\s+{_PC_APPLICATIONS})"
+    r"(?:abre|abreme|abri|abrime|abrir|open|despliega|desplega|muestrame|mostrame|muestra|ensename|show(?:\s+me)?|"
+    rf"pull\s+up|bring\s+up)\s+{_START_MENU}"
     r"(?:\s*,?\s*(?:por\s+favor|please))?[\s.!?]*$"
 )
 
 
 def start_menu_request(folded: str) -> bool:
-    """«abre el menú inicio», «open the start menu», «show me las aplicaciones»: the Windows key (see above)."""
+    """«abre el menú inicio», «open the start menu»: the Windows key (see above)."""
 
     return _START_MENU_REQUEST.match(_strip_request_envelope(folded)) is not None
 
