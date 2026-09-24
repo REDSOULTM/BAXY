@@ -119,8 +119,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 Fase 3.5 uso real 2026-09-23 (tanda 2): listas leídas, artículo al azar buscado, efectos y datos propios no afirmados en conversación.
 # C03 Fase 3.5 uso real 2026-09-24: integración de la segunda ola (tanda 2).
 # C03 Fase 3.5 uso real 2026-09-24: integración de la tercera ola (correo, medios, misc, agenda).
+# C03 Fase 3.5 uso real 2026-09-24: integración de la cuarta ola (mecanismos de la tanda 3).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "ed617ee52b713dec403dbfb41e68576c352b1761c3db14f49c7a4de7b44adf61"
+    "c8b4d32867e4a4f3eae3114cd9618dbf6b5fe73a4d4605adc28d787b4f90e1f2"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

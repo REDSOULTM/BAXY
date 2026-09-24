@@ -136,12 +136,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 Fase 3.5 uso real 2026-09-23 (tanda 2): listas leídas, artículo al azar buscado, efectos y datos propios no afirmados en conversación.
 # C03 Fase 3.5 uso real 2026-09-24: integración de la segunda ola (tanda 2).
 # C03 Fase 3.5 uso real 2026-09-24: integración de la tercera ola (correo, medios, misc, agenda).
+# C03 Fase 3.5 uso real 2026-09-24: integración de la cuarta ola (mecanismos de la tanda 3).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "38a1897dcbf988cc49d85aa13905332dc0d8c95b3db6061fd101c240cd6041fb"
+        "d7c603d93bf4eeff76d62788ee5e1696f2b5e9bd8ecbbb8ec63f33027327ed4b"
     ),
     "src/baxy_mind/llm.py": (
-        "2b98f379c239448de648fc3a972e66dbba89b86af8b1328c4bb616dd3b847625"
+        "f2f0583348f93a3ae61a1af1b8f79af275b081af19b50a205ccff75f6b83cbe6"
     ),
 }
 
