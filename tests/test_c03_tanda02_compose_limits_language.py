@@ -76,14 +76,18 @@ def test_the_report_instruction_names_a_real_site_in_its_example_and_never_that_
     assert "en ese sitio dice que" not in sent
     assert "nunca «ese sitio»" in sent
     assert "no el fragmento entero" in sent
-    assert "tratan de otra cosa" in sent
+    # Tanda 4: the no-answer example says none of the pages says it; «tratan de
+    # otra cosa» was copied before reports of pages that were about the request.
+    assert "ninguna de estas páginas lo dice" in sent
+    assert "tratan de otra cosa" not in sent
 
     english = Recorder(["According to parquelandia.parque.com, «Cómo llegar a Parquelandia Resort»."] * 3)
     english.compose_user_message("how do I get to parquelandia", "status", {"situation": _situation(_PARK_RESULTS)})
     sent_en = english.payloads[0]["messages"][-1]["content"]
     assert "«According to parquelandia.parque.com, …»" in sent_en
     assert "on that site says that" not in sent_en
-    assert "about something else" in sent_en
+    assert "none of these pages says it" in sent_en
+    assert "about something else" not in sent_en
 
 
 def test_the_copied_example_without_its_site_still_names_no_page() -> None:

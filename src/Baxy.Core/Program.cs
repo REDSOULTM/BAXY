@@ -106,6 +106,7 @@ internal static class Program
         var systemStatusProvider = new WindowsSystemStatusProvider();
         var processStatusProvider = new WindowsProcessStatusProvider();
         var timeStatusProvider = new WindowsTimeStatusProvider();
+        using var placeTimeZoneResolver = new OpenMeteoPlaceTimeZoneResolver();
         var gpuStatusProvider = new WindowsGpuStatusProvider();
         var windowControlProvider = new WindowsWindowControlProvider(installedApplicationProvider);
         var privatePayload = new WindowsProtectedPayload(
@@ -158,7 +159,7 @@ internal static class Program
             new SystemIdentityHandler(identityProvider),
             new SystemStatusHandler(systemStatusProvider, gpuStatusProvider),
             new ProcessListHandler(processStatusProvider),
-            new TimeStatusHandler(timeStatusProvider),
+            new TimeStatusHandler(timeStatusProvider, placeTimeZoneResolver),
             .. ReminderHandlers.Create(reminderStore),
             .. RoutineHandlers.Create(routineStore),
             .. TaskHandlers.Create(taskStore),

@@ -37,7 +37,10 @@ def test_local_clock_reads_share_selection_and_grounding(
 @pytest.mark.parametrize("text", [
     "mostrame la hora de cierre", "pasame la fecha de la reunión",
     "Show me the date of the event", "Give me the time needed to download it",
-    "What is the current date in Tokyo?", "Dime la hora en Madrid",
+    # Tanda 4: «Dime la hora en Madrid» is now the clock read with Madrid's zone
+    # (test_uso_real_tanda04_web_answers_time); refused or reported, it is still none.
+    "What is the current date in Tokyo?", "No me digas la hora en Madrid",
+    "Ayer te pedí la hora en Madrid",
     "What is the CPU time?", "Explícame la fecha", "Define local time",
     "Ayer te pedí la hora", "I asked you for the date yesterday",
     "Si te pidiera la hora, ¿qué harías?", "If I ask for the date, what happens?",

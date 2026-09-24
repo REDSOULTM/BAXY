@@ -1719,11 +1719,16 @@ public static class ProductCatalog
             "Mide CPU, memoria, disco, batería, GPU y Windows sin modificar el equipo."),
         Descriptor(
             "system.time",
-            EmptySchema(),
+            // Uso real tanda 4 «convertir nueve de la mañana huso horario a madrid»:
+            // con un lugar o una zona horaria nombrados, la misma lectura trae el
+            // desfase de esa zona en el mismo instante; no hay un reloj más.
+            Schema(
+                [String("place", types: NullableString, maximumUtf8Bytes: 128)],
+                []),
             OperationRisks.ReadOnly,
             "system.time.clock.secondread.v1",
             ToolExposure.Public,
-            "Lee la fecha y hora actuales, la hora UTC y el desfase local mediante dos observaciones coherentes."),
+            "Lee la fecha y hora actuales, la hora UTC y el desfase local mediante dos observaciones coherentes; con un lugar o una zona horaria nombrados, también el desfase de esa zona en ese instante."),
         Descriptor(
             "task.complete",
             TaskCasSchema(),

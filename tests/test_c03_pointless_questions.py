@@ -278,7 +278,9 @@ def test_public_information_is_looked_up_before_the_catalogue_is_offered(text: s
     result = _public_turn(llm, text)
 
     assert result["kind"] == "action"
-    assert result["operation"] == "web.search"
+    # Tanda 4: the time of another place is this clock read with that place's
+    # zone (system.time with «place»), read before the model, never searched.
+    assert result["operation"] == "system.time"
     assert result["question"] == ""
     # The catalogue probe is never reached.
     assert llm.identity_calls == llm.strict_calls == []
@@ -286,8 +288,8 @@ def test_public_information_is_looked_up_before_the_catalogue_is_offered(text: s
 
 def test_the_catalogue_probe_still_speaks_when_the_guard_reads_no_public_lookup() -> None:
     llm = _PublicKnowledgeLlm(public=False)
-    # «qué hora es en tokio» is now read before the model as a public lookup
-    # (other_place_clock_question); a question no reader takes keeps the probe.
+    # «qué hora es en tokio» is now read before the model (clock_elsewhere); a
+    # question no reader takes keeps the probe.
     result = _public_turn(llm, "dime la hora que marca el reloj de la cocina")
 
     # When the guard does not read public information the probe is still asked;
@@ -301,9 +303,11 @@ def test_the_catalogue_probe_still_speaks_when_the_guard_reads_no_public_lookup(
 
 
 def test_this_pc_clock_is_described_as_never_another_place() -> None:
-    assert "never the time in another city" in mind_main._native_selection_description(
-        "system.time", "Lee la fecha y hora actuales.",
-    )
+    # Tanda 4: another place's time is this clock read with that place, never
+    # this clock recited as theirs.
+    described = mind_main._native_selection_description("system.time", "Lee la fecha y hora actuales.")
+    assert "only with that place in «place»" in described
+    assert "never this clock as theirs" in described
 
 
 # --- «play reggae music», «alexa play song over the rainbow», «play song aces high»

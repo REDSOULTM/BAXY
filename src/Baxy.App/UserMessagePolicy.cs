@@ -2837,6 +2837,10 @@ internal static class UserMessagePolicy
         local = default;
         if (!root.TryGetProperty("observed", out JsonElement observed)
             || observed.ValueKind != JsonValueKind.Object
+            // Uso real tanda 4: a reading of another place's time answers with that
+            // place's clock (or a converted one) computed by the mind; this PC's
+            // clock is not the fact owed there, so it is not demanded here either.
+            || observed.TryGetProperty("place", out _)
             || !observed.TryGetProperty("utc", out JsonElement utcElement)
             || utcElement.GetString() is not { Length: > 0 } utc
             || !observed.TryGetProperty("localUtcOffsetMinutes", out JsonElement offsetElement)

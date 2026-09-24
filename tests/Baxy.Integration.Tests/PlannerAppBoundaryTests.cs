@@ -165,9 +165,11 @@ public sealed class PlannerAppBoundaryTests
     [Test]
     public void EmptyClosedSchemasDoNotRequireModelArgumentExtraction()
     {
+        // Uso real tanda 4: system.time now takes an optional place (the time of
+        // another place), so the empty closed schema here is the audio reading.
         Assert.That(
             ProductCatalog.TryGet(
-                "system.time",
+                "audio.status",
                 out ProductOperationDescriptor? noArguments),
             Is.True);
         Assert.That(

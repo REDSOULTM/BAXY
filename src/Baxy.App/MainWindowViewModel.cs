@@ -2270,12 +2270,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         if (NaturalSystemStatusRequestParser.IsCurrentTimeRequest(route.Text))
         {
+            // The shell parser read this PC's own clock (another place's time is
+            // not its reading): the clock takes no place, nothing is extracted.
             return await TryExecuteMindOperationAsync(
                 mind,
                 route,
                 "system.time",
                 registry,
-                cancellationToken);
+                cancellationToken,
+                knownArguments: new JsonObject());
         }
 
         if (UserMessagePolicy.IsConnectivityStatusRequest(route.Text))
@@ -2451,7 +2454,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 route,
                 "system.time",
                 registry,
-                cancellationToken);
+                cancellationToken,
+                knownArguments: new JsonObject());
         }
 
         if (UserMessagePolicy.IsConnectivityStatusRequest(route.Text))
@@ -2581,7 +2585,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         MissionInputRoute route,
         string operationName,
         RetryableOperationRegistry registry,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        JsonObject? knownArguments = null)
     {
         if (operationName.StartsWith("memory.", StringComparison.Ordinal))
         {
@@ -2602,7 +2607,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
 
         JsonObject groundedArguments;
-        if (MindArgumentNormalization.RequiresExtraction(descriptor))
+        if (knownArguments is not null)
+        {
+            groundedArguments = knownArguments;
+        }
+        else if (MindArgumentNormalization.RequiresExtraction(descriptor))
         {
             MindArgumentResult? extraction = await mind.ExtractArgumentResultAsync(
                 operationName,

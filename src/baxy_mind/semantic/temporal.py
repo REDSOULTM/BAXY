@@ -6,7 +6,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
-from .grammar import _PERCENTAGE_WORD_VALUES, _RELATIVE_DURATION_PATTERN, _fold, _strip_request_envelope
+from .grammar import _PERCENTAGE_WORD_VALUES, _RELATIVE_DURATION_PATTERN, _fold, _has, _strip_request_envelope
 from .audio import _PERCENTAGE_WORD_PATTERN
 from .normalize import alternation
 
@@ -254,6 +254,276 @@ def spoken_clock(folded: str) -> SpokenClock | None:
 
     clocks = spoken_clocks(folded)
     return clocks[0] if clocks else None
+
+
+# --- The time of another place ---------------------------------------------------
+# Uso real 2026-09-23 «in the eastern timezone, what time is it now» → «20:19»
+# (this PC's clock; Eastern was 19:19), «qué hora es en tokio», «hora entre aquí
+# y canadá»; tanda 4 «convertir nueve de la mañana huso horario a madrid» ended in
+# «las páginas que encontré tratan de otra cosa». The time somewhere else is this
+# PC's clock read together with that zone's offset (system.time with «place»),
+# and a conversion is arithmetic the mind does on both; never this clock recited
+# as another place's, never pages about clocks. A clock question names another
+# place when it carries a zone («timezone», «GMT», «hora del Pacífico»), a
+# difference between places, or «en/in <lugar>» after the clock words — «aquí»,
+# «este PC», a part of the day and «en una hora» are this clock or a duration.
+_CLOCK_QUESTION = (
+    r"\b(?:que\s+hora|la\s+hora|hora\s+(?:es|actual|local|exacta|entre)|"
+    r"diferencia\s+horaria|time\s+difference|"
+    r"what\s+time|the\s+time|current\s+time|local\s+time|time\s+(?:is\s+it|now|right\s+now))\b|"
+    # «time in Sydney please», «hora en Lima?»: the bare noun and its place.
+    r"^(?:(?:the|la)\s+)?(?:time|hora)\s+(?:in|en)\s+(?!punto\b)"
+)
+_OTHER_ZONE = (
+    r"\b(?:time\s*zones?|zona\s+horaria|zonas\s+horarias|huso\s+horario|husos\s+horarios|"
+    r"diferencia\s+horaria|diferencia\s+de\s+hora(?:rio)?|time\s+difference|"
+    r"gmt|utc|est|edt|pst|pdt|cst|cdt|mst|mdt|cet|cest|bst|jst|"
+    r"(?:eastern|pacific|central|mountain|atlantic)\s+(?:time|standard|daylight)|"
+    r"hora\s+(?:del\s+(?:pacifico|este|atlantico|centro)|de\s+la\s+costa\s+\w+)|"
+    r"hora\s+entre)\b"
+)
+_CLOCK_ELSEWHERE = (
+    r"\b(?:hora|time)\b.{0,32}?\b(?:en|in|at|over\s+in)\s+"
+    r"(?!(?:este|esta|mi|my|this|the\s+(?:pc|computer|morning|afternoon|evening|night)|"
+    r"el\s+(?:pc|equipo|computador|ordenador)|la\s+(?:pc|computadora|manana|tarde|noche)|"
+    r"casa|home|aqui|aca|here|punto|una|un|one|an?|\d)\b)"
+    r"[a-z]"
+)
+# «¿a qué hora es la cita?», «what time does the bank open in London»: the time
+# of an event is not a clock reading; neither is a scheduling order. «huso
+# horario» is the zone itself, not a schedule.
+_CLOCK_NOT_A_READ = (
+    r"\b(?:alarma|alarm|timer|temporizador|recuerda\w*|recorda\w*|remind|avisa\w*|(?<!huso\s)horario|schedule|"
+    r"a\s+que\s+hora|what\s+time\s+(?:does|do|did|will|should|shall|is\s+the|are\s+the))\b"
+)
+
+
+def other_place_clock_question(folded: str) -> bool:
+    """A question for the time in another zone or place (never this PC's clock)."""
+
+    return (
+        _has(folded, _CLOCK_QUESTION)
+        and (_has(folded, _OTHER_ZONE) or _has(folded, _CLOCK_ELSEWHERE))
+        and not _has(folded, _CLOCK_NOT_A_READ)
+    )
+
+
+# The zones a person names by their name instead of a place, each with the IANA
+# zone that carries its current rule (daylight saving included). «hora del
+# centro» is left out: in Mexico it is Mexico City's, in the US it is Chicago's.
+_NAMED_ZONES = (
+    (r"eastern(?:\s+(?:standard|daylight))?\s+(?:time\s*zone|timezone|time)|\be[sd]t\b|"
+     r"(?:hora|zona(?:\s+horaria)?)\s+del\s+este|(?:la\s+)?costa\s+este|east\s+coast", "America/New_York"),
+    (r"central(?:\s+(?:standard|daylight))?\s+(?:time\s*zone|timezone|time)|\bc[sd]t\b", "America/Chicago"),
+    (r"mountain(?:\s+(?:standard|daylight))?\s+(?:time\s*zone|timezone|time)|\bm[sd]t\b|"
+     r"(?:hora|zona(?:\s+horaria)?)\s+de\s+la\s+montana", "America/Denver"),
+    (r"pacific(?:\s+(?:standard|daylight))?\s+(?:time\s*zone|timezone|time)|\bp[sd]t\b|"
+     r"(?:hora|zona(?:\s+horaria)?)\s+del\s+pacifico|(?:la\s+)?costa\s+oeste|west\s+coast", "America/Los_Angeles"),
+    (r"atlantic(?:\s+(?:standard|daylight))?\s+(?:time\s*zone|timezone|time)|"
+     r"(?:hora|zona(?:\s+horaria)?)\s+del\s+atlantico", "America/Halifax"),
+    (r"\b(?:gmt|utc|zulu)\b|(?:coordinated\s+)?universal\s+time|tiempo\s+universal", "UTC"),
+    (r"\bcest?\b|central\s+europe(?:an)?\s+time|hora\s+(?:central\s+)?europea|hora\s+de\s+europa\s+central",
+     "Europe/Paris"),
+    (r"\bbst\b|british\s+(?:summer\s+)?time|hora\s+britanica", "Europe/London"),
+    (r"\bjst\b|japan\s+standard\s+time", "Asia/Tokyo"),
+    (r"hora\s+peninsular", "Europe/Madrid"),
+)
+# What introduces the place: «en/in/at Tokio» for the time there, «a/to/para
+# Madrid» only for a conversion of a said time, «con/with Japón» only for a
+# difference («the time needed to download it» names no place).
+_PLACE_LEAD = r"\b(?:en|in|at|over\s+in)\s+"
+_CONVERSION_LEAD = r"|\b(?:a|al|to|into|para|pa)\s+"
+_DIFFERENCE_LEAD = r"|\b(?:con|with|is|esta|va|van|queda)\s+(?:adelantad\w+\s+|atrasad\w+\s+)?"
+# A clock of another place that is refused, remembered, reported, written or
+# redefined is not asked now.
+_CLOCK_ELSEWHERE_NOT_ASKED = (
+    r"^(?:no|nunca|jamas|never|don'?t|do\s+not)\b|"
+    r"\b(?:ayer|yesterday|anoche|te\s+pedi\w*|i\s+asked|si\s+te\s+pidiera|if\s+i\s+ask\w*|"
+    r"escrib\w*|write|anota\w*|apunta\w*|nota|note|guarda\w*|save|define|explica\w*|explain|"
+    r"cambia\w*\s+la\s+hora|set\s+the\s+(?:local\s+)?time)\b"
+)
+# Words that end the place («en Madrid ahora», «in Paris right now please»).
+_PLACE_END = frozenset({
+    "ahora", "ahorita", "now", "right", "mismo", "actualmente", "currently", "hoy", "today", "tonight",
+    "por", "porfa", "please", "pls", "y", "and", "o", "or", "que", "what", "whats", "cual", "es", "is",
+    "son", "are", "sera", "seria", "serian", "seran", "will", "would", "time", "hora", "horas", "hours",
+    "horario", "huso", "zona", "timezone", "zone", "exacta", "exacto", "exact", "exactly", "exactamente",
+    "local", "si", "if", "cuando", "when", "con", "with", "aqui", "aca", "here", "para", "for", "to", "a",
+    "en", "in", "at", "me", "mi", "my", "tu", "your", "segun", "gracias", "thanks", "ya", "de", "del", "of",
+    "estaria", "estara", "esta", "hay", "there", "manana", "tomorrow", "ayer", "yesterday", "luego", "later",
+})
+# What the lead may introduce that is not a place: this PC, home, a pronoun, a
+# part of the day, an amount, the clock itself.
+_NOT_A_PLACE = frozenset({
+    "este", "esta", "ese", "esa", "eso", "mi", "my", "this", "that", "pc", "computer", "equipo",
+    "computador", "computadora", "ordenador", "casa", "home", "aqui", "aca", "here", "punto", "una",
+    "un", "uno", "one", "an", "ti", "me", "you", "momento", "moment", "linea", "manana", "tarde",
+    "noche", "morning", "afternoon", "evening", "night", "madrugada", "total", "general", "serio",
+    "realidad", "fin", "hora", "time", "horas", "hours", "minutos", "minutes", "formato", "format",
+    "numeros", "numbers", "letras", "words", "voz", "voice", "ingles", "english", "espanol", "spanish",
+    "local", "otra", "otro", "another", "other", "cualquier", "any", "reloj", "clock", "punto",
+    "segundos", "seconds", "tiempo", "real", "vivo", "directo", "live", "lugar", "place",
+})
+_HERE_TARGET = (
+    r"\b(?:aqui|aca|here|mi\s+(?:hora|zona(?:\s+horaria)?|huso(?:\s+horario)?)|my\s+(?:time(?:\s*zone)?|timezone)|"
+    r"hora\s+local|local\s+time|para\s+mi|for\s+me|nuestra\s+hora|our\s+time|donde\s+estoy|where\s+i\s+am)\b"
+)
+_CONVERSION_CUE = (
+    r"\b(?:convert\w*|pasa\w*|pase|cambia\w*|equivale\w*|traduc\w*|what\s+is|what'?s|whats|cuanto\s+es|"
+    r"que\s+hora\s+(?:es|son|sera|seria|serian|seran)|what\s+time|hora|time)\b"
+)
+_DIFFERENCE_CUE = (
+    r"\b(?:diferencia|difference|adelant\w*|atrasad\w*|ahead|behind|cuantas\s+horas|how\s+many\s+hours)\b"
+)
+
+
+@dataclass(frozen=True)
+class ClockElsewhere:
+    """The time asked of another place. ``place`` is what the zone read resolves
+    (the place as said, or the IANA zone of a named zone); ``said`` is how the
+    person named it. ``clock`` is a time to convert, when one was said, and
+    ``clock_is_there`` says that time is the other place's («si en Madrid son las
+    9, qué hora es aquí»), not this PC's. ``difference`` asks the hours apart."""
+
+    place: str
+    said: str
+    clock: SpokenClock | None
+    clock_is_there: bool
+    difference: bool
+
+
+def _named_zone(folded: str) -> tuple[str, str] | None:
+    for pattern, zone in _NAMED_ZONES:
+        found = re.search(pattern, folded)
+        if found is not None:
+            return zone, found.group(0)
+    return None
+
+
+# «la hora de la cita», «hora de salida», «hora de comer»: what «hora de» names
+# when it is not a place.
+_HOUR_OF_EVENT = frozenset({
+    "salida", "llegada", "cierre", "apertura", "entrada", "inicio", "comienzo", "almuerzo", "cena",
+    "desayuno", "once", "verdad", "partida", "clase", "reunion", "cita", "junta", "misa", "turno",
+    "vuelo", "tren", "bus", "pelicula", "partido", "evento", "fiesta", "siesta", "hacer", "que",
+})
+
+
+def _place_after(folded: str, start: int, *, verbs_are_not_places: bool = False) -> tuple[str, int] | None:
+    """The place words that begin at ``start``: up to four, cut at the first word
+    that ends a place; «de/del» only between words («ciudad de méxico»). After a
+    lead that also introduces a purpose («para saber», «a comer»), an infinitive
+    is not a place."""
+
+    words: list[str] = []
+    for found in re.finditer(r"[a-z][a-z'\-]*|\S", folded[start:]):
+        word = found.group(0)
+        if not re.fullmatch(r"[a-z][a-z'\-]*", word) or len(words) >= 4:
+            break
+        if word in _PLACE_END and not (word in {"de", "del"} and words):
+            break
+        words.append(word)
+    while words and words[-1] in {"de", "del"}:
+        words.pop()
+    if words and words[0] == "the":
+        words.pop(0)
+    # A Spanish article may be part of the name («La Paz», «Los Ángeles», «El
+    # Cairo») or not («la India»); it stays, and the zone read weighs both.
+    head = words[1] if len(words) > 1 and words[0] in {"la", "el", "los", "las"} else (words[0] if words else "")
+    if not head or head in _NOT_A_PLACE or len(head) < 2:
+        return None
+    if verbs_are_not_places and re.search(r"(?:ar|er|ir)(?:se|lo|la|le|me|te)?$", head):
+        return None
+    return " ".join(words), start
+
+
+def clock_elsewhere(folded: str) -> ClockElsewhere | None:
+    """The time of another place or zone asked in a request, or None.
+
+    «qué hora es en tokio», «what time is it right now in paris», «in the eastern
+    timezone, what time is it now», «dime la hora del pacífico», «convertir nueve
+    de la mañana huso horario a madrid», «si aquí son las 9 de la noche qué hora
+    es en Tokio», «when it's 3pm in London what time is it here», «diferencia
+    horaria con Japón». A second place or zone to convert between is not this
+    reading: it names two zones and this clock is neither.
+    """
+
+    # A quotation is content to write («una nota con el texto "la hora y …"»), not the question.
+    text = re.sub(r"[\"«“][^\"»”]*[\"»”]", " ", folded)
+    text = " ".join(re.sub(r"[¿?¡!,]", " ", text).split())
+    if _has(text, _CLOCK_NOT_A_READ) or _has(text, _CLOCK_ELSEWHERE_NOT_ASKED):
+        return None
+    # «what time is it and what's the weather in Paris»: the place of another
+    # question in the same request is not the clock's.
+    clauses = re.split(
+        # A sentence ends after a word, never inside «a. m.».
+        r"(?<=[a-z]{2})[.:;](?:\s+|$)|\s*;\s*|\s+(?:despues(?:\s+de\s+eso)?|luego|finalmente|then|after\s+that|finally)\s+|"
+        r"\s+(?:y|and|pero|but)\s+(?=(?:que|what|whats|what's|como|how|cual|cuanto|cuanta|cuantos|cuantas|"
+        r"donde|where|cuando|when|quien|who|dime|decime|tell|pon|abre|open|busca|search|si|if|whether|"
+        r"is|are|esta|estan|hay|do|does|can|puedes|sube|baja|turn|set)\b)",
+        text,
+    )
+    text = next(
+        (clause for clause in clauses if _has(clause, _CLOCK_QUESTION) or _has(clause, _OTHER_ZONE)),
+        text,
+    )
+    clock = spoken_clock(text)
+    rest = text.replace(clock.literal, " ", 1) if clock is not None else text
+    difference = _has(rest, _DIFFERENCE_CUE)
+    if not (
+        _has(text, _CLOCK_QUESTION)
+        or _has(text, _OTHER_ZONE)
+        or (clock is not None and _has(rest, _CONVERSION_CUE))
+        or (difference and _has(text, r"\b(?:hora\w*|hours?|time)\b"))
+    ):
+        return None
+    zone = _named_zone(rest)
+    places: list[tuple[str, int]] = []
+    between = re.search(r"\b(?:entre|between)\s+(.+?)\s+(?:y|and)\s+(.+)$", rest)
+    if between is not None:
+        for group in (1, 2):
+            if re.fullmatch(_HERE_TARGET + r".*", between.group(group)) is None:
+                found = _place_after(rest, between.start(group))
+                if found is not None:
+                    places.append(found)
+    # «how many hours ahead is Tokyo», «¿cuántas horas va adelantada Lima?».
+    leads = (
+        _PLACE_LEAD
+        + (_CONVERSION_LEAD if clock is not None else "")
+        + (_DIFFERENCE_LEAD if difference else "")
+    )
+    for lead in re.finditer(leads, rest):
+        found = _place_after(
+            rest, lead.end(), verbs_are_not_places=lead.group(0).split()[0] not in {"en", "in", "at", "over", "is"},
+        )
+        if found is not None and found not in places:
+            places.append(found)
+    # «9 am tokyo time», «las 9 hora de madrid», «dime la hora de madrid»: the
+    # place named by its time; «hora de salida», «es hora de comer» name an event.
+    for named in re.finditer(r"\b(?:(?P<en>[a-z][a-z'\-]+(?:\s+[a-z][a-z'\-]+)?)\s+time|hora\s+de\s+(?P<es>\S))", rest):
+        if named.group("es") is not None:
+            found = _place_after(rest, named.start("es"), verbs_are_not_places=True)
+            if found is not None and found[0].split()[-1] not in _HOUR_OF_EVENT and not _has(rest, r"\bes\s+hora\s+de\b"):
+                places.append(found)
+        elif clock is not None:
+            words = named.group("en").split()
+            while words and words[0] in _PLACE_END | _NOT_A_PLACE | {"the", "same", "what", "what's", "it's"}:
+                words.pop(0)
+            if words and words[-1] not in _NOT_A_PLACE | _PLACE_END:
+                places.append((" ".join(words), named.start("en")))
+    if zone is not None:
+        # «in the eastern timezone», «en la costa oeste»: the lead reads the zone's
+        # own words; any other place is a second zone to convert between.
+        if places and not all(place in zone[1] or zone[1] in place for place, _ in places):
+            return None
+        return ClockElsewhere(zone[0], zone[1], clock, False, difference)
+    distinct = {place for place, _ in places}
+    if len(distinct) != 1:
+        return None
+    place, position = places[0]
+    here = re.search(_HERE_TARGET, rest)
+    clock_is_there = clock is not None and here is not None and here.start() > position
+    return ClockElsewhere(place, place, clock, clock_is_there, difference)
 
 
 _WEEKDAYS = (

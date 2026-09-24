@@ -42,6 +42,7 @@ from .semantic.normalize import alternation, fold
 from .semantic import dialogue as dialogue_slot
 from .semantic.network import asks_calendar_part, calendar_parts_asked
 from .semantic.web import weather_asks_later_day, weather_asks_sun_time, asks_own_place, weather_asks_air
+from .semantic.temporal import clock_elsewhere
 from . import effect_intent
 from .effect_intent import (
     _PERCENTAGE_WORD_VALUES,
@@ -804,10 +805,11 @@ _NATIVE_SELECTION_DESCRIPTION_SUFFIXES = {
         "Describe scenes and objects; do not extract or transcribe visible text."
     ),
     # Uso real 2026-09-23 «qué hora es en tokio», «que hora es en sydney ahora»:
-    # this clock was offered for the time of another place.
+    # this clock was offered for the time of another place. Tanda 4: that time
+    # is this clock read with the place's zone, never this clock recited.
     "system.time": (
-        "Only this PC's own local clock and date; never the time in another "
-        "city, country or time zone."
+        "This PC's own clock and date; the time in another city, country or "
+        "time zone only with that place in «place», never this clock as theirs."
     ),
 }
 
@@ -4468,6 +4470,17 @@ _CAUSE_FACT = {
     "web_search_place_unavailable": (
         "this PC's own location could not be determined, so nothing was searched near it"
     ),
+    # Uso real tanda 4: the time of another place names its own absences;
+    # this PC's clock is never given as that place's.
+    "time_place_not_found": (
+        "no place or time zone by that name is known, so its time was not read"
+    ),
+    "time_place_service_unavailable": (
+        "the place lookup did not answer, so the time there was not read"
+    ),
+    "time_place_zone_ambiguous": (
+        "that place spans several time zones, so a city in it is needed to give its time"
+    ),
     # NETWORK1721 «conectate al wifi de casa» with no saved network of that
     # name: the fact is the absence; nothing was done. Not «connected»: the
     # truncated-word lens read the draft's «connect» as a cut of it
@@ -4718,6 +4731,87 @@ def _local_datetime_from_observed(observed: dict | None) -> datetime | None:
                 local = parsed.astimezone(timezone(timedelta(minutes=offset_minutes)))
                 return local
     return None
+
+
+def _place_clock_facts(observed: dict | None, user_text: str, language: str) -> dict | None:
+    """The time of the place a system.time reading carries, and its arithmetic.
+
+    Uso real tanda 4 «convertir nueve de la mañana huso horario a madrid»: the
+    reading gives this PC's instant and offset and the place zone's offset at
+    that instant; the place's clock, a said time converted between here and
+    there, the day it falls on and the hours apart are computed here. The
+    narrator copies them and never computes one.
+    """
+
+    if not isinstance(observed, dict) or not isinstance(observed.get("place"), dict):
+        return None
+    place = observed["place"]
+    there = place.get("utcOffsetMinutes")
+    here = observed.get("localUtcOffsetMinutes")
+    utc = _parse_core_utc(observed["utc"]) if isinstance(observed.get("utc"), str) else None
+    if utc is None or not all(isinstance(value, int) and not isinstance(value, bool) for value in (there, here)):
+        return None
+    english = language == "en"
+    there_zone, here_zone = timezone(timedelta(minutes=there)), timezone(timedelta(minutes=here))
+    asked = clock_elsewhere(fold(user_text))
+    named = str(place.get("name") or "").strip()
+    if asked is not None and (place.get("authority") == "time_zone_id" or english):
+        # A named zone keeps the person's words for it («la hora del Pacífico»);
+        # the service names places in Spanish («Tokio»), so English keeps «Tokyo».
+        named = asked.said if place.get("authority") == "time_zone_id" else asked.said.title()
+    facts: dict[str, object] = {"place": named}
+    country = str(place.get("country") or "").strip()
+    if country and _reading_fold(country) != _reading_fold(named):
+        facts["country"] = country
+    here_word = "here" if english else "aquí"
+    if asked is not None and asked.clock is not None:
+        source, target = (there_zone, here_zone) if asked.clock_is_there else (here_zone, there_zone)
+        day = utc.astimezone(source).date()
+        given = datetime(day.year, day.month, day.day, asked.clock.hour, asked.clock.minute, tzinfo=source)
+        converted = given.astimezone(target)
+        facts["given"] = f"{given.hour:02d}:{given.minute:02d}"
+        facts["givenAt"] = named if asked.clock_is_there else here_word
+        facts["clock"] = f"{converted.hour:02d}:{converted.minute:02d}"
+        facts["clockAt"] = here_word if asked.clock_is_there else named
+        shift = (converted.date() - given.date()).days
+    else:
+        now_there = utc.astimezone(there_zone)
+        facts["clock"] = f"{now_there.hour:02d}:{now_there.minute:02d}"
+        facts["clockAt"] = named
+        shift = (now_there.date() - utc.astimezone(here_zone).date()).days
+    if shift:
+        facts["day"] = (
+            ("the next day" if shift > 0 else "the day before")
+            if english
+            else ("el día siguiente" if shift > 0 else "el día anterior")
+        )
+    if asked is not None and asked.difference:
+        hours, minutes = divmod(abs(there - here), 60)
+        amount = f"{hours} h" + (f" {minutes} min" if minutes else "")
+        facts["difference"] = (
+            "the same time as here" if there == here
+            else f"{amount} {'ahead of' if there > here else 'behind'} here"
+            if english
+            else "la misma hora que aquí" if there == here
+            else f"{amount} {'más' if there > here else 'menos'} que aquí"
+        )
+    return facts
+
+
+def _names_clock_place(text: str, place: str) -> bool:
+    """The reply names the place whose time it gives: the whole name, or the
+    word that names it («Pacífico» for «la hora del Pacífico», «India» for «la
+    India»); the words for a zone or an article name nothing."""
+
+    folded = _reading_fold(text)
+    name = _reading_fold(place)
+    if re.search(r"\b" + re.escape(name) + r"\b", folded):
+        return True
+    words = [
+        word for word in re.findall(r"[a-z]+", name)
+        if len(word) >= 3 and word not in {"hora", "zona", "horaria", "time", "timezone", "zone", "del", "las", "los", "the"}
+    ]
+    return any(re.search(r"\b" + word + r"\b", folded) for word in words[:1])
 
 
 # Uso real 2026-09-23 «¿en qué día de la semana estamos?»: the weekday is a fact
@@ -5667,6 +5761,13 @@ def _compose_situation_payload(
             # Preserve its authority before internal status fields are removed.
             payload["effect"] = "applied"
         clock = _local_clock_from_observed(visible_seen)
+        place_clock = _place_clock_facts(merged_seen, user_text, language)
+        if place_clock is not None:
+            # The time of another place is its own fact set; this PC's clock is
+            # not the answer and the zone identifiers are not words to say.
+            payload.update(place_clock)
+            visible_seen.pop("place", None)
+            clock = None
         for key in (
             "localTime",
             "utc",
@@ -7566,12 +7667,64 @@ _SEARCH_REPORT_GRAMMAR_WORDS = frozenset(
 )
 
 
+def _text_language(text: str) -> str | None:
+    """es or en when the words of a text say so clearly; None for a name or a mix."""
+
+    spanish, english = read_request(text).evidence
+    if spanish >= 2 and spanish > english:
+        return "es"
+    if english >= 2 and english > spanish:
+        return "en"
+    return None
+
+
+# The words of a number up to twelve: a page that writes «tres naciones» states
+# the 3 a report may write in digits, and the other way round.
+_SMALL_NUMBER_WORDS = {
+    "0": ("cero", "zero"), "1": ("uno", "una", "one"), "2": ("dos", "two"),
+    "3": ("tres", "three"), "4": ("cuatro", "four"), "5": ("cinco", "five"),
+    "6": ("seis", "six"), "7": ("siete", "seven"), "8": ("ocho", "eight"),
+    "9": ("nueve", "nine"), "10": ("diez", "ten"), "11": ("once", "eleven"),
+    "12": ("doce", "twelve"),
+}
+
+
+def _search_report_unsourced_numbers(sentence: str, grounds: str) -> list[str]:
+    """The numbers of a report sentence that neither the pages it cites nor the request write."""
+
+    folded_grounds = _reading_fold(grounds)
+    missing: list[str] = []
+    # A number glued to letters is part of a name («24timezones.com», «PM2.5»).
+    for number in re.findall(r"(?<![\w.,:+-])\d+(?:[.,:]\d+)*(?!\w)", sentence):
+        forms = {number, number.replace(",", "."), number.replace(".", ","), re.sub(r"[.,]", "", number)}
+        if any(
+            re.search(r"(?<![\d.,])" + re.escape(form) + r"(?![\d]|[.,]\d)", folded_grounds)
+            for form in forms
+        ) or any(
+            re.search(r"\b" + word + r"\b", folded_grounds)
+            for word in _SMALL_NUMBER_WORDS.get(number.lstrip("0") or "0", ())
+        ):
+            continue
+        missing.append(number)
+    return missing
+
+
 def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> list[str]:
     """The words of the report that no result and no request shares.
 
     Judged sentence by sentence, the same for a named page as for an unnamed
     one (WEB1889: naming the page vouched for «problemas de conexion», which no
     result carried). The SEARCH2019 hint names these words back to the model.
+
+    Uso real tanda 4 «Whats the air quality hoy?»: the pages were English and
+    the report Spanish, so every translated word («calidad», «pronóstico»,
+    «contaminantes») was «unsourced», the three drafts fell and the turn ended
+    in the bare list of titles. A sentence that cites only pages written in the
+    other language cannot be checked word by word; its numbers still must be
+    the pages' own. And one paraphrased word («abarcan», «explanation»,
+    «opción») among many that the pages do write is the report's wording, not a
+    claim: a claim brings words of its own, and every number of a sentence is
+    checked whatever its words.
     """
 
     results_text = _search_results_text(payload)
@@ -7584,19 +7737,47 @@ def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> 
     observed = set(re.findall(r"[a-z]+", _reading_fold(results_text))) | set(
         re.findall(r"[a-z]+", _reading_fold(f"{user_text} {near_voice}"))
     )
+    results = [item for item in _search_results_of(payload) if isinstance(item, dict)]
     # «El artículo de El Tiempo» names eltiempo.com with the site's own words.
     site_labels = [
         label
-        for host in _search_result_hosts(payload, limit=len(_search_results_of(payload)))
+        for host in _search_result_hosts(payload, limit=len(results))
         for label in host.split(".")
         if len(label) >= 5
     ]
+
+    def host_of(item: dict) -> str:
+        host = (urlparse(str(item.get("url") or "")).hostname or "").casefold()
+        return host[4:] if host.startswith("www.") else host
+
+    # A page is cited by its site, or by a word of its site no other page shares
+    # («El Tiempo» for eltiempo.com; not «google» for two google.com sites).
+    shared_labels = {
+        label for label in site_labels if sum(label in host_of(item).split(".") for item in results) > 1
+    }
+
+    def cited(sentence: str) -> list[dict]:
+        folded = _reading_fold(sentence)
+        named = []
+        for item in results:
+            host = host_of(item)
+            labels = [label for label in host.split(".") if len(label) >= 5 and label not in shared_labels]
+            if host and (host in folded or any(re.search(r"\b" + label + r"\b", folded) for label in labels)):
+                named.append(item)
+        return named or results
+
+    def page_text(items: list[dict]) -> str:
+        return "\n".join(str(item.get(key) or "") for item in items for key in ("title", "snippet"))
+
     words: list[str] = []
     for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip()):
+        basis = cited(sentence)
+        numbers = _search_report_unsourced_numbers(sentence, page_text(basis) + "\n" + (user_text or ""))
+        content = 0
+        lettered: list[str] = []
         for word in re.findall(r"[a-z]+", _reading_fold(sentence)):
             if (
                 len(word) < 5
-                or word in words
                 or word in _SEARCH_REPORT_GRAMMAR_WORDS
                 # The report's own voice, conjugated: «incluyendo», «explicando».
                 or any(
@@ -7604,19 +7785,31 @@ def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> 
                     for own in _SEARCH_REPORT_OWN_WORDS
                     if len(own) >= 5
                 )
-                # Inflection is tolerated by the first four letters («enviar» for
-                # «envío»), and a short observed word may take its plural
-                # («yenes» for «yen»); a word no result shares that much is the
-                # model's.
-                or any(
-                    seen_word.startswith(word[:4])
-                    or (len(seen_word) >= 3 and word.startswith(seen_word) and len(word) - len(seen_word) <= 2)
-                    for seen_word in observed
-                )
-                or any(word in label for label in site_labels)
             ):
                 continue
-            words.append(word)
+            content += 1
+            # Inflection is tolerated by the first four letters («enviar» for
+            # «envío»), and a short observed word may take its plural
+            # («yenes» for «yen»); a word no result shares that much is the
+            # model's.
+            if word in lettered or any(
+                seen_word.startswith(word[:4])
+                or (len(seen_word) >= 3 and word.startswith(seen_word) and len(word) - len(seen_word) <= 2)
+                for seen_word in observed
+            ) or any(word in label for label in site_labels):
+                continue
+            lettered.append(word)
+        language = _text_language(sentence)
+        translated = (
+            language is not None
+            # A translation says what the page says; a bare verdict («está
+            # prohibido») is no translation of a page and is judged by its words.
+            and content >= 4
+            and all(_text_language(page_text([item])) not in (None, language) for item in basis)
+        )
+        if translated or (len(lettered) == 1 and content >= 8):
+            lettered = []
+        words.extend(word for word in numbers + lettered if word not in words)
     return words
 
 
@@ -8646,6 +8839,13 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     clock = payload.get("clock")
     if isinstance(clock, str) and clock:
         allowed: list[tuple[int, int]] = []
+        given = payload.get("given")
+        if isinstance(given, str) and re.fullmatch(r"\d\d:\d\d", given):
+            # A converted time is said next to the time it converts.
+            allowed.append((int(given[:2]), int(given[3:])))
+        place = payload.get("place")
+        if isinstance(place, str) and place.strip() and not _names_clock_place(text, place):
+            return "missing_state"
         countdown = payload.get("countdown")
         if isinstance(countdown, dict):
             try:
@@ -11005,8 +11205,15 @@ def compose_visible_defect(
             r"volumen|volume|\bnivel\b|\blevel\b", folded
         ):
             return "missing_name"
-        clock = _local_clock_from_situation(situation)
-        date_requested = clock and asks_calendar_part(user_text)
+        place_clock = _place_clock_facts(
+            _merged_observed(situation), user_text, _message_response_language(user_text),
+        )
+        if place_clock is not None and not _names_clock_place(stripped, str(place_clock["place"])):
+            return "missing_state"
+        # The time of another place is the clock this reply owes, next to the
+        # time it converts; this PC's own clock is not the answer then.
+        clock = str(place_clock["clock"]) if place_clock is not None else _local_clock_from_situation(situation)
+        date_requested = clock and place_clock is None and asks_calendar_part(user_text)
         if date_requested:
             local = _local_datetime_from_observed(_merged_observed(situation))
             if local is None or _misses_calendar_facts(stripped, _calendar_facts(local, user_text, "es")):
@@ -11014,7 +11221,10 @@ def compose_visible_defect(
         clock_required = not date_requested or re.search(
             r"\b(?:hora|time)\b", user_text, re.IGNORECASE
         )
-        allowed_clock_values: tuple[tuple[int, int], ...] = ()
+        given = place_clock.get("given") if place_clock is not None else None
+        allowed_clock_values: tuple[tuple[int, int], ...] = (
+            ((int(given[:2]), int(given[3:])),) if isinstance(given, str) else ()
+        )
         countdown_asked = countdown_target(user_text) if clock else None
         if countdown_asked is not None:
             # CLOCK1331 H0399: «Faltan 13 horas y 48 minutos para las 3 de la
@@ -17810,7 +18020,21 @@ class LlmRuntime:
             instruct(
                 "\nPreserve the 24-hour clock, or state AM/PM when converting to 12-hour time."
             )
-        if clock and isinstance(payload.get("countdown"), dict):
+        if clock and isinstance((visible_situation or {}).get("clockAt"), str):
+            # Uso real tanda 4: the time of another place, or a time converted
+            # between here and there; the figures are computed, never the model's.
+            instruct(
+                "\nSay that when it is given at givenAt, it is clock at clockAt"
+                if "given" in visible_situation
+                else "\nSay that it is clock now at clockAt"
+            )
+            instruct(
+                (", on day" if "day" in visible_situation else "")
+                + (", and that place is difference" if "difference" in visible_situation else "")
+                + ". Name the place as written in place. Copy the times exactly; never compute "
+                "a time or name this PC's own clock. Do not set the clock. Do not introduce yourself."
+            )
+        elif clock and isinstance(payload.get("countdown"), dict):
             countdown = payload["countdown"]
             instruct(
                 "\nSay that countdown.remaining remains until countdown.target"
@@ -18446,9 +18670,9 @@ class LlmRuntime:
                 "you may repeat it with its words, saying which page states it. Never "
                 "state a temperature, forecast, condition, cause, explanation, advice or "
                 "any fact that no result contains, even if you know it; if the results "
-                "only point to forecast pages, say that. If no result answers what the "
-                "person asked, say that first («the pages I found are about something "
-                "else») and then name the pages."
+                "only point to forecast pages, say that. If a result states what the "
+                "person asked, say it first with that page's words. If none does, say "
+                "that first («none of these pages says it») and then name the pages."
                 if response_language == "en"
                 else "\nseen.results son las páginas que devolvió la búsqueda pública "
                 "(título, url, fragmento). Informa lo encontrado en tres oraciones como "
@@ -18457,9 +18681,10 @@ class LlmRuntime:
                 "qué página lo afirma. Nunca afirmes una temperatura, un pronóstico, un "
                 "estado del tiempo, una causa, una explicación, un consejo ni ningún "
                 "dato que ningún resultado contenga, aunque lo sepas; si los resultados "
-                "sólo remiten a páginas de pronóstico, dilo. Si ningún resultado "
-                "responde lo que la persona preguntó, dilo primero («las páginas que "
-                "encontré tratan de otra cosa») y luego nombra las páginas."
+                "sólo remiten a páginas de pronóstico, dilo. Si un resultado afirma "
+                "lo que la persona preguntó, dilo primero con las palabras de esa "
+                "página. Si ninguno lo afirma, dilo primero («ninguna de estas páginas "
+                "lo dice») y luego nombra las páginas."
             )
             # H0463 «Busca el App ID de Doom Eternal en Steam usando la API
             # publica»: the three drafts judged the results («no es el correcto

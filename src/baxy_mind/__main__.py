@@ -44,7 +44,7 @@ from .semantic import surface as semantic_surface
 from .semantic.grammar import ARITHMETIC_EXPRESSION, SPOKEN_NUMBER
 from .semantic.patterns import output_level_request
 from .semantic.notes import agenda_event_request, said_repetition, stated_event_reminder
-from .semantic.temporal import SpokenClock, agenda_window, spoken_date, spoken_window
+from .semantic.temporal import SpokenClock, agenda_window, spoken_date, spoken_window, clock_elsewhere
 from .semantic.web import asks_for_information, names_own_data, near_the_person, news_lookup_query, public_query_body
 from .semantic.windows import start_menu_request
 from .corrector import catalog_correction_terms
@@ -5161,6 +5161,13 @@ def _explicit_arguments_from_evidence(
     if operation == "system.status":
         return _explicit_system_status_scope(evidence)
 
+    if operation == "system.time":
+        # The clock takes no argument; the time of another place or zone takes
+        # that place, as said or as the zone the person named. Never asked of the
+        # model: a place it guessed would be read as the person's.
+        elsewhere = clock_elsewhere(folded)
+        return {"place": elsewhere.place} if elsewhere is not None else {}
+
     if operation == "clipboard.write.text":
         # CLIPBOARD1359: the quoted or colon-introduced fragment is the
         # person's literal, case and accents preserved by the reader.
@@ -6720,6 +6727,7 @@ def _ground_explicit_arguments(
         "system.settings.set",
         "system.settings.status",
         "system.status",
+        "system.time",
         "window.application.status",
     }:
         # Core's verified installed application/game snapshots own identity

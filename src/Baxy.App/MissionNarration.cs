@@ -209,7 +209,7 @@ internal static class MissionNarration
     {
         foreach (string key in new[]
         {
-            "utc", "localUtcOffsetMinutes", "muted", "level", "online",
+            "utc", "localUtcOffsetMinutes", "place", "muted", "level", "online",
         })
         {
             if (observed.TryGetProperty(key, out JsonElement value))

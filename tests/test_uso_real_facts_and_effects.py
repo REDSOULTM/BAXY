@@ -28,8 +28,8 @@ from baxy_mind.request_reading import INTENT_IDENTITY, read_request  # noqa: E40
 from baxy_mind.semantic import dialogue  # noqa: E402
 from baxy_mind.semantic.grammar import _is_past_or_hypothetical_state  # noqa: E402
 from baxy_mind.semantic.system import _weather_location  # noqa: E402
+from baxy_mind.semantic.temporal import clock_elsewhere, other_place_clock_question  # noqa: E402
 from baxy_mind.semantic.web import (  # noqa: E402
-    other_place_clock_question,
     person_fact_subject,
     record_fact_query,
 )
@@ -121,24 +121,37 @@ _THIS_CLOCK = [
 
 
 @pytest.mark.parametrize("text", _OTHER_PLACE_CLOCKS)
-def test_the_clock_of_another_place_is_not_this_pc_clock(text: str) -> None:
+def test_the_clock_of_another_place_is_read_with_that_place(text: str) -> None:
+    # Tanda 4 supersedes the web lookup: the time somewhere else is this PC's
+    # clock read together with that place's zone, so system.time is grounded only
+    # because the place is read, and it always carries that place.
     folded = llm_module._policy_guard_text(text)
     assert other_place_clock_question(folded)
-    assert operation_domain_is_grounded(text, "system.time") is False
+    assert clock_elsewhere(folded) is not None
+    assert operation_domain_is_grounded(text, "system.time") is True
+    assert mind_main._explicit_arguments_from_evidence("system.time", text)["place"]
 
 
 @pytest.mark.parametrize("text", _THIS_CLOCK)
 def test_this_clock_and_clock_idioms_are_not_another_place(text: str) -> None:
-    assert not other_place_clock_question(llm_module._policy_guard_text(text))
+    folded = llm_module._policy_guard_text(text)
+    assert not other_place_clock_question(folded)
+    assert clock_elsewhere(folded) is None
 
 
 @pytest.mark.parametrize("text", _OTHER_PLACE_CLOCKS[:5])
-def test_the_time_elsewhere_is_looked_up_before_the_model_speaks(text: str) -> None:
+def test_the_time_elsewhere_is_this_clock_read_before_the_model_speaks(text: str) -> None:
     result = _turn(text, ("system.time", "web.search"), _NoModel())
     assert result["kind"] == "action"
-    assert result["operation"] == "web.search"
-    assert "system.time" not in result["intentOperations"]
-    assert "system.time" not in result["effectOperations"]
+    assert result["operation"] == "system.time"
+    assert "web.search" not in result["effectOperations"]
+
+
+def test_a_clock_of_another_place_that_names_no_single_place_is_never_this_clock() -> None:
+    text = "what time is it in london and in paris"
+    assert other_place_clock_question(llm_module._policy_guard_text(text))
+    assert clock_elsewhere(llm_module._policy_guard_text(text)) is None
+    assert operation_domain_is_grounded(text, "system.time") is False
 
 
 def test_the_local_clock_still_reads_this_pc() -> None:

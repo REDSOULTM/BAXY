@@ -72,11 +72,20 @@ def test_asking_to_be_told_the_date_or_time_reads_this_pc_clock(text: str) -> No
         "tell me what date easter is this year",
         "let me know what time the match starts",
         "avísame a qué hora sale el tren",
-        "i'd like to know what time it is in tokyo",
     ],
 )
 def test_the_date_or_time_of_something_else_is_never_this_pc_clock(text: str) -> None:
     assert "system.time" not in _effects(text)
+
+
+def test_the_time_of_another_place_is_this_clock_read_with_that_place() -> None:
+    # Tanda 4 (web answers and time arithmetic): another place's time is the
+    # clock read together with that place's zone, never this clock recited.
+    from baxy_mind import __main__ as mind_main
+
+    text = "i'd like to know what time it is in tokyo"
+    assert _effects(text) == ("system.time",)
+    assert mind_main._explicit_arguments_from_evidence("system.time", text) == {"place": "tokyo"}
 
 
 @pytest.mark.parametrize(

@@ -1027,52 +1027,6 @@ def _research_question_subject(text: str) -> str | None:
     return subject
 
 
-# Uso real 2026-09-23 «in the eastern timezone, what time is it now» → «20:19»
-# (this PC's clock; Eastern was 19:19), «qué hora es en tokio», «hora entre aquí
-# y canadá»: system.time reads only this PC's clock and the mind has no zone
-# database, so the time somewhere else is public information to look up, never
-# this clock recited. A clock question names another place when it carries a
-# zone («timezone», «GMT», «hora del Pacífico»), a difference between places, or
-# «en/in <lugar>» after the clock words — «aquí», «este PC», a part of the day
-# and «en una hora» are this clock or a duration, not a place.
-_CLOCK_QUESTION = (
-    r"\b(?:que\s+hora|la\s+hora|hora\s+(?:es|actual|local|exacta|entre)|"
-    r"diferencia\s+horaria|time\s+difference|"
-    r"what\s+time|the\s+time|current\s+time|local\s+time|time\s+(?:is\s+it|now|right\s+now))\b"
-)
-_OTHER_ZONE = (
-    r"\b(?:time\s*zones?|zona\s+horaria|zonas\s+horarias|huso\s+horario|"
-    r"diferencia\s+horaria|diferencia\s+de\s+hora(?:rio)?|time\s+difference|"
-    r"gmt|utc|est|edt|pst|pdt|cst|cdt|mst|mdt|cet|cest|bst|jst|"
-    r"(?:eastern|pacific|central|mountain|atlantic)\s+(?:time|standard|daylight)|"
-    r"hora\s+(?:del\s+(?:pacifico|este|atlantico|centro)|de\s+la\s+costa\s+\w+)|"
-    r"hora\s+entre)\b"
-)
-_CLOCK_ELSEWHERE = (
-    r"\b(?:hora|time)\b.{0,32}?\b(?:en|in|at|over\s+in)\s+"
-    r"(?!(?:este|esta|mi|my|this|the\s+(?:pc|computer|morning|afternoon|evening|night)|"
-    r"el\s+(?:pc|equipo|computador|ordenador)|la\s+(?:pc|computadora|manana|tarde|noche)|"
-    r"casa|home|aqui|aca|here|punto|una|un|one|an?|\d)\b)"
-    r"[a-z]"
-)
-# «¿a qué hora es la cita?», «what time does the bank open in London»: the time
-# of an event is not a clock reading; neither is a scheduling order.
-_CLOCK_NOT_A_READ = (
-    r"\b(?:alarma|alarm|timer|temporizador|recuerda\w*|recorda\w*|remind|avisa\w*|horario|schedule|"
-    r"a\s+que\s+hora|what\s+time\s+(?:does|do|did|will|should|shall|is\s+the|are\s+the))\b"
-)
-
-
-def other_place_clock_question(folded: str) -> bool:
-    """A question for the time in another zone or place (never this PC's clock)."""
-
-    return (
-        _has(folded, _CLOCK_QUESTION)
-        and (_has(folded, _OTHER_ZONE) or _has(folded, _CLOCK_ELSEWHERE))
-        and not _has(folded, _CLOCK_NOT_A_READ)
-    )
-
-
 # MASSIVE transport_traffic (dev corpus 2026-09-24) «cómo está el tráfico cerca de mí», «el trafico ahora», «i would
 # like to know the traffic condition»: the traffic of streets and roads is live public information; the model read
 # «tráfico» as this PC's listening ports. The traffic of a network, of data or of a site is not the road's.
@@ -1681,7 +1635,6 @@ def _public_live_lookup_request(folded: str) -> bool:
             future_clothing_weather,
             public_parking_discovery,
             retailer_product_discovery,
-            other_place_clock_question(folded),
             _road_traffic_request(folded),
             cinema_listing(folded),
         )
