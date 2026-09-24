@@ -31,16 +31,21 @@ BRIGHTNESS = "brightness"
 # Spanglish forms. «brighten» and «dim» only apply to the screen. Tanda 2 «Turn dowm poquito la musica»: the
 # English particle is typed with its neighbour key or its letters swapped.
 _DOWN_PARTICLE = r"(?:down|dowm|donw|dwon)"
+# Tanda 6 «Dale up al Sonido» was asked «¿Cuánto y en qué dirección?»: in Spanglish the English particle takes a
+# Spanish light verb with its dative clitic («dale up al sonido», «ponle down al volumen», «métele up»); the
+# particle is the direction.
+_LIGHT_VERB = r"(?:dale|dele|denle|ponle|pongale|hazle|metele|echale)"
 _UP = (
     r"(?:sub(?:e|a|i|ir)(?:le|lo|la|me|nos|mele|melo)?|aument(?:a|e|ar)(?:le|lo|la|me)?|"
     r"increment(?:a|ar)(?:le|lo)?|alza(?:le|lo)?|raise(?:\s+it)?|increase(?:\s+it)?|"
     r"(?:turn|crank|pump|bump)\s+(?:it\s+|that\s+)?up|brighten(?:\s+it)?|aclar(?:a|ar)(?:la|lo)?|"
-    r"ilumin(?:a|ar)(?:la|lo)?)"
+    rf"ilumin(?:a|ar)(?:la|lo)?|{_LIGHT_VERB}\s+up)"
 )
 _DOWN = (
     r"(?:baj(?:a|e|i|ar)(?:le|lo|la|me|nos|mele|melo)?|reduc(?:e|i|ir)(?:le|lo|la|me)?|"
     r"disminu(?:ye|i|ir)(?:le|lo|la|me)?|lower(?:\s+it)?|decrease(?:\s+it)?|"
-    rf"(?:turn|tone|slow)\s+(?:it\s+|that\s+)?{_DOWN_PARTICLE}|dim(?:\s+it)?|oscurec(?:e|er)(?:la|lo)?|darken(?:\s+it)?)"
+    rf"(?:turn|tone|slow)\s+(?:it\s+|that\s+)?{_DOWN_PARTICLE}|dim(?:\s+it)?|oscurec(?:e|er)(?:la|lo)?|darken(?:\s+it)?|"
+    rf"{_LIGHT_VERB}\s+{_DOWN_PARTICLE})"
 )
 # Tanda 3, a screen asked to be made brighter («ponme la pantalla más clara»): making the object more or
 # less of something is setting it in that direction, the same as «ponlo más bajito» or «make it louder».
