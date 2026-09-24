@@ -3624,7 +3624,12 @@ def _unsupported_answer_has_inability(value: object) -> bool:
                 r"no (?:puedo|es posible|esta disponible|se puede)|"
                 # 00_IDENTIDAD «Eso no lo hago»: the plain limit is an inability.
                 r"no (?:lo |la |los |las |eso )?(?:hago|llevo|manejo|gestiono)|no es algo que|"
-                r"i (?:do not|don t) (?:do|handle)|(?:that|this) (?:is not|isn t) something i (?:do|can do)|"
+                # Tanda 5e «No tengo whisper mode.»: a mode or function he does not have is the limit said.
+                r"no tengo (?:(?:un|una|el|la|ese|esa|este|esta|ningun|ninguna)\s)?(?:[a-z]+\s)?"
+                r"(?:modos?|mode|modes|funcion|funciones|opcion|opciones|option|options|feature|features)|"
+                r"i (?:do not|don t) have (?:(?:a|an|the|that|this|any)\s)?(?:[a-z]+\s)?"
+                r"(?:modes?|features?|options?|functions?)|"
+                r"i (?:do not|don t) (?:do|handle)|(?:that|this) (?:is not|isn t|s not) something i (?:do|can do)|"
                 r"(?:esa|esta|la) (?:variante|combinacion|accion|solicitud) "
                 r"no (?:esta disponible|se puede completar)|"
                 r"i (?:cannot|can t|am unable)|"
@@ -12212,7 +12217,17 @@ def _unsupported_answer_contract_failure(
     # BAXY is closed in a second sentence («… se cierra con la X de su ventana
     # o con Alt+F4»); ctx-dueno-07 killed every such draft as unsupported_shape.
     sentence_breaks = len(re.findall(r"[.!…]\s+\S", content))
-    allowed_breaks = 1 if effect_intent.self_close_request(str(request or "")) else 0
+    # Tandas 5e/6 «No detengo la cámara inteligente. Eso no lo hago.», «No activo el modo de privacy. Eso no lo
+    # hago.»: the limit named and then said plainly is the owner's own wording; rejecting it cost both drafts,
+    # a whole second decision and a recovery (8-10 s per limit). A short second sentence that is itself the plain
+    # inability is allowed; anything else after the limit (a suggestion, an explanation) still is not.
+    sentences = re.split(r"(?<=[.!…])\s+(?=\S)", content)
+    restated_limit = (
+        len(sentences) == 2
+        and len(content.split()) <= 20
+        and _unsupported_answer_has_inability(sentences[1])
+    )
+    allowed_breaks = 1 if restated_limit or effect_intent.self_close_request(str(request or "")) else 0
     if (
         not content
         or "\n" in content

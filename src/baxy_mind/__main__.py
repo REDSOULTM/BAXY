@@ -9222,6 +9222,11 @@ def _retry_side_effect_free_turn(
             return result
         except Exception as error:  # noqa: BLE001 - bounded local recovery
             last_error = error
+            # Tandas 5e/6: a limit whose wording failed its contract fails again on the second attempt —
+            # the same decision, the same seeded drafts (identical in every measured turn) — after paying
+            # the whole cascade once more (3-4 s). The recovery says the limit instead.
+            if _turn_failure_kind(error) == LIMIT_WORDING_FAILURE:
+                break
     assert last_error is not None
     raise last_error
 
@@ -10276,7 +10281,8 @@ def _run_sidecar(
                     turn_result = _recover_failed_turn(
                         message,
                         llm,
-                        attempts=2,
+                        # One attempt when a limit's wording failed (it is not retried).
+                        attempts=len(turn_failure_kinds) or 2,
                         failure_kinds=tuple(turn_failure_kinds),
                     )
                 write_request_message(turn_result)

@@ -13,6 +13,9 @@
   told (with a frame that only tells it, after earlier turns too) gets a listener's acknowledgement, never a
   claim that it was kept (saving needs the explicit request) nor an offer.
 - «Abre el app para ver mis pics.» → «No se encontró la aplicación…»: a built-in app named by what it is for.
+- «Activate el modo de privacy» 8.4 s, «stop la camera inteligente» 9.8 s: the unsupported contract rejected «No
+  X. Eso no lo hago.» and «No tengo whisper mode.», so both drafts, a second whole decision and a recovery were
+  paid. The plain limit restated passes, and a limit whose wording failed is not decided twice.
 
 The phrasings below are not the tanda's: they are paraphrases (es/en/spanglish) the fix does not name, with
 negative controls.
@@ -23,6 +26,8 @@ from __future__ import annotations
 import pytest
 
 from baxy_mind import llm
+from baxy_mind.__main__ import _retry_side_effect_free_turn
+from baxy_mind.llm import ConversationReplyContractError
 from baxy_mind.request_reading import INTENT_CAPABILITY, INTENT_IDENTITY, read_request
 from baxy_mind.semantic.patterns import (
     conversation_only_content_request,
@@ -260,3 +265,60 @@ def test_a_built_in_app_named_by_what_it_is_for_opens(text: str, spanish: str, e
 )
 def test_an_app_described_by_something_no_built_in_app_is_for_stays_unknown(text: str) -> None:
     assert resolve_application_catalog_app_id(text, SPANISH_WINDOWS) is None
+
+
+# ------------------------------------------------------------------ a limit costs one decision
+
+
+@pytest.mark.parametrize(
+    ("draft", "asked"),
+    [
+        ("No detengo la cámara inteligente. Eso no lo hago.", "para la cámara inteligente"),
+        ("No activo el modo avión. Eso no lo hago.", "turn on el airplane mode porfa"),
+        ("I don't turn on airplane mode. That's not something I do.", "enable airplane mode"),
+        ("No tengo modo susurro.", "activa el modo susurro"),
+        ("I don't have a whisper mode.", "switch to whisper mode"),
+    ],
+)
+def test_a_plain_limit_restated_or_a_missing_mode_is_a_limit(draft: str, asked: str) -> None:
+    assert llm._unsupported_answer_contract_failure(draft, asked) == ""
+
+
+@pytest.mark.parametrize(
+    ("draft", "asked"),
+    [
+        ("No activo el modo avión. Pero puedo bajar el volumen.", "turn on el airplane mode porfa"),
+        ("No activo el modo avión. Lo puedes hacer en la configuración de Windows.", "turn on el airplane mode"),
+        ("No activo el modo avión. ¿Quieres otra cosa?", "turn on el airplane mode"),
+        ("No tengo información sobre el modo avión.", "turn on el airplane mode"),
+    ],
+)
+def test_what_follows_a_limit_is_still_only_the_limit(draft: str, asked: str) -> None:
+    assert llm._unsupported_answer_contract_failure(draft, asked) != ""
+
+
+def test_a_limit_whose_wording_failed_is_not_decided_twice() -> None:
+    calls = 0
+
+    def operation() -> dict:
+        nonlocal calls
+        calls += 1
+        raise ConversationReplyContractError("unsupported_shape")
+
+    with pytest.raises(ConversationReplyContractError):
+        _retry_side_effect_free_turn(operation)
+    # The same decision would write the same seeded drafts again; the recovery says the limit.
+    assert calls == 1
+
+
+def test_any_other_failed_attempt_is_still_retried_once() -> None:
+    calls = 0
+
+    def operation() -> dict:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise ConversationReplyContractError("knowledge_not_answered")
+        return {"type": "turn.result"}
+
+    assert _retry_side_effect_free_turn(operation)["turn_attempts"] == 2
