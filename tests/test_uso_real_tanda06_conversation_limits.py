@@ -5,6 +5,8 @@
   somewhere, saving or sending it stays an effect.
 - «que sabes sobre la el ángel caído» → a recital of BAXY's capabilities: what he knows or can tell about a named
   subject asks for that subject; only himself or what he does is a question about him.
+- «¿Es posible la herencia múltiple en Java?» died as dumps_interfaces (shell policy; tested in
+  C03UsoRealComposeTests): «interfaces» is ordinary vocabulary, the machine's interface list is not.
 
 The phrasings below are not the tanda's: they are paraphrases (es/en/spanglish) the fix does not name, with
 negative controls.

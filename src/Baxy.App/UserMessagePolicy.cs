@@ -2486,8 +2486,11 @@ internal static class UserMessagePolicy
 
     private static bool DumpsUnsolicitedInterfaces(string userText, string reply)
     {
+        // The dump is this machine's interface list («24 interfaces conectadas, 14 de ellas son ethernet»), the
+        // same two marks the mind's composer rejects. «interfaces» alone is ordinary vocabulary: tanda 6 «¿Es
+        // posible la herencia múltiple en Java?» lost «…mediante la herencia de interfaces» to it twice.
         string said = FoldForPolicy(reply);
-        if (!ContainsAny(said, ["ethernet", "interfaces conectadas", "interfaces"]))
+        if (!ContainsAny(said, ["ethernet", "interfaces conectadas"]))
         {
             return false;
         }

@@ -129,4 +129,27 @@ public sealed class C03UsoRealComposeTests
         string? defect = UserMessagePolicy.ModelResponseRejectionReason(answer, draft, "busca qué dicen de la mitad de semana");
         Assert.That(defect, valid ? Is.Not.EqualTo("internal_code") : Is.EqualTo("internal_code"));
     }
+
+    // Tanda 6 «¿Es posible la herencia múltiple en Java?» died twice as dumps_interfaces: «interfaces» is ordinary
+    // vocabulary in a knowledge answer; the machine's interface list is still refused.
+    [TestCase("¿Es posible la herencia múltiple en el lenguaje de programación Java?",
+        "Sí, Java permite la herencia múltiple mediante la herencia de interfaces, aunque no de más de una clase.", null)]
+    [TestCase("what is an API in programming",
+        "An API is a set of interfaces that lets programs talk to each other.", null)]
+    [TestCase("¿qué es una interfaz gráfica?",
+        "Es la parte visual con la que usas un programa: ventanas, botones y menús, frente a las interfaces de texto.", null)]
+    [TestCase("online?", "Tienes 24 interfaces conectadas, 14 de ellas son ethernet.", "dumps_interfaces")]
+    [TestCase("¿estoy conectado?", "Sí, por ethernet.", "dumps_interfaces")]
+    public void TechnicalVocabularyIsNotAnInterfaceDump(string request, string reply, string? reason)
+    {
+        string? defect = UserMessagePolicy.ConversationReplyRejectionReason(request, reply);
+        if (reason is null)
+        {
+            Assert.That(defect, Is.Not.EqualTo("dumps_interfaces"));
+        }
+        else
+        {
+            Assert.That(defect, Is.EqualTo(reason));
+        }
+    }
 }
