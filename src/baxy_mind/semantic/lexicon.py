@@ -76,8 +76,16 @@ MUTE_SWITCH_OFF = (
 )
 MUTE_SWITCH_ON = r"(?:turn\s+on|switch\s+on|activa(?:r|le)?|enciende|prende|enable)\s+" + _MUTE_STATE_NOUN
 
-# Uso real 2026-09-23 «silencio»: the bare silence order, the whole message.
-BARE_SILENCE = r"^[¿?¡!\s]*(?:silencio|mudo|silence|quiet)(?:\s+(?:total|por\s+favor|porfa|please|ya|ahora))?[\s.!?]*$"
+# Uso real 2026-09-23 «silencio»: the bare silence order, the whole message. MASSIVE audio_volume_mute (dev corpus
+# 2026-09-23) «silencio altavoces», «altavoces en silencio»: the silence with the speakers or the sound it falls on,
+# still with no verb.
+_SILENCED_OBJECT = rf"(?:(?:los|las|el|la|the|mis|my)\s+)?(?:{SPEAKER_NOUN}|sonidos?|sounds?|audio)"
+BARE_SILENCE = (
+    r"^[¿?¡!\s]*(?:"
+    rf"(?:silencio|mudo|silence|quiet)(?:\s+(?:(?:en|a|on|for)\s+)?{_SILENCED_OBJECT})?|"
+    rf"{_SILENCED_OBJECT}\s+(?:en\s+)?(?:silencio|mudo|mute)"
+    r")(?:\s+(?:total|por\s+favor|porfa|please|ya|ahora))?[\s.!?]*$"
+)
 
 # ---------------------------------------------------------------- stopping a noise (audio.mute, muted = true)
 # Tanda 2026-09-23 «¡detén este horrible ruido!»: a stop order whose object is a noise asks for silence. It was

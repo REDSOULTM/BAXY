@@ -304,6 +304,13 @@ _FEEDBACK_TALK = re.compile(
     r"tus\s+detectores|tu\s+respuesta|que\s+respuesta|respuesta\s+(?:mas\s+)?rara|you\s+(?:didn'?t|never|"
     r"don'?t)\s+(?:understand|do|listen)|i\s+hate\s+(?:this|these|that))\b"
 )
+# MASSIVE news_query «ayer mediodía en el centro de palma por qué fue la protesta»: a time said first is not a
+# story told; the question after it, with the question mark the ear dropped, is what is asked.
+_EMBEDDED_QUESTION = re.compile(
+    r"\b(?:por\s+que|quien|quienes|donde|cuando|cuanto|cuantos|que\s+(?:paso|ocurrio|sucedio))\s+"
+    r"(?:fue|fueron|es|son|era|hubo|hay|habra|sera|paso|ocurrio|sucedio|gano|ganaron|murio|empezo|termina|"
+    r"termino|esta|estan)\b"
+)
 _REACTION_TALK = re.compile(r"^(?:jaja\w*|jeje\w*|jsjs\w*|lol|xd+|wow|uf+|que\s+(?:raro|bueno|lindo|loco|risa))\b")
 
 
@@ -323,7 +330,7 @@ def talk_act(text: str) -> str | None:
         return "reaction"
     if _FEEDBACK_TALK.search(folded):
         return "feedback"
-    if _FIRST_PERSON_TALK.match(folded):
+    if _FIRST_PERSON_TALK.match(folded) and not _EMBEDDED_QUESTION.search(folded):
         return "statement"
     return None
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import re
 from typing import Iterable
-from .grammar import _fold, _has, _strip_request_envelope, _process_list_domain, _PERCENTAGE_WORD_VALUES, _request_clauses, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS
+from .grammar import _fold, _has, _strip_request_envelope, _process_list_domain, _PERCENTAGE_WORD_VALUES, _request_clauses, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, SPOKEN_NUMBER
 from .intent import EffectIntent
 from .web import _WEATHER_WORDS, _names_weather, _weather_lookup_query
 
@@ -45,6 +45,8 @@ def _weather_location(text: str) -> str | None:
             # Uso real 2026-09-23 «va a llover el fin de semana?» read the weather of
             # «Sémana» (Mali): a time is not a place.
             or _has(folded_place, _WEATHER_TIME_WORDS)
+            # MASSIVE «la temperatura será más alta de cuarenta grados mañana»: a measure is not a place.
+            or _has(folded_place, rf"^{SPOKEN_NUMBER}\s*(?:grados|degrees|°|milimetros|mm|centimetros|cm|pulgadas|inches)\b")
             or len(place.encode("utf-8")) > 128
         ):
             continue
@@ -143,3 +145,50 @@ def process_inventory_arguments(text: str) -> dict[str, object] | None:
     elif _has(text, r"\b(?:que proceso|which process|what process)\b"):
         result["limit"] = 1
     return result
+
+
+# Uso real 2026-09-23 «prepárame una taza de café» → «¿Te refieres a que el café esté más suave o con menos
+# ruido?»: food and drink are made or brought in the physical world, where BAXY has no hands; the honest turn is
+# a plain limit, never a question about the PC. «pon en marcha una taza de café» (MASSIVE iot_coffee) starts it.
+_ERRAND = (
+    r"\b(?:prepara|preparame|preparar|prepararme|haz|hazme|hace|haceme|hacer|hacerme|"
+    r"sirve|sirveme|servime|servirme|trae|traeme|traer|traerme|cocina|cociname|cocinar|"
+    r"cocinarme|calienta|calientame|calentarme|pon(?:er|me)?\s+en\s+marcha|"
+    r"make|brew|bring|cook|serve|fetch|pour|heat\s+up|start)\b"
+    r"(?:\s+(?:me|us))?\s+(?:(?:un|una|unos|unas|el|la|los|las|mi|a|an|some|the|my)\s+)?"
+    r"(?:(?:taza|tacita|vaso|copa|plato|jarra|cup|mug|glass|plate|bowl|pot)\s+(?:de|of)\s+)?"
+    r"(?:cafe|cafecito|coffee|espresso|capuchino|cappuccino|latte|te|tecito|tea|mate|chocolate|"
+    r"leche|milk|agua|water|jugo|zumo|juice|cerveza|beer|vino|wine|trago|drink|"
+    r"comida|food|desayuno|breakfast|almuerzo|lunch|cena|dinner|sandwich|sandwiches|"
+    r"sopa|soup|huevos?|eggs?|tostadas?|toast|pancakes|panqueques|snack|merienda)\b"
+)
+# MASSIVE iot_* (dev corpus 2026-09-23): the devices of the house are not this PC. An appliance is one by its
+# name; a light or its colour is one only in a room of the house («las luces de la cocina», «colores oscuros en
+# la casa»), since «baja las luces» alone is the screen's brightness here.
+_HOME_APPLIANCE = (
+    r"\b(?:cafetera|coffee\s+maker|aspiradora|robot\s+aspirador|roomba|vacuum(?:\s+cleaner)?|lavadora|"
+    r"washing\s+machine|washer|secadora|dryer|lavavajillas|lavaplatos|dishwasher|horno|oven|microondas|"
+    r"microwave|aire\s+acondicionado|air\s+condition(?:ing|er)|calefaccion|calefactor|heater|heating|"
+    r"termostato|thermostat|persianas?|blinds|enchufes?\s+inteligentes?|smart\s+plugs?|bombillas?|bulbs?)\b"
+)
+_HOME_LIGHT = r"\b(?:luz|luces|lampara|lamparas|colores|light|lights|lamp|lamps|colou?rs)\b"
+_HOME_ROOM = (
+    r"\b(?:(?:en|de|del)\s+(?:la\s+|el\s+|mi\s+)?(?:casa|cocina|sala|salon|living|cuarto|habitacion|dormitorio|"
+    r"bano|comedor|jardin|garaje|pasillo|patio)|"
+    r"(?:in|of)\s+(?:the\s+|my\s+)?(?:house|home|kitchen|bedroom|living\s+room|bathroom|hallway|garden|garage))\b"
+)
+_HOME_CONTROL = (
+    r"\b(?:enciende|encender|enciendeme|prende|prender|prendeme|apaga|apagar|apagame|pon|poner|ponme|"
+    r"pon(?:er)?\s+en\s+marcha|arranca|arrancar|activa|activar|desactiva|desactivar|sube|subir|baja|bajar|"
+    r"ajusta|ajustar|cambia|cambiar|regula|regular|atenua|atenuar|abre|abrir|cierra|cerrar|"
+    r"turn\s+(?:on|off|up|down)|switch\s+(?:on|off)|start|stop|dim|brighten|set|open|close|run)\b"
+)
+
+
+def physical_world_request(folded: str) -> bool:
+    """An errand with food or drink, or a device of the house to control (see above)."""
+
+    return _has(folded, _ERRAND) or (
+        _has(folded, _HOME_CONTROL)
+        and (_has(folded, _HOME_APPLIANCE) or (_has(folded, _HOME_LIGHT) and _has(folded, _HOME_ROOM)))
+    )

@@ -40,6 +40,7 @@ from .semantic import dialogue as dialogue_slot
 from .semantic import levels as semantic_levels
 from .semantic import lexicon as semantic_lexicon
 from .semantic import reading as semantic_reading
+from .semantic.grammar import ARITHMETIC_EXPRESSION, SPOKEN_NUMBER
 from .semantic.patterns import output_level_request
 from .corrector import catalog_correction_terms
 from .first_signal import (
@@ -2920,6 +2921,8 @@ _SOCIAL_ACTS: tuple[tuple[str, dict[str, str]], ...] = (
                 r"te lo agradezco)"
             ),
             "compliment": (r"(?:sos un capo|eres un capo|sos genial|eres genial)"),
+            # MASSIVE general_joke «toc toc»: the opening of a knock-knock joke is answered in play.
+            "game": r"(?:toc,? toc)",
             "wellbeing": (
                 r"(?:como estas|como andas|como va|que tal todo|que tal|"
                 r"todo bien)"
@@ -2946,6 +2949,7 @@ _SOCIAL_ACTS: tuple[tuple[str, dict[str, str]], ...] = (
                 r"(?:you are great|you are awesome|you(?:['’]?re) great|"
                 r"you(?:['’]?re) awesome)"
             ),
+            "game": r"(?:knock,? knock)",
             "wellbeing": (
                 r"(?:how are you doing|how are you|how is it going|"
                 r"hows it going|whats up)"
@@ -2961,7 +2965,7 @@ def _social_turn_pattern(parts: dict[str, str]) -> str:
     greeting = parts["greeting"]
     core = (
         rf"(?:{greeting}(?:{_SOCIAL_SEPARATOR}{greeting})?"
-        rf"|{parts['farewell']}|{parts['gratitude']})"
+        rf"|{parts['farewell']}|{parts['gratitude']}|{parts['game']})"
     )
     wellbeing = parts["wellbeing"]
     return (
@@ -3407,6 +3411,8 @@ def _standalone_deictic_request(objective: str, history: object = None) -> bool:
 
 def _general_factoid_prompt(objective: str) -> bool:
     folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
+    if _arithmetic_question(folded) or _concept_description(folded):
+        return True
     return (
         re.fullmatch(
             (
@@ -3414,6 +3420,9 @@ def _general_factoid_prompt(objective: str) -> bool:
                 r"(?:please\s+)?tell\s+me\s+the\s+score\s+of\s+the\s+game|"
                 r"what\s+sound\s+does\s+(?:an?\s+|the\s+)?"
                 r"[a-z][a-z .'-]{0,48}\s+make|"
+                # MASSIVE general_quirky «que sonido hace un perro»: the Spanish mirror.
+                r"(?:que|cual\s+es\s+el)\s+(?:sonido|ruido)\s+(?:hace|hacen|emite|emiten|produce|producen)\s+"
+                r"(?:un|una|el|la|los|las)\s+[a-z][a-z .'-]{0,48}|"
                 r"(?:(?:podrias|puedes|can\s+you|could\s+you)\s+)?"
                 r"(?:confirmar|confirm)\s+(?:si|whether)\s+"
                 r"[a-z][a-z .'-]{0,64}\s+(?:esta\s+casad[oa]|is\s+married)|"
@@ -3439,6 +3448,55 @@ def _general_factoid_prompt(objective: str) -> bool:
             re.IGNORECASE,
         )
         is not None
+    )
+
+
+def _arithmetic_question(folded: str) -> bool:
+    """MASSIVE qa_maths «what is four plus five», «cuál es la suma de los dos números cuatro y seis»,
+    «muéstrame la respuesta a este problema doscientos cuarenta y seis más seiscientos cincuenta y cuatro»:
+    arithmetic on the person's own numbers is answered in conversation. The model had sent the first to a web
+    search and offered the others back as «¿Quieres que calcule…?». Typing it into the open Calculator names the
+    Calculator and keeps its own reader."""
+
+    return (
+        re.fullmatch(
+            r"[¿?¡!\s]*(?:(?:cuanto|cuanta)\s+(?:es|son|da|dan|seria)|cual\s+es|what(?:'s|\s+is)|how\s+much\s+is|"
+            r"calcula|calculame|calculate|compute|resuelve|solve|"
+            r"(?:dime|dame|muestrame|mostrame|tell\s+me|give\s+me|show\s+me)\s+(?:(?:la|el|the)\s+)?"
+            r"(?:respuesta|resultado|answer|result)(?:\s+(?:a|de|of|to)\s+(?:este|esta|this)\s+"
+            r"(?:problema|operacion|cuenta|problem|calculation|sum))?)?\s*"
+            rf"(?:{ARITHMETIC_EXPRESSION}|"
+            r"(?:(?:la|el|the)\s+)?(?:suma|resta|multiplicacion|division|producto|sum|product)\s+(?:de|of|entre|between)\s+"
+            rf"(?:(?:los|las|the)\s+)?(?:(?:dos|two)\s+)?(?:(?:numeros|numbers)\s+)?{SPOKEN_NUMBER}(?:\s+(?:y|and)\s+{SPOKEN_NUMBER})?)"
+            r"[\s?!.=]*",
+            folded,
+        )
+        is not None
+    )
+
+
+def _concept_description(folded: str) -> bool:
+    """MASSIVE qa_definition «describe infierno», «dime la descripción de teléfono inteligente», «cómo
+    describirías una pelota», «describe rock sand»: describing a thing by its name is knowledge. The model
+    proposed describing the screen, the domain gate withdrew it and the turn said «Eso no lo hago». What is on
+    the screen, an image, a window, a file or something pointed at keeps its own readers."""
+
+    found = re.fullmatch(
+        r"[¿?¡!\s]*(?:describe(?:me)?|describa|como\s+describirias|how\s+would\s+you\s+describe|"
+        r"(?:dime|dame|decime|give\s+me|tell\s+me)\s+(?:la\s+|una\s+|the\s+|a\s+)?(?:descripcion|description)\s+(?:de|del|of)|"
+        r"(?:la\s+|una\s+|the\s+|a\s+)?(?:descripcion|description)\s+(?:de|del|of))\s+"
+        r"(?P<thing>[a-z][a-z .'-]{0,60}?)[\s?!.]*",
+        folded,
+    )
+    return found is not None and not re.search(
+        r"\b(?:esto|eso|este|esta|ese|esa|aquello|aqui|lo\s+que|this|that|it|what|here|"
+        r"mi|mis|tu|tus|my|your|pantalla|screen|imagen|imagenes|image|images|foto|fotos|photo|photos|picture|"
+        r"ventana|ventanas|window|windows|video|archivo|archivos|file|files|captura|screenshot|escritorio|desktop|"
+        r"camara|camera|pc|computadora|computador|equipo|computer|"
+        # «describe el clima de hoy» is a live read, not a definition.
+        r"clima|tiempo|weather|pronostico|forecast|noticias|news|hora|fecha|time|date|hoy|today|ahora|now|"
+        r"actual|current|estado|status|sistema|system)\b",
+        found.group("thing"),
     )
 
 
@@ -3786,7 +3844,8 @@ def _explicit_stable_no_effect_turn_decision(
                 r"(?:por\s+que|why)\b|"
                 r"(?:(?:que|what)\s+quiere\s+decir)\b|"
                 r"what\s+does\b.{0,96}\b(?:mean|significa|decir)\b|"
-                r"(?:que|what(?:\s+is)?)\s+(?:diferencia|difference)\b|"
+                # MASSIVE qa_factoid «cuál es la diferencia entre el calendario romano y el gregoriano».
+                r"(?:que|cual\s+es\s+la|what(?:\s+is)?(?:\s+the)?|what's(?:\s+the)?)\s+(?:diferencia|difference)\b|"
                 r"(?:cuentame|contame|tell\s+me)\b.{0,48}\b(?:historia|history)\b|"
                 r"(?:cuentame|contame|tell\s+me)\b.{0,48}\b(?:chiste|joke)\b|"
                 r"(?:resume|summarize)\b|"
@@ -3809,6 +3868,7 @@ def _explicit_stable_no_effect_turn_decision(
             (
                 r"^[¿?¡!\s]*(?:"
                 r"i(?:'d|\s+would)?\s+like\s+to\s+hear|let\s+me\s+hear|"
+                r"i\s+(?:want|wanna)\s+(?:to\s+)?hear|(?:quiero|quisiera)\s+(?:oir|escuchar)|"
                 r"me\s+gustaria\s+(?:oir|escuchar)|"
                 r"(?:find|get|give|tell)\s+me|"
                 r"(?:buscame|dame|cuentame|contame))\b.{0,80}"
@@ -8621,6 +8681,8 @@ def _decide_turn_result(
             and "web.search" in available_operations
             and planner_catalog.get("web.search") is not None
             and not _names_own_data(objective)
+            # «rate five», «tuitea a Vodafone…»: a known limit is an order, not something to look up.
+            and not known_unsupported_effect_request(objective, available_operations)
         ):
             shortlist = _shortlist_with_required_effects(shortlist, ("web.search",), planner_catalog)
             decision = validate_turn_decision(

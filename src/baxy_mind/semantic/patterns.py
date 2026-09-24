@@ -19,13 +19,13 @@ from .intent import EffectIntent, _entity_key, _is_negated_match, _append, _appe
 from .catalog import ApplicationCatalogIndex, GameCatalogIndex, build_game_catalog_index, _authenticated_game_target, resolve_game_catalog_app_id, _application_name_key, build_application_catalog_index, _catalog_alias_key, _installed_game_named, installed_game_title
 from .temporal import _CALENDAR_MONTH_TOKEN, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, spoken_clock
 from .media import _youtube_search_query, youtube_play_query, _direct_media_discovery_or_play_request, _named_browser_music_request, _NETFLIX_SPELLED, _underspecified_video_request, _title_case_media_title, _media_transport_action, _resume_existing_media, _REMOVABLE_MEDIA, _bare_spoken_number_media_query, radio_station_query, spoken_media_order
-from .web import other_place_clock_question, public_opinion_query, record_fact_query, _public_route_lookup_request, _public_calendar_fact_lookup_request, _WEATHER_WORDS, _weather_lookup_query, _research_question_query, _public_live_lookup_request, _public_product_correction_lookup_request, _public_commerce_lookup_request, _FILESYSTEM_OBJECT_NOUN, operation_identity_is_a_near_miss, curiosity_request, web_image_request, _NAVIGATION_CLIENT, client_navigation_target, _authenticated_application_identity_conflict, _browser_page_domain, browser_back_arguments, browser_new_tab_arguments, browser_close_all_tabs_arguments, _historical_note_search_request, _stored_note_search_query, _nominal_reminder_lookup_title, _location_recommendation_request, _NAMED_BROWSER_SITE_REQUEST, _installed_browser_search_query, _completed_browser_search_pronoun_request, _NAMED_PUBLIC_SITE, _review_web_and_browser_effects, web_download_request, NAMED_CDP_BROWSERS, _named_browser_match, _named_browser
+from .web import other_place_clock_question, public_opinion_query, record_fact_query, _public_route_lookup_request, _public_calendar_fact_lookup_request, _WEATHER_WORDS, _weather_lookup_query, _research_question_query, _public_live_lookup_request, _public_product_correction_lookup_request, _public_commerce_lookup_request, _FILESYSTEM_OBJECT_NOUN, operation_identity_is_a_near_miss, curiosity_request, web_image_request, _NAVIGATION_CLIENT, client_navigation_target, _authenticated_application_identity_conflict, _browser_page_domain, browser_back_arguments, browser_new_tab_arguments, browser_close_all_tabs_arguments, _historical_note_search_request, _stored_note_search_query, _nominal_reminder_lookup_title, _location_recommendation_request, _NAMED_BROWSER_SITE_REQUEST, _installed_browser_search_query, _completed_browser_search_pronoun_request, _NAMED_PUBLIC_SITE, _review_web_and_browser_effects, web_download_request, NAMED_CDP_BROWSERS, _named_browser_match, _named_browser, public_event_subject
 from .files import _pdf_summary_request, _file_trash_request, process_report_file_request, _file_creation_request, known_folder_file_path, _current_directory_file_count, _DUPLICATE_FILES, _known_folder_recent_listing, _known_folder_listing_request, _review_file_and_game_effects, folder_txt_zip_open_mission, open_named_file_request, _office_document_roundtrip_intent
 from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
-from .system import _weather_read_intent
+from .system import _weather_read_intent, physical_world_request
 from .notes import list_entry_request, list_read_request, list_creation_without_items, _relative_calendar_read_request, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects
-from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, _latest_email_domain, _notification_listing_request, inbox_read_request
+from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, _latest_email_domain, _notification_listing_request, inbox_read_request, social_network_request
 from .ui import _clipboard_copy_domain, _clipboard_paste_domain, calculator_expression_request, literal_clipboard_write_text, _review_input_and_capture_effects, _VISIBLE_CLICK_APP_CONTEXT, _gerund_click_label, _visible_click_label, _click_in_application, _visible_click_intent
 from .apps import self_close_request, _APPLICATION_TRAILING_REQUEST, _application_target_forms, _CLOSE_TRAILING_COURTESY, _close_target_forms, deictic_close_request, _bounded_application_literal, _authenticated_application_list, _OPEN_STATE_CONDITION, close_all_request, _has_multiple_installed_entities, _append_domain_actions, _open_application_spans, _CATALOG_INSTALL_VERB, _opened_applications
 
@@ -2131,6 +2131,28 @@ def known_unsupported_effect_request(
             {"message.latest.read"},
         ),
         (
+            # MASSIVE social_post/social_query (dev corpus 2026-09-23) «tuitea a
+            # Vodafone que…», «what does my facebook feed look like»: no
+            # operation posts to a social network or reads the account there.
+            social_network_request(text),
+            {"social.post", "social.account.read"},
+        ),
+        (
+            # MASSIVE music_likeness «rate five»: a rating given to what plays
+            # is kept by the player's account; no operation rates. It was
+            # searched on the web as a phrase.
+            _has(
+                folded,
+                r"^[¿?¡!\s]*(?:rate|califica|calificale|puntua|puntuale|valora|valorale|dale|give)\s+"
+                r"(?:(?:it|this|esta|este|the|la|el)\s+(?:(?:song|cancion|track|tema|pelicula|movie)\s+)?)?"
+                r"(?:(?:con|with|a)\s+)?(?:(?:un|una|a)\s+)?"
+                r"(?:\d{1,2}|one|two|three|four|five|ten|uno|una|dos|tres|cuatro|cinco|diez)"
+                r"(?:\s+(?:estrellas?|stars?|puntos?|points?))?[\s.!?]*$",
+            )
+            and not _has(folded, r"^[¿?¡!\s]*(?:dale|give)\s+(?:\d{1,2}|one|two|three|four|five|ten|uno|una|dos|tres|cuatro|cinco|diez)[\s.!?]*$"),
+            {"media.rating.set"},
+        ),
+        (
             # AGENDA1669 H0666 «resumime informe.pdf»: the text reader opens text
             # files; no operation reads or summarises a PDF.
             _has(folded, r"\b(?:resumi|resumime|resumeme|resume|resumir|resumen|summari[sz]e|summary|sum\s+up)\b")
@@ -2138,24 +2160,12 @@ def known_unsupported_effect_request(
             {"document.pdf.read"},
         ),
         (
-            # Uso real 2026-09-23 «prepárame una taza de café» → «¿Te refieres a
-            # que el café esté más suave o con menos ruido?»: food and drink are
-            # made or brought in the physical world, where BAXY has no hands; the
-            # honest turn is a plain limit, never a question about the PC.
-            _has(
-                folded,
-                r"\b(?:prepara|preparame|preparar|prepararme|haz|hazme|hace|haceme|hacer|hacerme|"
-                r"sirve|sirveme|servime|servirme|trae|traeme|traer|traerme|cocina|cociname|cocinar|"
-                r"cocinarme|calienta|calientame|calentarme|"
-                r"make|brew|bring|cook|serve|fetch|pour|heat\s+up)\b"
-                r"(?:\s+(?:me|us))?\s+(?:(?:un|una|unos|unas|el|la|los|las|mi|a|an|some|the|my)\s+)?"
-                r"(?:(?:taza|tacita|vaso|copa|plato|jarra|cup|mug|glass|plate|bowl|pot)\s+(?:de|of)\s+)?"
-                r"(?:cafe|cafecito|coffee|espresso|capuchino|cappuccino|latte|te|tecito|tea|mate|chocolate|"
-                r"leche|milk|agua|water|jugo|zumo|juice|cerveza|beer|vino|wine|trago|drink|"
-                r"comida|food|desayuno|breakfast|almuerzo|lunch|cena|dinner|sandwich|sandwiches|"
-                r"sopa|soup|huevos?|eggs?|tostadas?|toast|pancakes|panqueques|snack|merienda)\b",
-            ),
-            {"physical.errand"},
+            # Uso real 2026-09-23 «prepárame una taza de café»; MASSIVE iot_* (dev
+            # corpus 2026-09-23) «pon en marcha una taza de café», «apaga las luces
+            # de la cocina»: food, drink and the devices of the house are the
+            # physical world, where BAXY has no hands (semantic.system).
+            physical_world_request(folded),
+            {"physical.errand", "home.device.control"},
         ),
         (
             # LIMITS1665 H0459 «cambiá el fondo de pantalla a azul»: no operation
@@ -3206,6 +3216,8 @@ def _clarification_intent_of(
         "calendar.event.list" in available
         and _has(folded, r"\b(?:calendario|calendar|eventos?|events?)\b")
         and _has(folded, rf"\b{_LIST}\b|\b(?:proximos?|upcoming)\b")
+        # «show me nearby musical events»: public events are looked up, not the agenda's range.
+        and not public_event_subject(folded)
         and not _has(
             folded,
             r"\b(?:desde|from)\b.+\b(?:hasta|to)\b|"
@@ -5383,6 +5395,11 @@ def _explicit_named_music_query(text: str) -> str | None:
         or _other_device_effect_scope(folded)
         or _fold(query) in {"it", "them", "this", "that", "esto", "eso", "esa", "ese"}
         or _has(_fold(query), _OWN_FAVOURITE)
+        # MASSIVE iot_* «pon en marcha una taza de café», «poner colores oscuros
+        # en lugar de claros en la casa»: starting a thing or setting the house
+        # is the physical world, never a title to play.
+        or _has(_fold(query), r"^en\s+marcha\b")
+        or physical_world_request(folded)
         # «pon el audio de Spotify al 20 %»: a volume object is a level to set,
         # never the thing to play; «ponme un recordatorio para las 3» schedules.
         or _has(
@@ -6453,6 +6470,8 @@ def _is_direct_request(text: str) -> bool:
         or public_opinion_query(text) is not None
         or record_fact_query(text) is not None
         or message_draft_request(text) is not None
+        # «tuitea a Vodafone que…»: posting is a request, even with no verb this module knows.
+        or social_network_request(text)
         or client_channel_request(text) is not None
         # Uso real 2026-09-23 «vuelve el sonido», «Turn off silenciar», «¡detén este horrible ruido!», «silencio»:
         # the message opens with the mute switched or the sound asked back; that is the request.
@@ -7580,6 +7599,9 @@ def _strict_catalog_request(
                     r"(?:cabeza|mente|head|mind)\b",
                 )
             )
+            # «hay algún evento deportivo mañana en chicago», «la diferencia entre
+            # el calendario romano y el gregoriano»: not the person's agenda.
+            or ("calendar.event.list" in found_operation_set and public_event_subject(text))
             or _has(
                 text,
                 r"\b(?:equipo\s+(?:de\s+)?(?:futbol|medico|editorial)|"

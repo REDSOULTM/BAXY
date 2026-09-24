@@ -414,3 +414,49 @@ def _notification_listing_request(text: str) -> bool:
         # calendar, and the listing says so by what it contains.
         return True
     return re.match(_NOTIFICATION_LISTING, folded) is not None
+
+
+# MASSIVE social_post / social_query (dev corpus 2026-09-23): «tuitea a Vodafone que su servicio es malo»,
+# «publica un estado en facebook diciendo…», «what does my facebook feed look like», «tengo nuevas peticiones
+# de amistad». No operation posts to a social network or reads the person's account there; the model wrote
+# the tweet as if it were posted, or searched the web for the sentence. The honest turn is the plain limit.
+# Opening the network's site («abre facebook») is navigation and is not this.
+_SOCIAL_NETWORK = (
+    r"(?:facebook|instagram|twitter|tiktok|linkedin|threads|mastodon|bluesky|"
+    r"redes?\s+sociales?|social\s+(?:media|networks?))"
+)
+_SOCIAL_POST = (
+    # A tweet said as a verb: «tuitea», «tuitear», «twittéale», «retweet», «tweet walmart» (not «a tweet»).
+    r"(?<!\ba\s)(?<!\bthe\s)(?<!\bmy\s)(?<!\bun\s)(?<!\bel\s)(?<!\bmi\s)(?<!\bese\s)(?<!\beste\s)"
+    r"\b(?:(?:re)?(?:tuite|twitte|tweete)(?:ar|a|ame|ale|ales|alo|ala|amos|e|en|es|o|ando)?|"
+    r"(?:re)?tweet(?:s|ed|ing)?)\b(?!\s+(?:is|es|was|means|significa)\b)|"
+    # A tweet as what is written, opened, answered or published: «abrir tuit a apple», «responde con un tuit».
+    r"\b(?:abre|abrir|abreme|escribe|escribir|escribeme|manda|mandar|envia|enviar|publica|publicar|haz|hacer|"
+    r"hazme|responde|responder|contesta|contestar|write|send|post|make|reply|answer)\b"
+    r"(?:\s+\w+){0,2}?\s+(?:(?:con|with)\s+)?(?:(?:un|una|el|mi|a|an|the|my)\s+)?(?:tuits?|tweets?)\b|"
+    # Publishing, sharing or updating on a network or on one's wall; putting or uploading a post there.
+    r"(?:\b(?:publica|publicar|publicame|postea|postear|comparte|compartir|post|share|update)\b|"
+    r"\b(?:sube|subir|pon|poner)\s+(?:(?:un|una|mi|el|la|esta|este|a|my|this)\s+)?"
+    r"(?:fotos?|videos?|estado|historia|post|publicacion|photo|status|story)\b)"
+    rf".{{0,80}}\b(?:en|a|on|to)\s+(?:(?:mi|my|el|the)\s+)?(?:{_SOCIAL_NETWORK}|muro|wall|timeline)\b"
+)
+_SOCIAL_ACCOUNT_READ = (
+    r"\b(?:peticion|peticiones|solicitud|solicitudes)\s+de\s+amistad\b|\bfriend\s+requests?\b|"
+    rf"\b(?:mi|mis|my)\s+{_SOCIAL_NETWORK}\s+(?:feed|wall|timeline|notifications|profile|inbox)\b|"
+    rf"\b(?:mi|mis|el|la)\s+(?:muro|feed|timeline|perfil|notificaciones|seguidores|menciones)\s+(?:de|en)\s+"
+    rf"{_SOCIAL_NETWORK}\b"
+)
+# «abre facebook», «entra a mi instagram»: going to the site is navigation. «abrir tuit a apple» is a post.
+_SOCIAL_NAVIGATION = (
+    r"^[¿?¡!\s]*(?:abre|abri|abrir|abreme|abrime|open|entra|entrar|go\s+to|ve\s+a|anda\s+a|llevame\s+a|"
+    r"navega|navegar|take\s+me\s+to)\b(?!(?:\s+\w+){0,2}?\s+(?:(?:un|una|el|a|the)\s+)?(?:tuits?|tweets?)\b)"
+)
+
+
+def social_network_request(text: str) -> bool:
+    """A post to a social network or a read of the person's account there (see above)."""
+
+    folded = _strip_request_envelope(_fold(text))
+    if _has(folded, _SOCIAL_NAVIGATION):
+        return False
+    return _has(folded, _SOCIAL_POST) or _has(folded, _SOCIAL_ACCOUNT_READ)

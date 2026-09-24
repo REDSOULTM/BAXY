@@ -51,7 +51,8 @@ def _direct_current_time_request(folded: str) -> bool:
         r"(?:es|estamos)(?:\s+(?:ahora|hoy))?|"
         r"what\s+day\s+of\s+the\s+week\s+is\s+(?:it|today)(?:\s+today)?|"
         r"what\s+(?:time|date|day)\s+is\s+it(?:\s+(?:(?:right\s+)?now|today))?)|"
-        rf"(?:hora|fecha)\s+{current}|(?:current|local)\s+(?:local\s+)?(?:time|date)|"
+        # «la fecha hoy», «la hora actual»: the noun with its article and a present modifier.
+        rf"(?:(?:la|el|the)\s+)?(?:hora|fecha)\s+{current}|(?:current|local)\s+(?:local\s+)?(?:time|date)|"
         rf"today(?:['’]s)?\s+date|(?:{observation}\s+)?"
         r"(?:the\s+)?time\s+(?:right\s+now|now)"
         r"(?:\s*[,;:]?\s*what\s+is\s+it)?|"

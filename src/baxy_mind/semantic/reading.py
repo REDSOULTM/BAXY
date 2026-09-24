@@ -121,6 +121,10 @@ def _desired_media_request(
     order to play; the words are the person's and stay the query. Only when the order resolves on its own.
     """
 
+    if re.search(r"(?:chistes?|jokes?|bromas?|adivinanzas?|riddles?)", _fold(objective)):
+        # MASSIVE general_joke «i want to hear a joke», «me gustaría escuchar algunos buenos chistes»:
+        # a joke is told by BAXY, not played.
+        return None
     order = spoken_media_order(_without_address(objective) or objective)
     return resolve(order) if order is not None else None
 
@@ -287,6 +291,8 @@ def plain_talk(text: str, *, effects: EffectIntent | None, clarification: object
         or _TALK_EXTRA_ORDER.search(orders)
         or _TALK_DESIRED_REQUEST.search(folded)
         or _TALK_LOOKUP.search(folded)
+        # MASSIVE «i had a problem with my burger can you tweet bk»: a request after the story is a request.
+        or re.search(r"\b(?:can|could|would|will)\s+you\s+(?!believe\b|imagine\b)[a-z]+", folded)
     ):
         return None
     if act == "statement" and _TALK_PC_DOMAIN.search(folded):

@@ -64,6 +64,13 @@ def cut_request_tail(objective: str) -> str | None:
     # still be cut («la carpeta de mi…»), so only «para» closes it.
     if last == "mi" and effect_intent._fold(words[-2]).strip(",;:") == "para":
         return None
+    # MASSIVE «tiendas de ropa en un radio de cinco kilómetros de mi», «un bar cerca de mi»: after a place or a
+    # distance, «de mí» is where the person is, not a possessive cut short.
+    if last == "mi" and re.search(
+        r"\b(?:cerca|alrededor|lejos|delante|detras|enfrente|kilometros?|km|metros?|millas?|cuadras?)\s+de\s+mi$",
+        effect_intent._fold(" ".join(words[-3:])).strip(",;:"),
+    ):
+        return None
     return " ".join(words[-3:])
 
 
@@ -358,6 +365,13 @@ def _conversation_in_progress(history: object) -> bool:
     )
 
 
+# Only the openers that are questions and nothing else: «que», «como», «cuando» also open talk («que te digo»).
+_ADDRESSED_OPENING = (
+    r"[\s¡!]*(?:cual|cuales|cuanto|cuanta|cuantos|cuantas|quien|quienes|por\s+que|"
+    r"what|which|who|whom|where|when|why|how)\b"
+)
+
+
 def _overheard_speech(folded: str) -> bool:
     """DIALOGUE1513: a long stretch of talk with no request for BAXY.
 
@@ -373,5 +387,12 @@ def _overheard_speech(folded: str) -> bool:
         return False
     words = re.findall(r"[a-z0-9]+", folded)
     if len(words) < 15:
+        return False
+    if re.match(_ADDRESSED_OPENING, folded) is not None or effect_intent._head_is(
+        effect_intent._request_head(folded), effect_intent._COVERAGE_ACTION_HEAD
+    ):
+        # MASSIVE (dev corpus 2026-09-23) «cuáles son las predicciones de las votaciones…», «muéstrame la
+        # respuesta a este problema…», «chequea en los cines…»: the ear drops the question mark; a message that
+        # opens asking or ordering is said to BAXY, however long.
         return False
     return _OVERHEARD_ACTION_WORDS.search(folded) is None and "baxy" not in folded

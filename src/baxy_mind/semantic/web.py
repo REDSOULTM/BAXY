@@ -6,7 +6,7 @@ from __future__ import annotations
 import re
 from typing import Iterable
 from .display import _KNOWN_FOLDER_ENUM, _KNOWN_FOLDER_WORDS
-from .grammar import _fold, _match, _has, _strip_request_envelope, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _is_meta_or_tool_denial, _OPEN, _LIST, _READ, _SEARCH, _explicit_google_search_query
+from .grammar import _fold, _match, _has, _strip_request_envelope, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _is_meta_or_tool_denial, _OPEN, _LIST, _READ, _SEARCH, _explicit_google_search_query, ARITHMETIC_EXPRESSION
 from .intent import EffectIntent, _entity_key, _append, _append_all
 from .catalog import ApplicationCatalogIndex, _application_name_key, build_application_catalog_index
 from .temporal import _BOUNDED_TEMPORAL_SELECTOR
@@ -81,6 +81,38 @@ def _names_weather(folded: str) -> bool:
     )
 
 
+# Uso real (MASSIVE weather_query, dev corpus 2026-09-23): the forecast asked with no asking verb in front.
+# «la temperatura de mañana va a ser caliente sí o no», «la temperatura será más alta de cuarenta grados
+# mañana» open on the weather noun itself; «¿tendremos este tiempo el resto del día?» asks whether the
+# weather holds. A noun of this PC or of the kitchen («la temperatura de la cpu», «del horno») is not.
+_WEATHER_SUBJECT_QUESTION = (
+    r"^[¿¡\s]*(?:el|la|the)\s+(?:temperatura|temperature|clima|weather|pronostico|forecast|prevision)\b"
+)
+_WEATHER_HOLDS_QUESTION = (
+    r"\b(?:tendremos|tendre|habra|seguira|continuara|durara|va\s+a\s+(?:seguir|durar))\s+"
+    r"(?:este|ese|el\s+mismo|buen|mal)\s+tiempo\b"
+)
+_NOT_WEATHER_TEMPERATURE = (
+    r"\b(?:cpu|gpu|procesador|processor|tarjeta|equipo|pc|computadora|computador|ordenador|laptop|notebook|"
+    r"disco|bateria|battery|motor|agua|water|horno|oven|nevera|heladera|refrigerador|fridge|cuerpo|body|fiebre)\b"
+)
+# «me gustaría saber el tiempo en barcelona», «quisiera saber si va a llover»: wanting to know is the ask.
+_KNOWLEDGE_LEAD_IN = (
+    r"^[¿¡\s]*(?:(?:yo\s+)?(?:quiero|quisiera|necesito|me\s+gustaria)\s+(?:saber|conocer)|"
+    r"i\s+(?:want|need|would\s+like|'d\s+like)\s+to\s+know)\s+(?:(?:si|if|whether)\s+)?"
+)
+
+
+def _forecast_question(folded: str) -> bool:
+    """The forecast asked by naming it as the subject of a time to come, or whether the weather holds."""
+
+    if _has(folded, _NOT_WEATHER_TEMPERATURE):
+        return False
+    return (_has(folded, _WEATHER_SUBJECT_QUESTION) and _has(folded, WEATHER_WHEN)) or _has(
+        folded, _WEATHER_HOLDS_QUESTION
+    )
+
+
 # Uso real tanda 2 (2026-09-23): the weather asked through what it calls for, never by name. «¿Me llevo el
 # chubasquero?», «¿Debo ponerme scarf esta noche?» ask whether to wear or carry something; «¿Cuántas pulgadas
 # are we getting today?» asks an amount; «necesito el horario de la caída del sol para mañana» asks a sun time.
@@ -91,7 +123,15 @@ _WEATHER_GEAR = (
     r"\b(?:paraguas|sombrilla|umbrella|chubasquero|impermeable|capa\s+de\s+lluvia|poncho|raincoat|rain\s+jacket|"
     r"bufanda|scarf|abrigo|chaqueta|chamarra|campera|casaca|parka|jacket|coat|sueter|sweater|jersey|poleron|"
     r"gorro|beanie|guantes|gloves|botas\s+de\s+(?:lluvia|agua)|rain\s+boots|protector\s+solar|bloqueador|"
-    r"sunscreen|gafas\s+de\s+sol|lentes\s+de\s+sol|sunglasses)\b"
+    r"sunscreen|gafas\s+de\s+sol|lentes\s+de\s+sol|sunglasses|"
+    # «¿debería ponerme sandalias o zapatos con calcetines?»: what the heat calls for is the weather too.
+    r"sandalias|chanclas|ojotas|sandals|flip[\s-]?flops|shorts|bermudas|pantalon(?:es)?\s+cortos?|"
+    r"manga\s+(?:corta|larga))\b"
+)
+# «qué chaqueta debería ponerme», «should I wear a coat»: a question said without its question mark
+# opens on the asking word or the modal.
+_WEATHER_GEAR_ASKED = (
+    r"^[¿¡\s]*(?:que|cual|cuales|deberia|deberiamos|debo|conviene|hace\s+falta|should|do\s+i|will\s+i)\b"
 )
 _WEATHER_GEAR_DECISION = (
     r"\b(?:llevo|llevar|llevarme|lleve|llevamos|pongo|ponerme|ponga|me\s+abrigo|abrigarme|uso|usar|necesito|necesitare|"
@@ -124,7 +164,7 @@ def _asks_weather_indirectly(folded: str) -> bool:
     gear = (
         _has(folded, _WEATHER_GEAR)
         and _has(folded, _WEATHER_GEAR_DECISION)
-        and ("?" in folded or _has(folded, WEATHER_WHEN))
+        and ("?" in folded or _has(folded, WEATHER_WHEN) or _has(folded, _WEATHER_GEAR_ASKED))
         and not _has(folded, _WEATHER_GEAR_ELSEWHERE)
     )
     amount = _has(folded, _WEATHER_AMOUNT) and _has(
@@ -158,7 +198,7 @@ def _weather_lookup_query(text: str) -> str | None:
     or verb-laden forms); None when the request is not a live weather lookup."""
 
     folded = _fold(text)
-    indirect = _asks_weather_indirectly(folded)
+    indirect = _asks_weather_indirectly(folded) or _forecast_question(folded)
     if not _public_live_lookup_request(folded) or not (_names_weather(folded) or indirect):
         return None
     if _has(folded, r"^[¿?¡!\s]*(?:que|what)\s+(?:es|son|is|are|significa|means)\b"):
@@ -177,7 +217,8 @@ def _weather_lookup_query(text: str) -> str | None:
     query = re.sub(
         r"^(?:mostrame|muéstrame|muestrame|muestra|decime|dime|contame|cuéntame|cuentame|"
         r"busca|buscá|buscame|buscar|search|find|show\s+me|tell\s+me|dame|give\s+me|"
-        r"necesito|need|quiero|i\s+want)\s+(?:saber\s+|to\s+know\s+)?(?:el|la|the|los|las)?\s*",
+        r"necesito|need|quiero|quisiera|me\s+gustaría|me\s+gustaria|i\s+want|i\s+would\s+like)\s+"
+        r"(?:saber\s+|to\s+know\s+)?(?:el|la|the|los|las)?\s*",
         "", query, count=1, flags=re.IGNORECASE)
     query = re.sub(
         r"^(?:qué|que|what|cuál|cual|what's|cómo|como|how)\s+(?:es\s+|is\s+|está\s+|esta\s+|estará\s+|estara\s+|va\s+a\s+estar\s+)?"
@@ -354,6 +395,9 @@ def _entity_lookup_query(text: str) -> str | None:
     ).strip(" \t\r\n.,;:")
     folded_entity = _fold(entity)
     if not folded_entity or not re.search(r"[a-z]", folded_entity):
+        return None
+    if re.fullmatch(ARITHMETIC_EXPRESSION, folded_entity):
+        # MASSIVE qa_maths «what is four plus five»: a sum is worked out, not looked up.
         return None
     if len(entity.encode("utf-8")) > 80 or len(folded_entity.split()) > 8:
         return None
@@ -696,6 +740,8 @@ def _public_live_lookup_request(folded: str) -> bool:
         "show",
         "revisa",
         "consulta",
+        # «hay alguna previsión de lluvia o nieve esta semana»
+        "hay",
     }
     news_consumption = (
         re.match(
@@ -740,8 +786,10 @@ def _public_live_lookup_request(folded: str) -> bool:
         folded,
         re.IGNORECASE,
     )
-    weather_head = head in weather_heads or (
-        vocative_weather is not None and vocative_weather.group("head") in weather_heads
+    weather_head = (
+        head in weather_heads
+        or (vocative_weather is not None and vocative_weather.group("head") in weather_heads)
+        or _has(folded, _KNOWLEDGE_LEAD_IN)
     )
     # «i wish to know the weather in san francisco»: an unambiguous weather noun
     # names the lookup when the sentence has no other order head («escribe …
@@ -749,7 +797,15 @@ def _public_live_lookup_request(folded: str) -> bool:
     weather_noun = not head and _has(folded, r"\b(?:weather|forecast|pronostico|clima)\b") and not _has(
         folded, r"\bclima\s+(?:laboral|politico|social|economico|de\s+trabajo|organizacional|familiar)\b"
     )
-    weather = (weather_head and _names_weather(folded) or weather_noun or _asks_weather_indirectly(folded)) and not _has(
+    weather = (
+        weather_head and _names_weather(folded)
+        or weather_noun
+        or _asks_weather_indirectly(folded)
+        or _forecast_question(folded)
+    ) and not (
+        # r7/r9 «dame una receta de sopa para una noche fría»: the weather is what the recipe is for.
+        _has(folded, r"\b(?:recetas?|recipes?)\b")
+    ) and not _has(
         # WEATHER2023 boundary: the weather of the past is no live lookup.
         folded,
         r"\b(?:hacia|hizo|hubo|estuvo|estaba|fue|llovio|was|were|did|rained)\b|"
@@ -937,17 +993,43 @@ def _public_live_lookup_request(folded: str) -> bool:
         )
         is not None
     )
+    # MASSIVE takeaway_query «alexa el rodilla hace envíos», «pizza hut tiene para llevar», «i need to know if mr.
+    # pizza delivers»: whether a business delivers or sells to take away, however the business is named first. The
+    # person's own order («¿cuándo llega mi pedido?») is theirs, not public.
     business_delivery = (
-        re.match(
-            (
-                r"^(?:hace|ofrece|tiene|does|do|is)\b.{0,96}"
-                r"\b(?:envios?|entregas?|delivery|deliver)\b.{0,48}"
-                r"\b(?:domicilio|home|nearby|disponible|available)?\b"
-            ),
+        _has(
             folded,
-            re.IGNORECASE,
+            r"\b(?:hace|hacen|ofrece|ofrecen|tiene|tienen|does|do|is|are)\b.{0,96}"
+            r"\b(?:envios?|entregas?|delivery|deliver|reparto|a\s+domicilio|para\s+llevar|take\s*-?out|takeaway|"
+            r"carry\s*-?out)\b|\b(?:delivers|reparte|reparten)\b",
         )
-        is not None
+        and not _has(folded, r"\b(?:mi|mis|my)\s+(?:pedidos?|orders?|comida|food|paquetes?|packages?|compras?)\b")
+    )
+    public_events = public_event_subject(folded) and not _has(folded, _CALENDAR_SYSTEM)
+    # MASSIVE qa_currency / qa_stock «cuantos euros es un dólar estadounidense ahora», «let me know about the
+    # exchange rate of rupee to dirham», «cuál es el aumento en el valor de las acciones durante la última semana de
+    # disney»: a rate or a share value moves every day; it was recited from memory. «acciones» alone is also the
+    # quick actions of Windows, so it counts with a word of the market.
+    # MASSIVE news_query «cuáles son las predicciones de las votaciones de r. t. v. e. para las próximas elecciones
+    # españolas»: polls and elections are the news, asked about.
+    election_news = _has(
+        folded, r"\b(?:elecciones|electoral(?:es)?|encuestas?\s+electorales?|sondeos?|votaciones|comicios|elections?|polls?)\b"
+    ) and _has(folded, r"^(?:que|cual|cuales|quien|quienes|como|cuando|what|which|who|how|when|dime|decime|tell|busca|search)\b")
+    market_data = (
+        _has(folded, r"\b(?:tipos?|tasas?)\s+de\s+cambio\b|\bexchange\s+rates?\b|\bconversion\s+rates?\b")
+        or (
+            _has(folded, rf"\b(?:cuant[oa]s?|how\s+(?:many|much))\b.{{0,40}}{_CURRENCY}.{{0,60}}{_CURRENCY}")
+            # «cuánto es 5 euros más 3 euros» is a sum.
+            and not _has(folded, r"\b(?:mas|menos|plus|minus)\b")
+        )
+        or (
+            _has(folded, r"\bacciones\b")
+            and _has(
+                folded,
+                r"\b(?:precios?|valor|cotiza\w*|bolsa|mercado|subiendo|bajando|subieron|bajaron|cayeron|cayendo|alza|"
+                r"aumento|subida|caida|bajada|rendimiento)\b",
+            )
+        )
     )
     takeaway_availability = (
         re.fullmatch(
@@ -1035,6 +1117,17 @@ def _public_live_lookup_request(folded: str) -> bool:
             re.IGNORECASE,
         )
         is not None
+        # MASSIVE transport_query «puedes decirme a qué hora sale el tren a chicago»: when a public service leaves
+        # or arrives. The person's own trip («mi vuelo») is theirs.
+        or (
+            _has(
+                folded,
+                r"\b(?:a\s+que\s+hora|cuando|what\s+time|when)\s+(?:sale|salen|llega|llegan|parte|parten|pasa|pasan|"
+                r"does|do|is|are)\b.{0,40}\b(?:tren|trenes|autobus|autobuses|bus|buses|micro|vuelo|vuelos|avion|metro|"
+                r"ferry|barco|train|trains|flight|flights|plane|subway)\b",
+            )
+            and not _has(folded, r"\b(?:mi|mis|my)\s+(?:tren|autobus|bus|vuelo|avion|train|flight|plane)\b")
+        )
     )
     weekly_weather_report = (
         re.fullmatch(
@@ -1106,6 +1199,9 @@ def _public_live_lookup_request(folded: str) -> bool:
             nearby_store,
             nearby_weekend_event,
             business_delivery,
+            public_events,
+            election_news,
+            market_data,
             takeaway_availability,
             publisher_top_stories,
             attributed_parking,
@@ -1775,6 +1871,31 @@ def _literal_known_file_search(text: str) -> dict[str, object] | None:
     return {"folder": folder, "query": found.group("query")}
 
 
+# MASSIVE recommendation_locations / recommendation_movies (dev corpus 2026-09-23): «dónde hay un buen bar de
+# vinos cerca de mí», «me gustaría saber cuáles son los pubs mejor valorados de la zona», «show me reviews of my
+# nearest location food court», «recomendar una película en mi área». A kind of public place sought near the
+# person or by its rating, or what the cinemas near them show, is the public world: it is looked up, never asked
+# back («¿pubs con buena reputación o con más reseñas?») nor refused. «Near me» sends nothing of the person's.
+_PUBLIC_PLACE = (
+    r"\b(?:pubs?|bar|bares|bars|restaurantes?|restaurants?|panaderias?|bakery|bakeries|tiendas?|stores?|shops?|"
+    r"cines?|cinemas?|movie\s+theaters?|cafeterias?|coffee\s+shops?|farmacias?|pharmacy|pharmacies|hoteles?|"
+    r"hotels?|gasolineras?|gas\s+stations?|supermercados?|supermarkets?|gimnasios?|gyms?|pizzerias?|"
+    r"food\s+courts?|museos?|museums?|discotecas?|nightclubs?|librerias?|bookstores?|heladerias?|"
+    r"cajeros?|atms?|lavanderias?|laundromats?|peluquerias?|barber\s+shops?)\b"
+)
+_NEAR_THE_PERSON = (
+    r"\b(?:cerca\s+de\s+(?:mi|aqui|donde\s+estoy)|near\s+me|nearby|nearest|closest|mas\s+cercan[oa]s?|"
+    r"(?:en|de)\s+(?:mi|la|esta)\s+(?:zona|area|ciudad|barrio)|"
+    r"(?:in|around)\s+(?:my|the|this)\s+(?:local\s+)?(?:area|city|neighbou?rhood)|local\s+area|"
+    r"en\s+un\s+radio\s+de|within\s+(?:a\s+)?\w+\s+(?:miles?|km|kilometers?|kilometres?))\b"
+)
+_PLACE_RATED = (
+    r"\b(?:mejor(?:es)?\s+valorad[oa]s?|mejores|best|top|(?:highly|best|top)[\s-]rated|rating|ratings|"
+    r"reviews?|resenas?|opiniones|recomendad[oa]s?|recommended)\b"
+)
+_SHOWING_FILMS = r"\b(?:peliculas?|pelis?|movies?|films?|estrenos?|cartelera|showtimes?)\b"
+
+
 def _location_recommendation_request(text: str) -> bool:
     """Recognize a standalone request for public place recommendations."""
 
@@ -1784,6 +1905,44 @@ def _location_recommendation_request(text: str) -> bool:
         r"(?:ir|salir|comer|visitar)\b.+|"
         r"^[^\w]*(?:places?|restaurants?|things?)\s+to\s+"
         r"(?:go|visit|eat|do)\b.+",
+    ) or (
+        (_has(text, _PUBLIC_PLACE) and (_has(text, _NEAR_THE_PERSON) or _has(text, _PLACE_RATED)))
+        or (_has(text, _SHOWING_FILMS) and _has(text, _NEAR_THE_PERSON))
+    )
+
+
+# MASSIVE recommendation_events / qa_factoid (dev corpus 2026-09-23): «hay algún evento deportivo mañana en
+# chicago», «show me nearby musical events», «cuál es la diferencia entre el calendario romano y el gregoriano».
+# The person's calendar holds their own events; an event of a public kind or near them, and a calendar system,
+# belong to the public world. Only «mi calendario», «tengo…» ask for their own.
+_PUBLIC_EVENT = (
+    r"\b(?:eventos?|events?)\s+(?:deportiv[oa]s?|musicales?|culturales?|publicos?|gratuitos?|gratis|emocionantes?|"
+    r"interesantes?|locales?|sports?|music(?:al)?|cultural|public|free|local|exciting|interesting)\b|"
+    r"\b(?:sports?|music(?:al)?|cultural|local|live|free)\s+events?\b"
+)
+_CALENDAR_SYSTEM = (
+    r"\b(?:calendarios?|calendars?)\s+(?:romano|gregoriano|juliano|chino|lunar|maya|azteca|hebreo|judio|islamico|"
+    r"musulman|escolar|academico|laboral|deportivo|roman|gregorian|julian|chinese|mayan|aztec|hebrew|jewish|"
+    r"islamic|school|academic)\b|\b(?:diferencias?\s+entre|difference\s+between)\b"
+)
+_OWN_AGENDA = r"\b(?:mi|mis|my)\s+(?:calendario|calendar|agenda|eventos?|events?)\b|\b(?:tengo|tenemos|i\s+have|do\s+i\s+have)\b"
+
+
+_CURRENCY = (
+    r"\b(?:euros?|dolar(?:es)?|dollars?|pesos?|yen(?:es)?|libras?|pounds?|rupias?|rupees?|dirhams?|dirhames|"
+    r"francos?|francs?|reales|reais|yuan(?:es)?|soles|bolivares|bitcoins?|libras?\s+esterlinas?)\b"
+)
+
+
+def public_event_subject(folded: str) -> bool:
+    """Events of a public kind or near the person, or a calendar system: not the person's agenda (see above)."""
+
+    if _has(folded, _OWN_AGENDA):
+        return False
+    return (
+        _has(folded, _PUBLIC_EVENT)
+        or (_has(folded, r"\b(?:eventos?|events?)\b") and _has(folded, _NEAR_THE_PERSON))
+        or _has(folded, _CALENDAR_SYSTEM)
     )
 
 

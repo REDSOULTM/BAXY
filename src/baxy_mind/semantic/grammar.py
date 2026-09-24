@@ -1353,7 +1353,7 @@ _COVERAGE_ACTION_HEAD = (
     r"edita|edit|convierte|convert|transforma|arrastra|drag|make|navega|navegar|"
     r"navigate|ve|go|ir|anda|entra|entrar|recarga|recargar|reload|refresh|reproduce|reproducir|reproduzca|"
     rf"play|{_MEDIA_RESUME_VERB}|pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
-    r"consulta|consultar|comprueba|comprobar|checkea|averigua|averiguar|"
+    r"consulta|consultar|comprueba|comprobar|checkea|chequea|chequear|averigua|averiguar|"
     r"investiga|investigar|research|"
     r"find\s+out|inspect|inspecciona|give|prepara|prepare|resolve|"
     r"envia|enviar|enviale|enviales|manda|mandar|mandale|mandales|"
@@ -1577,6 +1577,23 @@ def _percentage_word_values() -> dict[str, int]:
 
 
 _PERCENTAGE_WORD_VALUES = _percentage_word_values()
+
+
+# MASSIVE qa_maths (dev corpus 2026-09-23) «what is four plus five», «doscientos cuarenta y seis más seiscientos
+# cincuenta y cuatro», «la suma de los dos números cuatro y seis»: numbers, in digits or words, joined by an
+# arithmetic operator. The whole folded expression, nothing else in it.
+_NUMBER_WORD = (
+    r"(?:\d+(?:[.,]\d+)?|\b(?:"
+    + "|".join(sorted({*_ENGLISH_SMALL_NUMBERS, *_ENGLISH_TENS, *_SPANISH_SMALL_NUMBERS, *_SPANISH_TENS}, key=len, reverse=True))
+    + r"|cien|ciento|doscientos|trescientos|cuatrocientos|quinientos|seiscientos|setecientos|ochocientos|novecientos|"
+    r"mil|millon|millones|hundred|thousand|million)\b)"
+)
+SPOKEN_NUMBER = rf"{_NUMBER_WORD}(?:\s+(?:y\s+|and\s+)?{_NUMBER_WORD})*"
+_ARITHMETIC_OPERATOR = (
+    r"(?:\b(?:mas|menos|por|entre|x|dividido\s+(?:por|entre)|multiplicado\s+por|elevado\s+a|"
+    r"plus|minus|times|divided\s+by|multiplied\s+by|over)\b|[-+*/×÷])"
+)
+ARITHMETIC_EXPRESSION = rf"{SPOKEN_NUMBER}(?:\s*{_ARITHMETIC_OPERATOR}\s*{SPOKEN_NUMBER})+"
 
 
 def _explicit_google_search_query(text: str) -> str | None:

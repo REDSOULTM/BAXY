@@ -218,7 +218,8 @@ def _audio_mute_domain(text: str) -> bool:
             r"(?:(?:el|la|los|las|the|mi|my)\s+)?"
             r"(?:(?:computador|computadora|computer|equipo|pc|sistema|"
             r"system|notebook|laptop)\s+)?"
-            r"(?:audio|sonido|sound|musica|music)\b|"
+            # «apaga los sonidos»: the plural is the same sound.
+            r"(?:audio|sonidos?|sounds?|musica|music)\b|"
             rf"\b{_MUTE_VERB}\s+"
             r"(?:(?:el|la|los|las|the|mi|my)\s+)?"
             r"(?:(?:computador|computadora|computer|equipo|pc)\s+)?"
