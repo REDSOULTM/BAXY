@@ -261,11 +261,35 @@ _CATALOG_NAME_ALIASES: tuple[tuple[frozenset[str], tuple[str, ...]], ...] = (
 )
 
 
+# Tanda 6 «Abre el app para ver mis pics.» → «No se encontró la aplicación para ver mis pics»: a built-in app is
+# also named by what it is for («la app para ver mis fotos», «the app to look at my pictures», «el programa de las
+# imágenes»). Seeing pictures is Photos; taking them is the Camera.
+_PICTURES = r"(?:fotos|fotografias|pics|photos|pictures|imagenes|images|selfies)"
+_DESCRIBED_APP = (
+    (re.compile(
+        r"(?:(?:el|la|the|an?|un|una|mi|my)\s+)?(?:app|aplicacion|application|programa|program)\s+"
+        r"(?:(?:para|pa|to|for|que\s+(?:muestra|abre)|that\s+(?:shows|opens))\s+"
+        r"(?:(?:ver|mirar|abrir|revisar|view|viewing|see|seeing|look(?:ing)?\s+at|watch|watching|open|browse|"
+        r"browsing|check)\s+)?|de\s+(?:las\s+|mis\s+)?|of\s+(?:my\s+)?)"
+        r"(?:(?:mis|my|las|los|the|tus|your)\s+)?" + _PICTURES
+    ), "fotos"),
+    (re.compile(
+        r"(?:(?:el|la|the|an?|un|una|mi|my)\s+)?(?:app|aplicacion|application|programa|program)\s+"
+        r"(?:para|pa|to|for)\s+(?:sacar|tomar|hacer|take|taking|shoot|shooting|make|making)\s+(?:(?:unas?|a|some)\s+)?"
+        + _PICTURES
+    ), "camara"),
+)
+
+
 def _catalog_alias_key(target_key: str, keys: frozenset[str]) -> str | None:
     """Map a bilingual alias to the one catalog key it names, if installed."""
 
     if target_key in keys:
         return target_key
+    for described, alias in _DESCRIBED_APP:
+        if described.fullmatch(target_key.strip(" .!?")) is not None:
+            target_key = alias
+            break
     for aliases, catalog_names in _CATALOG_NAME_ALIASES:
         if target_key in aliases:
             for name in catalog_names:

@@ -12,6 +12,7 @@
 - «debieras saber que me gusta el jazz» → «Gracias, ya lo tengo en cuenta. ¿Quieres que te recomiende…?»: a taste
   told (with a frame that only tells it, after earlier turns too) gets a listener's acknowledgement, never a
   claim that it was kept (saving needs the explicit request) nor an offer.
+- «Abre el app para ver mis pics.» → «No se encontró la aplicación…»: a built-in app named by what it is for.
 
 The phrasings below are not the tanda's: they are paraphrases (es/en/spanglish) the fix does not name, with
 negative controls.
@@ -26,8 +27,10 @@ from baxy_mind.request_reading import INTENT_CAPABILITY, INTENT_IDENTITY, read_r
 from baxy_mind.semantic.patterns import (
     conversation_only_content_request,
     first_person_preference,
+    resolve_application_catalog_app_id,
 )
 from test_c03_tanda03_served_surface import _RefusingLlm, _turn
+from test_uso_real_tanda05_apps_media import ENGLISH_WINDOWS, SPANISH_WINDOWS, _opened
 
 # ------------------------------------------------------------------ code and examples are written in the chat
 
@@ -231,3 +234,29 @@ def test_an_acknowledgement_naming_the_taste_passes() -> None:
     assert not llm._shaped_conversation_answer_violates_contract(
         "Qué bien que te guste el jazz.", "debieras saber que me gusta el jazz", "preference_ack",
     )
+
+
+# ------------------------------------------------------------------ the app named by what it is for
+
+
+@pytest.mark.parametrize(
+    ("text", "spanish", "english"),
+    [
+        ("open the app to look at my pictures", "Fotos", "Photos"),
+        ("ábreme la aplicación de mis fotos", "Fotos", "Photos"),
+        ("launch the app for viewing my photos", "Fotos", "Photos"),
+        ("abre la app pa ver las fotos", "Fotos", "Photos"),
+        ("abre el programa para sacar fotos", "Cámara", "Camera"),
+        ("open the app for taking photos", "Cámara", "Camera"),
+    ],
+)
+def test_a_built_in_app_named_by_what_it_is_for_opens(text: str, spanish: str, english: str) -> None:
+    assert _opened(text, SPANISH_WINDOWS) == spanish
+    assert _opened(text, ENGLISH_WINDOWS) == english
+
+
+@pytest.mark.parametrize(
+    "text", ["abre la app para ver películas", "abre el programa de radio", "open the app for my emails"],
+)
+def test_an_app_described_by_something_no_built_in_app_is_for_stays_unknown(text: str) -> None:
+    assert resolve_application_catalog_app_id(text, SPANISH_WINDOWS) is None
