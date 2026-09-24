@@ -4635,7 +4635,7 @@ def _explicit_relative_reminder_arguments(
     )
     # The person's own spelling reaches this reader: «recuérdame», «avísame».
     lead = r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*,?\s+)?"
-    remind = r"(?:av[ií]same|record[aá]me|recu[eé]rdame|remind\s+me)"
+    remind = rf"(?:av[ií]same|record[aá]me|recu[eé]rdame|remind\s+me|{effect_intent.TASK_REMINDER_HEAD})"
     patterns = (
         rf"{lead}{remind}\s+"
         rf"(?P<due>{duration})\s+(?:(?:que|to|de)\s+)?(?P<title>.+?)[.!?]*$",
@@ -7423,9 +7423,11 @@ def _decide_turn_result(
     # cien-37 030 «send flowers to Deimos»: a place no operation reaches
     # has nothing to clarify either; the question asked for the detail of
     # something that cannot be done at all.
+    # tanda-02 «¿cuál es tu lugar de origen?» came back as «¿Te refieres a un
+    # lugar geográfico…?»: a question about BAXY himself has nothing to clarify.
     nothing_to_clarify = bool(
         read_request(objective).intents
-        & {INTENT_CAPABILITY, INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
+        & {INTENT_IDENTITY, INTENT_CAPABILITY, INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
     ) or effect_intent.out_of_world_request(objective)
     # AUDIO858 H0067 «subí el volumen y decime qué fecha es», H0527 «listá
     # las ventanas y enfocá la mejor»: the read clause runs now and the
@@ -8897,9 +8899,11 @@ def _recover_failed_turn(
     is_limit = (
         bool(failure_kinds) and set(failure_kinds) == {LIMIT_WORDING_FAILURE}
     ) or effect_intent.out_of_world_request(objective)
+    # tanda-02: an identity answer that failed its wording twice is not turned
+    # into a question about the question («¿Te refieres a un lugar geográfico?»).
     nothing_to_clarify = bool(
         read_request(objective).intents
-        & {INTENT_CAPABILITY, INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
+        & {INTENT_IDENTITY, INTENT_CAPABILITY, INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
     ) or is_limit
     if llm is not None:
         try:
@@ -8960,7 +8964,9 @@ def _recover_failed_turn(
                 "effectOperations": [],
                 "preserveObjective": False,
                 "question": "",
-                "reply": text,
+                # With nothing to clarify, a composed question is not published
+                # as the answer either (tanda-02 «¿cuál es tu lugar de origen?»).
+                "reply": text if kind == "conversation" else "",
                 # cien-38 060 «ship a piano to Charon»: the recovery composed
                 # «I can't ship a piano to Charon—that's outside what I do»
                 # and the App refused it as looks_like_failure, because the

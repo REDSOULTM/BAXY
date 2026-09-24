@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import re
 from typing import Iterable, Sequence
-from .grammar import _RELATIVE_DURATION_PATTERN, _fold, _match, _has, _strip_request_envelope, _request_body_surface, _request_head, _head_is, _LIST, _READ, _CREATE, _request_clauses
+from .grammar import TASK_REMINDER_HEAD, _RELATIVE_DURATION_PATTERN, _fold, _match, _has, _strip_request_envelope, _request_body_surface, _request_head, _head_is, _LIST, _READ, _CREATE, _request_clauses
 from .intent import EffectIntent, _append
 from .temporal import _absolute_calendar_range_parts, _DEICTIC_DAY, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, spoken_clock
 
@@ -846,22 +846,26 @@ def _review_calendar_message_and_direct_reminder_effects(
         )
 
     if (
-        _head_is(
-            head,
-            r"(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind)",
+        (
+            _head_is(
+                head,
+                r"(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind)",
+            )
+            and _has(
+                folded,
+                r"^[¿?¡!\s]*(?:recuerdame|recuerdamelo|recordame|recordamelo|"
+                r"avisame|remind\s+me)\b.+",
+            )
+            or _has(folded, rf"^[¿?¡!\s]*{TASK_REMINDER_HEAD}\s+.+")
         )
         and (temporal or _has(folded, _DEICTIC_DAY))
-        and _has(
-            folded,
-            r"^[¿?¡!\s]*(?:recuerdame|recuerdamelo|recordame|recordamelo|"
-            r"avisame|remind\s+me)\b.+",
-        )
     ):
         _append(
             matches,
             folded,
             "reminder.create",
-            r"\b(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind)\b",
+            r"\b(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind|"
+            r"recuerda|recorda|acordate|acuerdate|remember)\b",
         )
 
     if (

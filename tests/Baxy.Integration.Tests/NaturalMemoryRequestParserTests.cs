@@ -182,6 +182,22 @@ public sealed class NaturalMemoryRequestParserTests
         });
     }
 
+    // The reminder boundary only takes tasks and due moments: a datum to keep
+    // («recuerda que <dato>», «recordame que <preferencia>») is still a save.
+    [TestCase("recuerda que mi hermana vive en Curicó")]
+    [TestCase("recordame que prefiero el café sin azúcar")]
+    [TestCase("remember that my sister lives in Lima")]
+    public void DatumToKeepStaysAMemorySaveBesideTheReminderBoundary(string text)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route), text);
+            Assert.That(result.Operation?.Name, Is.EqualTo("memory.save"), text);
+        });
+    }
+
     [Test]
     public void GenericPersonalTopicForgetRoutesPrivatelyAndRequiresConfirmation()
     {
@@ -2574,6 +2590,15 @@ public sealed class NaturalMemoryRequestParserTests
     [TestCase("tienes permiso total sobre mi PC")]
     [TestCase("recuérdame en 10 minutos sacar la basura")]
     [TestCase("remind me tomorrow at 9 to call Ana")]
+    // tanda-02: a task to remember with its moment is a reminder, never a save.
+    [TestCase("recuerda arreglar una reunión entre los jugadores y yo mañana por la tarde noche a las siete")]
+    [TestCase("recordá revisar el horno en veinte minutos")]
+    [TestCase("acordate de pagar la luz el viernes")]
+    [TestCase("recuerda llevarle el cargador a Ana")]
+    [TestCase("recuérdame devolverle el libro a Tomás")]
+    [TestCase("recuérdame que tengo dentista mañana a las cinco")]
+    [TestCase("remember to water the plants at 6")]
+    [TestCase("remind me to stretch")]
     [TestCase("cuánta memoria RAM me queda libre")]
     [TestCase("revisa el estado de la memoria RAM del sistema")]
     [TestCase("revisa el estado de la memoria local de mi teléfono")]

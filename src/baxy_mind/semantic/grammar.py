@@ -109,6 +109,18 @@ _LEADING_DURATION_PREFACE = re.compile(
 )
 
 
+# «recuerda arreglar una reunión mañana a las siete», «acordate de pagar la luz
+# el viernes», «remember to call Ana at six»: remembering a task to do is the
+# same order as «recuérdame …» — a reminder, never a datum for the private
+# memory (tanda-02 saved that task as a fact). The head is read before an
+# infinitive (with its clitics) or «to <verb>»; «recuerda que <dato>» is not it.
+TASK_REMINDER_HEAD = (
+    r"(?:(?:recuerda|record[aá]|acordate|acu[eé]rdate)(?:\s+de)?"
+    r"(?=\s+\w+?(?:ar|er|ir|ír)(?:me|te|se|nos|lo|la|los|las|le|les){0,2}\b)"
+    r"|remember(?=\s+to\s+\w))"
+)
+
+
 def _without_leading_duration_preface(folded: str) -> str:
     """Read a scheduling request after its leading duration preface."""
 

@@ -211,27 +211,66 @@ _IDENTITY_EXPLETIVE = re.compile(
 # closed question to «tú»/«you» («de dónde eres», «how old are you»), or the
 # trait of «this AI»/BAXY— never as «you» anywhere in the sentence («can you tell
 # me who made the iPhone» asks about the iPhone).
+#
+# tanda-02 widened it to every trait of BAXY himself: when and how he was made
+# («¿cuándo te crearon?», «¿quién ha tenido la idea de crearte?» — searched or
+# answered «no sé quién me ha creado»), what he does with his time or likes
+# («what keeps you busy in your free time» — an invented hobby), where he
+# lives, and whether he is real, a person or a machine («¿existes en el mundo
+# real?» — «no existo»). A creation verb binds to «te» only after a question
+# word («no te creo» is «I don't believe you»); «hacerte» is left out («¿puedo
+# hacerte una pregunta?»).
 _SELF_TRAIT = (
     r"(?:creador|creadora|creadores|autor|autores|desarrollador|desarrolladores|programador|"
     r"programadores|fabricante|dueno|duena|empresa|compania|origen|lugar\s+de\s+origen|"
-    r"lugar\s+de\s+nacimiento|nacimiento|cumpleanos|edad|nombre|modelo|"
+    r"lugar\s+de\s+nacimiento|nacimiento|cumpleanos|edad|nombre|modelo|creacion|"
     r"creators?|makers?|authors?|developers?|programmers?|owners?|company|origins?|"
-    r"place\s+of\s+origin|birthplace|birthday|age|name|model)"
+    r"place\s+of\s+origin|birthplace|birthday|age|name|model|creation)"
 )
 _SELF_MAKING = (
     r"(?:creo|crearon|hizo|hicieron|programo|programaron|diseno|disenaron|desarrollo|"
     r"desarrollaron|construyo|construyeron|invento|inventaron|entreno|entrenaron|fabrico|fabricaron)"
 )
+# «¿cómo te hizo sentir?» is not about being made: after «cuándo/dónde/cómo»
+# only a creation verb binds.
+_SELF_CREATION = (
+    r"(?:creo|crearon|programaron|diseno|disenaron|desarrollo|desarrollaron|construyo|"
+    r"construyeron|invento|inventaron|entrenaron|fabrico|fabricaron)"
+)
+# What BAXY does for fun or with his free time asks about him, not about what he
+# can do on the PC: «what do you do for fun» is not «what do you do».
+_SELF_LEISURE = (
+    r"\b(?:tu|tus|your)\s+(?:tiempo\s+libre|pasatiempos?|hobbies|hobby|aficiones|gustos|"
+    r"free\s+time|spare\s+time|pastimes?|interests)\b|"
+    r"\bwhat\s+(?:keeps\s+you\s+busy|do\s+you\s+do\s+for\s+fun|do\s+you\s+like\s+to\s+do)\b|"
+    r"\bdo\s+you\s+have\s+(?:any\s+)?(?:hobbies|a\s+hobby|free\s+time)\b|"
+    r"\bque\s+te\s+gusta\s+hacer\b|\bque\s+haces\s+para\s+divertirte\b|"
+    r"\btienes\s+(?:algun\s+|algunos\s+)?(?:hobby|hobbies|pasatiempos?|tiempo\s+libre)\b"
+)
+_SELF_LEISURE_QUESTION = re.compile(_SELF_LEISURE)
 _SELF_QUESTION = re.compile(
     rf"\b(?:tu|tus|your)\s+(?:propi[oa]\s+|own\s+)?{_SELF_TRAIT}\b|"
     r"\b(?:the\s+)?(?:creators?|makers?|developers?)\s+of\s+(?:you|your\s+(?:ai|ia))\b|"
     rf"\b(?:quien|quienes|que\s+(?:empresa|compania|persona))\s+te\s+{_SELF_MAKING}\b|"
+    rf"\b(?:cuando|donde|como|por\s+que|para\s+que|en\s+que\s+ano)\s+te\s+{_SELF_CREATION}\b|"
+    r"\b(?:crear|programar|disenar|desarrollar|construir|inventar|fabricar)te\b|"
     r"\b(?:who|what\s+company|which\s+company)\s+(?:made|created|built|programmed|designed|"
     r"developed|invented|trained|owns)\s+you\b|"
+    r"\b(?:who|when|where|why|how|whose)\b.{0,60}\b(?:create|creating|created|build|building|"
+    r"built|design|designing|designed|develop|developing|developed|invent|invented)\s+you\b"
+    r"(?!\s+(?:a|an|the|some|my|this|that)\b)|"
     r"\bde\s+donde\s+(?:eres|sos|vienes|venis)\b|\bdonde\s+naciste\b|\bcuando\s+naciste\b|"
     r"\b(?:cuantos\s+anos|que\s+edad)\s+tienes\b|\bcomo\s+te\s+llamas\b|"
+    r"\bdesde\s+cuando\s+(?:existes|funcionas)\b|"
     r"\bwhere\s+(?:are|do)\s+you\s+(?:from|come\s+from)\b|\bwhere\s+were\s+you\s+(?:born|made|created)\b|"
     r"\bhow\s+old\s+are\s+you\b|\bwhen\s+were\s+you\s+(?:born|made|created)\b|"
+    r"\bdonde\s+(?:vives|vivis|estas\s+instalado)\b|\bwhere\s+do\s+you\s+(?:live|run)\b|"
+    r"\b(?:eres|sos)\s+(?:real|humano|humana|una\s+persona|un\s+robot|un\s+bot|una\s+maquina|"
+    r"una\s+ia|una\s+inteligencia\s+artificial)\b|\bexistes\b|"
+    r"\bare\s+you\s+(?:real|human|alive|a\s+(?:person|human|robot|bot|machine)|an\s+ai)\b|"
+    r"\bdo\s+you\s+(?:really\s+)?exist\b|"
+    rf"{_SELF_LEISURE}|"
+    r"^[¿?¡!\s]*(?:y\s+|and\s+|pero\s+|but\s+)?(?:que|what)\s+(?:eres|sos|are\s+you)(?:\s+exactamente|\s+exactly)?[\s?!.]*$|"
     rf"\b{_SELF_TRAIT}\s+(?:de|of)\s+(?:(?:the|this|esta|este)\s+(?:ai|ia|assistant|asistente|bot|chatbot)|baxy)\b|"
     rf"\b(?:(?:the|this)\s+(?:ai|assistant|bot)|baxy)['’]?s\s+{_SELF_TRAIT}\b"
 )
@@ -540,15 +579,19 @@ def _read_intents(ask: str) -> frozenset[str]:
         and (_LIMIT.search(folded) is not None or _NEGATED_DOING.search(folded) is not None)
         and not _contains_any(folded, _CAPABILITY_OVERRIDE_TOKENS)
     )
-    if not continue_constraint and (
+    # A trait of BAXY himself («where do you live», «what do you do for fun») is
+    # not a question about what he does on the PC; only a capability named in
+    # so many words («who are you and what can you do») still asks for both.
+    self_question = _SELF_QUESTION.search(folded) is not None
+    if not continue_constraint and _SELF_LEISURE_QUESTION.search(folded) is None and (
         _contains_any(folded, _CAPABILITY_TOKENS)
-        or (about_you and not marks_a_limit)
+        or (about_you and not marks_a_limit and not self_question)
     ):
         intents.add(INTENT_CAPABILITY)
     if (
         _contains_any(folded, _IDENTITY_TOKENS)
         or _IDENTITY_EXPLETIVE.search(folded)
-        or _SELF_QUESTION.search(folded)
+        or self_question
     ):
         intents.add(INTENT_IDENTITY)
     if (

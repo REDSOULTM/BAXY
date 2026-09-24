@@ -26,6 +26,7 @@ from .semantic.grammar import (  # noqa: F401 - moved to baxy_mind.semantic.gram
     _RELATIVE_DURATION_UNIT,
     _RELATIVE_DURATION_PATTERN,
     _LEADING_DURATION_PREFACE,
+    TASK_REMINDER_HEAD,
     _without_leading_duration_preface,
     _fold,
     _match,
