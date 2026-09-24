@@ -4680,6 +4680,26 @@ def _local_clock_from_observed(observed: dict | None) -> str | None:
     return f"{local.hour:02d}:{local.minute:02d}" if local is not None else None
 
 
+# Uso real tanda 4d «show me las aplicaciones»: Edge titles its window «<página> - <perfil>: Microsoft​ Edge», with
+# a zero-width space inside the browser's name. The narrator wrote «Microsoft Edge (<página> - Personal)» and the
+# identity check, which wants every observed title verbatim, refused all three drafts (⚠ retry_exhausted). The
+# window shows the page; the browser is its process. Narrator and check read the same visible title.
+_BROWSER_TITLE_SUFFIX = re.compile(
+    r"\s+[-—–]\s+(?:[^-—–]{1,40}:\s+)?(?:microsoft\s+edge|google\s+chrome|mozilla\s+firefox|brave|opera)\s*$",
+    re.IGNORECASE,
+)
+
+
+def _window_title_as_shown(title: object) -> object:
+    """A window title without invisible format characters and without the browser's own name after the page."""
+
+    if not isinstance(title, str):
+        return title
+    visible = "".join(ch for ch in title if unicodedata.category(ch) != "Cf")
+    page = _BROWSER_TITLE_SUFFIX.sub("", visible)
+    return page if page.strip() else visible
+
+
 def _local_datetime_from_observed(observed: dict | None) -> datetime | None:
     """Derive clock and calendar from the same captured instant and offset."""
 
@@ -5671,7 +5691,7 @@ def _compose_situation_payload(
                 {
                     ("is_current_window_for_user_interaction" if key == "foreground"
                      and isinstance(value, bool) and "is_current_window_for_user_interaction" not in window
-                     else key): value
+                     else key): _window_title_as_shown(value) if key == "title" else value
                     for key, value in window.items() if key != "windowId"
                 }
                 if isinstance(window, dict)

@@ -64,14 +64,11 @@ def _shape(text: str, *, has_history: bool = True) -> str | None:
         "hazme reír",
         "make me laugh, baxy",
         "puedes contarme un cuento corto",
-        "cuéntame una historia de dragones",
         "recítame un poema",
         "tírame una adivinanza",
         "got any fun facts?",
         "necesito un chiste para mi presentación",
         "dame un trabalenguas",
-        "tell me a short story about the sea",
-        "Actúa como Julio Verne y haz un relato basado en el año 2090",
         "habla como un pirata y cuéntame un chiste",
         "chistes",
         "otro chiste",
@@ -80,6 +77,22 @@ def _shape(text: str, *, has_history: bool = True) -> str | None:
 @pytest.mark.parametrize("has_history", [False, True])
 def test_a_request_for_a_bit_of_content_is_free_content_in_any_frame(text: str, has_history: bool) -> None:
     assert _shape(text, has_history=has_history) == "free_content"
+
+
+# Integration with tanda 4c compose finals: a story or a «relato» (with a persona frame too) is the content the
+# person asked for, written as a draft (``content_draft``, the prompt that writes it whole: a story does not fit
+# free_content's five lines). Either shape writes the content; neither offers a menu.
+@pytest.mark.parametrize(
+    "text",
+    [
+        "cuéntame una historia de dragones",
+        "tell me a short story about the sea",
+        "Actúa como Julio Verne y haz un relato basado en el año 2090",
+    ],
+)
+@pytest.mark.parametrize("has_history", [False, True])
+def test_a_story_asked_is_written_as_a_draft(text: str, has_history: bool) -> None:
+    assert _shape(text, has_history=has_history) == "content_draft"
 
 
 @pytest.mark.parametrize(

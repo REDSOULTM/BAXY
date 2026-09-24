@@ -142,8 +142,11 @@ _EXTREME = r"(?:maximo|max|tope|maximum|full|minimo|min|minimum|mitad|half)"
 _AMOUNT = (
     rf"(?:(?:en|by)\s+)?(?:(?:un|unos|unas|como|about|around)\s+)?(?P<amount>{_NUMBER})(?:\s*{_UNIT})?"
 )
+# Tanda 4 «Incrementa el brightness al level 8» was stepped up by 8 from 100: «al nivel 8», «to level 8» name
+# where the level ends, the same as «al 8».
 _TARGET = (
-    rf"(?:(?:a|al|hasta(?:\s+el)?|to|at|on)\s+(?:(?:el|the|un)\s+)?(?P<target>{_NUMBER})(?:\s*{_UNIT})?|"
+    rf"(?:(?:a|al|hasta(?:\s+el)?|to|at|on)\s+(?:(?:el|the|un)\s+)?(?:(?:nivel|level)\s+)?"
+    rf"(?P<target>{_NUMBER})(?:\s*{_UNIT})?|"
     rf"(?:(?:al|a|to|at|hasta(?:\s+el)?)\s+(?:(?:the|el)\s+)?)?(?P<extreme>{_EXTREME})|a\s+tope)"
 )
 _QUANTITY = rf"(?:{_TARGET}|{_AMOUNT})"
