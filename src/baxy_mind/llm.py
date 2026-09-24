@@ -8157,6 +8157,18 @@ def _search_report_unsourced_numbers(sentence: str, grounds: str) -> list[str]:
     return missing
 
 
+# A sentence that says the asked thing was not found or cannot be told (folded). «No hay …» or «there is no …» state
+# an absence in the world, not in the pages, and stay judged.
+_SEARCH_NOT_FOUND = re.compile(
+    r"^\W*(?:no\s+(?:(?:lo|la|los|las|le)\s+)?(?:encontre|halle|pude\s+(?:encontrar|hallar|determinar|confirmar|saber|"
+    r"precisar|ver)|puedo\s+(?:confirmar|determinar|saber|precisar|decir(?:te)?)|se\s+(?:indica|menciona|dice|"
+    r"especifica|encontro|pudo\s+(?:encontrar|determinar|confirmar)|puede\s+(?:determinar|saber|confirmar|precisar)))|"
+    r"(?:i\s+)?(?:couldn'?t|could\s+not|can'?t|cannot|didn'?t|did\s+not|wasn'?t\s+able\s+to|was\s+not\s+able\s+to)\s+"
+    r"(?:find|determine|confirm|tell|say|see)|(?:it\s+)?(?:isn'?t|is\s+not|wasn'?t|was\s+not)\s+(?:stated|mentioned|"
+    r"given|specified|listed))\b"
+)
+
+
 def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> list[str]:
     """The words of the report that no result and no request shares.
 
@@ -8193,6 +8205,12 @@ def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> 
     words: list[str] = []
     for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip()):
         numbers = _search_report_unsourced_numbers(sentence, page_text(results) + "\n" + (user_text or ""))
+        if _SEARCH_NOT_FOUND.match(_reading_fold(sentence)) is not None:
+            # Uso real tanda 6 «…¿qué hora será?»: «No se indica la hora exacta de la salida del sol» died on
+            # «exacta» and the turn ended in ⚠. Saying what was not found claims nothing of the world; its numbers
+            # are still the pages' or the person's.
+            words.extend(number for number in numbers if number not in words)
+            continue
         content = 0
         lettered: list[str] = []
         for word in re.findall(r"[a-z]+", _reading_fold(sentence)):
@@ -8288,6 +8306,8 @@ _SEARCH_MECHANICS = re.compile(
     r"(?:estas|esas|las|varias|algunas)\s+(?:paginas|fuentes|sitios\s+web)|"
     r"(?:en|de)\s+(?:ese|este|un|otro)\s+sitio|(?:en|de)\s+(?:esa|esta|una|otra)\s+pagina|"
     r"ninguna\s+de\s+(?:estas|las)\s+paginas|resultados\s+de\s+(?:la\s+)?busqueda|"
+    # Uso real tanda 6 «No se indica la hora exacta … en los resultados».
+    r"(?:en|de|entre)\s+(?:los|estos|mis)\s+resultados|(?:in|from|among)\s+(?:the|these|my)\s+results|"
     r"i\s+searched|i\s+looked\s+(?:it\s+)?up|my\s+search|the\s+search|search\s+results?|"
     r"i\s+found\s+(?:these|this|some|several|a\s+few|three|two|five)\s+(?:pages?|results?|sources?|sites?)|"
     r"(?:these|those|the|several|some)\s+(?:pages|sources|websites)|(?:on|from)\s+(?:that|this|one|another)\s+(?:site|page)|"
@@ -9187,9 +9207,11 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         if _search_unsupported_claim(text, results_text) is not None:
             return "search_unsupported_claim"
         if re.search(
-            r"\bno\s+(?:tengo|dispongo\s+de|encontre|hay|pude\s+(?:obtener|encontrar))\b.{0,40}"
+            # Owner rule 2026-09-24: when no page states it, «No lo encontré» / «I couldn't find it» is the answer;
+            # what stays denied is having no information at all while the pages were read.
+            r"\bno\s+(?:tengo|dispongo\s+de|hay|pude\s+obtener)\b.{0,40}"
             r"\b(?:informacion|datos|resultados|clima|pronostico|tiempo)\b"
-            r"|\b(?:i\s+)?(?:don't|do\s+not|couldn't|could\s+not)\s+(?:have|find|get)\b",
+            r"|\b(?:i\s+)?(?:don't|do\s+not)\s+have\b|\b(?:i\s+)?(?:couldn't|could\s+not)\s+get\b",
             _reading_fold(text),
         ):
             return "search_result_denied"
@@ -20803,9 +20825,9 @@ class LlmRuntime:
                     else "Usa sólo palabras que estén en el texto reconocido: cita dos o tres de sus líneas tal cual, di cuántas líneas se reconocieron y no añadas interpretación, propósito ni avisos."
                 ),
                 "search_unsupported_claim": (
-                    "Do not state a weather condition, temperature or forecast the results do not contain; name the pages found (their titles and sites) instead."
+                    "Do not state a weather condition, temperature or forecast the results do not contain; say only what a result states, or that you could not find it, without naming any page or site."
                     if response_language == "en"
-                    else "No afirmes un estado del tiempo, temperatura ni pronóstico que los resultados no contengan; nombra en su lugar las páginas encontradas (sus títulos y sitios)."
+                    else "No afirmes un estado del tiempo, temperatura ni pronóstico que los resultados no contengan; di sólo lo que afirma algún resultado, o que no lo encontraste, sin nombrar ninguna página ni sitio."
                 ),
                 "invented_number": (
                     "Use only the observed numbers from seen.monitors (width, height, refreshHz) and seen.monitorCount; no other number."
@@ -20822,10 +20844,12 @@ class LlmRuntime:
                     if response_language == "en"
                     else "Cita sólo la dirección navegada (seen.finalUrl); no menciones ninguna otra dirección."
                 ),
+                # Owner rule 2026-09-24: the lookup is invisible; these hints named the pages, which the next
+                # draft was then vetoed for.
                 "search_result_denied": (
-                    "The search did return results: do not say you have no information; name the pages found."
+                    "Do not say you have no information: say what a result states, in one or two sentences, or that you could not find it; never mention the search, a page or a site."
                     if response_language == "en"
-                    else "La búsqueda sí devolvió resultados: no digas que no tienes información; nombra las páginas encontradas."
+                    else "No digas que no tienes información: di lo que afirma algún resultado, en una o dos oraciones, o que no lo encontraste; nunca menciones la búsqueda, una página ni un sitio."
                 ),
                 "listing_unlisted_name": (
                     "Quote only names that appear in seen.names, exactly as written, each in its own quotation marks; do not invent or alter any name."
