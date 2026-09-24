@@ -1342,7 +1342,10 @@ def _public_live_lookup_request(folded: str) -> bool:
                 r"(?:pon|ponme|muestra|muestrame|show|play|"
                 r"busca|buscame|buscar|search|find|dame|decime|dime|investiga|"
                 # MASSIVE news_query «saca el artículo sobre cuidador de perro en las noticias de la mañana».
-                r"saca|sacame|lee|leeme|read|trae|traeme|pull\s+up)\b"
+                r"saca|sacame|lee|leeme|read|trae|traeme|pull\s+up|"
+                # Uso real tanda 5e «¿podrías poner las notícias mundiales?» searched portals: after «podrías»,
+                # «puedes», «could you» the order is its infinitive, and the news are put on as they are played.
+                r"poner|ponerme|mostrar|mostrarme|dar|darme|decir|decirme|leer|leerme|traer|traerme|buscarme|put)\b"
                 r")"
             ),
             folded,
