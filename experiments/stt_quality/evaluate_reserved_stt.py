@@ -117,8 +117,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 Fase 3.5 uso real 2026-09-23: integración de los frentes composición, hechos, preguntas, niveles y latencia.
 # C03 Fase 3.5 uso real 2026-09-23: lo que no sabe lo busca; evidencia de idioma de sustantivos del PC.
 # C03 Fase 3.5 uso real 2026-09-23 (tanda 2): listas leídas, artículo al azar buscado, efectos y datos propios no afirmados en conversación.
+# C03 Fase 3.5 uso real 2026-09-24: integración de la segunda ola (tanda 2).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "d73ccc56885cbcffa7d69dc71e4871e7682d259960ced57930e28de3fabebfae"
+    "0cee9ca0c96975b62d87d1a94cbb5a72d983569cace441751414ad04205be3f6"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
