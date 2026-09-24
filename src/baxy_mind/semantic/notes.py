@@ -490,7 +490,8 @@ def _task_without_title(folded: str) -> bool:
 # titles and details). No list store is added to the catalog.
 _LIST_NAME = (
     r"(?P<list>(?:lista|list)(?:\s+(?:de(?:\s+la|\s+los|\s+las|l)?|para(?:\s+la|\s+el)?|of|for)\s+[^,;.!?]{1,60}?)?"
-    r"|(?:shopping|grocery|to-?do|todo|packing)\s+list)"
+    # Tanda 4 2026-09-24 «please put the meeting with carla on my to do list»: the ear writes «to do» apart.
+    r"|(?:shopping|grocery|to[\s-]?do|todo|task|packing)\s+list)"
 )
 _LIST_ENTRY = re.compile(
     r"^(?:(?:por\s+favor|please)\s*,?\s+)?"
@@ -499,7 +500,7 @@ _LIST_ENTRY = re.compile(
     r"inclu(?:ye|ir)|sum[aá](?:le|r)?|add|put)\s+"
     r"(?P<item>\S.{0,200}?)\s+(?:a|al|en|to|on|in|into)\s+(?:(?:mi|la|tu|nuestra|my|the|our)\s+)?"
     + _LIST_NAME
-    + r"[\s.!?]*$",
+    + r"(?:\s*,?\s*(?:please|pls|plz|por\s+favor|porfa))?[\s.!?]*$",
     re.IGNORECASE,
 )
 # A playlist or a list of songs is music, not a list of things to do or buy.
@@ -588,7 +589,7 @@ def list_creation_without_items(folded: str) -> str | None:
 # every open task (task.list); a list named otherwise is the tasks that name it
 # (task.search reads titles and details), and one entry asked about is searched by itself.
 _TODO_LIST = (
-    r"(?:(?:to-?do|todo|task|tasks|chores?)\s+list|list\s+of\s+(?:things\s+to\s+do|tasks|to-?dos|chores)|"
+    r"(?:(?:to[\s-]?do|todo|task|tasks|chores?)\s+list|list\s+of\s+(?:things\s+to\s+do|tasks|to[\s-]?dos|chores)|"
     r"lista\s+de\s+(?:tareas|pendientes|quehaceres|to-?dos?|cosas\s+(?:por|que|para)\s+hacer)|lista|list)"
 )
 _NAMED_LIST = (

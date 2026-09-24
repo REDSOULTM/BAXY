@@ -204,8 +204,8 @@ def test_the_weekday_answer_names_the_observed_weekday_and_date(answer: str, val
 class _PublicKnowledgeLlm:
     def __init__(self, *, public: bool) -> None:
         self.public = public
-        self.confirmations = 0
         self.identity_calls: list[str] = []
+        self.strict_calls: list[str] = []
 
     @staticmethod
     def decide_turn(*_args: object, **_kwargs: object) -> dict[str, object]:
@@ -229,11 +229,12 @@ class _PublicKnowledgeLlm:
         self.identity_calls.append(operation)
         return operation == "system.time"
 
-    def confirm_operation_before_acting(
-        self, _text: str, _effects: tuple[tuple[str, str], ...], **_kwargs: object,
-    ) -> str:
-        self.confirmations += 1
-        return "¿Quieres que te diga la hora actual en Tokio?"
+    def operation_satisfies_the_request(
+        self, _text: str, operation: str, _contract: dict[str, object],
+    ) -> bool:
+        # A kitchen clock, or Tokyo's, is not this PC's clock.
+        self.strict_calls.append(operation)
+        return False
 
     @staticmethod
     def _verify_semantic_effect_shape(_text: str) -> tuple[str, str]:
@@ -279,7 +280,8 @@ def test_public_information_is_looked_up_before_the_catalogue_is_offered(text: s
     assert result["kind"] == "action"
     assert result["operation"] == "web.search"
     assert result["question"] == ""
-    assert llm.confirmations == 0
+    # The catalogue probe is never reached.
+    assert llm.identity_calls == llm.strict_calls == []
 
 
 def test_the_catalogue_probe_still_speaks_when_the_guard_reads_no_public_lookup() -> None:
@@ -288,10 +290,14 @@ def test_the_catalogue_probe_still_speaks_when_the_guard_reads_no_public_lookup(
     # (other_place_clock_question); a question no reader takes keeps the probe.
     result = _public_turn(llm, "dime la hora que marca el reloj de la cocina")
 
-    # Unchanged when the guard does not read public information: the probe is
-    # still asked, and nothing is dispatched by its question.
+    # When the guard does not read public information the probe is still asked;
+    # what it names is strictly verified, and refused it is neither dispatched
+    # nor offered back as «¿Quieres que…?» (tanda 4, D3).
     assert llm.identity_calls
+    assert llm.strict_calls == ["system.time"]
     assert result["effectOperations"] == []
+    assert result["kind"] == "conversation"
+    assert result["question"] == ""
 
 
 def test_this_pc_clock_is_described_as_never_another_place() -> None:

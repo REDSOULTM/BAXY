@@ -7,8 +7,9 @@ explotar la cabeza» was answered with chat; «¿puedes crear un programa en jav
 
 - Before a limit is published the request is re-read in its canonical surface (``semantic.surface``): the
   words the readers know stand where the person said another one. What the readers prove is done, what lacks
-  a value is asked, and a served operation only the rewrite grounds is re-decided and, if still refused, asked
-  about. A limit of something BAXY does not have keeps its words and stays a limit.
+  a value is asked, and a served operation only the rewrite grounds is re-decided and, if still refused, done
+  (tanda 4, D3: never offered back as «¿Quieres que…?») unless its risk forbids acting unasked. A limit of
+  something BAXY does not have keeps its words and stays a limit.
 - An order said before talk about it is the order.
 - Code is written in the conversation like any other text.
 - Restoring or trashing a note must name a note.
@@ -86,6 +87,7 @@ def test_a_message_said_with_the_readers_words_has_no_other_surface(said: str) -
         ("quiero que silencies el micro", ("audio.microphone.mute",)),
         ("me gustaría que reproduzcas algo de Bad Bunny", ("media.play.query",)),
         ("hazme sonar una canción de Shakira", ("media.play.query",)),
+        ("haz sonar algo movido", ("media.play.youtube",)),
     ],
 )
 def test_what_is_said_another_way_reads_as_the_served_request(said: str, operations: tuple[str, ...]) -> None:
@@ -103,7 +105,8 @@ def test_what_is_said_another_way_reads_as_the_served_request(said: str, operati
     [
         ("agrega una nueva lista de pendientes", "task.create"),
         ("add a list for my trip", "task.create"),
-        ("haz sonar algo movido", "media.play.query"),
+        # «algo movido» names the music by its character since tanda 4; «algo» alone names nothing.
+        ("haz sonar algo", "media.play.query"),
     ],
 )
 def test_what_is_said_another_way_asks_its_missing_value(said: str, operation: str) -> None:
@@ -124,7 +127,7 @@ class _RefusingLlm:
         self.accepts_canonical = accepts_canonical
         self.decided: list[str] = []
         self.chats = 0
-        self.confirmations: list[tuple[str, tuple[tuple[str, str], ...]]] = []
+        self.strict_calls: list[str] = []
 
     def decide_turn(self, text: str, *_args: object, **_kwargs: object) -> dict[str, object]:
         self.decided.append(text)
@@ -145,11 +148,10 @@ class _RefusingLlm:
         self.chats += 1
         return "Eso no lo hago.", []
 
-    def confirm_operation_before_acting(
-        self, text: str, effects: tuple[tuple[str, str], ...], **_kwargs: object,
-    ) -> str:
-        self.confirmations.append((text, effects))
-        return "¿Quieres que abra tu carpeta de Imágenes?"
+    def operation_satisfies_the_request(self, _text: str, operation: str, _contract: object) -> bool:
+        # The refusing model's strict verdict agrees with its refusal.
+        self.strict_calls.append(operation)
+        return False
 
     @staticmethod
     def operation_is_the_requested_effect(*_args: object, **_kwargs: object) -> bool:
@@ -229,10 +231,24 @@ def test_a_vetoed_proposal_said_another_way_asks_its_missing_value() -> None:
     # The real run: the model proposed media.play.exact and the domain gate vetoed it into a limit.
     llm = _RefusingLlm(proposal="media.play.exact")
 
-    result = _turn("me provoca que hagas sonar algo bailable", llm)
+    result = _turn("me provoca que hagas sonar algo", llm)
 
     assert result["kind"] == "clarify"
     assert result["intentOperations"] == ["media.play.query"]
+    assert result["objective"] == "pon algo"
+    assert llm.chats == 0
+
+
+def test_a_vetoed_proposal_said_another_way_with_the_music_named_plays_it() -> None:
+    # Tanda 4 (2026-09-24): «algo bailable» names the music by its character, so nothing is missing and nothing
+    # is asked back as «¿Quieres que reproduzca…?»; the rewrite is read and played.
+    llm = _RefusingLlm(proposal="media.play.exact")
+
+    result = _turn("me provoca que hagas sonar algo bailable", llm)
+
+    assert result["kind"] == "action"
+    assert result["operation"] == "media.play.youtube"
+    assert result["question"] == ""
     assert result["objective"] == "pon algo bailable"
     assert llm.chats == 0
 
@@ -274,17 +290,46 @@ def test_an_image_from_the_web_is_still_downloaded() -> None:
     assert reading.effects is not None and reading.effects.operations == ("web.download", "file.open")
 
 
-def test_a_served_operation_refused_again_on_the_rewrite_is_asked_never_denied() -> None:
+def test_a_served_operation_refused_again_on_the_rewrite_is_done_never_denied_nor_offered() -> None:
+    # Tanda 4 (D3): the rewrite grounds the served operation, so it is done — never
+    # published as «no hago eso», and no longer offered back as «¿Quieres que…?».
     llm = _RefusingLlm()
 
     result = _turn("open my gallery", llm)
 
-    assert result["kind"] == "clarify"
+    assert result["kind"] == "action"
+    assert result["operation"] == "filesystem.folder.open"
     assert result["intentOperations"] == ["filesystem.folder.open"]
-    assert result["question"] == "¿Quieres que abra tu carpeta de Imágenes?"
-    assert [effects[0][0] for _text, effects in llm.confirmations] == ["filesystem.folder.open"]
+    assert result["question"] == ""
     assert result["objective"] == "open my pictures folder"
+    # The rewrite is the evidence; the refusing model's strict verdict is not consulted.
+    assert llm.strict_calls == []
     assert llm.chats == 0
+
+
+@pytest.mark.parametrize("risk", ["work_loss", "recoverable_delete", "external_communication", "installation"])
+def test_a_served_operation_the_rewrite_names_never_acts_unasked_when_it_destroys_or_sends(risk: str) -> None:
+    class ComposingLlm(_RefusingLlm):
+        @staticmethod
+        def compose_user_message(*_args: object, **_kwargs: object) -> str:
+            return "Eso no lo hago."
+
+    llm = ComposingLlm()
+    tools = {name: _tool(name) for name in OPERATIONS}
+    tools["filesystem.folder.open"]["function"]["risk"] = risk
+
+    result = sidecar._prepare_turn_result(
+        {"id": "turn-served-risk", "text": "open my gallery", "history": [{"role": "user", "content": "open my gallery"}]},
+        llm=llm,
+        planner_catalog=PlannerCatalog(list(tools.values())),
+        turn_evidence=_NoEvidence(),
+        encoder=lambda _texts: (),
+        tool_by_name=tools,
+    )
+
+    assert result["kind"] == "conversation"
+    assert result["effectOperations"] == []
+    assert result["question"] == ""
 
 
 class _BrokenRereadLlm(_RefusingLlm):
@@ -326,7 +371,7 @@ def test_a_limit_of_what_baxy_does_not_have_stays_a_limit(text: str) -> None:
     assert llm.chats == 1
     # Never decided again on another surface, never asked about a stranger operation.
     assert len(llm.decided) <= 1
-    assert not llm.confirmations
+    assert not llm.strict_calls
     assert "objective" not in result
 
 

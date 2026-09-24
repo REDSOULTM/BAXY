@@ -2627,12 +2627,11 @@ def _withheld_invocation_operations(
     llm: object,
     application_names: tuple[str, ...] | ApplicationCatalogIndex,
 ) -> tuple[str, ...]:
-    """Name the invocation a withdrawal may still offer to confirm.
+    """The withdrawn operations, when every one is identified as the effect the person named.
 
-    Every withdrawn operation has to be independently identified as the effect
-    the person named. A single unidentified member keeps the whole turn
-    ``unsupported``: a confirmation must bind to one exact invocation, never to
-    a set with a stranger inside it.
+    Only an application whose identity did not resolve uses it: the question
+    that follows asks for that identity. A single unidentified member returns
+    nothing, never a set with a stranger inside it.
     """
 
     identifies = getattr(llm, "operation_is_the_requested_effect", None)
@@ -2659,51 +2658,74 @@ def _withheld_invocation_operations(
     return tuple(operations)
 
 
-def _domain_confirmation_question(
+# D3 (00_IDENTIDAD «actúa solo y luego cuenta»; confirma sólo lo que destruye
+# datos): what a withheld proposal may still do without the person being asked.
+# Destroying, installing, paying and sending to someone else never act on this
+# evidence; everything else is read, played, set or written and then told.
+_ACTS_WITHOUT_ASKING_RISKS = frozenset({"read_only", "low_reversible", "privacy_sensitive"})
+
+
+def _acts_without_asking(
     objective: str,
     operations: tuple[str, ...],
     tool_by_name: dict[str, dict],
     llm: object,
-) -> str:
-    """Ask the person to confirm the exact invocation, in the model's words."""
+    application_names: tuple[str, ...] | ApplicationCatalogIndex,
+    *,
+    rewrite_grounded: bool = False,
+) -> bool:
+    """Whether operations a stage withheld, or a catalogue probe named, are done instead of offered.
 
-    compose = getattr(llm, "confirm_operation_before_acting", None)
-    if not callable(compose):
-        return ""
-    effects: list[tuple[str, str]] = []
+    Tanda 4 2026-09-24: «let me know what today's date is», «please put the meeting
+    with carla on my to do list», «find instructions on how to play taboo» were
+    answered «Want me to …?». A complete request is done, never offered back as a
+    yes/no question that asks for no value. The identity verifier cannot carry
+    that authority: it keeps 46 of 48 right proposals but refuses only 21 of 84
+    wrong ones (``LlmRuntime.operation_is_the_requested_effect``). Each operation
+    acts only on stronger evidence: the words a reader knows name its domain once
+    the request is said in its canonical surface (``rewrite_grounded``: the
+    served-surface re-read proved it, and the readers read that surface first),
+    or the strict verifier finds it satisfies the whole request. A near miss, a
+    risk outside ``_ACTS_WITHOUT_ASKING_RISKS``, a silent verifier or a failed
+    one keeps the stricter side: nothing acts.
+    """
+
+    if not operations:
+        return False
+    satisfies = getattr(llm, "operation_satisfies_the_request", None)
     for operation in operations:
-        contract = _turn_operation_contract(
-            tool_by_name.get(operation),
-            operation,
-            objective,
-            (),
-        )
-        if contract is None:
-            return ""
-        effects.append((operation, str(contract["description"])))
-    try:
-        question = str(
-            compose(
-                objective,
-                tuple(effects),
-                timeout=TURN_DECIDE_RECOVERY_BUDGET_SECONDS,
-            )
-        )
-    except Exception:  # noqa: BLE001 - a failed question is an honest refusal
-        return ""
-    return question if _recovery_question_is_valid(question, objective) else ""
+        tool = tool_by_name.get(operation) if isinstance(operation, str) else None
+        if (
+            tool is None
+            or (tool.get("function") or {}).get("risk") not in _ACTS_WITHOUT_ASKING_RISKS
+            or effect_intent.operation_identity_is_a_near_miss(objective, operation)
+        ):
+            return False
+        if rewrite_grounded:
+            continue
+        contract = _turn_operation_contract(tool, operation, objective, application_names)
+        if contract is None or not callable(satisfies):
+            return False
+        try:
+            if not satisfies(objective, operation, contract):
+                return False
+        except Exception:  # noqa: BLE001 - a silent verifier never grants authority
+            return False
+    return True
 
 
-def _public_lookup_decision(response_language: object) -> dict[str, object]:
-    """A web search of the person's own words, for public information the model would recite."""
+def _recovered_action_decision(operation: str, response_language: object) -> dict[str, object]:
+    """One operation a later stage recovered for the turn: a public search of the person's own
+    words, or a withheld operation ``_acts_without_asking`` lets act. Its arguments are
+    grounded like any recovered proposal."""
 
     return {
         "mode": "action",
-        "operation": "web.search",
+        "operation": operation,
         "question": "",
         "conversation_kind": "",
         "effect_count": "one",
-        "effect_operations": ["web.search"],
+        "effect_operations": [operation],
         "effect_verification": "recovered",
         "response_language": response_language,
     }
@@ -8193,6 +8215,7 @@ def _decide_turn_result(
     )
     turn_audit["stages"].append(_turn_audit_stage("explicit_contract", decision))
     effects_before_information_veto = tuple(decision["effect_operations"])
+    decision_before_veto = decision
     decision = apply_information_question_effect_veto(
         decision,
         objective,
@@ -8246,7 +8269,7 @@ def _decide_turn_result(
         # web instead of offered back as «¿Quieres que…?».
         shortlist = _shortlist_with_required_effects(shortlist, ("web.search",), planner_catalog)
         decision = validate_turn_decision(
-            _public_lookup_decision(decision.get("response_language")),
+            _recovered_action_decision("web.search", decision.get("response_language")),
             {tool.name for tool in shortlist},
         )
         intent_operations = ["web.search"]
@@ -8264,26 +8287,16 @@ def _decide_turn_result(
         # information-question veto only knows that the sentence was phrased as
         # a question. Publishing either as an inability is how "No puedo apagar
         # el bluetooth" and "No puedo proporcionar tu dirección IP" reached the
-        # screen about capabilities that are in the catalogue -- 24 of the 27
-        # rows these stages cost on the goal 03 corpus, and the identity's
-        # inverse fault: BAXY says no only to what he cannot do. It is also why
-        # the turn kept dying: the presentation contract for ``unsupported``
-        # demands a sentence the model will not write about something it can do,
-        # and 22 of 160 turns fell through to total recovery that way.
+        # screen about capabilities that are in the catalogue.
         #
-        # So the verdict stops being binary. A second, independent opinion is
-        # asked -- does this operation *identify* the effect the person named --
-        # and when it does, the authority is not deleted, it is withheld until
-        # the person confirms the exact invocation. No effect is dispatched
-        # either way, so the invariant these stages exist for is untouched; what
-        # changes is that BAXY asks instead of lying.
-        confirmable = _withheld_invocation_operations(
-            withdrawn_effects,
-            objective,
-            tool_by_name,
-            llm,
-            application_names,
-        )
+        # Offering the withdrawn proposal back as «¿Quieres que …?» was the
+        # repair until tanda 4 (2026-09-24): «let me know what today's date is»
+        # and «please put the meeting with carla on my to do list» were complete
+        # requests answered with a yes/no question that asks for no value, which
+        # D3 forbids (confirm only what destroys data). The proposal now acts
+        # when ``_acts_without_asking`` finds evidence stronger than its identity;
+        # otherwise "unsupported" is the honest word, and the raw proposal stays
+        # only in the opt-in audit.
         app_evidence = (
             explicit_intent.evidence
             if explicit_intent is not None
@@ -8293,13 +8306,15 @@ def _decide_turn_result(
         if (
             effects_before_domain_grounding == ("app.open",)
             and unresolved_compound_effects is None
-            and confirmable == ("app.open",)
             and effect_request_is_authoritative(objective)
             and len(app_evidence) == 1
             and isinstance(app_evidence[0], str)
             and app_evidence[0].strip()
             and resolve_application_catalog_app_id(app_evidence[0], application_names)
             is None
+            and _withheld_invocation_operations(
+                withdrawn_effects, objective, tool_by_name, llm, application_names,
+            ) == ("app.open",)
         ):
             # This is the same single identity operand that withheld execution.
             # Ask for the missing target, not permission to repeat its opening.
@@ -8318,36 +8333,38 @@ def _decide_turn_result(
                     question = ""
             except Exception:  # noqa: BLE001 - no identity question grants authority
                 question = ""
-        else:
-            question = (
-                _domain_confirmation_question(objective, confirmable, tool_by_name, llm)
-                if confirmable
-                else ""
-            )
-        if question:
-            decision = {
-                "mode": "clarify",
-                "operation": None,
-                "question": question,
-                "conversation_kind": "",
-                "effect_count": "zero",
-                "effect_operations": [],
-                "effect_verification": "not_applicable",
-                "response_language": decision["response_language"],
-            }
+            if question:
+                decision = validate_turn_decision(
+                    {
+                        "mode": "clarify",
+                        "operation": None,
+                        "question": question,
+                        "conversation_kind": "",
+                        "effect_count": "zero",
+                        "effect_operations": [],
+                        "effect_verification": "not_applicable",
+                        "response_language": decision["response_language"],
+                    },
+                    {tool.name for tool in shortlist},
+                )
+                intent_operations = ["app.open"]
+                turn_audit["stages"].append(
+                    _turn_audit_stage("app_identity_question", decision)
+                )
+            else:
+                intent_operations = []
+        elif _acts_without_asking(
+            objective, withdrawn_effects, tool_by_name, llm, application_names,
+        ):
             decision = validate_turn_decision(
-                decision,
+                decision_before_veto,
                 {tool.name for tool in shortlist},
             )
-            intent_operations = list(confirmable)
+            intent_operations = list(withdrawn_effects)
             turn_audit["stages"].append(
-                _turn_audit_stage("domain_confirmation", decision)
+                _turn_audit_stage("withheld_effect_grounded", decision)
             )
         else:
-            # Both one-sided guards refused. Now "unsupported" is the honest
-            # word, and the raw proposal stays only in the opt-in audit: nobody
-            # is asked for fields of an unrelated capability (for example
-            # scheduling a notification for a taxi order).
             intent_operations = []
     decision = apply_compound_effect_conservation_veto(
         decision,
@@ -8459,7 +8476,7 @@ def _decide_turn_result(
     ):
         shortlist = _shortlist_with_required_effects(shortlist, ("web.search",), planner_catalog)
         decision = validate_turn_decision(
-            _public_lookup_decision(decision.get("response_language")),
+            _recovered_action_decision("web.search", decision.get("response_language")),
             {tool.name for tool in shortlist},
         )
         intent_operations = ["web.search"]
@@ -8479,28 +8496,22 @@ def _decide_turn_result(
             application_names,
             history=history,
         )
-        question = (
-            _domain_confirmation_question(objective, (observing,), tool_by_name, llm)
-            if observing
-            else ""
-        )
-        if question:
+        # Tanda 4 2026-09-24 «find instructions on how to play taboo»: the probe
+        # named routine.read and the turn asked «Want me to show you how to play
+        # Taboo?». What the probe names is observed only on the evidence
+        # ``_acts_without_asking`` demands, never offered back as a yes/no
+        # question; without it the model's own answer stands.
+        if observing and _acts_without_asking(
+            objective, (observing,), tool_by_name, llm, application_names,
+        ):
+            shortlist = _shortlist_with_required_effects(shortlist, (observing,), planner_catalog)
             decision = validate_turn_decision(
-                {
-                    "mode": "clarify",
-                    "operation": None,
-                    "question": question,
-                    "conversation_kind": "",
-                    "effect_count": "zero",
-                    "effect_operations": [],
-                    "effect_verification": "not_applicable",
-                    "response_language": decision["response_language"],
-                },
+                _recovered_action_decision(observing, decision["response_language"]),
                 {tool.name for tool in shortlist},
             )
             intent_operations = [observing]
             turn_audit["stages"].append(
-                _turn_audit_stage("observation_not_recital", decision)
+                _turn_audit_stage("observation_grounded", decision)
             )
     if (
         raw_intent_operations is not None
@@ -8584,8 +8595,9 @@ def _decide_turn_result(
     # alegre», «Muéstrame mi Gallery.» were published as «no hago eso» about
     # things the catalog serves, named with words no reader knows. Before a limit
     # is published the request is re-read in its canonical surface; on that
-    # re-read, a served operation only the rewrite named is asked about, never
-    # denied (00_IDENTIDAD: dice que no sólo a lo que no sabe hacer).
+    # re-read, a served operation only the rewrite named is done, never denied
+    # (00_IDENTIDAD: dice que no sólo a lo que no sabe hacer) and, since tanda 4,
+    # never offered back as «¿Quieres que…?» (D3) — unless its risk forbids it.
     if (
         decision["mode"] == "conversation"
         and decision.get("conversation_kind") == "unsupported"
@@ -8612,26 +8624,18 @@ def _decide_turn_result(
                 turn_audit["reread_objective"] = reread.get("objective")
                 _append_turn_audit(turn_audit)
                 return reread
-        elif served_surface:
-            question = _domain_confirmation_question(objective, served_surface, tool_by_name, llm)
-            if question:
-                decision = validate_turn_decision(
-                    {
-                        "mode": "clarify",
-                        "operation": None,
-                        "question": question,
-                        "conversation_kind": "",
-                        "effect_count": "zero",
-                        "effect_operations": [],
-                        "effect_verification": "not_applicable",
-                        "response_language": decision.get("response_language"),
-                    },
-                    {tool.name for tool in shortlist},
-                )
-                intent_operations = list(served_surface)
-                turn_audit["stages"].append(
-                    _turn_audit_stage("served_surface_question", decision)
-                )
+        elif served_surface and _acts_without_asking(
+            objective, served_surface, tool_by_name, llm, application_names, rewrite_grounded=True,
+        ):
+            shortlist = _shortlist_with_required_effects(shortlist, served_surface, planner_catalog)
+            decision = validate_turn_decision(
+                _recovered_action_decision(served_surface[0], decision.get("response_language")),
+                {tool.name for tool in shortlist},
+            )
+            intent_operations = list(served_surface)
+            turn_audit["stages"].append(
+                _turn_audit_stage("served_surface_grounded", decision)
+            )
 
     reply_text = ""
     # El idioma con el que se redacta la respuesta viaja con ella: el shell no
@@ -8756,7 +8760,7 @@ def _decide_turn_result(
         ):
             shortlist = _shortlist_with_required_effects(shortlist, ("web.search",), planner_catalog)
             decision = validate_turn_decision(
-                _public_lookup_decision(decision.get("response_language")),
+                _recovered_action_decision("web.search", decision.get("response_language")),
                 {tool.name for tool in shortlist},
             )
             intent_operations = ["web.search"]

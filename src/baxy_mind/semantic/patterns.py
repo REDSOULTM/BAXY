@@ -5282,6 +5282,7 @@ _NAMED_APPLICATION_PLACE = (
     r"(?:(?:aplicacion|app|application)\s+(?!(?:de\s+)?(?:spotify|youtube)\b)(?:de\s+)?\S+|"
     r"(?!(?:spotify|youtube|mi|my|la|the)\b)\S+\s+(?:app|application|aplicacion))\b"
 )
+_NOT_A_MUSIC_CHARACTER = r"(?:aqui|ahi|alli|alla|aca|encima|debajo|adentro|afuera|here|there|on|in|else|mas|more)"
 _QUALIFIED_MUSIC_QUERY = re.compile(
     r"(?:(?:la|el|una?|the|a)\s+)?(?:cancion|song|tema|track)\s+"
     rf"(?P<title>(?!{_MUSIC_QUERY_FILLER}\b)\S.*)|"
@@ -5294,7 +5295,12 @@ _QUALIFIED_MUSIC_QUERY = re.compile(
     # named by its subject or its title, is searched with its noun.
     r"(?:(?:el|los|un|the|a)\s+)?(?:podcasts?|audiolibros?|audiobooks?)\s+(?:(?:de|del|sobre|about|on|of|by)\s+)?"
     rf"(?P<show>(?!{_MUSIC_QUERY_FILLER}\b)\S.*)|"
-    rf"(?P<show_before>(?:(?!{_MUSIC_QUERY_FILLER}\b)[a-z0-9&'-]+\s+){{1,4}})(?:podcasts?|audiobooks?)",
+    rf"(?P<show_before>(?:(?!{_MUSIC_QUERY_FILLER}\b)[a-z0-9&'-]+\s+){{1,4}})(?:podcasts?|audiobooks?)|"
+    # Tanda 4 2026-09-24 «me apetece que hagas sonar algo alegre» (read as «pon algo alegre») was asked back
+    # «¿Quieres que reproduzca una canción alegre?»; «play something relaxing» was already played. Something
+    # with its character («algo tranquilo», «something upbeat») names the music; a place is not a character.
+    rf"(?:algo|something)\s+(?!{_MUSIC_QUERY_FILLER}\b|{_NOT_A_MUSIC_CHARACTER}\b)[a-z]+"
+    rf"(?:\s+(?:y|e|and)\s+(?!{_MUSIC_QUERY_FILLER}\b|{_NOT_A_MUSIC_CHARACTER}\b)[a-z]+)?",
 )
 
 
@@ -13154,6 +13160,13 @@ def unresolved_compound_contract(
         and resolved_intent.operations in (("web.search",), ("weather.current",), ("web.news.headlines",))
         and _public_live_lookup_request(folded)
     )
+    # Tanda 4 «find instructions on how to play taboo», «busca cómo se juega a la brisca»: «how to» after an
+    # order to search is what to look up, not a how-to explanation that forbids tools.
+    benign_research_lookup = (
+        isinstance(resolved_intent, EffectIntent)
+        and resolved_intent.operations == ("web.search",)
+        and _research_question_query(text) is not None
+    )
     benign_game_correction = (
         isinstance(resolved_intent, EffectIntent)
         and resolved_intent.operations == ("game.launch",)
@@ -13187,6 +13200,7 @@ def unresolved_compound_contract(
         or (
             _is_explicit_meta_or_tool_denial(folded)
             and not benign_routine_catalog_question
+            and not benign_research_lookup
         )
         or _other_device_effect_scope(folded)
     ):

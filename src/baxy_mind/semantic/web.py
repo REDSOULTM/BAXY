@@ -279,8 +279,19 @@ def _topic_research_query(text: str) -> str | None:
 
 
 _RESEARCH_VERBS = (
-    r"(?:investiga(?:r|me)?|research|look\s+(?:into|up)|busca(?:r|me)?|search|averigua(?:r|me)?|find\s+out)"
+    r"(?:investiga(?:r|me)?|research|look\s+(?:into|up)|busca(?:r|me)?|search|averigua(?:r|me)?|find\s+out|"
+    # Tanda 4 2026-09-24 «find instructions on how to play taboo» was offered back as «Want me to show you…?».
+    r"find(?:\s+me)?|encuentra(?:me)?|encontrar)"
 )
+# «instrucciones para jugar al tabú», «the rules of monopoly», «a tutorial on how to…»: how a thing is done,
+# asked by the noun that names its instructions, is looked up like the question itself.
+_INSTRUCTIONS_NOUN = (
+    r"(?:(?:las|los|la|el|un|unas?|unos|some|the|an?)\s+)?"
+    r"(?:instrucciones|instructions|indicaciones|gu[ií]as?|guides?|tutorial(?:es|s)?|pasos|steps|reglas|rules|"
+    r"manual(?:es|s)?)\s+"
+)
+_INSTRUCTIONS_OF = r"(?:on|about|for|to|of|de|del|para|sobre|acerca\s+de)\s+"
+_RESEARCH_WH = r"(?:por\s*que|porq\w*|why|como|how|que|what|cual(?:es)?|which|donde|where|cuando|when|quien(?:es)?|who)"
 
 
 _RESEARCH_LEAD_IN = re.compile(
@@ -297,7 +308,8 @@ _RESEARCH_QUESTION = re.compile(
     rf"{_RESEARCH_VERBS}\s+"
     r"(?:(?:en\s+internet|en\s+la\s+web|en\s+google|online|on\s+the\s+internet|on\s+the\s+web|the\s+internet|the\s+web)\s+)?"
     r"(?:(?:for|sobre|acerca\s+de|about)\s+)?"
-    r"(?P<question>(?:por\s*que|porq\w*|why|como|how|que|what|cual(?:es)?|which|donde|where|cuando|when|quien(?:es)?|who)\b.+?)\s*[.!?]*$",
+    rf"(?:{_INSTRUCTIONS_NOUN}(?:{_INSTRUCTIONS_OF})?(?={_RESEARCH_WH}\b))?"
+    rf"(?P<question>{_RESEARCH_WH}\b.+?|{_INSTRUCTIONS_NOUN}{_INSTRUCTIONS_OF}.+?)\s*[.!?]*$",
     re.IGNORECASE,
 )
 

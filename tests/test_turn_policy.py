@@ -244,35 +244,6 @@ def test_missing_referent_uses_the_shared_request_reading(
 
 
 @pytest.mark.parametrize(
-    "text, language",
-    [
-        ("close that", "English"),
-        ("cierra aquello", "español"),
-    ],
-)
-def test_domain_confirmation_inherits_the_existing_question_language_contract(
-    text: str,
-    language: str,
-) -> None:
-    runtime = object.__new__(LlmRuntime)
-    captured: dict = {}
-
-    def response(payload: dict, **_kwargs: object) -> dict:
-        captured.update(payload)
-        return {"choices": [{"message": {"content": '{"question":"Proceed?"}'}}]}
-
-    runtime._post = response  # type: ignore[method-assign]
-    runtime.confirm_operation_before_acting(
-        text, (("app.close", "Close an application"),)
-    )
-    system_text = "\n".join(
-        m["content"] for m in captured["messages"] if m["role"] == "system"
-    )
-    assert language in system_text
-    assert "de tú" in system_text
-
-
-@pytest.mark.parametrize(
     "text, question",
     [
         ("cierra aquello", "¿Qué quieres cerrar?"),
@@ -1966,9 +1937,14 @@ def test_non_stable_or_failed_independent_reading_preserves_catalog_recovery(
         def decide_turn(*_args: object, **_kwargs: object) -> dict:
             raise ProbeReached
 
+    # «what is on my to do list» is read by the list reader since tanda 4 (the ear writes «to do» apart), so it
+    # never reaches this stage; a phrasing no reader takes keeps the same «what is on my …» shape.
+    from baxy_mind.semantic.reading import read
+
+    assert read("what is on my to do list", available_operations=("task.list",)).effects is not None
     with pytest.raises(ProbeReached):
         _prepare_turn_result(
-            {"id": "read-before-catalog", "text": "what is on my to do list"},
+            {"id": "read-before-catalog", "text": "what is on my chores board"},
             llm=Runtime(),
             planner_catalog=PlannerCatalog([tool]),
             turn_evidence=_NoEvidence(),
@@ -11548,7 +11524,7 @@ def test_broken_spanish_after_the_modal_is_retried_not_published(
     assert _spanish_modal_is_malformed(reply) is malformed
 
 
-# --- Goal 03B: a withdrawn effect is withheld for confirmation, not denied ---
+# --- Goal 03B: a withdrawn effect is not denied; tanda 4: nor offered back ---
 #
 # The identity says BAXY says no only to what he cannot do. Two stages used to
 # break that from the inside: when ``information_question`` or
@@ -11557,11 +11533,12 @@ def test_broken_spanish_after_the_modal_is_retried_not_published(
 # "No puedo apagar el bluetooth" about an operation sitting in the catalogue.
 # On the goal 03 corpus that was 24 of the 27 rows those stages cost.
 #
-# The repair is not a new gate. It is that the verdict stopped being binary: an
-# independent verifier is asked whether the operation *is* the effect the person
-# named, and when it is, the authority is withheld until the person confirms the
-# exact invocation instead of being deleted. Nothing is dispatched either way,
-# so the invariant the gate exists for is untouched.
+# Goal 03B withheld the proposal behind «¿Quieres que …?» when an identity
+# verifier named it. Tanda 4 (2026-09-24, D3: confirm only what destroys data)
+# retired that question: «let me know what today's date is» and «please put the
+# meeting with carla on my to do list» are complete requests. A withheld proposal
+# now acts when the strict verifier (or the canonical surface) grounds it and its
+# risk allows acting unasked; otherwise the turn keeps the honest limit.
 
 
 _NETWORK_STATUS_TOOL = {
@@ -11598,13 +11575,13 @@ class _WithheldEffectLlm:
         self,
         *,
         identifies: bool,
-        question: str = "¿Quieres que lo mire?",
+        satisfies: bool = False,
     ) -> None:
         self._identifies = identifies
-        self._question = question
+        self._satisfies = satisfies
         self.chats = 0
-        self.confirmations = 0
         self.identity_calls: list[str] = []
+        self.strict_calls: list[str] = []
 
     def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
         return {
@@ -11627,14 +11604,14 @@ class _WithheldEffectLlm:
         self.identity_calls.append(operation)
         return self._identifies
 
-    def confirm_operation_before_acting(
+    def operation_satisfies_the_request(
         self,
         _text: str,
-        _effects: tuple[tuple[str, str], ...],
-        **_kwargs: object,
-    ) -> str:
-        self.confirmations += 1
-        return self._question
+        operation: str,
+        _contract: dict[str, object],
+    ) -> bool:
+        self.strict_calls.append(operation)
+        return self._satisfies
 
     @staticmethod
     def _verify_semantic_effect_shape(_text: str) -> tuple[str, str]:
@@ -11800,43 +11777,75 @@ def test_complete_turn_retains_answer_before_final_question(
         assert result["effectOperations"] == []
 
 
-def _withheld_effect_turn(llm: _WithheldEffectLlm) -> dict[str, object]:
+def _withheld_effect_turn(
+    llm: _WithheldEffectLlm,
+    text: str = "¿Cómo está la red neuronal?",
+    tool: dict[str, object] = _NETWORK_STATUS_TOOL,
+) -> dict[str, object]:
     return _prepare_turn_result(
-        {"id": "turn-withheld", "text": "¿Cómo está la red neuronal?"},
+        {"id": "turn-withheld", "text": text},
         llm=llm,
-        planner_catalog=PlannerCatalog([_NETWORK_STATUS_TOOL]),
+        planner_catalog=PlannerCatalog([tool]),
         turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
-        tool_by_name={"network.status": _NETWORK_STATUS_TOOL},
+        tool_by_name={"network.status": tool},
     )
 
 
-def test_a_withdrawn_effect_is_offered_for_confirmation_not_denied() -> None:
+def test_an_identified_withdrawn_effect_is_neither_offered_back_nor_acted_on_identity_alone() -> None:
+    """Tanda 4: no «¿Quieres que …?» about a complete request, and no action on weak evidence.
+
+    The identity verifier refuses only 21 of 84 wrong proposals; it names, it does
+    not authorize. Without the strict verdict the turn keeps the honest limit.
+    """
+
     llm = _WithheldEffectLlm(identifies=True)
     result = _withheld_effect_turn(llm)
 
-    # The turn asks instead of claiming an inability, and the question is bound
-    # to the exact invocation the person would be authorizing.
-    assert result["kind"] == "clarify"
-    assert result["question"] == "¿Quieres que lo mire?"
-    assert result["intentOperations"] == ["network.status"]
-    # Nothing may be dispatched by a confirmation: that is the whole reason the
-    # withdrawal is allowed to survive as a question at all.
+    assert result["kind"] == "conversation"
+    assert result["conversationKind"] == "unsupported"
+    assert result["question"] == ""
+    assert result["intentOperations"] == []
     assert result["effectOperations"] == []
     assert result["operation"] is None
-    assert llm.confirmations == 1
-    # No unsupported prose is even composed, so it cannot be published.
+    assert llm.strict_calls == ["network.status"]
+
+
+def test_a_withdrawn_effect_the_strict_verifier_grounds_is_done_not_offered() -> None:
+    llm = _WithheldEffectLlm(identifies=True, satisfies=True)
+    result = _withheld_effect_turn(llm, "is my machine talking to the outside world right now?")
+
+    assert result["kind"] == "action"
+    assert result["operation"] == "network.status"
+    assert result["effectOperations"] == ["network.status"]
+    assert result["question"] == ""
     assert llm.chats == 0
 
 
+@pytest.mark.parametrize(
+    "risk",
+    ["work_loss", "recoverable_delete", "installation", "monetary", "external_communication", "session_disruption"],
+)
+def test_a_withdrawn_effect_that_destroys_installs_pays_or_sends_never_acts_unasked(risk: str) -> None:
+    tool = json.loads(json.dumps(_NETWORK_STATUS_TOOL))
+    tool["function"]["risk"] = risk
+    llm = _WithheldEffectLlm(identifies=True, satisfies=True)
+    result = _withheld_effect_turn(llm, "is my machine talking to the outside world right now?", tool)
+
+    assert result["kind"] == "conversation"
+    assert result["effectOperations"] == []
+    assert result["operation"] is None
+    assert result["question"] == ""
+
+
 def test_the_read_only_exemption_stays_refuted_by_its_own_counterexample() -> None:
-    """A confirmation may ask about the wrong domain; it may never answer it.
+    """An identity may name the wrong domain; it may never answer it.
 
     Exempting ``read_only`` operations from the curated gate was measured and
     rejected in goal 03: "¿Cómo está la red neuronal?" proposes
     ``network.status``, and answering it reports the machine's connectivity to a
-    question about neural networks. Withholding the same proposal for
-    confirmation does not reopen that: the person is asked, and says no.
+    question about neural networks. Only the strict verdict lets a withheld
+    proposal act, and it refuses this one.
     """
 
     result = _withheld_effect_turn(_WithheldEffectLlm(identifies=True))
@@ -11851,30 +11860,15 @@ def test_an_unidentified_proposal_keeps_the_honest_unsupported_answer() -> None:
     assert result["kind"] == "conversation"
     assert result["conversationKind"] == "unsupported"
     assert result["intentOperations"] == []
-    assert llm.confirmations == 0
     assert llm.chats == 1
 
 
-def test_a_confirmation_question_the_model_will_not_write_is_not_invented() -> None:
-    """Invariant 5 holds on both sides: no fixed visible reply, ever.
-
-    A template would have made this branch deterministic and cheap. It would
-    also have put a constant on screen, which is the same product defect whether
-    the constant says "no puedo" or "¿lo hago?". When the model does not
-    return one well-formed question, the turn keeps the honest refusal.
-    """
-
-    llm = _WithheldEffectLlm(identifies=True, question="claro que sí")
-    result = _withheld_effect_turn(llm)
-
-    assert result["kind"] == "conversation"
-    assert result["intentOperations"] == []
-
-
-def test_the_second_opinion_is_asked_only_about_what_was_withdrawn() -> None:
+def test_the_strict_verdict_is_asked_only_about_what_was_withdrawn() -> None:
     llm = _WithheldEffectLlm(identifies=True)
     _withheld_effect_turn(llm)
-    assert llm.identity_calls == ["network.status"]
+    assert llm.strict_calls == ["network.status"]
+    # The identity verifier is asked only for an application whose identity did not resolve.
+    assert llm.identity_calls == []
 
 
 def _goal03c_catalog_tool(operation: str) -> dict[str, object]:
@@ -11901,7 +11895,7 @@ class _ProposedLeafLlm:
     def __init__(self, operation: str) -> None:
         self.operation = operation
         self.identity_calls: list[str] = []
-        self.confirmations = 0
+        self.strict_calls: list[str] = []
 
     def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
         return {
@@ -11924,14 +11918,14 @@ class _ProposedLeafLlm:
         self.identity_calls.append(operation)
         return True
 
-    def confirm_operation_before_acting(
+    def operation_satisfies_the_request(
         self,
         _text: str,
-        _effects: tuple[tuple[str, str], ...],
-        **_kwargs: object,
-    ) -> str:
-        self.confirmations += 1
-        return "¿Quieres que lo haga?"
+        operation: str,
+        _contract: dict[str, object],
+    ) -> bool:
+        self.strict_calls.append(operation)
+        return True
 
     @staticmethod
     def _verify_semantic_effect_shape(_text: str) -> tuple[str, str]:
@@ -12111,7 +12105,18 @@ def test_a_silent_verifier_never_revives_withdrawn_authority() -> None:
         ) -> bool:
             raise RuntimeError("verifier unavailable")
 
-    result = _withheld_effect_turn(Exploding(identifies=True))
+        def operation_satisfies_the_request(
+            self,
+            _text: str,
+            _operation: str,
+            _contract: dict[str, object],
+        ) -> bool:
+            raise RuntimeError("verifier unavailable")
+
+    result = _withheld_effect_turn(
+        Exploding(identifies=True, satisfies=True),
+        "is my machine talking to the outside world right now?",
+    )
     assert result["kind"] == "conversation"
     assert result["intentOperations"] == []
 

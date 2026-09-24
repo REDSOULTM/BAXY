@@ -12,6 +12,20 @@ from .normalize import alternation
 from .temporal import MONTH_NUMBERS, _WEEKDAYS, countdown_target
 
 
+# Tanda 4 2026-09-24 «let me know what today's date is» was offered back as «Want me to tell you today's date?»:
+# asking to be told or to know is asking. Shared by the clock and the calendar readings.
+_KNOW_FRAME = (
+    r"(?:let\s+me\s+know|(?:hazme|haceme)\s+saber|avisame|"
+    r"(?:necesito|quiero|quisiera|me\s+gustaria)\s+saber|"
+    r"(?:i\s+)?(?:need|want)\s+to\s+know|i(?:'d|’d|\s+would)\s+like\s+to\s+know)"
+)
+# «let me know what today's date is», «dime what time it is»: the question said inside the request.
+_EMBEDDED_CLOCK_QUESTION = (
+    r"what\s+(?:(?:time|day|date)\s+it|the\s+(?:time|date|day)|today(?:['’]s)?\s+date)\s+is"
+    r"(?:\s+(?:now|right\s+now|today))?"
+)
+
+
 def _direct_current_time_request(folded: str) -> bool:
     """Recognize a whole request for the local clock, shared by all three gates.
 
@@ -35,16 +49,12 @@ def _direct_current_time_request(folded: str) -> bool:
         r"(?:(?:current|local)\s+){0,2}(?:hora|fecha|time|date)"
         rf"(?:\s+{current}){{0,2}}|today(?:['’]s)?\s+date"
     )
-    observation = (
-        rf"(?:{_CLOCK_READ_HEAD}|"
-        r"(?:necesito|quiero|quisiera)\s+saber|"
-        r"(?:i\s+)?(?:need|want)\s+to\s+know)"
-    )
+    observation = rf"(?:{_CLOCK_READ_HEAD}|{_KNOW_FRAME})"
     request = _strip_request_envelope(folded).strip(" ¿?¡!.")
     if _PRESENT_CALENDAR_QUESTION.fullmatch(request) is not None:
         return True
     return re.fullmatch(
-        rf"(?:{observation}\s+(?:{nominal})|"
+        rf"(?:{observation}\s+(?:{nominal}|{_EMBEDDED_CLOCK_QUESTION})|"
         rf"(?:what(?:\s+is|'s|’s|s)\s+(?=(?:the|current|local|today)\b)|"
         rf"(?:que|cual)\s+es\s+)(?:{nominal})|"
         rf"(?:{observation}\s+)?(?:"
@@ -82,7 +92,7 @@ _CALENDAR_NAMES = rf"{_CALENDAR_NAME}(?:\s+(?:o|u|or)\s+(?:(?:a|en)\s+)?{_CALEND
 _CALENDAR_NOW = r"(?:\s+(?:hoy|ahora(?:\s+mismo)?|ya|today|now|right\s+now))?"
 _CALENDAR_ASK = (
     r"(?:(?:sabes|sabe|sabrias|me\s+(?:dices|decis|puedes\s+decir)|dime|decime|do\s+you\s+know|"
-    r"(?:can|could)\s+you\s+tell\s+me|tell\s+me)\s+)?"
+    rf"(?:can|could)\s+you\s+tell\s+me|tell\s+me|{_KNOW_FRAME})\s+)?"
 )
 # Tanda 4 «¿qué mes sale ahora mismo en el calendario de mi casa?» read the Outlook agenda: what a calendar or a
 # clock shows now is today's date, whoever's wall it hangs on.
