@@ -140,12 +140,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 Fase 3.5 uso real 2026-09-24: integración de la quinta ola (tanda 4).
 # uso real sexta y séptima ola: agenda, correo/contactos/redes, composición 4c, lugar de la persona
 # uso real: preguntas inútiles 4c y arreglos 4d
+# uso real: web, hora de otro lugar, 4e
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "bb24bc792e227a98d732ba7d804c6f20b82778c73f02104dfc66a03fa25253d2"
+        "86ed176fa09a7ec7a3dda8f582f9277e096865a07b5987c434c8a9351477e7fd"
     ),
     "src/baxy_mind/llm.py": (
-        "0927c7aaf47d263ceca1639e8cb15a1bd8b483c35b90b8489a0d7a91e1743dcc"
+        "9e4715046e5c93602c7c8d7a3d4c9b784bb8c8f65502133c4ae34333f42e4c11"
     ),
 }
 

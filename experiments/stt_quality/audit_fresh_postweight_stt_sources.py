@@ -107,8 +107,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # C03 Fase 3.5 uso real 2026-09-24: correo compuesto y re-medición del veto.
 # uso real sexta y séptima ola: agenda, correo/contactos/redes, composición 4c, lugar de la persona
 # uso real: preguntas inútiles 4c y arreglos 4d
+# uso real: web, hora de otro lugar, 4e
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "b3ea4109d294265259a8477be6361d9bedfc604529c1947ced2cacd4fa43de0c"
+    "c6ec260fbd1a2be63122d55219c195556c1b863c71051bab66d86115e58d8782"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
