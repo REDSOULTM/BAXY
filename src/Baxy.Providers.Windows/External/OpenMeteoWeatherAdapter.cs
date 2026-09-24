@@ -71,7 +71,7 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
                 + "?latitude=" + place.Value.Latitude.ToString("F4", CultureInfo.InvariantCulture)
                 + "&longitude=" + place.Value.Longitude.ToString("F4", CultureInfo.InvariantCulture)
                 + "&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,precipitation"
-                + "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code"
+                + "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code,sunrise,sunset"
                 + "&timezone=auto&forecast_days=2";
             string forecastJson = await FetchAsync(forecastUrl, cancellationToken).ConfigureAwait(false);
             using JsonDocument forecast = JsonDocument.Parse(forecastJson);
@@ -109,6 +109,8 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
                 WriteNumber(writer, "maxC", ReadDoubleAt(daily, "temperature_2m_max", 0));
                 WriteNumber(writer, "minC", ReadDoubleAt(daily, "temperature_2m_min", 0));
                 WriteNumber(writer, "rainProbabilityPercent", ReadDoubleAt(daily, "precipitation_probability_max", 0));
+                WriteClock(writer, "sunrise", ReadStringAt(daily, "sunrise", 0));
+                WriteClock(writer, "sunset", ReadStringAt(daily, "sunset", 0));
                 writer.WriteEndObject();
                 writer.WriteStartObject("tomorrow");
                 writer.WriteString("date", ReadStringAt(daily, "time", 1) ?? string.Empty);
@@ -116,6 +118,8 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
                 WriteNumber(writer, "minC", ReadDoubleAt(daily, "temperature_2m_min", 1));
                 WriteNumber(writer, "rainProbabilityPercent", ReadDoubleAt(daily, "precipitation_probability_max", 1));
                 writer.WriteString("condition", Condition(tomorrowCode ?? -1));
+                WriteClock(writer, "sunrise", ReadStringAt(daily, "sunrise", 1));
+                WriteClock(writer, "sunset", ReadStringAt(daily, "sunset", 1));
                 writer.WriteEndObject();
                 writer.WriteString("authority", "open_meteo_forecast_v1");
                 writer.WriteEndObject();
@@ -279,6 +283,20 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
             writer.WriteNull(name);
         else
             writer.WriteNumber(name, Math.Round(value.Value, 1));
+    }
+
+    // Uso real tanda 2 (2026-09-23) «necesito el horario de la caída del sol para
+    // mañana»: el servicio da la salida y la puesta del sol de cada día en hora
+    // local del lugar («2026-09-24T19:32»); el recibo lleva sólo la hora dicha.
+    private static void WriteClock(Utf8JsonWriter writer, string name, string? localIso)
+    {
+        int separator = localIso?.IndexOf('T', StringComparison.Ordinal) ?? -1;
+        string clock = separator >= 0 ? localIso![(separator + 1)..] : string.Empty;
+        if (clock.Length == 5 && clock[2] == ':' && char.IsAsciiDigit(clock[0]) && char.IsAsciiDigit(clock[1])
+            && char.IsAsciiDigit(clock[3]) && char.IsAsciiDigit(clock[4]))
+            writer.WriteString(name, clock);
+        else
+            writer.WriteNull(name);
     }
 
     public void Dispose() => _http.Dispose();

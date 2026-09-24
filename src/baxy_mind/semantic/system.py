@@ -7,7 +7,7 @@ import re
 from typing import Iterable
 from .grammar import _fold, _has, _strip_request_envelope, _process_list_domain, _PERCENTAGE_WORD_VALUES, _request_clauses, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS
 from .intent import EffectIntent
-from .web import _WEATHER_WORDS, _weather_lookup_query
+from .web import _WEATHER_WORDS, _names_weather, _weather_lookup_query
 
 
 _WEATHER_MEDIUM = (
@@ -25,8 +25,13 @@ def _weather_location(text: str) -> str | None:
     if query is None:
         return None
     # Each preposition opens a candidate: «clima de la semana en Buenos Aires»
-    # names its time first and its place after.
-    for match in re.finditer(r"\b(?:en|in|de|para|for|at)\s+(?=(?P<place>[^,;:.!?]+))", query, re.IGNORECASE):
+    # names its time first and its place after. Uso real tanda 2 «tengo un
+    # festival de música dentro de dos días. ¿Me llevo el chubasquero?»: when the
+    # weather is asked only through the gear, an amount or a sun time, «de» and
+    # «para» belong to other things («un festival de música», «para mañana»);
+    # only «en», «in» and «at» name the place.
+    prepositions = r"en|in|de|para|for|at" if _names_weather(_fold(query)) else r"en|in|at"
+    for match in re.finditer(rf"\b(?:{prepositions})\s+(?=(?P<place>[^,;:.!?]+))", query, re.IGNORECASE):
         candidate = match.group("place").strip(" \t\r\n.,;:")
         if _has(_fold(candidate), _WEATHER_TIME_WORDS):
             continue
@@ -71,7 +76,7 @@ _WEATHER_SPAN_COUNT = r"(?:\d{1,3}|" + "|".join(
 ) + r")"
 _WEATHER_TIME_WORDS = (
     r"^(?:(?:el|la|los|las|este|esta|estos|estas|the|this|these|next|coming|"
-    r"proximo|proxima|proximos|proximas|siguiente|siguientes)\s+){0,2}"
+    r"proximo|proxima|proximos|proximas|siguiente|siguientes|dentro\s+de)\s+){0,2}"
     rf"(?:{_WEATHER_SPAN_COUNT}\s+)?(?:semanas?|finde|fin\s+de\s+semana|"
     r"weeks?|weekend|manana|tarde|noche|morning|afternoon|evening|night|hoy|today|tomorrow|"
     r"lunes|martes|miercoles|jueves|viernes|sabado|domingo|monday|tuesday|wednesday|thursday|"

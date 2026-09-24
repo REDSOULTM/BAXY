@@ -39,6 +39,7 @@ from urllib.parse import parse_qs, urlparse
 
 from . import corrector
 from .semantic.normalize import fold
+from .semantic.web import weather_asks_later_day, weather_asks_sun_time
 from . import effect_intent
 from .effect_intent import (
     _PERCENTAGE_WORD_VALUES,
@@ -7108,6 +7109,15 @@ def _weather_number_forms(value: object) -> set[str]:
     return forms
 
 
+def _weather_clock_forms(value: object) -> set[str]:
+    """The numbers of an observed sun clock «07:05» as a reply writes them: 07, 7, 05, 5."""
+
+    if not isinstance(value, str) or re.fullmatch(r"\d\d:\d\d", value) is None:
+        return set()
+    hour, minute = value.split(":")
+    return {hour, str(int(hour)), minute, str(int(minute))}
+
+
 def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     """REOPEN1993 grupo W: every number in a weather reply is an observed one
     (temperatures, wind, humidity, rain probability) and the place is named;
@@ -7126,6 +7136,8 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         if isinstance(block, dict):
             for key in ("maxC", "minC", "rainProbabilityPercent"):
                 observed |= _weather_number_forms(block.get(key))
+            for key in ("sunrise", "sunset"):
+                observed |= _weather_clock_forms(block.get(key))
     for number in re.findall(r"(?<![\w.,])-?\d+(?:[.,]\d+)?(?![\w.,])", text):
         if number not in observed and number.lstrip("-") not in observed:
             return "invented_number"
@@ -7149,14 +7161,36 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
             return "missing_state"
     asks = _reading_fold(user_text or "")
     tomorrow = seen.get("tomorrow")
+    later_day = weather_asks_later_day(user_text or "")
+    if weather_asks_sun_time(user_text or ""):
+        # Uso real tanda 2 «el horario de la caída del sol para mañana»: the asked
+        # day's sun time is the answer (tomorrow's for tomorrow or a later day).
+        block = tomorrow if later_day or re.search(r"\b(?:manana|tomorrow)\b", asks) else seen.get("today")
+        clocks = [block.get(key) for key in ("sunrise", "sunset")] if isinstance(block, dict) else []
+        clocks = [clock for clock in clocks if isinstance(clock, str) and clock]
+        if clocks and not any(clock in text or clock.lstrip("0") in text for clock in clocks):
+            return "missing_state"
+        return ""
     if (
-        re.search(r"\b(?:manana|tomorrow|llover|lluvia|llueve|rain)\b", asks)
+        # Uso real tanda 2 «¿Me llevo el chubasquero?», «¿Cuántas pulgadas…?», «dentro de
+        # dos días»: rain gear, a rain amount and a later day are answered with the
+        # furthest rain probability read, tomorrow's.
+        (
+            re.search(
+                r"\b(?:manana|tomorrow|llover|lluvia|llueve|rain|paraguas|umbrella|chubasquero|impermeable|"
+                r"raincoat|pulgadas|inches|milimetros|millimeters)\b",
+                asks,
+            )
+            or later_day
+        )
         and isinstance(tomorrow, dict)
         and not any(form in text for form in _weather_number_forms(tomorrow.get("rainProbabilityPercent")))
     ):
         return "missing_state"
-    if not any(form in text for form in _weather_number_forms(seen.get("temperatureC"))) and not re.search(
-        r"\b(?:manana|tomorrow)\b", asks
+    if (
+        not any(form in text for form in _weather_number_forms(seen.get("temperatureC")))
+        and not re.search(r"\b(?:manana|tomorrow)\b", asks)
+        and not later_day
     ):
         return "missing_state"
     return ""
@@ -17190,21 +17224,29 @@ class LlmRuntime:
                 "\nseen is the weather read from a public forecast service for seen.location "
                 "(seen.country): temperatureC now, apparentC (feels like), condition (sky), "
                 "windKmh, humidityPercent, today.maxC/minC and today.rainProbabilityPercent, "
-                "and tomorrow.maxC/minC, tomorrow.rainProbabilityPercent, tomorrow.condition. "
+                "and tomorrow.maxC/minC, tomorrow.rainProbabilityPercent, tomorrow.condition; "
+                "today.sunrise/sunset and tomorrow.sunrise/sunset are the local sun times. "
                 "Say the current temperature and sky for that place, in one or two short "
                 "sentences; if the person asked about tomorrow or rain, answer with tomorrow's "
-                "rain probability and temperatures. Use only those numbers with their units "
-                "(°C, km/h, %). Nothing was opened or changed."
+                "rain probability and temperatures; if they asked when the sun rises or sets, "
+                "give that time for the day asked; if they asked what to wear or carry, or an "
+                "amount, answer from these readings. The read covers today and tomorrow only: "
+                "for a later day, say so and give tomorrow's. Use only those numbers with their "
+                "units (°C, km/h, %). Nothing was opened or changed."
                 if response_language == "en"
                 else "\nseen es el clima leído de un servicio público de pronóstico para "
                 "seen.location (seen.country): temperatureC ahora, apparentC (sensación "
                 "térmica), condition (cielo), windKmh, humidityPercent, today.maxC/minC y "
                 "today.rainProbabilityPercent, y tomorrow.maxC/minC, "
-                "tomorrow.rainProbabilityPercent, tomorrow.condition. Di la temperatura actual "
-                "y el cielo de ese lugar, nombrándolo, en una o dos oraciones cortas; si la "
-                "persona preguntó por mañana o por la lluvia, contesta con la probabilidad de "
-                "lluvia y las temperaturas de mañana. Sólo esos números, con sus unidades "
-                "(°C, km/h, %). No se abrió ni se cambió nada."
+                "tomorrow.rainProbabilityPercent, tomorrow.condition; today.sunrise/sunset y "
+                "tomorrow.sunrise/sunset son las horas locales de salida y puesta del sol. Di "
+                "la temperatura actual y el cielo de ese lugar, nombrándolo, en una o dos "
+                "oraciones cortas; si la persona preguntó por mañana o por la lluvia, contesta "
+                "con la probabilidad de lluvia y las temperaturas de mañana; si preguntó a qué "
+                "hora sale o se pone el sol, da esa hora del día preguntado; si preguntó qué "
+                "ponerse o llevar, o una cantidad, contesta desde estas lecturas. La lectura "
+                "cubre sólo hoy y mañana: para un día posterior, dilo y da la de mañana. Sólo "
+                "esos números, con sus unidades (°C, km/h, %). No se abrió ni se cambió nada."
             )
         if (
             visible_situation.get("operation") == "storage.removable.list"

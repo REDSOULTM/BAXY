@@ -20,6 +20,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from . import lexicon
 from .grammar import _PERCENTAGE_WORD_VALUES, _is_past_or_hypothetical_state, _strip_request_envelope
 from .normalize import fold
 
@@ -27,7 +28,9 @@ VOLUME = "volume"
 BRIGHTNESS = "brightness"
 
 # The verbs, each with the clitics people fuse to it («súbele», «bajálo», «bájamelo») and its English and
-# Spanglish forms. «brighten» and «dim» only apply to the screen.
+# Spanglish forms. «brighten» and «dim» only apply to the screen. Tanda 2 «Turn dowm poquito la musica»: the
+# English particle is typed with its neighbour key or its letters swapped.
+_DOWN_PARTICLE = r"(?:down|dowm|donw|dwon)"
 _UP = (
     r"(?:sub(?:e|a|i|ir)(?:le|lo|la|me|nos|mele|melo)?|aument(?:a|e|ar)(?:le|lo|la|me)?|"
     r"increment(?:a|ar)(?:le|lo)?|alza(?:le|lo)?|raise(?:\s+it)?|increase(?:\s+it)?|"
@@ -36,7 +39,7 @@ _UP = (
 _DOWN = (
     r"(?:baj(?:a|e|i|ar)(?:le|lo|la|me|nos|mele|melo)?|reduc(?:e|i|ir)(?:le|lo|la|me)?|"
     r"disminu(?:ye|i|ir)(?:le|lo|la|me)?|lower(?:\s+it)?|decrease(?:\s+it)?|"
-    r"(?:turn|tone|slow)\s+(?:it\s+|that\s+)?down|dim(?:\s+it)?)"
+    rf"(?:turn|tone|slow)\s+(?:it\s+|that\s+)?{_DOWN_PARTICLE}|dim(?:\s+it)?)"
 )
 _SET = (
     r"(?:pon(?:e|le|lo|la|elo|ela)?|poner(?:le|lo)?|deja(?:le|lo|la)?|fija(?:lo|la)?|ajusta(?:le|lo|la)?|"
@@ -49,13 +52,15 @@ _SPEAK = r"(?:habla(?:me)?|hable|hablar|speak|talk)"
 # a quantity, a relative word or a comparative. A verb with a dative clitic («súbele», «bájale») or an English
 # particle («turn it up») is a level request on its own.
 _STANDALONE_VERB = re.compile(
-    r"(?:sub|baj|aument|reduc|disminu)\w*le|(?:turn|crank|pump|bump|tone)\s+(?:it\s+|that\s+)?(?:up|down)|"
+    rf"(?:sub|baj|aument|reduc|disminu)\w*le|(?:turn|crank|pump|bump|tone)\s+(?:it\s+|that\s+)?(?:up|{_DOWN_PARTICLE})|"
     r"(?:raise|lower|increase|decrease|brighten|dim)\s+it"
 )
 _SCREEN_ONLY_VERB = re.compile(r"(?:brighten|dim)\b")
 
+# «bájale poquito», «súbele tantito»: the diminutive said without its article is the same small amount.
 _RELATIVE = (
-    r"(?:un\s+(?:poco|poquito|toque|pelin|cacho)(?:\s+mas)?|algo(?:\s+mas)?|bastante|mucho|mas|"
+    r"(?:(?:un\s+)?(?:poquito|poquitito|tantito|pelin)(?:\s+mas)?|un\s+(?:poco|toque|cacho|chin)(?:\s+mas)?|"
+    r"algo(?:\s+mas)?|bastante|mucho|mas|"
     r"a\s+(?:little|bit)(?:\s+bit)?(?:\s+more)?|slightly|some|a\s+lot|more)"
 )
 _COMPARATIVE_UP = r"(?:(?:mas|more)\s+(?:alto|fuerte|arriba|loud)|louder|brighter|mas\s+claro)"
@@ -70,10 +75,11 @@ _QUANTIFIER_DOWN = r"(?:menos|less)"
 _ARTICLE = r"(?:(?:el|la|los|las|the|my|mi|al|a\s+la|a\s+el|a|to\s+the|of\s+the)\s+)"
 _DEVICE = (
     r"(?:sistema|equipo|pc|compu|computador(?:a)?|ordenador|system|computer|laptop|notebook|"
-    r"altavoz|altavoces|parlantes?|speakers?|bocinas?)"
+    rf"{lexicon.SPEAKER_NOUN})"
 )
+# AUDIO1461 «bajá la música», tanda 2 «Turn dowm poquito la musica»: raising or lowering the music is the volume.
 _VOLUME_OBJECT = (
-    rf"(?:{_ARTICLE}?(?:(?:speaker|speakers|system|pc|computer)\s+)?(?:volumen|volume|sonido|sound|audio)"
+    rf"(?:{_ARTICLE}?(?:(?:speaker|speakers|system|pc|computer)\s+)?(?:volumen|volume|sonido|sound|audio|musica|music)"
     rf"(?:\s+(?:del?|of|on)\s+{_ARTICLE}?{_DEVICE})?)"
 )
 _SCREEN = r"(?:pantalla|monitor|screen|display)"
@@ -250,7 +256,9 @@ def _verb_level(found: re.Match[str]) -> Level | None:
         if target is not None:
             return Level(setting, None, None, target)
         relative = (found.group("rel1") or found.group("rel2") or "").split()
-        if setting is not None and relative and relative[-1] in {"mas", "more"}:
+        # «ponle más música» asks for more songs, not more volume.
+        music = re.search(r"\b(?:musica|music)\b", found.group(0)) is not None
+        if setting is not None and relative and relative[-1] in {"mas", "more"} and not music:
             return Level(setting, "up", None, None)
         return None
     direction = "up" if re.fullmatch(_UP, verb) else "down"
@@ -298,7 +306,8 @@ def read(text: str) -> Level | None:
             return None
         return Level(setting, direction, amount, None)
     found = _QUANTIFIER_FORM.fullmatch(cleaned)
-    if found is not None:
+    if found is not None and not re.search(r"\b(?:musica|music)\b", cleaned):
+        # «más música» asks for more songs; «más volumen» for more volume.
         setting = _object(found)
         return None if setting is False else Level(setting, "up" if found.group("qup") else "down", None, None)
     return _complaint(cleaned, question="?" in text or "¿" in text)

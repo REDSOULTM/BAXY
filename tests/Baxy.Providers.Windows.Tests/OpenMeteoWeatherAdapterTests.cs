@@ -22,7 +22,8 @@ public sealed class OpenMeteoWeatherAdapterTests
         """
         {"timezone":"America/Argentina/Buenos_Aires",
          "current":{"time":"2026-09-20T19:15","temperature_2m":18.8,"apparent_temperature":20.2,"relative_humidity_2m":92,"weather_code":3,"wind_speed_10m":8.0,"precipitation":0.0},
-         "daily":{"time":["2026-09-20","2026-09-21"],"temperature_2m_max":[22.1,21.0],"temperature_2m_min":[14.0,12.5],"precipitation_probability_max":[10,65],"weather_code":[3,61]}}
+         "daily":{"time":["2026-09-20","2026-09-21"],"temperature_2m_max":[22.1,21.0],"temperature_2m_min":[14.0,12.5],"precipitation_probability_max":[10,65],"weather_code":[3,61],
+                  "sunrise":["2026-09-20T07:05","2026-09-21T07:04"],"sunset":["2026-09-20T19:02","2026-09-21T19:03"]}}
         """;
 
     [Test]
@@ -46,7 +47,8 @@ public sealed class OpenMeteoWeatherAdapterTests
             Assert.That(receipt.ErrorCode, Is.Null);
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(asked[0], Does.Contain("name=buenos%20aires"));
-            Assert.That(asked[1], Does.Contain("latitude=-34.6131").And.Contain("forecast_days=2"));
+            Assert.That(asked[1], Does.Contain("latitude=-34.6131").And.Contain("forecast_days=2")
+                .And.Contain("sunrise,sunset"));
         });
         JsonElement result = receipt.Result!.Value;
         Assert.Multiple(() =>
@@ -63,6 +65,11 @@ public sealed class OpenMeteoWeatherAdapterTests
             Assert.That(result.GetProperty("tomorrow").GetProperty("date").GetString(), Is.EqualTo("2026-09-21"));
             Assert.That(result.GetProperty("tomorrow").GetProperty("rainProbabilityPercent").GetDouble(), Is.EqualTo(65));
             Assert.That(result.GetProperty("tomorrow").GetProperty("condition").GetString(), Is.EqualTo("lluvia débil"));
+            // Uso real tanda 2: the sun times are the service's local clock of each day.
+            Assert.That(result.GetProperty("today").GetProperty("sunrise").GetString(), Is.EqualTo("07:05"));
+            Assert.That(result.GetProperty("today").GetProperty("sunset").GetString(), Is.EqualTo("19:02"));
+            Assert.That(result.GetProperty("tomorrow").GetProperty("sunrise").GetString(), Is.EqualTo("07:04"));
+            Assert.That(result.GetProperty("tomorrow").GetProperty("sunset").GetString(), Is.EqualTo("19:03"));
             Assert.That(result.GetProperty("authority").GetString(), Is.EqualTo("open_meteo_forecast_v1"));
         });
     }

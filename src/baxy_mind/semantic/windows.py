@@ -158,13 +158,17 @@ _MINIMIZE_ALL_REQUEST = re.compile(
 # to it (Win+D) is every window minimized. «abre el escritorio» stays the
 # Desktop folder: only a movement or showing verb reads as the desktop view.
 PC_HOME_PLACE = r"(?:escritorio|desktop|home\s*screen|pantalla\s+(?:de\s+inicio|principal))"
+# Uso real tanda 2 «Ve home.»: said alone after a movement verb, «home» and «inicio» are the PC's home too
+# («go home», «vuelve al inicio»). Anywhere else they name other things («home depot», «la página de inicio de
+# un sitio», «el inicio de la canción»), so they are home only here, where nothing may follow them.
+_BARE_HOME = r"(?:home|inicio)"
 _SHOW_DESKTOP_REQUEST = re.compile(
     r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
-    r"(?:ve|vete|anda|andate|vuelve|volve|volvamos|regresa|ir|vamos|llevame|"
-    r"muestrame|mostrame|muestra|ensename|"
-    r"go(?:\s+back)?|return|take\s+me(?:\s+back)?|bring\s+me(?:\s+back)?|show(?:\s+me)?)"
+    r"(?:(?P<move>ve|vete|anda|andate|vuelve|volve|volvamos|regresa|ir|vamos|llevame|"
+    r"go(?:\s+back)?|return|take\s+me(?:\s+back)?|bring\s+me(?:\s+back)?)|"
+    r"muestrame|mostrame|muestra|ensename|show(?:\s+me)?)"
     r"\s+(?:(?:a|al|to)\s+)?(?:(?:el|la|the|my|mi)\s+)?"
-    rf"{PC_HOME_PLACE}"
+    rf"(?:{PC_HOME_PLACE}|(?(move){_BARE_HOME}|(?!)))"
     r"(?:\s*,?\s*(?:por\s+favor|please))?[\s.!?]*$"
 )
 

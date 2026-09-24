@@ -255,6 +255,94 @@ _REMOVABLE_MEDIA = (
 )
 
 
+# Uso real tanda 2 (2026-09-23): a radio station is something to play. «pon kiss f. m. para mi», «qué música está
+# poniendo actualmente novecientos noventa y nueve f. m.», «tune in to eight hundred and ninety seven f. m.»,
+# «pon radio cooperativa»: the station, by its name or its dial with the band, plays in the local player; asking
+# what it plays now is answered by playing it (the second went to a web search of the sentence). A dial said in
+# words is the dial written in digits («novecientos noventa y nueve» → 99.9).
+_RADIO_BAND = r"(?P<band>f\s*\.?\s*m|a\s*\.?\s*m)\.?"
+_RADIO_PLAY = (
+    r"(?:pon|ponme|pone|poneme|reproduce|reproduci|reproducir|play|start|inicia|sintoniza|sintonizame|"
+    r"tune(?:\s+in)?(?:\s+to)?|(?:quiero\s+)?escuchar|listen\s+to|i\s+want\s+to\s+(?:listen\s+to|hear))"
+)
+_RADIO_ASK = (
+    r"(?:que|what|whats|what\s+is|cual|which)\s+(?:(?:musica|cancion|canciones|tema|song|music|track)\s+)?"
+    r"(?:(?:esta|estan|is|are)\s+)?(?:poniendo|sonando|tocando|pasando|suena|pone|toca|pasa|playing|on)"
+    r"(?:\s+(?:actualmente|ahora|ahorita|now|right\s+now|currently))?(?:\s+(?:en|on|in))?"
+)
+_RADIO_COURTESY = r"(?:para\s+mi|for\s+me|por\s+favor|porfa|please|ahora|now|actualmente|currently|right\s+now)"
+_RADIO_REQUEST = re.compile(
+    rf"(?:{_RADIO_PLAY}|{_RADIO_ASK})\s+(?:(?:a|al|la|el|en|to|the)\s+)?(?P<station>.+?)"
+    rf"(?:\s+{_RADIO_COURTESY})*"
+)
+_RADIO_NOT_A_STATION = r"\b(?:wifi|wi\s+fi|bluetooth|wireless|inalambrica|alarma|alarm|despertador)\b"
+_SPOKEN_HUNDREDS = {
+    "cien": 100, "ciento": 100, "doscientos": 200, "trescientos": 300, "cuatrocientos": 400, "quinientos": 500,
+    "seiscientos": 600, "setecientos": 700, "ochocientos": 800, "novecientos": 900, "mil": 1000,
+}
+
+
+def _spoken_number(words: str) -> int | None:
+    """«novecientos noventa y nueve» → 999, «eight hundred and ninety seven» → 897; None if not all number."""
+
+    tokens = [token for token in words.replace("-", " ").split() if token != "and"]
+    if not tokens:
+        return None
+    if all(token.isdigit() for token in tokens):
+        return int("".join(tokens))
+    total = 0
+    if tokens[0] in _SPOKEN_HUNDREDS:
+        total, tokens = _SPOKEN_HUNDREDS[tokens[0]], tokens[1:]
+    elif len(tokens) > 1 and tokens[1] == "hundred" and tokens[0] in _PERCENTAGE_WORD_VALUES:
+        total, tokens = _PERCENTAGE_WORD_VALUES[tokens[0]] * 100, tokens[2:]
+    if not tokens:
+        return total or None
+    rest = _PERCENTAGE_WORD_VALUES.get(" ".join(tokens))
+    return None if rest is None else total + rest
+
+
+def _radio_dial(name: str, band: str) -> str:
+    """The station name with a spoken dial written as it is printed (99.9 FM, 1080 AM)."""
+
+    parts = re.split(r"\s+(?:punto|point|coma|dot)\s+", name, maxsplit=1)
+    whole, decimal = parts[0], (parts[1] if len(parts) > 1 else "")
+    number = _spoken_number(whole)
+    if number is None:
+        return name
+    fraction = _spoken_number(decimal) if decimal else None
+    if band == "FM" and fraction is None and 875 <= number <= 1080:
+        return f"{number // 10}.{number % 10}"
+    if fraction is not None and 0 <= fraction <= 9:
+        return f"{number}.{fraction}"
+    return str(number)
+
+
+def radio_station_query(text: str) -> str | None:
+    """The radio station to play, as the local player searches it («99.9 FM en vivo»), or None."""
+
+    folded = " ".join(re.sub(r"[¿?¡!,;:]", " ", _strip_request_envelope(_fold(text))).split()).strip(" .")
+    found = _RADIO_REQUEST.fullmatch(folded)
+    if found is None:
+        return None
+    station = found.group("station").strip(" .")
+    banded = re.fullmatch(rf"(?P<name>.+?)\s*{_RADIO_BAND}", station)
+    if banded is not None:
+        band = "FM" if banded.group("band").startswith("f") else "AM"
+        name = _radio_dial(banded.group("name").strip(" ."), band)
+        # «a. m.» after anything but a dial is a clock («pon un recordatorio a las 9 a. m.»).
+        if band == "AM" and not re.fullmatch(r"\d{3,4}", name):
+            return None
+        query = f"{name} {band}"
+    else:
+        named = re.fullmatch(r"(?:radio|emisora|station)\s+(?P<name>.+)|(?P<before>.+?)\s+radio", station)
+        if named is None:
+            return None
+        query = f"radio {named.group('name') or named.group('before')}"
+    if _has(query, _RADIO_NOT_A_STATION) or len(query.encode("utf-8")) > 200:
+        return None
+    return f"{query} en vivo"
+
+
 def _bare_spoken_number_media_query(text: str) -> str | None:
     """Preserve a word-valued media title without inventing volume context."""
 

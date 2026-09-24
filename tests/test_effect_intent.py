@@ -3035,24 +3035,26 @@ def test_product_payment_request_is_known_unsupported_without_commerce() -> None
     )
 
 
-def test_spoken_radio_station_resolves_as_media_query() -> None:
+# Uso real tanda 2 (2026-09-23): a station named without a provider plays in the
+# local player like any music named without one (MUSIC1559); still a play, never a search.
+def test_spoken_radio_station_resolves_as_media_play() -> None:
     result = resolve_explicit_effects(
         "pon kiss f. m. para mí",
-        {"media.play.query"},
+        {"media.play.query", "media.play.youtube", "web.search"},
     )
 
     assert result is not None
-    assert result.operations == ("media.play.query",)
+    assert result.operations == ("media.play.youtube",)
 
 
-def test_spoken_radio_frequency_resolves_as_media_query() -> None:
+def test_spoken_radio_frequency_resolves_as_media_play() -> None:
     result = resolve_explicit_effects(
         "tune in to eight hundred and ninety seven f. m.",
-        {"media.play.query"},
+        {"media.play.query", "media.play.youtube", "web.search"},
     )
 
     assert result is not None
-    assert result.operations == ("media.play.query",)
+    assert result.operations == ("media.play.youtube",)
 
 
 def test_corrected_installed_game_request_keeps_final_launch() -> None:

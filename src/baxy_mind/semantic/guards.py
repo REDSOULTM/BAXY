@@ -59,6 +59,11 @@ def cut_request_tail(objective: str) -> str | None:
     last = effect_intent._fold(words[-1]).strip(",;:")
     if last not in _CUT_TAIL_WORDS:
         return None
+    # Uso real «pon kiss f. m. para mi»: «para mí», typed without its accent, is
+    # the pronoun closing the request. After «de», «a» or «en» a possessive may
+    # still be cut («la carpeta de mi…»), so only «para» closes it.
+    if last == "mi" and effect_intent._fold(words[-2]).strip(",;:") == "para":
+        return None
     return " ".join(words[-3:])
 
 

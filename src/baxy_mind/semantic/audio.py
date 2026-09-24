@@ -163,12 +163,7 @@ def _volume_domain(text: str) -> bool:
             "pc",
             "dispositivo",
             "device",
-            "altavoz",
-            "altavoces",
-            "speaker",
-            "speakers",
-            "parlante",
-            "parlantes",
+            *lexicon.SPEAKER_NOUNS,
             "auriculares",
             "headphones",
             "musica",
@@ -227,7 +222,7 @@ def _audio_mute_domain(text: str) -> bool:
             rf"\b{_MUTE_VERB}\s+"
             r"(?:(?:el|la|los|las|the|mi|my)\s+)?"
             r"(?:(?:computador|computadora|computer|equipo|pc)\s+)?"
-            r"(?:altavoz|altavoces|parlante|parlantes|speaker|speakers)\b|"
+            rf"{lexicon.SPEAKER_NOUN}\b|"
             # Un objeto total («todo»/«everything») también nombra el audio
             # global: el fixture canónico de argumentos usa exactamente
             # «mute everything please» para audio.mute.

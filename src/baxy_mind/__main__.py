@@ -5409,7 +5409,7 @@ def _explicit_arguments_from_evidence(
     if operation == "media.play.youtube":
         # MUSIC1553: the person's own words name what to play; the provider
         # searches YouTube with them and the receipt carries the title played.
-        youtube_query = effect_intent.youtube_play_query(evidence)
+        youtube_query = effect_intent.youtube_play_query(evidence) or effect_intent.radio_station_query(evidence)
         if youtube_query is None and not re.search(r"\b(?:youtube|spotify)\b", folded):
             # MUSIC1559 «pon música de daft punk», «poneme algo de música tranqui»:
             # the named music, in the person's words, is the YouTube query.

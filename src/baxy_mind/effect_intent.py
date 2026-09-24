@@ -235,6 +235,7 @@ from .semantic.media import (  # noqa: F401 - moved to baxy_mind.semantic.media;
     _resume_existing_media,
     _REMOVABLE_MEDIA,
     _bare_spoken_number_media_query,
+    radio_station_query,
 )
 from .semantic.web import (  # noqa: F401 - moved to baxy_mind.semantic.web; callers migrate
     public_opinion_query,

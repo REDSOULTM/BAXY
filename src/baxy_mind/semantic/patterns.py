@@ -18,7 +18,7 @@ from .display import screen_light_as_brightness, _KNOWN_FOLDER_WORDS, _KNOWN_FOL
 from .intent import EffectIntent, _entity_key, _is_negated_match, _append, _append_all
 from .catalog import ApplicationCatalogIndex, GameCatalogIndex, build_game_catalog_index, _authenticated_game_target, resolve_game_catalog_app_id, _application_name_key, build_application_catalog_index, _catalog_alias_key, _installed_game_named, installed_game_title
 from .temporal import _CALENDAR_MONTH_TOKEN, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, spoken_clock
-from .media import _youtube_search_query, youtube_play_query, _direct_media_discovery_or_play_request, _named_browser_music_request, _NETFLIX_SPELLED, _underspecified_video_request, _title_case_media_title, _media_transport_action, _resume_existing_media, _REMOVABLE_MEDIA, _bare_spoken_number_media_query
+from .media import _youtube_search_query, youtube_play_query, _direct_media_discovery_or_play_request, _named_browser_music_request, _NETFLIX_SPELLED, _underspecified_video_request, _title_case_media_title, _media_transport_action, _resume_existing_media, _REMOVABLE_MEDIA, _bare_spoken_number_media_query, radio_station_query
 from .web import other_place_clock_question, public_opinion_query, record_fact_query, _public_route_lookup_request, _public_calendar_fact_lookup_request, _WEATHER_WORDS, _weather_lookup_query, _research_question_query, _public_live_lookup_request, _public_product_correction_lookup_request, _public_commerce_lookup_request, _FILESYSTEM_OBJECT_NOUN, operation_identity_is_a_near_miss, curiosity_request, web_image_request, _NAVIGATION_CLIENT, client_navigation_target, _authenticated_application_identity_conflict, _browser_page_domain, browser_back_arguments, browser_new_tab_arguments, browser_close_all_tabs_arguments, _historical_note_search_request, _stored_note_search_query, _nominal_reminder_lookup_title, _location_recommendation_request, _NAMED_BROWSER_SITE_REQUEST, _installed_browser_search_query, _completed_browser_search_pronoun_request, _NAMED_PUBLIC_SITE, _review_web_and_browser_effects, web_download_request, NAMED_CDP_BROWSERS, _named_browser_match, _named_browser
 from .files import _pdf_summary_request, _file_trash_request, process_report_file_request, _file_creation_request, known_folder_file_path, _current_directory_file_count, _DUPLICATE_FILES, _known_folder_recent_listing, _known_folder_listing_request, _review_file_and_game_effects, folder_txt_zip_open_mission, open_named_file_request, _office_document_roundtrip_intent
 from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
@@ -5035,7 +5035,7 @@ def _spoken_radio_station_request(text: str) -> bool:
     """Recognize a named/dial radio request without treating every `pon` as media."""
 
     folded = _fold(text)
-    return _head_is(
+    return radio_station_query(text) is not None or _head_is(
         _request_head(folded),
         r"(?:pon|ponme|pone|poneme|reproduce|reproducir|play|start|inicia|tune)",
     ) and _has(
@@ -9662,11 +9662,16 @@ def _review_media_and_email_effects(
             r"\b(?:need|want|necesito|quiero)\b",
         )
     elif _spoken_radio_station_request(folded):
+        # Uso real tanda 2: a station without a provider plays in the local
+        # player, like any music named without one (MUSIC1559); asking what it
+        # plays now («qué música está poniendo … f. m.») is played the same way.
+        # «pon la radio» names no station: nothing to search on YouTube.
         _append(
             matches,
             folded,
-            "media.play.query",
-            r"\b(?:pon|ponme|pone|poneme|reproduce|reproducir|play|start|inicia|tune)\b",
+            "media.play.youtube" if not spotify and radio_station_query(folded) is not None else "media.play.query",
+            r"\b(?:pon|ponme|pone|poneme|reproduce|reproducir|play|start|inicia|tune|sintoniza|sintonizame|"
+            r"escuchar|listen|que|what|whats|cual|which)\b",
         )
     elif _bare_spoken_number_media_query(folded) is not None:
         _append(

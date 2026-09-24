@@ -81,13 +81,85 @@ def _names_weather(folded: str) -> bool:
     )
 
 
+# Uso real tanda 2 (2026-09-23): the weather asked through what it calls for, never by name. «¿Me llevo el
+# chubasquero?», «¿Debo ponerme scarf esta noche?» ask whether to wear or carry something; «¿Cuántas pulgadas
+# are we getting today?» asks an amount; «necesito el horario de la caída del sol para mañana» asks a sun time.
+# All went to a web search of the whole sentence. Each is a weather read only inside the frame that asks it:
+# gear with a decision to wear, carry or need it (buying, finding or recommending one is not the weather),
+# asked as a question or about a time; a unit counted about a time; a sun time asked by its hour.
+_WEATHER_GEAR = (
+    r"\b(?:paraguas|sombrilla|umbrella|chubasquero|impermeable|capa\s+de\s+lluvia|poncho|raincoat|rain\s+jacket|"
+    r"bufanda|scarf|abrigo|chaqueta|chamarra|campera|casaca|parka|jacket|coat|sueter|sweater|jersey|poleron|"
+    r"gorro|beanie|guantes|gloves|botas\s+de\s+(?:lluvia|agua)|rain\s+boots|protector\s+solar|bloqueador|"
+    r"sunscreen|gafas\s+de\s+sol|lentes\s+de\s+sol|sunglasses)\b"
+)
+_WEATHER_GEAR_DECISION = (
+    r"\b(?:llevo|llevar|llevarme|lleve|llevamos|pongo|ponerme|ponga|me\s+abrigo|abrigarme|uso|usar|necesito|necesitare|"
+    r"necesitamos|hace\s+falta|debo|deberia|conviene|tengo\s+que|should|need|bring|take|wear|pack)\b"
+)
+_WEATHER_GEAR_ELSEWHERE = (
+    r"\b(?:compr\w*|buy|nuev[oa]s?|new|recomienda\w*|recommend\w*|precio|price|cuesta|cost|tienda|store|shop|"
+    r"donde|where|deje|perdi|lost|talla|size|lavar|wash|tintoreria)\b"
+)
+_WEATHER_AMOUNT = (
+    r"\b(?:cuant[oa]s|how\s+(?:many|much))\s+"
+    r"(?:pulgadas|milimetros|mm|centimetros|grados|inches|millimeters|centimeters|degrees)\b"
+)
+_WEATHER_SUN_TIME = (
+    r"\b(?:(?:salida|puesta|caida|entrada)\s+del\s+sol|amanecer|amanece|atardecer|atardece|anochecer|anochece|"
+    r"oscurece|ocaso|(?:se\s+pone|sale|se\s+oculta|se\s+esconde)\s+el\s+sol|sunrise|sunset|dawn|dusk|"
+    r"(?:the\s+)?sun\s+(?:rise|set|go\s+down|come\s+up))\b"
+)
+_WEATHER_SUN_ASK = r"\b(?:hora|horas|horario|cuando|when|time|times)\b"
+# A time the forecast is asked about. Today and tomorrow are read; a later day is answered with what is read.
+WEATHER_WHEN = (
+    r"\b(?:hoy|today|tonight|ahora|now|esta\s+(?:noche|tarde|manana)|this\s+(?:morning|afternoon|evening|weekend)|"
+    r"manana|tomorrow|pasado\s+manana|fin\s+de\s+semana|finde|weekend|(?:dentro\s+de|en|in)\s+\w+\s+(?:dias|days))\b"
+)
+
+
+def _asks_weather_indirectly(folded: str) -> bool:
+    """The weather asked through the gear it calls for, an amount of it, or a sun time (see above)."""
+
+    gear = (
+        _has(folded, _WEATHER_GEAR)
+        and _has(folded, _WEATHER_GEAR_DECISION)
+        and ("?" in folded or _has(folded, WEATHER_WHEN))
+        and not _has(folded, _WEATHER_GEAR_ELSEWHERE)
+    )
+    amount = _has(folded, _WEATHER_AMOUNT) and _has(
+        folded, WEATHER_WHEN + r"|\b(?:hace|hara|habra|afuera|outside|getting|expected|caer|caeran|fall)\b"
+    )
+    sun_time = _has(folded, _WEATHER_SUN_TIME) and _has(folded, _WEATHER_SUN_ASK + "|" + WEATHER_WHEN)
+    return gear or amount or sun_time
+
+
+def weather_asks_sun_time(text: str) -> bool:
+    """The weather question asks when the sun rises or sets («la caída del sol», «sunset»)."""
+
+    return _has(_fold(text), _WEATHER_SUN_TIME)
+
+
+def weather_asks_later_day(text: str) -> bool:
+    """The weather question is about a day after tomorrow («dentro de dos días», «el fin de semana»,
+    «pasado mañana»): the read covers today and tomorrow, and the answer says so."""
+
+    folded = _fold(text)
+    if _has(folded, r"\b(?:pasado\s+manana|fin\s+de\s+semana|finde|weekend|next\s+week|(?:proxima|siguiente)\s+semana|"
+                    r"semana\s+que\s+viene)\b"):
+        return True
+    counted = re.search(r"\b(?P<count>\w+)\s+(?:dias|days)\b", folded)
+    return counted is not None and counted.group("count") not in {"un", "uno", "one", "a", "1"}
+
+
 def _weather_lookup_query(text: str) -> str | None:
     """WEB1445: the person's weather request without its request verbs, accents
     kept (the engine answers «va a llover mañana» and «clima hoy», not the folded
     or verb-laden forms); None when the request is not a live weather lookup."""
 
     folded = _fold(text)
-    if not _public_live_lookup_request(folded) or not _names_weather(folded):
+    indirect = _asks_weather_indirectly(folded)
+    if not _public_live_lookup_request(folded) or not (_names_weather(folded) or indirect):
         return None
     if _has(folded, r"^[¿?¡!\s]*(?:que|what)\s+(?:es|son|is|are|significa|means)\b"):
         return None
@@ -120,7 +192,7 @@ def _weather_lookup_query(text: str) -> str | None:
     query = re.sub(r"(?:^|\s+)(?:en|in|on)\s+(?:google|internet|la\s+web|the\s+web)\b\s*", " ", query, flags=re.IGNORECASE)
     query = re.sub(r"^\s*(?:el|la|los|las|the)\s+", "", query, count=1, flags=re.IGNORECASE)
     query = re.sub(r"\s+", " ", query).strip(" ?!.,;:")
-    return query if query and _names_weather(_fold(query)) else None
+    return query if query and (indirect or _names_weather(_fold(query))) else None
 
 
 _TOPIC_RESEARCH = re.compile(
@@ -677,7 +749,7 @@ def _public_live_lookup_request(folded: str) -> bool:
     weather_noun = not head and _has(folded, r"\b(?:weather|forecast|pronostico|clima)\b") and not _has(
         folded, r"\bclima\s+(?:laboral|politico|social|economico|de\s+trabajo|organizacional|familiar)\b"
     )
-    weather = (weather_head and _names_weather(folded) or weather_noun) and not _has(
+    weather = (weather_head and _names_weather(folded) or weather_noun or _asks_weather_indirectly(folded)) and not _has(
         # WEATHER2023 boundary: the weather of the past is no live lookup.
         folded,
         r"\b(?:hacia|hizo|hubo|estuvo|estaba|fue|llovio|was|were|did|rained)\b|"

@@ -44,6 +44,12 @@ VOLUME_NOUNS = frozenset({"volumen", "volume", "sonido", "sound", "audio"})
 BRIGHTNESS_NOUNS = frozenset({"brillo", "brightness"})
 SETTING_NOUNS = VOLUME_NOUNS | BRIGHTNESS_NOUNS | MICROPHONE_NOUNS
 SETTING_NOUN = alternation(SETTING_NOUNS)
+# The PC's loudspeaker, as each region names it. Tanda 2 «Silenciar la bocina please»: «bocina» is the speaker in
+# Mexico and Central America; it was asked about instead of muted.
+SPEAKER_NOUNS = frozenset(
+    {"altavoz", "altavoces", "parlante", "parlantes", "bocina", "bocinas", "speaker", "speakers"}
+)
+SPEAKER_NOUN = alternation(SPEAKER_NOUNS)
 
 # ---------------------------------------------------------------- restoring the system sound (audio.mute, muted = false)
 # Held-out 2026-09-22 «devolvele el sonido»: giving the sound back is unmuting it.
