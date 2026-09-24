@@ -48,6 +48,28 @@ public sealed class C03UsoRealComposeTests
             Is.EqualTo("unsolicited_catalog"));
     }
 
+    // tanda-02: turning the music down is its volume; the mind's own question
+    // must reach the person instead of a rewording that invents a second option.
+    [TestCase("turn dwn un pelín la música", "¿Quieres que baje un poco el volumen de la música?")]
+    [TestCase("bájale a la música", "¿Cuánto quieres que baje el volumen?")]
+    [TestCase("turn the sound up a bit", "How much should I raise the volume?")]
+    public void AVolumeQuestionForMusicTurnedUpOrDownIsTheRequestedFamily(string request, string question)
+    {
+        Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(
+            request, question, "mixed", clarification: true), Is.Null);
+        Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(
+            request, "¿Quieres que vacíe la papelera?", "mixed", clarification: true),
+            Is.EqualTo("unsolicited_catalog"));
+    }
+
+    [Test]
+    public void MusicWithoutALevelVerbDoesNotCoverTheVolume()
+    {
+        Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(
+            "pon música", "¿Quieres que suba el volumen?", "es", clarification: true),
+            Is.EqualTo("unsolicited_catalog"));
+    }
+
     [Test]
     public void TheRegistrableSiteOfAResultHostIsObserved()
     {

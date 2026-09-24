@@ -401,7 +401,11 @@ def test_courtesy_is_never_the_anchor_of_a_limit() -> None:
         ("Stop listening por favor", "No puedo dejar de escucharte desde el chat.", ""),
         ("¿puedes poner un canal de noticias en francés?", "Eso no lo hago: los canales de noticias no los pongo yo.", ""),
         ("¿puedes poner un canal de noticias en francés?", "Eso no lo hago.", "unsupported_missing_anchor"),
-        ("prepárame una taza de café", "Preparar café no lo hago: pasa fuera de este PC.", ""),
+        # tanda-02: the request made the subject («Preparar café no lo hago») echoes it;
+        # the same limit in BAXY's own first person does not.
+        ("prepárame una taza de café", "Preparar café no lo hago: pasa fuera de este PC.",
+         "unsupported_limit_echoes_request"),
+        ("prepárame una taza de café", "Eso no lo hago: el café no lo preparo yo, pasa fuera de este PC.", ""),
     ],
 )
 def test_limit_prose_contract(request_text: str, reply: str, reason: str) -> None:

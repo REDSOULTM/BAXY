@@ -3113,6 +3113,13 @@ def _with_session_alarm_selector(objective: str, history: object) -> str:
     return rewritten if rewritten is not None else objective
 
 
+def _answers_the_last_question(history: object, current_request: str) -> bool:
+    """BAXY's last message asked a question, so this one may be its answer."""
+
+    last_reply = dialogue_slot.read_slot({}, history, current_request).last_reply
+    return bool(last_reply) and last_reply.rstrip().endswith(("?", "？"))
+
+
 def _previous_user_request(history: list[object], current_request: str) -> str | None:
     """Read the user antecedent, preserving contiguous clock continuations."""
     previous = history
@@ -8510,10 +8517,11 @@ def _decide_turn_result(
             response_language = str(decision["response_language"])
         else:
             response_language = _decisive_request_language(objective)
-            if response_language is None and isinstance(history, list):
+            if response_language is None and _answers_the_last_question(history, objective):
                 # MUSIC1753 «Play a song on Spotify.» → «Queen»: an answer with
                 # no language of its own keeps the language of the request it
-                # answers; a proper name is not Spanish evidence.
+                # answers; a proper name is not Spanish evidence. tanda-02: only
+                # an answer — a new request with no evidence goes to the detector.
                 previous = _previous_user_request(history, objective)
                 if isinstance(previous, str) and previous.strip():
                     response_language = _decisive_request_language(previous)

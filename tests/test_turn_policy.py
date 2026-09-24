@@ -8112,7 +8112,8 @@ def test_turn_chat_receives_closed_policy_without_catalog_or_evidence() -> None:
     ]
     assert len(anchor_messages) == 1
     assert '"taxi"' in anchor_messages[0]
-    assert "no puedes" in anchor_messages[0]
+    # tanda-02: the anchor states the limit in BAXY's first person.
+    assert "en primera persona, que eso no lo haces" in anchor_messages[0]
     assert "Devuelve exactamente" not in serialized
     assert "No puedo completar taxi tal como fue pedido" not in serialized
     assert "Operaciones candidatas" not in serialized

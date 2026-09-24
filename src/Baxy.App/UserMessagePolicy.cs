@@ -989,6 +989,20 @@ internal static class UserMessagePolicy
             return true;
         }
 
+        // tanda-02 (turn the music down a little, in spanglish): turning the music
+        // or the sound up or down is its volume. The mind asked whether to lower
+        // the music's volume, the family read as an offer of its own, and the
+        // reworded question invented a second option nobody named.
+        if (FamilyNamed(family, "volumen", "audio")
+            && Regex.IsMatch(user, @"\b(?:musica|music|sonido|sound|cancion|song)\b",
+                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
+            && Regex.IsMatch(user,
+                @"\b(?:turn|baja|bajale|bajala|bajar|bajame|sube|subele|subela|subir|subime|lower|raise|louder|quieter)\b",
+                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+        {
+            return true;
+        }
+
         return false;
     }
 

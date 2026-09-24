@@ -176,7 +176,10 @@ UNSUPPORTED_PRESENTATION_PROMPT = (
     "PC, dilo como causa en pocas palabras. Si hay varios pasos, habla de la "
     "secuencia entera, no de sus partes por separado. No preguntes, no sugieras "
     "otro paso, no te disculpes y no describas a BAXY ni su implementación. "
-    "Estilo: «Eso no lo hago: los hábitos no los llevo yo.»"
+    "Estilo, para un pedido de marcar un hábito: «Eso no lo hago: los hábitos no "
+    "los llevo yo.» Después de los dos puntos habla tú, en primera persona: nunca "
+    "pongas el pedido en infinitivo como sujeto, nunca lo repitas como si lo "
+    "pidieras tú y nunca hables de BAXY en tercera persona."
 )
 
 UNSUPPORTED_LANGUAGE_PRESENTATION_PROMPT = (
@@ -2093,14 +2096,30 @@ def _literal_recall_reference(
     return literal
 
 
-_FREE_CONTENT_CUE = re.compile(
-    r"^(?:(?:contame|cuentame|conta|cuenta|decime|dime|tirame|tira|explicame|explica|hablame|habla|"
+_FREE_CONTENT_ASK = (
+    r"(?:contame|cuentame|conta|cuenta|decime|dime|tirame|tira|explicame|explica|hablame|habla|"
     r"tell\s+me|give\s+me|say)\s+"
-    r"(?:(?:un|una|algun|alguna|algo\s+de|a|an|some)\s+)?"
-    r"(?:chiste|broma|chistes|joke|jokes|curiosidad|curiosidades|dato\s+curioso|datos\s+curiosos|fun\s+fact|"
-    r"historia\s+corta|algo|something|anything|cualquier\s+cosa|una\s+cosa)"
+)
+_FREE_CONTENT_TAIL = (
     r"(?:\s+(?:interesante|curioso|curiosa|gracioso|graciosa|divertido|divertida|interesting|curious|funny|fun|random))?"
-    r"[\s.!?]*$|^(?:estoy|ando|me\s+siento)\s+(?:re\s+|muy\s+|super\s+)?aburrid[oa][\s.!?]*$|^i'?m\s+(?:so\s+)?bored[\s.!?]*$)"
+    r"[\s.!?]*$"
+)
+# tanda-02: a bare plural noun asking for jokes was answered with a question
+# about the topic. The thing named on its own —a joke, a curiosity, with or
+# without a verb, with or without earlier turns— is asked for, not a question
+# about which one.
+_FREE_CONTENT_THING_CUE = re.compile(
+    r"^(?:" + _FREE_CONTENT_ASK + r")?"
+    r"(?:(?:un|una|unos|unas|algun|alguna|algo\s+de|otro|otra|a|an|some|another)\s+)?"
+    r"(?:chiste|broma|chistes|bromas|joke|jokes|curiosidad|curiosidades|dato\s+curioso|datos\s+curiosos|"
+    r"fun\s+facts?|historia\s+corta)" + _FREE_CONTENT_TAIL
+)
+# «contame algo», «estoy aburrido»: open content, read so only with no earlier
+# turn that «algo» could be about.
+_FREE_CONTENT_CUE = re.compile(
+    r"^(?:" + _FREE_CONTENT_ASK
+    + r"(?:algo|something|anything|cualquier\s+cosa|una\s+cosa)" + _FREE_CONTENT_TAIL
+    + r"|(?:estoy|ando|me\s+siento)\s+(?:re\s+|muy\s+|super\s+)?aburrid[oa][\s.!?]*$|^i'?m\s+(?:so\s+)?bored[\s.!?]*$)"
 )
 _MISNAMED_VOCATIVE = re.compile(r"^[A-ZÁÉÍÓÚÑ][A-Za-zÁ-ÿ'-]{1,24}[.!]?$")
 _REASSURANCE_OPENING = re.compile(
@@ -2210,6 +2229,9 @@ def _conversation_presentation_shape(
             )
             else "content_draft"
         )
+    if _FREE_CONTENT_THING_CUE.match(_policy_guard_text(_strip_request_envelope(semantic_text))) is not None:
+        # KNOWLEDGE1144 «contame un chiste»; tanda-02: the bare noun, after other turns.
+        return "free_content"
     if not has_history:
         # CONVERSATION1343 H0122 «hola Carter»: a greeting with another name
         # is answered by greeting back and saying the name is BAXY.
@@ -2229,7 +2251,7 @@ def _conversation_presentation_shape(
         # keeps it to an acknowledgement naming the person's preference.
         if first_person_preference(semantic_text) is not None:
             return "preference_ack"
-        # KNOWLEDGE1144/1149/1179 «contame un chiste», «estoy aburrido»: the
+        # KNOWLEDGE1144/1149/1179 «contame algo», «estoy aburrido»: the
         # content is asked for, not a question about which content.
         if _FREE_CONTENT_CUE.match(_policy_guard_text(_strip_request_envelope(semantic_text))) is not None:
             return "free_content"
@@ -2714,7 +2736,11 @@ def _shaped_conversation_answer_violates_contract(
             or content.rstrip().rstrip("😄😎🙂😂🤣!. ").endswith(("?", "？"))
             or re.search(
                 r"\b(?:que\s+tipo|what\s+kind|which\s+kind|prefieres|preferis|te\s+gustaria|would\s+you\s+like|"
-                r"idioma|language|en\s+espanol\s+o|in\s+spanish\s+or|elige|elegi|choose)\b",
+                r"idioma|language|en\s+espanol\s+o|in\s+spanish\s+or|elige|elegi|choose|"
+                # tanda-02: «¿Quieres un chiste de algún tema? Por ejemplo, …»
+                # offers a menu of topics instead of the joke.
+                r"algun\s+tema|que\s+tema|tema\s+especifico|quieres\s+(?:un|una|que)|"
+                r"which\s+topic|what\s+topic|specific\s+topic|do\s+you\s+want|want\s+(?:a|one|me))\b",
                 folded_content,
             ) is not None
         )
@@ -2914,6 +2940,43 @@ def _current_public_role_request(value: object) -> bool:
             folded,
         )
     )
+
+
+# tanda-02: limits that did not sound like BAXY saying no. «Pido leer esa
+# novela…, pero está fuera de lo que hago» put the person's words in his mouth;
+# «activar ese modo no es una acción que realice BAXY» spoke of him in the third
+# person; «Abrir la app del tiempo no está en lo que hago» and «Ir al inicio no
+# lo hago» made the request, as an infinitive, the subject of the sentence.
+# 00_IDENTIDAD: «Eso no lo hago», plain, in the first person.
+_LIMIT_OPENING = re.compile(
+    r"^\s*(?:(?:eso|esto)\s+no\s+lo\s+hago|i\s+(?:don'?t|do\s+not)\s+do\s+that)\s*[:,;.—-]\s*"
+)
+_LIMIT_PERSON_VOICE = re.compile(r"^(?:pido|pedi|quiero|necesito|i\s+(?:ask|want|need))\b")
+_LIMIT_REQUEST_SUBJECT = re.compile(
+    # A clause headed by a Spanish infinitive (with its clitics) negated by
+    # «no», or by an English gerund negated by «not», later in the same clause:
+    # the request made the subject of the limit.
+    r"^(?:(?!(?:mejor|lugar|hogar|ayer|mujer|primer|cualquier|tercer)\b)"
+    r"[a-zñ]*(?:ar|er|ir)(?:me|te|se|le|lo|la|nos|les|los|las)?\b[^.;:]*?\bno\b"
+    r"|(?!(?:during|\w*thing)\b)[a-z]+ing\b[^.;:]*?\b(?:not|isn'?t|aren'?t|don'?t)\b)"
+)
+
+
+def limit_voice_defect(text: object, request: object = "") -> str:
+    """Why a limit does not say, in BAXY's own first person, that he does not do it."""
+
+    folded = _reading_fold(str(text or "")).strip(" ¡!¿?\"«»")
+    body = _LIMIT_OPENING.sub("", folded, count=1)
+    if _LIMIT_PERSON_VOICE.match(body) or any(
+        _LIMIT_REQUEST_SUBJECT.match(clause.strip())
+        for clause in {folded, body}
+    ):
+        return "limit_echoes_request"
+    if re.search(r"(?<!\bsoy )(?<!\bi am )(?<!\bi'm )\bbaxy\b", folded) and not (
+        effect_intent.self_close_request(str(request or ""))
+    ):
+        return "limit_third_person"
+    return ""
 
 
 def _unsupported_answer_has_inability(value: object) -> bool:
@@ -7108,6 +7171,10 @@ _SEARCH_REPORT_OWN_WORDS = frozenset(
         "sugiere", "sugieren", "suggests", "repite", "repiten", "enlace", "enlaces",
         "links", "texto", "textos", "fragmento", "fragmentos", "snippet", "snippets",
         "website", "websites", "webpage", "portal", "portales",
+        # tanda-02: a question about what to wear tonight came back with pages
+        # about ties and flashcards; «the pages I found are about something
+        # else» is the honest report of results that do not answer it.
+        "something",
     }
 )
 
@@ -8197,6 +8264,21 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     return ""
 
 
+def _page_prose_of(value: object) -> list[str]:
+    """The page prose of the facts: result titles, snippets and urls."""
+
+    if isinstance(value, dict):
+        prose = [
+            child for key, child in value.items()
+            if key in ({"snippet", "url", "title"} if "snippet" in value else {"snippet", "url"})
+            and isinstance(child, str)
+        ]
+        return prose + [text for child in value.values() for text in _page_prose_of(child)]
+    if isinstance(value, (list, tuple)):
+        return [text for child in value for text in _page_prose_of(child)]
+    return []
+
+
 def _truncated_fact_word(text: str, facts: dict) -> bool:
     """Una palabra de los hechos publicada a medias: «mover y enfoc ventanas».
 
@@ -8240,8 +8322,12 @@ def _truncated_fact_word(text: str, facts: dict) -> bool:
     fact_words = set(re.findall(r"[a-záéíóúñ]{5,}", values))
     if not fact_words:
         return False
+    # tanda-02 (how to get to a theme park): the page's own word is whole, not a
+    # cut of a longer fact word. The label «parque» of a result host such as
+    # parquelandia.parque.com was read as a cut of the query's «parquelandia».
+    page_words = set(re.findall(r"[a-záéíóúñ]{5,}", " ".join(_page_prose_of(facts or {})).casefold()))
     for token in re.findall(r"[a-záéíóúñ]{5,}", text.casefold()):
-        if token in fact_words:
+        if token in fact_words or token in page_words:
             continue
         if any(
             word.startswith(token)
@@ -8761,10 +8847,22 @@ def _bracket_is_observed(bracketed: str, facts: dict) -> bool:
         return False
     needle = _reading_fold(bracketed)
     observed = _merged_observed(situation) if isinstance(situation, dict) else {}
-    for value in (observed.values() if isinstance(observed, dict) else ()):
-        if isinstance(value, str) and needle and needle in _reading_fold(value):
-            return True
-    return False
+
+    # tanda-02: a search result title «[FREE] …», «… [Live Clock] | …» is
+    # observed text one level down (results[].title); the pages report that
+    # quoted it died as a template hole.
+    def carries(value: object, depth: int = 0) -> bool:
+        if isinstance(value, str):
+            return bool(needle) and needle in _reading_fold(value)
+        if depth >= 3:
+            return False
+        if isinstance(value, dict):
+            return any(carries(child, depth + 1) for child in value.values())
+        if isinstance(value, list):
+            return any(carries(child, depth + 1) for child in value)
+        return False
+
+    return carries(observed)
 
 
 def _denies_the_destination(folded_reply: str, folded_destination: str) -> bool:
@@ -9741,7 +9839,7 @@ def compose_visible_defect(
             # intento que nunca ocurrió.
             if not _names_the_boundary(folded):
                 return "missing_failure"
-            return ""
+            return limit_voice_defect(stripped, user_text)
         if not _asserts_failure(stripped) and not (
             # Uso real 2026-09-23 «qué música se está reproduciendo» with no player
             # found: «No hay un video de YouTube en ejecución» IS the failure told,
@@ -10460,6 +10558,27 @@ def compose_visible_defect(
             # «Tiempo en Santiago mañana — ¿Va a llover? | tiempo.cl» is an
             # observed name, not a question the assistant asks.
             question_text = without_observed_names(question_text, situation)
+            # tanda-02 (the time in another city): «example.net says: "What time
+            # is it in that city right now? See the live clock…"» quotes the
+            # page, and the page's question inside the quotation is not the
+            # assistant asking. Only a quotation the results carry verbatim is
+            # the page's; an unquoted question is still BAXY's.
+            def words_of(value: str) -> str:
+                return " " + " ".join(re.findall(r"\w+", _reading_fold(value))) + " "
+
+            page_words = words_of(" ".join(
+                str(item.get(key) or "")
+                for item in _search_results_of(situation) if isinstance(item, dict)
+                for key in ("title", "snippet")
+            ))
+            question_text = re.sub(
+                r"[«\"“][^»\"”]{1,600}[»\"”]",
+                lambda quoted: " " if (
+                    len((quoted_words := words_of(quoted.group(0)[1:-1])).split()) >= 3
+                    and quoted_words in page_words
+                ) else quoted.group(0),
+                question_text,
+            )
         if (
             operation == "client.channel.locate"
             and situation.get("verified") is True
@@ -10775,6 +10894,9 @@ def _unsupported_answer_contract_failure(
     )
     if forbidden:
         return "unsupported_forbidden"
+    voice = limit_voice_defect(content, request)
+    if voice:
+        return "unsupported_" + voice
     if request is not None and not _unsupported_answer_mentions_request(
         content,
         request,
@@ -12459,19 +12581,20 @@ class LlmRuntime:
                 "content": (
                     (
                         "Nombra en la frase lo que se pidió, en torno a "
-                        f'"{unsupported_anchor}", conjugado con naturalidad y '
-                        "sin copiar la forma verbal tal cual. Di llanamente "
-                        "que no puedes hacerlo. Una sola oración breve, "
+                        f'"{unsupported_anchor}", como sustantivo y sin copiar '
+                        "la forma verbal tal cual. Di llanamente, en primera "
+                        "persona, que eso no lo haces. Una sola oración breve, "
                         "afirmativa, sin preguntas, sin alternativas y sin "
                         "explicar motivos internos."
                     )
                     if response_language != "en"
                     else (
                         "Name what was asked, around "
-                        f'"{unsupported_anchor}", worded naturally rather than '
-                        "copied verbatim. Say plainly that you cannot do it. "
-                        "One short statement, no questions, no alternatives "
-                        "and no internal reasons."
+                        f'"{unsupported_anchor}", as a noun rather than the '
+                        "request's verb copied verbatim. Say plainly, in the "
+                        "first person, that you do not do that. One short "
+                        "statement, no questions, no alternatives and no "
+                        "internal reasons."
                     )
                 ),
             }
@@ -12823,9 +12946,11 @@ class LlmRuntime:
                         if shaped_contract_failure
                         else (
                             "Escribe una sola frase declarativa y corta en el "
-                            "idioma del usuario que diga llanamente que eso no lo "
-                            "haces, nombrando lo pedido con al menos un sustantivo "
-                            "concreto del pedido, sin copiar sus cortesías. Usa una "
+                            "idioma del usuario que diga llanamente, en tu primera "
+                            "persona, que eso no lo haces, nombrando lo pedido con "
+                            "al menos un sustantivo concreto del pedido, sin copiar "
+                            "sus cortesías, sin ponerlo como sujeto en infinitivo y "
+                            "sin hablar de BAXY en tercera persona. Usa una "
                             "sola negación al principio; después nombra las partes "
                             "como sustantivos de una secuencia y no vuelvas a "
                             "escribir 'no puedo' ni 'cannot'. "
@@ -17000,19 +17125,38 @@ class LlmRuntime:
                     "Do not greet. Do not refuse."
                 )
             else:
-                instruct("\nAsk one short question that disambiguates. Do not guess.")
+                # tanda-02 (turn the music down a little, in spanglish): the
+                # rewording asked «¿… de la música o del audio en general?», an
+                # alternative nobody named. Ask only what is missing.
+                instruct(
+                    "\nAsk one short question about the one thing that is missing to "
+                    "do what the person asked, using their words. Do not guess, and "
+                    "do not offer alternatives or options the person did not name."
+                )
         elif intent == "error" or polarity == "failure":
             if cause in {"out_of_catalog", "out-of-catalog"}:
                 # LIMITS1895/003: sin pedir que nombre lo pedido, el ingles se
                 # quedaba en «This is outside what I do on this PC.» mientras el
                 # espanol si decia «Ejecutar npm install esta fuera de lo que
                 # hago en este PC». La misma asimetria de idiomas de siempre.
+                # tanda-02: «Pido leer esa novela…», «Abrir la app del tiempo no
+                # está en lo que hago», «Ir al inicio no lo hago»: the request
+                # echoed as the person's words or as the subject. The limit is
+                # BAXY's, said in the first person (00_IDENTIDAD «Eso no lo hago»).
                 refuse_line = (
-                    "This is outside what you do on this PC. Say so in one "
-                    "sentence of your own, naming what was asked. "
+                    # The fact is named, the visible sentence is not dictated.
+                    "This is outside what you do on this PC. Say it in one short "
+                    "sentence in your own first person: that you do not do that and "
+                    "what it is you do not do, named with a noun from the request. "
+                    "Never make the request the subject of the sentence, never repeat "
+                    "it as if you were asking it, never speak of BAXY in the third "
+                    "person. "
                     if response_language == "en"
-                    else "El pedido queda fuera de lo que haces en este PC. "
-                    "Dilo en una frase tuya, nombrando lo que te pidieron. "
+                    else "El pedido queda fuera de lo que haces en este PC. Dilo en "
+                    "una frase corta, en tu primera persona: que eso no lo haces y qué "
+                    "es lo que no haces, nombrado con un sustantivo del pedido. Nunca "
+                    "pongas el pedido como sujeto de la frase, nunca lo repitas como si "
+                    "lo pidieras tú, nunca hables de BAXY en tercera persona. "
                 )
                 instruct("\n" + refuse_line + "Do not say you tried and failed.")
             elif response_language == "en":
@@ -17701,7 +17845,9 @@ class LlmRuntime:
                 "you may repeat it with its words, saying which page states it. Never "
                 "state a temperature, forecast, condition, cause, explanation, advice or "
                 "any fact that no result contains, even if you know it; if the results "
-                "only point to forecast pages, say that."
+                "only point to forecast pages, say that. If no result answers what the "
+                "person asked, say that first («the pages I found are about something "
+                "else») and then name the pages."
                 if response_language == "en"
                 else "\nseen.results son las páginas que devolvió la búsqueda pública "
                 "(título, url, fragmento). Informa lo encontrado en tres oraciones como "
@@ -17710,7 +17856,9 @@ class LlmRuntime:
                 "qué página lo afirma. Nunca afirmes una temperatura, un pronóstico, un "
                 "estado del tiempo, una causa, una explicación, un consejo ni ningún "
                 "dato que ningún resultado contenga, aunque lo sepas; si los resultados "
-                "sólo remiten a páginas de pronóstico, dilo."
+                "sólo remiten a páginas de pronóstico, dilo. Si ningún resultado "
+                "responde lo que la persona preguntó, dilo primero («las páginas que "
+                "encontré tratan de otra cosa») y luego nombra las páginas."
             )
             # H0463 «Busca el App ID de Doom Eternal en Steam usando la API
             # publica»: the three drafts judged the results («no es el correcto
@@ -17750,25 +17898,32 @@ class LlmRuntime:
             # recibía (sólo quién-o-qué-es) y moría en search_report_without_source;
             # y pegaba el fragmento con la voz de la página («Nuestro conversor le
             # permite…», «¿A cuánto está el dólar?»), que BAXY no puede decir como suya.
+            # tanda-02: el ejemplo «… en ese sitio dice que …» se copiaba tal cual,
+            # sin el sitio delante («En ese sitio dice que …», «On that site says
+            # that …»), y siete de once búsquedas gastaban los
+            # tres intentos y terminaban en la lista de páginas. El ejemplo lleva
+            # ahora el sitio real, y del fragmento se repite la frase que
+            # responde, no el fragmento entero con sus preguntas.
             instruct(
                 " The sites of those pages are: "
                 + ", ".join(search_hosts)
-                + ". Write the one you use exactly like that; never say "
-                "«several sources» without naming one. Speak in your own voice, "
-                "in the third person about each page («… on that site says that …»): "
-                "never as the page («we», «our», «you can»), never copying its "
-                "questions or its instructions to the reader; what a snippet states "
-                "is repeated with the snippet's own words, not reworded."
+                + ". Every sentence names its site written exactly like that, for "
+                "example «According to " + search_hosts[0] + ", …»; never «that "
+                "site», «that page» or «several sources» instead of the name. Speak "
+                "in your own voice: never as the page («we», «our», «you can»), never "
+                "copying its questions or its instructions to the reader; from a "
+                "snippet repeat only the phrase that answers, with its own words, "
+                "not the whole snippet."
                 if response_language == "en"
                 else " Los sitios de esas páginas son: "
                 + ", ".join(search_hosts)
-                + ". Escribe tal cual el que uses; nunca digas "
-                "«múltiples fuentes» sin nombrar ninguna. Habla con tu propia voz, "
-                "en tercera persona sobre cada página («… en ese sitio dice que …»): "
+                + ". Cada oración nombra su sitio escrito tal cual, por ejemplo "
+                "«Según " + search_hosts[0] + ", …»; nunca «ese sitio», «esa página» "
+                "ni «múltiples fuentes» en lugar del nombre. Habla con tu propia voz: "
                 "nunca como la página («nuestro», «le decimos», «utiliza», «descubre»), "
-                "sin copiar sus preguntas ni sus instrucciones al lector; lo que "
-                "afirma un fragmento se repite con las palabras del fragmento, sin "
-                "cambiarlas por otras."
+                "sin copiar sus preguntas ni sus instrucciones al lector; de un "
+                "fragmento repite sólo la frase que responde, con sus palabras, no el "
+                "fragmento entero."
             )
         if _written_file_after_listing(visible_situation) is not None:
             # FILES1707 «crea un archivo de texto con los 5 procesos que más
@@ -18565,9 +18720,9 @@ class LlmRuntime:
                     else "No pegues direcciones: nombra cada página por su título entre comillas angulares y su sitio (por ejemplo steamdb.info), en prosa."
                 ),
                 "search_report_page_voice": (
-                    "Speak in your own voice: say what each page says in the third person, naming it by its title in guillemets and its site («… on example.com says that …»); never speak as the page («we», «our», «we tell you»), never copy its questions or its instructions to the reader."
+                    "Speak in your own voice: say what each page says in the third person, naming it by its title in guillemets and its site («according to example.com, …»); never speak as the page («we», «our», «we tell you»), never copy its questions or its instructions to the reader."
                     if response_language == "en"
-                    else "Habla con tu propia voz: di en tercera persona lo que dice cada página, nombrándola por su título entre comillas angulares y su sitio («… en ejemplo.com dice que …»); nunca hables como la página («nuestro», «le decimos», «te garantizamos»), ni copies sus preguntas ni sus instrucciones al lector."
+                    else "Habla con tu propia voz: di en tercera persona lo que dice cada página, nombrándola por su título entre comillas angulares y su sitio («según ejemplo.com, …»); nunca hables como la página («nuestro», «le decimos», «te garantizamos»), ni copies sus preguntas ni sus instrucciones al lector."
                 ),
                 "search_report_unsourced_claim": (
                     # SEARCH2019: name the words no result uses and keep the rest
@@ -18981,10 +19136,29 @@ class LlmRuntime:
                         text, str(_merged_observed(situation).get("remembered") or "")))
                 ),
                 "missing_failure": (
-                    "Say the request is outside what you do on this PC. "
-                    "Never say you tried."
+                    (
+                        "Say plainly, in the first person, that you do not do that. "
+                        "Never say you tried."
+                        if response_language == "en"
+                        else "Di llanamente, en primera persona, que eso no lo haces. "
+                        "Nunca digas que lo intentaste."
+                    )
                     if cause in {"out_of_catalog", "out-of-catalog"}
                     else "Name the failure cause in prose."
+                ),
+                "limit_echoes_request": (
+                    "The limit is yours: say in your own first person that you do not do "
+                    "that and what you do not do, named with a noun; do not start from the "
+                    "request or repeat it as if you were asking it."
+                    if response_language == "en"
+                    else "El límite es tuyo: di en tu primera persona que eso no lo haces y "
+                    "qué no haces, nombrado con un sustantivo; no empieces por el pedido ni "
+                    "lo repitas como si lo pidieras tú."
+                ),
+                "limit_third_person": (
+                    "You are BAXY: say it in the first person («I don't …»), never «BAXY does not»."
+                    if response_language == "en"
+                    else "Eres BAXY: dilo en primera persona («no …»), nunca «BAXY no …» ni «que realice BAXY»."
                 ),
                 "unstated_already_running": (
                     ("Name the app" + (" («" + str(_app_open_observed_name(situation)) + "»)" if _app_open_observed_name(situation) else "")
@@ -19100,7 +19274,42 @@ class LlmRuntime:
         if repair_machine_actor:
             retry_payload = _machine_actor_repair_payload(payload, text, gguf)
             sent_instructions.append(_MACHINE_ACTOR_FEEDBACK)
-        retry = post(retry_payload)
+        def last_resort(response: object) -> str:
+            # Los tres candidatos cayeron. Si lo que hubo fue una busqueda
+            # verificada, sus paginas bastan para decir la verdad sin el modelo:
+            # el turno informa lo encontrado en vez de morir. Pasa por las mismas
+            # reglas que cualquier candidato.
+            ambiguous_question = _ambiguous_action_question(user_text, response_language)
+            if ambiguous_question and publishable(ambiguous_question):
+                record_stage(
+                    "ambiguous_fallback", ambiguous_question, ambiguous_question,
+                    response, "", True,
+                )
+                return ambiguous_question
+            pages_report = _search_pages_report(visible_situation, response_language)
+            if pages_report and "api" in str(declined_means(user_text or "") or ""):
+                # H0463 «… usando la API publica»: the safety-net report keeps the
+                # same honesty the drafts were asked for — no API was called.
+                pages_report = (
+                    "I did not use the API. " if response_language == "en"
+                    else "No usé la API. "
+                ) + pages_report
+            if pages_report and publishable(pages_report):
+                record_stage("pages_fallback", pages_report, pages_report, response, "", True)
+                return pages_report
+            return ""
+
+        # tanda-02 (how to get to a theme park): the composition budget ran out on
+        # the way to the third draft and the verified search ended in ⚠ with its
+        # pages in hand. A model that does not answer in time (a timeout or a
+        # dropped local connection, both OSError) reaches the same last resort
+        # as three rejected drafts; with nothing to report it still raises.
+        try:
+            retry = post(retry_payload)
+        except OSError:
+            if fallback := last_resort(response):
+                return fallback
+            raise
         retry_raw = (retry["choices"][0]["message"].get("content") or "").strip()
         retry_text = _strip_prompt_labels(retry_raw)
         retry_text = title_clip(acting_clip(screen_clip(retry_text)))
@@ -19150,7 +19359,12 @@ class LlmRuntime:
         ]
         if repair_machine_actor:
             third_payload = _machine_actor_repair_payload(payload, retry_text, gguf)
-        third = post(third_payload)
+        try:
+            third = post(third_payload)
+        except OSError:
+            if fallback := last_resort(retry):
+                return fallback
+            raise
         third_raw = (third["choices"][0]["message"].get("content") or "").strip()
         third_text = _strip_prompt_labels(third_raw)
         third_text = title_clip(acting_clip(screen_clip(third_text)))
@@ -19174,26 +19388,4 @@ class LlmRuntime:
             required_actions=required_actions,
             required_words=required_words,
         )
-        # Los tres candidatos cayeron. Si lo que hubo fue una busqueda
-        # verificada, sus paginas bastan para decir la verdad sin el modelo:
-        # el turno informa lo encontrado en vez de morir. Pasa por las mismas
-        # reglas que cualquier candidato.
-        ambiguous_question = _ambiguous_action_question(user_text, response_language)
-        if ambiguous_question and publishable(ambiguous_question):
-            record_stage(
-                "ambiguous_fallback", ambiguous_question, ambiguous_question,
-                third, "", True,
-            )
-            return ambiguous_question
-        pages_report = _search_pages_report(visible_situation, response_language)
-        if pages_report and "api" in str(declined_means(user_text or "") or ""):
-            # H0463 «… usando la API publica»: the safety-net report keeps the
-            # same honesty the drafts were asked for — no API was called.
-            pages_report = (
-                "I did not use the API. " if response_language == "en"
-                else "No usé la API. "
-            ) + pages_report
-        if pages_report and publishable(pages_report):
-            record_stage("pages_fallback", pages_report, pages_report, third, "", True)
-            return pages_report
-        return ""
+        return last_resort(third)

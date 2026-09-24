@@ -67,10 +67,15 @@ _ES_WORDS = frozenset(
     brillo pantalla cancion canciones musica alarma alarmas recordatorio recordatorios
     carpeta carpetas archivo archivos clima noticias ventana ventanas bateria temporizador
     calculadora escritorio descargas pantallazo baja bajale subele bajito sonido
+    chiste chistes broma bromas cuento cuentos receta recetas adivinanza adivinanzas
+    poema poemas curiosidad curiosidades pelicula peliculas historia historias
+    consejo consejos
     """.split()
 )
 # Tanda 1 2026-09-23 «Brillo 20%» was answered in English after an English turn:
-# the everyday Spanish nouns of this PC are evidence too.
+# the everyday Spanish nouns of this PC are evidence too. Tanda 2, a bare Spanish
+# noun asking for jokes after an English turn: so are the nouns a bare request for
+# content is made of.
 
 _EN_WORDS = frozenset(
     """
@@ -95,6 +100,7 @@ _EN_WORDS = frozenset(
     whatever when where whether which while who why will window with
     within without would write wrote yes yesterday yet you your yours
     summarize summarise summary minimize maximize
+    joke jokes story stories recipe recipes riddle riddles poem poems
     """.split()
 )
 
