@@ -1703,6 +1703,34 @@ def _future_request_announcement(folded: str) -> bool:
     )
 
 
+# Uso real tanda 5 2026-09-24 «di lo mismo que yo hasta que te avise» → «Claro, estaré atento» and then «No hay
+# más repeticiones por finalizar»: repeating everything the person says from now on is a mode kept across turns,
+# and BAXY has none (each turn is read on its own). What is said next ahead of time (present or subjunctive:
+# «lo que digo», «lo que diga») is the mode; what was already said («lo que dije») is a recall of the dialogue.
+_ECHO_MODE = re.compile(
+    r"\b(?:"
+    r"(?:di|deci|repite|repiteme|repeti|repetime|imita|imitame)\s+(?:(?:todo|cada\s+cosa|cualquier\s+cosa)\s+)?"
+    r"lo\s+que\s+(?:yo\s+)?(?:te\s+)?(?:diga|digo|escriba|escribo)|"
+    r"(?:di|dime|deci|decime|repite|repiteme|repeti|repetime|imita|imitame|haz|hace|habla)\s+"
+    r"lo\s+mismo\s+que\s+(?:yo|digo|diga|te\s+digo|te\s+diga)|"
+    r"(?:di|deci|repite|repiteme|repeti|repetime|imita|imitame)\s+(?:cada|cualquier)\s+cosa\s+que\s+(?:yo\s+)?"
+    r"(?:te\s+)?(?:diga|digo|escriba|escribo)|"
+    r"(?:modo|mode)\s+(?:loro|eco|espejo|repeticion|echo|parrot)|(?:echo|parrot)\s+mode|"
+    r"(?:haz|hace|hazte|hacete)\s+(?:el|de)\s+loro|"
+    r"(?:repeat|say|echo|parrot|mimic)\s+(?:back\s+)?(?:everything|anything|whatever|every\s+word|each\s+word|what)\s+"
+    r"(?:that\s+)?i\s+(?:say|type|write)|"
+    r"say\s+(?:the\s+)?same\s+(?:thing\s+)?as\s+(?:me|i\s+do)|"
+    r"repeat\s+after\s+me\s*(?:until\b|from\s+now\b|[.!]*$)"
+    r")\b"
+)
+
+
+def echo_mode_request(text: str) -> bool:
+    """A request to repeat everything the person says from now on (a parrot mode), which BAXY does not keep."""
+
+    return _ECHO_MODE.search(_fold(text)) is not None
+
+
 def unsupported_effect_demonstration_request(text: str) -> bool:
     """Recognize a requested demonstration without granting effect authority."""
 
@@ -1995,6 +2023,11 @@ def known_unsupported_effect_request(
             # from the chat; the honest reply says so and how it is closed.
             self_close_request(text),
             {"self.close"},
+        ),
+        (
+            # Uso real tanda 5 «di lo mismo que yo hasta que te avise»: no mode repeats the next messages.
+            echo_mode_request(text),
+            {"conversation.echo.mode"},
         ),
         (
             # Tanda 4c «ponme algo de mi biblioteca»: no operation opens the person's own collection.

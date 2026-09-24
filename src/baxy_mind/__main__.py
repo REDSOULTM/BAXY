@@ -42,7 +42,7 @@ from .semantic import lexicon as semantic_lexicon
 from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
 from .semantic.grammar import ARITHMETIC_EXPRESSION, SPOKEN_NUMBER
-from .semantic.patterns import output_level_request
+from .semantic.patterns import echo_mode_request, output_level_request
 from .semantic.notes import agenda_event_request, said_repetition, stated_event_reminder
 from .semantic.temporal import SpokenClock, agenda_window, spoken_date, spoken_window, clock_elsewhere
 from .semantic.web import asks_for_information, names_own_data, near_the_person, news_lookup_query, public_query_body
@@ -85,6 +85,7 @@ from .llm import (
     _conversation_presentation_shape,
     _literal_recall_reference,
     _merged_observed,
+    random_draw_request,
     _native_selection_description,
     _reads_as_an_observation,
     _situation_from_facts,
@@ -3080,9 +3081,12 @@ _SOCIAL_ACTS: tuple[tuple[str, dict[str, str]], ...] = (
             "compliment": (r"(?:sos un capo|eres un capo|sos genial|eres genial)"),
             # MASSIVE general_joke «toc toc»: the opening of a knock-knock joke is answered in play.
             "game": r"(?:toc,? toc)",
+            # Uso real tanda 5 «¿qué dices de nuevo?» (what's new) was answered with an invented list of
+            # what BAXY does, «lanzar dados» included: asking what is new greets like «qué tal».
             "wellbeing": (
                 r"(?:como estas|como andas|como va|que tal todo|que tal|"
-                r"todo bien)"
+                r"todo bien|que dices de (?:nuevo|bueno)|que (?:hay|me cuentas|cuentas)(?: de (?:nuevo|bueno))?|"
+                r"que onda|que hubo|quiubo|que novedades)"
             ),
         },
     ),
@@ -3109,7 +3113,7 @@ _SOCIAL_ACTS: tuple[tuple[str, dict[str, str]], ...] = (
             "game": r"(?:knock,? knock)",
             "wellbeing": (
                 r"(?:how are you doing|how are you|how is it going|"
-                r"hows it going|whats up)"
+                r"how['’]?s it going|what(?:['’]?s| is) (?:up|new))"
             ),
         },
     ),
@@ -3837,6 +3841,9 @@ def _closed_unsupported_request(objective: str) -> bool:
     )
     return (
         standalone_speed
+        # Uso real tanda 5 «di lo mismo que yo hasta que te avise»: no order verb makes the parrot mode
+        # authoritative, and it is still a request with no operation (its known contract keeps it a limit).
+        or echo_mode_request(objective)
         or external_console_correction
         or external_console_game_request
         or referential_answer_review
@@ -3908,7 +3915,13 @@ def _explicit_stable_no_effect_turn_decision(
 
     definition = re.match(
         (
-            r"^[¿?¡!\s]*(?:que\s+es|que\s+son|what\s+(?:is|are|es)|what's|"
+            # Uso real tanda 5 «Me podrias indicar que es el futbol americano y sus reglas para jugar?» (19.3 s,
+            # the knowledge reply ran out of the turn after the whole model path): a verb that asks to be told
+            # («indicar», «decir», «explicar», «tell me») carries the same definition.
+            r"^[¿?¡!\s]*(?:(?:me\s+)?(?:indica|indicame|indicar|indicarme|indicas|dime|decime|decir|decirme|"
+            r"dices|explica|explicame|explicar|explicarme|explicas|cuentame|contame|contar|contarme|"
+            r"tell\s+me|explain\s+to\s+me)\s+)?"
+            r"(?:que\s+es|que\s+son|what\s+(?:is|are|es)|what's|"
             r"para\s+que\s+sirve|explain\s+what)\b"
         ),
         folded,
@@ -7895,18 +7908,21 @@ def _decide_turn_result(
         )
         return result
     recalled_literal = _literal_recall_reference(history, objective)
+    # Uso real tanda 5 «roll that dice, ai» was looked up on the web: a die, a coin or a number is drawn by
+    # the mind and said in conversation (llm.random_draw_request), with no dialogue behind it.
+    drawn = recalled_literal is None and random_draw_request(objective) is not None
     literal_recall_decision = (
         {
             "mode": "conversation",
             "operation": None,
             "question": "",
-            "conversation_kind": "followup",
+            "conversation_kind": "social" if drawn else "followup",
             "effect_count": "zero",
             "effect_operations": [],
             "effect_verification": "not_applicable",
             "response_language": _explicit_response_language(objective),
         }
-        if recalled_literal is not None
+        if recalled_literal is not None or drawn
         else None
     )
     stable_no_effect_decision = (
@@ -8012,7 +8028,9 @@ def _decide_turn_result(
     )
     catalog_unavailable_decision = (
         None
+        # «lanza una moneda» is a draw, not a program named «moneda» that is not installed.
         if unresolved_compound_effects is not None or compound_clauses is not None
+        or literal_recall_decision is not None
         else _catalog_unavailable_turn_decision(
             objective,
             explicit_intent,
