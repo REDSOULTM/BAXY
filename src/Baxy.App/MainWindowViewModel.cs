@@ -2390,6 +2390,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 }
             }
 
+            // Tanda 4 2026-09-24 «empezar a leer el libro»: the mind had decided
+            // a limit and only its wording failed, so the floor is that limit,
+            // composed as out_of_catalog; publishing the turn failure told the
+            // person «No pude entender bien la solicitud…», which is false.
+            if (string.Equals(turn.ConversationKind, "unsupported", StringComparison.Ordinal)
+                && turn.EffectOperations.Count == 0
+                && turn.IntentOperations.Count == 0)
+            {
+                return AddMindConversationFallback("unsupported");
+            }
+
             // cien-41 027 «open that»: la recuperación se quedó sin pregunta
             // —el presupuesto de 2,5 s no siempre alcanza bajo carga— y el turno
             // moría, aunque el pedido sí era una acción sin objeto. La App tiene

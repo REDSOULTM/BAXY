@@ -45,7 +45,7 @@ from .semantic.grammar import ARITHMETIC_EXPRESSION, SPOKEN_NUMBER
 from .semantic.patterns import output_level_request
 from .semantic.notes import agenda_event_request, stated_event_reminder
 from .semantic.temporal import SpokenClock, agenda_window, spoken_date, spoken_window
-from .semantic.web import names_own_data
+from .semantic.web import asks_for_information, names_own_data
 from .corrector import catalog_correction_terms
 from .first_signal import (
     PATH_MODEL,
@@ -1712,25 +1712,7 @@ def apply_non_effect_conversation_classification(
         # its own nature («opero como un modelo de lenguaje…»).
         return decision
     folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
-    request_head = effect_intent._request_head(folded)
-    information_question = request_head in {
-        "are",
-        "como",
-        "cual",
-        "cuando",
-        "donde",
-        "esta",
-        "estan",
-        "how",
-        "is",
-        "que",
-        "quien",
-        "what",
-        "when",
-        "where",
-        "which",
-        "who",
-    }
+    information_question = asks_for_information(objective)
     if (
         decision.get("mode") == "conversation"
         and not decision.get("effect_operations")
@@ -8403,8 +8385,11 @@ def _decide_turn_result(
     decision = apply_non_effect_conversation_classification(
         decision,
         objective,
+        # Tanda 4 2026-09-24 «Cuál es la edad promedio que vive un ser humano?»: the decider proposed a web
+        # search, the domain gate withdrew it and the question was published as «Eso no lo hago». A withdrawn
+        # public lookup observed nothing of this machine, so it keeps no question from being answered.
         retired_catalog_effect=bool(
-            (effects_before_information_veto or effects_before_domain_grounding)
+            set(effects_before_information_veto or effects_before_domain_grounding) - {"web.search"}
             and not decision["effect_operations"]
         ),
         available_operations=available_operations,
@@ -9181,20 +9166,18 @@ def _recovery_visible_from_compose(
         text = str(
             compose(
                 objective,
-                "error",
+                # A place no operation reaches, or a limit the turn already
+                # decided, is a boundary, not a failed reading: «I couldn't
+                # understand the request to send flowers to Deimos» is false.
+                # Tanda 3 and 4 2026-09-24: anything else is asked about — the
+                # one thing missing to do it —, never answered with «no pude
+                # entender bien la solicitud, explícalo de nuevo».
+                "error" if limit else "clarification",
                 {
                     "situation": json.dumps(
-                        {
-                            "kind": "failure",
-                            # A place no operation reaches, or a limit the turn
-                            # already decided, is a boundary, not a failed
-                            # reading: «I couldn't understand the request to send
-                            # flowers to Deimos» is false.
-                            "cause": (
-                                "out_of_catalog" if limit else "request_analysis_failed"
-                            ),
-                            "polarity": "failure",
-                        },
+                        {"kind": "failure", "cause": "out_of_catalog", "polarity": "failure"}
+                        if limit
+                        else {"kind": "clarification", "cause": "ambiguous_request", "polarity": "pending"},
                         ensure_ascii=False,
                     )
                 },

@@ -709,7 +709,9 @@ def test_narrate_is_compose_not_a_parallel_prompt() -> None:
 
 def test_recovery_compose_does_not_pass_a_spanish_constant() -> None:
     assert "No pude completar el análisis de tu petición." not in MAIN
-    assert "request_analysis_failed" in MAIN
+    # Tanda 4 2026-09-24: the recovery asks the missing piece through the
+    # clarification cause; it still passes a cause code, never visible text.
+    assert '"cause": "ambiguous_request"' in MAIN
 
 
 def test_invented_infinitives_and_stalls_are_still_rejected() -> None:

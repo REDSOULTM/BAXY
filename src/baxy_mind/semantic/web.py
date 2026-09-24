@@ -461,11 +461,61 @@ def _entity_lookup_query(text: str) -> str | None:
 # zombies», «cuándo sale X» looks up the question. Personal, deictic and local things are not public.
 _TALK_OPENING = r"^[¿?¡!\s]*(?:(?:y|e|entonces|che|oye|oime|bueno|pero|ah|and|so|hey)[\s,]+)*"
 # A lookup verb before the question asks for the same lookup («fijate cuándo sale…», «averiguá qué
-# dijo la crítica de X»; held-out 14/16 after the dialogue slot names the topic).
-_LOOKUP_LEAD = (
-    r"^(?:(?:fijate|fijese|averigua|averiguame|investiga|investigame|busca|buscame|decime|dime|sabes|"
-    r"check|find\s+out|look\s+up)\s+(?:si\s+|if\s+|whether\s+)?)?"
+# dijo la crítica de X»; held-out 14/16 after the dialogue slot names the topic). Tanda 4 2026-09-24
+# «Hola, me podrías decir cuántas copas mundiales…»: a greeting or a courteous ask («¿me puedes
+# decir…?», «quisiera saber», «do you know», «can you tell me») before the question asks the same
+# question.
+_ASK_LEAD = (
+    r"^[¿¡\s]*(?:(?:hola|buenas|buenos\s+dias|buenas\s+(?:tardes|noches)|hi|hello|hey|oye|oiga|baxy|por\s+favor|porfa|"
+    r"please|una\s+(?:pregunta|duda)|por\s+curiosidad|just\s+curious|quick\s+question)[\s,:;.!]+|"
+    r"(?:(?:fijate|fijese|averigua|averiguame|investiga|investigame|busca|buscame|decime|dime|digame|"
+    r"cuentame|contame|sabes|sabe|sabias|conoces|check|find\s+out|look\s+up|tell\s+me|let\s+me\s+know|"
+    r"(?:me\s+)?(?:puedes|podes|podrias|podria|puede)\s+(?:decir(?:me)?|contar(?:me)?|explicar(?:me)?)|"
+    r"(?:me\s+)?(?:dices|decis|dirias)|(?:quiero|quisiera|queria|me\s+gustaria|necesito)\s+saber|"
+    r"(?:can|could|would)\s+you\s+(?:please\s+)?(?:tell\s+me|explain(?:\s+to\s+me)?)|do\s+you\s+know|"
+    r"i\s+(?:want|would\s+like|need)\s+to\s+know|i['’]?d\s+like\s+to\s+know)"
+    r"[\s,:]+(?:si\s+|if\s+|whether\s+)?))"
 )
+
+
+def _question_body(text: str) -> str:
+    """The folded question without the talk and courtesy said before it."""
+
+    folded = re.sub(_TALK_OPENING, "", _fold(text))
+    for _ in range(4):
+        stripped = re.sub(_ASK_LEAD, "", folded, count=1)
+        if stripped == folded:
+            break
+        folded = stripped
+    return folded.strip(" ¿?¡!.,")
+
+
+# Tanda 4 2026-09-24 «Cuál es la edad promedio que vive un ser humano?» → «Eso no lo hago.»: a question for
+# information is answered or looked up, never refused (00_IDENTIDAD: dice que no sólo a lo que no sabe hacer).
+# Its form: an interrogative opens it once the talk and the courteous ask before it are set aside, or it is a
+# yes/no question about how things are, or an order to tell or explain («dime…», «explícame…», «tell me…»).
+_INFORMATION_HEAD = (
+    r"^(?:que|cual|cuales|quien|quienes|cuando|donde|adonde|como|cuanto|cuanta|cuantos|cuantas|por\s*que|"
+    r"para\s+que|de\s+(?:que|quien|donde)|en\s+que|a\s+que|desde\s+cuando|hace\s+cuanto|"
+    r"esta|estan|is|are|what|what['’]s|which|who|who['’]s|whom|whose|when|where|how|why)\b"
+)
+_YES_NO_WORLD_HEAD = r"^(?:es|son|era|eran|fue|fueron|hay|habia|existe|existen|is|are|was|were|does|do|did|has|have)\b"
+_TELL_ORDER = (
+    r"^[¿¡\s]*(?:(?:hola|oye|hey|baxy|por\s+favor|please)[\s,:;.!]+)*"
+    r"(?:dime|decime|digame|cuentame|contame|explicame|explica|define|definime|describe|describeme|"
+    r"tell\s+me|explain|let\s+me\s+know)\b"
+)
+
+
+def asks_for_information(text: str) -> bool:
+    """Whether the message asks for information (its form only; whose information it is is read elsewhere)."""
+
+    body = _question_body(text)
+    return (
+        _has(body, _INFORMATION_HEAD)
+        or (bool(re.search(r"[?¿]", text)) and _has(body, _YES_NO_WORLD_HEAD))
+        or _has(_fold(text), _TELL_ORDER)
+    )
 _WORK_NOUN = (
     r"\b(?:peli|pelis|pelicula|peliculas|serie|series|libro|libros|novela|novelas|saga|juego|juegos|videojuego|"
     r"videojuegos|disco|album|temporada|documental|anime|manga|comic|obra|show|movie|movies|film|films|book|"
@@ -523,7 +573,7 @@ def public_opinion_subject(text: str) -> str | None:
 
 
 def _public_opinion_work(text: str) -> tuple[str, bool] | None:
-    folded = re.sub(_LOOKUP_LEAD, "", re.sub(_TALK_OPENING, "", _fold(text))).strip(" ¿?¡!.,")
+    folded = _question_body(text)
     asked = re.match(_ASKED_OPINION, folded) is not None or "?" in text or "¿" in text
     folded = re.sub(_ASKED_OPINION, "", folded)
     for form, needs_work_noun, needs_to_be_asked in _OPINION_FORMS:
@@ -550,6 +600,76 @@ _RECORD_FACT = re.compile(
     r"sale\s+la\s+nueva|sale\s+el\s+nuevo)\s+\S.*|"
     r"(?:what|who|which)\s+(?:was|is)\s+the\s+(?:first|last|latest|newest|oldest|best|worst|most\s+\w+)\s+\S.*|"
     r"when\s+(?:does|did|will)\s+\S.*\s+(?:come\s+out|release|premiere|launch))"
+)
+
+# Tanda 4 2026-09-24 «¿cuántas copas mundiales de fútbol tiene Argentina?» → «2» (they are 3). A tally of
+# what is won or held (titles, cups, awards, medals, goals, followers), a population, a price, who holds a
+# title or a record now, who won the last edition and what is the next one change with the calendar: the
+# model's memory is stale by construction, so they are looked up like a release date. Arithmetic, units and
+# the person's own things are not (``record_fact_query`` excludes them).
+_WON_THING = (
+    r"(?:copas?\s+(?:del\s+mundo|mundiales|america|libertadores|sudamericanas?|continentales|intercontinentales|"
+    r"de\s+(?:europa|america|asia|africa|oro|campeones|la\s+liga|liga|el\s+rey|la\s+reina|confederaciones))|"
+    r"mundiales|titulos|campeonatos|trofeos|premios|oscars?|oscares|grammys?|emmys?|globos\s+de\s+oro|"
+    r"balones\s+de\s+oro|botas\s+de\s+oro|medallas(?:\s+(?:de\s+)?(?:oro|plata|bronce|olimpicas))?|goles|"
+    r"asistencias|anillos|champions|ligas|libertadores|super\s*bowls?|finales|victorias|triunfos|records|"
+    r"nominaciones|seguidores|suscriptores|habitantes|grand\s+slams?|podios|poles|"
+    r"world\s+cups?|titles|championships|trophies|awards|golden\s+globes|ballon\s+d['’]?ors?|medals|"
+    r"gold\s+medals|goals|assists|rings|wins|victories|nominations|followers|subscribers|inhabitants|majors|"
+    r"podiums|pole\s+positions)"
+)
+_COMPETITION = (
+    r"(?:(?<!guerra\s)mundial|copa\s+(?:del\s+mundo|mundial|america|libertadores|sudamericana|del\s+rey)|champions(?:\s+league)?|"
+    r"liga|eurocopa|libertadores|super\s*bowl|nba|nfl|mlb|nhl|formula\s*(?:1|uno)|f1|motogp|tour\s+de\s+francia|"
+    r"roland\s+garros|wimbledon|us\s+open|abierto\s+de\s+\w+|gran\s+premio(?:\s+de\s+\w+)?|oscars?|grammys?|"
+    r"emmys?|balon\s+de\s+oro|premio\s+nobel|nobel(?:\s+de\s+\w+)?|eurovision|elecciones|clasico|final|"
+    r"world\s+cup|champions\s+league|euro(?:s|\s+\d{4})?|stanley\s+cup|world\s+series|grand\s+prix|"
+    r"ballon\s+d['’]?or|nobel\s+(?:prize|peace\s+prize)|election|elections|finals?|masters|tour\s+de\s+france)"
+)
+_CHANGING_FACT = re.compile(
+    # A tally: «cuántas copas del mundo tiene Argentina», «how many Grammys has Beyoncé won».
+    rf"(?:cuant[oa]s|how\s+many)\s+(?:de\s+)?{_WON_THING}\b\s*\S.*|"
+    r"(?:cuantas\s+veces|how\s+many\s+times)\s+(?:\S+\s+){0,6}"
+    r"(?:gano|ganado|ganaron|han\s+ganado|ha\s+ganado|fue\s+campeon|salio\s+campeon|won|win)\b.*|"
+    r"cuantas\s+copas\s+(?:\S+\s+){0,4}(?:gano|ganado|ganaron|conquisto|levanto)\b.*|"
+    # A population.
+    r"(?:cuant[oa]s\s+(?:personas|habitantes)|cuanta\s+gente)\s+(?:viven|vive|hay|tiene)\s+\S.*|"
+    r"(?:cual\s+es\s+|what\s+is\s+|what['’]?s\s+)?(?:la\s+poblacion|the\s+population)\s+(?:actual\s+|current\s+)?"
+    r"(?:de|del|of)\s+\S.*|how\s+many\s+people\s+(?:live|are\s+there|are\s+living)\s+\S.*|"
+    # A price.
+    r"cuanto\s+(?:cuesta|cuestan|vale|valen)\s+(?!la\s+pena\b)(?:el|la|los|las|un|una|unos|unas)?\s*\S.*|"
+    r"(?:cual\s+es\s+|what\s+is\s+|what['’]?s\s+)?(?:el\s+precio|the\s+(?:current\s+)?price)\s+(?:actual\s+)?"
+    r"(?:de|del|of)\s+\S.*|"
+    r"how\s+much\s+(?:does|do)\s+\S.*\s+cost|how\s+much\s+(?:is|are)\s+(?:a|an|the)\s+\S.*|"
+    # Who holds a title or a record now, who won the last or a named edition, what is the next one.
+    r"(?:quien|quienes|que\s+\w+)\s+(?:es|son|va|van)\s+(?:el|la|los|las)\s+"
+    r"(?:(?:actual(?:es)?|vigente|reinante|nuev[oa])\s+\S.*|\S+(?:\s+\S+)?\s+(?:actual(?:es)?|vigente|reinante)\b.*)|"
+    rf"(?:quien|quienes|que\s+\w+)\s+(?:gano|ganaron|se\s+llevo|se\s+llevaron|conquisto|ganara)\s+"
+    rf"(?:el|la|los|las)\s+(?:ultim[oa]s?\s+|pasad[oa]s?\s+|mas\s+recientes?\s+)?(?:\w+\s+){{0,2}}{_COMPETITION}\b.*|"
+    r"(?:quien|quienes|que\s+\w+)\s+(?:tiene|tienen|ostenta|posee|lleva|llevan)\s+(?:el\s+)?(?:record|mas|mayor)\b.*|"
+    r"(?:quien|quienes|cual|cuales|que)\s+(?:es|son|fue|fueron)\s+(?:el|la|los|las)\s+(?:\w+\s+){1,3}"
+    r"(?:mas|menos)\s+\w+\s+(?:del|de\s+la|de)\s+(?:mundo|historia|planeta|universo|pais)\b.*|"
+    r"(?:quien|quienes)\s+(?:es|son|fue)\s+(?:el|la)\s+(?:maxim[oa]|mayor)\s+\w+.*|"
+    r"(?:cual|cuando|donde|que)\s+(?:es|son|sera|seran|se\s+juega|juega|sale)\s+(?:el|la|los|las)\s+"
+    r"(?:proxim[oa]s?|siguiente)\s+\S.*|"
+    r"who(?:\s+is|['’]s|\s+are)\s+the\s+(?:current|reigning|present|sitting|incumbent|new)\s+\S.*|"
+    rf"(?:who|which\s+\w+)\s+won\s+the\s+(?:last\s+|latest\s+|most\s+recent\s+|\d{{4}}\s+)?(?:\w+\s+){{0,2}}"
+    rf"{_COMPETITION}\b.*|"
+    r"who\s+(?:holds|has|owns)\s+the\s+(?:world\s+|all[\s-]time\s+)?record\b.*|who\s+has\s+(?:the\s+)?most\s+\S.*|"
+    r"(?:who|what|which)(?:\s+(?:is|are|was)|['’]s)\s+the\s+(?:\w+\s+){0,2}(?:\w+est|most\s+\w+|best[\s-]selling)\s+"
+    r"\S.*\b(?:in\s+the\s+world|ever|in\s+history|of\s+all\s+time|on\s+earth)\b.*|"
+    r"when\s+is\s+the\s+next\s+\S.*|what\s+is\s+the\s+next\s+\S.*"
+)
+# Whose tally or price it is: the person's own («cuántos goles metí», «how many followers do I have»), in the first
+# person, is theirs and never a lookup (``names_own_data`` reads the possessives).
+_FIRST_PERSON_TALLY = (
+    r"\b(?:tengo|tenemos|llevo|llevamos|meti|metimos|marque|marcamos|gane|ganamos|hice|hicimos|me|nos|"
+    r"i|we|us)\b"
+)
+# Things of this PC and of BAXY's stores are read on the PC, never priced or counted on the web.
+_LOCAL_THING = (
+    r"\b(?:archivos?|carpetas?|notas?|tareas?|recordatorios?|ventanas?|pestanas?|descargas?|capturas?|mensajes?|"
+    r"correos?|alarmas?|pc|computadora|ordenador|baxy|files?|folders?|notes?|tasks?|windows?|tabs?|emails?)\b"
 )
 
 
@@ -677,7 +797,7 @@ def person_fact_subject(text: str) -> str | None:
     """«cuántos años tiene Jennifer López» → «Jennifer López»; «quién es el presidente de
     Chile» → «el presidente de Chile»; None when the question is not about a public person."""
 
-    folded = re.sub(_LOOKUP_LEAD, "", re.sub(_TALK_OPENING, "", _fold(text))).strip(" ¿?¡!.,")
+    folded = _question_body(text)
     match = _PERSON_FACT.fullmatch(folded)
     if match is None or len(folded.split()) > 16:
         return None
@@ -696,10 +816,20 @@ def record_fact_query(text: str) -> str | None:
     """«Entonces cuál fue el 1er libro de zombies» → the question as the search query; None otherwise.
 
     A first, last, best or release date is a dated fact: looked up before it is stated;
-    so is a public person's age or who holds an office now."""
+    so is a public person's age or who holds an office now, and a tally, a population, a
+    price, a current holder, a record or the next edition (``_CHANGING_FACT``)."""
 
-    folded = re.sub(_LOOKUP_LEAD, "", re.sub(_TALK_OPENING, "", _fold(text))).strip(" ¿?¡!.,")
+    folded = _question_body(text)
     if person_fact_subject(text) is not None:
+        return _original_words(text, folded).strip()
+    if (
+        _CHANGING_FACT.fullmatch(folded) is not None
+        and len(folded.split()) <= 20
+        and not names_own_data(folded)
+        and not _has(folded, _FIRST_PERSON_TALLY)
+        and not _has(folded, _LOCAL_THING)
+        and re.search(ARITHMETIC_EXPRESSION, folded) is None
+    ):
         return _original_words(text, folded).strip()
     if _RECORD_FACT.fullmatch(folded) is None or len(folded.split()) > 16:
         return None
