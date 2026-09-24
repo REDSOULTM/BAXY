@@ -979,6 +979,16 @@ internal static class UserMessagePolicy
             return true;
         }
 
+        // Uso real 2026-09-23 «súbele un poco»: the bare clitic order is the
+        // volume (the mind reads it so and asks the amount); naming the volume
+        // in that question is the person's own request, not an offer.
+        if (FamilyNamed(family, "volumen", "audio")
+            && Regex.IsMatch(user, @"^[\s¿?¡!]*(?:sub[ei]le|bajale|aumentale)\b",
+                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+        {
+            return true;
+        }
+
         return false;
     }
 

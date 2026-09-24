@@ -317,6 +317,24 @@ public sealed class C03FactPreservationTests
             "Pon el volumen.", question, "es", clarification: true), Is.EqualTo("unsolicited_catalog"));
     }
 
+    // Uso real 2026-09-23: the bare clitic order is the volume; its amount
+    // question names the volume and must reach the person.
+    [TestCase("súbele un poco", "¿Cuánto quieres que suba el volumen?")]
+    [TestCase("Bájale", "¿Cuánto quieres que baje el volumen?")]
+    public void ClarificationOfABareCliticVolumeOrderMayNameTheVolume(string request, string question)
+    {
+        Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(
+            request, question, "es", clarification: true, missingFields: ["amount"]), Is.Null);
+    }
+
+    [Test]
+    public void BareCliticVolumeOrderStillDoesNotInviteAnotherFamily()
+    {
+        Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(
+            "súbele un poco", "¿Quieres que abra Steam?", "es", clarification: true),
+            Is.EqualTo("unsolicited_catalog"));
+    }
+
     [Test]
     public void KnowledgeAnswerCanExplainAnEarlierFailure()
     {

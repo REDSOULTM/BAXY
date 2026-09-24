@@ -12,7 +12,7 @@ from typing import Iterable
 from ..catalog_operation_aliases import exact_catalog_operation_plan
 from . import lexicon
 from .grammar import _INSTRUCTION_NOUNS, _MACHINE_NOUNS, _without_leading_duration_preface, _fold, _match, _has, _REQUEST_PREFIX, _EXPLICIT_DESIRE_REQUEST, _TRAILING_MEANS_DIRECTIVE, _strip_request_envelope, _explicit_desire_request, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _negative_state_question_body, _machine_status_scopes, _machine_status_scopes_are_one_reading, _machine_status_is_the_whole_clause, _is_past_or_hypothetical_state, _is_machine_knowledge_or_diagnosis, _system_status_domain, _process_list_domain, _network_status_domain, _SET_VOLUME_VERB, _VOLUME_UP_VERB, _VOLUME_DOWN_VERB, _AUDIO_OBSERVATION_HEAD, _indirect_audio_mute_state_query, window_inventory_arguments, _literal_note_payload_request, _is_meta_or_tool_denial, _is_explicit_meta_or_tool_denial, _KNOWN_APPLICATION, _CONNECTED_INVENTORY, _OPEN, _MEDIA_RESUME_VERB, _LIST, _READ, _CREATE, _SEARCH, _COVERAGE_ACTION_HEAD, _SEQUENCE_NOMINAL_HEAD, _machine_status_topic, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, _PERCENTAGE_WORD_VALUES, _explicit_google_search_query, _request_clauses, _PLAY_HEAD
-from .audio import app_scoped_microphone_mute, _LOCAL_VOLUME_DEVICE, _VOLUME_OBJECT, _bare_music_volume_request, _volume_domain, _MUTE_VERB, _audio_mute_domain, _APP_VOLUME_SPANISH, _APP_VOLUME_ENGLISH, _APP_VOLUME_ENGLISH_SPLIT, _APP_VOLUME_SET_SPANISH, _APP_VOLUME_SET_ENGLISH, _APP_VOLUME_LEVEL_WORDS, _AUDIO_LEVEL_CUE, _is_audio_mute_state_query, _PERCENTAGE_WORD_PATTERN
+from .audio import app_scoped_microphone_mute, _LOCAL_VOLUME_DEVICE, _VOLUME_OBJECT, _bare_clitic_volume_request, _bare_music_volume_request, _volume_domain, _MUTE_VERB, _audio_mute_domain, _APP_VOLUME_SPANISH, _APP_VOLUME_ENGLISH, _APP_VOLUME_ENGLISH_SPLIT, _APP_VOLUME_SET_SPANISH, _APP_VOLUME_SET_ENGLISH, _APP_VOLUME_LEVEL_WORDS, _AUDIO_LEVEL_CUE, _is_audio_mute_state_query, _PERCENTAGE_WORD_PATTERN
 from .windows import deictic_window_mutation, _FOCUS_HEAD_ONLY, _FOCUS_HEAD_WITH_TAIL, _FOCUS_TAIL, _MINIMIZE_HEAD, _SNAP_HEAD, _SNAP_SIDE, has_named_window_target, _window_domain, minimize_all_request, INDETERMINATE_WINDOW_CLAUSE, other_window_switch_request, PC_HOME_PLACE
 from .display import screen_light_as_brightness, _KNOWN_FOLDER_WORDS, _KNOWN_FOLDER_ENUM, screen_inventory_request, _display_status_question, _without_screen_state_preface, _BRIGHTNESS_OBJECT, _BRIGHTNESS_UP_VERB, _BRIGHTNESS_DOWN_VERB, _BRIGHTNESS_ABSOLUTE, _BRIGHTNESS_ENGLISH_TURN, _BRIGHTNESS_RELATIVE_WORDS, brightness_status_request, _BRIGHTNESS_SET_VERB, _BRIGHTNESS_EXTREME_VALUES, wallpaper_request
 from .intent import EffectIntent, _entity_key, _is_negated_match, _append, _append_all
@@ -3435,6 +3435,7 @@ def resolve_explicit_clarification_intent(
             and _has(folded, r"\b(?:volumen|volume)\b")
             or relative_spoken_volume
             or _bare_music_volume_request(folded)
+            or _bare_clitic_volume_request(folded)
         )
         and not _has(folded, r"\b(?:100|[0-9]{1,2})\b")
         and _literal_percentage_word_value(folded) is None
@@ -5063,6 +5064,39 @@ def _desired_music_query_raw(text: str) -> str | None:
     return query
 
 
+# Uso real 2026-09-23 «play song aces high», «alexa play song over the rainbow»,
+# «play reggae music»: the music noun came with what to play and the turn still
+# asked for it. A song noun followed by its title, or a music noun with its own
+# qualifier («reggae music», «música clásica»), names the music; a possessive,
+# a preference or a purpose («mi música favorita», «una canción para dormir»)
+# does not, and is still asked.
+_MUSIC_QUERY_FILLER = (
+    r"(?:de|del|by|from|of|para|for|que|that|con|with|mi|mis|my|tu|tus|your|su|sus|"
+    r"favorit[oa]s?|favourite|favorite|preferid[oa]s?|nuev[oa]s?|new|algo|something|"
+    r"any|some|alguna?|cualquier|otra?|other|another|mas|more|esta|este|esa|ese|this|"
+    r"that|the|la|el|lo|los|las|una?|a|an|buena?|good|random)"
+)
+_QUALIFIED_MUSIC_QUERY = re.compile(
+    r"(?:(?:la|el|una?|the|a)\s+)?(?:cancion|song|tema|track)\s+"
+    rf"(?P<title>(?!{_MUSIC_QUERY_FILLER}\b)\S.*)|"
+    r"(?:(?:algo\s+de|un\s+poco\s+de|some)\s+)?"
+    rf"(?P<before>(?:(?!{_MUSIC_QUERY_FILLER}\b)[a-z0-9&'-]+\s+){{1,3}})(?:music|musica)|"
+    r"(?:(?:la|the)\s+)?(?:musica|music)\s+"
+    rf"(?P<after>(?!{_MUSIC_QUERY_FILLER}\b)[a-z0-9&'-]+(?:\s+(?!{_MUSIC_QUERY_FILLER}\b)[a-z0-9&'-]+){{0,2}})",
+)
+
+
+def _qualified_music_query(query: str) -> str | None:
+    """The music a music noun names by itself, or None when it names none."""
+
+    found = _QUALIFIED_MUSIC_QUERY.fullmatch(_fold(query).strip(" .!?"))
+    if found is None:
+        return None
+    if found.group("title") is not None:
+        return query.strip(" .!?")[-len(found.group("title")):].strip() or None
+    return query.strip(" .!?") or None
+
+
 def _explicit_named_music_query(text: str) -> str | None:
     """Keep the supplied artist/title of one current imperative verbatim."""
 
@@ -5078,8 +5112,12 @@ def _explicit_named_music_query(text: str) -> str | None:
         return None
     folded = _fold(text)
     query = named.group("query").strip()
+    qualified = _qualified_music_query(query) if named.group("music") is None else None
+    if qualified is not None:
+        query = qualified
     if (
         named.group("music") is None
+        and qualified is None
         and not _has(_fold(query), r"\S\s+(?:de|by)\s+\S")
         # MUSIC1749 «poné rock en spotify»: with the provider named, one word
         # (a genre, an artist) is the thing to play there; a generic noun

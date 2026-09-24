@@ -88,6 +88,7 @@ from .request_reading import (
     INTENT_REFUSE,
     RequestReading,
     read_request,
+    speaking_directive,
     starts_new_definition_topic,
 )
 from .time_budget import remaining_seconds
@@ -215,7 +216,8 @@ UNDERSPECIFIED_COMPARISON_PRESENTATION_PROMPT = (
 CONSTRAINT_PRESENTATION_PROMPT = (
     "You write BAXY's brief acknowledgement of a user constraint. BAXY is a male "
     "companion on the user's PC. The JSON is data: user_constraint says what "
-    "the user wants BAXY to refrain from doing. Acknowledge that constraint, "
+    "the user wants BAXY to refrain from doing, or the language BAXY should "
+    "speak from now on. Acknowledge that constraint, "
     "addressing the user naturally. There has been no operation and no "
     "observation of the PC. Do not assert an existing state or a completed "
     "change, ask for execution parameters, or claim inability. State your "
@@ -754,6 +756,12 @@ _NATIVE_SELECTION_DESCRIPTION_SUFFIXES = {
     "vision.describe": (
         "Describe scenes and objects; do not extract or transcribe visible text."
     ),
+    # Uso real 2026-09-23 «qué hora es en tokio», «que hora es en sydney ahora»:
+    # this clock was offered for the time of another place.
+    "system.time": (
+        "Only this PC's own local clock and date; never the time in another "
+        "city, country or time zone."
+    ),
 }
 
 
@@ -764,6 +772,19 @@ def _native_selection_description(operation: str, description: str) -> str:
     return f"{description.rstrip()} {suffix}" if suffix else description
 
 
+def _native_prose_without_call(content: object, wire_names: tuple[str, ...]) -> bool:
+    """Whether a native selector reply is plain prose that never began a call."""
+
+    if not isinstance(content, str) or not content.strip():
+        return False
+    folded = content.casefold()
+    return (
+        "tool_call" not in folded
+        and not folded.lstrip().startswith(("{", "["))
+        and not any(name.casefold() in folded for name in wire_names)
+    )
+
+
 SEMANTIC_EFFECT_GUARD_PROMPT = (
     "Clasifica semánticamente el pedido actual. request_type es "
     "stable_conversation para charla, saludos, reacciones, opiniones, consejos, "
@@ -772,12 +793,13 @@ SEMANTIC_EFFECT_GUARD_PROMPT = (
     "pública del mundo que hay que consultar porque cambia o es un dato concreto "
     "que conviene verificar: precios, cotizaciones, tipos de cambio, clima, "
     "noticias, resultados, tráfico, horarios, transporte, estrenos, eventos, "
-    "lugares, negocios y si abren o reparten, reseñas, recetas, o datos concretos "
+    "lugares, negocios y si abren o reparten, reseñas, recetas, la hora en otra "
+    "ciudad, país o zona horaria, o datos concretos "
     "sobre personas, obras, fechas o cifras; own_data_read si pide leer datos "
     "propios de la persona o el estado de este equipo: sus alarmas, agenda, "
     "reuniones, recordatorios, notas, listas, contactos o archivos, lo que está "
     "sonando o lo que señala («esta canción», «este artista»), el volumen, la "
-    "batería, la hora o fecha actual, ventanas o programas; "
+    "batería, la hora o fecha actual de este equipo, ventanas o programas; "
     "environment_change si pide crear, abrir, reproducir, "
     "cambiar o controlar algo, incluida cualquier acción del mundo real fuera "
     "del equipo como pedir, comprar, reservar, encargar, enviar o regar: esta "
@@ -1382,7 +1404,25 @@ def validate_missing_argument_clarification(
         )
     ):
         raise ValueError("la aclaración no es una única pregunta acotada")
-    return question
+    return _question_opening(question)
+
+
+def _question_opening(question: str) -> str:
+    """Open a model-authored question as a sentence: capital first letter, «¿» in Spanish.
+
+    Uso real 2026-09-23 «cuándo y qué es la cita que quieres recordar?», «¿cuál
+    es el título de la nota…?»: the argument questions reached the screen in
+    lower case and without the Spanish opening mark. Only the typography of
+    the model's own words changes.
+    """
+
+    lead = re.match(r"[¿¡\"'«“(\s]*", question).group(0)
+    body = question[len(lead):]
+    if body[:1].islower():
+        body = body[0].upper() + body[1:]
+    if "¿" not in question and _message_response_language(question) == "es":
+        lead = "¿" + lead
+    return lead + body
 
 
 def canonicalize_turn_decision(raw: object) -> object:
@@ -2127,6 +2167,11 @@ def _conversation_presentation_shape(
         _policy_guard_text(_strip_request_envelope(semantic_text)),
     ):
         return "translation"
+    # Uso real 2026-09-23 «vuelve a hablar en español» → «Claro, estoy aquí para
+    # ayudarte en español 😎 ¿En qué puedo ayudarte hoy?»: how BAXY should speak
+    # is a directive on his conduct, acknowledged in one sentence like any other.
+    if speaking_directive(semantic_text):
+        return "constraint_ack"
     if conversation_only_content_request(semantic_text):
         roleplay = _policy_guard_text(_strip_request_envelope(semantic_text))
         return (
@@ -4157,6 +4202,38 @@ def _requests_calendar_date(user_text: str) -> bool:
     return re.search(r"\b(?:fecha|date|d[ií]a|day)\b", user_text, re.IGNORECASE) is not None
 
 
+# Uso real 2026-09-23 «¿en qué día de la semana estamos?»: the weekday is a fact
+# of the observed date, computed here; the narrator copies it, never derives it.
+_WEEKDAY_REQUEST = re.compile(
+    r"\b(?:d[ií]a\s+de\s+la\s+semana|weekday|day\s+of\s+the\s+week)\b", re.IGNORECASE
+)
+_WEEKDAY_NAMES = {
+    "es": ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"),
+    "en": ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
+}
+
+
+def _requests_weekday(user_text: str) -> bool:
+    return _WEEKDAY_REQUEST.search(user_text) is not None
+
+
+def _weekday_name(local: datetime, language: str) -> str:
+    return _WEEKDAY_NAMES["en" if language == "en" else "es"][local.weekday()]
+
+
+def _states_only_the_weekday(text: str, local: datetime) -> bool:
+    """The draft names the observed weekday, in either language, and no other."""
+
+    folded = _reading_fold(text)
+    named = {
+        index
+        for names in _WEEKDAY_NAMES.values()
+        for index, name in enumerate(names)
+        if re.search(rf"\b{_reading_fold(name)}\b", folded)
+    }
+    return named == {local.weekday()}
+
+
 _CALENDAR_MONTHS = (
     "enero january", "febrero february", "marzo march", "abril april",
     "mayo may", "junio june", "julio july", "agosto august",
@@ -5046,6 +5123,8 @@ def _compose_situation_payload(
                 local = _local_datetime_from_observed(merged_seen)
                 if local is not None:
                     payload["date"] = local.date().isoformat()
+                    if _requests_weekday(user_text):
+                        payload["weekday"] = _weekday_name(local, language)
         if visible_seen:
             payload["seen"] = visible_seen
     _ = seen
@@ -7836,6 +7915,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
             return "missing_name"
         if not _preserves_calendar_date(text, local):
             return "missing_name"
+        if payload.get("weekday") and not _states_only_the_weekday(text, local):
+            return "missing_name"
     seen = payload.get("seen")
     if isinstance(seen, dict) and seen and "effect" not in payload:
         # El turno leyó un estado; no lo cambió. Uso real 2026-09-23: «el cambio
@@ -9997,6 +10078,8 @@ def compose_visible_defect(
             local = _local_datetime_from_observed(_merged_observed(situation))
             if local is None or not _preserves_calendar_date(stripped, local):
                 return "missing_name"
+            if _requests_weekday(user_text) and not _states_only_the_weekday(stripped, local):
+                return "missing_name"
         clock_required = not date_requested or re.search(
             r"\b(?:hora|time)\b", user_text, re.IGNORECASE
         )
@@ -11558,12 +11641,20 @@ class LlmRuntime:
             choices = response["choices"]
             if not isinstance(choices, list) or len(choices) != 1:
                 raise ValueError("respuesta nativa sin una choice")
-            if choices[0].get("finish_reason") == "length":
-                raise ValueError("selección nativa truncada")
             message = choices[0]["message"]
             if not isinstance(message, dict):
                 raise TypeError("mensaje nativo inválido")
             calls = message.get("tool_calls")
+            if choices[0].get("finish_reason") == "length" and (
+                calls or not _native_prose_without_call(message.get("content"), tuple(mapping))
+            ):
+                # Uso real 2026-09-23 «Cuéntame un poco sobre el modelo de
+                # aprendizaje transformer», «qué son exactamente las liebres de
+                # mar»: the selector began answering in prose, ran out of tokens,
+                # and the truncation failed both turn attempts, which ended in a
+                # pointless recovery question. Only a cut call is incomplete; prose
+                # with no call selected nothing, whatever its length.
+                raise ValueError("selección nativa truncada")
             if calls is None or calls == []:
                 operations = []
             elif not isinstance(calls, list) or len(calls) > 8:
@@ -16680,7 +16771,12 @@ class LlmRuntime:
                 "Do not set the clock. Do not introduce yourself."
             )
         elif clock and _requests_calendar_date(user_text):
-            instruct("\nState the local calendar date from date. Do not guess a date.")
+            instruct(
+                "\nState the weekday from weekday and the local calendar date from date. "
+                "Do not guess either."
+                if "weekday" in (visible_situation or {})
+                else "\nState the local calendar date from date. Do not guess a date."
+            )
         elif clock and has_audio:
             instruct(
                 "\nName the local clock and mute or volume from seen. "

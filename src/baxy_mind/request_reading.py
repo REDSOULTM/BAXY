@@ -358,6 +358,26 @@ class RequestReading:
         )
 
 
+# Uso real 2026-09-23 «vuelve a hablar en español»: the person asks how BAXY
+# speaks, nothing more. It is acknowledged in that language, and the
+# acknowledgement is the whole reply (no «¿En qué puedo ayudarte hoy?» after it).
+_SPEAKING_DIRECTIVE = re.compile(
+    r"(?:(?:por\s+favor|porfa|please|baxy|oye|hey)\s*,?\s+)*"
+    r"(?:(?:vuelve|volve|regresa)\s+a\s+|sigue\s+|segui\s+|keep\s+|go\s+back\s+to\s+)?"
+    r"(?:habla(?:me)?|hablar|hablando|responde(?:me)?|contesta(?:me)?|"
+    r"speak(?:ing)?|talk(?:ing)?|answer(?:ing)?|reply(?:ing)?|respond(?:ing)?)"
+    r"(?:\s+(?:to\s+me|conmigo))?\s+(?:en|in)\s+(?:espanol|castellano|ingles|english|spanish)"
+    r"(?:\s*,?\s*(?:por\s+favor|porfa|please|de\s+nuevo|otra\s+vez|again|"
+    r"from\s+now\s+on|desde\s+ahora))*[\s.!]*"
+)
+
+
+def speaking_directive(text: str) -> bool:
+    """The whole message only asks BAXY to speak a language (es/en)."""
+
+    return _SPEAKING_DIRECTIVE.fullmatch(fold(text).strip()) is not None
+
+
 def _explicit_language(folded: str) -> str | None:
     """Traducción y idioma pedido mandan sobre la evidencia del texto."""
 
@@ -369,7 +389,7 @@ def _explicit_language(folded: str) -> str | None:
         folded,
         ("responde en ", "contesta en ", "answer in ", "reply in ",
          "respond in "),
-    ):
+    ) or _SPEAKING_DIRECTIVE.fullmatch(folded.strip()) is not None:
         if _contains_any(folded, ("en spanglish", "in spanglish", "to spanglish",
                                   "a spanglish", "al spanglish")):
             return "mixed"

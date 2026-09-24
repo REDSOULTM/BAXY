@@ -74,9 +74,28 @@ def _bare_music_volume_request(folded: str) -> bool:
     )
 
 
+# Uso real 2026-09-23 «súbele un poco», «bájale»: the clitic with nothing else
+# named is the everyday order for the volume. Without an amount it takes the
+# relative-volume question (owner rule, H0027); with one it is the adjustment.
+_BARE_CLITIC_VOLUME = r"^[¿?¡!\s]*(?:sub[ei]le|bajale|aumentale)"
+_CLITIC_VOLUME_SOFTENER = r"(?:un\s+(?:poco|poquito)|mas|algo|(?:por\s+favor|porfa|please))"
+
+
+def _bare_clitic_volume_request(folded: str) -> bool:
+    """«súbele un poco», «bájale»: a clitic volume order with no amount."""
+
+    return _has(folded, _BARE_CLITIC_VOLUME + rf"(?:\s*,?\s+{_CLITIC_VOLUME_SOFTENER})*\s*[.!?]*$")
+
+
 def _volume_domain(text: str) -> bool:
     if _has_app_scoped_audio(text):
         return False
+    if _bare_clitic_volume_request(text) or _has(
+        text,
+        _BARE_CLITIC_VOLUME + rf"(?:\s+{_CLITIC_VOLUME_SOFTENER})*"
+        r"\s+(?:(?:un|a|al|en)\s+)?\d{1,3}\s*(?:%|por\s*ciento)?\s*[.!?]*$",
+    ):
+        return True
     if _has(text, r"\b(?:data\s+volume|volumen\s+de\s+datos)\b"):
         return False
     if _has(text, r"\b(?:audio|sonido|sound)\b"):

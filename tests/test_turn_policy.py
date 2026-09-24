@@ -10892,12 +10892,18 @@ def test_native_tool_selection_clarifies_only_measured_sibling_boundaries() -> N
         "media.control",
         "Control playback.",
     )
+    # Uso real 2026-09-23 «qué hora es en tokio»: this PC's clock was offered
+    # for another city's time; that boundary is now measured too.
+    assert "never the time in another city" in llm_module._native_selection_description(
+        "system.time",
+        "Read the current time.",
+    )
     assert (
         llm_module._native_selection_description(
-            "system.time",
-            "Read the current time.",
+            "network.status",
+            "Read connectivity.",
         )
-        == "Read the current time."
+        == "Read connectivity."
     )
 
 

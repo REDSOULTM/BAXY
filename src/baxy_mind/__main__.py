@@ -72,6 +72,7 @@ from .effect_intent import (
     visual_content_request,
 )
 from .llm import (
+    ConversationReplyContractError,
     LlmRuntime,
     _literal_recall_reference,
     _merged_observed,
@@ -307,6 +308,24 @@ def _append_turn_audit(record: dict[str, Any]) -> None:
     except (OSError, TypeError, ValueError):
         # Diagnostics are deliberately outside the semantic and authority path.
         return
+
+
+# A turn that decided a limit («eso no lo hago») and failed only in the wording
+# of that limit: the unsupported presentation contract rejected every draft.
+LIMIT_WORDING_FAILURE = "limit_wording"
+
+
+def _turn_failure_kind(error: BaseException) -> str:
+    """Name the failure class of one turn attempt that did not raise a contract error."""
+
+    reason = str(getattr(error, "audit_reason", ""))
+    if (
+        isinstance(error, ConversationReplyContractError)
+        and reason.startswith("unsupported_")
+        and reason != "unsupported_language"
+    ):
+        return LIMIT_WORDING_FAILURE
+    return "runtime"
 
 
 def _audit_turn_attempt_failure(
@@ -8293,6 +8312,32 @@ def _decide_turn_result(
     # out of catalogue reaches this branch -- an out-of-catalogue request is
     # refused as ``unsupported``, never answered as knowledge -- so the
     # abstention it could cost is not on this path.
+    #
+    # Uso real 2026-09-23: «cuál es la tasa de cambio entre los pesos y el yen»,
+    # «qué películas salen esta semana», «cómo está el tráfico» were answered
+    # from memory («no tengo información en tiempo real») or refused. What the
+    # person asks about the public world is looked up (00_IDENTIDAD: «si no sabe
+    # algo, lo busca»); the guard alone decides it is public, never the person's
+    # own data, and the search runs on the words the person said. It is read
+    # before the catalogue probe below: «qué hora es en tokio» and «qué eventos
+    # se celebran en la ciudad de nueva york» reached that probe first, which
+    # named this PC's clock and the person's calendar and turned both into
+    # «¿Quieres que te diga…?» about something that answers neither.
+    if (
+        decision["mode"] == "conversation"
+        and decision.get("conversation_kind") in {"knowledge", "unsupported"}
+        and non_target_language is None
+        and _public_lookup_applies(
+            objective, routing_objective, llm, available_operations, planner_catalog,
+        )
+    ):
+        shortlist = _shortlist_with_required_effects(shortlist, ("web.search",), planner_catalog)
+        decision = validate_turn_decision(
+            _public_lookup_decision(decision.get("response_language")),
+            {tool.name for tool in shortlist},
+        )
+        intent_operations = ["web.search"]
+        turn_audit["stages"].append(_turn_audit_stage("public_lookup", decision))
     if (
         decision["mode"] == "conversation"
         and decision["conversation_kind"] in {"knowledge", "social"}
@@ -8381,28 +8426,6 @@ def _decide_turn_result(
         turn_audit["stages"].append(
             _turn_audit_stage("deictic_referent_clarification", decision)
         )
-
-    # Uso real 2026-09-23: «cuál es la tasa de cambio entre los pesos y el yen»,
-    # «qué películas salen esta semana», «cómo está el tráfico» were answered
-    # from memory («no tengo información en tiempo real») or refused. What the
-    # person asks about the public world is looked up (00_IDENTIDAD: «si no sabe
-    # algo, lo busca»); the guard alone decides it is public, never the person's
-    # own data, and the search runs on the words the person said.
-    if (
-        decision["mode"] == "conversation"
-        and decision.get("conversation_kind") in {"knowledge", "unsupported"}
-        and non_target_language is None
-        and _public_lookup_applies(
-            objective, routing_objective, llm, available_operations, planner_catalog,
-        )
-    ):
-        shortlist = _shortlist_with_required_effects(shortlist, ("web.search",), planner_catalog)
-        decision = validate_turn_decision(
-            _public_lookup_decision(decision.get("response_language")),
-            {tool.name for tool in shortlist},
-        )
-        intent_operations = ["web.search"]
-        turn_audit["stages"].append(_turn_audit_stage("public_lookup", decision))
 
     partial_offer = (
         _compound_partial_offer(
@@ -8824,10 +8847,17 @@ def _recover_failed_turn(
     # cien-37 030 «send flowers to Deimos»: a place no operation reaches
     # has nothing to clarify either; the question asked for the detail of
     # something that cannot be done at all.
+    # Uso real 2026-09-23 «prepárame una taza de café»: the turn had already
+    # decided this is something BAXY does not do, and only the wording of that
+    # limit failed twice. The recovery keeps the verdict — it says the limit —
+    # instead of asking an invented question about coffee.
+    is_limit = (
+        bool(failure_kinds) and set(failure_kinds) == {LIMIT_WORDING_FAILURE}
+    ) or effect_intent.out_of_world_request(objective)
     nothing_to_clarify = bool(
         read_request(objective).intents
         & {INTENT_CAPABILITY, INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
-    ) or effect_intent.out_of_world_request(objective)
+    ) or is_limit
     if llm is not None:
         try:
             if nothing_to_clarify:
@@ -8858,7 +8888,7 @@ def _recover_failed_turn(
             )
         except Exception:  # noqa: BLE001 - use the protocol safety floor
             pass
-        kind, text = _recovery_visible_from_compose(llm, objective)
+        kind, text = _recovery_visible_from_compose(llm, objective, limit=is_limit)
         if kind == "clarify" and not nothing_to_clarify:
             return audited(
                 {
@@ -8894,11 +8924,7 @@ def _recover_failed_turn(
                 # boundary did not travel with the reply, then published its
                 # own «I couldn't understand the request properly», which is
                 # false. A limit is a limit also when it is recovered.
-                "conversationKind": (
-                    "unsupported"
-                    if effect_intent.out_of_world_request(objective)
-                    else None
-                ),
+                "conversationKind": "unsupported" if is_limit else None,
                 "turn_attempts": max(0, attempts),
                 "turn_recovery": "protocol_fallback",
                 "recovery_attempts": 1,
@@ -8925,7 +8951,9 @@ def _recover_failed_turn(
     )
 
 
-def _recovery_visible_from_compose(llm: Any, objective: str) -> tuple[str, str]:
+def _recovery_visible_from_compose(
+    llm: Any, objective: str, *, limit: bool = False,
+) -> tuple[str, str]:
     """Use model-authored recovery text. A question is a question, not silence.
 
     Returns ``("clarify", question)``, ``("conversation", reply)`` or
@@ -8944,13 +8972,12 @@ def _recovery_visible_from_compose(llm: Any, objective: str) -> tuple[str, str]:
                     "situation": json.dumps(
                         {
                             "kind": "failure",
-                            # A place no operation reaches is a boundary, not a
-                            # failed reading: «I couldn't understand the request to
-                            # send flowers to Deimos» is false.
+                            # A place no operation reaches, or a limit the turn
+                            # already decided, is a boundary, not a failed
+                            # reading: «I couldn't understand the request to send
+                            # flowers to Deimos» is false.
                             "cause": (
-                                "out_of_catalog"
-                                if effect_intent.out_of_world_request(objective)
-                                else "request_analysis_failed"
+                                "out_of_catalog" if limit else "request_analysis_failed"
                             ),
                             "polarity": "failure",
                         },
@@ -9695,8 +9722,9 @@ def _run_sidecar(
                         _audit_turn_attempt_failure(message, error, "contract")
                         raise
                     except Exception as error:  # noqa: BLE001 - stable telemetry only
-                        turn_failure_kinds.append("runtime")
-                        _audit_turn_attempt_failure(message, error, "runtime")
+                        failure_kind = _turn_failure_kind(error)
+                        turn_failure_kinds.append(failure_kind)
+                        _audit_turn_attempt_failure(message, error, failure_kind)
                         raise
 
                 try:

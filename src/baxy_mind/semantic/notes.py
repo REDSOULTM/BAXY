@@ -18,7 +18,15 @@ def _relative_calendar_read_request(folded: str) -> bool:
             r"(?:is|are)\s+there\s+(?:any\s+)?(?:events?|meetings?|appointments?)\s+"
             r"(?:planned|scheduled|booked)\s+(?:for|in|over)\s+the\s+next\s+"
             r"(?:\d+|one|two|three|four|five|six|several|few)\s+"
-            r"(?:days?|weeks?|months?)[\s.!?]*",
+            r"(?:days?|weeks?|months?)[\s.!?]*|"
+            # Uso real 2026-09-23 «do i have appointments today» was asked
+            # «What time are you looking for appointments today?»: the day
+            # window is the whole range; the calendar grounding reads it.
+            r"[¿?\s]*(?:do|will)\s+i\s+have\s+(?:any\s+)?(?:events?|meetings?|appointments?|plans)\s+"
+            r"(?:today|tomorrow|tonight|this\s+week(?:end)?|next\s+week(?:end)?)[\s.!?]*|"
+            r"[¿?\s]*tengo\s+(?:alguna?s?|algo\s+de)\s+(?:citas?|reuniones|reunion|eventos?)\s+"
+            r"(?:para\s+)?(?:hoy|manana|esta\s+noche|esta\s+semana|la\s+proxima\s+semana|"
+            r"este\s+fin\s+de\s+semana)[\s.!?]*",
             folded,
             re.IGNORECASE,
         )
