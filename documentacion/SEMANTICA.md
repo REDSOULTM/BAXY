@@ -93,6 +93,7 @@ con antecedente es el objeto de ese antecedente, nunca «lo que esté delante».
 | `dialogue.py` | el hueco de diálogo (arriba) | un rechazo («no, dejalo», «mejor no», «never mind») nunca completa el pedido pendiente; «no, en YouTube» lleva destino y sí |
 | `intent.py`, `catalog.py`, `temporal.py` | el tipo de lectura (`EffectIntent`), los índices de apps y juegos instalados, las palabras de tiempo | compartidos por varios dominios: ningún dominio importa de otro para esto |
 | dominios | `audio`, `display`, `windows`, `media`, `web`, `files`, `games`, `network`, `system`, `notes`, `messaging`, `ui`, `apps` | los lectores acíclicos que estaban en `effect_intent` (19 140 → 13 133 líneas). Traslado puro: las 4 946 lecturas del patrón del corpus son idénticas antes y después (`pattern_dump`) |
+| `levels.py` | los niveles de salida (volumen del sistema, brillo) dichos sin objeto, mezclando idiomas, secos («Brillo 20%») o como respuesta a «¿cuánto?» | no decide efectos: reescribe el pedido en la frase canónica que ya leen los lectores de volumen y brillo (`patterns.output_level_request`); una cantidad suelta sólo completa el pedido relativo inmediatamente anterior, «a 40» es el nivel final y «20» lo que se mueve; sin cantidad pregunta cuánto (H0027) |
 | `reading.py` | la puerta `read(text, …) -> Reading` y las formas de enunciado (orden tras charla, destino delante, deseo de escuchar, cláusulas de una compuesta y su oferta parcial, charla que no pide nada) | `__main__._decide_turn_result` consume la lectura; el conteo «una sola resolución por turno» sigue probado (`test_turn_resolves_explicit_effects_only_once`) |
 | `patterns.py` | el orquestador del patrón: `resolve_explicit_effects`, `resolve_explicit_clarification_intent`, las revisiones por dominio que se llaman entre sí, los contratos compuestos | salió entero de `effect_intent` (traslado puro, 0 diferencias en 4 946 lecturas); `effect_intent` queda como capa de re-exportación de 687 líneas mientras los llamadores migran |
 
@@ -144,6 +145,14 @@ Formas nuevas (Fase 3.5, cada una con pruebas de frases que no son las que la or
   pregunta cuánto); «escuchar X» con un nombre o género a secas es «pon música de X».
 - **Un sinónimo, un lugar**: devolver/restaurar/recuperar el sonido se genera con sus clíticos una vez en
   `lexicon.AUDIO_RESTORE_WORDS` y lo usan el lector, el argumento (`state: false`) y las pistas del planner.
+- **Niveles como se dicen** (uso real 2026-09-23, `semantic/levels.py`): «súbele un poco», «más bajito», «Volume
+  más alto please», «I don't wanna hear it tan alto» preguntan sólo la cantidad; «baja un veinte por ciento»,
+  «Brillo 20%», «súbelo a 80» actúan; «un 10», «20», «a 40» completan el pedido relativo anterior con su objeto y
+  dirección («a 40» tras «bajá el brillo» es brillo 40: antes el modelo lo leyó como 40 menos y dejó el brillo en
+  60). El pronombre sin objeto toma el del pedido anterior saltando las respuestas (`levels.followup_antecedent`
+  en `_previous_user_request`); el hueco de diálogo completa estos niveles antes de pedir la reescritura al modelo.
+  El silencio como interruptor («Turn off silenciar», «activá el silencio»), el sonido que vuelve («vuelve el
+  sonido») y parar un ruido («¡detén este ruido!») son `audio.mute`, con sus palabras en `lexicon`.
 - **Una cláusula es una orden**: en una misión compuesta el vocativo («baxy, …», «Carter, …») no es una cláusula, y
   toda cláusula —la probada y la pendiente— tiene que empezar por una orden.
 

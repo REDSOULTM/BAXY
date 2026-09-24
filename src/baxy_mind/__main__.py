@@ -37,8 +37,10 @@ os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 from . import protocol
 from . import effect_intent
 from .semantic import dialogue as dialogue_slot
+from .semantic import levels as semantic_levels
 from .semantic import lexicon as semantic_lexicon
 from .semantic import reading as semantic_reading
+from .semantic.patterns import output_level_request
 from .corrector import catalog_correction_terms
 from .first_signal import (
     PATH_MODEL,
@@ -3119,7 +3121,11 @@ def _previous_user_request(history: list[object], current_request: str) -> str |
     ]
     if not requests:
         return None
-    return effect_intent.datetime_followup_antecedent(current_request, requests) or requests[0]
+    return (
+        effect_intent.datetime_followup_antecedent(current_request, requests)
+        or semantic_levels.followup_antecedent(current_request, requests)
+        or requests[0]
+    )
 
 
 def _window_query_reference_name(
@@ -6125,10 +6131,10 @@ def _explicit_arguments_from_evidence(
     if operation == "audio.mute":
         false_pattern = (
             rf"\b(?:{effect_intent._UNMUTE_VERB}|reactiva|reactivar)\b|"
-            r"\bquita(?:r)?\s+(?:el\s+)?(?:mute|silencio)\b|"
-            # Fase 3.5 (held-out turn 9 «devolvele el sonido»): the reader takes
-            # restoring the sound from the shared lexicon; so does the argument.
-            rf"\b{semantic_lexicon.AUDIO_RESTORE}\s+(?:(?:el|la|the|mi|my)\s+)?(?:sonido|audio|sound)\b"
+            # Fase 3.5 (held-out turn 9 «devolvele el sonido»), uso real 2026-09-23 («vuelve el sonido»,
+            # «Turn off silenciar»): the reader takes the sound coming back and the mute switched off from
+            # the shared lexicon; so does the argument.
+            rf"\b{semantic_lexicon.MUTE_SWITCH_OFF}\b|\b{semantic_lexicon.SOUND_BACK}\b"
         )
         false_signal = bool(re.search(false_pattern, folded))
         # The noun ``mute`` inside "quita el mute" is evidence for the
@@ -6140,6 +6146,8 @@ def _explicit_arguments_from_evidence(
         true_signal = bool(
             re.search(r"\b(?:mute|silencia|silenciar)\b", positive_surface)
             or re.search(rf"\b{effect_intent._MUTE_PREDICATIVE_VERB}\b", positive_surface)
+            or re.search(rf"\b(?:{semantic_lexicon.MUTE_SWITCH_ON}|{semantic_lexicon.NOISE_STOP})\b", positive_surface)
+            or re.search(semantic_lexicon.BARE_SILENCE, positive_surface)
             or re.search(
                 r"\b(?:pon(?:e|lo|elo|le|eme)?|ponlo|poner|deja(?:lo)?|dejar|leave|put)\b[^.;!?]{0,48}"
                 r"\b(?:en|on)\s+(?:mute|mudo|silencio)\b",
@@ -6157,6 +6165,9 @@ def _explicit_arguments_from_evidence(
         return {"state": true_signal}
 
     return None
+
+
+_OUTPUT_LEVEL_OPERATIONS = ("audio.volume", "audio.volume.adjust", "system.settings.adjust", "system.settings.set")
 
 
 def _ground_explicit_arguments(
@@ -6244,6 +6255,23 @@ def _ground_explicit_arguments(
             answer.strip(), (previous or "").strip() or None, ("message.send", operation),
         ) or effect_intent._completed_missing_message_text_request(
             answer.strip(), (previous or "").strip() or None, ("message.send", operation),
+        )
+        if completed is not None:
+            explicit = _explicit_arguments_from_evidence(
+                operation, completed, application_names, game_catalog,
+            )
+    if explicit is None and operation in _OUTPUT_LEVEL_OPERATIONS:
+        # Uso real 2026-09-23 «Brillo 20%», «baja un veinte por ciento», «a 40» after «bajá el brillo»: the
+        # decision read the canonical level request (``output_level_request``). The arguments are read from
+        # that same request, never from the model's reading of a bare number: brightness 100 became 60
+        # because «a 40» was taken as «40 less».
+        previous = _previous_user_request(history, evidence) if isinstance(history, list) else None
+        answer = evidence
+        folded_evidence = effect_intent._fold(evidence)
+        if previous is None and "aclaracion confiable del usuario:" in folded_evidence:
+            previous, _, answer = folded_evidence.partition("aclaracion confiable del usuario:")
+        completed = output_level_request(
+            answer.strip(), (previous or "").strip() or None, _OUTPUT_LEVEL_OPERATIONS,
         )
         if completed is not None:
             explicit = _explicit_arguments_from_evidence(
@@ -7207,6 +7235,26 @@ def _rearm_in_context(
         )
         return None if rearmed is None else (rearmed, how)
 
+    level = semantic_levels.read(objective)
+    if level is not None and level.setting is not None:
+        # «Volume más alto please», «Brillo 20%»: an output level that names its object stands on its own.
+        return audited(None, "pattern_kept")
+    if level is not None or semantic_levels.answer(objective) is not None:
+        # Uso real 2026-09-23: «un 10» after «súbele un poco» was rewritten by the model as «súbele un poco a
+        # la canción un 10», and «súbelo a 80» and «bájale» came back as questions about what to raise. An
+        # output level is completed from the request it follows, with the object and direction that request
+        # carried. A level that is not completed here («bájale», «más bajito») is read as it arrived, and the
+        # level readers ask for the amount.
+        completed = output_level_request(
+            objective, _previous_user_request(history, objective) or slot.pending_request, available_operations,
+        )
+        if completed is not None and resolve_explicit_effects(
+            completed, available_operations, application_names, game_catalog,
+        ) is not None:
+            return audited(completed, "pattern")
+        if level is not None:
+            return audited(None, "pattern_kept")
+
     if (
         dependency == "reference"
         and slot.antecedents
@@ -7435,6 +7483,7 @@ def _decide_turn_result(
             objective,
             authenticated_operations,
             application_names,
+            previous_user_text=_previous_user_request(history, objective),
         )
     )
     missing_open_referent = (

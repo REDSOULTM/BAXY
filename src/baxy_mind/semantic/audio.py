@@ -240,19 +240,16 @@ def _audio_mute_domain(text: str) -> bool:
             r"(?:(?:el|la|the|mi|my|this|este|esta)\s+)?"
             r"(?:computador|computadora|computer|compu|equipo|pc|sistema|system|notebook|laptop)"
             r"(?:\s+(?:please|pls|por\s+favor|porfa))?[\s.!?]*$|"
-            # Poner o quitar el estado de silencio, sin nombrar el verbo.
-            r"\b(?:quita|quitar|saca|sacar|remove)\s+(?:el\s+)?"
-            r"(?:silencio|mute|mudo)\b|"
-            # Devolver o restaurar el sonido es quitarle el silencio (semantic.lexicon).
-            rf"\b{lexicon.AUDIO_RESTORE}\s+(?:(?:el|la|the|mi|my)\s+)?(?:sonido|audio|sound)\b|"
+            # The mute as a switch, turned off or on, and a noise to stop (semantic.lexicon).
+            rf"\b{lexicon.MUTE_SWITCH_OFF}\b|\b{lexicon.MUTE_SWITCH_ON}\b|\b{lexicon.NOISE_STOP}\b|"
+            # Devolver o restaurar el sonido, o que vuelva, es quitarle el silencio (semantic.lexicon).
+            rf"\b{lexicon.SOUND_BACK}\b|"
             r"\b(?:pon|poner|ponle|deja|dejar|put|leave)\s+"
             r"(?:(?:el|la|the)\s+)?(?:\w+\s+){0,2}"
             r"(?:en|in|on)\s+(?:mudo|silencio|mute|silent)\b|"
             r"\bturn\s+(?:the\s+)?(?:audio|sound|volume)\s+back\s+on\b|"
-            # Uso real 2026-09-23 «silencio», «vuelve el sonido»: the bare silence
-            # order and the sound coming back are the global mute state.
-            r"^[¿?¡!\s]*(?:silencio|mudo|silence|quiet)(?:\s+(?:total|por\s+favor|porfa|please|ya|ahora))?[\s.!?]*$|"
-            r"\b(?:vuelve|volve|que\s+vuelva|regresa|regresame|devuelve)\s+(?:el\s+)?(?:sonido|audio|sound)\b|"
+            # Uso real 2026-09-23 «silencio»: the bare silence order is the global mute state.
+            rf"{lexicon.BARE_SILENCE}|"
             # Órdenes elípticas inequívocas: sólo existe un silencio global.
             rf"^[¿?¡!\s]*{_UNMUTE_VERB}"
             r"(?:\s+(?:it|please|pls|plz|por favor|porfa|todo|everything|el audio|"

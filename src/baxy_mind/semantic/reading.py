@@ -364,7 +364,9 @@ def read(
             if effects is not None:
                 source = name
                 break
-    clarification = resolve_explicit_clarification_intent(text, available, application_names)
+    clarification = resolve_explicit_clarification_intent(
+        text, available, application_names, previous_user_text=previous_user_text,
+    )
     return Reading(
         effects=effects,
         source=source,

@@ -53,3 +53,35 @@ AUDIO_RESTORE_WORDS = frozenset(
     {verb + clitic for verb in _AUDIO_RESTORE_VERBS for clitic in ("", "me", "le", "les", "nos", "lo")}
 )
 AUDIO_RESTORE = alternation(AUDIO_RESTORE_WORDS)
+# Uso real 2026-09-23 «vuelve el sonido»: the sound coming back, with the sound as its subject. «vuelve» and
+# «regresa» say nothing about the sound on their own («vuelve a abrir Spotify»), so they are not restore words
+# (which the planner also reads as «off» cues). They count only together with the sound.
+SOUND_BACK = (
+    rf"(?:{AUDIO_RESTORE}|vuelve|volve|vuelva|regresa|regrese)\s+(?:(?:el|la|the|mi|my)\s+)?(?:sonido|audio|sound)"
+)
+
+# ---------------------------------------------------------------- the mute as a switch (audio.mute)
+# Uso real 2026-09-23 «Turn off silenciar»: the mute said as a thing that is switched off (muted = false) or on
+# (muted = true), in Spanish, English or both. «quitá el silencio» was read before; the other switches were not.
+_MUTE_STATE_NOUN = r"(?:(?:el|la|the)\s+)?(?:modo\s+)?(?:mute|silencio|silenciar|mudo|silence|silent(?:\s+mode)?)"
+MUTE_SWITCH_OFF = (
+    r"(?:turn(?:ed)?\s+off|switch\s+off|apaga(?:r|le)?|desactiva(?:r|le)?|disable|deactivate|"
+    r"quita(?:r|le)?|saca(?:r|le)?|remove)\s+" + _MUTE_STATE_NOUN
+)
+MUTE_SWITCH_ON = r"(?:turn\s+on|switch\s+on|activa(?:r|le)?|enciende|prende|enable)\s+" + _MUTE_STATE_NOUN
+
+# Uso real 2026-09-23 «silencio»: the bare silence order, the whole message.
+BARE_SILENCE = r"^[¿?¡!\s]*(?:silencio|mudo|silence|quiet)(?:\s+(?:total|por\s+favor|porfa|please|ya|ahora))?[\s.!?]*$"
+
+# ---------------------------------------------------------------- stopping a noise (audio.mute, muted = true)
+# Tanda 2026-09-23 «¡detén este horrible ruido!»: a stop order whose object is a noise asks for silence. It was
+# answered with a question. Stopping music or a video is media.control; a noise is not something that plays.
+NOISE_STOP = (
+    r"(?:deten(?:er|lo)?|para(?:r|lo)?|pare|calla(?:r|lo)?|stop|kill|corta(?:r|lo)?|quita(?:r|lo)?|apaga(?:r|lo)?|"
+    r"shut\s+(?:off|up))\s+(?:(?:este|ese|esta|esa|el|la|los|that|this|the)\s+)?(?:[a-z]+\s+)?"
+    r"(?:ruido|ruidos|noise|bulla|barullo|escandalo|racket)"
+)
+
+# A message that opens with one of the above is a mute request by its form (the verbs alone, «vuelve», «para»,
+# «apaga», head many other requests).
+MUTE_REQUEST = rf"^[¿?¡!\s]*(?:{SOUND_BACK}|{MUTE_SWITCH_OFF}|{MUTE_SWITCH_ON}|{NOISE_STOP})\b|{BARE_SILENCE}"

@@ -10,7 +10,7 @@ import time
 from dataclasses import dataclass
 from typing import Iterable
 from ..catalog_operation_aliases import exact_catalog_operation_plan
-from . import lexicon
+from . import levels, lexicon
 from .grammar import _INSTRUCTION_NOUNS, _MACHINE_NOUNS, _without_leading_duration_preface, _fold, _match, _has, _REQUEST_PREFIX, _EXPLICIT_DESIRE_REQUEST, _TRAILING_MEANS_DIRECTIVE, _strip_request_envelope, _explicit_desire_request, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _negative_state_question_body, _machine_status_scopes, _machine_status_scopes_are_one_reading, _machine_status_is_the_whole_clause, _is_past_or_hypothetical_state, _is_machine_knowledge_or_diagnosis, _system_status_domain, _process_list_domain, _network_status_domain, _SET_VOLUME_VERB, _VOLUME_UP_VERB, _VOLUME_DOWN_VERB, _AUDIO_OBSERVATION_HEAD, _indirect_audio_mute_state_query, window_inventory_arguments, _literal_note_payload_request, _is_meta_or_tool_denial, _is_explicit_meta_or_tool_denial, _KNOWN_APPLICATION, _CONNECTED_INVENTORY, _OPEN, _MEDIA_RESUME_VERB, _LIST, _READ, _CREATE, _SEARCH, _COVERAGE_ACTION_HEAD, _SEQUENCE_NOMINAL_HEAD, _machine_status_topic, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, _PERCENTAGE_WORD_VALUES, _explicit_google_search_query, _request_clauses, _PLAY_HEAD
 from .audio import app_scoped_microphone_mute, _LOCAL_VOLUME_DEVICE, _VOLUME_OBJECT, _bare_clitic_volume_request, _bare_music_volume_request, _volume_domain, _MUTE_VERB, _audio_mute_domain, _APP_VOLUME_SPANISH, _APP_VOLUME_ENGLISH, _APP_VOLUME_ENGLISH_SPLIT, _APP_VOLUME_SET_SPANISH, _APP_VOLUME_SET_ENGLISH, _APP_VOLUME_LEVEL_WORDS, _AUDIO_LEVEL_CUE, _is_audio_mute_state_query, _PERCENTAGE_WORD_PATTERN
 from .windows import deictic_window_mutation, _FOCUS_HEAD_ONLY, _FOCUS_HEAD_WITH_TAIL, _FOCUS_TAIL, _MINIMIZE_HEAD, _SNAP_HEAD, _SNAP_SIDE, has_named_window_target, _window_domain, minimize_all_request, INDETERMINATE_WINDOW_CLAUSE, other_window_switch_request, PC_HOME_PLACE
@@ -2422,8 +2422,14 @@ def resolve_explicit_clarification_intent(
     text: str,
     available_operations: Iterable[str],
     application_names: Iterable[str] | ApplicationCatalogIndex = (),
+    *,
+    previous_user_text: str | None = None,
 ) -> ClarificationIntent | None:
-    """Preserve the operation identity of a recognized incomplete effect."""
+    """Preserve the operation identity of a recognized incomplete effect.
+
+    ``previous_user_text`` only gives an output level that leaves out its object («bájale» after «qué brillo
+    tengo») the object of the request it follows.
+    """
 
     if explicit_non_action_frame(text):
         return None
@@ -2466,6 +2472,14 @@ def resolve_explicit_clarification_intent(
         # system microphone (the client would stop receiving it) instead of
         # muting it unasked or pretending to press the client button.
         return ClarificationIntent(("audio.microphone.mute",), ("system_microphone_confirmation",))
+    level = levels.read(text)
+    if level is not None and level.direction is not None and level.amount is None and level.target is None:
+        # Uso real 2026-09-23 «súbele un poco», «más bajito», «Volume más alto please», «I don't wanna hear
+        # it tan alto»: the direction is given, so only the amount is asked (owner rule H0027, no default step).
+        setting = level.setting or levels.setting_of(previous_user_text) or levels.VOLUME
+        operation = "system.settings.adjust" if setting == levels.BRIGHTNESS else "audio.volume.adjust"
+        if operation in available:
+            return ClarificationIntent((operation,), ("amount",))
     if "input.text.type" in available and re.fullmatch(
         # UI1645 H0265 «escribe en el diálogo el de ChadGBT»: a typing order
         # that names where to write and not what; the text is missing.
@@ -6160,6 +6174,9 @@ def _is_direct_request(text: str) -> bool:
         or record_fact_query(text) is not None
         or message_draft_request(text) is not None
         or client_channel_request(text) is not None
+        # Uso real 2026-09-23 «vuelve el sonido», «Turn off silenciar», «¡detén este horrible ruido!», «silencio»:
+        # the message opens with the mute switched or the sound asked back; that is the request.
+        or _has(text, lexicon.MUTE_REQUEST)
     ):
         return True
     request_head = (
@@ -8549,10 +8566,14 @@ def _review_audio_effects(
                 priority=1,
             )
     if (
-        _head_is(
-            head,
-            rf"(?:{_MUTE_VERB}|{lexicon.AUDIO_RESTORE}|quita|quitar|saca|sacar|remove|"
-            r"pon|pone|ponlo|ponelo|poner|ponle|deja|dejalo|dejar|put|leave|turn)",
+        (
+            _head_is(
+                head,
+                rf"(?:{_MUTE_VERB}|{lexicon.AUDIO_RESTORE}|quita|quitar|saca|sacar|remove|"
+                r"pon|pone|ponlo|ponelo|poner|ponle|deja|dejalo|dejar|put|leave|turn)",
+            )
+            # Uso real 2026-09-23: the mute switched, the sound asked back, a noise to stop, a bare «silencio».
+            or _has(folded, lexicon.MUTE_REQUEST)
         )
         # The system audio is never what a sentence naming the microphone mutes
         # (held-out 2026-09-22 «poné en mute el micro» muted the speakers' family).
@@ -8578,9 +8599,8 @@ def _review_audio_effects(
         and _has(
             folded,
             rf"\b{_MUTE_VERB}\b|"
-            r"\b(?:quita|quitar|saca|sacar|remove)\s+(?:el\s+)?"
-            r"(?:silencio|mute|mudo)\b|"
-            rf"\b{lexicon.AUDIO_RESTORE}\s+(?:(?:el|la|the|mi|my)\s+)?(?:sonido|audio|sound)\b|"
+            rf"\b{lexicon.MUTE_SWITCH_OFF}\b|\b{lexicon.MUTE_SWITCH_ON}\b|\b{lexicon.NOISE_STOP}\b|"
+            rf"\b{lexicon.SOUND_BACK}\b|{lexicon.BARE_SILENCE}|"
             r"\b(?:en|in|on)\s+(?:mudo|silencio|mute|silent)\b|"
             r"\bback\s+on\b",
         )
@@ -8591,7 +8611,9 @@ def _review_audio_effects(
             "audio.mute",
             rf"\b{_MUTE_VERB}\b|\b{lexicon.AUDIO_RESTORE}\b|"
             r"\b(?:quita|quitar|saca|sacar|remove)\b|"
-            r"\b(?:pon|poner|ponle|deja|dejar|put|leave|turn)\b",
+            r"\b(?:pon|poner|ponle|deja|dejar|put|leave|turn)\b|"
+            rf"\b{lexicon.MUTE_SWITCH_OFF}\b|\b{lexicon.MUTE_SWITCH_ON}\b|\b{lexicon.NOISE_STOP}\b|"
+            rf"\b{lexicon.SOUND_BACK}\b|{lexicon.BARE_SILENCE}",
         )
         reversal = _match(
             folded,
@@ -11044,8 +11066,74 @@ def resolve_explicit_effects(
     *,
     previous_user_text: str | None = None,
 ) -> EffectIntent | None:
-    """Resolve a bounded sequence of clause-local, closed-catalog effects."""
+    """Resolve a bounded sequence of clause-local, closed-catalog effects.
 
+    A message the clause readers do not resolve may still be an output level said without its object, in
+    mixed languages, or as the bare answer to «¿cuánto?» (``output_level_request``). In that case it is
+    resolved as the canonical request it states, which goes through the same readers.
+    """
+
+    available = tuple(available_operations)
+    intent = _resolve_clause_effects(
+        text, available, application_names, game_catalog, previous_user_text=previous_user_text,
+    )
+    if intent is not None:
+        return intent
+    level_request = output_level_request(text, previous_user_text, available)
+    if level_request is None:
+        return None
+    return _resolve_clause_effects(level_request, available, application_names, game_catalog)
+
+
+def output_level_request(
+    text: str, previous_user_text: str | None, available_operations: Iterable[str],
+) -> str | None:
+    """The volume or brightness request ``text`` states, as the canonical sentence the level readers read.
+
+    Uso real 2026-09-23: «baja un veinte por ciento», «Brillo 20%», «súbelo a 80» and the answers to
+    «¿cuánto?» («un 10», «20», «a 40») were read by nobody. An answer completes only the request right before
+    it, and only when that request is a relative change still missing its amount. The pending request keeps
+    its object and direction; the answer gives the amount («un 10», «20») or the level to end at («a 40»,
+    «al máximo»). «a 40» after «bajá el brillo» is therefore brightness 40, not 40 less. A request that leaves
+    its object out takes it from the request it follows (``levels.followup_antecedent``), and otherwise
+    refers to the volume. The caller resolves the result with every ordinary check. Nothing is completed
+    from what the assistant said.
+    """
+
+    available = frozenset(available_operations)
+    answer = levels.answer(text)
+    if answer is not None:
+        if not previous_user_text:
+            return None
+        prior = resolve_explicit_clarification_intent(previous_user_text, available)
+        if prior is None or prior.missing_fields != ("amount",) or prior.operations not in {
+            ("audio.volume.adjust",), ("system.settings.adjust",),
+        }:
+            return None
+        setting = levels.BRIGHTNESS if prior.operations == ("system.settings.adjust",) else levels.VOLUME
+        direction = levels.direction_of(previous_user_text)
+        if answer.target is None and direction is None:
+            return None
+        return levels.Level(setting, direction, answer.amount, answer.target).request(setting)
+    level = levels.read(text)
+    if level is None or (level.amount is None and level.target is None):
+        return None
+    setting = level.setting or levels.setting_of(previous_user_text)
+    if setting is None and level.direction is None:
+        # «ponlo al 50» names neither the object nor a way to raise or lower anything: only a request about
+        # the volume or the brightness right before it says what «lo» is.
+        return None
+    return level.request(setting or levels.VOLUME)
+
+
+def _resolve_clause_effects(
+    text: str,
+    available_operations: Iterable[str],
+    application_names: Iterable[str] | ApplicationCatalogIndex = (),
+    game_catalog: Iterable[tuple[str, str, str]] | GameCatalogIndex = (),
+    *,
+    previous_user_text: str | None = None,
+) -> EffectIntent | None:
     text = without_control_cession_preamble(text)
 
     if explicit_non_action_frame(text):
