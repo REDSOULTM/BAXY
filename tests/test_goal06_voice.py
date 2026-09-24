@@ -62,11 +62,12 @@ def test_early_signal_preserves_phase_and_is_optional_when_composition_fails() -
     kwargs = dict(path=PATH_MODEL, objective="Lee el archivo.", request_id="p1",
                   on_signal=signals.append, already_signaled=signaled,
                   llm=composer, phase="preparing_steps")
-    _emit_early_turn_signal(**kwargs)
+    # The notice is worded on its own thread (it never delays the decision).
+    _emit_early_turn_signal(**kwargs).join(timeout=5)
     assert signals == [] and signaled == []
     composer.fail = False
-    _emit_early_turn_signal(**kwargs)
-    _emit_early_turn_signal(**kwargs)
+    _emit_early_turn_signal(**kwargs).join(timeout=5)
+    assert _emit_early_turn_signal(**kwargs) is None
     assert len(captured) == 2
     assert captured[1][0:2] == ("Lee el archivo.", "status")
     assert json.loads(captured[1][2]["situation"])["phase"] == "preparing_steps"

@@ -121,6 +121,15 @@ LLM_PROCESS_CLOSE_TIMEOUT_SECONDS = 0.25
 LLM_PROCESS_FINAL_REAP_TIMEOUT_SECONDS = 0.1
 LLM_WARMUP_CLOSE_TIMEOUT_SECONDS = 0.5
 VALIDATED_CLASSIFIER_REUSE_CAPACITY = 32
+# The native selector's prose is always discarded (only the chat stage words a
+# reply), yet it wrote whole answers up to its call budget (uso real 2026-09-23,
+# «el modelo transformer»): at the measured ~12 ms per token that is up to 3 s
+# per knowledge turn, paid again by the catalogue probe. One call of any
+# catalogue leaf is at most 26 tokens with its end marker, so this budget holds
+# a call after a one-sentence preamble; a reply cut by it that may have begun a
+# call is decoded again with the full budget (its prompt is still in its slot).
+NATIVE_SELECTION_PROSE_TOKENS = 64
+NATIVE_SELECTION_CALL_TOKENS = 256
 
 SYSTEM_PROMPT = (
     "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. "
@@ -831,6 +840,21 @@ def _native_prose_without_call(content: object, wire_names: tuple[str, ...]) -> 
         "tool_call" not in folded
         and not folded.lstrip().startswith(("{", "["))
         and not any(name.casefold() in folded for name in wire_names)
+    )
+
+
+def _native_selection_may_continue(response: object, wire_names: tuple[str, ...]) -> bool:
+    """Whether a selector reply cut by the prose budget may have begun a call."""
+
+    try:
+        choice = response["choices"][0]  # type: ignore[index]
+        message = choice["message"]
+        if choice.get("finish_reason") != "length" or not isinstance(message, dict):
+            return False
+    except (KeyError, IndexError, TypeError, AttributeError):
+        return False
+    return bool(message.get("tool_calls")) or not _native_prose_without_call(
+        message.get("content"), wire_names,
     )
 
 
@@ -1797,6 +1821,60 @@ def _capture_raw_conversation_reply(
                 stream.write(payload)
                 stream.flush()
     except (OSError, ValueError, TypeError):
+        # Opt-in diagnostics never change the turn outcome.
+        return
+
+
+def _capture_model_call_timing(
+    payload: dict[str, Any],
+    *,
+    request_identity: str,
+    elapsed_ms: float,
+    response: object,
+    error: BaseException | None,
+) -> None:
+    """Append an opt-in, content-free timing row for one model call.
+
+    The shell trace times a whole ``turn.decide``; tandas 04f/05 could not tell
+    which of its calls spent the seconds. The row names the call by the head of
+    its code-owned system prompt, never by the person's words.
+    """
+
+    configured = os.environ.get("BAXY_MIND_MODEL_CALL_AUDIT_PATH", "").strip()
+    if not configured:
+        return
+    try:
+        messages = payload.get("messages") or [{}]
+        first = messages[0] if isinstance(messages[0], dict) else {}
+        head = str(first.get("content") or "")[:40] if first.get("role") == "system" else ""
+        choice = {}
+        timings: dict[str, Any] = {}
+        if isinstance(response, dict):
+            choices = response.get("choices") or [{}]
+            choice = choices[0] if isinstance(choices[0], dict) else {}
+            timings = response.get("timings") if isinstance(response.get("timings"), dict) else {}
+        record = {
+            "schema": "baxy.model-call-timing.v1",
+            "request": request_identity,
+            "thread": threading.current_thread().name,
+            "prompt_head": head,
+            "tools": len(payload.get("tools") or ()),
+            "max_tokens": payload.get("max_tokens"),
+            "elapsed_ms": round(elapsed_ms, 1),
+            "finish_reason": choice.get("finish_reason"),
+            "error": type(error).__name__ if error is not None else "",
+            **{
+                key: timings.get(key)
+                for key in ("cache_n", "prompt_n", "prompt_ms", "predicted_n", "predicted_ms")
+            },
+        }
+        path = Path(configured).expanduser()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        line = json.dumps(record, ensure_ascii=False, separators=(",", ":")) + "\n"
+        with _RAW_REPLY_AUDIT_LOCK:
+            with path.open("a", encoding="utf-8", newline="\n") as stream:
+                stream.write(line)
+    except (OSError, ValueError, TypeError, IndexError, AttributeError):
         # Opt-in diagnostics never change the turn outcome.
         return
 
@@ -12652,18 +12730,34 @@ class LlmRuntime:
                 raise RuntimeError("llama-server no está disponible")
             return endpoint
 
-        return post_chat_completion(
-            payload,
-            endpoint_for_attempt=endpoint_for_attempt,
-            timeout_for_attempt=lambda: self._effective_request_timeout(timeout),
-            max_attempts=max_attempts,
-            cancellation=cancellation,
-            connection_pool=getattr(
-                self,
-                "_http_connection_pool",
-                None,
-            ),
-        )
+        started = time.monotonic()
+        response: object = None
+        failure: BaseException | None = None
+        try:
+            response = post_chat_completion(
+                payload,
+                endpoint_for_attempt=endpoint_for_attempt,
+                timeout_for_attempt=lambda: self._effective_request_timeout(timeout),
+                max_attempts=max_attempts,
+                cancellation=cancellation,
+                connection_pool=getattr(
+                    self,
+                    "_http_connection_pool",
+                    None,
+                ),
+            )
+            return response  # type: ignore[return-value]
+        except BaseException as error:
+            failure = error
+            raise
+        finally:
+            _capture_model_call_timing(
+                payload,
+                request_identity=str(getattr(self, "_request_identity", "")),
+                elapsed_ms=(time.monotonic() - started) * 1000.0,
+                response=response,
+                error=failure,
+            )
 
     def _post_schema_object(
         self,
@@ -12816,10 +12910,16 @@ class LlmRuntime:
             "parallel_tool_calls": True,
             "temperature": 0.0,
             "seed": 0,
-            "max_tokens": 256,
+            "max_tokens": NATIVE_SELECTION_PROSE_TOKENS,
             "chat_template_kwargs": {"enable_thinking": False},
         }
         response = self._post(payload)
+        if _native_selection_may_continue(response, tuple(mapping)):
+            # Only a reply that may have begun a call earns the full budget;
+            # prose without a call selected nothing at any length.
+            response = self._post(
+                {**payload, "max_tokens": NATIVE_SELECTION_CALL_TOKENS}
+            )
         try:
             choices = response["choices"]
             if not isinstance(choices, list) or len(choices) != 1:
@@ -14236,6 +14336,30 @@ class LlmRuntime:
             self._retire_deferred_count_work()
             raise
 
+    def _run_with_completion_cancellation(
+        self,
+        cancellation: ChatCompletionCancellation,
+        callback: Callable[[], Any],
+    ) -> Any:
+        """Run ``callback`` with its completions closable by ``cancellation``."""
+
+        cancellation_state = getattr(self, "_completion_cancellation_state", None)
+        if cancellation_state is None:
+            cancellation_state = threading.local()
+            self._completion_cancellation_state = cancellation_state
+        prior_cancellation = getattr(cancellation_state, "current", None)
+        cancellation_state.current = cancellation
+        try:
+            return callback()
+        finally:
+            if prior_cancellation is None:
+                try:
+                    del cancellation_state.current
+                except AttributeError:
+                    pass
+            else:
+                cancellation_state.current = prior_cancellation
+
     def _decide_turn(
         self,
         text: str,
@@ -14276,12 +14400,35 @@ class LlmRuntime:
             getattr(self, "_native_tool_policy_enabled", False) and operation_names
         )
         if native_policy:
-            raw_native = self._post_native_tool_selection(
-                text, operation_names, contracts_by_operation, prior_messages,
-            )
-            canonical_native = canonicalize_turn_decision(
-                _without_redundant_technical_predecessors(raw_native),
-            )
+            # A conversation from the selector is next read by the effect guard
+            # G (effect shape, then public lookup) on this same text. Tandas
+            # 04f/05 paid it after the selector; decoded in a free slot beside
+            # it, the later reads find it in the request cache. G grants nothing
+            # here: an action or plan retires it and its owners run as before.
+            guard_future = None
+            guard_cancellation = None
+            if getattr(self, "_parallel_turn_verification", False):
+                guard_cancellation = ChatCompletionCancellation()
+                guard_executor = ThreadPoolExecutor(
+                    max_workers=1, thread_name_prefix="baxy-guard",
+                )
+                guard_future = guard_executor.submit(
+                    self._run_with_completion_cancellation,
+                    guard_cancellation,
+                    lambda: self._verify_semantic_effect_shape(text),
+                )
+                guard_executor.shutdown(wait=False)
+            try:
+                raw_native = self._post_native_tool_selection(
+                    text, operation_names, contracts_by_operation, prior_messages,
+                )
+                canonical_native = canonicalize_turn_decision(
+                    _without_redundant_technical_predecessors(raw_native),
+                )
+            except BaseException:
+                if guard_cancellation is not None:
+                    guard_cancellation.cancel()
+                raise
             assert isinstance(canonical_native, dict)
             operations = list(canonical_native["effect_operations"])
             canonical_native["intent_operations"] = operations
@@ -14293,6 +14440,14 @@ class LlmRuntime:
                 )
             elif canonical_native["mode"] == "plan":
                 canonical_native["effect_verification"] = "multiple"
+            if guard_future is not None and guard_cancellation is not None:
+                if canonical_native["mode"] == "conversation":
+                    try:
+                        guard_future.result()
+                    except Exception:  # noqa: BLE001 - its owner call runs it again
+                        pass
+                else:
+                    guard_cancellation.cancel()
             # Do not reinterpret an AUTO abstention or proposal with the
             # candidate-free type/count classifier. It erased correct native
             # reads and stable knowledge in the measured C03 layer comparison.
@@ -14313,35 +14468,7 @@ class LlmRuntime:
         deferred_language_resolution = False
         deferred_count_resolution = False
         if getattr(self, "_parallel_turn_verification", False):
-
-            def run_with_completion_cancellation(
-                cancellation: ChatCompletionCancellation,
-                callback: Callable[[], Any],
-            ) -> Any:
-                cancellation_state = getattr(
-                    self,
-                    "_completion_cancellation_state",
-                    None,
-                )
-                if cancellation_state is None:
-                    cancellation_state = threading.local()
-                    self._completion_cancellation_state = cancellation_state
-                prior_cancellation = getattr(
-                    cancellation_state,
-                    "current",
-                    None,
-                )
-                cancellation_state.current = cancellation
-                try:
-                    return callback()
-                finally:
-                    if prior_cancellation is None:
-                        try:
-                            del cancellation_state.current
-                        except AttributeError:
-                            pass
-                    else:
-                        cancellation_state.current = prior_cancellation
+            run_with_completion_cancellation = self._run_with_completion_cancellation
 
             def classify_policy_independently() -> dict[str, Any]:
                 assert policy_cancellation is not None

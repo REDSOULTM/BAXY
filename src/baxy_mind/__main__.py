@@ -7349,47 +7349,67 @@ def _emit_early_turn_signal(
     step_count: int = 1,
     llm: Any = None,
     phase: str = "understanding",
-) -> None:
+) -> threading.Thread | None:
+    """Word the in-progress notice beside the decision, never in front of it.
+
+    Tandas 04f/05 (2026-09-24): composed before the model path, the notice
+    delayed every model-path answer by its own decode. It runs on its own thread
+    now; the shell shows it only while this request is still pending, so a notice
+    that finishes after the result is dropped there. Returns the thread.
+    """
+
     if already_signaled or on_signal is None:
-        return
+        return None
     if not should_emit_early(path, step_count):
-        return
+        return None
     compose = getattr(llm, "compose_user_message", None)
     if compose is None:
-        return
-    try:
-        text = compose(
-            objective,
-            "status",
-            {
-                "traceId": str(request_id or ""),
-                "situation": json.dumps(
-                    {
-                        "kind": "status", "cause": "acting",
-                        "polarity": "success", "phase": phase,
-                    },
-                    ensure_ascii=False,
-                ),
-            },
-            timeout=2.5,
-        )
-    except Exception as error:  # noqa: BLE001 - optional prose cannot fail the turn
-        _append_turn_audit({
-            "schema": "baxy.mind-turn-audit.v1",
-            "request_id": request_id,
-            "phase": "progress_unavailable",
-            "error_type": type(error).__name__,
-        })
-        return
-    if not str(text or "").strip():
-        return
-    on_signal(
-        turn_signal_payload(
-            request_id,
-            str(text).strip(),
-        )
-    )
+        return None
+    # Reserved now so a later stage of this attempt does not word a second one;
+    # released if no notice could be worded.
     already_signaled.append(True)
+
+    def word_and_signal() -> None:
+        try:
+            text = compose(
+                objective,
+                "status",
+                {
+                    "traceId": str(request_id or ""),
+                    "situation": json.dumps(
+                        {
+                            "kind": "status", "cause": "acting",
+                            "polarity": "success", "phase": phase,
+                        },
+                        ensure_ascii=False,
+                    ),
+                },
+                timeout=2.5,
+            )
+        except Exception as error:  # noqa: BLE001 - optional prose cannot fail the turn
+            already_signaled.clear()
+            _append_turn_audit({
+                "schema": "baxy.mind-turn-audit.v1",
+                "request_id": request_id,
+                "phase": "progress_unavailable",
+                "error_type": type(error).__name__,
+            })
+            return
+        if not str(text or "").strip():
+            already_signaled.clear()
+            return
+        on_signal(
+            turn_signal_payload(
+                request_id,
+                str(text).strip(),
+            )
+        )
+
+    worker = threading.Thread(
+        target=word_and_signal, name="baxy-early-signal", daemon=True,
+    )
+    worker.start()
+    return worker
 
 
 def _rearm_in_context(
