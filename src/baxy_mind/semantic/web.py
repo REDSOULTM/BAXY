@@ -10,7 +10,7 @@ from .grammar import _fold, _match, _has, _strip_request_envelope, _request_head
 from .intent import EffectIntent, _entity_key, _append, _append_all
 from .catalog import ApplicationCatalogIndex, _application_name_key, build_application_catalog_index
 from .temporal import _BOUNDED_TEMPORAL_SELECTOR, _DAY, _MONTH, _WEEKDAYS
-from .lexicon import GIVEN_NAMES
+from .lexicon import GIVEN_NAMES, SOCIAL_NETWORK
 from .windows import minimize_all_request
 from .media import _youtube_search_query
 
@@ -1276,6 +1276,8 @@ def _public_live_lookup_request(folded: str) -> bool:
             re.IGNORECASE,
         )
         is not None
+        # «what's going on in my social media» is the person's account (messaging.social_network_request).
+        and not _has(folded, SOCIAL_NETWORK)
     )
     local_fair = (
         re.match(
@@ -2392,6 +2394,9 @@ def news_lookup_query(text: str) -> str | None:
     body = public_query_body(text).strip(" ¿?¡!.")
     found = _HAPPENING.match(re.sub(r"^whats\b|^what's\b", "what 's", _fold(body)))
     if found is None or _has(found.group("scope").strip(), _CUT_SCOPE):
+        return None
+    if _has(found.group("scope"), SOCIAL_NETWORK):
+        # «qué pasa en mis redes sociales» is the person's account, not news (lexicon.SOCIAL_NETWORK).
         return None
     if _has(found.group("scope"), _NOT_A_NEWS_PLACE) and not _has(found.group("scope"), _NEAR_THE_PERSON):
         return None

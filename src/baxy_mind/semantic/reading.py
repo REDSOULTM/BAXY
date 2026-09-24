@@ -12,6 +12,7 @@ from .catalog import ApplicationCatalogIndex, GameCatalogIndex
 from .grammar import _ASSISTANT_NAME, _CLAUSE_EDGE_PUNCTUATION, _head_forms, _original_clause, _without_address
 from .intent import EffectIntent
 from .media import spoken_media_order
+from .messaging import after_opening_the_mailbox
 from .normalize import fold as _fold
 from .patterns import (
     ClarificationIntent,
@@ -131,6 +132,18 @@ def _addressed_request(
 
     rest = _without_address(objective)
     return resolve(rest) if rest is not None else None
+
+
+def _mailbox_opened_to_read(
+    objective: str,
+    resolve: Callable[[str], EffectIntent | None],
+) -> EffectIntent | None:
+    """«abre mi cuenta de correo y revisa nuevos correos» (dev corpus 2026-09-23): opening the mailbox is the way
+    to what arrived, which the mail read answers; any other order after the opening keeps its compound."""
+
+    rest = after_opening_the_mailbox(objective)
+    found = resolve(rest) if rest is not None else None
+    return found if found is not None and found.operations == ("email.latest.read",) else None
 
 
 def _desired_media_request(
@@ -344,7 +357,7 @@ def utterance_form(
     resolve: Callable[[str], EffectIntent | None],
 ) -> tuple[str, EffectIntent] | None:
     """The request inside an utterance form the pattern does not read alone (talk around the order, a fronted
-    place, an address, a desire to listen), with the form's name; None when there is none. The decision and the
+    place, an address, a desire to listen, the mailbox opened to read it), with the form's name; None when there is none. The decision and the
     argument binder both read the request through here, so the arguments come from the same clause the decision
     read (tanda 3 «para la música, me va a explotar la cabeza» was read and then asked which action)."""
 
@@ -353,6 +366,7 @@ def utterance_form(
         ("fronted_place", _fronted_place_request),
         ("addressed", _addressed_request),
         ("desired_media", _desired_media_request),
+        ("mailbox_opened", _mailbox_opened_to_read),
     ):
         effects = form(text, resolve)
         if effects is not None:

@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from typing import Iterable
 from ..catalog_operation_aliases import exact_catalog_operation_plan
 from . import levels, lexicon
-from .grammar import TASK_REMINDER_HEAD, _INSTRUCTION_NOUNS, _MACHINE_NOUNS, _without_leading_duration_preface, _fold, _match, _has, _REQUEST_PREFIX, _EXPLICIT_DESIRE_REQUEST, _TRAILING_MEANS_DIRECTIVE, _strip_request_envelope, _explicit_desire_request, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _negative_state_question_body, _machine_status_scopes, _machine_status_scopes_are_one_reading, _machine_status_is_the_whole_clause, _is_past_or_hypothetical_state, _is_machine_knowledge_or_diagnosis, _system_status_domain, _process_list_domain, _network_status_domain, _SET_VOLUME_VERB, _VOLUME_UP_VERB, _VOLUME_DOWN_VERB, _AUDIO_OBSERVATION_HEAD, _indirect_audio_mute_state_query, window_inventory_arguments, _literal_note_payload_request, _is_meta_or_tool_denial, _is_explicit_meta_or_tool_denial, _KNOWN_APPLICATION, _CONNECTED_INVENTORY, _OPEN, _MEDIA_RESUME_VERB, _LIST, _READ, _CREATE, _SEARCH, _COVERAGE_ACTION_HEAD, _SEQUENCE_NOMINAL_HEAD, _machine_status_topic, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, _PERCENTAGE_WORD_VALUES, _explicit_google_search_query, _request_clauses, _PLAY_HEAD, _request_body_surface, _without_address
+from .grammar import TASK_REMINDER_HEAD, _INSTRUCTION_NOUNS, _MACHINE_NOUNS, _without_leading_duration_preface, _fold, _match, _has, _REQUEST_PREFIX, _EXPLICIT_DESIRE_REQUEST, _TRAILING_MEANS_DIRECTIVE, _strip_request_envelope, _explicit_desire_request, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _negative_state_question_body, _machine_status_scopes, _machine_status_scopes_are_one_reading, _machine_status_is_the_whole_clause, _is_past_or_hypothetical_state, _is_machine_knowledge_or_diagnosis, _system_status_domain, _process_list_domain, _network_status_domain, _SET_VOLUME_VERB, _VOLUME_UP_VERB, _VOLUME_DOWN_VERB, _AUDIO_OBSERVATION_HEAD, _indirect_audio_mute_state_query, window_inventory_arguments, _literal_note_payload_request, _is_meta_or_tool_denial, _is_explicit_meta_or_tool_denial, _is_definition_question, _KNOWN_APPLICATION, _CONNECTED_INVENTORY, _OPEN, _MEDIA_RESUME_VERB, _LIST, _READ, _CREATE, _SEARCH, _COVERAGE_ACTION_HEAD, _SEQUENCE_NOMINAL_HEAD, _machine_status_topic, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, _PERCENTAGE_WORD_VALUES, _explicit_google_search_query, _request_clauses, _PLAY_HEAD, _request_body_surface, _without_address
 from .audio import app_scoped_microphone_mute, _LOCAL_VOLUME_DEVICE, _VOLUME_OBJECT, _bare_clitic_volume_request, _bare_music_volume_request, _volume_domain, _MUTE_VERB, _audio_mute_domain, _APP_VOLUME_SPANISH, _APP_VOLUME_ENGLISH, _APP_VOLUME_ENGLISH_SPLIT, _APP_VOLUME_SET_SPANISH, _APP_VOLUME_SET_ENGLISH, _APP_VOLUME_LEVEL_WORDS, _AUDIO_LEVEL_CUE, _is_audio_mute_state_query, _PERCENTAGE_WORD_PATTERN
 from .windows import deictic_window_mutation, _FOCUS_HEAD_ONLY, _FOCUS_HEAD_WITH_TAIL, _FOCUS_TAIL, _MINIMIZE_HEAD, _SNAP_HEAD, _SNAP_SIDE, has_named_window_target, _window_domain, minimize_all_request, INDETERMINATE_WINDOW_CLAUSE, other_window_switch_request, PC_HOME_PLACE, start_menu_request
 from .display import screen_light_as_brightness, _KNOWN_FOLDER_WORDS, _KNOWN_FOLDER_ENUM, screen_inventory_request, _display_status_question, _without_screen_state_preface, _BRIGHTNESS_OBJECT, _BRIGHTNESS_UP_VERB, _BRIGHTNESS_DOWN_VERB, _BRIGHTNESS_ABSOLUTE, _BRIGHTNESS_ENGLISH_TURN, _BRIGHTNESS_RELATIVE_WORDS, brightness_status_request, _BRIGHTNESS_SET_VERB, _BRIGHTNESS_EXTREME_VALUES, wallpaper_request
@@ -25,7 +25,7 @@ from .games import _corrected_game_launch_title, _edit_distance, near_catalog_ga
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
 from .system import _weather_read_intent, physical_world_request
 from .notes import list_entry_request, list_read_request, list_removal_request, list_creation_without_items, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder
-from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, _latest_email_domain, _notification_listing_request, inbox_read_request, social_network_request
+from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, _latest_email_domain, _notification_listing_request, inbox_read_request, social_network_request, contact_book_request
 from .ui import _clipboard_copy_domain, _clipboard_paste_domain, calculator_expression_request, literal_clipboard_write_text, _review_input_and_capture_effects, _VISIBLE_CLICK_APP_CONTEXT, _gerund_click_label, _visible_click_label, _click_in_application, _visible_click_intent
 from .apps import self_close_request, _APPLICATION_TRAILING_REQUEST, _application_target_forms, _CLOSE_TRAILING_COURTESY, _close_target_forms, deictic_close_request, _bounded_application_literal, _authenticated_application_list, _OPEN_STATE_CONDITION, close_all_request, _has_multiple_installed_entities, _append_domain_actions, _open_application_spans, _CATALOG_INSTALL_VERB, _opened_applications
 
@@ -1695,8 +1695,13 @@ def effect_request_is_authoritative(text: str) -> bool:
         confident_non_target_language(text) is None
         and not explicit_non_action_frame(text)
         and _is_direct_request(folded)
-        and not _is_past_or_hypothetical_state(folded)
-        and not _is_meta_or_tool_denial(folded)
+        # Dev corpus 2026-09-23 «what is mom's email address», «the email address for bill that i added friday»,
+        # «what are the latest photos on my instagram account»: «what is» about the person's own book or account is
+        # asked of it, never a definition; and a day said of an entry of the book is when it was saved, not a past
+        # state of the machine.
+        and not _is_explicit_meta_or_tool_denial(folded)
+        and (not _is_definition_question(folded) or contact_book_request(folded) or social_network_request(folded))
+        and (not _is_past_or_hypothetical_state(folded) or contact_book_request(folded))
         and not _has_contradictory_correction(folded)
         and not _future_request_announcement(folded)
     )
@@ -1832,6 +1837,8 @@ def conversation_only_content_request(text: str) -> bool:
         r"dame|pasame|buscame|busca|quiero|necesito|make\s+me|write\s+me|write|draft|give\s+me|find\s+me)\b"
         r".{0,48}\b(?:curriculum|curriculums|cv|carta|oficio|texto|poema|cuento|resumen|ensayo|"
         r"lista|triangulo|tabla|esquema|discurso|mensaje\s+de\s+cumpleanos|formato|plantilla|"
+        # Dev corpus 2026-09-23 «por favor escribe una queja para levis»: the complaint is written here.
+        r"queja|reclamo|reclamacion|complaint|"
         r"resume|cover\s+letter|essay|poem|letter|template|outline|table)\b|"
         r"^(?:formato|plantilla|ejemplo|modelo|template|example)\s+(?:de|of)\b.{1,96}$|"
         r"^(?:buscame|busca|dame|decime|dime|find\s+me|give\s+me)\b.{0,32}"
@@ -2254,14 +2261,11 @@ def known_unsupported_effect_request(
         ),
         (
             # LIMITS1665 H0306 «agregá a Juan a mis contactos», H0138 «guardá el
-            # contacto de Lucía …»: no operation keeps an address book (the
-            # owner ruled a phone number is not something to store on the PC).
-            (
-                _has(folded, r"\b(?:contactos?|contacts?|agenda\s+telefonica|address\s+book|libreta\s+de\s+direcciones)\b")
-                and _has(folded, r"\b(?:agrega|agregar|agregame|anade|anadir|guarda|guardar|guardame|agenda|agendar|agendame|mete|meter|suma|sumar|add|save|store|put)\b")
-            )
-            or _has(folded, r"\b(?:agenda|agendame|guarda|guardame|anota|anotame|save|add)\s+(?:a\s+)?\w+\s+(?:con\s+el|with\s+the)\s+(?:numero|number|telefono|phone)\b"),
-            {"contacts.add"},
+            # contacto de Lucía …»; dev corpus 2026-09-23 «what is mom's email
+            # address», «cuántos contactos tengo»: no operation keeps or reads an
+            # address book (semantic.messaging).
+            contact_book_request(text),
+            {"contacts.add", "contacts.read"},
         ),
         (
             # UI1659 H0290/H0636 «ve a Cotele en Discord» was a known limit; since
@@ -5025,14 +5029,38 @@ def chat_read_request(folded: str) -> bool:
     que me dijo X», «puedes leer una conversación mía de whatsapp», «read my
     last message from X». False for mail (its own reader) and for sending."""
 
-    return _has(
+    return (_has(
         folded,
         r"\b(?:que|qué)\s+(?:fue\s+lo\s+ultimo\s+que\s+)?me\s+(?:dijo|escribio|mando|envio|puso)\b"
         r"|\b(?:lee|leeme|leer|leas|leerme|read)\s+(?:me\s+)?(?:lo\s+ultimo\s+que\s+me\s+(?:dijo|escribio|mando)|"
         r"(?:una|la|mi|my|a|the)\s+(?:conversacion|conversation|chat)|(?:el|los|mis|the|my)\s+(?:ultimos?\s+)?(?:mensajes?|messages?)|"
         r"(?:the\s+)?last\s+message)\b"
         r"|\bwhat\s+did\s+\S+\s+(?:say|write|text)\s+(?:to\s+)?me\b",
-    ) and not _has(folded, r"\b(?:correo|mail|email|gmail|outlook)\b")
+    ) or _messages_arrived_question(folded)) and not _has(folded, r"\b(?:correo|mail|email|gmail|outlook)\b")
+
+
+def _messages_arrived_question(folded: str) -> bool:
+    """Dev corpus 2026-09-23 «cuántos mensajes no leídos tengo», «cuándo recibí el mensaje de john smith»: what
+    arrived as messages, with no mail named, is the chats (read by the deferred computer-use engine), never a
+    sentence to look up or answer from memory. Not writing one, and not an error message."""
+
+    return (
+        _has(folded, r"\b(?:mensajes?|messages?|texts?|dms?|sms)\b")
+        and _has(
+            folded,
+            r"\b(?:no\s+leidos?|sin\s+leer|unread|recibi|recibido|recibir|received|receive|llego|llegaron|arrived|"
+            r"mensajes?\s+nuevos?|nuevos?\s+mensajes?|new\s+(?:messages|texts))\b",
+        )
+        and (
+            not _has(folded, r"\b(?:mensajes?\s+nuevos?|nuevos?\s+mensajes?|new\s+(?:messages|texts))\b")
+            or _has(folded, r"\b(?:tengo|tenemos|hay|cuant[oa]s|have|has|any|got|get)\b")
+        )
+        and not _has(
+            folded,
+            r"\b(?:error|errores|sistema|system|windows|consola|console|warning|advertencia)\b|"
+            r"\b(?:envi\w*|mand\w*|escrib\w*|redact\w*|respond\w*|contest\w*|send|write|compose|reply)\b",
+        )
+    )
 
 
 def _other_device_effect_scope(text: str) -> bool:
@@ -5491,6 +5519,8 @@ def _explicit_named_music_query(text: str) -> str | None:
         # is the physical world, never a title to play.
         or _has(_fold(query), r"^en\s+marcha\b")
         or physical_world_request(folded)
+        # Dev corpus 2026-09-23 «pon un tuit a la compañía vodafone…»: a tweet is posted, never played.
+        or social_network_request(text)
         # «pon el audio de Spotify al 20 %»: a volume object is a level to set,
         # never the thing to play; «ponme un recordatorio para las 3» schedules.
         or _has(
@@ -6571,6 +6601,8 @@ def _is_direct_request(text: str) -> bool:
         or message_draft_request(text) is not None
         # «tuitea a Vodafone que…»: posting is a request, even with no verb this module knows.
         or social_network_request(text)
+        # «what is mom's email address»: asking the address book is a request, however it is said.
+        or contact_book_request(text)
         or client_channel_request(text) is not None
         # Uso real 2026-09-23 «vuelve el sonido», «Turn off silenciar», «¡detén este horrible ruido!», «silencio»:
         # the message opens with the mute switched or the sound asked back; that is the request.
@@ -7257,7 +7289,8 @@ def _strict_catalog_request(
             (
                 "media.status",
                 # «las cinco y media» is a clock time, not media.
-                r"\b(?:(?<!y\s)(?<!menos\s)media|multimedia|reproduccion|playing|playback|"
+                # «social media» is a network, not what plays.
+                r"\b(?:(?<!y\s)(?<!menos\s)(?<!social\s)media|multimedia|reproduccion|playing|playback|"
                 r"sonando|"
                 r"audiovisual\s+session|sesion\s+audiovisual|media\s+session|"
                 r"(?:track|pista)\s+(?:or|o)\s+(?:video|audio))\b",

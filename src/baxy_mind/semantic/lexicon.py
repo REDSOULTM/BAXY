@@ -135,7 +135,9 @@ MUTE_WORDS = rf"{MUTE_SWITCH_ON}|{SOUND_SWITCH_OFF}|{NOISE_STOP}"
 # ---------------------------------------------------------------- people of the person's own life
 # Tanda 3 2026-09-24 «es cierto que el cumpleaños de antonia es el primero de marzo» was searched on the web: someone
 # named only by a given name is someone the person knows, and what is asked of them is the person's own data
-# (web.names_own_data). The most common given names in Spanish and English. Left out on purpose: names that are also
+# (web.names_own_data). The most common given names in Spanish and English, their usual short forms («paco», «alex»),
+# and a few of the most common Indian ones English speakers use (dev corpus 2026-09-23 «call raju phone number»,
+# messaging.contact_book_request). Left out on purpose: names that are also
 # common words, months, places, holidays, brands, cartoon pairs or a famous single-name artist («rosa», «luz», «julio»,
 # «june», «victoria», «santiago», «mercedes», «mario», «tom», «camilo»), where a bare mention is not a private person.
 GIVEN_NAMES = frozenset(
@@ -152,6 +154,8 @@ GIVEN_NAMES = frozenset(
     lorena mariana miriam nuria olga susana teresa ximena jimena valeria yolanda zoe fabiola graciela josefina
     liliana maite micaela noelia pamela paola renata romina tamara vanesa viviana luciana antonella bianca agostina
     amanda barbara estefania gisela karina karla marisol nicole priscila rebeca tatiana almudena lola
+    alex paco pepe lucho chema manolo rafa dani santi nico fede beto lalo toni andy
+    raju rahul priya amit ravi arjun neha pooja
     john james robert michael william richard joseph thomas charles christopher matthew anthony steven paul andrew
     joshua kenneth kevin brian george edward ronald timothy jason jeffrey ryan jacob gary nicholas eric jonathan
     stephen larry justin scott brandon gregory alexander patrick dennis tyler aaron adam nathan henry zachary
@@ -165,6 +169,14 @@ GIVEN_NAMES = frozenset(
     isabella julia denise danielle marilyn beverly natalie theresa brittany doris kayla alexis lori marie chloe mia
     ava ella ellie jessie
     """.split()
+)
+
+# ---------------------------------------------------------------- social networks
+# The networks a person posts to or has an account on (messaging.social_network_request); what happens «in my social
+# media» is their account, never the news of a place (web.news_lookup_query).
+SOCIAL_NETWORK = (
+    r"(?:facebook|instagram|twitter|tiktok|linkedin|threads|mastodon|bluesky|tumblr|snapchat|pinterest|"
+    r"redes?\s+sociales?|social\s+(?:media|networks?))"
 )
 
 # ---------------------------------------------------------------- the canonical surface (semantic.surface)

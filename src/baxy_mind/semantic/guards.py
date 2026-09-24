@@ -60,9 +60,13 @@ def cut_request_tail(objective: str) -> str | None:
     if last not in _CUT_TAIL_WORDS:
         return None
     # Uso real «pon kiss f. m. para mi»: «para mí», typed without its accent, is
-    # the pronoun closing the request. After «de», «a» or «en» a possessive may
-    # still be cut («la carpeta de mi…»), so only «para» closes it.
-    if last == "mi" and effect_intent._fold(words[-2]).strip(",;:") == "para":
+    # the pronoun closing the request, and so is «por mí» («hazlo por mi»). After
+    # «de», «a» or «en» a possessive may still be cut («la carpeta de mi…»).
+    if last == "mi" and effect_intent._fold(words[-2]).strip(",;:") in {"para", "por"}:
+        return None
+    # Dev corpus 2026-09-23 «revisa mi bandeja de entrada por mí»: «mí» written with its accent is the pronoun,
+    # never a possessive cut short.
+    if words[-1].strip(",;:").casefold() == "mí":
         return None
     # MASSIVE «tiendas de ropa en un radio de cinco kilómetros de mi», «un bar cerca de mi»: after a place or a
     # distance, «de mí» is where the person is, not a possessive cut short.

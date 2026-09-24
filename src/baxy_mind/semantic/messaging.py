@@ -5,7 +5,9 @@ from __future__ import annotations
 
 import re
 from .grammar import _fold, _has, _strip_request_envelope, _negative_action_forms
+from .lexicon import GIVEN_NAMES, SOCIAL_NETWORK
 from .notes import _AGENDA_LISTING
+from .web import _OWN_RELATIVE, _bare_given_name
 
 
 _MSG_VERB = r"(?:m[aá]nd[aá](?:le|me|les)?|env[ií]a(?:le|me|les)?|envi[aá](?:le|me|les)?|escrib[ií](?:le|me)?|escr[ií]be(?:le|me)?|send|write|text|message)"
@@ -217,9 +219,16 @@ def email_request_without_address(text: str) -> bool:
     if draft is not None:
         return draft[0] == "email" and _MAIL_ADDRESS.match(draft[1].strip()) is None
     folded = _strip_request_envelope(_fold(text)).strip(" .!?")
+    # Dev corpus 2026-09-23 «me ayudarás a escribir un correo electrónico a chofin», «can you help me write an
+    # email to bob»: help asked to write it is the same mail, and still lacks the address.
+    folded = re.sub(
+        r"^(?:(?:me\s+)?(?:ayudas|ayudaras|ayudarias|ayudame|puedes\s+ayudarme|podrias\s+ayudarme)\s+a|"
+        r"(?:can|could|will|would)\s+you\s+help\s+me(?:\s+to)?|help\s+me(?:\s+to)?)\s+",
+        "", folded, count=1,
+    )
     return (
         (
-            _has(folded, r"^(?:" + _MSG_VERB + r")\s+(?:un\s+|una\s+|el\s+|a\s+|an\s+|the\s+)?(?:correo(?:\s+electronico)?|(?:e-?)?mail)\s+(?:a|al|para|to)\s+\S")
+            _has(folded, r"^(?:" + _MSG_VERB + r"|escribir|mandar|enviar)\s+(?:un\s+|una\s+|el\s+|a\s+|an\s+|the\s+)?(?:correo(?:\s+electronico)?|(?:e-?)?mail)\s+(?:a|al|para|to)\s+\S")
             or _has(folded, _EMAIL_VERB_TO_SOMEONE)
         )
         and "@" not in folded
@@ -285,15 +294,16 @@ _INBOX_RECENCY = (
 
 
 _INBOX_ARRIVAL = (
-    r"\b(?:tengo|tenemos|hay|llego|llegaron|llegado|recibi|recibido|recibimos|"
+    r"\b(?:tengo|tenemos|hay|llego|llegaron|llegado|recibi|recibido|recibimos|recibo|recibir|"
     r"me\s+(?:escribio|escribieron|mando|mandaron|envio|enviaron)|"
-    r"received|gotten|got|have\s+i|do\s+i\s+have|is\s+there|are\s+there|"
+    r"me\s+han?\s+(?:escrito|mandado|enviado)|"
+    r"received|receive|gotten|got|did\s+i\s+get|have\s+i|do\s+i\s+have|is\s+there|are\s+there|"
     r"sent\s+me|wrote\s+me|emailed\s+me|came\s+in|arrived)\b"
 )
 
 
 _INBOX_LOOK = (
-    r"\b(?:revisa|revisame|revisar|revises|chequea|checa|checkea|check|consulta|"
+    r"\b(?:revisa|revisame|revisar|revises|controla|controlame|controlar|chequea|checa|checkea|check|consulta|"
     r"consultar|mira|mirame|fijate|lee|leeme|leer|read|muestra|muestrame|mostrame|"
     r"show|dime|decime|tell\s+me|let\s+me\s+know|hazme\s+saber|avisame|look)\b"
 )
@@ -313,13 +323,16 @@ _NOT_THE_INBOX = (
 # composing; «me envió», «sent me» (somebody else's sending) is what arrived.
 _MAIL_WRITING = (
     r"\b(?:envi\w*|mand(?:a|ale|ar|e|es)|escrib\w*|redact\w*|respond\w*|contest\w*|"
-    r"reenvi\w*|crea|crear|creame|"
-    r"send|sent|write|compose|draft|reply|respond|answer|forward|create|emailed)\b"
+    r"reenvi\w*|crea|crear|creame|dile|decile|diles|decirle|"
+    r"send|sent|write|compose|draft|reply|respond|answer|forward|create|emailed)\b|"
+    # «di al email que me ha enviado jorge que…»: what to say to the mail is an answer.
+    r"^(?:(?:por\s+favor|please)\s+)?(?:di|say)\b"
 )
 
 
 _OTHERS_SENDING = (
     r"\bme\s+(?:mando|mandaron|envio|enviaron|escribio|escribieron)\b|"
+    r"\bme\s+han?\s+(?:escrito|mandado|enviado)\b|"
     r"\b(?:sent|emailed|wrote|written)\s+me\b"
 )
 
@@ -344,7 +357,9 @@ def _latest_email_domain(text: str) -> bool:
 # client or setting it up.
 _MAIL_HANDLING = (
     r"\b(?:borr\w*|elimin\w*|archiv\w*|marc\w*|muev\w*|mover|bloque\w*|"
-    r"configur\w*|abre|abrir|abreme|delete|remove|archive|mark|move|block|set\s+up|open)\b"
+    r"configur\w*|abre|abrir|abreme|delete|remove|archive|mark|move|block|set\s+up|open|"
+    # «agrega nuevo correo electrónico para julia»: adding an address is not reading what arrived.
+    r"agreg\w*|anad\w*|add|added|adding)\b"
 )
 
 
@@ -360,6 +375,26 @@ _OTHER_OWN_OBJECT = (
     # appointments»: the other things read in the same breath are their own reads.
     r"avisos?|notices?|notificaciones\s+vencidas|citas?|appointments?|eventos?|events?|alarmas?|alarms?)\b"
 )
+
+
+# Dev corpus 2026-09-23 «abre mi cuenta de correo electrónico y revisa nuevos correos»: opening the mailbox and
+# then looking at what arrived is the read; the opening is only the way there.
+_OPEN_THE_MAILBOX_FIRST = (
+    r"^(?:abre|abreme|abri|abrime|open|entra\s+(?:a|en)|go\s+to)\s+(?:(?:mi|el|la|my|the)\s+)?"
+    r"(?:cuenta\s+de\s+)?(?:correo(?:\s+electronico)?|e-?mail|mail|buzon|bandeja\s+de\s+entrada|inbox|mailbox)"
+    r"(?:\s+account)?\s*,?\s+(?:y|and)\s+(?:(?:luego|despues|then)\s+)?(?=\S)"
+)
+
+
+def after_opening_the_mailbox(text: str) -> str | None:
+    """What is asked after opening the mailbox, said of the mailbox («… y revisa si hay mensajes nuevos» →
+    «revisa si hay mensajes nuevos del correo»), or None."""
+
+    folded = _strip_request_envelope(_fold(text)).strip(" .!?¿¡")
+    rest = re.sub(_OPEN_THE_MAILBOX_FIRST, "", folded, count=1)
+    if rest == folded:
+        return None
+    return rest if _has(rest, _MAIL_NOUN) else rest + " del correo"
 
 
 # «I read the latest email yesterday»: an English sentence that opens on its
@@ -385,6 +420,8 @@ def inbox_read_request(text: str) -> bool:
         and not _has(folded, _FIRST_PERSON_ACCOUNT)
         and not _has(folded, _MAIL_HANDLING)
         and not _has(folded, _OTHER_OWN_OBJECT)
+        # «put this new email with my contact»: keeping an address is the book's (contact_book_request).
+        and not all(_has(folded, part) for part in _KEEPING_IN_THE_BOOK)
     )
 
 
@@ -424,35 +461,54 @@ def _notification_listing_request(text: str) -> bool:
 # de amistad». No operation posts to a social network or reads the person's account there; the model wrote
 # the tweet as if it were posted, or searched the web for the sentence. The honest turn is the plain limit.
 # Opening the network's site («abre facebook») is navigation and is not this.
-_SOCIAL_NETWORK = (
-    r"(?:facebook|instagram|twitter|tiktok|linkedin|threads|mastodon|bluesky|"
-    r"redes?\s+sociales?|social\s+(?:media|networks?))"
-)
 _SOCIAL_POST = (
     # A tweet said as a verb: «tuitea», «tuitear», «twittéale», «retweet», «tweet walmart» (not «a tweet»).
     r"(?<!\ba\s)(?<!\bthe\s)(?<!\bmy\s)(?<!\bun\s)(?<!\bel\s)(?<!\bmi\s)(?<!\bese\s)(?<!\beste\s)"
-    r"\b(?:(?:re)?(?:tuite|twitte|tweete)(?:ar|a|ame|ale|ales|alo|ala|amos|e|en|es|o|ando)?|"
+    # Its clitics too: «tuiteárselo», «twittearle».
+    r"\b(?:(?:re)?(?:tuite|twitte|tweete)(?:ar|a|amos|e|en|es|o|ando)?(?:me|te|le|les|lo|la|se|sel[oa]s?)?|"
     r"(?:re)?tweet(?:s|ed|ing)?)\b(?!\s+(?:is|es|was|means|significa)\b)|"
     # A tweet as what is written, opened, answered or published: «abrir tuit a apple», «responde con un tuit».
     r"\b(?:abre|abrir|abreme|escribe|escribir|escribeme|manda|mandar|envia|enviar|publica|publicar|haz|hacer|"
-    r"hazme|responde|responder|contesta|contestar|write|send|post|make|reply|answer)\b"
+    r"hazme|responde|responder|contesta|contestar|pon|poner|ponme|ponle|deja|dejar|"
+    r"write|send|post|make|reply|answer|put|leave)\b"
     r"(?:\s+\w+){0,2}?\s+(?:(?:con|with)\s+)?(?:(?:un|una|el|mi|a|an|the|my)\s+)?(?:tuits?|tweets?)\b|"
     # Publishing, sharing or updating on a network or on one's wall; putting or uploading a post there.
     r"(?:\b(?:publica|publicar|publicame|postea|postear|comparte|compartir|post|share|update)\b|"
     r"\b(?:sube|subir|pon|poner)\s+(?:(?:un|una|mi|el|la|esta|este|a|my|this)\s+)?"
     r"(?:fotos?|videos?|estado|historia|post|publicacion|photo|status|story)\b)"
-    rf".{{0,80}}\b(?:en|a|on|to)\s+(?:(?:mi|my|el|the)\s+)?(?:{_SOCIAL_NETWORK}|muro|wall|timeline)\b"
+    rf".{{0,80}}\b(?:en|a|on|to)\s+(?:(?:mi|my|el|the)\s+)?(?:{SOCIAL_NETWORK}|muro|wall|timeline)\b"
 )
 _SOCIAL_ACCOUNT_READ = (
     r"\b(?:peticion|peticiones|solicitud|solicitudes)\s+de\s+amistad\b|\bfriend\s+requests?\b|"
-    rf"\b(?:mi|mis|my)\s+{_SOCIAL_NETWORK}\s+(?:feed|wall|timeline|notifications|profile|inbox)\b|"
+    rf"\b(?:mi|mis|my)\s+{SOCIAL_NETWORK}\s+(?:feed|wall|timeline|notifications|profile|inbox)\b|"
     rf"\b(?:mi|mis|el|la)\s+(?:muro|feed|timeline|perfil|notificaciones|seguidores|menciones)\s+(?:de|en)\s+"
-    rf"{_SOCIAL_NETWORK}\b"
+    rf"{SOCIAL_NETWORK}\b|"
+    # A status for a network with what it says, as the message opens: «estado de facebook día ocupado».
+    rf"^(?:(?:mi|my)\s+)?(?:estado|status)\s+(?:de|en|on|for)\s+{SOCIAL_NETWORK}[\s:,-]+\w|"
+    rf"^(?:(?:mi|my)\s+)?{SOCIAL_NETWORK}\s+(?:status|estado)[\s:,-]+\w"
+)
+# Dev corpus 2026-09-23 «queja a apple y hacerles saber que mi aplicación falló»: a complaint made to a company is
+# posted to it (read as feedback to BAXY before). Writing the complaint text is a draft (patterns
+# .conversation_only_content_request), not this.
+_COMPLAINT_TO_SOMEONE = (
+    r"^(?!(?:escribe|escribeme|escribir|redacta|redactame|hazme|haz|write|draft)\b)(?:\w+\s+){0,2}?"
+    r"(?:queja|quejate|quejarme|quejarse|reclamo|reclamacion|complain|complaint)\s+(?:a|al|con|ante|to|with)\s+"
+    r"(?!(?:mi|me|ti|vos|usted|you|baxy)\b)\w"
+)
+# Dev corpus 2026-09-23 «how many likes does my last instagram photo have», «qué está pasando en mis redes
+# sociales», «what happened to my social media»: the person's own account on a network, asked about, is theirs
+# to read there; a sentence that only names it («mis redes sociales favoritas son…») asks nothing of it.
+_OWN_SOCIAL_ACCOUNT = rf"\b(?:mi|mis|my)\s+(?:\w+\s+){{0,3}}?{SOCIAL_NETWORK}\b"
+_ASKED_OF_THE_ACCOUNT = (
+    r"\b(?:que|what|como|how|cuant[oa]s?|many|any|alg[uo]n[oa]?s?|hay|tengo|have|nuev[oa]s?|new|latest|"
+    r"ultim[oa]s?|recientes?|pasa|pasando|paso|happen\w*|going\s+on|revisa|check|mira|look|muestra|muestrame|"
+    r"show|dime|decime|tell|lee|leeme|read|likes?|seguidores|followers|comentarios|comments|fotos?|photos?|"
+    r"posts?|publicaciones|mensajes|messages|notificaciones|notifications)\b"
 )
 # «abre facebook», «entra a mi instagram»: going to the site is navigation. «abrir tuit a apple» is a post.
 _SOCIAL_NAVIGATION = (
     r"^[¿?¡!\s]*(?:abre|abri|abrir|abreme|abrime|open|entra|entrar|go\s+to|ve\s+a|anda\s+a|llevame\s+a|"
-    r"navega|navegar|take\s+me\s+to)\b(?!(?:\s+\w+){0,2}?\s+(?:(?:un|una|el|a|the)\s+)?(?:tuits?|tweets?)\b)"
+    r"navega|navegar|take\s+me\s+to|cierra|cerra|cerrar|close|minimiza|minimize)\b(?!(?:\s+\w+){0,2}?\s+(?:(?:un|una|el|a|the)\s+)?(?:tuits?|tweets?)\b)"
 )
 
 
@@ -462,4 +518,125 @@ def social_network_request(text: str) -> bool:
     folded = _strip_request_envelope(_fold(text))
     if _has(folded, _SOCIAL_NAVIGATION):
         return False
-    return _has(folded, _SOCIAL_POST) or _has(folded, _SOCIAL_ACCOUNT_READ)
+    return (
+        _has(folded, _SOCIAL_POST)
+        or _has(folded, _SOCIAL_ACCOUNT_READ)
+        or _has(folded, _COMPLAINT_TO_SOMEONE)
+        or (_has(folded, _OWN_SOCIAL_ACCOUNT) and _has(folded, _ASKED_OF_THE_ACCOUNT))
+    )
+
+
+# --- The person's address book -----------------------------------------------------------------------------------
+# LIMITS1665 H0306/H0138 «agregá a Juan a mis contactos» (keeping) and dev corpus 2026-09-23 email_querycontact
+# (reading): «cuántos contactos tengo en mi agenda», «what is mom's email address», «cúal es la dirección para juan»,
+# «is this the correct area code for my boss». No operation keeps or reads an address book (message.recipient.resolve
+# finds a chat in WhatsApp or Discord, never a person's data), and the owner ruled a phone number is not something
+# to store on the PC. The data of someone of the person's own life is theirs: it was searched on the web or guessed;
+# the honest turn is the plain limit.
+_CONTACT_BOOK = (
+    r"\b(?:contactos|contacts|agenda\s+(?:telefonica|de\s+contactos|de\s+telefonos)|libreta\s+de\s+direcciones|"
+    r"address\s+book|phone\s*book|directorio\s+telefonico)\b|"
+    r"\b(?:un|una|el|mi|este|ese|al|del|nuevo|a|an|the|my|this|that|new)\s+(?:contacto|contact)\b"
+)
+# «contacto» that is not an entry of the book: being in touch, the eye, a lens, a form; «la información de contacto
+# de X» is a datum, and whose it is decides (below).
+_NOT_THE_BOOK = (
+    r"\b(?:en|in)\s+contacto\b|\bcontacto\s+(?:visual|fisico|directo)\b|\b(?:eye|physical|close)\s+contact\b|"
+    r"\b(?:lentes?|lentillas?)\s+de\s+contacto\b|\bcontact\s+lens(?:es)?\b|"
+    r"\b(?:informacion|info|datos|numero|telefono|correo|formulario|pagina|persona|punto)\s+de\s+contacto\b|"
+    r"\bcontact\s+(?:info|information|details|number|form|page|us|person)\b"
+)
+# Keeping something in the book, however «contacto» is said (LIMITS1665 «agregá a Juan a mis contactos»).
+_KEEPING_IN_THE_BOOK = (
+    r"\b(?:contactos?|contacts?|agenda\s+telefonica|address\s+book|libreta\s+de\s+direcciones)\b",
+    r"\b(?:agrega|agregar|agregame|anade|anadir|guarda|guardar|guardame|agenda|agendar|agendame|mete|meter|suma|"
+    r"sumar|add|save|store|put)\b",
+)
+# «agendá a Lucía con el número…»: a name kept with its number.
+_KEPT_WITH_ITS_NUMBER = (
+    r"\b(?:agenda|agendame|guarda|guardame|anota|anotame|save|add)\s+(?:a\s+)?\w+\s+(?:con\s+el|with\s+the)\s+"
+    r"(?:numero|number|telefono|phone)\b"
+)
+# What the book holds about someone.
+_CONTACT_DATUM = (
+    r"(?:direccion(?:\s+de\s+(?:correo(?:\s+electronico)?|e-?mail))?|domicilio|(?:e-?mail\s+|mail\s+|home\s+)?address|"
+    r"(?:numero|number)(?:\s+de\s+(?:telefono|celular|movil|whatsapp))?|telefono|celular|"
+    r"(?:phone|cell|mobile)(?:\s+number)?|area\s+code|codigo\s+de\s+area|prefijo|"
+    r"(?:informacion|info|datos|detalles|details)(?:\s+de\s+contacto)?|contact\s+(?:info|information|details|number))"
+)
+# «el correo de juan» is also the mail Juan sent: it is his address only when asked for as a datum.
+_MAIL_DATUM = r"(?:correo(?:\s+electronico)?|e-?mail|mail)"
+_ASKS_FOR_A_DATUM = (
+    r"^(?:(?:cual|what|which)(?:\s+(?:es|era|is|was))?|whats|dame|dime|decime|pasame|give\s+me|tell\s+me|"
+    r"necesito|i\s+need|sabes|do\s+you\s+know|busca|find|look\s+up)\b"
+)
+# Someone of the person's own life, as the owner of a datum: a role said as theirs («mi jefe», «my boss»), a
+# relative («mom», «la abuela»), a given name (lexicon.GIVEN_NAMES) or an entry of the book («un contacto»).
+_OWN_ROLE = (
+    r"(?:mi|mis|my|our|nuestr[oa]s?)\s+(?:\w+\s+)?(?:jef[ea]s?|boss|manager|gerente|supervisor[a]?|herman[oa]s?|"
+    r"brothers?|sisters?|amig[oa]s?|friends?|buddy|novi[oa]|boyfriend|girlfriend|espos[oa]|marido|mujer|wife|"
+    r"husband|pareja|partner|mama|mami|papa|papi|madre|padre|mother|father|mom|mum|dad|hij[oa]s?|sons?|"
+    r"daughters?|abuel[oa]s?|grandma|grandpa|grandmother|grandfather|ti[oa]s?|uncle|aunt|prim[oa]s?|cousins?|"
+    r"sobrin[oa]s?|nephew|niece|suegr[oa]s?|cunad[oa]s?|vecin[oa]s?|neighbou?rs?|companer[oa]s?|colegas?|"
+    r"coworkers?|colleagues?|roommates?|doctor[a]?|medic[oa]|dentista|dentist|profe(?:sor[a]?)?|teacher|"
+    r"abogad[oa]|lawyer|contador[a]?|accountant|entrenador[a]?|coach|cliente|client|asistente|assistant|"
+    r"secretari[oa]|secretary|ninera|babysitter|plomero|plumber|electricista|electrician|peluquer[oa]|"
+    r"hairdresser|mecanico|mechanic|casero|landlord)\b"
+)
+_BOOK_ENTRY = r"(?:un|una|el|este|ese|a|the|this|that)\s+contacto?\b"
+
+
+def _person_of_their_life(owner: str) -> bool:
+    """The folded words right after «de/para/of/for», or before «'s», name someone of the person's own life."""
+
+    words = owner.split()
+    first = re.sub(r"['’]s$", "", words[0]) if words else ""
+    return (
+        re.match(rf"(?:{_OWN_ROLE}|{_BOOK_ENTRY}|{_OWN_RELATIVE})", owner) is not None
+        # A full name («billy crystal», «jessica alba») is someone public; a bare given name is someone known.
+        or (first in GIVEN_NAMES and _bare_given_name(" ".join([first, *words[1:3]])))
+    )
+
+
+def _datum_of_someone_of_their_life(folded: str) -> bool:
+    datum = rf"(?:{_CONTACT_DATUM}|{_MAIL_DATUM})" if _has(folded, _ASKS_FOR_A_DATUM) else _CONTACT_DATUM
+    for found in re.finditer(rf"\b{datum}\s+(?:de|del|para|of|for)\s+(?P<owner>\S.*)$", folded):
+        if _person_of_their_life(found.group("owner")):
+            return True
+    # «mom's email address», «my brother's new address», «juan phone number» (a bare name right before the datum).
+    for found in re.finditer(rf"\b(?P<owner>(?:(?:my|our)\s+)?[a-z]+['’]s)(?=\s+(?:\w+\s+)?{datum}\b)", folded):
+        if _person_of_their_life(found.group("owner")):
+            return True
+    if any(found.group("owner") in GIVEN_NAMES for found in re.finditer(rf"\b(?P<owner>[a-z]+)(?=\s+{datum}\b)", folded)):
+        return True
+    # «la nueva dirección de correo de juan que añadí el viernes», «the email address for bill that i added».
+    return _has(
+        folded,
+        rf"\b{datum}\b.{{0,60}}\b(?:que\s+(?:anadi|agregue|guarde|anote|puse)|that\s+i\s+(?:added|saved|stored|put))\b",
+    )
+
+
+def contact_book_request(text: str) -> bool:
+    """A request about the person's address book: keeping, finding, counting or reading its entries, or a datum
+    (address, number, mail, details) of someone of their own life (see above). Not a message to send."""
+
+    folded = _strip_request_envelope(_fold(text)).strip(" .!?¿¡")
+    if (
+        not folded
+        or len(folded) > 400
+        or _negative_action_forms(folded)
+        # «cómo agrego un contacto en mi celular» asks how it is done, not for the book.
+        or _has(folded, r"^(?:como|how)\b(?!\s+(?:many|much)\b)")
+        or inbox_read_request(text)
+        or message_draft_request(text) is not None
+        or message_request_any_channel(text) is not None
+        # «envía un correo a un nuevo contacto»: the mail is sent once its address is said.
+        or email_request_without_address(text)
+    ):
+        return False
+    return (
+        (_has(folded, _CONTACT_BOOK) and not _has(folded, _NOT_THE_BOOK))
+        or all(_has(folded, part) for part in _KEEPING_IN_THE_BOOK)
+        or _has(folded, _KEPT_WITH_ITS_NUMBER)
+        or _datum_of_someone_of_their_life(folded)
+    )

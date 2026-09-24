@@ -77,6 +77,8 @@ def agenda_read_request(text: str) -> bool:
         # reminders are scheduled and listed by their own readers.
         or _has(folded, r"\b(?:recordatorios?|reminders?|alarmas?|alarms?|alertas?|alerts?|avisos?|"
                         r"notificacion(?:es)?|notifications?|despertador)\b")
+        # «cuántos contactos tengo en mi agenda»: the address book, not the calendar (messaging.contact_book_request).
+        or _has(folded, r"\b(?:contactos?|contacts?|telefonos|numeros\s+de\s+telefono|phone\s+numbers)\b")
     ):
         return False
     head = _request_head(folded)

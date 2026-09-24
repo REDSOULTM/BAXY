@@ -7953,6 +7953,10 @@ def _decide_turn_result(
         if non_target_language is not None
         else _talk_act_turn_decision(objective, explicit_intent, turn_reading.clarification)
     )
+    # A request the readers prove has no operation (the known unsupported contracts).
+    known_limit_requested = effect_request_is_authoritative(objective) and known_unsupported_effect_request(
+        objective, available_operations,
+    )
     explicit_conversation_decision = (
         _explicit_unsupported_turn_decision(objective)
         if non_target_language is not None
@@ -7965,13 +7969,7 @@ def _decide_turn_result(
             unresolved_compound_effects is not None
             and unsupported_effect_demonstration_request(objective)
         )
-        or (
-            effect_request_is_authoritative(objective)
-            and known_unsupported_effect_request(
-                objective,
-                available_operations,
-            )
-        )
+        or known_limit_requested
         else catalog_unavailable_decision
         or _explicit_social_turn_decision(
             objective,
@@ -8005,6 +8003,9 @@ def _decide_turn_result(
         and non_target_language is None
         and stable_no_effect_decision is not None
         and stable_no_effect_decision.get("conversation_kind") == "knowledge"
+        # Dev corpus 2026-09-23 «what is mom's email address»: a «what is» question the readers prove is a
+        # request with no operation keeps its limit; the shape verifier answered it from memory.
+        and not known_limit_requested
         and callable(verify_shape)
     ):
         try:
