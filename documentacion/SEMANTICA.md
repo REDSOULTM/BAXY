@@ -94,7 +94,8 @@ con antecedente es el objeto de ese antecedente, nunca «lo que esté delante».
 | `intent.py`, `catalog.py`, `temporal.py` | el tipo de lectura (`EffectIntent`), los índices de apps y juegos instalados, las palabras de tiempo | compartidos por varios dominios: ningún dominio importa de otro para esto |
 | dominios | `audio`, `display`, `windows`, `media`, `web`, `files`, `games`, `network`, `system`, `notes`, `messaging`, `ui`, `apps` | los lectores acíclicos que estaban en `effect_intent` (19 140 → 13 133 líneas). Traslado puro: las 4 946 lecturas del patrón del corpus son idénticas antes y después (`pattern_dump`) |
 | `levels.py` | los niveles de salida (volumen del sistema, brillo) dichos sin objeto, mezclando idiomas, secos («Brillo 20%») o como respuesta a «¿cuánto?» | no decide efectos: reescribe el pedido en la frase canónica que ya leen los lectores de volumen y brillo (`patterns.output_level_request`); una cantidad suelta sólo completa el pedido relativo inmediatamente anterior, «a 40» es el nivel final y «20» lo que se mueve; sin cantidad pregunta cuánto (H0027) |
-| `reading.py` | la puerta `read(text, …) -> Reading` y las formas de enunciado (orden tras charla, destino delante, deseo de escuchar, cláusulas de una compuesta y su oferta parcial, charla que no pide nada) | `__main__._decide_turn_result` consume la lectura; el conteo «una sola resolución por turno» sigue probado (`test_turn_resolves_explicit_effects_only_once`) |
+| `surface.py` | la superficie canónica: las palabras con que la persona nombra algo servido y que ningún lector conoce («speaker/bocina/parlante» → «el audio», «hacer sonar» → «poner», «quiero/me apetece que + subjuntivo» → imperativo, «inactivar» → «desactivar», «gallery/galería» → «carpeta de imágenes», «añadir una lista» → «crea una lista», «pon en pausa» → «pausa»), con su tabla en `lexicon` | como `levels`, no decide efectos: antes de publicar un límite, `__main__._served_surface_reread` relee la reescritura con los lectores y las guardas de siempre (tanda 3, 2026-09-24) |
+| `reading.py` | la puerta `read(text, …) -> Reading` y las formas de enunciado (orden con charla alrededor, destino delante, deseo de escuchar, cláusulas de una compuesta y su oferta parcial, charla que no pide nada) | `__main__._decide_turn_result` consume la lectura; el conteo «una sola resolución por turno» sigue probado (`test_turn_resolves_explicit_effects_only_once`) |
 | `patterns.py` | el orquestador del patrón: `resolve_explicit_effects`, `resolve_explicit_clarification_intent`, las revisiones por dominio que se llaman entre sí, los contratos compuestos | salió entero de `effect_intent` (traslado puro, 0 diferencias en 4 946 lecturas); `effect_intent` queda como capa de re-exportación de 687 líneas mientras los llamadores migran |
 
 Formas nuevas (Fase 3.5, cada una con pruebas de frases que no son las que la originaron):
@@ -106,8 +107,20 @@ Formas nuevas (Fase 3.5, cada una con pruebas de frases que no son las que la or
   Cláusulas por coordinación: heredado de Carter v4 (`mission_goal._MULTISTEP_SEPARATORS`); una cláusula cuenta si
   empieza por una orden, por lista o por la forma del imperativo (idea de Carter v3, `request_patterns.looks_imperative`),
   así «abre Ratchet y Clank» sigue siendo un nombre.
-- **Orden después de charla** (`_order_after_talk`): «Me encanta cómo lo definís, oye, hablando de amor, pon una canción
-  de amor en YouTube» → la cola con la orden; no si lo anterior es una condición («si llueve, …») o habla citada.
+- **Orden con charla alrededor** (`_order_with_talk`): «Me encanta cómo lo definís, oye, hablando de amor, pon una canción
+  de amor en YouTube» → la cola con la orden; no si lo anterior es una condición («si llueve, …») o habla citada. Y
+  la orden dicha antes de la charla («para la música, me va a explotar la cabeza», tanda 3) → la orden; no si lo que
+  sigue es otra orden, una condición, una corrección («digo…», «no, mejor no») o más de la misma orden («algo
+  tranquilo», «al 50»).
+- **Límite sólo de lo que no se sabe hacer** (`__main__._served_surface_reread`, tanda 3): antes de publicar
+  «no hago eso» el turno relee la superficie canónica (`surface.py`). Lo que los lectores prueban se hace, lo que
+  falta se pregunta, y una operación servida que sólo la reescritura fundamenta (la guarda de dominio curada, y
+  para apps y juegos su identidad instalada) se vuelve a decidir sobre la reescritura; si el modelo vuelve a
+  negarse, se pregunta la invocación exacta. Un límite de lo que BAXY no tiene («prende la smart camera», «pide un
+  taxi») conserva sus palabras y sigue siendo límite. El código se escribe en la conversación
+  (`conversation_only_content_request`), y restaurar o tirar una nota exige nombrar una nota. «Muéstrame la
+  carpeta de imágenes» o «mis fotos» son las imágenes del PC, nunca una imagen bajada de la web
+  (`web.web_image_request`).
 - **Destino delante** (`_fronted_place_request`): «en YouTube pon una canción» se lee como «pon una canción en YouTube».
 - **Opinión de una obra pública y hecho fechado** (`semantic/web.public_opinion_query`, `record_fact_query`):
   «¿la nueva peli de X es buena?», «¿X vale la pena?», «qué piensa la gente de X», «cuál fue el primer libro de…»,

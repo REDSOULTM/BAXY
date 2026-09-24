@@ -83,7 +83,7 @@ def _resolve_orders(tail: str) -> EffectIntent | None:
     ],
 )
 def test_the_order_after_talk_is_the_request(text):
-    found = mind._order_after_talk(text, _resolve_orders)
+    found = mind._order_with_talk(text, _resolve_orders)
     assert found is not None and found.evidence[0].lower().startswith(("poné", "abrí", "subí"))
 
 
@@ -97,7 +97,7 @@ def test_the_order_after_talk_is_the_request(text):
     ],
 )
 def test_conditions_and_reported_speech_do_not_become_orders(text):
-    assert mind._order_after_talk(text, _resolve_orders) is None
+    assert mind._order_with_talk(text, _resolve_orders) is None
 
 
 def test_a_dictated_literal_without_its_closing_quote_is_still_the_literal():

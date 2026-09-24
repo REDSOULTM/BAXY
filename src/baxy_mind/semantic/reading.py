@@ -67,16 +67,30 @@ _LEAD_NOT_TALK = re.compile(
 )
 
 
-def _order_after_talk(
+# What follows an order and is not talk about it: a correction, a coordination, or more of the order itself
+# (a place, an amount, «algo tranquilo», «al 50»).
+_NOT_TALK_AFTER_ORDER = re.compile(
+    r"^[¿¡\s]*(?:no\s*[,.;!]|(?:no\s+(?:mejor|espera|perdon|era|es)|mejor|digo|perdon|quiero\s+decir|o\s+sea|"
+    r"espera|wait|sorry|i\s+mean|actually|rather|instead|pero|but|y|e|and|o|u|or|luego|despues|then|"
+    r"el|la|los|las|lo|un|una|unos|unas|algo|al|a|en|de|del|con|para|por|sin|hasta|desde|hacia|"
+    r"the|an|some|to|in|on|at|with|for|from|\d)\b)"
+)
+
+
+def _order_with_talk(
     objective: str,
     resolve: Callable[[str], EffectIntent | None],
 ) -> EffectIntent | None:
-    """The order said after talk («Me encanta cómo lo definís, oye, hablando de amor,
-    pon una canción de amor en YouTube»): owner test 2026-09-21 turn 15.
+    """The order said with talk around it.
 
-    The pattern reads whole requests; talk before the order hid it. The tail from
-    the first clause the pattern resolves on its own is the request, when no earlier
-    clause is an order, a condition, reported speech or a negation.
+    After talk («Me encanta cómo lo definís, oye, hablando de amor, pon una canción de amor en YouTube», owner
+    test 2026-09-21 turn 15): the pattern reads whole requests and talk before the order hid it. The tail from
+    the first clause the pattern resolves on its own is the request, when no earlier clause is an order, a
+    condition, reported speech or a negation.
+
+    Before talk («para la música, me va a explotar la cabeza», tanda 3 2026-09-24, answered with chat): the
+    first clause is an order the pattern resolves on its own and what follows is only said about it — not an
+    order, a condition, reported speech, a correction or more of the order.
     """
 
     parts = re.split(r"(?<=[,.;!?])\s+", objective.strip())
@@ -86,12 +100,21 @@ def _order_after_talk(
         lead = " ".join(parts[:index])
         folded_lead = _fold(lead)
         if _LEAD_NOT_TALK.search(folded_lead) or _OVERHEARD_ACTION_WORDS.search(folded_lead):
-            return None
+            break
         tail = " ".join(parts[index:]).strip()
         found = resolve(tail)
         if found is not None:
             return found
-    return None
+    said_after = _fold(" ".join(parts[1:]))
+    if (
+        not _clause_starts_with_order(parts[0])
+        or _NOT_TALK_AFTER_ORDER.match(said_after)
+        or _LEAD_NOT_TALK.search(said_after)
+        or _OVERHEARD_ACTION_WORDS.search(said_after)
+        or _TALK_EXTRA_ORDER.search(said_after)
+    ):
+        return None
+    return resolve(parts[0].strip(_CLAUSE_EDGE_PUNCTUATION))
 
 
 _FRONTED_PLACE = re.compile(
@@ -337,7 +360,7 @@ def read(
     source = "pattern" if effects is not None else ""
     if effects is None:
         for name, form in (
-            ("order_after_talk", _order_after_talk),
+            ("order_with_talk", _order_with_talk),
             ("fronted_place", _fronted_place_request),
             ("addressed", _addressed_request),
             ("desired_media", _desired_media_request),

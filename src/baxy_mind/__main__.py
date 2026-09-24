@@ -40,6 +40,7 @@ from .semantic import dialogue as dialogue_slot
 from .semantic import levels as semantic_levels
 from .semantic import lexicon as semantic_lexicon
 from .semantic import reading as semantic_reading
+from .semantic import surface as semantic_surface
 from .semantic.grammar import ARITHMETIC_EXPRESSION, SPOKEN_NUMBER
 from .semantic.patterns import output_level_request
 from .semantic.notes import agenda_event_request, stated_event_reminder
@@ -135,7 +136,7 @@ from .semantic.reading import (  # noqa: F401 - moved to baxy_mind.semantic.read
     _coordinated_clauses,
     _clause_starts_with_order,
     _LEAD_NOT_TALK,
-    _order_after_talk,
+    _order_with_talk,
     _FRONTED_PLACE,
     _desired_media_request,
     _fronted_place_request,
@@ -2518,6 +2519,84 @@ def _catalog_answers_the_request(
         except Exception:  # noqa: BLE001 - a silent verifier keeps the refusal
             return ""
     return ""
+
+
+def _served_surface_reread(
+    message: dict[str, Any],
+    objective: str,
+    history: object,
+    *,
+    llm: Any,
+    planner_catalog: PlannerCatalog,
+    turn_evidence: TurnEvidenceService,
+    encoder: Callable[[Any], Any],
+    tool_by_name: dict[str, dict],
+    application_names: tuple[str, ...] | ApplicationCatalogIndex,
+    game_catalog: GameCatalogIndex,
+    on_signal: Callable[[dict[str, Any]], None] | None,
+    already_signaled: list[bool],
+) -> dict[str, Any] | None:
+    """The turn decided again on the canonical surface of a request about to be refused, or None.
+
+    Only when the rewrite (``semantic.surface``) reads as a served request: the readers prove an effect or
+    a missing value in it, or the curated domain gate grounds in it a served operation that the words as
+    said did not name. Asking the catalogue about every refusal was measured and rejected (see the public
+    lookup comment in ``_decide_turn_result``): the nearest neighbours of an out-of-catalogue request turned
+    honest limits into questions. Here the evidence is a word the readers know standing where the person
+    said another one; a limit of something BAXY does not have keeps its words and stays a limit.
+    """
+
+    canonical = semantic_surface.canonical(objective)
+    if canonical is None:
+        return None
+    previous = _previous_user_request(history if isinstance(history, list) else [], objective)
+    reading = semantic_reading.read(
+        canonical,
+        available_operations=tuple(tool.name for tool in planner_catalog.tools),
+        application_names=application_names,
+        game_catalog=game_catalog,
+        previous_user_text=previous,
+    )
+    family: tuple[str, ...] = ()
+    if reading.effects is None and reading.clarification is None:
+        family = next(
+            (
+                (tool.name,)
+                for tool in planner_catalog.shortlist(canonical)[:4]
+                if operation_domain_is_grounded(canonical, tool.name, application_names) is True
+                and operation_domain_is_grounded(objective, tool.name, application_names) is not True
+                # An application or a game is grounded by its installed identity, as the domain veto
+                # grounds it; an open verb alone («abre la puerta») names neither.
+                and (tool.name != "app.open" or resolve_application_catalog_app_id(canonical, application_names))
+                and (tool.name != "game.launch" or resolve_game_catalog_app_id(canonical, game_catalog))
+            ),
+            (),
+        )
+        if not family:
+            return None
+    turns = list(history) if isinstance(history, list) else []
+    if turns and isinstance(turns[-1], dict) and turns[-1].get("role") == "user":
+        turns[-1] = {**turns[-1], "content": canonical}
+    try:
+        result = _decide_turn_result(
+            {**message, "text": canonical, "history": turns},
+            llm=llm,
+            planner_catalog=planner_catalog,
+            turn_evidence=turn_evidence,
+            encoder=encoder,
+            tool_by_name=tool_by_name,
+            application_names=application_names,
+            game_catalog=game_catalog,
+            on_signal=on_signal,
+            served_surface=family,
+            already_signaled=already_signaled,
+        )
+    except PlannerContractError:
+        # A re-read that breaks its own turn contract adds nothing: the limit already decided stands.
+        return None
+    # The shell plans, confirms and resumes the words that were read.
+    result.setdefault("objective", canonical)
+    return result
 
 
 def _recogniser_identity_holds(
@@ -7401,9 +7480,15 @@ def _decide_turn_result(
     application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
     game_catalog: GameCatalogIndex = GameCatalogIndex(),
     on_signal: Callable[[dict[str, Any]], None] | None = None,
+    served_surface: tuple[str, ...] | None = None,
+    already_signaled: list[bool] | None = None,
 ) -> dict[str, Any]:
-    """Decide one side-effect-free turn result from the (rearmed) request."""
-    already_signaled: list[bool] = []
+    """Decide one side-effect-free turn result from the (rearmed) request.
+
+    ``served_surface`` is None on the request as said; on the re-read of its canonical surface
+    (``_served_surface_reread``) it holds the served operation that only the rewrite named, if any.
+    """
+    already_signaled = [] if already_signaled is None else already_signaled
 
     objective = str(message.get("text", ""))
     history = message.get("history") or []
@@ -8500,6 +8585,59 @@ def _decide_turn_result(
         turn_audit["stages"].append(
             _turn_audit_stage("compound_partial_offer", decision)
         )
+
+    # Tanda 3 2026-09-24: «Pausa el speaker.», «me apetece que hagas sonar algo
+    # alegre», «Muéstrame mi Gallery.» were published as «no hago eso» about
+    # things the catalog serves, named with words no reader knows. Before a limit
+    # is published the request is re-read in its canonical surface; on that
+    # re-read, a served operation only the rewrite named is asked about, never
+    # denied (00_IDENTIDAD: dice que no sólo a lo que no sabe hacer).
+    if (
+        decision["mode"] == "conversation"
+        and decision.get("conversation_kind") == "unsupported"
+        and non_target_language is None
+    ):
+        if served_surface is None:
+            reread = _served_surface_reread(
+                message,
+                objective,
+                history,
+                llm=llm,
+                planner_catalog=planner_catalog,
+                turn_evidence=turn_evidence,
+                encoder=encoder,
+                tool_by_name=tool_by_name,
+                application_names=application_names,
+                game_catalog=game_catalog,
+                on_signal=on_signal,
+                already_signaled=already_signaled,
+            )
+            if reread is not None:
+                # The re-read writes its own final row; this one records the limit it replaced.
+                turn_audit["phase"] = "served_surface_reread"
+                turn_audit["reread_objective"] = reread.get("objective")
+                _append_turn_audit(turn_audit)
+                return reread
+        elif served_surface:
+            question = _domain_confirmation_question(objective, served_surface, tool_by_name, llm)
+            if question:
+                decision = validate_turn_decision(
+                    {
+                        "mode": "clarify",
+                        "operation": None,
+                        "question": question,
+                        "conversation_kind": "",
+                        "effect_count": "zero",
+                        "effect_operations": [],
+                        "effect_verification": "not_applicable",
+                        "response_language": decision.get("response_language"),
+                    },
+                    {tool.name for tool in shortlist},
+                )
+                intent_operations = list(served_surface)
+                turn_audit["stages"].append(
+                    _turn_audit_stage("served_surface_question", decision)
+                )
 
     reply_text = ""
     # El idioma con el que se redacta la respuesta viaja con ella: el shell no

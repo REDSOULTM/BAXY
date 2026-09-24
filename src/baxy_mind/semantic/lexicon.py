@@ -134,3 +134,34 @@ GIVEN_NAMES = frozenset(
     ava ella ellie jessie
     """.split()
 )
+
+# ---------------------------------------------------------------- the canonical surface (semantic.surface)
+# Tanda 3 (2026-09-24): words people use for something BAXY serves that no reader knows by that word. Each maps to
+# the word the readers read; ``semantic.surface`` rewrites them before a limit is published.
+# «hacer sonar» is «poner» (each form of «hacer» to the same form of «poner»).
+MAKE_SOUND_FORMS = {
+    "haz": "pon", "hazme": "ponme", "hace": "pone", "haceme": "poneme", "hacer": "poner", "hacerme": "ponerme",
+    "hagas": "pongas", "haga": "ponga", "hagan": "pongan", "hagamos": "pongamos",
+}
+# What rings rather than plays: «haz sonar el timbre» is not «pon el timbre».
+RINGING_THINGS = frozenset(
+    {"timbre", "campana", "campanas", "sirena", "claxon", "bocina", "celular", "telefono", "movil", "phone"}
+)
+# «inactivar» is «desactivar», in every form.
+INACTIVE_STEM = "inactiv"
+# What people call the pictures folder of this PC.
+GALLERY_NOUNS = frozenset({"gallery", "galeria", "galerias"})
+# A desire said before «que» + the order in the subjunctive: «me apetece que pongas…», «quiero que me abras…».
+DESIRE_FRAMES = frozenset(
+    {
+        "quiero", "quisiera", "queria", "necesito", "me gustaria", "me encantaria", "me apetece", "me provoca",
+        "se me antoja", "tengo ganas de", "te pido",
+    }
+)
+# The tú subjunctive whose imperative the ending rules below do not give.
+IRREGULAR_IMPERATIVES = {
+    "pongas": "pon", "hagas": "haz", "digas": "di", "vayas": "ve", "tengas": "ten", "salgas": "sal",
+    "vengas": "ven", "sigas": "sigue", "detengas": "deten", "leas": "lee", "veas": "ve", "elijas": "elige",
+}
+# The list itself as what is added: «añadir una nueva lista» creates the list.
+LIST_ADD_VERBS = frozenset({"anade", "anadir", "anademe", "agrega", "agregar", "agregame", "add"})

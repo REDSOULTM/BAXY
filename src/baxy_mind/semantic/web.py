@@ -1665,6 +1665,12 @@ def web_image_request(text: str) -> tuple[str, bool] | None:
     folded = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.")
     if _negative_action_forms(folded):
         return None
+    if re.search(
+        rf"\b(?:carpetas?|folders?|directorio|galerias?|gallery)\b|\b(?:mi|mis|my)\s+{_WEB_IMAGE_NOUN}\b", folded,
+    ):
+        # Tanda 3 2026-09-24: «muéstrame la carpeta de imágenes», «muéstrame mis fotos» are the pictures of
+        # this PC, never an image downloaded from the web.
+        return None
     match = re.search(
         rf"(?:(?P<before>(?:[a-z]+\s+){{0,2}}?))\b(?P<noun>{_WEB_IMAGE_NOUN})\b"
         rf"(?:\s+(?P<subject>(?:de|del|de\s+la|de\s+los|de\s+las|of|about|sobre|con|with)\s+.+?))?\s*$",

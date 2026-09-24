@@ -532,8 +532,8 @@ def _contextual_output_level_target(
 def _uncovered_family_floor(folded: str, operation: str) -> bool | None:
     """Require the object class for families no curated rule reaches.
 
-    Only ``filesystem.`` is floored today, because that is where an unsolicited
-    effect was actually observed. The remaining uncovered families are recorded
+    Only ``filesystem.`` and the note selectors are floored today, because that is
+    where an unsolicited effect was actually observed. The remaining uncovered families are recorded
     as an open defect with their count rather than papered over here: adding
     rules for families no measurement has implicated would be the same
     hand-maintained treadmill this gate is already stuck on.
@@ -541,6 +541,10 @@ def _uncovered_family_floor(folded: str, operation: str) -> bool | None:
 
     if operation.startswith("filesystem."):
         return _has(folded, _FILESYSTEM_OBJECT_NOUN)
+    if operation in {"note.restore", "note.trash"}:
+        # Tanda 3 2026-09-24 «reanudar la lectura de la lección de francés» executed note.restore with no
+        # note to select and showed «argumentos inválidos». Restoring or trashing a note must name a note.
+        return _has(folded, r"\b(?:notas?|notes?|apuntes?|anotacion(?:es)?)\b")
     return None
 
 
@@ -1745,6 +1749,13 @@ def _strip_explicit_no_action_frame(folded: str) -> str:
     return re.sub(_EXPLICIT_NO_ACTION_INSTRUCTION_FRAME, "", folded).strip()
 
 
+# A programming language named after a program, code or an app («un programa en java», «a java program»).
+_CODE_LANGUAGE = (
+    r"(?:java|python|c|c\+\+|c#|javascript|typescript|go|rust|kotlin|swift|php|ruby|sql|bash|powershell|"
+    r"html|matlab|scala|lua|dart|pascal|cobol|haskell)(?![\w+#])"
+)
+
+
 def conversation_only_content_request(text: str) -> bool:
     """Recognize self-contained content work with no external effect.
 
@@ -1807,7 +1818,20 @@ def conversation_only_content_request(text: str) -> bool:
         r"resume|cover\s+letter|essay|poem|letter|template|outline|table)\b|"
         r"^(?:formato|plantilla|ejemplo|modelo|template|example)\s+(?:de|of)\b.{1,96}$|"
         r"^(?:buscame|busca|dame|decime|dime|find\s+me|give\s+me)\b.{0,32}"
-        r"\b(?:palabras|words|sinonimos|synonyms|antonimos|antonyms|rimas|rhymes)\b.{0,96}$",
+        r"\b(?:palabras|words|sinonimos|synonyms|antonimos|antonyms|rimas|rhymes)\b.{0,96}$|"
+        # Tanda 3 2026-09-24 «¿puedes crear un programa en java para resolver una ecuación…?» → «No creo
+        # programas en java»: code is written in the conversation like any other text. Code, a program or an
+        # app is code with its language named; a script, a function or an algorithm always is. Saving or
+        # opening it somewhere is an effect, not a draft.
+        r"^(?![^\n]{0,160}\b(?:carpeta|folder|guarda|guardalo|guardala|guardar|save|escritorio|desktop|"
+        r"abre|abrelo|open|ejecuta|ejecutalo|run|envia|send)\b)[¿¡\s]*"
+        r"(?:crea|crear|creame|escribe|escribir|escribeme|escribime|haz|hazme|hacer|haceme|genera|generar|"
+        r"generame|programa|programame|dame|desarrolla|codea|necesito|quiero|"
+        r"me\s+(?:escribes|escribis|haces|creas|generas|programas|das)|"
+        r"create|write|make|build|generate|code|give\s+me|i\s+need|i\s+want)\b"
+        r".{0,48}\b(?:(?:script|funcion|function|algoritmo|algorithm|snippet)\b|"
+        rf"(?:programa|program|codigo|code|app|aplicacion|clase|class)\b.{{0,32}}\b(?:en|in)\s+{_CODE_LANGUAGE}|"
+        rf"{_CODE_LANGUAGE}\s+(?:program|programs|code|app|class|script|function)\b)",
     )
 
 

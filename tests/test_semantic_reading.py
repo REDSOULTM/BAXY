@@ -17,7 +17,7 @@ OPERATIONS = ("app.open", "media.play.youtube", "audio.volume", "audio.volume.ad
     ("text", "operations", "source"),
     [
         ("abrí la calculadora", ("app.open",), "pattern"),
-        ("qué lindo día, che, poné música de Brasil en youtube", ("media.play.youtube",), "order_after_talk"),
+        ("qué lindo día, che, poné música de Brasil en youtube", ("media.play.youtube",), "order_with_talk"),
         ("en YouTube poné una canción de cuna", ("media.play.youtube",), "fronted_place"),
         ("quiero escuchar música de Brasil", ("media.play.youtube",), "desired_media"),
     ],
