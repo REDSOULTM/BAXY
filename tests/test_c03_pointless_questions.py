@@ -284,7 +284,9 @@ def test_public_information_is_looked_up_before_the_catalogue_is_offered(text: s
 
 def test_the_catalogue_probe_still_speaks_when_the_guard_reads_no_public_lookup() -> None:
     llm = _PublicKnowledgeLlm(public=False)
-    result = _public_turn(llm, "qué hora es en tokio")
+    # «qué hora es en tokio» is now read before the model as a public lookup
+    # (other_place_clock_question); a question no reader takes keeps the probe.
+    result = _public_turn(llm, "dime la hora que marca el reloj de la cocina")
 
     # Unchanged when the guard does not read public information: the probe is
     # still asked, and nothing is dispatched by its question.
