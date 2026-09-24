@@ -8274,18 +8274,32 @@ def _search_report_unsourced_claim(text: str, payload: dict, user_text: str) -> 
 _PAGE_FIRST_PERSON_PLURAL = re.compile(
     r"\b(?:nuestr[oa]s?|nosotr[oa]s|hemos|(?:le|les|te|os)\s+[a-z]+mos|our|ours)\b"
 )
+# Uso real tanda 6 «sería genial cenar en este nuevo restaurante…» → «Descubre los mejores restaurantes abiertos cerca
+# de ti. Consulta menús, reseñas, fotos…»: a sentence that opens by telling the reader to discover, check or browse is
+# the page's call to its visitor, not an answer. Read with its accents: «consulté», «busqué» are BAXY's own past,
+# «consulte», «busca» the page's order.
+_PAGE_CALL_TO_READER = re.compile(
+    r"(?:^|(?<=[.!?;:]))\s*[¿¡]?\s*(?:descubr[ea]|consult[ae]|explor[ae]|encuentr[ae]|conoc[ea]|conozca|"
+    r"compar[ae]|reserv[ae]|elige|elija|busca|visit[ae]|acced[ea]|disfrut[ae]|suscríbete|regístrate|"
+    r"descarga|descargue|check|discover|explore|find|view|browse|read|watch|learn|compare|book|visit|enjoy|"
+    r"subscribe|sign\s+up|download|get)\b(?!\s*,)"
+)
 
 
 def _search_report_speaks_as_a_page(text: str, payload: dict, user_text: str) -> bool:
-    """The report of a verified search speaks in the first person plural of a page."""
+    """The report of a verified search speaks as a page: its first person plural, or its call to the reader."""
 
     if _search_results_text(payload) is None:
         return False
-    unquoted = _reading_fold(re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(text)))
+    unquoted = re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(text))
     asked = _reading_fold(user_text or "")
     return any(
-        re.search(r"\b" + re.escape(found[0]) + r"\b", asked) is None
-        for found in _PAGE_FIRST_PERSON_PLURAL.finditer(unquoted)
+        re.search(r"\b" + re.escape(_reading_fold(found.group()).strip(" ¿¡")) + r"\b", asked) is None
+        for pattern, said in (
+            (_PAGE_FIRST_PERSON_PLURAL, _reading_fold(unquoted)),
+            (_PAGE_CALL_TO_READER, unquoted.casefold()),
+        )
+        for found in pattern.finditer(said)
     )
 
 
@@ -8298,7 +8312,10 @@ _SEARCH_ATTRIBUTION = re.compile(
     r"\b(?:segun|according\s+to|de\s+acuerdo\s+con|citing|cita\s+a)\s+(?:(?:el|la|los|las|un|una|the|an?)\s+)?"
     r"(?:[\w-]+\.(?:com|org|net|es|cl|mx|ar|co|info|gov|edu|io|uk|de|fr|cat|pe|us)\b|"
     r"(?:pagina|paginas|sitio|sitios|web|articulo|articulos|fuente|fuentes|wikipedia|page|pages|site|sites|"
-    r"website|article|articles|source|sources|result|results|resultado|resultados)\b)"
+    r"website|article|articles|source|sources|result|results|resultado|resultados|"
+    # Uso real tanda 6 «…puede ser alto según la lista de las acciones más caras del mundo»: a page's list,
+    # ranking, guide or reviews cited is the page cited.
+    r"lista|listas|list|lists|ranking|rankings|guia|guias|guide|guides|resenas|reviews)\b)"
 )
 _SEARCH_MECHANICS = re.compile(
     r"\b(?:busque|he\s+buscado|estuve\s+buscando|hice\s+una\s+busqueda|la\s+busqueda|mi\s+busqueda|"
@@ -8369,6 +8386,30 @@ def _search_report_runs_long(text: str, payload: dict, user_text: str) -> bool:
         return False
     sentences = [part for part in re.split(r"(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÑ¿¡«\"])", str(text).strip()) if part.strip()]
     return len(sentences) > 2
+
+
+def _search_report_names_a_page(text: str, payload: dict, user_text: str) -> bool:
+    """The whole answer is a result's title, or the heading its snippet opens with before a colon.
+
+    Uso real tanda 5e «dónde está el restaurante italiano mas cercano» → «Los mejores restaurantes italianos en
+    Curico, región de Curicó.»: the snippet «Los mejores restaurantes italianos en Curico, Región de
+    Curicó: Consulta en Tripadvisor opiniones…» named a listing page and no restaurant, and its heading was
+    published as the answer. A page's name states nothing the person asked."""
+
+    if _search_results_text(payload) is None:
+        return False
+    said = re.findall(r"[a-z0-9]+", _reading_fold(text))
+    if len(said) < 3:
+        return False
+    for item in _search_results_of(payload):
+        if not isinstance(item, dict):
+            continue
+        title = str(item.get("title") or "")
+        headed = re.split(r"\s*:\s+", str(item.get("snippet") or ""), maxsplit=1)
+        headings = (title, *re.split(r"\s+[-|–—]\s+|\s*:\s+", title), *(headed[:1] if len(headed) == 2 else ()))
+        if any(re.findall(r"[a-z0-9]+", _reading_fold(heading)) == said for heading in headings):
+            return True
+    return False
 
 
 def _verified_search_results(situation: dict) -> bool:
@@ -8998,6 +9039,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         return "search_report_unsourced_claim"
     if _search_report_runs_long(text, payload, user_text):
         return "search_report_runs_long"
+    if _search_report_names_a_page(text, payload, user_text):
+        return "search_report_names_a_page"
     if (
         _search_results_text(payload) is not None
         and _entity_lookup_query(user_text or "") is None
@@ -19633,8 +19676,10 @@ class LlmRuntime:
                 "it. Never mention the search, the pages, the sites or any source "
                 "(«according to …», «I searched», «I found these pages»). Never state a "
                 "temperature, forecast, condition, cause, explanation, advice or any fact "
-                "that no result contains, even if you know it. If none states what the "
-                "person asked, say briefly that you could not find it."
+                "that no result contains, even if you know it. What a page says of itself "
+                "(the best X in Y, lists, reviews, maps, videos, tools) is not the answer: say "
+                "the concrete thing asked (a name, a number, a date, a place). If none states "
+                "what the person asked, say briefly that you could not find it."
                 if response_language == "en"
                 else "\nseen.results son las páginas que devolvió la búsqueda pública "
                 "(título, url, fragmento). Contesta como un compañero que lo sabe, en una "
@@ -19643,8 +19688,10 @@ class LlmRuntime:
                 "sitios ni ninguna fuente («según …», «busqué», «encontré estas "
                 "páginas»). Nunca afirmes una temperatura, un pronóstico, un estado del "
                 "tiempo, una causa, una explicación, un consejo ni ningún dato que ningún "
-                "resultado contenga, aunque lo sepas. Si ninguno afirma lo que la persona "
-                "preguntó, di brevemente que no lo encontraste."
+                "resultado contenga, aunque lo sepas. Lo que una página dice de sí misma (los "
+                "mejores X en Y, listas, reseñas, mapas, videos, herramientas) no es la respuesta: "
+                "di lo concreto que se pidió (un nombre, un número, una fecha, un lugar). Si "
+                "ninguno afirma lo que la persona preguntó, di brevemente que no lo encontraste."
             )
             # H0463 «Busca el App ID de Doom Eternal en Steam usando la API
             # publica»: the three drafts judged the results («no es el correcto
@@ -20512,6 +20559,11 @@ class LlmRuntime:
                         else "Di sólo lo que dice algún resultado, con sus palabras; no resumas "
                         "causas por tu cuenta."
                     )
+                ),
+                "search_report_names_a_page": (
+                    "That is the name of a page, not the answer: say the concrete thing a result states (a name, a number, a date, a place) in one or two sentences; if none states it, say briefly that you could not find it."
+                    if response_language == "en"
+                    else "Eso es el nombre de una página, no la respuesta: di lo concreto que afirma algún resultado (un nombre, un número, una fecha, un lugar) en una o dos oraciones; si ninguno lo afirma, di brevemente que no lo encontraste."
                 ),
                 "search_report_runs_long": (
                     "Too long: answer in one or two short sentences with the answer itself."

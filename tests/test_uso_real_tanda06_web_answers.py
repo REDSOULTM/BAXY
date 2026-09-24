@@ -16,6 +16,11 @@ exacta…»).
    numbers are still checked), «in the results» shows the search, having «no information» is still denied, and the
    hints no longer ask for pages. Owner: llm._SEARCH_NOT_FOUND / _search_report_unsourced_words /
    _SEARCH_MECHANICS / _payload_fact_defect and the retry hints.
+3. A page's own words published as the answer: its title or snippet heading (tanda 5e t2), its call to the reader
+   («Descubre…, Consulta…», tanda 6 t46), its list cited («según la lista…», tanda 6 t41). Each falls with a hint
+   that asks for the concrete thing or «not found», and the search instruction says a page's description of itself
+   is not the answer. Owner: llm._search_report_names_a_page / _PAGE_CALL_TO_READER / _SEARCH_ATTRIBUTION and the
+   web.search compose instruction.
 
 Every list mixes Spanish, English and Spanglish and holds phrasings never seen in a run; negative controls keep what
 is not a news request out.
@@ -147,3 +152,101 @@ def test_having_no_information_is_still_denied_and_repaired_without_naming_pages
     retry = json.dumps(client.payloads[1]["messages"], ensure_ascii=False)
     assert "no lo encontraste" in retry
     assert "nombra las páginas" not in retry
+
+
+# --- 3. a page's name, its call to the reader or its list cited is not the answer -----------------------------------
+
+_ITALIAN = [
+    {"title": "Mejores restaurantes italianos en Curico - Tripadvisor", "url": "https://www.tripadvisor.cl/x",
+     "snippet": "Los mejores restaurantes italianos en Curico , Región de Curicó : Consulta en Tripadvisor "
+                "opiniones de restaurantes en Curico y busca por precio, ubicación y más ."},
+    {"title": "Los 12 mejores restaurantes italianos de Curicó", "url": "https://guia.example.cl/italianos",
+     "snippet": "Si eres un amante de la cocina italiana, has llegado al lugar correcto. En esta guía te "
+                "presentaremos los mejores restaurantes italianos de Curicó."},
+    {"title": "Trattoria Da Enzo - Cerro Alegre", "url": "https://enzo.example.cl/",
+     "snippet": "Trattoria Da Enzo: cocina italiana casera en el Cerro Alegre, Curicó, abierta de martes a domingo."},
+]
+_OPEN_NEAR = [
+    {"title": "Restaurantes abiertos cerca de mí | OpenTable", "url": "https://www.opentable.example/abiertos",
+     "snippet": "Descubre los mejores restaurantes abiertos cerca de ti. Consulta menús, reseñas, fotos y elige entre "
+                "los horarios de reservación disponibles."},
+]
+_STOCKS = [
+    {"title": "Las 12 acciones más caras del mundo - Traders Union", "url": "https://tu.example.com/caras",
+     "snippet": "¿Qué valores son los más caros del mundo? Los expertos de TU han preparado para ti una lista de las "
+                "acciones más caras en estos momentos."},
+]
+
+
+@pytest.mark.parametrize(
+    ("asked", "answer", "results"),
+    [
+        # The t2 final: the heading of a listing page, no restaurant named.
+        ("dónde está el restaurante italiano mas cercano",
+         "Los mejores restaurantes italianos en Curico, región de Curicó.", _ITALIAN),
+        ("closest italian place pls", "Los 12 mejores restaurantes italianos de Curicó.", _ITALIAN),
+        ("best italian food near me", "Mejores restaurantes italianos en Curico.", _ITALIAN),
+    ],
+)
+def test_a_pages_name_is_not_the_answer(asked: str, answer: str, results: list[dict]) -> None:
+    assert llm._payload_fact_defect(answer, _search_payload(results), asked) == "search_report_names_a_page"
+
+
+@pytest.mark.parametrize(
+    ("asked", "answer", "results"),
+    [
+        # The t46 final: the page's call to its visitor.
+        ("sería genial cenar en un restaurante abierto en el centro",
+         "Descubre los mejores restaurantes abiertos cerca de ti. Consulta menús, reseñas, fotos y elige entre los "
+         "horarios de reservación disponibles.", _OPEN_NEAR),
+        ("any restaurants open now", "Consulta menús y reseñas de restaurantes abiertos cerca de ti.", _OPEN_NEAR),
+    ],
+)
+def test_a_pages_call_to_the_reader_is_page_voice(asked: str, answer: str, results: list[dict]) -> None:
+    assert llm._payload_fact_defect(answer, _search_payload(results), asked) == "search_report_page_voice"
+
+
+@pytest.mark.parametrize("answer", ["Consulté varias páginas sobre restaurantes.", "Busqué restaurantes abiertos."])
+def test_baxys_own_past_is_not_the_pages_call(answer: str) -> None:
+    # «consulté», «busqué» fold to «consulte», «busque»: read with their accents they are BAXY telling the search.
+    assert llm._payload_fact_defect(answer, _search_payload(_OPEN_NEAR), "any restaurants open now") == (
+        "search_report_shows_the_search"
+    )
+
+
+def test_a_pages_list_cited_shows_the_search() -> None:
+    # The t41 final.
+    answer = "El precio de las acciones puede ser alto según la lista de las acciones más caras del mundo."
+    assert llm._payload_fact_defect(answer, _search_payload(_STOCKS), "alto precio de las acciones") == (
+        "search_report_shows_the_search"
+    )
+
+
+@pytest.mark.parametrize(
+    ("asked", "answer", "results"),
+    [
+        # A place a snippet names is the answer.
+        ("dónde está el restaurante italiano mas cercano",
+         "Trattoria Da Enzo, cocina italiana casera en el Cerro Alegre, Curicó.", _ITALIAN),
+        ("closest italian place pls", "Trattoria Da Enzo, en el Cerro Alegre.", _ITALIAN),
+        # Not finding one is said briefly.
+        ("any restaurants open now", "No encontré uno en concreto.", _OPEN_NEAR),
+        # «Mira,» is a discourse marker, not the page's order; a verb the person used is theirs.
+        ("dónde está el restaurante italiano mas cercano", "Mira, Trattoria Da Enzo está en el Cerro Alegre.", _ITALIAN),
+        ("consulta los horarios de los restaurantes abiertos", "No encontré los horarios de reservación.", _OPEN_NEAR),
+    ],
+)
+def test_a_concrete_answer_or_not_finding_it_passes(asked: str, answer: str, results: list[dict]) -> None:
+    assert llm._payload_fact_defect(answer, _search_payload(results), asked) == ""
+
+
+def test_a_pages_name_is_repaired_with_its_own_hint() -> None:
+    asked = "dónde está el restaurante italiano mas cercano"
+    named = "Los mejores restaurantes italianos en Curico, región de Curicó."
+    answer = "Trattoria Da Enzo, en el Cerro Alegre, Curicó."
+    client = Recorder([named, answer])
+    assert client.compose_user_message(asked, "status", {"situation": _search_situation(_ITALIAN)}) == answer
+    first = client.payloads[0]["messages"][-1]["content"]
+    assert "Lo que una página dice de sí misma" in first
+    retry = json.dumps(client.payloads[1]["messages"], ensure_ascii=False)
+    assert "Eso es el nombre de una página, no la respuesta" in retry
