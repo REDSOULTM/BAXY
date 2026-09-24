@@ -2667,7 +2667,11 @@ _ADMITS_NOT_KNOWING = re.compile(
 
 
 def _names_own_data(objective: str) -> bool:
-    return _NOT_A_PUBLIC_LOOKUP.search(effect_intent._fold(objective)) is not None
+    folded = effect_intent._fold(objective)
+    # Uso real 2026-09-23 «he recibido algún correo desde el mediodía», «check
+    # any mail from amazon» went to web.search: the person's received mail is
+    # theirs, and a question about it never leaves the PC.
+    return _NOT_A_PUBLIC_LOOKUP.search(folded) is not None or effect_intent._latest_email_domain(folded)
 
 
 def _public_lookup_applies(

@@ -25,7 +25,7 @@ from .games import _corrected_game_launch_title, _edit_distance, near_catalog_ga
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
 from .system import _weather_read_intent
 from .notes import list_entry_request, list_read_request, list_creation_without_items, _relative_calendar_read_request, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects
-from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, _latest_email_domain, _notification_listing_request
+from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, _latest_email_domain, _notification_listing_request, inbox_read_request
 from .ui import _clipboard_copy_domain, _clipboard_paste_domain, calculator_expression_request, literal_clipboard_write_text, _review_input_and_capture_effects, _VISIBLE_CLICK_APP_CONTEXT, _gerund_click_label, _visible_click_label, _click_in_application, _visible_click_intent
 from .apps import self_close_request, _APPLICATION_TRAILING_REQUEST, _application_target_forms, _CLOSE_TRAILING_COURTESY, _close_target_forms, deictic_close_request, _bounded_application_literal, _authenticated_application_list, _OPEN_STATE_CONDITION, close_all_request, _has_multiple_installed_entities, _append_domain_actions, _open_application_spans, _CATALOG_INSTALL_VERB, _opened_applications
 
@@ -2919,7 +2919,9 @@ def resolve_explicit_clarification_intent(
         r"[a-z0-9][a-z0-9 ._-]{0,80}?\s+"
         r"(?:que|el\s+mensaje|the\s+message)\s+\S.+$|"
         r"^dile\s+a\s+[a-z0-9._-]{1,80}\s+\S.+$|"
-        r"^let\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+know\s+\S.+$|"
+        # «let me know any new emails»: what BAXY is asked to tell the person
+        # is no message to anybody.
+        r"^let\s+(?!(?:me|us)\s)[a-z0-9][a-z0-9 ._-]{0,80}?\s+know\s+\S.+$|"
         r"^send\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+the\s+note\s+\S.+$|"
         r"^get\s+(?:the\s+)?(?:update|note|message)\s+\S.+\s+to\s+"
         r"[a-z0-9][a-z0-9 ._-]{0,80}$|"
@@ -6530,6 +6532,8 @@ def _strict_catalog_request(
         return EffectIntent(("filesystem.known.list",), (text,))
     if "notification.list" in available_operations and _notification_listing_request(text):
         return EffectIntent(("notification.list",), (text,))
+    if "email.latest.read" in available_operations and inbox_read_request(text):
+        return EffectIntent(("email.latest.read",), (text,))
     if "bluetooth.radio.status" in available_operations and _bluetooth_state_question(text):
         return EffectIntent(("bluetooth.radio.status",), (text,))
     if "display.status" in available_operations and _display_status_question(text):

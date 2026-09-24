@@ -197,6 +197,16 @@ def email_send_request(text: str) -> dict[str, str | None] | None:
     return {"to": recipient, "text": body, "subject": subject or None}
 
 
+# Uso real 2026-09-23 «email chelsea», «email mom and ask how …»: «email» said as
+# the verb, with the person right after it, is a mail to that person.
+_EMAIL_VERB_TO_SOMEONE = (
+    r"^(?:please\s+)?e-?mail\s+(?:to\s+)?"
+    r"(?!(?:notifications?|alerts?|messages?|inbox|from|about|in|on|of|for|me|us|"
+    r"address(?:es)?|accounts?|settings?|is|was|are|has|had|and|or|the\s+latest|"
+    r"the\s+last|the\s+new)\b)[a-z]"
+)
+
+
 def email_request_without_address(text: str) -> bool:
     """«enviá un correo a juan», «escribile un mail a Lucas que diga hola»: mail
     asked for a name that is not an address → the address is what is missing."""
@@ -208,7 +218,10 @@ def email_request_without_address(text: str) -> bool:
         return draft[0] == "email" and _MAIL_ADDRESS.match(draft[1].strip()) is None
     folded = _strip_request_envelope(_fold(text)).strip(" .!?")
     return (
-        _has(folded, r"^(?:" + _MSG_VERB + r")\s+(?:un\s+|una\s+|el\s+|a\s+|an\s+|the\s+)?(?:correo(?:\s+electronico)?|(?:e-?)?mail)\s+(?:a|al|para|to)\s+\S")
+        (
+            _has(folded, r"^(?:" + _MSG_VERB + r")\s+(?:un\s+|una\s+|el\s+|a\s+|an\s+|the\s+)?(?:correo(?:\s+electronico)?|(?:e-?)?mail)\s+(?:a|al|para|to)\s+\S")
+            or _has(folded, _EMAIL_VERB_TO_SOMEONE)
+        )
         and "@" not in folded
     )
 
@@ -253,26 +266,122 @@ def message_draft_request(text: str) -> tuple[str, str, str] | None:
     return None
 
 
+_MAIL_NOUN = (
+    r"\b(?:correos?(?:\s+electronicos?)?|e-?mails?|mails?|buzon|inbox|mailbox|"
+    r"bandeja\s+de\s+entrada)\b"
+)
+
+
+# What makes a mail mention the person's received mail: how new it is, whether
+# something arrived or is there, or an order to look at it. Uso real 2026-09-23
+# (MASSIVE email_query): «tengo algún correo nuevo», «check for new email»,
+# «hay algo nuevo en mi buzón», «have i received any emails from X».
+_INBOX_RECENCY = (
+    r"\b(?:recientes?|recent(?:ly)?|latest|ultim[oa]s?|last|newest|lately|"
+    r"nuev[oa]s?|new|sin\s+leer|unread|no\s+leid[oa]s?|notificacion(?:es)?|"
+    r"notifications?|newly\s+arrived|just\s+arrived|just\s+received|"
+    r"acaba\s+de\s+llegar|recien\s+llego|nullier\s+i[dt]|era\s+(?:y|ive)\s+blast)\b"
+)
+
+
+_INBOX_ARRIVAL = (
+    r"\b(?:tengo|tenemos|hay|llego|llegaron|llegado|recibi|recibido|recibimos|"
+    r"me\s+(?:escribio|escribieron|mando|mandaron|envio|enviaron)|"
+    r"received|gotten|got|have\s+i|do\s+i\s+have|is\s+there|are\s+there|"
+    r"sent\s+me|wrote\s+me|emailed\s+me|came\s+in|arrived)\b"
+)
+
+
+_INBOX_LOOK = (
+    r"\b(?:revisa|revisame|revisar|revises|chequea|checa|checkea|check|consulta|"
+    r"consultar|mira|mirame|fijate|lee|leeme|leer|read|muestra|muestrame|mostrame|"
+    r"show|dime|decime|tell\s+me|let\s+me\s+know|hazme\s+saber|avisame|look)\b"
+)
+
+
+# A mail mentioned for something other than reading what arrived: a phrase
+# quoted about mail, voicemail, an address or an account.
+_NOT_THE_INBOX = (
+    r"\b(?:frase|phrase|palabras?|words?|texto|text)\b.{0,80}\b(?:correo|email|mail)\b|"
+    r"\b(?:correo\s+de\s+voz|voice\s*mail)\b|"
+    r"\bdirecci(?:on|ones)\s+de\s+(?:correo|e-?mail)\b|\b(?:e-?mail|mail)\s+address(?:es)?\b|"
+    r"\bcuenta\s+de\s+(?:correo|e-?mail)\b|\b(?:e-?mail|mail)\s+account\b"
+)
+
+
+# Writing mail instead of reading what arrived: sending, answering, forwarding,
+# composing; «me envió», «sent me» (somebody else's sending) is what arrived.
+_MAIL_WRITING = (
+    r"\b(?:envi\w*|mand(?:a|ale|ar|e|es)|escrib\w*|redact\w*|respond\w*|contest\w*|"
+    r"reenvi\w*|crea|crear|creame|"
+    r"send|sent|write|compose|draft|reply|respond|answer|forward|create|emailed)\b"
+)
+
+
+_OTHERS_SENDING = (
+    r"\bme\s+(?:mando|mandaron|envio|enviaron|escribio|escribieron)\b|"
+    r"\b(?:sent|emailed|wrote|written)\s+me\b"
+)
+
+
 def _latest_email_domain(text: str) -> bool:
+    """The person's received mail is what the text is about (folded text)."""
+
     return (
-        _has(
-            text,
-            r"\b(?:correos?|emails?|mails?|buzon|inbox|inbox\s+messages?)\b",
+        _has(text, _MAIL_NOUN)
+        and (
+            _has(text, _INBOX_RECENCY)
+            or _has(text, _INBOX_ARRIVAL)
+            or _has(text, _INBOX_LOOK)
         )
-        and _has(
-            text,
-            r"\b(?:reciente|latest|ultimo|ultima|newest|most\s+recent)\b|"
-            r"\b(?:newly\s+arrived|just\s+arrived|just\s+received|"
-            r"acaba\s+de\s+llegar|"
-            r"recien\s+llego|nullier\s+i[dt]|era\s+(?:y|ive)\s+blast)\b",
-        )
-        and not _has(
-            text,
-            (
-                r"\b(?:frase|phrase|palabras?|words?|texto|text)\b"
-                r".{0,80}\b(?:correo|email|mail)\b"
-            ),
-        )
+        and not _has(text, _NOT_THE_INBOX)
+        and not _has(re.sub(_OTHERS_SENDING, " ", text), _MAIL_WRITING)
+        and not _has(_strip_request_envelope(text), _EMAIL_VERB_TO_SOMEONE)
+    )
+
+
+# Handling mail rather than reading it: deleting, filing, marking, opening the
+# client or setting it up.
+_MAIL_HANDLING = (
+    r"\b(?:borr\w*|elimin\w*|archiv\w*|marc\w*|muev\w*|mover|bloque\w*|"
+    r"configur\w*|abre|abrir|abreme|delete|remove|archive|mark|move|block|set\s+up|open)\b"
+)
+
+
+# Another of the person's things named with the mail: that one is the object
+# («lee mi nota sobre el correo más reciente»); or the mail of another device
+# («the latest inbox message from my phone»), which this PC does not read.
+_OTHER_OWN_OBJECT = (
+    r"\b(?:notas?|notes?|calendari[oa]s?|calendars?|agenda|reuniones|meetings?|"
+    r"recordatorios?|reminders?|tareas?|tasks?|listas?|lists?|archivos?|files?|"
+    r"documentos?|documents?|carpetas?|folders?|portapapeles|clipboard|pantalla|screen|"
+    r"whatsapp|discord|telefono|celular|movil|phone|smartphone|tablet|reloj|watch)\b"
+)
+
+
+# «I read the latest email yesterday»: an English sentence that opens on its
+# subject tells what the person did; asking inverts («have i», «did i»).
+_FIRST_PERSON_ACCOUNT = r"^i\s+(?!(?:want|wanna|need|would|'d)\b)"
+
+
+def inbox_read_request(text: str) -> bool:
+    """Uso real 2026-09-23: the person asks what arrived in their mail — to look
+    at it («revisa mis correos nuevos», «check any mail from amazon»), whether
+    there is any («tengo algún correo nuevo de julio», «have i received any
+    emails from X») or the newest by name («notificaciones de correo»). The one
+    mailbox read the catalog has is the latest message, and it answers every one
+    of them with what it reads (sender, subject, time); a filter the read cannot
+    apply is the composer's to say, never a web search of private mail."""
+
+    folded = _strip_request_envelope(_fold(text)).strip(" .!?¿¡")
+    return (
+        bool(folded)
+        and len(folded) <= 400
+        and _latest_email_domain(folded)
+        and not _negative_action_forms(folded)
+        and not _has(folded, _FIRST_PERSON_ACCOUNT)
+        and not _has(folded, _MAIL_HANDLING)
+        and not _has(folded, _OTHER_OWN_OBJECT)
     )
 
 
