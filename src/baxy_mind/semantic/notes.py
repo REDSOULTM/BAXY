@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Iterable, Sequence
+from typing import Callable, Iterable, Sequence
 from .grammar import TASK_REMINDER_HEAD, _RELATIVE_DURATION_PATTERN, _fold, _match, _has, _strip_request_envelope, _request_body_surface, _request_head, _head_is, _LIST, _READ, _CREATE, _request_clauses
 from .intent import EffectIntent, _append
 from .temporal import _absolute_calendar_range_parts, _DEICTIC_DAY, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, CLOCK_PHRASE, EventTiming, event_timing, spoken_clock, is_window_phrase, says_a_window
@@ -514,12 +514,27 @@ _UNNAMED_LIST_ENTRY = (
 )
 
 
+# Tanda 4 «add flour to my shopping list if it's not already on it» was asked back: an entry to add only when
+# the list does not have it yet. The condition closes the order and says the entry may already be there (a
+# negation, «ya/already/yet», or something missing). The list is read first (``list_read_request``).
+_ABSENCE_CONDITION = re.compile(
+    r"\s*[,;]?\s*(?P<condition>(?:(?:only|solo|solamente)\s+)?"
+    r"(?:if|si|unless|a\s+menos\s+que|salvo\s+que|en\s+caso\s+de\s+que)\b"
+    r"(?=[^,;.!?]*\b(?:no|not|isn'?t|aren'?t|don'?t|doesn'?t|ya|already|todavia|aun|yet|falta|faltan|missing)\b)"
+    r"[^,;.!?]{1,80}?)[\s.!?]*$"
+)
+
+
 def list_entry_request(text: str) -> tuple[str, str] | None:
     """(entry, list) of «añade X a mi lista de la compra», «pon hamburguesa en mi lista de
     comestibles», «add milk to my shopping list», in the person's own writing; None for a
-    playlist, a pointed entry («esto», «esa canción») or any other shape."""
+    playlist, a pointed entry («esto», «esa canción»), an entry added only if absent or any
+    other shape."""
 
-    found = _LIST_ENTRY.match(_request_body_surface(text).strip())
+    surface = _request_body_surface(text).strip()
+    if _ABSENCE_CONDITION.search(_fold(surface)) is not None:
+        return None
+    found = _LIST_ENTRY.match(surface)
     if found is None:
         return None
     item = found.group("item").strip(" ,;:\"'«»“”")
@@ -691,7 +706,7 @@ def list_read_request(text: str) -> ListRead | None:
             if found is not None:
                 break
         if found is None:
-            return None
+            return _list_entry_if_absent(body, literal)
         item = found.group("item")
         if re.fullmatch(_ANYTHING + r"|" + _UNNAMED_LIST_ENTRY, item) is not None:
             entry = None
@@ -722,6 +737,39 @@ def list_read_request(text: str) -> ListRead | None:
             literal(found.start("tail"), found.end("tail")), literal(0, found.start("tail")),
         )
     return ListRead(operation, query, list_name, entry, "", surface)
+
+
+def _list_entry_if_absent(body: str, literal: Callable[[int, int], str]) -> ListRead | None:
+    """«add flour to my shopping list if it's not already on it», «añade harina a mi lista de la compra si no
+    está»: the same read as «do i have flour on my shopping list, if not add it» (see ``_ABSENCE_CONDITION``)."""
+
+    condition = _ABSENCE_CONDITION.search(body)
+    if condition is None or condition.start() == 0:
+        return None
+    found = _LIST_ENTRY.match(body[: condition.start()])
+    if found is None:
+        return None
+    item, listed = found.group("item"), found.group("list")
+    if (
+        _has(f"{item} {listed}", _LIST_NOT_TASKS)
+        or _has(listed, _LIST_OF_ANOTHER_STORE)
+        or re.match(r"(?:esto|eso|esta|este|esa|ese|estas|estos|esas|esos|aquello|it|this|that|these|those)\b", item)
+        or re.fullmatch(_UNNAMED_LIST_ENTRY, item) is not None
+    ):
+        return None
+    entry = re.sub(
+        r"^(?:el|la|los|las|un|una|unos|unas|the|an?|some|any)\s+(?=\S)", "",
+        literal(found.start("item"), found.end("item")), flags=re.IGNORECASE,
+    )
+    list_name = literal(found.start("list"), found.end("list"))
+    # The read, said as the presence question the list reader already knows.
+    read_text = (
+        f"¿tengo {entry} en mi {list_name}?" if _has(listed, r"\blista\b") else f"do i have {entry} on my {list_name}?"
+    )
+    return ListRead(
+        "task.search", entry, list_name, entry,
+        literal(condition.start("condition"), condition.end("condition")), read_text,
+    )
 
 
 def _bare_note_inventory_request(text: str) -> bool:

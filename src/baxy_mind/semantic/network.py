@@ -79,15 +79,28 @@ def _direct_current_time_request(folded: str) -> bool:
 _CALENDAR_UNIT = r"(?:dia(?:\s+de\s+la\s+semana)?|fecha|mes|ano|day(?:\s+of\s+the\s+week)?|date|month|year|weekday)"
 _CALENDAR_NAME = alternation(tuple(MONTH_NUMBERS) + tuple(name for names in _WEEKDAYS for name in names))
 _CALENDAR_NAMES = rf"{_CALENDAR_NAME}(?:\s+(?:o|u|or)\s+(?:(?:a|en)\s+)?{_CALENDAR_NAME})*"
-_CALENDAR_NOW = r"(?:\s+(?:hoy|ahora|ya|today|now|right\s+now))?"
+_CALENDAR_NOW = r"(?:\s+(?:hoy|ahora(?:\s+mismo)?|ya|today|now|right\s+now))?"
 _CALENDAR_ASK = (
     r"(?:(?:sabes|sabe|sabrias|me\s+(?:dices|decis|puedes\s+decir)|dime|decime|do\s+you\s+know|"
     r"(?:can|could)\s+you\s+tell\s+me|tell\s+me)\s+)?"
+)
+# Tanda 4 «¿qué mes sale ahora mismo en el calendario de mi casa?» read the Outlook agenda: what a calendar or a
+# clock shows now is today's date, whoever's wall it hangs on.
+_CALENDAR_DISPLAY = (
+    r"(?:el|la|mi|the|my)\s+(?:calendario|calendar|reloj|clock)(?:\s+(?:de|of)\s+(?:mi|la|el|my|the)\s+\w+)?"
+)
+_CALENDAR_SHOWN = (
+    r"(?:(?:sale|marca|muestra|dice|aparece|pone|indica|shows?|says?|displays?)"
+    r"(?:\s+(?:hoy|ahora(?:\s+mismo)?|today|now|right\s+now))?"
+    rf"(?:\s+(?:(?:en|on|in)\s+)?{_CALENDAR_DISPLAY})?|"
+    rf"(?:does|is)\s+{_CALENDAR_DISPLAY}\s+(?:show|say|display)(?:ing)?)"
+    r"(?:\s+(?:hoy|ahora(?:\s+mismo)?|today|now|right\s+now))?"
 )
 _PRESENT_CALENDAR_QUESTION = re.compile(
     rf"{_CALENDAR_ASK}(?:"
     rf"(?:en|a)\s+(?:que|cual)\s+{_CALENDAR_UNIT}\s+(?:estamos|nos\s+encontramos){_CALENDAR_NOW}|"
     rf"(?:hoy\s+)?(?:que|cual)\s+{_CALENDAR_UNIT}\s+(?:es|tenemos|estamos|cae){_CALENDAR_NOW}|"
+    rf"(?:que|cual|what|which)\s+{_CALENDAR_UNIT}\s+{_CALENDAR_SHOWN}|"
     rf"a\s+(?:cuantos|que(?:\s+dia)?)\s+estamos{_CALENDAR_NOW}|"
     rf"(?:ya\s+)?(?:hoy\s+)?(?:es|estamos\s+(?:a|en))\s+{_CALENDAR_NAMES}{_CALENDAR_NOW}|"
     rf"(?:what|which)\s+{_CALENDAR_UNIT}\s+(?:is\s+it|it\s+is|is\s+today|today\s+is|is\s+this|"
@@ -97,6 +110,22 @@ _PRESENT_CALENDAR_QUESTION = re.compile(
     rf"is\s+(?:it|today)\s+{_CALENDAR_NAMES}(?:\s+today)?"
     r")"
 )
+
+
+# The month and weekday names, but the English «may» («may I know the time») asks for nothing.
+_CALENDAR_PART_NAME = alternation(
+    tuple(name for name in MONTH_NUMBERS if name != "may") + tuple(name for names in _WEEKDAYS for name in names)
+)
+
+
+def asks_calendar_part(text: str) -> bool:
+    """Whether a clock question asks for part of the date (day, date, weekday, month or year) rather than the time.
+
+    Tanda 3 «¿estamos a enero o febrero?» read the clock and was answered «Son 02:54.»: the month asked, said by
+    its name, is the date too. A calendar unit, a month or weekday name, or «a cuántos estamos» asks for it. The
+    App's visible policy (UserMessagePolicy.AsksCalendarPart) reads the same words; the two must not diverge."""
+
+    return _has(_fold(text), rf"\b(?:{_CALENDAR_UNIT}|{_CALENDAR_PART_NAME}|a\s+cuantos\s+estamos)\b")
 
 
 def _direct_process_inventory_request(text: str) -> bool:

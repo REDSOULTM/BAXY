@@ -45,7 +45,8 @@ from .semantic.grammar import ARITHMETIC_EXPRESSION, SPOKEN_NUMBER
 from .semantic.patterns import output_level_request
 from .semantic.notes import agenda_event_request, stated_event_reminder
 from .semantic.temporal import SpokenClock, agenda_window, spoken_date, spoken_window
-from .semantic.web import asks_for_information, names_own_data
+from .semantic.web import asks_for_information, names_own_data, news_lookup_query, public_query_body
+from .semantic.windows import start_menu_request
 from .corrector import catalog_correction_terms
 from .first_signal import (
     PATH_MODEL,
@@ -3736,6 +3737,9 @@ def _closed_unsupported_request(objective: str) -> bool:
             re.IGNORECASE,
         )
         is not None
+        # Tanda 4 «show me las aplicaciones»: the PC's applications shown are the Start menu (the Windows key);
+        # a listing read aloud, or the ones downloaded today, still has no operation.
+        and not start_menu_request(folded)
     )
     unsupported_open_game_status = (
         re.fullmatch(
@@ -4970,23 +4974,6 @@ def _explicit_media_control_arguments(evidence: str) -> dict[str, object] | None
     return arguments
 
 
-def _todays_news_query(text: str) -> str | None:
-    """WEB1451 «qué pasó hoy en el mundo»: a news query with the person's own
-    scope words; None when the request is not a what-happened-today question."""
-
-    match = re.match(
-        r"^[¿?¡!\s]*(?:qué|que|what)\s+"
-        r"(?:pasó|paso|pasa|ha\s+pasado|está\s+pasando|esta\s+pasando|ocurrió|ocurrio|ocurre|sucedió|sucedio|"
-        r"happened|is\s+happening|has\s+happened)\s+(?P<scope>(?:hoy|today)\b.*?)\s*[.!?]*$",
-        text.strip(),
-        re.IGNORECASE,
-    )
-    if match is None:
-        return None
-    scope = re.sub(r"\s+", " ", match.group("scope")).strip()
-    return ("news " if scope.casefold().startswith("today") else "noticias de ") + scope
-
-
 def _presentation_title(topic: str) -> str:
     """«hablando de amor» → «Amor»: the topic with its first letter up."""
 
@@ -5088,6 +5075,10 @@ def _explicit_arguments_from_evidence(
     if operation == "window.minimize.all":
         # MINALL1687: no arguments; the order over every window is the whole request.
         return {} if effect_intent.minimize_all_request(effect_intent._fold(evidence)) else None
+
+    if operation == "input.key.press" and start_menu_request(effect_intent._fold(evidence)):
+        # Tanda 4 «abre el menú inicio», «show me las aplicaciones»: the Start menu opens with the Windows key.
+        return {"key": "win"}
 
     if operation == "clipboard.read.text":
         # The read takes no literal; naming the clipboard is the whole request.
@@ -5555,11 +5546,11 @@ def _explicit_arguments_from_evidence(
             # WEB1451 «Investiga Spider-Man»: the engine answers the topic, not
             # the research verb («investiga» never appears in a result page).
             return {"query": topic}
-        news_query = _todays_news_query(search_evidence)
+        news_query = news_lookup_query(search_evidence)
         if news_query is not None:
-            # WEB1451 «qué pasó hoy en el mundo»: the engine answers a news
-            # query with the person's scope words («noticias de hoy en el
-            # mundo»); the question itself returns unrelated pages.
+            # WEB1451 «qué pasó hoy en el mundo», tanda 4 «dime que esta pasando en mi
+            # ciudad»: the engine answers a news query with the person's scope words
+            # («noticias de hoy en el mundo»); the question itself returns unrelated pages.
             return {"query": news_query}
         weather_query = effect_intent._weather_lookup_query(search_evidence)
         if weather_query is not None:
@@ -5616,10 +5607,12 @@ def _explicit_arguments_from_evidence(
                 evidence,
                 re.IGNORECASE,
             )
+            # Tanda 4 «dime que esta pasando…» found the song «Dime»: the words asking to be told are
+            # not looked up.
             query = (
                 clause_literal(opened_page.group("query"))
                 if opened_page is not None
-                else evidence.strip(" \t\r\n")
+                else public_query_body(evidence)
             )
         return {"query": query} if query and len(query.encode("utf-8")) <= 512 else None
 
@@ -6228,9 +6221,9 @@ def _explicit_arguments_from_evidence(
         false_pattern = (
             rf"\b(?:{effect_intent._UNMUTE_VERB}|reactiva|reactivar)\b|"
             # Fase 3.5 (held-out turn 9 «devolvele el sonido»), uso real 2026-09-23 («vuelve el sonido»,
-            # «Turn off silenciar»): the reader takes the sound coming back and the mute switched off from
-            # the shared lexicon; so does the argument.
-            rf"\b{semantic_lexicon.MUTE_SWITCH_OFF}\b|\b{semantic_lexicon.SOUND_BACK}\b"
+            # «Turn off silenciar»), tanda 4 («Enciende el sound»): the reader takes the sound coming back,
+            # the mute switched off and the sound switched on from the shared lexicon; so does the argument.
+            rf"\b(?:{semantic_lexicon.UNMUTE_WORDS})\b"
         )
         false_signal = bool(re.search(false_pattern, folded))
         # The noun ``mute`` inside "quita el mute" is evidence for the
@@ -6242,7 +6235,7 @@ def _explicit_arguments_from_evidence(
         true_signal = bool(
             re.search(r"\b(?:mute|silencia|silenciar)\b", positive_surface)
             or re.search(rf"\b{effect_intent._MUTE_PREDICATIVE_VERB}\b", positive_surface)
-            or re.search(rf"\b(?:{semantic_lexicon.MUTE_SWITCH_ON}|{semantic_lexicon.NOISE_STOP})\b", positive_surface)
+            or re.search(rf"\b(?:{semantic_lexicon.MUTE_WORDS})\b", positive_surface)
             or re.search(semantic_lexicon.BARE_SILENCE, positive_surface)
             or re.search(
                 r"\b(?:pon(?:e|lo|elo|le|eme)?|ponlo|poner|deja(?:lo)?|dejar|leave|put)\b[^.;!?]{0,48}"
@@ -6324,6 +6317,19 @@ def _ground_explicit_arguments(
             # listing selector), the other clause is asked in the final.
             explicit = _explicit_arguments_from_evidence(
                 operation, deferred.read_text, application_names, game_catalog,
+            )
+    if explicit is None:
+        # Tanda 3 «para la música, me va a explotar la cabeza»: the decision read the order inside talk,
+        # an address or a fronted place; the arguments read that same clause.
+        uttered = semantic_reading.utterance_form(
+            evidence,
+            lambda clause: effect_intent.resolve_explicit_effects(
+                clause, (operation,), application_names, game_catalog,
+            ),
+        )
+        if uttered is not None and uttered[1].operations == (operation,):
+            explicit = _explicit_arguments_from_evidence(
+                operation, uttered[1].evidence[0], application_names, game_catalog,
             )
     if explicit is None and operation == "browser.navigate.named":
         # MUSIC1827 «abrí chrome y poné música» → «¿qué música?» → «rock»: the
@@ -6465,7 +6471,10 @@ def _ground_explicit_arguments(
         # REOPEN1957 H0542: the unnamed folder and file take Windows' default
         # names, which the person never spelled.
         return explicit if validate_json_schema_instance(explicit, schema) else None
-    if operation == "web.search" and explicit.get("query") == _todays_news_query(evidence):
+    if operation == "input.key.press" and start_menu_request(effect_intent._fold(evidence)):
+        # Tanda 4: the Start menu reader owns the key; the person says the menu, not «win».
+        return explicit if validate_json_schema_instance(explicit, schema) else None
+    if operation == "web.search" and explicit.get("query") == news_lookup_query(evidence):
         # WEB1451 «qué pasó hoy en el mundo»: the news reader supplies the
         # word «noticias»; the scope words are the person's own.
         return explicit if validate_json_schema_instance(explicit, schema) else None

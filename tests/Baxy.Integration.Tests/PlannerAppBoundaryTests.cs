@@ -733,6 +733,25 @@ public sealed class PlannerAppBoundaryTests
         Assert.That(defect, valid ? Is.Null : Is.Not.Null);
     }
 
+    // Tanda 3 «¿estamos a enero o febrero?» was answered «Son 02:54.»: the month, a month or weekday name or
+    // «a cuántos estamos» ask for the date, as in the mind (semantic.network.asks_calendar_part).
+    [TestCase("¿estamos a enero o febrero?", "Hoy es 6 de septiembre de 2026.", true)]
+    [TestCase("¿estamos a enero o febrero?", "Son las 22:04.", false)]
+    [TestCase("¿qué mes sale ahora mismo en el calendario de mi casa?", "Estamos a 6 de septiembre.", true)]
+    [TestCase("a cuántos estamos", "Es 6 de septiembre.", true)]
+    [TestCase("what month is it", "It is September 6, 2026.", true)]
+    [TestCase("is today friday", "It is 22:04.", false)]
+    [TestCase("may I know the time", "It is 22:04.", true)]
+    public void AMonthOrADayNamedAsksForTheDate(string userText, string answer, bool valid)
+    {
+        const string source = """
+            {"kind":"operation","operation":"system.time","polarity":"success","verified":true,"succeeded":true,"observed":{"utc":"2026-09-07T01:04:11.4543673+00:00","localUtcOffsetMinutes":-180}}
+            """;
+        UserMessageDraft draft = UserMessagePolicy.Create(source, UserMessageEvent.Status);
+        string? defect = UserMessagePolicy.ModelResponseRejectionReason(answer, draft, userText);
+        Assert.That(defect, valid ? Is.Null : Is.Not.Null);
+    }
+
     [Test]
     public void LongMissionCompletionCarriesEveryVerifiedOutcomeToTheComposer()
     {

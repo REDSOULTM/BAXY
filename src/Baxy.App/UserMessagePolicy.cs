@@ -364,12 +364,11 @@ internal static class UserMessagePolicy
                 return "missing_literal_fact";
             }
             // «qué día es hoy» asks for the calendar date, like «fecha»/«date».
-            // The mind projects only the date for it (llm._requests_calendar_date);
+            // The mind projects only the date for it (semantic.network.asks_calendar_part);
             // reading it as a clock request here demanded the hour in the draft and
             // rejected six correct dates until the diagnostic code was published
             // (CLOCK1157/000..002).
-            bool dateRequested = Regex.IsMatch(userText ?? string.Empty,
-                @"\b(?:fecha|date|d[ií]a|day)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            bool dateRequested = AsksCalendarPart(userText);
             bool clockRequested = !dateRequested || Regex.IsMatch(userText ?? string.Empty,
                 @"\b(?:hora|time)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
             // CLOCK1333 «cuánto falta para las 3 de la tarde»: the answer is the
@@ -2261,6 +2260,19 @@ internal static class UserMessagePolicy
 
     private static readonly CultureInfo[] CalendarCultures =
         [CultureInfo.GetCultureInfo("es-ES"), CultureInfo.GetCultureInfo("en-US")];
+
+    // Tanda 3 «¿estamos a enero o febrero?» was answered «Son 02:54.»: a calendar unit, a month or weekday
+    // name (not the English «may») or «a cuántos estamos» asks for the date. The same words as the mind's
+    // semantic.network.asks_calendar_part; the two must not diverge.
+    private static readonly Regex CalendarPartAsked = new(
+        @"\b(?:d[ií]a(?:\s+de\s+la\s+semana)?|fecha|mes|a[ñn]o|day(?:\s+of\s+the\s+week)?|date|month|year|weekday|"
+        + "enero|january|febrero|february|marzo|march|abril|april|mayo|junio|june|julio|july|agosto|august|"
+        + "septiembre|setiembre|september|octubre|october|noviembre|november|diciembre|december|"
+        + @"lunes|monday|martes|tuesday|mi[ée]rcoles|wednesday|jueves|thursday|viernes|friday|s[áa]bado|saturday|"
+        + @"domingo|sunday|a\s+cu[áa]ntos\s+estamos)\b",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+    private static bool AsksCalendarPart(string? userText) => CalendarPartAsked.IsMatch(userText ?? string.Empty);
 
     private static bool PreservesObservedDate(string source, string result)
     {

@@ -339,6 +339,27 @@ class Reading:
     talk: str | None
 
 
+def utterance_form(
+    text: str,
+    resolve: Callable[[str], EffectIntent | None],
+) -> tuple[str, EffectIntent] | None:
+    """The request inside an utterance form the pattern does not read alone (talk around the order, a fronted
+    place, an address, a desire to listen), with the form's name; None when there is none. The decision and the
+    argument binder both read the request through here, so the arguments come from the same clause the decision
+    read (tanda 3 «para la música, me va a explotar la cabeza» was read and then asked which action)."""
+
+    for name, form in (
+        ("order_with_talk", _order_with_talk),
+        ("fronted_place", _fronted_place_request),
+        ("addressed", _addressed_request),
+        ("desired_media", _desired_media_request),
+    ):
+        effects = form(text, resolve)
+        if effects is not None:
+            return name, effects
+    return None
+
+
 def read(
     text: str,
     *,
@@ -359,16 +380,9 @@ def read(
     )
     source = "pattern" if effects is not None else ""
     if effects is None:
-        for name, form in (
-            ("order_with_talk", _order_with_talk),
-            ("fronted_place", _fronted_place_request),
-            ("addressed", _addressed_request),
-            ("desired_media", _desired_media_request),
-        ):
-            effects = form(text, resolve)
-            if effects is not None:
-                source = name
-                break
+        uttered = utterance_form(text, resolve)
+        if uttered is not None:
+            source, effects = uttered
     clarification = resolve_explicit_clarification_intent(
         text, available, application_names, previous_user_text=previous_user_text,
     )

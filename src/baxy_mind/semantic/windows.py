@@ -157,7 +157,9 @@ _MINIMIZE_ALL_REQUEST = re.compile(
 # website called homescreen: on a PC the home screen is the desktop, and going
 # to it (Win+D) is every window minimized. «abre el escritorio» stays the
 # Desktop folder: only a movement or showing verb reads as the desktop view.
-PC_HOME_PLACE = r"(?:escritorio|desktop|home\s*screen|start\s+screen|pantalla\s+(?:de\s+inicio|principal))"
+# Tanda 4 «Abre el start screen» was a limit: the home screen is no folder, so opening it is going to it too.
+_PC_HOME_VIEW = r"(?:home\s*screen|start\s+screen|pantalla\s+(?:de\s+inicio|principal))"
+PC_HOME_PLACE = rf"(?:escritorio|desktop|{_PC_HOME_VIEW})"
 # Uso real tanda 2 «Ve home.», tanda 3 «Go to página de inicio» (it opened a dictionary page for «inicio»): said
 # alone after a movement verb, «home», «inicio» and «la página de inicio» are the PC's home too («go home», «vuelve
 # al inicio», «ve a la página de inicio»). Anywhere else they name other things («home depot», «la página de inicio
@@ -168,11 +170,36 @@ _SHOW_DESKTOP_REQUEST = re.compile(
     r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
     r"(?:(?P<move>ve|vete|anda|andate|vuelve|volve|volvamos|regresa|ir|vamos|llevame|"
     r"go(?:\s+back)?|return|take\s+me(?:\s+back)?|bring\s+me(?:\s+back)?)|"
+    r"(?P<open>abre|abreme|abri|abrime|abrir|open)|"
     r"muestrame|mostrame|muestra|ensename|show(?:\s+me)?)"
     r"\s+(?:(?:a|al|to)\s+)?(?:(?:el|la|the|my|mi)\s+)?"
-    rf"(?:{PC_HOME_PLACE}|(?(move){_BARE_HOME}|(?!)))"
+    rf"(?:(?(open){_PC_HOME_VIEW}|{PC_HOME_PLACE})|(?(move){_BARE_HOME}|(?!)))"
     r"(?:\s*,?\s*(?:por\s+favor|please))?[\s.!?]*$"
 )
+
+
+# Tanda 4 «show me las aplicaciones» searched Google Play: the Start menu is where Windows shows what this PC has,
+# opened with the Windows key (input.key.press «win»); asked to open or show it, or to show the PC's applications
+# («muéstrame mis apps»), that key is pressed. A question about one app stays app.installed.
+_START_MENU = r"(?:(?:el\s+)?menu\s+(?:de\s+)?(?:inicio|start)|(?:the\s+)?start\s+menu)(?:\s+(?:de|of)\s+windows)?"
+_PC_APPLICATIONS = (
+    r"(?:(?:las|mis|todas\s+las|the|my|all\s+(?:the|my)|all)\s+)?(?:aplicaciones|apps|applications|programas|programs)"
+    r"(?:\s+(?:instalad[oa]s|installed|de\s+(?:este|mi|el)\s+(?:pc|equipo|computador(?:a)?|ordenador)|"
+    r"(?:on|in)\s+(?:this|my|the)\s+(?:pc|computer)))?"
+)
+_START_MENU_REQUEST = re.compile(
+    r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
+    r"(?:(?:abre|abreme|abri|abrime|abrir|open|despliega|desplega|muestrame|mostrame|muestra|ensename|show(?:\s+me)?|"
+    rf"pull\s+up|bring\s+up)\s+{_START_MENU}|"
+    rf"(?:muestrame|mostrame|muestra|ensename|show(?:\s+me)?|pull\s+up|bring\s+up)\s+{_PC_APPLICATIONS})"
+    r"(?:\s*,?\s*(?:por\s+favor|please))?[\s.!?]*$"
+)
+
+
+def start_menu_request(folded: str) -> bool:
+    """«abre el menú inicio», «open the start menu», «show me las aplicaciones»: the Windows key (see above)."""
+
+    return _START_MENU_REQUEST.match(_strip_request_envelope(folded)) is not None
 
 
 def minimize_all_request(folded: str) -> bool:

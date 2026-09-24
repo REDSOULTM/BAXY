@@ -6,7 +6,7 @@ from __future__ import annotations
 import re
 from typing import Iterable
 from .display import _KNOWN_FOLDER_ENUM, _KNOWN_FOLDER_WORDS
-from .grammar import _fold, _match, _has, _strip_request_envelope, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _is_meta_or_tool_denial, _OPEN, _LIST, _READ, _SEARCH, _explicit_google_search_query, ARITHMETIC_EXPRESSION
+from .grammar import _fold, _match, _has, _strip_request_envelope, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _is_meta_or_tool_denial, _OPEN, _LIST, _READ, _SEARCH, _explicit_google_search_query, ARITHMETIC_EXPRESSION, _request_body_surface
 from .intent import EffectIntent, _entity_key, _append, _append_all
 from .catalog import ApplicationCatalogIndex, _application_name_key, build_application_catalog_index
 from .temporal import _BOUNDED_TEMPORAL_SELECTOR
@@ -2158,6 +2158,67 @@ def _location_recommendation_request(text: str) -> bool:
         (_has(text, _PUBLIC_PLACE) and (_has(text, _NEAR_THE_PERSON) or _has(text, _PLACE_RATED)))
         or (_has(text, _SHOWING_FILMS) and _has(text, _NEAR_THE_PERSON))
     )
+
+
+# Tanda 4 «dime que esta pasando en mi ciudad» was searched as the whole sentence and found the song «Dime»: the
+# words that ask to be told («dime», «decime», «dígame», «cuéntame», «tell me», «can you tell me», «quiero
+# saber», «i'd like to know», «do you know») are the request, never what is looked up.
+_INFORMATION_ASK = re.compile(
+    r"(?:(?:(?:me\s+)?(?:puedes|podes|podrias|podria|puede)\s+)?(?:decir|contar|explicar|hablar)(?:me|nos)|"
+    r"(?:can|could|would|will)\s+you\s+(?:tell|show)\s+(?:me|us)|"
+    r"dime|decime|digame|diganme|dinos|decinos|cuentame|contame|cuentanos|explicame|explicanos|hablame|"
+    r"tell\s+(?:me|us)|let\s+me\s+know|"
+    r"(?:quiero|quisiera|necesito|me\s+gustaria)\s+saber|i\s+(?:want|need|would\s+like)\s+to\s+know|i'?d\s+like\s+to\s+know|"
+    r"sabes|sabe|do\s+you\s+know)\s*[,:]?\s+"
+    # What is asked about, not the preposition or the «whether» that introduces it.
+    r"(?:(?:about|sobre|acerca\s+de|de|si|if|whether)\s+)?(?P<body>\S.*)"
+)
+
+
+def _last_words(surface: str, folded_tail: str) -> str:
+    """The last words of ``surface``, as the person wrote them, that ``folded_tail`` (its folded end) counts."""
+
+    count = len(folded_tail.split())
+    return " ".join(surface.split()[-count:]) if count else ""
+
+
+def public_query_body(text: str) -> str:
+    """The request without its envelope and the words that ask to be told (see above), in the person's writing."""
+
+    surface = _request_body_surface(text).strip()
+    asked = _INFORMATION_ASK.fullmatch(_fold(surface).strip())
+    if asked is None:
+        return surface
+    return _last_words(surface, asked.group("body")).strip(" ¿?¡!.,;:")
+
+
+# WEB1451 «qué pasó hoy en el mundo», tanda 4 «qué está pasando en mi ciudad»: what happens today, or in a place,
+# is the news of it. The place near the person («mi ciudad», «around here», «near me») is said the way an engine
+# reads nearness, «noticias locales» / «local news»: the search already runs from this PC, and nothing of the
+# person's is sent.
+_HAPPENING = re.compile(
+    r"^(?:que|what)\s+(?:paso|pasa|ha\s+pasado|esta\s+pasando|ocurrio|ocurre|sucedio|sucede|hay\s+de\s+nuevo|"
+    r"happened|is\s+happening|'?s\s+happening|has\s+happened|is\s+going\s+on|'?s\s+going\s+on|is\s+new|'?s\s+new)"
+    r"\s+(?P<scope>(?:hoy|today)\b.*|(?:en|in|around|near|por)\s+\S.*)$"
+)
+
+
+def news_lookup_query(text: str) -> str | None:
+    """The news query of a what-is-happening question (see above), or None."""
+
+    body = public_query_body(text).strip(" ¿?¡!.")
+    found = _HAPPENING.match(re.sub(r"^whats\b|^what's\b", "what 's", _fold(body)))
+    if found is None:
+        return None
+    english = _has(_fold(body), r"^what\b")
+    scope = found.group("scope")
+    # «around town» is near; «around the world» is not.
+    if _has(scope, _NEAR_THE_PERSON) or _has(scope, r"^around\s+town\b"):
+        return "local news" if english else "noticias locales"
+    written = _last_words(body, scope)
+    if english:
+        return "news " + written
+    return "noticias de " + written if _has(scope, r"^(?:hoy|today)\b") else "noticias " + written
 
 
 # MASSIVE recommendation_events / qa_factoid (dev corpus 2026-09-23): «hay algún evento deportivo mañana en

@@ -75,6 +75,22 @@ MUTE_SWITCH_OFF = (
     r"quita(?:r|le)?|saca(?:r|le)?|remove)\s+" + _MUTE_STATE_NOUN
 )
 MUTE_SWITCH_ON = r"(?:turn\s+on|switch\s+on|activa(?:r|le)?|enciende|prende|enable)\s+" + _MUTE_STATE_NOUN
+# Tanda 4 2026-09-24 «Enciende el sound» was answered as a limit: the sound itself switched on is the mute
+# switched off (muted = false), and the sound switched off is the mute on (muted = true), in Spanish, English or
+# both. Only the sound, the audio or the PC's own sound is the object: «enciende la música» plays, «apaga el PC»
+# shuts down, «prende los parlantes» may be a Bluetooth device.
+_SOUND_NOUN = r"(?:(?:el|la|los|the|mi|my)\s+)?(?:sonido|sonidos|sound|sounds|audio)(?:\s+(?:del?|of)\s+(?:(?:el|la|the|mi|my)\s+)?(?:pc|equipo|computador(?:a)?|computer|sistema|system))?"
+_SOUND_ON_VERB = (
+    r"(?:turn(?:ed)?\s+on|switch\s+on|enable|activa(?:r|le)?|enciende(?:le)?|encende(?:le)?|encender|prende(?:le)?|"
+    r"prender|habilita(?:r)?)"
+)
+_SOUND_OFF_VERB = r"(?:turn(?:ed)?\s+off|switch\s+off|disable|apaga(?:r|le)?|desactiva(?:r|le)?|deshabilita(?:r)?)"
+# The sound ends the order: «desactiva el sonido de las notificaciones» is another sound.
+_SOUND_ORDER_END = (
+    r"(?=\s*(?:[,.;:!?]|$|\s(?:y|and|por\s+favor|porfa|please|ya|ahora|now|de\s+nuevo|again|otra\s+vez)\b))"
+)
+SOUND_SWITCH_ON = rf"(?:{_SOUND_ON_VERB}\s+{_SOUND_NOUN}|turn\s+{_SOUND_NOUN}\s+on){_SOUND_ORDER_END}"
+SOUND_SWITCH_OFF = rf"(?:{_SOUND_OFF_VERB}\s+{_SOUND_NOUN}|turn\s+{_SOUND_NOUN}\s+off){_SOUND_ORDER_END}"
 
 # Uso real 2026-09-23 «silencio»: the bare silence order, the whole message. MASSIVE audio_volume_mute (dev corpus
 # 2026-09-23) «silencio altavoces», «altavoces en silencio»: the silence with the speakers or the sound it falls on,
@@ -98,7 +114,13 @@ NOISE_STOP = (
 
 # A message that opens with one of the above is a mute request by its form (the verbs alone, «vuelve», «para»,
 # «apaga», head many other requests).
-MUTE_REQUEST = rf"^[¿?¡!\s]*(?:{SOUND_BACK}|{MUTE_SWITCH_OFF}|{MUTE_SWITCH_ON}|{NOISE_STOP})\b|{BARE_SILENCE}"
+MUTE_REQUEST = (
+    rf"^[¿?¡!\s]*(?:{SOUND_BACK}|{MUTE_SWITCH_OFF}|{MUTE_SWITCH_ON}|{SOUND_SWITCH_ON}|{SOUND_SWITCH_OFF}|{NOISE_STOP})\b"
+    rf"|{BARE_SILENCE}"
+)
+# What asks for muted = false, and muted = true, in every reader and the argument binder.
+UNMUTE_WORDS = rf"{SOUND_BACK}|{MUTE_SWITCH_OFF}|{SOUND_SWITCH_ON}"
+MUTE_WORDS = rf"{MUTE_SWITCH_ON}|{SOUND_SWITCH_OFF}|{NOISE_STOP}"
 
 # ---------------------------------------------------------------- people of the person's own life
 # Tanda 3 2026-09-24 «es cierto que el cumpleaños de antonia es el primero de marzo» was searched on the web: someone

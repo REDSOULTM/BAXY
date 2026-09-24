@@ -119,7 +119,9 @@ _ENUM_EVIDENCE_ALIASES = {
         "descargas",
         "descargue",
     ),
-    "pictures": ("pictures", "photos", "imagenes", "fotos"),
+    # Tanda 3 «Muéstrame mi Gallery.»: Explorer's Gallery (Galería) is the pictures folder shown (lexicon.GALLERY_NOUNS,
+    # which semantic.surface rewrites the same way); a proposal naming it is grounded, not asked which folder.
+    "pictures": ("pictures", "photos", "imagenes", "fotos", "gallery", "galeria"),
     "brightness": ("brightness", "brillo"),
     "night_light": ("night light", "luz nocturna"),
     "lock": ("lock", "bloquea", "bloquear"),

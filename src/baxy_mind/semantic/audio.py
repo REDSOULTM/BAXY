@@ -236,10 +236,8 @@ def _audio_mute_domain(text: str) -> bool:
             r"(?:(?:el|la|the|mi|my|this|este|esta)\s+)?"
             r"(?:computador|computadora|computer|compu|equipo|pc|sistema|system|notebook|laptop)"
             r"(?:\s+(?:please|pls|por\s+favor|porfa))?[\s.!?]*$|"
-            # The mute as a switch, turned off or on, and a noise to stop (semantic.lexicon).
-            rf"\b{lexicon.MUTE_SWITCH_OFF}\b|\b{lexicon.MUTE_SWITCH_ON}\b|\b{lexicon.NOISE_STOP}\b|"
-            # Devolver o restaurar el sonido, o que vuelva, es quitarle el silencio (semantic.lexicon).
-            rf"\b{lexicon.SOUND_BACK}\b|"
+            # The mute or the sound as a switch, the sound given back and a noise to stop (semantic.lexicon).
+            rf"\b(?:{lexicon.UNMUTE_WORDS}|{lexicon.MUTE_WORDS})\b|"
             r"\b(?:pon|poner|ponle|deja|dejar|put|leave)\s+"
             r"(?:(?:el|la|the)\s+)?(?:\w+\s+){0,2}"
             r"(?:en|in|on)\s+(?:mudo|silencio|mute|silent)\b|"

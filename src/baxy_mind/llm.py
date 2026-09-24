@@ -40,6 +40,7 @@ from urllib.parse import parse_qs, urlparse
 from . import corrector
 from .semantic.normalize import alternation, fold
 from .semantic import dialogue as dialogue_slot
+from .semantic.network import asks_calendar_part
 from .semantic.web import weather_asks_later_day, weather_asks_sun_time
 from . import effect_intent
 from .effect_intent import (
@@ -2672,7 +2673,7 @@ def _shaped_conversation_answer_violates_contract(
         return True
     if visible_reply_restates_the_request(value, request):
         return True
-    if visible_reply_invents_a_spanish_infinitive(value):
+    if visible_reply_invents_a_spanish_infinitive(value) or visible_reply_breaks_word_case(value, request):
         return True
     if visible_reply_is_a_fixed_stall(value):
         return True
@@ -4064,6 +4065,19 @@ def visible_reply_invents_a_spanish_infinitive(value: object) -> bool:
     )
 
 
+# Tanda 3 «Prende la smart camera» → «Eso no lo hago: la smart camera no la prenDO.»: the model broke a word's
+# case halfway and nothing read it. A word that turns to capitals after three lower-case letters is broken,
+# unless the person wrote it that way (a brand, «macOS»).
+_BROKEN_CASE_WORD = re.compile(r"\b[a-záéíóúüñ]{3,}[A-ZÁÉÍÓÚÜÑ]{2,}\b")
+
+
+def visible_reply_breaks_word_case(value: object, request: object = "") -> bool:
+    """A word of the reply switches to capitals mid-word, and the person did not write it so (see above)."""
+
+    written = str(request or "")
+    return any(found.group() not in written for found in _BROKEN_CASE_WORD.finditer(str(value or "")))
+
+
 def visible_reply_is_a_fixed_stall(value: object) -> bool:
     """A canned «un momento…» is a fixed visible reply. Invariant 5."""
 
@@ -4568,10 +4582,6 @@ def _local_datetime_from_observed(observed: dict | None) -> datetime | None:
                 local = parsed.astimezone(timezone(timedelta(minutes=offset_minutes)))
                 return local
     return None
-
-
-def _requests_calendar_date(user_text: str) -> bool:
-    return re.search(r"\b(?:fecha|date|d[ií]a|day)\b", user_text, re.IGNORECASE) is not None
 
 
 # Uso real 2026-09-23 «¿en qué día de la semana estamos?»: the weekday is a fact
@@ -5481,7 +5491,7 @@ def _compose_situation_payload(
                 for window in visible_seen["windows"]
             ]
         if clock:
-            if not _requests_calendar_date(user_text) or re.search(
+            if not asks_calendar_part(user_text) or re.search(
                 r"\b(?:hora|time)\b", user_text, re.IGNORECASE
             ):
                 payload["clock"] = clock
@@ -5491,7 +5501,7 @@ def _compose_situation_payload(
                 # CLOCK1327 H0399: the remaining time is arithmetic on the
                 # observed clock, done here; the narrator copies the figures.
                 payload["countdown"] = _countdown_facts(local, target, language)
-            if _requests_calendar_date(user_text):
+            if asks_calendar_part(user_text):
                 local = _local_datetime_from_observed(merged_seen)
                 if local is not None:
                     payload["date"] = local.date().isoformat()
@@ -6086,7 +6096,7 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             bits.append("Name the volume number.")
         if "muted" in observed:
             bits.append("Describe whether sound is silenced.")
-        if clock and _requests_calendar_date(user_text):
+        if clock and asks_calendar_part(user_text):
             bits.append("State the local calendar date from date.")
         elif clock and has_audio:
             bits.append("Name the local clock.")
@@ -7504,6 +7514,14 @@ _RAIN_AMOUNT = re.compile(
 )
 
 
+# What makes a number a weather measurement in a reply: its unit right after it.
+_WEATHER_MEASURE_UNIT = re.compile(
+    r"\s*(?:°|º|%|grados?\b|degrees?\b|por\s*ciento\b|percent\b|km|mm|mil[ií]metros?\b|millimet|"
+    r"pulgadas?\b|inch|cm\b|mph\b|m/s\b)",
+    re.IGNORECASE,
+)
+
+
 def _weather_clock_forms(value: object) -> set[str]:
     """The numbers of an observed sun clock «07:05» as a reply writes them: 07, 7, 05, 5."""
 
@@ -7533,10 +7551,18 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
                 observed |= _weather_number_forms(block.get(key))
             for key in ("sunrise", "sunset"):
                 observed |= _weather_clock_forms(block.get(key))
+    # Tanda 4 «Digame el weather lunes 13 en North Carolina»: every draft that said which day could not be read
+    # («no tengo el pronóstico del lunes 13») died here and the turn ended in no_response. A number the person
+    # said is theirs to repeat, but never as a measurement: «13 °C» must still be observed.
+    asked_numbers = set(re.findall(r"(?<![\w.,])\d+(?:[.,]\d+)?(?![\w]|[.,]\d)", user_text or ""))
     # A number that ends the sentence («a las 20:15.») is still a number said.
-    for number in re.findall(r"(?<![\w.,])-?\d+(?:[.,]\d+)?(?!\w|[.,]\d)", text):
-        if number not in observed and number.lstrip("-") not in observed:
-            return "invented_number"
+    for found in re.finditer(r"(?<![\w.,])-?\d+(?:[.,]\d+)?(?!\w|[.,]\d)", text):
+        number = found.group()
+        if number in observed or number.lstrip("-") in observed:
+            continue
+        if number in asked_numbers and re.match(_WEATHER_MEASURE_UNIT, text[found.end():]) is None:
+            continue
+        return "invented_number"
     folded_text = _reading_fold(text)
     # An amount of rain is only the observed precipitation, in its millimetres
     # (none is none in any unit): an observed temperature or percentage said
@@ -9116,7 +9142,10 @@ def compose_visible_defect(
         return "empty"
     if visible_reply_is_a_fixed_stall(stripped):
         return "stall"
-    if visible_reply_invents_a_spanish_infinitive(stripped):
+    if visible_reply_invents_a_spanish_infinitive(stripped) or visible_reply_breaks_word_case(
+        # An observed name («watchOS» in a page title) is written as it was seen.
+        stripped, f"{user_text} {json.dumps(facts, ensure_ascii=False, default=str)}",
+    ):
         return "invented"
     # A literal identifier supplied by the person (for example a filename)
     # is not leaked protocol metadata. Exempt only the same complete token
@@ -10672,7 +10701,7 @@ def compose_visible_defect(
         ):
             return "missing_name"
         clock = _local_clock_from_situation(situation)
-        date_requested = clock and _requests_calendar_date(user_text)
+        date_requested = clock and asks_calendar_part(user_text)
         if date_requested:
             local = _local_datetime_from_observed(_merged_observed(situation))
             if local is None or not _preserves_calendar_date(stripped, local):
@@ -11061,6 +11090,8 @@ def _unsupported_answer_contract_failure(
         return "unsupported_malformed_modal"
     if visible_reply_invents_a_spanish_infinitive(content):
         return "unsupported_invented_infinitive"
+    if visible_reply_breaks_word_case(content, request):
+        return "unsupported_broken_case"
     if visible_reply_is_a_fixed_stall(content):
         return "unsupported_fixed_stall"
     normalized = _policy_guard_text(content)
@@ -17456,7 +17487,7 @@ class LlmRuntime:
                 "You may also state the time in clock. "
                 "Do not set the clock. Do not introduce yourself."
             )
-        elif clock and _requests_calendar_date(user_text):
+        elif clock and asks_calendar_part(user_text):
             instruct(
                 "\nState the weekday from weekday and the local calendar date from date. "
                 "Do not guess either."

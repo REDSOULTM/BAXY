@@ -13,7 +13,7 @@ from ..catalog_operation_aliases import exact_catalog_operation_plan
 from . import levels, lexicon
 from .grammar import TASK_REMINDER_HEAD, _INSTRUCTION_NOUNS, _MACHINE_NOUNS, _without_leading_duration_preface, _fold, _match, _has, _REQUEST_PREFIX, _EXPLICIT_DESIRE_REQUEST, _TRAILING_MEANS_DIRECTIVE, _strip_request_envelope, _explicit_desire_request, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _negative_state_question_body, _machine_status_scopes, _machine_status_scopes_are_one_reading, _machine_status_is_the_whole_clause, _is_past_or_hypothetical_state, _is_machine_knowledge_or_diagnosis, _system_status_domain, _process_list_domain, _network_status_domain, _SET_VOLUME_VERB, _VOLUME_UP_VERB, _VOLUME_DOWN_VERB, _AUDIO_OBSERVATION_HEAD, _indirect_audio_mute_state_query, window_inventory_arguments, _literal_note_payload_request, _is_meta_or_tool_denial, _is_explicit_meta_or_tool_denial, _KNOWN_APPLICATION, _CONNECTED_INVENTORY, _OPEN, _MEDIA_RESUME_VERB, _LIST, _READ, _CREATE, _SEARCH, _COVERAGE_ACTION_HEAD, _SEQUENCE_NOMINAL_HEAD, _machine_status_topic, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, _PERCENTAGE_WORD_VALUES, _explicit_google_search_query, _request_clauses, _PLAY_HEAD, _request_body_surface, _without_address
 from .audio import app_scoped_microphone_mute, _LOCAL_VOLUME_DEVICE, _VOLUME_OBJECT, _bare_clitic_volume_request, _bare_music_volume_request, _volume_domain, _MUTE_VERB, _audio_mute_domain, _APP_VOLUME_SPANISH, _APP_VOLUME_ENGLISH, _APP_VOLUME_ENGLISH_SPLIT, _APP_VOLUME_SET_SPANISH, _APP_VOLUME_SET_ENGLISH, _APP_VOLUME_LEVEL_WORDS, _AUDIO_LEVEL_CUE, _is_audio_mute_state_query, _PERCENTAGE_WORD_PATTERN
-from .windows import deictic_window_mutation, _FOCUS_HEAD_ONLY, _FOCUS_HEAD_WITH_TAIL, _FOCUS_TAIL, _MINIMIZE_HEAD, _SNAP_HEAD, _SNAP_SIDE, has_named_window_target, _window_domain, minimize_all_request, INDETERMINATE_WINDOW_CLAUSE, other_window_switch_request, PC_HOME_PLACE
+from .windows import deictic_window_mutation, _FOCUS_HEAD_ONLY, _FOCUS_HEAD_WITH_TAIL, _FOCUS_TAIL, _MINIMIZE_HEAD, _SNAP_HEAD, _SNAP_SIDE, has_named_window_target, _window_domain, minimize_all_request, INDETERMINATE_WINDOW_CLAUSE, other_window_switch_request, PC_HOME_PLACE, start_menu_request
 from .display import screen_light_as_brightness, _KNOWN_FOLDER_WORDS, _KNOWN_FOLDER_ENUM, screen_inventory_request, _display_status_question, _without_screen_state_preface, _BRIGHTNESS_OBJECT, _BRIGHTNESS_UP_VERB, _BRIGHTNESS_DOWN_VERB, _BRIGHTNESS_ABSOLUTE, _BRIGHTNESS_ENGLISH_TURN, _BRIGHTNESS_RELATIVE_WORDS, brightness_status_request, _BRIGHTNESS_SET_VERB, _BRIGHTNESS_EXTREME_VALUES, wallpaper_request
 from .intent import EffectIntent, _entity_key, _is_negated_match, _append, _append_all
 from .catalog import ApplicationCatalogIndex, GameCatalogIndex, build_game_catalog_index, _authenticated_game_target, resolve_game_catalog_app_id, _application_name_key, build_application_catalog_index, _catalog_alias_key, _installed_game_named, installed_game_title
@@ -756,6 +756,8 @@ def _curated_domain_is_grounded(
         "input.keyboard.layout",
         "input.keyboard.status",
     }:
+        if operation == "input.key.press" and start_menu_request(folded):
+            return True
         return _has(
             folded,
             r"\b(?:teclado|keyboard|tecla|teclas|key|keys|"
@@ -5262,9 +5264,15 @@ _MUSIC_QUERY_FILLER = (
 # Uso real 2026-09-23 «poner mi canción favorita del año pasado», «mi lista de canciones más reproducidas»,
 # «un buen tema de mi cantante jazz favorito»: the person's own favourite is theirs to name; it is asked,
 # never searched as words.
+# Tanda 4 «pon cualquier cosa de mi playlist reciente» played an unrelated YouTube video: the person's own
+# collection (a playlist, their library, their liked or saved songs, what they played lately) is theirs too; no
+# search finds it, so it is asked the same way.
 _OWN_FAVOURITE = (
     r"\b(?:mi|mis|my|tu|tus|your|nuestr[oa]s?|our)\b.*\b(?:favorit[oa]s?|favou?rites?|preferid[oa]s?|"
-    r"mas\s+(?:escuchad|reproducid|oid)[oa]s?|most\s+played)\b"
+    r"mas\s+(?:escuchad|reproducid|oid)[oa]s?|most\s+played|"
+    r"playlists?|listas?\s+de\s+(?:reproduccion|canciones|musica)|biblioteca|library|"
+    r"(?:canciones|temas|musica)\s+(?:guardad[oa]s|que\s+me\s+gustan)|me\s+gusta|liked\s+songs|saved\s+(?:songs|music)|"
+    r"recientes?|recently\s+played|recent)\b"
 )
 # Uso real 2026-09-23 «pon mi lista wacky en mi aplicación gaana», «play me playlist wacky in my gaana
 # application»: an application named as the place to play is that application's session, never the
@@ -8942,8 +8950,7 @@ def _review_audio_effects(
         and _has(
             folded,
             rf"\b{_MUTE_VERB}\b|"
-            rf"\b{lexicon.MUTE_SWITCH_OFF}\b|\b{lexicon.MUTE_SWITCH_ON}\b|\b{lexicon.NOISE_STOP}\b|"
-            rf"\b{lexicon.SOUND_BACK}\b|{lexicon.BARE_SILENCE}|"
+            rf"\b(?:{lexicon.UNMUTE_WORDS}|{lexicon.MUTE_WORDS})\b|{lexicon.BARE_SILENCE}|"
             r"\b(?:en|in|on)\s+(?:mudo|silencio|mute|silent)\b|"
             r"\bback\s+on\b",
         )
@@ -8955,8 +8962,7 @@ def _review_audio_effects(
             rf"\b{_MUTE_VERB}\b|\b{lexicon.AUDIO_RESTORE}\b|"
             r"\b(?:quita|quitar|saca|sacar|remove)\b|"
             r"\b(?:pon|poner|ponle|deja|dejar|put|leave|turn)\b|"
-            rf"\b{lexicon.MUTE_SWITCH_OFF}\b|\b{lexicon.MUTE_SWITCH_ON}\b|\b{lexicon.NOISE_STOP}\b|"
-            rf"\b{lexicon.SOUND_BACK}\b|{lexicon.BARE_SILENCE}",
+            rf"\b(?:{lexicon.UNMUTE_WORDS}|{lexicon.MUTE_WORDS})\b|{lexicon.BARE_SILENCE}",
         )
         reversal = _match(
             folded,
@@ -11804,6 +11810,9 @@ def _resolve_clause_effects(
     ):
         # MINALL1687: every desktop window minimized and verified iconic.
         return EffectIntent(("window.minimize.all",), (text,))
+    if "input.key.press" in available and start_menu_request(folded):
+        # Tanda 4: the Start menu (or the PC's applications) shown with the Windows key.
+        return EffectIntent(("input.key.press",), (text,))
     if (
         "window.close.all" in available
         and close_all_request(folded)
