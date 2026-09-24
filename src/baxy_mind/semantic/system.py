@@ -5,10 +5,10 @@ from __future__ import annotations
 
 import re
 from typing import Iterable
-from .grammar import _fold, _has, _strip_request_envelope, _process_list_domain, _PERCENTAGE_WORD_VALUES, _request_clauses, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, SPOKEN_NUMBER
+from .grammar import _fold, _has, _strip_request_envelope, _process_list_domain, _PERCENTAGE_WORD_VALUES, _request_clauses, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, SPOKEN_NUMBER, _COVERAGE_ACTION_HEAD
 from .intent import EffectIntent
 from .temporal import is_window_phrase
-from .web import AIR_QUALITY_WORDS, _SKY_MEASURE_WORDS, _WEATHER_WORDS, _names_weather, _weather_lookup_query, asks_own_place
+from .web import AIR_QUALITY_WORDS, _SKY_MEASURE_WORDS, _WEATHER_SUN_TIME, _WEATHER_WORDS, _names_weather, _weather_lookup_query, asks_own_place, weather_asks_sun_time
 
 
 _WEATHER_MEDIUM = (
@@ -65,6 +65,8 @@ def _weather_location(text: str) -> str | None:
             or _has(folded_place, _WEATHER_MEDIUM)
             or _has(folded_place, _WEATHER_WORDS)
             or _has(folded_place, AIR_QUALITY_WORDS)
+            # Uso real tanda 6 «i'm meeting a friend at sunrise tomorrow»: «at sunrise» is a time of the day.
+            or _has(folded_place, _WEATHER_SUN_TIME)
             # Uso real tanda 6: «punto de rocío» and «índice de radiación UV» are one measure, not «de» a place.
             or _has(" ".join([*_fold(query[:match.start()]).split()[-1:], _fold(match.group(0)), folded_place]),
                     _SKY_MEASURE_WORDS)
@@ -138,9 +140,32 @@ def _weather_read_intent(
 
     if "weather.current" not in frozenset(available_operations):
         return None
-    if _weather_lookup_query(text) is None or len(_request_clauses(_fold(text))) != 1:
+    if _weather_lookup_query(text) is None:
+        return None
+    clauses = _request_clauses(_fold(text))
+    if len(clauses) != 1 and not _sun_time_asked_after_it(clauses):
         return None
     return EffectIntent(("weather.current",), (text.strip(),))
+
+
+# Uso real tanda 6 «he quedado con un amigo a la salida del sol mañana para correr, ¿qué hora será?» searched the
+# whole sentence and ended in ⚠: the sun time is named in what the person tells, and the question after it only
+# asks when that is. Two clauses, the first no order, the second a bare question of the time. «¿qué hora es?» and
+# «what time is it» ask this PC's clock, not when the sun rises.
+_BARE_TIME_QUESTION = (
+    r"^[¿¡\s]*(?:a\s+que\s+hora(?:\s+(?:sera|es|seria))?|que\s+hora\s+(?:sera|seria)|"
+    r"(?:at\s+)?what\s+time(?:\s+(?:is\s+that|will\s+(?:that|it)\s+be|would\s+that\s+be))?|"
+    r"cuando\s+(?:sera|es)|when\s+(?:is\s+that|will\s+(?:that|it)\s+be))[\s?!.]*$"
+)
+
+
+def _sun_time_asked_after_it(clauses: tuple[str, ...]) -> bool:
+    return (
+        len(clauses) == 2
+        and weather_asks_sun_time(clauses[0])
+        and re.match(rf"^[¿¡\s]*(?:{_COVERAGE_ACTION_HEAD})\b", clauses[0]) is None
+        and _has(clauses[1], _BARE_TIME_QUESTION)
+    )
 
 
 def process_inventory_arguments(text: str) -> dict[str, object] | None:

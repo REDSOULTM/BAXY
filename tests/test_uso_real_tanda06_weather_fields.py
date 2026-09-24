@@ -11,6 +11,9 @@
 3. «let me know my current location» was answered with the place and then the temperature, humidity and wind: the
    weather in a place reply is an unasked claim, repaired with the place focus. Owner: llm._weather_fact_defect and
    the extra_claim hint.
+4. «he quedado con un amigo a la salida del sol mañana para correr, ¿qué hora será?» searched the whole sentence and
+   ended in ⚠: a sun time told and then asked by a bare time question is the weather read. Owner:
+   semantic/system._weather_read_intent / _sun_time_asked_after_it.
 
 Every list mixes Spanish, English and Spanglish and holds phrasings never seen in a run; negative controls keep what
 is not the live reading out of it.
@@ -336,3 +339,41 @@ def test_a_place_reply_with_the_weather_is_repaired_with_the_place_focus() -> No
     assert reply == answer
     retry = json.dumps(client.payloads[1]["messages"], ensure_ascii=False)
     assert "nada del clima" in retry
+
+
+# --- 4. a sun time told, then asked «¿qué hora será?» ----------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("text", "place"),
+    [
+        ("he quedado con un amigo a la salida del sol mañana para correr, ¿qué hora será?", None),
+        ("i'm meeting a friend at sunrise tomorrow, what time is that?", None),
+        ("voy a salir a correr al amanecer, ¿a qué hora es?", None),
+        ("quiero ver la puesta de sol hoy, what time?", None),
+        ("i am going to watch the sunset in Malibu today, what time is that?", "Malibu"),
+    ],
+)
+def test_a_sun_time_told_and_then_asked_is_the_weather_read(text: str, place: str | None) -> None:
+    assert _operations(text) == ("weather.current",), text
+    assert effect_intent._weather_location(text) == place
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # The clock now, asked after a remark about the sunset.
+        "el atardecer me encanta, ¿qué hora es?",
+        "sunset is beautiful, what time is it?",
+        # An order and a question are two requests.
+        "pon música al atardecer, ¿a qué hora será?",
+    ],
+)
+def test_the_clock_now_or_an_order_is_not_the_sun_time(text: str) -> None:
+    assert _operations(text) != ("weather.current",), text
+
+
+def test_the_sun_time_told_is_answered_with_tomorrows_clock() -> None:
+    asked = "he quedado con un amigo a la salida del sol mañana para correr, ¿qué hora será?"
+    assert llm._weather_fact_defect("Mañana el sol sale a las 07:31.", _WEATHER, asked) == ""
+    assert llm._weather_fact_defect("Mañana el sol sale a las 07:33.", _WEATHER, asked) == "missing_state"
