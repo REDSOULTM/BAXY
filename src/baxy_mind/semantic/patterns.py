@@ -5484,7 +5484,8 @@ def _desired_music_query_raw(text: str) -> str | None:
         return None
     if not 1 <= len(query.split()) <= 12 or _has(
         _fold(query),
-        r"\b(?:alarma|alarm|temporizador|timer|volumen|volume|sonido|sound|"
+        # Tanda 6: «pon alarmas a las 7 y a las 8 …» schedules, in the plural too.
+        r"\b(?:alarmas?|alarms?|temporizador(?:es)?|timers?|volumen|volume|sonido|sound|"
         r"pantalla|screen|modo|mode|video|movie|pelicula|juego|game|"
         r"multijugador|multiplayer|with|against|conmigo|contra)\b",
     ):
@@ -5766,7 +5767,8 @@ def _explicit_named_music_query(text: str) -> str | None:
         or _has(
             _fold(query),
             r"^(?:(?:el|la|the|un|una|a|an)\s+)?(?:audio|volumen|volume|sonido|sound|"
-            r"recordatorio|reminder|alarma|alarm|temporizador|timer|nota|note|tarea|task|evento|event)\b",
+            r"recordatorios?|reminders?|alarmas?|alarms?|temporizador(?:es)?|timers?|nota|note|tarea|task|evento|"
+            r"event)\b",
         )
         # Uso real 2026-09-23 «pon hamburguesa en mi lista de comestibles» (a list
         # entry), «ponme lo último sobre el precio de las acciones de mercadona»

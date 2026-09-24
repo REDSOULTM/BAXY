@@ -578,6 +578,34 @@ def _reminder_has_actionable_due(folded: str) -> bool:
     )
 
 
+_ALARM_CLOCK = (
+    r"(?:[0-9]{1,2}|one|two|three|four|five|six|seven|eight|nine|"
+    r"ten|eleven|twelve|una?|dos|tres|cuatro|cinco|seis|siete|"
+    r"ocho|nueve|diez|once|doce)(?::[0-5][0-9])?"
+)
+_ALARM_PERIOD = (
+    r"(?:a\.?\s*m\.?|p\.?\s*m\.?|de\s+la\s+manana|de\s+la\s+tarde|de\s+la\s+noche|"
+    r"in\s+the\s+morning|in\s+the\s+afternoon|in\s+the\s+evening)"
+)
+# Plural alarms with their times: «set alarms for 2pm and 3pm», «pon alarmas a las 7 y a las 8 de la mañana», «set
+# two alarms, one at 5pm and one at 6pm», «set an alarm for 2pm and another for 3pm», also asked as a wish («i want
+# you to…», «quiero que me pongas…»).
+_MULTIPLE_ALARMS = re.compile(
+    r"[^\w]*(?:(?:i\s+(?:want|need|would\s+like)|i'?d\s+like)\s+you\s+to\s+|(?:quiero|necesito)\s+que\s+(?:me\s+)?)?"
+    r"(?:record|create|set|schedule|make|add|crea|crear|creame|programa|programar|programame|pon|ponme|poner|"
+    r"ponerme|configura|configurar|configurame|activa|activame|agrega|anade|pongas|programes|crees|configures|actives)"
+    r"\s+(?:(?:the|las?|two|three|four|dos|tres|cuatro|some|unas|an?|una)\s+)?(?:alarmas?|alarms?)\b\s*,?\s*"
+    r"(?P<items>\S.*)",
+    re.IGNORECASE,
+)
+_ALARM_ITEM_SEPARATOR = re.compile(r"\s*(?:,\s*(?:and\s+|y\s+)?|\s(?:and|y|e)\s)\s*")
+_ALARM_ITEM = re.compile(
+    r"(?:(?:one|another|the\s+other|una|otra|la\s+otra)\s+)?(?:(?:for|at|a|para)\s+)?(?:las?\s+)?"
+    rf"(?P<clock>{_ALARM_CLOCK})(?:\s*(?P<period>{_ALARM_PERIOD}))?[\s.!?]*",
+    re.IGNORECASE,
+)
+
+
 def _multiple_alarm_schedule_intent(
     folded: str,
     available: frozenset[str],
@@ -589,40 +617,27 @@ def _multiple_alarm_schedule_intent(
         r"\b(?:recurrente|recurrentes|repeating|recurring|cada|every)\b",
     ):
         return None
-    clock_token = (
-        r"(?:[0-9]{1,2}|one|two|three|four|five|six|seven|eight|nine|"
-        r"ten|eleven|twelve|una?|dos|tres|cuatro|cinco|seis|siete|"
-        r"ocho|nueve|diez|once|doce)(?::[0-5][0-9])?"
-    )
-    request = re.match(
-        (
-            r"^[^\w]*(?:record|create|set|schedule|crea|crear|programa|"
-            r"programar|pon|ponme)\s+(?:(?:the|las?)\s+)?"
-            r"(?:alarms|alarmas)\s+(?:(?:for|at|a|para)\s+(?:las?\s+)?)?"
-            rf"(?P<clocks>{clock_token}(?:\s*(?:,|and|y)\s*{clock_token})+)\s*"
-            r"(?P<period>a\.?\s*m\.?|p\.?\s*m\.?|de la manana|"
-            r"de la tarde|de la noche|in the morning|in the afternoon|"
-            r"in the evening)[\s.!?]*$"
-        ),
-        folded,
-        re.IGNORECASE,
-    )
+    request = _MULTIPLE_ALARMS.fullmatch(folded)
     if request is None:
         return None
-    clocks = tuple(
-        token.strip()
-        for token in re.split(r"\s*(?:,|and|y)\s*", request.group("clocks"))
-        if token.strip()
-    )
-    if not 2 <= len(clocks) <= 8 or len(set(clocks)) != len(clocks):
+    # Tanda 6 «i want you to set alarms for 2pm and 3pm» was asked «What time…?»: each time may carry its own
+    # period, and a period said only after the last time is shared by all of them («for 3 and 4 in the afternoon»).
+    found = [_ALARM_ITEM.fullmatch(part) for part in _ALARM_ITEM_SEPARATOR.split(request.group("items"))]
+    if any(item is None for item in found):
+        return None
+    periods = [item.group("period") for item in found]
+    if periods[-1] is not None and not any(periods[:-1]):
+        periods = [periods[-1]] * len(periods)
+    items = [(item.group("clock"), period) for item, period in zip(found, periods)]
+    clocks = tuple(clock for clock, _ in items)
+    if not 2 <= len(clocks) <= 8 or len(set(items)) != len(items) or any(period is None for _, period in items):
         return None
     for clock in clocks:
         hour_text = clock.split(":", 1)[0]
         if hour_text.isdigit() and not 1 <= int(hour_text) <= 12:
             return None
-    period = request.group("period")
-    noun = "alarma a las" if _has(folded, r"\balarmas\b") else "alarm at"
-    evidence = tuple(f"{noun} {clock} {period}" for clock in clocks)
+    noun = "alarma a las" if _has(folded, r"\balarmas?\b") else "alarm at"
+    evidence = tuple(f"{noun} {clock} {period.strip()}" for clock, period in items)
     return EffectIntent(
         tuple("notification.schedule" for _ in clocks),
         evidence,

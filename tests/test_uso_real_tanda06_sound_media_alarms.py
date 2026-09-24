@@ -14,6 +14,10 @@
 - «ponme barcelona por queen» was described instead of played: «<title> por <performer>» names the song and who
   sings it, like «by» and «de»; both sides must be names said alone, so «por» as a time, a way or a channel plays
   nothing.
+- «i want you to set alarms for 2pm and 3pm» was asked «What time…?»: several alarms said with their times are each
+  scheduled, whether each time carries its own half of the day or one said last is shared, asked as a wish or as an
+  order («one at…, one at…», «una a las…, otra a las…»). «pon alarmas a las 7 y a las 8 de la mañana» used to play a
+  YouTube video: the plural «alarmas» is not a title either.
 
 The phrases here are not the literals of the real window; they are other ways of saying the same things, with
 controls that must keep their own reading.
@@ -183,3 +187,51 @@ def test_a_song_by_its_performer_plays_in_the_local_player(text: str, query: str
 def test_por_without_a_performer_plays_nothing(text: str) -> None:
     effects = resolve_explicit_effects(text, AVAILABLE)
     assert effects is None or not {"media.play.youtube", "media.play.query"} & set(effects.operations)
+
+
+# --- 5. several alarms, each with its time -----------------------------------------------------------------------
+
+_ALARMS = AVAILABLE + ("notification.schedule", "reminder.create")
+
+
+@pytest.mark.parametrize(
+    ("text", "evidence"),
+    [
+        ("i need you to set alarms for 6am and 7am", ("alarm at 6 am", "alarm at 7 am")),
+        ("set two alarms, one at 5pm and one at 6pm", ("alarm at 5 pm", "alarm at 6 pm")),
+        ("set an alarm for 2pm and another for 3:30pm", ("alarm at 2 pm", "alarm at 3:30 pm")),
+        ("set alarms for 2 and 3 p.m.", ("alarm at 2 p.m.", "alarm at 3 p.m.")),
+        (
+            "pon alarmas a las 7 y a las 8 de la mañana",
+            ("alarma a las 7 de la manana", "alarma a las 8 de la manana"),
+        ),
+        ("quiero que me pongas alarmas a las 6 am y a las 6:30 am", ("alarma a las 6 am", "alarma a las 6:30 am")),
+        (
+            "programa dos alarmas, una a las 5 de la tarde y otra a las 6 de la tarde",
+            ("alarma a las 5 de la tarde", "alarma a las 6 de la tarde"),
+        ),
+    ],
+)
+def test_several_alarms_with_their_times_are_each_scheduled(text: str, evidence: tuple[str, ...]) -> None:
+    effects = resolve_explicit_effects(text, _ALARMS)
+    assert effects is not None, text
+    assert effects.operations == ("notification.schedule",) * len(evidence)
+    assert effects.evidence == evidence
+    for said in effects.evidence:
+        arguments = mind._explicit_arguments_from_evidence("notification.schedule", said, (), ())
+        assert arguments is not None and arguments["kind"] == "alarm", said
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # A time whose half of the day was never said is asked, not guessed; the same time twice is one alarm;
+        # a repeating alarm is not a finite list.
+        "set alarms for 5pm and 7",
+        "set alarms for 2pm and 2pm",
+        "set repeating alarms for 7am and 8am",
+    ],
+)
+def test_alarms_with_an_unsaid_period_or_a_repetition_are_not_expanded(text: str) -> None:
+    effects = resolve_explicit_effects(text, _ALARMS)
+    assert effects is None or effects.operations.count("notification.schedule") < 2
