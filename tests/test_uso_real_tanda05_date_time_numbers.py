@@ -379,6 +379,9 @@ def test_an_alarm_the_person_set_is_what_they_tell(text: str) -> None:
         "i set the volume to 50",
         "puse música",
         "tengo hambre",
+        "tengo recordatorios pendientes",
+        "tengo una alarma para las seis",
+        "i have reminders for tomorrow",
     ],
 )
 def test_an_order_a_question_or_a_request_about_it_is_not_a_statement(text: str) -> None:

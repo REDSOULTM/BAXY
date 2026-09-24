@@ -1970,15 +1970,17 @@ _OWN_SCHEDULE_OBJECT = (
     r"(?:(?:una|un|la|el|mi|mis|las|los|an?|the|my)\s+)?(?:alarmas?|despertador(?:es)?|temporizador(?:es)?|"
     r"timers?|recordatorios?|alarms?|reminders?)"
 )
+_OWN_SCHEDULE_SET = r"(?:(?:puest|configurad|programad|activad)[oa]s?|set)"
+# Having one is told only with its participle («tengo una alarma puesta»): «tengo recordatorios pendientes» asks.
 _OWN_SCHEDULE_STATEMENT = re.compile(
-    r"(?:(?:yo|ya|reci[eé]n|tambi[eé]n|hoy|anoche)\s+)*(?:me\s+|te\s+)?(?:"
+    r"(?:(?:yo|ya|reci[eé]n|tambi[eé]n|hoy|anoche)\s+)*(?:me\s+|te\s+)?(?:(?:"
     r"(?:configur|program|activ|dej|agend|fij|cre|coloqu)é|puse|establecí|estableci|"
     r"he\s+(?:configurado|programado|puesto|activado|dejado|agendado|fijado|creado|establecido)|"
-    r"tengo|"
     r"i\s+(?:just\s+|already\s+|also\s+)*(?:set|put|scheduled|made|created|turned\s+on|programmed)(?:\s+up)?|"
     r"i(?:['’]ve|\s+have)\s+(?:just\s+|already\s+|also\s+)*(?:set|put|scheduled|made|created|turned\s+on|programmed)"
-    r"(?:\s+up)?|i\s+have)(?:\s+(?:puest|configurad|programad|activad)[oa]s?)?"
-    rf"\s+{_OWN_SCHEDULE_OBJECT}(?:\s+(?:puest|configurad|programad|activad)[oa]s?|\s+set)?"
+    rf"(?:\s+up)?)(?:\s+{_OWN_SCHEDULE_SET})?\s+{_OWN_SCHEDULE_OBJECT}(?:\s+{_OWN_SCHEDULE_SET})?|"
+    rf"(?:tengo|i\s+have|i(?:['’]ve|\s+have)\s+got)\s+(?:{_OWN_SCHEDULE_SET}\s+{_OWN_SCHEDULE_OBJECT}|"
+    rf"{_OWN_SCHEDULE_OBJECT}\s+{_OWN_SCHEDULE_SET}))"
     r"(?:\s+(?P<tail>[^?¿]{0,100}))?[.!]*"
 )
 _OWN_SCHEDULE_REQUEST_TAIL = re.compile(
