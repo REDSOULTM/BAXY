@@ -808,7 +808,7 @@ def _curated_domain_is_grounded(
             r"\b(?:navegador|browser|web|website|sitio|site|pagina|page|"
             r"internet|google|wikipedia|youtube)\b|https?://|"
             r"\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}\b",
-        ) and not _has(folded, r"\b(?:archivo|file|carpeta|folder)\b")
+        ) and not _has(folded, r"\b(?:archivo|file|carpeta|folder)\b") and not minimize_all_request(folded)
     if operation == "web.search":
         # A semantic selector may confuse local inspection verbs with a web
         # lookup (for example, "look through Downloads"). A direct search with
@@ -9493,6 +9493,8 @@ def _symbolic_web_destination(text: str) -> str | None:
         or _has_unsupported_deferred_effect(folded)
         or _has_contradictory_correction(folded)
         or len(_request_clauses(folded)) != 1
+        # Tanda 3 «Go to página de inicio»: going home is the PC's desktop, never a site.
+        or minimize_all_request(folded)
         or _named_browser(folded) is not None
         or client_navigation_target(folded) is not None
         or _has(folded, r"https?://|\b(?:[a-z0-9-]+\.)+[a-z]{2,63}\b")
@@ -12555,6 +12557,13 @@ def _resolve_clause_effects(
         return EffectIntent(("web.search",), (folded,))
     if "web.search" in available and _public_commerce_lookup_request(folded):
         return EffectIntent(("web.search",), (folded,))
+    if "web.search" in available and _location_recommendation_request(folded):
+        # Temporal phrases such as "después de la medianoche" are query
+        # constraints, not composition separators. Preserve the complete
+        # request before the generic clause splitter sees "después". Read
+        # before the definition gate below: tanda 3 «what are the best
+        # restaurants in my area» is a place to look up, not a definition.
+        return EffectIntent(("web.search",), (folded,))
     shared_domain_minimum = _coordinated_effect_domain_minimum(folded)
     if _has_unresolved_shared_head_coordination(folded):
         shared_domain_minimum = max(2, shared_domain_minimum or 0)
@@ -12680,11 +12689,6 @@ def _resolve_clause_effects(
     nominal_reminder = _nominal_reminder_lookup_title(folded)
     if nominal_reminder is not None and "reminder.resolve.exact" in available:
         return EffectIntent(("reminder.resolve.exact",), (folded,))
-    if "web.search" in available and _location_recommendation_request(folded):
-        # Temporal phrases such as "después de la medianoche" are query
-        # constraints, not composition separators. Preserve the complete
-        # request before the generic clause splitter sees "después".
-        return EffectIntent(("web.search",), (folded,))
     notepad_paste = _new_notepad_paste_intent(
         folded,
         available,
@@ -13064,6 +13068,12 @@ def unresolved_compound_contract(
             r"\b(?:pista|track)\s+(?:o|or)\s+(?:video|audio)\b",
         )
     )
+    # Tanda 3 «¿estamos a enero o febrero?»: the choice is between answers to one clock read.
+    benign_calendar_choice = (
+        isinstance(resolved_intent, EffectIntent)
+        and resolved_intent.operations == ("system.time",)
+        and _direct_current_time_request(folded)
+    )
     benign_asr_catalog_report = (
         isinstance(resolved_intent, EffectIntent)
         and 2 <= len(resolved_intent.operations) <= 8
@@ -13124,6 +13134,7 @@ def unresolved_compound_contract(
         or (
             _has_contradictory_correction(folded, available)
             and not benign_media_alternative
+            and not benign_calendar_choice
             and not benign_asr_catalog_report
             and not benign_product_correction
             and not benign_live_lookup

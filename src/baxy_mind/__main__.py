@@ -44,6 +44,7 @@ from .semantic.grammar import ARITHMETIC_EXPRESSION, SPOKEN_NUMBER
 from .semantic.patterns import output_level_request
 from .semantic.notes import agenda_event_request, stated_event_reminder
 from .semantic.temporal import SpokenClock, agenda_window, spoken_date, spoken_window
+from .semantic.web import names_own_data
 from .corrector import catalog_correction_terms
 from .first_signal import (
     PATH_MODEL,
@@ -2645,12 +2646,12 @@ def _public_lookup_decision(response_language: object) -> dict[str, object]:
 
 
 # What is never a public search, whatever the guard reads: the person's own
-# things and what is playing (the words would leave the PC; 00_IDENTIDAD:
-# information comes in, content does not go out); someone pointed at and not
-# named; a level for this PC; a sentence cut off before its object («hora
-# actual en», «hay algún concierto próximo de») — that one is asked, not guessed.
+# data (semantic.web.names_own_data) and what is playing (the words would leave
+# the PC; 00_IDENTIDAD: information comes in, content does not go out); someone
+# pointed at and not named; a level for this PC; a sentence cut off before its
+# object («hora actual en», «hay algún concierto próximo de») — that one is
+# asked, not guessed.
 _NOT_A_PUBLIC_LOOKUP = re.compile(
-    r"\b(?:mi|mis|mio|mia|mios|mias|my|mine|nuestr[oa]s?|our)\b|"
     r"\b(?:este|esta|this)\s+(?:cancion|tema|song|track|artista|artist|disco|album|video|podcast)\b|"
     r"\b(?:that|this)\s+(?:person|guy|man|woman)\b|\b(?:esa|esta|aquella)\s+persona\b|"
     r"\d\s*%|\bpor\s*ciento\b|\bpercent\b|"
@@ -2673,7 +2674,11 @@ def _names_own_data(objective: str) -> bool:
     # Uso real 2026-09-23 «he recibido algún correo desde el mediodía», «check
     # any mail from amazon» went to web.search: the person's received mail is
     # theirs, and a question about it never leaves the PC.
-    return _NOT_A_PUBLIC_LOOKUP.search(folded) is not None or effect_intent._latest_email_domain(folded)
+    return (
+        _NOT_A_PUBLIC_LOOKUP.search(folded) is not None
+        or names_own_data(folded)
+        or effect_intent._latest_email_domain(folded)
+    )
 
 
 def _public_lookup_applies(

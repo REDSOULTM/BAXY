@@ -157,11 +157,13 @@ _MINIMIZE_ALL_REQUEST = re.compile(
 # website called homescreen: on a PC the home screen is the desktop, and going
 # to it (Win+D) is every window minimized. «abre el escritorio» stays the
 # Desktop folder: only a movement or showing verb reads as the desktop view.
-PC_HOME_PLACE = r"(?:escritorio|desktop|home\s*screen|pantalla\s+(?:de\s+inicio|principal))"
-# Uso real tanda 2 «Ve home.»: said alone after a movement verb, «home» and «inicio» are the PC's home too
-# («go home», «vuelve al inicio»). Anywhere else they name other things («home depot», «la página de inicio de
-# un sitio», «el inicio de la canción»), so they are home only here, where nothing may follow them.
-_BARE_HOME = r"(?:home|inicio)"
+PC_HOME_PLACE = r"(?:escritorio|desktop|home\s*screen|start\s+screen|pantalla\s+(?:de\s+inicio|principal))"
+# Uso real tanda 2 «Ve home.», tanda 3 «Go to página de inicio» (it opened a dictionary page for «inicio»): said
+# alone after a movement verb, «home», «inicio» and «la página de inicio» are the PC's home too («go home», «vuelve
+# al inicio», «ve a la página de inicio»). Anywhere else they name other things («home depot», «la página de inicio
+# de google», «el inicio de la canción»), so they are home only here, where nothing may follow them. The English
+# «home page» stays a web page (tanda 2 test_home_elsewhere_is_not_the_desktop).
+_BARE_HOME = r"(?:home|inicio|pagina\s+(?:de\s+inicio|principal))"
 _SHOW_DESKTOP_REQUEST = re.compile(
     r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
     r"(?:(?P<move>ve|vete|anda|andate|vuelve|volve|volvamos|regresa|ir|vamos|llevame|"

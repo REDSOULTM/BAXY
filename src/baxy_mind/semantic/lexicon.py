@@ -99,3 +99,38 @@ NOISE_STOP = (
 # A message that opens with one of the above is a mute request by its form (the verbs alone, «vuelve», «para»,
 # «apaga», head many other requests).
 MUTE_REQUEST = rf"^[¿?¡!\s]*(?:{SOUND_BACK}|{MUTE_SWITCH_OFF}|{MUTE_SWITCH_ON}|{NOISE_STOP})\b|{BARE_SILENCE}"
+
+# ---------------------------------------------------------------- people of the person's own life
+# Tanda 3 2026-09-24 «es cierto que el cumpleaños de antonia es el primero de marzo» was searched on the web: someone
+# named only by a given name is someone the person knows, and what is asked of them is the person's own data
+# (web.names_own_data). The most common given names in Spanish and English. Left out on purpose: names that are also
+# common words, months, places, holidays, brands, cartoon pairs or a famous single-name artist («rosa», «luz», «julio»,
+# «june», «victoria», «santiago», «mercedes», «mario», «tom», «camilo»), where a bare mention is not a private person.
+GIVEN_NAMES = frozenset(
+    """
+    juan jose luis carlos jorge pedro pablo miguel manuel antonio francisco javier fernando rafael ricardo roberto
+    sergio alejandro andres diego daniel david alberto eduardo enrique felipe gabriel gonzalo hector ignacio jaime
+    joaquin lucas martin mateo matias nicolas raul rodrigo ruben samuel sebastian vicente agustin benjamin bruno
+    cristian emilio esteban facundo gustavo ivan julian maximiliano mauricio patricio ramiro thiago victor alvaro
+    adrian emiliano gerardo alonso arturo elias ernesto fabian federico guillermo hernan leandro lorenzo marcelo
+    octavio renato rodolfo ulises walter ramon benito cristobal felix alfredo bastian nahuel lautaro santino
+    maria ana laura carmen isabel lucia martina valentina camila antonia paula andrea daniela gabriela fernanda
+    catalina josefa javiera constanza francisca isidora agustina emilia julieta juana marta elena cristina patricia
+    monica veronica claudia silvia beatriz raquel sara sandra natalia adriana alejandra alicia diana eva irene ines
+    lorena mariana miriam nuria olga susana teresa ximena jimena valeria yolanda zoe fabiola graciela josefina
+    liliana maite micaela noelia pamela paola renata romina tamara vanesa viviana luciana antonella bianca agostina
+    amanda barbara estefania gisela karina karla marisol nicole priscila rebeca tatiana almudena lola
+    john james robert michael william richard joseph thomas charles christopher matthew anthony steven paul andrew
+    joshua kenneth kevin brian george edward ronald timothy jason jeffrey ryan jacob gary nicholas eric jonathan
+    stephen larry justin scott brandon gregory alexander patrick dennis tyler aaron adam nathan henry zachary
+    douglas peter kyle noah ethan jeremy keith roger terry sean gerald carl harold dylan lawrence jesse bryan billy
+    bruce joe logan alan ralph randy eugene vincent russell bobby philip johnny liam oliver owen caleb isaac
+    nathaniel tony steve mike chris matt dave rick tim jim sam dan luke
+    mary jennifer elizabeth susan jessica sarah karen lisa nancy betty margaret ashley kimberly emily donna michelle
+    melissa deborah stephanie dorothy rebecca sharon cynthia amy kathleen angela shirley brenda emma anna samantha
+    katherine christine helen debra rachel carolyn janet catherine heather olivia julie joyce ruth lauren christina
+    joan evelyn judith hannah megan cheryl jacqueline martha janice ann kathryn abigail sophia frances alice judy
+    isabella julia denise danielle marilyn beverly natalie theresa brittany doris kayla alexis lori marie chloe mia
+    ava ella ellie jessie
+    """.split()
+)

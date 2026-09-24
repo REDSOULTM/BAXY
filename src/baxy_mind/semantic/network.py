@@ -8,7 +8,8 @@ from typing import Iterable
 from .grammar import _CLOCK_READ_HEAD, _fold, _match, _has, _REQUEST_PREFIX, _strip_request_envelope, _request_head, _head_is, _negative_action_forms, _machine_status_scopes_are_one_reading, _machine_status_is_the_whole_clause, _system_status_domain, _process_list_domain, _network_status_domain, _LIST, _COVERAGE_ACTION_HEAD, _MACHINE_STATUS_OBSERVATION_HEAD, _MACHINE_STATUS_HEAD, _MACHINE_STATUS_OBSERVATION
 from .audio import _volume_domain
 from .intent import EffectIntent, _is_negated_match, _append
-from .temporal import countdown_target
+from .normalize import alternation
+from .temporal import MONTH_NUMBERS, _WEEKDAYS, countdown_target
 
 
 def _direct_current_time_request(folded: str) -> bool:
@@ -39,6 +40,9 @@ def _direct_current_time_request(folded: str) -> bool:
         r"(?:necesito|quiero|quisiera)\s+saber|"
         r"(?:i\s+)?(?:need|want)\s+to\s+know)"
     )
+    request = _strip_request_envelope(folded).strip(" ¿?¡!.")
+    if _PRESENT_CALENDAR_QUESTION.fullmatch(request) is not None:
+        return True
     return re.fullmatch(
         rf"(?:{observation}\s+(?:{nominal})|"
         rf"(?:what(?:\s+is|'s|’s|s)\s+(?=(?:the|current|local|today)\b)|"
@@ -62,9 +66,37 @@ def _direct_current_time_request(folded: str) -> bool:
         r"(?:search|look|busca)\s+(?:to\s+)?(?:find|encontrar)\s+"
         r"(?:(?:the|la)\s+)?(?:current|actual)\s+(?:local\s+)?"
         r"(?:time|hora)(?:\s+(?:and|y)\s+(?:time\s+zone|zona\s+horaria))?)",
-        _strip_request_envelope(folded).strip(" ¿?¡!."),
+        request,
         re.IGNORECASE,
     ) is not None
+
+
+# Tanda 3 2026-09-24 «what day are we in» (asked back «Want me to tell you the current date?») and «¿estamos a enero o
+# febrero?» (searched on the web): which day, date, weekday, month or year it is now is this PC's calendar, asked
+# however it is asked — «en qué mes estamos», «a cuántos estamos», «¿hoy es lunes?», «what year is it», «is today
+# friday», «do you know what day it is». The whole message must be the question: «qué día es el partido», «en qué año
+# nació Messi», «what date is easter» ask for the date of something else.
+_CALENDAR_UNIT = r"(?:dia(?:\s+de\s+la\s+semana)?|fecha|mes|ano|day(?:\s+of\s+the\s+week)?|date|month|year|weekday)"
+_CALENDAR_NAME = alternation(tuple(MONTH_NUMBERS) + tuple(name for names in _WEEKDAYS for name in names))
+_CALENDAR_NAMES = rf"{_CALENDAR_NAME}(?:\s+(?:o|u|or)\s+(?:(?:a|en)\s+)?{_CALENDAR_NAME})*"
+_CALENDAR_NOW = r"(?:\s+(?:hoy|ahora|ya|today|now|right\s+now))?"
+_CALENDAR_ASK = (
+    r"(?:(?:sabes|sabe|sabrias|me\s+(?:dices|decis|puedes\s+decir)|dime|decime|do\s+you\s+know|"
+    r"(?:can|could)\s+you\s+tell\s+me|tell\s+me)\s+)?"
+)
+_PRESENT_CALENDAR_QUESTION = re.compile(
+    rf"{_CALENDAR_ASK}(?:"
+    rf"(?:en|a)\s+(?:que|cual)\s+{_CALENDAR_UNIT}\s+(?:estamos|nos\s+encontramos){_CALENDAR_NOW}|"
+    rf"(?:hoy\s+)?(?:que|cual)\s+{_CALENDAR_UNIT}\s+(?:es|tenemos|estamos|cae){_CALENDAR_NOW}|"
+    rf"a\s+(?:cuantos|que(?:\s+dia)?)\s+estamos{_CALENDAR_NOW}|"
+    rf"(?:ya\s+)?(?:hoy\s+)?(?:es|estamos\s+(?:a|en))\s+{_CALENDAR_NAMES}{_CALENDAR_NOW}|"
+    rf"(?:what|which)\s+{_CALENDAR_UNIT}\s+(?:is\s+it|it\s+is|is\s+today|today\s+is|is\s+this|"
+    rf"are\s+we\s+(?:in|on|at)|we\s+are\s+(?:in|on|at)){_CALENDAR_NOW}|"
+    r"what(?:\s+is|'s|’s|s)\s+(?:today|the\s+(?:day|date|month|year)(?:\s+(?:today|now))?|today['’]?s\s+(?:date|day))|"
+    r"today\s+is\s+what\s+(?:day|date)|"
+    rf"is\s+(?:it|today)\s+{_CALENDAR_NAMES}(?:\s+today)?"
+    r")"
+)
 
 
 def _direct_process_inventory_request(text: str) -> bool:

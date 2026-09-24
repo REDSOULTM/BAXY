@@ -7,6 +7,7 @@ import re
 from typing import Iterable
 from .grammar import _fold, _has, _strip_request_envelope, _process_list_domain, _PERCENTAGE_WORD_VALUES, _request_clauses, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, SPOKEN_NUMBER
 from .intent import EffectIntent
+from .temporal import is_window_phrase
 from .web import _WEATHER_WORDS, _names_weather, _weather_lookup_query
 
 
@@ -33,7 +34,7 @@ def _weather_location(text: str) -> str | None:
     prepositions = r"en|in|de|para|for|at" if _names_weather(_fold(query)) else r"en|in|at"
     for match in re.finditer(rf"\b(?:{prepositions})\s+(?=(?P<place>[^,;:.!?]+))", query, re.IGNORECASE):
         candidate = match.group("place").strip(" \t\r\n.,;:")
-        if _has(_fold(candidate), _WEATHER_TIME_WORDS):
+        if _names_a_time(_fold(candidate)):
             continue
         place = _without_trailing_time(candidate)
         place = re.sub(r"^(?:la\s+ciudad\s+de|the\s+city\s+of)\s+", "", place, flags=re.IGNORECASE)
@@ -43,8 +44,9 @@ def _weather_location(text: str) -> str | None:
             or _has(folded_place, _WEATHER_MEDIUM)
             or _has(folded_place, _WEATHER_WORDS)
             # Uso real 2026-09-23 «va a llover el fin de semana?» read the weather of
-            # «Sémana» (Mali): a time is not a place.
-            or _has(folded_place, _WEATHER_TIME_WORDS)
+            # «Sémana» (Mali), tanda 3 «para la semana del 5 al 12 de julio» the weather
+            # of «Júlio» (Mozambique): a time is not a place.
+            or _names_a_time(folded_place)
             # MASSIVE «la temperatura será más alta de cuarenta grados mañana»: a measure is not a place.
             or _has(folded_place, rf"^{SPOKEN_NUMBER}\s*(?:grados|degrees|°|milimetros|mm|centimetros|cm|pulgadas|inches)\b")
             or len(place.encode("utf-8")) > 128
@@ -61,18 +63,26 @@ def _without_trailing_time(place: str) -> str:
     words = place.split()
     for index in range(1, len(words)):
         tail = _fold(" ".join(words[index:]))
-        tail = re.sub(r"^(?:para|for|de|del|en|in|on|a|al|this|este|esta)\s+", "", tail)
-        if _has(tail, _WEATHER_TIME_WORDS) or _has(
+        if _names_a_time(tail) or _names_a_time(re.sub(r"^(?:para|for|de|del|en|in|on|a|al)\s+", "", tail)) or _has(
             tail, r"^(?:ahora|now|right\s+now|por\s+favor|please)\b"
         ):
             return " ".join(words[:index])
     return place
 
 
+def _names_a_time(folded: str) -> bool:
+    """«la semana del 5 al 12 de julio», «julio», «el 4 de julio», «next monday», «navidad»: the words say a time
+    (semantic.temporal reads dates, months, weekdays and spans; the list below adds holidays and counted spans)."""
+
+    return _has(folded, _WEATHER_TIME_WORDS) or is_window_phrase(folded) or is_window_phrase("en " + folded)
+
+
 # Uso real 2026-09-23 «pronóstico de diez días» asked the weather service for a
 # place called «diez días», and «el weather para San Valentín» for a place
 # called like the holiday: a span («los próximos 5 días», «the next 7 days») or
-# a named day of the year is a time, not a place.
+# a named day of the year is a time, not a place. Portuguese month spellings
+# («julho») are months too; «janeiro» and «março» are left to Rio de Janeiro and
+# to the Spanish word «marco».
 _WEATHER_SPAN_COUNT = r"(?:\d{1,3}|" + "|".join(
     sorted({*_SPANISH_SMALL_NUMBERS, *_ENGLISH_SMALL_NUMBERS}, key=len, reverse=True)
 ) + r")"
@@ -85,7 +95,8 @@ _WEATHER_TIME_WORDS = (
     r"friday|saturday|sunday|dia|dias|days?|mes|meses|months?|ano|anos|years?|"
     r"navidad|nochebuena|nochevieja|ano\s+nuevo|san\s+valentin|halloween|pascua|semana\s+santa|"
     r"dia\s+de\s+(?:los\s+)?(?:enamorados|muertos|la\s+madre|el\s+padre)|"
-    r"christmas|new\s+year|valentine|easter|thanksgiving)\b"
+    r"christmas|new\s+year|valentine|easter|thanksgiving|"
+    r"fevereiro|maio|junho|julho|setembro|outubro|novembro|dezembro)\b"
 )
 
 

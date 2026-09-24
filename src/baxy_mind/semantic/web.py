@@ -10,6 +10,8 @@ from .grammar import _fold, _match, _has, _strip_request_envelope, _request_head
 from .intent import EffectIntent, _entity_key, _append, _append_all
 from .catalog import ApplicationCatalogIndex, _application_name_key, build_application_catalog_index
 from .temporal import _BOUNDED_TEMPORAL_SELECTOR
+from .lexicon import GIVEN_NAMES
+from .windows import minimize_all_request
 from .media import _youtube_search_query
 
 
@@ -417,7 +419,8 @@ def _entity_lookup_query(text: str) -> str | None:
         r"they|it|esto|eso|esta|este|ese|esa|aquel|aquello|aquella|this|that|these|those|"
         r"mi|mis|tus|su|sus|nuestro|nuestra|nuestros|nuestras|my|your|his|her|their|our|"
         r"de\s+verdad|realmente|really|en\s+realidad)\b",
-    ):
+    ) or names_own_data(folded_entity):
+        # Tanda 3 «quién es antonia»: someone of the person's own life is not in public pages.
         return None
     if _has(
         folded_entity,
@@ -550,6 +553,103 @@ _RECORD_FACT = re.compile(
 )
 
 
+# --- The person's own data (00_IDENTIDAD: information comes in, the person's content never goes out) ----------
+# Tanda 3 2026-09-24 «es cierto que el cumpleaños de antonia es el primero de marzo» and «what do i have to do on
+# january 1st» were sent to the web. What the person has, did, has to do or owns, the people of their own life and
+# this PC are never a public lookup, whatever a guard reads. Four signals, each general:
+# 1. first person possession or experience («mi», «my», «did i», «am i», «i have to», «tengo que», «qué tengo»,
+#    «me toca», a first person past «hice», «dije», «fui»);
+_FIRST_PERSON_OWN = (
+    r"\b(?:mi|mis|mio|mia|mios|mias|my|mine|nuestr[oa]s?|our|ours)\b|"
+    r"\bdid\s+i\b|\b(?:am|was)\s+i\b|\bwhat\s+(?:do|did|will)\s+i\s+have\b|"
+    r"\bhave\s+i\s+(?:got|been|paid|sent|called|finished|done|booked|made|received|missed|scheduled|planned|saved)\b|"
+    r"\bdo\s+i\s+have\s+(?:any|anything|something|plans?|meetings?|events?|appointments?|class(?:es)?|work|school|"
+    r"homework|tasks?|reminders?|alarms?|a\s+(?:meeting|call|date|appointment|class|test|exam|reservation))\b|"
+    r"\bi(?:\s+have|\s+had|['’]ve|\s+got)\s+(?:got\s+)?to\b|\bi\s+gotta\b|"
+    r"\b(?:tengo|tenia|tuve|tenemos|teniamos|tendre)\s+que\b|\bque\s+(?:tengo|tenemos|tenia)\b|"
+    r"\btengo\s+(?:algo|algun[oa]?|pendientes?|planes?|citas?|reuniones?|clases?|examen(?:es)?|turno|tareas?|"
+    r"libre|hora)\b|\btengo[\s?.!]*$|\b(?:me|nos)\s+toca(?:ba)?\b|\b(?:estoy|estare)\s+(?:libre|ocupad[oa])\b|"
+    r"\b(?:hice|dije|puse|tuve|fui|estuve|pedi|recibi|perdi|escribi|anote)\b"
+)
+# 2. a relative, named as the person names their own («mom», «grandma's», «la abuela»), but not someone else's
+#    («la mamá de Messi», «Taylor Swift's mom»);
+_OWN_RELATIVE = (
+    r"(?<!['’]s\s)\b(?:mom|mommy|mum|dad|daddy|grandma|grandpa|granny|mami|papi|abuelita|abuelito)\b"
+    r"(?!\s+(?:de|del|of)\b)|"
+    r"\b(?:el|la|los|las|al|del|the)\s+(?:abuel[oa]s?|suegr[oa]s?|tias?|tios?|cunad[oa]s?|sobrin[oa]s?|niet[oa]s?|"
+    r"mama|novi[oa]|espos[oa]|marido|wife|husband|kids|grandma|grandpa|in-laws?)\b(?!\s+(?:de|del|of)\b)"
+)
+# 3. this PC or device;
+_THIS_DEVICE = (
+    r"\b(?:este|esta|this)\s+(?:pc|equipo|computador(?:a)?|ordenador|laptop|portatil|notebook|maquina|machine|"
+    r"computer|device|dispositivo|celular|telefono|phone)\b"
+)
+# 4. someone named by a bare given name (lexicon.GIVEN_NAMES): not a full name («Jennifer Lopez», «Pedro de
+#    Valdivia», «Juan Pablo II»), not after a title («el papa Francisco», «queen Elizabeth», «San Juan»), and not in
+#    talk about public works or fame, where a name is a title or a character («quién escribió Romeo y Julieta»).
+_NAME_TITLES = frozenset(
+    "san santa santo saint st sor fray papa pope rey reina king queen principe princesa prince princess presidente "
+    "presidenta president don dona sir lady lord emperador emperatriz emperor empress general capitan captain "
+    "profeta prophet apostol virgen beato".split()
+)
+_SURNAME_PARTICLES = frozenset("de del da di van von le".split())
+_AFTER_A_BARE_NAME = frozenset(
+    """
+    es era fue sera esta estaba estuvo tiene tenia tuvo cumple cumplio vive vivia trabaja trabajo llamo llama llego
+    llega viene vino dijo dice quiere queria puede va iba sale salio se casa caso muda mudo hizo hace regalo debe
+    me te le les lo la los las nos y e o u ni que en a al con para por sin sobre hoy manana ayer ya no si mas tambien
+    is was will would has had have does did do and or but of in on at to for with from by about today tomorrow
+    yesterday said says called calls call told tells wants want can could should turns turned turn lives lived live
+    works worked work got gets get coming came comes come moved married like likes think thinks need needs still also
+    too really ever again not this that the a an my me him her say tell go send text ask know bring meet visit
+    """.split()
+)
+_WORK_OR_FAME = (
+    r"\b(?:peli|pelis|pelicula|peliculas|serie|series|libro|libros|novela|cancion|canciones|song|songs|album|disco|"
+    r"obra|show|movie|movies|film|films|book|books|novel|personaje|character|escribio|wrote|written|pinto|painted|"
+    r"dirigio|directed|compuso|composed|canta|sings|sang|protagoniza|stars|starring|actor|actriz|actress|cantante|"
+    r"singer|autor|autora|author|jugador|jugadora|player|futbolista|famos[oa]s?|famous|celebrity|youtuber|streamer|"
+    r"influencer|rapper|rapero|banda|band)\b"
+)
+_WORD = re.compile(r"[a-z0-9]+(?:['’]s\b)?")
+
+
+def _bare_given_name(folded: str) -> bool:
+    if _has(folded, _WORK_OR_FAME):
+        return False
+    words = _WORD.findall(folded)
+    bare = [re.sub(r"['’]s$", "", word) for word in words]
+    for index, name in enumerate(bare):
+        if name not in GIVEN_NAMES or (index and (bare[index - 1] in _NAME_TITLES or bare[index - 1] in GIVEN_NAMES)):
+            continue
+        following = bare[index + 1] if index + 1 < len(bare) else None
+        if words[index] != name or following is None:
+            return True
+        if following in GIVEN_NAMES:
+            continue
+        if following in _SURNAME_PARTICLES and index + 2 < len(bare) and bare[index + 2] not in _AFTER_A_BARE_NAME:
+            continue
+        if following in _AFTER_A_BARE_NAME or following in _SURNAME_PARTICLES:
+            return True
+    return False
+
+
+def names_own_data(text: str) -> bool:
+    """Whether a request asks about the person's own data: their things, plans or past, their relatives, a person of
+    their life named by a given name, or this PC (see above). Where the person is («cerca de mí», «en mi zona»,
+    «near me») is not their data: a place near them is looked up (``_location_recommendation_request``)."""
+
+    folded = re.sub(_NEAR_THE_PERSON, " ", _fold(text))
+    # «what's grandma's birthday»: a contracted «is» is not a possessive.
+    folded = re.sub(r"\b(what|that|it|who|where|when|how|there|here|he|she)['’]s\b", r"\1 is", folded)
+    return (
+        _has(folded, _FIRST_PERSON_OWN)
+        or _has(folded, _OWN_RELATIVE)
+        or _has(folded, _THIS_DEVICE)
+        or _bare_given_name(folded)
+    )
+
+
 # Uso real 2026-09-23 «cuantos años tiene jennifer lopez» → «53 años en 2024»,
 # «quién es el presidente de chile» → a president out of office: a person's age
 # and who holds an office today change with the calendar, so the model's memory
@@ -565,10 +665,11 @@ _PERSON_FACT = re.compile(
     r"head\s+of\s+state|dueno|duena|owner|entrenador|entrenadora|coach|dt|campeon|campeona|champion)"
     r"(?:\s+actual)?\s+(?:de|del|of|en)\s+\S.*)"
 )
-# Who the age is asked of: nobody named («él», «she»), the person or BAXY is not a public person.
+# Who the age is asked of: nobody named («él», «she») or BAXY is not a public person; nor is anyone of the
+# person's own life (``names_own_data``: «mi hijo», «antonia»).
 _NOT_A_PUBLIC_PERSON = (
     r"^(?:el|ella|ellos|ellas|usted|he|she|him|her|they|them|it|eso|esto|that|this)$|"
-    r"^(?:mi|mis|tu|tus|nuestro|nuestra|my|your|our)\b|\b(?:bax[yi]|asistente|assistant|ia|ai)$"
+    r"^(?:tu|tus|your)\b|\b(?:bax[yi]|asistente|assistant|ia|ai)$"
 )
 
 
@@ -581,7 +682,12 @@ def person_fact_subject(text: str) -> str | None:
     if match is None or len(folded.split()) > 16:
         return None
     subject = (match.group("person") or match.group("office") or "").strip(" ,.")
-    if not subject or _has(subject, _NOT_A_PUBLIC_PERSON) or _has(subject, _NOT_PUBLIC_WORK):
+    if (
+        not subject
+        or _has(subject, _NOT_A_PUBLIC_PERSON)
+        or _has(subject, _NOT_PUBLIC_WORK)
+        or names_own_data(subject)
+    ):
         return None
     return _original_words(text, subject).strip()
 
@@ -1881,12 +1987,19 @@ _PUBLIC_PLACE = (
     r"cines?|cinemas?|movie\s+theaters?|cafeterias?|coffee\s+shops?|farmacias?|pharmacy|pharmacies|hoteles?|"
     r"hotels?|gasolineras?|gas\s+stations?|supermercados?|supermarkets?|gimnasios?|gyms?|pizzerias?|"
     r"food\s+courts?|museos?|museums?|discotecas?|nightclubs?|librerias?|bookstores?|heladerias?|"
-    r"cajeros?|atms?|lavanderias?|laundromats?|peluquerias?|barber\s+shops?)\b"
+    r"cajeros?|atms?|lavanderias?|laundromats?|peluquerias?|barber\s+shops?|"
+    # Tanda 3 paraphrases «top rated pizza places near me», «best tacos near me», «busca un café cerca de mi casa»:
+    # a place said by its kind or by the food it serves.
+    r"places?|lugares?|spots?|cafes?|tacos|taquerias?|sushi|pizzas?|hamburguesas?|burgers?|comida|food|"
+    r"hospitales?|hospitals?|clinicas?|clinics?|bancos?|banks?|parques?|parks?|veterinarias?)\b"
 )
+# Tanda 3 paraphrases of «busca un restaurante en mi zona»: «gasolineras cercanas», «farmacias abiertas cerca», «por
+# aquí», «around here», «close to me» say the same nearness.
 _NEAR_THE_PERSON = (
-    r"\b(?:cerca\s+de\s+(?:mi|aqui|donde\s+estoy)|near\s+me|nearby|nearest|closest|mas\s+cercan[oa]s?|"
-    r"(?:en|de)\s+(?:mi|la|esta)\s+(?:zona|area|ciudad|barrio)|"
-    r"(?:in|around)\s+(?:my|the|this)\s+(?:local\s+)?(?:area|city|neighbou?rhood)|local\s+area|"
+    r"\b(?:cerca\s+de\s+(?:mi|aqui|aca|donde\s+estoy)|cerca(?=[\s.!?]*$)|cercan[oa]s?|near\s+(?:me|here|by)|nearby|"
+    r"nearest|closest|close\s+(?:to\s+me|by)|por\s+(?:aqui|aca)|around\s+(?:here|me)|in\s+town|"
+    r"(?:en|de)\s+(?:mi|la|esta|este)\s+(?:zona|area|ciudad|barrio|comuna|pueblo|region|provincia|pais)|"
+    r"(?:in|around)\s+(?:my|the|this)\s+(?:local\s+)?(?:area|city|neighbou?rhood|town|region|country)|local\s+area|"
     r"en\s+un\s+radio\s+de|within\s+(?:a\s+)?\w+\s+(?:miles?|km|kilometers?|kilometres?))\b"
 )
 _PLACE_RATED = (
@@ -2283,6 +2396,8 @@ def _review_web_and_browser_effects(
             folded,
             r"\b(?:pagina|page|sitio|site|website)\b.{1,120}\S",
         )
+        # Tanda 3 «Go to página de inicio»: the start page alone is the PC's desktop.
+        and not minimize_all_request(folded)
     ):
         _append(
             matches,
