@@ -144,7 +144,7 @@ Implementadas y consumidas por App, pero no anunciadas:
 | Solicitud omitida del anuncio | Respuesta | Semántica |
 |---|---|---|
 | `arguments {operation, text}` | `arguments.result {arguments, ok, question}` | JSON Schema, evidencia literal, grounding determinista y abstención |
-| `message.compose {userText, intent, facts}` | `message.compose.result {text}` | compone lenguaje natural desde hechos acotados |
+| `message.compose {userText, intent, facts}` | `message.compose.result {text, reproducible}` | compone lenguaje natural desde hechos acotados; `text` vacío = ningún borrador aceptado dentro del presupuesto; `reproducible` = el mismo pedido da el mismo borrador, y el App no lo repite |
 
 `turn.evidence.status` también está implementada sin anuncio y la usa tooling
 de gates. Es una deuda de contrato vigente: `arguments` y `message.compose` ya

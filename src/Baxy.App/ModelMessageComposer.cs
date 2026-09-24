@@ -170,12 +170,18 @@ internal static class ModelMessageComposer
             draft,
             userText,
             priorUserText);
-        if (!allowRecovery)
+        // Latency 2026-09-23 (tanda-01, uso-real-03): with the served greedy
+        // writer no recovery call ever published; it repeated the refused
+        // composition and doubled a 0.4–9 s wait. A reproducible writer's answer
+        // is final; only a writer that samples, or a mind that did not answer,
+        // gets the second call.
+        if (!allowRecovery || composed is { Reproducible: true })
         {
             return new ModelMessageCompositionOutcome(
                 null,
                 originalFailure,
-                UsedRecovery: false);
+                UsedRecovery: false,
+                Unanswered: composed is null);
         }
 
         // Retry the same verified facts. A lost-facts failure draft used to
@@ -207,7 +213,8 @@ internal static class ModelMessageComposer
         return new ModelMessageCompositionOutcome(
             null,
             $"{originalFailure};recovery:{recoveryFailure}",
-            UsedRecovery: true);
+            UsedRecovery: true,
+            Unanswered: recovered is null);
     }
 
     // cien-36 027 «open that»: the clarification was refused by
@@ -293,7 +300,14 @@ internal static class ModelMessageComposer
             : MindSidecarClient.SelectMessageCompositionTimeout(facts, cpuFallback);
 }
 
+/// <summary>
+/// <see cref="Unanswered"/>: the last request got no answer from the mind
+/// (not ready, transport or runtime failure). Only such a failure can go
+/// differently later; a draft the writer answered or that the policy refused
+/// is the composition's outcome.
+/// </summary>
 internal sealed record ModelMessageCompositionOutcome(
     string? Text,
     string? Failure,
-    bool UsedRecovery);
+    bool UsedRecovery,
+    bool Unanswered = false);

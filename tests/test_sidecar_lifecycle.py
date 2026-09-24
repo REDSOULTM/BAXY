@@ -826,6 +826,156 @@ def test_failed_llm_scope_entry_finishes_the_attempt_exactly_once(
     assert finished == [message]
 
 
+@pytest.mark.parametrize(
+    ("outcome", "expected_text"),
+    [
+        ("Listo, abrí Calculadora.", "Listo, abrí Calculadora."),
+        ("", ""),
+        (TimeoutError("se agotó el presupuesto local del LLM"), ""),
+    ],
+)
+@pytest.mark.parametrize("reproducible", [True, False])
+def test_message_compose_answers_its_outcome_with_the_writers_reproducibility(
+    monkeypatch: pytest.MonkeyPatch,
+    outcome: str | BaseException,
+    expected_text: str,
+    reproducible: bool,
+) -> None:
+    """Latency 2026-09-23: a refused or out-of-budget composition is the
+    writer's answer, not a lost request; the shell repeats only what the mind
+    never answered, and only when the writer could answer differently."""
+
+    written: list[dict[str, Any]] = []
+    composed_facts: list[dict[str, Any]] = []
+
+    class FakeLlmRuntime:
+        @staticmethod
+        def start_warmup() -> None:
+            return None
+
+        @staticmethod
+        def begin_request(*_args: object, **_kwargs: object) -> None:
+            return None
+
+        @staticmethod
+        def end_request() -> None:
+            return None
+
+        @staticmethod
+        def compose_user_message(_user_text: str, _intent: str, facts: dict) -> str:
+            composed_facts.append(facts)
+            if isinstance(outcome, BaseException):
+                raise outcome
+            return outcome
+
+        @staticmethod
+        def composition_is_reproducible(facts: dict) -> bool:
+            assert facts is composed_facts[-1]
+            return reproducible
+
+        @staticmethod
+        def close() -> None:
+            return None
+
+    class FakeRouter:
+        @staticmethod
+        def close() -> None:
+            return None
+
+    monkeypatch.setattr(sidecar, "LlmRuntime", FakeLlmRuntime)
+    monkeypatch.setattr(sidecar, "ProcessIntentRouter", FakeRouter)
+    monkeypatch.setenv("BAXY_MIND_LLM_GGUF", "fixture.gguf")
+    pending = iter([
+        {
+            "type": "message.compose",
+            "id": "compose-1",
+            "userText": "Abre la calculadora",
+            "intent": "status",
+            "facts": {"situation": '{"kind":"status","polarity":"success"}'},
+        }
+    ])
+    lifecycle = sidecar._SidecarLifecycle()
+    try:
+        sidecar._run_sidecar(
+            lifecycle,
+            read_message=lambda: next(pending, None),
+            write_message=written.append,
+        )
+    finally:
+        lifecycle.close()
+
+    replies = [reply for reply in written if reply.get("id") == "compose-1"]
+    assert replies == [
+        {
+            "type": "message.compose.result",
+            "id": "compose-1",
+            "text": expected_text,
+            "reproducible": reproducible,
+        }
+    ]
+
+
+def test_message_compose_runtime_failure_stays_an_unanswered_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    written: list[dict[str, Any]] = []
+
+    class FakeLlmRuntime:
+        @staticmethod
+        def start_warmup() -> None:
+            return None
+
+        @staticmethod
+        def begin_request(*_args: object, **_kwargs: object) -> None:
+            return None
+
+        @staticmethod
+        def end_request() -> None:
+            return None
+
+        @staticmethod
+        def compose_user_message(*_args: object, **_kwargs: object) -> str:
+            raise RuntimeError("llama-server no está disponible")
+
+        @staticmethod
+        def composition_is_reproducible(_facts: dict) -> bool:
+            raise AssertionError("a lost request is not the writer's answer")
+
+        @staticmethod
+        def close() -> None:
+            return None
+
+    class FakeRouter:
+        @staticmethod
+        def close() -> None:
+            return None
+
+    monkeypatch.setattr(sidecar, "LlmRuntime", FakeLlmRuntime)
+    monkeypatch.setattr(sidecar, "ProcessIntentRouter", FakeRouter)
+    monkeypatch.setenv("BAXY_MIND_LLM_GGUF", "fixture.gguf")
+    pending = iter([
+        {
+            "type": "message.compose",
+            "id": "compose-2",
+            "userText": "Abre la calculadora",
+            "intent": "status",
+            "facts": {"situation": '{"kind":"status","polarity":"success"}'},
+        }
+    ])
+    lifecycle = sidecar._SidecarLifecycle()
+    try:
+        sidecar._run_sidecar(
+            lifecycle,
+            read_message=lambda: next(pending, None),
+            write_message=written.append,
+        )
+    finally:
+        lifecycle.close()
+
+    replies = [reply for reply in written if reply.get("id") == "compose-2"]
+    assert [reply["type"] for reply in replies] == ["error"]
+
+
 def test_failed_encoder_scope_entry_closes_both_attempted_scopes_once(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

@@ -81,7 +81,16 @@ internal sealed record MindPlanResult(
     string Question,
     IReadOnlyList<MindPlanStep> Steps);
 
-internal sealed record MindComposedMessage(string Text);
+/// <summary>
+/// The mind's answer to one composition. <see cref="Text"/> is null when the
+/// writer answered without an accepted draft (every candidate refused, or its
+/// budget ran out first). <see cref="Reproducible"/> says the writer decodes
+/// this request deterministically (greedy or fixed seed): the same request
+/// returns the same draft, so repeating it does not buy another chance. In
+/// tanda-01 and uso-real-03, 74 of 80 repeats returned the same first draft
+/// (continuous batching moved the other six) and one of 80 published.
+/// </summary>
+internal sealed record MindComposedMessage(string? Text, bool Reproducible = false);
 
 internal sealed record MindVoiceStatus(
     bool Available,
@@ -1119,7 +1128,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             case FieldCompositionInjectionMode.Timeout:
                 throw new TimeoutException("composition_injection_timeout");
             case FieldCompositionInjectionMode.Exhaust:
-                return null;
+                return new MindComposedMessage(null, Reproducible: true);
         }
         JsonObject? reply = await RequestAsync(
             new JsonObject
@@ -1132,14 +1141,28 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             },
             timeout,
             cancellationToken).ConfigureAwait(false);
-        if (reply is null
-            || (string?)reply["type"] != "message.compose.result"
-            || (string?)reply["text"] is not { Length: > 0 } text)
+        return ParseComposeResult(reply);
+    }
+
+    /// <summary>
+    /// Null means the mind did not answer (not ready, transport failure,
+    /// runtime error): another attempt may succeed. An answer without text is
+    /// the writer's own outcome and carries whether it is reproducible.
+    /// </summary>
+    internal static MindComposedMessage? ParseComposeResult(JsonObject? reply)
+    {
+        if (reply is null || (string?)reply["type"] != "message.compose.result")
         {
             return null;
         }
 
-        return new MindComposedMessage(text.Trim());
+        bool reproducible = reply["reproducible"] is JsonValue flag
+            && flag.TryGetValue(out bool value)
+            && value;
+        string? text = (string?)reply["text"] is { } raw && raw.Trim() is { Length: > 0 } trimmed
+            ? trimmed
+            : null;
+        return new MindComposedMessage(text, reproducible);
     }
 
     internal static MindPlanResult? ParsePlanResult(JsonObject? reply)

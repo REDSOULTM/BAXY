@@ -15919,6 +15919,22 @@ class LlmRuntime:
         }
         return self.compose_user_message(user_text, intent, facts)
 
+    def _compose_sampling(self, situation: dict) -> dict:
+        adapter = getattr(self, "_cpu_prose_adapter", None)
+        if adapter is not None and applies_to_cpu_prose(situation, _merged_observed(situation)):
+            return adapter.sampling()
+        return _public_compose_sampling(getattr(self, "_gguf", None))
+
+    def composition_is_reproducible(self, facts: dict) -> bool:
+        """The same compose request decodes to the same draft.
+
+        Greedy decoding or a fixed seed repeats every stage (continuous
+        batching aside); the shell then does not repeat a refused request.
+        """
+
+        sampling = self._compose_sampling(_situation_from_facts(facts))
+        return sampling.get("temperature") == 0.0 or isinstance(sampling.get("seed"), int)
+
     def compose_user_message(
         self,
         user_text: str,
@@ -16176,10 +16192,7 @@ class LlmRuntime:
             )
             message_prompt += scope
             cpu_prompt += scope
-        compose_sampling = _public_compose_sampling(gguf)
-        adapter = getattr(self, "_cpu_prose_adapter", None)
-        if adapter is not None and applies_to_cpu_prose(situation, _merged_observed(situation)):
-            compose_sampling = adapter.sampling()
+        compose_sampling = self._compose_sampling(situation)
         # Literal contract fields are rendered once below in a compact form and
         # validated again after generation. Repeating them inside the JSON made
         # every CPU composition re-evaluate the same facts up to three times;

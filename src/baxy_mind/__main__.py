@@ -10153,21 +10153,27 @@ def _run_sidecar(
                     )
                     if not _recovery_question_is_valid(text, user_text):
                         raise ValueError("invalid application identity question")
+                    if not text:
+                        raise RuntimeError("respuesta vacía")
+                    reply = {"type": "message.compose.result", "id": request_id}
                 else:
-                    text = llm.compose_user_message(
-                        user_text,
-                        str(message.get("intent", "status"))[:32],
-                        facts,
-                    )
-                if not text:
-                    raise RuntimeError("respuesta vacía")
-                write_request_message(
-                    {
+                    try:
+                        text = llm.compose_user_message(
+                            user_text,
+                            str(message.get("intent", "status"))[:32],
+                            facts,
+                        )
+                    except TimeoutError:
+                        # The budget ran out before a draft was accepted: that
+                        # is the writer's answer, not a lost request. The shell
+                        # repeats only what the mind never answered.
+                        text = ""
+                    reply = {
                         "type": "message.compose.result",
                         "id": request_id,
-                        "text": text[:4096],
+                        "reproducible": llm.composition_is_reproducible(facts),
                     }
-                )
+                write_request_message({**reply, "text": text[:4096]})
             else:
                 write_request_message(
                     protocol.error_reply(

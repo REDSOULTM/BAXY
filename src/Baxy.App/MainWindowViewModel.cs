@@ -3161,7 +3161,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     outcome = new ModelMessageCompositionOutcome(
                         null,
                         "composer_request_failed",
-                        UsedRecovery: false);
+                        UsedRecovery: false,
+                        Unanswered: true);
                 }
                 finally
                 {
@@ -3188,8 +3189,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 else
                 {
                     LastMessageCompositionFailure = outcome.Failure;
-                    pending.Attempts = 1;
-                    _modelMessages.Enqueue(pending, _mindLifetimeCancellation.Token);
+                    _modelMessages.EnqueueFailed(
+                        pending, outcome, _mindLifetimeCancellation.Token);
                 }
                 return;
             }

@@ -101,6 +101,32 @@ def test_personality_lives_in_the_editable_prompt() -> None:
     assert "unclear" not in granite.casefold()
 
 
+def test_composition_reproducibility_follows_the_sampling_actually_used() -> None:
+    """Latency 2026-09-23: the shell repeats a refused composition only when
+    the writer could answer it differently; greedy or seeded decoding cannot."""
+
+    class SeededCpuAdapter:
+        @staticmethod
+        def sampling() -> dict:
+            return {"temperature": 0.7, "seed": 0}
+
+    cpu_facts = {
+        "situation": json.dumps(
+            {"kind": "status", "polarity": "success", "observed": {"cpu": {"usagePercent": 12}}}
+        )
+    }
+    plain_facts = {"situation": json.dumps({"kind": "status", "polarity": "success"})}
+    runtime = object.__new__(llm_mod.LlmRuntime)
+    runtime._cpu_prose_adapter = None
+    runtime._gguf = r"D:\BAXYRuntime\assets\models\Qwen3-4B-Q4_K_M.gguf"
+    assert runtime.composition_is_reproducible(plain_facts) is True
+    runtime._gguf = r"D:\BAXYRuntime\assets\models\granite-4.2-3b-Q4_K_M.gguf"
+    assert runtime.composition_is_reproducible(plain_facts) is False
+    runtime._cpu_prose_adapter = SeededCpuAdapter()
+    assert runtime.composition_is_reproducible(cpu_facts) is True
+    assert runtime.composition_is_reproducible(plain_facts) is False
+
+
 def test_public_compose_profile_follows_gguf() -> None:
     qwen = r"D:\BAXYRuntime\assets\models\Qwen3-4B-Q4_K_M.gguf"
     granite = r"D:\BAXYRuntime\assets\models\granite-4.2-3b-Q4_K_M.gguf"

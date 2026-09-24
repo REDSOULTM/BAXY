@@ -12,21 +12,24 @@ namespace Baxy.App;
 /// </summary>
 internal sealed class PendingModelMessageQueue
 {
-    internal const int MaximumCompositionAttempts = 3;
-
+    // Only a composition the mind never answered (restarting, transport or
+    // runtime failure) is tried again, up to this budget.
+    //
     // Owner's test 2026-09-21 (turn 195): a failure final that the narrator could
     // not phrase went through three attempts, each with its recovery and the
     // narrator's own retries, and the person waited 45 s for «No pude armar una
-    // respuesta». The facts of a failure do not change between attempts: one
-    // attempt (with its recovery) is the budget, and the honest limit follows.
-    internal const int MaximumFailureCompositionAttempts = 1;
+    // respuesta». The facts of a final do not change between attempts: one
+    // answered attempt is the budget, and the honest limit follows. Latency
+    // 2026-09-23: the same holds for every final. In tanda-01 and uso-real-03
+    // the queue recomposed 16 refused finals with unchanged facts and a greedy
+    // writer; 15 ended refused anyway after 2.6–61 s, one published after 27 s.
+    internal const int MaximumCompositionAttempts = 3;
 
-    internal static int MaximumAttemptsFor(UserMessageDraft draft)
+    private static bool MayRetry(PendingModelMessage pending, ModelMessageCompositionOutcome outcome)
     {
-        ArgumentNullException.ThrowIfNull(draft);
-        return draft.Intent == "error"
-            ? MaximumFailureCompositionAttempts
-            : MaximumCompositionAttempts;
+        ArgumentNullException.ThrowIfNull(pending);
+        ArgumentNullException.ThrowIfNull(outcome);
+        return outcome.Unanswered && pending.Attempts < MaximumCompositionAttempts;
     }
 
     private readonly object _lock = new();
@@ -104,6 +107,25 @@ internal sealed class PendingModelMessageQueue
         _onQueued();
     }
 
+    /// <summary>
+    /// Hands over a message whose first composition, made outside the queue,
+    /// failed. It keeps its place in the order; an answered failure is settled
+    /// there without composing again.
+    /// </summary>
+    internal void EnqueueFailed(
+        PendingModelMessage pending,
+        ModelMessageCompositionOutcome outcome,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(pending);
+        ArgumentNullException.ThrowIfNull(outcome);
+        pending.Attempts = 1;
+        pending.FinalFailure = MayRetry(pending, outcome)
+            ? null
+            : outcome.Failure ?? "model_response_rejected";
+        Enqueue(pending, cancellationToken);
+    }
+
     /// <summary>Cierra la cola y espera a que el trabajador en curso termine.</summary>
     internal async Task CloseAsync()
     {
@@ -155,6 +177,12 @@ internal sealed class PendingModelMessageQueue
                 continue;
             }
 
+            if (pending.FinalFailure is { } finalFailure)
+            {
+                await ExhaustAsync(pending, finalFailure).ConfigureAwait(false);
+                continue;
+            }
+
             MindSidecarClient? mind = await _waitForMind(cancellationToken).ConfigureAwait(false);
             if (mind is null)
             {
@@ -184,14 +212,10 @@ internal sealed class PendingModelMessageQueue
             {
                 pending.Attempts++;
                 await _reportFailureAsync(outcome.Failure).ConfigureAwait(false);
-                if (pending.Attempts >= MaximumAttemptsFor(pending.Draft))
+                if (!MayRetry(pending, outcome))
                 {
-                    RemoveHead(pending);
-                    string exhausted =
-                        $"{outcome.Failure ?? "model_response_rejected"};retry_exhausted";
-                    await _reportFailureAsync(exhausted).ConfigureAwait(false);
-                    await _onExhaustedAsync(pending, exhausted).ConfigureAwait(false);
-                    await _onSettledAsync().ConfigureAwait(false);
+                    await ExhaustAsync(pending, outcome.Failure ?? "model_response_rejected")
+                        .ConfigureAwait(false);
                 }
                 continue;
             }
@@ -206,6 +230,15 @@ internal sealed class PendingModelMessageQueue
                     pending)
                 .ConfigureAwait(false);
         }
+    }
+
+    private async Task ExhaustAsync(PendingModelMessage pending, string failure)
+    {
+        RemoveHead(pending);
+        string exhausted = $"{failure};retry_exhausted";
+        await _reportFailureAsync(exhausted).ConfigureAwait(false);
+        await _onExhaustedAsync(pending, exhausted).ConfigureAwait(false);
+        await _onSettledAsync().ConfigureAwait(false);
     }
 
     private void RemoveHead(PendingModelMessage pending)
@@ -245,7 +278,8 @@ internal sealed class PendingModelMessageQueue
             return new ModelMessageCompositionOutcome(
                 null,
                 "composer_request_failed",
-                UsedRecovery: false);
+                UsedRecovery: false,
+                Unanswered: true);
         }
         finally
         {
@@ -265,4 +299,7 @@ internal sealed record PendingModelMessage(
     string TraceId)
 {
     public int Attempts { get; set; }
+
+    /// <summary>An answered failure from a composition made before queueing.</summary>
+    public string? FinalFailure { get; set; }
 }

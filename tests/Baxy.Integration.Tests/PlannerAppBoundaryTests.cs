@@ -998,15 +998,20 @@ public sealed class PlannerAppBoundaryTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(PendingModelMessageQueue.MaximumAttemptsFor(draft), Is.EqualTo(1));
             Assert.That(compositions, Is.EqualTo(1));
             Assert.That(queue.Count, Is.Zero);
             Assert.That(exhausted, Is.EqualTo(new[] { "invented;retry_exhausted" }));
         });
     }
 
-    [Test]
-    public async Task RejectedModelMessageStopsAfterTheBoundedRetryBudget()
+    // Latency 2026-09-23: a refused final is not recomposed with the same facts
+    // (the writer is greedy: same request, same refused draft); only a request
+    // the mind never answered is tried again, and still within the budget.
+    [TestCase(false, 1)]
+    [TestCase(true, PendingModelMessageQueue.MaximumCompositionAttempts)]
+    public async Task RejectedModelMessageStopsAfterTheBoundedRetryBudget(
+        bool unanswered,
+        int expectedCompositions)
     {
         UserMessageDraft draft = UserMessagePolicy.Create(
             TurnVisibleFacts.Confirmation(
@@ -1046,7 +1051,8 @@ public sealed class PlannerAppBoundaryTests
                     new ModelMessageCompositionOutcome(
                         null,
                         "missing_confirmation_choice",
-                        UsedRecovery: false));
+                        UsedRecovery: false,
+                        Unanswered: unanswered));
             },
             (_, _) => Task.CompletedTask,
             (message, failure) =>
@@ -1060,7 +1066,7 @@ public sealed class PlannerAppBoundaryTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(compositions, Is.EqualTo(PendingModelMessageQueue.MaximumCompositionAttempts));
+            Assert.That(compositions, Is.EqualTo(expectedCompositions));
             Assert.That(queue.Count, Is.Zero);
             Assert.That(
                 failures[^1],
@@ -1071,6 +1077,133 @@ public sealed class PlannerAppBoundaryTests
                 exhausted[0].Failure,
                 Is.EqualTo("missing_confirmation_choice;retry_exhausted"));
         });
+        await queue.CloseAsync();
+    }
+
+    // The first composition runs inline in the turn. Handing a refused one to
+    // the queue used to buy a second identical attempt (1 s backoff + the whole
+    // composition again); it is settled in order, without composing.
+    [TestCase(false, 0)]
+    [TestCase(true, PendingModelMessageQueue.MaximumCompositionAttempts - 1)]
+    public async Task InlineFailureIsRecomposedOnlyWhenTheMindDidNotAnswer(
+        bool unanswered,
+        int expectedCompositions)
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            "Listo, abrí Calculadora.",
+            UserMessageEvent.Status);
+        var pending = new PendingModelMessage(
+            draft,
+            "Abre la calculadora",
+            ModelMessageComposer.CreateFacts(draft),
+            "inline-failure-test");
+        var settled = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        int compositions = 0;
+        var delays = new List<TimeSpan>();
+        var exhausted = new List<string>();
+        await using var mind = new MindSidecarClient();
+        var queue = new PendingModelMessageQueue(
+            _ => Task.FromResult<MindSidecarClient?>(mind),
+            (_, _, _) => throw new AssertionException("A refused draft must not publish BAXY prose."),
+            _ => Task.CompletedTask,
+            () => { },
+            () =>
+            {
+                settled.TrySetResult(true);
+                return Task.CompletedTask;
+            },
+            (_, _, _) =>
+            {
+                compositions++;
+                return Task.FromResult(new ModelMessageCompositionOutcome(
+                    null, "no_response", UsedRecovery: false, Unanswered: true));
+            },
+            (delay, _) =>
+            {
+                delays.Add(delay);
+                return Task.CompletedTask;
+            },
+            (_, failure) =>
+            {
+                exhausted.Add(failure);
+                return Task.CompletedTask;
+            });
+
+        queue.EnqueueFailed(
+            pending,
+            new ModelMessageCompositionOutcome(
+                null, "extra_claim", UsedRecovery: false, Unanswered: unanswered),
+            CancellationToken.None);
+        await settled.Task.WaitAsync(TimeSpan.FromSeconds(2));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(compositions, Is.EqualTo(expectedCompositions));
+            Assert.That(delays, Has.Count.EqualTo(expectedCompositions));
+            Assert.That(queue.Count, Is.Zero);
+            Assert.That(
+                exhausted,
+                Is.EqualTo(new[]
+                {
+                    unanswered ? "no_response;retry_exhausted" : "extra_claim;retry_exhausted",
+                }));
+        });
+        await queue.CloseAsync();
+    }
+
+    [Test]
+    public async Task AnsweredInlineFailureKeepsItsPlaceBehindEarlierMessages()
+    {
+        UserMessageDraft welcome = UserMessagePolicy.Create(
+            TurnVisibleFacts.Welcome(), UserMessageEvent.Welcome);
+        UserMessageDraft status = UserMessagePolicy.Create(
+            "Listo, abrí Calculadora.", UserMessageEvent.Status);
+        var first = new PendingModelMessage(
+            welcome, string.Empty, ModelMessageComposer.CreateFacts(welcome), "t0");
+        var second = new PendingModelMessage(
+            status, "Abre la calculadora", ModelMessageComposer.CreateFacts(status), "t0");
+        var order = new List<string>();
+        var release = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        var settled = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        await using var mind = new MindSidecarClient();
+        var queue = new PendingModelMessageQueue(
+            _ => Task.FromResult<MindSidecarClient?>(mind),
+            (text, _, _) =>
+            {
+                order.Add(text);
+                return Task.CompletedTask;
+            },
+            _ => Task.CompletedTask,
+            () => { },
+            () =>
+            {
+                settled.TrySetResult(true);
+                return Task.CompletedTask;
+            },
+            async (_, _, _) =>
+            {
+                await release.Task;
+                return new ModelMessageCompositionOutcome("Hola.", null, UsedRecovery: false);
+            },
+            (_, _) => Task.CompletedTask,
+            (_, failure) =>
+            {
+                order.Add(failure);
+                return Task.CompletedTask;
+            });
+
+        queue.Enqueue(first, CancellationToken.None);
+        queue.EnqueueFailed(
+            second,
+            new ModelMessageCompositionOutcome(null, "extra_claim", UsedRecovery: false),
+            CancellationToken.None);
+        release.SetResult(true);
+        await settled.Task.WaitAsync(TimeSpan.FromSeconds(2));
+
+        Assert.That(order, Is.EqualTo(new[] { "Hola.", "extra_claim;retry_exhausted" }));
         await queue.CloseAsync();
     }
 
@@ -1191,6 +1324,110 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(outcome.Failure, Is.Not.Null.And.Not.Empty);
             Assert.That(observedIntents, Is.EqualTo(new[] { "status", "status" }));
             Assert.That(outcome.Text, Does.Not.Contain("No pude"));
+        });
+    }
+
+    // Latency 2026-09-23: the served writer is greedy, so the recovery call
+    // returned the same refused composition. A reproducible answer — a draft or
+    // the writer's own «no draft» — is final after one call and is not a
+    // transport failure the queue should retry.
+    [TestCase("Listo.")]
+    [TestCase(null)]
+    public async Task ReproducibleWriterIsNotAskedTheSameCompositionTwice(string? draftText)
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            "Listo, abrí Calculadora.",
+            UserMessageEvent.Status);
+        var facts = new JsonObject { ["situation"] = draft.Source };
+        int calls = 0;
+
+        ModelMessageCompositionOutcome outcome =
+            await ModelMessageComposer.ComposeAsync(
+                draft,
+                "Abre la calculadora",
+                facts,
+                (_, _, _, _, _) =>
+                {
+                    calls++;
+                    return Task.FromResult<MindComposedMessage?>(
+                        new MindComposedMessage(draftText, Reproducible: true));
+                },
+                cpuFallback: false,
+                allowRecovery: true,
+                CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(calls, Is.EqualTo(1));
+            Assert.That(outcome.Text, Is.Null);
+            Assert.That(outcome.UsedRecovery, Is.False);
+            Assert.That(outcome.Unanswered, Is.False);
+            Assert.That(outcome.Failure, Is.Not.Null.And.Not.Empty.And.Not.Contain("recovery:"));
+        });
+    }
+
+    [Test]
+    public async Task UnansweredCompositionStillGetsItsRecoveryAndStaysRetryable()
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            "Listo, abrí Calculadora.",
+            UserMessageEvent.Status);
+        var facts = new JsonObject { ["situation"] = draft.Source };
+        int calls = 0;
+
+        ModelMessageCompositionOutcome outcome =
+            await ModelMessageComposer.ComposeAsync(
+                draft,
+                "Abre la calculadora",
+                facts,
+                (_, _, _, _, _) =>
+                {
+                    calls++;
+                    return Task.FromResult<MindComposedMessage?>(null);
+                },
+                cpuFallback: false,
+                allowRecovery: true,
+                CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(calls, Is.EqualTo(2));
+            Assert.That(outcome.Text, Is.Null);
+            Assert.That(outcome.Unanswered, Is.True);
+        });
+    }
+
+    [Test]
+    public void ComposeResultCarriesTheWritersReproducibilityAndItsEmptyAnswer()
+    {
+        MindComposedMessage? drafted = MindSidecarClient.ParseComposeResult(new JsonObject
+        {
+            ["type"] = "message.compose.result",
+            ["text"] = "  Listo, abrí Calculadora. ",
+            ["reproducible"] = true,
+        });
+        MindComposedMessage? refused = MindSidecarClient.ParseComposeResult(new JsonObject
+        {
+            ["type"] = "message.compose.result",
+            ["text"] = "",
+            ["reproducible"] = true,
+        });
+        MindComposedMessage? undeclared = MindSidecarClient.ParseComposeResult(new JsonObject
+        {
+            ["type"] = "message.compose.result",
+            ["text"] = "Hola.",
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(drafted, Is.EqualTo(new MindComposedMessage("Listo, abrí Calculadora.", Reproducible: true)));
+            Assert.That(refused, Is.EqualTo(new MindComposedMessage(null, Reproducible: true)));
+            // A writer that does not declare it may sample: it keeps the recovery.
+            Assert.That(undeclared, Is.EqualTo(new MindComposedMessage("Hola.", Reproducible: false)));
+            Assert.That(
+                MindSidecarClient.ParseComposeResult(new JsonObject { ["type"] = "error", ["code"] = "request_failed" }),
+                Is.Null);
+            Assert.That(MindSidecarClient.ParseComposeResult(null), Is.Null);
         });
     }
 
