@@ -2278,22 +2278,43 @@ internal static class UserMessagePolicy
         + "enero|january|febrero|february|marzo|march|abril|april|mayo|junio|june|julio|july|agosto|august|"
         + "septiembre|setiembre|september|octubre|october|noviembre|november|diciembre|december|"
         + @"lunes|monday|martes|tuesday|mi[ée]rcoles|wednesday|jueves|thursday|viernes|friday|s[áa]bado|saturday|"
-        + @"domingo|sunday|a\s+cu[áa]ntos\s+estamos|" + CalendarWeekPeriod + @")\b",
+        + @"domingo|sunday|a\s+cu[áa]ntos\s+estamos|" + CalendarWeekPeriod
+        // Tanda 6: a year («¿estamos en 2025?») and a day of the month («¿hoy es 24?») asked.
+        + @"|(?:19|20)\d\d|hoy\s+es\s+(?:el\s+)?\d{1,2}|estamos\s+a\s+\d{1,2}|is\s+(?:it|today)\s+the\s+\d{1,2})\b",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
-    private static bool AsksCalendarPart(string? userText) => CalendarPartAsked.IsMatch(userText ?? string.Empty);
+    // Tanda 6 «¿sabes qué días fueron el último fin de semana?»: a day counted from today (mañana, ayer, el lunes
+    // pasado, el próximo fin de semana, dentro de diez días, two days ago) is the calendar too. The mind computes
+    // those days from the observed date and checks every one (semantic.network.relative_calendar_days,
+    // llm._misses_calendar_facts); here they only mean that today's date is not the answer.
+    private const string CalendarNamedDay =
+        @"(?:fin\s+de\s+semana|finde|weekend|lunes|monday|martes|tuesday|mi[ée]rcoles|wednesday|jueves|thursday|"
+        + @"viernes|friday|s[áa]bado|saturday|domingo|sunday)";
+
+    private static readonly Regex RelativeCalendarDay = new(
+        @"\b(?:(?<!\b(?:la|esta)\s)ma[ñn]ana|tomorrow|ayer|yesterday|anteayer|antier|"
+        + @"day\s+(?:after\s+tomorrow|before\s+yesterday)|"
+        + @"(?:[úu]ltimo|pasado|anterior|pr[óo]ximo|siguiente)\s+" + CalendarNamedDay + "|"
+        + CalendarNamedDay + @"\s+(?:pasado|anterior|que\s+viene|pr[óo]ximo)|"
+        + @"(?:last|next|previous|past|coming)\s+" + CalendarNamedDay + "|"
+        + @"(?:hace|dentro\s+de|en)\s+\S+\s+d[íi]as|in\s+\S+\s+days|\S+\s+days\s+ago)\b",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+    private static bool AsksCalendarPart(string? userText) =>
+        CalendarPartAsked.IsMatch(userText ?? string.Empty) || RelativeCalendarDay.IsMatch(userText ?? string.Empty);
 
     // Tanda 4c «¿qué mes sale ahora mismo en el calendario de mi casa?» → «Este mes es septiembre.» was rejected
     // for lacking the day: a day, date, weekday, number or «a cuántos estamos» asks for the whole date; otherwise
     // the month and/or the year asked is the answer, and any day stated is a guess. The same reading as the mind's
-    // semantic.network.calendar_parts_asked; the two must not diverge.
+    // semantic.network.calendar_parts_asked; the two must not diverge. Tanda 6: a year in digits asks the year.
     private static readonly Regex CalendarDayAsked = new(
         @"\b(?:d[ií]a|fecha|day|date|weekday|lunes|monday|martes|tuesday|mi[ée]rcoles|wednesday|jueves|thursday|"
-        + @"viernes|friday|s[áa]bado|saturday|domingo|sunday|a\s+cu[áa]ntos\s+estamos|" + CalendarWeekPeriod + @")\b|\d",
+        + @"viernes|friday|s[áa]bado|saturday|domingo|sunday|a\s+cu[áa]ntos\s+estamos|" + CalendarWeekPeriod
+        + @")\b|(?<!\d)\d{1,2}(?!\d)",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private static readonly Regex CalendarYearAsked = new(
-        @"\b(?:a[ñn]o|year)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        @"\b(?:a[ñn]o|year|(?:19|20)\d\d)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private static readonly string[][] CalendarMonthNames =
     [
@@ -2326,12 +2347,12 @@ internal static class UserMessagePolicy
 
     private static bool PreservesObservedDate(string source, string result, string? userText)
     {
-        if (!TryDerivedLocalMoment(source, out DateTimeOffset local))
+        string user = userText ?? string.Empty;
+        if (!TryDerivedLocalMoment(source, out DateTimeOffset local) || RelativeCalendarDay.IsMatch(user))
         {
             return true;
         }
 
-        string user = userText ?? string.Empty;
         bool monthAsked = CalendarMonthsNamed(user, asked: true).Count > 0
             || Regex.IsMatch(user, @"\b(?:mes|month)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         bool yearAsked = CalendarYearAsked.IsMatch(user);

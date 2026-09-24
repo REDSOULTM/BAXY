@@ -795,6 +795,17 @@ public sealed class PlannerAppBoundaryTests
     [TestCase("¿estamos a mitad de semana?", "Son las 22:04.", false)]
     [TestCase("is it the weekend yet?", "Yes, it is Sunday, September 6.", true)]
     [TestCase("is it the weekend yet?", "It is 22:04.", false)]
+    // Tanda 6: a year or a day of the month asked yes or no is the calendar; a day counted from today is not
+    // answered with today's date (the mind computes and checks it: semantic.network.relative_calendar_days).
+    [TestCase("¿estamos en 2025?", "No, estamos en 2026.", true)]
+    [TestCase("¿estamos en 2025?", "Sí, estamos en 2025.", false)]
+    [TestCase("¿estamos en 2025?", "Son las 22:04.", false)]
+    [TestCase("¿hoy es 6?", "Sí, hoy es domingo 6 de septiembre.", true)]
+    [TestCase("¿hoy es 6?", "Son las 22:04.", false)]
+    [TestCase("¿qué día es mañana?", "Mañana es lunes 7 de septiembre.", true)]
+    [TestCase("¿sabes qué días fueron el último fin de semana?", "Fueron el sábado 29 y el domingo 30 de agosto.", true)]
+    [TestCase("what date was yesterday", "Yesterday was Saturday, September 5.", true)]
+    [TestCase("¿cuándo es pasado mañana?", "Pasado mañana es martes 8 de septiembre.", true)]
     public void AMonthOrADayNamedAsksForTheCalendarPart(string userText, string answer, bool valid)
     {
         const string source = """

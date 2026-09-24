@@ -745,14 +745,18 @@ def _month_span(month: int, today: date) -> tuple[date, date]:
     return start, _add_months(datetime.combine(start, time()), 1).date()
 
 
+def _count_value(raw: str) -> int:
+    raw = " ".join(raw.split())
+    return int(raw) if raw.isdecimal() else 1 if raw == "una" else _PERCENTAGE_WORD_VALUES[raw]
+
+
 def _relative_span(text: str, now: datetime) -> tuple[datetime, datetime] | None:
     """«los próximos tres meses», «the last two weeks»: a span counted from ``now``."""
 
     span = _RELATIVE_SPAN.search(text)
     if span is None:
         return None
-    raw = " ".join((span.group("count") or span.group("count_first")).split())
-    count = int(raw) if raw.isdecimal() else 1 if raw == "una" else _PERCENTAGE_WORD_VALUES[raw]
+    count = _count_value(span.group("count") or span.group("count_first"))
     unit = span.group("unit") or span.group("unit_first")
     forward = bool(span.group("ahead") or span.group("ahead_after"))
     sign = 1 if forward else -1
@@ -761,6 +765,22 @@ def _relative_span(text: str, now: datetime) -> tuple[datetime, datetime] | None
     else:
         other = now + timedelta(days=sign * count * (7 if unit.startswith(("semana", "week")) else 1))
     return (now, other) if forward else (other, now)
+
+
+# Tanda 6 «¿sabes qué días fueron el último fin de semana?»: a weekend or a weekday already gone, and a day counted
+# from today («dentro de diez días», «hace tres días», «in 3 days», «two days ago»), are days of the calendar too.
+_WEEKDAY_NAME = alternation(tuple(name for names in _WEEKDAYS for name in names))
+_LAST_WEEKEND = (
+    r"\b(?:ultimo|pasado|anterior)\s+(?:fin\s+de\s+semana|finde)\b|\b(?:fin\s+de\s+semana|finde)\s+(?:pasado|anterior)\b|"
+    r"\b(?:last|past|previous)\s+weekend\b"
+)
+_PAST_WEEKDAY = (
+    rf"\b(?:{_WEEKDAY_NAME})\s+(?:pasado|anterior)\b|\b(?:ultimo|pasado|last|previous|past)\s+(?:{_WEEKDAY_NAME})\b"
+)
+_COUNTED_DAY = re.compile(
+    rf"\b(?:(?:dentro\s+de|en|in)\s+(?P<ahead>\d{{1,3}}|{_SPAN_COUNT_WORDS})\s+(?:dias|days)|"
+    rf"hace\s+(?P<ago>\d{{1,3}}|{_SPAN_COUNT_WORDS})\s+dias|(?P<ago_after>\d{{1,3}}|{_SPAN_COUNT_WORDS})\s+days\s+ago)\b"
+)
 
 
 def _said_days(text: str, today: date) -> set[tuple[date, date]]:
@@ -778,10 +798,16 @@ def _said_days(text: str, today: date) -> set[tuple[date, date]]:
     elif re.search(_TOMORROW, text):
         add(today + timedelta(days=1))
     # Uso real 2026-09-24 «qué pasó en la reunión de ayer»: a day already gone is a window too.
-    if re.search(r"\banteayer\b|\bday\s+before\s+yesterday\b", text):
+    if re.search(r"\b(?:anteayer|antier)\b|\bday\s+before\s+yesterday\b", text):
         add(today - timedelta(days=2))
     elif re.search(r"\b(?:ayer|yesterday|anoche|last\s+night)\b", text):
         add(today - timedelta(days=1))
+    counted = _COUNTED_DAY.search(text)
+    if counted is not None:
+        ahead = counted.group("ahead")
+        add(today + timedelta(days=_count_value(ahead) if ahead else -_count_value(
+            counted.group("ago") or counted.group("ago_after")
+        )))
     if re.search(
         r"\b(?:hoy|today|tonight|esta\s+jornada|this\s+day|for\s+the\s+day|"
         rf"(?:(?:para|de|en)\s+el|del)\s+dia(?!\s+{_DAY}\b))\b",
@@ -793,6 +819,8 @@ def _said_days(text: str, today: date) -> set[tuple[date, date]]:
     )
     if re.search(r"\bproximo\s+fin\s+de\s+semana\b|\bfin\s+de\s+semana\s+que\s+viene\b|\bnext\s+weekend\b", text):
         add(saturday + timedelta(days=7), 2)
+    elif re.search(_LAST_WEEKEND, text):
+        add(saturday - timedelta(days=7), 2)
     elif re.search(r"\bfin\s+de\s+semana\b|\bweekend\b", text):
         add(saturday, 2)
     monday = today - timedelta(days=today.weekday())
@@ -818,6 +846,8 @@ def _said_days(text: str, today: date) -> set[tuple[date, date]]:
         on = said_date.on_or_after(today)
         if on is not None:
             add(on)
+    elif len(weekdays) == 1 and re.search(_PAST_WEEKDAY, text):
+        add(today - timedelta(days=(today.weekday() - weekdays[0]) % 7 or 7))
     elif len(weekdays) == 1:
         ahead = (weekdays[0] - today.weekday()) % 7
         if ahead == 0 and re.search(r"\b(?:proxim[oa]|que\s+viene|next|coming)\b", text):
@@ -920,7 +950,8 @@ _WINDOW_WORDS = frozenset(
     "weekend weekends fin mes meses month months ano year ultimos ultimas last past siguientes coming after "
     "despues work trabajo mismo entero entera completo completa whole primera segunda tercera cuarta ultima "
     "second third several few couple varios varias unos unas pocos pocas upcoming venir "
-    "ayer anteayer anoche yesterday entre between desde from hasta until till y and to por".split()
+    "ayer anteayer antier anoche yesterday entre between desde from hasta until till y and to por "
+    "ultimo anterior previous hace ago dentro finde".split()
 ) | frozenset(MONTH_NUMBERS) | frozenset(name for names in _WEEKDAYS for name in names) | frozenset(
     token for word in _DAY_WORDS for token in word.split()
 )
@@ -940,6 +971,21 @@ def is_window_phrase(folded: str) -> bool:
             or bool({"next", "proximos", "proximas", "coming", "siguientes", "upcoming", "venir"} & set(tokens))
         )
     )
+
+
+def relative_days(folded: str, today: date) -> tuple[date, ...]:
+    """The days a phrase that says only a time names, counted from ``today`` («mañana», «el último fin de semana»,
+    «el lunes pasado», «in three days»), in order; empty for a phrase that says something else, several runs of
+    days, or more than a week. Tanda 6: these are arithmetic on this PC's calendar, never a guess."""
+
+    if not is_window_phrase(folded):
+        return ()
+    spans = _said_days(_hyphens_as_spaces(folded), today)
+    if len(spans) != 1:
+        return ()
+    start, end = next(iter(spans))
+    length = (end - start).days
+    return tuple(start + timedelta(days=index) for index in range(length)) if 1 <= length <= 7 else ()
 
 
 # --- When an event happens (uso real 2026-09-23 «añade una reunión con Tom a mi calendario para las

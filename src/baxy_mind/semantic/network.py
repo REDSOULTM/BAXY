@@ -4,12 +4,13 @@
 from __future__ import annotations
 
 import re
+from datetime import date
 from typing import Iterable
 from .grammar import _CLOCK_READ_HEAD, _fold, _match, _has, _REQUEST_PREFIX, _strip_request_envelope, _request_head, _head_is, _negative_action_forms, _machine_status_scopes_are_one_reading, _machine_status_is_the_whole_clause, _system_status_domain, _process_list_domain, _network_status_domain, _LIST, _COVERAGE_ACTION_HEAD, _MACHINE_STATUS_OBSERVATION_HEAD, _MACHINE_STATUS_HEAD, _MACHINE_STATUS_OBSERVATION
 from .audio import _volume_domain
 from .intent import EffectIntent, _is_negated_match, _append
 from .normalize import alternation
-from .temporal import MONTH_NUMBERS, _WEEKDAYS, countdown_target
+from .temporal import MONTH_NUMBERS, _WEEKDAYS, countdown_target, relative_days
 
 
 # Tanda 4 2026-09-24 «let me know what today's date is» was offered back as «Want me to tell you today's date?»:
@@ -39,8 +40,14 @@ def _direct_current_time_request(folded: str) -> bool:
 
     if countdown_target(folded) is not None:
         return True
-    # Fase 3.5: trailing courtesy («decime la hora porfa») is not part of the reading.
-    folded = re.sub(r"[\s,]*(?:por\s+favor|porfa|porfis|please|pls|plz)[\s.!?]*$", "", folded)
+    # Fase 3.5: trailing courtesy («decime la hora porfa») is not part of the reading, nor (tanda 6) the hurry or
+    # the tag said after the question («…el mes en el que estamos ya, ¡rápido!», «hoy es jueves, ¿verdad?»).
+    folded = re.sub(
+        r"[\s,]*[¡¿]?(?:por\s+favor|porfa|porfis|please|pls|plz|rapido|rapidito|ya\s+mismo|pronto|quick(?:ly)?|fast|"
+        r"asap|verdad|cierto|no|right|correct|isn['’]?t\s+it)[\s.!?]*$",
+        "",
+        folded,
+    )
     # CLOCK1327 H0054/H0312 «Tiempo»/«tiempo»: the bare word asks for the
     # time; the weather is not something this PC reads.
     if re.fullmatch(r"(?:el\s+)?tiempo(?:\s*,?\s*(?:por\s+favor|porfa|please))?",
@@ -48,9 +55,12 @@ def _direct_current_time_request(folded: str) -> bool:
         return True
     # Fase 3.5 (layer C «Dime la hora exacta»): «exacta/precisa» also ask for the present clock.
     # Tanda 5 «dime hora que es»: the relative «que es» after the noun is the same present («la hora que es»).
+    # Tanda 6 «¿sabes el año de ahora?» (answered «2024» from memory), «el mes en el que estamos ya»: the present
+    # said with «de ahora», «en curso», «en el que estamos», «we're in» is the same present.
     current = (
-        r"(?:actual|local|exacta|exactamente|precisa|exact|(?:de\s+)?hoy|ahora(?:\s+mismo)?|(?:right\s+)?now|"
-        r"que\s+(?:es|son|tenemos))"
+        r"(?:actual|local|exacta|exactamente|precisa|exact|(?:de\s+)?hoy|(?:de\s+)?ahora(?:\s+mismo)?|(?:de\s+)?ahorita|"
+        r"(?:right\s+)?now|en\s+curso|presente|ya|que\s+(?:es|son|tenemos|corre)|"
+        r"(?:en\s+)?(?:el\s+)?(?:que|cual)\s+(?:estamos|vivimos)|(?:that\s+)?we(?:'re|’re|\s+are)\s+in)"
     )
     # Tanda 5 «dime el mes actual» searched the web: the month, the year or the day of this PC's calendar is the
     # same clock read as the date («the current year», «el día de hoy»).
@@ -63,9 +73,9 @@ def _direct_current_time_request(folded: str) -> bool:
         r"(?:(?:current|local)\s+){0,2}(?:hora|fecha|time|date)"
         rf"(?:\s+{current}){{0,2}}|today(?:['’]s)?\s+date|{calendar_now}"
     )
-    observation = rf"(?:{_CLOCK_READ_HEAD}|{_KNOW_FRAME})"
+    observation = rf"(?:{_CLOCK_READ_HEAD}|{_KNOW_FRAME}|{_TELL_ME})"
     request = _strip_request_envelope(folded).strip(" ¿?¡!.")
-    if _PRESENT_CALENDAR_QUESTION.fullmatch(request) is not None:
+    if _PRESENT_CALENDAR_QUESTION.fullmatch(request) is not None or relative_calendar_phrase(request) is not None:
         return True
     return re.fullmatch(
         rf"(?:{observation}\s+(?:{nominal}|{_EMBEDDED_CLOCK_QUESTION})|"
@@ -101,13 +111,21 @@ def _direct_current_time_request(folded: str) -> bool:
 # friday», «do you know what day it is». The whole message must be the question: «qué día es el partido», «en qué año
 # nació Messi», «what date is easter» ask for the date of something else.
 _CALENDAR_UNIT = r"(?:dia(?:\s+de\s+la\s+semana)?|fecha|mes|ano|day(?:\s+of\s+the\s+week)?|date|month|year|weekday)"
-_CALENDAR_NAME = alternation(tuple(MONTH_NUMBERS) + tuple(name for names in _WEEKDAYS for name in names))
-_CALENDAR_NAMES = rf"{_CALENDAR_NAME}(?:\s+(?:o|u|or)\s+(?:(?:a|en)\s+)?{_CALENDAR_NAME})*"
-_CALENDAR_NOW = r"(?:\s+(?:hoy|ahora(?:\s+mismo)?|ya|today|now|right\s+now))?"
-_CALENDAR_ASK = (
-    r"(?:(?:sabes|sabe|sabrias|me\s+(?:dices|decis|puedes\s+decir)|dime|decime|do\s+you\s+know|"
-    rf"(?:can|could)\s+you\s+tell\s+me|tell\s+me|{_KNOW_FRAME})(?:\s+(?:si|if|whether))?\s+)?"
+# Tanda 6: «¿estamos en 2025?», «is it 2027 already?» ask the year as a month or a weekday is asked.
+_CALENDAR_NAME = (
+    "(?:" + alternation(tuple(MONTH_NUMBERS) + tuple(name for names in _WEEKDAYS for name in names))[3:-1]
+    + r"|(?:19|20)\d\d)"
 )
+_CALENDAR_NAMES = rf"{_CALENDAR_NAME}(?:\s+(?:o|u|or)\s+(?:(?:a|en)\s+)?{_CALENDAR_NAME})*"
+_CALENDAR_DAY_NUMBER = r"(?:3[01]|[12]\d|0?[1-9])(?!\d)"
+_CALENDAR_NOW = r"(?:\s+(?:hoy|ahora(?:\s+mismo)?|ya|today|now|right\s+now))?"
+# Asking to be told: «sabes…», «me dices…», «necesito que me digas…», «can you tell me…».
+_TELL_ME = (
+    r"(?:sabes|sabe|sabrias|me\s+(?:dices|decis|dice|das|puedes\s+decir|podrias\s+decir)|dime|decime|"
+    r"(?:puedes|podrias|puede|podria)\s+(?:decirme|darme)|(?:necesito|quiero|quisiera)\s+que\s+me\s+(?:digas|diga|des|de)|"
+    r"do\s+you\s+know|(?:can|could)\s+you\s+tell\s+me|tell\s+me)"
+)
+_CALENDAR_ASK = rf"(?:(?:{_TELL_ME}|{_KNOW_FRAME})(?:\s+(?:si|if|whether))?\s+)?"
 # Tanda 4 «¿qué mes sale ahora mismo en el calendario de mi casa?» read the Outlook agenda: what a calendar or a
 # clock shows now is today's date, whoever's wall it hangs on.
 _CALENDAR_DISPLAY = (
@@ -140,9 +158,60 @@ _PRESENT_CALENDAR_QUESTION = re.compile(
     rf"are\s+we\s+(?:in|on|at)|we\s+are\s+(?:in|on|at)){_CALENDAR_NOW}|"
     r"what(?:\s+is|'s|’s|s)\s+(?:today|the\s+(?:day|date|month|year)(?:\s+(?:today|now))?|today['’]?s\s+(?:date|day))|"
     r"today\s+is\s+what\s+(?:day|date)|"
-    rf"is\s+(?:it|today)\s+{_CALENDAR_NAMES}(?:\s+today)?"
+    rf"is\s+(?:it|today)\s+{_CALENDAR_NAMES}(?:\s+(?:today|yet|already))?|"
+    # Tanda 6: «¿hoy es 24?», «¿estamos a 3 de octubre?», «is today the 24th?»: the day of the month asked.
+    rf"(?:hoy\s+es|es\s+hoy|estamos\s+a)\s+(?:el\s+)?{_CALENDAR_DAY_NUMBER}(?:\s+de\s+{_CALENDAR_NAME})?{_CALENDAR_NOW}|"
+    rf"is\s+(?:it|today)\s+the\s+{_CALENDAR_DAY_NUMBER}(?:st|nd|rd|th)?(?:\s+today)?"
     r")"
 )
+# Tanda 6 «¿sabes qué días fueron el último fin de semana?» → «No tengo información…»: the date of a day counted from
+# today («mañana», «ayer», «el lunes pasado», «el próximo fin de semana», «dentro de diez días», «two days ago») is
+# arithmetic on this PC's calendar. The question names only that time (semantic.temporal.relative_days); «qué día es
+# el partido», «what day is the meeting tomorrow» ask for something else.
+_CALENDAR_UNITS = r"(?:dias?|fechas?|days?|dates?|dia\s+de\s+la\s+semana|day\s+of\s+the\s+week|weekday)"
+_CALENDAR_WAS = (
+    r"(?:es|son|era|eran|sera|seran|fue|fueron|cae|caen|caera|caeran|cayo|cayeron|toca|tocara|tenemos|tendremos|"
+    r"is|are|was|were|will\s+be|falls?(?:\s+on)?|fell(?:\s+on)?)"
+)
+_RELATIVE_CALENDAR_QUESTION = re.compile(
+    rf"(?:(?:y|and)\s+)?{_CALENDAR_ASK}(?:"
+    rf"(?:que|cual|cuales|what|which)\s+{_CALENDAR_UNITS}\s+{_CALENDAR_WAS}\s+(?P<after>.+)|"
+    rf"(?:what|which)\s+{_CALENDAR_UNITS}\s+(?:is|was|will)\s+it(?:\s+be)?\s+(?P<after_it>.+)|"
+    rf"what(?:'s|’s|\s+is|\s+was|\s+will\s+be)\s+(?:the\s+)?(?:date|day)\s+(?:of\s+)?(?P<after_what>.+)|"
+    rf"(?:cuando|when)\s+{_CALENDAR_WAS}\s+(?P<after_when>.+)|"
+    rf"(?P<before>.+?)\s*,?\s*(?:que|cual|cuales|what|which)\s+{_CALENDAR_UNITS}\s+"
+    rf"(?:{_CALENDAR_WAS}|(?:is|was|will)\s+it(?:\s+be)?)"
+    r")"
+)
+
+
+def relative_calendar_phrase(text: str) -> str | None:
+    """The time a whole calendar question asks the date of, when it is a day counted from today, else None."""
+
+    request = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.")
+    found = _RELATIVE_CALENDAR_QUESTION.fullmatch(request)
+    if found is None:
+        return None
+    phrase = next(group for group in found.groups() if group).strip(" ,")
+    # «hoy», «today», «ahora» are this very day: the present question reads those.
+    if _has(phrase, r"^(?:hoy|today|ahora|now|right\s+now|ahora\s+mismo)$"):
+        return None
+    return phrase if relative_days(phrase, date(2000, 1, 3)) else None
+
+
+def present_calendar_question(text: str) -> bool:
+    """The whole message asks which day, date, weekday, month or year it is on this PC's calendar (now, or a day
+    counted from today), not the date of something else."""
+
+    return asks_calendar_part(text) and _direct_current_time_request(_fold(text))
+
+
+def relative_calendar_days(text: str, today: date) -> tuple[date, ...]:
+    """The days of this PC's calendar a relative calendar question asks for, counted from ``today`` (empty when it
+    asks about another thing or about today)."""
+
+    phrase = relative_calendar_phrase(text)
+    return () if phrase is None else relative_days(phrase, today)
 
 
 # The month and weekday names, but the English «may» («may I know the time») asks for nothing.
@@ -156,9 +225,16 @@ def asks_calendar_part(text: str) -> bool:
 
     Tanda 3 «¿estamos a enero o febrero?» read the clock and was answered «Son 02:54.»: the month asked, said by
     its name, is the date too. A calendar unit, a month or weekday name, or «a cuántos estamos» asks for it. The
-    App's visible policy (UserMessagePolicy.AsksCalendarPart) reads the same words; the two must not diverge."""
+    App's visible policy (UserMessagePolicy.AsksCalendarPart) reads the same words; the two must not diverge.
+    Tanda 6: a year («¿estamos en 2025?»), a day of the month («¿hoy es 24?») and a day counted from today
+    («¿cuándo es pasado mañana?») too."""
 
-    return _has(_fold(text), rf"\b(?:{_CALENDAR_UNIT}|{_CALENDAR_PART_NAME}|{WEEK_PERIOD}|a\s+cuantos\s+estamos)\b")
+    folded = _fold(text)
+    return (
+        _has(folded, rf"\b(?:{_CALENDAR_UNIT}|{_CALENDAR_PART_NAME}|{WEEK_PERIOD}|a\s+cuantos\s+estamos|(?:19|20)\d\d)\b")
+        or _PRESENT_CALENDAR_QUESTION.fullmatch(_strip_request_envelope(folded).strip(" ¿?¡!.")) is not None
+        or relative_calendar_phrase(text) is not None
+    )
 
 
 _CALENDAR_MONTH_ASKED = alternation(("mes", "month") + tuple(name for name in MONTH_NUMBERS if name != "may"))
@@ -180,11 +256,12 @@ def calendar_parts_asked(text: str) -> tuple[str, ...]:
     if not asks_calendar_part(text):
         return ()
     folded = _fold(text)
-    if _has(folded, rf"\b(?:{_CALENDAR_DAY_ASKED}|a\s+cuantos\s+estamos)\b|\d"):
+    # A day of the month said in digits asks the date; a year in digits asks the year (tanda 6 «¿estamos en 2025?»).
+    if _has(folded, rf"\b(?:{_CALENDAR_DAY_ASKED}|a\s+cuantos\s+estamos)\b|(?<!\d)\d{{1,2}}(?!\d)"):
         return ("date",)
     parts = tuple(
         part
-        for part, words in (("month", _CALENDAR_MONTH_ASKED), ("year", r"(?:ano|year)"))
+        for part, words in (("month", _CALENDAR_MONTH_ASKED), ("year", r"(?:ano|year|(?:19|20)\d\d)"))
         if _has(folded, rf"\b{words}\b")
     )
     return parts or ("date",)
