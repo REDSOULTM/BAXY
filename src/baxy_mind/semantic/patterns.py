@@ -18,7 +18,7 @@ from .display import screen_light_as_brightness, _KNOWN_FOLDER_WORDS, _KNOWN_FOL
 from .intent import EffectIntent, _entity_key, _is_negated_match, _append, _append_all
 from .catalog import ApplicationCatalogIndex, GameCatalogIndex, build_game_catalog_index, _authenticated_game_target, resolve_game_catalog_app_id, _application_name_key, build_application_catalog_index, _catalog_alias_key, _installed_game_named, installed_game_title
 from .temporal import _CALENDAR_MONTH_TOKEN, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, spoken_clock
-from .media import _youtube_search_query, youtube_play_query, _direct_media_discovery_or_play_request, _named_browser_music_request, _NETFLIX_SPELLED, _underspecified_video_request, _title_case_media_title, _media_transport_action, _resume_existing_media, _REMOVABLE_MEDIA, _bare_spoken_number_media_query, radio_station_query, spoken_media_order
+from .media import _youtube_search_query, youtube_play_query, _direct_media_discovery_or_play_request, _named_browser_music_request, _NETFLIX_SPELLED, _underspecified_video_request, _title_case_media_title, _media_transport_action, _resume_existing_media, _REMOVABLE_MEDIA, _bare_spoken_number_media_query, radio_station_query, spoken_media_order, MUSIC_GENRE, _RADIO_PLAY
 from .web import asks_for_information, other_place_clock_question, public_opinion_query, record_fact_query, _public_route_lookup_request, _public_calendar_fact_lookup_request, _WEATHER_WORDS, _weather_lookup_query, _research_question_query, _public_live_lookup_request, _public_product_correction_lookup_request, _public_commerce_lookup_request, _FILESYSTEM_OBJECT_NOUN, operation_identity_is_a_near_miss, curiosity_request, web_image_request, _NAVIGATION_CLIENT, client_navigation_target, _authenticated_application_identity_conflict, _browser_page_domain, browser_back_arguments, browser_new_tab_arguments, browser_close_all_tabs_arguments, _historical_note_search_request, _stored_note_search_query, _nominal_reminder_lookup_title, _location_recommendation_request, _NAMED_BROWSER_SITE_REQUEST, _installed_browser_search_query, _completed_browser_search_pronoun_request, _NAMED_PUBLIC_SITE, _review_web_and_browser_effects, web_download_request, NAMED_CDP_BROWSERS, _named_browser_match, _named_browser, public_event_subject
 from .files import _pdf_summary_request, _file_trash_request, process_report_file_request, _file_creation_request, known_folder_file_path, _current_directory_file_count, _DUPLICATE_FILES, _known_folder_recent_listing, _known_folder_listing_request, _review_file_and_game_effects, folder_txt_zip_open_mission, open_named_file_request, _office_document_roundtrip_intent
 from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
@@ -2991,11 +2991,15 @@ def _clarification_intent_of(
         )
     # Uso real 2026-09-23 «oye toca la radio», «toca fm», «pon la radio»: the radio with no station
     # named asks which one, as the bare «radio» does; a named station or dial plays (radio_station_query).
+    # Uso real 2026-09-24 «por favor sintonice el canal de radio», «radio encendida»: the radio channel, or the
+    # radio said switched on, names no station either.
     bare_radio = (
         re.fullmatch(
-            r"(?:(?:pon|ponme|pone|toca|tocame|reproduce|enciende|prende|activa|sintoniza|escucha|escuchar|oir|"
-            r"play|put\s+on|turn\s+on|start|inicia|tune\s+in\s+to)\s+)?"
-            r"(?:(?:la|el|una|the|a|some)\s+)?(?:radio|emisora|fm|am|station)"
+            r"(?:(?:pon|ponme|pone|toca|tocame|reproduce|enciende|prende|activa|sintoniza|sintonice|sintonizar|"
+            r"escucha|escuchar|oir|play|put\s+on|turn\s+on|start|inicia|tune\s+in\s+to)\s+)?"
+            r"(?:(?:la|el|una|un|the|a|some)\s+)?"
+            r"(?:radio|emisora|fm|am|station|(?:canal|estacion)\s+de\s+radio|radio\s+(?:station|channel))"
+            r"(?:\s+(?:encendida|prendida|puesta|on))?"
             r"(?:\s+(?:por\s+favor|please|ahora(?:\s+mismo)?|now|right\s+now))?[\s.!?]*",
             folded,
             re.IGNORECASE,
@@ -3004,6 +3008,19 @@ def _clarification_intent_of(
     )
     if "media.play.query" in available and bare_radio:
         return ClarificationIntent(("media.play.query",), ("station_or_genre",))
+    # Uso real 2026-09-24 «adelanta por favor», «botón de rebobina»: moving what plays forward or back with no
+    # amount asks the amount, as a relative volume does; it is not a refusal.
+    bare_seek = re.fullmatch(
+        r"(?:(?:el\s+|the\s+)?boton\s+de\s+)?"
+        r"(?:adelanta(?:lo|la)?|adelantar|atrasa(?:lo|la)?|atrasar|retrocede|retroceder|rebobina(?:lo|la)?|rebobinar|"
+        r"rewind(?:\s+it)?|fast\s+forward(?:\s+it)?|skip\s+(?:ahead|forward|back))"
+        r"(?:\s+(?:un\s+poco|a\s+(?:bit|little)|(?:el|la|the)\s+(?:cancion|video|podcast|episodio|audio|pista|song|"
+        r"track|episode|audiobook|audiolibro)))?"
+        r"(?:\s+(?:por\s+favor|please|porfa))?(?:\s+(?:button|boton))?[\s.!?]*",
+        folded,
+    )
+    if "media.seek.relative" in available and bare_seek is not None:
+        return ClarificationIntent(("media.seek.relative",), ("seconds",))
     incomplete_shared_note = (
         re.fullmatch(
             r"(?:quiero|necesito|i\s+want)\s+(?:escribir|crear|hacer|write|create|make)\s+"
@@ -5196,8 +5213,7 @@ def _desired_music_query_raw(text: str) -> str | None:
     request = re.fullmatch(
         r"(?:(?:i\s+)?(?:need|want)|necesito|quiero)\s+"
         r"(?:(?:some|any|algo\s+de|un\s+poco\s+de)\s+)?"
-        r"(?P<query>(?:rap|hip\s+hop|rock|pop|jazz|blues|reggae|"
-        r"classical|clasica|metal|salsa|bachata|cumbia|reggaeton))"
+        rf"(?P<query>{MUSIC_GENRE})"
         r"(?:\s+(?:music|musica))?[\s.!?]*",
         folded,
         re.IGNORECASE,
@@ -5208,8 +5224,7 @@ def _desired_music_query_raw(text: str) -> str | None:
         r"(?:enciende|inicia|pon|reproduce|start|play)\s+"
         r"(?:(?:la|the)\s+)?(?:lista\s+de\s+reproduccion|playlist)\b"
         r".{0,160}\b(?:musica\s+)?"
-        r"(?P<query>rock|rap|hip\s+hop|pop|jazz|blues|reggae|clasica|"
-        r"classical|metal|salsa|bachata|cumbia|reggaeton)\b"
+        rf"(?P<query>{MUSIC_GENRE})\b"
         r".{0,48}[\s.!?]*",
         folded,
         re.IGNORECASE,
@@ -5254,11 +5269,11 @@ def _desired_music_query_raw(text: str) -> str | None:
 _MUSIC_QUERY_FILLER = (
     r"(?:de|del|by|from|of|para|for|que|that|con|with|mi|mis|my|tu|tus|your|su|sus|"
     r"favorit[oa]s?|favourite|favorite|preferid[oa]s?|nuev[oa]s?|new|algo|something|"
-    r"any|some|alguna?|cualquier|otra?|other|another|mas|more|esta|este|esa|ese|this|"
+    r"any|some|alguna?|cualquier|otr[oa]s?|other|another|mas|more|est[aeo]s?|es[aeo]s?|this|these|those|"
     r"that|the|la|el|lo|los|las|una?|a|an|buena?|good|random|"
     # «pon la canción anterior», «pon música ahora»: moving through what plays
     # or a time is not a title or a genre.
-    r"anterior|siguiente|previa|proxima|next|previous|last|ultima|ultimo|"
+    r"anterior(?:es)?|siguientes?|previas?|proxim[oa]s?|next|previous|last|ultim[oa]s?|"
     r"ahora|now|ya|luego|despues|later|aleatoria|aleatorio|shuffle)"
 )
 # Uso real 2026-09-23 «poner mi canción favorita del año pasado», «mi lista de canciones más reproducidas»,
@@ -5288,9 +5303,17 @@ _QUALIFIED_MUSIC_QUERY = re.compile(
     rf"(?P<title>(?!{_MUSIC_QUERY_FILLER}\b)\S.*)|"
     # Uso real 2026-09-23 «new pop music», «nueva música pop»: newness or chance in front keeps the genre.
     r"(?:(?:algo\s+de|un\s+poco\s+de|some|nuev[oa]s?|new|latest|random|aleatori[oa]s?)\s+)?"
-    rf"(?P<before>(?:(?!{_MUSIC_QUERY_FILLER}\b)[a-z0-9&'-]+\s+){{1,3}})(?:music|musica)|"
-    r"(?:(?:la|the|nuev[oa]|new|latest|random|aleatoria)\s+)?(?:musica|music)\s+"
+    # Uso real 2026-09-24 «play classic songs», «pon canciones románticas»: songs qualified the same way.
+    rf"(?P<before>(?:(?!{_MUSIC_QUERY_FILLER}\b)[a-z0-9&'-]+\s+){{1,3}})(?:music|musica|songs|canciones|tracks)|"
+    r"(?:(?:la|las|the|nuev[oa]s?|new|latest|random|aleatori[oa]s?)\s+)?(?:musica|music|canciones|songs)\s+"
     rf"(?P<after>(?!{_MUSIC_QUERY_FILLER}\b)[a-z0-9&'-]+(?:\s+(?!{_MUSIC_QUERY_FILLER}\b)[a-z0-9&'-]+){{0,2}})|"
+    # Uso real 2026-09-24 «pon los mejores country», «lo mejor de queen», «the greatest hits of abba»: the
+    # best or the hits of a kind or an artist name the music.
+    r"(?:(?:los|las|lo|sus|the|his|her|their)\s+)?(?:mejores|mejor|exitos|grandes\s+exitos|clasicos|best|"
+    r"greatest\s+hits|biggest\s+hits|hits|top(?:\s+\d+)?)\s+(?:(?:canciones|temas|songs|of|de|del)\s+)*"
+    rf"(?P<hits>(?!{_MUSIC_QUERY_FILLER}\b)[a-z0-9&'-]+(?:\s+[a-z0-9&'-]+){{0,3}})|"
+    # «play some jazz», «pon un poco de salsa»: some of a kind of music names it («some music» does not).
+    rf"(?:some|a\s+(?:bit|little)\s+of|un\s+poco\s+de)\s+{MUSIC_GENRE}(?:\s+(?:music|musica))?|"
     # «podcasts de nfl», «reply all podcast», «el audiolibro de dune»: a show or a book to listen to,
     # named by its subject or its title, is searched with its noun.
     r"(?:(?:el|los|un|the|a)\s+)?(?:podcasts?|audiolibros?|audiobooks?)\s+(?:(?:de|del|sobre|about|on|of|by)\s+)?"
@@ -5344,14 +5367,14 @@ _BARE_MUSIC_NAME_CONTROL_WORD = (
 
 def _bare_music_name(query: str) -> bool:
     """«pon rosalia», «puedes poner imogen heap» (MUSIC1559): after a play verb,
-    a name said alone —one to four plain words, no determiner or preposition in
-    front, no application and no control or media noun— is the artist or title
-    to play; the person's capitals are not needed (the ear writes lowercase)."""
+    a name said alone —one to six plain words (an artist and a title together, «michael buble save the last
+    dance»), no determiner or preposition in front, no application and no control or media noun— is the
+    artist or title to play; the person's capitals are not needed (the ear writes lowercase)."""
 
     folded = _fold(query).strip(" .!?")
     words = folded.split()
     return (
-        1 <= len(words) <= 4
+        1 <= len(words) <= 6
         and all(re.fullmatch(r"[a-z]+(?:'[a-z]+)?", word) for word in words)
         and re.fullmatch(_BARE_MUSIC_NAME_FIRST_WORD_NOT, words[0]) is None
         # «pon en marcha…», «pon Tesla en vivo», «pon café con leche»: a
@@ -5370,7 +5393,7 @@ _TRAILING_COURTESY = r"(?:\s*[,;:]?\s+(?:por\s+favor|please|porfa|porfi|pls|plz)
 
 # «puedes poner…», «podrías tocar…»: the request envelope leaves the infinitive.
 _NAMED_MUSIC_PLAY_VERB = (
-    r"(?:pon|ponme|poneme|pone|poné|poner|reproduce|reproducir|reproduc[ií]|play|toca|tocá|tocame|tocáme|toque|tocar)"
+    r"(?:pon|ponme|poneme|pone|poné|poner|reproduce|reproducir|reproduc[ií]|play\s+me|play|toca|tocá|tocame|tocáme|toque|tocar)"
 )
 
 
@@ -5408,8 +5431,11 @@ def _explicit_named_music_query(text: str) -> str | None:
     if (
         named.group("music") is None
         and qualified is None
-        # «la caza del octubre rojo»: «del» joins a title like «de».
-        and not _has(_fold(query), r"\S\s+(?:de|del|by)\s+\S")
+        # «la caza del octubre rojo»: «del» joins a title like «de»; «the number of the beast», «of» too.
+        and not (
+            _has(_fold(query), r"\S\s+(?:de|del|by|of)\s+\S")
+            and not _has(_fold(query), r"\b(?:of|de)\s+(?:that|this|it|them|eso|esto|esa|ese)$")
+        )
         # MUSIC1749 «poné rock en spotify»: with the provider named, one word
         # (a genre, an artist) is the thing to play there; a generic noun
         # («música», «una canción») still asks what to play.
@@ -6153,10 +6179,13 @@ def _has_contradictory_correction(
     # Preserving the authored sequence is a positive mission constraint, not
     # a revocation of the requested effects. Remove only that bounded phrase;
     # any independent ``but do not ...`` clause remains visible below.
+    # Uso real 2026-09-24 «vamos a oír algo de country y salsa que no sea de los estados unidos»: a negation
+    # inside a relative clause says what the object is not; it revokes nothing.
     text = re.sub(
         r"\b(?:sin\s+cambiar\s+(?:el\s+)?orden|"
         r"without\s+changing\s+(?:the\s+)?order|"
-        r"keep\s+(?:the\s+)?(?:same\s+)?order)\b",
+        r"keep\s+(?:the\s+)?(?:same\s+)?order|"
+        r"que\s+no\s+(?:sea|sean|tenga|tengan)|(?:that|which)\s+(?:(?:is|are)\s+not|isn'?t|aren'?t|(?:do|does)(?:\s+not|n'?t)\s+have))\b",
         "",
         text,
         flags=re.IGNORECASE,
@@ -6503,6 +6532,8 @@ def _is_direct_request(text: str) -> bool:
         or _explicit_google_search_query(text) is not None
         or _resume_existing_media(text)
         or _media_transport_action(text)
+        # Uso real 2026-09-24 «sintoniza capital radio madrid»: a station played is the request.
+        or radio_station_query(text) is not None
         or _direct_alarm_schedule_request(text)
         or _task_reminder_with_due(text)
         # NETWORK1293: «¿el wifi está encendido?» is a read request without a
@@ -9803,7 +9834,8 @@ def _pointed_media_question(folded: str, head: str) -> bool:
 
     return (
         (
-            _head_is(head, r"(?:que|what|cual|which|como|how|quien|who|dime|tell|decime)")
+            # Uso real 2026-09-24 «sabes sobre la letra de esta canción»: asking whether BAXY knows about it.
+            _head_is(head, r"(?:que|what|cual|which|como|how|quien|who|dime|tell|decime|sabes|conoces|know)")
             # Uso real 2026-09-23 «en qué año salió esta canción»: the question word after a preposition.
             or _has(folded, r"^(?:en|de|desde|para|a|in|from|since|for)\s+(?:que|cual|quien|what|which|who|cuando|when)\b")
         )
@@ -9877,8 +9909,7 @@ def _review_media_and_email_effects(
             matches,
             folded,
             "media.play.youtube" if not spotify and radio_station_query(folded) is not None else "media.play.query",
-            r"\b(?:pon|ponme|pone|poneme|reproduce|reproducir|play|start|inicia|tune|sintoniza|sintonizame|"
-            r"escuchar|listen|que|what|whats|cual|which)\b",
+            rf"\b(?:{_RADIO_PLAY}|que|what|whats|cual|which)\b",
         )
     elif _bare_spoken_number_media_query(folded) is not None:
         _append(

@@ -7661,8 +7661,15 @@ def _decide_turn_result(
         # parque del retiro a las dos de la tarde», «dame una notificación de
         # recordatorio para la reunión de mañana a las diez a. m.»: fifteen words
         # with no listed order verb at a clause start, yet a request the readers
-        # prove. What they read is addressed to BAXY, not overheard.
+        # prove. What they read is addressed to BAXY, not overheard; so is a request
+        # said in one of the utterance forms they read (uso real 2026-09-24 «vamos a
+        # oír algo de country y salsa que no sea de los estados unidos»).
         or resolve_explicit_effects(objective, authenticated_operations, application_names, game_catalog)
+        is not None
+        or semantic_reading.utterance_form(
+            objective,
+            lambda clause: resolve_explicit_effects(clause, authenticated_operations, application_names, game_catalog),
+        )
         is not None
     ):
         # Fase 3.5 (owner 2026-09-21, turns 156–167, 208): a long message right

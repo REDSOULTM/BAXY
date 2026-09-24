@@ -213,7 +213,10 @@ def steam_library_title(text: str) -> str | None:
             if match is not None and _has(
                 match.group("title"),
                 r"^(?:todo|todos|todas|eso|esto|aquello|algo|nada|lo|la|el|ese|esa|este|esta|los|las|un|una|mi|mis|"
-                r"it|this|that|them|my|the|something|anything|un\s+juego|a\s+game|algun\s+juego|any\s+game)$",
+                r"it|this|that|them|my|the|something|anything|un\s+juego|a\s+game|algun\s+juego|any\s+game)$|"
+                # Uso real 2026-09-24 «jugar un juego de carreras», «quiero jugar un partida de trivial»: a kind
+                # of game names no title; «puedes jugar póker conmigo» asks BAXY to play, not to launch a game.
+                r"^(?:un|una|unos|unas|a|an|algun|alguna|some|any)\s|\b(?:conmigo|with\s+me|contra\s+mi|against\s+me)$",
             ):
                 match = None
         if match is None:

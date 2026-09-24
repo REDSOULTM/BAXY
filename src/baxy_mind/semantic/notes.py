@@ -288,7 +288,10 @@ def agenda_event_request(text: str) -> AgendaEvent | None:
         # «pon una alarma», «añade leche a la lista»: an order about something else. «anota/apunta» is
         # a note unless the calendar is named; a bare «set/put/make» needs the event as its object.
         object_is_event = re.match(rf"(?:(?:un|una|el|la|mi|a|an|the|my|nueva|new)\s+)*(?:\S+\s+)?{_EVENT_NOUN}\b", rest)
-        marks_a_day = re.search(r"\b(?:como|as)\s+(?:(?:el|la|mi|my|a|an|the)\s+)?\S", rest) and head in {
+        # Uso real 2026-09-24 «pon duele como el cielo» (a song) was asked when the event starts: what is
+        # marked «como/as» something is a day only when a day was said before it.
+        marked = re.search(r"\b(?:como|as)\s+(?:(?:el|la|mi|my|a|an|the)\s+)?\S", rest)
+        marks_a_day = marked is not None and says_a_window(rest[: marked.start()]) and head in {
             "marca", "marcar", "marcame", "marque", "mark", "pon", "poner", "ponme", "pone", "poneme", "put", "set"
         }
         if _has(rest, _NOT_AN_EVENT) and calendar_place is None:
