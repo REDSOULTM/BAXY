@@ -8,9 +8,10 @@ adding a task are done and then told.
 
 Three producers wrote those offers with one prompt that demanded «¿Quieres que …?»: the withheld proposal after
 the domain veto, the catalogue probe after a knowledge verdict, and the served-surface re-read. None asked for a
-missing value. The composer is gone: a withheld or probed operation acts when a reader, the canonical surface or
-the strict verifier grounds it and its risk allows acting unasked; otherwise the turn answers or keeps its limit.
-The readers also read the everyday forms directly.
+missing value. A withheld or probed operation now acts when the canonical surface or the strict verifier grounds
+it and its risk allows acting unasked. When only the identity verifier names it, BAXY is unsure, not unable: a
+false limit is worse than a question, so it asks once, naming the operation it would run (never restating the
+request). Named by neither, the turn answers or keeps its limit. The readers also read the everyday forms directly.
 
 The phrasings below are not the tanda's, except the three real messages named as such.
 """
@@ -271,12 +272,34 @@ def test_a_how_to_explanation_that_orders_no_search_keeps_its_closed_contract(te
 # ------------------------------------------------------------------ the mechanism
 
 
-def test_no_component_composes_a_yes_no_offer_any_more() -> None:
+def test_the_unsure_question_names_the_operation_and_never_restates_the_request() -> None:
     import baxy_mind.llm as llm_module
 
-    assert not hasattr(LlmRuntime, "confirm_operation_before_acting")
+    # The restating «¿Quieres que …?» composer is gone.
     assert not hasattr(llm_module, "DOMAIN_CONFIRMATION_PROMPT")
     assert not hasattr(mind_main, "_domain_confirmation_question")
+    prompt = llm_module.OPERATION_CONFIRMATION_PROMPT
+    assert "No estás seguro" in prompt
+    assert "operación concreta que ejecutarías" in prompt
+    assert "No repitas ni reformules el pedido" in prompt
+    assert "«¿Quieres que" not in prompt
+
+    runtime = object.__new__(LlmRuntime)
+    captured: dict[str, object] = {}
+
+    def response(payload: dict, **_kwargs: object) -> dict:
+        captured.update(payload)
+        return {"choices": [{"message": {"content": '{"question":"¿Leo el reloj de este PC?"}'}}]}
+
+    runtime._post = response  # type: ignore[method-assign]
+    runtime._normalize_request_budget = lambda timeout: timeout  # type: ignore[method-assign]
+    question = runtime.confirm_operation_before_acting(
+        "what does my machine think the date is", (("system.time", "Lee la fecha y hora actuales."),),
+    )
+    assert question == "¿Leo el reloj de este PC?"
+    messages = captured["messages"]
+    assert messages[0] == {"role": "system", "content": prompt}
+    assert "system.time | Lee la fecha y hora actuales." in messages[-1]["content"]
 
 
 def test_the_acting_verdict_is_the_strict_one() -> None:
@@ -356,12 +379,52 @@ def test_one_ungrounded_member_keeps_the_whole_set_from_acting() -> None:
     )
 
 
+class _Verdicts(_Strict):
+    def __init__(self, strict: bool, identity: bool, question: str = "¿Reviso la red de este PC?") -> None:
+        super().__init__(strict)
+        self.identity = identity
+        self.question = question
+        self.identity_calls: list[str] = []
+
+    def operation_is_the_requested_effect(self, _text: str, operation: str, _contract: object) -> bool:
+        self.identity_calls.append(operation)
+        return self.identity
+
+    def confirm_operation_before_acting(self, *_args: object, **_kwargs: object) -> str:
+        return self.question
+
+
+_UNSURE_TEXT = "is my machine talking to the outside world right now?"
+
+
+@pytest.mark.parametrize(
+    ("strict", "identity", "verdict"),
+    [
+        (True, True, ("act", "")),  # strict accepts: act, identity never asked
+        (True, False, ("act", "")),
+        (False, True, ("ask", "¿Reviso la red de este PC?")),  # unsure, not unable: one question
+        (False, False, ("", "")),  # named by neither: the limit or the model's answer
+    ],
+)
+def test_the_three_branches_of_a_withheld_operation(strict: bool, identity: bool, verdict: tuple[str, str]) -> None:
+    llm = _Verdicts(strict, identity)
+    assert mind_main._withheld_operation_verdict(_UNSURE_TEXT, ("network.status",), _TOOLS, llm, ()) == verdict
+    assert llm.identity_calls == ([] if strict else ["network.status"])
+
+
+def test_an_unsure_question_that_restates_nothing_valid_is_not_published() -> None:
+    llm = _Verdicts(False, True, question="claro que sí")
+    assert mind_main._withheld_operation_verdict(_UNSURE_TEXT, ("network.status",), _TOOLS, llm, ()) == ("", "")
+
+
 class _KnowledgeLlm:
     """The model answers from what it knows; the catalogue probe names this PC's clock."""
 
-    def __init__(self, *, satisfies: bool) -> None:
+    def __init__(self, *, satisfies: bool, identifies: bool = True) -> None:
         self.satisfies = satisfies
+        self.identifies = identifies
         self.strict_calls: list[str] = []
+        self.confirmations: list[tuple[tuple[str, str], ...]] = []
         self.chats = 0
 
     @staticmethod
@@ -376,9 +439,14 @@ class _KnowledgeLlm:
     def public_lookup_requested(_text: str) -> bool:
         return False
 
-    @staticmethod
-    def operation_is_the_requested_effect(_text: str, operation: str, _contract: object) -> bool:
-        return operation == "system.time"
+    def operation_is_the_requested_effect(self, _text: str, operation: str, _contract: object) -> bool:
+        return self.identifies and operation == "system.time"
+
+    def confirm_operation_before_acting(
+        self, _text: str, effects: tuple[tuple[str, str], ...], **_kwargs: object,
+    ) -> str:
+        self.confirmations.append(effects)
+        return "Should I read this PC's clock?"
 
     def operation_satisfies_the_request(self, _text: str, operation: str, _contract: object) -> bool:
         self.strict_calls.append(operation)
@@ -428,14 +496,28 @@ def test_what_the_catalogue_probe_names_and_the_strict_verdict_grounds_is_observ
     assert llm.chats == 0
 
 
-def test_what_the_probe_names_without_grounding_leaves_the_answer_and_asks_nothing() -> None:
+def test_what_only_the_identity_names_is_asked_once_naming_the_operation() -> None:
     llm = _KnowledgeLlm(satisfies=False)
+    result = _knowledge_turn(llm)
+
+    assert result["kind"] == "clarify"
+    assert result["question"] == "Should I read this PC's clock?"
+    assert result["intentOperations"] == ["system.time"]
+    assert result["effectOperations"] == []
+    assert [[name for name, _ in effects] for effects in llm.confirmations] == [["system.time"]]
+    assert llm.strict_calls == ["system.time"]
+    assert llm.chats == 0
+
+
+def test_what_neither_verifier_names_leaves_the_model_answer_and_asks_nothing() -> None:
+    llm = _KnowledgeLlm(satisfies=True, identifies=False)
     result = _knowledge_turn(llm)
 
     assert result["kind"] == "conversation"
     assert result["question"] == ""
     assert result["effectOperations"] == []
     assert result["intentOperations"] == []
+    assert llm.confirmations == []
     assert llm.chats == 1
 
 
@@ -443,8 +525,8 @@ def test_the_probe_never_acts_unasked_on_an_operation_whose_risk_forbids_it() ->
     llm = _KnowledgeLlm(satisfies=True)
     result = _knowledge_turn(llm, risk="external_communication")
 
-    assert result["kind"] == "conversation"
-    assert result["question"] == ""
+    # Asked, naming the operation; never done unasked, and the strict verdict is not consulted.
+    assert result["kind"] == "clarify"
     assert result["effectOperations"] == []
     assert llm.strict_calls == []
 

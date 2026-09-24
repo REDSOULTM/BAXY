@@ -332,6 +332,35 @@ def test_a_served_operation_the_rewrite_names_never_acts_unasked_when_it_destroy
     assert result["question"] == ""
 
 
+def test_a_served_operation_the_rewrite_names_whose_risk_forbids_acting_is_asked_naming_it() -> None:
+    class UnsureLlm(_RefusingLlm):
+        @staticmethod
+        def operation_is_the_requested_effect(*_args: object, **_kwargs: object) -> bool:
+            return True
+
+        @staticmethod
+        def confirm_operation_before_acting(*_args: object, **_kwargs: object) -> str:
+            return "¿Abro tu carpeta de Imágenes?"
+
+    llm = UnsureLlm()
+    tools = {name: _tool(name) for name in OPERATIONS}
+    tools["filesystem.folder.open"]["function"]["risk"] = "work_loss"
+
+    result = sidecar._prepare_turn_result(
+        {"id": "turn-served-unsure", "text": "open my gallery", "history": [{"role": "user", "content": "open my gallery"}]},
+        llm=llm,
+        planner_catalog=PlannerCatalog(list(tools.values())),
+        turn_evidence=_NoEvidence(),
+        encoder=lambda _texts: (),
+        tool_by_name=tools,
+    )
+
+    assert result["kind"] == "clarify"
+    assert result["question"] == "¿Abro tu carpeta de Imágenes?"
+    assert result["intentOperations"] == ["filesystem.folder.open"]
+    assert result["effectOperations"] == []
+
+
 class _BrokenRereadLlm(_RefusingLlm):
     def decide_turn(self, text: str, *args: object, **kwargs: object) -> dict[str, object]:
         if self.decided:

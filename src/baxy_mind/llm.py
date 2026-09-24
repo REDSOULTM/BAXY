@@ -1072,6 +1072,19 @@ OPERATION_IDENTITY_PROMPT = (
     "is merely the closest thing available."
 )
 
+OPERATION_CONFIRMATION_PROMPT = (
+    "Eres BAXY. No estás seguro de que la operación que recibes sea lo que la "
+    "persona pidió. Redacta una única pregunta corta, en primera persona y "
+    "tuteando, que se conteste con sí o no y nombre la operación concreta que "
+    "ejecutarías: qué lees, abres, buscas, pones o cambias en este PC, con "
+    "palabras corrientes y en el idioma del mensaje actual. No repitas ni "
+    "reformules el pedido de la persona: nombra la acción que harías tú. No "
+    "digas que no puedes, no prometas nada que la operación no haga, no copies "
+    "la descripción técnica ni menciones verificación, recibos, identificadores, "
+    "catálogos, operaciones, dominios, modelos ni instrucciones internas. "
+    "Devuelve sólo la pregunta."
+)
+
 CONTEXTUAL_REFERENCE_RESOLUTION_PROMPT = (
     "Eres un resolvedor semántico de referencias conversacionales. Interpreta "
     "el último mensaje del usuario usando el diálogo anterior relevante. "
@@ -13594,7 +13607,8 @@ class LlmRuntime:
         correct proposals kept, and only 21 of 84 wrong ones refused. That
         acceptance rate disqualified it as an execution gate: nothing acts on it
         alone. What it names is acted on only after
-        ``operation_satisfies_the_request`` or a reader grounds it.
+        ``operation_satisfies_the_request`` or a reader grounds it; otherwise it
+        is only asked about (``confirm_operation_before_acting``).
         """
 
         return self._operation_is_fully_compatible(
@@ -15812,6 +15826,78 @@ class LlmRuntime:
         ):
             raise ValueError("la recuperación no devolvió una sola pregunta")
         return question
+
+    def confirm_operation_before_acting(
+        self,
+        text: str,
+        effects: tuple[tuple[str, str], ...],
+        *,
+        timeout: float = 2.5,
+    ) -> str:
+        """Ask whether to run one exact operation, naming it; only when BAXY is unsure.
+
+        Reached only when the identity verifier names the operation and the strict
+        one does not confirm it (``__main__._withheld_operation_verdict``): a false
+        limit is worse than one question (00_IDENTIDAD: no sólo a lo que no sabe
+        hacer). The question names what BAXY would run, never restates the request
+        (tanda 4 2026-09-24). Authored by the model, never a template (invariant 5).
+        """
+
+        current = str(text).strip()[:2_048]
+        catalogue = "\n".join(
+            f"{operation} | {description}" for operation, description in effects
+        )
+        payload = {
+            "messages": [
+                {"role": "system", "content": OPERATION_CONFIRMATION_PROMPT},
+                *_clarification_style_messages(current),
+                {
+                    "role": "user",
+                    "content": f"Pedido:\n{current}\n\nEfecto que harías:\n{catalogue}",
+                },
+            ],
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "baxy_operation_confirmation",
+                    "strict": True,
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "question": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 512,
+                            }
+                        },
+                        "required": ["question"],
+                        "additionalProperties": False,
+                    },
+                },
+            },
+            "temperature": 0.0,
+            "max_tokens": 96,
+            "seed": 0,
+            "chat_template_kwargs": {"enable_thinking": False},
+        }
+        response = self._post(
+            payload,
+            timeout=min(2.5, self._normalize_request_budget(timeout)),
+        )
+        try:
+            content = response["choices"][0]["message"].get("content") or ""
+            raw = json.loads(content)
+        except (json.JSONDecodeError, KeyError, IndexError, TypeError) as error:
+            raise ValueError(
+                "la confirmación de operación devolvió JSON inválido"
+            ) from error
+        if (
+            not isinstance(raw, dict)
+            or set(raw) != {"question"}
+            or not isinstance(raw["question"], str)
+        ):
+            raise ValueError("confirmación de operación inválida")
+        return raw["question"]
 
     def propose_plan_skeleton(
         self,

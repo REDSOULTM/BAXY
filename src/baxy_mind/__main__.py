@@ -2629,9 +2629,9 @@ def _withheld_invocation_operations(
 ) -> tuple[str, ...]:
     """The withdrawn operations, when every one is identified as the effect the person named.
 
-    Only an application whose identity did not resolve uses it: the question
-    that follows asks for that identity. A single unidentified member returns
-    nothing, never a set with a stranger inside it.
+    What it returns may be asked about, never done: the identity verdict accepts
+    most wrong proposals. A single unidentified member returns nothing, never a
+    set with a stranger inside it.
     """
 
     identifies = getattr(llm, "operation_is_the_requested_effect", None)
@@ -2712,6 +2712,63 @@ def _acts_without_asking(
         except Exception:  # noqa: BLE001 - a silent verifier never grants authority
             return False
     return True
+
+
+def _withheld_operation_verdict(
+    objective: str,
+    operations: tuple[str, ...],
+    tool_by_name: dict[str, dict],
+    llm: object,
+    application_names: tuple[str, ...] | ApplicationCatalogIndex,
+    *,
+    rewrite_grounded: bool = False,
+) -> tuple[str, str]:
+    """What a withheld or probed proposal becomes: ``("act", "")``, ``("ask", question)`` or ``("", "")``.
+
+    It acts when ``_acts_without_asking`` grounds it. When it may not act -- the
+    strict verdict refused it, or its risk forbids acting unasked -- but the
+    identity verifier names it, BAXY is unsure, not unable: a limit there would be
+    a false «no hago eso» (00_IDENTIDAD: dice que no sólo a lo que no sabe hacer).
+    It asks one yes/no question naming the operation it would run, never a
+    restatement of the request. Named by neither, the model's answer or the limit
+    stands.
+    """
+
+    if _acts_without_asking(
+        objective, operations, tool_by_name, llm, application_names, rewrite_grounded=rewrite_grounded,
+    ):
+        return "act", ""
+    if not _withheld_invocation_operations(operations, objective, tool_by_name, llm, application_names):
+        return "", ""
+    compose = getattr(llm, "confirm_operation_before_acting", None)
+    if not callable(compose):
+        return "", ""
+    effects: list[tuple[str, str]] = []
+    for operation in operations:
+        contract = _turn_operation_contract(tool_by_name.get(operation), operation, objective, ())
+        if contract is None:
+            return "", ""
+        effects.append((operation, str(contract["description"])))
+    try:
+        question = str(compose(objective, tuple(effects), timeout=TURN_DECIDE_RECOVERY_BUDGET_SECONDS))
+    except Exception:  # noqa: BLE001 - a failed question is an honest refusal
+        return "", ""
+    return ("ask", question) if _recovery_question_is_valid(question, objective) else ("", "")
+
+
+def _operation_question_decision(question: str, response_language: object) -> dict[str, object]:
+    """The one question ``_withheld_operation_verdict`` asks: nothing is dispatched by it."""
+
+    return {
+        "mode": "clarify",
+        "operation": None,
+        "question": question,
+        "conversation_kind": "",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "response_language": response_language,
+    }
 
 
 def _recovered_action_decision(operation: str, response_language: object) -> dict[str, object]:
@@ -8295,8 +8352,9 @@ def _decide_turn_result(
         # requests answered with a yes/no question that asks for no value, which
         # D3 forbids (confirm only what destroys data). The proposal now acts
         # when ``_acts_without_asking`` finds evidence stronger than its identity;
-        # otherwise "unsupported" is the honest word, and the raw proposal stays
-        # only in the opt-in audit.
+        # when only its identity holds, BAXY is unsure, not unable, and asks once
+        # naming the operation it would run; identified by neither, "unsupported"
+        # is the honest word (``_withheld_operation_verdict``).
         app_evidence = (
             explicit_intent.evidence
             if explicit_intent is not None
@@ -8353,19 +8411,30 @@ def _decide_turn_result(
                 )
             else:
                 intent_operations = []
-        elif _acts_without_asking(
-            objective, withdrawn_effects, tool_by_name, llm, application_names,
-        ):
-            decision = validate_turn_decision(
-                decision_before_veto,
-                {tool.name for tool in shortlist},
-            )
-            intent_operations = list(withdrawn_effects)
-            turn_audit["stages"].append(
-                _turn_audit_stage("withheld_effect_grounded", decision)
-            )
         else:
-            intent_operations = []
+            verdict, question = _withheld_operation_verdict(
+                objective, withdrawn_effects, tool_by_name, llm, application_names,
+            )
+            if verdict == "act":
+                decision = validate_turn_decision(
+                    decision_before_veto,
+                    {tool.name for tool in shortlist},
+                )
+                intent_operations = list(withdrawn_effects)
+                turn_audit["stages"].append(
+                    _turn_audit_stage("withheld_effect_grounded", decision)
+                )
+            elif verdict == "ask":
+                decision = validate_turn_decision(
+                    _operation_question_decision(question, decision["response_language"]),
+                    {tool.name for tool in shortlist},
+                )
+                intent_operations = list(withdrawn_effects)
+                turn_audit["stages"].append(
+                    _turn_audit_stage("withheld_effect_question", decision)
+                )
+            else:
+                intent_operations = []
     decision = apply_compound_effect_conservation_veto(
         decision,
         unresolved_compound_effects,
@@ -8499,11 +8568,17 @@ def _decide_turn_result(
         # Tanda 4 2026-09-24 «find instructions on how to play taboo»: the probe
         # named routine.read and the turn asked «Want me to show you how to play
         # Taboo?». What the probe names is observed only on the evidence
-        # ``_acts_without_asking`` demands, never offered back as a yes/no
-        # question; without it the model's own answer stands.
-        if observing and _acts_without_asking(
-            objective, (observing,), tool_by_name, llm, application_names,
-        ):
+        # ``_acts_without_asking`` demands; unsure, BAXY asks once naming the
+        # operation it would run, never restating the request; named by neither
+        # verifier, the model's own answer stands (``_withheld_operation_verdict``).
+        verdict, question = (
+            _withheld_operation_verdict(
+                objective, (observing,), tool_by_name, llm, application_names,
+            )
+            if observing
+            else ("", "")
+        )
+        if verdict == "act":
             shortlist = _shortlist_with_required_effects(shortlist, (observing,), planner_catalog)
             decision = validate_turn_decision(
                 _recovered_action_decision(observing, decision["response_language"]),
@@ -8512,6 +8587,15 @@ def _decide_turn_result(
             intent_operations = [observing]
             turn_audit["stages"].append(
                 _turn_audit_stage("observation_grounded", decision)
+            )
+        elif verdict == "ask":
+            decision = validate_turn_decision(
+                _operation_question_decision(question, decision["response_language"]),
+                {tool.name for tool in shortlist},
+            )
+            intent_operations = [observing]
+            turn_audit["stages"].append(
+                _turn_audit_stage("observation_question", decision)
             )
     if (
         raw_intent_operations is not None
@@ -8597,7 +8681,8 @@ def _decide_turn_result(
     # is published the request is re-read in its canonical surface; on that
     # re-read, a served operation only the rewrite named is done, never denied
     # (00_IDENTIDAD: dice que no sólo a lo que no sabe hacer) and, since tanda 4,
-    # never offered back as «¿Quieres que…?» (D3) — unless its risk forbids it.
+    # never offered back as «¿Quieres que…?» (D3); when its risk forbids acting
+    # unasked, one question names the operation (``_withheld_operation_verdict``).
     if (
         decision["mode"] == "conversation"
         and decision.get("conversation_kind") == "unsupported"
@@ -8624,18 +8709,29 @@ def _decide_turn_result(
                 turn_audit["reread_objective"] = reread.get("objective")
                 _append_turn_audit(turn_audit)
                 return reread
-        elif served_surface and _acts_without_asking(
-            objective, served_surface, tool_by_name, llm, application_names, rewrite_grounded=True,
-        ):
-            shortlist = _shortlist_with_required_effects(shortlist, served_surface, planner_catalog)
-            decision = validate_turn_decision(
-                _recovered_action_decision(served_surface[0], decision.get("response_language")),
-                {tool.name for tool in shortlist},
+        elif served_surface:
+            verdict, question = _withheld_operation_verdict(
+                objective, served_surface, tool_by_name, llm, application_names, rewrite_grounded=True,
             )
-            intent_operations = list(served_surface)
-            turn_audit["stages"].append(
-                _turn_audit_stage("served_surface_grounded", decision)
-            )
+            if verdict == "act":
+                shortlist = _shortlist_with_required_effects(shortlist, served_surface, planner_catalog)
+                decision = validate_turn_decision(
+                    _recovered_action_decision(served_surface[0], decision.get("response_language")),
+                    {tool.name for tool in shortlist},
+                )
+                intent_operations = list(served_surface)
+                turn_audit["stages"].append(
+                    _turn_audit_stage("served_surface_grounded", decision)
+                )
+            elif verdict == "ask":
+                decision = validate_turn_decision(
+                    _operation_question_decision(question, decision.get("response_language")),
+                    {tool.name for tool in shortlist},
+                )
+                intent_operations = list(served_surface)
+                turn_audit["stages"].append(
+                    _turn_audit_stage("served_surface_question", decision)
+                )
 
     reply_text = ""
     # El idioma con el que se redacta la respuesta viaja con ella: el shell no

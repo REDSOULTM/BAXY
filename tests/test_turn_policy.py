@@ -11538,7 +11538,9 @@ def test_broken_spanish_after_the_modal_is_retried_not_published(
 # retired that question: «let me know what today's date is» and «please put the
 # meeting with carla on my to do list» are complete requests. A withheld proposal
 # now acts when the strict verifier (or the canonical surface) grounds it and its
-# risk allows acting unasked; otherwise the turn keeps the honest limit.
+# risk allows acting unasked. When only the identity verifier names it, BAXY is
+# unsure, not unable: one question names the operation it would run (a false
+# limit is worse than a question). Named by neither, the honest limit stays.
 
 
 _NETWORK_STATUS_TOOL = {
@@ -11576,12 +11578,15 @@ class _WithheldEffectLlm:
         *,
         identifies: bool,
         satisfies: bool = False,
+        question: str = "¿Reviso la conexión de red de este PC?",
     ) -> None:
         self._identifies = identifies
         self._satisfies = satisfies
+        self._question = question
         self.chats = 0
         self.identity_calls: list[str] = []
         self.strict_calls: list[str] = []
+        self.confirmations: list[tuple[tuple[str, str], ...]] = []
 
     def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
         return {
@@ -11612,6 +11617,15 @@ class _WithheldEffectLlm:
     ) -> bool:
         self.strict_calls.append(operation)
         return self._satisfies
+
+    def confirm_operation_before_acting(
+        self,
+        _text: str,
+        effects: tuple[tuple[str, str], ...],
+        **_kwargs: object,
+    ) -> str:
+        self.confirmations.append(effects)
+        return self._question
 
     @staticmethod
     def _verify_semantic_effect_shape(_text: str) -> tuple[str, str]:
@@ -11792,23 +11806,36 @@ def _withheld_effect_turn(
     )
 
 
-def test_an_identified_withdrawn_effect_is_neither_offered_back_nor_acted_on_identity_alone() -> None:
-    """Tanda 4: no «¿Quieres que …?» about a complete request, and no action on weak evidence.
+def test_a_withdrawn_effect_only_its_identity_names_is_asked_once_naming_the_operation() -> None:
+    """Strict refuses, identity accepts: unsure, not unable -- one question, nothing dispatched.
 
-    The identity verifier refuses only 21 of 84 wrong proposals; it names, it does
-    not authorize. Without the strict verdict the turn keeps the honest limit.
+    The identity verifier refuses only 21 of 84 wrong proposals, so it may name
+    what to ask about but never authorize it. A limit here would be a false
+    «no hago eso» about a capability in the catalogue.
     """
 
     llm = _WithheldEffectLlm(identifies=True)
     result = _withheld_effect_turn(llm)
 
-    assert result["kind"] == "conversation"
-    assert result["conversationKind"] == "unsupported"
-    assert result["question"] == ""
-    assert result["intentOperations"] == []
+    assert result["kind"] == "clarify"
+    assert result["question"] == "¿Reviso la conexión de red de este PC?"
+    assert result["intentOperations"] == ["network.status"]
     assert result["effectOperations"] == []
     assert result["operation"] is None
+    # The composer is handed the exact operation it must name.
+    assert [[name for name, _description in effects] for effects in llm.confirmations] == [["network.status"]]
     assert llm.strict_calls == ["network.status"]
+    assert llm.chats == 0
+
+
+def test_an_unsure_question_the_model_will_not_write_is_not_invented() -> None:
+    """Invariant 5: no fixed visible reply. Without one well-formed question the limit stands."""
+
+    llm = _WithheldEffectLlm(identifies=True, question="claro que sí")
+    result = _withheld_effect_turn(llm)
+
+    assert result["kind"] == "conversation"
+    assert result["intentOperations"] == []
 
 
 def test_a_withdrawn_effect_the_strict_verifier_grounds_is_done_not_offered() -> None:
@@ -11820,6 +11847,7 @@ def test_a_withdrawn_effect_the_strict_verifier_grounds_is_done_not_offered() ->
     assert result["effectOperations"] == ["network.status"]
     assert result["question"] == ""
     assert llm.chats == 0
+    assert llm.confirmations == []
 
 
 @pytest.mark.parametrize(
@@ -11832,9 +11860,15 @@ def test_a_withdrawn_effect_that_destroys_installs_pays_or_sends_never_acts_unas
     llm = _WithheldEffectLlm(identifies=True, satisfies=True)
     result = _withheld_effect_turn(llm, "is my machine talking to the outside world right now?", tool)
 
-    assert result["kind"] == "conversation"
+    # Asked, naming the operation, never done unasked; the strict verdict is not even consulted.
+    assert result["kind"] == "clarify"
     assert result["effectOperations"] == []
     assert result["operation"] is None
+    assert llm.strict_calls == []
+
+    unidentified = _WithheldEffectLlm(identifies=False, satisfies=True)
+    result = _withheld_effect_turn(unidentified, "is my machine talking to the outside world right now?", tool)
+    assert result["kind"] == "conversation"
     assert result["question"] == ""
 
 
@@ -11845,7 +11879,7 @@ def test_the_read_only_exemption_stays_refuted_by_its_own_counterexample() -> No
     rejected in goal 03: "¿Cómo está la red neuronal?" proposes
     ``network.status``, and answering it reports the machine's connectivity to a
     question about neural networks. Only the strict verdict lets a withheld
-    proposal act, and it refuses this one.
+    proposal act, and it refuses this one: the person is asked, and says no.
     """
 
     result = _withheld_effect_turn(_WithheldEffectLlm(identifies=True))
@@ -11860,14 +11894,21 @@ def test_an_unidentified_proposal_keeps_the_honest_unsupported_answer() -> None:
     assert result["kind"] == "conversation"
     assert result["conversationKind"] == "unsupported"
     assert result["intentOperations"] == []
+    assert result["question"] == ""
+    assert llm.confirmations == []
     assert llm.chats == 1
 
 
-def test_the_strict_verdict_is_asked_only_about_what_was_withdrawn() -> None:
+def test_both_verdicts_are_asked_only_about_what_was_withdrawn() -> None:
     llm = _WithheldEffectLlm(identifies=True)
     _withheld_effect_turn(llm)
     assert llm.strict_calls == ["network.status"]
-    # The identity verifier is asked only for an application whose identity did not resolve.
+    assert llm.identity_calls == ["network.status"]
+
+
+def test_a_strict_verdict_that_acts_never_asks_the_identity() -> None:
+    llm = _WithheldEffectLlm(identifies=True, satisfies=True)
+    _withheld_effect_turn(llm, "is my machine talking to the outside world right now?")
     assert llm.identity_calls == []
 
 
