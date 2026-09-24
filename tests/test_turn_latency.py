@@ -9,6 +9,11 @@ easy and three of silence. Three serial costs sat in front of every model-path a
 * the effect guard G ran after the selector although it reads only the request text.
 
 Each cut keeps every decision identical; only when the work happens changes.
+
+Owner 2026-09-24: BAXY's visible time is judged against the model's own generation. The reply of a
+conversation turn now decodes beside the checks that may still withdraw it and is handed only to the
+identical ``chat`` call (same payload, same validators); the catalogue probe no longer re-asks the selector
+about operations it already declined.
 """
 
 from __future__ import annotations
@@ -18,13 +23,15 @@ import threading
 import time
 
 from baxy_mind import llm as llm_module
-from baxy_mind.__main__ import _emit_early_turn_signal, _prepare_turn_result
+from baxy_mind.__main__ import _catalog_answers_the_request, _emit_early_turn_signal, _prepare_turn_result
 from baxy_mind.first_signal import PATH_MODEL
 from baxy_mind.llm_transport import ChatCompletionCancelled
 from baxy_mind.llm import (
     NATIVE_SELECTION_CALL_TOKENS,
     NATIVE_SELECTION_PROSE_TOKENS,
+    RESPONSE_LANGUAGE_PROMPT,
     SEMANTIC_EFFECT_GUARD_PROMPT,
+    ConversationReplyContractError,
     LlmRuntime,
 )
 from baxy_mind.planner import PlannerCatalog
@@ -411,3 +418,249 @@ def test_one_slot_profiles_keep_the_guard_where_it_was() -> None:
     runtime.decide_turn("how long", [_candidate("system.time", "Read the local clock.")])
     assert posts == ["selector"]
     assert llm_module.LlmRuntime._run_with_completion_cancellation  # shared by both cascades
+
+
+# --- the conversation reply beside the decision -----------------------------
+
+
+_NOODLES = "how long should i boil noodles for"
+_ANSWER = "Boil them for eight to ten minutes, until they are tender."
+_SERVED = ("system.time", "weather.current")
+
+
+def _reply_runtime(reply_post) -> LlmRuntime:
+    runtime = object.__new__(LlmRuntime)
+    runtime._parallel_turn_verification = True
+    runtime._response_language_cache = {}
+    runtime._request_attempt = 0
+    runtime._speculative_chat_handoff = None
+    runtime._deferred_language_work = None
+    runtime.posts = []  # type: ignore[attr-defined]
+
+    def post(payload: dict[str, object], *_args: object, **kwargs: object) -> dict[str, object]:
+        if payload["messages"][0]["content"] == RESPONSE_LANGUAGE_PROMPT:  # type: ignore[index]
+            runtime.posts.append("language")  # type: ignore[attr-defined]
+            return _choice({"content": '{"language":"en"}'}, "stop")
+        runtime.posts.append("chat")  # type: ignore[attr-defined]
+        return reply_post(kwargs.get("cancellation"))
+
+    runtime._post = post  # type: ignore[method-assign]
+    return runtime
+
+
+def _reply(_cancellation: object) -> dict[str, object]:
+    return _choice({"content": _ANSWER}, "stop")
+
+
+def _reply_arguments(**overrides: object) -> dict[str, object]:
+    return {
+        "history": [{"role": "assistant", "content": "Hola, soy BAXY."}],
+        "tools": None,
+        "temperature": 0.0,
+        "conversation_kind": "knowledge",
+        "authenticated_operations": (),
+        "served_operations": _SERVED,
+        "response_language": "en",
+        **overrides,
+    }
+
+
+def test_the_identical_reply_is_handed_over_without_a_second_decode() -> None:
+    runtime = _reply_runtime(_reply)
+    runtime.prepare_chat(_NOODLES, **_reply_arguments())
+
+    assert runtime.chat(_NOODLES, **_reply_arguments()) == (_ANSWER, [])
+    assert runtime.posts == ["chat"]  # type: ignore[attr-defined]
+    assert runtime._speculative_chat_handoff is None
+
+
+def test_the_reply_joins_a_generation_still_decoding() -> None:
+    release = threading.Event()
+
+    def slow_reply(_cancellation: object) -> dict[str, object]:
+        assert release.wait(_WAIT)
+        return _reply(None)
+
+    runtime = _reply_runtime(slow_reply)
+    runtime.prepare_chat(_NOODLES, **_reply_arguments())
+    threading.Timer(0.2, release.set).start()
+    started = time.monotonic()
+    assert runtime.chat(_NOODLES, **_reply_arguments()) == (_ANSWER, [])
+    # It waited for the one generation in flight instead of starting another.
+    assert time.monotonic() - started >= 0.1
+    assert runtime.posts == ["chat"]  # type: ignore[attr-defined]
+
+
+def test_any_other_reply_retires_the_prepared_one_and_is_worded_itself() -> None:
+    cancellations: list[object] = []
+    release = threading.Event()
+
+    def reply(cancellation: object) -> dict[str, object]:
+        cancellations.append(cancellation)
+        if cancellation is not None:
+            assert release.wait(_WAIT)
+        return _reply(None)
+
+    runtime = _reply_runtime(reply)
+    runtime.prepare_chat(_NOODLES, **_reply_arguments())
+    deadline = time.monotonic() + _WAIT
+    while not cancellations and time.monotonic() < deadline:
+        time.sleep(0.005)
+    # The turn ended as a different conversation: other operations judge it.
+    runtime.chat(_NOODLES, **_reply_arguments(authenticated_operations=("system.time",)))
+    release.set()
+
+    assert runtime.posts == ["chat", "chat"]  # type: ignore[attr-defined]
+    assert getattr(cancellations[0], "cancelled") is True
+    assert cancellations[1] is None
+
+
+def test_the_prepared_language_read_is_the_one_the_turn_consumes() -> None:
+    runtime = _reply_runtime(_reply)
+    runtime.prepare_chat(_NOODLES, **_reply_arguments(response_language=None))
+
+    assert runtime.consume_deferred_response_language(_NOODLES) == (True, "en")
+    assert runtime.chat(_NOODLES, **_reply_arguments()) == (_ANSWER, [])
+    assert runtime.posts == ["language", "chat"]  # type: ignore[attr-defined]
+
+
+def test_a_draft_its_validators_reject_is_not_worded_twice() -> None:
+    def echo(_cancellation: object) -> dict[str, object]:
+        return _choice({"content": _NOODLES}, "stop")
+
+    runtime = _reply_runtime(echo)
+    runtime.prepare_chat(_NOODLES, **_reply_arguments())
+    try:
+        runtime.chat(_NOODLES, **_reply_arguments())
+    except ConversationReplyContractError:
+        pass
+    else:  # pragma: no cover - an echo never passes
+        raise AssertionError("an echoed reply must fail its contract")
+    # The first draft and its repair, once: the turn's own call reused the verdict.
+    assert runtime.posts == ["chat", "chat"]  # type: ignore[attr-defined]
+
+
+def test_a_request_that_ends_without_the_reply_releases_its_slot() -> None:
+    cancellations: list[object] = []
+    release = threading.Event()
+
+    def held(cancellation: object) -> dict[str, object]:
+        cancellations.append(cancellation)
+        assert release.wait(_WAIT)
+        return _reply(None)
+
+    runtime = _reply_runtime(held)
+    runtime.prepare_chat(_NOODLES, **_reply_arguments())
+    deadline = time.monotonic() + _WAIT
+    while not cancellations and time.monotonic() < deadline:
+        time.sleep(0.005)
+    runtime.end_request()
+    release.set()
+
+    assert getattr(cancellations[0], "cancelled") is True
+    assert runtime._speculative_chat_handoff is None
+
+
+def test_one_slot_profiles_prepare_no_reply() -> None:
+    runtime = _reply_runtime(_reply)
+    runtime._parallel_turn_verification = False
+    runtime.prepare_chat(_NOODLES, **_reply_arguments())
+
+    assert runtime._speculative_chat_handoff is None
+    assert runtime.posts == []  # type: ignore[attr-defined]
+
+
+class _PreparingLlm(_ModelPathLlm):
+    """Records the prepared reply, the reply the turn asks for and every probe."""
+
+    _native_tool_policy_enabled = True
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.prepared: list[tuple[str, dict[str, object]]] = []
+        self.asked: list[tuple[str, dict[str, object]]] = []
+        self.probes: list[list[str]] = []
+
+    def prepare_chat(self, text: str, **kwargs: object) -> None:
+        self.prepared.append((text, kwargs))
+
+    def chat(self, text: str, **kwargs: object) -> tuple[str, list[object]]:  # type: ignore[override]
+        self.asked.append((text, kwargs))
+        if kwargs["conversation_kind"] == "social":
+            return "Hi! Good to hear from you.", []
+        return _ANSWER, []
+
+    def _post_native_tool_selection(
+        self, _text: str, operation_names: list[str], _contracts: object, _history: object,
+    ) -> dict[str, object]:
+        self.probes.append(list(operation_names))
+        return {"effect_operations": []}
+
+
+_CLOCK_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "system_time", "canonical_name": "system.time",
+        "description": "Read the local clock.", "risk": "read_only",
+        "parameters": {"type": "object", "properties": {}, "required": [],
+                       "additionalProperties": False},
+    },
+}
+
+
+def _turn(llm: _PreparingLlm, text: str) -> dict[str, object]:
+    return _prepare_turn_result(
+        {"id": "t7", "text": text, "history": [{"role": "assistant", "content": "Hola, soy BAXY."}]},
+        llm=llm,
+        planner_catalog=PlannerCatalog([_CLOCK_TOOL]),
+        turn_evidence=_NoEvidence(),
+        encoder=lambda _texts: (),
+        tool_by_name={"system.time": _CLOCK_TOOL},
+    )
+
+
+def test_a_model_path_conversation_prepares_exactly_the_reply_it_publishes() -> None:
+    llm = _PreparingLlm()
+    result = _turn(llm, _NOODLES)
+
+    assert result["kind"] == "conversation"
+    assert len(llm.prepared) == len(llm.asked) == 1
+    assert llm.prepared[0] == llm.asked[0]
+    assert llm.asked[0][1]["conversation_kind"] == "knowledge"
+
+
+def test_the_probe_does_not_re_ask_what_the_selector_declined() -> None:
+    llm = _PreparingLlm()
+    _turn(llm, _NOODLES)
+    # The selector saw system.time and called nothing: no second selector call.
+    assert llm.probes == []
+
+
+def test_a_closed_social_turn_prepares_exactly_the_reply_it_publishes() -> None:
+    llm = _PreparingLlm()
+    result = _turn(llm, "hi")
+
+    assert result["kind"] == "conversation"
+    assert len(llm.prepared) == len(llm.asked) == 1
+    assert llm.prepared[0] == llm.asked[0]
+    assert llm.asked[0][1]["conversation_kind"] == "social"
+    # A closed social act is worded without the earlier dialogue.
+    assert llm.asked[0][1]["history"] == []
+
+
+def test_the_probe_still_asks_about_operations_the_selector_never_saw() -> None:
+    class Catalog:
+        @staticmethod
+        def shortlist(_text: str) -> tuple[object, ...]:
+            return tuple(PlannerCatalog([_CLOCK_TOOL]).tools)
+
+    llm = _PreparingLlm()
+    tools = {"system.time": _CLOCK_TOOL}
+    assert _catalog_answers_the_request(
+        _NOODLES, _NOODLES, Catalog(), tools, llm, (), already_declined=frozenset({"system.time"}),
+    ) == ""
+    assert llm.probes == []
+    _catalog_answers_the_request(
+        _NOODLES, _NOODLES, Catalog(), tools, llm, (), already_declined=frozenset({"weather.current"}),
+    )
+    assert llm.probes == [["system.time"]]

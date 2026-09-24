@@ -162,6 +162,25 @@ internal static class MindPlanBoundary
             && (response.Status != OperationStatuses.Completed || !response.Verified);
     }
 
+    /// <summary>
+    /// Whether a failed step may ask the mind for a replacement suffix. A safe
+    /// replacement repeats the pending suffix exactly (<see cref="IsSafeReplanSuffix(MindReplanSuffixContract, MindPlanResult)"/>),
+    /// so for a single direct action it could only repeat the invocation that
+    /// just failed. Tandas 01–05 (2026-09-23/24): all 18 such recovery plans
+    /// after a failed action published nothing and held the failure 3.8 s
+    /// (median, p90 6.5 s) before the person heard it.
+    /// </summary>
+    internal static bool MayReplan(
+        PendingMindPlanExecution execution,
+        OperationResponse response)
+    {
+        ArgumentNullException.ThrowIfNull(execution);
+        ArgumentNullException.ThrowIfNull(response);
+        return !response.EffectMayHaveOccurred
+            && execution.ReplanCount < 2
+            && execution.Steps.Count > 1;
+    }
+
     internal static bool CanRefreshConfirmationChallenge(
         PendingMindPlanExecution execution)
     {

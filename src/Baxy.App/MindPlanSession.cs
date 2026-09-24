@@ -318,7 +318,7 @@ internal sealed class MindPlanSession
             execution.PendingOperation = null;
             Persist(execution);
 
-            if (!response.EffectMayHaveOccurred && execution.ReplanCount < 2)
+            if (MindPlanBoundary.MayReplan(execution, response))
             {
                 MindPlanResult? replacement = await TryReplanAsync(
                     execution,

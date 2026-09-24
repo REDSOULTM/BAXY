@@ -2437,6 +2437,7 @@ def _catalog_answers_the_request(
     *,
     depth: int = 4,
     history: list[dict[str, str]] | None = None,
+    already_declined: frozenset[str] = frozenset(),
 ) -> str:
     """Name a catalogue operation that *is* what a closed refusal denied.
 
@@ -2461,9 +2462,17 @@ def _catalog_answers_the_request(
     first one the independent verifier identifies as the requested effect. It
     selects nothing: naming one is only the evidence that withdraws the
     refusal, after which the ordinary ranked path decides the turn.
+
+    ``already_declined`` holds the operations the native selector was shown for
+    this same request and called none of. Tandas 04f/05: asking it again over
+    four of them was a second selector call before every model-path answer
+    (0.4–1 s); in 344 audited model-path turns it changed one outcome, a clock
+    request turned into a question about reading the clock.
     """
 
     shortlist = planner_catalog.shortlist(routing_objective)[:depth]
+    if shortlist and {tool.name for tool in shortlist} <= already_declined:
+        return ""
     native_select = getattr(llm, "_post_native_tool_selection", None)
     if getattr(llm, "_native_tool_policy_enabled", False) and callable(native_select):
         contracts = {
@@ -2989,6 +2998,59 @@ def _decisive_request_language(objective: str) -> str | None:
     if bool(spanish) == bool(english):
         return None
     return reading.language
+
+
+def _read_reply_language(objective: str, history: list[Any]) -> str | None:
+    """The reply language the readers settle without the model, or None."""
+
+    language = _decisive_request_language(objective)
+    if language is None and _answers_the_last_question(history, objective):
+        # MUSIC1753 «Play a song on Spotify.» → «Queen»: an answer with
+        # no language of its own keeps the language of the request it
+        # answers; a proper name is not Spanish evidence. tanda-02: only
+        # an answer — a new request with no evidence goes to the detector.
+        previous = _previous_user_request(history, objective)
+        if isinstance(previous, str) and previous.strip():
+            language = _decisive_request_language(previous)
+    return language
+
+
+def _conversation_reply_arguments(
+    history: list[Any],
+    *,
+    conversation_kind: str,
+    response_language: str | None,
+    scoped: bool,
+    intent_operations: list[str],
+    available_operations: tuple[str, ...],
+) -> dict[str, Any]:
+    """The arguments of a conversation reply, the same for its preparation and its use."""
+
+    return {
+        # A closed social act is a complete new presentation. Replaying
+        # an earlier saved-memory result made a new introduction claim
+        # another save. Scope this generation; retain the actual dialogue
+        # and all context-dependent or model-classified conversations.
+        "history": [] if scoped else history,
+        "tools": None,
+        "temperature": 0.0,
+        "conversation_kind": conversation_kind,
+        "authenticated_operations": tuple(intent_operations),
+        # IDENTITY1325: «cómo funciona esto» names what the served
+        # catalog does on this PC; the families come from it.
+        "served_operations": available_operations,
+        # Language is independently constrained from the current message.
+        # The routing field cannot force the wrong response language.
+        "response_language": response_language,
+    }
+
+
+def _prepare_conversation_reply(llm: Any, objective: str, arguments: dict[str, Any]) -> None:
+    """Let the reply decode beside the checks that may still withdraw it (``LlmRuntime.prepare_chat``)."""
+
+    prepare = getattr(llm, "prepare_chat", None)
+    if callable(prepare):
+        prepare(objective, **arguments)
 
 
 def _explicit_turn_decision(
@@ -8092,6 +8154,39 @@ def _decide_turn_result(
         stable_no_effect_decision is not None
         and effect_intent.explicit_negative_constraint(objective)
     )
+    closed_conversation = (
+        stable_no_effect_decision if closed_no_effect_conversation else explicit_conversation_decision
+    )
+    if (
+        explicit_intent is None
+        and closed_conversation is not None
+        and not (
+            non_target_language is None
+            and closed_conversation.get("conversation_kind") == "unsupported"
+            and catalog_unavailable_decision is not None
+        )
+    ):
+        # Tandas 04f/05: a closed conversation still waited for the effect
+        # guard and the catalogue probe before its reply began to decode. The
+        # reply now decodes beside them; either one withdrawing the closure
+        # retires it (``LlmRuntime.prepare_chat``).
+        closed_kind = (
+            "unsupported_language"
+            if non_target_language is not None
+            else str(closed_conversation.get("conversation_kind"))
+        )
+        _prepare_conversation_reply(
+            llm,
+            objective,
+            _conversation_reply_arguments(
+                history,
+                conversation_kind=closed_kind,
+                response_language=str(closed_conversation.get("response_language")),
+                scoped=closed_kind == "social" and closed_conversation is not talk_act_decision,
+                intent_operations=[],
+                available_operations=available_operations,
+            ),
+        )
     verify_shape = getattr(llm, "_verify_semantic_effect_shape", None)
     if (
         not closed_no_effect_conversation
@@ -8274,6 +8369,30 @@ def _decide_turn_result(
             [tool.name for tool in shortlist],
         )
     )
+    native_selection = (
+        explicit_intent is None
+        and explicit_conversation_decision is None
+        and bool(candidates)
+        and bool(getattr(llm, "_native_tool_policy_enabled", False))
+    )
+    if native_selection:
+        # Tandas 04f/05: model-path conversations took 5–6 s, five serial calls
+        # before the reply began. The native selector writes no reply of its own
+        # (its prose is authored under tool-selection instructions, measured in
+        # astra-audio-mind505); when it selects nothing the turn answers as
+        # knowledge, and that reply now decodes beside the selection.
+        _prepare_conversation_reply(
+            llm,
+            objective,
+            _conversation_reply_arguments(
+                history,
+                conversation_kind="knowledge",
+                response_language=_read_reply_language(objective, history),
+                scoped=False,
+                intent_operations=[],
+                available_operations=available_operations,
+            ),
+        )
     raw_decision = (
         explicit_conversation_decision
         if explicit_conversation_decision is not None
@@ -8295,6 +8414,15 @@ def _decide_turn_result(
         else "explicit_conversation"
         if explicit_conversation_decision is not None
         else "model"
+    )
+    # The operations the native selector saw and declined, all of them.
+    selector_declined = (
+        frozenset(candidate["name"] for candidate in candidates)
+        if decision_path == "model"
+        and native_selection
+        and isinstance(raw_decision, dict)
+        and not raw_decision.get("effect_operations")
+        else frozenset()
     )
     turn_audit: dict[str, Any] = {
         "schema": "baxy.mind-turn-audit.v1",
@@ -8674,6 +8802,7 @@ def _decide_turn_result(
             llm,
             application_names,
             history=history,
+            already_declined=selector_declined,
         )
         # Tanda 4 2026-09-24 «find instructions on how to play taboo»: the probe
         # named routine.read and the turn asked «Want me to show you how to play
@@ -8859,15 +8988,7 @@ def _decide_turn_result(
             # and only repeats work before the same social/follow-up response.
             response_language = str(decision["response_language"])
         else:
-            response_language = _decisive_request_language(objective)
-            if response_language is None and _answers_the_last_question(history, objective):
-                # MUSIC1753 «Play a song on Spotify.» → «Queen»: an answer with
-                # no language of its own keeps the language of the request it
-                # answers; a proper name is not Spanish evidence. tanda-02: only
-                # an answer — a new request with no evidence goes to the detector.
-                previous = _previous_user_request(history, objective)
-                if isinstance(previous, str) and previous.strip():
-                    response_language = _decisive_request_language(previous)
+            response_language = _read_reply_language(objective, history)
             if response_language is not None:
                 # La lectura decide: la inferencia especulativa se retira sin
                 # consumirse, igual que en una ruta sin conversación.
@@ -8919,29 +9040,20 @@ def _decide_turn_result(
         else:
             reply_text, _ = llm.chat(
                 objective,
-                # A closed social act is a complete new presentation. Replaying
-                # an earlier saved-memory result made a new introduction claim
-                # another save. Scope this generation; retain the actual dialogue
-                # and all context-dependent or model-classified conversations.
-                history=(
-                    []
-                    if explicit_conversation_decision is not None
-                    and presentation_conversation_kind == "social"
-                    # Talk about the dialogue («no lo hiciste», «odio estos
-                    # fallos») is about the earlier turns: it keeps them.
-                    and explicit_conversation_decision is not talk_act_decision
-                    else history
+                **_conversation_reply_arguments(
+                    history,
+                    conversation_kind=presentation_conversation_kind,
+                    response_language=response_language,
+                    scoped=(
+                        explicit_conversation_decision is not None
+                        and presentation_conversation_kind == "social"
+                        # Talk about the dialogue («no lo hiciste», «odio estos
+                        # fallos») is about the earlier turns: it keeps them.
+                        and explicit_conversation_decision is not talk_act_decision
+                    ),
+                    intent_operations=intent_operations,
+                    available_operations=available_operations,
                 ),
-                tools=None,
-                temperature=0.0,
-                conversation_kind=presentation_conversation_kind,
-                authenticated_operations=tuple(intent_operations),
-                # IDENTITY1325: «cómo funciona esto» names what the served
-                # catalog does on this PC; the families come from it.
-                served_operations=available_operations,
-                # Language is independently constrained from the current message.
-                # The routing field cannot force the wrong response language.
-                response_language=response_language,
             )
         reply_text = reply_text.strip()
         if not reply_text:

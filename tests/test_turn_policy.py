@@ -78,6 +78,7 @@ from baxy_mind.llm import (
     _compact_structured_grammar,
     _conversation_presentation_shape,
     _INVENTED_INFINITIVES,
+    _PreparedChat,
     _reads_as_an_observation,
     _shaped_conversation_answer_violates_contract,
     _shaped_presentation_text,
@@ -6420,11 +6421,9 @@ def test_chat_consumes_exact_speculative_handoff_without_second_decode() -> None
         "knowledge",
         "es",
     )
-    runtime._speculative_chat_handoff = (
-        key,
-        time.monotonic(),
-        ("La dispersión de la luz lo hace verse azul.", []),
-    )
+    prepared_reply: Future = Future()
+    prepared_reply.set_result(("La dispersión de la luz lo hace verse azul.", []))
+    runtime._speculative_chat_handoff = _PreparedChat(key, prepared_reply, None)
 
     def post_must_not_run(_payload: dict) -> None:
         raise AssertionError("the prepared reply must be handed off")

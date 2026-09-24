@@ -31,7 +31,7 @@ import threading
 import time
 import unicodedata
 import urllib.request
-from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
+from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -12254,6 +12254,59 @@ class ConversationReplyContractError(ValueError):
         self.audit_reason = audit_reason
 
 
+class _PreparedChat:
+    """One conversation reply generated beside the checks that may still withdraw it.
+
+    ``key`` holds every input of that generation and of its verdict (None while
+    its language is still being read); ``chat`` hands the reply only to a call
+    with the same key. ``author`` is the thread writing it, which never waits on
+    itself.
+    """
+
+    __slots__ = ("key", "reply", "cancellation", "author")
+
+    def __init__(
+        self,
+        key: tuple[object, ...] | None,
+        reply: Future,
+        cancellation: ChatCompletionCancellation | None,
+        author: int | None = None,
+    ) -> None:
+        self.key = key
+        self.reply = reply
+        self.cancellation = cancellation
+        self.author = author
+
+    def retire(self) -> None:
+        if self.cancellation is not None:
+            self.cancellation.cancel()
+        self.reply.cancel()
+
+
+def _chat_prior_messages(
+    text: str,
+    history: list[dict[str, str]] | None,
+    conversation_kind: str | None,
+) -> list[dict[str, str]]:
+    """The bounded dialogue a conversation reply is generated from."""
+
+    prior_messages = _bounded_history(history)
+    if conversation_kind == "unsupported_language":
+        # The closed language gate already owns this result. Replaying the
+        # apparent foreign-language action makes a small model translate or
+        # obey it instead of wording the safe notice, and exposes needless
+        # untrusted content to the presentation-only decode.
+        prior_messages = []
+    if (
+        prior_messages
+        and prior_messages[-1].get("role") == "user"
+        and _normalized_dialogue_text(prior_messages[-1].get("content"))
+        == _normalized_dialogue_text(text)
+    ):
+        prior_messages.pop()
+    return prior_messages
+
+
 def _unsupported_language_answer_violates_contract(value: object) -> bool:
     """Require a model-authored request to repeat in a supported language."""
 
@@ -12468,14 +12521,7 @@ class LlmRuntime:
             ]
             | None
         ) = None
-        self._speculative_chat_handoff: (
-            tuple[
-                tuple[object, ...],
-                float,
-                tuple[str, list[dict]],
-            ]
-            | None
-        ) = None
+        self._speculative_chat_handoff: _PreparedChat | None = None
         self._direct_argument_handoff: (
             tuple[
                 str,
@@ -12987,6 +13033,14 @@ class LlmRuntime:
         cancellation.cancel()
         future.cancel()
 
+    def _retire_prepared_chat(self) -> None:
+        """Close a prepared reply nobody consumed, releasing its server slot."""
+
+        prepared = getattr(self, "_speculative_chat_handoff", None)
+        self._speculative_chat_handoff = None
+        if prepared is not None:
+            prepared.retire()
+
     def _retire_deferred_count_work(self) -> None:
         """Cancel a speculative V that no longer has a valid consumer."""
 
@@ -13066,7 +13120,7 @@ class LlmRuntime:
         self._speculative_count_after_guard = bool(
             getattr(self, "_parallel_turn_verification", False)
         )
-        self._speculative_chat_handoff = None
+        self._retire_prepared_chat()
 
     def begin_request_attempt(self, timeout: float, *, attempt: int) -> None:
         """Cap one logical attempt inside the existing total request budget."""
@@ -13117,7 +13171,7 @@ class LlmRuntime:
             bool(getattr(self, "_parallel_turn_verification", False))
             and request_attempt == 0
         )
-        self._speculative_chat_handoff = None
+        self._retire_prepared_chat()
 
     def end_request(self) -> None:
         self._retire_deferred_language_work()
@@ -13132,7 +13186,7 @@ class LlmRuntime:
         self._speculative_count_after_guard = bool(
             getattr(self, "_parallel_turn_verification", False)
         )
-        self._speculative_chat_handoff = None
+        self._retire_prepared_chat()
 
     def _effective_request_timeout(self, requested: float | None = None) -> float:
         request_timeout = getattr(self, "_request_timeout", 19.0)
@@ -13733,7 +13787,17 @@ class LlmRuntime:
         temperature: float,
         conversation_kind: str | None,
         response_language: str | None,
+        *,
+        served_operations: tuple[str, ...] = (),
+        authenticated_operations: tuple[str, ...] = (),
     ) -> tuple[object, ...]:
+        """Every input of one reply's generation and of its verdict."""
+
+        shape = _conversation_presentation_shape(
+            text,
+            conversation_kind=conversation_kind,
+            has_history=any(message.get("role") == "user" for message in prior_messages),
+        )
         return (
             text,
             tuple(
@@ -13743,7 +13807,107 @@ class LlmRuntime:
             float(temperature),
             conversation_kind,
             response_language,
+            # The served catalogue words only «cómo funciona esto»; the
+            # authenticated operations judge every draft.
+            tuple(served_operations) if shape == "how_it_works" else (),
+            tuple(authenticated_operations),
         )
+
+    def prepare_chat(
+        self,
+        text: str,
+        history: list[dict[str, str]] | None = None,
+        tools: list[dict] | None = None,
+        temperature: float = 0.7,
+        *,
+        conversation_kind: str | None = None,
+        response_language: str | None = None,
+        authenticated_operations: tuple[str, ...] = (),
+        served_operations: tuple[str, ...] = (),
+    ) -> None:
+        """Start, beside the decision, the reply a conversation turn publishes.
+
+        Uso real 2026-09-24 (owner: BAXY's time is the model's own generation):
+        a conversation waited for the selector, the effect guard, the catalogue
+        probe and the language read before its reply began to decode. Prepared
+        here in a free server slot, the reply is handed by ``chat`` only to the
+        call with exactly these inputs (same validators, same payload); any
+        other outcome of the turn retires it. ``response_language`` None reads
+        the language first, and that read is the one the turn consumes. Takes
+        the arguments of ``chat``; only the multi-slot profile has a free slot.
+        """
+
+        del tools
+        self._retire_prepared_chat()
+        # A read left by an earlier preparation belongs to its retired reply.
+        self._retire_deferred_language_work()
+        if not getattr(self, "_parallel_turn_verification", False):
+            return
+        cancellation = ChatCompletionCancellation()
+        prepared = _PreparedChat(None, Future(), cancellation)
+        prior_messages = _chat_prior_messages(text, history, conversation_kind)
+
+        def key_for(language: str | None) -> tuple[object, ...]:
+            return self._chat_handoff_key(
+                text,
+                prior_messages,
+                temperature,
+                conversation_kind,
+                language,
+                served_operations=served_operations,
+                authenticated_operations=authenticated_operations,
+            )
+
+        language_read: Future | None = None
+        if response_language is None:
+            # The turn consumes this same read (consume_deferred_response_language),
+            # which completes only once the reply is keyed by its result.
+            language_read = Future()
+            self._deferred_language_work = (text, cancellation, language_read)
+        else:
+            prepared.key = key_for(response_language)
+
+        def generate() -> None:
+            # Every exit settles both futures: the turn may be waiting on either.
+            prepared.author = threading.get_ident()
+            language = response_language
+            if language_read is not None:
+                if not language_read.set_running_or_notify_cancel():
+                    prepared.reply.cancel()
+                    return
+                try:
+                    language = self.detect_response_language(
+                        text,
+                        cancellation=cancellation,
+                    )
+                    prepared.key = key_for(language)
+                except BaseException as error:  # noqa: BLE001 - the turn reads it again
+                    language_read.set_exception(error)
+                    prepared.reply.cancel()
+                    return
+                language_read.set_result(language)
+            if not prepared.reply.set_running_or_notify_cancel():
+                return
+            try:
+                prepared.reply.set_result(
+                    self.chat(
+                        text,
+                        history=history,
+                        temperature=temperature,
+                        conversation_kind=conversation_kind,
+                        response_language=language,
+                        authenticated_operations=authenticated_operations,
+                        served_operations=served_operations,
+                        cancellation=cancellation,
+                    )
+                )
+            except BaseException as error:  # noqa: BLE001 - handed to its consumer
+                prepared.reply.set_exception(error)
+
+        self._speculative_chat_handoff = prepared
+        threading.Thread(
+            target=generate, name="baxy-prepared-reply", daemon=True,
+        ).start()
 
     def chat(
         self,
@@ -13814,20 +13978,33 @@ class LlmRuntime:
         }
         if response_language is not None and response_language not in language_policies:
             raise ValueError("idioma de respuesta inválido")
-        prior_messages = _bounded_history(history)
-        if conversation_kind == "unsupported_language":
-            # The closed language gate already owns this result. Replaying the
-            # apparent foreign-language action makes a small model translate or
-            # obey it instead of wording the safe notice, and exposes needless
-            # untrusted content to the presentation-only decode.
-            prior_messages = []
+        prior_messages = _chat_prior_messages(text, history, conversation_kind)
+        prepared = getattr(self, "_speculative_chat_handoff", None)
         if (
-            prior_messages
-            and prior_messages[-1].get("role") == "user"
-            and _normalized_dialogue_text(prior_messages[-1].get("content"))
-            == _normalized_dialogue_text(text)
+            prepared is not None
+            and prepared.key is not None
+            and prepared.author != threading.get_ident()
         ):
-            prior_messages.pop()
+            self._speculative_chat_handoff = None
+            if prepared.key == self._chat_handoff_key(
+                text,
+                prior_messages,
+                temperature,
+                conversation_kind,
+                response_language,
+                served_operations=served_operations,
+                authenticated_operations=authenticated_operations,
+            ):
+                try:
+                    return copy.deepcopy(prepared.reply.result())
+                except ConversationReplyContractError:
+                    # The same payload under the same validators: this call
+                    # would reach the same verdict.
+                    raise
+                except Exception:  # noqa: BLE001 - cancelled or transport: word it here
+                    pass
+            else:
+                prepared.retire()
         draw = (
             random_draw_request(text)
             if conversation_kind not in {"unsupported", "unsupported_language"}
@@ -13870,21 +14047,6 @@ class LlmRuntime:
             # A startup greeting is not a prior conversational request.
             has_history=any(message.get("role") == "user" for message in prior_messages),
         )
-        handoff_key = self._chat_handoff_key(
-            text,
-            prior_messages,
-            temperature,
-            conversation_kind,
-            response_language,
-        )
-        cached = getattr(self, "_speculative_chat_handoff", None)
-        if (
-            cached is not None
-            and cached[0] == handoff_key
-            and time.monotonic() - cached[1] <= 30.0
-        ):
-            self._speculative_chat_handoff = None
-            return copy.deepcopy(cached[2])
         last_assistant = next(
             (
                 message["content"]
@@ -15247,10 +15409,8 @@ class LlmRuntime:
                             and len(prepared_reply) == 2
                             and str(prepared_reply[0]).strip()
                         ):
-                            self._speculative_chat_handoff = (
-                                speculative_key,
-                                time.monotonic(),
-                                copy.deepcopy(prepared_reply),
+                            self._speculative_chat_handoff = _PreparedChat(
+                                speculative_key, speculative_reply, None,
                             )
                     elif speculative_cancellation is not None:
                         speculative_cancellation.cancel()

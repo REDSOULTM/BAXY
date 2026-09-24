@@ -2425,6 +2425,54 @@ public sealed class PlannerAppBoundaryTests
     }
 
     [Test]
+    public void FailedDirectActionIsNeverReplannedIntoItsOwnRepetition()
+    {
+        // Tandas 01–05: every recovery plan after a failed direct action published
+        // nothing and held the honest failure 3.8 s (median); the only suffix the
+        // boundary accepts for it repeats the invocation that just failed.
+        MindPlanStep weather = new(
+            "step_1",
+            "weather.current",
+            "Cumplir exactamente el efecto solicitado.",
+            [],
+            "literal",
+            new JsonObject());
+        MindPlanStep open = new(
+            "open", "app.open", "Abre Spotify.", [], "literal",
+            new JsonObject { ["appId"] = "spotify" });
+        MindPlanStep play = new(
+            "play", "media.control", "Reanuda la música.", ["open"], "literal",
+            new JsonObject { ["action"] = "play" });
+        OperationResponse failed = new(
+            ProtocolTypes.OperationResponse,
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            OperationStatuses.Failed,
+            "El servicio del tiempo no respondió.",
+            false,
+            false,
+            null,
+            "provider_unavailable");
+        OperationResponse ambiguous = failed with { EffectMayHaveOccurred = true };
+        var direct = new PendingMindPlanExecution("qué tiempo hace", [weather]);
+        var mission = new PendingMindPlanExecution("abre Spotify y dale play", [open, play])
+        {
+            NextIndex = 1,
+        };
+        var replannedTwice = new PendingMindPlanExecution(
+            "abre Spotify y dale play", [open, play], 2);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindPlanBoundary.MayReplan(direct, failed), Is.False);
+            Assert.That(MindPlanBoundary.MayReplan(mission, failed), Is.True);
+            Assert.That(MindPlanBoundary.MayReplan(mission, ambiguous), Is.False);
+            Assert.That(MindPlanBoundary.MayReplan(replannedTwice, failed), Is.False);
+        });
+    }
+
+    [Test]
     public void VerifiedObservationExportsCapabilitiesButNotUntrustedContent()
     {
         OperationResponse response = Response(
