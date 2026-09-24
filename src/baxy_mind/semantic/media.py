@@ -6,7 +6,7 @@ from __future__ import annotations
 import re
 from .grammar import (
     _fold, _has, _original_clause, _strip_request_envelope, _request_head, _head_is, _KNOWN_APPLICATION, _MEDIA_RESUME_VERB,
-    _PERCENTAGE_WORD_VALUES,
+    _PERCENTAGE_WORD_VALUES, spoken_cardinal,
 )
 
 
@@ -313,29 +313,13 @@ _RADIO_REQUEST = re.compile(
     rf"(?:\s+{_RADIO_COURTESY})*"
 )
 _RADIO_NOT_A_STATION = r"\b(?:wifi|wi\s+fi|bluetooth|wireless|inalambrica|alarma|alarm|despertador)\b"
-_SPOKEN_HUNDREDS = {
-    "cien": 100, "ciento": 100, "doscientos": 200, "trescientos": 300, "cuatrocientos": 400, "quinientos": 500,
-    "seiscientos": 600, "setecientos": 700, "ochocientos": 800, "novecientos": 900, "mil": 1000,
-}
-
-
 def _spoken_number(words: str) -> int | None:
     """«novecientos noventa y nueve» → 999, «eight hundred and ninety seven» → 897; None if not all number."""
 
-    tokens = [token for token in words.replace("-", " ").split() if token != "and"]
-    if not tokens:
-        return None
-    if all(token.isdigit() for token in tokens):
+    tokens = words.replace("-", " ").split()
+    if tokens and all(token.isdigit() for token in tokens):
         return int("".join(tokens))
-    total = 0
-    if tokens[0] in _SPOKEN_HUNDREDS:
-        total, tokens = _SPOKEN_HUNDREDS[tokens[0]], tokens[1:]
-    elif len(tokens) > 1 and tokens[1] == "hundred" and tokens[0] in _PERCENTAGE_WORD_VALUES:
-        total, tokens = _PERCENTAGE_WORD_VALUES[tokens[0]] * 100, tokens[2:]
-    if not tokens:
-        return total or None
-    rest = _PERCENTAGE_WORD_VALUES.get(" ".join(tokens))
-    return None if rest is None else total + rest
+    return spoken_cardinal(words)
 
 
 def _radio_dial(name: str, band: str) -> str:

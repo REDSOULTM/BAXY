@@ -1668,6 +1668,117 @@ def _percentage_word_values() -> dict[str, int]:
 _PERCENTAGE_WORD_VALUES = _percentage_word_values()
 
 
+# Tanda 4c–4f «cien mil doscientas veintitrés» was written 100.223, 102.230 and 10223 by the model: a number said
+# in words is read here, with its thousands and millions, and the model is only given the figures.
+_SPANISH_HUNDREDS = {
+    "cien": 100, "ciento": 100,
+    **{
+        f"{stem}{ending}": value
+        for stem, value in (
+            ("doscient", 200), ("trescient", 300), ("cuatrocient", 400), ("quinient", 500),
+            ("seiscient", 600), ("setecient", 700), ("ochocient", 800), ("novecient", 900),
+        )
+        for ending in ("os", "as")
+    },
+}
+_CARDINAL_UNITS = {
+    **_ENGLISH_SMALL_NUMBERS, **_SPANISH_SMALL_NUMBERS, "una": 1, "veintiun": 21, "veintiuna": 21,
+}
+_CARDINAL_TENS = {**_ENGLISH_TENS, **_SPANISH_TENS}
+_CARDINAL_THOUSAND = frozenset({"mil", "thousand"})
+_CARDINAL_MILLION = frozenset({"millon", "millones", "million", "millions"})
+_CARDINAL_WORDS = frozenset(
+    {*_SPANISH_HUNDREDS, *_CARDINAL_UNITS, *_CARDINAL_TENS, *_CARDINAL_THOUSAND, *_CARDINAL_MILLION, "hundred"}
+)
+
+
+def spoken_cardinal(words: str) -> int | None:
+    """The whole number the words say, in Spanish or English, up to the millions; None if any word is not part of
+    one well-formed number.
+
+    «cien mil doscientas veintitrés» → 100223, «one hundred and five» → 105, «dos millones trescientos mil» →
+    2300000, «twenty five hundred» → 2500. Each group below a thousand is hundreds, then tens, then units, in that
+    order and once each («dos tres» is not a number)."""
+
+    tokens = _fold(words).replace("-", " ").split()
+    if not tokens or tokens[0] in {"y", "and"} or tokens[-1] in {"y", "and"}:
+        return None
+    millions = thousands = group = 0
+    rank = 0  # what the current group already holds: 3 hundreds, 2 tens, 1 units, 0 nothing
+    counted = 0
+    for index, token in enumerate(tokens):
+        following = tokens[index + 1] if index + 1 < len(tokens) else ""
+        if token in {"y", "and"}:
+            continue
+        counted += 1
+        if token == "a" and following in {"hundred", "thousand", "million"}:
+            token = "one"
+        if token in _SPANISH_HUNDREDS:
+            if rank:
+                return None
+            group, rank = _SPANISH_HUNDREDS[token], 3
+        elif token == "hundred":
+            if rank not in {1, 2} or not 1 <= group <= 99:
+                return None
+            group, rank = group * 100, 3
+        elif token in _CARDINAL_TENS:
+            if rank in {1, 2}:
+                return None
+            group, rank = group + _CARDINAL_TENS[token], 2
+        elif token in _CARDINAL_UNITS:
+            value = _CARDINAL_UNITS[token]
+            if value == 0 and len(tokens) > 1:
+                return None
+            if rank == 1 or (rank == 2 and not 1 <= value <= 9):
+                return None
+            group, rank = group + value, 1
+        elif token in _CARDINAL_THOUSAND:
+            if thousands or group >= 1000:
+                return None
+            thousands, group, rank = (group or 1) * 1000, 0, 0
+        elif token in _CARDINAL_MILLION:
+            if millions:
+                return None
+            millions, thousands, group, rank = ((thousands + group) or 1) * 1_000_000, 0, 0, 0
+        else:
+            return None
+    return millions + thousands + group if counted else None
+
+
+_DIGITS_FRAME = r"(?:en|in|as|con|with)\s+(?:numeros|cifras|digitos|numbers|digits|figures|numerals)"
+_SPOKEN_NUMBER_WRITE_HEAD = (
+    r"(?:escribe|escribeme|escribime|escribir|pon|ponme|poneme|dame|dime|decime|pasa|pasame|convierte|convertir|"
+    r"write|give\s+me|tell\s+me|show\s+me|convert|put)"
+)
+_SPOKEN_NUMBER_REQUEST = re.compile(
+    r"(?:como\s+se\s+escribe|como\s+escribo|how\s+(?:do\s+(?:you|i)\s+|to\s+|would\s+you\s+)write|"
+    r"how\s+is)\s+(?:(?:el|the)\s+(?:numero|number)\s+)?(?P<asked>.+?)"
+    rf"(?:\s+(?:written|escrito))?(?:\s+{_DIGITS_FRAME})?(?:\s+(?:written|escrito))?|"
+    rf"(?:{_SPOKEN_NUMBER_WRITE_HEAD}\s+)?(?:(?:el|the)\s+(?:numero|number)\s+)?(?P<said>.+?)\s+{_DIGITS_FRAME}|"
+    r"(?P<bare>.+)"
+)
+
+
+def spoken_number_request(text: str) -> int | None:
+    """The number a message says in words and asks nothing else about, to be written in figures; None otherwise.
+
+    The number alone («cien mil doscientas veintitrés», at least two number words so a lone «cinco» stays an
+    answer), or asked in figures («one hundred and five in digits», «¿cómo se escribe dos mil diez?»). Writing
+    it somewhere else («escribe cien en el bloc de notas») or doing arithmetic with it is not this."""
+
+    folded = " ".join(_strip_request_envelope(_fold(text)).replace(",", " ").split()).strip(" ¿?¡!.:;")
+    found = _SPOKEN_NUMBER_REQUEST.fullmatch(folded)
+    if found is None:
+        return None
+    said = found.group("said") or found.group("asked") or found.group("bare") or ""
+    # Without «en números/in digits» one word may be asking for its spelling («¿cómo se escribe veintitrés?»).
+    if re.search(rf"\b{_DIGITS_FRAME}\b", folded) is None and sum(
+        token in _CARDINAL_WORDS for token in said.replace("-", " ").split()
+    ) < 2:
+        return None
+    return spoken_cardinal(said)
+
+
 # MASSIVE qa_maths (dev corpus 2026-09-23) «what is four plus five», «doscientos cuarenta y seis más seiscientos
 # cincuenta y cuatro», «la suma de los dos números cuatro y seis»: numbers, in digits or words, joined by an
 # arithmetic operator. The whole folded expression, nothing else in it.

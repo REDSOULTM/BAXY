@@ -13,6 +13,7 @@ from .temporal import _BOUNDED_TEMPORAL_SELECTOR, _DAY, _MONTH, _WEEKDAYS, is_wi
 from .lexicon import GIVEN_NAMES, SOCIAL_NETWORK
 from .notes import OWN_EVENT_NOUN, own_event_reference
 from .windows import minimize_all_request
+from .network import _direct_current_time_request
 from .media import _youtube_search_query
 
 
@@ -460,6 +461,9 @@ def _topic_research_query(text: str) -> str | None:
     if _has(folded_topic, r"^(?:que|quien|quienes|como|cual|cuales|donde|cuando|por\s+que|porque|what|who|how|which|where|when|why)\b"):
         return None
     if _has(folded_topic, r"\b(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|documents?|mi\s+pc|my\s+pc|este\s+equipo)\b"):
+        return None
+    if _direct_current_time_request(folded_topic):
+        # Tanda 5 «i need information on today's date»: today's date, month or hour is this PC's clock, not a topic.
         return None
     return topic
 

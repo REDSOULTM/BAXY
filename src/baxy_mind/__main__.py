@@ -41,7 +41,7 @@ from .semantic import levels as semantic_levels
 from .semantic import lexicon as semantic_lexicon
 from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
-from .semantic.grammar import ARITHMETIC_EXPRESSION, SPOKEN_NUMBER
+from .semantic.grammar import ARITHMETIC_EXPRESSION, SPOKEN_NUMBER, spoken_number_request
 from .semantic.patterns import echo_mode_request, output_level_request
 from .semantic.notes import agenda_event_request, said_repetition, stated_event_reminder
 from .semantic.temporal import SpokenClock, agenda_window, spoken_date, spoken_window, clock_elsewhere
@@ -3572,7 +3572,8 @@ def _standalone_deictic_request(objective: str, history: object = None) -> bool:
 
 def _general_factoid_prompt(objective: str) -> bool:
     folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
-    if _arithmetic_question(folded) or _concept_description(folded):
+    # Tanda 4f «cien mil doscientas veintitrés»: a number said in words is written in figures in conversation.
+    if _arithmetic_question(folded) or _concept_description(folded) or spoken_number_request(objective) is not None:
         return True
     return (
         re.fullmatch(
@@ -3678,8 +3679,12 @@ def _personal_checkin_statement(objective: str) -> bool:
     # MEMORY1501 H0174 «Me gusta tomar café.»: a first-person taste or
     # preference with nothing asked is a statement to acknowledge, not an
     # order (MEMORY1245 asked where to go for coffee). The reader is shared
-    # with the preference_ack presentation shape (MEMORY1503).
-    return effect_intent.first_person_preference(objective) is not None
+    # with the preference_ack presentation shape (MEMORY1503). Tanda 4f: so is an alarm or timer the person set
+    # themselves («configuré una alarma para despertarme por la mañana»).
+    return (
+        effect_intent.first_person_preference(objective) is not None
+        or effect_intent.reported_own_schedule(objective)
+    )
 
 
 def _closed_unsupported_request(objective: str) -> bool:

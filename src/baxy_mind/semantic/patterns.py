@@ -1962,6 +1962,46 @@ def first_person_preference(text: str) -> str | None:
     return thing
 
 
+# Tanda 4f «configuré una alarma para despertarme por la mañana» → «¡Claro! ¿Quieres que te diga qué hora tienes
+# configurada…?»: the person telling an alarm, timer or reminder they set themselves asks for nothing; BAXY does not
+# know where they set it (a phone, a clock) and acting or offering unasked is what he never does. The past form must
+# be the person's own: without its accent «configure/programe/active» is also the formal order, which stays an order.
+_OWN_SCHEDULE_OBJECT = (
+    r"(?:(?:una|un|la|el|mi|mis|las|los|an?|the|my)\s+)?(?:alarmas?|despertador(?:es)?|temporizador(?:es)?|"
+    r"timers?|recordatorios?|alarms?|reminders?)"
+)
+_OWN_SCHEDULE_STATEMENT = re.compile(
+    r"(?:(?:yo|ya|reci[eé]n|tambi[eé]n|hoy|anoche)\s+)*(?:me\s+|te\s+)?(?:"
+    r"(?:configur|program|activ|dej|agend|fij|cre|coloqu)é|puse|establecí|estableci|"
+    r"he\s+(?:configurado|programado|puesto|activado|dejado|agendado|fijado|creado|establecido)|"
+    r"tengo|"
+    r"i\s+(?:just\s+|already\s+|also\s+)*(?:set|put|scheduled|made|created|turned\s+on|programmed)(?:\s+up)?|"
+    r"i(?:['’]ve|\s+have)\s+(?:just\s+|already\s+|also\s+)*(?:set|put|scheduled|made|created|turned\s+on|programmed)"
+    r"(?:\s+up)?|i\s+have)(?:\s+(?:puest|configurad|programad|activad)[oa]s?)?"
+    rf"\s+{_OWN_SCHEDULE_OBJECT}(?:\s+(?:puest|configurad|programad|activad)[oa]s?|\s+set)?"
+    r"(?:\s+(?P<tail>[^?¿]{0,100}))?[.!]*"
+)
+_OWN_SCHEDULE_REQUEST_TAIL = re.compile(
+    r"\b(?:puedes|podes|podrias|pueden|revisa|revisala|revisalo|verifica|comprueba|confirma|dime|decime|avisame|"
+    r"cambia|cambiala|borra|borrala|quita|quitala|cancela|cancelala|apaga|apagala|sube|baja|"
+    r"can\s+you|could\s+you|would\s+you|please|check|verify|confirm|tell\s+me|change|delete|remove|cancel|"
+    r"turn\s+(?:it\s+)?off)\b"
+)
+
+
+def reported_own_schedule(text: str) -> bool:
+    """Whether the message only tells an alarm, timer or reminder the person set themselves («configuré una alarma
+    para despertarme por la mañana», «I've set a timer for the pasta»); a question or a request after it is not."""
+
+    said = " ".join(_strip_request_envelope(str(text or "").casefold()).split()).strip()
+    if "?" in said or "¿" in said:
+        return False
+    found = _OWN_SCHEDULE_STATEMENT.fullmatch(said)
+    if found is None:
+        return False
+    return _OWN_SCHEDULE_REQUEST_TAIL.search(_fold(found.group("tail") or "")) is None
+
+
 _VISUAL_CONTENT_NOUN = re.compile(
     r"\b(?P<noun>meme|memes|imagen|imagenes|foto|fotos|gif|gifs|sticker|stickers|dibujo|dibujos|picture|pictures|image|images|photo|photos)\b"
 )
@@ -2680,6 +2720,8 @@ def resolve_explicit_clarification_intent(
     """
 
     available = tuple(available_operations)
+    if reported_own_schedule(text):
+        return None
     found = _clarification_intent_of(text, available, application_names, previous_user_text=previous_user_text)
     if found is not None:
         return found
@@ -11679,6 +11721,10 @@ def resolve_explicit_effects(
     """
 
     available = tuple(available_operations)
+    if reported_own_schedule(text):
+        # Tanda 4f: «programé un temporizador de diez minutos» is what the person did, not the formal order
+        # «programe» its folded form reads as; telling it asks for nothing.
+        return None
     intent = _resolve_clause_effects(
         text, available, application_names, game_catalog, previous_user_text=previous_user_text,
     )

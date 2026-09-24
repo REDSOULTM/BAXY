@@ -25,6 +25,7 @@ from .patterns import (
     ClarificationIntent,
     CompoundEffectContract,
     resolve_explicit_clarification_intent,
+    reported_own_schedule,
     resolve_explicit_effects,
 )
 
@@ -383,6 +384,9 @@ def utterance_form(
     argument binder both read the request through here, so the arguments come from the same clause the decision
     read (tanda 3 «para la música, me va a explotar la cabeza» was read and then asked which action)."""
 
+    if reported_own_schedule(text):
+        # Tanda 4f: «programé un temporizador» is what the person did; rewritten as the «usted» order it became one.
+        return None
     for name, form in (
         ("order_with_talk", _order_with_talk),
         ("fronted_place", _fronted_place_request),

@@ -516,6 +516,7 @@ from .semantic.patterns import (  # noqa: F401 - moved to baxy_mind.semantic.pat
     _CURIOSITY_TOPICS_EN,
     curiosity_topic,
     first_person_preference,
+    reported_own_schedule,
     _VISUAL_CONTENT_NOUN,
     visual_content_noun,
     _completed_missing_image_subject_request,

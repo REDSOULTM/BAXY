@@ -115,4 +115,18 @@ public sealed class C03UsoRealComposeTests
         Assert.That(ObservedResponseLiterals.WithoutObservedNames("Según otrodiario.es, es tradicional.", source),
             Is.EqualTo("Según otrodiario.es, es tradicional."));
     }
+
+    // Tanda 5: a web report quoting «…lo que significa que estamos a un paso del fin de semana» died as
+    // internal_code; the connective is not the definition ask restated, which is still refused.
+    [TestCase("Según context.reverso.net, «estamos a mitad de semana, lo que significa que estamos a un paso del fin de semana».", true)]
+    [TestCase("Según context.reverso.net, la frase se usa a mitad de semana. ¿Qué significa exactamente para ti?", false)]
+    [TestCase("¿Qué significa la mitad de semana en este contexto?", false)]
+    public void AConnectiveIsNotARestatedDefinitionAsk(string answer, bool valid)
+    {
+        const string source =
+            """{"kind":"operation","operation":"web.search","polarity":"success","verified":true,"succeeded":true,"observed":{"query":"mitad de semana","count":1,"results":[{"title":"Estamos a mitad de semana - Traducción","url":"https://context.reverso.net/traduccion/espanol-ingles/mitad","snippet":"estamos a mitad de semana, lo que significa que estamos a un paso del fin de semana"}]}}""";
+        UserMessageDraft draft = UserMessagePolicy.Create(source, UserMessageEvent.Status);
+        string? defect = UserMessagePolicy.ModelResponseRejectionReason(answer, draft, "busca qué dicen de la mitad de semana");
+        Assert.That(defect, valid ? Is.Not.EqualTo("internal_code") : Is.EqualTo("internal_code"));
+    }
 }

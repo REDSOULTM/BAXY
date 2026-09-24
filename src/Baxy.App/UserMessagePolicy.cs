@@ -1329,9 +1329,12 @@ internal static class UserMessagePolicy
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
     }
 
+    // Tanda 5 «¿estamos a mitad de semana?»: a quoted snippet «…lo que significa que estamos a un paso del fin de
+    // semana» died as internal_code. «lo que significa que» is a connective, not the definition ask restated.
     private static bool LooksLikeRestatingDefinitionAsk(string folded) =>
         folded.Contains("significa exactamente", StringComparison.Ordinal)
-        || folded.Contains("que significa", StringComparison.Ordinal)
+        || folded.Replace("lo que significa", string.Empty, StringComparison.Ordinal)
+            .Contains("que significa", StringComparison.Ordinal)
         || folded.Contains("en este contexto", StringComparison.Ordinal)
         || folded.Contains("in this context", StringComparison.Ordinal)
         || (folded.Contains("what does", StringComparison.Ordinal)
@@ -2261,6 +2264,12 @@ internal static class UserMessagePolicy
     private static readonly CultureInfo[] CalendarCultures =
         [CultureInfo.GetCultureInfo("es-ES"), CultureInfo.GetCultureInfo("en-US")];
 
+    // Tanda 5 «¿estamos a mitad de semana?»: which part of the week today is asks for the weekday and the date.
+    // The same words as the mind's semantic.network.WEEK_PERIOD; the two must not diverge.
+    private const string CalendarWeekPeriod =
+        @"(?:(?:el|la|the)\s+)?(?:(?:mitad|medio|mediados|principio|inicio|comienzo|final|fin)\s+de\s+(?:la\s+)?semana|"
+        + @"finde|(?:middle|start|beginning|end)\s+of\s+the\s+week|mid-?\s?week|weekend)";
+
     // Tanda 3 «¿estamos a enero o febrero?» was answered «Son 02:54.»: a calendar unit, a month or weekday
     // name (not the English «may») or «a cuántos estamos» asks for the date. The same words as the mind's
     // semantic.network.asks_calendar_part; the two must not diverge.
@@ -2269,7 +2278,7 @@ internal static class UserMessagePolicy
         + "enero|january|febrero|february|marzo|march|abril|april|mayo|junio|june|julio|july|agosto|august|"
         + "septiembre|setiembre|september|octubre|october|noviembre|november|diciembre|december|"
         + @"lunes|monday|martes|tuesday|mi[ée]rcoles|wednesday|jueves|thursday|viernes|friday|s[áa]bado|saturday|"
-        + @"domingo|sunday|a\s+cu[áa]ntos\s+estamos)\b",
+        + @"domingo|sunday|a\s+cu[áa]ntos\s+estamos|" + CalendarWeekPeriod + @")\b",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private static bool AsksCalendarPart(string? userText) => CalendarPartAsked.IsMatch(userText ?? string.Empty);
@@ -2280,7 +2289,7 @@ internal static class UserMessagePolicy
     // semantic.network.calendar_parts_asked; the two must not diverge.
     private static readonly Regex CalendarDayAsked = new(
         @"\b(?:d[ií]a|fecha|day|date|weekday|lunes|monday|martes|tuesday|mi[ée]rcoles|wednesday|jueves|thursday|"
-        + @"viernes|friday|s[áa]bado|saturday|domingo|sunday|a\s+cu[áa]ntos\s+estamos)\b|\d",
+        + @"viernes|friday|s[áa]bado|saturday|domingo|sunday|a\s+cu[áa]ntos\s+estamos|" + CalendarWeekPeriod + @")\b|\d",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private static readonly Regex CalendarYearAsked = new(

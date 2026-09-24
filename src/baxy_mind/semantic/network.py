@@ -17,7 +17,11 @@ from .temporal import MONTH_NUMBERS, _WEEKDAYS, countdown_target
 _KNOW_FRAME = (
     r"(?:let\s+me\s+know|(?:hazme|haceme)\s+saber|avisame|"
     r"(?:necesito|quiero|quisiera|me\s+gustaria)\s+saber|"
-    r"(?:i\s+)?(?:need|want)\s+to\s+know|i(?:'d|’d|\s+would)\s+like\s+to\s+know)"
+    r"(?:i\s+)?(?:need|want)\s+to\s+know|i(?:'d|’d|\s+would)\s+like\s+to\s+know|"
+    # Tanda 5 «i need information on today's date» searched the web: information asked about the date is the date.
+    r"(?:(?:i\s+)?(?:need|want)|i(?:'d|’d|\s+would)\s+like|necesito|quiero|quisiera|me\s+gustaria)\s+"
+    r"(?:(?:some|a\s+bit\s+of|un\s+poco\s+de)\s+)?(?:information|info|informacion)\s+"
+    r"(?:on|about|regarding|sobre|de|acerca\s+de|respecto\s+a))"
 )
 # «let me know what today's date is», «dime what time it is»: the question said inside the request.
 _EMBEDDED_CLOCK_QUESTION = (
@@ -43,11 +47,21 @@ def _direct_current_time_request(folded: str) -> bool:
                     _strip_request_envelope(folded).strip(" ¿?¡!.,")):
         return True
     # Fase 3.5 (layer C «Dime la hora exacta»): «exacta/precisa» also ask for the present clock.
-    current = r"(?:actual|local|exacta|exactamente|precisa|exact|(?:de\s+)?hoy|ahora(?:\s+mismo)?|(?:right\s+)?now)"
+    # Tanda 5 «dime hora que es»: the relative «que es» after the noun is the same present («la hora que es»).
+    current = (
+        r"(?:actual|local|exacta|exactamente|precisa|exact|(?:de\s+)?hoy|ahora(?:\s+mismo)?|(?:right\s+)?now|"
+        r"que\s+(?:es|son|tenemos))"
+    )
+    # Tanda 5 «dime el mes actual» searched the web: the month, the year or the day of this PC's calendar is the
+    # same clock read as the date («the current year», «el día de hoy»).
+    calendar_now = (
+        rf"(?:(?:el|the)\s+)?(?:current\s+)?(?:mes|ano|dia(?:\s+de\s+la\s+semana)?|month|year|day|weekday)"
+        rf"(?:\s+{current}){{1,2}}|(?:the\s+)?current\s+(?:month|year|day|weekday)"
+    )
     nominal = (
         r"(?:(?:la|el|the)\s+)?"
         r"(?:(?:current|local)\s+){0,2}(?:hora|fecha|time|date)"
-        rf"(?:\s+{current}){{0,2}}|today(?:['’]s)?\s+date"
+        rf"(?:\s+{current}){{0,2}}|today(?:['’]s)?\s+date|{calendar_now}"
     )
     observation = rf"(?:{_CLOCK_READ_HEAD}|{_KNOW_FRAME})"
     request = _strip_request_envelope(folded).strip(" ¿?¡!.")
@@ -66,7 +80,7 @@ def _direct_current_time_request(folded: str) -> bool:
         r"what\s+day\s+of\s+the\s+week\s+is\s+(?:it|today)(?:\s+today)?|"
         r"what\s+(?:time|date|day)\s+is\s+it(?:\s+(?:(?:right\s+)?now|today))?)|"
         # «la fecha hoy», «la hora actual»: the noun with its article and a present modifier.
-        rf"(?:(?:la|el|the)\s+)?(?:hora|fecha)\s+{current}|(?:current|local)\s+(?:local\s+)?(?:time|date)|"
+        rf"(?:(?:la|el|the)\s+)?(?:hora|fecha)\s+{current}|(?:current|local)\s+(?:local\s+)?(?:time|date)|{calendar_now}|"
         rf"today(?:['’]s)?\s+date|(?:{observation}\s+)?"
         r"(?:the\s+)?time\s+(?:right\s+now|now)"
         r"(?:\s*[,;:]?\s*what\s+is\s+it)?|"
@@ -92,7 +106,7 @@ _CALENDAR_NAMES = rf"{_CALENDAR_NAME}(?:\s+(?:o|u|or)\s+(?:(?:a|en)\s+)?{_CALEND
 _CALENDAR_NOW = r"(?:\s+(?:hoy|ahora(?:\s+mismo)?|ya|today|now|right\s+now))?"
 _CALENDAR_ASK = (
     r"(?:(?:sabes|sabe|sabrias|me\s+(?:dices|decis|puedes\s+decir)|dime|decime|do\s+you\s+know|"
-    rf"(?:can|could)\s+you\s+tell\s+me|tell\s+me|{_KNOW_FRAME})\s+)?"
+    rf"(?:can|could)\s+you\s+tell\s+me|tell\s+me|{_KNOW_FRAME})(?:\s+(?:si|if|whether))?\s+)?"
 )
 # Tanda 4 «¿qué mes sale ahora mismo en el calendario de mi casa?» read the Outlook agenda: what a calendar or a
 # clock shows now is today's date, whoever's wall it hangs on.
@@ -106,8 +120,17 @@ _CALENDAR_SHOWN = (
     rf"(?:does|is)\s+{_CALENDAR_DISPLAY}\s+(?:show|say|display)(?:ing)?)"
     r"(?:\s+(?:hoy|ahora(?:\s+mismo)?|today|now|right\s+now))?"
 )
+# Tanda 5 «¿estamos a mitad de semana?» searched the web and quoted dictionaries: which part of the week today is
+# (its middle, its start or end, the weekend) is this PC's weekday. The App's visible policy (UserMessagePolicy
+# CalendarWeekPeriod) reads the same words; the two must not diverge.
+WEEK_PERIOD = (
+    r"(?:(?:el|la|the)\s+)?(?:(?:mitad|medio|mediados|principio|inicio|comienzo|final|fin)\s+de\s+(?:la\s+)?semana|"
+    r"finde|(?:middle|start|beginning|end)\s+of\s+the\s+week|mid-?\s?week|weekend)"
+)
 _PRESENT_CALENDAR_QUESTION = re.compile(
     rf"{_CALENDAR_ASK}(?:"
+    rf"(?:ya\s+)?(?:hoy\s+)?(?:estamos|es)\s+(?:(?:a|en)\s+)?{WEEK_PERIOD}(?:\s+ya)?{_CALENDAR_NOW}|"
+    rf"(?:is\s+(?:it|today)|are\s+we\s+(?:in|at|on))\s+{WEEK_PERIOD}(?:\s+(?:yet|already))?{_CALENDAR_NOW}|"
     rf"(?:en|a)\s+(?:que|cual)\s+{_CALENDAR_UNIT}\s+(?:estamos|nos\s+encontramos){_CALENDAR_NOW}|"
     rf"(?:hoy\s+)?(?:que|cual)\s+{_CALENDAR_UNIT}\s+(?:es|tenemos|estamos|cae){_CALENDAR_NOW}|"
     rf"(?:que|cual|what|which)\s+{_CALENDAR_UNIT}\s+{_CALENDAR_SHOWN}|"
@@ -135,12 +158,13 @@ def asks_calendar_part(text: str) -> bool:
     its name, is the date too. A calendar unit, a month or weekday name, or «a cuántos estamos» asks for it. The
     App's visible policy (UserMessagePolicy.AsksCalendarPart) reads the same words; the two must not diverge."""
 
-    return _has(_fold(text), rf"\b(?:{_CALENDAR_UNIT}|{_CALENDAR_PART_NAME}|a\s+cuantos\s+estamos)\b")
+    return _has(_fold(text), rf"\b(?:{_CALENDAR_UNIT}|{_CALENDAR_PART_NAME}|{WEEK_PERIOD}|a\s+cuantos\s+estamos)\b")
 
 
 _CALENDAR_MONTH_ASKED = alternation(("mes", "month") + tuple(name for name in MONTH_NUMBERS if name != "may"))
-_CALENDAR_DAY_ASKED = alternation(
-    ("dia", "fecha", "day", "date", "weekday") + tuple(name for names in _WEEKDAYS for name in names)
+_CALENDAR_DAY_ASKED = (
+    alternation(("dia", "fecha", "day", "date", "weekday") + tuple(name for names in _WEEKDAYS for name in names))
+    + f"|{WEEK_PERIOD}"
 )
 
 

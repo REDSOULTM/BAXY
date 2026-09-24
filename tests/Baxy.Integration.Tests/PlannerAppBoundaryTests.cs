@@ -788,6 +788,13 @@ public sealed class PlannerAppBoundaryTests
     [TestCase("¿qué mes y año es?", "Es septiembre de 2026.", true)]
     [TestCase("is today friday", "It is 22:04.", false)]
     [TestCase("may I know the time", "It is 22:04.", true)]
+    // Tanda 5 «¿estamos a mitad de semana?»: the part of the week is answered with the weekday and the date
+    // (semantic.network.WEEK_PERIOD), never with the clock or a bare yes.
+    [TestCase("¿estamos a mitad de semana?", "No, hoy es domingo 6 de septiembre.", true)]
+    [TestCase("¿estamos a mitad de semana?", "Sí, estamos a mitad de semana.", false)]
+    [TestCase("¿estamos a mitad de semana?", "Son las 22:04.", false)]
+    [TestCase("is it the weekend yet?", "Yes, it is Sunday, September 6.", true)]
+    [TestCase("is it the weekend yet?", "It is 22:04.", false)]
     public void AMonthOrADayNamedAsksForTheCalendarPart(string userText, string answer, bool valid)
     {
         const string source = """
