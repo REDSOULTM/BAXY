@@ -395,13 +395,23 @@ _WINDOW_SIZE_QUESTION = re.compile(
 
 
 def _inventory_identity_request(user_text: str) -> bool:
-    """A list request names windows; a count request only counts them."""
+    """A list request names windows; a count request only counts them.
+
+    Uso real tanda 4e «show me las aplicaciones»: asked for applications, the narrator grouped the windows by
+    their program («Microsoft Edge (varias pestañas: …)») and every draft was refused for a title not copied
+    whole. Applications are named by program; only a request for the windows owes each window's title.
+    """
     folded = fold(user_text)
     return (
         window_inventory_arguments(user_text) is not None
         and not _COUNT_QUESTION.search(folded)
         and not _WINDOW_SIZE_QUESTION.search(folded)
+        and not (_APPLICATION_NOUN.search(folded) and not _WINDOW_NOUN.search(folded))
     )
+
+
+_APPLICATION_NOUN = re.compile(r"\b(?:aplicacion(?:es)?|apps?|applications?|programas?|programs?)\b")
+_WINDOW_NOUN = re.compile(r"\b(?:ventanas?|windows?)\b")
 
 
 def _named_inventory_subset(windows: list) -> list:

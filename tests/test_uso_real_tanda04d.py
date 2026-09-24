@@ -51,7 +51,7 @@ def test_a_draft_naming_the_page_is_not_refused_for_the_browser_suffix():
         ("Taskmgr", "Administrador de tareas"),
         ("msedge", "Receta de lentejas - Personal: Microsoft​ Edge"),
     )
-    user_text = "show me las aplicaciones"
+    user_text = "muéstrame las ventanas abiertas"
     payload = llm._compose_situation_payload(situation, "es", user_text)
     draft = "Tienes abiertas estas ventanas:\n- Administrador de tareas\n- Receta de lentejas (Microsoft Edge)"
     assert llm._payload_fact_defect(draft, payload, user_text) == ""
@@ -82,3 +82,20 @@ def test_a_level_named_after_to_is_the_target(text, setting, target):
 def test_a_counted_step_stays_without_amount(text):
     level = levels.read(text)
     assert level is not None and level.target is None and level.amount is None
+
+
+# Tanda 4e: asked for the applications, the narrator grouped the windows by program and every draft was refused
+# for a title not copied whole. Applications are named by program; a request for the windows owes every title.
+def test_applications_are_named_by_program_windows_by_title():
+    situation = _situation(
+        ("Taskmgr", "Administrador de tareas"),
+        ("msedge", "Receta de lentejas - Personal: Microsoft​ Edge"),
+        ("msedge", "Horario del metro - Personal: Microsoft​ Edge"),
+    )
+    draft = "Tienes abiertos el Administrador de tareas y Microsoft Edge (dos pestañas: recetas y horarios)."
+    for asked in ("show me las aplicaciones", "¿qué programas tengo abiertos?", "which apps are open"):
+        payload = llm._compose_situation_payload(situation, "es", asked)
+        assert llm._payload_fact_defect(draft, payload, asked) == ""
+    for asked in ("muéstrame las ventanas abiertas", "list the open windows"):
+        payload = llm._compose_situation_payload(situation, "es", asked)
+        assert llm._payload_fact_defect(draft, payload, asked) == "missing_fact"
