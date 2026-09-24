@@ -2599,6 +2599,11 @@ public sealed class NaturalMemoryRequestParserTests
     [TestCase("recuérdame que tengo dentista mañana a las cinco")]
     [TestCase("remember to water the plants at 6")]
     [TestCase("remind me to stretch")]
+    // tanda 6: the ear writes the clitic apart; «recuerda me …» is still «recuérdame».
+    [TestCase("recuerda me a las nueve de la noche que tengo que sacar la basura")]
+    [TestCase("recordá me mañana que pague la luz")]
+    [TestCase("recuérda me en 10 minutos revisar el horno")]
+    [TestCase("recuerda me llamar a mi hermana")]
     [TestCase("cuánta memoria RAM me queda libre")]
     [TestCase("revisa el estado de la memoria RAM del sistema")]
     [TestCase("revisa el estado de la memoria local de mi teléfono")]

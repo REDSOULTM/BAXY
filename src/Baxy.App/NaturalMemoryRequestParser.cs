@@ -1679,12 +1679,15 @@ internal static partial class NaturalMemoryRequestParser
     // right after «recuérdame / remind me», or a «recuérdame que …» carrying a
     // due moment leaves the turn to the mind's reminder reading. «recuerda que
     // <dato>» stays a memory save.
+    // Tanda 6 «recuerda me a las ocho de la tarde que tengo que tomar mi medicamento»
+    // was saved as the datum «me a las ocho…»: the ear writes the clitic apart
+    // («recuerda me», «recordá me»), and it is still «recuérdame».
     [GeneratedRegex(
-        "^(?:recu[eé]rdame|recordame|remind[ ]+me)[ ]+(?:en[ ]+\\d+|a[ ]+las?[ ]|ma[nñ]ana|hoy|esta[ ]+(?:tarde|noche)|to(?:day|morrow|night)|at[ ]+\\d|in[ ]+\\d)"
-        + "|^(?:recuerda|record[aá]|acordate|acu[eé]rdate|recu[eé]rdame|recordame)[ ]+(?:de[ ]+)?\\p{L}+(?:ar|er|ir|ír)(?:me|te|se|nos|lo|la|los|las|le|les){0,2}(?:[ ,.]|$)"
+        "^(?:recu[eé]rda[ ]?me|record[aá][ ]?me|remind[ ]+me)[ ]+(?:en[ ]+\\d+|a[ ]+las?[ ]|ma[nñ]ana|hoy|esta[ ]+(?:tarde|noche)|to(?:day|morrow|night)|at[ ]+\\d|in[ ]+\\d)"
+        + "|^(?:recuerda|record[aá]|acordate|acu[eé]rdate|recu[eé]rda[ ]?me|record[aá][ ]?me)[ ]+(?:de[ ]+)?\\p{L}+(?:ar|er|ir|ír)(?:me|te|se|nos|lo|la|los|las|le|les){0,2}(?:[ ,.]|$)"
         + "|^(?:remember|remind[ ]+me)[ ]+to[ ]+\\p{L}"
-        + "|^recu[eé]rdame[ ]+que[ ]+(?:pague|tome|saque|llame|compre)[ ]+"
-        + "|^(?:recu[eé]rdame|recordame)[ ]+que[ ].*\\b(?:ma[nñ]ana|hoy|esta[ ]+(?:tarde|noche)|a[ ]+las?[ ]+\\S+|en[ ]+\\d+[ ]+(?:minutos?|horas?)|dentro[ ]+de|el[ ]+(?:lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo))\\b",
+        + "|^recu[eé]rda[ ]?me[ ]+que[ ]+(?:pague|tome|saque|llame|compre)[ ]+"
+        + "|^(?:recu[eé]rda[ ]?me|record[aá][ ]?me)[ ]+que[ ].*\\b(?:ma[nñ]ana|hoy|esta[ ]+(?:tarde|noche)|a[ ]+las?[ ]+\\S+|en[ ]+\\d+[ ]+(?:minutos?|horas?)|dentro[ ]+de|el[ ]+(?:lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo))\\b",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex ReminderPattern();
 

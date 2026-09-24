@@ -7,6 +7,10 @@
 - «Quiero el sound de nuevo please» was answered «No lo hago: no reparto sonidos antiguos»: the sound wanted, asked
   for or given back again is the sound coming back (audio.mute, state false), in Spanish, English or both; with
   «dame»/«necesito» in front it is that order, not a request to observe the audio.
+- «recuerda me a las ocho de la tarde que tengo que tomar mi medicamento» was saved in the private memory as the
+  datum «me a las ocho…» and read back: the App's memory parser (NaturalMemoryRequestParser.ReminderPattern) did
+  not know the clitic the ear writes apart. It now leaves the turn to the mind, which reads the reminder with its
+  moment and its title (pinned here; the App side in NaturalMemoryRequestParserTests).
 
 The phrases here are not the literals of the real window; they are other ways of saying the same things, with
 controls that must keep their own reading.
@@ -19,6 +23,7 @@ import pytest
 from baxy_mind import __main__ as mind
 from baxy_mind.semantic import levels
 from baxy_mind.semantic.patterns import resolve_explicit_clarification_intent, resolve_explicit_effects
+from baxy_mind.semantic.reading import read
 
 AVAILABLE = (
     "audio.volume", "audio.volume.adjust", "audio.mute", "audio.status", "system.settings.adjust",
@@ -122,3 +127,19 @@ def test_observing_the_audio_is_still_a_read(text: str) -> None:
     effects = resolve_explicit_effects(text, AVAILABLE)
     assert effects is not None and effects.operations == ("audio.status",)
 
+
+# --- 3. a reminder whose clitic the ear wrote apart --------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("text", "title"),
+    [
+        ("recuerda me a las nueve de la noche que tengo que sacar la basura", "tengo que sacar la basura"),
+        ("recuérda me en 10 minutos revisar el horno", "revisar el horno"),
+    ],
+)
+def test_a_split_clitic_reminder_keeps_its_title_without_the_clitic(text: str, title: str) -> None:
+    reading = read(text, available_operations=("reminder.create", "notification.schedule", "task.create"))
+    assert reading.effects is not None and reading.effects.operations == ("reminder.create",)
+    arguments = mind._explicit_arguments_from_evidence("reminder.create", reading.effects.evidence[0], (), ())
+    assert arguments is not None and arguments["title"] == title
