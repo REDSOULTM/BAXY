@@ -11,6 +11,7 @@ from .intent import EffectIntent, _entity_key, _append, _append_all
 from .catalog import ApplicationCatalogIndex, _application_name_key, build_application_catalog_index
 from .temporal import _BOUNDED_TEMPORAL_SELECTOR, _DAY, _MONTH, _WEEKDAYS
 from .lexicon import GIVEN_NAMES, SOCIAL_NETWORK
+from .notes import OWN_EVENT_NOUN, own_event_reference
 from .windows import minimize_all_request
 from .media import _youtube_search_query
 
@@ -761,7 +762,7 @@ _LOCAL_THING = (
 # --- The person's own data (00_IDENTIDAD: information comes in, the person's content never goes out) ----------
 # Tanda 3 2026-09-24 «es cierto que el cumpleaños de antonia es el primero de marzo» and «what do i have to do on
 # january 1st» were sent to the web. What the person has, did, has to do or owns, the people of their own life and
-# this PC are never a public lookup, whatever a guard reads. Four signals, each general:
+# this PC are never a public lookup, whatever a guard reads. Five signals, each general:
 # 1. first person possession or experience («mi», «my», «did i», «am i», «i have to», «tengo que», «qué tengo»,
 #    «me toca», a first person past «hice», «dije», «fui»);
 _FIRST_PERSON_OWN = (
@@ -817,6 +818,17 @@ _WORK_OR_FAME = (
     r"influencer|rapper|rapero|banda|band)\b"
 )
 _WORD = re.compile(r"[a-z0-9]+(?:['’]s\b)?")
+# 5. an event of the person's agenda (uso real 2026-09-24): named as theirs without «mi»
+#    (``notes.own_event_reference``: «la reunión de ayer», «cuándo está programada la boda»), one they have or will
+#    go to («tengo un vuelo el quince», «i have a birthday on monday», «quiero ir al cumpleaños de Sally»), or any
+#    meeting said with an indefinite article («necesito prepararme para una reunión»), which no public page is about.
+_OWN_EVENT_SAID = (
+    r"\b(?:tengo|tenemos|tendre|tenia|i\s+have|we\s+have|i['’]?ve\s+got|i\s+had)\s+(?:(?:un|una|el|la|a|an|the)\s+)?"
+    rf"(?:\w+\s+)?(?:{OWN_EVENT_NOUN}|vuelo|flight|viaje|trip)\b|"
+    r"\b(?:quiero|voy\s+a|tengo\s+que|i\s+want\s+to|i['’]?m\s+going\s+to|i\s+need\s+to)\s+(?:ir|go)\s+"
+    rf"(?:a|al|a\s+la|to)\s+(?:(?:the|la|el|mi|my)\s+)?(?:\w+\s+)?{OWN_EVENT_NOUN}\b|"
+    r"\b(?:un|una|a|an)\s+(?:\w+\s+)?(?:reunion|meeting|appointment)\b"
+)
 
 
 def _bare_given_name(folded: str) -> bool:
@@ -841,8 +853,9 @@ def _bare_given_name(folded: str) -> bool:
 
 def names_own_data(text: str) -> bool:
     """Whether a request asks about the person's own data: their things, plans or past, their relatives, a person of
-    their life named by a given name, or this PC (see above). Where the person is («cerca de mí», «en mi zona»,
-    «near me») is not their data: a place near them is looked up (``_location_recommendation_request``)."""
+    their life named by a given name, this PC, or an event of their agenda (see above). Where the person is («cerca
+    de mí», «en mi zona», «near me») is not their data: a place near them is looked up
+    (``_location_recommendation_request``)."""
 
     folded = re.sub(_NEAR_THE_PERSON, " ", _fold(text))
     # «what's grandma's birthday»: a contracted «is» is not a possessive.
@@ -852,6 +865,8 @@ def names_own_data(text: str) -> bool:
         or _has(folded, _OWN_RELATIVE)
         or _has(folded, _THIS_DEVICE)
         or _bare_given_name(folded)
+        or own_event_reference(folded)
+        or _has(folded, _OWN_EVENT_SAID)
     )
 
 

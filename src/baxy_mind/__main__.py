@@ -43,7 +43,7 @@ from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
 from .semantic.grammar import ARITHMETIC_EXPRESSION, SPOKEN_NUMBER
 from .semantic.patterns import output_level_request
-from .semantic.notes import agenda_event_request, stated_event_reminder
+from .semantic.notes import agenda_event_request, said_repetition, stated_event_reminder
 from .semantic.temporal import SpokenClock, agenda_window, spoken_date, spoken_window
 from .semantic.web import asks_for_information, names_own_data, news_lookup_query, public_query_body
 from .semantic.windows import start_menu_request
@@ -4849,6 +4849,14 @@ def _explicit_notification_schedule_arguments(
     }
 
 
+# The words of a daily or hourly repetition, in the person's writing: the reminder they repeat is read without them.
+_REPETITION_WORDS = re.compile(
+    r"\b(?:(?:cada|todos\s+los|todas\s+las|every|each)\s+(?:d[ií]as?|ma[nñ]anas?|tardes?|noches?|horas?|days?|"
+    r"mornings?|afternoons?|evenings?|nights?|hours?)|diariamente|a\s+diario|daily|hourly)\b",
+    re.IGNORECASE,
+)
+
+
 def _explicit_relative_reminder_arguments(
     evidence: str,
 ) -> dict[str, object] | None:
@@ -4861,11 +4869,17 @@ def _explicit_relative_reminder_arguments(
     # The person's own spelling reaches this reader: «recuérdame», «avísame».
     lead = r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*,?\s+)?"
     remind = rf"(?:av[ií]same|record[aá]me|recu[eé]rdame|remind\s+me|{effect_intent.TASK_REMINDER_HEAD})"
+    # Uso real 2026-09-24 «… a la una por la tarde», «… a las tres de la tarde mañana»: the day or the part
+    # of it said after the clock belongs to the moment (the due reader reads it from the whole request).
+    day_after = (
+        r"(?:\s+(?:por\s+la\s+(?:ma[nñ]ana|tarde|noche)|esta\s+(?:ma[nñ]ana|tarde|noche)|pasado\s+ma[nñ]ana|"
+        r"hoy|ma[nñ]ana|today|tonight|tomorrow|this\s+(?:morning|afternoon|evening)))?"
+    )
     patterns = (
         rf"{lead}{remind}\s+"
         rf"(?P<due>{duration})\s+(?:(?:que|to|de)\s+)?(?P<title>.+?)[.!?]*$",
         rf"{lead}{remind}\s+"
-        rf"(?:(?:que|to|de)\s+)?(?P<title>.+?)\s+(?P<due>{duration})[.!?]*$",
+        rf"(?:(?:que|to|de)\s+)?(?P<title>.+?)\s+(?P<due>{duration}){day_after}[.!?]*$",
         rf"{lead}(?P<due>{duration}),?\s+"
         rf"{remind}\s+"
         rf"(?:(?:que|to|de)\s+)?(?P<title>.+?)[.!?]*$",
@@ -4873,33 +4887,34 @@ def _explicit_relative_reminder_arguments(
         rf"(?:recordatorio|reminder)\s+(?P<due>{duration})\s+"
         rf"(?:para|to)\s+(?P<title>.+?)[.!?]*$",
         rf"{lead}(?:recordatorio|reminder)\s+(?:de|to)\s+"
-        rf"(?P<title>.+?)\s+(?P<due>{duration})[.!?]*$",
+        rf"(?P<title>.+?)\s+(?P<due>{duration}){day_after}[.!?]*$",
         rf"{lead}(?:set\s+)?(?:a\s+)?reminder\s+to\s+"
-        rf"(?P<title>.+?)\s+(?P<due>{duration})[.!?]*$",
+        rf"(?P<title>.+?)\s+(?P<due>{duration}){day_after}[.!?]*$",
         # «dame una notificación de recordatorio para la reunión de mañana a las
         # diez a. m.», «ponme un recordatorio para sacar la basura a las ocho de
-        # la noche»: the reminder asked for as a thing, its subject, then its moment.
-        # («set a reminder to …» keeps its own pattern above.)
+        # la noche», «send me a reminder to call mom at 6 pm»: the reminder asked
+        # for as a thing, its subject, then its moment.
         rf"{lead}(?:dame|ponme|pon|creame|crea|hazme|haz|programa|programame|quiero|quisiera|necesito|"
-        r"establece|establecer|fija|fijame|create|give\s+me|set)\s+(?:(?:un|una|a|an)\s+)?(?:(?:nuevo|new)\s+)?"
+        r"establece|establecer|fija|fijame|env[ií]ame|m[aá]ndame|create|give\s+me|send\s+me|set)\s+"
+        r"(?:(?:un|una|a|an)\s+)?(?:(?:nuevo|new)\s+)?"
         r"(?:(?:notificaci[oó]n|aviso|alerta|notification|alert)\s+(?:de|of)\s+)?"
         r"(?:recordatorio|reminder|notificaci[oó]n|aviso|alerta|notification|alert)\s+"
-        rf"(?:para|de|sobre|about|for)\s+(?P<title>.+?)\s+(?P<due>{duration})[.!?]*$",
+        rf"(?:para|de|sobre|about|for|to)\s+(?P<title>.+?)\s+(?P<due>{duration}){day_after}[.!?]*$",
         # Uso real 2026-09-23 «add conference call at four p. m. to my reminders for today»: the
         # thing added to the reminders, then its moment.
         rf"{lead}(?:add|agrega|agregame|a[nñ]ade|a[nñ]ademe|pon|ponme)\s+(?P<title>.+?)\s+(?P<due>{duration})\s+"
         r"(?:to|a|en|in)\s+(?:(?:my|mis|the|los)\s+)?(?:reminders|recordatorios)"
         r"(?:\s+(?:for|para)\s+(?:today|tomorrow|hoy|ma[nñ]ana))?[.!?]*$",
     )
-    matches = [
-        match
+    # Two shapes may read the same request («set a reminder to …»); only readings that disagree abstain.
+    readings = {
+        (match.group("due").strip(), match.group("title").strip().rstrip(".!?").rstrip())
         for pattern in patterns
         if (match := re.fullmatch(pattern, evidence, re.IGNORECASE)) is not None
-    ]
-    if len(matches) != 1:
+    }
+    if len(readings) != 1:
         return None
-    due = matches[0].group("due").strip()
-    title = matches[0].group("title").strip().rstrip(".!?").rstrip()
+    due, title = readings.pop()
     if not due or not title:
         return None
     return {"dueUtc": due, "title": title}
@@ -6069,7 +6084,20 @@ def _explicit_arguments_from_evidence(
                 "recurrence": repeated.repeat,
                 "title": repeated.title,
             }
-        return _explicit_notification_schedule_arguments(evidence)
+        # Uso real 2026-09-24 «recordarme que tengo que levantarme a las cinco de la mañana cada día»,
+        # «despiértame todos los días a las siete»: the repetition said is scheduled, never dropped.
+        repetition = said_repetition(evidence)
+        if repetition == "unsupported":
+            return None
+        reminder = (
+            _explicit_relative_reminder_arguments(" ".join(_REPETITION_WORDS.sub(" ", evidence).split()))
+            if repetition is not None
+            else None
+        )
+        if reminder is not None:
+            return {**reminder, "kind": "reminder", "recurrence": repetition}
+        alarm = _explicit_notification_schedule_arguments(evidence)
+        return {**alarm, "recurrence": repetition} if alarm is not None and repetition is not None else alarm
 
     if operation == "audio.microphone.mute":
         # Owner's test 2026-09-21 (turn 205): «activa mi micrófono» was bound to

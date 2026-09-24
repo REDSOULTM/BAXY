@@ -66,6 +66,8 @@ _ENUM_EVIDENCE_ALIASES = {
     "alarm": (
         "alarm", "alarma", "timer", "temporizador",
         "despertame", "despiertame", "levantame", "wake me", "despertador",
+        # Uso real 2026-09-24 «i want to wake up at six am», «quiero despertarme a las seis».
+        "wake up", "despertarme", "levantarme",
         # Uso real 2026-09-23 «pon alerta para las dos de la tarde».
         "alerta", "alert",
         # A countdown names the timer by counting («contá 10 minutos»).

@@ -9,7 +9,14 @@ from typing import Callable, Iterable
 
 from . import dialogue
 from .catalog import ApplicationCatalogIndex, GameCatalogIndex
-from .grammar import _ASSISTANT_NAME, _CLAUSE_EDGE_PUNCTUATION, _head_forms, _original_clause, _without_address
+from .grammar import (
+    _ASSISTANT_NAME,
+    _CLAUSE_EDGE_PUNCTUATION,
+    _head_forms,
+    _original_clause,
+    _without_address,
+    imperative_rewrites,
+)
 from .intent import EffectIntent
 from .media import spoken_media_order
 from .messaging import after_opening_the_mailbox
@@ -163,6 +170,20 @@ def _desired_media_request(
         return None
     order = spoken_media_order(_without_address(objective) or objective)
     return resolve(order) if order is not None else None
+
+
+def _imperative_rewrite_request(
+    objective: str,
+    resolve: Callable[[str], EffectIntent | None],
+) -> EffectIntent | None:
+    """«envíeme un recordatorio…», «establecer recordatorio…», «recuérda me la reunión…» read as the tú/voseo
+    order they say (``grammar.imperative_rewrites``), after an address; only a rewrite that resolves on its own."""
+
+    for rewrite in imperative_rewrites(_without_address(objective) or objective):
+        effects = resolve(rewrite)
+        if effects is not None:
+            return effects
+    return None
 
 
 def _fronted_place_request(
@@ -357,7 +378,8 @@ def utterance_form(
     resolve: Callable[[str], EffectIntent | None],
 ) -> tuple[str, EffectIntent] | None:
     """The request inside an utterance form the pattern does not read alone (talk around the order, a fronted
-    place, an address, a desire to listen, the mailbox opened to read it), with the form's name; None when there is none. The decision and the
+    place, an address, a desire to listen, the mailbox opened to read it, an order said with «usted», as an
+    infinitive or with a split clitic), with the form's name; None when there is none. The decision and the
     argument binder both read the request through here, so the arguments come from the same clause the decision
     read (tanda 3 «para la música, me va a explotar la cabeza» was read and then asked which action)."""
 
@@ -367,6 +389,7 @@ def utterance_form(
         ("addressed", _addressed_request),
         ("desired_media", _desired_media_request),
         ("mailbox_opened", _mailbox_opened_to_read),
+        ("imperative_rewrite", _imperative_rewrite_request),
     ):
         effects = form(text, resolve)
         if effects is not None:

@@ -7,6 +7,7 @@ import re
 from typing import Iterable
 from .. import effect_intent
 from .. import corrector
+from .grammar import imperative_rewrites
 from .reading import _OVERHEARD_ACTION_WORDS
 
 
@@ -406,7 +407,12 @@ def _overheard_speech(folded: str) -> bool:
     if (
         re.match(_ADDRESSED_OPENING, folded) is not None
         or re.search(_ADDRESSED_REQUEST, folded) is not None
-        or effect_intent._head_is(effect_intent._request_head(folded), effect_intent._COVERAGE_ACTION_HEAD)
+        or any(
+            effect_intent._head_is(effect_intent._request_head(said), effect_intent._COVERAGE_ACTION_HEAD)
+            # «envíeme un recordatorio…», «establecer un recordatorio…»: an order said with «usted» or as an
+            # infinitive opens ordering too (grammar.imperative_rewrites).
+            for said in (folded, *imperative_rewrites(folded))
+        )
     ):
         # MASSIVE (dev corpus 2026-09-23) «cuáles son las predicciones de las votaciones…», «muéstrame la
         # respuesta a este problema…», «chequea en los cines…»: the ear drops the question mark; a message that

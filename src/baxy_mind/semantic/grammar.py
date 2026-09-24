@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import re
 from .normalize import fold
+from ..request_reading import spoken_language
 
 
 _CLOCK_READ_HEAD = (
@@ -576,6 +577,90 @@ def _head_forms(head: str) -> tuple[str, ...]:
 
 def _head_is(head: str, pattern: str) -> bool:
     return any(re.fullmatch(pattern, form, re.IGNORECASE) is not None for form in _head_forms(head))
+
+
+# Uso real 2026-09-24 (MASSIVE es): «envíeme un recordatorio…», «ponga una alarma…», «agregue reuniones…»,
+# «establecer recordatorio…», «recordarme que…», «recuérda me la reunión…», «cuénta me todos los eventos…»:
+# an order said with «usted», as a bare infinitive, or with its clitic split off by the transcription is the
+# same order the readers read in the tú/voseo imperative.
+# Only the person's own clitics are fused back: «la», «lo», «los» after a verb are articles as often.
+_SPLIT_CLITIC = r"(?:me|te|nos|melo|mela|noslo|nosla|selo|sela)"
+_CLITIC_TAIL = re.compile(r"(?:(?:me|te|se|nos)(?:lo|la|los|las)|me|te|nos|lo|la|los|las|le|les)$")
+# «usted» forms and infinitives that no rule rebuilds: the tú imperative each one is.
+_USTED_IRREGULAR = {
+    "ponga": "pon", "haga": "haz", "diga": "di", "tenga": "ten", "salga": "sal", "venga": "ven", "vaya": "ve",
+}
+_INFINITIVE_IRREGULAR = {"poner": "pon", "hacer": "haz", "decir": "di", "tener": "ten", "salir": "sal", "venir": "ven"}
+
+
+def _imperatives_of(word: str) -> tuple[str, ...]:
+    """The tú/voseo imperatives ``word`` may say as an infinitive or an «usted» form, clitics kept."""
+
+    found: list[str] = []
+    endings = [(word, "")]
+    if (clitic := _CLITIC_TAIL.search(word)) is not None and len(word) - len(clitic.group()) >= 3:
+        endings.append((word[: clitic.start()], clitic.group()))
+    for base, clitic_text in endings:
+        if base in _INFINITIVE_IRREGULAR:
+            # «poner una alarma» → «pon una alarma», «hacerme una nota» → «hazme una nota».
+            found.append(_INFINITIVE_IRREGULAR[base] + clitic_text)
+            continue
+        infinitive = re.fullmatch(r"(?P<stem>[a-z]{2,}?)(?P<end>ar|er|ir)", base)
+        if infinitive is not None:
+            # «establecer» → «establece», «recordarme» → «recordame», «abrir» → «abri»/«abre».
+            vowels = {"ar": ("a",), "er": ("e",), "ir": ("i", "e")}[infinitive.group("end")]
+            found.extend(infinitive.group("stem") + vowel + clitic_text for vowel in vowels)
+            continue
+        usted = re.fullmatch(r"(?P<stem>[a-z]{2,}?)(?P<end>[ae])", base)
+        if usted is None:
+            continue
+        stem = usted.group("stem")
+        if base in _USTED_IRREGULAR:
+            imperative = _USTED_IRREGULAR[base]
+        elif usted.group("end") == "e":
+            # -ar verbs: «agregue» → «agrega», «marque» → «marca», «empiece» → «empieza».
+            imperative = re.sub(r"gu$", "g", re.sub(r"qu$", "c", re.sub(r"(?<=[aeiou])c$", "z", stem))) + "a"
+        else:
+            # -er/-ir verbs: «escriba» → «escribe», «establezca» → «establece».
+            imperative = re.sub(r"zc$", "c", stem) + "e"
+        # A tú imperative read backwards is another word («limpia» → «limpie»): only an order head the
+        # readers know is an «usted» form of it.
+        if _head_is(imperative + clitic_text, _COVERAGE_ACTION_HEAD):
+            found.append(imperative + clitic_text)
+    return tuple(dict.fromkeys(form for form in found if form != word))
+
+
+def imperative_rewrites(text: str) -> tuple[str, ...]:
+    """The request as the tú/voseo imperative the readers read, when its first word says the order with
+    «usted», as an infinitive or with its clitic split off (see above); the other words stay as written.
+    Empty when there is nothing to rewrite. The caller keeps a rewrite only if the readers resolve it."""
+
+    found = re.match(
+        r"^(?P<lead>[\s¡¿]*(?:(?:por\s+favor|solo|s[oó]lo)\s*,?\s+)*)(?P<verb>[^\W\d_]{3,})"
+        rf"(?:\s+(?P<clitic>{_SPLIT_CLITIC})\b)?(?P<rest>.*)$",
+        text,
+        re.IGNORECASE | re.DOTALL,
+    )
+    # Spanish morphology: «Lower nine points the volume» has no infinitive in it.
+    if found is None or spoken_language(text) == "en":
+        return ()
+    verb = fold(found.group("verb"))
+    clitic = fold(found.group("clitic") or "")
+    rest = found.group("rest")
+    # «Cierre de Word podía perder trabajo», «corte de luz»: a noun that looks like an «usted» form or an
+    # infinitive is followed by its complement, never by an order's object.
+    forms = () if re.match(r"\s+(?:de|del)\b", rest, re.IGNORECASE) else _imperatives_of(verb)
+    rewrites: list[str] = []
+    if clitic:
+        # «recuérda me» → «recuerdame», «cuénta me» → «cuentame», «recordar me» → «recordame».
+        if verb[-1] in "aeiu":
+            rewrites.append(verb + clitic + rest)
+        rewrites.extend(form + clitic + rest for form in forms)
+    rewrites.extend(form + (f" {clitic}" if clitic else "") + rest for form in forms)
+    if found.group("lead").strip():
+        # «solo recuérdame…»: the lead word alone hid the order.
+        rewrites.append(verb + (f" {clitic}" if clitic else "") + rest)
+    return tuple(dict.fromkeys(rewrites))
 
 
 def _negative_action_forms(folded: str) -> tuple[str, ...]:
@@ -1375,7 +1460,7 @@ _COVERAGE_ACTION_HEAD = (
     r"actualizar|update|describe|describir|redimensiona|redimensionar|"
     # WEB1539 «resumime esta página»: summarizing is an order head too.
     r"resumime|resumeme|resumi|resumir|resumelo|resumela|summarize|summarise|"
-    r"resize|enfoca|enfocar|focus|presiona|presionar|press|clic|click|vacia|vaciar|"
+    r"resize|enfoca|enfocar|focus|presiona|presionar|press|clic|click|vacia|vaciar|limpia|limpiar|despeja|despejar|"
     r"apreta|apretale|apretalo|apretala|apretar|aprieta|pulsa|pulsale|hace(?=\s+clic)|"
     r"empty|termina|terminar|terminate|verifica|verificar|verify|"
     r"recuerdame|recuerdamelo|recordame|recordamelo|remind|"

@@ -54,6 +54,50 @@ _AGENDA_HAVE = (
 )
 
 
+# Words that make an agenda sentence a reminder, a notice or a clean-up of it, never a read: «necesito que
+# me recuerden las reuniones del lunes», «limpia mi agenda para hoy» (uso real 2026-09-24).
+AGENDA_NOT_A_READ = (
+    r"\b(?:recuerd[a-z]*|recordar[a-z]*|recordame|recordamelo|remind[a-z]*|avisa(?:me|rme)?|avisen|avise|"
+    r"notifica(?:me|rme)?|limpia|limpiar|limpie|limpiame|despeja|despejar|despeje|vacia|vaciar|vacie|clear|wipe)\b"
+)
+_READ_OF_EVENT_HEAD = (
+    r"(?:que|cual|cuales|cuando|donde|quien|quienes|cuanto|a|what|which|when|where|who|dime|decime|"
+    r"cuentame|contame|hablame|tell|mas|more|is|are|will|does|do)"
+)
+# The person's own event, said without «mi» (uso real 2026-09-24): «la reunión vespertina que tengo con
+# John», «the meeting I have»; «cuándo está programada la boda», «when is the party scheduled», «the event
+# scheduled on the first of january»; «la reunión de ayer», «la cena de esta noche», «today's meeting».
+OWN_EVENT_NOUN = (
+    r"(?:reunion|reuniones|meetings?|citas?|appointments?|eventos?|events?|compromisos?|commitments?|cena|"
+    r"almuerzo|comida|desayuno|brunch|lunch|dinner|breakfast|fiestas?|party|parties|boda|wedding|cumpleanos|"
+    r"birthday|entrevistas?|interviews?|examen|exam|clases?|class|turno|sesion|session|llamadas?|calls?|"
+    r"videollamadas?|practicas?|practice|entrenamientos?|training)"
+)
+_OWN_EVENT = re.compile(
+    rf"\b{OWN_EVENT_NOUN}(?:\s+\w+)?\s+(?:que\s+(?:yo\s+)?(?:tengo|tenemos|tendre|tenia|teniamos)|"
+    r"(?:that\s+)?(?:i|we)\s+(?:have|had|'ve\s+got|am\s+having))\b|"
+    rf"\b{OWN_EVENT_NOUN}\b.*\b(?:programad[oa]s?|agendad[oa]s?|planead[oa]s?|scheduled|planned|booked)\b|"
+    rf"\b(?:programad[oa]s?|agendad[oa]s?|planead[oa]s?|scheduled|planned|booked)\b.*\b{OWN_EVENT_NOUN}\b|"
+    rf"(?:^|\b(?:la|el|las|los|the)\s+(?:\w+\s+)?){OWN_EVENT_NOUN}(?:\s+\w+)?(?:\s+(?:de|con|with|of)\s+\w+)?\s+"
+    r"(?:(?:de|del|of|on|for)\s+)?"
+    r"(?:hoy|ayer|anteayer|anoche|manana|pasado\s+manana|esta\s+(?:manana|tarde|noche)|este\s+\w+|"
+    r"(?:el\s+)?(?:lunes|martes|miercoles|jueves|viernes|sabado|domingo)|today|yesterday|tomorrow|tonight|"
+    r"this\s+(?:morning|afternoon|evening)|(?:on\s+)?(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday))\b|"
+    rf"\b(?:today|yesterday|tomorrow|tonight|this\s+(?:morning|afternoon|evening))'?s\s+(?:\w+\s+)?{OWN_EVENT_NOUN}\b|"
+    # The meeting or the appointment is the person's unless it is someone's («la reunión del G20»).
+    r"\b(?:la|las|el|los|the|esta|this)\s+(?:\w+\s+)?(?:reunion|reuniones|meetings?|appointments?)\b"
+    r"(?!\s+(?:de|del|of)\b)"
+)
+
+
+def own_event_reference(text: str) -> bool:
+    """Whether a request names an event of the person's own agenda without a possessive (see above); never a
+    public one («el concierto de esta noche», «the match today» are ``_PUBLIC_SCHEDULE``)."""
+
+    folded = _fold(text)
+    return _OWN_EVENT.search(folded) is not None and not _has(folded, _PUBLIC_SCHEDULE)
+
+
 def _window_tail(tail: str) -> bool:
     """Nothing after the agenda words, or only the window they are asked for."""
 
@@ -68,7 +112,8 @@ def agenda_read_request(text: str) -> bool:
     goes on to ask something else («tengo una cita mañana, recuérdame»)."""
 
     envelope = _strip_request_envelope(_fold(text))
-    folded = envelope.strip(" ¿?¡!.,;:")
+    # «up coming events»: the transcription splits the word.
+    folded = re.sub(r"\bup\s+coming\b", "upcoming", envelope.strip(" ¿?¡!.,;:"))
     if (
         not folded
         or re.match(_AGENDA_LISTING, envelope) is not None
@@ -79,6 +124,7 @@ def agenda_read_request(text: str) -> bool:
                         r"notificacion(?:es)?|notifications?|despertador)\b")
         # «cuántos contactos tengo en mi agenda»: the address book, not the calendar (messaging.contact_book_request).
         or _has(folded, r"\b(?:contactos?|contacts?|telefonos|numeros\s+de\s+telefono|phone\s+numbers)\b")
+        or _has(folded, AGENDA_NOT_A_READ)
     ):
         return False
     head = _request_head(folded)
@@ -92,8 +138,51 @@ def agenda_read_request(text: str) -> bool:
     )
     if own is not None:
         # «cuál es mi horario para el día», «mi horario para el siete de julio está completamente
-        # abierto», «what's my schedule like today», «dónde es mi reunión del viernes».
-        return asked or says_a_window(folded)
+        # abierto», «what's my schedule like today», «dónde es mi reunión del viernes», «my work schedule».
+        return (
+            asked
+            or says_a_window(folded)
+            or re.fullmatch(rf"(?:mi|mis|my)\s+(?:\w+\s+)?{AGENDA_NOUN}", folded) is not None
+        )
+    if ("?" in text or _head_is(head, _READ_OF_EVENT_HEAD)) and own_event_reference(folded):
+        # Uso real 2026-09-24 «a qué hora es la reunión vespertina que tengo con John», «cuándo está
+        # programada la boda», «when is the party scheduled», «qué pasó en la reunión de ayer».
+        return True
+    if re.match(
+        r"(?:has|habias|have\s+you|did\s+you)\s+(?:anadido|agregado|puesto|programado|agendado|creado|anotado|"
+        rf"added|put|scheduled|created|booked|set\s+up)\b.*\b{OWN_EVENT_NOUN}\b",
+        folded,
+    ):
+        # «has añadido una reunión con Tomás para mañana», «have you added a meeting with Tom tomorrow»:
+        # whether it is there is read from the agenda.
+        return True
+    busy = re.fullmatch(
+        r"(?:(?:am|are|will)\s+(?:i|we)\s+(?:be\s+)?|(?:estoy|estare|estamos|estaremos|voy\s+a\s+estar)\s+)"
+        r"(?:busy|free|available|booked|occupied|ocupad[oa]s?|libres?|disponibles?)\b(?P<tail>.*)",
+        folded,
+    )
+    if busy is not None:
+        # «am I busy this weekend», «estoy ocupado este fin de semana»: whether the agenda has something.
+        # Said without a window, only the English question asks it («estoy ocupado» is a statement).
+        tail = busy.group("tail")
+        return _window_tail(tail) and bool(tail.strip() or folded.startswith(("am ", "are ", "will ")))
+    somewhere = re.fullmatch(
+        r"(?:(?:yo\s+)?(?:tengo|tenemos)\s+que\s+(?:estar|ir)\s+(?:en\s+|a\s+)?(?:algun\s+(?:lado|lugar|sitio)|"
+        r"alguna\s+parte)|do\s+(?:i|we)\s+(?:have|need)\s+to\s+(?:be|go)\s+(?:somewhere|anywhere))\b(?P<tail>.*)",
+        folded,
+    )
+    if somewhere is not None:
+        # «tengo que estar en algún lado entre las ocho de la mañana y las cinco de la tarde hoy».
+        return _window_tail(somewhere.group("tail"))
+    how_is = re.fullmatch(
+        rf"(?:como|how)\s+(?:(?:tengo|tenemos)\s+(?:el|la)\s+(?:dia|semana|{AGENDA_NOUN})|"
+        rf"(?:esta|va|luce|pinta|is|does|looks?)\s+(?:el|la|the)\s+{AGENDA_NOUN})\b(?P<tail>.*)",
+        folded,
+    )
+    if how_is is not None:
+        # «cómo tengo el horario de hoy», «cómo luce la agenda del viernes»; «cómo está el día hoy» is the
+        # weather, not the agenda.
+        return _window_tail(how_is.group("tail"))
     if re.search(
         r"^(?:cuando|a\s+que\s+hora|what\s+time|when|how\s+long|cuanto(?:\s+tiempo)?)\s+"
         r"(?:es|son|sera|seran|empieza|comienza|termina|dura|durara|is|are|will|does|do|starts?|ends?)\b.*"
@@ -117,8 +206,23 @@ def agenda_read_request(text: str) -> bool:
     ):
         # «próximos eventos en calendario», «cuáles son los próximos tres eventos».
         return True
+    listed = re.fullmatch(
+        rf"(?:(?:any|some|algun[oa]?s?|tod[oa]s\s+(?:l[oa]s|mis)|all(?:\s+(?:the|my))?|el|la|los|las|the)\s+"
+        rf"(?:\w+\s+)?)?{AGENDA_NOUN}\b(?P<tail>.*)",
+        re.sub(rf"^(?:{_LIST}|cuentame|contame|dame|tell\s+me|give\s+me)\s+", "", folded),
+    )
+    if (
+        listed is not None
+        and (listed.group("tail").strip() or re.fullmatch(r"(?:horarios?|agenda|schedules?)", folded))
+        and _window_tail(listed.group("tail"))
+    ):
+        # «any meeting on friday», «cuéntame todos los eventos entre hoy y el veintiuno», «horario»,
+        # «el calendario de mayo»: the agenda nouns and the window they are asked for.
+        return True
     marker = rf"(?:(?:que\s+hacer|to\s+do|por\s+venir|pendientes?|{_AGENDA_PARTICIPLE})\b)"
-    what_have = re.fullmatch(rf"(?:que|what)\s+{_AGENDA_HAVE}\s+(?P<marker>{marker}\s*)?(?P<tail>.*)", folded)
+    what_have = re.fullmatch(
+        rf"(?:que|what)\s+{_AGENDA_HAVE}\s+(?P<marker>{marker}\s*)?(?:yo\s+)?(?P<tail>.*)", folded,
+    )
     if what_have is not None and (what_have.group("marker") or what_have.group("tail")):
         # «qué tengo por venir», «qué tengo que hacer esta semana», «qué hay hoy», «what do I have today».
         return _window_tail(what_have.group("tail"))
@@ -157,6 +261,26 @@ def agenda_read_request(text: str) -> bool:
     )
 
 
+# Uso real 2026-09-24 «do i have any reminders pending», «tengo alarmas puestas para mañana»: whether BAXY holds
+# reminders or alarms is a read of them (reminders are listed by ``reminder.list``, alarms by
+# ``notification.list``).
+_REMINDER_INVENTORY = re.compile(
+    r"(?:do\s+(?:i|we)\s+have|have\s+i\s+got|are\s+there|is\s+there|(?:yo\s+)?(?:tengo|tenemos)|hay)\s+"
+    r"(?:(?:any|some|algun[oa]?s?)\s+)?(?:(?P<reminder>reminders?|recordatorios?)|alarms?|alarmas?)"
+    r"(?:\s+(?:pendientes?|pending|programad[oa]s?|puest[oa]s?|set|scheduled|activ[oa]s?|active|"
+    r"(?:for|para)\s+(?:today|tomorrow|tonight|hoy|manana|esta\s+noche)|today|tomorrow|tonight|hoy|manana))*"
+)
+
+
+def reminder_inventory_question(text: str) -> str | None:
+    """The read a question about BAXY's own reminders or alarms asks for (see above), or None."""
+
+    found = _REMINDER_INVENTORY.fullmatch(_strip_request_envelope(_fold(text)).strip(" ¿?¡!.,"))
+    if found is None:
+        return None
+    return "reminder.list" if found.group("reminder") else "notification.list"
+
+
 # --- Something put on the agenda (uso real 2026-09-23) ------------------------------------------------
 # «añade una reunión con Tom a mi calendario para las nueve de la mañana», «programa una reunión para el
 # martes que viene a las once con Joan», «set me a meeting next tuesday at eleven am with jesse», «marca
@@ -180,8 +304,14 @@ _EVENT_HEAD = (
     r"(?:crea|crear|creame|anade|anadir|anademe|anademe|agrega|agregar|agregame|pon|poner|ponme|pone|poneme|"
     r"programa|programar|programame|agenda|agendar|agendame|establece|establecer|establecerme|fija|fijar|"
     r"fijame|marca|marcar|marcame|marque|reserva|reservar|reservame|bloquea|bloquear|incluye|incluir|"
-    r"organiza|organizar|arma|armar|haz|hazme|hacer|add|put|schedule|set|create|make|book|mark|block|plan|arrange)"
+    r"organiza|organizar|arma|armar|haz|hazme|hacer|add|put|schedule|set|create|make|book|mark|block|plan|arrange|"
+    # «anota este evento en mi calendario»: a note unless the calendar is named (see agenda_event_request).
+    r"anota|anotar|anotame|apunta|apuntar|apuntame)"
 )
+_NOTE_HEADS = frozenset(("anota", "anotar", "anotame", "apunta", "apuntar", "apuntame"))
+# Heads that name the agenda by themselves: whatever they schedule at a time that repeats («programa una
+# oración al mediodía todos los viernes») is on the agenda, even when it is no event noun.
+_AGENDA_HEADS = frozenset(("agenda", "agendar", "agendame", "schedule", "programa", "programar", "programame"))
 _EVENT_ENVELOPE = re.compile(
     r"^(?:(?:will|would|can|could)\s+you\s+|(?:puedes|podes|podrias|quiero|quisiera|necesito|"
     r"i\s+(?:want|need|would\s+like)(?:\s+to)?|let'?s)\s+)?"
@@ -220,6 +350,15 @@ _REPEAT_UNITS = {
     ),
     **dict.fromkeys(("hora", "horas", "hour", "hours", "hourly"), "hourly"),
 }
+
+
+def said_repetition(text: str) -> str | None:
+    """The repetition a scheduling request says («todos los días», «cada hora», «every friday»): the catalog's
+    recurrence («daily», «hourly»), «unsupported» for one no alarm or reminder can hold, None when none is said.
+    Uso real 2026-09-24 «recordarme que tengo que levantarme a las cinco de la mañana cada día» was scheduled once."""
+
+    recurrence = event_timing(_fold(text)).recurrence
+    return None if recurrence is None else _REPEAT_UNITS.get(recurrence, "unsupported")
 
 
 @dataclass(frozen=True)
@@ -296,9 +435,16 @@ def agenda_event_request(text: str) -> AgendaEvent | None:
         marks_a_day = marked is not None and says_a_window(rest[: marked.start()]) and head in {
             "marca", "marcar", "marcame", "marque", "mark", "pon", "poner", "ponme", "pone", "poneme", "put", "set"
         }
-        if _has(rest, _NOT_AN_EVENT) and calendar_place is None:
+        if (_has(rest, _NOT_AN_EVENT) or head in _NOTE_HEADS) and calendar_place is None:
             return None
-        if object_is_event is None and calendar_place is None and not marks_a_day:
+        rest_timing = event_timing(rest)
+        if (
+            object_is_event is None
+            and calendar_place is None
+            and not marks_a_day
+            # «programa una oración al mediodía todos los viernes»: an agenda head with a time said.
+            and not (head in _AGENDA_HEADS and rest_timing.start is not None and rest_timing.recurrence is not None)
+        ):
             return None
         if (
             head in _WEAK_EVENT_HEADS
@@ -323,15 +469,26 @@ def agenda_event_request(text: str) -> AgendaEvent | None:
     if calendar_place is not None:
         cut.append(calendar_place.span())
     title = _event_title(body, folded_body, cut)
+    if re.fullmatch(rf"(?:este|esta|ese|esa|aquel|aquella|this|that)\s+{_EVENT_NOUN}", _fold(title)):
+        # «anota este evento en mi calendario»: an event pointed at is not named; what it is is asked.
+        title = ""
     said_day = says_a_window(folded_body)
     whole_day = timing.start is None and said_day and _has(folded_body, _WHOLE_DAY_NOUN + r"|\b(?:como|as)\b")
     missing: list[str] = []
     if not title:
         missing.append("event_title")
     repeat = _REPEAT_UNITS.get(timing.recurrence or "")
-    if timing.recurrence is not None and repeat is None:
-        # «cada miércoles de marzo»: neither the calendar nor a reminder repeats weekly; the
-        # question says so and offers what can be done.
+    bounded = re.search(
+        r"\b(?:cada|todos\s+los|todas\s+las|every|each)\s+\w+\s+"
+        r"(?P<bound>(?:de|del|of|durante|during|hasta|until|this|esta|este|next)\s+.+)$",
+        folded_body,
+    )
+    if (timing.recurrence is not None and repeat is None) or (
+        repeat is not None and bounded is not None and says_a_window(bounded.group("bound"))
+    ):
+        # «cada miércoles de marzo»: neither the calendar nor a reminder repeats weekly; «todos los días de
+        # esta semana» (uso real 2026-09-24): nor stops repeating at a date. The question says so and offers
+        # what can be done.
         missing.append("repetition_the_calendar_cannot_hold")
     elif timing.start is None and not whole_day:
         missing.append("start_time" if said_day or timing.end is not None else "event_date_and_time")
@@ -414,7 +571,8 @@ def _reminder_has_actionable_due(folded: str) -> bool:
             folded,
             r"\b(?:(?:en|in|dentro de|within)\s+)?"
             rf"{_RELATIVE_DURATION_PATTERN}"
-            r"(?:\s+(?:from now|desde ahora))?\b",
+            # «una hora antes de la reunión»: counted from an event whose time is not said.
+            r"(?:\s+(?:from now|desde ahora))?\b(?!\s+(?:antes|despues|before|after)\b)",
         )
         or _has(folded, r"\b\d{4}-\d{2}-\d{2}t\d{2}:\d{2}(?::\d{2})?\S*\b")
     )
@@ -925,6 +1083,8 @@ _WAKE_DAY = (
     r"(?:hoy|today|manana|tomorrow|pasado\s+manana|lunes|martes|miercoles|jueves|viernes|sabado|domingo|"
     r"monday|tuesday|wednesday|thursday|friday|saturday|sunday|semana|week)"
 )
+# «despiértame todos los días a las siete»: a wake-up alarm that repeats every day.
+_WAKE_REPEAT = r"(?:todos\s+los\s+dias|cada\s+dia|todas\s+las\s+mananas|cada\s+manana|every\s+(?:day|morning)|daily)"
 
 
 def _wake_alarm_request(text: str) -> bool:
@@ -934,8 +1094,11 @@ def _wake_alarm_request(text: str) -> bool:
     folded = _strip_request_envelope(_fold(text))
     found = re.fullmatch(
         r"(?:i\s+need\s+you\s+to\s+)?"
-        r"(?:(?:wake|get)\s+me(?:\s+up)?|despiertame|despertame|levantame)\s+"
-        r"(?P<when>\S.*?)[\s.!?]*",
+        r"(?:(?:wake|get)\s+me(?:\s+up)?|despiertame|despertame|levantame|"
+        # Uso real 2026-09-24 «i want to wake up at six am tomorrow please», «quiero despertarme a las seis».
+        r"(?:i\s+(?:want|need)\s+to|i['’]?d\s+like\s+to|(?:yo\s+)?(?:quiero|necesito))\s+"
+        r"(?:wake\s+up|get\s+up|despertarme|levantarme))\s+"
+        r"(?P<when>\S.*?)(?:\s*,?\s+(?:please|por\s+favor))?[\s.!?]*",
         folded,
         re.IGNORECASE,
     )
@@ -945,13 +1108,14 @@ def _wake_alarm_request(text: str) -> bool:
     if re.fullmatch(rf"(?:in|en|dentro\s+de|within)\s+{_RELATIVE_DURATION_PATTERN}", when):
         return True
     clock = spoken_clock(when)
+    day = rf"(?:{_WAKE_DAY}|{_WAKE_REPEAT})"
     return (
         clock is not None
         and clock.resolved
         and re.fullmatch(
             # Uso real 2026-09-23 «despiértame a las seis de la mañana del jueves para tener tiempo
             # para la reunión»: what the alarm is for, said after it, does not change it.
-            rf"(?:{_WAKE_DAY}\s+)?{re.escape(clock.literal)}(?:\s+{_WAKE_DAY})?"
+            rf"(?:{day}\s+)?{re.escape(clock.literal)}(?:\s+{day})?"
             r"(?:\s+(?:para|porque|asi|que|to|so|because)\b.*)?",
             when,
         ) is not None
@@ -1506,6 +1670,9 @@ def _review_calendar_message_and_direct_reminder_effects(
             r"agenda|agendar|agendame)\b",
         )
 
+    # «recuérdame tomar la pastilla todos los días a las nueve»: a reminder repeated daily or hourly is a
+    # repeating notification; one repeated otherwise («cada viernes») no operation holds, and is asked.
+    repetition = said_repetition(folded)
     if (
         (
             _head_is(
@@ -1520,11 +1687,12 @@ def _review_calendar_message_and_direct_reminder_effects(
             or _has(folded, rf"^[¿?¡!\s]*{TASK_REMINDER_HEAD}\s+.+")
         )
         and (temporal or _has(folded, _DEICTIC_DAY))
+        and repetition != "unsupported"
     ):
         _append(
             matches,
             folded,
-            "reminder.create",
+            "notification.schedule" if repetition else "reminder.create",
             r"\b(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind|"
             r"recuerda|recorda|acordate|acuerdate|remember)\b",
         )
@@ -1572,6 +1740,7 @@ def _review_calendar_message_and_direct_reminder_effects(
             r"\b(?:alarma|alarmas|alarm|alarms|temporizador|"
             r"temporizadores|timer|timers|aviso|avisos)\b",
         )
+        and repetition != "unsupported"
     ):
         _append(
             matches,
@@ -1591,10 +1760,11 @@ def _review_calendar_message_and_direct_reminder_effects(
     if (
         temporal
         and _has(folded, r"\b(?:recordatorios?|reminders?)\b")
-        and not any(entry[2] == "reminder.create" for entry in matches)
+        and not any(entry[2] in {"reminder.create", "notification.schedule"} for entry in matches)
         and _head_is(head, reminder_head)
+        and repetition != "unsupported"
     ):
-        _append(matches, folded, "reminder.create", rf"\b{reminder_head}\b")
+        _append(matches, folded, "notification.schedule" if repetition else "reminder.create", rf"\b{reminder_head}\b")
 
     cancel_notification = (
         (

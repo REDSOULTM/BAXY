@@ -142,12 +142,16 @@ _DAY_PART = (
 )
 _NOON_OR_MIDNIGHT = r"\b(?:al|a|el|at|para\s+el)\s+(?:mediod[ií]a|noon|midday|medianoche|midnight)\b"
 _CLOCK_LEAD = r"(?:a\s+las?|para\s+las?|sobre\s+las?|hacia\s+las?|at)"
+# «a las cinco en punto», «twelve o'clock» (uso real 2026-09-24): the hour said exactly is a clock time.
+_O_CLOCK = r"\s+(?:en\s+punto|o['’]?\s*clock)"
 # One clock phrase with its lead («a las cinco y media de la mañana»), for
 # readers that cut a request around its time.
-CLOCK_PHRASE = rf"(?:{_CLOCK_LEAD}\s+(?:las?\s+)?{_CLOCK_HOUR}{_CLOCK_MINUTES}?(?:\s*{_CLOCK_PERIOD})?)"
+CLOCK_PHRASE = (
+    rf"(?:{_CLOCK_LEAD}\s+(?:las?\s+)?{_CLOCK_HOUR}{_CLOCK_MINUTES}?(?:{_O_CLOCK})?(?:\s*{_CLOCK_PERIOD})?)"
+)
 _SPOKEN_CLOCK = re.compile(
     rf"\b(?:(?P<lead>{_CLOCK_LEAD})\s+(?:las?\s+)?)?"
-    rf"(?P<hour>{_CLOCK_HOUR})(?P<minutes>{_CLOCK_MINUTES})?"
+    rf"(?P<hour>{_CLOCK_HOUR})(?P<minutes>{_CLOCK_MINUTES})?(?P<oclock>{_O_CLOCK})?"
     rf"(?:\s*(?P<period>{_CLOCK_PERIOD}))?(?=\s|$|[,;:.?!])"
     # «a las dos horas», «at five minutes»: a duration is not a clock time.
     r"(?!\s+(?:minutos?|minutes?|horas?|hours?|dias?|days?|segundos?|seconds?)\b)"
@@ -159,6 +163,7 @@ _CLOCK_TIME_SELECTOR = (
     rf"\b(?:a las?|para las?|at)\s+(?:las\s+)?{_CLOCK_HOUR}{_CLOCK_MINUTES}?"
     rf"(?:\s*{_CLOCK_PERIOD})?(?=\s|$|[,;:.?!])|"
     rf"\b{_CLOCK_HOUR}{_CLOCK_MINUTES}?\s*{_CLOCK_PERIOD}(?=\s|$|[,;:.?!])|"
+    rf"\b{_CLOCK_HOUR}{_O_CLOCK}\b|"
     rf"{_NOON_OR_MIDNIGHT}"
 )
 
@@ -210,6 +215,18 @@ def _read_clock(found: re.Match[str], folded: str) -> SpokenClock | None:
     return SpokenClock(literal, hour % 12 + 12, minute, True)
 
 
+def _is_a_clock(found: re.Match[str]) -> bool:
+    """A number is a clock time after «a las / para las / at», before a part of the day, with its minutes
+    after a colon, or said «en punto» / «o'clock» (uso real 2026-09-24 «an appointment twelve o'clock»)."""
+
+    return bool(
+        found.group("lead")
+        or found.group("period")
+        or (found.group("minutes") or "").startswith(":")
+        or found.group("oclock")
+    )
+
+
 def spoken_clocks(folded: str) -> tuple[SpokenClock, ...]:
     """Every clock time of a folded request, read with its minutes («y media», «menos
     cuarto», «:30») and its part of the day, said after the hour or elsewhere («esta tarde
@@ -220,7 +237,7 @@ def spoken_clocks(folded: str) -> tuple[SpokenClock, ...]:
     clocks = tuple(
         clock
         for found in _SPOKEN_CLOCK.finditer(folded)
-        if found.group("lead") or found.group("period") or (found.group("minutes") or "").startswith(":")
+        if _is_a_clock(found)
         if (clock := _read_clock(found, folded)) is not None
     )
     if clocks:
@@ -421,6 +438,12 @@ _RELATIVE_SPAN = re.compile(
     r"(?:(?P<ahead_after>proxim[oa]s|siguientes)|(?P<behind_after>ultim[oa]s))\s+"
     r"(?P<unit_first>dias|semanas|meses)\b"
 )
+# A run of days said by its ends («entre hoy y el veintiuno», «desde el lunes hasta el jueves», «from
+# monday to friday») or by its last day («hasta el viernes»); each end is read as a day on its own.
+_DAY_RANGE = re.compile(
+    r"\b(?:(?:entre|between|desde|from)\s+(?P<first>.+?)\s+(?:y|and|hasta|to|until|till|al|a)\s+|"
+    r"(?:hasta|until|till)\s+)(?P<last>.+)$"
+)
 _NTH_WEEK = re.compile(
     r"\b(?P<nth>primera|segunda|tercera|cuarta|ultima|first|second|third|fourth|last)\s+"
     rf"(?:semana\s+de|week\s+of)\s+(?:(?:the\s+)?month\s+of\s+|(?:el\s+)?mes\s+de\s+)?(?P<month>{_MONTH})\b"
@@ -482,6 +505,11 @@ def _said_days(text: str, today: date) -> set[tuple[date, date]]:
         add(today + timedelta(days=2))
     elif re.search(_TOMORROW, text):
         add(today + timedelta(days=1))
+    # Uso real 2026-09-24 «qué pasó en la reunión de ayer»: a day already gone is a window too.
+    if re.search(r"\banteayer\b|\bday\s+before\s+yesterday\b", text):
+        add(today - timedelta(days=2))
+    elif re.search(r"\b(?:ayer|yesterday|anoche|last\s+night)\b", text):
+        add(today - timedelta(days=1))
     if re.search(
         r"\b(?:hoy|today|tonight|esta\s+jornada|this\s+day|for\s+the\s+day|"
         rf"(?:(?:para|de|en)\s+el|del)\s+dia(?!\s+{_DAY}\b))\b",
@@ -555,6 +583,22 @@ def _said_windows(text: str, now: datetime) -> list[tuple[datetime, datetime]]:
     span = _relative_span(text, now)
     if span is not None:
         return [span]
+    day_range = _DAY_RANGE.search(text)
+    if day_range is not None:
+        # Uso real 2026-09-24 «todos los eventos entre hoy y el veintiuno», «from monday to friday», «hasta
+        # el viernes»: from the first day said (today when none) to the end of the last.
+        first = _said_days(day_range.group("first"), now.date()) if day_range.group("first") else {
+            (now.date(), now.date() + timedelta(days=1))
+        }
+        last = _said_days(day_range.group("last"), now.date())
+        if len(first) == 1 and len(last) == 1:
+            (start, _), (_, end) = next(iter(first)), next(iter(last))
+            if end <= start and re.search(r"\b(?:" + "|".join(n for names in _WEEKDAYS for n in names) + r")\b",
+                                          day_range.group("last")):
+                # «from monday to friday» said on a Thursday: the Friday after that Monday.
+                end += timedelta(days=7)
+            if start < end:
+                return [(datetime.combine(start, time()), datetime.combine(end, time()))]
     days = _said_days(text, now.date())
     part = None
     if re.search(r"\b(?:after\s+work|despues\s+del\s+trabajo)\b", text):
@@ -563,6 +607,22 @@ def _said_windows(text: str, now: datetime) -> list[tuple[datetime, datetime]]:
         part = _PART_HOURS[part_found.group("part") or part_found.group("english") or "tonight"]
     if not days and part is not None:
         days.add((now.date(), now.date() + timedelta(days=1)))
+    clocks = _CLOCK_RANGE.search(text)
+    if clocks is not None and len(days) <= 1:
+        # «entre las ocho de la mañana y las cinco de la tarde hoy», «esta mañana entre las diez y las
+        # doce»: the hours said bound the one day (today when none is said).
+        end_clock = _range_clock(clocks.group("end"), None, text)
+        start_clock = _range_clock(clocks.group("start"), clocks.group("end_period"), text)
+        day = next(iter(days))[0] if days else now.date()
+        if (
+            start_clock is not None and end_clock is not None and start_clock.resolved and end_clock.resolved
+            and (start_clock.hour, start_clock.minute) < (end_clock.hour, end_clock.minute)
+        ):
+            base = datetime.combine(day, time())
+            return [(
+                base + timedelta(hours=start_clock.hour, minutes=start_clock.minute),
+                base + timedelta(hours=end_clock.hour, minutes=end_clock.minute),
+            )]
     windows = []
     for start, end in days:
         if part is not None and end - start == timedelta(days=1):
@@ -587,7 +647,8 @@ _WINDOW_WORDS = frozenset(
     "today tomorrow tonight morning afternoon evening pasado pasada day days dia dias semana semanas week weeks "
     "weekend weekends fin mes meses month months ano year ultimos ultimas last past siguientes coming after "
     "despues work trabajo mismo entero entera completo completa whole primera segunda tercera cuarta ultima "
-    "second third several few couple varios varias unos unas pocos pocas upcoming venir".split()
+    "second third several few couple varios varias unos unas pocos pocas upcoming venir "
+    "ayer anteayer anoche yesterday entre between desde from hasta until till y and to por".split()
 ) | frozenset(MONTH_NUMBERS) | frozenset(name for names in _WEEKDAYS for name in names) | frozenset(
     token for word in _DAY_WORDS for token in word.split()
 )
@@ -691,7 +752,7 @@ def event_timing(folded: str) -> EventTiming:
         for found in _SPOKEN_CLOCK.finditer(text):
             if until is not None and until.start() <= found.start() < until.end():
                 continue
-            if found.group("lead") or found.group("period") or (found.group("minutes") or "").startswith(":"):
+            if _is_a_clock(found):
                 spans.append(found.span())
                 if start is None:
                     start = _read_clock(found, text)

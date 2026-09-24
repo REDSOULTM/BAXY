@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from typing import Iterable
 from ..catalog_operation_aliases import exact_catalog_operation_plan
 from . import levels, lexicon
-from .grammar import TASK_REMINDER_HEAD, _INSTRUCTION_NOUNS, _MACHINE_NOUNS, _without_leading_duration_preface, _fold, _match, _has, _REQUEST_PREFIX, _EXPLICIT_DESIRE_REQUEST, _TRAILING_MEANS_DIRECTIVE, _strip_request_envelope, _explicit_desire_request, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _negative_state_question_body, _machine_status_scopes, _machine_status_scopes_are_one_reading, _machine_status_is_the_whole_clause, _is_past_or_hypothetical_state, _is_machine_knowledge_or_diagnosis, _system_status_domain, _process_list_domain, _network_status_domain, _SET_VOLUME_VERB, _VOLUME_UP_VERB, _VOLUME_DOWN_VERB, _AUDIO_OBSERVATION_HEAD, _indirect_audio_mute_state_query, window_inventory_arguments, _literal_note_payload_request, _is_meta_or_tool_denial, _is_explicit_meta_or_tool_denial, _is_definition_question, _KNOWN_APPLICATION, _CONNECTED_INVENTORY, _OPEN, _MEDIA_RESUME_VERB, _LIST, _READ, _CREATE, _SEARCH, _COVERAGE_ACTION_HEAD, _SEQUENCE_NOMINAL_HEAD, _machine_status_topic, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, _PERCENTAGE_WORD_VALUES, _explicit_google_search_query, _request_clauses, _PLAY_HEAD, _request_body_surface, _without_address
+from .grammar import TASK_REMINDER_HEAD, _INSTRUCTION_NOUNS, _MACHINE_NOUNS, _without_leading_duration_preface, _fold, _match, _has, _REQUEST_PREFIX, _EXPLICIT_DESIRE_REQUEST, _TRAILING_MEANS_DIRECTIVE, _strip_request_envelope, _explicit_desire_request, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _negative_state_question_body, _machine_status_scopes, _machine_status_scopes_are_one_reading, _machine_status_is_the_whole_clause, _is_past_or_hypothetical_state, _is_machine_knowledge_or_diagnosis, _system_status_domain, _process_list_domain, _network_status_domain, _SET_VOLUME_VERB, _VOLUME_UP_VERB, _VOLUME_DOWN_VERB, _AUDIO_OBSERVATION_HEAD, _indirect_audio_mute_state_query, window_inventory_arguments, _literal_note_payload_request, _is_meta_or_tool_denial, _is_explicit_meta_or_tool_denial, _is_definition_question, _KNOWN_APPLICATION, _CONNECTED_INVENTORY, _OPEN, _MEDIA_RESUME_VERB, _LIST, _READ, _CREATE, _SEARCH, _COVERAGE_ACTION_HEAD, _SEQUENCE_NOMINAL_HEAD, _machine_status_topic, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, _PERCENTAGE_WORD_VALUES, _explicit_google_search_query, _request_clauses, _PLAY_HEAD, _request_body_surface, _without_address, imperative_rewrites
 from .audio import app_scoped_microphone_mute, _LOCAL_VOLUME_DEVICE, _VOLUME_OBJECT, _bare_clitic_volume_request, _bare_music_volume_request, _volume_domain, _MUTE_VERB, _audio_mute_domain, _APP_VOLUME_SPANISH, _APP_VOLUME_ENGLISH, _APP_VOLUME_ENGLISH_SPLIT, _APP_VOLUME_SET_SPANISH, _APP_VOLUME_SET_ENGLISH, _APP_VOLUME_LEVEL_WORDS, _AUDIO_LEVEL_CUE, _is_audio_mute_state_query, _PERCENTAGE_WORD_PATTERN
 from .windows import deictic_window_mutation, _FOCUS_HEAD_ONLY, _FOCUS_HEAD_WITH_TAIL, _FOCUS_TAIL, _MINIMIZE_HEAD, _SNAP_HEAD, _SNAP_SIDE, has_named_window_target, _window_domain, minimize_all_request, INDETERMINATE_WINDOW_CLAUSE, other_window_switch_request, PC_HOME_PLACE, start_menu_request
 from .display import screen_light_as_brightness, _KNOWN_FOLDER_WORDS, _KNOWN_FOLDER_ENUM, screen_inventory_request, _display_status_question, _without_screen_state_preface, _BRIGHTNESS_OBJECT, _BRIGHTNESS_UP_VERB, _BRIGHTNESS_DOWN_VERB, _BRIGHTNESS_ABSOLUTE, _BRIGHTNESS_ENGLISH_TURN, _BRIGHTNESS_RELATIVE_WORDS, brightness_status_request, _BRIGHTNESS_SET_VERB, _BRIGHTNESS_EXTREME_VALUES, wallpaper_request
@@ -24,7 +24,7 @@ from .files import _pdf_summary_request, _file_trash_request, process_report_fil
 from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
 from .system import _weather_read_intent, physical_world_request
-from .notes import list_entry_request, list_read_request, list_removal_request, list_creation_without_items, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder
+from .notes import list_entry_request, list_read_request, list_removal_request, list_creation_without_items, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder, said_repetition, _CALENDAR_PLACE, reminder_inventory_question, AGENDA_NOT_A_READ
 from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, _latest_email_domain, _notification_listing_request, inbox_read_request, social_network_request, contact_book_request
 from .ui import _clipboard_copy_domain, _clipboard_paste_domain, calculator_expression_request, literal_clipboard_write_text, _review_input_and_capture_effects, _VISIBLE_CLICK_APP_CONTEXT, _gerund_click_label, _visible_click_label, _click_in_application, _visible_click_intent
 from .apps import self_close_request, _APPLICATION_TRAILING_REQUEST, _application_target_forms, _CLOSE_TRAILING_COURTESY, _close_target_forms, deictic_close_request, _bounded_application_literal, _authenticated_application_list, _OPEN_STATE_CONDITION, close_all_request, _has_multiple_installed_entities, _append_domain_actions, _open_application_spans, _CATALOG_INSTALL_VERB, _opened_applications
@@ -1694,7 +1694,8 @@ def effect_request_is_authoritative(text: str) -> bool:
     return (
         confident_non_target_language(text) is None
         and not explicit_non_action_frame(text)
-        and _is_direct_request(folded)
+        # «cancele el próximo evento»: an order said with «usted» or as an infinitive is as direct.
+        and any(_is_direct_request(said) for said in (folded, *imperative_rewrites(folded)))
         # Dev corpus 2026-09-23 «what is mom's email address», «the email address for bill that i added friday»,
         # «what are the latest photos on my instagram account»: «what is» about the person's own book or account is
         # asked of it, never a definition; and a day said of an entry of the book is when it was saved, not a past
@@ -2015,12 +2016,20 @@ def known_unsupported_effect_request(
             # Uso real 2026-09-23 «erase my appointment for march seven», «clear my next activity»:
             # events are listed and created, never removed; the limit says so plainly. BAXY's own
             # alarms and reminders keep their cancellation.
-            _has(
-                folded,
-                r"\b(?:borra|borrar|borrame|elimina|eliminar|eliminame|quita|quitar|quitame|cancela|cancelar|"
-                r"cancelame|delete|remove|erase|clear|cancel)\b(?:\s+\S+){0,3}?\s+"
-                r"(?:citas?|appointments?|eventos?|events?|reuniones|reunion|meetings?|actividad(?:es)?|"
-                r"activit(?:y|ies)|compromisos?|commitments?)\b",
+            (
+                _has(
+                    folded,
+                    r"\b(?:borra|borrar|borrame|borre|elimina|eliminar|eliminame|elimine|quita|quitar|quitame|quite|"
+                    r"cancela|cancelar|cancelame|cancele|delete|remove|erase|clear|cancel)\b(?:\s+\S+){0,3}?\s+"
+                    r"(?:citas?|appointments?|eventos?|events?|reuniones|reunion|meetings?|actividad(?:es)?|"
+                    r"activit(?:y|ies)|compromisos?|commitments?)\b",
+                )
+                # Uso real 2026-09-24 «limpia mi agenda para hoy», «clear my calendar for this month».
+                or _has(
+                    folded,
+                    r"\b(?:limpia|limpiar|limpie|despeja|despejar|despeje|vacia|vaciar|vacie|clear|wipe)\s+"
+                    r"(?:(?:mi|el|la|my|the)\s+)?(?:agenda|calendario|calendar|horario|schedule)\b",
+                )
             )
             and not _has(folded, r"\b(?:alarmas?|alarms?|recordatorios?|reminders?|notas?|notes?|archivos?|files?)\b"),
             {"calendar.event.delete"},
@@ -2030,6 +2039,17 @@ def known_unsupported_effect_request(
             # entries, and no operation removes them all at once; one entry named is taken off (task.delete).
             (removal := list_removal_request(text)) is not None and removal.entry is None,
             {"task.list.delete"},
+            # Uso real 2026-09-24 «alter lunch event to repeat every friday», «alterar el evento del almuerzo
+            # para repetir cada viernes»: events are listed and created, never edited; the limit says so.
+            _has(
+                folded,
+                r"\b(?:altera|alterar|altere|modifica|modificar|modifique|edita|editar|edite|cambia|cambiar|"
+                # Rescheduling stays the new event it asks for («could you reschedule my meeting»).
+                r"cambie|alter|modify|edit|change)\b(?:\s+\S+){0,3}?\s+"
+                r"(?:citas?|appointments?|eventos?|events?|reuniones|reunion|meetings?)\b",
+            )
+            and not _has(folded, r"\b(?:alarmas?|alarms?|recordatorios?|reminders?|notas?|notes?|archivos?|files?)\b"),
+            {"calendar.event.update"},
         ),
         (
             _has(folded, rf"\b{_OPEN}\b")
@@ -2407,7 +2427,11 @@ def _directory_creation_request(text: str) -> re.Match[str] | None:
 
 _REMINDER_IDIOM = re.compile(
     r"^(?:no\s+dejes\s+que\s+(?:me\s+)?olvide(?:\s+de)?|que\s+no\s+se\s+me\s+olvide(?:\s+de)?|"
-    r"no\s+me\s+dejes\s+olvidar(?:me)?(?:\s+de)?|don'?t\s+let\s+me\s+forget(?:\s+to|\s+about)?)\s+"
+    r"no\s+me\s+dejes\s+olvidar(?:me)?(?:\s+de)?|don'?t\s+let\s+me\s+forget(?:\s+to|\s+about)?|"
+    # Uso real 2026-09-24 «no te olvides de recordarme el cumpleaños de mi hermano el veinte de abril»,
+    # «acuérdate de recordarme esto»: BAXY asked not to forget to remind is asked to remind.
+    r"(?:no\s+te\s+olvides|acuerdate|acordate)\s+de\s+(?:recordarme|avisarme)|"
+    r"don'?t\s+forget\s+to\s+remind\s+me(?:\s+(?:to|about|of))?)\s+"
 )
 
 
@@ -2486,13 +2510,16 @@ def _incomplete_scheduled_request(
         body,
     )
     if reminder is None and desire is not None:
-        reminder = re.match(r"^(?:recuerdes|recuerde|avises|avise)\s+(?P<title>.+)$", body)
+        # «necesito que me recuerden las reuniones del lunes»: an impersonal «recuerden» asks the same.
+        reminder = re.match(r"^(?:recuerdes|recuerde|recuerden|avises|avise|avisen)\s+(?P<title>.+)$", body)
     alarm = wake is not None or (
         noun_request is not None and noun_request.group("noun") in {"alarma", "alarm", "timer", "temporizador"}
     )
     title = (reminder.group("title") or "") if reminder is not None else ""
     if noun_request is not None and noun_request.group("noun") in {"recordatorio", "reminder"}:
-        payload = re.search(r"\b(?:about|to|de|que)\s+(?P<title>\S.+)", noun_request.group("tail"))
+        # «un recordatorio para el próximo sábado ir a la biblioteca a las cinco»: after «para/for» the words
+        # left once the time is taken out are what to remind.
+        payload = re.search(r"\b(?:about|to|de|que|para|for)\s+(?P<title>\S.+)", noun_request.group("tail"))
         title = payload.group("title") if payload is not None else ""
     if title:
         content = re.sub(rf"(?:{_CLOCK_TIME_SELECTOR}|{_BOUNDED_TEMPORAL_SELECTOR})", " ", title)
@@ -2524,9 +2551,13 @@ def _incomplete_scheduled_request(
         return ClarificationIntent(("reminder.create",), ("what_to_remind_or_notify_about", "due_time"))
     if not alarm and not title:
         return None
-    operation = "notification.schedule" if alarm else "reminder.create"
+    repetition = said_repetition(folded)
+    operation = "notification.schedule" if alarm or repetition else "reminder.create"
     if operation not in available:
         return None
+    if repetition == "unsupported":
+        # «recuérdame sacar la basura cada martes»: no alarm or reminder repeats weekly; the question says so.
+        return ClarificationIntent((operation,), ("repetition_the_calendar_cannot_hold",))
     if clock is not None:
         literal_clock = clock.group(0)
         # «5pm» writes the meridiem against the digits: no word boundary sits
@@ -2615,7 +2646,9 @@ def resolve_explicit_clarification_intent(
     if found is not None:
         return found
     addressed = _without_address(text)
-    for candidate in (addressed, spoken_media_order(addressed or text)):
+    # «establecer un recordatorio para el sábado … a las cinco»: an order said with «usted» or as an
+    # infinitive is asked what its tú imperative would be asked (``reading`` reads it the same way).
+    for candidate in (addressed, spoken_media_order(addressed or text), *imperative_rewrites(addressed or text)):
         # «me gustaría escuchar call me de aretha franklin después de esta canción»: a request for later
         # is not an incomplete one; asking what to play would ignore what was named.
         if candidate is not None and not _has_unsupported_deferred_effect(_fold(candidate)):
@@ -3271,6 +3304,30 @@ def _clarification_intent_of(
         folded,
     ):
         return ClarificationIntent(("notification.cancel.at",), ("which_alarm",))
+    if (
+        "notification.cancel.at" in available
+        and re.match(
+            # Uso real 2026-09-24 «apaga mis alarmas de la mañana tras el viernes», «remove my early alarms»:
+            # alarms are cancelled one at a time by their hour; which one is asked.
+            r"(?:apaga|apagame|quita|quitame|borra|borrame|elimina|cancela|cancelame|desactiva|remove|delete|cancel|"
+            r"turn\s+off|clear|disable)\s+(?:(?:mis|las|todas\s+(?:mis|las)|my|the|all(?:\s+(?:my|the))?)\s+)?"
+            r"(?:\w+\s+)?(?:alarmas|alarms)\b",
+            folded,
+        )
+        and not _has(folded, _CLOCK_TIME_SELECTOR)
+    ):
+        return ClarificationIntent(("notification.cancel.at",), ("which_alarm",))
+    if (
+        "reminder.create" in available
+        and re.search(
+            # Uso real 2026-09-24 «olly i want to go to the outdoor movie screening this weekend remind me»: what
+            # was said is what to remind; a trailing «remind me» with no moment asks when.
+            r"\S\s*[,.;]?\s+(?:remind\s+me(?:\s+(?:of|about)\s+it)?|recuerdamelo|recordamelo|avisame)[\s.!?]*$",
+            folded,
+        )
+        and not _reminder_has_actionable_due(folded)
+    ):
+        return ClarificationIntent(("reminder.create",), ("due_time",))
     if (
         not _is_direct_request(folded)
         and not _alarm_turn_off_request(folded)
@@ -5592,7 +5649,9 @@ def _direct_alarm_schedule_request(text: str) -> bool:
 
 _NOMINAL_SCHEDULE_REQUEST = re.compile(
     r"^(?:(?:please|por\s+favor)\s+)?"
-    r"(?:dame|damela|quiero|quisiera|necesito|me\s+hace\s+falta|i\s+(?:need|want)|give\s+me)\s+"
+    # Uso real 2026-09-24 «envíame un recordatorio para recoger a mi perro a la una por la tarde».
+    r"(?:dame|damela|quiero|quisiera|necesito|me\s+hace\s+falta|i\s+(?:need|want)|give\s+me|enviame|mandame|"
+    r"send\s+me)\s+"
     r"(?:una?|an?)\s+(?:(?:nueva?|new)\s+)?"
     r"(?:(?:notificacion|aviso|alerta|notification|alert)\s+(?:de|of)\s+)?"
     r"(?P<noun>alarma|alarm|despertador|recordatorio|reminder|notificacion|notification|aviso|alerta|alert)\b"
@@ -6260,7 +6319,8 @@ def _has_contradictory_correction(
                 r"elimina|delete|envia|send)\b"
             ),
         )
-        or _has(text, r"\b(?:o|or)\b")
+        # «at five o'clock» is a clock time, not an alternative.
+        or _has(text, r"\b(?:o|or)\b(?!['’]\s*clock)")
         or _has(
             text,
             (
@@ -6310,8 +6370,11 @@ def _review_local_data_effects(
 ) -> bool:
     """Append clause-local data effects and report explicit web-search intent."""
 
-    if _head_is(head, r"(?:anota|anotar|anotame|apunta|apuntame|jot)") and not _has(
-        folded, r"\b(?:nota|note)\b"
+    if (
+        _head_is(head, r"(?:anota|anotar|anotame|apunta|apuntame|jot)")
+        and not _has(folded, r"\b(?:nota|note)\b")
+        # «anota este evento en mi calendario»: written on the calendar, not in a note.
+        and not _has(folded, _CALENDAR_PLACE)
     ):
         _append(
             matches,
@@ -6656,8 +6719,9 @@ def _is_direct_request(text: str) -> bool:
         r"establece|set|deja|dejalo|dejala|dejar|put|leave|turn|"
         rf"{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB}|bajalo|subelo|increment|"
         r"quita|quitar|saca|sacale|sacar|remove|get\s+rid\s+of|"
-        # Uso real 2026-09-23 «erase my appointment for march seven», «clear my next activity».
-        r"erase|clear|"
+        # Uso real 2026-09-23 «erase my appointment for march seven», «clear my next activity»;
+        # 2026-09-24 «limpia mi agenda para hoy», «alter lunch event to repeat every friday».
+        r"erase|clear|limpia|limpiame|despeja|vacia|altera|alter|modifica|modify|"
         r"pega|pegar|pegalo|pegala|paste|"
         r"trancame|tranca|bloqueame|bloquea|lock|"
         r"agendame|"
@@ -7562,6 +7626,10 @@ def _strict_catalog_request(
             found_domains = [
                 item for item in found_domains if item[1] != "reminder.list"
             ]
+        if _has(text, r"\b(?:reminded|remind\s+me|set\s+(?:a\s+)?reminder|recuerdame|recordame|recuerden)\b"):
+            # Uso real 2026-09-24 «i need to be reminded that there is a meeting … set reminder for tuesday at
+            # three p. m.»: asking to be reminded never lists the reminders.
+            found_domains = [item for item in found_domains if item[1] != "reminder.list"]
         if any(
             operation == "notification.list.due" for _, operation in found_domains
         ) and _has(
@@ -7890,6 +7958,8 @@ def _strict_catalog_request(
             text,
             rf"{_BOUNDED_TEMPORAL_SELECTOR}|\b(?:esta\s+jornada|this\s+day)\b",
         )
+        # «necesito que me recuerden las reuniones del lunes»: a reminder asked, not the agenda read.
+        and not _has(text, AGENDA_NOT_A_READ)
     ):
         resolved = intent("calendar.event.list")
         if resolved is not None:
@@ -12194,6 +12264,8 @@ def _resolve_clause_effects(
         return EffectIntent(("system.time",), (folded,))
     if "calendar.event.list" in available and agenda_read_request(text):
         return EffectIntent(("calendar.event.list",), (folded,))
+    if (inventory := reminder_inventory_question(text)) in available:
+        return EffectIntent((inventory,), (folded,))
     event = agenda_event_request(text)
     event_operation = "notification.schedule" if event is not None and event.repeat else "calendar.event.create"
     if event is not None and not event.missing and event_operation in available:
