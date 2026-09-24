@@ -7,6 +7,8 @@
   subject asks for that subject; only himself or what he does is a question about him.
 - «¿Es posible la herencia múltiple en Java?» died as dumps_interfaces (shell policy; tested in
   C03UsoRealComposeTests): «interfaces» is ordinary vocabulary, the machine's interface list is not.
+- «haz una carcajada cuando quieras» → a reply dragging two earlier turns; «ríete diabólicamente» → «te río de
+  verdad 😈»: a laugh asked for is free content, written out on the spot.
 
 The phrasings below are not the tanda's: they are paraphrases (es/en/spanglish) the fix does not name, with
 negative controls.
@@ -16,6 +18,7 @@ from __future__ import annotations
 
 import pytest
 
+from baxy_mind import llm
 from baxy_mind.request_reading import INTENT_CAPABILITY, INTENT_IDENTITY, read_request
 from baxy_mind.semantic.patterns import conversation_only_content_request
 from test_c03_tanda03_served_surface import _RefusingLlm, _turn
@@ -123,3 +126,43 @@ def test_what_he_knows_about_a_named_topic_is_not_a_capability_question(text: st
 )
 def test_what_he_does_or_who_he_is_still_asks_about_him(text: str, intent: str) -> None:
     assert intent in read_request(text).intents
+
+
+# ------------------------------------------------------------------ a laugh asked for is content
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "ríete como un villano",
+        "suelta una risa malvada",
+        "give me your best evil laugh",
+        "laugh for me",
+        "échate una carcajada, anda",
+        "puedes reírte un poco?",
+        "do a maniacal laugh",
+        "haz una risotada cuando puedas",
+    ],
+)
+@pytest.mark.parametrize("has_history", [False, True])
+def test_a_laugh_asked_for_is_free_content_whatever_came_before(text: str, has_history: bool) -> None:
+    assert llm._conversation_presentation_shape(text, conversation_kind="knowledge", has_history=has_history) == (
+        "free_content"
+    )
+
+
+@pytest.mark.parametrize(
+    "text", ["no te rías", "¿de qué te ríes?", "por qué te ríes tanto", "la risa es buena para la salud"],
+)
+def test_talk_about_laughing_is_not_a_laugh_asked_for(text: str) -> None:
+    assert llm._conversation_presentation_shape(text, conversation_kind="knowledge", has_history=True) != (
+        "free_content"
+    )
+
+
+def test_a_laugh_is_short_and_a_joke_is_not() -> None:
+    violates = llm._shaped_conversation_answer_violates_contract
+    assert not violates("¡Muajajaja!", "ríete como un villano", "free_content")
+    assert violates("¡Ja!", "cuéntame un chiste", "free_content")
+    # The laugh still ends without a question or a menu.
+    assert violates("¡Jajaja! ¿Quieres otra?", "ríete como un villano", "free_content")
