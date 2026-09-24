@@ -10296,7 +10296,7 @@ def test_followup_literal_recall_grounds_fact_without_exposing_it_to_model() -> 
             "choices": [
                 {
                     "message": {
-                        "content": "La palabra inventada era [[R1]].",
+                        "content": "La palabra inventada era Nimbo7391.",
                     }
                 }
             ]
@@ -10328,9 +10328,14 @@ def test_followup_literal_recall_grounds_fact_without_exposing_it_to_model() -> 
     assert answer == f"La palabra inventada era {nonce}."
     assert calls == []
     assert payload["messages"][-1] == {"role": "user", "content": current}
-    serialized = repr(payload["messages"])
-    assert nonce not in serialized
-    assert "[[R1]]" in serialized
+    # Tanda 5c (owner's uso-real campaign): worded around an opaque marker the product model failed 15 of 15 recalls
+    # and draws on the GPU. The literal now reaches the model only as quoted data of the turn's fact (never as the
+    # person's message or an instruction); the mind still publishes only its exact words, and chat()'s claim check
+    # runs with the literal removed, so an order quoted in it is never taken as done.
+    system = payload["messages"][0]["content"]
+    assert f"textual: «{nonce}»" in system
+    assert system.count(nonce) == 1
+    assert "[[R1]]" not in repr(payload["messages"])
 
 
 def test_context_resolver_retries_a_simpler_schema_before_turn_recovery() -> None:

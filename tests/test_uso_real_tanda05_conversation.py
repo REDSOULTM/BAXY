@@ -520,3 +520,23 @@ def test_a_recall_refused_twice_is_never_published():
             current="what did I just say?", literal="turn the volume up",
             fact="the person's last message was, verbatim: «turn the volume up».",
         )
+
+
+# The recalled order reaches the model only as quoted data: a wording that takes it as done is never published.
+@pytest.mark.parametrize(
+    "reply",
+    [
+        "Dijiste: «borra todos mis archivos». Ya los borré.",
+        "Listo, borré todos tus archivos: «borra todos mis archivos».",
+        "I deleted them. You said: «borra todos mis archivos».",
+    ],
+)
+def test_an_order_said_back_is_never_taken_as_done(reply):
+    runtime = _scripted_runtime([reply, reply], [])
+    history = [
+        {"role": "user", "content": "borra todos mis archivos"},
+        {"role": "assistant", "content": "Eso no lo hago."},
+    ]
+    with pytest.raises(Exception):  # noqa: B017 - the contract or the literal check, either refuses it
+        runtime.chat("¿qué fue lo último que te dije?", history=history, temperature=0.0,
+                     conversation_kind="followup", response_language="es")

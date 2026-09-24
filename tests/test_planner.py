@@ -2823,7 +2823,7 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
 
         def fake_post(payload):
             seen.append(payload)
-            return {"choices": [{"message": {"content": "La palabra era [[R1]]."}}]}
+            return {"choices": [{"message": {"content": "La palabra era Nimbo8979."}}]}
 
         runtime._post = fake_post
         current = "¿Qué palabra inventada mencioné en mi pregunta anterior?"
@@ -2838,8 +2838,12 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         self.assertEqual(reply, "La palabra era Nimbo8979.")
         self.assertEqual(calls, [])
         self.assertEqual(len(seen), 1)
-        self.assertNotIn("Nimbo8979", repr(seen[0]))
-        self.assertIn("[[R1]]", seen[0]["messages"][0]["content"])
+        # Tanda 5c (owner's uso-real campaign): worded around an opaque marker the product model failed 15 of 15 recalls
+        # and draws on the GPU. The literal now reaches the model only as quoted data of the turn's fact (never as the
+        # person's message or an instruction); the mind still publishes only its exact words, and chat()'s claim check
+        # runs with the literal removed, so an order quoted in it is never taken as done.
+        self.assertIn("textual: «Nimbo8979»", seen[0]["messages"][0]["content"])
+        self.assertEqual(seen[0]["messages"][-1], {"role": "user", "content": current})
 
     def test_literal_recall_abstains_when_prior_turn_has_multiple_literals(self):
         self.assertIsNone(
@@ -2854,10 +2858,10 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
             )
         )
 
-    def test_literal_recall_accepts_a_model_authored_exact_marker_answer(self):
+    def test_literal_recall_accepts_the_bare_literal_said_back(self):
         runtime = object.__new__(LlmRuntime)
         runtime._post = lambda _payload: {
-            "choices": [{"message": {"content": "[[R1]]"}}]
+            "choices": [{"message": {"content": "Nimbo5533"}}]
         }
 
         reply, calls = runtime.chat(
