@@ -11,6 +11,9 @@
   datum «me a las ocho…» and read back: the App's memory parser (NaturalMemoryRequestParser.ReminderPattern) did
   not know the clitic the ear writes apart. It now leaves the turn to the mind, which reads the reminder with its
   moment and its title (pinned here; the App side in NaturalMemoryRequestParserTests).
+- «ponme barcelona por queen» was described instead of played: «<title> por <performer>» names the song and who
+  sings it, like «by» and «de»; both sides must be names said alone, so «por» as a time, a way or a channel plays
+  nothing.
 
 The phrases here are not the literals of the real window; they are other ways of saying the same things, with
 controls that must keep their own reading.
@@ -143,3 +146,40 @@ def test_a_split_clitic_reminder_keeps_its_title_without_the_clitic(text: str, t
     assert reading.effects is not None and reading.effects.operations == ("reminder.create",)
     arguments = mind._explicit_arguments_from_evidence("reminder.create", reading.effects.evidence[0], (), ())
     assert arguments is not None and arguments["title"] == title
+
+
+# --- 4. a song «por» its performer is played -------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("text", "query"),
+    [
+        ("toca hotel california por eagles", "hotel california por eagles"),
+        ("pon la bamba por los lobos", "la bamba por los lobos"),
+        ("play bohemian rhapsody por queen", "bohemian rhapsody por queen"),
+        ("reproduce la bamba por ritchie valens por favor", "la bamba por ritchie valens"),
+    ],
+)
+def test_a_song_by_its_performer_plays_in_the_local_player(text: str, query: str) -> None:
+    # MUSIC1559: music named without a provider plays from YouTube in the local player.
+    effects = resolve_explicit_effects(text, AVAILABLE)
+    assert effects is not None and effects.operations == ("media.play.youtube",), (text, effects)
+    assert mind._explicit_arguments_from_evidence("media.play.youtube", effects.evidence[0], (), ()) == {
+        "query": query
+    }
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # «por» as a time, a way, a channel or a courtesy never names a performer.
+        "pon todo por escrito",
+        "pon la tele por el canal 5",
+        "pon la lavadora por la noche",
+        "pon los platos por orden",
+        "pon eso por el parlante",
+    ],
+)
+def test_por_without_a_performer_plays_nothing(text: str) -> None:
+    effects = resolve_explicit_effects(text, AVAILABLE)
+    assert effects is None or not {"media.play.youtube", "media.play.query"} & set(effects.operations)

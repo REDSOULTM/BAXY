@@ -5666,6 +5666,34 @@ def _bare_play_name(text: str) -> str | None:
     return found.group("name") if found is not None and _bare_music_name(found.group("name")) else None
 
 
+# After «por», what is not who performs it: the courtesy, a time or a duration, a place, and the device or channel
+# something goes through («por favor», «por la noche», «por dos horas», «por los parlantes», «por email»).
+_NOT_A_PERFORMER = (
+    r"(?:favor|si|que|rato|momento|manana|tarde|noche|dia|vez|ejemplo|orden|escrito|email|correo|whatsapp|mensaje|"
+    r"telefono|celular|movil|parlantes?|altavoz|altavoces|bocinas?|speakers?|auriculares|audifonos|cascos|headphones|"
+    r"bluetooth|pc|computador(?:a)?|ordenador|equipo|ciento|encima|debajo|fondo|aqui|ahi|alli|aca|siempre|hoy|fin|"
+    r"dos|tres|cuatro|cinco|diez|quince|veinte|treinta|medi[oa]|horas?|minutos?|segundos?)"
+)
+
+
+def _title_by_performer(query: str) -> bool:
+    """Tanda 6 «ponme barcelona por queen»: «<title> por <performer>» names the song and who sings it, like «by».
+    Both sides are names said alone (``_bare_music_name``, a leading article allowed: «la bamba por los lobos»);
+    «pon todo por escrito», «pon la tele por el canal 5» or «pon la lavadora por la noche» are not."""
+
+    found = re.fullmatch(r"(?P<title>.+?)\s+por\s+(?P<performer>.+)", _fold(query).strip(" .!?"))
+    if found is None:
+        return False
+    title, performer = (
+        re.sub(r"^(?:el|la|los|las|the)\s+(?=\S)", "", found.group(name)) for name in ("title", "performer")
+    )
+    return (
+        _bare_music_name(title)
+        and _bare_music_name(performer)
+        and not _has(performer, rf"\b{_NOT_A_PERFORMER}\b")
+    )
+
+
 def _explicit_named_music_query(text: str) -> str | None:
     """Keep the supplied artist/title of one current imperative verbatim."""
 
@@ -5695,6 +5723,7 @@ def _explicit_named_music_query(text: str) -> str | None:
             _has(_fold(query), r"\S\s+(?:de|del|by|of)\s+\S")
             and not _has(_fold(query), r"\b(?:of|de)\s+(?:that|this|it|them|eso|esto|esa|ese)$")
         )
+        and not _title_by_performer(query)
         # MUSIC1749 «poné rock en spotify»: with the provider named, one word
         # (a genre, an artist) is the thing to play there; a generic noun
         # («música», «una canción») still asks what to play.
