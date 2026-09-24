@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind.llm import LlmRuntime
+from baxy_mind.llm import USER_MESSAGE_PROMPT, LlmRuntime
 
 
 MODELS = ['Qwen3-4B-Instruct-2507-Q4_K_M.gguf', 'K2-Horizon-3.7B-Q4_K_M.gguf']
@@ -100,5 +100,12 @@ def test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change
     result = client.compose_user_message(case['request'], 'status', {'situation': case['situation']})
     assert result == case['replies']['B_output_512']['message']['content']
     assert len(client.requests) == 1
-    assert client.requests[0]['messages'] == case['messages']
+    # The recording pinned the personality prompt of its day; that prompt is an
+    # editable text (owner 2026-09-24 made it concise). What this test holds is
+    # that the dense budget changes no prompt: the scope and the request are the
+    # recorded ones, and the personality prompt is the current one.
+    sent, recorded = client.requests[0]['messages'], case['messages']
+    assert sent[1:] == recorded[1:]
+    recorded_scope = recorded[0]['content'].split('Devuelve sólo el mensaje.', 1)[1]
+    assert sent[0]['content'] == USER_MESSAGE_PROMPT + recorded_scope
     assert client.requests[0]['max_tokens'] == 512
