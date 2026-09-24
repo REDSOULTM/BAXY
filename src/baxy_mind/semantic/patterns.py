@@ -19,7 +19,7 @@ from .intent import EffectIntent, _entity_key, _is_negated_match, _append, _appe
 from .catalog import ApplicationCatalogIndex, GameCatalogIndex, build_game_catalog_index, _authenticated_game_target, resolve_game_catalog_app_id, _application_name_key, build_application_catalog_index, _catalog_alias_key, _installed_game_named, installed_game_title
 from .temporal import _CALENDAR_MONTH_TOKEN, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, spoken_clock
 from .media import _youtube_search_query, youtube_play_query, _direct_media_discovery_or_play_request, _named_browser_music_request, _NETFLIX_SPELLED, _underspecified_video_request, _title_case_media_title, _media_transport_action, _resume_existing_media, _REMOVABLE_MEDIA, _bare_spoken_number_media_query, radio_station_query, spoken_media_order, MUSIC_GENRE, _RADIO_PLAY
-from .web import asks_for_information, other_place_clock_question, public_opinion_query, record_fact_query, _public_route_lookup_request, _public_calendar_fact_lookup_request, _WEATHER_WORDS, _weather_lookup_query, _research_question_query, _public_live_lookup_request, _public_product_correction_lookup_request, _public_commerce_lookup_request, _FILESYSTEM_OBJECT_NOUN, operation_identity_is_a_near_miss, curiosity_request, web_image_request, _NAVIGATION_CLIENT, client_navigation_target, _authenticated_application_identity_conflict, _browser_page_domain, browser_back_arguments, browser_new_tab_arguments, browser_close_all_tabs_arguments, _historical_note_search_request, _stored_note_search_query, _nominal_reminder_lookup_title, _location_recommendation_request, _NAMED_BROWSER_SITE_REQUEST, _installed_browser_search_query, _completed_browser_search_pronoun_request, _NAMED_PUBLIC_SITE, _review_web_and_browser_effects, web_download_request, NAMED_CDP_BROWSERS, _named_browser_match, _named_browser, public_event_subject
+from .web import asks_for_information, other_place_clock_question, public_opinion_query, record_fact_query, _public_route_lookup_request, _public_calendar_fact_lookup_request, _WEATHER_WORDS, _weather_lookup_query, _research_question_query, _public_live_lookup_request, _public_product_correction_lookup_request, _public_commerce_lookup_request, _FILESYSTEM_OBJECT_NOUN, operation_identity_is_a_near_miss, curiosity_request, web_image_request, _NAVIGATION_CLIENT, client_navigation_target, _authenticated_application_identity_conflict, _browser_page_domain, browser_back_arguments, browser_new_tab_arguments, browser_close_all_tabs_arguments, _historical_note_search_request, _stored_note_search_query, _nominal_reminder_lookup_title, _location_recommendation_request, _NAMED_BROWSER_SITE_REQUEST, _installed_browser_search_query, _completed_browser_search_pronoun_request, _NAMED_PUBLIC_SITE, _review_web_and_browser_effects, web_download_request, NAMED_CDP_BROWSERS, _named_browser_match, _named_browser, public_event_subject, cinema_listing
 from .files import _pdf_summary_request, _file_trash_request, process_report_file_request, _file_creation_request, known_folder_file_path, _current_directory_file_count, _DUPLICATE_FILES, _known_folder_recent_listing, _known_folder_listing_request, _review_file_and_game_effects, folder_txt_zip_open_mission, open_named_file_request, _office_document_roundtrip_intent
 from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
@@ -770,6 +770,9 @@ def _curated_domain_is_grounded(
         # The agenda readers are the domain: a read of the person's own agenda («qué tengo por
         # venir», «mi horario para el día») or an event put on it («añade práctica el cuatro de
         # febrero») names it without saying «calendario».
+        if operation == "calendar.event.list" and public_event_subject(folded):
+            # MASSIVE recommendation_events «dime todos los eventos que ocurren en milán» listed the agenda.
+            return False
         if agenda_read_request(text):
             return operation == "calendar.event.list"
         if agenda_event_request(text) is not None:
@@ -1233,6 +1236,11 @@ def _curated_domain_is_grounded(
         return _process_list_domain(folded)
     if operation == "network.status":
         return _network_status_domain(folded)
+    if operation == "network.port.list":
+        # MASSIVE transport_traffic (dev corpus 2026-09-24) «cómo está el tráfico cerca de mí», «me gustaria conocer la
+        # situacion del trafico» listed this PC's listening ports. Traffic alone is the road; what this operation reads
+        # (ports, sockets, listeners) has to be named.
+        return _has(folded, r"\b(?:puertos?|ports?|sockets?|listeners?|escuchando|listening|tcp|udp|endpoints?)\b")
     if operation in {
         "wifi.connect.named",
         "wifi.disconnect",
@@ -1542,7 +1550,7 @@ def _curated_domain_is_grounded(
             folded,
             r"\b(?:netflix|youtube|spotify)\b|"
             r"\b(?:en|inside)\s+(?:mi|my)\s+(?:cabeza|mente|head|mind)\b",
-        )
+        ) and not cinema_listing(folded)
     if operation in {"media.play.exact", "media.play.query"}:
         return _media_play_domain(folded)
     if operation == "vision.describe":
@@ -3635,6 +3643,8 @@ def _clarification_intent_of(
         and not _has(folded, r"\b(?:100|[0-9]{1,2})\b")
         and _literal_percentage_word_value(folded) is None
         and _literal_volume_adjustment(folded) is None
+        # «sube el volumen de la música a noventa»: a level said in words is no missing amount.
+        and not _level_quantity_said(folded)
     ):
         if (
             "system.settings.adjust" in available
@@ -11532,6 +11542,13 @@ def output_level_request(
         # the volume or the brightness right before it says what «lo» is.
         return None
     return level.request(setting or levels.VOLUME)
+
+
+def _level_quantity_said(text: str) -> bool:
+    """The whole message is an output-level request that says how much or where to (``levels.read``)."""
+
+    level = levels.read(text)
+    return level is not None and (level.amount is not None or level.target is not None)
 
 
 def _resolve_clause_effects(

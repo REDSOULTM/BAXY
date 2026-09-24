@@ -74,7 +74,11 @@ MUTE_SWITCH_OFF = (
     r"(?:turn(?:ed)?\s+off|switch\s+off|apaga(?:r|le)?|desactiva(?:r|le)?|disable|deactivate|"
     r"quita(?:r|le)?|saca(?:r|le)?|remove)\s+" + _MUTE_STATE_NOUN
 )
-MUTE_SWITCH_ON = r"(?:turn\s+on|switch\s+on|activa(?:r|le)?|enciende|prende|enable)\s+" + _MUTE_STATE_NOUN
+# MASSIVE audio_volume_mute (dev corpus 2026-09-24) «set mute until said otherwise»: the mute set, like switched on.
+MUTE_SWITCH_ON = (
+    r"(?:turn\s+on|switch\s+on|activa(?:r|le)?|enciende|prende|enable|set(?:\s+(?:it\s+)?(?:to|on))?)\s+"
+    + _MUTE_STATE_NOUN
+)
 # Tanda 4 2026-09-24 «Enciende el sound» was answered as a limit: the sound itself switched on is the mute
 # switched off (muted = false), and the sound switched off is the mute on (muted = true), in Spanish, English or
 # both. Only the sound, the audio or the PC's own sound is the object: «enciende la música» plays, «apaga el PC»
@@ -89,8 +93,14 @@ _SOUND_OFF_VERB = r"(?:turn(?:ed)?\s+off|switch\s+off|disable|apaga(?:r|le)?|des
 _SOUND_ORDER_END = (
     r"(?=\s*(?:[,.;:!?]|$|\s(?:y|and|por\s+favor|porfa|please|ya|ahora|now|de\s+nuevo|again|otra\s+vez)\b))"
 )
-SOUND_SWITCH_ON = rf"(?:{_SOUND_ON_VERB}\s+{_SOUND_NOUN}|turn\s+{_SOUND_NOUN}\s+on){_SOUND_ORDER_END}"
-SOUND_SWITCH_OFF = rf"(?:{_SOUND_OFF_VERB}\s+{_SOUND_NOUN}|turn\s+{_SOUND_NOUN}\s+off){_SOUND_ORDER_END}"
+# MASSIVE audio_volume_up (dev corpus 2026-09-24) «audio on»: the switch said as its state, with no verb, when the
+# message opens with the sound.
+SOUND_SWITCH_ON = (
+    rf"(?:{_SOUND_ON_VERB}\s+{_SOUND_NOUN}|turn\s+{_SOUND_NOUN}\s+on|^[¿¡\s]*{_SOUND_NOUN}\s+on){_SOUND_ORDER_END}"
+)
+SOUND_SWITCH_OFF = (
+    rf"(?:{_SOUND_OFF_VERB}\s+{_SOUND_NOUN}|turn\s+{_SOUND_NOUN}\s+off|^[¿¡\s]*{_SOUND_NOUN}\s+off){_SOUND_ORDER_END}"
+)
 
 # Uso real 2026-09-23 «silencio»: the bare silence order, the whole message. MASSIVE audio_volume_mute (dev corpus
 # 2026-09-23) «silencio altavoces», «altavoces en silencio»: the silence with the speakers or the sound it falls on,

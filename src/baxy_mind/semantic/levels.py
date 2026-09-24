@@ -104,10 +104,11 @@ _DEVICE = (
     r"(?:sistema|equipo|pc|compu|computador(?:a)?|ordenador|system|computer|laptop|notebook|"
     rf"{lexicon.SPEAKER_NOUN})"
 )
-# AUDIO1461 «bajá la música», tanda 2 «Turn dowm poquito la musica»: raising or lowering the music is the volume.
+# AUDIO1461 «bajá la música», tanda 2 «Turn dowm poquito la musica»: raising or lowering the music is the volume;
+# MASSIVE audio_volume_up (dev corpus 2026-09-24) «sube el volumen de la música a noventa»: so is its volume.
 _VOLUME_OBJECT = (
     rf"(?:{_ARTICLE}?(?:(?:speaker|speakers|system|pc|computer)\s+)?(?:volumen|volume|sonido|sound|audio|musica|music)"
-    rf"(?:\s+(?:del?|of|on)\s+{_ARTICLE}?{_DEVICE})?)"
+    rf"(?:\s+(?:del?|of|on)\s+{_ARTICLE}?(?:{_DEVICE}|musica|music))?)"
 )
 _SCREEN = r"(?:pantalla|monitor|screen|display)"
 _BRIGHTNESS_OBJECT = (

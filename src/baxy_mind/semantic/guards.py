@@ -365,10 +365,21 @@ def _conversation_in_progress(history: object) -> bool:
     )
 
 
-# Only the openers that are questions and nothing else: «que», «como», «cuando» also open talk («que te digo»).
+# Only the openers that are questions and nothing else: «que», «como», «cuando» also open talk («que te digo»). MASSIVE
+# cooking_recipe (dev corpus 2026-09-24) «por cuánto tiempo tengo que poner la pizza en el horno…»: the question word
+# may come after its preposition.
 _ADDRESSED_OPENING = (
-    r"[\s¡!]*(?:cual|cuales|cuanto|cuanta|cuantos|cuantas|quien|quienes|por\s+que|"
+    r"[\s¡!]*(?:(?:por|para|de|desde|hasta|en|a|con|sobre|durante|segun|for|in|to|from|at|with|about|since|until|"
+    r"during)\s+)?"
+    r"(?:cual|cuales|cuanto|cuanta|cuantos|cuantas|quien|quienes|por\s+que|"
     r"what|which|who|whom|where|when|why|how)\b"
+)
+# MASSIVE qa_factoid «con toda la información que pueda recopilar en internet podría proporcionarme la mejor
+# explicación…»: a request put to the listener (you could, can you) is said to BAXY wherever it sits.
+_ADDRESSED_REQUEST = (
+    r"\b(?:podria|podrias|puedes|podes|puede|pudieras|pudiera)\s+(?:usted\s+|tu\s+|vos\s+)?"
+    r"(?:\w+(?:rme|rnos|rle|rles)|me\s+\w+r|nos\s+\w+r)\b|"
+    r"\b(?:could|can|would|will)\s+you\s+\w+"
 )
 
 
@@ -388,8 +399,10 @@ def _overheard_speech(folded: str) -> bool:
     words = re.findall(r"[a-z0-9]+", folded)
     if len(words) < 15:
         return False
-    if re.match(_ADDRESSED_OPENING, folded) is not None or effect_intent._head_is(
-        effect_intent._request_head(folded), effect_intent._COVERAGE_ACTION_HEAD
+    if (
+        re.match(_ADDRESSED_OPENING, folded) is not None
+        or re.search(_ADDRESSED_REQUEST, folded) is not None
+        or effect_intent._head_is(effect_intent._request_head(folded), effect_intent._COVERAGE_ACTION_HEAD)
     ):
         # MASSIVE (dev corpus 2026-09-23) «cuáles son las predicciones de las votaciones…», «muéstrame la
         # respuesta a este problema…», «chequea en los cines…»: the ear drops the question mark; a message that

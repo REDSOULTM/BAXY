@@ -14,6 +14,11 @@ from .web import _WEATHER_WORDS, _names_weather, _weather_lookup_query
 _WEATHER_MEDIUM = (
     r"\b(?:google|bing|internet|la\s+web|the\s+web|online|en\s+linea)\b"
 )
+_GENERIC_PLACE = (
+    r"^(?:(?:the|my|a|la|el|mi|una?)\s+)?(?:beach|playa|park|parque|lake|lago|mountains?|montana|office|oficina|pool|"
+    r"piscina|stadium|estadio|school|colegio|escuela|work|trabajo|home|casa|river|rio|field|campo|golf\s+course|"
+    r"cancha|centro|downtown|calle|street)$"
+)
 
 
 def _weather_location(text: str) -> str | None:
@@ -36,6 +41,11 @@ def _weather_location(text: str) -> str | None:
         candidate = match.group("place").strip(" \t\r\n.,;:")
         if _names_a_time(_fold(candidate)):
             continue
+        if _has(_fold(match.group(0)), r"^(?:para|for)\b") and _has(
+            _fold(candidate), r"^(?:\w+(?:ar|er|ir)(?:me|te|se|nos|lo|la|los|las)?|\w+ing|to\s+\w+)\b"
+        ):
+            # MASSIVE weather_query «es necesario llevar paraguas para salir»: «para» before a verb says what for.
+            continue
         place = _without_trailing_time(candidate)
         place = re.sub(r"^(?:la\s+ciudad\s+de|the\s+city\s+of)\s+", "", place, flags=re.IGNORECASE)
         folded_place = _fold(place)
@@ -49,6 +59,8 @@ def _weather_location(text: str) -> str | None:
             or _names_a_time(folded_place)
             # MASSIVE «la temperatura será más alta de cuarenta grados mañana»: a measure is not a place.
             or _has(folded_place, rf"^{SPOKEN_NUMBER}\s*(?:grados|degrees|°|milimetros|mm|centimetros|cm|pulgadas|inches)\b")
+            # MASSIVE «will it be nice at the beach on friday»: a kind of place is where the person goes, not a town.
+            or _has(folded_place, _GENERIC_PLACE)
             or len(place.encode("utf-8")) > 128
         ):
             continue

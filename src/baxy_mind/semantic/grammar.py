@@ -1332,7 +1332,8 @@ _CREATE = (
 
 
 # SEARCH2005 «dale, buscame recetas de pizza»: the clitic forms head a search too.
-_SEARCH = r"(?:busc[aá](?:me|melo|mela|mel[oa]s)?|buscar|encuentra|search|find|look\s+up)"
+# MASSIVE qa_definition (dev corpus 2026-09-24) «busque la definición de ambulancia»: the formal imperative too.
+_SEARCH = r"(?:b[uú]sc[aá](?:me|melo|mela|mel[oa]s)?|b[uú]squen?(?:me|nos)?|buscar|encuentra|search|find|look\s+up)"
 
 
 # Verbs for catalog effects that this conservative recognizer does not
