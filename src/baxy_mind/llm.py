@@ -41,7 +41,7 @@ from . import corrector
 from .semantic.normalize import alternation, fold
 from .semantic import dialogue as dialogue_slot
 from .semantic.network import asks_calendar_part, calendar_parts_asked
-from .semantic.web import weather_asks_later_day, weather_asks_sun_time
+from .semantic.web import weather_asks_later_day, weather_asks_sun_time, asks_own_place, weather_asks_air
 from . import effect_intent
 from .effect_intent import (
     _PERCENTAGE_WORD_VALUES,
@@ -4391,6 +4391,10 @@ _CAUSE_FACT = {
     "weather_service_unavailable": (
         "the weather service did not answer, so no forecast was read"
     ),
+    # Tanda 4c: a search near the person needs this PC's city; without it nothing was searched.
+    "web_search_place_unavailable": (
+        "this PC's own location could not be determined, so nothing was searched near it"
+    ),
     # NETWORK1721 «conectate al wifi de casa» with no saved network of that
     # name: the fact is the absence; nothing was done. Not «connected»: the
     # truncated-word lens read the draft's «connect» as a cut of it
@@ -7480,8 +7484,12 @@ def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> 
     results_text = _search_results_text(payload)
     if results_text is None:
         return []
+    seen = payload.get("seen")
+    # Tanda 4c: the city this PC's search was made near, and saying it was near, are observed too.
+    near = seen.get("near") if isinstance(seen, dict) and isinstance(seen.get("near"), str) else ""
+    near_voice = f"{near} cerca near" if near.strip() else ""
     observed = set(re.findall(r"[a-z]+", _reading_fold(results_text))) | set(
-        re.findall(r"[a-z]+", _reading_fold(user_text))
+        re.findall(r"[a-z]+", _reading_fold(f"{user_text} {near_voice}"))
     )
     # «El artículo de El Tiempo» names eltiempo.com with the site's own words.
     site_labels = [
@@ -7707,6 +7715,13 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
                 observed |= _weather_number_forms(block.get(key))
             for key in ("sunrise", "sunset"):
                 observed |= _weather_clock_forms(block.get(key))
+    air = seen.get("airQuality")
+    if isinstance(air, dict):
+        # Tanda 4c «Whats the air quality hoy?»: the index and the particles of the same read.
+        for key in ("usAqi", "pm25", "pm10"):
+            observed |= _weather_number_forms(air.get(key))
+        # «PM2.5», «PM10» name what is measured; their digits are not a measurement.
+        text = re.sub(r"(?i)\bpm\s*(?:2[.,]5|10)\b", "PM", text)
     # Tanda 4 «Digame el weather lunes 13 en North Carolina»: every draft that said which day could not be read
     # («no tengo el pronóstico del lunes 13») died here and the turn ended in no_response. A number the person
     # said is theirs to repeat, but never as a measurement: «13 °C» must still be observed.
@@ -7761,6 +7776,15 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
             and not (len(asked_place) >= 3 and re.search(r"\b" + re.escape(asked_place) + r"\b", folded_text))
         ):
             return "missing_state"
+    if asks_own_place(user_text or ""):
+        # Tanda 4c «i'd like to know my current location»: the place read is the
+        # answer (named above); the weather was not asked.
+        return ""
+    if weather_asks_air(user_text or ""):
+        # Tanda 4c «Whats the air quality hoy?»: the air is answered with its index.
+        if isinstance(air, dict) and not _states_weather_number(text, air.get("usAqi")):
+            return "missing_state"
+        return ""
     if sun_time:
         # Uso real tanda 2 «el horario de la caída del sol para mañana»: the asked
         # day's sun time is the answer (tomorrow's for tomorrow or a later day).
@@ -18136,7 +18160,13 @@ class LlmRuntime:
                 "rain probability and temperatures; if they asked when the sun rises or sets, "
                 "give that time for the day asked; if they asked what to wear or carry, or an "
                 "amount, answer from these readings. The read covers today and tomorrow only: "
-                "for a later day, say so and give tomorrow's. Use only those numbers with their "
+                "for a later day, say so and give tomorrow's. seen.airQuality is the air of that "
+                "place now (usAqi, the US air quality index, with its category, and pm25 and pm10 "
+                "in µg/m³); if they asked about the air, answer with the index, its category and "
+                "PM2.5, and if seen.airQuality is null say the air quality could not be read. If "
+                "they asked where they are, say seen.location with seen.region and seen.country, "
+                "the approximate place of this PC read from its public internet address, and "
+                "nothing about the weather. Use only those numbers with their "
                 "units (°C, km/h, %). Nothing was opened or changed."
                 if response_language == "en"
                 else "\nseen es el clima leído de un servicio público de pronóstico para "
@@ -18150,7 +18180,13 @@ class LlmRuntime:
                 "con la probabilidad de lluvia y las temperaturas de mañana; si preguntó a qué "
                 "hora sale o se pone el sol, da esa hora del día preguntado; si preguntó qué "
                 "ponerse o llevar, o una cantidad, contesta desde estas lecturas. La lectura "
-                "cubre sólo hoy y mañana: para un día posterior, dilo y da la de mañana. Sólo "
+                "cubre sólo hoy y mañana: para un día posterior, dilo y da la de mañana. "
+                "seen.airQuality es el aire de ese lugar ahora (usAqi, el índice de calidad del "
+                "aire de EE. UU., con su category, y pm25 y pm10 en µg/m³); si preguntó por el "
+                "aire, contesta con el índice, su categoría y el PM2.5, y si seen.airQuality es "
+                "null di que no se pudo leer la calidad del aire. Si preguntó dónde está, di "
+                "seen.location con seen.region y seen.country, el lugar aproximado de este PC "
+                "leído de su dirección pública de internet, y nada del clima. Sólo "
                 "esos números, con sus unidades (°C, km/h, %). No se abrió ni se cambió nada."
             )
         if (
@@ -18348,6 +18384,14 @@ class LlmRuntime:
                 "por página, citando su título tal cual está escrito y nombrando su "
                 "sitio. Sólo prosa: sin saltos de línea, sin lista, sin URLs."
             )
+            near = (visible_situation.get("seen") or {}).get("near")
+            if isinstance(near, str) and near.strip():
+                # Uso real tanda 4c «comida para llevar cerca»: the search ran near this PC's city.
+                instruct(
+                    f" The search was made near {near}, where this PC is; say it was near {near}."
+                    if response_language == "en"
+                    else f" La búsqueda se hizo cerca de {near}, donde está este PC; di que fue cerca de {near}."
+                )
             if "api" in str(declined_means(user_text or "") or ""):
                 instruct(
                     " The person asked to use a public API; you did not call any API: "

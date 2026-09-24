@@ -1985,6 +1985,79 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Uso real tanda 4c «en qué lugares puedo pedir comida para llevar cerca»: a
+    // search near the person carries this PC's city, read from its public address;
+    // only the city name joins the query (no coordinates), and the receipt says so.
+    [Test]
+    public async Task ASearchNearbyCarriesThisPcsCityAndOnlyItsName()
+    {
+        string page = SearchResultsPage(
+            ("Comida para llevar en Curico", "https://example.com/valpo", "Locales de comida para llevar en Curico"));
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        var handler = new RoutingHttpHandler(page,
+            """{"success":true,"country":"Chile","region":"Curico","city":"Curico","latitude":-34.9828,"longitude":-71.2394}""");
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"comida para llevar cerca","nearby":true}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("query").GetString(), Is.EqualTo("comida para llevar cerca Curico"));
+            Assert.That(receipt.Result?.GetProperty("near").GetString(), Is.EqualTo("Curico"));
+            Assert.That(handler.Asked.Where(uri => !uri.Host.Contains("ipwho", StringComparison.Ordinal)),
+                Has.All.Matches<Uri>(uri => !uri.Query.Contains("33.03", StringComparison.Ordinal)
+                    && !uri.Query.Contains("71.62", StringComparison.Ordinal)));
+        });
+    }
+
+    [Test]
+    public async Task ASearchNearbyWithoutThisPcsPlaceIsAnHonestAbsenceNotAGenericSearch()
+    {
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        var handler = new RoutingHttpHandler(SearchResultsPage(("x", "https://example.com/", "x")), """{"success":false}""");
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"farmacias cerca","nearby":true}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("web_search_place_unavailable"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(handler.Asked, Has.None.Matches<Uri>(uri => uri.Query.Contains("farmacias", StringComparison.Ordinal)));
+        });
+    }
+
+    [Test]
+    public async Task ASearchWithoutNearbyNeverAsksWhereThisPcIs()
+    {
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        var handler = new RoutingHttpHandler(
+            SearchResultsPage(("Hoteles en Madrid", "https://example.com/madrid", "Hoteles en Madrid")), """{"success":true}""");
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"hoteles en Madrid"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("query").GetString(), Is.EqualTo("hoteles en Madrid"));
+            Assert.That(receipt.Result?.TryGetProperty("near", out _), Is.False);
+            Assert.That(handler.Asked, Has.None.Matches<Uri>(uri => uri.Host.Contains("ipwho", StringComparison.Ordinal)
+                || uri.Host.Contains("ip-api", StringComparison.Ordinal)));
+        });
+    }
+
     [Test]
     public async Task StructuredWebSearchRejectsAValidButUnrelatedFeed()
     {
@@ -2889,6 +2962,26 @@ public sealed class ExternalAdaptersTests
                 {
                     Content = new StringContent(body, Encoding.UTF8, "application/xml"),
                 });
+    }
+
+    // The public-address readers answer the located body; every other address the search page.
+    private sealed class RoutingHttpHandler(string page, string located) : HttpMessageHandler
+    {
+        internal List<Uri> Asked { get; } = [];
+
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            Uri uri = request.RequestUri!;
+            Asked.Add(uri);
+            bool locator = uri.Host.Contains("ipwho", StringComparison.Ordinal)
+                || uri.Host.Contains("ip-api", StringComparison.Ordinal);
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(locator ? located : page, Encoding.UTF8,
+                    locator ? "application/json" : "text/html"),
+            });
+        }
     }
 
     private sealed class RecordingInvalidJsonHttpHandler : HttpMessageHandler

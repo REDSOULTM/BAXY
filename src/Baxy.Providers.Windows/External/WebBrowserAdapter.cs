@@ -15,6 +15,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     private readonly CdpBrowserSession _browser;
     private readonly CdpBrowserSessionContext? _sessionContext;
     private readonly HttpClient _http;
+    private readonly PublicPlaceLocator _locator;
     private readonly string? _searchDiagnosticPath;
 
     // El perfil del navegador colgaba del directorio del turno, de modo que cada
@@ -54,6 +55,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _searchDiagnosticPath = Path.Combine(dataRoot, "captures", "web-search-rejections.jsonl");
         _http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY/1.0 structured-search");
+        _locator = new PublicPlaceLocator(_http.GetStringAsync);
     }
 
     internal WebBrowserAdapter(
@@ -64,6 +66,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _browser = browser ?? throw new ArgumentNullException(nameof(browser));
         _http = http ?? throw new ArgumentNullException(nameof(http));
         _sessionContext = sessionContext;
+        _locator = new PublicPlaceLocator(_http.GetStringAsync);
     }
 
     public bool CanHandle(string operation) => operation is
@@ -530,6 +533,24 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         string query = ExternalJson.RequiredString(arguments, "query").Trim();
+        // Uso real tanda 4c «en qué lugares puedo pedir comida para llevar cerca»
+        // buscó sin lugar y devolvió portales de otro país: lo que se busca cerca
+        // de la persona se busca con la ciudad de este PC, la misma que lee el
+        // clima. Sale sólo el nombre de la ciudad que el servicio público dedujo
+        // de la dirección de este PC; ni coordenadas ni nada de la persona.
+        string? near = null;
+        if (arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("nearby", out JsonElement nearby)
+            && nearby.ValueKind == JsonValueKind.True)
+        {
+            PublicPlace? place = await _locator.LocateAsync(cancellationToken).ConfigureAwait(false);
+            if (place is null)
+            {
+                return ExternalJson.FailureBeforeEffect(operation, "web_search_place_unavailable");
+            }
+            near = place.Value.Name;
+            query = query + " " + near;
+        }
         string[] queryTokens = SearchTokens(query);
         if (queryTokens.Length == 0)
         {
@@ -594,6 +615,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 writer.WriteStartObject();
                 writer.WriteNumber("version", 1);
                 writer.WriteString("query", query);
+                if (near is not null)
+                    writer.WriteString("near", near);
                 writer.WriteNumber("count", results.Count);
                 writer.WriteStartArray("results");
                 foreach ((string title, string url, string snippet) in results)

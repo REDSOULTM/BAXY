@@ -1,6 +1,8 @@
 using System.Globalization;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -14,22 +16,19 @@ namespace Baxy.Providers.Windows.External;
 internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisposable
 {
     private const string GeocodingAuthority = "https://geocoding-api.open-meteo.com/v1/search";
+    private const string GeocodedPlaceAuthority = "https://geocoding-api.open-meteo.com/v1/get";
     private const string ForecastAuthority = "https://api.open-meteo.com/v1/forecast";
-    // Dos lectores públicos de la ubicación por IP: el segundo contesta cuando el
-    // primero no lo hace; ninguno recibe otra cosa que la petición vacía.
-    private static readonly string[] LocationByIpAuthorities =
-    [
-        "https://ipwho.is/",
-        "http://ip-api.com/json/?fields=status,country,regionName,city,lat,lon",
-    ];
+    private const string AirQualityAuthority = "https://air-quality-api.open-meteo.com/v1/air-quality";
 
     private readonly HttpClient _http;
     private readonly Func<string, CancellationToken, Task<string>>? _fetch;
+    private readonly PublicPlaceLocator _locator;
 
     internal OpenMeteoWeatherAdapter()
     {
         _http = new HttpClient { Timeout = TimeSpan.FromSeconds(12) };
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY/1.0 weather-read");
+        _locator = new PublicPlaceLocator(FetchAsync);
     }
 
     // Las pruebas entregan las respuestas de cada dirección sin red.
@@ -37,6 +36,7 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
     {
         _http = new HttpClient();
         _fetch = fetch;
+        _locator = new PublicPlaceLocator(FetchAsync);
     }
 
     public bool CanHandle(string operation) => operation is "weather.current";
@@ -57,8 +57,8 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
 
         try
         {
-            Place? place = location is null
-                ? await LocateByIpAsync(cancellationToken).ConfigureAwait(false)
+            PublicPlace? place = location is null
+                ? await _locator.LocateAsync(cancellationToken).ConfigureAwait(false)
                 : await GeocodeAsync(location, cancellationToken).ConfigureAwait(false);
             if (place is null)
             {
@@ -67,13 +67,20 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
                     location is null ? "weather_location_unavailable" : "weather_place_not_found");
             }
 
-            string forecastUrl = ForecastAuthority
-                + "?latitude=" + place.Value.Latitude.ToString("F4", CultureInfo.InvariantCulture)
-                + "&longitude=" + place.Value.Longitude.ToString("F4", CultureInfo.InvariantCulture)
+            string coordinates = "?latitude=" + place.Value.Latitude.ToString("F4", CultureInfo.InvariantCulture)
+                + "&longitude=" + place.Value.Longitude.ToString("F4", CultureInfo.InvariantCulture);
+            string forecastUrl = ForecastAuthority + coordinates
                 + "&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,precipitation"
                 + "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code,sunrise,sunset"
                 + "&timezone=auto&forecast_days=2";
-            string forecastJson = await FetchAsync(forecastUrl, cancellationToken).ConfigureAwait(false);
+            // Uso real tanda 4c «Whats the air quality hoy?» buscó páginas de
+            // otro país: la calidad del aire del mismo lugar es otra lectura del
+            // mismo servicio, pedida a la vez; si no contesta, el clima sigue.
+            Task<string> forecastRead = FetchAsync(forecastUrl, cancellationToken);
+            Task<AirQuality?> airRead = ReadAirQualityAsync(AirQualityAuthority + coordinates
+                + "&current=us_aqi,pm2_5,pm10&timezone=auto", cancellationToken);
+            string forecastJson = await forecastRead.ConfigureAwait(false);
+            AirQuality? air = await airRead.ConfigureAwait(false);
             using JsonDocument forecast = JsonDocument.Parse(forecastJson);
             JsonElement root = forecast.RootElement;
             if (!root.TryGetProperty("current", out JsonElement current)
@@ -86,7 +93,7 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
 
             int weatherCode = ReadInt(current, "weather_code") ?? -1;
             int? tomorrowCode = ReadIntAt(daily, "weather_code", 1);
-            Place located = place.Value;
+            PublicPlace located = place.Value;
             JsonElement result = ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject();
@@ -121,6 +128,19 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
                 WriteClock(writer, "sunrise", ReadStringAt(daily, "sunrise", 1));
                 WriteClock(writer, "sunset", ReadStringAt(daily, "sunset", 1));
                 writer.WriteEndObject();
+                if (air is { } quality)
+                {
+                    writer.WriteStartObject("airQuality");
+                    writer.WriteNumber("usAqi", quality.UsAqi);
+                    writer.WriteString("category", AirCategory(quality.UsAqi));
+                    WriteNumber(writer, "pm25", quality.Pm25);
+                    WriteNumber(writer, "pm10", quality.Pm10);
+                    writer.WriteEndObject();
+                }
+                else
+                {
+                    writer.WriteNull("airQuality");
+                }
                 writer.WriteString("authority", "open_meteo_forecast_v1");
                 writer.WriteEndObject();
             });
@@ -134,83 +154,187 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
         }
     }
 
-    private async Task<Place?> GeocodeAsync(string location, CancellationToken cancellationToken)
+    // Uso real tanda 4c «Digame el weather lunes 13 en North Carolina» leyó el
+    // clima de «Calvary, Georgia»: el geocodificador lista primero un pueblo que
+    // lleva ese nombre como alias, y no indexa los estados ni las regiones por su
+    // nombre. De su lista (en español y en inglés, porque la persona nombra el
+    // lugar en cualquiera de los dos) se elige: el primer lugar que se llama
+    // así; la región de ese nombre cuando la lista la nombra como región de sus
+    // lugares y lo que se llama así es un pueblo menor (no una capital, o una
+    // cien veces menos poblada que la región); y, sin nada de eso, el primer
+    // lugar poblado o región que comparte una palabra con lo pedido. Un alias
+    // ajeno o un parque que lleva el nombre no bastan.
+    private async Task<PublicPlace?> GeocodeAsync(string location, CancellationToken cancellationToken)
     {
-        string url = GeocodingAuthority + "?count=1&language=es&name=" + Uri.EscapeDataString(location);
-        string json = await FetchAsync(url, cancellationToken).ConfigureAwait(false);
-        using JsonDocument document = JsonDocument.Parse(json);
-        if (!document.RootElement.TryGetProperty("results", out JsonElement results)
-            || results.ValueKind != JsonValueKind.Array
-            || results.GetArrayLength() == 0)
+        string asked = RegionKey(location);
+        Task<string> spanishRead = FetchAsync(GeocodingUrl(location, "es"), cancellationToken);
+        Task<string> englishRead = FetchAsync(GeocodingUrl(location, "en"), cancellationToken);
+        using JsonDocument spanish = JsonDocument.Parse(await spanishRead.ConfigureAwait(false));
+        using JsonDocument english = JsonDocument.Parse(await englishRead.ConfigureAwait(false));
+        var englishById = new Dictionary<long, JsonElement>();
+        foreach (JsonElement item in Results(english))
         {
-            return null;
+            if (ReadLong(item, "id") is long id)
+                englishById.TryAdd(id, item);
+        }
+        List<JsonElement> candidates = Results(spanish);
+        var spanishIds = candidates.Select(item => ReadLong(item, "id")).OfType<long>().ToHashSet();
+        candidates.AddRange(Results(english).Where(item => ReadLong(item, "id") is not long id || !spanishIds.Contains(id)));
+
+        string?[] Spellings(JsonElement item, string field)
+        {
+            JsonElement? other = ReadLong(item, "id") is long id && englishById.TryGetValue(id, out JsonElement found)
+                ? found
+                : null;
+            return [ReadString(item, field), other is { } englishItem ? ReadString(englishItem, field) : null];
         }
 
-        JsonElement first = results[0];
-        double? latitude = ReadDouble(first, "latitude");
-        double? longitude = ReadDouble(first, "longitude");
-        if (latitude is null || longitude is null)
-            return null;
-        return new Place(
-            ReadString(first, "name") ?? location,
-            ReadString(first, "admin1"),
-            ReadString(first, "country") ?? string.Empty,
-            latitude.Value,
-            longitude.Value,
-            "named_place_geocoded");
-    }
+        JsonElement? namedPlace = candidates
+            .Where(item => Spellings(item, "name").Any(name => name is not null && Fold(name) == Fold(location)))
+            .Select(item => (JsonElement?)item)
+            .FirstOrDefault();
+        long? regionId = candidates
+            .Where(item => Spellings(item, "admin1").Any(region => region is not null && RegionKey(region) == asked))
+            .Select(item => ReadLong(item, "admin1_id"))
+            .OfType<long>()
+            .GroupBy(id => id)
+            .OrderByDescending(group => group.Count())
+            .Select(group => (long?)group.Key)
+            .FirstOrDefault();
 
-    private async Task<Place?> LocateByIpAsync(CancellationToken cancellationToken)
-    {
-        foreach (string authority in LocationByIpAuthorities)
+        string? namedCode = namedPlace is { } placeItem ? ReadString(placeItem, "feature_code") : null;
+        if (regionId is long region
+            && (namedPlace is null || (namedCode is not null && namedCode.StartsWith("PPL", StringComparison.Ordinal)))
+            && await ReadGeocodedAsync(region, cancellationToken).ConfigureAwait(false) is { } regionItem)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            string json;
-            try
-            {
-                json = await FetchAsync(authority, cancellationToken).ConfigureAwait(false);
-            }
-            catch (HttpRequestException)
-            {
-                continue;
-            }
-            catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
-            {
-                continue;
-            }
+            double regionPopulation = ReadDouble(regionItem, "population") ?? 0;
+            double namedPopulation = namedPlace is { } minor ? ReadDouble(minor, "population") ?? 0 : 0;
+            bool regionIsMeant = namedPlace is null
+                || namedCode is not ("PPLC" or "PPLA" or "PPLA2")
+                || regionPopulation >= 100 * Math.Max(namedPopulation, 1);
+            if (regionIsMeant && PlaceOf(regionItem, location) is { } regionPlace)
+                return regionPlace;
+        }
 
-            try
+        if (namedPlace is { } exact)
+            return PlaceOf(exact, location);
+        string[] askedWords = Fold(location).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        foreach (JsonElement item in Results(spanish))
+        {
+            if (ReadString(item, "name") is { } name
+                && ReadString(item, "feature_code") is { } code
+                && (code.StartsWith("PPL", StringComparison.Ordinal) || code.StartsWith("ADM", StringComparison.Ordinal)
+                    || code.StartsWith("PCL", StringComparison.Ordinal))
+                && Fold(name).Split(' ', StringSplitOptions.RemoveEmptyEntries).Intersect(askedWords).Any())
             {
-                using JsonDocument document = JsonDocument.Parse(json);
-                JsonElement root = document.RootElement;
-                if (root.ValueKind != JsonValueKind.Object)
-                    continue;
-                bool ok = (root.TryGetProperty("success", out JsonElement success) && success.ValueKind == JsonValueKind.True)
-                    || (root.TryGetProperty("status", out JsonElement status) && status.ValueKind == JsonValueKind.String
-                        && status.GetString() == "success");
-                if (!ok)
-                    continue;
-                double? latitude = ReadDouble(root, "latitude") ?? ReadDouble(root, "lat");
-                double? longitude = ReadDouble(root, "longitude") ?? ReadDouble(root, "lon");
-                string? city = ReadString(root, "city");
-                if (latitude is null || longitude is null || string.IsNullOrWhiteSpace(city))
-                    continue;
-                return new Place(
-                    city,
-                    ReadString(root, "region") ?? ReadString(root, "regionName"),
-                    ReadString(root, "country") ?? string.Empty,
-                    latitude.Value,
-                    longitude.Value,
-                    "public_ip_address");
-            }
-            catch (JsonException)
-            {
-                continue;
+                return PlaceOf(item, location);
             }
         }
 
         return null;
     }
+
+    // La región se lee por su identificador; si el servicio no la da, cuenta lo
+    // que la búsqueda ya dio.
+    private async Task<JsonElement?> ReadGeocodedAsync(long id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            string json = await FetchAsync(
+                GeocodedPlaceAuthority + "?language=es&id=" + id.ToString(CultureInfo.InvariantCulture),
+                cancellationToken).ConfigureAwait(false);
+            using JsonDocument document = JsonDocument.Parse(json);
+            return document.RootElement.ValueKind == JsonValueKind.Object ? document.RootElement.Clone() : null;
+        }
+        catch (Exception exception) when (
+            exception is HttpRequestException or JsonException
+            || (exception is TaskCanceledException && !cancellationToken.IsCancellationRequested))
+        {
+            return null;
+        }
+    }
+
+    private static string GeocodingUrl(string location, string language) =>
+        GeocodingAuthority + "?count=100&language=" + language + "&name=" + Uri.EscapeDataString(location);
+
+    private static List<JsonElement> Results(JsonDocument document) =>
+        document.RootElement.ValueKind == JsonValueKind.Object
+            && document.RootElement.TryGetProperty("results", out JsonElement results)
+            && results.ValueKind == JsonValueKind.Array
+            ? [.. results.EnumerateArray()]
+            : [];
+
+    private static PublicPlace? PlaceOf(JsonElement item, string asked)
+    {
+        double? latitude = ReadDouble(item, "latitude");
+        double? longitude = ReadDouble(item, "longitude");
+        if (latitude is null || longitude is null)
+            return null;
+        string name = ReadString(item, "name") ?? asked;
+        string? region = ReadString(item, "admin1");
+        return new PublicPlace(
+            name,
+            region is not null && Fold(region) == Fold(name) ? null : region,
+            ReadString(item, "country") ?? string.Empty,
+            latitude.Value,
+            longitude.Value,
+            "named_place_geocoded");
+    }
+
+    // «North Carolina», «Carolina del Norte», «Estado de Jalisco» y «Comunidad
+    // Autónoma de Cataluña» se comparan por su nombre propio, sin tildes ni la
+    // palabra que dice qué clase de región es.
+    private static readonly Regex RegionKind = new(
+        @"^(?:comunidad autonoma|comunidad foral|comunidad|estado libre y soberano|estado|provincia|region|"
+        + @"departamento|state|province|region|department|prefectura|prefecture|canton|oblast)\s+(?:de\s+la\s+|del\s+|de\s+|of\s+)?"
+        + @"|\s+(?:department|province|state|region|prefecture|oblast)$",
+        RegexOptions.CultureInvariant);
+
+    private static string RegionKey(string name) => RegionKind.Replace(Fold(name), string.Empty).Trim();
+
+    private static string Fold(string text)
+    {
+        var folded = new StringBuilder(text.Length);
+        foreach (char character in text.Normalize(NormalizationForm.FormD))
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(character) == UnicodeCategory.NonSpacingMark)
+                continue;
+            folded.Append(char.IsLetterOrDigit(character) ? char.ToLowerInvariant(character) : ' ');
+        }
+        return string.Join(' ', folded.ToString().Split(' ', StringSplitOptions.RemoveEmptyEntries));
+    }
+
+    private async Task<AirQuality?> ReadAirQualityAsync(string url, CancellationToken cancellationToken)
+    {
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(await FetchAsync(url, cancellationToken).ConfigureAwait(false));
+            if (!document.RootElement.TryGetProperty("current", out JsonElement current)
+                || current.ValueKind != JsonValueKind.Object
+                || ReadInt(current, "us_aqi") is not int usAqi)
+            {
+                return null;
+            }
+            return new AirQuality(usAqi, ReadDouble(current, "pm2_5"), ReadDouble(current, "pm10"));
+        }
+        catch (Exception exception) when (
+            exception is HttpRequestException or JsonException
+            || (exception is TaskCanceledException && !cancellationToken.IsCancellationRequested))
+        {
+            return null;
+        }
+    }
+
+    // La escala pública del índice (US AQI), en las palabras de cada tramo.
+    internal static string AirCategory(int usAqi) => usAqi switch
+    {
+        <= 50 => "buena",
+        <= 100 => "moderada",
+        <= 150 => "dañina para grupos sensibles",
+        <= 200 => "dañina",
+        <= 300 => "muy dañina",
+        _ => "peligrosa",
+    };
 
     private Task<string> FetchAsync(string url, CancellationToken cancellationToken) =>
         _fetch is not null
@@ -252,6 +376,12 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
     private static double? ReadDouble(JsonElement element, string name) =>
         element.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.Number
             ? value.GetDouble()
+            : null;
+
+    private static long? ReadLong(JsonElement element, string name) =>
+        element.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.Number
+            && value.TryGetInt64(out long number)
+            ? number
             : null;
 
     private static int? ReadInt(JsonElement element, string name) =>
@@ -301,11 +431,5 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
 
     public void Dispose() => _http.Dispose();
 
-    private readonly record struct Place(
-        string Name,
-        string? Region,
-        string Country,
-        double Latitude,
-        double Longitude,
-        string Source);
+    private readonly record struct AirQuality(int UsAqi, double? Pm25, double? Pm10);
 }

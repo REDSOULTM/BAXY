@@ -45,7 +45,7 @@ from .semantic.grammar import ARITHMETIC_EXPRESSION, SPOKEN_NUMBER
 from .semantic.patterns import output_level_request
 from .semantic.notes import agenda_event_request, said_repetition, stated_event_reminder
 from .semantic.temporal import SpokenClock, agenda_window, spoken_date, spoken_window
-from .semantic.web import asks_for_information, names_own_data, news_lookup_query, public_query_body
+from .semantic.web import asks_for_information, names_own_data, near_the_person, news_lookup_query, public_query_body
 from .semantic.windows import start_menu_request
 from .corrector import catalog_correction_terms
 from .first_signal import (
@@ -6586,6 +6586,15 @@ def _ground_explicit_arguments(
     if operation == "input.key.press" and start_menu_request(effect_intent._fold(evidence)):
         # Tanda 4: the Start menu reader owns the key; the person says the menu, not «win».
         return explicit if validate_json_schema_instance(explicit, schema) else None
+    if operation == "web.search" and near_the_person(evidence):
+        # Uso real tanda 4c «comida para llevar cerca», «qué pasa en mi ciudad»: near
+        # the person is near this PC's city, which the provider adds (``nearby``;
+        # the person never spells a flag). The query crosses its usual grounding.
+        query_only: dict | None = explicit
+        if explicit.get("query") != news_lookup_query(evidence):
+            query_only, _ = normalize_objective_arguments(explicit, schema, evidence)
+        near = {**query_only, "nearby": True} if query_only is not None else None
+        return near if near is not None and validate_json_schema_instance(near, schema) else None
     if operation == "web.search" and explicit.get("query") == news_lookup_query(evidence):
         # WEB1451 «qué pasó hoy en el mundo»: the news reader supplies the
         # word «noticias»; the scope words are the person's own.

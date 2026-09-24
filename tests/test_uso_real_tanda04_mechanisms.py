@@ -87,7 +87,11 @@ SCHEMAS = {
     },
     "web.search": {
         "type": "object",
-        "properties": {"query": {"type": "string", "x-maxUtf8Bytes": 2000, "x-nonWhitespace": True}},
+        "properties": {
+            "limit": {"type": "integer", "minimum": 1, "maximum": 20},
+            "nearby": {"type": ["boolean", "null"]},
+            "query": {"type": "string", "x-maxUtf8Bytes": 2000, "x-nonWhitespace": True},
+        },
         "required": ["query"], "additionalProperties": False,
     },
 }
@@ -337,24 +341,27 @@ def test_the_words_asking_to_be_told_are_not_looked_up(text, body):
     assert public_query_body(text) == body
 
 
+# Tanda 4c: the news near the person is searched near this PC's city (``nearby``), never generic «local news»
+# alone (t45 found US portals); a named place keeps its own news.
 @pytest.mark.parametrize(
-    ("text", "query"),
+    ("text", "query", "nearby"),
     [
-        ("dime que esta pasando en mi ciudad", "noticias locales"),  # tanda 4 t45
-        ("What's happening near me?", "local news"),
-        ("¿qué hay de nuevo por aquí?", "noticias locales"),
-        ("can you tell me what's going on in my town", "local news"),
-        ("¿Qué está pasando en Barcelona?", "noticias en Barcelona"),
-        ("what is happening in London", "news in London"),
-        ("what's happening around town", "local news"),
-        ("what's happening around the world", "news around the world"),
-        ("qué pasó hoy en el mundo", "noticias de hoy en el mundo"),
-        ("what happened today", "news today"),
+        ("dime que esta pasando en mi ciudad", "noticias locales", True),  # tanda 4 t45
+        ("What's happening near me?", "local news", True),
+        ("¿qué hay de nuevo por aquí?", "noticias locales", True),
+        ("can you tell me what's going on in my town", "local news", True),
+        ("¿Qué está pasando en Barcelona?", "noticias en Barcelona", False),
+        ("what is happening in London", "news in London", False),
+        ("what's happening around town", "local news", True),
+        ("what's happening around the world", "news around the world", False),
+        ("qué pasó hoy en el mundo", "noticias de hoy en el mundo", False),
+        ("what happened today", "news today", False),
     ],
 )
-def test_what_happens_somewhere_is_its_news(text, query):
+def test_what_happens_somewhere_is_its_news(text, query, nearby):
     assert news_lookup_query(text) == query
-    assert sidecar._ground_explicit_arguments("web.search", text, SCHEMAS["web.search"]) == {"query": query}
+    expected = {"query": query, "nearby": True} if nearby else {"query": query}
+    assert sidecar._ground_explicit_arguments("web.search", text, SCHEMAS["web.search"]) == expected
 
 
 def test_a_plain_public_question_keeps_its_words_without_the_ask():

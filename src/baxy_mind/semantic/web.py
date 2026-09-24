@@ -9,7 +9,7 @@ from .display import _KNOWN_FOLDER_ENUM, _KNOWN_FOLDER_WORDS
 from .grammar import _fold, _match, _has, _strip_request_envelope, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _is_meta_or_tool_denial, _OPEN, _LIST, _READ, _SEARCH, _explicit_google_search_query, ARITHMETIC_EXPRESSION, _request_body_surface
 from .intent import EffectIntent, _entity_key, _append, _append_all
 from .catalog import ApplicationCatalogIndex, _application_name_key, build_application_catalog_index
-from .temporal import _BOUNDED_TEMPORAL_SELECTOR, _DAY, _MONTH, _WEEKDAYS
+from .temporal import _BOUNDED_TEMPORAL_SELECTOR, _DAY, _MONTH, _WEEKDAYS, is_window_phrase
 from .lexicon import GIVEN_NAMES, SOCIAL_NETWORK
 from .notes import OWN_EVENT_NOUN, own_event_reference
 from .windows import minimize_all_request
@@ -121,12 +121,66 @@ _NOT_WEATHER_TIEMPO = (
 )
 
 
-def _names_weather(folded: str) -> bool:
-    """The weather is named: a weather word, or «el tiempo» inside a weather frame."""
+# Uso real tanda 4c «Whats the air quality hoy?» searched US pages and answered nothing: the air of a place is
+# read with its weather, from the same public service, so naming the air names the weather read.
+AIR_QUALITY_WORDS = (
+    r"\b(?:calidad\s+del\s+aire|air\s+quality|aqi|smog|air\s+pollution|pollution\s+levels?|polucion|"
+    r"contaminacion\s+(?:del\s+aire|atmosferica|ambiental)|(?:nivel(?:es)?|indice)\s+de\s+(?:contaminacion|polucion)|"
+    r"pm\s*2[.,]?5|pm\s*10|particulas\s+finas|"
+    r"(?:contaminad[oa]|polluted|limpio|clean|sucio|dirty)\s+(?:esta\s+|is\s+)?(?:el\s+|the\s+)?(?:aire|air)|"
+    r"(?:el\s+aire|the\s+air)\s+(?:esta\s+|is\s+)?(?:muy\s+|very\s+)?(?:contaminado|limpio|sucio|malo|polluted|clean|"
+    r"dirty|bad)|(?:como\s+esta|how\s*'?s|how\s+is)\s+(?:el\s+aire|the\s+air))\b"
+)
+# «cómo reducir la contaminación del aire», «what causes air pollution», «noticias sobre el smog»: the air as a
+# topic is looked up, not read.
+_AIR_TOPIC = (
+    r"\b(?:causa\w*|cause\w*|reduc\w*|evitar|prevenir|prevent\w*|combat\w*|efectos?|effects?|impact\w*|"
+    r"por\s*que|why|definicion|definition|significa|means?|historia|history|noticias|news|articulos?|articles?|"
+    r"estudios?|stud(?:y|ies)|ensayo|essay|tarea|homework|soluci\w*|solutions?)\b"
+)
 
-    return _has(folded, _WEATHER_WORDS) or (
+
+def _asks_air(folded: str) -> bool:
+    return _has(folded, AIR_QUALITY_WORDS) and not _has(folded, _AIR_TOPIC)
+
+
+def _names_weather(folded: str) -> bool:
+    """The weather is named: a weather word, the air, or «el tiempo» inside a weather frame."""
+
+    return _has(folded, _WEATHER_WORDS) or _asks_air(folded) or (
         _has(folded, _WEATHER_TIEMPO) and not _has(folded, _NOT_WEATHER_TIEMPO)
     )
+
+
+def weather_asks_air(text: str) -> bool:
+    """The weather question asks about the air (its quality, smog, particles)."""
+
+    return _asks_air(_fold(text))
+
+
+# Uso real tanda 4c «i'd like to know my current location» got «I don't have access to your current location»,
+# while the weather read of the same session said «Hoy en Curicó…»: the weather read locates this PC by its
+# public address and its receipt names the place, so where the person is, asked as a whole question, is that read.
+# «dónde estoy guardando esto», «comparte mi ubicación» or «en qué carpeta estoy» are not the place.
+_OWN_PLACE_QUESTION = re.compile(
+    r"(?:(?:cual|what)\s*(?:es|is|'?s)?\s+)?(?:mi|my)\s+(?:(?:current|actual|exact|exacta|approximate|present)\s+)?"
+    r"(?:ubicacion|localizacion|location|posicion|position|ciudad|city)"
+    r"(?:\s+(?:actual|exacta|aproximada|ahora|now|right\s+now|currently))*|"
+    r"(?:en\s+)?(?:donde|where)\s+(?:estoy|me\s+encuentro|estamos|am\s+i|are\s+we|i\s+am|we\s+are)"
+    r"(?:\s+(?:ahora|ahorita|ahora\s+mismo|en\s+este\s+momento|now|right\s+now|located|currently))*|"
+    r"(?:donde|where)\s+(?:esta|is)\s+(?:este|this)\s+(?:pc|equipo|computador|computadora|ordenador|computer)"
+    r"(?:\s+(?:located|ubicad[oa]))?|"
+    r"(?:en\s+)?(?:que|cual|what|which)\s+(?:ciudad|pais|region|comuna|lugar|city|country|town|state|place)\s+"
+    r"(?:estoy|me\s+encuentro|estamos|am\s+i\s+in|are\s+we\s+in|is\s+this(?:\s+pc)?)"
+    r"(?:\s+(?:ahora|now|right\s+now))*"
+)
+
+
+def asks_own_place(text: str) -> bool:
+    """The whole request asks where the person (this PC) is (see above)."""
+
+    body = _fold(public_query_body(text)).strip(" ¿?¡!.,;:")
+    return _OWN_PLACE_QUESTION.fullmatch(body) is not None
 
 
 # Uso real (MASSIVE weather_query, dev corpus 2026-09-23): the forecast asked with no asking verb in front.
@@ -174,6 +228,8 @@ def _forecast_question(folded: str) -> bool:
             _has(folded, _WEATHER_DAY_QUESTION)
             and (_has(folded, WEATHER_WHEN) or _has(folded, rf"\b{_WEEKDAY_NAME}\b"))
         )
+        # Tanda 4c «el aire está limpio hoy?»: the air said as the subject, asked without an asking word.
+        or (_asks_air(folded) and _has(folded, r"^[¿¡\s]*(?:el|la|the)\b"))
     )
 
 
@@ -222,7 +278,8 @@ _WEATHER_AMOUNT = (
     r"sobre|bajo|por\s+(?:encima|debajo)\s+de)\s+(?:\w+\s+){1,3}?(?:grados|degrees)\b"
 )
 _WEATHER_SUN_TIME = (
-    r"\b(?:(?:salida|puesta|caida|entrada)\s+del\s+sol|amanecer|amanece|atardecer|atardece|anochecer|anochece|"
+    # Tanda 4c «la hora exacta de la puesta de sol en Badalona»: «de sol» says the same as «del sol».
+    r"\b(?:(?:salida|puesta|caida|entrada)\s+del?\s+sol|amanecer|amanece|atardecer|atardece|anochecer|anochece|"
     r"oscurece|ocaso|(?:se\s+pone|sale|se\s+oculta|se\s+esconde)\s+el\s+sol|sunrise|sunset|dawn|dusk|"
     r"(?:the\s+)?sun\s+(?:rise|set|go\s+down|come\s+up))\b"
 )
@@ -274,8 +331,11 @@ def weather_asks_later_day(text: str) -> bool:
 def _weather_lookup_query(text: str) -> str | None:
     """WEB1445: the person's weather request without its request verbs, accents
     kept (the engine answers «va a llover mañana» and «clima hoy», not the folded
-    or verb-laden forms); None when the request is not a live weather lookup."""
+    or verb-laden forms); None when the request is not a live weather lookup.
+    Tanda 4c: where the person is (``asks_own_place``) is the same read."""
 
+    if asks_own_place(text):
+        return text.strip(" \t\r\n¿?¡!.,;:")
     folded = _fold(text)
     indirect = _asks_weather_indirectly(folded) or _forecast_question(folded)
     if not _live_weather_request(folded):
@@ -1080,6 +1140,12 @@ _WEATHER_HEADS = frozenset(
         "va",
         "weather",
         "what",
+        # Tanda 4c «Whats the air quality hoy?»: the apostrophe the keyboard left out, and the air named first.
+        "whats",
+        "air",
+        "calidad",
+        "aqi",
+        "esta",
         "will",
         "voy",
         "yes",
@@ -1150,7 +1216,9 @@ def _live_weather_request(folded: str) -> bool:
     # «i wish to know the weather in san francisco»: an unambiguous weather noun
     # names the lookup when the sentence has no other order head («escribe …
     # clima» types words, it does not look anything up).
-    weather_noun = not head and _has(folded, r"\b(?:weather|forecast|pronostico|clima)\b") and not _has(
+    weather_noun = not head and (
+        _has(folded, r"\b(?:weather|forecast|pronostico|clima)\b") or _asks_air(folded)
+    ) and not _has(
         folded, r"\bclima\s+(?:laboral|politico|social|economico|de\s+trabajo|organizacional|familiar)\b"
     )
     weather = (
@@ -2301,7 +2369,7 @@ _PUBLIC_PLACE = (
 # aquí», «around here», «close to me» say the same nearness.
 _NEAR_THE_PERSON = (
     r"\b(?:cerca\s+de\s+(?:mi|aqui|aca|donde\s+estoy)|cerca(?=[\s.!?]*$)|cercan[oa]s?|near\s+(?:me|here|by)|nearby|"
-    r"nearest|closest|close\s+(?:to\s+me|by)|por\s+(?:aqui|aca)|around\s+(?:here|me)|in\s+town|"
+    r"nearest|closest|close\s+(?:to\s+me|by)|por\s+(?:aqui|aca)|around\s+(?:here|me|town)|in\s+town|"
     # MASSIVE recommendation_locations / takeaway_query (dev corpus 2026-09-24) «qué bares hay a mi alrededor», «en mi
     # vecindario», «más cercano a mi ubicación», «alrededor del centro», «holidays in my location».
     r"a\s+mi\s+alrededor|alrededor\s+(?:mio|mia|de\s+(?:mi|aqui|aca)|del\s+centro)|"
@@ -2331,6 +2399,42 @@ def cinema_listing(text: str) -> bool:
     me»: what the cinemas show, never what this PC plays."""
 
     return _has(text, _SHOWING_FILMS) and (_has(text, _NEAR_THE_PERSON) or _has(text, _IN_THEATERS))
+
+
+# Uso real tanda 4c «en qué lugares puedo pedir comida para llevar cerca» and «dime que esta pasando en mi ciudad»
+# were searched without the place and found portals and news of another country. Near the person is near this
+# PC: the search carries this PC's city (``nearby``; only the city name leaves, read from the PC's public
+# address like the weather's). A request that names another place near which to look («cercanos al aeropuerto
+# de Santiago», «en Madrid», «la ciudad de Nueva York») is about that place, never the person's.
+_NEAR_ELSEWHERE = (
+    r"\b(?:cerca\s+del?|cercan[oa]s?\s+(?:a|al|de|del)|mas\s+cerca\s+del?|near(?:est)?\s+to|closest\s+to|"
+    r"close\s+to|near)\s+(?!(?:mi|me|mio|mia|aqui|aca|here|by|donde\s+estoy|where\s+i)\b)|"
+    r"\b(?:ciudad|region|provincia|pais|zona|barrio|comuna|estado|pueblo|city|country|state|town|area)\s+"
+    r"(?:de|of)\s+(?!(?:mi|my|aqui|here)\b)"
+)
+_PLACE_AFTER_IN = re.compile(r"\b(?:en|in|at)\s+(?P<word>[a-z][\w']*)")
+_NOT_A_PLACE_WORD = frozenset(
+    {
+        "mi", "mis", "my", "la", "el", "los", "las", "lo", "un", "una", "unos", "unas", "the", "a", "an", "this",
+        "these", "that", "esta", "este", "estos", "estas", "ese", "esa", "eso", "su", "sus", "your", "our",
+        "nuestro", "nuestra", "que", "cual", "cuales", "donde", "what", "which", "where", "how", "linea",
+        "online", "internet", "google", "casa", "home", "town", "general", "vivo", "persona", "person",
+        "efectivo", "cash", "serio", "realidad", "total", "todo", "todos", "todas", "caso", "order",
+    }
+)
+
+
+def near_the_person(text: str) -> bool:
+    """The request looks for something near the person, and names no other place to look near (see above)."""
+
+    folded = _fold(text)
+    if not _has(folded, _NEAR_THE_PERSON) or _has(folded, _NEAR_ELSEWHERE):
+        return False
+    rest = re.sub(_NEAR_THE_PERSON, " ", folded)
+    for found in _PLACE_AFTER_IN.finditer(rest):
+        if found.group("word") not in _NOT_A_PLACE_WORD and not is_window_phrase(rest[found.start():]):
+            return False
+    return True
 
 
 def _location_recommendation_request(text: str) -> bool:
@@ -2420,8 +2524,8 @@ def news_lookup_query(text: str) -> str | None:
         return None
     english = _has(_fold(body), r"^what\b")
     scope = found.group("scope")
-    # «around town» is near; «around the world» is not.
-    if _has(scope, _NEAR_THE_PERSON) or _has(scope, r"^around\s+town\b"):
+    # «around town» is near; «around the world» is not, nor «en la ciudad de Nueva York» (tanda 4c).
+    if near_the_person(scope):
         return "local news" if english else "noticias locales"
     written = _last_words(body, scope)
     if english:

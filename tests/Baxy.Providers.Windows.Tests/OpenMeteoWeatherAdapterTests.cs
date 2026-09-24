@@ -47,8 +47,8 @@ public sealed class OpenMeteoWeatherAdapterTests
             Assert.That(receipt.ErrorCode, Is.Null);
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(asked[0], Does.Contain("name=buenos%20aires"));
-            Assert.That(asked[1], Does.Contain("latitude=-34.6131").And.Contain("forecast_days=2")
-                .And.Contain("sunrise,sunset"));
+            Assert.That(asked.Single(url => url.StartsWith("https://api.open-meteo.com/", StringComparison.Ordinal)),
+                Does.Contain("latitude=-34.6131").And.Contain("forecast_days=2").And.Contain("sunrise,sunset"));
         });
         JsonElement result = receipt.Result!.Value;
         Assert.Multiple(() =>
@@ -127,6 +127,154 @@ public sealed class OpenMeteoWeatherAdapterTests
 
         Assert.That(receipt.ErrorCode, Is.EqualTo("weather_service_unavailable"));
     }
+
+    // Uso real tanda 4c «Digame el weather lunes 13 en North Carolina» read «Calvary,
+    // Georgia»: the geocoder lists first a hamlet that carries the state's name as an
+    // alias, and it indexes no state by name. A region named in either language is the
+    // region its places belong to, read by its own identifier.
+    private const string CarolinaEs =
+        """{"results":[{"id":4185731,"name":"Calvary","latitude":30.72697,"longitude":-84.35088,"feature_code":"PPL","admin1_id":4197000,"population":161,"country":"Estados Unidos","admin1":"Georgia"},{"id":4482347,"name":"North Carolina Zoological Park","latitude":35.63347,"longitude":-79.75948,"feature_code":"PRK","admin1_id":4482348,"country":"Estados Unidos","admin1":"Carolina del Norte"}]}""";
+
+    private const string CarolinaEn =
+        """{"results":[{"id":4185731,"name":"Calvary","latitude":30.72697,"longitude":-84.35088,"feature_code":"PPL","admin1_id":4197000,"population":161,"country":"United States","admin1":"Georgia"},{"id":4482347,"name":"North Carolina Zoological Park","latitude":35.63347,"longitude":-79.75948,"feature_code":"PRK","admin1_id":4482348,"country":"United States","admin1":"North Carolina"}]}""";
+
+    private const string CarolinaRegion =
+        """{"id":4482348,"name":"Carolina del Norte","latitude":35.50069,"longitude":-80.00032,"feature_code":"ADM1","population":11046024,"country":"Estados Unidos","admin1":"Carolina del Norte"}""";
+
+    private const string Air =
+        """{"current":{"time":"2026-09-24T08:00","interval":3600,"us_aqi":75,"pm2_5":32.4,"pm10":33.1}}""";
+
+    private static Func<string, CancellationToken, Task<string>> Service(
+        string spanish, string english, string? region = null, string? air = null, List<string>? asked = null) =>
+        (url, _) =>
+        {
+            asked?.Add(url);
+            if (url.Contains("/v1/get?", StringComparison.Ordinal))
+                return Task.FromResult(region ?? throw new System.Net.Http.HttpRequestException("no region"));
+            if (url.Contains("geocoding", StringComparison.Ordinal))
+                return Task.FromResult(url.Contains("language=en", StringComparison.Ordinal) ? english : spanish);
+            if (url.Contains("air-quality", StringComparison.Ordinal))
+                return Task.FromResult(air ?? throw new System.Net.Http.HttpRequestException("no air"));
+            return Task.FromResult(Forecast);
+        };
+
+    [TestCase("North Carolina")]
+    [TestCase("north carolina")]
+    [TestCase("Carolina del Norte")]
+    public async Task ARegionNamedInEitherLanguageIsTheRegionNotAHamletThatBorrowsItsName(string asked)
+    {
+        var urls = new List<string>();
+        var adapter = new OpenMeteoWeatherAdapter(Service(CarolinaEs, CarolinaEn, CarolinaRegion, asked: urls));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current", JsonSerializer.SerializeToElement(new { location = asked }), CancellationToken.None);
+
+        Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+        JsonElement result = receipt.Result!.Value;
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.GetProperty("location").GetString(), Is.EqualTo("Carolina del Norte"));
+            Assert.That(result.TryGetProperty("region", out _), Is.False);
+            Assert.That(result.GetProperty("country").GetString(), Is.EqualTo("Estados Unidos"));
+            Assert.That(urls, Has.Some.Contains("/v1/get?language=es&id=4482348"));
+            Assert.That(urls.Single(url => url.StartsWith("https://api.open-meteo.com/", StringComparison.Ordinal)),
+                Does.Contain("latitude=35.5007"));
+        });
+    }
+
+    [Test]
+    public async Task ACapitalThatSharesItsRegionsNameStaysTheCity()
+    {
+        const string spanish =
+            """{"results":[{"id":3868626,"name":"Curicó","latitude":-34.98279,"longitude":-71.23943,"feature_code":"PPLA","admin1_id":3868621,"population":282448,"country":"Chile","admin1":"Región de Curicó"}]}""";
+        const string english =
+            """{"results":[{"id":3868626,"name":"Curico","latitude":-34.98279,"longitude":-71.23943,"feature_code":"PPLA","admin1_id":3868621,"population":282448,"country":"Chile","admin1":"Curico Region"}]}""";
+        const string region =
+            """{"id":3868621,"name":"Región de Curicó","latitude":-32.9,"longitude":-71.2,"feature_code":"ADM1","population":1790219,"country":"Chile"}""";
+        var adapter = new OpenMeteoWeatherAdapter(Service(spanish, english, region));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current", JsonSerializer.SerializeToElement(new { location = "curico" }), CancellationToken.None);
+
+        Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Result!.Value.GetProperty("location").GetString(), Is.EqualTo("Curicó"));
+            Assert.That(receipt.Result!.Value.GetProperty("region").GetString(), Is.EqualTo("Región de Curicó"));
+        });
+    }
+
+    [Test]
+    public async Task AVillageThatSharesAStatesNameYieldsToTheState()
+    {
+        const string spanish =
+            """{"results":[{"id":1,"name":"Texas","latitude":20.1,"longitude":-98.9,"feature_code":"PPL","admin1_id":10,"population":993,"country":"México","admin1":"Estado de Hidalgo"},{"id":2,"name":"Texas City","latitude":29.38,"longitude":-94.9,"feature_code":"PPL","admin1_id":4736286,"population":47618,"country":"Estados Unidos","admin1":"Texas"}]}""";
+        const string region =
+            """{"id":4736286,"name":"Texas","latitude":31.25044,"longitude":-99.25061,"feature_code":"ADM1","population":22875689,"country":"Estados Unidos","admin1":"Texas"}""";
+        var adapter = new OpenMeteoWeatherAdapter(Service(spanish, spanish, region));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current", JsonSerializer.SerializeToElement(new { location = "Texas" }), CancellationToken.None);
+
+        Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+        Assert.That(receipt.Result!.Value.GetProperty("country").GetString(), Is.EqualTo("Estados Unidos"));
+    }
+
+    [Test]
+    public async Task APlaceKnownOnlyByAnAliasOfAnotherIsNotFound()
+    {
+        var adapter = new OpenMeteoWeatherAdapter(Service(CarolinaEs, CarolinaEn));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current", JsonSerializer.SerializeToElement(new { location = "Carolina del Sur" }), CancellationToken.None);
+
+        Assert.That(receipt.ErrorCode, Is.EqualTo("weather_place_not_found"));
+    }
+
+    // Uso real tanda 4c «Whats the air quality hoy?»: the air of the same place is read
+    // with its weather; when that service does not answer, the weather still does.
+    [Test]
+    public async Task TheAirOfThePlaceIsReadWithItsWeather()
+    {
+        var adapter = new OpenMeteoWeatherAdapter((url, _) => Task.FromResult(
+            url.Contains("ipwho", StringComparison.Ordinal) ? Located
+            : url.Contains("air-quality", StringComparison.Ordinal) ? Air
+            : Forecast));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current", JsonSerializer.SerializeToElement(new { }), CancellationToken.None);
+
+        Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+        JsonElement air = receipt.Result!.Value.GetProperty("airQuality");
+        Assert.Multiple(() =>
+        {
+            Assert.That(air.GetProperty("usAqi").GetInt32(), Is.EqualTo(75));
+            Assert.That(air.GetProperty("category").GetString(), Is.EqualTo("moderada"));
+            Assert.That(air.GetProperty("pm25").GetDouble(), Is.EqualTo(32.4));
+            Assert.That(air.GetProperty("pm10").GetDouble(), Is.EqualTo(33.1));
+        });
+    }
+
+    [Test]
+    public async Task AnAirServiceThatDoesNotAnswerLeavesTheWeatherAndNamesTheAbsence()
+    {
+        var adapter = new OpenMeteoWeatherAdapter(Service(Geocoded, Geocoded));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current", JsonSerializer.SerializeToElement(new { location = "Buenos Aires" }), CancellationToken.None);
+
+        Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+        Assert.That(receipt.Result!.Value.GetProperty("airQuality").ValueKind, Is.EqualTo(JsonValueKind.Null));
+    }
+
+    [TestCase(12, "buena")]
+    [TestCase(75, "moderada")]
+    [TestCase(130, "dañina para grupos sensibles")]
+    [TestCase(180, "dañina")]
+    [TestCase(250, "muy dañina")]
+    [TestCase(420, "peligrosa")]
+    public void TheAirIndexIsNamedByItsPublicScale(int usAqi, string expected) =>
+        Assert.That(OpenMeteoWeatherAdapter.AirCategory(usAqi), Is.EqualTo(expected));
 
     [TestCase(0, "despejado")]
     [TestCase(45, "niebla")]

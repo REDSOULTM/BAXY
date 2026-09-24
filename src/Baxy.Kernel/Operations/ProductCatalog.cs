@@ -1840,6 +1840,8 @@ public static class ProductCatalog
         // clima, no páginas sobre el clima. Lectura pública sin clave (Open-Meteo:
         // geocodificación del lugar nombrado, o la ubicación de este PC por su IP) con
         // temperatura, sensación, cielo, viento, humedad y la lluvia de hoy y mañana.
+        // Uso real tanda 4c: el recibo nombra el lugar leído (la ciudad de este PC
+        // cuando no se nombra ninguno) y trae la calidad del aire del mismo lugar.
         Descriptor(
             "weather.current",
             Schema(
@@ -1848,7 +1850,7 @@ public static class ProductCatalog
             OperationRisks.ReadOnly,
             "weather.current.openmeteo.read.v1",
             ToolExposure.Public,
-            "Lee el clima actual y el pronóstico de mañana del lugar nombrado, o de la ubicación de este PC si no se nombra ninguno, desde un servicio público sin clave, y devuelve temperatura, sensación térmica, estado del cielo, viento, humedad, probabilidad de lluvia y horas de salida y puesta del sol."),
+            "Lee el clima actual y el pronóstico de mañana del lugar nombrado, o de la ubicación de este PC si no se nombra ninguno, desde un servicio público sin clave, y devuelve temperatura, sensación térmica, estado del cielo, viento, humedad, probabilidad de lluvia, horas de salida y puesta del sol, calidad del aire y el lugar leído (la ciudad donde está este PC cuando no se nombra ninguno)."),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo N): la encuesta pide las
         // noticias, no nombres de portales. Titulares del día o de un tema nombrado
         // desde un canal RSS público, cada uno con su medio y su hora.
@@ -1889,13 +1891,16 @@ public static class ProductCatalog
             Schema(
                 [
                     Integer("limit", 1, 20),
+                    // Uso real tanda 4c: «cerca de mí», «en mi ciudad» se buscan con
+                    // la ciudad de este PC (sólo su nombre) añadida a la consulta.
+                    Boolean("nearby", types: NullableBoolean),
                     String("query", maximumUtf8Bytes: 2_000, nonWhitespace: true),
                 ],
                 ["query"]),
             OperationRisks.ReadOnly,
             "web.search.provider.results.v1",
             ToolExposure.Public,
-            "Busca mediante un proveedor web configurado y devuelve resultados estructurados acotados."),
+            "Busca mediante un proveedor web configurado y devuelve resultados estructurados acotados; con nearby, busca cerca de la ciudad donde está este PC."),
         Descriptor(
             "wifi.connect",
             Schema([String("profileId", maximumLength: 128, nonWhitespace: true)], ["profileId"]),
