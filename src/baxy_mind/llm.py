@@ -11769,7 +11769,18 @@ def compose_visible_defect(
         if muted and unmuted_ok is not None:
             return "reversed_mute"
         if not muted:
-            if re.search(r"silenci|\bmuted\b", folded) and unmuted_ok is None:
+            # Tanda 6 «Reactiva el speaker»: «El speaker estaba silenciado y ahora está activo» tells the observed
+            # baseline and was rejected, costing a retry. The past mute is the fact when the baseline was muted.
+            baseline = observed_dict.get("baseline")
+            was_muted = observed_dict.get("baselineMuted") is True or (
+                isinstance(baseline, dict) and baseline.get("muted") is True
+            )
+            told_now = (
+                re.sub(r"\b(?:estaba|estaban|was|were|had\s+been)\s+(?:silenciad[oa]s?|muted)\b", " ", folded)
+                if was_muted
+                else folded
+            )
+            if re.search(r"silenci|\bmuted\b", told_now) and unmuted_ok is None:
                 return "reversed_mute"
         # Owner's test 2026-09-21 (turn 205): «Tu micrófono está activo» names
         # the observed unmute by its device; the state word need not be «mute».

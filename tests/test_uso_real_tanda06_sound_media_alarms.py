@@ -25,9 +25,12 @@ controls that must keep their own reading.
 
 from __future__ import annotations
 
+import json
+
 import pytest
 
 from baxy_mind import __main__ as mind
+from baxy_mind.llm import compose_visible_defect
 from baxy_mind.semantic import levels
 from baxy_mind.semantic.patterns import resolve_explicit_clarification_intent, resolve_explicit_effects
 from baxy_mind.semantic.reading import read
@@ -235,3 +238,41 @@ def test_several_alarms_with_their_times_are_each_scheduled(text: str, evidence:
 def test_alarms_with_an_unsaid_period_or_a_repetition_are_not_expanded(text: str) -> None:
     effects = resolve_explicit_effects(text, _ALARMS)
     assert effects is None or effects.operations.count("notification.schedule") < 2
+
+
+# --- 6. the unmute told from its observed baseline ----------------------------------------------------------------
+
+_UNMUTED_FROM_MUTED = json.dumps(
+    {
+        "kind": "operation", "operation": "audio.mute", "polarity": "success", "verified": True, "succeeded": True,
+        "observed": {
+            "operation": "audio.mute", "targetId": "default_output",
+            "baseline": {"volumePercent": 0, "muted": True}, "final": {"volumePercent": 0, "muted": False},
+            "applied": True, "reconciled": False,
+        },
+    }
+)
+_UNMUTED_FROM_UNMUTED = _UNMUTED_FROM_MUTED.replace('"volumePercent": 0, "muted": true}, "final"', '"volumePercent": 0, "muted": false}, "final"')
+
+
+@pytest.mark.parametrize(
+    ("draft", "said"),
+    [
+        ("El altavoz estaba silenciado y ahora está activo, con el volumen en 0%.", "reactiva los parlantes"),
+        ("The speaker was muted; it is on now, at 0% volume.", "turn the speakers back on"),
+        ("El speaker está activo y su volumen es 0%.", "reactiva los parlantes"),
+    ],
+)
+def test_the_unmute_may_tell_the_mute_it_undid(draft: str, said: str) -> None:
+    assert compose_visible_defect(draft, "status", said, {"situation": _UNMUTED_FROM_MUTED}) == ""
+
+
+def test_the_unmute_still_may_not_claim_the_sound_is_muted() -> None:
+    assert compose_visible_defect(
+        "El altavoz está silenciado.", "status", "reactiva los parlantes", {"situation": _UNMUTED_FROM_MUTED},
+    ) == "reversed_mute"
+    # A mute that never was is not a baseline to tell.
+    assert compose_visible_defect(
+        "El altavoz estaba silenciado y ahora está activo.", "status", "reactiva los parlantes",
+        {"situation": _UNMUTED_FROM_UNMUTED},
+    ) == "reversed_mute"
