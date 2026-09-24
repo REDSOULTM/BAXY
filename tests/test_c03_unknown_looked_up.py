@@ -94,3 +94,21 @@ def test_own_things_identity_and_known_answers_are_not_searched(text: str, reply
 
     assert result["kind"] == "conversation"
     assert result["effectOperations"] == []
+
+
+# Tanda 4e: «oye compárteme algún chiste para hacerme feliz» came back from joke sites. Content asked for is written;
+# a draft that happens to say «no sé» is not a question about the public world.
+@pytest.mark.parametrize(
+    ("text", "reply"),
+    [
+        ("oye compárteme algún chiste para hacerme feliz", "No sé si te va a gustar, pero ahí va uno."),
+        ("recítame un poema de amor", "No sé escribir como Neruda, pero aquí va."),
+        ("tell me something funny", "I don't know any new ones, but here goes."),
+        ("cuéntame una historia de piratas", "No conozco esa historia, pero te invento una."),
+    ],
+)
+def test_written_content_is_never_looked_up(text: str, reply: str) -> None:
+    result = _turn(text, reply)
+
+    assert result["kind"] == "conversation"
+    assert result.get("operation") != "web.search"

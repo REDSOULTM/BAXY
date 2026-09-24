@@ -294,7 +294,9 @@ _CLOCK_ELSEWHERE = (
 # horario» is the zone itself, not a schedule.
 _CLOCK_NOT_A_READ = (
     r"\b(?:alarma|alarm|timer|temporizador|recuerda\w*|recorda\w*|remind|avisa\w*|(?<!huso\s)horario|schedule|"
-    r"a\s+que\s+hora|what\s+time\s+(?:does|do|did|will|should|shall|is\s+the|are\s+the))\b"
+    r"a\s+que\s+hora|what\s+time\s+(?:does|do|did|will|should|shall|is\s+the|are\s+the)|"
+    # «la hora exacta de la puesta de sol en Badalona»: the hour of the sun there is the weather read's, not a clock.
+    r"(?:puesta|salida|caida|entrada)\s+del?\s+sol|amanecer|atardecer|anochecer|ocaso|sunrise|sunset|dawn|dusk)\b"
 )
 
 

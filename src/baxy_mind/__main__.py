@@ -82,6 +82,7 @@ from .effect_intent import (
 from .llm import (
     ConversationReplyContractError,
     LlmRuntime,
+    _conversation_presentation_shape,
     _literal_recall_reference,
     _merged_observed,
     _native_selection_description,
@@ -2804,6 +2805,9 @@ _NOT_A_PUBLIC_LOOKUP = re.compile(
     r"\b(?:de|del|en|a|al|el|la|los|las|un|una|para|con|por|sobre|entre|"
     r"the|of|in|at|to|for|on|with|about|a|an)[\s?.!¿¡]*$"
 )
+
+# Presentation shapes whose content BAXY writes itself (llm._conversation_presentation_shape).
+_WRITTEN_CONTENT_SHAPES = frozenset({"free_content", "content_draft", "roleplay_draft"})
 
 
 # A reply that says BAXY does not know or cannot tell (folded text).
@@ -8915,6 +8919,11 @@ def _decide_turn_result(
             and not _names_own_data(objective)
             # «rate five», «tuitea a Vodafone…»: a known limit is an order, not something to look up.
             and not known_unsupported_effect_request(objective, available_operations)
+            # Tanda 4e «oye compárteme algún chiste para hacerme feliz» was searched and answered with joke
+            # sites: a joke, a story or a poem asked for is written, never looked up.
+            and _conversation_presentation_shape(
+                objective, conversation_kind=presentation_conversation_kind, has_history=False,
+            ) not in _WRITTEN_CONTENT_SHAPES
         ):
             shortlist = _shortlist_with_required_effects(shortlist, ("web.search",), planner_catalog)
             decision = validate_turn_decision(
