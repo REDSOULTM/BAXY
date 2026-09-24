@@ -154,7 +154,12 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             {
                 return receipt;
             }
-            lastFailure = receipt;
+            // Tanda 5: a failure that read its player's state (Result: the YouTube tab's video was not playing) is
+            // the answer when no later adapter finds a player; a later «no client running here» never hides it.
+            if (lastFailure?.Result is null)
+            {
+                lastFailure = receipt;
+            }
         }
         if (lastFailure is not null)
         {

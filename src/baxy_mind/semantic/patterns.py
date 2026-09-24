@@ -4929,8 +4929,9 @@ def _authenticated_application_request(
         re.IGNORECASE,
     )
     if put_app is not None:
-        put_key = _application_name_key(put_app.group("app"))
-        if put_key in names.keys:
+        # Tanda 5: an installed app named by any of its bilingual names («ponme la galería»).
+        put_key = _catalog_alias_key(_application_name_key(put_app.group("app")), names.keys)
+        if put_key is not None:
             return "app.open", ((put_app.start("app"), put_key),)
     for installed_query, operation in (
         (False, "app.open"),
@@ -4965,6 +4966,19 @@ def _authenticated_application_desired_open(
     if occurrence is None or not _application_desire_is_positive(folded):
         return None
     found = list(occurrence.finditer(folded))
+    if not found:
+        # Tanda 5 «quiero que abras la galería»: the app named by one of its bilingual names, alone after the
+        # desire (courtesy apart), is the installed app that name stands for.
+        request = _application_open_request(folded)
+        if request is None or request.group("desire") is None:
+            return None
+        said = request.group("target")
+        for form, offset in _application_target_forms(said):
+            key = _catalog_alias_key(_application_name_key(form), catalog.keys)
+            rest = said[offset + len(form) :].strip(" ¿?¡!,:;.-")
+            if key is not None and (not rest or _has(rest, r"^(?:por favor|porfa|please)$")):
+                return request.start("target") + offset, key
+        return None
     if len(found) != 1:
         return None
     target = found[0]
@@ -12004,6 +12018,8 @@ def _resolve_clause_effects(
         and not near_catalog_game_candidates(text, authenticated_games)
         and not near_catalog_application_candidates(text, authenticated_applications)
         and resolve_application_catalog_app_id(text, authenticated_applications) is None
+        # Tanda 5 «launch my home screen»: the PC's home screen is no game title.
+        and not minimize_all_request(folded)
     ):
         # REOPEN1993 grupo S (D1/D11: the survey is the specification): a
         # download or install is the real install (the adapter says «not in

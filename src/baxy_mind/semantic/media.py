@@ -295,8 +295,10 @@ _REMOVABLE_MEDIA = (
 _RADIO_BAND = r"(?P<band>f\s*\.?\s*m|a\s*\.?\s*m)\.?"
 # Uso real 2026-09-24 «toca bbc radio uno», «enciende el emisora novecientos cincuenta y uno», «abre los cuarenta
 # estación rock»: a station is played by any verb that plays or switches on a radio.
+# Tanda 5 «¿puedes poner …?»: the polite request leaves the infinitive («poner», «tocar») or «me pones».
 _RADIO_PLAY = (
-    r"(?:pon|ponme|pone|poneme|reproduce|reproduci|reproducir|play|start|inicia|sintoniza|sintonizame|sintonice|"
+    r"(?:pon|ponme|pone|poneme|poner|ponerme|me\s+pones|reproduce|reproduci|reproducir|play|start|inicia|sintoniza|"
+    r"sintonizame|sintonice|tocar|tocarme|"
     r"sintonizar|toca|tocame|enciende|prende|activa|abre|abri|open|turn\s+on|put\s+on|"
     r"tune(?:\s+in)?(?:\s+to)?|(?:quiero\s+)?escuchar|listen\s+to|i\s+want\s+to\s+(?:listen\s+to|hear))"
 )
@@ -313,6 +315,20 @@ _RADIO_REQUEST = re.compile(
     rf"(?:\s+{_RADIO_COURTESY})*"
 )
 _RADIO_NOT_A_STATION = r"\b(?:wifi|wi\s+fi|bluetooth|wireless|inalambrica|alarma|alarm|despertador)\b"
+# Tanda 5 «¿puedes poner catalunya informació, por favor?» played an old YouTube upload: a station named only by its
+# own name carries no station noun. What still says it is a broadcaster: a verb that only tunes stations
+# («sintoniza éxitos clásicos»), or a broadcaster's word in the name — a network or a wave in front («cadena ser»,
+# «onda cero»), a news service behind a place or a name («catalunya informació»), with or without «en directo».
+# Words for broadcasters, not a list of stations.
+_TUNING_VERB = r"(?:sintoniza|sintonizame|sintonice|sintonizar|tune(?:\s+in)?(?:\s+to)?)"
+_LIVE_BROADCAST = re.compile(r"(?P<name>.+?)\s+(?:en\s+(?:directo|vivo)|live)")
+_NOT_A_NAME_HEAD = r"(?:el|la|los|las|un|una|mi|mis|tu|tus|su|sus|mas|menos|toda|todo|mucha|poca|esa|esta|de|del|more|some|the|a|my)"
+_BROADCASTER_NAME = re.compile(
+    r"(?:cadena|onda)\s+(?!(?:de|del|of)\b)[a-z0-9]+(?:\s+[a-z0-9]+){0,2}|ondacero(?:\s+[a-z0-9]+)?|"
+    rf"(?!{_NOT_A_NAME_HEAD}\b)[a-z0-9]+(?:\s+[a-z0-9]+)?\s+informacio(?:n)?"
+)
+
+
 def _spoken_number(words: str) -> int | None:
     """«novecientos noventa y nueve» → 999, «eight hundred and ninety seven» → 897; None if not all number."""
 
@@ -358,11 +374,12 @@ def radio_station_query(text: str) -> str | None:
         named = re.fullmatch(
             rf"{_STATION_NOUN}\s+(?P<name>.+)|(?P<before>.+?)\s+radio|(?P<inside>.+?\s+{_STATION_NOUN}\s+.+)", station,
         )
+        if named is None:
+            return _station_named_by_itself(folded, station)
         # «un canal de radio para…», «mi radio», «la estación de radio», «the radio station»: a station that is
         # not named by its name.
         if (
-            named is None
-            or re.match(r"(?:un|una|unos|unas|a|an|some|algun|alguna|cualquier|mi|mis|my|tu|your)\b", station)
+            re.match(r"(?:un|una|unos|unas|a|an|some|algun|alguna|cualquier|mi|mis|my|tu|your)\b", station)
             or not re.sub(rf"\b(?:{_STATION_NOUN}|canal|channel|de|del|of|la|el|the)\b", "", station).strip()
             # «pon a delilah en la radio del dormitorio»: the radio as the place something plays is a device.
             or re.search(rf"\b(?:en|in|on|a|al|to|por)\s+(?:(?:la|el|the|mi|my|tu|your)\s+)?{_STATION_NOUN}\b", station)
@@ -381,6 +398,26 @@ def radio_station_query(text: str) -> str | None:
     if _has(query, _RADIO_NOT_A_STATION) or len(query.encode("utf-8")) > 200:
         return None
     return f"{query} en vivo"
+
+
+def _station_named_by_itself(folded: str, station: str) -> str | None:
+    """The live query of a broadcaster said with no station noun (see _BROADCASTER_NAME), or None. Only an order to
+    play or tune: asking what plays names a station by its noun or its dial."""
+
+    if re.match(_RADIO_ASK, folded):
+        return None
+    live = _LIVE_BROADCAST.fullmatch(station)
+    name = live.group("name") if live is not None else station
+    # «pon música en vivo», «pon Tesla en vivo»: live alone is a live recording, not a broadcaster; it only goes
+    # with one the words above name.
+    generic = r"(?:musica|music|canciones?|songs?|temas?|videos?|tele|television|tv|partido|juego|game|algo|something)"
+    if re.match(rf"(?:{_NOT_A_NAME_HEAD}|lo|it)\b", name) or re.fullmatch(generic, name) or not (
+        re.match(_TUNING_VERB, folded) or _BROADCASTER_NAME.fullmatch(name)
+    ):
+        return None
+    if _has(name, _RADIO_NOT_A_STATION) or len(name.encode("utf-8")) > 200:
+        return None
+    return f"{name} en vivo"
 
 
 # The kinds of music people name by kind (folded). A closed list of words for music, not of providers or apps.
@@ -406,6 +443,18 @@ _NOT_NAMED_ALONE = (
 )
 
 
+_SEARCH_WORDS = r"(?:busca|buscame|buscar|encuentra|encuentrame|search(?:\s+for)?|find(?:\s+me)?|look\s+(?:for|up))"
+# «reprodúcelo», «reprodúce lo» (the clitic heard apart), «pon uno», «play it», «play one».
+_PLAY_WHAT_WAS_FOUND = (
+    r"(?:(?:reproduce|pon|ponme|toca|tocame)\s*(?:l[oa]s?|uno|una|alguno|alguna)|ponmel[oa]|"
+    r"(?:play|put\s+on)\s+(?:it|one|them)|put\s+it\s+on)"
+    r"(?:\s+(?:por\s+favor|porfa|please|ahora|now))?"
+)
+# What names only a kind of show to listen to: the search picks one («un podcast», «podcasts», «an audiobook»).
+_BARE_SHOW_KIND = re.compile(
+    r"(?:(?:un|una|unos|unas|el|la|los|las|algun|alguna|algunos|algunas|a|an|some|any|the)\s+)?"
+    r"(?:podcasts?|audiolibros?|audiobooks?)(?:\s+(?:cualquiera|any))?"
+)
 # Uso real 2026-09-23 (69 media rows): the thing to listen to was named and the turn still went to a
 # refusal, a web search or a question, because the order was not said as «pon …». These are the ways
 # people say it otherwise; each becomes the order «pon/play <what they named>» in their own words, and
@@ -436,6 +485,9 @@ _SPOKEN_MEDIA_ORDER = re.compile(
     # «enciende la música», «prende mis canciones»: switching the music on is asking for it.
     r"|(?:enciende|prende|activa)\s+(?P<switch_on>(?:(?:la|el|las|los|mi|mis|tu|tus)\s+)?"
     r"(?:musica|canciones|playlist|podcasts?)\b.*)"
+    # Tanda 5 «busca podcast y reprodúce lo»: searching for a thing and playing it (or one of them) is the order
+    # to play it; the search was never the thing to play (it became the query «busca … y»).
+    rf"|(?P<search>{_SEARCH_WORDS})\s+(?P<searched>\S.{{0,160}}?)\s*,?\s+(?:y|e|and)\s+{_PLAY_WHAT_WAS_FOUND}"
     # The thing said first and the order after it: «podcast especial shadi reprodúcelo».
     r"|(?P<fronted>\S.{0,160}?)\s+(?:reproducelo|reproducela|ponlo|ponla|ponmelo|ponmela|tocalo|tocala)"
     # A thing to listen to named alone: «nueva música pop», «aleatorias canciones de coldplay»; never
@@ -460,7 +512,9 @@ _SPOKEN_MEDIA_ORDER = re.compile(
     r"|(?:\S.{0,80}?\s+)?(?:how\s+about|what\s+about|why\s+not)\s+(?:playing|putting\s+on)\s+(?P<english_suggested>\S.*)"
     r"|(?:turn|switch|put)\s+on\s+(?P<english_switch_on>(?:(?:the|my|some)\s+)?(?:music|songs|playlist|podcasts?)\b.*)"
     # «reanuda el podcast» is an order about the podcast, not one named in English.
+    # Tanda 5: «busca podcast» searches; the search verb is no part of a title («busca podcast» was played).
     r"|(?P<english_nominal>(?!(?:i|you|we|he|she|they|it|this|that|the|my|your|our|his|her|their)\b)"
+    rf"(?!{_SEARCH_WORDS}\s)"
     r"(?!.*\b(?:el|la|los|las|un|una|mi|mis|tu|tus|su|sus|del|de)\b)"
     r"(?:(?:new|some|random|good|latest)\s+)?[a-z0-9&'-]+(?:\s+[a-z0-9&'-]+)?\s+(?:music|songs|podcast|audiobook))"
     r")[\s.!?]*"
@@ -480,10 +534,20 @@ def spoken_media_order(text: str) -> str | None:
     found = _SPOKEN_MEDIA_ORDER.fullmatch(folded)
     if found is None:
         return None
-    kind, rest = next((name, value) for name, value in found.groupdict().items() if value is not None)
+    kind, rest = next(
+        (name, value) for name, value in found.groupdict().items() if value is not None and name != "search"
+    )
     rest = _original_clause(text, rest.strip())
     if kind == "just":
         return rest
+    if kind == "searched":
+        verb = "pon" if found.group("search").startswith(("bus", "encuentra")) else "play"
+        # A show named only by its kind leaves the pick to the search, which the local player's YouTube search
+        # makes: nothing is missing to ask. Bare music keeps its own question (MUSIC1571).
+        if _BARE_SHOW_KIND.fullmatch(_fold(rest).strip(" .!?")) is not None:
+            kind_said = re.sub(r"\s+(?:cualquiera|any)$", "", rest.strip(" .!?"), flags=re.IGNORECASE)
+            return f"{verb} {kind_said} {'en' if verb == 'pon' else 'on'} youtube"
+        return f"{verb} {rest}"
     verb ="play" if kind.startswith("english") or (kind == "genre_alone" and _has(folded, r"\b(?:now|please)\b")) else "pon"
     if kind == "listen":
         rest = re.sub(r"^a\s+", "", rest, flags=re.IGNORECASE)

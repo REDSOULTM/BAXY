@@ -445,11 +445,24 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         {
             return ExternalJson.FailureBeforeEffect(operation, "youtube_tab_not_found");
         }
+        if (control.ErrorCode == YouTubeVideoNotPlaying)
+        {
+            // Nothing was sent to the tab. The failure carries what was read, so a later adapter that finds no
+            // player of its own does not replace it (WindowsExternalCapabilityProvider.InvokeAsync).
+            return new ExternalCapabilityReceipt(
+                operation, EffectObserved: false, Verified: false, YouTubeTabResult(action, control), control.ErrorCode);
+        }
         if (!control.Verified)
         {
             return effectBoundary.Failure(operation, control.ErrorCode, control.EffectObserved);
         }
-        JsonElement result = ExternalJson.Create(writer =>
+        return ExternalJson.Success(operation, YouTubeTabResult(action, control), control.EffectObserved);
+    }
+
+    internal const string YouTubeVideoNotPlaying = "youtube_playing_video_not_found";
+
+    private static JsonElement YouTubeTabResult(string action, CdpMediaControlResult control) =>
+        ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
@@ -464,8 +477,6 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteString("authority", "youtube_cdp_video_postread");
             writer.WriteEndObject();
         });
-        return ExternalJson.Success(operation, result, control.EffectObserved);
-    }
 
     private async ValueTask<ExternalCapabilityReceipt> ReadYouTubeTabAsync(
         string operation,
@@ -1725,6 +1736,12 @@ internal class CdpBrowserSession : IDisposable
             if (wanted.Length == 0)
                 return new(false, false, action, before[1], before[0], targetId, status,
                     "youtube_tab_action_unsupported");
+            // Tanda 5 «pausar el audiolibro»: the tab's video had ended; the pause was sent, nothing changed, and the
+            // reply said the change «could not be observed». Pausing or stopping a video that is not playing
+            // changes nothing: the state is the fact, read before anything is sent.
+            if (wanted == "paused" && before[2] == "paused")
+                return new(false, false, action, before[1], before[0], targetId, status,
+                    WebBrowserAdapter.YouTubeVideoNotPlaying);
             string command = wanted == "paused"
                 ? "(()=>{const v=document.querySelector('video');if(v)v.pause();return 'ok';})()"
                 : "(()=>{const v=document.querySelector('video');if(v)v.play().catch(()=>{});return 'ok';})()";

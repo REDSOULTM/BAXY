@@ -218,8 +218,8 @@ def _audio_mute_domain(text: str) -> bool:
             r"(?:(?:el|la|los|las|the|mi|my)\s+)?"
             r"(?:(?:computador|computadora|computer|equipo|pc|sistema|"
             r"system|notebook|laptop)\s+)?"
-            # «apaga los sonidos»: the plural is the same sound.
-            r"(?:audio|sonidos?|sounds?|musica|music)\b|"
+            # «apaga los sonidos»: the plural is the same sound. Tanda 5 «silenciar el volumen»: the volume too.
+            r"(?:audio|sonidos?|sounds?|musica|music|volumen|volume)\b|"
             rf"\b{_MUTE_VERB}\s+"
             r"(?:(?:el|la|los|las|the|mi|my)\s+)?"
             r"(?:(?:computador|computadora|computer|equipo|pc)\s+)?"
@@ -236,6 +236,16 @@ def _audio_mute_domain(text: str) -> bool:
             r"(?:(?:el|la|the|mi|my|this|este|esta)\s+)?"
             r"(?:computador|computadora|computer|compu|equipo|pc|sistema|system|notebook|laptop)"
             r"(?:\s+(?:please|pls|por\s+favor|porfa))?[\s.!?]*$|"
+            # Tanda 5 «silenciar la configuraciones» (MASSIVE audio_volume_mute) asked about Do Not Disturb: settings
+            # make no sound of their own, so silencing the PC's settings (or its sound, audio or system settings) is
+            # silencing the PC. Settings of something else («de notificaciones») are that other thing; and the
+            # silence verb said alone has nothing else to fall on.
+            r"^[¿?¡!\s]*(?:silencia|silenciar|mutea|mutear|mute)"
+            r"(?:\s+(?:(?:el|la|los|las|the|mi|mis|my)\s+)?"
+            r"(?:configuracion(?:es)?|config|ajustes?|settings?)"
+            r"(?:\s+(?:de|del|of)\s+(?:(?:el|la|the)\s+)?"
+            r"(?:sonido|audio|volumen|sound|volume|sistema|system|windows|pc|equipo|computador|computadora|computer))?)?"
+            r"(?:\s+(?:please|pls|por\s+favor|porfa|ya|ahora|now))?[\s.!?]*$|"
             # The mute or the sound as a switch, the sound given back and a noise to stop (semantic.lexicon).
             rf"\b(?:{lexicon.UNMUTE_WORDS}|{lexicon.MUTE_WORDS})\b|"
             r"\b(?:pon|poner|ponle|deja|dejar|put|leave)\s+"

@@ -2774,6 +2774,69 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Tanda 5 «pausar el audiolibro»: the tab's video had ended; the reply said the pause «could not be observed».
+    [TestCase("pause")]
+    [TestCase("stop")]
+    public async Task YouTubeTabControlSaysTheVideoWasNotPlayingWithoutClaimingAnEffect(string action)
+    {
+        using TemporaryDirectory temporary = new();
+        var browser = new StubYouTubeTabSession(
+            temporary.Path,
+            new CdpMediaControlResult(false, false, action, "Emisión inaugural - YouTube",
+                "https://www.youtube.com/watch?v=abc", "t1", "stopped", WebBrowserAdapter.YouTubeVideoNotPlaying));
+        using var http = new HttpClient();
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.control", Json($$"""{"action":"{{action}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_playing_video_not_found"));
+            Assert.That(receipt.Result?.GetProperty("playbackStatus").GetString(), Is.EqualTo("stopped"));
+        });
+    }
+
+    [Test]
+    public async Task ProviderKeepsTheFailureThatReadItsPlayerOverALaterAdapterWithNoPlayer()
+    {
+        var tab = new StubExternalAdapter(new ExternalCapabilityReceipt(
+            "media.control", false, false, Json("""{"playbackStatus":"paused"}"""),
+            "youtube_playing_video_not_found"));
+        var client = new StubExternalAdapter(new ExternalCapabilityReceipt(
+            "media.control", false, false, null, "spotify_client_not_running"));
+        using var provider = new WindowsExternalCapabilityProvider([tab, client]);
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
+            "media.control", Json("""{"action":"pause"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_playing_video_not_found"));
+            Assert.That(tab.Calls, Is.EqualTo(1));
+            // A later adapter still gets its chance: another player may be the one playing.
+            Assert.That(client.Calls, Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task ProviderStillReportsTheLastFailureWhenNoAdapterReadItsPlayer()
+    {
+        var first = new StubExternalAdapter(new ExternalCapabilityReceipt(
+            "media.control", false, false, null, "youtube_tab_not_found"));
+        var second = new StubExternalAdapter(new ExternalCapabilityReceipt(
+            "media.control", false, false, null, "spotify_client_not_running"));
+        using var provider = new WindowsExternalCapabilityProvider([first, second]);
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
+            "media.control", Json("""{"action":"pause"}"""), CancellationToken.None);
+
+        Assert.That(receipt.ErrorCode, Is.EqualTo("spotify_client_not_running"));
+    }
+
     [TestCase("media.control", """{"action":"pause"}""")]
     [TestCase("media.status", "{}")]
     public async Task YouTubeTabControlStandsAsideWithoutASessionTab(string operation, string arguments)

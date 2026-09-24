@@ -1400,7 +1400,8 @@ _CONNECTED_INVENTORY = (
 )
 
 
-_OPEN = r"(?:abre|abres|abrir|abri|abris|abrime|avri|open|launch|lanza|inicia|start|ejecuta|arranca|arrancame)"
+# Tanda 5: «ábreme la galería» is the tú form of «abrime»; it was read by no opener.
+_OPEN = r"(?:abre|abres|abrir|abri|abris|abrime|abreme|avri|open|launch|lanza|inicia|start|ejecuta|arranca|arrancame)"
 
 
 _MEDIA_RESUME_VERB = r"(?:reanuda|reanudar|resume|segui|seguir|sigue|continua|continuar|continue)"

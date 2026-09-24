@@ -230,6 +230,34 @@ _CATALOG_NAME_ALIASES: tuple[tuple[frozenset[str], tuple[str, ...]], ...] = (
     # «Navegador Opera GX»; people say «Opera» or «Opera GX».
     (frozenset({"opera", "opera gx", "navegador opera", "navegador opera gx", "opera browser"}),
      ("navegador opera gx", "opera gx", "opera")),
+    # Tanda 5 «Abre el gallery» asked which folder: Windows names its own apps in the language it is installed
+    # in («Fotos» on this PC, «Photos» on an English one), and people name them in theirs, or by what they show
+    # (the Photos app opens on its Gallery). Each built-in app below is found by any of its Spanish or English
+    # names, whichever of them the Start catalog carries.
+    (frozenset({"fotos", "photos", "microsoft photos", "fotos de microsoft", "app de fotos", "aplicacion de fotos",
+                "photos app", "gallery", "galeria", "galeria de fotos", "photo gallery", "visor de fotos",
+                "photo viewer"}),
+     ("fotos", "photos", "microsoft photos")),
+    (frozenset({"camara", "camera", "camara de windows", "windows camera", "app de camara", "camera app"}),
+     ("camara", "camera")),
+    (frozenset({"reloj", "clock", "alarmas", "alarms", "alarmas y reloj", "alarms & clock", "alarms and clock"}),
+     ("reloj", "clock", "alarmas y reloj", "alarms & clock")),
+    (frozenset({"calendario", "calendar", "app de calendario", "calendar app"}), ("calendario", "calendar")),
+    (frozenset({"mapas", "maps", "app de mapas", "maps app"}), ("mapas", "maps")),
+    (frozenset({"herramienta recortes", "herramienta de recortes", "recortes", "snipping tool"}),
+     ("herramienta recortes", "recortes", "snipping tool")),
+    (frozenset({"grabadora", "grabadora de sonido", "grabadora de voz", "sound recorder", "voice recorder"}),
+     ("grabadora de sonido", "sound recorder", "grabadora de voz", "voice recorder")),
+    (frozenset({"reproductor multimedia", "reproductor de medios", "media player"}),
+     ("reproductor multimedia", "media player")),
+    (frozenset({"notas rapidas", "notas adhesivas", "sticky notes"}), ("notas rapidas", "sticky notes")),
+    (frozenset({"microsoft store", "tienda de microsoft", "tienda microsoft", "tienda de windows", "windows store"}),
+     ("microsoft store",)),
+    (frozenset({"administrador de tareas", "task manager"}), ("administrador de tareas", "task manager")),
+    (frozenset({"panel de control", "control panel"}), ("panel de control", "control panel")),
+    (frozenset({"simbolo del sistema", "command prompt"}), ("simbolo del sistema", "command prompt")),
+    (frozenset({"lupa", "magnifier"}), ("lupa", "magnifier")),
+    (frozenset({"narrador", "narrator"}), ("narrador", "narrator")),
 )
 
 

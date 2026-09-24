@@ -6388,7 +6388,8 @@ def _explicit_arguments_from_evidence(
         # safely ambiguous.
         positive_surface = re.sub(false_pattern, " ", folded)
         true_signal = bool(
-            re.search(r"\b(?:mute|silencia|silenciar)\b", positive_surface)
+            # Tanda 5: «mutea el pc» is read by the same verbs as the reader (audio._MUTE_VERB).
+            re.search(r"\b(?:mute|mutea|mutear|muteame|silencia|silenciar|silenciame)\b", positive_surface)
             or re.search(rf"\b{effect_intent._MUTE_PREDICATIVE_VERB}\b", positive_surface)
             or re.search(rf"\b(?:{semantic_lexicon.MUTE_WORDS})\b", positive_surface)
             or re.search(semantic_lexicon.BARE_SILENCE, positive_surface)

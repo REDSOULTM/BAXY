@@ -158,6 +158,8 @@ _MINIMIZE_ALL_REQUEST = re.compile(
 # to it (Win+D) is every window minimized. «abre el escritorio» stays the
 # Desktop folder: only a movement or showing verb reads as the desktop view.
 # Tanda 4 «Abre el start screen» was a limit: the home screen is no folder, so opening it is going to it too.
+# Tanda 5 «Inicia mi homescreen» was the same limit: starting, launching or putting on the home screen is opening
+# it; those verbs name only the home view, never «el escritorio» (a folder) nor a bare «inicio».
 _PC_HOME_VIEW = r"(?:home\s*screen|start\s+screen|pantalla\s+(?:de\s+inicio|principal))"
 PC_HOME_PLACE = rf"(?:escritorio|desktop|{_PC_HOME_VIEW})"
 # Uso real tanda 2 «Ve home.», tanda 3 «Go to página de inicio» (it opened a dictionary page for «inicio»): said
@@ -170,7 +172,8 @@ _SHOW_DESKTOP_REQUEST = re.compile(
     r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
     r"(?:(?P<move>ve|vete|anda|andate|vuelve|volve|volvamos|regresa|ir|vamos|llevame|"
     r"go(?:\s+back)?|return|take\s+me(?:\s+back)?|bring\s+me(?:\s+back)?)|"
-    r"(?P<open>abre|abreme|abri|abrime|abrir|open)|"
+    r"(?P<open>abre|abreme|abri|abrime|abrir|open|inicia|iniciame|inicie|iniciar|arranca|arrancame|lanza|ejecuta|"
+    r"pon|ponme|pone|poneme|start|launch|run|bring\s+up|pull\s+up|put\s+on)|"
     r"muestrame|mostrame|muestra|ensename|show(?:\s+me)?)"
     r"\s+(?:(?:a|al|to)\s+)?(?:(?:el|la|the|my|mi)\s+)?"
     rf"(?:(?(open){_PC_HOME_VIEW}|{PC_HOME_PLACE})|(?(move){_BARE_HOME}|(?!)))"

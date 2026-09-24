@@ -83,7 +83,8 @@ MUTE_SWITCH_ON = (
 # switched off (muted = false), and the sound switched off is the mute on (muted = true), in Spanish, English or
 # both. Only the sound, the audio or the PC's own sound is the object: «enciende la música» plays, «apaga el PC»
 # shuts down, «prende los parlantes» may be a Bluetooth device.
-_SOUND_NOUN = r"(?:(?:el|la|los|the|mi|my)\s+)?(?:sonido|sonidos|sound|sounds|audio)(?:\s+(?:del?|of)\s+(?:(?:el|la|the|mi|my)\s+)?(?:pc|equipo|computador(?:a)?|computer|sistema|system))?"
+# Tanda 5: «apaga el volumen» is the sound switched off too.
+_SOUND_NOUN = r"(?:(?:el|la|los|the|mi|my)\s+)?(?:sonido|sonidos|sound|sounds|audio|volumen|volume)(?:\s+(?:del?|of)\s+(?:(?:el|la|the|mi|my)\s+)?(?:pc|equipo|computador(?:a)?|computer|sistema|system))?"
 _SOUND_ON_VERB = (
     r"(?:turn(?:ed)?\s+on|switch\s+on|enable|activa(?:r|le)?|enciende(?:le)?|encende(?:le)?|encender|prende(?:le)?|"
     r"prender|habilita(?:r)?)"

@@ -4848,6 +4848,11 @@ _CAUSE_FACT = {
     "youtube_tab_not_found": (
         "no YouTube video opened by the assistant is playing, so nothing was changed"
     ),
+    # Tanda 5 «pausar el audiolibro»: the video of the assistant's YouTube tab had already ended or was paused.
+    "youtube_playing_video_not_found": (
+        "nothing is playing: the YouTube video the assistant opened was already paused or had ended, "
+        "so nothing was changed"
+    ),
     "youtube_playback_not_verified": (
         "the YouTube page opened in the browser but the video did not start playing, "
         "so playback is not confirmed"
