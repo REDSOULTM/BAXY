@@ -199,7 +199,7 @@ def _media_transport_action(text: str) -> str | None:
         r"(?:\s+actual)?(?:\s*[,;:]?\s*(?:por favor|please))?[\s.!?]*$",
     ):
         return "stop"
-    media_object = r"(?:podcast|episodio|episode|cancion|song|pista|track)"
+    media_object = r"(?:podcast|episodio|episode|cancion|song|pista|track|tema)"
     for action, direction, movement, relative in (
         ("next", r"(?:siguiente|next)",
          r"(?:skip(?:\s+forward)?|salta|saltar|saltea|saltear|pasa|pasar)",
@@ -217,7 +217,7 @@ def _media_transport_action(text: str) -> str | None:
         if _has(
             folded,
             r"^[^\w]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
-            rf"(?:(?:(?:pon|pone|ponme|reproduce|reproducir|play)\s+)?{nominal}|"
+            rf"(?:(?:(?:pon|pone|ponme|reproduce|reproducir|play|toca|tocame)\s+)?{nominal}|"
             rf"{movement}\s+(?:(?:to|a)\s+{destination}|al\s+"
             rf"(?:{direction}\s+{media_object}|{media_object}\s+que\s+{relative}))|"
             rf"(?:go|skip)\s+{step_direction}\s+one\s+{media_object}"

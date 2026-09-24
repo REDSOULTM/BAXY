@@ -4583,39 +4583,16 @@ def _explicit_notification_schedule_arguments(
     relative_pattern = (
         rf"\b(?P<duration>{effect_intent._RELATIVE_DURATION_PATTERN})\b"
     )
-    clock_pattern = (
-        rf"\b(?P<clock>(?:(?:tomorrow|manana|maniana)\s+)?"
-        rf"(?:(?:for|at|a|para)\s+(?:las?\s+)?)?{_TEMPORAL_NUMBER_PATTERN}"
-        r"(?::[0-5][0-9])?\s*(?:a\.?\s*m\.?|p\.?\s*m\.?|"
-        r"de la manana|de la maniana|de la tarde|de la noche|"
-        r"in the morning|in the afternoon|in the evening)"
-        r"(?:\s+(?:tomorrow|manana|maniana))?)\b"
-    )
-    military_clock_pattern = (
-        r"\b(?P<clock24>(?:(?:tomorrow|manana|maniana)\s+)?"
-        r"(?:at|a|para)\s+(?:las?\s+)?"
-        r"(?:[01]?[0-9]|2[0-3]):[0-5][0-9]"
-        r"(?:\s+(?:tomorrow|manana|maniana))?)\b"
-    )
     # Time literals are read on the folded text: «9 de la mañana» carries an
     # ñ that the accent-free patterns never matched on the raw evidence
     # (TIME1193 probe). The title below still keeps the person's own words.
     relative = list(re.finditer(relative_pattern, folded, re.IGNORECASE))
-    clocks = list(re.finditer(clock_pattern, folded, re.IGNORECASE))
-    # «a las 6:30 de la tarde» is one clock with its period, not also a
-    # 24-hour clock: the period reading owns the literal when both match.
-    military_clocks = (
-        [] if clocks else list(re.finditer(military_clock_pattern, folded, re.IGNORECASE))
-    )
-    if len(relative) + len(clocks) + len(military_clocks) != 1:
+    # One clock whose part of the day was said, after the hour or elsewhere
+    # («esta tarde a las cinco»); the day is read from the whole request.
+    clocks = effect_intent.spoken_clocks(folded)
+    if len(relative) + len(clocks) != 1 or (clocks and not clocks[0].resolved):
         return None
-    due_literal = (
-        relative[0].group("duration")
-        if relative
-        else clocks[0].group("clock")
-        if clocks
-        else military_clocks[0].group("clock24")
-    ).strip()
+    due_literal = (relative[0].group("duration") if relative else clocks[0].literal).strip()
     noun = re.search(
         r"\b(?:alarm|alarma|timer|temporizador)\b", evidence, re.IGNORECASE
     )
@@ -4643,29 +4620,37 @@ def _explicit_relative_reminder_arguments(
 ) -> dict[str, object] | None:
     """Preserve one closed relative reminder's literal time and title."""
 
-    clock = (
-        rf"(?:(?:a\s+las?|para\s+las?|at)\s+{_TEMPORAL_NUMBER_PATTERN}(?::[0-5][0-9])?"
-        r"(?:\s*(?:a\.?\s*m\.?|p\.?\s*m\.?|de\s+la\s+ma[nñ]ana|de\s+la\s+tarde|"
-        r"de\s+la\s+noche|in\s+the\s+morning|in\s+the\s+afternoon|in\s+the\s+evening))?)"
-    )
     duration = (
-        rf"(?:(?:(?:en|in|dentro\s+de|within)\s+){effect_intent._RELATIVE_DURATION_PATTERN}|{clock})"
+        rf"(?:(?:(?:en|in|dentro\s+de|within)\s+){effect_intent._RELATIVE_DURATION_PATTERN}|"
+        rf"{effect_intent.CLOCK_PHRASE})"
     )
+    # The person's own spelling reaches this reader: «recuérdame», «avísame».
+    lead = r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*,?\s+)?"
+    remind = r"(?:av[ií]same|record[aá]me|recu[eé]rdame|remind\s+me)"
     patterns = (
-        rf"^[¿?¡!\s]*(?:avisame|recordame|recuerdame|remind\s+me)\s+"
+        rf"{lead}{remind}\s+"
         rf"(?P<due>{duration})\s+(?:(?:que|to|de)\s+)?(?P<title>.+?)[.!?]*$",
-        rf"^[¿?¡!\s]*(?:avisame|recordame|recuerdame|remind\s+me)\s+"
+        rf"{lead}{remind}\s+"
         rf"(?:(?:que|to|de)\s+)?(?P<title>.+?)\s+(?P<due>{duration})[.!?]*$",
-        rf"^[¿?¡!\s]*(?P<due>{duration}),?\s+"
-        rf"(?:avisame|recordame|recuerdame|remind\s+me)\s+"
+        rf"{lead}(?P<due>{duration}),?\s+"
+        rf"{remind}\s+"
         rf"(?:(?:que|to|de)\s+)?(?P<title>.+?)[.!?]*$",
-        rf"^[¿?¡!\s]*(?:ponme|set)\s+(?:(?:un|a)\s+)?"
+        rf"{lead}(?:ponme|set)\s+(?:(?:un|a)\s+)?"
         rf"(?:recordatorio|reminder)\s+(?P<due>{duration})\s+"
         rf"(?:para|to)\s+(?P<title>.+?)[.!?]*$",
-        rf"^[¿?¡!\s]*(?:recordatorio|reminder)\s+(?:de|to)\s+"
+        rf"{lead}(?:recordatorio|reminder)\s+(?:de|to)\s+"
         rf"(?P<title>.+?)\s+(?P<due>{duration})[.!?]*$",
-        rf"^[¿?¡!\s]*(?:set\s+)?(?:a\s+)?reminder\s+to\s+"
+        rf"{lead}(?:set\s+)?(?:a\s+)?reminder\s+to\s+"
         rf"(?P<title>.+?)\s+(?P<due>{duration})[.!?]*$",
+        # «dame una notificación de recordatorio para la reunión de mañana a las
+        # diez a. m.», «ponme un recordatorio para sacar la basura a las ocho de
+        # la noche»: the reminder asked for as a thing, its subject, then its moment.
+        # («set a reminder to …» keeps its own pattern above.)
+        rf"{lead}(?:dame|ponme|pon|creame|crea|hazme|haz|programa|programame|quiero|quisiera|necesito|"
+        r"create|give\s+me)\s+(?:(?:un|una|a|an)\s+)?(?:(?:nuevo|new)\s+)?"
+        r"(?:(?:notificaci[oó]n|aviso|alerta|notification|alert)\s+(?:de|of)\s+)?"
+        r"(?:recordatorio|reminder|notificaci[oó]n|aviso|alerta|notification|alert)\s+"
+        rf"(?:para|de|sobre|about|for)\s+(?P<title>.+?)\s+(?P<due>{duration})[.!?]*$",
     )
     matches = [
         match
@@ -5662,6 +5647,13 @@ def _explicit_arguments_from_evidence(
             query = clause_literal(stored_query)
             if query and len(query.encode("utf-8")) <= 512:
                 return {"query": query}
+
+    if operation == "task.create" and (list_entry := effect_intent.list_entry_request(evidence)) is not None:
+        # «añadir el brócoli a mi lista de la compra»: the entry is the title (its
+        # article dropped) and the list it goes on is the details.
+        entry, listed = list_entry
+        title = re.sub(r"^(?:el|la|los|las|un|una|unos|unas|the|an?|some)\s+(?=\S)", "", entry, flags=re.IGNORECASE)
+        return {"title": title, "details": listed}
 
     if operation == "task.create":
         task_pattern = (
@@ -6664,45 +6656,13 @@ def _canonical_due_utc(
         return due.isoformat().replace("+00:00", "Z")
 
     folded_context = effect_intent._fold(context)
-    clock_source = f"{folded_value} {folded_context}".strip()
-    military_clock = re.search(
-        r"\b(?:at|a|para)\s+(?:las?\s+)?"
-        r"(?P<hour24>[01]?[0-9]|2[0-3]):(?P<minute24>[0-5][0-9])\b"
-        # «6:30 de la tarde» is a 12-hour clock with its period, not 06:30.
-        r"(?!\s*(?:a\.?\s*m\.?|p\.?\s*m\.?|de\s+la\s+(?:manana|maniana|tarde|noche)|"
-        r"in\s+the\s+(?:morning|afternoon|evening)))",
-        clock_source,
-        re.IGNORECASE,
-    )
-    clock = re.search(
-        rf"\b(?P<hour>{_TEMPORAL_NUMBER_PATTERN})"
-        r"(?::(?P<minute>[0-5][0-9]))?\s*"
-        r"(?P<period>a\.?\s*m\.?|p\.?\s*m\.?|de la manana|"
-        r"de la maniana|de la tarde|de la noche|in the morning|"
-        r"in the afternoon|in the evening)\b",
-        clock_source,
-        re.IGNORECASE,
-    )
-    if military_clock is None and clock is None:
+    # The literal comes first, so its clock is the one read; its part of the
+    # day may be said elsewhere in the request («esta tarde a las cinco»).
+    clock_source = f"{folded_value} {folded_context}".strip().replace("maniana", "manana")
+    clock = effect_intent.spoken_clock(clock_source)
+    if clock is None or not clock.resolved:
         return None
-    if military_clock is not None:
-        hour = int(military_clock.group("hour24"))
-        minute = int(military_clock.group("minute24"))
-    else:
-        assert clock is not None
-        parsed_hour = _temporal_number(clock.group("hour"))
-        minute = int(clock.group("minute") or "0")
-        if parsed_hour is None or not 1 <= parsed_hour <= 12:
-            return None
-        period = effect_intent._fold(clock.group("period")).replace(" ", "")
-        is_am = period in {"am", "a.m."} or "manana" in period or "maniana" in period
-        is_pm = period in {"pm", "p.m."} or any(
-            marker in effect_intent._fold(clock.group("period"))
-            for marker in ("tarde", "noche", "afternoon", "evening")
-        )
-        if is_am == is_pm:
-            return None
-        hour = parsed_hour % 12 if is_am else (parsed_hour % 12) + 12
+    hour, minute = clock.hour, clock.minute
     local_now = (
         datetime.now().astimezone()
         if now_utc is None
@@ -6754,9 +6714,9 @@ def _canonical_due_utc(
             clock_source,
             re.IGNORECASE,
         )
-    if (month_date is not None or day_of_month is not None) and re.search(
-        r"\b(?:tomorrow|manana|maniana)\b", clock_source
-    ):
+    spoken_day = effect_intent.spoken_day(clock_source, local_now.weekday())
+    if (month_date is not None or day_of_month is not None) and spoken_day != (0, 1):
+        # A date and another day word («mañana», «el lunes») disagree on the day.
         return None
 
     def materialize_date(local_date: date) -> datetime | None:
@@ -6816,7 +6776,10 @@ def _canonical_due_utc(
                 return due.isoformat().replace("+00:00", "Z")
         return None
 
-    days = 1 if re.search(r"\b(?:tomorrow|manana|maniana)\b", clock_source) else 0
+    if spoken_day is None:
+        # «esta semana», «el lunes y el martes»: no one date holds the moment.
+        return None
+    days, roll = spoken_day
 
     def materialize(day_offset: int) -> datetime | None:
         return materialize_date(local_now.date() + timedelta(days=day_offset))
@@ -6824,8 +6787,8 @@ def _canonical_due_utc(
     due = materialize(days)
     if due is None:
         return None
-    if days == 0 and due <= now + timedelta(seconds=5):
-        due = materialize(1)
+    if roll and due <= now + timedelta(seconds=5):
+        due = materialize(days + roll)
     if due is None or due <= now + timedelta(seconds=5):
         return None
     return due.isoformat().replace("+00:00", "Z")

@@ -213,6 +213,10 @@ from .semantic.temporal import (  # noqa: F401 - moved to baxy_mind.semantic.tem
     _DEICTIC_DAY,
     _CLOCK_TIME_SELECTOR,
     _BOUNDED_TEMPORAL_SELECTOR,
+    CLOCK_PHRASE,
+    spoken_clock,
+    spoken_clocks,
+    spoken_day,
 )
 from .semantic.media import (  # noqa: F401 - moved to baxy_mind.semantic.media; callers migrate
     _YOUTUBE_SEARCH,
@@ -368,6 +372,7 @@ from .semantic.system import (  # noqa: F401 - moved to baxy_mind.semantic.syste
     process_inventory_arguments,
 )
 from .semantic.notes import (  # noqa: F401 - moved to baxy_mind.semantic.notes; callers migrate
+    list_entry_request,
     _relative_calendar_read_request,
     _time_only_reminder_request,
     _COUNT_DOWN_REQUEST,

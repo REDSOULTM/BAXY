@@ -448,6 +448,23 @@ def _strip_request_envelope(text: str) -> str:
     return current
 
 
+def _request_body_surface(text: str) -> str:
+    """The body ``_strip_request_envelope`` reads, in the person's own writing.
+
+    The envelope grammar is folded («podrías poner …»); a reader that keeps the
+    person's capitals and accents for a literal takes the same words from the
+    original text. The text itself when the words cannot be found again.
+    """
+
+    body = _strip_request_envelope(_fold(text)).split()
+    tokens = text.split()
+    folded = [_fold(token) for token in tokens]
+    for start in range(len(tokens) - len(body) + 1):
+        if body and folded[start : start + len(body)] == body:
+            return " ".join(tokens[start : start + len(body)])
+    return text
+
+
 def _explicit_desire_request(text: str) -> re.Match[str] | None:
     # A need/desire introduces a request only when its next head is an
     # explicit effect verb. Inspect it before the literal first word so a

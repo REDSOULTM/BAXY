@@ -5,9 +5,9 @@ from __future__ import annotations
 
 import re
 from typing import Iterable, Sequence
-from .grammar import _RELATIVE_DURATION_PATTERN, _fold, _match, _has, _strip_request_envelope, _request_head, _head_is, _LIST, _READ, _CREATE, _request_clauses
+from .grammar import _RELATIVE_DURATION_PATTERN, _fold, _match, _has, _strip_request_envelope, _request_body_surface, _request_head, _head_is, _LIST, _READ, _CREATE, _request_clauses
 from .intent import EffectIntent, _append
-from .temporal import _absolute_calendar_range_parts, _DEICTIC_DAY, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR
+from .temporal import _absolute_calendar_range_parts, _DEICTIC_DAY, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, spoken_clock
 
 
 def _relative_calendar_read_request(folded: str) -> bool:
@@ -155,6 +155,87 @@ def _task_without_title(folded: str) -> bool:
     return _TASK_DATE_ONLY.match(_strip_request_envelope(folded).strip(" ¿?¡!.,")) is not None
 
 
+# Lists (uso real 2026-09-23 «añadir el brócoli a mi lista de la compra»): an
+# entry of a list is a local task and the list it goes on travels as its details,
+# so «qué hay en mi lista de la compra» finds it by that name (task.search reads
+# titles and details). No list store is added to the catalog.
+_LIST_NAME = (
+    r"(?P<list>(?:lista|list)(?:\s+(?:de(?:\s+la|\s+los|\s+las|l)?|para(?:\s+la|\s+el)?|of|for)\s+[^,;.!?]{1,60}?)?"
+    r"|(?:shopping|grocery|to-?do|todo|packing)\s+list)"
+)
+_LIST_ENTRY = re.compile(
+    r"^(?:(?:por\s+favor|please)\s*,?\s+)?"
+    r"(?:a[nñ]ad[eií](?:me|r)?|a[nñ][aá]deme|agreg[aá](?:me|r)?|agr[eé]game|p[oó]n(?:me|er)?|pone(?:me)?|"
+    r"met[eé](?:me|r)?|m[eé]teme|apunt[aá](?:me|r)?|ap[uú]ntame|anot[aá](?:me|r)?|an[oó]tame|"
+    r"inclu(?:ye|ir)|sum[aá](?:le|r)?|add|put)\s+"
+    r"(?P<item>\S.{0,200}?)\s+(?:a|al|en|to|on|in|into)\s+(?:(?:mi|la|tu|nuestra|my|the|our)\s+)?"
+    + _LIST_NAME
+    + r"[\s.!?]*$",
+    re.IGNORECASE,
+)
+# A playlist or a list of songs is music, not a list of things to do or buy.
+_LIST_NOT_TASKS = (
+    r"\b(?:canciones?|temas?|musica|songs?|music|videos?|reproduccion|playlists?|favoritos|favorites|"
+    r"spotify|youtube|inicio|startup|contactos?|contacts?|bloqueados?|blocked)\b"
+)
+# «agregar un nuevo elemento a la lista»: an entry that names nothing.
+_UNNAMED_LIST_ENTRY = (
+    r"(?:(?:un|una|unos|unas|el|la|otro|otra|algun|alguna|a|an|another|the|some)\s+)?(?:(?:nuev[oa]s?|new)\s+)?"
+    r"(?:elementos?|articulos?|items?|cosas?|algo|productos?|entradas?|something|things?|entry|entries|products?)"
+)
+
+
+def list_entry_request(text: str) -> tuple[str, str] | None:
+    """(entry, list) of «añade X a mi lista de la compra», «pon hamburguesa en mi lista de
+    comestibles», «add milk to my shopping list», in the person's own writing; None for a
+    playlist, a pointed entry («esto», «esa canción») or any other shape."""
+
+    found = _LIST_ENTRY.match(_request_body_surface(text).strip())
+    if found is None:
+        return None
+    item = found.group("item").strip(" ,;:\"'«»“”")
+    listed = found.group("list").strip(" ,;:\"'«»“”")
+    folded_item = _fold(item)
+    if (
+        not item
+        or _has(f"{folded_item} {_fold(listed)}", _LIST_NOT_TASKS)
+        or _has(folded_item, r"^(?:esto|eso|esta|este|esa|ese|estas|estos|esas|esos|aquello|it|this|that|these|those)\b")
+        or re.fullmatch(_UNNAMED_LIST_ENTRY, folded_item) is not None
+    ):
+        return None
+    return item, listed
+
+
+_LIST_CREATION = re.compile(
+    r"^(?:(?:por\s+favor|please)\s*,?\s+)?"
+    r"(?:(?:quiero|quisiera|necesito|tengo\s+que|i\s+(?:need|want)\s+to|let's)\s+)?"
+    r"(?:crea|creame|crear|haz|hazme|hacer|arma|armame|armar|empieza|empezar|comienza|comenzar|"
+    r"inicia|iniciar|abre|abrir|create|make|start|nueva|new)\s+"
+    r"(?:(?:una|un|la|a|the)\s+)?(?:(?:nueva|new)\s+)?(?:lista|list)"
+    r"(?:\s+(?:nueva|new))?(?P<name>\s+(?:de(?:\s+la|\s+los|\s+las|l)?|para(?:\s+la|\s+el)?|of|for)\s+[^,;.!?]{1,60})?"
+    r"[\s.!?]*$"
+)
+
+
+def list_creation_without_items(folded: str) -> str | None:
+    """«por favor crea una nueva lista», «necesito hacer una lista de la compra»: a list
+    with nothing on it yet. The list as named («lista de la compra», «lista»), or None;
+    what goes on it is asked (a list is its entries, ``list_entry_request``)."""
+
+    body = _strip_request_envelope(folded).strip(" ¿?¡!.,")
+    if _has(folded, _LIST_NOT_TASKS):
+        return None
+    found = _LIST_CREATION.match(body)
+    if found is not None:
+        return "lista" + (found.group("name") or "")
+    # «agregar un nuevo elemento a la lista», «puedes agregar un artículo a mi lista
+    # de compras»: an entry that names nothing asks the same thing.
+    entry = _LIST_ENTRY.match(body)
+    if entry is not None and re.fullmatch(_UNNAMED_LIST_ENTRY, entry.group("item").strip()) is not None:
+        return entry.group("list").strip()
+    return None
+
+
 def _bare_note_inventory_request(text: str) -> bool:
     """Recognize a complete, verbless request for the person's own notes."""
 
@@ -181,28 +262,38 @@ def _note_inventory_object(text: str) -> bool:
     )
 
 
+# A day said with the wake-up time («mañana», «el lunes», «esta semana»).
+_WAKE_DAY = (
+    r"(?:(?:el|este|esta|next|this|el\s+proximo|la\s+proxima)\s+)?"
+    r"(?:hoy|today|manana|tomorrow|pasado\s+manana|lunes|martes|miercoles|jueves|viernes|sabado|domingo|"
+    r"monday|tuesday|wednesday|thursday|friday|saturday|sunday|semana|week)"
+)
+
+
 def _wake_alarm_request(text: str) -> bool:
-    """Recognize a direct wake-up alarm with one explicit clock."""
+    """Recognize a direct wake-up alarm with one explicit clock (its part of the day
+    said, «a las seis y cuarto de la mañana») or one duration, and at most a day."""
 
     folded = _strip_request_envelope(_fold(text))
+    found = re.fullmatch(
+        r"(?:i\s+need\s+you\s+to\s+)?"
+        r"(?:(?:wake|get)\s+me(?:\s+up)?|despiertame|despertame|levantame)\s+"
+        r"(?P<when>\S.*?)[\s.!?]*",
+        folded,
+        re.IGNORECASE,
+    )
+    if found is None:
+        return False
+    when = found.group("when")
+    if re.fullmatch(rf"(?:in|en|dentro\s+de|within)\s+{_RELATIVE_DURATION_PATTERN}", when):
+        return True
+    clock = spoken_clock(when)
     return (
-        re.fullmatch(
-            r"(?:i\s+need\s+you\s+to\s+)?"
-            r"(?:(?:wake|get)\s+me(?:\s+up)?|despiertame|despertame|levantame)\s+"
-            r"(?:"
-            rf"(?:in|en|dentro\s+de|within)\s+{_RELATIVE_DURATION_PATTERN}|"
-            r"(?:at|a\s+las?|para\s+las?)\s+"
-            r"(?:[0-2]?\d|one|two|three|four|five|six|seven|eight|nine|ten|"
-            r"eleven|twelve|una?|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|"
-            r"diez|once|doce)(?::[0-5]\d)?\s*"
-            r"(?:a\.?\s*m\.?|p\.?\s*m\.?|de\s+la\s+manana|de\s+la\s+tarde|"
-            r"de\s+la\s+noche|in\s+the\s+morning|in\s+the\s+afternoon|"
-            r"in\s+the\s+evening)"
-            r")[\s.!?]*",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
+        clock is not None
+        and clock.resolved
+        and re.fullmatch(
+            rf"(?:{_WAKE_DAY}\s+)?{re.escape(clock.literal)}(?:\s+{_WAKE_DAY})?", when,
+        ) is not None
     )
 
 

@@ -11,20 +11,20 @@ from dataclasses import dataclass
 from typing import Iterable
 from ..catalog_operation_aliases import exact_catalog_operation_plan
 from . import levels, lexicon
-from .grammar import _INSTRUCTION_NOUNS, _MACHINE_NOUNS, _without_leading_duration_preface, _fold, _match, _has, _REQUEST_PREFIX, _EXPLICIT_DESIRE_REQUEST, _TRAILING_MEANS_DIRECTIVE, _strip_request_envelope, _explicit_desire_request, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _negative_state_question_body, _machine_status_scopes, _machine_status_scopes_are_one_reading, _machine_status_is_the_whole_clause, _is_past_or_hypothetical_state, _is_machine_knowledge_or_diagnosis, _system_status_domain, _process_list_domain, _network_status_domain, _SET_VOLUME_VERB, _VOLUME_UP_VERB, _VOLUME_DOWN_VERB, _AUDIO_OBSERVATION_HEAD, _indirect_audio_mute_state_query, window_inventory_arguments, _literal_note_payload_request, _is_meta_or_tool_denial, _is_explicit_meta_or_tool_denial, _KNOWN_APPLICATION, _CONNECTED_INVENTORY, _OPEN, _MEDIA_RESUME_VERB, _LIST, _READ, _CREATE, _SEARCH, _COVERAGE_ACTION_HEAD, _SEQUENCE_NOMINAL_HEAD, _machine_status_topic, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, _PERCENTAGE_WORD_VALUES, _explicit_google_search_query, _request_clauses, _PLAY_HEAD
+from .grammar import _INSTRUCTION_NOUNS, _MACHINE_NOUNS, _without_leading_duration_preface, _fold, _match, _has, _REQUEST_PREFIX, _EXPLICIT_DESIRE_REQUEST, _TRAILING_MEANS_DIRECTIVE, _strip_request_envelope, _explicit_desire_request, _request_head, _head_is, _negative_action_forms, _is_negative_effect_clause, _negative_state_question_body, _machine_status_scopes, _machine_status_scopes_are_one_reading, _machine_status_is_the_whole_clause, _is_past_or_hypothetical_state, _is_machine_knowledge_or_diagnosis, _system_status_domain, _process_list_domain, _network_status_domain, _SET_VOLUME_VERB, _VOLUME_UP_VERB, _VOLUME_DOWN_VERB, _AUDIO_OBSERVATION_HEAD, _indirect_audio_mute_state_query, window_inventory_arguments, _literal_note_payload_request, _is_meta_or_tool_denial, _is_explicit_meta_or_tool_denial, _KNOWN_APPLICATION, _CONNECTED_INVENTORY, _OPEN, _MEDIA_RESUME_VERB, _LIST, _READ, _CREATE, _SEARCH, _COVERAGE_ACTION_HEAD, _SEQUENCE_NOMINAL_HEAD, _machine_status_topic, _ENGLISH_SMALL_NUMBERS, _SPANISH_SMALL_NUMBERS, _PERCENTAGE_WORD_VALUES, _explicit_google_search_query, _request_clauses, _PLAY_HEAD, _request_body_surface
 from .audio import app_scoped_microphone_mute, _LOCAL_VOLUME_DEVICE, _VOLUME_OBJECT, _bare_clitic_volume_request, _bare_music_volume_request, _volume_domain, _MUTE_VERB, _audio_mute_domain, _APP_VOLUME_SPANISH, _APP_VOLUME_ENGLISH, _APP_VOLUME_ENGLISH_SPLIT, _APP_VOLUME_SET_SPANISH, _APP_VOLUME_SET_ENGLISH, _APP_VOLUME_LEVEL_WORDS, _AUDIO_LEVEL_CUE, _is_audio_mute_state_query, _PERCENTAGE_WORD_PATTERN
 from .windows import deictic_window_mutation, _FOCUS_HEAD_ONLY, _FOCUS_HEAD_WITH_TAIL, _FOCUS_TAIL, _MINIMIZE_HEAD, _SNAP_HEAD, _SNAP_SIDE, has_named_window_target, _window_domain, minimize_all_request, INDETERMINATE_WINDOW_CLAUSE, other_window_switch_request, PC_HOME_PLACE
 from .display import screen_light_as_brightness, _KNOWN_FOLDER_WORDS, _KNOWN_FOLDER_ENUM, screen_inventory_request, _display_status_question, _without_screen_state_preface, _BRIGHTNESS_OBJECT, _BRIGHTNESS_UP_VERB, _BRIGHTNESS_DOWN_VERB, _BRIGHTNESS_ABSOLUTE, _BRIGHTNESS_ENGLISH_TURN, _BRIGHTNESS_RELATIVE_WORDS, brightness_status_request, _BRIGHTNESS_SET_VERB, _BRIGHTNESS_EXTREME_VALUES, wallpaper_request
 from .intent import EffectIntent, _entity_key, _is_negated_match, _append, _append_all
 from .catalog import ApplicationCatalogIndex, GameCatalogIndex, build_game_catalog_index, _authenticated_game_target, resolve_game_catalog_app_id, _application_name_key, build_application_catalog_index, _catalog_alias_key, _installed_game_named, installed_game_title
-from .temporal import _CALENDAR_MONTH_TOKEN, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR
+from .temporal import _CALENDAR_MONTH_TOKEN, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, spoken_clock
 from .media import _youtube_search_query, youtube_play_query, _direct_media_discovery_or_play_request, _named_browser_music_request, _NETFLIX_SPELLED, _underspecified_video_request, _title_case_media_title, _media_transport_action, _resume_existing_media, _REMOVABLE_MEDIA, _bare_spoken_number_media_query
 from .web import other_place_clock_question, public_opinion_query, record_fact_query, _public_route_lookup_request, _public_calendar_fact_lookup_request, _WEATHER_WORDS, _weather_lookup_query, _research_question_query, _public_live_lookup_request, _public_product_correction_lookup_request, _public_commerce_lookup_request, _FILESYSTEM_OBJECT_NOUN, operation_identity_is_a_near_miss, curiosity_request, web_image_request, _NAVIGATION_CLIENT, client_navigation_target, _authenticated_application_identity_conflict, _browser_page_domain, browser_back_arguments, browser_new_tab_arguments, browser_close_all_tabs_arguments, _historical_note_search_request, _stored_note_search_query, _nominal_reminder_lookup_title, _location_recommendation_request, _NAMED_BROWSER_SITE_REQUEST, _installed_browser_search_query, _completed_browser_search_pronoun_request, _NAMED_PUBLIC_SITE, _review_web_and_browser_effects, web_download_request, NAMED_CDP_BROWSERS, _named_browser_match, _named_browser
 from .files import _pdf_summary_request, _file_trash_request, process_report_file_request, _file_creation_request, known_folder_file_path, _current_directory_file_count, _DUPLICATE_FILES, _known_folder_recent_listing, _known_folder_listing_request, _review_file_and_game_effects, folder_txt_zip_open_mission, open_named_file_request, _office_document_roundtrip_intent
 from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
 from .system import _weather_read_intent
-from .notes import _relative_calendar_read_request, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects
+from .notes import list_entry_request, list_creation_without_items, _relative_calendar_read_request, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects
 from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, _latest_email_domain, _notification_listing_request
 from .ui import _clipboard_copy_domain, _clipboard_paste_domain, calculator_expression_request, literal_clipboard_write_text, _review_input_and_capture_effects, _VISIBLE_CLICK_APP_CONTEXT, _gerund_click_label, _visible_click_label, _click_in_application, _visible_click_intent
 from .apps import self_close_request, _APPLICATION_TRAILING_REQUEST, _application_target_forms, _CLOSE_TRAILING_COURTESY, _close_target_forms, deictic_close_request, _bounded_application_literal, _authenticated_application_list, _OPEN_STATE_CONDITION, close_all_request, _has_multiple_installed_entities, _append_domain_actions, _open_application_spans, _CATALOG_INSTALL_VERB, _opened_applications
@@ -421,6 +421,35 @@ def _completed_missing_music_request(
         answer = re.sub(r"^(?:(?:uno|una|one)\s+)?(?:de|of|sobre|about)\s+", "", answer, flags=re.IGNORECASE).strip(" .!") or answer
         return f"pon un video de {answer} en youtube"
     return f"pon música de {answer}"
+
+
+def _completed_missing_list_entries_request(
+    text: str, previous_user_text: str | None, available_operations: Iterable[str],
+) -> str | None:
+    """«crea una lista de la compra» → «¿qué pongo en ella?» → «leche y pan»: the answer
+    is what goes on the list asked for, read like «añade leche y pan a la lista de la
+    compra». Only after a request the resolver itself asks the entries of, and only for
+    a short content answer (no request head, no question, no refusal)."""
+
+    if not previous_user_text:
+        return None
+    prior = resolve_explicit_clarification_intent(previous_user_text, available_operations)
+    if prior is None or prior.operations != ("task.create",) or prior.missing_fields != ("list_entries",):
+        return None
+    listed = list_creation_without_items(_fold(previous_user_text))
+    answer = text.strip().strip("\"'“”«»").strip(" .!")
+    folded = _strip_request_envelope(_fold(answer))
+    if (
+        listed is None
+        or not folded
+        or len(folded.split()) > 24
+        or "?" in answer
+        or _head_is(_request_head(folded), _COVERAGE_ACTION_HEAD)
+        or _negative_action_forms(folded)
+        or re.fullmatch(r"(?:no|nada|ninguna|none|nothing|cancela|cancelar|cancel|olvidalo|dejalo)\b.*", folded)
+    ):
+        return None
+    return f"añade {answer} a la {listed}"
 
 
 def _contextual_output_level_target(
@@ -967,6 +996,8 @@ def _curated_domain_is_grounded(
             folded,
             r"\b(?:proceso|process|aplicacion|application|app|programa|program)\b",
         )
+    if operation == "task.create" and list_entry_request(text) is not None:
+        return True
     if operation == "task.create":
         return _has(
             folded,
@@ -2369,16 +2400,19 @@ def _incomplete_scheduled_request(
             # «a las 99», «13 pm»: no part of day can make that hour exist, so
             # asking morning/afternoon would be unfaithful (TIME1195 probe).
             return ClarificationIntent((operation,), ("valid_hour_0_to_23",))
-        complete_clock = _has(
-            literal_clock,
-            r"\b\d{1,2}:\d{2}\b|(?<![a-z])(?:a\.?\s*m\.?|p\.?\s*m\.?)\b|"
-            r"\b(?:de\s+la|in\s+the)\s+\w+\b|\b(?:0|1[3-9]|2[0-3])\b",
-        )
-        complete_clock = complete_clock or any(
-            (value == 0 or 12 < value <= 23) and _has(literal_clock, rf"\b{word}\b")
-            for word, value in {**_ENGLISH_SMALL_NUMBERS, **_SPANISH_SMALL_NUMBERS}.items()
-        )
-        if not complete_clock:
+        # The shared clock reader hears the minutes and the part of the day
+        # wherever it was said («a las cinco y media de la mañana», «esta tarde
+        # a las cinco», «a las diez a. m.»); only an hour left without one asks.
+        spoken = spoken_clock(folded)
+        if spoken is not None and not spoken.resolved:
+            return ClarificationIntent((operation,), ("am_pm_or_part_of_day_for_supplied_hour",))
+        if spoken is None and not (
+            _has(literal_clock, r"\b\d{1,2}:\d{2}\b|\b(?:0|1[3-9]|2[0-3])\b")
+            or any(
+                (value == 0 or 12 < value <= 23) and _has(literal_clock, rf"\b{word}\b")
+                for word, value in {**_ENGLISH_SMALL_NUMBERS, **_SPANISH_SMALL_NUMBERS}.items()
+            )
+        ):
             return ClarificationIntent((operation,), ("am_pm_or_part_of_day_for_supplied_hour",))
         return None
     if not _reminder_has_actionable_due(folded):
@@ -3358,6 +3392,9 @@ def resolve_explicit_clarification_intent(
         # incomplete as a bare song.
         and _has(clause, r"\b(?:musica|music|musika|cancion|canciones|song|songs|tema|temas|track|tracks|algo|something|videos?)\b")
         and _desired_music_query(clause) is None
+        # «pon la canción anterior», «pon el siguiente tema»: a transport order
+        # names the song by its place in the queue; nothing is missing.
+        and _media_transport_action(clause) is None
         # A video that is already named («un video de lofi en youtube») or a
         # title on a streaming service («The Office en Prime Video») is not bare.
         and youtube_play_query(clause) is None
@@ -3510,6 +3547,9 @@ def resolve_explicit_clarification_intent(
             return ClarificationIntent(("reminder.create",), ("due_time",))
         if _time_only_reminder_request(folded):
             return ClarificationIntent(("reminder.create",), ("title",))
+    if "task.create" in available and list_creation_without_items(folded) is not None:
+        # «por favor crea una nueva lista»: a list is its entries; what goes on it is asked.
+        return ClarificationIntent(("task.create",), ("list_entries",))
     if "task.create" in available and _task_without_title(folded):
         # AGENDA1021/TIME1199 H0043 «crea una tarea para el viernes»: only a
         # date was given; the title is asked, never invented.
@@ -5088,7 +5128,11 @@ _MUSIC_QUERY_FILLER = (
     r"(?:de|del|by|from|of|para|for|que|that|con|with|mi|mis|my|tu|tus|your|su|sus|"
     r"favorit[oa]s?|favourite|favorite|preferid[oa]s?|nuev[oa]s?|new|algo|something|"
     r"any|some|alguna?|cualquier|otra?|other|another|mas|more|esta|este|esa|ese|this|"
-    r"that|the|la|el|lo|los|las|una?|a|an|buena?|good|random)"
+    r"that|the|la|el|lo|los|las|una?|a|an|buena?|good|random|"
+    # «pon la canción anterior», «pon música ahora»: moving through what plays
+    # or a time is not a title or a genre.
+    r"anterior|siguiente|previa|proxima|next|previous|last|ultima|ultimo|"
+    r"ahora|now|ya|luego|despues|later|aleatoria|aleatorio|shuffle)"
 )
 _QUALIFIED_MUSIC_QUERY = re.compile(
     r"(?:(?:la|el|una?|the|a)\s+)?(?:cancion|song|tema|track)\s+"
@@ -5111,16 +5155,85 @@ def _qualified_music_query(query: str) -> str | None:
     return query.strip(" .!?") or None
 
 
+_BARE_MUSIC_NAME_FIRST_WORD_NOT = (
+    # A bare name is a proper name said alone; a noun phrase with a determiner,
+    # a possessive, a pronoun or a quantifier in front («pon la radio», «pon mi
+    # cafetera», «pon todo…») is an object.
+    r"(?:el|la|los|las|lo|le|les|un|una|unos|unas|uno|"
+    r"mi|mis|tu|tus|su|sus|nuestro|nuestra|este|esta|estos|estas|ese|esa|esos|esas|esto|eso|"
+    r"aquel|aquella|me|te|se|nos|todo|toda|todos|todas|algo|alguna?|algun|nada|otro|otra|otros|otras|"
+    r"cualquier|cualquiera|mas|menos|muy|ya|aqui|ahi|alli|ahora|luego|otra|vez|"
+    r"the|an?|my|your|his|her|our|their|this|that|these|those|it|some|any|all|more|"
+    r"up|down|off|back|again)"
+)
+
+
+# Words that make a bare «pon X» a control or a setting, never a name to play.
+_BARE_MUSIC_NAME_CONTROL_WORD = (
+    r"(?:pausa|pause|stop|play|mute|mudo|silencio|silence|volumen|volume|sonido|sound|audio|"
+    r"brillo|brightness|modo|mode|wifi|bluetooth|pantalla|screen|musica|music|cancion|canciones|"
+    r"song|songs|tema|temas|video|videos|radio|fm|am|emisora|station|podcast|podcasts|pelicula|movie|serie|juego|game|"
+    r"alarma|alarm|recordatorio|reminder|temporizador|timer|atencion|orden|cuidado|ojo|"
+    r"siguiente|anterior|next|previous|aleatorio|shuffle|repetir|repeat|bucle|loop|"
+    r"subtitulos|subtitles|mayusculas|hora|fecha|clima|tiempo|noticias|time|date|weather|news|"
+    r"fuerte|alta|alto|baja|bajo|bajita|bajito|loud|louder|quiet|exactamente|exacto|exacta|exactly|exact|"
+    r"tele|television|tv|youtube|prime|hbo|twitch|crunchyroll|paramount|hulu|"
+    rf"{_NETFLIX_SPELLED})"
+)
+
+
+def _bare_music_name(query: str) -> bool:
+    """«pon rosalia», «puedes poner imogen heap» (MUSIC1559): after a play verb,
+    a name said alone —one to four plain words, no determiner or preposition in
+    front, no application and no control or media noun— is the artist or title
+    to play; the person's capitals are not needed (the ear writes lowercase)."""
+
+    folded = _fold(query).strip(" .!?")
+    words = folded.split()
+    return (
+        1 <= len(words) <= 4
+        and all(re.fullmatch(r"[a-z]+(?:'[a-z]+)?", word) for word in words)
+        and re.fullmatch(_BARE_MUSIC_NAME_FIRST_WORD_NOT, words[0]) is None
+        # «pon en marcha…», «pon Tesla en vivo», «pon café con leche»: a
+        # preposition makes it a phrase with its own reader, not a name said alone.
+        and not _has(folded, r"\b(?:en|de|del|al|a|con|para|por|sin|on|in|at|for|with|to)\b")
+        and not _has(folded, rf"\b{_BARE_MUSIC_NAME_CONTROL_WORD}\b")
+        and not _has(folded, rf"^(?:{_KNOWN_APPLICATION})$")
+        # «pon trece»: a spoken number keeps its own reader (a title, never a level).
+        and folded not in _PERCENTAGE_WORD_VALUES
+    )
+
+
+# «poné Queen por favor»: the courtesy after the name is not part of it.
+_TRAILING_COURTESY = r"(?:\s*[,;:]?\s+(?:por\s+favor|please|porfa|porfi|pls|plz))?"
+
+
+# «puedes poner…», «podrías tocar…»: the request envelope leaves the infinitive.
+_NAMED_MUSIC_PLAY_VERB = (
+    r"(?:pon|ponme|poneme|pone|poné|poner|reproduce|reproducir|reproduc[ií]|play|toca|tocá|tocame|tocáme|toque|tocar)"
+)
+
+
+def _bare_play_name(text: str) -> str | None:
+    """The name of a bare «pon X» (``_bare_music_name``) as the person wrote it, or None."""
+
+    found = re.fullmatch(
+        rf"{_NAMED_MUSIC_PLAY_VERB}\s+(?P<name>\S(?:.{{0,80}}?\S)?){_TRAILING_COURTESY}[\s.!?]*",
+        _request_body_surface(text), re.IGNORECASE,
+    )
+    return found.group("name") if found is not None and _bare_music_name(found.group("name")) else None
+
+
 def _explicit_named_music_query(text: str) -> str | None:
     """Keep the supplied artist/title of one current imperative verbatim."""
 
     named = re.fullmatch(
-        r"(?:pon|ponme|poneme|pone|poné|reproduce|reproducir|reproduc[ií]|play|toca|tocá|tocame|tocáme|toque)\s+"
+        rf"{_NAMED_MUSIC_PLAY_VERB}\s+"
         r"(?:(?P<music>(?:(?:una?|la|las|the|a|some)\s+)?"
         r"(?:m[uú]sica|music|canci[oó]n(?:es)?|songs?|tracks?))\s+"
         r"(?:de|by|from)\s+)?"
-        r"(?P<query>\S(?:.{0,160}?\S)?)\s*[.!?]*",
-        _strip_request_envelope(text), re.IGNORECASE,
+        rf"(?P<query>\S(?:.{{0,160}}?\S)?){_TRAILING_COURTESY}\s*[.!?]*",
+        _request_body_surface(text), re.IGNORECASE,
     )
     if named is None:
         return None
@@ -5149,6 +5262,13 @@ def _explicit_named_music_query(text: str) -> str | None:
         # capitals (two capitalised words, connectors allowed) is the thing to
         # play; a single word or a known application name is not.
         and not _title_case_media_title(query)
+        and not _bare_music_name(query)
+        # «pon música rap», «tocar música reggae»: music with its genre or
+        # artist said right after it names what to play.
+        and not (
+            (genre := re.fullmatch(r"(?:musica|music)\s+(?P<name>\S.*)", _fold(query))) is not None
+            and _bare_music_name(genre.group("name"))
+        )
     ) or (
         not effect_request_is_authoritative(text)
         or _has_unsupported_deferred_effect(folded)
@@ -5220,6 +5340,42 @@ def _direct_alarm_schedule_request(text: str) -> bool:
         and _reminder_has_actionable_due(folded)
         and not _has(body, r"\b(?:check|comprueba|revisa|is\s+there|hay)\b")
     )
+
+
+_NOMINAL_SCHEDULE_REQUEST = re.compile(
+    r"^(?:(?:please|por\s+favor)\s+)?"
+    r"(?:dame|damela|quiero|quisiera|necesito|me\s+hace\s+falta|i\s+(?:need|want)|give\s+me)\s+"
+    r"(?:una?|an?)\s+(?:(?:nueva?|new)\s+)?"
+    r"(?:(?:notificacion|aviso|alerta|notification|alert)\s+(?:de|of)\s+)?"
+    r"(?P<noun>alarma|alarm|despertador|recordatorio|reminder|notificacion|notification|aviso|alerta|alert)\b"
+)
+
+
+def nominal_schedule_request(text: str) -> str | None:
+    """«necesito una alarma para mañana a las cinco y media de la mañana», «dame una
+    notificación de recordatorio para la reunión de mañana a las diez a. m.» (uso real
+    2026-09-23): an alarm or a reminder asked for as a thing, with its moment said, is
+    the same scheduling as «pon una alarma …». The operation, or None; without a
+    moment the incomplete-request reader asks it, and «dame mis recordatorios» stays a read."""
+
+    folded = _strip_request_envelope(_fold(text))
+    if (
+        _is_negative_effect_clause(folded)
+        or _is_meta_or_tool_denial(folded)
+        or _is_past_or_hypothetical_state(folded)
+        or _other_device_effect_scope(folded)
+        or _has(folded, r'["“”«»;]|\b(?:if|si)\b')
+        or len(_request_clauses(folded)) != 1
+        or not _reminder_has_actionable_due(folded)
+    ):
+        return None
+    found = _NOMINAL_SCHEDULE_REQUEST.match(folded)
+    if found is None:
+        return None
+    if found.group("noun") in {"alarma", "alarm", "despertador"}:
+        return "notification.schedule"
+    # «dame un recordatorio para las 5»: a reminder of nothing asks its title.
+    return None if _time_only_reminder_request(folded) else "reminder.create"
 
 
 def _literal_memo_payload(text: str) -> str | None:
@@ -6848,7 +7004,8 @@ def _strict_catalog_request(
             ),
             (
                 "media.status",
-                r"\b(?:media|multimedia|reproduccion|playing|playback|"
+                # «las cinco y media» is a clock time, not media.
+                r"\b(?:(?<!y\s)(?<!menos\s)media|multimedia|reproduccion|playing|playback|"
                 r"sonando|"
                 r"audiovisual\s+session|sesion\s+audiovisual|media\s+session|"
                 r"(?:track|pista)\s+(?:or|o)\s+(?:video|audio))\b",
@@ -11199,6 +11356,11 @@ def _resolve_clause_effects(
         return resolve_explicit_effects(
             completed_app_volume_request, available, application_names, game_catalog,
         )
+    completed_list_request = _completed_missing_list_entries_request(text, previous_user_text, available)
+    if completed_list_request is not None:
+        return resolve_explicit_effects(
+            completed_list_request, available, application_names, game_catalog,
+        )
     completed_music_request = _completed_missing_music_request(
         text, previous_user_text, available,
     )
@@ -11243,6 +11405,19 @@ def _resolve_clause_effects(
         application_names,
     )
     authenticated_games = build_game_catalog_index(game_catalog)
+    bare_name = _bare_play_name(text)
+    if bare_name is not None:
+        launch = "abre " + _fold(bare_name)
+        if (
+            _authenticated_game_target(launch, authenticated_games) is not None
+            or _authenticated_application_request(launch, authenticated_applications) is not None
+        ):
+            # «pon fortnite», «pon obsidian»: an installed game or catalog
+            # application said alone after «pon» is started, never searched as music.
+            return resolve_explicit_effects(launch, available, application_names, game_catalog)
+    if "task.create" in available and list_entry_request(text) is not None:
+        # «añadir el brócoli a mi lista de la compra»: the entry is a task on that list.
+        return EffectIntent(("task.create",), (text,))
     browser_music = _named_browser_music_request(text)
     if "browser.navigate.named" in available and browser_music is not None and browser_music[1] is None:
         # MUSIC1827 «open Edge and play some music»: which music is asked first
@@ -11653,6 +11828,8 @@ def _resolve_clause_effects(
         return EffectIntent(("notification.diagnose",), (folded,))
     if "notification.schedule" in available and _direct_alarm_schedule_request(folded):
         return EffectIntent(("notification.schedule",), (folded,))
+    if (nominal_schedule := nominal_schedule_request(folded)) in available:
+        return EffectIntent((nominal_schedule,), (folded,))
     direct_named_website = (
         re.fullmatch(
             r"(?:go|take\s+me|navigate|open|ve|llevame|navega)\s+"
