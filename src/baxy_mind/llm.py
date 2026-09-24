@@ -8841,11 +8841,17 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     ):
         return "missing_state"
     if coming and not rain_asked:
-        figures = [
+        # «¿qué tiempo hace hoy jueves?»: the day named may be today, answered with the weather now.
+        today_weekday = _reading_fold(str((seen.get("today") or {}).get("weekday") or ""))
+        today_asked = re.search(r"\b(?:hoy|today|ahora|now)\b", asks) is not None or (
+            bool(today_weekday) and re.search(r"\b" + re.escape(today_weekday) + r"\b", asks) is not None
+        )
+        figures = ([seen.get("temperatureC")] if today_asked else []) + [
             day.get(key)
             for day in (seen.get("today"), tomorrow, *later) if isinstance(day, dict)
             for key in ("maxC", "minC", "rainProbabilityPercent") if day.get(key) is not None
         ]
+        figures = [value for value in figures if value is not None]
         if figures and not any(_states_weather_number(text, value) for value in figures):
             return "missing_state"
     elif rain_asked or asks_tomorrow:

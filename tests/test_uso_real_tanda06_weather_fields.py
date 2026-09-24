@@ -274,6 +274,22 @@ def test_the_coming_days_are_not_answered_with_today_or_an_unread_figure(asked: 
     assert llm._weather_fact_defect(reply, _WEEK, asked) == defect
 
 
+@pytest.mark.parametrize(
+    ("asked", "reply", "defect"),
+    [
+        # The weekday named is today's: the weather now answers it.
+        ("¿qué tiempo hace hoy jueves?", "Hoy jueves en Curicó hay 16,4 °C y está nublado.", ""),
+        ("¿cómo estará el jueves?", "El jueves en Curicó hay 16,4 °C.", ""),
+        ("what's the weather like today, thursday", "Today in Curicó it's 16.4°C and cloudy.", ""),
+        # Another weekday is not answered with the weather now.
+        ("¿cómo estará el lunes?", "En Curicó hay 16,4 °C.", "missing_state"),
+    ],
+)
+def test_a_weekday_that_is_today_is_answered_with_the_weather_now(asked: str, reply: str, defect: str) -> None:
+    seen = {**_WEEK_SEEN, "today": {**_SEEN["today"], "date": "2026-09-24", "weekday": "jueves"}}
+    assert llm._weather_fact_defect(reply, {"operation": "weather.current", "seen": seen}, asked) == defect
+
+
 def test_the_week_instruction_sums_up_the_days_after_tomorrow() -> None:
     instruction = llm._weather_answer_instruction("cuál es el pronóstico del tiempo para la semana", "es")
     assert "seen.laterDays" in instruction
