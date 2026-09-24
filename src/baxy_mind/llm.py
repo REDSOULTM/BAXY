@@ -4723,6 +4723,11 @@ _CAUSE_FACT = {
     "timeout": "wait ran out",
     "provider_down": "no response",
     "out_of_catalog": "outside what I do",
+    # Tanda 5c «Abre el gallery» → «No pude abrir el gallery porque falló el inventario»: the code named in prose.
+    # The launch or the window step was sent; what failed is reading what is open, so the result is unconfirmed.
+    "inventory_failed": (
+        "the list of open programs and windows could not be read, so it is not confirmed whether it worked"
+    ),
     # H0714: Windows rechazo la transicion de energia. La App resume eso como
     # «result_unverified», y sin un hecho detras el modelo hablaba del fallo en
     # vez de hablarle a la persona: «El fallo se debe a que el resultado no fue
