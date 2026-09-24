@@ -4,6 +4,10 @@
    point map: the UV index (now and the day's peak) and the dew point are readings of the weather read. Owners:
    semantic/web._SKY_MEASURE_WORDS / weather_asked_measures; provider OpenMeteoWeatherAdapter (C# tests); composer
    llm._weather_focus / _weather_fact_defect.
+2. «cuál es el pronóstico del tiempo para la semana» got today and tomorrow only: the seven days come in the same
+   read (``laterDays`` after tomorrow, each with its weekday), are sent to the composer only when the question asks
+   the coming days, and the reply sums them up. Owners: semantic/web.weather_asks_week / weather_asks_coming_days;
+   provider OpenMeteoWeatherAdapter (C# tests); llm._compose_situation_payload / _weather_focus / _weather_fact_defect.
 
 Every list mixes Spanish, English and Spanglish and holds phrasings never seen in a run; negative controls keep what
 is not the live reading out of it.
@@ -173,3 +177,118 @@ def test_a_weather_draft_that_missed_the_asked_value_is_repaired_with_that_focus
     retry = json.dumps(client.payloads[1]["messages"], ensure_ascii=False)
     assert "seen.uvIndex (ahora) y today.uvIndexMax" in retry
     assert "abierto/open" not in retry
+
+
+# --- 2. the week's forecast is read and summed up briefly ---------------------------------------------------------
+
+_LATER = [
+    {"date": "2026-09-26", "weekday": "sábado", "condition": "lluvia", "maxC": 17.2, "minC": 11.0,
+     "rainProbabilityPercent": 70},
+    {"date": "2026-09-27", "weekday": "domingo", "condition": "lluvia débil", "maxC": 16.0, "minC": 10.2,
+     "rainProbabilityPercent": 45},
+    {"date": "2026-09-28", "weekday": "lunes", "condition": "parcialmente nublado", "maxC": 19.4, "minC": 11.5,
+     "rainProbabilityPercent": 5},
+    {"date": "2026-09-29", "weekday": "martes", "condition": "despejado", "maxC": 21.1, "minC": 12.0,
+     "rainProbabilityPercent": 0},
+    {"date": "2026-09-30", "weekday": "miércoles", "condition": "mayormente despejado", "maxC": 22.3, "minC": 13.1,
+     "rainProbabilityPercent": 3},
+]
+_WEEK_SEEN = {**_SEEN, "laterDays": _LATER}
+_WEEK = {"operation": "weather.current", "seen": _WEEK_SEEN}
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "cuál es el pronóstico del tiempo para la semana",
+        "what's the forecast for the week",
+        "dame el clima de los próximos días",
+        "how's the weather looking the next few days",
+        "el weather de esta semana porfa",
+        "pronóstico extendido para Lima",
+        "weekly forecast",
+        "¿va a llover el resto de la semana?",
+    ],
+)
+def test_the_week_is_asked_as_the_coming_days(text: str) -> None:
+    assert _operations(text) == ("weather.current",), text
+    assert llm.weather_asks_week(text)
+    assert llm.weather_asks_coming_days(text)
+
+
+@pytest.mark.parametrize(
+    ("text", "coming"),
+    [
+        ("¿el sábado podremos comer al aire libre en Sevilla?", True),
+        ("clima para pasado mañana", True),
+        ("will it rain on friday", True),
+        # Today, tomorrow or no day: the read of today and tomorrow answers them.
+        ("¿qué tiempo hace hoy?", False),
+        ("¿llueve mañana?", False),
+        ("how's the weather", False),
+        # The week gone by is no forecast.
+        ("¿llovió la semana pasada?", False),
+    ],
+)
+def test_a_day_after_tomorrow_is_one_of_the_coming_days(text: str, coming: bool) -> None:
+    assert llm.weather_asks_coming_days(text) is coming
+    assert llm.weather_asks_week(text) is False
+
+
+@pytest.mark.parametrize(
+    ("asked", "reply"),
+    [
+        ("cuál es el pronóstico del tiempo para la semana",
+         "Esta semana en Curicó irá de 10,2 a 22,3 °C, con lluvia probable el sábado (70 %) y el domingo (45 %)."),
+        ("what's the forecast for the week",
+         "This week in Curicó highs go from 16 to 22.3°C; rain is likely on Saturday (70%)."),
+        ("¿va a llover el resto de la semana?", "El sábado hay un 70 % de probabilidad de lluvia y el domingo un 45 %."),
+        ("¿el sábado podremos comer al aire libre en Curicó?",
+         "El sábado en Curicó habrá lluvia, con 70 % de probabilidad y máxima de 17,2 °C."),
+        ("will it rain on tuesday", "Tuesday looks dry: 0% chance of rain."),
+        ("clima para pasado mañana", "Pasado mañana, el sábado, habrá lluvia con máxima de 17,2 °C en Curicó."),
+    ],
+)
+def test_the_coming_days_are_answered_from_the_days_read(asked: str, reply: str) -> None:
+    assert llm._weather_fact_defect(reply, _WEEK, asked) == ""
+
+
+@pytest.mark.parametrize(
+    ("asked", "reply", "defect"),
+    [
+        # The t39 reply: today and tomorrow only, for the week.
+        ("cuál es el pronóstico del tiempo para la semana",
+         "En Curicó hay 16,4 °C y está nublado; mañana máxima de 20,5 °C y mínima de 12,4 °C.", "missing_state"),
+        ("¿el sábado podremos comer al aire libre en Curicó?", "En Curicó hay 16,4 °C.", "missing_state"),
+        # A figure of no day read is invented.
+        ("what's the forecast for the week", "This week highs reach 25°C in Curicó.", "invented_number"),
+    ],
+)
+def test_the_coming_days_are_not_answered_with_today_or_an_unread_figure(asked: str, reply: str, defect: str) -> None:
+    assert llm._weather_fact_defect(reply, _WEEK, asked) == defect
+
+
+def test_the_week_instruction_sums_up_the_days_after_tomorrow() -> None:
+    instruction = llm._weather_answer_instruction("cuál es el pronóstico del tiempo para la semana", "es")
+    assert "seen.laterDays" in instruction
+    assert "sin enumerar cada día" in instruction
+    assert "La lectura cubre sólo hoy y mañana" not in instruction
+    # A question about today still says the read it has.
+    today = llm._weather_answer_instruction("¿qué tiempo hace hoy?", "es")
+    assert "seen.laterDays" not in today
+    assert "La lectura cubre sólo hoy y mañana" in today
+
+
+@pytest.mark.parametrize(
+    ("asked", "sent"),
+    [
+        ("cuál es el pronóstico del tiempo para la semana", True),
+        ("¿el sábado podremos comer al aire libre?", True),
+        ("¿qué tiempo hace hoy?", False),
+        ("¿llueve mañana?", False),
+    ],
+)
+def test_the_days_after_tomorrow_are_sent_only_when_asked(asked: str, sent: bool) -> None:
+    payload = llm._compose_situation_payload(_weather_situation(_WEEK_SEEN), "es", asked)
+    assert ("laterDays" in payload["seen"]) is sent
+    assert payload["seen"]["temperatureC"] == 16.4

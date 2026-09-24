@@ -45,6 +45,7 @@ from .semantic.grammar import spoken_number_request
 from .semantic.network import WEEK_PERIOD, asks_calendar_part, calendar_parts_asked
 from .semantic.web import (
     weather_asks_later_day, weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
+    weather_asks_coming_days, weather_asks_week,
 )
 from .semantic.temporal import clock_elsewhere
 from .semantic.patterns import echo_mode_request
@@ -6036,6 +6037,10 @@ def _compose_situation_payload(
             visible_seen = project_system_measurements(visible_seen)
         elif operation == "system.process.list":
             visible_seen = project_process_measurements(visible_seen, user_text)
+        elif operation == "weather.current" and not weather_asks_coming_days(user_text):
+            # Uso real tanda 6: the days after tomorrow answer only a question about them; unasked, they
+            # would only lengthen every weather compose.
+            visible_seen.pop("laterDays", None)
         elif (
             operation == "app.installed"
             and visible_seen.get("authority") == "windows_start_catalog_snapshot"
@@ -8516,13 +8521,39 @@ def _weather_focus(user_text: str, english: bool) -> str:
             else "La persona preguntó por el índice UV: da seen.uvIndex (ahora) y today.uvIndexMax (el máximo de "
             "hoy); si son null, di que no se pudo leer el índice UV."
         )
+    coming = weather_asks_coming_days(user_text)
     if _weather_asks_rain(user_text):
         return (
             "The person asked about rain (or rain gear, or an amount of rain): answer with the rain "
-            "probability of the day asked, tomorrow's for tomorrow or a later day."
+            "probability of the day asked, tomorrow's for tomorrow"
+            + (", the matching day of seen.laterDays for a later day or the likeliest days for the week." if coming
+               else " or a later day.")
             if english
             else "La persona preguntó por la lluvia (o por algo para la lluvia, o una cantidad): contesta "
-            "con la probabilidad de lluvia del día preguntado, la de mañana para mañana o un día posterior."
+            "con la probabilidad de lluvia del día preguntado, la de mañana para mañana"
+            + (", la del día de seen.laterDays para un día posterior o los días más probables para la semana."
+               if coming else " o un día posterior.")
+        )
+    if weather_asks_week(user_text):
+        # Uso real tanda 6 «cuál es el pronóstico del tiempo para la semana» got today and tomorrow only.
+        return (
+            "The person asked about the coming days: sum them up from today, tomorrow and seen.laterDays "
+            "(each with its weekday): the range of maximums and minimums and the days with rain likely, "
+            "naming those days by their weekday; no list of every day."
+            if english
+            else "La persona preguntó por los próximos días: resúmelos desde today, tomorrow y seen.laterDays "
+            "(cada uno con su weekday): el rango de máximas y mínimas y los días con lluvia probable, "
+            "nombrándolos por su día de la semana; sin enumerar cada día."
+        )
+    if coming:
+        return (
+            "The person asked about a day by its weekday or a later day: give the sky, maximum, minimum and "
+            "rain probability of that day, from today, tomorrow or the day of seen.laterDays with that "
+            "weekday or date."
+            if english
+            else "La persona preguntó por un día por su nombre o un día posterior: da el cielo, la máxima, la "
+            "mínima y la probabilidad de lluvia de ese día, de today, tomorrow o el día de seen.laterDays con "
+            "ese weekday o esa fecha."
         )
     if _weather_asks_tomorrow(user_text):
         return (
@@ -8584,14 +8615,31 @@ def _weather_answer_instruction(user_text: str, language: str) -> str:
         "sunrise y sunset de today/tomorrow son las horas locales del sol; "
         "seen.airQuality es el aire ahora (usAqi con su category, pm25 y pm10 en µg/m³). "
     )
+    # Uso real tanda 6: the days after tomorrow are read too (seen.laterDays); they are sent only when the
+    # question asks them (``_compose_situation_payload``), so the reach said is the reach sent.
+    coverage = (
+        (
+            "seen.laterDays are the days after tomorrow (date, weekday, condition, maxC, minC, "
+            "rainProbabilityPercent); for a day after the last of them, say the forecast does not reach it. "
+            if english
+            else "seen.laterDays son los días después de mañana (date, weekday, condition, maxC, minC, "
+            "rainProbabilityPercent); para un día después del último, di que el pronóstico no llega hasta ahí. "
+        )
+        if weather_asks_coming_days(user_text)
+        else (
+            "The read covers today and tomorrow only: for a later day, say so. "
+            if english
+            else "La lectura cubre sólo hoy y mañana: para un día posterior, dilo. "
+        )
+    )
     closing = (
         " Answer only that, in one short sentence (two at most), with the observed numbers and their units "
-        "(°C, km/h, %); no other readings. The read covers today and tomorrow only: for a later day, say so. "
-        "Say it directly, without naming where it was read. Nothing was opened or changed."
+        "(°C, km/h, %); no other readings. " + coverage
+        + "Say it directly, without naming where it was read. Nothing was opened or changed."
         if english
         else " Contesta sólo eso, en una oración corta (dos como máximo), con los números observados y sus "
-        "unidades (°C, km/h, %); sin otras lecturas. La lectura cubre sólo hoy y mañana: para un día "
-        "posterior, dilo. Dilo directamente, sin nombrar de dónde se leyó. No se abrió ni se cambió nada."
+        "unidades (°C, km/h, %); sin otras lecturas. " + coverage
+        + "Dilo directamente, sin nombrar de dónde se leyó. No se abrió ni se cambió nada."
     )
     return fields + _weather_focus(user_text, english) + closing
 
@@ -8616,6 +8664,11 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
                 observed |= _weather_number_forms(block.get(key))
             for key in ("sunrise", "sunset"):
                 observed |= _weather_clock_forms(block.get(key))
+    # Uso real tanda 6: the days after tomorrow, sent when the question asks them.
+    later = [day for day in seen.get("laterDays") or [] if isinstance(day, dict)]
+    for block in later:
+        for key in ("maxC", "minC", "rainProbabilityPercent"):
+            observed |= _weather_number_forms(block.get(key))
     air = seen.get("airQuality")
     if isinstance(air, dict):
         # Tanda 4c «Whats the air quality hoy?»: the index and the particles of the same read.
@@ -8705,13 +8758,31 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         if values and not any(_states_weather_number(text, value) for value in values):
             return "missing_state"
         return ""
-    if rain_asked or asks_tomorrow:
+    # Uso real tanda 6 «el pronóstico del tiempo para la semana», «¿el sábado podremos comer afuera?»: with the
+    # days after tomorrow read, the day asked is any of the days read (the reply names which), and the week is
+    # answered with at least one of the days after tomorrow.
+    coming = bool(later) and weather_asks_coming_days(user_text or "")
+    if coming and weather_asks_week(user_text or "") and not any(
+        _states_weather_number(text, day.get(key)) for day in later for key in ("maxC", "minC", "rainProbabilityPercent")
+    ):
+        return "missing_state"
+    if coming and not rain_asked:
+        figures = [
+            day.get(key)
+            for day in (seen.get("today"), tomorrow, *later) if isinstance(day, dict)
+            for key in ("maxC", "minC", "rainProbabilityPercent") if day.get(key) is not None
+        ]
+        if figures and not any(_states_weather_number(text, value) for value in figures):
+            return "missing_state"
+    elif rain_asked or asks_tomorrow:
         # Uso real tanda 2 «¿Me llevo el chubasquero?», «¿Cuántas pulgadas are we
         # getting today?», «dentro de dos días»: rain, rain gear, a rain amount
         # and a later day are answered with the rain probability of the day
         # asked — tomorrow's for tomorrow or later, today's for today, either
         # read when no day is named.
-        if asks_tomorrow:
+        if coming:
+            days = (seen.get("today"), tomorrow, *later)
+        elif asks_tomorrow:
             days = (tomorrow,)
         elif re.search(r"\b(?:hoy|today|tonight|esta\s+(?:noche|tarde|manana))\b", asks):
             days = (seen.get("today"),)
@@ -8733,6 +8804,7 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         not any(form in text for form in _weather_number_forms(seen.get("temperatureC")))
         and not rain_asked
         and not asks_tomorrow
+        and not coming
         and not narrow_measures
     ):
         return "missing_state"

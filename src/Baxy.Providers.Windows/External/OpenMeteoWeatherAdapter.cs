@@ -71,12 +71,15 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
                 + "&longitude=" + place.Value.Longitude.ToString("F4", CultureInfo.InvariantCulture);
             // Uso real tanda 6 «Dime el UV index», «¿Cómo está el dew point ahora?»
             // buscaron definiciones y mapas en la web: el índice UV y el punto de
-            // rocío son del mismo servicio y vienen en la misma lectura.
+            // rocío son del mismo servicio y vienen en la misma lectura. «El
+            // pronóstico del tiempo para la semana» sólo tuvo hoy y mañana: los
+            // siete días llegan en la misma petición; los que siguen a mañana van
+            // en laterDays.
             string forecastUrl = ForecastAuthority + coordinates
                 + "&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,precipitation,"
                 + "uv_index,dew_point_2m"
                 + "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code,sunrise,sunset,uv_index_max"
-                + "&timezone=auto&forecast_days=2";
+                + "&timezone=auto&forecast_days=7";
             // Uso real tanda 4c «Whats the air quality hoy?» buscó páginas de
             // otro país: la calidad del aire del mismo lugar es otra lectura del
             // mismo servicio, pedida a la vez; si no contesta, el clima sigue.
@@ -119,6 +122,7 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
                 writer.WriteNumber("weatherCode", weatherCode);
                 writer.WriteString("condition", Condition(weatherCode));
                 writer.WriteStartObject("today");
+                WriteDay(writer, ReadStringAt(daily, "time", 0));
                 WriteNumber(writer, "maxC", ReadDoubleAt(daily, "temperature_2m_max", 0));
                 WriteNumber(writer, "minC", ReadDoubleAt(daily, "temperature_2m_min", 0));
                 WriteNumber(writer, "rainProbabilityPercent", ReadDoubleAt(daily, "precipitation_probability_max", 0));
@@ -127,7 +131,7 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
                 WriteClock(writer, "sunset", ReadStringAt(daily, "sunset", 0));
                 writer.WriteEndObject();
                 writer.WriteStartObject("tomorrow");
-                writer.WriteString("date", ReadStringAt(daily, "time", 1) ?? string.Empty);
+                WriteDay(writer, ReadStringAt(daily, "time", 1));
                 WriteNumber(writer, "maxC", ReadDoubleAt(daily, "temperature_2m_max", 1));
                 WriteNumber(writer, "minC", ReadDoubleAt(daily, "temperature_2m_min", 1));
                 WriteNumber(writer, "rainProbabilityPercent", ReadDoubleAt(daily, "precipitation_probability_max", 1));
@@ -136,6 +140,18 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
                 WriteClock(writer, "sunrise", ReadStringAt(daily, "sunrise", 1));
                 WriteClock(writer, "sunset", ReadStringAt(daily, "sunset", 1));
                 writer.WriteEndObject();
+                writer.WriteStartArray("laterDays");
+                for (int index = 2; ReadStringAt(daily, "time", index) is { } date; index++)
+                {
+                    writer.WriteStartObject();
+                    WriteDay(writer, date);
+                    writer.WriteString("condition", Condition(ReadIntAt(daily, "weather_code", index) ?? -1));
+                    WriteNumber(writer, "maxC", ReadDoubleAt(daily, "temperature_2m_max", index));
+                    WriteNumber(writer, "minC", ReadDoubleAt(daily, "temperature_2m_min", index));
+                    WriteNumber(writer, "rainProbabilityPercent", ReadDoubleAt(daily, "precipitation_probability_max", index));
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
                 if (air is { } quality)
                 {
                     writer.WriteStartObject("airQuality");
@@ -436,6 +452,29 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
         else
             writer.WriteNull(name);
     }
+
+    // Uso real tanda 6: a day of the forecast is named by the person by its weekday
+    // («el sábado»), so each day carries its date and the weekday of that date, in the
+    // same plain Spanish words as the sky.
+    private static void WriteDay(Utf8JsonWriter writer, string? isoDate)
+    {
+        writer.WriteString("date", isoDate ?? string.Empty);
+        if (DateOnly.TryParseExact(isoDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateOnly day))
+            writer.WriteString("weekday", Weekday(day.DayOfWeek));
+        else
+            writer.WriteNull("weekday");
+    }
+
+    private static string Weekday(DayOfWeek day) => day switch
+    {
+        DayOfWeek.Monday => "lunes",
+        DayOfWeek.Tuesday => "martes",
+        DayOfWeek.Wednesday => "miércoles",
+        DayOfWeek.Thursday => "jueves",
+        DayOfWeek.Friday => "viernes",
+        DayOfWeek.Saturday => "sábado",
+        _ => "domingo",
+    };
 
     public void Dispose() => _http.Dispose();
 

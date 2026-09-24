@@ -57,7 +57,7 @@ public sealed class OpenMeteoWeatherAdapterTests
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(asked[0], Does.Contain("name=buenos%20aires"));
             Assert.That(asked.Single(url => url.StartsWith("https://api.open-meteo.com/", StringComparison.Ordinal)),
-                Does.Contain("latitude=-34.6131").And.Contain("forecast_days=2").And.Contain("sunrise,sunset"));
+                Does.Contain("latitude=-34.6131").And.Contain("forecast_days=7").And.Contain("sunrise,sunset"));
         });
         JsonElement result = receipt.Result!.Value;
         Assert.Multiple(() =>
@@ -319,6 +319,64 @@ public sealed class OpenMeteoWeatherAdapterTests
             Assert.That(result.GetProperty("dewPointC").ValueKind, Is.EqualTo(JsonValueKind.Null));
             Assert.That(result.GetProperty("today").GetProperty("uvIndexMax").ValueKind, Is.EqualTo(JsonValueKind.Null));
         });
+    }
+
+    // Uso real tanda 6 «cuál es el pronóstico del tiempo para la semana» got today and
+    // tomorrow only: the seven days come in the same read; the days after tomorrow are
+    // laterDays, each with its date, its weekday, its sky and its figures as read.
+    private const string WeekForecast =
+        """
+        {"timezone":"America/Santiago",
+         "current":{"time":"2026-09-24T18:45","temperature_2m":16.4,"apparent_temperature":16.7,"relative_humidity_2m":74,"weather_code":3,"wind_speed_10m":2.3,"precipitation":0.0,"uv_index":0.0,"dew_point_2m":11.8},
+         "daily":{"time":["2026-09-24","2026-09-25","2026-09-26","2026-09-27","2026-09-28","2026-09-29","2026-09-30"],
+                  "temperature_2m_max":[18.9,20.5,17.2,16.0,19.4,21.1,22.3],"temperature_2m_min":[12.6,12.4,11.0,10.2,11.5,12.0,13.1],
+                  "precipitation_probability_max":[2,10,70,45,5,0,3],"weather_code":[3,3,63,61,2,0,1],
+                  "sunrise":["2026-09-24T07:33","2026-09-25T07:31","2026-09-26T07:30","2026-09-27T07:29","2026-09-28T07:27","2026-09-29T07:26","2026-09-30T07:25"],
+                  "sunset":["2026-09-24T19:44","2026-09-25T19:45","2026-09-26T19:45","2026-09-27T19:46","2026-09-28T19:47","2026-09-29T19:47","2026-09-30T19:48"],
+                  "uv_index_max":[5.9,6.3,3.0,4.1,6.8,7.2,7.5]}}
+        """;
+
+    [Test]
+    public async Task TheDaysAfterTomorrowAreReadWithTheirWeekday()
+    {
+        var adapter = new OpenMeteoWeatherAdapter((url, _) => Task.FromResult(
+            url.Contains("ipwho", StringComparison.Ordinal) ? Located : WeekForecast));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current", JsonSerializer.SerializeToElement(new { }), CancellationToken.None);
+
+        Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+        JsonElement result = receipt.Result!.Value;
+        JsonElement later = result.GetProperty("laterDays");
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.GetProperty("today").GetProperty("date").GetString(), Is.EqualTo("2026-09-24"));
+            Assert.That(result.GetProperty("today").GetProperty("weekday").GetString(), Is.EqualTo("jueves"));
+            Assert.That(result.GetProperty("tomorrow").GetProperty("weekday").GetString(), Is.EqualTo("viernes"));
+            Assert.That(later.GetArrayLength(), Is.EqualTo(5));
+            Assert.That(later[0].GetProperty("date").GetString(), Is.EqualTo("2026-09-26"));
+            Assert.That(later[0].GetProperty("weekday").GetString(), Is.EqualTo("sábado"));
+            Assert.That(later[0].GetProperty("condition").GetString(), Is.EqualTo("lluvia"));
+            Assert.That(later[0].GetProperty("maxC").GetDouble(), Is.EqualTo(17.2));
+            Assert.That(later[0].GetProperty("minC").GetDouble(), Is.EqualTo(11.0));
+            Assert.That(later[0].GetProperty("rainProbabilityPercent").GetDouble(), Is.EqualTo(70));
+            Assert.That(later[1].GetProperty("weekday").GetString(), Is.EqualTo("domingo"));
+            Assert.That(later[4].GetProperty("date").GetString(), Is.EqualTo("2026-09-30"));
+            Assert.That(later[4].GetProperty("weekday").GetString(), Is.EqualTo("miércoles"));
+            Assert.That(later[4].GetProperty("condition").GetString(), Is.EqualTo("mayormente despejado"));
+        });
+    }
+
+    [Test]
+    public async Task AServiceThatGivesOnlyTwoDaysLeavesNoLaterDays()
+    {
+        var adapter = new OpenMeteoWeatherAdapter(Service(Geocoded, Geocoded));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current", JsonSerializer.SerializeToElement(new { location = "Buenos Aires" }), CancellationToken.None);
+
+        Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+        Assert.That(receipt.Result!.Value.GetProperty("laterDays").GetArrayLength(), Is.EqualTo(0));
     }
 
     [TestCase(12, "buena")]

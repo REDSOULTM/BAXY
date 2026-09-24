@@ -290,6 +290,9 @@ def _forecast_question(folded: str) -> bool:
         # Uso real tanda 6: «el índice UV de hoy?», «radiación UV en Madrid hoy» name the UV index or the dew point
         # about a time, without an asking word.
         or (_asks_sky_measure(folded) and _has(folded, WEATHER_WHEN))
+        # «weekly forecast», «the 7-day forecast»: the forecast named by its span.
+        or _has(folded, r"^[¿¡\s]*(?:(?:the|a|el|la)\s+)?(?:weekly|extended|7[-\s]?day|seven[-\s]day)\s+"
+                        r"(?:weather\s+)?forecast\b")
     )
 
 
@@ -346,7 +349,9 @@ _WEATHER_SUN_TIME = (
 _WEATHER_SUN_ASK = r"\b(?:hora|horas|horario|cuando|when|time|times)\b"
 # A time the forecast is asked about. Today and tomorrow are read; a later day is answered with what is read.
 WEATHER_WHEN = (
-    r"\b(?:hoy|today|tonight|ahora|now|esta\s+(?:noche|tarde|manana)|this\s+(?:morning|afternoon|evening|weekend)|"
+    # Uso real tanda 6 «el weather de esta semana porfa»: the week to come is a time asked about too.
+    r"\b(?:(?:esta|la\s+proxima|la\s+siguiente)\s+semana|this\s+week|next\s+week|(?:next|coming)\s+few\s+days|"
+    r"hoy|today|tonight|ahora|now|esta\s+(?:noche|tarde|manana)|this\s+(?:morning|afternoon|evening|weekend)|"
     r"manana|tomorrow|pasado\s+manana|fin\s+de\s+semana|finde|weekend|(?:dentro\s+de|en|in)\s+\w+\s+(?:dias|days))\b"
 )
 
@@ -400,7 +405,7 @@ def weather_asked_measures(text: str) -> frozenset[str]:
 
 def weather_asks_later_day(text: str) -> bool:
     """The weather question is about a day after tomorrow («dentro de dos días», «el fin de semana»,
-    «pasado mañana»): the read covers today and tomorrow, and the answer says so."""
+    «pasado mañana»)."""
 
     folded = _fold(text)
     if _has(folded, r"\b(?:pasado\s+manana|fin\s+de\s+semana|finde|weekend|next\s+week|(?:proxima|siguiente)\s+semana|"
@@ -408,6 +413,33 @@ def weather_asks_later_day(text: str) -> bool:
         return True
     counted = re.search(r"\b(?P<count>\w+)\s+(?:dias|days)\b", folded)
     return counted is not None and counted.group("count") not in {"un", "uno", "one", "a", "1"}
+
+
+# Uso real tanda 6 «cuál es el pronóstico del tiempo para la semana» got today and tomorrow: the week, the coming
+# days or a weekly forecast ask the days the read carries after tomorrow (``laterDays``).
+_WEATHER_WEEK = (
+    r"\b(?:(?:la|esta|toda\s+la|this|the|for\s+the)\s+semana(?!\s+(?:pasada|anterior))|semanal|weekly|"
+    r"this\s+week|the\s+week|(?:next|coming)\s+(?:few\s+)?days|(?:proximos|siguientes)\s+dias|dias\s+que\s+vienen|"
+    r"resto\s+de\s+la\s+semana|rest\s+of\s+the\s+week|(?:7|siete|seven)\s+(?:dias|days)|7[-\s]?day|"
+    r"extended\s+forecast|pronostico\s+extendido|next\s+week|(?:proxima|siguiente)\s+semana|semana\s+que\s+viene)\b"
+)
+
+
+def weather_asks_week(text: str) -> bool:
+    """The weather question asks the coming days as a whole («para la semana», «next few days», «weekly»)."""
+
+    return _has(_fold(text), _WEATHER_WEEK)
+
+
+def weather_asks_coming_days(text: str) -> bool:
+    """The weather question is about the days after tomorrow: the week, a later day, or a day named by its
+    weekday («¿el sábado podremos comer afuera?»)."""
+
+    return (
+        weather_asks_week(text)
+        or weather_asks_later_day(text)
+        or _has(_fold(text), rf"\b{_WEEKDAY_NAME}\b")
+    )
 
 
 _WHAT_IS_THE_WEATHER = (
