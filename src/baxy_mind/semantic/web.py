@@ -343,7 +343,9 @@ _WEATHER_AMOUNT = (
 _WEATHER_SUN_TIME = (
     # Tanda 4c «la hora exacta de la puesta de sol en Badalona»: «de sol» says the same as «del sol».
     r"\b(?:(?:salida|puesta|caida|entrada)\s+del?\s+sol|amanecer|amanece|atardecer|atardece|anochecer|anochece|"
-    r"oscurece|ocaso|(?:se\s+pone|sale|se\s+oculta|se\s+esconde)\s+el\s+sol|sunrise|sunset|dawn|dusk|"
+    # Tanda 6 «cuando se ponga el sol mañana»: the subjunctive says the same sun time.
+    r"oscurece|ocaso|amanezca|atardezca|anochezca|oscurezca|"
+    r"(?:se\s+(?:pone|ponga|oculta|oculte|esconde|esconda)|sale|salga)\s+el\s+sol|sunrise|sunset|dawn|dusk|"
     r"(?:the\s+)?sun\s+(?:rise|set|go\s+down|come\s+up))\b"
 )
 _WEATHER_SUN_ASK = r"\b(?:hora|horas|horario|cuando|when|time|times)\b"
