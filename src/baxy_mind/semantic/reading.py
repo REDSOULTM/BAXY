@@ -121,7 +121,7 @@ def _desired_media_request(
     order to play; the words are the person's and stay the query. Only when the order resolves on its own.
     """
 
-    if re.search(r"(?:chistes?|jokes?|bromas?|adivinanzas?|riddles?)", _fold(objective)):
+    if re.search(r"\b(?:chistes?|jokes?|bromas?|adivinanzas?|riddles?)\b", _fold(objective)):
         # MASSIVE general_joke «i want to hear a joke», «me gustaría escuchar algunos buenos chistes»:
         # a joke is told by BAXY, not played.
         return None
