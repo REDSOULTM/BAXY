@@ -20,6 +20,8 @@ Every list mixes Spanish, English and Spanglish and holds phrasings never seen i
 
 from __future__ import annotations
 
+import copy
+
 import pytest
 
 from baxy_mind import __main__ as sidecar
@@ -345,42 +347,53 @@ class _FixedDraw:
         return options[-1]
 
 
-def test_the_die_is_drawn_by_the_mind_and_the_model_only_words_it(monkeypatch):
+# Tanda 5b (official window): «roll that dice, ai» died twice when the draft named the die («de 6 caras») and the
+# marker check refused it. The drawn value is the mind's own, not untrusted text: the model sees it and writes it;
+# the check keeps it the only result (the value, numbers of the request and the die's faces, nothing else).
+def test_the_die_is_drawn_by_the_mind_and_the_model_words_it(monkeypatch):
     monkeypatch.setattr(llm, "_DRAW", _FixedDraw(4))
     seen: list[dict] = []
-    runtime = _marker_runtime("You rolled a [[R1]].", seen)
+    runtime = _marker_runtime("You rolled a 4.", seen)
     reply, calls = runtime.chat("roll that dice, ai", history=[], temperature=0.0,
                                 conversation_kind="social", response_language="en")
     assert reply == "You rolled a 4."
     assert calls == []
-    assert "4" not in repr(seen[0]["messages"])
+    assert "«4»" in seen[0]["messages"][0]["content"]
+
+
+def test_the_faces_of_the_die_may_be_named_with_the_value(monkeypatch):
+    monkeypatch.setattr(llm, "_DRAW", _FixedDraw(5))
+    reply, _ = _marker_runtime("Salió un 5 en el dado de 6 caras.", []).chat(
+        "roll that dice, ai", history=[], temperature=0.0, conversation_kind="social", response_language="es",
+    )
+    assert reply == "Salió un 5 en el dado de 6 caras."
 
 
 def test_several_dice_and_a_coin_are_said_in_the_request_language(monkeypatch):
     monkeypatch.setattr(llm, "_DRAW", _FixedDraw(3, 6))
-    reply, _ = _marker_runtime("Salieron [[R1]].", []).chat(
+    reply, _ = _marker_runtime("Salieron 3 y 6.", []).chat(
         "tira dos dados", history=[], temperature=0.0, conversation_kind="social", response_language="es",
     )
     assert reply == "Salieron 3 y 6."
     monkeypatch.setattr(llm, "_DRAW", _FixedDraw())
-    reply, _ = _marker_runtime("Salió [[R1]].", []).chat(
+    reply, _ = _marker_runtime("Salió cruz.", []).chat(
         "lanza una moneda", history=[], temperature=0.0, conversation_kind="social", response_language="es",
     )
     assert reply == "Salió cruz."
 
 
-@pytest.mark.parametrize("scaffold", ["Salió un 3, no, un [[R1]].", "[[R1]]", "¿[[R1]]?", "Salió 7."])
-def test_a_wording_that_invents_another_number_or_says_only_the_value_is_refused(monkeypatch, scaffold):
+@pytest.mark.parametrize("draft", ["Salió un 3, no, un 5.", "5", "¿5?", "Salió 7.", "Salió un 5, y luego un 2."])
+def test_a_wording_that_invents_another_number_or_says_only_the_value_is_refused(monkeypatch, draft):
     monkeypatch.setattr(llm, "_DRAW", _FixedDraw(5))
     with pytest.raises(ValueError):
-        _marker_runtime(scaffold, []).chat(
+        _marker_runtime(draft, []).chat(
             "tira un dado", history=[], temperature=0.0, conversation_kind="social", response_language="es",
         )
 
 
 def test_the_sides_the_person_named_may_be_said_again(monkeypatch):
     monkeypatch.setattr(llm, "_DRAW", _FixedDraw(17))
-    reply, _ = _marker_runtime("En el dado de 20 caras salió [[R1]].", []).chat(
+    reply, _ = _marker_runtime("En el dado de 20 caras salió 17.", []).chat(
         "tira un dado de 20 caras", history=[], temperature=0.0, conversation_kind="social",
         response_language="es",
     )
@@ -453,3 +466,42 @@ def test_asking_what_is_new_is_a_greeting(text, language):
 )
 def test_other_questions_are_not_a_greeting(text):
     assert sidecar._explicit_social_turn_decision(text) is None
+
+
+# Tanda 5b (official window): «No puedo reproducir tus últimas palabras porque no las tengo disponibles… [[R1]]» —
+# a refusal around the text it says back; the App refused it. The wording is asked once more, told it has the
+# text; a second refusal abstains (no refusal is ever published around the literal).
+def _scripted_runtime(scaffolds: list[str], seen: list[dict]) -> LlmRuntime:
+    runtime = object.__new__(LlmRuntime)
+    replies = iter(scaffolds)
+
+    def post(payload: dict) -> dict:
+        seen.append(copy.deepcopy(payload))
+        return {"choices": [{"message": {"content": next(replies)}}]}
+
+    runtime._post = post  # type: ignore[method-assign]
+    return runtime
+
+
+def test_a_recall_worded_as_a_refusal_is_worded_again():
+    seen: list[dict] = []
+    runtime = _scripted_runtime(
+        ["No puedo reproducir tus últimas palabras porque no las tengo; sin embargo: [[R1]]", "Dijiste: «[[R1]]»."],
+        seen,
+    )
+    answer = runtime._compose_literal_answer(
+        current="¿puedes reproducir mis últimas palabras?", literal="pon el volumen en 10",
+        task="diga lo último que dijo la persona; [[R1]] es ese mensaje.",
+    )
+    assert answer == "Dijiste: «pon el volumen en 10»."
+    assert len(seen) == 2
+    assert "no digas que no puedes" in seen[1]["messages"][0]["content"]
+
+
+def test_a_recall_refused_twice_is_never_published():
+    runtime = _scripted_runtime(["I can't repeat that: [[R1]]", "I don't have it, but: [[R1]]"], [])
+    with pytest.raises(ValueError):
+        runtime._compose_literal_answer(
+            current="what did I just say?", literal="turn the volume up",
+            task="says back the person's last message; [[R1]] is that message.",
+        )
