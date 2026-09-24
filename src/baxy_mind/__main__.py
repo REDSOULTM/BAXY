@@ -133,7 +133,6 @@ from .semantic.reading import (  # noqa: F401 - moved to baxy_mind.semantic.read
     _LEAD_NOT_TALK,
     _order_after_talk,
     _FRONTED_PLACE,
-    _DESIRED_MEDIA,
     _desired_media_request,
     _fronted_place_request,
     _TALK_PC_DOMAIN,

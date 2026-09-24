@@ -4,7 +4,10 @@
 from __future__ import annotations
 
 import re
-from .grammar import _fold, _has, _strip_request_envelope, _request_head, _head_is, _KNOWN_APPLICATION, _MEDIA_RESUME_VERB, _PERCENTAGE_WORD_VALUES
+from .grammar import (
+    _fold, _has, _original_clause, _strip_request_envelope, _request_head, _head_is, _KNOWN_APPLICATION, _MEDIA_RESUME_VERB,
+    _PERCENTAGE_WORD_VALUES,
+)
 
 
 _YOUTUBE_SEARCH = re.compile(
@@ -338,9 +341,81 @@ def radio_station_query(text: str) -> str | None:
         if named is None:
             return None
         query = f"radio {named.group('name') or named.group('before')}"
+        # Uso real 2026-09-23 «vamos a escuchar la emisora ciento tres punto cinco»: a dial said without
+        # its band is FM when it is an FM dial.
+        dial = _radio_dial(named.group("name") or "", "FM")
+        if re.fullmatch(r"\d{2,3}\.\d", dial) and 87.5 <= float(dial) <= 108.0:
+            query = f"{dial} FM"
     if _has(query, _RADIO_NOT_A_STATION) or len(query.encode("utf-8")) > 200:
         return None
     return f"{query} en vivo"
+
+
+# Uso real 2026-09-23 (69 media rows): the thing to listen to was named and the turn still went to a
+# refusal, a web search or a question, because the order was not said as «pon …». These are the ways
+# people say it otherwise; each becomes the order «pon/play <what they named>» in their own words, and
+# the ordinary reader decides from there (what it names plays, what names nothing is asked).
+_SPOKEN_MEDIA_ORDER = re.compile(
+    r"(?:"
+    # A desire or an invitation to listen: «quiero escuchar…», «mi deseo es escuchar…», «escuchemos…»,
+    # «vamos a poner…», «déjame que escuche…».
+    r"(?:(?:yo|che|bueno|y)\s+)?"
+    r"(?:(?:quiero|quisiera|me\s+gustaria|me\s+encantaria|me\s+apetece|tengo\s+ganas\s+de|necesito|"
+    r"mi\s+deseo\s+es|vamos\s+a|dejame|deja\s+que)\s+(?:que\s+)?(?:escuchar|escuche|oir|oiga|poner|ponga)|"
+    r"escuchemos|oigamos|pongamos)\s+(?P<listen>\S.*)"
+    r"|(?:(?:yo|che|bueno|y)\s+)?(?:quiero|quisiera|me\s+gustaria|tengo\s+ganas\s+de|necesito)\s+"
+    r"(?P<object>(?:una?\s+|el\s+|la\s+|algo\s+de\s+)?"
+    r"(?:cancion|canciones|tema|temas|musica|playlist|video|videos|disco|podcasts?|audiolibros?)\b.*)"
+    # The order in the infinitive: «tocar música reggae», «(podrías) ponerme música clásica».
+    r"|(?:tocar|poner|reproducir)(?:me|nos)?\s+(?P<infinitive>\S.*)"
+    # Starting a thing to listen to: «iniciar podcasts de nfl», «empieza la playlist».
+    r"|(?:inicia|iniciar|empieza|empezar|comienza|comenzar|arranca)\s+(?P<start>(?:(?:el|la|los|las|un|una|mi|mis)\s+)?"
+    r"(?:podcasts?|audiolibros?|musica|canciones|playlist|lista\s+de\s+reproduccion|radio|emisora|episodio|capitulo)\b.*)"
+    # The thing said first and the order after it: «podcast especial shadi reprodúcelo».
+    r"|(?P<fronted>\S.{0,160}?)\s+(?:reproducelo|reproducela|ponlo|ponla|ponmelo|ponmela|tocalo|tocala)"
+    # A thing to listen to named alone: «nueva música pop», «aleatorias canciones de coldplay»; never
+    # a remark about it («música muy fuerte», «canciones que me gustan»).
+    r"|(?!.*\b(?:muy|mas|menos|tan|fuerte|alta|alto|baja|bajo|bajito|despacio|volumen|que|me|te|se|le|es|son|"
+    r"esta|estan|estuvo|fue|era|suena|sonando)\b)"
+    r"(?P<nominal>(?:(?:nuev[ao]s?|aleatori[ao]s?)\s+)?(?:musica|canciones|podcasts?|audiolibros?)\s+\S+(?:\s+\S+){0,3})"
+    # The same in English.
+    r"|(?:i\s+(?:want|need|would\s+like)\s+to|i'?d\s+like\s+to|i\s+wanna)\s+(?:listen\s+to|hear)"
+    r"(?:\s+(?:listen\s+to|hear))?\s+(?P<english>\S.*)"
+    r"|(?:let'?s|let\s+us|(?:can|could|shall|may)\s+(?:we|i))\s+(?:listen\s+to|hear)\s+(?P<english_we>\S.*)"
+    r"|(?:start|begin)\s+(?P<english_start>(?:(?:the|a|my)\s+)?(?:(?:next|previous|last)\s+)?"
+    r"(?:podcasts?|audiobooks?|music|songs|playlist|radio|station|episode)\b.*)"
+    r"|(?P<english_fronted>\S.{0,160}?)\s+(?:play\s+it|put\s+it\s+on)"
+    r"|(?P<english_nominal>(?!(?:i|you|we|he|she|they|it|this|that|the|my|your|our|his|her|their)\b)"
+    r"(?:(?:new|some|random|good|latest)\s+)?[a-z0-9&'-]+(?:\s+[a-z0-9&'-]+)?\s+(?:music|songs|podcast|audiobook))"
+    r")[\s.!?]*"
+)
+
+
+def spoken_media_order(text: str) -> str | None:
+    """The order «pon …»/«play …» a request to listen said another way stands for, in the person's
+    words («escuchemos a Soda Stereo» → «pon Soda Stereo»), or None when it is not one of those ways.
+
+    After a listening verb a bare name is its music («escuchar cumbia» → «pon música de cumbia»), and
+    the personal «a» is not part of what to play."""
+
+    folded = _strip_request_envelope(_fold(text)).strip(" .!?¿¡")
+    if "?" in text:
+        return None
+    found = _SPOKEN_MEDIA_ORDER.fullmatch(folded)
+    if found is None:
+        return None
+    kind, rest = next((name, value) for name, value in found.groupdict().items() if value is not None)
+    rest = _original_clause(text, rest.strip())
+    verb = "play" if kind.startswith("english") else "pon"
+    if kind == "listen":
+        rest = re.sub(r"^a\s+", "", rest, flags=re.IGNORECASE)
+        if not re.match(
+            r"(?:algo|una?|el|la|los|las|mi|tu)\b|.*\b(?:canci[oó]n|canciones|tema|temas|m[uú]sica|playlist|disco|"
+            r"album|video|podcasts?|audiolibros?|radio|emisora)\b",
+            rest, re.IGNORECASE,
+        ):
+            rest = "música de " + rest
+    return f"{verb} {rest}" if rest else None
 
 
 def _bare_spoken_number_media_query(text: str) -> str | None:

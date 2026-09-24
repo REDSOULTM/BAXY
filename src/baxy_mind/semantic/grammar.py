@@ -222,8 +222,10 @@ _LOCAL_TASK_FRAME = (
 # "comprar pan", destroying the very request it was meant to unwrap.
 # The names people call the assistant by (Fase 3.5, ley 1): the owner called the earlier BAXYs
 # «Gemma» and «Carter», and people say «Alexa», «Siri» or «Jarvis» out of habit. As a vocative
-# before a request each is only an address, never part of the request.
-_ASSISTANT_NAME = r"(?:baxy|gemma|carter|alexa|siri|jarvis)"
+# before a request each is only an address, never part of the request. Uso real 2026-09-23 «olly toca un buen
+# tema», «hola google pon mi lista…»: «Olly» and a greeted «Google» are the same habit; «Google» alone is not
+# (it is also a verb and a search engine: «google el clima»).
+_ASSISTANT_NAME = r"(?:baxy|gemma|carter|alexa|siri|jarvis|olly|(?:ok|okay|hey|hola|hi|oye)\s+google)"
 _COMPUTER_INSTRUCTION_FRAME = (
     rf"(?:{_ASSISTANT_NAME}\s*[,;:]?\s*)?"
     r"(?![^:]{0,90}\b(?:no|not|sin|without|s[oó]lo|solo|only|nada|"
@@ -475,6 +477,38 @@ def _request_body_surface(text: str) -> str:
         if body and folded[start : start + len(body)] == body:
             return " ".join(tokens[start : start + len(body)])
     return text
+
+
+# Uso real 2026-09-23 «oye toca la radio», «olly can we listen to reply all podcast», «oye por favor dime
+# el nombre de esta canción»: speech carries no comma after an address or a discourse marker, and the
+# request prefix (which needs that pause, so literal content stays intact) read the marker as the first word.
+_LEADING_ADDRESS = re.compile(
+    rf"^[\s¡¿]*(?:(?:oye|oiga|hey|ey|mira|escucha|che|bueno|ok|okay|vale|{_ASSISTANT_NAME})\b[\s,.:;!]*)+",
+    re.IGNORECASE,
+)
+
+
+def _without_address(text: str) -> str | None:
+    """The request after a leading address or discourse marker, or None when there is none."""
+
+    rest = _LEADING_ADDRESS.sub("", text.strip(), count=1).strip()
+    return rest if rest and rest != text.strip() else None
+
+
+_CLAUSE_EDGE_PUNCTUATION = " \t,.;:!?¿¡«»\"'"
+
+
+def _original_clause(objective: str, folded_clause: str) -> str:
+    """The clause as the person wrote it (case and accents), found by folded words."""
+
+    words = folded_clause.split()
+    tokens = list(re.finditer(r"\S+", objective))
+    folded = [_fold(token.group()).strip(_CLAUSE_EDGE_PUNCTUATION) for token in tokens]
+    for start in range(len(tokens) - len(words) + 1):
+        if folded[start : start + len(words)] == words:
+            span = objective[tokens[start].start() : tokens[start + len(words) - 1].end()]
+            return span.strip(_CLAUSE_EDGE_PUNCTUATION)
+    return folded_clause
 
 
 def _explicit_desire_request(text: str) -> re.Match[str] | None:

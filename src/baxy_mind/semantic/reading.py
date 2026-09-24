@@ -9,8 +9,9 @@ from typing import Callable, Iterable
 
 from . import dialogue
 from .catalog import ApplicationCatalogIndex, GameCatalogIndex
-from .grammar import _ASSISTANT_NAME, _head_forms
+from .grammar import _ASSISTANT_NAME, _CLAUSE_EDGE_PUNCTUATION, _head_forms, _original_clause, _without_address
 from .intent import EffectIntent
+from .media import spoken_media_order
 from .normalize import fold as _fold
 from .patterns import (
     ClarificationIntent,
@@ -18,22 +19,6 @@ from .patterns import (
     resolve_explicit_clarification_intent,
     resolve_explicit_effects,
 )
-
-
-_CLAUSE_EDGE_PUNCTUATION = " \t,.;:!?¿¡«»\"'"
-
-
-def _original_clause(objective: str, folded_clause: str) -> str:
-    """The clause as the person wrote it (case and accents), found by folded words."""
-
-    words = folded_clause.split()
-    tokens = list(re.finditer(r"\S+", objective))
-    folded = [_fold(token.group()).strip(_CLAUSE_EDGE_PUNCTUATION) for token in tokens]
-    for start in range(len(tokens) - len(words) + 1):
-        if folded[start : start + len(words)] == words:
-            span = objective[tokens[start].start() : tokens[start + len(words) - 1].end()]
-            return span.strip(_CLAUSE_EDGE_PUNCTUATION)
-    return folded_clause
 
 
 # Coordination between clauses: a comma, «y/e», «después/luego», «and/then».
@@ -115,39 +100,29 @@ _FRONTED_PLACE = re.compile(
 )
 
 
-_DESIRED_MEDIA = re.compile(
-    r"^[¿¡\s]*(?:(?:yo|che|bueno|y)\s+)?(?:quiero|quisiera|me\s+gustar[ií]a|tengo\s+ganas\s+de|necesito)\s+"
-    r"(?:(?:escuchar|o[ií]r|poner)\s+(?P<listen>\S.*)|(?P<object>(?:una?\s+|el\s+|la\s+|algo\s+de\s+)?"
-    r"(?:canci[oó]n|canciones|tema|temas|m[uú]sica|playlist|video|videos|disco)\b.*))$"
-    r"|^[¿¡\s]*i\s+(?:want|would\s+like|'d\s+like)\s+to\s+(?:listen\s+to|hear)\s+(?P<english>\S.*)$",
-    re.IGNORECASE,
-)
+def _addressed_request(
+    objective: str,
+    resolve: Callable[[str], EffectIntent | None],
+) -> EffectIntent | None:
+    """«oye abre chrome», «olly pon rosalía»: the request after the address, when it resolves on its own."""
+
+    rest = _without_address(objective)
+    return resolve(rest) if rest is not None else None
 
 
 def _desired_media_request(
     objective: str,
     resolve: Callable[[str], EffectIntent | None],
 ) -> EffectIntent | None:
-    """«Quiero una canción de amor», «quiero escuchar algo de Queen» read as «pon …» (owner test turn 16).
+    """«Quiero una canción de amor», «escuchemos a Soda Stereo», «tocar música reggae», «iniciar
+    podcasts de nfl», «nueva música pop» read as «pon …» (owner test turn 16; uso real 2026-09-23).
 
-    A desire to listen is the same request as the order to play; the words after
-    the desire are the person's and stay the query. Only when the rewritten order
-    resolves on its own.
+    A request to listen said another way (``media.spoken_media_order``) is the same request as the
+    order to play; the words are the person's and stay the query. Only when the order resolves on its own.
     """
 
-    match = _DESIRED_MEDIA.match(objective.strip())
-    if match is None:
-        return None
-    if match.group("english"):
-        return resolve("play " + match.group("english").strip().rstrip(".!?"))
-    rest = (match.group("listen") or match.group("object") or "").strip().rstrip(".!?")
-    if match.group("listen"):
-        # «escuchar a Soda Stereo»: the personal «a» is not part of what to play.
-        rest = re.sub(r"^a\s+", "", rest, flags=re.IGNORECASE)
-        # «escuchar reggaetón»: listening is music; a bare name or genre is its music.
-        if not re.match(r"(?:algo|una?|el|la|los|las|mi|tu)\b|.*\b(?:canci[oó]n|canciones|tema|temas|m[uú]sica|playlist|disco|album|video)\b", rest, re.IGNORECASE):
-            rest = "música de " + rest
-    return resolve("pon " + rest) if rest else None
+    order = spoken_media_order(_without_address(objective) or objective)
+    return resolve(order) if order is not None else None
 
 
 def _fronted_place_request(
@@ -358,6 +333,7 @@ def read(
         for name, form in (
             ("order_after_talk", _order_after_talk),
             ("fronted_place", _fronted_place_request),
+            ("addressed", _addressed_request),
             ("desired_media", _desired_media_request),
         ):
             effects = form(text, resolve)
