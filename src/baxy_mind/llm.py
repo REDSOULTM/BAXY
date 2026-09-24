@@ -4254,7 +4254,10 @@ _CAUSE_FACT = {
     # person has to say which one it is. Nothing was connected.
     # Fase 7 (D4): mail to a free address from the owner's classic Outlook.
     "mail_address_invalid": ("that is not a mail address, so nothing was sent"),
-    "outlook_profile_not_configured": ("this PC has no classic Outlook profile to send mail from, so nothing was sent"),
+    # Tanda 3 2026-09-24 «what do i have to do on january 1st» (a calendar read)
+    # was answered «I couldn't send mail…»: the same missing profile blocks the
+    # agenda and the mail, and the fact must not name an effect nobody asked for.
+    "outlook_profile_not_configured": ("this PC has no classic Outlook profile, so Outlook's mail and calendar could not be used"),
     "outlook_mail_send_failed": ("Outlook did not send the mail, so nothing went out"),
     "mail_delivery_not_verified": ("Outlook accepted the mail but its copy in Sent Items was not found, so the delivery is not verified"),
     # REOPEN1993 grupo E: the recipient was looked up in WhatsApp and Discord.
