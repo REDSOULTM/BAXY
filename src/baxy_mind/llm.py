@@ -43,13 +43,13 @@ from .semantic.normalize import alternation, fold
 from .semantic import dialogue as dialogue_slot
 from .semantic.grammar import spoken_number_request
 from .semantic.network import (
-    WEEK_PERIOD, asks_calendar_part, calendar_parts_asked, relative_calendar_days,
+    WEEK_PERIOD, asks_calendar_part, calendar_parts_asked, present_calendar_question, relative_calendar_days,
 )
 from .semantic.web import (
     weather_asks_later_day, weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
     weather_asks_coming_days, weather_asks_week,
 )
-from .semantic.temporal import clock_elsewhere
+from .semantic.temporal import _DAY_WORDS, clock_elsewhere
 from .semantic.patterns import echo_mode_request
 from . import effect_intent
 from .effect_intent import (
@@ -4272,14 +4272,16 @@ def conversation_claim_defect(value: object, request: object = "") -> str:
     """Why a conversation reply claims what no operation produced or read, or "".
 
     A conversation turn runs nothing: the reply can neither report, perform nor promise
-    an effect («effect_claim») nor state the person's own records («unread_records»).
+    an effect («effect_claim») nor state the person's own records («unread_records»), and
+    (tanda 6 «Sí, el año actual es 2024.») no date about today that this PC's calendar
+    denies («false_date», «hedged_date»).
     """
 
     if visible_reply_claims_an_effect(value):
         return "effect_claim"
     if visible_reply_asserts_unread_personal_records(value, request):
         return "unread_records"
-    return ""
+    return _calendar_contradiction(str(value or ""), str(request or ""), _local_now())
 
 
 def visible_reply_asserts_an_unread_machine_state(
@@ -5481,6 +5483,130 @@ def _misses_calendar_facts(text: str, facts: dict) -> bool:
         if set(re.findall(r"(?<!\d)\d{4}(?!\d)", text)) != {year}:
             return True
     return False
+
+
+# --- No reply contradicts the clock (tanda 6, «nunca inventa») -------------------------------------------------
+# t5 «¿hoy es lunes?» → «Hoy es lunes 24 de septiembre de 2026.» (a Thursday), t47 «el mes en el que estamos» → a
+# search snippet «Hoy es el primero de marzo, creo.», t40 «¿sabes el año de ahora?» → «el año actual es 2024». Every
+# weekday, day of the month, month and year a reply states about today is checked against this PC's calendar, on
+# every route: a sentence that says what today is («hoy es…», «today is…», «estamos en…», «el año actual es…»), and,
+# when the person asked which day it is (or a day counted from today), every date the reply states. A date denied
+# («hoy no es lunes»), another day's date said as such, history («hoy se cumplen 50 años del 11 de septiembre de
+# 1973») and another place's calendar are not claims about today.
+_DATE_TOKEN = (
+    rf"(?P<weekday>{_WEEKDAY_WORD})|(?P<month>{_CALENDAR_MONTH_PATTERN})|(?P<year>(?:19|20)\d\d)|"
+    r"(?P<day>(?:3[01]|[12]\d|0?[1-9])(?:st|nd|rd|th|o|º)?)(?![\d:.,/]\d)|"
+    r"(?P<word_day>" + alternation(tuple(_DAY_WORDS))[3:-1].replace(r"\ ", r"\s+") + r")"
+    rf"(?=\s+(?:de\s+|of\s+)?{_CALENDAR_MONTH_PATTERN}\b)"
+)
+_DATE_WORD = re.sub(r"\(\?P<\w+>", "(?:", _DATE_TOKEN)
+_DATE_RUN = re.compile(rf"\b(?:{_DATE_WORD})\b(?:(?:\s*,\s*|\s+)(?:(?:de|del|of|the|el)\s+)*(?:{_DATE_WORD})\b)*")
+# What today is, said. A lone day number is a claim only after «hoy es», «estamos a» or «el día de hoy es» («hoy es
+# 24»), never after «hoy,» or «ahora es» («ahora es 5 veces mejor»).
+_TODAY_IS = re.compile(
+    r"\b(?:"
+    # «ahora» and «now» only with their verb: «reproduciendo ahora September» names a song, not a month.
+    r"(?P<now>hoy|today)\s*,?\s*(?P<said>(?:es|seria|estamos(?:\s+(?:a|en))?|is|it['’]s|"
+    r"we['’]re(?:\s+(?:in|on))?|we\s+are(?:\s+(?:in|on))?)\s+)?|"
+    r"(?:ahora|now|actualmente|currently)\s*,?\s*(?:es|estamos(?:\s+(?:a|en))?|is|it['’]s|"
+    r"we['’]re(?:\s+(?:in|on))?|we\s+are(?:\s+(?:in|on))?)\s+|"
+    r"(?P<noun>(?:(?:el|la|the)\s+)?(?:(?:ano|mes|dia|fecha)\s+(?:actual|de\s+hoy|de\s+ahora|en\s+curso)|"
+    r"(?:current|present)\s+(?:year|month|day|date)|today['’]s\s+date|este\s+(?:ano|mes)|this\s+(?:year|month))"
+    r"\s+(?:es|is|sera))\s+|"
+    r"(?:(?P<at>estamos\s+a)|estamos\s+en|we['’]re\s+(?:in|on)|we\s+are\s+(?:in|on))\s+"
+    r")(?:(?:el|la|the|a|de|del|on)\s+)*(?=\S)"
+)
+# A sentence about another time: its dates are not today's.
+_OTHER_TIME = re.compile(
+    r"\b(?:fue|fueron|era|eran|sera|seran|was|were|will\s+be|manana|tomorrow|ayer|yesterday|anteayer|hace|ago|"
+    r"dentro\s+de|proxim[oa]s?|pasad[oa]s?|ultim[oa]s?|que\s+viene|next|last|since|desde|hasta|until|cumplen?|"
+    r"aniversario|anniversary)\b"
+)
+_DATE_HEDGE = re.compile(
+    r"\b(?:creo|supongo|quizas?|tal\s+vez|probablemente|posiblemente|aproximadamente|me\s+parece|i\s+think|"
+    r"i\s+guess|i\s+believe|maybe|probably|perhaps|possibly)\b"
+)
+
+
+# «hoy no es lunes», «it isn't Monday», «ni martes»: a value denied is no claim about today.
+_DENIED_BEFORE = re.compile(
+    r"\b(?:no|not|isn['’]t|ni|nor)\s+"
+    r"(?:(?:es|estamos|era|sera|fue|is|was|it['’]s|today|hoy|en|a|el|la|un|una|the)\s+){0,3}$"
+)
+
+
+def _denied_at(folded: str, start: int) -> bool:
+    return _DENIED_BEFORE.search(folded[:start]) is not None
+
+
+def _date_run_fits(run: str, days: tuple[date, ...], *, bare_day: bool) -> bool | None:
+    """Whether one of ``days`` has every weekday, day of the month, month and year the run states; None when the
+    run states none. A day number alone counts only where the sentence says it is today's (``bare_day``)."""
+
+    weekdays: set[int] = set()
+    numbers: set[int] = set()
+    months: set[int] = set()
+    years: set[int] = set()
+    for token in re.finditer(_DATE_TOKEN, run):
+        if token["weekday"]:
+            weekdays.add(_WEEKDAY_NUMBERS[token["weekday"]])
+        elif token["month"]:
+            months.add(_CALENDAR_MONTH_NUMBERS[token["month"]])
+        elif token["year"]:
+            years.add(int(token["year"]))
+        elif token["day"]:
+            numbers.add(int(re.match(r"\d+", token["day"]).group(0)))
+        elif token["word_day"]:
+            numbers.add(_DAY_WORDS[" ".join(token["word_day"].split())])
+    if "may" in run.split() and not (numbers or years):
+        months.discard(5)  # the English modal, not the month
+    if not (weekdays or months or years) and not (numbers and bare_day):
+        return None
+    return any(
+        weekdays <= {day.weekday()} and months <= {day.month} and years <= {day.year} and numbers <= {day.day}
+        for day in days
+    )
+
+
+def _calendar_contradiction(text: str, user_text: str, local: datetime | date) -> str:
+    """Why a reply states a date about today that this PC's calendar denies («false_date») or states it as a
+    guess («hedged_date»), or ""; ``local`` is the observed (or this PC's) local moment."""
+
+    if clock_elsewhere(_reading_fold(user_text)) is not None:
+        return ""  # another place's calendar may be another day
+    today = local.date() if isinstance(local, datetime) else local
+    asked = relative_calendar_days(user_text, today)
+    whole = bool(asked) or present_calendar_question(user_text)
+    for sentence in re.split(r"(?<=[.!?;])\s+|\n+", _reading_fold(text)):
+        verdicts = [
+            _date_run_fits(run.group(0), (today,), bare_day=bool(anchor["said"] or anchor["noun"] or anchor["at"]))
+            for anchor in _TODAY_IS.finditer(sentence)
+            if not _denied_at(sentence, anchor.start()) and (run := _DATE_RUN.match(sentence, anchor.end())) is not None
+        ]
+        if whole and (asked or _OTHER_TIME.search(sentence) is None):
+            # A day counted from today is that day; today's own date only where the sentence names today.
+            days = (*asked, today) if not asked or re.search(r"\b(?:hoy|today)\b", sentence) else asked
+            verdicts += [
+                _date_run_fits(run.group(0), days, bare_day=False)
+                for run in _DATE_RUN.finditer(sentence)
+                if not _denied_at(sentence, run.start())
+            ]
+        if False in verdicts:
+            return "false_date"
+        if True in verdicts and _DATE_HEDGE.search(sentence) is not None:
+            return "hedged_date"
+    return ""
+
+
+def _local_now() -> datetime:
+    """This PC's local moment, for the replies whose turn read no clock (a conversation, a search report)."""
+
+    return datetime.now().astimezone()
+
+
+def _reply_calendar_moment(situation: dict) -> datetime:
+    observed = _local_datetime_from_observed(_merged_observed(situation))
+    return observed if observed is not None else _local_now()
 
 
 def _observed_maps_from_situation(situation: dict) -> list[dict]:
@@ -12307,7 +12433,8 @@ def compose_visible_defect(
             ]
             if tokens and not any(token.casefold() in folded for token in tokens):
                 return "missing_name"
-    return ""
+    # Tanda 6 («nunca inventa»): whatever the route, no date about today that this PC's calendar denies.
+    return _calendar_contradiction(stripped, user_text, _reply_calendar_moment(_situation_from_facts(facts)))
 
 
 def _spanish_modal_is_malformed(value: object) -> bool:
@@ -14789,6 +14916,12 @@ class LlmRuntime:
                             "sin responder la acción aparente ni hacer preguntas."
                         )
                         if conversation_kind == "unsupported_language"
+                        else (
+                            # Tanda 6 «Sí, el año actual es 2024.»: the calendar is not known from memory.
+                            "En este turno no leíste el reloj: no digas qué día, fecha, mes ni año es hoy. "
+                            "Responde en una sola frase con lo que sabes."
+                        )
+                        if conversation_claim_defect(content, text) in {"false_date", "hedged_date"}
                         else (
                             # Uso real 2026-09-23 (tanda 2): «Te traigo una hamburguesa»,
                             # «Se añadirá.», «no hay queso en la lista». The generic
@@ -21146,6 +21279,19 @@ class LlmRuntime:
                     "Answer this message. Nothing was read this turn: state no date, day or figure about now."
                     if response_language == "en"
                     else "Contesta este mensaje. No se leyó nada en este turno: no afirmes fechas, días ni cifras de ahora."
+                ),
+                # Tanda 6: t5 «Hoy es lunes…» on a Thursday, t47 a page's «Hoy es el primero de marzo, creo.».
+                "false_date": (
+                    "That day, date, month or year is not today's: say today's only as the facts give it, "
+                    "and never take it from a page."
+                    if response_language == "en"
+                    else "Ese día, fecha, mes o año no es el de hoy: di el de hoy sólo como lo dan los hechos, "
+                    "nunca desde una página."
+                ),
+                "hedged_date": (
+                    "The date is read from this PC's clock: state it plainly, without «I think» or «maybe»."
+                    if response_language == "en"
+                    else "La fecha se leyó del reloj de este PC: dila sin «creo» ni «quizás»."
                 ),
             }.get(defect, "")
 
