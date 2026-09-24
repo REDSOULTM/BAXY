@@ -1782,7 +1782,14 @@ def _strip_explicit_no_action_frame(folded: str) -> str:
 # A programming language named after a program, code or an app («un programa en java», «a java program»).
 _CODE_LANGUAGE = (
     r"(?:java|python|c|c\+\+|c#|javascript|typescript|go|rust|kotlin|swift|php|ruby|sql|bash|powershell|"
-    r"html|matlab|scala|lua|dart|pascal|cobol|haskell)(?![\w+#])"
+    r"html|css|json|xml|yaml|markdown|latex|regex|matlab|scala|lua|dart|pascal|cobol|haskell)(?![\w+#])"
+)
+# What code in a named language is written as: a program, a page, a query, a table…
+_CODE_PIECE = (
+    r"programa|programas|program|programs|codigo|code|app|aplicacion|clase|class|script|scripts|funcion|function|"
+    r"pagina|paginas|page|pages|web|sitio|site|website|consulta|consultas|query|queries|expresion|expression|"
+    r"plantilla|template|tabla|table|formulario|form|boton|button|componente|component|"
+    r"estilos?|styles?|stylesheet|one-liner|oneliner|comando|command|ejemplo|ejemplos|example|examples|snippet|fragmento"
 )
 
 
@@ -1861,15 +1868,21 @@ def conversation_only_content_request(text: str) -> bool:
         # programas en java»: code is written in the conversation like any other text. Code, a program or an
         # app is code with its language named; a script, a function or an algorithm always is. Saving or
         # opening it somewhere is an effect, not a draft.
+        # Tanda 6 «Escribe un ejemplo de página HTML con ecuaciones matemáticas.» → «No escribo páginas HTML»:
+        # any piece of code named with its language («página HTML», «consulta SQL», «a bash one-liner») and
+        # an example asked for («un ejemplo de…», «three examples of…») are written here too. Typing it into a
+        # window, a note or the search box is still an effect.
         r"^(?![^\n]{0,160}\b(?:carpeta|folder|guarda|guardalo|guardala|guardar|save|escritorio|desktop|"
-        r"abre|abrelo|open|ejecuta|ejecutalo|run|envia|send)\b)[¿¡\s]*"
+        r"abre|abrelo|open|ejecuta|ejecutalo|run|envia|send|nota|notas|note|notes|bloc|notepad|buscador|"
+        r"search\s+box|barra)\b)[¿¡\s]*"
         r"(?:crea|crear|creame|escribe|escribir|escribeme|escribime|haz|hazme|hacer|haceme|genera|generar|"
-        r"generame|programa|programame|dame|desarrolla|codea|necesito|quiero|"
-        r"me\s+(?:escribes|escribis|haces|creas|generas|programas|das)|"
-        r"create|write|make|build|generate|code|give\s+me|i\s+need|i\s+want)\b"
+        r"generame|programa|programame|dame|desarrolla|codea|necesito|quiero|redacta|redactame|muestrame|"
+        r"ensename|me\s+(?:escribes|escribis|haces|creas|generas|programas|das|muestras|ensenas)|"
+        r"create|write|make|build|generate|code|draft|give\s+me|show\s+me|teach\s+me|i\s+need|i\s+want)\b"
         r".{0,48}\b(?:(?:script|funcion|function|algoritmo|algorithm|snippet)\b|"
-        rf"(?:programa|program|codigo|code|app|aplicacion|clase|class)\b.{{0,32}}\b(?:en|in)\s+{_CODE_LANGUAGE}|"
-        rf"{_CODE_LANGUAGE}\s+(?:program|programs|code|app|class|script|function)\b)",
+        r"(?:ejemplos?|examples?)\s+(?:de|of)\b|"
+        rf"(?:{_CODE_PIECE})\b.{{0,32}}\b(?:(?:en|in)\s+)?{_CODE_LANGUAGE}|"
+        rf"{_CODE_LANGUAGE}\s+(?:[a-z-]+\s+)?(?:{_CODE_PIECE})\b)",
     )
 
 
