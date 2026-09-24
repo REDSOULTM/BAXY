@@ -138,9 +138,11 @@ def _marker_runtime(scaffold: str, seen: list[dict]) -> LlmRuntime:
     return runtime
 
 
-def test_the_recall_is_worded_by_the_model_around_a_marker_it_never_fills():
+# Tanda 5c: worded around an opaque marker, the small model refused, glued or dropped the text; given the
+# message as the fact of the turn it says it back verbatim. The mind still checks the literal comes back whole.
+def test_the_recall_is_said_back_from_the_fact_of_the_turn():
     seen: list[dict] = []
-    runtime = _marker_runtime("Dijiste: «[[R1]]».", seen)
+    runtime = _marker_runtime("Dijiste: «pon el volumen en 10».", seen)
     current = "¿puedes reproducir mis últimas palabras?"
     reply, calls = runtime.chat(
         current,
@@ -152,14 +154,14 @@ def test_the_recall_is_worded_by_the_model_around_a_marker_it_never_fills():
     assert reply == "Dijiste: «pon el volumen en 10»."
     assert calls == []
     assert len(seen) == 1
-    assert "pon el volumen en 10" not in repr(seen[0]["messages"])
-    assert "mensaje anterior" in seen[0]["messages"][0]["content"]
+    assert "textual: «pon el volumen en 10»" in seen[0]["messages"][0]["content"]
+    assert "último mensaje de la persona" in seen[0]["messages"][0]["content"]
 
 
 def test_a_quoted_order_said_back_is_not_an_effect_claim():
     # The recalled words may be an order or a done effect; only the words around them are BAXY's.
     seen: list[dict] = []
-    runtime = _marker_runtime("Tu último mensaje fue: [[R1]]", seen)
+    runtime = _marker_runtime("Tu último mensaje fue: ya apagué la luz y subí el volumen", seen)
     history = [
         {"role": "user", "content": "ya apagué la luz y subí el volumen"},
         {"role": "assistant", "content": "Entendido."},
@@ -358,7 +360,7 @@ def test_the_die_is_drawn_by_the_mind_and_the_model_words_it(monkeypatch):
                                 conversation_kind="social", response_language="en")
     assert reply == "You rolled a 4."
     assert calls == []
-    assert "«4»" in seen[0]["messages"][0]["content"]
+    assert "salió 4." in seen[0]["messages"][0]["content"]
 
 
 def test_the_faces_of_the_die_may_be_named_with_the_value(monkeypatch):
@@ -486,22 +488,35 @@ def _scripted_runtime(scaffolds: list[str], seen: list[dict]) -> LlmRuntime:
 def test_a_recall_worded_as_a_refusal_is_worded_again():
     seen: list[dict] = []
     runtime = _scripted_runtime(
-        ["No puedo reproducir tus últimas palabras porque no las tengo; sin embargo: [[R1]]", "Dijiste: «[[R1]]»."],
+        ["No puedo reproducir tus últimas palabras porque no las tengo; sin embargo: pon el volumen en 10",
+         "Dijiste: «pon el volumen en 10»."],
         seen,
     )
     answer = runtime._compose_literal_answer(
         current="¿puedes reproducir mis últimas palabras?", literal="pon el volumen en 10",
-        task="diga lo último que dijo la persona; [[R1]] es ese mensaje.",
+        fact="el último mensaje de la persona fue, textual: «pon el volumen en 10».",
     )
     assert answer == "Dijiste: «pon el volumen en 10»."
     assert len(seen) == 2
-    assert "no digas que no puedes" in seen[1]["messages"][0]["content"]
+    # Tanda 5c: a hint added for the retry was copied into the visible reply; the retry adds no words.
+    assert seen[1]["messages"] == seen[0]["messages"]
+    assert seen[1]["temperature"] > 0
+
+
+def test_a_recall_that_repeats_its_own_instructions_is_never_published():
+    leaked = "Contesta al mensaje de la persona en una sola frase breve: pon el volumen en 10"
+    runtime = _scripted_runtime([leaked, leaked], [])
+    with pytest.raises(ValueError):
+        runtime._compose_literal_answer(
+            current="¿qué dije recién?", literal="pon el volumen en 10",
+            fact="el último mensaje de la persona fue, textual: «pon el volumen en 10».",
+        )
 
 
 def test_a_recall_refused_twice_is_never_published():
-    runtime = _scripted_runtime(["I can't repeat that: [[R1]]", "I don't have it, but: [[R1]]"], [])
+    runtime = _scripted_runtime(["I can't repeat that: turn the volume up", "I don't have it, but: turn the volume up"], [])
     with pytest.raises(ValueError):
         runtime._compose_literal_answer(
             current="what did I just say?", literal="turn the volume up",
-            task="says back the person's last message; [[R1]] is that message.",
+            fact="the person's last message was, verbatim: «turn the volume up».",
         )
