@@ -97,8 +97,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # C03 Fase 3.5 semantic S9 (2026-09-23): guardas de entrada sin pedido a semantic/guards.py (traslado puro).
 # C03 Fase 3.5 uso real 2026-09-23: guardia público/propio, vetos por familia, alarmas en hora local.
 # C03 Fase 3.5 uso real 2026-09-23 (familia hechos/efectos): hora de otro lugar, identidad, escritorio, temporizador, límite llano, clima, edad y cargos.
+# C03 Fase 3.5 uso real 2026-09-23: integración de los frentes composición, hechos, preguntas, niveles y latencia.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "b090d841825f569de0958a6a63dd06290aa691caf84a2edf6516561babd2ae30"
+    "d336ad7610d12af6d0f50332857fb1ab3125c8aef0cd0d1d95921874a1b7d332"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
