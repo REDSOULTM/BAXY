@@ -9,6 +9,9 @@
   C03UsoRealComposeTests): «interfaces» is ordinary vocabulary, the machine's interface list is not.
 - «haz una carcajada cuando quieras» → a reply dragging two earlier turns; «ríete diabólicamente» → «te río de
   verdad 😈»: a laugh asked for is free content, written out on the spot.
+- «debieras saber que me gusta el jazz» → «Gracias, ya lo tengo en cuenta. ¿Quieres que te recomiende…?»: a taste
+  told (with a frame that only tells it, after earlier turns too) gets a listener's acknowledgement, never a
+  claim that it was kept (saving needs the explicit request) nor an offer.
 
 The phrasings below are not the tanda's: they are paraphrases (es/en/spanglish) the fix does not name, with
 negative controls.
@@ -20,7 +23,10 @@ import pytest
 
 from baxy_mind import llm
 from baxy_mind.request_reading import INTENT_CAPABILITY, INTENT_IDENTITY, read_request
-from baxy_mind.semantic.patterns import conversation_only_content_request
+from baxy_mind.semantic.patterns import (
+    conversation_only_content_request,
+    first_person_preference,
+)
 from test_c03_tanda03_served_surface import _RefusingLlm, _turn
 
 # ------------------------------------------------------------------ code and examples are written in the chat
@@ -166,3 +172,62 @@ def test_a_laugh_is_short_and_a_joke_is_not() -> None:
     assert violates("¡Ja!", "cuéntame un chiste", "free_content")
     # The laugh still ends without a question or a menu.
     assert violates("¡Jajaja! ¿Quieres otra?", "ríete como un villano", "free_content")
+
+
+# ------------------------------------------------------------------ a taste told is acknowledged, never stored
+
+
+@pytest.mark.parametrize(
+    ("text", "thing"),
+    [
+        ("para que sepas, me encanta el rock", "el rock"),
+        ("you should know that I love jazz", "jazz"),
+        ("fyi I really like pizza", "pizza"),
+        ("te cuento que odio el reguetón", "el regueton"),
+        ("también me gusta el café", "el cafe"),
+        ("deberías saber que prefiero el té", "el te"),
+    ],
+)
+def test_a_taste_told_with_a_telling_frame_is_a_preference(text: str, thing: str) -> None:
+    assert first_person_preference(text) == thing
+    assert llm._conversation_presentation_shape(text, conversation_kind="social", has_history=True) == (
+        "preference_ack"
+    )
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["recuerda que me gusta el jazz", "remember that I like jazz", "deberías saber que me gusta que me avisen"],
+)
+def test_asking_to_remember_a_taste_or_a_wish_is_not_a_preference_told(text: str) -> None:
+    # Saving needs the explicit request, and it is the memory operation's, not an acknowledgement.
+    assert first_person_preference(text) is None
+
+
+@pytest.mark.parametrize("text", ["me gusta esa", "I like that one", "me gusta eso que dijiste"])
+def test_a_taste_pointing_back_at_earlier_turns_keeps_the_dialogue(text: str) -> None:
+    assert llm._conversation_presentation_shape(text, conversation_kind="social", has_history=True) != (
+        "preference_ack"
+    )
+
+
+@pytest.mark.parametrize(
+    "draft",
+    [
+        "Gracias, ya lo tengo en cuenta.",
+        "Anotado: te gusta el jazz.",
+        "Tomo nota de que te gusta el jazz.",
+        "Noted, you love jazz.",
+        "I'll keep that in mind: you love jazz.",
+    ],
+)
+def test_an_acknowledgement_never_claims_to_keep_the_taste(draft: str) -> None:
+    assert llm._shaped_conversation_answer_violates_contract(
+        draft, "debieras saber que me gusta el jazz", "preference_ack",
+    )
+
+
+def test_an_acknowledgement_naming_the_taste_passes() -> None:
+    assert not llm._shaped_conversation_answer_violates_contract(
+        "Qué bien que te guste el jazz.", "debieras saber que me gusta el jazz", "preference_ack",
+    )

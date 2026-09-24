@@ -1911,10 +1911,23 @@ def reassurance_statement(text: str) -> bool:
     return _REASSURANCE_STATEMENT.match(_strip_request_envelope(_fold(text)).strip()) is not None
 
 
+# Tanda 6 «debieras saber que me gusta el jazz» → «Gracias, ya lo tengo en cuenta. ¿Quieres que te recomiende…?»:
+# a taste told with a frame that only tells it («para que sepas», «you should know that», «fyi») is the same
+# statement. «recuerda que me gusta…» asks to save it and stays out: saving needs the explicit request.
+_PREFERENCE_TELLING_FRAME = (
+    r"(?:(?:(?:debieras|deberias|debes|tienes\s+que|tenes\s+que)\s+saber|"
+    r"you\s+(?:should|ought\s+to|need\s+to|must)\s+know)\s+(?:que|that)\s+|"
+    r"para\s+que\s+(?:lo\s+)?sepas\s*,?\s*(?:que\s+)?|(?:te\s+cuento|te\s+digo|te\s+comento)\s*,?\s*(?:que\s+)?|"
+    r"(?:quiero|queria)\s+(?:decirte|contarte)\s+que\s+|(?:just\s+)?so\s+you\s+know\s*,?\s*(?:that\s+)?|"
+    r"fyi\s*,?\s*|for\s+the\s+record\s*,?\s*|i\s+(?:wanted|want)\s+to\s+(?:tell\s+you|let\s+you\s+know)\s+(?:that\s+)?|"
+    r"(?:por\s+cierto|by\s+the\s+way|btw)\s*,?\s*)?"
+    r"(?:(?:yo\s+)?(?:tambien|ademas|realmente|la\s+verdad(?:\s+es\s+que)?)\s*,?\s+)?"
+)
 _FIRST_PERSON_PREFERENCE = re.compile(
-    r"(?:me\s+(?:gusta|gustan|encanta|encantan|fascina|fascinan)|"
+    _PREFERENCE_TELLING_FRAME
+    + r"(?:(?:a\s+mi\s+)?me\s+(?:gusta|gustan|encanta|encantan|fascina|fascinan)|"
     r"prefiero|adoro|amo|odio|detesto|no\s+me\s+gusta|no\s+me\s+gustan|"
-    r"i\s+(?:like|love|prefer|hate|enjoy|dislike))\s+"
+    r"i\s+(?:(?:really|also|actually|truly|just)\s+)?(?:like|love|prefer|hate|enjoy|dislike))\s+"
     r"(?P<thing>(?!(?:que|si|cuando|porque)\b)[a-z][a-z0-9 '\-]{1,80})[\s.!?]*",
     re.IGNORECASE,
 )
