@@ -8796,6 +8796,8 @@ def _review_audio_effects(
                 folded,
                 r"\b(?:puntos?|points?|en|by|por ciento|percent)\b|%",
             )
+            # Tanda 3: «en dos niveles» is a count of steps, not an amount; the amount is asked.
+            and not _has(folded, rf"\b{levels.STEP_NOUN}\b")
         ):
             _append(
                 matches,
@@ -8955,7 +8957,7 @@ def _literal_percentage_word_value(text: str) -> int | None:
         or _literal_volume_adjustment(text) is not None
     ):
         return None
-    value = rf"(?P<level>{_PERCENTAGE_WORD_PATTERN}|mitad|half|maximo|maximum|minimo|minimum)"
+    value = rf"(?P<level>{_PERCENTAGE_WORD_PATTERN}|mitad|half|maximo|maximum|minimo|minimum)(?!\s+{levels.STEP_NOUN}\b)"
     patterns = (
         rf"\b{_VOLUME_OBJECT}\s+(?:justo\s+|exactly\s+)?"
         rf"(?:a(?:l)?|en|to|at)\s*(?:la\s+|the\s+)?{value}"
@@ -8998,7 +9000,8 @@ def _literal_volume_adjustment(text: str) -> dict[str, object] | None:
     if up == down:
         return None
     direction = rf"(?:{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB})"
-    amount = rf"(?P<amount>\d{{1,3}}|{_PERCENTAGE_WORD_PATTERN})(?![a-z0-9])"
+    # Tanda 3: «dos niveles», «one level» count steps of unsaid size, not points (owner rule H0027: ask).
+    amount = rf"(?P<amount>\d{{1,3}}|{_PERCENTAGE_WORD_PATTERN})(?![a-z0-9])(?!\s+{levels.STEP_NOUN}\b)"
     unit = r"(?:puntos?|(?:percentage\s+)?points?|por\s+ciento|percent|%)"
     patterns = (
         rf"\b{direction}\s+(?:en\s+|by\s+)?{amount}\s+{unit}"
@@ -9041,7 +9044,8 @@ def _literal_brightness_adjustment(text: str) -> dict[str, object] | None:
     if up == down:
         return None
     direction = rf"(?:{_BRIGHTNESS_UP_VERB}|{_BRIGHTNESS_DOWN_VERB})"
-    amount = rf"(?P<amount>\d{{1,3}}|{_PERCENTAGE_WORD_PATTERN})(?![a-z0-9])"
+    # Tanda 3: «dos niveles», «one level» count steps of unsaid size, not points (owner rule H0027: ask).
+    amount = rf"(?P<amount>\d{{1,3}}|{_PERCENTAGE_WORD_PATTERN})(?![a-z0-9])(?!\s+{levels.STEP_NOUN}\b)"
     unit = r"(?:puntos?|(?:percentage\s+)?points?|por\s+ciento|percent|%)"
     obj = _BRIGHTNESS_OBJECT
     patterns = (
@@ -9101,9 +9105,10 @@ def _literal_brightness_level(text: str) -> int | None:
     ):
         return None
     obj = _BRIGHTNESS_OBJECT
+    # Tanda 3: «en un 45%», «a un 45%» after a setting verb are where the level ends, like «al 45».
     numeric = re.search(
         rf"\b{_BRIGHTNESS_SET_VERB}\s+(?:(?:el|la|the|my|mi)\s+)?{obj}\s+"
-        r"(?:a|al|en|to|at|hasta)\s*(?:el\s+|the\s+)?(?P<level>100|[0-9]{1,2})"
+        r"(?:a|al|en|to|at|hasta)\s*(?:el\s+|the\s+|un\s+)?(?P<level>100|[0-9]{1,2})"
         r"(?![0-9])(?:\s*(?:%|por\s+ciento|percent))?",
         folded,
     )

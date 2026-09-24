@@ -1538,7 +1538,9 @@ def apply_turn_action_grounding_gate(
         accepted = dict(decision)
         accepted["effect_verification"] = "grounded"
         return accepted
-    extraction = llm.extract_direct_arguments(objective, tool)
+    extraction = llm.extract_direct_arguments(
+        objective, tool, stated_fields=_stated_argument_fields(operation, objective, schema),
+    )
     extracted = extraction.arguments
     grounded, _ = normalize_objective_arguments(
         extracted,
@@ -6203,6 +6205,33 @@ def _explicit_arguments_from_evidence(
 _OUTPUT_LEVEL_OPERATIONS = ("audio.volume", "audio.volume.adjust", "system.settings.adjust", "system.settings.set")
 
 
+def _stated_argument_fields(operation: str, objective: str, schema: dict[str, object]) -> tuple[str, ...]:
+    """Required fields the request already settles, so the question for the rest never asks them again.
+
+    Tanda 3: a brightness lowered «un nivel» was asked «¿Cuánto y en qué dirección…?»:
+    the direction was said. A field with one allowed value is settled by the operation itself, and the
+    direction of a level change by the words that raise or lower it.
+    """
+
+    properties = schema.get("properties")
+    required = schema.get("required")
+    if not isinstance(properties, dict) or not isinstance(required, list):
+        return ()
+    stated: list[str] = []
+    for field in required:
+        contract = properties.get(field)
+        enum = contract.get("enum") if isinstance(contract, dict) else None
+        if isinstance(enum, list) and len(enum) == 1:
+            stated.append(field)
+        elif (
+            field == "direction"
+            and operation in _OUTPUT_LEVEL_OPERATIONS
+            and semantic_levels.direction_of(objective) is not None
+        ):
+            stated.append(field)
+    return tuple(stated)
+
+
 def _ground_explicit_arguments(
     operation: str,
     evidence: str,
@@ -10159,7 +10188,13 @@ def _run_sidecar(
                 )
                 question = ""
                 if arguments is None:
-                    extraction = llm.extract_direct_arguments(objective, tool)
+                    extraction = llm.extract_direct_arguments(
+                        objective,
+                        tool,
+                        stated_fields=_stated_argument_fields(
+                            operation, objective, tool["function"]["parameters"],
+                        ),
+                    )
                     arguments, question = prepare_direct_argument_result(
                         llm,
                         objective,

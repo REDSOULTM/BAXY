@@ -7837,6 +7837,7 @@ def test_action_grounding_gate_preserves_only_arguments_backed_by_user_text() ->
         def extract_direct_arguments(
             _objective: str,
             _tool: dict,
+            **_kwargs: object,
         ) -> DirectArgumentExtraction:
             return DirectArgumentExtraction(
                 {"appId": "calculadora"},
@@ -7896,6 +7897,7 @@ def test_recovered_required_action_still_crosses_argument_grounding() -> None:
         def extract_direct_arguments(
             _objective: str,
             _tool: dict,
+            **_kwargs: object,
         ) -> DirectArgumentExtraction:
             return DirectArgumentExtraction(
                 None,
@@ -7950,7 +7952,7 @@ def test_action_grounding_gate_skips_llm_for_complete_explicit_literals() -> Non
 
     class LlmMustNotRun:
         @staticmethod
-        def extract_direct_arguments(_objective: str, _tool: dict) -> None:
+        def extract_direct_arguments(_objective: str, _tool: dict, **_kwargs: object) -> None:
             raise AssertionError("literal grounding must not invoke the LLM")
 
     accepted = apply_turn_action_grounding_gate(
@@ -9336,6 +9338,7 @@ def test_context_dependent_action_is_conservatively_clarified() -> None:
         def extract_direct_arguments(
             _objective: str,
             _tool: dict,
+            **_kwargs: object,
         ) -> DirectArgumentExtraction:
             return DirectArgumentExtraction(
                 None,

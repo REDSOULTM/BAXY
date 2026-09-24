@@ -34,19 +34,26 @@ _DOWN_PARTICLE = r"(?:down|dowm|donw|dwon)"
 _UP = (
     r"(?:sub(?:e|a|i|ir)(?:le|lo|la|me|nos|mele|melo)?|aument(?:a|e|ar)(?:le|lo|la|me)?|"
     r"increment(?:a|ar)(?:le|lo)?|alza(?:le|lo)?|raise(?:\s+it)?|increase(?:\s+it)?|"
-    r"(?:turn|crank|pump|bump)\s+(?:it\s+|that\s+)?up|brighten(?:\s+it)?)"
+    r"(?:turn|crank|pump|bump)\s+(?:it\s+|that\s+)?up|brighten(?:\s+it)?|aclar(?:a|ar)(?:la|lo)?|"
+    r"ilumin(?:a|ar)(?:la|lo)?)"
 )
 _DOWN = (
     r"(?:baj(?:a|e|i|ar)(?:le|lo|la|me|nos|mele|melo)?|reduc(?:e|i|ir)(?:le|lo|la|me)?|"
     r"disminu(?:ye|i|ir)(?:le|lo|la|me)?|lower(?:\s+it)?|decrease(?:\s+it)?|"
-    rf"(?:turn|tone|slow)\s+(?:it\s+|that\s+)?{_DOWN_PARTICLE}|dim(?:\s+it)?)"
+    rf"(?:turn|tone|slow)\s+(?:it\s+|that\s+)?{_DOWN_PARTICLE}|dim(?:\s+it)?|oscurec(?:e|er)(?:la|lo)?|darken(?:\s+it)?)"
 )
+# Tanda 3, a screen asked to be made brighter («ponme la pantalla más clara»): making the object more or
+# less of something is setting it in that direction, the same as «ponlo más bajito» or «make it louder».
 _SET = (
-    r"(?:pon(?:e|le|lo|la|elo|ela)?|poner(?:le|lo)?|deja(?:le|lo|la)?|fija(?:lo|la)?|ajusta(?:le|lo|la)?|"
-    r"establece|cambia(?:le|lo|la)?|(?:set|put|leave|adjust|change|make)(?:\s+it)?)"
+    r"(?:pon(?:e|le|lo|la|elo|ela|me|mela|melo)?|poner(?:le|lo)?|deja(?:le|lo|la|me)?|fija(?:lo|la)?|"
+    r"ajusta(?:le|lo|la)?|establece|cambia(?:le|lo|la)?|coloca(?:le|lo|la)?|haz(?:me|lo|la|mela|melo)?|"
+    r"hace(?:lo|la|me)?|(?:set|put|leave|adjust|change|make)(?:\s+it)?)"
 )
-# Speaking louder or softer is the output volume (MASSIVE «habla más bajito por favor», «speak softer»).
-_SPEAK = r"(?:habla(?:me)?|hable|hablar|speak|talk)"
+# Speaking louder or softer is the output volume (MASSIVE «habla más bajito por favor», «speak softer»), and so
+# is making it sound louder or softer.
+_SPEAK = r"(?:habla(?:me)?|hable|hablar|speak|talk|haz\s+que\s+(?:suene|se\s+(?:escuche|oiga))|make\s+it\s+sound)"
+# A verb whose object is a clitic or «it» («ponlo», «déjala», «make it») refers to something already named.
+_PRONOUN_VERB = re.compile(r"\w+(?:lo|la|melo|mela)|\w+\s+it")
 
 # A bare object-less verb («baja», «sube») also means going down a street or downloading; it counts only with
 # a quantity, a relative word or a comparative. A verb with a dative clitic («súbele», «bájale») or an English
@@ -55,18 +62,38 @@ _STANDALONE_VERB = re.compile(
     rf"(?:sub|baj|aument|reduc|disminu)\w*le|(?:turn|crank|pump|bump|tone)\s+(?:it\s+|that\s+)?(?:up|{_DOWN_PARTICLE})|"
     r"(?:raise|lower|increase|decrease|brighten|dim)\s+it"
 )
-_SCREEN_ONLY_VERB = re.compile(r"(?:brighten|dim)\b")
+_SCREEN_ONLY_VERB = re.compile(r"(?:brighten|dim|aclar|ilumin|oscurec|darken)")
 
-# «bájale poquito», «súbele tantito»: the diminutive said without its article is the same small amount.
+# «bájale poquito», «súbele tantito»: the diminutive said without its article is the same small amount. Tanda
+# 3, a brightness lowered «un nivel»: a step («un nivel», «a notch», «dos niveles») gives the
+# direction and no amount either, since how much a step is was never said.
+STEP_NOUN = (
+    r"(?:nivel(?:es)?|paso(?:s)?|escalon(?:es)?|rayita(?:s)?|raya(?:s)?|notch(?:es)?|levels?|steps?|ticks?)"
+)
+_STEP_COUNT = r"(?:un\s+par\s+de|un|una|uno|dos|tres|cuatro|cinco|a|one|two|three|four|five|\d)"
 _RELATIVE = (
     r"(?:(?:un\s+)?(?:poquito|poquitito|tantito|pelin)(?:\s+mas)?|un\s+(?:poco|toque|cacho|chin)(?:\s+mas)?|"
+    rf"(?:(?:en|by)\s+)?{_STEP_COUNT}\s+{STEP_NOUN}(?:\s+(?:mas|more))?|"
     r"algo(?:\s+mas)?|bastante|mucho|mas|"
-    r"a\s+(?:little|bit)(?:\s+bit)?(?:\s+more)?|slightly|some|a\s+lot|more)"
+    r"a\s+(?:little|bit|tad|touch)(?:\s+bit)?(?:\s+more)?|slightly|some|a\s+lot|more)"
 )
-_COMPARATIVE_UP = r"(?:(?:mas|more)\s+(?:alto|fuerte|arriba|loud)|louder|brighter|mas\s+claro)"
+# Comparatives. «más alto/bajo» fit both levels; «más fuerte», «louder» only the sound; «más brillante», «más
+# oscura», «brighter» only the screen.
+_COMPARATIVE_UP = r"(?:(?:mas|more)\s+(?:alto|fuerte|arriba|loud)|louder|higher)"
 _COMPARATIVE_DOWN = (
-    r"(?:(?:mas|more)\s+(?:bajo|bajito|despacio|suave|quiet|soft|oscuro)|menos\s+(?:alto|fuerte)|"
-    r"quieter|softer|dimmer|darker)"
+    r"(?:(?:mas|more)\s+(?:bajo|bajito|despacio|suave|quiet|soft)|menos\s+(?:alto|fuerte)|quieter|softer)"
+)
+_BRIGHTER = (
+    r"(?:(?:mas|more)\s+(?:brillante|claro|clara|luminoso|luminosa|iluminado|iluminada|bright)|"
+    r"menos\s+(?:oscuro|oscura)|brighter|lighter)"
+)
+_DARKER = (
+    r"(?:(?:mas|more)\s+(?:oscuro|oscura|tenue|dark|dim)|"
+    r"menos\s+(?:brillante|claro|clara|luminoso|luminosa)|less\s+bright|dimmer|darker)"
+)
+_SOUND_ONLY_COMPARATIVE = re.compile(r"\b(?:fuerte|loud|louder|bajito|despacio|suave|quiet|quieter|soft|softer)")
+_COMPARISON = (
+    rf"(?:(?P<cup>{_COMPARATIVE_UP})|(?P<cdown>{_COMPARATIVE_DOWN})|(?P<bup>{_BRIGHTER})|(?P<bdown>{_DARKER}))"
 )
 # «más volumen», «menos brillo», «more volume»: the quantifier before the object is the direction.
 _QUANTIFIER_UP = r"(?:mas|more)"
@@ -87,7 +114,13 @@ _BRIGHTNESS_OBJECT = (
     rf"(?:{_ARTICLE}?(?:(?:screen|display|monitor)\s+)?(?:brillo|brightness|luminosidad|luz\s+de\s+la\s+pantalla)"
     rf"(?:\s+(?:de\s+(?:la\s+|mi\s+)?|del\s+|al\s+|a\s+la\s+|en\s+la\s+|of\s+(?:the\s+|my\s+)?|on\s+(?:the\s+|my\s+)?){_SCREEN})?)"
 )
-_OBJECT = rf"(?:(?P<{{name}}_volume>{_VOLUME_OBJECT})|(?P<{{name}}_brightness>{_BRIGHTNESS_OBJECT}))"
+# «pon la pantalla al 50%», «haz la pantalla más brillante»: the screen itself names its brightness, but only
+# with a level or a brightness word; «baja la pantalla» on its own says nothing about the brightness.
+_SCREEN_OBJECT = rf"(?:{_ARTICLE}?{_SCREEN}(?:\s+(?:del?|of)\s+{_ARTICLE}?{_DEVICE})?)"
+_OBJECT = (
+    rf"(?:(?P<{{name}}_volume>{_VOLUME_OBJECT})|(?P<{{name}}_brightness>{_BRIGHTNESS_OBJECT})|"
+    rf"(?P<{{name}}_screen>{_SCREEN_OBJECT}))"
+)
 
 # «un» and «uno» are also the indefinite article («un poco», «un 10»): never a quantity here.
 _NUMBER_WORDS = {word: value for word, value in _PERCENTAGE_WORD_VALUES.items() if word not in {"un", "uno", "one"}}
@@ -102,11 +135,14 @@ _EXTREMES = {
     "minimo": 0, "min": 0, "minimum": 0, "mitad": 50, "half": 50,
 }
 _EXTREME = r"(?:maximo|max|tope|maximum|full|minimo|min|minimum|mitad|half)"
-# An amount is relative («un 10», «en 10», «by 10», a bare «10»); a target is where the level ends
-# («a 40», «al 40», «to 40», «al máximo»).
-_AMOUNT = rf"(?:(?:en|by|un|unos|unas|como|about|around)\s+)?(?P<amount>{_NUMBER})(?:\s*{_UNIT})?"
+# An amount is relative («un 10», «en 10», «en un 10», «by 10», a bare «10»); a target is where the level ends
+# («a 40», «al 40», «a un 40», «to 40», «on 40», «al máximo»). After a setting verb an amount is a target too
+# (tanda 3: «deja el brillo en un 45%» was asked which way).
+_AMOUNT = (
+    rf"(?:(?:en|by)\s+)?(?:(?:un|unos|unas|como|about|around)\s+)?(?P<amount>{_NUMBER})(?:\s*{_UNIT})?"
+)
 _TARGET = (
-    rf"(?:(?:a|al|hasta(?:\s+el)?|to|at)\s+(?:(?:el|the|un)\s+)?(?P<target>{_NUMBER})(?:\s*{_UNIT})?|"
+    rf"(?:(?:a|al|hasta(?:\s+el)?|to|at|on)\s+(?:(?:el|the|un)\s+)?(?P<target>{_NUMBER})(?:\s*{_UNIT})?|"
     rf"(?:(?:al|a|to|at|hasta(?:\s+el)?)\s+(?:(?:the|el)\s+)?)?(?P<extreme>{_EXTREME})|a\s+tope)"
 )
 _QUANTITY = rf"(?:{_TARGET}|{_AMOUNT})"
@@ -114,6 +150,7 @@ _QUANTITY = rf"(?:{_TARGET}|{_AMOUNT})"
 _PREFACE = (
     r"(?:(?:por\s+favor|porfa|please|pls|oye|hey|che|dale)\s+)*"
     r"(?:(?:puedes|podes|podrias|can\s+you|could\s+you|would\s+you)\s+)?"
+    r"(?:(?:quiero|quisiera|i\s+want|i\s+would\s+like|i'?d\s+like)\s+)?"
 )
 _CLOSING = r"(?:\s+(?:por\s+favor|porfa|please|pls|plis|ya|ahora|now|mismo|otra\s+vez|again|de\s+nuevo))*"
 
@@ -131,15 +168,22 @@ _VERB_FORM = _form(
     rf"(?:\s+(?P<rel2>{_RELATIVE}))?"
     rf"(?:\s+{_QUANTITY})?"
     rf"(?:\s+{_OBJECT.format(name='o2')})?"
-    rf"(?:\s+(?:(?P<cup>{_COMPARATIVE_UP})|(?P<cdown>{_COMPARATIVE_DOWN})))?"
+    rf"(?:\s+{_COMPARISON})?"
+)
+# «turn the volume down a notch», «bring the brightness up to 80»: the English particle after the object.
+_PARTICLE_FORM = _form(
+    rf"(?:turn|crank|bump|pump|tone|dial|bring|knock)\s+{_OBJECT.format(name='o1')}\s+"
+    rf"(?:(?P<pup>up)|(?P<pdown>{_DOWN_PARTICLE}))"
+    rf"(?:\s+(?P<rel1>{_RELATIVE}))?(?:\s+{_QUANTITY})?"
 )
 _OBJECT_FORM = _form(
     rf"{_OBJECT.format(name='o1')}"
-    rf"(?:\s+(?:(?P<cup>{_COMPARATIVE_UP}|up)|(?P<cdown>{_COMPARATIVE_DOWN}|down)))?"
+    rf"(?:\s+(?P<rel1>{_RELATIVE}))?"
+    rf"(?:\s+(?:{_COMPARISON}|(?P<pup>up)|(?P<pdown>down)))?"
     rf"(?:\s+{_QUANTITY})?"
 )
 _COMPARATIVE_FORM = _form(
-    rf"(?:{_RELATIVE}\s+)?(?:(?P<cup>{_COMPARATIVE_UP})|(?P<cdown>{_COMPARATIVE_DOWN}))"
+    rf"(?:(?P<rel1>{_RELATIVE})\s+)?{_COMPARISON}"
     rf"(?:\s+{_OBJECT.format(name='o1')})?"
 )
 _QUANTIFIER_FORM = _form(
@@ -224,34 +268,87 @@ def _quantity(found: re.Match[str]) -> tuple[int | None, int | None] | None:
 def _object(found: re.Match[str]) -> str | None | bool:
     """The object named in a form: a setting, None when left out, False when two different ones are named."""
 
+    groups = found.groupdict()
     named = {
-        setting
+        BRIGHTNESS if kind == "screen" else kind
         for name in ("o1", "o2")
-        for setting in (VOLUME, BRIGHTNESS)
-        if found.groupdict().get(f"{name}_{setting}")
+        for kind in (VOLUME, BRIGHTNESS, "screen")
+        if groups.get(f"{name}_{kind}")
     }
     if len(named) > 1:
         return False
     return next(iter(named), None)
 
 
+def _only_the_screen(found: re.Match[str]) -> bool:
+    """«la pantalla» is the only object named: it is the brightness only when a level or a brightness word says so."""
+
+    groups = found.groupdict()
+    return any(groups.get(f"{name}_screen") for name in ("o1", "o2")) and not any(
+        groups.get(f"{name}_brightness") for name in ("o1", "o2")
+    )
+
+
+def _screen_level_said(found: re.Match[str], verb: str = "") -> bool:
+    """A level said of the screen itself: a target, a percentage, a brightness word or a brightness verb."""
+
+    groups = found.groupdict()
+    return bool(
+        groups.get("target")
+        or groups.get("extreme")
+        or re.search(rf"\b{_UNIT}|%", found.group(0))
+        or groups.get("bup")
+        or groups.get("bdown")
+        or _SCREEN_ONLY_VERB.match(verb)
+    )
+
+
+def _comparative(found: re.Match[str], setting: str | None) -> tuple[str | None, str | None] | None:
+    """(direction, setting) a comparative or a particle says, or None when it contradicts the object named."""
+
+    groups = found.groupdict()
+    if groups.get("bup") or groups.get("bdown"):
+        if setting == VOLUME:
+            return None
+        return ("up" if groups.get("bup") else "down"), BRIGHTNESS
+    said = groups.get("cup") or groups.get("cdown")
+    if said:
+        if setting == BRIGHTNESS and _SOUND_ONLY_COMPARATIVE.search(said):
+            return None
+        return ("up" if groups.get("cup") else "down"), setting
+    if groups.get("pup") or groups.get("pdown"):
+        return ("up" if groups.get("pup") else "down"), setting
+    return None, setting
+
+
 def _verb_level(found: re.Match[str]) -> Level | None:
     verb = found.group("verb")
     quantity = _quantity(found)
-    setting = _object(found)
-    if quantity is None or setting is False:
+    named = _object(found)
+    if quantity is None or named is False:
+        return None
+    if _only_the_screen(found) and not _screen_level_said(found, verb):
+        return None
+    compared = _comparative(found, named)
+    if compared is None:
         return None
     amount, target = quantity
-    comparative = "up" if found.group("cup") else "down" if found.group("cdown") else None
+    comparative, setting = compared
     if re.fullmatch(_SPEAK, verb):
         if comparative is None or setting is not None or amount is not None or target is not None:
             return None
         return Level(VOLUME, comparative, None, None)
     if re.fullmatch(_SET, verb):
+        if comparative is not None:
+            # «haz la pantalla más brillante», «ponlo más bajito», «make it louder»: something named, or referred
+            # to by its pronoun, made more or less. «pon algo más fuerte» names nothing (a song, maybe).
+            if amount is not None or target is not None:
+                return None
+            if named is None and _PRONOUN_VERB.fullmatch(verb) is None:
+                return None
+            return Level(setting, comparative, None, None)
         # «ponlo al 50», «set el volumen to 40»: a setting verb takes a target; «en 50» after it is one too.
         # «ponle más volumen» is the quantifier said after the verb: more of the object named.
-        if comparative is not None:
-            return None
         target = target if target is not None else amount
         if target is not None:
             return Level(setting, None, None, target)
@@ -280,6 +377,31 @@ def _verb_level(found: re.Match[str]) -> Level | None:
     return Level(setting, direction, amount, target)
 
 
+def _stated_level(found: re.Match[str]) -> Level | None:
+    """A level said around its object («Brillo 20%», «la pantalla más clara», «turn the volume down a notch»)."""
+
+    quantity = _quantity(found)
+    named = _object(found)
+    if quantity is None or named is False:
+        return None
+    if _only_the_screen(found) and not _screen_level_said(found):
+        return None
+    compared = _comparative(found, named)
+    if compared is None:
+        return None
+    amount, target = quantity
+    direction, setting = compared
+    if direction is None:
+        # «Brillo 20%», «volumen al 30»: the object and a level with no direction is where to put it.
+        if setting is None or (target if target is not None else amount) is None:
+            return None
+        return Level(setting, None, None, target if target is not None else amount)
+    if target is not None and not (found.groupdict().get("pup") or found.groupdict().get("pdown")):
+        # «el volumen más alto al 50» says two things; «turn the volume down to 20» says where it ends.
+        return None
+    return Level(setting, direction, amount, target)
+
+
 def read(text: str) -> Level | None:
     """The output-level request the whole utterance is, or None."""
 
@@ -289,24 +411,13 @@ def read(text: str) -> Level | None:
     found = _VERB_FORM.fullmatch(cleaned)
     if found is not None:
         return _verb_level(found)
-    found = _OBJECT_FORM.fullmatch(cleaned) or _COMPARATIVE_FORM.fullmatch(cleaned)
+    found = (
+        _PARTICLE_FORM.fullmatch(cleaned) or _OBJECT_FORM.fullmatch(cleaned) or _COMPARATIVE_FORM.fullmatch(cleaned)
+    )
     if found is not None:
-        quantity = _quantity(found)
-        setting = _object(found)
-        if quantity is None or setting is False:
-            return None
-        amount, target = quantity
-        direction = "up" if found.group("cup") else "down" if found.group("cdown") else None
-        if direction is None:
-            # «Brillo 20%», «volumen al 30»: the object and a level with no direction is where to put it.
-            if setting is None or (target if target is not None else amount) is None:
-                return None
-            return Level(setting, None, None, target if target is not None else amount)
-        if target is not None and direction is not None:
-            return None
-        return Level(setting, direction, amount, None)
+        return _stated_level(found)
     found = _QUANTIFIER_FORM.fullmatch(cleaned)
-    if found is not None and not re.search(r"\b(?:musica|music)\b", cleaned):
+    if found is not None and not re.search(r"\b(?:musica|music)\b", cleaned) and not _only_the_screen(found):
         # «más música» asks for more songs; «más volumen» for more volume.
         setting = _object(found)
         return None if setting is False else Level(setting, "up" if found.group("qup") else "down", None, None)
@@ -373,8 +484,8 @@ def direction_of(text: str) -> str | None:
     if level is not None and level.direction is not None:
         return level.direction
     cleaned = _clean(text)
-    up = re.search(rf"\b(?:{_UP}|{_COMPARATIVE_UP}|oscurece|aclara)\b", cleaned) is not None
-    down = re.search(rf"\b(?:{_DOWN}|{_COMPARATIVE_DOWN})\b", cleaned) is not None
+    up = re.search(rf"\b(?:{_UP}|{_COMPARATIVE_UP}|{_BRIGHTER})\b", cleaned) is not None
+    down = re.search(rf"\b(?:{_DOWN}|{_COMPARATIVE_DOWN}|{_DARKER})\b", cleaned) is not None
     if up == down:
         return None
     return "up" if up else "down"

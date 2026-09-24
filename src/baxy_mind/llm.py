@@ -16490,6 +16490,8 @@ class LlmRuntime:
         self,
         text: str,
         tool: dict,
+        *,
+        stated_fields: tuple[str, ...] = (),
     ) -> DirectArgumentExtraction:
         """Extract once, deriving literal provenance and a same-call fallback.
 
@@ -16499,6 +16501,11 @@ class LlmRuntime:
         would not add authority, so it is neither generated nor trusted. The
         fallback is generated in this same inference so a safe abstention
         never needs a second model call inside the transport deadline.
+
+        ``stated_fields`` are required fields the deterministic reading already
+        knows the person said; the fallback asks only for the others (tanda 3: a brightness
+        lowered «un nivel» was asked «¿cuánto y en qué dirección?» after
+        saying the direction).
         """
 
         function = tool.get("function") if isinstance(tool, dict) else None
@@ -16538,6 +16545,7 @@ class LlmRuntime:
                     separators=(",", ":"),
                     sort_keys=True,
                 ),
+                ",".join(sorted(stated_fields)),
             )
         )
 
@@ -16597,12 +16605,13 @@ class LlmRuntime:
             and "enum" not in contract
             and "const" not in contract
         )
+        asked_fields = tuple(field for field in required_fields if field not in stated_fields) or required_fields
         payload = _build_direct_argument_payload(
             text=text,
             canonical_name=canonical_name,
             description=description,
             schema=schema,
-            required_fields=required_fields,
+            required_fields=asked_fields,
             open_string_fields=open_string_fields,
         )
 
@@ -16628,10 +16637,10 @@ class LlmRuntime:
 
         fallback_question = validate_missing_argument_clarification(
             {
-                "requested_fields": list(required_fields),
+                "requested_fields": list(asked_fields),
                 "question": envelope.get("fallback_question"),
             },
-            required_fields,
+            asked_fields,
         )
         folded_question = fallback_question.casefold()
         technical_fields = tuple(
