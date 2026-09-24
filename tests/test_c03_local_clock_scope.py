@@ -47,7 +47,10 @@ def test_local_clock_reads_share_selection_and_grounding(
     "No me muestres la hora", "Do not show me the current date",
     "Escribe una nota que diga mostrame la hora",
     "Write a note saying show me the current date",
-    "Cambia la fecha", "Set the local time", "¿Qué fecha será mañana?",
+    "Cambia la fecha", "Set the local time",
+    # «¿Qué fecha será mañana?» left this list in tanda 6 (owner order 2026-09-24): the date of a day counted from
+    # today is arithmetic on this PC's clock (test_uso_real_tanda06_false_dates). A date named by itself still is not.
+    "¿Qué día de la semana será el 4 de julio?",
 ])
 def test_clock_mentions_do_not_authorize_a_current_local_read(text: str) -> None:
     result = resolve_explicit_effects(text, {"system.time"})

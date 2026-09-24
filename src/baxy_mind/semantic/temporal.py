@@ -976,9 +976,14 @@ def is_window_phrase(folded: str) -> bool:
 def relative_days(folded: str, today: date) -> tuple[date, ...]:
     """The days a phrase that says only a time names, counted from ``today`` («mañana», «el último fin de semana»,
     «el lunes pasado», «in three days»), in order; empty for a phrase that says something else, several runs of
-    days, or more than a week. Tanda 6: these are arithmetic on this PC's calendar, never a guess."""
+    days, or more than a week. Tanda 6: these are arithmetic on this PC's calendar, never a guess. A date or a
+    holiday named by itself («el 4 de julio», «el 21», «año nuevo») is not counted from today."""
 
-    if not is_window_phrase(folded):
+    if (
+        not is_window_phrase(folded)
+        or spoken_date(folded) is not None
+        or _has(folded, rf"\b{_MONTH}\b|\b(?:ano\s+nuevo|new\s+year'?s?)\b")
+    ):
         return ()
     spans = _said_days(_hyphens_as_spaces(folded), today)
     if len(spans) != 1:

@@ -167,6 +167,7 @@ def test_the_present_is_answered_from_the_clock(asked: str, reply: str, publishe
         ("which days were last weekend", ("2026-09-19", "2026-09-20")),
         ("¿qué día es mañana?", ("2026-09-25",)),
         ("¿mañana qué día es?", ("2026-09-25",)),
+        ("¿Qué fecha será mañana?", ("2026-09-25",)),  # was a «not the clock» case before the owner's order
         ("what date was yesterday", ("2026-09-23",)),
         ("¿cuándo es pasado mañana?", ("2026-09-26",)),
         ("what day is the day after tomorrow", ("2026-09-26",)),
@@ -190,6 +191,7 @@ def test_a_day_counted_from_today_is_computed_from_the_calendar(text: str, days:
 @pytest.mark.parametrize(
     "text",
     ["¿qué día es hoy?", "what day is the meeting tomorrow", "qué día es el partido del lunes",
+     "¿qué día es el 21?", "qué día de la semana es el 4 de julio", "what day is new year's day",
      "¿qué días abre el museo el fin de semana?", "¿cuándo fue la última vez que llovió?"],
 )
 def test_today_and_the_days_of_other_things_are_not_counted(text: str) -> None:
