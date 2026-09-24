@@ -110,8 +110,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # uso real: web, hora de otro lugar, 4e
 # uso real ola 8: tanda 5, latencia, concisión, búsqueda invisible
 # uso real 5b y latencia estructural
+# uso real 5c
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "851125976193d9d3ae69292465bd23036748ec4234103e988d2c3a4b11aa1618"
+    "b717b2da60ad6b2bc1e297925beb724378c8679294f9af996b24155118785c60"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"

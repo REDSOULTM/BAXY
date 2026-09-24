@@ -143,12 +143,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # uso real: web, hora de otro lugar, 4e
 # uso real ola 8: tanda 5, latencia, concisión, búsqueda invisible
 # uso real 5b y latencia estructural
+# uso real 5c
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
         "8973c6652add7aff980d09ebda0c61a04ee363e4decb6fb8f2f1b77a8e2366a1"
     ),
     "src/baxy_mind/llm.py": (
-        "f20ae0a1e45b648facba76f7f04e1b67ac531527f8b73ac626cf8d4cee403589"
+        "cb9d450d14779911aa320e926bab686d30818c57a1943a5ceaf2440076b1dae1"
     ),
 }
 
