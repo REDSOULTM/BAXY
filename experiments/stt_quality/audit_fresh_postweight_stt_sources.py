@@ -101,8 +101,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # C03 Fase 3.5 uso real 2026-09-23: lo que no sabe lo busca; evidencia de idioma de sustantivos del PC.
 # C03 Fase 3.5 uso real 2026-09-23 (tanda 2): listas leídas, artículo al azar buscado, efectos y datos propios no afirmados en conversación.
 # C03 Fase 3.5 uso real 2026-09-24: integración de la segunda ola (tanda 2).
+# C03 Fase 3.5 uso real 2026-09-24: integración de la tercera ola (correo, medios, misc, agenda).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "0cee9ca0c96975b62d87d1a94cbb5a72d983569cace441751414ad04205be3f6"
+    "ed617ee52b713dec403dbfb41e68576c352b1761c3db14f49c7a4de7b44adf61"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"

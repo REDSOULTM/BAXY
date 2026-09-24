@@ -135,12 +135,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 Fase 3.5 uso real 2026-09-23: lo que no sabe lo busca; evidencia de idioma de sustantivos del PC.
 # C03 Fase 3.5 uso real 2026-09-23 (tanda 2): listas leídas, artículo al azar buscado, efectos y datos propios no afirmados en conversación.
 # C03 Fase 3.5 uso real 2026-09-24: integración de la segunda ola (tanda 2).
+# C03 Fase 3.5 uso real 2026-09-24: integración de la tercera ola (correo, medios, misc, agenda).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "eb94a3826fb6276ee359da90f97689ec07e182c7a17e30dcf2b03c0624716a48"
+        "38a1897dcbf988cc49d85aa13905332dc0d8c95b3db6061fd101c240cd6041fb"
     ),
     "src/baxy_mind/llm.py": (
-        "6889bd325df4872c5804b4b0936886ece771b2aac989dd2caf7dc950d6e28780"
+        "2b98f379c239448de648fc3a972e66dbba89b86af8b1328c4bb616dd3b847625"
     ),
 }
 
