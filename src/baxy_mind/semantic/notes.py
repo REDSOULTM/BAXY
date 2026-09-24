@@ -8,31 +8,359 @@ from dataclasses import dataclass
 from typing import Iterable, Sequence
 from .grammar import TASK_REMINDER_HEAD, _RELATIVE_DURATION_PATTERN, _fold, _match, _has, _strip_request_envelope, _request_body_surface, _request_head, _head_is, _LIST, _READ, _CREATE, _request_clauses
 from .intent import EffectIntent, _append
-from .temporal import _absolute_calendar_range_parts, _DEICTIC_DAY, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, spoken_clock
+from .temporal import _absolute_calendar_range_parts, _DEICTIC_DAY, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, CLOCK_PHRASE, EventTiming, event_timing, spoken_clock, is_window_phrase, says_a_window
 
 
-def _relative_calendar_read_request(folded: str) -> bool:
-    """Recognize a read-only calendar query with a relative bounded range."""
+# --- The person's own agenda, read (uso real 2026-09-23) --------------------------------------------
+# «qué tengo por venir», «tengo algo programado para el cuatro de julio», «qué tengo que hacer esta
+# semana», «cuál es mi horario para el día», «cuándo es mi brunch con Jennifer», «próximos eventos en
+# calendario», «what's my schedule like today» went to a clarification, a web search, a knowledge reply
+# or «eso no lo hago». What the person has planned is their own data: it is read from the calendar
+# (``semantic.temporal.agenda_window`` bounds it: the window said, or what is coming).
+AGENDA_NOUN = (
+    r"(?:calendarios?|calendars?|agendas?|horarios?|schedules?|planes|plans?|eventos?|events?|reuniones|"
+    r"reunion|meetings?|citas?|appointments?|compromisos?|commitments?|actividades|activities)"
+)
+_AGENDA_PARTICIPLE = (
+    r"(?:planead[oa]s?|programad[oa]s?|agendad[oa]s?|previst[oa]s?|anotad[oa]s?|apuntad[oa]s?|"
+    r"planned|scheduled|booked|set\s+up|set|lined\s+up|going\s+on|coming\s+up|on)"
+)
+# Heads that change the agenda or ask for something else: not a read of it.
+_AGENDA_CHANGE_HEAD = (
+    r"(?:crea|crear|anade|anadir|agrega|agregar|pon|poner|pone|programa|programar|agendar|establece|"
+    r"establecer|fija|fijar|marca|marcar|marque|apunta|apuntar|anota|anotar|reserva|reservar|bloquea|borra|"
+    r"borrar|elimina|eliminar|cancela|cancelar|quita|quitar|mueve|mover|cambia|cambiar|reprograma|"
+    r"reprogramar|recuerda|recorda|avisa|notifica|despierta|busca|buscar|abre|abrir|add|put|schedule|set|"
+    r"create|make|book|mark|block|delete|remove|cancel|clear|erase|move|change|reschedule|remind|notify|"
+    r"alert|wake|search|find|open|planificar|planear|plan)"
+)
+_AGENDA_QUESTION_HEAD = (
+    r"(?:que|cual|cuales|cuando|donde|como|cuanto|cuanta|cuantos|cuantas|a|what|which|when|where|how|dime|"
+    r"decime|dame|muestra|muestrame|mostrame|ensename|lee|leeme|revisa|consulta|mira|tell|show|give|read|"
+    r"check|list|lista|listame|hay|tengo|tenemos|habra|tendre|do|does|is|are|will|have|any)"
+)
+# A schedule that is not the person's own («el horario del cine», «the movie schedule», «algún evento
+# en el centro»): public information, looked up elsewhere.
+_PUBLIC_SCHEDULE = (
+    r"\b(?:cine|cines|peliculas?|movies?|cinema|cartelera|tv|television|tele|bus|buses|autobus|tren|trenes|"
+    r"trains?|metro|vuelos?|flights?|partidos?|concierto|conciertos|concerts?|tienda|tiendas|stores?|"
+    r"shops?|biblioteca|library|museo|museum|centro|ciudad|city|downtown|town|cerca|nearby|near|"
+    r"elecciones|elections?|noticias|news|farmacia|pharmacy|banco|bank|clima|weather|mundo|world|pais|country)\b"
+)
+_AGENDA_DETERMINER = r"(?:algo|anything|something|algun|alguna|algunos|algunas|any|some|nada|nothing|un|una|a|an)"
+_AGENDA_HAVE = (
+    r"(?:(?:yo\s+)?(?:tengo|tenemos|tendre|tendremos)(?:\s+yo)?|hay|habra|do\s+i\s+have|have\s+i\s+got|"
+    r"will\s+i\s+have|is\s+there|are\s+there|will\s+there\s+be|do\s+we\s+have|i\s+have)"
+)
 
-    return (
-        re.fullmatch(
-            r"(?:is|are)\s+there\s+(?:any\s+)?(?:events?|meetings?|appointments?)\s+"
-            r"(?:planned|scheduled|booked)\s+(?:for|in|over)\s+the\s+next\s+"
-            r"(?:\d+|one|two|three|four|five|six|several|few)\s+"
-            r"(?:days?|weeks?|months?)[\s.!?]*|"
-            # Uso real 2026-09-23 «do i have appointments today» was asked
-            # «What time are you looking for appointments today?»: the day
-            # window is the whole range; the calendar grounding reads it.
-            r"[¿?\s]*(?:do|will)\s+i\s+have\s+(?:any\s+)?(?:events?|meetings?|appointments?|plans)\s+"
-            r"(?:today|tomorrow|tonight|this\s+week(?:end)?|next\s+week(?:end)?)[\s.!?]*|"
-            r"[¿?\s]*tengo\s+(?:alguna?s?|algo\s+de)\s+(?:citas?|reuniones|reunion|eventos?)\s+"
-            r"(?:para\s+)?(?:hoy|manana|esta\s+noche|esta\s+semana|la\s+proxima\s+semana|"
-            r"este\s+fin\s+de\s+semana)[\s.!?]*",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
+
+def _window_tail(tail: str) -> bool:
+    """Nothing after the agenda words, or only the window they are asked for."""
+
+    tail = tail.strip()
+    return not tail or is_window_phrase(tail)
+
+
+def agenda_read_request(text: str) -> bool:
+    """A question about the person's own agenda: what they have (planned, to do, coming up), their
+    schedule or plans for a window, when their own event is, their next events. Not a change to the
+    agenda, not BAXY's own alarms (``_AGENDA_LISTING``), not a public schedule, not a statement that
+    goes on to ask something else («tengo una cita mañana, recuérdame»)."""
+
+    envelope = _strip_request_envelope(_fold(text))
+    folded = envelope.strip(" ¿?¡!.,;:")
+    if (
+        not folded
+        or re.match(_AGENDA_LISTING, envelope) is not None
+        or folded.startswith(("no ", "not "))
+        # «dame un recordatorio veinticuatro horas antes de mi reunión»: BAXY's own alarms and
+        # reminders are scheduled and listed by their own readers.
+        or _has(folded, r"\b(?:recordatorios?|reminders?|alarmas?|alarms?|alertas?|alerts?|avisos?|"
+                        r"notificacion(?:es)?|notifications?|despertador)\b")
+    ):
+        return False
+    head = _request_head(folded)
+    if _head_is(head, _AGENDA_CHANGE_HEAD) or any(
+        _head_is(_request_head(clause), _AGENDA_CHANGE_HEAD) for clause in _request_clauses(folded)[1:]
+    ):
+        return False
+    asked = "?" in text or _head_is(head, _AGENDA_QUESTION_HEAD)
+    own = re.search(
+        rf"\b(?:mi|mis|my)\s+(?:(?:proxim[oa]s?|siguientes?|next|upcoming)\s+)?(?:\w+\s+)?{AGENDA_NOUN}\b", folded,
     )
+    if own is not None:
+        # «cuál es mi horario para el día», «mi horario para el siete de julio está completamente
+        # abierto», «what's my schedule like today», «dónde es mi reunión del viernes».
+        return asked or says_a_window(folded)
+    if re.search(
+        r"^(?:cuando|a\s+que\s+hora|what\s+time|when|how\s+long|cuanto(?:\s+tiempo)?)\s+"
+        r"(?:es|son|sera|seran|empieza|comienza|termina|dura|durara|is|are|will|does|do|starts?|ends?)\b.*"
+        r"\b(?:mi|mis|my)\b",
+        folded,
+    ):
+        # «cuándo es mi brunch con Jennifer», «what time is my flight»: the person's own event.
+        return True
+    if re.search(
+        r"^(?:como|how)\s+(?:sera|es|va\s+a\s+ser|se\s+ve|luce|pinta|will|is|looks?)\s+(?:be\s+)?(?:mi|my)\s+"
+        r"(?:dia|day|semana|week|proxima\s+semana|next\s+week|manana|tomorrow|fin\s+de\s+semana|weekend)\b"
+        r"|^what'?s?\s+(?:is\s+)?my\s+(?:day|week|weekend)\s+like\b",
+        folded,
+    ):
+        # «cómo será mi próxima semana».
+        return True
+    if _has(folded, _PUBLIC_SCHEDULE):
+        return False
+    if re.search(rf"\b(?:proxim[oa]s?|siguientes|upcoming|next)\s+(?:\w+\s+)?{AGENDA_NOUN}\b", folded) and (
+        asked or re.match(r"(?:(?:los|las|the)\s+)?(?:proxim[oa]s|siguientes|upcoming|next)\b", folded)
+    ):
+        # «próximos eventos en calendario», «cuáles son los próximos tres eventos».
+        return True
+    marker = rf"(?:(?:que\s+hacer|to\s+do|por\s+venir|pendientes?|{_AGENDA_PARTICIPLE})\b)"
+    what_have = re.fullmatch(rf"(?:que|what)\s+{_AGENDA_HAVE}\s+(?P<marker>{marker}\s*)?(?P<tail>.*)", folded)
+    if what_have is not None and (what_have.group("marker") or what_have.group("tail")):
+        # «qué tengo por venir», «qué tengo que hacer esta semana», «qué hay hoy», «what do I have today».
+        return _window_tail(what_have.group("tail"))
+    noun_first = re.fullmatch(
+        rf"(?:que|what|which|cuales|cuantas|cuantos|how\s+many)\s+{AGENDA_NOUN}\s+"
+        rf"(?:{_AGENDA_HAVE}|(?:esta|estan|is|are)\s+{_AGENDA_PARTICIPLE}|{_AGENDA_PARTICIPLE})?\s*(?P<tail>.*)",
+        folded,
+    )
+    if noun_first is not None:
+        # «qué eventos hay la semana que viene», «qué reunión está programada para hoy».
+        return _window_tail(noun_first.group("tail"))
+    have = re.fullmatch(
+        rf"(?:{_AGENDA_HAVE})\s+(?P<det>{_AGENDA_DETERMINER}\s+)?(?:(?:de\s+)?{AGENDA_NOUN}\b\s*)?"
+        rf"(?P<marker>{marker}\s*)?(?P<tail>.*)",
+        folded,
+    )
+    if have is not None and (have.group("det") or re.match(rf"(?:{_AGENDA_HAVE})\s+{AGENDA_NOUN}\b", folded)):
+        # «tengo algo planeado», «tengo algo programado para el cuatro de julio», «hay algún evento
+        # para los próximos tres meses», «do I have anything set for the fourth of July».
+        indefinite = (have.group("det") or "").strip() in {"un", "una", "a", "an"}
+        return (
+            (have.group("marker") is not None or bool(have.group("tail").strip()) or asked)
+            and (asked or not indefinite)
+            and _window_tail(have.group("tail"))
+        )
+    if re.match(r"(?:cual|what)\s+(?:es\s+)?(?:el|the)\s+plan\b|what'?s\s+the\s+plan\b", folded):
+        # «cuál es el plan hoy».
+        return _window_tail(re.sub(r"^.*?\bplan\b", "", folded))
+    return bool(
+        re.match(
+            rf"(?:{_LIST}|dame|lee|leeme|revisa|consulta|mira|tell\s+me|give\s+me|read|check|show)\s+(?:me\s+)?"
+            r"(?:el|la|the)\s+(?:calendario|agenda|calendar)\b",
+            folded,
+        )
+        and _window_tail(re.sub(r"^.*?\b(?:calendario|agenda|calendar)\b", "", folded))
+    )
+
+
+# --- Something put on the agenda (uso real 2026-09-23) ------------------------------------------------
+# «añade una reunión con Tom a mi calendario para las nueve de la mañana», «programa una reunión para el
+# martes que viene a las once con Joan», «set me a meeting next tuesday at eleven am with jesse», «marca
+# abril veinte como el cumpleaños de mi hermano» were refused, asked how long the meeting lasts, or
+# read as nothing. An event is created with what was said: a start with no end lasts an hour, a date
+# with no clock that marks a day (a birthday, a holiday) takes the whole day. Only a time never said is
+# asked, and a repetition the calendar cannot hold is said, never dropped.
+_EVENT_NOUN = (
+    r"(?:reunion|reuniones|meetings?|citas?|appointments?|eventos?|events?|llamadas?|calls?|conference\s+call|"
+    r"videollamadas?|comida|almuerzo|cena|desayuno|brunch|lunch|dinner|breakfast|practicas?|practice|"
+    r"entrenamientos?|training|clases?|class|fiestas?|party|cumpleanos|birthday|vacaciones|vacation|holidays?|"
+    r"feriado|festivo|aniversario|anniversary|entrevistas?|interview|examen|exam|turno|sesion|session|"
+    r"conferencia|conference|webinar|visita|visit|viaje|trip|boda|wedding|cena|junta|quedada)"
+)
+# A day the calendar marks whole: no clock is missing for it.
+_WHOLE_DAY_NOUN = (
+    r"\b(?:cumpleanos|birthday|vacaciones|vacation|holidays?|feriado|festivo|aniversario|anniversary|"
+    r"dia\s+libre|day\s+off|dia\s+de|boda|wedding|viaje|trip)\b"
+)
+_EVENT_HEAD = (
+    r"(?:crea|crear|creame|anade|anadir|anademe|anademe|agrega|agregar|agregame|pon|poner|ponme|pone|poneme|"
+    r"programa|programar|programame|agenda|agendar|agendame|establece|establecer|establecerme|fija|fijar|"
+    r"fijame|marca|marcar|marcame|marque|reserva|reservar|reservame|bloquea|bloquear|incluye|incluir|"
+    r"organiza|organizar|arma|armar|haz|hazme|hacer|add|put|schedule|set|create|make|book|mark|block|plan|arrange)"
+)
+_EVENT_ENVELOPE = re.compile(
+    r"^(?:(?:will|would|can|could)\s+you\s+|(?:puedes|podes|podrias|quiero|quisiera|necesito|"
+    r"i\s+(?:want|need|would\s+like)(?:\s+to)?|let'?s)\s+)?"
+    rf"(?P<head>{_EVENT_HEAD})(?:me|nos|le|lo|la)?\s+(?:(?:me|nos|us)\s+)?"
+    r"(?:(?:que|that)\s+(?:tengo|tenemos|hay|i\s+have|we\s+have|there\s+is)\s+)?"
+)
+# Heads that also mean doing the thing now («haz la cena», «make a call», «pon la comida»).
+_WEAK_EVENT_HEADS = frozenset(
+    ("haz", "hazme", "hacer", "make", "pon", "poner", "ponme", "pone", "poneme", "put", "set", "arma", "armar")
+)
+_DESIRED_EVENT = re.compile(
+    r"^(?:(?:yo\s+)?(?:quiero|quisiera|necesito)|i\s+(?:want|need|would\s+like))\s+"
+    rf"(?=(?:(?:una?|an?)\s+)?(?:\w+\s+)?{_EVENT_NOUN}\b)"
+)
+_MEETING_VERB = re.compile(r"^(?:reunirme|reunirnos|juntarme|juntarnos|quedar|meet)\s+(?:con|with)\s+\S")
+_CALENDAR_PLACE = (
+    r"\b(?:a|al|en|to|in|on|into)\s+(?:(?:mi|el|la|the|my|tu|your)\s+)?(?:calendario|calendar|agenda)\b"
+)
+_NOT_AN_EVENT = (
+    r"\b(?:alarmas?|alarms?|despertador|recordatorios?|reminders?|temporizador|timer|notas?|notes?|"
+    r"tareas?|tasks?|listas?|lists?|musica|music|cancion|song|volumen|volume|brillo|brightness|"
+    r"recuerdame|recordame|avisame|notificame|remind\s+me|alert\s+me|notify\s+me)\b"
+)
+_TITLE_EDGE = (
+    r"(?:un|una|unos|unas|el|la|los|las|lo|a|an|the|mi|my|para|for|en|in|on|at|de|del|como|as|que|that|to|"
+    r"y|and|por\s+favor|please|nueva|nuevo|new)"
+)
+
+
+_REPEAT_UNITS = {
+    **dict.fromkeys(
+        ("dia", "dias", "day", "days", "diariamente", "a diario", "daily", "manana", "mananas", "morning",
+         "mornings", "tarde", "tardes", "afternoon", "afternoons", "noche", "noches", "night", "nights",
+         "evening", "evenings"),
+        "daily",
+    ),
+    **dict.fromkeys(("hora", "horas", "hour", "hours", "hourly"), "hourly"),
+}
+
+
+@dataclass(frozen=True)
+class AgendaEvent:
+    """One thing the person asks to put on their agenda: ``title`` in their own words, ``timing`` as
+    said (``semantic.temporal.EventTiming``), whether it takes the whole day, and the fields still to
+    ask (empty when it can be created as said)."""
+
+    title: str
+    timing: EventTiming
+    whole_day: bool
+    missing: tuple[str, ...]
+    # «todos los días», «cada hora»: a repetition the calendar cannot hold but a repeating reminder
+    # can («daily», «hourly», the catalog's recurrence); None for a single event.
+    repeat: str | None = None
+
+
+def _event_title(body: str, folded_body: str, cut: list[tuple[int, int]]) -> str:
+    """The person's words for the event: the body without the cut spans (the order, the calendar,
+    the time), trimmed of the articles and prepositions left at its edges."""
+
+    tokens = list(re.finditer(r"\S+", folded_body))
+    words = body.split()
+    if len(words) != len(tokens):
+        words = [token.group() for token in tokens]
+    kept = [
+        word for word, token in zip(words, tokens)
+        if not any(start < token.end() and token.start() < end for start, end in cut)
+    ]
+    title = " ".join(kept).strip(" ,;:.!?¿¡\"'«»")
+    # «un evento llamado Revisión»: what follows the naming word is the title («llamada con Ana» is a call).
+    named = re.search(
+        r"\b(?!(?:un|una|el|la|a|an|the)\b)\w+\s+(?:llamad[oa]|titulad[oa]|called|named|titled)\s+(?P<name>\S.*)$",
+        _fold(title),
+    )
+    if named is not None:
+        title = " ".join(title.split()[len(_fold(title)[: named.start("name")].split()):])
+    edge = re.compile(rf"^(?:{_TITLE_EDGE})\s+|\s+(?:{_TITLE_EDGE})$", re.IGNORECASE)
+    while True:
+        folded_title = _fold(title)
+        found = edge.search(folded_title)
+        if found is None:
+            break
+        title = (
+            " ".join(title.split()[len(found.group().split()):]) if found.start() == 0
+            else " ".join(title.split()[: len(title.split()) - len(found.group().split())])
+        ).strip(" ,;:.!?\"'«»")
+    return title if re.search(r"[^\W\d_]", title) else ""
+
+
+def agenda_event_request(text: str) -> AgendaEvent | None:
+    """A request to put one event on the agenda, or None. Its title is what the person named (with
+    whom, where), its time is read by ``event_timing``; what is missing is what was never said."""
+
+    body = _request_body_surface(text).strip().rstrip(" .!?")
+    folded_body = _fold(body)
+    folded = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.,")
+    if folded_body.split() != folded.split():
+        body, folded_body = folded, folded
+    if not folded or folded.startswith(("no ", "not ", "don't ", "dont ")):
+        return None
+    calendar_place = re.search(_CALENDAR_PLACE, folded_body)
+    envelope = _EVENT_ENVELOPE.match(folded_body)
+    lead_end = 0
+    if envelope is not None:
+        head = envelope.group("head")
+        rest = folded_body[envelope.end():]
+        # «pon una alarma», «añade leche a la lista»: an order about something else. «anota/apunta» is
+        # a note unless the calendar is named; a bare «set/put/make» needs the event as its object.
+        object_is_event = re.match(rf"(?:(?:un|una|el|la|mi|a|an|the|my|nueva|new)\s+)*(?:\S+\s+)?{_EVENT_NOUN}\b", rest)
+        marks_a_day = re.search(r"\b(?:como|as)\s+(?:(?:el|la|mi|my|a|an|the)\s+)?\S", rest) and head in {
+            "marca", "marcar", "marcame", "marque", "mark", "pon", "poner", "ponme", "pone", "poneme", "put", "set"
+        }
+        if _has(rest, _NOT_AN_EVENT) and calendar_place is None:
+            return None
+        if object_is_event is None and calendar_place is None and not marks_a_day:
+            return None
+        if (
+            head in _WEAK_EVENT_HEADS
+            and calendar_place is None
+            and not marks_a_day
+            and event_timing(rest).start is None
+            and not says_a_window(rest)
+            and not re.search(r"\b(?:con|with)\s+\S", rest)
+        ):
+            # «haz la cena», «haz una llamada a mamá», «pon la comida»: doing the thing now, not putting
+            # it on the agenda; with a time, a companion or the calendar named it is an event.
+            return None
+        lead_end = envelope.end()
+    elif (desired := _DESIRED_EVENT.match(folded_body)) is not None:
+        lead_end = desired.end()
+    elif _MEETING_VERB.match(folded_body) is not None:
+        lead_end = 0
+    else:
+        return None
+    timing = event_timing(folded_body)
+    cut = [(0, lead_end), *timing.spans]
+    if calendar_place is not None:
+        cut.append(calendar_place.span())
+    title = _event_title(body, folded_body, cut)
+    said_day = says_a_window(folded_body)
+    whole_day = timing.start is None and said_day and _has(folded_body, _WHOLE_DAY_NOUN + r"|\b(?:como|as)\b")
+    missing: list[str] = []
+    if not title:
+        missing.append("event_title")
+    repeat = _REPEAT_UNITS.get(timing.recurrence or "")
+    if timing.recurrence is not None and repeat is None:
+        # «cada miércoles de marzo»: neither the calendar nor a reminder repeats weekly; the
+        # question says so and offers what can be done.
+        missing.append("repetition_the_calendar_cannot_hold")
+    elif timing.start is None and not whole_day:
+        missing.append("start_time" if said_day or timing.end is not None else "event_date_and_time")
+    elif timing.start is not None and not timing.start.resolved:
+        missing.append("am_pm_or_part_of_day_for_supplied_hour")
+    return AgendaEvent(title, timing, whole_day, tuple(missing), repeat)
+
+
+# «tengo una reunión el miércoles a las nueve de la mañana, envíame un recordatorio», «tengo cita a las
+# cinco de la tarde, recuérdamelo» (uso real 2026-09-23): the event is stated, then a reminder of it asked.
+_STATED_EVENT_REMINDER = re.compile(
+    rf"^(?:(?:yo\s+)?tengo|i\s+have)\s+(?P<title>.+?)\s+(?P<due>{CLOCK_PHRASE})\s*[,.;]?\s+(?:y\s+)?"
+    r"(?:(?:enviame|mandame|dame|ponme|hazme|send\s+me|give\s+me|set)\s+(?:un|una|a|an)\s+"
+    r"(?:recordatorio|reminder|aviso|alerta|notificacion|alert|notification)\b[^,;]*|"
+    r"recuerdamelo|recordamelo|avisame|remind\s+me(?:\s+(?:of|about)\s+it)?)[\s.!?]*$"
+)
+
+
+def stated_event_reminder(text: str) -> tuple[str, str] | None:
+    """(title, moment) of an event stated and then asked to be reminded of, in the person's writing."""
+
+    body = _request_body_surface(text).strip()
+    folded = _fold(body)
+    found = _STATED_EVENT_REMINDER.match(folded)
+    clock = spoken_clock(found.group("due")) if found is not None else None
+    if found is None or clock is None or not clock.resolved:
+        return None
+    words = body.split()
+
+    def original(group: str) -> str:
+        start = len(folded[: found.start(group)].split())
+        return " ".join(words[start : start + len(found.group(group).split())]).strip(" ,;")
+
+    return original("title"), original("due")
 
 
 def _time_only_reminder_request(folded: str) -> bool:
@@ -424,7 +752,7 @@ def _note_inventory_object(text: str) -> bool:
 
 # A day said with the wake-up time («mañana», «el lunes», «esta semana»).
 _WAKE_DAY = (
-    r"(?:(?:el|este|esta|next|this|el\s+proximo|la\s+proxima)\s+)?"
+    r"(?:(?:el|este|esta|next|this|el\s+proximo|la\s+proxima|del|on)\s+)?"
     r"(?:hoy|today|manana|tomorrow|pasado\s+manana|lunes|martes|miercoles|jueves|viernes|sabado|domingo|"
     r"monday|tuesday|wednesday|thursday|friday|saturday|sunday|semana|week)"
 )
@@ -452,7 +780,11 @@ def _wake_alarm_request(text: str) -> bool:
         clock is not None
         and clock.resolved
         and re.fullmatch(
-            rf"(?:{_WAKE_DAY}\s+)?{re.escape(clock.literal)}(?:\s+{_WAKE_DAY})?", when,
+            # Uso real 2026-09-23 «despiértame a las seis de la mañana del jueves para tener tiempo
+            # para la reunión»: what the alarm is for, said after it, does not change it.
+            rf"(?:{_WAKE_DAY}\s+)?{re.escape(clock.literal)}(?:\s+{_WAKE_DAY})?"
+            r"(?:\s+(?:para|porque|asi|que|to|so|because)\b.*)?",
+            when,
         ) is not None
     )
 
@@ -1081,23 +1413,19 @@ def _review_calendar_message_and_direct_reminder_effects(
             r"temporizador|timer)\b",
         )
 
+    # Uso real 2026-09-23 «establece un recordatorio sobre la reunión de mañana a las nueve de la
+    # mañana», «add conference call at four p. m. to my reminders for today».
+    reminder_head = (
+        r"(?:pon|ponme|pone|poneme|pongame|crea|crear|programa|programar|establece|establecer|fija|fijar|"
+        r"agrega|agregar|anade|anadir|add|set|schedule|recordatorio|reminder)"
+    )
     if (
         temporal
-        and _has(folded, r"\b(?:recordatorio|reminder)\b")
+        and _has(folded, r"\b(?:recordatorios?|reminders?)\b")
         and not any(entry[2] == "reminder.create" for entry in matches)
-        and _head_is(
-            head,
-            r"(?:pon|ponme|pone|poneme|pongame|crea|crear|programa|programar|"
-            r"set|schedule|recordatorio|reminder)",
-        )
+        and _head_is(head, reminder_head)
     ):
-        _append(
-            matches,
-            folded,
-            "reminder.create",
-            r"\b(?:pon|ponme|pone|poneme|pongame|crea|crear|programa|programar|"
-            r"set|schedule|recordatorio|reminder)\b",
-        )
+        _append(matches, folded, "reminder.create", rf"\b{reminder_head}\b")
 
     cancel_notification = (
         (

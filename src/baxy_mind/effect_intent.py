@@ -376,7 +376,7 @@ from .semantic.system import (  # noqa: F401 - moved to baxy_mind.semantic.syste
 from .semantic.notes import (  # noqa: F401 - moved to baxy_mind.semantic.notes; callers migrate
     list_entry_request,
     list_read_request,
-    _relative_calendar_read_request,
+    agenda_read_request,
     _time_only_reminder_request,
     _COUNT_DOWN_REQUEST,
     _count_down_request,

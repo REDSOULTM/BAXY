@@ -4073,11 +4073,9 @@ def test_explicit_text_source_is_grounded_for_clipboard_copy() -> None:
             "ocr.read",
             ("image_or_new_screenshot",),
         ),
-        (
-            "Lista mis próximos eventos del calendario",
-            "calendar.event.list",
-            ("date_range",),
-        ),
+        # «Lista mis próximos eventos del calendario» asked a date range here; since uso real
+        # 2026-09-23 what is coming is the next thirty days, so nothing is missing
+        # (tests/test_uso_real_2026_09_23_agenda.py reads it as a complete listing).
     ],
 )
 def test_incomplete_effect_asks_only_for_its_missing_contract_data(
@@ -5719,7 +5717,9 @@ def test_reminder_content_cannot_be_reclassified_by_an_embedded_event_noun() -> 
     assert clarification.missing_fields == ("due_time",)
 
 
-def test_calendar_event_without_duration_remains_a_calendar_clarification() -> None:
+def test_calendar_event_with_an_open_hour_remains_a_calendar_clarification() -> None:
+    # Uso real 2026-09-23: a start without an end lasts an hour, so the end is no longer asked;
+    # «a las 9» with no part of the day still is, and the event stays a calendar event.
     text = "Crea un evento llamado Revisión el domingo a las 9"
 
     clarification = resolve_explicit_clarification_intent(
@@ -5729,7 +5729,7 @@ def test_calendar_event_without_duration_remains_a_calendar_clarification() -> N
 
     assert clarification is not None
     assert clarification.operations == ("calendar.event.create",)
-    assert clarification.missing_fields == ("end_time_or_duration",)
+    assert clarification.missing_fields == ("am_pm_or_part_of_day_for_supplied_hour",)
 
 
 def test_telegraphic_calendar_invite_requests_missing_event_details() -> None:
@@ -5753,7 +5753,8 @@ def test_incomplete_calendar_after_an_independent_read_still_clarifies() -> None
 
     assert clarification is not None
     assert clarification.operations == ("calendar.event.create",)
-    assert clarification.missing_fields == ("end_time_or_duration",)
+    # Uso real 2026-09-23: the end is no longer asked (an hour); «a las 9» still misses its part of the day.
+    assert clarification.missing_fields == ("am_pm_or_part_of_day_for_supplied_hour",)
 
 
 @pytest.mark.parametrize(
@@ -6179,6 +6180,9 @@ def test_dynamic_alert_note_time_and_generic_game_requests_clarify_stably(
         ("puedes decirme donde hay parking gratis en huesca", "web.search"),
         ("Necesito un parking gratuito cerca de esta ubicacion", "web.search"),
         ("buy milk and eggs का memo create करो।", "note.create"),
+        # Uso real 2026-09-23: a start without an end lasts an hour, so this is complete
+        # (it was an incomplete clarification when the end was asked).
+        ("set meeting with joanna on saturday four p. m.", "calendar.event.create"),
     ],
 )
 def test_fresh_gate_families_have_deterministic_effect_identity(
@@ -6197,10 +6201,6 @@ def test_fresh_gate_families_have_deterministic_effect_identity(
         (
             "set notifications on the current weather disasters in america",
             "notification.schedule",
-        ),
-        (
-            "set meeting with joanna on saturday four p. m.",
-            "calendar.event.create",
         ),
         (
             "for every odd numbered sunday set a reminder for",

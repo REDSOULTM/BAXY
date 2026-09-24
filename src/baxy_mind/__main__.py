@@ -42,6 +42,8 @@ from .semantic import lexicon as semantic_lexicon
 from .semantic import reading as semantic_reading
 from .semantic.grammar import ARITHMETIC_EXPRESSION, SPOKEN_NUMBER
 from .semantic.patterns import output_level_request
+from .semantic.notes import agenda_event_request, stated_event_reminder
+from .semantic.temporal import SpokenClock, agenda_window, spoken_date, spoken_window
 from .corrector import catalog_correction_terms
 from .first_signal import (
     PATH_MODEL,
@@ -4656,7 +4658,7 @@ def _explicit_notification_schedule_arguments(
     wake_request = effect_intent._wake_alarm_request(folded)
     count_request = effect_intent._count_down_request(folded)
     if not wake_request and not count_request and not re.search(
-        r"\b(?:alarm|alarma|timer|temporizador)\b", folded
+        r"\b(?:alarm|alarma|alerta|alert|timer|temporizador)\b", folded
     ):
         return None
     relative_pattern = (
@@ -4673,7 +4675,7 @@ def _explicit_notification_schedule_arguments(
         return None
     due_literal = (relative[0].group("duration") if relative else clocks[0].literal).strip()
     noun = re.search(
-        r"\b(?:alarm|alarma|timer|temporizador)\b", evidence, re.IGNORECASE
+        r"\b(?:alarm|alarma|alerta|alert|timer|temporizador)\b", evidence, re.IGNORECASE
     )
     if noun is None and not wake_request and not count_request:
         return None
@@ -4726,10 +4728,15 @@ def _explicit_relative_reminder_arguments(
         # la noche»: the reminder asked for as a thing, its subject, then its moment.
         # («set a reminder to …» keeps its own pattern above.)
         rf"{lead}(?:dame|ponme|pon|creame|crea|hazme|haz|programa|programame|quiero|quisiera|necesito|"
-        r"create|give\s+me)\s+(?:(?:un|una|a|an)\s+)?(?:(?:nuevo|new)\s+)?"
+        r"establece|establecer|fija|fijame|create|give\s+me|set)\s+(?:(?:un|una|a|an)\s+)?(?:(?:nuevo|new)\s+)?"
         r"(?:(?:notificaci[oó]n|aviso|alerta|notification|alert)\s+(?:de|of)\s+)?"
         r"(?:recordatorio|reminder|notificaci[oó]n|aviso|alerta|notification|alert)\s+"
         rf"(?:para|de|sobre|about|for)\s+(?P<title>.+?)\s+(?P<due>{duration})[.!?]*$",
+        # Uso real 2026-09-23 «add conference call at four p. m. to my reminders for today»: the
+        # thing added to the reminders, then its moment.
+        rf"{lead}(?:add|agrega|agregame|a[nñ]ade|a[nñ]ademe|pon|ponme)\s+(?P<title>.+?)\s+(?P<due>{duration})\s+"
+        r"(?:to|a|en|in)\s+(?:(?:my|mis|the|los)\s+)?(?:reminders|recordatorios)"
+        r"(?:\s+(?:for|para)\s+(?:today|tomorrow|hoy|ma[nñ]ana))?[.!?]*$",
     )
     matches = [
         match
@@ -4745,32 +4752,22 @@ def _explicit_relative_reminder_arguments(
     return {"dueUtc": due, "title": title}
 
 
-_CALENDAR_MONTH_NUMBERS = {
-    "january": 1,
-    "enero": 1,
-    "february": 2,
-    "febrero": 2,
-    "march": 3,
-    "marzo": 3,
-    "april": 4,
-    "abril": 4,
-    "may": 5,
-    "mayo": 5,
-    "june": 6,
-    "junio": 6,
-    "july": 7,
-    "julio": 7,
-    "august": 8,
-    "agosto": 8,
-    "september": 9,
-    "septiembre": 9,
-    "october": 10,
-    "octubre": 10,
-    "november": 11,
-    "noviembre": 11,
-    "december": 12,
-    "diciembre": 12,
-}
+def _local_civil_utc(naive: datetime, local_zone: Any) -> datetime | None:
+    """One unambiguous UTC instant for a local wall-clock time, or None across a DST fold or gap."""
+
+    fold_zero = naive.replace(tzinfo=local_zone, fold=0).astimezone(timezone.utc)
+    fold_one = naive.replace(tzinfo=local_zone, fold=1).astimezone(timezone.utc)
+    if fold_zero != fold_one or fold_zero.astimezone(local_zone).replace(tzinfo=None) != naive:
+        return None
+    return fold_zero.replace(microsecond=0)
+
+
+def _local_now(now_utc: datetime | None) -> datetime:
+    if now_utc is None:
+        return datetime.now().astimezone()
+    if now_utc.tzinfo is None:
+        raise ValueError("now_utc must carry timezone authority")
+    return now_utc.astimezone(now_utc.tzinfo)
 
 
 def _explicit_calendar_range_arguments(
@@ -4778,133 +4775,72 @@ def _explicit_calendar_range_arguments(
     *,
     now_utc: datetime | None = None,
 ) -> dict[str, object] | None:
-    """Materialize one closed relative calendar window in local civil time."""
+    """The window of an agenda read in local civil time (semantic.temporal.agenda_window), as UTC."""
 
-    folded = effect_intent._fold(evidence)
-    patterns = (
-        (
-            "after_work_today",
-            r"\b(?:after work today|today after work|"
-            r"despues del trabajo hoy|hoy despues del trabajo)\b",
-        ),
-        ("tonight", r"\b(?:esta noche|tonight)\b"),
-        (
-            "new_year_day",
-            r"\b(?:ano nuevo|dia de ano nuevo|new year's day|new year day)\b",
-        ),
-        ("today", r"\b(?:hoy|today)\b"),
-        ("tomorrow", r"\b(?:manana|maniana|tomorrow)\b"),
-        ("next_weekend", r"\b(?:el\s+)?proximo fin de semana\b|\bnext weekend\b"),
-        ("this_weekend", r"\beste fin de semana\b|\bthis weekend\b"),
-        ("next_week", r"\b(?:la\s+)?proxima semana\b|\bnext week\b"),
-        ("this_week", r"\besta semana\b|\bthis week\b"),
-        ("next_month", r"\b(?:el\s+)?proximo mes\b|\bnext month\b"),
-        ("this_month", r"\beste mes\b|\bthis month\b"),
-    )
-    windows = {name for name, pattern in patterns if re.search(pattern, folded)}
-    absolute_range = effect_intent._absolute_calendar_range_parts(folded)
-    if "after_work_today" in windows:
-        windows.discard("today")
-    if absolute_range is None and len(windows) != 1:
-        return None
-
-    if now_utc is None:
-        local_now = datetime.now().astimezone()
-    else:
-        if now_utc.tzinfo is None:
-            raise ValueError("now_utc must carry timezone authority")
-        local_now = now_utc.astimezone(now_utc.tzinfo)
-    today = local_now.date()
-    window = next(iter(windows)) if windows else ""
-    start_hour = 0
-    if absolute_range is not None:
-        start_month_name, start_day_name, end_month_name, end_day_name = absolute_range
-        start_month = _CALENDAR_MONTH_NUMBERS.get(start_month_name)
-        end_month = _CALENDAR_MONTH_NUMBERS.get(end_month_name)
-
-        def calendar_day(value: str) -> int | None:
-            if value.isdigit():
-                parsed = int(value)
-            else:
-                parsed = effect_intent._PERCENTAGE_WORD_VALUES.get(value)
-            return parsed if parsed is not None and 1 <= parsed <= 31 else None
-
-        start_day = calendar_day(start_day_name)
-        end_day = calendar_day(end_day_name)
-        if (
-            start_month is None
-            or end_month is None
-            or start_day is None
-            or end_day is None
-        ):
-            return None
-        try:
-            start_date = date(today.year, start_month, start_day)
-            end_year = today.year + int((end_month, end_day) < (start_month, start_day))
-            # End is exclusive at the provider boundary; include the spoken
-            # final civil day by advancing one date before UTC conversion.
-            end_date = date(end_year, end_month, end_day) + timedelta(days=1)
-        except ValueError:
-            return None
-    elif window == "after_work_today":
-        start_date, end_date = today, today + timedelta(days=1)
-        start_hour = 17
-    elif window == "tonight":
-        start_date, end_date = today, today + timedelta(days=1)
-        start_hour = 18
-    elif window == "today":
-        start_date, end_date = today, today + timedelta(days=1)
-    elif window == "tomorrow":
-        start_date = today + timedelta(days=1)
-        end_date = start_date + timedelta(days=1)
-    elif window in {"this_week", "next_week"}:
-        monday = today - timedelta(days=today.weekday())
-        if window == "next_week":
-            monday += timedelta(days=7)
-        start_date, end_date = monday, monday + timedelta(days=7)
-    elif window in {"this_weekend", "next_weekend"}:
-        saturday = (
-            today - timedelta(days=1)
-            if today.weekday() == 6
-            else today + timedelta(days=(5 - today.weekday()) % 7)
-        )
-        if window == "next_weekend":
-            saturday += timedelta(days=7)
-        start_date, end_date = saturday, saturday + timedelta(days=2)
-    elif window == "new_year_day":
-        start_date = date(today.year, 1, 1)
-        if start_date < today:
-            start_date = date(today.year + 1, 1, 1)
-        end_date = start_date + timedelta(days=1)
-    else:
-        month_offset = 1 if window == "next_month" else 0
-        year = today.year + (today.month + month_offset - 1) // 12
-        month = (today.month + month_offset - 1) % 12 + 1
-        start_date = today.replace(year=year, month=month, day=1)
-        next_year = year + month // 12
-        next_month = month % 12 + 1
-        end_date = start_date.replace(year=next_year, month=next_month, day=1)
-
+    local_now = _local_now(now_utc)
     local_zone = local_now.tzinfo
-    if local_zone is None:
+    naive_now = local_now.replace(tzinfo=None, microsecond=0)
+    window = agenda_window(effect_intent._fold(evidence), naive_now)
+    if window is None or local_zone is None:
         return None
-
-    def local_civil_utc(local_date: date, hour: int = 0) -> datetime | None:
-        naive = datetime.combine(local_date, datetime_time(hour=hour))
-        fold_zero = naive.replace(tzinfo=local_zone, fold=0).astimezone(timezone.utc)
-        fold_one = naive.replace(tzinfo=local_zone, fold=1).astimezone(timezone.utc)
-        if (
-            fold_zero != fold_one
-            or fold_zero.astimezone(local_zone).replace(tzinfo=None) != naive
-        ):
-            return None
-        return fold_zero.replace(microsecond=0)
-
-    start_utc = local_civil_utc(start_date, start_hour)
-    end_utc = local_civil_utc(end_date)
+    start_utc = _local_civil_utc(window[0], local_zone)
+    end_utc = _local_civil_utc(window[1], local_zone)
     if start_utc is None or end_utc is None or end_utc <= start_utc:
         return None
     return {
+        "startUtc": start_utc.isoformat().replace("+00:00", "Z"),
+        "endUtc": end_utc.isoformat().replace("+00:00", "Z"),
+    }
+
+
+# A start said with no end and no duration: the event lasts an hour (uso real 2026-09-23 «añade una
+# reunión con Tom a mi calendario para las nueve de la mañana» was asked how long it would last).
+_DEFAULT_EVENT_MINUTES = 60
+
+
+def _clock_literal(clock: SpokenClock) -> str:
+    """One resolved clock written so the due reader reads it back unchanged («a las 9:00 a. m.»)."""
+
+    return f"a las {clock.hour % 12 or 12}:{clock.minute:02d} {'a. m.' if clock.hour < 12 else 'p. m.'}"
+
+
+def _explicit_calendar_event_arguments(
+    evidence: str,
+    *,
+    now_utc: datetime | None = None,
+) -> dict[str, object] | None:
+    """Title, start and end of one event put on the agenda, as said (semantic.notes.agenda_event_request):
+    a whole day for a marked date or span, otherwise the start said and the end said, the duration said
+    or an hour. None when the moment has passed or cannot be one instant."""
+
+    event = agenda_event_request(evidence)
+    if event is None or event.missing:
+        return None
+    local_now = _local_now(now_utc)
+    folded = effect_intent._fold(evidence)
+    if event.whole_day:
+        window = spoken_window(folded, local_now.replace(tzinfo=None, microsecond=0))
+        if window is None or local_now.tzinfo is None:
+            return None
+        start_utc = _local_civil_utc(window[0], local_now.tzinfo)
+        end_utc = _local_civil_utc(window[1], local_now.tzinfo)
+    else:
+        timing = event.timing
+        assert timing.start is not None
+        start_text = _canonical_due_utc(_clock_literal(timing.start), folded, now_utc=now_utc)
+        start_utc = datetime.fromisoformat(start_text.replace("Z", "+00:00")) if start_text else None
+        end_utc = None
+        if start_utc is not None:
+            if timing.end is not None and timing.end.resolved:
+                local_start = start_utc.astimezone(local_now.tzinfo)
+                local_end = local_start.replace(hour=timing.end.hour, minute=timing.end.minute)
+                end_utc = _local_civil_utc(local_end.replace(tzinfo=None), local_now.tzinfo)
+            elif timing.end is None:
+                end_utc = start_utc + timedelta(minutes=timing.minutes or _DEFAULT_EVENT_MINUTES)
+    if start_utc is None or end_utc is None or end_utc <= start_utc:
+        return None
+    return {
+        "title": event.title,
         "startUtc": start_utc.isoformat().replace("+00:00", "Z"),
         "endUtc": end_utc.isoformat().replace("+00:00", "Z"),
     }
@@ -5493,6 +5429,9 @@ def _explicit_arguments_from_evidence(
     if operation == "calendar.event.list":
         return _explicit_calendar_range_arguments(evidence)
 
+    if operation == "calendar.event.create":
+        return _explicit_calendar_event_arguments(evidence)
+
     if operation == "media.control":
         return _explicit_media_control_arguments(evidence)
 
@@ -5810,6 +5749,9 @@ def _explicit_arguments_from_evidence(
         relative_reminder = _explicit_relative_reminder_arguments(evidence)
         if relative_reminder is not None:
             return relative_reminder
+        stated = stated_event_reminder(evidence)
+        if stated is not None:
+            return {"dueUtc": stated[1], "title": stated[0]}
         reminder = re.search(
             (
                 r"\b(?:recordatorio|reminder)\s+"
@@ -5971,6 +5913,16 @@ def _explicit_arguments_from_evidence(
         return arguments
 
     if operation == "notification.schedule":
+        repeated = agenda_event_request(evidence)
+        if repeated is not None and repeated.repeat and not repeated.missing and repeated.timing.start is not None:
+            # Uso real 2026-09-23 «poner el almuerzo todos los días a las doce y media»: the event
+            # repeated daily is a repeating reminder of what was named, at the time said.
+            return {
+                "dueUtc": _clock_literal(repeated.timing.start),
+                "kind": "reminder",
+                "recurrence": repeated.repeat,
+                "title": repeated.title,
+            }
         return _explicit_notification_schedule_arguments(evidence)
 
     if operation == "audio.microphone.mute":
@@ -6406,6 +6358,11 @@ def _ground_explicit_arguments(
             )
     if explicit is None:
         return None
+    if operation == "notification.schedule" and "recurrence" in explicit:
+        # The repeating-event reader owns kind and recurrence (enum values the person need not
+        # spell); the title is the person's words and the moment is read back by the clock reader.
+        normalized = _normalize_grounded_operation_arguments(operation, explicit, evidence)
+        return normalized if normalized is not None and validate_json_schema_instance(normalized, schema) else None
     if (
         operation in {"filesystem.create.directory", "filesystem.write.text", "file.compress", "file.open"}
         and effect_intent.folder_txt_zip_open_mission(evidence) is not None
@@ -6498,6 +6455,9 @@ def _ground_explicit_arguments(
         "browser.control",
         "browser.navigate",
         "browser.navigate.named",
+        # Uso real 2026-09-23: the agenda readers own the UTC instants of a
+        # window or an event (semantic.temporal); the title is the person's.
+        "calendar.event.create",
         "calendar.event.list",
         "client.channel.locate",
         "message.draft",
@@ -6763,54 +6723,11 @@ def _canonical_due_utc(
         if now_utc is None
         else now.astimezone(now_utc.tzinfo)
     )
-    month_numbers = {
-        "enero": 1,
-        "january": 1,
-        "febrero": 2,
-        "february": 2,
-        "marzo": 3,
-        "march": 3,
-        "abril": 4,
-        "april": 4,
-        "mayo": 5,
-        "may": 5,
-        "junio": 6,
-        "june": 6,
-        "julio": 7,
-        "july": 7,
-        "agosto": 8,
-        "august": 8,
-        "septiembre": 9,
-        "september": 9,
-        "octubre": 10,
-        "october": 10,
-        "noviembre": 11,
-        "november": 11,
-        "diciembre": 12,
-        "december": 12,
-    }
-    month_names = "|".join(month_numbers)
-    month_date = re.search(
-        (
-            rf"\b(?:(?P<month_first>{month_names})\s+"
-            r"(?P<day_after>\d{1,2})(?:st|nd|rd|th)?|"
-            r"(?P<day_before>\d{1,2})(?:st|nd|rd|th)?\s+"
-            rf"(?:de\s+)?(?P<month_after>{month_names}))"
-            r"(?:,?\s+(?P<year>\d{4}))?\b"
-        ),
-        clock_source,
-        re.IGNORECASE,
-    )
-    day_of_month = None
-    if month_date is None:
-        day_of_month = re.search(
-            r"\b(?:on\s+(?:the\s+)?|el\s+)"
-            r"(?P<day>\d{1,2})(?:st|nd|rd|th)?\b",
-            clock_source,
-            re.IGNORECASE,
-        )
+    # One date reader for every request (semantic.temporal.spoken_date): «el 4 de julio»,
+    # «el cuatro de febrero», «march seven», «el veintiuno».
+    said_date = spoken_date(clock_source)
     spoken_day = effect_intent.spoken_day(clock_source, local_now.weekday())
-    if (month_date is not None or day_of_month is not None) and spoken_day != (0, 1):
+    if said_date is not None and spoken_day != (0, 1):
         # A date and another day word («mañana», «el lunes») disagree on the day.
         return None
 
@@ -6833,43 +6750,21 @@ def _canonical_due_utc(
             return None
         return fold_zero.replace(microsecond=0)
 
-    explicit_dates: list[date] = []
-    if month_date is not None:
-        month_name = month_date.group("month_first") or month_date.group("month_after")
-        day_text = month_date.group("day_after") or month_date.group("day_before")
-        month = month_numbers[month_name.casefold()]
-        day = int(day_text)
-        year_text = month_date.group("year")
-        years = (
-            (int(year_text),)
-            if year_text is not None
-            else (local_now.year, local_now.year + 1)
-        )
-        for year in years:
-            try:
-                explicit_dates.append(date(year, month, day))
-            except ValueError:
-                continue
-    elif day_of_month is not None:
-        day = int(day_of_month.group("day"))
-        year = local_now.year
-        month = local_now.month
-        for _ in range(24):
-            try:
-                explicit_dates.append(date(year, month, day))
-            except ValueError:
-                pass
-            month += 1
-            if month == 13:
-                month = 1
-                year += 1
-
-    if month_date is not None or day_of_month is not None:
-        for local_date in explicit_dates:
-            due = materialize_date(local_date)
-            if due is not None and due > now + timedelta(seconds=5):
-                return due.isoformat().replace("+00:00", "Z")
-        return None
+    if said_date is not None:
+        first = said_date.on_or_after(local_now.date())
+        due = materialize_date(first) if first is not None else None
+        if (
+            first is not None
+            and (due is None or due <= now + timedelta(seconds=5))
+            and said_date.year is None
+            and not said_date.this_year
+        ):
+            # A date said without its year is the next one whose moment is still ahead.
+            later = said_date.on_or_after(first + timedelta(days=1))
+            due = materialize_date(later) if later is not None else None
+        if due is None or due <= now + timedelta(seconds=5):
+            return None
+        return due.isoformat().replace("+00:00", "Z")
 
     if spoken_day is None:
         # «esta semana», «el lunes y el martes»: no one date holds the moment.
@@ -7571,7 +7466,16 @@ def _decide_turn_result(
         )
         else _unresolved_input_kind(objective, application_names)
     )
-    if unresolved_input_kind == "overheard_speech" and _conversation_in_progress(history):
+    if unresolved_input_kind == "overheard_speech" and (
+        _conversation_in_progress(history)
+        # Uso real 2026-09-23 «por favor añade práctica el cuatro de febrero en el
+        # parque del retiro a las dos de la tarde», «dame una notificación de
+        # recordatorio para la reunión de mañana a las diez a. m.»: fifteen words
+        # with no listed order verb at a clause start, yet a request the readers
+        # prove. What they read is addressed to BAXY, not overheard.
+        or resolve_explicit_effects(objective, authenticated_operations, application_names, game_catalog)
+        is not None
+    ):
         # Fase 3.5 (owner 2026-09-21, turns 156–167, 208): a long message right
         # after BAXY spoke is the person talking to BAXY, not a conversation the
         # microphone overheard (DIALOGUE1513's rows all arrive with no dialogue).
