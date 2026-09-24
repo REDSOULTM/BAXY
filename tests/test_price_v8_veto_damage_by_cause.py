@@ -132,9 +132,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 Fase 3.5 uso real 2026-09-23: guardia público/propio, vetos por familia, alarmas en hora local.
 # C03 Fase 3.5 uso real 2026-09-23 (familia hechos/efectos): hora de otro lugar, identidad, escritorio, temporizador, límite llano, clima, edad y cargos.
 # C03 Fase 3.5 uso real 2026-09-23: integración de los frentes composición, hechos, preguntas, niveles y latencia.
+# C03 Fase 3.5 uso real 2026-09-23: lo que no sabe lo busca; evidencia de idioma de sustantivos del PC.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "c8afaeaf3f9e78abf8df4846b09ad8cd5f085a7be50588d939869618a14f6ae3"
+        "acc1e9631a30a0de51d6cd341b13645a398357d3a0413990416b7cf96301b32d"
     ),
     "src/baxy_mind/llm.py": (
         "e278e6bc0a85f85851e1243e3112b81fd65b8030d9c17ca38cb042a5221dde82"

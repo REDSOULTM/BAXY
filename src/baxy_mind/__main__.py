@@ -2657,6 +2657,15 @@ _NOT_A_PUBLIC_LOOKUP = re.compile(
 )
 
 
+# A reply that says BAXY does not know or cannot tell (folded text).
+_ADMITS_NOT_KNOWING = re.compile(
+    r"\bno\s+(?:lo\s+|la\s+)?(?:conozco|se|tengo\s+(?:informacion|datos|acceso|idea))\b|"
+    r"\bdesconozco\b|\bno\s+estoy\s+(?:segur[oa]|familiarizad[oa])\b|"
+    r"\bi\s+(?:don'?t|do\s+not)\s+(?:know|have\s+(?:information|access|any\s+information|data))\b|"
+    r"\bi'?m\s+not\s+(?:sure|familiar)\b|\bi\s+am\s+not\s+(?:sure|familiar)\b|\bi\s+have\s+no\s+information\b"
+)
+
+
 def _names_own_data(objective: str) -> bool:
     return _NOT_A_PUBLIC_LOOKUP.search(effect_intent._fold(objective)) is not None
 
@@ -8570,6 +8579,28 @@ def _decide_turn_result(
             raise PlannerContractError(
                 "no se pudo preparar una respuesta conversacional"
             )
+        # Tanda 1 2026-09-23 «¿Conoces el lenguaje de programación Monkey C?» →
+        # «No, no conozco…»: what BAXY says he does not know about the public
+        # world is looked up (00_IDENTIDAD: «si no sabe algo, lo busca»); never
+        # the person's own things, BAXY himself or what he can do.
+        if (
+            presentation_conversation_kind in {"knowledge", "followup"}
+            and non_target_language is None
+            and _ADMITS_NOT_KNOWING.search(effect_intent._fold(reply_text)) is not None
+            and not read_request(objective).intents
+            & {INTENT_IDENTITY, INTENT_CAPABILITY, INTENT_REFUSE}
+            and "web.search" in available_operations
+            and planner_catalog.get("web.search") is not None
+            and not _names_own_data(objective)
+        ):
+            shortlist = _shortlist_with_required_effects(shortlist, ("web.search",), planner_catalog)
+            decision = validate_turn_decision(
+                _public_lookup_decision(decision.get("response_language")),
+                {tool.name for tool in shortlist},
+            )
+            intent_operations = ["web.search"]
+            turn_audit["stages"].append(_turn_audit_stage("unknown_looked_up", decision))
+            reply_text = ""
         # Una explicación que sólo devuelve otra pregunta no contesta nada:
         # «para qué lo necesita el PC» salió como «¿Para qué necesita el PC
         # para ejecutar tareas específicas?» (seguimiento-13/020), y «cuáles

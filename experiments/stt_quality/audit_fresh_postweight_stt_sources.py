@@ -98,8 +98,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # C03 Fase 3.5 uso real 2026-09-23: guardia público/propio, vetos por familia, alarmas en hora local.
 # C03 Fase 3.5 uso real 2026-09-23 (familia hechos/efectos): hora de otro lugar, identidad, escritorio, temporizador, límite llano, clima, edad y cargos.
 # C03 Fase 3.5 uso real 2026-09-23: integración de los frentes composición, hechos, preguntas, niveles y latencia.
+# C03 Fase 3.5 uso real 2026-09-23: lo que no sabe lo busca; evidencia de idioma de sustantivos del PC.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "d336ad7610d12af6d0f50332857fb1ab3125c8aef0cd0d1d95921874a1b7d332"
+    "963866ab5ba4149c9d1bf00d049bc093d746f2ffb9df25a4eb53a8df9b2e453a"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"

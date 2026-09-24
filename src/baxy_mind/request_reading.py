@@ -64,8 +64,13 @@ _ES_WORDS = frozenset(
     tambien tanto tardes tarea tareas terminada terminado tiene tienen tienes toda todas todo
     todos trabajo tras tus un una unas uno unos usted ustedes vamos varias
     varios vez volumen vosotros voy y
+    brillo pantalla cancion canciones musica alarma alarmas recordatorio recordatorios
+    carpeta carpetas archivo archivos clima noticias ventana ventanas bateria temporizador
+    calculadora escritorio descargas pantallazo baja bajale subele bajito sonido
     """.split()
 )
+# Tanda 1 2026-09-23 «Brillo 20%» was answered in English after an English turn:
+# the everyday Spanish nouns of this PC are evidence too.
 
 _EN_WORDS = frozenset(
     """
