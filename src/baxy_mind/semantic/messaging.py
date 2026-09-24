@@ -355,7 +355,10 @@ _OTHER_OWN_OBJECT = (
     r"\b(?:notas?|notes?|calendari[oa]s?|calendars?|agenda|reuniones|meetings?|"
     r"recordatorios?|reminders?|tareas?|tasks?|listas?|lists?|archivos?|files?|"
     r"documentos?|documents?|carpetas?|folders?|portapapeles|clipboard|pantalla|screen|"
-    r"whatsapp|discord|telefono|celular|movil|phone|smartphone|tablet|reloj|watch)\b"
+    r"whatsapp|discord|telefono|celular|movil|phone|smartphone|tablet|reloj|watch|"
+    # r6-composition-05 «read the newest mail, overdue notices, and tomorrow's
+    # appointments»: the other things read in the same breath are their own reads.
+    r"avisos?|notices?|notificaciones\s+vencidas|citas?|appointments?|eventos?|events?|alarmas?|alarms?)\b"
 )
 
 

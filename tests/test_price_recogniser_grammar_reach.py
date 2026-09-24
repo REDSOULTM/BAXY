@@ -54,8 +54,10 @@ def test_cut_b_cannot_price_the_domain_gate() -> None:
     gate = cut_b["domain_gate"]
     # Re-measured 2026-09-20 on the C03 domain gate (plan post-goal, Fase 1):
     # 162/158 → 152/148; the four rows the veto actually reaches are unchanged.
-    assert gate["would_veto_the_expected_operation"] == 152
-    assert gate["rescued_because_the_recogniser_resolved_first"] == 148
+    # Re-measured 2026-09-24 (uso real, family gates by domain lexicon instead of
+    # reader regexes): 152/148 → 146/142; still exactly four rows reach the turn.
+    assert gate["would_veto_the_expected_operation"] == 146
+    assert gate["rescued_because_the_recogniser_resolved_first"] == 142
     assert gate["veto_actually_reaches_the_turn"] == 4
 
 

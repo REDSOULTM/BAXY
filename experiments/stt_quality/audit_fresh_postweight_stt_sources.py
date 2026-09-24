@@ -104,8 +104,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # C03 Fase 3.5 uso real 2026-09-24: integración de la tercera ola (correo, medios, misc, agenda).
 # C03 Fase 3.5 uso real 2026-09-24: integración de la cuarta ola (mecanismos de la tanda 3).
 # C03 Fase 3.5 uso real 2026-09-24: integración de la quinta ola (tanda 4).
+# C03 Fase 3.5 uso real 2026-09-24: correo compuesto y re-medición del veto.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "889400cb76c7af5d25e871e8c9c4ba6d70b5b7aa89266ef2551e27a011a291cf"
+    "d61f4b1900c579c5f0cbd506db68862a42ce52b5374ba315e2d698881dc4f560"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
