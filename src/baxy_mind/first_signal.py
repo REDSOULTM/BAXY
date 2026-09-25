@@ -226,7 +226,11 @@ class PendingTurnSignal:
     def notice_due(self) -> bool:
         """Wait until the notice may start: True if the request is still pending then."""
 
-        return not self._closed.wait(max(0.0, self._notice_at - time.monotonic()))
+        # A timed wait may wake a clock tick early on Windows: wait out the rest.
+        while (remaining := self._notice_at - time.monotonic()) > 0.0:
+            if self._closed.wait(remaining):
+                return False
+        return not self._closed.is_set()
 
     def on_close(self, callback: Callable[[], Any]) -> None:
         with self._lock:
