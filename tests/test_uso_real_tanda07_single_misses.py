@@ -19,6 +19,8 @@
   any person or form, a few words before what is said next, is the same mode, and a negated one is not asked.
 - «consígueme un billete de tren a madrid para el próximo jueves…» → a web search and ⚠: getting a ticket, a seat or
   a flight is buying it, the same known limit as a product paid with a card; it is never looked up.
+- 6c «i would like to know the timezone for britain» → a web search: the zone of a place is named with «for/of/de»
+  after the zone's noun; it is the clock of that place, and the zone asked is given as its offset.
 
 The phrasings below are not the tandas': they are paraphrases (es/en/spanglish) the fixes do not name, with negative
 controls.
@@ -31,7 +33,8 @@ import pytest
 from baxy_mind import llm
 from baxy_mind.semantic import reading, web
 from baxy_mind.semantic.patterns import echo_mode_request, known_unsupported_effect_request
-from baxy_mind.semantic.temporal import countdown_target
+from baxy_mind.semantic.grammar import _fold
+from baxy_mind.semantic.temporal import clock_elsewhere, countdown_target
 
 _violates = llm._shaped_conversation_answer_violates_contract
 
@@ -363,3 +366,42 @@ def test_getting_a_ticket_or_a_paid_product_is_a_known_limit_not_a_lookup(text: 
 )
 def test_asking_about_tickets_or_times_is_not_a_purchase(text: str) -> None:
     assert not known_unsupported_effect_request(text, ("web.search", "app.open"))
+
+
+# ------------------------------------------------------------------ the zone of a place is read on the clock
+
+
+@pytest.mark.parametrize(
+    ("text", "place"),
+    [
+        ("cuál es la zona horaria de Japón", "japon"),
+        ("what is the time zone of Australia", "australia"),
+        ("dime el huso horario de chile porfa", "chile"),
+        ("which timezone for new zealand", "new zealand"),
+        ("zona horaria del peru?", "peru"),
+    ],
+)
+def test_the_zone_of_a_place_is_the_clock_elsewhere(text: str, place: str) -> None:
+    asked = clock_elsewhere(_fold(text))
+    assert asked is not None and asked.place == place and asked.zone
+    got = reading.read(text, available_operations=("system.time", "web.search"))
+    assert got.effects is not None and got.effects.operations == ("system.time",)
+
+
+@pytest.mark.parametrize(
+    "text", ["cuál es mi zona horaria", "change the time zone for this pc", "zona horaria de mi pc", "qué es un huso horario"],
+)
+def test_this_pcs_zone_or_the_word_itself_is_no_other_place(text: str) -> None:
+    assert clock_elsewhere(_fold(text)) is None
+
+
+def test_the_zone_asked_is_given_as_its_offset_and_the_time_alone_is_not() -> None:
+    observed = {
+        "version": 1, "utc": "2026-09-25T03:35:00Z", "localUtcOffsetMinutes": -180,
+        "place": {"name": "Tokio", "country": "Japón", "timeZone": "Asia/Tokyo", "utcOffsetMinutes": 540,
+                  "authority": "named_place_geocoded"},
+    }
+    zone = llm._place_clock_facts(observed, "what's the time zone of tokyo", "en")
+    assert zone is not None and zone["zone"] == "UTC+09:00 (Asia/Tokyo)" and zone["clock"] == "12:35"
+    clock = llm._place_clock_facts(observed, "qué hora es en tokio", "es")
+    assert clock is not None and "zone" not in clock

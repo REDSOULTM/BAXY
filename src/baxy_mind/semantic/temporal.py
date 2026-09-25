@@ -345,6 +345,9 @@ _NAMED_ZONES = (
 _PLACE_LEAD = r"\b(?:en|in|at|over\s+in)\s+"
 _CONVERSION_LEAD = r"|\b(?:a|al|to|into|para|pa)\s+"
 _DIFFERENCE_LEAD = r"|\b(?:con|with|is|esta|va|van|queda)\s+(?:adelantad\w+\s+|atrasad\w+\s+)?"
+# Tanda 6c «i would like to know the timezone for britain» was searched on the web: the zone of a place is named
+# with «for/of/de» after the zone's noun as much as with «in/en».
+_ZONE_OF_LEAD = r"|\b(?:time\s*zones?|timezones?|zona\s+horaria|huso\s+horario)\s+(?:for|of|de|del|para)\s+"
 # A clock of another place that is refused, remembered, reported, written or
 # redefined is not asked now.
 _CLOCK_ELSEWHERE_NOT_ASKED = (
@@ -394,13 +397,15 @@ class ClockElsewhere:
     (the place as said, or the IANA zone of a named zone); ``said`` is how the
     person named it. ``clock`` is a time to convert, when one was said, and
     ``clock_is_there`` says that time is the other place's («si en Madrid son las
-    9, qué hora es aquí»), not this PC's. ``difference`` asks the hours apart."""
+    9, qué hora es aquí»), not this PC's. ``difference`` asks the hours apart; ``zone`` asks
+    the zone itself («the timezone for britain»)."""
 
     place: str
     said: str
     clock: SpokenClock | None
     clock_is_there: bool
     difference: bool
+    zone: bool = False
 
 
 def _named_zone(folded: str) -> tuple[str, str] | None:
@@ -500,6 +505,7 @@ def clock_elsewhere(folded: str) -> ClockElsewhere | None:
     # «how many hours ahead is Tokyo», «¿cuántas horas va adelantada Lima?».
     leads = (
         _PLACE_LEAD
+        + _ZONE_OF_LEAD
         + (_CONVERSION_LEAD if clock is not None else "")
         + (_DIFFERENCE_LEAD if difference else "")
     )
@@ -534,7 +540,8 @@ def clock_elsewhere(folded: str) -> ClockElsewhere | None:
     place, position = places[0]
     here = re.search(_HERE_TARGET, rest)
     clock_is_there = clock is not None and here is not None and here.start() > position
-    return ClockElsewhere(place, place, clock, clock_is_there, difference)
+    zone_asked = _has(rest, r"\b(?:time\s*zones?|timezones?|zona\s+horaria|huso\s+horario)\b")
+    return ClockElsewhere(place, place, clock, clock_is_there, difference, zone_asked)
 
 
 _WEEKDAYS = (

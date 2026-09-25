@@ -5385,6 +5385,13 @@ def _place_clock_facts(observed: dict | None, user_text: str, language: str) -> 
             else "la misma hora que aquí" if there == here
             else f"{amount} {'más' if there > here else 'menos'} que aquí"
         )
+    if asked is not None and asked.zone:
+        # Tanda 6c «the timezone for britain»: the zone asked is its offset now (and its name), copied, never
+        # computed by the narrator.
+        hours, minutes = divmod(abs(there), 60)
+        facts["zone"] = f"UTC{'+' if there >= 0 else '-'}{hours:02d}:{minutes:02d}" + (
+            f" ({place['timeZone']})" if isinstance(place.get("timeZone"), str) and place["timeZone"].strip() else ""
+        )
     return facts
 
 
