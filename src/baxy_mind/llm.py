@@ -21404,7 +21404,7 @@ class LlmRuntime:
         if repair_machine_actor:
             retry_payload = _machine_actor_repair_payload(payload, text, gguf)
             sent_instructions.append(_MACHINE_ACTOR_FEEDBACK)
-        def last_resort(response: object) -> str:
+        def last_resort(response: object, *, drafts_rejected: bool = False) -> str:
             # Los tres candidatos cayeron. Una pregunta ambigua todavía se puede
             # hacer; la lista de páginas de una búsqueda ya no es un final (regla
             # del dueño 2026-09-24: la búsqueda no se ve), así que sin ella el
@@ -21416,10 +21416,10 @@ class LlmRuntime:
                     response, "", True,
                 )
                 return ambiguous_question
-            if isinstance(situation, dict) and situation.get("operation") == "web.search":
+            if drafts_rejected and isinstance(situation, dict) and situation.get("operation") == "web.search":
                 # Verification 2026-09-25 (held-out «averiguá qué dijo la crítica»): three drafts copied the page's
                 # tagline and the turn ended in ⚠. By the owner's rule, what no draft can say from the pages in
-                # BAXY's own voice was not found.
+                # BAXY's own voice was not found. A model that ran out of time proved nothing: that still raises.
                 not_found = "I couldn't find it." if response_language == "en" else "No lo encontré."
                 if publishable(not_found):
                     record_stage("not_found_fallback", not_found, not_found, response, "", True)
@@ -21513,4 +21513,4 @@ class LlmRuntime:
             required_actions=required_actions,
             required_words=required_words,
         )
-        return last_resort(third)
+        return last_resort(third, drafts_rejected=True)
