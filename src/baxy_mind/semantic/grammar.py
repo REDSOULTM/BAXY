@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import functools
 import re
 from .normalize import fold
 from ..request_reading import spoken_language
@@ -131,8 +132,16 @@ def _without_leading_duration_preface(folded: str) -> str:
 _fold = fold  # the single normalization (semantic.normalize)
 
 
+@functools.lru_cache(maxsize=2048)
+def _compiled(pattern: str) -> re.Pattern[str]:
+    return re.compile(pattern, re.IGNORECASE)
+
+
 def _match(text: str, pattern: str) -> re.Match[str] | None:
-    return re.search(pattern, text, re.IGNORECASE)
+    # Tanda-07 (uso real 2026-09-25): one turn reads ~770 distinct patterns and the re module keeps 512, so
+    # every turn compiled ~600 of them again — 95 % of a deterministic decision (0.3–1.9 s) was compiling.
+    # The readers' patterns are source text: each is compiled once and kept (bounded) while the mind lives.
+    return _compiled(pattern).search(text)
 
 
 def _has(text: str, pattern: str) -> bool:
@@ -576,7 +585,8 @@ def _head_forms(head: str) -> tuple[str, ...]:
 
 
 def _head_is(head: str, pattern: str) -> bool:
-    return any(re.fullmatch(pattern, form, re.IGNORECASE) is not None for form in _head_forms(head))
+    compiled = _compiled(pattern)
+    return any(compiled.fullmatch(form) is not None for form in _head_forms(head))
 
 
 # Uso real 2026-09-24 (MASSIVE es): «envíeme un recordatorio…», «ponga una alarma…», «agregue reuniones…»,
