@@ -306,6 +306,14 @@ def dependency(text: str, slot: DialogueSlot) -> str | None:
     return None
 
 
+# Tanda 9 «ok y tomorow va a hacer más calor?» → «y mañana va a hacer más calor?» and «is it humid?» → «… today»
+# after «hoy» were rejected: a day said in the other language (or typed with its stem kept) is the same word. Stems.
+_SAME_DAY = (
+    ("hoy", "toda"), ("mana", "tomo"), ("ayer", "yest"), ("lune", "mond"), ("mart", "tues"), ("mier", "wedn"),
+    ("juev", "thur"), ("vier", "frid"), ("saba", "satu"), ("domi", "sund"), ("sema", "week"), ("noch", "toni"),
+)
+
+
 def rewrite_stays_in_context(
     rewrite: str, text: str, slot: DialogueSlot, verified: list[tuple[str, str]] | None = None,
 ) -> bool:
@@ -323,6 +331,7 @@ def rewrite_stays_in_context(
     for source in (text, *(line for _, line in (*slot.context_lines(), *(verified or ())))):
         for word in _words(source):
             said.add(word[:4])
+    said |= {stem for pair in _SAME_DAY if said & set(pair) for stem in pair}
     meaningful = [word for word in _words(rewrite) if word not in _STOPWORDS]
     if not meaningful:
         return False
