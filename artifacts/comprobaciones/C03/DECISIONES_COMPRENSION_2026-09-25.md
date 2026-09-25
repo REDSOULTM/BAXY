@@ -64,3 +64,14 @@ F6). Revertir: medirlo todo cada vez.
 ## D9. FINAL sellado
 Elegido: FINAL se construye con los mismos scripts que imprimen sólo cifras; su texto no pasa por esta sesión; en git
 va sólo su SHA-256. Sus desacuerdos de auditoría los resuelve un subagente. Revertir: no aplica.
+
+## D10. Candidatos nuevos de F3 (pedido del dueño 2026-09-25 12:45)
+El dueño pidió añadir «Qwen 3.8 4B» y revisar modelos nuevos del mes. Qwen3.8 oficial no tiene variante pequeña (27B,
+Flash-Next 180B-A6B, 2,4T). Se añade la destilación comunitaria **empero-ai/Qwen3.8-4B-Distill** (Apache-2.0,
+arquitectura Qwen3.5-4B, sin cifras publicadas de herramientas ni de español): GGUF del autor
+`empero-ai/Qwen3.8-4B-Distill-GGUF@391fc7d1`, Q4_K_M (2 783 446 304 B, `dec96e8c…87c6790`) y Q5_K_M
+(3 161 425 184 B, `735cd00b…0c0892`), SHA-256 verificados, en `D:\BAXYRuntime\experiments\models\qwen38-4b-distill-391fc7d1\`.
+Ley 1: su arquitectura (DeltaNet híbrido) no reutiliza el prefijo del prompt en llama.cpp (#21831), que es el camino
+caliente de un decisor con prompt fijo largo; se mide, no se supone. Otros nuevos a considerar en F3: IBM Granite 4.2
+3B/8B (25-ago, Apache-2.0; 8B con RL agéntico) y el refresco de pesos de Gemma 4 E2B (15-jul, arreglos de tool calling).
+Descartados por tamaño: Qwen3.6-35B-A3B, Nex-N2.5-mini (35B-A3B), Qwen3.8-27B.
