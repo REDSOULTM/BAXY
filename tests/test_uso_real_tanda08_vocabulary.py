@@ -14,6 +14,9 @@ the readers already own are data added to that reader, in ``semantic/``; nothing
 - «¿Cómo estará the weather en el fin the semana de Memorial Day?» → the weather of «El Final» (Chiapas): the
   weekend with the English article the ear put for «de», a holiday named «X Day», and «de» after «día» («el día de
   la madre») are times, never a place. Owner: semantic/system._WEATHER_TIME_WORDS and _weather_location.
+- «¿qué día abriste los ojos por primera vez?» → looked up and answered about kittens: his birth said as an idiom
+  (opening his eyes, seeing the light, coming to life or online, first switched on) is a question about BAXY.
+  Owner: request_reading._SELF_FORMS.
 
 The phrasings below are paraphrases (es/en/spanglish, dialects, typos) the fixes do not name, with negative controls.
 """
@@ -26,6 +29,7 @@ from baxy_mind import __main__ as sidecar
 from baxy_mind.semantic import levels
 from baxy_mind.semantic.notes import list_entry_request
 from baxy_mind.semantic.reading import read
+from baxy_mind.request_reading import INTENT_IDENTITY, read_request
 from baxy_mind.semantic.system import _weather_location
 
 OPERATIONS = (
@@ -216,3 +220,41 @@ def test_a_holiday_or_a_weekend_is_no_place_for_the_weather(text: str) -> None:
 )
 def test_the_town_named_beside_the_holiday_is_still_the_place(text: str, place: str) -> None:
     assert _weather_location(text) == place
+
+
+# ------------------------------------------------------------------ his birth said as an idiom is about him
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "¿qué día abriste los ojos por primera vez?",
+        "cuando abriste los ojitos por primera vez baxy",
+        "¿cuándo viste la luz por primera vez?",
+        "¿cuándo llegaste al mundo?",
+        "¿cuándo cobraste vida?",
+        "¿qué día empezaste a existir?",
+        "¿cuándo te encendieron por primera vez?",
+        "when did you first open your eyes?",
+        "when did you come to life?",
+        "when did you first come online?",
+        "when were you first switched on?",
+    ],
+)
+def test_his_birth_said_as_an_idiom_is_a_question_about_him(text: str) -> None:
+    assert read_request(text).has(INTENT_IDENTITY)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "¿cuándo abriste Spotify?",
+        "¿cuándo abrió los ojos el bebé?",
+        "when did you open the file?",
+        "¿cuándo te encendieron el PC?",
+        "¿cuándo llegaste a casa?",
+        "dile a Ana: ¿cuándo abriste los ojos por primera vez?",
+    ],
+)
+def test_other_openings_and_arrivals_are_not_about_him(text: str) -> None:
+    assert not read_request(text).has(INTENT_IDENTITY)

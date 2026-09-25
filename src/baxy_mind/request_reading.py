@@ -359,6 +359,12 @@ _SELF_FORMS = tuple(
         r"physically))?\s*[?.!]*$|\b(?:are\s+you|you\s+are)\s+from\b|"
         r"\b(?:do\s+)?you\s+(?:live\b(?!\s+(?:stream|streaming|chat|captions?|translat\w*))|reside|come\s+from)|"
         r"\bwhere\s+do\s+you\s+(?:run|stay|exist)\b",
+        # Tanda 8 «¿qué día abriste los ojos por primera vez?» was looked up and answered about kittens: his birth
+        # said as an idiom (opening his eyes, seeing the light, coming to life or online, first switched on).
+        r"\b(?:abriste\s+(?:los|tus)\s+(?:ojos|ojitos)|viste\s+la\s+luz|llegaste\s+al\s+mundo|cobraste\s+vida|"
+        r"(?:empezaste|comenzaste)\s+a\s+existir|te\s+(?:encendieron|prendieron|activaron)\s+por\s+primera\s+vez)\b|"
+        r"\byou\s+(?:first\s+)?(?:open(?:ed)?\s+your\s+eyes|c[ao]me\s+(?:to\s+life|online|into\s+(?:being|existence)))\b|"
+        r"\bwere\s+you\s+(?:first\s+)?(?:switched|turned|powered)\s+on\b",
         # His age: «¿cuántos años tienes?», «how old are you», «¿desde cuándo existes?».
         r"\b(?:cuantos\s+anos|que\s+edad|how\s+old)\s+(?:tienes|tenes|eres|sos|are\s+you)\b|"
         r"\b(?:existes|existis)\b|\bdo\s+you\s+(?:really\s+|even\s+|actually\s+)?exist\b|"
