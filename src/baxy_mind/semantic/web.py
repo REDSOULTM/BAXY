@@ -88,6 +88,8 @@ _WEATHER_WORDS = (
     r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|llover|"
     # WEATHER2023 «¿hace frío afuera?»: the cold or the heat outside is the weather too.
     r"llovera|llovio|temperature|temperatura|frio|fria|calor|cold|hot|caluroso|calurosa|"
+    # Tanda 9 «is it humid?», «will it be hotter tomorrow?»: how the air feels, and its comparatives.
+    r"humid|muggy|hotter|colder|warmer|chilly|"
     # Uso real 2026-09-23 (MASSIVE weather_query): «necesitaré protector solar», «nieve», «viento».
     r"nieve|nevar|nevara|nevando|snow|snowing|viento|wind|windy|humedad|humidity|soleado|sunny|"
     r"cloudy|tormenta|storm|granizo|paraguas|umbrella|protector\s+solar|sunscreen|lloviendo|"
@@ -1322,12 +1324,18 @@ _ABOUT_THE_WORD_OR_A_FILE = (
 )
 
 
+_LEADING_CONNECTOR_OR_DAY = (
+    rf"^[¿¡\s]*(?:(?:(?:y|e|and|pero|but|ok|okay|entonces|so)\b|(?:(?:el|este|the|this)\s+)?{WEATHER_WHEN})[\s,]*)+"
+)
+
+
 def _live_weather_request(folded: str) -> bool:
     """The weather asked as a live read: named after an asking head, asked through what it calls for, or asked
     about a time to come. Shared by the live lookup and the weather query, so a sentence that is another lookup
-    and only mentions a weather word («actualización sobre el gorila copito de nieve») is not the weather."""
+    and only mentions a weather word («actualización sobre el gorila copito de nieve») is not the weather.
+    Tanda 9 «y mañana va a hacer más calor?»: a connector or the day said first is not the asking head."""
 
-    head = _request_head(folded)
+    head = _request_head(re.sub(_LEADING_CONNECTOR_OR_DAY, "", folded))
     vocative_weather = re.match(
         r"^(?:olly|bax[yi])\s+(?P<head>[a-z]+)\b",
         folded,

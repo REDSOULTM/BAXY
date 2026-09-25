@@ -29,6 +29,9 @@ One owner per rule:
    the message for the rewrite's check: «… mañana …» after «tomorow», «… today» after «hoy» were rejected. Into
    another language it is still a word the model brought (tanda 7's rule stands). Owner:
    semantic/dialogue.rewrite_stays_in_context (_SAME_DAY).
+8. The weather asked with the day or a connector first («y mañana va a hacer más calor?») or by how the air feels
+   («is it humid?», «hotter», «colder») is the weather read; both went to a web search that found nothing. Owner:
+   semantic/web._live_weather_request (_LEADING_CONNECTOR_OR_DAY), _WEATHER_WORDS.
 
 Every list holds fresh phrasings (Spanish dialects, English, Spanglish); none is a literal of the tanda.
 """
@@ -326,3 +329,29 @@ def test_a_day_said_in_the_other_language_is_the_same_word(turns, rewrite, stays
     message = _message(*turns)
     slot = dialogue.read_slot(message, message["history"], turns[-1])
     assert dialogue.rewrite_stays_in_context(rewrite, turns[-1], slot) is stays
+
+
+# ---------------------------------------------------------------- 8. the weather asked with the day first
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "y el finde va a hacer frío?",
+        "pasado mañana va a llover en Cusco?",
+        "and tomorrow, will it be colder?",
+        "is it muggy out there?",
+        "will it be warmer this weekend?",
+        "y esta noche va a hacer más frío?",
+    ],
+)
+def test_the_weather_with_the_day_first_or_how_it_feels_is_the_weather_read(text):
+    assert sidecar.resolve_explicit_effects(text, OPERATIONS).operations == ("weather.current",)
+
+
+@pytest.mark.parametrize(
+    "text", ["y mañana qué hago", "mañana abre el museo?", "and tomorrow what time is the game"],
+)
+def test_a_day_first_does_not_make_the_weather_of_what_is_not(text):
+    found = sidecar.resolve_explicit_effects(text, OPERATIONS)
+    assert found is None or "weather.current" not in found.operations
