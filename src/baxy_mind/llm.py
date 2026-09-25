@@ -4151,7 +4151,7 @@ def _rewrite_input(text: str, context: object, verified: object) -> str:
 
     lines = "\n".join(
         f"{'BAXY' if speaker == 'BAXY' else 'persona'}: {str(line).strip()[:400]}"
-        for speaker, line in list(context)[-4:]
+        for speaker, line in list(context)[-8:]
     )
     state = "\n".join(f"- {str(line).strip()[:300]}" for line in list(verified)[:12])
     head = f"Lo verificado en esta conversación:\n{state}\n\n" if state else ""

@@ -126,14 +126,24 @@ class DialogueSlot:
     antecedents: tuple[str, ...]  # user requests, most recent first (at most two)
     last_reply: str | None
     held: bool = True  # the shell holds the pending request; False when it is only read from BAXY's question
+    # The last exchanges as the person saw them, oldest first (speaker, text). Tanda 8 «vale, léemela otra vez»:
+    # the list was named three exchanges back and BAXY's replies between were missing from what the rewrite saw.
+    transcript: tuple[tuple[str, str], ...] = ()
 
     @property
     def has_context(self) -> bool:
         return bool(self.pending_request or self.antecedents)
 
     def context_lines(self) -> list[tuple[str, str]]:
-        """Oldest first, as (speaker, text), for the rewrite prompt."""
-        lines: list[tuple[str, str]] = [("persona", text) for text in reversed(self.antecedents)]
+        """Oldest first, as (speaker, text), for the rewrite prompt and its word check."""
+        if self.transcript:
+            lines = list(self.transcript)
+            said = {text for speaker, text in lines if speaker == "persona"}
+            if self.pending_request and self.pending_request not in said:
+                lines.insert(len(lines) - 1 if lines and lines[-1][0] == "BAXY" else len(lines),
+                             ("persona", self.pending_request))
+            return lines
+        lines = [("persona", text) for text in reversed(self.antecedents)]
         if self.pending_request and self.pending_request not in self.antecedents:
             lines.append(("persona", self.pending_request))
         if self.last_reply:
@@ -156,10 +166,12 @@ def read_slot(message: dict, history: object, current: str) -> DialogueSlot:
         items = items[:-1]
     antecedents: list[str] = []
     last_reply = None
+    transcript: list[tuple[str, str]] = []
     for item in reversed(items[-8:]):
         role, content = item.get("role"), str(item.get("content") or "").strip()
-        if not content:
+        if not content or role not in {"user", "assistant"}:
             continue
+        transcript.insert(0, ("persona" if role == "user" else "BAXY", content[:400]))
         if role == "assistant" and last_reply is None and not antecedents:
             last_reply = content[:400]
         elif role == "user" and len(antecedents) < 2:
@@ -169,7 +181,7 @@ def read_slot(message: dict, history: object, current: str) -> DialogueSlot:
     if not held and asked and antecedents:
         pending_request = antecedents[0]
     pending_question = last_reply if pending_request and asked else None
-    return DialogueSlot(pending_request, pending_question, tuple(antecedents), last_reply, held)
+    return DialogueSlot(pending_request, pending_question, tuple(antecedents), last_reply, held, tuple(transcript))
 
 
 def _object_pronoun(folded: str) -> bool:

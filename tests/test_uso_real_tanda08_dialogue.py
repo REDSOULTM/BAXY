@@ -147,6 +147,23 @@ def test_an_alarm_set_turns_ago_is_not_what_a_correction_replaces():
     assert state.cancel_last_alarm(True) is None
 
 
+def test_the_rewrite_sees_the_last_exchanges_as_the_person_saw_them():
+    turns = (
+        "anota en la lista del súper yerba y galletas", "Anoté yerba y galletas en la lista del súper.",
+        "¿y qué más había?", "En la lista del súper hay yerba, galletas y fideos.",
+        "saca los fideos", "Listo, saqué los fideos.",
+        "dale, léemela de nuevo",
+    )
+    message = _message(*turns)
+    slot = dialogue.read_slot(message, message["history"], turns[-1])
+    assert slot.context_lines() == [
+        ("persona" if index % 2 == 0 else "BAXY", turn) for index, turn in enumerate(turns[:-1])
+    ]
+    # The list named three exchanges back is a word said; a list nobody named is not.
+    assert dialogue.rewrite_stays_in_context("léeme la lista del súper de nuevo", turns[-1], slot)
+    assert not dialogue.rewrite_stays_in_context("léeme la lista de tareas de nuevo", turns[-1], slot)
+
+
 # ---------------------------------------------------------------- 2. a question BAXY asked
 
 
