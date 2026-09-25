@@ -368,6 +368,40 @@ def test_what_is_set_after_a_timer_and_a_reminder_is_read_back_in_context():
     assert _rearm(message, _Scripted({text: rewrite}), state) == (rewrite, "model")
 
 
+_RECALL_HISTORY = [
+    {"role": "user", "content": "baja el brillo a 30"},
+    {"role": "assistant", "content": "El brillo está en 30."},
+]
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "por favor, ¿me puedes repetir lo que te he dicho?",
+        "¿me repites lo mismo que te dije?",
+        "podrías decirme lo que te había dicho",
+        "can you repeat what I've said?",
+        "say back the same thing I said",
+    ],
+)
+def test_what_the_person_already_said_is_said_back_in_any_tense(text):
+    history = [*_RECALL_HISTORY, {"role": "user", "content": text}]
+    assert llm._recalled_speaker(text) == "user"
+    assert llm._literal_recall_reference(history, text) == "baja el brillo a 30"
+
+
+@pytest.mark.parametrize("text", ["¿me repites lo que me has dicho?", "repíteme lo mismo que me dijiste"])
+def test_what_baxy_already_said_is_said_back_in_any_tense(text):
+    history = [*_RECALL_HISTORY, {"role": "user", "content": text}]
+    assert llm._recalled_speaker(text) == "assistant"
+    assert llm._literal_recall_reference(history, text) == "El brillo está en 30."
+
+
+@pytest.mark.parametrize("text", ["repite lo mismo que te diga", "repite lo que digo", "¿me repites la canción?"])
+def test_what_is_still_to_be_said_is_not_a_recall(text):
+    assert llm._recalled_speaker(text) is None
+
+
 def test_no_worked_example_or_hint_is_a_phrase_of_a_measured_tanda():
     shown = " ".join(
         [str(part) for example in llm._REWRITE_EXAMPLES for part in example]

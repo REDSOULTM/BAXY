@@ -2194,7 +2194,7 @@ _RECALL_FRAME = (
 )
 _RECALL_TAIL = r"(?:\s+(?:otra\s+vez|de\s+nuevo|again|back|por\s+favor|porfa|please|baxy))*$"
 _RECALL_SAY = (
-    r"(?:repite|repiteme|repeti|repetime|repetir|repetirme|reproduce|reproduceme|reproduci|reproducir|di|dime|"
+    r"(?:me\s+)?(?:repite|repiteme|repeti|repetime|repetir|repetirme|repites|reproduce|reproduceme|reproduci|reproducir|di|dime|"
     r"deci|decime|decir|decirme|lee|leeme|leer|leerme|recuerdame|recordame|recordarme|"
     r"repeat|say|tell\s+me|read|read\s+me)\s+(?:(?:back|again|otra\s+vez|de\s+nuevo)\s+)?"
 )
@@ -2203,12 +2203,15 @@ _PERSON_RECALL = re.compile(
     _RECALL_FRAME
     + r"(?:"
     + _RECALL_SAY
-    + r"(?:lo\s+(?:ultimo\s+)?que\s+(?:yo\s+)?(?:te\s+)?(?:acabo\s+de\s+)?"
-    r"(?:dije|escribi|puse|pregunte|pedi|decir|escribir|preguntar|pedir)"
+    # Tanda 7b «por favor, ¿puedes repetir lo mismo que te he dicho?» was answered «¿en qué puedo ayudarte?»:
+    # «lo mismo que» and the perfect («te he dicho», «te había dicho») say what was already said too.
+    + r"(?:lo\s+(?:ultimo\s+|mismo\s+)?que\s+(?:yo\s+)?(?:te\s+)?(?:acabo\s+de\s+|he\s+|habia\s+)?"
+    r"(?:dije|escribi|puse|pregunte|pedi|decir|escribir|preguntar|pedir|dicho|escrito|puesto|preguntado|pedido)"
     + _RECALL_WHEN
     + r"|mis\s+ultimas\s+palabras|mi\s+ultim[oa]\s+(?:mensaje|frase|pregunta|pedido)|"
     r"mi\s+(?:mensaje|frase|pregunta|pedido)\s+anterior|"
-    r"what\s+i\s+(?:just\s+)?(?:said|wrote|typed|asked(?:\s+you)?)"
+    r"(?:what\s+|the\s+same\s+(?:thing\s+)?(?:that\s+|what\s+)?)i\s+(?:just\s+|have\s+|ve\s+)?(?:said|wrote|written|"
+    r"typed|asked(?:\s+you)?)"
     + _RECALL_WHEN
     + r"|my\s+(?:last|previous)\s+(?:message|words|sentence|question|request))|"
     r"que\s+(?:fue\s+lo\s+(?:ultimo\s+)?que\s+)?(?:te\s+)?(?:dije|escribi|pregunte|pedi|acabo\s+de\s+"
@@ -2226,8 +2229,8 @@ _ASSISTANT_RECALL = re.compile(
     _RECALL_FRAME
     + r"(?:"
     + _RECALL_SAY
-    + r"(?:lo\s+(?:ultimo\s+)?que\s+(?:me\s+)?(?:dijiste|respondiste|contestaste|escribiste|acabas\s+de\s+"
-    r"(?:decir|responder|contestar|escribir))"
+    + r"(?:lo\s+(?:ultimo\s+|mismo\s+)?que\s+(?:me\s+)?(?:dijiste|respondiste|contestaste|escribiste|acabas\s+de\s+"
+    r"(?:decir|responder|contestar|escribir)|has\s+(?:dicho|respondido|contestado|escrito))"
     + _RECALL_WHEN
     + r"|tu\s+ultim[oa]\s+(?:respuesta|mensaje|frase)|tu\s+(?:respuesta|mensaje)\s+anterior|tus\s+ultimas\s+palabras|"
     r"what\s+you\s+(?:just\s+)?(?:said|answered|replied|wrote)"
