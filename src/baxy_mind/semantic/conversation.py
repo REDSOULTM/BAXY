@@ -1241,3 +1241,34 @@ def catalog_unavailable(
         and effect_intent._authenticated_game_target(folded, game_catalog) is None
     )
     return bool(unavailable_application or unavailable_game)
+
+
+def first_person_observation(folded: str) -> bool:
+    """The person reports what they are, have, see or notice («estoy…», «me aparece…», «i see…»): a statement,
+    not a request (the non-effect relabelling of ``__main__``)."""
+
+    return (
+        re.search(
+            (
+                r"\b(?:estoy|estaba|estuve|tengo|tenia|veo|noto|observo|"
+                r"me aparece|me salio|dejo de|"
+                r"i am|i m|i was|i have|i ve|i did|i see|i notice|"
+                r"i observe|stopped)\b"
+            ),
+            folded,
+            re.IGNORECASE,
+        )
+        is not None
+    )
+
+
+def names_a_question_word(folded: str) -> bool:
+    """A question word or «explain» anywhere in the message: talk about it is knowledge."""
+
+    return (
+        re.search(
+            r"\b(?:que|cual|cuanto|como|por que|what|which|how|why|explain|explica)\b",
+            folded,
+        )
+        is not None
+    )

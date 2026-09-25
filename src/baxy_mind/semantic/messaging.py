@@ -640,3 +640,97 @@ def contact_book_request(text: str) -> bool:
         or _has(folded, _KEPT_WITH_ITS_NUMBER)
         or _datum_of_someone_of_their_life(folded)
     )
+
+
+def message_body(objective: str) -> str | None:
+    """The literal text the person dictated for ``message.send``: the words after the recipient, a quoted text,
+    or what follows «que» / «saying» / «el mensaje»; None when the request does not say one (moved from
+    ``__main__._verified_message_send_arguments``, which joins it with the verified recipient)."""
+
+    any_channel = message_request_any_channel(objective)
+    if any_channel is not None:
+        # REOPEN1993 grupo E: the text is the person's own words after the recipient.
+        return any_channel[1]
+    named_client = message_request_named_client(objective)
+    if named_client is not None:
+        return named_client[1]
+    quoted = re.search(r"[\"“](?P<text>[^\"”]{1,16384})[\"”]", objective)
+    if quoted is not None:
+        body = quoted.group("text")
+    else:
+        request_text = objective
+        for _ in range(2):
+            stripped = _strip_request_envelope(request_text).strip()
+            if stripped == request_text:
+                break
+            request_text = stripped
+        channel_first_patterns = (
+            r"^(?:por|en|via)\s+(?:whatsapp|wsp|discord)\s+"
+            r"(?:hazle\s+llegar|cu[eé]ntale)\s+a\s+"
+            r"[^,;.!?]{1,80}?\s+(?:que|(?:el\s+)?mensaje)\s+"
+            r"(?P<text>.+)$",
+            r"^(?:through|on|via)\s+(?:whatsapp|discord)\s+"
+            r"let\s+[^,;.!?]{1,80}?\s+know\s+(?P<text>.+)$",
+            r"^(?:through|on|via)\s+(?:whatsapp|discord)\s+"
+            r"get\s+(?:the\s+)?(?:note|message|update)\s+"
+            r"(?P<text>.+?)\s+to\s+[^,;.!?]{1,80}$",
+            r"^(?:por|en|via)\s+(?:whatsapp|wsp|discord)\s+"
+            r"(?:dile|decile)\s+a\s+[^,;.!?\s]{1,80}\s+"
+            r"(?P<text>.+)$",
+        )
+        channel_first = next(
+            (
+                match
+                for pattern in channel_first_patterns
+                if (match := re.match(pattern, request_text, re.IGNORECASE)) is not None
+            ),
+            None,
+        )
+        if channel_first is not None:
+            body = channel_first.group("text").strip()
+        else:
+            request = re.match(
+                r"^[Â¿?Â¡!\s]*(?:dile|decile|tell|manda|env[ií]a|send|message|"
+                r"escr[ií]be(?:le)?|write\s+to|pasa|pass)\b"
+                r"(?P<request>.+)$",
+                request_text,
+                re.IGNORECASE,
+            )
+            if request is None:
+                return None
+            separator = re.search(
+                r"\b(?:que|that|saying|(?:el|the)\s+(?:texto|text|mensaje|message))"
+                r"\s+(?P<text>.+)$",
+                request.group("request"),
+                re.IGNORECASE,
+            )
+            if separator is None:
+                return None
+            body = separator.group("text").strip()
+        body = body.rstrip(".!?").rstrip()
+        body = re.sub(
+            r"\s+(?:en|por|via|on|through)\s+(?:wsp|whatsapp|discord)\s*$",
+            "",
+            body,
+            count=1,
+            flags=re.IGNORECASE,
+        ).rstrip()
+    if not body or len(body.encode("utf-8")) > 16_384:
+        return None
+    return body
+
+
+def chat_message_dispatch(objective: str) -> bool:
+    """A message to send through WhatsApp or Discord («avisale por whatsapp», «send it on discord»): resolving
+    its recipient is the first step of that dispatch (moved from ``__main__``'s domain gate)."""
+
+    folded = _fold(objective)
+    return (
+        re.search(r"\b(?:whatsapp|discord)\b", folded) is not None
+        and re.search(
+            r"\b(?:avisa|avise|notify|notifica|dile|tell|manda|send|envia|"
+            r"escribele|write\s+to|message)\b",
+            folded,
+        )
+        is not None
+    )
