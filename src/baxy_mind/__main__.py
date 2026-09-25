@@ -6085,10 +6085,12 @@ def _explicit_arguments_from_evidence(
             }
 
     if operation == "notification.cancel.latest":
+        # Tanda 7b «actually make it 9» → «cancel the last timer and …»: a timer is a scheduled alarm (419a7ddd), so
+        # its kind is said by «timer» too; the plan asked «¿De qué tipo debe ser la alarma que se va a cancelar?».
         domain_kinds = {
             kind
             for kind, pattern in (
-                ("alarm", r"\b(?:alarma|alarm)s?\b"),
+                ("alarm", r"\b(?:alarmas?|alarms?|temporizador(?:es)?|timers?)\b"),
                 ("reminder", r"\b(?:recordatorios?|reminders?)\b"),
             )
             if re.search(pattern, folded)

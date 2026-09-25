@@ -271,6 +271,37 @@ def test_every_worked_example_keeps_the_rule_it_teaches(example):
     assert dialogue.rewrite_stays_in_context(rewrite, text, slot, [("verificado", line) for line in verified])
 
 
+_CANCEL_LATEST_SCHEMA = {
+    "type": "object",
+    "properties": {"kind": {"type": "string", "enum": ["alarm", "reminder"]}},
+    "required": ["kind"],
+    "additionalProperties": False,
+}
+
+
+@pytest.mark.parametrize(
+    ("clause", "kind"),
+    [
+        ("cancel the last timer", "alarm"),  # tanda 7b: the step of «actually make it 9»
+        ("cancela el último temporizador", "alarm"),
+        ("quita el último timer", "alarm"),
+        ("cancela la última alarma", "alarm"),
+        ("borra el último recordatorio", "reminder"),
+    ],
+)
+def test_the_kind_of_the_last_one_cancelled_is_read_from_its_name(clause, kind):
+    # A timer is a scheduled alarm; the plan's cancel step no longer asks which kind it is.
+    assert sidecar._ground_explicit_arguments("notification.cancel.latest", clause, _CANCEL_LATEST_SCHEMA) == {
+        "kind": kind,
+    }
+
+
+def test_the_last_of_two_kinds_named_is_still_asked():
+    assert sidecar._ground_explicit_arguments(
+        "notification.cancel.latest", "cancela el último temporizador o recordatorio", _CANCEL_LATEST_SCHEMA,
+    ) is None
+
+
 def test_no_worked_example_or_hint_is_a_phrase_of_a_measured_tanda():
     shown = " ".join(
         [str(part) for example in llm._REWRITE_EXAMPLES for part in example]
