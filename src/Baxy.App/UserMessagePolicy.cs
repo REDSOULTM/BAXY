@@ -1300,6 +1300,7 @@ internal static class UserMessagePolicy
             // as la ventana "Ventana de trabajo". Only whitespace-separated
             // duplicate words are evidence of a stutter.
             if (word.Length >= 3
+                && !IsLaughter(word.Value)
                 && previous is not null
                 && string.Equals(word.Value, previous.Value, StringComparison.Ordinal)
                 && string.IsNullOrWhiteSpace(folded[(previous.Index + previous.Length)..word.Index]))
@@ -1819,6 +1820,13 @@ internal static class UserMessagePolicy
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
         {
             string word = token.Value;
+            // Tanda 6c «haz una carcajada cuando quieras» → «¡Jajajaja!» died here and the shell composed «Claro,
+            // te doy una carcajada cuando quieras.»: a laugh written out repeats its syllable by nature.
+            if (IsLaughter(word))
+            {
+                continue;
+            }
+
             // WEB1449: a doubled two-letter tail is ordinary morphology
             // («contienen», «intereses», «preparar», «succeeded»), not a
             // stutter; the measured stutters («llamarar») are listed by
@@ -1836,6 +1844,10 @@ internal static class UserMessagePolicy
 
         return false;
     }
+
+    // «jajajaja», «hahaha», «jejeje», «muajajaja»: one laughing syllable repeated.
+    private static bool IsLaughter(string word) =>
+        Regex.IsMatch(word, @"^(?:mu|bu)?a?(?:[jh][aeiou]){2,}[jh]?$", RegexOptions.CultureInvariant);
 
     private static bool ContainsMeasuredInventedToken(string reply)
     {

@@ -25,6 +25,24 @@ public sealed class C03Tanda07SingleMissTests
         Assert.That(UserMessagePolicy.IsCountdownRequest(request), Is.True);
     }
 
+    // Tanda 6c «haz una carcajada cuando quieras»: the mind wrote «¡Jajajaja!», the shell refused it as a stuttered
+    // token and composed a promise to laugh instead. A laugh written out is published as written.
+    [TestCase("échate una risa cuando puedas", "¡Jajajaja!")]
+    [TestCase("laugh for me", "Hahahaha!")]
+    [TestCase("ríete como villano", "¡Muajajajaja!")]
+    [TestCase("haz una risita", "Jejeje jejeje.")]
+    public void ALaughWrittenOutIsNotAStutter(string request, string reply)
+    {
+        Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(request, reply), Is.Null);
+    }
+
+    [TestCase("dime algo", "Esa canciónción es buena.", "stuttered_token")]
+    [TestCase("dime algo", "Tengo tengo una idea.", "repeated_word")]
+    public void AStutterThatIsNoLaughIsStillRefused(string request, string reply, string reason)
+    {
+        Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(request, reply), Is.EqualTo(reason));
+    }
+
     [TestCase("qué hora es")]
     [TestCase("cuánto dura la película")]
     [TestCase("how long is the movie")]
