@@ -23,8 +23,8 @@ from baxy_mind.llm import (
     _message_response_language,
     served_capability_families,
 )
-from baxy_mind import request_reading as reading_mod
-from baxy_mind.request_reading import read_request
+from baxy_mind.semantic import request as reading_mod
+from baxy_mind.semantic.request import read_request
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = json.loads(

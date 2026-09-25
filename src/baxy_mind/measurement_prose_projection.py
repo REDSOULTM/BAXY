@@ -14,7 +14,7 @@ import math
 import re
 from typing import Any
 
-from .request_reading import fold
+from .semantic.request import fold
 
 
 def _byte_count(value: object) -> bool:

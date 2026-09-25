@@ -20,7 +20,7 @@ import pytest
 
 from baxy_mind import __main__ as mind_main
 from baxy_mind import llm
-from baxy_mind.request_reading import read_request
+from baxy_mind.semantic.request import read_request
 from test_c03_cpu_actor import Recorder
 
 # --- web.search reports ----------------------------------------------------------

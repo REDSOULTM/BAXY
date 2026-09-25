@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from baxy_mind import piper_tts
-from baxy_mind.request_reading import spoken_language
+from baxy_mind.semantic.request import spoken_language
 
 
 @pytest.fixture

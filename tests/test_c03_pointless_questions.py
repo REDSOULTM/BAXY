@@ -30,7 +30,7 @@ from baxy_mind.llm import (
     validate_missing_argument_clarification,
 )
 from baxy_mind.planner import PlannerCatalog
-from baxy_mind.request_reading import read_request, speaking_directive
+from baxy_mind.semantic.request import read_request, speaking_directive
 from baxy_mind.semantic import patterns
 from baxy_mind.semantic.reading import read
 

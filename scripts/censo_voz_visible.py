@@ -11,7 +11,7 @@ Qué NO cuenta, y por qué:
 - `llm.py` — es el prompt. La personalidad vive ahí por decisión del goal 06:
   «cambiar el carácter tiene que ser editar un texto». Un literal en el prompt
   es la solución, no el defecto.
-- `router_bank_sources.py`, `public_turn_corpus.py`, `request_reading.py`,
+- `router_bank_sources.py`, `public_turn_corpus.py`, `semantic/request.py`,
   `UserMessagePhrases.cs` — son textos de ENTRADA (anclas de embeddings, corpus
   de turnos, lectura del pedido y marcas de defecto de un borrador), nunca salen
   por pantalla.
@@ -35,9 +35,9 @@ PALABRAS_ES = re.compile(
     u'encontré)\\b')
 REGEXISH = re.compile(r'[\^\$\|\[\]]')
 
-FICHEROS_DE_ENTRADA = ('llm.py', 'router_bank_sources.py',
-                       'public_turn_corpus.py', 'request_reading.py',
-                       'UserMessagePhrases.cs')
+FICHEROS_DE_ENTRADA = ('/llm.py', '/router_bank_sources.py',
+                       '/public_turn_corpus.py', '/semantic/request.py',
+                       '/UserMessagePhrases.cs')
 
 
 def lineas_de_docstring(txt):
@@ -72,9 +72,9 @@ def censar(raiz='src'):
         for fn in files:
             if not fn.endswith(('.cs', '.py')):
                 continue
-            if 'Parser' in fn or fn.endswith(FICHEROS_DE_ENTRADA):
-                continue
             p = os.path.join(root, fn).replace(os.sep, '/')
+            if 'Parser' in fn or p.endswith(FICHEROS_DE_ENTRADA):
+                continue
             try:
                 txt = io.open(p, encoding='utf-8').read()
             except (OSError, UnicodeDecodeError):

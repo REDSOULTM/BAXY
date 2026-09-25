@@ -38,7 +38,7 @@ from baxy_mind.semantic.notes import list_entry_request
 from baxy_mind.semantic.reading import read
 from baxy_mind import llm
 from baxy_mind.semantic.reading import plain_talk
-from baxy_mind.request_reading import INTENT_IDENTITY, read_request
+from baxy_mind.semantic.request import INTENT_IDENTITY, read_request
 from baxy_mind.semantic.system import _weather_location
 
 OPERATIONS = (

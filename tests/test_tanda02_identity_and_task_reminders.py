@@ -22,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from baxy_mind import __main__ as mind_main  # noqa: E402
 from baxy_mind import llm as llm_module  # noqa: E402
 from baxy_mind.planner import PlannerCatalog  # noqa: E402
-from baxy_mind.request_reading import (  # noqa: E402
+from baxy_mind.semantic.request import (  # noqa: E402
     INTENT_CAPABILITY,
     INTENT_IDENTITY,
     read_request,

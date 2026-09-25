@@ -8,7 +8,7 @@ from baxy_mind.catalog_operation_aliases import (
     catalog_operation_aliases,
     exact_catalog_operation_plan,
 )
-from baxy_mind.request_reading import read_request
+from baxy_mind.semantic.request import read_request
 from baxy_mind.effect_intent import (
     resolve_explicit_clarification_intent,
     resolve_explicit_effects,

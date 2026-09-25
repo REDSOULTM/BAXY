@@ -10,7 +10,7 @@ from collections import Counter
 import re
 
 from .effect_intent import _PERCENTAGE_WORD_VALUES, _strip_request_envelope, window_inventory_arguments
-from .request_reading import fold
+from .semantic.request import fold
 
 
 _CARDINALS = {**_PERCENTAGE_WORD_VALUES, "a": 1, "an": 1, "una": 1,

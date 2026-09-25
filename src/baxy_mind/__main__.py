@@ -109,7 +109,7 @@ from .planner import (
     validate_json_schema_instance,
     validate_skeleton,
 )
-from .request_reading import (
+from .semantic.request import (
     _INTERROGATIVE,
     fold as read_fold,
     INTENT_AMBIGUOUS_ACTION,

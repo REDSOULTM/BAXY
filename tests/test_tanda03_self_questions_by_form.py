@@ -26,7 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from baxy_mind import __main__ as mind_main  # noqa: E402
 from baxy_mind import llm as llm_module  # noqa: E402
 from baxy_mind.planner import PlannerCatalog  # noqa: E402
-from baxy_mind.request_reading import INTENT_CAPABILITY, INTENT_IDENTITY, read_request  # noqa: E402
+from baxy_mind.semantic.request import INTENT_CAPABILITY, INTENT_IDENTITY, read_request  # noqa: E402
 
 from test_tanda02_identity_and_task_reminders import _SearchingModel  # noqa: E402
 from test_uso_real_facts_and_effects import _WEB_SEARCH, _GuardSaysPublic, _turn  # noqa: E402
@@ -313,7 +313,7 @@ def test_what_baxy_can_do_is_a_capability_not_his_identity(text: str) -> None:
 
 def test_the_phrase_list_is_gone() -> None:
     # One reading, by form: the list of phrases it replaced does not live on beside it.
-    from baxy_mind import request_reading
+    from baxy_mind.semantic import request as request_reading
 
     assert not hasattr(request_reading, "_SELF_QUESTION")
     assert not hasattr(request_reading, "_SELF_TRAIT")

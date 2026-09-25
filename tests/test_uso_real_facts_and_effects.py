@@ -24,7 +24,7 @@ from baxy_mind.effect_intent import (  # noqa: E402
     resolve_explicit_effects,
 )
 from baxy_mind.planner import PlannerCatalog  # noqa: E402
-from baxy_mind.request_reading import INTENT_IDENTITY, read_request  # noqa: E402
+from baxy_mind.semantic.request import INTENT_IDENTITY, read_request  # noqa: E402
 from baxy_mind.semantic import dialogue  # noqa: E402
 from baxy_mind.semantic.grammar import _is_past_or_hypothetical_state  # noqa: E402
 from baxy_mind.semantic.system import _weather_location  # noqa: E402

@@ -27,7 +27,7 @@ from .piper_tts import (
     resolve_neural_tts_model,
     resolve_piper_executable,
 )
-from .request_reading import spoken_language
+from .semantic.request import spoken_language
 from .time_budget import remaining_seconds
 
 logger = logging.getLogger(__name__)

@@ -28,7 +28,7 @@ import pytest
 from baxy_mind import llm
 from baxy_mind.__main__ import _retry_side_effect_free_turn
 from baxy_mind.llm import ConversationReplyContractError
-from baxy_mind.request_reading import INTENT_CAPABILITY, INTENT_IDENTITY, read_request
+from baxy_mind.semantic.request import INTENT_CAPABILITY, INTENT_IDENTITY, read_request
 from baxy_mind.semantic.patterns import (
     conversation_only_content_request,
     first_person_preference,

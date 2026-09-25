@@ -6,7 +6,7 @@ from __future__ import annotations
 import functools
 import re
 from .normalize import fold
-from ..request_reading import spoken_language
+from .request import spoken_language
 
 
 _CLOCK_READ_HEAD = (

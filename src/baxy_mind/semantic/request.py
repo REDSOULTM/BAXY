@@ -11,6 +11,9 @@ Aquí vive el contrato: una lectura por turno, con precedencia explícita
 → español por defecto) y una separación de saludo y petición que nunca borra
 lo que la persona pidió. `RequestReading.to_payload()` es la representación que
 cruza la frontera hacia el shell; nadie la reinterpreta después.
+
+Vivía en `baxy_mind/request_reading.py`; pasó entera a `semantic/` con la
+unificación de la lectura (2026-09-25): toda lectura del pedido vive aquí.
 """
 
 from __future__ import annotations
@@ -18,7 +21,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import re
 
-from .semantic.normalize import fold
+from .normalize import fold
 
 LANGUAGES = ("es", "en", "mixed")
 

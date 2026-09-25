@@ -1189,7 +1189,7 @@ internal static class UserMessagePolicy
 
     /// <summary>
     /// Greeting heads recognized on both sides of the boundary. The Python
-    /// owner (`baxy_mind.request_reading`) keeps the same list, and
+    /// owner (`baxy_mind.semantic.request`) keeps the same list, and
     /// `tests/data/request_reading_cases.json` pins the two together.
     /// </summary>
     private static readonly string[] GreetingHeads =

@@ -89,7 +89,7 @@ from .process_lifecycle import (
     report_incomplete_reap,
     terminate_and_reap_bounded,
 )
-from .request_reading import (
+from .semantic.request import (
     fold as _reading_fold,
     followup_topic,
     is_elliptical_followup,
