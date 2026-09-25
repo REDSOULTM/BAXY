@@ -12,6 +12,8 @@
 - «alto precio de las acciones» → «Los expertos de TU han preparado para ti una lista…», «sería genial cenar en este
   nuevo restaurante…» → «Se pueden consultar menús, reseñas…»: the page addressing its reader («para ti») or offering
   what can be done on it is its voice. «Bob Dean afirma que … nunca lo hemos estado» is reported speech, not the page.
+- «alexa dime todo lo que sabes sobre bob dean»: what he knows about a name, after an address, asks who or what it
+  is; the bare name is looked up and answered from its pages.
 
 The phrasings below are not the tandas': they are paraphrases (es/en/spanglish) the fixes do not name, with negative
 controls.
@@ -22,7 +24,7 @@ from __future__ import annotations
 import pytest
 
 from baxy_mind import llm
-from baxy_mind.semantic import reading
+from baxy_mind.semantic import reading, web
 from baxy_mind.semantic.temporal import countdown_target
 
 _violates = llm._shaped_conversation_answer_violates_contract
@@ -247,3 +249,38 @@ def test_an_answer_reported_or_asked_for_themselves_is_not_the_page_speaking(dra
 def test_the_page_speaking_for_itself_is_still_its_voice() -> None:
     assert llm._search_report_speaks_as_a_page("Nuestro conversor te dice el cambio al instante.", _PAGES, "dólar hoy")
     assert llm._search_report_speaks_as_a_page("Hemos preparado una guía de los mejores sitios.", _PAGES, "sitios")
+
+
+# ------------------------------------------------------------------ what he knows about a name is who or what it is
+
+
+@pytest.mark.parametrize(
+    ("text", "entity"),
+    [
+        ("siri, what do you know about Nikola Tesla", "Nikola Tesla"),
+        ("qué sabes de Messi", "Messi"),
+        ("tell me everything you know about Daft Punk", "Daft Punk"),
+        ("oye cuéntame lo que sabes de Rosalía", "Rosalía"),
+        ("what can you tell me about Pompeii", "Pompeii"),
+        ("qué me puedes contar de Frida Kahlo", "Frida Kahlo"),
+        ("que conocés de Neruda", "Neruda"),
+        ("alexa quién es Shakira", "Shakira"),
+    ],
+)
+def test_what_he_knows_about_a_name_looks_up_the_name(text: str, entity: str) -> None:
+    assert web._entity_lookup_query(text) == entity
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "qué sabes sobre ti",
+        "what do you know about yourself",
+        "que sabes de mi",
+        "qué sabes hacer",
+        "what do you know about my files",
+        "dime todo lo que sabes sobre los perezosos",
+    ],
+)
+def test_what_he_knows_about_himself_the_person_or_a_common_noun_is_no_name_lookup(text: str) -> None:
+    assert web._entity_lookup_query(text) is None

@@ -6,7 +6,7 @@ from __future__ import annotations
 import re
 from typing import Iterable
 from .display import _KNOWN_FOLDER_ENUM, _KNOWN_FOLDER_WORDS
-from .grammar import _fold, _match, _has, _strip_request_envelope, _request_head, _head_forms, _head_is, _negative_action_forms, _is_negative_effect_clause, _is_meta_or_tool_denial, _OPEN, _LIST, _READ, _SEARCH, _explicit_google_search_query, ARITHMETIC_EXPRESSION, _request_body_surface
+from .grammar import _fold, _match, _has, _strip_request_envelope, _without_address, _request_head, _head_forms, _head_is, _negative_action_forms, _is_negative_effect_clause, _is_meta_or_tool_denial, _OPEN, _LIST, _READ, _SEARCH, _explicit_google_search_query, ARITHMETIC_EXPRESSION, _request_body_surface
 from .intent import EffectIntent, _entity_key, _append, _append_all
 from .catalog import ApplicationCatalogIndex, _application_name_key, build_application_catalog_index
 from .temporal import _BOUNDED_TEMPORAL_SELECTOR, _DAY, _MONTH, _WEEKDAYS, is_window_phrase
@@ -657,7 +657,11 @@ _ENTITY_LOOKUP = re.compile(
     r"(?:quien|quién|quienes|quiénes|who)\s+(?:es|fue|era|son|fueron|eran|is|was|are|were)|"
     r"(?:(?:dime|decime|explicame|explícame|contame|cuentame|cuéntame|tell\s+me)\s+)?(?:que|qué|what)\s+(?:es|fue|era|is|was)|"
     r"(?:hablame|háblame|hablarme|contame|cuentame|cuéntame|explicame|explícame|tell\s+me)\s+"
-    r"(?:(?:un\s+poco|algo|mas|más|a\s+bit|a\s+little|more)\s+)?(?:de|sobre|acerca\s+de|about)"
+    r"(?:(?:un\s+poco|algo|mas|más|a\s+bit|a\s+little|more)\s+)?(?:de|sobre|acerca\s+de|about)|"
+    # Tanda 7 «alexa dime todo lo que sabes sobre bob dean»: what he knows about a name asks who or what it is.
+    r"(?:(?:dime|decime|cuentame|cuéntame|contame)\s+)?(?:todo\s+)?(?:lo\s+que|que|qué)\s+"
+    r"(?:sabes|sab[eé]s|conoces|conoc[eé]s|me\s+puedes\s+(?:decir|contar))\s+(?:de|sobre|acerca\s+de)|"
+    r"(?:tell\s+me\s+)?(?:everything|all|what)\s+(?:do\s+)?you\s+know\s+about|what\s+can\s+you\s+tell\s+me\s+about"
     r")\s+(?P<entity>[^?¿!¡]+?)\s*[.!?¿¡=\s]*$",
     re.IGNORECASE,
 )
@@ -672,7 +676,8 @@ def _entity_lookup_query(text: str) -> str | None:
     thing («quién es mi mamá», «qué es este archivo»), a word's meaning, a
     local thing, or a question folded into the name («…, quien gana?»)."""
 
-    match = _ENTITY_LOOKUP.match(text.strip())
+    # «alexa, quién es…», «oye dime qué sabes de…»: an address before the question is not part of it.
+    match = _ENTITY_LOOKUP.match(_without_address(text) or text.strip())
     if match is None:
         return None
     entity = match.group("entity").strip(" \t\r\n.,;:")
@@ -708,7 +713,7 @@ def _entity_lookup_query(text: str) -> str | None:
         return None
     if _has(
         folded_entity,
-        r"^(?:tu|vos|usted|ustedes|ti|yo|el|ella|ellos|ellas|nosotros|nosotras|you|me|i|he|she|"
+        r"^(?:tu|vos|usted|ustedes|ti|yo|el|ella|ellos|ellas|nosotros|nosotras|you|yourself|myself|me|i|he|she|"
         r"they|it|esto|eso|esta|este|ese|esa|aquel|aquello|aquella|this|that|these|those|"
         r"mi|mis|tus|su|sus|nuestro|nuestra|nuestros|nuestras|my|your|his|her|their|our|"
         r"de\s+verdad|realmente|really|en\s+realidad)\b",
