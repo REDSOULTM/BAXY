@@ -9104,9 +9104,9 @@ def _weather_answer_instruction(user_text: str, language: str) -> str:
         # Tanda 6b: only the place, or only the asked sun time, is sent (_project_weather_read); no other field of
         # the weather is described.
         return _weather_focus(user_text, english) + (
-            " Answer only that, in one short sentence, without naming how it was read."
+            " Answer only that, in one short sentence, without naming where it was read."
             if english
-            else " Contesta sólo eso, en una oración corta, sin nombrar cómo se leyó."
+            else " Contesta sólo eso, en una oración corta, sin nombrar de dónde se leyó."
         )
     fields = (
         "seen is the weather of seen.location (seen.country) now: temperatureC, apparentC (feels like), "
