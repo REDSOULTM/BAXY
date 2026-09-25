@@ -20548,6 +20548,15 @@ class LlmRuntime:
             unescaped = re.sub(r"\\[nrt]", " ", candidate)
             return re.sub(r"\\([\"\\])", r"\1", unescaped)
 
+        def capital_lead(candidate: str) -> str:
+            # Verification 2026-09-25 (held-out «cerralo»): «¿quieres confirmar o cancelar?» was rejected three times
+            # for its lowercase lead and the turn ended in ⚠. A lowercase first letter is form, not content: it is
+            # put in capital here instead of costing a retry (an observed identifier keeps its spelling).
+            if not candidate or compose_visible_defect(candidate, intent, user_text, facts) != "lowercase":
+                return candidate
+            index = len(candidate) - len(candidate.lstrip("¿¡\"'"))
+            return candidate[:index] + candidate[index].upper() + candidate[index + 1:]
+
         acting_facts = _compose_user_content(user_text, prompt_facts, language_contract, include_request=False)
         if cause == "acting":
             message_prompt = cpu_prompt
@@ -20559,7 +20568,7 @@ class LlmRuntime:
         response = post(payload)
         first_raw = (response["choices"][0]["message"].get("content") or "").strip()
         text = _strip_prompt_labels(first_raw)
-        text = title_clip(acting_clip(screen_clip(text)))
+        text = capital_lead(title_clip(acting_clip(screen_clip(text))))
         note_length_cut(text, response)
         if publishable(text):
             record_stage("first", first_raw, text, response, "", True)
@@ -21361,7 +21370,7 @@ class LlmRuntime:
             raise
         retry_raw = (retry["choices"][0]["message"].get("content") or "").strip()
         retry_text = _strip_prompt_labels(retry_raw)
-        retry_text = title_clip(acting_clip(screen_clip(retry_text)))
+        retry_text = capital_lead(title_clip(acting_clip(screen_clip(retry_text))))
         note_length_cut(retry_text, retry)
         if publishable(retry_text):
             record_stage("retry", retry_raw, retry_text, retry, "", True)
@@ -21416,7 +21425,7 @@ class LlmRuntime:
             raise
         third_raw = (third["choices"][0]["message"].get("content") or "").strip()
         third_text = _strip_prompt_labels(third_raw)
-        third_text = title_clip(acting_clip(screen_clip(third_text)))
+        third_text = capital_lead(title_clip(acting_clip(screen_clip(third_text))))
         note_length_cut(third_text, third)
         if publishable(third_text):
             record_stage("third", third_raw, third_text, third, "", True)
