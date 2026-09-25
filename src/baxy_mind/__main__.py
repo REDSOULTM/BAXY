@@ -7718,6 +7718,7 @@ def _rearm_in_context(
             dialogue_slot.corrected_request(last_request, objective),
             dialogue_slot.as_the_song(objective) if music else None,
             dialogue_state.listing_request(objective) if dialogue_state is not None else None,
+            dialogue_slot.again(last_request, objective),
         ):
             settled = continuing(candidate) if candidate and effects_of(candidate) else None
             if settled is not None:

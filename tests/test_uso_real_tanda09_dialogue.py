@@ -17,6 +17,9 @@ One owner per rule:
 4. An order to raise or lower the sound said with why («… que está muy fuerte», «… it's way too loud») is that order:
    it was answered «No bajé nada». The reason after it is a state; a relative change still asks how much (owner rule
    H0027). Owner: semantic/levels.read (_REASON).
+5. «más», «otra vez», «a bit more» alone right after an effect are that request once more, as it was said (the
+   same amount again; a change still missing its amount asks it again); «¿y más?» asks for more of an answer. «a bit
+   more» is no destination. Owners: semantic/dialogue._AGAIN_FRAGMENT, .again; __main__._rearm_in_context.
 
 Every list holds fresh phrasings (Spanish dialects, English, Spanglish); none is a literal of the tanda.
 """
@@ -220,3 +223,31 @@ def test_lowering_what_plays_with_its_reason_is_the_volume_question():
     state = _state(_PLAYED[0], "media.play.youtube")
     # Read as it arrived: the level readers ask how much.
     assert _rearm(_message(*_PLAYED, "bajale un poco que está a full"), _Scripted(), state) is None
+
+
+# ---------------------------------------------------------------- 5. once more
+
+
+@pytest.mark.parametrize(
+    ("said", "operation", "text"),
+    [
+        ("bajá el volumen en 10", "audio.volume.adjust", "más"),
+        ("turn the volume up by 20", "audio.volume.adjust", "a bit more"),
+        ("salta la canción", "media.control", "otra vez"),
+        ("sube el brillo en 15", "system.settings.adjust", "un poco más"),
+    ],
+)
+def test_once_more_is_the_last_request_again(said, operation, text):
+    state = _state(said, operation)
+    assert _rearm(_message(said, "Listo.", text), _Scripted(), state) == (said, "pattern")
+
+
+def test_asking_for_more_of_an_answer_is_not_the_request_again():
+    state = _state("¿va a llover hoy en Quito?", "weather.current")
+    model = _Scripted({"¿y más?": "¿y más?"})
+    assert _rearm(_message("¿va a llover hoy en Quito?", "No, hoy no llueve en Quito.", "¿y más?"), model, state) is None
+    assert model.seen  # the model decides; the weather read is not repeated by pattern
+
+
+def test_a_bit_more_is_not_a_destination():
+    assert _dependency(("turn the volume up by 20", "Done."), "a bit more") == "followup"

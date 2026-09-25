@@ -286,7 +286,7 @@ def dependency(text: str, slot: DialogueSlot) -> str | None:
         and len(words) <= 6
         and _DESTINATION_ONLY.fullmatch(folded)
         # Tanda 7 «no, a las 8»: an hour or an amount is not where; the follow-up replaces the one said.
-        and not (_TIME_FRAGMENT.fullmatch(rest) or _AMOUNT_FRAGMENT.fullmatch(rest))
+        and not (_TIME_FRAGMENT.fullmatch(rest) or _AMOUNT_FRAGMENT.fullmatch(rest) or _AGAIN_FRAGMENT.fullmatch(rest))
     ):
         return "destination"
     if len(words) > 16:
@@ -661,6 +661,11 @@ _ANOTHER_FRAGMENT = re.compile(
     r"(?:(?:pon(?:me|e|eme)?|pone|play|dame|give\s+me|quiero|i\s+want)\s+)?(?:otra|otro|another|something\s+else|"
     r"una\s+(?:distinta|diferente)|a\s+different\s+one))"
 )
+# «más», «un poco más», «otra vez», «again»: the last request once more (tanda 9 «más» after lowering the volume).
+_AGAIN_FRAGMENT = re.compile(
+    r"(?:(?:un\s+(?:poco|poquito|toque)|a\s+(?:bit|little)|algo)\s+)?(?:mas|more)|otro\s+poco|otra\s+vez|de\s+nuevo|"
+    r"again|once\s+more|one\s+more\s+time"
+)
 # The thing just acted on or named, said as a demonstrative with no noun: «cómo se llama esta», «what's this
 # called», «sobre eso».
 _DEMONSTRATIVE = re.compile(
@@ -710,6 +715,7 @@ class Followup:
             or _TIME_FRAGMENT.fullmatch(folded)
             or (_PLACE_FRAGMENT.fullmatch(folded) and len(folded.split()) <= 5)
             or _ANOTHER_FRAGMENT.match(folded)
+            or _AGAIN_FRAGMENT.fullmatch(folded)
         )
 
     @property
@@ -717,6 +723,8 @@ class Followup:
         """It corrects what was just done («actually make it 9», «no, a las 8», «mejor 30», a bare «9»),
         rather than adding to it («y otro de 20», «and at 8 too»)."""
 
+        if _AGAIN_FRAGMENT.fullmatch(self.folded):
+            return False  # «otra vez», «más»: once more, not instead
         corrects = self.corrected or re.match(_CHANGE, self.folded) is not None or not self.continued
         adds = re.search(r"\b(?:otro|otra|another|also|too|tambien|ademas|second|segundo|segunda)\b", self.folded)
         return corrects and adds is None
@@ -833,6 +841,16 @@ def corrected_request(request: str | None, text: str) -> str | None:
 _BARE_POINTER = re.compile(r"\b(?:(?P<es>esta|este|esto|esa|ese|eso)|(?:this|that|it)(?:\s+one)?)\b")
 
 
+def again(request: str | None, text: str) -> str | None:
+    """«más» after «baja el volumen en 10» → «baja el volumen en 10»: the last request once more, as it was said.
+    «¿y más?» asks for more of an answer, not the request again."""
+
+    said, base = followup(text), " ".join(str(request or "").split())
+    if not base or "\n" in str(request) or said.continued or not _AGAIN_FRAGMENT.fullmatch(said.folded):
+        return None
+    return base
+
+
 def as_the_song(text: str) -> str | None:
     """«cómo se llama esta?» → «cómo se llama esta canción», «what's this called» → «what's this song called»."""
 
@@ -854,6 +872,7 @@ def shape(text: str, dependency: str | None) -> str:
         return dependency or ""
     folded = followup(text).folded
     for name, found in (
+        ("again", _AGAIN_FRAGMENT.fullmatch(folded)),
         ("amount", _AMOUNT_FRAGMENT.fullmatch(folded)),
         ("time", _TIME_FRAGMENT.fullmatch(folded)),
         ("another", _ANOTHER_FRAGMENT.match(folded)),
