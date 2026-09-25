@@ -16,8 +16,8 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | Fase | Estado | Cifra |
 |---|---|---|
 | F0 etiqueta y ficheros | hecho | — |
-| F1 conjuntos DEV-A / DEV-B / FINAL + puntuador + base | conjuntos cerrados; base DEV pendiente de GPU | ver abajo |
-| F2 diagnóstico por camino + modelo libre | pendiente | — |
+| F1 conjuntos DEV-A / DEV-B / FINAL + puntuador + base | **hecho** | DEV-A 59,6 %, DEV-B 69,2 % |
+| F2 diagnóstico por camino + modelo libre | en curso | — |
 | F3 torneo de modelos | pendiente | — |
 | F4 mecanismos | pendiente | — |
 | F5 ventana oficial con DEV-B | pendiente | — |
@@ -48,6 +48,13 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 - Base del conjunto de regresión: salidas de `verify_chain2.sh` en el scratchpad de la sesión anterior
   (`…\6f29a6a5-…\scratchpad\`: `lit-fin2.jsonl`, `layers-fin2.jsonl`, `uso\hold-fin2.jsonl`, `finc2\`, `cien-103`,
   `uso\fin2-NN.out`).
+
+## Base de F1 en DEV (HEAD de partida, sólo decisión, `scripts/comprension_eval.py`, 14:28–14:48)
+
+| | total | sueltos | en conversación | seguimientos que dependen | decisión p50 / p90 |
+|---|---|---|---|---|---|
+| DEV-A (260) | **59,6 %** (155) | 62,4 % | 57,0 % | 51,5 % (35/68) | 1,97 / 4,09 s |
+| DEV-B (253) | **69,2 %** (175) | 77,6 % | 60,9 % | 53,0 % (35/66) | 1,98 / 4,03 s |
 
 ## Base del conjunto de regresión (HEAD de partida, `src` = b34c3f39)
 
