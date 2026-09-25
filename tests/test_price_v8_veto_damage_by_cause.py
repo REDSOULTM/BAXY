@@ -151,12 +151,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # uso real ola 13: seguimientos
 # uso real ola 14: tanda 9
 # uso real: unificación de la lectura en semantic/
+# uso real: verificación final, regresiones de la 3.5 arregladas
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "484d398606bc567e1d52e5dbfa863f1efe02ed566e27a5a27716a00772b47b6c"
+        "d8a5bc431d2cec7e0d54a4ce5e902e03a85b04d88fd7b41a579bfd37b8cb0c42"
     ),
     "src/baxy_mind/llm.py": (
-        "0b1884832c5587fde2d3ec3c1f020f91673c47c89964f6ceab3b6b6678ade795"
+        "1637aafa2eff0f08c5d740e241cfa3d9e10183647546f04bfe27892b44c4c73a"
     ),
 }
 
