@@ -146,12 +146,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # uso real 5c
 # uso real ola 9: tanda 6
 # uso real: 6b, menos llamadas, selector de un token
+# uso real: contexto, sueltos 7, latencia 7, escritorio
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "f075e3c81e0ebfa20e15a7cc039e3d1f50550d968f972485e66f607a3843c6de"
+        "3c3f80b09ad8514b0b3c1b38df7645e3bf749d0da532748faaecdd18c7111e91"
     ),
     "src/baxy_mind/llm.py": (
-        "2f0109bae88e43d1c87f9ed8371e5ca45b2074a2429adb7a05d486be9a103cec"
+        "ef54e1605daea25474fc691bbde785601118f16c27299cb86373f53fe42c5a73"
     ),
 }
 
