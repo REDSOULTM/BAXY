@@ -8,6 +8,9 @@ the readers already own are data added to that reader, in ``semantic/``; nothing
 - «the screen is way too bright» → «Do you mean the screen is too bright for your current environment…?»: a
   complaint about the screen's light is the brightness down (or up), without an amount, so it asks how much (owner
   rule H0027), like the loudness complaint. Owner: semantic/levels._complaint.
+- «apúntame en la lista de la compra huevos, leche y pan de molde» → «¿Qué contenido y título quieres que tenga la
+  nota…?»: the list named before its entries is the same list entry as «apunta huevos en la lista de la compra».
+  Owner: semantic/notes.list_entry_request.
 
 The phrasings below are paraphrases (es/en/spanglish, dialects, typos) the fixes do not name, with negative controls.
 """
@@ -18,6 +21,7 @@ import pytest
 
 from baxy_mind import __main__ as sidecar
 from baxy_mind.semantic import levels
+from baxy_mind.semantic.notes import list_entry_request
 from baxy_mind.semantic.reading import read
 
 OPERATIONS = (
@@ -128,3 +132,43 @@ def test_the_loudness_complaint_still_asks_how_much_volume() -> None:
     assert levels.read("está muy fuerte la música") == levels.Level(levels.VOLUME, "down", None, None)
     assert levels.read("the music is too loud") == levels.Level(levels.VOLUME, "down", None, None)
 
+
+# ------------------------------------------------------------------ the list named before its entries
+
+
+@pytest.mark.parametrize(
+    ("text", "entry", "listed"),
+    [
+        ("apúntame en la lista de la compra huevos, leche y pan de molde", "huevos, leche y pan de molde",
+         "lista de la compra"),
+        ("añade a la lista de la compra leche y pan", "leche y pan", "lista de la compra"),
+        ("agrega a mi lista del súper tortillas y frijoles", "tortillas y frijoles", "lista del súper"),
+        ("poné en la lista del super yerba y facturas", "yerba y facturas", "lista del super"),
+        ("anota en la lista de compras palta y marraqueta", "palta y marraqueta", "lista de compras"),
+        ("añádeme a la lista de la compra dos barras de pan", "dos barras de pan", "lista de la compra"),
+        ("add to my shopping list eggs and milk", "eggs and milk", "shopping list"),
+        ("put on my grocery list bananas", "bananas", "grocery list"),
+        ("agrega a la lista de pendientes llamar al dentista", "llamar al dentista", "lista de pendientes"),
+        ("add to the to do list call mom", "call mom", "to do list"),
+    ],
+)
+def test_a_list_named_before_its_entries_is_a_list_entry(text: str, entry: str, listed: str) -> None:
+    assert list_entry_request(text) == (entry, listed)
+    assert _effects(text) == ("task.create",)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "pon en la lista de la compra",
+        "añade a la lista de la compra esto",
+        "agrega a la lista de reproducción esta canción",
+        "añade a mi lista de contactos a Juan",
+    ],
+)
+def test_a_list_named_first_with_no_entry_to_add_is_not_one(text: str) -> None:
+    assert list_entry_request(text) is None
+
+
+def test_the_entry_said_first_still_reads_as_before() -> None:
+    assert list_entry_request("apunta huevos en la lista de la compra") == ("huevos", "lista de la compra")

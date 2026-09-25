@@ -674,15 +674,26 @@ _LIST_NAME = (
 )
 # The list an entry goes on or comes off: whose it is, or a new one («put pencil on a new grocery list»).
 _LIST_DETERMINER = r"(?:(?:mi|la|tu|nuestra|una|esta|my|the|our|a|this)\s+)?(?:(?:nueva|new)\s+)?"
-_LIST_ENTRY = re.compile(
+# The person's verb as said to a friend or with «usted» («por favor agregue este artículo a la lista»).
+_LIST_VERB = (
     r"^(?:(?:por\s+favor|please)\s*,?\s+)?"
-    # The person's verb as said to a friend or with «usted» («por favor agregue este artículo a la lista»).
-    r"(?:a[nñ]ad[eií](?:me|r)?|a[nñ][aá]deme|a[nñ]ada|agreg[aá](?:me|r)?|agr[eé]game|agregue|p[oó]n(?:me|er)?|pone(?:me)?|ponga|"
-    r"met[eé](?:me|r)?|m[eé]teme|meta|apunt[aá](?:me|r)?|ap[uú]ntame|apunte|anot[aá](?:me|r)?|an[oó]tame|anote|"
+    r"(?:a[nñ]ad[eií](?:me|r)?|a[nñ][aá]deme|a[nñ]ada|agreg[aá](?:me|r)?|agr[eé]game|agregue|p[oó]n(?:me|er)?|pon[eé](?:me)?|"
+    r"ponga|met[eé](?:me|r)?|m[eé]teme|meta|apunt[aá](?:me|r)?|ap[uú]ntame|apunte|anot[aá](?:me|r)?|an[oó]tame|anote|"
     r"inclu(?:ye|ir|ya)|sum[aá](?:le|r)?|add|put|include|insert)\s+"
-    r"(?P<item>\S.{0,200}?)\s+(?:a|al|en|to|on|in|into)\s+" + _LIST_DETERMINER
-    + _LIST_NAME
-    + r"(?:\s*,?\s*(?:please|pls|plz|por\s+favor|porfa))?[\s.!?]*$",
+)
+_LIST_CLOSE = r"(?:\s*,?\s*(?:please|pls|plz|por\s+favor|porfa))?[\s.!?]*$"
+_LIST_ENTRY = re.compile(
+    _LIST_VERB + r"(?P<item>\S.{0,200}?)\s+(?:a|al|en|to|on|in|into)\s+" + _LIST_DETERMINER + _LIST_NAME + _LIST_CLOSE,
+    re.IGNORECASE,
+)
+# Tanda 8 «apúntame en la lista de la compra huevos, leche y pan de molde» was asked for a note: the list named
+# first and the entries after it. Its name is then one word after «de» («lista de la compra», «lista del súper»),
+# since nothing else marks where the name ends and the entries begin.
+_LIST_ENTRY_AFTER = re.compile(
+    _LIST_VERB + r"(?:a|al|en|to|on|in|into)\s+" + _LIST_DETERMINER
+    + r"(?P<list>(?:listas?|lists?)(?:\s+(?:de(?:\s+la|\s+los|\s+las|l)?|para(?:\s+la|\s+el)?)\s+(?!(?:la|los|las|el)\b)\w+)?|"
+    r"(?:shopping|grocery|to[\s-]?do|todo|task|packing)\s+list)"
+    r"\s*[,:]?\s+(?P<item>(?!(?:de|del|para|of|for)\b)\S.{0,200}?)" + _LIST_CLOSE,
     re.IGNORECASE,
 )
 # A playlist or a list of songs is music, not a list of things to do or buy.
@@ -720,7 +731,7 @@ def list_entry_request(text: str) -> tuple[str, str] | None:
     surface = _request_body_surface(text).strip()
     if _ABSENCE_CONDITION.search(_fold(surface)) is not None:
         return None
-    found = _LIST_ENTRY.match(surface)
+    found = _LIST_ENTRY.match(surface) or _LIST_ENTRY_AFTER.match(surface)
     if found is None:
         return None
     item = found.group("item").strip(" ,;:\"'«»“”")
