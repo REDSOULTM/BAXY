@@ -109,6 +109,14 @@ _PAST_WEATHER = (
 # Uso real 2026-09-23: «qué tiempo hace en santiago», «cómo va a estar el tiempo hoy
 # en ñuñoa»: «el tiempo» is the weather inside a weather frame only; «cuánto
 # tiempo», a cooking or travel time, or «hace tiempo» (long ago) are not.
+# Tanda 9 «dime el tiempo de Madrid» read the clock and then pasted a weather page: «el tiempo de» a name said bare
+# (no article, no possessive, no verb) is the weather there, as «el tiempo en Madrid» is. A span of something («el
+# tiempo de vuelo», «de espera») is not; those nouns are listed in _NOT_WEATHER_TIEMPO.
+_TIEMPO_OF_A_NAME = (
+    r"de\s+(?!(?:la|el|los|las|lo|un|una|unos|unas|mi|mis|tu|tus|su|sus|nuestr[oa]s?|este|esta|estos|estas|ese|esa|"
+    r"esos|esas|eso|esto|aquel|aquella|que|cuando|como|cada|todo|toda|ahi|alla|aqui)\b)"
+    r"(?!\w+(?:ar|er|ir)(?:me|te|se|nos|lo|la|le)?\b)\w"
+)
 _WEATHER_TIEMPO = (
     r"\b(?:que|como)\s+(?:tiempo\s+(?:hace|hara|va\s+a\s+hacer)|"
     r"(?:esta|estara|sera|va\s+a\s+estar|va\s+a\s+ser|viene)\s+el\s+tiempo)\b|"
@@ -118,12 +126,18 @@ _WEATHER_TIEMPO = (
     r"\b(?:el|del)\s+tiempo\s+(?:(?:de|para)\s+(?:hoy|manana|este|esta|el\s+fin|"
     r"(?:la|el)\s+(?:semana|proxim[oa]|siguiente|lunes|martes|miercoles|jueves|viernes|sabado|domingo))|"
     r"hoy|manana|ahora|actual|de\s+ahora|"
-    r"este\s+\w+|esta\s+(?:tarde|noche|semana|manana)|en\s+(?!el\s+horno|la\s+olla|el\s+microondas|que\b)\w)|"
-    r"^\s*tiempo\s+(?:en|para|hoy|manana|actual|de\s+(?:hoy|manana|ahora))\b"
+    r"este\s+\w+|esta\s+(?:tarde|noche|semana|manana)|en\s+(?!el\s+horno|la\s+olla|el\s+microondas|que\b)\w|"
+    + _TIEMPO_OF_A_NAME + r")|"
+    r"^\s*tiempo\s+(?:(?:en|para|hoy|manana|actual|de\s+(?:hoy|manana|ahora))\b|" + _TIEMPO_OF_A_NAME + ")"
 )
 _NOT_WEATHER_TIEMPO = (
     r"\b(?:cuanto|cuantos|mucho|poco|a|hace)\s+tiempo\b|\btiempo\s+(?:libre|de\s+(?:coccion|espera|viaje|carga|"
-    r"respuesta|entrega|juego|pantalla))\b|\b(?:horno|olla|microondas|coccion|cocinar|receta)\b"
+    r"respuesta|entrega|juego|pantalla|vuelo|vida|ejecucion|reaccion|descarga|duracion|uso|subida|bajada|trabajo|"
+    r"estudio|sobra|calidad|ocio|descuento|silencio|recuperacion|entrenamiento|lectura|procesamiento|arranque|"
+    r"encendido|compilacion|instalacion|conduccion|llegada|transito|envio|preparacion|reposo|horneado|hervor|"
+    r"fermentacion|secado|exposicion|vigencia|validez|gracia|prueba|dios|guerra|paz|crisis|vacaciones|clase|"
+    r"examen|partido|descanso|juventud|infancia|ninez|sueno|pausa|latencia))\b|"
+    r"\b(?:horno|olla|microondas|coccion|cocinar|receta)\b"
 )
 
 

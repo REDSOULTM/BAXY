@@ -116,7 +116,9 @@ def _without_trailing_time(place: str) -> str:
         tail = _fold(" ".join(words[index:]))
         if _names_a_time(tail) or _names_a_time(re.sub(r"^(?:para|for|de|del|en|in|on|a|al)\s+", "", tail)) or _has(
             # Tanda 4c «puesta de sol en Mendoza a qué hora»: the question asked after the place.
-            tail, r"^(?:ahora|now|right\s+now|por\s+favor|please|(?:a\s+)?(?:que|what)\s+(?:hora|time)|cuando|when)\b"
+            # Tanda 9: «el tiempo de Sevilla porfa» — the courtesy said short is not part of the town either.
+            tail, r"^(?:ahora|now|right\s+now|por\s+favor|porfa|porfis|please|pls|plz|"
+            r"(?:a\s+)?(?:que|what)\s+(?:hora|time)|cuando|when)\b"
         ):
             return " ".join(words[:index])
     return place
