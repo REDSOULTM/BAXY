@@ -16,7 +16,7 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | Fase | Estado | Cifra |
 |---|---|---|
 | F0 etiqueta y ficheros | hecho | — |
-| F1 conjuntos DEV-A / DEV-B / FINAL + puntuador + base | en curso | — |
+| F1 conjuntos DEV-A / DEV-B / FINAL + puntuador + base | conjuntos cerrados; base DEV pendiente de GPU | ver abajo |
 | F2 diagnóstico por camino + modelo libre | pendiente | — |
 | F3 torneo de modelos | pendiente | — |
 | F4 mecanismos | pendiente | — |
@@ -25,8 +25,26 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 
 ## Dónde está cada cosa
 
-- Conjuntos (privados, fuera de git): `%LOCALAPPDATA%\BAXY\comprension-2026-09-25\` (D3). SHA-256 en este fichero
-  cuando estén cerrados.
+- Conjuntos (privados, fuera de git): `%LOCALAPPDATA%\BAXY\comprension-2026-09-25\sets\` (D3). Scripts que los
+  construyen y encargos de los subagentes: `comprension-f1/` (junto a este fichero).
+
+## Conjuntos de F1 (cerrados 2026-09-25 12:40)
+
+| conjunto | turnos | sueltos | en conversación (conv.) | seguimientos que dependen | SHA-256 |
+|---|---|---|---|---|---|
+| DEV-A (se miran sus fallos) | 260 | 125 | 135 (35) | 68 | `cffb39cd90ba378c92902401f48da8330712a0d0233f0d89985d0c7ad7044e75` |
+| DEV-B (sólo su cifra) | 253 | 125 | 128 (35) | 66 | `5f7eda2a1602c4b7e6cb9c0b5a17c0dad8c37bbf7e04d66f6c93b469b26462c9` |
+| FINAL (sellado, sólo lectura) | 202 | 100 | 102 (27) | 57 | `e05cf27e8af6dca7d38f77689d866d0a94ddf19bd8bf203d5b9e2bc71323d993` |
+
+- Sueltos por fuente en cada conjunto (por 125): MASSIVE val es 18 / en 10, MTOP test+eval es 14 / en 8, CLINC150 12,
+  OVOS-ILENIA 12, CSTOP (spanglish) 20, PRESTO test es 14 / en 7 (code-mixing, disfluencias, auto-correcciones),
+  oasst2 es 10. Ninguna frase ya vista (D4: 79 464 textos + 13 371 hashes).
+- Conversaciones: públicas (PRESTO humano con contexto, SGD test, oasst2 es) + 54 escritas en sala limpia por tres
+  subagentes (chileno, rioplatense, mexicano, colombiano, España, inglés EE. UU., spanglish; dictado, erratas,
+  muletillas, cortés, seco, largo), repartidas por hablante entre los tres conjuntos (D6).
+- Oro: escritores (sus conversaciones) y tres etiquetadores con ids opacos mezclando los tres conjuntos, según
+  `comprension-f1/brief/REGLAS_ORO.md`. Auditoría a ciegas del 10 % (71 turnos): **acuerdo 70/71** (DEV-A 25/26,
+  DEV-B 25/25, FINAL 20/20); el desacuerdo de DEV-A se resolvió a `limit`/`ask`.
 - Base del conjunto de regresión: salidas de `verify_chain2.sh` en el scratchpad de la sesión anterior
   (`…\6f29a6a5-…\scratchpad\`: `lit-fin2.jsonl`, `layers-fin2.jsonl`, `uso\hold-fin2.jsonl`, `finc2\`, `cien-103`,
   `uso\fin2-NN.out`).
@@ -45,3 +63,5 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 ## Bitácora
 
 - 2026-09-25 12:0x — F0: tag, ficheros de estado. Verificación anterior en curso (capas A/B/C).
+- 12:40 — conjuntos DEV-A/DEV-B/FINAL cerrados y auditados; FINAL sellado. Esperando GPU (verificación anterior) para
+  la base DEV y F2.
