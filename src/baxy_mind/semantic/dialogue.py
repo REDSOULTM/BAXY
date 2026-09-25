@@ -218,8 +218,9 @@ def _object_pronoun(folded: str) -> bool:
 _DETERMINERS = frozenset({"el", "la", "los", "las", "un", "una", "unos", "unas", "mi", "mis", "su", "sus", "algo", "que"})
 # How much or how long, said after the verb («bajale un poco», «pausalo un toque», «seguí un rato»): never its object.
 _DEGREE = frozenset(
-    "poco poquito poquitito toque toquecito cachito cacho chin pelin rato ratito momento momentito segundo tantito"
-    .split()
+    """
+    poco poquito poquitito toque toquecito cachito cacho chin pelin rato ratito momento momentito segundo tantito
+    """.split()
 )
 # A verb stands first in its clause: after nothing, a pause, a connector or a filler («ok postealo», «y cerralo»).
 _VERB_POSITION = re.compile(
