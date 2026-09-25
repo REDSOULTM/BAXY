@@ -74,6 +74,8 @@ def _weather_location(text: str) -> str | None:
             # «Sémana» (Mali), tanda 3 «para la semana del 5 al 12 de julio» the weather
             # of «Júlio» (Mozambique): a time is not a place.
             or _names_a_time(folded_place)
+            # «clima para el día de la madre» read the weather of «la madre»: «de» after «día» names the day.
+            or _fold(query[:match.start()]).split()[-1:] in (["dia"], ["dias"])
             # MASSIVE «la temperatura será más alta de cuarenta grados mañana»: a measure is not a place.
             or _has(folded_place, rf"^{SPOKEN_NUMBER}\s*(?:grados|degrees|°|milimetros|mm|centimetros|cm|pulgadas|inches)\b")
             # MASSIVE «will it be nice at the beach on friday»: a kind of place is where the person goes, not a town.
@@ -139,12 +141,15 @@ _WEATHER_SPAN_COUNT = r"(?:\d{1,3}|" + "|".join(
 _WEATHER_TIME_WORDS = (
     r"^(?:(?:el|la|los|las|este|esta|estos|estas|the|this|these|next|coming|"
     r"proximo|proxima|proximos|proximas|siguiente|siguientes|dentro\s+de)\s+){0,2}"
-    rf"(?:{_WEATHER_SPAN_COUNT}\s+)?(?:semanas?|finde|fin\s+de\s+semana|"
+    # Tanda 8 «¿Cómo estará the weather en el fin the semana de Memorial Day?» read the weather of «El Final»
+    # (Chiapas): the weekend with the English article the ear put for «de», and a holiday named «X Day» (as
+    # «día de X» already is by «dia»), are times too.
+    rf"(?:{_WEATHER_SPAN_COUNT}\s+)?(?:semanas?|finde|fin\s+(?:de|the|d)\s+semana|long\s+weekend|"
     r"weeks?|weekend|manana|tarde|noche|morning|afternoon|evening|night|hoy|today|tomorrow|ahora|now|"
     r"lunes|martes|miercoles|jueves|viernes|sabado|domingo|monday|tuesday|wednesday|thursday|"
     r"friday|saturday|sunday|dia|dias|days?|mes|meses|months?|ano|anos|years?|"
     r"navidad|nochebuena|nochevieja|ano\s+nuevo|san\s+valentin|halloween|pascua|semana\s+santa|"
-    r"dia\s+de\s+(?:los\s+)?(?:enamorados|muertos|la\s+madre|el\s+padre)|"
+    r"feriado|festivo|fiestas\s+patrias|(?:[a-z]+(?:'s|s)?\s+){1,2}day|"
     r"christmas|new\s+year|valentine|easter|thanksgiving|"
     r"fevereiro|maio|junho|julho|setembro|outubro|novembro|dezembro)\b"
 )

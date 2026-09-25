@@ -11,6 +11,9 @@ the readers already own are data added to that reader, in ``semantic/``; nothing
 - «apúntame en la lista de la compra huevos, leche y pan de molde» → «¿Qué contenido y título quieres que tenga la
   nota…?»: the list named before its entries is the same list entry as «apunta huevos en la lista de la compra».
   Owner: semantic/notes.list_entry_request.
+- «¿Cómo estará the weather en el fin the semana de Memorial Day?» → the weather of «El Final» (Chiapas): the
+  weekend with the English article the ear put for «de», a holiday named «X Day», and «de» after «día» («el día de
+  la madre») are times, never a place. Owner: semantic/system._WEATHER_TIME_WORDS and _weather_location.
 
 The phrasings below are paraphrases (es/en/spanglish, dialects, typos) the fixes do not name, with negative controls.
 """
@@ -23,6 +26,7 @@ from baxy_mind import __main__ as sidecar
 from baxy_mind.semantic import levels
 from baxy_mind.semantic.notes import list_entry_request
 from baxy_mind.semantic.reading import read
+from baxy_mind.semantic.system import _weather_location
 
 OPERATIONS = (
     "audio.mute", "audio.volume", "audio.volume.adjust", "audio.status", "media.control", "media.play.query",
@@ -172,3 +176,43 @@ def test_a_list_named_first_with_no_entry_to_add_is_not_one(text: str) -> None:
 
 def test_the_entry_said_first_still_reads_as_before() -> None:
     assert list_entry_request("apunta huevos en la lista de la compra") == ("huevos", "lista de la compra")
+
+
+# ------------------------------------------------------------------ a holiday or a weekend is a time, not a place
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "¿Cómo estará the weather en el fin the semana de Memorial Day?",
+        "weather for Memorial Day weekend",
+        "what's the weather on Labor Day",
+        "will it rain on Independence Day",
+        "how's the weather looking for Mother's Day",
+        "clima para el Día de la Independencia",
+        "clima para el día de la madre",
+        "¿hará calor en fiestas patrias?",
+        "pronóstico para el feriado",
+        "¿va a llover el long weekend?",
+        "clima pal fin d semana",
+    ],
+)
+def test_a_holiday_or_a_weekend_is_no_place_for_the_weather(text: str) -> None:
+    assert _weather_location(text) is None
+
+
+@pytest.mark.parametrize(
+    ("text", "place"),
+    [
+        ("weather in Chicago on Memorial Day", "Chicago"),
+        ("weather this Memorial Day in Chicago", "Chicago"),
+        ("clima en el fin d semana en Lima", "Lima"),
+        ("clima para el día de la madre en Quito", "Quito"),
+        ("¿va a llover el long weekend en Toronto?", "Toronto"),
+        ("clima en Puente Alto", "Puente Alto"),
+        ("weather in Daytona", "Daytona"),
+        ("clima en El Salvador el día de la madre", "El Salvador"),
+    ],
+)
+def test_the_town_named_beside_the_holiday_is_still_the_place(text: str, place: str) -> None:
+    assert _weather_location(text) == place
