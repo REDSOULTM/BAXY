@@ -94,3 +94,14 @@ DEV-B y el conjunto de regresión.
 primero el último pedido como pedido completo y después decide) terminó después de escribir D11 y es la
 configuración ganadora de F2: Qwen3.5-4B 189/260 y 204/253 (seguimientos 51/68 y 61/66) frente a 182 y 196 con `min`,
 p50 0,67 s. El torneo se corre en `request`; el resto de la regla no cambia.
+
+## D12. Regla de entrada de M1 (decisor en contexto + Qwen3.5-4B + 12 288 por ranura), escrita antes de medirlo
+M1: `semantic/decider.py` + `LlmRuntime.decide_in_context` + `_context_decided_result`. Un mensaje con conversación
+previa lo decide el decisor con la conversación entera; el primero de una conversación pasa por los lectores y, si
+ninguno lo prueba, lo decide el decisor (reparto V2 de F2). El modelo del runtime pasa a Qwen3.5-4B Q4_K_M con 3
+ranuras × 12 288 (3 708 MiB medidos). Entra si, con la cifra **estricta** de `comprension_eval.py` (decisión y
+argumentos clave): DEV-B total ≥ 72,2 % (base 69,2 + 3) **o** seguimientos de DEV-B ≥ 58,0 % (base 53,0 + 5); y en
+regresión: capa A ≥ 96,0 % (base 96,5), reserva MASSIVE ≥ 81,2 % (base 82,2), y cada decisión de las 742 distinta de
+la base revisada una a una. Guion del dueño, held-out y cien se miden en la ventana en el hito de F5. Si no entra, se
+revierte. Después de entrar, lo que sustituye (selector nativo, lista corta para decidir, vetos del camino del modelo,
+re-armado del hueco, recuperación) se retira en commits medidos con el mismo conjunto.
