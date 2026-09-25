@@ -25,8 +25,9 @@ One owner per rule:
    value of that kind (a duration for a time, a percent for a level), never a range; the effect is the one the
    message itself asks for. Owners: semantic/dialogue._VALUE_POINTER, .value_from_reply;
    __main__._rearm_in_context (continuing accepts what the message asks for).
-7. A day said in the other language, or typed with its stem kept («tomorow»), is the same word for the rewrite's
-   check: «… mañana …» after «tomorow», «… today» after «hoy» were rejected. Owner:
+7. A day said in the other language, or typed with its stem kept («tomorow»), is the same word in the language of
+   the message for the rewrite's check: «… mañana …» after «tomorow», «… today» after «hoy» were rejected. Into
+   another language it is still a word the model brought (tanda 7's rule stands). Owner:
    semantic/dialogue.rewrite_stays_in_context (_SAME_DAY).
 
 Every list holds fresh phrasings (Spanish dialects, English, Spanglish); none is a literal of the tanda.
@@ -314,7 +315,9 @@ def test_a_rewrite_that_reads_what_the_message_itself_asks_for_is_kept():
     [
         (("¿llueve hoy en Lima?", "No, hoy no llueve en Lima.", "and is it windy?"), "is it windy in Lima today", True),
         (("what's the weather like", "It's 20 °C in Lima.", "y el tmrw?"), "¿y mañana en Lima?", True),
-        (("clima del sábado", "El sábado habrá sol.", "and on sunday?"), "¿y el domingo?", True),
+        (("clima del sábado", "El sábado habrá sol.", "y el sunday?"), "¿y el domingo?", True),
+        # Into a language that is not the message's, the day is still a word the model brought (tanda 7).
+        (("clima del sábado", "El sábado habrá sol.", "and on sunday?"), "¿y el domingo?", False),
         # A day nobody said in any language is still a word the model brought.
         (("¿llueve hoy en Lima?", "No, hoy no llueve en Lima.", "and is it windy?"), "is it windy in Lima on friday", False),
     ],
