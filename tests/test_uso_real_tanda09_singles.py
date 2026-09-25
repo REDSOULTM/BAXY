@@ -87,3 +87,29 @@ def test_the_weather_of_a_name_said_bare_is_the_weather_there(text: str, place: 
 )
 def test_a_span_of_something_is_not_the_weather(text: str) -> None:
     assert "weather.current" not in _effects(text)
+
+
+# ------------------------------------------------------------------ «vivimos» asks the present like «estamos»
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "dime en que día de la semana vivimos",
+        "¿en qué año vivimos?",
+        "en que mes vivimos",
+        "sabes en qué día vivimos hoy",
+        "en q dia vivimos",
+        "what year do we live in",
+        "what day are we living in",
+    ],
+)
+def test_the_day_we_live_in_is_the_clock(text: str) -> None:
+    assert _effects(text) == ("system.time",)
+
+
+@pytest.mark.parametrize(
+    "text", ["en qué época vivimos", "en qué país vivimos", "en qué mundo vivimos", "en qué ciudad vivimos tú y yo"]
+)
+def test_other_places_and_eras_we_live_in_are_not_the_clock(text: str) -> None:
+    assert "system.time" not in _effects(text)

@@ -149,7 +149,9 @@ _PRESENT_CALENDAR_QUESTION = re.compile(
     rf"{_CALENDAR_ASK}(?:"
     rf"(?:ya\s+)?(?:hoy\s+)?(?:estamos|es)\s+(?:(?:a|en)\s+)?{WEEK_PERIOD}(?:\s+ya)?{_CALENDAR_NOW}|"
     rf"(?:is\s+(?:it|today)|are\s+we\s+(?:in|at|on))\s+{WEEK_PERIOD}(?:\s+(?:yet|already))?{_CALENDAR_NOW}|"
-    rf"(?:en|a)\s+(?:que|cual)\s+{_CALENDAR_UNIT}\s+(?:estamos|nos\s+encontramos){_CALENDAR_NOW}|"
+    # Tanda 9 «dime en qué día de la semana vivimos» searched the web: «vivimos» says the present as «estamos».
+    rf"(?:en|a)\s+(?:que|qe|q|cual)\s+{_CALENDAR_UNIT}\s+(?:estamos|vivimos|nos\s+encontramos){_CALENDAR_NOW}|"
+    rf"(?:what|which)\s+{_CALENDAR_UNIT}\s+(?:do\s+we\s+live\s+in|are\s+we\s+living\s+in){_CALENDAR_NOW}|"
     rf"(?:hoy\s+)?(?:que|cual)\s+{_CALENDAR_UNIT}\s+(?:es|tenemos|estamos|cae){_CALENDAR_NOW}|"
     rf"(?:que|cual|what|which)\s+{_CALENDAR_UNIT}\s+{_CALENDAR_SHOWN}|"
     rf"a\s+(?:cuantos|que(?:\s+dia)?)\s+estamos{_CALENDAR_NOW}|"
