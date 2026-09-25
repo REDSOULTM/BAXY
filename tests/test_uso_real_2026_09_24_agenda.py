@@ -247,7 +247,7 @@ def test_a_public_event_is_not_the_persons_data(text: str) -> None:
     ],
 )
 def test_whether_baxy_holds_reminders_or_alarms_is_a_read_of_them(text: str, operation: str) -> None:
-    assert reminder_inventory_question(text) == operation
+    assert reminder_inventory_question(text) == (operation,)
     effects = resolve_explicit_effects(text, OPERATIONS)
     assert effects is not None and effects.operations == (operation,)
 

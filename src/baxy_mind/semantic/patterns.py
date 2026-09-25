@@ -12482,8 +12482,8 @@ def _resolve_clause_effects(
         return EffectIntent(("system.time",), (folded,))
     if "calendar.event.list" in available and agenda_read_request(text):
         return EffectIntent(("calendar.event.list",), (folded,))
-    if (inventory := reminder_inventory_question(text)) in available:
-        return EffectIntent((inventory,), (folded,))
+    if (inventory := reminder_inventory_question(text)) and set(inventory) <= set(available):
+        return EffectIntent(inventory, (folded,) * len(inventory))
     event = agenda_event_request(text)
     event_operation = "notification.schedule" if event is not None and event.repeat else "calendar.event.create"
     if event is not None and not event.missing and event_operation in available:

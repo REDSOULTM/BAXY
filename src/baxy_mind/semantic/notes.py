@@ -264,21 +264,34 @@ def agenda_read_request(text: str) -> bool:
 # Uso real 2026-09-24 «do i have any reminders pending», «tengo alarmas puestas para mañana»: whether BAXY holds
 # reminders or alarms is a read of them (reminders are listed by ``reminder.list``, alarms by
 # ``notification.list``).
+# Tanda 7b «what have I got set right now?» after a timer and a reminder, rewritten as «what alarms, timers and
+# reminders have I got set right now?»: a timer is a scheduled alarm, several kinds are asked together, and «what
+# … have I got» asks the same as «do I have». Each kind named is its read.
+_INVENTORY_KIND = r"(?:reminders?|recordatorios?|alarms?|alarmas?|timers?|temporizador(?:es)?)"
+_INVENTORY_KINDS = rf"{_INVENTORY_KIND}(?:\s*,?\s*(?:(?:and|y|or|o|&)\s+)?{_INVENTORY_KIND})*"
+_INVENTORY_HAVE = r"(?:do\s+(?:i|we)\s+have|have\s+(?:i|we)\s+got|are\s+there|is\s+there|(?:yo\s+)?(?:tengo|tenemos)|hay)"
 _REMINDER_INVENTORY = re.compile(
-    r"(?:do\s+(?:i|we)\s+have|have\s+i\s+got|are\s+there|is\s+there|(?:yo\s+)?(?:tengo|tenemos)|hay)\s+"
-    r"(?:(?:any|some|algun[oa]?s?)\s+)?(?:(?P<reminder>reminders?|recordatorios?)|alarms?|alarmas?)"
-    r"(?:\s+(?:pendientes?|pending|programad[oa]s?|puest[oa]s?|set|scheduled|activ[oa]s?|active|"
-    r"(?:for|para)\s+(?:today|tomorrow|tonight|hoy|manana|esta\s+noche)|today|tomorrow|tonight|hoy|manana))*"
+    rf"(?:{_INVENTORY_HAVE}\s+(?:(?:any|some|algun[oa]?s?)\s+)?{_INVENTORY_KINDS}"
+    rf"|(?:what|which|que|cuales|cuantos|cuantas)\s+{_INVENTORY_KINDS}\s+{_INVENTORY_HAVE})"
+    r"(?:\s+(?:pendientes?|pending|programad[oa]s?|puest[oa]s?|set|scheduled|activ[oa]s?|active|right\s+now|now|"
+    r"ahora(?:\s+mismo)?|(?:for|para|pa)\s+(?:today|tomorrow|tonight|hoy|manana|esta\s+noche)|today|tomorrow|tonight|"
+    r"hoy|manana))*"
 )
 
 
-def reminder_inventory_question(text: str) -> str | None:
-    """The read a question about BAXY's own reminders or alarms asks for (see above), or None."""
+def reminder_inventory_question(text: str) -> tuple[str, ...]:
+    """The reads a question about BAXY's own reminders, alarms or timers asks for (see above); () for any other."""
 
-    found = _REMINDER_INVENTORY.fullmatch(_strip_request_envelope(_fold(text)).strip(" ¿?¡!.,"))
-    if found is None:
-        return None
-    return "reminder.list" if found.group("reminder") else "notification.list"
+    folded = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.,")
+    if _REMINDER_INVENTORY.fullmatch(folded) is None:
+        return ()
+    kinds = re.findall(_INVENTORY_KIND, folded)
+    reads = []
+    if any(not kind.startswith("r") for kind in kinds):
+        reads.append("notification.list")
+    if any(kind.startswith("r") for kind in kinds):
+        reads.append("reminder.list")
+    return tuple(reads)
 
 
 # --- Something put on the agenda (uso real 2026-09-23) ------------------------------------------------

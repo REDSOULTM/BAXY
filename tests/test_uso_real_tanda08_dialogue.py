@@ -331,6 +331,43 @@ def test_the_weekend_answer_passes_against_the_understood_request_and_not_the_fr
     assert llm._weather_fact_defect(draft, payload, "¿y el fin de semana?") == "missing_state"
 
 
+@pytest.mark.parametrize(
+    ("text", "reads"),
+    [
+        ("what alarms, timers and reminders do I have set right now?", ("notification.list", "reminder.list")),
+        ("qué alarmas y recordatorios tengo programados", ("notification.list", "reminder.list")),
+        ("cuáles temporizadores tengo puestos ahora mismo", ("notification.list",)),
+        ("do I have any timers or reminders set for tomorrow", ("notification.list", "reminder.list")),
+        ("¿hay recordatorios pendientes pa hoy?", ("reminder.list",)),
+        ("which reminders have I got", ("reminder.list",)),
+    ],
+)
+def test_what_is_set_is_read_back_by_the_kinds_named(text, reads):
+    from baxy_mind.semantic.notes import reminder_inventory_question
+    from baxy_mind.semantic.reading import read
+
+    assert reminder_inventory_question(text) == reads
+    assert read(text, available_operations=OPERATIONS).effects.operations == reads
+
+
+@pytest.mark.parametrize("text", ["set an alarm and a reminder for 8", "qué alarma me recomiendas", "borra mis alarmas"])
+def test_other_requests_about_alarms_are_not_the_listing(text):
+    from baxy_mind.semantic.notes import reminder_inventory_question
+
+    assert reminder_inventory_question(text) == ()
+
+
+def test_what_is_set_after_a_timer_and_a_reminder_is_read_back_in_context():
+    state = dialogue.DialogueState()
+    state.expect("pon un temporizador de 20 minutos para el pan", ["notification.schedule"])
+    state.record(_verified("notification.schedule", {"kind": "alarm", "title": "pan"}))
+    state.expect("recuérdame a las 9 regar las plantas", ["reminder.create"])
+    state.record(_verified("reminder.create", {"title": "regar las plantas"}))
+    text, rewrite = "¿y qué tengo puesto ahora?", "¿qué alarmas, temporizadores y recordatorios tengo puestos ahora?"
+    message = _message("recuérdame a las 9 regar las plantas", "Listo, te aviso a las 9.", text)
+    assert _rearm(message, _Scripted({text: rewrite}), state) == (rewrite, "model")
+
+
 def test_no_worked_example_or_hint_is_a_phrase_of_a_measured_tanda():
     shown = " ".join(
         [str(part) for example in llm._REWRITE_EXAMPLES for part in example]
