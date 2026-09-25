@@ -25,7 +25,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-from .normalize import alternation, fold
+from .normalize import alternation, fold, spelled_out
 
 _WORD = re.compile(r"[a-z0-9ñ]+")
 
@@ -114,7 +114,8 @@ _fold = fold
 
 
 def _words(text: str) -> list[str]:
-    return _WORD.findall(_fold(text))
+    """The words of a text for the rewrite's check, short and chat forms in full («finde» → fin de semana)."""
+    return _WORD.findall(spelled_out(_fold(text)))
 
 
 @dataclass(frozen=True)
