@@ -12,8 +12,9 @@ from __future__ import annotations
 import re
 import threading
 import time
-import unicodedata
 from typing import Any, Callable
+
+from .semantic.request import response_language
 
 SILENCE_BUDGET_SECONDS = 3.0
 # First hito after last visible output: strictly over 3 s, before a 1 s
@@ -42,46 +43,6 @@ _PATH_COST_SECONDS = {
 }
 _EXTRA_STEP_SECONDS = 2.0
 _SNIPPET_CHARS = 42
-_SPANISH_HINTS = frozenset(
-    {
-        "abre",
-        "algo",
-        "al",
-        "con",
-        "crea",
-        "cuentame",
-        "dime",
-        "el",
-        "explicame",
-        "la",
-        "las",
-        "los",
-        "me",
-        "pon",
-        "que",
-        "silencia",
-        "sube",
-        "una",
-        "volumen",
-    }
-)
-_ENGLISH_HINTS = frozenset(
-    {
-        "about",
-        "and",
-        "how",
-        "me",
-        "mute",
-        "please",
-        "something",
-        "tell",
-        "the",
-        "what",
-        "walk",
-    }
-)
-
-
 def estimate_turn_seconds(path: str, step_count: int = 1) -> float:
     """Two-line cost: known path plus extra compound steps."""
 
@@ -114,21 +75,6 @@ def should_emit_milestone(
     return gap > ceiling
 
 
-def response_language(text: str) -> str:
-    """Pick es or en from the request. Unclear defaults to es."""
-
-    folded = unicodedata.normalize("NFKD", text or "")
-    folded = "".join(
-        character for character in folded.casefold() if not unicodedata.combining(character)
-    )
-    if re.search(r"[áéíóúñ¿¡]", text or "", re.IGNORECASE):
-        return "es"
-    tokens = set(re.findall(r"[a-z]+", folded))
-    spanish = len(tokens & _SPANISH_HINTS)
-    english = len(tokens & _ENGLISH_HINTS)
-    return "en" if english > spanish else "es"
-
-
 def _snippet(text: str) -> str:
     collapsed = re.sub(r"\s+", " ", (text or "").strip())
     collapsed = collapsed.strip(" \t.,;:¡!¿?")
@@ -148,7 +94,8 @@ def formulate_progress(
     total: int = 0,
     language: str | None = None,
 ) -> str:
-    """Formulated in-progress prose for this request. Never a result claim."""
+    """Formulated in-progress prose for this request. Never a result claim. Its language is the request's
+    (``semantic.request.response_language``, the single reader; this module kept its own until 2026-09-25)."""
 
     lang = language or response_language(user_text)
     snippet = _snippet(user_text)
