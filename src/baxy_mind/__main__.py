@@ -7545,10 +7545,13 @@ def _rearm_in_context(
         return tuple(found.operations) if found is not None else ()
 
     def continued_operations() -> tuple[str, ...]:
-        # What the message continues: the last verified operation, or what the readers read in the last request.
-        if dialogue_state is not None and dialogue_state.operations:
-            return dialogue_state.operations
-        previous = _previous_user_request(history, objective)
+        # What the message continues: what the last turn verified or was about (an effect, or the one its question
+        # asks for), or what the readers read in the last request (a conversation turn reads none).
+        if dialogue_state is not None and (dialogue_state.operations or dialogue_state.intended):
+            return dialogue_state.operations or dialogue_state.intended
+        previous = (dialogue_state.request if dialogue_state is not None else None) or _previous_user_request(
+            history, objective,
+        )
         return effects_of(previous) if previous else ()
 
     def audited(rearmed: str | None, how: str, proposal: str | None = None) -> tuple[str, str] | None:
@@ -7666,7 +7669,7 @@ def _rearm_in_context(
         # The model read «mejor» as «mejorar»; the pattern joins the destination
         # to the request as said and keeps it when the readers read it in the family
         # of that request. Tanda 7 «¿y en Mar del Plata?»: the last request is the
-        # verified one («¿va a llover el finde?»), not the previous message.
+        # last turn's as completed («¿va a llover el finde?»), not the previous message.
         joined = dialogue_slot.joined_answer(last_request, objective)
         if (
             joined is not None
@@ -7707,9 +7710,9 @@ def _rearm_in_context(
         if effects_of(replaced) == ("notification.cancel.latest", "notification.schedule"):
             return audited(replaced, "model", rewritten)
         return audited(None, "model_rejected", rewritten)
-    if dependency == "answer" and slot.pending_request and rewritten is None:
-        # The model was unavailable: the pending request and its answer travel
-        # together in the form the grounding readers already join (AUDIO1789).
+    if dependency == "answer" and slot.held and slot.pending_request and rewritten is None:
+        # The model was unavailable: the pending request the shell holds and its answer travel together in the
+        # form the grounding readers already join (AUDIO1789). A question read only from the history is not held.
         return audited(f"{slot.pending_request}\nAclaración confiable del usuario: {objective}", "joined")
     return audited(None, "model_rejected" if rewritten else "model_failed", rewritten)
 
@@ -7729,8 +7732,8 @@ def _prepare_turn_result(
 ) -> dict[str, Any]:
     """Prepare one side-effect-free turn result, after filling the dialogue slot.
 
-    ``dialogue_state`` is what this conversation verified so far (the serve loop owns it); it is read, never
-    written, here.
+    ``dialogue_state`` is what the conversation left so far (the serve loop owns it); it is read, never written,
+    here.
     """
 
     rearmed = _rearm_in_context(
@@ -10029,7 +10032,8 @@ def _run_sidecar(
     application_catalog = build_application_catalog_index(application_names)
     game_entries: tuple[tuple[str, str, str], ...] = ()
     game_catalog = build_game_catalog_index(game_entries)
-    # What this conversation verified, for the next follow-up (tanda 7); written only from composed results.
+    # What the conversation left for the next follow-up (tanda 7/8): the last turn's request, told by turn.decide,
+    # and the facts of verified results, told by message.compose.
     dialogue_state = dialogue_slot.DialogueState()
     planner_catalog = None
     skill_registry = None
@@ -10365,9 +10369,11 @@ def _run_sidecar(
                         attempts=len(turn_failure_kinds) or 2,
                         failure_kinds=tuple(turn_failure_kinds),
                     )
-                # The request this turn decided waits for its verified result (message.compose).
+                # The request this turn decided is the last one now; its operations (the effects, or those a
+                # question is about) wait for their verified results (message.compose).
                 dialogue_state.expect(
-                    turn_result.get("objective") or message.get("text", ""), turn_result.get("effectOperations"),
+                    turn_result.get("objective") or message.get("text", ""),
+                    turn_result.get("effectOperations") or turn_result.get("intentOperations"),
                 )
                 write_request_message(turn_result)
             elif kind == "plan":

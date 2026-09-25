@@ -15,7 +15,9 @@ This module decides only *whether* the message depends on the context and
 person and BAXY did not already say.
 
 The shell holds the pending request (it asked); it sends it with the turn and uses
-the rewritten request the mind returns. Neither side re-reads the other's text.
+the rewritten request the mind returns. Neither side re-reads the other's text. A
+question BAXY asked that the shell does not hold still belongs to the request before
+it, and a yes or a value after it answers that request (``read_slot``).
 """
 
 from __future__ import annotations
@@ -65,12 +67,18 @@ _REFUSAL = re.compile(
 _PROHIBITION = re.compile(r"^(?:no|nunca|jamas|tampoco|don'?t|do\s+not|never)\s+(?:(?:me|te|lo|la|los|las|le|les|it)\s+)?[a-z]{3,}")
 # A request whose only object is a demonstrative («haz eso», «ábreme eso porfa», «do that»).
 _BARE_DEICTIC_REQUEST = re.compile(r"[a-z]+(?:\s+(?:me|lo|la))?\s+(?:eso|esto|aquello|that|this|it)(?:\s+(?:porfa|por\s+favor|please))?")
-# Talk that never answers a slot, even with a question pending.
-_SOCIAL = re.compile(
-    r"^(?:gracias|muchas\s+gracias|genial|perfecto|buenisimo|jaja\w*|uf+|ah+|oh+|wow|que\s+bien|"
+# Talk that never answers a slot, even with a question pending: the whole message is thanks, a reaction or a
+# closing, with at most a filler around it. Tanda 8 «ah, y tomates» is an interjection before a request, not talk.
+_SOCIAL_WORD = (
+    r"(?:gracias|muchas\s+gracias|genial|perfecto|buenisimo|jaja\w*|jeje\w*|uf+|ah+|oh+|wow|"
+    r"que\s+(?:bien|bueno|buena|genial|lindo|linda|risa|gracioso)|"
     r"thanks|thank\s+you|cool|nice|great|"
     # Tanda 7 «no that's all thank you»: closing the conversation continues nothing.
-    r"that'?s\s+(?:all|it)|eso\s+es\s+todo|nada\s+mas|nothing\s+else)\b"
+    r"that'?s\s+(?:all|it)|eso\s+es\s+todo|nada\s+mas|nothing\s+else)"
+)
+_SOCIAL = re.compile(
+    rf"(?:(?:ok|okay|okey|vale|bueno|no|y|and|muy|mucho|so|very|much|really|baxy)\s*[,.!]*\s+)*{_SOCIAL_WORD}"
+    rf"(?:\s*[,.!]*\s*(?:{_SOCIAL_WORD}|ok|okay|baxy|so\s+much|very\s+much|a\s+lot|entonces|then))*"
 )
 _NUMBER_WORDS = (
     "cero uno una dos tres cuatro cinco seis siete ocho nueve diez once doce trece catorce quince dieciseis "
@@ -90,6 +98,16 @@ _STOPWORDS = frozenset(
     the a an and or to of in on at for with it this that is are be my your me you
     """.split()
 )
+# The frame of a request, which names no object, amount or place: a verb that sets or tells and a question word.
+# Tanda 8 «40 percent» after «the screen is way too bright» is «set the screen brightness to 40 percent»; the
+# object still has to be one said, and a follow-up must still read the family it continues.
+_FRAME_WORDS = frozenset(
+    """
+    set put make change turn tell show read give pon ponme poner pone cambia cambiar deja dejar dime decime muestra
+    muestrame lee leeme dame what which who how when where cual cuales quien quienes como cuando donde cuanto
+    cuanta cuantos cuantas have has got do does did tengo tiene hay
+    """.split()
+)
 
 
 _fold = fold
@@ -107,6 +125,7 @@ class DialogueSlot:
     pending_question: str | None
     antecedents: tuple[str, ...]  # user requests, most recent first (at most two)
     last_reply: str | None
+    held: bool = True  # the shell holds the pending request; False when it is only read from BAXY's question
 
     @property
     def has_context(self) -> bool:
@@ -123,7 +142,13 @@ class DialogueSlot:
 
 
 def read_slot(message: dict, history: object, current: str) -> DialogueSlot:
-    """Read the slot from the shell's pending request and the recent history."""
+    """Read the slot from the shell's pending request and the recent history.
+
+    Tanda 8 («the screen is way too bright» → «Do you mean…?» → «40 percent»): when BAXY's last reply asked a
+    question and the shell holds no request for it, the question still belongs to the person's request before it,
+    as a person would hear it; the answer is read against that request. The rewrite it leads to is decided by the
+    ordinary path, so the slot grants nothing by itself.
+    """
 
     pending_request = str(message.get("pendingObjective") or "").strip() or None
     items = [item for item in history if isinstance(item, dict)] if isinstance(history, list) else []
@@ -139,8 +164,12 @@ def read_slot(message: dict, history: object, current: str) -> DialogueSlot:
             last_reply = content[:400]
         elif role == "user" and len(antecedents) < 2:
             antecedents.append(content[:400])
-    pending_question = last_reply if pending_request and last_reply and last_reply.rstrip().endswith("?") else None
-    return DialogueSlot(pending_request, pending_question, tuple(antecedents), last_reply)
+    asked = bool(last_reply and last_reply.rstrip().endswith("?"))
+    held = pending_request is not None
+    if not held and asked and antecedents:
+        pending_request = antecedents[0]
+    pending_question = last_reply if pending_request and asked else None
+    return DialogueSlot(pending_request, pending_question, tuple(antecedents), last_reply, held)
 
 
 def _object_pronoun(folded: str) -> bool:
@@ -177,7 +206,7 @@ def dependency(text: str, slot: DialogueSlot) -> str | None:
     if not slot.has_context:
         return None
     folded = _fold(text).strip(" ¿?¡!.,")
-    if not folded or _SOCIAL.match(folded) or _REFUSAL.fullmatch(folded) or _PROHIBITION.match(folded):
+    if not folded or _SOCIAL.fullmatch(folded) or _REFUSAL.fullmatch(folded) or _PROHIBITION.match(folded):
         return None
     words = folded.split()
     if slot.pending_request:
@@ -187,9 +216,8 @@ def dependency(text: str, slot: DialogueSlot) -> str | None:
             return None
         if _ASSENT.fullmatch(folded) or _NUMBER_ANSWER.fullmatch(folded):
             return "answer"
-        if len(words) <= 5 and _DESTINATION_ONLY.fullmatch(folded):
-            return "answer"
-        if len(words) <= 4:
+        # A question read only from BAXY's reply is answered by a yes or a value; any other message is read as usual.
+        if slot.held and ((len(words) <= 5 and _DESTINATION_ONLY.fullmatch(folded)) or len(words) <= 4):
             return "answer"
     rest = followup(text).folded
     if (
@@ -230,10 +258,10 @@ def rewrite_stays_in_context(
     for source in (text, *(line for _, line in (*slot.context_lines(), *(verified or ())))):
         for word in _words(source):
             said.add(word[:4])
-    content = [word for word in _words(rewrite) if word not in _STOPWORDS and not word.isdigit()]
-    if not content:
+    meaningful = [word for word in _words(rewrite) if word not in _STOPWORDS]
+    if not meaningful:
         return False
-    return all(word[:4] in said for word in content)
+    return all(word[:4] in said for word in meaningful if word not in _FRAME_WORDS and not word.isdigit())
 
 
 _NUMBER_VALUES = {
@@ -454,10 +482,11 @@ def asks_to_look_up(text: str) -> bool:
 # eso», «is the entrance free». Each was read alone and lost what it continued.
 #
 # Two pieces, and no reading of any one phrase:
-# - The dialogue state: the last thing of each kind this conversation verified — the place a weather read
-#   reported and the day it was asked for, what the player says is playing, the alarm and the reminder created
-#   (with the alarm's id), the topic searched, the level set, and the last request that ran. Only verified
-#   results write it, never BAXY's text.
+# - The dialogue state: the last turn's request (whatever came of it: tanda 8) and the last thing of each kind this
+#   conversation verified — the place a weather read reported and the day it was asked for, what the player says
+#   is playing, the alarm and the reminder created (with the alarm's id), the topic searched, the level set. Only
+#   verified results write the facts, never BAXY's text; BAXY's last reply reaches the rewrite as the conversation
+#   the person saw (a number it computed, a place it named).
 # - The trigger, by form: a connector or a correction first («y», «and», «actually», «mejor», «no, …»), a bare
 #   part with no verb of its own (a day, a place, an amount, «otra»), a place or a thing said as «allá», «esta»,
 #   «eso», «it», a question with no object («what have I got set?»), or a short question about something already
@@ -497,8 +526,9 @@ _DAY = (
     r"(?:pasado\s+manana|manana|hoy|ayer|anoche|anteayer|esta\s+(?:noche|tarde)|fin\s+de\s+semana|finde|"
     rf"semana\s+(?:que\s+viene|proxima)|today|tonight|tomorrow|yesterday|last\s+night|weekend|week|{_WEEKDAY})"
 )
+# «a las 6 y cuarto», «a las 7 y media», «a las 8 y 20»: the minutes said in words are part of the hour.
 _CLOCK = (
-    r"(?:a\s+las?|at|para\s+las?|by|around|como\s+a\s+las?)\s+\d{1,2}(?::\d{2})?"
+    r"(?:a\s+las?|at|para\s+las?|by|around|como\s+a\s+las?)\s+\d{1,2}(?::\d{2}|\s+y\s+(?:cuarto|media|\d{1,2}))?"
     r"(?:\s*(?:am|pm|a\.?\s?m\.?|p\.?\s?m\.?|hs|horas|de\s+la\s+(?:manana|tarde|noche)|in\s+the\s+(?:morning|afternoon|"
     r"evening)))?"
 )
@@ -530,11 +560,13 @@ _DEFINITE_QUESTION = re.compile(
     r"(?:the|it|they|this|that|el|la|los|las|eso|esto|ella|ellos)\b"
 )
 _ANAPHORIC_PRONOUN = re.compile(r"\b(?:it|its|they|them|their|he|she|him|his|her|ella|ellos|ellas|eso|esa|ese)\b")
-# «what have I got set», «qué tengo programado»: what the person has, with no object named.
+# «what have I got set», «qué tengo programado», «¿qué llevo ya?» (tanda 8, after a shopping list): what the person
+# has or holds, asked with no object named — the whole question is the verb and when.
 _OWN_LISTING = re.compile(
-    r"^(?:what|which|que|cuales|cuantos|cuantas)\s+(?:(?:have|do|did)\s+(?:i|we)\s+(?:got\s+|have\s+)?|"
-    r"(?:tengo|tenemos|hay|me\s+quedan?)\s+)(?:set|scheduled|pending|programad[oa]s?|puest[oa]s?|pendientes?|"
-    r"activ[oa]s?|active|on|going)\b"
+    r"^(?:what|which|que|cuales|cuantos|cuantas|cuanto|cuanta)\s+(?:(?:have|do|did)\s+(?:i|we)(?:\s+(?:got|have))?|"
+    r"(?:me\s+|nos\s+)?(?:tengo|tenemos|hay|quedan?|faltan?|llevo|llevamos|[a-zñ]{3,}o))"
+    r"(?:\s+(?:set|scheduled|pending|programad[oa]s?|puest[oa]s?|pendientes?|activ[oa]s?|active|on|going|ya|"
+    r"ahora|todavia|aun|hasta\s+ahora|already|so\s+far|right\s+now|now|en\s+total|in\s+total))*"
 )
 _SPANISH_WORD = re.compile(
     r"\b(?:que|quien|quienes|cual|cuales|como|donde|cuando|cuanto|el|la|los|las|es|fue|son|de|del|y|un|una|esta|"
@@ -619,9 +651,9 @@ def leans_on_context(text: str) -> bool:
 
     said = followup(text)
     folded = said.folded
-    if not folded or _SOCIAL.match(folded) or _REFUSAL.fullmatch(folded) or _PROHIBITION.match(folded):
+    if not folded or _SOCIAL.fullmatch(folded) or _REFUSAL.fullmatch(folded) or _PROHIBITION.match(folded):
         return False
-    if said.fragment or refers_back(text) or _OWN_LISTING.match(folded):
+    if said.fragment or refers_back(text) or _OWN_LISTING.fullmatch(folded):
         return True
     # A name of its own in a question («y quién ganó el Mundial?») is a new subject: that question is complete.
     names_something = re.search(r"\s(?!I\b)[A-ZÁÉÍÓÚÑ]", said.said) is not None or re.search(r"[\"«“]", said.said)
@@ -680,11 +712,19 @@ def _said_time(request: str) -> str | None:
 
 
 class DialogueState:
-    """The last thing of each kind this conversation verified. The serve loop owns one and passes it in.
+    """What the conversation left for the next follow-up. The serve loop owns one and passes it in.
 
-    ``expect`` is told the request a turn decided and its operations; ``record`` is given the situation of each
-    composed result and keeps it only when the operation was one of those, verified and succeeded. A new
-    conversation starts it over (``reset``).
+    Two parts, as a person keeps them. The last turn: the request it decided, in the person's words as completed,
+    whatever came of it (an answer, a question, an effect), with the operations it was about and those of them
+    verified. And the last thing of each kind any turn verified (place, day, what plays, the alarm and the
+    reminder set, the topic searched, a level). Tanda 8: the state followed only verified turns, so after an answer
+    or a question the last request was an older one («ábreme la calculadora» for «y eso por 12?») and a correction
+    of the alarm still being asked for was judged against it.
+
+    ``expect`` is told every turn's decided request and its operations (the effects, or those a question was
+    about); ``record`` is given the situation of each composed result and keeps it only when the operation was one
+    of the last turn's, verified and succeeded. Never written from BAXY's text. A new conversation starts it over
+    (``reset``).
     """
 
     _LABELS = (
@@ -701,39 +741,34 @@ class DialogueState:
     )
 
     def __init__(self) -> None:
-        self._expected: tuple[str, tuple[str, ...]] | None = None
-        self._facts: dict[str, str] = {}
-        self.operations: tuple[str, ...] = ()  # the last verified request's operations
-        self.families: set[str] = set()  # every family this conversation verified
+        self.reset()
 
     def reset(self) -> None:
-        self._expected = None
-        self._facts = {}
-        self.operations = ()
-        self.families = set()
-
-    @property
-    def request(self) -> str | None:
-        """The last request whose result was verified, in the person's words as completed."""
-
-        return self._facts.get("request")
+        self.request: str | None = None  # the last turn's request
+        self.intended: tuple[str, ...] = ()  # the operations the last turn was about
+        self.operations: tuple[str, ...] = ()  # those of them verified
+        self.families: set[str] = set()  # every family this conversation verified
+        self._facts: dict[str, str] = {}
 
     def expect(self, request: str, operations: object) -> None:
-        names = tuple(str(op) for op in operations) if isinstance(operations, (list, tuple)) else ()
-        self._expected = (str(request or "").strip(), names) if names else None
+        self.request = str(request or "").strip() or None
+        self.intended = tuple(str(op) for op in operations) if isinstance(operations, (list, tuple)) else ()
+        self.operations = ()
+        self._facts.pop("request", None)
 
     def record(self, situation: object) -> None:
-        if not isinstance(situation, dict) or self._expected is None:
+        if not isinstance(situation, dict) or self.request is None:
             return
         operation = str(situation.get("operation") or "")
-        request, expected = self._expected
-        if operation not in expected or situation.get("verified") is not True or situation.get("succeeded") is not True:
+        if (
+            operation not in self.intended
+            or situation.get("verified") is not True
+            or situation.get("succeeded") is not True
+        ):
             return
+        request = self.request
         observed = situation.get("observed") if isinstance(situation.get("observed"), dict) else {}
-        self.operations = (
-            tuple(dict.fromkeys((*self.operations, operation))) if self._facts.get("request") == request
-            else (operation,)
-        )
+        self.operations = tuple(dict.fromkeys((*self.operations, operation)))
         self._facts["request"] = request
         family = _family(operation)
         self.families.add(family)
@@ -772,10 +807,11 @@ class DialogueState:
         return [("verificado", f"{label}: {self._facts[key]}") for key, label in self._LABELS if key in self._facts]
 
     def cancel_last_alarm(self, in_spanish: bool) -> str | None:
-        """«cancela el último temporizador» / «cancel the last timer» when this conversation set an alarm or a
-        timer: a correction of it («actually make it 9») replaces it instead of setting a second one."""
+        """«cancela el último temporizador» / «cancel the last timer» when the last turn set an alarm or a timer: a
+        correction of it («actually make it 9») replaces it instead of setting a second one. A correction of an
+        alarm still being asked for («no, mejor a las 6:15» after «¿a qué hora…?») has nothing to replace."""
 
-        if "alarm" not in self._facts:
+        if "notification.schedule" not in self.operations:
             return None
         timer = self._facts.get("alarm_noun") in {"timer", "temporizador"}
         if in_spanish:

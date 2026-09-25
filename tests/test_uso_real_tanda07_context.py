@@ -200,7 +200,8 @@ def test_the_state_is_written_only_by_a_verified_result_of_the_decided_operation
     state.expect("¿llueve mañana en Rosario?", ["weather.current"])
     state.record(_verified("weather.current", {"location": "Rosario"}, verified=False))  # not verified
     state.record(_verified("media.status", {"title": "Otra"}))  # not the decided operation
-    assert state.lines() == [] and state.request is None
+    # Nothing is verified; the request is still the one the last turn decided (tanda 8), never a fact.
+    assert state.lines() == [] and state.operations == () and state.request == "¿llueve mañana en Rosario?"
     state.expect("¿qué hora es?", [])  # a conversation turn decides no operation
     state.record(_verified("weather.current", {"location": "Rosario"}))
     assert state.lines() == []
