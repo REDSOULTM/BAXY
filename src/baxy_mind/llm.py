@@ -2850,9 +2850,14 @@ def _shaped_conversation_answer_violates_contract(
         # never the assistant's own tastes, offers or questions (MEMORY1501
         # finals «Me encanta el café…», «¡A mí también! ¿Te gusta…?»,
         # «¡Claro! ¿Quieres un té…?»).
-        thing_words = [
+        taste = _policy_guard_text(first_person_preference(request) or "")
+        # Verification 2026-09-25 (owner script «Me gusta como se desenvuelven» → «…el modo en que se desarrollan…»
+        # rejected twice, then a recovery question): a taste said as a manner («cómo se desenvuelven», «how they
+        # talk») names no thing; it is acknowledged in other words. A thing («el café») is still named.
+        manner = re.match(r"(?:como|cuando|lo\s+que|la\s+forma|el\s+modo|how|when|what|the\s+way)\b", taste) is not None
+        thing_words = [] if manner else [
             word
-            for word in re.findall(r"[a-z0-9]+", _policy_guard_text(first_person_preference(request) or ""))
+            for word in re.findall(r"[a-z0-9]+", taste)
             if len(word) >= 4 and word not in _PREFERENCE_FUNCTION_WORDS
         ]
         return (
