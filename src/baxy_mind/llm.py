@@ -5742,7 +5742,10 @@ _TYPED_TRANSITION_OPERATIONS = frozenset({
 def _lift_observed_blob(blob: dict) -> dict:
     lifted = dict(blob)
     state = blob.get("state")
-    if not isinstance(state, dict) and blob.get("applied") is True:
+    if not isinstance(state, dict):
+        # Tanda 6b «Quiero el sound de nuevo please» with the sound already on: nothing was applied, but the final
+        # read is still the observed state. Lifted only when applied, «No, el sonido no está activo, sigue en
+        # silencio.» was published over muted=false: no mute check saw a mute state.
         state = blob.get("final")
     if isinstance(state, dict):
         if "muted" in state:
@@ -12080,6 +12083,13 @@ def compose_visible_defect(
                 else folded
             )
             if re.search(r"silenci|\bmuted\b", told_now) and unmuted_ok is None:
+                return "reversed_mute"
+            # Tanda 6b «No, el sonido no está activo…» over muted=false: the sound said off is a mute said otherwise.
+            if re.search(
+                r"\b(?:sonido|audio|speakers?|altavoz|altavoces|sound)\s+(?:\w+\s+){0,2}?"
+                r"(?:no\s+est[aá]\s+activ|is\s+not\s+active|isn'?t\s+active|is\s+off\b|est[aá]\s+apagad)",
+                told_now,
+            ):
                 return "reversed_mute"
         # Owner's test 2026-09-21 (turn 205): «Tu micrófono está activo» names
         # the observed unmute by its device; the state word need not be «mute».

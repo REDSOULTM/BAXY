@@ -35,6 +35,11 @@ controls that keep a false fact out.
    el sol a las 19:45.», the other sun event. The event asked (sunrise or sunset) is read apart, only it and the
    asked day are sent, and the validator rejects the other event's time. Owners: semantic.web
    weather_sun_events_asked; llm._project_weather_read, _weather_focus, _weather_fact_defect.
+7. t14 «Quiero el sound de nuevo please» (sound already on, volume 0, nothing applied) published «No, el sonido no
+   está activo, sigue en silencio.» over muted=false: the final state was lifted only when the effect was applied,
+   so no mute check saw one. The final read is the observed state either way; a mute (or the sound said off)
+   contrary to it is reversed_mute, and the honest reply says the sound is on with its volume. Owners:
+   llm._lift_observed_blob, compose_visible_defect (mute).
 """
 
 from __future__ import annotations
@@ -486,6 +491,77 @@ def test_one_alarm_said_by_its_hour_and_day() -> None:
     assert _alarm_defect("Alarma puesta para mañana a las 23:00.", today, "pon una alarma a las 11 de la noche") == (
         "extra_claim"
     )
+
+
+# --- 7. the sound already on: no mute is claimed -----------------------------------------------------------------
+
+
+def _mute_read(baseline_muted: bool, final_muted: bool, level: int = 0) -> dict:
+    return {
+        "kind": "operation", "operation": "audio.mute", "polarity": "success", "verified": True, "succeeded": True,
+        "observed": {
+            "operation": "audio.mute", "targetId": "default_output", "endpointIdHash": "0" * 64,
+            "baseline": {"volumePercent": level, "muted": baseline_muted},
+            "final": {"volumePercent": level, "muted": final_muted},
+            "applied": baseline_muted != final_muted, "reconciled": False,
+        },
+    }
+
+
+def _mute_defect(reply: str, situation: dict, asked: str) -> str:
+    payload = llm._compose_situation_payload(situation, "es", asked)
+    return llm.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(situation)}) or (
+        llm._payload_fact_defect(reply, payload, asked)
+    )
+
+
+_T14 = "Quiero el sound de nuevo please"
+
+
+def test_the_final_state_is_sent_even_when_nothing_changed() -> None:
+    seen = llm._compose_situation_payload(_mute_read(False, False), "es", _T14)["seen"]
+    assert seen["muted"] is False and seen["level"] == 0
+
+
+@pytest.mark.parametrize(
+    ("asked", "reply"),
+    [
+        (_T14, "El sonido ya está activo, pero el volumen está en 0."),
+        ("reactiva el audio", "El audio ya estaba activo; el volumen está en 0 %."),
+        ("unmute the sound", "The sound is already on, but the volume is at 0."),
+        ("turn the sound back on", "Sound's not muted; the volume is at 0%."),
+    ],
+)
+def test_the_sound_already_on_is_said_with_its_volume(asked: str, reply: str) -> None:
+    assert _mute_defect(reply, _mute_read(False, False), asked) == ""
+
+
+@pytest.mark.parametrize(
+    ("asked", "reply", "defect"),
+    [
+        (_T14, "No, el sonido no está activo, sigue en silencio.", "reversed_mute"),  # t14, published: false
+        (_T14, "El sonido sigue silenciado.", "reversed_mute"),
+        ("dame sonido otra vez", "El sonido no está activo.", "reversed_mute"),
+        ("turn the sound back on", "The sound is off.", "reversed_mute"),
+        ("unmute the sound", "The sound is still muted.", "reversed_mute"),
+        # On but at 0: the volume is the honest part of the answer.
+        (_T14, "El sonido ya está activo.", "missing_name"),
+    ],
+)
+def test_a_mute_contrary_to_the_final_read_is_rejected(asked: str, reply: str, defect: str) -> None:
+    assert _mute_defect(reply, _mute_read(False, False), asked) == defect
+
+
+def test_a_real_mute_and_a_real_unmute_are_still_told_as_read() -> None:
+    # Negative control: muted, «no está silenciado» is the false one.
+    assert _mute_defect("El sonido ya no está silenciado.", _mute_read(True, True), "silencia") == "reversed_mute"
+    assert _mute_defect("El sonido sigue silenciado, con el volumen en 0.", _mute_read(True, True), "silencia") == ""
+    # Tanda 6 t4: the baseline mute told next to the unmute.
+    assert _mute_defect(
+        "El speaker estaba silenciado y ahora está activo, con el volumen en 0%.",
+        _mute_read(True, False),
+        "Reactiva el speaker.",
+    ) == ""
 
 
 # --- 6. the sun event asked, not the other one --------------------------------------------------------------------
