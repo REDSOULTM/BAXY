@@ -75,3 +75,18 @@ Ley 1: su arquitectura (DeltaNet híbrido) no reutiliza el prefijo del prompt en
 caliente de un decisor con prompt fijo largo; se mide, no se supone. Otros nuevos a considerar en F3: IBM Granite 4.2
 3B/8B (25-ago, Apache-2.0; 8B con RL agéntico) y el refresco de pesos de Gemma 4 E2B (15-jul, arreglos de tool calling).
 Descartados por tamaño: Qwen3.6-35B-A3B, Nex-N2.5-mini (35B-A3B), Qwen3.8-27B.
+
+## D11. Regla prerregistrada del torneo F3 (escrita antes de medir, 2026-09-25 15:25)
+Configuración: la ganadora de F2 — decisor libre (`comprension-f1/free_model.py`, variante `min`, mismo prompt y
+catálogo compacto para todos, plantilla de chat embebida del GGUF), `llama-server` b9980 con los flags del producto,
+1 slot, 12 288 de contexto. Población: DEV-A + DEV-B (513 turnos), sólo decisión.
+Candidatos: Qwen3.5-4B Q4_K_M (líder de F2), Qwen3-4B-Instruct-2507 Q4_K_M (actual), Qwen3.8-4B-Distill Q4_K_M,
+Granite 4.2 3B Q4_K_M, Gemma 4 E2B Q4_K_M (pesos de julio), Phi-4-mini Q4_K_M, Qwen3-8B IQ3_XXS. Fuera por VRAM sin
+medir: Granite 4.2 8B (Q3_K_S 3,94 GB + contexto), Qwen3.5-9B, Gemma 4 E4B, Qwen3-4B Q6/Q8. xLAM-2-3b sólo con el «sí»
+del dueño (cc-by-nc-4.0).
+Regla: un candidato **desplaza al líder** si (1) acierta **≥ +10 turnos** en A+B con McNemar exacto p < 0,10 sobre los
+turnos emparejados, (2) no pierde más de 2 seguimientos (134), (3) decisión p50 ≤ 1,0 s y p90 ≤ 2,5 s, (4) pico de VRAM
+del árbol del servidor ≤ 4 096 MiB medido, (5) licencia que permite uso comercial. Si ninguno cumple, sigue el líder.
+Un candidato que queda a ≤ 5 turnos del líder con p ≥ 0,10 y ≥ 300 MiB menos de VRAM se informa como alternativa ligera
+(ley 4), sin adoptarlo en F3. El ganador no entra al producto por ganar aquí: entra con el mecanismo de F4 medido en
+DEV-B y el conjunto de regresión.
