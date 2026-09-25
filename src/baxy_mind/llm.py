@@ -13239,6 +13239,7 @@ class LlmRuntime:
             tuple[str, str | None],
         ] = {}
         self._response_language_cache: dict[str, str] = {}
+        self._rejected_reply_cache: dict[tuple[object, ...], str] = {}
         self._validated_classifier_reuse_enabled = endpoint is None
         self._validated_classifier_reuse_lock = threading.Lock()
         self._semantic_effect_reuse_cache: OrderedDict[
@@ -13876,6 +13877,7 @@ class LlmRuntime:
         self._request_attempt = max(0, int(attempt))
         self._semantic_effect_cache = {}
         self._response_language_cache = {}
+        self._rejected_reply_cache = {}
         self._speculative_count_after_guard = bool(
             getattr(self, "_parallel_turn_verification", False)
         )
@@ -13893,9 +13895,13 @@ class LlmRuntime:
             response_language_cache = dict(
                 getattr(self, "_response_language_cache", {})
             )
+            # A greedy reply the contracts rejected is the same draft again when the retried decision asks
+            # for it with the same inputs (``chat``).
+            rejected_reply_cache = dict(getattr(self, "_rejected_reply_cache", {}))
         else:
             semantic_effect_cache = {}
             response_language_cache = {}
+            rejected_reply_cache = {}
         self._retire_deferred_language_work()
         self._retire_deferred_count_work()
         total_deadline = getattr(self, "_request_total_deadline", None)
@@ -13926,6 +13932,7 @@ class LlmRuntime:
         self._request_attempt = request_attempt
         self._semantic_effect_cache = semantic_effect_cache
         self._response_language_cache = response_language_cache
+        self._rejected_reply_cache = rejected_reply_cache
         self._speculative_count_after_guard = (
             bool(getattr(self, "_parallel_turn_verification", False))
             and request_attempt == 0
@@ -13942,6 +13949,7 @@ class LlmRuntime:
         self._request_attempt = 0
         self._semantic_effect_cache = {}
         self._response_language_cache = {}
+        self._rejected_reply_cache = {}
         self._speculative_count_after_guard = bool(
             getattr(self, "_parallel_turn_verification", False)
         )
@@ -14535,6 +14543,18 @@ class LlmRuntime:
             tuple(authenticated_operations),
         )
 
+    def _rejected_reply(
+        self,
+        key: tuple[object, ...] | None,
+        reason: str,
+    ) -> ConversationReplyContractError:
+        """The contracts' verdict on a greedy reply, kept for the retries of this request (``key`` None: not greedy)."""
+
+        cache = getattr(self, "_rejected_reply_cache", None)
+        if key is not None and cache is not None:
+            cache[key] = reason
+        return ConversationReplyContractError(reason)
+
     def prepare_chat(
         self,
         text: str,
@@ -14727,6 +14747,28 @@ class LlmRuntime:
                     pass
             else:
                 prepared.retire()
+        # Tanda-07 (uso real 2026-09-25): a retried turn that reached the same reply again decoded the same
+        # greedy drafts again (the same tokens, 0.8–1.2 s) only for the contracts to reject them the same way.
+        verdict_key = (
+            self._chat_handoff_key(
+                text,
+                prior_messages,
+                temperature,
+                conversation_kind,
+                response_language,
+                served_operations=served_operations,
+                authenticated_operations=authenticated_operations,
+            )
+            if temperature <= 0.0
+            else None
+        )
+        rejected = (
+            getattr(self, "_rejected_reply_cache", {}).get(verdict_key)
+            if verdict_key is not None
+            else None
+        )
+        if rejected is not None:
+            raise ConversationReplyContractError(rejected)
         draw = (
             random_draw_request(text)
             if conversation_kind not in {"unsupported", "unsupported_language"}
@@ -15347,7 +15389,7 @@ class LlmRuntime:
                 presentation_shape=presentation_shape,
             )
             if response["choices"][0].get("finish_reason") == "length":
-                raise ConversationReplyContractError("truncated_structured_reply")
+                raise self._rejected_reply(verdict_key, "truncated_structured_reply")
             if retry_content:
                 try:
                     structured = json.loads(retry_content)
@@ -15366,7 +15408,7 @@ class LlmRuntime:
                 elif structured is not None or retry_content.startswith(("{", "[")):
                     # A truncated/invalid wire envelope is not public prose.
                     # Previously JSON parse failure published the raw envelope.
-                    raise ConversationReplyContractError("invalid_structured_reply")
+                    raise self._rejected_reply(verdict_key, "invalid_structured_reply")
         else:
             final_messages = payload["messages"]
         final_content = str(message.get("content") or "").strip()
@@ -15441,7 +15483,7 @@ class LlmRuntime:
             # This is an internal contract failure, never user-facing prose.
             # The total turn boundary retries the side-effect-free decision and
             # then asks the model for one candidate-free semantic clarification.
-            raise ConversationReplyContractError(failure_reason)
+            raise self._rejected_reply(verdict_key, failure_reason)
         # Ignore a malformed/model-invented tool call even when an external
         # endpoint violates the chat contract.
         return message.get("content") or "", []

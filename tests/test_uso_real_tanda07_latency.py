@@ -5,6 +5,11 @@
   turn compiled ~600 of them again: 95 % of a deterministic decision was compiling regular expressions, and the
   same cost sat under every model-path turn's own readers and vetoes. The readers' shared primitives
   (``grammar._match``/``_has``/``_head_is``) now compile each pattern once for the life of the mind.
+- A reply whose wording failed its contracts (``shaped_presentation``, ``wrong_language``) sends the turn to its
+  second attempt; the retried decision reached the same reply and decoded the same greedy drafts again (the same
+  token counts, 0.8–1.2 s) only to be rejected the same way. The turn is still retried — a different decision
+  still gets its own reply — but the same greedy reply asked again under the same inputs is refused with the
+  verdict it already had.
 
 The phrasings below are not the tanda's: they are paraphrases (es/en/spanglish).
 """
@@ -15,6 +20,7 @@ import re
 
 import pytest
 
+from baxy_mind.llm import ConversationReplyContractError, LlmRuntime
 from baxy_mind.semantic import grammar
 from baxy_mind.semantic.reading import read
 
@@ -89,3 +95,99 @@ def test_the_readers_whole_working_set_stays_compiled() -> None:
     # Every pattern ever compiled is still held: evicting one would bring the per-turn compilation back.
     assert info.misses == info.currsize < info.maxsize
 
+
+# ------------------------------------------------------------------ a rejected greedy reply is not worded twice
+
+
+_ASKED = "explícame despacio cómo se hace un buen asado"
+_ANSWER = "Un buen asado empieza con brasas parejas y paciencia: la carne se da vuelta una sola vez."
+
+
+def _runtime(content: str) -> LlmRuntime:
+    runtime = object.__new__(LlmRuntime)
+    runtime._request_attempt = 0
+    runtime._speculative_chat_handoff = None
+    runtime._deferred_language_work = None
+    runtime.posts = []  # type: ignore[attr-defined]
+
+    def post(payload: dict[str, object], *_args: object, **_kwargs: object) -> dict[str, object]:
+        runtime.posts.append(payload.get("temperature"))  # type: ignore[attr-defined]
+        return {"choices": [{"finish_reason": "stop", "message": {"content": content}}]}
+
+    runtime._post = post  # type: ignore[method-assign]
+    runtime.begin_request(10.0)
+    return runtime
+
+
+def _reply_arguments(**overrides: object) -> dict[str, object]:
+    return {
+        "history": [{"role": "assistant", "content": "Hola, soy BAXY."}],
+        "tools": None,
+        "temperature": 0.0,
+        "conversation_kind": "knowledge",
+        "authenticated_operations": (),
+        "served_operations": (),
+        "response_language": "es",
+        **overrides,
+    }
+
+
+def _rejected(runtime: LlmRuntime, **overrides: object) -> str:
+    with pytest.raises(ConversationReplyContractError) as failure:
+        runtime.chat(_ASKED, **_reply_arguments(**overrides))
+    return failure.value.audit_reason
+
+
+def test_the_retried_turn_does_not_decode_the_same_rejected_reply_again() -> None:
+    runtime = _runtime(_ASKED)  # an echo: every draft fails its contract
+    first = _rejected(runtime)
+    decoded = len(runtime.posts)  # type: ignore[attr-defined]
+    assert decoded == 2  # the draft and its bounded repair
+
+    runtime.begin_request_attempt(10.0, attempt=1)
+
+    assert _rejected(runtime) == first
+    assert len(runtime.posts) == decoded  # type: ignore[attr-defined]
+
+
+def test_a_different_reply_on_the_retry_is_worded_and_judged_itself() -> None:
+    runtime = _runtime(_ASKED)
+    _rejected(runtime)
+    decoded = len(runtime.posts)  # type: ignore[attr-defined]
+
+    runtime.begin_request_attempt(10.0, attempt=1)
+    # The retried decision words it over another dialogue: other inputs, another verdict.
+    _rejected(runtime, history=[{"role": "assistant", "content": "Listo, la alarma quedó puesta."}])
+
+    assert len(runtime.posts) > decoded  # type: ignore[attr-defined]
+
+
+def test_a_sampled_reply_is_always_worded_again() -> None:
+    runtime = _runtime(_ASKED)
+    _rejected(runtime, temperature=0.4)
+    decoded = len(runtime.posts)  # type: ignore[attr-defined]
+
+    runtime.begin_request_attempt(10.0, attempt=1)
+    _rejected(runtime, temperature=0.4)
+
+    assert len(runtime.posts) == 2 * decoded  # type: ignore[attr-defined]
+
+
+def test_a_new_request_forgets_the_verdicts_of_the_last_one() -> None:
+    runtime = _runtime(_ASKED)
+    _rejected(runtime)
+    decoded = len(runtime.posts)  # type: ignore[attr-defined]
+
+    runtime.begin_request(10.0)
+    _rejected(runtime)
+
+    assert len(runtime.posts) == 2 * decoded  # type: ignore[attr-defined]
+
+
+def test_a_reply_that_passes_is_never_withheld() -> None:
+    runtime = _runtime(_ANSWER)
+    assert runtime.chat(_ASKED, **_reply_arguments()) == (_ANSWER, [])
+
+    runtime.begin_request_attempt(10.0, attempt=1)
+    assert runtime.chat(_ASKED, **_reply_arguments()) == (_ANSWER, [])
+    assert len(runtime.posts) == 2  # type: ignore[attr-defined]
