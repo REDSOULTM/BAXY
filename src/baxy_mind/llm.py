@@ -4489,7 +4489,8 @@ def visible_reply_claims_an_effect(value: object, request: object = "") -> bool:
                 )
             ):
                 continue
-            if _EFFECT_CLAIM_NEGATED.search(clause) is None:
+            # «I will not open any programs»: the negation can sit inside the promise itself.
+            if _EFFECT_CLAIM_NEGATED.search(clause + match.group(0)) is None:
                 return True
     return False
 
@@ -11694,6 +11695,23 @@ def compose_visible_defect(
     kind = str(situation.get("kind") or intent).strip().lower()
     cause = str(situation.get("cause") or "").strip().lower()
     operation = str(situation.get("operation") or "").strip().lower()
+    # Uso real 2026-09-25 (tanda 8): the App's conversation fallback composed «Sí, está lista
+    # para recoger.» for «está mi orden lista para recoger ya» from the bare situation
+    # {"kind":"conversation"}. A message composed where no operation ran carries the same
+    # contract as the mind's conversation reply: nothing done, read or observed is said.
+    # A failure is one only when it is the limit («out_of_catalog»): a timeout or a failed mission ran something.
+    # A welcome keeps its own opener check.
+    ran_nothing = not (operation or situation.get("reason") or situation.get("steps")) and (
+        kind in {"conversation", "clarification"} or (kind == "failure" and cause == "out_of_catalog")
+    )
+    if ran_nothing and cause != "acting":
+        prior = facts.get("priorRequests")
+        world_claim = conversation_world_claim(
+            stripped, user_text, tuple(str(item) for item in prior if isinstance(item, str))
+            if isinstance(prior, list) else (),
+        )
+        if world_claim:
+            return world_claim
     blob = f"{user_text} {json.dumps(situation, ensure_ascii=False)}".casefold()
     folded = stripped.casefold()
     # Un destino que ya estaba en ejecución no lo abrió este turno. El recibo lo
@@ -22051,6 +22069,24 @@ class LlmRuntime:
                     "Answer this message. Nothing was read this turn: state no date, day or figure about now."
                     if response_language == "en"
                     else "Contesta este mensaje. No se leyó nada en este turno: no afirmes fechas, días ni cifras de ahora."
+                ),
+                # Tanda 8: «Agregado: tomates.», «Ya tienes en la lista: …», «Sí, está lista para recoger.».
+                "effect_claim": (
+                    "Nothing ran this turn: do not say you did, are doing or will do anything. If the person asked "
+                    "for it, say in one sentence that you did not do it."
+                    if response_language == "en"
+                    else "En este turno no se ejecutó nada: no digas que hiciste, haces o harás algo. Si la persona "
+                    "lo pidió, di en una frase que no lo hiciste."
+                ),
+                **dict.fromkeys(
+                    ("unread_records", "unobserved_answer"),
+                    "Nothing of the person's was read this turn: do not say what their lists, notes, alarms, "
+                    "timers, agenda, mail or orders hold, and do not answer yes or no about them. In one sentence, "
+                    "say plainly that you do not know that from here."
+                    if response_language == "en"
+                    else "En este turno no se leyó nada de la persona: no digas qué hay en sus listas, notas, "
+                    "alarmas, temporizadores, agenda, correo o pedidos, y no contestes sí o no sobre eso. En una "
+                    "frase, di llanamente que eso no lo sabes desde aquí.",
                 ),
                 # Tanda 6: t5 «Hoy es lunes…» on a Thursday, t47 a page's «Hoy es el primero de marzo, creo.».
                 "false_date": (

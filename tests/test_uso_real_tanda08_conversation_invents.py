@@ -6,8 +6,9 @@
 - «¿qué llevo ya?» → «Ya tienes en la lista: huevos, leche, pan de molde y tomates.»: the list was never
   read, it was recited from the chat. The person is the one who holds it («tienes»), so it is theirs.
 - «what have I got set right now?» → «You haven't set anything right now.» with two timers running.
-- «está mi orden lista para recoger ya» → «Sí, está lista para recoger.»: a yes or no about something of
-  the person's that nothing observed.
+- «está mi orden lista para recoger ya» → «Sí, está lista para recoger.»: the App's conversation fallback
+  composed it from the bare situation {"kind": "conversation"}, which no claim check read. A message
+  composed where no operation ran now carries the same contract as the mind's conversation reply.
 
 Knowledge, jokes, stories, drafts, questions, offers, denials and the person's own statements acknowledged
 («me metí en un accidente hoy» → empathy) stay as they are.
@@ -15,10 +16,13 @@ Knowledge, jokes, stories, drafts, questions, offers, denials and the person's o
 
 from __future__ import annotations
 
+import json
+
 import pytest
 
 from baxy_mind import llm
 from baxy_mind.llm import LlmRuntime, conversation_claim_defect, conversation_world_claim
+from test_c03_cpu_actor import Recorder
 
 SHOPPING = ("apúntame en la lista de la compra huevos, leche y pan de molde",)
 ORDER = "está mi orden lista para recoger ya"
@@ -119,6 +123,8 @@ def test_a_yes_or_no_about_something_of_the_persons_is_not_invented(reply, ask):
         ("I don't have access to your orders.", "is my order ready", ()),
         ("No, no puedo saberlo desde aquí.", ORDER, ()),
         ("No lo añadí: no tengo esa capacidad.", "y tomates", ()),
+        ("I will not open any programs.", "keep chatting without opening programs", ()),
+        ("I'll never install unauthorized software on this PC.", "what will you never do on this PC", ()),
         # Questions and offers.
         ("¿Quieres que lo añada a tu lista?", "y tomates", ()),
         ("Si quieres, lo apunto en tu lista.", "y tomates", ()),
@@ -176,4 +182,63 @@ def test_the_chat_retry_names_the_yes_or_no_it_may_not_give():
     hint = payloads[1]["messages"][1]["content"]
     assert "no digas que hiciste, haces o harás algo" in hint
     assert "no contestes sí o no" in hint
+
+
+# ---------------------------------------------------------------- compositions where nothing ran
+
+
+_CONVERSATION = {"situation": json.dumps({"kind": "conversation", "polarity": "success"})}
+
+
+@pytest.mark.parametrize(
+    ("reply", "ask", "defect"),
+    [
+        ("Sí, está lista para recoger.", ORDER, "unobserved_answer"),
+        ("You haven't set anything right now.", TIMERS, "unread_records"),
+        ("I'm mostly busy with coding and fixing bugs when I'm not working on projects.",
+         "what keeps you busy in your free time", "effect_claim"),
+        ("Agregado: tomates.", "ah, y tomates", "effect_claim"),
+    ],
+)
+def test_the_apps_conversation_fallback_is_held_to_the_same_contract(reply, ask, defect):
+    assert llm.compose_visible_defect(reply, "conversation", ask, _CONVERSATION) == defect
+    recovery = {"situation": json.dumps({"kind": "clarification", "cause": "ambiguous_request", "polarity": "pending"})}
+    assert llm.compose_visible_defect(reply, "clarification", ask, recovery) == defect
+
+
+@pytest.mark.parametrize(
+    ("reply", "ask"),
+    [
+        ("No sé si tu pedido está listo: no lo veo desde aquí.", ORDER),
+        ("I don't know what you have set from here.", TIMERS),
+        ("Lamento mucho que hayas tenido un accidente.", "me metí en un accidente hoy"),
+    ],
+)
+def test_an_honest_composed_conversation_is_published(reply, ask):
+    assert llm.compose_visible_defect(reply, "conversation", ask, _CONVERSATION) == ""
+
+
+def test_a_failure_where_something_ran_is_not_held_to_the_no_operation_contract():
+    timeout = {"situation": json.dumps({"kind": "failure", "cause": "timeout", "polarity": "failure"})}
+    assert llm.compose_visible_defect("Listo, Chrome no respondió.", "error", "cierra Chrome", timeout) not in {
+        "effect_claim", "unread_records", "unobserved_answer",
+    }
+
+
+def test_a_verified_operation_is_not_held_to_the_no_operation_contract():
+    situation = {
+        "kind": "operation", "operation": "task.create", "polarity": "success", "verified": True,
+        "succeeded": True, "observed": {"title": "tomates"},
+    }
+    assert llm.compose_visible_defect(
+        "Agregado: tomates.", "status", "ah, y tomates", {"situation": json.dumps(situation)},
+    ) not in {"effect_claim", "unread_records", "unobserved_answer"}
+
+
+def test_the_invented_answer_is_retried_with_a_hint_that_names_it():
+    honest = "No sé si tu pedido está listo: no lo veo desde aquí."
+    client = Recorder(["Sí, está lista para recoger.", honest])
+    assert client.compose_user_message(ORDER, "conversation", dict(_CONVERSATION)) == honest
+    retry = json.dumps(client.payloads[1]["messages"], ensure_ascii=False)
+    assert "no contestes sí o no" in retry
 
