@@ -179,3 +179,30 @@ def test_a_note_ordered_with_anota_or_apunta_is_the_literal_note(text: str, cont
 )
 def test_another_created_thing_named_after_anota_is_that_thing_alone(text: str, operation: str) -> None:
     assert _effects(text) == (operation,)
+
+
+# ------------------------------------------------------------------ a work named with its maker is played
+
+
+@pytest.mark.parametrize(
+    ("text", "query"),
+    [
+        ("me puedes poner el último disco que sacó Estopa", "el último disco de Estopa"),
+        ("pon el último disco que sacó Estopa", "el último disco de Estopa"),
+        ("ponme la canción nueva que lanzó Bad Bunny", "la canción nueva de Bad Bunny"),
+        ("pon el disco que sacaron los Rolling Stones", "el disco de los Rolling Stones"),
+        ("ponme el último álbum que ha sacado Rosalía", "el último álbum de Rosalía"),
+        ("poneme el tema que grabó Charly García", "el tema de Charly García"),
+        ("play the new album that Drake released", "the new album by Drake"),
+        ("play the latest song Taylor Swift put out", "the latest song by Taylor Swift"),
+    ],
+)
+def test_a_work_named_with_its_maker_is_played(text: str, query: str) -> None:
+    effects = _effects(text)
+    assert len(effects) == 1 and effects[0] in {"media.play.youtube", "media.play.query"}
+    arguments = sidecar._explicit_arguments_from_evidence(effects[0], text)
+    assert arguments is not None and arguments["query"] == query
+
+
+def test_a_maker_said_by_a_pronoun_is_not_named_here() -> None:
+    assert sidecar._explicit_arguments_from_evidence("media.play.query", "pon la canción que sacó él") is None

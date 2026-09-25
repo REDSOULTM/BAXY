@@ -5605,6 +5605,52 @@ _QUALIFIED_MUSIC_QUERY = re.compile(
 )
 
 
+# Tanda 9 «me puedes poner el último disco que sacó Estopa» was asked which record: a piece of music said with who
+# made it in a relative clause («que sacó/lanzó/grabó Estopa», «that Drake released», «Adele's latest») names it as
+# «el último disco de Estopa» does, and the search finds what is latest. The query says it that way.
+_MUSIC_WORK = (
+    r"(?:disco|discos|album|albumes|lp|ep|single|sencillo|cancion|canciones|tema|temas|temazo|track|tracks|"
+    r"song|songs|record|records|sesion|session|video|videoclip|exito|hit)"
+)
+_MADE_BY_ES = (
+    r"(?:(?:ha|han|haya|hayan|habia|habian)\s+)?"
+    r"(?:saco|sacaron|sacado|lanzo|lanzaron|lanzado|grabo|grabaron|grabado|publico|publicaron|publicado|"
+    r"estreno|estrenaron|estrenado|hizo|hicieron|hecho|canto|cantaron|cantado|compuso|compusieron|compuesto|"
+    r"subio|subieron|subido|saca|sacan|lanza|lanzan|canta|cantan)"
+)
+_MADE_BY_EN = r"(?:(?:has|have|just)\s+)?(?:released|put\s+out|dropped|recorded|made|sang|sung|came\s+out\s+with)"
+
+
+def _music_named_by_its_maker(query: str) -> str | None:
+    """«el último disco que sacó Estopa» → «el último disco de Estopa», «the new album that Drake released» →
+    «the new album by Drake»; None when the query does not name a work and its maker that way."""
+
+    words = query.strip(" .!?").split()
+    folded = _fold(" ".join(words)).split()
+    spanish = re.fullmatch(
+        rf"(?P<work>.*\b{_MUSIC_WORK}\b(?:\s+\w+)?)\s+que\s+{_MADE_BY_ES}\s+(?P<maker>\S.*)", " ".join(folded)
+    )
+    english = re.fullmatch(
+        rf"(?P<work>.*\b{_MUSIC_WORK}\b)\s+(?:that\s+|which\s+)?(?P<maker>\S.*?)\s+{_MADE_BY_EN}"
+        r"(?:\s+(?:recently|lately|last|this\s+year))?",
+        " ".join(folded),
+    )
+    found, joiner = (spanish, "de") if spanish is not None else (english, "by")
+    if found is None:
+        return None
+    work = " ".join(words[: len(found.group("work").split())])
+    maker_words = found.group("maker").split()
+    start = (
+        len(folded) - len(maker_words) if spanish is not None else len(found.group("work").split())
+        + len(re.match(r"(?:(?:that|which)\s+)?", " ".join(folded[len(found.group("work").split()):])).group().split())
+    )
+    maker = " ".join(words[start : start + len(maker_words)])
+    # «que sacó él», «that they released»: a maker said by a pronoun is named in the conversation, not here.
+    if not maker or _has(found.group("maker"), r"^(?:el|ella|ellos|ellas|ese|esa|he|she|they|it|him|her|them)$"):
+        return None
+    return f"{work} {joiner} {maker}"
+
+
 def _qualified_music_query(query: str) -> str | None:
     """The music a music noun names by itself, or None when it names none."""
 
@@ -5731,6 +5777,7 @@ def _explicit_named_music_query(text: str) -> str | None:
         return None
     folded = _fold(text)
     query = named.group("query").strip()
+    query = _music_named_by_its_maker(query) or query
     qualified = _qualified_music_query(query) if named.group("music") is None else None
     if qualified is not None:
         query = qualified
