@@ -7516,13 +7516,15 @@ def _rearm_in_context(
     available_operations: tuple[str, ...],
     application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
     game_catalog: GameCatalogIndex = GameCatalogIndex(),
+    dialogue_state: dialogue_slot.DialogueState | None = None,
 ) -> tuple[str, str] | None:
     """Fill the dialogue slot: the request this message completes, or None.
 
     Returns (rearmed request, how) when the message depends on the previous turns
     (``semantic.dialogue.dependency``) and a rearmed request stays inside what was
-    said. The pattern path is tried first (pending request + answer); the model
-    rewrites only what the patterns cannot join. Talk is never rewritten.
+    said or verified. The pattern path is tried first (pending request + answer); the
+    model rewrites, with the verified dialogue state, what the patterns cannot join.
+    Talk is never rewritten.
     """
 
     objective = str(message.get("text", "")).strip()
@@ -7531,6 +7533,23 @@ def _rearm_in_context(
     dependency = dialogue_slot.dependency(objective, slot)
     if dependency is None:
         return None
+
+    def effects_of(candidate: str) -> tuple[str, ...]:
+        def resolve(clause: str) -> EffectIntent | None:
+            return resolve_explicit_effects(clause, available_operations, application_names, game_catalog)
+
+        found = resolve(candidate)
+        if found is None:
+            uttered = semantic_reading.utterance_form(candidate, resolve)
+            found = uttered[1] if uttered is not None else None
+        return tuple(found.operations) if found is not None else ()
+
+    def continued_operations() -> tuple[str, ...]:
+        # What the message continues: the last verified operation, or what the readers read in the last request.
+        if dialogue_state is not None and dialogue_state.operations:
+            return dialogue_state.operations
+        previous = _previous_user_request(history, objective)
+        return effects_of(previous) if previous else ()
 
     def audited(rearmed: str | None, how: str, proposal: str | None = None) -> tuple[str, str] | None:
         _append_turn_audit(
@@ -7563,7 +7582,13 @@ def _rearm_in_context(
             completed, available_operations, application_names, game_catalog,
         ) is not None:
             return audited(completed, "pattern")
-        if level is not None:
+        if level is not None and (
+            dependency != "followup"
+            or not continued_operations()
+            or any(op.startswith(("audio.", "system.settings")) for op in continued_operations())
+        ):
+            # Tanda 7 «actually make it 9» after a timer is the timer's amount: only a level that follows a level
+            # request, or nothing the readers read, stays a level.
             return audited(None, "pattern_kept")
 
     if (
@@ -7632,32 +7657,56 @@ def _rearm_in_context(
             )
             if resolved is not None and still_missing is None and same_family:
                 return audited(joined, "pattern")
-    if dependency == "destination" and slot.antecedents:
+    last_request = (dialogue_state.request if dialogue_state is not None else None) or (
+        slot.antecedents[0] if slot.antecedents else None
+    )
+    if dependency == "destination" and last_request:
         # Fase 3.5 (held-out turn 18 «en YouTube mejor» after «tengo ganas de
         # escuchar reggaetón»): only the destination of the last request changes.
         # The model read «mejor» as «mejorar»; the pattern joins the destination
-        # to the request as said and keeps it when the gate reads an effect.
-        joined = dialogue_slot.joined_answer(slot.antecedents[0], objective)
-        if joined is not None and dialogue_slot.differs(joined, slot.antecedents[0]):
-            try:
-                destination_reading = semantic_reading.read(
-                    joined,
-                    available_operations=available_operations,
-                    application_names=application_names,
-                    game_catalog=game_catalog,
-                )
-            except (TypeError, ValueError):
-                destination_reading = None
-            if destination_reading is not None and destination_reading.effects is not None:
-                return audited(joined, "pattern")
+        # to the request as said and keeps it when the readers read it in the family
+        # of that request. Tanda 7 «¿y en Mar del Plata?»: the last request is the
+        # verified one («¿va a llover el finde?»), not the previous message.
+        joined = dialogue_slot.joined_answer(last_request, objective)
+        if (
+            joined is not None
+            and dialogue_slot.differs(joined, last_request)
+            and effects_of(joined)
+            and dialogue_slot.same_family(effects_of(joined), effects_of(last_request))
+        ):
+            return audited(joined, "pattern")
+    if dependency == "followup":
+        said = dialogue_slot.followup(objective)
+        if (said.continued or said.corrected) and not dialogue_slot.refers_back(objective) and effects_of(said.said):
+            # Tanda 7 «and remind me at 7:30 to call grandma»: after the connector, a complete request is itself.
+            return audited(said.said, "pattern")
+    verified = dialogue_state.lines() if dialogue_state is not None else []
     try:
-        rewritten = llm.rewrite_in_context(objective, slot.context_lines(), dependency=dependency)
+        rewritten = llm.rewrite_in_context(objective, slot.context_lines(), dependency=dependency, verified=verified)
     except Exception:  # noqa: BLE001 - a failed rewrite leaves the message as it arrived
         rewritten = None
     if rewritten is not None and not dialogue_slot.differs(rewritten, objective):
         return audited(None, "model_kept", rewritten)
-    if rewritten and dialogue_slot.rewrite_stays_in_context(rewritten, objective, slot):
-        return audited(rewritten, "model", rewritten)
+    if rewritten and dialogue_slot.rewrite_stays_in_context(rewritten, objective, slot, verified):
+        if dependency not in {"followup", "destination"}:
+            return audited(rewritten, "model", rewritten)
+        # Tanda 7: a follow-up continues what was done. Its rewrite reads no effect, or only effects of that
+        # family; a correction of the alarm or timer just set replaces it instead of setting a second one.
+        read = effects_of(rewritten)
+        if not dialogue_slot.continues(read, continued_operations(), dialogue_state):
+            return audited(None, "model_rejected", rewritten)
+        cancel = (
+            dialogue_state.cancel_last_alarm(dialogue_slot.spanish(rewritten))
+            if dialogue_state is not None and read == ("notification.schedule",)
+            and dialogue_slot.followup(objective).replaces_last
+            else None
+        )
+        if cancel is None:
+            return audited(rewritten, "model", rewritten)
+        replaced = f"{cancel} {'y' if dialogue_slot.spanish(rewritten) else 'and'} {rewritten}"
+        if effects_of(replaced) == ("notification.cancel.latest", "notification.schedule"):
+            return audited(replaced, "model", rewritten)
+        return audited(None, "model_rejected", rewritten)
     if dependency == "answer" and slot.pending_request and rewritten is None:
         # The model was unavailable: the pending request and its answer travel
         # together in the form the grounding readers already join (AUDIO1789).
@@ -7676,8 +7725,13 @@ def _prepare_turn_result(
     application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
     game_catalog: GameCatalogIndex = GameCatalogIndex(),
     on_signal: PendingTurnSignal | None = None,
+    dialogue_state: dialogue_slot.DialogueState | None = None,
 ) -> dict[str, Any]:
-    """Prepare one side-effect-free turn result, after filling the dialogue slot."""
+    """Prepare one side-effect-free turn result, after filling the dialogue slot.
+
+    ``dialogue_state`` is what this conversation verified so far (the serve loop owns it); it is read, never
+    written, here.
+    """
 
     rearmed = _rearm_in_context(
         message,
@@ -7685,6 +7739,7 @@ def _prepare_turn_result(
         available_operations=tuple(tool.name for tool in planner_catalog.tools),
         application_names=application_names,
         game_catalog=game_catalog,
+        dialogue_state=dialogue_state,
     )
     if rearmed is not None:
         request = rearmed[0]
@@ -9974,6 +10029,8 @@ def _run_sidecar(
     application_catalog = build_application_catalog_index(application_names)
     game_entries: tuple[tuple[str, str, str], ...] = ()
     game_catalog = build_game_catalog_index(game_entries)
+    # What this conversation verified, for the next follow-up (tanda 7); written only from composed results.
+    dialogue_state = dialogue_slot.DialogueState()
     planner_catalog = None
     skill_registry = None
     planner_resources_lock = threading.Lock()
@@ -10260,6 +10317,10 @@ def _run_sidecar(
                     write_request_message(turn_result)
                     continue
 
+                if not dialogue_slot.read_slot({}, message.get("history") or [], str(message.get("text", ""))).antecedents:
+                    # A conversation's first message: nothing verified before it belongs to it.
+                    dialogue_state.reset()
+
                 def prepare_turn() -> dict[str, Any]:
                     try:
                         return _prepare_turn_result(
@@ -10272,6 +10333,7 @@ def _run_sidecar(
                             application_names=application_catalog,
                             game_catalog=game_catalog,
                             on_signal=request_signal,
+                            dialogue_state=dialogue_state,
                         )
                     except PlannerContractError as error:
                         turn_failure_kinds.append("contract")
@@ -10303,6 +10365,10 @@ def _run_sidecar(
                         attempts=len(turn_failure_kinds) or 2,
                         failure_kinds=tuple(turn_failure_kinds),
                     )
+                # The request this turn decided waits for its verified result (message.compose).
+                dialogue_state.expect(
+                    turn_result.get("objective") or message.get("text", ""), turn_result.get("effectOperations"),
+                )
                 write_request_message(turn_result)
             elif kind == "plan":
                 if llm is None:
@@ -10724,6 +10790,8 @@ def _run_sidecar(
                 }
                 user_text = str(message.get("userText", ""))[:4096]
                 situation = _situation_from_facts(facts)
+                # Only a verified result of the operation the last turn decided is kept for the next follow-up.
+                dialogue_state.record(situation)
                 observed = _merged_observed(situation)
                 opening_name = effect_intent.unresolved_application_open_name(
                     user_text, application_names,

@@ -23,7 +23,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-from .normalize import fold
+from .normalize import alternation, fold
 
 _WORD = re.compile(r"[a-z0-9ñ]+")
 
@@ -68,7 +68,9 @@ _BARE_DEICTIC_REQUEST = re.compile(r"[a-z]+(?:\s+(?:me|lo|la))?\s+(?:eso|esto|aq
 # Talk that never answers a slot, even with a question pending.
 _SOCIAL = re.compile(
     r"^(?:gracias|muchas\s+gracias|genial|perfecto|buenisimo|jaja\w*|uf+|ah+|oh+|wow|que\s+bien|"
-    r"thanks|thank\s+you|cool|nice|great)\b"
+    r"thanks|thank\s+you|cool|nice|great|"
+    # Tanda 7 «no that's all thank you»: closing the conversation continues nothing.
+    r"that'?s\s+(?:all|it)|eso\s+es\s+todo|nada\s+mas|nothing\s+else)\b"
 )
 _NUMBER_WORDS = (
     "cero uno una dos tres cuatro cinco seis siete ocho nueve diez once doce trece catorce quince dieciseis "
@@ -167,7 +169,9 @@ def dependency(text: str, slot: DialogueSlot) -> str | None:
     ``destination`` «no, en YouTube»: only the destination of the last request changes;
     ``reference``   a pronoun object («súbelo», «cerralo»);
     ``subject``     a person's age asked without the person («¿y cuántos años tiene?», «how old is he»);
-    ``topic``       a lookup verb whose topic may have been named before («averiguá qué dijo la crítica»).
+    ``topic``       a lookup verb whose topic may have been named before («averiguá qué dijo la crítica»);
+    ``followup``    anything else whose form leans on the turn before (``leans_on_context``): «¿y el finde?»,
+                    «actually make it 9», «cómo se llama esta?», «is the entrance free».
     """
 
     if not slot.has_context:
@@ -187,7 +191,14 @@ def dependency(text: str, slot: DialogueSlot) -> str | None:
             return "answer"
         if len(words) <= 4:
             return "answer"
-    if slot.antecedents and len(words) <= 6 and _DESTINATION_ONLY.fullmatch(folded):
+    rest = followup(text).folded
+    if (
+        slot.antecedents
+        and len(words) <= 6
+        and _DESTINATION_ONLY.fullmatch(folded)
+        # Tanda 7 «no, a las 8»: an hour or an amount is not where; the follow-up replaces the one said.
+        and not (_TIME_FRAGMENT.fullmatch(rest) or _AMOUNT_FRAGMENT.fullmatch(rest))
+    ):
         return "destination"
     if len(words) > 16:
         return None
@@ -197,11 +208,15 @@ def dependency(text: str, slot: DialogueSlot) -> str | None:
         return "reference"
     if slot.antecedents and _RESEARCH_VERB.search(folded):
         return "topic"
+    if slot.antecedents and leans_on_context(text):
+        return "followup"
     return None
 
 
-def rewrite_stays_in_context(rewrite: str, text: str, slot: DialogueSlot) -> bool:
-    """Every content word of the rewrite was said by the person or BAXY.
+def rewrite_stays_in_context(
+    rewrite: str, text: str, slot: DialogueSlot, verified: list[tuple[str, str]] | None = None,
+) -> bool:
+    """Every content word of the rewrite was said by the person or BAXY, or is in what was verified.
 
     A four-letter stem is enough for inflection («súbelo» → «sube», «prenderlo» →
     «prende»); anything else is a word the model brought in, and the rewrite is
@@ -212,7 +227,7 @@ def rewrite_stays_in_context(rewrite: str, text: str, slot: DialogueSlot) -> boo
     if not rewrite or len(rewrite) > 600 or "\n" in rewrite:
         return False
     said = set()
-    for source in (text, *(line for _, line in slot.context_lines())):
+    for source in (text, *(line for _, line in (*slot.context_lines(), *(verified or ())))):
         for word in _words(source):
             said.add(word[:4])
     content = [word for word in _words(rewrite) if word not in _STOPWORDS and not word.isdigit()]
@@ -417,3 +432,342 @@ def substituted_reference(text: str, antecedent: str) -> str | None:
 def asks_to_look_up(text: str) -> bool:
     """A lookup verb («investigala», «averiguá…»): its referent is a topic, not an object."""
     return _RESEARCH_VERB.search(_fold(text)) is not None
+
+
+# ------------------------------------------------------------------ the follow-up and the dialogue state
+#
+# Tanda 7 (2026-09-25) and the owner's method of the same day (artifacts/comprobaciones/C03/
+# PROPUESTA_METODO_COMPRENSION_2026-09-25.md). Half of real use is a conversation where each message leans on
+# the one before: «¿y el finde?», «¿y en Mar del Plata?», «a qué hora sale el sol allá el sábado», «actually make
+# it 9», «esa no, otra más movida», «cómo se llama esta?», «y quién fue el top scorer», «escríbeme un tweet sobre
+# eso», «is the entrance free». Each was read alone and lost what it continued.
+#
+# Two pieces, and no reading of any one phrase:
+# - The dialogue state: the last thing of each kind this conversation verified — the place a weather read
+#   reported and the day it was asked for, what the player says is playing, the alarm and the reminder created
+#   (with the alarm's id), the topic searched, the level set, and the last request that ran. Only verified
+#   results write it, never BAXY's text.
+# - The trigger, by form: a connector or a correction first («y», «and», «actually», «mejor», «no, …»), a bare
+#   part with no verb of its own (a day, a place, an amount, «otra»), a place or a thing said as «allá», «esta»,
+#   «eso», «it», a question with no object («what have I got set?»), or a short question about something already
+#   named. A complete new request never triggers.
+# The model rewrites the message with the state and the previous turns (``llm.rewrite_in_context``); the rewrite
+# keeps the existing check (only words the person, BAXY or the verified state said) and the readers must read it
+# in the family of what it continues, or read no effect at all.
+
+_CONTINUATION = re.compile(
+    r"^(?:(?:y|e|and|pero|but|entonces|so|tambien|ademas|also|plus|(?:and\s+)?(?:what|how)\s+about|y\s+que\s+tal|"
+    r"que\s+tal)\b[\s,.:]*)+"
+)
+# An address or a filler before anything («che, ¿va a llover hoy?», «ok, y en Rosario»): dropped, it continues
+# nothing by itself.
+_FILLER = re.compile(r"^(?:(?:oye|che|bueno|ok|okay|okey|ah|oh|mira|hey|listen|baxy)\b[\s,.:]*)+")
+_CORRECTION = re.compile(
+    r"^(?:(?:no|nop|nope|nah|mejor|actually|en\s+realidad|perdon|digo|o\s+sea|wait|espera|sorry|rather|instead|"
+    r"mas\s+bien)\b[\s,.:]*)+"
+)
+_COURTESY_TAIL = re.compile(r"(?:[\s,]+(?:mejor|entonces|then|instead|porfa|por\s+favor|please|pls))+$")
+_EDGE = " ¿?¡!.,;:"
+_UNIT = (
+    r"(?:minutos?|minutes?|mins?|segundos?|seconds?|secs?|horas?|hours?|hrs?|%|por\s*ciento|percent|puntos|points)"
+)
+# «make it 9», «que sean 9», «cámbialo a 9», «unos 15», «9 minutes».
+_CHANGE = (
+    r"(?:(?:make|set|put|change|turn)\s+(?:it|that)(?:\s+(?:to|at|for|into))?|que\s+sean?(?:\s+de)?|"
+    r"(?:hazlo|hacelo|ponlo|ponelo|ponle|dejalo|cambialo|cambiale|cambia)(?:\s+(?:a|de|en|con))?)"
+)
+_AMOUNT_FRAGMENT = re.compile(
+    rf"^(?:{_CHANGE}\s+)?(?:(?:a|al|en|de|to|at|for|by|unos|unas|como|about|around|like)\s+)*"
+    rf"(?:\d{{1,3}}|{alternation(frozenset(_NUMBER_WORDS))})(?:\s*{_UNIT})?$"
+)
+_WEEKDAY = r"(?:lunes|martes|miercoles|jueves|viernes|sabado|domingo|monday|tuesday|wednesday|thursday|friday|saturday|sunday)"
+_DAY = (
+    r"(?:(?:el|este|the|this|next|on|para|pa|for|el\s+proximo|la\s+proxima|este\s+proximo)\s+)*"
+    r"(?:pasado\s+manana|manana|hoy|ayer|anoche|anteayer|esta\s+(?:noche|tarde)|fin\s+de\s+semana|finde|"
+    rf"semana\s+(?:que\s+viene|proxima)|today|tonight|tomorrow|yesterday|last\s+night|weekend|week|{_WEEKDAY})"
+)
+_CLOCK = (
+    r"(?:a\s+las?|at|para\s+las?|by|around|como\s+a\s+las?)\s+\d{1,2}(?::\d{2})?"
+    r"(?:\s*(?:am|pm|a\.?\s?m\.?|p\.?\s?m\.?|hs|horas|de\s+la\s+(?:manana|tarde|noche)|in\s+the\s+(?:morning|afternoon|"
+    r"evening)))?"
+)
+_TIME_FRAGMENT = re.compile(rf"^(?:{_DAY}|{_CLOCK})(?:\s+(?:y|and|o|or)\s+(?:{_DAY}|{_CLOCK}))?$")
+_PLACE_FRAGMENT = re.compile(r"^(?:en|in|at|para|for|on|por|desde|from)\s+\S.*$")
+# A place said as «allá» or «there»; «is there…», «there are…» only say that something exists.
+_PLACE_ANAPHOR = re.compile(
+    r"\b(?:alla|alli|aya|ahi)\b|(?<!is )(?<!are )(?<!was )(?<!were )(?<!be )\b(?:over\s+)?there\b"
+    r"(?!\s+(?:is|are|was|were|will|be|'s)\b)"
+)
+# «esa no, otra más movida», «another one», «not that one».
+_ANOTHER_FRAGMENT = re.compile(
+    r"^(?:(?:esa|esta|ese|este|eso|that|this)(?:\s+(?:one|cancion|song|tema|track))?\s+no\b|not\s+(?:that|this)\b|"
+    r"(?:(?:pon(?:me|e|eme)?|pone|play|dame|give\s+me|quiero|i\s+want)\s+)?(?:otra|otro|another|something\s+else|"
+    r"una\s+(?:distinta|diferente)|a\s+different\s+one))"
+)
+# The thing just acted on or named, said as a demonstrative with no noun: «cómo se llama esta», «what's this
+# called», «sobre eso».
+_DEMONSTRATIVE = re.compile(
+    r"\b(?:esta|este|esto|esa|ese|eso|aquello|this|that|it)(?:\s+one)?(?:\s+(?:called|se\s+llama))?$"
+)
+_QUESTION_WORD = re.compile(
+    r"^(?:quien|quienes|que|cual|cuales|cuando|donde|como|cuanto|cuanta|cuantos|cuantas|por\s+que|who|whose|what|"
+    r"which|when|where|why|how)\b"
+)
+# «is the entrance free», «¿está abierto el museo?»: a yes/no question about a thing already known.
+_DEFINITE_QUESTION = re.compile(
+    r"^(?:is|are|was|were|does|do|did|will|can|es|son|era|fue|esta|estan|hay|habra|sera|cuesta|cuestan)\s+"
+    r"(?:the|it|they|this|that|el|la|los|las|eso|esto|ella|ellos)\b"
+)
+_ANAPHORIC_PRONOUN = re.compile(r"\b(?:it|its|they|them|their|he|she|him|his|her|ella|ellos|ellas|eso|esa|ese)\b")
+# «what have I got set», «qué tengo programado»: what the person has, with no object named.
+_OWN_LISTING = re.compile(
+    r"^(?:what|which|que|cuales|cuantos|cuantas)\s+(?:(?:have|do|did)\s+(?:i|we)\s+(?:got\s+|have\s+)?|"
+    r"(?:tengo|tenemos|hay|me\s+quedan?)\s+)(?:set|scheduled|pending|programad[oa]s?|puest[oa]s?|pendientes?|"
+    r"activ[oa]s?|active|on|going)\b"
+)
+_SPANISH_WORD = re.compile(
+    r"\b(?:que|quien|quienes|cual|cuales|como|donde|cuando|cuanto|el|la|los|las|es|fue|son|de|del|y|un|una|esta|"
+    r"este|esa|ese|eso|otra|otro|mas|cancion|pon|ponme|sobre|para|tengo|hay|se|mejor|sean|hoy|manana)\b"
+)
+_SCHEDULED_NOUN = re.compile(r"\b(?:temporizador|alarma|aviso|timer|alarm)\b")
+
+
+@dataclass(frozen=True)
+class Followup:
+    """A message split into the connector or correction it starts with and what it says after it."""
+
+    said: str  # the person's words after the lead, edges and trailing courtesy trimmed
+    folded: str  # the same, folded (same length)
+    continued: bool  # «y», «and», «what about»
+    corrected: bool  # «no», «mejor», «actually»
+
+    @property
+    def fragment(self) -> bool:
+        """A bare part with no verb of its own: an amount, a day or an hour, a place, another item."""
+
+        folded = self.folded
+        return bool(
+            _AMOUNT_FRAGMENT.fullmatch(folded)
+            or _TIME_FRAGMENT.fullmatch(folded)
+            or (_PLACE_FRAGMENT.fullmatch(folded) and len(folded.split()) <= 5)
+            or _ANOTHER_FRAGMENT.match(folded)
+        )
+
+    @property
+    def replaces_last(self) -> bool:
+        """It corrects what was just done («actually make it 9», «no, a las 8», «mejor 30», a bare «9»),
+        rather than adding to it («y otro de 20», «and at 8 too»)."""
+
+        corrects = self.corrected or re.match(_CHANGE, self.folded) is not None or not self.continued
+        adds = re.search(r"\b(?:otro|otra|another|also|too|tambien|ademas|second|segundo|segunda)\b", self.folded)
+        return corrects and adds is None
+
+
+def _trimmed(said: str, folded: str) -> tuple[str, str]:
+    start = len(folded) - len(folded.lstrip(_EDGE))
+    end = len(folded.rstrip(_EDGE))
+    return said[start:end], folded[start:end]
+
+
+def followup(text: str) -> Followup:
+    """«¿y en Mar del Plata?» → «en Mar del Plata», continued; «actually make it 9» → «make it 9», corrected."""
+
+    said = " ".join(str(text or "").split())
+    folded = _fold(said)
+    if len(folded) != len(said):
+        said = folded
+    said, folded = _trimmed(said, folded)
+    continued = corrected = False
+    while folded:
+        found = _FILLER.match(folded)
+        if found is None or not found.end():
+            found = _CONTINUATION.match(folded)
+            if found is not None and found.end():
+                continued = True
+            else:
+                found = _CORRECTION.match(folded)
+                if found is None or not found.end():
+                    break
+                corrected = True
+        said, folded = _trimmed(said[found.end():], folded[found.end():])
+    tail = _COURTESY_TAIL.search(folded)
+    if tail is not None:
+        said, folded = _trimmed(said[: tail.start()], folded[: tail.start()])
+    return Followup(said, folded, continued, corrected)
+
+
+def refers_back(text: str) -> bool:
+    """A place or a thing said as «allá», «esta», «eso», «it» in the message."""
+
+    folded = followup(text).folded
+    return bool(_PLACE_ANAPHOR.search(folded) or _DEMONSTRATIVE.search(folded))
+
+
+def leans_on_context(text: str) -> bool:
+    """The trigger: the message's form leans on the turn before (see the section comment). Talk never does."""
+
+    said = followup(text)
+    folded = said.folded
+    if not folded or _SOCIAL.match(folded) or _REFUSAL.fullmatch(folded) or _PROHIBITION.match(folded):
+        return False
+    if said.fragment or refers_back(text) or _OWN_LISTING.match(folded):
+        return True
+    # A name of its own in a question («y quién ganó el Mundial?») is a new subject: that question is complete.
+    names_something = re.search(r"\s(?!I\b)[A-ZÁÉÍÓÚÑ]", said.said) is not None or re.search(r"[\"«“]", said.said)
+    if said.continued or said.corrected:
+        return not (_QUESTION_WORD.match(folded) and names_something)
+    # A short question about something already named: an unnamed yes/no subject («is the entrance free») or a
+    # pronoun («how old is he»).
+    return (
+        len(folded.split()) <= 10
+        and not names_something
+        and (
+            _DEFINITE_QUESTION.match(folded) is not None
+            or (_QUESTION_WORD.match(folded) is not None and _ANAPHORIC_PRONOUN.search(folded) is not None)
+        )
+    )
+
+
+def spanish(text: str) -> bool:
+    """The message is said in Spanish (for the words BAXY adds to a rewrite)."""
+
+    return _SPANISH_WORD.search(_fold(text)) is not None
+
+
+def _family(operation: str) -> str:
+    return operation.split(".", 1)[0]
+
+
+def same_family(operations: tuple[str, ...], frame: tuple[str, ...]) -> bool:
+    """A rewrite reads no effect, or only effects of the family of the request it continues."""
+
+    return not operations or (bool(frame) and {_family(op) for op in operations} <= {_family(op) for op in frame})
+
+
+def continues(operations: tuple[str, ...], frame: tuple[str, ...], state: DialogueState | None) -> bool:
+    """A follow-up's rewrite adds no effect: it reads nothing, only the family it continues, or only lists of
+    what this conversation verified («what have I got set?» after a timer and a reminder)."""
+
+    if same_family(operations, frame):
+        return True
+    return (
+        state is not None
+        and all(op.endswith(".list") for op in operations)
+        and {_family(op) for op in operations} <= state.families
+    )
+
+
+def _said_time(request: str) -> str | None:
+    """The day or the hour the person said in a request, in their words («el finde», «a las 7:30»)."""
+
+    said = " ".join(str(request or "").split())
+    folded = _fold(said)
+    if len(folded) != len(said):
+        said = folded
+    found = re.search(rf"\b(?:{_DAY}|{_CLOCK})\b", folded)
+    return said[found.start(): found.end()] if found is not None else None
+
+
+class DialogueState:
+    """The last thing of each kind this conversation verified. The serve loop owns one and passes it in.
+
+    ``expect`` is told the request a turn decided and its operations; ``record`` is given the situation of each
+    composed result and keeps it only when the operation was one of those, verified and succeeded. A new
+    conversation starts it over (``reset``).
+    """
+
+    _LABELS = (
+        ("request", "último pedido hecho (last request done)"),
+        ("place", "lugar (place)"),
+        ("day", "día u hora pedidos (day or time asked)"),
+        ("playing", "canción sonando (song playing)"),
+        ("asked_to_play", "música pedida (music asked for)"),
+        ("alarm", "alarma o temporizador creado (alarm or timer set)"),
+        ("reminder", "recordatorio creado (reminder set)"),
+        ("topic", "tema buscado (topic searched)"),
+        ("volume", "volumen (volume)"),
+        ("brightness", "brillo (brightness)"),
+    )
+
+    def __init__(self) -> None:
+        self._expected: tuple[str, tuple[str, ...]] | None = None
+        self._facts: dict[str, str] = {}
+        self.operations: tuple[str, ...] = ()  # the last verified request's operations
+        self.families: set[str] = set()  # every family this conversation verified
+
+    def reset(self) -> None:
+        self._expected = None
+        self._facts = {}
+        self.operations = ()
+        self.families = set()
+
+    @property
+    def request(self) -> str | None:
+        """The last request whose result was verified, in the person's words as completed."""
+
+        return self._facts.get("request")
+
+    def expect(self, request: str, operations: object) -> None:
+        names = tuple(str(op) for op in operations) if isinstance(operations, (list, tuple)) else ()
+        self._expected = (str(request or "").strip(), names) if names else None
+
+    def record(self, situation: object) -> None:
+        if not isinstance(situation, dict) or self._expected is None:
+            return
+        operation = str(situation.get("operation") or "")
+        request, expected = self._expected
+        if operation not in expected or situation.get("verified") is not True or situation.get("succeeded") is not True:
+            return
+        observed = situation.get("observed") if isinstance(situation.get("observed"), dict) else {}
+        self.operations = (
+            tuple(dict.fromkeys((*self.operations, operation))) if self._facts.get("request") == request
+            else (operation,)
+        )
+        self._facts["request"] = request
+        family = _family(operation)
+        self.families.add(family)
+        said_time = _said_time(request)
+        if family in {"weather", "notification", "reminder", "calendar"} and said_time:
+            self._facts["day"] = said_time
+        if family == "weather":
+            place = ", ".join(str(observed[key]) for key in ("location", "region", "country") if observed.get(key))
+            if place:
+                self._facts["place"] = place
+        elif family == "media":
+            title, artist = str(observed.get("title") or "").strip(), str(observed.get("artist") or "").strip()
+            if title:
+                self._facts["playing"] = f"{title} — {artist}" if artist and artist not in title else title
+            if observed.get("query"):
+                self._facts["asked_to_play"] = str(observed["query"])
+        elif operation == "notification.schedule":
+            noun = _SCHEDULED_NOUN.search(_fold(request))
+            parts = [str(observed.get("title") or request)]
+            parts += [f"{observed['dueUtc']} UTC"] if observed.get("dueUtc") else []
+            parts += [f"id {observed['taskName']}"] if observed.get("taskName") else []
+            self._facts["alarm"] = ", ".join(parts)
+            self._facts["alarm_noun"] = noun.group(0) if noun is not None else "alarm"
+        elif operation == "reminder.create":
+            self._facts["reminder"] = str(observed.get("title") or request)
+        elif operation == "web.search" and observed.get("query"):
+            self._facts["topic"] = str(observed["query"])
+        elif operation in {"audio.volume", "audio.volume.adjust"} and observed.get("level") is not None:
+            self._facts["volume"] = str(observed["level"])
+        elif operation.startswith("system.settings") and observed.get("setting") and observed.get("value") is not None:
+            self._facts[str(observed["setting"])] = str(observed["value"])
+
+    def lines(self) -> list[tuple[str, str]]:
+        """What was verified, one line per kind, for the rewrite prompt and its word check."""
+
+        return [("verificado", f"{label}: {self._facts[key]}") for key, label in self._LABELS if key in self._facts]
+
+    def cancel_last_alarm(self, in_spanish: bool) -> str | None:
+        """«cancela el último temporizador» / «cancel the last timer» when this conversation set an alarm or a
+        timer: a correction of it («actually make it 9») replaces it instead of setting a second one."""
+
+        if "alarm" not in self._facts:
+            return None
+        timer = self._facts.get("alarm_noun") in {"timer", "temporizador"}
+        if in_spanish:
+            return "cancela el último temporizador" if timer else "cancela la última alarma"
+        return f"cancel the last {'timer' if timer else 'alarm'}"
+

@@ -4049,8 +4049,19 @@ _REWRITE_DEPENDENCY_HINTS = {
         "persona completado con esa respuesta."
     ),
     "destination": (
-        "El último mensaje sólo cambia dónde hacerlo (otra aplicación o sitio): repite el último pedido de "
-        "la persona con ese destino."
+        "El último mensaje sólo cambia dónde (otro lugar, otra aplicación o sitio): repite el último pedido de "
+        "la persona (el último pedido hecho, si está verificado) con ese lugar o destino."
+    ),
+    "followup": (
+        "El último mensaje sigue la conversación y dice sólo lo que cambia —un día, una hora, un lugar, una "
+        "cantidad, otra canción— o nombra con «allá», «esta», «eso», «it», «the» algo ya dicho o verificado, o "
+        "pregunta algo más sobre el mismo tema. Escribe el último pedido hecho con ese cambio, o la pregunta con "
+        "la cosa, el lugar, el día o el tema que nombra, tomados de lo verificado o de la conversación "
+        "(«¿y el finde?» tras «¿va a llover hoy?» → «¿va a llover el finde?»; «¿y en Rosario?» → «¿va a llover el "
+        "finde en Rosario?»; «y quién fue el goleador» tras «quién ganó el partido de Boca anoche» → «quién fue "
+        "el goleador del partido de Boca anoche»; «cómo se llama esta» con una canción sonando → «cómo se llama "
+        "esta canción»; «make it 9» tras «set a timer for 11 minutes» → «set a timer for 9 minutes»). Si "
+        "después de «y», «and» o «no» ya hay un pedido completo, devuelve ese pedido sin el conector."
     ),
     "reference": (
         "El último mensaje usa un pronombre (lo, la, le) que nombra algo que la persona dijo antes: "
@@ -16749,15 +16760,19 @@ class LlmRuntime:
         context: list[tuple[str, str]],
         *,
         dependency: str = "",
+        verified: list[tuple[str, str]] | tuple[tuple[str, str], ...] = (),
         timeout: float = 2.5,
     ) -> str:
         """Rewrite a message that depends on the dialogue as a request that stands alone.
 
         The dialogue slot (``semantic.dialogue.dependency``) already decided that the
         message points back: an answer to BAXY's question, «sí», a new destination,
-        a pronoun object or a lookup without its topic. The model only joins the
-        message with what was said; ``semantic.dialogue.rewrite_stays_in_context``
-        rejects any word nobody said, so it can never add an object or an effect.
+        a pronoun object, a lookup without its topic or a follow-up that says only
+        what changes. ``verified`` is what this conversation verified (the dialogue
+        state: place, day, what plays, the alarm set, the topic searched). The model
+        only joins the message with what was said or verified;
+        ``semantic.dialogue.rewrite_stays_in_context`` rejects any other word, so it
+        can never add an object or an effect.
         """
 
         current = str(text).strip()[:1_024]
@@ -16765,6 +16780,11 @@ class LlmRuntime:
             f"{'BAXY' if speaker == 'BAXY' else 'persona'}: {str(line).strip()[:400]}"
             for speaker, line in list(context)[-4:]
         )
+        state = "\n".join(f"- {str(line).strip()[:300]}" for _, line in list(verified)[:12])
+        if state:
+            lines = "Lo verificado en esta conversación:\n" + state + "\n\nConversación:\n" + lines
+        else:
+            lines = "Conversación:\n" + lines
         payload = {
             "messages": [
                 {
@@ -16772,8 +16792,8 @@ class LlmRuntime:
                     "content": (
                         "Reescribes el último mensaje que una persona le escribe a BAXY, su "
                         "asistente de PC, para que se entienda solo, sin leer la conversación. "
-                        "Usa sólo palabras que ya están en la conversación o en el mensaje: no "
-                        "agregues cosas, nombres, cantidades ni acciones que nadie dijo. "
+                        "Usa sólo palabras que ya están en la conversación, en lo verificado o en el "
+                        "mensaje: no agregues cosas, nombres, cantidades ni acciones que nadie dijo. "
                         "Si el mensaje responde a la pregunta de BAXY, junta la respuesta con el "
                         "pedido al que responde (pedido «pon una alarma», pregunta «¿a qué hora?», "
                         "respuesta «a las 7» → «pon una alarma a las 7»). Si el mensaje sólo dice "
@@ -16793,7 +16813,7 @@ class LlmRuntime:
                 ),
                 {
                     "role": "user",
-                    "content": "Conversación:\n" + lines + "\n\nÚltimo mensaje: " + current,
+                    "content": lines + "\n\nÚltimo mensaje: " + current,
                 },
             ],
             "response_format": {
