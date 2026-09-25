@@ -23,7 +23,7 @@ from .web import asks_for_information, public_opinion_query, record_fact_query, 
 from .files import _pdf_summary_request, _file_trash_request, process_report_file_request, _file_creation_request, known_folder_file_path, _current_directory_file_count, _DUPLICATE_FILES, _known_folder_recent_listing, _known_folder_listing_request, _review_file_and_game_effects, folder_txt_zip_open_mission, open_named_file_request, _office_document_roundtrip_intent
 from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
-from .system import _weather_read_intent, physical_world_request
+from .system import _weather_read_intent, physical_world_request, weather_place_known_only_through_someone
 from .notes import list_entry_request, list_read_request, list_removal_request, list_creation_without_items, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder, said_repetition, _CALENDAR_PLACE, reminder_inventory_question, AGENDA_NOT_A_READ
 from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, _latest_email_domain, _notification_listing_request, inbox_read_request, social_network_request, contact_book_request
 from .ui import _clipboard_copy_domain, _clipboard_paste_domain, calculator_expression_request, literal_clipboard_write_text, _review_input_and_capture_effects, _VISIBLE_CLICK_APP_CONTEXT, _gerund_click_label, _visible_click_label, _click_in_application, _visible_click_intent
@@ -2803,6 +2803,9 @@ def _clarification_intent_of(
     if "email.send" in available and email_request_without_address(text):
         # Fase 7: a mail for a name and no address asks the address (never guesses one).
         return ClarificationIntent(("email.send",), ("to",))
+    if _weather_read_intent(text, available) is not None and weather_place_known_only_through_someone(text):
+        # Tanda 7 «at my sister's»: a place BAXY does not know is asked for, never read as this PC's town.
+        return ClarificationIntent(("weather.current",), ("location",))
     if {"web.download", "file.open"} <= available and (image := web_image_request(text)) is not None and image[1]:
         # REOPEN1957 H0069: an image or a photo of nothing in particular is asked
         # what it should show; a meme needs no subject.

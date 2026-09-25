@@ -78,11 +78,31 @@ def _weather_location(text: str) -> str | None:
             or _has(folded_place, rf"^{SPOKEN_NUMBER}\s*(?:grados|degrees|°|milimetros|mm|centimetros|cm|pulgadas|inches)\b")
             # MASSIVE «will it be nice at the beach on friday»: a kind of place is where the person goes, not a town.
             or _has(folded_place, _GENERIC_PLACE)
+            # Tanda 7: «casa de mi hermana» is no town; a town may still be named after it («… en Lima»).
+            or _has(folded_place, rf"^(?:{_SOMEONES_PLACE})")
             or len(place.encode("utf-8")) > 128
         ):
             continue
         return place
     return None
+
+
+# Tanda 7 «¿Va a llover tomorrow at my sister's?» was answered for this PC's town as «en casa de tu hermana»: a
+# place said only through a person («casa de mi hermana», «lo de mi vieja», «where my dad lives», «at my mom's»)
+# is somewhere BAXY does not know. It is asked, never taken for here.
+_SOMEONES_PLACE = (
+    r"\b(?:(?:la\s+)?casa\s+de\s+(?:mi|mis|tu|tus|su|sus|nuestr[oa]s?)\s+\w+|lo\s+de\s+(?:mi|mis|tu|tus|su|sus)\s+\w+|"
+    r"donde\s+(?:vive|viven|trabaja|trabajan|esta|estan)\s+(?:mi|mis|tu|tus|su|sus)\s+\w+|"
+    r"(?:at|to|in|near|by)\s+(?:my|your|his|her|our|their)\s+\w+['’]s\b|"
+    r"(?:my|your|his|her|our|their)\s+\w+['’]s\s+(?:house|place|home)|"
+    r"where\s+(?:my|your|his|her|our|their)\s+\w+\s+(?:lives|live|works|work|is|are|stays))"
+)
+
+
+def weather_place_known_only_through_someone(text: str) -> bool:
+    """The weather is asked for a place said only through a person, with no town named."""
+
+    return _has(_fold(text), _SOMEONES_PLACE) and _weather_location(text) is None
 
 
 def _without_trailing_time(place: str) -> str:

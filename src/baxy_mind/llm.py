@@ -8756,6 +8756,33 @@ def _search_report_names_a_page(text: str, payload: dict, user_text: str) -> boo
     return False
 
 
+def _search_report_off_subject(text: str, payload: dict, user_text: str) -> bool:
+    """The search did not answer and the report says something anyway.
+
+    Tanda 7 «¿y quién fue el top scorer?» after the Lakers game was reported as «Raphinha fue el top scorer con 12
+    goles en la LaLiga»: the question names its subject («Lakers») and no result mentions it, so none answers it.
+    Then only «no lo encontré» may be said, never a fact of another subject. A subject is a name the question
+    writes with a capital after its first word; a question without one is not judged here.
+    """
+
+    results_text = _search_results_text(payload)
+    if results_text is None:
+        return False
+    names = {
+        _reading_fold(name) for name in re.findall(r"(?<=\s)(?!I\b)[A-ZÁÉÍÓÚÑ][\w'-]+", str(user_text or ""))
+    } - {"google", "bing", "duckduckgo", "internet", "web", "wikipedia", "youtube"}  # where to look, not what
+    if not names:
+        return False
+    found = _reading_fold(results_text)
+    if any(re.search(r"\b" + re.escape(name) + r"\b", found) for name in names):
+        return False
+    return any(
+        _SEARCH_NOT_FOUND.match(_reading_fold(sentence)) is None
+        for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip())
+        if sentence.strip()
+    )
+
+
 def _verified_search_results(situation: dict) -> bool:
     """A completed, verified web.search whose observation carries results."""
 
@@ -9741,6 +9768,9 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
             _reading_fold(text),
         ):
             return "search_result_denied"
+        if _search_report_off_subject(text, payload, user_text):
+            # Owner method 2026-09-25 (no inventing): a search that did not answer is said as not found.
+            return "search_report_off_subject"
     written = seen.get("writtenText") if isinstance(seen, dict) else None
     if payload.get("operation") == "clipboard.write.text" and isinstance(written, str) and written:
         # CLIPBOARD1359: «Hola» / «Buen día.» were published after a verified
@@ -21096,6 +21126,13 @@ class LlmRuntime:
                         else "Di sólo lo que dice algún resultado, con sus palabras; no resumas "
                         "causas por tu cuenta."
                     )
+                ),
+                "search_report_off_subject": (
+                    "No result is about what was asked: say briefly, in one sentence, that you could not find it; "
+                    "do not give facts about anything else."
+                    if response_language == "en"
+                    else "Ningún resultado trata de lo que se preguntó: di brevemente, en una oración, que no lo "
+                    "encontraste; no des datos de otra cosa."
                 ),
                 "search_report_names_a_page": (
                     "That is the name of a page, not the answer: say the concrete thing a result states (a name, a number, a date, a place) in one or two sentences; if none states it, say briefly that you could not find it."
