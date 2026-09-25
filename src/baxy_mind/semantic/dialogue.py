@@ -275,7 +275,8 @@ def dependency(text: str, slot: DialogueSlot) -> str | None:
             # cien-99 049: «hazlo» after «haz eso» → «¿Qué es eso?». Agreeing to a request
             # with no object completes nothing; the message is read on its own.
             return None
-        if _ASSENT.fullmatch(folded) or _NUMBER_ANSWER.fullmatch(folded):
+        if _ASSENT.fullmatch(folded) or _NUMBER_ANSWER.fullmatch(folded) or followup(text).value:
+            # Tanda 9 «It will be for 3:30 pm.» after BAXY asked what to do: a value answers the question.
             return "answer"
         # A question read only from BAXY's reply is answered by a yes or a value; any other message is read as usual.
         if slot.held and ((len(words) <= 5 and _DESTINATION_ONLY.fullmatch(folded)) or len(words) <= 4):
@@ -652,15 +653,28 @@ _DAY = (
     r"(?:pasado\s+manana|manana|hoy|ayer|anoche|anteayer|esta\s+(?:noche|tarde)|fin\s+de\s+semana|finde|"
     rf"semana\s+(?:que\s+viene|proxima)|today|tonight|tomorrow|yesterday|last\s+night|weekend|week|{_WEEKDAY})"
 )
-# «a las 6 y cuarto», «a las 7 y media», «a las 8 y 20»: the minutes said in words are part of the hour.
+# «a las 6 y cuarto», «a las 7 y media», «a las 8 y 20»: the minutes said in words are part of the hour. Tanda 9
+# «It will be for 3:30 pm», «afternoon 3:45»: an hour with no preposition is a clock by its own form (its minutes or
+# am/pm), and the part of the day may come first.
+_CLOCK_PREFIX = r"(?:a\s+las?|at|para\s+las?|by|around|como\s+a\s+las?)"
+_AM_PM = r"(?:am|pm|a\.?\s?m\.?|p\.?\s?m\.?)"
 _CLOCK_HOUR = (
-    r"(?:a\s+las?|at|para\s+las?|by|around|como\s+a\s+las?)\s+\d{1,2}(?::\d{2}|\s+y\s+(?:cuarto|media|\d{1,2}))?"
+    rf"(?:{_CLOCK_PREFIX}\s+\d{{1,2}}(?::\d{{2}}|\s+y\s+(?:cuarto|media|\d{{1,2}}))?|"
+    rf"(?:(?:for|to)\s+)?\d{{1,2}}(?::\d{{2}}|(?=\s*{_AM_PM}(?![a-z]))))"
 )
 _CLOCK_PERIOD = (
-    r"\s*(?:am|pm|a\.?\s?m\.?|p\.?\s?m\.?|hs|horas|de\s+la\s+(?:manana|tarde|noche)|in\s+the\s+(?:morning|afternoon|"
-    r"evening))"
+    rf"\s*(?:{_AM_PM}|hs|horas|de\s+la\s+(?:manana|tarde|noche)|in\s+the\s+(?:morning|afternoon|evening))"
 )
-_CLOCK = rf"{_CLOCK_HOUR}(?:{_CLOCK_PERIOD})?"
+_PART_OF_DAY_FIRST = (
+    r"(?:(?:(?:in\s+the|de\s+la|por\s+la)\s+)?(?:morning|afternoon|evening|night|tarde|noche)|(?:de\s+la|por\s+la)\s+manana)"
+)
+_CLOCK = rf"(?:{_PART_OF_DAY_FIRST}\s+)?{_CLOCK_HOUR}(?:{_CLOCK_PERIOD})?"
+# «it will be for 3:30 pm», «it should be 9», «que sea a las 5», «debería ser mañana»: a copula before a value only
+# says the value.
+_VALUE_FRAME = re.compile(
+    r"^(?:(?:it|that|this)\s+(?:(?:will|would|should|must|could|can)\s+)?be|it'?ll\s+be|it'?s|that'?s|"
+    r"(?:que\s+)?sean?|sera|seria|(?:deberia|debe|tiene\s+que)\s+ser)\s+"
+)
 _TIME_FRAGMENT = re.compile(rf"^(?:{_DAY}|{_CLOCK})(?:\s+(?:y|and|o|or)\s+(?:{_DAY}|{_CLOCK}))?$")
 _PLACE_FRAGMENT = re.compile(rf"^(?:en|in|at|para|for|on|por|desde|from)\s+{_NOT_ASKED}\S.*$")
 # A place said as «allá» or «there»; «is there…», «there are…» only say that something exists.
@@ -732,6 +746,12 @@ class Followup:
         )
 
     @property
+    def value(self) -> bool:
+        """Only a value: an amount, a day or an hour («for 3:30 pm», «9 minutes», «mañana»)."""
+
+        return bool(_AMOUNT_FRAGMENT.fullmatch(self.folded) or _TIME_FRAGMENT.fullmatch(self.folded))
+
+    @property
     def replaces_last(self) -> bool:
         """It corrects what was just done («actually make it 9», «no, a las 8», «mejor 30», a bare «9»),
         rather than adding to it («y otro de 20», «and at 8 too»)."""
@@ -773,6 +793,11 @@ def followup(text: str) -> Followup:
     tail = _COURTESY_TAIL.search(folded)
     if tail is not None:
         said, folded = _trimmed(said[: tail.start()], folded[: tail.start()])
+    frame = _VALUE_FRAME.match(folded)
+    if frame is not None and (
+        _TIME_FRAGMENT.fullmatch(folded[frame.end():]) or _AMOUNT_FRAGMENT.fullmatch(folded[frame.end():])
+    ):
+        said, folded = said[frame.end():], folded[frame.end():]
     return Followup(said, folded, continued, corrected)
 
 
@@ -862,6 +887,16 @@ _SAID_HOUR = re.compile(rf"\b(?P<hour>{_CLOCK_HOUR})(?P<period>{_CLOCK_PERIOD})?
 _SAID_DAY = re.compile(rf"\b{_DAY}\b")
 
 
+def _period_after(first: str, old_period: str | None, request: str) -> str:
+    """«afternoon» said before the hour, as the request says a part of the day after it: « pm» next to «am/pm» or in
+    English, « de la tarde» in Spanish."""
+
+    morning = re.search(r"(?:morning|manana)$", first) is not None
+    if (old_period and re.search(_AM_PM, old_period)) or (not old_period and not spanish(request)):
+        return " am" if morning else " pm"
+    return " de la mañana" if morning else " de la noche" if re.search(r"(?:night|noche)$", first) else " de la tarde"
+
+
 def corrected_request(request: str | None, text: str) -> str | None:
     """«no, mejor a las 6:15» after «ponme una alarma a las 6 y media pa mañana» → «ponme una alarma a las 6:15 pa
     mañana»; «mejor que sean 6» after «un temporizador de 8 minutos» → «… de 6 minutos». None when the message is not
@@ -874,12 +909,26 @@ def corrected_request(request: str | None, text: str) -> str | None:
     folded = _fold(base)
     if len(folded) != len(base):
         base = folded
-    hour = re.fullmatch(rf"{_CLOCK_HOUR}(?P<period>{_CLOCK_PERIOD})?", said.folded)
+    hour = re.fullmatch(rf"(?:(?P<first>{_PART_OF_DAY_FIRST})\s+)?(?P<hour>{_CLOCK_HOUR})(?P<period>{_CLOCK_PERIOD})?", said.folded)
     old = _SAID_HOUR.search(folded)
     if hour is not None and old is not None:
-        # The part of the day said before stays unless the correction says another one.
-        end = old.end() if hour.group("period") else old.end("hour")
-        return base[: old.start()] + said.said + base[end:]
+        # The part of the day said before stays unless the correction says another one; said first («afternoon
+        # 3:45»), it goes after the hour as the request says it. The request's preposition stays unless the
+        # correction says one.
+        new = said.said[hour.start("hour"): hour.end("period") if hour.group("period") else hour.end("hour")]
+        if hour.group("first"):
+            new += _period_after(hour.group("first"), old.group("period"), base)
+        start = old.start()
+        if not re.match(rf"(?:{_CLOCK_PREFIX}|for|to)\s", hour.group("hour")):
+            said_prefix = re.match(rf"(?:{_CLOCK_PREFIX}|for|to)\s+", old.group("hour"))
+            if said_prefix is not None and said_prefix.group(0).split()[0] in {"for", "to"}:
+                # «for 3:45» also names the alarm already set for then (a cancellation reads it so): the clock
+                # that replaces one is said «at».
+                new = "at " + new
+            else:
+                start += said_prefix.end() if said_prefix is not None else 0
+        end = old.end() if hour.group("period") or hour.group("first") else old.end("hour")
+        return base[:start] + new + base[end:]
     if _AMOUNT_FRAGMENT.fullmatch(said.folded):  # «at 7» after a timer of 10 minutes is its amount
         new = re.search(rf"\b(?P<number>{_NUMBER})(?P<unit>\s*{_UNIT})?$", said.folded)
         old = _SAID_AMOUNT.search(folded)

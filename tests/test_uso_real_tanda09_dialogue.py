@@ -32,6 +32,11 @@ One owner per rule:
 8. The weather asked with the day or a connector first («y mañana va a hacer más calor?») or by how the air feels
    («is it humid?», «hotter», «colder») is the weather read; both went to a web search that found nothing. Owner:
    semantic/web._live_weather_request (_LEADING_CONNECTOR_OR_DAY), _WEATHER_WORDS.
+9. A value said with a copula («it will be for 3:30 pm», «it should be afternoon 3:45», «que sea a las 8») is that
+   value: after BAXY's question it answers it, after an alarm just set it corrects it. An hour is a clock by its
+   form too («3:45», «4 pm», the part of the day first); the alarm just set is replaced, and a clock that replaces
+   one said «for» is said «at» («for 3:45» also names the alarm set for then). Both turns ended in ⚠. Owners:
+   semantic/dialogue._VALUE_FRAME, _CLOCK_HOUR, _PART_OF_DAY_FIRST, Followup.value, corrected_request.
 
 Every list holds fresh phrasings (Spanish dialects, English, Spanglish); none is a literal of the tanda.
 """
@@ -355,3 +360,36 @@ def test_the_weather_with_the_day_first_or_how_it_feels_is_the_weather_read(text
 def test_a_day_first_does_not_make_the_weather_of_what_is_not(text):
     found = sidecar.resolve_explicit_effects(text, OPERATIONS)
     assert found is None or "weather.current" not in found.operations
+
+
+# ---------------------------------------------------------------- 9. a value said with a copula
+
+
+@pytest.mark.parametrize("text", ["It'll be at 6:10 am.", "it should be 7 pm", "que sea a las 9 y media", "5:20"])
+def test_a_value_after_baxys_question_answers_it(text):
+    turns = ("can you list my alarms?", "You have two alarms.", "sure, go ahead", "What would you like me to do?")
+    message = _message(*turns, text)
+    slot = dialogue.read_slot(message, message["history"], text)
+    assert dialogue.dependency(text, slot) == "answer"
+
+
+@pytest.mark.parametrize(
+    ("said", "text", "rewrite"),
+    [
+        ("set an alarm for 6:30 am", "no, it should be morning 6:50", "cancel the last alarm and set an alarm at 6:50 am"),
+        ("set an alarm at 7 am", "actually 7:15", "cancel the last alarm and set an alarm at 7:15 am"),
+        ("ponme una alarma a las 8 de la mañana", "no, que sea a las 8 y media",
+         "cancela la última alarma y ponme una alarma a las 8 y media de la mañana"),
+        ("pon una alarma a las 5", "mejor por la tarde 5:40", "cancela la última alarma y pon una alarma a las 5:40 de la tarde"),
+    ],
+)
+def test_a_correction_of_the_alarm_just_set_replaces_it_with_the_value_said(said, text, rewrite):
+    state = dialogue.DialogueState()
+    state.expect(said, ["notification.schedule"])
+    state.record(_verified("notification.schedule", {"kind": "alarm", "title": said}))
+    assert _rearm(_message(said, "Listo.", text), _Scripted(), state) == (rewrite, "pattern")
+
+
+@pytest.mark.parametrize("text", ["for 9", "at 7"])
+def test_a_number_without_a_clock_form_stays_an_amount(text):
+    assert dialogue.shape(text, "followup") == "amount"
