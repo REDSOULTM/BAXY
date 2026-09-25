@@ -412,6 +412,17 @@ def test_a_playlist_a_note_or_a_pointed_entry_is_not_a_list_entry(text):
     assert list_entry_request(text) is None
 
 
+@pytest.mark.parametrize(
+    "text",
+    ["¿qué llevo ya en la lista de la compra?", "¿qué tengo ya en la lista del súper?", "lee la lista del mercado",
+     "qué hay hasta ahora en la lista de compras"],
+)
+def test_what_a_list_holds_so_far_is_a_read_of_it(text):
+    from baxy_mind.semantic.reading import read
+
+    assert read(text, available_operations=(*OPERATIONS, "task.list")).effects.operations == ("task.search",)
+
+
 _RECALL_HISTORY = [
     {"role": "user", "content": "baja el brillo a 30"},
     {"role": "assistant", "content": "El brillo está en 30."},

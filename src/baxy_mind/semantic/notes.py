@@ -878,7 +878,8 @@ _NAMED_LIST = (
 # «la lista de los planetas» is public knowledge; with the article only the to-do list
 # and the shopping list are the person's.
 _HOUSEHOLD_LIST = (
-    r"lista\s+de(?:\s+la|\s+las)?\s+(?:compras?|supermercado|super|mercado|comestibles)|(?:shopping|grocery|groceries)\s+list"
+    r"lista\s+(?:de(?:\s+la|\s+las)?|del)\s+(?:compras?|supermercado|super|mercado|comestibles)"
+    r"|(?:shopping|grocery|groceries)\s+list"
 )
 _OWN_LIST = (
     rf"(?:(?:mi|mis|my)\s+(?P<list>{_TODO_LIST}|{_NAMED_LIST})|(?:la|las|the)\s+(?P<the_list>{_HOUSEHOLD_LIST}|{_TODO_LIST})"
@@ -926,7 +927,9 @@ _LIST_INVENTORY = (
     r"(?:check|review|open|show|display|read|comprueba|revisa|abre|muestra|lee)\s+(?P<list>lista|list)",
 )
 _WHOLE_LIST_READ = (
-    rf"que\s+(?:mas\s+)?(?:hay|tengo|queda|quedan|llevo|puse|anote|esta|estan)\s+(?:en|dentro\s+de)\s+{_OWN_LIST}",
+    # Tanda 8 «¿qué llevo ya en la lista de la compra?» (the rewrite of «¿qué llevo ya?»): «ya», «hasta ahora».
+    rf"que\s+(?:mas\s+)?(?:hay|tengo|queda|quedan|llevo|puse|anote|esta|estan)"
+    rf"(?:\s+(?:ya|ahora|todavia|aun|hasta\s+ahora))?\s+(?:en|dentro\s+de)\s+{_OWN_LIST}",
     rf"(?:que|cual)\s+es\s+(?:lo|la\s+(?:cosa|tarea))\s+(?:siguiente|proxim[oa]|primer[oa]?|ultim[oa])\s+(?:en|de)\s+{_OWN_LIST}",
     rf"(?:que\s+es\s+(?:esto|eso)|what(?:'s|s|\s+is)\s+(?:this|that))\s+(?:en|de|on|in)\s+{_OWN_LIST}",
     rf"{_LIST_READ_VERB}\s+(?:lo\s+que\s+(?:hay|tengo)\s+en\s+|el\s+contenido\s+de\s+)?{_OWN_LIST}(?:\s+(?:otra\s+vez|de\s+nuevo))?",
