@@ -73,6 +73,7 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 |---|---|---|---|---|---|---|---|
 | base | 69,2 % | 53,0 % | 59,6 % | 96,5 % (90,1 %) | 82,2 % | — | — |
 | M1: decisor en contexto (V2) + Qwen3.5-4B, 12 288/ranura | 75,5 % | 87,9 % | 70,0 % | **93,5 % (70,3 %)** | 81,5 % | 24 | **no entra**: el registro real cae (quejas y charla con historial convertidas en acciones: «baxy, cierra baxy» → cerrar todas las ventanas) |
+| M1b: V5 — con historial deciden los lectores de conversación (charla, quejas, social, límites) y el decisor el resto | 73,9 % | 80,3 % | 70,4 % | **94,9 % (82,4 %)** | — | 24 | **no entra** (capa A): catálogo opaco («ponme daredevil en disney» → límite, «tirame cuánta memoria tengo» → «no tengo acceso»), «buscá recetas de pizza» como charla |
 
 ## Bitácora
 
