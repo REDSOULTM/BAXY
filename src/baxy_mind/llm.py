@@ -8658,21 +8658,45 @@ _PAGE_CALL_TO_READER = re.compile(
     r"compar[ae]|reserv[ae]|elige|elija|busca|visit[ae]|acced[ea]|disfrut[ae]|suscríbete|regístrate|"
     r"descarga|descargue|check|discover|explore|find|view|browse|read|watch|learn|compare|book|visit|enjoy|"
     r"subscribe|sign\s+up|download|get)\b(?!\s*,)"
+    # Tanda 6c «Se pueden consultar menús, reseñas y fotos de restaurantes abiertos cerca de ti…»: the same call said
+    # as what the reader may do on the page, anywhere in the sentence. Only the verbs of using a page: «se puede ver la
+    # aurora en Noruega», «you can visit the Louvre» answer.
+    r"|\b(?:se\s+pueden?|puedes|pod[eé]s|podr[aá]s|puede\s+usted|you\s+can|you\s+may|you'?ll\s+be\s+able\s+to)\s+"
+    r"(?:consultar|reservar|comparar|descubrir|explorar|suscribirte|suscribirse|registrarte|registrarse|descargar|"
+    r"check\s+out|browse|book|compare|discover|explore|subscribe|sign\s+up|download)\b"
+)
+# Tanda 6c «Los expertos de TU han preparado para ti una lista…»: the page addressing its visitor («para ti», «for
+# you») is its voice; BAXY says the answer without the page's dedication.
+_PAGE_ADDRESS_TO_READER = re.compile(r"\b(?:para\s+ti|for\s+you)\b")
+# Tanda 7 «Bob Dean afirma que … nunca lo hemos estado»: a first person plural inside what a named person says or
+# believes is theirs, reported, not the page speaking.
+_REPORTED_SPEECH = re.compile(
+    r"\b(?:afirm|dic|dij|sostien|sostuv|asegur|cre[eiy]|explic|mencion|declar|cuent|cont[oó]|opin|"
+    r"say|said|claim|believ|state|argu|told|insist)\w*\s+(?:\w+\s+){0,3}(?:que|that)\b"
 )
 
 
 def _search_report_speaks_as_a_page(text: str, payload: dict, user_text: str) -> bool:
-    """The report of a verified search speaks as a page: its first person plural, or its call to the reader."""
+    """The report of a verified search speaks as a page: its first person plural, its call to the reader or its
+    address to the reader."""
 
     if _search_results_text(payload) is None:
         return False
     unquoted = re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(text))
     asked = _reading_fold(user_text or "")
+    folded = _reading_fold(unquoted)
+
+    def reported(said: str, found: re.Match[str]) -> bool:
+        sentence = re.split(r"[.!?;]", said[: found.start()])[-1]
+        return _REPORTED_SPEECH.search(sentence) is not None
+
     return any(
         re.search(r"\b" + re.escape(_reading_fold(found.group()).strip(" ¿¡")) + r"\b", asked) is None
+        and not (pattern is _PAGE_FIRST_PERSON_PLURAL and reported(said, found))
         for pattern, said in (
-            (_PAGE_FIRST_PERSON_PLURAL, _reading_fold(unquoted)),
+            (_PAGE_FIRST_PERSON_PLURAL, folded),
             (_PAGE_CALL_TO_READER, unquoted.casefold()),
+            (_PAGE_ADDRESS_TO_READER, folded),
         )
         for found in pattern.finditer(said)
     )

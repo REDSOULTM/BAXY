@@ -9,6 +9,9 @@
   lookup that answered nothing is that it was not found.
 - «¿hoy qué día tengo que marcar en el calendario?» → «El fallo ocurre porque este PC no tiene un perfil clásico de
   Outlook…»: the fact named the profile as a technicality; it now says Outlook is not set up and cannot be reached.
+- «alto precio de las acciones» → «Los expertos de TU han preparado para ti una lista…», «sería genial cenar en este
+  nuevo restaurante…» → «Se pueden consultar menús, reseñas…»: the page addressing its reader («para ti») or offering
+  what can be done on it is its voice. «Bob Dean afirma que … nunca lo hemos estado» is reported speech, not the page.
 
 The phrasings below are not the tandas': they are paraphrases (es/en/spanglish) the fixes do not name, with negative
 controls.
@@ -192,3 +195,55 @@ def test_the_fact_of_a_failure_says_what_the_person_hears_not_the_mechanism(
 )
 def test_the_unreachable_outlook_said_plainly_is_the_failure_told(draft: str) -> None:
     assert llm._asserts_failure(draft)
+
+
+# ------------------------------------------------------------------ the page's voice: its offer to the reader
+
+
+_PAGES = {
+    "operation": "web.search",
+    "seen": {
+        "query": "q",
+        "count": 1,
+        "results": [{
+            "title": "Restaurantes nuevos en el centro",
+            "url": "https://comer.example.com/nuevos",
+            "snippet": "Descubre los restaurantes abiertos cerca de ti. Consulta menús, reseñas y fotos.",
+        }],
+    },
+}
+
+
+@pytest.mark.parametrize(
+    ("draft", "asked"),
+    [
+        ("Se pueden consultar menús, reseñas y fotos de los restaurantes nuevos del centro.",
+         "me encantaría probar el restaurante nuevo del centro"),
+        ("Puedes reservar mesa y comparar precios en los restaurantes del centro.", "algún sitio nuevo pa cenar?"),
+        ("You can browse menus and book a table at the new places downtown.", "any new restaurant downtown?"),
+        ("Los analistas han seleccionado para ti las acciones más caras del momento.", "acciones caras"),
+        ("Here are the priciest stocks, handpicked for you by our team.", "most expensive stocks rn"),
+        ("Hoy podrás descubrir los mejores sitios para cenar.", "dónde ceno hoy"),
+    ],
+)
+def test_a_page_offering_itself_to_its_reader_is_its_voice(draft: str, asked: str) -> None:
+    assert llm._search_report_speaks_as_a_page(draft, _PAGES, asked)
+
+
+@pytest.mark.parametrize(
+    ("draft", "asked"),
+    [
+        ("Se puede ver la aurora boreal en Tromsø entre septiembre y marzo.", "dónde se ve la aurora boreal"),
+        ("You can visit the Louvre for free on the first Friday of the month.", "is the louvre free"),
+        ("Bob Dean afirma que nunca hemos estado solos en el universo.", "qué sabes de bob dean"),
+        ("He claimed that we are not alone and that our planet is watched.", "who is bob dean"),
+        ("El restaurante nuevo del centro abre de 13 a 23 h.", "a qué hora abre el restaurante nuevo del centro"),
+    ],
+)
+def test_an_answer_reported_or_asked_for_themselves_is_not_the_page_speaking(draft: str, asked: str) -> None:
+    assert not llm._search_report_speaks_as_a_page(draft, _PAGES, asked)
+
+
+def test_the_page_speaking_for_itself_is_still_its_voice() -> None:
+    assert llm._search_report_speaks_as_a_page("Nuestro conversor te dice el cambio al instante.", _PAGES, "dólar hoy")
+    assert llm._search_report_speaks_as_a_page("Hemos preparado una guía de los mejores sitios.", _PAGES, "sitios")
