@@ -2457,7 +2457,10 @@ def _conversation_max_tokens(
     if presentation_shape is not None:
         return 64
     if retry:
-        return 96
+        # Verification 2026-09-25 (layer A, real log «Por dios, odio estos fallos»): the repair is written inside a JSON
+        # wrapper, and at 96 tokens a two-sentence Spanish reply was cut twice (truncated_structured_reply) and the turn
+        # became a question. The prompt keeps it short; the cap only has to hold the wrapper and two sentences.
+        return 160
     if conversation_kind in {"knowledge", None}:
         return 256 if asks_an_extended_answer(text) else 128
     return {"social": 64, "unsupported": 96, "unsupported_language": 96}.get(conversation_kind, 128)

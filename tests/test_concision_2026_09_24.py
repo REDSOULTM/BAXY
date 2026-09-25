@@ -232,7 +232,9 @@ def test_budgets_by_shape_and_kind() -> None:
     assert llm._conversation_max_tokens("identity", None, "quién eres") == 128
     assert llm._conversation_max_tokens(None, "social", "epa, qué tal") == 64
     assert llm._conversation_max_tokens(None, "unsupported", "pide un uber") == 96
-    assert llm._conversation_max_tokens(None, "knowledge", "qué es un átomo", retry=True) == 96
+    # Verification 2026-09-25: the JSON-wrapped repair holds two sentences (96 cut «Por dios, odio estos fallos»).
+    assert llm._conversation_max_tokens(None, "knowledge", "qué es un átomo", retry=True) == 160
+    assert llm._conversation_max_tokens(None, "social", "por dios, odio estos fallos", retry=True) == 160
 
 
 @pytest.mark.parametrize(
