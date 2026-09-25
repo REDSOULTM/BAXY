@@ -77,6 +77,7 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | M2: + catálogo del decisor en lenguaje llano (dato de sala limpia, 204 líneas) + lo que el catálogo sí hace se hace + «buscar» es web.search | **77,1 %** | **86,4 %** | 72,7 % | 95,4 % (83,5 %) | — | 21 | no entra todavía (capa A 95,4 < 96,0): quejas con historial largo convertidas en acción; argumentos: 7–8 turnos por conjunto con la decisión bien (lector de lugar del clima, recordatorios) |
 | M3: + política «un comentario o una queja no es un pedido», «las opiniones se buscan sin preguntar de dónde», «parar» en media.control | 76,7 % | 86,4 % | 71,5 % | 95,2 % (82,4 %) | — | 22 | **retirado**: no mueve nada (ley 2) |
 | V6 (simulado): con historial, los mensajes autónomos según `dialogue.dependency` por la tubería vieja | 180/253 | 46/66 | 179/260 | registro real 84/95 (M2: 80) | — | — | **descartado**: el detector da por autónomos 57–70 seguimientos reales |
+| M4: M2 + el decisor ve los últimos 4 mensajes (no 12) | 77,1 % | 86,4 % | 72,7 % | 95,6 % (84,6 %) | — | 21 | se queda (igual en DEV, +1 en el registro real, menos prompt); capa A aún a 4 filas del umbral |
 
 ## Bitácora
 
