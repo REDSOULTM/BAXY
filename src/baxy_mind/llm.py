@@ -4083,16 +4083,13 @@ _REWRITE_DEPENDENCY_HINTS = {
         "El último mensaje sólo cambia dónde (otro lugar, otra aplicación o sitio): repite el último pedido de "
         "la persona (el último pedido hecho, si está verificado) con ese lugar o destino."
     ),
+    # Tanda 8: the examples of this hint named things («goleador», «partido») the model copied into rewrites
+    # of other conversations; the worked examples are the shared few-shot turns (_REWRITE_EXAMPLES).
     "followup": (
-        "El último mensaje sigue la conversación y dice sólo lo que cambia —un día, una hora, un lugar, una "
-        "cantidad, otra canción— o nombra con «allá», «esta», «eso», «it», «the» algo ya dicho o verificado, o "
-        "pregunta algo más sobre el mismo tema. Escribe el último pedido hecho con ese cambio, o la pregunta con "
-        "la cosa, el lugar, el día o el tema que nombra, tomados de lo verificado o de la conversación "
-        "(«¿y el finde?» tras «¿va a llover hoy?» → «¿va a llover el finde?»; «¿y en Rosario?» → «¿va a llover el "
-        "finde en Rosario?»; «y quién fue el goleador» tras «quién ganó el partido de Boca anoche» → «quién fue "
-        "el goleador del partido de Boca anoche»; «cómo se llama esta» con una canción sonando → «cómo se llama "
-        "esta canción»; «make it 9» tras «set a timer for 11 minutes» → «set a timer for 9 minutes»). Si "
-        "después de «y», «and» o «no» ya hay un pedido completo, devuelve ese pedido sin el conector."
+        "El último mensaje sigue la conversación: dice sólo lo que cambia (un día, una hora, un lugar, una "
+        "cantidad, otra canción), señala con «eso», «allá», «esta», «it» algo ya dicho, verificado o contestado "
+        "por BAXY, o pregunta algo más sobre lo mismo. Escribe el pedido anterior de la persona con ese cambio, o "
+        "la pregunta con la cosa, el número, el lugar, el día o el tema que señala."
     ),
     "reference": (
         "El último mensaje usa un pronombre (lo, la, le) que nombra algo que la persona dijo antes: "
@@ -4103,6 +4100,59 @@ _REWRITE_DEPENDENCY_HINTS = {
         "persona nombró antes."
     ),
 }
+
+# Tanda 8 (official window): with only rules in the system prompt the 4B model returned «y eso por 12?», «40
+# percent» and «is the entrance free» unchanged. Worked conversations, one per shape (a number BAXY computed, a
+# day, a correction or an answer to BAXY's question, a level answered, an item added to a list or asked about, a
+# timer corrected, what is set, a topic, a thing BAXY named, a place said «allá», another song), shown as turns
+# of the same form as the real input. None is a phrase of a measured tanda. (verified, conversation, message,
+# rewrite).
+_REWRITE_EXAMPLES: tuple[tuple[tuple[str, ...], tuple[tuple[str, str], ...], str, str], ...] = (
+    ((), (("persona", "cuánto es 18 por 45"), ("BAXY", "18 por 45 es 810.")), "¿y eso dividido en 3?",
+     "cuánto es 810 dividido en 3"),
+    (("lugar (place): Lima, Perú",), (("persona", "¿llueve hoy?"), ("BAXY", "Hoy en Lima no llueve.")),
+     "¿y pasado mañana?", "¿llueve pasado mañana en Lima?"),
+    ((), (("persona", "recuérdame llamar al dentista mañana a las 5"),
+          ("BAXY", "¿A las 5 de la mañana o de la tarde?")),
+     "no, mejor a las 4 y media", "recuérdame llamar al dentista mañana a las 4 y media"),
+    ((), (("persona", "the music is way too loud"), ("BAXY", "What volume do you want?")), "25 percent",
+     "set the music volume to 25 percent"),
+    ((), (("persona", "anota en la lista del súper arroz y aceite"),
+          ("BAXY", "Anoté arroz y aceite en la lista del súper.")),
+     "ah, y también azúcar", "anota en la lista del súper azúcar"),
+    ((), (("persona", "anota en la lista del súper azúcar"), ("BAXY", "Anoté azúcar en la lista del súper.")),
+     "¿qué tengo ya?", "¿qué tengo ya en la lista del súper?"),
+    (("último pedido hecho (last request done): pon un temporizador de 15 minutos para el arroz",
+      "alarma o temporizador creado (alarm or timer set): temporizador de 15 minutos para el arroz"),
+     (("persona", "pon un temporizador de 15 minutos para el arroz"),
+      ("BAXY", "Listo, el temporizador suena en 15 minutos.")),
+     "mejor que sean 12", "pon un temporizador de 12 minutos para el arroz"),
+    (("alarma o temporizador creado (alarm or timer set): timer for the laundry, 40 minutes",
+      "recordatorio creado (reminder set): water the plants"),
+     (("persona", "remind me to water the plants at 6"), ("BAXY", "Done, I'll remind you at 6:00.")),
+     "what do I have scheduled?", "what alarms, timers and reminders do I have scheduled?"),
+    ((), (("persona", "who won the Celtics game last night"), ("BAXY", "The Celtics beat the Knicks 112 to 104.")),
+     "and who scored the most points", "who scored the most points in the Celtics game last night"),
+    ((), (("persona", "recommend me a museum in Rome"), ("BAXY", "The Vatican Museums are a classic choice.")),
+     "are they open on sundays", "are the Vatican Museums open on sundays"),
+    (("lugar (place): Tokio, Japón",), (("persona", "qué hora es en Tokio"), ("BAXY", "En Tokio son las 10:20.")),
+     "y si allá son las 8 de la mañana, qué hora es aquí", "si en Tokio son las 8 de la mañana, qué hora es aquí"),
+    (("música pedida (music asked for): cumbia",), (("persona", "pon algo de cumbia"),
+                                                   ("BAXY", "Suena La Pollera Colorá.")),
+     "esa no, otra más lenta", "pon otra de cumbia más lenta"),
+)
+
+
+def _rewrite_input(text: str, context: object, verified: object) -> str:
+    """The rewrite's input: what was verified, the conversation, and the last message."""
+
+    lines = "\n".join(
+        f"{'BAXY' if speaker == 'BAXY' else 'persona'}: {str(line).strip()[:400]}"
+        for speaker, line in list(context)[-4:]
+    )
+    state = "\n".join(f"- {str(line).strip()[:300]}" for line in list(verified)[:12])
+    head = f"Lo verificado en esta conversación:\n{state}\n\n" if state else ""
+    return f"{head}Conversación:\n{lines}\n\nÚltimo mensaje: {str(text).strip()[:1_024]}"
 
 _COMPLETED_EFFECT_CLAIM = re.compile(
     r"(?<![\w])(?:"
@@ -16870,37 +16920,33 @@ class LlmRuntime:
         can never add an object or an effect.
         """
 
-        current = str(text).strip()[:1_024]
-        lines = "\n".join(
-            f"{'BAXY' if speaker == 'BAXY' else 'persona'}: {str(line).strip()[:400]}"
-            for speaker, line in list(context)[-4:]
-        )
-        state = "\n".join(f"- {str(line).strip()[:300]}" for _, line in list(verified)[:12])
-        if state:
-            lines = "Lo verificado en esta conversación:\n" + state + "\n\nConversación:\n" + lines
-        else:
-            lines = "Conversación:\n" + lines
+        examples = []
+        for example_verified, example_context, example_text, example_rewrite in _REWRITE_EXAMPLES:
+            examples += [
+                {"role": "user", "content": _rewrite_input(example_text, example_context, example_verified)},
+                {"role": "assistant", "content": json.dumps({"request": example_rewrite}, ensure_ascii=False)},
+            ]
         payload = {
             "messages": [
                 {
                     "role": "system",
                     "content": (
-                        "Reescribes el último mensaje que una persona le escribe a BAXY, su "
-                        "asistente de PC, para que se entienda solo, sin leer la conversación. "
-                        "Usa sólo palabras que ya están en la conversación, en lo verificado o en el "
-                        "mensaje: no agregues cosas, nombres, cantidades ni acciones que nadie dijo. "
-                        "Si el mensaje responde a la pregunta de BAXY, junta la respuesta con el "
-                        "pedido al que responde (pedido «pon una alarma», pregunta «¿a qué hora?», "
-                        "respuesta «a las 7» → «pon una alarma a las 7»). Si el mensaje sólo dice "
-                        "que sí a lo que BAXY ofreció, escribe ese ofrecimiento como pedido de la "
-                        "persona. Si sólo cambia el lugar o la aplicación («no, en X»), repite el "
-                        "pedido anterior con ese lugar en vez del otro. Si usa un pronombre (lo, "
-                        "la, le, eso) o no nombra de qué habla, pon en su lugar la cosa o el tema "
-                        "que se nombró antes. Si el mensaje ya se entiende solo, o es un "
-                        "comentario, una queja, un agradecimiento o charla, devuélvelo exactamente "
-                        "igual. Conserva el idioma y el trato de la persona. Devuelve sólo el JSON."
+                        "Reescribes el último mensaje que una persona le escribe a BAXY, su asistente de PC, "
+                        "como un pedido completo que se entienda solo, sin leer la conversación. El mensaje "
+                        "depende de la conversación: dice sólo lo que cambia, responde a la pregunta de BAXY, "
+                        "señala algo con «eso», «allá», «esta», «it» o un pronombre, o pregunta algo más sobre "
+                        "lo mismo. Pon en su lugar lo que la conversación ya nombró: el pedido anterior de la "
+                        "persona, lo que BAXY contestó (un número calculado, un lugar, una hora, un nombre) o "
+                        "lo verificado. Si responde a la pregunta de BAXY, junta la respuesta con el pedido al "
+                        "que responde; si sólo dice que sí a lo que BAXY ofreció, escribe ese ofrecimiento como "
+                        "pedido de la persona. Usa sólo palabras que ya están en la conversación, en lo "
+                        "verificado o en el mensaje: no agregues cosas, nombres, cantidades ni acciones que "
+                        "nadie dijo. No devuelvas el mensaje igual si le falta algo de la conversación; sólo "
+                        "un pedido completo y nuevo, o charla, queda igual. Conserva el idioma y el trato de "
+                        "la persona. Devuelve sólo el JSON."
                     ),
                 },
+                *examples,
                 *(
                     [{"role": "system", "content": _REWRITE_DEPENDENCY_HINTS[dependency]}]
                     if dependency in _REWRITE_DEPENDENCY_HINTS
@@ -16908,7 +16954,7 @@ class LlmRuntime:
                 ),
                 {
                     "role": "user",
-                    "content": lines + "\n\nÚltimo mensaje: " + current,
+                    "content": _rewrite_input(text, context, [line for _, line in verified]),
                 },
             ],
             "response_format": {

@@ -16,15 +16,22 @@ entrance free», and good rewrites rejected. One owner per rule:
    semantic/dialogue._SOCIAL.
 4. A question about what the person holds with no object («¿qué llevo ya?», «what have I got so far?») leans on the
    turn before. Owner: semantic/dialogue._OWN_LISTING.
+5. The rewrite is shown worked conversations, one per shape, as turns of the same form as the real input (with only
+   rules the 4B model returned the message unchanged), and no hint names a thing of one conversation (the old
+   follow-up hint's «goleador del partido» came back in a Lakers rewrite). Owner: llm.rewrite_in_context,
+   llm._REWRITE_EXAMPLES.
 
 Every list holds fresh phrasings (Spanish dialects, English, Spanglish); none is a literal of the tanda.
 """
 
 from __future__ import annotations
 
+import json
+
 import pytest
 
 from baxy_mind import __main__ as sidecar
+from baxy_mind import llm
 from baxy_mind.semantic import dialogue
 
 OPERATIONS = (
@@ -217,3 +224,58 @@ def test_a_question_about_what_the_person_holds_leans_on_the_turn_before(text):
 @pytest.mark.parametrize("text", ["qué hora es", "what do I have to do today to renew my passport", "qué tengo que llevar a la playa"])
 def test_a_question_with_its_own_object_does_not(text):
     assert not dialogue.leans_on_context(text)
+
+
+# ---------------------------------------------------------------- 5. the rewrite is shown worked conversations
+
+
+def _rewrite_payload(text: str, context: list[tuple[str, str]], verified: list[tuple[str, str]]) -> dict:
+    runtime = object.__new__(llm.LlmRuntime)
+    seen: list[dict] = []
+
+    def post(payload: dict, **_kwargs: object) -> dict:
+        seen.append(payload)
+        return {"choices": [{"message": {"content": json.dumps({"request": "cuánto da 150 por 3"})}}]}
+
+    runtime._post = post  # type: ignore[method-assign]
+    assert runtime.rewrite_in_context(text, context, dependency="followup", verified=verified) == "cuánto da 150 por 3"
+    return seen[0]
+
+
+def test_the_rewrite_is_shown_worked_conversations_before_the_real_one():
+    context = [("persona", "oye cuánto da 1200 entre 8"), ("BAXY", "1200 entre 8 da 150.")]
+    messages = _rewrite_payload("¿y eso por 3?", context, [("verificado", "lugar (place): Quito")])["messages"]
+    examples = [message for message in messages[1:-1] if message["role"] in {"user", "assistant"}]
+    assert len(examples) == 2 * len(llm._REWRITE_EXAMPLES)
+    assert all(json.loads(answer["content"])["request"] for answer in examples[1::2])
+    real = messages[-1]
+    assert real["role"] == "user"
+    assert real["content"] == (
+        "Lo verificado en esta conversación:\n- lugar (place): Quito\n\nConversación:\npersona: oye cuánto da 1200 "
+        "entre 8\nBAXY: 1200 entre 8 da 150.\n\nÚltimo mensaje: ¿y eso por 3?"
+    )
+    # The example turns have the real input's form.
+    assert all(
+        "Conversación:\npersona: " in example["content"] and "\n\nÚltimo mensaje: " in example["content"]
+        for example in examples[0::2]
+    )
+
+
+@pytest.mark.parametrize("example", llm._REWRITE_EXAMPLES, ids=lambda example: example[2])
+def test_every_worked_example_keeps_the_rule_it_teaches(example):
+    verified, context, text, rewrite = example
+    slot = dialogue.DialogueSlot(None, None, tuple(line for speaker, line in reversed(context) if speaker == "persona"),
+                                 next((line for speaker, line in reversed(context) if speaker == "BAXY"), None))
+    assert dialogue.leans_on_context(text) or dialogue.dependency(text, slot) is not None
+    assert dialogue.differs(rewrite, text)
+    assert dialogue.rewrite_stays_in_context(rewrite, text, slot, [("verificado", line) for line in verified])
+
+
+def test_no_worked_example_or_hint_is_a_phrase_of_a_measured_tanda():
+    shown = " ".join(
+        [str(part) for example in llm._REWRITE_EXAMPLES for part in example]
+        + list(llm._REWRITE_DEPENDENCY_HINTS.values())
+    ).casefold()
+    for literal in ("2350", "335", "tomates", "top scorer", "lakers", "mar del plata", "finde", "madrid", "6:15",
+                    "40 percent", "entrance", "goleador", "boca"):
+        assert literal not in shown
