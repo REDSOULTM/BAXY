@@ -5940,6 +5940,64 @@ def _verified_notification_due(situation: dict) -> datetime | None:
     return _parse_core_utc(next_run) if parsed is not None else None
 
 
+def _verified_notification_dues(situation: dict) -> list[datetime]:
+    """The verified next run of the scheduled alarm or timer, or of each one a mission scheduled (tanda 6b «set
+    alarms for 2pm and 3pm»)."""
+
+    single = _verified_notification_due(situation)
+    if single is not None:
+        return [single]
+    return [due for step in _situation_steps(situation) if (due := _verified_notification_due(step)) is not None]
+
+
+# «2 pm», «3p.m.», «las 8 de la tarde», «a las 7 de la mañana»: an hour with its part of the day, no minutes.
+_MERIDIEM_HOUR = re.compile(
+    r"(?<![\d:.,])(\d{1,2})\s*(?:([ap])\.?\s*m\b\.?|(?:de|en|por)\s+la\s+(manana|madrugada|tarde|noche))"
+)
+
+
+def _scheduled_notification_defect(text: str, dues: list[datetime]) -> str:
+    """Tanda 5 / 6b: each scheduled alarm is told at its local time (HH:MM or its hour said «2 pm», «las 2 de la
+    tarde»), no other time and no UTC; a date or a day word («today», «mañana») said must be one of theirs —
+    «Alarms scheduled for 2 pm and 3 pm today.» for two alarms due tomorrow is false."""
+
+    moments = [due.astimezone() for due in dues]
+    expected = {(moment.hour, moment.minute) for moment in moments}
+    folded = _accent_folded_with_punctuation(text).casefold()
+    said = set(_clock_values(text)) | {
+        (int(hour) % 12 + (12 if (marker or "") == "p" or part in {"tarde", "noche"} else 0), 0)
+        for hour, marker, part in _MERIDIEM_HOUR.findall(folded)
+        if 1 <= int(hour) <= 12
+    }
+    if not expected <= said:
+        return "missing_state"
+    if said - expected:
+        return "reversed_result"
+    if re.search(r"\bUTC\b|\bGMT\b", text, re.IGNORECASE):
+        return "missing_state"
+    days = {moment.date() for moment in moments}
+    for pattern in _CALENDAR_DATE_PATTERNS:
+        for match in pattern.finditer(text.casefold()):
+            month = int(match["month"]) if match["month"].isdigit() else _CALENDAR_MONTH_NUMBERS[match["month"]]
+            if not any(
+                (day.month, day.day) == (month, int(match["day"]))
+                and (match["year"] is None or int(match["year"]) == day.year)
+                for day in days
+            ):
+                return "extra_claim"
+    today = datetime.now().astimezone().date()
+    relative = _reading_fold(text)
+    for offset, word in (
+        (0, r"\b(?:hoy|today|tonight|esta\s+(?:noche|tarde)|this\s+(?:afternoon|evening))\b"),
+        # «de la mañana», «esta mañana» are a part of the day, «pasado mañana» another day.
+        (1, r"(?<!\bafter )\btomorrow\b|(?<!\bla )(?<!\besta )(?<!\bpasado )\bmanana\b"),
+        (2, r"\bpasado\s+manana\b|\bday\s+after\s+tomorrow\b"),
+    ):
+        if re.search(word, relative) and today + timedelta(days=offset) not in days:
+            return "extra_claim"
+    return ""
+
+
 def _clock_only_from_situation(situation: dict) -> bool:
     if not _local_clock_from_situation(situation):
         return False
@@ -6430,7 +6488,7 @@ def _compose_situation_payload(
         elif operation == "notification.list":
             visible_seen = _project_notification_listing(visible_seen, language)
         elif operation == "notification.schedule":
-            visible_seen = _project_scheduled_notification(visible_seen, situation)
+            visible_seen = _project_scheduled_notification(visible_seen, situation, language)
         elif operation == "ocr.read":
             # SCREEN1407 «leéme lo que dice la pantalla»: the receipt carries the
             # layout boxes, hashes and timestamps (about 30 KB) and the composer
@@ -7006,17 +7064,19 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             "absence beyond that catalog, a launch attempt, or a completed opening."
         )
     if observed:
-        scheduled_local = _verified_notification_due(situation)
-        if scheduled_local is not None:
+        scheduled_dues = _verified_notification_dues(situation)
+        if scheduled_dues:
             # Uso real 2026-09-23: «a las seis de la mañana» was confirmed as
             # «09:00 UTC». The person hears their own clock; the conversion is
-            # done here, never left to the model.
-            scheduled_local = scheduled_local.astimezone()
+            # done here, never left to the model. Tanda 6b: two alarms due
+            # tomorrow were told «today»; the day is said as sent (scheduledDay).
+            times = " and ".join(f"{due.astimezone():%H:%M}" for due in scheduled_dues)
             bits.append(
                 "Briefly confirm the alarm or timer was scheduled and give its "
-                f"scheduled local time, {scheduled_local:%H:%M}, as HH:MM; never "
+                f"scheduled local time, {times}, as HH:MM; never "
                 "mention UTC or a time zone. This is "
-                "not the current time or a new relative countdown. "
+                "not the current time or a new relative countdown. Say the day only as "
+                "sent (scheduledDay or scheduledLocalDate); without them it is today. "
                 "Do not expose internal field names. "
                 "Preserve any explicitly named title; a descriptive alarm label "
                 "may be paraphrased. Address the person naturally in their language."
@@ -8058,11 +8118,12 @@ def _project_notification_listing(observed: dict, language: str) -> dict:
     return {"count": count, "scheduled": scheduled}
 
 
-def _project_scheduled_notification(observed: dict, situation: dict) -> dict:
+def _project_scheduled_notification(observed: dict, situation: dict, language: str) -> dict:
     """Tanda 5 «set 30 minute timer» died three times in missing_state: the receipt carried only UTC instants
     (dueUtc/nextRunUtc 16:57) and the drafts said 14:27, 16:57 and 17:27 for a timer due at 13:57 local. The person
     hears their own clock: the verified next run goes as local time (and its date when it is not today); the UTC
-    instants, the task name and the authority stay with the checks."""
+    instants, the task name and the authority stay with the checks. Tanda 6b: given «2026-09-25» at 21:55 on the
+    24th, the drafts said «today» and «on 2026-09-25»; tomorrow goes as the word the person hears."""
 
     projected: dict = {}
     title = observed.get("title")
@@ -8071,8 +8132,11 @@ def _project_scheduled_notification(observed: dict, situation: dict) -> dict:
     due = _verified_notification_due(situation)
     if due is not None:
         local = due.astimezone()
+        today = datetime.now().astimezone().date()
         projected["scheduledLocalTime"] = f"{local:%H:%M}"
-        if local.date() != datetime.now().astimezone().date():
+        if local.date() == today + timedelta(days=1):
+            projected["scheduledDay"] = "tomorrow" if language == "en" else "mañana"
+        elif local.date() != today:
             projected["scheduledLocalDate"] = local.date().isoformat()
     return projected
 
@@ -12244,14 +12308,15 @@ def compose_visible_defect(
             # y has pasado 0.63 segundos»— y le atribuyó un tiempo que pasó el
             # vídeo, no ella. Pedir una serie no es preguntar por dónde va.
             return "playback_progress_stated"
-        scheduled_due = _verified_notification_due(situation)
+        # Tanda 6b «set alarms for 2pm and 3pm»: a mission's alarms are judged like one alarm, each by its time.
+        scheduled_dues = _verified_notification_dues(situation)
         title = observed_dict.get("title")
-        if scheduled_due is not None and not re.search(
+        if scheduled_dues and not re.search(
             r"\b(?:llamad[oa]|titulad[oa]|nombre|named|called|titled|name)\b|[\"“”«»]",
             user_text,
             re.IGNORECASE,
         ):
-            # A generated description is not an explicitly chosen identity.
+            # A generated description («alarm at 3 pm») is not an explicitly chosen identity.
             title = None
         if isinstance(title, str) and title.strip():
             # MUSIC1555: a YouTube title with doubled spaces is still named
@@ -12276,7 +12341,7 @@ def compose_visible_defect(
             )
             if not title_named or (
                 operation != "media.status" and not verified_media_transport
-                and scheduled_due is None
+                and not scheduled_dues
                 and not (
                     operation in {"note.create", "task.create"}
                     and situation.get("verified") is True
@@ -12452,18 +12517,10 @@ def compose_visible_defect(
             folded,
         ):
             return "extra_claim"
-        if scheduled_due is not None:
-            scheduled_local = scheduled_due.astimezone()
-            scheduled_defect = _clock_fact_defect(
-                stripped, f"{scheduled_local.hour:02d}:{scheduled_local.minute:02d}"
-            )
+        if scheduled_dues:
+            scheduled_defect = _scheduled_notification_defect(stripped, scheduled_dues)
             if scheduled_defect:
-                return "missing_state" if scheduled_defect == "missing_name" else scheduled_defect
-            if re.search(r"\bUTC\b|\bGMT\b", stripped, re.IGNORECASE):
-                return "missing_state"
-            if any(pattern.search(folded) for pattern in _CALENDAR_DATE_PATTERNS):
-                if not _preserves_calendar_date(stripped, scheduled_local):
-                    return "extra_claim"
+                return scheduled_defect
         elif not clock and any(
             # Uso real 2026-09-23 «qué alarmas hay puestas»: the listing gives each
             # alarm's next run in local time and the answer has to say it; only a
@@ -21072,6 +21129,9 @@ class LlmRuntime:
                     # asked is told the asked focus again.
                     else _weather_focus(user_text or "", response_language == "en")
                     if situation.get("operation") == "weather.current"
+                    # Tanda 6b: two alarms due tomorrow were told «today».
+                    else "Say the day of each alarm only as sent: scheduledDay or scheduledLocalDate, none means today."
+                    if _verified_notification_dues(situation)
                     else (
                         ""
                         if _looks_like_continue_constraint(user_text)
@@ -21441,9 +21501,10 @@ class LlmRuntime:
                 ),
                 "missing_state": (
                     # Tanda 5: the hint named no time and the retries kept guessing one.
-                    f"Give the scheduled local time, {_verified_notification_due(situation).astimezone():%H:%M}, "
-                    "without UTC, not the current time or a restarted countdown."
-                    if _verified_notification_due(situation) is not None
+                    "Give the scheduled local time, "
+                    + " and ".join(f"{due.astimezone():%H:%M}" for due in _verified_notification_dues(situation))
+                    + ", without UTC, not the current time or a restarted countdown."
+                    if _verified_notification_dues(situation)
                     # Uso real tanda 6: a weather draft that missed the asked value got the window hint
                     # («abierto/open»); the hint is the asked focus itself.
                     else _weather_focus(user_text or "", response_language == "en")

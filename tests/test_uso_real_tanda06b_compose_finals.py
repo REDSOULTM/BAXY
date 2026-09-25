@@ -24,6 +24,13 @@ controls that keep a false fact out.
    lowest minimum was 12, the rain went from 0). The week is summed up by the mind (seen.week), is answered without
    the place like the other narrow questions, and a range said about the week must be one of its ranges. Owners:
    llm._weather_week / _false_week_range / _project_weather_read / _weather_focus / _weather_fact_defect.
+5. t45 «i want you to set alarms for 2pm and 3pm» (a mission of two notification.schedule, due tomorrow) → «Alarms
+   scheduled for 2 pm and 3 pm today.» died three times as missing_name: the generated title «alarm at 3 pm» was
+   demanded because the one-alarm exemption did not reach a mission; and «today» was false. Every scheduled alarm of
+   a mission is judged like one alarm: its time said (HH:MM or its hour, «2 pm», «las 2 de la tarde»), no other time,
+   no UTC, and a date or day word («today», «mañana») must be one of theirs; tomorrow is sent as a word. Owners:
+   llm._verified_notification_dues / _scheduled_notification_defect / _project_scheduled_notification, the alarm
+   instruction and hints.
 6. t1 «he quedado con un amigo a la salida del sol mañana para correr, ¿qué hora será?» published «Mañana se pone
    el sol a las 19:45.», the other sun event. The event asked (sunrise or sunset) is read apart, only it and the
    asked day are sent, and the validator rejects the other event's time. Owners: semantic.web
@@ -33,6 +40,7 @@ controls that keep a false fact out.
 from __future__ import annotations
 
 import json
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -364,6 +372,120 @@ def test_a_brief_true_week_summary_passes(asked: str, reply: str, language: str)
 )
 def test_a_false_or_empty_week_summary_is_rejected(asked: str, reply: str, defect: str) -> None:
     assert _weather_defect(reply, asked) == defect
+
+
+# --- 5. several alarms: each by its time, and their true day -------------------------------------------------------
+
+_T45 = "i want you to set alarms for 2pm and 3pm"
+
+
+def _alarm_step(due: datetime, title: str) -> dict:
+    stamp = due.astimezone(timezone.utc).isoformat()
+    return {
+        "kind": "operation", "operation": "notification.schedule", "polarity": "success", "verified": True,
+        "succeeded": True, "readOnly": False,
+        "observed": {
+            "version": 1, "kind": "alarm", "title": title, "dueUtc": stamp, "taskName": "BAXY-Alarm-0123",
+            "state": "Ready", "nextRunUtc": stamp.replace("+00:00", ".0000000+00:00"),
+            "authority": "windows_task_scheduler_postread",
+        },
+    }
+
+
+def _local_at(days: int, hour: int) -> datetime:
+    now = datetime.now().astimezone()
+    return (now + timedelta(days=days)).replace(hour=hour, minute=0, second=0, microsecond=0)
+
+
+def _alarms(days: int = 1) -> dict:
+    """The t45 mission: two verified alarms, at 14:00 and 15:00 local, ``days`` from today (tomorrow in the run)."""
+
+    return {
+        "kind": "status", "polarity": "success", "cause": "mission_completed", "stepCount": 2,
+        "steps": [json.dumps(_alarm_step(_local_at(days, 14), "alarm at 2 pm")),
+                  json.dumps(_alarm_step(_local_at(days, 15), "alarm at 3 pm"))],
+        "completedRequest": _T45,
+    }
+
+
+def _alarm_defect(reply: str, situation: dict, asked: str = _T45) -> str:
+    payload = llm._compose_situation_payload(situation, "en", asked)
+    return llm.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(situation)}) or (
+        llm._payload_fact_defect(reply, payload, asked)
+    )
+
+
+def test_each_alarm_is_sent_with_its_local_time_and_tomorrow_as_a_word() -> None:
+    steps = llm._compose_situation_payload(_alarms(), "en", _T45)["completedStepsInOrder"]
+    assert [step["resultAtThisStep"]["seen"] for step in steps] == [
+        {"title": "alarm at 2 pm", "scheduledLocalTime": "14:00", "scheduledDay": "tomorrow"},
+        {"title": "alarm at 3 pm", "scheduledLocalTime": "15:00", "scheduledDay": "tomorrow"},
+    ]
+    later = llm._compose_situation_payload(_alarms(days=3), "es", _T45)["completedStepsInOrder"]
+    assert later[0]["resultAtThisStep"]["seen"]["scheduledLocalDate"] == _local_at(3, 14).date().isoformat()
+
+
+_ES45 = "ponme alarmas a las 2 y a las 3 de la tarde"
+
+
+@pytest.mark.parametrize(
+    ("asked", "reply"),
+    [
+        (_T45, "Alarms set for 2 pm and 3 pm tomorrow."),
+        (_T45, "Alarms set for 14:00 and 15:00 tomorrow."),
+        (_T45, "Done: 2 p.m. and 3 p.m., tomorrow."),
+        (_T45, "Alarms set for 2 pm and 3 pm."),
+        (_ES45, "Listo: alarmas mañana a las 14:00 y a las 15:00."),
+        (_ES45, "Puse las alarmas de mañana a las 2 de la tarde y a las 3 de la tarde."),
+        ("setea alarms a las 2pm y 3pm", "Listo, alarmas para las 2pm y 3pm de mañana."),
+    ],
+)
+def test_the_alarms_told_at_their_times_pass(asked: str, reply: str) -> None:
+    assert _alarm_defect(reply, _alarms(), asked) == ""
+
+
+def test_the_true_date_of_the_alarms_passes_too() -> None:
+    day = _local_at(1, 14).date()
+    # t45's second and third drafts, with the run's date replaced by tomorrow's: both were true.
+    assert _alarm_defect(f"Alarms scheduled for 2 pm and 3 pm on {day.isoformat()}.", _alarms()) == ""
+    assert _alarm_defect(
+        f"I have set alarms for 2 pm and 3 pm on {day:%B} {day.day}, {day.year}.", _alarms(),
+    ) == ""
+
+
+@pytest.mark.parametrize(
+    ("asked", "reply", "defect"),
+    [
+        (_T45, "Alarms scheduled for 2 pm and 3 pm today.", "extra_claim"),  # t45's first draft: they are tomorrow's
+        (_ES45, "Alarmas listas para hoy a las 14:00 y a las 15:00.", "extra_claim"),
+        (_T45, "Alarms set for 2 pm and 3 pm the day after tomorrow.", "extra_claim"),
+        (_T45, "Alarms set for 2 pm and 4 pm tomorrow.", "missing_state"),
+        (_T45, "Alarm set for 2 pm tomorrow.", "missing_state"),
+        (_T45, "Alarms set for 17:00 and 18:00 UTC.", "missing_state"),
+        (_T45, "Alarms set for 2 pm, 3 pm and 5 pm tomorrow.", "reversed_result"),
+    ],
+)
+def test_a_false_day_or_time_of_the_alarms_is_rejected(asked: str, reply: str, defect: str) -> None:
+    assert _alarm_defect(reply, _alarms(), asked) == defect
+
+
+def test_a_mission_draft_missing_an_alarm_is_told_both_times() -> None:
+    wrong = "Alarms set for 2 pm and 4 pm tomorrow."
+    good = "Alarms set for 2 pm and 3 pm tomorrow."
+    client = Recorder([wrong, good])
+    assert client.compose_user_message(_T45, "status", {"situation": json.dumps(_alarms())}) == good
+    assert "Give the scheduled local time, 14:00 and 15:00," in json.dumps(client.payloads[1]["messages"])
+
+
+def test_one_alarm_said_by_its_hour_and_day() -> None:
+    single = _alarm_step(_local_at(1, 14), "alarm at 2 pm")
+    assert _alarm_defect("Alarm set for 2 pm tomorrow.", single, "set an alarm for 2pm") == ""
+    assert _alarm_defect("Alarm set for 2 pm today.", single, "set an alarm for 2pm") == "extra_claim"
+    today = _alarm_step(_local_at(0, 23), "alarm at 11 pm")
+    assert _alarm_defect("Alarma puesta para hoy a las 23:00.", today, "pon una alarma a las 11 de la noche") == ""
+    assert _alarm_defect("Alarma puesta para mañana a las 23:00.", today, "pon una alarma a las 11 de la noche") == (
+        "extra_claim"
+    )
 
 
 # --- 6. the sun event asked, not the other one --------------------------------------------------------------------
