@@ -5932,7 +5932,9 @@ def _without_observed_search_vocabulary(text: str, observed: dict) -> str:
     """
 
     parts: list[object] = [observed.get("query")]
-    for entry in observed.get("results") or []:
+    # Tanda 8: the headlines a news read observed are the same kind of data («Rechazada reforma…» is a headline,
+    # not a failure of the read).
+    for entry in [*(observed.get("results") or []), *(observed.get("headlines") or [])]:
         if isinstance(entry, dict):
             parts.extend((entry.get("title"), entry.get("snippet")))
     words: set[str] = set()
@@ -11612,11 +11614,11 @@ def compose_visible_defect(
                     " ", failure_assertions, flags=re.IGNORECASE,
                 )
     if (
-        situation.get("operation") == "web.search"
+        situation.get("operation") in {"web.search", "web.news.headlines"}
         and situation.get("verified") is True
         and situation.get("succeeded") is True
         and isinstance(presence, dict)
-        and isinstance(presence.get("results"), list)
+        and isinstance(presence.get("results") or presence.get("headlines"), list)
     ):
         # H0060 «me falla mucho whatsapp … porqué suele fallar»: the pages found
         # are about failures, so the words they carry («fallos», «no funciona»,

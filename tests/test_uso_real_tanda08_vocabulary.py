@@ -19,11 +19,16 @@ the readers already own are data added to that reader, in ``semantic/``; nothing
   Owner: request_reading._SELF_FORMS.
 - «i don't really know» → a web lookup of the phrase: not knowing, said alone, is talk that asks nothing.
   Owner: semantic/dialogue.talk_act.
+- «¿qué estan contando ahora mismo en las noticias?» → ⚠: the draft that read the headlines was rejected as a
+  failure («Rechazada reforma…» is a headline). The headlines a news read observed are data, like a search's
+  pages. Owner: llm._without_observed_search_vocabulary.
 
 The phrasings below are paraphrases (es/en/spanglish, dialects, typos) the fixes do not name, with negative controls.
 """
 
 from __future__ import annotations
+
+import json
 
 import pytest
 
@@ -31,6 +36,7 @@ from baxy_mind import __main__ as sidecar
 from baxy_mind.semantic import levels
 from baxy_mind.semantic.notes import list_entry_request
 from baxy_mind.semantic.reading import read
+from baxy_mind import llm
 from baxy_mind.semantic.reading import plain_talk
 from baxy_mind.request_reading import INTENT_IDENTITY, read_request
 from baxy_mind.semantic.system import _weather_location
@@ -299,3 +305,41 @@ def test_not_knowing_said_alone_is_talk(text: str) -> None:
 )
 def test_not_knowing_with_a_question_inside_is_not_plain_talk(text: str) -> None:
     assert plain_talk(text, effects=None, clarification=None) is None
+
+
+# ------------------------------------------------------------------ a headline that says «rejected» is data
+
+
+def _news_facts(*titles: str) -> dict[str, str]:
+    observed = {
+        "version": 1,
+        "edition": "es-419/CL",
+        "count": len(titles),
+        "headlines": [{"title": title, "source": "Diario", "publishedAt": "Fri, 25 Sep 2026 01:00:00 GMT"}
+                      for title in titles],
+    }
+    return {"situation": json.dumps({
+        "kind": "operation", "operation": "web.news.headlines", "polarity": "success", "verified": True,
+        "succeeded": True, "observed": observed,
+    })}
+
+
+@pytest.mark.parametrize(
+    "titles",
+    [
+        ("Rechazada la ley de pesca en el Senado", "Fallece a los 90 años un histórico actor"),
+        ("Court rejected the appeal of the mayor", "Storm could not be forecast in time"),
+        ("No pudieron rescatar al gato del árbol", "Se agotó la entrada para el concierto"),
+    ],
+)
+def test_a_headline_that_says_a_failure_is_read_as_the_news(titles: tuple[str, ...]) -> None:
+    draft = " ".join(f"{title}." for title in titles)
+    assert llm.compose_visible_defect(draft, "result", "¿qué están diciendo en las noticias?", _news_facts(*titles)) \
+        != "asserted_failure"
+
+
+def test_a_failure_of_the_news_read_itself_is_still_a_failure() -> None:
+    facts = _news_facts("Rechazada la ley de pesca en el Senado")
+    assert llm.compose_visible_defect(
+        "No pude leer las noticias.", "result", "¿qué están diciendo en las noticias?", facts,
+    ) == "asserted_failure"
