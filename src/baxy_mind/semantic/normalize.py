@@ -60,3 +60,18 @@ def _policy_guard_text(value: object) -> str:
             if not unicodedata.combining(character)
         ).split()
     )
+
+
+def _accent_folded_with_punctuation(value: object) -> str:
+    """Fold case and accents while keeping punctuation intact.
+
+    ``_policy_guard_text`` turns every non-alphanumeric character into a space,
+    so "14:30" arrives as "14 30" and a percent sign is gone before any pattern
+    sees it. That silently made the ``%`` alternative of the detail class above
+    unreachable for as long as it has existed.
+    """
+
+    decomposed = unicodedata.normalize("NFKD", str(value or ""))
+    return "".join(
+        character for character in decomposed if not unicodedata.combining(character)
+    ).casefold()

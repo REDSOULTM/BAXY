@@ -707,3 +707,19 @@ def _visible_click_intent(
             ("input.visible.controls", "input.visible.click"), (evidence, evidence),
         )
     return EffectIntent(("input.visible.click",), (evidence,))
+
+
+def asks_about_buttons(folded_ask: str) -> bool:
+    """A button asked of a screen capture (SCREEN1807; folded words)."""
+
+    return re.search(r"\b(?:boton\w*|button\w*)\b", folded_ask) is not None
+
+
+def asks_to_see_the_screen(folded_ask: str) -> bool:
+    """«qué hay en la pantalla», «describime», «identificá»: asked to see, not only to read (folded words)."""
+
+    return re.search(
+        r"\b(?:describ\w*|ves|ver|viendo|see|seeing|hay en|is on|what'?s on|"
+        r"identific\w*|identify)\b",
+        folded_ask,
+    ) is not None

@@ -15,6 +15,7 @@ from .notes import OWN_EVENT_NOUN, own_event_reference
 from .windows import minimize_all_request
 from .network import _direct_current_time_request
 from .media import _youtube_search_query
+from .normalize import fold as _reading_fold
 
 
 def _public_route_lookup_request(folded: str) -> bool:
@@ -3270,3 +3271,67 @@ _VISIBLE_CLICK_WEB_DESTINATION = re.compile(
     r"wikipedia|https?://|www\.|\.com\b|\.org\b|\.net\b|\.io\b",
     re.IGNORECASE,
 )
+
+
+def _weather_asks_rain(user_text: str) -> bool:
+    """The weather question asks about rain, rain gear or an amount of it
+    («¿lloverá?», «¿me llevo el paraguas?», «how many inches»)."""
+
+    return re.search(
+        r"\b(?:llov\w*|lluvi\w*|llueve|rain\w*|paraguas|umbrella|chubasquero|impermeable|"
+        r"pulgadas|inches|milimetros|millimeters)\b",
+        _reading_fold(user_text),
+    ) is not None
+
+
+def _weather_asks_tomorrow(user_text: str) -> bool:
+    """The weather question is about tomorrow or a later day."""
+
+    return weather_asks_later_day(user_text) or re.search(
+        r"(?<!esta )\b(?:manana|tomorrow)\b", _reading_fold(user_text)
+    ) is not None
+
+
+# What is never a public search, whatever the guard reads: the person's own
+# data (semantic.web.names_own_data) and what is playing (the words would leave
+# the PC; 00_IDENTIDAD: information comes in, content does not go out); someone
+# pointed at and not named; a level for this PC; a sentence cut off before its
+# object («hora actual en», «hay algún concierto próximo de») — that one is
+# asked, not guessed.
+_NOT_A_PUBLIC_LOOKUP = re.compile(
+    r"\b(?:este|esta|this)\s+(?:cancion|tema|song|track|artista|artist|disco|album|video|podcast)\b|"
+    r"\b(?:that|this)\s+(?:person|guy|man|woman)\b|\b(?:esa|esta|aquella)\s+persona\b|"
+    r"\d\s*%|\bpor\s*ciento\b|\bpercent\b|"
+    r"\b(?:de|del|en|a|al|el|la|los|las|un|una|para|con|por|sobre|entre|"
+    r"the|of|in|at|to|for|on|with|about|a|an)[\s?.!¿¡]*$"
+)
+
+
+def not_a_public_lookup(objective: str) -> bool:
+    """What the public-lookup guard never sends to the web (moved from ``__main__._names_own_data``)."""
+
+    from .messaging import _latest_email_domain  # messaging reads web's own-data words: imported when used
+
+    folded = _fold(objective)
+    # Uso real 2026-09-23 «he recibido algún correo desde el mediodía», «check
+    # any mail from amazon» went to web.search: the person's received mail is
+    # theirs, and a question about it never leaves the PC.
+    return (
+        _NOT_A_PUBLIC_LOOKUP.search(folded) is not None
+        or names_own_data(folded)
+        or _latest_email_domain(folded)
+    )
+
+
+def weather_asks_today(asks: str, today_weekday: str) -> bool:
+    """The weather question is about today: «hoy», «now», or today's weekday named (folded words)."""
+
+    return re.search(r"\b(?:hoy|today|ahora|now)\b", asks) is not None or (
+        bool(today_weekday) and re.search(r"\b" + re.escape(today_weekday) + r"\b", asks) is not None
+    )
+
+
+def weather_asks_later_today(asks: str) -> bool:
+    """«hoy», «tonight», «esta tarde / noche / mañana»: the rain asked is today's (folded words)."""
+
+    return re.search(r"\b(?:hoy|today|tonight|esta\s+(?:noche|tarde|manana))\b", asks) is not None

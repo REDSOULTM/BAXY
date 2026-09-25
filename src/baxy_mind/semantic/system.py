@@ -283,3 +283,34 @@ def physical_world_request(folded: str) -> bool:
         _has(folded, _HOME_CONTROL)
         and (_has(folded, _HOME_APPLIANCE) or (_has(folded, _HOME_LIGHT) and _has(folded, _HOME_ROOM)))
     )
+
+
+def reports_the_gpu_stopped(request_folded: str) -> bool:
+    """«la gpu dejó de funcionar», «my gpu stopped»: the person reports the GPU stopped (folded words)."""
+
+    return re.search(
+        r"\bgpu\b.{0,80}\b(?:dejo|stopped|ya no|no longer)\b|"
+        r"\b(?:dejo|stopped|ya no|no longer)\b.{0,80}\bgpu\b",
+        request_folded,
+    ) is not None
+
+
+def asks_only_the_process_count(user_text: str) -> bool:
+    """How many processes, not their list («cuántos procesos hay», «count them without listing»)."""
+
+    request = _fold(user_text)
+    count_request = re.search(
+        r"\b(?:cuantos|cuenta|cantidad|numero|how many|count)\b", request,
+    ) is not None
+    also_list = re.search(r"\b(?:lista(?:los)?|list|show|muestra(?:los|me)?)\b", request)
+    return bool(count_request and (not also_list or re.search(
+        r"\b(?:sin listarlos|without listing|do not list)\b", request,
+    )))
+
+
+def asks_lifetime_cpu(user_text: str) -> bool:
+    """The processor time a process accumulated since it started was asked («acumulado», «lifetime»)."""
+
+    return re.search(
+        r"\b(?:acumulad[oa]|cumulative|lifetime|total processor seconds)\b", _fold(user_text),
+    ) is not None

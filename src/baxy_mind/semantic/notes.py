@@ -1924,3 +1924,13 @@ _AGENDA_LISTING = (
     r"(?:\s+(?:para|for)\s+(?:hoy|manana|today|tomorrow|esta\s+semana|this\s+week))?"
     r"|(?:para|for)\s+(?:hoy|today)\s+(?:agendad[oa]s?|programad[oa]s?|scheduled|planned|en\s+(?:la|mi)\s+agenda))[\s?!.]*$"
 )
+
+
+def names_the_title(user_text: str) -> bool:
+    """The person named what the alarm or reminder is called («llamada…», «titled…», quotes)."""
+
+    return re.search(
+        r"\b(?:llamad[oa]|titulad[oa]|nombre|named|called|titled|name)\b|[\"“”«»]",
+        user_text,
+        re.IGNORECASE,
+    ) is not None

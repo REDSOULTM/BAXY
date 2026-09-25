@@ -586,3 +586,17 @@ def _bare_spoken_number_media_query(text: str) -> str | None:
         return None
     query = match.group("query").strip()
     return query if query in _PERCENTAGE_WORD_VALUES else None
+
+
+# «qué persona hizo esta canción», «who sings this», «cómo se llama esta canción»: who made it or which it is.
+_MEDIA_IDENTITY_QUESTION = re.compile(
+    r"\b(?:quien(?:es)?|who|whose|que\s+(?:persona|artista|cantante|grupo|banda|cancion|tema)|"
+    r"(?:what|which)\s+(?:artist|singer|band|song|track)|como\s+se\s+llama|what(?:'s|\s+is)\s+(?:this|that)\s+"
+    r"(?:song|track)|name\s+of\s+(?:this|that|the)\s+(?:song|track)|autor|author)\b"
+)
+
+
+def asks_what_is_playing(user_text: str | None) -> bool:
+    """Who made what is playing or which song it is («qué canción es», «who sings this»)."""
+
+    return _MEDIA_IDENTITY_QUESTION.search(_fold(user_text or "")) is not None

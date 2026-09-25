@@ -40,7 +40,7 @@ from .semantic import levels as semantic_levels
 from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
 from .semantic.patterns import output_level_request
-from .semantic.web import asks_for_information, names_own_data, near_the_person, news_lookup_query
+from .semantic.web import asks_for_information, near_the_person, news_lookup_query
 from .semantic.windows import start_menu_request
 from .corrector import catalog_correction_terms
 from .first_signal import (
@@ -195,6 +195,9 @@ from .semantic.arguments import (  # noqa: F401 - moved to baxy_mind.semantic.ar
     _explicit_media_control_arguments,
     _explicit_notification_schedule_arguments,
     _explicit_system_status_scope,
+)
+from .semantic.web import (
+    not_a_public_lookup,
 )
 
 
@@ -2744,20 +2747,6 @@ def _recovered_action_decision(operation: str, response_language: object) -> dic
     }
 
 
-# What is never a public search, whatever the guard reads: the person's own
-# data (semantic.web.names_own_data) and what is playing (the words would leave
-# the PC; 00_IDENTIDAD: information comes in, content does not go out); someone
-# pointed at and not named; a level for this PC; a sentence cut off before its
-# object («hora actual en», «hay algún concierto próximo de») — that one is
-# asked, not guessed.
-_NOT_A_PUBLIC_LOOKUP = re.compile(
-    r"\b(?:este|esta|this)\s+(?:cancion|tema|song|track|artista|artist|disco|album|video|podcast)\b|"
-    r"\b(?:that|this)\s+(?:person|guy|man|woman)\b|\b(?:esa|esta|aquella)\s+persona\b|"
-    r"\d\s*%|\bpor\s*ciento\b|\bpercent\b|"
-    r"\b(?:de|del|en|a|al|el|la|los|las|un|una|para|con|por|sobre|entre|"
-    r"the|of|in|at|to|for|on|with|about|a|an)[\s?.!¿¡]*$"
-)
-
 # Presentation shapes whose content BAXY writes itself (llm._conversation_presentation_shape).
 _WRITTEN_CONTENT_SHAPES = frozenset({"free_content", "content_draft", "roleplay_draft"})
 
@@ -2769,18 +2758,6 @@ _ADMITS_NOT_KNOWING = re.compile(
     r"\bi\s+(?:don'?t|do\s+not)\s+(?:know|have\s+(?:information|access|any\s+information|data))\b|"
     r"\bi'?m\s+not\s+(?:sure|familiar)\b|\bi\s+am\s+not\s+(?:sure|familiar)\b|\bi\s+have\s+no\s+information\b"
 )
-
-
-def _names_own_data(objective: str) -> bool:
-    folded = effect_intent._fold(objective)
-    # Uso real 2026-09-23 «he recibido algún correo desde el mediodía», «check
-    # any mail from amazon» went to web.search: the person's received mail is
-    # theirs, and a question about it never leaves the PC.
-    return (
-        _NOT_A_PUBLIC_LOOKUP.search(folded) is not None
-        or names_own_data(folded)
-        or effect_intent._latest_email_domain(folded)
-    )
 
 
 def _public_lookup_applies(
@@ -2796,7 +2773,7 @@ def _public_lookup_applies(
     return (
         "web.search" in available_operations
         and planner_catalog.get("web.search") is not None
-        and not _names_own_data(objective)
+        and not not_a_public_lookup(objective)
         # Uso real 2026-09-23 «the creator of your ai, what is their name»: a
         # question about BAXY itself is answered as BAXY, never searched.
         and not read_request(objective).intents
@@ -5550,7 +5527,7 @@ def _decide_turn_result(
             & {INTENT_IDENTITY, INTENT_CAPABILITY, INTENT_REFUSE}
             and "web.search" in available_operations
             and planner_catalog.get("web.search") is not None
-            and not _names_own_data(objective)
+            and not not_a_public_lookup(objective)
             # «rate five», «tuitea a Vodafone…»: a known limit is an order, not something to look up.
             and not known_unsupported_effect_request(objective, available_operations)
             # Tanda 4e «oye compárteme algún chiste para hacerme feliz» was searched and answered with joke

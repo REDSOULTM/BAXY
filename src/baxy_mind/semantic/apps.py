@@ -416,3 +416,41 @@ _CATALOG_INSTALL_VERB = (
 def _opened_applications(text: str) -> tuple[str, ...]:
     applications = [application for _, application in _open_application_spans(text)]
     return tuple(applications)
+
+
+def asks_to_close(user_text: str | None, *, voseo: bool = False) -> bool:
+    """«cierra…», «close…» (and with ``voseo`` the imperative «cerrá»): the request asked to close something.
+
+    The composer's check reads «cierr/close» and its hint also «cerrá»; both readings are kept as they were."""
+
+    pattern = r"\bcierr|\bcerr[aá]\b|\bclose\b" if voseo else r"\bcierr|\bclose\b"
+    return re.search(pattern, (user_text or "").casefold()) is not None
+
+
+def object_asked_to_close(user_text: str | None) -> str | None:
+    """The word right after the close verb («cierra Opera» → «opera»), folded, or None."""
+
+    found = re.search(
+        r"\b(?:cierr[ae]|cerr[aá]|close|quit)\s+(?:el|la|los|las|the|a)?\s*([a-záéíóúñ0-9][\w+.-]*)",
+        _fold(user_text or ""),
+    )
+    return found.group(1) if found is not None else None
+
+
+def asks_to_install_or_remove(user_text: str | None) -> bool:
+    """Installing, uninstalling or downloading a program was asked (INSTALL1625)."""
+
+    return re.search(
+        r"\b(?:instal|install|desinstal|uninstall|descarg|download|baj[aá])",
+        (user_text or "").casefold(),
+    ) is not None
+
+
+def wants_to_work_in_it(user_text: str | None) -> bool:
+    """«quiero editar una foto en photoshop»: working in a program, not opening it (APPS1671)."""
+
+    folded = (user_text or "").casefold()
+    return bool(
+        re.search(r"\b(?:editar|retocar|usar|trabajar|edit|retouch|use|work)\b", folded)
+        and not re.search(r"\b(?:abr[ií]|abre|open)", folded)
+    )

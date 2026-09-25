@@ -11,6 +11,7 @@ from .audio import _volume_domain
 from .intent import EffectIntent, _is_negated_match, _append
 from .normalize import alternation
 from .temporal import MONTH_NUMBERS, _WEEKDAYS, countdown_target, relative_days
+from .normalize import fold as _reading_fold
 
 
 # Tanda 4 2026-09-24 «let me know what today's date is» was offered back as «Want me to tell you today's date?»:
@@ -804,4 +805,73 @@ def _wifi_email_intent(
     return EffectIntent(
         ("wifi.ensure.connected", "email.latest.read"),
         (evidence, evidence),
+    )
+
+
+# Uso real 2026-09-23 «¿en qué día de la semana estamos?»: the weekday is a fact
+# of the observed date, computed here; the narrator copies it, never derives it.
+_WEEKDAY_REQUEST = re.compile(
+    r"\b(?:d[ií]a\s+de\s+la\s+semana|weekday|day\s+of\s+the\s+week)\b", re.IGNORECASE
+)
+
+
+_WEEKDAY_NAMES = {
+    "es": ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"),
+    "en": ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
+}
+
+
+_WEEKDAY_NUMBERS = {
+    _reading_fold(name): index for names in _WEEKDAY_NAMES.values() for index, name in enumerate(names)
+}
+
+
+_WEEKDAY_WORD = alternation(tuple(_WEEKDAY_NUMBERS))
+
+
+def _requests_weekday(user_text: str) -> bool:
+    # Tanda 5 «¿estamos a mitad de semana?»: the part of the week asked is answered with the weekday.
+    # Tanda 6 «¿hoy es lunes?» → «Hoy es lunes 24 de septiembre» on a Thursday: the weekday was never carried, so
+    # the narrator echoed the question's. A weekday named in the question is asked as well.
+    folded = _reading_fold(user_text)
+    return (
+        _WEEKDAY_REQUEST.search(user_text) is not None
+        or re.search(rf"\b(?:{WEEK_PERIOD}|{_WEEKDAY_WORD})\b", folded) is not None
+    )
+
+
+_CALENDAR_MONTHS = (
+    "enero january", "febrero february", "marzo march", "abril april",
+    "mayo may", "junio june", "julio july", "agosto august",
+    "septiembre setiembre september", "octubre october", "noviembre november",
+    "diciembre december",
+)
+
+
+_CALENDAR_MONTH_NUMBERS = {
+    word: number for number, words in enumerate(_CALENDAR_MONTHS, 1)
+    for word in words.split()
+}
+
+
+# «¿hoy es lunes?», «¿estamos en 2025?», «is today the 24th?»: the question names the value it asks about.
+_CALENDAR_VALUE_ASKED = re.compile(
+    r"\b(?:" + _WEEKDAY_WORD[3:-1] + "|" + "|".join(sorted(_CALENDAR_MONTH_NUMBERS, key=len, reverse=True))
+    + r"|(?:19|20)\d\d|\d{1,2})\b"
+)
+
+
+def names_the_time(user_text: str) -> bool:
+    """«hora» / «time» said in a date question: the clock is owed with the date."""
+
+    return re.search(r"\b(?:hora|time)\b", user_text, re.IGNORECASE) is not None
+
+
+def asks_the_clock(user_text: str | None) -> bool:
+    """The person asked the time («qué hora es», «what time is it», «tell the time»)."""
+
+    folded = (user_text or "").casefold()
+    return bool(
+        re.search(r"\b(?:clock|hora)\b", folded)
+        or re.search(r"\b(?:what time|time now|tell the time)\b", folded)
     )

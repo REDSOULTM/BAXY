@@ -419,3 +419,9 @@ _PERCENTAGE_WORD_PATTERN = (
     )
     + ")"
 )
+
+
+def asks_about_mute(user_text: str | None) -> bool:
+    """The request says «silenciar» or «mute» (the composer does not name a mute nobody read)."""
+
+    return re.search(r"silenci|\bmute\b", (user_text or "").casefold()) is not None

@@ -11,10 +11,9 @@ and the whole disk or RAM was published under the free label (SYSTEM1173,
 from __future__ import annotations
 
 import math
-import re
 from typing import Any
 
-from .semantic.request import fold
+from .semantic.system import asks_lifetime_cpu, asks_only_the_process_count
 
 
 def _byte_count(value: object) -> bool:
@@ -95,15 +94,7 @@ def project_process_measurements(seen: dict[str, Any], user_text: str) -> dict[s
             value = seen.get(key)
             if type(value) is int and value >= 0:
                 result[key] = {"value": value, "unit": unit}
-    request = fold(user_text)
-    count_request = re.search(
-        r"\b(?:cuantos|cuenta|cantidad|numero|how many|count)\b", request,
-    ) is not None
-    also_list = re.search(r"\b(?:lista(?:los)?|list|show|muestra(?:los|me)?)\b", request)
-    count_only = count_request and (not also_list or re.search(
-        r"\b(?:sin listarlos|without listing|do not list)\b", request,
-    ))
-    if count_only:
+    if asks_only_the_process_count(user_text):
         # Ten returned rows say nothing about a count of two hundred observed.
         # Keep the authoritative count and its scope without an irrelevant list.
         return {key: value for key, value in result.items() if key in {
@@ -133,7 +124,7 @@ def project_process_measurements(seen: dict[str, Any], user_text: str) -> dict[s
         if seen.get("sort") == "cpu" and type(cpu) in (int, float) and math.isfinite(cpu):
             projected["current_cpu_usage"] = _quantity(cpu, "%")
             projected["sampleDurationSeconds"] = row.get("sampleDurationSeconds")
-        if re.search(r"\b(?:acumulad[oa]|cumulative|lifetime|total processor seconds)\b", request):
+        if asks_lifetime_cpu(user_text):
             projected["lifetime_cpu_time_seconds"] = row.get("totalProcessorSeconds")
         projected_rows.append(projected)
     result["processes"] = projected_rows

@@ -39,14 +39,14 @@ from typing import Any, Callable
 from urllib.parse import parse_qs, urlparse
 
 from . import corrector
-from .semantic.normalize import _policy_guard_text, alternation, fold
+from .semantic.normalize import _accent_folded_with_punctuation, _policy_guard_text, alternation, fold
 from .semantic import dialogue as dialogue_slot
 from .semantic.grammar import spoken_number_request
 from .semantic.network import (
-    WEEK_PERIOD, asks_calendar_part, calendar_parts_asked, present_calendar_question, relative_calendar_days,
+    asks_calendar_part, calendar_parts_asked, present_calendar_question, relative_calendar_days,
 )
 from .semantic.web import (
-    weather_asks_later_day, weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
+    weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
     weather_asks_coming_days, weather_asks_week, weather_sun_events_asked,
 )
 from .semantic.temporal import _DAY_WORDS, clock_elsewhere
@@ -108,22 +108,48 @@ from .window_prose_facts import (
 from .observed_response_literals import without_observed_names
 from .semantic.conversation import (
     RandomDraw,
-    asks_a_laugh,
-    asks_an_extended_answer,
-    quoted_literals,
-    recall_asked,
+    _asks_non_event_confirmation,
     _conversation_presentation_shape,
     _recalled_speaker,
     _roleplay_participant_names,
+    ambiguous_action_verb,
+    asks_a_laugh,
+    asks_a_polar_question_about_the_person,
+    asks_an_extended_answer,
+    asks_baxys_name,
+    asks_what_this_is,
+    assent_without_action,
     assistant_desire_thing,
+    coordinates_actions,
+    names_a_current_public_office,
+    quoted_literals,
+    quoted_translation_phrase,
     random_draw_request,
+    recall_asked,
     sarcasm_question,
     spelling_word,
     versus_contenders,
 )
-from .semantic.request import (
-    _conversation_response_language,
+from .semantic.apps import asks_to_close, asks_to_install_or_remove, object_asked_to_close, wants_to_work_in_it
+from .semantic.audio import asks_about_mute
+from .semantic.display import monitor_facts_asked
+from .semantic.media import asks_what_is_playing
+from .semantic.network import (
+    _CALENDAR_MONTHS,
+    _CALENDAR_MONTH_NUMBERS,
+    _CALENDAR_VALUE_ASKED,
+    _WEEKDAY_NAMES,
+    _WEEKDAY_NUMBERS,
+    _WEEKDAY_WORD,
+    _requests_weekday,
+    asks_the_clock,
+    names_the_time,
 )
+from .semantic.notes import names_the_title
+from .semantic.request import _conversation_response_language
+from .semantic.system import reports_the_gpu_stopped
+from .semantic.ui import asks_about_buttons, asks_to_see_the_screen
+from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_later_today, weather_asks_today
 
 
 MAX_CONTEXT_TOKENS = 4096
@@ -438,15 +464,6 @@ _IDENTITY_OWN_FACT = (
     r"\b(?:baxy|pc|computadora?|ordenador|equipo|computer|machine|programa|program)\b"
 )
 
-# Only a question for the name or for who is answering has BAXY's name as its
-# answer; «¿cuál es tu lugar de origen?» is answered without it («No tengo un
-# lugar de origen; vivo en este PC» was rejected for not saying «BAXY»).
-_IDENTITY_ASKS_THE_NAME = (
-    r"\b(?:quien\s+(?:\w+\s+){0,2}(?:eres|sos|es\s+usted)|quien\s+(?:habla|esta\s+hablando)|"
-    r"who\s+(?:\w+\s+){0,2}are\s+you|who\s+is\s+speaking|(?:tu|your)\s+(?:propio\s+|own\s+)?"
-    r"(?:nombre|name)|como\s+te\s+llamas|what\s+(?:should\s+i\s+)?call\s+you|presentate|"
-    r"introduce\s+yourself|describete|describe\s+yourself)\b"
-)
 
 CONTENT_DRAFT_PRESENTATION_PROMPT = (
     "Eres el redactor de BAXY. El último mensaje pide únicamente escribir un "
@@ -2228,12 +2245,6 @@ _MEDIA_SITE_SUFFIX = re.compile(r"\s+[-—–|]\s+youtube(?:\s+music)?\s*$", re.
 _MEDIA_TITLE_DECORATION = re.compile(r"\([^()]*\)|\[[^\[\]]*\]")
 _MEDIA_TITLE_PART = re.compile(r"\s+[-—–|]\s+")
 _MEDIA_TITLE_PERFORMERS = re.compile(r"\s*[&,+/]\s*|\s+(?:feat\.?|ft\.?|featuring|x|y|and|con|with)\s+", re.IGNORECASE)
-# «qué persona hizo esta canción», «who sings this», «cómo se llama esta canción»: who made it or which it is.
-_MEDIA_IDENTITY_QUESTION = re.compile(
-    r"\b(?:quien(?:es)?|who|whose|que\s+(?:persona|artista|cantante|grupo|banda|cancion|tema)|"
-    r"(?:what|which)\s+(?:artist|singer|band|song|track)|como\s+se\s+llama|what(?:'s|\s+is)\s+(?:this|that)\s+"
-    r"(?:song|track)|name\s+of\s+(?:this|that|the)\s+(?:song|track)|autor|author)\b"
-)
 
 
 def _media_title_names(title: str) -> list[str]:
@@ -2674,7 +2685,7 @@ def _shaped_conversation_answer_violates_contract(
             or any(marker in content for marker in ("?", "¿", "？"))
             or (
                 "baxy" not in folded_content
-                and re.search(_IDENTITY_ASKS_THE_NAME, _policy_guard_text(str(request or ""))) is not None
+                and asks_baxys_name(request)
             )
             # Uso real 2026-09-23 «who made you»: a maker, lab, model family or a
             # date/age is not among BAXY's facts; naming one is an invented fact.
@@ -2919,12 +2930,7 @@ def _shaped_conversation_answer_violates_contract(
     if shape == "observation_ack":
         request_folded = _policy_guard_text(request)
         if (
-            re.search(
-                r"\bgpu\b.{0,80}\b(?:dejo|stopped|ya no|no longer)\b|"
-                r"\b(?:dejo|stopped|ya no|no longer)\b.{0,80}\bgpu\b",
-                request_folded,
-            )
-            is None
+            not reports_the_gpu_stopped(request_folded)
         ):
             return False
         return (
@@ -2966,18 +2972,7 @@ _UNSUPPORTED_ANCHOR_LIMIT_WORDS = frozenset(
 
 
 def _current_public_role_request(value: object) -> bool:
-    folded = _policy_guard_text(value)
-    return bool(
-        re.search(
-            r"\b(?:current|currently|actual|actualmente|ahora|now)\b",
-            folded,
-        )
-        and re.search(
-            r"\b(?:president|presidente|prime minister|primer ministro|"
-            r"chancellor|canciller|governor|gobernador|mayor|alcalde|ceo)\b",
-            folded,
-        )
-    )
+    return names_a_current_public_office(_policy_guard_text(value))
 
 
 # tanda-02: limits that did not sound like BAXY saying no. «Pido leer esa
@@ -3339,16 +3334,6 @@ _HABITUAL_OR_GENERIC = re.compile(
     r"en\s+promedio|equivale|equivalen|equals?)\b",
     re.IGNORECASE,
 )
-_DEICTIC_REFERENCE = re.compile(
-    r"\b(?:this|that|these|those|este|esta|esto|estos|estas|ese|esa|eso|"
-    r"esos|esas)\b",
-    re.IGNORECASE,
-)
-_IDENTITY_QUESTION = re.compile(
-    r"\b(?:what|which)\b.{0,48}\b(?:name|called)\b"
-    r"|\b(?:como\s+se\s+llama|que\s+nombre)\b",
-    re.IGNORECASE,
-)
 
 
 # The fabrications that carry no reading at all needed a different separator,
@@ -3382,21 +3367,6 @@ _FIRST_PERSON_PERCEPTION = re.compile(
     r"|i\s+(?:can\s+)?see\s+(?:that|the|a|an))\b",
     re.IGNORECASE,
 )
-
-
-def _accent_folded_with_punctuation(value: object) -> str:
-    """Fold case and accents while keeping punctuation intact.
-
-    ``_policy_guard_text`` turns every non-alphanumeric character into a space,
-    so "14:30" arrives as "14 30" and a percent sign is gone before any pattern
-    sees it. That silently made the ``%`` alternative of the detail class above
-    unreachable for as long as it has existed.
-    """
-
-    decomposed = unicodedata.normalize("NFKD", str(value or ""))
-    return "".join(
-        character for character in decomposed if not unicodedata.combining(character)
-    ).casefold()
 
 
 # Fase 3.5: the dialogue slot already knows why the message depends on the
@@ -3915,26 +3885,6 @@ def visible_reply_asserts_unread_personal_records(
     return False
 
 
-# The person asks whether something of theirs is so («está mi orden lista para recoger ya», «did I leave the
-# stove on», «¿tengo reuniones mañana?»). What they may or should do is knowledge («¿mi perro puede comer
-# uvas?», «do I need a visa»), and a question about the world or about BAXY is not about theirs.
-_ASKED_ABOUT_WRAPPER = re.compile(
-    r"^\W*(?:(?:i\s+(?:need|want|would\s+like)\s+to\s+know|i'd\s+like\s+to\s+know|tell\s+me|(?:can|could)\s+you\s+"
-    r"(?:tell\s+me|check)|do\s+you\s+know|check|quiero\s+saber|necesito\s+saber|dime|me\s+(?:puedes|podes|podrias)\s+"
-    r"decir|sabes|revisa|mira|fijate|comprueba|verifica)\s+(?:if|whether|si)\s+)"
-)
-_ASKED_WH = re.compile(
-    r"^\W*(?:que|cual|cuales|como|donde|cuando|quien|quienes|cuanto|cuanta|cuantos|cuantas|por\s+que|para\s+que|"
-    r"what|which|how|where|when|who|whom|whose|why)\b"
-)
-_ASKED_ABOUT_THE_PERSON = re.compile(
-    r"\b(?:mi|mis|my|mine|tengo|tenia|llevo|deje|puse|hice|do\s+i|did\s+i|have\s+i|i\s+have|i've|i\s+had|i\s+left)\b"
-)
-_ASKED_WHAT_MAY_BE = re.compile(
-    r"\b(?:puedo|puede|pueden|podria|podrian|debo|debe|deberia|deberian|necesito|necesita|hace\s+falta|conviene|"
-    r"es\s+(?:bueno|malo|normal|seguro|recomendable|posible)|can|could|should|must|may|might|need|needs|ought|"
-    r"is\s+it\s+(?:ok|okay|safe|normal|bad|good|possible)|would)\b"
-)
 _POLAR_ANSWER = re.compile(
     r"^\W*(?:sí\b|si,|yes\b|yeah\b|yep\b|yup\b|correcto\b|correct\b|exacto\b|exactly\b|así\s+es\b|"
     r"that's\s+right\b|no[,.!]|no$|nope\b|not\s+yet\b|todavía\s+no\b|aún\s+no\b)"
@@ -3952,12 +3902,7 @@ def visible_reply_answers_an_unobserved_polar_question(value: object, request: o
     text = str(value or "").strip()
     if not text or _POLAR_ANSWER.search(text.casefold()) is None:
         return False
-    asked = _ASKED_ABOUT_WRAPPER.sub("", _accent_folded_with_punctuation(request).casefold())
-    if (
-        _ASKED_WH.search(asked) is not None
-        or _ASKED_ABOUT_THE_PERSON.search(asked) is None
-        or _ASKED_WHAT_MAY_BE.search(asked) is not None
-    ):
+    if not asks_a_polar_question_about_the_person(request):
         return False
     honest = _accent_folded_with_punctuation(text).casefold()
     return _UNREAD_RECORD_HONESTY.search(honest) is None and not _unsupported_answer_has_inability(text)
@@ -4051,10 +3996,8 @@ def visible_reply_asserts_an_unread_machine_state(
     text = str(value or "").strip()
     if not text:
         return False
-    request_folded = _policy_guard_text(request)
     if (
-        _DEICTIC_REFERENCE.search(request_folded) is not None
-        and _IDENTITY_QUESTION.search(request_folded) is not None
+        asks_what_this_is(request)
         and not _unsupported_answer_has_inability(text)
         and not any(marker in text for marker in ("?", "¿", "？"))
     ):
@@ -5022,34 +4965,6 @@ def _names_clock_place(text: str, place: str) -> bool:
     return any(re.search(r"\b" + word + r"\b", folded) for word in words[:1])
 
 
-# Uso real 2026-09-23 «¿en qué día de la semana estamos?»: the weekday is a fact
-# of the observed date, computed here; the narrator copies it, never derives it.
-_WEEKDAY_REQUEST = re.compile(
-    r"\b(?:d[ií]a\s+de\s+la\s+semana|weekday|day\s+of\s+the\s+week)\b", re.IGNORECASE
-)
-_WEEKDAY_NAMES = {
-    "es": ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"),
-    "en": ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
-}
-
-
-_WEEKDAY_NUMBERS = {
-    _reading_fold(name): index for names in _WEEKDAY_NAMES.values() for index, name in enumerate(names)
-}
-_WEEKDAY_WORD = alternation(tuple(_WEEKDAY_NUMBERS))
-
-
-def _requests_weekday(user_text: str) -> bool:
-    # Tanda 5 «¿estamos a mitad de semana?»: the part of the week asked is answered with the weekday.
-    # Tanda 6 «¿hoy es lunes?» → «Hoy es lunes 24 de septiembre» on a Thursday: the weekday was never carried, so
-    # the narrator echoed the question's. A weekday named in the question is asked as well.
-    folded = _reading_fold(user_text)
-    return (
-        _WEEKDAY_REQUEST.search(user_text) is not None
-        or re.search(rf"\b(?:{WEEK_PERIOD}|{_WEEKDAY_WORD})\b", folded) is not None
-    )
-
-
 def _weekday_name(local: datetime | date, language: str) -> str:
     return _WEEKDAY_NAMES["en" if language == "en" else "es"][local.weekday()]
 
@@ -5074,16 +4989,6 @@ def _states_only_the_weekday(text: str, weekday: int) -> bool:
     } == {weekday}
 
 
-_CALENDAR_MONTHS = (
-    "enero january", "febrero february", "marzo march", "abril april",
-    "mayo may", "junio june", "julio july", "agosto august",
-    "septiembre setiembre september", "octubre october", "noviembre november",
-    "diciembre december",
-)
-_CALENDAR_MONTH_NUMBERS = {
-    word: number for number, words in enumerate(_CALENDAR_MONTHS, 1)
-    for word in words.split()
-}
 _CALENDAR_MONTH_PATTERN = "(?:" + "|".join(_CALENDAR_MONTH_NUMBERS) + ")"
 _CALENDAR_DATE_PATTERNS = (
     re.compile(r"\b(?P<year>\d{4})-(?P<month>\d{1,2})-(?P<day>\d{1,2})\b"),
@@ -5132,13 +5037,6 @@ def _calendar_facts(local: datetime, user_text: str, language: str) -> dict[str,
     if "year" in parts:
         facts["year"] = str(local.year)
     return facts
-
-
-# «¿hoy es lunes?», «¿estamos en 2025?», «is today the 24th?»: the question names the value it asks about.
-_CALENDAR_VALUE_ASKED = re.compile(
-    r"\b(?:" + _WEEKDAY_WORD[3:-1] + "|" + "|".join(sorted(_CALENDAR_MONTH_NUMBERS, key=len, reverse=True))
-    + r"|(?:19|20)\d\d|\d{1,2})\b"
-)
 
 
 def _calendar_instruction(user_text: str) -> str:
@@ -6277,9 +6175,7 @@ def _compose_situation_payload(
                 for window in visible_seen["windows"]
             ]
         if clock:
-            if not asks_calendar_part(user_text) or re.search(
-                r"\b(?:hora|time)\b", user_text, re.IGNORECASE
-            ):
+            if not asks_calendar_part(user_text) or names_the_time(user_text):
                 payload["clock"] = clock
             target = countdown_target(user_text)
             local = _local_datetime_from_observed(merged_seen)
@@ -6673,10 +6569,7 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
         and situation.get("verified") is True
         and situation.get("succeeded") is True
     ):
-        if re.search(
-            r"\b(?:instal|install|desinstal|uninstall|descarg|download|baj[aá])",
-            (user_text or "").casefold(),
-        ):
+        if asks_to_install_or_remove(user_text):
             # INSTALL1625: an install or uninstall request answered by the
             # presence read; nothing was installed or removed.
             bits.append(
@@ -6694,10 +6587,7 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
                 "say it is not in the Windows Start catalog. One or two sentences, "
                 "the person's language, the application named as they named it."
             )
-        if re.search(
-            r"\b(?:editar|retocar|usar|trabajar|edit|retouch|use|work)\b",
-            (user_text or "").casefold(),
-        ) and not re.search(r"\b(?:abr[ií]|abre|open)", (user_text or "").casefold()):
+        if wants_to_work_in_it(user_text):
             # APPS1671 «quiero editar una foto en photoshop»: the person wants
             # to work in a program the presence read did not find. Every
             # draft that added «no puedo editarte la foto» / «cannot be opened»
@@ -6996,13 +6886,12 @@ def _looks_like_ambiguous_action(user_text: str) -> bool:
 # cien-41 y cien-45, turno 027: dentro de su bloque el modelo contesta el
 # pedido ambiguo negando en vez de preguntar, los tres candidatos caen en el
 # veto correcto y el turno termina sin respuesta. La lista de pedidos
-# ambiguos es cerrada, asi que la pregunta se arma sin el modelo.
-_AMBIGUOUS_ACTION_QUESTIONS = (
-    (("abrir", "abre", "abreme", "open"),
-     "What do you want me to open?", "¿Qué quieres que abra?"),
-    (("cerrar", "cierra", "close"),
-     "What do you want me to close?", "¿Qué quieres que cierre?"),
-)
+# ambiguos es cerrada, asi que la pregunta se arma sin el modelo (el verbo lo
+# lee semantic.conversation.ambiguous_action_verb).
+_AMBIGUOUS_ACTION_QUESTIONS = {
+    "open": ("What do you want me to open?", "¿Qué quieres que abra?"),
+    "close": ("What do you want me to close?", "¿Qué quieres que cierre?"),
+}
 
 
 def _ambiguous_action_question(user_text: str, language: str) -> str:
@@ -7010,10 +6899,10 @@ def _ambiguous_action_question(user_text: str, language: str) -> str:
 
     if not _looks_like_ambiguous_action(user_text):
         return ""
-    folded = _reading_fold(user_text)
-    for verbs, english, spanish in _AMBIGUOUS_ACTION_QUESTIONS:
-        if any(re.search(r"(?<!\w)" + verb, folded) for verb in verbs):
-            return english if language == "en" else spanish
+    action = ambiguous_action_verb(user_text)
+    if action is not None:
+        english, spanish = _AMBIGUOUS_ACTION_QUESTIONS[action]
+        return english if language == "en" else spanish
     return (
         "What exactly do you want me to do?"
         if language == "en"
@@ -7056,29 +6945,12 @@ _SET_PHRASE_TRANSLATIONS = {
 def _set_phrase_translation(user_text: str) -> tuple[str, str] | None:
     """The quoted set phrase of a translation request and its fixed equivalent."""
 
-    current = str(user_text or "")
-    if re.search(r"traduc|translat", current, re.IGNORECASE) is None:
-        return None
-    quoted = re.search(r"['‘“\"«]([^'’”\"»]{2,40})['’”\"»]", current)
+    quoted = quoted_translation_phrase(user_text)
     if quoted is None:
         return None
-    phrase = " ".join(quoted.group(1).strip(" .!?,;:").casefold().split())
+    phrase = " ".join(quoted.strip(" .!?,;:").casefold().split())
     equivalent = _SET_PHRASE_TRANSLATIONS.get(phrase)
-    return (quoted.group(1).strip(), equivalent) if equivalent else None
-
-
-_NON_EVENT_CONFIRMATION = re.compile(
-    r"(?:si|if)\s+(?:eso|it|that)?\s*(?:no|didn\s?t|did not|nunca)\s+"
-    r"(?:pas[oó]|ocurri[oó]|sucedi[oó]|happen(?:ed)?|lo\s+hiciste|hiciste)\b",
-)
-
-
-def _asks_non_event_confirmation(user_text: str) -> bool:
-    """The person asks whether what they forbade actually happened."""
-
-    return _NON_EVENT_CONFIRMATION.search(
-        _policy_guard_text(_strip_request_envelope(str(user_text or "")))
-    ) is not None
+    return (quoted.strip(), equivalent) if equivalent else None
 
 
 def _looks_like_refuse_question(user_text: str) -> bool:
@@ -8627,25 +8499,6 @@ def _weather_clock_forms(value: object) -> set[str]:
     return {hour, str(int(hour)), minute, str(int(minute))}
 
 
-def _weather_asks_rain(user_text: str) -> bool:
-    """The weather question asks about rain, rain gear or an amount of it
-    («¿lloverá?», «¿me llevo el paraguas?», «how many inches»)."""
-
-    return re.search(
-        r"\b(?:llov\w*|lluvi\w*|llueve|rain\w*|paraguas|umbrella|chubasquero|impermeable|"
-        r"pulgadas|inches|milimetros|millimeters)\b",
-        _reading_fold(user_text),
-    ) is not None
-
-
-def _weather_asks_tomorrow(user_text: str) -> bool:
-    """The weather question is about tomorrow or a later day."""
-
-    return weather_asks_later_day(user_text) or re.search(
-        r"(?<!esta )\b(?:manana|tomorrow)\b", _reading_fold(user_text)
-    ) is not None
-
-
 _WEATHER_MEASURE_FIELDS = {
     "humidity": ("humidityPercent", "the humidity", "la humedad"),
     "wind": ("windKmh", "the wind", "el viento"),
@@ -9092,9 +8945,7 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     if coming and not rain_asked:
         # «¿qué tiempo hace hoy jueves?»: the day named may be today, answered with the weather now.
         today_weekday = _reading_fold(str((seen.get("today") or {}).get("weekday") or ""))
-        today_asked = re.search(r"\b(?:hoy|today|ahora|now)\b", asks) is not None or (
-            bool(today_weekday) and re.search(r"\b" + re.escape(today_weekday) + r"\b", asks) is not None
-        )
+        today_asked = weather_asks_today(asks, today_weekday)
         figures = ([seen.get("temperatureC")] if today_asked else []) + [
             day.get(key)
             for day in (seen.get("today"), tomorrow, *later) if isinstance(day, dict)
@@ -9113,7 +8964,7 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
             days = (seen.get("today"), tomorrow, *later)
         elif asks_tomorrow:
             days = (tomorrow,)
-        elif re.search(r"\b(?:hoy|today|tonight|esta\s+(?:noche|tarde|manana))\b", asks):
+        elif weather_asks_later_today(asks):
             days = (seen.get("today"),)
         else:
             days = (seen.get("today"), tomorrow)
@@ -9780,17 +9631,17 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         numbers_in_text = re.findall(r"(?<![\d.,])\d{2,}(?![\d.,])", text)
         if any(number not in observed_numbers for number in numbers_in_text):
             return "invented_number"
-        asks = _reading_fold(user_text)
-        if re.search(r"\bresoluci", asks) and not all(
+        asks = monitor_facts_asked(user_text)
+        if "resolution" in asks and not all(
             any(str(monitor.get(key)) in text for monitor in seen["monitors"] if isinstance(monitor, dict))
             for key in ("width", "height")
         ):
             return "missing_state"
-        if re.search(r"\b(?:hz|hertz|hercios|frecuencia|refresh)\b", asks) and not any(
+        if "refresh" in asks and not any(
             str(monitor.get("refreshHz")) in text for monitor in seen["monitors"] if isinstance(monitor, dict)
         ):
             return "missing_state"
-        if re.search(r"\b(?:cuantos|cuantas|how\s+many)\b", asks) and isinstance(count, int):
+        if "count" in asks and isinstance(count, int):
             words = {1: r"\b(?:un|uno|una|one|solo\s+un|1)\b", 2: r"\b(?:dos|two|2)\b", 3: r"\b(?:tres|three|3)\b", 4: r"\b(?:cuatro|four|4)\b"}
             if not re.search(words.get(count, rf"\b{count}\b"), folded):
                 return "missing_state"
@@ -10969,11 +10820,7 @@ def compose_visible_defect(
         stripped.casefold(),
     ) and (
         "system.time" in json.dumps(facts or {}, ensure_ascii=False).casefold()
-        or re.search(r"\b(?:clock|hora)\b", (user_text or "").casefold())
-        or re.search(
-            r"\b(?:what time|time now|tell the time)\b",
-            (user_text or "").casefold(),
-        )
+        or asks_the_clock(user_text)
     ):
         return "extra_claim"
     if "cannot provide" in stripped.casefold():
@@ -11961,9 +11808,7 @@ def compose_visible_defect(
                 names |= {word for word in app_name.casefold().split() if len(word) >= 4}
             if not any(name in folded for name in names):
                 return "missing_name"
-            closed_request = re.search(
-                r"\bcierr|\bclose\b", (user_text or "").casefold()
-            )
+            closed_request = asks_to_close(user_text)
             if closed_request and re.search(r"abiert|\bis open\b", folded):
                 return "reversed_result"
             if not closed_request and not re.search(
@@ -12123,11 +11968,7 @@ def compose_visible_defect(
         # Tanda 6b «set alarms for 2pm and 3pm»: a mission's alarms are judged like one alarm, each by its time.
         scheduled_dues = _verified_notification_dues(situation)
         title = observed_dict.get("title")
-        if scheduled_dues and not re.search(
-            r"\b(?:llamad[oa]|titulad[oa]|nombre|named|called|titled|name)\b|[\"“”«»]",
-            user_text,
-            re.IGNORECASE,
-        ):
+        if scheduled_dues and not names_the_title(user_text):
             # A generated description («alarm at 3 pm») is not an explicitly chosen identity.
             title = None
         if isinstance(title, str) and title.strip():
@@ -12246,7 +12087,7 @@ def compose_visible_defect(
                 # which song it is is answered by the title; the state is then not owed, and a contrary one
                 # still is reversed above.
                 if not names_observed_state and not (
-                    operation == "media.status" and _MEDIA_IDENTITY_QUESTION.search(_reading_fold(user_text or ""))
+                    operation == "media.status" and asks_what_is_playing(user_text)
                 ):
                     return "missing_state"
         if (
@@ -12297,9 +12138,7 @@ def compose_visible_defect(
             local = _local_datetime_from_observed(_merged_observed(situation))
             if local is None or _misses_calendar_facts(stripped, _calendar_facts(local, user_text, "es")):
                 return "missing_name"
-        clock_required = not date_requested or re.search(
-            r"\b(?:hora|time)\b", user_text, re.IGNORECASE
-        )
+        clock_required = not date_requested or names_the_time(user_text)
         given = place_clock.get("given") if place_clock is not None else None
         allowed_clock_values: tuple[tuple[int, int], ...] = (
             ((int(given[:2]), int(given[3:])),) if isinstance(given, str) else ()
@@ -12447,19 +12286,16 @@ def compose_visible_defect(
             question_text = re.sub(r"[¿?][^?¿]*\??\s*$", "", question_text).strip()
         if "?" in question_text or "¿" in question_text:
             return "extra_claim"
-        closed_request = re.search(r"\bcierr|\bclose\b", (user_text or "").casefold())
+        closed_request = asks_to_close(user_text)
         # H0516 «… y luego cierra Opera»: en una misión de varios pasos el cierre
         # no trae nombre de aplicación en lo observado, y exigir «ventana» a
         # «cerré Opera GX» tumbaba un final fiel. Si la persona nombró lo que
         # había que cerrar y el final repite ese nombre, está nombrado.
-        closed_object = re.search(
-            r"\b(?:cierr[ae]|cerr[aá]|close|quit)\s+(?:el|la|los|las|the|a)?\s*([a-záéíóúñ0-9][\w+.-]*)",
-            _reading_fold(user_text or ""),
-        )
+        closed_object = object_asked_to_close(user_text)
         closed_named = bool(
             closed_object
-            and closed_object.group(1) not in {"todo", "everything", "all", "eso", "esto", "that", "it", "lo", "la"}
-            and closed_object.group(1) in folded
+            and closed_object not in {"todo", "everything", "all", "eso", "esto", "that", "it", "lo", "la"}
+            and closed_object in folded
         )
         if (
             closed_request
@@ -12709,10 +12545,7 @@ def _unsupported_answer_contract_failure(
     # falla.»: when the request itself coordinates two actions with «y»/«and»,
     # a denial that mirrors them («no puedo ver ni analizar…») is one plain
     # limit, not a list of partial refusals; the «ni»/«nor» rule steps aside.
-    request_coordinates = (
-        re.search(r"\b(?:y|e|and)\b", _policy_guard_text(str(request or "")))
-        is not None
-    )
+    request_coordinates = coordinates_actions(request)
     coordinated_denial = (
         ""
         if request_coordinates
@@ -12918,17 +12751,6 @@ _ACTION_ATTRIBUTED_TO_USER = re.compile(
     re.IGNORECASE,
 )
 
-# «Si hazlo», «dale, hacelo», «do it»: an assent that names no action. The
-# clarification must ask which action, never «¿Qué querés que abra?».
-_ASSENT_WITHOUT_ACTION = re.compile(
-    r"[\s¡!¿?]*(?:(?:si|ok|okay|dale|bueno|vale|ya|yes|yeah|sure)\s*,?\s+)?"
-    r"(?:(?:por favor|please)\s*,?\s+)?"
-    r"(?:haz(?:lo|\s+(?:eso|esto|aquello))|hace(?:lo|\s+(?:eso|esto|aquello))|"
-    r"dale(?:\s+con)?\s+(?:eso|esto)|do\s+(?:it|that|this)|"
-    r"make\s+(?:it|that)\s+happen|go\s+ahead(?:\s+with\s+(?:it|that|this))?)"
-    r"(?:\s*,?\s*(?:por favor|please))?[\s.!?]*",
-    re.IGNORECASE,
-)
 _INVENTED_ACTION_VERB = re.compile(
     r"\b(?:abra|abrir|cierre|cerrar|mande|mandar|envie|enviar|borre|borrar|"
     r"elimine|eliminar|guarde|guardar|busque|buscar|reproduzca|reproducir|"
@@ -16716,7 +16538,7 @@ class LlmRuntime:
             # corrected retry each; a repeat is a failure.
             past_action = _PAST_ACTION_ATTRIBUTED_TO_USER.search(question) is not None
             invented_verb = (
-                _ASSENT_WITHOUT_ACTION.fullmatch(_fold_dialogue_text(current)) is not None
+                assent_without_action(current)
                 and _INVENTED_ACTION_VERB.search(question) is not None
             )
             if not past_action and not invented_verb:
@@ -19498,7 +19320,7 @@ class LlmRuntime:
         ):
             instruct("\nEnglish only.")
         if (
-            re.search(r"silenci|\bmute\b", (user_text or "").casefold())
+            asks_about_mute(user_text)
             # Use the same lifted/mission observations as the visible facts
             # and validator; a nested mute reading is not a missing reading.
             and "muted" not in merged_audio
@@ -20316,13 +20138,9 @@ class LlmRuntime:
             folded_ask = _reading_fold(user_text)
             # SCREEN1807 «tomá un screenshot, identificá el botón»: a button asked
             # of a capture is the same scope limit, said about buttons.
-            button_ask = re.search(r"\b(?:boton\w*|button\w*)\b", folded_ask) is not None
-            if button_ask or re.search(
-                # SCREEN1807: «para ver la pantalla», «identificá …» ask to see too.
-                r"\b(?:describ\w*|ves|ver|viendo|see|seeing|hay en|is on|what'?s on|"
-                r"identific\w*|identify)\b",
-                folded_ask,
-            ):
+            button_ask = asks_about_buttons(folded_ask)
+            # SCREEN1807: «para ver la pantalla», «identificá …» ask to see too.
+            if button_ask or asks_to_see_the_screen(folded_ask):
                 # SCREEN1417 «qué hay en la pantalla», «describime la pantalla»:
                 # no vision provider is configured, so the honest scope is the
                 # text this reading recognized, said before the lines.
@@ -21430,7 +21248,7 @@ class LlmRuntime:
                             ("Also say, in the past tense, that you closed what the person asked you to close."
                              if response_language == "en"
                              else "Di también, en pasado, que cerraste lo que la persona pidió cerrar.")
-                            if re.search(r"\bcierr|\bcerr[aá]\b|\bclose\b", (user_text or "").casefold())
+                            if asks_to_close(user_text, voseo=True)
                             else "abierto/open, no el imperativo."
                         )
                     )

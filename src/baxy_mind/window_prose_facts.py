@@ -9,8 +9,15 @@ from __future__ import annotations
 from collections import Counter
 import re
 
-from .effect_intent import _PERCENTAGE_WORD_VALUES, _strip_request_envelope, window_inventory_arguments
+from .effect_intent import _PERCENTAGE_WORD_VALUES, window_inventory_arguments
 from .semantic.request import fold
+from .semantic.windows import (
+    _FOCUS_ASSERTION,
+    _inventory_identity_request,
+    _window_focus_question,
+    asks_how_many_windows,
+    window_size_asked,
+)
 
 
 _CARDINALS = {**_PERCENTAGE_WORD_VALUES, "a": 1, "an": 1, "una": 1,
@@ -50,7 +57,6 @@ _PROCESS_STATE = re.compile(
     r"\b(?:process(?:es)?|procesos?)\s+(?:no\s+)?(?:is|are|esta|estan)\s+(?:not\s+)?"
     r"(?:active|inactive|stopped|activ[oa]s?|inactiv[oa]s?|detenid[oa]s?)\b"
 )
-_COUNT_QUESTION = re.compile(r"\b(?:cuantas|how\s+many|cuenta|count)\b")
 # A 22-window desktop exhausted composition (WINDOWS1207/000-004): the
 # narrator omitted the eight untitled explorer entries, and every retry was
 # rejected for the same omission. The answer names a bounded subset, titled
@@ -63,64 +69,6 @@ _UNCERTAINTY = re.compile(
     r"no\s+puedo\s+(?:saber|confirmar|determinar)|desconozco)\b"
 )
 _SEPARATORS = re.compile(r"([.;!?]|\b(?:but|pero|and|y)\b)")
-_FOCUS_STATE = r"active|inactive|activ[oa]s?|inactiv[oa]s?|en primer plano|in the foreground"
-_FOCUS_COPULA = r"esta|estan|is|are|isn['’]t|aren['’]t"
-_WINDOW_DISPLAY_STATE = r"maximized|maximizad[oa]s?|minimized|minimizad[oa]s?|visible|normal"
-_FOCUS_ASSERTION = re.compile(
-    rf"\b(?P<before>no\s+)?(?P<verb>{_FOCUS_COPULA})"
-    rf"\s+(?P<after>not\s+)?(?P<state>{_FOCUS_STATE})\b|"
-    rf"\b(?P<inverted_state>{_FOCUS_STATE})\s+(?P<inverted_before>no\s+)?"
-    rf"(?P<inverted_verb>{_FOCUS_COPULA})\b(?:\s+(?P<inverted_after>not)\b)?|"
-    r"\b(?P<focus_negative>no\s+|does not\s+|doesn['’]t\s+)?"
-    r"(?:tiene|has|have)\s+(?:el\s+)?(?P<focus>foco|focus)\b"
-)
-
-
-def _window_focus_question(user_text: str, window: dict) -> str | None:
-    question = _strip_request_envelope(fold(user_text))
-    names = {fold(window[key]) for key in ("title", "processName")
-             if isinstance(window.get(key), str) and window[key]}
-    for name in sorted(names, key=len, reverse=True):
-        def replace_subject(match: re.Match) -> str:
-            # A process named "Is Active" must not erase the predicate in
-            # "Which window is active?". Quoting or a surrounding predicate
-            # can instead establish that the occurrence is the subject.
-            if _FOCUS_ASSERTION.fullmatch(name) and not (
-                re.search(r"(?:\b(?:is|are|esta|estan|does|do|tiene|has|of|de|named|titled)|[\"'«])\s*$",
-                          question[:match.start()])
-                or re.search(rf"\b(?:is|are|esta|estan)\s+(?:{_WINDOW_DISPLAY_STATE})\s+$",
-                             question[:match.start()])
-                or re.match(r"[\"'»]|\s+(?:window|ventana|is|are|esta|estan|has|tiene)\b",
-                            question[match.end():])
-            ):
-                return match[0]
-            return "selected_window"
-
-        question = re.sub(rf"(?<!\w){re.escape(name)}(?!\w)", replace_subject, question, count=1)
-    # A relative clause identifies the subject: asking its name does not
-    # also ask whether it has focus. Removing just that clause preserves
-    # the main predicate in "Is the window that is maximized active?".
-    question = re.sub(
-        r"\b(window|ventana)\s+(?:that|which|que)\s+"
-        rf"(?:(?:is|esta)\s+(?:{_FOCUS_STATE}|{_WINDOW_DISPLAY_STATE})|"
-        r"(?:has|tiene)\s+(?:el\s+)?(?:focus|foco))\b",
-        r"\1", question,
-    )
-    # "Is the active window maximized?" uses focus to identify the subject;
-    # it asks about maximization, not about whether that subject has focus.
-    question = re.sub(r"\b(?:active window|ventana activa)\b", "window", question)
-    question = re.sub(r"\b(?:selected_window|the|el|la|window|ventana|it|currently|ahora|actualmente)\b", " ", question)
-    question = re.sub(r"\s+", " ", question)
-    predicate = _FOCUS_ASSERTION.search(question)
-    if predicate is None:
-        return None
-    prefix = question[:predicate.start()].strip(" ¿?¡!,")
-    if re.fullmatch(r"(?:(?:y|and)\s+)?(?:que|cual|what|which)(?:\s+one)?", prefix) and re.fullmatch(
-        r"(?:\s*(?:[?.!]|now|right now|at (?:this|the) moment|en este momento|please|por favor))*",
-        question[predicate.end():],
-    ):
-        return "identity"
-    return "state"
 
 
 def window_fact_feedback(text: str, payload: dict, user_text: str = "") -> dict | None:
@@ -386,34 +334,6 @@ def _inventory_is_entire(seen: dict) -> bool | None:
     )
 
 
-# WINDOWS1315 H0419 «cuál es la ventana más grande»: a superlative over the
-# open windows asks for one window, not the list.
-_WINDOW_SIZE_QUESTION = re.compile(
-    r"\b(?:ventanas?|windows?)\b.*\b(?:mas\s+(?:grande|chica|pequena|ancha|alta)|largest|biggest|smallest|widest|tallest)\b|"
-    r"\b(?:mas\s+(?:grande|chica|pequena)|largest|biggest|smallest)\s+(?:ventana|window)\b"
-)
-
-
-def _inventory_identity_request(user_text: str) -> bool:
-    """A list request names windows; a count request only counts them.
-
-    Uso real tanda 4e «show me las aplicaciones»: asked for applications, the narrator grouped the windows by
-    their program («Microsoft Edge (varias pestañas: …)») and every draft was refused for a title not copied
-    whole. Applications are named by program; only a request for the windows owes each window's title.
-    """
-    folded = fold(user_text)
-    return (
-        window_inventory_arguments(user_text) is not None
-        and not _COUNT_QUESTION.search(folded)
-        and not _WINDOW_SIZE_QUESTION.search(folded)
-        and not (_APPLICATION_NOUN.search(folded) and not _WINDOW_NOUN.search(folded))
-    )
-
-
-_APPLICATION_NOUN = re.compile(r"\b(?:aplicacion(?:es)?|apps?|applications?|programas?|programs?)\b")
-_WINDOW_NOUN = re.compile(r"\b(?:ventanas?|windows?)\b")
-
-
 def _named_inventory_subset(windows: list) -> list:
     """Titled windows in enumeration order, capped; untitled ones only when no title exists.
 
@@ -455,7 +375,8 @@ def project_window_inventory(payload: dict, user_text: str) -> dict:
             projected["hasMore"] = True
             projected.pop("limit", None)
             projected.pop("nextOffset", None)
-    if _WINDOW_SIZE_QUESTION.search(fold(user_text)):
+    size_asked = window_size_asked(user_text)
+    if size_asked is not None:
         # WINDOWS1315 H0419 «cuál es la ventana más grande»: the answer is a
         # comparison of the observed geometry, computed here, never guessed.
         # The narrator's copy keeps only the selected window; the others are
@@ -466,7 +387,7 @@ def project_window_inventory(payload: dict, user_text: str) -> dict:
             and isinstance(window.get("width"), (int, float)) and isinstance(window.get("height"), (int, float))
         ]
         if sized:
-            smallest = re.search(r"\b(?:mas\s+(?:chica|pequena)|smallest)\b", fold(user_text)) is not None
+            smallest = size_asked == "smallest"
             pick = (min if smallest else max)(sized, key=lambda w: float(w["width"]) * float(w["height"]))
             selected = {
                 key: pick.get(key) for key in ("title", "processName", "width", "height") if pick.get(key) is not None
@@ -731,7 +652,7 @@ def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
         # the size comparison covered every observed window.
         entire_inventory = True
     partial_page = entire_inventory is not True
-    count_question = _COUNT_QUESTION.search(fold(user_text))
+    count_question = asks_how_many_windows(user_text)
     stated_subset = False
     stated_page_count = False
     stated_inventory_count = False

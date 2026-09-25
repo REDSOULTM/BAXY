@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from dataclasses import dataclass
 
 from .. import effect_intent
 from .catalog import ApplicationCatalogIndex, GameCatalogIndex, build_application_catalog_index
@@ -19,14 +20,16 @@ from .intent import EffectIntent
 from .patterns import conversation_only_content_request, echo_mode_request
 from .request import (
     INTENT_AMBIGUOUS_ACTION,
+    INTENT_CAPABILITY,
     INTENT_IDENTITY,
     _INTERROGATIVE,
+    fold as _reading_fold,
     read_request,
     response_language as read_language,
+    speaking_directive,
 )
-from dataclasses import dataclass
 from .grammar import _strip_request_envelope
-from .normalize import _policy_guard_text
+from .normalize import _accent_folded_with_punctuation, _policy_guard_text
 from .patterns import (
     explicit_negative_constraint,
     explicit_non_action_body,
@@ -34,7 +37,6 @@ from .patterns import (
     reassurance_statement,
     reported_own_schedule,
 )
-from .request import INTENT_CAPABILITY, fold as _reading_fold, speaking_directive
 from .web import visual_content_request
 
 
@@ -304,15 +306,7 @@ def _current_public_role_question(objective: str) -> bool:
     folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
     return (
         re.match(r"^[¿?¡!\s]*(?:quien|who)\b", folded, re.IGNORECASE) is not None
-        and effect_intent._has(
-            folded,
-            r"\b(?:current|currently|actual|actualmente|ahora|now)\b",
-        )
-        and effect_intent._has(
-            folded,
-            r"\b(?:president|presidente|prime\s+minister|primer\s+ministro|"
-            r"chancellor|canciller|governor|gobernador|mayor|alcalde|ceo)\b",
-        )
+        and names_a_current_public_office(folded)
     )
 
 
@@ -1726,9 +1720,7 @@ def _conversation_presentation_shape(
     # pregunta por si ocurrio o no llegaba sin forma ninguna y el modelo devolvia
     # la condicion como tautologia. Es el mismo reconocimiento de la restriccion,
     # que ya tiene su prompt y su contrato.
-    if has_history and re.search(
-        r"(?:si|if)\s+(?:eso|it|that)?\s*(?:no|didn\s?t|did not|nunca)\s+"
-        r"(?:pas[oó]|ocurri[oó]|sucedi[oó]|happen(?:ed)?|lo\s+hiciste|hiciste)\b",
+    if has_history and _NON_EVENT_CONFIRMATION.search(
         _policy_guard_text(_strip_request_envelope(semantic_text)),
     ):
         return "constraint_ack"
@@ -2023,3 +2015,164 @@ def asks_a_laugh(request: object) -> bool:
     """A laugh asked for, performed on the spot («haz una carcajada», «ríete»)."""
 
     return _LAUGHTER_ASKED.match(_policy_guard_text(_strip_request_envelope(str(request or "")))) is not None
+
+
+# Only a question for the name or for who is answering has BAXY's name as its
+# answer; «¿cuál es tu lugar de origen?» is answered without it («No tengo un
+# lugar de origen; vivo en este PC» was rejected for not saying «BAXY»).
+_IDENTITY_ASKS_THE_NAME = (
+    r"\b(?:quien\s+(?:\w+\s+){0,2}(?:eres|sos|es\s+usted)|quien\s+(?:habla|esta\s+hablando)|"
+    r"who\s+(?:\w+\s+){0,2}are\s+you|who\s+is\s+speaking|(?:tu|your)\s+(?:propio\s+|own\s+)?"
+    r"(?:nombre|name)|como\s+te\s+llamas|what\s+(?:should\s+i\s+)?call\s+you|presentate|"
+    r"introduce\s+yourself|describete|describe\s+yourself)\b"
+)
+
+
+_DEICTIC_REFERENCE = re.compile(
+    r"\b(?:this|that|these|those|este|esta|esto|estos|estas|ese|esa|eso|"
+    r"esos|esas)\b",
+    re.IGNORECASE,
+)
+
+
+_IDENTITY_QUESTION = re.compile(
+    r"\b(?:what|which)\b.{0,48}\b(?:name|called)\b"
+    r"|\b(?:como\s+se\s+llama|que\s+nombre)\b",
+    re.IGNORECASE,
+)
+
+
+# The person asks whether something of theirs is so («está mi orden lista para recoger ya», «did I leave the
+# stove on», «¿tengo reuniones mañana?»). What they may or should do is knowledge («¿mi perro puede comer
+# uvas?», «do I need a visa»), and a question about the world or about BAXY is not about theirs.
+_ASKED_ABOUT_WRAPPER = re.compile(
+    r"^\W*(?:(?:i\s+(?:need|want|would\s+like)\s+to\s+know|i'd\s+like\s+to\s+know|tell\s+me|(?:can|could)\s+you\s+"
+    r"(?:tell\s+me|check)|do\s+you\s+know|check|quiero\s+saber|necesito\s+saber|dime|me\s+(?:puedes|podes|podrias)\s+"
+    r"decir|sabes|revisa|mira|fijate|comprueba|verifica)\s+(?:if|whether|si)\s+)"
+)
+
+
+_ASKED_WH = re.compile(
+    r"^\W*(?:que|cual|cuales|como|donde|cuando|quien|quienes|cuanto|cuanta|cuantos|cuantas|por\s+que|para\s+que|"
+    r"what|which|how|where|when|who|whom|whose|why)\b"
+)
+
+
+_ASKED_ABOUT_THE_PERSON = re.compile(
+    r"\b(?:mi|mis|my|mine|tengo|tenia|llevo|deje|puse|hice|do\s+i|did\s+i|have\s+i|i\s+have|i've|i\s+had|i\s+left)\b"
+)
+
+
+_ASKED_WHAT_MAY_BE = re.compile(
+    r"\b(?:puedo|puede|pueden|podria|podrian|debo|debe|deberia|deberian|necesito|necesita|hace\s+falta|conviene|"
+    r"es\s+(?:bueno|malo|normal|seguro|recomendable|posible)|can|could|should|must|may|might|need|needs|ought|"
+    r"is\s+it\s+(?:ok|okay|safe|normal|bad|good|possible)|would)\b"
+)
+
+
+_NON_EVENT_CONFIRMATION = re.compile(
+    r"(?:si|if)\s+(?:eso|it|that)?\s*(?:no|didn\s?t|did not|nunca)\s+"
+    r"(?:pas[oó]|ocurri[oó]|sucedi[oó]|happen(?:ed)?|lo\s+hiciste|hiciste)\b",
+)
+
+
+def _asks_non_event_confirmation(user_text: str) -> bool:
+    """The person asks whether what they forbade actually happened."""
+
+    return _NON_EVENT_CONFIRMATION.search(
+        _policy_guard_text(_strip_request_envelope(str(user_text or "")))
+    ) is not None
+
+
+# «Si hazlo», «dale, hacelo», «do it»: an assent that names no action. The
+# clarification must ask which action, never «¿Qué querés que abra?».
+_ASSENT_WITHOUT_ACTION = re.compile(
+    r"[\s¡!¿?]*(?:(?:si|ok|okay|dale|bueno|vale|ya|yes|yeah|sure)\s*,?\s+)?"
+    r"(?:(?:por favor|please)\s*,?\s+)?"
+    r"(?:haz(?:lo|\s+(?:eso|esto|aquello))|hace(?:lo|\s+(?:eso|esto|aquello))|"
+    r"dale(?:\s+con)?\s+(?:eso|esto)|do\s+(?:it|that|this)|"
+    r"make\s+(?:it|that)\s+happen|go\s+ahead(?:\s+with\s+(?:it|that|this))?)"
+    r"(?:\s*,?\s*(?:por favor|please))?[\s.!?]*",
+    re.IGNORECASE,
+)
+
+
+# A time-sensitive office holder: who holds it now is looked up, never answered from memory.
+_CURRENT_WORD = r"\b(?:current|currently|actual|actualmente|ahora|now)\b"
+_PUBLIC_OFFICE = (
+    r"\b(?:president|presidente|prime\s+minister|primer\s+ministro|"
+    r"chancellor|canciller|governor|gobernador|mayor|alcalde|ceo)\b"
+)
+
+
+def names_a_current_public_office(folded: str) -> bool:
+    """«el presidente actual», «the current ceo»: a public office and now (folded, one space between words)."""
+
+    return bool(effect_intent._has(folded, _CURRENT_WORD) and effect_intent._has(folded, _PUBLIC_OFFICE))
+
+
+def asks_baxys_name(request: object) -> bool:
+    """The identity question asks the name («¿cómo te llamas?»): the answer says «BAXY»."""
+
+    return re.search(_IDENTITY_ASKS_THE_NAME, _policy_guard_text(str(request or ""))) is not None
+
+
+def asks_a_polar_question_about_the_person(request: object) -> bool:
+    """A yes/no question about the person's own things («¿tengo correos nuevos?»), not a wh-question nor what may
+    be: only what was read of them answers it."""
+
+    asked = _ASKED_ABOUT_WRAPPER.sub("", _accent_folded_with_punctuation(request).casefold())
+    return not (
+        _ASKED_WH.search(asked) is not None
+        or _ASKED_ABOUT_THE_PERSON.search(asked) is None
+        or _ASKED_WHAT_MAY_BE.search(asked) is not None
+    )
+
+
+def asks_what_this_is(request: object) -> bool:
+    """«¿qué es esto?», «what is that?»: an identity question about something pointed at, not named."""
+
+    request_folded = _policy_guard_text(request)
+    return (
+        _DEICTIC_REFERENCE.search(request_folded) is not None
+        and _IDENTITY_QUESTION.search(request_folded) is not None
+    )
+
+
+def assent_without_action(current: str) -> bool:
+    """«sí, hazlo», «dale» with nothing to do named: an assent that names no action."""
+
+    return _ASSENT_WITHOUT_ACTION.fullmatch(_reading_fold(current)) is not None
+
+
+def coordinates_actions(request: object) -> bool:
+    """The request joins two things with «y» / «and»: a denial mirroring both is one limit."""
+
+    return re.search(r"\b(?:y|e|and)\b", _policy_guard_text(str(request or ""))) is not None
+
+
+# cien-41 y cien-45, turno 027: el pedido ambiguo que sólo trae el verbo; abrir o cerrar sin objeto.
+_AMBIGUOUS_ACTION_VERBS = (
+    ("open", ("abrir", "abre", "abreme", "open")),
+    ("close", ("cerrar", "cierra", "close")),
+)
+
+
+def ambiguous_action_verb(user_text: str) -> str | None:
+    """The action an ambiguous request names without its object («abre», «cierra»): «open», «close» or None."""
+
+    folded = _reading_fold(user_text)
+    for action, verbs in _AMBIGUOUS_ACTION_VERBS:
+        if any(re.search(r"(?<!\w)" + verb, folded) for verb in verbs):
+            return action
+    return None
+
+
+def quoted_translation_phrase(user_text: str) -> str | None:
+    """The quoted phrase a translation request asks for («traduce 'good evening'»), as written, or None."""
+
+    current = str(user_text or "")
+    if re.search(r"traduc|translat", current, re.IGNORECASE) is None:
+        return None
+    quoted = re.search(r"['‘“\"«]([^'’”\"»]{2,40})['’”\"»]", current)
+    return quoted.group(1) if quoted is not None else None

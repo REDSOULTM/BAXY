@@ -228,3 +228,18 @@ def wallpaper_request(text: str) -> dict[str, str | None] | None:
     if picture is not None:
         return {"color": None, "folder": _KNOWN_FOLDER_ENUM.get(_fold(picture.group("folder")), "pictures"), "name": picture.group("name")}
     return None
+
+
+def monitor_facts_asked(user_text: str) -> frozenset[str]:
+    """What a question about the monitors asks: «resolution», «refresh» (Hz) and/or «count» (how many)."""
+
+    asks = _fold(user_text)
+    return frozenset(
+        fact
+        for fact, pattern in (
+            ("resolution", r"\bresoluci"),
+            ("refresh", r"\b(?:hz|hertz|hercios|frecuencia|refresh)\b"),
+            ("count", r"\b(?:cuantos|cuantas|how\s+many)\b"),
+        )
+        if re.search(pattern, asks)
+    )
