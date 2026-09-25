@@ -14,6 +14,9 @@ One owner per rule:
    last turn acted on, named as the readers name it (a song, a video), and the request must read an effect of that
    family; an agreement before a pause («dale,») is a filler. Owners: semantic/dialogue._bare_order, .with_object,
    .things_acted_on, ._FILLER; __main__._rearm_in_context.
+4. An order to raise or lower the sound said with why («… que está muy fuerte», «… it's way too loud») is that order:
+   it was answered «No bajé nada». The reason after it is a state; a relative change still asks how much (owner rule
+   H0027). Owner: semantic/levels.read (_REASON).
 
 Every list holds fresh phrasings (Spanish dialects, English, Spanglish); none is a literal of the tanda.
 """
@@ -23,7 +26,7 @@ from __future__ import annotations
 import pytest
 
 from baxy_mind import __main__ as sidecar
-from baxy_mind.semantic import dialogue
+from baxy_mind.semantic import dialogue, levels
 
 OPERATIONS = (
     "audio.volume", "audio.volume.adjust", "audio.mute", "system.settings.set", "system.settings.adjust",
@@ -184,3 +187,36 @@ def test_an_order_left_without_object_after_something_else_is_not_about_music():
 @pytest.mark.parametrize("text", ["sigue lloviendo en Lima?", "pausa Spotify", "resume the download"])
 def test_an_order_that_says_its_object_is_not_a_bare_order(text):
     assert _dependency(_PLAYED, text) != "reference"
+
+
+# ---------------------------------------------------------------- 4. an order said with its reason
+
+
+@pytest.mark.parametrize(
+    ("text", "direction", "target"),
+    [
+        ("bajale un toque que está re fuerte", "down", None),
+        ("súbele porque no se escucha nada", "up", None),
+        ("turn it down it's way too loud", "down", None),
+        ("baja el volumen que me duele la cabeza", "down", None),
+        ("pon el volumen al 30 que están durmiendo", None, 30),
+    ],
+)
+def test_an_order_said_with_why_is_the_order(text, direction, target):
+    level = levels.read(text)
+    assert level is not None and level.direction == direction and level.target == target
+    asked = sidecar.resolve_explicit_clarification_intent(text, OPERATIONS)
+    if target is None:
+        # A relative change without an amount asks how much; it never takes a default step.
+        assert asked is not None and asked.operations == ("audio.volume.adjust",) and asked.missing_fields == ("amount",)
+
+
+@pytest.mark.parametrize("text", ["baja que está lloviendo", "sube a ver que pasa", "la música que suena es de Duki"])
+def test_a_reason_never_makes_a_level_of_what_is_not_one(text):
+    assert levels.read(text) is None
+
+
+def test_lowering_what_plays_with_its_reason_is_the_volume_question():
+    state = _state(_PLAYED[0], "media.play.youtube")
+    # Read as it arrived: the level readers ask how much.
+    assert _rearm(_message(*_PLAYED, "bajale un poco que está a full"), _Scripted(), state) is None

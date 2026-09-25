@@ -427,10 +427,24 @@ def _stated_level(found: re.Match[str]) -> Level | None:
     return Level(setting, direction, amount, target)
 
 
-def read(text: str) -> Level | None:
-    """The output-level request the whole utterance is, or None."""
+# Tanda 9 «bajale un poco que está al palo» was answered «No bajé nada»: an order followed by why it is asked («que
+# está muy fuerte», «porque no se escucha», «it's way too loud») is the order; the reason is a state, said after it.
+_REASON = re.compile(
+    r"\s+(?:(?:que|porque|pq|ya\s+que)\s+(?:esta|estan|es|son|suena|suenan|se|no|me|ya|anda|quedo)|because|cause|"
+    r"since|it'?s|its)\b.*$"
+)
 
-    cleaned = _clean(text)
+
+def read(text: str) -> Level | None:
+    """The output-level request the whole utterance is, or None; an order said with its reason is the order."""
+
+    cleaned, question = _clean(text), "?" in str(text or "") or "¿" in str(text or "")
+    level = _read(cleaned, question)
+    reason = _REASON.search(cleaned) if level is None else None
+    return _read(cleaned[: reason.start()], question) if reason is not None and reason.start() else level
+
+
+def _read(cleaned: str, question: bool) -> Level | None:
     if not cleaned:
         return None
     found = _VERB_FORM.fullmatch(cleaned)
@@ -446,7 +460,7 @@ def read(text: str) -> Level | None:
         # «más música» asks for more songs; «más volumen» for more volume.
         setting = _object(found)
         return None if setting is False else Level(setting, "up" if found.group("qup") else "down", None, None)
-    return _complaint(cleaned, question="?" in text or "¿" in text)
+    return _complaint(cleaned, question=question)
 
 
 def _complaint(cleaned: str, *, question: bool) -> Level | None:
