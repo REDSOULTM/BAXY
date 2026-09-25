@@ -327,6 +327,15 @@ _EMBEDDED_QUESTION = re.compile(
     r"termino|esta|estan)\b"
 )
 _REACTION_TALK = re.compile(r"^(?:jaja\w*|jeje\w*|jsjs\w*|lol|xd+|wow|uf+|que\s+(?:raro|bueno|lindo|loco|risa))\b")
+# Tanda 8 «i don't really know» was looked up on the web: not knowing, said alone, tells something about the person
+# and asks nothing. Only the whole message: «no sé cómo abrir Spotify» or «no sé qué hora es» still ask.
+_NOT_KNOWING_TALK = re.compile(
+    r"(?:(?:la\s+verdad|honestamente|sinceramente|pues|bueno|mm+|hm+|eh+|well|honestly|actually)[\s,]+)?"
+    r"(?:no\s+(?:lo\s+)?se|nose|ni\s+idea|no\s+tengo\s+(?:ni\s+)?(?:idea|la\s+menor\s+idea)|no\s+estoy\s+segur[oa]|"
+    r"i\s+(?:really\s+)?(?:don'?t|do\s+not)\s+(?:really\s+)?know|idk|dunno|(?:i'?m\s+)?not\s+(?:really\s+)?sure|"
+    r"(?:i\s+have\s+)?no\s+idea)"
+    r"(?:[\s,]+(?:la\s+verdad|bien|todavia|aun|exactamente|really|yet|exactly|honestly|tbh))*"
+)
 
 
 def talk_act(text: str) -> str | None:
@@ -345,7 +354,9 @@ def talk_act(text: str) -> str | None:
         return "reaction"
     if _FEEDBACK_TALK.search(folded):
         return "feedback"
-    if _FIRST_PERSON_TALK.match(folded) and not _EMBEDDED_QUESTION.search(folded):
+    if (
+        _FIRST_PERSON_TALK.match(folded) and not _EMBEDDED_QUESTION.search(folded)
+    ) or _NOT_KNOWING_TALK.fullmatch(folded):
         return "statement"
     return None
 

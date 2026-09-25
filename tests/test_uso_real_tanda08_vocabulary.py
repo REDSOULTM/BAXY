@@ -17,6 +17,8 @@ the readers already own are data added to that reader, in ``semantic/``; nothing
 - «¿qué día abriste los ojos por primera vez?» → looked up and answered about kittens: his birth said as an idiom
   (opening his eyes, seeing the light, coming to life or online, first switched on) is a question about BAXY.
   Owner: request_reading._SELF_FORMS.
+- «i don't really know» → a web lookup of the phrase: not knowing, said alone, is talk that asks nothing.
+  Owner: semantic/dialogue.talk_act.
 
 The phrasings below are paraphrases (es/en/spanglish, dialects, typos) the fixes do not name, with negative controls.
 """
@@ -29,6 +31,7 @@ from baxy_mind import __main__ as sidecar
 from baxy_mind.semantic import levels
 from baxy_mind.semantic.notes import list_entry_request
 from baxy_mind.semantic.reading import read
+from baxy_mind.semantic.reading import plain_talk
 from baxy_mind.request_reading import INTENT_IDENTITY, read_request
 from baxy_mind.semantic.system import _weather_location
 
@@ -258,3 +261,41 @@ def test_his_birth_said_as_an_idiom_is_a_question_about_him(text: str) -> None:
 )
 def test_other_openings_and_arrivals_are_not_about_him(text: str) -> None:
     assert not read_request(text).has(INTENT_IDENTITY)
+
+
+# ------------------------------------------------------------------ not knowing, said alone, is talk
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "i don't really know",
+        "idk",
+        "dunno",
+        "i'm not sure",
+        "i have no idea",
+        "no sé",
+        "no lo sé",
+        "no sé, la verdad",
+        "la verdad no sé",
+        "ni idea",
+        "no tengo ni idea",
+        "nose",
+    ],
+)
+def test_not_knowing_said_alone_is_talk(text: str) -> None:
+    assert plain_talk(text, effects=None, clarification=None) == "statement"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "no sé cómo abrir Spotify",
+        "no sé qué hora es",
+        "i don't know how to take a screenshot",
+        "no sé si llueve mañana",
+        "¿no sabes?",
+    ],
+)
+def test_not_knowing_with_a_question_inside_is_not_plain_talk(text: str) -> None:
+    assert plain_talk(text, effects=None, clarification=None) is None
