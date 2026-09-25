@@ -21357,6 +21357,14 @@ class LlmRuntime:
                     response, "", True,
                 )
                 return ambiguous_question
+            if isinstance(situation, dict) and situation.get("operation") == "web.search":
+                # Verification 2026-09-25 (held-out «averiguá qué dijo la crítica»): three drafts copied the page's
+                # tagline and the turn ended in ⚠. By the owner's rule, what no draft can say from the pages in
+                # BAXY's own voice was not found.
+                not_found = "I couldn't find it." if response_language == "en" else "No lo encontré."
+                if publishable(not_found):
+                    record_stage("not_found_fallback", not_found, not_found, response, "", True)
+                    return not_found
             return ""
 
         # tanda-02: a model that does not answer in time (a timeout or a dropped
