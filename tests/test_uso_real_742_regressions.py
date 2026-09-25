@@ -9,6 +9,8 @@ decisions; these are the regressions whose cause is a reader, each fixed where i
 3. «para la canción» (layer A, real log) was rewritten by the model and looked up: its form is a place («para la X»),
    but it reads a request by itself. A follow-up that reads an effect on its own is that request and the model is
    not asked. Owner: __main__._rearm_in_context.
+4. «De donde sacaste esa info?» (layer A, real log; since fa327140 «buscar lo público») was looked up: where BAXY got
+   what he just said is asked of BAXY. Owner: semantic/web._NOT_A_PUBLIC_LOOKUP.
 
 Every list holds fresh phrasings (dialects, English, Spanglish), not the literals.
 """
@@ -94,3 +96,17 @@ def test_a_follow_up_that_reads_a_request_by_itself_is_that_request(text: str) -
     model = _NoModel()
     assert sidecar._rearm_in_context(message, llm=model, available_operations=_OPERATIONS) is None
     assert model.asked == []
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["¿de dónde sacaste eso?", "de donde sacas esos datos", "where did you get that from?", "did you make that up",
+     "¿te lo inventaste?", "eso lo imaginaste o qué"],
+)
+def test_where_baxy_got_what_he_said_is_asked_of_baxy(text: str) -> None:
+    assert web.not_a_public_lookup(text)
+
+
+@pytest.mark.parametrize("text", ["¿dónde queda la Torre Eiffel?", "where did the Titanic sink", "¿de dónde es Shakira?"])
+def test_where_things_are_is_still_public(text: str) -> None:
+    assert not web.not_a_public_lookup(text)

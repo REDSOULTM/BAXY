@@ -3306,6 +3306,10 @@ _NOT_A_PUBLIC_LOOKUP = re.compile(
     r"\b(?:este|esta|this)\s+(?:cancion|tema|song|track|artista|artist|disco|album|video|podcast)\b|"
     r"\b(?:that|this)\s+(?:person|guy|man|woman)\b|\b(?:esa|esta|aquella)\s+persona\b|"
     r"\d\s*%|\bpor\s*ciento\b|\bpercent\b|"
+    # Verification 2026-09-25 (layer A, real log «De donde sacaste esa info?»): where BAXY got what he just said,
+    # or whether he made it up, is asked of BAXY, never of a page.
+    r"\b(?:de\s+donde|donde)\s+(?:sacaste|sacas|encontraste|leiste)\b|\bwhere\s+did\s+you\s+(?:get|find|read)\b|"
+    r"\b(?:lo\s+|la\s+|eso\s+)?(?:imaginaste|inventaste)\b|\bdid\s+you\s+make\s+(?:it|that|this)\s+up\b|"
     r"\b(?:de|del|en|a|al|el|la|los|las|un|una|para|con|por|sobre|entre|"
     r"the|of|in|at|to|for|on|with|about|a|an)[\s?.!¿¡]*$"
 )
