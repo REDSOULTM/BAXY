@@ -2187,16 +2187,23 @@ def known_unsupported_effect_request(
             {"peripheral.default.set"},
         ),
         (
+            # Tanda 7 «consígueme un billete de tren a madrid para el próximo jueves» was looked up and answered
+            # «No se encontró información…»: getting a ticket, a seat or a booking is buying it, a limit like
+            # getting a product paid with a card. Neither is information to look up.
             _has(
-                folded,
-                r"^(?:get\s+me|i\s+(?:want|need)\s+to\s+get)\b",
+                _fold(_without_address(text) or text),
+                r"^(?:(?:por\s+favor|porfa|please)\s+)?(?:get\s+me|i\s+(?:want|need)\s+to\s+get|buy(?:\s+me)?|"
+                r"book(?:\s+me)?|compra(?:me|nos)?|consigue(?:me|nos)?|consegui(?:me|nos)|reserva(?:me|nos)?|"
+                r"saca(?:me|nos)|pilla(?:me|nos))\b",
             )
-            and _has(
-                folded,
-                r"\b(?:american\s+express|visa|mastercard|credit\s+card|"
-                r"debit\s+card|tarjeta|bizum|cash|efectivo)\b",
-            )
-            and not _has(folded, r"\b(?:game|juego|steam)\b"),
+            and (
+                _has(folded, r"\b(?:billetes?|boletos?|pasajes?|entradas?|tickets?|vuelos?|flights?|asientos?|seats?)\b")
+                or _has(
+                    folded,
+                    r"\b(?:american\s+express|visa|mastercard|credit\s+card|debit\s+card|tarjeta|bizum|cash|efectivo)\b",
+                )
+                and not _has(folded, r"\b(?:game|juego|steam)\b")
+            ),
             {"commerce.product.purchase"},
         ),
         (

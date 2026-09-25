@@ -17,6 +17,8 @@
 - «¿puedes activar este modo que tienes que repites todo el rato lo mismo que yo digo?» → «No pude entender…»: the
   parrot mode (a known limit) was read only with an imperative right before «lo que digo»; the repeating verb in
   any person or form, a few words before what is said next, is the same mode, and a negated one is not asked.
+- «consígueme un billete de tren a madrid para el próximo jueves…» → a web search and ⚠: getting a ticket, a seat or
+  a flight is buying it, the same known limit as a product paid with a card; it is never looked up.
 
 The phrasings below are not the tandas': they are paraphrases (es/en/spanglish) the fixes do not name, with negative
 controls.
@@ -323,3 +325,41 @@ def test_the_parrot_mode_with_the_verb_in_any_form_is_the_known_limit(text: str)
 )
 def test_a_negated_repetition_or_a_recall_is_not_the_parrot_mode(text: str) -> None:
     assert not echo_mode_request(text)
+
+
+# ------------------------------------------------------------------ getting a ticket is buying it: a limit
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "cómprame dos entradas pal concierto de la Rosalía",
+        "book me a flight to London next friday",
+        "oye sácame un pasaje a Santiago pa mañana",
+        "get me a ticket for the 8pm show",
+        "resérvame un asiento en el bus a Córdoba",
+        "alexa buy me tickets for the Lakers game",
+        "porfa consígueme boletos pal cine el sábado",
+        "Get me vanilla, wait, cinnamon using my American Express card.",
+    ],
+)
+def test_getting_a_ticket_or_a_paid_product_is_a_known_limit_not_a_lookup(text: str) -> None:
+    assert known_unsupported_effect_request(text, ("web.search", "app.open"))
+    # With a purchase operation served, it is that operation's, never a limit.
+    assert not known_unsupported_effect_request(text, ("commerce.product.purchase",))
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "busca billetes de tren a madrid",
+        "cuánto cuesta un billete a madrid",
+        "a qué hora sale el tren a madrid",
+        "consígueme el horario del tren a madrid",
+        "how much is a flight to London",
+        "saca una foto",
+        "get me the new zelda game with my visa",
+    ],
+)
+def test_asking_about_tickets_or_times_is_not_a_purchase(text: str) -> None:
+    assert not known_unsupported_effect_request(text, ("web.search", "app.open"))
