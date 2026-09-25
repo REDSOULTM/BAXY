@@ -2668,7 +2668,9 @@ def _incomplete_scheduled_request(
         literal_clock = clock.group(0)
         # «5pm» writes the meridiem against the digits: no word boundary sits
         # between them, so the hour and its period are read without one.
-        digits = re.search(r"\b(\d{1,2})(?![\d:])", literal_clock)
+        # Tanda 7 «remind me at 7:30 to call grandma» was asked «when and what?»:
+        # the hour of «7:30» is the 7 before the colon, never the 30 after it.
+        digits = re.search(r"(?<![\d:])(\d{1,2})(?=:\d{2}|(?![\d:]))", literal_clock)
         hour_value = int(digits.group(1)) if digits else None
         has_period = _has(
             literal_clock,
