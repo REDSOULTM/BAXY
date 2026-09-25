@@ -12,6 +12,11 @@ controls that keep a false fact out.
    extra_claim: the narrator got the whole weather read. The place asked alone sends only the place fields; the
    validator stays, and a weather draft is told the place focus. Owners: llm._project_weather_read,
    _weather_answer_instruction, _weather_fact_defect, the invented_number hint.
+4. t39 «cuál es el pronóstico del tiempo para la semana» → «Durante la semana… entre 12,5 °C y 21 °C… del 2% al
+   6%…» died as missing_state for not naming the place, then the turn ran out of time; and its ranges were false (the
+   lowest minimum was 12, the rain went from 0). The week is summed up by the mind (seen.week), is answered without
+   the place like the other narrow questions, and a range said about the week must be one of its ranges. Owners:
+   llm._weather_week / _false_week_range / _project_weather_read / _weather_focus / _weather_fact_defect.
 6. t1 «he quedado con un amigo a la salida del sol mañana para correr, ¿qué hora será?» published «Mañana se pone
    el sol a las 19:45.», the other sun event. The event asked (sunrise or sunset) is read apart, only it and the
    asked day are sent, and the validator rejects the other event's time. Owners: semantic.web
@@ -224,6 +229,54 @@ def test_the_place_prompt_carries_no_weather_and_a_weather_draft_is_told_the_pla
     first = json.dumps(client.payloads[0]["messages"], ensure_ascii=False)
     assert "humidityPercent" not in first and "temperatureC" not in first
     assert "nothing about the weather" in json.dumps(client.payloads[1]["messages"], ensure_ascii=False)
+
+
+# --- 4. the week summed up briefly, with its true range ------------------------------------------------------------
+
+_T39 = "cuál es el pronóstico del tiempo para la semana"
+
+
+def test_the_week_is_summed_up_by_the_mind() -> None:
+    seen = llm._compose_situation_payload(_WEATHER, "es", _T39)["seen"]
+    assert seen["week"] == {"minC": 12, "maxC": 21, "rainProbabilityPercentMax": 6, "rainiestWeekdays": ["viernes", "lunes"]}
+    assert "laterDays" in seen
+    assert "week.minC" in llm._weather_answer_instruction(_T39, "es")
+    assert "week" not in llm._compose_situation_payload(_WEATHER, "es", "¿qué tiempo hace?")["seen"]
+
+
+@pytest.mark.parametrize(
+    ("asked", "reply", "language"),
+    [
+        (_T39, "Esta semana, entre 12 y 21 °C, nublado, con lluvia poco probable (6 % como máximo el viernes y el lunes).",
+         "es"),
+        (_T39, "Esta semana en Curicó irá de 12 a 21 °C; la lluvia no pasa del 6 %.", "es"),
+        ("what's the forecast for the week", "This week: 12 to 21°C, mostly cloudy; rain chance tops out at 6% on "
+         "Friday and Monday.", "en"),
+        ("el weather de esta semana porfa", "De 12 a 21 °C y casi sin lluvia (6 % el viernes y el lunes).", "es"),
+        ("how's the weather looking the next few days", "Highs from 18.8 to 21°C, with lows down to 12°C.", "en"),
+        ("dame el clima de los próximos días", "Nublado, con mínimas de 12 a 14,5 °C y lluvia de 0 a 6 %.", "es"),
+    ],
+)
+def test_a_brief_true_week_summary_passes(asked: str, reply: str, language: str) -> None:
+    assert _weather_defect(reply, asked, language) == ""
+
+
+@pytest.mark.parametrize(
+    ("asked", "reply", "defect"),
+    [
+        # t39's draft, verbatim: its range is tomorrow's, not the week's, and so is its rain range.
+        (_T39, "Durante la semana, las temperaturas oscilarán entre 12,5 °C y 21 °C, con cielos nublados la mayor "
+         "parte del tiempo, probabilidad de lluvia del 2% al 6%, y viento de 1,5 km/h. El día de lunes tendrá cielos "
+         "parcialmente nublados y una probabilidad de lluvia del 6%.", "invented_number"),
+        (_T39, "Esta semana, entre 12 y 21 °C, con lluvia del 2 % al 6 %.", "invented_number"),
+        (_T39, "Esta semana irá de 12,6 a 21 °C.", "invented_number"),
+        ("what's the forecast for the week", "This week between 12 and 25°C.", "invented_number"),
+        # No figure of the week is no summary.
+        (_T39, "Esta semana estará nublada.", "missing_state"),
+    ],
+)
+def test_a_false_or_empty_week_summary_is_rejected(asked: str, reply: str, defect: str) -> None:
+    assert _weather_defect(reply, asked) == defect
 
 
 # --- 6. the sun event asked, not the other one --------------------------------------------------------------------

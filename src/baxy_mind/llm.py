@@ -8809,15 +8809,16 @@ def _weather_focus(user_text: str, english: bool) -> str:
                if coming else " o un día posterior.")
         )
     if weather_asks_week(user_text):
-        # Uso real tanda 6 «cuál es el pronóstico del tiempo para la semana» got today and tomorrow only.
+        # Uso real tanda 6 «cuál es el pronóstico del tiempo para la semana» got today and tomorrow only. Tanda 6b:
+        # the model's own range was false («entre 12,5 y 21 °C» with a minimum of 12); seen.week is computed.
         return (
-            "The person asked about the coming days: sum them up from today, tomorrow and seen.laterDays "
-            "(each with its weekday): the range of maximums and minimums and the days with rain likely, "
-            "naming those days by their weekday; no list of every day."
+            "The person asked about the coming days: sum them up with seen.week, computed from today, tomorrow "
+            "and seen.laterDays: from week.minC to week.maxC, and the highest rain chance "
+            "(week.rainProbabilityPercentMax) with its days (week.rainiestWeekdays); no list of every day."
             if english
-            else "La persona preguntó por los próximos días: resúmelos desde today, tomorrow y seen.laterDays "
-            "(cada uno con su weekday): el rango de máximas y mínimas y los días con lluvia probable, "
-            "nombrándolos por su día de la semana; sin enumerar cada día."
+            else "La persona preguntó por los próximos días: resúmelos con seen.week, calculado desde today, "
+            "tomorrow y seen.laterDays: de week.minC a week.maxC, y la mayor probabilidad de lluvia "
+            "(week.rainProbabilityPercentMax) con sus días (week.rainiestWeekdays); sin enumerar cada día."
         )
     if coming:
         return (
@@ -8866,6 +8867,73 @@ def _weather_focus(user_text: str, english: bool) -> str:
 _OWN_PLACE_FIELDS = ("location", "region", "country", "locatedBy")
 
 
+def _weather_days(seen: dict) -> list[dict]:
+    """Today, tomorrow and the days after it that the read carries, in order."""
+
+    return [day for day in (seen.get("today"), seen.get("tomorrow"), *(seen.get("laterDays") or [])) if isinstance(day, dict)]
+
+
+def _weather_day_values(days: list[dict], key: str) -> list[float]:
+    return [day[key] for day in days if isinstance(day.get(key), (int, float)) and not isinstance(day.get(key), bool)]
+
+
+def _weather_week(seen: dict) -> dict:
+    """Tanda 6b: the coming days summed up here (lowest minimum, highest maximum, the highest rain chance and its
+    days); the narrator copies the figures instead of computing a range it got wrong."""
+
+    days = _weather_days(seen)
+    lows, highs, rains = (_weather_day_values(days, key) for key in ("minC", "maxC", "rainProbabilityPercent"))
+    week: dict = {}
+    if lows:
+        week["minC"] = min(lows)
+    if highs:
+        week["maxC"] = max(highs)
+    if rains:
+        week["rainProbabilityPercentMax"] = max(rains)
+        if max(rains) > 0:
+            week["rainiestWeekdays"] = [
+                day["weekday"] for day in days
+                if day.get("rainProbabilityPercent") == max(rains) and isinstance(day.get("weekday"), str)
+            ]
+    return week
+
+
+# «entre 12 y 21 °C», «de 12 a 21», «del 2% al 6%», «from 16 to 22.3°C», «between 12 and 21», «12–21 °C».
+_WEATHER_RANGE = re.compile(
+    r"(?:\b(?:entre|between|de|del|from)\s+(?P<low>-?\d+(?:[.,]\d+)?)\s*(?:°\s*c?|º\s*c?|grados|degrees|%|"
+    r"por\s*ciento|percent)?\s*(?:y|a|al|and|to|hasta)\s+(?:el\s+|un\s+)?(?P<high>-?\d+(?:[.,]\d+)?)(?![\d:])"
+    # «del 24 al 30 de septiembre», «de 7 a 9 de la mañana» are days and hours, not a range read.
+    rf"(?!\s*(?:de\s+|of\s+)?(?:{_CALENDAR_MONTH_PATTERN}|de\s+la|am|pm|h|hrs?|horas?|hours?)\b)|"
+    r"(?<![\w.,-])(?P<dash_low>\d+(?:[.,]\d+)?)\s*[–-]\s*(?P<dash_high>\d+(?:[.,]\d+)?)\s*(?:°|º|grados|degrees|%))",
+    re.IGNORECASE,
+)
+
+
+def _false_week_range(text: str, seen: dict) -> bool:
+    """A range said about the coming days that is none of theirs: of all temperatures, of the maximums, of the
+    minimums or of the rain chances (tanda 6b «entre 12,5 °C y 21 °C» with a lowest minimum of 12)."""
+
+    days = _weather_days(seen)
+    pairs = []
+    for low_key, high_key in (("minC", "maxC"), ("maxC", "maxC"), ("minC", "minC")):
+        lows, highs = _weather_day_values(days, low_key), _weather_day_values(days, high_key)
+        if lows and highs:
+            pairs.append((min(lows), max(highs)))
+    rains = _weather_day_values(days, "rainProbabilityPercent")
+    if rains:
+        pairs.append((min(rains), max(rains)))
+    for found in _WEATHER_RANGE.finditer(text):
+        said = sorted(
+            (found["low"] or found["dash_low"], found["high"] or found["dash_high"]),
+            key=lambda number: float(number.replace(",", ".")),
+        )
+        if not any(
+            said[0] in _weather_number_forms(low) and said[1] in _weather_number_forms(high) for low, high in pairs
+        ):
+            return True
+    return False
+
+
 def _project_weather_read(seen: dict, user_text: str) -> dict:
     """What of the weather read the narrator gets: the part the question asks (the checks keep the whole read).
 
@@ -8887,6 +8955,8 @@ def _project_weather_read(seen: dict, user_text: str) -> dict:
     projected = dict(seen)
     if not weather_asks_coming_days(user_text):
         projected.pop("laterDays", None)
+    if weather_asks_week(user_text):
+        projected["week"] = _weather_week(seen)
     return projected
 
 
@@ -9024,7 +9094,10 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     # its value; the place must be named when the person named one, or for a
     # general report.
     asked_place = _reading_fold(_weather_location(user_text or "") or "")
-    narrow = rain_asked or sun_time or bool(narrow_measures) or weather_asks_air(user_text or "")
+    # Tanda 6b «cuál es el pronóstico del tiempo para la semana»: the week summed up is the answer, as its focus
+    # asks; the place is not demanded next to it (the draft died on missing_state for not naming it).
+    week_asked = weather_asks_week(user_text or "")
+    narrow = rain_asked or sun_time or week_asked or bool(narrow_measures) or weather_asks_air(user_text or "")
     if isinstance(location, str) and location and (asked_place or not narrow):
         # WEATHER2031 «how's the weather in Santiago»: the geocoder says «Santiago
         # de Chile»; the head of that name (before « de …» or a comma) names the
@@ -9098,10 +9171,20 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     # days after tomorrow read, the day asked is any of the days read (the reply names which), and the week is
     # answered with at least one of the days after tomorrow.
     coming = bool(later) and weather_asks_coming_days(user_text or "")
-    if coming and weather_asks_week(user_text or "") and not any(
-        _states_weather_number(text, day.get(key)) for day in later for key in ("maxC", "minC", "rainProbabilityPercent")
-    ):
-        return "missing_state"
+    if coming and week_asked:
+        # Tanda 6b: the week's own figures (seen.week) sum up the days after tomorrow too; a range said about the
+        # week is one of its ranges.
+        if not any(
+            _states_weather_number(text, value)
+            for value in [
+                *(day.get(key) for day in later for key in ("maxC", "minC", "rainProbabilityPercent")),
+                *_weather_week(seen).values(),
+            ]
+            if isinstance(value, (int, float))
+        ):
+            return "missing_state"
+        if _false_week_range(text, seen):
+            return "invented_number"
     if coming and not rain_asked:
         # «¿qué tiempo hace hoy jueves?»: the day named may be today, answered with the weather now.
         today_weekday = _reading_fold(str((seen.get("today") or {}).get("weekday") or ""))
