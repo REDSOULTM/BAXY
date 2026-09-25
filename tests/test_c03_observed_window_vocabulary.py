@@ -100,11 +100,13 @@ def test_complete_token_boundaries_and_answer_meaning_still_apply(bad):
     assert len(client.requests) == 2
 
 
-def test_lowercase_prose_outside_the_observed_name_still_requires_recovery():
+def test_lowercase_prose_outside_the_observed_name_is_never_published_lowercase():
+    # Verification 2026-09-25: a lowercase lead outside the observed name is still a defect, but it is put in capital
+    # when composing (capital_lead) instead of costing a retry; what reaches the person is the same capitalised text.
     good = 'The window "Router notes" is active.'
-    client = Recorder(['the window "Router notes" is active.', good])
+    client = Recorder(['the window "Router notes" is active.'])
     assert client.compose_user_message("Which window is active?", "status", facts("Router notes")) == good
-    assert len(client.requests) == 2
+    assert len(client.requests) == 1
 
 
 @pytest.mark.parametrize("name,compound", [
