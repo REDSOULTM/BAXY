@@ -56,9 +56,9 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | capa A (768) | **96,5 %** (741) · registro real 90,1 % · 742 97,3 % | `semantic_corpus.py score` sobre `lit-fin2` + `layers-fin2`, referencia S8 |
 | capa B (20) / capa C (1 000) | 45,0 % / 54,2 % | ídem |
 | 742 sólo-decisión contra S8 | **14** decisiones distintas | `semantic_replay.py diff lit-s8 lit-fin2` |
-| reserva MASSIVE (2 757) | en curso | `score_big.py big-hold hold-fin2` |
-| guion del dueño (60) / held-out (30) | en curso (ventana) | `semantic_replay.py conv` |
-| cien-103 | en curso | conductor |
+| reserva MASSIVE (2 757) | **82,2 %** (2 265; decisión p50 0,93 s) | `score_big.py big-hold hold-fin2` |
+| guion del dueño (60) / held-out (30) | **46/60** (+6 por revisar) / **24/30** — ambos bajo el «sin retroceder» del goal (53, 29): hay que recuperarlos | `semantic_replay.py summary --out finc2` |
+| cien-103 | 100 turnos publicados; adjudicación contra cien-101 en curso | conductor |
 
 ## Bitácora
 
