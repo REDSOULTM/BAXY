@@ -12,6 +12,10 @@ controls that keep a false fact out.
    extra_claim: the narrator got the whole weather read. The place asked alone sends only the place fields; the
    validator stays, and a weather draft is told the place focus. Owners: llm._project_weather_read,
    _weather_answer_instruction, _weather_fact_defect, the invented_number hint.
+6. t1 «he quedado con un amigo a la salida del sol mañana para correr, ¿qué hora será?» published «Mañana se pone
+   el sol a las 19:45.», the other sun event. The event asked (sunrise or sunset) is read apart, only it and the
+   asked day are sent, and the validator rejects the other event's time. Owners: semantic.web
+   weather_sun_events_asked; llm._project_weather_read, _weather_focus, _weather_fact_defect.
 """
 
 from __future__ import annotations
@@ -220,3 +224,70 @@ def test_the_place_prompt_carries_no_weather_and_a_weather_draft_is_told_the_pla
     first = json.dumps(client.payloads[0]["messages"], ensure_ascii=False)
     assert "humidityPercent" not in first and "temperatureC" not in first
     assert "nothing about the weather" in json.dumps(client.payloads[1]["messages"], ensure_ascii=False)
+
+
+# --- 6. the sun event asked, not the other one --------------------------------------------------------------------
+
+_T1 = "he quedado con un amigo a la salida del sol mañana para correr, ¿qué hora será?"
+
+
+@pytest.mark.parametrize(
+    ("asked", "events"),
+    [
+        (_T1, {"sunrise"}),  # t1, verbatim
+        ("i'm meeting a friend at sunrise tomorrow, what time is that?", {"sunrise"}),
+        ("voy a salir a correr al amanecer, ¿a qué hora es?", {"sunrise"}),
+        ("what time does the sun come up tomorrow", {"sunrise"}),
+        ("¿a qué hora amanece mañana?", {"sunrise"}),
+        ("quiero ver la puesta de sol hoy, what time?", {"sunset"}),
+        ("¿a qué hora se pone el sol?", {"sunset"}),
+        ("when does the sun set tomorrow", {"sunset"}),
+        ("a qué hora es el atardecer en Malibu", {"sunset"}),
+        ("sunrise and sunset times today", {"sunrise", "sunset"}),
+    ],
+)
+def test_the_sun_event_asked_is_read(asked: str, events: set[str]) -> None:
+    assert llm.weather_sun_events_asked(asked) == frozenset(events)
+
+
+def test_only_the_asked_event_of_the_asked_day_is_sent() -> None:
+    seen = llm._compose_situation_payload(_WEATHER, "es", _T1)["seen"]
+    assert seen == {
+        "location": "Curico", "region": "Region de Curico", "country": "Chile",
+        "tomorrow": {"date": "2026-09-25", "weekday": "viernes", "sunrise": "07:31"},
+    }
+    today = llm._compose_situation_payload(_WEATHER, "en", "what time is sunset today")["seen"]
+    assert today["today"] == {"date": "2026-09-24", "weekday": "jueves", "sunset": "19:44"}
+    assert "tomorrow" not in today
+    assert "temperatureC" not in llm._weather_answer_instruction(_T1, "es")
+
+
+@pytest.mark.parametrize(
+    ("asked", "reply", "language"),
+    [
+        (_T1, "Mañana el sol sale a las 07:31.", "es"),
+        (_T1, "Sale a las 7:31.", "es"),
+        ("i'm meeting a friend at sunrise tomorrow, what time is that?", "Tomorrow the sun rises at 07:31.", "en"),
+        ("quiero ver la puesta de sol hoy, what time?", "Hoy el sol se pone a las 19:44.", "es"),
+        ("when does the sun set tomorrow", "Tomorrow at 19:45.", "en"),
+    ],
+)
+def test_the_asked_sun_time_answers(asked: str, reply: str, language: str) -> None:
+    assert _weather_defect(reply, asked, language) == ""
+
+
+@pytest.mark.parametrize(
+    ("asked", "reply"),
+    [
+        (_T1, "Mañana se pone el sol a las 19:45."),  # t1, published: the other event
+        (_T1, "Mañana el sol sale a las 07:31 y se pone a las 19:45."),
+        (_T1, "Mañana el sol sale a las 07:33."),  # today's sunrise for tomorrow
+        ("¿a qué hora se pone el sol?", "Hoy el sol sale a las 07:33."),
+        ("when does the sun set tomorrow", "Tomorrow the sun rises at 07:31."),
+    ],
+)
+def test_the_other_sun_event_or_day_is_rejected(asked: str, reply: str) -> None:
+    assert _weather_defect(reply, asked) != ""
+    # Even given the whole read, the validator tells the other event apart.
+    whole = {"operation": "weather.current", "seen": _WEATHER_SEEN}
+    assert llm._weather_fact_defect(reply, whole, asked) in {"missing_state", "extra_claim"}

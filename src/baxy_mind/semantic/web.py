@@ -340,14 +340,21 @@ _WEATHER_AMOUNT = (
     r"\b(?:over|above|under|below|more\s+than|less\s+than|mas\s+de|menos\s+de|arriba\s+de|encima\s+de|"
     r"sobre|bajo|por\s+(?:encima|debajo)\s+de)\s+(?:\w+\s+){1,3}?(?:grados|degrees)\b"
 )
-_WEATHER_SUN_TIME = (
+# Tanda 6b «a la salida del sol mañana… ¿qué hora será?» was answered with tomorrow's sunset: which sun event is
+# asked, the rising or the setting, is read apart.
+_WEATHER_SUNRISE = (
     # Tanda 4c «la hora exacta de la puesta de sol en Badalona»: «de sol» says the same as «del sol».
-    r"\b(?:(?:salida|puesta|caida|entrada)\s+del?\s+sol|amanecer|amanece|atardecer|atardece|anochecer|anochece|"
-    # Tanda 6 «cuando se ponga el sol mañana»: the subjunctive says the same sun time.
-    r"oscurece|ocaso|amanezca|atardezca|anochezca|oscurezca|"
-    r"(?:se\s+(?:pone|ponga|oculta|oculte|esconde|esconda)|sale|salga)\s+el\s+sol|sunrise|sunset|dawn|dusk|"
-    r"(?:the\s+)?sun\s+(?:rise|set|go\s+down|come\s+up))\b"
+    r"\b(?:salida\s+del?\s+sol|amanecer|amanece|amanezca|(?:sale|salga)\s+el\s+sol|sunrise|dawn|"
+    r"(?:the\s+)?sun\s+(?:rise|comes?\s+up))\b"
 )
+_WEATHER_SUNSET = (
+    r"\b(?:(?:puesta|caida|entrada)\s+del?\s+sol|atardecer|atardece|anochecer|anochece|"
+    # Tanda 6 «cuando se ponga el sol mañana»: the subjunctive says the same sun time.
+    r"oscurece|ocaso|atardezca|anochezca|oscurezca|"
+    r"se\s+(?:pone|ponga|oculta|oculte|esconde|esconda)\s+el\s+sol|sunset|dusk|"
+    r"(?:the\s+)?sun\s+(?:sets?|goes?\s+down))\b"
+)
+_WEATHER_SUN_TIME = f"(?:{_WEATHER_SUNRISE}|{_WEATHER_SUNSET})"
 _WEATHER_SUN_ASK = r"\b(?:hora|horas|horario|cuando|when|time|times)\b"
 # A time the forecast is asked about. Today and tomorrow are read; a later day is answered with what is read.
 WEATHER_WHEN = (
@@ -381,6 +388,16 @@ def weather_asks_sun_time(text: str) -> bool:
     """The weather question asks when the sun rises or sets («la caída del sol», «sunset»)."""
 
     return _has(_fold(text), _WEATHER_SUN_TIME)
+
+
+def weather_sun_events_asked(text: str) -> frozenset[str]:
+    """The sun events the question asks about: ``sunrise``, ``sunset``, both, or none."""
+
+    folded = _fold(text)
+    return frozenset(
+        event for event, pattern in (("sunrise", _WEATHER_SUNRISE), ("sunset", _WEATHER_SUNSET))
+        if _has(folded, pattern)
+    )
 
 
 # Owner 2026-09-24 «tiene que ser conciso… que te responda de una»; tanda-05 «¿Cuál es la tasa de humedad de hoy?»

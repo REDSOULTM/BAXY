@@ -47,7 +47,7 @@ from .semantic.network import (
 )
 from .semantic.web import (
     weather_asks_later_day, weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
-    weather_asks_coming_days, weather_asks_week,
+    weather_asks_coming_days, weather_asks_week, weather_sun_events_asked,
 )
 from .semantic.temporal import _DAY_WORDS, clock_elsewhere
 from .semantic.patterns import echo_mode_request
@@ -8772,12 +8772,13 @@ def _weather_focus(user_text: str, english: bool) -> str:
             "seen.airQuality es null, di que no se pudo leer la calidad del aire."
         )
     if weather_asks_sun_time(user_text):
+        # Tanda 6b: only the asked event of the asked day is sent (_project_weather_read).
         return (
-            "The person asked when the sun rises or sets: give that time for the day asked "
-            "(tomorrow's for tomorrow or a later day)."
+            "The person asked when the sun rises or sets: give the sun time sent, with its event (sunrise is "
+            "when the sun rises, sunset when it sets) and its day (tomorrow's for tomorrow or a later day)."
             if english
-            else "La persona preguntó a qué hora sale o se pone el sol: da esa hora del día preguntado "
-            "(la de mañana para mañana o un día posterior)."
+            else "La persona preguntó a qué hora sale o se pone el sol: da la hora del sol enviada, con su evento "
+            "(sunrise es cuando sale, sunset cuando se pone) y su día (la de mañana para mañana o un día posterior)."
         )
     if "uv" in measures:
         # Uso real tanda 6 «Dime el UV index»: the index now and the day's peak are both read.
@@ -8874,6 +8875,15 @@ def _project_weather_read(seen: dict, user_text: str) -> dict:
 
     if asks_own_place(user_text):
         return {key: seen[key] for key in _OWN_PLACE_FIELDS if key in seen}
+    if weather_asks_sun_time(user_text):
+        # Tanda 6b «a la salida del sol mañana… ¿qué hora será?» → «Mañana se pone el sol a las 19:45.»: given both
+        # days and both events, the narrator told the other one. The asked event of the asked day is sent.
+        day = "tomorrow" if _weather_asks_tomorrow(user_text) else "today"
+        events = weather_sun_events_asked(user_text) or frozenset(("sunrise", "sunset"))
+        block = seen.get(day) if isinstance(seen.get(day), dict) else {}
+        projected = {key: seen[key] for key in ("location", "region", "country") if key in seen}
+        projected[day] = {key: block[key] for key in ("date", "weekday", *sorted(events)) if key in block}
+        return projected
     projected = dict(seen)
     if not weather_asks_coming_days(user_text):
         projected.pop("laterDays", None)
@@ -8891,12 +8901,13 @@ def _weather_answer_instruction(user_text: str, language: str) -> str:
     """
 
     english = language == "en"
-    if asks_own_place(user_text):
-        # Tanda 6b: only the place is sent (_project_weather_read); nothing of the weather is described.
+    if asks_own_place(user_text) or weather_asks_sun_time(user_text):
+        # Tanda 6b: only the place, or only the asked sun time, is sent (_project_weather_read); no other field of
+        # the weather is described.
         return _weather_focus(user_text, english) + (
-            " Answer only that, in one short sentence, without naming how the place was found."
+            " Answer only that, in one short sentence, without naming how it was read."
             if english
-            else " Contesta sólo eso, en una oración corta, sin nombrar cómo se supo el lugar."
+            else " Contesta sólo eso, en una oración corta, sin nombrar cómo se leyó."
         )
     fields = (
         "seen is the weather of seen.location (seen.country) now: temperatureC, apparentC (feels like), "
@@ -9055,11 +9066,23 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     if sun_time:
         # Uso real tanda 2 «el horario de la caída del sol para mañana»: the asked
         # day's sun time is the answer (tomorrow's for tomorrow or a later day).
+        # Tanda 6b: the event asked (sunrise or sunset) is the answer; the other event's time is another fact.
         block = tomorrow if asks_tomorrow else seen.get("today")
-        clocks = [block.get(key) for key in ("sunrise", "sunset")] if isinstance(block, dict) else []
+        events = weather_sun_events_asked(user_text or "") or frozenset(("sunrise", "sunset"))
+
+        def said(clock: object) -> bool:
+            return isinstance(clock, str) and bool(clock) and (clock in text or clock.lstrip("0") in text)
+
+        clocks = [block.get(key) for key in events] if isinstance(block, dict) else []
         clocks = [clock for clock in clocks if isinstance(clock, str) and clock]
-        if clocks and not any(clock in text or clock.lstrip("0") in text for clock in clocks):
+        if clocks and not any(said(clock) for clock in clocks):
             return "missing_state"
+        if any(
+            said(day.get(other)) and day.get(other) not in clocks
+            for day in (seen.get("today"), tomorrow) if isinstance(day, dict)
+            for other in {"sunrise", "sunset"} - events
+        ):
+            return "extra_claim"
         return ""
     if "uv" in narrow_measures:
         # Uso real tanda 6 «Dime el UV index»: the index now or the peak of the day asked is the answer.
