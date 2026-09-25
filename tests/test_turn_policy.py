@@ -20,6 +20,7 @@ from baxy_mind import __main__ as mind_main
 from baxy_mind import effect_intent as effect_intent_module
 from baxy_mind import llm as llm_module
 from baxy_mind import protocol
+from baxy_mind.semantic import conversation as semantic_conversation
 from baxy_mind.first_signal import PendingTurnSignal
 from baxy_mind.__main__ import (
     _recovery_question_is_valid,
@@ -184,10 +185,12 @@ def test_invalid_clarification_prose_is_reworded_without_redeciding_the_intent(
     repaired: str,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    # Exercise a model decision rather than the earlier bare-reference shortcut.
-    monkeypatch.setattr(
-        mind_main, "_standalone_deictic_request", lambda *_args, **_kwargs: False,
-    )
+    # Exercise a model decision rather than the earlier bare-reference shortcut
+    # (read in semantic.conversation and consumed by the turn).
+    for module in (mind_main, semantic_conversation):
+        monkeypatch.setattr(
+            module, "_standalone_deictic_request", lambda *_args, **_kwargs: False,
+        )
     tool = _goal03c_catalog_tool("app.close")
     calls: list[str] = []
 

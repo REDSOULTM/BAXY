@@ -26,7 +26,9 @@ import re
 from dataclasses import dataclass
 
 from .grammar import _COVERAGE_ACTION_HEAD, _head_is
+from .levels import followup_antecedent
 from .normalize import alternation, fold, spelled_out
+from .patterns import datetime_followup_antecedent
 
 _WORD = re.compile(r"[a-z0-9ñ]+")
 
@@ -1183,3 +1185,49 @@ class DialogueState:
         named = ", ".join(nouns[:-1]) + (" y " if asked.group("es") else " and ") + nouns[-1] if len(nouns) > 1 else nouns[0]
         return f"{said.said[: asked.end()]} {named}{said.said[asked.end():]}"
 
+
+def _previous_user_request(history: list[object], current_request: str) -> str | None:
+    """Read the user antecedent, preserving contiguous clock continuations."""
+    previous = history
+    if (
+        history
+        and isinstance(history[-1], dict)
+        and history[-1].get("role") == "user"
+        and history[-1].get("content") == current_request
+    ):
+        previous = history[:-1]
+    requests = [
+        str(item.get("content") or "")
+        for item in reversed(previous)
+        if isinstance(item, dict) and item.get("role") == "user"
+    ]
+    if not requests:
+        return None
+    return (
+        datetime_followup_antecedent(current_request, requests)
+        or followup_antecedent(current_request, requests)
+        or requests[0]
+    )
+
+
+def _history_has_pending_clarification(
+    history: object,
+    pending_clarification: bool | None = None,
+) -> bool:
+    """Use shell state; punctuation is only a legacy history-only hint."""
+
+    if isinstance(pending_clarification, bool):
+        return pending_clarification
+
+    if not isinstance(history, list):
+        return False
+    for item in reversed(history):
+        if (
+            not isinstance(item, dict)
+            or item.get("role") != "assistant"
+            or not isinstance(item.get("content"), str)
+        ):
+            continue
+        content = str(item["content"]).strip()
+        return bool(content) and content.rstrip().endswith("?")
+    return False
