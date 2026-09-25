@@ -75,6 +75,8 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | M1: decisor en contexto (V2) + Qwen3.5-4B, 12 288/ranura | 75,5 % | 87,9 % | 70,0 % | **93,5 % (70,3 %)** | 81,5 % | 24 | **no entra**: el registro real cae (quejas y charla con historial convertidas en acciones: «baxy, cierra baxy» → cerrar todas las ventanas) |
 | M1b: V5 — con historial deciden los lectores de conversación (charla, quejas, social, límites) y el decisor el resto | 73,9 % | 80,3 % | 70,4 % | **94,9 % (82,4 %)** | — | 24 | **no entra** (capa A): catálogo opaco («ponme daredevil en disney» → límite, «tirame cuánta memoria tengo» → «no tengo acceso»), «buscá recetas de pizza» como charla |
 | M2: + catálogo del decisor en lenguaje llano (dato de sala limpia, 204 líneas) + lo que el catálogo sí hace se hace + «buscar» es web.search | **77,1 %** | **86,4 %** | 72,7 % | 95,4 % (83,5 %) | — | 21 | no entra todavía (capa A 95,4 < 96,0): quejas con historial largo convertidas en acción; argumentos: 7–8 turnos por conjunto con la decisión bien (lector de lugar del clima, recordatorios) |
+| M3: + política «un comentario o una queja no es un pedido», «las opiniones se buscan sin preguntar de dónde», «parar» en media.control | 76,7 % | 86,4 % | 71,5 % | 95,2 % (82,4 %) | — | 22 | **retirado**: no mueve nada (ley 2) |
+| V6 (simulado): con historial, los mensajes autónomos según `dialogue.dependency` por la tubería vieja | 180/253 | 46/66 | 179/260 | registro real 84/95 (M2: 80) | — | — | **descartado**: el detector da por autónomos 57–70 seguimientos reales |
 
 ## Bitácora
 
