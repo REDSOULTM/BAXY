@@ -58,7 +58,7 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | 742 sólo-decisión contra S8 | **14** decisiones distintas | `semantic_replay.py diff lit-s8 lit-fin2` |
 | reserva MASSIVE (2 757) | **82,2 %** (2 265; decisión p50 0,93 s) | `score_big.py big-hold hold-fin2` |
 | guion del dueño (60) / held-out (30) | **46/60** (+6 por revisar) / **24/30** — ambos bajo el «sin retroceder» del goal (53, 29): hay que recuperarlos | `semantic_replay.py summary --out finc2` |
-| cien-103 | 100 turnos publicados; adjudicación contra cien-101 en curso | conductor |
+| cien-103 | **95/100** (94 iguales + 1 mejor; mal: 008, 027, 096 pedido sin referente → límite falso, 037 «no lances Steam», 084 memoria tras session.new) | conductor; adjudicación contra cien-101 |
 
 ## Bitácora
 
