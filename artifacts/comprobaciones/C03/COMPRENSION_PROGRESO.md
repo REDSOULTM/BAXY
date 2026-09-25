@@ -31,6 +31,17 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
   (`…\6f29a6a5-…\scratchpad\`: `lit-fin2.jsonl`, `layers-fin2.jsonl`, `uso\hold-fin2.jsonl`, `finc2\`, `cien-103`,
   `uso\fin2-NN.out`).
 
+## Base del conjunto de regresión (HEAD de partida, `src` = b34c3f39)
+
+| medida | base | cómo |
+|---|---|---|
+| capa A (768) | **96,5 %** (741) · registro real 90,1 % · 742 97,3 % | `semantic_corpus.py score` sobre `lit-fin2` + `layers-fin2`, referencia S8 |
+| capa B (20) / capa C (1 000) | 45,0 % / 54,2 % | ídem |
+| 742 sólo-decisión contra S8 | **14** decisiones distintas | `semantic_replay.py diff lit-s8 lit-fin2` |
+| reserva MASSIVE (2 757) | en curso | `score_big.py big-hold hold-fin2` |
+| guion del dueño (60) / held-out (30) | en curso (ventana) | `semantic_replay.py conv` |
+| cien-103 | en curso | conductor |
+
 ## Bitácora
 
 - 2026-09-25 12:0x — F0: tag, ficheros de estado. Verificación anterior en curso (capas A/B/C).
