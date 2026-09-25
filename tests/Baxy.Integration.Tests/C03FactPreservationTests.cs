@@ -237,6 +237,29 @@ public sealed class C03FactPreservationTests
         Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "make a presentation about dogs with 5 slides"), Is.Null);
     }
 
+    // Uso real tanda 9 «¿me ha llegado algún correo nuevo?» without Outlook: «No se puede verificar…» states the
+    // failure (twin of the mind's _FAILURE_MARKERS); inventing that no mail came does not.
+    [TestCase("No se puede verificar si hay correos nuevos porque Outlook no está configurado en este PC.", true)]
+    [TestCase("No se puede comprobar tu correo: Outlook no está configurado en este PC.", true)]
+    [TestCase("No se verifica el correo porque Outlook no está configurado en este PC.", true)]
+    [TestCase("No he recibido correos nuevos porque Outlook no está configurado en este PC.", false)]
+    public void UncheckableMailIsAFailureStatement(string reply, bool accepted)
+    {
+        string failed = new JsonObject
+        {
+            ["kind"] = "operation",
+            ["operation"] = "email.latest.read",
+            ["polarity"] = "failure",
+            ["verified"] = false,
+            ["succeeded"] = false,
+            ["error"] = "outlook_profile_not_configured",
+        }.ToJsonString();
+        string facts = MissionNarration.CreateFailureMessage([], failed);
+        UserMessageDraft draft = UserMessagePolicy.Create(facts, UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+        string? reason = UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "¿me ha llegado algún correo nuevo?");
+        Assert.That(reason is null, Is.EqualTo(accepted), reason);
+    }
+
     // DOWNLOAD2047: the file just written and the source host are observed data, not codes.
     [Test]
     public void DownloadedFileNameIsObservedVocabulary()

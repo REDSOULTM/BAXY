@@ -1992,7 +1992,8 @@ internal static class UserMessagePolicy
             // PPTX2051: «the opening is not confirmed» / «cannot be verified» say the failure entire.
             + @"|\b(?:(?:is|was|were|could)\s+not\s+(?:be\s+)?(?:confirmed|verified)|cannot\s+be\s+(?:confirmed|verified)|not\s+confirmed|unconfirmed|unverified|no\s+(?:esta|quedo|queda)\s+confirmad[oa]|sin\s+confirmar)\b"
             // WINGET2083: «no se puede confirmar», «no se confirma la instalación».
-            + @"|\b(?:no\s+(?:se\s+)?(?:puede|pude|puedo|podemos|logro)\s+confirmar|no\s+se\s+confirma)\b",
+            // Tanda 9: «no se puede verificar si hay correos nuevos» (twin of the mind's _FAILURE_MARKERS).
+            + @"|\b(?:no\s+(?:se\s+)?(?:puede|pude|puedo|podemos|logro)\s+(?:confirmar|verificar|comprobar)|no\s+se\s+(?:confirma|verifica|comprueba))\b",
             RegexOptions.CultureInvariant);
     }
 

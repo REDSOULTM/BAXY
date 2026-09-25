@@ -5113,7 +5113,10 @@ _FAILURE_MARKERS = re.compile(
     r"not\s+confirmed|unconfirmed|unverified|no\s+(?:est[aá]|qued[oó]|queda)\s+confirmad[oa]|sin\s+confirmar|"
     # WINGET2083 «instala 7-Zip»: «no se puede confirmar que se haya instalado»
     # and «no se confirma la instalación» say the failure as plainly.
-    r"no\s+(?:se\s+)?(?:puede|pude|puedo|podemos|logro|logr[oó])\s+confirmar|no\s+se\s+confirma)",
+    # Tanda 9 «¿me ha llegado algún correo nuevo?» without Outlook: «No se puede verificar si hay correos nuevos
+    # porque Outlook no está configurado» says it as plainly, and the turn ended in ⚠ after three drafts.
+    r"no\s+(?:se\s+)?(?:puede|pude|puedo|podemos|logro|logr[oó])\s+(?:confirmar|verificar|comprobar)|"
+    r"no\s+se\s+(?:confirma|verifica|comprueba))",
     re.IGNORECASE,
 )
 _NEGATED_FAILURE = re.compile(

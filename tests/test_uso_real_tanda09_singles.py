@@ -261,3 +261,42 @@ def test_a_page_describing_itself_is_page_voice(asked: str, answer: str, results
 )
 def test_an_answer_or_a_not_found_is_not_page_voice(asked: str, answer: str, results: list[dict]) -> None:
     assert llm._payload_fact_defect(answer, _search_payload(results), asked) != "search_report_page_voice"
+
+
+# ------------------------------------------------------------------ «no se puede verificar» is a failure said
+
+
+_NO_OUTLOOK = json.dumps(
+    {
+        "kind": "failure", "polarity": "failure", "cause": "mission_failed", "stepCount": 0, "steps": [],
+        "reason": {"kind": "operation", "operation": "email.latest.read", "polarity": "failure", "verified": False,
+                   "succeeded": False, "error": "outlook_profile_not_configured"},
+    }
+)
+
+
+@pytest.mark.parametrize(
+    "draft",
+    [
+        "No se puede verificar si hay correos nuevos porque Outlook no está configurado en este PC.",
+        "No se puede comprobar tu correo: Outlook no está configurado en este PC.",
+        "No pude verificar si te llegó correo, porque Outlook no está configurado aquí.",
+        "No se verifica el correo porque Outlook no está configurado en este PC.",
+    ],
+)
+def test_a_check_that_cannot_be_made_is_a_failure_said(draft: str) -> None:
+    assert llm.compose_visible_defect(draft, "failure", "¿me ha llegado algún correo nuevo?",
+                                      {"situation": _NO_OUTLOOK}) == ""
+
+
+@pytest.mark.parametrize(
+    "draft",
+    [
+        # Inventing that no mail came is not the failure.
+        "No, no ha llegado ningún correo nuevo porque en este PC no está configurado Outlook.",
+        "No he recibido correos nuevos porque Outlook no está configurado en este PC.",
+    ],
+)
+def test_inventing_the_mailbox_state_is_still_not_the_failure(draft: str) -> None:
+    assert llm.compose_visible_defect(draft, "failure", "¿me ha llegado algún correo nuevo?",
+                                      {"situation": _NO_OUTLOOK}) == "missing_failure"
