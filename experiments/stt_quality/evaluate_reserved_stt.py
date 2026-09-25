@@ -132,8 +132,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # uso real: 6b, menos llamadas, selector de un token
 # uso real: contexto, sueltos 7, latencia 7, escritorio
 # uso real ola 12: diálogo vivo, no inventar, vocabulario
+# uso real ola 13: seguimientos
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "c825d30de04dbf298ae1e6fca09cc3076f4472085aea13c1c32aaaf1b729dbf7"
+    "eb412cfe53e860b85063188684026da4af1ef46aa01cdbc578e5dd099fb77bd9"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
