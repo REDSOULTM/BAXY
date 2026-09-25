@@ -2413,6 +2413,64 @@ def _title_fold(value: object) -> str:
     )
 
 
+# Operations whose observed title is a played or loaded media title.
+_MEDIA_TITLE_OPERATIONS = frozenset({
+    "media.status", "media.control", "media.play.youtube", "media.play.query", "media.play.exact",
+})
+# Those whose title may be named by its names (MUSIC1749, tanda 6b); the local YouTube playback keeps quoting it whole.
+_MEDIA_TITLE_BY_PARTS = frozenset({"media.status", "media.play.query", "media.play.exact"})
+_MEDIA_SITE_SUFFIX = re.compile(r"\s+[-—–|]\s+youtube(?:\s+music)?\s*$", re.IGNORECASE)
+_MEDIA_TITLE_DECORATION = re.compile(r"\([^()]*\)|\[[^\[\]]*\]")
+_MEDIA_TITLE_PART = re.compile(r"\s+[-—–|]\s+")
+_MEDIA_TITLE_PERFORMERS = re.compile(r"\s*[&,+/]\s*|\s+(?:feat\.?|ft\.?|featuring|x|y|and|con|with)\s+", re.IGNORECASE)
+# «qué persona hizo esta canción», «who sings this», «cómo se llama esta canción»: who made it or which it is.
+_MEDIA_IDENTITY_QUESTION = re.compile(
+    r"\b(?:quien(?:es)?|who|whose|que\s+(?:persona|artista|cantante|grupo|banda|cancion|tema)|"
+    r"(?:what|which)\s+(?:artist|singer|band|song|track)|como\s+se\s+llama|what(?:'s|\s+is)\s+(?:this|that)\s+"
+    r"(?:song|track)|name\s+of\s+(?:this|that|the)\s+(?:song|track)|autor|author)\b"
+)
+
+
+def _media_title_names(title: str) -> list[str]:
+    """The names in a played title: its parts between « - » without the tab's site or bracketed decoration
+    («(Official Video 1987 Remastered)»), each performer apart («Freddie Mercury & Montserrat Caballé»)."""
+
+    video = _MEDIA_SITE_SUFFIX.sub("", title).strip() or title
+    return [
+        name for part in _MEDIA_TITLE_PART.split(_MEDIA_TITLE_DECORATION.sub(" ", video))
+        for name in _MEDIA_TITLE_PERFORMERS.split(part) if _title_fold(name).split()
+    ]
+
+
+def _title_words_pattern(value: str) -> str | None:
+    words = _title_fold(value).split()
+    return r"(?<!\w)" + r"\s+".join(re.escape(word) for word in words) + r"(?!\w)" if words else None
+
+
+def _names_media_title(text: str, title: str, *, by_parts: bool) -> bool:
+    """The draft names the observed media title: all its words (MUSIC1555 spacing, MUSIC1773 quotes and tanda 5b
+    emoji blind), without the tab's « - YouTube» too; or, ``by_parts``, every name in it (MUSIC1749 «"Bohemian
+    Rhapsody" de Queen», tanda 6b «Es Barcelona, de Freddie Mercury y Montserrat Caballé»)."""
+
+    folded = _title_fold(text)
+    whole = [_title_words_pattern(title), _title_words_pattern(_MEDIA_SITE_SUFFIX.sub("", title))]
+    if any(pattern and re.search(pattern, folded) for pattern in whole):
+        return True
+    names = [_title_words_pattern(name) for name in _media_title_names(title)] if by_parts else []
+    return bool(names) and all(pattern and re.search(pattern, folded) for pattern in names)
+
+
+def _without_media_title(text: str, title: str) -> str:
+    """``text`` folded, without the observed title's words, whole or by its names."""
+
+    folded = _title_fold(text)
+    for value in (title, _MEDIA_SITE_SUFFIX.sub("", title), *_media_title_names(title)):
+        pattern = _title_words_pattern(value)
+        if pattern:
+            folded = re.sub(pattern, " ", folded)
+    return folded
+
+
 def _repeats_prompt(text: str, prompt: str, window: int = 5) -> bool:
     """Whether ``text`` carries ``window`` consecutive words of the prompt it was written from."""
 
@@ -7067,10 +7125,14 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             and bool(observed["sourceAppUserModelId"].strip())
             and observed.get("playbackStatus") in {"playing", "paused", "stopped"}
         ):
+            # Tanda 6b: told to «identify the observed title», the draft opened «El título observado es…»; a title
+            # like «Artist - Song (Official Video) - YouTube» names the song and who performs it.
             bits.append(
-                "Identify the observed title and artist when supplied, and state "
-                "playbackStatus. A loaded track is not evidence that it is playing: "
-                "paused or stopped means it is not playing. Do not repeat the "
+                "Answer with seen.title and seen.artist when supplied: a title like «Artist - Song (Official "
+                "Video) - YouTube» names the song and who performs it, so say those names as a person would, "
+                "never calling it a title that was observed. When the question asks what is playing, say "
+                "whether it plays, is paused or stopped (seen.playbackStatus). A loaded track is not evidence "
+                "that it is playing: paused or stopped means it is not playing. Do not repeat the "
                 "question's playing premise as a fact or claim PC-wide silence. "
                 "If no session or metadata was observed, report only that scope."
             )
@@ -10799,6 +10861,15 @@ def compose_visible_defect(
         return "internal_code"
     if "el mensaje es" in stripped.casefold():
         return "internal_code"
+    # Tanda 6b «El título observado es "…". El estado de reproducción es pausado.»: the words the prompt uses for a
+    # read are not the person's; the song is named and its state said as a person would.
+    if re.search(
+        r"\b(?:t[ií]tulo|artista|estado)\s+observad[oa]s?\b|\bobserved\s+(?:title|artist|state|playback)\b|"
+        r"\bestado\s+de\s+(?:la\s+)?reproducci[oó]n\b|\bplayback\s*status\b",
+        stripped,
+        re.IGNORECASE,
+    ):
+        return "internal_code"
     # Nombrar un campo del contrato es jerga: «la situación.greeting».
     if (
         re.search(
@@ -12190,14 +12261,9 @@ def compose_visible_defect(
             title_named = title.casefold() in folded or re.search(
                 r"\s+".join(re.escape(part) for part in _title_fold(title).split()), _title_fold(stripped)
             ) is not None or (
-                # Tanda 5b: «… | Seré Weón? 👀 - YouTube» named without « - YouTube»: the tab adds the site's name,
-                # the video is the rest.
-                operation == "media.play.youtube"
-                and (video := re.sub(r"\s+[-—–]\s+youtube\s*$", "", title, flags=re.IGNORECASE)) != title
-                and re.search(
-                    r"\s+".join(re.escape(part) for part in _title_fold(video).split()),
-                    _title_fold(stripped),
-                ) is not None
+                # Tanda 5b / 6b: a played title named without the tab's « - YouTube» or by every name in it.
+                operation in _MEDIA_TITLE_OPERATIONS
+                and _names_media_title(stripped, title, by_parts=operation in _MEDIA_TITLE_BY_PARTS)
             ) or (
                 # INSTALL1619: the model wrote «Batman: Arkham Knight» for the
                 # library title «batman arkham knight»; punctuation between the
@@ -12207,17 +12273,6 @@ def compose_visible_defect(
                     r"[\s:,\-–—.]+".join(re.escape(part) for part in _reading_fold(title).split()),
                     _reading_fold(stripped),
                 ) is not None
-            ) or (
-                # MUSIC1749 «pon Bohemian Rhapsody en Spotify»: the client reports
-                # «Queen - Bohemian Rhapsody»; a draft that names every part of
-                # that title («"Bohemian Rhapsody" de Queen») names what plays.
-                operation in {"media.play.query", "media.play.exact"}
-                and " - " in title
-                and all(
-                    re.search(r"\s+".join(re.escape(word) for word in _title_fold(part).split()), _title_fold(stripped)) is not None
-                    for part in title.split(" - ")
-                    if _title_fold(part).split()
-                )
             )
             if not title_named or (
                 operation != "media.status" and not verified_media_transport
@@ -12275,31 +12330,11 @@ def compose_visible_defect(
             playback_text = stripped
             for field in ("title", "artist"):
                 name = observed_dict.get(field)
-                if field == "title" and operation == "media.play.youtube" and isinstance(name, str):
-                    # Tanda 5b: the tab's « - YouTube» is the site's name, not the video's.
-                    name = re.sub(r"\s+[-—–]\s+youtube\s*$", "", name, flags=re.IGNORECASE) or name
                 if isinstance(name, str) and name.strip():
-                    # MUSIC1555: YouTube titles carry doubled spaces («Lofi  Study»)
-                    # that the draft collapses; any whitespace run matches one.
-                    # MUSIC1773: quotation marks inside a title («Op. 125 "Choral"»)
-                    # are typography, straight or curly; the words are the name.
-                    pattern = r"(?<!\w)" + r"\s+".join(
-                        re.escape(part) for part in _title_fold(name).split()
-                    ) + r"(?!\w)"
-                    if not re.search(pattern, _title_fold(stripped), re.IGNORECASE):
-                        # MUSIC1749 «pon Bohemian Rhapsody en Spotify»: the client
-                        # reports «Queen - Bohemian Rhapsody»; naming every part
-                        # («"Bohemian Rhapsody" de Queen») names what plays.
-                        parts = [
-                            r"(?<!\w)" + r"\s+".join(re.escape(word) for word in _title_fold(part).split()) + r"(?!\w)"
-                            for part in name.split(" - ") if _title_fold(part).split()
-                        ] if operation in {"media.play.query", "media.play.exact"} and " - " in name else []
-                        if not parts or not all(re.search(part, _title_fold(stripped), re.IGNORECASE) for part in parts):
-                            return "missing_name"
-                        for part in parts:
-                            playback_text = re.sub(part, "", _title_fold(playback_text), flags=re.IGNORECASE)
-                        continue
-                    playback_text = re.sub(pattern, "", _title_fold(playback_text), flags=re.IGNORECASE)
+                    if not _names_media_title(stripped, name, by_parts=operation in _MEDIA_TITLE_BY_PARTS):
+                        return "missing_name"
+                    # The title's own words («Playing God», «Stop») are no claim about the playback.
+                    playback_text = _without_media_title(playback_text, name)
             playback = observed_dict.get("playbackStatus")
             if playback in {"playing", "paused", "stopped"}:
                 assertions = list(re.finditer(
@@ -12330,7 +12365,12 @@ def compose_visible_defect(
                         return "reversed_result"
                     if state == playback or (state == "playing" and assertion.group("negative")):
                         names_observed_state = True
-                if not names_observed_state:
+                # Tanda 6b «qué persona hizo esta canción que está sonando en la radio» (paused): who made it or
+                # which song it is is answered by the title; the state is then not owed, and a contrary one
+                # still is reversed above.
+                if not names_observed_state and not (
+                    operation == "media.status" and _MEDIA_IDENTITY_QUESTION.search(_reading_fold(user_text or ""))
+                ):
                     return "missing_state"
         if (
             operation in {"audio.app.volume.adjust", "audio.app.volume.set"}
@@ -12479,19 +12519,17 @@ def compose_visible_defect(
                 flags=re.IGNORECASE,
             )
         if (
-            operation in {"media.play.youtube", "media.play.query", "media.play.exact"}
+            operation in _MEDIA_TITLE_OPERATIONS
             and situation.get("verified") is True
             and situation.get("succeeded") is True
         ):
             # Tanda 5b «busca podcast y reprodúce lo»: the playing video was «… | Seré Weón? 👀 - YouTube»; its «?»
             # is the title's, not BAXY asking, and all three drafts died on it. Written without the tab's
-            # « - YouTube», it is the same title.
+            # « - YouTube», or by its names, it is the same title (tanda 6b: any observed media title).
             question_text = without_observed_names(question_text, situation)
             played = observed_dict.get("title") if isinstance(observed_dict, dict) else None
-            if isinstance(played, str) and (
-                video := re.sub(r"\s+[-—–]\s+youtube\s*$", "", played, flags=re.IGNORECASE).strip()
-            ):
-                question_text = _title_fold(question_text).replace(_title_fold(video), " ")
+            if isinstance(played, str) and played.strip():
+                question_text = _without_media_title(question_text, played)
         if (
             operation == "web.search"
             and situation.get("verified") is True

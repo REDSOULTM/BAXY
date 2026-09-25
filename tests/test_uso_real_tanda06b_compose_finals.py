@@ -12,6 +12,13 @@ controls that keep a false fact out.
    extra_claim: the narrator got the whole weather read. The place asked alone sends only the place fields; the
    validator stays, and a weather draft is told the place focus. Owners: llm._project_weather_read,
    _weather_answer_instruction, _weather_fact_defect, the invented_number hint.
+3. t29 «qué persona hizo esta canción que está sonando en la radio» (media.status of a paused YouTube tab «Freddie
+   Mercury & Montserrat Caballé - Barcelona (…) - YouTube») → «El título observado es…» (missing_name), then a
+   failure. The « - YouTube» suffix and the emoji-blind title (tanda 5b, media.play.youtube only) hold for every
+   observed media title; the status read names it by its names (parts, performers, no bracketed decoration); who
+   made it or which song it is does not owe the state; and the prompt's «observed title» voice is not published.
+   Owners: llm._names_media_title / _without_media_title / _MEDIA_IDENTITY_QUESTION, compose_visible_defect, the
+   media.status instruction.
 4. t39 «cuál es el pronóstico del tiempo para la semana» → «Durante la semana… entre 12,5 °C y 21 °C… del 2% al
    6%…» died as missing_state for not naming the place, then the turn ran out of time; and its ranges were false (the
    lowest minimum was 12, the rain went from 0). The week is summed up by the mind (seen.week), is answered without
@@ -229,6 +236,86 @@ def test_the_place_prompt_carries_no_weather_and_a_weather_draft_is_told_the_pla
     first = json.dumps(client.payloads[0]["messages"], ensure_ascii=False)
     assert "humidityPercent" not in first and "temperatureC" not in first
     assert "nothing about the weather" in json.dumps(client.payloads[1]["messages"], ensure_ascii=False)
+
+
+# --- 3. who made the song: the names in the observed title --------------------------------------------------------
+
+_T29 = "qué persona hizo esta canción que está sonando en la radio"
+_BARCELONA = "Freddie Mercury & Montserrat Caballé - Barcelona (Original David Mallet Video 1987 Remastered) - YouTube"
+_MEDIA = {
+    "kind": "operation", "operation": "media.status", "polarity": "success", "verified": True, "succeeded": True,
+    "observed": {
+        "version": 1, "provider": "youtube", "sourceAppUserModelId": "BAXY YouTube (Edge)", "title": _BARCELONA,
+        "titleObserved": True, "artist": "", "finalUrl": "https://www.youtube.com/watch?v=0123456789a",
+        "playbackStatus": "paused", "authority": "youtube_cdp_video_read",
+    },
+}
+
+
+def _media_defect(reply: str, asked: str) -> str:
+    payload = llm._compose_situation_payload(_MEDIA, "es", asked)
+    return llm.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(_MEDIA)}) or (
+        llm._payload_fact_defect(reply, payload, asked)
+    )
+
+
+@pytest.mark.parametrize(
+    ("asked", "reply"),
+    [
+        (_T29, "Es Barcelona, de Freddie Mercury y Montserrat Caballé."),
+        (_T29, "Es «Barcelona», de Freddie Mercury & Montserrat Caballé, y está en pausa."),
+        ("who sings this song", "That's Barcelona, by Freddie Mercury and Montserrat Caballé."),
+        ("quién canta this song?", "Barcelona, de Freddie Mercury con Montserrat Caballé."),
+        ("cómo se llama esta canción", "Se llama Barcelona, de Freddie Mercury y Montserrat Caballé."),
+        ("what's this song", "It's Barcelona by Freddie Mercury & Montserrat Caballé; it's paused."),
+        # Asked what plays, the paused state is said.
+        ("¿qué está sonando?", "Barcelona, de Freddie Mercury y Montserrat Caballé, está en pausa."),
+    ],
+)
+def test_the_names_in_the_title_answer_who_made_the_song(asked: str, reply: str) -> None:
+    assert _media_defect(reply, asked) == ""
+
+
+@pytest.mark.parametrize(
+    ("asked", "reply", "defect"),
+    [
+        # t29's three drafts, verbatim.
+        (_T29, 'El título observado es "Freddie Mercury & Montserrat Caballé - Barcelona (Original David Mallet Video '
+         '1987 Remastered)". El artista es Freddie Mercury y Montserrat Caballé. El estado de reproducción es pausado.',
+         "internal_code"),
+        (_T29, "No se identificó el artista de la canción observada. El estado de reproducción es pausado.",
+         "internal_code"),
+        (_T29, "No pude identificar al artista de la canción que está sonando en la radio.", "asserted_failure"),
+        # A name the title does not carry, or a part left out, is not the song.
+        (_T29, "Es Barcelona, de Queen.", "missing_name"),
+        (_T29, "Es de Freddie Mercury.", "missing_name"),
+        # The premise «está sonando» is not the observed pause.
+        (_T29, "Es Barcelona, de Freddie Mercury y Montserrat Caballé, y está sonando.", "reversed_result"),
+        # Asked what plays, the state is owed.
+        ("¿está sonando algo?", "Es Barcelona, de Freddie Mercury y Montserrat Caballé.", "missing_state"),
+    ],
+)
+def test_a_wrong_name_state_or_internal_voice_is_rejected(asked: str, reply: str, defect: str) -> None:
+    assert _media_defect(reply, asked) == defect
+
+
+def test_the_site_suffix_is_dropped_for_every_observed_media_title() -> None:
+    title = "Lofi Girl - beats to relax 😳 - YouTube"
+    # The local YouTube playback still quotes the whole title, without the tab's site and blind to emoji.
+    assert llm._names_media_title("Suena «Lofi Girl - beats to relax».", title, by_parts=False)
+    assert not llm._names_media_title("Suena beats to relax, de Lofi Girl.", title, by_parts=False)
+    # The status read and the music clients name it by its names.
+    assert llm._names_media_title("Suena beats to relax, de Lofi Girl.", title, by_parts=True)
+    assert not llm._names_media_title("Suena beats to relax.", title, by_parts=True)
+
+
+def test_the_media_prompt_does_not_call_the_title_observed() -> None:
+    client = Recorder(["Es Barcelona, de Freddie Mercury y Montserrat Caballé."])
+    reply = client.compose_user_message(_T29, "status", {"situation": json.dumps(_MEDIA)})
+    assert reply == "Es Barcelona, de Freddie Mercury y Montserrat Caballé."
+    prompt = json.dumps(client.payloads[0]["messages"], ensure_ascii=False)
+    assert "Identify the observed title" not in prompt
+    assert "never calling it a title that was observed" in prompt
 
 
 # --- 4. the week summed up briefly, with its true range ------------------------------------------------------------
