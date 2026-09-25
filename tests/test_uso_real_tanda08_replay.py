@@ -208,3 +208,20 @@ def test_only_the_kinds_this_conversation_set_are_named():
 def test_what_the_person_holds_after_a_list_is_not_the_alarms():
     state = _state(("anota en la lista del súper yerba", "task.create", None))
     assert state.listing_request("¿qué llevo ya?") is None
+
+
+# ---------------------------------------------------------------- 4. a list read, said as people say it
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "dale, léemela de nuevo la lista del súper",
+        "ok, repítemela otra vez la lista de compras",
+        "bueno, léeme otra vez mi lista de tareas",
+        "vale, dime otra vez la lista de la compra",
+        "léemelas nuevamente mis listas",
+    ],
+)
+def test_a_list_read_with_its_pronoun_again_or_an_opener_is_read(text):
+    assert _effects(text) in {("task.search",), ("task.list",)}

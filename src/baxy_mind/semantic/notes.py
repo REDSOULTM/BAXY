@@ -927,13 +927,17 @@ _LIST_INVENTORY = (
     # «check list»: the list said bare after the verb.
     r"(?:check|review|open|show|display|read|comprueba|revisa|abre|muestra|lee)\s+(?P<list>lista|list)",
 )
+_AGAIN = r"(?:otra\s+vez|de\s+nuevo|nuevamente)"
 _WHOLE_LIST_READ = (
     # Tanda 8 «¿qué llevo ya en la lista de la compra?» (the rewrite of «¿qué llevo ya?»): «ya», «hasta ahora».
     rf"que\s+(?:mas\s+)?(?:hay|tengo|queda|quedan|llevo|puse|anote|esta|estan)"
     rf"(?:\s+(?:ya|ahora|todavia|aun|hasta\s+ahora))?\s+(?:en|dentro\s+de)\s+{_OWN_LIST}",
     rf"(?:que|cual)\s+es\s+(?:lo|la\s+(?:cosa|tarea))\s+(?:siguiente|proxim[oa]|primer[oa]?|ultim[oa])\s+(?:en|de)\s+{_OWN_LIST}",
     rf"(?:que\s+es\s+(?:esto|eso)|what(?:'s|s|\s+is)\s+(?:this|that))\s+(?:en|de|on|in)\s+{_OWN_LIST}",
-    rf"{_LIST_READ_VERB}\s+(?:lo\s+que\s+(?:hay|tengo)\s+en\s+|el\s+contenido\s+de\s+)?{_OWN_LIST}(?:\s+(?:otra\s+vez|de\s+nuevo))?",
+    # Tanda 8 «vale, léemela otra vez la lista de la compra» (the rewrite of «vale, léemela otra vez»): the list said
+    # after its pronoun and «otra vez» before it.
+    rf"{_LIST_READ_VERB}(?:mel[oa]s?|l[oa]s?)?(?:\s+{_AGAIN})?\s+(?:lo\s+que\s+(?:hay|tengo)\s+en\s+|el\s+contenido\s+de\s+)?"
+    rf"{_OWN_LIST}(?:\s+{_AGAIN})?",
     rf"(?:dejame|quiero|quisiera|me\s+gustaria|necesito|puedo)\s+(?:escuchar|oir|ver|saber|revisar|leer|consultar|repasar|"
     rf"comprobar|chequear|abrir)\s+(?:lo\s+que\s+(?:hay|tengo)\s+en\s+)?{_OWN_LIST}",
     rf"(?:tengo|hay)\s+{_ANYTHING}\s+(?:en|dentro\s+de)\s+{_OWN_LIST}",
@@ -975,7 +979,9 @@ _ADD_IF_ABSENT = (
     r"\s+(?:on|there|ahi|alli))?"
     r"(?:\s*,?\s*(?:please|por\s+favor))?)?"
 )
-_LIST_READ_OPENER = r"^[¿?¡!\s]*(?:(?:olly|alexa|bax[yi]|oye|hey)\s*,?\s+)?(?:(?:please|por\s+favor)\s*,?\s+)?"
+_LIST_READ_OPENER = (
+    r"^[¿?¡!\s]*(?:(?:olly|alexa|bax[yi]|oye|hey|vale|dale|ok|okay|bueno|venga)\s*,?\s+)*(?:(?:please|por\s+favor)\s*,?\s+)?"
+)
 
 
 @dataclass(frozen=True, slots=True)
