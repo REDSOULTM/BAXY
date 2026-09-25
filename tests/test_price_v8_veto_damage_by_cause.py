@@ -150,12 +150,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # uso real ola 12: diálogo vivo, no inventar, vocabulario
 # uso real ola 13: seguimientos
 # uso real ola 14: tanda 9
+# uso real: unificación de la lectura en semantic/
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "4f9b83b354d65e75639f2a1425e27530939c34d41428d7f439ebfbc6b901f9bc"
+        "484d398606bc567e1d52e5dbfa863f1efe02ed566e27a5a27716a00772b47b6c"
     ),
     "src/baxy_mind/llm.py": (
-        "8b58297c168457e00f0745ec7567aa1e33ad4f4f53f8b606c69ef18227849021"
+        "0b1884832c5587fde2d3ec3c1f020f91673c47c89964f6ceab3b6b6678ade795"
     ),
 }
 

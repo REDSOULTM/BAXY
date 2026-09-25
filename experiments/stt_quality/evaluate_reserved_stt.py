@@ -134,8 +134,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # uso real ola 12: diálogo vivo, no inventar, vocabulario
 # uso real ola 13: seguimientos
 # uso real ola 14: tanda 9
+# uso real: unificación de la lectura en semantic/
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "447b037548fbf1d72c01837ffdad3bc3d17c709c355dd864f91706e92b4d873c"
+    "05d99e14ff2a8caea9779e7bebd318970d68c0525cd026e159d2077134d22b2d"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
