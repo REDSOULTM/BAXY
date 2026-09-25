@@ -165,8 +165,9 @@ _WEDNESDAY = {
 def test_the_weekday_travels_as_a_fact_of_the_observed_date(
     language: str, user_text: str, weekday: str,
 ) -> None:
+    # Tanda 6b (owner): the weekday asked alone travels alone; the date is not required of the answer.
     payload = _compose_situation_payload(_WEDNESDAY, language, user_text)
-    assert payload["date"] == "2026-09-23"
+    assert "date" not in payload
     assert payload["weekday"] == weekday
 
 
@@ -184,15 +185,23 @@ def test_a_plain_date_request_gets_no_weekday_fact() -> None:
         ("Hoy es jueves 23 de septiembre de 2026.", False),
         ("Hoy es 23 de septiembre de 2026.", False),
         ("Hoy es miércoles o jueves, 23 de septiembre.", False),
-        ("Hoy es miércoles.", False),
+        # Tanda 6b (owner): the weekday alone answers.
+        ("Hoy es miércoles.", True),
     ],
 )
-def test_the_weekday_answer_names_the_observed_weekday_and_date(answer: str, valid: bool) -> None:
+def test_the_weekday_answer_names_the_observed_weekday_and_a_true_date(answer: str, valid: bool) -> None:
     user_text = "¿en qué día de la semana estamos?"
     facts = {"situation": json.dumps(_WEDNESDAY)}
     payload = _compose_situation_payload(_WEDNESDAY, "es", user_text)
     assert (compose_visible_defect(answer, "status", user_text, facts) == "") is valid
     assert (_payload_fact_defect(answer, payload) == "") is valid
+
+
+def test_a_date_said_with_the_weekday_is_still_the_observed_one() -> None:
+    # Tanda 6b: the date is no longer carried for a weekday question; the clock still denies a false one.
+    facts = {"situation": json.dumps(_WEDNESDAY)}
+    asked = "¿en qué día de la semana estamos?"
+    assert compose_visible_defect("Hoy es miércoles 24 de septiembre.", "status", asked, facts) == "false_date"
 
 
 # --- «qué hora es en tokio», «qué eventos se celebran en la ciudad de nueva york»
