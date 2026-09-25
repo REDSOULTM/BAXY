@@ -2780,6 +2780,9 @@ def _public_lookup_applies(
         & {INTENT_IDENTITY, INTENT_CAPABILITY, INTENT_REFUSE}
         # «prepárame una taza de café»: a known limit is an order, not information.
         and not known_unsupported_effect_request(objective, available_operations)
+        # Verification 2026-09-25 (cien-102 090 «rent a studio on Haumea» → a page about studios in Doha): what no
+        # operation of this PC reaches is a boundary, never a lookup.
+        and not effect_intent.out_of_world_request(objective)
         and callable(reads)
         and bool(reads(routing_objective))
     )
@@ -5534,6 +5537,7 @@ def _decide_turn_result(
             and not not_a_public_lookup(objective)
             # «rate five», «tuitea a Vodafone…»: a known limit is an order, not something to look up.
             and not known_unsupported_effect_request(objective, available_operations)
+            and not effect_intent.out_of_world_request(objective)
             # Tanda 4e «oye compárteme algún chiste para hacerme feliz» was searched and answered with joke
             # sites: a joke, a story or a poem asked for is written, never looked up.
             and _conversation_presentation_shape(
