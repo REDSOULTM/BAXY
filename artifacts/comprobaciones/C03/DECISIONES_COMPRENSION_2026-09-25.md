@@ -90,3 +90,7 @@ del árbol del servidor ≤ 4 096 MiB medido, (5) licencia que permite uso comer
 Un candidato que queda a ≤ 5 turnos del líder con p ≥ 0,10 y ≥ 300 MiB menos de VRAM se informa como alternativa ligera
 (ley 4), sin adoptarlo en F3. El ganador no entra al producto por ganar aquí: entra con el mecanismo de F4 medido en
 DEV-B y el conjunto de regresión.
+**Enmienda a D11 (15:40, antes de correr ningún candidato del torneo):** la variante `request` (el decisor reescribe
+primero el último pedido como pedido completo y después decide) terminó después de escribir D11 y es la
+configuración ganadora de F2: Qwen3.5-4B 189/260 y 204/253 (seguimientos 51/68 y 61/66) frente a 182 y 196 con `min`,
+p50 0,67 s. El torneo se corre en `request`; el resto de la regla no cambia.
