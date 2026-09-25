@@ -104,8 +104,12 @@ _EN_WORDS = frozenset(
     within without would write wrote yes yesterday yet you your yours
     summarize summarise summary minimize maximize
     joke jokes story stories recipe recipes riddle riddles poem poems
+    yourself yourselves myself himself herself itself ourselves themselves briefly quickly shortly
+    introduce
     """.split()
 )
+# Verification 2026-09-25 (cien-102 099 «describe yourself briefly» answered in Spanish): a message whose only
+# English words were a reflexive and an adverb had no evidence, and no evidence reads as Spanish.
 
 _ES_PHRASES = (
     "buenos dias",
