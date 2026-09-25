@@ -7680,11 +7680,39 @@ def _rearm_in_context(
             and dialogue_slot.same_family(effects_of(joined), effects_of(last_request))
         ):
             return audited(joined, "pattern")
+    def continuing(candidate: str) -> str | None:
+        # Tanda 7: a follow-up continues what was done. Its request reads no effect, or only effects of that family;
+        # a correction of the alarm or timer just set replaces it instead of setting a second one. None otherwise.
+        read = effects_of(candidate)
+        if not dialogue_slot.continues(read, continued_operations(), dialogue_state):
+            return None
+        cancel = (
+            dialogue_state.cancel_last_alarm(dialogue_slot.spanish(candidate))
+            if dialogue_state is not None and read == ("notification.schedule",)
+            and dialogue_slot.followup(objective).replaces_last
+            else None
+        )
+        if cancel is None:
+            return candidate
+        replaced = f"{cancel} {'y' if dialogue_slot.spanish(candidate) else 'and'} {candidate}"
+        return replaced if effects_of(replaced) == ("notification.cancel.latest", "notification.schedule") else None
+
     if dependency == "followup":
         said = dialogue_slot.followup(objective)
         if (said.continued or said.corrected) and not dialogue_slot.refers_back(objective) and effects_of(said.said):
             # Tanda 7 «and remind me at 7:30 to call grandma»: after the connector, a complete request is itself.
             return audited(said.said, "pattern")
+        # Tanda 7b: what the person's words already say with the last turn is not left to the model — a new amount,
+        # hour or day for the last request, the song a music turn left playing, what was just set.
+        music = any(op.startswith("media.") for op in continued_operations())
+        for candidate in (
+            dialogue_slot.corrected_request(last_request, objective),
+            dialogue_slot.as_the_song(objective) if music else None,
+            dialogue_state.listing_request(objective) if dialogue_state is not None else None,
+        ):
+            settled = continuing(candidate) if candidate and effects_of(candidate) else None
+            if settled is not None:
+                return audited(settled, "pattern")
     verified = dialogue_state.lines() if dialogue_state is not None else []
     try:
         rewritten = llm.rewrite_in_context(objective, slot.context_lines(), dependency=dependency, verified=verified)
@@ -7695,23 +7723,8 @@ def _rearm_in_context(
     if rewritten and dialogue_slot.rewrite_stays_in_context(rewritten, objective, slot, verified):
         if dependency not in {"followup", "destination"}:
             return audited(rewritten, "model", rewritten)
-        # Tanda 7: a follow-up continues what was done. Its rewrite reads no effect, or only effects of that
-        # family; a correction of the alarm or timer just set replaces it instead of setting a second one.
-        read = effects_of(rewritten)
-        if not dialogue_slot.continues(read, continued_operations(), dialogue_state):
-            return audited(None, "model_rejected", rewritten)
-        cancel = (
-            dialogue_state.cancel_last_alarm(dialogue_slot.spanish(rewritten))
-            if dialogue_state is not None and read == ("notification.schedule",)
-            and dialogue_slot.followup(objective).replaces_last
-            else None
-        )
-        if cancel is None:
-            return audited(rewritten, "model", rewritten)
-        replaced = f"{cancel} {'y' if dialogue_slot.spanish(rewritten) else 'and'} {rewritten}"
-        if effects_of(replaced) == ("notification.cancel.latest", "notification.schedule"):
-            return audited(replaced, "model", rewritten)
-        return audited(None, "model_rejected", rewritten)
+        settled = continuing(rewritten)
+        return audited(settled, "model" if settled else "model_rejected", rewritten)
     if dependency == "answer" and slot.held and slot.pending_request and rewritten is None:
         # The model was unavailable: the pending request the shell holds and its answer travel together in the
         # form the grounding readers already join (AUDIO1789). A question read only from the history is not held.

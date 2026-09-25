@@ -274,6 +274,7 @@ _REMINDER_INVENTORY = re.compile(
     rf"(?:{_INVENTORY_HAVE}\s+(?:(?:any|some|algun[oa]?s?)\s+)?{_INVENTORY_KINDS}"
     rf"|(?:what|which|que|cuales|cuantos|cuantas)\s+{_INVENTORY_KINDS}\s+{_INVENTORY_HAVE})"
     r"(?:\s+(?:pendientes?|pending|programad[oa]s?|puest[oa]s?|set|scheduled|activ[oa]s?|active|right\s+now|now|"
+    r"ya|todavia|hasta\s+ahora|so\s+far|already|"
     r"ahora(?:\s+mismo)?|(?:for|para|pa)\s+(?:today|tomorrow|tonight|hoy|manana|esta\s+noche)|today|tomorrow|tonight|"
     r"hoy|manana))*"
 )

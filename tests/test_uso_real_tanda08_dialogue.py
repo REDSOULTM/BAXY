@@ -124,7 +124,9 @@ def test_a_correction_of_the_alarm_still_asked_for_completes_it_and_replaces_not
     state.record(_verified("system.time", {"location": "Lima"}))
     state.expect(said, ["notification.schedule"])  # the turn asked; nothing was set
     result = _rearm(_message(said, question, text), _Scripted({text: rewrite}), state)
-    assert result == (rewrite, "model")
+    # An hour said with «a las» is put in place of the one asked about without the model; «make it 5:40» is the
+    # model's. Either way nothing is cancelled.
+    assert result in {(rewrite, "model"), (rewrite, "pattern")}
     assert state.cancel_last_alarm(True) is None
 
 
@@ -134,8 +136,8 @@ def test_a_correction_of_the_alarm_just_set_still_replaces_it():
     state.expect(request, ["notification.schedule"])
     state.record(_verified("notification.schedule", {"kind": "alarm", "title": request}))
     text, rewrite = "no, a las 6 y cuarto", "pon una alarma a las 6 y cuarto de la mañana"
-    result = _rearm(_message(request, "Listo, suena a las 6:00.", text), _Scripted({text: rewrite}), state)
-    assert result == ("cancela la última alarma y " + rewrite, "model")
+    result = _rearm(_message(request, "Listo, suena a las 6:00.", text), _Scripted({}), state)
+    assert result == ("cancela la última alarma y " + rewrite, "pattern")
 
 
 def test_an_alarm_set_turns_ago_is_not_what_a_correction_replaces():
@@ -377,14 +379,18 @@ def test_other_requests_about_alarms_are_not_the_listing(text):
 
 
 def test_what_is_set_after_a_timer_and_a_reminder_is_read_back_in_context():
+    from baxy_mind.semantic.notes import reminder_inventory_question
+
     state = dialogue.DialogueState()
     state.expect("pon un temporizador de 20 minutos para el pan", ["notification.schedule"])
     state.record(_verified("notification.schedule", {"kind": "alarm", "title": "pan"}))
     state.expect("recuérdame a las 9 regar las plantas", ["reminder.create"])
     state.record(_verified("reminder.create", {"title": "regar las plantas"}))
-    text, rewrite = "¿y qué tengo puesto ahora?", "¿qué alarmas, temporizadores y recordatorios tengo puestos ahora?"
+    text = "¿y qué tengo puesto ahora?"
     message = _message("recuérdame a las 9 regar las plantas", "Listo, te aviso a las 9.", text)
-    assert _rearm(message, _Scripted({text: rewrite}), state) == (rewrite, "model")
+    rearmed = _rearm(message, _Scripted({}), state)  # the kinds set are named without the model (tanda 7b replay)
+    assert rearmed == ("qué alarmas, temporizadores y recordatorios tengo puesto ahora", "pattern")
+    assert reminder_inventory_question(rearmed[0]) == ("notification.list", "reminder.list")
 
 
 @pytest.mark.parametrize(

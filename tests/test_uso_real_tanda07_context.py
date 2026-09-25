@@ -316,9 +316,11 @@ def test_a_place_nobody_said_is_never_taken():
     ],
 )
 def test_a_correction_of_the_timer_just_set_replaces_it(said, text, rewrite, rearmed):
+    # Replay of tanda 7b: the correction is the request with its new value, joined without the model (the model's
+    # «make the timer for the pasta 9 minutes» was read by nobody); the model is not asked.
     state = _state((said, "notification.schedule", {"kind": "alarm", "title": said, "taskName": "BAXY-Alarm-2"}))
-    result = _rearm(_message(said, "Listo, quedó programado.", text), _Scripted({text: rewrite}), state)
-    assert result == (rearmed, "model")
+    result = _rearm(_message(said, "Listo, quedó programado.", text), _Scripted({}), state)
+    assert result == (rearmed, "pattern") and rearmed.endswith(rewrite)
     assert read(rearmed, available_operations=OPERATIONS).effects.operations == (
         "notification.cancel.latest", "notification.schedule",
     )
@@ -335,9 +337,10 @@ def test_another_timer_is_added_not_replaced():
 def test_this_one_is_what_is_playing():
     state = _state(("pon algo de Soda Stereo en Spotify", "media.play.query",
                     {"title": "De Música Ligera", "artist": "Soda Stereo", "query": "soda stereo"}))
-    model = _Scripted({"qué tema es este": "qué canción es esta"})
     message = _message("pon algo de Soda Stereo en Spotify", "Suena De Música Ligera.", "qué tema es este")
-    assert _rearm(message, model, state) == ("qué canción es esta", "model")
+    rearmed = _rearm(message, _Scripted({}), state)
+    assert rearmed is not None and rearmed[1] == "pattern"
+    assert read(rearmed[0], available_operations=OPERATIONS).effects.operations == ("media.status",)
 
 
 def test_another_song_is_asked_with_what_was_asked_before():
@@ -369,9 +372,9 @@ def test_what_was_set_is_listed_back():
         ("recordame a las 21:05 sacar la basura", "reminder.create", None),
     )
     text = "qué tengo programado"
-    rewrite = "qué alarmas y recordatorios tengo programados"
     message = _message("recordame a las 21:05 sacar la basura", "Listo.", text)
-    assert _rearm(message, _Scripted({text: rewrite}), state) == (rewrite, "model")
+    # Replay of tanda 7b: the model kept «what have I got set right now?»; the kinds set are named without it.
+    assert _rearm(message, _Scripted({}), state) == ("qué alarmas, temporizadores y recordatorios tengo programado", "pattern")
 
 
 def test_a_complete_request_after_a_connector_is_itself_without_the_model():

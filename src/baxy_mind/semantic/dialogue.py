@@ -529,9 +529,9 @@ _CHANGE = (
     r"(?:(?:make|set|put|change|turn)\s+(?:it|that)(?:\s+(?:to|at|for|into))?|que\s+sean?(?:\s+de)?|"
     r"(?:hazlo|hacelo|ponlo|ponelo|ponle|dejalo|cambialo|cambiale|cambia)(?:\s+(?:a|de|en|con))?)"
 )
+_NUMBER = rf"(?:\d{{1,3}}|{alternation(frozenset(_NUMBER_WORDS))})"
 _AMOUNT_FRAGMENT = re.compile(
-    rf"^(?:{_CHANGE}\s+)?(?:(?:a|al|en|de|to|at|for|by|unos|unas|como|about|around|like)\s+)*"
-    rf"(?:\d{{1,3}}|{alternation(frozenset(_NUMBER_WORDS))})(?:\s*{_UNIT})?$"
+    rf"^(?:{_CHANGE}\s+)?(?:(?:a|al|en|de|to|at|for|by|unos|unas|como|about|around|like)\s+)*{_NUMBER}(?:\s*{_UNIT})?$"
 )
 _WEEKDAY = r"(?:lunes|martes|miercoles|jueves|viernes|sabado|domingo|monday|tuesday|wednesday|thursday|friday|saturday|sunday)"
 _DAY = (
@@ -540,11 +540,14 @@ _DAY = (
     rf"semana\s+(?:que\s+viene|proxima)|today|tonight|tomorrow|yesterday|last\s+night|weekend|week|{_WEEKDAY})"
 )
 # «a las 6 y cuarto», «a las 7 y media», «a las 8 y 20»: the minutes said in words are part of the hour.
-_CLOCK = (
+_CLOCK_HOUR = (
     r"(?:a\s+las?|at|para\s+las?|by|around|como\s+a\s+las?)\s+\d{1,2}(?::\d{2}|\s+y\s+(?:cuarto|media|\d{1,2}))?"
-    r"(?:\s*(?:am|pm|a\.?\s?m\.?|p\.?\s?m\.?|hs|horas|de\s+la\s+(?:manana|tarde|noche)|in\s+the\s+(?:morning|afternoon|"
-    r"evening)))?"
 )
+_CLOCK_PERIOD = (
+    r"\s*(?:am|pm|a\.?\s?m\.?|p\.?\s?m\.?|hs|horas|de\s+la\s+(?:manana|tarde|noche)|in\s+the\s+(?:morning|afternoon|"
+    r"evening))"
+)
+_CLOCK = rf"{_CLOCK_HOUR}(?:{_CLOCK_PERIOD})?"
 _TIME_FRAGMENT = re.compile(rf"^(?:{_DAY}|{_CLOCK})(?:\s+(?:y|and|o|or)\s+(?:{_DAY}|{_CLOCK}))?$")
 _PLACE_FRAGMENT = re.compile(r"^(?:en|in|at|para|for|on|por|desde|from)\s+\S.*$")
 # A place said as «allá» or «there»; «is there…», «there are…» only say that something exists.
@@ -682,6 +685,65 @@ def leans_on_context(text: str) -> bool:
             or (_QUESTION_WORD.match(folded) is not None and _ANAPHORIC_PRONOUN.search(folded) is not None)
         )
     )
+
+
+# Tanda 7b «actually make it 9» after «set a timer for the pasta, 11 minutes»: the model wrote «make the timer for the
+# pasta 9 minutes», which no reader reads. A correction that only says a new amount, hour or day is the last request
+# with that value in place of the one it had, in the person's words, and it is read as that request was.
+_SAID_AMOUNT = re.compile(rf"\b(?P<number>{_NUMBER})(?P<unit>\s*{_UNIT})(?![a-z])")
+_SAID_HOUR = re.compile(rf"\b(?P<hour>{_CLOCK_HOUR})(?P<period>{_CLOCK_PERIOD})?(?![a-z0-9])")
+_SAID_DAY = re.compile(rf"\b{_DAY}\b")
+
+
+def corrected_request(request: str | None, text: str) -> str | None:
+    """«no, mejor a las 6:15» after «ponme una alarma a las 6 y media pa mañana» → «ponme una alarma a las 6:15 pa
+    mañana»; «mejor que sean 6» after «un temporizador de 8 minutos» → «… de 6 minutos». None when the message is not
+    such a correction or the request has no value of that kind."""
+
+    said = followup(text)
+    base = " ".join(str(request or "").split())
+    if not base or "\n" in str(request) or not said.replaces_last:
+        return None
+    folded = _fold(base)
+    if len(folded) != len(base):
+        base = folded
+    hour = re.fullmatch(rf"{_CLOCK_HOUR}(?P<period>{_CLOCK_PERIOD})?", said.folded)
+    old = _SAID_HOUR.search(folded)
+    if hour is not None and old is not None:
+        # The part of the day said before stays unless the correction says another one.
+        end = old.end() if hour.group("period") else old.end("hour")
+        return base[: old.start()] + said.said + base[end:]
+    if _AMOUNT_FRAGMENT.fullmatch(said.folded):  # «at 7» after a timer of 10 minutes is its amount
+        new = re.search(rf"\b(?P<number>{_NUMBER})(?P<unit>\s*{_UNIT})?$", said.folded)
+        old = _SAID_AMOUNT.search(folded)
+        if new is None or old is None:
+            return None
+        number = str(_NUMBER_VALUES.get(new.group("number"), new.group("number")))
+        unit = said.said[new.start("unit"):new.end("unit")] if new.group("unit") else base[old.start("unit"):old.end("unit")]
+        return base[: old.start()] + number + unit + base[old.end():]
+    if re.fullmatch(_DAY, said.folded):
+        old = _SAID_DAY.search(folded)
+        return base[: old.start()] + said.said + base[old.end():] if old is not None else None
+    return None
+
+
+# Tanda 7b «cómo se llama esta?» after a music request was searched on the web as «cómo se llama esta de los
+# bunkers»: in a question right after music, a bare «esta», «this», «it» is the song, and what plays is read
+# (media.status says what plays, or that nothing does).
+_BARE_POINTER = re.compile(r"\b(?:(?P<es>esta|este|esto|esa|ese|eso)|(?:this|that|it)(?:\s+one)?)\b")
+
+
+def as_the_song(text: str) -> str | None:
+    """«cómo se llama esta?» → «cómo se llama esta canción», «what's this called» → «what's this song called»."""
+
+    said = followup(text)
+    if _QUESTION_WORD.match(said.folded) is None or _DEMONSTRATIVE.search(said.folded) is None:
+        return None
+    if re.search(r"\b(?:cancion|tema|song|track|tune)\b", said.folded):
+        return said.said  # «qué tema es este» already says it
+    pointer = list(_BARE_POINTER.finditer(said.folded))[-1]
+    noun = "esta canción" if pointer.group("es") else "this song"
+    return said.said[: pointer.start()] + noun + said.said[pointer.end():]
 
 
 def spanish(text: str) -> bool:
@@ -850,4 +912,25 @@ class DialogueState:
         if in_spanish:
             return "cancela el último temporizador" if timer else "cancela la última alarma"
         return f"cancel the last {'timer' if timer else 'alarm'}"
+
+    # Tanda 7b «what have I got set right now?» after a timer and a reminder: the model kept it, and the question
+    # names no kind, so no reader read it. Right after an alarm, a timer or a reminder, what the person holds is
+    # the kinds this conversation set, named in the question.
+    _SET_KINDS = (("notification", ("alarmas", "temporizadores"), ("alarms", "timers")),
+                  ("reminder", ("recordatorios",), ("reminders",)))
+
+    def listing_request(self, text: str) -> str | None:
+        """«¿y qué tengo puesto?» → «qué alarmas, temporizadores y recordatorios tengo puesto»; None unless the last
+        turn was about an alarm, a timer or a reminder and the message asks what the person holds."""
+
+        said = followup(text)
+        asked = re.match(r"(?:(?P<es>que|cuales)|what|which)\b", said.folded)
+        kinds = [kind for kind in self._SET_KINDS if kind[0] in self.families]
+        if asked is None or not _OWN_LISTING.fullmatch(said.folded) or not (
+            {_family(op) for op in self.intended} & {kind[0] for kind in kinds}
+        ):
+            return None
+        nouns = [noun for kind in kinds for noun in kind[1 if asked.group("es") else 2]]
+        named = ", ".join(nouns[:-1]) + (" y " if asked.group("es") else " and ") + nouns[-1] if len(nouns) > 1 else nouns[0]
+        return f"{said.said[: asked.end()]} {named}{said.said[asked.end():]}"
 

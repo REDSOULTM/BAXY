@@ -129,3 +129,82 @@ def test_a_clock_read_elsewhere_is_the_last_place():
     state.expect("¿y qué hora es acá?", ["system.time"])
     state.record(_verified("system.time", {"utc": "2026-09-25T06:09:10Z", "localUtcOffsetMinutes": -180}))
     assert [line for _, line in state.lines() if line.startswith("lugar")] == places
+
+
+# ---------------------------------------------------------------- 3. what the words already say with the last turn
+
+
+@pytest.mark.parametrize(
+    ("said", "text", "corrected"),
+    [
+        ("pon un temporizador de 10 minutos pa los fideos", "nah, que sean 7", "pon un temporizador de 7 minutos pa los fideos"),
+        ("set a timer for the rice, 20 minutes", "actually make it fifteen", "set a timer for the rice, 15 minutes"),
+        ("ponme una alarma a las 7 de la mañana", "no, mejor a las 7 y media", "ponme una alarma a las 7 y media de la mañana"),
+        ("despertame mañana a las 6", "mejor a las 5 y cuarto", "despertame mañana a las 5 y cuarto"),
+        ("wake me up at 6 am", "no wait, at 7", "wake me up at 7 am"),
+        ("wake me up at 6 am", "no, at 7 pm", "wake me up at 7 pm"),
+    ],
+)
+def test_a_correction_is_the_last_request_with_its_new_value(said, text, corrected):
+    assert dialogue.corrected_request(said, text) == corrected
+
+
+@pytest.mark.parametrize(
+    ("said", "text"),
+    [
+        ("pon un temporizador de 10 minutos", "y otro de 20 pal arroz"),  # an addition
+        ("pon un temporizador de 10 minutos", "¿y a las 8?"),  # continued, not corrected
+        ("pon música de Charly García", "mejor 5"),  # no value of that kind
+        ("pon una alarma a las 7", "mejor en Spotify"),  # not a value
+    ],
+)
+def test_an_addition_or_a_request_without_that_value_is_not_corrected(said, text):
+    assert dialogue.corrected_request(said, text) is None
+
+
+def test_the_correction_of_the_timer_just_set_cancels_it_without_the_model():
+    request = "pon un temporizador de 10 minutos pa los fideos"
+    state = _state((request, "notification.schedule", {"kind": "alarm", "title": "fideos", "taskName": "BAXY-Alarm-7"}))
+    result = _rearm(_message(request, "Listo, suena en 10 minutos.", "nah, que sean 7"), _Scripted(), state)
+    assert result == ("cancela el último temporizador y pon un temporizador de 7 minutos pa los fideos", "pattern")
+    assert _effects(result[0]) == ("notification.cancel.latest", "notification.schedule")
+
+
+@pytest.mark.parametrize("text", ["¿y cómo se llama esta?", "quién canta esto?", "what's this one called", "who sings it"])
+def test_a_bare_pointer_after_music_is_the_song_playing(text):
+    state = _state(("ponme algo de Los Prisioneros", "media.play.query", {"query": "los prisioneros"}))
+    result = _rearm(_message("ponme algo de Los Prisioneros", "Listo.", text), _Scripted(), state)
+    assert result is not None and result[1] == "pattern"
+    assert _effects(result[0]) == ("media.status",)
+
+
+def test_a_bare_pointer_after_something_else_is_left_to_the_model():
+    state = _state(("¿llueve hoy?", "weather.current", {"location": "Quito"}))
+    model = _Scripted({"cómo se llama esto?": "cómo se llama esto?"})
+    assert _rearm(_message("¿llueve hoy?", "Hoy no llueve en Quito.", "cómo se llama esto?"), model, state) is None
+    assert model.seen
+
+
+@pytest.mark.parametrize(
+    ("text", "rearmed"),
+    [
+        ("¿qué tengo puesto hasta ahora?", "qué alarmas, temporizadores y recordatorios tengo puesto hasta ahora"),
+        ("which do I have set now?", "which alarms, timers and reminders do I have set now"),
+    ],
+)
+def test_what_the_person_holds_right_after_setting_it_names_the_kinds_set(text, rearmed):
+    state = _state(("pon un temporizador de 5 minutos pal té", "notification.schedule", {"title": "té"}),
+                   ("recordame a las 8 llamar a la vieja", "reminder.create", None))
+    result = _rearm(_message("recordame a las 8 llamar a la vieja", "Listo.", text), _Scripted(), state)
+    assert result == (rearmed, "pattern")
+    assert _effects(rearmed) == ("notification.list", "reminder.list")
+
+
+def test_only_the_kinds_this_conversation_set_are_named():
+    state = _state(("set an alarm at 6 am", "notification.schedule", {"title": "alarm"}))
+    assert state.listing_request("what have I got set?") == "what alarms and timers have I got set"
+
+
+def test_what_the_person_holds_after_a_list_is_not_the_alarms():
+    state = _state(("anota en la lista del súper yerba", "task.create", None))
+    assert state.listing_request("¿qué llevo ya?") is None
