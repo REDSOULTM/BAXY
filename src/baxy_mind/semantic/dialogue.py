@@ -196,12 +196,17 @@ def _object_pronoun(folded: str) -> bool:
     for found in _ENCLITIC.finditer(folded):
         tail = _CLITIC_TAIL.search(found.group(0))
         rest = folded[found.end():].split()
-        if tail is not None and tail.group("clitic") in {"le", "les"} and rest and rest[0] in {
+        if tail is not None and tail.group("clitic") in {"le", "les"} and rest and (rest[0] in {
             "el", "la", "los", "las", "un", "una", "unos", "unas", "mi", "mis", "su", "sus", "algo", "que",
-        }:
+        } or _DATIVE_OBJECT.match(" ".join(rest))):
             continue
         return True
     return False
+
+
+# Tanda 7b «oye súbele al volumen po» was rewritten as «… al volumen please use whisper mode»: «le» doubles the object
+# said after it with «a» («súbele al volumen», «dale a la música»); «súbele al 50» still leaves it out.
+_DATIVE_OBJECT = re.compile(r"(?:al|a\s+(?:la|las|los|el|mi|mis|tu|tus))\s+(?!\d)[a-zñ]")
 
 
 def dependency(text: str, slot: DialogueSlot) -> str | None:

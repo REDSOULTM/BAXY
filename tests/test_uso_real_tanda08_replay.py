@@ -263,3 +263,17 @@ def test_the_answer_after_a_question_of_baxy_is_read_by_that_question(said, ques
     result = _rearm(_message(said, question, answer), _Scripted(), dialogue.DialogueState())
     assert result is not None and result[1] == "pattern"
     assert _effects(result[0]) == (operation,)
+
+
+# ---------------------------------------------------------------- 6. «le» doubling an object said
+
+
+@pytest.mark.parametrize("text", ["oye súbele al volumen po", "dale a la música más fuerte", "bájale a las alertas"])
+def test_le_with_its_object_said_after_it_is_no_reference(text):
+    slot = dialogue.DialogueSlot(None, None, ("please use whisper mode",), "please use whisper mode")
+    assert dialogue.dependency(text, slot) != "reference"
+
+
+def test_le_with_only_a_level_after_it_still_refers_back():
+    slot = dialogue.DialogueSlot(None, None, ("pon música de Soda",), "Listo.")
+    assert dialogue.dependency("súbele al 50", slot) == "reference"
