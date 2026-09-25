@@ -385,6 +385,33 @@ def test_what_is_set_after_a_timer_and_a_reminder_is_read_back_in_context():
     assert _rearm(message, _Scripted({text: rewrite}), state) == (rewrite, "model")
 
 
+@pytest.mark.parametrize(
+    ("text", "entry", "listed"),
+    [
+        ("apúntame en la lista del súper arroz, aceite y yerba", "arroz, aceite y yerba", "lista del súper"),
+        ("anota en mi lista de compras dos kilos de papas", "dos kilos de papas", "lista de compras"),
+        ("pon en la lista de tareas: llamar al plomero", "llamar al plomero", "lista de tareas"),
+        ("add to my grocery list eggs and bread", "eggs and bread", "grocery list"),
+    ],
+)
+def test_an_entry_said_after_the_list_is_the_same_entry(text, entry, listed):
+    from baxy_mind.semantic.notes import list_entry_request
+    from baxy_mind.semantic.reading import read
+
+    assert list_entry_request(text) == (entry, listed)
+    assert read(text, available_operations=OPERATIONS).effects.operations == ("task.create",)
+
+
+@pytest.mark.parametrize(
+    "text", ["pon en la lista de reproducción esta canción", "apunta en una nota la receta de la abuela",
+             "anota en la lista esto"],
+)
+def test_a_playlist_a_note_or_a_pointed_entry_is_not_a_list_entry(text):
+    from baxy_mind.semantic.notes import list_entry_request
+
+    assert list_entry_request(text) is None
+
+
 _RECALL_HISTORY = [
     {"role": "user", "content": "baja el brillo a 30"},
     {"role": "assistant", "content": "El brillo está en 30."},
