@@ -137,15 +137,15 @@ from .semantic.media import asks_what_is_playing
 from .semantic.network import (
     _CALENDAR_MONTHS,
     _CALENDAR_MONTH_NUMBERS,
-    _CALENDAR_VALUE_ASKED,
     _WEEKDAY_NAMES,
     _WEEKDAY_NUMBERS,
     _WEEKDAY_WORD,
     _requests_weekday,
+    asks_about_a_named_calendar_value,
     asks_the_clock,
     names_the_time,
 )
-from .semantic.notes import names_the_title
+from .semantic.notes import _PERSONAL_RECORD_STORE, names_an_own_record_store, names_the_title
 from .semantic.request import _conversation_response_language
 from .semantic.system import reports_the_gpu_stopped
 from .semantic.ui import asks_about_buttons, asks_to_see_the_screen
@@ -3540,15 +3540,6 @@ _PC_OBJECT = (
     r"pc|computadora|computador|ordenador|equipo|computer|sonido|sound|nota|note|alarma|alarm|"
     r"recordatorio|reminder|mensaje|message|correo|email)"
 )
-# What the person keeps with BAXY or elsewhere and only a read can tell (uso real 2026-09-23, tanda 2; tanda 8
-# added the timers and the orders: «You haven't set anything right now.», «Sí, está lista para recoger.»).
-# Written accent-folded: the replies are folded before these are read.
-_PERSONAL_RECORD_STORE = (
-    r"(?:listas?|lists?|notas?|notes?|recordatorios?|reminders?|tareas?|tasks?|pendientes|to-?dos?|agenda|"
-    r"calendario|calendar|alarmas?|alarms?|temporizador(?:es)?|timers?|citas?|appointments?|reunion(?:es)?|"
-    r"meetings?|correos?|e-?mails?|inbox|bandeja\s+de\s+entrada|pedidos?|orden(?:es)?|orders?|paquetes?|"
-    r"packages?|envios?|deliver(?:y|ies)|shipments?)"
-)
 # The person's world: a thing on this PC or one of the person's records.
 _PERSON_WORLD = re.compile(r"(?<![\w])(?:" + _PC_OBJECT + r"|" + _PERSONAL_RECORD_STORE + r")(?![\w])")
 # BAXY as the one who did it, on the case-folded text with its accents («paré» is the claim, «pare» is not):
@@ -3828,8 +3819,6 @@ _PERSON_HOLDS = re.compile(
 _CONFIGURED_STATE = re.compile(
     r"(?<![\w])(?:(?!hech)" + _ES_PARTICIPLE + r"|" + alternation(frozenset(_EN_DONE)) + r")(?![\w])"
 )
-# The person's own records named in their messages: «apúntame en la lista de la compra …», «mi agenda».
-_FIRST_PERSON_MARK = re.compile(r"\b(?:mi|mis|my|me|yo|i|i'm|i've|tengo|llevo|\w+(?:ame|eme|ime|nme))\b")
 _PERSONAL_STORE_QUALIFIERS = frozenset({
     "la", "las", "compra", "compras", "tareas", "pendientes", "cosas", "super", "supermercado", "mercado",
 })
@@ -3852,10 +3841,7 @@ def visible_reply_asserts_unread_personal_records(
     text = str(value or "").strip()
     if not text:
         return False
-    owned_by_the_person = any(
-        re.search(rf"\b{_PERSONAL_RECORD_STORE}\b", said) is not None and _FIRST_PERSON_MARK.search(said) is not None
-        for said in (_accent_folded_with_punctuation(item).casefold() for item in (request, *prior_requests))
-    )
+    owned_by_the_person = any(names_an_own_record_store(item) for item in (request, *prior_requests))
     for said in re.split(r"(?<=[.!?…])\s+|\n+", text.casefold()):
         # «sí» agrees; only «si» opens a hypothesis, so the accents are read first.
         if "?" in said or "¿" in said or _CONDITIONAL_OFFER.search(said) is not None:
@@ -5052,7 +5038,7 @@ def _calendar_instruction(user_text: str) -> str:
     yes_no = (
         " The person asked whether it is the one they named: say yes or no first, then only the observed one;"
         " do not repeat theirs."
-        if _CALENDAR_VALUE_ASKED.search(_reading_fold(user_text)) is not None
+        if asks_about_a_named_calendar_value(user_text)
         else ""
     )
     if parts == ("weekday",):

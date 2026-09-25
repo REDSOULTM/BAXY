@@ -875,3 +875,9 @@ def asks_the_clock(user_text: str | None) -> bool:
         re.search(r"\b(?:clock|hora)\b", folded)
         or re.search(r"\b(?:what time|time now|tell the time)\b", folded)
     )
+
+
+def asks_about_a_named_calendar_value(user_text: str) -> bool:
+    """«¿hoy es lunes?», «¿estamos en 2025?», «is today the 24th?»: the question names the value it asks about."""
+
+    return _CALENDAR_VALUE_ASKED.search(_reading_fold(user_text)) is not None

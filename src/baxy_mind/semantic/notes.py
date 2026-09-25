@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import Callable, Iterable, Sequence
 from .grammar import TASK_REMINDER_HEAD, _RELATIVE_DURATION_PATTERN, _fold, _match, _has, _strip_request_envelope, _request_body_surface, _request_head, _head_is, _LIST, _READ, _CREATE, _request_clauses
 from .intent import EffectIntent, _append
+from .normalize import _accent_folded_with_punctuation
 from .temporal import _absolute_calendar_range_parts, _DEICTIC_DAY, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, CLOCK_PHRASE, EventTiming, event_timing, spoken_clock, is_window_phrase, says_a_window
 
 
@@ -1933,4 +1934,28 @@ def names_the_title(user_text: str) -> bool:
         r"\b(?:llamad[oa]|titulad[oa]|nombre|named|called|titled|name)\b|[\"“”«»]",
         user_text,
         re.IGNORECASE,
+    ) is not None
+
+
+# What the person keeps with BAXY or elsewhere and only a read can tell (uso real 2026-09-23, tanda 2; tanda 8
+# added the timers and the orders: «You haven't set anything right now.», «Sí, está lista para recoger.»).
+# Written accent-folded: the replies are folded before these are read.
+_PERSONAL_RECORD_STORE = (
+    r"(?:listas?|lists?|notas?|notes?|recordatorios?|reminders?|tareas?|tasks?|pendientes|to-?dos?|agenda|"
+    r"calendario|calendar|alarmas?|alarms?|temporizador(?:es)?|timers?|citas?|appointments?|reunion(?:es)?|"
+    r"meetings?|correos?|e-?mails?|inbox|bandeja\s+de\s+entrada|pedidos?|orden(?:es)?|orders?|paquetes?|"
+    r"packages?|envios?|deliver(?:y|ies)|shipments?)"
+)
+
+
+# The person's own records named in their messages: «apúntame en la lista de la compra …», «mi agenda».
+_FIRST_PERSON_MARK = re.compile(r"\b(?:mi|mis|my|me|yo|i|i'm|i've|tengo|llevo|\w+(?:ame|eme|ime|nme))\b")
+
+
+def names_an_own_record_store(said: object) -> bool:
+    """A message that names one of the person's own stores («apúntame en la lista de la compra», «mi agenda»)."""
+
+    folded = _accent_folded_with_punctuation(said).casefold()
+    return re.search(rf"\b{_PERSONAL_RECORD_STORE}\b", folded) is not None and _FIRST_PERSON_MARK.search(
+        folded
     ) is not None
