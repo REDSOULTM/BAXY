@@ -406,7 +406,8 @@ def _event_title(body: str, folded_body: str, cut: list[tuple[int, int]]) -> str
     title = " ".join(kept).strip(" ,;:.!?¿¡\"'«»")
     # «un evento llamado Revisión»: what follows the naming word is the title («llamada con Ana» is a call).
     named = re.search(
-        r"\b(?!(?:un|una|el|la|a|an|the)\b)\w+\s+(?:llamad[oa]|titulad[oa]|called|named|titled)\s+(?P<name>\S.*)$",
+        r"\b(?!(?:un|una|el|la|a|an|the)\b)\w+\s+(?:llamad[oa]|titulad[oa]|called|named|titled)\s+"
+        r"(?P<name>(?!(?:con|with|a|al|de|del|para|por|en|hoy|manana)\b)\S.*)$",
         _fold(title),
     )
     if named is not None:
@@ -443,7 +444,13 @@ def agenda_event_request(text: str) -> AgendaEvent | None:
         rest = folded_body[envelope.end():]
         # «pon una alarma», «añade leche a la lista»: an order about something else. «anota/apunta» is
         # a note unless the calendar is named; a bare «set/put/make» needs the event as its object.
-        object_is_event = re.match(rf"(?:(?:un|una|el|la|mi|a|an|the|my|nueva|new)\s+)*(?:\S+\s+)?{_EVENT_NOUN}\b", rest)
+        # 742 H0256/H0288/H0629 «crea una carpeta llamada proyectos»: «llamada» after the thing it names is
+        # the participle («named»), not a phone call; «otra llamada con Ana» still is one.
+        object_is_event = re.match(
+            rf"(?:(?:un|una|el|la|mi|a|an|the|my|nueva|new)\s+)*"
+            rf"(?:\S+\s+(?!llamad[oa]s?\s+(?!(?:con|a|al|de|del|para|por|en|hoy|manana)\b)\S))?{_EVENT_NOUN}\b",
+            rest,
+        )
         # Uso real 2026-09-24 «pon duele como el cielo» (a song) was asked when the event starts: what is
         # marked «como/as» something is a day only when a day was said before it.
         marked = re.search(r"\b(?:como|as)\s+(?:(?:el|la|mi|my|a|an|the)\s+)?\S", rest)
