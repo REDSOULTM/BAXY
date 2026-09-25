@@ -10225,7 +10225,10 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         return "missing_name"
     if isinstance(seen, dict) and "level" in seen:
         level = str(seen["level"]).strip()
-        if level and not re.search(rf"(?<!\d){re.escape(level)}(?!\d)", folded):
+        # Tanda 6c «el volumen es cero»: a small level said as its word is the level.
+        if level and not re.search(rf"(?<!\d){re.escape(level)}(?!\d)", folded) and not any(
+            re.search(rf"\b{word}\b", folded) for word in _SMALL_NUMBER_WORDS.get(level, ())
+        ):
             return "missing_name"
     # MEMORY1251: «red» was confirmed as «rojo» and «my favorite drink is tea»
     # as «mi favorito es el té». What the memory keeps is quoted, not translated.
@@ -12220,7 +12223,8 @@ def compose_visible_defect(
             # Tanda 6b «No, el sonido no está activo…» over muted=false: the sound said off is a mute said otherwise.
             if re.search(
                 r"\b(?:sonido|audio|speakers?|altavoz|altavoces|sound)\s+(?:\w+\s+){0,2}?"
-                r"(?:no\s+est[aá]\s+activ|is\s+not\s+active|isn'?t\s+active|is\s+off\b|est[aá]\s+apagad)",
+                r"(?:no\s+est[aá]\s+activ|is\s+not\s+active|isn'?t\s+active|is\s+off\b|est[aá]\s+apagad|"
+                r"est[aá]\s+desactivad|is\s+disabled)",
                 told_now,
             ):
                 return "reversed_mute"
@@ -21349,7 +21353,13 @@ class LlmRuntime:
                     if _looks_like_capability_question(user_text)
                     else _MACHINE_ACTOR_FEEDBACK
                 ),
-                "reversed_mute": "Name audio or speakers and the mute state.",
+                # Tanda 6c «Quiero el sound de nuevo please» (sound already on at volume 0): three drafts said it
+                # was silenced. A volume of 0 is a level, not a mute; the hint says which state was read.
+                "reversed_mute": (
+                    "The sound is on, not muted: say it is active, and give its volume as a level."
+                    if _merged_observed(situation).get("muted") is False
+                    else "Name audio or speakers and the mute state."
+                ),
                 "reversed_polarity": "Failure. Do not say it is open or that you opened it.",
                 "asserted_failure": (
                     "Name several entries of can. One short sentence."

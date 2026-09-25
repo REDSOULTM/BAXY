@@ -23,12 +23,16 @@
   after the zone's noun; it is the clock of that place, and the zone asked is given as its offset.
 - «¿podemos estar un rato en silencio?» → «…¿Quieres que hablemos de algo específico…?»: an unshaped conversational
   reply that offers something more is rejected, as the prompt's «sin ofertas» already asks.
+- 6c «Quiero el sound de nuevo please» (sound on at volume 0): the drafts said it was silenced or «desactivado»; the
+  sound said disabled over an unmuted read is a reversed mute, «cero» is the level 0, and the hint says it is on.
 
 The phrasings below are not the tandas': they are paraphrases (es/en/spanglish) the fixes do not name, with negative
 controls.
 """
 
 from __future__ import annotations
+
+import json
 
 import pytest
 
@@ -439,3 +443,47 @@ def test_a_conversational_reply_offering_more_is_rejected(reply: str) -> None:
 )
 def test_a_conversational_reply_without_an_offer_passes(reply: str) -> None:
     assert not _violates(reply, "¿nos quedamos un rato calladitos?", None)
+
+
+# ------------------------------------------------------------------ the sound already on is said as read
+
+
+def _sound_on_at_zero() -> dict:
+    return {
+        "kind": "operation", "operation": "audio.mute", "polarity": "success", "verified": True, "succeeded": True,
+        "observed": {
+            "operation": "audio.mute", "targetId": "default_output", "endpointIdHash": "0" * 64,
+            "baseline": {"volumePercent": 0, "muted": False}, "final": {"volumePercent": 0, "muted": False},
+            "applied": False, "reconciled": False,
+        },
+    }
+
+
+def _sound_defect(reply: str, asked: str) -> str:
+    situation = _sound_on_at_zero()
+    payload = llm._compose_situation_payload(situation, "es", asked)
+    return llm.compose_visible_defect(reply, "status", asked, {"situation": json.dumps(situation)}) or (
+        llm._payload_fact_defect(reply, payload, asked)
+    )
+
+
+@pytest.mark.parametrize(
+    ("asked", "reply"),
+    [
+        ("devuélveme el sonido porfa", "El sonido ya está activo y el volumen está en cero."),
+        ("sound back on pls", "The sound is already on; the volume is at zero."),
+    ],
+)
+def test_the_sound_on_with_its_level_said_as_a_word_passes(asked: str, reply: str) -> None:
+    assert _sound_defect(reply, asked) == ""
+
+
+@pytest.mark.parametrize(
+    ("asked", "reply"),
+    [
+        ("devuélveme el sonido porfa", "El sonido está desactivado y el volumen es cero."),
+        ("sound back on pls", "The sound is disabled and the volume is at zero."),
+    ],
+)
+def test_the_sound_said_disabled_over_an_unmuted_read_is_a_reversed_mute(asked: str, reply: str) -> None:
+    assert _sound_defect(reply, asked) == "reversed_mute"
