@@ -6251,10 +6251,8 @@ def _compose_situation_payload(
             visible_seen = project_system_measurements(visible_seen)
         elif operation == "system.process.list":
             visible_seen = project_process_measurements(visible_seen, user_text)
-        elif operation == "weather.current" and not weather_asks_coming_days(user_text):
-            # Uso real tanda 6: the days after tomorrow answer only a question about them; unasked, they
-            # would only lengthen every weather compose.
-            visible_seen.pop("laterDays", None)
+        elif operation == "weather.current":
+            visible_seen = _project_weather_read(visible_seen, user_text)
         elif (
             operation == "app.installed"
             and visible_seen.get("authority") == "windows_start_catalog_snapshot"
@@ -8864,6 +8862,24 @@ def _weather_focus(user_text: str, english: bool) -> str:
     )
 
 
+_OWN_PLACE_FIELDS = ("location", "region", "country", "locatedBy")
+
+
+def _project_weather_read(seen: dict, user_text: str) -> dict:
+    """What of the weather read the narrator gets: the part the question asks (the checks keep the whole read).
+
+    Uso real tanda 6b «let me know my current location»: given the whole read, all three drafts added the
+    temperature, humidity and wind and died as extra_claim; the place alone leaves no weather to recite. Tanda 6:
+    the days after tomorrow answer only a question about them; unasked, they would only lengthen every compose."""
+
+    if asks_own_place(user_text):
+        return {key: seen[key] for key in _OWN_PLACE_FIELDS if key in seen}
+    projected = dict(seen)
+    if not weather_asks_coming_days(user_text):
+        projected.pop("laterDays", None)
+    return projected
+
+
 def _weather_answer_instruction(user_text: str, language: str) -> str:
     """What a weather reply says: the one thing the question asks of the read.
 
@@ -8875,6 +8891,13 @@ def _weather_answer_instruction(user_text: str, language: str) -> str:
     """
 
     english = language == "en"
+    if asks_own_place(user_text):
+        # Tanda 6b: only the place is sent (_project_weather_read); nothing of the weather is described.
+        return _weather_focus(user_text, english) + (
+            " Answer only that, in one short sentence, without naming how the place was found."
+            if english
+            else " Contesta sólo eso, en una oración corta, sin nombrar cómo se supo el lugar."
+        )
     fields = (
         "seen is the weather of seen.location (seen.country) now: temperatureC, apparentC (feels like), "
         "condition (sky), windKmh, humidityPercent, dewPointC (dew point), uvIndex (UV index now), "
@@ -8927,7 +8950,8 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     if payload.get("operation") != "weather.current":
         return ""
     seen = payload.get("seen")
-    if not isinstance(seen, dict) or "temperatureC" not in seen:
+    # Tanda 6b: the place asked alone is sent without the weather (_project_weather_read) and is checked too.
+    if not isinstance(seen, dict) or not ("temperatureC" in seen or "location" in seen):
         return ""
     observed: set[str] = set()
     for key in ("temperatureC", "apparentC", "humidityPercent", "windKmh", "precipitationMm", "uvIndex", "dewPointC"):
@@ -9009,13 +9033,14 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         # Tanda 4c «i'd like to know my current location»: the place read is the
         # answer (named above); the weather was not asked. Uso real tanda 6 «let me
         # know my current location» still added the temperature, humidity and wind:
-        # a reading of the weather in the reply is a claim nobody asked for.
+        # a reading of the weather in the reply is a claim nobody asked for. Tanda
+        # 6b: only the place is sent now, so the sky is named by its words too.
         condition = _reading_fold(str(seen.get("condition") or ""))
         if (
             re.search(r"\d", text)
             or re.search(
                 r"\b(?:temperatura|temperature|grados|degrees|humedad|humidity|viento|wind|clima|weather|"
-                r"lluvia|rain|cielo|sky)\b",
+                r"lluvia|rain|cielo|sky|nublad[oa]|soleado|despejado|cloudy|sunny|frio|calor|cold|hot|warm|mild)\b",
                 folded_text,
             )
             or (condition not in ("", "sin dato") and re.search(r"\b" + re.escape(condition) + r"\b", folded_text))
@@ -21138,7 +21163,11 @@ class LlmRuntime:
                     else "No afirmes un estado del tiempo, temperatura ni pronóstico que los resultados no contengan; di sólo lo que afirma algún resultado, o que no lo encontraste, sin nombrar ninguna página ni sitio."
                 ),
                 "invented_number": (
-                    "Use only the observed numbers from seen.monitors (width, height, refreshHz) and seen.monitorCount; no other number."
+                    # Tanda 6b: a weather draft with a number not sent (the place asked alone carries none) is told
+                    # the asked focus, as extra_claim is; the monitors hint named fields a weather read lacks.
+                    _weather_focus(user_text or "", response_language == "en")
+                    if situation.get("operation") == "weather.current"
+                    else "Use only the observed numbers from seen.monitors (width, height, refreshHz) and seen.monitorCount; no other number."
                     if response_language == "en"
                     else "Usa sólo los números observados de seen.monitors (width, height, refreshHz) y seen.monitorCount; ningún otro número."
                 ),
