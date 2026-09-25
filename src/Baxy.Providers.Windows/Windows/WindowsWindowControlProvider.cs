@@ -307,7 +307,12 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             return new WindowMinimizeAllResult(false, false, 0, 0, 0, WindowControlErrorCodes.InventoryFailed);
         }
 
-        List<WindowSnapshot> targets = desktop.Where(static window => window.State != "minimized").ToList();
+        // Uso real (tandas 4–7, the official window): «abre el homescreen» minimized BAXY's own window with the
+        // rest; its reply was written into a minimized window and the person saw nothing. Showing the desktop
+        // leaves the companion the person is talking to on screen.
+        List<WindowSnapshot> targets = desktop
+            .Where(static window => window.State != "minimized" && !OwnProcessNames.Contains(window.Identity.ProcessName))
+            .ToList();
         if (targets.Count == 0)
         {
             return new WindowMinimizeAllResult(true, true, desktop.Count, 0, 0, null);
@@ -365,9 +370,15 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
     // the person's work, the terminal and this product; a window that stays —
     // an application asking whether to save, a client that refuses — is
     // counted as remaining and never forced, so no document is lost.
+    // The product's own windows: the App runs as «Baxy» (Baxy.exe), and «Baxy.App» in development hosts.
+    private static readonly HashSet<string> OwnProcessNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Baxy", "Baxy.App", "baxy-core",
+    };
+
     private static readonly HashSet<string> KeptProcessNames = new(StringComparer.OrdinalIgnoreCase)
     {
-        "Code", "Code - Insiders", "WindowsTerminal", "baxy-core", "Baxy.App",
+        "Code", "Code - Insiders", "WindowsTerminal", "baxy-core", "Baxy.App", "Baxy",
     };
 
     public async ValueTask<WindowCloseAllResult> CloseAllAsync(CancellationToken cancellationToken)
