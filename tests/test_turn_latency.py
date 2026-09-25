@@ -317,6 +317,41 @@ def test_the_guard_decodes_beside_the_selector_and_serves_the_later_read() -> No
     assert runtime.posts == before == ["guard", "selector"]  # type: ignore[attr-defined]
 
 
+def test_one_guard_reading_serves_the_request_with_and_without_its_envelope() -> None:
+    # Tanda-06b: the turn decides on the routing text («Cuál es…?») and the conversation
+    # presentation read the request as said («¿Cuál es…?»): a second, serial G per question.
+    guard_users: list[str] = []
+
+    def guard(_cancellation: object) -> dict[str, object]:
+        return _guard_reply(_cancellation)
+
+    runtime = _parallel_runtime(_CONVERSATION, guard)
+    posted = runtime._post
+
+    def post(payload: dict[str, object], *args: object, **kwargs: object) -> dict[str, object]:
+        messages = payload["messages"]
+        if messages[0]["content"] == SEMANTIC_EFFECT_GUARD_PROMPT:  # type: ignore[index]
+            guard_users.append(messages[1]["content"])  # type: ignore[index]
+        return posted(payload, *args, **kwargs)
+
+    runtime._post = post  # type: ignore[method-assign]
+    routing = "Cuál es la diferencia entre un auto a gasolina y uno eléctrico?"
+    for said in (f"¿{routing}", f"Hola BAXY, ¿{routing}"):
+        runtime._semantic_effect_cache = {}
+        runtime.__dict__.pop("_semantic_request_types", None)
+        runtime.posts = []  # type: ignore[attr-defined]
+        guard_users.clear()
+        assert runtime.decide_turn(routing, [_candidate("system.time", "Read the local clock.")])["mode"] == (
+            "conversation"
+        )
+        assert runtime._verify_semantic_effect_shape(said) == ("no_effect", "zero")
+        assert runtime.public_lookup_requested(said) is False
+        assert runtime.public_lookup_requested(routing) is False
+        assert runtime.posts == ["guard", "selector"]  # type: ignore[attr-defined]
+        # G reads the request itself, never its envelope.
+        assert guard_users == [f"Mensaje actual:\n{routing}"]
+
+
 def test_an_action_retires_the_guard_without_waiting_for_it() -> None:
     cancelled = threading.Event()
 

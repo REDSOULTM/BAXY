@@ -920,6 +920,20 @@ SEMANTIC_EFFECT_GUARD_PROMPT = (
     "operaciones ni inventes contexto."
 )
 
+
+def _guard_request_text(text: str) -> str:
+    """The request the effect guard G classifies: its words without their envelope.
+
+    Tanda-06b (2026-09-24): G read the turn's routing text («Cuál es…?») beside
+    the selector, and the conversation presentation then read the same request
+    with its envelope («¿Cuál es…?»): a second, serial G of 0.4–1.1 s on every
+    such question before the reply could be published. The envelope (``¿``, «hola
+    baxy,», «por favor», a closing «gracias») is not part of the request by the
+    grammar every reader shares, so one reading serves every consumer of G.
+    """
+
+    return _strip_request_envelope(text).strip() or text
+
 TURN_EFFECT_REANALYSIS_PROMPT = (
     "Reanaliza el turno usando la observación semántica independiente adjunta. "
     "La observación no conoce ni elige operaciones: sólo distingue si existe "
@@ -16211,6 +16225,7 @@ class LlmRuntime:
         it; otherwise runs the guard once. Never selects an operation.
         """
 
+        text = _guard_request_text(text)
         remembered = self.__dict__.get("_semantic_request_types") or {}
         if text not in remembered:
             cache = getattr(self, "_semantic_effect_cache", None)
@@ -16237,6 +16252,7 @@ class LlmRuntime:
         re-analysis. It never selects an operation or rewrites primary effects.
         """
 
+        text = _guard_request_text(text)
         cache = getattr(self, "_semantic_effect_cache", None)
         if cache is not None and text in cache:
             return cache[text]
