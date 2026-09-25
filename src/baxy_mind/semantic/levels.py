@@ -217,6 +217,22 @@ _OTHER_OBJECT = re.compile(
     r"\b(?:brillo|brightness|pantalla|screen|microfono|microphone|mic|micro|tele|tv|television|llamada|call|"
     r"discord|zoom|teams|spotify|youtube|chrome|juego|game|vecino|neighbou?r|voz\s+de)\b"
 )
+# Tanda 8 «the screen is way too bright» was asked what it meant: the same complaint about the screen's light asks
+# for less (or more) brightness. It needs the screen or its brightness named, so «the sun is too bright» and «esta
+# película es muy oscura» say nothing about it; «alto/bajo» count only with the brightness itself («el brillo está
+# muy alto»), since «la pantalla está muy alta» is its height.
+_INTENSE = r"(?:muy|demasiado|tan|super|re|too|so|really)"
+_TOO_BRIGHT = re.compile(
+    rf"\b{_INTENSE}\s+(?:brillantes?|bright|clar[oa]|luminos[oa])\b|\bbrilla\s+(?:demasiado|mucho|too\s+much)\b|"
+    rf"\b(?:demasiado|mucho|too\s+much)\s+(?:brillo|brightness)\b|"
+    rf"\b(?:brillo|brightness)\b.*\b{_INTENSE}\s+(?:alto|alta|high)\b"
+)
+_TOO_DARK = re.compile(
+    rf"\b{_INTENSE}\s+(?:oscur[oa]s?|dark|dim|tenue)\b|\b(?:muy\s+poco|poco|not\s+enough)\s+(?:brillo|brightness)\b|"
+    rf"\b(?:brillo|brightness)\b.*\b{_INTENSE}\s+(?:bajo|baja|low)\b"
+)
+_SEEING = re.compile(r"\b(?:pantalla|screen|display|monitor|brillo|brightness)\b")
+_OTHER_SCREEN = re.compile(r"\b(?:celular|movil|telefono|phone|tele|tv|television|tablet|ipad|consola|console)\b")
 _QUESTION = re.compile(r"^(?:por\s*que|porque|why|como|how|que|what|cual|is|are|does)\b")
 # A complaint is said as a state («está muy fuerte», «sounds too loud»), with an excess word («demasiado»,
 # «too») or as a refusal to hear it like that («I don't wanna hear it tan alto»). A wish to hear it loud
@@ -434,28 +450,35 @@ def read(text: str) -> Level | None:
 
 
 def _complaint(cleaned: str, *, question: bool) -> Level | None:
-    """«I don't wanna hear it tan alto»: how it sounds, said as a complaint, is a volume request without amount."""
+    """«I don't wanna hear it tan alto», «the screen is way too bright»: how it sounds or how the screen looks,
+    said as a complaint, is a volume or brightness request without amount."""
 
     if (
         question
         or _QUESTION.search(cleaned)
-        or _HEARING.search(cleaned) is None
-        or _OTHER_OBJECT.search(cleaned)
         or _is_past_or_hypothetical_state(cleaned)
         or re.search(r"\d", cleaned)
     ):
         return None
-    loud, quiet = _TOO_LOUD.search(cleaned) is not None, _TOO_QUIET.search(cleaned) is not None
+    if _SEEING.search(cleaned) is not None:
+        if _HEARING.search(cleaned) is not None or _OTHER_SCREEN.search(cleaned) is not None:
+            return None
+        setting, more, less = BRIGHTNESS, _TOO_BRIGHT, _TOO_DARK
+    elif _HEARING.search(cleaned) is not None and _OTHER_OBJECT.search(cleaned) is None:
+        setting, more, less = VOLUME, _TOO_LOUD, _TOO_QUIET
+    else:
+        return None
+    loud, quiet = more.search(cleaned) is not None, less.search(cleaned) is not None
     if loud == quiet:
         return None
     negated, desire = _NEGATION.search(cleaned) is not None, _DESIRE.search(cleaned) is not None
-    unheard = re.search(r"\bno\s+se\s+(?:escucha|oye)\b|\b(?:barely|can'?t|cannot)\s+hear\b", cleaned) is not None
+    unheard = re.search(r"\bno\s+se\s+(?:escucha|oye|ve)\b|\b(?:barely|can'?t|cannot)\s+(?:hear|see)\b", cleaned) is not None
     if desire != negated and not unheard:
         # A wish without a refusal, or a denial without a wish («no está muy alto»), is not this complaint.
         return None
     if not (desire or unheard or _STATE.search(cleaned) or _EXCESS.search(cleaned)):
         return None
-    return Level(VOLUME, "down" if loud else "up", None, None)
+    return Level(setting, "down" if loud else "up", None, None)
 
 
 def answer(text: str) -> Level | None:

@@ -5,6 +5,9 @@ the readers already own are data added to that reader, in ``semantic/``; nothing
 
 - «can you skip this song», «go passed the song now» → «What song would you like to skip?»: skipping, jumping or
   going past the song that plays is the next one. Owner: semantic/media._media_transport_action.
+- «the screen is way too bright» → «Do you mean the screen is too bright for your current environment…?»: a
+  complaint about the screen's light is the brightness down (or up), without an amount, so it asks how much (owner
+  rule H0027), like the loudness complaint. Owner: semantic/levels._complaint.
 
 The phrasings below are paraphrases (es/en/spanglish, dialects, typos) the fixes do not name, with negative controls.
 """
@@ -14,6 +17,7 @@ from __future__ import annotations
 import pytest
 
 from baxy_mind import __main__ as sidecar
+from baxy_mind.semantic import levels
 from baxy_mind.semantic.reading import read
 
 OPERATIONS = (
@@ -69,3 +73,58 @@ def test_the_song_that_plays_skipped_is_the_next_track(text: str) -> None:
 )
 def test_other_skips_and_changes_are_not_the_next_track(text: str) -> None:
     assert "media.control" not in _effects(text)
+
+
+# ------------------------------------------------------------------ a complaint about the screen's light
+
+
+@pytest.mark.parametrize(
+    ("text", "direction"),
+    [
+        ("the screen is way too bright", "down"),
+        ("my screen is so bright", "down"),
+        ("the monitor is too bright", "down"),
+        ("la pantalla está demasiado brillante", "down"),
+        ("mi pantalla está re brillante", "down"),
+        ("la pantalla está súper clara", "down"),
+        ("la pantalla brilla demasiado", "down"),
+        ("hay demasiado brillo", "down"),
+        ("el brillo está muy alto", "down"),
+        ("the brightness is way too high", "down"),
+        ("está muy oscura la pantalla", "up"),
+        ("no se ve nada, la pantalla está muy oscura", "up"),
+        ("the display is too dim", "up"),
+        ("screen's too dark", "up"),
+        ("el brillo está demasiado bajo", "up"),
+    ],
+)
+def test_a_complaint_about_the_screens_light_asks_how_much_brightness(text: str, direction: str) -> None:
+    assert levels.read(text) == levels.Level(levels.BRIGHTNESS, direction, None, None)
+    reading = read(text, available_operations=OPERATIONS)
+    assert reading.effects is None
+    assert reading.clarification is not None and reading.clarification.operation == "system.settings.adjust"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "¿por qué la pantalla está tan brillante?",
+        "quiero la pantalla muy brillante",
+        "la pantalla no está muy brillante",
+        "ayer la pantalla estaba muy oscura",
+        "the sun is too bright",
+        "esta película es muy oscura",
+        "la pantalla está muy alta",
+        "la pantalla del celular está muy brillante",
+        "la música está muy fuerte y la pantalla muy brillante",
+    ],
+)
+def test_other_remarks_about_light_are_not_a_brightness_complaint(text: str) -> None:
+    level = levels.read(text)
+    assert level is None or level.setting != levels.BRIGHTNESS
+
+
+def test_the_loudness_complaint_still_asks_how_much_volume() -> None:
+    assert levels.read("está muy fuerte la música") == levels.Level(levels.VOLUME, "down", None, None)
+    assert levels.read("the music is too loud") == levels.Level(levels.VOLUME, "down", None, None)
+
