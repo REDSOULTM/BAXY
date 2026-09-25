@@ -87,16 +87,26 @@ con antecedente es el objeto de ese antecedente, nunca «lo que esté delante».
 
 | Módulo | Qué es | Regla |
 |---|---|---|
-| `normalize.py` | el único fold (minúsculas, sin tildes, espacios) | antes había cuatro copias idénticas en effect_intent, request_reading, llm y el hueco |
+| `normalize.py` | el único fold (minúsculas, sin tildes, espacios), el de palabras (`_policy_guard_text`: la puntuación es espacio) y el que conserva la puntuación (`_accent_folded_with_punctuation`) | antes había cuatro copias idénticas en effect_intent, request_reading, llm y el hueco; los dos últimos salieron de `llm` con sus lectores (2026-09-25) |
+| `request.py` | la lectura única del pedido: idioma (también el de un turno de conversación y la respuesta neutra «sí/confirmar»), saludo, intenciones (identidad, capacidad, restricciones) | era `baxy_mind/request_reading.py`; pasó entera (2026-09-25). `first_signal` ya no tiene su propio lector de idioma |
+| `conversation.py` | lo que se contesta hablando: acto social, «no entendí», conocimiento y factoides, aritmética, descripción, charla personal, límites cerrados, conversación estable sin efecto, app o juego no instalado; la forma de respuesta pedida (`_conversation_presentation_shape`: contenido libre, risa, directiva de conducta, deletreo, versus, sarcasmo…), el sorteo, lo que se pide repetir, y las lecturas del pedido que usan los vetos del compositor (pregunta sí/no sobre lo propio, «¿qué es esto?», cargo público actual) | salió de `__main__` y `llm` (2026-09-25). Devuelve lecturas (tipo de conversación e idioma, o si la forma está); `__main__._conversation_turn_decision` arma la decisión |
+| `arguments.py` | el ligador de argumentos: los valores literales de cada operación leídos de las palabras de la persona (`_explicit_arguments_from_evidence` y sus lectores por familia, hora canónica, correferencia ordinal de un paso del plan) | salió de `__main__` (2026-09-25); `__main__._ground_explicit_arguments` lo contrasta con el esquema del catálogo |
 | `lexicon.py` | las palabras de cada familia, dichas una vez: micrófono (sustantivos, verbos de silenciar / activar), volumen, brillo, ajustes del PC, restaurar el sonido | el lector del patrón, la guarda de dominio, las pistas de estado del planner y el veto importan lo mismo; un sinónimo se añade una vez («micro», «prender», «devolver el sonido») |
 | `grammar.py` | la gramática compartida del pedido: sobre (saludos, cortesía, «¿podés…?», «volvé a…», «ahora/luego…» + verbo), cabeza, cláusulas, negación | `_head_is` reconoce **formas**, no entradas: la cabeza tal cual, sin clíticos («cerralo» → «cerra»), y el voseo como infinitivo («cerra» → «cerrar»). Una lista de verbos ya no necesita «cerralo», «abrilo», «devolvele» |
-| `dialogue.py` | el hueco de diálogo (arriba) | un rechazo («no, dejalo», «mejor no», «never mind») nunca completa el pedido pendiente; «no, en YouTube» lleva destino y sí |
+| `dialogue.py` | el hueco de diálogo (arriba), el antecedente del pedido y la aclaración pendiente del historial | un rechazo («no, dejalo», «mejor no», «never mind») nunca completa el pedido pendiente; «no, en YouTube» lleva destino y sí |
 | `intent.py`, `catalog.py`, `temporal.py` | el tipo de lectura (`EffectIntent`), los índices de apps y juegos instalados, las palabras de tiempo | compartidos por varios dominios: ningún dominio importa de otro para esto |
 | dominios | `audio`, `display`, `windows`, `media`, `web`, `files`, `games`, `network`, `system`, `notes`, `messaging`, `ui`, `apps` | los lectores acíclicos que estaban en `effect_intent` (19 140 → 13 133 líneas). Traslado puro: las 4 946 lecturas del patrón del corpus son idénticas antes y después (`pattern_dump`) |
 | `levels.py` | los niveles de salida (volumen del sistema, brillo) dichos sin objeto, mezclando idiomas, secos («Brillo 20%») o como respuesta a «¿cuánto?» | no decide efectos: reescribe el pedido en la frase canónica que ya leen los lectores de volumen y brillo (`patterns.output_level_request`); una cantidad suelta sólo completa el pedido relativo inmediatamente anterior, «a 40» es el nivel final y «20» lo que se mueve; sin cantidad pregunta cuánto (H0027) |
 | `surface.py` | la superficie canónica: las palabras con que la persona nombra algo servido y que ningún lector conoce («speaker/bocina/parlante» → «el audio», «hacer sonar» → «poner», «quiero/me apetece que + subjuntivo» → imperativo, «inactivar» → «desactivar», «gallery/galería» → «carpeta de imágenes», «añadir una lista» → «crea una lista», «pon en pausa» → «pausa»), con su tabla en `lexicon` | como `levels`, no decide efectos: antes de publicar un límite, `__main__._served_surface_reread` relee la reescritura con los lectores y las guardas de siempre (tanda 3, 2026-09-24) |
 | `reading.py` | la puerta `read(text, …) -> Reading` y las formas de enunciado (orden con charla alrededor, destino delante, deseo de escuchar, cláusulas de una compuesta y su oferta parcial, charla que no pide nada) | `__main__._decide_turn_result` consume la lectura; el conteo «una sola resolución por turno» sigue probado (`test_turn_resolves_explicit_effects_only_once`) |
 | `patterns.py` | el orquestador del patrón: `resolve_explicit_effects`, `resolve_explicit_clarification_intent`, las revisiones por dominio que se llaman entre sí, los contratos compuestos | salió entero de `effect_intent` (traslado puro, 0 diferencias en 4 946 lecturas); `effect_intent` queda como capa de re-exportación de 687 líneas mientras los llamadores migran |
+
+**Unificación (dueño, 2026-09-24): toda lectura del pedido va a `semantic/`.** `__main__`, `llm` y los módulos de
+prosa consumen lecturas; no aplican patrones propios al texto de la persona salvo para redactar (eco, cita), para
+contrastar un valor con sus palabras literales o sobre el habla antes de ser pedido. Lo cuenta
+`scripts/inventory_reading_outside_semantic.py` y lo exige `tests/test_reading_lives_in_semantic.py`: una lectura
+nueva fuera de `semantic/` falla hasta moverla a su familia o revisar por qué no es lectura. Inventario y cifras:
+`artifacts/comprobaciones/C03/UNIFICACION_LECTURA_2026-09-25.md`.
 
 Formas nuevas (Fase 3.5, cada una con pruebas de frases que no son las que la originaron):
 
@@ -184,9 +194,9 @@ entre sí) va a `patterns.py` al final; antes salen los lectores acíclicos de c
 
 | Módulo | Qué lee | De dónde sale hoy |
 |---|---|---|
-| `normalize.py` | fold único (tildes, mayúsculas), clíticos, voseo, número en palabras, typos ≤2 contra el catálogo | `effect_intent._fold`, `request_reading.fold`, `corrector`, `dialogue_slot._fold` |
+| `normalize.py` | fold único (tildes, mayúsculas), clíticos, voseo, número en palabras, typos ≤2 contra el catálogo | `effect_intent._fold`, `request.fold`, `corrector`, `dialogue_slot._fold` |
 | `guards.py` | guardas de entrada sin pedido (corte, habla ajena, ruido, eco, ruta suelta) | ya trasladadas desde `__main__` |
-| `identity.py` | qué es BAXY, qué no hace y por qué (límites de primera clase) | `request_reading` (identidad/capacidad), `known_unsupported_effect_request`, `_closed_unsupported_request` |
+| `identity.py` | qué es BAXY, qué no hace y por qué (límites de primera clase) | `request` (identidad/capacidad), `known_unsupported_effect_request`, `conversation._closed_unsupported_request` |
 | lectores con historial | oferta de Wi-Fi pendiente, respuesta de lugar, pronombre de búsqueda del navegador, «repetilo», estado de una ventana nombrada antes | siguen en `__main__` antes de `read()`; pasan a `reading` cuando `read()` reciba el historial |
 | `memory.py` | guardar, recordar y olvidar datos de la persona | hoy la ruta es del shell (`NaturalMemoryRequestParser`); la puntuación de capas la deja fuera |
 

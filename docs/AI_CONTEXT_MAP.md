@@ -13,7 +13,7 @@ dice tu goal.
 | Quiero… | Empieza por | Y arrastra |
 |---|---|---|
 | Añadir o cambiar una **operación** | `src/Baxy.Kernel/Operations/ProductCatalog.cs` | handler en `src/Baxy.Core/Operations/`, provider en `src/Baxy.Providers.Windows/<área>/`, alias en `src/baxy_mind/data/catalog_operation_aliases.v1.json`, pruebas en `tests/Baxy.Kernel.Tests` y `tests/Baxy.Integration.Tests` |
-| Cambiar **cómo se entiende** una petición | `src/baxy_mind/router.py`, `family_classifier.py`, `semantic_family_arbiter.py` | corpus en `src/baxy_mind/data/`, `tools/router_bank_sources.py`, pruebas `tests/test_catalog_*`, `tests/test_*router*` |
+| Cambiar **cómo se entiende** una petición | `src/baxy_mind/semantic/` (mapa: `documentacion/SEMANTICA.md`; toda lectura del pedido vive ahí), `router.py`, `family_classifier.py`, `semantic_family_arbiter.py` | corpus en `src/baxy_mind/data/`, `tools/router_bank_sources.py`, pruebas `tests/test_catalog_*`, `tests/test_*router*` |
 | Cambiar el **plan** de una misión compuesta | `src/baxy_mind/planner.py`, `src/Baxy.Kernel/Planning/` | `src/Baxy.Kernel/Mission/MissionEngine.cs`, `tests/Baxy.Integration.Tests` |
 | Cambiar **autorización, riesgo o confirmación** | `src/Baxy.Kernel/Policy/`, `src/Baxy.Kernel/Mission/` | journal en `src/Baxy.Kernel/Journal/`, `tests/Baxy.Kernel.Tests` |
 | Cambiar el **protocolo** mente↔kernel | `src/Baxy.Contracts/ProtocolContracts.cs` | `src/baxy_mind/protocol.py` — **los dos extremos, siempre**; `tests/Baxy.Contracts.Tests` |

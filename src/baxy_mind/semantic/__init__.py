@@ -6,4 +6,6 @@
 - ``lexicon``    each domain's nouns and verbs, said once and imported by every stage that reads them.
 - ``dialogue``   the dialogue slot: when a message depends on the previous turn and how it is rearmed.
 - ``request``    the single reading of the request: language, greeting and what is really asked.
+- ``conversation`` what is answered by talking (social acts, knowledge, limits, the form of answer asked).
+- ``arguments``  the argument binder: each operation's literal values read from the person's words.
 """
