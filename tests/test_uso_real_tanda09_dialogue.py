@@ -37,15 +37,21 @@ One owner per rule:
    form too («3:45», «4 pm», the part of the day first); the alarm just set is replaced, and a clock that replaces
    one said «for» is said «at» («for 3:45» also names the alarm set for then). Both turns ended in ⚠. Owners:
    semantic/dialogue._VALUE_FRAME, _CLOCK_HOUR, _PART_OF_DAY_FIRST, Followup.value, corrected_request.
+10. A time said to BAXY's open question («What would you like me to do?») in a conversation about alarms is the
+   alarm: the rewrite of an answer is shown a worked conversation of that form (the model had kept it as said).
+   Owner: llm._REWRITE_EXAMPLES.
 
 Every list holds fresh phrasings (Spanish dialects, English, Spanglish); none is a literal of the tanda.
 """
 
 from __future__ import annotations
 
+import json
+
 import pytest
 
 from baxy_mind import __main__ as sidecar
+from baxy_mind import llm
 from baxy_mind.semantic import dialogue, levels
 
 OPERATIONS = (
@@ -121,6 +127,19 @@ def test_a_noun_or_an_order_that_only_ends_like_a_clitic_is_read_on_its_own(text
     assert _dependency(_WEATHER, text) is None
     # Nothing is sent to the model: a complete request never inherits the place before it.
     assert _rearm(_message(*_WEATHER, text), _Scripted()) is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["cómo se preparan los tamales verdes", "qué es la fotosíntesis", "cuántas calorías tienen las enchiladas"],
+)
+def test_a_complete_question_never_takes_the_persons_place(text):
+    # Coordinator's acceptance case: the recipe was rewritten with the verified place appended and its good answer
+    # rejected as off-subject. A complete, self-contained question is never sent to the rewrite.
+    state = dialogue.DialogueState()
+    state.expect(_WEATHER[0], ["weather.current"])
+    state.record(_verified("weather.current", {"location": "Rosario", "region": "Santa Fe", "country": "Argentina"}))
+    assert _rearm(_message(*_WEATHER, text), _Scripted(), state) is None
 
 
 @pytest.mark.parametrize(
@@ -393,3 +412,22 @@ def test_a_correction_of_the_alarm_just_set_replaces_it_with_the_value_said(said
 @pytest.mark.parametrize("text", ["for 9", "at 7"])
 def test_a_number_without_a_clock_form_stays_an_amount(text):
     assert dialogue.shape(text, "followup") == "amount"
+
+
+# ---------------------------------------------------------------- 10. a time for BAXY's open question
+
+
+def test_an_answer_is_shown_a_time_given_to_an_open_question_about_alarms():
+    runtime = object.__new__(llm.LlmRuntime)
+    seen: list[dict] = []
+
+    def post(payload: dict, **_kwargs: object) -> dict:
+        seen.append(payload)
+        return {"choices": [{"message": {"content": json.dumps({"request": "set an alarm for 9:10 pm"})}}]}
+
+    runtime._post = post  # type: ignore[method-assign]
+    context = [("persona", "show my alarms"), ("BAXY", "You have no alarms."), ("BAXY", "What should I do?")]
+    runtime.rewrite_in_context("it will be 9:10 pm", context, dependency="answer", shape="answer")
+    shown = [message["content"] for message in seen[0]["messages"] if message["role"] == "user"][:-1]
+    assert any("alarm" in example and example.rstrip().endswith("am") for example in shown)
+    assert len(shown) <= llm._REWRITE_EXAMPLES_SHOWN
