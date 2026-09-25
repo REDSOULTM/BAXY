@@ -17,7 +17,7 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 |---|---|---|
 | F0 etiqueta y ficheros | hecho | — |
 | F1 conjuntos DEV-A / DEV-B / FINAL + puntuador + base | **hecho** | DEV-A 59,6 %, DEV-B 69,2 % |
-| F2 diagnóstico por camino + modelo libre | en curso | — |
+| F2 diagnóstico por camino + modelo libre | casi hecho (falta variante reescrita de Qwen3.5) | Qwen3.5-4B libre: DEV-A 70,0 %, DEV-B 77,5 %, seguimientos B 84,8 % (`DIAGNOSTICO_F2_2026-09-25.md`) |
 | F3 torneo de modelos | pendiente | — |
 | F4 mecanismos | pendiente | — |
 | F5 ventana oficial con DEV-B | pendiente | — |
