@@ -10361,7 +10361,8 @@ def _review_media_and_email_effects(
             folded,
             "media.control",
             (
-                r"\b(?:siguiente|next|anterior|previous|viene|sigue|antes|forward|back|deten(?:e|er)?|para|parar|stop)\b"
+                r"\b(?:siguiente|next|anterior|previous|viene|sigue|antes|forward|back|deten(?:e|er)?|para|parar|stop|"
+                r"skip\w*|salta\w*|pasa|pasar|past|passed|cambia\w*)\b"
                 if media_transport
                 else r"\b(?:cambia|cambiar|change|switch)\b"
                 if change_current_artist

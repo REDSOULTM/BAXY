@@ -203,13 +203,24 @@ def _media_transport_action(text: str) -> str | None:
     ):
         return "stop"
     media_object = r"(?:podcast|episodio|episode|cancion|song|pista|track|tema)"
-    for action, direction, movement, relative in (
+    # Tanda 8 «can you skip this song», tanda 7 «go passed the song now» (the ear's «past»): skipping, jumping or
+    # going past the one that plays is the next one, and so is changing it («cambia de canción», «cámbiale el
+    # tema»). Only the current one: «pasa la canción a mi celular» or «cambia la canción a Queen» say more.
+    current = (
+        rf"(?:(?:de|this|the|esta|este|la|el|a\s+(?:esta|este|la|el))\s+)?(?:current\s+)?{media_object}"
+        r"(?:\s+(?:actual|current))?"
+    )
+    for action, direction, movement, relative, replaced in (
         ("next", r"(?:siguiente|next)",
-         r"(?:skip(?:\s+forward)?|salta|saltar|saltea|saltear|pasa|pasar)",
-         r"(?:viene|sigue)"),
+         r"(?:skipp?(?:\s+forward)?|skipp?ea(?:r|la|lo)?|dale\s+skip|salta(?:te|tela|la|lo)?|saltar|saltea|saltear|"
+         r"pasa|pasar|go\s+pas(?:t|sed))",
+         r"(?:viene|sigue)",
+         rf"(?:(?:skipp?(?:\s+forward)?|skipp?ea(?:r|la|lo)?|dale\s+skip|salta(?:te|tela|la|lo)?|saltar|saltea|"
+         rf"pasa|pasar|go\s+pas(?:t|sed)|cambia(?:le|r)?)\s+{current})"),
         ("previous", r"(?:anterior|previous)",
          r"(?:skip(?:\s+back)?|go\s+back|ve|vuelve|pasa|pasar)",
-         r"(?:iba|estaba)\s+antes"),
+         r"(?:iba|estaba)\s+antes",
+         r"(?!)"),
     ):
         nominal = (
             rf"(?:(?:el|la|the)\s+)?(?:{direction}\s+{media_object}|"
@@ -220,12 +231,12 @@ def _media_transport_action(text: str) -> str | None:
         if _has(
             folded,
             r"^[^\w]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
-            rf"(?:(?:(?:pon|pone|ponme|reproduce|reproducir|play|toca|tocame)\s+)?{nominal}|"
+            rf"(?:(?:(?:pon|pone|ponme|reproduce|reproducir|play|toca|tocame)\s+)?{nominal}|{replaced}|"
             rf"{movement}\s+(?:(?:to|a)\s+{destination}|al\s+"
             rf"(?:{direction}\s+{media_object}|{media_object}\s+que\s+{relative}))|"
             rf"(?:go|skip)\s+{step_direction}\s+one\s+{media_object}"
             r"(?:\s+in\s+(?:the\s+)?(?:current\s+)?queue)?)"
-            r"(?:\s*[,;:]?\s*(?:por favor|please))?[\s.!?]*$",
+            r"(?:\s+(?:now|ya|ahora))?(?:\s*[,;:]?\s*(?:por favor|porfa|please))?[\s.!?]*$",
         ):
             return action
     return None
