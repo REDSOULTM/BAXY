@@ -7716,7 +7716,10 @@ def _rearm_in_context(
                 return audited(settled, "pattern")
     verified = dialogue_state.lines() if dialogue_state is not None else []
     try:
-        rewritten = llm.rewrite_in_context(objective, slot.context_lines(), dependency=dependency, verified=verified)
+        rewritten = llm.rewrite_in_context(
+            objective, slot.context_lines(), dependency=dependency, verified=verified,
+            shape=dialogue_slot.shape(objective, dependency),
+        )
     except Exception:  # noqa: BLE001 - a failed rewrite leaves the message as it arrived
         rewritten = None
     if rewritten is not None and not dialogue_slot.differs(rewritten, objective):

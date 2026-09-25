@@ -250,7 +250,9 @@ def test_a_question_with_its_own_object_does_not(text):
 # ---------------------------------------------------------------- 5. the rewrite is shown worked conversations
 
 
-def _rewrite_payload(text: str, context: list[tuple[str, str]], verified: list[tuple[str, str]]) -> dict:
+def _rewrite_payload(
+    text: str, context: list[tuple[str, str]], verified: list[tuple[str, str]], shape: str = "question",
+) -> dict:
     runtime = object.__new__(llm.LlmRuntime)
     seen: list[dict] = []
 
@@ -259,7 +261,9 @@ def _rewrite_payload(text: str, context: list[tuple[str, str]], verified: list[t
         return {"choices": [{"message": {"content": json.dumps({"request": "cuánto da 150 por 3"})}}]}
 
     runtime._post = post  # type: ignore[method-assign]
-    assert runtime.rewrite_in_context(text, context, dependency="followup", verified=verified) == "cuánto da 150 por 3"
+    assert runtime.rewrite_in_context(
+        text, context, dependency="followup", verified=verified, shape=shape,
+    ) == "cuánto da 150 por 3"
     return seen[0]
 
 
@@ -267,8 +271,12 @@ def test_the_rewrite_is_shown_worked_conversations_before_the_real_one():
     context = [("persona", "oye cuánto da 1200 entre 8"), ("BAXY", "1200 entre 8 da 150.")]
     messages = _rewrite_payload("¿y eso por 3?", context, [("verificado", "lugar (place): Quito")])["messages"]
     examples = [message for message in messages[1:-1] if message["role"] in {"user", "assistant"}]
-    assert len(examples) == 2 * len(llm._REWRITE_EXAMPLES)
-    assert all(json.loads(answer["content"])["request"] for answer in examples[1::2])
+    # Tanda 8 replay (rewrite p50 ~850 ms with all twelve): only the conversations of the message's shape.
+    of_shape = [example for example in llm._REWRITE_EXAMPLES if "question" in example[0]]
+    assert 2 <= len(examples) == 2 * min(len(of_shape), llm._REWRITE_EXAMPLES_SHOWN)
+    assert [json.loads(answer["content"])["request"] for answer in examples[1::2]] == [
+        example[4] for example in of_shape[: llm._REWRITE_EXAMPLES_SHOWN]
+    ]
     real = messages[-1]
     assert real["role"] == "user"
     assert real["content"] == (
@@ -282,14 +290,23 @@ def test_the_rewrite_is_shown_worked_conversations_before_the_real_one():
     )
 
 
-@pytest.mark.parametrize("example", llm._REWRITE_EXAMPLES, ids=lambda example: example[2])
+@pytest.mark.parametrize("example", llm._REWRITE_EXAMPLES, ids=lambda example: example[3])
 def test_every_worked_example_keeps_the_rule_it_teaches(example):
-    verified, context, text, rewrite = example
+    shapes, verified, context, text, rewrite = example
     slot = dialogue.DialogueSlot(None, None, tuple(line for speaker, line in reversed(context) if speaker == "persona"),
                                  next((line for speaker, line in reversed(context) if speaker == "BAXY"), None))
-    assert dialogue.leans_on_context(text) or dialogue.dependency(text, slot) is not None
+    dependency = dialogue.dependency(text, slot)
+    assert dependency is not None
     assert dialogue.differs(rewrite, text)
     assert dialogue.rewrite_stays_in_context(rewrite, text, slot, [("verificado", line) for line in verified])
+    # It is shown to the messages of its own shape.
+    assert dialogue.shape(text, dependency) in shapes
+
+
+def test_every_shape_has_a_worked_example():
+    shown = {shape for example in llm._REWRITE_EXAMPLES for shape in example[0]}
+    assert {"amount", "time", "another", "listing", "place", "pointer", "question", "item", "answer",
+            "reference", "topic", "destination"} <= shown
 
 
 _CANCEL_LATEST_SCHEMA = {

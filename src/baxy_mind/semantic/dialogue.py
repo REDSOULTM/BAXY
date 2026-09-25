@@ -751,6 +751,27 @@ def as_the_song(text: str) -> str | None:
     return said.said[: pointer.start()] + noun + said.said[pointer.end():]
 
 
+def shape(text: str, dependency: str | None) -> str:
+    """The form of a message that depends on the context: the dependency, or for a follow-up what it says — an
+    amount, a time, another item, what the person holds, a place, a thing pointed at, an item added, a question."""
+
+    if dependency != "followup":
+        return dependency or ""
+    folded = followup(text).folded
+    for name, found in (
+        ("amount", _AMOUNT_FRAGMENT.fullmatch(folded)),
+        ("time", _TIME_FRAGMENT.fullmatch(folded)),
+        ("another", _ANOTHER_FRAGMENT.match(folded)),
+        ("listing", _OWN_LISTING.fullmatch(folded)),
+        ("place", _PLACE_ANAPHOR.search(folded) or _PLACE_FRAGMENT.fullmatch(folded)),
+        ("pointer", _DEMONSTRATIVE.search(folded) or _BARE_POINTER.match(folded)),
+        ("question", _QUESTION_WORD.match(folded) or _DEFINITE_QUESTION.match(folded)),
+    ):
+        if found:
+            return name
+    return "item"
+
+
 def spanish(text: str) -> bool:
     """The message is said in Spanish (for the words BAXY adds to a rewrite)."""
 

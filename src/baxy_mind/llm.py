@@ -4088,7 +4088,8 @@ def _accent_folded_with_punctuation(value: object) -> str:
 _REWRITE_DEPENDENCY_HINTS = {
     "answer": (
         "El último mensaje responde a la pregunta que BAXY acaba de hacer: escribe el pedido de la "
-        "persona completado con esa respuesta."
+        "persona completado con esa respuesta; si sólo dice que sí a lo que BAXY ofreció, escribe ese "
+        "ofrecimiento como pedido de la persona."
     ),
     "destination": (
         "El último mensaje sólo cambia dónde (otro lugar, otra aplicación o sitio): repite el último pedido de "
@@ -4097,10 +4098,8 @@ _REWRITE_DEPENDENCY_HINTS = {
     # Tanda 8: the examples of this hint named things («goleador», «partido») the model copied into rewrites
     # of other conversations; the worked examples are the shared few-shot turns (_REWRITE_EXAMPLES).
     "followup": (
-        "El último mensaje sigue la conversación: dice sólo lo que cambia (un día, una hora, un lugar, una "
-        "cantidad, otra canción), señala con «eso», «allá», «esta», «it» algo ya dicho, verificado o contestado "
-        "por BAXY, o pregunta algo más sobre lo mismo. Escribe el pedido anterior de la persona con ese cambio, o "
-        "la pregunta con la cosa, el número, el lugar, el día o el tema que señala."
+        "El último mensaje sigue la conversación: escribe el pedido anterior de la persona con lo que cambia, o la "
+        "pregunta con la cosa, el número, el lugar, el día o el tema que señala."
     ),
     "reference": (
         "El último mensaje usa un pronombre (lo, la, le) que nombra algo que la persona dijo antes: "
@@ -4116,42 +4115,53 @@ _REWRITE_DEPENDENCY_HINTS = {
 # percent» and «is the entrance free» unchanged. Worked conversations, one per shape (a number BAXY computed, a
 # day, a correction or an answer to BAXY's question, a level answered, an item added to a list or asked about, a
 # timer corrected, what is set, a topic, a thing BAXY named, a place said «allá», another song), shown as turns
-# of the same form as the real input. None is a phrase of a measured tanda. (verified, conversation, message,
-# rewrite).
-_REWRITE_EXAMPLES: tuple[tuple[tuple[str, ...], tuple[tuple[str, str], ...], str, str], ...] = (
-    ((), (("persona", "cuánto es 18 por 45"), ("BAXY", "18 por 45 es 810.")), "¿y eso dividido en 3?",
-     "cuánto es 810 dividido en 3"),
-    (("lugar (place): Lima, Perú",), (("persona", "¿llueve hoy?"), ("BAXY", "Hoy en Lima no llueve.")),
-     "¿y pasado mañana?", "¿llueve pasado mañana en Lima?"),
-    ((), (("persona", "recuérdame llamar al dentista mañana a las 5"),
-          ("BAXY", "¿A las 5 de la mañana o de la tarde?")),
+# of the same form as the real input. None is a phrase of a measured tanda.
+# Tanda 8 replay: the twelve cost ~750 prompt tokens (rewrite p50 ~850 ms). Each is tagged with the shapes it
+# teaches (``semantic.dialogue.shape``) and a rewrite is shown only the ones of its message's shape.
+# (shapes, verified, conversation, message, rewrite).
+_REWRITE_EXAMPLES: tuple[tuple[frozenset[str], tuple[str, ...], tuple[tuple[str, str], ...], str, str], ...] = (
+    (frozenset({"pointer", "question"}), (), (("persona", "cuánto es 18 por 45"), ("BAXY", "18 por 45 es 810.")),
+     "¿y eso dividido en 3?", "cuánto es 810 dividido en 3"),
+    (frozenset({"time", "destination"}), ("lugar (place): Lima, Perú",),
+     (("persona", "¿llueve hoy?"), ("BAXY", "Hoy en Lima no llueve.")), "¿y pasado mañana?",
+     "¿llueve pasado mañana en Lima?"),
+    (frozenset({"time", "answer"}), (), (("persona", "recuérdame llamar al dentista mañana a las 5"),
+                                         ("BAXY", "¿A las 5 de la mañana o de la tarde?")),
      "no, mejor a las 4 y media", "recuérdame llamar al dentista mañana a las 4 y media"),
-    ((), (("persona", "the music is way too loud"), ("BAXY", "What volume do you want?")), "25 percent",
-     "set the music volume to 25 percent"),
-    ((), (("persona", "anota en la lista del súper arroz y aceite"),
-          ("BAXY", "Anoté arroz y aceite en la lista del súper.")),
+    (frozenset({"answer", "amount"}), (), (("persona", "the music is way too loud"), ("BAXY", "What volume do you want?")),
+     "25 percent", "set the music volume to 25 percent"),
+    (frozenset({"item"}), (), (("persona", "anota en la lista del súper arroz y aceite"),
+                               ("BAXY", "Anoté arroz y aceite en la lista del súper.")),
      "ah, y también azúcar", "anota en la lista del súper azúcar"),
-    ((), (("persona", "anota en la lista del súper azúcar"), ("BAXY", "Anoté azúcar en la lista del súper.")),
+    (frozenset({"listing", "reference"}), (), (("persona", "anota en la lista del súper azúcar"),
+                                               ("BAXY", "Anoté azúcar en la lista del súper.")),
      "¿qué tengo ya?", "¿qué tengo ya en la lista del súper?"),
-    (("último pedido hecho (last request done): pon un temporizador de 15 minutos para el arroz",
-      "alarma o temporizador creado (alarm or timer set): temporizador de 15 minutos para el arroz"),
-     (("persona", "pon un temporizador de 15 minutos para el arroz"),
-      ("BAXY", "Listo, el temporizador suena en 15 minutos.")),
+    (frozenset({"amount"}), ("último pedido hecho (last request done): pon un temporizador de 15 minutos para el arroz",
+                             "alarma o temporizador creado (alarm or timer set): temporizador de 15 minutos para el arroz"),
+     (("persona", "pon un temporizador de 15 minutos para el arroz"), ("BAXY", "Listo, el temporizador suena en 15 minutos.")),
      "mejor que sean 12", "pon un temporizador de 12 minutos para el arroz"),
-    (("alarma o temporizador creado (alarm or timer set): timer for the laundry, 40 minutes",
-      "recordatorio creado (reminder set): water the plants"),
+    (frozenset({"listing"}), ("alarma o temporizador creado (alarm or timer set): timer for the laundry, 40 minutes",
+                              "recordatorio creado (reminder set): water the plants"),
      (("persona", "remind me to water the plants at 6"), ("BAXY", "Done, I'll remind you at 6:00.")),
      "what do I have scheduled?", "what alarms, timers and reminders do I have scheduled?"),
-    ((), (("persona", "who won the Celtics game last night"), ("BAXY", "The Celtics beat the Knicks 112 to 104.")),
+    (frozenset({"question", "topic"}), (), (("persona", "who won the Celtics game last night"),
+                                            ("BAXY", "The Celtics beat the Knicks 112 to 104.")),
      "and who scored the most points", "who scored the most points in the Celtics game last night"),
-    ((), (("persona", "recommend me a museum in Rome"), ("BAXY", "The Vatican Museums are a classic choice.")),
+    (frozenset({"question", "reference"}), (), (("persona", "recommend me a museum in Rome"),
+                                                ("BAXY", "The Vatican Museums are a classic choice.")),
      "are they open on sundays", "are the Vatican Museums open on sundays"),
-    (("lugar (place): Tokio, Japón",), (("persona", "qué hora es en Tokio"), ("BAXY", "En Tokio son las 10:20.")),
+    (frozenset({"place", "destination"}), ("lugar (place): Tokio, Japón",),
+     (("persona", "qué hora es en Tokio"), ("BAXY", "En Tokio son las 10:20.")),
      "y si allá son las 8 de la mañana, qué hora es aquí", "si en Tokio son las 8 de la mañana, qué hora es aquí"),
-    (("música pedida (music asked for): cumbia",), (("persona", "pon algo de cumbia"),
-                                                   ("BAXY", "Suena La Pollera Colorá.")),
+    (frozenset({"another"}), ("música pedida (music asked for): cumbia",),
+     (("persona", "pon algo de cumbia"), ("BAXY", "Suena La Pollera Colorá.")),
      "esa no, otra más lenta", "pon otra de cumbia más lenta"),
+    # Tanda 7b «escríbeme … sobre eso» after a question and BAXY's answer: «eso» is what the person asked about.
+    (frozenset({"pointer"}), (), (("persona", "quién ganó el Tour de Francia"), ("BAXY", "Lo ganó Tadej Pogačar.")),
+     "escribe un poema corto sobre eso", "escribe un poema corto sobre quién ganó el Tour de Francia"),
 )
+# At most this many worked conversations per rewrite; a shape with none is shown the first ones.
+_REWRITE_EXAMPLES_SHOWN = 3
 
 
 def _rewrite_input(text: str, context: object, verified: object) -> str:
@@ -17158,6 +17168,7 @@ class LlmRuntime:
         *,
         dependency: str = "",
         verified: list[tuple[str, str]] | tuple[tuple[str, str], ...] = (),
+        shape: str = "",
         timeout: float = 2.5,
     ) -> str:
         """Rewrite a message that depends on the dialogue as a request that stands alone.
@@ -17169,11 +17180,13 @@ class LlmRuntime:
         state: place, day, what plays, the alarm set, the topic searched). The model
         only joins the message with what was said or verified;
         ``semantic.dialogue.rewrite_stays_in_context`` rejects any other word, so it
-        can never add an object or an effect.
+        can never add an object or an effect. ``shape`` (``semantic.dialogue.shape``) picks the worked
+        conversations shown.
         """
 
+        shown = [example for example in _REWRITE_EXAMPLES if shape in example[0]] or list(_REWRITE_EXAMPLES)
         examples = []
-        for example_verified, example_context, example_text, example_rewrite in _REWRITE_EXAMPLES:
+        for _, example_verified, example_context, example_text, example_rewrite in shown[:_REWRITE_EXAMPLES_SHOWN]:
             examples += [
                 {"role": "user", "content": _rewrite_input(example_text, example_context, example_verified)},
                 {"role": "assistant", "content": json.dumps({"request": example_rewrite}, ensure_ascii=False)},
@@ -17183,19 +17196,14 @@ class LlmRuntime:
                 {
                     "role": "system",
                     "content": (
-                        "Reescribes el último mensaje que una persona le escribe a BAXY, su asistente de PC, "
-                        "como un pedido completo que se entienda solo, sin leer la conversación. El mensaje "
-                        "depende de la conversación: dice sólo lo que cambia, responde a la pregunta de BAXY, "
-                        "señala algo con «eso», «allá», «esta», «it» o un pronombre, o pregunta algo más sobre "
-                        "lo mismo. Pon en su lugar lo que la conversación ya nombró: el pedido anterior de la "
-                        "persona, lo que BAXY contestó (un número calculado, un lugar, una hora, un nombre) o "
-                        "lo verificado. Si responde a la pregunta de BAXY, junta la respuesta con el pedido al "
-                        "que responde; si sólo dice que sí a lo que BAXY ofreció, escribe ese ofrecimiento como "
-                        "pedido de la persona. Usa sólo palabras que ya están en la conversación, en lo "
-                        "verificado o en el mensaje: no agregues cosas, nombres, cantidades ni acciones que "
-                        "nadie dijo. No devuelvas el mensaje igual si le falta algo de la conversación; sólo "
-                        "un pedido completo y nuevo, o charla, queda igual. Conserva el idioma y el trato de "
-                        "la persona. Devuelve sólo el JSON."
+                        "Reescribes el último mensaje de una persona a BAXY, su asistente de PC, como un pedido "
+                        "completo que se entienda sin leer la conversación. En lugar de lo que falta o se señala "
+                        "(«eso», «allá», «esta», «it», un pronombre) pon lo que la conversación ya nombró: el "
+                        "pedido anterior de la persona, lo que BAXY contestó (un número, un lugar, un nombre) o "
+                        "lo verificado. Usa sólo palabras de la conversación, de lo verificado o del mensaje: "
+                        "nada que nadie dijo. Si le falta algo, no lo devuelvas igual; un pedido completo y "
+                        "nuevo, o charla, queda igual. Conserva el idioma y el trato de la persona. Devuelve "
+                        "sólo el JSON."
                     ),
                 },
                 *examples,

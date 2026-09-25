@@ -277,3 +277,41 @@ def test_le_with_its_object_said_after_it_is_no_reference(text):
 def test_le_with_only_a_level_after_it_still_refers_back():
     slot = dialogue.DialogueSlot(None, None, ("pon música de Soda",), "Listo.")
     assert dialogue.dependency("súbele al 50", slot) == "reference"
+
+
+# ---------------------------------------------------------------- 7. the rewrite sees the conversations of its shape
+
+
+@pytest.mark.parametrize(
+    ("text", "dependency", "shape"),
+    [
+        ("¿y el domingo?", "followup", "time"),
+        ("nah, que sean 20", "followup", "amount"),
+        ("¿y a qué hora anochece por allá?", "followup", "place"),
+        ("esa no, otra más cumbiera", "followup", "another"),
+        ("¿y eso más 15?", "followup", "pointer"),
+        ("¿qué me falta?", "followup", "listing"),
+        ("¿y quién la dirigió?", "followup", "question"),
+        ("ah y dos limones", "followup", "item"),
+        ("20", "answer", "answer"),
+    ],
+)
+def test_the_shape_of_a_message_that_depends_on_the_context(text, dependency, shape):
+    assert dialogue.shape(text, dependency) == shape
+
+
+def test_a_rewrite_is_shown_only_the_worked_conversations_of_its_shape():
+    runtime = object.__new__(llm.LlmRuntime)
+    seen: list[dict] = []
+
+    def post(payload: dict, **_kwargs: object) -> dict:
+        seen.append(payload)
+        return {"choices": [{"message": {"content": json.dumps({"request": "pon un temporizador de 9 minutos"})}}]}
+
+    runtime._post = post  # type: ignore[method-assign]
+    runtime.rewrite_in_context("nah, que sean 9", [("persona", "pon un temporizador de 11 minutos")],
+                               dependency="followup", shape="amount")
+    shown = [json.loads(message["content"])["request"] for message in seen[0]["messages"]
+             if message["role"] == "assistant"]
+    expected = [example[4] for example in llm._REWRITE_EXAMPLES if "amount" in example[0]]
+    assert shown == expected[: llm._REWRITE_EXAMPLES_SHOWN] and len(shown) < len(llm._REWRITE_EXAMPLES)
