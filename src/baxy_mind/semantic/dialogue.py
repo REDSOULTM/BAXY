@@ -257,7 +257,7 @@ def dependency(text: str, slot: DialogueSlot) -> str | None:
 
     ``answer``      a short answer or «sí» to the question BAXY just asked;
     ``destination`` «no, en YouTube»: only the destination of the last request changes;
-    ``reference``   a pronoun object («súbelo», «cerralo»);
+    ``reference``   a pronoun object («súbelo», «cerralo», «pause it») or an order said without one («dale, seguí»);
     ``subject``     a person's age asked without the person («¿y cuántos años tiene?», «how old is he»);
     ``topic``       a lookup verb whose topic may have been named before («averiguá qué dijo la crítica»);
     ``followup``    anything else whose form leans on the turn before (``leans_on_context``): «¿y el finde?»,
@@ -293,7 +293,11 @@ def dependency(text: str, slot: DialogueSlot) -> str | None:
         return None
     if slot.antecedents and _SUBJECTLESS_PERSON_FACT.fullmatch(folded):
         return "subject"
-    if _object_pronoun(folded) or (len(words) <= 6 and _PROCLITIC_START.match(folded)):
+    if (
+        _object_pronoun(folded)
+        or (len(words) <= 6 and _PROCLITIC_START.match(folded))
+        or (slot.antecedents and _bare_order(followup(text).folded))
+    ):
         return "reference"
     if slot.antecedents and _RESEARCH_VERB.search(folded):
         return "topic"
@@ -508,11 +512,52 @@ def antecedent_object(antecedent: str) -> str | None:
 
 
 def substituted_reference(text: str, antecedent: str) -> str | None:
-    """«activalo» after «silencia mi micrófono» → «activa mi micrófono»: the direct-object clitic
-    fused to the verb is replaced by the antecedent's object. «le» (indirect) is left to the model."""
+    """«activalo» after «silencia mi micrófono» → «activa mi micrófono»: the object left out is the antecedent's."""
 
-    obj = antecedent_object(antecedent)
-    if obj is None:
+    return with_object(text, antecedent_object(antecedent))
+
+
+# How much, how long or how politely an order is said, never what it acts on («seguí un rato», «pause it now»).
+_ORDER_TAIL = _DEGREE | frozenset(
+    "un una ya ahora de nuevo otra vez porfa por favor please pls now again a bit for sec second moment nomas mas more "
+    "rapido it".split()
+)
+
+
+def _bare_order(folded: str) -> bool:
+    """An order the readers know said with no object, at most how much or how long: «seguí», «pausa un toque»,
+    «pause it», «resume it now» (tanda 9: «dale, seguí» after a video was read alone and not understood)."""
+
+    words = folded.split()
+    return (
+        0 < len(words) <= 5
+        and _ENCLITIC.fullmatch(words[0]) is None
+        and _head_is(words[0], _COVERAGE_ACTION_HEAD)
+        and all(word in _ORDER_TAIL for word in words[1:])
+    )
+
+
+# What the last turn acted on, named as the readers name it, for an order that leaves it out right after (tanda 9:
+# «pausalo un toque», «dale, seguí» after a video). What plays is a song or a video.
+_THINGS_ACTED_ON = {"media": (("la canción", "el video"), ("the song", "the video"))}
+
+
+def things_acted_on(operations: tuple[str, ...], in_spanish: bool) -> tuple[str, ...]:
+    """The names of what ``operations`` acted on, the person's language first."""
+
+    names: list[str] = []
+    for family in dict.fromkeys(_family(op) for op in operations):
+        spanish_names, english_names = _THINGS_ACTED_ON.get(family, ((), ()))
+        names += [*spanish_names, *english_names] if in_spanish else [*english_names, *spanish_names]
+    return tuple(names)
+
+
+def with_object(text: str, obj: str | None) -> str | None:
+    """The message with the object it leaves out said: the direct-object clitic fused to the verb is replaced by it
+    («activalo» → «activa mi micrófono»), or it follows an order said without one («dale, seguí» → «seguí la
+    canción», «pause it» → «pause the song»). «le» (indirect) is left to the model."""
+
+    if not obj:
         return None
     words = str(text).split()
     for index, word in enumerate(words):
@@ -526,7 +571,11 @@ def substituted_reference(text: str, antecedent: str) -> str | None:
         joined = " ".join([*words[:index], verb, obj, *words[index + 1:]]).strip(" .!?")
         # «pues investigala…» → «investiga …»: a talk filler is not part of the request («ahora» is).
         return re.sub(r"^(?:(?:pues|bueno|oye|che)\b[\s,]*)+", "", joined, flags=re.IGNORECASE).strip() or joined
-    return None
+    said = followup(text)
+    if not _bare_order(said.folded):
+        return None
+    head, *rest = said.said.split()
+    return " ".join([head, obj, *(word for word in rest if _fold(word) != "it")])
 
 
 def asks_to_look_up(text: str) -> bool:
@@ -561,8 +610,11 @@ _CONTINUATION = re.compile(
     r"que\s+tal)\b[\s,.:]*)+"
 )
 # An address or a filler before anything («che, ¿va a llover hoy?», «ok, y en Rosario»): dropped, it continues
-# nothing by itself.
-_FILLER = re.compile(r"^(?:(?:oye|che|bueno|ok|okay|okey|ah|oh|mira|hey|listen|baxy)\b[\s,.:]*)+")
+# nothing by itself. Tanda 9: an agreement said before a pause is a filler too («dale, seguí», «órale, y …»).
+_FILLER = re.compile(
+    r"^(?:(?:oye|che|bueno|ok|okay|okey|ah|oh|mira|hey|listen|baxy|(?:dale|orale|sale|va|vale|listo)(?=\s*,))\b"
+    r"[\s,.:]*)+"
+)
 _CORRECTION = re.compile(
     r"^(?:(?:no|nop|nope|nah|mejor|actually|en\s+realidad|perdon|digo|o\s+sea|wait|espera|sorry|rather|instead|"
     r"mas\s+bien)\b[\s,.:]*)+"

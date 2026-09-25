@@ -9,6 +9,11 @@ One owner per rule:
 2. A question word after the preposition asks a question of its own («¿en qué lugar te…?»): a complete question
    about BAXY was read as a new destination for the topic before and answered about that topic. Owner:
    semantic/dialogue._NOT_ASKED in _DESTINATION_ONLY and _PLACE_FRAGMENT.
+3. An order that leaves its object out right after something played acts on what plays: «pausalo un toque» was kept
+   as said and refused, «dale, seguí» was not understood. A pronoun or no object at all after the verb is what the
+   last turn acted on, named as the readers name it (a song, a video), and the request must read an effect of that
+   family; an agreement before a pause («dale,») is a filler. Owners: semantic/dialogue._bare_order, .with_object,
+   .things_acted_on, ._FILLER; __main__._rearm_in_context.
 
 Every list holds fresh phrasings (Spanish dialects, English, Spanglish); none is a literal of the tanda.
 """
@@ -52,6 +57,18 @@ def _message(*turns: str) -> dict:
 
 def _rearm(message: dict, model: _Scripted, state: dialogue.DialogueState | None = None):
     return sidecar._rearm_in_context(message, llm=model, available_operations=OPERATIONS, dialogue_state=state)
+
+
+def _verified(operation: str, observed: dict | None = None) -> dict:
+    return {"kind": "operation", "operation": operation, "polarity": "success", "verified": True, "succeeded": True,
+            "observed": observed or {}}
+
+
+def _state(request: str, operation: str) -> dialogue.DialogueState:
+    state = dialogue.DialogueState()
+    state.expect(request, [operation])
+    state.record(_verified(operation))
+    return state
 
 
 def _dependency(before: tuple[str, ...], text: str) -> str | None:
@@ -129,3 +146,41 @@ def test_a_question_after_a_preposition_is_its_own_question(text):
 @pytest.mark.parametrize(("text", "dependency"), [("no, por telegram mejor", "destination"), ("¿y en Cusco?", "destination")])
 def test_a_new_destination_or_place_still_continues(text, dependency):
     assert _dependency(("mandá el resumen por mail", "Listo, lo mandé por mail."), text) == dependency
+
+
+# ---------------------------------------------------------------- 3. an order on what just played
+
+
+_PLAYED = ("ponme el último tema de Duki en youtube", "Está sonando «Rockstar» de Duki en YouTube.")
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["pausalo", "pausámelo un ratito", "dale, pausalo un toque", "stop it", "pause it for a sec", "pausa un momento"],
+)
+def test_pausing_what_just_played_needs_no_model(text):
+    state = _state(_PLAYED[0], "media.play.youtube")
+    result = _rearm(_message(*_PLAYED, text), _Scripted(), state)
+    assert result is not None and result[1] == "pattern"
+    assert set(sidecar.resolve_explicit_effects(result[0], OPERATIONS).operations) == {"media.control"}
+
+
+@pytest.mark.parametrize("text", ["ok, seguí", "dale, seguilo", "resume it", "sigue", "continuá porfa"])
+def test_resuming_what_was_paused_needs_no_model(text):
+    state = _state("pausa la canción", "media.control")
+    result = _rearm(_message("pausa la canción", "Listo, la pausé.", text), _Scripted(), state)
+    assert result is not None and result[1] == "pattern"
+    assert set(sidecar.resolve_explicit_effects(result[0], OPERATIONS).operations) == {"media.control"}
+
+
+def test_an_order_left_without_object_after_something_else_is_not_about_music():
+    state = _state("¿qué hora es en Lima?", "system.time")
+    # Nothing played: the song is not what «pausalo» points at, and the model is asked instead.
+    model = _Scripted({"pausalo": "pausalo"})
+    assert _rearm(_message("¿qué hora es en Lima?", "En Lima son las 10:20.", "pausalo"), model, state) is None
+    assert model.seen
+
+
+@pytest.mark.parametrize("text", ["sigue lloviendo en Lima?", "pausa Spotify", "resume the download"])
+def test_an_order_that_says_its_object_is_not_a_bare_order(text):
+    assert _dependency(_PLAYED, text) != "reference"

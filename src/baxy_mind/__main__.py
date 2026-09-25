@@ -7571,6 +7571,23 @@ def _rearm_in_context(
         )
         return None if rearmed is None else (rearmed, how)
 
+    def continuing(candidate: str) -> str | None:
+        # Tanda 7: a follow-up continues what was done. Its request reads no effect, or only effects of that family;
+        # a correction of the alarm or timer just set replaces it instead of setting a second one. None otherwise.
+        read = effects_of(candidate)
+        if not dialogue_slot.continues(read, continued_operations(), dialogue_state):
+            return None
+        cancel = (
+            dialogue_state.cancel_last_alarm(dialogue_slot.spanish(candidate))
+            if dialogue_state is not None and read == ("notification.schedule",)
+            and dialogue_slot.followup(objective).replaces_last
+            else None
+        )
+        if cancel is None:
+            return candidate
+        replaced = f"{cancel} {'y' if dialogue_slot.spanish(candidate) else 'and'} {candidate}"
+        return replaced if effects_of(replaced) == ("notification.cancel.latest", "notification.schedule") else None
+
     level = semantic_levels.read(objective)
     if level is not None and level.setting is not None:
         # «Volume más alto please», «Brillo 20%»: an output level that names its object stands on its own.
@@ -7624,6 +7641,13 @@ def _rearm_in_context(
             substituted, available_operations, application_names, game_catalog,
         ) is not None:
             return audited(substituted, "pattern")
+        # Tanda 9: «pausalo un toque», «dale, seguí» right after a video — what the last turn acted on, named as the
+        # readers name it; the request must read an effect of that family.
+        for thing in dialogue_slot.things_acted_on(continued_operations(), read_language(objective) == "es"):
+            candidate = dialogue_slot.with_object(objective, thing)
+            settled = continuing(candidate) if candidate and effects_of(candidate) else None
+            if settled is not None:
+                return audited(settled, "pattern")
     if (
         dependency == "answer"
         and slot.pending_request
@@ -7682,23 +7706,6 @@ def _rearm_in_context(
             and dialogue_slot.same_family(effects_of(joined), effects_of(last_request))
         ):
             return audited(joined, "pattern")
-    def continuing(candidate: str) -> str | None:
-        # Tanda 7: a follow-up continues what was done. Its request reads no effect, or only effects of that family;
-        # a correction of the alarm or timer just set replaces it instead of setting a second one. None otherwise.
-        read = effects_of(candidate)
-        if not dialogue_slot.continues(read, continued_operations(), dialogue_state):
-            return None
-        cancel = (
-            dialogue_state.cancel_last_alarm(dialogue_slot.spanish(candidate))
-            if dialogue_state is not None and read == ("notification.schedule",)
-            and dialogue_slot.followup(objective).replaces_last
-            else None
-        )
-        if cancel is None:
-            return candidate
-        replaced = f"{cancel} {'y' if dialogue_slot.spanish(candidate) else 'and'} {candidate}"
-        return replaced if effects_of(replaced) == ("notification.cancel.latest", "notification.schedule") else None
-
     if dependency == "followup":
         said = dialogue_slot.followup(objective)
         if (said.continued or said.corrected) and not dialogue_slot.refers_back(objective) and effects_of(said.said):
