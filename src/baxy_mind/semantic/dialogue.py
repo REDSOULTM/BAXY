@@ -40,10 +40,16 @@ _PROCLITIC_START = re.compile(
     r"^(?:y\s+|ahora\s+|pues\s+)?(?:me\s+|te\s+)?(?:lo|la|los|las|le|les)\s+"
     r"[a-zñ]{2,}(?:as|es|is|o|amos|emos|imos|an|en)\b"
 )
+# A question word after the preposition asks a question of its own: «¿en qué lugar te hicieron?», «¿desde cuándo
+# existes?», «in which year…» (tanda 9: a question about BAXY was read as a new destination for the topic before).
+_NOT_ASKED = (
+    r"(?!(?:que|quien|quienes|cual|cuales|cuando|donde|cuanto|cuanta|cuantos|cuantas|como|what|which|who|whom|whose|"
+    r"when|where|how)\b)"
+)
 # «no, en YouTube», «mejor en Spotify», «en YouTube mejor», «por WhatsApp».
 _DESTINATION_ONLY = re.compile(
     r"^(?:(?:no|nop|mejor|en\s+cambio|pero|y)\s*[,.]?\s*)*"
-    r"(?:en|por|con|desde|a|al|on|in|with)\s+(?:el\s+|la\s+|mi\s+)?[a-z0-9ñ+ .'-]{2,30}?"
+    rf"(?:en|por|con|desde|a|al|on|in|with)\s+{_NOT_ASKED}(?:el\s+|la\s+|mi\s+)?[a-z0-9ñ+ .'-]{{2,30}}?"
     r"(?:\s+(?:mejor|entonces|porfa|por\s+favor|please))?$"
 )
 # Verbs that look something up about a topic the person may have said before.
@@ -591,7 +597,7 @@ _CLOCK_PERIOD = (
 )
 _CLOCK = rf"{_CLOCK_HOUR}(?:{_CLOCK_PERIOD})?"
 _TIME_FRAGMENT = re.compile(rf"^(?:{_DAY}|{_CLOCK})(?:\s+(?:y|and|o|or)\s+(?:{_DAY}|{_CLOCK}))?$")
-_PLACE_FRAGMENT = re.compile(r"^(?:en|in|at|para|for|on|por|desde|from)\s+\S.*$")
+_PLACE_FRAGMENT = re.compile(rf"^(?:en|in|at|para|for|on|por|desde|from)\s+{_NOT_ASKED}\S.*$")
 # A place said as «allá» or «there»; «is there…», «there are…» only say that something exists.
 _PLACE_ANAPHOR = re.compile(
     r"\b(?:alla|alli|aya|ahi)\b|(?<!is )(?<!are )(?<!was )(?<!were )(?<!be )\b(?:over\s+)?there\b"

@@ -6,6 +6,9 @@ One owner per rule:
    was sent to the rewrite and came back with a place of two turns before. A verb with its clitic is an infinitive
    or a gerund, an order the readers know with the clitic removed, or a word first in its clause. Owner:
    semantic/dialogue._object_pronoun.
+2. A question word after the preposition asks a question of its own («¿en qué lugar te…?»): a complete question
+   about BAXY was read as a new destination for the topic before and answered about that topic. Owner:
+   semantic/dialogue._NOT_ASKED in _DESTINATION_ONLY and _PLACE_FRAGMENT.
 
 Every list holds fresh phrasings (Spanish dialects, English, Spanglish); none is a literal of the tanda.
 """
@@ -99,3 +102,30 @@ def test_a_verb_with_its_pronoun_still_leans_on_the_turn_before(text):
 @pytest.mark.parametrize("text", ["mandale un mensaje", "devolvele el sonido", "pasale la foto"])
 def test_a_dative_with_its_object_said_stands_on_its_own(text):
     assert _dependency(("abrí el chat", "Listo."), text) is None
+
+
+# ---------------------------------------------------------------- 2. a complete question never inherits
+
+
+_TOPIC = ("explícame qué es el patrón observer", "El patrón Observer define una dependencia uno a muchos…")
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "¿en qué ciudad te crearon?",
+        "¿desde cuándo existes?",
+        "¿con quién hablo?",
+        "¿en qué año naciste?",
+        "in which country were you built?",
+        "¿por qué te llamas así?",
+    ],
+)
+def test_a_question_after_a_preposition_is_its_own_question(text):
+    assert _dependency(_TOPIC, text) is None
+    assert _rearm(_message(*_TOPIC, text), _Scripted()) is None
+
+
+@pytest.mark.parametrize(("text", "dependency"), [("no, por telegram mejor", "destination"), ("¿y en Cusco?", "destination")])
+def test_a_new_destination_or_place_still_continues(text, dependency):
+    assert _dependency(("mandá el resumen por mail", "Listo, lo mandé por mail."), text) == dependency
