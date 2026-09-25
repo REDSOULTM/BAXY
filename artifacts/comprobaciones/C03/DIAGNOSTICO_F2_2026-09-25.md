@@ -77,3 +77,22 @@ reglas quedan para lo sensible y para lo que el modelo mide peor.
 3. F4, por orden de peso medido: (a) el decisor nuevo sustituye selector + compuertas + recuperación en el camino del
    modelo (retira vetos: 20 errores; validadores que tiran el turno: 15); (b) catálogo del decisor en lenguaje de
    usuario (dato, no regla); (c) argumentos desde el pedido reescrito por el mismo decisor.
+
+## F3 — torneo de modelos en la configuración ganadora (regla D11, variante `request`, 15:23–15:59)
+
+| modelo | A+B (513) | DEV-A | DEV-B | seguimientos (134) | vs líder (mejor/peor) | p50 / p90 | VRAM pico servidor |
+|---|---|---|---|---|---|---|---|
+| **Qwen3.5-4B Q4_K_M** (líder) | **393 (76,6 %)** | 189 | 204 | **112** | — | 0,65 / 0,93 s | 3 104 MiB |
+| Qwen3.8-4B-Distill Q4_K_M | 344 (67,1 %) | 170 | 174 | 91 | 28 / 77 | 0,87 / 2,36 s | 3 144 MiB |
+| Gemma 4 E2B Q4_K_M (julio) | 337 (65,7 %) | 157 | 180 | 96 | 32 / 88 | 0,54 / 0,67 s | 1 732 MiB |
+| Qwen3-8B IQ3_XXS | 322 (62,8 %) | 163 | 159 | 84 | 26 / 97 | 0,75 / 0,98 s | 4 118 MiB (excede) |
+| Qwen3-4B-Instruct-2507 Q4_K_M (actual) | 275 (53,6 %) | 139 | 136 | 73 | 22 / 140 | 0,58 / 0,81 s | 3 514 MiB |
+| Granite 4.2 3B Q4_K_M | 217 (42,3 %) | 124 | 93 | 60 | 27 / 203 | 0,87 / 1,42 s | 2 718 MiB |
+| Phi-4-mini Q4_K_M | 194 (37,8 %) | 95 | 99 | 43 | 23 / 222 | 0,60 / 1,78 s | 3 412 MiB |
+
+Veredicto (D11): **ningún candidato desplaza a Qwen3.5-4B**; todos son peores con McNemar p < 0,001. Sin alternativa
+ligera según la regla (Gemma 4 E2B queda a 56 turnos). Licencias: Qwen3.5-4B Apache-2.0. Por qué esta medida es
+distinta de la ley 1: R80 lo rechazó por VRAM con el perfil de 3 slots (3 077,6 MiB sobre 3 072) y 11 errores
+semánticos dentro de la tubería; Goal 03B, por 58/124 punta a punta con las puertas y p50 4,4 s. Aquí decide solo,
+con la conversación completa, sin puertas: 76,6 % y p50 0,65 s. La VRAM del producto con Qwen3.5 y el reparto de
+slots se mide en F4 con el perfil real.
