@@ -128,8 +128,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # uso real ola 8: tanda 5, latencia, concisión, búsqueda invisible
 # uso real 5b y latencia estructural
 # uso real 5c
+# uso real ola 9: tanda 6
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "b717b2da60ad6b2bc1e297925beb724378c8679294f9af996b24155118785c60"
+    "f595c1d8bc3512603c223da2e105c8724fe354b14c408b626ee33135da7eef31"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
