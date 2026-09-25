@@ -675,8 +675,12 @@ internal static class UserMessagePolicy
     internal static bool IsCountdownRequest(string? text) =>
         Regex.IsMatch(
             text ?? string.Empty,
-            @"^\s*[¿¡]?\s*(?:cu[aá]nto\s+(?:tiempo\s+)?(?:falta|queda|resta)\s+(?:para|hasta)\b|"
-            + @"how\s+(?:long|much\s+time)\s+(?:until|till|before|to|is\s+left)\b)",
+            // Tanda 7 «¿cuánto rato queda para las seis?»: the mind's countdown reading (semantic/temporal.py
+            // _COUNTDOWN_HEAD) takes any measure of time and any verb of remaining; the shell reads the same head.
+            @"^\s*[¿¡]?\s*(?:(?:cu[aá]nt[oa]s?|qu[eé]\s+tanto)\s+(?:(?:tiempo|rato|horas?|minutos?)\s+)?"
+            + @"(?:falta|faltan|queda|quedan|resta|restan)\s+(?:para|hasta|pa)\b|"
+            + @"how\s+(?:long|much\s+time|many\s+(?:hours|minutes|mins))\s+(?:(?:is|are|do\s+(?:i|we)\s+have|"
+            + @"have\s+(?:i|we)\s+got)\s+)?(?:(?:left|remaining|remain|to\s+go)\s+)?(?:until|till|til|before|to)\b)",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     internal static bool IsConnectivityStatusRequest(string text)

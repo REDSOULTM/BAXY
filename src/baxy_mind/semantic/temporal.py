@@ -18,14 +18,23 @@ _COUNTDOWN_HOUR_WORDS = {
 }
 
 
+# Tanda 7 «¿cuánto rato queda para las seis?» was searched on the web: the time left is asked with any measure of
+# time («rato», «horas», «minutos», «qué tanto») and any verb of remaining, singular or plural; «how many minutes
+# until», «how much time is left till», «how long do we have until» are the same countdown.
+_COUNTDOWN_HEAD = (
+    r"(?:(?:cuant[oa]s?|que\s+tanto)\s+(?:(?:tiempo|rato|horas?|minutos?)\s+)?(?:falta|faltan|queda|quedan|resta|"
+    r"restan)\s+(?:para|hasta|pa)(?:\s+que\s+(?:sea|sean|den|llegue|lleguen))?|"
+    r"how\s+(?:long|much\s+time|many\s+(?:hours|minutes|mins))\s+(?:(?:is|are|do\s+(?:i|we)\s+have|have\s+(?:i|we)\s+"
+    r"got)\s+)?(?:(?:left|remaining|remain|to\s+go)\s+)?(?:until|till|til|before|to))"
+)
 _COUNTDOWN_TARGET = re.compile(
-    r"^(?:cuanto\s+(?:tiempo\s+)?(?:falta|queda|resta)\s+(?:para|hasta)|"
-    r"how\s+(?:long|much\s+time)\s+(?:until|till|before|to|is\s+left\s+(?:until|till|before)))\s+"
+    r"^" + _COUNTDOWN_HEAD + r"\s+"
     r"(?:(?:el|la|las|the)\s+)?"
     r"(?:(?P<noon>mediodia|noon|midday)|(?P<midnight>medianoche|midnight)|"
     r"(?P<hour>\d{1,2}|" + "|".join(sorted(_COUNTDOWN_HOUR_WORDS, key=len, reverse=True)) + r")"
     r"(?:[:.h](?P<minute>\d{2}))?"
     r"(?:\s+(?:y\s+(?P<spoken_minute>media|cuarto|\d{1,2}))?)?"
+    r"(?:\s+(?:o\W?\s*clock|en\s+punto))?"
     r"(?:\s*(?P<ampm>[ap])\.?\s*m\.?|\s+(?:de\s+la\s+|en\s+la\s+|in\s+the\s+|)"
     r"(?P<part>manana|madrugada|tarde|noche|morning|afternoon|evening|night))?"
     r"(?:\s+(?:de\s+hoy|today|hoy))?"
