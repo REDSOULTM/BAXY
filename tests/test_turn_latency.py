@@ -27,6 +27,8 @@ import json
 import threading
 import time
 
+import pytest
+
 from baxy_mind import __main__ as mind_main
 from baxy_mind import llm as llm_module
 from baxy_mind.__main__ import _catalog_answers_the_request, _emit_early_turn_signal, _prepare_turn_result
@@ -142,12 +144,47 @@ def test_a_complete_reply_inside_the_budget_is_one_decode() -> None:
     assert sent == [NATIVE_SELECTION_PROSE_TOKENS]
 
 
-def test_the_prose_budget_still_holds_a_preamble_and_the_longest_call() -> None:
-    # One call of a catalogue leaf is at most 26 Qwen3 tokens with its end marker
-    # (measured over the served catalogue's 204 wire names). A budget below twice
-    # that would cut a call that follows a one-sentence preamble.
-    assert NATIVE_SELECTION_PROSE_TOKENS >= 2 * 26
-    assert NATIVE_SELECTION_CALL_TOKENS == 256
+def test_the_first_token_is_the_whole_prose_budget_and_the_call_budget_holds_the_longest_plan() -> None:
+    # Every call of the audited runs opened at token one (33 of 33), and prose is
+    # never read: one token tells the reply apart. One call of a catalogue leaf is
+    # at most 26 Qwen3 tokens with its end marker, so the call budget still holds
+    # a plan of eight leaves (the most the selector may return is 8).
+    assert NATIVE_SELECTION_PROSE_TOKENS == 1
+    assert NATIVE_SELECTION_CALL_TOKENS == 256 >= 8 * 26
+
+
+@pytest.mark.parametrize("opening", ["<tool_call>", "", "\n", '{"'])
+def test_a_reply_that_opens_a_call_or_says_nothing_yet_is_decoded_again(opening: str) -> None:
+    runtime = object.__new__(LlmRuntime)
+    sent: list[int] = []
+
+    def post(payload: dict[str, object]) -> dict[str, object]:
+        sent.append(int(payload["max_tokens"]))  # type: ignore[arg-type]
+        if len(sent) == 1:
+            return _choice({"content": opening}, "length")
+        return _choice({"content": "", "tool_calls": [
+            {"function": {"name": "baxy_system__time", "arguments": "{}"}},
+        ]}, "tool_calls")
+
+    runtime._post = post  # type: ignore[method-assign]
+    assert _select(runtime, "dime la hora")["effect_operations"] == ["system.time"]
+    assert sent == [NATIVE_SELECTION_PROSE_TOKENS, NATIVE_SELECTION_CALL_TOKENS]
+
+
+@pytest.mark.parametrize("opening", ["Usually", "Claro", "¡"])
+def test_a_reply_that_opens_with_prose_is_one_token_and_selects_nothing(opening: str) -> None:
+    runtime = object.__new__(LlmRuntime)
+    sent: list[int] = []
+
+    def post(payload: dict[str, object]) -> dict[str, object]:
+        sent.append(int(payload["max_tokens"]))  # type: ignore[arg-type]
+        return _choice({"content": opening}, "length")
+
+    runtime._post = post  # type: ignore[method-assign]
+    result = _select(runtime)
+    assert sent == [NATIVE_SELECTION_PROSE_TOKENS]
+    assert result["mode"] == "conversation"
+    assert result["effect_operations"] == []
 
 
 # --- the in-progress notice -------------------------------------------------

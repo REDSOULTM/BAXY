@@ -132,12 +132,15 @@ LLM_WARMUP_CLOSE_TIMEOUT_SECONDS = 0.5
 VALIDATED_CLASSIFIER_REUSE_CAPACITY = 32
 # The native selector's prose is always discarded (only the chat stage words a
 # reply), yet it wrote whole answers up to its call budget (uso real 2026-09-23,
-# «el modelo transformer»): at the measured ~12 ms per token that is up to 3 s
-# per knowledge turn, paid again by the catalogue probe. One call of any
-# catalogue leaf is at most 26 tokens with its end marker, so this budget holds
-# a call after a one-sentence preamble; a reply cut by it that may have begun a
-# call is decoded again with the full budget (its prompt is still in its slot).
-NATIVE_SELECTION_PROSE_TOKENS = 64
+# «el modelo transformer»), paid again by the catalogue probe. Its first token
+# already says which reply it is: every call it made in the audited runs opened
+# at token one (``predicted_n`` equal to the call itself, 19-23 tokens; tandas
+# 05b-06b 26 of 26 with the catalogue probe, the GPU replay of 05e/06/06b 7 of
+# 7), while a knowledge turn decoded 36 tokens of prose on average beside G and
+# the prepared reply, 0.5-2 s. So the prose budget is that one token: a reply
+# that may have begun a call is decoded again with the full budget (its prompt
+# is still in its slot).
+NATIVE_SELECTION_PROSE_TOKENS = 1
 NATIVE_SELECTION_CALL_TOKENS = 256
 # Slots of the owned GPU server (``-np``); the HTTP pool leases exactly these.
 GPU_SERVER_SLOTS = 3
