@@ -9,6 +9,8 @@
 - «está mi orden lista para recoger ya» → «Sí, está lista para recoger.»: the App's conversation fallback
   composed it from the bare situation {"kind": "conversation"}, which no claim check read. A message
   composed where no operation ran now carries the same contract as the mind's conversation reply.
+- «¿a qué hora se fue el sol ayer?» → «No lo encontraste.»: the hint says «di que no lo encontraste» to
+  the model and the model said it to the person. BAXY searched; its not-found is his own.
 
 Knowledge, jokes, stories, drafts, questions, offers, denials and the person's own statements acknowledged
 («me metí en un accidente hoy» → empathy) stay as they are.
@@ -242,3 +244,23 @@ def test_the_invented_answer_is_retried_with_a_hint_that_names_it():
     retry = json.dumps(client.payloads[1]["messages"], ensure_ascii=False)
     assert "no contestes sí o no" in retry
 
+
+# ---------------------------------------------------------------- the search is BAXY's
+
+
+_SEARCH = {
+    "operation": "web.search",
+    "seen": {"query": "¿a qué hora se fue el sol ayer?", "count": 1, "results": [
+        {"title": "Salida y puesta del sol", "url": "https://example.org/sol", "snippet": "Consulta la hora."},
+    ]},
+}
+
+
+@pytest.mark.parametrize("reply", ["No lo encontraste.", "Ya lo buscaste y no aparece.", "You didn't find it."])
+def test_a_search_report_does_not_make_the_person_the_one_who_searched(reply):
+    assert llm._payload_fact_defect(reply, _SEARCH, "¿a qué hora se fue el sol ayer?") == "search_report_wrong_finder"
+
+
+@pytest.mark.parametrize("reply", ["No lo encontré.", "I couldn't find it.", "Si no lo encontraste en la tienda, prueba en línea."])
+def test_his_own_not_found_and_advice_to_the_person_stay(reply):
+    assert llm._payload_fact_defect(reply, _SEARCH, "¿a qué hora se fue el sol ayer?") != "search_report_wrong_finder"

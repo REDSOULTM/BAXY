@@ -8635,6 +8635,22 @@ _SEARCH_WEATHER_CLAIM = re.compile(
 )
 
 
+# The search is BAXY's own act: its not-found is said in his first person («No lo encontré»), never the
+# person's («No lo encontraste»), which is how the hint addresses him. «si no lo encontraste…» advises.
+_SECOND_PERSON_LOOKUP = re.compile(
+    r"\b(?:encontraste|buscaste|hallaste)\b"
+    r"|\byou\s+(?:didn't|did\s+not|couldn't|could\s+not|haven't|have\s+not)\s+(?:been\s+able\s+to\s+)?find\b"
+)
+
+
+def _search_report_names_the_person_as_finder(text: str) -> bool:
+    folded = _accent_folded_with_punctuation(text).casefold()
+    return any(
+        re.search(r"\b(?:si|if)\b[^.,;:!?]*$", folded[: found.start()]) is None
+        for found in _SECOND_PERSON_LOOKUP.finditer(folded)
+    )
+
+
 def _search_results_text(payload: dict) -> str | None:
     """Titles, hosts and snippets of a verified web.search, joined; None otherwise."""
 
@@ -9899,6 +9915,9 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         return window_defect
     if _search_report_speaks_as_a_page(text, payload, user_text):
         return "search_report_page_voice"
+    if payload.get("operation") == "web.search" and _search_report_names_the_person_as_finder(text):
+        # Tanda 8 «¿a qué hora se fue el sol ayer?» → «No lo encontraste.»: BAXY searched, not the person.
+        return "search_report_wrong_finder"
     if _search_report_shows_the_search(text, payload, user_text):
         # Owner rule 2026-09-24: the lookup is invisible (see _search_report_shows_the_search).
         return "search_report_shows_the_search"
@@ -21548,6 +21567,11 @@ class LlmRuntime:
                     "menciones la búsqueda, una página, un sitio ni una fuente («según …», "
                     "«busqué», «encontré estas páginas», «no se menciona»). Si no lo tienes, "
                     "di sólo, en breve, que no lo encontraste."
+                ),
+                "search_report_wrong_finder": (
+                    "You looked it up, not the person: say it in your own first person («I couldn't find it»)."
+                    if response_language == "en"
+                    else "Lo buscaste tú, no la persona: dilo en tu primera persona («No lo encontré»)."
                 ),
                 "recalled_as_own": (
                     "The record is about the person: say it in the second person («your name is …», «you like …»)."
