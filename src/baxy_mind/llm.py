@@ -3260,12 +3260,18 @@ _PREFERENCE_FUNCTION_WORDS = frozenset({
 })
 
 
+# Content written for the person — a joke, a story, a draft, a translation — is not BAXY's report of
+# what happened: «Ayer compré un reloj…» in a joke, «Ya envié el informe» in a draft claim nothing.
+_WRITTEN_CONTENT_SHAPES = frozenset({"free_content", "content_draft", "roleplay_draft", "translation", "spelling"})
+
+
 def _shaped_conversation_answer_violates_contract(
     value: object,
     request: object,
     shape: str | None,
     *,
     authenticated_operations: tuple[str, ...] = (),
+    prior_requests: tuple[str, ...] = (),
 ) -> bool:
     """Validate bounded no-history prose without supplying visible wording."""
 
@@ -3282,7 +3288,9 @@ def _shaped_conversation_answer_violates_contract(
     # No operation ran in a conversation turn: a claimed effect or the person's
     # records stated unread are invented (owner's test 2026-09-21, turn 189 «Claro,
     # ya le hice click.»; uso real 2026-09-23 «No hay queso en la lista. Se añadirá.»).
-    if conversation_claim_defect(value, request):
+    if (
+        shape not in _WRITTEN_CONTENT_SHAPES and conversation_world_claim(value, request, prior_requests)
+    ) or _calendar_contradiction(str(value or ""), str(request or ""), _local_now()):
         return True
     if visible_reply_restates_the_request(value, request):
         return True
@@ -4157,26 +4165,72 @@ def _rewrite_input(text: str, context: object, verified: object) -> str:
     head = f"Lo verificado en esta conversación:\n{state}\n\n" if state else ""
     return f"{head}Conversación:\n{lines}\n\nÚltimo mensaje: {str(text).strip()[:1_024]}"
 
-_COMPLETED_EFFECT_CLAIM = re.compile(
-    r"(?<![\w])(?:"
-    # Spanish first-person preterite of a PC action, alone or with a clitic:
-    # «ya le hice click», «lo abrí», «cerré Edge», «puse la canción».
-    r"(?:ya\s+)?(?:se\s+)?(?:lo|la|los|las|le|les|te)?\s*"
-    r"(?:hice|hize|cliqueé|cliqué|pulsé|apreté|abrí|cerré|puse|activé|desactivé|"
-    r"silencié|muteé|desmuteé|subí|bajé|reproduje|pausé|detuve|paré|instalé|"
-    r"desinstalé|envié|mandé|borré|eliminé|guardé|minimicé|maximicé|escribí|"
-    r"pegué|copié|apagué|reinicié|conecté|desconecté|entré|ejecuté|descargué|"
-    r"cambié|configuré|busqué)(?![\w])"
-    r"|ya\s+(?:esta|está|queda|quedo|quedó)\s+(?:hecho|listo|abierto|cerrado|activado|desactivado|"
-    r"silenciado|instalado|enviado|reproduciendo|puesto)"
-    r"|i\s+(?:just\s+)?(?:clicked|opened|closed|played|muted|unmuted|installed|uninstalled|sent|deleted|"
-    r"saved|turned\s+(?:it\s+)?(?:on|off)|set\s+it|did\s+it|pressed|launched|paused|stopped)(?![\w])"
-    r"|it(?:'s|\s+is)\s+(?:done|open|closed|muted|playing)\s+now"
-    r")"
+# A conversation turn runs no operation, so whatever its reply says BAXY did, is doing or will do to the
+# person's world, and whatever it says that world holds, is invented. The acts are written once as verbs;
+# every form a reply can claim one in is generated from these tables, never listed per tense.
+#
+# Uso real 2026-09-25 (tanda 8): «Agregado: tomates.» was published with nothing added. Each tense had
+# its own hand-written verb list (first-person preterites here, impersonal preterites and participle stems
+# below, «se añadió» for four list verbs in the promises, English past forms in three more places) and the
+# bare participle of a status label was the one form none of them carried.
+#
+# The promised forms (present with a clitic, future, «voy a …», «estoy …ndo») come from the first table
+# only: «te escribo un poema», «voy a cambiar de tema», «te creo» are how a conversation speaks.
+_EFFECT_INFINITIVES = (
+    "guardar", "añadir", "agregar", "anotar", "apuntar", "abrir", "cerrar", "poner", "traer", "llevar",
+    "enviar", "mandar", "borrar", "eliminar", "instalar", "descargar", "reproducir", "activar",
+    "desactivar", "silenciar", "subir", "bajar", "programar", "apagar", "encender", "prender", "preparar",
+    "cocinar", "comprar", "agendar", "recordar", "buscar", "pedir", "hacer", "arreglar", "corregir",
 )
-# ctx-dueno-04 (2026-09-22, turn 56): «El volumen se subió a 100.» in a
-# conversation turn with no operation. An impersonal or passive completed
-# change of a PC object is the same invented effect as the first person.
+_DONE_ONLY_INFINITIVES = (
+    "cliquear", "pulsar", "apretar", "mutear", "desmutear", "pausar", "detener", "parar", "desinstalar",
+    "minimizar", "maximizar", "escribir", "pegar", "copiar", "reiniciar", "conectar", "desconectar", "entrar",
+    "ejecutar", "cambiar", "configurar", "ajustar", "crear", "quitar", "cancelar", "vaciar",
+)
+# (first person preterite, third person preterite, participle) of the irregular ones.
+_IRREGULAR_DONE_FORMS = {
+    "abrir": ("abrí", "abrió", "abierto"),
+    "poner": ("puse", "puso", "puesto"),
+    "hacer": ("hice", "hizo", "hecho"),
+    "traer": ("traje", "trajo", "traído"),
+    "escribir": ("escribí", "escribió", "escrito"),
+    "reproducir": ("reproduje", "reprodujo", "reproducido"),
+    "detener": ("detuve", "detuvo", "detenido"),
+    "pedir": ("pedí", "pidió", "pedido"),
+    "corregir": ("corregí", "corrigió", "corregido"),
+}
+
+
+def _done_forms(infinitive: str) -> tuple[str, str, str]:
+    """(first person preterite, third person preterite, participle) of an effect verb."""
+
+    if infinitive in _IRREGULAR_DONE_FORMS:
+        return _IRREGULAR_DONE_FORMS[infinitive]
+    stem, conjugation = infinitive[:-2], infinitive[-2:]
+    if conjugation != "ar":
+        return stem + "í", stem + "ió", stem + "ido"
+    # The spelling keeps the sound before «é»: busqué, agregué, minimicé.
+    first = stem[:-1] + "qu" if stem.endswith("c") else stem + "u" if stem.endswith("g") else (
+        stem[:-1] + "c" if stem.endswith("z") else stem
+    )
+    return first + "é", stem + "ó", stem + "ado"
+
+
+_DONE_FORMS = tuple(_done_forms(infinitive) for infinitive in _EFFECT_INFINITIVES + _DONE_ONLY_INFINITIVES)
+# The same acts in English; each past is also the participle. «set» and «put» are their own present too.
+_EN_DONE = (
+    "added", "saved", "opened", "closed", "put", "brought", "sent", "deleted", "removed", "installed", "uninstalled",
+    "downloaded", "played", "paused", "stopped", "muted", "unmuted", "set", "scheduled", "reminded", "ordered",
+    "bought", "cooked", "launched", "recorded", "stored", "created", "booked", "clicked", "pressed", "raised",
+    "lowered", "minimized", "minimised", "maximized", "maximised", "changed", "canceled", "cancelled", "noted",
+    "searched", "fetched", "cleared", "emptied", "turned on", "turned off",
+)
+_EN_DONE_FORM = (
+    r"(?:" + alternation(frozenset(_EN_DONE) - {"set", "put"})
+    + r"|(?:set|put)(?=\s+(?:it|them|that|this|the|a|an|your|up|for|to)\b)|turned\s+it\s+(?:on|off))"
+)
+# Accent-folded participles in any gender and number: agregado, añadidas, puesto, hecho.
+_ES_PARTICIPLE = r"(?:" + alternation(frozenset(fold(forms[2])[:-1] for forms in _DONE_FORMS)) + r")(?:o|a|os|as)"
 _PC_OBJECT = (
     r"(?:volumen|volume|micr[oó]fono|microphone|mic|ventana|window|pesta[ñn]a|tab|app|aplicaci[oó]n|"
     r"application|programa|program|archivo|file|carpeta|folder|reproductor|player|canci[oó]n|song|"
@@ -4185,19 +4239,71 @@ _PC_OBJECT = (
     r"pc|computadora|computador|ordenador|equipo|computer|sonido|sound|nota|note|alarma|alarm|"
     r"recordatorio|reminder|mensaje|message|correo|email)"
 )
-_IMPERSONAL_EFFECT_CLAIM = re.compile(
-    r"(?<![\w])(?:"
-    r"(?:ya\s+)?se\s+(?:abri[oó]|cerr[oó]|subi[oó]|baj[oó]|activ[oó]|desactiv[oó]|silenci[oó]|"
-    r"instal[oó]|desinstal[oó]|envi[oó]|mand[oó]|puso|reprodujo|paus[oó]|detuvo|apag[oó]|reinici[oó]|"
-    r"conect[oó]|desconect[oó]|guard[oó]|borr[oó]|elimin[oó]|minimiz[oó]|maximiz[oó]|ajust[oó]|"
-    r"cambi[oó]|configur[oó]|cre[oó]|program[oó])(?![\w])"
-    r"|(?:ya\s+)?qued[oó]\s+(?:abiert|cerrad|silenciad|activad|desactivad|puest|subid|bajad|"
-    r"instalad|enviad|guardad|borrad|eliminad|minimizad|maximizad|configurad|programad)"
-    r"|(?:has|have|is|was|got)\s+been\s+(?:opened|closed|raised|lowered|muted|unmuted|installed|"
-    r"uninstalled|sent|played|paused|stopped|saved|deleted|minimi[sz]ed|maximi[sz]ed|set|changed|created)"
-    r"|is\s+now\s+(?:at|open|closed|muted|unmuted|playing|paused|installed|set)"
-    r")"
+# What the person keeps with BAXY or elsewhere and only a read can tell (uso real 2026-09-23, tanda 2; tanda 8
+# added the timers and the orders: «You haven't set anything right now.», «Sí, está lista para recoger.»).
+# Written accent-folded: the replies are folded before these are read.
+_PERSONAL_RECORD_STORE = (
+    r"(?:listas?|lists?|notas?|notes?|recordatorios?|reminders?|tareas?|tasks?|pendientes|to-?dos?|agenda|"
+    r"calendario|calendar|alarmas?|alarms?|temporizador(?:es)?|timers?|citas?|appointments?|reunion(?:es)?|"
+    r"meetings?|correos?|e-?mails?|inbox|bandeja\s+de\s+entrada|pedidos?|orden(?:es)?|orders?|paquetes?|"
+    r"packages?|envios?|deliver(?:y|ies)|shipments?)"
 )
+# The person's world: a thing on this PC or one of the person's records.
+_PERSON_WORLD = re.compile(r"(?<![\w])(?:" + _PC_OBJECT + r"|" + _PERSONAL_RECORD_STORE + r")(?![\w])")
+# BAXY as the one who did it, on the case-folded text with its accents («paré» is the claim, «pare» is not):
+# «ya le hice click», «lo abrí», «agregué tomates», «I added it», «I set a timer».
+_DONE_BY_BAXY = re.compile(
+    r"(?<![\w])(?:"
+    + alternation(frozenset(forms[0] for forms in _DONE_FORMS))
+    + r"|i\s+(?:just\s+|already\s+)?(?:" + _EN_DONE_FORM + r"|did\s+it)"
+    + r"|it(?:'s|\s+is)\s+(?:done|open|closed|muted|playing)\s+now"
+    + r")(?![\w])"
+)
+# The same on the accent-folded text: the perfect («te lo he apuntado», «I've added it») and the state it left
+# («ya está hecho», «ya quedó guardado»).
+_DONE_BY_BAXY_FOLDED = re.compile(
+    r"(?<![\w])(?:"
+    r"(?:(?:me|te|se|le|les|nos)\s+)?(?:(?:lo|la|los|las)\s+)?(?:he|hemos)\s+(?:ya\s+)?" + _ES_PARTICIPLE
+    + r"|i(?:'ve|\s+have)\s+(?:just\s+|already\s+|now\s+)?" + _EN_DONE_FORM
+    + r"|ya\s+(?:esta|estan|queda|quedan|quedo|quedaron)\s+(?:" + _ES_PARTICIPLE + r"|listos?|listas?|reproduciendo)"
+    + r")(?![\w])"
+)
+# A status label at the head of a statement («Agregado: tomates.», «Listo.», «Done.», «Added to your list.»).
+# A participle that goes on to describe something else («Añadido el azúcar, se bate…», «Opened to the public
+# in 1889, …») is knowledge, not a report.
+_STATUS_LABEL = re.compile(
+    r"^\W*(?:ya\s+)?(?:" + _ES_PARTICIPLE + r"|listos?|listas?|done|all\s+set|" + alternation(frozenset(_EN_DONE))
+    + r")(?=\s*(?:[:,.!…]|$)|\s+(?:a|al|en|para|to|on|in|into|for)\s+(?:(?:tu|tus|your|la|el|los|las|the)\s+)?"
+    r"(?:[\w-]+\s+)?" + _PERSON_WORLD.pattern + r")"
+)
+# Nobody named as the doer: «el volumen se subió a 100», «quedó silenciado», «it has been added». Knowledge
+# says these too («la fábrica se cerró en 1990»), so they claim only about the person's world, or when the
+# sentence names nothing else and so points at what was just asked («Se añadió.», «It has been added.»).
+_DONE_WITHOUT_ACTOR = re.compile(
+    r"(?<![\w])(?:"
+    r"se\s+(?:" + alternation(frozenset(fold(forms[1]) for forms in _DONE_FORMS)) + r"|(?:ha|han)\s+" + _ES_PARTICIPLE + r")"
+    + r"|(?:quedo|quedaron|queda|quedan)\s+" + _ES_PARTICIPLE
+    + r"|(?:has|have|had|is|was|got)\s+been\s+" + _EN_DONE_FORM
+    + r"|(?:is|are)\s+now\s+(?:at|open|closed|muted|unmuted|playing|paused|installed|set)"
+    + r")(?![\w])"
+)
+# «un traje», «el pedido»: after a determiner the form is a noun.
+_NOUN_DETERMINER = re.compile(
+    r"\b(?:un|una|unos|unas|el|del|al|su|sus|mi|mis|tu|tus|este|esta|ese|esa|aquel|aquella|nuestro|nuestra)\s+$"
+)
+_ELIDED_OBJECT_WORDS = frozenset({
+    "ya", "y", "todo", "eso", "esto", "lo", "la", "los", "las", "ahora", "listo", "lista", "hecho", "bien",
+    "it", "they", "that", "this", "and", "now", "already", "all", "everything", "done", "just", "successfully",
+})
+
+
+def _claim_names_nothing_else(folded: str, claim: re.Match[str]) -> bool:
+    """Only pronouns and adverbs around an actorless claim: its object is what the person just asked for."""
+
+    rest = folded[: claim.start()] + " " + folded[claim.end():]
+    return all(word in _ELIDED_OBJECT_WORDS for word in re.findall(r"[a-z]+", rest))
+
+
 # Fase 3.5 (held-out 2026-09-22): «Reducí el brillo de la pantalla a 45.» with
 # no operation. The first person singular preterite is a form, not a list: a
 # word ending in a stressed «-é»/«-í» next to a PC object. The future («subiré»,
@@ -4219,18 +4325,6 @@ _NOT_A_PRETERITE = frozenset({
 _EFFECT_CLAIM_NEGATED = re.compile(
     r"\b(?:no|nunca|jamas|jamás|tampoco|sin|ni|not|never|didn'?t|couldn'?t|cannot|can'?t|haven'?t|"
     r"won'?t|don'?t|aun\s+no|aún\s+no|todavia\s+no|todavía\s+no)\b"
-)
-# Uso real 2026-09-23 (tanda 2): what BAXY says he does or will do in a turn that runs
-# nothing is as invented as what he says he did: «No, no hay queso en la lista de
-# compras. Se añadirá.», «Claro, te la guardo.» (a song), «Te traigo una hamburguesa con
-# queso.», «I'm mostly busy with coding and fixing bugs». The effect verbs are written
-# once as infinitives; their forms (present with a clitic, future, «voy a …», «estoy
-# …ndo») are generated from them.
-_EFFECT_INFINITIVES = (
-    "guardar", "añadir", "agregar", "anotar", "apuntar", "abrir", "cerrar", "poner", "traer", "llevar",
-    "enviar", "mandar", "borrar", "eliminar", "instalar", "descargar", "reproducir", "activar",
-    "desactivar", "silenciar", "subir", "bajar", "programar", "apagar", "encender", "prender", "preparar",
-    "cocinar", "comprar", "agendar", "recordar", "buscar", "pedir", "hacer", "arreglar", "corregir",
 )
 # (present first person, future first person, gerund) of the irregular ones.
 _IRREGULAR_EFFECT_FORMS = {
@@ -4254,6 +4348,9 @@ _EFFECT_FORMS = tuple(
     for infinitive in _EFFECT_INFINITIVES
 )
 _ENCLITIC = r"(?:me|te|se|le|les|nos)?(?:lo|la|los|las)?"
+# Uso real 2026-09-23 (tanda 2): what BAXY says he does or will do in a turn that runs
+# nothing is as invented as what he says he did: «Se añadirá.», «Claro, te la guardo.» (a
+# song), «Te traigo una hamburguesa con queso.», «I'm mostly busy with coding and fixing bugs».
 _PROMISED_EFFECT_CLAIM = re.compile(
     r"(?<![\w])(?:"
     # «te la guardo», «ya lo añado», «te traigo una hamburguesa»
@@ -4279,15 +4376,13 @@ _PROMISED_EFFECT_CLAIM = re.compile(
     r"|i(?:'m|\s+am)\s+(?:\w+\s+)?(?:adding|saving|opening|closing|putting|bringing|sending|deleting|removing|"
     r"installing|downloading|playing|muting|setting|scheduling|reminding|ordering|buying|cooking|fetching|"
     r"turning|launching|searching|recording|storing|creating|booking|coding|fixing|working\s+on|writing\s+code)"
-    # Impersonal: «se añadirá», «se añadió», «quedará guardado», «it will be added»
+    # Impersonal future: «se añadirá», «quedará guardado», «it will be added»
     r"|se\s+(?:añadir|agregar|guardar|anotar|apuntar|programar|agendar|instalar|descargar|reproducir|"
     r"silenciar|enviar|mandar|borrar|eliminar)án?"
-    r"|se\s+(?:añadi|agreg|anot|apunt|agend)ó"
     r"|quedar[áa]n?\s+(?:guardad|añadid|agregad|anotad|apuntad|programad|agendad|instalad|descargad|enviad|"
     r"borrad|eliminad)[oa]s?"
     r"|(?:will|'ll)\s+be\s+(?:added|saved|sent|deleted|removed|installed|downloaded|played|scheduled|stored|"
     r"noted|created)"
-    r"|(?:has|have)\s+been\s+(?:added|stored|noted)"
     r")(?![\w])"
 )
 # The assistant's own pastime is invented too: he lives on this PC and does what he is
@@ -4318,58 +4413,75 @@ _SPOKEN_OBJECT = re.compile(
 _CONDITIONAL_OFFER = re.compile(r"\b(?:si|if|cuando|when|once|en\s+cuanto|apenas|as\s+soon\s+as)\b")
 
 
-def visible_reply_claims_an_effect(value: object) -> bool:
+def visible_reply_claims_an_effect(value: object, request: object = "") -> bool:
     """Reject a conversation reply that claims an effect no operation produced.
 
     Owner's test 2026-09-21, turn 189: «Pero quiero que le hagas click» was
     answered «Claro, ya le hice click.» with zero operations. A conversation
-    turn executes nothing by construction, so a first-person, completed-action
-    claim about the PC in it is invented every time. Negated forms («no lo
-    hice», «no pude abrirlo») are the honest reply and survive; general
-    knowledge in the third person («Romero publicó…») is untouched because the
-    grammar only matches the first person singular of PC actions.
+    turn executes nothing by construction, so BAXY's completed act on the
+    person's world in it is invented every time, in any tense the verb tables
+    above generate. Negated forms («no lo hice», «no pude abrirlo») are the
+    honest reply and survive; general knowledge in the third person («Romero
+    publicó…», «la fábrica se cerró en 1990») is untouched.
 
     Uso real 2026-09-23 (tanda 2): nothing runs after the reply either, so an
     effect done now or promised («te la guardo», «se añadirá», «I'll add it»)
     and the assistant's own invented pastime are the same claim. A question
     («¿lo añado?»), an offer under a condition («si quieres, te lo recuerdo»)
     and what he says to the person («te pongo un ejemplo») are not.
+
+    A label that says back the person's own word («listo» → «¡Listo!») agrees
+    with them, and a preterite after a determiner is a noun («un traje»).
     """
 
     text = str(value or "").strip()
     if not text:
         return False
-    # Accents stay: «paré» is the claim, «pare» («que pare la canción») is not.
+    asked_words = set(re.findall(r"[a-z]+", _accent_folded_with_punctuation(request).casefold()))
     for sentence in re.split(r"(?<=[.!?…])\s+|\n+", text.casefold()):
-        clause_start = 0
-        matches = list(_COMPLETED_EFFECT_CLAIM.finditer(sentence))
-        if re.search(r"(?<![\w])" + _PC_OBJECT + r"(?![\w])", sentence) is not None:
-            matches.extend(_IMPERSONAL_EFFECT_CLAIM.finditer(sentence))
-            matches.extend(
-                match
+        folded = _accent_folded_with_punctuation(sentence)
+        world = _PERSON_WORLD.search(folded) is not None
+        claims = [
+            (sentence, match)
+            for match in _DONE_BY_BAXY.finditer(sentence)
+            if _NOUN_DETERMINER.search(sentence[: match.start()]) is None
+        ]
+        claims.extend((folded, match) for match in _DONE_BY_BAXY_FOLDED.finditer(folded))
+        claims.extend(
+            (folded, match)
+            for match in _DONE_WITHOUT_ACTOR.finditer(folded)
+            if world or _claim_names_nothing_else(folded, match)
+        )
+        if world:
+            claims.extend(
+                (sentence, match)
                 for match in _FIRST_PERSON_PRETERITE.finditer(sentence)
                 if match.group(0) not in _NOT_A_PRETERITE
                 and not match.group(0).endswith(("aré", "eré", "iré"))
             )
         if "?" not in sentence and "¿" not in sentence:
-            matches.extend(_INVENTED_SELF_ACTIVITY.finditer(sentence))
+            claims.extend(
+                (folded, match)
+                for match in _STATUS_LABEL.finditer(folded)
+                if not set(re.findall(r"[a-z]+", match.group(0))) <= asked_words
+            )
+            claims.extend((sentence, match) for match in _INVENTED_SELF_ACTIVITY.finditer(sentence))
             if _CONDITIONAL_OFFER.search(sentence) is None:
-                matches.extend(
-                    match
-                    for match in _PROMISED_EFFECT_CLAIM.finditer(sentence)
-                    if _SPOKEN_OBJECT.match(sentence[match.end():]) is None
-                )
-        for match in matches:
+                claims.extend((sentence, match) for match in _PROMISED_EFFECT_CLAIM.finditer(sentence))
+        for source, match in claims:
+            # What BAXY says to the person is the conversation, not an effect («te hice una pregunta»).
+            if _SPOKEN_OBJECT.match(source[match.end():]) is not None:
+                continue
             # A negation earlier in the same clause makes it a denial, not a claim.
-            clause = sentence[clause_start:match.start()]
+            clause = source[:match.start()]
             for boundary in (",", ";", " pero ", " but ", " aunque "):
                 if boundary in clause:
                     clause = clause.rsplit(boundary, 1)[-1]
             # «lo que hice fue decir la verdad»: a pseudo-cleft describes the act
             # it names; it does not claim that an effect happened.
-            cleft = re.match(r"\s*(?:fue|es|era)\s+(?P<act>[a-záéíóúñ]+)(?P<rest>[^.!?]*)", sentence[match.end():])
+            cleft = re.match(r"\s*(?:fue|es|era)\s+(?P<act>[a-záéíóúñ]+)(?P<rest>[^.!?]*)", source[match.end():])
             if (
-                re.search(r"\blo que\s+(?:(?:ya|solo|sólo)\s+)?$", sentence[:match.start()])
+                re.search(r"\blo que\s+(?:(?:ya|solo|sólo)\s+)?$", source[:match.start()])
                 and cleft is not None
                 and not (
                     re.search(r"(?:ar|er|ir)$", cleft.group("act"))
@@ -4382,78 +4494,170 @@ def visible_reply_claims_an_effect(value: object) -> bool:
     return False
 
 
-# Uso real 2026-09-23 (tanda 2): «do i have cheese on my shopping list» was answered
-# «No, no hay queso en la lista de compras.» with nothing read. What the person keeps on
-# this PC is known only by reading it; a conversation reply that states it is invented.
-_PERSONAL_RECORD_STORE = (
-    r"(?:listas?|lists?|notas?|notes?|recordatorios?|reminders?|tareas?|tasks?|pendientes|to-?dos?|agenda|"
-    r"calendario|calendar|alarmas?|alarms?|citas?|appointments?|correos?|e-?mails?|inbox|bandeja\s+de\s+entrada)"
-)
 _PERSONAL_RECORD_CONTENT = re.compile(
     r"\b(?:hay|tienes|tenes|tiene|contiene|incluye|figuran?|aparecen?|esta|estan|queda|quedan|"
     r"there\s+(?:is|are)|there's|you\s+have|you've\s+got|has|contains|includes|"
     r"(?:is|are|isn't|aren't)(?:\s+not)?\s+(?:on|in)|is\s+empty)\b"
 )
+# A record named as the person's may not be given any state at all: «tu pedido llegó», «your order is ready».
+_OWNED_RECORD_STATE = re.compile(r"\b(?:es|son|fue|llego|llegaron|is|are|was|were|arrived|shipped)\b")
 _UNREAD_RECORD_HONESTY = re.compile(
     r"\b(?:no\s+(?:se|puedo|pude|tengo\s+acceso|consigo|lo\s+se)|sin\s+(?:leer|revisar|mirar|ver|acceso)|"
     r"puedo\s+(?:leer|revisar|buscar|mirar|ver|consultar)|don'?t\s+know|do\s+not\s+know|can(?:not|'t)|"
-    r"no\s+access|unable|not\s+able|without\s+(?:reading|checking|looking)|can\s+(?:check|read|look))\b"
+    r"no\s+access|unable|not\s+able|without\s+(?:reading|checking|looking)|can\s+(?:check|read|look)|"
+    r"(?:don'?t|do\s+not)\s+have\s+access)\b"
 )
 # «En tu calendario hay una opción para…» describes an application, not its content.
 _APPLICATION_FEATURE = re.compile(
     r"\b(?:opcion|opciones|funcion|funciones|boton|seccion|menu|pestana|apartado|ajuste|"
     r"option|feature|button|setting|section|menu|tab)\b"
 )
+# The person as the one who holds something now: «Ya tienes en la lista: …», «No tienes nada programado»,
+# «You haven't set anything right now.» (tanda 7b, with two timers running). «Tienes que…», «you have to…»
+# say what to do, not what there is.
+_PERSON_HOLDS = re.compile(
+    r"^\W*(?:(?:si|yes|yeah|no|ya|todavia|aun|still|also|tambien|ahora|now|actualmente|currently|hoy|today|"
+    r"right\s+now|por\s+ahora|so\s+far|hasta\s+ahora)\b[\s,]*)*"
+    r"(?:no\s+)?(?:tienes|tenes|te\s+quedan?|has"
+    r"|you(?:'ve|\s+have|\s+haven't|\s+have\s+not|\s+don't\s+have|\s+do\s+not\s+have|'ve\s+got|\s+got|"
+    r"\s+still\s+have|\s+already\s+have|\s+currently\s+have))\b(?!\s+(?:que|to)\b)"
+)
+# What the person set up, said of them: every effect participle but «hecho» («has hecho una buena pregunta»).
+_CONFIGURED_STATE = re.compile(
+    r"(?<![\w])(?:(?!hech)" + _ES_PARTICIPLE + r"|" + alternation(frozenset(_EN_DONE)) + r")(?![\w])"
+)
+# The person's own records named in their messages: «apúntame en la lista de la compra …», «mi agenda».
+_FIRST_PERSON_MARK = re.compile(r"\b(?:mi|mis|my|me|yo|i|i'm|i've|tengo|llevo|\w+(?:ame|eme|ime|nme))\b")
+_PERSONAL_STORE_QUALIFIERS = frozenset({
+    "la", "las", "compra", "compras", "tareas", "pendientes", "cosas", "super", "supermercado", "mercado",
+})
 
 
-def visible_reply_asserts_unread_personal_records(value: object, request: object = "") -> bool:
-    """Reject a conversation reply that states what the person's lists, notes,
-    reminders, agenda or mail hold: nothing was read in a conversation turn.
+def visible_reply_asserts_unread_personal_records(
+    value: object, request: object = "", prior_requests: tuple[str, ...] = (),
+) -> bool:
+    """Reject a conversation reply that states what the person's lists, notes, alarms,
+    timers, agenda, mail or orders hold: nothing was read in a conversation turn.
 
-    The store is the person's when the reply says so («tu lista», «your list») or
-    names it with an article after the request named it as the person's («my shopping
-    list» → «la lista de compras»). Saying it cannot know, a question, a hypothesis and
-    general knowledge about lists («una lista de la compra suele…») survive.
+    The store is the person's when the reply says so («tu lista», «your order»), when the
+    person is the one who holds it («Ya tienes en la lista: …», «You haven't set anything»),
+    or when it names with an article a store the person named as theirs in this dialogue
+    («apúntame en la lista de la compra» → «En la lista hay …»). Saying it cannot know, a
+    question, a hypothesis and general knowledge about lists («una lista de la compra
+    suele…», «la lista de Schindler tiene…») survive.
     """
 
     text = str(value or "").strip()
     if not text:
         return False
-    owned_request = re.search(
-        rf"\b(?:mi|mis|my)\s+(?:[\w-]+\s+)?{_PERSONAL_RECORD_STORE}\b", _accent_folded_with_punctuation(request),
-    ) is not None
+    owned_by_the_person = any(
+        re.search(rf"\b{_PERSONAL_RECORD_STORE}\b", said) is not None and _FIRST_PERSON_MARK.search(said) is not None
+        for said in (_accent_folded_with_punctuation(item).casefold() for item in (request, *prior_requests))
+    )
     for said in re.split(r"(?<=[.!?…])\s+|\n+", text.casefold()):
         # «sí» agrees; only «si» opens a hypothesis, so the accents are read first.
         if "?" in said or "¿" in said or _CONDITIONAL_OFFER.search(said) is not None:
             continue
         sentence = _accent_folded_with_punctuation(said)
-        owned = re.search(rf"\b(?:tu|tus|your)\s+(?:[\w-]+\s+)?{_PERSONAL_RECORD_STORE}\b", sentence) is not None or (
-            owned_request and re.search(rf"\b(?:la|las|el|los|the)\s+{_PERSONAL_RECORD_STORE}\b", sentence) is not None
-        )
-        if (
-            owned
-            and _PERSONAL_RECORD_CONTENT.search(sentence) is not None
-            and _UNREAD_RECORD_HONESTY.search(sentence) is None
-            and _APPLICATION_FEATURE.search(sentence) is None
+        if _UNREAD_RECORD_HONESTY.search(sentence) is not None or _APPLICATION_FEATURE.search(sentence) is not None:
+            continue
+        store = re.search(rf"\b{_PERSONAL_RECORD_STORE}\b", sentence)
+        if _PERSON_HOLDS.search(sentence) is not None and (
+            store is not None or _CONFIGURED_STATE.search(sentence) is not None
         ):
             return True
+        possessed = re.search(rf"\b(?:tu|tus|your)\s+(?:[\w-]+\s+)?{_PERSONAL_RECORD_STORE}\b", sentence)
+        if possessed is not None and (
+            _PERSONAL_RECORD_CONTENT.search(sentence) is not None
+            or _OWNED_RECORD_STATE.search(sentence[possessed.end():]) is not None
+        ):
+            return True
+        if owned_by_the_person and _PERSONAL_RECORD_CONTENT.search(sentence) is not None:
+            for named in re.finditer(
+                rf"\b(?:la|las|el|los|the)\s+(?:(?:shopping|grocery|to-?do)\s+)?{_PERSONAL_RECORD_STORE}\b"
+                r"(?:\s+(?:de|del|of)\s+(?P<qualifier>[\w-]+))?",
+                sentence,
+            ):
+                if named.group("qualifier") in (None, *_PERSONAL_STORE_QUALIFIERS):
+                    return True
     return False
 
 
-def conversation_claim_defect(value: object, request: object = "") -> str:
-    """Why a conversation reply claims what no operation produced or read, or "".
+# The person asks whether something of theirs is so («está mi orden lista para recoger ya», «did I leave the
+# stove on», «¿tengo reuniones mañana?»). What they may or should do is knowledge («¿mi perro puede comer
+# uvas?», «do I need a visa»), and a question about the world or about BAXY is not about theirs.
+_ASKED_ABOUT_WRAPPER = re.compile(
+    r"^\W*(?:(?:i\s+(?:need|want|would\s+like)\s+to\s+know|i'd\s+like\s+to\s+know|tell\s+me|(?:can|could)\s+you\s+"
+    r"(?:tell\s+me|check)|do\s+you\s+know|check|quiero\s+saber|necesito\s+saber|dime|me\s+(?:puedes|podes|podrias)\s+"
+    r"decir|sabes|revisa|mira|fijate|comprueba|verifica)\s+(?:if|whether|si)\s+)"
+)
+_ASKED_WH = re.compile(
+    r"^\W*(?:que|cual|cuales|como|donde|cuando|quien|quienes|cuanto|cuanta|cuantos|cuantas|por\s+que|para\s+que|"
+    r"what|which|how|where|when|who|whom|whose|why)\b"
+)
+_ASKED_ABOUT_THE_PERSON = re.compile(
+    r"\b(?:mi|mis|my|mine|tengo|tenia|llevo|deje|puse|hice|do\s+i|did\s+i|have\s+i|i\s+have|i've|i\s+had|i\s+left)\b"
+)
+_ASKED_WHAT_MAY_BE = re.compile(
+    r"\b(?:puedo|puede|pueden|podria|podrian|debo|debe|deberia|deberian|necesito|necesita|hace\s+falta|conviene|"
+    r"es\s+(?:bueno|malo|normal|seguro|recomendable|posible)|can|could|should|must|may|might|need|needs|ought|"
+    r"is\s+it\s+(?:ok|okay|safe|normal|bad|good|possible)|would)\b"
+)
+_POLAR_ANSWER = re.compile(
+    r"^\W*(?:sí\b|si,|yes\b|yeah\b|yep\b|yup\b|correcto\b|correct\b|exacto\b|exactly\b|así\s+es\b|"
+    r"that's\s+right\b|no[,.!]|no$|nope\b|not\s+yet\b|todavía\s+no\b|aún\s+no\b)"
+)
 
-    A conversation turn runs nothing: the reply can neither report, perform nor promise
-    an effect («effect_claim») nor state the person's own records («unread_records»), and
-    (tanda 6 «Sí, el año actual es 2024.») no date about today that this PC's calendar
-    denies («false_date», «hedged_date»).
+
+def visible_reply_answers_an_unobserved_polar_question(value: object, request: object = "") -> bool:
+    """Reject «Sí»/«No» to whether something of the person's is so, with nothing observed.
+
+    Uso real 2026-09-25 (tanda 8): «está mi orden lista para recoger ya» was answered «Sí,
+    está lista para recoger.»; BAXY knows nothing of any order. The honest reply says it
+    cannot know or has no access («No, no puedo saberlo desde aquí» survives).
     """
 
-    if visible_reply_claims_an_effect(value):
+    text = str(value or "").strip()
+    if not text or _POLAR_ANSWER.search(text.casefold()) is None:
+        return False
+    asked = _ASKED_ABOUT_WRAPPER.sub("", _accent_folded_with_punctuation(request).casefold())
+    if (
+        _ASKED_WH.search(asked) is not None
+        or _ASKED_ABOUT_THE_PERSON.search(asked) is None
+        or _ASKED_WHAT_MAY_BE.search(asked) is not None
+    ):
+        return False
+    honest = _accent_folded_with_punctuation(text).casefold()
+    return _UNREAD_RECORD_HONESTY.search(honest) is None and not _unsupported_answer_has_inability(text)
+
+
+def conversation_world_claim(value: object, request: object = "", prior_requests: tuple[str, ...] = ()) -> str:
+    """Why a reply written with no operation run claims something of the person's world, or "".
+
+    Nothing ran and nothing was read, so the reply can neither report, perform nor promise
+    an effect («effect_claim»), nor state the person's own records («unread_records»), nor
+    answer yes or no about something of theirs («unobserved_answer»).
+    """
+
+    if visible_reply_claims_an_effect(value, request):
         return "effect_claim"
-    if visible_reply_asserts_unread_personal_records(value, request):
+    if visible_reply_asserts_unread_personal_records(value, request, tuple(prior_requests)):
         return "unread_records"
-    return _calendar_contradiction(str(value or ""), str(request or ""), _local_now())
+    if visible_reply_answers_an_unobserved_polar_question(value, request):
+        return "unobserved_answer"
+    return ""
+
+
+def conversation_claim_defect(value: object, request: object = "", prior_requests: tuple[str, ...] = ()) -> str:
+    """Why a conversation reply claims what no operation produced or read, or "".
+
+    The person's world (``conversation_world_claim``) and (tanda 6 «Sí, el año actual es
+    2024.») no date about today that this PC's calendar denies («false_date», «hedged_date»).
+    """
+
+    return conversation_world_claim(value, request, prior_requests) or _calendar_contradiction(
+        str(value or ""), str(request or ""), _local_now(),
+    )
 
 
 def visible_reply_asserts_an_unread_machine_state(
@@ -14910,6 +15114,10 @@ class LlmRuntime:
         if response_language is not None and response_language not in language_policies:
             raise ValueError("idioma de respuesta inválido")
         prior_messages = _chat_prior_messages(text, history, conversation_kind)
+        # What the person said before decides whose records a reply names («apúntame en la lista…»).
+        prior_user_requests = tuple(
+            str(message.get("content") or "") for message in prior_messages if message.get("role") == "user"
+        )
         prepared = getattr(self, "_speculative_chat_handoff", None)
         if (
             prepared is not None
@@ -15041,12 +15249,11 @@ class LlmRuntime:
             # lista de compras. Se añadirá.»). Only that veto applies here; a
             # violating draft falls through to the ordinary generation.
             # The records are the person's when any of their messages said so.
-            said = " ".join(
-                [text, *(message["content"] for message in prior_messages if message.get("role") == "user")]
-            )
             # A message said back is quoted, not claimed: only the words around it are BAXY's.
             if not conversation_claim_defect(
-                contextual.replace(literal_recall, " ") if literal_recall else contextual, said,
+                contextual.replace(literal_recall, " ") if literal_recall else contextual,
+                text,
+                prior_user_requests,
             ):
                 return (contextual, [])
 
@@ -15398,6 +15605,7 @@ class LlmRuntime:
             text,
             presentation_shape,
             authenticated_operations=authenticated_operations,
+            prior_requests=prior_user_requests,
         )
         wrong_reply_language = _reply_uses_opposite_language(content, response_language)
         language_only_repair = (
@@ -15445,18 +15653,20 @@ class LlmRuntime:
                             "En este turno no leíste el reloj: no digas qué día, fecha, mes ni año es hoy. "
                             "Responde en una sola frase con lo que sabes."
                         )
-                        if conversation_claim_defect(content, text) in {"false_date", "hedged_date"}
+                        if conversation_claim_defect(content, text, prior_user_requests) in {"false_date", "hedged_date"}
                         else (
                             # Uso real 2026-09-23 (tanda 2): «Te traigo una hamburguesa»,
                             # «Se añadirá.», «no hay queso en la lista». The generic
                             # repair did not say what was wrong with the draft.
                             "En este turno no ejecutaste nada ni leíste nada de la persona: "
                             "no digas que hiciste, haces o harás algo (guardar, añadir, abrir, "
-                            "traer, buscar…), no inventes actividades tuyas y no afirmes qué hay "
-                            "en sus listas, notas, recordatorios o agenda. Responde en una sola "
-                            "frase con lo que sabes, o di llanamente que eso no lo haces."
+                            "traer, buscar…), no inventes actividades tuyas, no afirmes qué hay "
+                            "en sus listas, notas, recordatorios, temporizadores, agenda o pedidos "
+                            "y no contestes sí o no sobre ellos. Responde en una sola frase con lo "
+                            "que sabes, o di llanamente que eso no lo sabes desde aquí o que no lo haces."
                         )
-                        if conversation_claim_defect(content, text)
+                        if presentation_shape not in _WRITTEN_CONTENT_SHAPES
+                        and conversation_world_claim(content, text, prior_user_requests)
                         else (
                             "Cumple el primer contrato con una sola oración natural: "
                             "reconoce lo que la persona cuenta o pregunta por el "
@@ -15612,6 +15822,7 @@ class LlmRuntime:
                 text,
                 presentation_shape,
                 authenticated_operations=authenticated_operations,
+                prior_requests=prior_user_requests,
             ):
                 # WEB1455: the published text is message.content, not
                 # final_content; both must carry the kept sentence.
@@ -15649,6 +15860,7 @@ class LlmRuntime:
                 text,
                 presentation_shape,
                 authenticated_operations=authenticated_operations,
+                prior_requests=prior_user_requests,
             )
         ):
             failure_reason = (
