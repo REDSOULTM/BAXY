@@ -25,6 +25,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from .grammar import _COVERAGE_ACTION_HEAD, _head_is
 from .normalize import alternation, fold, spelled_out
 
 _WORD = re.compile(r"[a-z0-9ñ]+")
@@ -190,18 +191,54 @@ def _object_pronoun(folded: str) -> bool:
 
     «apagalo», «subila a 20»: the object is the pronoun. «devolvele el sonido», «mandale un
     mensaje»: «le» is the dative (to whom); the object («el sonido») is said, so the message
-    stands on its own (held-out turn 9).
+    stands on its own (held-out turn 9). «bajale un poco», «pausalo un toque»: an amount or a
+    while is not an object.
     """
 
     for found in _ENCLITIC.finditer(folded):
         tail = _CLITIC_TAIL.search(found.group(0))
+        if tail is None or not _verb_with_clitic(found.group(0), tail.group(0), folded[: found.start()]):
+            continue
         rest = folded[found.end():].split()
-        if tail is not None and tail.group("clitic") in {"le", "les"} and rest and (rest[0] in {
-            "el", "la", "los", "las", "un", "una", "unos", "unas", "mi", "mis", "su", "sus", "algo", "que",
-        } or _DATIVE_OBJECT.match(" ".join(rest))):
+        if tail.group("clitic") in {"le", "les"} and rest and (
+            (rest[0] in _DETERMINERS and not (len(rest) > 1 and rest[1] in _DEGREE))
+            or _DATIVE_OBJECT.match(" ".join(rest))
+        ):
             continue
         return True
     return False
+
+
+_DETERMINERS = frozenset({"el", "la", "los", "las", "un", "una", "unos", "unas", "mi", "mis", "su", "sus", "algo", "que"})
+# How much or how long, said after the verb («bajale un poco», «pausalo un toque», «seguí un rato»): never its object.
+_DEGREE = frozenset(
+    "poco poquito poquitito toque toquecito cachito cacho chin pelin rato ratito momento momentito segundo tantito"
+    .split()
+)
+# A verb stands first in its clause: after nothing, a pause, a connector or a filler («ok postealo», «y cerralo»).
+_VERB_POSITION = re.compile(
+    r"(?:^|[,;.!?]|\b(?:y|e|pero|luego|despues|entonces))\s*"
+    r"(?:(?:ok|okay|okey|oye|che|bueno|pues|dale|ya|ahora|porfa|baxy|no|mejor|va|vale|orale|sale)\b[\s,.]*)*$"
+)
+_INFINITIVE_OR_GERUND_CLITIC = re.compile(r"(?:ar|er|ir|ando|iendo)(?:me|te|se|nos)?(?:lo|la|los|las|le|les)$")
+
+
+def _verb_with_clitic(word: str, clitic: str, before: str) -> bool:
+    """«pausalo», «cerralo», «postealo» are a verb and its pronoun; «chilaquiles», «internacionales» and «cancela» are
+    not (tanda 9: «cómo se hacen los chilaquiles verdes» was rewritten with a place two turns before).
+
+    An infinitive or a gerund with its clitic is a verb. Otherwise the word without the clitic must be an order the
+    readers know («pausa», «baja»); a word that is itself such an order («cancela») carries no clitic; and a word
+    neither says must stand where a verb stands, first in its clause.
+    """
+
+    if _INFINITIVE_OR_GERUND_CLITIC.search(word):
+        return True
+    if _head_is(word[: len(word) - len(clitic)], _COVERAGE_ACTION_HEAD):
+        return True
+    if _head_is(word, _COVERAGE_ACTION_HEAD):
+        return False
+    return _VERB_POSITION.search(before) is not None
 
 
 # Tanda 7b «oye súbele al volumen po» was rewritten as «… al volumen please use whisper mode»: «le» doubles the object
