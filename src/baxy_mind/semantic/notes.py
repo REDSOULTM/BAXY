@@ -1780,10 +1780,12 @@ def _review_calendar_message_and_direct_reminder_effects(
             )
             or _has(folded, r"^get\s+rid\s+of\b")
         )
-        and _has(folded, r"\b(?:alarma|alarm|recordatorio|reminder)\b")
+        # Tanda 7 «actually make it 9» after «set a timer for the pasta, 11 minutes»: a timer is a scheduled
+        # alarm too, and «cancel the last timer» cancels it like «cancel the last alarm».
+        and _has(folded, r"\b(?:alarma|alarm|recordatorio|reminder|temporizador|timer|aviso)\b")
         and not _has(
             folded,
-            r"\b(?:alarmas|alarms|recordatorios|reminders)\b",
+            r"\b(?:alarmas|alarms|recordatorios|reminders|temporizadores|timers|avisos)\b",
         )
     )
     exact_local_reminder_title = _exact_local_reminder_title(folded)
