@@ -300,3 +300,37 @@ def test_a_check_that_cannot_be_made_is_a_failure_said(draft: str) -> None:
 def test_inventing_the_mailbox_state_is_still_not_the_failure(draft: str) -> None:
     assert llm.compose_visible_defect(draft, "failure", "¿me ha llegado algún correo nuevo?",
                                       {"situation": _NO_OUTLOOK}) == "missing_failure"
+
+
+# ------------------------------------------------------------------ the alarm listing as it is heard
+
+
+def _utc(local: datetime) -> str:
+    return local.astimezone(timezone.utc).isoformat()
+
+
+def test_the_alarm_listing_carries_the_local_clock_and_the_day_only_when_not_today() -> None:
+    now = datetime.now().astimezone().replace(second=0, microsecond=0)
+    today_at = now.replace(hour=23, minute=58)
+    tomorrow_at = (now + timedelta(days=1)).replace(hour=6, minute=15)
+    later_at = (now + timedelta(days=3)).replace(hour=7, minute=0)
+    observed = {
+        "count": 4,
+        "notifications": [
+            {"kind": "alarm", "nextRunUtc": _utc(today_at)},
+            {"kind": "alarm", "nextRunUtc": _utc(today_at)},
+            {"kind": "reminder", "title": "Pastilla", "nextRunUtc": _utc(tomorrow_at)},
+            {"kind": "alarm", "nextRunUtc": _utc(later_at)},
+        ],
+    }
+    projected = llm._project_notification_listing(observed, "es")
+    assert projected["count"] == 4
+    assert projected["scheduled"] == [
+        {"kind": "alarma", "time": "23:58", "howMany": 2},
+        {"kind": "recordatorio", "title": "Pastilla", "time": "06:15", "day": "mañana"},
+        {"kind": "alarma", "time": "07:00", "date": later_at.date().isoformat()},
+    ]
+    english = llm._project_notification_listing(observed, "en")
+    assert english["scheduled"][1]["day"] == "tomorrow"
+    # No UTC instant, no «YYYY-MM-DD HH:MM» string reaches the model.
+    assert "nextRun" not in json.dumps(projected) and "T" not in json.dumps(projected["scheduled"][0])

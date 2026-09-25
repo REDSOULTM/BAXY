@@ -8430,10 +8430,15 @@ def _page_read_quote_defect(text: str, seen: dict) -> str:
 
 def _project_notification_listing(observed: dict, language: str) -> dict:
     """AGENDA1435 «listá los timers»: kind, title and next run of each scheduled
-    alarm or reminder, plus the count; the task identities stay out."""
+    alarm or reminder, plus the count; the task identities stay out.
+
+    Tanda 9 «Would you show me my alarms?» → «"alarm" at "2026-09-25 14:00", "alarm" at "2026-09-25 14:00"…»: the
+    next run goes as the person hears it — its local clock, and its day only when it is not today («tomorrow» as
+    the word, a later day as its date) — and equal entries go once with how many there are."""
 
     entries = observed.get("notifications")
-    scheduled = []
+    scheduled: list[dict] = []
+    today = datetime.now().astimezone().date()
     for entry in (entries if isinstance(entries, list) else []):
         if not isinstance(entry, dict):
             continue
@@ -8447,9 +8452,24 @@ def _project_notification_listing(observed: dict, language: str) -> dict:
             item["title"] = entry["title"].strip()
         next_run = entry.get("nextRunUtc")
         if isinstance(next_run, str) and next_run:
-            local = _local_clock_text(next_run)
-            item["nextRun"] = local or next_run
-        scheduled.append(item)
+            try:
+                instant = datetime.fromisoformat(next_run.replace("Z", "+00:00"))
+            except ValueError:
+                instant = None
+            if instant is None:
+                item["nextRun"] = next_run
+            else:
+                local = (instant if instant.tzinfo else instant.replace(tzinfo=timezone.utc)).astimezone()
+                item["time"] = f"{local:%H:%M}"
+                if local.date() == today + timedelta(days=1):
+                    item["day"] = "tomorrow" if language == "en" else "mañana"
+                elif local.date() != today:
+                    item["date"] = local.date().isoformat()
+        same = next((earlier for earlier in scheduled if {k: v for k, v in earlier.items() if k != "howMany"} == item), None)
+        if same is not None:
+            same["howMany"] = same.get("howMany", 1) + 1
+        else:
+            scheduled.append(item)
     count = observed.get("count") if type(observed.get("count")) is int else len(scheduled)
     return {"count": count, "scheduled": scheduled}
 
@@ -20231,18 +20251,18 @@ class LlmRuntime:
             # each scheduled alarm or reminder, its kind, title and next run.
             instruct(
                 "\nseen.scheduled holds the alarms and reminders BAXY has scheduled "
-                "(kind, title, nextRun in local time) and seen.count their number. "
-                "If seen.count is 0, say that there are no alarms or reminders "
-                "scheduled, nothing else. Otherwise say how many there are and name "
-                "each one with its kind, its title verbatim in quotation marks and "
-                "its next run. No purpose, no interpretation, no other items."
+                "(kind, title, time in local time, day or date only when it is not today, howMany for equal "
+                "ones) and seen.count their number. If seen.count is 0, say that there are no alarms or "
+                "reminders scheduled, nothing else. Otherwise say how many there are and each one briefly, as "
+                "spoken: its kind, its title in quotation marks only when it has one, and when it rings (the "
+                "time, and tomorrow or the date when given). No purpose, no interpretation, no other items."
                 if response_language == "en"
                 else "\nseen.scheduled trae las alarmas y recordatorios que BAXY tiene "
-                "programados (tipo, título, nextRun en hora local) y seen.count su "
-                "número. Si seen.count es 0, di que no hay alarmas ni recordatorios "
-                "programados, nada más. Si no, di cuántos hay y nombra cada uno con "
-                "su tipo, su título tal cual entre comillas y su próxima ejecución. "
-                "Sin propósito, sin interpretación, sin otros elementos."
+                "programados (tipo, título, time en hora local, day o date sólo cuando no es hoy, howMany "
+                "para los iguales) y seen.count su número. Si seen.count es 0, di que no hay alarmas ni "
+                "recordatorios programados, nada más. Si no, di cuántos hay y cada uno en breve, como se "
+                "dice: su tipo, su título entre comillas sólo si tiene, y cuándo suena (la hora, y mañana o la "
+                "fecha cuando vienen). Sin propósito, sin interpretación, sin otros elementos."
             )
         if (
             visible_situation.get("operation") == "bluetooth.radio.status"
