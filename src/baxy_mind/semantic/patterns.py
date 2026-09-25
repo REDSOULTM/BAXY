@@ -11832,7 +11832,7 @@ def resolve_explicit_effects(
 
 
 def output_level_request(
-    text: str, previous_user_text: str | None, available_operations: Iterable[str],
+    text: str, previous_user_text: str | None, available_operations: Iterable[str], *, asked: str | None = None,
 ) -> str | None:
     """The volume or brightness request ``text`` states, as the canonical sentence the level readers read.
 
@@ -11843,7 +11843,9 @@ def output_level_request(
     «al máximo»). «a 40» after «bajá el brillo» is therefore brightness 40, not 40 less. A request that leaves
     its object out takes it from the request it follows (``levels.followup_antecedent``), and otherwise
     refers to the volume. The caller resolves the result with every ordinary check. Nothing is completed
-    from what the assistant said.
+    from what the assistant said. ``asked``, when given, is BAXY's reply between the request and the answer:
+    a bare number answers it (``levels.answers_with_amount``: «¿cuánto…?» an amount, a level question or none
+    the level to end at).
     """
 
     available = frozenset(available_operations)
@@ -11851,6 +11853,8 @@ def output_level_request(
     if answer is not None:
         if not previous_user_text:
             return None
+        if asked is not None and answer.amount is not None and not levels.answers_with_amount(asked, text):
+            answer = levels.Level(None, None, None, answer.amount)
         prior = resolve_explicit_clarification_intent(previous_user_text, available)
         if prior is None or prior.missing_fields != ("amount",) or prior.operations not in {
             ("audio.volume.adjust",), ("system.settings.adjust",),

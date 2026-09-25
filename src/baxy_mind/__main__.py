@@ -7582,6 +7582,7 @@ def _rearm_in_context(
         # level readers ask for the amount.
         completed = output_level_request(
             objective, _previous_user_request(history, objective) or slot.pending_request, available_operations,
+            asked=slot.last_reply or "",
         )
         if completed is not None and resolve_explicit_effects(
             completed, available_operations, application_names, game_catalog,

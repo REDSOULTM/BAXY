@@ -493,6 +493,24 @@ def answer(text: str) -> Level | None:
     return Level(None, None, *quantity)
 
 
+# Tanda 8 «40 percent» after «How bright should the screen be adjusted to?» lowered the brightness by 40: a bare
+# number answers the question BAXY asked. «¿cuánto (menos)…?», «how much…?» ask for an amount; a level («¿a qué
+# nivel…?», «what level…?», «a cuánto…?»), any other question or none is answered with where the level ends.
+_ASKS_AMOUNT = re.compile(r"\b(?:cuant[oa]s?|how\s+(?:much|many)|by\s+how)\b")
+_ASKS_LEVEL = re.compile(r"\b(?:a\s+cuant[oa]|nivel|level|porcentaje|percentage|to\s+what)\b")
+_SAYS_AMOUNT = re.compile(r"\b(?:en|by)\s+\S|\S\s+(?:mas|menos|more|less)$")
+
+
+def answers_with_amount(question: str | None, answer_text: str) -> bool:
+    """A bare level said after ``question`` is how much to change (True) or where to end (False)."""
+
+    folded = fold(question or "")
+    return bool(
+        _SAYS_AMOUNT.search(_clean(answer_text))
+        or ("?" in str(question or "") and _ASKS_AMOUNT.search(folded) and not _ASKS_LEVEL.search(folded))
+    )
+
+
 def setting_of(text: str | None) -> str | None:
     """The setting an earlier request was about, when it names one: its level request, else its nouns."""
 

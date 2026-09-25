@@ -225,3 +225,41 @@ def test_what_the_person_holds_after_a_list_is_not_the_alarms():
 )
 def test_a_list_read_with_its_pronoun_again_or_an_opener_is_read(text):
     assert _effects(text) in {("task.search",), ("task.list",)}
+
+
+# ---------------------------------------------------------------- 5. a bare number answers BAXY's question
+
+
+@pytest.mark.parametrize(
+    ("question", "answer", "amount"),
+    [
+        ("¿Cuánto le bajo?", "20", True),
+        ("How much darker should I make it?", "30 percent", True),
+        ("¿A qué nivel la dejo?", "20", False),
+        ("¿A cuánto querés el volumen?", "unos 20", False),
+        ("What level do you want?", "20 percent", False),
+        ("How bright should the screen be?", "20", False),
+        ("Listo.", "20", False),  # no question
+        (None, "20", False),
+        ("¿A qué nivel?", "en 20", True),  # the answer itself says it is an amount
+        ("What level?", "20 more", True),
+    ],
+)
+def test_a_bare_number_answers_with_what_the_question_asked(question, answer, amount):
+    assert levels.answers_with_amount(question, answer) is amount
+
+
+@pytest.mark.parametrize(
+    ("said", "question", "answer", "operation"),
+    [
+        ("la pantalla está re brillante", "¿A qué nivel te la dejo?", "30", "system.settings.set"),
+        ("the screen is way too bright", "How bright should it be?", "35 percent", "system.settings.set"),
+        ("the screen is way too bright", "How much darker should I make it?", "35 percent", "system.settings.adjust"),
+        ("bájale al volumen", "¿Cuánto le bajo?", "unos 10", "audio.volume.adjust"),
+        ("bájale al volumen", "¿A qué nivel lo pongo?", "unos 10", "audio.volume"),
+    ],
+)
+def test_the_answer_after_a_question_of_baxy_is_read_by_that_question(said, question, answer, operation):
+    result = _rearm(_message(said, question, answer), _Scripted(), dialogue.DialogueState())
+    assert result is not None and result[1] == "pattern"
+    assert _effects(result[0]) == (operation,)
