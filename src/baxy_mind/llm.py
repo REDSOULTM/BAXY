@@ -18756,14 +18756,20 @@ class LlmRuntime:
             if timeout is None
             else time.monotonic() + self._normalize_request_budget(timeout)
         )
+        # An optional composition (the in-progress notice) run under
+        # ``_run_with_completion_cancellation`` is closable by its owner.
+        cancellation = getattr(
+            getattr(self, "_completion_cancellation_state", None), "current", None,
+        )
+        cancellable = {} if cancellation is None else {"cancellation": cancellation}
 
         def post(payload: dict) -> dict:
             if compose_deadline is None:
-                return self._post(payload)
+                return self._post(payload, **cancellable)
             remaining = compose_deadline - time.monotonic()
             if remaining <= 0:
                 raise TimeoutError("se agotó el presupuesto de composición opcional")
-            return self._post(payload, timeout=remaining, max_attempts=1)
+            return self._post(payload, timeout=remaining, max_attempts=1, **cancellable)
 
         # La lectura del pedido llega hecha desde el shell cuando existe: es el
         # mismo idioma e intención con los que después se valida el borrador.

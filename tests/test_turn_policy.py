@@ -20,6 +20,7 @@ from baxy_mind import __main__ as mind_main
 from baxy_mind import effect_intent as effect_intent_module
 from baxy_mind import llm as llm_module
 from baxy_mind import protocol
+from baxy_mind.first_signal import PendingTurnSignal
 from baxy_mind.__main__ import (
     _recovery_question_is_valid,
     ARGUMENT_REQUEST_BUDGET_SECONDS,
@@ -11693,7 +11694,8 @@ def test_preclassification_progress_cannot_exhaust_an_answerable_turn(
         turn_evidence=_NoEvidence(),
         encoder=lambda _: [],
         tool_by_name={"network.status": _NETWORK_STATUS_TOOL},
-        on_signal=signals.append,
+        # Due at once: a notice that fails while the turn decides must not cost the answer.
+        on_signal=PendingTurnSignal(signals.append, notice_after=0.0),
     )
     assert result["kind"] == "conversation"
     assert result["reply"]

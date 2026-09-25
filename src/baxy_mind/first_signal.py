@@ -3,13 +3,17 @@
 The owner's hard bar is three seconds of dead silence. A turn that will
 finish inside the budget stays quiet until the real reply. A turn that
 will miss it gets one formulated in-progress sentence that never claims a
-result. When verification denies, the person reads the correction.
+result, worded only once the request is still pending near that bar.
+When verification denies, the person reads the correction.
 """
 
 from __future__ import annotations
 
 import re
+import threading
+import time
 import unicodedata
+from typing import Any, Callable
 
 SILENCE_BUDGET_SECONDS = 3.0
 # First hito after last visible output: strictly over 3 s, before a 1 s
@@ -18,6 +22,13 @@ MILESTONE_DUE_SECONDS = SILENCE_BUDGET_SECONDS + 0.01
 # Emit before the primary model work: that call alone was measured at ~2.5 s
 # wall on this tree's model path, already next to the silence bar.
 EARLY_SIGNAL_THRESHOLD_SECONDS = 1.5
+# Tanda-06b (2026-09-24): worded as each model-path request began, the notice was
+# a fourth decode beside the selector, the guard G and the prepared reply on a
+# GPU that is compute-bound, so every one of them decoded slower for a sentence
+# a turn that ends in time never needs. It is worded only when the request is
+# still pending this long after it arrived: its own call took ~1 s under that
+# load (median of the tanda's notices), so it still lands inside the budget.
+NOTICE_AFTER_SECONDS = SILENCE_BUDGET_SECONDS - 1.0
 PATH_RECOGNIZER = "explicit_effects"
 PATH_CLOSED_CONVERSATION = "explicit_conversation"
 PATH_MODEL = "model"
@@ -185,3 +196,48 @@ def turn_signal_payload(
         "text": text,
         "asserted_result": False,
     }
+
+
+class PendingTurnSignal:
+    """The in-progress notice channel of one request, open until its result is written.
+
+    The notice may start only once the request has been pending ``notice_after``
+    seconds. Closing the channel (the request's result was written) retires a
+    notice that has not started, cancels one being worded through the callbacks
+    registered with ``on_close``, and drops any signal written after it.
+    """
+
+    def __init__(
+        self,
+        write: Callable[[dict[str, Any]], Any],
+        *,
+        notice_after: float = NOTICE_AFTER_SECONDS,
+    ) -> None:
+        self._write = write
+        self._notice_at = time.monotonic() + max(0.0, float(notice_after))
+        self._closed = threading.Event()
+        self._lock = threading.Lock()
+        self._on_close: list[Callable[[], Any]] = []
+
+    def __call__(self, payload: dict[str, Any]) -> None:
+        if not self._closed.is_set():
+            self._write(payload)
+
+    def notice_due(self) -> bool:
+        """Wait until the notice may start: True if the request is still pending then."""
+
+        return not self._closed.wait(max(0.0, self._notice_at - time.monotonic()))
+
+    def on_close(self, callback: Callable[[], Any]) -> None:
+        with self._lock:
+            if not self._closed.is_set():
+                self._on_close.append(callback)
+                return
+        callback()
+
+    def close(self) -> None:
+        with self._lock:
+            self._closed.set()
+            callbacks, self._on_close = self._on_close, []
+        for callback in callbacks:
+            callback()

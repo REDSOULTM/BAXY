@@ -14,17 +14,23 @@ Owner 2026-09-24: BAXY's visible time is judged against the model's own generati
 conversation turn now decodes beside the checks that may still withdraw it and is handed only to the
 identical ``chat`` call (same payload, same validators); the catalogue probe no longer re-asks the selector
 about operations it already declined.
+
+Tanda-06b (fewer calls on a compute-bound GPU): the notice is worded only for a request still pending when it
+is due, and the request's end cancels one being worded; the guard G reads the request once, without its
+envelope, for every consumer.
 """
 
 from __future__ import annotations
 
+import inspect
 import json
 import threading
 import time
 
+from baxy_mind import __main__ as mind_main
 from baxy_mind import llm as llm_module
 from baxy_mind.__main__ import _catalog_answers_the_request, _emit_early_turn_signal, _prepare_turn_result
-from baxy_mind.first_signal import PATH_MODEL
+from baxy_mind.first_signal import NOTICE_AFTER_SECONDS, PATH_MODEL, SILENCE_BUDGET_SECONDS, PendingTurnSignal
 from baxy_mind.llm_transport import ChatCompletionCancelled
 from baxy_mind.llm import (
     NATIVE_SELECTION_CALL_TOKENS,
@@ -159,9 +165,11 @@ def test_the_notice_is_worded_beside_the_caller_never_in_front_of_it() -> None:
             return "Estoy revisando la solicitud."
 
     started = time.monotonic()
+    # Due at once: this test is about where the wording runs, not when it may start.
+    channel = PendingTurnSignal(signals.append, notice_after=0.0)
     worker = _emit_early_turn_signal(
         path=PATH_MODEL, objective="how long should i boil noodles for", request_id="t7",
-        on_signal=signals.append, already_signaled=signaled, llm=Composer(),
+        on_signal=channel, already_signaled=signaled, llm=Composer(),
     )
     assert worker is not None
     assert time.monotonic() - started < 1.0
@@ -170,12 +178,108 @@ def test_the_notice_is_worded_beside_the_caller_never_in_front_of_it() -> None:
     assert signaled == [True]
     assert _emit_early_turn_signal(
         path=PATH_MODEL, objective="x", request_id="t7",
-        on_signal=signals.append, already_signaled=signaled, llm=Composer(),
+        on_signal=channel, already_signaled=signaled, llm=Composer(),
     ) is None
     release.set()
     worker.join(_WAIT)
     assert [signal["id"] for signal in signals] == ["t7"]
     assert signals[0]["asserted_result"] is False
+
+
+class _CountingComposer:
+    def __init__(self) -> None:
+        self.calls: list[float] = []
+
+    def compose_user_message(self, *_args: object, **_kwargs: object) -> str:
+        self.calls.append(time.monotonic())
+        return "Estoy revisando la solicitud."
+
+
+def test_the_notice_is_due_before_the_silence_budget_with_room_for_its_own_decode() -> None:
+    # Tanda-06b: the notice's own call took ~1 s beside the turn's other decodes.
+    assert 0.0 < NOTICE_AFTER_SECONDS <= SILENCE_BUDGET_SECONDS - 1.0
+
+
+def test_a_request_that_ends_before_the_notice_is_due_spends_no_model_call() -> None:
+    signals: list[dict[str, object]] = []
+    signaled: list[bool] = []
+    composer = _CountingComposer()
+    channel = PendingTurnSignal(signals.append, notice_after=_WAIT)
+    worker = _emit_early_turn_signal(
+        path=PATH_MODEL, objective="how long should i boil noodles for", request_id="t7",
+        on_signal=channel, already_signaled=signaled, llm=composer,
+    )
+    assert worker is not None
+    started = time.monotonic()
+    channel.close()  # the result was written
+    worker.join(_WAIT)
+    assert not worker.is_alive()
+    assert time.monotonic() - started < 1.0
+    assert composer.calls == [] and signals == []
+
+
+def test_a_request_still_pending_when_the_notice_is_due_gets_one_worded_notice() -> None:
+    signals: list[dict[str, object]] = []
+    composer = _CountingComposer()
+    started = time.monotonic()
+    channel = PendingTurnSignal(signals.append, notice_after=0.2)
+    worker = _emit_early_turn_signal(
+        path=PATH_MODEL, objective="how long should i boil noodles for", request_id="t7",
+        on_signal=channel, already_signaled=[], llm=composer,
+    )
+    assert worker is not None
+    worker.join(_WAIT)
+    assert len(composer.calls) == 1 and composer.calls[0] - started >= 0.2
+    assert [signal["text"] for signal in signals] == ["Estoy revisando la solicitud."]
+    channel.close()
+    channel({"type": "turn.signal", "id": "t7", "text": "late"})
+    assert len(signals) == 1  # nothing is written after the result
+
+
+def test_every_turn_and_plan_request_owns_a_notice_channel_closed_with_its_result() -> None:
+    source = inspect.getsource(mind_main._run_sidecar)
+    assert source.count("on_signal=request_signal") == 2  # turn.decide and plan
+    assert "on_signal=write_request_message" not in source
+    # Closed in the request's last ``finally``: after its result or its failure was written.
+    closing = source.rindex("request_signal.close()")
+    assert source.rindex("finally:") < closing < source.rindex("_finish_request_scope(")
+
+
+def test_the_end_of_the_request_cancels_a_notice_still_being_worded(tmp_path, monkeypatch) -> None:
+    audit = tmp_path / "turns.jsonl"
+    monkeypatch.setenv("BAXY_MIND_TURN_AUDIT_PATH", str(audit))
+    signals: list[dict[str, object]] = []
+    wording = threading.Event()
+    seen: list[object] = []
+
+    class Runtime(LlmRuntime):
+        def __init__(self) -> None:
+            self._completion_cancellation_state = threading.local()
+
+        def _post(self, payload: dict[str, object], timeout: object = None, *,
+                  max_attempts: int = 2, cancellation: object = None) -> dict[str, object]:
+            seen.append(cancellation)
+            wording.set()
+            deadline = time.monotonic() + _WAIT
+            while not getattr(cancellation, "cancelled", False):
+                assert time.monotonic() < deadline, "the notice was never cancelled"
+                time.sleep(0.005)
+            raise ChatCompletionCancelled("the request ended")
+
+    channel = PendingTurnSignal(signals.append, notice_after=0.0)
+    worker = _emit_early_turn_signal(
+        path=PATH_MODEL, objective="how long should i boil noodles for", request_id="t7",
+        on_signal=channel, already_signaled=[], llm=Runtime(),
+    )
+    assert worker is not None
+    assert wording.wait(_WAIT)
+    channel.close()
+    worker.join(_WAIT)
+    assert not worker.is_alive()
+    assert len(seen) == 1 and getattr(seen[0], "cancelled", False)
+    assert signals == []
+    # A notice the request outlived is not a missing notice.
+    assert not audit.exists() or "progress_unavailable" not in audit.read_text(encoding="utf-8")
 
 
 class _ModelPathLlm:
@@ -252,7 +356,8 @@ def test_a_model_path_decision_does_not_wait_for_its_notice() -> None:
         turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={"system.time": tool},
-        on_signal=signals.append,
+        # Due at once: the notice starts as the turn does and the decision still does not wait for it.
+        on_signal=PendingTurnSignal(signals.append, notice_after=0.0),
     )
     assert result["kind"] == "conversation"
     deadline = time.monotonic() + _WAIT

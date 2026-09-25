@@ -43,7 +43,7 @@ def test_early_signal_production_path_uses_compose_not_snippet_template() -> Non
 
 def test_early_signal_preserves_phase_and_is_optional_when_composition_fails() -> None:
     from baxy_mind.__main__ import _emit_early_turn_signal
-    from baxy_mind.first_signal import PATH_MODEL
+    from baxy_mind.first_signal import PATH_MODEL, PendingTurnSignal
 
     captured = []
     signals = []
@@ -60,7 +60,8 @@ def test_early_signal_preserves_phase_and_is_optional_when_composition_fails() -
 
     composer = Composer()
     kwargs = dict(path=PATH_MODEL, objective="Lee el archivo.", request_id="p1",
-                  on_signal=signals.append, already_signaled=signaled,
+                  on_signal=PendingTurnSignal(signals.append, notice_after=0.0),
+                  already_signaled=signaled,
                   llm=composer, phase="preparing_steps")
     # The notice is worded on its own thread (it never delays the decision).
     _emit_early_turn_signal(**kwargs).join(timeout=5)

@@ -51,6 +51,7 @@ from .corrector import catalog_correction_terms
 from .first_signal import (
     PATH_MODEL,
     PATH_RECOGNIZER,
+    PendingTurnSignal,
     should_emit_early,
     turn_signal_payload,
 )
@@ -92,6 +93,7 @@ from .llm import (
     served_capability_families,
     visible_reply_is_only_questions,
 )
+from .llm_transport import ChatCompletionCancellation
 from .planner import (
     MAX_SHORTLIST_OPERATIONS,
     PlannerCatalog,
@@ -2530,7 +2532,7 @@ def _served_surface_reread(
     tool_by_name: dict[str, dict],
     application_names: tuple[str, ...] | ApplicationCatalogIndex,
     game_catalog: GameCatalogIndex,
-    on_signal: Callable[[dict[str, Any]], None] | None,
+    on_signal: PendingTurnSignal | None,
     already_signaled: list[bool],
 ) -> dict[str, Any] | None:
     """The turn decided again on the canonical surface of a request about to be refused, or None.
@@ -7425,7 +7427,7 @@ def _emit_early_turn_signal(
     path: str,
     objective: str,
     request_id: object,
-    on_signal: Callable[[dict[str, Any]], None] | None,
+    on_signal: PendingTurnSignal | None,
     already_signaled: list[bool],
     step_count: int = 1,
     llm: Any = None,
@@ -7436,7 +7438,10 @@ def _emit_early_turn_signal(
     Tandas 04f/05 (2026-09-24): composed before the model path, the notice
     delayed every model-path answer by its own decode. It runs on its own thread
     now; the shell shows it only while this request is still pending, so a notice
-    that finishes after the result is dropped there. Returns the thread.
+    that finishes after the result is dropped there. Tanda-06b: it starts only
+    when the request is still pending once its channel says the notice is due,
+    and the request's end cancels one still being worded (``PendingTurnSignal``),
+    so a turn that ends in time spends no decode on it. Returns the thread.
     """
 
     if already_signaled or on_signal is None:
@@ -7450,25 +7455,36 @@ def _emit_early_turn_signal(
     # released if no notice could be worded.
     already_signaled.append(True)
 
+    def word() -> object:
+        return compose(
+            objective,
+            "status",
+            {
+                "traceId": str(request_id or ""),
+                "situation": json.dumps(
+                    {
+                        "kind": "status", "cause": "acting",
+                        "polarity": "success", "phase": phase,
+                    },
+                    ensure_ascii=False,
+                ),
+            },
+            timeout=2.5,
+        )
+
     def word_and_signal() -> None:
+        if not on_signal.notice_due():
+            return
+        cancellation = ChatCompletionCancellation()
+        on_signal.on_close(cancellation.cancel)
+        cancellable = getattr(llm, "_run_with_completion_cancellation", None)
         try:
-            text = compose(
-                objective,
-                "status",
-                {
-                    "traceId": str(request_id or ""),
-                    "situation": json.dumps(
-                        {
-                            "kind": "status", "cause": "acting",
-                            "polarity": "success", "phase": phase,
-                        },
-                        ensure_ascii=False,
-                    ),
-                },
-                timeout=2.5,
-            )
+            text = cancellable(cancellation, word) if callable(cancellable) else word()
         except Exception as error:  # noqa: BLE001 - optional prose cannot fail the turn
             already_signaled.clear()
+            if cancellation.cancelled:
+                # The request ended first: nothing is missing.
+                return
             _append_turn_audit({
                 "schema": "baxy.mind-turn-audit.v1",
                 "request_id": request_id,
@@ -7659,7 +7675,7 @@ def _prepare_turn_result(
     tool_by_name: dict[str, dict],
     application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
     game_catalog: GameCatalogIndex = GameCatalogIndex(),
-    on_signal: Callable[[dict[str, Any]], None] | None = None,
+    on_signal: PendingTurnSignal | None = None,
 ) -> dict[str, Any]:
     """Prepare one side-effect-free turn result, after filling the dialogue slot."""
 
@@ -7708,7 +7724,7 @@ def _decide_turn_result(
     tool_by_name: dict[str, dict],
     application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
     game_catalog: GameCatalogIndex = GameCatalogIndex(),
-    on_signal: Callable[[dict[str, Any]], None] | None = None,
+    on_signal: PendingTurnSignal | None = None,
     served_surface: tuple[str, ...] | None = None,
     already_signaled: list[bool] | None = None,
 ) -> dict[str, Any]:
@@ -10048,6 +10064,8 @@ def _run_sidecar(
                 return False
             return write_message(reply)
 
+        # Open from the request's arrival until its result is written (finally below).
+        request_signal = PendingTurnSignal(write_request_message)
         interactive_request = str(kind) in {"turn.decide", "plan"}
         owns_llm_request_scope = llm is not None and not internal_replay
         llm_scope_attempted = False
@@ -10253,7 +10271,7 @@ def _run_sidecar(
                             tool_by_name=tool_by_name,
                             application_names=application_catalog,
                             game_catalog=game_catalog,
-                            on_signal=write_request_message,
+                            on_signal=request_signal,
                         )
                     except PlannerContractError as error:
                         turn_failure_kinds.append("contract")
@@ -10362,7 +10380,7 @@ def _run_sidecar(
                         path=PATH_MODEL,
                         objective=objective,
                         request_id=request_id,
-                        on_signal=write_request_message,
+                        on_signal=request_signal,
                         already_signaled=[],
                         llm=llm,
                         phase="preparing_steps",
@@ -10840,6 +10858,7 @@ def _run_sidecar(
                     )
                 )
         finally:
+            request_signal.close()
             _finish_request_scope(
                 interactive_encoder=interactive_encoder,
                 llm=llm,
