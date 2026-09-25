@@ -206,3 +206,58 @@ def test_a_work_named_with_its_maker_is_played(text: str, query: str) -> None:
 
 def test_a_maker_said_by_a_pronoun_is_not_named_here() -> None:
     assert sidecar._explicit_arguments_from_evidence("media.play.query", "pon la canción que sacó él") is None
+
+
+# ------------------------------------------------------------------ a page describing itself is page voice
+
+
+def _search_payload(results: list[dict]) -> dict:
+    return {"operation": "web.search", "seen": {"query": "q", "count": len(results), "results": results}}
+
+
+_TRAFFIC = [
+    {"title": "Tempe Traffic and Road Conditions", "url": "https://example.com/tempe",
+     "snippet": "Tempe traffic flow and incidents map - how to use it to check live traffic, road conditions, and weather "
+                "impacts with an interactive map."},
+]
+_WEATHER_PAGE = [
+    {"title": "El Tiempo en Madrid - 14 días", "url": "https://example.com/madrid",
+     "snippet": "El Tiempo en Madrid, Madrid para los próximos 14 días, previsión actualizada del tiempo. Temperaturas, "
+                "probabilidad de lluvias y velocidad del viento."},
+]
+_RECIPE = [
+    {"title": "Chilaquiles verdes", "url": "https://example.com/chilaquiles",
+     "snippet": "Los chilaquiles verdes son un platillo mexicano que consiste en totopos regados con salsa verde y "
+                "acompañados de queso fresco desmigado y crema."},
+]
+
+
+@pytest.mark.parametrize(
+    ("asked", "answer", "results"),
+    [
+        ("i need to know what traffic will be like in temp",
+         "Tempe traffic flow and incidents map provides live traffic, road conditions, and weather impacts.", _TRAFFIC),
+        ("how's traffic in tempe rn", "The Tempe map shows live traffic and road conditions.", _TRAFFIC),
+        ("cómo está el tráfico en Tempe", "Hay tráfico en vivo y condiciones de las rutas en un mapa interactivo.",
+         _TRAFFIC),
+        ("dime el tiempo de Madrid",
+         "El Tiempo en Madrid, Madrid para los próximos 14 días, previsión actualizada del tiempo.", _WEATHER_PAGE),
+        ("el tiempo de Madrid porfa", "El sitio ofrece temperaturas y probabilidad de lluvias en Madrid.",
+         _WEATHER_PAGE),
+    ],
+)
+def test_a_page_describing_itself_is_page_voice(asked: str, answer: str, results: list[dict]) -> None:
+    assert llm._payload_fact_defect(answer, _search_payload(results), asked) == "search_report_page_voice"
+
+
+@pytest.mark.parametrize(
+    ("asked", "answer", "results"),
+    [
+        ("cómo se hacen los chilaquiles verdes",
+         "Los chilaquiles verdes son totopos regados con salsa verde, con queso fresco desmigado y crema.", _RECIPE),
+        ("i need to know what traffic will be like in temp", "I couldn't find it.", _TRAFFIC),
+        ("dime el tiempo de Madrid", "No lo encontré.", _WEATHER_PAGE),
+    ],
+)
+def test_an_answer_or_a_not_found_is_not_page_voice(asked: str, answer: str, results: list[dict]) -> None:
+    assert llm._payload_fact_defect(answer, _search_payload(results), asked) != "search_report_page_voice"

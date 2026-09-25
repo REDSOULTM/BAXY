@@ -8980,6 +8980,20 @@ _PAGE_CALL_TO_READER = re.compile(
 # Tanda 6c «Los expertos de TU han preparado para ti una lista…»: the page addressing its visitor («para ti», «for
 # you») is its voice; BAXY says the answer without the page's dedication.
 _PAGE_ADDRESS_TO_READER = re.compile(r"\b(?:para\s+ti|for\s+you)\b")
+# Tanda 9 «dime el tiempo de Madrid» → «El Tiempo en Madrid… previsión actualizada del tiempo. Temperaturas,
+# probabilidad de lluvias…», «what traffic will be like in Tempe» → «Tempe traffic flow and incidents map provides live
+# traffic, road conditions…»: the page describing itself (what its map or site offers, how fresh or live its data
+# is) is its advertisement, not the answer. When no page states the answer, it was not found.
+_PAGE_SELF_DESCRIPTION = re.compile(
+    r"\b(?:map|maps|mapa|mapas|site|website|sitio|pagina|page|portal)\b(?:\s+\w+){0,2}\s+"
+    r"(?:provides?|offers?|shows?|features?|includes?|lets|allows|gives|brings|"
+    r"ofrece|muestra|incluye|permite|brinda|proporciona|entrega|trae)\b|"
+    r"\b(?:prevision|pronostico|forecast|informacion|information|info|datos|data|noticias|news|trafico|traffic|"
+    r"mapa|map)\s+(?:\w+\s+)?(?:actualizad[oa]s?|al\s+dia|en\s+(?:tiempo\s+real|vivo|directo)|updated|"
+    r"up[-\s]to[-\s]date|in\s+real[-\s]time)\b|"
+    r"\b(?:live|real[-\s]time|up[-\s]to[-\s]date|interactive)\s+(?:traffic|maps?|updates|forecasts?|data|weather)\b|"
+    r"\bmapas?\s+interactivos?\b"
+)
 # Tanda 7 «Bob Dean afirma que … nunca lo hemos estado»: a first person plural inside what a named person says or
 # believes is theirs, reported, not the page speaking.
 _REPORTED_SPEECH = re.compile(
@@ -8989,8 +9003,8 @@ _REPORTED_SPEECH = re.compile(
 
 
 def _search_report_speaks_as_a_page(text: str, payload: dict, user_text: str) -> bool:
-    """The report of a verified search speaks as a page: its first person plural, its call to the reader or its
-    address to the reader."""
+    """The report of a verified search speaks as a page: its first person plural, its call to the reader, its
+    address to the reader or its description of itself."""
 
     if _search_results_text(payload) is None:
         return False
@@ -9009,6 +9023,7 @@ def _search_report_speaks_as_a_page(text: str, payload: dict, user_text: str) ->
             (_PAGE_FIRST_PERSON_PLURAL, folded),
             (_PAGE_CALL_TO_READER, unquoted.casefold()),
             (_PAGE_ADDRESS_TO_READER, folded),
+            (_PAGE_SELF_DESCRIPTION, folded),
         )
         for found in pattern.finditer(said)
     )
@@ -21522,9 +21537,9 @@ class LlmRuntime:
                     else "No pegues direcciones: da la respuesta misma en una o dos oraciones, en prosa, sin nombrar ningún sitio."
                 ),
                 "search_report_page_voice": (
-                    "Speak in your own voice: say the answer as something you know, in one or two sentences, without naming any page or site; never speak as the page («we», «our», «we tell you»), never copy its questions or its instructions to the reader."
+                    "Speak in your own voice: say the answer as something you know, in one or two sentences, without naming any page or site; never speak as the page («we», «our», «we tell you»), never copy its questions, its instructions to the reader or what it says it offers; if no page states the answer, say only that you did not find it."
                     if response_language == "en"
-                    else "Habla con tu propia voz: di la respuesta como algo que sabes, en una o dos oraciones, sin nombrar ninguna página ni sitio; nunca hables como la página («nuestro», «le decimos», «te garantizamos»), ni copies sus preguntas ni sus instrucciones al lector."
+                    else "Habla con tu propia voz: di la respuesta como algo que sabes, en una o dos oraciones, sin nombrar ninguna página ni sitio; nunca hables como la página («nuestro», «le decimos», «te garantizamos»), ni copies sus preguntas, sus instrucciones al lector ni lo que dice ofrecer; si ninguna página dice la respuesta, di sólo, en primera persona, que no lo encontraste."
                 ),
                 "search_report_unsourced_claim": (
                     # SEARCH2019: name the words no result uses and keep the rest
