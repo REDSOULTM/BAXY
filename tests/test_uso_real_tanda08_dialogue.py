@@ -273,6 +273,10 @@ def test_the_rewrite_is_shown_worked_conversations_before_the_real_one():
     examples = [message for message in messages[1:-1] if message["role"] in {"user", "assistant"}]
     # Tanda 8 replay (rewrite p50 ~850 ms with all twelve): only the conversations of the message's shape.
     of_shape = [example for example in llm._REWRITE_EXAMPLES if "question" in example[0]]
+    # Tanda 8 GPU replay: an English example turned a Spanish correction English; the shape's examples in the
+    # message's language are the ones shown when there are any.
+    same_language = [example for example in of_shape if llm._message_response_language(example[3]) == "es"]
+    of_shape = same_language or of_shape
     assert 2 <= len(examples) == 2 * min(len(of_shape), llm._REWRITE_EXAMPLES_SHOWN)
     assert [json.loads(answer["content"])["request"] for answer in examples[1::2]] == [
         example[4] for example in of_shape[: llm._REWRITE_EXAMPLES_SHOWN]

@@ -17227,6 +17227,11 @@ class LlmRuntime:
         """
 
         shown = [example for example in _REWRITE_EXAMPLES if shape in example[0]] or list(_REWRITE_EXAMPLES)
+        # Tanda 8 replay: an English alarm example led «no, mejor a las 6:15» to «set an alarm for 6:15 a.m.
+        # tomorrow», rejected for its language. When the shape has worked conversations in the message's
+        # language, only those are shown.
+        language = _message_response_language(text)
+        shown = [example for example in shown if _message_response_language(example[3]) == language] or shown
         examples = []
         for _, example_verified, example_context, example_text, example_rewrite in shown[:_REWRITE_EXAMPLES_SHOWN]:
             examples += [
