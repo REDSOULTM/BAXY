@@ -7,6 +7,8 @@
 - «No se menciona ningún famoso…», «…los resultados de búsqueda son irrelevantes»: the lookup is invisible; an
   absence told as what the pages do not say, or a failed search told as a search, is rejected, and the fact of a
   lookup that answered nothing is that it was not found.
+- «¿hoy qué día tengo que marcar en el calendario?» → «El fallo ocurre porque este PC no tiene un perfil clásico de
+  Outlook…»: the fact named the profile as a technicality; it now says Outlook is not set up and cannot be reached.
 
 The phrasings below are not the tandas': they are paraphrases (es/en/spanglish) the fixes do not name, with negative
 controls.
@@ -169,6 +171,7 @@ def test_a_positive_statement_with_a_participle_is_not_an_absence() -> None:
     ("code", "forbidden"),
     [
         ("web_search_results_irrelevant", ("search", "result", "irrelevant", "page")),
+        ("outlook_profile_not_configured", ("profile", "classic")),
     ],
 )
 def test_the_fact_of_a_failure_says_what_the_person_hears_not_the_mechanism(
@@ -177,3 +180,15 @@ def test_the_fact_of_a_failure_says_what_the_person_hears_not_the_mechanism(
     fact = llm._cause_in_prose(code, "es")
     assert fact != code.replace("_", " ")
     assert not any(word in fact.casefold() for word in forbidden)
+
+
+@pytest.mark.parametrize(
+    "draft",
+    [
+        "No puedo ver tu calendario de Outlook: Outlook no está configurado en este PC.",
+        "I can't reach your Outlook calendar, Outlook isn't set up on this PC.",
+        "No pude abrir tu agenda de Outlook porque no está configurado aquí.",
+    ],
+)
+def test_the_unreachable_outlook_said_plainly_is_the_failure_told(draft: str) -> None:
+    assert llm._asserts_failure(draft)

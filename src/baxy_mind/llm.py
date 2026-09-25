@@ -5073,7 +5073,12 @@ _CAUSE_FACT = {
     # Tanda 3 2026-09-24 «what do i have to do on january 1st» (a calendar read)
     # was answered «I couldn't send mail…»: the same missing profile blocks the
     # agenda and the mail, and the fact must not name an effect nobody asked for.
-    "outlook_profile_not_configured": ("this PC has no classic Outlook profile, so Outlook's mail and calendar could not be used"),
+    # Tanda 7 «¿hoy qué día tengo que marcar en el calendario?» → «El fallo ocurre porque este PC no tiene un perfil
+    # clásico de Outlook…»: the profile named as a technicality was narrated as one. What the person hears is that
+    # their Outlook cannot be reached from here.
+    "outlook_profile_not_configured": (
+        "Outlook is not set up on this PC, so I cannot reach the person's Outlook calendar or mail here"
+    ),
     # Tanda 7 «quién ganó el game de los Lakers anoche» → «…los resultados de búsqueda son irrelevantes»: the code
     # became prose about a search. The lookup is invisible; what the person hears is that it was not found.
     "web_search_results_irrelevant": "it was not found; say only that, briefly",
