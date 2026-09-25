@@ -21,6 +21,7 @@ from baxy_mind import effect_intent as effect_intent_module
 from baxy_mind import llm as llm_module
 from baxy_mind import protocol
 from baxy_mind.semantic import conversation as semantic_conversation
+from baxy_mind.semantic.conversation import _reads_as_an_observation
 from baxy_mind.first_signal import PendingTurnSignal
 from baxy_mind.__main__ import (
     _recovery_question_is_valid,
@@ -81,7 +82,6 @@ from baxy_mind.llm import (
     _conversation_presentation_shape,
     _INVENTED_INFINITIVES,
     _PreparedChat,
-    _reads_as_an_observation,
     _shaped_conversation_answer_violates_contract,
     _shaped_presentation_text,
     _spanish_modal_is_malformed,

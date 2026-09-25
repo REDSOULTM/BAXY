@@ -39,7 +39,7 @@ from typing import Any, Callable
 from urllib.parse import parse_qs, urlparse
 
 from . import corrector
-from .semantic.normalize import alternation, fold
+from .semantic.normalize import _policy_guard_text, alternation, fold
 from .semantic import dialogue as dialogue_slot
 from .semantic.grammar import spoken_number_request
 from .semantic.network import (
@@ -50,7 +50,6 @@ from .semantic.web import (
     weather_asks_coming_days, weather_asks_week, weather_sun_events_asked,
 )
 from .semantic.temporal import _DAY_WORDS, clock_elsewhere
-from .semantic.patterns import echo_mode_request
 from . import effect_intent
 from .effect_intent import (
     _PERCENTAGE_WORD_VALUES,
@@ -58,17 +57,12 @@ from .effect_intent import (
     _research_question_subject,
     _strip_request_envelope,
     _weather_location,
-    conversation_only_content_request,
     countdown_target,
     curiosity_request,
     declined_means,
     first_person_preference,
     literal_clipboard_write_text,
-    reassurance_statement,
-    reported_own_schedule,
     visual_content_noun,
-    visual_content_request,
-    explicit_negative_constraint,
     explicit_non_action_body,
 )
 from .cpu_prose_adapter import CpuProseAdapter, applies_to_cpu_prose
@@ -102,7 +96,6 @@ from .semantic.request import (
     INTENT_REFUSE,
     RequestReading,
     read_request,
-    speaking_directive,
     starts_new_definition_topic,
 )
 from .time_budget import remaining_seconds
@@ -113,6 +106,24 @@ from .window_prose_facts import (
     window_status_assertions,
 )
 from .observed_response_literals import without_observed_names
+from .semantic.conversation import (
+    RandomDraw,
+    asks_a_laugh,
+    asks_an_extended_answer,
+    quoted_literals,
+    recall_asked,
+    _conversation_presentation_shape,
+    _recalled_speaker,
+    _roleplay_participant_names,
+    assistant_desire_thing,
+    random_draw_request,
+    sarcasm_question,
+    spelling_word,
+    versus_contenders,
+)
+from .semantic.request import (
+    _conversation_response_language,
+)
 
 
 MAX_CONTEXT_TOKENS = 4096
@@ -636,37 +647,6 @@ def _message_response_language(text: str) -> str:
     """Idioma visible del turno. La lectura del pedido es el único owner."""
 
     return read_request(text).language
-
-
-def _conversation_response_language(text: str, facts: dict | None) -> str:
-    """MUSIC1755 «Play a song on Spotify.» → «Queen»: an answer with no language
-    evidence of its own keeps the language of the latest prior request that has
-    some; the reading of the current text stays the owner otherwise."""
-
-    reading = read_request(text)
-    if (tuple(reading.evidence) != (0, 0) and not _language_neutral_reply(text)) or not isinstance(facts, dict):
-        return reading.language
-    prior_requests = facts.get("priorRequests")
-    if isinstance(prior_requests, list):
-        for prior in reversed(prior_requests):
-            # MUSIC1761: the confirmation word the person typed before is
-            # no evidence either («Play a song…», «Queen», «confirmar»).
-            if isinstance(prior, str) and prior.strip() and not _language_neutral_reply(prior):
-                prior_reading = read_request(prior)
-                if tuple(prior_reading.evidence) != (0, 0):
-                    return prior_reading.language
-    return reading.language
-
-
-def _language_neutral_reply(text: str) -> bool:
-    """MUSIC1759: a confirmation, cancellation or assent word answers a
-    challenge in either language; it is not a choice of Spanish or English."""
-
-    return re.fullmatch(
-        r"[¿?¡!\s]*(?:confirmar|confirm|confirmo|confirmed|cancelar|cancel|continuar|continue|"
-        r"s[ií]|yes|yep|no|nope|ok|okay|dale|vale|bueno|listo|adelante|go\s+ahead)[\s.!?]*",
-        text or "", re.IGNORECASE,
-    ) is not None
 
 
 def _reading_of(user_text: str) -> RequestReading:
@@ -2170,94 +2150,6 @@ def _normalized_dialogue_text(value: object) -> str:
     )
 
 
-def _policy_guard_text(value: object) -> str:
-    """Fold prose for policy checks, including accents and contractions."""
-
-    decomposed = unicodedata.normalize("NFKD", str(value or ""))
-    return " ".join(
-        "".join(
-            character.casefold() if character.isalnum() else " "
-            for character in decomposed
-            if not unicodedata.combining(character)
-        ).split()
-    )
-
-
-# Uso real tanda 5 2026-09-24 «¿puedes reproducir mis últimas palabras?» played media and then asked which
-# words: saying back the previous message, the person's or BAXY's own, is conversation over the dialogue. The
-# whole message is the literal. Only what was already said is recalled («lo que dije», never «lo que diga»,
-# which is the echo mode BAXY does not keep) and only as the whole ask, so «qué dije sobre la reunión» or
-# «repite la última canción» keep their own readers.
-_RECALL_FRAME = (
-    r"^(?:(?:oye|hey|baxy|a\s+ver|bueno|ok|okay|por\s+favor|porfa|please)\s+)*"
-    r"(?:(?:me\s+)?(?:puedes|podes|podrias|podria|can\s+you|could\s+you|would\s+you)\s+(?:please\s+)?)?"
-)
-_RECALL_TAIL = r"(?:\s+(?:otra\s+vez|de\s+nuevo|again|back|por\s+favor|porfa|please|baxy))*$"
-_RECALL_SAY = (
-    r"(?:me\s+)?(?:repite|repiteme|repeti|repetime|repetir|repetirme|repites|reproduce|reproduceme|reproduci|reproducir|di|dime|"
-    r"deci|decime|decir|decirme|lee|leeme|leer|leerme|recuerdame|recordame|recordarme|"
-    r"repeat|say|tell\s+me|read|read\s+me)\s+(?:(?:back|again|otra\s+vez|de\s+nuevo)\s+)?"
-)
-_RECALL_WHEN = r"(?:\s+(?:antes|recien|hace\s+un\s+(?:momento|rato|ratito)|just\s+now|before|earlier|a\s+moment\s+ago))?"
-_PERSON_RECALL = re.compile(
-    _RECALL_FRAME
-    + r"(?:"
-    + _RECALL_SAY
-    # Tanda 7b «por favor, ¿puedes repetir lo mismo que te he dicho?» was answered «¿en qué puedo ayudarte?»:
-    # «lo mismo que» and the perfect («te he dicho», «te había dicho») say what was already said too.
-    + r"(?:lo\s+(?:ultimo\s+|mismo\s+)?que\s+(?:yo\s+)?(?:te\s+)?(?:acabo\s+de\s+|he\s+|habia\s+)?"
-    r"(?:dije|escribi|puse|pregunte|pedi|decir|escribir|preguntar|pedir|dicho|escrito|puesto|preguntado|pedido)"
-    + _RECALL_WHEN
-    + r"|mis\s+ultimas\s+palabras|mi\s+ultim[oa]\s+(?:mensaje|frase|pregunta|pedido)|"
-    r"mi\s+(?:mensaje|frase|pregunta|pedido)\s+anterior|"
-    r"(?:what\s+|the\s+same\s+(?:thing\s+)?(?:that\s+|what\s+)?)i\s+(?:just\s+|have\s+|ve\s+)?(?:said|wrote|written|"
-    r"typed|asked(?:\s+you)?)"
-    + _RECALL_WHEN
-    + r"|my\s+(?:last|previous)\s+(?:message|words|sentence|question|request))|"
-    r"que\s+(?:fue\s+lo\s+(?:ultimo\s+)?que\s+)?(?:te\s+)?(?:dije|escribi|pregunte|pedi|acabo\s+de\s+"
-    r"(?:decir|escribir|preguntar|pedir))"
-    + _RECALL_WHEN
-    + r"|cual(?:es)?\s+(?:fue|fueron|era|eran)\s+(?:mis\s+ultimas\s+palabras|mi\s+ultim[oa]\s+"
-    r"(?:mensaje|frase|pregunta)|lo\s+(?:ultimo\s+)?que\s+(?:te\s+)?dije)|"
-    r"what\s+did\s+i\s+(?:just\s+)?(?:say|write|type|ask(?:\s+you)?)"
-    + _RECALL_WHEN
-    + r"|what\s+(?:was|were)\s+my\s+(?:last|previous)\s+(?:message|words|sentence|question|request)"
-    r")"
-    + _RECALL_TAIL
-)
-_ASSISTANT_RECALL = re.compile(
-    _RECALL_FRAME
-    + r"(?:"
-    + _RECALL_SAY
-    + r"(?:lo\s+(?:ultimo\s+|mismo\s+)?que\s+(?:me\s+)?(?:dijiste|respondiste|contestaste|escribiste|acabas\s+de\s+"
-    r"(?:decir|responder|contestar|escribir)|has\s+(?:dicho|respondido|contestado|escrito))"
-    + _RECALL_WHEN
-    + r"|tu\s+ultim[oa]\s+(?:respuesta|mensaje|frase)|tu\s+(?:respuesta|mensaje)\s+anterior|tus\s+ultimas\s+palabras|"
-    r"what\s+you\s+(?:just\s+)?(?:said|answered|replied|wrote)"
-    + _RECALL_WHEN
-    + r"|your\s+(?:last|previous)\s+(?:answer|message|reply|words))|"
-    r"que\s+(?:fue\s+lo\s+(?:ultimo\s+)?que\s+)?(?:me\s+)?(?:dijiste|respondiste|contestaste|acabas\s+de\s+"
-    r"(?:decir|responder|contestar))"
-    + _RECALL_WHEN
-    + r"|what\s+did\s+you\s+(?:just\s+)?(?:say|answer|reply|write)"
-    + _RECALL_WHEN
-    + r"|what\s+(?:was|were)\s+your\s+(?:last|previous)\s+(?:answer|message|reply|words)"
-    r")"
-    + _RECALL_TAIL
-)
-
-
-def _recalled_speaker(current: object) -> str | None:
-    """Whose whole previous message the current one asks to be said back: "user", "assistant" or None."""
-
-    folded = _policy_guard_text(current)
-    if _PERSON_RECALL.match(folded) is not None:
-        return "user"
-    if _ASSISTANT_RECALL.match(folded) is not None:
-        return "assistant"
-    return None
-
-
 def _literal_recall_reference(
     history: object,
     current: object,
@@ -2270,23 +2162,10 @@ def _literal_recall_reference(
     presentation path; it never selects an operation or grants effect authority.
     """
 
-    folded = _policy_guard_text(current)
-    speaker = _recalled_speaker(current)
-    if speaker is None and not (
-        re.search(
-            r"\b(?:palabra|frase|nombre|dato|codigo|word|phrase|name|value|code)\b",
-            folded,
-        )
-        and re.search(
-            r"\b(?:mencione|dije|escribi|use|mentioned|said|wrote|used)\b",
-            folded,
-        )
-        and re.search(
-            r"\b(?:anterior|previa|previo|antes|previous|prior|last|earlier)\b",
-            folded,
-        )
-    ):
+    asked = recall_asked(current)
+    if asked is None:
         return None
+    speaker = None if asked == "quoted" else asked
     prior_messages = _bounded_history(history)
     if (
         prior_messages
@@ -2309,14 +2188,7 @@ def _literal_recall_reference(
         # A reply laid out in lines is said back as one run of its words.
         matches = [" ".join(prior_said.split())]
     else:
-        matches = [
-            next(group for group in match.groups() if group is not None).strip()
-            for match in re.finditer(
-                r"«([^»\r\n]{1,256})»|“([^”\r\n]{1,256})”|"
-                r'"([^"\r\n]{1,256})"|`([^`\r\n]{1,256})`',
-                prior_said,
-            )
-        ]
+        matches = quoted_literals(prior_said)
     if len(matches) != 1:
         return None
     literal = matches[0]
@@ -2331,87 +2203,6 @@ def _literal_recall_reference(
     ):
         return None
     return literal
-
-
-# Uso real tanda 5 2026-09-24 «roll that dice, ai» was searched on the web (a CapCut dice page). A die, a coin
-# or a number within a range is drawn here, for real, by the mind; the drawn value reaches the narrator as the
-# one literal of its sentence, so the model never picks the number itself.
-@dataclass(frozen=True)
-class RandomDraw:
-    """What was asked to be drawn: dice («die»), a coin («coin») or a number in [low, high] («number»)."""
-
-    kind: str
-    count: int = 1
-    low: int = 1
-    high: int = 6
-    faces: tuple[str, ...] = ()
-
-
-_DRAW_COUNTS = {
-    "un": 1, "una": 1, "uno": 1, "a": 1, "an": 1, "one": 1, "dos": 2, "two": 2, "tres": 3, "three": 3,
-    "cuatro": 4, "four": 4, "cinco": 5, "five": 5, "seis": 6, "six": 6,
-}
-_DRAW_FRAME = (
-    r"^(?:(?:oye|hey|baxy|ok|okay|bueno|vale|dale|a\s+ver|por\s+favor|porfa|please|pls)\s+)*"
-    r"(?:(?:me\s+)?(?:puedes|podes|podrias|can\s+you|could\s+you|would\s+you)\s+(?:please\s+)?|"
-    r"(?:quiero\s+que|necesito\s+que|i\s+want\s+you\s+to|i\s+need\s+you\s+to)\s+)?"
-)
-_DRAW_TAIL = (
-    r"(?:\s+(?:por\s+favor|porfa|please|pls|ai|ia|bot|baxy|amigo|bro|para\s+mi|for\s+me|ahora|now|"
-    r"otra\s+vez|de\s+nuevo|again|ya))*$"
-)
-_DRAW_COUNT = r"(?:\d{1,2}|un|una|uno|a|an|one|dos|two|tres|three|cuatro|four|cinco|five|seis|six)"
-_DIE_DRAW = re.compile(
-    _DRAW_FRAME
-    + r"(?:(?:tira|tirame|tiras|tirar|tirarme|tire|lanza|lanzame|lanzas|lanzar|lanzarme|lance|echa|echame|echar|"
-    r"arroja|arrojame|arrojar|avienta|aventar|roll|throw|toss)\s+(?:(?P<count>" + _DRAW_COUNT + r")|"
-    r"el|los|la|las|the|that|this|those|these|some|unos|unas|my|mi|mis)?\s*"
-    r"(?:(?:dados?|dice|die)(?:\s+de\s+(?P<sides>\d{1,3})\s+caras|\s+with\s+(?P<sides_en>\d{1,3})\s+sides)?|"
-    r"d(?P<sides_short>\d{1,3}))|"
-    r"(?:haz|hace|haceme|hazme|do|make)\s+(?:una|a)\s+(?:tirada|roll)(?:\s+de\s+dados?|\s+of\s+(?:the\s+)?dice)?)"
-    + _DRAW_TAIL
-)
-_COIN_DRAW = re.compile(
-    _DRAW_FRAME
-    + r"(?:(?:tira|tirame|lanza|lanzame|echa|echame|arroja|flip|toss|throw)\s+(?:una|la|a|the)\s+(?:moneda|coin)"
-    r"(?:\s+al\s+aire)?(?:\s+(?P<face_a>cara|heads)\s+o\s+(?P<face_b>cruz|sello|tails))?|"
-    r"(?P<pair>cara\s+o\s+(?:cruz|sello)|aguila\s+o\s+sol|heads\s+or\s+tails))"
-    + _DRAW_TAIL
-)
-_NUMBER_DRAW = re.compile(
-    _DRAW_FRAME
-    + r"(?:dame|dime|decime|elige|elegi|escoge|escogi|saca|genera|piensa\s+en|pick|give\s+me|choose|generate|"
-    r"tell\s+me|think\s+of)\s+(?:un|a)\s+(?:random\s+)?(?:numero|number)(?:\s+(?:al\s+azar|aleatorio|cualquiera|"
-    r"at\s+random))?\s+(?:del|entre|de|between|from)\s+(?P<low>\d{1,6})\s+(?:al|y|a|hasta|and|to)\s+"
-    r"(?P<high>\d{1,6})"
-    + _DRAW_TAIL
-)
-
-
-def random_draw_request(text: object) -> RandomDraw | None:
-    """The die, coin or number within a range the whole message asks to be drawn, or None."""
-
-    folded = _policy_guard_text(text)
-    found = _DIE_DRAW.match(folded)
-    if found is not None:
-        count_word = found.group("count") or "1"
-        count = int(count_word) if count_word.isdigit() else _DRAW_COUNTS[count_word]
-        sides = int(found.group("sides") or found.group("sides_en") or found.group("sides_short") or 6)
-        if not 1 <= count <= 10 or not 2 <= sides <= 1000:
-            return None
-        return RandomDraw("die", count=count, high=sides)
-    found = _COIN_DRAW.match(folded)
-    if found is not None:
-        named = found.group("pair") or (
-            f"{found.group('face_a')} o {found.group('face_b')}" if found.group("face_a") else ""
-        )
-        faces = tuple(re.split(r"\s+(?:o|or)\s+", named)) if named else ()
-        return RandomDraw("coin", high=2, faces=faces)
-    found = _NUMBER_DRAW.match(folded)
-    if found is not None:
-        low, high = int(found.group("low")), int(found.group("high"))
-        return RandomDraw("number", low=low, high=high) if low < high else None
-    return None
 
 
 _DRAW = random.SystemRandom()
@@ -2558,181 +2349,6 @@ def _drawn_literal(draw: RandomDraw, language: str) -> str:
     return ", ".join(values[:-1]) + joiner + values[-1]
 
 
-# Tanda 4c 2026-09-24 «oye compárteme algún chiste para hacerme feliz», «i'd like you to tell me a joke» were
-# answered «¿Quieres un chiste de amor, de trabajo o de general?»: a request for a bit of content is complete
-# whatever frame carries it. The frame (an address, a courtesy, being able to, wanting it) carries the request;
-# the verb gives or tells it; the thing is named with at most a quality, a topic or a purpose after it.
-_FREE_CONTENT_FRAME = (
-    r"(?:(?:oye|oiga|hey|ey|mira|che|baxy|bueno|ok|okay|vale|dale|please|pls|por\s+favor|porfa)\s+|"
-    r"(?:i\s+d|i\s+would|id)\s+(?:like|love)\s+(?:you\s+to\s+|to\s+(?:hear|read)\s+)?|"
-    r"i\s+(?:want|need)\s+(?:you\s+to\s+)?|"
-    r"(?:can|could|would|will)\s+you\s+(?:please\s+)?|"
-    r"(?:me\s+|nos\s+)?(?:puedes|podes|podrias|podria|puede|pueden)\s+|"
-    r"(?:quiero|quisiera|necesito|me\s+gustaria|me\s+encantaria|te\s+pido)\s+(?:que\s+)?|"
-    # «Actúa como Julio Verne y haz un relato…»: the voice to write it in.
-    r"(?:actua|act|habla|talk|speak|finge\s+ser|pretend\s+(?:to\s+be|you\s+are)|como\s+si\s+fueras)\s+"
-    r"(?:(?:como|like|as)\s+)?[a-z0-9]+(?:\s+[a-z0-9]+){0,3}\s+(?:y|e|and)\s+)*"
-)
-_FREE_CONTENT_VERB = (
-    r"(?:(?:me|nos|te)\s+)?"
-    r"(?:cuentame|contame|cuenta|conta|cuentas|cuentes|cuente|decime|dime|di|dices|digas|diga|"
-    r"dame|da|das|des|tirame|tira|tiras|tires|echame|echa|echas|eches|sueltame|suelta|sueltas|sueltes|"
-    r"comparteme|compartime|comparte|compartes|compartas|regalame|regala|regalas|hazme|haceme|haz|haces|hagas|"
-    r"inventame|inventate|inventa|inventas|inventes|recitame|recita|narrame|narra|explicame|explica|hablame|habla|"
-    r"(?:contar|decir|dar|tirar|echar|soltar|compartir|regalar|hacer|inventar|recitar|narrar|explicar|hablar)"
-    r"(?:me|nos)?|"
-    r"(?:te\s+)?sabes|conoces|tienes|tenes|quiero|quisiera|necesito|oir|escuchar|leer|"
-    r"tell|give|say|share|crack|throw|recite|know|have|got|hear|read|do\s+you\s+(?:know|have)|you\s+got|"
-    r"i\s+(?:want|need)|(?:i\s+d|i\s+would|id)\s+(?:like|love)|hit\s+(?:me|us)\s+with|make\s+up|come\s+up\s+with)"
-    r"(?:\s+(?:me|us|nos|to\s+me|with\s+me))?\s+"
-)
-_FREE_CONTENT_QUALITY = (
-    r"(?:buen|bueno|buena|buenos|buenas|corto|corta|cortos|cortas|pequeno|pequena|breve|nuevo|nueva|gracioso|graciosa|"
-    r"divertido|divertida|interesante|curioso|curiosa|malo|mala|original|random|aleatorio|"
-    r"short|quick|good|funny|silly|bad|cheesy|dad|clean|new|little|interesting|curious|fun)"
-)
-_FREE_CONTENT_THING = (
-    r"(?:chistes?|bromas?|chascarrillos?|jokes?|puns?|juegos?\s+de\s+palabras|adivinanzas?|acertijos?|riddles?|"
-    r"trabalenguas|tongue\s+twisters?|curiosidad(?:es)?|datos?\s+curiosos?|(?:fun|random|interesting|cool)\s+facts?|"
-    r"piropos?|pick\s*up\s+lines?|cuentos?|relatos?|historias?|stor(?:y|ies)|poemas?|poems?|poesias?|haikus?)"
-)
-_FREE_CONTENT_COURTESY = r"(?:\s+(?:please|pls|porfa|por\s+favor|baxy|ahora|now|anda|va|ya))*"
-# A quality and nothing else after the thing; a verb in front also allows its topic («de programadores», «about
-# cats») or its purpose («para hacerme feliz», «to cheer me up»).
-_FREE_CONTENT_SHORT_TAIL = rf"(?:\s+{_FREE_CONTENT_QUALITY})?{_FREE_CONTENT_COURTESY}$"
-_FREE_CONTENT_LONG_TAIL = (
-    rf"(?:\s+{_FREE_CONTENT_QUALITY})?"
-    r"(?:\s+(?:de|del|sobre|acerca\s+de|about|on|of|with|con|para|pa|to|so|que|that|basad[oa]\s+en|based\s+on)"
-    r"(?:\s+[a-z0-9]+){1,10})?" + _FREE_CONTENT_COURTESY + r"$"
-)
-_FREE_CONTENT_AMOUNT = (
-    r"(?:(?:un|una|unos|unas|algun|alguna|algunos|algunas|algo\s+de|otro|otra|otros|otras|un\s+par\s+de|dos|tres|"
-    r"mas|tu\s+mejor|a|an|one|some|any|another|a\s+couple\s+of|two|three|more|your\s+best)\s+)?"
-)
-# Tanda 6 «haz una carcajada cuando quieras» → an answer dragging two earlier turns; «ríete diabólicamente» → «te río
-# de verdad 😈»: a laugh asked for is a bit of content performed on the spot («¡Muajajaja!»), with its manner or
-# its moment after it. The imperative «ríete» asks for it too; «no te rías» or «¿de qué te ríes?» do not start so.
-_LAUGHTER_ASK = (
-    r"(?:(?:(?:haz|hazme|haceme|hace|suelta|sueltame|echa|echate|echame|dame|tira|tirate|give\s+me|give|do|let\s+out)\s+)"
-    r"(?:(?:un|una|otra|otro|tu\s+mejor|a|an|another|your\s+best)\s+)?(?:[a-z]+\s+)?"
-    r"(?:carcajadas?|risas?|risotadas?|laughs?|laughters?|cackles?)|"
-    r"(?:riete|reite|rie|reirte|reir|laugh|cackle)(?:\s+(?:for|at)\s+me)?)"
-    r"(?:\s+[a-z]+){0,4}[\s.!]*$"
-)
-_LAUGHTER_ASKED = re.compile(r"^" + _FREE_CONTENT_FRAME + _LAUGHTER_ASK)
-# tanda-02: a bare plural noun asking for jokes was answered with a question about the topic. The thing named on
-# its own —a joke, a curiosity, with or without earlier turns— is asked for, not a question about which one; with a
-# verb in front it may bring its topic or its purpose.
-_FREE_CONTENT_THING_CUE = re.compile(
-    r"^" + _FREE_CONTENT_FRAME + r"(?:"
-    + _FREE_CONTENT_VERB + _FREE_CONTENT_AMOUNT + rf"(?:{_FREE_CONTENT_QUALITY}\s+)?" + _FREE_CONTENT_THING
-    + _FREE_CONTENT_LONG_TAIL
-    + r"|(?:hazme|haceme|make\s+me)\s+(?:reir|sonreir|laugh|smile)" + _FREE_CONTENT_LONG_TAIL
-    + r"|" + _FREE_CONTENT_AMOUNT + rf"(?:{_FREE_CONTENT_QUALITY}\s+)?" + _FREE_CONTENT_THING + _FREE_CONTENT_SHORT_TAIL
-    + r"|" + _LAUGHTER_ASK
-    + r")"
-)
-# «contame algo», «estoy aburrido»: open content, read so only with no earlier
-# turn that «algo» could be about.
-_FREE_CONTENT_CUE = re.compile(
-    r"^(?:" + _FREE_CONTENT_FRAME
-    + r"(?:contame|cuentame|conta|cuenta|decime|dime|tirame|tira|explicame|explica|hablame|habla|comparteme|comparte|"
-    r"tell\s+me|give\s+me|say|share)\s+"
-    + r"(?:algo|something|anything|cualquier\s+cosa|una\s+cosa)" + _FREE_CONTENT_SHORT_TAIL
-    + r"|(?:estoy|ando|me\s+siento)\s+(?:re\s+|muy\s+|super\s+)?aburrid[oa][\s.!?]*$|^i\s?m\s+(?:so\s+)?bored[\s.!?]*$)"
-)
-_MISNAMED_VOCATIVE = re.compile(r"^[A-ZÁÉÍÓÚÑ][A-Za-zÁ-ÿ'-]{1,24}[.!]?$")
-_REASSURANCE_OPENING = re.compile(
-    r"^(?:(?:no|nunca)\s+(?:te|se)\s+preocup\w*|tranqui(?:lo|la|los|las)?\b|no\s+pasa\s+nada|"
-    r"(?:don'?\s?t|dont|do\s+not)\s+worry|no\s+worries|it'?\s?s\s+(?:ok|okay|fine|alright)|esta\s+bien\s+si\b|todo\s+bien\s+si\b)"
-)
-# KNOWLEDGE1527 H0030 «¿Quieres el acompañante de Batman?»: an offer to BAXY.
-_ASSISTANT_DESIRE_QUESTION = re.compile(
-    r"^[\s¿?¡!]*(?:quieres|queres|quiere|te\s+gustaria|le\s+gustaria|do\s+you\s+want|would\s+you\s+like)\s+"
-    r"(?!que\b|abrir|poner|buscar|cerrar|to\b)"
-    r"(?P<thing>(?:el|la|los|las|un|una|unos|unas|a|an|some|the)\s+[a-z][a-z0-9 .'-]{1,60}?)[\s?!.]*$"
-)
-
-
-def assistant_desire_thing(text: str) -> str | None:
-    """The thing a person offered BAXY («¿Quieres el acompañante de Batman?»), or None."""
-
-    found = _ASSISTANT_DESIRE_QUESTION.match(_policy_guard_text(_strip_request_envelope(text)))
-    if found is None:
-        return None
-    thing = found.group("thing").strip()
-    if re.search(r"\b(?:que|abra|abras|ponga|pongas|busque|busques|cierre|cierres|haga|hagas|volumen|brillo)\b", thing):
-        return None
-    return thing
-
-
-# KNOWLEDGE1525 H0582 «Quien gana en batman vs superman»: two contenders.
-_VERSUS_QUESTION = re.compile(
-    r"^[\s¿?¡!]*(?:quien|who)\s+(?:gana|ganaria|vence|venceria|would\s+win|wins|win)\s+"
-    r"(?:(?:en\s+una\s+pelea|en\s+un\s+combate|in\s+a\s+fight)\s+)?(?:entre|en|between|in)\s+"
-    r"(?P<first>[a-z0-9][a-z0-9 .'-]{0,38}?)\s+(?:vs\.?|versus|contra|y|and|o|or)\s+"
-    r"(?P<second>[a-z0-9][a-z0-9 .'-]{0,38}?)[\s?!.]*$"
-)
-# KNOWLEDGE1525 H0596 «El agua moja?, responde con sarcasmo»: a sarcastic tone was asked for.
-_SARCASM_REQUEST = re.compile(
-    r"^(?P<question>.+?)[\s,;:.!?]*(?:(?:y\s+)?(?:responde|respondeme|respondelo|contesta|contestame|contestalo|answer|reply)"
-    r"(?:\s+(?:me|lo|la|it))?\s+(?:con\s+sarcasmo|sarcasticamente|sarcastically|with\s+sarcasm))[\s.!?]*$"
-)
-
-
-def versus_contenders(text: str) -> tuple[str, str] | None:
-    """The two contenders of a who-wins question, or None."""
-
-    found = _VERSUS_QUESTION.match(_policy_guard_text(_strip_request_envelope(text)))
-    if found is None:
-        return None
-    return found.group("first").strip(), found.group("second").strip()
-
-
-def sarcasm_question(text: str) -> str | None:
-    """The question a sarcastic answer was asked for, or None."""
-
-    found = _SARCASM_REQUEST.match(_policy_guard_text(_strip_request_envelope(text)))
-    if found is None:
-        return None
-    question = found.group("question").strip(" ,;:.!?¿¡")
-    return question or None
-
-
-# Tanda 4 2026-09-24 «spell potato» → «Potato.»: spelling a word is saying its letters one by one. Read on the
-# casefolded words as written, so the word keeps its accents («deletrea camión»).
-_SPELLING_REQUEST = re.compile(
-    r"^[\s¿?¡!]*(?:(?:hola|oye|hey|baxy|por\s+favor|porfa|please)[\s,:;.!]+)*"
-    r"(?:(?:can|could|would)\s+you\s+(?:please\s+)?|(?:me\s+)?(?:puedes|podés|podes|podrías|podrias)\s+)?"
-    r"(?:spell(?:\s+out)?|(?:me\s+)?deletr[eé](?:a|á|as|ás|ame|ar(?:me)?)|"
-    r"how\s+(?:do\s+you|do\s+i|would\s+you|to|is|are)\s+(?:you\s+)?spell(?:ed)?|"
-    r"c[oó]mo\s+se\s+deletrea|c[oó]mo\s+(?:deletreo|deletreas|deletrear)|"
-    r"what(?:\s+is|['’]s)\s+the\s+spelling\s+of|"
-    r"(?:c[oó]mo\s+se\s+escribe|escr[ií]b(?:e|eme|ime|i)|write)(?=.*\b(?:letra\s+por\s+letra|letter\s+by\s+letter)\b))"
-    r"\s+(?:(?:the\s+word|the\s+name|la\s+palabra|el\s+nombre|el\s+apellido)\s+)?[\"'«“‘]?"
-    r"(?P<word>[^\W\d_][^\W\d_'’-]{0,39})[\"'»”’]?"
-    r"(?:\s+(?:for\s+me|por\s+favor|please|porfa|letra\s+por\s+letra|letter\s+by\s+letter|en\s+ingl[eé]s|"
-    r"en\s+espa[nñ]ol|in\s+english|in\s+spanish))*[\s.?!]*$"
-)
-_SPELLED_QUESTION = re.compile(
-    r"^[\s¿?¡!]*how\s+(?:is|are)\s+(?:the\s+word\s+)?[\"'«“‘]?(?P<word>[^\W\d_][^\W\d_'’-]{0,39})[\"'»”’]?"
-    r"\s+spelled[\s.?!]*$"
-)
-_NOT_A_SPELLED_WORD = frozenset(
-    "it that this eso esto esa ese aquello me you te lo la something algo anything nada".split()
-)
-
-
-def spelling_word(text: str) -> str | None:
-    """The word a person asked to have spelled («spell potato» → «potato»), or None."""
-
-    said = str(text or "").strip().casefold()
-    found = _SPELLING_REQUEST.match(said) or _SPELLED_QUESTION.match(said)
-    if found is None or found.group("word") in _NOT_A_SPELLED_WORD:
-        return None
-    return found.group("word")
-
-
 _SPELLED_RUNS = tuple(
     re.compile(rf"(?<![^\W\d_])[^\W\d_](?![^\W\d_])(?:{separator}[^\W\d_](?![^\W\d_]))+")
     for separator in (r"\s*[-–—,·.;:/]\s*", r"\s+")
@@ -2772,40 +2388,6 @@ def _numbers_in_figures(value: object) -> set[int]:
     }
 
 
-_HOW_IT_WORKS_CUE = re.compile(
-    r"^[\s¿?¡!]*(?:y\s+)?(?:como\s+funciona(?:s|n)?(?:\s+(?:esto|eso|baxy|este\s+asistente|todo\s+esto|el\s+asistente))?|"
-    r"how\s+(?:does|do)\s+(?:this|it|you|baxy)\s+work)[\s.?!]*$"
-)
-
-
-# Tanda 4c 2026-09-24 «a partir de ahora imítame» → «Claro, ya estoy en el mismo estilo… ¿Qué necesitas ahora?»:
-# how BAXY talks or behaves from now on, imitating the person included, is a directive on his conduct like the
-# language he speaks; it is acknowledged, not followed by a question.
-_CONDUCT_DIRECTIVE = re.compile(
-    r"^(?:(?:por\s+favor|porfa|please|baxy|oye|hey|ok|okay|bueno|vale)\s+)*(?:"
-    r"(?:a\s+partir\s+de\s+(?:ahora|hoy|ya)|desde\s+(?:ahora|hoy|ya)(?:\s+en\s+adelante)?|de\s+ahora\s+en\s+adelante|"
-    r"en\s+adelante|from\s+now\s+on|starting\s+(?:now|today)|for\s+the\s+rest\s+of\s+(?:the|this|our)\s+"
-    r"(?:chat|conversation))\s+(?:(?:quiero\s+que|i\s+want\s+you\s+to|please|por\s+favor)\s+)?"
-    r"(?:imita|imitame|imitar|imites|copia|copiame|copies|habla|hablame|hablar|hables|responde|respondeme|respondas|"
-    r"contesta|contestame|contestes|tutea|tuteame|trata|tratame|trates|actua|actues|seas|usa|uses|"
-    # «sé más breve»: without its accent «se» is also the pronoun («se me olvida»), so a quality follows it.
-    r"se\s+(?:mas|menos|muy)?\s*(?:breve|directo|directa|formal|informal|amable|conciso|concisa|claro|clara|"
-    r"gracioso|graciosa|serio|seria|sincero|sincera)|"
-    r"imitate|copy|mimic|talk|speak|answer|reply|respond|act|be|use)\b.{0,80}"
-    r"|(?:imitame|copiame|imitate\s+me|copy\s+me|mimic\s+me)(?:\s+.{0,60})?"
-    r")$"
-)
-
-
-# Owner 2026-09-24 («conciso… de una»): a plain answer is one or two sentences,
-# so its budget is sized to that; a request that asks for more (detail, steps,
-# a list, a story) keeps room for the content it asked for.
-_EXTENDED_ANSWER_ASK = re.compile(
-    r"\b(?:en\s+detalle|detallad\w*|a\s+fondo|profundi\w*|paso\s+a\s+paso|pasos|reglas|listas?|enumer\w*|"
-    r"ejemplos|todo\s+(?:sobre|lo\s+que)|relato|cuento|historia|poema|ensayo|carta|resum\w*|"
-    r"in\s+detail|detailed|step\s+by\s+step|steps|rules|lists?|listing|examples|everything\s+about|"
-    r"story|poem|essay|letter|summar\w*|elaborat\w*)\b"
-)
 _CONTENT_SHAPES = frozenset({"content_draft", "roleplay_draft"})
 _BRIEF_SHAPES = frozenset({
     "constraint_ack", "reassurance_ack", "preference_ack", "versus_opinion", "sarcastic_answer",
@@ -2831,7 +2413,7 @@ def _conversation_max_tokens(
     if retry:
         return 96
     if conversation_kind in {"knowledge", None}:
-        return 256 if _EXTENDED_ANSWER_ASK.search(_reading_fold(text)) else 128
+        return 256 if asks_an_extended_answer(text) else 128
     return {"social": 64, "unsupported": 96, "unsupported_language": 96}.get(conversation_kind, 128)
 
 
@@ -2841,271 +2423,6 @@ def _complete_sentences(text: str) -> str:
 
     ends = list(re.finditer(r"[.!?…](?:[»\"'”)\]*_]*)(?=\s|$)", text))
     return text[: ends[-1].end()].strip() if ends else ""
-
-
-def _conversation_presentation_shape(
-    text: str,
-    *,
-    conversation_kind: str | None,
-    has_history: bool,
-) -> str | None:
-    """Close a few no-history prose contracts without changing turn authority."""
-
-    semantic_text = explicit_non_action_body(text) or text
-    # cien-40 007/028: «traduce 'good evening' al español» recibía la forma de
-    # redacción de contenido, no la de traducción, así que el prompt del
-    # traductor —devolver la traducción y nada más— no llegaba nunca a los
-    # pedidos más corrientes. Un pedido de traducción es una traducción.
-    # cien-43 038 «no lances Steam» y luego «if it didn't happen, say so»: la
-    # pregunta por si ocurrio o no llegaba sin forma ninguna y el modelo devolvia
-    # la condicion como tautologia. Es el mismo reconocimiento de la restriccion,
-    # que ya tiene su prompt y su contrato.
-    if has_history and re.search(
-        r"(?:si|if)\s+(?:eso|it|that)?\s*(?:no|didn\s?t|did not|nunca)\s+"
-        r"(?:pas[oó]|ocurri[oó]|sucedi[oó]|happen(?:ed)?|lo\s+hiciste|hiciste)\b",
-        _policy_guard_text(_strip_request_envelope(semantic_text)),
-    ):
-        return "constraint_ack"
-    if re.match(
-        r"^[\s¿?¡!]*(?:traduc(?:e|i|ime|eme|ir|elo|ela|ela)|translate)\b",
-        _policy_guard_text(_strip_request_envelope(semantic_text)),
-    ):
-        return "translation"
-    if spelling_word(semantic_text) is not None:
-        return "spelling"
-    if spoken_number_request(semantic_text) is not None:
-        return "spoken_number"
-    # Uso real 2026-09-23 «vuelve a hablar en español» → «Claro, estoy aquí para
-    # ayudarte en español 😎 ¿En qué puedo ayudarte hoy?»: how BAXY should speak
-    # is a directive on his conduct, acknowledged in one sentence like any other.
-    # Uso real tanda 5: a parrot mode («a partir de ahora imita lo que digo») is a limit, never acknowledged.
-    if not echo_mode_request(semantic_text) and (
-        speaking_directive(semantic_text)
-        or _CONDUCT_DIRECTIVE.match(_policy_guard_text(_strip_request_envelope(semantic_text)))
-    ):
-        return "constraint_ack"
-    if conversation_only_content_request(semantic_text):
-        roleplay = _policy_guard_text(_strip_request_envelope(semantic_text))
-        return (
-            "roleplay_draft"
-            if re.search(
-                r"\b(?:role\s+play|simula)\b.{0,48}\b"
-                r"(?:conversation|conversacion)\b",
-                roleplay,
-            )
-            else "content_draft"
-        )
-    if _FREE_CONTENT_THING_CUE.match(_policy_guard_text(_strip_request_envelope(semantic_text))) is not None:
-        # KNOWLEDGE1144 «contame un chiste»; tanda-02: the bare noun, after other turns.
-        return "free_content"
-    # Tanda 4f «configuré una alarma para despertarme por la mañana»: an alarm the person set is what they tell,
-    # acknowledged without an offer, whatever came before in the conversation.
-    if reported_own_schedule(semantic_text):
-        return "observation_ack"
-    # MEMORY1501/1503 H0174 «Me gusta tomar café.»: the social turn answered with the assistant's own tastes and
-    # offers; the shape keeps it to an acknowledgement naming the person's preference. Tanda 6: after earlier
-    # turns too («debieras saber que me gusta el jazz» got an offer), unless the taste points back at them («me
-    # gusta esa», «I like that one»).
-    preference = first_person_preference(semantic_text)
-    if preference is not None and not (
-        has_history and re.match(r"(?:ese|esa|eso|esos|esas|este|esta|esto|lo|la|it|that|this|those|these)\b", preference)
-    ):
-        return "preference_ack"
-    if not has_history:
-        # CONVERSATION1343 H0122 «hola Carter»: a greeting with another name
-        # is answered by greeting back and saying the name is BAXY.
-        reading = read_request(semantic_text)
-        if (
-            reading.greets
-            and _MISNAMED_VOCATIVE.fullmatch(reading.ask or "") is not None
-            and _reading_fold(reading.ask) != "baxy"
-        ):
-            return "misnamed_greeting"
-        # CONVERSATION1343 H0059 «NO te preocupes si se abrio steam»: a
-        # reassurance takes a brief acknowledgement, not a question.
-        if reassurance_statement(semantic_text):
-            return "reassurance_ack"
-        # KNOWLEDGE1144/1149/1179 «contame algo», «estoy aburrido»: the
-        # content is asked for, not a question about which content.
-        if _FREE_CONTENT_CUE.match(_policy_guard_text(_strip_request_envelope(semantic_text))) is not None:
-            return "free_content"
-        # CONVERSATION1343 H0069 «Tienes algun meme?»: the generic unsupported
-        # wording inverted the subject («Pido un meme…»); say the boundary.
-        if visual_content_request(semantic_text):
-            return "visual_content_boundary"
-    # KNOWLEDGE1525 H0582 «Quien gana en batman vs superman»: KNOWLEDGE1473
-    # asserted an invented outcome as a fact; the shape keeps it an opinion
-    # whatever kind the model chose for the turn.
-    if versus_contenders(semantic_text) is not None:
-        return "versus_opinion"
-    # KNOWLEDGE1525 H0596 «El agua moja?, responde con sarcasmo».
-    if sarcasm_question(semantic_text) is not None:
-        return "sarcastic_answer"
-    # KNOWLEDGE1527 H0030 «¿Quieres el acompañante de Batman?»: BAXY has no
-    # wants; it says so naming the thing and offers to act on it if meant.
-    if assistant_desire_thing(semantic_text) is not None:
-        return "assistant_desire"
-    if conversation_kind not in {"knowledge", "followup"}:
-        return None
-    if explicit_negative_constraint(semantic_text):
-        return "constraint_ack"
-    if _HOW_IT_WORKS_CUE.search(_policy_guard_text(_strip_request_envelope(semantic_text))):
-        # IDENTITY1323 H0373 «cómo funciona esto» answered as a plain chat.
-        return "how_it_works"
-    identity_reading = read_request(semantic_text)
-    if identity_reading.has(INTENT_IDENTITY) and not identity_reading.has(INTENT_CAPABILITY):
-        # IDENTITY1325 H0012 «to quien chuta eres.»: the plain knowledge reply
-        # asked what «chuta» meant instead of saying who answers. A combined
-        # «who are you and what can you do» keeps the catalog answer.
-        return "identity"
-    # Classify the question inside a language wrapper, while keeping the
-    # original request for generation. Otherwise "responde en ...: qué es ..."
-    # becomes an observation acknowledgment instead of an explanation.
-    folded = _policy_guard_text(_strip_request_envelope(semantic_text))
-    for _ in range(4):
-        stripped = re.sub(
-            r"^(?:(?:a\s+ver\s+baxy|baxy|hola|hello|hi|hey|oye|listen)\s+|"
-            r"(?:por\s+curiosidad|una\s+duda|just\s+curious|a\s+question)\s+|"
-            r"(?:por\s+favor|porfa|please)\s+|"
-            r"(?:puedes|podrias|can\s+you|could\s+you|"
-            r"would\s+you(?:\s+please)?)\s+)",
-            "",
-            folded,
-            count=1,
-        ).strip()
-        if stripped == folded:
-            break
-        folded = stripped
-    if re.search(
-        r"^(?:please\s+)?(?:write|draft) me an? (?:email|mail) "
-        r"(?:that|saying|about)\b",
-        folded,
-    ):
-        return "content_draft"
-    if re.match(r"^(?:traduce|traducir|translate)\b", folded):
-        return "translation"
-    if re.match(
-        r"^(?:find|get|give|tell)\s+me\b",
-        folded,
-    ) and re.search(r"\b(?:jokes?|chistes?)\b", folded):
-        # A joke request asks the model to produce content. It is not a plain
-        # observation to acknowledge in one declarative sentence.
-        return None
-    if (
-        re.search(
-            r"\b(?:quien gana|which wins|who wins)\b",
-            folded,
-        )
-        and re.search(r"\b(?:vs|versus|entre .+ y |between .+ and )\b", folded) is None
-    ):
-        return "underspecified_comparison"
-    if not has_history and re.search(
-        (
-            r"\b(?:which of those|required task|todo lo de arriba|esta tarea|"
-            r"nueva sesion|todo listo|el progreso|como ha ido|donde dejaste|"
-            r"que me hiciste|intentalo|try it)\b"
-        ),
-        folded,
-    ):
-        return "missing_context"
-    if (
-        not has_history
-        and not any(marker in text for marker in ("?", "¿", "？"))
-        and re.match(
-            r"\s*(?:que|what|why|how|which|who|cuando|when|donde|where|"
-            r"por\s+que|como|cual|quien)\b",
-            folded,
-        )
-        is None
-        and re.match(
-            r"\s*(?:explica(?:me)?|explain|describe|dime|tell me|cuentame|contame|"
-            r"propon|propone|sugiere|suggest|traduce|translate|resume|"
-            r"summarize|ayudame|help me)\b",
-            folded,
-        )
-        is None
-        # A knowledge turn must retain its information request. An adverb or
-        # noun at the beginning is not evidence that the person asserted a
-        # fact: "ahora explicame que es Steam" was forced into observation_ack
-        # and answered as if the user had already supplied the explanation.
-        # Only the already-classified followup may use this acknowledgment.
-        and conversation_kind == "followup"
-        and _reads_as_an_observation(folded)
-    ):
-        return "observation_ack"
-    return None
-
-
-# An acknowledgement restates what the person said. A command is not a
-# statement, so acknowledging one invents a fact: "Compra un vuelo a Madrid"
-# came back as "Mencionas que compraste un vuelo a Madrid", which is simply
-# false. Require a declarative opening instead of accepting anything that is
-# not a question. Falling through costs an abstention, which is honest; the
-# alternative costs a fabrication, which invariant 2 forbids outright.
-_OBSERVATION_OPENING = re.compile(
-    r"^(?:"
-    r"hoy|ayer|manana|anoche|ahora|siempre|nunca|todavia|ya|aqui|alla|"
-    r"estoy|estamos|esta|estan|era|fue|hace|hay|tengo|tenemos|tenia|"
-    r"me|mi|mis|nos|nuestro|nuestra|yo|nosotros|"
-    r"el|la|los|las|un|una|unos|unas|este|esta|estos|estas|eso|esto|"
-    r"parece|creo|pienso|siento|veo|noto|"
-    r"today|yesterday|tomorrow|tonight|now|always|never|still|here|there|"
-    r"i|im|ive|my|we|our|it|its|this|that|these|those|the|a|an|"
-    r"is|are|was|were|feels|seems|looks|sounds"
-    r")\b",
-    re.IGNORECASE,
-)
-
-
-# A declarative opener is not the only shape an observation takes: "Cierre de
-# Word podía perder trabajo" starts with a noun. What those share, and what a
-# command lacks, is a finite verb that is not the first word. Accept either
-# signal; a command still has its verb in front and nothing behind it.
-_OBSERVATION_FINITE_VERB = re.compile(
-    r"\b(?:"
-    r"es|son|era|eran|fue|fueron|sera|seria|"
-    r"esta|estan|estaba|estaban|estuvo|"
-    r"hace|hacia|hay|habia|hubo|"
-    r"puede|pueden|podia|podian|podria|podrian|pudo|"
-    r"tiene|tienen|tenia|tenian|tuvo|"
-    r"parece|parecia|suele|solia|va|van|iba|iban|"
-    # A gerund or infinitive subject carries its predicate later: "Pintar la
-    # reja nos llevo toda la tarde" is narration, not an order to paint.
-    r"llevo|llevaron|duro|duraron|costo|costaron|tomo|tomaron|"
-    r"resulto|salio|quedo|"
-    r"took|lasted|"
-    r"is|are|was|were|has|have|had|does|did|"
-    r"can|could|will|would|should|might|must|"
-    r"seems|seemed|feels|felt|looks|looked|sounds|sounded"
-    r")\b",
-    re.IGNORECASE,
-)
-
-
-def _reads_as_an_observation(folded: str) -> bool:
-    stripped = folded.strip()
-    if _OBSERVATION_OPENING.match(stripped) is not None:
-        return True
-    found = _OBSERVATION_FINITE_VERB.search(stripped)
-    return found is not None and found.start() > 0
-
-
-def _roleplay_participant_names(text: object) -> tuple[str, ...]:
-    current = _strip_request_envelope(str(text or "").strip())
-    name = r"[^\W\d_][\w'’\-]{0,39}"
-    for pattern in (
-        rf"\b(?:between|entre)\s+(?P<first>{name})\s+"
-        rf"(?:and|y)\s+(?P<second>{name})\b",
-        rf"\b(?:send\s+nothing\s+(?:to|a)|no\s+envies\s+nada\s+a)\s+"
-        rf"(?P<first>{name})\s+(?:nor|ni|and|y)\s+"
-        rf"(?P<second>{name})\b",
-    ):
-        found = re.search(pattern, current, flags=re.IGNORECASE)
-        if found is not None:
-            participants = (found.group("first"), found.group("second"))
-            if participants[0].casefold() != participants[1].casefold():
-                return participants
-    return ()
 
 
 def _shaped_presentation_text(
@@ -3443,7 +2760,7 @@ def _shaped_conversation_answer_violates_contract(
         # A joke is often a question with its answer («¿Por qué…? Porque…»);
         # only a reply that ends by asking the person misses the contract. A
         # poem asked for keeps its four lines (tanda 4c). A laugh is short (tanda 6).
-        laugh = _LAUGHTER_ASKED.match(_policy_guard_text(_strip_request_envelope(str(request or "")))) is not None
+        laugh = asks_a_laugh(request)
         return (
             not content
             or len(content) < (4 if laugh else 20)

@@ -988,3 +988,34 @@ def followup_topic(text: str, prior_user_texts: object) -> str | None:
         if topic is not None:
             return topic
     return None
+
+
+def _conversation_response_language(text: str, facts: dict | None) -> str:
+    """MUSIC1755 «Play a song on Spotify.» → «Queen»: an answer with no language
+    evidence of its own keeps the language of the latest prior request that has
+    some; the reading of the current text stays the owner otherwise."""
+
+    reading = read_request(text)
+    if (tuple(reading.evidence) != (0, 0) and not _language_neutral_reply(text)) or not isinstance(facts, dict):
+        return reading.language
+    prior_requests = facts.get("priorRequests")
+    if isinstance(prior_requests, list):
+        for prior in reversed(prior_requests):
+            # MUSIC1761: the confirmation word the person typed before is
+            # no evidence either («Play a song…», «Queen», «confirmar»).
+            if isinstance(prior, str) and prior.strip() and not _language_neutral_reply(prior):
+                prior_reading = read_request(prior)
+                if tuple(prior_reading.evidence) != (0, 0):
+                    return prior_reading.language
+    return reading.language
+
+
+def _language_neutral_reply(text: str) -> bool:
+    """MUSIC1759: a confirmation, cancellation or assent word answers a
+    challenge in either language; it is not a choice of Spanish or English."""
+
+    return re.fullmatch(
+        r"[¿?¡!\s]*(?:confirmar|confirm|confirmo|confirmed|cancelar|cancel|continuar|continue|"
+        r"s[ií]|yes|yep|no|nope|ok|okay|dale|vale|bueno|listo|adelante|go\s+ahead)[\s.!?]*",
+        text or "", re.IGNORECASE,
+    ) is not None

@@ -46,3 +46,17 @@ def alternation(words: frozenset[str] | tuple[str, ...] | set[str]) -> str:
     """A non-capturing regex alternation of folded words, longest first so a prefix never wins early."""
 
     return "(?:" + "|".join(re.escape(word) for word in sorted(set(words), key=lambda w: (-len(w), w))) + ")"
+
+
+def _policy_guard_text(value: object) -> str:
+    """Fold prose for policy checks, including accents and contractions: like ``fold``, and every character that is
+    not a letter or a digit is a space («¿Qué-tal?» → «que tal»). Moved from ``llm`` with the readers that use it."""
+
+    decomposed = unicodedata.normalize("NFKD", str(value or ""))
+    return " ".join(
+        "".join(
+            character.casefold() if character.isalnum() else " "
+            for character in decomposed
+            if not unicodedata.combining(character)
+        ).split()
+    )
