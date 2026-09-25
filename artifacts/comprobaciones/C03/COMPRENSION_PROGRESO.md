@@ -67,6 +67,13 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | guion del dueño (60) / held-out (30) | **46/60** (+6 por revisar) / **24/30** — ambos bajo el «sin retroceder» del goal (53, 29): hay que recuperarlos | `semantic_replay.py summary --out finc2` |
 | cien-103 | **95/100** (94 iguales + 1 mejor; mal: 008, 027, 096 pedido sin referente → límite falso, 037 «no lances Steam», 084 memoria tras session.new) | conductor; adjudicación contra cien-101 |
 
+## F4 — mecanismos (regla D12 para M1; cifras estrictas de `comprension_eval.py`)
+
+| mecanismo | DEV-B total | seguim. B | DEV-A | capa A (registro real) | reserva | 742 distintas de la base | veredicto |
+|---|---|---|---|---|---|---|---|
+| base | 69,2 % | 53,0 % | 59,6 % | 96,5 % (90,1 %) | 82,2 % | — | — |
+| M1: decisor en contexto (V2) + Qwen3.5-4B, 12 288/ranura | 75,5 % | 87,9 % | 70,0 % | **93,5 % (70,3 %)** | 81,5 % | 24 | **no entra**: el registro real cae (quejas y charla con historial convertidas en acciones: «baxy, cierra baxy» → cerrar todas las ventanas) |
+
 ## Bitácora
 
 - 2026-09-25 12:0x — F0: tag, ficheros de estado. Verificación anterior en curso (capas A/B/C).
