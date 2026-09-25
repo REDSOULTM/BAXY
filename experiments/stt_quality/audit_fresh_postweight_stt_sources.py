@@ -116,8 +116,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # uso real: contexto, sueltos 7, latencia 7, escritorio
 # uso real ola 12: diálogo vivo, no inventar, vocabulario
 # uso real ola 13: seguimientos
+# uso real ola 14: tanda 9
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "eb412cfe53e860b85063188684026da4af1ef46aa01cdbc578e5dd099fb77bd9"
+    "447b037548fbf1d72c01837ffdad3bc3d17c709c355dd864f91706e92b4d873c"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"

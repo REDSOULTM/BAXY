@@ -149,12 +149,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # uso real: contexto, sueltos 7, latencia 7, escritorio
 # uso real ola 12: diálogo vivo, no inventar, vocabulario
 # uso real ola 13: seguimientos
+# uso real ola 14: tanda 9
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "2c2024b2cf850d34f34fd9d87a493ec8786f1c23e9af42def26cdcdcd473ba60"
+        "4f9b83b354d65e75639f2a1425e27530939c34d41428d7f439ebfbc6b901f9bc"
     ),
     "src/baxy_mind/llm.py": (
-        "1e1fbd3e6a8c8e2f927570c225e3c2be5cf23a857440156bad537a269e10c1c1"
+        "8b58297c168457e00f0745ec7567aa1e33ad4f4f53f8b606c69ef18227849021"
     ),
 }
 
