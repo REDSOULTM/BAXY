@@ -149,7 +149,7 @@ _MINIMIZE_ALL_REQUEST = re.compile(
     r"(?:minimiza|minimizame|minimizar|minimise|minimize)\s+(?:me\s+)?"
     r"(?:todas\s+(?:las\s+)?(?:ventanas|apps|aplicaciones)|todas|todo|"
     r"all(?:\s+(?:the|my|of\s+the))?(?:\s+(?:windows|apps|applications))?|everything)"
-    r"(?:\s+(?:abiertas|open))?(?:\s*,?\s*(?:por\s+favor|please))?[\s.!?]*$"
+    r"(?:\s+(?:abiertas|open))?(?:\s*,?\s*(?:por\s+favor|porfa|porfis|please|pls))?[\s.!?]*$"
 )
 
 
@@ -160,7 +160,11 @@ _MINIMIZE_ALL_REQUEST = re.compile(
 # Tanda 4 «Abre el start screen» was a limit: the home screen is no folder, so opening it is going to it too.
 # Tanda 5 «Inicia mi homescreen» was the same limit: starting, launching or putting on the home screen is opening
 # it; those verbs name only the home view, never «el escritorio» (a folder) nor a bare «inicio».
-_PC_HOME_VIEW = r"(?:home\s*screen|start\s+screen|pantalla\s+(?:de\s+inicio|principal))"
+# Tanda 9 «Ir a la pantalla de homescreen» was a limit: the Spanish «pantalla (de)» may wrap the English name too.
+_PC_HOME_VIEW = (
+    r"(?:(?:pantalla\s+(?:de\s+|del\s+)?)?(?:home\s*screen|start\s+screen)|"
+    r"pantalla\s+(?:de\s+(?:inicio|home)|principal|home|del\s+home))"
+)
 PC_HOME_PLACE = rf"(?:escritorio|desktop|{_PC_HOME_VIEW})"
 # Uso real tanda 2 «Ve home.», tanda 3 «Go to página de inicio» (it opened a dictionary page for «inicio»): said
 # alone after a movement verb, «home», «inicio» and «la página de inicio» are the PC's home too («go home», «vuelve
@@ -177,7 +181,7 @@ _SHOW_DESKTOP_REQUEST = re.compile(
     r"muestrame|mostrame|muestra|ensename|show(?:\s+me)?)"
     r"\s+(?:(?:a|al|to)\s+)?(?:(?:el|la|the|my|mi)\s+)?"
     rf"(?:(?(open){_PC_HOME_VIEW}|{PC_HOME_PLACE})|(?(move){_BARE_HOME}|(?!)))"
-    r"(?:\s*,?\s*(?:por\s+favor|please))?[\s.!?]*$"
+    r"(?:\s*,?\s*(?:por\s+favor|porfa|porfis|please|pls))?[\s.!?]*$"
 )
 
 

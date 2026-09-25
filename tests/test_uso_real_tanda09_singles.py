@@ -113,3 +113,33 @@ def test_the_day_we_live_in_is_the_clock(text: str) -> None:
 )
 def test_other_places_and_eras_we_live_in_are_not_the_clock(text: str) -> None:
     assert "system.time" not in _effects(text)
+
+
+# ------------------------------------------------------------------ «la pantalla de homescreen» is the desktop view
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Ir a la pantalla de homescreen.",
+        "ve a la pantalla home",
+        "llévame a la pantalla del home screen",
+        "vamos a la pantalla de home",
+        "regresa a la pantalla principal",
+        "abre la pantalla de homescreen",
+        "muéstrame la pantalla de inicio",
+        "ir a la pantalla de inicio porfa",
+        "go to the home screen",
+        "take me to the homescreen",
+    ],
+)
+def test_the_home_screen_wrapped_in_pantalla_is_the_desktop(text: str) -> None:
+    assert _effects(text) == ("window.minimize.all",)
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["ve a la pantalla de inicio de sesión", "ir a la pantalla de home de netflix", "ir a la pantalla de configuración"],
+)
+def test_other_screens_are_not_the_desktop(text: str) -> None:
+    assert "window.minimize.all" not in _effects(text)
