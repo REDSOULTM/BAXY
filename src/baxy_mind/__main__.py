@@ -5873,11 +5873,12 @@ def _explicit_arguments_from_evidence(
             note_request = desired.group("body")
         shorthand = re.match(
             r"^[¿?¡!\s]*(?:"
-            r"(?:anot[aá]|anotar|anotame|note down|write down|"
-            r"deja(?:r)?\s+anotad[oa])\s*"
+            r"(?:anot[aá]|anotar|an[oó]tame|apunt[aá]|apuntar|ap[uú]ntame|note down|write down|jot down|"
+            r"deja(?:r)?\s+(?:anotad[oa]|apuntad[oa]))\s*(?:(?:en una nota|in a note)\s*)?"
             r"(?:(?:que|that)\b|:|\s(?=[^\W\d_]+(?:ar|er|ir)\b))"
+            # Twin of grammar._literal_note_payload_request (tanda 9 «apúntame una nota: …»).
             r"|(?:cre[aá]|crear|create|make|haz|hacer|guard[aá](?:me)?|guardar|"
-            r"save|tom[aá](?:me)?|take)\s+"
+            r"save|tom[aá](?:me)?|take|anot[aá]|anotar|an[oó]tame|apunt[aá]|apuntar|ap[uú]ntame|jot down)\s+"
             r"(?:(?:una?|a)\s+)?(?:nota|note)\s*"
             r"(?:(?:que\s+diga|that\s+says?|saying)\s*:?|:)"
             r"|(?:nota\s+nueva|nueva\s+nota|new\s+note)\s*:"

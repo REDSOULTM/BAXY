@@ -6575,7 +6575,8 @@ def _review_local_data_effects(
 
     if (
         _head_is(head, r"(?:anota|anotar|anotame|apunta|apuntame|jot)")
-        and not _has(folded, r"\b(?:nota|note)\b")
+        # «apúntame una tarea», «anota un recordatorio»: the created domain named is what is written (_CREATE).
+        and not _has(folded, r"\b(?:notas?|notes?|tareas?|tasks?|recordatorios?|reminders?)\b")
         # «anota este evento en mi calendario»: written on the calendar, not in a note.
         and not _has(folded, _CALENDAR_PLACE)
     ):

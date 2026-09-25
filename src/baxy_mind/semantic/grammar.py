@@ -1281,10 +1281,12 @@ def _literal_note_payload_request(text: str) -> bool:
     return _has(
         text,
         r"^[¿?¡!\s]*(?:"
-        r"(?:anota|anotar|anotame|note\s+down|write\s+down|"
-        r"deja(?:r)?\s+anotad[oa])\s*(?:que\b|that\b|:)"
+        r"(?:anota|anotar|anotame|apunta|apuntar|apuntame|note\s+down|write\s+down|jot\s+down|"
+        r"deja(?:r)?\s+(?:anotad[oa]|apuntad[oa]))\s*(?:(?:en\s+una\s+nota|in\s+a\s+note)\s*)?(?:que\b|that\b|:)"
+        # Tanda 9 «apúntame una nota: revisar la factura de la luz el lunes» was asked what to review: the note
+        # ordered with «anota/apunta» and its noun is the same literal note as «crea una nota:».
         r"|(?:crea|crear|create|make|haz|hacer|guarda(?:me)?|guardar|save|"
-        r"toma(?:me)?|take)\s+"
+        r"toma(?:me)?|take|anota|anotar|anotame|apunta|apuntar|apuntame|jot\s+down)\s+"
         r"(?:(?:una?|a)\s+)?(?:nota|note)\s*"
         r"(?:(?:que\s+diga|that\s+says?|saying)\s*:?|:)"
         r"|(?:nota\s+nueva|nueva\s+nota|new\s+note)\s*:"
@@ -1424,7 +1426,7 @@ _READ = r"(?:lee|leer|leeme|leela|leelo|leerla|leerlo|read|dime|muestra)"
 
 
 _CREATE = (
-    r"(?:crea|crear|anota|anotar|añade|añadir|anade|anadir|"
+    r"(?:crea|crear|anota|anotar|anotame|apunta|apuntar|apuntame|añade|añadir|anade|anadir|"
     r"agrega|agregar|agregame|guarda|guardame|guardar|haz|hacer|create|make|add|"
     r"toma|tomame|take)"
 )

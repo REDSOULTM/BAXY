@@ -143,3 +143,39 @@ def test_the_home_screen_wrapped_in_pantalla_is_the_desktop(text: str) -> None:
 )
 def test_other_screens_are_not_the_desktop(text: str) -> None:
     assert "window.minimize.all" not in _effects(text)
+
+
+# ------------------------------------------------------------------ «apúntame una nota: …» is the literal note
+
+
+@pytest.mark.parametrize(
+    ("text", "content"),
+    [
+        ("apúntame una nota: revisar la factura de la luz el lunes", "revisar la factura de la luz el lunes"),
+        ("apuntame una nota: pagar el gas el viernes", "pagar el gas el viernes"),
+        ("anótame una nota: llamar al dentista el martes", "llamar al dentista el martes"),
+        ("apunta una nota que diga comprar pilas", "comprar pilas"),
+        ("apúntame en una nota que mañana viene el técnico", "mañana viene el técnico"),
+        ("anota en una nota: la clave del portón es 4411", "la clave del portón es 4411"),
+        ("jot down a note: call mom on sunday", "call mom on sunday"),
+        ("porfa apúntame una nota: sacar la basura el jueves", "sacar la basura el jueves"),
+        ("apúntame una nota: renovar el carnet en octubre", "renovar el carnet en octubre"),
+        ("apunta una nota: el wifi de la abuela es casa123", "el wifi de la abuela es casa123"),
+    ],
+)
+def test_a_note_ordered_with_anota_or_apunta_is_the_literal_note(text: str, content: str) -> None:
+    assert _effects(text) == ("note.create",)
+    arguments = sidecar._explicit_arguments_from_evidence("note.create", text)
+    assert arguments is not None and arguments["content"] == content
+
+
+@pytest.mark.parametrize(
+    ("text", "operation"),
+    [
+        ("apúntame una tarea: lavar el auto", "task.create"),
+        ("anota una tarea: lavar el auto", "task.create"),
+        ("apúntame un recordatorio para el lunes a las 9 de pagar la luz", "reminder.create"),
+    ],
+)
+def test_another_created_thing_named_after_anota_is_that_thing_alone(text: str, operation: str) -> None:
+    assert _effects(text) == (operation,)
