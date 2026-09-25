@@ -14,6 +14,9 @@
   what can be done on it is its voice. «Bob Dean afirma que … nunca lo hemos estado» is reported speech, not the page.
 - «alexa dime todo lo que sabes sobre bob dean»: what he knows about a name, after an address, asks who or what it
   is; the bare name is looked up and answered from its pages.
+- «¿puedes activar este modo que tienes que repites todo el rato lo mismo que yo digo?» → «No pude entender…»: the
+  parrot mode (a known limit) was read only with an imperative right before «lo que digo»; the repeating verb in
+  any person or form, a few words before what is said next, is the same mode, and a negated one is not asked.
 
 The phrasings below are not the tandas': they are paraphrases (es/en/spanglish) the fixes do not name, with negative
 controls.
@@ -25,6 +28,7 @@ import pytest
 
 from baxy_mind import llm
 from baxy_mind.semantic import reading, web
+from baxy_mind.semantic.patterns import echo_mode_request, known_unsupported_effect_request
 from baxy_mind.semantic.temporal import countdown_target
 
 _violates = llm._shaped_conversation_answer_violates_contract
@@ -284,3 +288,38 @@ def test_what_he_knows_about_a_name_looks_up_the_name(text: str, entity: str) ->
 )
 def test_what_he_knows_about_himself_the_person_or_a_common_noun_is_no_name_lookup(text: str) -> None:
     assert web._entity_lookup_query(text) is None
+
+
+# ------------------------------------------------------------------ the parrot mode, said with the verb in any form
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "pon el modo donde imitas todo lo que digo",
+        "quiero que estés repitiendo siempre lo que yo te diga",
+        "¿te acuerdas del modo ese en que repetías cada cosa que yo escribo?",
+        "can you turn on the mode where you keep repeating everything I say",
+        "activate that thing where you mimic whatever I type",
+        "oye porfa ponte a repetir to el rato lo mismo que digo",
+    ],
+)
+def test_the_parrot_mode_with_the_verb_in_any_form_is_the_known_limit(text: str) -> None:
+    assert echo_mode_request(text)
+    assert known_unsupported_effect_request(text, ("web.search", "app.open"))
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "no repitas lo que digo",
+        "don't repeat everything I say",
+        "repite lo que dije",
+        "¿puedes repetir lo mismo que te he dicho?",
+        "repeat what I said",
+        "copia lo que escribo en el portapapeles",
+        "repite conmigo: hola",
+    ],
+)
+def test_a_negated_repetition_or_a_recall_is_not_the_parrot_mode(text: str) -> None:
+    assert not echo_mode_request(text)

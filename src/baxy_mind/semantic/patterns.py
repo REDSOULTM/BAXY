@@ -1709,18 +1709,24 @@ def _future_request_announcement(folded: str) -> bool:
 # «lo que digo», «lo que diga») is the mode; what was already said («lo que dije») is a recall of the dialogue.
 _ECHO_MODE = re.compile(
     r"\b(?:"
-    r"(?:di|deci|repite|repiteme|repeti|repetime|imita|imitame)\s+(?:(?:todo|cada\s+cosa|cualquier\s+cosa)\s+)?"
+    r"(?:di|deci)\s+(?:(?:todo|cada\s+cosa|cualquier\s+cosa)\s+)?"
     r"lo\s+que\s+(?:yo\s+)?(?:te\s+)?(?:diga|digo|escriba|escribo)|"
     r"(?:di|dime|deci|decime|repite|repiteme|repeti|repetime|imita|imitame|haz|hace|habla)\s+"
     r"lo\s+mismo\s+que\s+(?:yo|digo|diga|te\s+digo|te\s+diga)|"
-    r"(?:di|deci|repite|repiteme|repeti|repetime|imita|imitame)\s+(?:cada|cualquier)\s+cosa\s+que\s+(?:yo\s+)?"
-    r"(?:te\s+)?(?:diga|digo|escriba|escribo)|"
+    r"(?:di|deci)\s+(?:cada|cualquier)\s+cosa\s+que\s+(?:yo\s+)?(?:te\s+)?(?:diga|digo|escriba|escribo)|"
     r"(?:modo|mode)\s+(?:loro|eco|espejo|repeticion|echo|parrot)|(?:echo|parrot)\s+mode|"
     r"(?:haz|hace|hazte|hacete)\s+(?:el|de)\s+loro|"
-    r"(?:repeat|say|echo|parrot|mimic)\s+(?:back\s+)?(?:everything|anything|whatever|every\s+word|each\s+word|what)\s+"
-    r"(?:that\s+)?i\s+(?:say|type|write)|"
     r"say\s+(?:the\s+)?same\s+(?:thing\s+)?as\s+(?:me|i\s+do)|"
-    r"repeat\s+after\s+me\s*(?:until\b|from\s+now\b|[.!]*$)"
+    r"repeat\s+after\s+me\s*(?:until\b|from\s+now\b|[.!]*$)|"
+    # Tanda 7 «¿puedes activar este modo que tienes que repites todo el rato lo mismo que yo digo?»: the repeating
+    # verb in any person or form («repites», «repetir», «imitando», «repeating»), with a few words between it and
+    # what is said next, is the same mode. A negated one («no repitas…») is not asked for. These two replace the
+    # imperative-only readings of «repite/imita … lo que digo» and «repeat everything I say».
+    r"(?<!\bno\s)(?:repit|repet|imit)\w*\s+(?:\w+\s+){0,4}?(?:lo\s+mismo\s+que|(?:todo\s+|cada\s+cosa\s+|"
+    r"cualquier\s+cosa\s+)?lo\s+que|(?:cada|cualquier)\s+cosa\s+que)\s+(?:yo\s+)?(?:te\s+)?"
+    r"(?:digo|diga|escribo|escriba|hablo|hable)|"
+    r"(?<!\bnot\s)(?<!n't\s)(?:(?:repeat|echo|parrot|mimic)\w*\s+(?:\w+\s+){0,4}?|say\s+)(?:back\s+)?(?:everything|"
+    r"anything|whatever|every\s+word|each\s+word|what)\s+(?:that\s+)?i\s+(?:say|type|write)"
     r")\b"
 )
 
