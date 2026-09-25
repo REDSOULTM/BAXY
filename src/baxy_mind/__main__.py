@@ -4076,6 +4076,10 @@ def _rearm_in_context(
         valued = dialogue_slot.value_from_reply(objective, slot.last_reply)
         if valued is not None and effects_of(valued):
             return audited(valued, "pattern")
+        if not (said.continued or said.corrected) and not dialogue_slot.refers_back(objective) and effects_of(objective):
+            # Verification 2026-09-25 (layer A log:147): «para la canción» (stop it) had the form of a place
+            # («para la X», for the X), was rewritten and looked up. What reads a request by itself is that request.
+            return audited(None, "pattern_kept")
     verified = dialogue_state.lines() if dialogue_state is not None else []
     try:
         rewritten = llm.rewrite_in_context(

@@ -6,6 +6,9 @@ decisions; these are the regressions whose cause is a reader, each fixed where i
    semantic/notes.agenda_event_request (object_is_event) and its title reader.
 2. «Como me llamo», «que me gusta tomar.» went to the web (H0604, H0173): who the person is and what they like
    are their own data. Owner: semantic/web._FIRST_PERSON_OWN (read by names_own_data / not_a_public_lookup).
+3. «para la canción» (layer A, real log) was rewritten by the model and looked up: its form is a place («para la X»),
+   but it reads a request by itself. A follow-up that reads an effect on its own is that request and the model is
+   not asked. Owner: __main__._rearm_in_context.
 
 Every list holds fresh phrasings (dialects, English, Spanglish), not the literals.
 """
@@ -14,6 +17,7 @@ from __future__ import annotations
 
 import pytest
 
+from baxy_mind import __main__ as sidecar
 from baxy_mind.semantic import web
 from baxy_mind.semantic.notes import agenda_event_request
 
@@ -63,3 +67,30 @@ def test_questions_about_the_person_never_go_to_the_web(text: str) -> None:
 )
 def test_questions_about_others_are_still_public(text: str) -> None:
     assert not web.not_a_public_lookup(text)
+
+
+class _NoModel:
+    """Records every rewrite asked (a raise would be swallowed: a failed rewrite leaves the message as it arrived)."""
+
+    def __init__(self) -> None:
+        self.asked: list[str] = []
+
+    def rewrite_in_context(self, text, context, **kwargs):
+        self.asked.append(text)
+        return "busca la canción"
+
+
+_OPERATIONS = ("media.control", "media.play.query", "media.status", "web.search", "audio.volume.adjust", "app.open")
+_SONG = ("quiero un tema de rock", "¿Quieres que ponga un tema de rock en Spotify?", "no, en youtube",
+         "¿Alguno en particular?", "pon un tema de rock en youtube",
+         "Está reproduciéndose «Soda Stereo - De música ligera - YouTube».")
+
+
+@pytest.mark.parametrize("text", ["para la canción", "para la música porfa", "pará la canción ya", "para la reproducción"])
+def test_a_follow_up_that_reads_a_request_by_itself_is_that_request(text: str) -> None:
+    turns = (*_SONG, text)
+    history = [{"role": "user" if i % 2 == 0 else "assistant", "content": turn} for i, turn in enumerate(turns)]
+    message = {"id": "742-regression", "text": text, "history": history}
+    model = _NoModel()
+    assert sidecar._rearm_in_context(message, llm=model, available_operations=_OPERATIONS) is None
+    assert model.asked == []
