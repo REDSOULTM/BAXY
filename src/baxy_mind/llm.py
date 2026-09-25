@@ -139,6 +139,8 @@ VALIDATED_CLASSIFIER_REUSE_CAPACITY = 32
 # call is decoded again with the full budget (its prompt is still in its slot).
 NATIVE_SELECTION_PROSE_TOKENS = 64
 NATIVE_SELECTION_CALL_TOKENS = 256
+# Slots of the owned GPU server (``-np``); the HTTP pool leases exactly these.
+GPU_SERVER_SLOTS = 3
 
 SYSTEM_PROMPT = (
     "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. "
@@ -13043,7 +13045,10 @@ class LlmRuntime:
         self._warmup_done = threading.Event()
         self._close_event = threading.Event()
         self._lifecycle_lock = threading.Lock()
-        self._http_connection_pool = ChatCompletionConnectionPool(max_connections=3)
+        self._http_connection_pool = ChatCompletionConnectionPool(
+            max_connections=GPU_SERVER_SLOTS,
+            server_slots=self._parallel_turn_verification,
+        )
 
     def _server_command(self) -> list[str]:
         """Build the bounded local inference profile used by the sidecar.
@@ -13051,7 +13056,8 @@ class LlmRuntime:
         Quantized KV cache plus Flash Attention preserve the current 4K conversational
         window per slot while reducing cache pressure. The GPU profile uses
         three continuously batched slots so the primary policy, independent
-        semantic verifier and independent language detector can run together.
+        semantic verifier and independent language detector can run together;
+        the HTTP pool assigns them (``id_slot``) and keeps one for the selector.
         CPU fallback defaults to one slot; a bounded experiment may retain two
         or three alternating prompt prefixes without granting parallel policy
         authority.
@@ -13061,7 +13067,9 @@ class LlmRuntime:
         cpu_only = gpu_layers == "0"
         kv_offload = _kv_offload_from_env() and not cpu_only
         kv_cache_type = _kv_cache_type_from_env()
-        parallel = 3 if getattr(self, "_parallel_turn_verification", False) else 1
+        parallel = (
+            GPU_SERVER_SLOTS if getattr(self, "_parallel_turn_verification", False) else 1
+        )
         context_size = _context_size_from_env()
         batch_size, ubatch_size = _batch_sizes_from_env()
         command = [
@@ -13745,6 +13753,10 @@ class LlmRuntime:
                     "_http_connection_pool",
                     None,
                 ),
+                # Only the native selector declares tools: it keeps its own
+                # server slot, so its ~0.3k-token system and tool preamble stays
+                # cached and it never queues behind the turn's speculative work.
+                reserved_slot=bool(payload.get("tools")),
             )
             return response  # type: ignore[return-value]
         except BaseException as error:
