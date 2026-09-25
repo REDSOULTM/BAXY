@@ -21,6 +21,8 @@
   a flight is buying it, the same known limit as a product paid with a card; it is never looked up.
 - 6c «i would like to know the timezone for britain» → a web search: the zone of a place is named with «for/of/de»
   after the zone's noun; it is the clock of that place, and the zone asked is given as its offset.
+- «¿podemos estar un rato en silencio?» → «…¿Quieres que hablemos de algo específico…?»: an unshaped conversational
+  reply that offers something more is rejected, as the prompt's «sin ofertas» already asks.
 
 The phrasings below are not the tandas': they are paraphrases (es/en/spanglish) the fixes do not name, with negative
 controls.
@@ -405,3 +407,35 @@ def test_the_zone_asked_is_given_as_its_offset_and_the_time_alone_is_not() -> No
     assert zone is not None and zone["zone"] == "UTC+09:00 (Asia/Tokyo)" and zone["clock"] == "12:35"
     clock = llm._place_clock_facts(observed, "qué hora es en tokio", "es")
     assert clock is not None and "zone" not in clock
+
+
+# ------------------------------------------------------------------ a conversational reply offers nothing more
+
+
+@pytest.mark.parametrize(
+    "reply",
+    [
+        "Claro, me quedo callado. ¿Quieres que te ponga algo de música mientras tanto?",
+        "Sure, I'll be quiet. Want me to play something relaxing?",
+        "La capital de Australia es Canberra. ¿Te gustaría saber más sobre ella?",
+        "Vale, tranqui. ¿Te apetece que ponga algo suave?",
+        "Okay. Do you want some white noise?",
+    ],
+)
+def test_a_conversational_reply_offering_more_is_rejected(reply: str) -> None:
+    assert _violates(reply, "¿nos quedamos un rato calladitos?", None)
+
+
+@pytest.mark.parametrize(
+    "reply",
+    [
+        "Claro, me quedo en silencio.",
+        "Sure, quiet it is.",
+        "La capital de Australia es Canberra.",
+        "¡Hola! ¿Qué tal tu día?",
+        # A greeting's own question is no offer of something more.
+        "¡Hola! ¿En qué puedo ayudarte?",
+    ],
+)
+def test_a_conversational_reply_without_an_offer_passes(reply: str) -> None:
+    assert not _violates(reply, "¿nos quedamos un rato calladitos?", None)

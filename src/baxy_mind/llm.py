@@ -3288,7 +3288,8 @@ def _shaped_conversation_answer_violates_contract(
     if visible_reply_is_a_fixed_stall(value):
         return True
     if shape is None:
-        return False
+        # Shaped replies carry their own question rules; the unshaped one is held to the prompt's «sin ofertas».
+        return visible_reply_offers_more(value)
     content = str(value or "").strip()
     if shape == "roleplay_draft":
         participants = _roleplay_participant_names(request)
@@ -3869,6 +3870,24 @@ def visible_reply_is_only_questions(value: object) -> bool:
         r"¿[^¿?？]*[?？]|[^.!?！？¿\n]*[?？]", "", reply
     )
     return not any(character.isalnum() for character in outside_questions)
+
+
+# Tanda 7 «¿podemos estar un rato en silencio?» → «Claro, está bien. Solo respira y escucha. ¿Quieres que hablemos
+# de algo específico mientras pasa el tiempo?»: a question that offers something more is the offer USER_MESSAGE_PROMPT
+# already forbids («sin ofertas»); the owner's D3 asks back only for a missing datum.
+_OFFER_QUESTION = re.compile(
+    r"\b(?:quieres|queres|quisieras|deseas|te\s+gustaria|prefieres|preferis|te\s+apetece|"
+    r"want\s+me\s+to|would\s+you\s+like|do\s+you\s+want|shall\s+i|should\s+i)\b"
+)
+
+
+def visible_reply_offers_more(value: object) -> bool:
+    """A question of the reply offers something the person did not ask for."""
+
+    return any(
+        ("?" in sentence or "¿" in sentence) and _OFFER_QUESTION.search(_reading_fold(sentence)) is not None
+        for sentence in re.split(r"(?<=[.!?…])\s+", str(value or "").strip())
+    )
 
 
 def visible_reply_restates_the_request(value: object, request: object) -> bool:
