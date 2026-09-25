@@ -20,6 +20,11 @@ One owner per rule:
 5. «más», «otra vez», «a bit more» alone right after an effect are that request once more, as it was said (the
    same amount again; a change still missing its amount asks it again); «¿y más?» asks for more of an answer. «a bit
    more» is no destination. Owners: semantic/dialogue._AGAIN_FRAGMENT, .again; __main__._rearm_in_context.
+6. A value pointed at with a demonstrative («ese tiempo», «esa cantidad», «that long») is the one BAXY's last
+   answer gave: «ponme un timer de ese tiempo» after a cooking time was asked «¿Cuál es la hora exacta?». Only one
+   value of that kind (a duration for a time, a percent for a level), never a range; the effect is the one the
+   message itself asks for. Owners: semantic/dialogue._VALUE_POINTER, .value_from_reply;
+   __main__._rearm_in_context (continuing accepts what the message asks for).
 
 Every list holds fresh phrasings (Spanish dialects, English, Spanglish); none is a literal of the tanda.
 """
@@ -251,3 +256,48 @@ def test_asking_for_more_of_an_answer_is_not_the_request_again():
 
 def test_a_bit_more_is_not_a_destination():
     assert _dependency(("turn the volume up by 20", "Done."), "a bit more") == "followup"
+
+
+# ---------------------------------------------------------------- 6. a value BAXY just gave
+
+
+@pytest.mark.parametrize(
+    ("asked", "answer", "text", "rewrite"),
+    [
+        ("cuánto se cocina el arroz blanco", "El arroz blanco se cocina unos 18 minutos a fuego bajo.",
+         "pon un temporizador de ese tiempo", "pon un temporizador de 18 minutos"),
+        ("how long should I steep green tea", "Green tea steeps best for 3 minutes.",
+         "set a timer for that long", "set a timer for 3 minutes"),
+        ("qué volumen es cómodo para leer", "Para leer con música, un 25 % suele ir bien.",
+         "deja el volumen en ese nivel", "deja el volumen en 25 %"),
+    ],
+)
+def test_a_value_pointed_at_is_the_one_baxy_just_gave(asked, answer, text, rewrite):
+    state = dialogue.DialogueState()
+    state.expect(asked, [])  # answered in conversation: no operation to continue
+    assert _rearm(_message(asked, answer, text), _Scripted(), state) == (rewrite, "pattern")
+
+
+@pytest.mark.parametrize(
+    "answer",
+    [
+        "Entre 8 y 10 minutos, hasta que cambien de color.",  # a range names no one value
+        "Unos 8 minutos si son chicos, 12 si son grandes.",  # two values
+        "Hasta que se ablanden.",  # none
+    ],
+)
+def test_without_one_value_the_model_decides(answer):
+    text = "ponme un timer de ese tiempo"
+    model = _Scripted({text: text})
+    assert _rearm(_message("cuánto hiervo los tomatillos", answer, text), model, dialogue.DialogueState()) is None
+    assert model.seen and model.seen[0]["shape"] == "pointer"
+
+
+def test_a_rewrite_that_reads_what_the_message_itself_asks_for_is_kept():
+    # The last turn was talk (no operation); the timer is the person's own order, completed by the model.
+    text, rewrite = "ponme un timer de ese tiempo", "ponme un timer de 30 minutos"
+    result = _rearm(
+        _message("cuánto hiervo los tomatillos", "Entre 25 y 30 minutos.", text), _Scripted({text: rewrite}),
+        dialogue.DialogueState(),
+    )
+    assert result == (rewrite, "model")

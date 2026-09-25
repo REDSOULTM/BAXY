@@ -764,10 +764,56 @@ def followup(text: str) -> Followup:
 
 
 def refers_back(text: str) -> bool:
-    """A place or a thing said as «allá», «esta», «eso», «it» in the message."""
+    """A place or a thing said as «allá», «esta», «eso», «it», or a value as «ese tiempo», «that long»."""
 
     folded = followup(text).folded
-    return bool(_PLACE_ANAPHOR.search(folded) or _DEMONSTRATIVE.search(folded))
+    return bool(_PLACE_ANAPHOR.search(folded) or _DEMONSTRATIVE.search(folded) or _VALUE_POINTER.search(folded))
+
+
+# Tanda 9 «ponme un timer de ese tiempo» after BAXY said how long to boil something was asked «¿Cuál es la hora
+# exacta?»: a value pointed at with a demonstrative («ese tiempo», «esa cantidad», «that long», «that amount») is the
+# one BAXY's last answer gave. A time noun takes a duration; a level or a percentage takes a percent.
+_VALUE_POINTER = re.compile(
+    r"\b(?:(?:ese|esa|este|esta|that|this|the\s+same)\s+(?:(?P<time>tiempo|rato|duracion|time|duration)|"
+    r"(?P<share>porcentaje|nivel|percentage|level)|cantidad|numero|valor|monto|amount|number|value)|"
+    r"(?:that|this)\s+(?:(?P<long>long)|much|many))\b"
+)
+_TIME_UNIT = re.compile(r"(?:minutos?|minutes?|mins?|segundos?|seconds?|secs?|horas?|hours?|hrs?)$")
+# A number with its unit, in digits as BAXY writes them; a range («8 a 10 minutos») names no one value.
+_REPLY_AMOUNT = re.compile(rf"(?<![\d.,])(?P<number>\d{{1,3}}(?:[.,]\d+)?)(?P<unit>\s*{_UNIT})(?![a-z])")
+_RANGE_BEFORE = re.compile(r"\d\s*(?:-|–|a|y|o|to|or|and)\s*$")
+# A number with no unit, or none of another kind (°C, grados, km): «180 °C» is a temperature, «12» alone may be a time.
+_BARE_NUMBER = re.compile(r"(?<![\d.,])\d{1,3}(?:[.,]\d+)?(?!\s*(?:°|º|grados|degrees|km|kg|g\b|ml|cm|[\d.,]))")
+
+
+def value_from_reply(text: str, reply: str | None) -> str | None:
+    """«ponme un timer de ese tiempo» after «… durante 35 minutos …» → «ponme un timer de 35 minutos»; None unless
+    BAXY's last answer gave exactly one value of the kind pointed at."""
+
+    said = " ".join(str(text or "").split())
+    folded = _fold(said)
+    pointer = _VALUE_POINTER.search(folded)
+    if pointer is None or not reply or len(folded) != len(said):
+        return None
+    answer = " ".join(str(reply).split())
+    folded_answer = _fold(answer)
+    if len(folded_answer) != len(answer):
+        answer = folded_answer
+    if _BARE_NUMBER.search(_REPLY_AMOUNT.sub(" ", folded_answer)):
+        return None  # «8 minutos si son chicos, 12 si son grandes»: another value said without its unit
+    values = set()
+    for found in _REPLY_AMOUNT.finditer(folded_answer):
+        unit = found.group("unit").strip()
+        if (pointer.group("time") or pointer.group("long")) and not _TIME_UNIT.match(unit):
+            continue
+        if pointer.group("share") and unit not in {"%", "por ciento", "porciento", "percent"}:
+            continue
+        if _RANGE_BEFORE.search(folded_answer[: found.start()]):
+            return None
+        values.add(answer[found.start(): found.end()].strip())
+    if len(values) != 1:
+        return None
+    return said[: pointer.start()] + values.pop() + said[pointer.end():]
 
 
 def leans_on_context(text: str) -> bool:
@@ -878,7 +924,7 @@ def shape(text: str, dependency: str | None) -> str:
         ("another", _ANOTHER_FRAGMENT.match(folded)),
         ("listing", _OWN_LISTING.fullmatch(folded)),
         ("place", _PLACE_ANAPHOR.search(folded) or _PLACE_FRAGMENT.fullmatch(folded)),
-        ("pointer", _DEMONSTRATIVE.search(folded) or _BARE_POINTER.match(folded)),
+        ("pointer", _DEMONSTRATIVE.search(folded) or _BARE_POINTER.match(folded) or _VALUE_POINTER.search(folded)),
         ("question", _QUESTION_WORD.match(folded) or _DEFINITE_QUESTION.match(folded)),
     ):
         if found:

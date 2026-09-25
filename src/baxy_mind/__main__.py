@@ -7571,11 +7571,20 @@ def _rearm_in_context(
         )
         return None if rearmed is None else (rearmed, how)
 
+    def asked_for() -> tuple[str, ...]:
+        # The operations the message itself asks for: read, or asked about for a missing value.
+        try:
+            asked = resolve_explicit_clarification_intent(objective, available_operations, application_names)
+        except (TypeError, ValueError):
+            asked = None
+        return (*effects_of(objective), *(asked.operations if asked is not None else ()))
+
     def continuing(candidate: str) -> str | None:
-        # Tanda 7: a follow-up continues what was done. Its request reads no effect, or only effects of that family;
-        # a correction of the alarm or timer just set replaces it instead of setting a second one. None otherwise.
+        # Tanda 7: a follow-up continues what was done. Its request reads no effect, or only effects of that family
+        # (tanda 9: or of what the message itself asks for, «ponme un timer de ese tiempo»); a correction of the
+        # alarm or timer just set replaces it instead of setting a second one. None otherwise.
         read = effects_of(candidate)
-        if not dialogue_slot.continues(read, continued_operations(), dialogue_state):
+        if not dialogue_slot.continues(read, (*continued_operations(), *asked_for()), dialogue_state):
             return None
         cancel = (
             dialogue_state.cancel_last_alarm(dialogue_slot.spanish(candidate))
@@ -7723,6 +7732,11 @@ def _rearm_in_context(
             settled = continuing(candidate) if candidate and effects_of(candidate) else None
             if settled is not None:
                 return audited(settled, "pattern")
+        # Tanda 9: «ponme un timer de ese tiempo» — only the value BAXY just gave is put in; the order is the
+        # person's own, so whatever it reads is what they asked for.
+        valued = dialogue_slot.value_from_reply(objective, slot.last_reply)
+        if valued is not None and effects_of(valued):
+            return audited(valued, "pattern")
     verified = dialogue_state.lines() if dialogue_state is not None else []
     try:
         rewritten = llm.rewrite_in_context(
