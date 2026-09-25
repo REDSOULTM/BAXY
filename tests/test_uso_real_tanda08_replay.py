@@ -113,3 +113,19 @@ def test_a_rewrite_in_the_full_words_of_a_short_form_stays_in_context(said, text
 def test_a_word_nobody_said_is_still_rejected_after_spelling_out():
     slot = dialogue.read_slot({}, [{"role": "user", "content": "oye, ¿va a llover hoy?"}], "¿y el finde?")
     assert not dialogue.rewrite_stays_in_context("¿va a nevar el fin de semana?", "¿y el finde?", slot)
+
+
+# ---------------------------------------------------------------- 2. the last place read wins
+
+
+def test_a_clock_read_elsewhere_is_the_last_place():
+    state = _state(("¿llueve en Rosario?", "weather.current", {"location": "Rosario", "country": "Argentina"}))
+    state.expect("oye, qué hora es en Oaxaca", ["system.time"])
+    state.record(_verified("system.time", {"utc": "2026-09-25T06:08:59Z",
+                                           "place": {"name": "Oaxaca", "country": "México", "timeZone": "x"}}))
+    places = [line for _, line in state.lines() if line.startswith("lugar")]
+    assert places == ["lugar (place): Oaxaca, México"]
+    # The local clock names no place: the place stays the last one read.
+    state.expect("¿y qué hora es acá?", ["system.time"])
+    state.record(_verified("system.time", {"utc": "2026-09-25T06:09:10Z", "localUtcOffsetMinutes": -180}))
+    assert [line for _, line in state.lines() if line.startswith("lugar")] == places

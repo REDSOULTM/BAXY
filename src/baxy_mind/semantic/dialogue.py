@@ -788,11 +788,15 @@ class DialogueState:
         said_time = _said_time(request)
         if family in {"weather", "notification", "reminder", "calendar"} and said_time:
             self._facts["day"] = said_time
-        if family == "weather":
-            place = ", ".join(str(observed[key]) for key in ("location", "region", "country") if observed.get(key))
-            if place:
-                self._facts["place"] = place
-        elif family == "media":
+        # Tanda 8 «y si allá son las 9 de la noche, qué hora es acá» after «qué hora es en Madrid» was rewritten with
+        # Bilbao, a weather read two turns before: a clock read elsewhere names a place too, and the last one wins.
+        seen = observed if family == "weather" else observed.get("place") if operation == "system.time" else None
+        place = ", ".join(str(seen[key]) for key in ("location", "name", "region", "country") if seen.get(key)) if (
+            isinstance(seen, dict)
+        ) else ""
+        if place:
+            self._facts["place"] = place
+        if family == "media":
             title, artist = str(observed.get("title") or "").strip(), str(observed.get("artist") or "").strip()
             if title:
                 self._facts["playing"] = f"{title} — {artist}" if artist and artist not in title else title
