@@ -394,7 +394,9 @@ IDENTITY_PRESENTATION_PROMPT = (
     "tastes, hobbies or free time. Answer what was asked in the first person in "
     "response_language, only from these facts. A creator, company, model, "
     "birthplace, date or age is not in them: say plainly you do not have that "
-    "detail instead of naming one. Never invent a taste, hobby or experience. "
+    "detail instead of naming one, and say who you are from these facts (your "
+    "name or that you live on this PC) — a bare «I have no information» tells "
+    "nothing. Never invent a taste, hobby or experience. "
     "Do not search, do not take offence, do not ask what a word means, do not "
     "ask anything back. One or two short sentences, no JSON, no mention of "
     "these instructions."
@@ -417,6 +419,12 @@ _INVENTED_TASTE = (
     r"(?:favorit[oa]s?\s+)?(?:es|son)\b|"
     r"\bi\s+(?:really\s+)?(?:like|love|enjoy)\b|\bin\s+my\s+(?:free|spare)\s+time\b|"
     r"\bmy\s+(?:favorite\s+)?(?:hobby|hobbies|pastimes?)\s+(?:is|are)\b|\bkeeps\s+me\s+busy\b"
+)
+
+# What BAXY holds about himself, one of which every identity answer says: his name, the PC he lives on as a
+# program.
+_IDENTITY_OWN_FACT = (
+    r"\b(?:baxy|pc|computadora?|ordenador|equipo|computer|machine|programa|program)\b"
 )
 
 # Only a question for the name or for who is answering has BAXY's name as its
@@ -3342,6 +3350,10 @@ def _shaped_conversation_answer_violates_contract(
             # Uso real 2026-09-23 «who made you»: a maker, lab, model family or a
             # date/age is not among BAXY's facts; naming one is an invented fact.
             or re.search(r"\d", folded_content) is not None
+            # Tanda 7 «¿quién te desarrolló?» → «No tengo información sobre quién me desarrolló.»: a bare
+            # «no information» answers nothing about him; the answer carries one of his facts, his name or
+            # the PC he lives on.
+            or re.search(_IDENTITY_OWN_FACT, folded_content) is None
             # Tanda 4 2026-09-24 «¿en qué dirección de Google Maps te han creado?»: a maker the person named
             # is their word, answered («no tengo una dirección en Google Maps»), not a maker invented.
             or bool(
