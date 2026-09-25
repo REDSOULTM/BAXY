@@ -242,20 +242,34 @@ _CALENDAR_DAY_ASKED = (
     alternation(("dia", "fecha", "day", "date", "weekday") + tuple(name for names in _WEEKDAYS for name in names))
     + f"|{WEEK_PERIOD}"
 )
+_CALENDAR_WEEKDAY_UNIT = r"(?:dia\s+de\s+la\s+semana|day\s+of\s+the\s+week)"
+_CALENDAR_WEEKDAY_ASKED = (
+    rf"{_CALENDAR_WEEKDAY_UNIT}|weekday|"
+    + alternation(tuple(name for names in _WEEKDAYS for name in names))[3:-1]
+    + f"|{WEEK_PERIOD}"
+)
 
 
 def calendar_parts_asked(text: str) -> tuple[str, ...]:
-    """The part of the date a calendar question asks for: ``("date",)``, or only ``month`` and/or ``year``.
+    """The part of the date a calendar question asks for: ``("date",)``, ``("weekday",)``, or only ``month``
+    and/or ``year``.
 
     Tanda 4c «¿qué mes sale ahora mismo en el calendario de mi casa?» was answered «Este mes es septiembre.»
     three times and every draft was rejected for lacking the day: a question about the month (or the year) is
-    answered with that part, never made to carry the whole date. A day, a date, a weekday, a number or «a
+    answered with that part, never made to carry the whole date. Tanda 6b «¿hoy es lunes?» → «No, hoy es jueves.»
+    died three times for lacking the day of the month: a weekday, the weekday unit or a part of the week asked,
+    with no day, date, number, month or year, is answered by the weekday alone. A day, a date, a number or «a
     cuántos estamos» asks for the date. The App's visible policy (UserMessagePolicy.PreservesObservedDate) reads
     the same words; the two must not diverge."""
 
     if not asks_calendar_part(text):
         return ()
     folded = _fold(text)
+    if _has(folded, rf"\b(?:{_CALENDAR_WEEKDAY_ASKED})\b") and not _has(
+        re.sub(rf"\b{_CALENDAR_WEEKDAY_UNIT}\b", " ", folded),
+        rf"\b(?:dia|fecha|day|date|a\s+cuantos\s+estamos|{_CALENDAR_MONTH_ASKED[3:-1]}|ano|year)\b|(?<!\d)\d{{1,4}}(?!\d)",
+    ):
+        return ("weekday",)
     # A day of the month said in digits asks the date; a year in digits asks the year (tanda 6 «¿estamos en 2025?»).
     if _has(folded, rf"\b(?:{_CALENDAR_DAY_ASKED}|a\s+cuantos\s+estamos)\b|(?<!\d)\d{{1,2}}(?!\d)"):
         return ("date",)

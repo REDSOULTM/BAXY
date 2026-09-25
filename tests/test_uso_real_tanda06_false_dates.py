@@ -57,15 +57,18 @@ def _clock_defect(reply: str, asked: str) -> str:
 
 
 @pytest.mark.parametrize(
-    "text",
-    ["¿hoy es lunes?", "is today friday", "¿es martes hoy?", "hoy es jueves, ¿verdad?", "is it wednesday yet?",
-     "sabes si hoy es domingo", "¿hoy es 24?", "is today the 25th?", "¿estamos a 3 de octubre?"],
+    ("text", "part"),
+    [("¿hoy es lunes?", "weekday"), ("is today friday", "weekday"), ("¿es martes hoy?", "weekday"),
+     ("hoy es jueves, ¿verdad?", "weekday"), ("is it wednesday yet?", "weekday"),
+     ("sabes si hoy es domingo", "weekday"), ("¿hoy es 24?", "date"), ("is today the 25th?", "date"),
+     ("¿estamos a 3 de octubre?", "date")],
 )
-def test_a_yes_no_day_question_reads_the_clock_and_carries_the_date(text: str) -> None:
+def test_a_yes_no_day_question_reads_the_clock_and_carries_the_part_asked(text: str, part: str) -> None:
+    # Tanda 6b (owner): a weekday asked yes or no is answered by the weekday; only a day of the month asks the date.
     assert _effects(text) == ("system.time",)
-    assert calendar_parts_asked(text) == ("date",)
+    assert calendar_parts_asked(text) == (part,)
     payload = llm._compose_situation_payload(_CLOCK, "es", text)
-    assert payload["date"] == "2026-09-24"
+    assert payload.get("date") == ("2026-09-24" if part == "date" else None)
 
 
 @pytest.mark.parametrize("text", ["¿hoy es lunes?", "is today friday", "¿es martes hoy?", "hoy es jueves, ¿verdad?"])

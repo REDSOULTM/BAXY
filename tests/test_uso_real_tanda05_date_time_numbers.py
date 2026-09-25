@@ -124,13 +124,14 @@ _WEEK_PERIOD_QUESTIONS = (
 def test_which_part_of_the_week_today_is_reads_the_clock(text: str) -> None:
     assert _effects(text) == ("system.time",)
     assert asks_calendar_part(text)
-    assert calendar_parts_asked(text) == ("date",)
+    # Tanda 6b (owner): the part of the week is answered by the weekday; the date is not required.
+    assert calendar_parts_asked(text) == ("weekday",)
 
 
 @pytest.mark.parametrize("text", _WEEK_PERIOD_QUESTIONS[:3])
-def test_the_part_of_the_week_carries_the_weekday_and_the_date_not_the_clock(text: str) -> None:
+def test_the_part_of_the_week_carries_the_weekday_not_the_clock(text: str) -> None:
     payload = llm._compose_situation_payload(_time_situation(), "es", text)
-    assert payload == {"date": "2026-09-24", "weekday": "jueves", "operation": "system.time"}
+    assert payload == {"weekday": "jueves", "operation": "system.time"}
 
 
 @pytest.mark.parametrize(

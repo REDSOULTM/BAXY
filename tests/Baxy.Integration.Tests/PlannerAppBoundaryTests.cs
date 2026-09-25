@@ -788,13 +788,21 @@ public sealed class PlannerAppBoundaryTests
     [TestCase("¿qué mes y año es?", "Es septiembre de 2026.", true)]
     [TestCase("is today friday", "It is 22:04.", false)]
     [TestCase("may I know the time", "It is 22:04.", true)]
-    // Tanda 5 «¿estamos a mitad de semana?»: the part of the week is answered with the weekday and the date
-    // (semantic.network.WEEK_PERIOD), never with the clock or a bare yes.
+    // Tanda 5 «¿estamos a mitad de semana?»: the part of the week is answered with the weekday
+    // (semantic.network.WEEK_PERIOD), never with the clock or a bare yes. Tanda 6b «¿hoy es lunes?» → «No, hoy es
+    // jueves.»: a weekday asked alone is answered by the observed weekday; a date said with it is still checked.
     [TestCase("¿estamos a mitad de semana?", "No, hoy es domingo 6 de septiembre.", true)]
+    [TestCase("¿estamos a mitad de semana?", "No, hoy es domingo.", true)]
     [TestCase("¿estamos a mitad de semana?", "Sí, estamos a mitad de semana.", false)]
     [TestCase("¿estamos a mitad de semana?", "Son las 22:04.", false)]
     [TestCase("is it the weekend yet?", "Yes, it is Sunday, September 6.", true)]
     [TestCase("is it the weekend yet?", "It is 22:04.", false)]
+    [TestCase("¿hoy es lunes?", "No, hoy no es lunes. Hoy es domingo.", true)]
+    [TestCase("is today friday", "No, it's Sunday.", true)]
+    [TestCase("what day of the week is it", "It's Sunday.", true)]
+    [TestCase("¿hoy es lunes?", "No, hoy es domingo 7 de septiembre.", false)]
+    [TestCase("¿hoy es lunes?", "No.", false)]
+    [TestCase("¿hoy es lunes 7?", "No, hoy es domingo.", false)]
     // Tanda 6: a year or a day of the month asked yes or no is the calendar; a day counted from today is not
     // answered with today's date (the mind computes and checks it: semantic.network.relative_calendar_days).
     [TestCase("¿estamos en 2025?", "No, estamos en 2026.", true)]

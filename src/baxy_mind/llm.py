@@ -5350,10 +5350,18 @@ def _named_weekdays(text: str) -> set[int]:
     return {_WEEKDAY_NUMBERS[found] for found in re.findall(rf"\b{_WEEKDAY_WORD}\b", _reading_fold(text))}
 
 
-def _states_only_the_weekday(text: str, local: datetime | date) -> bool:
-    """The draft names the observed weekday, in either language, and no other."""
+def _states_only_the_weekday(text: str, weekday: int) -> bool:
+    """The draft states the observed weekday, in either language, and no other; one it denies is no claim.
 
-    return _named_weekdays(text) == {local.weekday()}
+    Tanda 6b «¿hoy es lunes?» → «No, hoy no es lunes. Hoy es jueves.»: the weekday of the question, denied, is the
+    answer's «no», not a second weekday."""
+
+    folded = _reading_fold(text)
+    return {
+        _WEEKDAY_NUMBERS[found.group(0)]
+        for found in re.finditer(rf"\b{_WEEKDAY_WORD}\b", folded)
+        if not _denied_at(folded, found.start())
+    } == {weekday}
 
 
 _CALENDAR_MONTHS = (
@@ -5402,6 +5410,8 @@ def _calendar_facts(local: datetime, user_text: str, language: str) -> dict[str,
         return {"asked_days": [{"date": day.isoformat(), "weekday": _weekday_name(day, language)} for day in asked]}
     parts = calendar_parts_asked(user_text)
     facts: dict[str, object] = {}
+    if "weekday" in parts:
+        facts["weekday"] = _weekday_name(local, language)
     if "date" in parts:
         facts["date"] = local.date().isoformat()
         if _requests_weekday(user_text):
@@ -5437,6 +5447,8 @@ def _calendar_instruction(user_text: str) -> str:
         if _CALENDAR_VALUE_ASKED.search(_reading_fold(user_text)) is not None
         else ""
     )
+    if parts == ("weekday",):
+        return f"State only the weekday from weekday; no date is needed. Do not guess.{yes_no}"
     if "date" not in parts:
         named = " and ".join(parts)
         return f"State only the {named} from {named}; say no day. Do not guess.{yes_no}"
@@ -5448,7 +5460,7 @@ def _calendar_instruction(user_text: str) -> str:
 def _misses_calendar_facts(text: str, facts: dict) -> bool:
     """The draft states each calendar fact carried (date, weekday, month, year, asked days) and no other.
 
-    Without a carried date, any day stated is a guess; the month named is the carried one and no other («may»
+    Without a carried date or weekday, any day stated is a guess; the month named is the carried one and no other («may»
     counts only as the capitalised month, not the English modal); the year likewise. Tanda 6: the days asked
     relative to today are named each by its day of the month and weekday, and no other date is written."""
 
@@ -5480,7 +5492,12 @@ def _misses_calendar_facts(text: str, facts: dict) -> bool:
             return True
         if not _preserves_calendar_date(text, local):
             return True
-        if facts.get("weekday") and not _states_only_the_weekday(text, local):
+        if facts.get("weekday") and not _states_only_the_weekday(text, local.weekday()):
+            return True
+    elif isinstance(weekday := facts.get("weekday"), str) and weekday:
+        # Tanda 6b: the weekday asked alone is the answer; a date said with it is judged against the clock by
+        # _calendar_contradiction, which every visible reply passes.
+        if not _states_only_the_weekday(text, _WEEKDAY_NUMBERS.get(_reading_fold(weekday), -1)):
             return True
     elif any(pattern.search(text.casefold()) for pattern in _CALENDAR_DATE_PATTERNS):
         return True
@@ -9848,7 +9865,7 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         )
         if clock_defect:
             return clock_defect
-    if any(isinstance(payload.get(key), (str, list)) and payload[key] for key in ("date", "month", "year", "asked_days")) and (
+    if any(isinstance(payload.get(key), (str, list)) and payload[key] for key in ("date", "weekday", "month", "year", "asked_days")) and (
         _misses_calendar_facts(text, payload)
     ):
         return "missing_name"

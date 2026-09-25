@@ -145,8 +145,8 @@ _CLOCK = {
         ("¿qué día es hoy?", ("date",)),
         ("a cuántos estamos", ("date",)),
         ("what's the date today", ("date",)),
-        ("¿qué día de la semana es?", ("date",)),
-        ("is today friday", ("date",)),
+        ("¿qué día de la semana es?", ("weekday",)),  # tanda 6b: the weekday alone
+        ("is today friday", ("weekday",)),
         ("¿hoy es 24 de septiembre?", ("date",)),
         ("¿qué hora es?", ()),
     ],
@@ -163,7 +163,7 @@ def test_the_calendar_part_asked_is_read(text, parts):
         ("¿en qué año estamos?", "es", {"year": "2026"}),
         ("which month and year are we in", "en", {"month": "September", "year": "2026"}),
         ("¿qué día es hoy?", "es", {"date": "2026-09-24"}),
-        ("¿qué día de la semana es?", "es", {"date": "2026-09-24", "weekday": "jueves"}),
+        ("¿qué día de la semana es?", "es", {"weekday": "jueves"}),
     ],
 )
 def test_the_payload_carries_only_the_part_asked(text, language, facts):

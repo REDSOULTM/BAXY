@@ -2316,6 +2316,33 @@ internal static class UserMessagePolicy
     private static readonly Regex CalendarYearAsked = new(
         @"\b(?:a[ñn]o|year|(?:19|20)\d\d)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
+    // Tanda 6b «¿hoy es lunes?» → «No, hoy es jueves.» died three times for lacking the day of the month: a weekday,
+    // the weekday unit or a part of the week asked, with no day, date, number, month or year, is answered by the
+    // observed weekday; a date said with it must still be the observed one. The same reading as the mind's
+    // semantic.network.calendar_parts_asked («weekday»); the two must not diverge.
+    private const string CalendarWeekdayUnit = @"(?:d[ií]a\s+de\s+la\s+semana|day\s+of\s+the\s+week)";
+
+    private static readonly Regex CalendarWeekdayAsked = new(
+        @"\b(?:" + CalendarWeekdayUnit + "|weekday|lunes|monday|martes|tuesday|mi[ée]rcoles|wednesday|jueves|"
+        + @"thursday|viernes|friday|s[áa]bado|saturday|domingo|sunday|" + CalendarWeekPeriod + @")\b",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+    private static readonly Regex CalendarBeyondWeekday = new(
+        @"\b(?:d[ií]a|fecha|day|date|a\s+cu[áa]ntos\s+estamos)\b|(?<!\d)\d{1,4}(?!\d)",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+    // Indexed by DayOfWeek.
+    private static readonly string[][] CalendarWeekdayNames =
+    [
+        ["domingo", "sunday"], ["lunes", "monday"], ["martes", "tuesday"], ["mi[ée]rcoles", "wednesday"],
+        ["jueves", "thursday"], ["viernes", "friday"], ["s[áa]bado", "saturday"],
+    ];
+
+    private static bool CalendarWeekdayOnlyAsked(string user) =>
+        CalendarWeekdayAsked.IsMatch(user)
+        && !CalendarBeyondWeekday.IsMatch(Regex.Replace(user, @"\b" + CalendarWeekdayUnit + @"\b", " ",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant));
+
     private static readonly string[][] CalendarMonthNames =
     [
         ["enero", "january"], ["febrero", "february"], ["marzo", "march"], ["abril", "april"],
@@ -2356,7 +2383,8 @@ internal static class UserMessagePolicy
         bool monthAsked = CalendarMonthsNamed(user, asked: true).Count > 0
             || Regex.IsMatch(user, @"\b(?:mes|month)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         bool yearAsked = CalendarYearAsked.IsMatch(user);
-        bool dateAsked = CalendarDayAsked.IsMatch(user) || !(monthAsked || yearAsked);
+        bool weekdayOnly = !(monthAsked || yearAsked) && CalendarWeekdayOnlyAsked(user);
+        bool dateAsked = !weekdayOnly && (CalendarDayAsked.IsMatch(user) || !(monthAsked || yearAsked));
 
         const string month = "(?:enero|january|febrero|february|marzo|march|abril|april|"
             + "mayo|may|junio|june|julio|july|agosto|august|septiembre|setiembre|"
@@ -2375,7 +2403,7 @@ internal static class UserMessagePolicy
                     DateTimeStyles.AllowWhiteSpaces, out DateOnly date)
                 && date.Month == local.Month && date.Day == local.Day
                 && (!hasYear || date.Year == local.Year));
-            if (!sameDate || !dateAsked)
+            if (!sameDate || !(dateAsked || weekdayOnly))
             {
                 return false;
             }
@@ -2384,6 +2412,12 @@ internal static class UserMessagePolicy
         if (dateAsked)
         {
             return found;
+        }
+
+        if (weekdayOnly)
+        {
+            return CalendarWeekdayNames[(int)local.DayOfWeek].Any(name => Regex.IsMatch(result, @"\b" + name + @"\b",
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant));
         }
 
         HashSet<int> months = CalendarMonthsNamed(result, asked: false);
