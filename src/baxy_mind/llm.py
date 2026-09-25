@@ -3244,13 +3244,26 @@ _OFFER_QUESTION = re.compile(
 )
 
 
+# Verification 2026-09-25 (owner script turn 3 «Me gusta crear cosas, como tu» → «Interesante, ¿qué tipo de cosas te
+# gustaría crear?» rejected twice, then a recovery question): a question that starts with a question word asks about
+# the person («¿qué te gustaría crear?», «what would you like to build?»); it offers nothing.
+_WH_QUESTION_START = re.compile(
+    r"^(?:y\s+|and\s+)?(?:que|cual|cuales|como|donde|cuando|cuanto|cuanta|cuantos|cuantas|quien|quienes|por\s+que|"
+    r"what|which|how|where|when|who|whom|why)\b"
+)
+
+
 def visible_reply_offers_more(value: object) -> bool:
     """A question of the reply offers something the person did not ask for."""
 
-    return any(
-        ("?" in sentence or "¿" in sentence) and _OFFER_QUESTION.search(_reading_fold(sentence)) is not None
-        for sentence in re.split(r"(?<=[.!?…])\s+", str(value or "").strip())
-    )
+    for sentence in re.split(r"(?<=[.!?…])\s+", str(value or "").strip()):
+        if "?" not in sentence and "¿" not in sentence:
+            continue
+        asked = sentence[sentence.index("¿") + 1:] if "¿" in sentence else sentence
+        folded = _reading_fold(asked).strip(" ,;:¡!")
+        if _WH_QUESTION_START.match(folded) is None and _OFFER_QUESTION.search(folded) is not None:
+            return True
+    return False
 
 
 def visible_reply_restates_the_request(value: object, request: object) -> bool:
