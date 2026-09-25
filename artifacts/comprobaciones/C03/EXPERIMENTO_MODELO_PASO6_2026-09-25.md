@@ -89,3 +89,18 @@ reescrituras), 15–25 min los tres.
 ## Resultado
 
 Pendiente de la corrida de la raíz.
+
+## Resultado (corrida 2026-09-25 01:53, `integ/uso-real` @ 9ccfafd3, 42 turnos de conversación de la tanda 7, 32 seguimientos)
+
+| métrica | Qwen3-4B (actual) | Qwen3.5-4B | xLAM-2-3b (hermes) |
+|---|---|---|---|
+| decisiones correctas en seguimientos (32) | 23 | 23 | 23 |
+| decisiones correctas (42) | 33 | 33 | 33 |
+| reescrituras efectivas correctas (32) | 21 | 22 | 15 |
+| decisión p50 / p90 | 1,82 / 3,09 s | 2,65 / 5,42 s | 1,48 / 3,03 s |
+| VRAM pico llama-server | 3 488 MiB | 3 166 MiB | 2 238 MiB |
+| licencia | apache-2.0 | apache-2.0 | cc-by-nc-4.0 |
+
+Qwen3.5-4B: +0 decisiones (McNemar exacto p = 1,0), +1 reescritura, más lento. xLAM-2-3b: +0 decisiones, −6
+reescrituras, más rápido, licencia no comercial. **Veredicto: se sigue con Qwen3-4B-Instruct-2507**; ningún candidato
+mejora con el margen prerregistrado. La comprensión se sube con el método (estado del diálogo, reescritura, datos).
