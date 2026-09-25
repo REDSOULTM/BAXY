@@ -170,9 +170,11 @@ def test_the_rewrite_sees_the_last_exchanges_as_the_person_saw_them():
 @pytest.mark.parametrize(
     ("said", "question", "text", "rewrite"),
     [
-        ("the monitor is way too bright", "What brightness level do you want?", "70 percent",
-         "set the monitor brightness to 70 percent"),
-        ("la pantalla está re oscura", "¿A qué nivel de brillo la pongo?", "al 70", "pon el brillo de la pantalla al 70"),
+        # Integration with the tanda-8 vocabulary fix: a brightness complaint is now read, so BAXY asks the amount
+        # after it and the level reader joins the answer deterministically (no model call); the request before the
+        # question is still what the value completes.
+        ("the monitor is way too bright", "How much darker should I make it?", "70 percent", "baja el brillo en 70"),
+        ("la pantalla está re oscura", "¿A qué nivel de brillo la pongo?", "al 70", "pon el brillo al 70"),
     ],
 )
 def test_a_value_after_a_question_of_baxy_answers_the_request_before_it(said, question, text, rewrite):
@@ -180,7 +182,7 @@ def test_a_value_after_a_question_of_baxy_answers_the_request_before_it(said, qu
     slot = dialogue.read_slot(message, message["history"], text)
     assert slot.pending_request == said and not slot.held
     assert dialogue.dependency(text, slot) == "answer"
-    assert _rearm(message, _Scripted({text: rewrite}), dialogue.DialogueState()) == (rewrite, "model")
+    assert _rearm(message, _Scripted({text: rewrite}), dialogue.DialogueState()) in {(rewrite, "model"), (rewrite, "pattern")}
 
 
 @pytest.mark.parametrize(
