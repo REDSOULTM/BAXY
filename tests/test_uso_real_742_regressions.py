@@ -4,6 +4,8 @@ decisions; these are the regressions whose cause is a reader, each fixed where i
 1. «crea una carpeta llamada proyectos» asked for the date of an event (H0256, H0288, H0629; since 26f37154): the
    agenda reader took the participle «llamada» («named») after the thing it names for a phone call. Owner:
    semantic/notes.agenda_event_request (object_is_event) and its title reader.
+2. «Como me llamo», «que me gusta tomar.» went to the web (H0604, H0173): who the person is and what they like
+   are their own data. Owner: semantic/web._FIRST_PERSON_OWN (read by names_own_data / not_a_public_lookup).
 
 Every list holds fresh phrasings (dialects, English, Spanglish), not the literals.
 """
@@ -12,6 +14,7 @@ from __future__ import annotations
 
 import pytest
 
+from baxy_mind.semantic import web
 from baxy_mind.semantic.notes import agenda_event_request
 
 
@@ -42,3 +45,21 @@ def test_calls_and_named_events_stay_on_the_agenda(text: str, title: str) -> Non
     event = agenda_event_request(text)
     assert event is not None
     assert event.title == title
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["¿cómo me llamo?", "cual me llamo yo", "qué me gusta comer", "¿qué me gustaba de chico?", "what do i like",
+     "¿dónde vivo?", "where do i live again", "¿cuántos años tengo?"],
+)
+def test_questions_about_the_person_never_go_to_the_web(text: str) -> None:
+    assert web.not_a_public_lookup(text)
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["¿cómo se llama el presidente de Chile?", "qué le gusta comer a un gato", "where does Taylor Swift live",
+     "cuántos años tiene el papa"],
+)
+def test_questions_about_others_are_still_public(text: str) -> None:
+    assert not web.not_a_public_lookup(text)

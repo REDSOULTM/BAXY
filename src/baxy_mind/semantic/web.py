@@ -1004,7 +1004,11 @@ _FIRST_PERSON_OWN = (
     r"\b(?:tengo|tenia|tuve|tenemos|teniamos|tendre)\s+que\b|\bque\s+(?:tengo|tenemos|tenia)\b|"
     r"\btengo\s+(?:algo|algun[oa]?|pendientes?|planes?|citas?|reuniones?|clases?|examen(?:es)?|turno|tareas?|"
     r"libre|hora)\b|\btengo[\s?.!]*$|\b(?:me|nos)\s+toca(?:ba)?\b|\b(?:estoy|estare)\s+(?:libre|ocupad[oa])\b|"
-    r"\b(?:hice|dije|puse|tuve|fui|estuve|pedi|recibi|perdi|escribi|anote)\b"
+    r"\b(?:hice|dije|puse|tuve|fui|estuve|pedi|recibi|perdi|escribi|anote)\b|"
+    # 742 H0604 «Como me llamo», H0173 «que me gusta tomar.» went to the web: who the person is and what they
+    # like are theirs, never a page's.
+    r"\b(?:como|cual)\s+me\s+llamo\b|\bque\s+me\s+gusta(?:n|ba|ria)?\b|\bwhat\s+do\s+i\s+(?:like|love|prefer)\b|"
+    r"\b(?:donde|where)\s+(?:vivo|do\s+i\s+live)\b|\bcuantos\s+anos\s+tengo\b"
 )
 # 2. a relative, named as the person names their own («mom», «grandma's», «la abuela»), but not someone else's
 #    («la mamá de Messi», «Taylor Swift's mom»);
