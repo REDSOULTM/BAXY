@@ -302,6 +302,35 @@ def test_the_last_of_two_kinds_named_is_still_asked():
     ) is None
 
 
+_SEEN = {
+    "location": "Valdivia", "country": "Chile", "temperatureC": 9.4, "condition": "nublado",
+    "today": {"date": "2026-10-02", "weekday": "viernes", "maxC": 14, "minC": 6, "rainProbabilityPercent": 20},
+    "tomorrow": {"date": "2026-10-03", "weekday": "sábado", "maxC": 13, "minC": 5.5, "rainProbabilityPercent": 70,
+                 "condition": "lluvia"},
+    "laterDays": [{"date": "2026-10-04", "weekday": "domingo", "condition": "chubascos", "maxC": 12, "minC": 6,
+                   "rainProbabilityPercent": 85}],
+}
+
+
+def test_a_result_of_the_turn_answers_the_request_as_the_turn_understood_it():
+    state = dialogue.DialogueState()
+    state.expect("oye, ¿va a llover el fin de semana en Valdivia?", ["weather.current"])  # «¿y el fin de semana?»
+    weather = _verified("weather.current", _SEEN)
+    assert state.understood("¿y el fin de semana?", weather) == "oye, ¿va a llover el fin de semana en Valdivia?"
+    # A notice, another operation's result or a joined answer keeps the person's text.
+    assert state.understood("¿y el fin de semana?", {"kind": "status", "cause": "acting"}) == "¿y el fin de semana?"
+    assert state.understood("¿y el fin de semana?", _verified("media.status")) == "¿y el fin de semana?"
+    state.expect("pon una alarma\nAclaración confiable del usuario: a las 7", ["notification.schedule"])
+    assert state.understood("a las 7", _verified("notification.schedule")) == "a las 7"
+
+
+def test_the_weekend_answer_passes_against_the_understood_request_and_not_the_fragment():
+    payload = {"operation": "weather.current", "seen": _SEEN}
+    draft = "El fin de semana llueve: 70 % el sábado y 85 % el domingo."
+    assert llm._weather_fact_defect(draft, payload, "oye, ¿va a llover el fin de semana?") == ""
+    assert llm._weather_fact_defect(draft, payload, "¿y el fin de semana?") == "missing_state"
+
+
 def test_no_worked_example_or_hint_is_a_phrase_of_a_measured_tanda():
     shown = " ".join(
         [str(part) for example in llm._REWRITE_EXAMPLES for part in example]

@@ -10796,10 +10796,11 @@ def _run_sidecar(
                         [tool["function"]["canonical_name"] for tool in tools]
                     ),
                 }
-                user_text = str(message.get("userText", ""))[:4096]
                 situation = _situation_from_facts(facts)
-                # Only a verified result of the operation the last turn decided is kept for the next follow-up.
+                # Only a verified result of the operation the last turn decided is kept for the next follow-up,
+                # and a result of it answers the request as the turn understood it (tanda 7b «¿y el finde?»).
                 dialogue_state.record(situation)
+                user_text = dialogue_state.understood(str(message.get("userText", "")), situation)[:4096]
                 observed = _merged_observed(situation)
                 opening_name = effect_intent.unresolved_application_open_name(
                     user_text, application_names,

@@ -801,6 +801,22 @@ class DialogueState:
         elif operation.startswith("system.settings") and observed.get("setting") and observed.get("value") is not None:
             self._facts[str(observed["setting"])] = str(observed["value"])
 
+    def understood(self, user_text: str, situation: object) -> str:
+        """The request a composed result answers: the last turn's, as the mind understood it, when the result is
+        of one of its operations; the person's text otherwise.
+
+        Tanda 7b: «¿y el finde?» was decided as «che, ¿va a llover el finde?», but its weather read was worded
+        against the bare fragment, so every draft about the weekend died on missing_state (⚠), and «¿y en Mar del
+        Plata?» was answered with today's weather.
+        """
+
+        operation = str(situation.get("operation") or "") if isinstance(situation, dict) else ""
+        # The joined form of an answer the model could not rewrite («…\nAclaración confiable del usuario: …») is
+        # for the readers, not a request to word against.
+        if not self.request or "\n" in self.request or not operation or operation not in self.intended:
+            return user_text
+        return self.request
+
     def lines(self) -> list[tuple[str, str]]:
         """What was verified, one line per kind, for the rewrite prompt and its word check."""
 
