@@ -79,6 +79,7 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | V6 (simulado): con historial, los mensajes autónomos según `dialogue.dependency` por la tubería vieja | 180/253 | 46/66 | 179/260 | registro real 84/95 (M2: 80) | — | — | **descartado**: el detector da por autónomos 57–70 seguimientos reales |
 | M4: M2 + el decisor ve los últimos 4 mensajes (no 12) | 77,1 % | 86,4 % | 72,7 % | 95,6 % (84,6 %) | — | 21 | se queda (igual en DEV, +1 en el registro real, menos prompt); capa A aún a 4 filas del umbral |
 | M5: M4 + guarda de forma sobre acciones del decisor en mensajes autónomos con historial | 76,3 % | 83,3 % | 71,9 % | 95,4 % (83,5 %) | — | 21 | **retirado**: peor en todo |
+| M6: M4 + segunda elección sobre la elección del decisor y 10 recuperadas para el pedido reescrito | 73,1 % | 77,3 % | 70,0 % | 95,6 % (85,7 %) | — | 23 | **retirado**: la lista corta vuelve a cambiar elecciones buenas (ley 1) |
 
 ### Revisión de las 21 decisiones de las 742 que M4 cambia frente a la base
 

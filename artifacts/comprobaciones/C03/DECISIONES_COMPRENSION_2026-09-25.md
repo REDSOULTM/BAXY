@@ -105,3 +105,13 @@ regresión: capa A ≥ 96,0 % (base 96,5), reserva MASSIVE ≥ 81,2 % (base 82,2
 la base revisada una a una. Guion del dueño, held-out y cien se miden en la ventana en el hito de F5. Si no entra, se
 revierte. Después de entrar, lo que sustituye (selector nativo, lista corta para decidir, vetos del camino del modelo,
 re-armado del hueco, recuperación) se retira en commits medidos con el mismo conjunto.
+
+## D13. LoRA del decisor: autorizado por el dueño, local (2026-09-25 ~20:45)
+Pregunta (marcada PREGUNTAR en el goal), con la evidencia: DEV-B 77,1 % con M4; M3, M5 y M6 retirados porque no
+mueven o empeoran; lo que queda son elecciones del modelo (operación hermana, actuar sobre comentarios, límites
+falsos). Respuesta del dueño: **sí, local**, preguntando si cubre lo que AGENTS.md e identidad piden. Alcance acordado:
+sólo la decisión (no la personalidad, que sigue en el prompt): el adaptador se aplica por petición únicamente a la
+llamada del decisor; se declara en el manifiesto con su SHA-256; datos sintéticos de sala limpia disjuntos de DEV y
+FINAL (`comprension-f1/brief/ENTRENAMIENTO.md`), ningún dato del dueño. Se juzga con la regla de siempre en DEV-B y el
+conjunto de regresión; si no entra, se retira. Aviso de ley 1: el LoRA heredado de FunctionGemma aprendió su corpus y
+fuera de él cayó (63/124). Los créditos de Claude no pagan GPU (lo preguntó el dueño): se entrena en la RTX 3060.
