@@ -5074,6 +5074,9 @@ _CAUSE_FACT = {
     # was answered «I couldn't send mail…»: the same missing profile blocks the
     # agenda and the mail, and the fact must not name an effect nobody asked for.
     "outlook_profile_not_configured": ("this PC has no classic Outlook profile, so Outlook's mail and calendar could not be used"),
+    # Tanda 7 «quién ganó el game de los Lakers anoche» → «…los resultados de búsqueda son irrelevantes»: the code
+    # became prose about a search. The lookup is invisible; what the person hears is that it was not found.
+    "web_search_results_irrelevant": "it was not found; say only that, briefly",
     "outlook_mail_send_failed": ("Outlook did not send the mail, so nothing went out"),
     "mail_delivery_not_verified": ("Outlook accepted the mail but its copy in Sent Items was not found, so the delivery is not verified"),
     # REOPEN1993 grupo E: the recipient was looked up in WhatsApp and Discord.
@@ -8525,14 +8528,14 @@ def _search_report_unsourced_numbers(sentence: str, grounds: str) -> list[str]:
 
 
 # A sentence that says the asked thing was not found or cannot be told (folded). «No hay …» or «there is no …» state
-# an absence in the world, not in the pages, and stay judged.
+# an absence in the world, not in the pages, and stay judged. «No se menciona/indica…» is the pages narrated
+# (_SEARCH_NARRATED_ABSENCE), not a not-found.
 _SEARCH_NOT_FOUND = re.compile(
     r"^\W*(?:no\s+(?:(?:lo|la|los|las|le)\s+)?(?:encontre|halle|pude\s+(?:encontrar|hallar|determinar|confirmar|saber|"
-    r"precisar|ver)|puedo\s+(?:confirmar|determinar|saber|precisar|decir(?:te)?)|se\s+(?:indica|menciona|dice|"
-    r"especifica|encontro|pudo\s+(?:encontrar|determinar|confirmar)|puede\s+(?:determinar|saber|confirmar|precisar)))|"
+    r"precisar|ver)|puedo\s+(?:confirmar|determinar|saber|precisar|decir(?:te)?)|se\s+(?:"
+    r"encontro|pudo\s+(?:encontrar|determinar|confirmar)|puede\s+(?:determinar|saber|confirmar|precisar)))|"
     r"(?:i\s+)?(?:couldn'?t|could\s+not|can'?t|cannot|didn'?t|did\s+not|wasn'?t\s+able\s+to|was\s+not\s+able\s+to)\s+"
-    r"(?:find|determine|confirm|tell|say|see)|(?:it\s+)?(?:isn'?t|is\s+not|wasn'?t|was\s+not)\s+(?:stated|mentioned|"
-    r"given|specified|listed))\b"
+    r"(?:find|determine|confirm|tell|say|see))\b"
 )
 
 
@@ -8697,6 +8700,14 @@ _SEARCH_MECHANICS = re.compile(
     r"(?:these|those|the|several|some)\s+(?:pages|sources|websites)|(?:on|from)\s+(?:that|this|one|another)\s+(?:site|page)|"
     r"none\s+of\s+(?:these|the)\s+pages)\b"
 )
+# Tanda 7 «No se menciona ningún famoso…», «No se indica cuánto tiempo queda…»: an absence told as what a text does
+# not say narrates the pages that were read. The owner's not-found is «No lo encontré».
+_SEARCH_NARRATED_ABSENCE = re.compile(
+    r"\bno\s+se\s+(?:menciona|mencionan|indica|indican|especifica|especifican|dice|detalla|detallan|precisa|nombra|"
+    r"nombran|informa|aclara)\b|"
+    r"\b(?:(?:is|are|was|were)\s+not|isn'?t|aren'?t|wasn'?t|weren'?t)\s+(?:mentioned|stated|specified|listed|"
+    r"indicated|named|given)\b|\bno\s+mention\s+of\b|\b(?:doesn'?t|does\s+not)\s+(?:mention|specify|state|indicate)\b"
+)
 # «según Tripadvisor», «according to BBC Mundo»: a source named by its proper name.
 _SEARCH_NAMED_SOURCE = re.compile(
     r"\b(?:[Ss]eg[uú]n|[Aa]ccording\s+to|[Dd]e\s+acuerdo\s+con)\s+(?:(?:el|la|los|las|the)\s+)?[A-ZÁÉÍÓÚÑ][\w.-]*"
@@ -8708,9 +8719,19 @@ def _search_report_shows_the_search(text: str, payload: dict, user_text: str) ->
     found. The person's own words and a snippet's own words are not the search showing."""
 
     results_text = _search_results_text(payload)
-    if results_text is None:
-        return False
     folded = _reading_fold(re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(text)))
+    reason = payload.get("reason")
+    if results_text is None:
+        # Tanda 7 «quién ganó el game de los Lakers anoche» → «…debido a que los resultados de búsqueda son
+        # irrelevantes»: a lookup that answered nothing is told as not found, never as a search that failed.
+        return (
+            isinstance(reason, dict)
+            and reason.get("operation") == "web.search"
+            and any(
+                pattern.search(folded) is not None
+                for pattern in (_SEARCH_MECHANICS, _SEARCH_ATTRIBUTION, _SEARCH_NARRATED_ABSENCE)
+            )
+        )
     grounds = _reading_fold(f"{user_text or ''}\n" + "\n".join(
         str(item.get(key) or "") for item in _search_results_of(payload) if isinstance(item, dict)
         for key in ("title", "snippet")
@@ -8722,6 +8743,7 @@ def _search_report_shows_the_search(text: str, payload: dict, user_text: str) ->
     for found in (
         *(match.group(0) for match in _SEARCH_ATTRIBUTION.finditer(folded)),
         *(match.group(0) for match in _SEARCH_MECHANICS.finditer(folded)),
+        *(match.group(0) for match in _SEARCH_NARRATED_ABSENCE.finditer(folded)),
         *named_source,
     ):
         # A snippet that itself says «según la OMS» may be repeated with its words.
@@ -21179,11 +21201,13 @@ class LlmRuntime:
                 "search_report_shows_the_search": (
                     "Say the answer as something you know, in one or two sentences: never "
                     "mention the search, a page, a site or a source («according to …», «I "
-                    "searched», «I found these pages»)."
+                    "searched», «I found these pages», «it is not mentioned»). If you do not "
+                    "have it, say only, briefly, that you did not find it."
                     if response_language == "en"
                     else "Di la respuesta como algo que sabes, en una o dos oraciones: nunca "
                     "menciones la búsqueda, una página, un sitio ni una fuente («según …», "
-                    "«busqué», «encontré estas páginas»)."
+                    "«busqué», «encontré estas páginas», «no se menciona»). Si no lo tienes, "
+                    "di sólo, en breve, que no lo encontraste."
                 ),
                 "recalled_as_own": (
                     "The record is about the person: say it in the second person («your name is …», «you like …»)."

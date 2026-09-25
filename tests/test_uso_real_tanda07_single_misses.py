@@ -4,6 +4,9 @@
   him; it now carries one of his facts (his name or the PC he lives on) beside the detail he does not have.
 - «¿cuánto rato queda para las seis?» → a web search and «No se indica…»: the countdown reading knew only «cuánto
   (tiempo) falta/queda/resta»; any measure of time and any verb of remaining asks the same countdown.
+- «No se menciona ningún famoso…», «…los resultados de búsqueda son irrelevantes»: the lookup is invisible; an
+  absence told as what the pages do not say, or a failed search told as a search, is rejected, and the fact of a
+  lookup that answered nothing is that it was not found.
 
 The phrasings below are not the tandas': they are paraphrases (es/en/spanglish) the fixes do not name, with negative
 controls.
@@ -96,3 +99,81 @@ def test_time_left_of_something_else_is_not_a_clock_countdown(text: str) -> None
 def test_a_countdown_is_read_on_the_clock_not_searched(text: str) -> None:
     got = reading.read(text, available_operations=("system.time", "web.search"))
     assert got.effects is not None and got.effects.operations == ("system.time",)
+
+
+# ------------------------------------------------------------------ a lookup that did not answer is «not found»
+
+_SEARCHED = {
+    "operation": "web.search",
+    "seen": {
+        "query": "músicos famosos que tocaron en orquestas juveniles",
+        "count": 1,
+        "results": [{
+            "title": "Los cantantes más famosos del momento",
+            "url": "https://musica.example.com/famosos",
+            "snippet": "Una lista de los diez artistas que dominan hoy la escena musical global.",
+        }],
+    },
+}
+_SEARCH_FAILED = {
+    "outcome": "failed",
+    "reason": {"outcome": "failed", "cause": "it was not found; say only that, briefly", "operation": "web.search"},
+}
+
+
+@pytest.mark.parametrize(
+    ("draft", "payload"),
+    [
+        ("No se menciona ningún músico famoso que tocara en una orquesta juvenil.", _SEARCHED),
+        ("No se indica qué músicos famosos tocaron en orquestas juveniles.", _SEARCHED),
+        ("No se especifican nombres de músicos de orquestas juveniles.", _SEARCHED),
+        ("Famous musicians from youth orchestras are not mentioned.", _SEARCHED),
+        ("There is no mention of famous musicians from youth orchestras.", _SEARCHED),
+        ("No se sabe quién ganó porque los resultados de búsqueda son irrelevantes.", _SEARCH_FAILED),
+        ("The web search results were irrelevant to the time zone of Britain.", _SEARCH_FAILED),
+        ("Según las páginas que encontré, no hay datos del partido.", _SEARCH_FAILED),
+    ],
+)
+def test_an_absence_told_as_what_the_pages_do_not_say_shows_the_search(draft: str, payload: dict) -> None:
+    assert llm._payload_fact_defect(draft, payload, "¿qué famosos tocaron en orquestas juveniles?") == (
+        "search_report_shows_the_search"
+    )
+
+
+@pytest.mark.parametrize(
+    ("draft", "payload"),
+    [
+        ("No lo encontré.", _SEARCHED),
+        ("No encontré ningún músico famoso que tocara en una orquesta juvenil.", _SEARCHED),
+        ("I couldn't find a famous musician who played in a youth orchestra.", _SEARCHED),
+        ("No encontré quién ganó el partido de anoche.", _SEARCH_FAILED),
+        ("I couldn't find it.", _SEARCH_FAILED),
+    ],
+)
+def test_not_found_said_briefly_is_the_answer(draft: str, payload: dict) -> None:
+    assert llm._payload_fact_defect(draft, payload, "¿qué famosos tocaron en orquestas juveniles?") != (
+        "search_report_shows_the_search"
+    )
+
+
+def test_a_positive_statement_with_a_participle_is_not_an_absence() -> None:
+    assert llm._payload_fact_defect(
+        "Los diez artistas que dominan hoy la escena musical fueron nombrados en una lista global.",
+        _SEARCHED,
+        "¿qué artistas dominan la escena musical?",
+    ) != "search_report_shows_the_search"
+    assert not llm._SEARCH_NARRATED_ABSENCE.search("he was named best player and was given the award")
+
+
+@pytest.mark.parametrize(
+    ("code", "forbidden"),
+    [
+        ("web_search_results_irrelevant", ("search", "result", "irrelevant", "page")),
+    ],
+)
+def test_the_fact_of_a_failure_says_what_the_person_hears_not_the_mechanism(
+    code: str, forbidden: tuple[str, ...],
+) -> None:
+    fact = llm._cause_in_prose(code, "es")
+    assert fact != code.replace("_", " ")
+    assert not any(word in fact.casefold() for word in forbidden)

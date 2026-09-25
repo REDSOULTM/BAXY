@@ -105,7 +105,9 @@ def _search_payload(results: list[dict]) -> dict:
          "No se puede determinar la hora exacta de la salida del sol."),
         ("¿a qué hora amanece en Cádiz?", "No encontré la hora exacta del amanecer en Cádiz."),
         ("when does the sun rise in Cadiz", "I couldn't find the exact sunrise time for Cadiz."),
-        ("sunrise time in Cadiz pls", "It isn't stated anywhere precise, sorry."),
+        # Tanda 7: «it isn't stated» narrates the pages read (now search_report_shows_the_search); the plain
+        # not-found keeps this case's intent.
+        ("sunrise time in Cadiz pls", "I couldn't find the precise time, sorry."),
     ],
 )
 def test_saying_it_was_not_found_is_no_unsourced_claim(asked: str, answer: str) -> None:
