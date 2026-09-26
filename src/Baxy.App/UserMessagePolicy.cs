@@ -3316,7 +3316,57 @@ internal static class UserMessagePolicy
             return false;
         }
 
+        // Fase 3.5b «activa mi microfono» already on: «ya estaba activo» IS the failure told when the
+        // failure is that the target already had the asked state. Twin of the mind's _ALREADY_STATEMENT.
+        if (IsAlreadyStateFailure(source)
+            && Regex.IsMatch(FoldForPolicy(result), AlreadyStatement,
+                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+        {
+            return false;
+        }
+
         return !LooksLikeFailure(result);
+    }
+
+    private const string AlreadyStatement = @"\bya\s+(?:estaba|estaban|esta|estan|era|eran)\b|\balready\b";
+
+    /// <summary>
+    /// The typed failure is that the target already had the asked state («microphone_already_unmuted»).
+    /// Twin of the mind's _failure_is_an_unchanged_state.
+    /// </summary>
+    private static bool IsAlreadyStateFailure(string source)
+    {
+        return TryReadJson(source, out JsonElement root) && HasAlreadyError(root, 0);
+
+        static bool HasAlreadyError(JsonElement node, int depth)
+        {
+            if (depth > 4 || node.ValueKind != JsonValueKind.Object)
+            {
+                return false;
+            }
+            foreach (JsonProperty property in node.EnumerateObject())
+            {
+                if (property.Value.ValueKind == JsonValueKind.Object && HasAlreadyError(property.Value, depth + 1))
+                {
+                    return true;
+                }
+                if (property.Value.ValueKind != JsonValueKind.String)
+                {
+                    continue;
+                }
+                string text = property.Value.GetString() ?? string.Empty;
+                if (property.NameEquals("error") && text.Contains("_already_", StringComparison.Ordinal))
+                {
+                    return true;
+                }
+                if (property.NameEquals("reason") && TryReadJson(text, out JsonElement wrapped)
+                    && HasAlreadyError(wrapped, depth + 1))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     private const string AbsenceStatement =

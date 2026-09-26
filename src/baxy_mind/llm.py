@@ -5064,6 +5064,18 @@ _ABSENCE_STATEMENT = re.compile(
 )
 
 
+def _failure_is_an_unchanged_state(situation: dict) -> bool:
+    """The typed failure is that the target already had the asked state («microphone_already_unmuted»).
+    Twin of UserMessagePolicy.IsAlreadyStateFailure."""
+
+    return any("_already_" in code for code in _situation_error_codes(situation))
+
+
+# Saying that it already was so: «ya estaba activo», «ya está en silencio», «it was already on». Twin of
+# UserMessagePolicy.AlreadyStatement.
+_ALREADY_STATEMENT = re.compile(r"\bya\s+(?:estaba|estaban|esta|estan|era|eran)\b|\balready\b")
+
+
 def _situation_error_codes(situation: dict) -> tuple[str, ...]:
     """The typed error codes of a situation and of the step failure it wraps
     (MissionNarration serializes the step's facts inside `reason`)."""
@@ -11192,6 +11204,11 @@ def compose_visible_defect(
             # when the failure is that absence. Twelve such drafts died wanting «no pude».
             _failure_is_an_absence(situation)
             and _ABSENCE_STATEMENT.search(_accent_folded_with_punctuation(stripped)) is not None
+        ) and not (
+            # Fase 3.5b owner script «activa mi microfono» (already on): «El micrófono ya estaba activo, por lo que
+            # no ha cambiado su estado» IS the failure told; wanting «no pude» made the final claim an attempt failed.
+            _failure_is_an_unchanged_state(situation)
+            and _ALREADY_STATEMENT.search(_accent_folded_with_punctuation(stripped)) is not None
         ):
             return "missing_failure"
         parts = stripped.split(":", 1)
