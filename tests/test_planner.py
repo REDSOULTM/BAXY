@@ -4001,7 +4001,7 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         self.assertEqual(extraction.evidence, ())
         runtime._post.assert_called_once()
 
-    def test_direct_argument_contract_rejects_malformed_fallback(self):
+    def test_direct_argument_contract_drops_a_malformed_fallback(self):
         operation_tool = tool(
             "app.open",
             "Abre una aplicación por nombre.",
@@ -4030,8 +4030,11 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
             }
         )
 
-        with self.assertRaisesRegex(ValueError, "pregunta"):
-            runtime.extract_direct_arguments("abre eso", operation_tool)
+        # Fase 3.5b: two questions in one are never shown, and never fail the turn either; the caller
+        # formulates the question with its own call (prepare_direct_argument_result).
+        extraction = runtime.extract_direct_arguments("abre eso", operation_tool)
+        self.assertIsNone(extraction.arguments)
+        self.assertEqual(extraction.fallback_question, "")
         runtime._post.assert_called_once()
 
     def test_direct_argument_normalization_still_drops_ungrounded_optional_default(
@@ -4268,7 +4271,7 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         self.assertIn("corregida", prompt)
         runtime._post.assert_called_once()
 
-    def test_direct_fallback_rejects_internal_identifier_and_format_controls(self):
+    def test_direct_fallback_drops_internal_identifier_and_format_controls(self):
         operation_tool = tool(
             "app.open",
             "Abre una aplicación por nombre.",
@@ -4299,11 +4302,14 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
                     ]
                 }
             )
-            with self.subTest(question=question), self.assertRaises(ValueError):
-                runtime.extract_direct_arguments(
+            with self.subTest(question=question):
+                # Never shown: the caller formulates the question with its own call instead.
+                extraction = runtime.extract_direct_arguments(
                     "abre una aplicación",
                     operation_tool,
                 )
+                self.assertIsNone(extraction.arguments)
+                self.assertEqual(extraction.fallback_question, "")
 
     def test_direct_empty_required_schema_has_one_semantic_attempt(self):
         operation_tool = tool(

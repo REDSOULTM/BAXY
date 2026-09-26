@@ -18620,13 +18620,19 @@ class LlmRuntime:
         ):
             raise ValueError("envoltura de argumentos directos inválida")
 
-        fallback_question = validate_missing_argument_clarification(
-            {
-                "requested_fields": list(asked_fields),
-                "question": envelope.get("fallback_question"),
-            },
-            asked_fields,
-        )
+        # The same-call fallback only saves a second call: one that is not a single bounded question or that names
+        # an internal identifier is dropped, and the caller formulates the question (Fase 3.5b DEV «Recordame llevar
+        # el auto al service a las 7»: two questions in one failed the whole turn as a runtime error).
+        try:
+            fallback_question = validate_missing_argument_clarification(
+                {
+                    "requested_fields": list(asked_fields),
+                    "question": envelope.get("fallback_question"),
+                },
+                asked_fields,
+            )
+        except ValueError:
+            fallback_question = ""
         folded_question = fallback_question.casefold()
         technical_fields = tuple(
             field
@@ -18636,7 +18642,7 @@ class LlmRuntime:
         if canonical_name.casefold() in folded_question or any(
             field.casefold() in folded_question for field in technical_fields
         ):
-            raise ValueError("la aclaración expone un identificador interno")
+            fallback_question = ""
         arguments = envelope.get("arguments")
         if envelope["grounded"] is False:
             if arguments is not None:

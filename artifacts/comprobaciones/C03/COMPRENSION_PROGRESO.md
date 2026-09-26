@@ -82,6 +82,8 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | M6: M4 + segunda elección sobre la elección del decisor y 10 recuperadas para el pedido reescrito | 73,1 % | 77,3 % | 70,0 % | 95,6 % (85,7 %) | — | 23 | **retirado**: la lista corta vuelve a cambiar elecciones buenas (ley 1) |
 | M7: M4 + argumentos: el lector del clima ya no toma «Denver»/«para Rosario» por un infinitivo; la extracción omite el opcional no dicho (vacío o no literal) en vez de abstenerse de todo | argumentos sólo (turnos con decisión bien y oro de argumentos): DEV-A 31→33/40, **DEV-B 33→34/41** | | | | | | se queda (0 rotos; pytest de extracción y clima: las mismas fallas con y sin el cambio, todas de la ruta M4). Resto: servicio de streaming perdido en la reescritura, archivos por referencia, pedido reescrito en otro idioma («airport» → «aeropuerto») |
 | **M8: M7 + LoRA del decisor (`full1`, D17) sólo en la llamada del decisor** | **78,3 %** (sólo decisión 206) | 80,3 % | **82,7 %** | **96,4 % (92,3 %)** | **84,0 %** | 20 (8 mejor, 4 peor, 8 igual) | **entra** (D18): cumple toda la regla de D12; VRAM 3 804 MiB |
+| M9: M8 + el decisor decide también los primeros mensajes que un lector prueba | 79,1 % | 80,3 % | 82,7 % | **70,3 %** (84,6 %) | — | 248 | **retirado**: en los comandos del dueño el LoRA vuelve planes una acción (48) o charla (23), y acciones charla (48); faltan planes en sus datos |
+| M10: M8 + el decisor lee los mensajes largos que hoy se toman por conversación ajena (`overheard_speech`) | 78,3 % | 80,3 % | 83,8 % | **94,4 %** (84,6 %) | — | 30 | **retirado**: el registro real del dueño sí trae conversación ajena |
 
 ### Revisión de las 21 decisiones de las 742 que M4 cambia frente a la base
 
