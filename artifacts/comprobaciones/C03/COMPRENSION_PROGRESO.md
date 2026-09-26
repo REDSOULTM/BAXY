@@ -93,6 +93,25 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 - **Equivalente (8):** fragmentos sin contexto y preguntas equivalentes (H0173, H0271, H0353, H0354, H0414, H0513,
   H0582, H0604).
 
+## LoRA del decisor (D13, en curso)
+
+- Datos: 9 escritores de sala limpia (`comprension-f1/brief/ENTRENAMIENTO.md`), 900 conversaciones, **1 991 ejemplos de
+  entrenamiento + 111 de validación** (acción 66 %, charla 25 %, límite 5 %, pregunta 4 %; 257 mensajes de operar dentro
+  de aplicaciones para computer use); 2 frases que coincidían con DEV/FINAL descartadas. Cada ejemplo lleva un catálogo
+  parcial de 50 operaciones (las correctas, sus hermanas de familia y distractoras): el decisor aprende a leer el
+  catálogo que tiene delante, así las operaciones nuevas del motor de computer use no piden reentrenar.
+- Entorno aislado `D:\BAXYRuntime\python\c03-decider-lora-v1` (torch 2.8 cu126, transformers 5.17, peft 0.21,
+  bitsandbytes 0.50, triton-windows 3.4 + flash-linear-attention 0.5.2 para las capas DeltaNet); base HF
+  `Qwen/Qwen3.5-4B@851bf6e8`; QLoRA nf4, r 16, pérdida sólo en la respuesta. Medido: 7,9 s por ejemplo, pico 5,76 GB
+  (sin flash-linear-attention: 20 s; con el catálogo entero no cabe en 6 GB).
+- Conversor: llama.cpp b9980 (el mismo del servidor) en `D:\BAXYRuntimeuild\llama.cpp-b9980`.
+- Plan: piloto de 360 ejemplos (1 época) medido con `lora/decider_eval.py` (el decisor del producto aislado, con y sin
+  adaptador) en DEV-A; si mejora, entrenamiento completo y medición con la regla de siempre.
+- El dueño pidió (2026-09-25 ~21:00) que sirva a BAXY completo y a la fase de computer use: escritor 9 dedicado a operar
+  dentro de apps; adaptador sólo en la llamada del decisor (no toca redacción ni el paso a paso del motor); riesgo
+  anotado: el paso a paso del motor (rama `fable/computer-use-engine`) está ajustado sobre Qwen3-4B y el cambio de modelo
+  base le afecta; medirlo al unir esa rama.
+
 ## Bitácora
 
 - 2026-09-25 12:0x — F0: tag, ficheros de estado. Verificación anterior en curso (capas A/B/C).
