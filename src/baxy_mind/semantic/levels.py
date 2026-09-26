@@ -75,11 +75,13 @@ _SCREEN_ONLY_VERB = re.compile(r"(?:brighten|dim|aclar|ilumin|oscurec|darken)")
 STEP_NOUN = (
     r"(?:nivel(?:es)?|paso(?:s)?|escalon(?:es)?|rayita(?:s)?|raya(?:s)?|notch(?:es)?|levels?|steps?|ticks?)"
 )
-_STEP_COUNT = r"(?:un\s+par\s+de|un|una|uno|dos|tres|cuatro|cinco|a|one|two|three|four|five|\d)"
+_STEP_COUNT = r"(?:un\s+par\s+de|un|una|uno|dos|tres|cuatro|cinco|one|two|three|four|five|\d)"
 _RELATIVE = (
     r"(?:(?:un\s+)?(?:poquito|poquitito|tantito|pelin)(?:\s+mas)?|un\s+(?:poco|toque|cacho|chin)(?:\s+mas)?|"
     rf"(?:(?:en|by)\s+)?{_STEP_COUNT}\s+{STEP_NOUN}(?:\s+(?:mas|more))?|"
     r"algo(?:\s+mas)?|bastante|mucho|mas|"
+    # «a notch», «a level»: English «a» is one step; Spanish «a nivel 8» names a target (Fase 3.5b DEV).
+    r"a\s+(?:notch(?:es)?|levels?|steps?|ticks?)(?!\s*\d)(?:\s+(?:mas|more))?|"
     r"a\s+(?:little|bit|tad|touch)(?:\s+bit)?(?:\s+more)?|slightly|some|a\s+lot|more)"
 )
 # Comparatives. «más alto/bajo» fit both levels; «más fuerte», «louder» only the sound; «más brillante», «más
