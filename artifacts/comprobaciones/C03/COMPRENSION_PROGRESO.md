@@ -85,6 +85,8 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | M9: M8 + el decisor decide también los primeros mensajes que un lector prueba | 79,1 % | 80,3 % | 82,7 % | **70,3 %** (84,6 %) | — | 248 | **retirado**: en los comandos del dueño el LoRA vuelve planes una acción (48) o charla (23), y acciones charla (48); faltan planes en sus datos |
 | M10: M8 + el decisor lee los mensajes largos que hoy se toman por conversación ajena (`overheard_speech`) | 78,3 % | 80,3 % | 83,8 % | **94,4 %** (84,6 %) | — | 30 | **retirado**: el registro real del dueño sí trae conversación ajena |
 | M12: M8 + los reintentos del compositor muestrean (Qwen: T 0,7, top_p 0,8, top_k 20, semilla fija; el primer intento sigue greedy) + la pista de «missing_name» nombra el nivel observado | (no toca decisiones) | | | | | | **se queda**: en la app real, guion 46/60 (+8 por revisar), held-out 21 → **23/30**; Qwen3.5 repetía tres veces el mismo borrador rechazado («He bajado el volumen a 15» por 15 → 55) |
+| M11: el camino viejo del modelo (lista corta, selector nativo, `llm.decide_turn`, re-decisión por familia) se retira; todo turno sin lector lo decide el decisor | 78,3 % | 80,3 % | 82,7 % | 96,1 % (90,1 %) | 84,0 % | 20 | **entra** (ley 2): igual que M8 dentro del ruido (±2 filas del registro real entre corridas); ningún turno de DEV, 742, registro real ni reserva pasaba ya por ese camino |
+| M13: la re-lectura canónica también sobre los límites del decisor (sólo lo que los lectores prueban en la reescritura) | 78,3 % | 80,3 % | 82,7 % | 96,2 % (91,2 %) | 84,0 % | 20 | **entra**: arregla la tanda 3 del dueño («Pausa el speaker.» → media.control, micrófono y cámara → micrófono, «añadir una nueva lista…» → pregunta los ítems) sin mover ningún conjunto |
 
 ### Revisión de las 21 decisiones de las 742 que M4 cambia frente a la base
 
@@ -135,6 +137,19 @@ decide el decisor (LLM falsos sin `decide_in_context`). Plan M11: la re-lectura 
 la reescritura; el camino viejo queda muerto y se retira con sus pruebas (y con ellas las que fijan guardas sobre el
 decisor viejo). Los invariantes de seguridad (lo que borra, instala, paga o envía nunca actúa sin confirmación)
 siguen en la App (riesgo del catálogo, confirmación ligada a la invocación). Se mide con la regla de D12.
+
+### Retirada hecha (M11 + M13, 2026-09-26)
+
+- `src`: `__main__` +55/−300 (rama del modelo tras la ruta, evidencia, selección nativa, `selector_declined`, veredicto
+  por familia de la superficie servida, `_turn_evidence_query`, `_compound_clause_shortlist`,
+  `_recogniser_identity_holds`); `llm.py` −1 243 (`decide_turn`, `_decide_turn` y los 10 ayudantes que sólo usaba él,
+  `_reading_of`, `_greeting_is_the_whole_request`). Ninguna regla nueva.
+- Pruebas: ~120 funciones que fijaban el camino viejo o el motor retirado se retiraron (turnos que hoy decide el
+  decisor, medidos en DEV y en las capas); 8 nuevas fijan el contrato del decisor (`tests/test_context_decider_route.py`).
+  Re-fijadas con cita: presupuesto de la reparación en JSON 160 (44e683ad), contexto por ranura 12 288, pregunta de
+  reserva inválida descartada, sellos de identidad del programa.
+- Pendiente de la misma línea: la prueba de la tanda 3 «inactiva la alarma de la casa» sigue siendo acción del decisor
+  (dato para el próximo ajuste del LoRA).
 
 ## LoRA del decisor (D13, en curso)
 

@@ -295,22 +295,6 @@ def test_public_information_is_looked_up_before_the_catalogue_is_offered(text: s
     assert llm.identity_calls == llm.strict_calls == []
 
 
-def test_the_catalogue_probe_still_speaks_when_the_guard_reads_no_public_lookup() -> None:
-    llm = _PublicKnowledgeLlm(public=False)
-    # «qué hora es en tokio» is now read before the model (clock_elsewhere); a
-    # question no reader takes keeps the probe.
-    result = _public_turn(llm, "dime la hora que marca el reloj de la cocina")
-
-    # When the guard does not read public information the probe is still asked;
-    # what it names is strictly verified, and refused it is neither dispatched
-    # nor offered back as «¿Quieres que…?» (tanda 4, D3).
-    assert llm.identity_calls
-    assert llm.strict_calls == ["system.time"]
-    assert result["effectOperations"] == []
-    assert result["kind"] == "conversation"
-    assert result["question"] == ""
-
-
 def test_this_pc_clock_is_described_as_never_another_place() -> None:
     # Tanda 4: another place's time is this clock read with that place, never
     # this clock recited as theirs.

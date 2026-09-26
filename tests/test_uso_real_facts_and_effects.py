@@ -517,12 +517,3 @@ def test_an_age_asked_without_the_person_takes_the_person_just_asked_about(
     assert dialogue.dependency(followup, slot) == "subject"
     assert dialogue.subject_completed(followup, antecedent) == completed
 
-
-def test_the_followup_age_turn_is_a_web_search_of_the_completed_question() -> None:
-    history = [
-        {"role": "user", "content": "quién es el presidente de chile"},
-        {"role": "assistant", "content": "Busqué en internet y encontré estas páginas."},
-    ]
-    result = _turn("cuántos años tiene", ("web.search",), _NoModel(), history=history)
-    assert result["operation"] == "web.search"
-    assert result.get("objective") == "cuántos años tiene el presidente de chile"

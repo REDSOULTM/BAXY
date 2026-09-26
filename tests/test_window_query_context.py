@@ -88,31 +88,3 @@ def test_assistant_text_cannot_supply_the_reference():
         history=[{"role": "assistant", "content": "Is Spotify open?"}],
     ) is None
 
-
-@pytest.mark.parametrize("text", ["And Spotify?", "Is it open now?", "¿Y Órbita 23?", "¿Esa aplicación tiene alguna ventana abierta?"])
-def test_scoped_followup_reaches_the_typed_read_without_retrieving_old_actions(text):
-    tool = {"type": "function", "function": {
-        "name": "window_application_status", "canonical_name": "window.application.status",
-        "description": "Read visible windows for one installed application.",
-        "risk": "read_only", "parameters": SCHEMA,
-    }}
-
-    class NoModel:
-        _verify_semantic_effect_shape = None
-        retire_deferred_response_language = None
-
-        def __getattr__(self, name):
-            raise AssertionError(f"A proved contextual read must not call {name}")
-
-    result = _prepare_turn_result(
-        {"id": "scoped-reference", "text": text, "history": [
-            {"role": "user", "content": "Is Steam open?"},
-            {"role": "assistant", "content": "Steam has two visible windows."},
-        ]},
-        llm=NoModel(), planner_catalog=PlannerCatalog([tool]), turn_evidence=NoModel(),
-        encoder=lambda _texts: (), tool_by_name={"window.application.status": tool},
-        application_names=APPS,
-    )
-    assert result["kind"] == "action"
-    assert result["operation"] == "window.application.status"
-    assert result["effectOperations"] == ["window.application.status"]

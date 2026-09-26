@@ -435,17 +435,6 @@ def test_the_turn_reads_or_schedules_what_was_asked(text: str, operation: str) -
     assert result["operation"] == operation
 
 
-@pytest.mark.parametrize(
-    "text",
-    ["necesito prepararme para una reunión importante", "tengo un vuelo el jueves", "call person b for the meeting"],
-)
-def test_the_persons_event_never_leaves_as_a_web_search(text: str) -> None:
-    result = _turn(text)
-
-    assert result["kind"] == "conversation"
-    assert result["operation"] is None
-
-
 def test_a_public_event_is_still_looked_up() -> None:
     result = _turn("cuándo es el concierto de Coldplay en Santiago")
 

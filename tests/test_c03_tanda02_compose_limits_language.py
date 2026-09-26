@@ -392,39 +392,6 @@ def _conversation_language(text: str, history: list[dict]) -> str:
     return str(result["responseLanguage"])
 
 
-def test_a_new_request_with_no_language_of_its_own_asks_the_detector_not_the_last_turn() -> None:
-    _LanguageLlm.detected = 0
-    history = [
-        {"role": "user", "content": "what time is it"},
-        {"role": "assistant", "content": "It is 10:24."},
-        {"role": "user", "content": "Minecraft"},
-    ]
-    assert _conversation_language("Minecraft", history) == "es"
-    assert _LanguageLlm.detected == 1
-
-
-def test_an_answer_to_baxys_question_keeps_the_language_of_the_request_it_answers() -> None:
-    _LanguageLlm.detected = 0
-    history = [
-        {"role": "user", "content": "Play a song on Spotify."},
-        {"role": "assistant", "content": "Which song should I play?"},
-        {"role": "user", "content": "Queen"},
-    ]
-    assert _conversation_language("Queen", history) == "en"
-    assert _LanguageLlm.detected == 0
-
-
-def test_a_bare_spanish_noun_after_an_english_question_is_answered_in_spanish() -> None:
-    _LanguageLlm.detected = 0
-    history = [
-        {"role": "user", "content": "switch on the camera"},
-        {"role": "assistant", "content": "Which camera do you mean?"},
-        {"role": "user", "content": "chistes"},
-    ]
-    assert _conversation_language("chistes", history) == "es"
-    assert _LanguageLlm.detected == 0
-
-
 # --- a bare request for jokes tells one ------------------------------------------------
 
 

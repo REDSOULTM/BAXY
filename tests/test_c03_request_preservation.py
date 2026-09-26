@@ -1557,7 +1557,8 @@ def test_language_only_repair_preserves_the_complete_draft_and_original_history(
     assert json.loads(repair["messages"][-1]["content"]) == {
         "source_text": draft, "target_language": target,
     }
-    assert repair["max_tokens"] == 96
+    # 44e683ad (verificación 2026-09-25): the JSON repair holds two sentences, 160 tokens, not 96.
+    assert repair["max_tokens"] == 160
     assert repair["response_format"]["json_schema"]["name"] == "bounded_chat_answer"
     assert len(runtime.payloads) == 2
 

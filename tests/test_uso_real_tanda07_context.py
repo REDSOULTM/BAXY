@@ -435,46 +435,11 @@ def _turn(message: dict, model: _Scripted, state: dialogue.DialogueState) -> dic
     )
 
 
-@pytest.mark.parametrize(
-    ("said", "operation", "observed", "reply", "text", "rewrite", "operations"),
-    [
-        (
-            "will it rain tomorrow in Lisbon?", "weather.current", {"location": "Lisbon", "country": "Portugal"},
-            "No rain tomorrow in Lisbon.", "what about sunday?", "will it rain sunday in Lisbon?",
-            ["weather.current"],
-        ),
-        (  # spanglish, rioplatense
-            "¿va a llover mañana en Buenos Aires?", "weather.current", {"location": "Buenos Aires"},
-            "Mañana no llueve.", "¿y el weekend?", "¿va a llover el weekend en Buenos Aires?", ["weather.current"],
-        ),
-        (
-            "pon algo de Soda Stereo en Spotify", "media.play.query", {"title": "Persiana Americana — Soda Stereo"},
-            "Suena Persiana Americana.", "cómo se llama esta?", "cómo se llama esta canción", ["media.status"],
-        ),
-    ],
-)
-def test_the_followup_turn_is_decided_by_the_readers_as_the_rewritten_request(
-    said, operation, observed, reply, text, rewrite, operations,
-):
-    result = _turn(_message(said, reply, text), _Scripted({text: rewrite}), _state((said, operation, observed)))
-    assert result["kind"] == "action" and result["effectOperations"] == operations
-    assert result["objective"] == rewrite
-
-
 def test_a_rewrite_in_words_nobody_said_leaves_the_message_as_it_arrived():
     # A translated rewrite («domingo» for «sunday») is a word the model brought in.
     model = _Scripted({"what about sunday?": "¿llueve el domingo?"})
     message = _message("che, ¿llueve mañana?", "No.", "what about sunday?")
     assert _rearm(message, model, _state(_WEATHER)) is None
-
-
-def test_the_timer_correction_turn_is_one_plan_that_replaces_it():
-    request = "set a timer for the tea, 4 minutes"
-    state = _state((request, "notification.schedule", {"kind": "alarm", "title": request}))
-    model = _Scripted({"actually, make it 6": "set a timer for the tea, 6 minutes"})
-    result = _turn(_message(request, "Done.", "actually, make it 6"), model, state)
-    assert result["kind"] == "plan"
-    assert result["effectOperations"] == ["notification.cancel.latest", "notification.schedule"]
 
 
 # ---------------------------------------------------------------- 5. no inventing

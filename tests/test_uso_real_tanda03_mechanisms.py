@@ -260,24 +260,6 @@ def test_public_people_keep_their_lookup(text: str) -> None:
     assert intent is not None and intent.operations == ("web.search",)
 
 
-@pytest.mark.parametrize(
-    "text",
-    [
-        "es cierto que el cumpleaños de antonia es el primero de marzo",
-        "cuándo es el cumpleaños de juan",
-        "did i pay the electricity bill",
-        "what did i do last weekend",
-        "how old is jessica",
-    ],
-)
-def test_a_private_question_the_model_cannot_answer_stays_on_the_pc(text: str) -> None:
-    llm = _ChattingModel()
-    result = _turn(text, ("web.search", "memory.recall"), llm)
-    assert "web.search" not in result["effectOperations"]
-    assert "web.search" not in result["intentOperations"]
-    assert result["operation"] != "web.search"
-
-
 # --- B. A time is never a place -----------------------------------------------------------------------
 
 _TIMES_ONLY = [

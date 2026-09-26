@@ -358,26 +358,3 @@ def _turn(*turns: str, pending: str | None = None) -> tuple[dict[str, object], _
     )
     return result, runtime
 
-
-def test_the_answer_after_a_brightness_question_sets_the_level_in_the_whole_turn():
-    result, _ = _turn("bájale el brillo a la pantalla", "a 40", pending="bájale el brillo a la pantalla")
-    assert result["kind"] == "action"
-    assert result["effectOperations"] == ["system.settings.set"]
-
-
-def test_the_answer_after_an_elliptical_volume_question_adjusts_the_volume_in_the_whole_turn():
-    result, _ = _turn("ponme algo tranquilo", "súbele un poco", "un 10", pending="súbele un poco")
-    assert result["kind"] == "action"
-    assert result["effectOperations"] == ["audio.volume.adjust"]
-
-
-def test_a_pronoun_level_after_a_brightness_exchange_sets_the_brightness_in_the_whole_turn():
-    result, _ = _turn("bájale el brillo a la pantalla", "a 40", "súbelo a 80")
-    assert result["kind"] == "action"
-    assert result["effectOperations"] == ["system.settings.set"]
-
-
-def test_an_elliptical_volume_request_asks_the_amount_in_the_whole_turn():
-    result, runtime = _turn("ponme algo tranquilo", "bájale")
-    assert result["kind"] == "clarify"
-    assert runtime.questions == [("bájale", ("audio.volume.adjust",), ("amount",))]

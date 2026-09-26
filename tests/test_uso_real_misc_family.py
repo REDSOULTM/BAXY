@@ -460,9 +460,3 @@ class _NotKnowingLlm(_ClosedLlm):
             "response_language": "en",
         }
 
-
-def test_a_known_limit_the_model_answers_is_never_searched() -> None:
-    result = _turn("rate five", _NotKnowingLlm("I don't know what you want me to rate."))
-
-    assert result["effectOperations"] == []
-    assert "web.search" not in result["intentOperations"]

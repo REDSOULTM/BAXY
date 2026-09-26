@@ -660,24 +660,6 @@ def _finish_request_scope(
         raise cleanup_errors[0]
 
 
-def _turn_evidence_query(text: str, history: object) -> str:
-    """Retain a small conversational window for semantic evidence retrieval."""
-
-    context: list[str] = []
-    if isinstance(history, list):
-        for turn in history[-4:]:
-            if not isinstance(turn, dict):
-                continue
-            role = turn.get("role")
-            content = turn.get("content")
-            if role in {"user", "assistant"} and isinstance(content, str):
-                compact = " ".join(content.split())
-                if compact:
-                    context.append(f"{role}: {compact[:1_024]}")
-    current = " ".join(text.split())[:2_048]
-    return "\n".join([*context, f"user: {current}"])[-4_096:]
-
-
 _OPERATION_NAME = re.compile(r"^[a-z][a-z0-9]*(?:\.[a-z][a-z0-9]*)+$")
 _ARGUMENT_FIELD_NAME = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,127}$")
 _KNOWN_RISKS = {
@@ -2481,8 +2463,9 @@ def _served_surface_reread(
     """The turn decided again on the canonical surface of a request about to be refused, or None.
 
     Only when the rewrite (``semantic.surface``) reads as a served request: the readers prove an effect or
-    a missing value in it, or the curated domain gate grounds in it a served operation that the words as
-    said did not name. Asking the catalogue about every refusal was measured and rejected (see the public
+    a missing value in it (Fase 3.5b M13: whether the limit came from a reader or from the contextual
+    decider). The domain gate over the shortlist that also re-decided a rewrite it grounded was retired
+    with the model path. Asking the catalogue about every refusal was measured and rejected (see the public
     lookup comment in ``_decide_turn_result``): the nearest neighbours of an out-of-catalogue request turned
     honest limits into questions. Here the evidence is a word the readers know standing where the person
     said another one; a limit of something BAXY does not have keeps its words and stays a limit.
@@ -2499,23 +2482,10 @@ def _served_surface_reread(
         game_catalog=game_catalog,
         previous_user_text=previous,
     )
-    family: tuple[str, ...] = ()
     if reading.effects is None and reading.clarification is None:
-        family = next(
-            (
-                (tool.name,)
-                for tool in planner_catalog.shortlist(canonical)[:4]
-                if operation_domain_is_grounded(canonical, tool.name, application_names) is True
-                and operation_domain_is_grounded(objective, tool.name, application_names) is not True
-                # An application or a game is grounded by its installed identity, as the domain veto
-                # grounds it; an open verb alone («abre la puerta») names neither.
-                and (tool.name != "app.open" or resolve_application_catalog_app_id(canonical, application_names))
-                and (tool.name != "game.launch" or resolve_game_catalog_app_id(canonical, game_catalog))
-            ),
-            (),
-        )
-        if not family:
-            return None
+        # Fase 3.5b M13: only what the readers prove on the canonical surface overrides a limit; the
+        # domain gate over the shortlist turned honest limits into actions and is retired.
+        return None
     turns = list(history) if isinstance(history, list) else []
     if turns and isinstance(turns[-1], dict) and turns[-1].get("role") == "user":
         turns[-1] = {**turns[-1], "content": canonical}
@@ -2530,7 +2500,7 @@ def _served_surface_reread(
             application_names=application_names,
             game_catalog=game_catalog,
             on_signal=on_signal,
-            served_surface=family,
+            served_surface=(),
             already_signaled=already_signaled,
         )
     except PlannerContractError:
@@ -2539,44 +2509,6 @@ def _served_surface_reread(
     # The shell plans, confirms and resumes the words that were read.
     result.setdefault("objective", canonical)
     return result
-
-
-def _recogniser_identity_holds(
-    explicit_intent: EffectIntent,
-    objective: str,
-    tool_by_name: dict[str, dict],
-    llm: object,
-    application_names: tuple[str, ...] | ApplicationCatalogIndex,
-) -> bool:
-    """Let the deterministic recogniser decline the rows it resolved wrong.
-
-    One-sided in the same direction as every other guard here: it can only
-    withdraw the recogniser's claim, never move it to another operation. When it
-    withdraws, the row is not refused -- it falls through to the ranked model
-    path, which is the alternative goal 03 already measured for these exact
-    rows.
-
-    A silent or unavailable verifier keeps the recogniser exactly as it was.
-    """
-
-    identifies = getattr(llm, "operation_is_the_requested_effect", None)
-    if not callable(identifies):
-        return True
-    for operation in explicit_intent.operations:
-        contract = _turn_operation_contract(
-            tool_by_name.get(operation),
-            operation,
-            objective,
-            application_names,
-        )
-        if contract is None:
-            return True
-        try:
-            if not identifies(objective, operation, contract):
-                return False
-        except Exception:  # noqa: BLE001 - a silent verifier never withdraws
-            return True
-    return True
 
 
 def _withheld_invocation_operations(
@@ -2807,32 +2739,6 @@ def _shortlist_with_required_effects(
     required_names = {tool.name for tool in required_tools}
     remaining = [tool for tool in shortlist if tool.name not in required_names]
     return tuple([*required_tools, *remaining][:MAX_SHORTLIST_OPERATIONS])
-
-
-def _compound_clause_shortlist(
-    objective: str,
-    planner_catalog: PlannerCatalog,
-) -> tuple[PlannerTool, ...]:
-    """Retrieve each spoken sequence clause without assigning an operation."""
-
-    clauses = compound_retrieval_clauses(objective)
-    if not clauses:
-        return ()
-    per_clause = min(4, max(3, 24 // len(clauses)))
-    selected: list[PlannerTool] = []
-    selected_names: set[str] = set()
-    for clause in clauses:
-        ranked = planner_catalog.shortlist(clause)
-        added = 0
-        for tool in ranked:
-            if tool.name in selected_names:
-                continue
-            selected.append(tool)
-            selected_names.add(tool.name)
-            added += 1
-            if added >= per_clause:
-                break
-    return tuple(selected[:MAX_SHORTLIST_OPERATIONS])
 
 
 def _prepare_plan_prompt_resources(
@@ -4110,6 +4016,7 @@ def _context_decided_result(
     *,
     llm: Any,
     planner_catalog: PlannerCatalog,
+    on_limit: Callable[[], dict[str, Any] | None] | None = None,
 ) -> dict[str, Any]:
     """The turn as the contextual decider reads it (``semantic.decider``), with the whole conversation.
 
@@ -4153,7 +4060,23 @@ def _context_decided_result(
         result["kind"] = "clarify"
         result["question"] = question
     else:
+        if decided.decision == "limit" and on_limit is not None:
+            reread = on_limit()
+            if reread is not None:
+                _append_turn_audit(
+                    {
+                        "schema": "baxy.mind-turn-audit.v1",
+                        "request_id": message.get("id"),
+                        "phase": "served_surface_reread",
+                        "decision_path": "context_decider",
+                        "raw_decision": {"mode": decided.decision, "request": decided.request},
+                        "reread_objective": reread.get("objective"),
+                    }
+                )
+                return reread
         kind = "unsupported" if decided.decision == "limit" else "knowledge"
+        # Talk and limits have no request for the shell to plan, confirm or resume.
+        result.pop("objective", None)
         language = _read_reply_language(text, history)
         if language is None:
             try:
@@ -4285,8 +4208,8 @@ def _decide_turn_result(
 ) -> dict[str, Any]:
     """Decide one side-effect-free turn result from the (rearmed) request.
 
-    ``served_surface`` is None on the request as said; on the re-read of its canonical surface
-    (``_served_surface_reread``) it holds the served operation that only the rewrite named, if any.
+    ``served_surface`` is None on the request as said and ``()`` on the re-read of its canonical surface
+    (``_served_surface_reread``), which is never re-read again.
     ``in_conversation``: the message follows earlier turns. Only the conversation readers (talk,
     complaints, social acts, known limits) keep it; everything else is the contextual decider's, which
     reads the whole conversation (Fase 3.5b F4: with the history, the effect and clarification readers
@@ -4807,13 +4730,33 @@ def _decide_turn_result(
         )
         if withdrawn_closed_refusal:
             explicit_conversation_decision = None
-    if served_surface is None and explicit_conversation_decision is None and (
-        explicit_intent is None or in_conversation
-    ):
+    if explicit_conversation_decision is None and (explicit_intent is None or in_conversation):
         # No reader proved this message, or it follows earlier turns and no conversation reader kept it:
         # the contextual decider decides it (Fase 3.5b F4), not the shortlist, the native selector and
         # the gates.
-        return _context_decided_result(message, llm=llm, planner_catalog=planner_catalog)
+        def reread_limit() -> dict[str, Any] | None:
+            # Tanda 3 «Pausa el speaker.», «añadir una nueva lista para material escolar»: a limit the decider
+            # gives to words the readers prove once they stand in their canonical surface is that request.
+            if served_surface is not None or non_target_language is not None:
+                return None
+            return _served_surface_reread(
+                message,
+                objective,
+                history,
+                llm=llm,
+                planner_catalog=planner_catalog,
+                turn_evidence=turn_evidence,
+                encoder=encoder,
+                tool_by_name=tool_by_name,
+                application_names=application_names,
+                game_catalog=game_catalog,
+                on_signal=on_signal,
+                already_signaled=already_signaled,
+            )
+
+        return _context_decided_result(
+            message, llm=llm, planner_catalog=planner_catalog, on_limit=reread_limit,
+        )
     if explicit_intent is not None:
         _emit_early_turn_signal(
             path=PATH_RECOGNIZER
@@ -4831,181 +4774,17 @@ def _decide_turn_result(
             explicit_intent.operations,
             planner_catalog,
         )
-    elif explicit_conversation_decision is not None:
-        # Neither deterministic conversation variant consumes candidates,
-        # evidence or semantic scores. Avoid crossing the E5 process for data
-        # that cannot influence the already-closed decision.
-        shortlist = ()
     else:
-        evidence_query = _turn_evidence_query(routing_objective, history)
-        _emit_early_turn_signal(
-            path=PATH_MODEL,
-            objective=objective,
-            request_id=message.get("id"),
-            on_signal=on_signal,
-            already_signaled=already_signaled,
-            llm=llm,
-        )
-        # Retrieval ranks operations, not families. Ranking families and then
-        # handing out a window inside the winner is a coarser question than the
-        # one being asked, and the leaf the person meant lost its place to
-        # siblings of a family that merely scored well. Measured end to end on
-        # the fresh paraphrase corpus of goal 03 with the same decider, the
-        # expected operation reached the decider in 73 turns of 124 that way and
-        # in 102 this way. The compound contract still forces its own proved
-        # identities in below.
-        shortlist = planner_catalog.shortlist(routing_objective)
-        if unresolved_compound_effects is not None:
-            required = tuple(
-                operation
-                for sequence in unresolved_compound_effects.required_clause_sequences
-                for operation in sequence
-            )
-            shortlist = _shortlist_with_required_effects(
-                shortlist,
-                required,
-                planner_catalog,
-            )
-        elif (
-            effect_intent._direct_public_search_query(routing_objective) is not None
-            and getattr(planner_catalog, "get", None) is not None
-            and planner_catalog.get("web.search") is not None
-        ):
-            # SEARCH2011 «dale, buscame recetas de pizza»: the retrieval left
-            # web.search out of the shortlist and the decider took
-            # filesystem.search, vetoed as unsupported. A direct public search
-            # the reader recognizes keeps web.search visible to the decider.
-            shortlist = _shortlist_with_required_effects(
-                shortlist,
-                ("web.search",),
-                planner_catalog,
-            )
-        clause_shortlist = _compound_clause_shortlist(
-            routing_objective,
-            planner_catalog,
-        )
-        if clause_shortlist:
-            clauses = compound_retrieval_clauses(routing_objective)
-            advisory_operations = compound_retrieval_operation_hints(
-                routing_objective,
-                available_operations,
-                application_names,
-            )
-            advisory_tools = tuple(
-                tool
-                for operation in advisory_operations
-                if (tool := planner_catalog.get(operation)) is not None
-            )
-            if len(advisory_tools) == len(clauses) and len(clauses) >= 2:
-                # Every isolated clause has exactly one closed-catalog match.
-                # Keep only those advisory identities so unrelated leaves
-                # cannot tempt the semantic selector to add an extra effect.
-                # This remains retrieval-only: conservation and grounding
-                # still decide whether the proposal can retain authority.
-                shortlist = advisory_tools
-            else:
-                shortlist = tuple(
-                    {
-                        tool.name: tool
-                        for tool in (
-                            *advisory_tools,
-                            *clause_shortlist,
-                            *shortlist,
-                        )
-                    }.values()
-                )[:MAX_SHORTLIST_OPERATIONS]
-            if unresolved_compound_effects is not None:
-                required = tuple(
-                    operation
-                    for sequence in unresolved_compound_effects.required_clause_sequences
-                    for operation in sequence
-                )
-                shortlist = _shortlist_with_required_effects(
-                    shortlist,
-                    required,
-                    planner_catalog,
-                )
-        if recogniser_declined:
-            # The identity verifier may withdraw a true colloquial leaf that
-            # E5 never ranked. Keep that leaf visible to the model path so a
-            # decline cannot become a retrieval hole.
-            shortlist = _shortlist_with_required_effects(
-                shortlist,
-                tuple(recogniser_declined),
-                planner_catalog,
-            )
-    candidates = [
-        {
-            "name": tool.name,
-            "description": tool.description,
-            "arguments_schema": tool.schema,
-        }
-        for tool in shortlist
-    ]
-    evidence = (
-        []
-        if explicit_intent is not None or explicit_conversation_decision is not None
-        else turn_evidence.retrieve(
-            evidence_query,
-            encoder,
-            [tool.name for tool in shortlist],
-        )
-    )
-    native_selection = (
-        explicit_intent is None
-        and explicit_conversation_decision is None
-        and bool(candidates)
-        and bool(getattr(llm, "_native_tool_policy_enabled", False))
-    )
-    if native_selection:
-        # Tandas 04f/05: model-path conversations took 5–6 s, five serial calls
-        # before the reply began. The native selector writes no reply of its own
-        # (its prose is authored under tool-selection instructions, measured in
-        # astra-audio-mind505); when it selects nothing the turn answers as
-        # knowledge, and that reply now decodes beside the selection.
-        _prepare_conversation_reply(
-            llm,
-            objective,
-            _conversation_reply_arguments(
-                history,
-                conversation_kind="knowledge",
-                response_language=_read_reply_language(objective, history),
-                scoped=False,
-                intent_operations=[],
-                available_operations=available_operations,
-            ),
-        )
+        # A conversation reader closed the turn: neither deterministic conversation variant consumes
+        # candidates, evidence or semantic scores. Every other turn went to the contextual decider above.
+        shortlist = ()
     raw_decision = (
         explicit_conversation_decision
         if explicit_conversation_decision is not None
         else _explicit_turn_decision(explicit_intent, objective)
-        if explicit_intent is not None
-        else llm.decide_turn(
-            routing_objective,
-            candidates,
-            history=history,
-            evidence=evidence,
-        )
     )
-    # Which of the three producers owned this decision. Without it a split by
-    # cause cannot tell a recogniser hit from a retrieval hit: both publish a
-    # candidate list that already contains the answer.
-    decision_path = (
-        "explicit_effects"
-        if explicit_intent is not None
-        else "explicit_conversation"
-        if explicit_conversation_decision is not None
-        else "model"
-    )
-    # The operations the native selector saw and declined, all of them.
-    selector_declined = (
-        frozenset(candidate["name"] for candidate in candidates)
-        if decision_path == "model"
-        and native_selection
-        and isinstance(raw_decision, dict)
-        and not raw_decision.get("effect_operations")
-        else frozenset()
-    )
+    # Which reader owned this decision (the contextual decider's turns never reach here).
+    decision_path = "explicit_effects" if explicit_intent is not None else "explicit_conversation"
     turn_audit: dict[str, Any] = {
         "schema": "baxy.mind-turn-audit.v1",
         "request_id": message.get("id"),
@@ -5384,7 +5163,6 @@ def _decide_turn_result(
             llm,
             application_names,
             history=history,
-            already_declined=selector_declined,
         )
         # Tanda 4 2026-09-24 «find instructions on how to play taboo»: the probe
         # named routine.read and the turn asked «Want me to show you how to play
@@ -5530,29 +5308,6 @@ def _decide_turn_result(
                 turn_audit["reread_objective"] = reread.get("objective")
                 _append_turn_audit(turn_audit)
                 return reread
-        elif served_surface:
-            verdict, question = _withheld_operation_verdict(
-                objective, served_surface, tool_by_name, llm, application_names, rewrite_grounded=True,
-            )
-            if verdict == "act":
-                shortlist = _shortlist_with_required_effects(shortlist, served_surface, planner_catalog)
-                decision = validate_turn_decision(
-                    _recovered_action_decision(served_surface[0], decision.get("response_language")),
-                    {tool.name for tool in shortlist},
-                )
-                intent_operations = list(served_surface)
-                turn_audit["stages"].append(
-                    _turn_audit_stage("served_surface_grounded", decision)
-                )
-            elif verdict == "ask":
-                decision = validate_turn_decision(
-                    _operation_question_decision(question, decision.get("response_language")),
-                    {tool.name for tool in shortlist},
-                )
-                intent_operations = list(served_surface)
-                turn_audit["stages"].append(
-                    _turn_audit_stage("served_surface_question", decision)
-                )
 
     reply_text = ""
     # El idioma con el que se redacta la respuesta viaja con ella: el shell no

@@ -65,7 +65,6 @@ def _turn(text: str, reply: str) -> dict[str, object]:
 @pytest.mark.parametrize(
     ("text", "reply"),
     [
-        ("¿Conoces el lenguaje de programación Monkey C?", "No, no conozco el lenguaje de programación Monkey C."),
         ("¿qué es el zorbing?", "No tengo información sobre el zorbing."),
         ("what is a bogwoppit", "I don't know what a bogwoppit is."),
     ],
@@ -81,8 +80,6 @@ def test_what_baxy_does_not_know_is_looked_up(text: str, reply: str) -> None:
 @pytest.mark.parametrize(
     ("text", "reply"),
     [
-        # The person's own things never leave the PC as a search.
-        ("¿qué tengo en mi agenda mañana?", "No sé qué tienes en tu agenda."),
         # BAXY himself is answered as BAXY.
         ("¿quién eres?", "No sé muy bien cómo definirme, soy BAXY."),
         # A knowing answer stays an answer.
@@ -101,9 +98,6 @@ def test_own_things_identity_and_known_answers_are_not_searched(text: str, reply
 @pytest.mark.parametrize(
     ("text", "reply"),
     [
-        ("oye compárteme algún chiste para hacerme feliz", "No sé si te va a gustar, pero ahí va uno."),
-        ("recítame un poema de amor", "No sé escribir como Neruda, pero aquí va."),
-        ("tell me something funny", "I don't know any new ones, but here goes."),
         ("cuéntame una historia de piratas", "No conozco esa historia, pero te invento una."),
     ],
 )

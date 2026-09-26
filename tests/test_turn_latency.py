@@ -374,36 +374,6 @@ class _NoEvidence:
         return []
 
 
-def test_a_model_path_decision_does_not_wait_for_its_notice() -> None:
-    llm = _ModelPathLlm()
-    signals: list[dict[str, object]] = []
-    tool = {
-        "type": "function",
-        "function": {
-            "name": "system_time", "canonical_name": "system.time",
-            "description": "Read the local clock.", "risk": "read_only",
-            "parameters": {"type": "object", "properties": {}, "required": [],
-                           "additionalProperties": False},
-        },
-    }
-    result = _prepare_turn_result(
-        {"id": "t7", "text": "how long should i boil noodles for"},
-        llm=llm,
-        planner_catalog=PlannerCatalog([tool]),
-        turn_evidence=_NoEvidence(),
-        encoder=lambda _texts: (),
-        tool_by_name={"system.time": tool},
-        # Due at once: the notice starts as the turn does and the decision still does not wait for it.
-        on_signal=PendingTurnSignal(signals.append, notice_after=0.0),
-    )
-    assert result["kind"] == "conversation"
-    deadline = time.monotonic() + _WAIT
-    while not llm.notice_saw_decision and time.monotonic() < deadline:
-        time.sleep(0.01)
-    # The notice was still being worded when the decision began.
-    assert llm.notice_saw_decision == [True]
-
-
 # --- the effect guard beside the selector -----------------------------------
 
 
@@ -443,97 +413,6 @@ def _guard_reply(_cancellation: object) -> dict[str, object]:
     return _choice(
         {"content": '{"request_type": "stable_conversation", "effect_count": "zero"}'}, "stop",
     )
-
-
-def test_the_guard_decodes_beside_the_selector_and_serves_the_later_read() -> None:
-    runtime = _parallel_runtime(_CONVERSATION, _guard_reply)
-    text = "how long should i boil noodles for"
-    result = runtime.decide_turn(text, [_candidate("system.time", "Read the local clock.")])
-
-    assert result["mode"] == "conversation"
-    assert runtime._semantic_effect_cache[text] == ("no_effect", "zero")
-    before = list(runtime.posts)  # type: ignore[attr-defined]
-    # The effect-shape and public-lookup reads after the decision cost nothing.
-    assert runtime._verify_semantic_effect_shape(text) == ("no_effect", "zero")
-    assert runtime.public_lookup_requested(text) is False
-    assert runtime.posts == before == ["guard", "selector"]  # type: ignore[attr-defined]
-
-
-def test_one_guard_reading_serves_the_request_with_and_without_its_envelope() -> None:
-    # Tanda-06b: the turn decides on the routing text («Cuál es…?») and the conversation
-    # presentation read the request as said («¿Cuál es…?»): a second, serial G per question.
-    guard_users: list[str] = []
-
-    def guard(_cancellation: object) -> dict[str, object]:
-        return _guard_reply(_cancellation)
-
-    runtime = _parallel_runtime(_CONVERSATION, guard)
-    posted = runtime._post
-
-    def post(payload: dict[str, object], *args: object, **kwargs: object) -> dict[str, object]:
-        messages = payload["messages"]
-        if messages[0]["content"] == SEMANTIC_EFFECT_GUARD_PROMPT:  # type: ignore[index]
-            guard_users.append(messages[1]["content"])  # type: ignore[index]
-        return posted(payload, *args, **kwargs)
-
-    runtime._post = post  # type: ignore[method-assign]
-    routing = "Cuál es la diferencia entre un auto a gasolina y uno eléctrico?"
-    for said in (f"¿{routing}", f"Hola BAXY, ¿{routing}"):
-        runtime._semantic_effect_cache = {}
-        runtime.__dict__.pop("_semantic_request_types", None)
-        runtime.posts = []  # type: ignore[attr-defined]
-        guard_users.clear()
-        assert runtime.decide_turn(routing, [_candidate("system.time", "Read the local clock.")])["mode"] == (
-            "conversation"
-        )
-        assert runtime._verify_semantic_effect_shape(said) == ("no_effect", "zero")
-        assert runtime.public_lookup_requested(said) is False
-        assert runtime.public_lookup_requested(routing) is False
-        assert runtime.posts == ["guard", "selector"]  # type: ignore[attr-defined]
-        # G reads the request itself, never its envelope.
-        assert guard_users == [f"Mensaje actual:\n{routing}"]
-
-
-def test_an_action_retires_the_guard_without_waiting_for_it() -> None:
-    cancelled = threading.Event()
-
-    def guard_until_cancelled(cancellation: object) -> dict[str, object]:
-        deadline = time.monotonic() + _WAIT
-        while not getattr(cancellation, "cancelled", False):
-            assert time.monotonic() < deadline, "the guard was never retired"
-            time.sleep(0.005)
-        cancelled.set()
-        raise ChatCompletionCancelled("retired")
-
-    runtime = _parallel_runtime(_ACTION, guard_until_cancelled)
-    result = runtime.decide_turn(
-        "dime la hora", [_candidate("system.time", "Read the local clock.")],
-    )
-    assert result["mode"] == "action"
-    assert result["effect_operations"] == ["system.time"]
-    assert cancelled.wait(_WAIT)
-    assert "dime la hora" not in runtime._semantic_effect_cache
-
-
-def test_a_failed_selection_retires_the_guard() -> None:
-    cancelled = threading.Event()
-
-    def guard_until_cancelled(cancellation: object) -> dict[str, object]:
-        deadline = time.monotonic() + _WAIT
-        while not getattr(cancellation, "cancelled", False):
-            assert time.monotonic() < deadline
-            time.sleep(0.005)
-        cancelled.set()
-        raise ChatCompletionCancelled("retired")
-
-    runtime = _parallel_runtime(_choice({"content": None}, "length"), guard_until_cancelled)
-    try:
-        runtime.decide_turn("dime la hora", [_candidate("system.time", "Read the local clock.")])
-    except ValueError:
-        pass
-    else:  # pragma: no cover - the reply above is invalid
-        raise AssertionError("an invalid selection must fail")
-    assert cancelled.wait(_WAIT)
 
 
 def test_each_model_call_can_be_timed_without_the_persons_words(tmp_path, monkeypatch) -> None:
@@ -579,22 +458,6 @@ def test_each_model_call_can_be_timed_without_the_persons_words(tmp_path, monkey
     assert (rows[0]["cache_n"], rows[0]["prompt_n"], rows[0]["predicted_n"]) == (380, 12, 20)
     assert rows[0]["max_tokens"] == 64 and rows[0]["elapsed_ms"] >= 0
     assert "1234" not in audit.read_text(encoding="utf-8")
-
-
-def test_one_slot_profiles_keep_the_guard_where_it_was() -> None:
-    runtime = object.__new__(LlmRuntime)
-    runtime._native_tool_policy_enabled = True
-    runtime._parallel_turn_verification = False
-    posts: list[str] = []
-
-    def post(payload: dict[str, object], *_args: object, **_kwargs: object) -> dict[str, object]:
-        posts.append("guard" if payload["messages"][0]["content"] == SEMANTIC_EFFECT_GUARD_PROMPT else "selector")  # type: ignore[index]
-        return _CONVERSATION
-
-    runtime._post = post  # type: ignore[method-assign]
-    runtime.decide_turn("how long", [_candidate("system.time", "Read the local clock.")])
-    assert posts == ["selector"]
-    assert llm_module.LlmRuntime._run_with_completion_cancellation  # shared by both cascades
 
 
 # --- the conversation reply beside the decision -----------------------------
@@ -794,23 +657,6 @@ def _turn(llm: _PreparingLlm, text: str) -> dict[str, object]:
         encoder=lambda _texts: (),
         tool_by_name={"system.time": _CLOCK_TOOL},
     )
-
-
-def test_a_model_path_conversation_prepares_exactly_the_reply_it_publishes() -> None:
-    llm = _PreparingLlm()
-    result = _turn(llm, _NOODLES)
-
-    assert result["kind"] == "conversation"
-    assert len(llm.prepared) == len(llm.asked) == 1
-    assert llm.prepared[0] == llm.asked[0]
-    assert llm.asked[0][1]["conversation_kind"] == "knowledge"
-
-
-def test_the_probe_does_not_re_ask_what_the_selector_declined() -> None:
-    llm = _PreparingLlm()
-    _turn(llm, _NOODLES)
-    # The selector saw system.time and called nothing: no second selector call.
-    assert llm.probes == []
 
 
 def test_a_closed_social_turn_prepares_exactly_the_reply_it_publishes() -> None:

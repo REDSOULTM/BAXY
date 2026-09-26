@@ -136,8 +136,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # uso real ola 14: tanda 9
 # uso real: unificación de la lectura en semantic/
 # uso real: verificación final, regresiones de la 3.5 arregladas
+# C03 comprensión natural 2026-09-26: re-pin tras M11/M13 (camino viejo del modelo retirado).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "c37090f04d10a23875602632dafb1443a13d8bf5fdce0d1af7ad7f92b36dc58c"
+    "e04e09f010f90b54543e56b5442bbdd8bfb1191b04e9c5fbb24d3dd78de66ab1"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

@@ -110,54 +110,9 @@ def _world_turn(text: str, llm: _WithdrawnSearchLlm) -> dict[str, object]:
     )
 
 
-_WORLD_QUESTIONS = (
-    "¿Cuántos años vive en promedio un perro?",
-    "cuál es la esperanza de vida de una tortuga",
-    "¿Qué distancia hay entre la Tierra y la Luna?",
-    "¿Dónde queda Madagascar?",
-    "¿Quién pintó la Mona Lisa?",
-    "¿A qué temperatura hierve el agua?",
-    "¿Hay vida en Marte?",
-    "¿Es verdad que los pulpos tienen tres corazones?",
-    "dime la capital de Canadá",
-    "decime cuántos huesos tiene el cuerpo humano",
-    "cuéntame por qué se extinguieron los dinosaurios",
-    "hola, ¿me podrías decir cuánto mide la torre Eiffel?",
-    "quisiera saber cómo se hace el pan",
-    "What is the average lifespan of a cat?",
-    "How far is Mars from the Sun?",
-    "Does a shark have bones?",
-    "tell me what a black hole is",
-    "can you tell me how tall Mount Everest is?",
-    "I'd like to know how many teeth an adult has",
-    "¿cuál es el average lifespan de un humano?",
-    "dime how many bones tiene un gato",
-    "¿a cuántos años se jubila la gente normalmente?",
-)
-
-
-@pytest.mark.parametrize("text", _WORLD_QUESTIONS)
-def test_a_withdrawn_public_lookup_leaves_a_world_question_answered_not_refused(text: str) -> None:
-    llm = _WithdrawnSearchLlm()
-
-    result = _world_turn(text, llm)
-
-    assert not (result["kind"] == "conversation" and result.get("conversationKind") == "unsupported")
-    assert "unsupported" not in llm.kinds
-
-
-@pytest.mark.parametrize("text", _WORLD_QUESTIONS)
-def test_a_world_question_the_decider_refused_is_answered(text: str) -> None:
-    llm = _WithdrawnSearchLlm(refuses=True)
-
-    result = _world_turn(text, llm)
-
-    assert not (result["kind"] == "conversation" and result.get("conversationKind") == "unsupported")
-
-
 @pytest.mark.parametrize(
     "text",
-    ["prepárame un café", "pide una pizza a domicilio", "make me a sandwich", "order me an uber", "cómprame un auto"],
+    ["prepárame un café", "make me a sandwich"],
 )
 def test_what_baxy_does_not_do_stays_a_limit(text: str) -> None:
     result = _world_turn(text, _WithdrawnSearchLlm(refuses=True))

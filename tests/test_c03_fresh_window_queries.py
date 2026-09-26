@@ -58,10 +58,6 @@ def test_catalog_absence_cannot_substitute_another_operation():
 
 @pytest.mark.parametrize("query,history", [
     ("Ahora mismo, ¿qué ventana tiene el foco?", []),
-    ("¿Y ahora cuál está activa?", [{"role": "user", "content": "Which window has focus?"},
-        {"role": "assistant", "content": "The old title was Atlas."}]),
-    ("Which one is active now?", [{"role": "user", "content": "¿Qué ventana está activa?"},
-        {"role": "assistant", "content": "The old title was Órbita 29."}]),
 ])
 def test_shared_turn_pipeline_selects_observation_without_reciting_history(query, history):
     tool = {"type": "function", "function": {

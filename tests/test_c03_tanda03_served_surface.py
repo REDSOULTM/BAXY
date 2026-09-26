@@ -7,9 +7,9 @@ explotar la cabeza» was answered with chat; «¿puedes crear un programa en jav
 
 - Before a limit is published the request is re-read in its canonical surface (``semantic.surface``): the
   words the readers know stand where the person said another one. What the readers prove is done, what lacks
-  a value is asked, and a served operation only the rewrite grounds is re-decided and, if still refused, done
-  (tanda 4, D3: never offered back as «¿Quieres que…?») unless its risk forbids acting unasked. A limit of
-  something BAXY does not have keeps its words and stays a limit.
+  a value is asked (Fase 3.5b M13: also when the limit is the contextual decider's). A limit of something BAXY
+  does not have keeps its words and stays a limit. (The domain gate that re-decided a rewrite only it grounded
+  was retired with the model path; the contextual decider reads those requests itself.)
 - An order said before talk about it is the order.
 - Code is written in the conversation like any other text.
 - Restoring or trashing a note must name a note.
@@ -23,7 +23,7 @@ import pytest
 
 from baxy_mind import __main__ as sidecar
 from baxy_mind.planner import PlannerCatalog
-from baxy_mind.semantic import surface
+from baxy_mind.semantic import decider, surface
 from baxy_mind.semantic.patterns import conversation_only_content_request, operation_domain_is_grounded
 from baxy_mind.semantic.reading import read
 from test_c03_pointless_questions import _NoEvidence
@@ -144,6 +144,11 @@ class _RefusingLlm:
             "response_language": "es",
         }
 
+    def decide_in_context(self, text: str, *_args: object, **_kwargs: object) -> decider.ContextDecision:
+        # Fase 3.5b: the contextual decider of the real run refuses what it reads as not served.
+        self.decided.append(text)
+        return decider.ContextDecision(request=text, decision="limit", operations=(), question="")
+
     def chat(self, *_args: object, **_kwargs: object) -> tuple[str, list[object]]:
         self.chats += 1
         return "Eso no lo hago.", []
@@ -263,17 +268,6 @@ def test_a_list_added_is_a_list_created_and_its_items_are_asked() -> None:
     assert llm.chats == 0
 
 
-def test_a_served_operation_only_the_rewrite_names_is_decided_again_on_the_rewrite() -> None:
-    llm = _RefusingLlm(accepts_canonical="filesystem.folder.open")
-
-    result = _turn("enséñame la galería", llm)
-
-    assert llm.decided == ["enséñame la galería", "enséñame la carpeta de imagenes"]
-    assert result["kind"] == "action"
-    assert result["operation"] == "filesystem.folder.open"
-    assert result["objective"] == "enséñame la carpeta de imagenes"
-
-
 @pytest.mark.parametrize(
     "text", ["muéstrame la carpeta de imágenes", "muestra mis fotos", "dame la galería", "show me my pictures"],
 )
@@ -288,23 +282,6 @@ def test_an_image_from_the_web_is_still_downloaded() -> None:
     reading = read("muéstrame una foto de un gato", available_operations=("web.download", "file.open"))
 
     assert reading.effects is not None and reading.effects.operations == ("web.download", "file.open")
-
-
-def test_a_served_operation_refused_again_on_the_rewrite_is_done_never_denied_nor_offered() -> None:
-    # Tanda 4 (D3): the rewrite grounds the served operation, so it is done — never
-    # published as «no hago eso», and no longer offered back as «¿Quieres que…?».
-    llm = _RefusingLlm()
-
-    result = _turn("open my gallery", llm)
-
-    assert result["kind"] == "action"
-    assert result["operation"] == "filesystem.folder.open"
-    assert result["intentOperations"] == ["filesystem.folder.open"]
-    assert result["question"] == ""
-    assert result["objective"] == "open my pictures folder"
-    # The rewrite is the evidence; the refusing model's strict verdict is not consulted.
-    assert llm.strict_calls == []
-    assert llm.chats == 0
 
 
 @pytest.mark.parametrize("risk", ["work_loss", "recoverable_delete", "external_communication", "installation"])
@@ -330,54 +307,6 @@ def test_a_served_operation_the_rewrite_names_never_acts_unasked_when_it_destroy
     assert result["kind"] == "conversation"
     assert result["effectOperations"] == []
     assert result["question"] == ""
-
-
-def test_a_served_operation_the_rewrite_names_whose_risk_forbids_acting_is_asked_naming_it() -> None:
-    class UnsureLlm(_RefusingLlm):
-        @staticmethod
-        def operation_is_the_requested_effect(*_args: object, **_kwargs: object) -> bool:
-            return True
-
-        @staticmethod
-        def confirm_operation_before_acting(*_args: object, **_kwargs: object) -> str:
-            return "¿Abro tu carpeta de Imágenes?"
-
-    llm = UnsureLlm()
-    tools = {name: _tool(name) for name in OPERATIONS}
-    tools["filesystem.folder.open"]["function"]["risk"] = "work_loss"
-
-    result = sidecar._prepare_turn_result(
-        {"id": "turn-served-unsure", "text": "open my gallery", "history": [{"role": "user", "content": "open my gallery"}]},
-        llm=llm,
-        planner_catalog=PlannerCatalog(list(tools.values())),
-        turn_evidence=_NoEvidence(),
-        encoder=lambda _texts: (),
-        tool_by_name=tools,
-    )
-
-    assert result["kind"] == "clarify"
-    assert result["question"] == "¿Abro tu carpeta de Imágenes?"
-    assert result["intentOperations"] == ["filesystem.folder.open"]
-    assert result["effectOperations"] == []
-
-
-class _BrokenRereadLlm(_RefusingLlm):
-    def decide_turn(self, text: str, *args: object, **kwargs: object) -> dict[str, object]:
-        if self.decided:
-            self.decided.append(text)
-            raise sidecar.PlannerContractError("decisión de turno con forma inválida")
-        return super().decide_turn(text, *args, **kwargs)
-
-
-def test_a_reread_that_breaks_its_contract_keeps_the_limit_already_decided() -> None:
-    llm = _BrokenRereadLlm()
-
-    result = _turn("enséñame la galería", llm)
-
-    assert llm.decided == ["enséñame la galería", "enséñame la carpeta de imagenes"]
-    assert result["kind"] == "conversation"
-    assert result["conversationKind"] == "unsupported"
-    assert llm.chats == 1
 
 
 @pytest.mark.parametrize(

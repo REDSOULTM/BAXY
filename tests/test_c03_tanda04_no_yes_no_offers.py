@@ -494,52 +494,6 @@ def _knowledge_turn(llm: _KnowledgeLlm, risk: str = "read_only") -> dict[str, ob
     )
 
 
-def test_what_the_catalogue_probe_names_and_the_strict_verdict_grounds_is_observed_not_offered() -> None:
-    llm = _KnowledgeLlm(satisfies=True)
-    result = _knowledge_turn(llm)
-
-    assert result["kind"] == "action"
-    assert result["operation"] == "system.time"
-    assert result["question"] == ""
-    assert llm.strict_calls == ["system.time"]
-    assert llm.chats == 0
-
-
-def test_what_only_the_identity_names_is_asked_once_naming_the_operation() -> None:
-    llm = _KnowledgeLlm(satisfies=False)
-    result = _knowledge_turn(llm)
-
-    assert result["kind"] == "clarify"
-    assert result["question"] == "Should I read this PC's clock?"
-    assert result["intentOperations"] == ["system.time"]
-    assert result["effectOperations"] == []
-    assert [[name for name, _ in effects] for effects in llm.confirmations] == [["system.time"]]
-    assert llm.strict_calls == ["system.time"]
-    assert llm.chats == 0
-
-
-def test_what_neither_verifier_names_leaves_the_model_answer_and_asks_nothing() -> None:
-    llm = _KnowledgeLlm(satisfies=True, identifies=False)
-    result = _knowledge_turn(llm)
-
-    assert result["kind"] == "conversation"
-    assert result["question"] == ""
-    assert result["effectOperations"] == []
-    assert result["intentOperations"] == []
-    assert llm.confirmations == []
-    assert llm.chats == 1
-
-
-def test_the_probe_never_acts_unasked_on_an_operation_whose_risk_forbids_it() -> None:
-    llm = _KnowledgeLlm(satisfies=True)
-    result = _knowledge_turn(llm, risk="external_communication")
-
-    # Asked, naming the operation; never done unasked, and the strict verdict is not consulted.
-    assert result["kind"] == "clarify"
-    assert result["effectOperations"] == []
-    assert llm.strict_calls == []
-
-
 def test_the_recovered_decision_is_an_action_that_asks_nothing() -> None:
     decision = mind_main._recovered_action_decision("system.time", "en")
     assert json.loads(json.dumps(decision)) == {
