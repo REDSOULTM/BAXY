@@ -84,6 +84,7 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | **M8: M7 + LoRA del decisor (`full1`, D17) sólo en la llamada del decisor** | **78,3 %** (sólo decisión 206) | 80,3 % | **82,7 %** | **96,4 % (92,3 %)** | **84,0 %** | 20 (8 mejor, 4 peor, 8 igual) | **entra** (D18): cumple toda la regla de D12; VRAM 3 804 MiB |
 | M9: M8 + el decisor decide también los primeros mensajes que un lector prueba | 79,1 % | 80,3 % | 82,7 % | **70,3 %** (84,6 %) | — | 248 | **retirado**: en los comandos del dueño el LoRA vuelve planes una acción (48) o charla (23), y acciones charla (48); faltan planes en sus datos |
 | M10: M8 + el decisor lee los mensajes largos que hoy se toman por conversación ajena (`overheard_speech`) | 78,3 % | 80,3 % | 83,8 % | **94,4 %** (84,6 %) | — | 30 | **retirado**: el registro real del dueño sí trae conversación ajena |
+| M12: M8 + los reintentos del compositor muestrean (Qwen: T 0,7, top_p 0,8, top_k 20, semilla fija; el primer intento sigue greedy) + la pista de «missing_name» nombra el nivel observado | (no toca decisiones) | | | | | | **se queda**: en la app real, guion 46/60 (+8 por revisar), held-out 21 → **23/30**; Qwen3.5 repetía tres veces el mismo borrador rechazado («He bajado el volumen a 15» por 15 → 55) |
 
 ### Revisión de las 21 decisiones de las 742 que M4 cambia frente a la base
 
@@ -108,6 +109,32 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
   («no llamo»).
 - **Igual (8):** H0271, H0353, H0354, H0373, H0414, H0513, H0607, H0623 (fragmentos y pedidos de ayuda: charla ↔
   pregunta).
+
+### Guion del dueño y held-out en la app real (2026-09-26 06:42–07:19, runtime M8, audio 70 y devuelto a 61)
+
+| | base (b34c3f39) | M8 | M8 + M12 |
+|---|---|---|---|
+| guion del dueño (60) | 46 (+6 por revisar) | 47 (+6) | 46 (+8) |
+| held-out (30) | 24 | 21 (+1) | **23** (+1) |
+
+- La primera corrida no arrancó la mente: el build **Release** de la App era del 25-09 y su lectura del manifiesto no
+  conocía `decider_adapter` (rechazo del manifiesto entero). Release recompilado 06:41; los servidores de
+  compilación de dotnet bloquean la compuerta de `semantic_replay conv` (`dotnet build-server shutdown`).
+- Cambios del guion frente a la base: +4 (03, 11, 17, 42) y −3 (08 «Me gusta como se desenvuelven» → pregunta, 16
+  y 26 ya recuperado por M12). Held-out: siguen mal 10–12 (el bloc de notas no se verifica: la lista de ventanas no
+  se leyó, cadena de cierre), 14 y 16 (el compositor no publica la reseña hallada: «search_report_page_voice», ya
+  mal en la base), 17 («tengo ganas de escuchar reggaetón» → Spotify sin resultados; la base iba a YouTube).
+- El audio del dueño estaba en 61 sin silenciar (no 0 silenciado como decía el goal): se devolvió así.
+
+### Retirada del camino viejo (ley 2, plan tras M8)
+
+Con M8, el camino viejo del modelo (lista corta, selector nativo, `llm.decide_turn`, vetos y verificadores del
+efecto retirado) sólo sigue vivo dentro de la re-lectura de la superficie servida (`_served_surface_reread`), que
+corre cuando un lector da un límite. La suite tiene ~165 pruebas en rojo que fijan ese camino para turnos que hoy
+decide el decisor (LLM falsos sin `decide_in_context`). Plan M11: la re-lectura también la decide el decisor sobre
+la reescritura; el camino viejo queda muerto y se retira con sus pruebas (y con ellas las que fijan guardas sobre el
+decisor viejo). Los invariantes de seguridad (lo que borra, instala, paga o envía nunca actúa sin confirmación)
+siguen en la App (riesgo del catálogo, confirmación ligada a la invocación). Se mide con la regla de D12.
 
 ## LoRA del decisor (D13, en curso)
 

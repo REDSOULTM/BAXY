@@ -668,6 +668,19 @@ def _public_compose_sampling(gguf: str | None = None) -> dict[str, float]:
     return {"temperature": 0.0}
 
 
+def _compose_retry_sampling(sampling: dict, seed: int) -> dict:
+    """The sampler of a composition retry: greedy decoding repeats the rejected draft word for word.
+
+    Fase 3.5b (Qwen3.5-4B in the owner's script): three identical drafts for one defect. Qwen's model card
+    advises against greedy decoding in non-thinking mode and gives temperature 0.7, top_p 0.8, top_k 20,
+    min_p 0; a fixed seed per retry keeps a composition reproducible. A profile that already samples is kept.
+    """
+
+    if float(sampling.get("temperature", 0.0)) > 0.0:
+        return {}
+    return {"temperature": 0.7, "top_p": 0.8, "top_k": 20, "min_p": 0.0, "seed": seed}
+
+
 def _public_compose_prompts(gguf: str | None = None) -> tuple[str, str]:
     if _public_compose_uses_granite_42(gguf):
         return GRANITE_USER_MESSAGE_PROMPT, GRANITE_CPU_USER_MESSAGE_PROMPT
@@ -21098,12 +21111,18 @@ class LlmRuntime:
                     and situation.get("verified") is True
                     and isinstance(_merged_observed(situation), dict)
                     else
+                    # Fase 3.5b (owner's held-out «quince»): Qwen3.5-4B said «a 15» three times for a volume lowered
+                    # by 15 to 55; the observed level itself, in the reply's language, is what the final must name.
+                    (
+                        ("Say that the volume is now at " + str(_merged_observed(situation).get("level")) + ".")
+                        if response_language == "en"
+                        else ("Di que el volumen ahora está en " + str(_merged_observed(situation).get("level")) + ".")
+                    )
+                    if _merged_observed(situation) and "level" in _merged_observed(situation)
+                    else
                     "Name the clock and mute or volume."
                     if _merged_observed(situation)
-                    and (
-                        "muted" in _merged_observed(situation)
-                        or "level" in _merged_observed(situation)
-                    )
+                    and "muted" in _merged_observed(situation)
                     # MUSIC1555: the drafts quoted a fragment («Smooth Criminal»)
                     # of the observed title; the whole title, verbatim, is the name.
                     else (
@@ -21483,6 +21502,7 @@ class LlmRuntime:
             {"role": "user", "content": retry_user},
         ]
         retry_payload.update(compose_sampling)
+        retry_payload.update(_compose_retry_sampling(compose_sampling, 1))
         if repair_machine_actor:
             retry_payload = _machine_actor_repair_payload(payload, text, gguf)
             sent_instructions.append(_MACHINE_ACTOR_FEEDBACK)
@@ -21542,6 +21562,7 @@ class LlmRuntime:
         )
         third_payload = dict(payload)
         third_payload.update(compose_sampling)
+        third_payload.update(_compose_retry_sampling(compose_sampling, 2))
         # H0516: el tercer intento pedía la pista del PRIMER defecto (el lugar de
         # la captura) cuando el segundo era otro (faltaba el cierre), y el modelo
         # repetía. Cada intento recibe la pista de su propio defecto.
