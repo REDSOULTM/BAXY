@@ -1310,6 +1310,14 @@ def _build_direct_argument_payload(
         )
         + ". Usa el idioma del pedido, sin nombres internos, "
         "y termina con un solo '?'. Devuelve JSON compacto."
+        # Fase 3.5b DEV «Recuérdame pagar el recibo de la luz hoy a las 5 de la tarde»: the model abstained,
+        # reading dueUtc as a UTC date to compute. The literal is what it copies; the mind converts it.
+        + (
+            " dueUtc es la hora tal como la dijo la persona («a las 5 de la tarde», «mañana a las 9:50», "
+            "«en 10 minutos»): cópiala literal; la conversión a UTC la hace el sistema."
+            if "dueUtc" in schema.get("properties", {})
+            else ""
+        )
     )
     return {
         "messages": [
