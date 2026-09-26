@@ -1607,8 +1607,9 @@ def confident_non_target_language(text: str) -> str | None:
         # ``bota`` is ordinary Latin American Spanish -- "bota las boxes viejas
         # al recycling" is spanglish, not Portuguese -- so it only counts with a
         # Portuguese article behind it. A shared Romance word never suffices.
-        r"\b(?:pra|cento|tela|loja|faz|mexer|tudo|aberto|regista|fiz|hoje)\b|"
-        r"\bbota\s+[oa]\b|\bconecta\s+no\b|"
+        # ``tela`` too (Fase 3.5b DEV «vaya tela», Spain's Spanish): the Portuguese screen has its article.
+        r"\b(?:pra|cento|loja|faz|mexer|tudo|aberto|regista|fiz|hoje|uma)\b|"
+        r"\bbota\s+[oa]\b|\b(?:a|na|da)\s+tela\b|\bconecta\s+no\b|"
         r"\bfecha\s+tudo\b|\bde\s+novo\b|\barea\s+de\s+trabalho\b",
     ):
         return "pt"
