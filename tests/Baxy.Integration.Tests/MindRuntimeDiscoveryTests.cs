@@ -951,9 +951,22 @@ public sealed class MindRuntimeDiscoveryTests
     [TestCase("extra_field", false)]
     [TestCase("null", false)]
     [TestCase("missing_hash", false)]
-    public void CpuAdapterRegistrationIsBoundToBothArtifacts(string mutation, bool expected)
+    public void CpuAdapterRegistrationIsBoundToBothArtifacts(string mutation, bool expected) =>
+        AdapterRegistrationIsBoundToBothArtifacts("cpu_prose_adapter", "baxy-cpu-prose-adapter-v1", mutation, expected);
+
+    [TestCase("valid", true)]
+    [TestCase("changed_asset", false)]
+    [TestCase("wrong_base", false)]
+    [TestCase("extra_field", false)]
+    [TestCase("null", false)]
+    [TestCase("missing_hash", false)]
+    public void DeciderAdapterRegistrationIsBoundToBothArtifacts(string mutation, bool expected) =>
+        AdapterRegistrationIsBoundToBothArtifacts("decider_adapter", "baxy-decider-adapter-v1", mutation, expected);
+
+    private static void AdapterRegistrationIsBoundToBothArtifacts(
+        string property, string schema, string mutation, bool expected)
     {
-        string root = Path.Combine(Path.GetTempPath(), "baxy-cpu-adapter-" + Guid.NewGuid());
+        string root = Path.Combine(Path.GetTempPath(), "baxy-adapter-" + Guid.NewGuid());
         try
         {
             RuntimeFixture fixture = CreateRuntimeFixture(root);
@@ -962,7 +975,7 @@ public sealed class MindRuntimeDiscoveryTests
             var document = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(fixture.Manifest))!.AsObject();
             var profile = new System.Text.Json.Nodes.JsonObject
             {
-                ["schema"] = "baxy-cpu-prose-adapter-v1",
+                ["schema"] = schema,
                 ["gguf"] = adapter,
                 ["gguf_sha256"] = Sha256(adapter),
                 ["base_gguf_sha256"] = Sha256(fixture.Gguf),
@@ -971,13 +984,14 @@ public sealed class MindRuntimeDiscoveryTests
             if (mutation == "wrong_base") { profile["base_gguf_sha256"] = new string('0', 64); }
             if (mutation == "extra_field") { profile["global"] = true; }
             if (mutation == "missing_hash") { profile.Remove("gguf_sha256"); }
-            document["cpu_prose_adapter"] = mutation == "null" ? null : profile;
+            document[property] = mutation == "null" ? null : profile;
             File.WriteAllText(fixture.Manifest, document.ToJsonString());
             MindRuntimeConfiguration? runtime = MindRuntimeDiscovery.LoadRegistered(fixture.Manifest);
             Assert.That(runtime is not null, Is.EqualTo(expected));
             if (expected)
             {
-                Assert.That(runtime!.CpuProseAdapter, Does.Contain("baxy-cpu-prose-adapter-v1"));
+                Assert.That(property == "decider_adapter" ? runtime!.DeciderAdapter : runtime!.CpuProseAdapter,
+                    Does.Contain(schema));
             }
         }
         finally { Directory.Delete(root, recursive: true); }
@@ -1030,6 +1044,7 @@ public sealed class MindRuntimeDiscoveryTests
     private static readonly string[] RuntimeEnvironmentNames =
     [
         "BAXY_MIND_CPU_PROSE_ADAPTER",
+        "BAXY_MIND_DECIDER_ADAPTER",
         MindSidecarClient.DisabledEnvironmentVariable,
         MindSidecarClient.PythonEnvironmentVariable,
         MindSidecarClient.PythonPathEnvironmentVariable,

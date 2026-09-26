@@ -19,7 +19,7 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | F1 conjuntos DEV-A / DEV-B / FINAL + puntuador + base | **hecho** | DEV-A 59,6 %, DEV-B 69,2 % |
 | F2 diagnóstico por camino + modelo libre | **hecho** | Qwen3.5-4B libre: DEV-A 70,0 %, DEV-B 77,5 %, seguimientos B 84,8 % (`DIAGNOSTICO_F2_2026-09-25.md`) |
 | F3 torneo de modelos | **hecho**: gana Qwen3.5-4B | 393/513 (76,6 %), seguimientos 112/134; ninguno lo desplaza (`DIAGNOSTICO_F2_2026-09-25.md` §F3) |
-| F4 mecanismos | en curso | — |
+| F4 mecanismos | **M8 entra** (D18); falta retirar el camino viejo de la suite (ley 2) | producto DEV-B 78,3 %, seguim. B 80,3 %, capa A 96,4 %, reserva 84,0 %, VRAM 3 804 MiB |
 | F5 ventana oficial con DEV-B | pendiente | — |
 | F6 cierre (FINAL una vez) | pendiente | — |
 
@@ -80,6 +80,8 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | M4: M2 + el decisor ve los últimos 4 mensajes (no 12) | 77,1 % | 86,4 % | 72,7 % | 95,6 % (84,6 %) | — | 21 | se queda (igual en DEV, +1 en el registro real, menos prompt); capa A aún a 4 filas del umbral |
 | M5: M4 + guarda de forma sobre acciones del decisor en mensajes autónomos con historial | 76,3 % | 83,3 % | 71,9 % | 95,4 % (83,5 %) | — | 21 | **retirado**: peor en todo |
 | M6: M4 + segunda elección sobre la elección del decisor y 10 recuperadas para el pedido reescrito | 73,1 % | 77,3 % | 70,0 % | 95,6 % (85,7 %) | — | 23 | **retirado**: la lista corta vuelve a cambiar elecciones buenas (ley 1) |
+| M7: M4 + argumentos: el lector del clima ya no toma «Denver»/«para Rosario» por un infinitivo; la extracción omite el opcional no dicho (vacío o no literal) en vez de abstenerse de todo | argumentos sólo (turnos con decisión bien y oro de argumentos): DEV-A 31→33/40, **DEV-B 33→34/41** | | | | | | se queda (0 rotos; pytest de extracción y clima: las mismas fallas con y sin el cambio, todas de la ruta M4). Resto: servicio de streaming perdido en la reescritura, archivos por referencia, pedido reescrito en otro idioma («airport» → «aeropuerto») |
+| **M8: M7 + LoRA del decisor (`full1`, D17) sólo en la llamada del decisor** | **78,3 %** (sólo decisión 206) | 80,3 % | **82,7 %** | **96,4 % (92,3 %)** | **84,0 %** | 20 (8 mejor, 4 peor, 8 igual) | **entra** (D18): cumple toda la regla de D12; VRAM 3 804 MiB |
 
 ### Revisión de las 21 decisiones de las 742 que M4 cambia frente a la base
 
@@ -93,6 +95,18 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 - **Equivalente (8):** fragmentos sin contexto y preguntas equivalentes (H0173, H0271, H0353, H0354, H0414, H0513,
   H0582, H0604).
 
+### Revisión de las 742 con M8 (20 distintas de la base)
+
+- **Mejor (8):** H0059 «NO te preocupes si se abrio steam» → charla; H0080 «funciona mi internet» y H0732 «tengo
+  internet» → `network.status`; H0139 dictado sin referente → pregunta (no busca); H0142 «responde con un chiste» →
+  charla; H0253 °F/°C y H0367 «100 dividido 4» → se contestan; H0711 «abrí mi carpeta de descargas» →
+  `filesystem.folder.open`.
+- **Peor (4):** H0313 «They are P Games.» → charla que inventa un dato; H0407 «nunca cierres spotify» → pregunta;
+  H0506 «guardá que mi cumpleaños es el 5 de mayo» → nota (lo propio va a memoria); H0604 «Como me llamo» → límite
+  («no llamo»).
+- **Igual (8):** H0271, H0353, H0354, H0373, H0414, H0513, H0607, H0623 (fragmentos y pedidos de ayuda: charla ↔
+  pregunta).
+
 ## LoRA del decisor (D13, en curso)
 
 - Datos: 9 escritores de sala limpia (`comprension-f1/brief/ENTRENAMIENTO.md`), 900 conversaciones, **1 991 ejemplos de
@@ -104,7 +118,7 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
   bitsandbytes 0.50, triton-windows 3.4 + flash-linear-attention 0.5.2 para las capas DeltaNet); base HF
   `Qwen/Qwen3.5-4B@851bf6e8`; QLoRA nf4, r 16, pérdida sólo en la respuesta. Medido: 7,9 s por ejemplo, pico 5,76 GB
   (sin flash-linear-attention: 20 s; con el catálogo entero no cabe en 6 GB).
-- Conversor: llama.cpp b9980 (el mismo del servidor) en `D:\BAXYRuntimeuild\llama.cpp-b9980`.
+- Conversor: llama.cpp b9980 (el mismo del servidor) en `D:\BAXYRuntime\build\llama.cpp-b9980`.
 - Plan: piloto de 360 ejemplos (1 época) medido con `lora/decider_eval.py` (el decisor del producto aislado, con y sin
   adaptador) en DEV-A; si mejora, entrenamiento completo y medición con la regla de siempre.
 - El dueño pidió (2026-09-25 ~21:00) que sirva a BAXY completo y a la fase de computer use: escritor 9 dedicado a operar
@@ -118,6 +132,24 @@ El dueño ofreció su PC principal (RTX 4060 Ti, 16 GB) para la receta bf16 que 
 sólo por la tailnet y sólo con una clave de esta laptop; desde aquí se montó `D:\BAXYTrain` (mismas versiones,
 Qwen/Qwen3.5-4B@851bf6e8, datos de entrenamiento) y se lanzó el piloto bf16 (400 ejemplos, igual que el QLoRA local)
 como tarea programada oculta. Nada del repositorio de BAXY se toca en ese PC.
+
+- **Piloto 1** (23:05): DEV-B ciego sólo decisión 201/253 frente a 208/253 de la base (DEV-A 199 frente a 198): arregla
+  operaciones hermanas y convierte límites y preguntas en acciones. Causas y receta de datos v2 en D15 (negativos
+  difíciles w10–w13, catálogo por familias al azar). **Piloto 2** (800 ejemplos de los datos v2) lanzado 23:50 con
+  conversión y evaluación encadenadas (`lora/pilot_chain_redpc.ps1`).
+- **Deriva de idioma del decisor** (2026-09-26 00:25): Qwen3.5-4B reescribe en español el 22–28 % de los pedidos de
+  acción en inglés («max it» → «Maximizar la ventana de Steam»); M4 tomaba de ahí el idioma de la respuesta. Arreglado
+  en el producto: el idioma sale de las palabras de la persona (`_read_reply_language`) y sólo si no lo dicen, de la
+  reescritura. El LoRA del piloto 1 ya baja la deriva de 22/100 a 2/133 en DEV-A (sus datos traen el pedido en el
+  idioma de la persona); el prompt del decisor no se toca mientras se entrena con él.
+- **Piloto 2** (01:05): DEV-B ciego 210/253 (base 208), DEV-A 203/260 (base 198), p50 0,66 s; sobran límites (D16).
+  **Completo** (`full1`, 2 654 ejemplos, irrelevancia 10 %) lanzado 01:19 en redpc, ~3,5 h + evaluación encadenada.
+- **Integración lista para medir** (sin commit): `baxy_mind/decider_adapter.py` (binding por hash al GGUF base, como
+  el adaptador de prosa de CPU, con el que comparte `read_bound_adapter`/`verify_neutral_adapter`); el servidor lo
+  carga sin aplicar (`--lora-init-without-apply`, escala global 0 verificada al arrancar) y `decide_in_context` lo
+  enciende por petición en su ranura reservada. Harness: `--decider-adapter` en `comprension_eval.py run` y
+  `semantic_replay.py literals` (`gate.decider_adapter_environment`). Humo con el piloto 2 en `turn.decide`: 12/12 sin
+  error, A-s006/A-s007 con la elección del LoRA. Falta el lado C# (manifiesto → variable) si el completo entra.
 
 ## Bitácora
 

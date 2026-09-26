@@ -15,6 +15,7 @@ group must appear in the folded arguments the mind grounds for that operation.
 
 usage:
   comprension_eval.py run --set S.jsonl --out RUN.jsonl [--audit AUDIT.jsonl] [--src DIR] [--limit N]
+                          [--gguf G.gguf] [--ctx 12288] [--decider-adapter A.gguf]
   comprension_eval.py score --set S.jsonl --run RUN.jsonl [--audit AUDIT.jsonl] [--base RUN0.jsonl] [--blind]
                             [--json SUMMARY.json]
 """
@@ -200,6 +201,9 @@ def run(
     audit: pathlib.Path | None,
     src: pathlib.Path | None,
     limit: int | None,
+    gguf: pathlib.Path | None = None,
+    context: int | None = None,
+    decider_adapter: pathlib.Path | None = None,
 ) -> None:
     import run_turn_policy_gate as gate
 
@@ -214,11 +218,17 @@ def run(
     )
     configuration = gate.core_catalog_configuration(gate.DEFAULT_CORE)
     overrides = {"BAXY_MIND_TURN_AUDIT_PATH": str(audit)} if audit else {}
+    if context:
+        # The gate pins 4 096 per slot; a candidate profile measures its own.
+        overrides["BAXY_MIND_CTX"] = str(context)
+    base = gguf or pathlib.Path(manifest["gguf"])
+    if decider_adapter:
+        overrides.update(gate.decider_adapter_environment(decider_adapter, base))
     with gate.MindClient(
         configuration["capabilities"],
         application_catalog=configuration["applicationCatalog"],
         game_catalog=configuration["gameCatalog"],
-        gguf=pathlib.Path(manifest["gguf"]),
+        gguf=base,
         llama_server=pathlib.Path(manifest["llama_server"]),
         ngl=int(manifest.get("ngl") or 99),
         endpoint=None,
@@ -508,6 +518,15 @@ def main(argv: list[str]) -> int:
         help="mind sources to run (a worktree of another commit)",
     )
     runner.add_argument("--limit", type=int)
+    runner.add_argument(
+        "--gguf", type=pathlib.Path, help="another GGUF than the runtime manifest's"
+    )
+    runner.add_argument(
+        "--ctx", type=int, help="context per server slot (BAXY_MIND_CTX)"
+    )
+    runner.add_argument(
+        "--decider-adapter", type=pathlib.Path, help="the decider's LoRA GGUF over the base GGUF"
+    )
     scorer = sub.add_parser("score")
     scorer.add_argument("--set", required=True, type=pathlib.Path)
     scorer.add_argument("--run", required=True, type=pathlib.Path)
@@ -518,7 +537,7 @@ def main(argv: list[str]) -> int:
     sub.add_parser("selftest")
     args = parser.parse_args(argv)
     if args.command == "run":
-        run(args.set, args.out, args.audit, args.src, args.limit)
+        run(args.set, args.out, args.audit, args.src, args.limit, args.gguf, args.ctx, args.decider_adapter)
     elif args.command == "score":
         score(args.set, args.run, args.audit, args.base, args.blind, args.json)
     else:

@@ -1,14 +1,15 @@
 """Training examples for the decider LoRA (D13), in the exact prompt and output the product decider uses.
 
-Per turn of the clean-room conversations (train/w*-p*.jsonl): the decider's system prompt over a PARTIAL catalog
-(the target operations, their family siblings, then random distractors up to N), the last HISTORY_TURNS messages,
-the user message, and the target JSON. Partial catalogs teach reading the catalog in front instead of memorising
-names, so new operations (computer use) keep working without retraining; they also keep one example inside 6 GB.
+Per turn of the clean-room conversations (train/w*-p*.jsonl): the decider's system prompt over the product's whole
+catalog (--full of the examples, and the whole holdout) or over whole random families of about N operations (the
+target's families always among them), the last HISTORY_TURNS messages, the user message, and the target JSON. Partial
+catalogs teach reading the catalog in front instead of memorising names, so new operations (computer use) keep
+working without retraining; which families are in view never depends on the answer.
 Rows whose text normalises to a DEV-A/DEV-B/FINAL text are dropped. Prints counts only.
 Hammer (Lin et al., ICLR 2025): in --mask of the examples every operation name of the catalog (and of the answer) is
 replaced by a random name, so the decider reads descriptions, not names; in --irrelevance of the action examples the
 target operations are removed from the catalog and the answer becomes a plain limit (never invent an operation).
-usage: build_train.py [--n 50] [--holdout 0.05] [--mask 0.33] [--irrelevance 0.10]
+usage: build_train.py [--n 50] [--holdout 0.05] [--mask 0.33] [--irrelevance 0.15] [--full 0.5]
 """
 import json
 import os
@@ -39,7 +40,8 @@ def main():
     n_ops = int(sys.argv[sys.argv.index("--n") + 1]) if "--n" in sys.argv else 50
     holdout = float(sys.argv[sys.argv.index("--holdout") + 1]) if "--holdout" in sys.argv else 0.05
     mask = float(sys.argv[sys.argv.index("--mask") + 1]) if "--mask" in sys.argv else 0.33
-    irrelevance = float(sys.argv[sys.argv.index("--irrelevance") + 1]) if "--irrelevance" in sys.argv else 0.10
+    irrelevance = float(sys.argv[sys.argv.index("--irrelevance") + 1]) if "--irrelevance" in sys.argv else 0.15
+    full = float(sys.argv[sys.argv.index("--full") + 1]) if "--full" in sys.argv else 0.5
     rng = random.Random(1309)
     evaluation = set()
     for name in ("DEV-A", "DEV-B", "FINAL"):
@@ -74,24 +76,38 @@ def main():
                 dropped["eval_overlap"] += 1
             else:
                 chosen = list(dict.fromkeys(ops))
-                siblings = [s for op in chosen for s in families[op.split(".", 1)[0]] if s not in chosen and s not in INTERNAL]
-                rng.shuffle(siblings)
-                subset = chosen + siblings[: max(0, n_ops // 3 - len(chosen))]
-                others = [t for t in TOOLS if t not in subset and t not in INTERNAL]
-                rng.shuffle(others)
-                subset += others[: n_ops - len(subset)]
-                kind = "plain"
+                # The catalog never depends on the answer: the product's whole catalog, or whole random families (the
+                # target's families swapped in). A first build padded action examples with the target's siblings and
+                # the rest with loose random operations, so "a full family in view" meant "act" (pilot 1, 2026-09-25).
+                if split == "holdout" or rng.random() < full:
+                    subset = [t for t in TOOLS if t not in INTERNAL]
+                else:
+                    names = list(families)
+                    rng.shuffle(names)
+                    picked = []
+                    for family in names:
+                        if sum(len(families[f]) for f in picked) >= n_ops:
+                            break
+                        picked.append(family)
+                    needed = list(dict.fromkeys(op.split(".", 1)[0] for op in chosen))
+                    for family in needed:
+                        if family not in picked:
+                            free = [i for i, f in enumerate(picked) if f not in needed]
+                            picked[rng.choice(free)] = family
+                    subset = [t for f in picked for t in families[f] if t not in INTERNAL]
+                kind = "full" if len(subset) > n_ops * 2 else "families"
                 answer_decision, answer_ops = decision, (chosen if decision == "action" else [])
                 if split == "train" and decision == "action" and rng.random() < irrelevance:
-                    # Hammer's irrelevance augmentation: what the catalog in front cannot do is a limit.
+                    # Hammer's irrelevance augmentation: what the catalog in front cannot do is a limit. The siblings
+                    # stay, so the near miss is in view.
                     subset = [t for t in subset if t not in chosen]
-                    answer_decision, answer_ops, kind = "limit", [], "irrelevance"
+                    answer_decision, answer_ops, kind = "limit", [], kind + "+irrelevance"
                 shown = {t: t for t in subset}
                 if split == "train" and rng.random() < mask:
                     # Hammer's function masking: names become opaque, descriptions carry the meaning.
                     shown = {t: f"{t.split('.', 1)[0]}.{''.join(rng.choice('abcdefghijklmnopqrstuvwxyz') for _ in range(7))}"
                              for t in subset}
-                    kind = kind + "+mask" if kind != "plain" else "mask"
+                    kind += "+mask"
                 plain_of = {shown[t]: PLAIN.get(t) or TOOLS[t] for t in subset}
                 saved = dict(decider.plain_descriptions())
                 decider.plain_descriptions().clear()

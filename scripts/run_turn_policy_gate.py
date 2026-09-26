@@ -1516,6 +1516,17 @@ def paired_summary(
     }
 
 
+def decider_adapter_environment(adapter: Path, base_gguf: Path) -> dict[str, str]:
+    """The mind's binding of the decider's LoRA to its base GGUF (``baxy_mind.decider_adapter``)."""
+
+    return {"BAXY_MIND_DECIDER_ADAPTER": json.dumps({
+        "schema": "baxy-decider-adapter-v1",
+        "gguf": str(adapter.resolve()),
+        "gguf_sha256": hashlib.sha256(adapter.read_bytes()).hexdigest(),
+        "base_gguf_sha256": hashlib.sha256(base_gguf.read_bytes()).hexdigest(),
+    })}
+
+
 def read_runtime_manifest(path: Path) -> dict[str, Any]:
     if not path.is_file():
         return {}

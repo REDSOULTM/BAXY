@@ -10,7 +10,8 @@ Qué NO cuenta, y por qué:
 
 - `llm.py` — es el prompt. La personalidad vive ahí por decisión del goal 06:
   «cambiar el carácter tiene que ser editar un texto». Un literal en el prompt
-  es la solución, no el defecto.
+  es la solución, no el defecto. `semantic/decider.py`, por lo mismo: es el prompt
+  del decisor en contexto (Fase 3.5b); lo que dice la persona lo redacta el modelo.
 - `router_bank_sources.py`, `public_turn_corpus.py`, `semantic/request.py`,
   `UserMessagePhrases.cs` — son textos de ENTRADA (anclas de embeddings, corpus
   de turnos, lectura del pedido y marcas de defecto de un borrador), nunca salen
@@ -35,7 +36,7 @@ PALABRAS_ES = re.compile(
     u'encontré)\\b')
 REGEXISH = re.compile(r'[\^\$\|\[\]]')
 
-FICHEROS_DE_ENTRADA = ('/llm.py', '/router_bank_sources.py',
+FICHEROS_DE_ENTRADA = ('/llm.py', '/semantic/decider.py', '/router_bank_sources.py',
                        '/public_turn_corpus.py', '/semantic/request.py',
                        '/UserMessagePhrases.cs')
 

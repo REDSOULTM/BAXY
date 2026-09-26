@@ -91,8 +91,14 @@ function Get-BaxyMindRuntimeStatus {
     }
     $actualProperties = @($runtime.PSObject.Properties.Name)
     $expectedProperties = @($script:BaxyMindRuntimeProperties)
-    $hasCpuAdapter = $actualProperties -ccontains 'cpu_prose_adapter'
-    if ($hasCpuAdapter) { $expectedProperties += 'cpu_prose_adapter' }
+    # LoRAs bound by hash to the registered GGUF: property, schema, label.
+    $adapterContracts = @(
+        @('cpu_prose_adapter', 'baxy-cpu-prose-adapter-v1', 'Adaptador CPU'),
+        @('decider_adapter', 'baxy-decider-adapter-v1', 'Adaptador del decisor')
+    )
+    foreach ($contract in $adapterContracts) {
+        if ($actualProperties -ccontains $contract[0]) { $expectedProperties += $contract[0] }
+    }
     if ([string]$runtime.schema -cne $script:BaxyMindRuntimeSchema -or
         $actualProperties.Count -ne $expectedProperties.Count -or
         @($actualProperties | Where-Object {
@@ -149,29 +155,31 @@ function Get-BaxyMindRuntimeStatus {
         @('GGUF conversacional', $gguf, [string]$runtime.gguf_sha256),
         @('llama-server', $server, [string]$runtime.llama_server_sha256)
     )
-    if ($hasCpuAdapter) {
-        $adapter = $runtime.cpu_prose_adapter
+    foreach ($contract in $adapterContracts) {
+        if ($actualProperties -cnotcontains $contract[0]) { continue }
+        $code = if ($contract[0] -ceq 'cpu_prose_adapter') { 'runtime_cpu_adapter_invalid' } else { 'runtime_decider_adapter_invalid' }
+        $adapter = $runtime.($contract[0])
         if ($null -eq $adapter -or $adapter -isnot [pscustomobject]) {
-            $result.Code = 'runtime_cpu_adapter_invalid'
-            $result.Detail = 'El adaptador CPU debe ser un objeto de perfil.'
+            $result.Code = $code
+            $result.Detail = "$($contract[2]) debe ser un objeto de perfil."
             return [pscustomobject]$result
         }
         $fields = @('schema', 'gguf', 'gguf_sha256', 'base_gguf_sha256')
         $keys = @($adapter.PSObject.Properties.Name)
         if ($keys.Count -ne $fields.Count -or
             @($keys | Where-Object { $fields -cnotcontains $_ }).Count -ne 0 -or
-            [string]$adapter.schema -cne 'baxy-cpu-prose-adapter-v1' -or
+            [string]$adapter.schema -cne $contract[1] -or
             -not (Test-BaxySha256Text $adapter.gguf_sha256) -or
             [string]$adapter.base_gguf_sha256 -cne [string]$runtime.gguf_sha256 -or
             $adapter.gguf -isnot [string] -or
             -not [IO.Path]::IsPathRooted([string]$adapter.gguf) -or
             [IO.Path]::GetExtension([string]$adapter.gguf) -ine '.gguf' -or
             -not (Test-Path -LiteralPath $adapter.gguf -PathType Leaf)) {
-            $result.Code = 'runtime_cpu_adapter_invalid'
-            $result.Detail = 'El adaptador CPU no corresponde al modelo registrado.'
+            $result.Code = $code
+            $result.Detail = "$($contract[2]) no corresponde al modelo registrado."
             return [pscustomobject]$result
         }
-        $hashChecks += ,@('Adaptador CPU', [string]$adapter.gguf, [string]$adapter.gguf_sha256)
+        $hashChecks += ,@($contract[2], [string]$adapter.gguf, [string]$adapter.gguf_sha256)
     }
     foreach ($check in $hashChecks) {
         if ((Get-BaxySha256 -Path $check[1]) -cne $check[2]) {

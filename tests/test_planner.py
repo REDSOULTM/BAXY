@@ -2681,7 +2681,9 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         ):
             command = runtime._server_command()
 
-        self.assertEqual(command[command.index("-c") + 1], "12288")
+        # Fase 3.5b: the ceiling per slot is 12 288 (the contextual decider's prompt; 3 708 MiB measured
+        # with Qwen3.5-4B), so a larger request clamps to three slots of it.
+        self.assertEqual(command[command.index("-c") + 1], "36864")
         self.assertEqual(command[command.index("-b") + 1], "2048")
         self.assertEqual(command[command.index("-ub") + 1], "256")
         self.assertEqual(command[command.index("-fa") + 1], "on")
@@ -2693,7 +2695,7 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         self.assertIn("--no-mmap", command)
         self.assertEqual(command[command.index("--reasoning") + 1], "off")
         self.assertEqual(command[command.index("--reasoning-budget") + 1], "0")
-        self.assertEqual(_context_size_from_env("bad"), 4096)
+        self.assertEqual(_context_size_from_env("bad"), 12288)
         self.assertEqual(_context_size_from_env("1"), 1024)
 
     def test_llm_bounds_research_prefill_batch_controls(self):

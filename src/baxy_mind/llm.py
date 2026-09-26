@@ -8,9 +8,11 @@ Config por entorno:
 - BAXY_MIND_LLM_GGUF: ruta del GGUF (obligatoria para levantar el LLM).
 - BAXY_MIND_LLAMA_SERVER: ruta de llama-server.exe.
 - BAXY_MIND_NGL: capas en GPU (default 99; 0 = CPU puro).
-- BAXY_MIND_CTX: contexto (default y máximo: 4096). El límite protege el
-  presupuesto total de 3 GiB de VRAM; no se usa el contexto nominal del modelo
-  sin una nueva medición física.
+- BAXY_MIND_CTX: contexto por ranura (default y máximo: 12288). El decisor en
+  contexto lleva el catálogo entero (~7 k tokens) en su ranura; medido con
+  Qwen3.5-4B Q4_K_M, 3 ranuras × 12 288 y tres decisiones a la vez: 3 708 MiB de
+  pico del servidor, bajo el techo de 4 GiB del dueño (Fase 3.5b F4,
+  2026-09-25). Otro modelo necesita su propia medición física.
 - BAXY_MIND_LLM_INVALID_JSON_DIR: diagnóstico local opt-in; conserva sólo la
   respuesta inválida sanitizada y metadatos de terminación, nunca el prompt.
 """
@@ -35,12 +37,13 @@ from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Iterable
 from urllib.parse import parse_qs, urlparse
 
 from . import corrector
 from .semantic.normalize import _accent_folded_with_punctuation, _policy_guard_text, alternation, fold
 from .semantic import dialogue as dialogue_slot
+from .semantic import decider as semantic_decider
 from .semantic.grammar import spoken_number_request
 from .semantic.network import (
     asks_calendar_part, calendar_parts_asked, present_calendar_question, relative_calendar_days,
@@ -66,6 +69,7 @@ from .effect_intent import (
     explicit_non_action_body,
 )
 from .cpu_prose_adapter import CpuProseAdapter, applies_to_cpu_prose
+from .decider_adapter import DeciderAdapter
 from .measurement_prose_projection import project_process_measurements, project_system_measurements
 from .llm_transport import (
     ChatCompletionCancellation,
@@ -152,7 +156,7 @@ from .semantic.ui import asks_about_buttons, asks_to_see_the_screen
 from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_later_today, weather_asks_today
 
 
-MAX_CONTEXT_TOKENS = 4096
+MAX_CONTEXT_TOKENS = 12288
 DEFAULT_BATCH_TOKENS = 2048
 DEFAULT_UBATCH_TOKENS = 256
 MAX_UBATCH_TOKENS = 512
@@ -1496,9 +1500,16 @@ def _build_direct_argument_payload(
             ensure_ascii=False,
             separators=(",", ":"),
         )
-        + ". Si falta un dato o una mención está negada, "
+        + ". Un campo opcional que el pedido no dice se omite. "
+        "Si falta un dato obligatorio ("
+        + json.dumps(
+            required_fields,
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
+        + ") o su mención está negada, "
         "descartada, corregida, contrapuesta o ambigua, usa "
-        "grounded=false y arguments=null; si todo está explícito, "
+        "grounded=false y arguments=null; si los obligatorios están explícitos, "
         "usa grounded=true. Formula fallback_question como una "
         "pregunta natural y breve para obtener estos campos: "
         + json.dumps(
@@ -2097,7 +2108,7 @@ def _capture_compose_stage(
 def _context_size_from_env(value: str | None = None) -> int:
     """Return the measured context ceiling, never the model's 128K maximum."""
 
-    raw = value if value is not None else os.environ.get("BAXY_MIND_CTX", "4096")
+    raw = value if value is not None else os.environ.get("BAXY_MIND_CTX", str(MAX_CONTEXT_TOKENS))
     try:
         requested = int(str(raw).strip())
     except (TypeError, ValueError):
@@ -12951,6 +12962,10 @@ class LlmRuntime:
         self._server = server
         self._endpoint = endpoint
         self._cpu_prose_adapter = CpuProseAdapter.from_environment(gguf)
+        self._decider_adapter = DeciderAdapter.from_environment(gguf)
+        if self._cpu_prose_adapter is not None and self._decider_adapter is not None:
+            # Both would be the server's adapter 0; each role turns only its own on.
+            raise ValueError("cpu_prose_adapter_and_decider_adapter_exclusive")
         # AUTO can abstain; the previously rejected REQUIRED policy could not.
         # Native selection preserves scope that the separate type classifier
         # erased in C03. Downstream catalog, argument and invocation checks own
@@ -13049,9 +13064,9 @@ class LlmRuntime:
             command.append("--no-mmap")
         if parallel > 1:
             command.append("--cont-batching")
-        adapter = getattr(self, "_cpu_prose_adapter", None)
-        if adapter is not None:
-            command.extend(adapter.server_arguments())
+        for adapter in (getattr(self, "_cpu_prose_adapter", None), getattr(self, "_decider_adapter", None)):
+            if adapter is not None:
+                command.extend(adapter.server_arguments())
         if not kv_offload:
             command.append("--no-kv-offload")
         if cpu_only:
@@ -13248,9 +13263,9 @@ class LlmRuntime:
                 else:
                     time.sleep(pause)
             if healthy:
-                adapter = getattr(self, "_cpu_prose_adapter", None)
-                if adapter is not None:
-                    adapter.initialize(endpoint, current_remaining())
+                for adapter in (getattr(self, "_cpu_prose_adapter", None), getattr(self, "_decider_adapter", None)):
+                    if adapter is not None:
+                        adapter.initialize(endpoint, current_remaining())
                 return
         raise TimeoutError("llama-server no quedó listo")
 
@@ -13648,6 +13663,7 @@ class LlmRuntime:
         *,
         max_attempts: int = 2,
         cancellation: ChatCompletionCancellation | None = None,
+        reserved_slot: bool = False,
     ) -> dict[str, Any]:
         """Call the local inference endpoint with an explicitly bounded retry."""
 
@@ -13694,10 +13710,11 @@ class LlmRuntime:
                     "_http_connection_pool",
                     None,
                 ),
-                # Only the native selector declares tools: it keeps its own
-                # server slot, so its ~0.3k-token system and tool preamble stays
-                # cached and it never queues behind the turn's speculative work.
-                reserved_slot=bool(payload.get("tools")),
+                # The turn's decider (the contextual decider, or the native
+                # selector that declares tools) keeps its own server slot, so
+                # its long fixed prompt stays cached and it never queues behind
+                # the turn's speculative work.
+                reserved_slot=reserved_slot or bool(payload.get("tools")),
             )
             return response  # type: ignore[return-value]
         except BaseException as error:
@@ -16387,6 +16404,52 @@ class LlmRuntime:
             )
         return result
 
+    def decide_in_context(
+        self,
+        text: str,
+        history: list[dict[str, str]] | None,
+        tools: Iterable[tuple[str, str]],
+        *,
+        timeout: float = 8.0,
+    ) -> semantic_decider.ContextDecision:
+        """Decide the turn with the whole conversation and the catalog (``semantic.decider``).
+
+        The prompt is fixed for a catalog, so it is built once and stays cached in the reserved slot; only the
+        conversation and the last message are decoded each turn.
+        """
+
+        tools = tuple(sorted(tools))
+        cached = getattr(self, "_decider_prompt", None)
+        if cached is None or cached[0] != tools:
+            cached = (tools, semantic_decider.catalog_prompt(tools))
+            self._decider_prompt = cached
+        names = [name for name, _ in tools]
+        payload = {
+            "messages": semantic_decider.messages(cached[1], text, history),
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "baxy_context_decision",
+                    "strict": True,
+                    "schema": semantic_decider.response_schema(names),
+                },
+            },
+            "temperature": 0.0,
+            "max_tokens": 200,
+            "seed": 0,
+            "cache_prompt": True,
+            "chat_template_kwargs": {"enable_thinking": False},
+        }
+        adapter = getattr(self, "_decider_adapter", None)
+        if adapter is not None:
+            payload.update(adapter.request_fields())
+        response = self._post(payload, timeout=self._normalize_request_budget(timeout), reserved_slot=True)
+        try:
+            content = response["choices"][0]["message"].get("content") or ""
+        except (KeyError, IndexError, TypeError) as error:
+            raise ValueError("el decisor no devolvió contenido") from error
+        return semantic_decider.parse(content, names)
+
     def rewrite_in_context(
         self,
         text: str,
@@ -18585,6 +18648,14 @@ class LlmRuntime:
                     fallback_question,
                 )
             )
+        if isinstance(arguments, dict):
+            # Fase 3.5b DEV «Crear una tarea pendiente llamada '…'»: the model writes an optional field it was not
+            # told as "" instead of leaving it out; blank is not said, so it is dropped, never grounded.
+            arguments = {
+                field: value
+                for field, value in arguments.items()
+                if field in required_fields or not (isinstance(value, str) and not value.strip())
+            }
         if not validate_json_schema_instance(arguments, schema):
             return retain(DirectArgumentExtraction(None, (), fallback_question))
 
@@ -18602,6 +18673,11 @@ class LlmRuntime:
                 and "enum" not in contract
                 and "const" not in contract
             ):
+                if field not in required_fields and value not in text:
+                    # «…llamada 'Llamar a Uber … a las seis'» came back with due "6:00 AM": an optional literal the
+                    # person did not write is left out (never asserted); a required one still abstains.
+                    arguments = {key: item for key, item in arguments.items() if key != field}
+                    continue
                 if not value.strip() or value not in text:
                     return retain(
                         DirectArgumentExtraction(

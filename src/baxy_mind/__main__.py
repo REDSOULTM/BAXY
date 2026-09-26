@@ -4105,6 +4105,100 @@ def _rearm_in_context(
     return audited(None, "model_rejected" if rewritten else "model_failed", rewritten)
 
 
+def _context_decided_result(
+    message: dict[str, Any],
+    *,
+    llm: Any,
+    planner_catalog: PlannerCatalog,
+) -> dict[str, Any]:
+    """The turn as the contextual decider reads it (``semantic.decider``), with the whole conversation.
+
+    Fase 3.5b F2–F4: with the conversation in front of it, the model decides a turn better than the readers,
+    the shortlist, the native selector and the gates together; the readers keep only the first message of a
+    conversation they prove. The restated request travels as ``objective``: the arguments step reads it.
+    """
+
+    text = str(message.get("text", ""))
+    history = message.get("history") or []
+    available_operations = tuple(tool.name for tool in planner_catalog.tools)
+    decided = llm.decide_in_context(
+        text, history, ((tool.name, tool.description) for tool in planner_catalog.tools),
+    )
+    objective = decided.request or text
+    result: dict[str, Any] = {
+        "type": "turn.result",
+        "id": message.get("id"),
+        "operation": None,
+        "intentOperations": list(decided.operations),
+        "effectOperations": list(decided.operations),
+        "question": "",
+        "reply": "",
+        "objective": objective,
+    }
+    if decided.decision == "action":
+        result["kind"] = "action" if len(decided.operations) == 1 else "plan"
+        if result["kind"] == "action":
+            result["operation"] = decided.operations[0]
+        # The person's words set the language, not the decider's restatement: Qwen3.5-4B restated a quarter of the
+        # English DEV requests in Spanish («max it» → «Maximizar la ventana de Steam»).
+        language = _read_reply_language(text, history) or _decisive_request_language(objective)
+        if language in {"es", "en", "mixed"}:
+            result["responseLanguage"] = language
+    elif decided.decision == "clarify":
+        question = decided.question
+        if not _recovery_question_is_valid(question, objective, history):
+            question = llm.clarify_after_turn_failure(objective, history=history, timeout=2.5)
+            if not _recovery_question_is_valid(question):
+                raise PlannerContractError("aclaración del decisor inválida")
+        result["kind"] = "clarify"
+        result["question"] = question
+    else:
+        kind = "unsupported" if decided.decision == "limit" else "knowledge"
+        language = _read_reply_language(text, history)
+        if language is None:
+            try:
+                language = llm.detect_response_language(text)
+            except ValueError:
+                language = None
+        reply, _ = llm.chat(
+            text,
+            **_conversation_reply_arguments(
+                history,
+                conversation_kind=kind,
+                response_language=language,
+                scoped=False,
+                intent_operations=[],
+                available_operations=available_operations,
+            ),
+        )
+        if not reply.strip():
+            raise PlannerContractError("no se pudo preparar una respuesta conversacional")
+        result.update(kind="conversation", conversationKind=kind, reply=reply.strip())
+        if language in {"es", "en", "mixed"}:
+            result["responseLanguage"] = language
+    _append_turn_audit(
+        {
+            "schema": "baxy.mind-turn-audit.v1",
+            "request_id": message.get("id"),
+            "phase": "final",
+            "decision_path": "context_decider",
+            "candidate_operations": list(available_operations),
+            "raw_decision": {
+                "mode": decided.decision,
+                "request": decided.request,
+                "effect_operations": list(decided.operations),
+            },
+            "stages": [],
+            "final": {
+                "kind": result["kind"],
+                "intent_operations": result["intentOperations"],
+                "effect_operations": result["effectOperations"],
+            },
+        }
+    )
+    return result
+
+
 def _prepare_turn_result(
     message: dict[str, Any],
     *,
@@ -4118,12 +4212,26 @@ def _prepare_turn_result(
     on_signal: PendingTurnSignal | None = None,
     dialogue_state: dialogue_slot.DialogueState | None = None,
 ) -> dict[str, Any]:
-    """Prepare one side-effect-free turn result, after filling the dialogue slot.
+    """Prepare one side-effect-free turn result.
 
-    ``dialogue_state`` is what the conversation left so far (the serve loop owns it); it is read, never written,
-    here.
+    A message inside a conversation keeps only the conversation readers; the rest is the contextual decider's,
+    with the whole conversation. The first message of one goes through every reader first. ``dialogue_state`` is what the
+    conversation left so far (the serve loop owns it); it is read, never written, here.
     """
 
+    if dialogue_slot.read_slot({}, message.get("history") or [], str(message.get("text", ""))).antecedents:
+        return _decide_turn_result(
+            message,
+            llm=llm,
+            planner_catalog=planner_catalog,
+            turn_evidence=turn_evidence,
+            encoder=encoder,
+            tool_by_name=tool_by_name,
+            application_names=application_names,
+            game_catalog=game_catalog,
+            on_signal=on_signal,
+            in_conversation=True,
+        )
     rearmed = _rearm_in_context(
         message,
         llm=llm,
@@ -4173,11 +4281,16 @@ def _decide_turn_result(
     on_signal: PendingTurnSignal | None = None,
     served_surface: tuple[str, ...] | None = None,
     already_signaled: list[bool] | None = None,
+    in_conversation: bool = False,
 ) -> dict[str, Any]:
     """Decide one side-effect-free turn result from the (rearmed) request.
 
     ``served_surface`` is None on the request as said; on the re-read of its canonical surface
     (``_served_surface_reread``) it holds the served operation that only the rewrite named, if any.
+    ``in_conversation``: the message follows earlier turns. Only the conversation readers (talk,
+    complaints, social acts, known limits) keep it; everything else is the contextual decider's, which
+    reads the whole conversation (Fase 3.5b F4: with the history, the effect and clarification readers
+    lost more follow-ups than they proved).
     """
     already_signaled = [] if already_signaled is None else already_signaled
 
@@ -4334,7 +4447,7 @@ def _decide_turn_result(
             or effect_intent.near_catalog_game_candidates(objective, game_catalog)
         )
     )
-    if (
+    if not in_conversation and (
         explicit_clarification is not None
         or missing_open_referent
         or unresolved_input_kind is not None
@@ -4694,6 +4807,13 @@ def _decide_turn_result(
         )
         if withdrawn_closed_refusal:
             explicit_conversation_decision = None
+    if served_surface is None and explicit_conversation_decision is None and (
+        explicit_intent is None or in_conversation
+    ):
+        # No reader proved this message, or it follows earlier turns and no conversation reader kept it:
+        # the contextual decider decides it (Fase 3.5b F4), not the shortlist, the native selector and
+        # the gates.
+        return _context_decided_result(message, llm=llm, planner_catalog=planner_catalog)
     if explicit_intent is not None:
         _emit_early_turn_signal(
             path=PATH_RECOGNIZER

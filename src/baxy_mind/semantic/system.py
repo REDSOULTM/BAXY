@@ -45,10 +45,13 @@ def _weather_location(text: str) -> str | None:
         candidate = match.group("place").strip(" \t\r\n.,;:")
         if _names_a_time(_fold(candidate)):
             continue
-        if _has(_fold(match.group(0)), r"^(?:para|for)\b") and _has(
-            _fold(candidate), r"^(?:\w+(?:ar|er|ir)(?:me|te|se|nos|lo|la|los|las)?|\w+ing|to\s+\w+)\b"
-        ):
+        if (
+            _has(_fold(match.group(0)), r"^para\b")
+            and not candidate[:1].isupper()
+            and _has(_fold(candidate), r"^\w+(?:ar|er|ir)(?:me|te|se|nos|lo|la|los|las)?\b")
+        ) or (_has(_fold(match.group(0)), r"^for\b") and _has(_fold(candidate), r"^(?:\w+ing|to\s+\w+)\b")):
             # MASSIVE weather_query «es necesario llevar paraguas para salir»: «para» before a verb says what for.
+            # Fase 3.5b DEV «weather forecast for Denver»: English has no «-er» infinitive, and a capital is a name.
             continue
         place = _without_trailing_time(candidate)
         # Uso real tanda 5 «wat level of air pollution hay en downtown Houston»: the weather service

@@ -6,6 +6,7 @@ param(
     [string]$LlamaServer,
     [string]$SttDirectory,
     [string]$CpuProseAdapter,
+    [string]$DeciderAdapter,
     [ValidateRange(0, 999)]
     [int]$GpuLayers = 99,
     [switch]$NoWake
@@ -187,13 +188,17 @@ $manifest = [ordered]@{
     ngl = $GpuLayers
     wake_on_start = $wakeOnStart
 }
-if (-not [string]::IsNullOrWhiteSpace($CpuProseAdapter)) {
-    $adapterFull = Resolve-RequiredFile -Path $CpuProseAdapter -Description 'Adaptador CPU'
+# LoRAs bound by hash to the registered GGUF (the mind turns each on only for its own role).
+foreach ($bound in @(
+        @('cpu_prose_adapter', 'baxy-cpu-prose-adapter-v1', 'Adaptador CPU', $CpuProseAdapter),
+        @('decider_adapter', 'baxy-decider-adapter-v1', 'Adaptador del decisor', $DeciderAdapter))) {
+    if ([string]::IsNullOrWhiteSpace($bound[3])) { continue }
+    $adapterFull = Resolve-RequiredFile -Path $bound[3] -Description $bound[2]
     if ([IO.Path]::GetExtension($adapterFull) -ine '.gguf') {
-        throw 'cpu_prose_adapter_must_be_gguf'
+        throw "$($bound[0])_must_be_gguf"
     }
-    $manifest.cpu_prose_adapter = [ordered]@{
-        schema = 'baxy-cpu-prose-adapter-v1'
+    $manifest[$bound[0]] = [ordered]@{
+        schema = $bound[1]
         gguf = $adapterFull
         gguf_sha256 = Get-BaxySha256 -Path $adapterFull
         base_gguf_sha256 = $manifest.gguf_sha256

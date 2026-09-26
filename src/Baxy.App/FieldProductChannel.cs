@@ -1056,7 +1056,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         return int.TryParse(raw, NumberStyles.None, CultureInfo.InvariantCulture, out int value)
             && value is >= 1024 and <= 131072
             ? value
-            : 4096;
+            // The mind's own default per slot (llm.MAX_CONTEXT_TOKENS, Fase 3.5b decider prompt).
+            : 12288;
     }
 
     private static JsonObject MetricsJson(FieldMetricSnapshot metrics)

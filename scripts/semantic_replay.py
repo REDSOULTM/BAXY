@@ -403,6 +403,9 @@ def literals(
     corpus: pathlib.Path | None = None,
     skip_survey: bool = False,
     src: pathlib.Path | None = None,
+    gguf: pathlib.Path | None = None,
+    context: int | None = None,
+    decider_adapter: pathlib.Path | None = None,
 ) -> None:
     import run_turn_policy_gate as gate
 
@@ -424,6 +427,10 @@ def literals(
         rows = rows[:limit]
     manifest = gate.read_runtime_manifest(pathlib.Path(os.environ["LOCALAPPDATA"]) / "BAXYRuntime" / "mind-runtime-v1.json")
     configuration = gate.core_catalog_configuration(gate.DEFAULT_CORE)
+    base = gguf or pathlib.Path(manifest["gguf"])
+    overrides = {"BAXY_MIND_CTX": str(context)} if context else {}
+    if decider_adapter:
+        overrides.update(gate.decider_adapter_environment(decider_adapter, base))
     done = set()
     if out.is_file():
         done = {record["case_id"] for record in map(json.loads, filter(str.strip, out.read_text(encoding="utf-8").splitlines())) if "error" not in record}
@@ -431,11 +438,12 @@ def literals(
         configuration["capabilities"],
         application_catalog=configuration["applicationCatalog"],
         game_catalog=configuration["gameCatalog"],
-        gguf=pathlib.Path(manifest["gguf"]),
+        gguf=base,
         llama_server=pathlib.Path(manifest["llama_server"]),
         ngl=int(manifest.get("ngl") or 99),
         endpoint=None,
-        environment_overrides={},
+        # The gate pins 4 096 per slot; a candidate profile measures its own.
+        environment_overrides=overrides,
         startup_timeout=300.0,
     ) as client:
         for row in rows:
@@ -523,6 +531,9 @@ def main(argv: list[str]) -> int:
     lit.add_argument("--corpus", type=pathlib.Path, help="semantic_corpus.py corpus.jsonl instead of the 742")
     lit.add_argument("--skip-survey", action="store_true")
     lit.add_argument("--src", type=pathlib.Path, help="mind sources to run (e.g. a worktree of the baseline tag)")
+    lit.add_argument("--gguf", type=pathlib.Path, help="another GGUF than the runtime manifest's")
+    lit.add_argument("--ctx", type=int, help="context per server slot (BAXY_MIND_CTX)")
+    lit.add_argument("--decider-adapter", type=pathlib.Path, help="the decider's LoRA GGUF over the base GGUF")
     dif = sub.add_parser("diff")
     dif.add_argument("base", type=pathlib.Path)
     dif.add_argument("new", type=pathlib.Path)
@@ -540,7 +551,8 @@ def main(argv: list[str]) -> int:
     elif args.command == "rescore":
         rescore(args.out, args.reviews)
     elif args.command == "literals":
-        literals(args.out, args.limit, args.corpus, args.skip_survey, args.src)
+        literals(args.out, args.limit, args.corpus, args.skip_survey, args.src, args.gguf, args.ctx,
+                 args.decider_adapter)
     else:
         diff(args.base, args.new)
     return 0
