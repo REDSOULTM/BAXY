@@ -198,3 +198,14 @@ Runtime del producto registrado de nuevo (`register_mind_runtime.ps1 -DeciderAda
 tiene ~165 pruebas que fijan el camino viejo (selector y verificadores sobre turnos no probados, que ahora decide el
 decisor) con LLM falsos sin `decide_in_context`: se retiran o se reescriben contra el decisor (ley 2). Los 4 peores de
 las 742 (H0313 inventa, H0407, H0506 a nota, H0604 «llamo») van como datos al próximo ajuste, no como reglas.
+
+## D19. Segundo ajuste del LoRA: planes, reacciones en conversación y lo propio (2026-09-26 ~11:30)
+Las mediciones de M8–M13 dejaron tres huecos del decisor con LoRA: convierte los planes del dueño en una acción o en
+charla (M9: capa A 70 %), contesta con una pregunta a comentarios y agradecimientos en conversación («gracias, así
+está bien», «Me gusta como se desenvuelven»), y confunde lo propio («guardá que mi cumpleaños…» → nota, «Como me
+llamo» → «no llamo», «nunca cierres spotify» → pregunta, «inactiva la alarma de la casa» → cancelar una alarma del
+PC). Cuatro escritores de sala limpia (`brief/AJUSTE2.md`) escribieron 400 conversaciones, 810 mensajes (w14–w17:
+166 mensajes con 2–3 operaciones, 152 charlas, 54 límites, 22 preguntas). Datos v4: 3 404 ejemplos. Receta igual a
+`full1` (1 época, irrelevancia 10 %, familias de ~60 operaciones) para que la única diferencia sean los datos.
+`full2` entra sólo si el decisor aislado no baja en DEV-B y, integrado, cumple la regla de D12 y mejora la capa A o la
+reserva sin empeorar DEV-B; las 742 no se usan como datos.

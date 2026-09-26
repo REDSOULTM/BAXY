@@ -128,6 +128,16 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
   mal en la base), 17 («tengo ganas de escuchar reggaetón» → Spotify sin resultados; la base iba a YouTube).
 - El audio del dueño estaba en 61 sin silenciar (no 0 silenciado como decía el goal): se devolvió así.
 
+### App real tras M13 (2026-09-26 11:45–11:51, runtime M8 + M11–M13; audio del dueño en 100 sin silenciar, devuelto)
+
+- Guion del dueño **47/60** (+8 por revisar); held-out **26/30** (+1). Las subidas del held-out son de entorno (el
+  bloc de notas se verificó y se cerró, Spotify encontró reggaetón); siguen mal 14 (el primer borrador copia el lema
+  de la página, «nuestro destino», y el veto de voz de la página lo rechaza: termina en «No lo encontré»), 16 (esta
+  vez la búsqueda misma falló; con resultados, el informe no nombraba la serie) y 18.
+- Latencia visible (mensaje → primera respuesta, resolución 1 s): **p50 2,0 s**, p90 6 s, 10/90 sobre 5 s.
+- Probado y retirado (ley 2): una instrucción para que el informe de búsqueda nombre de qué trata; en la corrida el
+  caso que la motivó no llegó a redactarse, así que no hay efecto demostrado.
+
 ### Retirada del camino viejo (ley 2, plan tras M8)
 
 Con M8, el camino viejo del modelo (lista corta, selector nativo, `llm.decide_turn`, vetos y verificadores del

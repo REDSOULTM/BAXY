@@ -1,6 +1,6 @@
 # La semántica de BAXY — cómo se entiende un mensaje
 
-Borrador vivo de la Fase 3.5 (2026-09-23). Se lee en diez minutos. Si una sección dice «hoy» es el mapa verificado del
+Borrador vivo de la Fase 3.5 (2026-09-23; caminos y medición actualizados con la Fase 3.5b, 2026-09-26). Se lee en diez minutos. Si una sección dice «hoy» es el mapa verificado del
 código; si dice «destino» es a dónde se está migrando (`src/baxy_mind/semantic/`). Meta vigente:
 `artifacts/comprobaciones/C03/META_SEMANTICA_TOTAL_2026-09-22.md`.
 
@@ -37,13 +37,20 @@ Todo pasa por `turn.decide` → `src/baxy_mind/__main__.py::_prepare_turn_result
    plan, falta un dato → clarify, límite conocido / fuera del mundo / charla → conversation. Antes de la lectura
    quedan en `__main__` los lectores que necesitan el historial (una oferta pendiente, «repetilo», el pronombre de
    una búsqueda del navegador).
-3. **Recuperación + modelo**: `PlannerCatalog.shortlist` (E5 consulta contra el pasaje de cada operación; ordenar
-   por familia se midió y se rechazó, 73/124 contra 102/124), `llm.decide_turn` (Qwen3-4B, temperatura 0, esquema
-   cerrado: conversation | clarify | action | plan sobre la lista corta). La segunda lectura sin catálogo
-   (`_verify_semantic_effect_shape`) y la sonda de conversación (`turn_evidence`) **sólo pueden bajar** la clase.
+3. **Decisor en contexto** (Fase 3.5b, `semantic/decider.py` + `llm.decide_in_context`): todo lo que ningún lector
+   prueba —y, si el mensaje sigue a turnos anteriores, todo lo que los lectores de conversación (charla, quejas,
+   social, límites conocidos) no retienen— lo decide un modelo que lee la conversación (los últimos 4 mensajes), el
+   catálogo en lenguaje llano (`data/decider_catalog.es.v1.json`) y las reglas del dueño, y responde con esquema
+   cerrado `{request, decision: action|clarify|talk|limit, operations, question}`. `request` es el pedido reescrito y
+   autónomo: viaja como `objective` (el shell lo planifica, confirma y extrae sus argumentos de ahí); el idioma de la
+   respuesta sale de las palabras de la persona, nunca de la reescritura. Modelo: Qwen3.5-4B con un LoRA propio
+   (`decider_adapter.py`, atado por hash al GGUF del manifiesto, apagado para cualquier otro rol y encendido por
+   petición en la ranura reservada del decisor). Un `limit` del decisor se re-lee en su forma canónica
+   (`semantic.surface`): lo que los lectores prueban ahí es ese pedido (M13). La lista corta, el selector nativo,
+   `llm.decide_turn` y sus vetos se retiraron (M11): ningún turno medido pasaba ya por ahí.
 
 Prioridad cuando varios dicen algo: efecto explícito > aclaración tipada > conocimiento / redacción > límite conocido >
-modelo. Guardas que **retiran autoridad y nunca la inventan**: pregunta de información, dominio en el texto
+decisor en contexto (en conversación: lectores de conversación > decisor). Guardas que **retiran autoridad y nunca la inventan**: pregunta de información, dominio en el texto
 (`operation_domain_is_grounded`), conservación de la misión compuesta, relevancia, argumentos literales,
 presentación, límite fuera del mundo.
 
@@ -75,6 +82,10 @@ con antecedente es el objeto de ese antecedente, nunca «lo que esté delante».
   guardia y comprobación de VS Code. Guiones: `contexto/dueno-2026-09-21`, `contexto/heldout-2026-09-22` (congelado),
   35 bancos por categoría.
 - `scripts/semantic_replay.py literals` — sólo `turn.decide`, sin ejecutar nada (742, capas A/B/C).
+- `scripts/comprension_eval.py` — conjuntos DEV-A (se miran sus fallos), DEV-B (sólo su cifra) y FINAL (sellado, una
+  vez) de la Fase 3.5b: sueltos y conversaciones con historial fijo, oro de sala limpia auditado, sólo decisión y
+  argumentos clave. `--decider-adapter` mide el LoRA en el producto; `comprension-f1/lora/` entrena y evalúa el
+  decisor aislado (receta en `DECISIONES_COMPRENSION_2026-09-25.md`, D13–D19).
 - `scripts/semantic_corpus.py` — corpus por capas del histórico de todos los BAXY (filtros de idioma y destinatario,
   oráculo proyectado a familias) y puntuación por tipo de fallo. Todo lo que contiene texto del dueño es privado
   (`%LOCALAPPDATA%\BAXY\semantic-corpus-v1`). Capa A = lo dicho de verdad a BAXY (encuesta de 742 y registro real);
@@ -97,7 +108,8 @@ con antecedente es el objeto de ese antecedente, nunca «lo que esté delante».
 | `intent.py`, `catalog.py`, `temporal.py` | el tipo de lectura (`EffectIntent`), los índices de apps y juegos instalados, las palabras de tiempo | compartidos por varios dominios: ningún dominio importa de otro para esto |
 | dominios | `audio`, `display`, `windows`, `media`, `web`, `files`, `games`, `network`, `system`, `notes`, `messaging`, `ui`, `apps` | los lectores acíclicos que estaban en `effect_intent` (19 140 → 13 133 líneas). Traslado puro: las 4 946 lecturas del patrón del corpus son idénticas antes y después (`pattern_dump`) |
 | `levels.py` | los niveles de salida (volumen del sistema, brillo) dichos sin objeto, mezclando idiomas, secos («Brillo 20%») o como respuesta a «¿cuánto?» | no decide efectos: reescribe el pedido en la frase canónica que ya leen los lectores de volumen y brillo (`patterns.output_level_request`); una cantidad suelta sólo completa el pedido relativo inmediatamente anterior, «a 40» es el nivel final y «20» lo que se mueve; sin cantidad pregunta cuánto (H0027) |
-| `surface.py` | la superficie canónica: las palabras con que la persona nombra algo servido y que ningún lector conoce («speaker/bocina/parlante» → «el audio», «hacer sonar» → «poner», «quiero/me apetece que + subjuntivo» → imperativo, «inactivar» → «desactivar», «gallery/galería» → «carpeta de imágenes», «añadir una lista» → «crea una lista», «pon en pausa» → «pausa»), con su tabla en `lexicon` | como `levels`, no decide efectos: antes de publicar un límite, `__main__._served_surface_reread` relee la reescritura con los lectores y las guardas de siempre (tanda 3, 2026-09-24) |
+| `surface.py` | la superficie canónica: las palabras con que la persona nombra algo servido y que ningún lector conoce («speaker/bocina/parlante» → «el audio», «hacer sonar» → «poner», «quiero/me apetece que + subjuntivo» → imperativo, «inactivar» → «desactivar», «gallery/galería» → «carpeta de imágenes», «añadir una lista» → «crea una lista», «pon en pausa» → «pausa»), con su tabla en `lexicon` | como `levels`, no decide efectos: antes de publicar un límite —de un lector o del decisor en contexto (M13)— `__main__._served_surface_reread` relee la reescritura y sólo lo que los lectores prueban ahí la reemplaza (tanda 3, 2026-09-24) |
+| `decider.py` | el decisor en contexto de la Fase 3.5b: su política (9 reglas del dueño en prosa), el formato, los títulos de familia, el catálogo llano (`data/decider_catalog.es.v1.json`, escrito en sala limpia), la ventana de 4 mensajes, el esquema y el parser | es el prompt: lo que dice la persona lo redacta el modelo, así que el censo de prosa visible no lo cuenta; los datos del LoRA se construyen con este mismo prompt (`comprension-f1/lora/build_train.py`) |
 | `reading.py` | la puerta `read(text, …) -> Reading` y las formas de enunciado (orden con charla alrededor, destino delante, deseo de escuchar, cláusulas de una compuesta y su oferta parcial, charla que no pide nada) | `__main__._decide_turn_result` consume la lectura; el conteo «una sola resolución por turno» sigue probado (`test_turn_resolves_explicit_effects_only_once`) |
 | `patterns.py` | el orquestador del patrón: `resolve_explicit_effects`, `resolve_explicit_clarification_intent`, las revisiones por dominio que se llaman entre sí, los contratos compuestos | salió entero de `effect_intent` (traslado puro, 0 diferencias en 4 946 lecturas); `effect_intent` queda como capa de re-exportación de 687 líneas mientras los llamadores migran |
 
