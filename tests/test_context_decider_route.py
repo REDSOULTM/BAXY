@@ -163,3 +163,36 @@ def test_what_a_conversation_reader_keeps_never_reaches_the_decider(text: str) -
     result = _turn(text, llm, history)
 
     assert result["kind"] == "conversation"
+
+
+def test_a_pointer_with_no_antecedent_is_asked_never_filled_by_the_model() -> None:
+    # cien-104 «ábreme eso porfa» after the time: «Abre el navegador» opened a browser nobody named (M19).
+    llm = _Decider(ContextDecision("Abre el navegador.", "action", ("app.open",), ""), clarification="¿Qué quieres que abra?")
+    history = [{"role": "user", "content": "¿qué hora es?"}, {"role": "assistant", "content": "Son las 17:26."}]
+
+    result = _turn("ábreme eso porfa", llm, history)
+
+    assert result["kind"] == "clarify"
+    assert result["effectOperations"] == []
+    assert result["question"] == "¿Qué quieres que abra?"
+
+
+def test_a_pointer_whose_antecedent_was_said_is_that_request() -> None:
+    llm = _Decider(ContextDecision("Abre Spotify.", "action", ("app.open",), ""))
+    history = [{"role": "user", "content": "¿está instalado Spotify?"}, {"role": "assistant", "content": "Sí, Spotify está instalado."}]
+
+    result = _turn("ábreme eso porfa", llm, history)
+
+    assert result["kind"] == "action"
+    assert result["operation"] == "app.open"
+
+
+def test_a_question_in_another_language_is_formulated_again_in_the_persons() -> None:
+    # cien-104 «open that» was asked «¿Qué página web quieres que abra?».
+    llm = _Decider(ContextDecision("Abre eso.", "clarify", (), "¿Qué quieres que abra?"), clarification="What should I open?")
+    history = [{"role": "user", "content": "¿qué hora es?"}, {"role": "assistant", "content": "Son las 17:25."}]
+
+    result = _turn("open that", llm, history)
+
+    assert result["kind"] == "clarify"
+    assert result["question"] == "What should I open?"

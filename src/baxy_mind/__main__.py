@@ -35,7 +35,9 @@ os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
 from . import protocol
 from . import effect_intent
+from .semantic import decider as semantic_decider
 from .semantic import dialogue as dialogue_slot
+from .semantic.apps import deictic_close_request
 from .semantic import levels as semantic_levels
 from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
@@ -4031,6 +4033,17 @@ def _context_decided_result(
     decided = llm.decide_in_context(
         text, history, ((tool.name, tool.description) for tool in planner_catalog.tools),
     )
+    if (
+        decided.decision == "action"
+        and (_deictic_open_request(text) or deictic_close_request(effect_intent._fold(text)))
+        and not dialogue_slot.restatement_was_said(
+            decided.request,
+            [text, *(str(turn.get("content") or "") for turn in history if isinstance(turn, dict))],
+        )
+    ):
+        # Fase 3.5b M19 (cien-104 «ábreme eso porfa» after the time → «Abre el navegador» → a browser opened): a
+        # pointer with no antecedent in what was said is asked, never filled with an object the model brought.
+        decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
     objective = decided.request or text
     result: dict[str, Any] = {
         "type": "turn.result",
@@ -4053,6 +4066,14 @@ def _context_decided_result(
             result["responseLanguage"] = language
     elif decided.decision == "clarify":
         question = decided.question
+        person_language = _read_reply_language(text, history)
+        question_language = _decisive_request_language(question) if question else None
+        if person_language in {"es", "en"} and question_language in {"es", "en"} and person_language != question_language:
+            # cien-104 «open that»: the decider asked «¿Qué página web quieres que abra?»; the question is the
+            # person's language or it is formulated again, from the person's own words.
+            question = ""
+            objective = text
+            result["objective"] = text
         if not _recovery_question_is_valid(question, objective, history):
             question = llm.clarify_after_turn_failure(objective, history=history, timeout=2.5)
             if not _recovery_question_is_valid(question):

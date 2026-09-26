@@ -346,6 +346,18 @@ def rewrite_stays_in_context(
     return all(word[:4] in said for word in meaningful if word not in _FRAME_WORDS and not word.isdigit())
 
 
+def restatement_was_said(restatement: str, lines: list[str]) -> bool:
+    """Every content word of a model's restatement is in these lines (what the person and BAXY said).
+
+    The same four-letter-stem test as ``rewrite_stays_in_context``, for the contextual decider's ``request``
+    (Fase 3.5b M19): «ábreme eso porfa» after the time was restated «Abre el navegador» and a browser opened.
+    """
+
+    said = {word[:4] for line in lines for word in _words(line)}
+    meaningful = [word for word in _words(restatement) if word not in _STOPWORDS]
+    return all(word[:4] in said for word in meaningful if word not in _FRAME_WORDS and not word.isdigit())
+
+
 _NUMBER_VALUES = {
     "cero": 0, "uno": 1, "una": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5, "seis": 6, "siete": 7, "ocho": 8,
     "nueve": 9, "diez": 10, "once": 11, "doce": 12, "trece": 13, "catorce": 14, "quince": 15, "dieciseis": 16,
