@@ -5,7 +5,10 @@ Per turn of the clean-room conversations (train/w*-p*.jsonl): the decider's syst
 the user message, and the target JSON. Partial catalogs teach reading the catalog in front instead of memorising
 names, so new operations (computer use) keep working without retraining; they also keep one example inside 6 GB.
 Rows whose text normalises to a DEV-A/DEV-B/FINAL text are dropped. Prints counts only.
-usage: build_train.py [--n 50] [--holdout 0.05]
+Hammer (Lin et al., ICLR 2025): in --mask of the examples every operation name of the catalog (and of the answer) is
+replaced by a random name, so the decider reads descriptions, not names; in --irrelevance of the action examples the
+target operations are removed from the catalog and the answer becomes a plain limit (never invent an operation).
+usage: build_train.py [--n 50] [--holdout 0.05] [--mask 0.33] [--irrelevance 0.10]
 """
 import json
 import os
@@ -35,6 +38,8 @@ def norm(text):
 def main():
     n_ops = int(sys.argv[sys.argv.index("--n") + 1]) if "--n" in sys.argv else 50
     holdout = float(sys.argv[sys.argv.index("--holdout") + 1]) if "--holdout" in sys.argv else 0.05
+    mask = float(sys.argv[sys.argv.index("--mask") + 1]) if "--mask" in sys.argv else 0.33
+    irrelevance = float(sys.argv[sys.argv.index("--irrelevance") + 1]) if "--irrelevance" in sys.argv else 0.10
     rng = random.Random(1309)
     evaluation = set()
     for name in ("DEV-A", "DEV-B", "FINAL"):
@@ -75,13 +80,34 @@ def main():
                 others = [t for t in TOOLS if t not in subset and t not in INTERNAL]
                 rng.shuffle(others)
                 subset += others[: n_ops - len(subset)]
-                system = decider.catalog_prompt([(t, TOOLS[t]) for t in subset])
+                kind = "plain"
+                answer_decision, answer_ops = decision, (chosen if decision == "action" else [])
+                if split == "train" and decision == "action" and rng.random() < irrelevance:
+                    # Hammer's irrelevance augmentation: what the catalog in front cannot do is a limit.
+                    subset = [t for t in subset if t not in chosen]
+                    answer_decision, answer_ops, kind = "limit", [], "irrelevance"
+                shown = {t: t for t in subset}
+                if split == "train" and rng.random() < mask:
+                    # Hammer's function masking: names become opaque, descriptions carry the meaning.
+                    shown = {t: f"{t.split('.', 1)[0]}.{''.join(rng.choice('abcdefghijklmnopqrstuvwxyz') for _ in range(7))}"
+                             for t in subset}
+                    kind = kind + "+mask" if kind != "plain" else "mask"
+                plain_of = {shown[t]: PLAIN.get(t) or TOOLS[t] for t in subset}
+                saved = dict(decider.plain_descriptions())
+                decider.plain_descriptions().clear()
+                decider.plain_descriptions().update(plain_of)
+                try:
+                    system = decider.catalog_prompt([(shown[t], TOOLS[t]) for t in subset])
+                finally:
+                    decider.plain_descriptions().clear()
+                    decider.plain_descriptions().update(saved)
                 messages = decider.messages(system, user, history)
-                answer = json.dumps({"request": str(target.get("request") or user), "decision": decision,
-                                     "operations": chosen if decision == "action" else [],
+                answer = json.dumps({"request": str(target.get("request") or user), "decision": answer_decision,
+                                     "operations": [shown[op] for op in answer_ops],
                                      "question": str(target.get("question") or "") if decision == "clarify" else ""},
                                     ensure_ascii=False)
-                out[split].append({"id": conv.get("id"), "messages": messages, "answer": answer, "decision": decision})
+                out[split].append({"id": conv.get("id"), "messages": messages, "answer": answer,
+                                   "decision": answer_decision, "kind": kind})
             history.append({"role": "user", "content": user})
             if turn.get("assistant"):
                 history.append({"role": "assistant", "content": str(turn["assistant"])})
@@ -92,11 +118,12 @@ def main():
             for row in rows:
                 sink.write(json.dumps(row, ensure_ascii=False) + "\n")
     counts = {split: len(rows) for split, rows in out.items()}
-    by = {}
+    by, kinds = {}, {}
     for row in out["train"]:
         by[row["decision"]] = by.get(row["decision"], 0) + 1
+        kinds[row["kind"]] = kinds.get(row["kind"], 0) + 1
     print(json.dumps({"conversations": len(conversations), "examples": counts, "train_decisions": by,
-                      "dropped": dropped, "catalog_ops_per_example": n_ops}))
+                      "dropped": dropped, "catalog_ops_per_example": n_ops, "kinds": kinds}))
 
 
 if __name__ == "__main__":

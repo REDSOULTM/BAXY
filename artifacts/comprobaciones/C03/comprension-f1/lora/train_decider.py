@@ -17,8 +17,9 @@ from transformers import AutoModelForImageTextToText, AutoTokenizer, BitsAndByte
 
 BASE = r"D:/BAXYRuntime/experiments/models/qwen35-4b-hf-851bf6e8"
 DATA = pathlib.Path(os.environ["LOCALAPPDATA"]) / "BAXY" / "comprension-2026-09-25" / "train_built"
-TARGET = (r".*language_model\.layers\.\d+\..*\.(q_proj|k_proj|v_proj|o_proj|gate_proj|up_proj|down_proj|"
-          r"in_proj_qkv|in_proj_z|in_proj_b|in_proj_a|out_proj)$")
+# Full-attention and MLP projections only: the DeltaNet projections (linear_attn.*) break the GGUF LoRA export
+# (llama.cpp #21125, _reorder_v_heads), and Unsloth's Qwen3.5 recipe targets exactly these seven.
+TARGET = r".*language_model\.layers\.\d+\.(self_attn\.(q_proj|k_proj|v_proj|o_proj)|mlp\.(gate_proj|up_proj|down_proj))$"
 
 
 def encode(tok, row):
@@ -61,7 +62,7 @@ def main():
     model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
     model.enable_input_require_grads()
     model.config.use_cache = False
-    model = get_peft_model(model, LoraConfig(r=args.rank, lora_alpha=2 * args.rank, lora_dropout=0.05,
+    model = get_peft_model(model, LoraConfig(r=args.rank, lora_alpha=2 * args.rank, lora_dropout=0.0,
                                              target_modules=TARGET, task_type="CAUSAL_LM"))
     params = [q for q in model.parameters() if q.requires_grad]
     opt = torch.optim.AdamW(params, lr=args.lr, weight_decay=0.0)

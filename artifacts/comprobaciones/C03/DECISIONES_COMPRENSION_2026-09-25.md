@@ -115,3 +115,24 @@ llamada del decisor; se declara en el manifiesto con su SHA-256; datos sintétic
 FINAL (`comprension-f1/brief/ENTRENAMIENTO.md`), ningún dato del dueño. Se juzga con la regla de siempre en DEV-B y el
 conjunto de regresión; si no entra, se retira. Aviso de ley 1: el LoRA heredado de FunctionGemma aprendió su corpus y
 fuera de él cayó (63/124). Los créditos de Claude no pagan GPU (lo preguntó el dueño): se entrena en la RTX 3060.
+
+## D14. Receta del LoRA corregida por el estado del arte (pedido del dueño 2026-09-25 ~22:00)
+El dueño pidió basar el ajuste en papers, documentación y experimentos de usuarios, no en conocimiento propio.
+Hallazgos y cambios:
+- **Unsloth, guía de Qwen3.5:** no recomienda QLoRA de 4 bits en Qwen3.5 («higher than normal quantization
+  differences»); pide LoRA bf16 (~10 GB para el 4B), módulos q/k/v/o + gate/up/down, transformers v5, α ≥ r, dropout 0,
+  lr 2e-4, 1–3 épocas, pérdida sólo en la respuesta. Medido aquí: bf16 no cabe en 6 GB; 8 bits, 10 GB y 255 s por paso.
+- **llama.cpp #21125 + código del conversor b9980:** la conversión a GGUF de un LoRA de Qwen3.5 falla en
+  `_reorder_v_heads`, que sólo se aplica a `linear_attn.*`. El primer piloto entrenaba esas proyecciones: se detuvo; el
+  entrenamiento sólo toca atención completa y MLP.
+- **Hammer (ICLR 2025):** enmascarar los nombres de función en ~33 % de los ejemplos (lee descripciones: sirve para
+  catálogos nuevos, como los del motor de computer use) y ~10 % de ejemplos sin la función correcta (→ límite, no
+  inventar operaciones). Añadido a `build_train.py`.
+- **Gorilla (entrenamiento consciente del recuperador):** documentación en el prompt, a veces incompleta: confirma el
+  catálogo parcial por ejemplo.
+- **Internalizing Tool Knowledge (QLoRA, 2026):** Qwen3-4B, ~1 700 ejemplos, r 32, α 64, lr 2e-4, 2 épocas; olvido
+  fuerte (61 % retenido). Aquí el adaptador sólo se aplica a la llamada del decisor: la redacción y el resto no se ven
+  afectados.
+Decisión del dueño: **piloto aquí (QLoRA 4 bits, receta corregida, para validar la dirección) y, si da lo esperado,
+entrenamiento completo en bf16 en su PC principal (RTX 4060 Ti, 16 GB)** con un prompt que le preparo al agente de
+ese PC (que va ~5 días atrás en el desarrollo).
