@@ -112,6 +112,13 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
   anotado: el paso a paso del motor (rama `fable/computer-use-engine`) está ajustado sobre Qwen3-4B y el cambio de modelo
   base le afecta; medirlo al unir esa rama.
 
+### Entrenamiento en el PC principal (redpc) por SSH (dueño, 2026-09-25 ~22:20)
+
+El dueño ofreció su PC principal (RTX 4060 Ti, 16 GB) para la receta bf16 que Unsloth recomienda. Su agente abrió SSH
+sólo por la tailnet y sólo con una clave de esta laptop; desde aquí se montó `D:\BAXYTrain` (mismas versiones,
+Qwen/Qwen3.5-4B@851bf6e8, datos de entrenamiento) y se lanzó el piloto bf16 (400 ejemplos, igual que el QLoRA local)
+como tarea programada oculta. Nada del repositorio de BAXY se toca en ese PC.
+
 ## Bitácora
 
 - 2026-09-25 12:0x — F0: tag, ficheros de estado. Verificación anterior en curso (capas A/B/C).

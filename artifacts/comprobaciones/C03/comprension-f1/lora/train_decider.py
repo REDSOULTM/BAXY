@@ -1,6 +1,8 @@
 """QLoRA of Qwen3.5-4B on the decider's examples (D13). Loss only on the answer JSON; logits only there.
 
-usage: train_decider.py --out DIR [--max N] [--epochs E] [--lr 2e-4] [--accum 8] [--rank 16]
+usage: train_decider.py --out DIR [--max N] [--epochs E] [--lr 2e-4] [--accum 8] [--rank 16] [--bf16]
+                         [--base HF_DIR] [--data DIR]
+--bf16: LoRA on bf16 weights (Unsloth's recipe for Qwen3.5, ~10 GB for the 4B); default QLoRA nf4 (fits 6 GB).
 Needs flash-linear-attention + triton-windows (the DeltaNet layers) in the training venv.
 """
 import argparse
@@ -45,20 +47,25 @@ def main():
     ap.add_argument("--lr", type=float, default=2e-4)
     ap.add_argument("--accum", type=int, default=8)
     ap.add_argument("--rank", type=int, default=16)
+    ap.add_argument("--bf16", action="store_true")
+    ap.add_argument("--base", default=BASE)
+    ap.add_argument("--data", default=str(DATA))
     args = ap.parse_args()
+    data = pathlib.Path(args.data)
     out = pathlib.Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    train = [json.loads(line) for line in open(DATA / "train.jsonl", encoding="utf-8")]
-    hold = [json.loads(line) for line in open(DATA / "holdout.jsonl", encoding="utf-8")][:60]
+    train = [json.loads(line) for line in open(data / "train.jsonl", encoding="utf-8")]
+    hold = [json.loads(line) for line in open(data / "holdout.jsonl", encoding="utf-8")][:60]
     rng = random.Random(7)
     rng.shuffle(train)
     if args.max:
         train = train[: args.max]
-    tok = AutoTokenizer.from_pretrained(BASE)
-    bnb = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16,
-                             bnb_4bit_use_double_quant=True)
-    model = AutoModelForImageTextToText.from_pretrained(BASE, quantization_config=bnb, dtype=torch.bfloat16,
-                                                        device_map={"": 0})
+    tok = AutoTokenizer.from_pretrained(args.base)
+    quantization = None if args.bf16 else BitsAndBytesConfig(
+        load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16,
+        bnb_4bit_use_double_quant=True)
+    model = AutoModelForImageTextToText.from_pretrained(args.base, quantization_config=quantization,
+                                                        dtype=torch.bfloat16, device_map={"": 0})
     model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
     model.enable_input_require_grads()
     model.config.use_cache = False
@@ -110,7 +117,7 @@ def main():
             model.save_pretrained(out / "checkpoint")
     model.save_pretrained(out)
     evaluate("end")
-    (out / "TRAINING.json").write_text(json.dumps({"base": BASE, "examples": len(train), "epochs": args.epochs,
+    (out / "TRAINING.json").write_text(json.dumps({"base": args.base, "bf16": args.bf16, "examples": len(train), "epochs": args.epochs,
                                                    "lr": args.lr, "accum": args.accum, "rank": args.rank,
                                                    "seconds": round(time.time() - started)}), encoding="utf-8")
 
