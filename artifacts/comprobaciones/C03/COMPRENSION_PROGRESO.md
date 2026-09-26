@@ -19,7 +19,7 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | F1 conjuntos DEV-A / DEV-B / FINAL + puntuador + base | **hecho** | DEV-A 59,6 %, DEV-B 69,2 % |
 | F2 diagnóstico por camino + modelo libre | **hecho** | Qwen3.5-4B libre: DEV-A 70,0 %, DEV-B 77,5 %, seguimientos B 84,8 % (`DIAGNOSTICO_F2_2026-09-25.md`) |
 | F3 torneo de modelos | **hecho**: gana Qwen3.5-4B | 393/513 (76,6 %), seguimientos 112/134; ninguno lo desplaza (`DIAGNOSTICO_F2_2026-09-25.md` §F3) |
-| F4 mecanismos | **M8 entra** (D18); falta retirar el camino viejo de la suite (ley 2) | producto DEV-B 78,3 %, seguim. B 80,3 %, capa A 96,4 %, reserva 84,0 %, VRAM 3 804 MiB |
+| F4 mecanismos | M8–M18 dentro (D18, D20); camino viejo retirado (M11); Full verde | producto DEV-B 81,8 %, seguim. B 89,4 %, capa A 96,5 %, reserva 84,3 %, VRAM 3 804 MiB, latencia visible p50 2,0 s |
 | F5 ventana oficial con DEV-B | pendiente | — |
 | F6 cierre (FINAL una vez) | pendiente | — |
 
@@ -91,6 +91,7 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | M15: un fallo tipado «ya estaba así» (`*_already_*`) se cuenta dicho si el final dice «ya estaba…» (mente y App, gemelo de la regla de ausencia) | (redacción) | | | | | | **se queda**: «activa mi microfono» ya activo publica «El micrófono ya estaba activo, por lo que no ha cambiado su estado» en vez de «No pude activar…»; el juez del guion sigue pidiendo ruta de resultado (pendiente: el adaptador lo informa como fallo antes del efecto por la prueba del 21-09; igual en la base). Guion 46/60 (+8), held-out 26/30; pytest de redacción y .NET (Contracts, Kernel, Providers, Setup) verdes |
 | M16: el detector de portugués ya no toma «tela» suelta ("vaya tela", español de España): sólo «a/na/da tela»; «uma» pasa a ser pista (conserva «tira uma captura de tela») | DEV-A: arregla A-w07-t4 (tratado como idioma no soportado) | | | | | | **se queda**: la regla se estrecha; ninguna frase de DEV-B, 742, registro real ni reserva contiene «tela» o «uma»; pruebas de idioma verdes (3 112) |
 | M17: «a» cuenta como un paso sólo ante los sustantivos ingleses («a notch», «a level») y nunca antes de un número: «sube el volumen a nivel 8» es el nivel 8, no «8 más» | DEV-A: arregla A-s030; DEV-B: las 3 frases afectadas siguen 3/3 (ciego) | | | | | | **se queda**: la regla se estrecha; 742, registro real y reserva no tienen la forma; pruebas de niveles verdes |
+| **M18: LoRA `full2` (D19–D20) sobre M13–M17** | **81,8 %** (sólo decisión 214) | **89,4 %** | 81,9 % | **96,5 % (91,2 %)** | **84,3 %** | 18 (8 mejor, 4 peor, 6 igual) | **entra** (D20); app real: guion 47/60 (+7), held-out 26/30 |
 
 ### Revisión de las 21 decisiones de las 742 que M4 cambia frente a la base
 

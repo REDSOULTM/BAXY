@@ -209,3 +209,14 @@ PC). Cuatro escritores de sala limpia (`brief/AJUSTE2.md`) escribieron 400 conve
 `full1` (1 época, irrelevancia 10 %, familias de ~60 operaciones) para que la única diferencia sean los datos.
 `full2` entra sólo si el decisor aislado no baja en DEV-B y, integrado, cumple la regla de D12 y mejora la capa A o la
 reserva sin empeorar DEV-B; las 742 no se usan como datos.
+
+## D20. `full2` entra (2026-09-26 ~17:00)
+Decisor aislado: DEV-B 222/253 = 87,7 % (full1 217), seguimientos 63/66; DEV-A 220/260 (full1 225: más límites en
+pedidos de listas y streaming). Integrado con M14–M17 (Qwen3.5-4B, 12 288/ranura): **DEV-B 81,8 %** (78,3), seguimientos
+B **89,4 %** (80,3), sueltos B 76,8 %, DEV-A 81,9 % (82,7); capa A **96,5 %** (96,2; registro real 91,2 %, 742 97,2 %);
+reserva **84,3 %** (84,0; decisión p50 0,81 s); 742: 18 distintas de la base (las 20 de M8 menos H0271 y H0414, que
+vuelven a la base: 8 mejor, 4 peor —H0313, H0407, H0506, H0604, las mismas—, 6 igual); VRAM 3 804 MiB. Runtime
+registrado con `decider-full2.gguf` (`01bf479a…`; respaldo `mind-runtime-v1.before-full2-2026-09-26.json`). App
+real: guion 47/60 (+7 por revisar), held-out 26/30. Lección para el próximo ajuste: el encargo AJUSTE2 decía «límite
+si todo depende de lo que no se hace» y el modelo lo generaliza: «abre steam y ve a la biblioteca» → límite, cuando
+abrir Steam se hace; lo que se puede hacer de un pedido mixto se hace y lo demás se dice.
