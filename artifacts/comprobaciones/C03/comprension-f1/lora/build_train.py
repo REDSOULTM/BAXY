@@ -47,6 +47,22 @@ def main():
     for name in ("DEV-A", "DEV-B", "FINAL"):
         for line in open(ROOT / "sets" / f"{name}.jsonl", encoding="utf-8"):
             evaluation.add(norm(json.loads(line)["text"]))
+    # The regression gates never train either (D21): the 742, the owner's script and held-out, the real log.
+    repo = pathlib.Path(r"C:/Users/usuario/Desktop/ETC/Programacion/BAXY Definitivo/artifacts/comprobaciones/C03")
+    gate_files = [
+        (ROOT.parent / "C03-survey-requirements336-private" / "requirements.jsonl", "literal"),
+        (repo / "contexto" / "dueno-2026-09-21.turns.jsonl", "text"),
+        (repo / "contexto" / "heldout-2026-09-22.turns.jsonl", "text"),
+        (HERE.parent / "corpus_A_log.jsonl", "text"),
+    ]
+    for path, key in gate_files:
+        for line in open(path, encoding="utf-8-sig"):
+            try:
+                row = json.loads(line) if line.strip() else {}
+            except json.JSONDecodeError:
+                continue  # the scripts carry comment lines
+            if isinstance(row, dict) and row.get(key):
+                evaluation.add(norm(row[key]))
     conversations = []
     for path in sorted((ROOT / "train").glob("w*-p*.jsonl")):
         for line in open(path, encoding="utf-8"):

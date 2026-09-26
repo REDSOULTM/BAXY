@@ -220,3 +220,14 @@ registrado con `decider-full2.gguf` (`01bf479a…`; respaldo `mind-runtime-v1.be
 real: guion 47/60 (+7 por revisar), held-out 26/30. Lección para el próximo ajuste: el encargo AJUSTE2 decía «límite
 si todo depende de lo que no se hace» y el modelo lo generaliza: «abre steam y ve a la biblioteca» → límite, cuando
 abrir Steam se hace; lo que se puede hacer de un pedido mixto se hace y lo demás se dice.
+
+## D21. Tercer ajuste: lo que sí se hace; las puertas de regresión nunca entrenan (2026-09-26 ~17:50)
+`full2` dice «no lo hago» a pedidos que el catálogo sí hace (DEV-A: «fire up steam», «añadir gaseosa a super», «what
+are my lists», «Cancela todos los recordatorios de hoy»; guion: «abre steam y ve a la biblioteca» → límite, por una
+regla de AJUSTE2 que el modelo generalizó). Encargo `brief/AJUSTE3.md` (sin frases de DEV ni de las puertas: sólo
+formas): 4 escritores, 400 conversaciones, 828 mensajes (559 acciones con verbos y objetos poco comunes, 196 charlas en
+conversación, 64 límites de contraste, 9 preguntas); pedidos mixtos → lo que se puede hacer. Irrelevancia sintética
+5 % (antes 10 %). Auditoría de contaminación: los datos de `full2` compartían 54 órdenes cortas y genéricas con las
+742, el guion y el held-out («abre la calculadora», «sube el volumen»; las deciden los lectores, no el decisor) y
+ninguna frase peculiar; desde v5 `build_train.py` excluye los literales de las 742, el guion, el held-out y el
+registro real (81 descartados en total). Datos v5: 4 119 ejemplos. `full3` entra con la regla de D19.
