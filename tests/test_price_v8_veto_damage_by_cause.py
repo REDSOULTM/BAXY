@@ -153,12 +153,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # uso real: unificación de la lectura en semantic/
 # uso real: verificación final, regresiones de la 3.5 arregladas
 # C03 comprensión natural 2026-09-26: re-pin tras M11/M13 (camino viejo del modelo retirado).
+# C03 comprensión natural 2026-09-26: re-pin tras M14–M19.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "895c47374b0dc07da636ebb144e70a83e40c6e6c156fba197434008721719e79"
+        "c70368e904f61f08b745a9615f18fa850013f72281558ee1de688aea6e772fec"
     ),
     "src/baxy_mind/llm.py": (
-        "f26c542749dc636739622eed45d3c647628725cf1907f66f77127cf003df715c"
+        "e0c58b763a4d375fe1a2dec1768449c31c9ca0664fefc7ccacabc5524a3f1e45"
     ),
 }
 

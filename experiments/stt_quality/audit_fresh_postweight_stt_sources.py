@@ -120,8 +120,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # uso real: unificación de la lectura en semantic/
 # uso real: verificación final, regresiones de la 3.5 arregladas
 # C03 comprensión natural 2026-09-26: re-pin tras M11/M13 (camino viejo del modelo retirado).
+# C03 comprensión natural 2026-09-26: re-pin tras M14–M19.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "e04e09f010f90b54543e56b5442bbdd8bfb1191b04e9c5fbb24d3dd78de66ab1"
+    "b5008bf272e3e7a885f9473b924070bb84b0009504cd02dd33e91eefa42df76c"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
