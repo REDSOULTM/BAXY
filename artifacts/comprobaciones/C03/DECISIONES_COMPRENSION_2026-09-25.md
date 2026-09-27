@@ -270,5 +270,6 @@ el decisor habla de más; seguir ajustando el LoRA no es el camino al 88 % de su
 DEV-B `full3` aislado decide bien 225/253 y dentro del producto 212; por camino (agregados, DEV-B es ciego), los turnos
 que no llegan al decisor pierden ≈ 13 (lectores de efectos 3, de conversación 2, conversación ajena 1, respuestas que
 el contrato rechazó y la recuperación convirtió en pregunta 4, el propio camino del decisor 3). Siguiente: M10b (la
-conversación ajena la lee el decisor) y, si pasa, los lectores de efectos (M9b); las respuestas rechazadas se atacan
-en la redacción.
+conversación ajena la lee el decisor) y, si pasa, los lectores de efectos; las respuestas rechazadas se atacan en la
+redacción. (Lo que se midió para los lectores de efectos fue M9c, la versión estrecha: el lector cede sólo si el
+decisor lee un límite; M9b —cederlo todo— es M9 y no se repitió.)

@@ -19,7 +19,7 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | F1 conjuntos DEV-A / DEV-B / FINAL + puntuador + base | **hecho** | DEV-A 59,6 %, DEV-B 69,2 % |
 | F2 diagnóstico por camino + modelo libre | **hecho** | Qwen3.5-4B libre: DEV-A 70,0 %, DEV-B 77,5 %, seguimientos B 84,8 % (`DIAGNOSTICO_F2_2026-09-25.md`) |
 | F3 torneo de modelos | **hecho**: gana Qwen3.5-4B | 393/513 (76,6 %), seguimientos 112/134; ninguno lo desplaza (`DIAGNOSTICO_F2_2026-09-25.md` §F3) |
-| F4 mecanismos | M8–M18 dentro (D18, D20); camino viejo retirado (M11); Full verde | producto DEV-B 81,8 %, seguim. B 89,4 %, capa A 96,5 %, reserva 84,3 %, VRAM 3 804 MiB, latencia visible p50 2,0 s |
+| F4 mecanismos | M8–M24 dentro (D18, D20, D22: el producto usa `full3`); camino viejo retirado (M11); no entran `full4`/`full5` (D24), M9, M9c, M10, M10b, M10c | producto (M23) DEV-B 80,2 %, sueltos B 74,4 %, seguim. B 87,9 %, DEV-A 85,0 %, capa A 96,2 %, reserva 85,6 %, VRAM 3 804 MiB (M18; por re-medir con `full3`), latencia visible p50 2,0 s |
 | F5 ventana oficial con DEV-B | pendiente | — |
 | F6 cierre (FINAL una vez) | pendiente | — |
 

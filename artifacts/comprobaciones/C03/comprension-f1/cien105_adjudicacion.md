@@ -1,4 +1,4 @@
-# cien-104 y cien-105 — adjudicación contra cien-101
+# cien-104, cien-105 y cien-106 — adjudicación contra cien-101
 
 Runtime M18 (Qwen3.5-4B + LoRA `full2`), árbol `c588ec98` (cien-104) y `f265fc61` (cien-105, con M19). Referencia
 cien-101: `9277c10e` (100/100). Mismos 100 turnos de `cien-v18.turns.jsonl`, emparejados por posición. Criterio de
