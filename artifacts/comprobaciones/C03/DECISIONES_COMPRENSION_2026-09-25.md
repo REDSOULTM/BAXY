@@ -261,3 +261,14 @@ ya hablado → web.search con el tema). Sólo formas; ninguna frase de DEV, FINA
 excluye cien). `full4` (datos v6) se lanzó a las 02:03 y se paró en el ejemplo 280 (4,2 s por ejemplo: dos ciclos de
 5–6 h en vez de uno); `full5` = datos v7 (5 557 ejemplos, receta igual a `full3`), con el catálogo llano de M22 en el
 entrenamiento y en la evaluación aislada de redpc (copiada allí antes de evaluar). Entra con la regla de D19 y D12.
+
+## D24. `full5` no entra; el producto sigue con `full3` (2026-09-27 ~14:20)
+Integrado (M25, mismo árbol que M23 más el adaptador): DEV-B 77,5 % (full3 80,2), sueltos B 71,2 % (74,4), DEV-A
+81,9 % (85,0), capa A **95,8 %** (< 96,0; registro real 87,9 %), reserva 83,8 % (85,6; 37 arreglados, 88 rotos). Aislado,
+DEV-A sólo decisión 227/260 frente a 230 de `full3`. Lección: los datos v7 subieron la charla de 997 a 1 412 ejemplos y
+el decisor habla de más; seguir ajustando el LoRA no es el camino al 88 % de sueltos. Lo que sí mide la distancia: en
+DEV-B `full3` aislado decide bien 225/253 y dentro del producto 212; por camino (agregados, DEV-B es ciego), los turnos
+que no llegan al decisor pierden ≈ 13 (lectores de efectos 3, de conversación 2, conversación ajena 1, respuestas que
+el contrato rechazó y la recuperación convirtió en pregunta 4, el propio camino del decisor 3). Siguiente: M10b (la
+conversación ajena la lee el decisor) y, si pasa, los lectores de efectos (M9b); las respuestas rechazadas se atacan
+en la redacción.
