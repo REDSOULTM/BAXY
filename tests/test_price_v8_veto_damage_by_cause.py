@@ -156,12 +156,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 comprensión natural 2026-09-26: re-pin tras M14–M19.
 # C03 comprensión natural — M20: full3 + redacción (no encontrado sin causa, límite sin razón, fallos de la persona, nivel en %, Eris)
 # C03 comprensión natural — M23: fallo no verificado dicho, hecho del navegador, app de su propia cláusula
+# C03 comprensión natural — M24: acuse de un gusto en segunda persona
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
         "d84e4983a5ad426b173cbb52362254cc83567fa78d8aa8ac5bbeebe200cec11f"
     ),
     "src/baxy_mind/llm.py": (
-        "19d873784f123f8e7a935004fbe12acfb8e7c3dc9252b73a650dd911e1a31116"
+        "eefbd0566f5a3dc5c371a2d197628a566f84531394d3a35591df6f629cac248b"
     ),
 }
 

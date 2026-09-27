@@ -123,8 +123,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # C03 comprensión natural 2026-09-26: re-pin tras M14–M19.
 # C03 comprensión natural — M20: full3 + redacción (no encontrado sin causa, límite sin razón, fallos de la persona, nivel en %, Eris)
 # C03 comprensión natural — M23: fallo no verificado dicho, hecho del navegador, app de su propia cláusula
+# C03 comprensión natural — M24: acuse de un gusto en segunda persona
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "ed66f8377c24ccdeefc8291d8a6c73ae6bd5234e6fdd8d0fe138fee70cf988dd"
+    "65f0860052c7f9e50f23f240a1b6a83918930bd08bdd479f954cca4a79eee560"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
