@@ -311,3 +311,22 @@ _TIME_AND_AUDIO = {
 )
 def test_a_level_said_as_a_percentage_is_the_level(draft: str, defect: str) -> None:
     assert compose_visible_defect(draft, "status", "Dime la hora y el estado del audio.", _TIME_AND_AUDIO) == defect
+
+
+# Held-out t17 «tengo ganas de escuchar reggaetón»: Spotify's play was pressed and playback was not verified.
+_PLAY_NOT_VERIFIED = {"situation": '{"kind":"failure","polarity":"failure","cause":"mission_failed","stepCount":0,"steps":[],"reason":{"kind":"operation","operation":"media.play.query","polarity":"failure","verified":false,"succeeded":false,"error":"spotify_play_clicked_not_verified","cause":"external_effect_ambiguous","effectUncertain":true}}', "payload": {'outcome': 'failed', 'reason': {'outcome': 'unverified', 'effect': 'unknown', 'cause': 'the Spotify play control was pressed but the client did not start playing in time, so nothing verified is playing', 'operation': 'media.play.query'}}}
+
+
+@pytest.mark.parametrize(
+    ("draft", "defect"),
+    [
+        # Two of the three drafts that died in missing_failure, verbatim.
+        ("No se ha verificado que esté sonando reggaetón porque el control de reproducción de Spotify se presionó "
+         "antes de que el cliente iniciara la reproducción.", ""),
+        ("No estoy seguro de que el reggaetón esté sonando porque el control de reproducción de Spotify se presionó "
+         "antes de que el cliente iniciara la reproducción.", ""),
+        ("Está sonando reggaetón en Spotify.", "missing_failure"),
+    ],
+)
+def test_an_unverified_play_said_as_not_verified_is_the_failure_told(draft: str, defect: str) -> None:
+    assert compose_visible_defect(draft, "error", "tengo ganas de escuchar reggaetón", _PLAY_NOT_VERIFIED) == defect

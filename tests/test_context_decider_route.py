@@ -207,3 +207,12 @@ def test_a_question_about_an_unreachable_place_is_its_limit() -> None:
     assert result["kind"] == "conversation"
     assert result["conversationKind"] == "unsupported"
     assert llm.chats == ["unsupported"]
+
+
+@pytest.mark.parametrize(
+    "objective", ["Abre Steam y entra a la biblioteca.", "abre steam y ve a la biblioteca", "open Steam and go to the library"]
+)
+def test_the_app_to_open_is_read_from_its_own_clause(objective: str) -> None:
+    # Owner script t36: full3 opened Steam for «abre steam y ve a la biblioteca» and the arguments step, reading the
+    # whole compound as the application's name, asked «¿Cuál es el nombre exacto de la aplicación…?».
+    assert sidecar._explicit_arguments_from_evidence("app.open", objective, ("Steam", "Spotify")) == {"appId": "Steam"}

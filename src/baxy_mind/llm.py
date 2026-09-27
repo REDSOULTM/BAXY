@@ -4068,7 +4068,12 @@ _FAILURE_MARKERS = re.compile(
     # Tanda 9 «¿me ha llegado algún correo nuevo?» without Outlook: «No se puede verificar si hay correos nuevos
     # porque Outlook no está configurado» says it as plainly, and the turn ended in ⚠ after three drafts.
     r"no\s+(?:se\s+)?(?:puede|pude|puedo|podemos|logro|logr[oó])\s+(?:confirmar|verificar|comprobar)|"
-    r"no\s+se\s+(?:confirma|verifica|comprueba))",
+    r"no\s+se\s+(?:confirma|verifica|comprueba)|"
+    # Held-out t17 «tengo ganas de escuchar reggaetón», Spotify pressed but not verified playing: «No se ha
+    # verificado que esté sonando…», «No estoy seguro de que el reggaetón esté sonando…» said it three times and the
+    # turn ended in ⚠.
+    r"no\s+se\s+(?:ha\s+|han\s+)?(?:confirm|verific|comprob)(?:[oó]|ado|ada|aron)\b|"
+    r"no\s+(?:est[aá]|qued[oó])\s+(?:verificad|comprobad)[oa]|no\s+estoy\s+segur[oa]\s+de\s+que)",
     re.IGNORECASE,
 )
 _NEGATED_FAILURE = re.compile(
@@ -4339,6 +4344,9 @@ _CAUSE_FACT = {
     # Tanda 7 «quién ganó el game de los Lakers anoche» → «…los resultados de búsqueda son irrelevantes»: the code
     # became prose about a search. The lookup is invisible; what the person hears is that it was not found.
     "web_search_results_irrelevant": "it was not found; say only that, briefly",
+    # Owner script t22 «¿Sabes qué peli estoy viendo en potplayer?» → media.status read the browser's player, the
+    # browser did not answer, and the bare code became «la conexión con PotPlayer ha fallado».
+    "web_adapter_unavailable": "the web browser could not be reached, so nothing was read or done in it",
     "outlook_mail_send_failed": ("Outlook did not send the mail, so nothing went out"),
     "mail_delivery_not_verified": ("Outlook accepted the mail but its copy in Sent Items was not found, so the delivery is not verified"),
     # REOPEN1993 grupo E: the recipient was looked up in WhatsApp and Discord.
