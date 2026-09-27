@@ -47,13 +47,14 @@ def main():
     for name in ("DEV-A", "DEV-B", "FINAL"):
         for line in open(ROOT / "sets" / f"{name}.jsonl", encoding="utf-8"):
             evaluation.add(norm(json.loads(line)["text"]))
-    # The regression gates never train either (D21): the 742, the owner's script and held-out, the real log.
+    # The regression gates never train either (D21): the 742, the owner's script and held-out, the real log, cien.
     repo = pathlib.Path(r"C:/Users/usuario/Desktop/ETC/Programacion/BAXY Definitivo/artifacts/comprobaciones/C03")
     gate_files = [
         (ROOT.parent / "C03-survey-requirements336-private" / "requirements.jsonl", "literal"),
         (repo / "contexto" / "dueno-2026-09-21.turns.jsonl", "text"),
         (repo / "contexto" / "heldout-2026-09-22.turns.jsonl", "text"),
         (HERE.parent / "corpus_A_log.jsonl", "text"),
+        (repo / "cien-v18.turns.jsonl", "text"),
     ]
     for path, key in gate_files:
         for line in open(path, encoding="utf-8-sig"):

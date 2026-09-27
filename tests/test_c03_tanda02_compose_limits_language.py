@@ -432,3 +432,20 @@ def test_the_clarification_rewording_asks_only_what_is_missing() -> None:
     sent = client.payloads[0]["messages"][-1]["content"]
     assert "the one thing that is missing" in sent
     assert "do not offer alternatives or options the person did not name" in sent
+
+
+@pytest.mark.parametrize(
+    ("asked", "limit", "defect"),
+    [
+        # cien-106 «post a letter to Eris», published verbatim.
+        ("post a letter to Eris", "I cannot post a letter to Eris because I do not have the ability to send messages "
+         "or interact with external entities.", "limit_gives_a_reason"),
+        ("manda un paquete a Io", "No envío paquetes a Io porque no tengo acceso a servicios de mensajería.",
+         "limit_gives_a_reason"),
+        ("book a ferry to Europa", "I do not book ferries to Europa.", ""),
+        ("manda un paquete a Io", "No envío paquetes a Io.", ""),
+    ],
+)
+def test_a_limit_is_said_without_a_reason_nobody_checked(asked: str, limit: str, defect: str) -> None:
+    assert llm.limit_voice_defect(limit, asked) == defect
+    assert bool(llm._unsupported_answer_contract_failure(limit, asked)) is bool(defect)

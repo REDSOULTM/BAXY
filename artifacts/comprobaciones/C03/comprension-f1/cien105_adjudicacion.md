@@ -35,3 +35,19 @@ Operaciones de cien-105: 14 `system.time`, 5 `network.status`, 2 `audio.status`,
 
 Observaciones sin fallo: 080 «buy a kite on Sedna» añade una razón («that planet is too far away») contra la concisión
 del dueño; la identidad sigue larga (079, 099).
+
+## cien-106 (runtime M20: `full3`, árbol `bdc78d68`, 2026-09-26 23:47)
+
+Mismos 100 turnos. Operaciones: la misma secuencia que cien-101 (23, todas lecturas; **0 efectos**). **96/100** bien
+(95 si 059 cuenta).
+
+| # | Usuario | cien-106 | Motivo |
+|---|---|---|---|
+| 006 | Dime la hora y el estado del audio. | (sin final: `no_response;retry_exhausted`) | la redacción: «…al 100 % en los auriculares HyperX, sin estar silenciado» rechazado como `reversed_mute` y `missing_name` (pedía la palabra «volumen»); arreglado en M21 |
+| 038 | if it didn't happen, say so | Could you clarify what you'd like me to do? | pregunta donde contestaba (igual que 105) |
+| 077 | still there? | Are you still looking for the specific information…? | pregunta donde contestaba (igual que 105) |
+| 100 | post a letter to Eris | I cannot post a letter to Eris because I do not have the ability to send messages… | límite con una razón falsa (BAXY sí envía mensajes); arreglado en M21 («I do not post letters to Eris.») |
+
+Mejor que 105: 088 «preséntate breve» contesta (101 lo rechazaba como `identity_not_answered`); 080 «buy a kite on
+Sedna» ya no da la razón del planeta. Tras M21, 006, 100, Sedna y «odio estos fallos» publican 2 de 2 en la app
+real (réplica de 4 turnos con auditoría de redacción).

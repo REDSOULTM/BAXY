@@ -2690,7 +2690,15 @@ def limit_voice_defect(text: object, request: object = "") -> str:
         effect_intent.self_close_request(str(request or ""))
     ):
         return "limit_third_person"
+    if _LIMIT_REASON.search(folded):
+        return "limit_gives_a_reason"
     return ""
+
+
+# cien-106 «post a letter to Eris» → «I cannot post a letter to Eris because I do not have the ability to send
+# messages or interact with external entities»: the limit is said plainly (00_IDENTIDAD, owner's concision rule);
+# a reason for it is a claim about BAXY nobody checked (he does send messages).
+_LIMIT_REASON = re.compile(r"\b(?:porque|ya\s+que|puesto\s+que|dado\s+que|debido\s+a|because|since)\b")
 
 
 # Tanda 3 and 4 2026-09-24 «No reanudo la lectura de la lección de francés.», «No leo libros en voz alta»: BAXY
@@ -4078,6 +4086,21 @@ def _asserts_failure(text: str) -> bool:
     return _FAILURE_MARKERS.search(text) is not None or re.search(
         r"\b(?:fallos?|failed)\b|\bno\s+(?:encontre|se\s+(?:pudo|pudieron|encontro|encontraron))\b", assertions
     ) is not None
+
+
+def _failure_word_is_the_persons(text: str, user_text: str) -> bool:
+    """Owner script «Por dios, odio estos fallos» → «Entiendo que la frustración por los fallos es inmensa»: the
+    person's «fallos», answered back («los/estos/esos fallos»), claims no failure of BAXY's. «Hubo un fallo», «failed»
+    or a failure phrase of its own («no pude…», «no se encontró…») still does."""
+
+    if re.search(r"\bfallos\b", _accent_folded_with_punctuation(user_text or "")) is None:
+        return False
+    rest = _ECHOED_FAILURES.sub("", str(text))
+    return rest != str(text) and not _asserts_failure(rest)
+
+
+# Twin of UserMessagePolicy.EchoedFailures.
+_ECHOED_FAILURES = re.compile(r"\b(?:los|estos|esos|tantos|tus|sus)\s+fallos\b", re.IGNORECASE)
 
 
 # Ungendered fact labels for the JSON the model sees. Spanish wording lives
@@ -7968,10 +7991,40 @@ _SEARCH_NARRATED_ABSENCE = re.compile(
     r"\b(?:(?:is|are|was|were)\s+not|isn'?t|aren'?t|wasn'?t|weren'?t)\s+(?:mentioned|stated|specified|listed|"
     r"indicated|named|given)\b|\bno\s+mention\s+of\b|\b(?:doesn'?t|does\s+not)\s+(?:mention|specify|state|indicate)\b"
 )
+# Fase 3.5b held-out «¿la serie The Last of Us vale la pena?» with nothing found → «No encontré la serie The Last of
+# Us porque no existe; solo hay el videojuego.»: a lookup that answered nothing carries no cause, so a reason the
+# reply gives for it (the thing does not exist, only something else does, anything but not finding it) is invented.
+_NOT_FOUND_EXISTENCE_DENIAL = re.compile(
+    r"\bno\s+existen?\b|\b(?:doesn'?t|does\s+not|don'?t|do\s+not)\s+exist\b|\b(?:isn'?t|is\s+not)\s+real\b|"
+    r"\bno\s+es\s+real\b|\bsolo\s+(?:hay|existe|existen)\b|\bthere\s+is\s+only\b|\bonly\s+exists?\b"
+)
+_NOT_FOUND_REASON = re.compile(
+    r"\b(?:porque|ya\s+que|debido\s+a|puesto\s+que|because)\b(?P<after>[^.;]{0,160})|"
+    r"(?P<before>[^.;]{0,160}?)\b(?:por\s+lo\s+que|asi\s+que|therefore)\b"
+)
+_NOT_FOUND_ITSELF = re.compile(r"encontr|hall[eoa]|\bfound\b|\bfind\b|informacion|information|\bdatos\b|\bdata\b")
 # «según Tripadvisor», «according to BBC Mundo»: a source named by its proper name.
 _SEARCH_NAMED_SOURCE = re.compile(
     r"\b(?:[Ss]eg[uú]n|[Aa]ccording\s+to|[Dd]e\s+acuerdo\s+con)\s+(?:(?:el|la|los|las|the)\s+)?[A-ZÁÉÍÓÚÑ][\w.-]*"
 )
+
+
+def _not_found_invents_a_cause(text: str, payload: dict) -> bool:
+    """A lookup that answered nothing is told as not found; a reason given for it that is not the not-finding itself
+    («porque no existe», «solo hay el videojuego», «no es un videojuego, por lo que…») is a fact nobody observed."""
+
+    reason = payload.get("reason")
+    if _search_results_text(payload) is not None or not (
+        isinstance(reason, dict) and reason.get("operation") == "web.search"
+    ):
+        return False
+    folded = _reading_fold(re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(text)))
+    if _NOT_FOUND_EXISTENCE_DENIAL.search(folded) is not None:
+        return True
+    return any(
+        _NOT_FOUND_ITSELF.search(found.group("after") or found.group("before") or "") is None
+        for found in _NOT_FOUND_REASON.finditer(folded)
+    )
 
 
 def _search_report_shows_the_search(text: str, payload: dict, user_text: str) -> bool:
@@ -8829,6 +8882,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     if _search_report_shows_the_search(text, payload, user_text):
         # Owner rule 2026-09-24: the lookup is invisible (see _search_report_shows_the_search).
         return "search_report_shows_the_search"
+    if _not_found_invents_a_cause(text, payload):
+        return "search_not_found_invents_a_cause"
     if _search_report_unsourced_claim(text, payload, user_text):
         # WEB1879 H0060: a sentence of the report summarised causes in its own
         # voice; no result contains them. Reinstated in WEB1889: the turn no
@@ -11236,6 +11291,7 @@ def compose_visible_defect(
         )
         and not _looks_like_refuse_question(user_text)
         and not _looks_like_capability_question(user_text)
+        and not (kind == "conversation" and _failure_word_is_the_persons(failure_assertions, user_text))
     ):
         return "asserted_failure"
     if intent == "welcome" or kind == "welcome":
@@ -11403,9 +11459,10 @@ def compose_visible_defect(
         muted = observed_dict.get("muted") is True
         # MIC1813: «micrófono está silenciado» contains «no esta silenci»; the
         # negation is a word, not the tail of «micrófono».
+        # cien-106 t006 «…el audio está activo al 100 %, sin estar silenciado» died three drafts as reversed_mute.
         unmuted_ok = re.search(
             r"reactiv|unmuted|\bya no est[aá] silenci|"
-            r"\bno est[aá] silenci|\bfalse\b|not muted|"
+            r"\bno est[aá] silenci|\bsin\s+(?:estar\s+)?silenci|\bfalse\b|not muted|"
             r"isn't muted|is not muted",
             folded,
         )
@@ -11803,7 +11860,7 @@ def compose_visible_defect(
             # AUDIO1799: «not silenced» / «no está silenciado» reads the unmuted
             # sessions truthfully; only an affirmed silence is invented.
             unnegated = re.sub(
-                r"\b(?:not|isn't|is\s+not|no|no\s+est[aá]n?|no\s+quedo|no\s+quedan?)\s+"
+                r"\b(?:not|isn't|is\s+not|no|no\s+est[aá]n?|no\s+quedo|no\s+quedan?|sin(?:\s+estar)?)\s+"
                 r"(?:silenciad[oa]s?|silenced|en\s+silencio|mute[d]?|muteado)\b",
                 " ",
                 folded,
@@ -11814,8 +11871,9 @@ def compose_visible_defect(
                 unnegated,
             ) and observed_dict.get("muted") is not True:
                 return "extra_claim"
+        # cien-106 t006 «el audio está activo al 100 %»: a percentage is the level said.
         if "level" in observed_dict and not re.search(
-            r"volumen|volume|\bnivel\b|\blevel\b", folded
+            r"volumen|volume|\bnivel\b|\blevel\b|\d\s*%|\bpor\s*ciento\b|\bpercent\b", folded
         ):
             return "missing_name"
         place_clock = _place_clock_facts(
@@ -19678,6 +19736,13 @@ class LlmRuntime:
                     if response_language == "en"
                     else "Demasiado largo: contesta en una o dos oraciones cortas con la respuesta misma."
                 ),
+                "search_not_found_invents_a_cause": (
+                    "Say only, briefly, that you did not find it: give no reason and no guess about why "
+                    "(never that it does not exist or that only something else exists)."
+                    if response_language == "en"
+                    else "Di sólo, en breve, que no lo encontraste: sin razones ni suposiciones de por qué "
+                    "(nunca que no existe ni que sólo existe otra cosa)."
+                ),
                 "search_report_shows_the_search": (
                     "Say the answer as something you know, in one or two sentences: never "
                     "mention the search, a page, a site or a source («according to …», «I "
@@ -20124,6 +20189,11 @@ class LlmRuntime:
                     else "El límite es tuyo: di en tu primera persona que eso no lo haces y "
                     "qué no haces, nombrado con un sustantivo; no empieces por el pedido ni "
                     "lo repitas como si lo pidieras tú."
+                ),
+                "limit_gives_a_reason": (
+                    "Say only that you do not do it, in one short sentence, and stop: no reason why."
+                    if response_language == "en"
+                    else "Di sólo que eso no lo haces, en una frase corta, y termina: sin decir por qué."
                 ),
                 "limit_third_person": (
                     "You are BAXY: say it in the first person («I don't …»), never «BAXY does not»."

@@ -138,8 +138,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # uso real: verificación final, regresiones de la 3.5 arregladas
 # C03 comprensión natural 2026-09-26: re-pin tras M11/M13 (camino viejo del modelo retirado).
 # C03 comprensión natural 2026-09-26: re-pin tras M14–M19.
+# C03 comprensión natural — M20: full3 + redacción (no encontrado sin causa, límite sin razón, fallos de la persona, nivel en %, Eris)
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "b5008bf272e3e7a885f9473b924070bb84b0009504cd02dd33e91eefa42df76c"
+    "fbc92c84e6115d89b7b19f67425add3a5921739c54c5c868046183691644b6c6"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

@@ -196,3 +196,14 @@ def test_a_question_in_another_language_is_formulated_again_in_the_persons() -> 
 
     assert result["kind"] == "clarify"
     assert result["question"] == "What should I open?"
+
+
+def test_a_question_about_an_unreachable_place_is_its_limit() -> None:
+    # cien-105/106 «post a letter to Eris» → «What should the letter say?», a question about what cannot be done.
+    llm = _Decider(ContextDecision("Enviar una carta a Eris", "clarify", (), "What should the letter say?"))
+
+    result = _turn("post a letter to Eris", llm)
+
+    assert result["kind"] == "conversation"
+    assert result["conversationKind"] == "unsupported"
+    assert llm.chats == ["unsupported"]

@@ -555,6 +555,7 @@ internal static class UserMessagePolicy
             ("looks_like_failure",
                 LooksLikeFailure(reply)
                 && !(unsupportedByMind && !ClaimsFailedAttempt(reply))
+                && !OnlyEchoesThePersonsFailures(reply, userText)
                 && !LooksLikeKnowledgeQuestion(user)
                 && ConversationFallbackIntent(userText) != "out_of_catalog"),
             ("greeting_not_returned",
@@ -1925,6 +1926,23 @@ internal static class UserMessagePolicy
         // El código estable queda disponible para diagnóstico interno; nunca
         // forma parte del mensaje que recibe una persona.
         return text.Trim();
+    }
+
+    // Owner script «Por dios, odio estos fallos» → «Entiendo que la frustración por
+    // los fallos es inmensa»: the person's «fallos», answered back, claims no
+    // failure of BAXY's. What is left once they are removed is judged as always.
+    // Twin of llm._failure_word_is_the_persons.
+    private const string EchoedFailures = @"\b(?:los|estos|esos|tantos|tus|sus)\s+fallos\b";
+
+    private static bool OnlyEchoesThePersonsFailures(string reply, string userText)
+    {
+        if (!Regex.IsMatch(FoldForPolicy(userText ?? string.Empty), @"\bfallos\b", RegexOptions.CultureInvariant))
+        {
+            return false;
+        }
+        string rest = Regex.Replace(reply, EchoedFailures, string.Empty,
+            RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+        return !string.Equals(rest, reply, StringComparison.Ordinal) && !LooksLikeFailure(rest);
     }
 
     private static bool LooksLikeFailure(string sourceOrResult)

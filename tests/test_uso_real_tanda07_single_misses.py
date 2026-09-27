@@ -178,6 +178,36 @@ def test_not_found_said_briefly_is_the_answer(draft: str, payload: dict) -> None
     )
 
 
+@pytest.mark.parametrize(
+    "draft",
+    [
+        # Fase 3.5b held-out «¿la serie The Last of Us vale la pena?» with nothing found (published).
+        "No encontré la serie The Last of Us porque no existe; solo hay el videojuego.",
+        "La serie The Last of Us no es un videojuego, por lo que no se puede encontrar.",
+        "I couldn't find it because that show was cancelled.",
+        "I couldn't find it; that series doesn't exist.",
+    ],
+)
+def test_a_not_found_with_a_reason_nobody_observed_invents_a_cause(draft: str) -> None:
+    assert llm._payload_fact_defect(draft, _SEARCH_FAILED, "¿la serie The Last of Us vale la pena?") == (
+        "search_not_found_invents_a_cause"
+    )
+
+
+@pytest.mark.parametrize(
+    "draft",
+    [
+        "No puedo confirmar si la nueva película es buena porque no encontré información sobre ella.",
+        "No se encontró información sobre el primer libro de zombies.",
+        "I couldn't find it.",
+    ],
+)
+def test_a_not_found_whose_only_reason_is_the_not_finding_invents_nothing(draft: str) -> None:
+    assert llm._payload_fact_defect(draft, _SEARCH_FAILED, "¿la nueva peli es buena?") != (
+        "search_not_found_invents_a_cause"
+    )
+
+
 def test_a_positive_statement_with_a_participle_is_not_an_absence() -> None:
     assert llm._payload_fact_defect(
         "Los diez artistas que dominan hoy la escena musical fueron nombrados en una lista global.",

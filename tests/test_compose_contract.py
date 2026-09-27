@@ -992,3 +992,18 @@ def test_a_read_never_claims_it_changed_the_state() -> None:
         )
         == ""
     )
+
+
+@pytest.mark.parametrize(
+    ("reply", "defect"),
+    [
+        # Owner script «Por dios, odio estos fallos»: the third draft, verbatim, died as a failure claimed.
+        ("Entiendo que la frustración por los fallos es inmensa y duele.", ""),
+        ("Entiendo tu frustración con esos fallos.", ""),
+        # A failure of BAXY's own is still one.
+        ("Entiendo lo de los fallos, pero no pude hacer nada.", "asserted_failure"),
+        ("Hubo un fallo al abrir Steam.", "asserted_failure"),
+    ],
+)
+def test_the_persons_fallos_answered_back_claim_no_failure(reply: str, defect: str) -> None:
+    assert compose_visible_defect(reply, "conversation", "Por dios, odio estos fallos", CONVERSATION) == defect

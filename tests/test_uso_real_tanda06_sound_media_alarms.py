@@ -276,3 +276,38 @@ def test_the_unmute_still_may_not_claim_the_sound_is_muted() -> None:
         "El altavoz estaba silenciado y ahora está activo.", "status", "reactiva los parlantes",
         {"situation": _UNMUTED_FROM_UNMUTED},
     ) == "reversed_mute"
+
+
+@pytest.mark.parametrize(
+    ("draft", "reversed"),
+    [
+        # cien-106 t006, the first draft's wording (three drafts died on it).
+        ("El audio está activo al 0% en los auriculares HyperX, sin estar silenciado.", False),
+        ("El volumen está en 0%, sin silenciar.", False),
+        ("El altavoz está silenciado.", True),
+    ],
+)
+def test_an_unmuted_sound_said_sin_silenciar_is_not_a_mute(draft: str, reversed: bool) -> None:
+    defect = compose_visible_defect(draft, "status", "reactiva los parlantes", {"situation": _UNMUTED_FROM_UNMUTED})
+    assert (defect == "reversed_mute") is reversed
+
+
+# cien-106 t006 «Dime la hora y el estado del audio.», the mission's facts as the composer saw them.
+_TIME_AND_AUDIO = {
+    "situation": '{"kind":"status","polarity":"success","cause":"mission_completed","stepCount":2,"steps":["{\\"kind\\":\\"operation\\",\\"operation\\":\\"system.time\\",\\"polarity\\":\\"success\\",\\"verified\\":true,\\"succeeded\\":true,\\"observed\\":{\\"version\\":1,\\"utc\\":\\"2026-09-27T03:04:26.1300123\\\\u002B00:00\\",\\"localUtcOffsetMinutes\\":-180},\\"readOnly\\":true}","{\\"kind\\":\\"operation\\",\\"operation\\":\\"audio.status\\",\\"polarity\\":\\"success\\",\\"verified\\":true,\\"succeeded\\":true,\\"observed\\":{\\"operation\\":\\"audio.status\\",\\"targetId\\":\\"default_output\\",\\"endpointIdHash\\":\\"306bf383914f6feb7bb50a7d9f24a50e174d5b44a4da9e3993aab1da67d756e4\\",\\"state\\":{\\"volumePercent\\":100,\\"muted\\":false},\\"endpointName\\":\\"Aud\\\\u00EDfono de los auriculares con micr\\\\u00F3fono (HyperX Virtual Surround Sound)\\"},\\"readOnly\\":true}"],"completedRequest":"Dime la hora y el estado del audio.","observed":{"utc":"2026-09-27T03:04:26.1300123+00:00","localUtcOffsetMinutes":-180,"muted":false,"level":100}}',
+    "payload": {'kind': 'status', 'completedRequest': 'Dime la hora y el estado del audio.', 'outcome': 'completed', 'completedStepsInOrder': [{'operation': 'system.time', 'resultAtThisStep': {'readOnly': True, 'clock': '00:04', 'operation': 'system.time'}}, {'operation': 'audio.status', 'resultAtThisStep': {'readOnly': True, 'seen': {'endpointName': 'Audífono de los auriculares con micrófono (HyperX Virtual Surround Sound)', 'muted': False, 'level': 100}, 'operation': 'audio.status'}}]},
+}
+
+
+@pytest.mark.parametrize(
+    ("draft", "defect"),
+    [
+        # The first draft, verbatim: three drafts died wanting the word «volumen» next to «al 100 %».
+        ("La hora es 00:04 y el audio está activo al 100% en los auriculares HyperX, sin estar silenciado.", ""),
+        ("La hora es 00:04 y el audio está en 100.", "missing_name"),
+        # A retry that moved the clock stays out.
+        ("Son las cuatro de la mañana y el volumen del audífono está en cien sin estar silenciado.", "missing_name"),
+    ],
+)
+def test_a_level_said_as_a_percentage_is_the_level(draft: str, defect: str) -> None:
+    assert compose_visible_defect(draft, "status", "Dime la hora y el estado del audio.", _TIME_AND_AUDIO) == defect

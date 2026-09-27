@@ -231,3 +231,19 @@ conversación, 64 límites de contraste, 9 preguntas); pedidos mixtos → lo que
 742, el guion y el held-out («abre la calculadora», «sube el volumen»; las deciden los lectores, no el decisor) y
 ninguna frase peculiar; desde v5 `build_train.py` excluye los literales de las 742, el guion, el held-out y el
 registro real (81 descartados en total). Datos v5: 4 119 ejemplos. `full3` entra con la regla de D19.
+
+## D22. `full3` entra; la búsqueda web queda fuera de la comparación mientras la red esté marcada (2026-09-26 ~23:40)
+Decisor aislado: DEV-B 225/253 = 88,9 % (full2 222), sueltos 103, seguimientos 64/66; DEV-A 230/260 (full2 220).
+Integrado sobre M19: DEV-B 80,6 % con la misma decisión (214/253) que `full2` —6 arreglados y 9 rotos, McNemar
+p = 0,61: ruido—; DEV-A **83,5 %** (81,9); capa A 96,1 % (≥ 96,0; frente a M19, −3 en las 742 y −2 en el registro
+real, revisados: H0271 pasa a la pregunta que pide su oro, H0604 lee `system.identity` en vez de recordar, cuatro
+filas del registro real mejoran —«abre steam y ve a la biblioteca» → app.open— y dos se vuelven búsquedas no pedidas);
+reserva **85,2 %** (84,3). Cumple D19 y D12. Runtime registrado con `decider-full3.gguf` (`41f83fa4…`; respaldo
+`mind-runtime-v1.before-full3-2026-09-26.json`; sólo cambia el adaptador, mismo base).
+App real (23:24–23:30): guion 44/60 (+6), held-out 25/30. Las 7 diferencias con `full2` no son del adaptador: en 5
+turnos web.search terminó `web_search_results_irrelevant` (la decisión fue idéntica) y en 1 un veto de redacción
+(«los fallos» de la persona leídos como fallo afirmado, M21). A esa hora los motores tratan esta red como automatizada:
+DuckDuckGo devuelve «anomaly» (202), Mojeek «your network appears to be sending automated queries» (403), Brave pide
+captcha y Bing HTML responde otra cosa («Tortugas Ninja» a «la serie The Last of Us vale la pena», foros chinos a
+«primer libro de zombies»); el filtro de pertinencia los rechaza bien. No se esquiva la detección de bots; las cifras
+del guion y del held-out se repiten cuando la búsqueda vuelva, y hasta entonces los turnos de búsqueda se leen aparte.

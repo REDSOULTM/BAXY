@@ -358,6 +358,17 @@ public sealed class C03FactPreservationTests
             Is.EqualTo("unsolicited_catalog"));
     }
 
+    // Owner script «Por dios, odio estos fallos»: the person's «fallos» answered back claim no failure.
+    [TestCase("Entiendo que la frustración por los fallos es inmensa y duele.", null)]
+    [TestCase("Entiendo tu frustración con esos fallos.", null)]
+    [TestCase("Entiendo lo de los fallos, pero no pude hacer nada.", "looks_like_failure")]
+    [TestCase("Hubo un fallo al abrir Steam.", "looks_like_failure")]
+    public void ThePersonsFallosAnsweredBackClaimNoFailure(string reply, string? reason)
+    {
+        Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(
+            "Por dios, odio estos fallos", reply, "es"), Is.EqualTo(reason));
+    }
+
     [Test]
     public void KnowledgeAnswerCanExplainAnEarlierFailure()
     {
