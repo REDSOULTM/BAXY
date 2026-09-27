@@ -47,7 +47,11 @@ Todo pasa por `turn.decide` → `src/baxy_mind/__main__.py::_prepare_turn_result
    (`decider_adapter.py`, atado por hash al GGUF del manifiesto, apagado para cualquier otro rol y encendido por
    petición en la ranura reservada del decisor). Un `limit` del decisor se re-lee en su forma canónica
    (`semantic.surface`): lo que los lectores prueban ahí es ese pedido (M13). La lista corta, el selector nativo,
-   `llm.decide_turn` y sus vetos se retiraron (M11): ningún turno medido pasaba ya por ahí.
+   `llm.decide_turn` y sus vetos se retiraron (M11): ningún turno medido pasaba ya por ahí. Dos guardas después del
+   decisor: un deíctico («ábreme eso») cuya reescritura trae palabras que nadie dijo se pregunta (M19), y una pregunta
+   del decisor sobre un lugar inalcanzable es su límite (M21, la misma regla de `apply_out_of_world_boundary`). Lo que
+   los lectores prueban en un primer mensaje sigue siendo de ellos: cederlo al decisor (M9, M9c) o darle la
+   conversación ajena (M10, M10b, M10c) rompió las órdenes del dueño y las 742 (D24).
 
 Prioridad cuando varios dicen algo: efecto explícito > aclaración tipada > conocimiento / redacción > límite conocido >
 decisor en contexto (en conversación: lectores de conversación > decisor). Guardas que **retiran autoridad y nunca la inventan**: pregunta de información, dominio en el texto
@@ -85,7 +89,7 @@ con antecedente es el objeto de ese antecedente, nunca «lo que esté delante».
 - `scripts/comprension_eval.py` — conjuntos DEV-A (se miran sus fallos), DEV-B (sólo su cifra) y FINAL (sellado, una
   vez) de la Fase 3.5b: sueltos y conversaciones con historial fijo, oro de sala limpia auditado, sólo decisión y
   argumentos clave. `--decider-adapter` mide el LoRA en el producto; `comprension-f1/lora/` entrena y evalúa el
-  decisor aislado (receta en `DECISIONES_COMPRENSION_2026-09-25.md`, D13–D19).
+  decisor aislado (receta y ajustes `full1`…`full5` en `DECISIONES_COMPRENSION_2026-09-25.md`, D13–D24; el producto usa `full3`).
 - `scripts/semantic_corpus.py` — corpus por capas del histórico de todos los BAXY (filtros de idioma y destinatario,
   oráculo proyectado a familias) y puntuación por tipo de fallo. Todo lo que contiene texto del dueño es privado
   (`%LOCALAPPDATA%\BAXY\semantic-corpus-v1`). Capa A = lo dicho de verdad a BAXY (encuesta de 742 y registro real);
