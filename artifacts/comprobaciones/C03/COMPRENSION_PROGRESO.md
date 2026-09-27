@@ -101,6 +101,7 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | M25: LoRA `full5` (datos v7: AJUSTE4 sueltos + AJUSTE5 seguimientos, D23) | 77,5 % | 86,4 % | 81,9 % | **95,8 %** (87,9 %) | 83,8 % (37 arreglados, 88 rotos) | 22 | **no entra** (D24): peor en todo; los datos nuevos llevan la charla de 997 a 1 412 ejemplos y el decisor habla de más |
 | M10b: lo que el lector toma por conversación ajena lo lee el decisor | 80,2 % (1 arreglado, 1 roto) | | 86,2 % (+3) | **94,9 %** | — | 30 (las 10 conversaciones ajenas de las 742 pasan a charla sobre ellas) | **retirado** (igual que M10 con `full1`) |
 | M10c: la conversación ajena sigue siéndolo salvo que el decisor lea en ella una acción o un límite | 80,2 % (1 y 1) | | 85,8 % (+2) | 96,0 % | — | 2 peores: H0610 → web.search, **H0735 → notification.schedule** (un efecto sobre una conversación ajena) | **retirado**: un efecto inventado; DEV-B no se mueve y la ganancia está sólo en el conjunto mirado |
+| M9c: un primer mensaje que un lector prueba como efecto cede al decisor sólo si éste lee un límite | 80,6 % (2 arreglados, 1 roto) | | 85,8 % (+2) | **94,5 %** | — | 34; 14 órdenes del dueño que el producto sí hace pasan a límite («abre Gmail», «instala requests con pip», «Borra la carpeta CarterTest del escritorio», «cerrá todas las pestañas de chrome») | **retirado**: en las órdenes del dueño los lectores son la protección; el decisor limita de más |
 
 ### Revisión de las 21 decisiones de las 742 que M4 cambia frente a la base
 
