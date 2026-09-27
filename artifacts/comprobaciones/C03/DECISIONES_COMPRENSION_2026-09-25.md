@@ -247,3 +247,17 @@ DuckDuckGo devuelve «anomaly» (202), Mojeek «your network appears to be sendi
 captcha y Bing HTML responde otra cosa («Tortugas Ninja» a «la serie The Last of Us vale la pena», foros chinos a
 «primer libro de zombies»); el filtro de pertinencia los rechaza bien. No se esquiva la detección de bots; las cifras
 del guion y del held-out se repiten cuando la búsqueda vuelva, y hasta entonces los turnos de búsqueda se leen aparte.
+
+## D23. Cuarto y quinto ajuste en uno solo: `full5` con los datos v7 (2026-09-27 ~02:45)
+Meta pendiente: sueltos ≥ 88 % (DEV-B 74–77 %). Los 23 sueltos que fallan en DEV-A (el conjunto que sí se mira) caen
+en tres grupos: lectores viejos que deciden antes (9; M9 y M10 ya mostraron que ceder todo rompe las 742 y el registro
+real), el catálogo llano mal descrito (M22) y el decisor ante autocorrecciones, muletillas, mensajes largos y servicios
+ajenos. Encargo `brief/AJUSTE4.md` (w22–w24, 300 conversaciones, 496 mensajes: autocorrecciones y muletillas; mensajes
+largos con el contraste de conversación ajena; servicios ajenos → límite). Los fallos de la app real que no eran la
+búsqueda (guion t57 «al volumen» → pregunta, held-out t14 «averiguá qué dijo la crítica» → pregunta, cien 038/077)
+son seguimientos sobre lo que BAXY acaba de hacer o decir: `brief/AJUSTE5.md` (w25–w27, 300 conversaciones, 1 028
+mensajes: remates y precisiones → charla que confirma; preguntas sobre la conversación → charla; encargos sobre el tema
+ya hablado → web.search con el tema). Sólo formas; ninguna frase de DEV, FINAL ni de las puertas (y desde v6 también se
+excluye cien). `full4` (datos v6) se lanzó a las 02:03 y se paró en el ejemplo 280 (4,2 s por ejemplo: dos ciclos de
+5–6 h en vez de uno); `full5` = datos v7 (5 557 ejemplos, receta igual a `full3`), con el catálogo llano de M22 en el
+entrenamiento y en la evaluación aislada de redpc (copiada allí antes de evaluar). Entra con la regla de D19 y D12.
