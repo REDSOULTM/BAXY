@@ -33,9 +33,13 @@ def test_prompt_with_signatures_asks_for_arguments() -> None:
     signed = decider.catalog_prompt(tools, {"audio.volume": ("level",)})
     assert "\"arguments\"" not in plain
     assert "- audio.volume(level):" in signed and "\"arguments\"" in signed
-    schema = decider.response_schema(["audio.volume"], with_arguments=True)
-    assert list(schema["properties"]) == ["request", "decision", "operations", "arguments", "question"]
-    assert schema["required"] == list(schema["properties"])
+    # M49: the arguments are decoded only in the action branch; a talk, a question or a limit writes none.
+    action, other = decider.response_schema(["audio.volume"], with_arguments=True)["anyOf"]
+    assert list(action["properties"]) == ["request", "decision", "operations", "arguments", "question"]
+    assert action["required"] == list(action["properties"])
+    assert action["properties"]["decision"]["enum"] == ["action"]
+    assert "arguments" not in other["properties"] and "action" not in other["properties"]["decision"]["enum"]
+    assert other["properties"]["operations"]["maxItems"] == 0
     assert "arguments" not in decider.response_schema(["audio.volume"])["properties"]
 
 

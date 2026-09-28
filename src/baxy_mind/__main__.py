@@ -4250,6 +4250,7 @@ def _context_decided_result(
                 "request": decided.request,
                 "effect_operations": list(decided.operations),
             },
+            "decider_timings": getattr(llm, "_last_decider_timings", None),
             "stages": [],
             "final": {
                 "kind": result["kind"],

@@ -161,16 +161,33 @@ def response_schema(operations: Iterable[str], *, with_arguments: bool = False) 
         "request": {"type": "string", "maxLength": 300},
         "decision": {"type": "string", "enum": list(DECISIONS)},
         "operations": {"type": "array", "items": {"type": "string", "enum": sorted(operations)}, "maxItems": 3},
+        "question": {"type": "string", "maxLength": 200},
     }
-    if with_arguments:
-        properties["arguments"] = {"type": "object"}
-    properties["question"] = {"type": "string", "maxLength": 200}
-    return {
-        "type": "object",
-        "properties": properties,
-        "required": list(properties),
-        "additionalProperties": False,
+    closed = {"type": "object", "properties": properties, "required": list(properties), "additionalProperties": False}
+    if not with_arguments:
+        return closed
+    # M49 (lat49): the values are decoded only when the decision is an action, each one bounded; a talk, a question
+    # or a limit writes no arguments at all (M42 as first shipped cost +0.8 s p50 on every turn in the app).
+    other = {
+        **closed,
+        "properties": {
+            **properties,
+            "decision": {"type": "string", "enum": [d for d in DECISIONS if d != "action"]},
+            "operations": {"type": "array", "items": {"type": "string"}, "maxItems": 0},
+        },
     }
+    action_properties = {
+        "request": properties["request"],
+        "decision": {"type": "string", "enum": ["action"]},
+        "operations": properties["operations"],
+        "arguments": {
+            "type": "object",
+            "additionalProperties": {"type": ["string", "number", "boolean"], "maxLength": 120},
+        },
+        "question": properties["question"],
+    }
+    action = {**closed, "properties": action_properties, "required": list(action_properties)}
+    return {"anyOf": [action, other]}
 
 
 def messages(system: str, text: str, history: list[dict[str, str]] | None) -> list[dict[str, str]]:

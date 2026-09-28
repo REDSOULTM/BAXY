@@ -15616,7 +15616,7 @@ class LlmRuntime:
                 },
             },
             "temperature": 0.0,
-            "max_tokens": 200,
+            "max_tokens": 300,
             "seed": 0,
             "cache_prompt": True,
             "chat_template_kwargs": {"enable_thinking": False},
@@ -15625,6 +15625,13 @@ class LlmRuntime:
         if adapter is not None:
             payload.update(adapter.request_fields())
         response = self._post(payload, timeout=self._normalize_request_budget(timeout), reserved_slot=True)
+        # M49: what the server spent on this decision (prompt tokens it had to evaluate, tokens it wrote), for the
+        # turn audit; a reserved slot that lost its cached catalog shows as a large prompt_n.
+        timings = response.get("timings") if isinstance(response, dict) else None
+        self._last_decider_timings = (
+            {key: timings.get(key) for key in ("prompt_n", "prompt_ms", "predicted_n", "predicted_ms")}
+            if isinstance(timings, dict) else None
+        )
         try:
             content = response["choices"][0]["message"].get("content") or ""
         except (KeyError, IndexError, TypeError) as error:
