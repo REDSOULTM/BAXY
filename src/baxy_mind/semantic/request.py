@@ -576,6 +576,17 @@ def speaking_directive(text: str) -> bool:
     return _SPEAKING_DIRECTIVE.fullmatch(fold(text).strip()) is not None
 
 
+# M33 (DEV-B 2026-09-28: turns the decider got right failed in the wording; independent review REV2): «escríbeme un
+# mensaje en inglés para mi jefe», «write a short poem in Spanish» ask for content in the language they name, like a
+# translation; the reply is in it. Only a writing order at the start counts: «¿cómo se escribe hello en inglés?» or
+# «qué significa escribir en inglés» are questions about words, answered in the person's language.
+_WRITING_REQUEST = re.compile(
+    r"^[\s¡!]*(?:(?:por\s+favor|porfa|please)[\s,]+)?(?:(?:puedes|podrias|podes|can\s+you|could\s+you)\s+)?"
+    r"(?:escribe|escribeme|escribime|escribir|escribirme|redacta|redactame|redactar|redactarme|componme|compon|write|draft|"
+    r"compose)\b"
+)
+
+
 def _explicit_language(folded: str) -> str | None:
     """Traducción y idioma pedido mandan sobre la evidencia del texto."""
 
@@ -587,7 +598,7 @@ def _explicit_language(folded: str) -> str | None:
         folded,
         ("responde en ", "contesta en ", "answer in ", "reply in ",
          "respond in "),
-    ) or _SPEAKING_DIRECTIVE.fullmatch(folded.strip()) is not None:
+    ) or _SPEAKING_DIRECTIVE.fullmatch(folded.strip()) is not None or _WRITING_REQUEST.match(folded) is not None:
         if _contains_any(folded, ("en spanglish", "in spanglish", "to spanglish",
                                   "a spanglish", "al spanglish")):
             return "mixed"

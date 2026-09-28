@@ -333,7 +333,8 @@ CONSTRAINT_PRESENTATION_PROMPT = (
     "addressing the user naturally. There has been no operation and no "
     "observation of the PC. Do not assert an existing state or a completed "
     "change, ask for execution parameters, or claim inability. State your "
-    "intention in first person, preserving the user's time scope without "
+    "intention in first person, never speaking of BAXY in the third person, "
+    "preserving the user's time scope without "
     "adding universal commitments. Do not promise that the device state "
     "cannot change. Return one short natural sentence in response_language, "
     "without JSON or explanation of these instructions. No question and no "
@@ -504,6 +505,10 @@ _INVENTED_TASTE = (
 
 # What BAXY holds about himself, one of which every identity answer says: his name, the PC he lives on as a
 # program.
+_IDENTITY_ORIGIN_SIGNAL = (
+    r"\b(?:cre\w*|naci\w*|desarroll\w*|lanz\w*|edad|anos?|version|entren\w*|created|born|made|built|trained|"
+    r"released|launched|developed|age|years?|version|since|desde|en\s+el\s+ano)\b"
+)
 _IDENTITY_OWN_FACT = (
     r"\b(?:baxy|pc|computadora?|ordenador|equipo|computer|machine|programa|program)\b"
 )
@@ -2293,8 +2298,19 @@ def _shaped_conversation_answer_violates_contract(
                 and asks_baxys_name(request)
             )
             # Uso real 2026-09-23 «who made you»: a maker, lab, model family or a
-            # date/age is not among BAXY's facts; naming one is an invented fact.
-            or re.search(r"\d", folded_content) is not None
+            # date/age is not among BAXY's facts; naming one is an invented fact. M35 (real log 66 «quién eres,
+            # cuánto suma 2 más 2»): the numbers a request brings are its own, and so is their answer.
+            or (
+                re.search(r"\d", folded_content) is not None
+                and (
+                    re.search(r"\d", _policy_guard_text(str(request or ""))) is None
+                    # REV2: a date, an age or a version of BAXY is invented whatever numbers the request brought.
+                    or any(
+                        re.search(r"\d", sentence) and re.search(_IDENTITY_ORIGIN_SIGNAL, sentence)
+                        for sentence in re.split(r"[.;!]\s*", folded_content)
+                    )
+                )
+            )
             # Tanda 7 «¿quién te desarrolló?» → «No tengo información sobre quién me desarrolló.»: a bare
             # «no information» answers nothing about him; the answer carries one of his facts, his name or
             # the PC he lives on.
@@ -3246,6 +3262,17 @@ _NOT_A_PRETERITE = frozenset({
     # subjunctive of «estar», not «I …».
     "esté",
 })
+# Fase 3.5b M35 (real log 121 «¿de qué hablas?» → «…solo respondí a tu mensaje anterior…», vetoed twice and the
+# turn asked instead): what BAXY answered, asked or explained TO THE PERSON in this dialogue («te respondí», «respondí a
+# tu mensaje») is the conversation itself. Independent review REV2: with «le», a recipient or a channel («respondí el
+# correo de tu jefe», «le pregunté por mensaje») it is an effect and stays one.
+_SPEECH_ACT_PRETERITES = frozenset({
+    "respondí", "contesté", "pregunté", "expliqué", "comenté", "mencioné", "aclaré", "dije", "entendí", "confundí",
+})
+_SPEECH_ACT_TO_THE_PERSON_BEFORE = re.compile(r"(?<![\w])te\s+$")
+_SPEECH_ACT_TO_THE_PERSON_AFTER = re.compile(
+    r"^\s+(?:a\s+)?(?:tus?\s+(?:mensajes?|preguntas?|comentarios?)|lo\s+que\s+(?:me\s+)?(?:dijiste|preguntaste)|what\s+you\s+(?:said|asked)|your\s+(?:message|question))(?:\s+anterior)?\b"
+)
 _EFFECT_CLAIM_NEGATED = re.compile(
     r"\b(?:no|nunca|jamas|jamás|tampoco|sin|ni|not|never|didn'?t|couldn'?t|cannot|can'?t|haven'?t|"
     r"won'?t|don'?t|aun\s+no|aún\s+no|todavia\s+no|todavía\s+no)\b"
@@ -3381,6 +3408,13 @@ def visible_reply_claims_an_effect(value: object, request: object = "") -> bool:
                 (sentence, match)
                 for match in _FIRST_PERSON_PRETERITE.finditer(sentence)
                 if match.group(0) not in _NOT_A_PRETERITE
+                and not (
+                    match.group(0) in _SPEECH_ACT_PRETERITES
+                    and (
+                        _SPEECH_ACT_TO_THE_PERSON_BEFORE.search(sentence[: match.start()]) is not None
+                        or _SPEECH_ACT_TO_THE_PERSON_AFTER.match(sentence[match.end():]) is not None
+                    )
+                )
                 and not match.group(0).endswith(("aré", "eré", "iré"))
             )
         if "?" not in sentence and "¿" not in sentence:

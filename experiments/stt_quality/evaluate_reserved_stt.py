@@ -150,8 +150,12 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 comprensión natural — pista de reintento sin estados en charla
 # Ley 2 G1: cuatro prompts huérfanos de llm.py retirados
 # Ley 2 G2+G3: restos muertos de __main__ y compound_retrieval_operation_hints
+# M33: el contenido pedido en un idioma nombrado se valida en ese idioma
+# M33+M35: guardas de redacción
+# M32-M36 revisados tras REV2
+# M32, M33, M35, M36 (M34 retirado)
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "5205b61ba6e069209dc64ef6024a1b2d9310abbfc9a8e8871a7ba4dab818d728"
+    "71d2c9f9fb2d1962d3c6f15e8bf99cecdc06800faeade1cc94f111fedf71eeb5"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

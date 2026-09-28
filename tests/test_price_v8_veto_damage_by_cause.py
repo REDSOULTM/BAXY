@@ -164,12 +164,15 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 comprensión natural — pista de reintento sin estados en charla
 # Ley 2 G1: cuatro prompts huérfanos de llm.py retirados
 # Ley 2 G2+G3: restos muertos de __main__ y compound_retrieval_operation_hints
+# M33: el contenido pedido en un idioma nombrado se valida en ese idioma
+# M33+M35: guardas de redacción
+# M32-M36 revisados tras REV2
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
         "562d35cc075b9bf2bd4cd02ed3548ab6702dfebc39a3a7deacc9fba0b62d8ab4"
     ),
     "src/baxy_mind/llm.py": (
-        "a64d67cc8a3792137d5f63708606cf16bda143cb97da283d906738e3704c5729"
+        "acf7505a5ebb2b035d6aff70c23e457142499b1bb31bbc8c02b8afb22b253a07"
     ),
 }
 

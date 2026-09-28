@@ -229,6 +229,11 @@ def test_the_app_to_open_is_read_from_its_own_clause(objective: str) -> None:
         ("necesito escuchar algunas canciones tristes hoy", False),
         ("play some jazz music", False),
         ("pon algo de rock", False),
+        # M32: next to the person's own collection only a genre named says what to play.
+        ("pon mi playlist", True),
+        ("pon mis canciones preferidas", True),
+        ("play my rock playlist", False),
+        ("pon mi lista de reproducción de jazz", False),
     ],
 )
 def test_music_is_asked_only_when_nothing_to_play_was_said(text: str, asks: bool) -> None:

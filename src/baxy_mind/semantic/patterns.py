@@ -5468,6 +5468,8 @@ _MUSIC_OWN_COLLECTION = re.compile(
     r"\b(?:favorit\w*|playlists?|lista\s+de\s+reproduccion|lista|biblioteca|library|mis\s+canciones|comprad\w*|"
     r"liked|saved|guardad\w*|my\s+(?:music|songs)|que\s+me\s+gust\w*)\b"
 )
+_MUSIC_COLLECTION_CONTAINER = re.compile(r"\b(?:playlists?|lista\s+de\s+reproduccion|lista|biblioteca|library)\b")
+_MUSIC_TASTE = re.compile(r"\b(?:favorit\w*|preferid\w*|que\s+me\s+gust\w*)\b")
 # Tanda 4 «pon algo para dormir», «pon algo nuevo» ask: a purpose and «nuevo» name no music; a character does.
 _MUSIC_PURPOSE = re.compile(r"\b(?:para|for|to)\s+\w+.*$")
 
@@ -5477,7 +5479,15 @@ def _music_clause_names_content(clause: str) -> bool:
 
     body = _MUSIC_ORDER_HEAD.sub(" ", _fold(clause), count=1)
     if _MUSIC_OWN_COLLECTION.search(body):
-        return False
+        # M32 (MASSIVE reserve «play my rock playlist», «pon mi lista de reproducción de jazz» were asked «¿qué
+        # música?»): next to the person's own collection only a genre named says what to play; how the collection
+        # is qualified («preferidas», «de siempre», «descargadas») does not (independent review REV2). A taste
+        # («mi cantante de jazz favorito», uso real) names a person, not the collection: it still asks.
+        return (
+            _MUSIC_COLLECTION_CONTAINER.search(body) is not None
+            and _MUSIC_TASTE.search(body) is None
+            and re.search(r"\b" + MUSIC_GENRE + r"\b", body) is not None
+        )
     body = _MUSIC_PURPOSE.sub(" ", body)
     return any(word not in _MUSIC_GENERIC_WORDS for word in re.findall(r"[a-z0-9ñ]+", body))
 

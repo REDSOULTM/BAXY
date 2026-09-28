@@ -1007,3 +1007,59 @@ def test_a_read_never_claims_it_changed_the_state() -> None:
 )
 def test_the_persons_fallos_answered_back_claim_no_failure(reply: str, defect: str) -> None:
     assert compose_visible_defect(reply, "conversation", "Por dios, odio estos fallos", CONVERSATION) == defect
+
+
+@pytest.mark.parametrize(
+    ("request_text", "language"),
+    [
+        ("escríbeme un mensaje en inglés para mi jefe diciendo que llego tarde", "en"),
+        ("redacta un correo en inglés para mi casero", "en"),
+        ("write a short poem in Spanish about the sea", "es"),
+        # A question about words is answered in the person's language (independent review REV2).
+        ("qué significa escribir en inglés", "es"),
+        ("redacta un correo para mi profesor", "es"),
+    ],
+)
+def test_content_asked_in_a_named_language_is_answered_in_it(request_text: str, language: str) -> None:
+    # M33 (DEV-B 2026-09-28): the draft in the language the person named was vetoed as the wrong reply language.
+    from baxy_mind import __main__ as sidecar
+
+    assert sidecar._read_reply_language(request_text, []) == language
+
+
+@pytest.mark.parametrize(
+    ("draft", "claims"),
+    [
+        ("No hablo de nada, solo respondí a tu mensaje anterior.", False),
+        ("Te pregunté cuánto subir el volumen.", False),
+        ("Ya le hice click.", True),
+        ("Agregué tomates a tu lista.", True),
+        # Independent review REV2: with a recipient or a channel it is an effect.
+        ("Respondí el correo de tu jefe.", True),
+        ("Contesté el mensaje de Juan en WhatsApp.", True),
+        ("Le pregunté a tu jefe por correo.", True),
+    ],
+)
+def test_what_baxy_said_is_the_conversation_not_an_effect(draft: str, claims: bool) -> None:
+    # M35 (real log 121 «¿de qué hablas?»): the reply was vetoed twice and the turn asked instead.
+    from baxy_mind import llm
+
+    assert llm.visible_reply_claims_an_effect(draft, "de qué hablas") is claims
+
+
+@pytest.mark.parametrize(
+    ("request_text", "draft", "violates"),
+    [
+        ("Hola que tal quien eres, cuantame cuanto suma 2 mas 2",
+         "Hola, soy BAXY, un programa que vive y corre en este PC. La suma de 2 más 2 es 4.", False),
+        ("quién te creó", "Soy BAXY; me crearon en 2023.", True),
+        # REV2: a date, an age or a version stays invented whatever numbers the request brought.
+        ("quién te creó, ¿fue en 2023?", "Soy BAXY; me crearon en 2023.", True),
+        ("¿tienes 2 años?", "Soy BAXY y tengo 2 años.", True),
+    ],
+)
+def test_an_identity_answer_keeps_the_numbers_the_request_brought(request_text: str, draft: str, violates: bool) -> None:
+    # M35 (real log 66): a digit was always read as an invented maker date.
+    from baxy_mind import llm
+
+    assert llm._shaped_conversation_answer_violates_contract(draft, request_text, "identity") is violates
