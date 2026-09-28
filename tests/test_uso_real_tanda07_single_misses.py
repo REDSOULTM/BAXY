@@ -517,3 +517,16 @@ def test_the_sound_on_with_its_level_said_as_a_word_passes(asked: str, reply: st
 )
 def test_the_sound_said_disabled_over_an_unmuted_read_is_a_reversed_mute(asked: str, reply: str) -> None:
     assert _sound_defect(reply, asked) == "reversed_mute"
+
+
+@pytest.mark.parametrize(
+    "draft",
+    [
+        # Owner script t35 (28-09), published: results compared aloud.
+        "Un resultado dice que la primera obra literaria con zombis fue una película de 1968, mientras que otro afirma "
+        "que fue un libro de 1929.",
+        "One result says it was 1929, another says 1968.",
+    ],
+)
+def test_results_compared_aloud_show_the_search(draft: str) -> None:
+    assert llm._payload_fact_defect(draft, _SEARCHED, "¿cuál fue el primer libro de zombies?") == "search_report_shows_the_search"

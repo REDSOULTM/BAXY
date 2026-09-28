@@ -159,12 +159,14 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 comprensión natural — M24: acuse de un gusto en segunda persona
 # C03 comprensión natural — arreglos de la revisión independiente
 # C03 comprensión natural — arreglos de la revisión independiente
+# C03 comprensión natural — resultados comparados en voz alta muestran la búsqueda
+# C03 comprensión natural — M30: resultados comparados; charla sobre un lugar inalcanzable es su límite
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "d84e4983a5ad426b173cbb52362254cc83567fa78d8aa8ac5bbeebe200cec11f"
+        "8e92825b52807850133e07337542889715daa3e5e90113b24d9fd05e4adc008c"
     ),
     "src/baxy_mind/llm.py": (
-        "ab7e3c6ea1ec15b8160a7ca5176b350c9d905b88e06aee3bb8de469d3ba3897e"
+        "b19abb91b36e394cd2462994dab1cbec5464fe607d3ccbab25be239012b4f965"
     ),
 }
 

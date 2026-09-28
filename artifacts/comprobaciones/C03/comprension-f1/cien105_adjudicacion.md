@@ -51,3 +51,19 @@ Mismos 100 turnos. Operaciones: la misma secuencia que cien-101 (23, todas lectu
 Mejor que 105: 088 «preséntate breve» contesta (101 lo rechazaba como `identity_not_answered`); 080 «buy a kite on
 Sedna» ya no da la razón del planeta. Tras M21, 006, 100, Sedna y «odio estos fallos» publican 2 de 2 en la app
 real (réplica de 4 turnos con auditoría de redacción).
+
+## cien-107 (runtime `full3`, árbol `b73137f4` = M29, 2026-09-28 02:35)
+
+Operaciones: la misma secuencia que cien-101 (**0 efectos**). Mejor que 106: 006 «Dime la hora y el estado del audio»
+contesta (M21), 088 «preséntate breve» contesta. Siguen mal 038 y 077 (pregunta donde contestaba) y 100 «post a
+letter to Eris» salió con una razón inventada («…because I do not have access to external communication channels…»):
+con historial el decisor dijo «talk» («Write a letter to Eris.») y el contrato de conocimiento no aplica el del
+límite. Arreglado en M30 (la charla sobre un lugar inalcanzable también es su límite); reproducido dentro de cien:
+«I do not send letters to Eris.». **cien-107: 96/100** (97 tras M30; 059 dudoso).
+
+## App real a M29 (2026-09-28 02:28, búsqueda web todavía bloqueada)
+
+Guion **51/60** revisado a mano (48 bien + 16, 17 y 21 revisados bien; 24 y 25 no evaluables por la búsqueda; mal:
+22 PotPlayer, 35 resultados narrados —arreglado en M30—, 36 clic dentro de Steam —motor—, 38 clic en CS2, 47
+micrófono ya activo, 54 «si» sin respuesta —variación del redactor—, 57 «al volumen»). Held-out **29/30** (28 + 29
+revisado bien; mal: 14, búsqueda).

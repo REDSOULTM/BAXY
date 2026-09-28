@@ -4044,7 +4044,9 @@ def _context_decided_result(
         # Fase 3.5b M19 (cien-104 «ábreme eso porfa» after the time → «Abre el navegador» → a browser opened): a
         # pointer with no antecedent in what was said is asked, never filled with an object the model brought.
         decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
-    if decided.decision == "clarify" and effect_intent.out_of_world_request(text):
+    # cien-107 100: with a block of history the decider answered «talk» («Write a letter to Eris.»), the knowledge
+    # contract let «…because I do not have access to external communication channels…» through; talk is bounded too.
+    if decided.decision in {"clarify", "talk"} and effect_intent.out_of_world_request(text):
         # cien-105/106 «post a letter to Eris» → «What should the letter say?», vetoed by the App as a question about
         # what cannot be done: the boundary of an unreachable place holds here too (apply_out_of_world_boundary).
         decided = semantic_decider.ContextDecision(request=text, decision="limit", operations=(), question="")

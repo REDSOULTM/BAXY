@@ -8003,7 +8003,11 @@ _SEARCH_MECHANICS = re.compile(
     r"i\s+searched|i\s+looked\s+(?:it\s+)?up|my\s+search|the\s+search|search\s+results?|"
     r"i\s+found\s+(?:these|this|some|several|a\s+few|three|two|five)\s+(?:pages?|results?|sources?|sites?)|"
     r"(?:these|those|the|several|some)\s+(?:pages|sources|websites)|(?:on|from)\s+(?:that|this|one|another)\s+(?:site|page)|"
-    r"none\s+of\s+(?:these|the)\s+pages)\b"
+    r"none\s+of\s+(?:these|the)\s+pages|"
+    # Guion t35 (28-09) «Un resultado dice que la primera obra … mientras que otro afirma …»: results compared aloud
+    # are the search shown.
+    r"(?:un|otro|el\s+primer|el\s+segundo)\s+resultado|otro\s+(?:dice|afirma|indica|sostiene)|"
+    r"(?:one|another|the\s+first|the\s+second)\s+result|another\s+(?:says|states|claims))\b"
 )
 # Tanda 7 «No se menciona ningún famoso…», «No se indica cuánto tiempo queda…»: an absence told as what a text does
 # not say narrates the pages that were read. The owner's not-found is «No lo encontré».

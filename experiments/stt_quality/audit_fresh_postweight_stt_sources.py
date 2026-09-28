@@ -128,8 +128,10 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # C03 comprensión natural — arreglos de la revisión independiente
 # C03 comprensión natural — arreglos de la revisión independiente
 # C03 comprensión natural — léxico de música separado por barras (censo de prosa visible)
+# C03 comprensión natural — resultados comparados en voz alta muestran la búsqueda
+# C03 comprensión natural — M30: resultados comparados; charla sobre un lugar inalcanzable es su límite
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "237e6e7bcae0c15a54c595ce4274259eb42d28b9772b6ba9e68760ebef6ec929"
+    "5d31880c4000d02f80f1885140a661422dac6d6282603e9faadf9dbf542002b3"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"

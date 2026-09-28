@@ -269,3 +269,21 @@ def test_the_true_not_found_and_the_asked_reason_are_no_invention() -> None:
     assert not llm._not_found_invents_a_cause("No lo encontré porque la búsqueda no devolvió resultados.", failed)
     assert llm.limit_voice_defect("No mando cartas a Eris porque no hay correo allá.", "¿por qué no puedes mandar una carta a Eris?") == ""
     assert not llm._failure_word_is_the_persons("Estos fallos se deben a que Spotify no respondió.", "odio estos fallos")
+
+
+def test_talk_about_an_unreachable_place_is_its_limit_too() -> None:
+    # cien-107 100: the decider talked («Write a letter to Eris.») and a reason nobody checked went out.
+    llm = _Decider(ContextDecision("Write a letter to Eris.", "talk", (), ""))
+
+    result = _turn("post a letter to Eris", llm)
+
+    assert result["conversationKind"] == "unsupported"
+    assert llm.chats == ["unsupported"]
+
+
+def test_asking_about_an_unreachable_place_is_still_talk() -> None:
+    llm = _Decider(ContextDecision("How far is Eris from the Sun?", "talk", (), ""))
+
+    result = _turn("how far is Eris from the sun", llm)
+
+    assert result["conversationKind"] == "knowledge"
