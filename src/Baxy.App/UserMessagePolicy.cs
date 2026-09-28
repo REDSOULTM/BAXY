@@ -276,9 +276,27 @@ internal static class UserMessagePolicy
         // «Un router enruta el tráfico» sólo es jerga si nadie preguntó por un
         // router: sin el pedido, explicar uno era imposible.
         string vocabularyText = ObservedResponseLiterals.WithoutObservedNames(modelText, draft.Source);
-        if (LeakedInternalTerm(vocabularyText, userText, priorUserText) is not null)
+        // M50: in a conversation reply to a code request the code is the content asked for; only the prose around
+        // it is judged for jargon and internal codes. A reply that is only code has no prose to judge.
+        bool codeAsked = draft.Intent == "conversation" && AsksForCode(userText, priorUserText);
+        if (codeAsked)
+        {
+            vocabularyText = RequestedCodeProse(vocabularyText);
+        }
+        if ((!codeAsked || vocabularyText.Length > 0)
+            && LeakedInternalTerm(vocabularyText, userText, priorUserText) is not null)
         {
             return "unsafe_language";
+        }
+
+        if (BreaksFirstPerson(modelText))
+        {
+            return "broken_person_conjugation";
+        }
+
+        if (SpeaksOfThePerson(modelText, string.Concat(userText, " ", priorUserText)))
+        {
+            return "third_person_addressee";
         }
 
         if (IsPunctuationOnly(modelText) || IsTooThin(modelText))
@@ -289,9 +307,10 @@ internal static class UserMessagePolicy
         // WEB1481 «Investiga en internet que es el h2o»: a quoted result title
         // («¿Qué significa H2O?») is observed data, not the model restating the
         // definition ask; the lexical checks read the masked vocabulary.
+        string judgedText = codeAsked ? vocabularyText : modelText;
         if (LooksLikeMachineSlotAsk(FoldForPolicy(vocabularyText))
             || LooksLikeRestatingDefinitionAsk(FoldForPolicy(vocabularyText))
-            || HasRepeatedWord(FoldForPolicy(modelText))
+            || HasRepeatedWord(FoldForPolicy(judgedText))
             || ContainsPersonMetadiscourse(FoldForPolicy(modelText))
             || ContainsInternalCode(vocabularyText, string.Concat(userText, " ", priorUserText))
             || FoldForPolicy(modelText).Contains("hecho ya ocurrido", StringComparison.Ordinal)
@@ -530,6 +549,18 @@ internal static class UserMessagePolicy
         IReadOnlyList<string>? missingFields = null,
         bool unsupportedByMind = false)
     {
+        // M50 (v3a-final F-w07-t1, F-w12-t1/t2: the mind's code was refused as internal_code): when the person asked
+        // for code, the code of the reply is the content asked for and only the prose around it is judged. A reply
+        // that is only code has nothing else to judge.
+        if (!clarification && AsksForCode(userText, priorUserText) && !string.IsNullOrWhiteSpace(reply))
+        {
+            reply = RequestedCodeProse(reply);
+            if (reply.Length == 0)
+            {
+                return null;
+            }
+        }
+
         if (LeakedInternalTerm(reply, userText, priorUserText) is { } leaked)
         {
             return "unsafe_language:" + leaked;
@@ -664,6 +695,8 @@ internal static class UserMessagePolicy
                     ["i'm happy to help", "im happy to help", "i am happy to help",
                         "just let me know what you need"])),
             ("person_metadiscourse", ContainsPersonMetadiscourse(said)),
+            ("broken_person_conjugation", BreaksFirstPerson(reply)),
+            ("third_person_addressee", SpeaksOfThePerson(reply, string.Concat(userText, " ", priorUserText))),
         ];
 
         foreach ((string reason, bool failed) in checks)
@@ -1970,6 +2003,80 @@ internal static class UserMessagePolicy
             folded,
             @"\b(?:(?:al|del|el|la|este|esta|ese|esa)\s+(?:usuario|usuaria|persona)|(?:the|this|that)\s+(?:user|person|requester))\s+(?:le gustaria|le interesa|quiere|quisiera|desea|prefiere|pidio|ha pedido|pregunto|dijo|saludo|solicito|menciono|se refiere|would like|wants|asked|said|greeted|requested|mentioned|prefers|has asked|is referring)\b",
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+    }
+
+    // M50 (v3a-final F-w07, F-w12, F-w14, F-p10): code asked for in the conversation is content, not an internal
+    // code of the product. Twin of semantic.conversation.asks_for_code: a verb of writing or giving and a piece of
+    // code, making something in a named programming language, or carrying code to another language; asked now or in
+    // one of the earlier requests the shell keeps.
+    private const string CodeLanguageName =
+        @"(?:python|javascript|js|typescript|java|c\+\+|c#|csharp|rust|kotlin|swift|php|ruby|sql|bash|powershell|html|"
+        + @"css|matlab|scala|lua|dart|haskell|golang|perl|vba)(?![\w+#])";
+    private const string CodeWritingVerb =
+        @"(?:escrib\w*|haz|hazme|haceme|hacer|hacerme|haces|crea|crear|creame|creas|genera\w*|dame|damelo|damela|"
+        + @"pasa\w*|pasas|mostra\w*|muestra\w*|ensena\w*|arma\w*|programa\w*|codea\w*|codifica\w*|conviert\w*|"
+        + @"traduc\w*|reescrib\w*|write|make|create|generate|give|show|build|code|convert|translate|rewrite|port)";
+    private const string CodePieceNoun =
+        @"(?:scripts?|scriptcitos?|funcion(?:es|cita)?|functions?|algoritmos?|algorithms?|snippets?|quer(?:y|ies)|"
+        + @"consultas?\s+(?:de\s+)?sql|codigos?|code|regex|one-?liners?|metodos?|methods?|"
+        + @"programas?\s+(?:en|in|para|que)|programs?\s+(?:in|that)|clases?\s+(?:en|in))(?![\w])";
+    private static readonly Regex CodeAsked = new(
+        @"\b" + CodeWritingVerb + @"\b.{0,60}\b" + CodePieceNoun + "|"
+        + @"\b" + CodeWritingVerb + @"\b.{0,160}\b(?:en|in|a|to|into|para|for|con|with|using|usando)\s+(?:el\s+|the\s+)?"
+        + @"(?:lenguaje\s+(?:de\s+programacion\s+)?)?" + CodeLanguageName + "|"
+        + @"^[\s¿¡]*(?:y\s+|and\s+)?(?:ahora\s+|now\s+)?(?:en|in)\s+" + CodeLanguageName + @"[\s?!.]*$",
+        RegexOptions.CultureInvariant);
+
+    internal static bool AsksForCode(string? userText, string? priorUserText) =>
+        new[] { userText, priorUserText }.Any(static said =>
+            !string.IsNullOrWhiteSpace(said)
+            && CodeAsked.IsMatch(string.Join(" ", FoldForPolicy(said).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries))));
+
+    // Twin of llm.requested_code_prose: the reply without its fenced or inline code and without its lines of code.
+    private static readonly Regex CodeFence = new(@"```[\s\S]*?(?:```|\z)|`[^`\n]+`", RegexOptions.CultureInvariant);
+    private static readonly Regex CodeLine = new(
+        @"^(?:[ \t]{2,}\S.*"
+        + @"|\s*(?:def|class|function|const|let|var|return|import|elif|except|catch|public|private|static|async|await|"
+        + @"fn|func|package|using|#include)\b.*"
+        + @"|\s*from\s+[\w.]+\s+import\b.*"
+        + @"|\s*(?:for|while|if|switch)\s*\(.*"
+        + @"|\s*(?:print|console\.\w+|document\.\w+|System\.out\.\w+)\s*\(.*"
+        + @"|\s*(?:SELECT|FROM|WHERE|ORDER BY|GROUP BY|HAVING|LIMIT|INSERT INTO|UPDATE|DELETE FROM|CREATE TABLE|"
+        + @"(?:LEFT |RIGHT |INNER |OUTER )?JOIN|VALUES|UNION)\b.*"
+        + @"|\s*[\w.\[\]]+\s*(?:[-+*/%]|\?\?)?=\s*[^=\s].*"
+        + @"|.*[{};]\s*|\s*[}\])].*)$",
+        RegexOptions.CultureInvariant);
+
+    internal static string RequestedCodeProse(string reply)
+    {
+        string unfenced = CodeFence.Replace(reply ?? string.Empty, " ");
+        return string.Join(
+            "\n",
+            unfenced.Replace("\r\n", "\n", StringComparison.Ordinal).Split('\n')
+                .Where(static line => !CodeLine.IsMatch(line))).Trim();
+    }
+
+    // v3a-final F-s007 «…no la activan yo», F-s077 «No leeo SMS»: BAXY's «yo» with a plural verb, or a first person
+    // made from an «-eer» stem plus «-o». Twin of llm.visible_reply_breaks_first_person.
+    private static bool BreaksFirstPerson(string reply)
+    {
+        string folded = FoldForPolicy(reply);
+        return Regex.IsMatch(folded, @"\b(?:lo|la|los|las|le|les)\s+[a-z]{2,}(?:an|en)\s+yo\b", RegexOptions.CultureInvariant)
+            || Regex.IsMatch(folded, @"\b[a-z]+eeo\b", RegexOptions.CultureInvariant);
+    }
+
+    // v3a-final F-s074/F-s091 «…access to the person's Outlook calendar or mail»: the reply speaks to the person,
+    // never about them. Twin of llm.visible_reply_speaks_of_the_person.
+    private static bool SpeaksOfThePerson(string reply, string? userText)
+    {
+        Match found = Regex.Match(
+            FoldForPolicy(reply),
+            @"\b(?:the|this)\s+(?:person|user)(?:'s|’s|s')(?!\w)|"
+            + @"\b(?:calendario|agenda|correos?|mails?|cuentas?|archivos?|carpetas?|tareas?|notas?|recordatorios?|listas?|"
+            + @"mensajes?|datos|musica|biblioteca|outlook|pc|equipo|computadora)\s+(?:\w+\s+)?de\s+la\s+persona\b",
+            RegexOptions.CultureInvariant);
+        return found.Success
+            && !FoldForPolicy(userText ?? string.Empty).Contains(found.Value, StringComparison.Ordinal);
     }
 
     public static string WithDiagnosticCode(string text, UserMessageDraft draft)
