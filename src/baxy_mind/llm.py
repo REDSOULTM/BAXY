@@ -13734,11 +13734,13 @@ class LlmRuntime:
                     "_http_connection_pool",
                     None,
                 ),
-                # The turn's decider (the contextual decider, or the native
-                # selector that declares tools) keeps its own server slot, so
-                # its long fixed prompt stays cached and it never queues behind
-                # the turn's speculative work.
-                reserved_slot=reserved_slot or bool(payload.get("tools")),
+                # The contextual decider keeps its own server slot, so its long
+                # fixed prompt stays cached and it never queues behind the turn's
+                # speculative work. M52 (2026-09-28): the native selector's catalogue
+                # probe no longer shares it: each probe evicted the decider's cached
+                # catalogue and the next decision re-read ≈ 6 100 tokens (3,5 s; 12 %
+                # of DEV-A decisions).
+                reserved_slot=reserved_slot,
             )
             return response  # type: ignore[return-value]
         except BaseException as error:

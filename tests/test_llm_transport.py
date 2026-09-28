@@ -1334,10 +1334,13 @@ def test_slot_pool_names_the_leased_slot_on_the_wire() -> None:
 
 
 @pytest.mark.parametrize(
-    ("tools", "reserved"),
-    [([{"type": "function"}], True), (None, False), ([], False)],
+    ("tools", "asked", "reserved"),
+    [([{"type": "function"}], False, False), (None, False, False), ([], False, False), (None, True, True)],
 )
-def test_runtime_reserves_the_slot_only_for_tool_selection(tools: object, reserved: bool) -> None:
+def test_runtime_reserves_the_slot_only_for_the_decider(tools: object, asked: bool, reserved: bool) -> None:
+    """M52 (2026-09-28): only the contextual decider asks for the reserved slot; the native selector's tool probe
+    no longer shares it, because each probe evicted the decider's cached catalogue (12 % of DEV-A decisions re-read
+    ≈ 6 100 prompt tokens, 3,5 s)."""
     from baxy_mind.llm import LlmRuntime
 
     payload: dict[str, object] = {"messages": [{"role": "user", "content": "abre spotify"}], "max_tokens": 64}
@@ -1345,7 +1348,7 @@ def test_runtime_reserves_the_slot_only_for_tool_selection(tools: object, reserv
         payload["tools"] = tools
     runtime = object.__new__(LlmRuntime)
     with patch("baxy_mind.llm.post_chat_completion", return_value={"choices": []}) as transport:
-        runtime._post(payload, max_attempts=1)
+        runtime._post(payload, max_attempts=1, reserved_slot=asked)
     assert transport.call_args.kwargs["reserved_slot"] is reserved
 
 
