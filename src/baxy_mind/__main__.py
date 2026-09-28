@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import os
 import queue
+import math
 import re
 import stat
 import sys
@@ -757,14 +758,20 @@ def prepare_direct_argument_result(
     tool: dict,
     arguments: object,
     fallback_question: str = "",
+    *,
+    trusted_source: str | None = None,
 ) -> tuple[dict | None, str]:
-    """Return only grounded arguments or one schema-grounded clarification."""
+    """Return only grounded arguments or one schema-grounded clarification.
+
+    ``trusted_source`` widens the evidence to what the person and BAXY said in the conversation (M43) when the
+    values came from the decider, which read it; the question is still formulated from the objective.
+    """
 
     schema = tool["function"]["parameters"]
     grounded, fields = normalize_objective_arguments(
         arguments,
         schema,
-        objective,
+        objective if trusted_source is None else trusted_source,
     )
     if grounded is not None:
         operation = str(tool["function"].get("canonical_name") or "")
@@ -3066,6 +3073,131 @@ def _stated_argument_fields(operation: str, objective: str, schema: dict[str, ob
     return tuple(stated)
 
 
+# Fase 3.5b M42 (D33): the values the decider read in the conversation reach the arguments step of the same turn,
+# keyed by the restated request the App sends back. Spent FINAL: 12 well-decided actions asked again for a time, a
+# name or a folder the person had given; the decider had read them (DEV-A: 55 of 57).
+_DECIDED_ARGUMENTS: dict[str, tuple[tuple[str, ...], tuple[tuple[str, Any], ...]]] = {}
+_DECIDED_ARGUMENTS_KEPT = 32
+
+
+def _remember_decided_arguments(
+    objective: str, operations: tuple[str, ...], arguments: tuple[tuple[str, Any], ...],
+) -> None:
+    key = " ".join(objective.split())
+    if not key or not arguments:
+        return
+    _DECIDED_ARGUMENTS.pop(key, None)
+    _DECIDED_ARGUMENTS[key] = (tuple(operations), tuple(arguments))
+    while len(_DECIDED_ARGUMENTS) > _DECIDED_ARGUMENTS_KEPT:
+        _DECIDED_ARGUMENTS.pop(next(iter(_DECIDED_ARGUMENTS)))
+
+
+def _decided_value(value: Any, contract: dict[str, Any]) -> Any:
+    """The decider's scalar in the field's JSON type, or None when it cannot be one."""
+
+    declared = contract.get("type")
+    types = set(declared if isinstance(declared, list) else [declared])
+    enum = contract.get("enum")
+    if isinstance(enum, list):
+        folded = str(value).strip().casefold()
+        return next((item for item in enum if str(item).casefold() == folded), None)
+    if "integer" in types and not isinstance(value, bool):
+        if isinstance(value, int):
+            return value
+        text = str(value).strip()
+        return int(text) if re.fullmatch(r"-?\d{1,9}", text) else None
+    if "number" in types and not isinstance(value, bool):
+        try:
+            number = float(str(value).strip().replace(",", "."))
+        except ValueError:
+            return None
+        return number if math.isfinite(number) else None
+    if "boolean" in types:
+        return value if isinstance(value, bool) else None
+    if "string" in types:
+        text = " ".join(str(value).split())
+        return text or None
+    return None
+
+
+def _with_decided_arguments(
+    operation: str,
+    request: str,
+    arguments: object,
+    schema: dict[str, object],
+    trusted_source: str,
+) -> dict[str, Any] | None:
+    """Fill what the extraction left out or could not ground with what the decider read.
+
+    Each value must be grounded in the trusted text like any model-proposed literal; identifiers stay with the
+    kernel's dependencies and times with ``temporal`` (the decider's own ISO dates are not trusted). None when the
+    decider gave nothing new for this operation.
+    """
+
+    remembered = _DECIDED_ARGUMENTS.get(" ".join(request.split()))
+    properties = schema.get("properties")
+    if remembered is None or operation not in remembered[0] or not isinstance(properties, dict):
+        return None
+    merged = dict(arguments) if isinstance(arguments, dict) else {}
+    identities = set(_DETERMINISTIC_DEPENDENCY_FIELDS.get(operation, ()))
+    added = False
+    for name, raw in remembered[1]:
+        contract = properties.get(name)
+        if (
+            not isinstance(contract, dict)
+            or name in identities
+            or (name.endswith("Id") and name != "appId")
+            or name.endswith("Utc")
+            or contract.get("format") in {"date-time", "date", "time"}
+        ):
+            continue
+        value = _decided_value(raw, contract)
+        if value is None:
+            continue
+        field_schema = {"type": "object", "properties": {name: contract}, "required": [name], "additionalProperties": False}
+        if name in merged and validate_argument_grounding({name: merged[name]}, field_schema, trusted_source):
+            continue
+        if validate_argument_grounding({name: value}, field_schema, trusted_source):
+            merged[name] = value
+            added = True
+    return merged if added else None
+
+
+def _conversation_grounding_source(objective: str, history: object) -> str:
+    """M43: the request, the person's recent turns and BAXY's last reply, the text a decided value may come from.
+
+    Spent FINAL: «Abre el Calendar» restated «Abre el Calendario»; the folder of a PDF said one turn earlier; «save
+    that as a note» whose content was BAXY's previous answer. Only what was said in this conversation counts.
+    """
+
+    parts = [objective]
+    if isinstance(history, list):
+        turns = [item for item in history if isinstance(item, dict) and item.get("content")]
+        parts.extend(
+            str(item["content"])[:1500] for item in turns[-semantic_decider.HISTORY_TURNS:]
+            if item.get("role") == "user"
+        )
+        last_reply = next((item for item in reversed(turns) if item.get("role") == "assistant"), None)
+        if last_reply is not None:
+            parts.append(str(last_reply["content"])[:1500])
+    return "\n".join(parts)
+
+
+def _decided_arguments_alone(
+    operation: str, request: str, tool: dict, trusted_source: str,
+) -> dict[str, Any] | None:
+    """The decider's values when they ground every required field and the operation's own normalization."""
+
+    schema = tool["function"]["parameters"]
+    decided = _with_decided_arguments(operation, request, {}, schema, trusted_source)
+    if decided is None:
+        return None
+    grounded = normalize_grounded_arguments(decided, schema, trusted_source)
+    if grounded is None:
+        return None
+    return _normalize_grounded_operation_arguments(operation, grounded, request)
+
+
 def _ground_explicit_arguments(
     operation: str,
     evidence: str,
@@ -4006,6 +4138,7 @@ def _context_decided_result(
     available_operations = tuple(tool.name for tool in planner_catalog.tools)
     decided = llm.decide_in_context(
         text, history, ((tool.name, tool.description) for tool in planner_catalog.tools),
+        signatures={tool.name: semantic_decider.argument_signature(tool.schema) for tool in planner_catalog.tools},
     )
     if (
         decided.decision == "action"
@@ -4036,6 +4169,7 @@ def _context_decided_result(
         "objective": objective,
     }
     if decided.decision == "action":
+        _remember_decided_arguments(objective, decided.operations, decided.arguments)
         result["kind"] = "action" if len(decided.operations) == 1 else "plan"
         if result["kind"] == "action":
             result["operation"] = decided.operations[0]
@@ -6912,6 +7046,13 @@ def _run_sidecar(
                     history=message.get("history"),
                 )
                 question = ""
+                said = _conversation_grounding_source(objective, message.get("history"))
+                if arguments is None:
+                    # M42b: what the decider read, grounded in what was said, is enough on its own; the separate
+                    # extraction call runs only when a required value is still missing.
+                    arguments = _decided_arguments_alone(
+                        operation, str(message.get("text", "")), tool, said,
+                    )
                 if arguments is None:
                     extraction = llm.extract_direct_arguments(
                         objective,
@@ -6920,12 +7061,21 @@ def _run_sidecar(
                             operation, objective, tool["function"]["parameters"],
                         ),
                     )
+                    decided_arguments = _with_decided_arguments(
+                        operation,
+                        str(message.get("text", "")),
+                        extraction.arguments,
+                        tool["function"]["parameters"],
+                        said,
+                    )
                     arguments, question = prepare_direct_argument_result(
                         llm,
                         objective,
                         tool,
-                        extraction.arguments,
-                        extraction.fallback_question,
+                        extraction.arguments if decided_arguments is None else decided_arguments,
+                        # A question written before the decider's values were added may ask for one of them.
+                        extraction.fallback_question if decided_arguments is None else "",
+                        trusted_source=objective if decided_arguments is None else said,
                     )
                 write_request_message(
                     {

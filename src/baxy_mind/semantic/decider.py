@@ -66,6 +66,17 @@ FORMAT = (
     "action), \"question\": la pregunta corta si es clarify, si no \"\"}."
 )
 
+# Fase 3.5b M42 (D33): the decision and the values the person already gave travel in one output. Each catalog line
+# names the operation's fields (identifiers left out: the kernel resolves them), so the arguments step no longer asks
+# for a time, a name or a folder the message or the conversation gave (spent FINAL: 12 actions asked again).
+FORMAT_WITH_ARGUMENTS = (
+    "\nResponde sólo con JSON: {\"request\": el último pedido reescrito como pedido completo y autónomo con lo que "
+    "aporta la conversación, en el idioma de la persona, \"decision\": ..., \"operations\": [...] (vacía si no es "
+    "action), \"arguments\": {operación: {campo: valor}} con los valores que el mensaje o la conversación YA dan "
+    "para los campos entre paréntesis (horas, duraciones, nombres, carpetas, títulos, textos; nunca inventes uno; "
+    "{} si no hay), \"question\": la pregunta corta si es clarify, si no \"\"}."
+)
+
 FAMILY_TITLES = {
     "app": "aplicaciones", "audio": "sonido", "backup": "copias", "bluetooth": "bluetooth", "browser": "navegador",
     "calculator": "calculadora", "calendar": "agenda", "capture": "capturas", "clipboard": "portapapeles",
@@ -88,6 +99,7 @@ class ContextDecision:
     decision: str
     operations: tuple[str, ...]
     question: str
+    arguments: tuple[tuple[str, Any], ...] = ()
 
 
 _PLAIN_CATALOG = pathlib.Path(__file__).resolve().parents[1] / "data" / "decider_catalog.es.v1.json"
@@ -110,28 +122,53 @@ def plain_descriptions() -> dict[str, str]:
     return {str(k): str(v) for k, v in operations.items()} if isinstance(operations, dict) else {}
 
 
-def catalog_prompt(tools: Iterable[tuple[str, str]]) -> str:
-    """The system prompt for ``(name, description)`` operations, the same bytes for the same catalog."""
+def catalog_prompt(
+    tools: Iterable[tuple[str, str]],
+    signatures: dict[str, tuple[str, ...]] | None = None,
+) -> str:
+    """The system prompt for ``(name, description)`` operations, the same bytes for the same catalog.
+
+    With ``signatures`` (M42) each line names the operation's argument fields and the output asks for their values.
+    """
 
     plain = plain_descriptions()
     families: dict[str, list[str]] = {}
     for name, description in sorted(tools):
         first = plain.get(name) or description.split(". ")[0].rstrip(".")
-        families.setdefault(name.split(".", 1)[0], []).append(f"- {name}: {first[:140]}")
+        fields = (signatures or {}).get(name) or ()
+        signature = f"({', '.join(fields)})" if fields else ""
+        families.setdefault(name.split(".", 1)[0], []).append(f"- {name}{signature}: {first[:140]}")
     catalog = "\n".join(f"[{FAMILY_TITLES.get(f, f)}]\n" + "\n".join(lines) for f, lines in families.items())
-    return POLICY + catalog + FORMAT
+    return POLICY + catalog + (FORMAT if signatures is None else FORMAT_WITH_ARGUMENTS)
 
 
-def response_schema(operations: Iterable[str]) -> dict[str, Any]:
+def argument_signature(schema: dict[str, Any]) -> tuple[str, ...]:
+    """The fields the decider may fill for one operation: optional ones marked «?», identifiers left out."""
+
+    properties = schema.get("properties") if isinstance(schema, dict) else None
+    if not isinstance(properties, dict):
+        return ()
+    required = set(schema.get("required") or ())
+    return tuple(
+        name + ("" if name in required else "?")
+        for name in properties
+        if isinstance(name, str) and not (name.endswith("Id") and name != "appId")
+    )
+
+
+def response_schema(operations: Iterable[str], *, with_arguments: bool = False) -> dict[str, Any]:
+    properties: dict[str, Any] = {
+        "request": {"type": "string", "maxLength": 300},
+        "decision": {"type": "string", "enum": list(DECISIONS)},
+        "operations": {"type": "array", "items": {"type": "string", "enum": sorted(operations)}, "maxItems": 3},
+    }
+    if with_arguments:
+        properties["arguments"] = {"type": "object"}
+    properties["question"] = {"type": "string", "maxLength": 200}
     return {
         "type": "object",
-        "properties": {
-            "request": {"type": "string", "maxLength": 300},
-            "decision": {"type": "string", "enum": list(DECISIONS)},
-            "operations": {"type": "array", "items": {"type": "string", "enum": sorted(operations)}, "maxItems": 3},
-            "question": {"type": "string", "maxLength": 200},
-        },
-        "required": ["request", "decision", "operations", "question"],
+        "properties": properties,
+        "required": list(properties),
         "additionalProperties": False,
     }
 
@@ -166,5 +203,21 @@ def parse(content: str, operations: Iterable[str]) -> ContextDecision:
         decision=decision,
         operations=chosen if decision == "action" else (),
         question=" ".join(str(raw.get("question") or "").split()),
+        arguments=_decided_arguments(raw.get("arguments"), chosen) if decision == "action" else (),
     )
+
+
+def _decided_arguments(value: Any, operations: tuple[str, ...]) -> tuple[tuple[str, Any], ...]:
+    """The scalar values the decider read, flat: the model writes them keyed by operation or not."""
+
+    if not isinstance(value, dict):
+        return ()
+    flat: dict[str, Any] = {}
+    for key, item in value.items():
+        if key in operations and isinstance(item, dict):
+            for field, inner in item.items():
+                flat.setdefault(str(field), inner)
+        elif isinstance(item, (str, int, float, bool)):
+            flat.setdefault(str(key), item)
+    return tuple((name, item) for name, item in flat.items() if isinstance(item, (str, int, float, bool)))
 

@@ -15283,6 +15283,7 @@ class LlmRuntime:
         tools: Iterable[tuple[str, str]],
         *,
         timeout: float = 8.0,
+        signatures: dict[str, tuple[str, ...]] | None = None,
     ) -> semantic_decider.ContextDecision:
         """Decide the turn with the whole conversation and the catalog (``semantic.decider``).
 
@@ -15291,9 +15292,10 @@ class LlmRuntime:
         """
 
         tools = tuple(sorted(tools))
+        key = (tools, tuple(sorted((signatures or {}).items())) if signatures is not None else None)
         cached = getattr(self, "_decider_prompt", None)
-        if cached is None or cached[0] != tools:
-            cached = (tools, semantic_decider.catalog_prompt(tools))
+        if cached is None or cached[0] != key:
+            cached = (key, semantic_decider.catalog_prompt(tools, signatures))
             self._decider_prompt = cached
         names = [name for name, _ in tools]
         payload = {
@@ -15303,7 +15305,7 @@ class LlmRuntime:
                 "json_schema": {
                     "name": "baxy_context_decision",
                     "strict": True,
-                    "schema": semantic_decider.response_schema(names),
+                    "schema": semantic_decider.response_schema(names, with_arguments=signatures is not None),
                 },
             },
             "temperature": 0.0,
