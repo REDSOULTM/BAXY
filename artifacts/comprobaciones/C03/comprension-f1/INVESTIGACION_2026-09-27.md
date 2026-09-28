@@ -72,3 +72,22 @@ inventada más (acción donde el oro no la tiene) invalida el cambio aunque suba
   también vale, 6 «charla frente a búsqueda» donde se busca. Explica en parte por qué `full5` empeoró. La ronda 2 de
   pares se filtra (173 → 77) y el cierre de remates se limita a 2 por contraste; AJUSTE5 no vuelve a entrenar sin esa
   revisión.
+
+## Modelos base alternativos (R5, 28-09, sólo fuentes públicas)
+
+Ninguno gana con claridad a Qwen3.5-4B en mensajes sueltos en español: BFCL v4 es 40 % agéntico y 30 % multivuelta
+(mal proxy de una decisión cerrada de cuatro), nadie publica las subcifras de relevancia/irrelevancia y no existe un
+banco de llamadas a herramientas en español para modelos pequeños. Un cambio de base exige un A/B local (mismo LoRA
+sobre cada base, puntuado en el conjunto propio de sueltos).
+
+| modelo | licencia | por qué entra o no |
+|---|---|---|
+| LFM2.5-2.6B | LFM Open v1.0 (gratis bajo 10 M USD de ingresos, no OSI) | única comparación directa: BFCLv4 56,9 frente a 50,6; KV mínima; **PREGUNTAR** por la licencia |
+| Gemma 4 E4B | Apache-2.0 | mejor multilingüe que cabe (MMMLU 76,6), tokens nativos de funciones; BFCL menor; VRAM a medir |
+| Granite 4.2 3B | Apache-2.0 | ganancia marginal (52,4 frente a 50,3), KV cara (q8_0 obligatoria) |
+| Qwen3.5-4B Q5_K_M | la actual | base de comparación: ≈4,0 GB con KV q8_0, al borde del tope de 4 096 MiB |
+| Hammer2.1, xLAM-2-3b, Arch-Function | no comerciales | fuera sin permiso del dueño |
+| Phi-4-mini, Llama 3.2 3B, Qwen3.5-9B, MoE | — | no caben en 4 GB con 12k de contexto |
+
+Decisión: no se cambia la base en esta fase salvo que el techo de sueltos quede medido como causa limitante tras CAL
+y RPO; entonces el primer A/B es Gemma 4 E4B (Apache) y LFM2.5 sólo con el visto bueno del dueño.
