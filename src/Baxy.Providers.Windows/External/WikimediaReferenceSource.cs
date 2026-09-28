@@ -36,7 +36,9 @@ internal sealed class WikimediaReferenceSource(HttpClient http)
 
     // Subject: las palabras que nombran el plato o la obra, en el orden dicho; Named: las
     // que el título tiene que llevar (el sujeto sin los sustantivos de clase de obra).
-    internal readonly record struct ReferenceAsk(ReferenceKind Kind, string[] Subject, string[] Named);
+    // Focus: after «:», what a question about the work asks about («resumen libro hobbit:
+    // peligroso anillo»); it chooses the paragraphs, never the page.
+    internal readonly record struct ReferenceAsk(ReferenceKind Kind, string[] Subject, string[] Named, string[]? Focus = null);
 
     internal readonly record struct ReferenceReading(
         string Title,
@@ -75,7 +77,9 @@ internal sealed class WikimediaReferenceSource(HttpClient http)
     // clase y el referente. Sin referente no hay nada que consultar.
     internal static ReferenceAsk? Parse(string query)
     {
-        string[] words = WebBrowserAdapter.SearchTokens(query);
+        string[] parts = query.Split(':', 2);
+        string[] words = WebBrowserAdapter.SearchTokens(parts[0]);
+        string[]? focus = parts.Length == 2 ? WebBrowserAdapter.SearchTokens(parts[1]) : null;
         if (words.Length > 0 && words[0] == "ranking")
         {
             // «ranking objetos brillantes del cielo nocturno»: what is ranked and by what come
@@ -95,7 +99,9 @@ internal sealed class WikimediaReferenceSource(HttpClient http)
             .ToArray();
         string[] named = recipe ? subject : subject.Where(static word => !WorkNouns.Contains(word)).ToArray();
         if (named.Length == 0) return null;
-        return new ReferenceAsk(recipe ? ReferenceKind.Recipe : ReferenceKind.Plot, subject, named);
+        return recipe
+            ? new ReferenceAsk(ReferenceKind.Recipe, subject, named)
+            : new ReferenceAsk(ReferenceKind.Plot, subject, named, focus is { Length: > 0 } ? focus : null);
     }
 
     // La palabra de clase que escribió la mente está en el idioma de la persona («receta»,
@@ -408,7 +414,7 @@ internal sealed class WikimediaReferenceSource(HttpClient http)
             if (body is null) continue;
             try
             {
-                if (ParsePlotResponse(body, language, ask.Named) is { } found) return found;
+                if (ParsePlotResponse(body, language, ask.Named, ask.Focus) is { } found) return found;
             }
             catch (JsonException)
             {
@@ -424,7 +430,8 @@ internal sealed class WikimediaReferenceSource(HttpClient http)
 
     // El primer resultado tiene que ser la obra (todas las palabras de su nombre en el
     // título); se lee su sección de argumento o, si no la tiene, su introducción.
-    internal static ReferenceReading? ParsePlotResponse(string body, string language, string[] named)
+    internal static ReferenceReading? ParsePlotResponse(
+        string body, string language, string[] named, string[]? focus = null)
     {
         using JsonDocument document = JsonDocument.Parse(body);
         string host = language + ".wikipedia.org";
@@ -444,14 +451,16 @@ internal sealed class WikimediaReferenceSource(HttpClient http)
             {
                 continue;
             }
-            string evidence = PlotEvidence(StringOf(page, "extract"));
+            string evidence = PlotEvidence(StringOf(page, "extract"), focus);
             if (evidence.Length == 0) continue;
             return new ReferenceReading(title, parsed.AbsoluteUri, evidence, WikipediaSearchSource.Authority(language), null);
         }
         return null;
     }
 
-    internal static string PlotEvidence(string extract)
+    // With a focus (F-p11-t2 «¿por qué es peligroso el anillo?» after the summary), the
+    // section's opening paragraph and then the paragraphs that name what is asked about.
+    internal static string PlotEvidence(string extract, string[]? focus = null)
     {
         string text = extract.Replace("​", string.Empty, StringComparison.Ordinal);
         var headings = Regex.Matches(text, @"^(=+)\s*(.+?)\s*=+\s*$", RegexOptions.Multiline);
@@ -474,7 +483,32 @@ internal sealed class WikimediaReferenceSource(HttpClient http)
             chosen = Regex.Replace(text[(heading.Index + heading.Length)..end], @"^=+.*=+\s*$", string.Empty, RegexOptions.Multiline);
             break;
         }
-        return Sentences(string.Join(' ', chosen.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)), EvidenceCharacters);
+        string[] paragraphs = chosen.Split('\n')
+            .Select(static paragraph => string.Join(' ', paragraph.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)))
+            .Where(static paragraph => paragraph.Length > 0)
+            .ToArray();
+        if (focus is { Length: > 0 } && paragraphs.Length > 1)
+        {
+            var kept = new List<string> { paragraphs[0] };
+            int length = paragraphs[0].Length;
+            foreach (string paragraph in paragraphs.Skip(1))
+            {
+                var words = new HashSet<string>(WikipediaSearchSource.FoldedWords(paragraph), StringComparer.Ordinal);
+                if (!focus.Any(word => WebBrowserAdapter.MatchesSearchTerm(word, words))) continue;
+                if (length + paragraph.Length + 1 > EvidenceCharacters) break;
+                kept.Add(paragraph);
+                length += paragraph.Length + 1;
+            }
+            if (kept.Count > 1)
+            {
+                // The opening paragraph gives way when it alone would crowd out the answer.
+                string focused = string.Join('\n', kept);
+                return focused.Length <= EvidenceCharacters
+                    ? focused
+                    : Sentences(string.Join('\n', kept.Skip(1)), EvidenceCharacters);
+            }
+        }
+        return Sentences(string.Join(' ', paragraphs), EvidenceCharacters);
     }
 
     // ------------------------------------------------------------------ listas con cifras
