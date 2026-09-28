@@ -348,3 +348,17 @@ coincidencia con DEV-C + 232 nuevos auditados: fragmentos pelados y preguntas so
 acciones → pregunta), DEV-B 225 → 219 (sueltos 104 → 89 en la ronda 2, → 99 en la 3). **Retirada.**
 Tres rondas (5·10⁻⁶ sin efecto; 5·10⁻⁵ rompe; 1,5·10⁻⁵ con β 0,3 retrocede): con estos pares, la etapa de
 preferencias no mejora a `full3`. Se cierra esta vía en la fase; `full3` sigue siendo el decisor del producto.
+
+## D31. Se corre el FINAL (F6), una sola vez (2026-09-28 11:30)
+Por qué ahora: tras `full3` ninguna palanca del decisor mejora el ciego (SFT `full4`/`full5`, few-shot, CAL, tres
+rondas de preferencias, cuantización); los lectores y guardas quedaron estrechados y confirmados en DEV-C (246/301,
+0 rotos); en la app real se arreglaron las causas de fallo que se repetían (M37–M41 y el bloqueo de la captura de la
+ventana activa, a7f528ec). Lo que falla ahora es disperso, una causa por turno. El goal (§8) prevé informar un
+resultado entre 80 y 85 % como parcial con la causa medida; no hay otra ronda sobre este FINAL.
+Protocolo (el ensayado en DEV-A, `scratchpad/cn/window_run.sh`): producto en a7f528ec+ con `full3`, app real con el
+conductor (misma admisión, turno y publicación que la ventana), ventana guardia que mantiene VS Code a salvo, volumen,
+silencio y brillo del dueño leídos antes y devueltos después, un «cancel» antes de cada conversación nueva,
+auditorías de turno, traza y redacción. Puntuación con `comprension_eval score` sobre los registros de
+`comprension_window records`; revisión turno a turno (inventado, ⚠, bien) por un subagente que no escribió ni arregló
+nada, con la rúbrica de la meta. SHA-256 del FINAL verificado antes de correr: `e05cf27e…d993` (202 turnos).
+Referencia en la app real: DEV-A 80,8 % (sueltos 83,2 %, seguimientos 73,5 %, 3,5 % de turnos con fallo de redacción).
