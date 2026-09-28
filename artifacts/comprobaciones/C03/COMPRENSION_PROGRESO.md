@@ -268,3 +268,14 @@ DEV-B sólo en recuentos (no se miran sus turnos).
 - `overheard_speech` confunde pedidos largos de una frase con conversación ajena (DEV-A −3); las 10 conversaciones
   ajenas reales de las 742 tienen 18–49 palabras y los falsos positivos 14–28: la longitud no los separa y M10 ya
   falló por esta vía. Queda para después de la guarda de redacción.
+
+### Confirmación en DEV-C (conjunto nuevo, 301 turnos; sólo cifras)
+
+| producto | total | sueltos | conversación | seguimientos | contra la base |
+|---|---|---|---|---|---|
+| base 645217a7 (M30 + limpieza G1–G3) | 81,4 % (245) | 79,2 % | 83,0 % | 80,0 % | — |
+| candidato 829ec0bb (M32, M33, M35, M36) | **81,7 % (246)** | 80,0 % | 83,0 % | 80,0 % | 1 arreglado, **0 rotos** |
+
+DEV-C confirma que los mecanismos de lectores y guardas no rompen nada en un conjunto nunca usado para decidir, y
+que el producto ronda el 81–82 % en conjuntos nuevos: los sueltos (80 %) siguen lejos del 88 % del FINAL.
+Ley 2 G4 y G5 integradas después (7f024512, f4ecf375): −457 líneas más, sin cambio de conducta (comprobado en DEV-A).
