@@ -284,3 +284,25 @@ que `full3` con el mismo catálogo (DEV-A 234, DEV-B 225, sueltos B 104). Demasi
 ajuste completo; con LoRA suele hacer falta un orden más. Ronda 2: lr 5·10⁻⁵, pares de la ronda 1 + errores minados
 en frases que `full3` nunca vio, filtrados por la auditoría de etiquetas (173 → 77; se quita el contraste «dos temas
 → preguntar» de AJUSTE5 y se limita el remate a 2 por contraste) → 518. Entra con la regla de D19 y D12.
+
+## D26. DEV-C sellado para confirmar (2026-09-28 ~03:50)
+DEV-B decidió más de 20 mecanismos y su cifra ya está algo ajustada (goal v2 §3). DEV-C se construyó con el método de
+F1 copiado sin cambios (reproducción byte a byte de los conjuntos de F1 antes de empezar): 125 sueltos con el mismo
+reparto de fuentes que DEV-A (MASSIVE, MTOP, CLINC150, OVOS-ILENIA, CSTOP, PRESTO, oasst2), 103 turnos de 30
+conversaciones públicas (PRESTO, SGD, oasst2) y 73 turnos de 18 conversaciones escritas en sala limpia (seis hablas,
+dos en spanglish). Exclusión contra todo lo visto (DEV-A/B, FINAL, 742, guion, held-out, cien, registro real, reserva
+MASSIVE, todo el entrenamiento y los pares, y los ficheros de las sesiones): 0 iguales, 0 hash, similitud máxima 0,84.
+Oro: tres etiquetadores a ciegas con ids opacos y un **segundo etiquetado ciego completo** (no una muestra del 10 %):
+acuerdo 299/301; los 2 desacuerdos, adjudicados. 301 filas, SHA-256 `7ffb35a3…f93a`. Regla: DEV-C no se mira ni se
+itera; se corre sólo para confirmar un producto candidato antes de la ventana oficial (F5). Queda en la lista de
+exclusión de todo entrenamiento futuro.
+
+## D27. CAL: sesgo por decisión sobre la distribución del propio decisor (prerregistro, 2026-09-28 ~03:55)
+Fuente: Batch Calibration (arXiv 2309.17249) y el análisis de fallos de DEV-A (el decisor pregunta donde las reglas
+dicen límite). En la misma pasada se lee la distribución del modelo en el primer token del valor de `decision`
+(log-probs sin gramática, 20 alternativas); se suma un sesgo por decisión y, si la elegida cambia, el turno se decodifica
+otra vez con sólo esa decisión permitida (una acción forzada exige al menos una operación). Ajuste en DEV-A aislado
+con veto a más acciones inventadas: meseta estable en preguntar −0,75, charla −0,25, límite +1,0 (acción 0);
+`full3` aislado 234 → 244/260 (sueltos 109 → 118/125), inventadas 7 → 5, 10 arreglados y 0 rotos. Sesgos fijados
+antes de ver DEV-B. Entra con D19 (DEV-B aislado sin bajar, sin más inventadas) y después D12 integrado (DEV-B,
+capa A ≥ 96,0, reserva sin bajar, 742 revisadas: el riesgo es un límite falso a una orden del dueño).
