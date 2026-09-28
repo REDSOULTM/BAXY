@@ -160,6 +160,10 @@ public static class MissionPlanValidator
             "package.install.commit" => ["package.install.prepare"],
             "peripheral.print" or "peripheral.scan" => ["peripheral.list"],
             "reminder.delete" => ["reminder.resolve.exact"],
+            // The mind already binds task.delete to task.resolve.exact
+            // (planner._required_predecessors); without the same relation here
+            // the shell rejected that plan as incomplete (M44 F-p02-t3).
+            "task.delete" => ["task.resolve.exact"],
             "vision.describe" => ["capture.screenshot"],
             "window.focus" or "window.maximize" or "window.minimize"
                 or "window.move" or "window.resize" or "window.restore"
@@ -218,6 +222,7 @@ public static class MissionPlanValidator
             "message.send" => ["recipientId"],
             "note.read" => ["noteId"],
             "notification.dismiss" or "reminder.delete" => ["reminderId"],
+            "task.delete" => ["taskId"],
             "ocr.read" or "vision.describe" => ["captureId"],
             "office.document.read" => ["documentId"],
             "wifi.connect" => ["profileId"],

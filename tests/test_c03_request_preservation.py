@@ -736,9 +736,84 @@ def test_status_composition_preserves_that_the_transition_already_happened(
         == response
     )
     content = client.payloads[0]["messages"][-1]["content"]
-    assert '"outcome": "completed"' in content
-    assert '"state": "clarification cancelled"' in content
+    # M45 (FINAL t22): «completed» made the writer finish the cancelled request; the drop ran nothing.
+    assert '"outcome": "cancelled"' in content
+    assert '"state": "the pending question was dropped as the person asked; nothing was done"' in content
     assert '"cause":' not in content
+
+
+_CANCELLED_CLARIFICATION = {
+    "situation": json.dumps({"kind": "status", "polarity": "success", "cause": "clarification_cancelled"}),
+}
+
+
+@pytest.mark.parametrize(
+    "user_text, invented, honest",
+    [
+        # FINAL 2026-09-28 t22: «Reanudar el ejercicio en 5 minutos, mejor en 10» → question → «cancelar».
+        ("cancelar", "Reanudaré el ejercicio en 10 minutos.", "Vale, no reanudo el ejercicio."),
+        # t42: the retry after a vetoed honest draft claimed the list.
+        ("cancelar", "La nueva lista se ha creado y la aclaración previa fue cancelada.", "Cancelado, no creo la lista."),
+        # t20: an English cancellation composed an effect on the room.
+        ("cancel", "The room is now darker. The clarification request has been cancelled.", "OK, I dropped it."),
+    ],
+)
+def test_a_cancelled_clarification_never_states_the_cancelled_effect(
+    user_text: str, invented: str, honest: str,
+) -> None:
+    assert llm.cancelled_clarification_defect(invented) == "cancelled_effect_claim"
+    assert llm.cancelled_clarification_defect(honest) == ""
+    client = Recorder([invented, honest])
+    assert client.compose_user_message(user_text, "status", dict(_CANCELLED_CLARIFICATION)) == honest
+    assert len(client.payloads) == 2
+
+
+@pytest.mark.parametrize(
+    "user_text, expected",
+    [("cancelar", "Vale, lo dejo."), ("cancel", "OK, cancelled.")],
+)
+def test_a_cancelled_clarification_says_the_drop_when_no_draft_can(user_text: str, expected: str) -> None:
+    client = Recorder(["Reanudaré el ejercicio en 10 minutos."] * 3 if user_text == "cancelar"
+                      else ["I'll remind you in 10 minutes."] * 3)
+    assert client.compose_user_message(user_text, "status", dict(_CANCELLED_CLARIFICATION)) == expected
+    assert len(client.payloads) == 3
+
+
+@pytest.mark.parametrize(
+    "user_text, draft",
+    [
+        ("cancelar", "He cancelado la aclaración pendiente."),
+        ("cancelar", "Vale, lo dejo."),
+        ("cancelar", "Entendido, no hago nada."),
+        ("cancelar", "De acuerdo, no reanudaré el ejercicio."),
+        ("cancel", "The pending clarification is cancelled."),
+        ("cancel", "OK, I won't set anything."),
+    ],
+)
+def test_an_honest_cancellation_is_publishable(user_text: str, draft: str) -> None:
+    assert llm.cancelled_clarification_defect(draft) == ""
+    assert llm.compose_visible_defect(draft, "status", user_text, dict(_CANCELLED_CLARIFICATION)) == ""
+
+
+def test_a_cancellation_offer_is_not_an_effect_claim() -> None:
+    # A question offers; it never states the cancelled effect.
+    assert llm.cancelled_clarification_defect("Vale, lo dejamos aquí. ¿Quieres otra hora?") == ""
+
+
+@pytest.mark.parametrize(
+    "draft",
+    [
+        "Reanudaré el ejercicio si no quieres otra cosa.",
+        "Cancelado, te lo recordaré en 10 minutos.",
+        "He abierto las listas y eliminado la lista solicitada.",
+        "OK, I'll remind you in 10 minutes.",
+        "Vale.",
+    ],
+)
+def test_a_cancellation_draft_that_claims_or_promises_is_vetoed(draft: str) -> None:
+    assert llm.compose_visible_defect(draft, "status", "cancelar", dict(_CANCELLED_CLARIFICATION)) == (
+        "cancelled_effect_claim"
+    )
 
 
 def test_progress_is_not_projected_as_a_completed_transition() -> None:

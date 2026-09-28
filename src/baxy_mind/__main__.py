@@ -758,13 +758,16 @@ def prepare_direct_argument_result(
     tool: dict,
     arguments: object,
     fallback_question: str = "",
+    response_language: str | None = None,
     *,
     trusted_source: str | None = None,
 ) -> tuple[dict | None, str]:
     """Return only grounded arguments or one schema-grounded clarification.
 
-    ``trusted_source`` widens the evidence to what the person and BAXY said in the conversation (M43) when the
-    values came from the decider, which read it; the question is still formulated from the objective.
+    ``response_language`` is the turn's language decided upstream (M47); the question is formulated in it rather
+    than in the objective's. ``trusted_source`` widens the evidence to what the person and BAXY said in the
+    conversation (M43) when the values came from the decider, which read it; the question still asks from the
+    objective.
     """
 
     schema = tool["function"]["parameters"]
@@ -790,6 +793,7 @@ def prepare_direct_argument_result(
         "",
         tool,
         fields,
+        **({"response_language": response_language} if response_language else {}),
     )
     return None, question
 
@@ -7054,12 +7058,21 @@ def _run_sidecar(
                         operation, str(message.get("text", "")), tool, said,
                     )
                 if arguments is None:
+                    # M47 (FINAL F-w09-t5, F-p02-t3): the shell sends the language the turn decision chose; the
+                    # objective may be the decider's restatement in the other language, so it cannot decide it.
+                    response_language = message.get("responseLanguage")
+                    language_argument = (
+                        {"response_language": response_language}
+                        if response_language in {"es", "en", "mixed"}
+                        else {}
+                    )
                     extraction = llm.extract_direct_arguments(
                         objective,
                         tool,
                         stated_fields=_stated_argument_fields(
                             operation, objective, tool["function"]["parameters"],
                         ),
+                        **language_argument,
                     )
                     decided_arguments = _with_decided_arguments(
                         operation,
@@ -7076,6 +7089,7 @@ def _run_sidecar(
                         # A question written before the decider's values were added may ask for one of them.
                         extraction.fallback_question if decided_arguments is None else "",
                         trusted_source=objective if decided_arguments is None else said,
+                        **language_argument,
                     )
                 write_request_message(
                     {

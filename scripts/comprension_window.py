@@ -110,12 +110,9 @@ def turns(
     entries: list[dict[str, Any]] = []
     blocks = 0
     for session, unit in enumerate(selected, start=1):
-        if session > 1:
-            # A confirmation left pending by the previous conversation (DEV-A window 2026-09-28: «olvida mi memoria»
-            # held 113 later turns on «¿confirmas o cancelas?») is cancelled before the next one, as a person who
-            # starts another chat would. The conductor writes a «turn» admission for it too: counted in ``block``.
-            commands.append({"cmd": "cancel"})
-            blocks += 1
+        # M48 (2026-09-28): «session.new» leaves nothing of the previous conversation pending. The «cancel» sent here
+        # before (DEV-A window, «olvida mi memoria» holding 113 turns) was a person's «cancelar» and, with nothing
+        # pending, cancelled a real alarm the run had set (FINAL t86).
         commands.append({"cmd": "session.new"})
         for row in unit:
             text = str(row["text"]).strip()

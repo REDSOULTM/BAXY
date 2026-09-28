@@ -37,6 +37,7 @@ def _trace(message: dict[str, Any]) -> None:
         "expectedOperations",
         "pendingClarification",
         "pendingObjective",
+        "responseLanguage",
     ):
         if key in message:
             selected[key] = message[key]
@@ -255,6 +256,21 @@ def _turn(message: dict[str, Any]) -> dict[str, Any]:
             "question": "",
             "reply": "",
         }
+    # M44: operations that consume a verified identity (taskId, windowId).
+    if text in _DEPENDENCY_ACTIONS:
+        operation, language = _DEPENDENCY_ACTIONS[text]
+        return {
+            "type": "turn.result", "id": request_id, "kind": "action",
+            "operation": operation, "effectOperations": [operation],
+            "question": "", "reply": "", "responseLanguage": language,
+        }
+    # M47: an English action whose missing argument is asked in English.
+    if text == "Set a reminder to pay the water bill.":
+        return {
+            "type": "turn.result", "id": request_id, "kind": "action",
+            "operation": "notification.schedule", "effectOperations": ["notification.schedule"],
+            "question": "", "reply": "", "responseLanguage": "en",
+        }
     if text == "Terminá el proceso baxy-proceso-inexistente":
         # D3 2026-09-20: navigation no longer asks; the confirmation mechanics are
         # exercised on a work_loss operation that is harmless if ever confirmed
@@ -279,7 +295,24 @@ def _turn(message: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+_DEPENDENCY_ACTIONS = {
+    "Delete the last item from my list.": ("task.delete", "en"),
+    "Pon la ventana de Word a la izquierda.": ("window.snap", "es"),
+}
+_DEPENDENCY_PLAN_QUESTIONS = {
+    "task.delete": "Which item do you want to remove from the list?",
+    "window.snap": "¿Qué ventana quieres poner a la izquierda?",
+}
+
+
 def _plan(message: dict[str, Any]) -> dict[str, Any]:
+    expected = message.get("expectedOperations")
+    if isinstance(expected, list) and len(expected) == 1 and expected[0] in _DEPENDENCY_PLAN_QUESTIONS:
+        return {
+            "type": "plan.result", "id": message.get("id"), "version": 1,
+            "kind": "clarify", "steps": [],
+            "question": _DEPENDENCY_PLAN_QUESTIONS[expected[0]],
+        }
     if message.get("text") == "Ajusta el volumen, por favor." or message.get("objective") == "Ajusta el volumen, por favor.":
         return {
             "type": "plan.result", "id": message.get("id"), "version": 1,
@@ -357,6 +390,17 @@ def main() -> int:
                     "type": "arguments.result", "id": request_id, "arguments": None,
                     "operation": message.get("operation"), "ok": False,
                     "question": "¿Quieres que ajuste el volumen de la salida a un nivel específico?",
+                })
+                continue
+            if message.get("operation") == "notification.schedule":
+                _write({
+                    "type": "arguments.result", "id": request_id, "arguments": None,
+                    "operation": "notification.schedule", "ok": False,
+                    "question": (
+                        "Should it be an alarm or a reminder?"
+                        if message.get("responseLanguage") == "en"
+                        else "¿Es una alarma o un recordatorio?"
+                    ),
                 })
                 continue
             operation = message.get("operation")

@@ -64,11 +64,6 @@ def turn_block(n: int, you: str, baxy: str | None, route: str, terminal: str = "
     return rows
 
 
-def cancel_block(n: int) -> list[dict]:
-    """The conductor's «cancel» before a new conversation: it writes a «turn» admission of its own."""
-    return turn_block(900 + n, "", None, "result", terminal="rejected")
-
-
 def session_new() -> dict:
     return {"type": "admission", "command": "session.new", "status": 200, "body": "{\"ok\":true,\"id\":\"s\"}"}
 
@@ -80,12 +75,10 @@ def fake_run(capture: Path) -> None:
         {"type": "runtime", "ready": True, "startupError": False, "status": "BAXY disponible"},
         session_new(),
         *turn_block(1, "book a ferry to Europa", "I can't book travel from this PC.", "conversation"),
-        *cancel_block(1),
         session_new(),
         *turn_block(2, "anota algo", "¿Qué quieres que anote?", "clarification"),
         *turn_block(3, "comprar leche", "¿Confirmar o cancelar?", "confirmation"),
         *turn_block(4, "gracias", "De nada.", "conversation"),
-        *cancel_block(2),
         session_new(),
         *turn_block(5, "¿qué hora es?", None, "result", terminal="composition_failed"),
         {"type": "posterior", "messageCount": 9, "userMessageCount": 5},
@@ -152,10 +145,10 @@ def test_turns_file_and_map(tmp_path: Path) -> None:
     commands = [json.loads(line) for line in (tmp_path / "x.turns.jsonl").read_text("utf-8").splitlines()]
     assert commands == [
         {"cmd": "session.new"}, {"cmd": "turn", "text": "book a ferry to Europa"},
-        {"cmd": "cancel"}, {"cmd": "session.new"}, {"cmd": "turn", "text": "anota algo"},
+        {"cmd": "session.new"}, {"cmd": "turn", "text": "anota algo"},
         {"cmd": "turn", "text": "comprar leche"}, {"cmd": "turn", "text": "gracias"},
-        {"cmd": "cancel"}, {"cmd": "session.new"}, {"cmd": "turn", "text": "¿qué hora es?"},
-        {"cmd": "cancel"}, {"cmd": "session.new"}, {"cmd": "turn", "text": "hola"},
+        {"cmd": "session.new"}, {"cmd": "turn", "text": "¿qué hora es?"},
+        {"cmd": "session.new"}, {"cmd": "turn", "text": "hola"},
     ]
     mapping = json.loads((tmp_path / "x.map.json").read_text("utf-8"))
     assert [(e["ordinal"], e["id"], e["session"]) for e in mapping["turns"]] == [

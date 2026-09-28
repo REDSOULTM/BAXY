@@ -766,7 +766,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         string text,
         TimeSpan timeout,
         CancellationToken cancellationToken,
-        IReadOnlyList<(string Role, string Content)>? history = null)
+        IReadOnlyList<(string Role, string Content)>? history = null,
+        string? responseLanguage = null)
     {
         // El grounding de argumentos es un tramo propio: no pertenece ni a la
         // decisión ni al Core, y fundirlo con ellos oculta dónde está el coste.
@@ -785,14 +786,23 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                     ["content"] = content,
                 });
             }
+            var request = new JsonObject
+            {
+                ["type"] = "arguments",
+                ["operation"] = operation,
+                ["text"] = text,
+                ["history"] = historyArray,
+            };
+            // The question for a missing argument is written in the language
+            // the mind decided for the turn; the objective alone may have been
+            // restated in the other one (M47, FINAL F-w09-t5).
+            if (responseLanguage is "es" or "en" or "mixed")
+            {
+                request["responseLanguage"] = responseLanguage;
+            }
+
             JsonObject? reply = await RequestAsync(
-                new JsonObject
-                {
-                    ["type"] = "arguments",
-                    ["operation"] = operation,
-                    ["text"] = text,
-                    ["history"] = historyArray,
-                },
+                request,
                 timeout,
                 cancellationToken).ConfigureAwait(false);
             return ParseArgumentResult(reply, operation);
