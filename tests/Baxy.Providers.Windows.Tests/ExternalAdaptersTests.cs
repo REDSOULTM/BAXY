@@ -2412,6 +2412,97 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // M53 (D35): the mind asks a named dish's recipe with its class word; Wikibooks'
+    // Spanish recipe book answers with the recipe read from its wikitext, the receipt
+    // says it is a recipe, and the encyclopedia is not asked.
+    [Test]
+    public async Task ARecipeIsReadFromTheRecipeBookAndSaysItIsOne()
+    {
+        var handler = new SearchSourcesHttpHandler();
+        handler.Routes.Add(("es.wikibooks.org", new(HttpStatusCode.OK,
+            WikimediaReferenceSourceTests.Fixture("wikibooks_es_sopaipillas.json"), "application/json")));
+        handler.Routes.Add(("es.wikipedia.org", new(HttpStatusCode.OK,
+            WikimediaReferenceSourceTests.Fixture("wikipedia_es_langlinks_pan_banana.json"), "application/json")));
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"receta sopaipillas"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("wikibooks_es_api"));
+            Assert.That(receipt.Result?.GetProperty("reference").GetString(), Is.EqualTo("recipe"));
+            Assert.That(receipt.Result?.GetProperty("count").GetInt32(), Is.EqualTo(1));
+            JsonElement first = receipt.Result!.Value.GetProperty("results")[0];
+            Assert.That(first.GetProperty("title").GetString(), Is.EqualTo("Sopaipilla"));
+            Assert.That(first.GetProperty("url").GetString(), Does.StartWith("https://es.wikibooks.org/wiki/"));
+            Assert.That(first.GetProperty("snippet").GetString(), Does.Contain("Ingredientes"));
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host), Does.Not.Contain("lite.duckduckgo.com"));
+            Assert.That(handler.Asked.All(asked => asked.UserAgent.StartsWith("BAXY/", StringComparison.Ordinal)));
+            Assert.That(handler.Asked.Select(asked => Uri.UnescapeDataString(asked.Uri.Query)),
+                Has.Some.Contain("gsrsearch=sopaipillas prefix:Artes culinarias/Recetas/&"));
+        });
+    }
+
+    // Without the dish in either recipe book, the query goes on as any other: Wikipedia's
+    // article about it answers, with no «reference».
+    [Test]
+    public async Task ARecipeNoBookHasFallsBackToTheEncyclopedia()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["es.wikipedia.org"] = WikipediaAnswer("es",
+                ("Pastel de choclo", "El pastel de choclo es un plato de la gastronomía de Chile.", false)),
+        };
+        handler.Routes.Add(("wikibooks.org", new(HttpStatusCode.OK, """{"batchcomplete":true}""", "application/json")));
+        handler.Routes.Add(("lllang=en", new(HttpStatusCode.OK, """{"batchcomplete":true}""", "application/json")));
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"receta pastel de choclo"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("wikipedia_es_api"));
+            Assert.That(receipt.Result?.TryGetProperty("reference", out _), Is.False);
+        });
+    }
+
+    // The plot of a named work is its article's plot section, one request.
+    [Test]
+    public async Task AWorksPlotIsReadFromItsArticle()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["es.wikipedia.org"] = new(HttpStatusCode.OK,
+                WikimediaReferenceSourceTests.Fixture("wikipedia_es_plot_hobbit.json"), "application/json"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"resumen libro Hobbit"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("reference").GetString(), Is.EqualTo("plot"));
+            Assert.That(receipt.Result?.GetProperty("results")[0].GetProperty("snippet").GetString(), Does.Contain("Smaug"));
+            Assert.That(handler.Asked, Has.Count.EqualTo(1));
+            Assert.That(Uri.UnescapeDataString(handler.Asked[0].Uri.Query), Does.Contain("exsectionformat=wiki"));
+        });
+    }
+
     // M51 F-p09-t2: Wikipedia wants every word it is given and the answer says «film»;
     // after nothing pertinent, the proper names alone are asked once in the query's
     // language, and the article is judged by the whole query («movie» = «film»).
