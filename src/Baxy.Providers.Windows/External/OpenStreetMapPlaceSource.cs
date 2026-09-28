@@ -133,11 +133,19 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
     }
 
     // Null cuando Nominatim no contestó; vacío cuando contestó sin nada.
+    // M54 (v3b-final F-p01-t2): «Curico», la ciudad de este PC en Chile, se geocodificó
+    // en Curico, Indiana, y se contestó con sus aparcamientos. «country» es el país
+    // preferido (código ISO de dos letras): entre candidatos con el mismo nombre gana el
+    // de ese país; con «requireCountry» (la ciudad de este PC, cuyo país dedujo el mismo
+    // servicio) un candidato de otro país no vale. Nada de esto sale del PC: se compara
+    // con el país de la dirección que Nominatim devuelve.
     internal async Task<List<(string Title, string Url, string Snippet)>?> SearchAsync(
         PlaceAsk ask,
         int limit,
         string language,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        string? country = null,
+        bool requireCountry = false)
     {
         // «La Puntilla, El Puerto» found only «Bar El Puerto» in Ceuta; «La Puntilla» alone
         // finds the beach of El Puerto de Santa María. A candidate counts only if its
@@ -152,10 +160,10 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
             foreach (string asked in segments.Length > 1 ? [ask.Place, segments[0]] : new[] { ask.Place })
             {
                 string? area = await ReadAsync(
-                    Endpoint + "?format=jsonv2&limit=5&q=" + Uri.EscapeDataString(asked), cancellationToken)
+                    Endpoint + "?format=jsonv2&addressdetails=1&limit=5&q=" + Uri.EscapeDataString(asked), cancellationToken)
                     .ConfigureAwait(false);
                 if (area is null) return null;
-                box = AreaOf(area, required, wanted);
+                box = AreaOf(area, required, wanted, country, requireCountry);
                 if (box is not null) break;
             }
             if (box is null) return [];
@@ -182,16 +190,24 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
             .ToArray();
 
     // El recuadro del lugar elegido, con al menos ~1 km por lado y como mucho ~30 km, y
-    // su centro. Null cuando ningún candidato lleva las palabras del lugar.
-    internal static Area? AreaOf(string body, string[] required, string[] wanted)
+    // su centro. Null cuando ningún candidato lleva las palabras del lugar (o, con
+    // «requireCountry», ninguno está en «country»). A igual número de palabras gana el
+    // candidato de «country».
+    internal static Area? AreaOf(
+        string body, string[] required, string[] wanted, string? country = null, bool requireCountry = false)
     {
         using JsonDocument document = JsonDocument.Parse(body);
         if (document.RootElement.ValueKind != JsonValueKind.Array) throw new JsonException("Not a Nominatim answer.");
         (int Score, double South, double North, double West, double East)? best = null;
+        bool countryKnown = !string.IsNullOrWhiteSpace(country);
         foreach (JsonElement place in document.RootElement.EnumerateArray())
         {
             var named = new HashSet<string>(WikipediaSearchSource.FoldedWords(Text(place, "display_name")), StringComparer.Ordinal);
+            string placeCountry = place.TryGetProperty("address", out JsonElement address)
+                && address.ValueKind == JsonValueKind.Object ? Text(address, "country_code") : string.Empty;
+            bool inCountry = countryKnown && string.Equals(placeCountry, country, StringComparison.OrdinalIgnoreCase);
             if (!required.All(named.Contains)
+                || (requireCountry && countryKnown && !inCountry)
                 || !place.TryGetProperty("boundingbox", out JsonElement box)
                 || box.ValueKind != JsonValueKind.Array || box.GetArrayLength() != 4)
             {
@@ -204,7 +220,9 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
                 read = box[index].ValueKind == JsonValueKind.String
                     && double.TryParse(box[index].GetString(), NumberStyles.Float, CultureInfo.InvariantCulture, out edges[index]);
             }
-            int score = wanted.Count(named.Contains);
+            // Doubled, plus one in the preferred country: more words of the place always win, and
+            // the country breaks a tie (Nominatim's own order, by importance, breaks the rest).
+            int score = 2 * wanted.Count(named.Contains) + (inCountry ? 1 : 0);
             if (read && (best is null || score > best.Value.Score))
                 best = (score, edges[0], edges[1], edges[2], edges[3]);
         }
