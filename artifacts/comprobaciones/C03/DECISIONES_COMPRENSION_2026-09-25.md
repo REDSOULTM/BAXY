@@ -398,3 +398,27 @@ independiente con 0 violaciones; conversaciones de sala limpia escritas aparte. 
   `7c91c653395dad307e8c825bd4465c200166240b215b367ee895dee038575017`. Conjunto de iteración (se miran sus fallos).
 - El FINAL gastado (`e05cf27e…d993`) pasa a desarrollo. Todo dato de entrenamiento generado desde ahora excluye
   FINAL-2 y DEV-D por huellas.
+
+## D35. Conocimiento honesto: atribución y lo que no se puede comprobar (dueño, 2026-09-28 ~15:50)
+Tras R8 (`research/R8_conocimiento_honesto.md`): recetas, obras, cifras y datos con fecha se consultan antes de
+afirmar (Wikibooks/Wikipedia/Wikidata; cálculos con un evaluador determinista con unidades). Respuestas del dueño:
+- **Atribución (CC BY-SA)**: la respuesta no nombra la fuente (sigue la búsqueda invisible); en la app aparece un
+  enlace discreto «fuente» debajo del mensaje, que no se lee en voz alta.
+- **Sin fuente**: BAXY responde de memoria y lo avisa en corto («de memoria, puede no ser exacto»); no se calla.
+
+## D36. v3a medido (9c56adbc: M42–M48, A7, búsqueda D32) — resultado mixto (2026-09-28 15:50)
+| medida | base | v3a |
+|---|---|---|
+| FINAL gastado, mismo revisor | 108/202 | 99/202 (8 mejoran por decisión; 17 empeoran, 13 por búsqueda) |
+| FINAL gastado, automática | 150/202 | 155/202 |
+| ⚠ FINAL / DEV-A ventana | 10 / 9 | 2 / 6 |
+| DEV-A ventana | 210/260 | 209/260 |
+| DEV-C (sellado, mente) | 246/301 | 253/301 (11 arreglados, 4 rotos) |
+| capa A | 96,4 % | 96,5 % |
+| reserva MASSIVE | 86,4 % | 85,7 % (33 rotos, 22 por el decisor) |
+| latencia p50 FINAL | 2,1 s | 3,1 s |
+Lectura: la decisión y los argumentos mejoran (DEV-C +7, repreguntas 16 → 13); la búsqueda sin Bing retrocede (se
+arregla en M51 con fuentes abiertas y veto de respuestas desde resultados que no tratan de lo preguntado); la latencia
+no viene de los tokens del decisor (aislado +0,16 s: lat49 A 0,73 / B 0,89 / C 0,89 s; decisión 235/237/236) sino de
+otra parte del turno: M49 aplica las variantes C (argumentos sólo al actuar) y mide los tiempos del decisor en la
+auditoría. 742: 19 decisiones distintas a revisar.
