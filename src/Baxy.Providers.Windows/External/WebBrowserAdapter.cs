@@ -17,6 +17,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     private readonly HttpClient _http;
     private readonly PublicPlaceLocator _locator;
     private readonly WikipediaSearchSource _wikipedia;
+    private readonly OpenStreetMapPlaceSource _places;
+    private readonly FrankfurterRateSource _rates;
     private readonly string? _searchDiagnosticPath;
 
     // El perfil del navegador colgaba del directorio del turno, de modo que cada
@@ -62,6 +64,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY/1.0 structured-search");
         _locator = new PublicPlaceLocator(_http.GetStringAsync);
         _wikipedia = new WikipediaSearchSource(_http);
+        _places = new OpenStreetMapPlaceSource(_http);
+        _rates = new FrankfurterRateSource(_http);
     }
 
     internal WebBrowserAdapter(
@@ -74,6 +78,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _sessionContext = sessionContext;
         _locator = new PublicPlaceLocator(_http.GetStringAsync);
         _wikipedia = new WikipediaSearchSource(_http);
+        _places = new OpenStreetMapPlaceSource(_http);
+        _rates = new FrankfurterRateSource(_http);
     }
 
     public bool CanHandle(string operation) => operation is
@@ -516,9 +522,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
-    // web.search asks its sources in order and the first one whose results pass the
-    // pertinence gate answers, with the receipt naming the source that answered
-    // («authority»). The gate is the same for every source.
+    // web.search asks the source that fits the query and the first one that answers
+    // with something pertinent answers, with the receipt naming it («authority»).
     //
     // History of the general engine (WEB1831/H0060, WEB1877, H0463): Bing's RSS feed,
     // then its HTML page, then DuckDuckGo lite in front of Bing, each one decaying on
@@ -526,26 +531,40 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // pages or junk.
     //
     // D32 (owner, 2026-09-28): search works on its own, with no account or key of
-    // anybody's. Order since then:
-    //   1. Wikipedia's open API (WikipediaSearchSource), Spanish or English first by
-    //      the language of the query, for what an encyclopedia answers.
-    //   2. DuckDuckGo lite, the last attempt for everything else (news, prices,
-    //      hours). Its terms and policy say nothing about automated queries, but the
-    //      service throttles them and D32 prefers no loose HTTP requests to engines;
-    //      it stays only until the owner rules on it.
-    // Bing's HTML page was retired: the Microsoft Services Agreement §14.f.i keeps
-    // Bing material «for your noncommercial, personal use only» and building products
-    // with it «permitted only to the extent specifically authorized by Microsoft»;
-    // §3.a.vi forbids «impermissible scraping»; bing.com/robots.txt disallows /search.
-    // Searching through the person's own browser over CDP was studied and not enabled
-    // (artifacts/comprobaciones/C03/BUSQUEDA_SIN_CLAVES_D32_2026-09-28.md).
+    // anybody's, and only the query leaves. M51 (2026-09-28, review of v3a-final) routes
+    // by what the query asks, each source open and keyless, with its terms of use in
+    // artifacts/comprobaciones/C03/BUSQUEDA_SIN_CLAVES_D32_2026-09-28.md:
+    //   1. a conversion between two currencies → Frankfurter (FrankfurterRateSource);
+    //   2. a kind of place in a named place or near this PC → OpenStreetMap Nominatim
+    //      (OpenStreetMapPlaceSource);
+    //   3. what changes by the day (news, prices, schedules, «hoy») → the search feed of
+    //      Google News (the same feed GoogleNewsHeadlinesAdapter reads);
+    //   4. what an encyclopedia answers → Wikipedia's open API (WikipediaSearchSource),
+    //      Spanish or English first by the language of the query;
+    //   5. DuckDuckGo lite, the last attempt for everything. Its terms and policy say
+    //      nothing about automated queries, but the service throttles them and D32
+    //      prefers no loose HTTP requests to engines; it stays until the owner rules.
+    // Wikipedia and the news feed answer only with results that pass SearchPertinence
+    // (the query's proper names, or its content words in the title); DuckDuckGo keeps
+    // its own gate (PertinentResults). Bing's HTML page was retired: the Microsoft
+    // Services Agreement §14.f.i keeps Bing material «for your noncommercial, personal
+    // use only»; §3.a.vi forbids «impermissible scraping»; bing.com/robots.txt disallows
+    // /search.
     //
-    // When no source searched (all unreachable, blocked, or none fits the query) the
+    // When nothing searched (all unreachable, blocked, or none fits the query) the
     // receipt says web_search_unavailable, so the reply says it could not look it up
-    // and offers to open the search in the person's browser; when a source answered
-    // and nothing was pertinent, web_search_results_irrelevant.
+    // and offers to open the search in the person's browser; when the general engine
+    // answered and nothing was pertinent, web_search_results_irrelevant.
     private const string GeneralSearchEndpoint = "https://lite.duckduckgo.com/lite/";
     private const string GeneralSearchAuthority = "duckduckgo_lite_https";
+    private const string NewsSearchAuthority = "google_news_rss_search";
+
+    // A day-bound query that is about a place near the person or the weather is not
+    // the news feed's.
+    private static readonly HashSet<string> NotNewsWords = new(StringComparer.Ordinal)
+    {
+        "cerca", "near", "nearby", "clima", "weather", "forecast", "pronostico",
+    };
 
     private readonly record struct SearchChannelReading(
         List<SearchCandidate> Candidates,
@@ -557,6 +576,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         string query = ExternalJson.RequiredString(arguments, "query").Trim();
+        string asked = query;
         // Uso real tanda 4c «en qué lugares puedo pedir comida para llevar cerca»
         // buscó sin lugar y devolvió portales de otro país: lo que se busca cerca
         // de la persona se busca con la ciudad de este PC, la misma que lee el
@@ -581,20 +601,59 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             throw new InvalidDataException("The search query has no verifiable terms.");
         }
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 5), 1, 20);
+        string[] languages = WikipediaSearchSource.Languages(asked, CultureInfo.CurrentCulture);
 
-        // What is looked for near the person is never an encyclopedia article.
-        if (near is null && WikipediaSearchSource.IsEncyclopedic(query))
+        if (FrankfurterRateSource.Parse(asked, RegionInfo.CurrentRegion) is { } currencies)
         {
-            string terms = WikipediaSearchSource.Terms(queryTokens);
-            foreach (string language in WikipediaSearchSource.Languages(query, CultureInfo.CurrentCulture))
+            List<(string Title, string Url, string Snippet)>? rate = await _rates
+                .ReadAsync(currencies, cancellationToken).ConfigureAwait(false);
+            if (rate is { Count: > 0 })
+                return SearchReceipt(operation, query, near, rate, FrankfurterRateSource.Authority);
+        }
+
+        if (OpenStreetMapPlaceSource.Parse(asked, near) is { } placeAsk)
+        {
+            List<(string Title, string Url, string Snippet)>? places = await _places
+                .SearchAsync(placeAsk, limit, languages[0], cancellationToken).ConfigureAwait(false);
+            if (places is { Count: > 0 })
+                return SearchReceipt(operation, query, near, places, OpenStreetMapPlaceSource.Authority);
+        }
+
+        bool encyclopedic = WikipediaSearchSource.IsEncyclopedic(query);
+        string terms = string.Join(' ', SearchPertinence.ContentTerms(asked));
+        if (!encyclopedic && near is null && terms.Length > 0
+            && !WikipediaSearchSource.FoldedWords(asked).Any(NotNewsWords.Contains))
+        {
+            List<(string Title, string Url, string Snippet)>? headlines = await ReadNewsAsync(
+                terms, languages[0], cancellationToken).ConfigureAwait(false);
+            List<(string Title, string Url, string Snippet)> pertinent = (headlines ?? [])
+                .Where(item => SearchPertinence.IsPertinent(asked, item.Title, item.Snippet))
+                .Take(Math.Min(limit, 5))
+                .ToList();
+            if (pertinent.Count > 0)
+                return SearchReceipt(operation, query, near, pertinent, NewsSearchAuthority);
+        }
+
+        // What is looked for near the person is never an encyclopedia article. Wikipedia
+        // finds only pages that carry every word it is given, and the article that
+        // answers «who played in the movie directed by Kirill Mikhanovsky» says «film»:
+        // when the words found nothing pertinent, the proper names alone are asked once,
+        // in the query's language, and judged by the same whole query.
+        if (near is null && encyclopedic && terms.Length > 0)
+        {
+            string names = string.Join(' ', SearchPertinence.EntityTerms(asked));
+            var asks = languages.Select(language => (Language: language, Words: terms)).ToList();
+            if (names.Length > 0 && names != terms) asks.Add((languages[0], names));
+            foreach ((string language, string words) in asks)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 List<(string Title, string Url, string Snippet)>? articles = await _wikipedia
-                    .SearchAsync(language, terms, limit, cancellationToken).ConfigureAwait(false);
+                    .SearchAsync(language, words, limit, cancellationToken).ConfigureAwait(false);
                 if (articles is null) continue;
-                List<SearchCandidate> candidates = SearchCandidates(articles, excludedHost: null);
-                List<(string Title, string Url, string Snippet)> pertinent =
-                    PertinentResults(queryTokens, candidates, limit, rejected: null);
+                List<(string Title, string Url, string Snippet)> pertinent = articles
+                    .Where(item => SearchPertinence.IsPertinent(asked, item.Title, item.Snippet))
+                    .Take(limit)
+                    .ToList();
                 if (pertinent.Count > 0)
                 {
                     return SearchReceipt(operation, query, near, pertinent,
@@ -633,9 +692,51 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         return ExternalJson.FailureBeforeEffect(operation, "web_search_results_irrelevant");
     }
 
+    // The search feed of Google News: each headline with its outlet and time. Null when
+    // the feed did not answer with its RSS.
+    private async Task<List<(string Title, string Url, string Snippet)>?> ReadNewsAsync(
+        string terms,
+        string language,
+        CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get,
+            GoogleNewsHeadlinesAdapter.SearchUri(terms, language));
+        request.Headers.TryAddWithoutValidation("User-Agent", WikipediaSearchSource.UserAgent);
+        try
+        {
+            using HttpResponseMessage response = await _http
+                .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode) return null;
+            string feed = await ReadBoundedTextAsync(response, 2_000_000, cancellationToken)
+                .ConfigureAwait(false);
+            return GoogleNewsHeadlinesAdapter.Parse(feed, 20)
+                .Where(static headline => Uri.TryCreate(headline.Url, UriKind.Absolute, out Uri? link)
+                    && link.Scheme == Uri.UriSchemeHttps)
+                .Select(static headline => (
+                    headline.Title,
+                    headline.Url.Split('?')[0],
+                    string.Join(", ", new[] { headline.Source, headline.PublishedAt }.Where(static part => part.Length > 0))))
+                .ToList();
+        }
+        catch (HttpRequestException)
+        {
+            return null;
+        }
+        catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+        catch (XmlException)
+        {
+            return null;
+        }
+    }
+
     // The receipt contract the mind reads (seen.results[].title/url/snippet): one
     // shape whatever source answered; «authority» names that source
-    // (wikipedia_es_api, wikipedia_en_api or duckduckgo_lite_https).
+    // (frankfurter_reference_rates, openstreetmap_nominatim, google_news_rss_search,
+    // wikipedia_es_api, wikipedia_en_api or duckduckgo_lite_https).
     private static ExternalCapabilityReceipt SearchReceipt(
         string operation,
         string query,
@@ -691,7 +792,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         string[] queryTokens,
         List<SearchCandidate> candidates,
         int limit,
-        List<(string Title, Uri Url, string Snippet)>? rejected)
+        List<(string Title, Uri Url, string Snippet)> rejected)
     {
         var results = new List<(string Title, string Url, string Snippet)>();
         if (candidates.Count == 0) return results;
@@ -707,7 +808,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             {
                 results.Add((candidate.Title, candidate.Url.AbsoluteUri, candidate.Snippet));
             }
-            else if (rejected is not null && _searchDiagnosticPath is not null && rejected.Count < 20)
+            else if (_searchDiagnosticPath is not null && rejected.Count < 20)
             {
                 rejected.Add((candidate.Title, candidate.Url, candidate.Snippet));
             }
@@ -876,7 +977,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         }
     }
 
-    private static string[] SearchTokens(string value) =>
+    internal static string[] SearchTokens(string value) =>
         WikipediaSearchSource.FoldedWords(value)
             .Where(static token => token.Length >= 2 && !IsSearchStopWord(token))
             .Distinct(StringComparer.Ordinal)
@@ -924,7 +1025,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     private static bool SearchPageSharesEnough(string[] queryTokens, string[] verifiableTerms) =>
         queryTokens.Length < 3 || verifiableTerms.Length >= 2;
 
-    private static bool MatchesSearchTerm(string token, HashSet<string> observed) =>
+    internal static bool MatchesSearchTerm(string token, HashSet<string> observed) =>
         observed.Contains(token)
         || WeatherSynonyms.Any(family => family.Contains(token) && family.Any(observed.Contains))
         || SharesInflectedStem(token, observed);
@@ -955,6 +1056,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         ["lluvia", "lluvias", "llueve", "llover", "llovera", "rain", "raining"],
         ["manana", "tomorrow"],
         ["temperatura", "temperature", "temperaturas", "temperatures"],
+        // M51 F-p09 «the movie directed by Kirill Mikhanovsky»: the article says «film».
+        ["movie", "movies", "film", "films", "pelicula", "peliculas", "filme"],
     ];
 
     private static string SafeUnescapedPath(Uri uri)

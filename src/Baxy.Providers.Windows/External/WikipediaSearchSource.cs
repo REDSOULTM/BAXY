@@ -45,6 +45,11 @@ internal sealed class WikipediaSearchSource(HttpClient http)
         "latest", "news", "price", "prices", "cost", "costs", "schedule", "hours",
         "opens", "closes", "score", "scores", "near", "nearby", "buy", "deal", "deals",
         "weather", "forecast", "showtimes",
+        // M51 F-s037 «números ganadores del loto», F-s076 «train schedules»: el último
+        // sorteo y los horarios cambian; Wikipedia contestó con Baloto y con 1830.
+        "schedules", "loto", "loteria", "sorteo", "sorteos", "lottery", "lotto",
+        // F-w01-t4 «¿cuánto sale el pisco…?»: «sale» es «cuesta» en Chile y Argentina.
+        "sale",
     };
 
     // El idioma de la consulta elige la Wikipedia que se pregunta primero; la otra
@@ -76,16 +81,6 @@ internal sealed class WikipediaSearchSource(HttpClient http)
         "el", "la", "los", "las", "de", "del", "que", "quien", "cual", "cuando", "donde",
         "como", "por", "para", "es", "son", "fue", "un", "una", "y", "en", "al", "primer",
         "primera", "escribio", "invento",
-    };
-
-    // Lo que se le pide a Wikipedia son las palabras de contenido; «internet»,
-    // «google» o «wikipedia» dicen dónde mirar, no qué.
-    internal static string Terms(IEnumerable<string> contentTokens) =>
-        string.Join(' ', contentTokens.Where(static token => !WhereToLookWords.Contains(token)));
-
-    private static readonly HashSet<string> WhereToLookWords = new(StringComparer.Ordinal)
-    {
-        "internet", "web", "google", "bing", "duckduckgo", "wikipedia", "online", "net",
     };
 
     internal static Uri SearchUri(string language, string terms, int limit)
