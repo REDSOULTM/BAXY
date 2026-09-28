@@ -148,8 +148,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 comprensión natural — resultados comparados en voz alta muestran la búsqueda
 # C03 comprensión natural — M30: resultados comparados; charla sobre un lugar inalcanzable es su límite
 # C03 comprensión natural — pista de reintento sin estados en charla
+# Ley 2 G1: cuatro prompts huérfanos de llm.py retirados
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "1b9782602315ff725944c7b577e2c207d387320b42d3558e96287e9800bbb5d3"
+    "346453948fa6b6e9751091bab3138e86c78687aa12139bc893a44a990f81ae85"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

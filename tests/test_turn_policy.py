@@ -69,11 +69,8 @@ from baxy_mind.effect_intent import (
     build_game_catalog_index,
 )
 from baxy_mind.llm import (
-    EFFECT_COUNT_VERIFIER_PROMPT,
     RESPONSE_LANGUAGE_PROMPT,
     SEMANTIC_EFFECT_GUARD_PROMPT,
-    TURN_EFFECT_REANALYSIS_PROMPT,
-    TURN_POLICY_PROMPT,
     DirectArgumentExtraction,
     LlmRuntime,
     _compact_structured_grammar,
