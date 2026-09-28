@@ -181,7 +181,8 @@ internal static class ModelMessageComposer
                 null,
                 originalFailure,
                 UsedRecovery: false,
-                Unanswered: composed is null);
+                Unanswered: composed is null,
+                RejectedText: composed?.Text);
         }
 
         // Retry the same verified facts. A lost-facts failure draft used to
@@ -214,7 +215,8 @@ internal static class ModelMessageComposer
             null,
             $"{originalFailure};recovery:{recoveryFailure}",
             UsedRecovery: true,
-            Unanswered: recovered is null);
+            Unanswered: recovered is null,
+            RejectedText: recovered?.Text ?? composed?.Text);
     }
 
     // cien-36 027 «open that»: the clarification was refused by
@@ -284,6 +286,132 @@ internal static class ModelMessageComposer
         return accepted;
     }
 
+    /// <summary>
+    /// A7 twin of the mind's llm._deterministic_final: when every composition of a verified result was refused,
+    /// the observed values are told in one short sentence of the person's language. Only a verified, successful
+    /// result is told this way, and the sentence passes the same acceptance as a composed one; a failure or an
+    /// unverified result keeps the honest composition-failure line.
+    /// </summary>
+    internal static string? DeterministicFinal(
+        UserMessageDraft draft,
+        string userText,
+        JsonObject facts,
+        string? rejectedText)
+    {
+        ArgumentNullException.ThrowIfNull(draft);
+        ArgumentNullException.ThrowIfNull(facts);
+        if (draft.Intent != "status" || !UserMessagePolicy.IsStructuredFacts(draft.Source))
+        {
+            return null;
+        }
+
+        JsonObject? source;
+        try
+        {
+            source = JsonNode.Parse(draft.Source) as JsonObject;
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return null;
+        }
+
+        if (source is null
+            || source["verified"] is not JsonValue verified || !verified.TryGetValue(out bool isVerified) || !isVerified
+            || source["succeeded"] is not JsonValue succeeded || !succeeded.TryGetValue(out bool hasSucceeded)
+            || !hasSucceeded
+            || source["operation"] is not JsonValue operationValue
+            || !operationValue.TryGetValue(out string? operation))
+        {
+            return null;
+        }
+
+        JsonObject? seen = source["observed"] as JsonObject;
+        bool english = LooksEnglish(rejectedText ?? userText);
+        string? text = null;
+        if (operation == "system.time")
+        {
+            if (!UserMessagePolicy.IsCountdownRequest(userText)
+                && !UserMessagePolicy.IsLaterClockRequest(userText)
+                && !UserMessagePolicy.AsksCalendarDate(userText)
+                && UserMessagePolicy.TryDerivedLocalClock(draft.Source, out string hhmm))
+            {
+                text = english ? $"It's {hhmm}." : $"Son las {hhmm}.";
+            }
+        }
+        else if (operation is "audio.volume" or "audio.volume.adjust"
+            && seen?["level"] is JsonValue levelValue
+            && levelValue.TryGetValue(out int level))
+        {
+            text = VolumeFinal(level, ReadString(seen, "direction"), ReadBool(seen, "muted") == true, english);
+        }
+        else if (operation == "media.play.youtube"
+            && ReadString(seen, "playbackStatus") == "playing"
+            && ReadString(seen, "title") is { Length: > 0 } title
+            && ReadBool(seen, "titleObserved") != false)
+        {
+            string where = title.EndsWith("youtube", StringComparison.OrdinalIgnoreCase)
+                ? string.Empty
+                : english ? " on YouTube" : " en YouTube";
+            text = english ? $"Now playing «{title}»{where}." : $"Está sonando «{title}»{where}.";
+        }
+        else if (operation == "web.search" && rejectedText is not null)
+        {
+            // Owner rule 2026-09-24: what no draft could say from the pages was not found. A mind that never
+            // answered proved nothing, so only refused drafts lead here.
+            text = english ? "I couldn't find it." : "No lo encontré.";
+        }
+
+        if (text is null)
+        {
+            return null;
+        }
+
+        string? priorUserText = facts["priorRequests"] is JsonArray prior
+            ? string.Join(" ", prior.Select(static item => (string?)item))
+            : null;
+        return AcceptPublishedConversation(text, draft, userText, priorUserText);
+    }
+
+    private static string? ReadString(JsonObject? node, string key) =>
+        node?[key] is JsonValue value && value.TryGetValue(out string? text) ? text : null;
+
+    private static bool? ReadBool(JsonObject? node, string key) =>
+        node?[key] is JsonValue value && value.TryGetValue(out bool flag) ? flag : null;
+
+    private static string VolumeFinal(int level, string? direction, bool muted, bool english)
+    {
+        if (english)
+        {
+            string head = direction is "down" or "up"
+                ? $"I turned the volume {direction} to {level}%"
+                : $"The volume is at {level}%";
+            return head + (muted ? "; it is muted." : ".");
+        }
+
+        string spanish = direction is "down" or "up"
+            ? $"{(direction == "down" ? "Bajé" : "Subí")} el volumen a {level} %"
+            : $"El volumen está en {level} %";
+        return spanish + (muted ? "; está silenciado." : ".");
+    }
+
+    // BAXY's own refused sentence (or else the request) decides the language of the fallback: Spanish unless
+    // English function words outnumber Spanish ones; accents and inverted marks are Spanish.
+    private static bool LooksEnglish(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text) || text.IndexOfAny(['á', 'é', 'í', 'ó', 'ú', 'ñ', '¿', '¡']) >= 0)
+        {
+            return false;
+        }
+
+        string[] words = text.ToLowerInvariant().Split(
+            [' ', ',', '.', '?', '!', ';', ':'], StringSplitOptions.RemoveEmptyEntries);
+        int english = words.Count(static word => word is "the" or "is" or "it" or "i" or "what" or "you" or "to"
+            or "my" or "of" or "and" or "in" or "on" or "time" or "play" or "show" or "like");
+        int spanish = words.Count(static word => word is "el" or "la" or "es" or "que" or "de" or "los" or "las"
+            or "en" or "y" or "mi" or "mis" or "por" or "un" or "una" or "hora" or "pon" or "ponme");
+        return english > spanish;
+    }
+
     internal static bool IsTransientFailure(Exception exception) =>
         exception is IOException
             or InvalidDataException
@@ -304,10 +432,12 @@ internal static class ModelMessageComposer
 /// <see cref="Unanswered"/>: the last request got no answer from the mind
 /// (not ready, transport or runtime failure). Only such a failure can go
 /// differently later; a draft the writer answered or that the policy refused
-/// is the composition's outcome.
+/// is the composition's outcome. <see cref="RejectedText"/> is the mind's text
+/// the policy refused, kept for the private audit only (A7).
 /// </summary>
 internal sealed record ModelMessageCompositionOutcome(
     string? Text,
     string? Failure,
     bool UsedRecovery,
-    bool Unanswered = false);
+    bool Unanswered = false,
+    string? RejectedText = null);

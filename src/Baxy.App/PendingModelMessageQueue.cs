@@ -120,6 +120,7 @@ internal sealed class PendingModelMessageQueue
         ArgumentNullException.ThrowIfNull(pending);
         ArgumentNullException.ThrowIfNull(outcome);
         pending.Attempts = 1;
+        pending.LastRejectedText = outcome.RejectedText;
         pending.FinalFailure = MayRetry(pending, outcome)
             ? null
             : outcome.Failure ?? "model_response_rejected";
@@ -210,6 +211,7 @@ internal sealed class PendingModelMessageQueue
             }
             if (outcome.Text is null)
             {
+                pending.LastRejectedText = outcome.RejectedText ?? pending.LastRejectedText;
                 pending.Attempts++;
                 await _reportFailureAsync(outcome.Failure).ConfigureAwait(false);
                 if (!MayRetry(pending, outcome))
@@ -236,6 +238,15 @@ internal sealed class PendingModelMessageQueue
     {
         RemoveHead(pending);
         string exhausted = $"{failure};retry_exhausted";
+        // A7 (goal v3 paso 5): a verified result can always be said. Before the composition-failure line, its
+        // observed values are told in one short sentence that passes the same acceptance as a composed one.
+        if (ModelMessageComposer.DeterministicFinal(
+                pending.Draft, pending.UserText, pending.Facts, pending.LastRejectedText) is { } deterministic)
+        {
+            await _publishAsync(deterministic, $"{failure};deterministic_fallback", pending).ConfigureAwait(false);
+            return;
+        }
+
         await _reportFailureAsync(exhausted).ConfigureAwait(false);
         await _onExhaustedAsync(pending, exhausted).ConfigureAwait(false);
         await _onSettledAsync().ConfigureAwait(false);
@@ -302,4 +313,7 @@ internal sealed record PendingModelMessage(
 
     /// <summary>An answered failure from a composition made before queueing.</summary>
     public string? FinalFailure { get; set; }
+
+    /// <summary>The mind's last text the policy refused, for the private audit (A7).</summary>
+    public string? LastRejectedText { get; set; }
 }

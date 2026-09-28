@@ -31,7 +31,8 @@ internal sealed record ProductPosteriorState(
     string? CompositionFailure,
     bool HasCompositionError,
     string? StatusDescription,
-    string? MindReplyRejection);
+    string? MindReplyRejection,
+    string? MindRejectedReply = null);
 
 /// <summary>
 /// Windowless adapter over <see cref="FieldProductChannel"/>. Same admission,
@@ -248,7 +249,8 @@ internal sealed class ProductConductor : IAsyncDisposable
             _viewModel.LastMessageCompositionFailure,
             _viewModel.HasCompositionError,
             _viewModel.StatusDescription,
-            _viewModel.LastMindReplyRejection);
+            _viewModel.LastMindReplyRejection,
+            _viewModel.LastMindRejectedReply);
 
     private ProductTurnResult? TryClassify(
         FieldHttpResponse admission,

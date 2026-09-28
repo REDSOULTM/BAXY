@@ -198,6 +198,13 @@ def _turn(message: dict[str, Any]) -> dict[str, Any]:
             "operation": None if text.startswith("Ajusta") else "audio.volume",
             "effectOperations": ["audio.volume"], "question": "", "reply": "",
         }
+    if text == "perfect, copialo al clipboard":
+        # A7 (FINAL t320): an action whose arguments come back without values and without a question.
+        return {
+            "type": "turn.result", "id": request_id, "kind": "action",
+            "operation": "clipboard.write.text", "effectOperations": ["clipboard.write.text"],
+            "question": "", "reply": "",
+        }
     if text == "Set the volume, por favor.":
         return {
             "type": "turn.result", "id": request_id, "kind": "clarify",

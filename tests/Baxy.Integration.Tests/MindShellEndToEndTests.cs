@@ -609,6 +609,23 @@ public sealed class MindShellEndToEndTests
         });
     }
 
+    // A7 (FINAL t320 «perfect, copialo al clipboard»): the action was decided and its arguments came back
+    // without values and without a question. That is a clarification naming the missing field, not the
+    // ambiguous_request failure whose every question the composer vetoed.
+    [Test]
+    public async Task EmptyArgumentsForADecidedActionAskForTheMissingField()
+    {
+        await WithContractMindAsync(async (viewModel, _, _) =>
+        {
+            string result = await SubmitAsync(viewModel, "perfect, copialo al clipboard");
+            Assert.That(result, Does.Contain("\"kind\":\"clarification\""));
+            Assert.That(result, Does.Contain("\"cause\":\"ambiguous_request\""));
+            Assert.That(result, Does.Contain("\"missingValue\":\"text\""));
+            Assert.That(result, Does.Not.Contain("\"kind\":\"failure\""));
+            Assert.That(viewModel.StatusDescription, Is.EqualTo("Esperando tu aclaración"));
+        });
+    }
+
     [TestCase("Set the volume, por favor.")]
     [TestCase("Ajusta el volumen, por favor.")]
     [TestCase("Set the speaker volume, please.")]
