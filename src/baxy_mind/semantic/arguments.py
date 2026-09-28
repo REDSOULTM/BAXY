@@ -912,7 +912,12 @@ def _explicit_arguments_from_evidence(
     if operation == "window.snap":
         # ARRANGE1781: the side is the person's literal; windowId comes from window.resolve.
         snap = effect_intent.resolve_application_snap(evidence, application_names)
-        return {"side": snap[1]} if snap is not None else None
+        if snap is None:
+            # M55: the decided request restated as «Coloca la ventana de Word en la mitad izquierda» (a head the
+            # decision reader does not hold as an order) or one clause of a two-window plan.
+            pairs = effect_intent.application_snap_pairs(evidence, application_names)
+            return {"side": pairs[0][1]} if pairs is not None and len(pairs) == 1 else None
+        return {"side": snap[1]}
 
     if operation == "window.resolve":
         application_name = effect_intent.resolve_application_snap_name(
@@ -928,6 +933,10 @@ def _explicit_arguments_from_evidence(
         )
         if application_name is not None:
             return {"applicationName": application_name}
+        pairs = effect_intent.application_snap_pairs(evidence, application_names)
+        if pairs is not None and len(pairs) == 1:
+            # M55: one window of a placing request (a two-window plan resolves each clause on its own step).
+            return {"applicationName": pairs[0][0]}
         if effect_intent.other_window_switch_request(evidence):
             # REOPEN1993 H0263: every visible window, so the one behind the
             # foreground can be chosen from the verified reading.
@@ -2304,6 +2313,54 @@ def _canonical_due_utc(
     if due is None or due <= now + timedelta(seconds=5):
         return None
     return due.isoformat().replace("+00:00", "Z")
+
+
+def window_snap_plan_split(
+    operations: tuple[str, ...],
+    evidence: tuple[str, ...],
+    objective: str,
+    application_names: Any = (),
+) -> tuple[tuple[str, ...], tuple[str, ...]] | None:
+    """One window.snap per window a placing request names, each with its own clause as evidence.
+
+    M55 (v3b F-w06-t1 «pon el word a la izquierda y el chrome a la derecha», F-w08-t1): the decider lists
+    the kinds of effect, once each, so two windows arrive as one ``window.snap``; the plan resolved both
+    windows in one ``window.resolve`` and the Core rejected the mixed selector. Each clause names one
+    window and its side, so its resolve and its snap read it alone. Anything else abstains (None).
+    """
+
+    if operations.count("window.snap") != 1:
+        return None
+    pairs = effect_intent.application_snap_pairs(objective, application_names)
+    if pairs is None or len(pairs) < 2:
+        return None
+    index = operations.index("window.snap")
+    clauses = tuple(clause for _, _, clause in pairs)
+    padded = evidence if len(evidence) == len(operations) else ("",) * len(operations)
+    return (
+        operations[:index] + ("window.snap",) * len(pairs) + operations[index + 1:],
+        padded[:index] + clauses + padded[index + 1:],
+    )
+
+
+def window_snap_side_for_step(
+    objective: str,
+    purpose: str,
+    application_names: Any = (),
+) -> dict[str, str] | None:
+    """The side of the one window a snap step docks, read from the person's request, not from the step.
+
+    With several windows in the request, the step's purpose only picks which of the request's own
+    (window, side) pairs this step is; the side itself is the request's. A purpose naming no pair of the
+    request, or a request with one window, abstains here.
+    """
+
+    requested = effect_intent.application_snap_pairs(objective, application_names)
+    chosen = effect_intent.application_snap_pairs(purpose, application_names)
+    if requested is None or len(requested) < 2 or chosen is None or len(chosen) != 1:
+        return None
+    name, side, _ = chosen[0]
+    return {"side": side} if (name, side) in {(item[0], item[1]) for item in requested} else None
 
 
 def _select_referenced_predecessor(
