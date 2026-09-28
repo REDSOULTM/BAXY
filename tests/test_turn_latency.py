@@ -364,16 +364,6 @@ class _ModelPathLlm:
         return "About eight to ten minutes, until al dente.", []
 
 
-class _NoEvidence:
-    @staticmethod
-    def candidate_families(_text: str, _encoder: object) -> tuple[str, ...]:
-        return ()
-
-    @staticmethod
-    def retrieve(*_args: object, **_kwargs: object) -> list[object]:
-        return []
-
-
 # --- the effect guard beside the selector -----------------------------------
 
 
@@ -653,7 +643,6 @@ def _turn(llm: _PreparingLlm, text: str) -> dict[str, object]:
         {"id": "t7", "text": text, "history": [{"role": "assistant", "content": "Hola, soy BAXY."}]},
         llm=llm,
         planner_catalog=PlannerCatalog([_CLOCK_TOOL]),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={"system.time": _CLOCK_TOOL},
     )

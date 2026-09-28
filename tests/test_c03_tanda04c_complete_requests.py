@@ -37,7 +37,7 @@ from baxy_mind.__main__ import _prepare_turn_result
 from baxy_mind.effect_intent import effect_request_is_authoritative, known_unsupported_effect_request
 from baxy_mind.planner import PlannerCatalog, guarding_predecessors, validate_skeleton
 from baxy_mind.semantic.reading import read
-from test_c03_pointless_questions import _NoEvidence, _tool
+from test_c03_pointless_questions import _tool
 
 
 def _shape(text: str, *, has_history: bool = True) -> str | None:
@@ -361,7 +361,6 @@ def test_the_real_conditional_add_is_planned_without_a_question() -> None:
         {"id": "turn-flour", "text": "add flour to my shopping list if it's not already on it", "history": []},
         llm=_ConversationLlm(),
         planner_catalog=PlannerCatalog(list(tools.values())),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name=tools,
     )

@@ -412,23 +412,12 @@ def _tool(operation: str) -> dict:
     }
 
 
-class _NoEvidence:
-    @staticmethod
-    def candidate_families(*_args: object) -> tuple[str, ...]:
-        return ()
-
-    @staticmethod
-    def retrieve(*_args: object, **_kwargs: object) -> list[object]:
-        return []
-
-
 def _turn(message: dict, model: _Scripted, state: dialogue.DialogueState) -> dict:
     tools = [_tool(name) for name in OPERATIONS]
     return sidecar._prepare_turn_result(
         message,
         llm=model,
         planner_catalog=PlannerCatalog(tools),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={tool["function"]["canonical_name"]: tool for tool in tools},
         dialogue_state=state,

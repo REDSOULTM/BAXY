@@ -11,7 +11,7 @@ import pytest
 
 from baxy_mind.__main__ import _prepare_turn_result
 from baxy_mind.planner import PlannerCatalog
-from test_c03_pointless_questions import _NoEvidence, _tool
+from test_c03_pointless_questions import _tool
 
 
 class _KnowledgeLlm:
@@ -56,7 +56,6 @@ def _turn(text: str, reply: str) -> dict[str, object]:
         {"id": "turn-unknown", "text": text},
         llm=_KnowledgeLlm(reply),
         planner_catalog=PlannerCatalog(list(tools.values())),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name=tools,
     )

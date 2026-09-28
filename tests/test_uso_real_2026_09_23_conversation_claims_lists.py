@@ -34,7 +34,7 @@ from baxy_mind.semantic.patterns import (
     resolve_explicit_effects,
 )
 from baxy_mind.semantic.reading import read
-from test_c03_pointless_questions import _NoEvidence, _tool
+from test_c03_pointless_questions import _tool
 
 OPERATIONS = ("task.list", "task.search", "task.create", "reminder.list", "note.list", "web.search")
 
@@ -229,7 +229,6 @@ def _turn(text, history=()):
         {"id": "turn-list", "text": text, "history": list(history)},
         llm=_InventingLlm(),
         planner_catalog=PlannerCatalog(list(tools.values())),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name=tools,
     )

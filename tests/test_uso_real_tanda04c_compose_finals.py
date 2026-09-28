@@ -79,16 +79,6 @@ def _tool(operation: str) -> dict:
     }
 
 
-class _NoEvidence:
-    @staticmethod
-    def candidate_families(*_args: object) -> tuple[str, ...]:
-        return ()
-
-    @staticmethod
-    def retrieve(*_args: object, **_kwargs: object) -> list[object]:
-        return []
-
-
 class _Writer:
     """Readers own the routing; the model only writes the conversation reply it is handed."""
 
@@ -115,7 +105,6 @@ def _turn(text: str, model: _Writer | None = None) -> dict:
         {"id": "tanda-04c", "text": text, "history": []},
         llm=model or _Writer(),
         planner_catalog=PlannerCatalog(tools),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={tool["function"]["canonical_name"]: tool for tool in tools},
     )

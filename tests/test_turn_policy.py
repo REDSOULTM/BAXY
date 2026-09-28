@@ -127,7 +127,6 @@ def test_unresolved_catalog_identity_uses_typed_error_without_invented_observati
         {"id": "catalog-boundary", "text": text},
         llm=Runtime(),
         planner_catalog=PlannerCatalog([tool]),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={"system.time.get": tool},
     )
@@ -1700,7 +1699,6 @@ def test_confirmed_stable_knowledge_cannot_be_reopened_by_catalog_candidates(
         },
         llm=Runtime(),
         planner_catalog=PlannerCatalog([tool]),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={"backup.create": tool},
     )
@@ -1737,7 +1735,6 @@ def test_known_limit_for_an_authoritative_request_supersedes_a_pending_slot(text
         {"id": "self-close", "text": text, "pendingClarification": True, "history": []},
         llm=Runtime(),
         planner_catalog=PlannerCatalog([tool]),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={"app.close": tool},
     )
@@ -1762,7 +1759,6 @@ def test_isolated_negative_request_supersedes_a_pending_slot(text: str) -> None:
         {"id": "isolated-negative", "text": text, "pendingClarification": False, "history": []},
         llm=Runtime(),
         planner_catalog=PlannerCatalog([tool]),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={"audio.mute": tool},
     )
@@ -1797,7 +1793,7 @@ def test_closed_prohibition_does_not_become_a_catalog_observation(text: str) -> 
         {"id": "closed-prohibition", "text": text, "pendingClarification": False,
          "history": [{"role": "user", "content": "está silenciado el audio"},
                      {"role": "assistant", "content": "El audio no está silenciado."}]},
-        llm=Runtime(), planner_catalog=PlannerCatalog(tools), turn_evidence=_NoEvidence(),
+        llm=Runtime(), planner_catalog=PlannerCatalog(tools),
         encoder=lambda _texts: (),
         tool_by_name={tool["function"]["canonical_name"]: tool for tool in tools},
     )
@@ -1827,7 +1823,7 @@ def test_identity_question_cannot_be_consumed_as_an_old_slot_value(user_text: st
         {"id": "identity-new-topic", "text": user_text,
          "pendingClarification": False, "history": []},
         llm=Runtime("system.time"), planner_catalog=PlannerCatalog([tool]),
-        turn_evidence=_NoEvidence(), encoder=lambda _texts: (),
+        encoder=lambda _texts: (),
         tool_by_name={"system.time": tool},
     )
     assert result["kind"] == "conversation"
@@ -1862,15 +1858,6 @@ def test_content_drafting_closes_before_message_delivery_clarification() -> None
         },
     }
 
-    class NoEvidence:
-        @staticmethod
-        def candidate_families(*_args: object) -> tuple[str, ...]:
-            raise AssertionError("content drafting must not rank action families")
-
-        @staticmethod
-        def retrieve(*_args: object) -> list[object]:
-            raise AssertionError("content drafting must not retrieve action evidence")
-
     class Runtime:
         @staticmethod
         def formulate_explicit_clarification_question(*_args: object) -> str:
@@ -1892,7 +1879,6 @@ def test_content_drafting_closes_before_message_delivery_clarification() -> None
         },
         llm=Runtime(),
         planner_catalog=PlannerCatalog([tool]),
-        turn_evidence=NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={"message.send": tool},
     )
@@ -1961,15 +1947,6 @@ def test_literal_recall_closes_routing_before_a_second_cpu_policy_decode() -> No
         ]
     )
 
-    class NoEvidence:
-        @staticmethod
-        def candidate_families(*_args: object) -> tuple[str, ...]:
-            raise AssertionError("literal recall must not rank action families")
-
-        @staticmethod
-        def retrieve(*_args: object) -> list[object]:
-            raise AssertionError("literal recall must not retrieve action evidence")
-
     class Runtime:
         @staticmethod
         def decide_turn(*_args: object, **_kwargs: object) -> dict[str, object]:
@@ -1989,7 +1966,6 @@ def test_literal_recall_closes_routing_before_a_second_cpu_policy_decode() -> No
         {"id": "literal-recall", "text": current, "history": history},
         llm=Runtime(),
         planner_catalog=catalog,
-        turn_evidence=NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={},
     )
@@ -4068,19 +4044,6 @@ def test_turn_resolves_explicit_effects_only_once(
         resolutions += 1
         return real_resolver(*args, **kwargs)
 
-    class NoEvidence:
-        @staticmethod
-        def candidate_families(
-            text: str,
-            encoder: object,
-        ) -> tuple[str, ...]:
-            del text, encoder
-            raise AssertionError("explicit effects do not rank E5 families")
-
-        @staticmethod
-        def retrieve(*args: object, **kwargs: object) -> list[object]:
-            raise AssertionError("explicit effects do not retrieve evidence")
-
     class ExplicitCatalog:
         # El audit del turno registra si el catálogo vivo rankea con E5 o
         # sólo con solapamiento de tokens. Un doble también lo declara.
@@ -4127,7 +4090,6 @@ def test_turn_resolves_explicit_effects_only_once(
         {"id": "turn-1", "text": "What time is it?"},
         llm=object(),
         planner_catalog=ExplicitCatalog(),
-        turn_evidence=NoEvidence(),
         encoder=encoder_should_not_run,
         tool_by_name={"system.time": tool},
     )
@@ -4167,15 +4129,6 @@ def test_live_weather_feed_is_closed_before_model_selection(text: str) -> None:
     }
     catalog = PlannerCatalog([tool])
 
-    class NoEvidence:
-        @staticmethod
-        def candidate_families(*_args: object) -> tuple[str, ...]:
-            raise AssertionError("a literal live feed must not rank families")
-
-        @staticmethod
-        def retrieve(*_args: object) -> list[object]:
-            raise AssertionError("a literal live feed must not retrieve evidence")
-
     class NoModel:
         @staticmethod
         def decide_turn(*_args: object, **_kwargs: object) -> dict[str, object]:
@@ -4192,7 +4145,6 @@ def test_live_weather_feed_is_closed_before_model_selection(text: str) -> None:
         },
         llm=NoModel(),
         planner_catalog=catalog,
-        turn_evidence=NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={"web.search": tool},
     )
@@ -4221,15 +4173,6 @@ def test_explicit_message_payload_future_tense_preserves_intent_identity() -> No
     }
     catalog = PlannerCatalog([tool])
 
-    class NoEvidence:
-        @staticmethod
-        def candidate_families(*_args: object) -> tuple[str, ...]:
-            raise AssertionError("explicit effects do not rank candidates")
-
-        @staticmethod
-        def retrieve(*_args: object) -> list[object]:
-            raise AssertionError("explicit effects do not retrieve evidence")
-
     class NoModel:
         @staticmethod
         def decide_turn(*_args: object, **_kwargs: object) -> dict[str, object]:
@@ -4246,7 +4189,6 @@ def test_explicit_message_payload_future_tense_preserves_intent_identity() -> No
         },
         llm=NoModel(),
         planner_catalog=catalog,
-        turn_evidence=NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={"message.send": tool},
     )
@@ -4304,15 +4246,6 @@ def test_explicit_social_turn_does_not_compute_unused_semantic_candidates(
         def operation_is_relevant(*args: object, **kwargs: object):
             raise AssertionError("social turns do not apply operation relevance")
 
-    class NoEvidence:
-        @staticmethod
-        def candidate_families(*args: object, **kwargs: object):
-            raise AssertionError("social turns do not rank E5 families")
-
-        @staticmethod
-        def retrieve(*args: object, **kwargs: object):
-            raise AssertionError("social turns do not retrieve evidence")
-
     class SocialLlm:
         @staticmethod
         def detect_response_language(_text: str) -> str:
@@ -4331,7 +4264,6 @@ def test_explicit_social_turn_does_not_compute_unused_semantic_candidates(
         {"id": "turn-social", "text": objective, "history": history},
         llm=SocialLlm(),
         planner_catalog=NoSemanticWork(),
-        turn_evidence=NoEvidence(),
         encoder=encoder_should_not_run,
         tool_by_name={},
     )
@@ -4424,11 +4356,6 @@ def test_expected_plan_skips_unused_e5_and_skill_retrieval() -> None:
         @staticmethod
         def shortlist(*_args: object, **_kwargs: object):
             raise AssertionError("closed effects do not rank an E5 shortlist")
-
-    class NoEvidence:
-        @staticmethod
-        def candidate_families(*_args: object, **_kwargs: object):
-            raise AssertionError("closed effects do not rank E5 families")
 
     class NoSkills:
         @staticmethod
@@ -4586,17 +4513,6 @@ def test_cpu_bare_deictic_route_uses_its_measured_clarification_budget(
     }
     observed: list[float] = []
 
-    class NoEvidence:
-        @staticmethod
-        def candidate_families(*_args: object) -> tuple[str, ...]:
-            raise AssertionError("bare deictic clarification must not rank actions")
-
-        @staticmethod
-        def retrieve(*_args: object) -> list[object]:
-            raise AssertionError(
-                "bare deictic clarification must not retrieve evidence"
-            )
-
     class Runtime:
         @staticmethod
         def clarify_missing_referent(
@@ -4622,7 +4538,6 @@ def test_cpu_bare_deictic_route_uses_its_measured_clarification_budget(
         },
         llm=Runtime(),
         planner_catalog=PlannerCatalog([tool]),
-        turn_evidence=NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={},
     )
@@ -7954,16 +7869,6 @@ _NETWORK_STATUS_TOOL = {
 }
 
 
-class _NoEvidence:
-    @staticmethod
-    def candidate_families(_text: str, _encoder: object) -> tuple[str, ...]:
-        return ()
-
-    @staticmethod
-    def retrieve(*_args: object, **_kwargs: object) -> list[object]:
-        return []
-
-
 class _WithheldEffectLlm:
     """A decider that proposes the right operation the curated gate refuses."""
 
@@ -8077,7 +7982,6 @@ def test_preclassification_progress_cannot_exhaust_an_answerable_turn(
         {"id": "progress-budget", "text": text},
         llm=ConversationalLlm(identifies=False),
         planner_catalog=PlannerCatalog([_NETWORK_STATUS_TOOL]),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _: [],
         tool_by_name={"network.status": _NETWORK_STATUS_TOOL},
         # Due at once: a notice that fails while the turn decides must not cost the answer.
@@ -8114,7 +8018,6 @@ def test_complete_explanation_uses_the_existing_knowledge_path(text: str) -> Non
         {"id": "complete-explanation", "text": text},
         llm=ExplanationLlm(identifies=False),
         planner_catalog=PlannerCatalog([_NETWORK_STATUS_TOOL]),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _: [],
         tool_by_name={"network.status": _NETWORK_STATUS_TOOL},
     )
@@ -8171,7 +8074,7 @@ def test_complete_turn_retains_answer_before_final_question(
             {"id": "final-question-scope", "text": text},
             llm=Runtime(identifies=False),
             planner_catalog=PlannerCatalog([_NETWORK_STATUS_TOOL]),
-            turn_evidence=_NoEvidence(), encoder=lambda _: [],
+            encoder=lambda _: [],
             tool_by_name={"network.status": _NETWORK_STATUS_TOOL},
         )
 
@@ -8194,7 +8097,6 @@ def _withheld_effect_turn(
         {"id": "turn-withheld", "text": text},
         llm=llm,
         planner_catalog=PlannerCatalog([tool]),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={"network.status": tool},
     )
@@ -8309,7 +8211,6 @@ def _goal03c_prepare_turn(text: str, operation: str) -> dict[str, object]:
         {"id": f"goal03c-{operation}", "text": text},
         llm=_ProposedLeafLlm(operation),
         planner_catalog=PlannerCatalog([tool]),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={operation: tool},
     )
@@ -8491,7 +8392,6 @@ def test_personal_question_is_not_a_compound_prohibition(
         {"id": "personal-read", "text": user_text, "pendingClarification": False},
         llm=Runtime(operation),
         planner_catalog=PlannerCatalog([tool]),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={operation: tool},
     )
@@ -8519,7 +8419,7 @@ def test_scoped_read_survives_the_complete_turn_policy(user_text, operation):
     result = _prepare_turn_result(
         {"id": "scoped-read", "text": user_text, "pendingClarification": False},
         llm=Runtime(operation), planner_catalog=PlannerCatalog(tools),
-        turn_evidence=_NoEvidence(), encoder=lambda _texts: (),
+        encoder=lambda _texts: (),
         tool_by_name=dict(zip(names, tools)),
     )
     assert result["kind"] == "action"

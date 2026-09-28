@@ -26,7 +26,6 @@ from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import decider, surface
 from baxy_mind.semantic.patterns import conversation_only_content_request, operation_domain_is_grounded
 from baxy_mind.semantic.reading import read
-from test_c03_pointless_questions import _NoEvidence
 
 OPERATIONS = (
     "media.control", "media.play.query", "media.play.youtube", "media.play.exact", "audio.microphone.mute",
@@ -206,7 +205,6 @@ def _turn(text: str, llm: _RefusingLlm) -> dict[str, object]:
         {"id": "turn-served-surface", "text": text, "history": [{"role": "user", "content": text}]},
         llm=llm,
         planner_catalog=PlannerCatalog(list(tools.values())),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name=tools,
     )
@@ -299,7 +297,6 @@ def test_a_served_operation_the_rewrite_names_never_acts_unasked_when_it_destroy
         {"id": "turn-served-risk", "text": "open my gallery", "history": [{"role": "user", "content": "open my gallery"}]},
         llm=llm,
         planner_catalog=PlannerCatalog(list(tools.values())),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name=tools,
     )

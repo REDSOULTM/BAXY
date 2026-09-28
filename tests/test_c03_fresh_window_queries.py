@@ -75,7 +75,7 @@ def test_shared_turn_pipeline_selects_observation_without_reciting_history(query
 
     result = _prepare_turn_result(
         {"id": "current-reference", "text": query, "history": history},
-        llm=NoModel(), planner_catalog=PlannerCatalog([tool]), turn_evidence=NoModel(),
+        llm=NoModel(), planner_catalog=PlannerCatalog([tool]),
         encoder=lambda _texts: (), tool_by_name={"window.active": tool}, application_names=(),
     )
     assert result["kind"] == "action"

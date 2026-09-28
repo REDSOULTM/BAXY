@@ -37,7 +37,7 @@ from baxy_mind.llm import (
 )
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.patterns import echo_mode_request, known_unsupported_effect_request
-from test_c03_pointless_questions import _NoEvidence, _tool
+from test_c03_pointless_questions import _tool
 
 OPERATIONS = ("media.play.query", "media.play.youtube", "web.search", "audio.volume", "system.time")
 
@@ -214,7 +214,6 @@ def _turn(text, history=(), runtime=None):
         {"id": "tanda-05", "text": text, "history": [*history, {"role": "user", "content": text}]},
         llm=runtime,
         planner_catalog=PlannerCatalog(list(tools.values())),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name=tools,
     )

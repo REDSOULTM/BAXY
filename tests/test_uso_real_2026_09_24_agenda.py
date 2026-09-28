@@ -34,7 +34,7 @@ from baxy_mind.semantic.patterns import (
 from baxy_mind.semantic.reading import read
 from baxy_mind.semantic.temporal import agenda_window, spoken_clock
 from baxy_mind.semantic.web import names_own_data
-from test_c03_pointless_questions import _NoEvidence, _tool
+from test_c03_pointless_questions import _tool
 from test_c03_unknown_looked_up import _KnowledgeLlm
 
 OPERATIONS = (
@@ -409,7 +409,6 @@ def _turn(text: str) -> dict[str, object]:
         {"id": "turn-agenda-2", "text": text},
         llm=_PublicLookupLlm("No lo sé."),
         planner_catalog=PlannerCatalog(list(tools.values())),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name=tools,
     )

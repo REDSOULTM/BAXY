@@ -360,16 +360,6 @@ class _LanguageLlm:
         return "Listo." if kwargs["response_language"] == "es" else "Done.", []
 
 
-class _NoEvidence:
-    @staticmethod
-    def candidate_families(_text: str, _encoder: object) -> tuple[str, ...]:
-        return ()
-
-    @staticmethod
-    def retrieve(*_args: object, **_kwargs: object) -> list[object]:
-        return []
-
-
 def _conversation_language(text: str, history: list[dict]) -> str:
     from baxy_mind.planner import PlannerCatalog
 
@@ -385,7 +375,6 @@ def _conversation_language(text: str, history: list[dict]) -> str:
         {"id": "tanda02-language", "text": text, "history": history},
         llm=_LanguageLlm(),
         planner_catalog=PlannerCatalog([tool]),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={"network.status": tool},
     )

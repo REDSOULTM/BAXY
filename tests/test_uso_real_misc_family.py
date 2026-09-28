@@ -26,7 +26,7 @@ from baxy_mind.semantic.patterns import (
 )
 from baxy_mind.semantic.system import _weather_location
 from baxy_mind.semantic.web import _entity_lookup_query
-from test_c03_pointless_questions import _NoEvidence, _tool
+from test_c03_pointless_questions import _tool
 
 _OPS = (
     "weather.current", "web.search", "system.time", "audio.mute", "audio.status", "audio.volume.adjust",
@@ -390,7 +390,6 @@ def _turn(text: str, llm: object) -> dict[str, object]:
         {"id": "turn-misc", "text": text},
         llm=llm,
         planner_catalog=PlannerCatalog(list(tools.values())),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name=tools,
     )

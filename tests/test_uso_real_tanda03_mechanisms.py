@@ -54,16 +54,6 @@ def _tool(operation: str, properties: dict | None = None) -> dict:
 _WEB_SEARCH = _tool("web.search", {"query": {"type": "string", "x-nonWhitespace": True}})
 
 
-class _NoEvidence:
-    @staticmethod
-    def candidate_families(*_args: object) -> tuple[str, ...]:
-        return ()
-
-    @staticmethod
-    def retrieve(*_args: object, **_kwargs: object) -> list[object]:
-        return []
-
-
 class _NoModel:
     """The readers must own the turn: the model is never asked to decide it."""
 
@@ -123,7 +113,6 @@ def _turn(text: str, operations: tuple[str, ...], llm: object) -> dict:
         {"id": "tanda-03", "text": text, "history": []},
         llm=llm,
         planner_catalog=PlannerCatalog(tools),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={tool["function"]["canonical_name"]: tool for tool in tools},
     )

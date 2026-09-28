@@ -35,7 +35,7 @@ from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.patterns import out_of_world_request
 from baxy_mind.semantic.reading import read
 from baxy_mind.semantic.web import asks_for_information, record_fact_query
-from test_c03_pointless_questions import _NoEvidence, _tool
+from test_c03_pointless_questions import _tool
 
 # ------------------------------------------------------------------ A. a world question is never a limit
 
@@ -104,7 +104,6 @@ def _world_turn(text: str, llm: _WithdrawnSearchLlm) -> dict[str, object]:
         {"id": "turn-world", "text": text, "history": [{"role": "user", "content": text}]},
         llm=llm,
         planner_catalog=PlannerCatalog(list(tools.values())),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name=tools,
     )

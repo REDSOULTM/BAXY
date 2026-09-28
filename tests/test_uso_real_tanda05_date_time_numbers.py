@@ -32,7 +32,7 @@ from baxy_mind.semantic.network import asks_calendar_part, calendar_parts_asked
 from baxy_mind.semantic.patterns import reported_own_schedule
 from baxy_mind.semantic.reading import read
 from test_c03_cpu_actor import Recorder
-from test_c03_pointless_questions import _NoEvidence, _tool
+from test_c03_pointless_questions import _tool
 
 _OPERATIONS = (
     "system.time", "web.search", "notification.schedule", "notification.list", "reminder.create",
@@ -456,7 +456,6 @@ def _turn(text: str) -> dict[str, object]:
         {"id": "turn-tanda05", "text": text},
         llm=_ClosedLlm(),
         planner_catalog=PlannerCatalog(list(tools.values())),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name=tools,
     )

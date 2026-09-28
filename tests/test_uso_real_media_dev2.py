@@ -27,7 +27,7 @@ from baxy_mind.semantic.media import radio_station_query
 from baxy_mind.semantic.normalize import fold
 from baxy_mind.semantic.patterns import _has_contradictory_correction, resolve_explicit_clarification_intent
 from baxy_mind.semantic.reading import read
-from test_c03_pointless_questions import _NoEvidence, _tool
+from test_c03_pointless_questions import _tool
 from test_c03_unknown_looked_up import _KnowledgeLlm
 
 OPERATIONS = (
@@ -259,7 +259,6 @@ def _turn(text: str) -> dict[str, object]:
         {"id": "turn-media-dev2", "text": text},
         llm=_AskingLlm("x"),
         planner_catalog=PlannerCatalog(list(tools.values())),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name=tools,
     )

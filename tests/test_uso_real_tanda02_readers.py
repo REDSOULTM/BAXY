@@ -26,7 +26,7 @@ from baxy_mind.semantic.system import _weather_location
 from baxy_mind.semantic.web import weather_asks_later_day, weather_asks_sun_time
 from baxy_mind.semantic.windows import minimize_all_request
 from baxy_mind.semantic.normalize import fold
-from test_c03_pointless_questions import _NoEvidence, _tool
+from test_c03_pointless_questions import _tool
 from test_c03_unknown_looked_up import _KnowledgeLlm
 
 _WEATHER = {"weather.current", "web.search", "reminder.create", "task.create", "notification.schedule"}
@@ -250,7 +250,6 @@ def _turn(text: str) -> dict[str, object]:
         {"id": "turn-tanda02", "text": text},
         llm=_TalkingLlm("x"),
         planner_catalog=PlannerCatalog(list(tools.values())),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name=tools,
     )

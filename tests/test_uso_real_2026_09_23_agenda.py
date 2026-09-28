@@ -30,7 +30,7 @@ from baxy_mind.semantic.patterns import (
     resolve_explicit_effects,
 )
 from baxy_mind.semantic.temporal import UPCOMING_DAYS, agenda_window, spoken_date, spoken_window
-from test_c03_pointless_questions import _NoEvidence, _tool
+from test_c03_pointless_questions import _tool
 from test_c03_unknown_looked_up import _KnowledgeLlm
 
 OPERATIONS = (
@@ -438,7 +438,6 @@ def _turn(text: str) -> dict[str, object]:
         {"id": "turn-agenda", "text": text},
         llm=_TalkingLlm("x"),
         planner_catalog=PlannerCatalog(list(tools.values())),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name=tools,
     )

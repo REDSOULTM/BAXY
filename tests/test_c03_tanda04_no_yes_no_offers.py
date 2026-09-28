@@ -231,16 +231,6 @@ def _tool(operation: str, *, required: tuple[str, ...] = (), risk: str = "read_o
     }
 
 
-class _NoEvidence:
-    @staticmethod
-    def candidate_families(_text: str, _encoder: object) -> tuple[str, ...]:
-        return ()
-
-    @staticmethod
-    def retrieve(*_args: object, **_kwargs: object) -> list[object]:
-        return []
-
-
 @pytest.mark.parametrize(
     ("text", "operation", "required"),
     [
@@ -259,7 +249,6 @@ def test_the_real_messages_act_and_ask_nothing(text: str, operation: str, requir
         {"id": "tanda-04", "text": text},
         llm=_ReaderOnlyLlm(),
         planner_catalog=PlannerCatalog([tool]),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={operation: tool},
     )
@@ -476,7 +465,6 @@ def _knowledge_turn(llm: _KnowledgeLlm, risk: str = "read_only") -> dict[str, ob
         {"id": "tanda-04-probe", "text": "what does my machine think the date is"},
         llm=llm,
         planner_catalog=PlannerCatalog([tool]),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={"system.time": tool},
     )

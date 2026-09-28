@@ -53,16 +53,6 @@ def _tool(operation: str, *, required: tuple[str, ...] = ()) -> dict[str, object
     }
 
 
-class _NoEvidence:
-    @staticmethod
-    def candidate_families(_text: str, _encoder: object) -> tuple[str, ...]:
-        return ()
-
-    @staticmethod
-    def retrieve(*_args: object, **_kwargs: object) -> list[object]:
-        return []
-
-
 # --- «Cuéntame un poco sobre el modelo de aprendizaje transformer» ----------
 # The native selector started answering in prose, ran out of tokens and the
 # truncation failed both attempts; the recovery then asked «¿Te refieres a…?».
@@ -275,7 +265,6 @@ def _public_turn(llm: _PublicKnowledgeLlm, text: str) -> dict[str, object]:
         {"id": "turn-public", "text": text},
         llm=llm,
         planner_catalog=PlannerCatalog(list(tools.values())),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name=tools,
     )

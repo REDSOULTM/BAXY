@@ -104,16 +104,6 @@ def _tool(operation: str) -> dict:
 TOOLS = [_tool(name) for name in OPERATIONS]
 
 
-class _NoEvidence:
-    @staticmethod
-    def candidate_families(*_args: object) -> tuple[str, ...]:
-        return ()
-
-    @staticmethod
-    def retrieve(*_args: object, **_kwargs: object) -> list[object]:
-        return []
-
-
 class _NoModel:
     """The readers own these turns: the model never decides them; it only words a question or a limit."""
 
@@ -140,7 +130,6 @@ def _turn(text: str) -> dict:
         {"id": "dev2-lists", "text": text, "history": []},
         llm=_NoModel(),
         planner_catalog=PlannerCatalog(TOOLS),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name={tool["function"]["canonical_name"]: tool for tool in TOOLS},
     )

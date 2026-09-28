@@ -13,7 +13,6 @@ import pytest
 from baxy_mind import __main__ as sidecar
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic.decider import ContextDecision
-from test_c03_pointless_questions import _NoEvidence
 
 OPERATIONS = ("media.control", "media.play.query", "audio.mute", "web.search", "app.open", "system.time")
 
@@ -82,7 +81,6 @@ def _turn(text: str, llm: _Decider, history: list[dict[str, str]] | None = None)
         {"id": "turn-context-decider", "text": text, "history": [*(history or []), {"role": "user", "content": text}]},
         llm=llm,
         planner_catalog=PlannerCatalog(list(tools.values())),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name=tools,
     )

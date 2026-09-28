@@ -28,7 +28,7 @@ from baxy_mind.semantic.patterns import (
     resolve_explicit_clarification_intent,
     resolve_explicit_effects,
 )
-from test_c03_pointless_questions import _NoEvidence, _tool
+from test_c03_pointless_questions import _tool
 
 _OPS = (
     "email.latest.read", "email.latest.reply", "email.send", "message.send", "message.recipient.resolve",
@@ -341,7 +341,6 @@ def _turn(text: str, llm: object) -> dict[str, object]:
         {"id": "turn-email-contacts-social", "text": text},
         llm=llm,
         planner_catalog=PlannerCatalog(list(tools.values())),
-        turn_evidence=_NoEvidence(),
         encoder=lambda _texts: (),
         tool_by_name=tools,
     )
