@@ -426,6 +426,10 @@ internal static class PlanObservationProjector
             // FILES1705 «crea un archivo de texto con los 5 procesos que más
             // memoria usan»: the write that follows projects its text from
             // the listing's names and measures.
+            // task.delete copies the version and review label the verified
+            // resolver returned, exactly as reminder.delete does.
+            ["task.resolve.exact"] = new(StringComparer.Ordinal)
+                { "expectedVersion", "reviewLabel" },
             ["system.process.list"] = new(StringComparer.Ordinal)
                 { "cpuUsagePercent", "name", "processes", "sort", "totalProcessorSeconds", "workingSetBytes" },
             // MEME2053 «Tienes algun meme?»: the open that follows copies the
@@ -638,6 +642,7 @@ internal static class PlanObservationProjector
             "office.document.read" => ["documentId"],
             "peripheral.print" => ["deviceId"],
             "reminder.delete" => ["reminderId", "expectedVersion", "reviewLabel"],
+            "task.delete" => ["taskId", "expectedVersion", "reviewLabel"],
             "wifi.connect" => ["profileId"],
             _ => [],
         };

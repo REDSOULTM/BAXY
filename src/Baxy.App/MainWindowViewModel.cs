@@ -2520,11 +2520,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         if (turn.Kind == "action"
             && turn.Operation is { Length: > 0 } routedOperation
-            // app.close consumes an opaque window identity issued by a prior
-            // verified window.resolve. It can never be grounded safely from
-            // the user's text alone, so keep the semantic routing decision but
-            // send it through the dependency-aware planner below.
-            && !string.Equals(routedOperation, "app.close", StringComparison.Ordinal))
+            && !ConsumesVerifiedDependency(routedOperation))
         {
             // The mind owns semantic grounding, including contextual requests.
             // The shell's positive fast-path recognizer is not an exhaustive
@@ -2534,12 +2530,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 route,
                 routedOperation,
                 registry,
-                cancellationToken);
+                cancellationToken,
+                responseLanguage: turn.ResponseLanguage);
         }
 
         if ((turn.Kind == "plan"
                 || (turn.Kind == "action"
-                    && string.Equals(turn.Operation, "app.close", StringComparison.Ordinal)))
+                    && turn.Operation is { Length: > 0 } dependentOperation
+                    && ConsumesVerifiedDependency(dependentOperation)))
             && mind.IsPlannerAvailable)
         {
             StatusDescription = "Preparando los pasos";
@@ -2562,7 +2560,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
             if (plan.Kind == "clarify")
             {
-                return AddMindClarification(route.Text, plan.Question);
+                return AddMindClarification(route.Text, plan.Question, turn.ResponseLanguage);
             }
 
             if (plan.Kind == "plan")
@@ -2596,13 +2594,26 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         return AddMindConversationFallback();
     }
 
+    /// <summary>
+    /// An operation whose schema carries an identity only a verified producer
+    /// issues (windowId, taskId, confirmationId…) can never be grounded from
+    /// the person's words. It keeps the mind's routing decision but crosses the
+    /// dependency-aware planner, which adds the producer step. The criterion is
+    /// the kernel's own producer relation, not a list kept here (M44: FINAL
+    /// F-w06-t1, F-w08-t1 and F-p02-t3 were asked «¿Cuál es el ID…?»).
+    /// </summary>
+    internal static bool ConsumesVerifiedDependency(string operation) =>
+        Baxy.Kernel.Planning.MissionPlanValidator
+            .RequiredPredecessorOperations(operation).Length > 0;
+
     private async Task<bool> TryExecuteMindOperationAsync(
         MindSidecarClient mind,
         MissionInputRoute route,
         string operationName,
         RetryableOperationRegistry registry,
         CancellationToken cancellationToken,
-        JsonObject? knownArguments = null)
+        JsonObject? knownArguments = null,
+        string? responseLanguage = null)
     {
         if (operationName.StartsWith("memory.", StringComparison.Ordinal))
         {
@@ -2634,7 +2645,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 route.Text,
                 MindSidecarClient.ArgumentRequestTimeout,
                 cancellationToken,
-                BuildMindHistory());
+                BuildMindHistory(),
+                responseLanguage);
 
             if (extraction is null)
             {
@@ -2643,7 +2655,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
             if (extraction.Arguments is null)
             {
-                return AddMindClarification(route.Text, extraction.Question);
+                // M47 (FINAL F-w09-t5 «Sure, tomorrow at noon, please» → «¿Es
+                // una alarma o un recordatorio?»): the question is checked in
+                // the language the mind decided for this turn, not re-derived.
+                return AddMindClarification(route.Text, extraction.Question, responseLanguage);
             }
 
             groundedArguments = MindArgumentNormalization.Normalize(

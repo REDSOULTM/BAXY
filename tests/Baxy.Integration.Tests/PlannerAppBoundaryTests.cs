@@ -162,6 +162,61 @@ public sealed class PlannerAppBoundaryTests
         });
     }
 
+    // M44 (FINAL F-w06-t1, F-w08-t1, F-p02-t3): an action whose schema carries
+    // an identity only a verified producer issues goes to the planner, never to
+    // the direct argument step that asked «¿Cuál es el ID de la ventana…?».
+    [TestCase("app.close", true)]
+    [TestCase("window.snap", true)]
+    [TestCase("window.maximize", true)]
+    [TestCase("task.delete", true)]
+    [TestCase("reminder.delete", true)]
+    [TestCase("message.send", true)]
+    [TestCase("game.install.commit", true)]
+    [TestCase("notification.schedule", false)]
+    [TestCase("system.time", false)]
+    [TestCase("app.open", false)]
+    public void DependencyBoundActionsCrossThePlanner(string operation, bool expected)
+    {
+        Assert.That(MainWindowViewModel.ConsumesVerifiedDependency(operation), Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void TaskDeletePlanIsGroundedFromTheVerifiedResolver()
+    {
+        var plan = new MindPlanResult(
+            "plan", string.Empty,
+            [
+                new MindPlanStep("resolve", "task.resolve.exact", "Identifica la tarea por su título.",
+                    [], "literal", new JsonObject { ["title"] = "leche" }),
+                new MindPlanStep("delete", "task.delete", "Envía la tarea a la papelera.",
+                    ["resolve"], "after_dependencies", null),
+            ]);
+        var observations = new JsonArray(PlanObservationProjector.Create(
+            "resolve",
+            "task.resolve.exact",
+            new OperationResponse(
+                "operation.response", "req_resolve", "mission_task", "inv_resolve", OperationStatuses.Completed,
+                "resolved", true, false,
+                JsonDocument.Parse("""
+                    {"taskId":"6f1c2d3e-0000-4000-8000-000000000001","expectedVersion":3,"reviewLabel":"leche","deleted":false,"status":"open"}
+                    """).RootElement,
+                null)));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindSidecarClient.ValidateExpectedPlanResult(plan, ["task.delete"]), Is.SameAs(plan));
+            Assert.That(() => MindPlanBoundary.ValidateAndConvert("quita la leche de mi lista", plan), Throws.Nothing);
+            Assert.That(PlanObservationProjector.TryGroundIdentityArguments(
+                plan.Steps[1], observations, out JsonObject? arguments), Is.True);
+            Assert.That((string?)arguments!["taskId"], Is.EqualTo("6f1c2d3e-0000-4000-8000-000000000001"));
+            Assert.That((long?)arguments["expectedVersion"], Is.EqualTo(3));
+            Assert.That((string?)arguments["reviewLabel"], Is.EqualTo("leche"));
+            Assert.That(MindPlanBoundary.ArgumentsSatisfyExactSchema("task.delete", arguments), Is.True);
+            Assert.That(PlanObservationProjector.ArgumentsUseVerifiedDependencyAuthority(
+                "task.delete", arguments, observations), Is.True);
+        });
+    }
+
     [Test]
     public void EmptyClosedSchemasDoNotRequireModelArgumentExtraction()
     {

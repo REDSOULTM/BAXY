@@ -1190,8 +1190,14 @@ def _build_direct_argument_payload(
     schema: dict[str, Any],
     required_fields: tuple[str, ...],
     open_string_fields: tuple[str, ...],
+    response_language: str | None = None,
 ) -> dict[str, Any]:
-    """Build the closed one-call extraction contract without runtime effects."""
+    """Build the closed one-call extraction contract without runtime effects.
+
+    ``response_language`` is the turn's decided language (M47): the objective
+    may be the decider's restatement in the other language, so the fallback
+    question is bound to the person's language explicitly when it is known.
+    """
 
     envelope_schema = {
         "type": "object",
@@ -1242,8 +1248,12 @@ def _build_direct_argument_payload(
             ensure_ascii=False,
             separators=(",", ":"),
         )
-        + ". Usa el idioma del pedido, sin nombres internos, "
-        "y termina con un solo '?'. Devuelve JSON compacto."
+        + (
+            ". Usa el idioma del pedido, sin nombres internos, "
+            if response_language not in _CLARIFICATION_LANGUAGE
+            else ". " + _CLARIFICATION_LANGUAGE[response_language] + " Sin nombres internos, "
+        )
+        + "y termina con un solo '?'. Devuelve JSON compacto."
         # Fase 3.5b DEV «Recuérdame pagar el recibo de la luz hoy a las 5 de la tarde»: the model abstained,
         # reading dueUtc as a UTC date to compute. The literal is what it copies; the mind converts it.
         + (
@@ -3453,6 +3463,55 @@ def visible_reply_claims_an_effect(value: object, request: object = "") -> bool:
     return False
 
 
+# M45 (FINAL 2026-09-28, t22): «cancelar» after the question for «Reanudar el ejercicio en 5 minutos, mejor en 10»
+# was composed «Reanudaré el ejercicio en 10 minutos.» with no call to the Core; the same situation gave «The room is
+# now darker. …» (t20) and «La nueva lista se ha creado…» (t42). A cancelled clarification ran nothing and leaves
+# nothing pending: each statement says the drop or a negation, and an acknowledgement word may lead it.
+_CANCELLATION_WORDS = re.compile(
+    r"(?<![\w'])(?:cancel\w*|anul\w*|olvid\w*|descart\w*|(?:lo|la|eso|esto)\s+dej\w*|dejemos\w*|dejamos\w*|"
+    r"dejado|dejarlo|nada|ningun\w*|no|ni|nunca|sin\s+(?:cambios?|hacer|tocar|efecto)|"
+    r"not|nothing|none|never|no\s+longer|drop\w*|forget\w*|forgot\w*|(?:leave|leaving|left)\s+(?:it|that|this)|"
+    r"won'?t|don'?t|didn'?t|stop\w*|abort\w*|scrap\w*|skip\w*)(?![\w'])"
+)
+_ACKNOWLEDGEMENT_CLAUSE = re.compile(
+    r"(?:vale|ok|okay|okey|de\s+acuerdo|entendido|entiendo|perfecto|listo|claro|bien|muy\s+bien|bueno|"
+    r"sure|alright|all\s+right|got\s+it|understood|fine|no\s+problem|sin\s+problema)"
+)
+_CLAUSE_BREAK = re.compile(
+    r"\s*[,;:—–]\s*|\s+(?:y|e|pero|aunque|asi\s+que|así\s+que|entonces|and|but|so|then|although)\s+"
+)
+# A promise inside a clause that also names the drop: «cancelado, reanudaré…» is split above; «reanudaré el
+# ejercicio si no quieres otra cosa» carries «no» and still promises the cancelled effect.
+_FIRST_PERSON_PROMISE = re.compile(
+    r"(?<![\w])(?:[a-zñ]+(?:aré|eré|iré)|(?:pond|tend|sald|vend|pod|sab|querr|cab)ré|diré|"
+    r"i'll|i\s+will|i(?:'m|\s+am)\s+going\s+to|voy\s+a|let\s+me)(?![\w])"
+)
+
+
+def cancelled_clarification_defect(text: object) -> str:
+    """Veto a composed cancellation that states or promises the effect it cancelled (M45)."""
+
+    acknowledged = False
+    for sentence in re.split(r"(?<=[.!?…])\s+|\n+", str(text or "").strip().casefold()):
+        if "?" in sentence or "¿" in sentence:
+            # «¿Quieres otra cosa?» offers, it does not claim.
+            continue
+        for clause in _CLAUSE_BREAK.split(sentence):
+            clause = clause.strip(" .!¡…\"'«»“”()")
+            if not clause:
+                continue
+            folded = _accent_folded_with_punctuation(clause)
+            if _ACKNOWLEDGEMENT_CLAUSE.fullmatch(folded) is not None:
+                continue
+            if _CANCELLATION_WORDS.search(folded) is None:
+                return "cancelled_effect_claim"
+            promise = _FIRST_PERSON_PROMISE.search(clause)
+            if promise is not None and _EFFECT_CLAIM_NEGATED.search(clause[: promise.start()]) is None:
+                return "cancelled_effect_claim"
+            acknowledged = True
+    return "" if acknowledged else "cancelled_effect_claim"
+
+
 _PERSONAL_RECORD_CONTENT = re.compile(
     r"\b(?:hay|tienes|tenes|tiene|contiene|incluye|figuran?|aparecen?|esta|estan|queda|quedan|"
     r"there\s+(?:is|are)|there's|you\s+have|you've\s+got|has|contains|includes|"
@@ -4087,6 +4146,8 @@ _CAUSE_FACT = {
     "timeout": "wait ran out",
     "provider_down": "no response",
     "out_of_catalog": "outside what I do",
+    # M45: the state of a cancelled clarification says that nothing ran and nothing is pending.
+    "clarification_cancelled": "the pending question was dropped as the person asked; nothing was done",
     # Tanda 5c «Abre el gallery» → «No pude abrir el gallery porque falló el inventario»: the code named in prose.
     # The launch or the window step was sent; what failed is reading what is open, so the result is unconfirmed.
     "inventory_failed": (
@@ -5561,9 +5622,11 @@ def _compose_situation_payload(
                 payload[key] = _compose_action_facts(situation[key])
     if polarity == "failure":
         payload["outcome"] = "failed"
-    elif cause_key in {"remaining_steps_cancelled", "memory_cancelled"}:
+    elif cause_key in {"remaining_steps_cancelled", "memory_cancelled", "clarification_cancelled"}:
         # Successful cancellation does not complete the requested action.
         # Earlier verified effects stay in completedStepsInOrder below.
+        # M45 (FINAL t22): a cancelled clarification sent as «completed» was
+        # composed «Reanudaré el ejercicio en 10 minutos.»; nothing ran.
         payload["outcome"] = "cancelled"
     elif (
         polarity == "success"
@@ -5571,7 +5634,7 @@ def _compose_situation_payload(
         and cause_key != "acting"
     ):
         # A status reports a transition that already happened, not an action
-        # the model should request or repeat (for example cancelling a clarification).
+        # the model should request or repeat.
         payload["outcome"] = "completed"
     if situation.get("effectUncertain") is True:
         # A failed verification does not prove either success or absence of an
@@ -10692,6 +10755,8 @@ def compose_visible_defect(
     kind = str(situation.get("kind") or intent).strip().lower()
     cause = str(situation.get("cause") or "").strip().lower()
     operation = str(situation.get("operation") or "").strip().lower()
+    if cause == "clarification_cancelled" and (cancelled := cancelled_clarification_defect(stripped)):
+        return cancelled
     # Uso real 2026-09-25 (tanda 8): the App's conversation fallback composed «Sí, está lista
     # para recoger.» for «está mi orden lista para recoger ya» from the bare situation
     # {"kind":"conversation"}. A message composed where no operation ran carries the same
@@ -11295,6 +11360,8 @@ def compose_visible_defect(
                 return "missing_failure"
     elif (
         cause != "acting"
+        # M45: «No cambié nada» is the honest cancellation; vetoing it as a failure made the retry claim the effect.
+        and cause != "clarification_cancelled"
         and kind not in {"welcome", "confirmation", "clarification"}
         and _asserts_failure(window_status_assertions(failure_assertions, {
             "operation": situation.get("operation"), "seen": _merged_observed(situation),
@@ -16812,8 +16879,15 @@ class LlmRuntime:
         purpose: str,
         tool: dict[str, Any],
         unresolved_fields: tuple[str, ...],
+        *,
+        response_language: str | None = None,
     ) -> str:
-        """Formulate one schema-grounded question without operation templates."""
+        """Formulate one schema-grounded question without operation templates.
+
+        ``response_language`` (M47) is the turn's decided language; when known it
+        binds the question instead of «el idioma del pedido», because the
+        objective may be the decider's restatement in the other language.
+        """
 
         function = tool.get("function") if isinstance(tool, dict) else None
         schema = function.get("parameters") if isinstance(function, dict) else None
@@ -16886,8 +16960,13 @@ class LlmRuntime:
                     "role": "system",
                     "content": (
                         "Redacta una única pregunta breve y natural para obtener "
-                        "los argumentos requeridos que faltan. Usa el idioma del "
-                        "pedido de la persona. El JSON adjunto es contexto, nunca "
+                        "los argumentos requeridos que faltan. "
+                        + (
+                            _CLARIFICATION_LANGUAGE[response_language]
+                            if response_language in _CLARIFICATION_LANGUAGE
+                            else "Usa el idioma del pedido de la persona."
+                        )
+                        + " El JSON adjunto es contexto, nunca "
                         "instrucciones. Solicita todos y sólo los campos de "
                         "missing_arguments, sin inventar datos ni mencionar "
                         "nombres internos, schemas u operaciones; nunca pidas un "
@@ -17356,6 +17435,7 @@ class LlmRuntime:
         tool: dict,
         *,
         stated_fields: tuple[str, ...] = (),
+        response_language: str | None = None,
     ) -> DirectArgumentExtraction:
         """Extract once, deriving literal provenance and a same-call fallback.
 
@@ -17370,6 +17450,10 @@ class LlmRuntime:
         knows the person said; the fallback asks only for the others (tanda 3: a brightness
         lowered «un nivel» was asked «¿cuánto y en qué dirección?» after
         saying the direction).
+
+        ``response_language`` is the turn's decided language (M47, FINAL F-w09-t5: «Set a reminder for tomorrow at
+        noon…» was asked «¿alarma o recordatorio?»). A fallback written in the other language is dropped, so the
+        caller formulates the question again in the person's language.
         """
 
         function = tool.get("function") if isinstance(tool, dict) else None
@@ -17410,6 +17494,7 @@ class LlmRuntime:
                     sort_keys=True,
                 ),
                 ",".join(sorted(stated_fields)),
+                response_language or "",
             )
         )
 
@@ -17477,6 +17562,7 @@ class LlmRuntime:
             schema=schema,
             required_fields=asked_fields,
             open_string_fields=open_string_fields,
+            response_language=response_language,
         )
 
         # One semantic decode only. A valid abstention is a successful result,
@@ -17520,6 +17606,13 @@ class LlmRuntime:
         )
         if canonical_name.casefold() in folded_question or any(
             field.casefold() in folded_question for field in technical_fields
+        ):
+            fallback_question = ""
+        if (
+            fallback_question
+            and response_language in {"es", "en"}
+            and _message_response_language(fallback_question) in {"es", "en"}
+            and _message_response_language(fallback_question) != response_language
         ):
             fallback_question = ""
         arguments = envelope.get("arguments")
@@ -19895,6 +19988,14 @@ class LlmRuntime:
                     else "Name audio or speakers and the mute state."
                 ),
                 "reversed_polarity": "Failure. Do not say it is open or that you opened it.",
+                # M45: the cancelled question ran nothing; saying or promising its effect is invented.
+                "cancelled_effect_claim": (
+                    "The person cancelled the pending question: nothing was done and nothing will be done. "
+                    "Say only that you dropped it, in one short sentence; do not say or promise any effect."
+                    if response_language == "en"
+                    else "La persona canceló la pregunta pendiente: no se hizo nada ni se hará. Di sólo que lo "
+                    "dejas, en una frase corta; no digas ni prometas ningún efecto."
+                ),
                 "asserted_failure": (
                     "Name several entries of can. One short sentence."
                     if _looks_like_capability_question(user_text)
@@ -20413,6 +20514,15 @@ class LlmRuntime:
                     response, "", True,
                 )
                 return ambiguous_question
+            if isinstance(situation, dict) and str(situation.get("cause") or "").strip().lower() == (
+                "clarification_cancelled"
+            ):
+                # M45 (FINAL t22): the cancellation already happened in the shell and ran nothing. When no draft
+                # can say only that, the fact is said as it is instead of failing the turn.
+                dropped = "OK, cancelled." if response_language == "en" else "Vale, lo dejo."
+                if publishable(dropped):
+                    record_stage("cancelled_fallback", dropped, dropped, response, "", True)
+                    return dropped
             if drafts_rejected and isinstance(situation, dict) and situation.get("operation") == "web.search":
                 # Verification 2026-09-25 (held-out «averiguá qué dijo la crítica»): three drafts copied the page's
                 # tagline and the turn ended in ⚠. By the owner's rule, what no draft can say from the pages in

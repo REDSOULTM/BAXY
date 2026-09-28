@@ -870,6 +870,63 @@ public sealed class MindShellEndToEndTests
         });
     }
 
+    // M44 (FINAL F-p02-t3, F-w06-t1): the decided operation consumes an identity
+    // a verified resolver issues, so it crosses the planner with its effect
+    // preserved; the direct argument step never asks the person for an ID.
+    [TestCase("Delete the last item from my list.", "task.delete",
+        "Which item do you want to remove from the list?")]
+    [TestCase("Pon la ventana de Word a la izquierda.", "window.snap",
+        "¿Qué ventana quieres poner a la izquierda?")]
+    public async Task DependencyBoundActionCrossesThePlannerInsteadOfAskingForAnIdentity(
+        string request,
+        string operation,
+        string question)
+    {
+        await WithContractMindAsync(async (viewModel, _, tracePath) =>
+        {
+            string answer = await SubmitAsync(viewModel, request);
+
+            JsonElement[] trace = ReadTrace(tracePath);
+            JsonElement planRequest = trace.Single(static entry =>
+                Property(entry, "type") == "plan");
+            Assert.Multiple(() =>
+            {
+                Assert.That(answer, Is.EqualTo(question));
+                Assert.That(
+                    planRequest.GetProperty("expectedOperations")
+                        .EnumerateArray()
+                        .Select(static value => value.GetString()),
+                    Is.EqualTo(new[] { operation }));
+                Assert.That(
+                    trace,
+                    Has.None.Matches<JsonElement>(static entry =>
+                        Property(entry, "type") == "arguments"));
+                Assert.That(viewModel.HasPendingPlan, Is.False);
+            });
+        });
+    }
+
+    // M47 (FINAL F-w09-t5): the argument request carries the turn's language
+    // and the missing-argument question reaches the person in it.
+    [Test]
+    public async Task MissingArgumentQuestionTravelsInTheTurnLanguage()
+    {
+        await WithContractMindAsync(async (viewModel, _, tracePath) =>
+        {
+            string answer = await SubmitAsync(viewModel, "Set a reminder to pay the water bill.");
+
+            JsonElement argumentsRequest = ReadTrace(tracePath).Single(static entry =>
+                Property(entry, "type") == "arguments");
+            Assert.Multiple(() =>
+            {
+                Assert.That(answer, Is.EqualTo("Should it be an alarm or a reminder?"));
+                Assert.That(Property(argumentsRequest, "responseLanguage"), Is.EqualTo("en"));
+                Assert.That(Property(argumentsRequest, "operation"), Is.EqualTo("notification.schedule"));
+                Assert.That(viewModel.HasPendingPlan, Is.False);
+            });
+        });
+    }
+
     [Test]
     [Explicit("Real-runtime read-only shell/Core proof; execute through run_mind_shell_e2e_gate.ps1.")]
     [Category("PhysicalMindShellGate")]

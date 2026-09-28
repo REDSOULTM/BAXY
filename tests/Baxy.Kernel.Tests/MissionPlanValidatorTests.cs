@@ -183,6 +183,9 @@ public sealed class MissionPlanValidatorTests
 
     [TestCase("notification.dismiss", "notification.list.due")]
     [TestCase("reminder.delete", "reminder.resolve.exact")]
+    // M44 (FINAL F-p02-t3 «clear out the last item on the list»): the mind
+    // plans task.resolve.exact → task.delete; the shell accepts the same relation.
+    [TestCase("task.delete", "task.resolve.exact")]
     [TestCase("filesystem.read.text", "filesystem.search")]
     [TestCase("filesystem.read.text", "filesystem.list")]
     public void DeferredIdentityConsumersRequireTheirResolvers(

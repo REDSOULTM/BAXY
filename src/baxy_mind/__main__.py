@@ -757,8 +757,13 @@ def prepare_direct_argument_result(
     tool: dict,
     arguments: object,
     fallback_question: str = "",
+    response_language: str | None = None,
 ) -> tuple[dict | None, str]:
-    """Return only grounded arguments or one schema-grounded clarification."""
+    """Return only grounded arguments or one schema-grounded clarification.
+
+    ``response_language`` is the turn's language decided upstream (M47); the
+    question is formulated in it rather than in the objective's.
+    """
 
     schema = tool["function"]["parameters"]
     grounded, fields = normalize_objective_arguments(
@@ -783,6 +788,7 @@ def prepare_direct_argument_result(
         "",
         tool,
         fields,
+        **({"response_language": response_language} if response_language else {}),
     )
     return None, question
 
@@ -6913,12 +6919,21 @@ def _run_sidecar(
                 )
                 question = ""
                 if arguments is None:
+                    # M47 (FINAL F-w09-t5, F-p02-t3): the shell sends the language the turn decision chose; the
+                    # objective may be the decider's restatement in the other language, so it cannot decide it.
+                    response_language = message.get("responseLanguage")
+                    language_argument = (
+                        {"response_language": response_language}
+                        if response_language in {"es", "en", "mixed"}
+                        else {}
+                    )
                     extraction = llm.extract_direct_arguments(
                         objective,
                         tool,
                         stated_fields=_stated_argument_fields(
                             operation, objective, tool["function"]["parameters"],
                         ),
+                        **language_argument,
                     )
                     arguments, question = prepare_direct_argument_result(
                         llm,
@@ -6926,6 +6941,7 @@ def _run_sidecar(
                         tool,
                         extraction.arguments,
                         extraction.fallback_question,
+                        **language_argument,
                     )
                 write_request_message(
                     {
