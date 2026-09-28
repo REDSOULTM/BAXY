@@ -68,6 +68,8 @@ def pair(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
         elif kind == "posterior" and current is not None:
             current["status"] = str(row.get("statusDescription") or "")
             current["mindReplyRejection"] = row.get("mindReplyRejection")
+            # A7: the text the shell refused, so a false veto can be told from a right one.
+            current["mindRejectedReply"] = row.get("mindRejectedReply")
     return turns
 
 

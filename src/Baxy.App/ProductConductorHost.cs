@@ -926,6 +926,7 @@ internal static class ProductConductorHost
             ["hasCompositionError"] = posterior.HasCompositionError,
             ["statusDescription"] = posterior.StatusDescription,
             ["mindReplyRejection"] = posterior.MindReplyRejection,
+            ["mindRejectedReply"] = posterior.MindRejectedReply,
         };
 
     private static JsonObject BuildMeta(ConductorArguments parsed)

@@ -213,7 +213,7 @@ internal static class UserMessagePolicy
 
         foreach (string term in ForbiddenTerms)
         {
-            if (!text.Contains(term, StringComparison.OrdinalIgnoreCase))
+            if (!NamesTerm(text, term))
             {
                 continue;
             }
@@ -228,6 +228,25 @@ internal static class UserMessagePolicy
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// A7 E2 (FINAL t241): a jargon term ends where its word ends. «operacion» inside «operaciones básicas»
+    /// (arithmetic) or «tool» inside «toolkit» go on into another word; a name glued in front («XRouter notes»)
+    /// still says «router». Twin of llm._names_forbidden_term.
+    /// </summary>
+    private static bool NamesTerm(string text, string term)
+    {
+        if (!text.Contains(term, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        string end = char.IsLetterOrDigit(term[^1]) ? @"(?![\w])" : string.Empty;
+        return Regex.IsMatch(
+            text,
+            Regex.Escape(term) + end,
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     }
 
     public static bool IsSafe(string text, UserMessageDraft draft)
@@ -376,7 +395,11 @@ internal static class UserMessagePolicy
             // para las 3 de la tarde»); the observed clock is optional there and
             // the asked time is not an extra invented clock.
             bool countdownRequested = IsCountdownRequest(userText);
-            if (clockRequested && !countdownRequested && !PreservesObservedClock(draft.Source, modelText))
+            // A7 C (DEV-A3 t217 «¿qué hora será de aquí a doce minutos?»): the mind adds the minutes to the
+            // observed clock (M40) and its guard checks that later time; the current clock is not the answer.
+            bool laterClockRequested = IsLaterClockRequest(userText);
+            if (clockRequested && !countdownRequested && !laterClockRequested
+                && !PreservesObservedClock(draft.Source, modelText))
             {
                 return "missing_literal_fact";
             }
@@ -408,7 +431,7 @@ internal static class UserMessagePolicy
             {
                 return "missing_literal_fact";
             }
-            if (!countdownRequested && InventedExtraClock(draft.Source, modelText))
+            if (!countdownRequested && !laterClockRequested && InventedExtraClock(draft.Source, modelText))
             {
                 return "missing_literal_fact";
             }
@@ -683,6 +706,23 @@ internal static class UserMessagePolicy
             + @"how\s+(?:long|much\s+time|many\s+(?:hours|minutes|mins))\s+(?:(?:is|are|do\s+(?:i|we)\s+have|"
             + @"have\s+(?:i|we)\s+got)\s+)?(?:(?:left|remaining|remain|to\s+go)\s+)?(?:until|till|til|before|to)\b)",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+    /// <summary>
+    /// The clock some minutes or hours from now («¿qué hora será de aquí a doce minutos?», «what time will it be
+    /// in 2 hours»). Same heads as the mind's semantic.temporal clock_later_asked; the two must not diverge.
+    /// </summary>
+    internal static bool IsLaterClockRequest(string? text)
+    {
+        string folded = FoldForPolicy(text ?? string.Empty);
+        return Regex.IsMatch(
+                folded,
+                @"\b(?:que\s+hora\s+(?:sera|seran|va\s+a\s+ser)|what\s+time\s+(?:will\s+it\s+be|is\s+it\s+going\s+to\s+be))\b",
+                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
+            && Regex.IsMatch(
+                folded,
+                @"\b(?:de\s+aqui\s+a|dentro\s+de|en|in)\s+(?:[a-z0-9]+\s+){0,3}(?:minutos?|horas?|minutes?|hours?)\b",
+                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+    }
 
     internal static bool IsConnectivityStatusRequest(string text)
     {
@@ -1541,10 +1581,16 @@ internal static class UserMessagePolicy
         // tanda-02b t28 «¡ave, cesar!» → «¡Ave, César! ¿Cómo estás?»: returning a
         // salutation in its own exclamation and then asking something else is
         // an answer; only a question that carries the request echoes it.
+        // A7 E7 (DEV-A3 t201 «new address» → «What is the new address?»): a request that is only a short noun
+        // phrase is answered by asking its value; a question that opens with an interrogative word asks for new
+        // data and does not hand the request back.
+        bool nounPhraseRequest = asked.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length <= 3;
         foreach (string sentence in Regex.Split(reply, @"(?<=[.!?…])\s+"))
         {
+            string folded = FoldForPolicy(sentence);
             if (sentence.Contains('?', StringComparison.Ordinal)
-                && FoldForPolicy(sentence).Contains(asked, StringComparison.Ordinal))
+                && folded.Contains(asked, StringComparison.Ordinal)
+                && !(nounPhraseRequest && AsksForAValue(folded)))
             {
                 return true;
             }
@@ -1552,6 +1598,12 @@ internal static class UserMessagePolicy
 
         return false;
     }
+
+    private static bool AsksForAValue(string foldedSentence) =>
+        Regex.IsMatch(
+            foldedSentence,
+            @"^\s*[¿¡]?\s*(?:que|cual|cuales|cuando|donde|quien|what|which|when|where|who)\b",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
 
     private static bool GreetsOutOfWorldTarget(string folded) =>
         Regex.IsMatch(
@@ -2017,7 +2069,12 @@ internal static class UserMessagePolicy
             + @"|\b(?:(?:is|was|were|could)\s+not\s+(?:be\s+)?(?:confirmed|verified)|cannot\s+be\s+(?:confirmed|verified)|not\s+confirmed|unconfirmed|unverified|no\s+(?:esta|quedo|queda)\s+confirmad[oa]|sin\s+confirmar)\b"
             // WINGET2083: «no se puede confirmar», «no se confirma la instalación».
             // Tanda 9: «no se puede verificar si hay correos nuevos» (twin of the mind's _FAILURE_MARKERS).
-            + @"|\b(?:no\s+(?:se\s+)?(?:puede|pude|puedo|podemos|logro)\s+(?:confirmar|verificar|comprobar)|no\s+se\s+(?:confirma|verifica|comprueba))\b",
+            + @"|\b(?:no\s+(?:se\s+)?(?:puede|pude|puedo|podemos|logro)\s+(?:confirmar|verificar|comprobar)|no\s+se\s+(?:confirma|verifica|comprueba))\b"
+            // A7 E6 (FINAL t305 «No he podido subir el volumen… el cambio no se confirmó»): the mind accepted it and
+            // this twin read it as a reversed result. Same markers as the mind's _FAILURE_MARKERS.
+            + @"|\bno\s+se\s+(?:ha\s+|han\s+)?(?:confirm|verific|comprob)(?:o|ado|ada|aron)\b"
+            + @"|\bno\s+(?:esta|quedo)\s+(?:verificad|comprobad)[oa]\b|\bno\s+estoy\s+segur[oa]\s+de\s+que\b"
+            + @"|\bno\s+(?:he|hemos)\s+podido\b|\b(?:haven[’']?t|have\s+not)\s+been\s+able\b",
             RegexOptions.CultureInvariant);
     }
 
@@ -2340,6 +2397,8 @@ internal static class UserMessagePolicy
         + @"(?:last|next|previous|past|coming)\s+" + CalendarNamedDay + "|"
         + @"(?:hace|dentro\s+de|en)\s+\S+\s+d[íi]as|in\s+\S+\s+days|\S+\s+days\s+ago)\b",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+    internal static bool AsksCalendarDate(string? userText) => AsksCalendarPart(userText);
 
     private static bool AsksCalendarPart(string? userText) =>
         CalendarPartAsked.IsMatch(userText ?? string.Empty) || RelativeCalendarDay.IsMatch(userText ?? string.Empty);

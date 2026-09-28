@@ -66,6 +66,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// de uno falso sin repetir la campaña entera.
     /// </summary>
     internal string? LastMindReplyRejection { get; private set; }
+
+    /// <summary>
+    /// A7: the text the mind wrote and the shell refused (its reply, its clarification or its last composition),
+    /// for the private run audit only; the veto name alone did not tell a false veto from a right one.
+    /// </summary>
+    internal string? LastMindRejectedReply { get; private set; }
     private string? _progressLabel;
     private DateTimeOffset? _lastBaxyVisibleUtc;
     private DateTimeOffset? _firstWakeUtc;
@@ -163,6 +169,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 }
 
                 LastMessageCompositionFailure = failure;
+                LastMindRejectedReply ??= pending.LastRejectedText;
                 HasCompositionError = false;
                 AddMessageCore("BAXY", text, isUser: false, PublicResponseRoute.FromDraft(pending.Draft));
                 RestorePresentationState();
@@ -181,6 +188,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 }
 
                 LastMessageCompositionFailure = failure;
+                LastMindRejectedReply ??= pending.LastRejectedText;
                 HasCompositionError = true;
                 CompositionFailed?.Invoke(pending, failure);
                 // Owner session 2026-09-21 16:08 «que es una verga»: the composition
@@ -261,6 +269,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         AddMessage("Tú", publicUserText, isUser: true);
         _turnExecutionActive = true;
         LastMindReplyRejection = null;
+        LastMindRejectedReply = null;
         HasCompositionError = false;
         LastMessageCompositionFailure = null;
         IsBusy = true;
@@ -2407,6 +2416,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         string.Join(" ", PreviousUserRequests()),
                         unsupportedByMind: string.Equals(
                             turn.ConversationKind, "unsupported", StringComparison.Ordinal));
+                LastMindRejectedReply = LastMindReplyRejection is null ? null : turn.Reply;
                 if (LastMindReplyRejection is null)
                 {
                     AddMessage(
@@ -2504,6 +2514,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     turn.ResponseLanguage,
                     string.Join(" ", PreviousUserRequests()),
                     unsupportedByMind: string.Equals(turn.ConversationKind, "unsupported", StringComparison.Ordinal));
+            LastMindRejectedReply = LastMindReplyRejection is null ? null : turn.Reply;
             if (LastMindReplyRejection is null)
             {
                 AddMessage(
@@ -2660,7 +2671,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
             if (extraction is null)
             {
-                return false;
+                // A7 (FINAL t23/t199/t320): the action was decided and its arguments came back without values
+                // and without a usable question. That is a question to ask, not a failure to report, and the
+                // question names the field the operation still needs.
+                return AddMissingArgumentsClarification(route.Text, descriptor);
             }
 
             if (extraction.Arguments is null)
@@ -2707,6 +2721,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _pendingMindClarificationObjective = preserveObjective ? request : null;
         LastMindReplyRejection = UserMessagePolicy.ConversationReplyRejectionReason(
             request, question, responseLanguage, clarification: true, missingFields: missingFields);
+        LastMindRejectedReply = LastMindReplyRejection is null ? null : question;
         if (LastMindReplyRejection is null)
         {
             AddMessage(
@@ -2725,6 +2740,22 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 "BAXY", TurnVisibleFacts.Clarification("ambiguous_request", requiredInput),
                 isUser: false, messageEvent: UserMessageEvent.Clarification);
         }
+        return true;
+    }
+
+    private bool AddMissingArgumentsClarification(string request, ProductOperationDescriptor descriptor)
+    {
+        IReadOnlyList<string> fields = descriptor.ArgumentsSchema.Required.Count > 0
+            ? descriptor.ArgumentsSchema.Required
+            : descriptor.ArgumentsSchema.Properties.Select(static property => property.Name).ToArray();
+        _pendingMindClarificationObjective = request;
+        AddMessage(
+            "BAXY",
+            TurnVisibleFacts.Clarification(
+                "ambiguous_request",
+                new JsonObject { ["missingValue"] = string.Join(", ", fields) }),
+            isUser: false,
+            messageEvent: UserMessageEvent.Clarification);
         return true;
     }
 

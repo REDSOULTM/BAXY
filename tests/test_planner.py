@@ -3122,9 +3122,12 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
 
     def test_visible_message_retries_app_forbidden_response_terms(self):
         runtime = object.__new__(LlmRuntime)
+        # A7 E2 (FINAL t241 «…botones para operaciones básicas…»): a forbidden
+        # term is a whole word, so the jargon draft names «operacion» itself; the
+        # plural of arithmetic «operaciones» is another word.
         replies = iter(
             [
-                "Complete las 8 operaciones.",
+                "Complete la operacion de 8 pasos.",
                 "Complete y verifique los 8 pasos.",
             ]
         )
