@@ -126,6 +126,22 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
         "WORDING", "picks which of the person's words a limit must quote (an anchor), not what they asked"),
     ("llm.py", "_cut_request_tail"): ("WORDING", "the last words of a cut message, quoted back in the question"),
     ("llm.py", "_bare_path_name"): ("WORDING", "the file name of a pasted path, quoted back in the question"),
+    ("llm.py", "_deterministic_final"): (
+        "WORDING",
+        "A7 last resort: the day or later hour the person named picks which verified value the sentence tells",
+    ),
+    ("llm.py", "_observed_identifier_tokens.walk"): (
+        "GROUNDING",
+        "A7 E4: identifiers inside observed values, so a fragment of an observed title is not internal code",
+    ),
+    ("llm.py", "_said_misspelled"): (
+        "GROUNDING",
+        "A7 E1: a name in the reply checked against a word the person wrote with a typo",
+    ),
+    ("llm.py", "_search_query_terms"): (
+        "GROUNDING",
+        "M51: the query's content words, the evidence a search result is about what was asked",
+    ),
     ("llm.py", "LlmRuntime.clarify_unresolved_input"): (
         "WORDING", "the question BAXY writes must not echo the person's words (echo check); the kind of input "
         "was read by semantic.guards"),

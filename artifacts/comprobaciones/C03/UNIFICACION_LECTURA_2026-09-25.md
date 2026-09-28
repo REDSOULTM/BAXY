@@ -121,25 +121,25 @@ consumen las lecturas por su nombre en vez de releer el texto.
 ```json
 {
  "regex_sites": {
-  "mind_outside_semantic": 747,
-  "app": 248
+  "mind_outside_semantic": 798,
+  "app": 263
  },
  "sites_on_the_person": {
-  "mind_outside_semantic": 46,
-  "app": 121
+  "mind_outside_semantic": 52,
+  "app": 124
  },
  "functions_on_the_person": {
-  "mind_outside_semantic": 31,
-  "app": 46
+  "mind_outside_semantic": 36,
+  "app": 49
  },
  "functions_on_the_person_by_class": {
-  "GROUNDING": 17,
+  "GROUNDING": 21,
   "INDEX": 1,
   "INPUT": 7,
-  "MIRROR": 28,
+  "MIRROR": 31,
   "OTHER": 3,
   "READING": 14,
-  "WORDING": 7
+  "WORDING": 8
  }
 }
 ```
@@ -156,39 +156,44 @@ consumen las lecturas por su nombre en vez de releer el texto.
 | `wake_cascade.py` | `normalize_lexical_transcript` | 570 | INPUT | the transcript before it is a request: wake-word and listening checks run on speech, not on a request |
 | `wake_verifier.py` | `lexical_words` | 489 | INPUT | the transcript before it is a request: wake-word and listening checks run on speech, not on a request |
 | `skill_registry.py` | `_token_sequence` | 337 | INDEX | the request tokenized to rank skill passages lexically; no pattern decides a meaning |
-| `llm.py` | `_literal_reply_defect` | 2323 | GROUNDING | a number in the reply of a said-back literal or a draw must be one the person said |
-| `llm.py` | `_ocr_unsupported_terms.stems` | 7822 | GROUNDING | a word of the screen report must be read on screen or said by the person |
-| `llm.py` | `_screen_count_defect` | 7319 | GROUNDING | a number the person said may be repeated |
-| `llm.py` | `_search_report_off_subject` | 8375 | GROUNDING | the proper names the person wrote are the subject the report must be about |
-| `llm.py` | `_search_report_shows_the_search` | 8320 | GROUNDING | the person's words (and the pages read) are the evidence each word, number or name of the search report is checked against; nothing decides what was asked |
-| `llm.py` | `_search_report_speaks_as_a_page` | 8222 | GROUNDING | the person's words (and the pages read) are the evidence each word, number or name of the search report is checked against; nothing decides what was asked |
-| `llm.py` | `_search_report_unsourced_numbers` | 8038, 8041 | GROUNDING | the person's words (and the pages read) are the evidence each word, number or name of the search report is checked against; nothing decides what was asked |
-| `llm.py` | `_search_report_unsourced_words` | 8087 | GROUNDING | the person's words (and the pages read) are the evidence each word, number or name of the search report is checked against; nothing decides what was asked |
-| `llm.py` | `_shaped_conversation_answer_violates_contract` | 2701 | GROUNDING | a maker or origin the person named is theirs to repeat (_INVENTED_ORIGIN on both texts); what was asked comes from semantic.conversation readers |
-| `llm.py` | `_unverified_present_fact` | 10499 | GROUNDING | a date or figure about now may only restate what the person said or what was read |
-| `llm.py` | `_weather_fact_defect` | 8805 | GROUNDING | a number the person said is theirs to repeat, never a measurement; what the weather question asks is read by semantic.web |
-| `llm.py` | `compose_visible_defect` | 10536, 10752, 10754, 11055, 11639 | GROUNDING | identifiers and literals the person typed are allowed in the reply, and an echo of the request is rejected; every reading of what was asked is a semantic reader it calls |
-| `llm.py` | `visible_reply_claims_an_effect` | 3732 | GROUNDING | a claimed act that repeats the person's own words is not invented (asked_words) |
+| `llm.py` | `_failure_word_is_the_persons` | 4186 | GROUNDING | the «fallos» of the reply may be the person's own word said back, never BAXY's failure |
+| `llm.py` | `_literal_reply_defect` | 1969 | GROUNDING | a number in the reply of a said-back literal or a draw must be one the person said |
+| `llm.py` | `_observed_identifier_tokens.walk` | 10850 | GROUNDING | A7 E4: identifiers inside observed values, so a fragment of an observed title is not internal code |
+| `llm.py` | `_ocr_unsupported_terms.stems` | 7856 | GROUNDING | a word of the screen report must be read on screen or said by the person |
+| `llm.py` | `_said_misspelled` | 10835 | GROUNDING | A7 E1: a name in the reply checked against a word the person wrote with a typo |
+| `llm.py` | `_screen_count_defect` | 7326 | GROUNDING | a number the person said may be repeated |
+| `llm.py` | `_search_query_terms` | 8542 | GROUNDING | M51: the query's content words, the evidence a search result is about what was asked |
+| `llm.py` | `_search_report_off_subject` | 8483 | GROUNDING | the proper names the person wrote are the subject the report must be about |
+| `llm.py` | `_search_report_shows_the_search` | 8428 | GROUNDING | the person's words (and the pages read) are the evidence each word, number or name of the search report is checked against; nothing decides what was asked |
+| `llm.py` | `_search_report_speaks_as_a_page` | 8256 | GROUNDING | the person's words (and the pages read) are the evidence each word, number or name of the search report is checked against; nothing decides what was asked |
+| `llm.py` | `_search_report_unsourced_numbers` | 8072, 8075 | GROUNDING | the person's words (and the pages read) are the evidence each word, number or name of the search report is checked against; nothing decides what was asked |
+| `llm.py` | `_search_report_unsourced_words` | 8121 | GROUNDING | the person's words (and the pages read) are the evidence each word, number or name of the search report is checked against; nothing decides what was asked |
+| `llm.py` | `_shaped_conversation_answer_violates_contract` | 2345, 2361 | GROUNDING | a maker or origin the person named is theirs to repeat (_INVENTED_ORIGIN on both texts); what was asked comes from semantic.conversation readers |
+| `llm.py` | `_unverified_present_fact` | 10810 | GROUNDING | a date or figure about now may only restate what the person said or what was read |
+| `llm.py` | `_weather_fact_defect` | 9073 | GROUNDING | a number the person said is theirs to repeat, never a measurement; what the weather question asks is read by semantic.web |
+| `llm.py` | `compose_visible_defect` | 10910, 11126, 11128, 11433, 12028 | GROUNDING | identifiers and literals the person typed are allowed in the reply, and an echo of the request is rejected; every reading of what was asked is a semantic reader it calls |
+| `llm.py` | `visible_reply_claims_an_effect` | 3430 | GROUNDING | a claimed act that repeats the person's own words is not invented (asked_words) |
 | `planner.py` | `_grounding_tokens` | 1018 | GROUNDING | a value the model proposed is accepted only when the person's words contain it literally |
 | `planner.py` | `_number_is_grounded` | 1180, 1184 | GROUNDING | a value the model proposed is accepted only when the person's words contain it literally |
 | `planner.py` | `_tokens` | 1012 | GROUNDING | a value the model proposed is accepted only when the person's words contain it literally |
 | `planner.py` | `_value_is_grounded` | 1145, 1150, 1155, 1161 | GROUNDING | a value the model proposed is accepted only when the person's words contain it literally |
 | `first_signal.py` | `_snippet` | 79 | WORDING | the request quoted in the fixture's progress line |
-| `llm.py` | `LlmRuntime.clarify_unresolved_input` | 17288, 17412 | WORDING | the question BAXY writes must not echo the person's words (echo check); the kind of input was read by semantic.guards |
-| `llm.py` | `_bare_path_name` | 12763 | WORDING | the file name of a pasted path, quoted back in the question |
-| `llm.py` | `_cut_request_tail` | 12756 | WORDING | the last words of a cut message, quoted back in the question |
-| `llm.py` | `_shaped_presentation_text` | 2555 | WORDING | the person's message is the material of the prompt (a numbered list kept, anchor words); the shape was read by semantic.conversation |
-| `llm.py` | `_unsupported_request_anchor_token` | 12458, 12472, 12481 | WORDING | picks which of the person's words a limit must quote (an anchor), not what they asked |
+| `llm.py` | `LlmRuntime.clarify_unresolved_input` | 16967, 17091 | WORDING | the question BAXY writes must not echo the person's words (echo check); the kind of input was read by semantic.guards |
+| `llm.py` | `_bare_path_name` | 13174 | WORDING | the file name of a pasted path, quoted back in the question |
+| `llm.py` | `_cut_request_tail` | 13167 | WORDING | the last words of a cut message, quoted back in the question |
+| `llm.py` | `_deterministic_final` | 6859 | WORDING | A7 last resort: the day or later hour the person named picks which verified value the sentence tells |
+| `llm.py` | `_shaped_presentation_text` | 2204 | WORDING | the person's message is the material of the prompt (a numbered list kept, anchor words); the shape was read by semantic.conversation |
+| `llm.py` | `_unsupported_request_anchor_token` | 12857, 12871, 12880 | WORDING | picks which of the person's words a limit must quote (an anchor), not what they asked |
 
 El resto de los patrones de la mente fuera de `semantic/` no lee el texto de la persona:
 
 | Fichero | WORDING (texto de BAXY) | OTHER (hashes, rutas, observaciones, catálogo) |
 |---|---|---|
-| `__main__.py` | 2 | 3 |
+| `__main__.py` | 2 | 4 |
 | `assets.py` | 0 | 2 |
 | `catalog_operation_aliases.py` | 0 | 2 |
 | `historical_intents.py` | 0 | 2 |
-| `llm.py` | 236 | 78 |
+| `llm.py` | 263 | 84 |
 | `observed_response_literals.py` | 1 | 5 |
 | `planner.py` | 0 | 1 |
 | `skill_registry.py` | 0 | 1 |
@@ -212,7 +217,7 @@ El resto de los patrones de la mente fuera de `semantic/` no lee el texto de la 
 | `NaturalSystemStatusRequestParser.cs` | 22 | 3 | READING | shell shortcut «hora» → system.time without a mind round-trip (latency); the mind reads the same request (semantic.network); UserMessagePolicy also judges clock replies with it |
 | `NoteDisambiguation.cs` | 6 | 0 | MIRROR | the person's choice among the notes the App listed, bound to that pending list |
 | `ObservedResponseLiterals.cs` | 2 | 1 | WORDING | observed names masked in BAXY's own text |
-| `UserMessagePolicy.cs` | 80 | 40 | MIRROR | the App's policy on every text it publishes, its own fallbacks included: a reply is judged against what was asked, so the policy reads the request with twins of the mind's readers (calendar parts, countdown, clitic volume, visual content, out-of-world); consuming the mind's reading needs the compose result to carry it |
+| `UserMessagePolicy.cs` | 95 | 43 | MIRROR | the App's policy on every text it publishes, its own fallbacks included: a reply is judged against what was asked, so the policy reads the request with twins of the mind's readers (calendar parts, countdown, clitic volume, visual content, out-of-world); consuming the mind's reading needs the compose result to carry it |
 | `VoiceListenCommand.cs` | 2 | 0 | INPUT | the listening switch, which must work without the mind |
 
 Métodos de la App con otra clase que la de su fichero:
