@@ -306,3 +306,8 @@ con veto a más acciones inventadas: meseta estable en preguntar −0,75, charla
 `full3` aislado 234 → 244/260 (sueltos 109 → 118/125), inventadas 7 → 5, 10 arreglados y 0 rotos. Sesgos fijados
 antes de ver DEV-B. Entra con D19 (DEV-B aislado sin bajar, sin más inventadas) y después D12 integrado (DEV-B,
 capa A ≥ 96,0, reserva sin bajar, 742 revisadas: el riesgo es un límite falso a una orden del dueño).
+
+**Resultado (04:05): retirado.** DEV-B aislado con los sesgos prerregistrados 227 → 226 (1 arreglado, 2 rotos;
+sueltos 105 → 104), inventadas 6 → 4. No cumple D19. Lo que CAL ganó en DEV-A (+10) no generaliza, como el few-shot:
+los fallos restantes de DEV-B no son de calibración de una clase. No se prueba otra combinación de sesgos (sería
+iterar sobre DEV-B).
