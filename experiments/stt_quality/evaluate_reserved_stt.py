@@ -144,8 +144,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 comprensión natural — M27: la música se pregunta sólo si no se dijo qué poner
 # C03 comprensión natural — arreglos de la revisión independiente
 # C03 comprensión natural — arreglos de la revisión independiente
+# C03 comprensión natural — léxico de música separado por barras (censo de prosa visible)
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "64e2e70172009d993c30e438f4191e5274916d36f571346e5f793d5be98565b7"
+    "237e6e7bcae0c15a54c595ce4274259eb42d28b9772b6ba9e68760ebef6ec929"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

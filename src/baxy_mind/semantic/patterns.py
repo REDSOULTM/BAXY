@@ -5451,17 +5451,17 @@ _MUSIC_ORDER_HEAD = re.compile(
 )
 # The words that name no music: articles, possessives, «música/canción/algo», courtesy, time, randomness, the player.
 _MUSIC_GENERIC_WORDS = frozenset(
-    "una un unas unos algo alguna algunas algun algunos la el las los lo de del al a mi mis tu tus su sus some any the "
-    "my me musica music musika cancion canciones song songs tema temas track tracks sonido sonidos sound sounds por "
-    "favor please ahora now hoy today ya aqui here cualquier cualquiera aleatoria aleatorio aleatoriamente random "
-    "shuffle modo buena buenas bueno buenos good nice en on spotify youtube que y and o or otra otras otro otros other "
-    "another more mas nuevo nueva nuevos nuevas new podcast podcasts audiolibro audiolibros audiobook audiobooks episodio "
-    "episode "
+    "una|un|unas|unos|algo|alguna|algunas|algun|algunos|la|el|las|los|lo|de|del|al|a|mi|mis|tu|tus|su|sus|some|any|the|"
+    "my|me|musica|music|musika|cancion|canciones|song|songs|tema|temas|track|tracks|sonido|sonidos|sound|sounds|por|"
+    "favor|please|ahora|now|hoy|today|ya|aqui|here|cualquier|cualquiera|aleatoria|aleatorio|aleatoriamente|random|"
+    "shuffle|modo|buena|buenas|bueno|buenos|good|nice|en|on|spotify|youtube|que|y|and|o|or|otra|otras|otro|otros|other|"
+    "another|more|mas|nuevo|nueva|nuevos|nuevas|new|podcast|podcasts|audiolibro|audiolibros|audiobook|audiobooks|episodio|"
+    "episode|"
     # Independent review M2: courtesy, fillers, repetition, time and the room («pon musica porfa», «…, gracias»,
     # «pls», «otra vez», «un rato», «en el living», «weon») name no music.
-    "porfa porfis porfavor gracias thanks thx pls plz po pe che weon weona wey guey mano bro loco pues nomas dale "
-    "vez rato ratito momento living sala cuarto pieza casa auto carro coche oficina alto fuerte bajito despacio "
-    "volumen fondo".split()
+    "porfa|porfis|porfavor|gracias|thanks|thx|pls|plz|po|pe|che|weon|weona|wey|guey|mano|bro|loco|pues|nomas|dale|"
+    "vez|rato|ratito|momento|living|sala|cuarto|pieza|casa|auto|carro|coche|oficina|alto|fuerte|bajito|despacio|"
+    "volumen|fondo".split("|")
 )
 # The person's own collection keeps the tanda-4c reading (own_collection_free_choice); it is not content said here.
 _MUSIC_OWN_COLLECTION = re.compile(
