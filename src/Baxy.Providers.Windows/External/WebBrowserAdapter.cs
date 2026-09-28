@@ -16,6 +16,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     private readonly CdpBrowserSessionContext? _sessionContext;
     private readonly HttpClient _http;
     private readonly PublicPlaceLocator _locator;
+    private readonly WikipediaSearchSource _wikipedia;
     private readonly string? _searchDiagnosticPath;
 
     // El perfil del navegador colgaba del directorio del turno, de modo que cada
@@ -53,9 +54,14 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _browser = new CdpBrowserSession(SharedBrowserProfile(dataRoot, "edge"));
         _sessionContext = sessionContext;
         _searchDiagnosticPath = Path.Combine(dataRoot, "captures", "web-search-rejections.jsonl");
-        _http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
+        _http = new HttpClient(new SocketsHttpHandler
+        {
+            AutomaticDecompression = System.Net.DecompressionMethods.All,
+        })
+        { Timeout = TimeSpan.FromSeconds(20) };
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY/1.0 structured-search");
         _locator = new PublicPlaceLocator(_http.GetStringAsync);
+        _wikipedia = new WikipediaSearchSource(_http);
     }
 
     internal WebBrowserAdapter(
@@ -67,6 +73,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _http = http ?? throw new ArgumentNullException(nameof(http));
         _sessionContext = sessionContext;
         _locator = new PublicPlaceLocator(_http.GetStringAsync);
+        _wikipedia = new WikipediaSearchSource(_http);
     }
 
     public bool CanHandle(string operation) => operation is
@@ -509,30 +516,36 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
-    // WEB1831 / H0060: Bing's RSS feed answered a Spanish question («por qué suele
-    // fallar whatsapp») with navigational pages that share no word with it (measured
-    // 2026-09-18 on REDPC: Gmail, WhatsApp home pages, unrelated feeds), so every
-    // honest search ended web_search_results_irrelevant. The same engine's HTML page,
-    // asked with the product's own User-Agent, lists ten organic results that answer
-    // the question, so the provider reads that page; the pertinence gate stays.
-    // WEB1877 (2026-09-19): that HTML page in turn began answering every query from
-    // this machine with sites that share no word with it (measured with the product's
-    // own User-Agent: a museum, a furniture shop and a music service for three
-    // different Spanish questions), so the pertinence gate rejected everything again.
-    // A second engine now follows the first: the engines are asked in order and the
-    // first one whose results pass the gate answers, with the receipt naming the
-    // engine that actually answered. Neither engine is trusted over the other; the
-    // gate is the same for both.
-    // 2026-09-20 (H0463 «Busca el App ID de Doom Eternal en Steam usando la API
-    // publica»): the first engine answered with ONE result about a music service
-    // that shared the single word «app» with the request, the gate let it through,
-    // and the second engine —which answers that exact query with SteamDB first— was
-    // never asked. Measured with the product's User-Agent, one probe each. The
-    // engine that answers is asked first; the decaying one stays as the fallback.
-    private const string SearchEndpoint = "https://www.bing.com/search";
-    private const string FallbackSearchEndpoint = "https://lite.duckduckgo.com/lite/";
-    private const string PrimarySearchAuthority = "duckduckgo_lite_https";
-    private const string FallbackSearchAuthority = "bing_html_https";
+    // web.search asks its sources in order and the first one whose results pass the
+    // pertinence gate answers, with the receipt naming the source that answered
+    // («authority»). The gate is the same for every source.
+    //
+    // History of the general engine (WEB1831/H0060, WEB1877, H0463): Bing's RSS feed,
+    // then its HTML page, then DuckDuckGo lite in front of Bing, each one decaying on
+    // this machine. Since 2026-09-26 every engine answers this network with challenge
+    // pages or junk.
+    //
+    // D32 (owner, 2026-09-28): search works on its own, with no account or key of
+    // anybody's. Order since then:
+    //   1. Wikipedia's open API (WikipediaSearchSource), Spanish or English first by
+    //      the language of the query, for what an encyclopedia answers.
+    //   2. DuckDuckGo lite, the last attempt for everything else (news, prices,
+    //      hours). Its terms and policy say nothing about automated queries, but the
+    //      service throttles them and D32 prefers no loose HTTP requests to engines;
+    //      it stays only until the owner rules on it.
+    // Bing's HTML page was retired: the Microsoft Services Agreement §14.f.i keeps
+    // Bing material «for your noncommercial, personal use only» and building products
+    // with it «permitted only to the extent specifically authorized by Microsoft»;
+    // §3.a.vi forbids «impermissible scraping»; bing.com/robots.txt disallows /search.
+    // Searching through the person's own browser over CDP was studied and not enabled
+    // (artifacts/comprobaciones/C03/BUSQUEDA_SIN_CLAVES_D32_2026-09-28.md).
+    //
+    // When no source searched (all unreachable, blocked, or none fits the query) the
+    // receipt says web_search_unavailable, so the reply says it could not look it up
+    // and offers to open the search in the person's browser; when a source answered
+    // and nothing was pertinent, web_search_results_irrelevant.
+    private const string GeneralSearchEndpoint = "https://lite.duckduckgo.com/lite/";
+    private const string GeneralSearchAuthority = "duckduckgo_lite_https";
 
     private readonly record struct SearchChannelReading(
         List<SearchCandidate> Candidates,
@@ -568,142 +581,164 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             throw new InvalidDataException("The search query has no verifiable terms.");
         }
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 5), 1, 20);
-        int structurallyValidItems = 0;
-        bool anyResultsPage = false;
-        var rejectedByLastEngine = new List<(string Title, Uri Url, string Snippet)>();
-        foreach (string authority in new[] { PrimarySearchAuthority, FallbackSearchAuthority })
+
+        // What is looked for near the person is never an encyclopedia article.
+        if (near is null && WikipediaSearchSource.IsEncyclopedic(query))
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            SearchChannelReading reading;
-            try
+            string terms = WikipediaSearchSource.Terms(queryTokens);
+            foreach (string language in WikipediaSearchSource.Languages(query, CultureInfo.CurrentCulture))
             {
-                reading = await ReadSearchChannelAsync(authority, query, cancellationToken)
-                    .ConfigureAwait(false);
-            }
-            catch (HttpRequestException)
-            {
-                // This engine did not answer; the next one still may, and if none
-                // does the reply says the search could not be made.
-                continue;
-            }
-            catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
-            {
-                continue;
-            }
-            anyResultsPage |= reading.IsResultsPage;
-            structurallyValidItems += reading.Candidates.Count;
-            if (reading.Candidates.Count == 0)
-            {
-                continue;
-            }
-            string[] verifiableTerms = VerifiableSearchTerms(queryTokens, reading.Candidates);
-            if (!SearchPageSharesEnough(queryTokens, verifiableTerms))
-            {
-                verifiableTerms = [];
-            }
-            var results = new List<(string Title, string Url, string Snippet)>();
-            var rejected = new List<(string Title, Uri Url, string Snippet)>();
-            foreach (SearchCandidate candidate in reading.Candidates)
-            {
-                if (results.Count >= limit) break;
-                if (IsSearchResultRelevant(verifiableTerms, candidate.Observed))
+                cancellationToken.ThrowIfCancellationRequested();
+                List<(string Title, string Url, string Snippet)>? articles = await _wikipedia
+                    .SearchAsync(language, terms, limit, cancellationToken).ConfigureAwait(false);
+                if (articles is null) continue;
+                List<SearchCandidate> candidates = SearchCandidates(articles, excludedHost: null);
+                List<(string Title, string Url, string Snippet)> pertinent =
+                    PertinentResults(queryTokens, candidates, limit, rejected: null);
+                if (pertinent.Count > 0)
                 {
-                    results.Add((candidate.Title, candidate.Url.AbsoluteUri, candidate.Snippet));
-                }
-                else if (_searchDiagnosticPath is not null && rejected.Count < 20)
-                {
-                    rejected.Add((candidate.Title, candidate.Url, candidate.Snippet));
+                    return SearchReceipt(operation, query, near, pertinent,
+                        WikipediaSearchSource.Authority(language));
                 }
             }
-            if (results.Count == 0)
-            {
-                rejectedByLastEngine = rejected;
-                continue;
-            }
-            string answering = authority;
-            JsonElement result = ExternalJson.Create(writer =>
-            {
-                writer.WriteStartObject();
-                writer.WriteNumber("version", 1);
-                writer.WriteString("query", query);
-                if (near is not null)
-                    writer.WriteString("near", near);
-                writer.WriteNumber("count", results.Count);
-                writer.WriteStartArray("results");
-                foreach ((string title, string url, string snippet) in results)
-                {
-                    writer.WriteStartObject();
-                    writer.WriteString("title", title);
-                    writer.WriteString("url", url);
-                    writer.WriteString("snippet", snippet);
-                    writer.WriteEndObject();
-                }
-                writer.WriteEndArray();
-                writer.WriteString("authority", answering);
-                writer.WriteEndObject();
-            });
-            return ExternalJson.Success(operation, result, effectObserved: false);
         }
-        if (structurallyValidItems == 0 && !anyResultsPage)
+
+        SearchChannelReading reading;
+        try
         {
-            // No engine answered with a results page (a block, a captcha, an error):
-            // nothing was searched, and the reply must not pretend the web had no
-            // answer.
-            return ExternalJson.FailureBeforeEffect(operation, "web_search_engine_unavailable");
+            reading = await ReadGeneralSearchAsync(query, cancellationToken).ConfigureAwait(false);
         }
-        RecordSearchRejection(query, queryTokens, structurallyValidItems, rejectedByLastEngine);
+        catch (HttpRequestException)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "web_search_unavailable");
+        }
+        catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "web_search_unavailable");
+        }
+        if (reading.Candidates.Count == 0 && !reading.IsResultsPage)
+        {
+            // A block, a captcha or an error page: nothing was searched, and the
+            // reply must not pretend the web had no answer.
+            return ExternalJson.FailureBeforeEffect(operation, "web_search_unavailable");
+        }
+        var rejected = new List<(string Title, Uri Url, string Snippet)>();
+        List<(string Title, string Url, string Snippet)> results =
+            PertinentResults(queryTokens, reading.Candidates, limit, rejected);
+        if (results.Count > 0)
+        {
+            return SearchReceipt(operation, query, near, results, GeneralSearchAuthority);
+        }
+        RecordSearchRejection(query, queryTokens, reading.Candidates.Count, rejected);
         return ExternalJson.FailureBeforeEffect(operation, "web_search_results_irrelevant");
     }
 
-    // The primary engine answers a query string; the lite endpoint of the second one
-    // answers only a form post (a GET returns its search form with no results). Each
-    // page is parsed by its own reader and the engine's own links are discarded.
-    private async Task<SearchChannelReading> ReadSearchChannelAsync(
-        string authority,
+    // The receipt contract the mind reads (seen.results[].title/url/snippet): one
+    // shape whatever source answered; «authority» names that source
+    // (wikipedia_es_api, wikipedia_en_api or duckduckgo_lite_https).
+    private static ExternalCapabilityReceipt SearchReceipt(
+        string operation,
         string query,
-        CancellationToken cancellationToken)
+        string? near,
+        List<(string Title, string Url, string Snippet)> results,
+        string authority)
     {
-        bool fallback = authority == "duckduckgo_lite_https";
-        using HttpRequestMessage request = fallback
-            ? new HttpRequestMessage(HttpMethod.Post, FallbackSearchEndpoint)
-            {
-                Content = new FormUrlEncodedContent(new[]
-                {
-                    new KeyValuePair<string, string>("q", query),
-                }),
-            }
-            : new HttpRequestMessage(
-                HttpMethod.Get,
-                SearchEndpoint + "?q=" + Uri.EscapeDataString(query)
-                    + SearchMarket(CultureInfo.CurrentCulture));
-        using HttpResponseMessage response = await _http
-            .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
-            .ConfigureAwait(false);
-        string page = await ReadBoundedTextAsync(response, 4_000_000, cancellationToken)
-            .ConfigureAwait(false);
-        string engineHost = fallback ? "duckduckgo.com" : "bing.com";
-        var candidates = new List<SearchCandidate>();
-        foreach ((string title, string url, string snippet) in fallback
-            ? ParseDuckDuckGoLitePage(page)
-            : ParseSearchPage(page))
+        JsonElement result = ExternalJson.Create(writer =>
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("query", query);
+            if (near is not null)
+                writer.WriteString("near", near);
+            writer.WriteNumber("count", results.Count);
+            writer.WriteStartArray("results");
+            foreach ((string title, string url, string snippet) in results)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("title", title);
+                writer.WriteString("url", url);
+                writer.WriteString("snippet", snippet);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteString("authority", authority);
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    private static List<SearchCandidate> SearchCandidates(
+        IEnumerable<(string Title, string Url, string Snippet)> items,
+        string? excludedHost)
+    {
+        var candidates = new List<SearchCandidate>();
+        foreach ((string title, string url, string snippet) in items)
+        {
             if (Uri.TryCreate(url, UriKind.Absolute, out Uri? parsed)
                 && parsed.Scheme is "http" or "https"
-                && !parsed.Host.EndsWith(engineHost, StringComparison.OrdinalIgnoreCase)
+                && (excludedHost is null
+                    || !parsed.Host.EndsWith(excludedHost, StringComparison.OrdinalIgnoreCase))
                 && title.Length is > 0 and <= 4_096
                 && snippet.Length <= 16_384)
             {
                 candidates.Add(new SearchCandidate(title, parsed, snippet, ObservedSearchTokens(title, parsed, snippet)));
             }
         }
-        bool isResultsPage = fallback
-            ? IsDuckDuckGoResultsPage(response, page)
-            : IsSearchResultsPage(response, page);
-        return new SearchChannelReading(candidates, isResultsPage);
+        return candidates;
     }
 
-    private static async Task<string> ReadBoundedTextAsync(
+    private List<(string Title, string Url, string Snippet)> PertinentResults(
+        string[] queryTokens,
+        List<SearchCandidate> candidates,
+        int limit,
+        List<(string Title, Uri Url, string Snippet)>? rejected)
+    {
+        var results = new List<(string Title, string Url, string Snippet)>();
+        if (candidates.Count == 0) return results;
+        string[] verifiableTerms = VerifiableSearchTerms(queryTokens, candidates);
+        if (!SearchPageSharesEnough(queryTokens, verifiableTerms))
+        {
+            verifiableTerms = [];
+        }
+        foreach (SearchCandidate candidate in candidates)
+        {
+            if (results.Count >= limit) break;
+            if (IsSearchResultRelevant(verifiableTerms, candidate.Observed))
+            {
+                results.Add((candidate.Title, candidate.Url.AbsoluteUri, candidate.Snippet));
+            }
+            else if (rejected is not null && _searchDiagnosticPath is not null && rejected.Count < 20)
+            {
+                rejected.Add((candidate.Title, candidate.Url, candidate.Snippet));
+            }
+        }
+        return results;
+    }
+
+    // The lite endpoint answers only a form post (a GET returns its search form with
+    // no results). The engine's own links are discarded.
+    private async Task<SearchChannelReading> ReadGeneralSearchAsync(
+        string query,
+        CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, GeneralSearchEndpoint)
+        {
+            Content = new FormUrlEncodedContent(new[]
+            {
+                new KeyValuePair<string, string>("q", query),
+            }),
+        };
+        using HttpResponseMessage response = await _http
+            .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+            .ConfigureAwait(false);
+        string page = await ReadBoundedTextAsync(response, 4_000_000, cancellationToken)
+            .ConfigureAwait(false);
+        List<SearchCandidate> candidates = SearchCandidates(
+            ParseDuckDuckGoLitePage(page), excludedHost: "duckduckgo.com");
+        return new SearchChannelReading(candidates, IsDuckDuckGoResultsPage(response, page));
+    }
+
+    internal static async Task<string> ReadBoundedTextAsync(
         HttpResponseMessage response,
         int maximumBytes,
         CancellationToken cancellationToken)
@@ -728,110 +763,15 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         return Encoding.UTF8.GetString(buffer.GetBuffer(), 0, (int)buffer.Length);
     }
 
-    // The person's culture chooses the engine's language and country («setlang=es»,
-    // «cc=AR»), so a Spanish question gets Spanish pages; an invariant culture adds
-    // nothing and the engine decides.
-    internal static string SearchMarket(CultureInfo culture)
-    {
-        string language = culture.TwoLetterISOLanguageName.ToLowerInvariant();
-        if (language.Length != 2 || culture.Equals(CultureInfo.InvariantCulture)) return string.Empty;
-        string market = "&setlang=" + language;
-        try
-        {
-            if (!culture.IsNeutralCulture && culture.Name.Length >= 5)
-            {
-                string region = new RegionInfo(culture.Name).TwoLetterISORegionName.ToUpperInvariant();
-                if (region.Length == 2) market += "&cc=" + region;
-            }
-        }
-        catch (ArgumentException)
-        {
-        }
-        return market;
-    }
-
-    private static readonly Regex SearchResultEntry = new(
-        "<li class=\"b_algo\"",
-        RegexOptions.CultureInvariant,
-        TimeSpan.FromSeconds(2));
-
-    private static readonly Regex SearchResultHeading = new(
-        "<h2[^>]*>\\s*<a\\b[^>]*href=\"([^\"]+)\"[^>]*>(.*?)</a>",
-        RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant,
-        TimeSpan.FromSeconds(2));
-
-    private static readonly Regex SearchResultSnippet = new(
-        "<p\\b[^>]*class=\"b_lineclamp[^\"]*\"[^>]*>(.*?)</p>|<div class=\"b_caption\"[^>]*>.*?<p\\b[^>]*>(.*?)</p>|</h2>.*?<p\\b[^>]*>(.*?)</p>",
-        RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant,
-        TimeSpan.FromSeconds(2));
-
     private static readonly Regex HtmlTag = new(
         "<[^>]+>",
         RegexOptions.Singleline | RegexOptions.CultureInvariant,
         TimeSpan.FromSeconds(2));
 
-    // Each organic result is a «b_algo» list item whose heading anchor carries the
-    // engine's click redirect; the real target travels base64-encoded in its «u»
-    // parameter (prefixed «a1»). Advertising and engine-internal links keep the
-    // engine's host and are discarded by the caller.
-    internal static IEnumerable<(string Title, string Url, string Snippet)> ParseSearchPage(string page)
-    {
-        MatchCollection entries = SearchResultEntry.Matches(page);
-        for (int index = 0; index < entries.Count; index++)
-        {
-            int blockStart = entries[index].Index;
-            int blockEnd = index + 1 < entries.Count ? entries[index + 1].Index : page.Length;
-            string block = page.Substring(blockStart, blockEnd - blockStart);
-            Match heading = SearchResultHeading.Match(block);
-            if (!heading.Success) continue;
-            Match snippet = SearchResultSnippet.Match(block);
-            string rawSnippet = snippet.Success
-                ? (snippet.Groups[1].Success ? snippet.Groups[1].Value
-                    : snippet.Groups[2].Success ? snippet.Groups[2].Value
-                    : snippet.Groups[3].Value)
-                : string.Empty;
-            yield return (
-                HtmlText(heading.Groups[2].Value),
-                ResolveSearchLink(System.Net.WebUtility.HtmlDecode(heading.Groups[1].Value)),
-                HtmlText(rawSnippet));
-        }
-    }
-
     private static string HtmlText(string fragment)
     {
         string text = System.Net.WebUtility.HtmlDecode(HtmlTag.Replace(fragment, " "));
         return string.Join(' ', text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
-    }
-
-    internal static string ResolveSearchLink(string href)
-    {
-        string absolute = href.StartsWith("//", StringComparison.Ordinal) ? "https:" + href
-            : href.StartsWith('/') ? "https://www.bing.com" + href
-            : href;
-        if (!Uri.TryCreate(absolute, UriKind.Absolute, out Uri? uri)) return absolute;
-        if (!uri.Host.EndsWith("bing.com", StringComparison.OrdinalIgnoreCase)) return absolute;
-        foreach (string pair in uri.Query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
-        {
-            int separator = pair.IndexOf('=');
-            if (separator <= 0 || pair[..separator] != "u") continue;
-            string encoded = pair[(separator + 1)..];
-            if (encoded.StartsWith("a1", StringComparison.Ordinal)) encoded = encoded[2..];
-            encoded = encoded.Replace('-', '+').Replace('_', '/');
-            encoded += new string('=', (4 - encoded.Length % 4) % 4);
-            try
-            {
-                string decoded = Encoding.UTF8.GetString(Convert.FromBase64String(encoded));
-                if (Uri.TryCreate(decoded, UriKind.Absolute, out Uri? target)
-                    && target.Scheme is "http" or "https")
-                {
-                    return target.AbsoluteUri;
-                }
-            }
-            catch (FormatException)
-            {
-            }
-        }
-        return absolute;
     }
 
     private static readonly Regex DuckDuckGoResultLink = new(
@@ -868,12 +808,6 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         response.IsSuccessStatusCode
         && (page.Contains("Web results are present", StringComparison.Ordinal)
             || DuckDuckGoResultLink.IsMatch(page));
-
-    // A genuine answer carries the engine's result list container even when it is
-    // empty; a block, a captcha or an error page does not.
-    private static bool IsSearchResultsPage(HttpResponseMessage response, string page) =>
-        response.IsSuccessStatusCode
-        && page.Contains("id=\"b_results\"", StringComparison.Ordinal);
 
     private void RecordSearchRejection(
         string query,
@@ -942,40 +876,11 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         }
     }
 
-    private static string[] SearchTokens(string value)
-    {
-        string decomposed = value.Normalize(NormalizationForm.FormD);
-        var normalized = new StringBuilder(decomposed.Length);
-        bool separatorPending = false;
-        foreach (char character in decomposed)
-        {
-            UnicodeCategory category = CharUnicodeInfo.GetUnicodeCategory(character);
-            if (category == UnicodeCategory.NonSpacingMark)
-            {
-                continue;
-            }
-
-            if (char.IsLetterOrDigit(character))
-            {
-                if (separatorPending && normalized.Length > 0)
-                {
-                    normalized.Append(' ');
-                }
-                normalized.Append(char.ToLowerInvariant(character));
-                separatorPending = false;
-            }
-            else
-            {
-                separatorPending = true;
-            }
-        }
-
-        return normalized.ToString()
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+    private static string[] SearchTokens(string value) =>
+        WikipediaSearchSource.FoldedWords(value)
             .Where(static token => token.Length >= 2 && !IsSearchStopWord(token))
             .Distinct(StringComparer.Ordinal)
             .ToArray();
-    }
 
     private readonly record struct SearchCandidate(
         string Title,

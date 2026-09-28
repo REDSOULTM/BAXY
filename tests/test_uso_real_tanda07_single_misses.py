@@ -221,6 +221,8 @@ def test_a_positive_statement_with_a_participle_is_not_an_absence() -> None:
     ("code", "forbidden"),
     [
         ("web_search_results_irrelevant", ("search", "result", "irrelevant", "page")),
+        # D32: nothing was looked up; no engine, source or page is named.
+        ("web_search_unavailable", ("search", "result", "engine", "wikipedia", "source", "page")),
         ("outlook_profile_not_configured", ("profile", "classic")),
     ],
 )
@@ -230,6 +232,29 @@ def test_the_fact_of_a_failure_says_what_the_person_hears_not_the_mechanism(
     fact = llm._cause_in_prose(code, "es")
     assert fact != code.replace("_", " ")
     assert not any(word in fact.casefold() for word in forbidden)
+
+
+def test_the_unavailable_search_offers_the_browser() -> None:
+    assert "browser" in llm._cause_in_prose("web_search_unavailable", "es")
+
+
+@pytest.mark.parametrize(
+    ("draft", "asked"),
+    [
+        ("No pude consultarlo ahora. ¿Quieres que lo abra en tu navegador?", "¿cuál fue el primer libro de zombies?"),
+        ("I couldn't look that up right now. Want me to open it in your browser?", "who wrote Dracula"),
+    ],
+)
+def test_an_unavailable_search_told_plainly_with_the_browser_offer_passes(draft: str, asked: str) -> None:
+    payload = {
+        "outcome": "failed",
+        "reason": {
+            "outcome": "failed",
+            "cause": llm._cause_in_prose("web_search_unavailable", "es"),
+            "operation": "web.search",
+        },
+    }
+    assert llm._payload_fact_defect(draft, payload, asked) == ""
 
 
 @pytest.mark.parametrize(
