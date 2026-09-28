@@ -18,6 +18,8 @@ export interface ActivityEntry {
   src: SourceTag;
   msg: string;
   ts: string; // 'HH:MM:SS'
+  /** the page a consulted answer was written from (M53, D35); shown as «fuente», never read aloud. */
+  source?: string;
 }
 
 export interface ModelInfo {
