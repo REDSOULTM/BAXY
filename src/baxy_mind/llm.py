@@ -122,6 +122,8 @@ from .semantic.conversation import (
     asks_a_polar_question_about_the_person,
     asks_an_extended_answer,
     asks_baxys_name,
+    asks_for_code,
+    asks_to_order,
     asks_what_this_is,
     assent_without_action,
     assistant_desire_thing,
@@ -267,7 +269,9 @@ UNSUPPORTED_PRESENTATION_PROMPT = (
     "mensaje: di llanamente que eso no lo haces, nombrando lo pedido con tus "
     "palabras e incluyendo al menos un sustantivo concreto del pedido, sin "
     "copiar su forma verbal ni sus cortesías. Si lo pedido ocurre fuera de este "
-    "PC, dilo como causa en pocas palabras. Si hay varios pasos, habla de la "
+    "PC, dilo como causa en pocas palabras. Nombra el mismo acto que se pidió: "
+    "pedir o comprar algo no es prepararlo, y el motivo que da la persona no es "
+    "parte de lo pedido. Si hay varios pasos, habla de la "
     "secuencia entera, no de sus partes por separado. No preguntes, no sugieras "
     "otro paso, no te disculpes y no describas a BAXY ni su implementación. "
     "Estilo, para un pedido de marcar un hábito: «Eso no lo hago: los hábitos no "
@@ -283,7 +287,9 @@ UNSUPPORTED_PRESENTATION_PROMPT_EN = (
     "natural declarative sentence, in the first person and in English: say plainly that you do not do that, "
     "naming what was asked in your own words and including at least one concrete noun from the request, "
     "without copying its verb form or its courtesies. If what was asked happens outside this PC, say so as the "
-    "cause in a few words. If there are several steps, speak of the whole sequence, not of its parts. Do not "
+    "cause in a few words. Name the same act that was asked: ordering or buying something is not making it, and "
+    "the reason the person gives is not part of what was asked. If there are several steps, speak of the whole "
+    "sequence, not of its parts. Do not "
     "ask, do not suggest another step, do not apologize and do not describe BAXY or how it is built. Style, "
     "for a request to track a habit: «I don't do that: habits aren't something I keep track of.» Speak as "
     "yourself, in the first person: never make the request the subject, never repeat it as if you were asking "
@@ -529,6 +535,28 @@ CONTENT_DRAFT_PRESENTATION_PROMPT = (
     "y termina. No expliques estas instrucciones y no termines con una oferta "
     "genérica."
 )
+
+# M50 (v3a-final F-w07, F-w12, F-w14, F-p10): asked for a function, a query or a calculator in Python, the reply
+# described it («La función suma los elementos…»), said «No puedo mostrar código ni ejecutar herramientas en este
+# turno», or wrote code the App then refused as internal code. Writing code is talk: the model writes it.
+CODE_REQUEST_PROMPT = (
+    "La persona pide código (un programa, una función, un script, una consulta) o un cambio al código de antes. "
+    "Escribir código es parte de la conversación, no una herramienta: escríbelo tú, completo y funcional, dentro de "
+    "un bloque ``` con el nombre del lenguaje; ese bloque es el único formato permitido. Lo más corto que funcione, "
+    "sin comentarios. Fuera del bloque, como mucho una frase breve en el idioma de la persona. Si pide cambiar el "
+    "código de antes o pasarlo a otro lenguaje, reescríbelo entero con el cambio. Nunca digas que no puedes mostrar "
+    "código ni lo describas en lugar de escribirlo."
+)
+CODE_REQUEST_PROMPT_EN = (
+    "The person asks for code (a program, a function, a script, a query) or a change to the code before. Writing "
+    "code is part of the conversation, not a tool: write it yourself, complete and working, inside a ``` block "
+    "named with its language; that block is the only formatting allowed. The shortest code that works, no "
+    "comments. Outside the block, at most one short sentence in the person's language. If they ask to change the "
+    "code before or carry it to another language, rewrite it whole with the change. Never say you cannot show "
+    "code and never describe it instead of writing it."
+)
+# The budget of a code reply: a short program fits; a reply cut inside its code is never published.
+CODE_REPLY_MAX_TOKENS = 640
 
 ROLEPLAY_DRAFT_PRESENTATION_PROMPT = (
     "Eres el redactor de BAXY. El último mensaje contiene únicamente hechos JSON "
@@ -3974,6 +4002,37 @@ def visible_reply_invents_a_spanish_infinitive(value: object) -> bool:
     )
 
 
+# v3a-final F-s007 «…la función Smart Camera no la activan yo» and F-s077 «No leeo SMS»: BAXY speaks of himself in
+# the first person singular. A plural verb with «yo» as its subject, or a first person made by adding «-o» to an
+# «-eer» stem («leeo», «creeo»: the first person is «leo», «creo»), is broken Spanish. Twin of
+# UserMessagePolicy.BreaksFirstPerson.
+_PLURAL_VERB_WITH_YO = re.compile(r"\b(?:lo|la|los|las|le|les)\s+[a-z]{2,}(?:an|en)\s+yo\b")
+_DOUBLED_E_FIRST_PERSON = re.compile(r"\b[a-z]+eeo\b")
+
+
+def visible_reply_breaks_first_person(value: object) -> bool:
+    """BAXY's «yo» with a plural verb («no la activan yo») or an invented first person («leeo»)."""
+
+    folded = _reading_fold(str(value or ""))
+    return _PLURAL_VERB_WITH_YO.search(folded) is not None or _DOUBLED_E_FIRST_PERSON.search(folded) is not None
+
+
+# v3a-final F-s074/F-s091 «…preventing access to the person's Outlook calendar or mail»: the reply speaks to the
+# person («your calendar», «tu agenda»), never about them. Twin of UserMessagePolicy.SpeaksOfThePerson.
+_PERSON_IN_THIRD = re.compile(
+    r"\b(?:the|this)\s+(?:person|user)(?:'s|’s|s')(?!\w)|"
+    r"\b(?:calendario|agenda|correos?|mails?|cuentas?|archivos?|carpetas?|tareas?|notas?|recordatorios?|listas?|"
+    r"mensajes?|datos|musica|biblioteca|outlook|pc|equipo|computadora)\s+(?:\w+\s+)?de\s+la\s+persona\b"
+)
+
+
+def visible_reply_speaks_of_the_person(value: object, request: object = "") -> bool:
+    """The reply names the person it is talking to in the third person (unless the person wrote it so)."""
+
+    found = _PERSON_IN_THIRD.search(_reading_fold(str(value or "")))
+    return found is not None and found.group(0) not in _reading_fold(str(request or ""))
+
+
 # Tanda 3 «Prende la smart camera» → «Eso no lo hago: la smart camera no la prenDO.»: the model broke a word's
 # case halfway and nothing read it. A word that turns to capitals after three lower-case letters is broken,
 # unless the person wrote it that way (a brand, «macOS»).
@@ -4370,8 +4429,9 @@ _CAUSE_FACT = {
     # Tanda 7 «¿hoy qué día tengo que marcar en el calendario?» → «El fallo ocurre porque este PC no tiene un perfil
     # clásico de Outlook…»: the profile named as a technicality was narrated as one. What the person hears is that
     # their Outlook cannot be reached from here.
+    # v3a-final F-s074/F-s091: «the person's Outlook calendar» was copied into the reply; the fact is said to them.
     "outlook_profile_not_configured": (
-        "Outlook is not set up on this PC, so I cannot reach the person's Outlook calendar or mail here"
+        "Outlook is not set up on this PC, so I cannot reach your Outlook calendar or mail here"
     ),
     # Tanda 7 «quién ganó el game de los Lakers anoche» → «…los resultados de búsqueda son irrelevantes»: the code
     # became prose about a search. The lookup is invisible; what the person hears is that it was not found.
@@ -7693,6 +7753,33 @@ def _listing_fact_defect(text: str, seen: dict) -> str:
     return ""
 
 
+def _listed_task_titles(payload: dict) -> list[str]:
+    """The distinct titles of the open tasks a verified task.list read, in order («ice cream» twice is one)."""
+
+    if not isinstance(payload, dict) or payload.get("operation") != "task.list":
+        return []
+    seen = payload.get("seen")
+    if not isinstance(seen, dict) or not isinstance(seen.get("tasks"), list):
+        return []
+    titles = [
+        str(task.get("title")).strip()
+        for task in seen["tasks"]
+        if isinstance(task, dict) and isinstance(task.get("title"), str) and task.get("title").strip()
+        and not task.get("completed") and not task.get("deleted")
+    ]
+    return list(dict.fromkeys(titles))
+
+
+def _task_listing_defect(text: str, payload: dict) -> str:
+    """A task list names its tasks by their titles, as written: at least the first five distinct ones."""
+
+    titles = _listed_task_titles(payload)
+    folded = _reading_fold(text)
+    if any(_reading_fold(title) not in folded for title in titles[:5]):
+        return "task_title_not_named"
+    return ""
+
+
 def _wifi_scan_networks_in_situation(situation: dict) -> dict | None:
     """NETWORK1737: the verified wifi.scan observation of a situation, single-step
     or mission-shaped (radio switched on, then scanned)."""
@@ -9323,6 +9410,9 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         # is a pasted listing, not a report a companion would say; pages are
         # named by title and site. The safety-net report has that shape.
         return "search_report_pasted_urls"
+    task_defect = _task_listing_defect(text, payload)
+    if task_defect:
+        return task_defect
     folded = _reading_fold(text)
     seen = payload.get("seen")
     # A wifi reading observes the WLAN connection, not internet reachability.
@@ -10233,6 +10323,31 @@ def _english_pc_nouns(text: str) -> list[str]:
     return list(dict.fromkeys(_ENGLISH_PC_NOUN.findall(prose)))
 
 
+# M50: the code of a reply to a code request — a fenced block, an inline span, or bare lines of code (v3a-final
+# F-w07-t1 answered «def calcular_media(lista):» with no fence) — is the content asked for. Only the prose around it
+# is judged for jargon, internal identifiers and language. Twin of UserMessagePolicy.RequestedCodeProse.
+_CODE_FENCE = re.compile(r"```[\s\S]*?(?:```|\Z)|`[^`\n]+`")
+_CODE_LINE = re.compile(
+    r"^(?:[ \t]{2,}\S.*"
+    r"|\s*(?:def|class|function|const|let|var|return|import|elif|except|catch|public|private|static|async|await|"
+    r"fn|func|package|using|#include)\b.*"
+    r"|\s*from\s+[\w.]+\s+import\b.*"
+    r"|\s*(?:for|while|if|switch)\s*\(.*"
+    r"|\s*(?:print|console\.\w+|document\.\w+|System\.out\.\w+)\s*\(.*"
+    r"|\s*(?:SELECT|FROM|WHERE|ORDER BY|GROUP BY|HAVING|LIMIT|INSERT INTO|UPDATE|DELETE FROM|CREATE TABLE|"
+    r"(?:LEFT |RIGHT |INNER |OUTER )?JOIN|VALUES|UNION)\b.*"
+    r"|\s*[\w.\[\]]+\s*(?:[-+*/%]|\?\?)?=\s*[^=\s].*"
+    r"|.*[{};]\s*|\s*[}\])].*)$"
+)
+
+
+def requested_code_prose(reply: str) -> str:
+    """``reply`` without the code it carries: fenced and inline code, and lines that are code."""
+
+    unfenced = _CODE_FENCE.sub(" ", str(reply or ""))
+    return "\n".join(line for line in unfenced.splitlines() if not _CODE_LINE.match(line)).strip()
+
+
 def _reply_uses_opposite_language(text: str, language: str | None) -> bool:
     """Shared direct/compose check; short neutral names are not a language error."""
     if language not in {"es", "en"}:
@@ -10748,6 +10863,20 @@ def compose_visible_defect(
     stripped = _strip_prompt_labels((text or "").strip())
     if not stripped:
         return "empty"
+    prior_asked = facts.get("priorRequests") if isinstance(facts, dict) else None
+    if (
+        (intent == "conversation" or _situation_from_facts(facts).get("kind") == "conversation")
+        and asks_for_code(
+            user_text,
+            tuple(item for item in prior_asked if isinstance(item, str)) if isinstance(prior_asked, list) else (),
+        )
+    ):
+        # M50 (v3a-final F-w12-t1 «Aquí tienes la función: `def calcular_gastos(montos): …`» died as internal_code):
+        # the code asked for is the content; the prose around it is judged as any reply. A reply that is only code
+        # has nothing else to judge.
+        stripped = requested_code_prose(stripped)
+        if not stripped:
+            return ""
     if visible_reply_is_a_fixed_stall(stripped):
         return "stall"
     if visible_reply_invents_a_spanish_infinitive(stripped) or visible_reply_breaks_word_case(
@@ -10816,7 +10945,7 @@ def compose_visible_defect(
         r"(?:a\s+)?[a-záéíóú]+(?:ar|er|ir)\b",
         stripped,
         re.IGNORECASE,
-    ) is not None:
+    ) is not None or visible_reply_breaks_first_person(stripped):
         return "broken_person_conjugation"
     # Un hueco por rellenar no es una respuesta: «La hora actual es [hora
     # actual en español].» (conocimiento-3/t3).
@@ -11134,6 +11263,8 @@ def compose_visible_defect(
         _policy_guard_text(stripped),
     ) is not None:
         return "internal_code"
+    if visible_reply_speaks_of_the_person(stripped, user_text):
+        return "third_person_addressee"
     if (
         re.search(r"\b(?:cannot|can't|can not)\s+[a-z]+ing\b", stripped.casefold())
         is not None
@@ -12738,6 +12869,13 @@ def _unsupported_request_anchor_token(request: object) -> str:
     return candidates[-1] if candidates else ""
 
 
+# v3a-final F-w11-t1 «pideme unos tacos al pastor» → «…los tacos al pastor del partido no los preparo yo»: a limit on
+# ordering something that says BAXY does not make it names another act. The verbs of making a thing, in the reply.
+_MAKING_ACT = re.compile(
+    r"\b(?:prepar\w*|cocin\w*|fabric\w*|horne\w*|elabor\w*|cook\w*|bak(?:e|es|ing)|brew\w*)\b"
+)
+
+
 def _unsupported_answer_contract_failure(
     value: object,
     request: object = None,
@@ -12777,6 +12915,11 @@ def _unsupported_answer_contract_failure(
         return "unsupported_malformed_modal"
     if visible_reply_invents_a_spanish_infinitive(content):
         return "unsupported_invented_infinitive"
+    if visible_reply_breaks_first_person(content):
+        return "unsupported_broken_person"
+    if asks_to_order(request) and _MAKING_ACT.search(_policy_guard_text(content)) is not None:
+        # v3a-final F-w11-t1: ordering tacos is not preparing them.
+        return "unsupported_changed_act"
     if visible_reply_breaks_word_case(content, request):
         return "unsupported_broken_case"
     if visible_reply_is_a_fixed_stall(content):
@@ -14681,6 +14824,13 @@ class LlmRuntime:
             # A startup greeting is not a prior conversational request.
             has_history=any(message.get("role") == "user" for message in prior_messages),
         )
+        # M50: code asked for now or earlier in this dialogue is written by the model, in a fenced block; its code is
+        # content, so only the prose around it is judged below.
+        code_asked = (
+            conversation_kind in {None, "knowledge", "followup"}
+            and presentation_shape in {None, "content_draft"}
+            and asks_for_code(text, prior_user_requests)
+        )
         last_assistant = next(
             (
                 message["content"]
@@ -14695,6 +14845,7 @@ class LlmRuntime:
         literal_recall = _literal_recall_reference(prior_messages, text)
         contextual_history = literal_recall is not None or (
             presentation_shape is None
+            and not code_asked
             and followup_subject is None
             and bool(last_assistant)
             and conversation_kind
@@ -14858,9 +15009,17 @@ class LlmRuntime:
                 presentation_max_tokens,
                 32 if cpu_brief_presentation else 64,
             )
+        elif code_asked:
+            presentation_max_tokens = max(presentation_max_tokens, CODE_REPLY_MAX_TOKENS)
         cpu_brief_message = (
             {"role": "system", "content": CPU_BRIEF_PRESENTATION_PROMPT}
             if cpu_brief_presentation
+            else None
+        )
+        # Last of the instructions, so the one-sentence policies above do not shorten the code away.
+        code_message = (
+            {"role": "system", "content": CODE_REQUEST_PROMPT_EN if response_language == "en" else CODE_REQUEST_PROMPT}
+            if code_asked
             else None
         )
         followup_subject_message = (
@@ -14912,6 +15071,7 @@ class LlmRuntime:
                     else None
                 ),
                 CPU_BRIEF_PRESENTATION_PROMPT if cpu_brief_presentation else None,
+                code_message["content"] if code_message is not None else None,
             )
             if isinstance(text_sent, str) and text_sent
         ]
@@ -15003,6 +15163,7 @@ class LlmRuntime:
                     else []
                 ),
                 *([cpu_brief_message] if cpu_brief_message is not None else []),
+                *([code_message] if code_message is not None else []),
                 *generation_history,
                 {"role": "user", "content": presentation_text},
             ],
@@ -15036,11 +15197,20 @@ class LlmRuntime:
             ),
         )
         if response["choices"][0].get("finish_reason") == "length":
+            if code_asked and not cpu_fallback:
+                # M50: code cut by its budget does not run; half a program is never published.
+                raise self._rejected_reply(verdict_key, "truncated_code")
             # Tanda 4f: a story stopped by its budget was published ending in
             # «…donde». Keep the finished sentences; none left means no answer
             # yet, and the bounded retry below writes one.
             content = _complete_sentences(content)
             message = {**message, "content": content}
+
+        def judged(value: str) -> str:
+            """M50: in a reply to a code request only the prose around the code is judged; all code is the content."""
+
+            return requested_code_prose(value) if code_asked else value
+
         # Un acto social puede responderse legítimamente con un espejo: la
         # respuesta natural a «nos vemos» es «¡nos vemos!», y a «chau», «chau».
         # El guard anti-eco existe para atrapar a un modelo que repite la
@@ -15080,16 +15250,27 @@ class LlmRuntime:
             and conversation_kind == "unsupported_language"
             and _unsupported_language_answer_violates_contract(content)
         )
-        shaped_contract_failure = _shaped_conversation_answer_violates_contract(
+        prose = judged(content)
+        shaped_contract_failure = (
+            bool(prose) and _shaped_conversation_answer_violates_contract(
+                prose,
+                text,
+                presentation_shape,
+                authenticated_operations=authenticated_operations,
+                prior_requests=prior_user_requests,
+            )
+        ) if code_asked and content else _shaped_conversation_answer_violates_contract(
             content,
             text,
             presentation_shape,
             authenticated_operations=authenticated_operations,
             prior_requests=prior_user_requests,
         )
-        wrong_reply_language = _reply_uses_opposite_language(content, response_language)
+        # v3a-final F-w14-t1: a SQL query read as English killed the reply twice (wrong_language) and the turn asked back.
+        wrong_reply_language = _reply_uses_opposite_language(prose, response_language)
         language_only_repair = (
             direct_knowledge
+            and not code_asked
             and wrong_reply_language
             and bool(content)
             and response["choices"][0].get("finish_reason") == "stop"
@@ -15167,7 +15348,8 @@ class LlmRuntime:
                             "persona, que eso no lo haces, nombrando lo pedido con "
                             "al menos un sustantivo concreto del pedido, sin copiar "
                             "sus cortesías, sin ponerlo como sujeto en infinitivo y "
-                            "sin hablar de BAXY en tercera persona. Usa una "
+                            "sin hablar de BAXY en tercera persona; tu verbo va "
+                            "conjugado para «yo» y es el mismo acto que se pidió. Usa una "
                             "sola negación al principio; después nombra las partes "
                             "como sustantivos de una secuencia y no vuelvas a "
                             "escribir 'no puedo' ni 'cannot'. "
@@ -15190,6 +15372,7 @@ class LlmRuntime:
                     else []
                 ),
                 *([cpu_brief_message] if cpu_brief_message is not None else []),
+                *([code_message] if code_message is not None else []),
                 # Repair the wording with the same scoped dialogue as the
                 # first attempt. Dropping it made a rejected draft erase facts
                 # the user had supplied; raw history would undo topic scoping.
@@ -15226,6 +15409,9 @@ class LlmRuntime:
                     retry_payload["max_tokens"],
                     32,
                 )
+            elif code_asked and not cpu_fallback:
+                # The repair is the code again, inside the JSON wrapper: the same budget as the first draft.
+                retry_payload["max_tokens"] = presentation_max_tokens
             if unsupported_contract_failure:
                 # UI1659/UI1661 «Andá al canal general en Discord.»: under the
                 # JSON grammar the bounded retry spent its whole budget on
@@ -15308,9 +15494,10 @@ class LlmRuntime:
                 # final_content; both must carry the kept sentence.
                 final_content = head
                 message = {**message, "content": head}
+        final_prose = judged(final_content)
         if (
             not final_content
-            or _reply_uses_opposite_language(final_content, response_language)
+            or _reply_uses_opposite_language(final_prose, response_language)
             or (
                 not mirror_is_a_valid_answer
                 and _normalized_dialogue_text(final_content)
@@ -15335,19 +15522,22 @@ class LlmRuntime:
                 and conversation_kind == "unsupported_language"
                 and _unsupported_language_answer_violates_contract(final_content)
             )
-            or _shaped_conversation_answer_violates_contract(
-                final_content,
-                text,
-                presentation_shape,
-                authenticated_operations=authenticated_operations,
-                prior_requests=prior_user_requests,
+            or (
+                (not code_asked or bool(final_prose))
+                and _shaped_conversation_answer_violates_contract(
+                    final_prose,
+                    text,
+                    presentation_shape,
+                    authenticated_operations=authenticated_operations,
+                    prior_requests=prior_user_requests,
+                )
             )
         ):
             failure_reason = (
                 "empty"
                 if not final_content
                 else "wrong_language"
-                if _reply_uses_opposite_language(final_content, response_language)
+                if _reply_uses_opposite_language(final_prose, response_language)
                 else "echo"
                 if not mirror_is_a_valid_answer
                 and _normalized_dialogue_text(final_content)
@@ -18576,6 +18766,15 @@ class LlmRuntime:
                     )
                 )
             user_folded = (user_text or "").casefold()
+            prior_asked = facts.get("priorRequests")
+            if asks_for_code(
+                user_text,
+                tuple(item for item in prior_asked if isinstance(item, str)) if isinstance(prior_asked, list) else (),
+            ):
+                # M50 (v3a-final F-p10-t2 «Aquí tienes un ejemplo…» with no code, F-w12-t2 «Sí, se puede hacer en
+                # JavaScript»): the App's conversation fallback writes the code asked for too; the code is content,
+                # not an internal code of the product.
+                instruct("\n" + (CODE_REQUEST_PROMPT_EN if response_language == "en" else CODE_REQUEST_PROMPT))
             if "traduce" in user_folded or "translate " in user_folded:
                 instruct(
                     "\nGive only the translation in one short sentence. "
@@ -19168,6 +19367,20 @@ class LlmRuntime:
                 f"en {delay} segundos (seen.delaySeconds). Dilo así, en una oración corta, con ese "
                 "número; no digas que ya se reinició ni que ya se apagó."
             )
+        if _listed_task_titles(visible_situation):
+            # v3a-final F-w05-t4/F-w14-t4 «…y dos entradas para helado»: two tasks titled «ice cream» became tickets.
+            # A task is named by its title as the person wrote it.
+            instruct(
+                "\nseen.tasks are the person's tasks; each title is the task's name exactly as they wrote it. Name "
+                "every title verbatim in quotation marks, without translating it or adding verbs; a title listed "
+                "more than once is named once, saying how many times it is there. If there are more than five, "
+                "name five and say how many more there are."
+                if response_language == "en"
+                else "\nseen.tasks son las tareas de la persona; cada title es el nombre de la tarea tal cual lo "
+                "escribió. Nombra cada título tal cual entre comillas, sin traducirlo ni añadirle verbos; un título "
+                "que está más de una vez se nombra una sola vez diciendo cuántas veces está. Si hay más de cinco, "
+                "nombra cinco y di cuántas más hay."
+            )
         if (
             visible_situation.get("operation") == "web.news.headlines"
             and isinstance(visible_situation.get("seen"), dict)
@@ -19695,11 +19908,21 @@ class LlmRuntime:
                 f"\nHechos: {', '.join(required_facts) or '(ninguno)'}"
             )
 
+        prior_asked_code = facts.get("priorRequests")
+        # M50: in a conversation reply to a code request the code is content; jargon is judged on the prose around it.
+        conversation_code_asked = (intent == "conversation" or kind == "conversation") and asks_for_code(
+            user_text,
+            tuple(item for item in prior_asked_code if isinstance(item, str))
+            if isinstance(prior_asked_code, list) else (),
+        )
+
         def preserves_contract(text: str) -> bool:
             if intent == "status" and _starts_with_request_imperative(text):
                 return False
             folded = text.casefold()
-            vocabulary = without_observed_names(text, situation).casefold()
+            vocabulary = without_observed_names(
+                requested_code_prose(text) if conversation_code_asked else text, situation,
+            ).casefold()
             if any(_names_forbidden_term(vocabulary, term) for term in forbidden_terms):
                 return False
             if any(
@@ -20015,7 +20238,9 @@ class LlmRuntime:
                 # bluetooth»: the assistant did it, not the person.
                 return "action_attributed_to_user"
             folded_candidate = candidate.casefold()
-            vocabulary = without_observed_names(candidate, situation).casefold()
+            vocabulary = without_observed_names(
+                requested_code_prose(candidate) if conversation_code_asked else candidate, situation,
+            ).casefold()
             if any(_names_forbidden_term(vocabulary, term) for term in forbidden_terms):
                 return "forbidden_term"
             if any(
@@ -20169,7 +20394,9 @@ class LlmRuntime:
             """Nombrar lo que falta: un reintento a ciegas repite el fallo."""
 
             folded = (candidate or "").casefold()
-            vocabulary = without_observed_names(candidate, situation).casefold()
+            vocabulary = without_observed_names(
+                requested_code_prose(candidate) if conversation_code_asked else candidate, situation,
+            ).casefold()
             present = [term for term in forbidden_terms if _names_forbidden_term(vocabulary, term)]
             if present:
                 return "No incluyas ninguno de estos terminos: " + ", ".join(present)
@@ -20219,7 +20446,14 @@ class LlmRuntime:
             candidate = candidate or text
             return {
                 "broken_person_conjugation": (
-                    "Say it in the first person present: «me ocupo de …», never "
+                    (
+                        "Say it of yourself in the first person singular, with that verb correctly conjugated."
+                        if response_language == "en"
+                        else "Habla de ti en primera persona del singular, con el verbo conjugado para «yo» "
+                        "(activo, leo), nunca en plural ni con una forma inventada."
+                    )
+                    if visible_reply_breaks_first_person(candidate)
+                    else "Say it in the first person present: «me ocupo de …», never "
                     "«me ocupó», which says something occupied you."
                     if response_language == "en"
                     else "Dilo en primera persona del presente: «me ocupo de …», nunca "
@@ -20444,6 +20678,17 @@ class LlmRuntime:
                     )
                 ),
                 "internal_code": "Sin códigos internos ni jerga de contrato.",
+                "task_title_not_named": (
+                    "Name the tasks by their titles exactly as written, in quotation marks: "
+                    if response_language == "en"
+                    else "Nombra las tareas por su título tal cual está escrito, entre comillas: "
+                ) + ", ".join(f"«{title}»" for title in _listed_task_titles(visible_situation)[:5]) + ".",
+                # v3a-final F-s074/F-s091: «the person's Outlook calendar» said to that person.
+                "third_person_addressee": (
+                    "You are talking to the person: say «your» (your calendar, your mail), never «the person's»."
+                    if response_language == "en"
+                    else "Le hablas a la persona: di «tu» (tu calendario, tu correo), nunca «de la persona»."
+                ),
                 "confirmation_asserted": "Pregunta; no afirmes.",
                 "welcome_opener": "Saluda; evita Listo.",
                 "knowledge_greeting": (

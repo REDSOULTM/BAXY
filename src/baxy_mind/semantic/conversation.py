@@ -2176,3 +2176,55 @@ def quoted_translation_phrase(user_text: str) -> str | None:
         return None
     quoted = re.search(r"['‘“\"«]([^'’”\"»]{2,40})['’”\"»]", current)
     return quoted.group(1) if quoted is not None else None
+
+
+# M50 (v3a-final F-w07, F-w12, F-w14, F-p10): code asked for in the conversation is content the model writes, never a
+# lookup and never «internal code». What asks for it: a verb of writing or giving and a piece of code («hazme una
+# función», «¿me escribís una función…?», «escribeme un query de sql»), making something in a named programming
+# language («crear una interfaz … para el lenguaje de programación Python»), or carrying code to another language
+# («pásamela a javascript», «¿y me la pasás a JavaScript?», «ahora en typescript»).
+_CODE_LANGUAGE_NAME = (
+    r"(?:python|javascript|js|typescript|java|c\+\+|c#|csharp|rust|kotlin|swift|php|ruby|sql|bash|powershell|html|"
+    r"css|matlab|scala|lua|dart|haskell|golang|perl|vba)(?![\w+#])"
+)
+_CODE_WRITING_VERB = (
+    r"(?:escrib\w*|haz|hazme|haceme|hacer|hacerme|haces|crea|crear|creame|creas|genera\w*|dame|damelo|damela|"
+    r"pasa\w*|pasas|mostra\w*|muestra\w*|ensena\w*|arma\w*|programa\w*|codea\w*|codifica\w*|conviert\w*|"
+    r"traduc\w*|reescrib\w*|write|make|create|generate|give|show|build|code|convert|translate|rewrite|port)"
+)
+_CODE_PIECE_NOUN = (
+    r"(?:scripts?|scriptcitos?|funcion(?:es|cita)?|functions?|algoritmos?|algorithms?|snippets?|quer(?:y|ies)|"
+    r"consultas?\s+(?:de\s+)?sql|codigos?|code|regex|one-?liners?|metodos?|methods?|"
+    r"programas?\s+(?:en|in|para|que)|programs?\s+(?:in|that)|clases?\s+(?:en|in))(?![\w])"
+)
+_CODE_ASKED = re.compile(
+    rf"\b{_CODE_WRITING_VERB}\b.{{0,60}}\b{_CODE_PIECE_NOUN}|"
+    rf"\b{_CODE_WRITING_VERB}\b.{{0,160}}\b(?:en|in|a|to|into|para|for|con|with|using|usando)\s+(?:el\s+|the\s+)?"
+    rf"(?:lenguaje\s+(?:de\s+programacion\s+)?)?{_CODE_LANGUAGE_NAME}|"
+    rf"^[\s¿¡]*(?:y\s+|and\s+)?(?:ahora\s+|now\s+)?(?:en|in)\s+{_CODE_LANGUAGE_NAME}[\s?!.]*$"
+)
+
+
+def asks_for_code(current: object, prior_user_texts: tuple[str, ...] = ()) -> bool:
+    """The person asks for code in this turn, or earlier in this dialogue (the last six requests, as the shell
+    sends them): then a change to it («que ignore los negativos», «ordenados por fecha») is code too."""
+
+    return any(
+        _CODE_ASKED.search(_reading_fold(said)) is not None
+        for said in (str(current or ""), *tuple(prior_user_texts)[-6:])
+        if said
+    )
+
+
+# v3a-final F-w11-t1 «pideme unos tacos al pastor porfa» → «los tacos al pastor del partido no los preparo yo»: the
+# limit named another act. Ordering or buying something is not making it.
+_ORDERING_ACT = re.compile(
+    r"\b(?:pide\w*|pidas|pedi|pedime|pedir|pedirme|ordena\w*|encarga\w*|compra\w*|comprar|consigue\w*|"
+    r"order|buy|get\s+me)\b"
+)
+
+
+def asks_to_order(request: object) -> bool:
+    """The request orders or buys something («pídeme unos tacos», «order a pizza»): an act done by asking someone."""
+
+    return _ORDERING_ACT.search(_reading_fold(str(request or ""))) is not None
