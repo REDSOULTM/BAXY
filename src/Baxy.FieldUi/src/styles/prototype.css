@@ -2209,7 +2209,18 @@ html[data-maximized="true"] .window-root {
   font-size: 12px; color: var(--t-bone);
   line-height: 1.45; text-wrap: pretty;
   padding-left: 0;
+  /* M53: a recipe keeps its lines (ingredients, numbered steps). */
+  white-space: pre-line;
 }
+/* M53 (D35): the page a consulted answer was written from; small, under the message. */
+.act .source-link {
+  align-self: flex-start;
+  font-family: var(--mono); font-size: 10px;
+  color: var(--t-dim); letter-spacing: 0.04em;
+  text-decoration: underline; text-underline-offset: 2px;
+  cursor: pointer;
+}
+.act .source-link:hover { color: var(--t-bone); }
 .src.tool    { color: var(--carmine); }
 .src.you     { color: var(--tag-you); }
 .src.gemma   { color: var(--carmine); }
