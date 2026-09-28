@@ -273,3 +273,14 @@ el contrato rechazó y la recuperación convirtió en pregunta 4, el propio cami
 conversación ajena la lee el decisor) y, si pasa, los lectores de efectos; las respuestas rechazadas se atacan en la
 redacción. (Lo que se midió para los lectores de efectos fue M9c, la versión estrecha: el lector cede sólo si el
 decisor lee un límite; M9b —cederlo todo— es M9 y no se repitió.)
+
+## D25. Etapa de preferencias (RPO) sobre `full3`: la ronda 1 no mueve nada; la ronda 2 sube el paso (2026-09-28 ~03:20)
+Por qué preferencias y no más SFT: `full4` y `full5` empeoraron al sumar datos (cuotas por clase, Hammer 2410.04587;
+When2Call 2504.18851: el SFT con negativos vuelve conservador al modelo y RPO no). Herramienta propia sin TRL
+(precálculo de log-probs de referencia, pérdida sigmoide de DPO + NLL del elegido, β 0,1, α 1,0; probada en CPU 17/17).
+Pares: 450 escritos en sala limpia (auditados: 448 bien) + 295 errores minados de `full3` sobre sus propios datos,
+tope 60 por tipo → 480 de entrenamiento. Ronda 1 (lr 5·10⁻⁶, 1 época, acumulación 8 ≈ 60 pasos): aislado **igual**
+que `full3` con el mismo catálogo (DEV-A 234, DEV-B 225, sueltos B 104). Demasiado suave: 5·10⁻⁶ es la tasa del
+ajuste completo; con LoRA suele hacer falta un orden más. Ronda 2: lr 5·10⁻⁵, pares de la ronda 1 + errores minados
+en frases que `full3` nunca vio, filtrados por la auditoría de etiquetas (173 → 77; se quita el contraste «dos temas
+→ preguntar» de AJUSTE5 y se limita el remate a 2 por contraste) → 518. Entra con la regla de D19 y D12.
