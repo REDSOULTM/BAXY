@@ -53,6 +53,7 @@ from .semantic.web import (
     weather_asks_coming_days, weather_asks_week, weather_sun_events_asked,
 )
 from .semantic.temporal import _DAY_WORDS, clock_elsewhere, clock_later_asked
+from .semantic.games import _edit_distance
 from . import effect_intent
 from .effect_intent import (
     _PERCENTAGE_WORD_VALUES,
@@ -3993,7 +3994,9 @@ def visible_reply_breaks_article_agreement(value: object) -> str:
     noun = match["feminine_noun"] or match["masculine_noun"]
     return f"{_AGREEING_DETERMINER[determiner]} {noun}"
 _FAILURE_MARKERS = re.compile(
-    r"(?:no pude|no puedo|couldn't|could not|can't|cannot|"
+    # A7 E6 (FINAL t305): «No he podido subir el volumen» is «no pude» in the perfect tense; twin in the App's
+    # UserMessagePolicy.LooksLikeFailure.
+    r"(?:no pude|no puedo|no (?:he|hemos) podido|(?:haven't|have not) been able|couldn't|could not|can't|cannot|"
     r"eso no lo hago|i don't do that|i do not do that|"
     r"no la encontré|no lo encontré|no pude encontr|"
     r"no responde|se agotó|"
@@ -4404,6 +4407,11 @@ _CAUSE_FACT = {
         "this PC has no usable Wi-Fi adapter right now, so no network can be seen"
     ),
     "mission_failed": "mission unfinished",
+    # A7 E5 (DEV-A3 t388 «baxy poné la casa de papel en netflix»): the typed cause was dropped for «external effect
+    # ambiguous», and the drafts narrated that jargon. What is known is that the service asks to sign in.
+    "netflix_authentication_required": "Netflix asks to sign in on this PC, so nothing was played",
+    "disney_authentication_required": "Disney+ asks to sign in on this PC, so nothing was played",
+    "streaming_authentication_required": "the streaming service asks to sign in on this PC, so nothing was played",
     "acting": "still working",
     # M38 (official-window rehearsal 2026-09-28 «what is the timer now?»): the bare «unclear request» was copied into
     # the drafts («…because the request was unclear»), which are no question and name an internal cause; every draft
@@ -6623,6 +6631,136 @@ def _ambiguous_action_question(user_text: str, language: str) -> str:
     )
 
 
+# A7 (goal v3 paso 5, «un resultado verificado siempre se puede decir»): when every draft was vetoed or the writer
+# ran out of time, a verified result is still told, with its observed values copied into one short sentence per
+# operation in the person's language. It passes the same publishable() gate as any draft and never states an effect
+# the result did not verify. The typed failures below say only the cause the result carries.
+_DETERMINISTIC_FAILURES = {
+    "netflix_authentication_required": (
+        "No pude poner nada en Netflix: pide iniciar sesión en este PC.",
+        "I couldn't play anything on Netflix: it asks to sign in on this PC.",
+    ),
+    "disney_authentication_required": (
+        "No pude poner nada en Disney+: pide iniciar sesión en este PC.",
+        "I couldn't play anything on Disney+: it asks to sign in on this PC.",
+    ),
+    "external_verification_failed": (
+        "No pude confirmar que se hiciera el cambio.",
+        "I couldn't confirm that the change was made.",
+    ),
+}
+
+
+def _decimal_said(value: object, english: bool) -> str:
+    text = f"{value:g}" if isinstance(value, float) else str(value)
+    return text if english else text.replace(".", ",")
+
+
+def _deterministic_final(situation: dict, payload: dict, user_text: str, language: str) -> str:
+    english = language == "en"
+    operation = str(situation.get("operation") or payload.get("operation") or "")
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    if situation.get("verified") is not True or situation.get("succeeded") is not True:
+        reason = situation.get("reason")
+        if isinstance(reason, str) and reason.lstrip().startswith("{"):
+            try:
+                reason = json.loads(reason)
+            except json.JSONDecodeError:
+                reason = None
+        codes = [situation.get("error"), situation.get("cause")]
+        if isinstance(reason, dict):
+            codes[:0] = [reason.get("error"), reason.get("cause")]
+        for code in codes:
+            if isinstance(code, str) and code in _DETERMINISTIC_FAILURES:
+                spanish, english_text = _DETERMINISTIC_FAILURES[code]
+                return english_text if english else spanish
+        return ""
+    if operation == "system.time":
+        clock = payload.get("clock")
+        if not isinstance(clock, str) or not re.fullmatch(r"\d{2}:\d{2}", clock) or set(payload) - {
+            "clock", "operation", "kind",
+        }:
+            return ""
+        if clock_later_asked(user_text) is not None:
+            return f"It will be {clock}." if english else f"Serán las {clock}."
+        return f"It's {clock}." if english else f"Son las {clock}."
+    if operation in {"audio.volume", "audio.volume.adjust"} and type(seen.get("level")) is int:
+        # The master output only; an application's own level is another read.
+        level = seen["level"]
+        direction = seen.get("direction")
+        muted = seen.get("muted") is True
+        if english:
+            head = (
+                f"I turned the volume {'down' if direction == 'down' else 'up'} to {level}%"
+                if direction in {"down", "up"}
+                else f"The volume is at {level}%"
+            )
+            return head + ("; it is muted." if muted else ".")
+        head = (
+            f"{'Bajé' if direction == 'down' else 'Subí'} el volumen a {level} %"
+            if direction in {"down", "up"}
+            else f"El volumen está en {level} %"
+        )
+        return head + ("; está silenciado." if muted else ".")
+    if operation == "media.play.youtube" and seen.get("playbackStatus") == "playing":
+        title = str(seen.get("title") or "").strip()
+        if not title or seen.get("titleObserved") is False:
+            return ""
+        where = "" if title.casefold().endswith("youtube") else (" on YouTube" if english else " en YouTube")
+        return f"Now playing «{title}»{where}." if english else f"Está sonando «{title}»{where}."
+    if operation == "weather.current" and isinstance(seen.get("location"), str):
+        folded_request = fold(user_text or "")
+        day: dict | None = None
+        day_name = ""
+        for block in seen.get("laterDays") or []:
+            weekday = str(block.get("weekday") or "") if isinstance(block, dict) else ""
+            if weekday and re.search(rf"\b{re.escape(fold(weekday))}\b", folded_request):
+                day, day_name = block, weekday
+                break
+        if day is None and _weather_asks_tomorrow(user_text or "") and isinstance(seen.get("tomorrow"), dict):
+            day, day_name = seen["tomorrow"], ("tomorrow" if english else "mañana")
+        if day is None:
+            if not isinstance(seen.get("temperatureC"), (int, float)) or not isinstance(seen.get("condition"), str):
+                return ""
+            temperature = _decimal_said(seen["temperatureC"], english)
+            return (
+                f"In {seen['location']} it is {temperature} °C now, {seen['condition']}."
+                if english
+                else f"En {seen['location']} hay {temperature} °C ahora, {seen['condition']}."
+            )
+        figures = [day.get("condition"), day.get("minC"), day.get("maxC"), day.get("rainProbabilityPercent")]
+        if not isinstance(figures[0], str) or not all(isinstance(value, (int, float)) for value in figures[1:]):
+            return ""
+        low, high = (_decimal_said(value, english) for value in figures[1:3])
+        rain = _decimal_said(figures[3], english)
+        return (
+            f"In {seen['location']}, {day_name}: {figures[0]}, {low} to {high} °C, {rain}% chance of rain."
+            if english
+            else f"En {seen['location']}, el {day_name}: {figures[0]}, de {low} a {high} °C, {rain} % de lluvia."
+            if day_name != "mañana"
+            else f"En {seen['location']}, mañana: {figures[0]}, de {low} a {high} °C, {rain} % de lluvia."
+        )
+    if operation == "window.resolve" and isinstance(seen.get("windows"), list):
+        names: list[str] = []
+        for window in seen["windows"]:
+            if not isinstance(window, dict):
+                continue
+            name = str(window.get("title") or window.get("processName") or "").strip()
+            if name and name not in names:
+                names.append(name)
+        if not names:
+            return ""
+        total = seen.get("totalCount") if seen.get("complete") is True else seen.get("observedCount")
+        listed = seen.get("count")
+        partial = type(total) is int and type(listed) is int and listed < total
+        if english:
+            head = f"There are {total} windows; this page lists {listed}: " if partial else "Open windows: "
+        else:
+            head = f"Hay {total} ventanas; en esta página van {listed}: " if partial else "Ventanas abiertas: "
+        return head + ", ".join(names) + "."
+    return ""
+
+
 def _looks_like_continue_constraint(user_text: str) -> bool:
     return read_request(user_text).has(INTENT_CONTINUE_CONSTRAINT)
 
@@ -8011,6 +8149,33 @@ _NOT_FOUND_REASON = re.compile(
 _NOT_FOUND_ITSELF = re.compile(
     r"encontr|hall[eoa]|\bfound\b|\bfind\b|informacion|information|\bdatos\b|\bdata\b|resultado|\bresults?\b"
 )
+# A7 B (FINAL t151/t233, DEV-A3 t274): a verified search that holds nothing that answers is reported «I couldn't
+# find it» / «no lo encontré» by the owner's rule, and the last resort says exactly that; the success branch read it
+# as a failure asserted and vetoed it, so the turn ended in ⚠. Only the not-found clause is exempt.
+_SEARCH_NOT_FOUND_CLAUSE = re.compile(
+    r"\b(?:i\s+)?(?:couldn'?t|could\s+not|didn'?t|did\s+not|was\s+not\s+able\s+to|wasn'?t\s+able\s+to)\s+find\b"
+    r"|\bno\s+(?:(?:lo|la|los|las)\s+)?(?:pude\s+encontrar|encontre|halle)\b|\bnot\s+found\b|\bno\s+results\b"
+    r"|\bsin\s+resultados\b"
+)
+_SEARCH_OPERATIONS = frozenset({"web.search", "web.news.headlines"})
+
+
+def _search_not_found_report(text: str, situation: dict) -> bool:
+    if (
+        str(situation.get("operation") or "") not in _SEARCH_OPERATIONS
+        or situation.get("verified") is not True
+        or situation.get("succeeded") is not True
+    ):
+        return False
+    folded = _accent_folded_with_punctuation(text)
+    clauses = re.split(r"[.;:!?\n]+|,\s*(?:but|pero|and|y)\b", folded)
+    found = [clause for clause in clauses if _SEARCH_NOT_FOUND_CLAUSE.search(clause)]
+    if not found:
+        return False
+    rest = " . ".join(clause for clause in clauses if not _SEARCH_NOT_FOUND_CLAUSE.search(clause))
+    return not _asserts_failure(rest)
+
+
 # «según Tripadvisor», «according to BBC Mundo»: a source named by its proper name.
 _SEARCH_NAMED_SOURCE = re.compile(
     r"\b(?:[Ss]eg[uú]n|[Aa]ccording\s+to|[Dd]e\s+acuerdo\s+con)\s+(?:(?:el|la|los|las|the)\s+)?[A-ZÁÉÍÓÚÑ][\w.-]*"
@@ -8577,6 +8742,13 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     # («no tengo el pronóstico del lunes 13») died here and the turn ended in no_response. A number the person
     # said is theirs to repeat, but never as a measurement: «13 °C» must still be observed.
     asked_numbers = set(re.findall(r"(?<![\w.,])\d+(?:[.,]\d+)?(?![\w]|[.,]\d)", user_text or ""))
+    # A7 E3 (FINAL t323 «el sábado (3 de octubre)»): the day, month and year of a date the read carries are that
+    # day's date, said like the person's numbers: never as a measurement.
+    for block in [seen.get("today"), seen.get("tomorrow"), *later]:
+        date_value = block.get("date") if isinstance(block, dict) else None
+        if isinstance(date_value, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", date_value):
+            year, month, day = date_value.split("-")
+            asked_numbers |= {year, month, day, month.lstrip("0"), day.lstrip("0")}
     # A number that ends the sentence («a las 20:15.») is still a number said.
     for found in re.finditer(r"(?<![\w.,])-?\d+(?:[.,]\d+)?(?!\w|[.,]\d)", text):
         number = found.group()
@@ -9599,7 +9771,9 @@ def _truncated_fact_word(text: str, facts: dict) -> bool:
             return [
                 text
                 for key, child in value.items()
-                if key not in {"observationScope", "unit", "operation", "authority"} | page_prose
+                # A7 E5 (DEV-A3 t388): cause is the English prose of a typed cause for the narrator; the Spanish
+                # «ambiguo» of a reply is not a cut of its «ambiguous».
+                if key not in {"observationScope", "unit", "operation", "authority", "cause"} | page_prose
                 for text in values_only(child)
             ]
         if isinstance(value, (list, tuple)):
@@ -10277,6 +10451,55 @@ def _unverified_present_fact(text: str, user_text: str, facts: dict) -> str | No
     return None
 
 
+def _names_forbidden_term(vocabulary: str, term: str) -> bool:
+    """A7 E2 (FINAL t241): a jargon term ends where its word ends; «operacion» inside «operaciones básicas»
+    (arithmetic) or «tool» inside «toolkit» go on into another word, while a name glued in front («XRouter») still
+    says it. Twin of UserMessagePolicy.LeakedInternalTerm."""
+
+    folded = term.casefold()
+    if not folded:
+        return False
+    end = r"(?!\w)" if re.search(r"\w$", folded) else ""
+    return re.search(re.escape(folded) + end, vocabulary.casefold()) is not None
+
+
+def _said_misspelled(user_text: str, name: str) -> bool:
+    """A7 E1 (FINAL t299 «ponme algo de luis miguel en spotfy»): the person named it with a typo; by the owner's rule
+    (2026-09-19) what was misheard or mistyped BAXY repairs, so a reply that names it spelled right names what was
+    said. A small edit distance against a word the person wrote, never a new name."""
+
+    budget = 1 if len(name) <= 5 else 2
+    return any(
+        abs(len(word) - len(name)) <= budget and _edit_distance(word, name) <= budget
+        for word in re.findall(r"[a-z0-9]+", fold(user_text or ""))
+        if len(word) >= 4
+    )
+
+
+def _observed_identifier_tokens(situation: dict) -> set[str]:
+    """A7 E4 (DEV-A3 t103): a file name inside an observed window title («baxy-guardia.txt: Bloc de notas») is what
+    was seen, not an internal code; only the observed values count, never the operation that read them."""
+
+    tokens: set[str] = set()
+
+    def walk(value: object, key: str = "") -> None:
+        if key in {"operation", "operations", "authority", "windowId", "endpointIdHash"}:
+            return
+        if isinstance(value, str):
+            tokens.update(match.casefold() for match in _IDENTIFIER_TOKEN.findall(value))
+        elif isinstance(value, dict):
+            for child_key, child in value.items():
+                walk(child, str(child_key))
+        elif isinstance(value, (list, tuple)):
+            for child in value:
+                walk(child, key)
+
+    walk(_merged_observed(situation))
+    operation = str(situation.get("operation") or "").casefold()
+    tokens.discard(operation)
+    return tokens
+
+
 def compose_visible_defect(
     text: str,
     intent: str,
@@ -10310,7 +10533,7 @@ def compose_visible_defect(
         match.casefold()
         for source in identifier_sources
         for match in _IDENTIFIER_TOKEN.findall(source)
-    }
+    } | _observed_identifier_tokens(_situation_from_facts(facts))
     vocabulary_text = without_observed_names(stripped, _situation_from_facts(facts))
     without_user_identifiers = _IDENTIFIER_TOKEN.sub(
         lambda match: "" if match[0].casefold() in user_identifiers else match[0],
@@ -10757,7 +10980,7 @@ def compose_visible_defect(
         folded,
     ):
         return "extra_claim"
-    if "spotify" in folded and "spotify" not in blob:
+    if "spotify" in folded and "spotify" not in blob and not _said_misspelled(user_text, "spotify"):
         return "unmentioned_name"
     if re.search(
         r"observable state|observed state|observed status|"
@@ -11189,8 +11412,10 @@ def compose_visible_defect(
     # decir el fallo. No hay fallo que decir: la persona pidio abrir algo sin
     # decir que. La lista de pedidos ambiguos es cerrada y el texto ha de ser
     # solo pregunta.
+    # A7 (FINAL t23/t199/t320): after an action was decided and its arguments came back empty, the App reports
+    # ambiguous_request, whose fact asks for one short question; the question is the reply, not a failure to say.
     is_failure = (intent == "error" or polarity == "failure") and not (
-        _looks_like_ambiguous_action(user_text)
+        (_looks_like_ambiguous_action(user_text) or cause == "ambiguous_request")
         and visible_reply_is_only_questions(stripped)
     )
     if is_failure:
@@ -11311,6 +11536,7 @@ def compose_visible_defect(
         and not _looks_like_refuse_question(user_text)
         and not _looks_like_capability_question(user_text)
         and not (kind == "conversation" and _failure_word_is_the_persons(failure_assertions, user_text))
+        and not _search_not_found_report(stripped, situation)
     ):
         return "asserted_failure"
     if intent == "welcome" or kind == "welcome":
@@ -11913,6 +12139,14 @@ def compose_visible_defect(
         allowed_clock_values: tuple[tuple[int, int], ...] = (
             ((int(given[:2]), int(given[3:])),) if isinstance(given, str) else ()
         )
+        later = clock_later_asked(user_text) if clock and place_clock is None else None
+        later_local = _local_datetime_from_observed(_merged_observed(situation)) if later is not None else None
+        if later is not None and later_local is not None:
+            # A7 C (DEV-A3 t217 «¿qué hora será de aquí a doce minutos?»): the payload carries the clock later on
+            # (M40); the reply owes that time, and naming the current one next to it is no contrary claim.
+            then = later_local + timedelta(minutes=later[1])
+            allowed_clock_values += ((later_local.hour, later_local.minute),)
+            clock = f"{then.hour:02d}:{then.minute:02d}"
         countdown_asked = countdown_target(user_text) if clock else None
         if countdown_asked is not None:
             # CLOCK1331 H0399: «Faltan 13 horas y 48 minutos para las 3 de la
@@ -19194,7 +19428,7 @@ class LlmRuntime:
                 return False
             folded = text.casefold()
             vocabulary = without_observed_names(text, situation).casefold()
-            if any(term.casefold() in vocabulary for term in forbidden_terms):
+            if any(_names_forbidden_term(vocabulary, term) for term in forbidden_terms):
                 return False
             if any(
                 not re.search(
@@ -19291,7 +19525,7 @@ class LlmRuntime:
                     (
                         term
                         for term in forbidden_terms
-                        if term.casefold() in folded_scaffold
+                        if _names_forbidden_term(folded_scaffold, term)
                     ),
                     None,
                 )
@@ -19510,7 +19744,7 @@ class LlmRuntime:
                 return "action_attributed_to_user"
             folded_candidate = candidate.casefold()
             vocabulary = without_observed_names(candidate, situation).casefold()
-            if any(term.casefold() in vocabulary for term in forbidden_terms):
+            if any(_names_forbidden_term(vocabulary, term) for term in forbidden_terms):
                 return "forbidden_term"
             if any(
                 not re.search(
@@ -19664,7 +19898,7 @@ class LlmRuntime:
 
             folded = (candidate or "").casefold()
             vocabulary = without_observed_names(candidate, situation).casefold()
-            present = [term for term in forbidden_terms if term.casefold() in vocabulary]
+            present = [term for term in forbidden_terms if _names_forbidden_term(vocabulary, term)]
             if present:
                 return "No incluyas ninguno de estos terminos: " + ", ".join(present)
             missing_actions = [
@@ -20423,6 +20657,15 @@ class LlmRuntime:
                 if publishable(not_found):
                     record_stage("not_found_fallback", not_found, not_found, response, "", True)
                     return not_found
+            # A7: a verified result (or a typed failure with its known cause) is told with its observed values,
+            # through the same gate as a draft, whether the drafts were vetoed or the writer ran out of time.
+            if isinstance(situation, dict):
+                deterministic = _deterministic_final(situation, visible_situation, user_text, response_language)
+                if deterministic and publishable(deterministic):
+                    record_stage(
+                        "deterministic_fallback", deterministic, deterministic, response, "", True,
+                    )
+                    return deterministic
             return ""
 
         # tanda-02: a model that does not answer in time (a timeout or a dropped
