@@ -2228,3 +2228,33 @@ def asks_to_order(request: object) -> bool:
     """The request orders or buys something («pídeme unos tacos», «order a pizza»): an act done by asking someone."""
 
     return _ORDERING_ACT.search(_reading_fold(str(request or ""))) is not None
+
+
+# M54 (v3b-devD D-s042 «quiero pastel de camote de una panadería local» → «No preparo el pastel de camote…»): a limit
+# may deny making something only when making it was asked.
+_MAKING_REQUEST = re.compile(
+    r"\b(?:haz\w*|hace\w*|hacer\w*|hag[ao]s?|prepar\w*|cocin\w*|fabric\w*|horne\w*|elabor\w*|guis\w*|"
+    r"make\w*|making|cook\w*|bak(?:e|es|ing)|brew\w*|prepare\w*)\b"
+)
+
+
+def asks_to_make(request: object) -> bool:
+    """The request asks to make, cook or prepare something («hazme una tortilla», «bake a cake»)."""
+
+    return _MAKING_REQUEST.search(_reading_fold(str(request or ""))) is not None
+
+
+# M54 (v3b-devD D-s004 «recomprar el último billete de tren a huesca» → «No recomprobo el billete…»): the verbs the
+# person wrote as infinitives (with their clitics), by stem, so a limit's first person of them can be checked.
+_REQUEST_INFINITIVE = re.compile(r"\b([a-zñ]{3,}?)(?:ar|er|ir)(?:me|te|se|le|lo|la|nos|les|los|las)?\b")
+
+
+def requested_infinitive_stems(request: object) -> tuple[str, ...]:
+    """The stems of the Spanish infinitives of the request («recomprar» → «recompr»), five letters or more."""
+
+    stems: list[str] = []
+    for found in _REQUEST_INFINITIVE.finditer(_reading_fold(str(request or ""))):
+        stem = found.group(1)
+        if len(stem) >= 5 and stem not in stems:
+            stems.append(stem)
+    return tuple(stems)
