@@ -145,8 +145,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # M42/M42b/M43: argumentos del decisor
 # integración búsqueda D32, M44–M48 y A7
 # v3b: M49–M52, M50, M51, último recurso de media
+# v3b tras inventario
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "39f09309f4faca5d55c0fc71a1ae0809b471162e6d540624ba327f4819d0c66d"
+    "7af42b204d1614d074c51dd49e0e46bc649184200e975cb8e74289e8923087c4"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
