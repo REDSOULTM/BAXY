@@ -319,3 +319,24 @@ ronda 1. Aislado, mismo entorno que `full3m22`: DEV-A 234 → 210/260 (5 arregla
 límite, límites → pregunta), DEV-B 225 → 208/253 (sueltos 104 → 89). **Retirado.** Lección: entre 5·10⁻⁶ (no mueve)
 y 5·10⁻⁵ (rompe); un reintento sería un paso intermedio con β mayor para contener la deriva, y sólo después de agotar
 los lectores y guardas (prioridad del dueño del 28-09).
+
+## D29. Lectores y guardas (prioridad del dueño del 28-09): M32–M36, revisados antes de medir (2026-09-28 07:30)
+El análisis por etapa mostró que en DEV-B la mayor pérdida frente al decisor aislado son turnos acertados que fallan al
+redactar (la guarda rechaza todos los borradores) y que en la reserva los lectores ganan en neto salvo en casos
+concretos. De ahí cinco estrechamientos, cada uno sobre un camino distinto:
+- **M33** idioma de una redacción que lo nombra («escríbeme un mensaje en inglés…») = idioma de la respuesta, desde
+  la lectura del pedido (`semantic/request._WRITING_REQUEST`); una pregunta sobre palabras no cuenta.
+- **M35** guardas de redacción: lo que BAXY respondió o preguntó *a la persona* («te respondí», «respondí a tu
+  mensaje») es conversación, no efecto; con «le», destinatario o canal sigue siendo efecto. En una presentación, los
+  números que trae el pedido se pueden decir, pero nunca una fecha, edad o versión de BAXY.
+- **M34** `overheard_speech` sólo si nada va dirigido a BAXY: vocativo, cortesía en un extremo, pregunta que empieza
+  por palabra interrogativa, deseo al oyente u orden cerrada al inicio. La narración («como te decía…») sigue ajena.
+- **M32** junto a la colección propia sólo un género nombrado dice qué poner («play my rock playlist»); los
+  calificativos («mis preferidas», «de siempre») siguen preguntando.
+- **M36** el acuse de una restricción nunca habla de BAXY en tercera persona (prompt).
+Revisión independiente (REV2) antes de medir: M35a tal cual dejaba pasar efectos inventados («Respondí el correo de
+tu jefe»), M35b orígenes inventados, M33 no se activaba en su propio ejemplo y M34 volvía dirigidas narraciones
+ajenas; todo corregido con sus contraejemplos como pruebas. La primera medida de M33+M35 (m40) se detuvo por eso.
+**Protocolo:** como cada mecanismo toca un camino distinto, se miden juntos (m41: DEV-A, DEV-B, capa A, 742, reserva)
+y cada arreglo o rotura se atribuye por el camino que decidió el turno; un mecanismo con una rotura atribuida se
+retira solo. Confirmación en DEV-C (base 645217a7 frente al candidato).
