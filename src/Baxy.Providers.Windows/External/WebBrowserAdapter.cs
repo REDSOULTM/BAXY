@@ -583,6 +583,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         // clima. Sale sólo el nombre de la ciudad que el servicio público dedujo
         // de la dirección de este PC; ni coordenadas ni nada de la persona.
         string? near = null;
+        string? nearCountry = null;
         if (arguments.ValueKind == JsonValueKind.Object
             && arguments.TryGetProperty("nearby", out JsonElement nearby)
             && nearby.ValueKind == JsonValueKind.True)
@@ -593,6 +594,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 return ExternalJson.FailureBeforeEffect(operation, "web_search_place_unavailable");
             }
             near = place.Value.Name;
+            nearCountry = place.Value.CountryCode;
             query = query + " " + near;
         }
         string[] queryTokens = SearchTokens(query);
@@ -613,8 +615,14 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
 
         if (OpenStreetMapPlaceSource.Parse(asked, near) is { } placeAsk)
         {
+            // M54: this PC's city is looked up in this PC's country; a named place prefers the
+            // country of this PC's regional settings among places of the same name.
             List<(string Title, string Url, string Snippet)>? places = await _places
-                .SearchAsync(placeAsk, limit, languages[0], cancellationToken).ConfigureAwait(false);
+                .SearchAsync(
+                    placeAsk, limit, languages[0], cancellationToken,
+                    nearCountry ?? RegionInfo.CurrentRegion.TwoLetterISORegionName,
+                    requireCountry: nearCountry is not null)
+                .ConfigureAwait(false);
             if (places is { Count: > 0 })
                 return SearchReceipt(operation, query, near, places, OpenStreetMapPlaceSource.Authority);
         }
