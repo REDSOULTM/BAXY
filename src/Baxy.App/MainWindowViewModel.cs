@@ -41,6 +41,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private readonly ConversationLog? _conversationLog = ConversationLog.CreateDefault();
     private Action? _coreDisconnectedHandler;
     private int _coreDisconnectObserved;
+    private bool _coreRecoveryPending;
+    private Task _coreRecovery = Task.CompletedTask;
     private int _voiceCommandBusy;
     private string _draft = string.Empty;
     private string _statusText = "Iniciando";
@@ -453,7 +455,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// (CLOSE1219/007 answered an English request in Spanish after «confirmar»).</summary>
     internal string? LastMindResponseLanguage { get; private set; }
 
-    public async Task InitializeAsync(CancellationToken cancellationToken)
+    public Task InitializeAsync(CancellationToken cancellationToken) =>
+        InitializeAsync(recovering: false, cancellationToken);
+
+    private async Task InitializeAsync(bool recovering, CancellationToken cancellationToken)
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
         if (_isInitializing || IsReady)
@@ -537,11 +542,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
             StatusText = "Lista";
             StatusDescription = "BAXY disponible";
-            AddMessage(
-                "BAXY",
-                TurnVisibleFacts.Welcome(),
-                isUser: false,
-                messageEvent: UserMessageEvent.Welcome);
+            if (!recovering)
+            {
+                // A recovered core continues the conversation: the disconnect
+                // was already said, and a greeting there would read as a reply.
+                AddMessage(
+                    "BAXY",
+                    TurnVisibleFacts.Welcome(),
+                    isUser: false,
+                    messageEvent: UserMessageEvent.Welcome);
+            }
+
             if (_mindPlans.DroppedRestoredPlan is { } droppedPlan)
             {
                 // A plan of a previous session is never resumed: the person is
@@ -1285,6 +1296,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 turnTraceId,
                 ShellTraceStages.ResponseFinal);
             _turnExecutionActive = false;
+            if (_coreRecoveryPending)
+            {
+                RecoverCoreWhenIdle();
+            }
+
             RestorePresentationState();
         }
     }
@@ -3047,9 +3063,54 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     isUser: false,
                     messageEvent: UserMessageEvent.Error(
                         UserMessageDiagnosticCodes.LocalService));
+                owner.RecoverCoreWhenIdle();
             },
             (this, client));
     }
+
+    /// <summary>
+    /// 2026-09-28: baxy-core ended during «captura la ventana activa» and the
+    /// App stayed with input disabled for good — every turn, «cancelar» and a
+    /// new session got agent_not_ready until the process was closed. The
+    /// retry that the startup failure offers (<see cref="InitializeAsync(CancellationToken)"/>)
+    /// already restarts the core and drops a stale plan; after a disconnect
+    /// the App takes it itself, once the turn in flight has ended.
+    /// </summary>
+    private void RecoverCoreWhenIdle()
+    {
+        if (_isDisposed || _isInitializing)
+        {
+            return;
+        }
+
+        if (_turnExecutionActive)
+        {
+            _coreRecoveryPending = true;
+            return;
+        }
+
+        _coreRecoveryPending = false;
+        _coreRecovery = RecoverCoreAsync();
+    }
+
+    private async Task RecoverCoreAsync()
+    {
+        try
+        {
+            await InitializeAsync(recovering: true, _mindLifetimeCancellation.Token);
+        }
+        catch (Exception exception) when (
+            exception is OperationCanceledException or ObjectDisposedException)
+        {
+            // The shell is closing; there is nothing left to recover.
+        }
+    }
+
+    /// <summary>
+    /// A turn that arrives while the core restarts waits for it instead of
+    /// being refused as agent_not_ready.
+    /// </summary>
+    internal Task WaitForCoreRecoveryAsync() => _coreRecovery;
 
     internal static bool IsExpectedStartupFailure(Exception exception) =>
         exception is IOException

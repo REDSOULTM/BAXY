@@ -645,6 +645,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         // Attachments in the FieldCenter body are not a product contract:
         // /upload already answers attachments_not_supported. They are ignored
         // here so the conductor and the UI share the same admission.
+        await _viewModel.WaitForCoreRecoveryAsync().ConfigureAwait(true);
         if (!FieldBridgeContract.TryAcceptTurn(
                 _viewModel.IsInputEnabled,
                 text,

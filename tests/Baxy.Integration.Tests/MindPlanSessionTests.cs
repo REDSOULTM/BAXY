@@ -79,6 +79,62 @@ public sealed class MindPlanSessionTests
         }
     }
 
+    // 2026-09-28: baxy-core ended during «captura la ventana activa»; the send threw,
+    // the plan stayed pending and the App refused every later turn. A step whose core
+    // is gone ends the plan and its retry identity; the failure still reaches the turn.
+    [Test]
+    public async Task CoreLostDuringAStepEndsThePlanAndStillFailsTheTurn()
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-plan-core-lost-" + Guid.NewGuid());
+        Directory.CreateDirectory(root);
+        var core = new CoreProcessClient();
+        var mind = new MindSidecarClient();
+        try
+        {
+            var published = new List<(string Body, UserMessageEvent? Event)>();
+            var session = new MindPlanSession(new MindPlanSession.Host
+            {
+                Core = () => core,
+                Mind = () => mind,
+                Publish = (body, messageEvent) => published.Add((body, messageEvent)),
+                SetStatus = static _ => { },
+                TryMarkResolved = static (registry, prepared) =>
+                {
+                    registry.MarkResolved(prepared);
+                    return true;
+                },
+            });
+            var store = new DurablePlanStore(Path.Combine(root, "plan.bin"), Path.Combine(root, "plan.key"));
+            session.UseStore(store);
+            string outbox = Path.Combine(root, "outbox.bin");
+            var registry = new RetryableOperationRegistry(outbox);
+            var execution = new PendingMindPlanExecution(
+                "captura la ventana activa",
+                [new MindPlanStep("capture", "capture.active.window", "Captura la ventana activa.",
+                    [], "literal", new JsonObject())]);
+            session.Begin(execution);
+
+            // A client whose core is gone: not ready, and every send fails.
+            Assert.That(core.IsReady, Is.False);
+            Assert.ThrowsAsync<InvalidOperationException>(
+                async () => await session.ExecuteAsync(execution, registry, CancellationToken.None));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(session.HasPending, Is.False);
+                Assert.That(store.Load(registry), Is.Null);
+                Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+                Assert.That(published, Is.Empty, "the turn says the failure once");
+            });
+        }
+        finally
+        {
+            await mind.DisposeAsync();
+            await core.DisposeAsync();
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
     // ctx-dueno-01 (2026-09-22): an uncertain effect used to keep the plan pending on
     // «cancelar» too, and the whole conversation stayed hostage. Cancel now closes it
     // with one terminal uncertain message; only an unrecognised reply keeps the

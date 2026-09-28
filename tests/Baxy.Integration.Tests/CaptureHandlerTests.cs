@@ -58,6 +58,50 @@ public sealed class CaptureHandlerTests
         });
     }
 
+    // 2026-09-28: the provider's IOException escaped the handler and ended
+    // baxy-core (Steam's helper window, parked off-screen, held the foreground).
+    // A capture that cannot be taken is a failed operation with its reason.
+    [TestCase(true, "unavailable", "active_window_not_visible")]
+    [TestCase(true, "io", "active_window_capture_failed")]
+    [TestCase(true, "access", "active_window_capture_failed")]
+    [TestCase(false, "io", "screen_capture_failed")]
+    public async Task CaptureThatCannotBeTakenIsAFailedOperationNotACoreFault(
+        bool activeWindow, string failure, string expectedError)
+    {
+        Exception exception = failure switch
+        {
+            "unavailable" => new ScreenshotUnavailableException(
+                "active_window_not_visible", "Active window is outside the visible desktop."),
+            "io" => new IOException("Screenshot copy failed."),
+            "access" => new UnauthorizedAccessException("Capture directory denied."),
+            _ => throw new ArgumentOutOfRangeException(nameof(failure)),
+        };
+        var handler = activeWindow
+            ? new ScreenshotCaptureHandler(new FailingProvider(exception), "capture.active.window", true)
+            : new ScreenshotCaptureHandler(new FailingProvider(exception));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(default!, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.Verified, Is.False);
+            Assert.That(outcome.Retryable, Is.False);
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo(expectedError));
+            Assert.That(outcome.Result, Is.Null);
+        });
+    }
+
+    private sealed class FailingProvider(Exception failure) : IScreenshotProvider
+    {
+        public ValueTask<CaptureResult> CaptureAsync(CancellationToken cancellationToken) =>
+            ValueTask.FromException<CaptureResult>(failure);
+
+        public ValueTask<CaptureResult> CaptureActiveWindowAsync(CancellationToken cancellationToken) =>
+            throw failure;
+    }
+
     private sealed class StubProvider(ActiveWindowCaptureProvenance? activeWindow = null) : IScreenshotProvider
     {
         public ValueTask<CaptureResult> CaptureAsync(CancellationToken cancellationToken)

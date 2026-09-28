@@ -204,7 +204,8 @@ internal sealed partial class GdiScreenshotPlatform : IScreenshotPlatform
         int right = Math.Min(checked(window.Left + window.Width), checked(screen.Left + screen.Width));
         int bottom = Math.Min(checked(window.Top + window.Height), checked(screen.Top + screen.Height));
         if (right <= left || bottom <= top)
-            throw new IOException("Active window is outside the visible desktop.");
+            throw new ScreenshotUnavailableException(
+                "active_window_not_visible", "Active window is outside the visible desktop.");
         var crop = new CaptureBounds(left, top, right - left, bottom - top);
         ScreenshotFrame frame = _captureRegion(crop);
         ActiveWindowSnapshot after = _observeActiveWindow();

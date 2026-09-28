@@ -109,6 +109,36 @@ public sealed class WindowsScreenshotProviderTests
         });
     }
 
+    // 2026-09-28: Steam's helper window, parked at (-25600, -25600), held the
+    // foreground. The failure names why, so the operation reports it instead of
+    // a bare I/O fault, and nothing is read or stored.
+    [Test]
+    public void ActiveWindowOutsideTheVisibleDesktopFailsWithItsReasonWithoutStoringImage()
+    {
+        using TemporaryDirectory temporary = new();
+        ActiveWindowSnapshot parked = Snapshot() with
+        {
+            WindowBounds = new CaptureBounds(-25600, -25600, 1010, 600),
+        };
+        int copies = 0;
+        var platform = new GdiScreenshotPlatform(() => parked, bounds =>
+        {
+            copies++;
+            return new ScreenshotFrame(bounds.Width, bounds.Height, new byte[bounds.Width * bounds.Height * 4]);
+        }, new FixedTimeProvider());
+        var provider = new WindowsScreenshotProvider(temporary.Path, platform, new FixedTimeProvider());
+
+        ScreenshotUnavailableException? failure = Assert.ThrowsAsync<ScreenshotUnavailableException>(
+            async () => await provider.CaptureActiveWindowAsync(CancellationToken.None));
+        Assert.Multiple(() =>
+        {
+            Assert.That(failure!.Code, Is.EqualTo("active_window_not_visible"));
+            Assert.That(failure, Is.InstanceOf<IOException>());
+            Assert.That(copies, Is.Zero);
+            Assert.That(Directory.GetFiles(temporary.Path), Is.Empty);
+        });
+    }
+
     [TestCase(1)]
     [TestCase(2)]
     public void UnavailableWindowIdentityFailsWithoutStoringImage(int failingObservation)

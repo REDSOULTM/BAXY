@@ -17,10 +17,28 @@ internal sealed class ScreenshotCaptureHandler(
         CancellationToken cancellationToken)
     {
         CaptureResult result;
-        if (activeWindow)
-            result = await provider.CaptureActiveWindowAsync(cancellationToken).ConfigureAwait(false);
-        else
-            result = await provider.CaptureAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            if (activeWindow)
+                result = await provider.CaptureActiveWindowAsync(cancellationToken).ConfigureAwait(false);
+            else
+                result = await provider.CaptureAsync(cancellationToken).ConfigureAwait(false);
+        }
+        // A capture that cannot be taken is an operation failure, not a core
+        // fault: an escaping exception ended baxy-core and left the App without
+        // a kernel (2026-09-28, Steam's helper window parked off-screen held
+        // the foreground). The provider never stores a partial image.
+        catch (ScreenshotUnavailableException exception)
+        {
+            return OperationOutcome.Failure(exception.Code);
+        }
+        catch (Exception exception) when (
+            exception is IOException or UnauthorizedAccessException or OverflowException)
+        {
+            return OperationOutcome.Failure(activeWindow
+                ? "active_window_capture_failed"
+                : "screen_capture_failed");
+        }
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
         {

@@ -63,6 +63,9 @@ internal sealed class MindPlanSession
     {
         ArgumentNullException.ThrowIfNull(registry);
         EnsureStore();
+        // Each start says only what it dropped itself; a core recovery must not
+        // repeat the plan an earlier start already announced.
+        DroppedRestoredPlan = null;
         _pending ??= _store!.Load(registry);
         if (_pending is { } restored)
         {
@@ -238,10 +241,8 @@ internal sealed class MindPlanSession
                 ?? registry.GetOrAdd(routed);
             execution.PendingOperation = prepared;
             Persist(execution);
-            OperationResponse response = await client.SendOperationAsync(
-                prepared,
-                TimeSpan.FromSeconds(20),
-                cancellationToken);
+            OperationResponse response = await SendClosingOnCoreLossAsync(
+                client, registry, prepared, cancellationToken);
             if (PendingOperationConfirmation.TryCreate(
                     response,
                     prepared,
@@ -418,10 +419,8 @@ internal sealed class MindPlanSession
                 case ConfirmationReplyKind.Confirm:
                     CoreProcessClient client = _host.Core()
                         ?? throw new InvalidOperationException("El motor local no está disponible.");
-                    OperationResponse response = await client.SendOperationAsync(
-                        confirmation.Prepared,
-                        TimeSpan.FromSeconds(20),
-                        cancellationToken,
+                    OperationResponse response = await SendClosingOnCoreLossAsync(
+                        client, registry, confirmation.Prepared, cancellationToken,
                         confirmation.Token);
                     execution.Confirmation = null;
                     if (response.Status == OperationStatuses.Completed && response.Verified)
@@ -615,6 +614,36 @@ internal sealed class MindPlanSession
             cancellationToken,
             recovery,
             expectedSuffix: pendingSuffix);
+    }
+
+    /// <summary>
+    /// Sends one step. 2026-09-28: the core ended mid-step and the plan stayed
+    /// pending with input disabled, so every later turn, «cancelar» and a new
+    /// session were refused. A step whose core is gone ends the plan here — the
+    /// same drop a restart already gives a stale plan — and the failure still
+    /// reaches the turn, which says the step was sent and not confirmed.
+    /// </summary>
+    private async Task<OperationResponse> SendClosingOnCoreLossAsync(
+        CoreProcessClient client,
+        RetryableOperationRegistry registry,
+        PreparedOperation prepared,
+        CancellationToken cancellationToken,
+        string? confirmationToken = null)
+    {
+        try
+        {
+            return await client.SendOperationAsync(
+                prepared,
+                TimeSpan.FromSeconds(20),
+                cancellationToken,
+                confirmationToken);
+        }
+        catch (Exception) when (!client.IsReady && !cancellationToken.IsCancellationRequested)
+        {
+            _ = _host.TryMarkResolved(registry, prepared);
+            Clear();
+            throw;
+        }
     }
 
     private void FinishWithFailure(PendingMindPlanExecution execution, string reason)

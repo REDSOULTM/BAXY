@@ -23,6 +23,18 @@ public sealed record ActiveWindowCaptureProvenance(
     public bool IsClipped => WindowBounds != CaptureBounds;
 }
 
+/// <summary>
+/// The active window is not on the visible desktop (minimized, or parked
+/// off-screen like Steam's helper window). An honest capture failure with a
+/// reason the person can act on; still an <see cref="IOException"/> for callers
+/// that only need "no image was stored".
+/// </summary>
+public sealed class ScreenshotUnavailableException(string code, string message) : IOException(message)
+{
+    public string Code { get; } = code;
+}
+
+/// <summary>Captures fail with <see cref="IOException"/> and never store a partial image.</summary>
 public interface IScreenshotProvider
 {
     ValueTask<CaptureResult> CaptureAsync(CancellationToken cancellationToken);
