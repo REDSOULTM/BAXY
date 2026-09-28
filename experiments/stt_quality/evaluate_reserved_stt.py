@@ -154,8 +154,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # M33+M35: guardas de redacción
 # M32-M36 revisados tras REV2
 # M32, M33, M35, M36 (M34 retirado)
+# Ley 2 G4+G5 integradas
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "71d2c9f9fb2d1962d3c6f15e8bf99cecdc06800faeade1cc94f111fedf71eeb5"
+    "73427eac5fa763a70fcc824ba0a1a47d9aa872ac0ec4d3c8619127e226d6b4a6"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

@@ -167,9 +167,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # M33: el contenido pedido en un idioma nombrado se valida en ese idioma
 # M33+M35: guardas de redacción
 # M32-M36 revisados tras REV2
+# Ley 2 G4+G5 integradas
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "562d35cc075b9bf2bd4cd02ed3548ab6702dfebc39a3a7deacc9fba0b62d8ab4"
+        "f13c7ee09da2d9dc2c1285ba0c552d06493e0b5a61d832f88b15556982c59b3b"
     ),
     "src/baxy_mind/llm.py": (
         "acf7505a5ebb2b035d6aff70c23e457142499b1bb31bbc8c02b8afb22b253a07"
