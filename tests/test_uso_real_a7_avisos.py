@@ -331,3 +331,25 @@ def test_the_last_resort_is_recorded_as_its_own_stage(monkeypatch: pytest.Monkey
     _Drafts(["The volume is muted."]).compose_user_message("turn it down 10", "status", {"situation": VOLUME})
     assert stages[-1] == ("deterministic_fallback", True)
     assert json.dumps(stages)
+
+
+# v3a DEV-A s034/s054: Spotify was playing; three drafts of the verified skip and stop were vetoed (invented,
+# missing_name, internal_code) and the turn ended in ⚠. The session's observed state is what is told.
+MEDIA = {
+    "kind": "operation", "operation": "media.control", "polarity": "success", "verified": True, "succeeded": True,
+    "observed": {"version": 1, "sourceAppUserModelId": "SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify",
+                 "title": "Baila Baila Baila - Remix", "artist": "Ozuna", "playbackStatus": "paused",
+                 "authority": "windows_smtc"},
+}
+
+
+def test_a_verified_media_control_is_told_as_the_observed_session() -> None:
+    payload = llm._compose_situation_payload(MEDIA, "en", "i don't like that song turn it off")
+    assert llm._deterministic_final(MEDIA, payload, "i don't like that song turn it off", "en") == (
+        "«Baila Baila Baila - Remix» by Ozuna is paused."
+    )
+    playing = {**MEDIA, "observed": {**MEDIA["observed"], "playbackStatus": "playing"}}
+    payload = llm._compose_situation_payload(playing, "es", "pasa a la siguiente")
+    assert llm._deterministic_final(playing, payload, "pasa a la siguiente", "es") == (
+        "Está sonando «Baila Baila Baila - Remix» de Ozuna."
+    )

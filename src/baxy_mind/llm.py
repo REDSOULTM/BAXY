@@ -6831,6 +6831,19 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
             else f"El volumen está en {level} %"
         )
         return head + ("; está silenciado." if muted else ".")
+    if operation in {"media.status", "media.control"} and seen.get("playbackStatus") in {"playing", "paused"}:
+        # v3a DEV-A s009/s034/s054: a verified read or control of the session that was playing had its three drafts
+        # vetoed; what was observed is the session's title, artist and state after the call.
+        title = str(seen.get("title") or "").strip()
+        if not title:
+            return ""
+        artist = str(seen.get("artist") or "").strip()
+        playing = seen["playbackStatus"] == "playing"
+        if english:
+            by = f" by {artist}" if artist else ""
+            return f"Now playing «{title}»{by}." if playing else f"«{title}»{by} is paused."
+        by = f" de {artist}" if artist else ""
+        return f"Está sonando «{title}»{by}." if playing else f"Está en pausa «{title}»{by}."
     if operation == "media.play.youtube" and seen.get("playbackStatus") == "playing":
         title = str(seen.get("title") or "").strip()
         if not title or seen.get("titleObserved") is False:
