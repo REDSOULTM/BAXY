@@ -21,7 +21,7 @@ del goal. Abajo, cada meta, la causa limitante medida y qué haría falta.
 | ⚠ (turnos sin respuesta publicada) | **5,0 %** (10/202, `composition_failed`) | ≤ 1 % | no |
 | guion del dueño | 51/60 (app real, M29; 24 y 25 no evaluables: la búsqueda web está bloqueada para esta red) | ≥ 53/60 | no |
 | held-out | **29/30** (M29) | ≥ 29/30 | sí |
-| cien | 96/100 (cien-107, M29; 97 con M30); cien-108 al cierre: ver §5 | 100/100 | no |
+| cien | **98/100** (cien-108 en la app real con el producto del cierre; 96 con los 2 dudosos; 0 efectos de más). Fallan 073 «what is cache memory» (busca y dice «via web search») y 077 «still there?» (pregunta) | 100/100 | no |
 | reserva MASSIVE (sólo decisión) | 86,4 % (82,2 % al empezar la fase) | ≥ 88 % | no |
 | capa A | **96,4 %** | ≥ 96 % | sí |
 | 742 | 19 decisiones distintas de la base, todas revisadas; hoy sólo cambió H0407, a mejor | sin cambios sin revisar | sí |
@@ -74,8 +74,8 @@ ajena: 3 roturas de `email.latest.reply`).
 
 ## 5. Pendiente y riesgos
 
-- **cien-108** (cien-v18 en la app real con el producto del cierre): se corrió al final; su resultado se añade al
-  progreso cuando termine la adjudicación.
+- **cien-108**: 98/100 (`cien-108/adjudicacion.md`); 038 «if it didn't happen, say so» y 100 «post a letter to
+  Eris» ya están bien; siguen mal 073 y 077.
 - La búsqueda web está bloqueada para esta red (D22): los turnos de búsqueda del guion no se pueden evaluar.
 - El FINAL ya se usó: una ronda nueva exige un conjunto nuevo sellado.
 - Brillo del dueño: el primer ensayo lo puso en 100 sin guardar el valor previo (el arnés ya lo guarda).
