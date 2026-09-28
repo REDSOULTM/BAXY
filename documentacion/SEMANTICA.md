@@ -191,6 +191,10 @@ Formas nuevas (Fase 3.5, cada una con pruebas de frases que no son las que la or
 - **El idioma de lo que se redacta** (M33, `request._WRITING_REQUEST`): una orden de redactar que nombra su idioma
   («escríbeme un mensaje en inglés para mi jefe», «write a short poem in Spanish») se responde en ese idioma, como
   una traducción; una pregunta sobre palabras («¿cómo se escribe hello en inglés?») no.
+- **Las cuentas del reloj las hace el código** (M37 `network.days_until_asked`, M40 `temporal.clock_later_asked`):
+  «¿cuánto falta para el finde / el viernes?» y «¿qué hora será dentro de doce minutos?» se leen aquí y el dato de la
+  hora ya lleva los días que faltan o la hora de entonces; el redactor copia, nunca calcula (en la app real sumaba mal
+  y la guarda vetaba cada borrador).
 - **Las guardas de lo que BAXY dice leen el acto, no la palabra** (M35/M36, en `llm`, no en `semantic/`): lo que BAXY
   respondió o preguntó a la persona («te respondí», «respondí a tu mensaje») es conversación y no un efecto
   inventado, pero con «le», un destinatario o un canal («respondí el correo de tu jefe») sí lo es; en una presentación
