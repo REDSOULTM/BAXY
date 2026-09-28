@@ -8035,6 +8035,17 @@ def _not_found_invents_a_cause(text: str, payload: dict) -> bool:
     )
 
 
+# M41 (official-window DEV-A 2026-09-28 «what's your recommendation for dining out tonight», «best parking
+# manhattan»): «I did not find a specific recommendation in the search results» was vetoed three times for naming
+# the search, and the turn failed. That closing phrase is form, not content: it is clipped before costing a retry.
+_SEARCH_RESULTS_TAIL = re.compile(
+    r"\s*,?\s+(?:in|from|among|within|en|entre|de)\s+(?:the|these|my|los|estos|mis|las|estas)\s+"
+    r"(?:search\s+)?(?:results|resultados|fuentes|p[aá]ginas|pages|sources)(?:\s+de\s+(?:la\s+)?b[uú]squeda)?"
+    r"(?:\s+(?:that\s+i\s+found|que\s+encontr[eé]))?(?=\s*[.!]?\s*$)",
+    re.IGNORECASE,
+)
+
+
 def _search_report_shows_the_search(text: str, payload: dict, user_text: str) -> bool:
     """The answer to a verified search tells the search: a source cited, a result's site named, or how it was
     found. The person's own words and a snippet's own words are not the search showing."""
@@ -19548,6 +19559,15 @@ class LlmRuntime:
                 rest = rest[0].upper() + rest[1:]
             return rest if publishable(rest) else candidate
 
+        def search_clip(candidate: str) -> str:
+            # M41: «…in the search results.» / «…en los resultados de búsqueda.» at the end names the lookup; clipped,
+            # the not-found report is whole. Kept only if the clipped draft passes every check.
+            clipped = _SEARCH_RESULTS_TAIL.sub("", candidate or "").rstrip(" ,;")
+            if not candidate or clipped == (candidate or "").rstrip(" ,;") or not clipped:
+                return candidate
+            clipped = clipped if clipped.endswith((".", "!", "?")) else clipped + "."
+            return clipped if publishable(clipped) else candidate
+
         def screen_clip(candidate: str) -> str:
             # SCREEN1421: quoting seen.lines, the model copied the JSON escapes
             # of the prompt («\"key\": false,», «\n»); the person's screen has
@@ -19577,7 +19597,7 @@ class LlmRuntime:
         response = post(payload)
         first_raw = (response["choices"][0]["message"].get("content") or "").strip()
         text = _strip_prompt_labels(first_raw)
-        text = capital_lead(title_clip(acting_clip(screen_clip(text))))
+        text = capital_lead(title_clip(acting_clip(screen_clip(search_clip(text)))))
         note_length_cut(text, response)
         if publishable(text):
             record_stage("first", first_raw, text, response, "", True)
@@ -20414,7 +20434,7 @@ class LlmRuntime:
             raise
         retry_raw = (retry["choices"][0]["message"].get("content") or "").strip()
         retry_text = _strip_prompt_labels(retry_raw)
-        retry_text = capital_lead(title_clip(acting_clip(screen_clip(retry_text))))
+        retry_text = capital_lead(title_clip(acting_clip(screen_clip(search_clip(retry_text)))))
         note_length_cut(retry_text, retry)
         if publishable(retry_text):
             record_stage("retry", retry_raw, retry_text, retry, "", True)
@@ -20470,7 +20490,7 @@ class LlmRuntime:
             raise
         third_raw = (third["choices"][0]["message"].get("content") or "").strip()
         third_text = _strip_prompt_labels(third_raw)
-        third_text = capital_lead(title_clip(acting_clip(screen_clip(third_text))))
+        third_text = capital_lead(title_clip(acting_clip(screen_clip(search_clip(third_text)))))
         note_length_cut(third_text, third)
         if publishable(third_text):
             record_stage("third", third_raw, third_text, third, "", True)

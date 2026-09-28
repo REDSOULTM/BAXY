@@ -1126,3 +1126,19 @@ def test_the_clock_later_on_is_computed_not_narrated(text: str, later: int | Non
 
     found = clock_later_asked(text)
     assert (found[1] if found else None) == later
+
+
+@pytest.mark.parametrize(
+    ("draft", "clipped"),
+    [
+        ("I could not find a specific restaurant recommendation in the search results.",
+         "I could not find a specific restaurant recommendation."),
+        ("No encontré una recomendación concreta en los resultados de búsqueda.", "No encontré una recomendación concreta."),
+        ("Los resultados muestran tres opciones.", "Los resultados muestran tres opciones."),
+    ],
+)
+def test_a_closing_mention_of_the_search_is_clipped(draft: str, clipped: str) -> None:
+    # M41 (official-window DEV-A 2026-09-28): the not-found report was vetoed three times for that closing phrase.
+    from baxy_mind import llm
+
+    assert llm._SEARCH_RESULTS_TAIL.sub("", draft) == clipped
