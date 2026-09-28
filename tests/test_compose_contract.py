@@ -1063,3 +1063,30 @@ def test_an_identity_answer_keeps_the_numbers_the_request_brought(request_text: 
     from baxy_mind import llm
 
     assert llm._shaped_conversation_answer_violates_contract(draft, request_text, "identity") is violates
+
+
+@pytest.mark.parametrize(
+    ("text", "until"),
+    [
+        ("¿cuánto falta para el finde?", ("finde", 5)),
+        ("cuantos dias faltan para el viernes", ("viernes", 4)),
+        ("how long until friday", ("friday", 4)),
+        ("qué día es hoy", None),
+    ],
+)
+def test_the_days_left_are_counted_from_the_observed_date(text: str, until: tuple[str, int] | None) -> None:
+    # M37 (official-window rehearsal 2026-09-28): the model counted the days to the weekend itself, wrongly, and every
+    # draft was vetoed. On Monday 2026-09-28 the count is carried; the narrator copies it.
+    from datetime import date
+
+    from baxy_mind.semantic.network import days_until_asked
+
+    assert days_until_asked(text, date(2026, 9, 28)) == until
+
+
+def test_a_pending_detail_is_asked_without_naming_an_internal_cause() -> None:
+    # M38: «unclear request» was copied into the drafts («…because the request was unclear»), no question at all.
+    from baxy_mind import llm
+
+    fact = llm._CAUSE_FACT["ambiguous_request"]
+    assert "question" in fact and "unclear request" not in fact

@@ -108,15 +108,23 @@ def turns(
     selected = selected[: limit or None]
     commands: list[dict[str, Any]] = []
     entries: list[dict[str, Any]] = []
+    blocks = 0
     for session, unit in enumerate(selected, start=1):
+        if session > 1:
+            # A confirmation left pending by the previous conversation (DEV-A window 2026-09-28: «olvida mi memoria»
+            # held 113 later turns on «¿confirmas o cancelas?») is cancelled before the next one, as a person who
+            # starts another chat would. The conductor writes a «turn» admission for it too: counted in ``block``.
+            commands.append({"cmd": "cancel"})
+            blocks += 1
         commands.append({"cmd": "session.new"})
         for row in unit:
             text = str(row["text"]).strip()
             if not text:
                 raise SystemExit(f"{row['id']}: texto vacío (el conductor lo mandaría como POST /turn sin texto)")
             commands.append({"cmd": "turn", "text": text})
+            blocks += 1
             entries.append(
-                {"ordinal": len(entries) + 1, "id": row["id"], "session": session, "text": text}
+                {"ordinal": len(entries) + 1, "block": blocks, "id": row["id"], "session": session, "text": text}
             )
     write_jsonl(out, commands)
     map_path.parent.mkdir(parents=True, exist_ok=True)
@@ -284,11 +292,12 @@ def records(
     written: list[dict[str, Any]] = []
     for entry in mapping["turns"]:
         record: dict[str, Any] = {"id": entry["id"], "ordinal": entry["ordinal"], "session": entry["session"]}
-        if entry["ordinal"] > len(blocks):
+        position = entry.get("block", entry["ordinal"])
+        if position > len(blocks):
             record["error"] = "no_turn_in_capture"
             written.append(record)
             continue
-        seen = observe(blocks[entry["ordinal"] - 1])
+        seen = observe(blocks[position - 1])
         record.update(
             turn_id=seen["turnId"],
             terminal=seen["terminal"],

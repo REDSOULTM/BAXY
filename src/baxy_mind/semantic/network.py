@@ -217,6 +217,32 @@ def relative_calendar_days(text: str, today: date) -> tuple[date, ...]:
     return () if phrase is None else relative_days(phrase, today)
 
 
+# M37 (official-window rehearsal 2026-09-28 «¿cuánto falta para el finde?»: three drafts counted the days
+# themselves and got them wrong, and the turn failed): how long until a weekday or the weekend is counted here
+# from the observed date; the narrator only copies it.
+_DAYS_UNTIL = re.compile(
+    r"\b(?:cuanto|cuantos\s+dias|how\s+long|how\s+many\s+days)\s+(?:me\s+|nos\s+|te\s+)?"
+    r"(?:falta|faltan|queda|quedan|until|till|to|is\s+it\s+(?:until|till|to)|left\s+(?:until|till|to|for)|are\s+left\s+(?:until|till|to|for))"
+    r"\s+(?:para\s+|pa\s+|hasta\s+)?(?:el\s+|la\s+|the\s+|this\s+|este\s+)?"
+    r"(?:(?P<weekend>finde|fin\s+de\s+semana|weekend)|(?P<day>"
+    + alternation(tuple(name for names in _WEEKDAYS for name in names))[3:-1]
+    + r"))\b"
+)
+
+
+def days_until_asked(text: str, today: date) -> tuple[str, int] | None:
+    """What «¿cuánto falta para el viernes / el finde?», «how long until Friday» asks for: the target as said and the
+    days left from ``today`` (0 when it is already that day or the weekend), or None."""
+
+    match = _DAYS_UNTIL.search(_fold(text))
+    if match is None:
+        return None
+    if match["weekend"]:
+        return match["weekend"], 0 if today.weekday() >= 5 else 5 - today.weekday()
+    target = next(index for index, names in enumerate(_WEEKDAYS) if match["day"] in names)
+    return match["day"], (target - today.weekday()) % 7
+
+
 # The month and weekday names, but the English «may» («may I know the time») asks for nothing.
 _CALENDAR_PART_NAME = alternation(
     tuple(name for name in MONTH_NUMBERS if name != "may") + tuple(name for names in _WEEKDAYS for name in names)

@@ -46,7 +46,7 @@ from .semantic import dialogue as dialogue_slot
 from .semantic import decider as semantic_decider
 from .semantic.grammar import spoken_number_request
 from .semantic.network import (
-    asks_calendar_part, calendar_parts_asked, present_calendar_question, relative_calendar_days,
+    asks_calendar_part, calendar_parts_asked, days_until_asked, present_calendar_question, relative_calendar_days,
 )
 from .semantic.web import (
     weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
@@ -4405,7 +4405,12 @@ _CAUSE_FACT = {
     ),
     "mission_failed": "mission unfinished",
     "acting": "still working",
-    "ambiguous_request": "unclear request",
+    # M38 (official-window rehearsal 2026-09-28 «what is the timer now?»): the bare «unclear request» was copied into
+    # the drafts («…because the request was unclear»), which are no question and name an internal cause; every draft
+    # was vetoed and the turn failed. The fact says what the reply is.
+    "ambiguous_request": (
+        "one detail of what the person wants is missing: ask one short question about it, without saying why"
+    ),
     "memory_forget_irreversible": "cannot be undone",
     "memory_none": "no matching memories",
     "memory_updated": "saved in the private local memory",
@@ -4699,6 +4704,10 @@ def _calendar_facts(local: datetime, user_text: str, language: str) -> dict[str,
     Tanda 6 «¿sabes qué días fueron el último fin de semana?»: a day counted from today is computed here from the
     observed date (semantic.network.relative_calendar_days) and carried with its weekday, instead of today's."""
 
+    until = days_until_asked(user_text, local.date())
+    if until is not None:
+        # M37: the days left are counted here; the narrator copies them with today's weekday.
+        return {"weekday": _weekday_name(local, language), "until": until[0], "days_until": until[1]}
     asked = relative_calendar_days(user_text, local.date())
     if asked:
         return {"asked_days": [{"date": day.isoformat(), "weekday": _weekday_name(day, language)} for day in asked]}
@@ -4721,6 +4730,11 @@ def _calendar_facts(local: datetime, user_text: str, language: str) -> dict[str,
 def _calendar_instruction(user_text: str) -> str:
     """What the narrator states from the calendar facts _calendar_facts carries."""
 
+    if days_until_asked(user_text, date(2000, 1, 3)) is not None:
+        return (
+            "Say that today is weekday and how many days are left until the day named in until: days_until, "
+            "copied; 0 means it is already that day. Never compute or guess a number."
+        )
     if relative_calendar_days(user_text, date(2000, 1, 3)):
         return (
             "State each day in asked_days with its weekday: that is the day the person asked about, not today. "

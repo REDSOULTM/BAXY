@@ -138,8 +138,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # M32-M36 revisados tras REV2
 # M32, M33, M35, M36 (M34 retirado)
 # Ley 2 G4+G5 integradas
+# M37+M38
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "73427eac5fa763a70fcc824ba0a1a47d9aa872ac0ec4d3c8619127e226d6b4a6"
+    "eb8a28ef9288acc871d78a74af525292adec54a89539aa4bc760affbcc57b5db"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
