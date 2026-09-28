@@ -185,7 +185,18 @@ Formas nuevas (Fase 3.5, cada una con pruebas de frases que no son las que la or
   «¿qué música?» sólo si, quitados el verbo, lo genérico (música, canción, algo, otras, podcast), la cortesía, el
   relleno, la pieza y el propósito («para dormir»), no queda nada con contenido (M27, `_music_clause_names_content`):
   «pon música clásica», «canciones tristes» y «la canción la macarena» se ponen; lo propio sin nombrar («mis
-  favoritos», «liked songs») sigue su regla de la tanda 4c.
+  favoritos», «liked songs») sigue su regla de la tanda 4c. Junto a un contenedor de la colección propia (playlist,
+  lista, biblioteca) sólo un género nombrado dice qué poner: «play my rock playlist» se pone, «mi playlist de
+  siempre» y «mi cantante de jazz favorito» preguntan (M32).
+- **El idioma de lo que se redacta** (M33, `request._WRITING_REQUEST`): una orden de redactar que nombra su idioma
+  («escríbeme un mensaje en inglés para mi jefe», «write a short poem in Spanish») se responde en ese idioma, como
+  una traducción; una pregunta sobre palabras («¿cómo se escribe hello en inglés?») no.
+- **Las guardas de lo que BAXY dice leen el acto, no la palabra** (M35/M36, en `llm`, no en `semantic/`): lo que BAXY
+  respondió o preguntó a la persona («te respondí», «respondí a tu mensaje») es conversación y no un efecto
+  inventado, pero con «le», un destinatario o un canal («respondí el correo de tu jefe») sí lo es; en una presentación
+  se dicen los números que trae el pedido («2 más 2 es 4»), nunca una fecha, edad o versión de BAXY; el acuse de una
+  restricción es en primera persona («no cerraré Spotify»). El análisis por etapa del 28-09 mostró que en DEV-B la
+  mayor pérdida frente al decisor aislado eran respuestas correctas vetadas al redactarlas, no un lector.
 - **Un sinónimo, un lugar**: devolver/restaurar/recuperar el sonido se genera con sus clíticos una vez en
   `lexicon.AUDIO_RESTORE_WORDS` y lo usan el lector, el argumento (`state: false`) y las pistas del planner.
 - **Niveles como se dicen** (uso real 2026-09-23, `semantic/levels.py`): «súbele un poco», «más bajito», «Volume
