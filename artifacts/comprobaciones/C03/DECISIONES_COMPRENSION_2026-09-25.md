@@ -383,3 +383,18 @@ datos ya dados (anclados en lo dicho: un valor que no aparece en el mensaje, la 
 entra; las horas pasan por `temporal`, nunca el ISO del modelo) y sólo pregunta lo que falte.
 Regla: se adopta si en DEV-A (app real) las repreguntas de datos dados bajan y no hay rotos atribuidos; se confirma
 en DEV-C (mente) sin bajar de 246/301; latencia p50 del decisor + ≤ 0,4 s.
+
+## D34. FINAL-2 y DEV-D sellados (paso 1 del goal v3, 2026-09-28 ~14:40)
+Método de DEV-C: particiones de validación/test públicas (MASSIVE val+test, MTOP test+eval, CLINC test+val, ilenia,
+CSTOP eval+test, PRESTO test, SGD test, oasst2-es validación), exclusión por igualdad, hashes y trigramas ≥ 0,85 contra
+todo lo visto (DEV-A/B/C, FINAL, pares, ventanas, cien, scratchpads; DEV-D también contra FINAL-2), auditoría
+independiente con 0 violaciones; conversaciones de sala limpia escritas aparte. Oro: 3 etiquetadores por conjunto
+(lotes opacos), auditoría ciega completa por otros 2, adjudicador para los desacuerdos.
+- **FINAL-2**: 338 turnos (125 sueltos + 127 de 38 conversaciones públicas + 86 escritos), acuerdo ciego 337/338,
+  1 adjudicado. SHA-256 `0f497ea2e148766e9bb5f68b08059f4d29f196cd376210e379347409d92dd312`. Se corre UNA vez al cierre
+  (paso 9), en la app real con revisor independiente. Nota de honestidad: el informe del adjudicador mostró a la raíz
+  el texto de un turno (LF2-0028:t4, una confirmación «Yes, that's the one…»); ningún mecanismo se ajusta sobre él.
+- **DEV-D**: 332 turnos (125 + 125 de 37 conversaciones + 82 escritos), acuerdo 331/332, 1 adjudicado. SHA-256
+  `7c91c653395dad307e8c825bd4465c200166240b215b367ee895dee038575017`. Conjunto de iteración (se miran sus fallos).
+- El FINAL gastado (`e05cf27e…d993`) pasa a desarrollo. Todo dato de entrenamiento generado desde ahora excluye
+  FINAL-2 y DEV-D por huellas.
