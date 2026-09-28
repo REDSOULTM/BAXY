@@ -234,3 +234,35 @@ como tarea programada oculta. Nada del repositorio de BAXY se toca en ese PC.
 - 2026-09-25 12:0x — F0: tag, ficheros de estado. Verificación anterior en curso (capas A/B/C).
 - 12:40 — conjuntos DEV-A/DEV-B/FINAL cerrados y auditados; FINAL sellado. Esperando GPU (verificación anterior) para
   la base DEV y F2.
+
+### Análisis por etapa: qué lector o guarda decide peor que el decisor (28-09 04:20–05:10, pedido del dueño)
+
+Decisor `full3` aislado frente al producto (M29/M30), sólo decisión, por el camino que decidió cada turno en el
+producto (`decision_path` de la auditoría). Neto = aciertos del producto − aciertos del decisor solo en esos turnos.
+DEV-B sólo en recuentos (no se miran sus turnos).
+
+| etapa | DEV-A sueltos | DEV-B sueltos | DEV-B conversación | reserva MASSIVE (2 757) |
+|---|---|---|---|---|
+| lector de efectos (`explicit_effects`) | 0 | −4 | 0 | **+91** (118 frente a 27) |
+| fallo de redacción → recuperación | +1 | **−3** | **−2** | — |
+| decisor, cambiado después (`context_decider`) | 0 | −2 | +1 | +7 |
+| entrada no resuelta (`overheard_speech`) | −3 | −2 | — | +1 |
+| conversación explícita | −1 | 0 | −2 | +9 |
+| pregunta explícita | −1 | 0 | 0 | +4 |
+| total | 105 / 109 | **94 / 105** | 119 / 122 | — |
+
+- De los ~9 puntos entre `full3` aislado (88,9 %) y el producto (80,2 %), unos 5 son de decisión y unos 4 de
+  argumentos (el aislado no los ancla ni los puntúa).
+- **La mayor pérdida en DEV-B no es un lector sino una guarda de redacción**: en 5 turnos el decisor acertó y el
+  contrato de la respuesta de charla rechazó todos los borradores (`shaped_presentation` 6, `wrong_language` 4) →
+  recuperación. Diagnóstico por comprobación en curso (auditoría `BAXY_MIND_RAW_REPLY_AUDIT_PATH`).
+- En la reserva los lectores ganan en neto; por tipo de desacuerdo del lector de efectos, ceder al decisor sólo
+  saldría a cuenta cuando ambos leen acciones distintas (+3); frente a un límite, charla o pregunta del decisor el
+  lector acierta 105 a 11. **No se cede en general.**
+- Pregunta explícita frente a una acción del decisor: decisor 17, lector 7; pero 7 de los 17 son la pregunta de
+  mañana/tarde, que BAXY hace a propósito (no inventa la parte del día; el oro de MASSIVE es permisivo). Lo que es
+  un fallo real del lector: pregunta «¿qué música?» cuando lo pedido nombra contenido junto a la colección propia
+  («play my rock playlist») → **M32** estrecha la prueba de contenido de M27.
+- `overheard_speech` confunde pedidos largos de una frase con conversación ajena (DEV-A −3); las 10 conversaciones
+  ajenas reales de las 742 tienen 18–49 palabras y los falsos positivos 14–28: la longitud no los separa y M10 ya
+  falló por esta vía. Queda para después de la guarda de redacción.
