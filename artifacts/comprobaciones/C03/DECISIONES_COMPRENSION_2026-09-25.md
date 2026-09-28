@@ -340,3 +340,11 @@ ajenas; todo corregido con sus contraejemplos como pruebas. La primera medida de
 **Protocolo:** como cada mecanismo toca un camino distinto, se miden juntos (m41: DEV-A, DEV-B, capa A, 742, reserva)
 y cada arreglo o rotura se atribuye por el camino que decidió el turno; un mecanismo con una rotura atribuida se
 retira solo. Confirmación en DEV-C (base 645217a7 frente al candidato).
+
+## D30. RPO ronda 3 retirada; se cierra la vía de preferencias sobre `full3` (2026-09-28 10:02)
+Ronda 3: paso intermedio (lr 1,5·10⁻⁵), β 0,3 para contener la deriva, 749 pares (los 517 de la ronda 2 sin la
+coincidencia con DEV-C + 232 nuevos auditados: fragmentos pelados y preguntas sobre la conversación). Deriva final
+0,97 (ronda 2: 3,6). Aislado, mismo entorno que `full3m22`: DEV-A 234 → 230 (3 arreglados, 7 rotos, sobre todo
+acciones → pregunta), DEV-B 225 → 219 (sueltos 104 → 89 en la ronda 2, → 99 en la 3). **Retirada.**
+Tres rondas (5·10⁻⁶ sin efecto; 5·10⁻⁵ rompe; 1,5·10⁻⁵ con β 0,3 retrocede): con estos pares, la etapa de
+preferencias no mejora a `full3`. Se cierra esta vía en la fase; `full3` sigue siendo el decisor del producto.

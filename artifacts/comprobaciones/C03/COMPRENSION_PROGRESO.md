@@ -113,6 +113,7 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | CAL (D27): sesgo por decisión sobre la distribución del propio decisor (preguntar −0,75, charla −0,25, límite +1,0), segunda decodificación forzada si cambia | aislado 227 → 226 (1 y 2) | | aislado 234 → 244 (10 y 0) | | | 6 → 4 | **retirado**: no generaliza del DEV-A al ciego |
 | RPO ronda 2 (D28): preferencias sobre `full3`, lr 5·10⁻⁵, 518 pares | aislado 225 → 208 (sueltos 104 → 89) | | aislado 234 → 210 (5 y 29) | | | | **retirado**: el paso desplaza el decisor en todas direcciones |
 | M32–M36 (D29, prioridad del dueño: lectores y guardas): M33 idioma de una redacción que lo nombra; M35 lo dicho a la persona no es efecto y los números del pedido en una presentación; M32 género junto a un contenedor de la colección; M36 acuse sin tercera persona; M34 conversación ajena sólo si nada va dirigido a BAXY | 80,2 % (igual) | | 85,0 → 85,8 % | 96,2 → 96,4 % | 86,2 → 86,4 % (7 y 3) | 0 | **entran M32, M33, M35, M36**; **M34 retirado** (5 arreglados y 3 rotos: «responde al correo de mi jefe» va al último correo; fallo latente de `email.latest.reply`) |
+| RPO ronda 3 (D30): lr 1,5·10⁻⁵, β 0,3, 749 pares auditados | aislado 225 → 219 (sueltos 104 → 99) | | aislado 234 → 230 (3 y 7) | | | | **retirado**; se cierra la vía de preferencias sobre `full3` |
 
 ### Revisión de las 21 decisiones de las 742 que M4 cambia frente a la base
 
