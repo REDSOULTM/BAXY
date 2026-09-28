@@ -91,3 +91,10 @@ sobre cada base, puntuado en el conjunto propio de sueltos).
 
 Decisión: no se cambia la base en esta fase salvo que el techo de sueltos quede medido como causa limitante tras CAL
 y RPO; entonces el primer A/B es Gemma 4 E4B (Apache) y LFM2.5 sólo con el visto bueno del dueño.
+
+## ¿Le cuesta la cuantización Q4 al decisor? (28-09 04:20, medida propia)
+
+El mismo Qwen3.5-4B convertido del HF original a Q8_0 (casi sin pérdida, 4,6 GB: sólo para medir, no cabe en el tope)
+con el mismo LoRA `full3` y el mismo prompt, decisor aislado: DEV-A 234 → 235 (sueltos 109 → 110), DEV-B 227 → 226
+(sueltos 105 → 105). La cuantización Q4_K_M del producto no es la causa del hueco de sueltos; Q5_K_M no se midió (su
+techo es el de Q8). Se descarta subir la cuantización.
