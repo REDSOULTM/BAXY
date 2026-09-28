@@ -52,7 +52,7 @@ from .semantic.web import (
     weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
     weather_asks_coming_days, weather_asks_week, weather_sun_events_asked,
 )
-from .semantic.temporal import _DAY_WORDS, clock_elsewhere
+from .semantic.temporal import _DAY_WORDS, clock_elsewhere, clock_later_asked
 from . import effect_intent
 from .effect_intent import (
     _PERCENTAGE_WORD_VALUES,
@@ -5891,6 +5891,11 @@ def _compose_situation_payload(
                 payload["clock"] = clock
             target = countdown_target(user_text)
             local = _local_datetime_from_observed(merged_seen)
+            later = clock_later_asked(user_text)
+            if later is not None and local is not None:
+                # M40: the clock later on is arithmetic on the observed clock, done here; the narrator copies it.
+                then = local + timedelta(minutes=later[1])
+                payload["clock"] = f"{then.hour:02d}:{then.minute:02d}"
             if target is not None and local is not None:
                 # CLOCK1327 H0399: the remaining time is arithmetic on the
                 # observed clock, done here; the narrator copies the figures.

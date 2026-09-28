@@ -170,12 +170,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # Ley 2 G4+G5 integradas
 # M37+M38
 # M39
+# M40
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
         "f13c7ee09da2d9dc2c1285ba0c552d06493e0b5a61d832f88b15556982c59b3b"
     ),
     "src/baxy_mind/llm.py": (
-        "2ad02c4aae7a51c1ad5b8c0d1d0296e6ba2c8aa442c77c22bf9e9581c4759d29"
+        "1b2c733324a3ae7d5a0a44bdf80cbabdf5bec66f5560c0120bff86e33a22b6f2"
     ),
 }
 

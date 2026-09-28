@@ -6,7 +6,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
-from .grammar import _PERCENTAGE_WORD_VALUES, _RELATIVE_DURATION_PATTERN, _fold, _has, _strip_request_envelope
+from .grammar import _PERCENTAGE_WORD_VALUES, _RELATIVE_DURATION_PATTERN, _fold, _has, _strip_request_envelope, spoken_cardinal
 from .audio import _PERCENTAGE_WORD_PATTERN
 from .normalize import alternation
 
@@ -40,6 +40,33 @@ _COUNTDOWN_TARGET = re.compile(
     r"(?:\s+(?:de\s+hoy|today|hoy))?"
     r")\s*$"
 )
+
+
+# M40 (official-window rehearsal 2026-09-28 «¿qué hora será de aquí a doce minutos?»: three drafts added the
+# minutes themselves, wrongly, and the turn failed): the clock later on is computed from the observed one.
+_CLOCK_LATER = re.compile(
+    r"\b(?:que\s+hora\s+(?:sera|seran|va\s+a\s+ser)|what\s+time\s+(?:will\s+it\s+be|is\s+it\s+going\s+to\s+be))\b"
+)
+_LATER_BY = re.compile(
+    r"\b(?:de\s+aqui\s+a|dentro\s+de|en|in)\s+(?P<n>(?:[a-z0-9]+\s+){0,3}?)(?P<unit>minutos?|horas?|minutes?|hours?)\b"
+)
+
+
+def clock_later_asked(text: str) -> tuple[str, int] | None:
+    """«¿qué hora será de aquí a doce minutos?», «what time will it be in 2 hours»: the span as said and its minutes."""
+
+    folded = _fold(text)
+    if _CLOCK_LATER.search(folded) is None:
+        return None
+    match = _LATER_BY.search(folded)
+    if match is None:
+        return None
+    words = match["n"].strip()
+    amount = 1 if words in {"", "un", "una", "a", "an"} else int(words) if words.isdigit() else spoken_cardinal(words)
+    if amount is None or amount <= 0:
+        return None
+    minutes = amount * 60 if match["unit"].startswith(("hora", "hour")) else amount
+    return match.group(0).strip(), minutes
 
 
 def countdown_target(text: str) -> str | None:

@@ -1110,3 +1110,19 @@ def test_an_internal_identifier_is_asked_as_which_one_by_its_name() -> None:
     context = json.loads(sent[0]["messages"][1]["content"])
     assert "never an ID" in context["missing_arguments"][0]["ask_as"]
     assert "nunca pidas un identificador" in sent[0]["messages"][0]["content"]
+
+
+@pytest.mark.parametrize(
+    ("text", "later"),
+    [
+        ("¿qué hora serà de aquí a doce minutos?", 12),
+        ("what time will it be in 2 hours", 120),
+        ("qué hora es", None),
+    ],
+)
+def test_the_clock_later_on_is_computed_not_narrated(text: str, later: int | None) -> None:
+    # M40 (official-window rehearsal 2026-09-28): three drafts added the minutes themselves, wrongly.
+    from baxy_mind.semantic.temporal import clock_later_asked
+
+    found = clock_later_asked(text)
+    assert (found[1] if found else None) == later
