@@ -121,7 +121,6 @@ from .router import (
     ProcessIntentRouter,
     RequestBudgetEncoder,
 )
-from .turn_evidence import TurnEvidenceService
 from .voice import VoiceEngine
 from .semantic.reading import (  # noqa: F401 - moved to baxy_mind.semantic.reading; callers migrate
     _CLAUSE_EDGE_PUNCTUATION,
@@ -5862,7 +5861,6 @@ class _SidecarLifecycle:
         self._voice_engine: Any | None = None
         self._voice_cancel_pending = False
         self._llm: Any | None = None
-        self._turn_evidence: Any | None = None
         self._planner_promotion_thread: threading.Thread | None = None
         self._planner_promotion_stop: threading.Event | None = None
         self._dispatch_thread: threading.Thread | None = None
@@ -5916,15 +5914,6 @@ class _SidecarLifecycle:
         with self._ownership_lock:
             self._llm = self._claim(self._llm, llm, "LLM runtime")
         return llm
-
-    def own_turn_evidence(self, turn_evidence: Any) -> Any:
-        with self._ownership_lock:
-            self._turn_evidence = self._claim(
-                self._turn_evidence,
-                turn_evidence,
-                "turn evidence service",
-            )
-        return turn_evidence
 
     def own_planner_promotion(
         self,
@@ -6010,15 +5999,6 @@ class _SidecarLifecycle:
 
         if self._planner_promotion_stop is not None:
             self._planner_promotion_stop.set()
-        evidence_stopped = True
-        evidence_reap_status = ReapStatus.ABSENT
-        if self._turn_evidence is not None:
-            ok, result = attempt(lambda: self._turn_evidence.stop(timeout=0.0))
-            evidence_stopped = ok and bool(result)
-            evidence_reap_status = observed_reap_status(
-                ok,
-                evidence_stopped,
-            )
 
         voice_shutdown_errors: list[BaseException] = []
         voice_shutdown_thread: threading.Thread | None = None
@@ -6072,18 +6052,6 @@ class _SidecarLifecycle:
         if self._llm is not None:
             attempt(self._llm.close)
 
-        if self._turn_evidence is not None:
-            ok, result = attempt(
-                lambda: self._turn_evidence.stop(
-                    timeout=BACKGROUND_WORKER_JOIN_TIMEOUT_SECONDS,
-                )
-            )
-            evidence_stopped = ok and bool(result)
-            evidence_reap_status = observed_reap_status(
-                ok,
-                evidence_stopped,
-            )
-
         planner_stopped = True
         planner_reap_status = ReapStatus.ABSENT
         planner_thread = self._planner_promotion_thread
@@ -6136,22 +6104,11 @@ class _SidecarLifecycle:
         # their stop signals. If a worker is still inside model/encoder I/O,
         # abort the transport without waiting for its serialized request lock.
         if self._router is not None and (
-            not evidence_stopped or not planner_stopped or not dispatch_stopped
+            not planner_stopped or not dispatch_stopped
         ):
             request_close = getattr(self._router, "request_close", None)
             if callable(request_close):
                 attempt(request_close)
-            if self._turn_evidence is not None and not evidence_stopped:
-                ok, result = attempt(
-                    lambda: self._turn_evidence.stop(
-                        timeout=BACKGROUND_WORKER_ABORT_JOIN_SECONDS,
-                    )
-                )
-                evidence_stopped = ok and bool(result)
-                evidence_reap_status = observed_reap_status(
-                    ok,
-                    evidence_stopped,
-                )
             if (
                 planner_thread is not None
                 and planner_thread is not threading.current_thread()
@@ -6203,13 +6160,6 @@ class _SidecarLifecycle:
         if self._router is not None:
             attempt(self._router.close)
 
-        if self._turn_evidence is not None and not evidence_stopped:
-            ok, result = attempt(lambda: self._turn_evidence.stop(timeout=0.0))
-            evidence_stopped = ok and bool(result)
-            evidence_reap_status = observed_reap_status(
-                ok,
-                evidence_stopped,
-            )
         if (
             planner_thread is not None
             and planner_thread is not threading.current_thread()
@@ -6230,10 +6180,6 @@ class _SidecarLifecycle:
                 voice_reap_status = ReapStatus.REAPED
             collect_voice_shutdown_error()
 
-        report_incomplete_reap(
-            ReapResource.TURN_EVIDENCE_THREAD,
-            evidence_reap_status,
-        )
         report_incomplete_reap(
             ReapResource.PLANNER_PROMOTION_THREAD,
             planner_reap_status,
@@ -6286,7 +6232,6 @@ def _run_sidecar(
     planner_resources_lock = threading.Lock()
     planner_promotion_stop = threading.Event()
     planner_promotion_thread: threading.Thread | None = None
-    turn_evidence = lifecycle.own_turn_evidence(TurnEvidenceService())
     voice_engine = None
 
     def ready_planner_catalog() -> PlannerCatalog:
@@ -6297,7 +6242,7 @@ def _run_sidecar(
         return current
 
     def promote_planner_resources() -> None:
-        """Add E5 retrieval only after its optional corpus build leaves the path."""
+        """Add E5 retrieval once the router's E5 worker is ready."""
 
         nonlocal planner_catalog, skill_registry
 
@@ -6310,9 +6255,6 @@ def _run_sidecar(
             return encoded
 
         deadline = time.monotonic() + 185.0
-        while turn_evidence.state == "building" and time.monotonic() < deadline:
-            if planner_promotion_stop.wait(timeout=0.1):
-                return
         if planner_promotion_stop.is_set():
             return
         # The worker spawns 3 s after start and needs ~11 s to load E5. Polling
@@ -6442,18 +6384,11 @@ def _run_sidecar(
                 }
                 # Publish a complete lexical snapshot synchronously. E5 is an
                 # optional ranking improvement and must never make the first
-                # user turn wait for the router or the corpus cache.
+                # user turn wait for the router.
                 lexical_catalog, lexical_skills = _create_planner_resources(tools)
                 with planner_resources_lock:
                     planner_catalog = lexical_catalog
                     skill_registry = lexical_skills
-                # Corpus embeddings are advisory and build in the background.
-                # They must never delay the ready handshake or become a
-                # prerequisite for an otherwise valid local turn.
-                turn_evidence.start(
-                    background_encoder,
-                    lambda: router.try_ready(0.5),
-                )
                 planner_promotion_thread = threading.Thread(
                     target=promote_planner_resources,
                     name="baxy-planner-e5-promotion",
@@ -6475,14 +6410,6 @@ def _run_sidecar(
                         "type": "catalog.ready",
                         "id": request_id,
                         "count": len(tools),
-                    }
-                )
-            elif kind == "turn.evidence.status":
-                write_request_message(
-                    {
-                        "type": "turn.evidence.status.result",
-                        "id": request_id,
-                        **turn_evidence.diagnostics,
                     }
                 )
             elif kind in {

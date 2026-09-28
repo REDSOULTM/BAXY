@@ -77,7 +77,6 @@ def test_arguments_dispatch_returns_canonical_audio_without_model_extraction(
     monkeypatch.setenv("BAXY_MIND_LLM_GGUF", "never-loaded.gguf")
     monkeypatch.setattr(sidecar, "LlmRuntime", FailIfCalledLlm)
     monkeypatch.setattr(sidecar, "ProcessIntentRouter", lambda: object())
-    monkeypatch.setattr(sidecar, "TurnEvidenceService", lambda: SimpleNamespace(state="ready", start=lambda *_: None))
     # This two-operation catalog has no unrelated product skills to resolve.
     monkeypatch.setattr(
         sidecar.SkillRegistry, "load_default",
@@ -89,7 +88,6 @@ def test_arguments_dispatch_returns_canonical_audio_without_model_extraction(
     lifecycle = SimpleNamespace(
         own_llm=lambda value: value,
         own_router=lambda value: value,
-        own_turn_evidence=lambda value: value,
         own_planner_promotion=lambda _thread, stop: stop.set(),
     )
     pending = iter([

@@ -32,7 +32,6 @@ class ReapResource(str, Enum):
 
     LLM_PROCESS = "llm_process"
     ROUTER_PROCESS = "router_process"
-    TURN_EVIDENCE_THREAD = "turn_evidence_thread"
     PLANNER_PROMOTION_THREAD = "planner_promotion_thread"
     REQUEST_DISPATCH_THREAD = "request_dispatch_thread"
     VOICE_ENGINE_SHUTDOWN = "voice_engine_shutdown"

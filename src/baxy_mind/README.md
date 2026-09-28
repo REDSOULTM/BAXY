@@ -146,9 +146,10 @@ Implementadas y consumidas por App, pero no anunciadas:
 | `arguments {operation, text}` | `arguments.result {arguments, ok, question}` | JSON Schema, evidencia literal, grounding determinista y abstención |
 | `message.compose {userText, intent, facts}` | `message.compose.result {text, reproducible}` | compone lenguaje natural desde hechos acotados; `text` vacío = ningún borrador aceptado dentro del presupuesto; `reproducible` = el mismo pedido da el mismo borrador, y el App no lo repite |
 
-`turn.evidence.status` también está implementada sin anuncio y la usa tooling
-de gates. Es una deuda de contrato vigente: `arguments` y `message.compose` ya
-tienen consumidores, por lo que corregirla exige actualizar ambos extremos, el
+`turn.evidence.status` ya no existe: el sidecar dejó de arrancar el índice de
+evidencia (ley 2, G4) y la solicitud recibe `unknown_request`. La deuda de
+contrato vigente es la de `arguments` y `message.compose`: ya tienen
+consumidores, por lo que corregirla exige actualizar ambos extremos, el
 handshake y las pruebas de compatibilidad.
 
 ## Evidencia semántica de turnos
@@ -159,6 +160,9 @@ débiles o ruidosas: participan únicamente en el índice y en diagnósticos de
 familia, no entrenan la sonda y su texto nunca llega al LLM. Dev/test público
 permanece en un holdout disjunto de 9.172 filas; el gate comprobó cero
 solapamientos de texto normalizado con runtime.
+
+El sidecar ya no arranca este índice: ningún turno leía su resultado. El módulo
+queda como sello de investigación hasta que el dueño decida retirarlo (G6).
 
 `TurnEvidenceService` construye en segundo plano embeddings normalizados de
 `intfloat/multilingual-e5-small`. El caché `baxy.turn-evidence.v4` es un par

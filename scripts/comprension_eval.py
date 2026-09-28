@@ -38,7 +38,6 @@ sys.path.insert(0, str(SCRIPTS))
 
 WEB_OPS = {"web.search", "weather.current", "web.news.headlines"}
 LIMIT_KINDS = {"unsupported", "unsupported_language"}
-EVIDENCE_TIMEOUT_S = 600.0
 DECIDE_TIMEOUT_S = 120.0
 
 
@@ -235,20 +234,6 @@ def run(
         environment_overrides=overrides,
         startup_timeout=300.0,
     ) as client:
-        deadline = time.monotonic() + EVIDENCE_TIMEOUT_S
-        while time.monotonic() < deadline:
-            status = _await(
-                client,
-                {
-                    "type": "turn.evidence.status",
-                    "id": f"cn-evidence-{time.monotonic_ns()}",
-                },
-                "turn.evidence.status.result",
-                30.0,
-            )
-            if status.get("state") in {"ready", "unavailable", "failed", "stopped"}:
-                break
-            time.sleep(1.0)
         _await(
             client,
             {

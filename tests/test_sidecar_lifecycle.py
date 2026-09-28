@@ -6,7 +6,6 @@ import sys
 import threading
 import time
 from pathlib import Path
-from types import SimpleNamespace
 from typing import Any
 
 import pytest
@@ -340,11 +339,6 @@ def test_lifecycle_close_is_directly_idempotent_and_joins_owned_worker() -> None
     events: list[str] = []
     planner_stop = threading.Event()
 
-    class Evidence:
-        def stop(self, timeout: float) -> bool:
-            events.append(f"evidence.stop:{timeout}")
-            return True
-
     class Voice:
         @staticmethod
         def shutdown() -> None:
@@ -369,7 +363,6 @@ def test_lifecycle_close_is_directly_idempotent_and_joins_owned_worker() -> None
     lifecycle = sidecar._SidecarLifecycle()
     lifecycle.own_voice_engine(Voice())
     lifecycle.own_llm(Llm())
-    lifecycle.own_turn_evidence(Evidence())
     lifecycle.own_planner_promotion(planner, planner_stop)
     lifecycle.own_router(Router())
 
@@ -378,10 +371,8 @@ def test_lifecycle_close_is_directly_idempotent_and_joins_owned_worker() -> None
 
     assert not planner.is_alive()
     assert events == [
-        "evidence.stop:0.0",
         "voice.shutdown",
         "llm.close",
-        f"evidence.stop:{sidecar.BACKGROUND_WORKER_JOIN_TIMEOUT_SECONDS}",
         "router.close",
     ]
 
@@ -437,19 +428,13 @@ def test_lifecycle_aborts_router_before_final_join_when_worker_is_stuck(
 ) -> None:
     events: list[str] = []
     release_worker = threading.Event()
+    planner_stop = threading.Event()
     worker = threading.Thread(
         target=release_worker.wait,
-        name="fixture-stuck-evidence",
+        name="fixture-stuck-planner-promotion",
         daemon=True,
     )
     worker.start()
-
-    class Evidence:
-        @staticmethod
-        def stop(timeout: float) -> bool:
-            events.append(f"evidence.stop:{timeout}")
-            worker.join(timeout=timeout)
-            return not worker.is_alive()
 
     class Router:
         @staticmethod
@@ -468,7 +453,7 @@ def test_lifecycle_aborts_router_before_final_join_when_worker_is_stuck(
         0.02,
     )
     lifecycle = sidecar._SidecarLifecycle()
-    lifecycle.own_turn_evidence(Evidence())
+    lifecycle.own_planner_promotion(worker, planner_stop)
     lifecycle.own_router(Router())
 
     started_at = time.monotonic()
@@ -476,12 +461,10 @@ def test_lifecycle_aborts_router_before_final_join_when_worker_is_stuck(
     elapsed = time.monotonic() - started_at
 
     assert elapsed < 0.3
+    assert planner_stop.is_set()
     assert not worker.is_alive()
     assert events == [
-        "evidence.stop:0.0",
-        "evidence.stop:0.02",
         "router.request_close",
-        f"evidence.stop:{sidecar.BACKGROUND_WORKER_ABORT_JOIN_SECONDS}",
         "router.close",
     ]
 
@@ -490,7 +473,6 @@ def test_lifecycle_reports_workers_that_survive_bounded_abort(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    evidence_timeouts: list[float] = []
     router_events: list[str] = []
     release_worker = threading.Event()
     planner_stop = threading.Event()
@@ -506,12 +488,6 @@ def test_lifecycle_reports_workers_that_survive_bounded_abort(
     )
     planner.start()
     dispatch.start()
-
-    class Evidence:
-        @staticmethod
-        def stop(timeout: float) -> bool:
-            evidence_timeouts.append(timeout)
-            return False
 
     class Router:
         @staticmethod
@@ -533,7 +509,6 @@ def test_lifecycle_reports_workers_that_survive_bounded_abort(
         0.01,
     )
     lifecycle = sidecar._SidecarLifecycle()
-    lifecycle.own_turn_evidence(Evidence())
     lifecycle.own_planner_promotion(planner, planner_stop)
     lifecycle.own_dispatch_thread(dispatch)
     lifecycle.own_router(Router())
@@ -549,11 +524,9 @@ def test_lifecycle_reports_workers_that_survive_bounded_abort(
         dispatch.join(timeout=1.0)
 
     assert elapsed < 0.2
-    assert evidence_timeouts == [0.0, 0.01, 0.01, 0.0]
     assert router_events == ["request_close", "close"]
     assert captured.out == ""
     assert captured.err.splitlines() == [
-        "baxy_mind_reap_incomplete:turn_evidence_thread:timed_out",
         "baxy_mind_reap_incomplete:planner_promotion_thread:timed_out",
         "baxy_mind_reap_incomplete:request_dispatch_thread:timed_out",
     ]
@@ -570,15 +543,9 @@ def test_lifecycle_reports_workers_that_survive_bounded_abort(
 )
 def test_catalog_background_workers_stop_before_router_on_exit(
     monkeypatch: pytest.MonkeyPatch,
-    tmp_path: Path,
     tail: dict[str, Any] | None,
 ) -> None:
-    from baxy_mind import turn_evidence as evidence_module
-
-    corpus = tmp_path / "turn-evidence.jsonl"
-    corpus.write_text("", encoding="utf-8")
     encode_started = threading.Event()
-    service_instances: list[evidence_module.TurnEvidenceService] = []
     router_instances: list[object] = []
     encoder_timeouts: list[float] = []
     calls_after_close: list[str] = []
@@ -616,34 +583,19 @@ def test_catalog_background_workers_stop_before_router_on_exit(
             self.closed = True
 
         def close(self) -> None:
-            service = service_instances[0]
-            if service._thread is not None and service._thread.is_alive():
-                calls_after_close.append("evidence.worker_alive")
+            if any(
+                thread.name == "baxy-planner-e5-promotion" and thread.is_alive()
+                for thread in threading.enumerate()
+            ):
+                calls_after_close.append("planner.worker_alive")
             self.closed = True
             cleanup.append("router.close")
 
-    def evidence_factory() -> evidence_module.TurnEvidenceService:
-        service = evidence_module.TurnEvidenceService(corpus)
-        service_instances.append(service)
-        return service
-
-    fake_index = SimpleNamespace(
-        count=1,
-        dimensions=1,
-        encoder_identity="fixture-encoder",
-        report=SimpleNamespace(source_sha256="a" * 64),
-    )
-
-    def build_index(
-        _cls: object,
-        _path: Path,
-        encoder: Any,
-        *,
-        is_cancelled: Any = None,
-    ):
-        del is_cancelled
-        encoder(["fixture corpus"])
-        return fake_index
+    def planner_resources(_tools: object, encoder: Any = None):
+        # The lexical snapshot takes no encoder; the E5 promotion encodes.
+        if encoder is not None:
+            encoder(["fixture catalog"])
+        return object(), object()
 
     tools = [
         {
@@ -654,7 +606,6 @@ def test_catalog_background_workers_stop_before_router_on_exit(
     ]
     monkeypatch.delenv("BAXY_MIND_LLM_GGUF", raising=False)
     monkeypatch.setattr(sidecar, "ProcessIntentRouter", FakeRouter)
-    monkeypatch.setattr(sidecar, "TurnEvidenceService", evidence_factory)
     monkeypatch.setattr(sidecar, "configure_tools", lambda _value: tools)
     monkeypatch.setattr(
         sidecar,
@@ -664,19 +615,9 @@ def test_catalog_background_workers_stop_before_router_on_exit(
     monkeypatch.setattr(
         sidecar,
         "_create_planner_resources",
-        lambda *_args, **_kwargs: (object(), object()),
+        planner_resources,
     )
     monkeypatch.setattr(sidecar, "_write", replies.append)
-    monkeypatch.setattr(
-        evidence_module,
-        "load_abstention_policy",
-        lambda _path=None: None,
-    )
-    monkeypatch.setattr(
-        evidence_module.TurnEvidenceIndex,
-        "from_corpus",
-        classmethod(build_index),
-    )
     read_count = 0
 
     def read_message() -> dict[str, Any] | None:
@@ -698,10 +639,6 @@ def test_catalog_background_workers_stop_before_router_on_exit(
 
     assert result == 0
     assert len(router_instances) == 1
-    assert len(service_instances) == 1
-    assert service_instances[0].state == "stopped"
-    assert service_instances[0]._thread is not None
-    assert not service_instances[0]._thread.is_alive()
     assert not any(
         thread.name == "baxy-planner-e5-promotion" and thread.is_alive()
         for thread in threading.enumerate()
