@@ -14,7 +14,8 @@ internal readonly record struct PublicPlace(
     string Country,
     double Latitude,
     double Longitude,
-    string Source);
+    string Source,
+    string? CountryCode = null);
 
 /// <summary>
 /// Uso real tanda 4c (2026-09-24): el clima ya sabía dónde está este PC y la
@@ -29,7 +30,7 @@ internal sealed class PublicPlaceLocator
     private static readonly string[] LocationByIpAuthorities =
     [
         "https://ipwho.is/",
-        "http://ip-api.com/json/?fields=status,country,regionName,city,lat,lon",
+        "http://ip-api.com/json/?fields=status,country,countryCode,regionName,city,lat,lon",
     ];
 
     private readonly Func<string, CancellationToken, Task<string>> _fetch;
@@ -78,7 +79,10 @@ internal sealed class PublicPlaceLocator
                     ReadString(root, "country") ?? string.Empty,
                     latitude.Value,
                     longitude.Value,
-                    "public_ip_address");
+                    "public_ip_address",
+                    // M54: the country the service deduced, so a search near this PC stays in its country
+                    // (v3b-final F-p01-t2: «Curico» alone geocoded to Curico, Indiana).
+                    ReadString(root, "country_code") ?? ReadString(root, "countryCode"));
             }
             catch (JsonException)
             {
