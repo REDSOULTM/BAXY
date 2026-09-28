@@ -132,8 +132,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # C03 comprensión natural — M30: resultados comparados; charla sobre un lugar inalcanzable es su límite
 # C03 comprensión natural — pista de reintento sin estados en charla
 # Ley 2 G1: cuatro prompts huérfanos de llm.py retirados
+# Ley 2 G2+G3: restos muertos de __main__ y compound_retrieval_operation_hints
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "346453948fa6b6e9751091bab3138e86c78687aa12139bc893a44a990f81ae85"
+    "5205b61ba6e069209dc64ef6024a1b2d9310abbfc9a8e8871a7ba4dab818d728"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"

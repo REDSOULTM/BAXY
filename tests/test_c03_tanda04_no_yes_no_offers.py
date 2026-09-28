@@ -346,17 +346,6 @@ _TOOLS = {
 }
 
 
-def test_a_served_surface_the_reread_proved_grounds_without_the_verifier() -> None:
-    llm = _Strict(False)
-    assert mind_main._acts_without_asking(
-        "Muéstrame mi carpeta de imagenes.", ("filesystem.folder.open",), _TOOLS, llm, (), rewrite_grounded=True,
-    )
-    assert llm.calls == []
-    # Said as said, the rewrite is not evidence here: the re-read decides that surface with the readers first.
-    assert not mind_main._acts_without_asking("Muéstrame mi Gallery.", ("filesystem.folder.open",), _TOOLS, llm, ())
-    assert llm.calls == ["filesystem.folder.open"]
-
-
 @pytest.mark.parametrize(
     ("verdict", "acts"), [(True, True), (False, False), (RuntimeError("down"), False)],
 )
@@ -376,7 +365,6 @@ def test_a_missing_verifier_never_lets_it_act() -> None:
 @pytest.mark.parametrize("operation", ["app.close", "email.send"])
 def test_what_destroys_or_sends_never_acts_unasked_whatever_grounds_it(operation: str) -> None:
     llm = _Strict(True)
-    assert not mind_main._acts_without_asking("close it", (operation,), _TOOLS, llm, (), rewrite_grounded=True)
     assert not mind_main._acts_without_asking("close it", (operation,), _TOOLS, llm, ())
     assert llm.calls == []
 

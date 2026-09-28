@@ -59,8 +59,6 @@ from .effect_intent import (
     GameCatalogIndex,
     build_application_catalog_index,
     build_game_catalog_index,
-    compound_retrieval_clauses,
-    compound_retrieval_operation_hints,
     confident_non_target_language,
     conversation_only_content_request,
     effect_request_is_authoritative,
@@ -411,7 +409,6 @@ def _audit_turn_attempt_failure(
 
 
 _TURN_FAILURE_STAGE_BY_FRAME = {
-    "decide_turn": "model_decision",
     "validate_turn_decision": "decision_validation",
     "apply_explicit_effect_contract": "explicit_contract",
     "apply_information_question_effect_veto": "information_question",
@@ -2366,7 +2363,6 @@ def _catalog_answers_the_request(
     *,
     depth: int = 4,
     history: list[dict[str, str]] | None = None,
-    already_declined: frozenset[str] = frozenset(),
 ) -> str:
     """Name a catalogue operation that *is* what a closed refusal denied.
 
@@ -2391,17 +2387,9 @@ def _catalog_answers_the_request(
     first one the independent verifier identifies as the requested effect. It
     selects nothing: naming one is only the evidence that withdraws the
     refusal, after which the ordinary ranked path decides the turn.
-
-    ``already_declined`` holds the operations the native selector was shown for
-    this same request and called none of. Tandas 04f/05: asking it again over
-    four of them was a second selector call before every model-path answer
-    (0.4–1 s); in 344 audited model-path turns it changed one outcome, a clock
-    request turned into a question about reading the clock.
     """
 
     shortlist = planner_catalog.shortlist(routing_objective)[:depth]
-    if shortlist and {tool.name for tool in shortlist} <= already_declined:
-        return ""
     native_select = getattr(llm, "_post_native_tool_selection", None)
     if getattr(llm, "_native_tool_policy_enabled", False) and callable(native_select):
         contracts = {
@@ -2564,8 +2552,6 @@ def _acts_without_asking(
     tool_by_name: dict[str, dict],
     llm: object,
     application_names: tuple[str, ...] | ApplicationCatalogIndex,
-    *,
-    rewrite_grounded: bool = False,
 ) -> bool:
     """Whether operations a stage withheld, or a catalogue probe named, are done instead of offered.
 
@@ -2575,12 +2561,9 @@ def _acts_without_asking(
     yes/no question that asks for no value. The identity verifier cannot carry
     that authority: it keeps 46 of 48 right proposals but refuses only 21 of 84
     wrong ones (``LlmRuntime.operation_is_the_requested_effect``). Each operation
-    acts only on stronger evidence: the words a reader knows name its domain once
-    the request is said in its canonical surface (``rewrite_grounded``: the
-    served-surface re-read proved it, and the readers read that surface first),
-    or the strict verifier finds it satisfies the whole request. A near miss, a
-    risk outside ``_ACTS_WITHOUT_ASKING_RISKS``, a silent verifier or a failed
-    one keeps the stricter side: nothing acts.
+    acts only on stronger evidence: the strict verifier finds it satisfies the
+    whole request. A near miss, a risk outside ``_ACTS_WITHOUT_ASKING_RISKS``, a
+    silent verifier or a failed one keeps the stricter side: nothing acts.
     """
 
     if not operations:
@@ -2594,8 +2577,6 @@ def _acts_without_asking(
             or effect_intent.operation_identity_is_a_near_miss(objective, operation)
         ):
             return False
-        if rewrite_grounded:
-            continue
         contract = _turn_operation_contract(tool, operation, objective, application_names)
         if contract is None or not callable(satisfies):
             return False
@@ -2613,8 +2594,6 @@ def _withheld_operation_verdict(
     tool_by_name: dict[str, dict],
     llm: object,
     application_names: tuple[str, ...] | ApplicationCatalogIndex,
-    *,
-    rewrite_grounded: bool = False,
 ) -> tuple[str, str]:
     """What a withheld or probed proposal becomes: ``("act", "")``, ``("ask", question)`` or ``("", "")``.
 
@@ -2627,9 +2606,7 @@ def _withheld_operation_verdict(
     stands.
     """
 
-    if _acts_without_asking(
-        objective, operations, tool_by_name, llm, application_names, rewrite_grounded=rewrite_grounded,
-    ):
+    if _acts_without_asking(objective, operations, tool_by_name, llm, application_names):
         return "act", ""
     if not _withheld_invocation_operations(operations, objective, tool_by_name, llm, application_names):
         return "", ""
@@ -4591,11 +4568,6 @@ def _decide_turn_result(
             else None
         )
     )
-    # rec5e2e6: the 4B identity verifier withdrew six true colloquial leaves
-    # (app.open, note.create, task.create) after the grammar already named
-    # them, and only one false sister (audio.status for a volume request).
-    # Domain grounding still vetoes ungrounded families. Keep the recogniser.
-    recogniser_declined: list[str] = []
     unresolved_compound_effects = unresolved_compound_contract(
         objective,
         available_operations,
@@ -4823,15 +4795,6 @@ def _decide_turn_result(
         "stages": [
             stage
             for stage in (
-                {
-                    "name": "recogniser_declined",
-                    "mode": "",
-                    "operation": None,
-                    "effect_operations": list(recogniser_declined),
-                    "effect_verification": "not_applicable",
-                }
-                if recogniser_declined
-                else None,
                 {
                     "name": "closed_refusal_withdrawn",
                     "mode": "",

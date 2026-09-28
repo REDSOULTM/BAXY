@@ -10,7 +10,6 @@ from baxy_mind.effect_intent import (
     build_application_catalog_index,
     build_game_catalog_index,
     compound_retrieval_clauses,
-    compound_retrieval_operation_hints,
     conversation_only_content_request,
     explicit_negative_constraint,
     effect_request_is_authoritative,
@@ -386,29 +385,6 @@ def test_compound_retrieval_clauses_tolerates_voice_punctuation_loss() -> None:
 
 def test_compound_retrieval_clauses_does_not_split_temporal_after_of() -> None:
     assert compound_retrieval_clauses("revisa el correo después del almuerzo") == ()
-
-
-def test_compound_retrieval_operation_hints_cover_voice_report_fragments() -> None:
-    text = (
-        "hazme este chequeo por partes la salud global del sistema "
-        "después las copias recuperables después la distribución del teclado "
-        "después text ready para paste"
-    )
-
-    assert compound_retrieval_operation_hints(
-        text,
-        (
-            "system.status",
-            "backup.list",
-            "input.keyboard.status",
-            "clipboard.read.text",
-        ),
-    ) == (
-        "system.status",
-        "backup.list",
-        "input.keyboard.status",
-        "clipboard.read.text",
-    )
 
 
 @pytest.mark.parametrize(

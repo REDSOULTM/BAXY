@@ -641,7 +641,6 @@ from .semantic.patterns import (  # noqa: F401 - moved to baxy_mind.semantic.pat
     _resolve_clause_local_special_effects,
     _catalog_report_clauses,
     compound_retrieval_clauses,
-    compound_retrieval_operation_hints,
     _catalog_report_composition,
     _BOUNDED_STATUS_SEQUENCE_DOMAINS,
     _DATED_MACHINE_REPORT,

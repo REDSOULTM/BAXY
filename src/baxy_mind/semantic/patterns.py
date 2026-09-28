@@ -11387,36 +11387,6 @@ def compound_retrieval_clauses(text: str) -> tuple[str, ...]:
     return tuple(clauses) if 2 <= len(clauses) <= 8 else ()
 
 
-def compound_retrieval_operation_hints(
-    text: str,
-    available_operations: Iterable[str],
-    application_names: Iterable[str] | ApplicationCatalogIndex = (),
-) -> tuple[str, ...]:
-    """Return clause-local catalog candidates without granting intent authority."""
-
-    available = tuple(available_operations)
-    authenticated_applications = build_application_catalog_index(
-        application_names,
-    )
-    hints: list[str] = []
-    for clause in compound_retrieval_clauses(text):
-        result = _resolve_explicit_effects_single(
-            f"check {clause}",
-            available,
-            application_names=authenticated_applications,
-        )
-        if result is not None and len(result.operations) == 1:
-            hints.append(result.operations[0])
-            continue
-        if "clipboard.read.text" in available and _has(
-            clause,
-            r"\b(?:texto|text)\b.{0,32}\b(?:list[oa]\s+para\s+pegar|"
-            r"ready\s+(?:para|to)\s+paste)\b",
-        ):
-            hints.append("clipboard.read.text")
-    return tuple(dict.fromkeys(hints))
-
-
 def _catalog_report_composition(
     text: str,
     available: frozenset[str],

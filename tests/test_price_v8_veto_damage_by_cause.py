@@ -163,9 +163,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 comprensión natural — M30: resultados comparados; charla sobre un lugar inalcanzable es su límite
 # C03 comprensión natural — pista de reintento sin estados en charla
 # Ley 2 G1: cuatro prompts huérfanos de llm.py retirados
+# Ley 2 G2+G3: restos muertos de __main__ y compound_retrieval_operation_hints
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "8e92825b52807850133e07337542889715daa3e5e90113b24d9fd05e4adc008c"
+        "562d35cc075b9bf2bd4cd02ed3548ab6702dfebc39a3a7deacc9fba0b62d8ab4"
     ),
     "src/baxy_mind/llm.py": (
         "a64d67cc8a3792137d5f63708606cf16bda143cb97da283d906738e3704c5729"

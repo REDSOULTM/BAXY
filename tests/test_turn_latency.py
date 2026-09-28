@@ -671,7 +671,7 @@ def test_a_closed_social_turn_prepares_exactly_the_reply_it_publishes() -> None:
     assert llm.asked[0][1]["history"] == []
 
 
-def test_the_probe_still_asks_about_operations_the_selector_never_saw() -> None:
+def test_the_probe_asks_the_catalog_about_the_request() -> None:
     class Catalog:
         @staticmethod
         def shortlist(_text: str) -> tuple[object, ...]:
@@ -679,11 +679,5 @@ def test_the_probe_still_asks_about_operations_the_selector_never_saw() -> None:
 
     llm = _PreparingLlm()
     tools = {"system.time": _CLOCK_TOOL}
-    assert _catalog_answers_the_request(
-        _NOODLES, _NOODLES, Catalog(), tools, llm, (), already_declined=frozenset({"system.time"}),
-    ) == ""
-    assert llm.probes == []
-    _catalog_answers_the_request(
-        _NOODLES, _NOODLES, Catalog(), tools, llm, (), already_declined=frozenset({"weather.current"}),
-    )
+    _catalog_answers_the_request(_NOODLES, _NOODLES, Catalog(), tools, llm, ())
     assert llm.probes == [["system.time"]]
