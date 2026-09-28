@@ -2144,7 +2144,7 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Result?.GetProperty("results")[0].GetProperty("snippet").GetString(),
                 Does.Not.Contain("<strong>"));
             Assert.That(receipt.Result?.GetProperty("authority").GetString(),
-                Is.EqualTo("bing_html_https"));
+                Is.EqualTo("duckduckgo_lite_https"));
             Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("recetas"));
         });
     }
@@ -2168,51 +2168,238 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.EffectObserved, Is.False);
-            Assert.That(receipt.ErrorCode, Is.EqualTo("web_search_engine_unavailable"));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("web_search_unavailable"));
             Assert.That(receipt.Result, Is.Null);
         });
     }
 
+    // D32: a knowledge question is answered by Wikipedia's open API, Spanish first for
+    // a Spanish question; the request carries the project's Wikimedia User-Agent and
+    // only the query's content words, and the general engine is never asked.
     [Test]
-    public void StructuredWebSearchDecodesTheEngineRedirectAndFollowsThePersonCulture()
+    public async Task AKnowledgeQuestionIsAnsweredByWikipediaWithTheProjectUserAgent()
     {
-        string redirect = "https://www.bing.com/ck/a?!&&p=abc&u=a1"
-            + Convert.ToBase64String(Encoding.UTF8.GetBytes("https://example.net/whatsapp/razones-fallos/"))
-                .TrimEnd('=').Replace('+', '-').Replace('/', '_')
-            + "&ntb=1";
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["es.wikipedia.org"] = WikipediaAnswer("es",
+                ("Canberra (desambiguación)", "", true),
+                ("Canberra", "Canberra es la capital de Australia.​\n\nEstá en el Territorio de la Capital Australiana.", false),
+                ("Territorio de la Capital Australiana", "Territorio federal de Australia que contiene la capital, Canberra.", false)),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"¿Cuál es la capital de Australia?","limit":5}"""), CancellationToken.None);
+
         Assert.Multiple(() =>
         {
-            Assert.That(WebBrowserAdapter.ResolveSearchLink(redirect),
-                Is.EqualTo("https://example.net/whatsapp/razones-fallos/"));
-            Assert.That(WebBrowserAdapter.ResolveSearchLink("https://example.com/direct"),
-                Is.EqualTo("https://example.com/direct"));
-            Assert.That(WebBrowserAdapter.SearchMarket(new CultureInfo("es-AR")), Is.EqualTo("&setlang=es&cc=AR"));
-            Assert.That(WebBrowserAdapter.SearchMarket(new CultureInfo("en")), Is.EqualTo("&setlang=en"));
-            Assert.That(WebBrowserAdapter.SearchMarket(CultureInfo.InvariantCulture), Is.EqualTo(string.Empty));
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("wikipedia_es_api"));
+            Assert.That(receipt.Result?.GetProperty("count").GetInt32(), Is.EqualTo(2));
+            JsonElement first = receipt.Result!.Value.GetProperty("results")[0];
+            Assert.That(first.GetProperty("title").GetString(), Is.EqualTo("Canberra"));
+            Assert.That(first.GetProperty("url").GetString(), Is.EqualTo("https://es.wikipedia.org/wiki/Canberra"));
+            Assert.That(first.GetProperty("snippet").GetString(),
+                Is.EqualTo("Canberra es la capital de Australia. Está en el Territorio de la Capital Australiana."));
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("desambiguaci"));
+            Assert.That(handler.Asked, Has.Count.EqualTo(1));
+            Assert.That(handler.Asked[0].Uri.Host, Is.EqualTo("es.wikipedia.org"));
+            Assert.That(handler.Asked[0].UserAgent,
+                Does.Match(@"^BAXY/\d+\.\d+ \(https://github\.com/REDSOULTM/baxy-assistant\)$"));
+            Assert.That(Uri.UnescapeDataString(handler.Asked[0].Uri.Query), Does.Contain("gsrsearch=capital australia&"));
         });
     }
 
-    // The engine's results page shape the adapter parses: an «ol#b_results» list of
-    // «b_algo» items, each with a heading anchor whose href is the engine's redirect
-    // (real target base64 in «u», prefixed «a1») and a clamped snippet paragraph.
+    [Test]
+    public async Task AnEnglishQuestionAsksEnglishWikipediaFirstAndSpanishOnlyWhenItHasNothing()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["en.wikipedia.org"] = WikipediaAnswer("en", ("Bran Castle", "A castle in Romania.", false)),
+            ["es.wikipedia.org"] = WikipediaAnswer("es",
+                ("Drácula", "Drácula es una novela de Bram Stoker publicada en 1897.", false)),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"who wrote Dracula"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host),
+                Is.EqualTo(new[] { "en.wikipedia.org", "es.wikipedia.org" }));
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("wikipedia_es_api"));
+            Assert.That(receipt.Result?.GetProperty("results")[0].GetProperty("url").GetString(),
+                Is.EqualTo("https://es.wikipedia.org/wiki/Dr%C3%A1cula"));
+        });
+    }
+
+    // What changes by the day (a price, the news, today) is not an encyclopedia's:
+    // Wikipedia is never asked and the general engine answers.
+    [Test]
+    public async Task ATimeBoundQuestionSkipsWikipediaForTheGeneralEngine()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["es.wikipedia.org"] = WikipediaAnswer("es", ("Dólar estadounidense", "El dólar es la moneda de Estados Unidos.", false)),
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, SearchResultsPage(
+                ("Precio del dólar hoy en Chile", "https://example.cl/dolar", "El dólar cierra hoy a 950 pesos.")), "text/html"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"precio del dólar hoy"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("duckduckgo_lite_https"));
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host), Is.EqualTo(new[] { "lite.duckduckgo.com" }));
+        });
+    }
+
+    // Nothing searched (Wikipedia down, the engine behind a challenge page) is an
+    // honest «could not look it up», never «not found» and never the page's text.
+    [Test]
+    public async Task WhenNoSourceSearchesTheReceiptSaysSearchUnavailable()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["es.wikipedia.org"] = new(HttpStatusCode.ServiceUnavailable, "busy", "text/plain"),
+            ["en.wikipedia.org"] = new(HttpStatusCode.OK, "<html>not json</html>", "text/html"),
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK,
+                "<html><body><form>Please verify you are a human. Buy now!</form></body></html>", "text/html"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"primer libro de zombies"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("web_search_unavailable"));
+            Assert.That(receipt.Result, Is.Null);
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host),
+                Is.EqualTo(new[] { "es.wikipedia.org", "en.wikipedia.org", "lite.duckduckgo.com" }));
+        });
+    }
+
+    [Test]
+    public void WikipediaReadingKeepsRankDropsForeignHostsAndPicksTheQueryLanguage()
+    {
+        const string body = """
+            {"batchcomplete":true,"query":{"pages":[
+              {"pageid":2,"ns":0,"title":"Segundo","index":2,"fullurl":"https://es.wikipedia.org/wiki/Segundo","extract":"Dos."},
+              {"pageid":3,"ns":0,"title":"Ajeno","index":0,"fullurl":"https://example.com/wiki/Ajeno","extract":"No."},
+              {"pageid":1,"ns":0,"title":"Primero","index":1,"fullurl":"https://es.wikipedia.org/wiki/Primero","extract":"Uno.\n\nOtro párrafo."}
+            ]}}
+            """;
+        List<(string Title, string Url, string Snippet)> parsed = WikipediaSearchSource.ParseSearchResponse(body, "es");
+        Assert.Multiple(() =>
+        {
+            Assert.That(parsed.Select(item => item.Title), Is.EqualTo(new[] { "Primero", "Segundo" }));
+            Assert.That(parsed[0].Snippet, Is.EqualTo("Uno. Otro párrafo."));
+            Assert.That(WikipediaSearchSource.ParseSearchResponse("""{"batchcomplete":true}""", "es"), Is.Empty);
+            Assert.Throws<JsonException>(() => WikipediaSearchSource.ParseSearchResponse(
+                """{"error":{"code":"maxlag"}}""", "es"));
+            Assert.That(WikipediaSearchSource.Languages("quién escribió Drácula", CultureInfo.InvariantCulture),
+                Is.EqualTo(new[] { "es", "en" }));
+            Assert.That(WikipediaSearchSource.Languages("who wrote Dracula", new CultureInfo("es-CL")),
+                Is.EqualTo(new[] { "en", "es" }));
+            Assert.That(WikipediaSearchSource.Languages("Dracula", new CultureInfo("en-US")),
+                Is.EqualTo(new[] { "en", "es" }));
+            Assert.That(WikipediaSearchSource.Terms(["busca", "internet", "dracula"]), Is.EqualTo("busca dracula"));
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("quién ganó el Mundial de 2010"), Is.True);
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("noticias de Chile"), Is.False);
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("what's the weather tomorrow"), Is.False);
+        });
+    }
+
+    private static HttpAnswer WikipediaAnswer(
+        string language,
+        params (string Title, string Extract, bool Disambiguation)[] pages)
+    {
+        var body = new StringBuilder("""{"batchcomplete":true,"query":{"pages":[""");
+        for (int index = 0; index < pages.Length; index++)
+        {
+            (string title, string extract, bool disambiguation) = pages[index];
+            if (index > 0) body.Append(',');
+            body.Append("{\"pageid\":").Append(index + 10).Append(",\"ns\":0,\"title\":")
+                .Append(JsonSerializer.Serialize(title))
+                .Append(",\"index\":").Append(index + 1)
+                .Append(",\"fullurl\":").Append(JsonSerializer.Serialize(
+                    "https://" + language + ".wikipedia.org/wiki/" + Uri.EscapeDataString(title.Replace(' ', '_'))))
+                .Append(",\"extract\":").Append(JsonSerializer.Serialize(extract));
+            if (disambiguation) body.Append(",\"pageprops\":{\"disambiguation\":\"\"}");
+            body.Append('}');
+        }
+        return new(HttpStatusCode.OK, body.Append("]}}").ToString(), "application/json");
+    }
+
+    // The general engine's lite page: each result a «result-link» anchor followed by
+    // its snippet cell.
     private static string SearchResultsPage(params (string Title, string Url, string Snippet)[] results)
     {
-        var page = new StringBuilder("<html><body><ol id=\"b_results\" class=\"\">");
+        var page = new StringBuilder("<html><body><!-- Web results are present --><table>");
         foreach ((string title, string url, string snippet) in results)
         {
-            string encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(url))
-                .TrimEnd('=').Replace('+', '-').Replace('/', '_');
-            page.Append("<li class=\"b_algo\"><div class=\"b_tpcn\"><a class=\"tilk\" href=\"")
+            page.Append("<tr><td><a rel=\"nofollow\" href=\"")
                 .Append(url)
-                .Append("\">site</a></div><h2><a href=\"https://www.bing.com/ck/a?!&amp;&amp;p=x&amp;u=a1")
-                .Append(encoded)
-                .Append("&amp;ntb=1\" h=\"ID=SERP,1\">")
+                .Append("\" class='result-link'>")
                 .Append(title)
-                .Append("</a></h2><div class=\"b_caption\"><p class=\"b_lineclamp2\">")
-                .Append(snippet.Replace("WhatsApp", "<strong>WhatsApp</strong>"))
-                .Append("</p></div></li>");
+                .Append("</a></td></tr><tr><td class='result-snippet'>")
+                .Append(snippet.Replace("WhatsApp", "<b>WhatsApp</b>"))
+                .Append("</td></tr>");
         }
-        return page.Append("</ol></body></html>").ToString();
+        return page.Append("</table></body></html>").ToString();
+    }
+
+    private sealed record HttpAnswer(HttpStatusCode Status, string Body, string ContentType);
+
+    private sealed record AskedRequest(Uri Uri, string UserAgent);
+
+    // Answers each host with its own reply; a host it does not know is unreachable.
+    private sealed class SearchSourcesHttpHandler : HttpMessageHandler
+    {
+        private readonly Dictionary<string, HttpAnswer> _answers = new(StringComparer.OrdinalIgnoreCase);
+
+        internal List<AskedRequest> Asked { get; } = [];
+
+        internal HttpAnswer this[string host]
+        {
+            set => _answers[host] = value;
+        }
+
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            Uri uri = request.RequestUri!;
+            Asked.Add(new AskedRequest(uri, request.Headers.UserAgent.ToString()));
+            if (!_answers.TryGetValue(uri.Host, out HttpAnswer? answer))
+            {
+                throw new HttpRequestException("unreachable host " + uri.Host);
+            }
+            return Task.FromResult(new HttpResponseMessage(answer.Status)
+            {
+                Content = new StringContent(answer.Body, Encoding.UTF8, answer.ContentType),
+            });
+        }
     }
 
     [Test]

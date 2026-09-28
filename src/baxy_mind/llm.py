@@ -4312,6 +4312,12 @@ _CAUSE_FACT = {
     # Tanda 7 «quién ganó el game de los Lakers anoche» → «…los resultados de búsqueda son irrelevantes»: the code
     # became prose about a search. The lookup is invisible; what the person hears is that it was not found.
     "web_search_results_irrelevant": "it was not found; say only that, briefly",
+    # D32 (2026-09-28): no search source answered (Wikipedia and the general engine unreachable or blocked), so
+    # nothing was looked up — not the same as not found. No cause is given (a «porque…» would be invented) and the
+    # lookup stays invisible; the way out the owner chose is opening it in the person's own browser.
+    "web_search_unavailable": (
+        "it could not be looked up right now; say only that, briefly, and offer to open it in the person's web browser"
+    ),
     # Owner script t22 «¿Sabes qué peli estoy viendo en potplayer?» → media.status read the browser's player, the
     # browser did not answer, and the bare code became «la conexión con PotPlayer ha fallado».
     "web_adapter_unavailable": "the web browser could not be reached, so nothing was read or done in it",
