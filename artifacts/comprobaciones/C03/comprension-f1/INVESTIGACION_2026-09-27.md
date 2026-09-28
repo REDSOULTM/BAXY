@@ -59,3 +59,16 @@ razonamiento dentro del JSON del decisor (sin mejora medida).
 Un cambio a la vez; DEV-A para mirar y ajustar, DEV-B sólo la cifra, FINAL una vez al cierre. Veto: una acción
 inventada más (acción donde el oro no la tiene) invalida el cambio aunque suba el total. Entra con la regla de D12
 (capa A ≥ 96,0 %, 742 revisadas, reserva sin bajar) y DEV-B sin bajar.
+
+## Auditorías del 28-09 (agentes, sólo lectura)
+
+- **Contaminación:** 32 396 textos de entrenamiento (SFT, pares, RPO, bancos few-shot) contra 2 830 protegidos (DEV-A,
+  DEV-B, FINAL, 742, guion, held-out, cien, registro real). 0 filtraciones peculiares: las coincidencias exactas son
+  órdenes cortas y genéricas («qué hora es», «cerralo») o frases hechas de BAXY en el historial; ninguna conversación
+  comparte dos turnos con una protegida (similitud máxima con FINAL 0,73). Único caso dudoso de riesgo bajo: la pregunta
+  del «dólar blue hoy» (coseno 0,88 con una fila de FINAL), la forma estándar en Argentina.
+- **Calidad de las etiquetas de AJUSTE5:** en 144 pares minados revisados, 47 tienen el «chosen» dudoso: el contraste
+  «dos temas → preguntar» (17) choca con la regla 3 (buscar los dos no rompe nada), 9 «charlas» donde preguntar
+  también vale, 6 «charla frente a búsqueda» donde se busca. Explica en parte por qué `full5` empeoró. La ronda 2 de
+  pares se filtra (173 → 77) y el cierre de remates se limita a 2 por contraste; AJUSTE5 no vuelve a entrenar sin esa
+  revisión.
