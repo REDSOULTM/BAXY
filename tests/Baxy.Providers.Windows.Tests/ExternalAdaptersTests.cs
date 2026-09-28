@@ -2243,7 +2243,8 @@ public sealed class ExternalAdaptersTests
     }
 
     // What changes by the day (a price, the news, today) is not an encyclopedia's:
-    // Wikipedia is never asked and the general engine answers.
+    // Wikipedia is never asked; the news feed is, and when it does not answer the
+    // general engine does.
     [Test]
     public async Task ATimeBoundQuestionSkipsWikipediaForTheGeneralEngine()
     {
@@ -2265,7 +2266,8 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
             Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("duckduckgo_lite_https"));
-            Assert.That(handler.Asked.Select(asked => asked.Uri.Host), Is.EqualTo(new[] { "lite.duckduckgo.com" }));
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host),
+                Is.EqualTo(new[] { "news.google.com", "lite.duckduckgo.com" }));
         });
     }
 
@@ -2324,10 +2326,306 @@ public sealed class ExternalAdaptersTests
                 Is.EqualTo(new[] { "en", "es" }));
             Assert.That(WikipediaSearchSource.Languages("Dracula", new CultureInfo("en-US")),
                 Is.EqualTo(new[] { "en", "es" }));
-            Assert.That(WikipediaSearchSource.Terms(["busca", "internet", "dracula"]), Is.EqualTo("busca dracula"));
+            Assert.That(SearchPertinence.ContentTerms("busca en internet quién escribió Drácula"), Is.EqualTo(new[] { "dracula" }));
             Assert.That(WikipediaSearchSource.IsEncyclopedic("quién ganó el Mundial de 2010"), Is.True);
             Assert.That(WikipediaSearchSource.IsEncyclopedic("noticias de Chile"), Is.False);
             Assert.That(WikipediaSearchSource.IsEncyclopedic("what's the weather tomorrow"), Is.False);
+        });
+    }
+
+    // M51: the results Wikipedia gave in the official-window run v3a-final (2026-09-28),
+    // with the queries the mind sent. Each was published as if it answered; none does.
+    // The two knowledge questions of D32 still pass with their real extracts.
+    [Test]
+    public void OnlyAResultAboutTheQueryPassesThePertinenceGate()
+    {
+        (string Query, string Title, string Snippet, bool Pertinent)[] cases =
+        [
+            ("any new status updates", "HTTP 301",
+                "On the World Wide Web, HTTP 301, or 301 Moved Permanently, is the HTTP status code used for permanent redirecting. It means that links or records to this URL should be updated to the destination provided in the Location field of the server response.", false),
+            ("any new status updates", "National Living Treasure (Australia)",
+                "National Living Treasure is a status created and occasionally updated by the National Trust of Australia's New South Wales branch, awarded to up to 100 living people.", false),
+            ("Show me something funny about food.", "Remotely Funny",
+                "Remotely Funny is a British children's game show hosted by SAARA. The show is produced by Twenty Twenty Kids for CBBC.", false),
+            ("Show me something funny about food.", "The Shnookums & Meat Funny Cartoon Show",
+                "The Shnookums & Meat Funny Cartoon Show is a half-hour American animated comedy television series produced by Walt Disney Television Animation and aired in 1995.", false),
+            ("el artículo más leído de Wikipedia", "Artículo II de la Constitución de los Estados Unidos",
+                "El Artículo II de la Constitución de los Estados Unidos crea el poder ejecutivo del Gobierno estadounidense, el cual está formado por el presidente y otros funcionarios principales.", false),
+            ("el artículo más leído de Wikipedia", "Cómo hablar de los libros que no se han leído",
+                "Cómo hablar de los libros que no se han leído (en francés: Comment parler des livres que l'on n'a pas lus ?) es un ensayo del psicoanalista, profesor de literatura, crítico literario y escritor francés Pierre Bayard.", false),
+            ("el artículo más leído de Wikipedia", "Las fuentes del comportamiento soviético",
+                "El Artículo X es un artículo, formalmente titulado Las fuentes de la conducta soviética, escrito por George F. Kennan y publicado bajo el seudónimo \"X\" en el número de julio de 1947 de la revista Foreign Affairs.", false),
+            ("Show me gas stations in Buford.", "Buford, Wyoming",
+                "Buford is an unincorporated community and ghost town in Albany County, Wyoming, United States. It is located between Laramie and Cheyenne on Interstate 80. Its last resident, who had been the lone resident for nearly two decades, left in 2012.", false),
+            ("¿Cuáles son los números ganadores del loto?", "Baloto",
+                "Baloto es un juego de tipo loto en línea de suerte y azar en Colombia, donde el jugador por $9.000 apuesta por un acumulado multimillonario inicial de $4.000 millones de pesos colombianos, que se irá acumulando en cada sorteo, si no se tiene un ganador.", false),
+            ("Get train schedules to Manchester on Wednesday.", "Opening of the Liverpool and Manchester Railway",
+                "The Liverpool and Manchester Railway (L&M) opened on 15 September 1830. Work on the L&M had begun in the 1820s, to connect the textile mills of the city of Manchester with the nearest deep water port at the Port of Liverpool.", false),
+            ("what is the rate for 500 cad in usd", "List of European countries by minimum wage",
+                "Most minimum wages are fixed at a monthly rate, but some countries set their minimum wage at an hourly rate or annual rate.", false),
+            ("Does Bob live in France?", "Live! (Bob Marley and the Wailers album)",
+                "Live! is a 1975 album by Bob Marley and the Wailers which was recorded live in concert during July 1975 at the Lyceum Theatre, London.", false),
+            ("capital de Australia", "Territorio de la Capital Australiana",
+                "El Territorio de la Capital Australiana es un territorio federal de Australia que contiene la capital nacional, Camberra.", true),
+            ("who wrote Dracula", "Dracula",
+                "Dracula is an 1897 Gothic horror novel by Irish author Bram Stoker.", true),
+            ("¿Cuál es la capital de Australia?", "Canberra",
+                "Canberra es la capital de Australia.", true),
+        ];
+        Assert.Multiple(() =>
+        {
+            foreach ((string query, string title, string snippet, bool pertinent) in cases)
+            {
+                Assert.That(SearchPertinence.IsPertinent(query, title, snippet), Is.EqualTo(pertinent),
+                    query + " → " + title);
+            }
+        });
+    }
+
+    // M51 F-s012: Wikipedia answered with articles that shared a word with the query;
+    // none passes the gate, so Wikipedia did not answer and the engine is asked.
+    [Test]
+    public async Task WikipediaResultsThatDoNotAnswerAreNotAnAnswer()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["en.wikipedia.org"] = WikipediaAnswer("en",
+                ("HTTP 301", "HTTP 301 is the HTTP status code used for permanent redirecting; links should be updated.", false)),
+            ["es.wikipedia.org"] = WikipediaAnswer("es", ("Estado", "Un estado es una organización política.", false)),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"Are there any new status updates?"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("web_search_unavailable"));
+            Assert.That(receipt.Result, Is.Null);
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host),
+                Is.EqualTo(new[] { "en.wikipedia.org", "es.wikipedia.org", "lite.duckduckgo.com" }));
+            Assert.That(Uri.UnescapeDataString(handler.Asked[0].Uri.Query), Does.Contain("gsrsearch=status updates&"));
+        });
+    }
+
+    // M51 F-p09-t2: Wikipedia wants every word it is given and the answer says «film»;
+    // after nothing pertinent, the proper names alone are asked once in the query's
+    // language, and the article is judged by the whole query («movie» = «film»).
+    [Test]
+    public async Task AfterNothingPertinentWikipediaIsAskedForTheProperNamesAlone()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["en.wikipedia.org"] = new(HttpStatusCode.OK, """{"batchcomplete":true}""", "application/json"),
+            ["es.wikipedia.org"] = new(HttpStatusCode.OK, """{"batchcomplete":true}""", "application/json"),
+        };
+        handler.Routes.Add(("gsrsearch=kirill mikhanovsky&", WikipediaAnswer("en",
+            ("Give Me Liberty (film)",
+                "Give Me Liberty is a 2019 American comedy-drama film directed by Kirill Mikhanovsky, starring Chris Galust and Lauren Spencer.",
+                false))));
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"Who played in the movie directed by Kirill Mikhanovsky?"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("wikipedia_en_api"));
+            Assert.That(receipt.Result?.GetProperty("results")[0].GetProperty("title").GetString(),
+                Is.EqualTo("Give Me Liberty (film)"));
+            Assert.That(handler.Asked.Select(asked => Uri.UnescapeDataString(asked.Uri.Query).Split("gsrsearch=")[1].Split('&')[0]),
+                Is.EqualTo(new[] { "movie kirill mikhanovsky", "movie kirill mikhanovsky", "kirill mikhanovsky" }));
+        });
+    }
+
+    // M51 F-w12-t4/F-w13-t1: a price of today was «could not look it up». The search
+    // feed of the news answers it, in the query's language, with the headlines about it
+    // and only those.
+    [Test]
+    public async Task ADayBoundQuestionIsAnsweredByTheNewsFeedWithItsPertinentHeadlines()
+    {
+        const string feed = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <rss version="2.0"><channel><title>Noticias</title>
+            <item><title>Dólar blue hoy: a cuánto cotiza este lunes - Diario Uno</title><link>https://news.google.com/rss/articles/abc?oc=5</link><pubDate>Mon, 28 Sep 2026 12:00:00 GMT</pubDate><source url="https://www.example.com.ar">Diario Uno</source></item>
+            <item><title>El fútbol argentino vuelve este fin de semana - Diario Dos</title><link>https://news.google.com/rss/articles/def?oc=5</link><pubDate>Mon, 28 Sep 2026 11:00:00 GMT</pubDate><source url="https://www.example.com">Diario Dos</source></item>
+            </channel></rss>
+            """;
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["news.google.com"] = new(HttpStatusCode.OK, feed, "application/rss+xml"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"¿Cuánto está el dólar blue hoy?"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("google_news_rss_search"));
+            Assert.That(receipt.Result?.GetProperty("count").GetInt32(), Is.EqualTo(1));
+            JsonElement first = receipt.Result!.Value.GetProperty("results")[0];
+            Assert.That(first.GetProperty("title").GetString(), Is.EqualTo("Dólar blue hoy: a cuánto cotiza este lunes"));
+            Assert.That(first.GetProperty("url").GetString(), Is.EqualTo("https://news.google.com/rss/articles/abc"));
+            Assert.That(first.GetProperty("snippet").GetString(), Is.EqualTo("Diario Uno, Mon, 28 Sep 2026 12:00:00 GMT"));
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host), Is.EqualTo(new[] { "news.google.com" }));
+            Assert.That(Uri.UnescapeDataString(handler.Asked[0].Uri.Query),
+                Is.EqualTo("?q=dolar blue&hl=es-419&gl=CL&ceid=CL:es-419"));
+            Assert.That(handler.Asked[0].UserAgent,
+                Does.Match(@"^BAXY/\d+\.\d+ \(https://github\.com/REDSOULTM/baxy-assistant\)$"));
+        });
+    }
+
+    // M51 F-s090 «what is the rate for 500 cad in usd»: two currencies are a conversion,
+    // answered by Frankfurter's reference rate with the amount already multiplied.
+    [Test]
+    public async Task ACurrencyConversionIsAnsweredByFrankfurterWithTheAmountConverted()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["api.frankfurter.dev"] = new(HttpStatusCode.OK,
+                """[{"date":"2026-09-28","base":"CAD","quote":"USD","rate":0.70774}]""", "application/json"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"what is the rate for 500 cad in usd"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("frankfurter_reference_rates"));
+            JsonElement first = receipt.Result!.Value.GetProperty("results")[0];
+            Assert.That(first.GetProperty("title").GetString(), Is.EqualTo("500 CAD = 353.87 USD"));
+            Assert.That(first.GetProperty("snippet").GetString(),
+                Is.EqualTo("Reference rate on 2026-09-28: 1 CAD = 0.70774 USD."));
+            Assert.That(handler.Asked.Single().Uri.AbsoluteUri,
+                Is.EqualTo("https://api.frankfurter.dev/v2/rates?base=CAD&quotes=USD"));
+        });
+    }
+
+    [Test]
+    public void ACurrencyAskNeedsTwoCurrenciesAndNoInformalRate()
+    {
+        var chile = new RegionInfo("CL");
+        Assert.Multiple(() =>
+        {
+            Assert.That(FrankfurterRateSource.Parse("what is the rate for 500 cad in usd", chile),
+                Is.EqualTo(new FrankfurterRateSource.CurrencyAsk(500m, "CAD", "USD")));
+            Assert.That(FrankfurterRateSource.Parse("cuántos pesos son 1.000 dólares", chile),
+                Is.EqualTo(new FrankfurterRateSource.CurrencyAsk(1000m, "USD", "CLP")));
+            Assert.That(FrankfurterRateSource.Parse("20 euros a pesos mexicanos", chile),
+                Is.EqualTo(new FrankfurterRateSource.CurrencyAsk(20m, "EUR", "MXN")));
+            Assert.That(FrankfurterRateSource.Parse("¿Cuánto está el dólar blue hoy?", chile), Is.Null);
+            Assert.That(FrankfurterRateSource.Parse("precio del dólar hoy", chile), Is.Null);
+            Assert.That(FrankfurterRateSource.Parse("dólares a pesos", new RegionInfo("ES")), Is.Null);
+        });
+    }
+
+    [Test]
+    public void APlaceAskIsAKindOfSiteInANamedPlace()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(OpenStreetMapPlaceSource.Parse("Encuentrame aparcamiento cerca de La Puntilla", null),
+                Is.EqualTo(new OpenStreetMapPlaceSource.PlaceAsk("parking", "La Puntilla")));
+            Assert.That(OpenStreetMapPlaceSource.Parse("Show me gas stations in Buford.", null),
+                Is.EqualTo(new OpenStreetMapPlaceSource.PlaceAsk("fuel", "Buford")));
+            Assert.That(OpenStreetMapPlaceSource.Parse("Busca aparcamiento en la calle Génova en Madrid.", null),
+                Is.EqualTo(new OpenStreetMapPlaceSource.PlaceAsk("parking", "la calle Génova, Madrid")));
+            Assert.That(OpenStreetMapPlaceSource.Parse("aparcamiento en Plaza del Polvorista", null),
+                Is.EqualTo(new OpenStreetMapPlaceSource.PlaceAsk("parking", "Plaza del Polvorista")));
+            Assert.That(OpenStreetMapPlaceSource.Parse("Busca taquerías cerca que tengan servicio a domicilio.", "Curico"),
+                Is.EqualTo(new OpenStreetMapPlaceSource.PlaceAsk("taqueria", "Curico")));
+            Assert.That(OpenStreetMapPlaceSource.Parse("un aparcamiento en el centro de la ciudad", null), Is.Null);
+            Assert.That(OpenStreetMapPlaceSource.Parse("farmacias cerca de mí", null), Is.Null);
+            Assert.That(OpenStreetMapPlaceSource.Parse("capital de Australia", null), Is.Null);
+        });
+    }
+
+    // M51 F-p05-t1 «Encuentra aparcamiento en Plaza del Polvorista» was answered from a
+    // party's proposal. OpenStreetMap answers: the named place's box first, then the
+    // kind of site inside it, both with the project's User-Agent.
+    [Test]
+    public async Task AParkingQueryIsAnsweredByOpenStreetMapInsideTheNamedPlace()
+    {
+        var handler = new SearchSourcesHttpHandler();
+        handler.Routes.Add(("q=Plaza del Polvorista", new(HttpStatusCode.OK,
+            """[{"lat":"36.5985","lon":"-6.2330","boundingbox":["36.5982","36.5988","-6.2334","-6.2326"],"display_name":"Plaza del Polvorista, El Puerto de Santa María, Cádiz, España"}]""",
+            "application/json")));
+        handler.Routes.Add(("q=parking", new(HttpStatusCode.OK,
+            """[{"osm_type":"way","osm_id":123,"name":"Aparcamiento Polvorista","type":"parking","display_name":"Aparcamiento Polvorista, Calle Larga, El Puerto de Santa María, Cádiz, España"},{"osm_type":"node","osm_id":456,"name":"","type":"parking","display_name":"Calle Ganado, El Puerto de Santa María, Cádiz, España"}]""",
+            "application/json")));
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"aparcamiento en Plaza del Polvorista"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("openstreetmap_nominatim"));
+            JsonElement results = receipt.Result!.Value.GetProperty("results");
+            Assert.That(results.GetArrayLength(), Is.EqualTo(2));
+            Assert.That(results[0].GetProperty("title").GetString(), Is.EqualTo("Aparcamiento Polvorista"));
+            Assert.That(results[0].GetProperty("url").GetString(), Is.EqualTo("https://www.openstreetmap.org/way/123"));
+            Assert.That(results[1].GetProperty("title").GetString(), Is.EqualTo("parking"));
+            Assert.That(handler.Asked, Has.Count.EqualTo(2));
+            Assert.That(handler.Asked, Has.All.Matches<AskedRequest>(asked => asked.Uri.Host == "nominatim.openstreetmap.org"
+                && asked.UserAgent.Contains("github.com/REDSOULTM/baxy-assistant", StringComparison.Ordinal)));
+            Assert.That(Uri.UnescapeDataString(handler.Asked[1].Uri.Query),
+                Does.Contain("bounded=1").And.Contain("viewbox=-6.243,36.6085,-6.223,36.5885"));
+        });
+    }
+
+    // Real answer of 2026-09-28: «La Puntilla, El Puerto» geocodes to a bar in Ceuta
+    // named «El Puerto». A place whose address lacks «Puntilla» is not the place; the
+    // first part is asked alone and the candidate in El Puerto de Santa María wins.
+    [Test]
+    public async Task APlaceIsTheCandidateWhoseAddressCarriesItsName()
+    {
+        var handler = new SearchSourcesHttpHandler();
+        handler.Routes.Add(("q=La Puntilla, El Puerto", new(HttpStatusCode.OK,
+            """[{"boundingbox":["35.89135","35.89145","-5.31856","-5.31846"],"display_name":"Bar El Puerto, Avenida Juan de Borbón, Ceuta, España"}]""",
+            "application/json")));
+        handler.Routes.Add(("q=La Puntilla", new(HttpStatusCode.OK,
+            """[{"boundingbox":["-32.99","-32.98","-68.87","-68.86"],"display_name":"La Puntilla, Luján de Cuyo, Mendoza, Argentina"},{"boundingbox":["36.585","36.587","-6.245","-6.243"],"display_name":"La Puntilla, Valdelagrana, El Puerto de Santa María, Cádiz, España"}]""",
+            "application/json")));
+        handler.Routes.Add(("q=parking", new(HttpStatusCode.OK,
+            """[{"osm_type":"way","osm_id":7,"name":"Parking La Puntilla","type":"parking","display_name":"Parking La Puntilla, El Puerto de Santa María, Cádiz, España"}]""",
+            "application/json")));
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"Encuentrame aparcamiento cerca de La Puntilla, El Puerto."}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("results")[0].GetProperty("title").GetString(), Is.EqualTo("Parking La Puntilla"));
+            Assert.That(handler.Asked, Has.Count.EqualTo(3));
+            Assert.That(Uri.UnescapeDataString(handler.Asked[2].Uri.Query), Does.Contain("viewbox=-6.254,36.596,-6.234,36.576"));
         });
     }
 
@@ -2386,12 +2684,18 @@ public sealed class ExternalAdaptersTests
             set => _answers[host] = value;
         }
 
+        // An answer for the requests whose unescaped address contains the text, asked
+        // before the answer of the whole host.
+        internal List<(string Contains, HttpAnswer Answer)> Routes { get; } = [];
+
         protected override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
             Uri uri = request.RequestUri!;
             Asked.Add(new AskedRequest(uri, request.Headers.UserAgent.ToString()));
-            if (!_answers.TryGetValue(uri.Host, out HttpAnswer? answer))
+            string address = Uri.UnescapeDataString(uri.AbsoluteUri);
+            HttpAnswer? answer = Routes.FirstOrDefault(route => address.Contains(route.Contains, StringComparison.Ordinal)).Answer;
+            if (answer is null && !_answers.TryGetValue(uri.Host, out answer))
             {
                 throw new HttpRequestException("unreachable host " + uri.Host);
             }

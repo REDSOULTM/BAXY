@@ -8394,6 +8394,166 @@ def _search_report_off_subject(text: str, payload: dict, user_text: str) -> bool
     )
 
 
+# M51 (review of the official-window run v3a-final, 2026-09-28): «el artículo más leído es Cómo hablar de los libros que
+# no se han leído», «no hay números ganadores del loto porque Baloto…»: the reply took a fact from a result that is not
+# about what was searched. A result is about the query by the same rule the providers gate Wikipedia and the news feed
+# with (src/Baxy.Providers.Windows/External/SearchPertinence.cs): the query's proper names are all in its title or
+# snippet, or without names one of its content words is in the title; and the title and snippet repeat its content
+# words (both when there are one or two, a strict majority when more). A general engine's result is judged as that
+# engine's own gate judges it (half of the words, no title needed). The structured sources (a place read from
+# OpenStreetMap, a reference exchange rate) answer by construction and are not judged here.
+_SEARCH_QUERY_FRAME_WORDS = frozenset(
+    {
+        # IsSearchStopWord (WebBrowserAdapter.cs)
+        "a", "an", "and", "the", "to", "for", "from", "in", "of", "on", "search", "find", "de", "del", "el", "en",
+        "la", "las", "los", "para", "por", "un", "una", "y", "busca", "buscar", "hoy", "today", "ahora", "now",
+        "todays", "que", "porque", "como", "cual", "cuales", "cuando", "donde", "quien", "quienes", "es", "son",
+        "esta", "estan", "hay", "se", "me", "mi", "mis", "tu", "su", "sus", "lo", "le", "les", "al", "con", "sin",
+        "sobre", "si", "no", "ya", "muy", "mas", "why", "how", "what", "which", "when", "where", "who", "whom", "is",
+        "are", "was", "were", "do", "does", "did", "can", "could", "should", "would", "will", "it", "its", "my",
+        "your", "this", "that", "with", "without", "about", "at", "by", "or", "not", "so", "very", "more", "please",
+        # SearchPertinence.FrameWords
+        "show", "tell", "give", "get", "got", "look", "lookup", "list", "us", "something", "anything", "any",
+        "some", "there", "new", "info", "information", "want", "need", "know", "like", "let", "only", "just", "also",
+        "much", "many", "have", "has", "had", "wrote", "written", "write", "writes", "invented", "discovered",
+        "founded", "directed", "painted", "composed", "won", "played", "starred", "starring", "muestra",
+        "muestrame", "mostrar", "ensename", "dime", "decime", "dame", "pasame", "pasa", "encuentra", "encuentrame",
+        "encontrar", "buscame", "buscarme", "informacion", "algo", "alguna", "alguno", "algun", "quiero", "quisiera",
+        "necesito", "saber", "puedes", "podrias", "puede", "solo", "solamente", "tambien", "cuanto", "cuanta",
+        "cuantos", "cuantas", "tiene", "tienen", "tener", "sale", "vale", "valen", "cuesta", "cuestan", "escribio",
+        "escribe", "escrito", "invento", "descubrio", "fundo", "dirigio", "pinto", "compuso", "gano", "ganaron",
+        "internet", "web", "google", "bing", "duckduckgo", "wikipedia", "online", "net", "latest", "news", "recent",
+        "noticia", "noticias", "ultima", "ultimas", "ultimo", "ultimos", "actualidad", "precio", "precios", "price",
+        "prices", "cost", "costs", "cotizacion",
+    }
+)
+_SEARCH_TERM_SYNONYMS = (
+    frozenset({"clima", "tiempo", "weather", "meteo", "meteorologico", "meteorologica", "pronostico", "forecast"}),
+    frozenset({"lluvia", "lluvias", "llueve", "llover", "llovera", "rain", "raining"}),
+    frozenset({"manana", "tomorrow"}),
+    frozenset({"temperatura", "temperature", "temperaturas", "temperatures"}),
+    frozenset({"movie", "movies", "film", "films", "pelicula", "peliculas", "filme"}),
+)
+_SEARCH_STRUCTURED_AUTHORITIES = frozenset({"openstreetmap_nominatim", "frankfurter_reference_rates"})
+
+
+def _search_query_terms(query: str) -> list[str]:
+    terms: list[str] = []
+    for word in re.findall(r"[a-z0-9]+", _reading_fold(query)):
+        if len(word) >= 2 and word not in _SEARCH_QUERY_FRAME_WORDS and word not in terms:
+            terms.append(word)
+    return terms
+
+
+def _search_query_names(query: str) -> list[str]:
+    names: list[str] = []
+    opening = True
+    for raw in str(query).split():
+        word = raw.lstrip("¿¡\"'«(“")
+        if word and not opening and word[0].isupper():
+            for token in _search_query_terms(word):
+                if token not in names:
+                    names.append(token)
+        if word:
+            opening = word[-1] in ".?!:"
+    return names
+
+
+def _search_term_found(term: str, observed: set[str]) -> bool:
+    if term in observed or any(term in family and family & observed for family in _SEARCH_TERM_SYNONYMS):
+        return True
+    stem = term[:-2]
+    return len(term) >= 5 and len(stem) >= 4 and any(len(word) >= 4 and word.startswith(stem) for word in observed)
+
+
+def _search_result_is_about(query: str, item: dict, titled: bool) -> bool:
+    """«titled»: the source's pages are about their title (an encyclopedia article, a headline). A general engine's
+    page title is often the site's own, so there the snippet may carry the query's words instead, and half of them
+    is enough."""
+
+    terms = _search_query_terms(query)
+    if not terms:
+        return False
+    title = set(re.findall(r"[a-z0-9]+", _reading_fold(str(item.get("title") or ""))))
+    observed = title | set(re.findall(r"[a-z0-9]+", _reading_fold(str(item.get("snippet") or ""))))
+    names = _search_query_names(query)
+    if names:
+        if not all(_search_term_found(name, observed) for name in names):
+            return False
+    elif titled and not any(_search_term_found(term, title) for term in terms):
+        return False
+    matched = sum(1 for term in terms if _search_term_found(term, observed))
+    if not titled:
+        # The general engine's own gate: half of the words, rounded up («cómo llego a parquelandia» is answered by
+        # «Cómo llegar a Parquelandia Resort»).
+        return matched >= (len(terms) + 1) // 2
+    return matched >= (len(terms) if len(terms) <= 2 else len(terms) // 2 + 1)
+
+
+def _search_report_from_no_pertinent_result(text: str, payload: dict, user_text: str) -> bool:
+    """The search answered with results none of which is about the query, and the report states something anyway."""
+
+    if _search_results_text(payload) is None:
+        return False
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    if seen.get("authority") in _SEARCH_STRUCTURED_AUTHORITIES:
+        return False
+    query = seen.get("query") if isinstance(seen.get("query"), str) and seen.get("query").strip() else user_text
+    near = seen.get("near") if isinstance(seen.get("near"), str) else ""
+    if near and str(query).endswith(" " + near):
+        query = str(query)[: -len(near) - 1]
+    if not _search_query_terms(str(query or "")):
+        return False
+    results = [item for item in _search_results_of(payload) if isinstance(item, dict)]
+    authority = str(seen.get("authority") or "")
+    titled = authority.startswith("wikipedia_") or authority == "google_news_rss_search"
+    if any(_search_result_is_about(str(query), item, titled) for item in results):
+        return False
+    return any(
+        _SEARCH_NOT_FOUND.match(_reading_fold(sentence)) is None
+        for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip())
+        if sentence.strip()
+    )
+
+
+# M51 v3a-final F-p05-t1 «Encuentra aparcamiento en Plaza del Polvorista» → «Hay aparcamiento subterráneo en la Plaza del
+# Polvorista»: the only result that named an underground car park said a party «plantea» one. What a result proposes or
+# plans is not there yet; the report may say it is proposed, never that it exists.
+_SEARCH_EXISTENCE_CLAIM = re.compile(
+    r"\b(?:hay|existen?|cuenta\s+con|dispone\s+de|there\s+(?:is|are)|has|have)\s+(?:(?:un|una|unos|unas|el|la|los|las|"
+    r"a|an|the|some)\s+)?(?P<thing>[a-z]{4,}(?:\s+[a-z]{4,})?)"
+)
+_SEARCH_PROPOSAL_WORDS = frozenset(
+    {
+        "plantea", "plantean", "propone", "proponen", "propuesta", "propuestas", "proyecto", "proyecta", "proyectan",
+        "proyectado", "proyectada", "planea", "planean", "contara", "contaran", "construira", "construiran", "futuro",
+        "futura", "proposes", "proposed", "proposal", "planned", "plans",
+    }
+)
+
+
+def _search_report_proposal_as_fact(text: str, payload: dict, user_text: str) -> bool:
+    """The report says a thing exists that the only results naming it propose or plan."""
+
+    if _search_results_text(payload) is None:
+        return False
+    results = [
+        set(re.findall(r"[a-z0-9]+", _reading_fold(f"{item.get('title') or ''} {item.get('snippet') or ''}")))
+        for item in _search_results_of(payload)
+        if isinstance(item, dict)
+    ]
+    for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip()):
+        folded = _reading_fold(sentence)
+        if _SEARCH_NOT_FOUND.match(folded) is not None or re.search(r"\b(?:propuest|propon|plante|plan|propos)", folded):
+            continue
+        for claim in _SEARCH_EXISTENCE_CLAIM.finditer(folded):
+            thing = [word for word in claim.group("thing").split() if word not in _SEARCH_QUERY_FRAME_WORDS]
+            naming = [words for words in results if thing and all(_search_term_found(word, words) for word in thing)]
+            if naming and all(words & _SEARCH_PROPOSAL_WORDS for words in naming):
+                return True
+    return False
+
+
 def _verified_search_results(situation: dict) -> bool:
     """A completed, verified web.search whose observation carries results."""
 
@@ -9370,9 +9530,13 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
             _reading_fold(text),
         ):
             return "search_result_denied"
-        if _search_report_off_subject(text, payload, user_text):
+        if _search_report_off_subject(text, payload, user_text) or _search_report_from_no_pertinent_result(
+            text, payload, user_text
+        ):
             # Owner method 2026-09-25 (no inventing): a search that did not answer is said as not found.
             return "search_report_off_subject"
+        if _search_report_proposal_as_fact(text, payload, user_text):
+            return "search_report_proposal_as_fact"
     written = seen.get("writtenText") if isinstance(seen, dict) else None
     if payload.get("operation") == "clipboard.write.text" and isinstance(written, str) and written:
         # CLIPBOARD1359: «Hola» / «Buen día.» were published after a verified
@@ -20104,6 +20268,13 @@ class LlmRuntime:
                     if response_language == "en"
                     else "Ningún resultado trata de lo que se preguntó: di brevemente, en una oración, que no lo "
                     "encontraste; no des datos de otra cosa."
+                ),
+                "search_report_proposal_as_fact": (
+                    "A result only says that is proposed or planned: say it is proposed (or planned), never that it "
+                    "already exists; if nothing else answers, say briefly that you could not find it."
+                    if response_language == "en"
+                    else "Un resultado sólo dice que eso se propone o se planea: di que se propone (o se planea), nunca "
+                    "que ya existe; si nada más lo contesta, di brevemente que no lo encontraste."
                 ),
                 "search_report_names_a_page": (
                     "That is the name of a page, not the answer: say the concrete thing a result states (a name, a number, a date, a place) in one or two sentences; if none states it, say briefly that you could not find it."

@@ -50,7 +50,7 @@ internal sealed class GoogleNewsHeadlinesAdapter : IExternalOperationAdapter, ID
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 5), 1, 10);
         string url = topic is null
             ? FeedAuthority + "?" + Edition
-            : FeedAuthority + "/search?q=" + Uri.EscapeDataString(topic) + "&" + Edition;
+            : SearchUri(topic, "es").AbsoluteUri;
         string xml;
         try
         {
@@ -110,6 +110,14 @@ internal sealed class GoogleNewsHeadlinesAdapter : IExternalOperationAdapter, ID
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
+
+    // M51: web.search asks this same feed's search for what changes by the day (news,
+    // prices, schedules), in the edition of the query's language.
+    internal static Uri SearchUri(string topic, string language) =>
+        new(FeedAuthority + "/search?q=" + Uri.EscapeDataString(topic) + "&"
+            + (language == "en" ? EnglishEdition : Edition));
+
+    private const string EnglishEdition = "hl=en-US&gl=US&ceid=US:en";
 
     internal static List<Headline> Parse(string xml, int limit)
     {
