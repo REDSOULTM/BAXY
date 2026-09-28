@@ -180,6 +180,52 @@ public sealed class PlannerAppBoundaryTests
         Assert.That(MainWindowViewModel.ConsumesVerifiedDependency(operation), Is.EqualTo(expected));
     }
 
+    // M55 (v3b F-w06-t1 «pon el word a la izquierda y el chrome a la derecha», F-w08-t1): the decider lists
+    // window.snap once for two windows; the mind plans one resolve and one snap per window.
+    [Test]
+    public void OneSnapPerWindowCrossesTheSingleExpectedEffect()
+    {
+        static MindPlanStep Resolve(string id, string application) =>
+            new(id, "window.resolve", $"Localiza la ventana de {application}.", [], "literal",
+                new JsonObject { ["applicationName"] = application });
+        static MindPlanStep Snap(string id, string dependency, string purpose) =>
+            new(id, "window.snap", purpose, [dependency], "after_dependencies", null);
+
+        var perWindow = new MindPlanResult(
+            "plan", string.Empty,
+            [
+                Resolve("step_1", "Word"),
+                Snap("step_2", "step_1", "coloca la ventana de word en la mitad izquierda"),
+                Resolve("step_3", "Google Chrome"),
+                Snap("step_4", "step_3", "coloca la de chrome en la mitad derecha"),
+            ]);
+        var sharedIdentity = perWindow with
+        {
+            Steps = perWindow.Steps.Where(static step => step.Id != "step_3").ToArray(),
+        };
+        var addedEffect = perWindow with
+        {
+            Steps =
+            [
+                .. perWindow.Steps,
+                new MindPlanStep("step_5", "capture.screenshot", "Captura la pantalla.", [], "literal",
+                    new JsonObject()),
+            ],
+        };
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindSidecarClient.ValidateExpectedPlanResult(perWindow, ["window.snap"]), Is.SameAs(perWindow));
+            Assert.That(() => MindPlanBoundary.ValidateAndConvert(
+                "Coloca la ventana de Word en la mitad izquierda y la de Chrome en la mitad derecha.", perWindow),
+                Throws.Nothing);
+            Assert.That(MindSidecarClient.ValidateExpectedPlanResult(sharedIdentity, ["window.snap"]), Is.Null);
+            Assert.That(MindSidecarClient.ValidateExpectedPlanResult(addedEffect, ["window.snap"]), Is.Null);
+            Assert.That(MindSidecarClient.ValidateExpectedPlanResult(
+                addedEffect, ["window.snap", "capture.screenshot"]), Is.SameAs(addedEffect));
+        });
+    }
+
     [Test]
     public void TaskDeletePlanIsGroundedFromTheVerifiedResolver()
     {
