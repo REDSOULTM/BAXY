@@ -111,6 +111,7 @@ el dueño: [`DECISIONES_COMPRENSION_2026-09-25.md`](DECISIONES_COMPRENSION_2026-
 | M30: «un resultado dice…, otro afirma…» muestra la búsqueda (guion t35); la charla del decisor sobre un lugar inalcanzable también es su límite (cien-107 100: «Write a letter to Eris.» salió con una razón inventada) | (redacción y ruta de límite) | | | | | | **entra**: dentro de cien «I do not send letters to Eris.»; app real a M29: guion 51/60, **held-out 29/30 (meta cumplida)**, cien-107 96/100 con 0 efectos |
 | M31: líneas negativas en el catálogo llano (captura de pantalla «no usa la cámara», saltar en el medio «no cambia temporizadores», alarma «no alarga una ya puesta») para los límites que el decisor pregunta | 80,2 % (0 y 0) | | 85,0 % → 221/260 (0 arreglados, 1 roto: «Agrega 10 minutos al temporizador en curso» pasa a preguntar) | | | 0 | **retirado** (ley 2): no arregla «Quita 10 segundos del temporizador» ni la cámara, que el decisor sigue preguntando; corrida detenida tras DEV-B |
 | CAL (D27): sesgo por decisión sobre la distribución del propio decisor (preguntar −0,75, charla −0,25, límite +1,0), segunda decodificación forzada si cambia | aislado 227 → 226 (1 y 2) | | aislado 234 → 244 (10 y 0) | | | 6 → 4 | **retirado**: no generaliza del DEV-A al ciego |
+| RPO ronda 2 (D28): preferencias sobre `full3`, lr 5·10⁻⁵, 518 pares | aislado 225 → 208 (sueltos 104 → 89) | | aislado 234 → 210 (5 y 29) | | | | **retirado**: el paso desplaza el decisor en todas direcciones |
 
 ### Revisión de las 21 decisiones de las 742 que M4 cambia frente a la base
 

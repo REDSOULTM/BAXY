@@ -311,3 +311,11 @@ capa A ≥ 96,0, reserva sin bajar, 742 revisadas: el riesgo es un límite falso
 sueltos 105 → 104), inventadas 6 → 4. No cumple D19. Lo que CAL ganó en DEV-A (+10) no generaliza, como el few-shot:
 los fallos restantes de DEV-B no son de calibración de una clase. No se prueba otra combinación de sesgos (sería
 iterar sobre DEV-B).
+
+## D28. RPO ronda 2 retirada: el paso ×10 desplaza el decisor en todas direcciones (2026-09-28 05:47)
+Ronda 2 (lr 5·10⁻⁵, 518 pares auditados, 1 época; relanzada a las 04:15 sin los 36 pares de control de ≈6 000 tokens
+que desbordaban la VRAM de redpc). Entrenamiento con margen creciente (0,8 → 3,6) y deriva 3,6 frente a 0,3 de la
+ronda 1. Aislado, mismo entorno que `full3m22`: DEV-A 234 → 210/260 (5 arreglados, 29 rotos: acciones → charla o
+límite, límites → pregunta), DEV-B 225 → 208/253 (sueltos 104 → 89). **Retirado.** Lección: entre 5·10⁻⁶ (no mueve)
+y 5·10⁻⁵ (rompe); un reintento sería un paso intermedio con β mayor para contener la deriva, y sólo después de agotar
+los lectores y guardas (prioridad del dueño del 28-09).
