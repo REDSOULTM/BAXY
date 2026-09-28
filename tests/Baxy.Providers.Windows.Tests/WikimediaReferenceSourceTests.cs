@@ -174,6 +174,27 @@ public sealed class WikimediaReferenceSourceTests
         });
     }
 
+    // F-p11-t2 «¿por qué es peligroso el anillo?» right after the summary: the same work,
+    // and from its plot the opening paragraph plus the ones that name the ring.
+    [Test]
+    public void AQuestionAboutTheWorkKeepsTheParagraphsThatNameWhatItAsks()
+    {
+        WikimediaReferenceSource.ReferenceAsk? ask = WikimediaReferenceSource.Parse("resumen libro hobbit: peligroso anillo");
+        Assert.That(ask?.Named, Is.EqualTo(new[] { "hobbit" }));
+        Assert.That(ask?.Focus, Is.EqualTo(new[] { "peligroso", "anillo" }));
+
+        WikimediaReferenceSource.ReferenceReading? reading = WikimediaReferenceSource.ParsePlotResponse(
+            Fixture("wikipedia_es_plot_hobbit.json"), "es", ask!.Value.Named, ask.Value.Focus);
+
+        Assert.That(reading, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(reading!.Value.Evidence, Does.StartWith("La historia comienza"));
+            Assert.That(reading.Value.Evidence, Does.Contain("anillo"));
+            Assert.That(reading.Value.Evidence.Length, Is.LessThanOrEqualTo(WikimediaReferenceSource.EvidenceCharacters));
+        });
+    }
+
     [Test]
     public void WikitextBecomesPlainText()
     {
