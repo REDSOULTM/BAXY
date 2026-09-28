@@ -157,12 +157,14 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 comprensión natural — M20: full3 + redacción (no encontrado sin causa, límite sin razón, fallos de la persona, nivel en %, Eris)
 # C03 comprensión natural — M23: fallo no verificado dicho, hecho del navegador, app de su propia cláusula
 # C03 comprensión natural — M24: acuse de un gusto en segunda persona
+# C03 comprensión natural — arreglos de la revisión independiente
+# C03 comprensión natural — arreglos de la revisión independiente
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
         "d84e4983a5ad426b173cbb52362254cc83567fa78d8aa8ac5bbeebe200cec11f"
     ),
     "src/baxy_mind/llm.py": (
-        "eefbd0566f5a3dc5c371a2d197628a566f84531394d3a35591df6f629cac248b"
+        "ab7e3c6ea1ec15b8160a7ca5176b350c9d905b88e06aee3bb8de469d3ba3897e"
     ),
 }
 

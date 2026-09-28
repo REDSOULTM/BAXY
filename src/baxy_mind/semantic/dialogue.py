@@ -346,6 +346,12 @@ def rewrite_stays_in_context(
     return all(word[:4] in said for word in meaningful if word not in _FRAME_WORDS and not word.isdigit())
 
 
+def asks_for_the_reason(text: str) -> bool:
+    """«¿por qué no puedes…?», «why can't you…»: the person asks for the reason (independent review B1)."""
+
+    return re.search(r"\b(?:por\s*que|why)\b", _fold(text)) is not None
+
+
 def restatement_was_said(restatement: str, lines: list[str]) -> bool:
     """Every content word of a model's restatement is in these lines (what the person and BAXY said).
 

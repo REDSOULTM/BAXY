@@ -363,6 +363,8 @@ public sealed class C03FactPreservationTests
     [TestCase("Entiendo tu frustración con esos fallos.", null)]
     [TestCase("Entiendo lo de los fallos, pero no pude hacer nada.", "looks_like_failure")]
     [TestCase("Hubo un fallo al abrir Steam.", "looks_like_failure")]
+    // Independent review B3: a cause after the person's «fallos» is BAXY's claim.
+    [TestCase("Estos fallos se deben a que Spotify no respondió.", "looks_like_failure")]
     public void ThePersonsFallosAnsweredBackClaimNoFailure(string reply, string? reason)
     {
         Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(

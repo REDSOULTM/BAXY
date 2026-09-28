@@ -1942,6 +1942,12 @@ internal static class UserMessagePolicy
         }
         string rest = Regex.Replace(reply, EchoedFailures, string.Empty,
             RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+        // Independent review B3: a cause after the person's «fallos» is a claim of BAXY's.
+        if (Regex.IsMatch(FoldForPolicy(rest), @"\b(?:se\s+deben?|debid[oa]s?|porque|ya\s+que|because|due\s+to|caused)\b",
+                RegexOptions.CultureInvariant))
+        {
+            return false;
+        }
         return !string.Equals(rest, reply, StringComparison.Ordinal) && !LooksLikeFailure(rest);
     }
 
@@ -3338,6 +3344,8 @@ internal static class UserMessagePolicy
         // failure is that the target already had the asked state. Twin of the mind's _ALREADY_STATEMENT.
         if (IsAlreadyStateFailure(source)
             && Regex.IsMatch(FoldForPolicy(result), AlreadyStatement,
+                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
+            && !Regex.IsMatch(FoldForPolicy(result), FirstPersonAlready,
                 RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
         {
             return false;
@@ -3346,7 +3354,13 @@ internal static class UserMessagePolicy
         return !LooksLikeFailure(result);
     }
 
-    private const string AlreadyStatement = @"\bya\s+(?:estaba|estaban|esta|estan|era|eran)\b|\balready\b";
+    // Independent review A2: «Ya está, activé tu micrófono» is «done», not «it already was»; twin of
+    // llm._ALREADY_STATEMENT.
+    // NonBacktracking takes no lookaround: «ya está» before a state word is «ya está» and a letter, and BAXY's own
+    // «I already…» is excluded by FirstPersonAlready.
+    private const string AlreadyStatement =
+        @"\bya\s+(?:estaba|estaban|era|eran)\b|\bya\s+estan?\s+[a-z]|\balready\b";
+    private const string FirstPersonAlready = @"\bi(?:'ve|\s+have)?\s+already\b";
 
     /// <summary>
     /// The typed failure is that the target already had the asked state («microphone_already_unmuted»).

@@ -956,7 +956,11 @@ def _explicit_arguments_from_evidence(
             # Owner script t36 «abre steam y ve a la biblioteca»: the decider opens Steam and the second clause is
             # said, not done; the whole text is no application name, its opening clause is.
             clauses = effect_intent._request_clauses(effect_intent._fold(evidence))
-            if len(clauses) > 1:
+            # Independent review M1: «si se cierra steam, abre discord» is a condition, not an order to open now.
+            conditional = re.search(
+                r"\b(?:si|cuando|apenas|en\s+cuanto|if|when|once|as\s+soon\s+as)\b", effect_intent._fold(evidence)
+            )
+            if len(clauses) > 1 and conditional is None:
                 app_id = next(
                     (found for clause in clauses
                      if (found := resolve_application_catalog_app_id(clause, application_names)) is not None),

@@ -2695,7 +2695,8 @@ def limit_voice_defect(text: object, request: object = "") -> str:
         effect_intent.self_close_request(str(request or ""))
     ):
         return "limit_third_person"
-    if _LIMIT_REASON.search(folded):
+    # Independent review B1: «¿por qué no puedes…?» asks for the reason.
+    if _LIMIT_REASON.search(folded) and not dialogue_slot.asks_for_the_reason(str(request or "")):
         return "limit_gives_a_reason"
     return ""
 
@@ -4106,10 +4107,14 @@ def _failure_word_is_the_persons(text: str, user_text: str) -> bool:
     if re.search(r"\bfallos\b", _accent_folded_with_punctuation(user_text or "")) is None:
         return False
     rest = _ECHOED_FAILURES.sub("", str(text))
+    # Independent review B3: «Estos fallos se deben a que Spotify no respondió» states a cause of BAXY's.
+    if _FAILURE_CAUSE.search(_accent_folded_with_punctuation(rest)) is not None:
+        return False
     return rest != str(text) and not _asserts_failure(rest)
 
 
 # Twin of UserMessagePolicy.EchoedFailures.
+_FAILURE_CAUSE = re.compile(r"\b(?:se\s+deben?|debid[oa]s?|porque|ya\s+que|because|due\s+to|caused)\b")
 _ECHOED_FAILURES = re.compile(r"\b(?:los|estos|esos|tantos|tus|sus)\s+fallos\b", re.IGNORECASE)
 
 
@@ -5109,7 +5114,11 @@ def _failure_is_an_unchanged_state(situation: dict) -> bool:
 
 # Saying that it already was so: «ya estaba activo», «ya está en silencio», «it was already on». Twin of
 # UserMessagePolicy.AlreadyStatement.
-_ALREADY_STATEMENT = re.compile(r"\bya\s+(?:estaba|estaban|esta|estan|era|eran)\b|\balready\b")
+# Independent review A2: «Ya está, activé tu micrófono» is «done» said over a failure; «ya está» is the state only
+# before a word («ya está activo»), and «I already did it» is BAXY's act.
+_ALREADY_STATEMENT = re.compile(
+    r"\bya\s+(?:estaba|estaban|era|eran)\b|\bya\s+estan?\s+(?=[a-z])|(?<!\bi )(?<!\bi've )(?<!\bi have )\balready\b"
+)
 
 
 def _situation_error_codes(situation: dict) -> tuple[str, ...]:
@@ -8015,7 +8024,9 @@ _NOT_FOUND_REASON = re.compile(
     r"\b(?:porque|ya\s+que|debido\s+a|puesto\s+que|because)\b(?P<after>[^.;]{0,160})|"
     r"(?P<before>[^.;]{0,160}?)\b(?:por\s+lo\s+que|asi\s+que|therefore)\b"
 )
-_NOT_FOUND_ITSELF = re.compile(r"encontr|hall[eoa]|\bfound\b|\bfind\b|informacion|information|\bdatos\b|\bdata\b")
+_NOT_FOUND_ITSELF = re.compile(
+    r"encontr|hall[eoa]|\bfound\b|\bfind\b|informacion|information|\bdatos\b|\bdata\b|resultado|\bresults?\b"
+)
 # «según Tripadvisor», «according to BBC Mundo»: a source named by its proper name.
 _SEARCH_NAMED_SOURCE = re.compile(
     r"\b(?:[Ss]eg[uú]n|[Aa]ccording\s+to|[Dd]e\s+acuerdo\s+con)\s+(?:(?:el|la|los|las|the)\s+)?[A-ZÁÉÍÓÚÑ][\w.-]*"

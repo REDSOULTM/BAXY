@@ -236,3 +236,36 @@ def test_music_is_asked_only_when_nothing_to_play_was_said(text: str, asks: bool
 
     read = reading.read(text, available_operations=("media.play.query", "media.control"))
     assert (read.clarification is not None) is asks
+
+
+# Independent review 2026-09-27 (REVISION_INDEPENDIENTE_2026-09-27.md).
+def test_a_condition_never_opens_its_app_now() -> None:
+    # M1: the clause fallback of M23 read «abre discord» out of a condition.
+    assert sidecar._explicit_arguments_from_evidence("app.open", "si se cierra steam, abre discord", ("Steam", "Discord")) is None
+
+
+@pytest.mark.parametrize("text", ["pon musica porfa", "pon música, gracias", "pon música en el living"])
+def test_courtesy_and_the_room_are_no_music(text: str) -> None:
+    from baxy_mind.semantic import reading
+
+    assert reading.read(text, available_operations=("media.play.query", "media.control")).clarification is not None
+
+
+@pytest.mark.parametrize(
+    ("draft", "already"),
+    [("Ya está, activé tu micrófono.", False), ("I already turned it on.", False),
+     ("El micrófono ya está activo.", True), ("It was already on.", True)],
+)
+def test_done_is_not_already(draft: str, already: bool) -> None:
+    from baxy_mind import llm
+
+    assert (llm._ALREADY_STATEMENT.search(llm._accent_folded_with_punctuation(draft)) is not None) is already
+
+
+def test_the_true_not_found_and_the_asked_reason_are_no_invention() -> None:
+    from baxy_mind import llm
+
+    failed = {"outcome": "failed", "reason": {"operation": "web.search"}}
+    assert not llm._not_found_invents_a_cause("No lo encontré porque la búsqueda no devolvió resultados.", failed)
+    assert llm.limit_voice_defect("No mando cartas a Eris porque no hay correo allá.", "¿por qué no puedes mandar una carta a Eris?") == ""
+    assert not llm._failure_word_is_the_persons("Estos fallos se deben a que Spotify no respondió.", "odio estos fallos")
