@@ -38,6 +38,7 @@ from . import protocol
 from . import effect_intent
 from .semantic import decider as semantic_decider
 from .semantic import dialogue as dialogue_slot
+from .semantic import knowledge as semantic_knowledge
 from .semantic.apps import deictic_close_request
 from .semantic import levels as semantic_levels
 from .semantic import reading as semantic_reading
@@ -3096,6 +3097,26 @@ def _remember_decided_arguments(
         _DECIDED_ARGUMENTS.pop(next(iter(_DECIDED_ARGUMENTS)))
 
 
+def _prior_user_texts(history: object, current: str) -> tuple[str, ...]:
+    """The person's earlier messages, oldest first, without the current one when the history already ends in it."""
+
+    items = [item for item in history if isinstance(item, dict)] if isinstance(history, list) else []
+    if items and items[-1].get("role") == "user" and items[-1].get("content") == current:
+        items = items[:-1]
+    return tuple(str(item.get("content") or "") for item in items if item.get("role") == "user" and item.get("content"))
+
+
+def _reference_lookup(objective: str, history: object) -> "semantic_knowledge.ReferenceLookup | None":
+    """M53 (step 6 of goal v3, D35): a named dish's recipe or a named work's plot is looked up, never recited.
+
+    ``semantic.knowledge`` reads the kind of fact from the person's words; the decider (its LoRA) is unchanged: its
+    «talk» for these kinds becomes ``web.search`` with the query the reader writes, the same one the arguments step
+    reads back from the same request.
+    """
+
+    return semantic_knowledge.reference_lookup(objective, _prior_user_texts(history, objective))
+
+
 def _decided_value(value: Any, contract: dict[str, Any]) -> Any:
     """The decider's scalar in the field's JSON type, or None when it cannot be one."""
 
@@ -3213,6 +3234,14 @@ def _ground_explicit_arguments(
 ) -> dict[str, object] | None:
     """Return a complete schema-grounded literal or abstain without inference."""
 
+    if operation == "web.search":
+        reference = _reference_lookup(evidence, history)
+        if reference is not None:
+            # M53: the reader supplies the class word the provider reads («receta», «resumen»), as the news reader
+            # supplies «noticias» below; the referent is the person's own words.
+            looked_up = {"query": reference.query}
+            if validate_json_schema_instance(looked_up, schema):
+                return looked_up
     explicit = _explicit_arguments_from_evidence(
         operation,
         evidence,
@@ -4161,6 +4190,17 @@ def _context_decided_result(
         # cien-105/106 «post a letter to Eris» → «What should the letter say?», vetoed by the App as a question about
         # what cannot be done: the boundary of an unreachable place holds here too (apply_out_of_world_boundary).
         decided = semantic_decider.ContextDecision(request=text, decision="limit", operations=(), question="")
+    reference = None
+    if decided.decision == "talk" and "web.search" in available_operations:
+        # M53 (D35): what the decider answers by talking but is a named dish's recipe or a named work's plot is
+        # looked up first; the arguments step reads the same query from the same request.
+        for said in dict.fromkeys((decided.request or text, text)):
+            reference = _reference_lookup(said, history)
+            if reference is not None:
+                decided = semantic_decider.ContextDecision(
+                    request=said, decision="action", operations=("web.search",), question="",
+                )
+                break
     objective = decided.request or text
     result: dict[str, Any] = {
         "type": "turn.result",
@@ -4246,12 +4286,14 @@ def _context_decided_result(
             "decision_path": "context_decider",
             "candidate_operations": list(available_operations),
             "raw_decision": {
-                "mode": decided.decision,
+                "mode": "talk" if reference is not None else decided.decision,
                 "request": decided.request,
-                "effect_operations": list(decided.operations),
+                "effect_operations": [] if reference is not None else list(decided.operations),
             },
+            "stages": [] if reference is None else [
+                {"name": "reference_looked_up", "kind": reference.kind, "query": reference.query},
+            ],
             "decider_timings": getattr(llm, "_last_decider_timings", None),
-            "stages": [],
             "final": {
                 "kind": result["kind"],
                 "intent_operations": result["intentOperations"],
@@ -5428,6 +5470,23 @@ def _decide_turn_result(
                 turn_audit["reread_objective"] = reread.get("objective")
                 _append_turn_audit(turn_audit)
                 return reread
+
+    if (
+        decision["mode"] == "conversation"
+        and decision.get("conversation_kind") in {"knowledge", "followup"}
+        and non_target_language is None
+        and "web.search" in available_operations
+        and planner_catalog.get("web.search") is not None
+        and _reference_lookup(objective, history) is not None
+    ):
+        # M53 (D35): a named dish's recipe or a named work's plot is looked up before anything is said about it.
+        shortlist = _shortlist_with_required_effects(shortlist, ("web.search",), planner_catalog)
+        decision = validate_turn_decision(
+            _recovered_action_decision("web.search", decision.get("response_language")),
+            {tool.name for tool in shortlist},
+        )
+        intent_operations = ["web.search"]
+        turn_audit["stages"].append(_turn_audit_stage("reference_looked_up", decision))
 
     reply_text = ""
     # El idioma con el que se redacta la respuesta viaja con ella: el shell no
