@@ -147,8 +147,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 comprensión natural — léxico de música separado por barras (censo de prosa visible)
 # C03 comprensión natural — resultados comparados en voz alta muestran la búsqueda
 # C03 comprensión natural — M30: resultados comparados; charla sobre un lugar inalcanzable es su límite
+# C03 comprensión natural — pista de reintento sin estados en charla
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "5d31880c4000d02f80f1885140a661422dac6d6282603e9faadf9dbf542002b3"
+    "1b9782602315ff725944c7b577e2c207d387320b42d3558e96287e9800bbb5d3"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

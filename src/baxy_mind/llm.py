@@ -19863,7 +19863,15 @@ class LlmRuntime:
                         if _looks_like_continue_constraint(user_text)
                         else (
                             "State only what the observation supports."
-                            if inventory_answer else "One short sentence of the facts."
+                            if inventory_answer
+                            # Guion t54 (28-09) «si» after the volume was lowered: three drafts restated «el sonido no
+                            # está silenciado», nothing was read this turn, and «the facts» asked for them again.
+                            else (
+                                "Nothing was read in this turn: acknowledge in one short sentence, without stating "
+                                "any state of the PC (volume, sound, windows)."
+                                if str(situation.get("kind") or "") == "conversation"
+                                else "One short sentence of the facts."
+                            )
                         )
                     )
                 ),
