@@ -3744,6 +3744,10 @@ def _clarification_intent_of(
             or re.fullmatch(r"(?:pon|ponme|poneme|toca|tocame)[\s.!?]*", clause) is not None
         )
         and _desired_music_query(clause) is None
+        # Fase 3.5b M27 (reserva: «necesito escuchar algunas canciones tristes hoy», «pon la cancion la macarena»,
+        # «play some jazz music» asked «¿qué música?»): what is left once the order and the generic words go is what
+        # to play; only a bare order asks.
+        and not _music_clause_names_content(clause)
         # Tanda 4c: a free choice within the person's own collection, or what they played last, is complete.
         and not own_recent_listening_request(clause)
         and not own_collection_free_choice(clause)
@@ -5438,6 +5442,39 @@ def _spoken_radio_station_request(text: str) -> bool:
         r"(?:\bf\s*\.?\s*m\s*\.?\b|\ba\s*\.?\s*m\s*\.?\b|"
         r"\b(?:radio|station|emisora)\b)",
     )
+
+
+_MUSIC_ORDER_HEAD = re.compile(
+    r"^(?:(?:por\s+favor|alexa|oye|baxy)\s+)*(?:pon|pone|poneme|ponme|pondras|reproduce|reproducir|reproduci|"
+    r"reproducime|play|toca|tocame|toque|quiero\s+escuchar|necesito\s+escuchar|me\s+gustaria\s+escuchar|escuchar|"
+    r"dame|put\s+on|start)\b"
+)
+# The words that name no music: articles, possessives, «música/canción/algo», courtesy, time, randomness, the player.
+_MUSIC_GENERIC_WORDS = frozenset(
+    "una un unas unos algo alguna algunas algun algunos la el las los lo de del al a mi mis tu tus su sus some any the "
+    "my me musica music musika cancion canciones song songs tema temas track tracks sonido sonidos sound sounds por "
+    "favor please ahora now hoy today ya aqui here cualquier cualquiera aleatoria aleatorio aleatoriamente random "
+    "shuffle modo buena buenas bueno buenos good nice en on spotify youtube que y and o or otra otras otro otros other "
+    "another more mas nuevo nueva nuevos nuevas new podcast podcasts audiolibro audiolibros audiobook audiobooks episodio "
+    "episode".split()
+)
+# The person's own collection keeps the tanda-4c reading (own_collection_free_choice); it is not content said here.
+_MUSIC_OWN_COLLECTION = re.compile(
+    r"\b(?:favorit\w*|playlists?|lista\s+de\s+reproduccion|lista|biblioteca|library|mis\s+canciones|comprad\w*|"
+    r"liked|saved|guardad\w*|my\s+(?:music|songs)|que\s+me\s+gust\w*)\b"
+)
+# Tanda 4 «pon algo para dormir», «pon algo nuevo» ask: a purpose and «nuevo» name no music; a character does.
+_MUSIC_PURPOSE = re.compile(r"\b(?:para|for|to)\s+\w+.*$")
+
+
+def _music_clause_names_content(clause: str) -> bool:
+    """«pon música clásica», «canciones tristes», «la canción la macarena» say what to play; «pon música» does not."""
+
+    body = _MUSIC_ORDER_HEAD.sub(" ", _fold(clause), count=1)
+    if _MUSIC_OWN_COLLECTION.search(body):
+        return False
+    body = _MUSIC_PURPOSE.sub(" ", body)
+    return any(word not in _MUSIC_GENERIC_WORDS for word in re.findall(r"[a-z0-9ñ]+", body))
 
 
 def _desired_music_query(text: str) -> str | None:

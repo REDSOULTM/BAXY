@@ -141,8 +141,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 comprensión natural — M20: full3 + redacción (no encontrado sin causa, límite sin razón, fallos de la persona, nivel en %, Eris)
 # C03 comprensión natural — M23: fallo no verificado dicho, hecho del navegador, app de su propia cláusula
 # C03 comprensión natural — M24: acuse de un gusto en segunda persona
+# C03 comprensión natural — M27: la música se pregunta sólo si no se dijo qué poner
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "65f0860052c7f9e50f23f240a1b6a83918930bd08bdd479f954cca4a79eee560"
+    "50ef15ee69e49dfcaae57891dd521fb0d95c7ab5ba1c846362e4820157329246"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

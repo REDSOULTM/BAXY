@@ -216,3 +216,23 @@ def test_the_app_to_open_is_read_from_its_own_clause(objective: str) -> None:
     # Owner script t36: full3 opened Steam for «abre steam y ve a la biblioteca» and the arguments step, reading the
     # whole compound as the application's name, asked «¿Cuál es el nombre exacto de la aplicación…?».
     assert sidecar._explicit_arguments_from_evidence("app.open", objective, ("Steam", "Spotify")) == {"appId": "Steam"}
+
+
+@pytest.mark.parametrize(
+    ("text", "asks"),
+    [
+        ("pon música", True),
+        ("play some music", True),
+        ("pon mis favoritos", True),
+        # M27, the reserve's shapes: the genre, the mood or the title is what to play.
+        ("pon música clásica", False),
+        ("necesito escuchar algunas canciones tristes hoy", False),
+        ("play some jazz music", False),
+        ("pon algo de rock", False),
+    ],
+)
+def test_music_is_asked_only_when_nothing_to_play_was_said(text: str, asks: bool) -> None:
+    from baxy_mind.semantic import reading
+
+    read = reading.read(text, available_operations=("media.play.query", "media.control"))
+    assert (read.clarification is not None) is asks
