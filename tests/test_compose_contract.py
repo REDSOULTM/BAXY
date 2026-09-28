@@ -1090,3 +1090,23 @@ def test_a_pending_detail_is_asked_without_naming_an_internal_cause() -> None:
 
     fact = llm._CAUSE_FACT["ambiguous_request"]
     assert "question" in fact and "unclear request" not in fact
+
+
+def test_an_internal_identifier_is_asked_as_which_one_by_its_name() -> None:
+    # M39 (official-window rehearsal 2026-09-28): «max it» after opening Steam asked «¿Cuál es el ID de la ventana…?».
+    from baxy_mind import llm
+
+    runtime = object.__new__(llm.LlmRuntime)
+    sent = []
+
+    def post(payload, _label):
+        sent.append(payload)
+        return {"requested_fields": ["windowId"], "question": "¿Qué ventana quieres maximizar?"}
+
+    runtime._post_schema_object = post
+    tool = {"function": {"canonical_name": "window.maximize", "description": "Maximiza una ventana.",
+                         "parameters": {"type": "object", "properties": {"windowId": {"type": "string"}}}}}
+    runtime.formulate_missing_argument_question("Maximize the Steam window.", "Maximizar", tool, ("windowId",))
+    context = json.loads(sent[0]["messages"][1]["content"])
+    assert "never an ID" in context["missing_arguments"][0]["ask_as"]
+    assert "nunca pidas un identificador" in sent[0]["messages"][0]["content"]

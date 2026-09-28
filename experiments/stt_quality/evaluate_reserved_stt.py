@@ -156,8 +156,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # M32, M33, M35, M36 (M34 retirado)
 # Ley 2 G4+G5 integradas
 # M37+M38
+# M39
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "eb8a28ef9288acc871d78a74af525292adec54a89539aa4bc760affbcc57b5db"
+    "987d2785fae231c02c1fcdeef61a3c54dfb03cb0597a9d4cc8a2ffc7cd6d6268"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
