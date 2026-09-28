@@ -2596,6 +2596,39 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Real answer of 2026-09-28: «La Puntilla, El Puerto» geocodes to a bar in Ceuta
+    // named «El Puerto». A place whose address lacks «Puntilla» is not the place; the
+    // first part is asked alone and the candidate in El Puerto de Santa María wins.
+    [Test]
+    public async Task APlaceIsTheCandidateWhoseAddressCarriesItsName()
+    {
+        var handler = new SearchSourcesHttpHandler();
+        handler.Routes.Add(("q=La Puntilla, El Puerto", new(HttpStatusCode.OK,
+            """[{"boundingbox":["35.89135","35.89145","-5.31856","-5.31846"],"display_name":"Bar El Puerto, Avenida Juan de Borbón, Ceuta, España"}]""",
+            "application/json")));
+        handler.Routes.Add(("q=La Puntilla", new(HttpStatusCode.OK,
+            """[{"boundingbox":["-32.99","-32.98","-68.87","-68.86"],"display_name":"La Puntilla, Luján de Cuyo, Mendoza, Argentina"},{"boundingbox":["36.585","36.587","-6.245","-6.243"],"display_name":"La Puntilla, Valdelagrana, El Puerto de Santa María, Cádiz, España"}]""",
+            "application/json")));
+        handler.Routes.Add(("q=parking", new(HttpStatusCode.OK,
+            """[{"osm_type":"way","osm_id":7,"name":"Parking La Puntilla","type":"parking","display_name":"Parking La Puntilla, El Puerto de Santa María, Cádiz, España"}]""",
+            "application/json")));
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"Encuentrame aparcamiento cerca de La Puntilla, El Puerto."}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("results")[0].GetProperty("title").GetString(), Is.EqualTo("Parking La Puntilla"));
+            Assert.That(handler.Asked, Has.Count.EqualTo(3));
+            Assert.That(Uri.UnescapeDataString(handler.Asked[2].Uri.Query), Does.Contain("viewbox=-6.254,36.596,-6.234,36.576"));
+        });
+    }
+
     private static HttpAnswer WikipediaAnswer(
         string language,
         params (string Title, string Extract, bool Disambiguation)[] pages)

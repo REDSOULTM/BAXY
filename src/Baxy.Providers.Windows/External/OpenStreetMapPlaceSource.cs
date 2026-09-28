@@ -139,18 +139,33 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
         string language,
         CancellationToken cancellationToken)
     {
-        string? area = await ReadAsync(
-            Endpoint + "?format=jsonv2&limit=1&q=" + Uri.EscapeDataString(ask.Place), cancellationToken)
-            .ConfigureAwait(false);
+        // «La Puntilla, El Puerto» found only «Bar El Puerto» in Ceuta; «La Puntilla» alone
+        // finds the beach of El Puerto de Santa María. A candidate counts only if its
+        // address carries every word of the place's first part; the one that carries more
+        // of the rest wins; with none, the first part alone is asked once.
+        string[] segments = ask.Place.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        string[] required = PlaceWords(segments.Length > 0 ? segments[0] : ask.Place);
+        string[] wanted = PlaceWords(ask.Place);
         try
         {
-            if (area is null) return null;
-            if (AreaOf(area) is not { } box) return [];
+            Area? box = null;
+            foreach (string asked in segments.Length > 1 ? [ask.Place, segments[0]] : new[] { ask.Place })
+            {
+                string? area = await ReadAsync(
+                    Endpoint + "?format=jsonv2&limit=5&q=" + Uri.EscapeDataString(asked), cancellationToken)
+                    .ConfigureAwait(false);
+                if (area is null) return null;
+                box = AreaOf(area, required, wanted);
+                if (box is not null) break;
+            }
+            if (box is null) return [];
             string? found = await ReadAsync(
                 Endpoint + "?format=jsonv2&bounded=1&limit=10"
-                + "&accept-language=" + language + "&viewbox=" + box.Viewbox
+                + "&accept-language=" + language + "&viewbox=" + box.Value.Viewbox
                 + "&q=" + Uri.EscapeDataString(ask.Kind), cancellationToken).ConfigureAwait(false);
-            return found is null ? null : Places(found, box.Latitude, box.Longitude).Take(Math.Clamp(limit, 1, 10)).ToList();
+            return found is null
+                ? null
+                : Places(found, box.Value.Latitude, box.Value.Longitude).Take(Math.Clamp(limit, 1, 10)).ToList();
         }
         catch (JsonException)
         {
@@ -160,39 +175,49 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
 
     internal readonly record struct Area(string Viewbox, double Latitude, double Longitude);
 
-    // El recuadro del lugar, con al menos ~1 km por lado y como mucho ~30 km, y su centro.
-    internal static Area? AreaOf(string body)
+    // Las palabras que nombran un lugar: plegadas, de tres letras o más, sin artículos.
+    private static string[] PlaceWords(string place) =>
+        WikipediaSearchSource.FoldedWords(place)
+            .Where(static word => word.Length >= 3 && word is not ("del" or "los" or "las" or "the"))
+            .ToArray();
+
+    // El recuadro del lugar elegido, con al menos ~1 km por lado y como mucho ~30 km, y
+    // su centro. Null cuando ningún candidato lleva las palabras del lugar.
+    internal static Area? AreaOf(string body, string[] required, string[] wanted)
     {
         using JsonDocument document = JsonDocument.Parse(body);
         if (document.RootElement.ValueKind != JsonValueKind.Array) throw new JsonException("Not a Nominatim answer.");
+        (int Score, double South, double North, double West, double East)? best = null;
         foreach (JsonElement place in document.RootElement.EnumerateArray())
         {
-            if (!place.TryGetProperty("boundingbox", out JsonElement box)
+            var named = new HashSet<string>(WikipediaSearchSource.FoldedWords(Text(place, "display_name")), StringComparer.Ordinal);
+            if (!required.All(named.Contains)
+                || !place.TryGetProperty("boundingbox", out JsonElement box)
                 || box.ValueKind != JsonValueKind.Array || box.GetArrayLength() != 4)
             {
                 continue;
             }
             double[] edges = new double[4];
-            for (int index = 0; index < 4; index++)
+            bool read = true;
+            for (int index = 0; index < 4 && read; index++)
             {
-                if (box[index].ValueKind != JsonValueKind.String
-                    || !double.TryParse(box[index].GetString(), NumberStyles.Float, CultureInfo.InvariantCulture, out edges[index]))
-                {
-                    return null;
-                }
+                read = box[index].ValueKind == JsonValueKind.String
+                    && double.TryParse(box[index].GetString(), NumberStyles.Float, CultureInfo.InvariantCulture, out edges[index]);
             }
-            (double south, double north, double west, double east) = (edges[0], edges[1], edges[2], edges[3]);
-            double latitude = (south + north) / 2, longitude = (west + east) / 2;
-            double halfHeight = Math.Clamp((north - south) / 2, 0.01, 0.15);
-            double halfWidth = Math.Clamp((east - west) / 2, 0.01, 0.15);
-            static string Coordinate(double value) => value.ToString("0.#####", CultureInfo.InvariantCulture);
-            return new Area(
-                Coordinate(longitude - halfWidth) + "," + Coordinate(latitude + halfHeight) + ","
-                + Coordinate(longitude + halfWidth) + "," + Coordinate(latitude - halfHeight),
-                latitude,
-                longitude);
+            int score = wanted.Count(named.Contains);
+            if (read && (best is null || score > best.Value.Score))
+                best = (score, edges[0], edges[1], edges[2], edges[3]);
         }
-        return null;
+        if (best is not { } chosen) return null;
+        double latitude = (chosen.South + chosen.North) / 2, longitude = (chosen.West + chosen.East) / 2;
+        double halfHeight = Math.Clamp((chosen.North - chosen.South) / 2, 0.01, 0.15);
+        double halfWidth = Math.Clamp((chosen.East - chosen.West) / 2, 0.01, 0.15);
+        static string Coordinate(double value) => value.ToString("0.#####", CultureInfo.InvariantCulture);
+        return new Area(
+            Coordinate(longitude - halfWidth) + "," + Coordinate(latitude + halfHeight) + ","
+            + Coordinate(longitude + halfWidth) + "," + Coordinate(latitude - halfHeight),
+            latitude,
+            longitude);
     }
 
     // Cada sitio: su nombre (o su clase), su dirección y su página en OpenStreetMap,
