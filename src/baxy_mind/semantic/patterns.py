@@ -4549,6 +4549,76 @@ def resolve_application_snap_name(
     return resolved[0] if resolved is not None else None
 
 
+# M55 (v3b F-w06-t1, F-w06-t2, F-w08-t1): one placing head over several windows, each with its own side —
+# «pon el word a la izquierda y el chrome a la derecha», «Coloca la ventana de Word en la mitad izquierda y la de
+# Chrome en la mitad derecha», «Snap the Chrome window to the left half and the Slack window to the right half».
+_SNAP_PAIR_OPENING = (
+    r"^[¿?¡!\s]*(?:(?:necesito|quiero|queria|quisiera|puedes|podes|podrias|podria|"
+    r"me\s+(?:puedes|podes|podrias|podria))\s+(?:que\s+)?|(?:can|could|would|will)\s+you\s+(?:please\s+)?|"
+    r"please\s+)?"
+)
+_SNAP_PAIR = re.compile(
+    rf"(?P<target>.+?)\s+{_SNAP_SIDE}"
+    rf"(?:(?P<more>\s*,?\s+(?:y|e|and)\s+(?:{_SNAP_HEAD}\s+(?:(?:me|a)\s+)?)?|\s*,\s*)"
+    r"|(?P<end>(?:\s*,?\s+(?:so|so\s+that|para|para\s+que|porque|because)\b.*)?[\s.!?]*$))",
+    re.IGNORECASE,
+)
+_SNAP_PAIR_ELLIPSIS = re.compile(r"^(?:la|el|the)\s+(?:de|del|of)\s+", re.IGNORECASE)
+
+
+def application_snap_pairs(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> tuple[tuple[str, str, str], ...] | None:
+    """Each window a placing request docks, in order, as (catalog display name, side, folded clause).
+
+    The clause is the head with that window's own target and side («coloca la de chrome en la mitad derecha»),
+    so one plan step can read its window alone. This reads the targets of an effect already decided upstream (the
+    decider or a reader); it authorizes nothing: every target must be one exact catalog identity, all distinct, or
+    the reading abstains.
+    """
+
+    folded = _strip_request_envelope(_fold(text))
+    if (
+        len(folded) > 2048
+        or _has_unsupported_deferred_effect(folded)
+        or _other_device_effect_scope(folded)
+    ):
+        return None
+    opening = _match(folded, rf"{_SNAP_PAIR_OPENING}(?P<head>{_SNAP_HEAD})\s+(?:(?:me|a)\s+)?")
+    if opening is None:
+        return None
+    catalog = build_application_catalog_index(application_names)
+    head = opening.group("head")
+    pairs: list[tuple[str, str, str]] = []
+    position = opening.end()
+    while True:
+        found = _SNAP_PAIR.match(folded, position)
+        if found is None:
+            return None
+        raw_target = _SNAP_PAIR_ELLIPSIS.sub("", found.group("target").strip())
+        if not raw_target or _has(
+            raw_target,
+            r"\b(?:esta|this|esa|that|todo|todas|everything|all|activa|active|actual|current)\b",
+        ):
+            return None
+        keys = {
+            key for form, _ in _close_target_forms(raw_target)
+            if (key := _authenticated_close_key(form, catalog)) is not None
+        }
+        names = {name for name, key in catalog.entries if key in keys}
+        if len(keys) != 1 or len(names) != 1:
+            return None
+        side = "left" if _has(found.group("side"), r"\b(?:izquierda|left)\b") else "right"
+        pairs.append((next(iter(names)), side, f"{head} {found.group('target').strip()} {found.group('side')}"))
+        if found.group("end") is not None:
+            break
+        position = found.end()
+    if len({name for name, _, _ in pairs}) != len(pairs):
+        return None
+    return tuple(pairs)
+
+
 def resolve_application_close_name(
     text: str,
     application_names: Iterable[str] | ApplicationCatalogIndex,
