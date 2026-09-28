@@ -362,3 +362,24 @@ auditorías de turno, traza y redacción. Puntuación con `comprension_eval scor
 `comprension_window records`; revisión turno a turno (inventado, ⚠, bien) por un subagente que no escribió ni arregló
 nada, con la rúbrica de la meta. SHA-256 del FINAL verificado antes de correr: `e05cf27e…d993` (202 turnos).
 Referencia en la app real: DEV-A 80,8 % (sueltos 83,2 %, seguimientos 73,5 %, 3,5 % de turnos con fallo de redacción).
+
+## D32. Búsqueda: automática, sin claves, no comercial por ahora (dueño, 2026-09-28 ~15:00)
+Respuestas del dueño (paso 2 del goal v3): «ni yo ni los usuarios deberíamos poner nada en la app, sólo debería
+funcionar» → ninguna API que pida cuenta o clave del dueño o de la persona; el producto no es comercial por ahora
+(los términos «no comercial» de fuentes abiertas valen hoy y se revisan si cambia); si no hay fuente, BAXY lo dice y
+ofrece abrir el navegador; las peticiones a Wikimedia se identifican con la URL del repositorio de GitHub
+(`https://github.com/REDSOULTM/baxy-assistant`). Vía elegida (R6): APIs abiertas por dominio (Wikipedia REST es→en,
+Wikidata, Open-Meteo que ya se usa, Frankfurter para divisas, RSS/GDELT para noticias) y, para lo general, la
+búsqueda hecha por el navegador del propio usuario a ritmo humano en vez de peticiones HTTP sueltas; sólo sale la
+consulta. La medida de búsqueda va aparte hasta que la fuente funcione.
+
+## D33. Argumentos en la salida del decisor (paso 3, prerregistro 2026-09-28 ~15:10)
+Experimento aislado en DEV-A con `full3` sin reentrenar: el esquema lleva `arguments` y cada operación del catálogo
+su firma de campos (sin identificadores). Decisión 234 → 237/260, estricta 185 → 188; en las 57 acciones con dato
+de oro, el dato está en los argumentos del decisor en 55 (fallan `task.delete` con la etiqueta traducida y
+`file.open` sin el nombre). En el FINAL gastado (ahora desarrollo) 12 fallos son acciones bien decididas que el paso
+de argumentos repreguntó. Mecanismo M42: el decisor devuelve los argumentos; el paso de argumentos los usa como
+datos ya dados (anclados en lo dicho: un valor que no aparece en el mensaje, la conversación o la reescritura no
+entra; las horas pasan por `temporal`, nunca el ISO del modelo) y sólo pregunta lo que falte.
+Regla: se adopta si en DEV-A (app real) las repreguntas de datos dados bajan y no hay rotos atribuidos; se confirma
+en DEV-C (mente) sin bajar de 246/301; latencia p50 del decisor + ≤ 0,4 s.
