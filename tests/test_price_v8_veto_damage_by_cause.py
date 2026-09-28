@@ -174,12 +174,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # M41
 # M42/M42b/M43: argumentos del decisor
 # integración búsqueda D32, M44–M48 y A7
+# v3b: M49–M52, M50, M51, último recurso de media
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "b48447a747df09d647bf6c617573ba5ed82331ce7db44bc157f3f3f93b643fcb"
+        "61299010e76fd4b113640a00344c3d032b4bbc3a99a05d963d5a88a878de0fda"
     ),
     "src/baxy_mind/llm.py": (
-        "cee4d111cf74007b104fb3939c1674c07fb129113d9c2c072fe4cd23e51ac71c"
+        "4c2f31d063aaa10daa213a55d7928a83ca5129545303b1e18b97204969eafc26"
     ),
 }
 

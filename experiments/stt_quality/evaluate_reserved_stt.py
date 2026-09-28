@@ -161,8 +161,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # M41
 # M42/M42b/M43: argumentos del decisor
 # integración búsqueda D32, M44–M48 y A7
+# v3b: M49–M52, M50, M51, último recurso de media
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "2ec808f216a5109c695e121508cf615b3a49ecf5ad3d8dcf0cb86a5d41e74adb"
+    "39f09309f4faca5d55c0fc71a1ae0809b471162e6d540624ba327f4819d0c66d"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
