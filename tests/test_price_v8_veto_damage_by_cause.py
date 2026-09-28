@@ -172,12 +172,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # M39
 # M40
 # M41
+# M42/M42b/M43: argumentos del decisor
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "f13c7ee09da2d9dc2c1285ba0c552d06493e0b5a61d832f88b15556982c59b3b"
+        "98a68b948519c7e82840dd1f78cf2db6c11796c406654c2ffc2b5d065b8b2acf"
     ),
     "src/baxy_mind/llm.py": (
-        "0205d92c8b190ff990a7bfe41c34c99fb976725450f56462dfd3c6769c1e3d57"
+        "7c3ebb31b64a2aee18b6a83bf59312640eb32924c7f83e800cfe9c47bcfe34cf"
     ),
 }
 
