@@ -19,6 +19,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     private readonly WikipediaSearchSource _wikipedia;
     private readonly OpenStreetMapPlaceSource _places;
     private readonly FrankfurterRateSource _rates;
+    private readonly WikimediaReferenceSource _references;
     private readonly string? _searchDiagnosticPath;
 
     // El perfil del navegador colgaba del directorio del turno, de modo que cada
@@ -66,6 +67,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _wikipedia = new WikipediaSearchSource(_http);
         _places = new OpenStreetMapPlaceSource(_http);
         _rates = new FrankfurterRateSource(_http);
+        _references = new WikimediaReferenceSource(_http);
     }
 
     internal WebBrowserAdapter(
@@ -80,6 +82,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _wikipedia = new WikipediaSearchSource(_http);
         _places = new OpenStreetMapPlaceSource(_http);
         _rates = new FrankfurterRateSource(_http);
+        _references = new WikimediaReferenceSource(_http);
     }
 
     public bool CanHandle(string operation) => operation is
@@ -539,6 +542,10 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     //      (OpenStreetMapPlaceSource);
     //   3. what changes by the day (news, prices, schedules, «hoy») → the search feed of
     //      Google News (the same feed GoogleNewsHeadlinesAdapter reads);
+    //   3b. M53 (D35): a named dish's recipe or the plot of a named work, asked by the mind
+    //      with its class word («receta …», «resumen …») → Wikibooks' recipes or the plot
+    //      section of the work's Wikipedia article (WikimediaReferenceSource); the receipt
+    //      says «reference» so the reply keeps the recipe's form;
     //   4. what an encyclopedia answers → Wikipedia's open API (WikipediaSearchSource),
     //      Spanish or English first by the language of the query;
     //   5. DuckDuckGo lite, the last attempt for everything. Its terms and policy say
@@ -617,6 +624,15 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 .SearchAsync(placeAsk, limit, languages[0], cancellationToken).ConfigureAwait(false);
             if (places is { Count: > 0 })
                 return SearchReceipt(operation, query, near, places, OpenStreetMapPlaceSource.Authority);
+        }
+
+        if (near is null && WikimediaReferenceSource.Parse(asked) is { } reference)
+        {
+            WikimediaReferenceSource.ReferenceReading? read = await _references
+                .ReadAsync(reference, WikimediaReferenceSource.CueLanguages(asked, languages), cancellationToken)
+                .ConfigureAwait(false);
+            if (read is { } found)
+                return ReferenceReceipt(operation, query, reference.Kind, found);
         }
 
         bool encyclopedic = WikipediaSearchSource.IsEncyclopedic(query);
@@ -763,6 +779,36 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             }
             writer.WriteEndArray();
             writer.WriteString("authority", authority);
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    // M53: the same receipt with the one page read and what it is («reference»: recipe or
+    // plot) and, for a recipe, the servings its page states.
+    private static ExternalCapabilityReceipt ReferenceReceipt(
+        string operation,
+        string query,
+        WikimediaReferenceSource.ReferenceKind kind,
+        WikimediaReferenceSource.ReferenceReading reading)
+    {
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("query", query);
+            writer.WriteNumber("count", 1);
+            writer.WriteStartArray("results");
+            writer.WriteStartObject();
+            writer.WriteString("title", reading.Title);
+            writer.WriteString("url", reading.Url);
+            writer.WriteString("snippet", reading.Evidence);
+            writer.WriteEndObject();
+            writer.WriteEndArray();
+            writer.WriteString("reference", WikimediaReferenceSource.KindName(kind));
+            if (reading.Servings is int servings)
+                writer.WriteNumber("servings", servings);
+            writer.WriteString("authority", reading.Authority);
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
