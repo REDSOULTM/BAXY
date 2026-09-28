@@ -14,4 +14,7 @@
     <ProjectReference Include="..\..\src\Baxy.Providers.Windows\Baxy.Providers.Windows.csproj" />
     <ProjectReference Include="..\..\src\Baxy.Security.Windows\Baxy.Security.Windows.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Fixtures\Wikimedia\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>
