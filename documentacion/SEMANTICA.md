@@ -108,7 +108,7 @@ con antecedente es el objeto de ese antecedente, nunca «lo que esté delante».
 | `arguments.py` | el ligador de argumentos: los valores literales de cada operación leídos de las palabras de la persona (`_explicit_arguments_from_evidence` y sus lectores por familia, hora canónica, correferencia ordinal de un paso del plan) | salió de `__main__` (2026-09-25); `__main__._ground_explicit_arguments` lo contrasta con el esquema del catálogo |
 | `lexicon.py` | las palabras de cada familia, dichas una vez: micrófono (sustantivos, verbos de silenciar / activar), volumen, brillo, ajustes del PC, restaurar el sonido | el lector del patrón, la guarda de dominio, las pistas de estado del planner y el veto importan lo mismo; un sinónimo se añade una vez («micro», «prender», «devolver el sonido») |
 | `grammar.py` | la gramática compartida del pedido: sobre (saludos, cortesía, «¿podés…?», «volvé a…», «ahora/luego…» + verbo), cabeza, cláusulas, negación | `_head_is` reconoce **formas**, no entradas: la cabeza tal cual, sin clíticos («cerralo» → «cerra»), y el voseo como infinitivo («cerra» → «cerrar»). Una lista de verbos ya no necesita «cerralo», «abrilo», «devolvele» |
-| `dialogue.py` | el hueco de diálogo (arriba), el antecedente del pedido y la aclaración pendiente del historial | un rechazo («no, dejalo», «mejor no», «never mind») nunca completa el pedido pendiente; «no, en YouTube» lleva destino y sí |
+| `dialogue.py` | el hueco de diálogo (arriba), el antecedente del pedido, la aclaración pendiente del historial, si la reescritura del decisor trae palabras que nadie dijo (`restatement_was_said`, M19) y si la persona pregunta el porqué (`asks_for_the_reason`) | un rechazo («no, dejalo», «mejor no», «never mind») nunca completa el pedido pendiente; «no, en YouTube» lleva destino y sí; «¿por qué no puedes…?» deja que un límite diga su razón |
 | `intent.py`, `catalog.py`, `temporal.py` | el tipo de lectura (`EffectIntent`), los índices de apps y juegos instalados, las palabras de tiempo | compartidos por varios dominios: ningún dominio importa de otro para esto |
 | dominios | `audio`, `display`, `windows`, `media`, `web`, `files`, `games`, `network`, `system`, `notes`, `messaging`, `ui`, `apps` | los lectores acíclicos que estaban en `effect_intent` (19 140 → 13 133 líneas). Traslado puro: las 4 946 lecturas del patrón del corpus son idénticas antes y después (`pattern_dump`) |
 | `levels.py` | los niveles de salida (volumen del sistema, brillo) dichos sin objeto, mezclando idiomas, secos («Brillo 20%») o como respuesta a «¿cuánto?» | no decide efectos: reescribe el pedido en la frase canónica que ya leen los lectores de volumen y brillo (`patterns.output_level_request`); una cantidad suelta sólo completa el pedido relativo inmediatamente anterior, «a 40» es el nivel final y «20» lo que se mueve; sin cantidad pregunta cuánto (H0027) |
@@ -181,7 +181,11 @@ Formas nuevas (Fase 3.5, cada una con pruebas de frases que no son las que la or
 - **Medios y pantalla**: pausar o reanudar «el video / la peli / la serie» controla la misma sesión que la música;
   «qué dice el mensaje en la pantalla» se lee de la pantalla como «leé el mensaje de la pantalla»; oscurecer o
   aclarar la pantalla es su brillo (`display.screen_light_as_brightness`, un solo punto de normalización; sin cantidad
-  pregunta cuánto); «escuchar X» con un nombre o género a secas es «pon música de X».
+  pregunta cuánto); «escuchar X» con un nombre o género a secas es «pon música de X». Una orden de música pregunta
+  «¿qué música?» sólo si, quitados el verbo, lo genérico (música, canción, algo, otras, podcast), la cortesía, el
+  relleno, la pieza y el propósito («para dormir»), no queda nada con contenido (M27, `_music_clause_names_content`):
+  «pon música clásica», «canciones tristes» y «la canción la macarena» se ponen; lo propio sin nombrar («mis
+  favoritos», «liked songs») sigue su regla de la tanda 4c.
 - **Un sinónimo, un lugar**: devolver/restaurar/recuperar el sonido se genera con sus clíticos una vez en
   `lexicon.AUDIO_RESTORE_WORDS` y lo usan el lector, el argumento (`state: false`) y las pistas del planner.
 - **Niveles como se dicen** (uso real 2026-09-23, `semantic/levels.py`): «súbele un poco», «más bajito», «Volume
