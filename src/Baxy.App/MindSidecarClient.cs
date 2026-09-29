@@ -1016,12 +1016,47 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         string[] observedPlan = result.Steps
             .Select(static step => step.Operation)
             .ToArray();
+        string[] perTargetPlan = WithoutRepeatedTargets(observedPlan);
         return ExpandExpectedPlanOperationVariants(expectedOperations)
             .Any(expectedPlan => observedPlan.SequenceEqual(
-                expectedPlan,
-                StringComparer.Ordinal))
+                    expectedPlan,
+                    StringComparer.Ordinal)
+                || perTargetPlan.SequenceEqual(
+                    expectedPlan,
+                    StringComparer.Ordinal))
             ? result
             : null;
+    }
+
+    /// <summary>
+    /// M55 (v3b F-w06-t1 «pon el word a la izquierda y el chrome a la derecha»):
+    /// the mind lists each kind of effect once, so a request that docks two
+    /// windows arrives as one expected <c>window.snap</c> and is planned as one
+    /// verified producer and consumer per window. A consumer repeated right
+    /// after itself, each time behind its own required producer, is the same
+    /// effect on another target; it collapses to one occurrence before the
+    /// comparison. A repeat without its own producer (a shared identity) or
+    /// any other added or dropped effect still fails.
+    /// </summary>
+    private static string[] WithoutRepeatedTargets(string[] observedPlan)
+    {
+        var kept = new List<string>(observedPlan.Length);
+        for (int index = 0; index < observedPlan.Length; index++)
+        {
+            if (index + 1 < observedPlan.Length
+                && kept.Count > 0
+                && string.Equals(kept[^1], observedPlan[index + 1], StringComparison.Ordinal)
+                && MissionPlanValidator.RequiredPredecessorOperations(observedPlan[index + 1])
+                    .Contains(observedPlan[index], StringComparer.Ordinal))
+            {
+                index++;
+                continue;
+            }
+
+            kept.Add(observedPlan[index]);
+        }
+
+        return kept.ToArray();
     }
 
     private static string[][] ExpandExpectedPlanOperationVariants(

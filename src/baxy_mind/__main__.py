@@ -186,6 +186,8 @@ from .semantic.arguments import (
     literal_vision_prompt,
     names_spotify,
     reminder_title_without_que,
+    window_snap_plan_split,
+    window_snap_side_for_step,
 )
 from .semantic.messaging import chat_message_dispatch, message_body
 from .semantic.arguments import (  # noqa: F401 - moved to baxy_mind.semantic.arguments; callers migrate
@@ -881,6 +883,8 @@ def _verified_dependency_identity_arguments(
     tool: dict[str, object],
     application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
     game_catalog: GameCatalogIndex | None = None,
+    *,
+    purpose: str = "",
 ) -> dict[str, object] | None:
     """Copy a complete unique identity from permitted verified producers.
 
@@ -1028,6 +1032,10 @@ def _verified_dependency_identity_arguments(
             application_names if isinstance(application_names, tuple) else (),
             game_catalog if game_catalog is not None else GameCatalogIndex(),
         )
+        if explicit is None and operation == "window.snap":
+            # M55: a request that docks several windows gives each its own side; the step's purpose
+            # picks which of the request's pairs this window is, the side stays the person's.
+            explicit = window_snap_side_for_step(objective, purpose, application_names)
         if not isinstance(explicit, dict):
             return None
         merged = {**explicit, **arguments}
@@ -3615,6 +3623,20 @@ def _normalize_grounded_operation_arguments(
     """Apply closed semantic constraints not expressible by catalog JSON Schema."""
 
     normalized = dict(arguments)
+    if operation == "window.resolve":
+        # M55 (v3b F-w06-t1, F-w08-t1 «invalid selector»): Core's selector contract is exactly one of
+        # applicationName or process, and an application name takes neither byTitle nor offset. A neutral
+        # byTitle=false or offset=0 beside a name is dropped; two selectors (two windows read into one
+        # step) or none is never sent to fail in the Core.
+        if "applicationName" in normalized:
+            if normalized.get("byTitle") is False:
+                normalized.pop("byTitle")
+            if normalized.get("offset") == 0:
+                normalized.pop("offset")
+        if ("applicationName" in normalized) == ("process" in normalized) or (
+            "applicationName" in normalized and ("byTitle" in normalized or "offset" in normalized)
+        ):
+            return None
     if (
         operation == "note.read"
         and isinstance(normalized.get("noteId"), str)
@@ -6767,6 +6789,15 @@ def _run_sidecar(
                     and recognized_expected.operations == expected_operations
                     else ()
                 )
+                snap_split = window_snap_plan_split(
+                    expected_operations,
+                    expected_evidence,
+                    objective,
+                    application_catalog,
+                )
+                if snap_split is not None:
+                    # M55: «X a la izquierda e Y a la derecha» is one resolve and one snap per window.
+                    expected_operations, expected_evidence = snap_split
                 expected_plan_operations = tuple(
                     operation
                     for operation, _ in _expand_effect_plan(
@@ -7011,6 +7042,7 @@ def _run_sidecar(
                         tool,
                         application_names,
                         game_catalog,
+                        purpose=str(message.get("purpose", "")),
                     )
                     or llm.ground_plan_arguments(
                         objective,

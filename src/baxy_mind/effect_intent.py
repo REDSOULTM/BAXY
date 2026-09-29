@@ -550,6 +550,7 @@ from .semantic.patterns import (  # noqa: F401 - moved to baxy_mind.semantic.pat
     _authenticated_application_snap_target,
     resolve_application_snap,
     resolve_application_snap_name,
+    application_snap_pairs,
     resolve_application_close_name,
     _repeated_application_target,
     resolve_application_window_status_name,

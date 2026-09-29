@@ -163,8 +163,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # integración búsqueda D32, M44–M48 y A7
 # v3b: M49–M52, M50, M51, último recurso de media
 # v3b tras inventario
+# M55: colocar ventanas por destino
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "7af42b204d1614d074c51dd49e0e46bc649184200e975cb8e74289e8923087c4"
+    "d44bc720709d166d9eb7b3614fa58a1c2a8d9b301bc23c93176c0460997fc8fb"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

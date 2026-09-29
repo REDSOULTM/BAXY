@@ -175,9 +175,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # M42/M42b/M43: argumentos del decisor
 # integración búsqueda D32, M44–M48 y A7
 # v3b: M49–M52, M50, M51, último recurso de media
+# M55: colocar ventanas por destino
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "61299010e76fd4b113640a00344c3d032b4bbc3a99a05d963d5a88a878de0fda"
+        "4145b867ce0eceb8d3a5475131ace6560bb912aa4ba23facebf4d5b523092be9"
     ),
     "src/baxy_mind/llm.py": (
         "4c2f31d063aaa10daa213a55d7928a83ca5129545303b1e18b97204969eafc26"
