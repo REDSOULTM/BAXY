@@ -40,8 +40,9 @@ def test_a_lowercase_lead_is_capitalised_without_a_retry(question: str, draft: s
 @pytest.mark.parametrize(
     ("question", "pasted", "not_found"),
     [
+        # M64: the not-found names what was looked up, in the person's words.
         (_RATE_ASK, "Nuestro conversor de moneda le permite conocer el cambio del peso chileno en relación con el yen.",
-         "No lo encontré."),
+         "No encontré a cuánto está el yen frente al peso chileno."),
         ("yen to chilean peso today", "Our converter on diariodivisas.com gives the rate in real time.",
          "I couldn't find it."),
     ],
