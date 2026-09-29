@@ -476,3 +476,14 @@ sólo baja 160 MiB (BAXY ≈ 3 750–3 880 MiB): 2 huecos no se adopta. Se mide 
 | **K q8 / V q4 (M59)** | **3 440** | 742 un cambio (H0271 pregunta qué componente); reserva 85,6 % (+7/−11, ninguno peligroso) |
 Con V en q4 el pico de BAXY en la app debería quedar ≈ 3,74–3,77 GB (se mide en v3e con muestreo cada 5 s). Además:
 el literal «No lo encontré.» que A7 dejó en la App se quita (censo de prosa visible fija en cero).
+**Corrección (05:10):** K q8 / V q4 no tiene núcleo rápido de flash attention para tipos mixtos en este llama.cpp:
+decisiones 2,5× más lentas (reserva p50 0,91 → 2,34 s) y la corrida v3e en la app agotó tiempos (descartada). M59 se
+revierte (V sigue a K). K+V q4 es rápido pero lleva «por favor apaga» a system.power, que va sin confirmación: descartado.
+
+## D42. v3e2 medido (fa35fcba: v3d + M58, D39, M60, censo; KV q8) (2026-09-29 05:15)
+FINAL gastado en la app real, mismo revisor: **146/202 = 72,3 %** (v3d 133; +15/−2), automática 165/202 = 81,7 %,
+2 inventados (s040 cuenta mal las alarmas; w13-t2 cuenta de litros desde un precio de tanque), ⚠ 1 (0,5 %), repreguntas
+7 (v3d 12), búsqueda caída 0, latencia p50 2,47 s. VRAM medida por proceso (contadores de Windows): pico 3 876 MiB, todo
+llama-server (App y mente sin GPU) → 76 MiB sobre la meta; M61 baja el contexto por hueco a 10 240.
+Quedan 56: búsqueda 14 (lo personal a la web s014/s034/s048, resultados ajenos), argumentos 10, límites 9, redacción 8,
+conocimiento 8, otros 7. M62 (mecanismos) en curso; límites y lo personal van al decisor (full6, P2).
