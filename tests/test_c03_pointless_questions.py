@@ -13,6 +13,7 @@ import pytest
 
 from baxy_mind import __main__ as mind_main
 from baxy_mind.__main__ import (
+    CONVERSATION_WORDING_FAILURE,
     LIMIT_WORDING_FAILURE,
     _explicit_arguments_from_evidence,
     _prepare_turn_result,
@@ -416,16 +417,39 @@ def test_a_failed_limit_wording_is_its_own_failure_class(reason: str) -> None:
     assert _turn_failure_kind(ConversationReplyContractError(reason)) == LIMIT_WORDING_FAILURE
 
 
-@pytest.mark.parametrize(
-    "error",
-    [
-        ConversationReplyContractError("unsupported_language"),
-        ConversationReplyContractError("echo"),
-        ValueError("respuesta nativa de operaciones inválida"),
-    ],
-)
-def test_other_attempt_failures_stay_runtime(error: BaseException) -> None:
-    assert _turn_failure_kind(error) == "runtime"
+def test_other_attempt_failures_stay_runtime() -> None:
+    assert _turn_failure_kind(ValueError("respuesta nativa de operaciones inválida")) == "runtime"
+
+
+# M72 (conv-v3h guion t26/t28, v3j real log log:165): a reply that failed its wording after the turn was understood as
+# conversation is its own class, and the recovery answers instead of asking what the person wants.
+@pytest.mark.parametrize("reason", ["unsupported_language", "echo", "shaped_presentation"])
+def test_a_failed_conversation_wording_is_its_own_failure_class(reason: str) -> None:
+    assert _turn_failure_kind(ConversationReplyContractError(reason)) == CONVERSATION_WORDING_FAILURE
+
+
+class _ChatRecoveryLlm:
+    def __init__(self) -> None:
+        self.questions = 0
+
+    def clarify_after_turn_failure(self, *_args: object, **_kwargs: object) -> str:
+        self.questions += 1
+        return "¿Podrías explicarme con tus propias palabras qué es lo que quieres que haga BAXY?"
+
+    def compose_user_message(self, _text: str, _intent: str, _facts: dict[str, str]) -> str:
+        return "Entiendo tu frustración; sigo aquí para lo que necesites."
+
+
+def test_an_understood_conversation_is_not_recovered_as_a_question() -> None:
+    llm = _ChatRecoveryLlm()
+    result = _recover_failed_turn(
+        {"id": "turn-chat", "text": "Por dios, odio estos fallos", "history": []},
+        llm,
+        failure_kinds=(CONVERSATION_WORDING_FAILURE, CONVERSATION_WORDING_FAILURE),
+    )
+    assert llm.questions == 0
+    assert result["kind"] == "conversation" and result["question"] == ""
+    assert result["effectOperations"] == [] and result["intentOperations"] == []
 
 
 class _RecoveryLlm:

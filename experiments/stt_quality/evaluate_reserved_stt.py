@@ -177,8 +177,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # M69
 # M70
 # M71 (held-out v3j t14): a search report names the subject the conversation carried; the retry hint says who said what, not which outlet.
+# M71 M72
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "c9b8ff49f872540cf22f60ccbc10a632df7caabf18ca702ac7a2db0c71c873df"
+    "a2fd5dd69fbc617c939750ba7e572b66a4db9d61a99a29f623a5d3560e927577"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

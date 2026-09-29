@@ -189,9 +189,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # M69
 # M70
 # M71 (held-out v3j t14): a search report names the subject the conversation carried; the retry hint says who said what, not which outlet.
+# M71 M72
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "a97c724616001c4eb31b8bfcd0a9da5006b762161c2861135fd5557c5b71dbdb"
+        "9ad12b986367c82dbde6b0412b62d0f838a8e9ba005a22dee28e73849caf5016"
     ),
     "src/baxy_mind/llm.py": (
         "dc7146d149733c6f6e3b23073a1c2bb9ff22096e1c0970dd9db6ff175892923c"

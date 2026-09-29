@@ -374,6 +374,9 @@ def _append_turn_audit(record: dict[str, Any]) -> None:
 # A turn that decided a limit («eso no lo hago») and failed only in the wording
 # of that limit: the unsupported presentation contract rejected every draft.
 LIMIT_WORDING_FAILURE = "limit_wording"
+# M72 (conv-v3h guion t26/t28, v3j real log log:165): a turn that decided conversation and failed only in the wording
+# of its reply was understood; there is nothing to clarify.
+CONVERSATION_WORDING_FAILURE = "conversation_wording"
 
 
 def _turn_failure_kind(error: BaseException) -> str:
@@ -386,6 +389,8 @@ def _turn_failure_kind(error: BaseException) -> str:
         and reason != "unsupported_language"
     ):
         return LIMIT_WORDING_FAILURE
+    if isinstance(error, ConversationReplyContractError):
+        return CONVERSATION_WORDING_FAILURE
     return "runtime"
 
 
@@ -6160,7 +6165,11 @@ def _recover_failed_turn(
     nothing_to_clarify = bool(
         read_request(objective).intents
         & {INTENT_IDENTITY, INTENT_CAPABILITY, INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
-    ) or is_limit
+    ) or is_limit or (
+        # M72: the turn was understood as conversation and only its wording failed; the recovery answers briefly
+        # instead of asking «¿qué quieres que haga BAXY?» about a message nobody misread.
+        bool(failure_kinds) and set(failure_kinds) == {CONVERSATION_WORDING_FAILURE}
+    )
     if llm is not None:
         try:
             if nothing_to_clarify:
