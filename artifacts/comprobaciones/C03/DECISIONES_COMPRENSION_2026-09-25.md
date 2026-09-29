@@ -512,3 +512,13 @@ PC exige un verbo de escribir), arregla la raíz del verbo en M19 (diptongos) y 
 enciclopedia. M64: la reescritura del decisor no puede introducir números, unidades, fechas, horas ni nombres no dichos
 (20/20 marcadas en la revisión eran introducciones reales) y «no lo encontré» nombra lo buscado. `full6` (entrenado con
 el prompt nuevo y argumentos) debe quitar la deriva de raíz; hasta entonces las guardas quedan.
+
+## D46. `full6` rechazado (2026-09-29 ~13:10)
+`full6` = LoRA r16 bf16, 1 época sobre P0 (2 103 respuestas con argumentos anidados por operación, prompt nuevo), en
+redpc. Aislado en DEV-A con el prompt de la app: decisión **227/260 frente a 236–237 de `full3`** (arreglados 4, rotos
+14, McNemar p = 0,03), más aclaraciones (35 → 42). Con el esquema plano de la app (M49) `full6` emitía un escalar por
+operación (`{"app.open": 1}`) y fallaba argumentos (42/57); con un esquema anidado igual al de su entrenamiento los
+argumentos son **53/57 frente a 54/57** de `full3`, así que la caída de argumentos era del formato, no del modelo. La
+de decisión sigue: no cumple la regla (decisión ≥ `full3`, argumentos ≥ 55/57, ninguna clase −2 pts). Se queda `full3`
+con las guardas M64/M65. El siguiente LoRA se entrena con el formato de argumentos plano que pide la app (o la app pasa
+al anidado, medido igual), con P0 + P1 + P2 y cuotas por clase para no perder decisión.
