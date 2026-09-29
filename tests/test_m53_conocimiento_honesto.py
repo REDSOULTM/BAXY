@@ -63,9 +63,9 @@ GUARD = (
         (W02_T1, (), "recipe", "receta sopaipillas"),
         ("what are the ingredients for banana bread", (), "recipe", "recipe banana bread"),
         (P11_T1, (), "plot", "resumen libro hobbit"),
-        # The follow-up names no other work: it is about the work just looked up (its plot answers it).
-        (P11_T2, (P11_T1,), "plot", "resumen libro hobbit"),
-        ("¿Por qué es peligroso el Anillo Único en El Hobbit?", (P11_T1,), "plot", "resumen libro hobbit"),
+        # The follow-up names no other work: it is about the work just looked up; after «:», what it asks about.
+        (P11_T2, (P11_T1,), "plot", "resumen libro hobbit: peligroso anillo"),
+        ("¿Por qué es peligroso el Anillo Único en El Hobbit?", (P11_T1,), "plot", "resumen libro hobbit: peligroso anillo unico"),
         ("Resumime El Señor de los Anillos", (), "plot", "resumen senor de los anillos"),
         # F-s020: a ranking of the world, asked by its superlative.
         ("¿Cuáles son los 9 objetos mas brillantes del cielo nocturno?", (), "ranking",
@@ -228,7 +228,7 @@ def test_the_arguments_step_reads_the_same_query_back() -> None:
         {"role": "user", "content": P11_T2},
     ]
     assert sidecar._ground_explicit_arguments("web.search", P11_T2, WEB_SEARCH_SCHEMA, history=history) == {
-        "query": "resumen libro hobbit"
+        "query": "resumen libro hobbit: peligroso anillo"
     }
 
 
