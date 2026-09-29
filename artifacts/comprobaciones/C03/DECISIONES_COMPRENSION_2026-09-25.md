@@ -501,3 +501,14 @@ repreguntas 7, búsqueda caída 0, automática 164/202, VRAM por proceso 3 750 M
 a la web s014/s034/s048, resultados ajenos, Polvorista mal anclada), argumentos 11, límites 9, conocimiento 8, otros 9,
 redacción 3. Siguiente: M63 (la App exige «08:00» literal y veta «8:00», F-s019; «llovizna … 0 %» contradictorio;
 ancla de la Plaza del Polvorista) y el decisor (full6 con argumentos; P1/P2) para límites, lo personal y repreguntas.
+
+## D45. Regresión del guion y el held-out; M64 y M65 (2026-09-29 ~10:30)
+Guion del dueño y held-out en la app real sobre 0ef2d86b: 42/60 (+7 por revisar) y 25/30 (+1), frente a 48/60 y
+28/30 en conv-m35 (b73137f4). Causa común de lo grave: M42/M49 cambiaron el prompt del decisor (firmas de campos,
+formato con argumentos) y el LoRA `full3` se entrenó con el anterior; en contexto decide distinto: «Perfecto muy bien»
+→ abrió Steam, «Di la palabra "algo"» → escribió en la ventana activa, y la guarda M19 tomó «Cierra» por un objeto no
+dicho («Cerrá» antes). M65 añade guardas generales después del decisor (una reacción social nunca actúa; escribir en el
+PC exige un verbo de escribir), arregla la raíz del verbo en M19 (diptongos) y saca las opiniones y reseñas de la
+enciclopedia. M64: la reescritura del decisor no puede introducir números, unidades, fechas, horas ni nombres no dichos
+(20/20 marcadas en la revisión eran introducciones reales) y «no lo encontré» nombra lo buscado. `full6` (entrenado con
+el prompt nuevo y argumentos) debe quitar la deriva de raíz; hasta entonces las guardas quedan.
