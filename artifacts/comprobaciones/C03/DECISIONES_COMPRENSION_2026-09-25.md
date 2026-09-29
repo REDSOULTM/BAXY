@@ -487,3 +487,10 @@ FINAL gastado en la app real, mismo revisor: **146/202 = 72,3 %** (v3d 133; +15/
 llama-server (App y mente sin GPU) → 76 MiB sobre la meta; M61 baja el contexto por hueco a 10 240.
 Quedan 56: búsqueda 14 (lo personal a la web s014/s034/s048, resultados ajenos), argumentos 10, límites 9, redacción 8,
 conocimiento 8, otros 7. M62 (mecanismos) en curso; límites y lo personal van al decisor (full6, P2).
+
+## D43. Paso 7 cumplido: contexto por hueco 10 240 (M61) (2026-09-29 07:40)
+Medido por proceso en la app real (contadores de Windows, App + mente + llama-server): con 3 × 10 240 el pico de BAXY es
+**3 778 MiB** (con 3 × 12 288 era 3 876–3 908). Sin retroceso: DEV-D ventana 263/332 (v3e2 267; los 4 de diferencia son
+titulares, Spotify y una búsqueda, contenido que cambia con la hora, ninguno de contexto), 742 y registro real sin
+cambios, reserva 85,7 % (+2/−3), latencia de decisión p50 0,90 s. Se adopta. El margen es de 22 MiB: cualquier cambio de
+modelo, adaptador o contexto vuelve a medirse por proceso (scratchpad/cn/vram_procs.ps1).
