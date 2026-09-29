@@ -168,6 +168,7 @@ from .semantic.conversation import (
     _standalone_deictic_request,
     _conversation_presentation_shape,
     _reads_as_an_observation,
+    asks_for_code,
     catalog_unavailable,
     first_person_observation,
     names_a_question_word,
@@ -4213,7 +4214,8 @@ def _context_decided_result(
         # what cannot be done: the boundary of an unreachable place holds here too (apply_out_of_world_boundary).
         decided = semantic_decider.ContextDecision(request=text, decision="limit", operations=(), question="")
     reference = None
-    if decided.decision == "talk" and "web.search" in available_operations:
+    # M56 (v3c-final F-w14-t1): code the person asks for is written, whatever the decider's rewrite of it says.
+    if decided.decision == "talk" and "web.search" in available_operations and not asks_for_code(text):
         # M53 (D35): what the decider answers by talking but is a named dish's recipe or a named work's plot is
         # looked up first; the arguments step reads the same query from the same request.
         for said in dict.fromkeys((decided.request or text, text)):
