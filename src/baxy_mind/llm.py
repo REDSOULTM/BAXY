@@ -36,6 +36,7 @@ import urllib.request
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 from fractions import Fraction
 from pathlib import Path
 from typing import Any, Callable, Iterable, NamedTuple
@@ -54,7 +55,8 @@ from .semantic.network import (
 from .semantic.web import (
     weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
     weather_asks_coming_days, weather_asks_week, weather_sun_events_asked, place_containers, searched_clause,
-    ASKED_UNCONFIRMED_WORDS, asked_dimension_words, carried_subjects, names_subject,
+    ASKED_UNCONFIRMED_WORDS, asked_dimension_words, carried_subjects, names_subject, PLACE_KIND_WORDS,
+    request_common_words, asks_this_year, undefined_asked_phrases,
 )
 from .semantic.temporal import (
     _DAY_WORDS, clock_elsewhere, clock_later_asked, named_clock_dial, plural_alarm_cancellation,
@@ -8905,6 +8907,47 @@ def _shares_inflected_stem(word: str, seen_word: str) -> bool:
     )
 
 
+_REPORT_MONTHS = {
+    "enero": 1, "febrero": 2, "marzo": 3, "abril": 4, "mayo": 5, "junio": 6, "julio": 7, "agosto": 8,
+    "septiembre": 9, "setiembre": 9, "octubre": 10, "noviembre": 11, "diciembre": 12, "january": 1, "february": 2,
+    "march": 3, "april": 4, "may": 5, "june": 6, "july": 7, "august": 8, "september": 9, "october": 10,
+    "november": 11, "december": 12,
+}
+_REPORT_MONTH = "(?:" + "|".join(_REPORT_MONTHS) + ")"
+# A person's birth as an encyclopedia writes it (folded): «(Hillerslev, 10 de diciembre de 1996)», «(born 10 December
+# 1996)», «(born December 10, 1996)», «nació el 10 de diciembre de 1996». A parenthesis that closes with a second date
+# («13 de septiembre de 1932-27 de febrero de 2020») is a life that ended, not an age.
+_BIRTH_DATE = re.compile(
+    r"(?:\((?:[^()\d]{0,80},\s*)?|\bborn\s+(?:on\s+)?|\bnaci(?:o|da|do)\s+(?:el\s+)?)"
+    r"(?:(?P<day>\d{1,2})\s+(?:de\s+)?(?P<month>" + _REPORT_MONTH + r")|(?P<month2>" + _REPORT_MONTH
+    + r")\s+(?P<day2>\d{1,2}),?)\s+(?:de\s+|del\s+)?(?P<year>\d{4})(?!\s*[-–—]\s*\d)(?=\s*[)\s,.;])"
+)
+
+
+def _report_today() -> date:
+    """Today, for what a report computes from a date it read (M77)."""
+
+    return datetime.now().date()
+
+
+def _birth_ages(results_text: str, today: date) -> str:
+    """M77 (DEV-D v3l D-w14-t2 «¿y cuántos años tiene el chaval?» over «Jonas Vingegaard Rasmussen (Hillerslev, 10 de
+    diciembre de 1996)»): «nació el 10 de diciembre de 1996» died on «nació» and the age was «not found». The birth an
+    encyclopedia writes is a birth read, and the age it gives today is a figure of the read: the words that say it and
+    the age computed, in both languages; empty when no birth is written."""
+
+    grounds: list[str] = []
+    for found in _BIRTH_DATE.finditer(_reading_fold(results_text)):
+        day = int(found.group("day") or found.group("day2"))
+        month = _REPORT_MONTHS[found.group("month") or found.group("month2")]
+        year = int(found.group("year"))
+        if not 1 <= day <= 31 or year > today.year:
+            continue
+        age = today.year - year - ((today.month, today.day) < (month, day))
+        grounds.append(f"nacio nacido nacida nacimiento born birth edad age {age} anos años years old")
+    return " ".join(grounds)
+
+
 class _ReportSentence(NamedTuple):
     """One sentence of a search report, measured against the pages and the request."""
 
@@ -8914,6 +8957,61 @@ class _ReportSentence(NamedTuple):
     content: int  # how many content words it has
     named: bool  # a content word or a number of it is the pages' or the request's
     translated: bool  # it says in its language what pages in the other language say
+    titles: list[str] = []  # the words of a title it writes that no page and no request writes (M77)
+
+
+# M77 (DEV-D v3l D-p27-t3 «Eugene Dynarski appeared in two movies directed by Steven Spielberg: The Biker and Close
+# Encounters of the Third Kind» over «dos películas de Steven Spielberg: El diablo sobre ruedas y Encuentros en la
+# tercera fase»): a translated sentence is not judged word by word, and the model gave the Spanish titles English names
+# of its own («The Biker» is no film of Spielberg's). A title is a run of capitalised words inside the sentence that
+# opens with a capitalised article or joins its words with «of», «the», «de»…; its words must be read.
+_TITLE_ARTICLES = frozenset({"the", "a", "an", "el", "la", "los", "las", "un", "una"})
+_TITLE_JOINERS = frozenset({"of", "the", "a", "an", "and", "in", "on", "to", "at", "de", "del", "la", "las", "los", "el",
+                            "y", "en", "un", "una"})
+
+
+def _unread_title_words(sentence: str, observed: set[str], written: set[str]) -> list[str]:
+    """The capitalised words of the titles a sentence writes, when most of a title's words no page nor request
+    writes (folded)."""
+
+    unread: list[str] = []
+    run: list[tuple[str, bool]] = []  # (folded word, capitalised)
+    joiners: list[str] = []
+
+    def close() -> None:
+        capitalised = [word for word, upper in run if upper and word not in _TITLE_ARTICLES]
+        shaped = len([1 for _, upper in run if upper]) >= 2 and (
+            any(not upper for _, upper in run) or run[0][0] in _TITLE_ARTICLES
+        )
+        missing = [
+            word for word in capitalised
+            if word not in observed and not any(_shares_inflected_stem(word, seen) for seen in written)
+        ]
+        if shaped and capitalised and len(missing) * 2 > len(capitalised):
+            unread.extend(word for word in missing if word not in unread)
+        run.clear()
+        joiners.clear()
+
+    for index, raw in enumerate(str(sentence).split()):
+        bare = raw.strip("¿¡\"'«(“‘").rstrip(".,;:!?»\")”’…")
+        folded = _reading_fold(bare)
+        if not bare or not re.fullmatch(r"[a-z0-9'-]+", folded):
+            if run:
+                close()
+            continue
+        if bare[:1].isupper() and index > 0 and bare != "I":
+            run.extend((joiner, False) for joiner in joiners)
+            joiners.clear()
+            run.append((folded, True))
+        elif run and folded in _TITLE_JOINERS:
+            joiners.append(folded)
+        elif run:
+            close()
+        if run and raw.rstrip(".,;:!?»\")”’…") != raw:
+            close()
+    if run:
+        close()
+    return unread
 
 
 def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> list[str]:
@@ -8943,7 +9041,10 @@ def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> 
             words.extend(number for number in sentence.numbers if number not in words)
             continue
         lettered = sentence.lettered
-        if sentence.translated or (len(lettered) == 1 and sentence.content >= 8):
+        if sentence.translated:
+            # M77 (D-p27-t3): a translated sentence keeps the titles the pages write.
+            lettered = sentence.titles
+        elif len(lettered) == 1 and sentence.content >= 8:
             lettered = []
         words.extend(word for word in sentence.numbers + lettered if word not in words)
     return words
@@ -9009,8 +9110,10 @@ def _search_report_sentences(text: str, payload: dict, user_text: str) -> list[_
     query = str(seen.get("query") or "") if isinstance(seen, dict) else ""
     # M70 (held-out v3h t16): what a question of when, where or how much asks for is part of what was asked.
     asked = asked_dimension_words(f"{user_text or ''}\n{query}")
+    # M77 (D-w14-t2): a birth read gives the age today and the words that say it.
+    births = _birth_ages(results_text, _report_today())
     observed = set(re.findall(r"[a-z]+", _reading_fold(results_text))) | set(
-        re.findall(r"[a-z]+", _reading_fold(f"{user_text} {near_voice}"))
+        re.findall(r"[a-z]+", _reading_fold(f"{user_text} {near_voice} {births}"))
     ) | asked
     # M54 (v3b-final F-w13-t2 «40 litros de nafta súper cuestan 82.360 pesos» over «$82.360»): a currency sign the
     # pages write is said with its name.
@@ -9033,6 +9136,7 @@ def _search_report_sentences(text: str, payload: dict, user_text: str) -> list[_
 
     # M62 (F-w13-t2): the total BAXY computed from a unit price read is a figure of the read too.
     computed = " ".join(item.sentence for item in semantic_quantities.priced_totals(user_text or "", results_text))
+    computed += " " + births
     # M70: the words the pages and the request write (no link, and not the query the mind sent), for the inflection
     # of a changing stem.
     written = set(re.findall(r"[a-z]+", _reading_fold(f"{page_text(results)}\n{user_text or ''}")))
@@ -9089,7 +9193,12 @@ def _search_report_sentences(text: str, payload: dict, user_text: str) -> list[_
             and content >= 4
             and all(_text_language(page_text([item])) not in (None, language) for item in results)
         )
-        sentences.append(_ReportSentence(False, numbers, lettered, content, grounded or shared > 0, translated))
+        sentences.append(
+            _ReportSentence(
+                False, numbers, lettered, content, grounded or shared > 0, translated,
+                _unread_title_words(sentence, observed, written) if translated else [],
+            )
+        )
     return sentences
 
 
@@ -9223,7 +9332,23 @@ _SEARCH_MECHANICS = re.compile(
     r"otra\s+(?:dice|afirma|indica|sostiene|menciona|senala|asegura|cuenta)|"
     r"(?:one|another|an?|the|this|that)\s+(?:page|article|source|site|outlet|piece)(?:\s+(?:from|by|on)(?:\s+[a-z0-9]+)"
     r"{1,3}?)?\s+(?:says|states|claims|mentions|notes|reports|explains|indicates)|"
-    r"another\s+(?:mentions|notes|reports|indicates))\b"
+    r"another\s+(?:mentions|notes|reports|indicates)|"
+    # M77 (DEV-D v3l D-p27-t2 «None of the results state which genre…», D-s063 «…in the provided results», D-p34-t1
+    # «Los fragmentos mencionan…», D-p31-t1 «La información visible solo confirma…», «Los resultados no mencionan…»):
+    # the results, fragments or visible information named as what speaks, or qualified as the ones given, are the
+    # search shown the same.
+    r"none\s+of\s+(?:the|these|my)\s+(?:\w+\s+)?results|ninguno\s+de\s+(?:los|estos)\s+(?:\w+\s+)?resultados|"
+    r"(?:the|these|my)\s+(?:provided|returned|available|given|retrieved|visible)\s+(?:search\s+)?(?:results|information|"
+    r"snippets)|(?:los|estos|mis)\s+resultados\s+(?:disponibles|proporcionados|obtenidos|encontrados|mostrados|"
+    r"visibles)|(?:los|estos|esos)\s+(?:fragmentos|extractos|snippets)|(?:the|these|those)\s+(?:snippets|excerpts)|"
+    # «The snippet describes a drama movie called Hustlers…», «El fragmento dice…».
+    r"(?:the|this|that)\s+(?:snippet|excerpt)|(?:el|este|ese)\s+(?:snippet|extracto|fragmento)\s+(?:no\s+)?"
+    r"(?:dice|menciona|describe|indica|muestra|habla|senala|nombra|incluye)|"
+    r"la\s+informacion\s+(?:visible|disponible|proporcionada|encontrada|obtenida)|"
+    r"(?:los|estos|esos)\s+resultados\s+(?:(?:solo|solamente|unicamente|tampoco)\s+)?(?:no\s+)?(?:mencionan|muestran|"
+    r"indican|dicen|detallan|especifican|incluyen|hablan|confirman|senalan|nombran|analizan|describen)|"
+    r"(?:the|these|those)\s+results\s+(?:only\s+)?(?:(?:do\s+not|don'?t|did\s+not|didn'?t)\s+)?(?:show|mention|state|"
+    r"say|specify|include|indicate|confirm|name|list|describe))\b"
 )
 # Tanda 7 «No se menciona ningún famoso…», «No se indica cuánto tiempo queda…»: an absence told as what a text does
 # not say narrates the pages that were read. The owner's not-found is «No lo encontré».
@@ -9351,12 +9476,37 @@ def _not_found_invents_a_cause(text: str, payload: dict) -> bool:
     )
 
 
+# M77 (DEV-D v3l D-s087 «What's the weather este fin de semana en Abingdon Virginia?» → «No hay pronóstico disponible
+# porque no existe un lugar llamado Abingdon en Virginia.»): the weather service did not recognise the name; that the
+# place does not exist is a fact nobody read. Folded.
+_PLACE_EXISTENCE_DENIAL = re.compile(
+    _NOT_FOUND_EXISTENCE_DENIAL.pattern
+    + r"|\bno\s+hay\s+(?:ningun[oa]?\s+)?(?:lugar|ciudad|pueblo|localidad|sitio|poblacion)\b"
+    r"|\bthere\s+(?:is|are)\s+no\s+(?:such\s+)?(?:place|city|town|location)\b|\bno\s+such\s+(?:place|city|town|location)\b"
+    r"|\b(?:place|city|town|location)\s+(?:does\s+not|doesn'?t)\s+exist\b"
+)
+
+
+def _place_existence_denied(text: str, payload: dict) -> bool:
+    """The weather service knew no place by the name asked, and the reply says the place does not exist."""
+
+    reason = payload.get("reason")
+    if not isinstance(reason, dict) or reason.get("cause") != _CAUSE_FACT["weather_place_not_found"]:
+        return False
+    folded = _reading_fold(re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(text)))
+    return _PLACE_EXISTENCE_DENIAL.search(folded) is not None
+
+
 # M41 (official-window DEV-A 2026-09-28 «what's your recommendation for dining out tonight», «best parking
 # manhattan»): «I did not find a specific recommendation in the search results» was vetoed three times for naming
 # the search, and the turn failed. That closing phrase is form, not content: it is clipped before costing a retry.
 _SEARCH_RESULTS_TAIL = re.compile(
+    # M77 (DEV-D v3l D-s063 «…in the provided results.», D-s012 «…en los resultados disponibles.»): the results
+    # qualified as the ones given are the same closing phrase.
     r"\s*,?\s+(?:in|from|among|within|en|entre|de)\s+(?:the|these|my|los|estos|mis|las|estas)\s+"
-    r"(?:search\s+)?(?:results|resultados|fuentes|p[aá]ginas|pages|sources)(?:\s+de\s+(?:la\s+)?b[uú]squeda)?"
+    r"(?:(?:provided|returned|available|given|retrieved)\s+)?(?:search\s+)?(?:results|resultados|fuentes|p[aá]ginas|"
+    r"pages|sources)(?:\s+(?:disponibles|proporcionad[oa]s|obtenid[oa]s|encontrad[oa]s))?"
+    r"(?:\s+de\s+(?:la\s+)?b[uú]squeda)?"
     r"(?:\s+(?:that\s+i\s+found|que\s+encontr[eé]))?(?=\s*[.!]?\s*$)",
     re.IGNORECASE,
 )
@@ -9526,6 +9676,9 @@ _SEARCH_QUERY_FRAME_WORDS = frozenset(
         "internet", "web", "google", "bing", "duckduckgo", "wikipedia", "online", "net", "latest", "news", "recent",
         "noticia", "noticias", "ultima", "ultimas", "ultimo", "ultimos", "actualidad", "precio", "precios", "price",
         "prices", "cost", "costs", "cotizacion",
+        # M77 (DEV-D v3l D-w10-t2 «¿Y cuánto sería eso de harina en gramos, por favor?»): the person's whole sentence
+        # reached the general engine; its courtesy and its pointing back («eso», «sería», «por favor») ask nothing.
+        "eso", "esto", "seria", "serian", "favor", "porfa", "please", "gracias", "thanks",
     }
 )
 _SEARCH_TERM_SYNONYMS = (
@@ -9590,15 +9743,31 @@ def _search_result_is_about(query: str, item: dict, titled: bool, dropped: froze
             if len(word) >= 4 and not word.isdigit() and word not in _SEARCH_QUERY_FRAME_WORDS
             and not any(_search_term_found(term, {word}) for term in terms)
         ]
-        if titled and others and narrower and not any(_search_term_found(term, title) for term in others):
+        # M77 (DEV-D v3l D-p24-t2 «Drama movies like Lizzo» → the article «Estafadoras de Wall Street», whose extract
+        # says «película de drama … protagonizada por … Lizzo»): an article narrower than a name is one whose title
+        # carries that name. One whose title does not is about another thing the extract ties to the name, and it
+        # answers when the extract carries the other words asked.
+        title_names = any(_search_term_found(name, title) for name in names)
+        if titled and title_names and others and narrower and not any(
+            _search_term_found(term, title) for term in others
+        ):
+            return False
+        # «a nice fantasy movie like Elijah Wood» is not answered by «Pawn Shop Chronicles», whose extract names Elijah
+        # Wood and a film but no fantasy: most of the other words asked are the extract's.
+        if titled and not title_names and others and sum(
+            1 for term in others if _search_term_found(term, observed)
+        ) < len(others) // 2 + 1:
             return False
     elif titled and not any(_search_term_found(term, title) for term in terms):
         return False
     matched = sum(1 for term in terms if _search_term_found(term, observed))
     if not titled:
         # The general engine's own gate: half of the words, rounded up («cómo llego a parquelandia» is answered by
-        # «Cómo llegar a Parquelandia Resort»).
-        return matched >= (len(terms) + 1) // 2
+        # «Cómo llegar a Parquelandia Resort»). M77 (DEV-D v3l D-p34-t1, D-p31-t1): the engine was given the
+        # person's whole long request («Elabora una lista con las cápsulas del tiempo más famosas de la historia,
+        # especificando las fechas…», eighteen words), and no page repeats half of a request's wording; four of its
+        # words («cápsulas», «tiempo», «famosas», «historia») are what a page about it shares.
+        return matched >= min((len(terms) + 1) // 2, 4)
     return matched >= (len(terms) if len(terms) <= 2 else len(terms) // 2 + 1)
 
 
@@ -9696,10 +9865,30 @@ def _places_whole_address(text: str, payload: dict, user_text: str = "") -> bool
     return False
 
 
-def _search_report_denies_found_places(text: str, payload: dict) -> bool:
+def _places_unread_qualifiers(payload: dict, user_text: str) -> list[str]:
+    """M77: the words the person wrote in lower case about the places asked («valet» of «valet parking») that are
+    not the class OpenStreetMap read and that no place read carries, in the person's order."""
+
+    carried = set(re.findall(r"[a-z0-9]+", _reading_fold(_search_results_text(payload) or "")))
+    return sorted(
+        (
+            word for word in request_common_words(user_text)
+            if word not in PLACE_KIND_WORDS and word not in _SEARCH_QUERY_FRAME_WORDS
+            and word not in _SEARCH_REPORT_GRAMMAR_WORDS and not _search_term_found(word, carried)
+        ),
+        key=lambda word: _reading_fold(user_text).find(word),
+    )
+
+
+def _search_report_denies_found_places(text: str, payload: dict, user_text: str = "") -> bool:
     """M54 (v3b-final F-p06-t3 «Mejor en calle Génova» → «No encontré aparcamiento en la calle Génova en Madrid» over
     five car parks of Chueca, the next streets): the places OpenStreetMap returns are of the asked kind inside the asked
-    place by construction, so they cannot be reported as not found nor as absent."""
+    place by construction, so they cannot be reported as not found nor as absent.
+
+    M77 (DEV-D v3l D-p16-t1/t2 «valet parking at the Kenzi Rose Garden»): OpenStreetMap read the class («parking»),
+    not what the person qualified it with; «I could not find valet parking at …» over public car parks says what was
+    not read. A not-found that names a word the person wrote in lower case, which is not the class read and no place
+    carries, is that honest not-found. Saying it does not exist stays denied."""
 
     if _search_results_text(payload) is None:
         return False
@@ -9707,8 +9896,14 @@ def _search_report_denies_found_places(text: str, payload: dict) -> bool:
     if seen.get("authority") != "openstreetmap_nominatim" or not _places_inside_named_place(payload):
         # M56: places outside the city the person named are not the asked place; «no lo encontré» fits them.
         return False
+    qualifiers = set(_places_unread_qualifiers(payload, user_text))
+
+    def qualified_not_found(folded: str) -> bool:
+        return _SEARCH_NOT_FOUND.match(folded) is not None and bool(qualifiers & set(re.findall(r"[a-z0-9]+", folded)))
+
     return any(
-        _SEARCH_NOT_FOUND.match(folded) is not None or _SEARCH_ABSENCE_CLAIM.search(folded) is not None
+        (_SEARCH_NOT_FOUND.match(folded) is not None or _SEARCH_ABSENCE_CLAIM.search(folded) is not None)
+        and not qualified_not_found(folded)
         for folded in (_reading_fold(sentence) for sentence in re.split(r"(?<=[.!?;])\s+", str(text).strip()))
     )
 
@@ -9758,7 +9953,13 @@ _SEARCH_ABSENCE_CLAIM = re.compile(
     r"\bno\s+(?:hay|habra|habia|existen?|existira|tienen?|cuentan?\s+con|ofrecen?|disponen?\s+de|venden?)\b|"
     r"\bno\s+se\s+(?:venden?|ofrecen?)\b|\bningun[oa]?\s+[a-z]+\s+(?:tiene|ofrece|cuenta)\b|"
     r"\bthere\s+(?:is|are|was|were|will\s+be)\s+no\b|\bthere\s+(?:isn'?t|aren'?t|won'?t\s+be)\b|"
-    r"\b(?:doesn'?t|does\s+not|don'?t|do\s+not)\s+(?:have|offer|exist)\b|\bnone\s+(?:of\s+them\s+)?(?:is|are|has|have)\b"
+    r"\b(?:doesn'?t|does\s+not|don'?t|do\s+not)\s+(?:have|offer|exist)\b|\bnone\s+(?:of\s+them\s+)?(?:is|are|has|have)\b|"
+    # M77 (DEV-D v3l D-p16-t3 «No valet parking is available at the Kenzi Rose Garden» over public car parks): that a
+    # thing is not available or not offered is the same verdict of the world.
+    r"\bno\s+[a-z]+(?:\s+[a-z]+){0,2}\s+(?:is|are|was|were)\s+(?:available|offered|provided)\b|"
+    r"\b(?:is|are|was|were)\s+not\s+(?:available|offered|provided)\b|\b(?:isn'?t|aren'?t|wasn'?t|weren'?t)\s+"
+    r"(?:available|offered|provided)\b|\bno\s+(?:esta|estan|estaba|estaban)\s+disponibles?\b|"
+    r"\bno\s+(?:se\s+)?(?:ofrece|ofrecen|dispone|disponen|presta|prestan)\b"
 )
 _SEARCH_RESULT_NEGATION = r"(?:\b(?:no|not|sin|ningun[oa]?|none|never|nunca|without|nadie|nothing|nada)\b|n't\b)"
 
@@ -9795,6 +9996,159 @@ def _search_report_absence_claim(text: str, payload: dict, user_text: str = "") 
         ):
             return True
     return False
+
+
+# M77 (DEV-D v3l D-p05-t2 «Necesito aparcamiento para mañana» → «El aparcamiento junto a la estación de ferrocarril
+# abrirá mañana con más de 400 plazas»): the headline «… ABRIRÁ MAÑANA CON MÁS DE 400 PLAZAS» was published five days
+# before, by the town hall of Aranjuez; its «mañana» was the day after that, not the person's. A day said relative to
+# when a dated result was published (the news feed writes it: «Thu, 24 Sep 2026 12:12:35 GMT») belongs to that day.
+_RELATIVE_DAY_WORDS = frozenset({"hoy", "manana", "ayer", "anoche", "today", "tomorrow", "yesterday", "tonight"})
+_RESULT_PUBLISHED = re.compile(
+    r"\b(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),\s+\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}\s+"
+    r"\d{2}:\d{2}:\d{2}\s+GMT\b"
+)
+
+
+def _result_published_day(item: dict) -> date | None:
+    """The local day a dated result (a news item) was published; None when it carries no date."""
+
+    for key in ("publishedAt", "snippet"):
+        found = _RESULT_PUBLISHED.search(str(item.get(key) or ""))
+        if found is None:
+            continue
+        try:
+            return parsedate_to_datetime(found.group(0)).astimezone().date()
+        except (TypeError, ValueError):
+            return None
+    return None
+
+
+def _search_report_stale_day(text: str, payload: dict) -> tuple[str, date] | None:
+    """The relative day a report sentence takes from a result published on another day (the word and that day)."""
+
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    items = [
+        item for item in [*_search_results_of(payload), *(seen.get("headlines") or [])] if isinstance(item, dict)
+    ]
+    today = _report_today()
+    if not any((day := _result_published_day(item)) is not None and day != today for item in items):
+        return None
+    for sentence in re.split(r"(?<=[.!?;])\s+", str(text).strip()):
+        folded = _reading_fold(sentence)
+        if _SEARCH_NOT_FOUND.match(folded) is not None:
+            continue
+        words = set(re.findall(r"[a-z0-9]+", folded))
+        if not words & _RELATIVE_DAY_WORDS:
+            continue
+        # The result the sentence says: the one whose title shares most of its words.
+        best: tuple[int, dict] | None = None
+        for item in items:
+            title = set(re.findall(r"[a-z0-9]+", _reading_fold(f"{item.get('title') or ''}")))
+            shared = len({word for word in words & title if len(word) >= 5 and word not in _RELATIVE_DAY_WORDS})
+            if shared >= 2 and (best is None or shared > best[0]):
+                best = (shared, item)
+        if best is None:
+            continue
+        day = _result_published_day(best[1])
+        said = words & _RELATIVE_DAY_WORDS & set(re.findall(r"[a-z0-9]+", _reading_fold(str(best[1].get("title") or ""))))
+        if day is not None and day != today and said:
+            return sorted(said)[0], day
+    return None
+
+
+def _search_report_other_year(text: str, payload: dict, user_text: str) -> str:
+    """M77 (DEV-D v3l D-w14-t1 «¿quién ha ganado la Vuelta este año?» → «Jonas Vingegaard conquistó la Vuelta a
+    España 2025» in 2026): what a result states of another year does not answer a question about this one. The year
+    a report sentence names when the request asks about the current year and the sentence does not name it."""
+
+    if _search_results_text(payload) is None:
+        return ""
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    if not (asks_this_year(user_text or "") or asks_this_year(str(seen.get("query") or ""))):
+        return ""
+    current = str(_report_today().year)
+    for sentence in re.split(r"(?<=[.!?;])\s+", str(text).strip()):
+        if _SEARCH_NOT_FOUND.match(_reading_fold(sentence)) is not None:
+            continue
+        years = re.findall(r"(?<![\d.,])(?:19|20)\d{2}(?![\d.,]\d)", sentence)
+        if years and current not in years:
+            return years[0]
+    return ""
+
+
+# M77 (DEV-D v3l D-s021 «me gustaría saber qué está pasando por el mundo» → «El mundo ha perdido sus colores y la IA más
+# potente está obsesionada con Mark Fisher…»): the headlines were «Por qué el mundo ha perdido sus colores: Los
+# estudios…» and «Por qué la IA más potente del mundo está obsesionada con Mark Fisher…». A headline that asks why
+# something is so is a piece about it; said without its «por qué», it becomes a fact the headline does not state.
+_WHY_TITLE = re.compile(r"^\W*(?:por\s*que|why)\s+(?P<clause>[^:?|]+)")
+
+
+def _search_report_why_title_as_fact(text: str, payload: dict) -> bool:
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    items = [
+        item for item in [*_search_results_of(payload), *(seen.get("headlines") or [])] if isinstance(item, dict)
+    ]
+    unquoted = re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(text))
+    said = " " + " ".join(re.findall(r"[a-z0-9]+", _reading_fold(unquoted))) + " "
+    for item in items:
+        found = _WHY_TITLE.match(_reading_fold(str(item.get("title") or "")))
+        if found is None:
+            continue
+        clause = re.findall(r"[a-z0-9]+", found.group("clause"))
+        for start in range(len(clause) - 3):
+            run = clause[start:start + 4]
+            if (
+                sum(1 for word in run if len(word) >= 4) >= 2
+                and f" {' '.join(run)} " in said
+                and not re.search(r"\b(?:por\s+que|why)\s+" + re.escape(clause[0]) + r"\b", said)
+            ):
+                return True
+    return False
+
+
+# M77 (DEV-D v3l D-p19-t3 «What's the genre?» → «Genre is any style or form of communication…», D-p23-t2 «Look for a
+# drama film.» → «A drama film is a work set in a past period…», D-w17-t5 → «The second headline refers to the text
+# indicating the content…»): the encyclopedia's article on the word itself was read and the reply defined the word.
+_REPORT_DEFINES = re.compile(
+    r"^\W*(?:(?:the|a|an|el|la|los|las|un|una)\s+)?(?P<term>[a-z]+(?:[\s-][a-z]+){0,2}?)\s+"
+    r"(?:is|are|es|son|refers?\s+to|se\s+refiere\s+a|means|significa|se\s+conoce\s+como)\b"
+)
+
+
+def _search_report_defines_the_ask(text: str, payload: dict, user_text: str) -> str:
+    """The term the report opens by defining, when the request used it for an attribute, one of a series or the kind of
+    thing to find (semantic.web.undefined_asked_phrases): the person did not ask what it means."""
+
+    if _search_results_text(payload) is None:
+        return ""
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    phrases = [
+        set(phrase.split())
+        for source in (user_text or "", str(seen.get("query") or ""))
+        for phrase in undefined_asked_phrases(source)
+    ]
+    first = re.split(r"(?<=[.!?;])\s+", str(text).strip())[0]
+    found = _REPORT_DEFINES.match(_reading_fold(first))
+    if found is None or not phrases:
+        return ""
+    term = found.group("term")
+    # A title said with capitals («Scary Movie is a 2000 comedy») names a work, not the word.
+    written = re.search(r"\b" + r"\W+".join(re.escape(word) for word in term.split()) + r"\b", first, re.IGNORECASE)
+    if written is not None and any(word[:1].isupper() for word in written.group(0).split()[1:]):
+        return ""
+    words = set(re.findall(r"[a-z]+", term))
+    if not any(words and all(_search_term_found(word, phrase) for word in words) for phrase in phrases):
+        return ""
+    # It is the word defined only when a result is the article on that word («Genre», «Headline - Wikipedia», «Drama
+    # histórico (cinematografía)»); «The genre is drama» over the film's own article answers.
+    for item in _search_results_of(payload):
+        if not isinstance(item, dict):
+            continue
+        heading = re.split(r"\s+[-|–—]\s+|\s*\(", str(item.get("title") or ""), maxsplit=1)[0]
+        heading_words = re.findall(r"[a-z]+", _reading_fold(heading))
+        if 0 < len(heading_words) <= 3 and _search_term_found(heading_words[0], words):
+            return term
+    return ""
 
 
 def _verified_search_results(situation: dict) -> bool:
@@ -10835,6 +11189,9 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
         return "search_report_shows_the_search"
     if _not_found_invents_a_cause(text, payload):
         return "search_not_found_invents_a_cause"
+    if _place_existence_denied(text, payload):
+        # M77 (DEV-D v3l D-s087): not recognised is not nonexistent.
+        return "place_existence_denied"
     results_text = _search_results_text(payload)
     if results_text and semantic_quantities.underived_price(text, user_text or "", results_text):
         # M62 (v3e2-final F-w13-t2): the money a report gives for the asked quantity is the unit price read or the
@@ -11069,7 +11426,7 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
             _reading_fold(text),
         ):
             return "search_result_denied"
-        if _search_report_denies_found_places(text, payload):
+        if _search_report_denies_found_places(text, payload, user_text):
             # M54: an OpenStreetMap place list is the answer, so neither «no lo encontré» nor «no hay» fits it.
             return "search_places_denied"
         if _search_report_absence_claim(text, payload, user_text):
@@ -11081,6 +11438,19 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
             return "search_report_off_subject"
         if _search_report_proposal_as_fact(text, payload, user_text):
             return "search_report_proposal_as_fact"
+        if _search_report_other_year(text, payload, user_text):
+            # M77 (DEV-D v3l D-w14-t1): this year's question is not answered with another year's result.
+            return "search_report_other_year"
+        if _search_report_stale_day(text, payload) is not None:
+            # M77 (DEV-D v3l D-p05-t2): a dated headline's «mañana» is its own day's.
+            return "search_report_stale_day"
+        if _search_report_defines_the_ask(text, payload, user_text):
+            # M77 (DEV-D v3l D-p19-t3, D-p23-t2, D-w17-t5): the word asked with is not what was asked.
+            return "search_report_defines_the_ask"
+    if _search_report_why_title_as_fact(text, payload):
+        # M77 (DEV-D v3l D-s021): «Por qué X» does not state X.
+        return "search_report_why_title_as_fact"
+    if results_text is not None:
         if _places_whole_address(text, payload, user_text):
             return "places_whole_address"
         if _search_report_names_nothing(text, payload, user_text):
@@ -12243,6 +12613,10 @@ _CALENDAR_WORDS = (
 )
 _PRESENT_CLAIM = re.compile(
     r"(?<![\w.,])\d+(?:[.,:/-]\d+)*(?!\w)|\b(?:" + _CALENDAR_WORDS + r")\b"
+    # M77 (DEV-D v3l D-p27-t1 «Any good movies for me to watch?» → «…try the new space opera or the cozy mystery that's
+    # been trending this week.»): with nothing read, what is trending, in fashion or most watched now is not known.
+    r"|\b(?:trending|trends?|tendencias?|de\s+moda|viral|most\s+(?:watched|popular|streamed)|mas\s+(?:vist[oa]s?|"
+    r"popular(?:es)?|escuchad[oa]s?)|top\s+(?:charts?|lists?)|number\s+one|numero\s+uno)\b"
 )
 
 
@@ -14226,6 +14600,27 @@ def compose_visible_defect(
             # D39 (owner, 2026-09-29): «cancela las alarmas» is answered by the alarms read and the one question
             # whether to cancel them (_alarm_offer_defect demands it); that trailing question is the owner's.
             question_text = re.sub(r"[¿?][^?¿]*\??\s*$", "", question_text).strip()
+        if (
+            operation == "web.news.headlines"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and isinstance(observed_dict, dict)
+            and isinstance(observed_dict.get("headlines"), list)
+        ):
+            # M77 (DEV-D v3l D-s032 «Noticias sobre Taylor Swift»): the headline «La crítica se harta de Taylor Swift,
+            # pero… ¿es ‘Cleveland’ tan mala?» quoted with its words is the outlet asking, not BAXY, and the draft that
+            # quoted three headlines died as extra_claim. A question whose words are an observed headline's is that
+            # headline's.
+            headline_words = [
+                f" {_headline_words(str(item.get('title') or ''))} "
+                for item in observed_dict["headlines"] if isinstance(item, dict)
+            ]
+
+            def headline_question(found: re.Match[str]) -> str:
+                words = _headline_words(found.group(0))
+                return " " if words and any(f" {words} " in title for title in headline_words) else found.group(0)
+
+            question_text = re.sub(r"¿?[^¿?.;:!]*\?", headline_question, question_text)
         if "?" in question_text or "¿" in question_text:
             return "extra_claim"
         closed_request = asks_to_close(user_text)
@@ -22616,7 +23011,22 @@ class LlmRuntime:
                     "encontraste; nunca que no hay."
                 ),
                 "search_places_denied": (
-                    "These results are what was asked, found in that place: name one or two of them with their "
+                    # M77 (DEV-D v3l D-p16-t3 «No valet parking is available at the Kenzi Rose Garden»): the places
+                    # read are of the class asked, not of what the person qualified it with; that is not found.
+                    (
+                        "The places read are not known to be " + " or ".join("«" + word + "»" for word in qualified)
+                        + ": say only, in one sentence, that you could not find it naming "
+                        + " and ".join("«" + word + "»" for word in qualified) + "; never that there is none."
+                        if response_language == "en"
+                        else "No se sabe si los lugares leídos son " + " o ".join("«" + word + "»" for word in qualified)
+                        + ": di sólo, en una oración, que no lo encontraste nombrando "
+                        + " y ".join("«" + word + "»" for word in qualified) + "; nunca que no hay."
+                    )
+                    if (qualified := [
+                        word for word in _places_unread_qualifiers(visible_situation, user_text)
+                        if word in set(re.findall(r"[a-z0-9]+", _reading_fold(candidate)))
+                    ])
+                    else "These results are what was asked, found in that place: name one or two of them with their "
                     "street, as the results write them, in one sentence; never say you did not find it, and add no "
                     "quality a result does not state."
                     if response_language == "en"
@@ -22647,6 +23057,61 @@ class LlmRuntime:
                     if response_language == "en"
                     else "Di sólo, en breve, que no lo encontraste: sin razones ni suposiciones de por qué "
                     "(nunca que no existe ni que sólo existe otra cosa)."
+                ),
+                # M77 (DEV-D v3l D-w14-t1 «…conquistó la Vuelta a España 2025» for «este año»).
+                "search_report_other_year": (
+                    f"The person asked about this year, {_report_today().year}; what you said is of "
+                    f"{_search_report_other_year(candidate, visible_situation, user_text) or 'another year'}. Say only "
+                    f"what a result states of {_report_today().year}; if none does, say briefly, in one sentence, that "
+                    "you could not find it."
+                    if response_language == "en"
+                    else f"La persona preguntó por este año, {_report_today().year}; lo que dijiste es de "
+                    f"{_search_report_other_year(candidate, visible_situation, user_text) or 'otro año'}. Di sólo lo "
+                    f"que un resultado afirma de {_report_today().year}; si ninguno lo hace, di brevemente, en una "
+                    "oración, que no lo encontraste."
+                ),
+                # M77 (DEV-D v3l D-p05-t2 «…abrirá mañana con más de 400 plazas» from a headline of five days before).
+                "search_report_stale_day": (
+                    (
+                        f"That result was published on {stale[1].isoformat()}: its «{stale[0]}» is that day's, not "
+                        "the person's. Do not say it of today; if nothing read answers for the person's day, say "
+                        "briefly, in one sentence, that you could not find it."
+                        if response_language == "en"
+                        else f"Ese resultado se publicó el {stale[1].isoformat()}: su «{stale[0]}» es de ese día, no "
+                        "del de la persona. No lo digas de hoy; si nada de lo leído contesta para el día de la persona, "
+                        "di brevemente, en una oración, que no lo encontraste."
+                    )
+                    if (stale := _search_report_stale_day(candidate, visible_situation)) is not None
+                    else ""
+                ),
+                # M77 (DEV-D v3l D-p19-t3 «Genre is any style…», D-p23-t2, D-w17-t5).
+                "search_report_defines_the_ask": (
+                    f"The person did not ask what «{defined}» means: they asked about a particular one. Say what a "
+                    "result states about that one; if none does, say briefly, in one sentence, that you could not "
+                    "find it, naming it."
+                    if response_language == "en"
+                    else f"La persona no preguntó qué significa «{defined}»: preguntó por uno en particular. Di lo que "
+                    "un resultado afirma de ese; si ninguno lo hace, di brevemente, en una oración, que no lo "
+                    "encontraste, nombrándolo."
+                )
+                if (defined := _search_report_defines_the_ask(candidate, visible_situation, user_text))
+                else "",
+                # M77 (DEV-D v3l D-s021 «El mundo ha perdido sus colores…» from «Por qué el mundo ha perdido sus
+                # colores: …»).
+                "search_report_why_title_as_fact": (
+                    "A headline that asks why something is so does not state it: quote such a headline whole, between "
+                    "«», as a headline, or leave it out; say nothing a headline does not state."
+                    if response_language == "en"
+                    else "Un titular que pregunta por qué algo es así no lo afirma: cita ese titular entero, entre «», "
+                    "como titular, o déjalo fuera; no digas nada que un titular no afirme."
+                ),
+                # M77 (DEV-D v3l D-s087 «…porque no existe un lugar llamado Abingdon en Virginia»).
+                "place_existence_denied": (
+                    "The weather service did not recognise that name; that is all that is known. Say that, briefly, "
+                    "and never that the place does not exist."
+                    if response_language == "en"
+                    else "El servicio del tiempo no reconoció ese nombre; eso es todo lo que se sabe. Dilo, en breve, "
+                    "y nunca que el lugar no existe."
                 ),
                 "search_report_shows_the_search": (
                     "Say the answer as something you know, in one or two sentences: never "

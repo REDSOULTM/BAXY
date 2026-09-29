@@ -114,6 +114,9 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
     ("llm.py", "_search_report_shows_the_search"): ("GROUNDING", _GROUNDING_SEARCH),
     ("llm.py", "_search_report_off_subject"): (
         "GROUNDING", "the proper names the person wrote are the subject the report must be about"),
+    ("llm.py", "_headline_words"): (
+        "GROUNDING", "M77: a question of the reply is folded to its words to tell whether it quotes an observed "
+        "headline; nothing decides what was asked"),
     ("llm.py", "_places_whole_address"): (
         "GROUNDING", "the tail of an address the person wrote themselves may be said back (M62)"),
     ("llm.py", "_weather_fact_defect"): (

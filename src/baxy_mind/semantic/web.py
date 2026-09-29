@@ -3738,3 +3738,84 @@ def names_subject(text: str, subject: str) -> bool:
     of Us», «Nolan» names «Christopher Nolan»)."""
 
     return bool(_name_words(subject) & set(re.findall(r"[a-z0-9]+", _reading_fold(text))))
+
+
+# M77 (DEV-D v3l D-p16-t1/t2/t3 «valet parking at the Kenzi Rose Garden»): OpenStreetMap reads a class of site
+# («parking»), never what the person qualified it with («valet»). The words that name the class read (twin of
+# OpenStreetMapPlaceSource.Kinds and PairedKinds), folded.
+PLACE_KIND_WORDS = frozenset(
+    {
+        "aparcamiento", "aparcamientos", "estacionamiento", "estacionamientos", "parqueadero", "parqueaderos",
+        "parking", "car", "park", "parks", "gasolinera", "gasolineras", "bencinera", "bencineras", "fuel", "gas",
+        "petrol", "station", "stations", "farmacia", "farmacias", "pharmacy", "pharmacies", "drugstore", "drugstores",
+        "hospital", "hospitales", "hospitals", "clinica", "clinicas", "clinic", "clinics", "cajero", "cajeros", "atm",
+        "atms", "hotel", "hoteles", "hotels", "hostal", "hostales", "hostel", "hostels", "supermercado",
+        "supermercados", "supermarket", "supermarkets", "restaurante", "restaurantes", "restaurant", "restaurants",
+        "taqueria", "taquerias", "cafeteria", "cafeterias", "cafe", "cafes", "panaderia", "panaderias", "bakery",
+        "bakeries", "comisaria", "comisarias", "veterinaria", "veterinarias", "veterinario", "museo", "museos",
+        "museum", "museums", "biblioteca", "bibliotecas", "library", "libraries", "cine", "cines", "cinema",
+        "cinemas", "dentista", "dentistas", "dentist", "dentists",
+    }
+)
+
+
+def request_common_words(text: str) -> frozenset[str]:
+    """The folded words of four letters or more that the person wrote in lower case: what they asked for and how they
+    qualified it, not the names they wrote («valet» and «parking» of «valet parking at the Kenzi Rose Garden»)."""
+
+    words: set[str] = set()
+    for raw in str(text or "").split():
+        bare = raw.strip("¿¡?!.,;:\"'«»()“”‘’")
+        if bare[:1].islower():
+            words |= {word for word in re.findall(r"[a-z0-9]+", _reading_fold(bare)) if len(word) >= 4}
+    return frozenset(words)
+
+
+# M77 (DEV-D v3l D-w14-t1 «¿quién ha ganado la Vuelta este año?» → «Jonas Vingegaard conquistó la Vuelta a España
+# 2025»): a question about this year, this season or the one under way asks for the current year's.
+_THIS_YEAR = re.compile(
+    r"\b(?:este|esta|this)\s+(?:ano|temporada|season|year)\b|\b(?:ano|temporada)\s+(?:actual|en\s+curso)\b|"
+    r"\b(?:current|present)\s+(?:year|season)\b|\ben\s+lo\s+que\s+va\s+del\s+ano\b"
+)
+
+
+def asks_this_year(text: str) -> bool:
+    """The request asks about the current year or season («este año», «esta temporada», «this year»)."""
+
+    return _THIS_YEAR.search(_reading_fold(text)) is not None
+
+
+# M77 (DEV-D v3l D-p19-t3 «What's the genre?» after a film, D-p23-t2 «Look for a drama film.», D-w17-t5 «tell me more
+# about the second one» → the query «more about the second headline»): the search found the encyclopedia's article on
+# the word itself, and the reply defined «genre», «drama film», «headline». A word the person used for an attribute
+# of something («the genre», «su trama»), for one of a series («the second headline», «el segundo titular») or for the
+# kind of thing they want found («look for a drama film», «busca una película de terror») does not ask what that word
+# means. Folded phrases, one to three words.
+_ATTRIBUTE_NOUN = (
+    r"(?:genre|genres|plot|cast|rating|runtime|director|author|score|ending|headline|title|story|premise|budget|"
+    r"soundtrack|genero|trama|reparto|autor|autora|final|titular|titulo|argumento|sinopsis|duracion|puntuacion)"
+)
+_UNDEFINED_ASKED = (
+    re.compile(r"\b(?:the|its|their|his|her|el|la|su|sus)\s+(?P<phrase>" + _ATTRIBUTE_NOUN + r")\b"),
+    re.compile(
+        r"\b(?:the|el|la|los|las)\s+(?P<phrase>(?:first|second|third|fourth|fifth|last|next|previous|primer|primero|"
+        r"primera|segundo|segunda|tercer|tercero|tercera|cuarto|cuarta|quinto|quinta|ultimo|ultima|siguiente|"
+        r"anterior)\s+[a-z]+)"
+    ),
+    re.compile(
+        r"\b(?:look(?:ing)?\s+for|search(?:ing)?\s+for|find(?:\s+me)?|recommend(?:\s+me)?|suggest|buscame|busca(?:me)?|"
+        r"encuentrame|encuentra(?:me)?|recomiendame|recomienda(?:me)?|sugiereme|sugiere)\s+"
+        r"(?:(?:a|an|some|any|un|una|unos|unas|algun|alguna|algunos|algunas)\s+)?"
+        r"(?P<phrase>[a-z]+(?:\s+[a-z]+){0,2})"
+    ),
+)
+
+
+def undefined_asked_phrases(text: str) -> tuple[str, ...]:
+    """The folded phrases the request uses for an attribute, one of a series, or the kind of thing to find: words
+    whose meaning it does not ask («the genre», «the second headline», «a drama film»)."""
+
+    folded = _reading_fold(text)
+    return tuple(
+        found.group("phrase") for pattern in _UNDEFINED_ASKED for found in pattern.finditer(folded)
+    )
