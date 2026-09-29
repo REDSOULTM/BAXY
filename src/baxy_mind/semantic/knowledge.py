@@ -215,7 +215,22 @@ def reference_lookup(text: str, prior_requests: Iterable[str] = ()) -> Reference
         or _WORK.search(folded) is not None
     ):
         return None
-    return previous
+    # What the question asks about goes after «:» (the provider keeps the plot's paragraphs that name it).
+    focus = [
+        word
+        for word in dict.fromkeys(re.findall(r"[a-z]{4,}", folded))
+        if word not in _QUESTION_WORDS and word not in previous.subject.split()
+    ]
+    if not focus:
+        return previous
+    return ReferenceLookup(previous.kind, previous.subject, previous.query + ": " + " ".join(focus[:4]), previous.language)
+
+
+_QUESTION_WORDS = frozenset({
+    "porque", "cual", "cuales", "cuando", "donde", "como", "quien", "quienes", "cuanto", "cuantos", "esta", "este",
+    "estos", "estas", "eso", "esto", "hace", "hizo", "tiene", "tienen", "puede", "pasa", "paso", "what", "which",
+    "when", "where", "does", "that", "this", "with", "have", "there", "about",
+})
 
 
 _NUMBER_WORDS = {
