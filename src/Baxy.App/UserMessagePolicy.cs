@@ -614,6 +614,8 @@ internal static class UserMessagePolicy
             ("looks_like_failure",
                 LooksLikeFailure(reply)
                 && !(unsupportedByMind && !ClaimsFailedAttempt(reply))
+                // M75 (DEV-D v3l D-p02-t2): «No puedo hacer fotos» answers «¿Serías capaz de hacer foto ahora?».
+                && !(AsksWhetherAble(user) && !ClaimsFailedAttempt(reply))
                 && !OnlyEchoesThePersonsFailures(reply, userText)
                 && !LooksLikeKnowledgeQuestion(user)
                 && ConversationFallbackIntent(userText) != "out_of_catalog"),
@@ -658,6 +660,8 @@ internal static class UserMessagePolicy
                 // ask words that lead no clause; the mind's overheard-speech
                 // clarification asks, and that question is not an unanswered ask.
                 && !IsLongDeclarativeStatement(user)
+                // M75 (DEV-D v3l D-w15-t3): with nothing to translate in the message, asking which is the answer.
+                && !TranslationWithoutItsText(userText)
                 && (IsGreetingOnly(reply)
                     || (StartsWithGreeting(reply) && GreetingRemainder(userText) is null)
                     || reply.Contains('?', StringComparison.Ordinal)
@@ -1656,6 +1660,33 @@ internal static class UserMessagePolicy
             FoldForPolicy(reply),
             @"\b(?:no\s+(?:pude|logr[eé]|consegu[ií]|complet[eé]|realic[eé])|(?:i\s+)?(?:couldn['’]t|could\s+not)|failed\s+to)\b",
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+
+    // M75 (DEV-D v3l D-p02-t2 «¿Serías capaz de hacer foto ahora?»): whether BAXY is able to do something is answered
+    // yes or no, and «No puedo hacer fotos» is that answer. Twin of semantic.conversation.asks_whether_able.
+    private static bool AsksWhetherAble(string user) =>
+        Regex.IsMatch(
+            user,
+            @"\b(?:eres|seras|serias|sos|serian|son)\s+(?:\w+\s+)?capa(?:z|ces)\s+de\b"
+            + @"|\btienes\s+(?:la\s+)?(?:capacidad|posibilidad)\s+de\b"
+            + @"|\b(?:are|were)\s+you\s+(?:\w+\s+)?(?:able|capable)\s+(?:to|of)\b"
+            + @"|\bwould\s+you\s+be\s+(?:able|capable)\s+(?:to|of)\b"
+            + @"|\bdo\s+you\s+have\s+the\s+(?:ability|capacity)\s+to\b",
+            RegexOptions.CultureInvariant);
+
+    // M75 (DEV-D v3l D-w15-t3 «traducelo al ingles que es para mi jefa»): a translation of something only pointed at
+    // has no text to translate, so asking which is the reply. Twin of semantic.conversation.translation_without_its_text.
+    private static bool TranslationWithoutItsText(string userText)
+    {
+        string text = userText ?? string.Empty;
+        return Regex.IsMatch(
+                FoldForPolicy(text),
+                @"\btraduc(?:e|i|ir)(?:me|nos|se)?(?:lo|la|los|las)\b"
+                + @"|\btraduc(?:e|i|ir)(?:me|nos)?\s+(?:eso|esto|esa|ese|este|esta|aquello|lo\s+anterior)\b"
+                + @"|\btranslate\s+(?:it|them|that|this|these|those)\b(?!\s+(?!(?:to|into|in|for|please)\b)[a-z])",
+                RegexOptions.CultureInvariant)
+            && !Regex.IsMatch(text, @"['‘“""«][^'’”""»]{2,40}['’”""»]", RegexOptions.CultureInvariant)
+            && !text.Contains(':', StringComparison.Ordinal);
+    }
 
     private static bool ClaimsUnverifiedConnectivity(string folded) =>
         ClaimsFirstPersonConnectivity(folded)

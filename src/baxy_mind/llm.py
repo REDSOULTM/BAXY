@@ -132,6 +132,7 @@ from .semantic.conversation import (
     asks_to_make,
     asks_to_order,
     asks_what_this_is,
+    asks_whether_able,
     assent_without_action,
     assistant_desire_thing,
     coordinates_actions,
@@ -143,6 +144,7 @@ from .semantic.conversation import (
     requested_infinitive_stems,
     sarcasm_question,
     spelling_word,
+    translation_without_its_text,
     versus_contenders,
 )
 from .semantic.apps import asks_to_close, asks_to_install_or_remove, object_asked_to_close, wants_to_work_in_it
@@ -5593,6 +5595,11 @@ _ATTEMPT_CLAIM = re.compile(
     r"\b(?:al\s+)?intent(?:ar|e|é|o|ó|arlo|arla|ando|amos)\b|\btrat(?:ar|e|é|o|ó|ando)\s+de\b|"
     r"\b(?:i\s+)?(?:tried|trying|attempted|attempting)\b|\bwhen\s+i\s+tried\b"
 )
+# A failure of something attempted, said in the past («no pude», «I couldn't»); twin of the App's
+# UserMessagePolicy.ClaimsFailedAttempt. Casefolded text, accents kept.
+_FAILED_ATTEMPT = re.compile(
+    r"\b(?:no\s+(?:pude|logr[eé]|consegu[ií]|complet[eé]|realic[eé])|(?:i\s+)?(?:couldn['’]t|could\s+not)|failed\s+to)\b"
+)
 
 # M69 (guion v3h t46): the microphone said off («está desactivado», «is off») or on («está activo», «is on»); for the
 # microphone off is muted and on is unmuted. Casefolded text, accents kept; «no está activo» is off, not on. Only the
@@ -7190,6 +7197,14 @@ def _looks_like_capability_question(user_text: str) -> bool:
     return read_request(user_text).has(INTENT_CAPABILITY)
 
 
+def _knowledge_to_answer(user_text: str) -> bool:
+    """A knowledge ask a clarification cannot stand in for. M75 (DEV-D v3l D-w15-t3 «traducelo al ingles que es para
+    mi jefa»): a translation of something only pointed at has no text to translate, so asking which is the reply; all
+    three questions died on knowledge_question and the turn ended in ⚠."""
+
+    return _looks_like_knowledge_question(user_text) and not translation_without_its_text(user_text)
+
+
 def _looks_like_ambiguous_action(user_text: str) -> bool:
     return read_request(user_text).has(INTENT_AMBIGUOUS_ACTION)
 
@@ -7258,6 +7273,13 @@ _DETERMINISTIC_FAILURES = {
     "media_seek_postcondition_not_verified": (
         "No pude confirmar el salto en la reproducción.",
         "I couldn't confirm the jump in the playback.",
+    ),
+    # M75 (DEV-D v3l D-w02-t2 «y si allá son las 10 de la mañana acá qué hora es»): the turn was not interpreted and
+    # every draft either invented a limit («no tengo acceso a tu ubicación»), answered anyway or guessed a reason; the
+    # turn ended in ⚠. What is known is only that the message was not understood (_CAUSE_FACT), said without a cause.
+    **dict.fromkeys(
+        ("turn_runtime_failure", "turn_contract_failure", "turn_unavailable"),
+        ("No pude entender bien tu mensaje.", "I couldn't quite understand your message."),
     ),
 }
 
@@ -10680,6 +10702,34 @@ def _headline_words(value: str) -> str:
     return " ".join(re.findall(r"\w+", _reading_fold(value)))
 
 
+def _without_quoted_headlines(text: str, situation: dict) -> str:
+    """``text`` folded, without the verified headlines it quotes, their own «¿…?» included.
+
+    M75 (DEV-D v3l D-s032 «Noticias sobre Taylor Swift»): the feed's «La crítica se harta de Taylor Swift, pero… ¿es
+    ‘Cleveland’ tan mala?» quoted with plain quotes was read as BAXY asking, and the first draft (three headlines as
+    written) and the deterministic final both died on extra_claim. A headline is found by its words in order, as the
+    quoting check reads it (M60); the question marks it carries go with it, a question of BAXY's own stays."""
+
+    folded = _accent_folded_with_punctuation(text)
+    if situation.get("operation") != "web.news.headlines" or not (
+        situation.get("verified") is True and situation.get("succeeded") is True
+    ):
+        return folded
+    headlines = _merged_observed(situation).get("headlines")
+    for item in headlines if isinstance(headlines, list) else []:
+        title = item.get("title") if isinstance(item, dict) else None
+        words = re.findall(r"\w+", _accent_folded_with_punctuation(title)) if isinstance(title, str) else []
+        if len(words) < 3:
+            continue
+        # Only the marks at the headline's own ends; one inside it goes with the words around it.
+        opening = r"(?:¿\W{0,3})?" if re.match(r"\W*¿", title) else ""
+        closing = r"(?:\W{0,3}\?)?" if re.search(r"\?\W*$", title) else ""
+        folded = re.sub(
+            opening + r"(?<!\w)" + r"\W+".join(re.escape(word) for word in words) + r"(?!\w)" + closing, " ", folded,
+        )
+    return folded
+
+
 def _news_fact_defect(text: str, payload: dict) -> str:
     """REOPEN1993 grupo N: the reply quotes the observed headlines (at least
     three when the feed gave that many) and names no portal listing instead."""
@@ -13439,6 +13489,10 @@ def compose_visible_defect(
         )
         and not _looks_like_refuse_question(user_text)
         and not _looks_like_capability_question(user_text)
+        # M75 (DEV-D v3l D-p02-t2 «¿Serías capaz de hacer foto ahora?»): «No puedo hacer fotos.» answers whether BAXY
+        # is able; three such drafts died here and the turn ended in ⚠. A failed attempt claimed is still a failure
+        # (twin: UserMessagePolicy looks_like_failure).
+        and not (kind == "conversation" and asks_whether_able(user_text) and _FAILED_ATTEMPT.search(folded) is None)
         and not (kind == "conversation" and _failure_word_is_the_persons(failure_assertions, user_text))
         and not _search_not_found_report(stripped, situation)
         and not _listing_not_found_report(stripped, situation)
@@ -13491,7 +13545,7 @@ def compose_visible_defect(
             if visible_reply_is_only_questions(stripped):
                 return "answered_with_a_question"
     if intent == "clarification" or kind == "clarification":
-        if _required_compose_input(situation) is None and _looks_like_knowledge_question(user_text):
+        if _required_compose_input(situation) is None and _knowledge_to_answer(user_text):
             if "?" in stripped or "¿" in stripped:
                 return "knowledge_question"
             folded_reply = stripped.casefold().strip(" .!?¿¡")
@@ -14226,6 +14280,8 @@ def compose_visible_defect(
             # D39 (owner, 2026-09-29): «cancela las alarmas» is answered by the alarms read and the one question
             # whether to cancel them (_alarm_offer_defect demands it); that trailing question is the owner's.
             question_text = re.sub(r"[¿?][^?¿]*\??\s*$", "", question_text).strip()
+        if operation == "web.news.headlines":
+            question_text = _without_quoted_headlines(question_text, situation)
         if "?" in question_text or "¿" in question_text:
             return "extra_claim"
         closed_request = asks_to_close(user_text)
@@ -20855,7 +20911,7 @@ class LlmRuntime:
         elif intent == "clarification" or kind == "clarification":
             if _required_compose_input(situation) is not None:
                 instruct("\nAsk one short question for missingValue. Do not guess or claim completion.")
-            elif _looks_like_knowledge_question(user_text):
+            elif _knowledge_to_answer(user_text):
                 instruct(
                     "\nAnswer the person's question in one short sentence. "
                     "Do not greet. Do not refuse."
