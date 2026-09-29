@@ -1773,7 +1773,11 @@ def _kv_offload_from_env(value: str | None = None) -> bool:
 
 
 def _kv_cache_type_from_env(value: str | None = None) -> str:
-    """Return the promoted KV quantization with a bounded research override."""
+    """Return the promoted KV quantization with a bounded research override.
+
+    M59 (goal v3 step 7): ``BAXY_MIND_KV_CACHE_TYPE_V`` sets the V cache alone (K keeps its type); V in q4_0 saved as
+    much as K+V in q4_0 (server 3 724 → 3 440 MiB with 3 slots of 12 288) while K keeps the attention scores exact.
+    """
 
     raw = (
         value
@@ -13967,7 +13971,7 @@ class LlmRuntime:
             "-ctk",
             kv_cache_type,
             "-ctv",
-            kv_cache_type,
+            _kv_cache_type_from_env(os.environ.get("BAXY_MIND_KV_CACHE_TYPE_V", kv_cache_type)),
             "-np",
             str(parallel),
             "--jinja",

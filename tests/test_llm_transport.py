@@ -1395,3 +1395,23 @@ def test_gpu_slot_count_can_be_lowered_for_a_measured_run() -> None:
     assert _gpu_slots_from_env(" 3 ") == 3
     assert _gpu_slots_from_env("7") == 3
     assert _gpu_slots_from_env(None) == 3
+
+
+def test_the_v_cache_type_can_differ_from_k(monkeypatch: pytest.MonkeyPatch) -> None:
+    """M59 (goal v3 step 7): BAXY_MIND_KV_CACHE_TYPE_V sets only the V cache; without it V follows K."""
+    from baxy_mind.llm import LlmRuntime
+
+    runtime = object.__new__(LlmRuntime)
+    runtime._server = "llama-server.exe"
+    runtime._gguf = "qwen.gguf"
+    runtime._port = 12345
+    runtime._parallel_turn_verification = True
+    monkeypatch.setenv("BAXY_MIND_NGL", "99")
+    monkeypatch.delenv("BAXY_MIND_KV_CACHE_TYPE", raising=False)
+    monkeypatch.delenv("BAXY_MIND_KV_CACHE_TYPE_V", raising=False)
+    command = runtime._server_command()
+    assert command[command.index("-ctk") + 1] == command[command.index("-ctv") + 1] == "q8_0"
+    monkeypatch.setenv("BAXY_MIND_KV_CACHE_TYPE_V", "q4_0")
+    command = runtime._server_command()
+    assert command[command.index("-ctk") + 1] == "q8_0"
+    assert command[command.index("-ctv") + 1] == "q4_0"
