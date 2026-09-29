@@ -1904,8 +1904,12 @@ def _explicit_arguments_from_evidence(
             return {"folder": next(iter(folders))}
 
     if operation == "notification.list":
-        # D39: «cancela las alarmas» reads them first (the offer to cancel them all is made with the list).
-        if effect_intent._notification_listing_request(evidence) or plural_alarm_cancellation(evidence):
+        # D39: «cancela las alarmas» reads them first (the offer to cancel them all is made with the list). M62
+        # (v3e2-final F-s040: 20 of 38 read, «resultsMayBeTruncated»): the offer of every alarm reads as many as the
+        # catalog lets it (50).
+        if plural_alarm_cancellation(evidence):
+            return {"limit": 50}
+        if effect_intent._notification_listing_request(evidence):
             return {}
 
     if operation == "bluetooth.radio.status":
