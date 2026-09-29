@@ -3307,6 +3307,29 @@ _WEATHER_FUTURE = (
 _WEATHER_TODAY = r"\b(?:hoy|today|tonight|esta\s+(?:manana|tarde|noche)|later|mas\s+tarde|ahora|now)\b"
 
 
+# M62 (v3e2-final F-p07-t1 «I must verify the weather in Foster City later today.» → «It is 11.7°C and clear…», the
+# temperature at 00:45 with a maximum of 30 °C read for the day): a later part of today asks today's read (its maximum,
+# minimum and rain), not only the weather now. Tomorrow or a later day is its own question.
+_WEATHER_LATER_TODAY = (
+    r"\b(?:later(?:\s+(?:on|today|tonight))?|this\s+(?:afternoon|evening)|tonight|mas\s+tarde|luego|"
+    r"esta\s+(?:tarde|noche)|(?:hoy\s+)?(?:por|en)\s+la\s+(?:tarde|noche)|a\s+la\s+tarde|en\s+un\s+rato)\b"
+)
+
+
+def weather_asks_later_in_the_day(user_text: str) -> bool:
+    """The weather is asked for a later part of today (``_WEATHER_LATER_TODAY``), not for tomorrow or a later day.
+    What to wear or carry then («¿Debo ponerme scarf esta noche?») is its own question, answered from the
+    temperature (uso real tanda 2)."""
+
+    folded = _reading_fold(user_text)
+    return (
+        re.search(_WEATHER_LATER_TODAY, folded) is not None
+        and not _weather_asks_tomorrow(user_text)
+        and not weather_asks_coming_days(user_text)
+        and re.search(_WEATHER_GEAR, folded) is None
+    )
+
+
 def weather_asks_future(user_text: str) -> bool:
     """The weather is asked in the future tense and no day is named (``_WEATHER_FUTURE``)."""
 
