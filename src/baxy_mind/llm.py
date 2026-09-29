@@ -11546,7 +11546,8 @@ def _claims_it_performed_the_open(folded: str) -> bool:
 
     return re.search(
         r"(?:^|[.;:,]\s*|\b(?:y|and|so|pero|but)\s+)(?:ya\s+|yo\s+|i\s+|i've\s+|i\s+have\s+)*"
-        r"(?:abrí|abri|abro|opened|launched|started)\b",
+        # M65 (conv-v3g owner script t37 «He abierto Steam…» over alreadyRunning=true): the perfect tense too.
+        r"(?:abrí|abri|abro|(?:(?:lo|la)\s+)?he\s+abierto|opened|launched|started)\b",
         folded,
     ) is not None
 
@@ -12453,6 +12454,16 @@ def compose_visible_defect(
         # anterior un estado que este turno acaba de crear.
         if not already_running and _claims_the_target_was_open_before(folded):
             return "invented_prior_open_state"
+        # M65 (conv-v3g owner script t37 «He abierto Steam y he entrado en la biblioteca.»): app.open opens the
+        # application or brings it forward, nothing inside it; a section entered, a click or a page gone to was not
+        # this operation's and nothing observed it.
+        if re.search(
+            r"\b(?:(?:he|hemos)\s+(?:entrado|ido|navegado|hecho\s+clic|pulsado|abierto\s+(?:la|el)\s+(?:secci[oó]n|"
+            r"pestaña|biblioteca|men[uú]))|entr[eé]\s+(?:a|al|en)\b|fui\s+a\b|hice\s+clic|puls[eé]\b|"
+            r"(?:i\s+)?(?:went|navigated|clicked|entered)\b)",
+            folded,
+        ):
+            return "extra_claim"
     # WEB1261: «Ya fui a YouTube. La página ya estaba abierta.» gave a verified
     # navigation from about:blank a prior state it never had.
     if (
