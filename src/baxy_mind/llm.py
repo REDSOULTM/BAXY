@@ -53,7 +53,7 @@ from .semantic.network import (
 )
 from .semantic.web import (
     weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
-    weather_asks_coming_days, weather_asks_week, weather_sun_events_asked, place_containers,
+    weather_asks_coming_days, weather_asks_week, weather_sun_events_asked, place_containers, searched_clause,
 )
 from .semantic.temporal import (
     _DAY_WORDS, clock_elsewhere, clock_later_asked, named_clock_dial, plural_alarm_cancellation,
@@ -11546,7 +11546,8 @@ def _claims_it_performed_the_open(folded: str) -> bool:
 
     return re.search(
         r"(?:^|[.;:,]\s*|\b(?:y|and|so|pero|but)\s+)(?:ya\s+|yo\s+|i\s+|i've\s+|i\s+have\s+)*"
-        r"(?:abrí|abri|abro|opened|launched|started)\b",
+        # M65 (conv-v3g owner script t37 «He abierto Steam…» over alreadyRunning=true): the perfect tense too.
+        r"(?:abrí|abri|abro|(?:(?:lo|la)\s+)?he\s+abierto|opened|launched|started)\b",
         folded,
     ) is not None
 
@@ -12453,6 +12454,16 @@ def compose_visible_defect(
         # anterior un estado que este turno acaba de crear.
         if not already_running and _claims_the_target_was_open_before(folded):
             return "invented_prior_open_state"
+        # M65 (conv-v3g owner script t37 «He abierto Steam y he entrado en la biblioteca.»): app.open opens the
+        # application or brings it forward, nothing inside it; a section entered, a click or a page gone to was not
+        # this operation's and nothing observed it.
+        if re.search(
+            r"\b(?:(?:he|hemos)\s+(?:entrado|ido|navegado|hecho\s+clic|pulsado|abierto\s+(?:la|el)\s+(?:secci[oó]n|"
+            r"pestaña|biblioteca|men[uú]))|entr[eé]\s+(?:a|al|en)\b|fui\s+a\b|hice\s+clic|puls[eé]\b|"
+            r"(?:i\s+)?(?:went|navigated|clicked|entered)\b)",
+            folded,
+        ):
+            return "extra_claim"
     # WEB1261: «Ya fui a YouTube. La página ya estaba abierta.» gave a verified
     # navigation from about:blank a prior state it never had.
     if (
@@ -22939,10 +22950,23 @@ class LlmRuntime:
                 # Verification 2026-09-25 (held-out «averiguá qué dijo la crítica»): three drafts copied the page's
                 # tagline and the turn ended in ⚠. By the owner's rule, what no draft can say from the pages in
                 # BAXY's own voice was not found. A model that ran out of time proved nothing: that still raises.
-                not_found = "I couldn't find it." if response_language == "en" else "No lo encontré."
-                if publishable(not_found):
-                    record_stage("not_found_fallback", not_found, not_found, response, "", True)
-                    return not_found
+                # M64 (v3f-final F-w12-t4 → t5): «No lo encontré.» left the next turn without its topic; what was
+                # looked up is named in the person's words (the request, else the query sent), never a fact.
+                observed = situation.get("observed") if isinstance(situation.get("observed"), dict) else {}
+                candidates = []
+                for source in dict.fromkeys((user_text, str(observed.get("query") or ""))):
+                    read = searched_clause(source, response_language)
+                    if read is not None:
+                        clause, asked = read
+                        candidates.append(
+                            f"I couldn't find {'out ' if asked else ''}{clause}." if response_language == "en"
+                            else f"No encontré {clause}."
+                        )
+                candidates.append("I couldn't find it." if response_language == "en" else "No lo encontré.")
+                for not_found in candidates:
+                    if publishable(not_found):
+                        record_stage("not_found_fallback", not_found, not_found, response, "", True)
+                        return not_found
             # A7: a verified result (or a typed failure with its known cause) is told with its observed values,
             # through the same gate as a draft, whether the drafts were vetoed or the writer ran out of time.
             if isinstance(situation, dict):

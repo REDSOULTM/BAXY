@@ -82,7 +82,10 @@ _BARE_DEICTIC_REQUEST = re.compile(r"[a-z]+(?:\s+(?:me|lo|la))?\s+(?:eso|esto|aq
 _SOCIAL_WORD = (
     r"(?:gracias|muchas\s+gracias|genial|perfecto|buenisimo|jaja\w*|jeje\w*|uf+|ah+|oh+|wow|"
     r"que\s+(?:bien|bueno|buena|genial|lindo|linda|risa|gracioso)|"
-    r"thanks|thank\s+you|cool|nice|great|"
+    # M65 (conv-v3g owner script t37 «Perfecto muy bien», t31 «Muy bien baxy»): praise said alone. A bare «bien»
+    # stays out: after a yes/no question it can be the yes.
+    r"muy\s+bien|bien\s+hecho|buen\s+trabajo|excelente|de\s+lujo|"
+    r"thanks|thank\s+you|cool|nice|great|perfect|awesome|good\s+job|well\s+done|great\s+job|"
     # Tanda 7 «no that's all thank you»: closing the conversation continues nothing.
     r"that'?s\s+(?:all|it)|eso\s+es\s+todo|nada\s+mas|nothing\s+else)"
 )
@@ -360,9 +363,25 @@ def restatement_was_said(restatement: str, lines: list[str]) -> bool:
     (Fase 3.5b M19): «ábreme eso porfa» after the time was restated «Abre el navegador» and a browser opened.
     """
 
-    said = {word[:4] for line in lines for word in _words(line)}
-    meaningful = [word for word in _words(restatement) if word not in _STOPWORDS]
-    return all(word[:4] in said for word in meaningful if word not in _FRAME_WORDS and not word.isdigit())
+    said_words = [_undiphthonged(word) for line in lines for word in _words(line)]
+    said = {word[:4] for word in said_words}
+    meaningful = [
+        _undiphthonged(word)
+        for word in _words(restatement)
+        if word not in _STOPWORDS and word not in _FRAME_WORDS and not word.isdigit()
+    ]
+    if meaningful and meaningful[0][:3] in {word[:3] for word in said_words}:
+        # M65 (conv-v3g held-out t11 «cerralo» restated «Cierra el Bloc de notas.» was asked again): the leading
+        # verb is the person's own in another person or mood («abrí»/«abre», «cerrá»/«cierra»); the pointer's
+        # object is what has to have been said.
+        meaningful = meaningful[1:]
+    return all(word[:4] in said for word in meaningful)
+
+
+def _undiphthonged(word: str) -> str:
+    """A Spanish stem with its stressed diphthong undone («cierra» → «cerra», «vuelve» → «volve»)."""
+
+    return word.replace("ie", "e").replace("ue", "o")
 
 
 _NUMBER_VALUES = {
@@ -420,6 +439,17 @@ def joined_answer(pending_request: str, answer: str, *, percentage: bool = False
 def is_assent(text: str) -> bool:
     """The whole message only says yes («sí», «dale», «ok, sí»)."""
     return _ASSENT.fullmatch(_fold(text).strip(" ¿?¡!.,")) is not None
+
+
+def is_social(text: str) -> bool:
+    """The whole message is thanks, praise, a reaction or a closing («gracias», «perfecto muy bien», «that's all»).
+
+    It answers no question and asks for nothing, whatever is pending: the rewrite never reads it as a dependency
+    (``dependency``) and the contextual decider's action on it is not the person's (M65).
+    """
+
+    folded = _fold(text).strip(" ¿?¡!.,")
+    return bool(folded) and _SOCIAL.fullmatch(folded) is not None
 
 
 _CLITIC_TAIL = re.compile(r"(?:me|te|se|nos)?(?P<clitic>los|las|lo|la|les|le)$")

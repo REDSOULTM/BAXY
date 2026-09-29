@@ -16,8 +16,16 @@ from __future__ import annotations
 import functools
 import json
 import pathlib
+import re
 from dataclasses import dataclass
+from datetime import datetime, timedelta
+from fractions import Fraction
 from typing import Any, Iterable
+
+from .grammar import _CARDINAL_WORDS, spoken_cardinal
+from .normalize import fold, fold_in_place, spelled_out
+from .quantities import _UNITS, measures
+from .temporal import _SPOKEN_DATE, _TOMORROW, _WEEKDAYS, MONTH_NUMBERS, spoken_clocks
 
 DECISIONS = ("action", "clarify", "talk", "limit")
 
@@ -122,6 +130,12 @@ def plain_descriptions() -> dict[str, str]:
     return {str(k): str(v) for k, v in operations.items()} if isinstance(operations, dict) else {}
 
 
+def catalog_line(name: str, description: str) -> str:
+    """What the decider reads of one operation: its line in the person's words, or its description's first sentence."""
+
+    return plain_descriptions().get(name) or description.split(". ")[0].rstrip(".")
+
+
 def catalog_prompt(
     tools: Iterable[tuple[str, str]],
     signatures: dict[str, tuple[str, ...]] | None = None,
@@ -131,10 +145,9 @@ def catalog_prompt(
     With ``signatures`` (M42) each line names the operation's argument fields and the output asks for their values.
     """
 
-    plain = plain_descriptions()
     families: dict[str, list[str]] = {}
     for name, description in sorted(tools):
-        first = plain.get(name) or description.split(". ")[0].rstrip(".")
+        first = catalog_line(name, description)
         fields = (signatures or {}).get(name) or ()
         signature = f"({', '.join(fields)})" if fields else ""
         families.setdefault(name.split(".", 1)[0], []).append(f"- {name}{signature}: {first[:140]}")
@@ -237,4 +250,290 @@ def _decided_arguments(value: Any, operations: tuple[str, ...]) -> tuple[tuple[s
         elif isinstance(item, (str, int, float, bool)):
             flat.setdefault(str(key), item)
     return tuple((name, item) for name, item in flat.items() if isinstance(item, (str, int, float, bool)))
+
+
+# --- Fidelity of the restatement (Fase 3.5b M64) ---------------------------------------------------------------------
+# v3d-final and v3f-final F-w01-t4 «¿y cuánto sale más o menos ese pisco en el líder? el mistral de 35» was restated
+# «¿Cuánto sale el pisco Mistral de 350 ml en el líder?», and «350 ml» travelled as the objective to the search and to
+# the reply; F-s054 «Estará storming mañana» became «…mañana en Santiago?» and the weather of a city nobody named was
+# read; F-w05-t3 «apúntamelo como recordatorio un mes antes» got «el 1 de octubre», a date nobody gave. The restatement
+# joins the message with the conversation; a number, a unit, a date, a clock time or a proper name that neither the
+# person nor BAXY said is the model's, not the person's.
+#
+# What counts as said: every turn of the conversation the decider read (the person's and BAXY's) and the message. A
+# number is said in digits or in words («treinta y cinco» is 35, «la mitad» of a level is 50, the current year); a
+# clock time or a date is said, or is one a said duration or day word puts from now or from a said clock («en 20
+# minutos», «20 minutos antes de eso», «mañana»); a unit is said, or the same unit in other words («l» for «litros»);
+# a name is said in any case, with or without its hyphen («NeYo» → «Ne-Yo»), as an abbreviation of a said word
+# («control» → «Ctrl»), or completing a said name through «de/del» («ñuñoa» → «Ñuñoa»). What the catalog line of
+# the chosen operation names is its world, not an introduction: «sonido del PC» for audio.mute, «on Netflix» for
+# streaming.play.named (Netflix or Disney+, whose title reader needs the service written after the title).
+_DAY_WORDS_OF_A_NAME = frozenset(
+    {*MONTH_NUMBERS, *(name for names in _WEEKDAYS for name in names), "i", "i'm", "i'd", "i'll", "i've"}
+)
+_NAME_CONNECTOR = frozenset({"de", "del", "la", "las", "los", "of", "the"})
+_LEVEL_WORDS = (
+    (re.compile(r"\b(?:mitad|half)\b"), 50),
+    (re.compile(r"\b(?:maxim[oa]|al\s+tope|full|max)\b"), 100),
+    (re.compile(r"\bminim[oa]\b"), 0),
+    (re.compile(r"\b(?:un\s+cuarto|a\s+quarter)\b"), 25),
+    (re.compile(r"\b(?:tres\s+cuartos|three\s+quarters)\b"), 75),
+)
+_DEGREES = frozenset({"grado", "grados", "degree", "degrees"})
+_NUMERAL = re.compile(
+    r"(?<![\w.,])(?P<number>\d+(?:[.,]\d+)*)(?:st|nd|rd|th)?(?P<sign>\s*[°º%])?(?:\s+(?P<unit>[a-z]+)\b)?"
+)
+_NAME_WORD = re.compile(r"[\w'’-]+")
+# What a removed complement leaves hanging in front of it: its preposition and its article.
+_LEAD_IN = re.compile(
+    r"(?:\s*,)?\s+(?:en|de|del|para|por|a|al|con|in|at|on|from|for|near|of|with)(?:\s+(?:el|la|las|los|the))?\s*$",
+    re.IGNORECASE,
+)
+_ARTICLES_AS_ONE = frozenset({"un", "una", "uno", "one", "a", "an"})
+
+
+@dataclass(frozen=True, slots=True)
+class Fidelity:
+    """What travels as the objective: the restatement, the restatement without what it brought, or the message."""
+
+    request: str
+    introduced: tuple[str, ...] = ()
+    kind: str = "kept"  # kept | trimmed | person
+
+
+def _values(token: str) -> set[Fraction]:
+    """«5.000» is 5000 and 5; «3,5» is 3.5."""
+
+    found: set[Fraction] = set()
+    if re.fullmatch(r"\d{1,3}(?:[.,]\d{3})+", token):
+        found.add(Fraction(int(re.sub(r"\D", "", token))))
+    if token.count(".") + token.count(",") <= 1:
+        try:
+            found.add(Fraction(token.replace(",", ".")))
+        except (ValueError, ZeroDivisionError):
+            pass
+    return found
+
+
+def _spoken_values(words: list[str], *, articles: bool = True) -> set[Fraction]:
+    """The numbers runs of number words say («treinta y cinco» → 35), and each number word alone; without
+    ``articles`` a lone «un», «una» or «a» is an article, not a one."""
+
+    found: set[Fraction] = set()
+    run: list[str] = []
+    for word in [*words, ""]:
+        if word in _CARDINAL_WORDS or (run and word in {"y", "and"}):
+            run.append(word)
+            continue
+        while run and run[-1] in {"y", "and"}:
+            run.pop()
+        if run and (articles or len(run) > 1 or run[0] not in _ARTICLES_AS_ONE):
+            whole = spoken_cardinal(" ".join(run))
+            if whole is not None:
+                found.add(Fraction(whole))
+            for single in run:
+                value = None if single in {"y", "and"} else spoken_cardinal(single)
+                if value is not None and (articles or single not in _ARTICLES_AS_ONE):
+                    found.add(Fraction(value))
+        run = []
+    return found
+
+
+def _numbers_said(folded: str, *, articles: bool = True) -> set[Fraction]:
+    found = {value for token in re.findall(r"\d+(?:[.,]\d+)*", folded) for value in _values(token)}
+    return found | _spoken_values(re.findall(r"[a-z0-9]+", folded), articles=articles)
+
+
+def _said_days(folded: str, now: datetime) -> set[tuple[int, int]]:
+    """(day, month) of the dates the words put from today: «hoy», «mañana», «ayer», a weekday, «en 3 días»."""
+
+    offsets = set()
+    if re.search(r"\b(?:hoy|today|tonight)\b", folded):
+        offsets.add(0)
+    if re.search(_TOMORROW, folded):
+        offsets.add(1)
+    if re.search(r"\bpasado\s+manana\b|\bday\s+after\s+tomorrow\b", folded):
+        offsets.add(2)
+    if re.search(r"\b(?:ayer|yesterday)\b", folded):
+        offsets.add(-1)
+    for index, names in enumerate(_WEEKDAYS):
+        if re.search(rf"\b(?:{'|'.join(names)})\b", folded):
+            offsets.add((index - now.weekday()) % 7)
+    for measure in measures(folded):
+        if measure.dimension == (0, 1, 0, 0) and measure.value % 86400 == 0:
+            offsets.update({int(measure.value // 86400), -int(measure.value // 86400)})
+    return {((now + timedelta(days=offset)).day, (now + timedelta(days=offset)).month) for offset in offsets}
+
+
+def _dates(folded: str) -> list[tuple[int, int, int, int]]:
+    """(start, end, day, month) of each date said with its month («el 1 de octubre», «november 10th»)."""
+
+    found = []
+    for match in _SPOKEN_DATE.finditer(re.sub(r"(?<=[a-z])-(?=[a-z])", " ", folded)):
+        month = match.group("month") or match.group("month_first")
+        digits = re.match(r"\d+", match.group("day") or match.group("day_after") or "")
+        if month is None or digits is None:
+            continue
+        found.append((match.start(), match.end(), int(digits.group()), MONTH_NUMBERS[month]))
+    return found
+
+
+def _subsequence(short: str, long: str) -> bool:
+    letters = iter(long)
+    return all(letter in letters for letter in short)
+
+
+def _introduced_spans(
+    request: str, said: list[str], world: list[str], now: datetime,
+) -> list[tuple[int, int, str]]:
+    """(start, end, what) of each number, unit, date, clock time or proper name of ``request`` nobody said; the
+    ``world`` lines count for names only (their «una hora» is no duration the person gave)."""
+
+    folded_request = fold_in_place(request)
+    said_text = spelled_out(fold("\n".join(said)))
+    said_words = re.findall(r"[a-z0-9]+", said_text)
+    said_set = set(said_words)
+    named_words = said_words + re.findall(r"[a-z0-9]+", fold("\n".join(world)))
+    named_set = set(named_words)
+    stems = {word[:4] for word in named_words}
+    glued = {first + second for first, second in zip(named_words, named_words[1:])}
+    numbers = _numbers_said(said_text) | {Fraction(now.year)}
+    numbers |= {Fraction(value) for pattern, value in _LEVEL_WORDS if pattern.search(said_text)}
+    said_units = {_UNITS[word] for word in said_words if word in _UNITS}
+    durations = {m.value for line in said for m in measures(fold(line)) if m.dimension == (0, 1, 0, 0)}
+    said_clocks = {(c.hour % 12) * 60 + c.minute for line in said for c in spoken_clocks(fold(line))}
+    said_dates = {(day, month) for line in said for _, _, day, month in _dates(fold(line))}
+    said_dates |= _said_days(said_text, now)
+
+    spans: list[tuple[int, int, str]] = []
+    covered: list[tuple[int, int]] = []
+
+    def inside(start: int) -> bool:
+        return any(first <= start < last for first, last in covered)
+
+    for start, end, day, month in _dates(folded_request):
+        covered.append((start, end))
+        if (day, month) not in said_dates:
+            spans.append((start, end, request[start:end]))
+    # «media hora antes de eso» is only earlier, «dentro de una hora» only later (v3f-devD D-w02-t3 «…antes de eso» after
+    # «las 10» was restated «a las 10:30»); a message that says neither may go either way.
+    message = fold(said[0]) if said else ""
+    signs = tuple(
+        sign for sign, word in ((-1, r"antes|before|earlier"), (1, r"despues|after|later|dentro"))
+        if re.search(rf"\b(?:{word})\b", message)
+    ) or (1, -1)
+    bases = said_clocks | {(now.hour % 12) * 60 + now.minute}
+    derived = {(base + sign * int(duration // 60)) % 720 for base in bases for duration in durations for sign in signs}
+    for clock in spoken_clocks(folded_request):
+        start = folded_request.find(clock.literal)
+        if start < 0 or inside(start):
+            continue
+        end = start + len(clock.literal)
+        covered.append((start, end))
+        dial = (clock.hour % 12) * 60 + clock.minute
+        if dial not in said_clocks and dial not in derived:
+            spans.append((start, end, request[start:end]))
+    for match in _NUMERAL.finditer(folded_request):
+        if inside(match.start()):
+            continue
+        unit = match.group("unit")
+        sign = (match.group("sign") or "").strip()
+        if sign in {"°", "º"} or unit in _DEGREES:
+            unit_said = bool(_DEGREES & said_set) or "°" in said_text or "º" in said_text
+        elif unit in _UNITS:
+            unit_said = unit in said_set or _UNITS[unit] in said_units
+        else:
+            unit_said = True
+        if unit in _UNITS or unit in _DEGREES:
+            end = match.end()
+        else:
+            end = match.end("sign") if sign else match.end("number")
+        if not (_values(match.group("number")) & numbers) or not unit_said:
+            spans.append((match.start(), end, request[match.start():end]))
+
+    words = list(_NAME_WORD.finditer(request))
+    for index, word in enumerate(words):
+        text = word.group(0)
+        if not text[:1].isupper():
+            continue
+        lead = request[:word.start()].rstrip().rstrip("¿¡\"«“'(").rstrip()
+        key = fold(text)
+        if not lead or lead[-1] in ".!?:;" or key in _DAY_WORDS_OF_A_NAME:
+            continue
+        bare = re.sub(r"[-'’]", "", key)
+        if bare[:4] in stems or bare in glued or bare in named_set:
+            continue
+        if len(bare) >= 2 and any(
+            len(said_word) >= len(bare) + 2 and said_word[0] == bare[0] and _subsequence(bare, said_word)
+            for said_word in named_set
+        ):
+            continue
+        # «Ñuñoa» for «ñuñoa»: the name continues a said name through «de/del».
+        back = index - 1
+        while back >= 0 and fold(words[back].group(0)) in _NAME_CONNECTOR:
+            back -= 1
+        if back < index - 1 and back >= 0 and words[back].group(0)[:1].isupper():
+            if re.sub(r"[-'’]", "", fold(words[back].group(0)))[:4] in stems:
+                continue
+        spans.append((word.start(), word.end(), text))
+    return sorted(spans)
+
+
+def _trimmed(request: str, spans: list[tuple[int, int, str]]) -> str | None:
+    """The request without each introduced complement and the preposition that led to it; None when one of them is
+    not a complement («Abre Spotify») or too little would be left."""
+
+    # A name of several words is one complement: «en Nueva York».
+    merged: list[list[int]] = []
+    for start, end, _ in spans:
+        if merged and re.fullmatch(r"[\s,]*", request[merged[-1][1]:start]):
+            merged[-1][1] = end
+        else:
+            merged.append([start, end])
+    result = request
+    for start, end in reversed(merged):
+        lead = _LEAD_IN.search(result[:start])
+        if lead is None:
+            return None
+        result = result[:lead.start()] + result[end:]
+    result = re.sub(r"\s+([?.!,;:])", r"\1", " ".join(result.split()))
+    result = re.sub(r",([?.!])", r"\1", result).strip(" ,")
+    content = [word for word in re.findall(r"[a-z0-9]+", fold(result)) if len(word) > 2]
+    return result if len(content) >= 2 else None
+
+
+def faithful_request(
+    request: str,
+    text: str,
+    conversation: Iterable[str],
+    *,
+    world: Iterable[str] = (),
+    now: datetime | None = None,
+) -> Fidelity:
+    """The decider's restatement as the objective, only with what was said (M64).
+
+    ``conversation`` is every turn the decider read; ``world`` the catalog lines of the operations it chose. What the
+    restatement brought is taken out when it is a complement («…mañana en Santiago?» → «…mañana?») and every number
+    the message states stays in the result; otherwise the objective is the person's message, which the steps after
+    the decider read with the conversation as they always do.
+    """
+
+    request = " ".join(str(request or "").split())
+    if not request:
+        return Fidelity(request)
+    now = now or datetime.now()
+    said = [str(text or ""), *(str(line or "") for line in conversation)]
+    lines = [str(line or "") for line in world]
+    spans = _introduced_spans(request, said, lines, now)
+    if not spans:
+        return Fidelity(request)
+    introduced = tuple(dict.fromkeys(what for _, _, what in spans))
+    trimmed = _trimmed(request, spans)
+    if (
+        trimmed is not None
+        and not _introduced_spans(trimmed, said, lines, now)
+        and _numbers_said(fold(text), articles=False) <= _numbers_said(fold(trimmed))
+    ):
+        return Fidelity(trimmed, introduced, "trimmed")
+    return Fidelity(" ".join(str(text or "").split()), introduced, "person")
 

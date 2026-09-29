@@ -44,6 +44,7 @@ from .semantic import levels as semantic_levels
 from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
 from .semantic import temporal as semantic_temporal
+from .semantic import ui as semantic_ui
 from .semantic.system import weather_destination_there
 from .semantic.patterns import output_level_request
 from .semantic.web import (
@@ -4288,6 +4289,9 @@ def _context_decided_result(
         text, history, ((tool.name, tool.description) for tool in planner_catalog.tools),
         signatures={tool.name: semantic_decider.argument_signature(tool.schema) for tool in planner_catalog.tools},
     )
+    # M64 (v3f-final F-w14-t3): which fields the decider filled, never their values, so a turn whose arguments went
+    # wrong can be told apart from one whose decider gave none.
+    argument_fields = [name for name, _ in decided.arguments]
     if (
         decided.decision == "action"
         and (_deictic_open_request(text) or deictic_close_request(effect_intent._fold(text)))
@@ -4299,6 +4303,38 @@ def _context_decided_result(
         # Fase 3.5b M19 (cien-104 «ábreme eso porfa» after the time → «Abre el navegador» → a browser opened): a
         # pointer with no antecedent in what was said is asked, never filled with an object the model brought.
         decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
+    unasked_action: dict[str, Any] | None = None
+    if decided.decision == "action":
+        slot = dialogue_slot.read_slot({}, history, text)
+        unasked = None
+        if dialogue_slot.is_social(text):
+            # M65 (conv-v3g owner script t37 «Perfecto muy bien» after a question BAXY composed → «Abre Steam y entra
+            # a la biblioteca.» and Steam opened): thanks, praise or a closing asks for nothing and answers no
+            # question, whatever is pending. An offer BAXY holds is confirmed by the shell, never through here.
+            unasked = "social"
+        elif "input.text.type" in decided.operations and not semantic_ui.asks_to_type(
+            text, slot.last_reply, slot.antecedents[0] if slot.antecedents else None,
+        ):
+            # M65 (conv-v3g owner script t30 «Di la palabra"algo"» → «Escribe la palabra «algo».»): saying is not
+            # typing into the window in front; nothing in the message or the question it answers asks to write.
+            unasked = "untyped"
+        if unasked is not None:
+            unasked_action = {"kind": unasked, "request": decided.request, "operations": list(decided.operations)}
+            decided = semantic_decider.ContextDecision(request=text, decision="talk", operations=(), question="")
+    # M64 (v3f-final F-w01-t4 «…el mistral de 35» restated «…Mistral de 350 ml…», F-s054 «…mañana en Santiago?»): a
+    # number, unit, date, clock time or name of the restatement nobody said never travels as the objective.
+    descriptions = {tool.name: tool.description for tool in planner_catalog.tools}
+    fidelity = semantic_decider.faithful_request(
+        decided.request,
+        text,
+        [str(turn.get("content") or "") for turn in history if isinstance(turn, dict)],
+        world=[semantic_decider.catalog_line(op, descriptions.get(op, "")) for op in decided.operations],
+    )
+    decider_request = decided.request
+    if fidelity.kind != "kept":
+        decided = semantic_decider.ContextDecision(
+            fidelity.request, decided.decision, decided.operations, decided.question, decided.arguments,
+        )
     # cien-107 100: with a block of history the decider answered «talk» («Write a letter to Eris.»), the knowledge
     # contract let «…because I do not have access to external communication channels…» through; talk is bounded too.
     if decided.decision in {"clarify", "talk"} and effect_intent.out_of_world_request(text):
@@ -4405,6 +4441,16 @@ def _context_decided_result(
                 "mode": "talk" if reference is not None else decided.decision,
                 "request": decided.request,
                 "effect_operations": [] if reference is not None else list(decided.operations),
+                "argument_fields": argument_fields,
+                **({} if unasked_action is None else {"unasked_action": unasked_action}),
+                **(
+                    {}
+                    if fidelity.kind == "kept"
+                    else {
+                        "decider_request": decider_request,
+                        "fidelity": {"kind": fidelity.kind, "introduced": list(fidelity.introduced)},
+                    }
+                ),
             },
             "stages": [] if reference is None else [
                 {"name": "reference_looked_up", "kind": reference.kind, "query": reference.query},

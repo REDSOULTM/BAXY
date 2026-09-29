@@ -32,8 +32,35 @@ internal sealed class WikipediaSearchSource(HttpClient http)
     // o un marcador va directa al buscador general. Palabras plegadas (sin tildes).
     // Quedan fuera las que también nombran saberes («partido político», «Semana
     // Santa», «quién ganó el Mundial de 2010», «código abierto»).
-    internal static bool IsEncyclopedic(string query) =>
-        !FoldedWords(query).Any(TimeBoundWords.Contains);
+    internal static bool IsEncyclopedic(string query)
+    {
+        string[] words = FoldedWords(query);
+        return !words.Any(TimeBoundWords.Contains) && !words.Any(OpinionWords.Contains) && !AsksWorth(words);
+    }
+
+    // M65 (conv-v3g held-out t14 «qué dijo la crítica sobre Oppenheimer» → «The Act of Killing», t15 «¿la serie
+    // The Last of Us vale la pena?» → «The Last Ship»): lo que opina la gente o la crítica de una obra no lo guarda
+    // una enciclopedia; va a las noticias y al buscador general, y si ninguno responde, la respuesta dice que no pudo
+    // buscar en vez de contestar con otro artículo.
+    private static readonly HashSet<string> OpinionWords = new(StringComparer.Ordinal)
+    {
+        "opinion", "opiniones", "opina", "opinan", "opinaron", "critica", "criticas", "criticos",
+        "resena", "resenas", "valoracion", "valoraciones", "calificacion", "calificaciones",
+        "review", "reviews", "reviewed", "rating", "ratings", "worth", "recomiendan", "recomendable",
+    };
+
+    // «vale la pena», «piensa/dice la gente», «what people think/say».
+    private static bool AsksWorth(string[] words)
+    {
+        for (int i = 0; i + 1 < words.Length; i++)
+        {
+            if (words[i] == "vale" && words[i + 1] == "la" && i + 2 < words.Length && words[i + 2] == "pena") return true;
+            if (words[i] is "piensa" or "piensan" or "dice" or "dicen" && words[i + 1] == "la"
+                && i + 2 < words.Length && words[i + 2] == "gente") return true;
+            if (words[i] == "people" && words[i + 1] is "think" or "say") return true;
+        }
+        return false;
+    }
 
     private static readonly HashSet<string> TimeBoundWords = new(StringComparer.Ordinal)
     {

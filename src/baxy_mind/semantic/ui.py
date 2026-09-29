@@ -715,6 +715,21 @@ def asks_about_buttons(folded_ask: str) -> bool:
     return re.search(r"\b(?:boton\w*|button\w*)\b", folded_ask) is not None
 
 
+# M65 (conv-v3g owner script t30 «Di la palabra"algo"» → «Escribe la palabra «algo».» and «Algo» was typed into the
+# window in front): typing goes into whatever has the focus, so only words that ask to write, type, dictate or put
+# text somewhere ask for it. Saying something («di», «dime», «say», «repeat») is talk.
+_TYPING_CUE = re.compile(
+    r"\b(?:escrib\w*|tecle\w*|tipe\w*|typ\w*|writ\w*|wrote|dict\w*|anot\w*|"
+    r"pon(?:e|er)?(?:le|lo|la|les|me|melo|mela|selo|sela)?|put|insert\w*|ingres\w*|introduc\w*|rellen\w*)\b"
+)
+
+
+def asks_to_type(*lines: str | None) -> bool:
+    """Some of these lines (the message, BAXY's question it answers, the request before it) asks to type text."""
+
+    return any(line and _TYPING_CUE.search(_fold(line)) is not None for line in lines)
+
+
 def asks_to_see_the_screen(folded_ask: str) -> bool:
     """«qué hay en la pantalla», «describime», «identificá»: asked to see, not only to read (folded words)."""
 

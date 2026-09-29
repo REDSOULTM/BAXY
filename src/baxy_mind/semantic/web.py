@@ -15,7 +15,7 @@ from .notes import OWN_EVENT_NOUN, own_event_reference
 from .windows import minimize_all_request
 from .network import _direct_current_time_request
 from .media import _youtube_search_query
-from .normalize import fold as _reading_fold
+from .normalize import fold as _reading_fold, fold_in_place
 
 
 def _public_route_lookup_request(folded: str) -> bool:
@@ -3524,3 +3524,95 @@ def weather_asks_later_today(asks: str) -> bool:
     """«hoy», «tonight», «esta tarde / noche / mañana»: the rain asked is today's (folded words)."""
 
     return re.search(r"\b(?:hoy|today|tonight|esta\s+(?:noche|tarde|manana))\b", asks) is not None
+
+
+# M64 (v3f-final F-w12-t4 → t5): three drafts of «¿Cuánto está el dólar blue hoy?» fell, the last resort said «No lo
+# encontré.», and «Anotame ese valor en una nota» lost what had been looked up. The not-found names what was looked up,
+# in the person's own words: the question as an indirect one («cuánto está el dólar blue hoy», «si va a llover mañana»,
+# «what the latest song from Ne-Yo is») or the thing asked for with its article («el horario del Líder de Ñuñoa»). A
+# phrase without one may begin with a verb («Get train schedules to Manchester…»), and is left to the plain not-found.
+_SEARCHED_LEAD = re.compile(
+    r"^(?:[\s,¿¡]*(?:y|e|and|pero|but|ok|vale|bueno|entonces|so|then|oye|hey|che|ya|pucha|baxy)\b)*[\s,¿¡]*"
+)
+_SEARCHED_VERB = re.compile(
+    r"^(?:buscame|busca|buscar|averiguame|averigua|investiga|consulta|dime|decime|dame|fijate\s+en|revisa|muestrame|"
+    r"encuentrame|encuentra|get|show\s+me|give\s+me|"
+    r"(?:me\s+)?(?:sabes|sabrias|puedes\s+decirme|podrias\s+decirme|dices|puedes\s+decir|podrias\s+decir)|"
+    r"search\s+for|search|look\s+up|find\s+out|find|tell\s+me|check|(?:do\s+you\s+know|can\s+you\s+tell\s+me|"
+    r"could\s+you\s+tell\s+me))\b(?:\s+(?:en|on)\s+(?:internet|google|la\s+web|the\s+web))?[\s,]*"
+)
+_SEARCHED_TAIL = re.compile(r"(?:[\s,]*\b(?:por\s+favor|porfa|please|eh|po|pues)\b)*[\s?!.…,]*$")
+_SEARCHED_WH_ES = {
+    "que": "qué", "cual": "cuál", "cuales": "cuáles", "cuanto": "cuánto", "cuanta": "cuánta", "cuantos": "cuántos",
+    "cuantas": "cuántas", "quien": "quién", "quienes": "quiénes", "donde": "dónde", "cuando": "cuándo", "como": "cómo",
+    "adonde": "adónde",
+}
+_SEARCHED_WH_EN = frozenset({"what", "who", "where", "when", "which", "why", "whose", "how"})
+_SEARCHED_COPULA_EN = frozenset({"is", "are", "was", "were"})
+_SEARCHED_AUXILIARY_EN = frozenset(
+    {"do", "does", "did", "can", "could", "will", "would", "should", "has", "have", "had", "may", "might", "am"}
+)
+_SEARCHED_PHRASE_START = frozenset(
+    {"el", "la", "los", "las", "un", "una", "unos", "unas", "lo", "algun", "alguna", "algunos", "algunas", "the", "a",
+     "an", "any", "some"}
+)
+# Who speaks and whom a pointer points at cannot be turned into BAXY's words by swapping «me» for «te»: the person's
+# own verbs, BAXY addressed, and «eso» with its antecedent elsewhere leave the plain «No lo encontré».
+_SEARCHED_NOT_BAXYS = frozenset(
+    {"yo", "nos", "nuestro", "nuestra", "nuestros", "nuestras", "conmigo", "tengo", "puedo", "necesito", "debo",
+     "quiero", "estoy", "voy", "soy", "hago", "busco", "llevo", "pago", "vivo", "trabajo", "compro", "uso", "i", "we",
+     "our", "ours", "us", "im", "tu", "tus", "usted", "puedes", "sabes", "tienes", "podrias", "quieres", "recomiendas",
+     "crees", "piensas", "you", "your", "yours", "eso", "esto", "ese", "esa", "esos", "esas", "it"}
+)
+_SEARCHED_PREPOSITION = frozenset({"a", "de", "en", "por", "para", "con", "desde", "hasta"})
+_SEARCHED_SECOND_PERSON = {"es": {"me": "te", "mi": "tu", "mis": "tus"}, "en": {"my": "your", "me": "you"}}
+
+
+def searched_clause(text: str, language: str) -> tuple[str, bool] | None:
+    """What a search looked for, said by BAXY after «No encontré» / «I couldn't find»: (the clause, whether it is an
+    indirect question, «find out» in English). None when the text is not one plain question or lookup in
+    ``language`` («¿y cuánto sale…? el mistral de 35», keywords, a question English inverts)."""
+
+    said = " ".join(str(text or "").replace("’", "'").split())
+    if not said or len(said) > 200 or language not in _SEARCHED_SECOND_PERSON:
+        return None
+    question = "?" in said
+    for pattern in (_SEARCHED_LEAD, _SEARCHED_VERB):
+        lead = pattern.match(fold_in_place(said))
+        said = said[lead.end():] if lead else said
+    tail = _SEARCHED_TAIL.search(fold_in_place(said))
+    said = said[: tail.start()] if tail else said
+    if re.search(r"[?!;¿¡\n]|\.\s+[a-záéíóúñü]", said):
+        return None
+    words = said.split(" ")
+    keys = [_reading_fold(word).strip(".,:") for word in words]
+    if not 2 <= len(words) <= 16 or _SEARCHED_NOT_BAXYS & set(keys):
+        return None
+    shift = _SEARCHED_SECOND_PERSON[language]
+    words = [shift.get(key, word) for word, key in zip(words, keys)]
+    if language == "es":
+        head = 1 if keys[0] in _SEARCHED_PREPOSITION and keys[1] in _SEARCHED_WH_ES else 0
+        if keys[head] in _SEARCHED_WH_ES:
+            return " ".join([*(key for key in keys[:head]), _SEARCHED_WH_ES[keys[head]], *words[head + 1:]]), True
+        if question:
+            first = words[0] if words[0][1:2].isupper() or words[1][:1].isupper() else words[0][:1].lower() + words[0][1:]
+            return " ".join(["si", first, *words[1:]]), True
+    else:
+        wh, _, contracted = keys[0].partition("'")
+        if wh in _SEARCHED_WH_EN:
+            span = 2 if wh == "how" and keys[1] in {"much", "many"} else 1
+            lead = " ".join([wh, *keys[1:span]])
+            rest = words[span:]
+            if contracted in {"s", "re"}:
+                return " ".join([lead, *rest, "is" if contracted == "s" else "are"]), True
+            following = keys[span] if len(keys) > span else ""
+            if following in _SEARCHED_AUXILIARY_EN or not rest:
+                return None
+            if following in _SEARCHED_COPULA_EN:
+                return " ".join([lead, *rest[1:], following]), True
+            return " ".join([lead, *rest]), True
+        if question:
+            return None
+    if keys[0] not in _SEARCHED_PHRASE_START:
+        return None
+    return " ".join([words[0][:1].lower() + words[0][1:], *words[1:]]), False

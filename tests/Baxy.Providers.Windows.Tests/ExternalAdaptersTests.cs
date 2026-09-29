@@ -2358,6 +2358,44 @@ public sealed class ExternalAdaptersTests
             Assert.That(WikipediaSearchSource.IsEncyclopedic("quién ganó el Mundial de 2010"), Is.True);
             Assert.That(WikipediaSearchSource.IsEncyclopedic("noticias de Chile"), Is.False);
             Assert.That(WikipediaSearchSource.IsEncyclopedic("what's the weather tomorrow"), Is.False);
+            // M65: what people or critics think of a work is not an encyclopedia's.
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("qué dijo la crítica sobre Oppenheimer"), Is.False);
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("¿La serie The Last of Us vale la pena?"), Is.False);
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("reseñas de la nueva película de Resident Evil"), Is.False);
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("qué piensa la gente de Colony"), Is.False);
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("is Dune worth watching"), Is.False);
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("quién dirigió Oppenheimer"), Is.True);
+        });
+    }
+
+    // M65 (conv-v3g held-out t14): «qué dijo la crítica sobre Oppenheimer» was answered by
+    // Wikipedia with «The Act of Killing» (a film by Joshua Oppenheimer) and the reply said it
+    // found nothing. Opinions go to the news and the general engine; when neither answers,
+    // the receipt says nothing was searched, and the encyclopedia is never asked.
+    [Test]
+    public async Task WhatCriticsSaidIsNotAskedToTheEncyclopedia()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["es.wikipedia.org"] = WikipediaAnswer("es",
+                ("The Act of Killing", "The Act of Killing es una película de no-ficción dirigida por Joshua Oppenheimer.", false)),
+            ["en.wikipedia.org"] = WikipediaAnswer("en",
+                ("The Act of Killing", "The Act of Killing is a documentary film directed by Joshua Oppenheimer.", false)),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"qué dijo la crítica sobre Oppenheimer"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("web_search_unavailable"));
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host), Has.None.Contains("wikipedia.org"));
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host), Does.Contain("lite.duckduckgo.com"));
         });
     }
 
