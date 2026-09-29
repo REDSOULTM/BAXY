@@ -2178,6 +2178,44 @@ def quoted_translation_phrase(user_text: str) -> str | None:
     return quoted.group(1) if quoted is not None else None
 
 
+# M75 (DEV-D v3l D-w15-t3 «traducelo al ingles que es para mi jefa», after a turn that only asked a question): what
+# is to be translated is a clitic or a demonstrative, not text in the message. When the turn could not tell what it
+# points to and asks, that question is the answer, not a knowledge question left unanswered.
+_TRANSLATION_POINTING = re.compile(
+    r"\btraduc(?:e|i|ir)(?:me|nos|se)?(?:lo|la|los|las)\b|"
+    r"\btraduc(?:e|i|ir)(?:me|nos)?\s+(?:eso|esto|esa|ese|este|esta|aquello|lo\s+anterior)\b|"
+    r"\btranslate\s+(?:it|them|that|this|these|those)\b(?!\s+(?!(?:to|into|in|for|please)\b)[a-z])"
+)
+
+
+def translation_without_its_text(user_text: str) -> bool:
+    """A translation asked of something only pointed at («tradúcelo», «translate that»), with no quoted text."""
+
+    folded = _reading_fold(str(user_text or ""))
+    return (
+        _TRANSLATION_POINTING.search(folded) is not None
+        and quoted_translation_phrase(user_text) is None
+        and ":" not in str(user_text or "")
+    )
+
+
+# M75 (DEV-D v3l D-p02-t2 «¿Serías capaz de hacer foto ahora?», gold: the limit): a question whether BAXY is able to do
+# something is answered yes or no; «No puedo hacer fotos» is that answer, not a failure of something attempted.
+_ABILITY_QUESTION = re.compile(
+    r"\b(?:eres|seras|serias|sos|serian|son)\s+(?:\w+\s+)?capa(?:z|ces)\s+de\b|"
+    r"\btienes\s+(?:la\s+)?(?:capacidad|posibilidad)\s+de\b|"
+    r"\b(?:are|were)\s+you\s+(?:\w+\s+)?(?:able|capable)\s+(?:to|of)\b|"
+    r"\bwould\s+you\s+be\s+(?:able|capable)\s+(?:to|of)\b|"
+    r"\bdo\s+you\s+have\s+the\s+(?:ability|capacity)\s+to\b"
+)
+
+
+def asks_whether_able(user_text: str) -> bool:
+    """The person asks whether BAXY is able to do something («¿serías capaz de…?», «are you able to…?»)."""
+
+    return _ABILITY_QUESTION.search(_reading_fold(str(user_text or ""))) is not None
+
+
 # M50 (v3a-final F-w07, F-w12, F-w14, F-p10): code asked for in the conversation is content the model writes, never a
 # lookup and never «internal code». What asks for it: a verb of writing or giving and a piece of code («hazme una
 # función», «¿me escribís una función…?», «escribeme un query de sql»), making something in a named programming
