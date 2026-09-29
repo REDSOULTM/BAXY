@@ -36,6 +36,13 @@ internal sealed class PendingMindPlanExecution
 
     internal bool PendingEffectMayHaveOccurred { get; set; }
 
+    /// <summary>
+    /// M56: the failure of an earlier step that changed nothing and ended only its own
+    /// chain; the independent steps ran on and the end reports it. Not persisted: a plan
+    /// never resumes across sessions.
+    /// </summary>
+    internal string? DeferredFailure { get; init; }
+
     internal MindPlanStep CurrentStep => Steps[NextIndex];
 
     internal bool CanAbandonConfirmation =>
@@ -155,6 +162,140 @@ internal sealed class MindReplanSuffixContract
 
 internal static class MindPlanBoundary
 {
+    /// <summary>
+    /// M56 (v3c-final F-w06-t1, F-w06-t2): the steps after a failed read that do not depend
+    /// on it, directly or through another skipped step. Only a read that changed nothing
+    /// is stepped over, and only when every effect left acts on what its own producer in
+    /// the remainder observes (the other window's resolve and snap): an effect with no
+    /// producer of its own (typing into whatever is in front) never runs past a failure.
+    /// Null otherwise: the failure ends the plan as before.
+    /// </summary>
+    internal static IReadOnlyList<MindPlanStep>? IndependentRemainder(
+        PendingMindPlanExecution execution,
+        OperationResponse response)
+    {
+        ArgumentNullException.ThrowIfNull(execution);
+        ArgumentNullException.ThrowIfNull(response);
+        if (response.EffectMayHaveOccurred
+            || response.Status == OperationStatuses.Completed
+            || execution.NextIndex < 0
+            || execution.NextIndex >= execution.Steps.Count
+            || !IsReadOnly(execution.CurrentStep.Operation))
+        {
+            return null;
+        }
+
+        var ended = new HashSet<string>(StringComparer.Ordinal) { execution.CurrentStep.Id };
+        var kept = new List<MindPlanStep>();
+        for (int index = execution.NextIndex + 1; index < execution.Steps.Count; index++)
+        {
+            MindPlanStep step = execution.Steps[index];
+            if (step.DependsOn.Any(ended.Contains))
+            {
+                ended.Add(step.Id);
+                continue;
+            }
+
+            kept.Add(step);
+        }
+
+        var keptIds = new HashSet<string>(kept.Select(static step => step.Id), StringComparer.Ordinal);
+        return kept.Count > 0
+            && kept.All(step => IsReadOnly(step.Operation) || step.DependsOn.Any(keptIds.Contains))
+            ? kept
+            : null;
+    }
+
+    private static bool IsReadOnly(string operation) =>
+        Baxy.Kernel.Operations.ProductCatalog.TryGet(
+            operation,
+            out Baxy.Kernel.Operations.ProductOperationDescriptor? descriptor)
+        && descriptor.Risk == OperationRisks.ReadOnly;
+
+    /// <summary>
+    /// M56 (v3c-final F-w06-t1 «ninguna de las aplicaciones tenía una ventana abierta»): a
+    /// failed step's facts name the application it was about, from its own grounded
+    /// arguments, so the reply says which window was missing instead of guessing.
+    /// </summary>
+    internal static string WithStepTarget(string message, JsonObject? arguments)
+    {
+        ArgumentNullException.ThrowIfNull(message);
+        if (arguments?["applicationName"] is not JsonValue value
+            || !value.TryGetValue(out string? application)
+            || string.IsNullOrWhiteSpace(application))
+        {
+            return message;
+        }
+
+        JsonObject? facts;
+        try
+        {
+            facts = JsonNode.Parse(message) as JsonObject;
+        }
+        catch (JsonException)
+        {
+            return message;
+        }
+
+        if (facts is null || facts.ContainsKey("target"))
+        {
+            return message;
+        }
+
+        facts["target"] = application.Trim();
+        return facts.ToJsonString();
+    }
+
+    /// <summary>
+    /// M56: two failures of the same operation for the same reason («Word» and «Google
+    /// Chrome» both without a window) are one fact with both targets; otherwise the later
+    /// failure is the one that ended the plan.
+    /// </summary>
+    internal static string MergeFailures(string? earlier, string later)
+    {
+        ArgumentNullException.ThrowIfNull(later);
+        if (earlier is null)
+        {
+            return later;
+        }
+
+        try
+        {
+            if (JsonNode.Parse(earlier) is JsonObject first
+                && JsonNode.Parse(later) is JsonObject second
+                && string.Equals((string?)first["operation"], (string?)second["operation"], StringComparison.Ordinal)
+                && string.Equals((string?)first["error"], (string?)second["error"], StringComparison.Ordinal)
+                && first["target"] is { } firstTarget
+                && second["target"] is { } secondTarget)
+            {
+                var targets = new JsonArray();
+                foreach (JsonNode? target in new[] { firstTarget, secondTarget })
+                {
+                    if (target is JsonArray many)
+                    {
+                        foreach (JsonNode? item in many)
+                        {
+                            targets.Add(item?.DeepClone());
+                        }
+                    }
+                    else
+                    {
+                        targets.Add(target.DeepClone());
+                    }
+                }
+
+                second["target"] = targets;
+                return second.ToJsonString();
+            }
+        }
+        catch (Exception exception) when (exception is JsonException or InvalidOperationException)
+        {
+            return later;
+        }
+
+        return later;
+    }
+
     internal static bool MustRetainAmbiguousEffect(OperationResponse response)
     {
         ArgumentNullException.ThrowIfNull(response);
