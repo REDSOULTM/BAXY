@@ -799,7 +799,8 @@ def test_message_compose_answers_its_outcome_with_the_writers_reproducibility(
             return None
 
         @staticmethod
-        def compose_user_message(_user_text: str, _intent: str, facts: dict) -> str:
+        def compose_user_message(_user_text: str, _intent: str, facts: dict, *, said: str | None = None) -> str:
+            # M71: the shell's message.compose passes the person's own message beside the understood request.
             composed_facts.append(facts)
             if isinstance(outcome, BaseException):
                 raise outcome
