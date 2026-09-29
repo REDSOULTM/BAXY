@@ -167,8 +167,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # v3c: M53, M54, M55
 # v3d: M56, M57
 # v3e: M58, D39, M59, M60, censo
+# v3e tras revertir M59
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "fcb619def9a12c616cff21487a7a8320da836fe9636e56b666c5ddc9eb13d05a"
+    "9946c5db4a42ede21f5084e9217f6950431a5ebc1898f9425b35567659b545f5"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
