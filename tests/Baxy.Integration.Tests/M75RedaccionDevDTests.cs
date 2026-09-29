@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using Baxy.App;
 using NUnit.Framework;
 
@@ -13,7 +12,6 @@ public sealed class M75RedaccionDevDTests
 {
     private const string Foto = "¿Serías capaz de hacer foto ahora?";
     private const string Traducelo = "traducelo al ingles que es para mi jefa";
-    private const string HoraAlla = "y si allá son las 10 de la mañana acá qué hora es";
 
     // D-p02-t2: whether BAXY is able is answered yes or no; «No puedo hacer fotos» is that answer.
     [TestCase(Foto, "No puedo tomar fotos, pero puedo ayudarte con otras tareas.", null)]
@@ -46,21 +44,5 @@ public sealed class M75RedaccionDevDTests
             var draft = new UserMessageDraft(TurnVisibleFacts.Clarification("ambiguous_request"), "clarification", null);
             Assert.That(UserMessagePolicy.ModelResponseRejectionReason(question, draft, userText), Is.Null);
         }
-    }
-
-    // D-w02-t2: the mind's last resort for a turn it could not interpret passes the App's error checks.
-    [TestCase("No pude entender bien tu mensaje.", HoraAlla)]
-    [TestCase("I couldn't quite understand your message.", "and if it's 10 in the morning there, what time is it here")]
-    public void TheNotUnderstoodFinalIsAnHonestFailure(string final, string userText)
-    {
-        var draft = new UserMessageDraft(
-            TurnVisibleFacts.Failure("turn_runtime_failure", new JsonObject
-            {
-                ["operationAttempted"] = false,
-                ["retryable"] = true,
-            }),
-            "error",
-            null);
-        Assert.That(UserMessagePolicy.ModelResponseRejectionReason(final, draft, userText), Is.Null);
     }
 }

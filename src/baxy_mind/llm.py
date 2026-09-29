@@ -7274,13 +7274,6 @@ _DETERMINISTIC_FAILURES = {
         "No pude confirmar el salto en la reproducción.",
         "I couldn't confirm the jump in the playback.",
     ),
-    # M75 (DEV-D v3l D-w02-t2 «y si allá son las 10 de la mañana acá qué hora es»): the turn was not interpreted and
-    # every draft either invented a limit («no tengo acceso a tu ubicación»), answered anyway or guessed a reason; the
-    # turn ended in ⚠. What is known is only that the message was not understood (_CAUSE_FACT), said without a cause.
-    **dict.fromkeys(
-        ("turn_runtime_failure", "turn_contract_failure", "turn_unavailable"),
-        ("No pude entender bien tu mensaje.", "I couldn't quite understand your message."),
-    ),
 }
 
 

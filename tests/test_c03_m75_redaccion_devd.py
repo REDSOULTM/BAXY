@@ -8,7 +8,8 @@ is the person's message, which is what the writer got for these situations (dial
 - D-p02-t2 «¿Serías capaz de hacer foto ahora?» (conversation, gold: the limit): «No puedo hacer fotos.» answers
   whether BAXY is able; three such drafts died on asserted_failure (in v3c, v3d, v3e2, v3f and v3l alike).
 - D-w02-t2 «y si allá son las 10 de la mañana acá qué hora es» (error, turn_runtime_failure): every draft was rightly
-  vetoed (an invented limit, an invented answer, a guessed reason); the last resort had nothing to say.
+  vetoed (an invented limit, an invented answer, a guessed reason). No fixed final replaces it (owner's review): the ⚠
+  stays until the turn itself is answered (a clock conversion from the place of the previous turn).
 - D-w15-t3 «traducelo al ingles que es para mi jefa» (clarification): what is to be translated is only pointed at, so
   asking which is the reply; all three questions died on knowledge_question.
 """
@@ -175,18 +176,10 @@ def test_d_w02_t2_the_recorded_drafts_are_still_vetoed() -> None:
     ]
 
 
-def test_d_w02_t2_the_last_resort_says_the_message_was_not_understood() -> None:
-    assert _compose(HORA_DRAFTS, HORA_ALLA, "error", NOT_UNDERSTOOD) == ("No pude entender bien tu mensaje.", 3)
-
-
-@pytest.mark.parametrize("cause", ["turn_runtime_failure", "turn_contract_failure", "turn_unavailable"])
-def test_d_w02_t2_every_interpretation_failure_has_its_honest_final(cause: str) -> None:
-    situation = NOT_UNDERSTOOD.replace("turn_runtime_failure", cause)
-    english = "and if it's 10 in the morning there, what time is it here"
-    assert _compose(["I have no access to your location."], english, "error", situation) == (
-        "I couldn't quite understand your message.", 3,
-    )
-    assert _compose(HORA_DRAFTS, HORA_ALLA, "error", situation)[0] == "No pude entender bien tu mensaje."
+def test_d_w02_t2_stays_without_a_fixed_final() -> None:
+    # Owner's review of M75: a fixed «No pude entender…» would turn the ⚠ into a false failure (the message was
+    # understood; its wording failed) and the product has no fixed visible replies. The ⚠ stays; the cause is open.
+    assert _compose(HORA_DRAFTS, HORA_ALLA, "error", NOT_UNDERSTOOD) == ("", 3)
 
 
 # ------------------------------------------------------------------ D-w15-t3: a translation of something pointed at
