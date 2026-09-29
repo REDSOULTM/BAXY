@@ -7,6 +7,7 @@ import re
 import unicodedata
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
+from typing import Iterable
 from .grammar import _PERCENTAGE_WORD_VALUES, _RELATIVE_DURATION_PATTERN, _fold, _has, _strip_request_envelope, spoken_cardinal
 from .audio import _PERCENTAGE_WORD_PATTERN
 from .normalize import alternation
@@ -1359,18 +1360,56 @@ class NotificationChange:
             return f"cancel the {self.noun} at {self.old}"
         return f"cancela {'el' if masculine else 'la'} {self.noun} de {_clock_article(self.old)} {self.old}"
 
-    def schedule_arguments(self) -> dict[str, str]:
+    def schedule_arguments(self, part_of_day: str | None = None) -> dict[str, str]:
         """notification.schedule's arguments: the new moment as said (a duration counts from now; a clock without its
-        part of the day takes the old one's), the kind, and what it is for in the person's words."""
+        part of the day takes the old one's, or ``part_of_day`` — «am»/«pm», ``change_part_of_day``), the kind, and
+        what it is for in the person's words."""
 
         if self.duration:
             due = f"{'in' if self.english else 'en'} {self.new_literal}"
         else:
             due = f"{'at' if self.english else 'a ' + _clock_article(self.new_literal)} {self.new_literal}"
             old_period = re.search(_CLOCK_PERIOD, _fold(self.old)) if self.old else None
-            if old_period is not None and re.search(_CLOCK_PERIOD, _fold(self.new_literal)) is None:
-                due = f"{due} {old_period.group(0)}"
+            if re.search(_CLOCK_PERIOD, _fold(self.new_literal)) is None:
+                if old_period is not None:
+                    due = f"{due} {old_period.group(0)}"
+                elif part_of_day in {"am", "pm"}:
+                    due = f"{due} {part_of_day if self.english else part_of_day[0] + '. m.'}"
         return {"dueUtc": due, "kind": self.kind, "title": " ".join(f"{self.noun} {self.title}".split())}
+
+    def clocks_lack_the_part_of_day(self) -> bool:
+        """Both clocks are hours of 1 to 12 with no morning or afternoon said («from 3 to 4»)."""
+
+        if self.old is None or self.duration:
+            return False
+        lead = "at" if self.english else "a las"
+        old = spoken_clocks(_fold(f"{lead} {self.old}"))
+        new = spoken_clocks(_fold(f"{lead} {self.new_literal}"))
+        return len(old) == 1 and len(new) == 1 and not old[0].resolved and not new[0].resolved
+
+
+def change_part_of_day(change: NotificationChange, said_before: Iterable[str] = ()) -> str | None:
+    """M62 (v3e2-final F-s044 «change the reminder for the chef's table group from 3 to 4» → «¿Cuándo, en tus propias
+    palabras…?»): the part of the day («am»/«pm») the new clock of a change inherits when neither clock says it —
+    the old clock said earlier in this conversation (newest first) with its part of the day or in 24 hours («remind me
+    at 3 pm», «Listo, a las 15:00»). None when nothing said it: then it is asked."""
+
+    if change.old is None or change.duration:
+        return None
+    lead = "at" if change.english else "a las"
+    olds = spoken_clocks(_fold(f"{lead} {change.old}"))
+    news = spoken_clocks(_fold(f"{lead} {change.new_literal}"))
+    if len(olds) != 1 or len(news) != 1 or news[0].resolved:
+        return None
+    old = olds[0]
+    if old.resolved:
+        # «de las 15:00 a las 4»: the old clock says it in 24 hours.
+        return "am" if old.hour < 12 else "pm"
+    for text in said_before:
+        for clock in spoken_clocks(_fold(str(text or ""))):
+            if clock.resolved and clock.hour % 12 == old.hour % 12 and clock.minute == old.minute:
+                return "am" if clock.hour < 12 else "pm"
+    return None
 
 
 def notification_change(text: str) -> NotificationChange | None:
