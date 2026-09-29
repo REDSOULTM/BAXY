@@ -191,8 +191,14 @@ VALIDATED_CLASSIFIER_REUSE_CAPACITY = 32
 # is still in its slot).
 NATIVE_SELECTION_PROSE_TOKENS = 1
 NATIVE_SELECTION_CALL_TOKENS = 256
-# Slots of the owned GPU server (``-np``); the HTTP pool leases exactly these.
-GPU_SERVER_SLOTS = 3
+def _gpu_slots_from_env(value: str | None) -> int:
+    return int(value.strip()) if value is not None and value.strip() in {"2", "3"} else 3
+
+
+# Slots of the owned GPU server (``-np``); the HTTP pool leases exactly these. M57 (goal v3 step 7, VRAM ≤ 3,8 GB):
+# BAXY_MIND_GPU_SLOTS=2 lowers them for a measured run (each slot keeps its own KV cache: 3 × 12 288 tokens peaked at
+# ≈ 4 040 MiB for all of BAXY in the app); the reserved slot stays the last one.
+GPU_SERVER_SLOTS = _gpu_slots_from_env(os.environ.get("BAXY_MIND_GPU_SLOTS"))
 
 SYSTEM_PROMPT = (
     "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. "
