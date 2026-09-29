@@ -178,12 +178,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # M55: colocar ventanas por destino
 # v3c: M53, M54, M55
 # v3d: M56, M57
+# v3e: M58, D39, M59, M60, censo
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "0eac1d846ae06109ccfa2ba5608b8f032a7e90fa3eb7f5a83a189a18806d3239"
+        "e1df132dc06859032d28fd88244812e28b61679bc9331fa132476af52cfad677"
     ),
     "src/baxy_mind/llm.py": (
-        "83cf3d667561df2e955aefbdec582ec587dabed934a6f7c9f04510e4330ede74"
+        "fed1020499081a546a6baba4ca7fb07910e2234b7bface589d7a0d2cc0ca20d9"
     ),
 }
 

@@ -149,8 +149,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # M55: colocar ventanas por destino
 # v3c: M53, M54, M55
 # v3d: M56, M57
+# v3e: M58, D39, M59, M60, censo
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "beebe05474d6763849a3455836bd0ea423cc2a9e1204dda63b529d73e7064046"
+    "fcb619def9a12c616cff21487a7a8320da836fe9636e56b666c5ddc9eb13d05a"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
