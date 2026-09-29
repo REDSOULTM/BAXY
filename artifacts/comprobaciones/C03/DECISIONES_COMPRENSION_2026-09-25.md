@@ -466,3 +466,13 @@ ninguna, lo dice.
 FINAL gastado, mismo revisor: **133/202 = 65,8 %** (v3c 128; +10/−5), 1 inventado, ⚠ 3, 12 repreguntas, búsqueda
 caída 1 (v3c 17). Automática 162/202. DEV-D con 2 huecos (M57): 260/332 (v3c 256) pero ⚠ 8 (2,4 %) y el pico de VRAM
 sólo baja 160 MiB (BAXY ≈ 3 750–3 880 MiB): 2 huecos no se adopta. Se mide KV q4_0 con 3 huecos (M59).
+
+## D41. Paso 7 (VRAM): caché V en q4_0, K en q8_0, 3 huecos × 12 288 (2026-09-29 ~04:10)
+| variante | servidor (matriz) | calidad (sobre v3d, mente) |
+|---|---|---|
+| K q8 / V q8, 3 huecos (antes) | 3 724 MiB | referencia: reserva 85,7 % |
+| 2 huecos (M57) | ≈ 3 436 | DEV-D ventana 260 (+4) pero ⚠ 8 (2,4 %); pico real sólo −160 MiB |
+| K q4 / V q4 | 3 441 | 742 =; reserva 85,5 % (+12/−19, «por favor apaga» → system.power) |
+| **K q8 / V q4 (M59)** | **3 440** | 742 un cambio (H0271 pregunta qué componente); reserva 85,6 % (+7/−11, ninguno peligroso) |
+Con V en q4 el pico de BAXY en la app debería quedar ≈ 3,74–3,77 GB (se mide en v3e con muestreo cada 5 s). Además:
+el literal «No lo encontré.» que A7 dejó en la App se quita (censo de prosa visible fija en cero).
