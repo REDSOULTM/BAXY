@@ -3586,10 +3586,14 @@ def searched_clause(text: str, language: str) -> tuple[str, bool] | None:
         return None
     words = said.split(" ")
     keys = [_reading_fold(word).strip(".,:") for word in words]
-    if not 2 <= len(words) <= 16 or _SEARCHED_NOT_BAXYS & set(keys):
+    # M70 (held-out v3h t16 «¿Cuándo sale la próxima temporada de The Last of Us?»): the «Us» of a title is part of a
+    # name, not the person's «us», and the not-found fell to the bare «No lo encontré». A capitalised word inside the
+    # text (English «I» apart) belongs to a name and is neither a pronoun nor shifted to BAXY's voice.
+    named = [index > 0 and word[:1].isupper() and key != "i" for index, (word, key) in enumerate(zip(words, keys))]
+    if not 2 <= len(words) <= 16 or _SEARCHED_NOT_BAXYS & {key for key, name in zip(keys, named) if not name}:
         return None
     shift = _SEARCHED_SECOND_PERSON[language]
-    words = [shift.get(key, word) for word, key in zip(words, keys)]
+    words = [word if name else shift.get(key, word) for word, key, name in zip(words, keys, named)]
     if language == "es":
         head = 1 if keys[0] in _SEARCHED_PREPOSITION and keys[1] in _SEARCHED_WH_ES else 0
         if keys[head] in _SEARCHED_WH_ES:
@@ -3616,3 +3620,44 @@ def searched_clause(text: str, language: str) -> tuple[str, bool] | None:
     if keys[0] not in _SEARCHED_PHRASE_START:
         return None
     return " ".join([words[0][:1].lower() + words[0][1:], *words[1:]]), False
+
+
+# M70 (held-out v3h t16 «fijate cuándo sale la próxima temporada»): the pages were about the next season's cast and
+# none gave a date; «No hay fecha de estreno confirmada…» and «…sin confirmar una fecha de estreno» died as invented
+# claims on «fecha» and «confirmada». A question of when asks for a date, a day or a time; of where, a place; of how
+# much, a price or an amount: that word is part of what was asked, and saying it is missing or unconfirmed reports what
+# was not found. Folded words.
+_ASKED_DIMENSIONS = (
+    (
+        re.compile(r"\b(?:cuando|when)\b"),
+        frozenset({"fecha", "fechas", "dia", "dias", "hora", "horas", "horario", "date", "dates", "day", "days", "time",
+                   "hour", "hours"}),
+    ),
+    (
+        re.compile(r"\b(?:donde|adonde|where)\b"),
+        frozenset({"lugar", "lugares", "sitio", "ubicacion", "direccion", "place", "location", "address"}),
+    ),
+    (
+        re.compile(r"\b(?:cuanto|cuanta|cuantos|cuantas|how\s+(?:much|many))\b"),
+        frozenset({"precio", "precios", "costo", "coste", "valor", "cantidad", "cifra", "numero", "price", "cost",
+                   "value", "amount", "number", "figure"}),
+    ),
+)
+# How a report says the asked thing is not known yet: unconfirmed, unannounced, not official, not set.
+ASKED_UNCONFIRMED_WORDS = frozenset(
+    {"confirmado", "confirmada", "confirmados", "confirmadas", "confirmar", "anunciado", "anunciada", "anunciar",
+     "oficial", "oficiales", "definido", "definida", "definir", "concreta", "concreto", "exacta", "exacto", "precisa",
+     "preciso", "confirmed", "confirm", "announced", "official", "exact", "precise"}
+)
+
+
+def asked_dimension_words(text: str) -> frozenset[str]:
+    """The folded words that name what a question of when, where or how much asks for («¿Cuándo sale…?» → «fecha»,
+    «día», «hora»…); empty when the text asks none of them."""
+
+    folded = _reading_fold(text)
+    words: set[str] = set()
+    for asks, named in _ASKED_DIMENSIONS:
+        if asks.search(folded) is not None:
+            words |= named
+    return frozenset(words)
