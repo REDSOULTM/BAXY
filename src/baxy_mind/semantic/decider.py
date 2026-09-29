@@ -99,6 +99,8 @@ FAMILY_TITLES = {
 # Model turns kept from the conversation, and characters per turn: the prompt stays inside one server slot.
 HISTORY_TURNS = 4
 HISTORY_CHARACTERS = 1500
+# M49: each value the decider writes is bounded; one that reaches the bound was cut by the grammar (M67).
+ARGUMENT_VALUE_CHARACTERS = 120
 
 
 @dataclass(frozen=True, slots=True)
@@ -195,7 +197,7 @@ def response_schema(operations: Iterable[str], *, with_arguments: bool = False) 
         "operations": properties["operations"],
         "arguments": {
             "type": "object",
-            "additionalProperties": {"type": ["string", "number", "boolean"], "maxLength": 120},
+            "additionalProperties": {"type": ["string", "number", "boolean"], "maxLength": ARGUMENT_VALUE_CHARACTERS},
         },
         "question": properties["question"],
     }

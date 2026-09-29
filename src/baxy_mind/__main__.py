@@ -3158,6 +3158,10 @@ def _decided_value(value: Any, contract: dict[str, Any]) -> Any:
     if "boolean" in types:
         return value if isinstance(value, bool) else None
     if "string" in types:
+        if isinstance(value, str) and len(value) >= semantic_decider.ARGUMENT_VALUE_CHARACTERS:
+            # M67 (FINAL F-w14-t3): a text at the decider's bound is the start of a longer one (a query, a list BAXY
+            # wrote), grounded but cut; the extraction reads it whole instead.
+            return None
         text = " ".join(str(value).split())
         return text or None
     return None
@@ -3224,6 +3228,24 @@ def _conversation_grounding_source(objective: str, history: object) -> str:
         if last_reply is not None:
             parts.append(str(last_reply["content"])[:1500])
     return "\n".join(parts)
+
+
+def _previous_reply(history: object) -> str | None:
+    """M67 (FINAL F-w14-t3, F-w15-t4): BAXY's reply right before the current message, whole, or None.
+
+    The decider's values are bounded and the grounding source cuts each turn, so a content that is that reply (a SQL
+    query, a packing list) travels only through here. Only the history's last assistant turn counts, with at most
+    the current message after it.
+    """
+
+    if not isinstance(history, list):
+        return None
+    turns = [item for item in history if isinstance(item, dict) and str(item.get("content") or "").strip()]
+    if turns and turns[-1].get("role") == "user":
+        turns = turns[:-1]
+    if not turns or turns[-1].get("role") != "assistant":
+        return None
+    return str(turns[-1]["content"]).strip()
 
 
 def _decided_arguments_alone(
@@ -7370,6 +7392,10 @@ def _run_sidecar(
                         if response_language in {"es", "en", "mixed"}
                         else {}
                     )
+                    # M67 (FINAL F-w14-t3 «perfect, copialo al clipboard» after a ```sql answer, F-w15-t4 «save that
+                    # as a note porfa» after a packing list): the model reads BAXY's last reply beside the objective
+                    # and says whether it is the content; code copies it verbatim into that field.
+                    previous_reply = _previous_reply(message.get("history"))
                     extraction = llm.extract_direct_arguments(
                         objective,
                         tool,
@@ -7377,7 +7403,14 @@ def _run_sidecar(
                             operation, objective, tool["function"]["parameters"],
                         ),
                         **language_argument,
+                        **({"previous_reply": previous_reply} if previous_reply else {}),
                     )
+                    if extraction.previous_reply_field and previous_reply:
+                        # The reply is literally what BAXY said (M43's trusted source), whole and not cut.
+                        objective_source = f"{objective}\n{previous_reply}"
+                        said = f"{said}\n{previous_reply}"
+                    else:
+                        objective_source = objective
                     decided_arguments = _with_decided_arguments(
                         operation,
                         str(message.get("text", "")),
@@ -7392,7 +7425,7 @@ def _run_sidecar(
                         extraction.arguments if decided_arguments is None else decided_arguments,
                         # A question written before the decider's values were added may ask for one of them.
                         extraction.fallback_question if decided_arguments is None else "",
-                        trusted_source=objective if decided_arguments is None else said,
+                        trusted_source=objective_source if decided_arguments is None else said,
                         **language_argument,
                     )
                 arguments = _with_conversation_place(
