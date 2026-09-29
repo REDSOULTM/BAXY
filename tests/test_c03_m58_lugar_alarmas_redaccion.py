@@ -214,10 +214,12 @@ def test_other_changes_are_not_a_notification_moved(text: str) -> None:
     assert notification_change(text) is None
 
 
-def test_s040_the_plural_alarms_rule_of_2026_09_24_is_unchanged() -> None:
-    # «Cancela las alarmas, por favor.» still asks which one (uso real 2026-09-24, owner's rule); M58 only reports it.
-    asked = resolve_explicit_clarification_intent("Cancela las alarmas, por favor.", OPERATIONS)
-    assert asked is not None and asked.missing_fields == ("which_alarm",)
+def test_s040_the_plural_alarms_are_read_and_offered_d39() -> None:
+    # D39 (owner, 2026-09-29) replaces the plural branch of uso real 2026-09-24: «Cancela las alarmas, por favor.» is
+    # no longer asked which one; the alarms are read and offered (tests/test_c03_d39_cancelar_alarmas.py).
+    assert resolve_explicit_clarification_intent("Cancela las alarmas, por favor.", OPERATIONS) is None
+    effects = resolve_explicit_effects("Cancela las alarmas, por favor.", OPERATIONS)
+    assert effects is not None and effects.operations == ("notification.list",)
 
 
 # ------------------------------------------------------------------ 1. the place of the conversation
