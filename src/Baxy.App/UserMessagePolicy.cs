@@ -3232,6 +3232,7 @@ internal static class UserMessagePolicy
         result = WithoutScreenReadingImageScope(source, result);
         result = WithoutLibraryEntitlementConsequence(source, result);
         result = WithoutWebSearchObservedVocabulary(source, result);
+        result = WithoutUnlistedNoteFinding(source, result);
 
         if (TryReadJson(source, out JsonElement root)
             && root.TryGetProperty("kind", out JsonElement kind) && kind.ValueKind == JsonValueKind.String && kind.GetString() == "operation"
@@ -3447,6 +3448,48 @@ internal static class UserMessagePolicy
         }
 
         return false;
+    }
+
+    // M58 (v3d-final F-p03-t1 «Actually, can you find the note called grocery?» read the notes and
+    // «I cannot find a note called "grocery" in your active notes; the only note visible is titled
+    // "Llego tarde hoy".» died as reversed_result: the turn ended with no answer). A verified read of
+    // the notes that has no note by the asked name is answered by saying so; that finding is the read,
+    // not a failure. Only a name the read does not list is masked.
+    private static string WithoutUnlistedNoteFinding(string source, string result)
+    {
+        if (!TryReadJson(source, out JsonElement root)
+            || !root.TryGetProperty("kind", out JsonElement kind) || kind.ValueKind != JsonValueKind.String || kind.GetString() != "operation"
+            || !root.TryGetProperty("operation", out JsonElement operation) || operation.ValueKind != JsonValueKind.String
+            || operation.GetString() is not ("note.list" or "note.search")
+            || !root.TryGetProperty("polarity", out JsonElement polarity) || polarity.ValueKind != JsonValueKind.String || polarity.GetString() != "success"
+            || !root.TryGetProperty("verified", out JsonElement verified) || verified.ValueKind != JsonValueKind.True
+            || !root.TryGetProperty("succeeded", out JsonElement succeeded) || succeeded.ValueKind != JsonValueKind.True
+            || !root.TryGetProperty("observed", out JsonElement observed) || observed.ValueKind != JsonValueKind.Object
+            || !observed.TryGetProperty("notes", out JsonElement notes) || notes.ValueKind != JsonValueKind.Array)
+        {
+            return result;
+        }
+
+        static string Bare(string text) => Regex.Replace(FoldForPolicy(text), @"[""'«»“”‘’]", string.Empty).Trim();
+        var listed = new HashSet<string>(StringComparer.Ordinal);
+        foreach (JsonElement note in notes.EnumerateArray())
+        {
+            if (note.ValueKind == JsonValueKind.Object && note.TryGetProperty("title", out JsonElement title)
+                && title.ValueKind == JsonValueKind.String && title.GetString() is { Length: > 0 } name)
+            {
+                listed.Add(Bare(name));
+            }
+        }
+
+        const string quoted = @"[""'«“‘]?(?<name>[^""'«»“”‘’.;,]{1,120}?)[""'»”’]?";
+        string finding =
+            @"\b(?:i\s+)?(?:cannot|can't|could\s+not|couldn't|did\s+not|didn't)\s+find\s+(?:a|any|the)\s+note\s+"
+            + @"(?:called|named|titled)\s+" + quoted + @"(?=\s+in\b|\s*[.;,]|$)"
+            + @"|\bno\s+(?:encontre|encuentro|pude\s+encontrar|puedo\s+encontrar|se\s+encontro|hay)\s+(?:una|ninguna|la)\s+"
+            + @"nota\s+(?:llamada|titulada|con\s+el\s+titulo)\s+" + quoted + @"(?=\s+en\b|\s*[.;,]|$)";
+        return Regex.Replace(FoldForPolicy(result), finding, found =>
+            listed.Contains(Bare(found.Groups["name"].Value)) ? found.Value : " ",
+            RegexOptions.CultureInvariant);
     }
 
     private static string WithoutVerifiedEmptyKnownFileFinding(string source, string result)
