@@ -494,3 +494,10 @@ Medido por proceso en la app real (contadores de Windows, App + mente + llama-se
 titulares, Spotify y una búsqueda, contenido que cambia con la hora, ninguno de contexto), 742 y registro real sin
 cambios, reserva 85,7 % (+2/−3), latencia de decisión p50 0,90 s. Se adopta. El margen es de 22 MiB: cualquier cambio de
 modelo, adaptador o contexto vuelve a medirse por proceso (scratchpad/cn/vram_procs.ps1).
+
+## D44. v3f medido (96cbee8e: v3e2 + M61 + M62) (2026-09-29 08:20)
+FINAL gastado en la app real, mismo revisor: **149/202 = 73,8 %** (v3e2 146; +9/−5), **0 inventados**, ⚠ 2 (1,0 %),
+repreguntas 7, búsqueda caída 0, automática 164/202, VRAM por proceso 3 750 MiB. Quedan 53: búsqueda 13 (lo personal
+a la web s014/s034/s048, resultados ajenos, Polvorista mal anclada), argumentos 11, límites 9, conocimiento 8, otros 9,
+redacción 3. Siguiente: M63 (la App exige «08:00» literal y veta «8:00», F-s019; «llovizna … 0 %» contradictorio;
+ancla de la Plaza del Polvorista) y el decisor (full6 con argumentos; P1/P2) para límites, lo personal y repreguntas.
