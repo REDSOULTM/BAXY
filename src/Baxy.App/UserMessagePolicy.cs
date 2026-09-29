@@ -2181,12 +2181,26 @@ internal static class UserMessagePolicy
             // this twin read it as a reversed result. Same markers as the mind's _FAILURE_MARKERS.
             + @"|\bno\s+se\s+(?:ha\s+|han\s+)?(?:confirm|verific|comprob)(?:o|ado|ada|aron)\b"
             + @"|\bno\s+(?:esta|quedo)\s+(?:verificad|comprobad)[oa]\b|\bno\s+estoy\s+segur[oa]\s+de\s+que\b"
-            + @"|\bno\s+(?:he|hemos)\s+podido\b|\b(?:haven[’']?t|have\s+not)\s+been\s+able\b",
+            + @"|\bno\s+(?:he|hemos)\s+podido\b|\b(?:haven[’']?t|have\s+not)\s+been\s+able\b"
+            // M60 (DEV-D p25-t1 v3c «I checked the weather service for Martinez, but it did not respond, so no
+            // forecast was available»): the mind's _FAILURE_MARKERS read a source that did not respond, or a thing
+            // not found, as the failure told; this twin read it as a reversed result.
+            + @"|\b(?:did\s+not|didn[’']?t)\s+(?:respond|find)\b|\bno\s+responde\b",
             RegexOptions.CultureInvariant);
     }
 
     private static bool AttributesBaxyActionToUser(string source, string result)
     {
+        // M60 (DEV-D s024 q4 «Añade un iPhone a mi lista de deseos que hice la semana pasada»): structured facts
+        // carry BAXY's act as the operation, not as a first-person verb, so the verb found there was the person's own
+        // («details»: «…que hice la semana pasada») and «la lista que creaste la semana pasada» died as wrong_actor.
+        // RequiredBaxyActions reads no verb from structured facts either; the mind's twin (action_attributed_to_user)
+        // judges the verified effect told as the person's.
+        if (IsStructuredFacts(source))
+        {
+            return false;
+        }
+
         string sourceFolded = FoldForPolicy(source);
         bool baxyPerformedAction = Regex.IsMatch(
             sourceFolded,
