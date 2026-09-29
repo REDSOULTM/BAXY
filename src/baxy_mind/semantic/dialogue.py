@@ -29,6 +29,7 @@ from .grammar import _COVERAGE_ACTION_HEAD, _head_is
 from .levels import followup_antecedent
 from .normalize import alternation, fold, spelled_out
 from .patterns import datetime_followup_antecedent
+from .temporal import alarm_cancellation_request, assents_to_alarm_offer, plural_alarm_cancellation
 
 _WORD = re.compile(r"[a-z0-9ñ]+")
 
@@ -1093,12 +1094,15 @@ class DialogueState:
         self.operations: tuple[str, ...] = ()  # those of them verified
         self.families: set[str] = set()  # every family this conversation verified
         self._facts: dict[str, str] = {}
+        self._alarm_offer: tuple[tuple[int, int], ...] = ()  # D39: the alarms read for «cancela las alarmas»
 
     def expect(self, request: str, operations: object) -> None:
         self.request = str(request or "").strip() or None
         self.intended = tuple(str(op) for op in operations) if isinstance(operations, (list, tuple)) else ()
         self.operations = ()
         self._facts.pop("request", None)
+        # D39: the offer to cancel the alarms read stands only for the turn right after it.
+        self._alarm_offer = ()
 
     def record(self, situation: object) -> None:
         if not isinstance(situation, dict) or self.request is None:
@@ -1142,6 +1146,8 @@ class DialogueState:
             self._facts["alarm_noun"] = noun.group(0) if noun is not None else "alarm"
         elif operation == "reminder.create":
             self._facts["reminder"] = str(observed.get("title") or request)
+        elif operation == "notification.list" and plural_alarm_cancellation(request):
+            self._alarm_offer = _alarm_clocks(observed)
         elif operation == "web.search" and observed.get("query"):
             self._facts["topic"] = str(observed["query"])
         elif operation in {"audio.volume", "audio.volume.adjust"} and observed.get("level") is not None:
@@ -1171,6 +1177,15 @@ class DialogueState:
         if not operation or operation not in self.intended:
             return user_text
         return self.request
+
+    def accepted_alarm_cancellation(self, text: str) -> str | None:
+        """D39 (owner, 2026-09-29): after «cancela las alarmas» BAXY read the alarms and asked whether to cancel them
+        all; a yes is the cancellation of each alarm read (its verified local clock), as one request the readers read.
+        None for anything else, with no alarm read, or with more than a plan holds."""
+
+        if not self._alarm_offer or self.request is None or not assents_to_alarm_offer(text):
+            return None
+        return alarm_cancellation_request(self._alarm_offer, english=not spanish(self.request))
 
     def lines(self) -> list[tuple[str, str]]:
         """What was verified, one line per kind, for the rewrite prompt and its word check."""
@@ -1256,3 +1271,22 @@ def _history_has_pending_clarification(
         content = str(item["content"]).strip()
         return bool(content) and content.rstrip().endswith("?")
     return False
+
+
+def _alarm_clocks(observed: dict) -> tuple[tuple[int, int], ...]:
+    """D39: the local (hour, minute) of each alarm a verified notification.list read, once each, in order."""
+
+    from datetime import datetime, timezone
+
+    clocks: list[tuple[int, int]] = []
+    for entry in observed.get("notifications") or []:
+        if not isinstance(entry, dict) or entry.get("kind") != "alarm" or not isinstance(entry.get("nextRunUtc"), str):
+            continue
+        try:
+            instant = datetime.fromisoformat(entry["nextRunUtc"].replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        local = (instant if instant.tzinfo else instant.replace(tzinfo=timezone.utc)).astimezone()
+        if (local.hour, local.minute) not in clocks:
+            clocks.append((local.hour, local.minute))
+    return tuple(clocks)
