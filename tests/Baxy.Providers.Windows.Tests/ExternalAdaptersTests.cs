@@ -2665,8 +2665,12 @@ public sealed class ExternalAdaptersTests
                 Is.EqualTo(new OpenStreetMapPlaceSource.PlaceAsk("parking", "La Puntilla")));
             Assert.That(OpenStreetMapPlaceSource.Parse("Show me gas stations in Buford.", null),
                 Is.EqualTo(new OpenStreetMapPlaceSource.PlaceAsk("fuel", "Buford")));
+            // M56 (v3c-final F-p06-t2): the sentence's lower-case article is not the place's name;
+            // Nominatim answered nothing for «la Plaza de las Salesas, Madrid».
             Assert.That(OpenStreetMapPlaceSource.Parse("Busca aparcamiento en la calle Génova en Madrid.", null),
-                Is.EqualTo(new OpenStreetMapPlaceSource.PlaceAsk("parking", "la calle Génova, Madrid")));
+                Is.EqualTo(new OpenStreetMapPlaceSource.PlaceAsk("parking", "calle Génova, Madrid")));
+            Assert.That(OpenStreetMapPlaceSource.Parse("aparcamiento en la Plaza de las Salesas en Madrid", null),
+                Is.EqualTo(new OpenStreetMapPlaceSource.PlaceAsk("parking", "Plaza de las Salesas, Madrid")));
             Assert.That(OpenStreetMapPlaceSource.Parse("aparcamiento en Plaza del Polvorista", null),
                 Is.EqualTo(new OpenStreetMapPlaceSource.PlaceAsk("parking", "Plaza del Polvorista")));
             Assert.That(OpenStreetMapPlaceSource.Parse("Busca taquerías cerca que tengan servicio a domicilio.", "Curico"),
@@ -2745,6 +2749,55 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Result?.GetProperty("results")[0].GetProperty("title").GetString(), Is.EqualTo("Parking La Puntilla"));
             Assert.That(handler.Asked, Has.Count.EqualTo(3));
             Assert.That(Uri.UnescapeDataString(handler.Asked[2].Uri.Query), Does.Contain("viewbox=-6.254,36.596,-6.234,36.576"));
+        });
+    }
+
+    // M56 (v3c-final F-p06-t2, Nominatim's real answers of 2026-09-28): «Plaza de las Salesas,
+    // Madrid» asked with the sentence's «la» found nothing, and the first part alone found only
+    // the Plaza de las Salesas of Cartagena, whose car parks were told as Madrid's. A candidate
+    // outside the city the person named is not the place: the source does not answer.
+    [Test]
+    public async Task APlaceOutsideTheNamedCityIsNotThePlace()
+    {
+        var handler = new SearchSourcesHttpHandler();
+        handler.Routes.Add(("q=Plaza de las Salesas, Madrid", new(HttpStatusCode.OK, "[]", "application/json")));
+        handler.Routes.Add(("q=Plaza de las Salesas", new(HttpStatusCode.OK,
+            """[{"boundingbox":["37.6125952","37.6129237","-0.9894311","-0.9889022"],"display_name":"Plaza de las Salesas, Cartagena Casco, Cartagena, Campo de Cartagena y Mar Menor, Región de Murcia, España","address":{"country_code":"es"}},{"boundingbox":["37.6125121","37.6129570","-0.9894855","-0.9888487"],"display_name":"Plaza de las Salesas, Ciudad Jardín, Cartagena Casco, Cartagena, Campo de Cartagena y Mar Menor, Región de Murcia, 30204, España","address":{"country_code":"es"}}]""",
+            "application/json")));
+        using var http = new HttpClient(handler);
+        var source = new OpenStreetMapPlaceSource(http);
+        OpenStreetMapPlaceSource.PlaceAsk ask =
+            OpenStreetMapPlaceSource.Parse("aparcamiento en la Plaza de las Salesas en Madrid", null)!.Value;
+
+        List<(string Title, string Url, string Snippet)>? places =
+            await source.SearchAsync(ask, 5, "es", CancellationToken.None, "CL");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(places, Is.Empty);
+            Assert.That(handler.Asked, Has.Count.EqualTo(2), "no car park is asked around another city's square");
+            Assert.That(handler.Asked.Select(asked => Uri.UnescapeDataString(asked.Uri.Query)),
+                Has.None.Contains("q=la "));
+        });
+    }
+
+    [Test]
+    public void TheNamedCityBindsTheCandidate()
+    {
+        const string both = """
+            [{"boundingbox":["37.6125","37.6129","-0.9894","-0.9889"],"display_name":"Plaza de las Salesas, Cartagena Casco, Cartagena, Región de Murcia, España"},
+             {"boundingbox":["40.4239","40.4244","-3.6947","-3.6943"],"display_name":"Plaza de las Salesas, Justicia, Centro, Madrid, Comunidad de Madrid, España"}]
+            """;
+        string[] square = ["plaza", "salesas"];
+        string[] madrid = ["madrid"];
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(OpenStreetMapPlaceSource.AreaOf(both, square, square, within: [madrid])?.Latitude,
+                Is.EqualTo(40.42415).Within(0.001), "the square of the named city, not Nominatim's first");
+            Assert.That(OpenStreetMapPlaceSource.AreaOf(both, square, square, within: [["sevilla"]]), Is.Null);
+            Assert.That(OpenStreetMapPlaceSource.AreaOf(both, square, square)?.Latitude, Is.EqualTo(37.6127).Within(0.001),
+                "with no city named, Nominatim's order stands");
         });
     }
 

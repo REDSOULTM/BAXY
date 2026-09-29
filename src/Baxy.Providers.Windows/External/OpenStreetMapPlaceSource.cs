@@ -125,6 +125,10 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
             bool named = words.Skip(start).Any(static word => char.IsUpper(word[0]));
             if (link is "en" or "in" or "at" && !named) continue;
             if (KindOf(WikipediaSearchSource.FoldedWords(first)) is not null) continue;
+            // M56 (v3c-final F-p06-t2): Nominatim finds nothing for «la Plaza de las Salesas, Madrid»
+            // and, without the city, only the Plaza de las Salesas of Cartagena. A lower-case
+            // article is the sentence's, not the name's («La Puntilla» keeps its own).
+            if (start == 1 && char.IsLower(words[0][0])) words = words[1..];
             // «calle Génova en Madrid» → «calle Génova, Madrid».
             return Regex.Replace(string.Join(' ', words), @"\s+(?:en|in)\s+", ", ",
                 RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1));
@@ -154,6 +158,9 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
         string[] segments = ask.Place.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         string[] required = PlaceWords(segments.Length > 0 ? segments[0] : ask.Place);
         string[] wanted = PlaceWords(ask.Place);
+        // M56 (v3c-final F-p06-t2): the places the first part is said to be in («…, Madrid»)
+        // bind the candidate too, also when the first part is asked alone.
+        string[][] within = segments.Skip(1).Select(PlaceWords).Where(static words => words.Length > 0).ToArray();
         try
         {
             Area? box = null;
@@ -163,7 +170,7 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
                     Endpoint + "?format=jsonv2&addressdetails=1&limit=5&q=" + Uri.EscapeDataString(asked), cancellationToken)
                     .ConfigureAwait(false);
                 if (area is null) return null;
-                box = AreaOf(area, required, wanted, country, requireCountry);
+                box = AreaOf(area, required, wanted, country, requireCountry, within);
                 if (box is not null) break;
             }
             if (box is null) return [];
@@ -191,10 +198,16 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
 
     // El recuadro del lugar elegido, con al menos ~1 km por lado y como mucho ~30 km, y
     // su centro. Null cuando ningún candidato lleva las palabras del lugar (o, con
-    // «requireCountry», ninguno está en «country»). A igual número de palabras gana el
-    // candidato de «country».
+    // «requireCountry», ninguno está en «country»; o, con «within», ninguno lleva en su
+    // dirección alguna palabra de cada lugar que lo contiene: la ciudad nombrada). A igual
+    // número de palabras gana el candidato de «country».
     internal static Area? AreaOf(
-        string body, string[] required, string[] wanted, string? country = null, bool requireCountry = false)
+        string body,
+        string[] required,
+        string[] wanted,
+        string? country = null,
+        bool requireCountry = false,
+        IReadOnlyList<string[]>? within = null)
     {
         using JsonDocument document = JsonDocument.Parse(body);
         if (document.RootElement.ValueKind != JsonValueKind.Array) throw new JsonException("Not a Nominatim answer.");
@@ -207,6 +220,7 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
                 && address.ValueKind == JsonValueKind.Object ? Text(address, "country_code") : string.Empty;
             bool inCountry = countryKnown && string.Equals(placeCountry, country, StringComparison.OrdinalIgnoreCase);
             if (!required.All(named.Contains)
+                || (within is not null && !within.All(words => words.Any(named.Contains)))
                 || (requireCountry && countryKnown && !inCountry)
                 || !place.TryGetProperty("boundingbox", out JsonElement box)
                 || box.ValueKind != JsonValueKind.Array || box.GetArrayLength() != 4)

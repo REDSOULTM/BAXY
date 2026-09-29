@@ -145,5 +145,11 @@ def test_a_result_about_the_query_still_answers():
     assert not _search_report_from_no_pertinent_result("Bram Stoker wrote Dracula.", payload, "who wrote Dracula")
     places = copy.deepcopy(payload)
     places["seen"].update(query="aparcamiento en Plaza Mayor, Madrid", authority="openstreetmap_nominatim")
-    # A place read from OpenStreetMap answers by construction.
+    # M56 (v3c-final F-p06-t2, car parks of Cartagena told for «…la Plaza de las Salesas en Madrid»): a place read
+    # from OpenStreetMap answers by construction only inside the city the query named; one outside it (this result
+    # names no Madrid) answers nothing about it.
+    assert _search_report_from_no_pertinent_result("Hay un parking en la Calle Mayor.", places, "")
+    places["seen"]["results"][0].update(
+        title="parking", snippet="Calle Mayor, Sol, Centro, Madrid, Comunidad de Madrid, 28013, España"
+    )
     assert not _search_report_from_no_pertinent_result("Hay un parking en la Calle Mayor.", places, "")

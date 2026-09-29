@@ -4564,18 +4564,48 @@ _SNAP_PAIR = re.compile(
     re.IGNORECASE,
 )
 _SNAP_PAIR_ELLIPSIS = re.compile(r"^(?:la|el|the)\s+(?:de|del|of)\s+", re.IGNORECASE)
+# M56 (v3c-final F-w08-t1, Slack not installed on the test PC): a name the catalog does not hold is still a name when
+# it is one to three plain words and none of them is a word for a window, a program, a side or an article.
+_ABSENT_NAME = re.compile(r"[a-z0-9][a-z0-9.+&'-]*(?:\s+[a-z0-9.+&'-]+){0,2}")
+_NOT_A_NAME_WORD = frozenset({
+    "ventana", "ventanas", "window", "windows", "app", "apps", "aplicacion", "aplicaciones", "application",
+    "applications", "programa", "programas", "program", "programs", "pantalla", "screen", "mitad", "half", "lado",
+    "side", "el", "la", "los", "las", "the", "de", "del", "of", "y", "e", "and", "otra", "otro", "other", "una",
+    "un", "a", "an", "mi", "my", "tu", "your", "eso", "esto", "ese", "esa", "este", "esta", "aquello", "aquella",
+    "it", "this", "that", "todo", "todas", "todos", "all", "everything", "ambas", "ambos", "both", "cosa", "thing",
+    "lo", "le",
+})
+
+
+def _absent_application_name(raw_target: str, text: str) -> str | None:
+    """The name a placing request gives a window the catalog does not hold, as the person wrote it."""
+
+    names = [
+        form
+        for form, _ in _close_target_forms(raw_target)
+        if _ABSENT_NAME.fullmatch(form) and not any(word in _NOT_A_NAME_WORD for word in form.split())
+    ]
+    if not names:
+        return None
+    name = min(names, key=len)
+    written = re.search(r"(?<!\w)" + r"\s+".join(map(re.escape, name.split())) + r"(?!\w)", str(text), re.IGNORECASE)
+    return written.group(0) if written is not None else name
 
 
 def application_snap_pairs(
     text: str,
     application_names: Iterable[str] | ApplicationCatalogIndex,
+    *,
+    absent: bool = False,
 ) -> tuple[tuple[str, str, str], ...] | None:
     """Each window a placing request docks, in order, as (catalog display name, side, folded clause).
 
     The clause is the head with that window's own target and side («coloca la de chrome en la mitad derecha»),
     so one plan step can read its window alone. This reads the targets of an effect already decided upstream (the
     decider or a reader); it authorizes nothing: every target must be one exact catalog identity, all distinct, or
-    the reading abstains.
+    the reading abstains. With ``absent`` (the plan of a placing the decider already chose), a target no catalog
+    entry holds keeps the name the person gave it («Slack»): its resolve step asks the PC and the PC says it is not
+    there; an ambiguous target still abstains.
     """
 
     folded = _strip_request_envelope(_fold(text))
@@ -4607,10 +4637,19 @@ def application_snap_pairs(
             if (key := _authenticated_close_key(form, catalog)) is not None
         }
         names = {name for name, key in catalog.entries if key in keys}
+        if not keys and absent:
+            absent_name = _absent_application_name(raw_target, str(text))
+            names = {absent_name} if absent_name is not None else set()
+            keys = {"absent:" + absent_name.casefold()} if absent_name is not None else set()
         if len(keys) != 1 or len(names) != 1:
             return None
         side = "left" if _has(found.group("side"), r"\b(?:izquierda|left)\b") else "right"
-        pairs.append((next(iter(names)), side, f"{head} {found.group('target').strip()} {found.group('side')}"))
+        target = found.group("target").strip()
+        if next(iter(keys)).startswith("absent:"):
+            # The step reads its clause alone: it keeps the name as the person wrote it («Slack»).
+            name = next(iter(names))
+            target = re.sub(r"(?<!\w)" + re.escape(name.casefold()) + r"(?!\w)", lambda _: name, target, count=1)
+        pairs.append((next(iter(names)), side, f"{head} {target} {found.group('side')}"))
         if found.group("end") is not None:
             break
         position = found.end()

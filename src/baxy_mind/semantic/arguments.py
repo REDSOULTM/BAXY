@@ -915,7 +915,7 @@ def _explicit_arguments_from_evidence(
         if snap is None:
             # M55: the decided request restated as «Coloca la ventana de Word en la mitad izquierda» (a head the
             # decision reader does not hold as an order) or one clause of a two-window plan.
-            pairs = effect_intent.application_snap_pairs(evidence, application_names)
+            pairs = effect_intent.application_snap_pairs(evidence, application_names, absent=True)
             return {"side": pairs[0][1]} if pairs is not None and len(pairs) == 1 else None
         return {"side": snap[1]}
 
@@ -933,7 +933,7 @@ def _explicit_arguments_from_evidence(
         )
         if application_name is not None:
             return {"applicationName": application_name}
-        pairs = effect_intent.application_snap_pairs(evidence, application_names)
+        pairs = effect_intent.application_snap_pairs(evidence, application_names, absent=True)
         if pairs is not None and len(pairs) == 1:
             # M55: one window of a placing request (a two-window plan resolves each clause on its own step).
             return {"applicationName": pairs[0][0]}
@@ -2331,7 +2331,7 @@ def window_snap_plan_split(
 
     if operations.count("window.snap") != 1:
         return None
-    pairs = effect_intent.application_snap_pairs(objective, application_names)
+    pairs = effect_intent.application_snap_pairs(objective, application_names, absent=True)
     if pairs is None or len(pairs) < 2:
         return None
     index = operations.index("window.snap")
@@ -2355,8 +2355,8 @@ def window_snap_side_for_step(
     request, or a request with one window, abstains here.
     """
 
-    requested = effect_intent.application_snap_pairs(objective, application_names)
-    chosen = effect_intent.application_snap_pairs(purpose, application_names)
+    requested = effect_intent.application_snap_pairs(objective, application_names, absent=True)
+    chosen = effect_intent.application_snap_pairs(purpose, application_names, absent=True)
     if requested is None or len(requested) < 2 or chosen is None or len(chosen) != 1:
         return None
     name, side, _ = chosen[0]

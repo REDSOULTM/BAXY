@@ -3318,6 +3318,7 @@ _NOT_A_PUBLIC_LOOKUP = re.compile(
 def not_a_public_lookup(objective: str) -> bool:
     """What the public-lookup guard never sends to the web (moved from ``__main__._names_own_data``)."""
 
+    from .conversation import asks_for_code  # conversation reads web: imported when used
     from .messaging import _latest_email_domain  # messaging reads web's own-data words: imported when used
 
     folded = _fold(objective)
@@ -3328,7 +3329,35 @@ def not_a_public_lookup(objective: str) -> bool:
         _NOT_A_PUBLIC_LOOKUP.search(folded) is not None
         or names_own_data(folded)
         or _latest_email_domain(folded)
+        # M56 (v3c-final F-w14-t1 «escribeme un query de sql q me saque los users activos del ultimo mes» → the
+        # guard read public_lookup, web.search failed): code asked for is written by the model, never looked up.
+        or asks_for_code(objective)
     )
+
+
+# M56 (v3c-final F-p06-t2 «aparcamiento en la Plaza de las Salesas en Madrid» → car parks of Cartagena told as
+# Madrid's): the places a place search names its place to be in, read as the provider reads the query
+# (OpenStreetMapPlaceSource.PlaceOf): after «en / in / cerca de / near», the parts after the first one.
+_PLACE_LINK = re.compile(r"\b(?:cerca\s+del?|near|around|alrededor\s+del?|en|in|at)\s+(?P<place>[^?!.;]+)")
+_PLACE_PART_SPLIT = re.compile(r"\s+(?:en|in)\s+|\s*,\s*")
+
+
+def place_containers(query: str) -> tuple[frozenset[str], ...]:
+    """The words of each place the searched place is said to be in («…en la Plaza de las Salesas en Madrid» →
+    ({"madrid"},)); empty when the query names one place only."""
+
+    found = _PLACE_LINK.search(_reading_fold(str(query or "")))
+    if found is None:
+        return ()
+    parts = _PLACE_PART_SPLIT.split(found.group("place").strip(" ,:"))
+    containers = (
+        frozenset(word for word in re.findall(r"[a-z0-9]+", part) if len(word) >= 3 and word not in _PLACE_ARTICLES)
+        for part in parts[1:]
+    )
+    return tuple(words for words in containers if words)
+
+
+_PLACE_ARTICLES = frozenset({"del", "los", "las", "the"})
 
 
 def weather_asks_today(asks: str, today_weekday: str) -> bool:
