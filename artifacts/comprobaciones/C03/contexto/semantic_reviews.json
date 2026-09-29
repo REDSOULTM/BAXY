@@ -2,8 +2,8 @@
  "dueno-2026-09-21": {
   "21": {
    "verdict": "bien",
-   "reply": "He cerrado la ventana de YouTube y la de restaurar páginas en Edge.",
-   "head": "02c986e9"
+   "reply": "He cerrado las ventanas de Edge que estaban abiertas.",
+   "head": "7ba5c5e9"
   },
   "16": {
    "verdict": "bien",
@@ -27,18 +27,18 @@
   },
   "24": {
    "verdict": "bien",
-   "reply": "Colony es una película surcoreana de thriller y terror dirigida por Yeon Sang-ho, protagonizada por Jun Ji-hyun y Koo Kyo-hwan, que se presentó en mayo de 2026 en el Festival de Cannes y en los cines de Corea del Sur.",
-   "head": "f06d1655"
+   "reply": "La gente ve en Colony una exploración de la mente colectiva frente al individualismo extremo.",
+   "head": "7ba5c5e9"
   },
   "35": {
    "verdict": "bien",
-   "reply": "La primera novela de zombies fue La isla mágica, publicada en 1929.",
-   "head": "3a844c22"
+   "reply": "El primer libro de zombies fue La isla mágica, que tiene un capítulo titulado 'Fallecidos vivientes que trabajan en los campos de caña de azúcar'.",
+   "head": "7ba5c5e9"
   },
   "25": {
    "verdict": "mal",
-   "reply": "Colony puede referirse al Old Colony Club en Nueva York, al álbum de In Flames, a Colony Park en Pensilvania o a Cabana Colony en Florida.",
-   "head": "3a844c22"
+   "reply": "No lo encontré.",
+   "head": "7ba5c5e9"
   }
  },
  "heldout-2026-09-22": {
