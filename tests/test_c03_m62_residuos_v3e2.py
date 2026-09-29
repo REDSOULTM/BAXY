@@ -352,9 +352,9 @@ def test_f_p07_t1_the_deterministic_final_carries_today() -> None:
 )
 def test_f_p07_t4_the_person_is_not_called_baxy(reply: str, vocative: bool) -> None:
     assert llm.visible_reply_calls_the_person_baxy(reply) is vocative
-    assert (llm.compose_visible_defect(reply, "conversation", "Okay, that's all; see ya!", {}) == "person_called_baxy") is (
-        vocative
-    )
+    english = reply.startswith(("Have", "Bye", "I'm"))
+    request = "Okay, that's all; see ya!" if english else "Vale, eso es todo, ¡nos vemos!"
+    assert (llm.compose_visible_defect(reply, "conversation", request, {}) == "person_called_baxy") is vocative
 
 
 def test_f_p07_t4_the_talk_reply_is_refused() -> None:
