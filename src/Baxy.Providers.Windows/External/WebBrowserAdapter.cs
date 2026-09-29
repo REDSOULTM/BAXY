@@ -624,14 +624,23 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         {
             // M54: this PC's city is looked up in this PC's country; a named place prefers the
             // country of this PC's regional settings among places of the same name.
-            List<(string Title, string Url, string Snippet)>? places = await _places
-                .SearchAsync(
+            OpenStreetMapPlaceSource.PlaceReading? places = await _places
+                .SearchNearAsync(
                     placeAsk, limit, languages[0], cancellationToken,
                     nearCountry ?? RegionInfo.CurrentRegion.TwoLetterISORegionName,
                     requireCountry: nearCountry is not null)
                 .ConfigureAwait(false);
-            if (places is { Count: > 0 })
-                return SearchReceipt(operation, query, near, places, OpenStreetMapPlaceSource.Authority);
+            if (places is { Places.Count: > 0 } read)
+            {
+                return SearchReceipt(operation, query, near,
+                    read.Places.Select(static place => (place.Title, place.Url, place.Snippet)).ToList(),
+                    OpenStreetMapPlaceSource.Authority,
+                    read.Places.Select(static place => place.DistanceMeters).ToList());
+            }
+            // M62 (v3e2-final F-p05-t1): sites of that kind exist only farther than the named
+            // place's surroundings; none is near it, and that is the answer.
+            if (places is { AllFar: true })
+                return ExternalJson.FailureBeforeEffect(operation, "web_search_places_not_found_near");
         }
 
         if (near is null && WikimediaReferenceSource.Parse(asked) is { } reference)
@@ -761,12 +770,14 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // shape whatever source answered; «authority» names that source
     // (frankfurter_reference_rates, openstreetmap_nominatim, google_news_rss_search,
     // wikipedia_es_api, wikipedia_en_api or duckduckgo_lite_https).
+    // M62: a place read also carries each site's «distanceMeters» from the named place.
     private static ExternalCapabilityReceipt SearchReceipt(
         string operation,
         string query,
         string? near,
         List<(string Title, string Url, string Snippet)> results,
-        string authority)
+        string authority,
+        List<int?>? distances = null)
     {
         JsonElement result = ExternalJson.Create(writer =>
         {
@@ -777,12 +788,15 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 writer.WriteString("near", near);
             writer.WriteNumber("count", results.Count);
             writer.WriteStartArray("results");
-            foreach ((string title, string url, string snippet) in results)
+            for (int index = 0; index < results.Count; index++)
             {
+                (string title, string url, string snippet) = results[index];
                 writer.WriteStartObject();
                 writer.WriteString("title", title);
                 writer.WriteString("url", url);
                 writer.WriteString("snippet", snippet);
+                if (distances is not null && index < distances.Count && distances[index] is int meters)
+                    writer.WriteNumber("distanceMeters", meters);
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
