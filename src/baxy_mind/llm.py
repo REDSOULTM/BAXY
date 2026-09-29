@@ -161,7 +161,7 @@ from .semantic.notes import _PERSONAL_RECORD_STORE, names_an_own_record_store, n
 from .semantic.request import _conversation_response_language
 from .semantic.system import reports_the_gpu_stopped
 from .semantic.ui import asks_about_buttons, asks_to_see_the_screen
-from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_future, weather_asks_later_today, weather_asks_today
+from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_future, weather_asks_later_today, weather_asks_rain_now, weather_asks_today
 
 
 MAX_CONTEXT_TOKENS = 12288
@@ -4623,6 +4623,11 @@ _CAUSE_FACT = {
     "netflix_authentication_required": "Netflix asks to sign in on this PC, so nothing was played",
     "disney_authentication_required": "Disney+ asks to sign in on this PC, so nothing was played",
     "streaming_authentication_required": "the streaming service asks to sign in on this PC, so nothing was played",
+    # M60 (DEV-D w10-t6 v3d «Diez» → media.seek.relative): the typed cause fell back to «external effect ambiguous»
+    # and the three drafts narrated that jargon («La operación de búsqueda relativa…»).
+    "media_seek_postcondition_not_verified": (
+        "the jump in the playback could not be confirmed afterwards, so it is not known whether it moved"
+    ),
     "acting": "still working",
     # M38 (official-window rehearsal 2026-09-28 «what is the timer now?»): the bare «unclear request» was copied into
     # the drafts («…because the request was unclear»), which are no question and name an internal cause; every draft
@@ -6884,6 +6889,20 @@ _DETERMINISTIC_FAILURES = {
         "The volume is already at maximum, but muted. Should I unmute it?",
     ),
     "volume_already_at_minimum": ("El volumen ya está al mínimo.", "The volume is already at minimum."),
+    # M60 (DEV-D p16-t1 v3c, p25-t1 v3c, w10-t6 v3d): every draft of these typed failures was vetoed and the turn
+    # ended in ⚠; each says its cause fact (_CAUSE_FACT) and, for the search, the browser offer the owner chose.
+    "web_search_unavailable": (
+        "No pude buscarlo ahora; puedo abrirlo en tu navegador.",
+        "I couldn't look it up right now; I can open it in your web browser.",
+    ),
+    "weather_service_unavailable": (
+        "No pude leer el tiempo: el servicio meteorológico no respondió.",
+        "I couldn't read the weather: the weather service didn't answer.",
+    ),
+    "media_seek_postcondition_not_verified": (
+        "No pude confirmar el salto en la reproducción.",
+        "I couldn't confirm the jump in the playback.",
+    ),
 }
 
 
@@ -6977,6 +6996,23 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
                 if english
                 else f"En {seen['location']} hay {temperature} °C ahora, {seen['condition']}"
             )
+            today_rain = (seen.get("today") or {}).get("rainProbabilityPercent") if isinstance(
+                seen.get("today"), dict
+            ) else None
+            if weather_asks_rain_now(user_text or "") and isinstance(seen.get("precipitationMm"), (int, float)):
+                # M60 (DEV-D w11-t1): the rain asked now is the rain read now.
+                raining = _raining_now(seen)
+                now += (
+                    ("; it is raining now" if raining else "; it isn't raining now")
+                    if english
+                    else ("; está lloviendo" if raining else "; no llueve ahora")
+                )
+            elif _weather_asks_rain(user_text or "") and isinstance(today_rain, (int, float)) and not (
+                weather_asks_future(user_text or "")
+            ):
+                # The rain asked for today, with no hour, is today's probability.
+                said = _decimal_said(today_rain, english)
+                now += f"; {said}% chance of rain today" if english else f"; hoy, {said} % de lluvia"
             coming = seen.get("tomorrow") if weather_asks_future(user_text or "") else None
             figures = [coming.get(key) for key in ("condition", "minC", "maxC", "rainProbabilityPercent")] if (
                 isinstance(coming, dict)
@@ -7056,6 +7092,32 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
             return ""
         listed = ", ".join(places[:-1]) + (" and " if english else " y ") + places[-1] if len(places) > 1 else places[0]
         return f"I found: {listed}." if english else f"Encontré: {listed}."
+    if operation == "web.news.headlines" and isinstance(seen.get("headlines"), list):
+        # M60 (DEV-D s032 q4): the headlines read are the answer, quoted as the feed wrote them (three at most).
+        titles = [
+            str(item.get("title")).strip(" :;,.-–—|")
+            for item in seen["headlines"]
+            if isinstance(item, dict) and isinstance(item.get("title"), str) and item.get("title").strip(" :;,.-–—|")
+        ][:3]
+        if not titles:
+            return ""
+        quoted = "; ".join(f"«{title}»" for title in titles)
+        topic = str(seen.get("topic") or "").strip()
+        if english:
+            return f"Headlines about {topic}: {quoted}." if topic else f"Headlines: {quoted}."
+        return f"Titulares sobre {topic}: {quoted}." if topic else f"Titulares: {quoted}."
+    if operation in {"task.create", "task.delete", "task.complete"} and isinstance(seen.get("title"), str):
+        # M60 (DEV-D s067 q4 «Pon patatas y patatas y huevos en la lista de deseos»): the item written is named by
+        # the title the store verified, the person's own words.
+        title = seen["title"].strip()
+        if not title:
+            return ""
+        verbs = {
+            "task.create": ("Añadí", "I added"),
+            "task.delete": ("Quité", "I removed"),
+            "task.complete": ("Marqué como hecho", "I marked as done"),
+        }[operation]
+        return f"{verbs[1]} «{title}»." if english else f"{verbs[0]} «{title}»."
     return ""
 
 
@@ -8716,12 +8778,23 @@ _SEARCH_RESULTS_TAIL = re.compile(
 )
 
 
+# M60 (DEV-D p16-t1 v3c, web_search_unavailable): the cause asks to offer opening it in the person's browser, and
+# «I can open the search page in your web browser» / «open the search in your web browser?» is that offer, a search
+# the person would run, not BAXY's lookup shown. Folded text.
+_BROWSER_SEARCH_OFFER = re.compile(
+    r"\b(open|abrir|abro|abra|abrirte|abrirla|abrirlo)\s+(?:the|a|that|la|una|esa)\s+(?:search|busqueda)"
+    r"(?:\s+(?:page|pagina))?(?=\s+(?:for\s+you\s+)?(?:in|on|en)\s+(?:your|the|tu|su|el)\s+(?:web\s+)?"
+    r"(?:browser|navegador))"
+)
+
+
 def _search_report_shows_the_search(text: str, payload: dict, user_text: str) -> bool:
     """The answer to a verified search tells the search: a source cited, a result's site named, or how it was
     found. The person's own words and a snippet's own words are not the search showing."""
 
     results_text = _search_results_text(payload)
     folded = _reading_fold(re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(text)))
+    folded = _BROWSER_SEARCH_OFFER.sub(r"\1 it", folded)
     reason = payload.get("reason")
     if results_text is None:
         # Tanda 7 «quién ganó el game de los Lakers anoche» → «…debido a que los resultados de búsqueda son
@@ -9572,6 +9645,35 @@ def _weather_unsupported_comparison(text: str, seen: dict) -> bool:
     return False
 
 
+# M60: the rain now a reply says (folded text): False for «no está lloviendo», «no llueve», «it isn't raining», True
+# for «está lloviendo», «llueve», «it's raining», None when it says neither. The reply's wording, not the request.
+_RAIN_NOW_DENIED = re.compile(
+    r"\b(?:no\s+(?:esta|estan)\s+lloviendo|no\s+llueve|no\s+hay\s+lluvia|sin\s+lluvia|"
+    r"(?:is\s+not|isn'?t|it'?s\s+not|not)\s+raining|no\s+rain)\b"
+)
+_RAIN_NOW_STATED = re.compile(r"\b(?:(?:esta|estan)\s+lloviendo|llueve|(?:is|it'?s)\s+raining)\b")
+_RAINY_CONDITION = re.compile(
+    r"\b(?:lluvi\w*|llovizn\w*|chubasc\w*|tormenta\w*|aguacer\w*|rain\w*|drizzl\w*|shower\w*|thunderstorm\w*)\b"
+)
+
+
+def _rain_now_said(folded_text: str) -> bool | None:
+    if _RAIN_NOW_DENIED.search(folded_text) is not None:
+        return False
+    if _RAIN_NOW_STATED.search(folded_text) is not None:
+        return True
+    return None
+
+
+def _raining_now(seen: dict) -> bool:
+    """Rain read now: precipitation measured, or a rainy sky named by the read."""
+
+    rain_mm = seen.get("precipitationMm")
+    return (isinstance(rain_mm, (int, float)) and rain_mm > 0) or _RAINY_CONDITION.search(
+        _reading_fold(str(seen.get("condition") or ""))
+    ) is not None
+
+
 def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     """REOPEN1993 grupo W: every number in a weather reply is an observed one
     (temperatures, wind, humidity, rain probability) and the place is named;
@@ -9761,6 +9863,15 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         # and a later day are answered with the rain probability of the day
         # asked — tomorrow's for tomorrow or later, today's for today, either
         # read when no day is named.
+        # M60 (DEV-D w11-t1 «¿Está lloviendo en Medellín ahora?», 0 mm read): the rain asked now is answered by the
+        # rain read now («No está lloviendo ahora en Medellín.» died three times wanting the day's probability); a
+        # present rain said against the read is reversed.
+        said_now = (
+            _rain_now_said(folded_text)
+            if weather_asks_rain_now(user_text or "") and isinstance(rain_mm, (int, float)) else None
+        )
+        if said_now is not None and said_now != _raining_now(seen):
+            return "reversed_result"
         if coming:
             days = (seen.get("today"), tomorrow, *later)
         elif asks_tomorrow:
@@ -9774,7 +9885,9 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
             for day in days
             if isinstance(day, dict) and day.get("rainProbabilityPercent") is not None
         ]
-        if probabilities and not any(_states_weather_number(text, value) for value in probabilities):
+        if said_now is None and probabilities and not any(
+            _states_weather_number(text, value) for value in probabilities
+        ):
             return "missing_state"
     # M58 (v3d-final F-s066 «¿hará bueno para San Juan?»): asked in the future with no day named, the answer carries
     # tomorrow's read (its sky, a temperature or its rain), not the weather now alone.
@@ -9801,6 +9914,10 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     return ""
 
 
+def _headline_words(value: str) -> str:
+    return " ".join(re.findall(r"\w+", _reading_fold(value)))
+
+
 def _news_fact_defect(text: str, payload: dict) -> str:
     """REOPEN1993 grupo N: the reply quotes the observed headlines (at least
     three when the feed gave that many) and names no portal listing instead."""
@@ -9817,8 +9934,11 @@ def _news_fact_defect(text: str, payload: dict) -> str:
     ]
     if not titles:
         return ""
-    folded_text = _reading_fold(text)
-    quoted = sum(1 for title in titles if _reading_fold(title) in folded_text)
+    # M60 (DEV-D s032 q4 «Noticias sobre Taylor Swift»): the feed's «: Taylor Swift abre su intimidad con Travis
+    # Kelce» was quoted without its stray colon and did not count, so two drafts with three headlines died. A
+    # headline is quoted when its words are, in order; punctuation and quotation marks are typography.
+    said_words = f" {_headline_words(text)} "
+    quoted = sum(1 for title in titles if (words := _headline_words(title)) and f" {words} " in said_words)
     if quoted < min(3, len(titles)):
         return "missing_state"
     return ""
@@ -11425,6 +11545,46 @@ def _observed_identifier_tokens(situation: dict) -> set[str]:
     return tokens
 
 
+# Typed causes whose fact is that a source did not answer: saying so is the cause, not an invented non-answer.
+_NON_ANSWER_CAUSES = frozenset({
+    "download_source_unavailable", "weather_service_unavailable", "time_place_service_unavailable",
+})
+
+# The writes of a task or a note: their verified result names the item by its title, the person's own words.
+_TITLED_ITEM_WRITES = frozenset({
+    "note.create", "note.update", "note.trash", "note.restore",
+    "task.create", "task.update", "task.delete", "task.complete", "task.reopen", "task.restore",
+})
+# A write told as not done (the reply's wording, folded): «I did not remove», «no añadí», «no se ha borrado».
+_NEGATED_OWN_WRITE = re.compile(
+    r"\bi\s+(?:did\s+not|didn'?t|have\s+not|haven'?t|could\s+not|couldn'?t|was\s+not\s+able\s+to|"
+    r"wasn'?t\s+able\s+to)\s+(?:add|remove|delete|create|save|mark|complete|put|move|update|erase|note)\w*|"
+    r"\b(?:has|have|was|were)\s+not\s+been\s+(?:added|removed|deleted|created|saved|marked|completed|updated)\b|"
+    r"\b(?:hasn'?t|haven'?t|wasn'?t|weren'?t)\s+been\s+(?:added|removed|deleted|created|saved|marked|completed|"
+    r"updated)\b|"
+    r"\bno\s+(?:(?:lo|la|los|las|le|les|se)\s+)?(?:(?:he|ha|han)\s+)?(?:anadi|anadido|agregue|agregado|quite|quitado|"
+    r"elimine|eliminado|borre|borrado|cree|creado|guarde|guardado|marque|marcado|puse|puesto|movi|movido|"
+    r"actualice|actualizado|anote|anotado|pude)\b"
+)
+
+
+def _verified_titled_item_write(situation: dict, operation: str, cause: str) -> bool:
+    """A verified write of a task or a note, alone or as a step of a completed mission."""
+
+    if (
+        operation in _TITLED_ITEM_WRITES
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+    ):
+        return True
+    return cause == "mission_completed" and any(
+        step.get("operation") in _TITLED_ITEM_WRITES
+        and step.get("verified") is True
+        and step.get("succeeded") is True
+        for step in _situation_steps(situation)
+    )
+
+
 def compose_visible_defect(
     text: str,
     intent: str,
@@ -12422,8 +12582,9 @@ def compose_visible_defect(
             and re.search(r"no respond|didn't respond|did not respond|no respondo", folded)
             # DOWNLOAD2047 «descargá https://example.com/index.html»: «la dirección
             # no respondió» is the typed cause (download_source_unavailable), not
-            # an invented non-answer.
-            and "download_source_unavailable" not in _situation_error_codes(situation)
+            # an invented non-answer. M60 (DEV-D p25-t1 v3c «the weather service did not respond»): so is a
+            # service whose cause fact is that it did not answer.
+            and not _NON_ANSWER_CAUSES & set(_situation_error_codes(situation))
         ):
             return "extra_claim"
         # Fuera de catálogo no se intentó nada: «No pude reservar la mesa en
@@ -12909,6 +13070,13 @@ def compose_visible_defect(
             return "playback_progress_stated"
         # Tanda 6b «set alarms for 2pm and 3pm»: a mission's alarms are judged like one alarm, each by its time.
         scheduled_dues = _verified_notification_dues(situation)
+        if _verified_titled_item_write(situation, operation, cause) and _NEGATED_OWN_WRITE.search(
+            _reading_fold(stripped)
+        ):
+            # M60 (DEV-D p03-t3 v3d «I did not remove the chips from your shopping list because you requested
+            # that.» over a verified delete): the write the store verified, told as not done, is the result
+            # reversed. The title rule caught it only by accident, for not saying «title».
+            return "reversed_result"
         title = observed_dict.get("title")
         if scheduled_dues and not names_the_title(user_text):
             # A generated description («alarm at 3 pm») is not an explicitly chosen identity.
@@ -12938,16 +13106,19 @@ def compose_visible_defect(
                 operation != "media.status" and not verified_media_transport
                 and not scheduled_dues
                 and not (
-                    operation in {"note.create", "task.create"}
+                    operation in _TITLED_ITEM_WRITES
                     and situation.get("verified") is True
                     and situation.get("succeeded") is True
                 )
                 # Tanda 4c: the list read and then the add of the entry it did not find («add flour to my
                 # shopping list if it's not already on it»); the created title is named like a single add.
+                # M60 (DEV-D p03-t3 «Nevermind I do not want chips on there», resolve + delete, all three runs):
+                # «I have removed chips from your shopping list.» names the removed item by its title as well; nine
+                # drafts died for not saying «note» or «title».
                 and not (
                     cause == "mission_completed"
                     and any(
-                        step.get("operation") in {"note.create", "task.create"}
+                        step.get("operation") in _TITLED_ITEM_WRITES
                         and step.get("verified") is True
                         and step.get("succeeded") is True
                         for step in _situation_steps(situation)
@@ -21274,6 +21445,22 @@ class LlmRuntime:
             clipped = clipped if clipped.endswith((".", "!", "?")) else clipped + "."
             return clipped if publishable(clipped) else candidate
 
+        def limit_clip(candidate: str) -> str:
+            # M60 (DEV-D s004 «recomprar el último billete de tren a huesca», w03-t3 «prende la luz de la cosina»):
+            # «No enciendo la luz de la cocina porque eso no es lo que hago.» died three times on limit_gives_a_reason
+            # and the turn ended in ⚠. The reason is the part the owner's rule refuses; the limit before it is whole.
+            # Kept only if the clipped draft passes every check.
+            if cause not in {"out_of_catalog", "out-of-catalog"} or not candidate or publishable(candidate):
+                return candidate
+            found = re.search(_LIMIT_REASON.pattern, candidate, re.IGNORECASE)
+            if found is None:
+                return candidate
+            head = candidate[:found.start()].rstrip(" ,;:—–-")
+            if not head:
+                return candidate
+            head = head if head.endswith((".", "!", "?")) else head + "."
+            return head if publishable(head) else candidate
+
         def screen_clip(candidate: str) -> str:
             # SCREEN1421: quoting seen.lines, the model copied the JSON escapes
             # of the prompt («\"key\": false,», «\n»); the person's screen has
@@ -21303,7 +21490,7 @@ class LlmRuntime:
         response = post(payload)
         first_raw = (response["choices"][0]["message"].get("content") or "").strip()
         text = _strip_prompt_labels(first_raw)
-        text = capital_lead(title_clip(acting_clip(screen_clip(search_clip(text)))))
+        text = capital_lead(title_clip(acting_clip(limit_clip(screen_clip(search_clip(text))))))
         note_length_cut(text, response)
         if publishable(text):
             record_stage("first", first_raw, text, response, "", True)
@@ -22233,7 +22420,7 @@ class LlmRuntime:
             raise
         retry_raw = (retry["choices"][0]["message"].get("content") or "").strip()
         retry_text = _strip_prompt_labels(retry_raw)
-        retry_text = capital_lead(title_clip(acting_clip(screen_clip(search_clip(retry_text)))))
+        retry_text = capital_lead(title_clip(acting_clip(limit_clip(screen_clip(search_clip(retry_text))))))
         note_length_cut(retry_text, retry)
         if publishable(retry_text):
             record_stage("retry", retry_raw, retry_text, retry, "", True)
@@ -22289,7 +22476,7 @@ class LlmRuntime:
             raise
         third_raw = (third["choices"][0]["message"].get("content") or "").strip()
         third_text = _strip_prompt_labels(third_raw)
-        third_text = capital_lead(title_clip(acting_clip(screen_clip(search_clip(third_text)))))
+        third_text = capital_lead(title_clip(acting_clip(limit_clip(screen_clip(search_clip(third_text))))))
         note_length_cut(third_text, third)
         if publishable(third_text):
             record_stage("third", third_raw, third_text, third, "", True)
