@@ -3318,6 +3318,29 @@ def weather_asks_future(user_text: str) -> bool:
     )
 
 
+# M60 (DEV-D w11-t1 «¿sabes si allá está lloviendo ahorita?», decided «¿Está lloviendo en Medellín ahora?»): rain
+# asked in the present, in the progressive («está lloviendo», «is it raining») or with «now» («¿llueve ahora?»), is
+# answered by the rain read now; the day's probability is another question. A later part of the day, tomorrow or a
+# later day asks what is coming.
+_WEATHER_RAIN_NOW = (
+    r"\b(?:esta|estan)\s+(?:lloviendo|lloviznando|garuando)\b|\b(?:is\s+it|it\s+is|it'?s)\s+raining\b|"
+    r"\bllueve\b[^.?!]{0,40}\b(?:ahora|ahorita|en\s+este\s+momento)\b|"
+    r"\b(?:ahora|ahorita|en\s+este\s+momento)\b[^.?!]{0,40}\bllueve\b|\braining\s+(?:right\s+)?now\b"
+)
+
+
+def weather_asks_rain_now(user_text: str) -> bool:
+    """The rain is asked now (``_WEATHER_RAIN_NOW``), not later today, tomorrow or on a later day."""
+
+    folded = _reading_fold(user_text)
+    return (
+        re.search(_WEATHER_RAIN_NOW, folded) is not None
+        and re.search(r"\b(?:tonight|esta\s+(?:noche|tarde)|mas\s+tarde|later)\b", folded) is None
+        and not _weather_asks_tomorrow(user_text)
+        and not weather_asks_coming_days(user_text)
+    )
+
+
 # What is never a public search, whatever the guard reads: the person's own
 # data (semantic.web.names_own_data) and what is playing (the words would leave
 # the PC; 00_IDENTIDAD: information comes in, content does not go out); someone
