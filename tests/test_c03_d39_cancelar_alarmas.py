@@ -17,7 +17,7 @@ from datetime import datetime, timedelta, timezone
 import pytest
 
 from baxy_mind import __main__ as mind
-from baxy_mind.llm import LlmRuntime, _deterministic_final, _payload_fact_defect, _project_notification_listing
+from baxy_mind.llm import LlmRuntime, _compose_situation_payload, _deterministic_final, _payload_fact_defect
 from baxy_mind.semantic.dialogue import DialogueState
 from baxy_mind.semantic.patterns import resolve_explicit_clarification_intent, resolve_explicit_effects
 from baxy_mind.semantic.temporal import assents_to_alarm_offer, plural_alarm_cancellation
@@ -67,8 +67,9 @@ def _alarms_read(*clocks: tuple[int, int]) -> dict:
     }
 
 
-def _payload(situation: dict) -> dict:
-    return {"seen": _project_notification_listing(situation["observed"], "es"), "operation": "notification.list"}
+def _payload(situation: dict, request: str = F_S040, language: str = "es") -> dict:
+    # M62: the payload the composer gets for the offer (alarms alone, their number and whether all can be offered).
+    return _compose_situation_payload(situation, language, request)
 
 
 class _Writer(LlmRuntime):
@@ -91,7 +92,9 @@ def test_alarms_in_the_plural_without_which_are_read(text: str) -> None:
     assert resolve_explicit_clarification_intent(text, OPERATIONS) is None
     effects = resolve_explicit_effects(text, OPERATIONS)
     assert effects is not None and effects.operations == ("notification.list",)
-    assert mind._ground_explicit_arguments("notification.list", text, LIST_SCHEMA) == {}
+    # M62 (v3e2-final F-s040: the read held 20 of 38 notifications, «resultsMayBeTruncated»): the offer of every alarm
+    # reads as many as the catalog lets it.
+    assert mind._ground_explicit_arguments("notification.list", text, LIST_SCHEMA) == {"limit": 50}
 
 
 @pytest.mark.parametrize(
@@ -135,8 +138,7 @@ def test_one_alarm_is_named_and_none_is_said() -> None:
     none = _alarms_read()
     assert _deterministic_final(none, _payload(none), F_S040, "es") == "No tienes alarmas programadas."
     english = _alarms_read((7, 0), (19, 5))
-    assert _deterministic_final(english, {"seen": _project_notification_listing(english["observed"], "en"),
-                                          "operation": "notification.list"}, "cancel my alarms", "en") == (
+    assert _deterministic_final(english, _payload(english, "cancel my alarms", "en"), "cancel my alarms", "en") == (
         "You have 2 alarms (07:00 tomorrow and 19:05 tomorrow). Shall I cancel them all?"
     )
 
