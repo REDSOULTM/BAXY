@@ -182,12 +182,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # v3e tras revertir M59
 # M61
 # v3f: M61, M62
+# M63
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
         "e6b6fe315c55e216967736306267559aa2a0f3f5fd5f55ba6fa20dcb82e9b7ee"
     ),
     "src/baxy_mind/llm.py": (
-        "e1cbc8a841671d8170680f591526660f32bc0abbba12aa48b0ece787b5a184d5"
+        "0b9ce39346e5b88764492f2f77a382bf034185d4e2b01ad1bf55043dee8457c7"
     ),
 }
 
