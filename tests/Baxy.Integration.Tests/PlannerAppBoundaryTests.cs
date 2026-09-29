@@ -226,6 +226,72 @@ public sealed class PlannerAppBoundaryTests
         });
     }
 
+    // M56 (v3c-final F-w06-t1/t2, Word installed but closed on the test PC): the first window's
+    // resolve failed with window_not_found, the plan ended, Chrome was never placed and the reply
+    // said «ninguna» window existed. A read that changed nothing ends only its own chain; the other
+    // window's resolve and snap still run, and the failure names its application.
+    [Test]
+    public void AFailedReadEndsOnlyItsOwnChain()
+    {
+        static MindPlanStep Resolve(string id, string application) =>
+            new(id, "window.resolve", $"Localiza la ventana de {application}.", [], "literal",
+                new JsonObject { ["applicationName"] = application });
+        static MindPlanStep Snap(string id, string dependency) =>
+            new(id, "window.snap", "Coloca la ventana.", [dependency], "after_dependencies", null);
+        MindPlanStep[] twoWindows =
+            [Resolve("step_1", "Word"), Snap("step_2", "step_1"), Resolve("step_3", "Google Chrome"), Snap("step_4", "step_3")];
+        OperationResponse notFound = new(
+            ProtocolTypes.OperationResponse,
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            OperationStatuses.Failed,
+            """{"kind":"operation","operation":"window.resolve","polarity":"failure","verified":false,"succeeded":false,"error":"window_not_found"}""",
+            false,
+            false,
+            null,
+            "window_not_found");
+        var firstFailed = new PendingMindPlanExecution("pon el word a la izquierda y el chrome a la derecha", twoWindows);
+        var lastFailed = new PendingMindPlanExecution("pon el word a la izquierda y el chrome a la derecha", twoWindows)
+        {
+            NextIndex = 2,
+        };
+        // An effect with no producer of its own (typing into whatever is in front) never runs past a failure.
+        var typing = new PendingMindPlanExecution(
+            "abre word y escribe hola",
+            [Resolve("step_1", "Word"), new MindPlanStep("step_2", "input.text.type", "Escribe hola.", [], "literal",
+                new JsonObject { ["text"] = "hola" })]);
+        var openFailed = new PendingMindPlanExecution(
+            "abre word y pon chrome a la derecha",
+            [new MindPlanStep("step_1", "app.open", "Abre Word.", [], "literal", new JsonObject { ["appId"] = "word" }),
+             Resolve("step_2", "Google Chrome"), Snap("step_3", "step_2")]);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindPlanBoundary.IndependentRemainder(firstFailed, notFound)?.Select(static step => step.Id),
+                Is.EqualTo(new[] { "step_3", "step_4" }));
+            Assert.That(MindPlanBoundary.IndependentRemainder(lastFailed, notFound), Is.Null);
+            Assert.That(MindPlanBoundary.IndependentRemainder(firstFailed, notFound with { EffectMayHaveOccurred = true }),
+                Is.Null);
+            Assert.That(MindPlanBoundary.IndependentRemainder(typing, notFound), Is.Null);
+            Assert.That(MindPlanBoundary.IndependentRemainder(openFailed, notFound), Is.Null, "only a read is stepped over");
+
+            string word = MindPlanBoundary.WithStepTarget(notFound.Message, new JsonObject { ["applicationName"] = "Word" });
+            Assert.That(JsonNode.Parse(word)!["target"]!.GetValue<string>(), Is.EqualTo("Word"));
+            Assert.That(MindPlanBoundary.WithStepTarget(notFound.Message, new JsonObject { ["windowId"] = "w1" }),
+                Is.EqualTo(notFound.Message));
+            Assert.That(MindPlanBoundary.WithStepTarget("prosa", new JsonObject { ["applicationName"] = "Word" }),
+                Is.EqualTo("prosa"));
+            string chrome = MindPlanBoundary.WithStepTarget(
+                notFound.Message, new JsonObject { ["applicationName"] = "Google Chrome" });
+            Assert.That(JsonNode.Parse(MindPlanBoundary.MergeFailures(word, chrome))!["target"]!.AsArray()
+                    .Select(static node => node!.GetValue<string>()),
+                Is.EqualTo(new[] { "Word", "Google Chrome" }));
+            Assert.That(MindPlanBoundary.MergeFailures(null, chrome), Is.EqualTo(chrome));
+            Assert.That(MindPlanBoundary.MergeFailures(word, "prosa"), Is.EqualTo("prosa"));
+        });
+    }
+
     [Test]
     public void TaskDeletePlanIsGroundedFromTheVerifiedResolver()
     {
