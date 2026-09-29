@@ -151,6 +151,28 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
         string? country = null,
         bool requireCountry = false)
     {
+        PlaceReading? reading = await SearchNearAsync(ask, limit, language, cancellationToken, country, requireCountry)
+            .ConfigureAwait(false);
+        return reading?.Places.Select(static place => (place.Title, place.Url, place.Snippet)).ToList();
+    }
+
+    // M62 (v3e2-final F-p05-t1 «Encuentra aparcamiento en Plaza del Polvorista»): the car parks
+    // were told by their whole addresses, with nothing saying how near they are. Each site
+    // carries its distance to the named place, those farther than the place's own size (at
+    // least 1.5 km) are left out, and «AllFar» says that sites of the kind were found only
+    // farther than that.
+    internal readonly record struct Place(string Title, string Url, string Snippet, int? DistanceMeters);
+
+    internal readonly record struct PlaceReading(List<Place> Places, bool AllFar);
+
+    internal async Task<PlaceReading?> SearchNearAsync(
+        PlaceAsk ask,
+        int limit,
+        string language,
+        CancellationToken cancellationToken,
+        string? country = null,
+        bool requireCountry = false)
+    {
         // «La Puntilla, El Puerto» found only «Bar El Puerto» in Ceuta; «La Puntilla» alone
         // finds the beach of El Puerto de Santa María. A candidate counts only if its
         // address carries every word of the place's first part; the one that carries more
@@ -173,14 +195,18 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
                 box = AreaOf(area, required, wanted, country, requireCountry, within);
                 if (box is not null) break;
             }
-            if (box is null) return [];
+            if (box is null) return new PlaceReading([], false);
             string? found = await ReadAsync(
                 Endpoint + "?format=jsonv2&bounded=1&limit=10"
                 + "&accept-language=" + language + "&viewbox=" + box.Value.Viewbox
                 + "&q=" + Uri.EscapeDataString(ask.Kind), cancellationToken).ConfigureAwait(false);
-            return found is null
-                ? null
-                : Places(found, box.Value.Latitude, box.Value.Longitude).Take(Math.Clamp(limit, 1, 10)).ToList();
+            if (found is null) return null;
+            List<Place> all = Places(found, box.Value.Latitude, box.Value.Longitude);
+            List<Place> near = all
+                .Where(place => place.DistanceMeters is not { } meters || meters <= box.Value.RadiusMeters)
+                .Take(Math.Clamp(limit, 1, 10))
+                .ToList();
+            return new PlaceReading(near, near.Count == 0 && all.Count > 0);
         }
         catch (JsonException)
         {
@@ -188,7 +214,15 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
         }
     }
 
-    internal readonly record struct Area(string Viewbox, double Latitude, double Longitude);
+    internal readonly record struct Area(string Viewbox, double Latitude, double Longitude, int RadiusMeters = 1_500);
+
+    private const double MetersPerDegree = 111_320;
+
+    // Metres between two points a few kilometres apart (equirectangular: good to well under 1 %
+    // at that scale).
+    private static double Meters(double latitude, double longitude, double otherLatitude, double otherLongitude) =>
+        Math.Sqrt(Math.Pow((otherLatitude - latitude) * MetersPerDegree, 2)
+            + Math.Pow((otherLongitude - longitude) * MetersPerDegree * Math.Cos(latitude * Math.PI / 180), 2));
 
     // Las palabras que nombran un lugar: plegadas, de tres letras o más, sin artículos.
     private static string[] PlaceWords(string place) =>
@@ -249,11 +283,16 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
         double halfHeight = Math.Clamp((chosen.North - chosen.South) / 2, 0.01, 0.15);
         double halfWidth = Math.Clamp((chosen.East - chosen.West) / 2, 0.01, 0.15);
         static string Coordinate(double value) => value.ToString("0.#####", CultureInfo.InvariantCulture);
+        // M62: near the place is within its own size (half its diagonal), and never less than
+        // 1.5 km around a square or a street nor more than 20 km around a city.
+        int radius = (int)Math.Round(Math.Clamp(
+            Meters(latitude, longitude, chosen.North, chosen.East), 1_500, 20_000));
         return new Area(
             Coordinate(longitude - halfWidth) + "," + Coordinate(latitude + halfHeight) + ","
             + Coordinate(longitude + halfWidth) + "," + Coordinate(latitude - halfHeight),
             latitude,
-            longitude);
+            longitude,
+            radius);
     }
 
     // El pueblo o la ciudad de la dirección de Nominatim es exactamente el lugar dicho («Madrid»,
@@ -272,10 +311,10 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
         return false;
     }
 
-    // Cada sitio: su nombre (o su clase), su dirección y su página en OpenStreetMap,
-    // del más cercano al centro del lugar al más lejano (Nominatim los ordena por
-    // importancia, no por distancia).
-    internal static List<(string Title, string Url, string Snippet)> Places(string body, double latitude, double longitude)
+    // Cada sitio: su nombre (o su clase), su dirección, su página en OpenStreetMap y su
+    // distancia en metros al centro del lugar (nula si Nominatim no dio sus coordenadas),
+    // del más cercano al más lejano (Nominatim los ordena por importancia, no por distancia).
+    internal static List<Place> Places(string body, double latitude, double longitude)
     {
         using JsonDocument document = JsonDocument.Parse(body);
         if (document.RootElement.ValueKind != JsonValueKind.Array) throw new JsonException("Not a Nominatim answer.");
@@ -294,7 +333,7 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
             if (title.Length == 0 || address.Length == 0) continue;
             double distance = double.TryParse(Text(place, "lat"), NumberStyles.Float, CultureInfo.InvariantCulture, out double lat)
                 && double.TryParse(Text(place, "lon"), NumberStyles.Float, CultureInfo.InvariantCulture, out double lon)
-                    ? Math.Pow(lat - latitude, 2) + Math.Pow((lon - longitude) * Math.Cos(latitude * Math.PI / 180), 2)
+                    ? Meters(latitude, longitude, lat, lon)
                     : double.MaxValue;
             places.Add((
                 distance,
@@ -304,7 +343,12 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
         }
         return places
             .OrderBy(static place => place.Distance)
-            .Select(static place => (place.Title, place.Url, place.Snippet))
+            .Select(static place => new Place(
+                place.Title,
+                place.Url,
+                place.Snippet,
+                // Said to the nearest ten metres: the centre of a square is not more exact than that.
+                place.Distance == double.MaxValue ? null : (int)(Math.Round(place.Distance / 10) * 10)))
             .ToList();
     }
 
