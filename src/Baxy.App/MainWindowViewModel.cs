@@ -2886,10 +2886,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             "BAXY",
             projection.Message,
             isUser: false,
+            // M69 (guion v3h t47): the asked state that already held is the result, not an error.
             messageEvent: string.Equals(
                 response.Status,
                 OperationStatuses.Completed,
                 StringComparison.Ordinal)
+                || OperationResponseProjection.AskedStateAlreadyHeld(response)
                 ? UserMessageEvent.Status
                 : UserMessageEvent.Error(
                     UserMessageDiagnosticCodes.ActionNotCompleted));

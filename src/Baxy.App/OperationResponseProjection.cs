@@ -65,6 +65,20 @@ internal sealed record OperationResponseProjection(string Message)
                     response.ErrorCode)));
     }
 
+    // M69 (guion v3h t46/t47): «activa mi microfono» with the microphone already
+    // active was published on the error route. The adapter reads the state and
+    // stops before any effect boundary (owner's test 2026-09-21, turn 205) with a
+    // typed code whose asked state already holds; that state is the result the
+    // person asked about, so the turn publishes it as one. Nothing was changed and
+    // the facts keep saying so (polarity failure, the typed code).
+    internal static bool AskedStateAlreadyHeld(OperationResponse response)
+    {
+        ArgumentNullException.ThrowIfNull(response);
+        return response.Status == OperationStatuses.Failed
+            && !response.EffectMayHaveOccurred
+            && UserMessagePolicy.IsAskedStateAlreadyHeldCode(response.ErrorCode);
+    }
+
     // NETWORK1721: a confirmed step that fails hands the mind the operation's
     // own typed facts (kind operation, polarity failure, error) exactly as an
     // ordinary step does, so the cause reaches the final; anything else keeps
