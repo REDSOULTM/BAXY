@@ -25,7 +25,7 @@ from typing import Any, Iterable
 from .grammar import _CARDINAL_WORDS, spoken_cardinal
 from .normalize import fold, fold_in_place, spelled_out
 from .quantities import _UNITS, measures
-from .temporal import _SPOKEN_DATE, _TOMORROW, _WEEKDAYS, MONTH_NUMBERS, spoken_clocks
+from .temporal import _SPOKEN_DATE, _TOMORROW, _WEEKDAYS, MONTH_NUMBERS, spoken_clocks, taken_back_time
 
 DECISIONS = ("action", "clarify", "talk", "limit")
 
@@ -524,6 +524,16 @@ def faithful_request(
     if not request:
         return Fidelity(request)
     now = now or datetime.now()
+    taken_back = taken_back_time(str(text or ""))
+    if taken_back is not None:
+        # M76 (DEV-D v3l D-s097 «… en 2 , no espera en 3 minutos» restated «Pon un temporizador de 2 minutos…»): a
+        # number the person said and took back is said, but not asked for. A restatement that keeps it and loses the
+        # time that stands is not the request.
+        restated = _numbers_said(fold(request))
+        kept = _numbers_said(fold(taken_back.kept))
+        dropped = _numbers_said(fold(taken_back.taken_back)) - kept
+        if dropped & restated and not kept & restated:
+            return Fidelity(" ".join(str(text or "").split()), (taken_back.taken_back,), "person")
     said = [str(text or ""), *(str(line or "") for line in conversation)]
     lines = [str(line or "") for line in world]
     spans = _introduced_spans(request, said, lines, now)

@@ -784,6 +784,8 @@ internal static class PlanObservationProjector
             "peripheral.print" => ["deviceId"],
             "reminder.delete" => ["reminderId", "expectedVersion", "reviewLabel"],
             "task.delete" => ["taskId", "expectedVersion", "reviewLabel"],
+            // M76 (DEV-D v3l D-w17-t2): the version the resolver verified, never one asked of the person.
+            "task.complete" or "task.reopen" => ["taskId", "expectedVersion"],
             "wifi.connect" => ["profileId"],
             _ => [],
         };

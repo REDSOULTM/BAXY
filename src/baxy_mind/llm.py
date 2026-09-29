@@ -4910,6 +4910,19 @@ _CAUSE_FACT = {
 _INTERNAL_IDENTIFIER_FIELD = re.compile(r"(?:Id|ID|Ids|_id)$")
 # M54: a field whose name carries a machine time format (dueUtc): the person says when, the system converts.
 _MACHINE_TIME_FIELD = re.compile(r"(?:Utc|UTC|Iso|ISO)$")
+# M76 (DEV-D v3l D-w17-t2 «Which task ID and expected version should be marked as complete?», D-p08-t3 «¿Cuál es la
+# fecha límite, la versión esperada y el nombre…?», D-s019 «¿Cuál es la revisión esperada…?»): a value the system
+# checks against the stored item before writing it (expectedVersion, expectedRevision, expectedTitle,
+# expectedPriceCents) is read from that item, never asked of the person; which item is asked through its identifier.
+_WRITE_GUARD_FIELD = re.compile(r"^expected[A-Z]")
+
+
+def person_askable_fields(fields: tuple[str, ...]) -> tuple[str, ...]:
+    """The missing fields a question may ask the person: every one but the write guards (M76), or all of them when
+    nothing else is missing (the question then still asks which item, never a version)."""
+
+    askable = tuple(field for field in fields if not _WRITE_GUARD_FIELD.match(field))
+    return askable or fields
 # «en formato UTC», «(UTC)», «in ISO 8601 format», «hora UTC»: the format named in a question to the person.
 _TIME_FORMAT_JARGON = re.compile(
     r"\s*\(\s*(?:UTC|ISO(?:[\s-]*8601)?)\s*\)"
@@ -6043,7 +6056,12 @@ def _required_compose_input(situation: dict) -> str | None:
     ):
         return None
     value = situation.get("missingValue")
-    return value.strip() if isinstance(value, str) and value.strip() else None
+    if not isinstance(value, str) or not value.strip():
+        return None
+    # M76 (DEV-D v3l): the shell names the operation's missing fields when the arguments step gave no question; a
+    # write guard among them (expectedVersion) is not something to ask the person.
+    fields = tuple(part.strip() for part in value.split(",") if part.strip())
+    return ", ".join(person_askable_fields(fields)) if fields else value.strip()
 
 
 def _compose_situation_payload(
@@ -19918,6 +19936,8 @@ class LlmRuntime:
             or any(field not in properties for field in unresolved_fields)
         ):
             raise ValueError("contrato de aclaración no canónico")
+        # M76 (DEV-D v3l D-w17-t2, D-p08-t3): a write guard is never one of the things asked.
+        unresolved_fields = person_askable_fields(unresolved_fields)
 
         context = {
             "user_request": objective[:16_384],
@@ -19930,6 +19950,8 @@ class LlmRuntime:
                 # person; what is asked is which item, by its name or title.
                 | ({"ask_as": "which one, by its name or title; never an ID or code"}
                    if _INTERNAL_IDENTIFIER_FIELD.search(field) else {})
+                | ({"ask_as": "which one, by its name or title; never a version, revision or code"}
+                   if _WRITE_GUARD_FIELD.match(field) else {})
                 # M54 (v3b-final F-w05-t3 «apúntamelo como recordatorio un mes antes» → «¿Cuál es la fecha y hora
                 # exacta en formato UTC…?»): the machine format of a time field is the system's to convert.
                 | ({"ask_as": "when, in the person's own words (a day and an hour); never a format, a time zone or UTC"}
@@ -20550,15 +20572,21 @@ class LlmRuntime:
 
         required_fields = tuple(required)
         if not required_fields:
-            arguments = self._extract_schema_object(
-                text,
-                (
-                    f"Extrae los argumentos JSON para {canonical_name} "
-                    f"({description}) a partir del pedido. No inventes datos."
-                ),
-                schema,
-                max_attempts=1,
-            )
+            try:
+                arguments = self._extract_schema_object(
+                    text,
+                    (
+                        f"Extrae los argumentos JSON para {canonical_name} "
+                        f"({description}) a partir del pedido. No inventes datos."
+                    ),
+                    schema,
+                    max_attempts=1,
+                )
+            except ArgumentGroundingAbstention:
+                # M76 (DEV-D v3l D-s014 «¿qué previsión de tiempo hay para las cuatro?», D-s054, D-s080 → «¿En qué
+                # ciudad…?»): with no required field nothing can be missing. An abstention says only that no optional
+                # value was stated, so the operation's own default applies (the weather of this PC's place).
+                arguments = {}
             return retain(DirectArgumentExtraction(arguments, (), ""))
 
         open_string_fields = tuple(
@@ -20576,7 +20604,11 @@ class LlmRuntime:
             and "enum" not in contract
             and "const" not in contract
         )
-        asked_fields = tuple(field for field in required_fields if field not in stated_fields) or required_fields
+        # M76 (DEV-D v3l D-p06-t3 «…along with its due date and expected version?»): the same-call question never
+        # asks a write guard either (``person_askable_fields``).
+        asked_fields = person_askable_fields(
+            tuple(field for field in required_fields if field not in stated_fields) or required_fields
+        )
         reply = (previous_reply or "").strip()
         reply_fields = _previous_reply_fields(schema, open_string_fields, reply)
         payload = _build_direct_argument_payload(

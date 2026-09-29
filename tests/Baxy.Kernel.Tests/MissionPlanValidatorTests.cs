@@ -186,6 +186,10 @@ public sealed class MissionPlanValidatorTests
     // M44 (FINAL F-p02-t3 «clear out the last item on the list»): the mind
     // plans task.resolve.exact → task.delete; the shell accepts the same relation.
     [TestCase("task.delete", "task.resolve.exact")]
+    // M76 (DEV-D v3l D-w17-t2 «mark the first one done» → «Which task ID and expected version…?»): a task marked
+    // done or reopened takes its identity and version from the same resolver.
+    [TestCase("task.complete", "task.resolve.exact")]
+    [TestCase("task.reopen", "task.resolve.exact")]
     [TestCase("filesystem.read.text", "filesystem.search")]
     [TestCase("filesystem.read.text", "filesystem.list")]
     public void DeferredIdentityConsumersRequireTheirResolvers(

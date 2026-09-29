@@ -24,12 +24,21 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from datetime import datetime, timezone
 
 from .grammar import _COVERAGE_ACTION_HEAD, _head_is
 from .levels import followup_antecedent
 from .normalize import alternation, fold, spelled_out
 from .patterns import datetime_followup_antecedent
-from .temporal import alarm_cancellation_request, assents_to_alarm_offer, plural_alarm_cancellation
+from .temporal import (
+    alarm_cancellation_request,
+    assents_to_alarm_offer,
+    notification_retiming,
+    plural_alarm_cancellation,
+    retimed_local_moment,
+    spoken_clocks,
+    _TASK_TIME,
+)
 
 _WORD = re.compile(r"[a-z0-9ñ]+")
 
@@ -1086,6 +1095,32 @@ def _said_time(request: str) -> str | None:
     return said[found.start(): found.end()] if found is not None else None
 
 
+# M76 (DEV-D v3l D-w17-t2): «the first one», «el segundo», «la última tarea»: an item of the list just read, by its place.
+_ORDINAL_INDEX = {
+    r"first|1st|primer|primero|primera": 0,
+    r"second|2nd|segundo|segunda": 1,
+    r"third|3rd|tercer|tercero|tercera": 2,
+    r"fourth|4th|cuarto|cuarta": 3,
+    r"fifth|5th|quinto|quinta": 4,
+    r"last|ultimo|ultima": -1,
+}
+_LISTED_POINTER = re.compile(
+    r"\b(?:the|el|la|lo)\s+(?P<ordinal>" + "|".join(_ORDINAL_INDEX) + r")\b"
+    r"(?!\s+(?:time|vez|day|dia|week|semana|hour|hora|minute|minuto|of\s+(?:the\s+)?month|de(?:l)?\s+mes))"
+)
+
+
+@dataclass(frozen=True)
+class RetimedNotification:
+    """M76: the notification just set, moved: its ``kind`` (the cancellation of the last one takes only it), the
+    cancellation of the one at its old local clock as the readers of a cancellation read it, and the arguments of
+    ``notification.schedule`` that set it again."""
+
+    kind: str
+    cancel_at_request: str | None
+    schedule_arguments: dict[str, str]
+
+
 class DialogueState:
     """What the conversation left for the next follow-up. The serve loop owns one and passes it in.
 
@@ -1125,8 +1160,12 @@ class DialogueState:
         self.families: set[str] = set()  # every family this conversation verified
         self._facts: dict[str, str] = {}
         self._alarm_offer: tuple[tuple[int, int], ...] = ()  # D39: the alarms read for «cancela las alarmas»
+        self.previous_operations: tuple[str, ...] = ()  # M76: what the turn before the last one verified
+        self._notification: dict[str, str] | None = None  # M76: the alarm, timer or reminder set, as verified
+        self._listed: tuple[str, ...] = ()  # M76: the titles of the tasks read, in the order they were told
 
     def expect(self, request: str, operations: object) -> None:
+        self.previous_operations = self.operations
         self.request = str(request or "").strip() or None
         self.intended = tuple(str(op) for op in operations) if isinstance(operations, (list, tuple)) else ()
         self.operations = ()
@@ -1174,10 +1213,18 @@ class DialogueState:
             parts += [f"id {observed['taskName']}"] if observed.get("taskName") else []
             self._facts["alarm"] = ", ".join(parts)
             self._facts["alarm_noun"] = noun.group(0) if noun is not None else "alarm"
+            if all(isinstance(observed.get(key), str) and observed[key] for key in ("kind", "title", "dueUtc")):
+                self._notification = {key: observed[key] for key in ("kind", "title", "dueUtc")}
         elif operation == "reminder.create":
             self._facts["reminder"] = str(observed.get("title") or request)
         elif operation == "notification.list" and plural_alarm_cancellation(request):
             self._alarm_offer = _alarm_clocks(observed)
+        elif operation in {"task.list", "task.search"} and isinstance(observed.get("tasks"), list):
+            # M76 (DEV-D v3l D-w17-t2): the tasks read, in the order they were told, for «the first one».
+            self._listed = tuple(
+                str(task["title"]) for task in observed["tasks"]
+                if isinstance(task, dict) and isinstance(task.get("title"), str) and task["title"].strip()
+            )
         elif operation == "web.search" and observed.get("query"):
             self._facts["topic"] = str(observed["query"])
         elif operation in {"audio.volume", "audio.volume.adjust"} and observed.get("level") is not None:
@@ -1221,6 +1268,52 @@ class DialogueState:
         """What was verified, one line per kind, for the rewrite prompt and its word check."""
 
         return [("verificado", f"{label}: {self._facts[key]}") for key, label in self._LABELS if key in self._facts]
+
+    def retimed_notification(
+        self, text: str, *, now: datetime | None = None, zone: timezone | None = None,
+    ) -> "RetimedNotification | None":
+        """M76 (DEV-D v3l D-w16-t2, D-w04-t4, D-w18-t5): «Actually, make it 6:30.» right after the turn that set an
+        alarm, a timer or a reminder moves that one (``temporal.notification_retiming``): it is cancelled and set
+        again at the new time with its kind and what it was for, as verified. A clock keeps the day of the old time
+        and, when it says no part of the day, the part nearer the old time. None unless the turn before verified
+        setting one."""
+
+        retiming = notification_retiming(text)
+        if retiming is None or self._notification is None or "notification.schedule" not in self.previous_operations:
+            return None
+        english = not spanish(text)
+        kind, title = self._notification["kind"], self._notification["title"]
+        if _TASK_TIME.search(_fold(title)) or spoken_clocks(_fold(title)):
+            # «alarm for 6:45 tomorrow morning, please»: a title that says the old time would say it again.
+            title = {("alarm", True): "alarm", ("alarm", False): "alarma",
+                     ("reminder", True): "reminder", ("reminder", False): "recordatorio"}[(kind, english)]
+        try:
+            old = datetime.fromisoformat(self._notification["dueUtc"].replace("Z", "+00:00")).astimezone(zone)
+        except ValueError:
+            return None
+        cancel_at = alarm_cancellation_request(((old.hour, old.minute),), english)
+        if retiming.duration is not None:
+            due = f"{'in' if english else 'en'} {retiming.duration}"
+        else:
+            moment = retimed_local_moment(retiming, old, now)
+            if moment is None:
+                return None
+            due = moment.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+        return RetimedNotification(kind, cancel_at, {"dueUtc": due, "kind": kind, "title": title})
+
+    def pointed_listed_title(self, text: str) -> str | None:
+        """M76 (DEV-D v3l D-w17-t2 «mark the first one done» after «You have 13 tasks on your list, including
+        "tomates", …» → «Which task ID and expected version…?»): the title of the task an ordinal points at in the list
+        the turn before read. None unless that turn read the tasks and the message points at exactly one of them."""
+
+        if not self._listed or not {"task.list", "task.search"} & set(self.previous_operations):
+            return None
+        pointed = {found.group("ordinal") for found in _LISTED_POINTER.finditer(_fold(text))}
+        if len(pointed) != 1:
+            return None
+        ordinal = pointed.pop()
+        index = next(value for words, value in _ORDINAL_INDEX.items() if re.fullmatch(words, ordinal))
+        return self._listed[index] if -len(self._listed) <= index < len(self._listed) else None
 
     def cancel_last_alarm(self, in_spanish: bool) -> str | None:
         """«cancela el último temporizador» / «cancel the last timer» when the last turn set an alarm or a timer: a

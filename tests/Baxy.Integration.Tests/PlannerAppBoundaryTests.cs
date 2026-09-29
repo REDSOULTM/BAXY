@@ -169,6 +169,9 @@ public sealed class PlannerAppBoundaryTests
     [TestCase("window.snap", true)]
     [TestCase("window.maximize", true)]
     [TestCase("task.delete", true)]
+    // M76 (DEV-D v3l D-w17-t2): marking a task done crosses the planner too, never «¿ID y versión esperada?».
+    [TestCase("task.complete", true)]
+    [TestCase("task.reopen", true)]
     [TestCase("reminder.delete", true)]
     [TestCase("message.send", true)]
     [TestCase("game.install.commit", true)]
@@ -326,6 +329,45 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(MindPlanBoundary.ArgumentsSatisfyExactSchema("task.delete", arguments), Is.True);
             Assert.That(PlanObservationProjector.ArgumentsUseVerifiedDependencyAuthority(
                 "task.delete", arguments, observations), Is.True);
+        });
+    }
+
+    // M76 (DEV-D v3l D-w17-t2 «mark the first one done» after a task listing → «Which task ID and expected version
+    // should be marked as complete?»): the task marked done is resolved by the title the listing told, and its
+    // identity and version come from that verified resolver, never from the person.
+    [Test]
+    public void TaskCompletePlanIsGroundedFromTheVerifiedResolver()
+    {
+        var plan = new MindPlanResult(
+            "plan", string.Empty,
+            [
+                new MindPlanStep("resolve", "task.resolve.exact", "Mark the first task on my list as done.",
+                    [], "literal", new JsonObject { ["title"] = "tomates" }),
+                new MindPlanStep("complete", "task.complete", "Mark the first task on my list as done.",
+                    ["resolve"], "after_dependencies", null),
+            ]);
+        var observations = new JsonArray(PlanObservationProjector.Create(
+            "resolve",
+            "task.resolve.exact",
+            new OperationResponse(
+                "operation.response", "req_resolve", "mission_task", "inv_resolve", OperationStatuses.Completed,
+                "resolved", true, false,
+                JsonDocument.Parse("""
+                    {"taskId":"0fd37d83-6f96-4b82-a1c6-9de123985517","expectedVersion":1,"reviewLabel":"tomates","deleted":false,"status":"open"}
+                    """).RootElement,
+                null)));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindSidecarClient.ValidateExpectedPlanResult(plan, ["task.complete"]), Is.SameAs(plan));
+            Assert.That(() => MindPlanBoundary.ValidateAndConvert("mark the first one done", plan), Throws.Nothing);
+            Assert.That(PlanObservationProjector.TryGroundIdentityArguments(
+                plan.Steps[1], observations, out JsonObject? arguments), Is.True);
+            Assert.That((string?)arguments!["taskId"], Is.EqualTo("0fd37d83-6f96-4b82-a1c6-9de123985517"));
+            Assert.That((long?)arguments["expectedVersion"], Is.EqualTo(1));
+            Assert.That(MindPlanBoundary.ArgumentsSatisfyExactSchema("task.complete", arguments), Is.True);
+            Assert.That(PlanObservationProjector.ArgumentsUseVerifiedDependencyAuthority(
+                "task.complete", arguments, observations), Is.True);
         });
     }
 

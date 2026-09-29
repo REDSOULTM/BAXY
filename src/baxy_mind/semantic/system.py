@@ -97,11 +97,27 @@ def _weather_location(text: str) -> str | None:
 # are going to in the same message. Only a name (capitals) after a verb of going; the weather of «allá» with no such
 # place stays this read's own question.
 _THERE = r"\b(?:alla|alli|ahi|there|over\s+there)\b"
+# M76 (DEV-D v3l D-p25-t1 «I'm visiting Martinez soon and would like the check the weather there please» → the weather
+# of Curicó): a place visited is gone to as well, and a verb of visiting takes it with no preposition.
 _GOING_TO = re.compile(
-    r"\b(?:me\s+voy|nos\s+vamos|voy|vamos|viajo|viajamos|ire|iremos|going|heading|headed|traveling|travelling|"
-    r"flying|driving|trip)\s+(?:a|al|para|to|hacia)\s+"
+    r"\b(?:(?:me\s+voy|nos\s+vamos|voy|vamos|viajo|viajamos|ire|iremos|going|heading|headed|traveling|travelling|"
+    r"flying|driving|trip)\s+(?:a|al|para|to|hacia)|visiting|visit|visitar[eé]?|visitaremos|visitando|visito|visitamos)\s+"
     r"(?P<place>[A-ZÁÉÍÓÚÑ][\w'’-]*(?:\s+(?:(?:de|del|de\s+la|de\s+los|de\s+las)\s+)?[A-ZÁÉÍÓÚÑ][\w'’-]*)*)"
 )
+
+
+# M76 (DEV-D v3l D-s054 «Necesito la hora en que comenzará a oscurecerse.» restated «…oscurecerse aquí?»): «aquí», «here»,
+# «donde estoy» name this PC's own place; the weather read without a place reads it (its IP location).
+_THIS_PLACE = (
+    r"(?:(?:por\s+)?(?:aqui|aca)|(?:around\s+)?here|donde\s+estoy|where\s+i\s+am|(?:mi|my)\s+(?:ubicacion|location|"
+    r"zona|area|ciudad|city|pueblo|town)|(?:esta|this)\s+(?:ciudad|city|zona|area))"
+)
+
+
+def names_this_place(location: str) -> bool:
+    """The place said is where this PC is («aquí», «here», «mi ciudad»), not a place to look up by name."""
+
+    return re.fullmatch(_THIS_PLACE, _fold(str(location or "")).strip(" ,.;:!?¿¡")) is not None
 
 
 def weather_destination_there(text: str) -> str | None:
