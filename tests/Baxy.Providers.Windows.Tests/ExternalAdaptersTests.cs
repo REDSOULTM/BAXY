@@ -2752,6 +2752,35 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // M63 (v3f-final F-p05-t1, reviewed «aparcamientos de Valdelagrana a 150 m de una plaza del centro, a
+    // 2–3 km»): Nominatim's own answers of 2026-09-29 (both reproduced, compacted to the fields read). The
+    // three candidates are the one Plaza del Polvorista OpenStreetMap has (street, park and bus stop within
+    // 50 m, on the left bank of the Guadalete, whose suburb OpenStreetMap calls Valdelagrana), so the anchor
+    // is not misresolved: the car parks said are 150–620 m from it, as published.
+    private const string PolvoristaCandidates =
+        """[{"osm_type":"way","osm_id":29451698,"lat":"36.5948388","lon":"-6.2270183","category":"highway","type":"tertiary","name":"Plaza del Polvorista","display_name":"Plaza del Polvorista, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España","boundingbox":["36.5945842","36.5950933","-6.2272746","-6.2267619"],"address":{"country_code":"es"}},{"osm_type":"way","osm_id":29451697,"lat":"36.5950470","lon":"-6.2273243","category":"leisure","type":"park","name":"Plaza del Polvorista","display_name":"Plaza del Polvorista, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, España","boundingbox":["36.5947017","36.5953921","-6.2277549","-6.2268937"],"address":{"country_code":"es"}},{"osm_type":"node","osm_id":13398649899,"lat":"36.5947788","lon":"-6.2271996","category":"highway","type":"bus_stop","name":"Plaza del Polvorista","display_name":"Plaza del Polvorista, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España","boundingbox":["36.5947288","36.5948288","-6.2272496","-6.2271496"],"address":{"country_code":"es"}}]""";
+
+    private const string PolvoristaParking =
+        """[{"osm_type":"way","osm_id":952407268,"lat":"36.5931010","lon":"-6.2204714","type":"parking","name":"","display_name":"Calle Río Majaceite, Las Viñas, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":237016676,"lat":"36.5952887","lon":"-6.2254513","type":"parking","name":"","display_name":"Avenida de la Bajamar, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":952407272,"lat":"36.5930603","lon":"-6.2224781","type":"parking","name":"","display_name":"Avenida de Valdelagrana, Las Viñas, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":1106171484,"lat":"36.5948204","lon":"-6.2221896","type":"parking","name":"","display_name":"Avenida de Europa, Las Viñas, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":1423300837,"lat":"36.6041595","lon":"-6.2182015","type":"parking","name":"Vehículos Autorizados","display_name":"Vehículos Autorizados, Avenida del Monasterio, El Tejar, Sudamérica, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":1423300839,"lat":"36.6045170","lon":"-6.2175435","type":"parking","name":"","display_name":"Avenida del Monasterio, El Tejar, Sudamérica, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":302015013,"lat":"36.6035873","lon":"-6.2174271","type":"parking","name":"","display_name":"Calle Francisco Cossi Ochoa, El Tejar, Sudamérica, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":301734888,"lat":"36.5917584","lon":"-6.2365322","type":"parking","name":"","display_name":"Calle Tórtola, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":301734891,"lat":"36.5914572","lon":"-6.2304048","type":"parking","name":"","display_name":"Calle Brújula, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":301734896,"lat":"36.5912467","lon":"-6.2365437","type":"parking","name":"","display_name":"Calle Pescadores, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"}]""";
+
+    [Test]
+    public void ThePlazaDelPolvoristaIsWhereOpenStreetMapHasIt()
+    {
+        OpenStreetMapPlaceSource.Area? anchor = OpenStreetMapPlaceSource.AreaOf(
+            PolvoristaCandidates, ["plaza", "polvorista"], ["plaza", "polvorista"], "es");
+        Assert.That(anchor, Is.Not.Null);
+        List<OpenStreetMapPlaceSource.Place> parks =
+            OpenStreetMapPlaceSource.Places(PolvoristaParking, anchor!.Value.Latitude, anchor.Value.Longitude);
+        Assert.Multiple(() =>
+        {
+            Assert.That(anchor.Value.Latitude, Is.EqualTo(36.5948).Within(0.0005));
+            Assert.That(anchor.Value.Longitude, Is.EqualTo(-6.2270).Within(0.0005));
+            Assert.That(parks.Take(5).Select(static place => place.DistanceMeters),
+                Is.EqualTo(new int?[] { 150, 430, 450, 480, 620 }), "the distances published in v3f-final t113");
+            Assert.That(parks[0].Snippet, Does.StartWith("Avenida de la Bajamar"));
+        });
+    }
+
     [Test]
     public async Task APlaceWithSitesOnlyFarAwayHasNoneNear()
     {
