@@ -180,8 +180,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # M71 M72
 # M73
 # M74
+# M76 (DEV-D v3l): re-pin tras las repreguntas (campos opcionales, guardas de escritura, lugar visitado, correcciones de hora, tareas por su resolutor).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "483df6cc3b38431d841e430ee2f0286e69231a758f7e8c16355705a9d69dc976"
+    "c97c844bffac095e09e8a43e407fe1dfec9a5ca17ff2293a169647ce829df98a"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

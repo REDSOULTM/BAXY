@@ -191,12 +191,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # M71 (held-out v3j t14): a search report names the subject the conversation carried; the retry hint says who said what, not which outlet.
 # M71 M72
 # M74
+# M76 (DEV-D v3l): re-pin tras las repreguntas (campos opcionales, guardas de escritura, lugar visitado, correcciones de hora, tareas por su resolutor).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "9ad12b986367c82dbde6b0412b62d0f838a8e9ba005a22dee28e73849caf5016"
+        "4111f780788bbf1c9deb98c5fadba560c69058e61fb11feb4e6a04bbe7278eeb"
     ),
     "src/baxy_mind/llm.py": (
-        "dfa5ead22e31a640c9dea51a1b4b41a132b84e77e55b7f2b0bb13e272dde6939"
+        "70b661681418bc6e4d7dcf92a5ae45826255b788c33c02a91fe054fbb033e687"
     ),
 }
 

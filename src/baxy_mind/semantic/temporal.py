@@ -1227,8 +1227,67 @@ _TASK_TIME = re.compile(rf"\b(?:{_RELATIVE_DUE}|{CLOCK_PHRASE})(?=\s|$|[,;:.?!])
 # What may stand between a time and the one that corrects it: «en 5 minutos, mejor en 10», «at 6, actually at 7».
 _TIME_CORRECTION = re.compile(
     r"\s*[,;]?\s*(?:y\s+|and\s+)?(?:no\s*,?\s*)?(?:mejor(?:\s+dicho)?|digo|o\s+sea|perdon|rather|actually|i\s+mean|"
-    r"make\s+it|wait|no)\s*[,;]?\s*"
+    # M76 (DEV-D v3l D-s097 «… en 2 , no espera en 3 minutos»): «espera» / «wait» take the time back too.
+    r"make\s+it|(?:no\s*,?\s*)?(?:espera|espere|wait)(?:\s*,?\s*no)?|no)\s*[,;]?\s*"
 )
+# M76 (DEV-D v3l D-s097 «Quiero retomar el entrenamiento de glúteo en 2 , no espera en 3 minutos» → a timer of 2
+# minutes): the time taken back may leave its unit to the time that corrects it; only the number is said.
+_ELIDED_TAKEN_BACK = re.compile(
+    r"\b(?P<taken>(?:en|in|dentro\s+de|within|a\s+las?|at)\s+(?:\d{1,4}(?::\d{2})?|un[oa]?|dos|tres|cuatro|cinco|"
+    r"seis|siete|ocho|nueve|diez|quince|veinte|treinta|one|two|three|four|five|six|seven|eight|nine|ten|fifteen|"
+    r"twenty|thirty))(?:" + _TIME_CORRECTION.pattern + r")$"
+)
+
+
+# «at 8:30 actually 9:30», «en 5 minutos, mejor 10 minutos»: the time kept may leave its lead to the one taken back.
+_BARE_KEPT_TIME = re.compile(
+    rf"(?:{_RELATIVE_DURATION_PATTERN}|{_CLOCK_HOUR}{_CLOCK_MINUTES}?(?:{_O_CLOCK})?(?:\s*{_CLOCK_PERIOD})?)"
+    r"(?=\s|$|[,;:.?!])"
+)
+_TIME_LEAD = re.compile(r"(?:en|in|dentro\s+de|within|a\s+las?|para\s+las?|at)\s+")
+
+
+@dataclass(frozen=True)
+class TakenBackTime:
+    """A time the person said and took back at once for another, both in the person's words: ``taken_back`` (with
+    its unit or without it) and ``kept``, the one that stands (with the lead of the one taken back when it said
+    none); ``start`` is where the time taken back begins and ``end`` where the time kept ends."""
+
+    taken_back: str
+    kept: str
+    start: int
+    end: int
+
+
+def taken_back_time(text: str) -> TakenBackTime | None:
+    """«en 2, no espera en 3 minutos», «at 8:30 actually 9:30», «en 5 minutos, mejor en 10 minutos»: the time taken
+    back and the one kept. None without such a correction."""
+
+    said = str(text or "")
+    folded = _same_length_fold(said)
+    times = list(_TASK_TIME.finditer(folded))
+    for before, after in zip(times, times[1:]):
+        if _TIME_CORRECTION.fullmatch(folded[before.end():after.start()]) is not None:
+            return TakenBackTime(
+                said[before.start():before.end()], said[after.start():after.end()], before.start(), after.end(),
+            )
+    for kept in times:
+        elided = _ELIDED_TAKEN_BACK.search(folded[:kept.start()])
+        if elided is not None:
+            return TakenBackTime(
+                said[elided.start("taken"):elided.end("taken")], said[kept.start():kept.end()], elided.start(),
+                kept.end(),
+            )
+    for before in times:
+        correction = _TIME_CORRECTION.match(folded, before.end())
+        bare = _BARE_KEPT_TIME.match(folded, correction.end()) if correction is not None else None
+        lead = _TIME_LEAD.match(folded, before.start())
+        if bare is not None and lead is not None:
+            return TakenBackTime(
+                said[before.start():before.end()], f"{said[lead.start():lead.end()]}{said[bare.start():bare.end()]}",
+                before.start(), bare.end(),
+            )
+    return None
 _NOTIFICATION_NOUN = (
     r"\b(?:alarmas?|alarms?|alertas?|alerts?|temporizador(?:es)?|timers?|recordatorios?|reminders?|avisos?|"
     r"despertador(?:es)?|notificacion(?:es)?|notifications?)\b"
@@ -1242,6 +1301,32 @@ class TimedTask:
 
     title: str
     due: str
+    kind: str = "reminder"
+
+
+# M76 (DEV-D v3l D-s120 «Cojamos un descanso de 14 minutos del yoga para el yoga.» → «¿Cuándo … y si es una alarma o un
+# recordatorio?»): a rest of a stated length ends after that length; what is set is the alarm that ends it.
+_TIMED_BREAK = re.compile(
+    r"\b(?:tom(?:ar|a|emos|emonos|ate|arme|arnos)|coj(?:amos|o)|coger(?:nos|me)?|hacer|hagamos|haz|haga|"
+    r"take|let'?s\s+take|have|having)\s+(?:(?:un|una|a|an)\s+)?"
+    rf"(?:(?P<before>{_RELATIVE_DURATION_PATTERN})[\s-]+)?(?P<noun>descanso|pausa|break|respiro|rest)\b"
+    rf"(?:\s+(?:de|of)\s+(?P<after>{_RELATIVE_DURATION_PATTERN}))?"
+)
+
+
+def timed_break(text: str) -> TimedTask | None:
+    """«Cojamos un descanso de 14 minutos», «take a 10 minute break»: the alarm at the end of the rest, titled with
+    the rest as said. None without a length, or for a question."""
+
+    said = " ".join(str(text or "").split())
+    folded = _same_length_fold(said)
+    found = _TIMED_BREAK.search(folded)
+    if "?" in said or found is None or not (found.group("before") or found.group("after")):
+        return None
+    amount = found.group("after") or found.group("before")
+    title = said[found.start("noun"):].strip(" ,;:.!¡¿")
+    english = found.group("noun") in {"break", "rest"}
+    return TimedTask(title, f"{'in' if english else 'en'} {amount}", "alarm")
 
 
 def timed_task(text: str) -> TimedTask | None:
@@ -1258,16 +1343,24 @@ def timed_task(text: str) -> TimedTask | None:
         for before, after in zip(times, times[1:])
     ):
         return None
-    title = " ".join(f"{text[:times[0].start()]} {text[times[-1].end():]}".split()).strip(" ,;:.!¡¿")
-    # «Recuérdame llamar a Ana en 10 minutos»: the order to remind is not what is reminded.
+    head_end, tail_start, due = times[0].start(), times[-1].end(), text[times[-1].start():times[-1].end()]
+    taken_back = taken_back_time(text)
+    if taken_back is not None:
+        # M76 (DEV-D v3l D-s097): «en 2 , no espera» before the time kept, or «actually 9:30» after the one taken
+        # back, is the correction, not the task; the time kept is the due.
+        head_end, tail_start, due = min(head_end, taken_back.start), max(tail_start, taken_back.end), taken_back.kept
+    title = " ".join(f"{text[:head_end]} {text[tail_start:]}".split()).strip(" ,;:.!¡¿")
+    # «Recuérdame llamar a Ana en 10 minutos»: the order to remind is not what is reminded. M76 (D-s097 «Quiero
+    # retomar el entrenamiento…»): nor is the wish that opens it.
     title = re.sub(
         r"^(?:(?:por\s+favor|please)\s*,?\s+)?(?:recu[eé]rd(?:a|ame)|record[aá]me|av[ií]same|ac[uú]erdate|"
-        r"remind\s+me|remember)\s+(?:de\s+|que\s+|to\s+)?|^(?:que|to)\s+",
+        r"remind\s+me|remember|quiero|quisiera|necesito|i\s+want\s+to|i'd\s+like\s+to|i\s+need\s+to)\s+"
+        r"(?:de\s+|que\s+|to\s+)?|^(?:que|to)\s+",
         "", title, flags=re.IGNORECASE,
     )
     if not re.match(r"[^\W\d_]", title) or len(title) > 160 or _TASK_TIME.search(_same_length_fold(title)):
         return None
-    return TimedTask(title, " ".join(text[times[-1].start():times[-1].end()].split()))
+    return TimedTask(title, " ".join(due.split()))
 
 
 _CHANGE_CLOCK = rf"{_CLOCK_HOUR}{_CLOCK_MINUTES}?(?:\s*{_CLOCK_PERIOD})?"
@@ -1459,3 +1552,67 @@ def notification_change(text: str) -> NotificationChange | None:
             duration=duration,
         )
     return None
+
+
+# M76 (DEV-D v3l): the notification just set, moved by a message that names only its new time. D-w16-t2 «Actually,
+# make it 6:30.» after «set an alarm for 6:45 tomorrow morning», D-w04-t4 «Mejor a las 6 en punto, que si no no llego
+# al micro» after a reminder for tomorrow at 6:15 and D-w18-t5 «wait no, make it una hora» after «remind me en 45
+# minutes to take a break» were each asked «¿A qué hora y qué tipo…?» or «¿Qué … deseas cancelar?»: the time was in the
+# message and the notification is the one the last turn set. The message opens with the change (a correction word or a
+# verb of making it so), then the time; a reason may follow it after a comma or a «que / because».
+_RETIMING_OPENING = (
+    r"(?:actually|wait|no|oh|oops|sorry|hmm|instead|mejor(?:\s+dicho)?|espera|perdon|en\s+realidad|o\s+sea|"
+    r"pensandolo\s+bien|uy|ah)"
+)
+_RETIMING_VERB = (
+    r"(?:make\s+(?:it|that)|change\s+it\s+to|move\s+it\s+to|set\s+it\s+(?:to|for)|let'?s\s+(?:do|say)|que\s+sea(?:n)?|"
+    r"mejor|ponla|ponlo|p[oó]nmela|p[oó]nmelo|c[aá]mbiala\s+a|c[aá]mbialo\s+a|p[aá]sala\s+a|p[aá]salo\s+a)"
+)
+_RETIMING = re.compile(
+    rf"^(?P<opening>(?:{_RETIMING_OPENING}\s*[,.;!]?\s+)*)(?P<verb>{_RETIMING_VERB}\s+)?"
+    r"(?:(?:en|in|dentro\s+de|within|a|at|para|for|to)\s+)?(?:las?\s+)?"
+    rf"(?P<new>{_RELATIVE_DURATION_PATTERN}|{_CLOCK_HOUR}{_CLOCK_MINUTES}?(?:{_O_CLOCK})?(?:\s*{_CLOCK_PERIOD})?)"
+    r"(?:\s*[,;]\s*.*|\s+(?:que|porque|because|since|so|then|pues|asi)\b.*)?[\s.!]*$"
+)
+
+
+@dataclass(frozen=True)
+class Retiming:
+    """The new time a message gives the notification just set: a duration from now, or a clock (``hour`` 0–23 when
+    ``resolved``, otherwise the 1–12 hour whose part of the day the old time decides)."""
+
+    duration: str | None
+    hour: int = 0
+    minute: int = 0
+    resolved: bool = False
+
+
+def notification_retiming(text: str) -> Retiming | None:
+    """«Actually, make it 6:30.», «Mejor a las 6 en punto, que si no no llego al micro», «wait no, make it una hora»:
+    the new time of the notification just set. None unless the message opens with the change and names only its time
+    (a bare «a las 6» may answer a question; «que sea en una hora» is a change)."""
+
+    folded = _same_length_fold(" ".join(str(text or "").split()))
+    found = _RETIMING.match(folded)
+    if found is None or not (found.group("opening") or found.group("verb")):
+        return None
+    new = found.group("new")
+    if re.fullmatch(_RELATIVE_DURATION_PATTERN, new):
+        return Retiming(duration=new)
+    clocks = spoken_clocks(f"a las {new}")
+    if len(clocks) != 1:
+        return None
+    return Retiming(None, clocks[0].hour, clocks[0].minute, clocks[0].resolved)
+
+
+def retimed_local_moment(retiming: Retiming, old: datetime, now: datetime | None = None) -> datetime | None:
+    """The new local moment of a notification set for ``old`` (local, with its zone): the clock on the same day, in
+    the part of the day nearer the old time when it said none (6:45 → «6:30» is 6:30, 18:00 → «7» is 19:00). None
+    for a duration (it counts from now) or a moment already past."""
+
+    if retiming.duration is not None:
+        return None
+    hours = (retiming.hour,) if retiming.resolved else (retiming.hour % 12, retiming.hour % 12 + 12)
+    candidates = [old.replace(hour=hour, minute=retiming.minute, second=0, microsecond=0) for hour in hours]
+    moment = min(candidates, key=lambda candidate: abs((candidate - old).total_seconds()))
+    return moment if moment > (now or datetime.now(old.tzinfo)) else None

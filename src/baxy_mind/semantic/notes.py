@@ -689,10 +689,16 @@ def _task_without_title(folded: str) -> bool:
 # so «qué hay en mi lista de la compra» finds it by that name (task.search reads
 # titles and details). No list store is added to the catalog.
 _LIST_NAME = (
-    r"(?P<list>(?:listas?|lists?)(?:\s+(?:de(?:\s+la|\s+los|\s+las|l)?|para(?:\s+la|\s+el)?|of|for)\s+[^,;.!?]{1,60}?)?"
+    r"(?P<list>(?:listas?|lists?)(?:\s+(?:de(?:\s+la|\s+los|\s+las|l)?|para(?:\s+la|\s+el)?|of|for)\s+[^,;.!?]{1,60}?"
+    # M76 (DEV-D v3l D-p08-t2 «Pon huevos en mi lista Navidad» → «¿Qué título le pondrás…?»): the name of a list
+    # also goes right after the word, with no «de» («mi lista Navidad», «la lista Comida»).
+    r"|\s+(?!(?:de|del|para|of|for|por|porfa|please|pls|plz)\b)[^\W\d_][\w'-]*"
+    r"(?:\s+(?!(?:por|porfa|please|pls|plz)\b)[^\W\d_][\w'-]*)?)?"
     # Tanda 4 2026-09-24 «please put the meeting with carla on my to do list»: the ear writes «to do» apart.
     # Dev set 2 «add buy groceries to my to do list for today»: the day said after the list is part of its name.
-    r"|(?:shopping|grocery|to[\s-]?do|todo|task|packing)\s+list(?:\s+(?:for|from)\s+(?:today|tomorrow|tonight|this\s+week))?)"
+    r"|(?:shopping|grocery|to[\s-]?do|todo|task|packing)\s+list(?:\s+(?:for|from)\s+(?:today|tomorrow|tonight|this\s+week))?"
+    # M76 (DEV-D v3l D-p06-t2 «Add to the Walmart list»): in English a list's own name goes before the word.
+    r"|(?!(?:new|nueva)\b)[^\W\d_][\w'-]*\s+list)"
 )
 # The list an entry goes on or comes off: whose it is, or a new one («put pencil on a new grocery list»).
 _LIST_DETERMINER = r"(?:(?:mi|la|tu|nuestra|una|esta|my|the|our|a|this)\s+)?(?:(?:nueva|new)\s+)?"
@@ -833,6 +839,46 @@ _LIST_REMOVAL = (
         re.IGNORECASE,
     ),
 )
+
+
+# M76 (DEV-D v3l D-w17-t2): a task marked done (task.complete, after task.resolve.exact finds it by its title): «mark
+# buy milk as done», «marca la tarea llamar a Ana como hecha», «complete the task renew car registration». A verb that
+# does not say «done» by itself («mark», «pon») says it after the title; «complete» takes the word «task».
+_DONE_AFTER = r"(?:\s+(?:as\s+)?(?:done|complete|completed|finished)|\s+como\s+(?:hech[ao]|completad[ao]|terminad[ao]))"
+_TASK_WORD = r"(?:(?:the|my|la|mi|el)\s+)?(?:task|tarea|to-?do|pendiente)\s+(?:(?:called|named|llamad[ao])\s+)?"
+_TASK_COMPLETION = (
+    re.compile(
+        r"^(?:(?:por\s+favor|please)\s*,?\s+)?(?:mark|set|marca(?:me|r)?|marque|pon(?:me|er)?|pone(?:me)?|deja(?:me)?)\s+"
+        rf"(?:{_TASK_WORD}|(?:the|my|la|mi|el)\s+)?(?P<title>\S.{{0,200}}?){_DONE_AFTER}"
+        r"(?:\s*,?\s*(?:please|por\s+favor|porfa))?[\s.!]*$",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"^(?:(?:por\s+favor|please)\s*,?\s+)?(?:complete|completa(?:r|me)?|termina(?:r)?|finish|close)\s+"
+        rf"{_TASK_WORD}(?P<title>\S.{{0,200}}?)(?:\s*,?\s*(?:please|por\s+favor|porfa))?[\s.!]*$",
+        re.IGNORECASE,
+    ),
+)
+
+
+def task_completion_title(text: str) -> str | None:
+    """The title of the task the person marks done, as written; None for an ordinal or a pointer («the first one»,
+    «esa»: which one is read from the list just told), or any other shape."""
+
+    surface = _request_body_surface(text).strip()
+    for pattern in _TASK_COMPLETION:
+        found = pattern.match(surface)
+        if found is None:
+            continue
+        title = found.group("title").strip(" ,;:\"'«»“”")
+        if not title or _has(
+            _fold(title),
+            r"^(?:(?:the|el|la|lo)\s+)?(?:first|second|third|last|primer[oa]?|segund[oa]|tercer[oa]?|ultim[oa]|"
+            r"it|this|that|esto|eso|esta|esa|este|ese|one|uno|una)\b",
+        ):
+            return None
+        return title
+    return None
 
 
 @dataclass(frozen=True, slots=True)

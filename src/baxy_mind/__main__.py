@@ -45,7 +45,7 @@ from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
 from .semantic import temporal as semantic_temporal
 from .semantic import ui as semantic_ui
-from .semantic.system import weather_destination_there
+from .semantic.system import names_this_place, weather_destination_there
 from .semantic.patterns import output_level_request
 from .semantic.web import (
     asks_for_information,
@@ -197,6 +197,7 @@ from .semantic.arguments import (
     literal_ocr_language,
     literal_vision_prompt,
     names_spotify,
+    partial_explicit_arguments,
     reminder_title_without_que,
     window_snap_plan_split,
     window_snap_side_for_step,
@@ -304,7 +305,9 @@ _IDENTITY_CONSUMERS = frozenset(
         "peripheral.print",
         "peripheral.scan",
         "reminder.delete",
+        "task.complete",
         "task.delete",
+        "task.reopen",
         "vision.describe",
         "window.focus",
         "window.maximize",
@@ -771,6 +774,21 @@ def normalize_objective_arguments(
     return None, unresolved_argument_fields(arguments, schema, objective)
 
 
+def _said_optional_arguments(arguments: object, schema: dict, trusted_source: str) -> dict:
+    """The optional fields of ``arguments`` each grounded in what was said, alone (M76); none when there are none."""
+
+    properties = schema.get("properties") if isinstance(schema.get("properties"), dict) else {}
+    kept: dict = {}
+    for name, value in (arguments.items() if isinstance(arguments, dict) else ()):
+        contract = properties.get(name)
+        if not isinstance(contract, dict):
+            continue
+        field_schema = {"type": "object", "properties": {name: contract}, "required": [name], "additionalProperties": False}
+        if validate_argument_grounding({name: value}, field_schema, trusted_source):
+            kept[name] = value
+    return kept
+
+
 def prepare_direct_argument_result(
     llm: object,
     objective: str,
@@ -790,6 +808,13 @@ def prepare_direct_argument_result(
     """
 
     schema = tool["function"]["parameters"]
+    if not schema.get("required"):
+        # M76 (DEV-D v3l D-s014, D-s054, D-s080: the weather asked «¿En qué ciudad…?»): with every field optional
+        # there is nothing to ask. A value the person did not say (a town the model brought, this PC's own) is left
+        # out and the operation's default applies; what was said is kept.
+        arguments = _said_optional_arguments(
+            arguments, schema, objective if trusted_source is None else trusted_source,
+        )
     grounded, fields = normalize_objective_arguments(
         arguments,
         schema,
@@ -862,6 +887,9 @@ _DETERMINISTIC_DEPENDENCY_FIELDS = {
     "peripheral.print": ("deviceId",),
     "reminder.delete": ("reminderId", "expectedVersion", "reviewLabel"),
     "task.delete": ("taskId", "expectedVersion", "reviewLabel"),
+    # M76 (DEV-D v3l D-w17-t2): identity and version from task.resolve.exact.
+    "task.complete": ("taskId", "expectedVersion"),
+    "task.reopen": ("taskId", "expectedVersion"),
     "vision.describe": ("captureId",),
     "wifi.connect": ("profileId",),
 }
@@ -3099,6 +3127,9 @@ def _stated_argument_fields(operation: str, objective: str, schema: dict[str, ob
             and semantic_levels.direction_of(objective) is not None
         ):
             stated.append(field)
+        elif field in partial_explicit_arguments(operation, objective, schema):
+            # M76 (DEV-D v3l D-p19-t1): a title the readers know is not asked with the service that is missing.
+            stated.append(field)
     return tuple(stated)
 
 
@@ -3689,13 +3720,49 @@ def _timed_task_arguments(
             str(item.get("content") or "") for item in reversed(history)
             if isinstance(item, dict) and item.get("role") == "user"
         ][:1]
-    task = next((found for text in said if (found := semantic_temporal.timed_task(text)) is not None), None)
+    task = next(
+        (
+            found for text in said
+            # M76 (DEV-D v3l D-s120): a rest of a stated length is timed too («un descanso de 14 minutos»).
+            if (found := semantic_temporal.timed_task(text) or semantic_temporal.timed_break(text)) is not None
+        ),
+        None,
+    )
     if task is None:
         return None
     arguments: dict[str, object] = {"dueUtc": task.due, "title": task.title}
     if operation == "notification.schedule":
-        arguments["kind"] = "reminder"
+        arguments["kind"] = task.kind
     arguments = _normalize_grounded_operation_arguments(operation, arguments, task.due)
+    return arguments if arguments is not None and validate_json_schema_instance(arguments, schema) else None
+
+
+def _person_message(history: object, objective: str) -> str:
+    """The person's own message of this turn: the history's last turn when it is theirs (the shell sends it last),
+    otherwise the objective."""
+
+    last = history[-1] if isinstance(history, list) and history else None
+    if isinstance(last, dict) and last.get("role") == "user" and str(last.get("content") or "").strip():
+        return str(last["content"])
+    return objective
+
+
+def _retimed_step_arguments(
+    operation: str, retimed: dialogue_slot.RetimedNotification, schema: dict[str, object],
+) -> dict[str, object] | None:
+    """M76: the arguments of one step of moving the notification just set, or None for another step."""
+
+    if operation == "notification.cancel.latest":
+        arguments: dict[str, object] | None = {"kind": retimed.kind}
+    elif operation == "notification.cancel.at" and retimed.cancel_at_request:
+        # The clock is read as a cancellation reads it; the kind is the one verified (a reminder is not an alarm).
+        arguments = _ground_explicit_arguments(operation, retimed.cancel_at_request, schema)
+        arguments = {**arguments, "kind": retimed.kind} if arguments is not None else None
+    elif operation == "notification.schedule":
+        due = retimed.schedule_arguments["dueUtc"]
+        arguments = _normalize_grounded_operation_arguments(operation, dict(retimed.schedule_arguments), due)
+    else:
+        return None
     return arguments if arguments is not None and validate_json_schema_instance(arguments, schema) else None
 
 
@@ -3795,6 +3862,11 @@ def _normalize_grounded_operation_arguments(
     """Apply closed semantic constraints not expressible by catalog JSON Schema."""
 
     normalized = dict(arguments)
+    if operation == "weather.current" and isinstance(normalized.get("location"), str) and names_this_place(
+        normalized["location"]
+    ):
+        # M76 (DEV-D v3l D-s054): «aquí» is this PC's place, read by the weather with no place named.
+        del normalized["location"]
     if operation == "window.resolve":
         # M55 (v3b F-w06-t1, F-w08-t1 «invalid selector»): Core's selector contract is exactly one of
         # applicationName or process, and an application name takes neither byTitle nor offset. A neutral
@@ -7172,6 +7244,13 @@ def _run_sidecar(
                     )
                 arguments_by_step: dict[str, dict] = {}
                 argument_requests: list[dict] = []
+                # M76 (DEV-D v3l D-w16-t2 «Actually, make it 6:30.», D-w04-t4, D-w18-t5): moving the notification the
+                # last turn set takes its new time from the person's message and the rest from what was verified.
+                retimed = (
+                    dialogue_state.retimed_notification(_person_message(history, objective))
+                    if "notification.schedule" in expected_operations
+                    else None
+                )
                 enumerated_note_arguments = _fully_enumerated_note_create_arguments(
                     objective
                 )
@@ -7224,6 +7303,25 @@ def _run_sidecar(
                             )
                         arguments_by_step[step.step_id] = grounded
                         continue
+                    moved = (
+                        _retimed_step_arguments(step.operation, retimed, schema)
+                        if retimed is not None
+                        else None
+                    )
+                    if moved is not None:
+                        arguments_by_step[step.step_id] = moved
+                        continue
+                    pointed = (
+                        dialogue_state.pointed_listed_title(_person_message(history, objective))
+                        or dialogue_state.pointed_listed_title(objective)
+                        if step.operation == "task.resolve.exact"
+                        else None
+                    )
+                    if pointed is not None and validate_json_schema_instance({"title": pointed}, schema):
+                        # M76 (DEV-D v3l D-w17-t2 «mark the first one done»): the task pointed at by its place in the
+                        # list the turn before read is resolved by the title that list told.
+                        arguments_by_step[step.step_id] = {"title": pointed}
+                        continue
                     if expected_operations:
                         explicit_arguments = _ground_explicit_arguments(
                             step.operation,
@@ -7262,6 +7360,11 @@ def _run_sidecar(
                     tool = request["tool"]
                     schema = tool["function"]["parameters"]
                     arguments = extracted_arguments.get(step_id)
+                    partial = partial_explicit_arguments(str(request["operation"]), objective, schema)
+                    if partial:
+                        # M76 (DEV-D v3l D-w15-t2 «¿En qué carpeta conocida deseas buscar…?» after «…en Documentos»):
+                        # what the readers know fills what the extraction left out, so it is never asked again.
+                        arguments = {**partial, **(arguments if isinstance(arguments, dict) else {})}
                     grounded, fields = normalize_objective_arguments(
                         arguments,
                         schema,
@@ -7442,10 +7545,17 @@ def _run_sidecar(
                         said = f"{said}\n{previous_reply}"
                     else:
                         objective_source = objective
+                    extracted = extraction.arguments
+                    if extracted is None:
+                        # M76 (DEV-D v3l D-p19-t1): an abstention keeps what the readers know, so what is asked is
+                        # only what is still missing (the service of a film named by its title).
+                        extracted = partial_explicit_arguments(
+                            operation, objective, tool["function"]["parameters"],
+                        ) or None
                     decided_arguments = _with_decided_arguments(
                         operation,
                         str(message.get("text", "")),
-                        extraction.arguments,
+                        extracted,
                         tool["function"]["parameters"],
                         said,
                     )
@@ -7453,7 +7563,7 @@ def _run_sidecar(
                         llm,
                         objective,
                         tool,
-                        extraction.arguments if decided_arguments is None else decided_arguments,
+                        extracted if decided_arguments is None else decided_arguments,
                         # A question written before the decider's values were added may ask for one of them.
                         extraction.fallback_question if decided_arguments is None else "",
                         trusted_source=objective_source if decided_arguments is None else said,

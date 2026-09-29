@@ -164,6 +164,9 @@ public static class MissionPlanValidator
             // (planner._required_predecessors); without the same relation here
             // the shell rejected that plan as incomplete (M44 F-p02-t3).
             "task.delete" => ["task.resolve.exact"],
+            // M76 (DEV-D v3l D-w17-t2 «mark the first one done» → «Which task ID and expected version…?»): marking
+            // a task done or open again takes its identity and version from the same verified resolver.
+            "task.complete" or "task.reopen" => ["task.resolve.exact"],
             "vision.describe" => ["capture.screenshot"],
             "window.focus" or "window.maximize" or "window.minimize"
                 or "window.move" or "window.resize" or "window.restore"
@@ -222,7 +225,7 @@ public static class MissionPlanValidator
             "message.send" => ["recipientId"],
             "note.read" => ["noteId"],
             "notification.dismiss" or "reminder.delete" => ["reminderId"],
-            "task.delete" => ["taskId"],
+            "task.delete" or "task.complete" or "task.reopen" => ["taskId"],
             "ocr.read" or "vision.describe" => ["captureId"],
             "office.document.read" => ["documentId"],
             "wifi.connect" => ["profileId"],

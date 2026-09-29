@@ -17,7 +17,7 @@ from urllib.parse import urlencode, urlsplit
 from .. import effect_intent
 from . import lexicon as semantic_lexicon
 from .catalog import GameCatalogIndex, resolve_game_catalog_app_id
-from .notes import agenda_event_request, said_repetition, stated_event_reminder
+from .notes import agenda_event_request, said_repetition, stated_event_reminder, task_completion_title
 from .patterns import resolve_application_catalog_app_id, resolve_application_installed_name
 from .temporal import SpokenClock, agenda_window, clock_elsewhere, plural_alarm_cancellation, spoken_date, spoken_window
 from .web import news_lookup_query, public_query_body
@@ -503,6 +503,11 @@ def _explicit_wifi_profile_arguments(evidence: str) -> dict[str, object] | None:
     return {"profileName": profile}
 
 
+# «una hora antes de la reunión», «half an hour before that», «diez minutos después de eso»: a duration counted from a
+# moment other than now (the same reading as ``notes._reminder_has_actionable_due``).
+_OFFSET_FROM_ANOTHER_MOMENT = r"\s+(?:antes|despues|before|after|earlier\s+than|later\s+than)\b"
+
+
 def _explicit_notification_schedule_arguments(
     evidence: str,
 ) -> dict[str, object] | None:
@@ -522,6 +527,10 @@ def _explicit_notification_schedule_arguments(
     # ñ that the accent-free patterns never matched on the raw evidence
     # (TIME1193 probe). The title below still keeps the person's own words.
     relative = list(re.finditer(relative_pattern, folded, re.IGNORECASE))
+    if any(re.match(_OFFSET_FROM_ANOTHER_MOMENT, folded[found.end():]) for found in relative):
+        # M76 (DEV-D v3l D-w02-t3 «ponme una alarma media hora antes de eso» → an alarm half an hour from now): a
+        # duration counted from another moment is not a delay from now; that moment is not read here.
+        return None
     # One clock whose part of the day was said, after the hour or elsewhere
     # («esta tarde a las cinco»); the day is read from the whole request.
     clocks = effect_intent.spoken_clocks(folded)
@@ -1487,6 +1496,10 @@ def _explicit_arguments_from_evidence(
         # «take bathroom painting off the list»: the entry is the title it was put on the list with.
         return {"title": removal.entry} if removal.entry else None
 
+    if operation == "task.resolve.exact" and (completed := task_completion_title(evidence)) is not None:
+        # M76 (DEV-D v3l D-w17-t2): the task marked done is found by the title the person wrote.
+        return {"title": completed}
+
     if operation == "note.create":
         # This closed form carries both required literals in one atomic effect
         # fragment. Preserve their original spelling and punctuation, then let
@@ -2222,6 +2235,11 @@ def _canonical_due_utc(
         re.IGNORECASE,
     )
     if relative is not None:
+        if context and re.search(
+            re.escape(folded_value) + _OFFSET_FROM_ANOTHER_MOMENT, effect_intent._fold(context),
+        ):
+            # M76 (DEV-D v3l D-w02-t3): «media hora» copied out of «media hora antes de eso» is not from now.
+            return None
         if relative.group("half"):
             amount, unit = 30, "minutes"
         else:
@@ -2418,6 +2436,61 @@ def literal_vision_prompt(objective: str) -> str | None:
         re.IGNORECASE,
     )
     return prompt.group(1) if prompt is not None else None
+
+
+# M76 (DEV-D v3l D-p19-t1 «I'd like to watch a movie called After the Wedding with Spanish subtitles on.» → «Which
+# streaming service and movie title would you like to play?»): a film or a series named without its service. The
+# title is what follows the noun (and «called / llamada» when said), up to «with / con …» or the end.
+_WATCH_NAMED_TITLE = re.compile(
+    r"^(?:(?:i(?:\s+would|['’]d)\s+like\s+to|i\s+want\s+to|i\s+wanna|let'?s|quiero|quisiera|me\s+gustar[ií]a|vamos\s+a)\s+)?"
+    r"(?:watch|see|play|put\s+on|ver|mirar|poner|pon(?:me)?|reproduc[ei](?:r|me)?)\s+"
+    r"(?:(?:a|an|the|la|una|el|un)\s+)?(?:movie|film|series|show|pel[ií]cula|peli|serie)\s+"
+    r"(?:(?:called|named|titled|llamad[ao]|titulad[ao])\s+)?"
+    r"(?P<title>[\"'«“]?[^\W\d_][^\"»”]{0,120}?[\"'»”]?)"
+    r"(?:\s+(?:with|con)\s+[^.!?]*)?[\s.!?]*$",
+    re.IGNORECASE,
+)
+
+
+# The services of streaming.play.named, as the reader of a named title spells them (VIDEO1921, VIDEO1947).
+_STREAMING_SERVICE_SAID = re.compile(
+    r"\b(?:netflix|nerflix|netlix|netfix|netflis|neflix|disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|"
+    r"dinsey|dizney)\b",
+    re.IGNORECASE,
+)
+
+
+# M76 (DEV-D v3l D-w15-t2 «vale, resumemelo en tres puntos» after «el informe trimestral que guardé en Documentos» →
+# «¿En qué carpeta conocida deseas buscar…?»): a known folder named in the request is not asked again.
+_KNOWN_FOLDER_NAMED = (
+    ("desktop", r"\b(?:desktop|escritorio)\b"),
+    ("documents", r"\b(?:documents|documentos)\b"),
+    ("downloads", r"\b(?:downloads|descargas)\b"),
+)
+
+
+def partial_explicit_arguments(operation: str, evidence: str, schema: dict) -> dict[str, object]:
+    """M76: the values of a request the readers know while another required one is still missing, so the question
+    asks only for that one (a film named with no service: its title; a search in the folder named: that folder).
+    Only fields of the operation's ``schema`` with a value it allows. Empty when there is none."""
+
+    known: dict[str, object] = {}
+    if operation == "streaming.play.named" and _STREAMING_SERVICE_SAID.search(evidence) is None:
+        found = _WATCH_NAMED_TITLE.match(" ".join(evidence.split()))
+        title = found.group("title").strip("\"'«»“” ") if found is not None else ""
+        if title and len(title.encode("utf-8")) <= 512:
+            known["title"] = title
+    folders = {folder for folder, pattern in _KNOWN_FOLDER_NAMED if re.search(pattern, effect_intent._fold(evidence))}
+    if len(folders) == 1:
+        known["folder"] = folders.pop()
+    properties = schema.get("properties") if isinstance(schema, dict) else None
+    if not isinstance(properties, dict):
+        return {}
+    return {
+        field: value for field, value in known.items()
+        if isinstance(properties.get(field), dict)
+        and value in properties[field].get("enum", [value])
+    }
 
 
 def reminder_title_without_que(title: str) -> str:

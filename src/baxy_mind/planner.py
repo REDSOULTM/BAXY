@@ -1061,6 +1061,9 @@ def _required_predecessors(operation: str) -> tuple[str, ...]:
         "peripheral.scan": ("peripheral.list",),
         "reminder.delete": ("reminder.resolve.exact",),
         "task.delete": ("task.resolve.exact",),
+        # M76 (DEV-D v3l D-w17-t2): the task marked done or open again is resolved first, like the one trashed.
+        "task.complete": ("task.resolve.exact",),
+        "task.reopen": ("task.resolve.exact",),
         "vision.describe": ("capture.screenshot",),
         "window.focus": ("window.resolve", "window.active"),
         "window.maximize": ("window.resolve", "window.active"),
