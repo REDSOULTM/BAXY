@@ -1161,7 +1161,14 @@ class DialogueState:
         operation = str(situation.get("operation") or "") if isinstance(situation, dict) else ""
         # The joined form of an answer the model could not rewrite («…\nAclaración confiable del usuario: …») is
         # for the readers, not a request to word against.
-        if not self.request or "\n" in self.request or not operation or operation not in self.intended:
+        if not self.request or "\n" in self.request:
+            return user_text
+        if not operation and isinstance(situation, dict) and situation.get("cause") == "mission_failed" and self.intended:
+            # M58 (v3d-final F-w06-t2 «no, al revés» → «No se pudo abrir Word ni Google Chrome»): a failed plan is the
+            # mission this turn decided («Coloca la ventana de Word en la mitad derecha…»); its failure is told
+            # against that request, which names the act asked, not against the bare correction.
+            return self.request
+        if not operation or operation not in self.intended:
             return user_text
         return self.request
 
