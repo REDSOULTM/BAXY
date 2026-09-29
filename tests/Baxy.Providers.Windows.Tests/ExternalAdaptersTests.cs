@@ -2801,6 +2801,32 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // M58 (v3d-final F-p06-t3 «aparcamiento en la calle Génova en Madrid», Nominatim's real answer of
+    // 2026-09-28 for «calle Génova, Madrid»): the Calle Génova of Villa del Prado came first and carries
+    // «Madrid» only in «Comunidad de Madrid»; its car parks were told. The candidate whose own town is
+    // the named one wins; «Las Rozas de Madrid» is another town.
+    [Test]
+    public void TheNamedCityIsTheCandidatesOwnTownNotItsRegion()
+    {
+        const string genova = """
+            [{"display_name":"Calle Génova, Villa del Prado, Comunidad de Madrid, 28630, España","boundingbox":["40.2763773","40.2772820","-4.3081919","-4.3068498"],"address":{"road":"Calle Génova","village":"Villa del Prado","state":"Comunidad de Madrid","postcode":"28630","country":"España","country_code":"es"}},
+             {"display_name":"Calle Génova, Parque Industrial Tecnológico Európolis, La Puentecilla y Los Majuelos, Las Rozas de Madrid, Comunidad de Madrid, 28230, España","boundingbox":["40.4991016","40.4991277","-3.8902731","-3.8895388"],"address":{"road":"Calle Génova","town":"Las Rozas de Madrid","state":"Comunidad de Madrid","postcode":"28230","country":"España","country_code":"es"}},
+             {"display_name":"Calle Genova, Quijorna, Comunidad de Madrid, 28693, España","boundingbox":["40.4316964","40.4336917","-4.0625033","-4.0615325"],"address":{"road":"Calle Genova","village":"Quijorna","state":"Comunidad de Madrid","postcode":"28693","country":"España","country_code":"es"}},
+             {"display_name":"Calle de Génova, Chueca, Almagro, Chamberí, Centro, Madrid, Comunidad de Madrid, 28004, España","boundingbox":["40.4251315","40.4271468","-3.6947895","-3.6909553"],"address":{"road":"Calle de Génova","city":"Madrid","state":"Comunidad de Madrid","postcode":"28004","country":"España","country_code":"es"}},
+             {"display_name":"Calle de Génova, Almagro, Chamberí, Madrid, Comunidad de Madrid, 28004, España","boundingbox":["40.4254918","40.4267445","-3.6938416","-3.6907592"],"address":{"road":"Calle de Génova","city":"Madrid","state":"Comunidad de Madrid","postcode":"28004","country":"España","country_code":"es"}}]
+            """;
+        string[] street = ["calle", "genova"];
+        string[] wanted = ["calle", "genova", "madrid"];
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(OpenStreetMapPlaceSource.AreaOf(genova, street, wanted, "ES", within: [["madrid"]])?.Latitude,
+                Is.EqualTo(40.42614).Within(0.001), "the Calle de Génova of Madrid, not Villa del Prado's");
+            Assert.That(OpenStreetMapPlaceSource.AreaOf(genova, street, wanted, "ES")?.Latitude,
+                Is.EqualTo(40.27683).Within(0.001), "with no city named, Nominatim's order stands");
+        });
+    }
+
     // M54 (v3b-final F-p01-t2): this PC's city «Curico» (Chile) geocoded to Curico,
     // Indiana, the first candidate, and its car parks were the answer. Among candidates of
     // the same name the one in the preferred country wins; this PC's own city must be in
