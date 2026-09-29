@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 import unicodedata
 
-__all__ = ["fold", "alternation", "spelled_out"]
+__all__ = ["fold", "fold_in_place", "alternation", "spelled_out"]
 
 
 def fold(value: object) -> str:
@@ -18,6 +18,16 @@ def fold(value: object) -> str:
 
     decomposed = unicodedata.normalize("NFKD", str(value or "").casefold())
     return " ".join("".join(ch for ch in decomposed if not unicodedata.combining(ch)).split())
+
+
+def fold_in_place(value: object) -> str:
+    """``fold`` one character for one, whitespace kept, so a span found in it is the same span of the text."""
+
+    folded = []
+    for character in str(value or ""):
+        base = "".join(c for c in unicodedata.normalize("NFKD", character.lower()) if not unicodedata.combining(c))
+        folded.append(base[:1] or " ")
+    return "".join(folded)
 
 
 # Tanda 7b «¿y el finde?» → «¿va a llover el fin de semana?» was rejected as words nobody said: a short or chat
