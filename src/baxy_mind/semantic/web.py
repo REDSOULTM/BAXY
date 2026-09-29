@@ -3296,6 +3296,28 @@ def _weather_asks_tomorrow(user_text: str) -> bool:
     ) is not None
 
 
+# M58 (v3d-final F-s066 «¿hará bueno para San Juan?» → «En San Juan hay 28,5 °C ahora, despejado.», leaving out the
+# drizzle at 94 % read for tomorrow): the weather asked in the future tense with no day named asks what is coming, so
+# the answer carries the next day's read besides now. A day said («hoy», «esta tarde», «later today», a weekday) is
+# that day's question.
+_WEATHER_FUTURE = (
+    r"\b(?:hara|llovera|nevara|estara|habra|saldra|va\s+a\s+(?:hacer|llover|nevar|estar|haber)|"
+    r"will\s+(?:it|there)\b|(?:is|it'?s)\s+(?:it\s+)?going\s+to)\b"
+)
+_WEATHER_TODAY = r"\b(?:hoy|today|tonight|esta\s+(?:manana|tarde|noche)|later|mas\s+tarde|ahora|now)\b"
+
+
+def weather_asks_future(user_text: str) -> bool:
+    """The weather is asked in the future tense and no day is named (``_WEATHER_FUTURE``)."""
+
+    folded = _reading_fold(user_text)
+    return (
+        re.search(_WEATHER_FUTURE, folded) is not None
+        and re.search(_WEATHER_TODAY, folded) is None
+        and not weather_asks_coming_days(user_text)
+    )
+
+
 # What is never a public search, whatever the guard reads: the person's own
 # data (semantic.web.names_own_data) and what is playing (the words would leave
 # the PC; 00_IDENTIDAD: information comes in, content does not go out); someone
@@ -3358,6 +3380,71 @@ def place_containers(query: str) -> tuple[frozenset[str], ...]:
 
 
 _PLACE_ARTICLES = frozenset({"del", "los", "las", "the"})
+
+
+# M58 (v3d-final F-p05-t3 «Perdón, encuéntrame cerca de La Puntilla» after «… cerca de La Puntilla, El Puerto» → a car
+# park of San Juan, Puerto Rico; F-p06-t3 «Mejor en calle Génova» in a conversation about Madrid): the town or region
+# the conversation already fixed goes with a place the message names alone. Only for the same place said before with
+# its town, or for a street or a square (never a town), and only the last town said; a place named with its own town
+# keeps it. The person's writing is kept: the provider reads the capitals.
+_SAID_PLACE = re.compile(r"\b(?:cerca\s+del?|near|around|alrededor\s+del?|en|in|at)\s+(?P<place>[^?!.;]+)", re.IGNORECASE)
+_SAID_PLACE_PARTS = re.compile(r"\s+(?:en|in)\s+|\s*,\s*", re.IGNORECASE)
+_STREET_OR_SQUARE = re.compile(
+    r"^(?:(?:la|el|the)\s+)?(?:calle|c/|avenida|avda\.?|plaza|plazuela|paseo|pasaje|camino|ronda|glorieta|callejon|"
+    r"street|st\.?|avenue|ave\.?|road|rd\.?|square|boulevard|blvd\.?|lane)\b"
+)
+_TRAILING_COURTESY = re.compile(r"(?:\s+(?:hoy|today|ahora|now|por\s+favor|porfa|please))+$", re.IGNORECASE)
+
+
+def _without_article(place: str) -> str:
+    return re.sub(r"^(?:la|el|los|las|the)\s+", "", _fold(place))
+
+
+def _said_place_parts(text: str) -> tuple[str, ...]:
+    """The place a message names after «en / cerca de / near» and the towns it says that place is in, as written
+    («… cerca de La Puntilla, El Puerto» → («La Puntilla», «El Puerto»))."""
+
+    found = _SAID_PLACE.search(str(text or ""))
+    if found is None:
+        return ()
+    place = _TRAILING_COURTESY.sub("", found.group("place").strip(" ,:"))
+    return tuple(part.strip(" ,:") for part in _SAID_PLACE_PARTS.split(place) if part.strip(" ,:"))
+
+
+def place_fixed_by_conversation(place: str, said_before: Iterable[str]) -> str | None:
+    """The town the conversation fixed for ``place`` (named alone), from the person's earlier messages, newest first;
+    None when the last town said does not fit it or ``place`` already names its own."""
+
+    place = " ".join(str(place or "").split())
+    if not place or "," in place:
+        return None
+    for text in said_before:
+        parts = _said_place_parts(text)
+        if len(parts) < 2 or not parts[-1][:1].isupper():
+            continue
+        town = parts[-1]
+        same_place = _without_article(parts[0]) == _without_article(place)
+        if _fold(town) in _fold(place) or not (same_place or _STREET_OR_SQUARE.match(_fold(place))):
+            return None
+        return town
+    return None
+
+
+def place_query_in_conversation(query: str, said_before: Iterable[str]) -> str | None:
+    """``query`` with the town the conversation fixed written after the place it names alone («Encuéntrame
+    aparcamiento cerca de La Puntilla» → «Encuéntrame aparcamiento cerca de La Puntilla, El Puerto»); None when
+    nothing is added."""
+
+    query = str(query or "")
+    found = _SAID_PLACE.search(query)
+    parts = _said_place_parts(query)
+    if found is None or len(parts) != 1:
+        return None
+    town = place_fixed_by_conversation(parts[0], said_before)
+    if town is None:
+        return None
+    end = found.start("place") + query[found.start("place"):].find(parts[0]) + len(parts[0])
+    return f"{query[:end]}, {town}{query[end:]}"
 
 
 def weather_asks_today(asks: str, today_weekday: str) -> bool:
