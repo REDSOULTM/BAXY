@@ -1398,7 +1398,7 @@ def test_gpu_slot_count_can_be_lowered_for_a_measured_run() -> None:
 
 
 def test_the_v_cache_type_can_differ_from_k(monkeypatch: pytest.MonkeyPatch) -> None:
-    """M59 (goal v3 step 7): BAXY_MIND_KV_CACHE_TYPE_V sets only the V cache; without it V follows K."""
+    """M59 (goal v3 step 7): V defaults to q4_0 and K to q8_0; BAXY_MIND_KV_CACHE_TYPE_V sets V alone."""
     from baxy_mind.llm import LlmRuntime
 
     runtime = object.__new__(LlmRuntime)
@@ -1410,7 +1410,11 @@ def test_the_v_cache_type_can_differ_from_k(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.delenv("BAXY_MIND_KV_CACHE_TYPE", raising=False)
     monkeypatch.delenv("BAXY_MIND_KV_CACHE_TYPE_V", raising=False)
     command = runtime._server_command()
-    assert command[command.index("-ctk") + 1] == command[command.index("-ctv") + 1] == "q8_0"
+    # M59 default: K q8_0, V q4_0; a research K override without V moves both (the pre-M59 contract).
+    assert command[command.index("-ctk") + 1] == "q8_0" and command[command.index("-ctv") + 1] == "q4_0"
+    monkeypatch.setenv("BAXY_MIND_KV_CACHE_TYPE", "q8_0")
+    command = runtime._server_command()
+    assert command[command.index("-ctv") + 1] == "q8_0"
     monkeypatch.setenv("BAXY_MIND_KV_CACHE_TYPE_V", "q4_0")
     command = runtime._server_command()
     assert command[command.index("-ctk") + 1] == "q8_0"

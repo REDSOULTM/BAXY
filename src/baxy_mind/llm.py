@@ -171,6 +171,10 @@ MAX_UBATCH_TOKENS = 512
 # C03 integrated diagnostics: q8 fits the 4 GiB ceiling for the candidate;
 # q4 degraded facts and confirmations. Keep the measured profile reproducible.
 DEFAULT_KV_CACHE_TYPE = "q8_0"
+# M59 (goal v3 step 7, VRAM ≤ 3,8 GB): only the V cache goes to q4_0; K keeps q8_0, so attention scores stay exact.
+# Measured on v3d: server 3 724 → 3 440 MiB (3 slots × 12 288); 742 one change (H0271 asks which component), reserve
+# 85,7 → 85,6 % (+7/−11, none dangerous). K+V in q4 cost more (−7) and turned «por favor apaga» into system.power.
+DEFAULT_KV_CACHE_TYPE_V = "q4_0"
 MAX_CHAT_HISTORY_MESSAGES = 12
 MAX_CHAT_HISTORY_CHARS = 6_000
 LLM_HEALTH_POLL_TIMEOUT_SECONDS = 0.25
@@ -13971,7 +13975,11 @@ class LlmRuntime:
             "-ctk",
             kv_cache_type,
             "-ctv",
-            _kv_cache_type_from_env(os.environ.get("BAXY_MIND_KV_CACHE_TYPE_V", kv_cache_type)),
+            (
+                _kv_cache_type_from_env(os.environ["BAXY_MIND_KV_CACHE_TYPE_V"])
+                if "BAXY_MIND_KV_CACHE_TYPE_V" in os.environ
+                else kv_cache_type if "BAXY_MIND_KV_CACHE_TYPE" in os.environ else DEFAULT_KV_CACHE_TYPE_V
+            ),
             "-np",
             str(parallel),
             "--jinja",
