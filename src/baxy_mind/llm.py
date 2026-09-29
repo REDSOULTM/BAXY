@@ -8,11 +8,11 @@ Config por entorno:
 - BAXY_MIND_LLM_GGUF: ruta del GGUF (obligatoria para levantar el LLM).
 - BAXY_MIND_LLAMA_SERVER: ruta de llama-server.exe.
 - BAXY_MIND_NGL: capas en GPU (default 99; 0 = CPU puro).
-- BAXY_MIND_CTX: contexto por ranura (default y máximo: 12288). El decisor en
-  contexto lleva el catálogo entero (~7 k tokens) en su ranura; medido con
-  Qwen3.5-4B Q4_K_M, 3 ranuras × 12 288 y tres decisiones a la vez: 3 708 MiB de
-  pico del servidor, bajo el techo de 4 GiB del dueño (Fase 3.5b F4,
-  2026-09-25). Otro modelo necesita su propia medición física.
+- BAXY_MIND_CTX: contexto por ranura (default 10240, máximo 12288). El decisor en
+  contexto lleva el catálogo entero (~6 k tokens) en su ranura; medido con
+  Qwen3.5-4B Q4_K_M, 3 ranuras × 12 288 en la app: 3 876–3 908 MiB de pico del
+  servidor (goal v3, meta ≤ 3,8 GB); con 10 240 por ranura baja ≈ 128 MiB (M61,
+  2026-09-29). Otro modelo necesita su propia medición física.
 - BAXY_MIND_LLM_INVALID_JSON_DIR: diagnóstico local opt-in; conserva sólo la
   respuesta inválida sanitizada y metadatos de terminación, nunca el prompt.
 """
@@ -165,6 +165,10 @@ from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_as
 
 
 MAX_CONTEXT_TOKENS = 12288
+# M61 (goal v3 step 7, VRAM ≤ 3,8 GB): 3 slots × 12 288 peaked at 3 876 MiB in the app (llama-server alone, measured per
+# process). The decider needs ≤ ~8 100 tokens (catalog 6 100 + four-turn history ≤ 1 700 + output 300), so each slot
+# gets 10 240 by default (−128 MiB); an explicit BAXY_MIND_CTX may still ask up to MAX_CONTEXT_TOKENS.
+DEFAULT_CONTEXT_TOKENS = 10240
 DEFAULT_BATCH_TOKENS = 2048
 DEFAULT_UBATCH_TOKENS = 256
 MAX_UBATCH_TOKENS = 512
@@ -1726,11 +1730,11 @@ def _capture_compose_stage(
 def _context_size_from_env(value: str | None = None) -> int:
     """Return the measured context ceiling, never the model's 128K maximum."""
 
-    raw = value if value is not None else os.environ.get("BAXY_MIND_CTX", str(MAX_CONTEXT_TOKENS))
+    raw = value if value is not None else os.environ.get("BAXY_MIND_CTX", str(DEFAULT_CONTEXT_TOKENS))
     try:
         requested = int(str(raw).strip())
     except (TypeError, ValueError):
-        requested = MAX_CONTEXT_TOKENS
+        requested = DEFAULT_CONTEXT_TOKENS
     return max(1024, min(MAX_CONTEXT_TOKENS, requested))
 
 

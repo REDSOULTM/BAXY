@@ -2695,7 +2695,8 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         self.assertIn("--no-mmap", command)
         self.assertEqual(command[command.index("--reasoning") + 1], "off")
         self.assertEqual(command[command.index("--reasoning-budget") + 1], "0")
-        self.assertEqual(_context_size_from_env("bad"), 12288)
+        # M61 (goal v3 step 7): the default per slot is 10 240 (3 × 12 288 peaked at 3 876 MiB in the app).
+        self.assertEqual(_context_size_from_env("bad"), 10240)
         self.assertEqual(_context_size_from_env("1"), 1024)
 
     def test_llm_bounds_research_prefill_batch_controls(self):
