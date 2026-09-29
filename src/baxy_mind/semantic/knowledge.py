@@ -19,6 +19,7 @@ import re
 from dataclasses import dataclass
 from typing import Iterable
 
+from .conversation import asks_for_code
 from .normalize import fold, spelled_out
 
 __all__ = ["ReferenceLookup", "reference_lookup", "servings_asked"]
@@ -169,6 +170,41 @@ _NOT_RANKED_HERE = frozenset({
     "programas", "pestanas", "correos", "processes", "windows", "files", "folders", "programs", "tabs", "emails",
     "notas", "tareas", "notes", "tasks", "juegos", "games", "canciones", "songs", "mensajes", "messages",
 })
+# M56 (v3c-final F-s017 «what's the latest song from NeYo» → «ranking latest song», trot music from Korea): a ranking
+# is asked only by the superlative of an attribute the world is ordered by — size, height, brightness, population,
+# age, speed, price, what is measured. «último», «latest», «newest», «recent» ask for the newest thing of someone,
+# not for an order, and «best», «popular» are opinions: none of them is a ranking.
+_ORDERABLE_ES_O = (
+    "alt", "elevad", "baj", "larg", "profund", "extens", "pequen", "chic", "rapid", "lent", "car", "costos", "barat",
+    "ric", "fri", "calid", "caluros", "pesad", "livian", "antigu", "viej", "dens", "anch", "estrech", "vendid",
+    "visitad", "hablad", "poblad", "habitad", "peligros", "venenos", "contaminad", "lluvios", "poderos", "caudalos",
+    "grues", "lejan", "cercan", "luminos", "masiv", "numeros", "extendid", "seguid", "premiad",
+)
+_ORDERABLE_ES = frozenset(
+    {stem + ending for stem in _ORDERABLE_ES_O for ending in ("o", "a", "os", "as")}
+    | {"grande", "grandes", "brillante", "brillantes", "pobre", "pobres", "caliente", "calientes", "potente",
+       "potentes", "fuerte", "fuertes", "distante", "distantes", "comun", "comunes", "letal", "letales", "mortal",
+       "mortales", "veloz", "veloces"}
+)
+_ORDERABLE_EN_MOST = frozenset({
+    "populous", "populated", "expensive", "visited", "spoken", "dangerous", "venomous", "massive", "luminous",
+    "distant", "polluted", "powerful", "valuable", "abundant", "common", "densely", "widely", "sold", "followed",
+    "awarded", "decorated", "remote", "crowded",
+})
+_ORDERABLE_EN_EST = frozenset({
+    "tallest", "highest", "largest", "biggest", "brightest", "longest", "deepest", "smallest", "fastest", "slowest",
+    "heaviest", "lightest", "hottest", "coldest", "oldest", "richest", "poorest", "densest", "widest", "lowest",
+    "farthest", "furthest", "wettest", "driest", "strongest", "deadliest", "busiest", "shortest", "cheapest",
+    "narrowest", "thickest", "loudest", "sunniest", "rainiest", "windiest", "hardest",
+})
+
+
+def _orderable(adj: str, language: str) -> bool:
+    if language == "es":
+        return adj in _ORDERABLE_ES
+    if adj.startswith("most "):
+        return adj.split(None, 1)[1] in _ORDERABLE_EN_MOST
+    return adj in _ORDERABLE_EN_EST
 
 
 def _ranking(folded: str) -> ReferenceLookup | None:
@@ -179,7 +215,7 @@ def _ranking(folded: str) -> ReferenceLookup | None:
         if found is None:
             continue
         noun, adj = found.group("noun").strip(), found.group("adj").strip()
-        if any(word in _NOT_RANKED_HERE for word in noun.split()) or adj in {"que", "de", "the"}:
+        if any(word in _NOT_RANKED_HERE for word in noun.split()) or not _orderable(adj, language):
             continue
         rest = (found.group("rest") or "").strip()
         subject = " ".join(part for part in ((noun, adj, rest) if language == "es" else (adj, noun, rest)) if part)
@@ -199,6 +235,10 @@ def reference_lookup(text: str, prior_requests: Iterable[str] = ()) -> Reference
     work's lookup, naming no other work, looks that same work up again (its plot answers the question).
     """
 
+    # M56 (v3c-final F-w14-t1 «escribeme un query de sql q me saque los users activos del ultimo mes»): code asked
+    # for is written by the model; nothing in it is a dish, a work or a ranking to look up.
+    if asks_for_code(text):
+        return None
     direct = _direct(text)
     if direct is not None:
         return direct
