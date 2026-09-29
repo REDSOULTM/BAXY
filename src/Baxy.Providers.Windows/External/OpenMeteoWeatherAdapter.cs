@@ -188,8 +188,18 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
     // cien veces menos poblada que la región); y, sin nada de eso, el primer
     // lugar poblado o región que comparte una palabra con lo pedido. Un alias
     // ajeno o un parque que lleva el nombre no bastan.
+    private static readonly string[] RegionFields = ["admin1", "admin2", "country"];
+
     private async Task<PublicPlace?> GeocodeAsync(string location, CancellationToken cancellationToken)
     {
+        // M58 (v3d-final F-p07-t1/t2 «the weather in Foster City» → Foster City, Michigan, the
+        // first of the list and with no population, instead of Foster City, California): «Lugar,
+        // Región» (the region said, or the one the conversation fixed) picks the place of that
+        // name in that region or country; without a region, the most populous place of that name.
+        string[] parts = location.Split(',', 2, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        string? within = parts.Length == 2 ? parts[1] : null;
+        if (within is not null)
+            location = parts[0];
         string asked = RegionKey(location);
         Task<string> spanishRead = FetchAsync(GeocodingUrl(location, "es"), cancellationToken);
         Task<string> englishRead = FetchAsync(GeocodingUrl(location, "en"), cancellationToken);
@@ -213,9 +223,30 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
             return [ReadString(item, field), other is { } englishItem ? ReadString(englishItem, field) : null];
         }
 
-        JsonElement? namedPlace = candidates
+        List<JsonElement> sameName = candidates
             .Where(item => Spellings(item, "name").Any(name => name is not null && Fold(name) == Fold(location)))
-            .Select(item => (JsonElement?)item)
+            .ToList();
+        if (within is not null)
+        {
+            string saidRegion = RegionKey(within);
+            JsonElement? placed = sameName
+                .Where(item => RegionFields
+                    .SelectMany(field => Spellings(item, field))
+                    .Any(name => name is not null && RegionKey(name) == saidRegion))
+                .Select(item => (JsonElement?)item)
+                .FirstOrDefault();
+            if (placed is { } inRegion)
+                return PlaceOf(inRegion, location);
+        }
+        // A populated place outranks a park or a centre of the same name; among the places, the most
+        // populous (the service lists some without a population, which counts as none).
+        JsonElement? namedPlace = sameName
+            .Select((item, order) => (item, order))
+            .OrderByDescending(entry => ReadString(entry.item, "feature_code") is { } code
+                && code.StartsWith("PPL", StringComparison.Ordinal))
+            .ThenByDescending(entry => ReadDouble(entry.item, "population") ?? 0)
+            .ThenBy(entry => entry.order)
+            .Select(entry => (JsonElement?)entry.item)
             .FirstOrDefault();
         long? regionId = candidates
             .Where(item => Spellings(item, "admin1").Any(region => region is not null && RegionKey(region) == asked))
