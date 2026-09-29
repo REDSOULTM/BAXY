@@ -2688,8 +2688,7 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         self.assertEqual(command[command.index("-ub") + 1], "256")
         self.assertEqual(command[command.index("-fa") + 1], "on")
         self.assertEqual(command[command.index("-ctk") + 1], "q8_0")
-        # M59 (goal v3 step 7): V alone in q4_0 (server 3 724 → 3 440 MiB; reserve 85,7 → 85,6 %, none dangerous).
-        self.assertEqual(command[command.index("-ctv") + 1], "q4_0")
+        self.assertEqual(command[command.index("-ctv") + 1], "q8_0")
         self.assertEqual(command[command.index("-np") + 1], "3")
         self.assertIn("--cont-batching", command)
         self.assertEqual(command[command.index("--cache-ram") + 1], "0")
