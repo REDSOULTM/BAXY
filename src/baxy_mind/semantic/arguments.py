@@ -19,7 +19,7 @@ from . import lexicon as semantic_lexicon
 from .catalog import GameCatalogIndex, resolve_game_catalog_app_id
 from .notes import agenda_event_request, said_repetition, stated_event_reminder
 from .patterns import resolve_application_catalog_app_id, resolve_application_installed_name
-from .temporal import SpokenClock, agenda_window, clock_elsewhere, spoken_date, spoken_window
+from .temporal import SpokenClock, agenda_window, clock_elsewhere, plural_alarm_cancellation, spoken_date, spoken_window
 from .web import news_lookup_query, public_query_body
 from .windows import start_menu_request
 
@@ -1904,7 +1904,8 @@ def _explicit_arguments_from_evidence(
             return {"folder": next(iter(folders))}
 
     if operation == "notification.list":
-        if effect_intent._notification_listing_request(evidence):
+        # D39: «cancela las alarmas» reads them first (the offer to cancel them all is made with the list).
+        if effect_intent._notification_listing_request(evidence) or plural_alarm_cancellation(evidence):
             return {}
 
     if operation == "bluetooth.radio.status":
