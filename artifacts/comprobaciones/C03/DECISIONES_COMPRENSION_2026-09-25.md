@@ -535,3 +535,12 @@ los casos del dueño; en DEV-D (conversaciones escritas y corpus públicos) la d
 sigue siendo ≈ 21 puntos. Siguiente: tres frentes con mecanismos generales (repreguntas/lugar por defecto/jerga,
 informes de búsqueda que inventan o dicen «no encontré» con el dato leído, límites falsos y fechas fuera de alcance)
 y el decisor (full7, full8).
+
+## D48. DEV-D v3m: 241/332 = 72,6 % con revisor (d946de8b = M74–M78) (2026-09-29 ~20:10)
+Mismo revisor independiente y criterio que D47: **v3m 241/332 = 72,6 %** (v3l 212, v3f 215): arreglados 36, rotos 7.
+Inventados 8 (11), ⚠ 4 = 1,2 % (7), repreguntas de datos dados 6 (15). Automática 270/332 = 81,3 % (v3l 264), VRAM
+pico por proceso 3 784 MiB, p50 decisión 2,22 s. No-ok por causa: argumentos o repregunta 19 (31), redacción 19 (14),
+búsqueda 16 (27), conocimiento o código 13 (13), límite o alcance 12 (19), otros 12 (16). Rotos: s007 ⚠, s047 frase
+rota, s104 repregunta hora teniendo «18:00», s125 vencidos→retiros, p19-t2 «no encontré» con el reparto leído, p27-t4
+incoherente, w19-t4 jerga de fallo. Siguiente: redacción (idioma de la conversación, dato pedido y no el de ahora,
+frases rotas), argumentos residuales (task.update parcial, hora con parte del día pasada), búsqueda y conocimiento.
