@@ -178,6 +178,12 @@ _DAY_PART = (
     r"\b(?:(?:esta|por\s+la|en\s+la|a\s+la)\s+(?P<part>manana|madrugada|tarde|noche)|"
     r"(?:this|in\s+the)\s+(?P<english>morning|afternoon|evening)|(?P<tonight>tonight))\b"
 )
+# M73 (reserve v3j es8765 «mi cena … a las nueve» asked morning or afternoon): a meal said in the request is the part
+# of the day of a bare 1–12 hour when no part of the day is said. Not a window of the day (``_DAY_PART`` in ranges).
+_MEAL_PART = (
+    r"\b(?:(?P<night>cena|cenas|cenar|dinner|supper)|(?P<morning>desayuno|desayunos|desayunar|breakfast)|"
+    r"(?P<afternoon>almuerzo|almuerzos|almorzar|comida|merienda|lunch))\b"
+)
 _NOON_OR_MIDNIGHT = r"\b(?:al|a|el|at|para\s+el)\s+(?:mediod[ií]a|noon|midday|medianoche|midnight)\b"
 _CLOCK_LEAD = r"(?:a\s+las?|para\s+las?|sobre\s+las?|hacia\s+las?|at)"
 # «a las cinco en punto», «twelve o'clock» (uso real 2026-09-24): the hour said exactly is a clock time.
@@ -239,10 +245,15 @@ def _read_clock(found: re.Match[str], folded: str) -> SpokenClock | None:
     period = found.group("period") or ""
     if not period:
         elsewhere = re.search(_DAY_PART, folded)
-        if elsewhere is None:
+        meal = re.search(_MEAL_PART, folded) if elsewhere is None and not colon else None
+        if elsewhere is None and meal is None:
             # «a las 7:30» is read as written, on the 24-hour clock.
             return SpokenClock(literal, hour, minute, colon)
-        period = elsewhere.group("part") or elsewhere.group("english") or "noche"
+        if elsewhere is not None:
+            period = elsewhere.group("part") or elsewhere.group("english") or "noche"
+        else:
+            # M73: «la cena a las nueve» is 21:00, «el desayuno a las ocho» 8:00, «el almuerzo a la una» 13:00.
+            period = "noche" if meal.group("night") else "manana" if meal.group("morning") else "tarde"
     if re.search(r"^a\.?\s*m|manana|madrugada|morning", period):
         return SpokenClock(literal, hour % 12, minute, True)
     if "mediodia" in period:

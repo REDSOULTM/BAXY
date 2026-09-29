@@ -17,8 +17,8 @@
   },
   "54": {
    "verdict": "bien",
-   "reply": "Entendido, el volumen está a 50.",
-   "head": "f06d1655"
+   "reply": "Sí, el volumen está en 50.",
+   "head": "3a844c22"
   },
   "57": {
    "verdict": "bien",
@@ -32,13 +32,13 @@
   },
   "35": {
    "verdict": "bien",
-   "reply": "El primer libro de zombies fue La isla mágica, que tiene un capítulo titulado 'Fallecidos vivientes que trabajan en los campos de caña de azúcar'.",
-   "head": "02c986e9"
+   "reply": "La primera novela de zombies fue La isla mágica, publicada en 1929.",
+   "head": "3a844c22"
   },
   "25": {
    "verdict": "mal",
-   "reply": "Colony puede referirse al Old Colony Club en Nueva York, a Cabana Colony en Florida, al álbum de In Flames o a Colony Park en Pensilvania.",
-   "head": "f06d1655"
+   "reply": "Colony puede referirse al Old Colony Club en Nueva York, al álbum de In Flames, a Colony Park en Pensilvania o a Cabana Colony en Florida.",
+   "head": "3a844c22"
   }
  },
  "heldout-2026-09-22": {
