@@ -195,12 +195,65 @@ humano y sin robar el foco, y leer los resultados del DOM. No se activa por tres
 Lo que sí es legítimo, y es lo que el dueño eligió como salida: **abrir la búsqueda en el navegador de la persona
 para que la mire ella** (BAXY no lee esa página). La redacción la ofrece con `web_search_unavailable`.
 
+## M53 (paso 6 del goal v3, D35): recetas y argumentos se consultan antes de afirmar
+
+Estudio R8 (`research/R8_conocimiento_honesto.md`, recomendación A + B) y decisión D35 del dueño (la respuesta no
+nombra la fuente; enlace discreto «fuente» bajo el mensaje, que la voz no lee; sin fuente, se responde de memoria y
+se avisa en corto).
+
+**Elección: la fuente vive en el proveedor de `web.search`; el decisor (su LoRA) no cambia.** La mente no hace
+peticiones HTTP (invariante 1: la mente propone, el proveedor ejecuta). Cuando el decisor dice «talk» y un lector
+general de `semantic/knowledge.py` lee en las palabras de la persona una receta de un plato con nombre (con una
+palabra de cocina: receta, ingredientes, cocina, hornear, recipe, cook…) o el argumento de una obra con nombre
+(resumen/argumento/de qué trata + libro/película/serie… o un título con mayúsculas), el turno pasa a `web.search`
+con la consulta que escribe ese lector: la palabra de clase y el referente («receta pastel de choclo», «resumen
+libro hobbit»). El paso de argumentos lee la misma consulta del mismo pedido (como el lector de noticias pone
+«noticias»). Una pregunta sobre la historia justo después del resumen de una obra, que no nombra otra obra ni pide
+imaginar, consulta la misma obra (F-p11-t2). Lo abierto («una receta vegetariana»), el código y las explicaciones
+siguen en charla (paso 5).
+
+El proveedor (`WikimediaReferenceSource.cs`), antes de Wikipedia genérica:
+
+| clase | fuente | lectura | peticiones |
+|---|---|---|---|
+| receta | es.wikibooks «Artes culinarias/Recetas/…» (búsqueda con `prefix:`) y en.wikibooks «Cookbook:» (espacio 102) | wikitexto de la página: plantilla «Datos de receta» (es) o secciones Ingredients/Procedure con lista o tabla (en); comentarios, `{{ing}}`, `{{coc}}`, enlaces y citas fuera; el pie de la foto dice la variante | 1 (búsqueda + contenido); si el recetario español no lo tiene, el nombre inglés del artículo de es.wikipedia (`langlinks`, en paralelo) y 1 más al Cookbook |
+| argumento | Wikipedia es/en | texto plano con cabeceras (`exsectionformat=wiki`) de la primera página, si su título lleva el nombre de la obra; sección Argumento/Sinopsis/Trama/Plot…, o la introducción; ≤ 1 500 caracteres cortados en frase | 1 |
+
+El proyecto que se pregunta primero es el del idioma de la palabra de clase. Plazo de 2,5 s por petición. El recibo
+es el de siempre (`results[].title/url/snippet`) con `reference` (`recipe`/`plot`) y, si la página lo dice,
+`servings`. Si ninguna página sirve, la consulta sigue como cualquier otra (Wikipedia genérica…).
+
+Redacción (`llm._compose_consulted_answer`): la receta con su forma (qué es, «Ingredientes:» uno por línea,
+«Preparación:» numerada), desde la evidencia y sin nombrarla; el escalado de porciones es un cálculo declarado por
+BAXY (`servings` de la página frente a las pedidas, «multiplica por 1,5»); toda cifra de la respuesta sale de la
+página, del pedido o de ese cálculo (diseño B), si no se reescribe. Si la consulta no respondió
+(`web_search_unavailable`/`web_search_results_irrelevant`) y era una de estas, se responde de memoria empezando por
+el aviso («No pude comprobarlo; de memoria, puede no ser exacto»). En charla, las cifras derivadas de las cantidades
+de la persona las calcula `semantic/quantities.py` (evaluador cerrado sobre `ast` con `Fraction` y unidades; las
+duraciones se leen enteras: 1 h 10 min = 70 min) y se entregan al redactor; una velocidad, ritmo o total que no
+coincide, o un promedio sin datos, se vetan y se reescriben.
+
+La App (`ConsultedSource.cs`) pone la dirección de la página en el mensaje publicado sólo si hubo una consulta real
+a Wikimedia (web.search verificado con autoridad `wikipedia_*`/`wikibooks_*`) y la redacción no fue un último
+recurso; la vista la muestra como «fuente» y la abre, a petición, en el navegador de la persona
+(`POST /source/open`, sólo direcciones que el canal publicó).
+
+**Términos de Wikilibros** (igual que Wikipedia): texto CC BY-SA 4.0 (pie de cada página), API de MediaWiki sin clave
+con User-Agent identificado (D32), límites de Wikimedia (sin paralelismo agresivo: como mucho dos peticiones a la
+vez). La atribución es el enlace a la página. Los recetarios los escribe cualquiera y la cobertura en español es
+desigual (R8 R2): el pastel de choclo de es.wikibooks es la variante dulce peruana, y su foto lo dice.
+
+Medido en vivo el 2026-09-28 desde esta red (fuente sola, sin mente): «receta sopaipillas» 560–594 ms, «recipe
+chicken alfredo» 528 ms, «receta pan de banana» 663 ms (vía «Banana bread»), «receta pastel de choclo» 247 ms,
+«resumen libro hobbit» 602–758 ms, «summary novel Frankenstein» 1 701 ms (artículo largo).
+
 ## Qué falta
 
 - Que el «sí» a la oferta de abrir el navegador en el turno siguiente se resuelva como `browser.navigate` a la
   búsqueda. Es de la mente (estado de diálogo) y no se tocó.
 - Fuentes abiertas por dominio de R6/D32: Frankfurter, Nominatim y el RSS de noticias quedaron cableados en M51;
-  falta Wikidata (dato puntual: edad, población).
+  Wikibooks y el argumento de Wikipedia en M53; falta Wikidata (dato puntual: edad, población) y las listas con
+  cifras (rankings: F-s020, tablas de «List of…»).
 - Atribución de OpenStreetMap en la App cuando responde Nominatim (M51).
 - Decisión del dueño sobre el RSS de Google News (zona gris, M51).
 - Decisión del dueño sobre DuckDuckGo lite: mantenerlo como último intento o retirarlo.

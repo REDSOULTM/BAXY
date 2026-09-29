@@ -129,6 +129,13 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private DateTimeOffset? _progressPublishedUtc;
     private bool _disposed;
     private int _admissionSequence;
+    // M53 (D35): the «fuente» pages this channel published under a message. The view asks
+    // to open one by its address; only an address published here opens, in the person's
+    // own browser, never inside the view.
+    private const int MaximumPublishedSources = 256;
+    private readonly HashSet<string> _publishedSources = new(StringComparer.Ordinal);
+
+    internal Func<string, bool> SourceOpener { get; set; } = OpenInDefaultBrowser;
 
     internal FieldProductChannel(
         MainWindowViewModel viewModel,
@@ -282,6 +289,18 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             }
 
             return Json(new JsonObject { ["ok"] = true });
+        }
+
+        if (method == "POST" && route == "/source/open")
+        {
+            string url = (string?)ParseBody(body)?["url"] ?? string.Empty;
+            if (!_publishedSources.Contains(url) || !ConsultedSource.IsWikimediaPage(url))
+            {
+                return Error("source_not_published", 404);
+            }
+
+            bool opened = SourceOpener(url);
+            return Json(new JsonObject { ["ok"] = opened }, opened ? 200 : 503);
         }
 
         if (method == "POST" && route == "/log/clear")
@@ -548,6 +567,17 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         if (!string.IsNullOrWhiteSpace(message.Route))
         {
             entry["route"] = message.Route;
+        }
+
+        if (!message.IsUser && ConsultedSource.IsWikimediaPage(message.SourceUrl))
+        {
+            if (_publishedSources.Count >= MaximumPublishedSources)
+            {
+                _publishedSources.Clear();
+            }
+
+            _publishedSources.Add(message.SourceUrl!);
+            entry["source"] = message.SourceUrl;
         }
 
         return new JsonObject
@@ -1092,6 +1122,21 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         ["gpu"] = hardware.Gpu,
         ["gpu_vram_gb"] = hardware.GpuVramGb,
     };
+
+    private static bool OpenInDefaultBrowser(string url)
+    {
+        try
+        {
+            using System.Diagnostics.Process? process = System.Diagnostics.Process.Start(
+                new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
+            return true;
+        }
+        catch (Exception exception) when (exception is System.ComponentModel.Win32Exception
+            or InvalidOperationException or PlatformNotSupportedException)
+        {
+            return false;
+        }
+    }
 
     private static JsonObject? ParseBody(string? body)
     {

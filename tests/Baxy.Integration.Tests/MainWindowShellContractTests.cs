@@ -12,8 +12,11 @@ namespace Baxy.Integration.Tests;
 public sealed class MainWindowShellContractTests
 {
     private const string HistoricalCommit = "4a83f2d082d6b0fec8297e801b96a0da620b059e";
+    // Resealed for M53 (goal v3 step 6, owner's D35): the activity row shows a small «fuente»
+    // link under a consulted answer and keeps the message's lines (types.ts, ActivityPanel.tsx,
+    // prototype.css and the rebuilt dist). Previous seal: 99FF9838C07CE32F…B2CA657.
     private const string CurrentFieldTreeSha256 =
-        "99FF9838C07CE32F25F329AACF830F62D8DD70C5931E26C2EC483B710B2CA657";
+        "88415FD01574BA0B7285440B0E2C6944D0A812F51BED75EC0D8A9C103355C7C1";
     private static readonly XNamespace XamlNamespace =
         "http://schemas.microsoft.com/winfx/2006/xaml";
 

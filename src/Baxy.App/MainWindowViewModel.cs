@@ -171,7 +171,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 LastMessageCompositionFailure = failure;
                 LastMindRejectedReply ??= pending.LastRejectedText;
                 HasCompositionError = false;
-                AddMessageCore("BAXY", text, isUser: false, PublicResponseRoute.FromDraft(pending.Draft));
+                // M53 (D35): an answer composed from a page BAXY consulted carries that page as
+                // its «fuente» link; a fallback line (failure set) was not written from it.
+                AddMessageCore(
+                    "BAXY",
+                    text,
+                    isUser: false,
+                    PublicResponseRoute.FromDraft(pending.Draft),
+                    failure is null ? ConsultedSource.From(pending.Facts) : null);
                 RestorePresentationState();
             });
 
@@ -3476,7 +3483,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         string speaker,
         string body,
         bool isUser,
-        string? route = null)
+        string? route = null,
+        string? sourceUrl = null)
     {
         // Sólo se descarta una repetición literal. Descartar cualquier segundo
         // mensaje de BAXY hacía desaparecer en silencio avisos distintos —el
@@ -3495,7 +3503,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             body,
             isUser,
             DateTimeOffset.Now,
-            route);
+            route,
+            sourceUrl);
         Messages.Add(message);
         MessageAdded?.Invoke(message);
         // Registro privado de la conversación (dueño, 2026-09-20): texto, ruta y
