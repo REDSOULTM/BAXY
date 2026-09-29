@@ -38,7 +38,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from fractions import Fraction
 from pathlib import Path
-from typing import Any, Callable, Iterable
+from typing import Any, Callable, Iterable, NamedTuple
 from urllib.parse import parse_qs, urlparse
 
 from . import corrector
@@ -54,6 +54,7 @@ from .semantic.network import (
 from .semantic.web import (
     weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
     weather_asks_coming_days, weather_asks_week, weather_sun_events_asked, place_containers, searched_clause,
+    ASKED_UNCONFIRMED_WORDS, asked_dimension_words,
 )
 from .semantic.temporal import (
     _DAY_WORDS, clock_elsewhere, clock_later_asked, named_clock_dial, plural_alarm_cancellation,
@@ -8737,13 +8738,16 @@ _SMALL_NUMBER_WORDS = {
 }
 
 
+# A number of a report; one glued to letters is part of a name («24timezones.com», «PM2.5»).
+_REPORT_NUMBER = re.compile(r"(?<![\w.,:+-])\d+(?:[.,:]\d+)*(?!\w)")
+
+
 def _search_report_unsourced_numbers(sentence: str, grounds: str) -> list[str]:
     """The numbers of a report sentence that neither the pages it cites nor the request write."""
 
     folded_grounds = _reading_fold(grounds)
     missing: list[str] = []
-    # A number glued to letters is part of a name («24timezones.com», «PM2.5»).
-    for number in re.findall(r"(?<![\w.,:+-])\d+(?:[.,:]\d+)*(?!\w)", sentence):
+    for number in _REPORT_NUMBER.findall(sentence):
         forms = {number, number.replace(",", "."), number.replace(".", ","), re.sub(r"[.,]", "", number)}
         if any(
             re.search(r"(?<![\d.,])" + re.escape(form) + r"(?![\d]|[.,]\d)", folded_grounds)
@@ -8779,6 +8783,43 @@ _CURRENCY_SIGN_NAMES = {
 }
 
 
+# M70 (held-out v3h t14 «averiguá qué dijo la crítica»): «Otra menciona que John Carpenter no se subió a los elogios» over
+# the title «John Carpenter no se sube a los elogios de Oppenheimer» died on «subio»: a stem whose tense changes at its
+# fourth letter («sub-ió», «sub-e») escaped the four-letter rule. The endings a word takes when conjugated or declined.
+_INFLECTION_ENDINGS = frozenset(
+    {
+        "", "a", "e", "o", "i", "s", "as", "es", "os", "an", "en", "io", "ia", "ias", "ian", "aba", "aban", "ado",
+        "ada", "ados", "adas", "ido", "ida", "idos", "idas", "aron", "ieron", "amos", "emos", "imos", "ed", "ing",
+    }
+)
+
+
+def _shares_inflected_stem(word: str, seen_word: str) -> bool:
+    """«subio» and «sube», «lamento» and «lamenta»: two folded words of four letters or more that share their first
+    three letters and all but one letter of the shorter, and differ only by an ending of conjugation or declension
+    («ganso» and «gana», «casino» and «casa», «salto» and «salsa» do not)."""
+
+    if min(len(word), len(seen_word)) < 4:
+        return False
+    common = len(os.path.commonprefix((word, seen_word)))
+    return (
+        common >= max(3, min(len(word), len(seen_word)) - 1)
+        and word[common:] in _INFLECTION_ENDINGS
+        and seen_word[common:] in _INFLECTION_ENDINGS
+    )
+
+
+class _ReportSentence(NamedTuple):
+    """One sentence of a search report, measured against the pages and the request."""
+
+    not_found: bool
+    numbers: list[str]  # its numbers that neither the pages nor the request write
+    lettered: list[str]  # its content words that no page and no request shares
+    content: int  # how many content words it has
+    named: bool  # a content word or a number of it is the pages' or the request's
+    translated: bool  # it says in its language what pages in the other language say
+
+
 def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> list[str]:
     """The words of the report that no result and no request shares.
 
@@ -8797,6 +8838,37 @@ def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> 
     checked whatever its words.
     """
 
+    words: list[str] = []
+    for sentence in _search_report_sentences(text, payload, user_text):
+        if sentence.not_found:
+            # Uso real tanda 6 «…¿qué hora será?»: «No se indica la hora exacta de la salida del sol» died on
+            # «exacta» and the turn ended in ⚠. Saying what was not found claims nothing of the world; its numbers
+            # are still the pages' or the person's.
+            words.extend(number for number in sentence.numbers if number not in words)
+            continue
+        lettered = sentence.lettered
+        if sentence.translated or (len(lettered) == 1 and sentence.content >= 8):
+            lettered = []
+        words.extend(word for word in sentence.numbers + lettered if word not in words)
+    return words
+
+
+def _search_report_names_nothing(text: str, payload: dict, user_text: str) -> bool:
+    """M70 (held-out v3h t14 «averiguá qué dijo la crítica»): over five pages about the critics of Oppenheimer the
+    third draft «Nadie lo dijo.» was published. A report of a search that found pages, none of whose sentences names a
+    word or a number of the pages or of the request, says nothing of what was looked up; when no draft can say it, the
+    turn ends in the not-found that names it. Saying it was not found, and a translation, are judged elsewhere."""
+
+    sentences = _search_report_sentences(text, payload, user_text)
+    return bool(sentences) and not any(
+        sentence.not_found or sentence.named or sentence.translated for sentence in sentences
+    )
+
+
+def _search_report_sentences(text: str, payload: dict, user_text: str) -> list[_ReportSentence]:
+    """The sentences of the report of a verified search, each measured against the pages and the request; empty
+    without results."""
+
     results_text = _search_results_text(payload)
     if results_text is None:
         return []
@@ -8804,9 +8876,12 @@ def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> 
     # Tanda 4c: the city this PC's search was made near, and saying it was near, are observed too.
     near = seen.get("near") if isinstance(seen, dict) and isinstance(seen.get("near"), str) else ""
     near_voice = f"{near} cerca near" if near.strip() else ""
+    query = str(seen.get("query") or "") if isinstance(seen, dict) else ""
+    # M70 (held-out v3h t16): what a question of when, where or how much asks for is part of what was asked.
+    asked = asked_dimension_words(f"{user_text or ''}\n{query}")
     observed = set(re.findall(r"[a-z]+", _reading_fold(results_text))) | set(
         re.findall(r"[a-z]+", _reading_fold(f"{user_text} {near_voice}"))
-    )
+    ) | asked
     # M54 (v3b-final F-w13-t2 «40 litros de nafta súper cuestan 82.360 pesos» over «$82.360»): a currency sign the
     # pages write is said with its name.
     for sign, names in _CURRENCY_SIGN_NAMES.items():
@@ -8828,23 +8903,31 @@ def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> 
 
     # M62 (F-w13-t2): the total BAXY computed from a unit price read is a figure of the read too.
     computed = " ".join(item.sentence for item in semantic_quantities.priced_totals(user_text or "", results_text))
-    words: list[str] = []
+    # M70: the words the pages and the request write (no link, and not the query the mind sent), for the inflection
+    # of a changing stem.
+    written = set(re.findall(r"[a-z]+", _reading_fold(f"{page_text(results)}\n{user_text or ''}")))
+    sentences: list[_ReportSentence] = []
     for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip()):
         numbers = _search_report_unsourced_numbers(
             sentence, page_text(results) + "\n" + (user_text or "") + "\n" + computed,
         )
-        if _SEARCH_NOT_FOUND.match(_reading_fold(sentence)) is not None:
-            # Uso real tanda 6 «…¿qué hora será?»: «No se indica la hora exacta de la salida del sol» died on
-            # «exacta» and the turn ended in ⚠. Saying what was not found claims nothing of the world; its numbers
-            # are still the pages' or the person's.
-            words.extend(number for number in numbers if number not in words)
+        grounded = len(_REPORT_NUMBER.findall(sentence)) > len(numbers)
+        folded = _reading_fold(sentence)
+        if _SEARCH_NOT_FOUND.match(folded) is not None:
+            sentences.append(_ReportSentence(True, numbers, [], 0, grounded, False))
             continue
+        said = re.findall(r"[a-z]+", folded)
+        # M70 (held-out v3h t16): «No hay fecha de estreno confirmada», «sin confirmar una fecha»: that the asked date,
+        # place or amount is not confirmed yet says what was not found.
+        unconfirmed = bool(asked & set(said)) and re.search(_SEARCH_RESULT_NEGATION, folded) is not None
         content = 0
+        shared = 0
         lettered: list[str] = []
-        for word in re.findall(r"[a-z]+", _reading_fold(sentence)):
+        for word in said:
             if (
                 len(word) < 5
                 or word in _SEARCH_REPORT_GRAMMAR_WORDS
+                or (unconfirmed and word in ASKED_UNCONFIRMED_WORDS)
                 # The report's own voice, conjugated: «incluyendo», «explicando».
                 or any(
                     word.startswith(own) and len(word) - len(own) <= 4
@@ -8858,11 +8941,14 @@ def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> 
             # «envío»), and a short observed word may take its plural
             # («yenes» for «yen»); a word no result shares that much is the
             # model's.
-            if word in lettered or any(
+            if word in lettered:
+                continue
+            if any(
                 seen_word.startswith(word[:4])
                 or (len(seen_word) >= 3 and word.startswith(seen_word) and len(word) - len(seen_word) <= 2)
                 for seen_word in observed
-            ):
+            ) or any(_shares_inflected_stem(word, seen_word) for seen_word in written):
+                shared += 1
                 continue
             lettered.append(word)
         language = _text_language(sentence)
@@ -8873,10 +8959,8 @@ def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> 
             and content >= 4
             and all(_text_language(page_text([item])) not in (None, language) for item in results)
         )
-        if translated or (len(lettered) == 1 and content >= 8):
-            lettered = []
-        words.extend(word for word in numbers + lettered if word not in words)
-    return words
+        sentences.append(_ReportSentence(False, numbers, lettered, content, grounded or shared > 0, translated))
+    return sentences
 
 
 def _search_report_unsourced_claim(text: str, payload: dict, user_text: str) -> bool:
@@ -8999,7 +9083,17 @@ _SEARCH_MECHANICS = re.compile(
     # Guion t35 (28-09) «Un resultado dice que la primera obra … mientras que otro afirma …»: results compared aloud
     # are the search shown.
     r"(?:un|otro|el\s+primer|el\s+segundo)\s+resultado|otro\s+(?:dice|afirma|indica|sostiene)|"
-    r"(?:one|another|the\s+first|the\s+second)\s+result|another\s+(?:says|states|claims))\b"
+    r"(?:one|another|the\s+first|the\s+second)\s+result|another\s+(?:says|states|claims)|"
+    # M70 (held-out v3h t14/t16): once «subió» and «fecha» stopped vetoing them, «Cierta página señala que el nieto…
+    # Otra menciona que John Carpenter…» and «Un artículo de La Vanguardia indica que…» would have been published: a
+    # page, article or source that speaks, or «otra» that says, is the search shown the same.
+    r"(?:un|una|otro|otra|cierto|cierta|algun|alguna|el|la|este|esta|ese|esa)\s+"
+    r"(?:pagina|articulo|nota|fuente|sitio|medio|publicacion|reportaje)(?:\s+(?:de|del)(?:\s+[a-z0-9]+){1,3}?)?\s+"
+    r"(?:dice|indica|senala|menciona|afirma|sostiene|asegura|informa|explica|cuenta|reporta|comenta)|"
+    r"otra\s+(?:dice|afirma|indica|sostiene|menciona|senala|asegura|cuenta)|"
+    r"(?:one|another|an?|the|this|that)\s+(?:page|article|source|site|outlet|piece)(?:\s+(?:from|by|on)(?:\s+[a-z0-9]+)"
+    r"{1,3}?)?\s+(?:says|states|claims|mentions|notes|reports|explains|indicates)|"
+    r"another\s+(?:mentions|notes|reports|indicates))\b"
 )
 # Tanda 7 «No se menciona ningún famoso…», «No se indica cuánto tiempo queda…»: an absence told as what a text does
 # not say narrates the pages that were read. The owner's not-found is «No lo encontré».
@@ -9043,10 +9137,20 @@ def _search_not_found_report(text: str, situation: dict) -> bool:
         return False
     folded = _accent_folded_with_punctuation(text)
     clauses = re.split(r"[.;:!?\n]+|,\s*(?:but|pero|and|y)\b", folded)
-    found = [clause for clause in clauses if _SEARCH_NOT_FOUND_CLAUSE.search(clause)]
+    # M70 (held-out v3h t16 «¿Cuándo sale la próxima temporada…?» → «…sin confirmar una fecha de estreno»): that the
+    # date, place or amount asked is not confirmed yet is the not-found of that search, not a failure of BAXY's.
+    asked = asked_dimension_words(str(_merged_observed(situation).get("query") or ""))
+
+    def not_found(clause: str) -> bool:
+        return _SEARCH_NOT_FOUND_CLAUSE.search(clause) is not None or (
+            bool(asked & set(re.findall(r"[a-z]+", _reading_fold(clause))))
+            and re.search(_SEARCH_RESULT_NEGATION, _reading_fold(clause)) is not None
+        )
+
+    found = [clause for clause in clauses if not_found(clause)]
     if not found:
         return False
-    rest = " . ".join(clause for clause in clauses if not _SEARCH_NOT_FOUND_CLAUSE.search(clause))
+    rest = " . ".join(clause for clause in clauses if not not_found(clause))
     return not _asserts_failure(rest)
 
 
@@ -9529,7 +9633,7 @@ _SEARCH_ABSENCE_CLAIM = re.compile(
 _SEARCH_RESULT_NEGATION = r"(?:\b(?:no|not|sin|ningun[oa]?|none|never|nunca|without|nadie|nothing|nada)\b|n't\b)"
 
 
-def _search_report_absence_claim(text: str, payload: dict) -> bool:
+def _search_report_absence_claim(text: str, payload: dict, user_text: str = "") -> bool:
     """A sentence of the report says a thing does not exist or is not offered, and no result denies one of its words
     (a negation at most three words before it: «sin servicio a domicilio», «no hay aparcamiento»)."""
 
@@ -9540,9 +9644,15 @@ def _search_report_absence_claim(text: str, payload: dict) -> bool:
         for item in _search_results_of(payload)
         if isinstance(item, dict)
     ]
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    asked = asked_dimension_words(f"{user_text or ''}\n{seen.get('query') or ''}")
     for sentence in re.split(r"(?<=[.!?;])\s+", str(text).strip()):
         folded = _reading_fold(sentence)
         if _SEARCH_NOT_FOUND.match(folded) is not None or _SEARCH_ABSENCE_CLAIM.search(folded) is None:
+            continue
+        if any(asked & set(folded[claim.end():].split()[:3]) for claim in _SEARCH_ABSENCE_CLAIM.finditer(folded)):
+            # M70 (held-out v3h t16 «¿Cuándo sale la próxima temporada…?» → «No hay fecha de estreno confirmada…»):
+            # the absent thing is the date, place or amount asked; that is what was not found, not a fact of the world.
             continue
         words = {
             word for word in re.findall(r"[a-z]{5,}", folded)
@@ -10832,7 +10942,7 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         if _search_report_denies_found_places(text, payload):
             # M54: an OpenStreetMap place list is the answer, so neither «no lo encontré» nor «no hay» fits it.
             return "search_places_denied"
-        if _search_report_absence_claim(text, payload):
+        if _search_report_absence_claim(text, payload, user_text):
             return "search_report_absence_claim"
         if _search_report_off_subject(text, payload, user_text) or _search_report_from_no_pertinent_result(
             text, payload, user_text
@@ -10843,6 +10953,10 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
             return "search_report_proposal_as_fact"
         if _places_whole_address(text, payload, user_text):
             return "places_whole_address"
+        if _search_report_names_nothing(text, payload, user_text):
+            # M70 (held-out v3h t14): «Nadie lo dijo.» over five pages about the critics. After the specific defects,
+            # whose hints say better what to change.
+            return "search_report_names_nothing"
     written = seen.get("writtenText") if isinstance(seen, dict) else None
     if payload.get("operation") == "clipboard.write.text" and isinstance(written, str) and written:
         # CLIPBOARD1359: «Hola» / «Buen día.» were published after a verified
@@ -22301,6 +22415,16 @@ class LlmRuntime:
                     if response_language == "en"
                     else "Ningún resultado trata de lo que se preguntó: di brevemente, en una oración, que no lo "
                     "encontraste; no des datos de otra cosa."
+                ),
+                # M70 (held-out v3h t14 «Nadie lo dijo.»).
+                "search_report_names_nothing": (
+                    "Your reply names nothing of what was asked or of the results: in one or two sentences, say what "
+                    "the results state about what was asked, naming it; if none states it, say that you could not "
+                    "find it, naming what was asked."
+                    if response_language == "en"
+                    else "Tu respuesta no nombra nada de lo que se preguntó ni de los resultados: en una o dos "
+                    "oraciones, di lo que los resultados afirman sobre lo preguntado, nombrándolo; si ninguno lo "
+                    "dice, di que no lo encontraste, nombrando lo que se preguntó."
                 ),
                 "search_report_absence_claim": (
                     "No result says that it does not exist or is not offered: say only, briefly, that you could not "
