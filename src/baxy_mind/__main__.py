@@ -91,6 +91,7 @@ from .llm import (
     _literal_recall_reference,
     _merged_observed,
     _native_selection_description,
+    _previous_reply_fields,
     _situation_from_facts,
     served_capability_families,
     visible_reply_is_only_questions,
@@ -3246,6 +3247,27 @@ def _previous_reply(history: object) -> str | None:
     if not turns or turns[-1].get("role") != "assistant":
         return None
     return str(turns[-1]["content"]).strip()
+
+
+def _previous_reply_may_be_content(tool: dict, history: object) -> bool:
+    """M67b: BAXY's previous reply fits a long free-text field of the operation, so it may be the content.
+
+    The decider's values are bounded and may restate the content («el query de SQL») instead of carrying it; then
+    the extraction, which reads the reply, decides (M67), not the decider's values alone.
+    """
+
+    reply = _previous_reply(history)
+    if not reply:
+        return False
+    schema = tool.get("function", {}).get("parameters") if isinstance(tool, dict) else None
+    properties = schema.get("properties") if isinstance(schema, dict) else None
+    if not isinstance(properties, dict):
+        return False
+    strings = tuple(
+        name for name, contract in properties.items()
+        if isinstance(contract, dict) and contract.get("type") == "string" and "enum" not in contract
+    )
+    return bool(_previous_reply_fields(schema, strings, reply))
 
 
 def _decided_arguments_alone(
@@ -7377,7 +7399,7 @@ def _run_sidecar(
                 )
                 question = ""
                 said = _conversation_grounding_source(objective, message.get("history"))
-                if arguments is None:
+                if arguments is None and not _previous_reply_may_be_content(tool, message.get("history")):
                     # M42b: what the decider read, grounded in what was said, is enough on its own; the separate
                     # extraction call runs only when a required value is still missing.
                     arguments = _decided_arguments_alone(

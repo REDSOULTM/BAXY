@@ -326,3 +326,29 @@ def test_the_model_saying_none_still_asks(monkeypatch) -> None:
         monkeypatch, runtime, "clipboard.write.text", _CLIPBOARD_SCHEMA, _SQL_OBJECTIVE, _SQL_HISTORY,
     )
     assert result["ok"] is False and result["question"] == "¿Qué texto quieres copiar al portapapeles?"
+
+
+def test_m67b_a_short_restatement_from_the_decider_never_replaces_the_previous_reply(monkeypatch) -> None:
+    # M67b: the decider may restate the content («el query de SQL de usuarios activos») within its bound; that text
+    # grounds in its own request, so alone it would be copied instead of the query. With a reply that can be the
+    # content, the extraction, which reads the reply, decides.
+    monkeypatch.setattr(sidecar, "_DECIDED_ARGUMENTS", {})
+    sidecar._remember_decided_arguments(
+        _SQL_OBJECTIVE, ("clipboard.write.text",), (("text", "el query de SQL de usuarios activos del último mes"),),
+    )
+    runtime = _runtime({
+        "previous_reply_field": "text", "previous_reply_part": "code",
+        "grounded": False, "arguments": None, "fallback_question": "¿Qué texto quieres copiar al portapapeles?",
+    })
+    runtime.formulate_missing_argument_question = MagicMock(side_effect=AssertionError("nothing is asked"))
+    result = _run_arguments(
+        monkeypatch, runtime, "clipboard.write.text", _CLIPBOARD_SCHEMA, _SQL_OBJECTIVE, _SQL_HISTORY,
+    )
+    assert result["ok"] is True and result["arguments"] == {"text": _SQL_V2}
+
+
+def test_m67b_without_a_previous_reply_the_decider_values_still_settle_the_arguments() -> None:
+    tool = _tool("clipboard.write.text", _CLIPBOARD_SCHEMA)
+    assert sidecar._previous_reply_may_be_content(tool, _SQL_HISTORY) is True
+    assert sidecar._previous_reply_may_be_content(tool, [{"role": "user", "content": "copia hola"}]) is False
+    assert sidecar._previous_reply_may_be_content(_tool("web.search", _SEARCH_SCHEMA), _SQL_HISTORY) is False
