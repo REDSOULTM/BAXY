@@ -354,12 +354,9 @@ internal static class ModelMessageComposer
                 : english ? " on YouTube" : " en YouTube";
             text = english ? $"Now playing «{title}»{where}." : $"Está sonando «{title}»{where}.";
         }
-        else if (operation == "web.search" && rejectedText is not null)
-        {
-            // Owner rule 2026-09-24: what no draft could say from the pages was not found. A mind that never
-            // answered proved nothing, so only refused drafts lead here.
-            text = english ? "I couldn't find it." : "No lo encontré.";
-        }
+        // A search the App could not phrase has no fixed sentence here: the owner's zero-fixed-visible-prose census
+        // (A7 had put «No lo encontré.» in this place) keeps that wording in the mind, whose not-found fallback is
+        // written from the turn; the App's own last resort only states values it observed.
 
         if (text is null)
         {
