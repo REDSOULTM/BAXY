@@ -89,7 +89,28 @@ def _weather_location(text: str) -> str | None:
         ):
             continue
         return place
-    return None
+    return weather_destination_there(text)
+
+
+# M58 (v3d-final F-w15-t1 «este weekend me voy a San Antonio con unos friends, like, can you check el weather para el
+# sábado allá?» → the weather of this PC's town, Curicó): «allá / there» points at the place the person said they
+# are going to in the same message. Only a name (capitals) after a verb of going; the weather of «allá» with no such
+# place stays this read's own question.
+_THERE = r"\b(?:alla|alli|ahi|there|over\s+there)\b"
+_GOING_TO = re.compile(
+    r"\b(?:me\s+voy|nos\s+vamos|voy|vamos|viajo|viajamos|ire|iremos|going|heading|headed|traveling|travelling|"
+    r"flying|driving|trip)\s+(?:a|al|para|to|hacia)\s+"
+    r"(?P<place>[A-ZÁÉÍÓÚÑ][\w'’-]*(?:\s+(?:(?:de|del|de\s+la|de\s+los|de\s+las)\s+)?[A-ZÁÉÍÓÚÑ][\w'’-]*)*)"
+)
+
+
+def weather_destination_there(text: str) -> str | None:
+    """The place «allá / there» points at: the one the message says the person is going to."""
+
+    if not _has(_fold(text), _THERE):
+        return None
+    places = {found.group("place") for found in _GOING_TO.finditer(str(text))}
+    return places.pop() if len(places) == 1 else None
 
 
 # Tanda 7 «¿Va a llover tomorrow at my sister's?» was answered for this PC's town as «en casa de tu hermana»: a

@@ -43,8 +43,16 @@ from .semantic.apps import deictic_close_request
 from .semantic import levels as semantic_levels
 from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
+from .semantic import temporal as semantic_temporal
+from .semantic.system import weather_destination_there
 from .semantic.patterns import output_level_request
-from .semantic.web import asks_for_information, near_the_person, news_lookup_query
+from .semantic.web import (
+    asks_for_information,
+    near_the_person,
+    news_lookup_query,
+    place_fixed_by_conversation,
+    place_query_in_conversation,
+)
 from .semantic.windows import start_menu_request
 from .corrector import catalog_correction_terms
 from .first_signal import (
@@ -3243,6 +3251,12 @@ def _ground_explicit_arguments(
 ) -> dict[str, object] | None:
     """Return a complete schema-grounded literal or abstain without inference."""
 
+    if operation == "notification.schedule" and (change := semantic_temporal.notification_change(evidence)) is not None:
+        # M58 (v3d-final F-s019, F-s044, F-s095): the new time of a moved alarm, timer or reminder, its kind and what
+        # it is for, read from the change the person asked for; the cancellation is its own step.
+        moved = change.schedule_arguments()
+        moved = _normalize_grounded_operation_arguments(operation, moved, moved["dueUtc"])
+        return moved if moved is not None and validate_json_schema_instance(moved, schema) else None
     if operation == "web.search":
         reference = _reference_lookup(evidence, history)
         if reference is not None:
@@ -3400,6 +3414,14 @@ def _ground_explicit_arguments(
             explicit = _explicit_arguments_from_evidence(
                 operation, completed, application_names, game_catalog,
             )
+    if explicit is None and operation in {"notification.schedule", "reminder.create"}:
+        return _timed_task_arguments(operation, evidence, history, schema)
+    if operation == "weather.current" and explicit is not None and explicit.get("location") is None:
+        # M58 (v3d-final F-w15-t1): the weather clause says «allá»; the place is the one the whole message says the
+        # person is going to («me voy a San Antonio»). Never this PC's town in its place.
+        there = weather_destination_there(evidence)
+        if there is not None:
+            explicit = {**explicit, "location": there}
     if explicit is None:
         return None
     if operation == "notification.schedule" and "recurrence" in explicit:
@@ -3538,6 +3560,9 @@ def _ground_explicit_arguments(
         "media.control",
         "media.play.query",
         "media.play.youtube",
+        # D39 (M58): the clock reader of a cancellation owns hour, minute and period; «las 7:05» grounded
+        # its minute as the literal «5», which «05» never is, and the minute was dropped (7:00 cancelled).
+        "notification.cancel.at",
         # VIDEO1929 H0737 «quiero ver stranger things en nerflix»: el extractor
         # conserva el título literal y aporta el único servicio del catálogo;
         # exigir que «netflix» apareciera escrito tal cual tiraba esa lectura y
@@ -3585,6 +3610,60 @@ def _ground_explicit_arguments(
         if normalized is not None and validate_json_schema_instance(normalized, schema)
         else None
     )
+
+
+def _timed_task_arguments(
+    operation: str, evidence: str, history: object, schema: dict[str, object],
+) -> dict[str, object] | None:
+    """M58 (v3d-final F-s011 «Reanudar el ejercicio en 5 minutos, mejor en 10 minutos» → «¿cuándo y en qué
+    formato?»): a thing to do at a time, said with no alarm or reminder noun, for an operation already decided to be a
+    notification. It is a reminder of that thing at the one time kept (the last of a corrected pair), read from the
+    request or, when the restatement lost it, from the person's own message."""
+
+    said = [evidence]
+    if isinstance(history, list):
+        said += [
+            str(item.get("content") or "") for item in reversed(history)
+            if isinstance(item, dict) and item.get("role") == "user"
+        ][:1]
+    task = next((found for text in said if (found := semantic_temporal.timed_task(text)) is not None), None)
+    if task is None:
+        return None
+    arguments: dict[str, object] = {"dueUtc": task.due, "title": task.title}
+    if operation == "notification.schedule":
+        arguments["kind"] = "reminder"
+    arguments = _normalize_grounded_operation_arguments(operation, arguments, task.due)
+    return arguments if arguments is not None and validate_json_schema_instance(arguments, schema) else None
+
+
+def _with_conversation_place(
+    operation: str, arguments: object, history: object, schema: dict[str, object],
+) -> object:
+    """M58 (v3d-final F-p05-t3, F-p06-t3): a place named alone in a place search or a weather read carries the town
+    the conversation already fixed for it (``semantic.web.place_fixed_by_conversation``); what the message names with
+    its own town, or anything else, is left as it came."""
+
+    if not isinstance(arguments, dict) or not isinstance(history, list):
+        return arguments
+    # The last message of the person is this turn's own; the town comes from the ones before it.
+    said_before = [
+        str(item.get("content") or "") for item in reversed(history)
+        if isinstance(item, dict) and item.get("role") == "user"
+    ][1:]
+    placed = dict(arguments)
+    if operation == "web.search" and isinstance(arguments.get("query"), str) and not arguments.get("nearby"):
+        query = place_query_in_conversation(arguments["query"], said_before)
+        if query is None:
+            return arguments
+        placed["query"] = query
+    elif operation == "weather.current" and isinstance(arguments.get("location"), str):
+        town = place_fixed_by_conversation(arguments["location"], said_before)
+        if town is None:
+            return arguments
+        placed["location"] = f"{arguments['location']}, {town}"
+    else:
+        return arguments
+    return placed if validate_json_schema_instance(placed, schema) else arguments
 
 
 def _fold_with_source_offsets(value: str) -> tuple[str, tuple[int, ...]]:
@@ -4347,6 +4426,29 @@ def _prepare_turn_result(
     conversation left so far (the serve loop owns it); it is read, never written, here.
     """
 
+    accepted_cancellation = (
+        dialogue_state.accepted_alarm_cancellation(str(message.get("text", "")))
+        if dialogue_state is not None
+        else None
+    )
+    if accepted_cancellation is not None:
+        # D39 (owner, 2026-09-29): «sí» to «Tienes 3 alarmas (…). ¿Las cancelo todas?» is the cancellation of each
+        # alarm read, said as one request («cancela la alarma de las 7:00 de la mañana y …») that every reader reads.
+        history = list(message.get("history") or [])
+        if history and isinstance(history[-1], dict) and history[-1].get("role") == "user":
+            history[-1] = {**history[-1], "content": accepted_cancellation}
+        result = _decide_turn_result(
+            {**message, "text": accepted_cancellation, "history": history, "pendingObjective": None},
+            llm=llm,
+            planner_catalog=planner_catalog,
+            encoder=encoder,
+            tool_by_name=tool_by_name,
+            application_names=application_names,
+            game_catalog=game_catalog,
+            on_signal=on_signal,
+        )
+        result.setdefault("objective", accepted_cancellation)
+        return result
     if dialogue_slot.read_slot({}, message.get("history") or [], str(message.get("text", ""))).antecedents:
         return _decide_turn_result(
             message,
@@ -7207,6 +7309,9 @@ def _run_sidecar(
                         trusted_source=objective if decided_arguments is None else said,
                         **language_argument,
                     )
+                arguments = _with_conversation_place(
+                    operation, arguments, message.get("history"), tool["function"]["parameters"],
+                )
                 write_request_message(
                     {
                         "type": "arguments.result",

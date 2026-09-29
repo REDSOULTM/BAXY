@@ -229,6 +229,38 @@ public sealed class OpenMeteoWeatherAdapterTests
         Assert.That(receipt.Result!.Value.GetProperty("country").GetString(), Is.EqualTo("Estados Unidos"));
     }
 
+    // M58 (v3d-final F-p07-t1/t2 «I must verify the weather in Foster City later today», the
+    // service's real answers of 2026-09-28): Foster City, Michigan comes first and has no population;
+    // Foster City, California was meant. Among places of the asked name the most populous is read;
+    // «Lugar, Región» reads the one in that region.
+    private const string FosterCityEs =
+        """{"results":[{"id":4993198,"name":"Foster City","latitude":45.96329,"longitude":-87.74402,"feature_code":"PPL","admin1_id":5001836,"country":"Estados Unidos","admin1":"Michigan"},{"id":5350159,"name":"Foster City","latitude":37.55855,"longitude":-122.27108,"feature_code":"PPL","admin1_id":5332921,"population":33477,"country":"Estados Unidos","admin1":"California"},{"id":5350157,"name":"Foster City Recreation Center","latitude":37.55716,"longitude":-122.27025,"feature_code":"PRK","admin1_id":5332921,"country":"Estados Unidos","admin1":"California"}]}""";
+
+    private const string FosterCityEn =
+        """{"results":[{"id":4993198,"name":"Foster City","latitude":45.96329,"longitude":-87.74402,"feature_code":"PPL","admin1_id":5001836,"country":"United States","admin1":"Michigan"},{"id":5350159,"name":"Foster City","latitude":37.55855,"longitude":-122.27108,"feature_code":"PPL","admin1_id":5332921,"population":33477,"country":"United States","admin1":"California"},{"id":5350157,"name":"Foster City Recreation Center","latitude":37.55716,"longitude":-122.27025,"feature_code":"PRK","admin1_id":5332921,"country":"United States","admin1":"California"}]}""";
+
+    [TestCase("Foster City", "California")]
+    [TestCase("Foster City, Michigan", "Michigan")]
+    [TestCase("Foster City, California", "California")]
+    public async Task ThePlaceOfTheAskedNameIsTheMostPopulousOrTheOneInTheRegionSaid(
+        string asked, string region)
+    {
+        var urls = new List<string>();
+        var adapter = new OpenMeteoWeatherAdapter(Service(FosterCityEs, FosterCityEn, asked: urls));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current", JsonSerializer.SerializeToElement(new { location = asked }), CancellationToken.None);
+
+        Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Result!.Value.GetProperty("location").GetString(), Is.EqualTo("Foster City"));
+            Assert.That(receipt.Result!.Value.GetProperty("region").GetString(), Is.EqualTo(region));
+            Assert.That(urls.First(url => url.Contains("geocoding", StringComparison.Ordinal)),
+                Does.EndWith("name=Foster%20City"), "the region said is not sent as part of the name");
+        });
+    }
+
     [Test]
     public async Task APlaceKnownOnlyByAnAliasOfAnotherIsNotFound()
     {

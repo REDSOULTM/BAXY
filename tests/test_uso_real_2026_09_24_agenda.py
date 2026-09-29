@@ -332,7 +332,8 @@ def test_a_repetition_no_alarm_or_reminder_holds_is_asked(text: str, operation: 
          ("am_pm_or_part_of_day_for_supplied_hour",)),
         ("establecer un recordatorio para el domingo ir al mercado a las nueve", "reminder.create",
          ("am_pm_or_part_of_day_for_supplied_hour",)),
-        ("quita todas mis alarmas", "notification.cancel.at", ("which_alarm",)),
+        # D39 (owner, 2026-09-29): «quita todas mis alarmas» (all of them, none said) is no longer asked: the alarms
+        # are read and offered with their times (tests/test_c03_d39_cancelar_alarmas.py). Alarms said which still are.
         ("delete my alarms for tomorrow", "notification.cancel.at", ("which_alarm",)),
         ("anota esta reunión en mi agenda", "calendar.event.create", ("event_title", "event_date_and_time")),
     ],

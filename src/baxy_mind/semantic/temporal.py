@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
 from .grammar import _PERCENTAGE_WORD_VALUES, _RELATIVE_DURATION_PATTERN, _fold, _has, _strip_request_envelope, spoken_cardinal
@@ -1180,3 +1181,223 @@ def agenda_window(folded: str, now: datetime) -> tuple[datetime, datetime] | Non
     if not windows:
         return now, now + timedelta(days=UPCOMING_DAYS)
     return windows[0] if len(windows) == 1 else None
+
+
+# --- A task at a time, and the change of a notification's time (M58) ---------------------------------------------
+# v3d-final F-s011 «Reanudar el ejercicio en 5 minutos, mejor en 10 minutos» asked «¿cuándo y en qué formato?»: the
+# decider chose notification.schedule and restated «en 10 minutos», but no reader took a task said without the word
+# «alarma» or «recordatorio», and the model's extraction abstained. F-s019 «Cambia la alarma despertador de las 8:00 a
+# las 9:00», F-s044 «change the reminder for the chef's table group from 3 to 4» and F-s095 «Cambia el temporizador a
+# una hora» asked the time back: a change is cancelling the one at the old time (or the last one) and setting the new.
+
+
+def _same_length_fold(text: str) -> str:
+    """``text`` lower-cased and without accents, one character for each character, so a span found here cuts the
+    person's own words."""
+
+    folded = []
+    for character in text:
+        base = "".join(part for part in unicodedata.normalize("NFKD", character) if not unicodedata.combining(part))
+        folded.append(base.lower() if len(base) == 1 else character.lower())
+    return "".join(folded)
+
+
+_RELATIVE_DUE = rf"(?:en|in|dentro\s+de|within)\s+{_RELATIVE_DURATION_PATTERN}"
+_TASK_TIME = re.compile(rf"\b(?:{_RELATIVE_DUE}|{CLOCK_PHRASE})(?=\s|$|[,;:.?!])")
+# What may stand between a time and the one that corrects it: «en 5 minutos, mejor en 10», «at 6, actually at 7».
+_TIME_CORRECTION = re.compile(
+    r"\s*[,;]?\s*(?:y\s+|and\s+)?(?:no\s*,?\s*)?(?:mejor(?:\s+dicho)?|digo|o\s+sea|perdon|rather|actually|i\s+mean|"
+    r"make\s+it|wait|no)\s*[,;]?\s*"
+)
+_NOTIFICATION_NOUN = (
+    r"\b(?:alarmas?|alarms?|alertas?|alerts?|temporizador(?:es)?|timers?|recordatorios?|reminders?|avisos?|"
+    r"despertador(?:es)?|notificacion(?:es)?|notifications?)\b"
+)
+
+
+@dataclass(frozen=True)
+class TimedTask:
+    """A thing to do and when, said without naming an alarm or a reminder: ``title`` in the person's words and
+    ``due`` the one time kept (the last of a corrected pair)."""
+
+    title: str
+    due: str
+
+
+def timed_task(text: str) -> TimedTask | None:
+    """«Reanudar el ejercicio en 5 minutos, mejor en 10 minutos» → TimedTask(«Reanudar el ejercicio», «en 10
+    minutos»). None when an alarm or reminder noun is said (their own readers read it), for a question, with two
+    times that are not a correction of each other, or with no task beside the time."""
+
+    folded = _same_length_fold(str(text or ""))
+    if "?" in text or re.search(_NOTIFICATION_NOUN, folded):
+        return None
+    times = list(_TASK_TIME.finditer(folded))
+    if not times or any(
+        _TIME_CORRECTION.fullmatch(folded[before.end():after.start()]) is None
+        for before, after in zip(times, times[1:])
+    ):
+        return None
+    title = " ".join(f"{text[:times[0].start()]} {text[times[-1].end():]}".split()).strip(" ,;:.!¡¿")
+    # «Recuérdame llamar a Ana en 10 minutos»: the order to remind is not what is reminded.
+    title = re.sub(
+        r"^(?:(?:por\s+favor|please)\s*,?\s+)?(?:recu[eé]rd(?:a|ame)|record[aá]me|av[ií]same|ac[uú]erdate|"
+        r"remind\s+me|remember)\s+(?:de\s+|que\s+|to\s+)?|^(?:que|to)\s+",
+        "", title, flags=re.IGNORECASE,
+    )
+    if not re.match(r"[^\W\d_]", title) or len(title) > 160 or _TASK_TIME.search(_same_length_fold(title)):
+        return None
+    return TimedTask(title, " ".join(text[times[-1].start():times[-1].end()].split()))
+
+
+_CHANGE_CLOCK = rf"{_CLOCK_HOUR}{_CLOCK_MINUTES}?(?:\s*{_CLOCK_PERIOD})?"
+_CHANGE_NOUN = r"(?P<noun>alarma|alerta|temporizador|recordatorio|aviso|despertador|alarm|alert|timer|reminder)"
+_REMINDER_NOUNS = frozenset({"recordatorio", "aviso", "reminder"})
+_MASCULINE_NOUNS = frozenset({"temporizador", "recordatorio", "aviso", "despertador"})
+_NOTIFICATION_CHANGE = (
+    re.compile(
+        r"^(?:(?:por\s+favor|oye|baxy)\s*,?\s+)*(?:cambia(?:me|la|lo)?|cambie|cambiar|mueve(?:me|la|lo)?|mover|"
+        r"pasa(?:me|la|lo)?|pasar|modifica(?:la|lo)?|modificar|atrasa(?:me|la|lo)?|adelanta(?:me|la|lo)?)\s+"
+        rf"(?:(?:la|el|mi|tu)\s+)?{_CHANGE_NOUN}(?P<title>(?:\s+(?!de\s+las?\s)[^\d,;]+?)?)"
+        rf"(?:\s+de\s+(?:las?\s+)?(?P<old>{_CHANGE_CLOCK}))?"
+        rf"\s+(?:a|para)\s+(?:(?:las?|una?)\s+)?(?P<new>{_RELATIVE_DURATION_PATTERN}|{_CHANGE_CLOCK})"
+        r"(?:\s*,?\s*(?:por\s+favor|porfa|please))?[\s.!]*$"
+    ),
+    re.compile(
+        r"^(?:(?:please|hey|baxy)\s*,?\s+)*(?:change|move|reschedule|push|shift|switch|update)\s+"
+        rf"(?:(?:the|my)\s+)?{_CHANGE_NOUN}(?P<title>(?:\s+(?:for|about|of|to)\s+[^\d,;]+?)?)"
+        rf"(?:\s+from\s+(?P<old>{_CHANGE_CLOCK}))?"
+        rf"\s+to\s+(?:an?\s+)?(?P<new>{_RELATIVE_DURATION_PATTERN}|{_CHANGE_CLOCK})"
+        r"(?:\s*,?\s*please)?[\s.!]*$"
+    ),
+)
+
+
+# D39 (owner, 2026-09-29; v3d-final F-s040 «Cancela las alarmas, por favor.» → «¿Qué alarma deseas cancelar?»): the
+# alarms named in the plural without saying which are read first, and BAXY offers to cancel all of them with the list
+# («Tienes 3 alarmas (7:00, 8:30 y 12:00). ¿Las cancelo todas?»); they are cancelled only when the person says yes.
+# This replaces the plural branch of the which-alarm clarification of uso real 2026-09-24. A plural that says which
+# («mis alarmas de la mañana», «my alarms for tomorrow», «las de las 7») is still asked.
+_PLURAL_ALARM_CANCELLATION = re.compile(
+    r"^(?:(?:por\s+favor|porfa|oye|baxy|please|hey)\s*,?\s+)*"
+    r"(?:apaga(?:me)?|quita(?:me)?|borra(?:me)?|elimina(?:me)?|cancela(?:me)?|desactiva(?:me)?|remove|delete|cancel|"
+    r"turn\s+off|clear|disable)\s+"
+    r"(?:(?:mis|las|todas\s+(?:mis|las)|my|the|all(?:\s+(?:of\s+)?(?:my|the))?)\s+)?(?:alarmas|alarms)"
+    r"(?:\s*,?\s*(?:por\s+favor|porfa|please))?[\s.!]*$"
+)
+
+
+def plural_alarm_cancellation(text: str) -> bool:
+    """«Cancela las alarmas», «quita todas mis alarmas», «cancel my alarms»: every alarm, none said (D39)."""
+
+    return _PLURAL_ALARM_CANCELLATION.match(_strip_request_envelope(_fold(str(text or ""))).strip()) is not None
+
+
+# D39: the yes to the offer («sí», «dale», «sí, cancélalas todas», «yes, all of them»); anything else is not it.
+_ALARM_OFFER_ASSENT = re.compile(
+    r"^[¿?¡!\s]*(?:si|dale|ok|okey|okay|bueno|claro|por\s+favor|yes|yeah|yep|sure|please|go\s+ahead|do\s+it|hazlo|"
+    r"hacelo|todas|all\s+of\s+them|cancelalas|cancela(?:las)?\s+todas|borralas|quitalas|cancel\s+(?:them|all)(?:\s+of\s+them)?)"
+    r"(?:[,\s]+(?:si|dale|por\s+favor|please|hazlo|hacelo|todas(?:\s+ellas)?|all(?:\s+of\s+them)?|cancelalas(?:\s+todas)?|"
+    r"cancela(?:las)?\s+todas|borralas|quitalas|cancel\s+(?:them|all)(?:\s+of\s+them)?|go\s+ahead))*[\s.!]*$"
+)
+
+
+def assents_to_alarm_offer(text: str) -> bool:
+    return _ALARM_OFFER_ASSENT.match(_fold(str(text or "")).strip()) is not None
+
+
+def alarm_cancellation_request(clocks: tuple[tuple[int, int], ...], english: bool) -> str | None:
+    """The request that cancels each offered alarm by its local (hour, minute), one clause each, as the readers of a
+    cancellation read it; None with none, or with more than a plan can hold (eight steps). Each clock says its part
+    of the day, so the alarm at 7:00 is never the one at 19:00."""
+
+    if not clocks or len(clocks) > 8:
+        return None
+
+    def said(hour: int, minute: int) -> str:
+        if hour > 12 or (hour == 0 and not english):
+            return f"{hour}:{minute:02d}"
+        if english:
+            return f"{hour % 12 or 12}:{minute:02d} {'am' if hour < 12 else 'pm'}"
+        return f"{hour}:{minute:02d} {'de la mañana' if hour < 12 else 'de la tarde'}"
+
+    if english:
+        return " and ".join(f"cancel the alarm at {said(hour, minute)}" for hour, minute in clocks)
+    return " y ".join(
+        f"cancela la alarma de {'la' if hour == 1 else 'las'} {said(hour, minute)}" for hour, minute in clocks
+    )
+
+
+def _clock_article(clock: str) -> str:
+    """«la» before one o'clock, «las» before the others («de la una», «a las 9:00»)."""
+
+    return "la" if re.match(r"(?:1|una)\b", _fold(clock)) else "las"
+
+
+@dataclass(frozen=True)
+class NotificationChange:
+    """A notification moved to another time: which one (``kind``, the ``old`` clock as said or, without it, the last
+    one set) and when it rings now (``new_literal``, a clock or a duration from now)."""
+
+    english: bool
+    kind: str
+    noun: str
+    title: str
+    old: str | None
+    new_literal: str
+    duration: bool
+
+    def cancel_request(self) -> str:
+        """The cancellation, said the way the readers of a cancellation read it."""
+
+        masculine = self.noun in _MASCULINE_NOUNS
+        if self.old is None:
+            if self.english:
+                return f"cancel the last {self.noun}"
+            return f"cancela {'el último' if masculine else 'la última'} {self.noun}"
+        if self.english:
+            return f"cancel the {self.noun} at {self.old}"
+        return f"cancela {'el' if masculine else 'la'} {self.noun} de {_clock_article(self.old)} {self.old}"
+
+    def schedule_arguments(self) -> dict[str, str]:
+        """notification.schedule's arguments: the new moment as said (a duration counts from now; a clock without its
+        part of the day takes the old one's), the kind, and what it is for in the person's words."""
+
+        if self.duration:
+            due = f"{'in' if self.english else 'en'} {self.new_literal}"
+        else:
+            due = f"{'at' if self.english else 'a ' + _clock_article(self.new_literal)} {self.new_literal}"
+            old_period = re.search(_CLOCK_PERIOD, _fold(self.old)) if self.old else None
+            if old_period is not None and re.search(_CLOCK_PERIOD, _fold(self.new_literal)) is None:
+                due = f"{due} {old_period.group(0)}"
+        return {"dueUtc": due, "kind": self.kind, "title": " ".join(f"{self.noun} {self.title}".split())}
+
+
+def notification_change(text: str) -> NotificationChange | None:
+    """«Cambia la alarma despertador de las 8:00 a las 9:00», «change the reminder for the chef's table group from 3
+    to 4», «Cambia el temporizador a una hora»: the notification and its new time. None for anything else."""
+
+    said = " ".join(str(text or "").split())
+    folded = _same_length_fold(said)
+    for english, pattern in enumerate(_NOTIFICATION_CHANGE):
+        found = pattern.match(folded)
+        if found is None:
+            continue
+        lead = "at" if english else "a las"
+        if found.group("old") and len(spoken_clocks(f"{lead} {found.group('old')}")) != 1:
+            return None
+        new = found.group("new")
+        duration = re.fullmatch(_RELATIVE_DURATION_PATTERN, new) is not None
+        if not duration and len(spoken_clocks(f"{lead} {new}")) != 1:
+            return None
+        title = said[found.start("title"):found.end("title")].strip()
+        return NotificationChange(
+            english=bool(english),
+            kind="reminder" if found.group("noun") in _REMINDER_NOUNS else "alarm",
+            noun=said[found.start("noun"):found.end("noun")].lower(),
+            title=title,
+            old=said[found.start("old"):found.end("old")] if found.group("old") else None,
+            new_literal=said[found.start("new"):found.end("new")],
+            duration=duration,
+        )
+    return None
