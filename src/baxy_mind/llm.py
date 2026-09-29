@@ -161,7 +161,7 @@ from .semantic.notes import _PERSONAL_RECORD_STORE, names_an_own_record_store, n
 from .semantic.request import _conversation_response_language
 from .semantic.system import reports_the_gpu_stopped
 from .semantic.ui import asks_about_buttons, asks_to_see_the_screen
-from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_later_today, weather_asks_today
+from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_future, weather_asks_later_today, weather_asks_today
 
 
 MAX_CONTEXT_TOKENS = 12288
@@ -6972,11 +6972,24 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
             if not isinstance(seen.get("temperatureC"), (int, float)) or not isinstance(seen.get("condition"), str):
                 return ""
             temperature = _decimal_said(seen["temperatureC"], english)
-            return (
-                f"In {seen['location']} it is {temperature} °C now, {seen['condition']}."
+            now = (
+                f"In {seen['location']} it is {temperature} °C now, {seen['condition']}"
                 if english
-                else f"En {seen['location']} hay {temperature} °C ahora, {seen['condition']}."
+                else f"En {seen['location']} hay {temperature} °C ahora, {seen['condition']}"
             )
+            coming = seen.get("tomorrow") if weather_asks_future(user_text or "") else None
+            figures = [coming.get(key) for key in ("condition", "minC", "maxC", "rainProbabilityPercent")] if (
+                isinstance(coming, dict)
+            ) else []
+            if figures and isinstance(figures[0], str) and all(isinstance(value, (int, float)) for value in figures[1:]):
+                # M58 (v3d-final F-s066): asked in the future with no day, what is coming is tomorrow's read too.
+                low, high, rain = (_decimal_said(value, english) for value in figures[1:])
+                return (
+                    f"{now}; tomorrow: {figures[0]}, {low} to {high} °C, {rain}% chance of rain."
+                    if english
+                    else f"{now}; mañana: {figures[0]}, de {low} a {high} °C, {rain} % de lluvia."
+                )
+            return f"{now}."
         figures = [day.get("condition"), day.get("minC"), day.get("maxC"), day.get("rainProbabilityPercent")]
         if not isinstance(figures[0], str) or not all(isinstance(value, (int, float)) for value in figures[1:]):
             return ""
@@ -6989,6 +7002,20 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
             if day_name != "mañana"
             else f"En {seen['location']}, mañana: {figures[0]}, de {low} a {high} °C, {rain} % de lluvia."
         )
+    if operation == "task.list" and _listed_task_titles(payload):
+        # M58 (v3d-final F-w05-t4): the open tasks read, each title once with how many times it is there.
+        open_titles = [
+            str(task.get("title")).strip() for task in seen.get("tasks") or []
+            if isinstance(task, dict) and isinstance(task.get("title"), str) and task.get("title").strip()
+            and not task.get("completed") and not task.get("deleted")
+        ]
+        named = []
+        for title in _listed_task_titles(payload):
+            times = open_titles.count(title)
+            again = "" if times == 1 else (f" ({times} times)" if english else f" ({times} veces)")
+            named.append(f"«{title}»{again}")
+        listed = ", ".join(named[:-1]) + (" and " if english else " y ") + named[-1] if len(named) > 1 else named[0]
+        return f"Pending: {listed}." if english else f"Tienes pendientes {listed}."
     if operation == "window.resolve" and isinstance(seen.get("windows"), list):
         names: list[str] = []
         for window in seen["windows"]:
@@ -7910,6 +7937,18 @@ def _listed_task_titles(payload: dict) -> list[str]:
     return list(dict.fromkeys(titles))
 
 
+_TASK_COUNT_WORDS = {
+    "un": "1", "una": "1", "uno": "1", "one": "1", "another": "1", "otra": "1", "otro": "1", "dos": "2", "two": "2",
+    "tres": "3", "three": "3", "cuatro": "4", "four": "4", "cinco": "5", "five": "5", "seis": "6", "six": "6",
+    "siete": "7", "seven": "7", "ocho": "8", "eight": "8", "nueve": "9", "nine": "9", "diez": "10", "ten": "10",
+}
+_TASK_COUNT = r"(?P<n>\d+|" + "|".join(sorted(_TASK_COUNT_WORDS, key=len, reverse=True)) + r")"
+_TASKS_MORE = re.compile(
+    rf"\b{_TASK_COUNT}\s+(?:(?:tareas?|pendientes?|cosas?|tasks?|items?|things?)\s+)?(?:mas|more)\b"
+)
+_TASKS_TOTAL = re.compile(rf"\b(?:tienes|hay|you\s+have|there\s+are)\s+{_TASK_COUNT}\s+(?:tareas|pendientes|tasks)\b")
+
+
 def _task_listing_defect(text: str, payload: dict) -> str:
     """A task list names its tasks by their titles, as written: at least the first five distinct ones."""
 
@@ -7917,6 +7956,23 @@ def _task_listing_defect(text: str, payload: dict) -> str:
     folded = _reading_fold(text)
     if any(_reading_fold(title) not in folded for title in titles[:5]):
         return "task_title_not_named"
+    if titles:
+        # M58 (v3d-final F-w05-t4): «Tienes pendientes "palta y pisco", "ice cream" (2 veces) y una tarea más» over a
+        # read of three tasks, all named. How many more there are is how many the reply leaves unnamed; how many there
+        # are is the read's count (with or without the repeated titles).
+        open_titles = [
+            str(task.get("title")).strip() for task in payload["seen"]["tasks"]
+            if isinstance(task, dict) and isinstance(task.get("title"), str) and task.get("title").strip()
+            and not task.get("completed") and not task.get("deleted")
+        ]
+        unnamed = [title for title in open_titles if _reading_fold(title) not in folded]
+        more = {len(unnamed), len({_reading_fold(title) for title in unnamed})}
+        total = {len(open_titles), len(titles)}
+        prose = _reading_fold(re.sub(r'[«"“][^»"”]{1,400}[»"”]', " ", text))
+        for said, pattern in ((more, _TASKS_MORE), (total, _TASKS_TOTAL)):
+            for found in pattern.finditer(prose):
+                if _TASK_COUNT_WORDS.get(found.group("n"), found.group("n")) not in {str(n) for n in said}:
+                    return "listing_wrong_count"
     return ""
 
 
@@ -8064,14 +8120,25 @@ def _places_inside_named_place(situation: dict) -> list:
     containers = place_containers(str(seen.get("query") or ""))
     if not containers:
         return places
-    return [
-        item
-        for item in places
-        if all(
-            words & set(re.findall(r"[a-z0-9]+", _reading_fold(str(item.get("snippet") or ""))))
-            for words in containers
-        )
-    ]
+    return [item for item in places if all(
+        any(words <= part for part in _address_places(str(item.get("snippet") or ""))) for words in containers
+    )]
+
+
+# M58 (v3d-final F-p06-t3): «Calle Príncipe de Asturias, Villa del Prado, Comunidad de Madrid, …» is not in Madrid; the
+# region carries the city's name. A place of an address is one of its parts that is not a region.
+_ADDRESS_REGION = re.compile(
+    r"^(?:comunidad|region|provincia|estado|departamento|condado|canton|state|province|county|department|"
+    r"prefecture|prefectura|oblast)\b"
+)
+
+
+def _address_places(address: str) -> list[set[str]]:
+    """The words of each part of an address that names a place (the street, the district, the town), regions left
+    out."""
+
+    parts = (_reading_fold(part).strip() for part in address.split(","))
+    return [set(re.findall(r"[a-z0-9]+", part)) for part in parts if part and not _ADDRESS_REGION.match(part)]
 
 
 def _search_result_hosts(situation: dict, limit: int = 3) -> list[str]:
@@ -8231,7 +8298,10 @@ def _search_report_unsourced_numbers(sentence: str, grounds: str) -> list[str]:
 # an absence in the world, not in the pages, and stay judged. «No se menciona/indica…» is the pages narrated
 # (_SEARCH_NARRATED_ABSENCE), not a not-found.
 _SEARCH_NOT_FOUND = re.compile(
-    r"^\W*(?:no\s+(?:(?:lo|la|los|las|le)\s+)?(?:encontre|halle|pude\s+(?:encontrar|hallar|determinar|confirmar|saber|"
+    # M58 (v3d-final F-p05-t1): «No he encontrado aparcamiento en …» over the car parks OpenStreetMap read is the
+    # same «no lo encontré».
+    r"^\W*(?:no\s+(?:(?:lo|la|los|las|le)\s+)?(?:encontre|halle|(?:he|hemos)\s+(?:podido\s+)?(?:encontrar|encontrado|"
+    r"hallado)|pude\s+(?:encontrar|hallar|determinar|confirmar|saber|"
     r"precisar|ver)|puedo\s+(?:confirmar|determinar|saber|precisar|decir(?:te)?)|se\s+(?:"
     r"encontro|pudo\s+(?:encontrar|determinar|confirmar)|puede\s+(?:determinar|saber|confirmar|precisar)))|"
     r"(?:i\s+)?(?:couldn'?t|could\s+not|can'?t|cannot|didn'?t|did\s+not|wasn'?t\s+able\s+to|was\s+not\s+able\s+to)\s+"
@@ -8681,14 +8751,22 @@ def _search_report_off_subject(text: str, payload: dict, user_text: str) -> bool
     results_text = _search_results_text(payload)
     if results_text is None:
         return False
-    names = {
-        _reading_fold(name) for name in re.findall(r"(?<=\s)(?!I\b)[A-ZÁÉÍÓÚÑ][\w'-]+", str(user_text or ""))
-    } - {"google", "bing", "duckduckgo", "internet", "web", "wikipedia", "youtube"}  # where to look, not what
-    if not names:
-        return False
-    found = _reading_fold(results_text)
-    if any(re.search(r"\b" + re.escape(name) + r"\b", found) for name in names):
-        return False
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    if seen.get("authority") == "openstreetmap_nominatim":
+        # M58 (v3d-final F-p05-t1 «Encuentra aparcamiento en Plaza del Polvorista» ended with no answer): the places
+        # OpenStreetMap returns lie around the named place by construction, and their addresses do not repeat its
+        # name. Only a town the query names them to be in judges them (M56).
+        if _places_inside_named_place(payload):
+            return False
+    else:
+        names = {
+            _reading_fold(name) for name in re.findall(r"(?<=\s)(?!I\b)[A-ZÁÉÍÓÚÑ][\w'-]+", str(user_text or ""))
+        } - {"google", "bing", "duckduckgo", "internet", "web", "wikipedia", "youtube"}  # where to look, not what
+        if not names:
+            return False
+        found = _reading_fold(results_text)
+        if any(re.search(r"\b" + re.escape(name) + r"\b", found) for name in names):
+            return False
     return any(
         _SEARCH_NOT_FOUND.match(_reading_fold(sentence)) is None
         for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip())
@@ -9163,6 +9241,15 @@ def _weather_focus(user_text: str, english: bool) -> str:
             else "La persona preguntó por mañana o un día posterior: da el cielo, la máxima, la mínima y la "
             "probabilidad de lluvia de mañana."
         )
+    if weather_asks_future(user_text) and not measures:
+        # M58 (v3d-final F-s066 «¿hará bueno para San Juan?»): what is coming is tomorrow's read.
+        return (
+            "The person asked what the weather will be: say the weather now in seen.location, naming it, and "
+            "tomorrow's sky, maximum and rain probability."
+            if english
+            else "La persona preguntó qué tiempo hará: di el tiempo de ahora en seen.location, nombrándolo, y el "
+            "cielo, la máxima y la probabilidad de lluvia de mañana."
+        )
     if measures:
         asked = [
             _WEATHER_MEASURE_FIELDS[name][1 if english else 2] + f" ({_WEATHER_MEASURE_FIELDS[name][0]})"
@@ -9625,6 +9712,14 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         ]
         if probabilities and not any(_states_weather_number(text, value) for value in probabilities):
             return "missing_state"
+    # M58 (v3d-final F-s066 «¿hará bueno para San Juan?»): asked in the future with no day named, the answer carries
+    # tomorrow's read (its sky, a temperature or its rain), not the weather now alone.
+    future = not narrow_measures and weather_asks_future(user_text or "") and isinstance(tomorrow, dict)
+    if future and not any(
+        _states_weather_number(text, tomorrow.get(key)) for key in ("maxC", "minC", "rainProbabilityPercent")
+        if isinstance(tomorrow.get(key), (int, float))
+    ):
+        return "missing_state"
     for measure, key in (
         ("humidity", "humidityPercent"), ("wind", "windKmh"), ("apparent", "apparentC"), ("dew_point", "dewPointC"),
     ):
@@ -9636,6 +9731,7 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         and not asks_tomorrow
         and not coming
         and not narrow_measures
+        and not future
     ):
         return "missing_state"
     return ""
@@ -10440,6 +10536,11 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
                 r"(?<!\ben )(?<!\bpor )(?<!\bsin )(?<!\bmas )(?<!\bmuy )(?<!\besta )(?<!\bestan )(?<!\bes )"
                 r"\b(?:hago|pongo|ajusto|subo|bajo|silencio|cambio|configuro)\b"
                 r"(?!\s+(?:de|del)\b)"
+                # M58 (v3d-final F-s066 «¿hará bueno para San Juan?»): «28.5 °C bajo un cielo despejado», «lloverá
+                # bajo 29 °C» are «under», not «I lower»; three right drafts died and the reply lost tomorrow's rain.
+                r"(?<!\bbajo(?=\s+(?:un|una|el|la|los|las)\s+(?:cielo|sol|lluvia|nubes?|nublado|niebla|viento|"
+                r"calor|frio|techo|agua|nieve|temperatura)s?\b))"
+                r"(?<!\bbajo(?=\s+(?:cero|\d)))"
                 r"|\bi (?:set|turn|adjust|change|raise|lower|mute)\b",
                 folded,
             )
