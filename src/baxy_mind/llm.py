@@ -53,7 +53,7 @@ from .semantic.network import (
 )
 from .semantic.web import (
     weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
-    weather_asks_coming_days, weather_asks_week, weather_sun_events_asked,
+    weather_asks_coming_days, weather_asks_week, weather_sun_events_asked, place_containers,
 )
 from .semantic.temporal import _DAY_WORDS, clock_elsewhere, clock_later_asked
 from .semantic.games import _edit_distance
@@ -4267,6 +4267,14 @@ _CAUSE_FACT = {
     "timeout": "wait ran out",
     "provider_down": "no response",
     "out_of_catalog": "outside what I do",
+    # M56 (v3c-final F-w08-t1 «I cannot rearrange your screen layout because the plan to do so is incomplete»): the
+    # App's planning codes were written as prose and the drafts narrated «the plan». What the person gets is the fact.
+    "plan_incomplete": "it could not be worked out how to do this on this PC, so nothing was done",
+    "plan_unverified": "it could not be worked out how to do this on this PC, so nothing was done",
+    "step_data_missing": "a detail needed for one of the actions was missing, so it was not done",
+    "step_unlinkable": "the earlier result this action needed could not be used, so it was not done",
+    "step_unverified": "the earlier result this action needed was not confirmed, so it was not done",
+    "continue_unsafe": "going on could not be done safely, so it stopped there",
     # M45: the state of a cancelled clarification says that nothing ran and nothing is pending.
     "clarification_cancelled": "the pending question was dropped as the person asked; nothing was done",
     # Tanda 5c «Abre el gallery» → «No pude abrir el gallery porque falló el inventario»: the code named in prose.
@@ -6997,9 +7005,7 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
         # M54 (v3b-final F-p06-t3): the places OpenStreetMap returned inside the asked place are the answer, so they
         # are told by their names and streets as the read writes them (the nearest first), never as not found.
         places: list[str] = []
-        for item in _search_results_of(payload)[:3]:
-            if not isinstance(item, dict):
-                continue
+        for item in _places_inside_named_place(payload)[:3]:
             title = str(item.get("title") or "").strip()
             parts = [part.strip() for part in str(item.get("snippet") or "").split(",") if part.strip()]
             if parts and _reading_fold(parts[0]) == _reading_fold(title):
@@ -8042,6 +8048,26 @@ def _search_results_of(situation: dict) -> list:
     return results if isinstance(results, list) else []
 
 
+def _places_inside_named_place(situation: dict) -> list:
+    """M56 (v3c-final F-p06-t2): the OpenStreetMap places whose address lies in every place the query named the
+    searched one to be in («…en la Plaza de las Salesas en Madrid»: the ones in Madrid). With no such place named,
+    all of them: they were read around the one named place."""
+
+    places = [item for item in _search_results_of(situation) if isinstance(item, dict)]
+    seen = situation.get("seen") if isinstance(situation.get("seen"), dict) else {}
+    containers = place_containers(str(seen.get("query") or ""))
+    if not containers:
+        return places
+    return [
+        item
+        for item in places
+        if all(
+            words & set(re.findall(r"[a-z0-9]+", _reading_fold(str(item.get("snippet") or ""))))
+            for words in containers
+        )
+    ]
+
+
 def _search_result_hosts(situation: dict, limit: int = 3) -> list[str]:
     """Los sitios distintos que esta búsqueda devolvió, en orden."""
 
@@ -8807,6 +8833,13 @@ def _search_report_from_no_pertinent_result(text: str, payload: dict, user_text:
     if _search_results_text(payload) is None:
         return False
     seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    if seen.get("authority") == "openstreetmap_nominatim" and not _places_inside_named_place(payload):
+        # M56 (v3c-final F-p06-t2): places outside the city the person named answer nothing about it.
+        return any(
+            _SEARCH_NOT_FOUND.match(_reading_fold(sentence)) is None
+            for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip())
+            if sentence.strip()
+        )
     if seen.get("authority") in _SEARCH_STRUCTURED_AUTHORITIES:
         return False
     query = seen.get("query") if isinstance(seen.get("query"), str) and seen.get("query").strip() else user_text
@@ -8842,7 +8875,8 @@ def _search_report_denies_found_places(text: str, payload: dict) -> bool:
     if _search_results_text(payload) is None:
         return False
     seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
-    if seen.get("authority") != "openstreetmap_nominatim":
+    if seen.get("authority") != "openstreetmap_nominatim" or not _places_inside_named_place(payload):
+        # M56: places outside the city the person named are not the asked place; «no lo encontré» fits them.
         return False
     return any(
         _SEARCH_NOT_FOUND.match(folded) is not None or _SEARCH_ABSENCE_CLAIM.search(folded) is not None
