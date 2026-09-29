@@ -13351,8 +13351,10 @@ def compose_visible_defect(
         if cause == "mission_failed" and re.search(
             # UI1735 «ve a Cotele en Discord» with the click failed: «Ya anduve
             # a Cotele en Discord, pero no pude verificar…» claims the navigation
-            # it then denies; a negated «no fui» stays.
-            r"(?<!\bno )(?<!\bnot )(?<!\bnunca )(?:\bya\s+)?\b(?:anduve|fui|entr[eé]|navegu[eé]|hice\s+clic|puls[eé]|apret[eé]|"
+            # it then denies; a negated «no fui» stays. M74 (DEV-D v3l D-p24-t3): «the web browser could not be
+            # reached» is the cause the shell gives, in the passive; «be reached» claims nothing BAXY did.
+            r"(?<!\bno )(?<!\bnot )(?<!\bnunca )(?<!\bbe )(?<!\bbeen )(?<!\bbeing )"
+            r"(?:\bya\s+)?\b(?:anduve|fui|entr[eé]|navegu[eé]|hice\s+clic|puls[eé]|apret[eé]|"
             r"i\s+went|i\s+navigated|i\s+clicked|i\s+entered|i\s+reached|reached)\b",
             folded,
         ):

@@ -162,8 +162,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # M71 (held-out v3j t14): a search report names the subject the conversation carried; the retry hint says who said what, not which outlet.
 # M71 M72
 # M73
+# M74
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "64487299f7aadf1cb0abca223a1557ebb41b326f39871700c52f5da3fd7d3754"
+    "483df6cc3b38431d841e430ee2f0286e69231a758f7e8c16355705a9d69dc976"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
