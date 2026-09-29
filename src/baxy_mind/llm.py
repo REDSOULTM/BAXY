@@ -11860,8 +11860,6 @@ def compose_visible_defect(
             return ""
     if visible_reply_is_a_fixed_stall(stripped):
         return "stall"
-    if visible_reply_calls_the_person_baxy(stripped):
-        return "person_called_baxy"
     if visible_reply_invents_a_spanish_infinitive(stripped) or visible_reply_breaks_word_case(
         # An observed name («watchOS» in a page title) is written as it was seen.
         stripped, f"{user_text} {json.dumps(facts, ensure_ascii=False, default=str)}",
@@ -13730,7 +13728,12 @@ def compose_visible_defect(
             if tokens and not any(token.casefold() in folded for token in tokens):
                 return "missing_name"
     # Tanda 6 («nunca inventa»): whatever the route, no date about today that this PC's calendar denies.
-    return _calendar_contradiction(stripped, user_text, _reply_calendar_moment(_situation_from_facts(facts)))
+    calendar = _calendar_contradiction(stripped, user_text, _reply_calendar_moment(_situation_from_facts(facts)))
+    if calendar:
+        return calendar
+    # M62 (v3e2-final F-p07-t4 «Have a great day, BAXY!»): BAXY never calls the person by its own name. Judged last,
+    # so a draft with another defect is told that one first.
+    return "person_called_baxy" if visible_reply_calls_the_person_baxy(stripped) else ""
 
 
 def _spanish_modal_is_malformed(value: object) -> bool:
