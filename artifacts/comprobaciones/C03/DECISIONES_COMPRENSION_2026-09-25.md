@@ -422,3 +422,21 @@ arregla en M51 con fuentes abiertas y veto de respuestas desde resultados que no
 no viene de los tokens del decisor (aislado +0,16 s: lat49 A 0,73 / B 0,89 / C 0,89 s; decisión 235/237/236) sino de
 otra parte del turno: M49 aplica las variantes C (argumentos sólo al actuar) y mide los tiempos del decisor en la
 auditoría. 742: 19 decisiones distintas a revisar.
+
+## D37. v3b medido (49775ca4: v3a + M49–M52, M50, M51, último recurso de media) (2026-09-28 21:25)
+| medida | base | v3a | v3b |
+|---|---|---|---|
+| FINAL gastado, revisor (mismo) | 108/202 | 99/202 | **126/202 = 62,4 %** |
+| FINAL gastado, automática | 150 | 155 | 162 (80,2 %) |
+| ⚠ / inventados / repreguntas (FINAL) | 10 / 2 / 16 | 2 / 5 / 13 | 2 / 3 / 12 |
+| latencia p50 FINAL | 2,1 s | 3,1 s | 2,4 s |
+| DEV-D ventana (base de iteración) | — | — | 256/332 = 77,1 %, ⚠ 3 |
+| DEV-C (mente) | 246 | 253 | 252 |
+| reserva | 86,4 % | 85,7 % | 85,7 % |
+| capa A | 96,4 % | 96,5 % | 96,4 % |
+| 742 | — | 19 distintas (revisadas) | 0 distintas frente a v3a |
+Se adoptan M49 (latencia: argumentos sólo al actuar), M52 (hueco reservado sólo para el decisor; reprocesos del
+catálogo 24 → 1 de 195, p90 3,58 → 2,09 s), M50 (código pedido), M51 (búsqueda pertinente con fuentes abiertas) y el
+último recurso de media: el revisor sube 18 turnos sobre la base, sin retroceso en DEV-C, reserva, capa A ni 742.
+Registro real: log:86 («hazme un triángulo con las estaciones del año») pasa de charla a web.search (a revisar).
+Siguiente: v3c = + M53 (conocimiento consultado, D35), M54 (redacción fiel a las lecturas), M55 (colocar ventanas).
