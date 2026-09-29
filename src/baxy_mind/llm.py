@@ -1230,6 +1230,90 @@ class DirectArgumentExtraction:
     arguments: dict[str, Any] | None
     evidence: tuple[tuple[str, str], ...]
     fallback_question: str
+    # M67: the field the model said takes BAXY's previous reply, copied there by code; "" when none did.
+    previous_reply_field: str = ""
+
+
+# M67 (FINAL F-w14-t3, F-w15-t4): a field whose declared size holds a text of its own (clipboard text, a note's
+# content, a message body, a task's details), not a name, a query or a path; only such a field may take a reply.
+_REPLY_CONTENT_MIN_SIZE = 4096
+_REPLY_PROMPT_CHARACTERS = 1500
+
+
+def _previous_reply_fields(
+    schema: dict[str, Any], open_string_fields: tuple[str, ...], reply: str,
+) -> tuple[str, ...]:
+    """M67: the open-text fields of ``schema`` that can hold BAXY's whole previous ``reply``."""
+
+    properties = schema.get("properties") if isinstance(schema, dict) else None
+    if not isinstance(properties, dict) or not reply.strip():
+        return ()
+    fields = []
+    for field in open_string_fields:
+        contract = properties.get(field)
+        if not isinstance(contract, dict):
+            continue
+        sizes = [contract[key] for key in ("maxLength", "x-maxUtf8Bytes") if isinstance(contract.get(key), int)]
+        if (
+            sizes
+            and min(sizes) >= _REPLY_CONTENT_MIN_SIZE
+            and len(reply) <= contract.get("maxLength", len(reply))
+            and len(reply.encode("utf-8")) <= contract.get("x-maxUtf8Bytes", len(reply.encode("utf-8")))
+        ):
+            fields.append(field)
+    return tuple(fields)
+
+
+def _single_fenced_code(reply: str) -> str | None:
+    """M67: the code inside the one ``` block of BAXY's reply, without its fences and language tag; None otherwise.
+
+    «copy the query» after a reply with prose around a ```sql block copies the query, not the prose or the fences.
+    With two blocks or none there is no single code to copy, and the reply goes whole or not at all.
+    """
+
+    lines = reply.splitlines()
+    fences = [index for index, line in enumerate(lines) if line.strip().startswith("```")]
+    if len(fences) != 2:
+        return None
+    code = "\n".join(lines[fences[0] + 1:fences[1]]).strip("\n")
+    return code if code.strip() else None
+
+
+def _with_previous_reply(
+    arguments: object,
+    schema: dict[str, Any],
+    field: str,
+    content: str,
+    evidence_text: str,
+    open_string_fields: tuple[str, ...],
+) -> DirectArgumentExtraction:
+    """M67: ``content`` (BAXY's reply, verbatim) in ``field``, beside the other values the model read.
+
+    Another open string is kept only when it is a literal of the request or of the reply (``evidence_text``); a
+    value that does not fit its contract is left out, and so is a required one nobody said, which the caller asks
+    alone: the same-call fallback asked for every field, the content too, so it is not used.
+    """
+
+    properties = schema.get("properties") if isinstance(schema, dict) else {}
+    kept: dict[str, Any] = {}
+    evidence: list[tuple[str, str]] = []
+    for name, value in (arguments.items() if isinstance(arguments, dict) else ()):
+        contract = properties.get(name) if isinstance(properties, dict) else None
+        if name == field or not isinstance(contract, dict):
+            continue
+        if isinstance(value, str) and not value.strip():
+            continue
+        if name in open_string_fields and (not isinstance(value, str) or value not in evidence_text):
+            continue
+        single = {"type": "object", "properties": {name: contract}, "required": [name], "additionalProperties": False}
+        if not validate_json_schema_instance({name: value}, single):
+            continue
+        kept[name] = value
+        if name in open_string_fields:
+            evidence.append((name, value))
+    kept[field] = content
+    evidence.append((field, content))
+    return DirectArgumentExtraction(kept, tuple(evidence), "", field)
 
 
 def _build_direct_argument_payload(
@@ -1241,20 +1325,41 @@ def _build_direct_argument_payload(
     required_fields: tuple[str, ...],
     open_string_fields: tuple[str, ...],
     response_language: str | None = None,
+    previous_reply: str | None = None,
+    previous_reply_fields: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     """Build the closed one-call extraction contract without runtime effects.
 
     ``response_language`` is the turn's decided language (M47): the objective
     may be the decider's restatement in the other language, so the fallback
     question is bound to the person's language explicitly when it is known.
+
+    ``previous_reply`` with ``previous_reply_fields`` (M67, FINAL F-w14-t3 «perfect, copialo al clipboard» after a
+    ```sql answer was asked «¿Qué texto quieres copiar?»): BAXY's last reply travels beside the request, and the
+    same decode says which of those fields takes it (``previous_reply_field``) and, when the reply has one code
+    block, whether only its code (``previous_reply_part``). The model never writes the reply: those fields are
+    optional in ``arguments`` and code copies the reply verbatim.
     """
 
+    arguments_schema = copy.deepcopy(schema)
+    offered = bool(previous_reply and previous_reply_fields)
+    if offered:
+        arguments_schema["required"] = [
+            field for field in arguments_schema.get("required", []) if field not in previous_reply_fields
+        ]
+    reply_properties: dict[str, Any] = {}
+    if offered:
+        reply_properties["previous_reply_field"] = {"type": "string", "enum": ["none", *previous_reply_fields]}
+        if _single_fenced_code(previous_reply or "") is not None:
+            reply_properties["previous_reply_part"] = {"type": "string", "enum": ["whole", "code"]}
     envelope_schema = {
         "type": "object",
         "properties": {
+            # M67: decoded first, so the decision that the reply is the content comes before the arguments.
+            **reply_properties,
             "grounded": {"type": "boolean"},
             "arguments": {
-                "anyOf": [copy.deepcopy(schema), {"type": "null"}],
+                "anyOf": [arguments_schema, {"type": "null"}],
             },
             "fallback_question": {
                 "type": "string",
@@ -1263,6 +1368,7 @@ def _build_direct_argument_payload(
             },
         },
         "required": [
+            *reply_properties,
             "grounded",
             "arguments",
             "fallback_question",
@@ -1313,11 +1419,31 @@ def _build_direct_argument_payload(
             if "dueUtc" in schema.get("properties", {})
             else ""
         )
+        + (
+            " Tras el pedido va la respuesta anterior de BAXY, que no es parte del pedido. Si el pedido la toma "
+            "como el contenido (copiarla, guardarla, enviarla o escribirla: «cópialo», «guarda eso como nota», «el "
+            "query de antes»), previous_reply_field es el campo que la recibe y ese campo NO se escribe en "
+            "arguments: el sistema copia la respuesta literal; los demás campos salen del pedido o de esa "
+            "respuesta. Si el pedido trae su propio contenido o no se refiere a ella, previous_reply_field=\"none\"."
+            + (
+                " previous_reply_part=\"code\" si lo pedido es sólo el código de su bloque ```, \"whole\" si es "
+                "la respuesta entera."
+                if "previous_reply_part" in reply_properties
+                else ""
+            )
+            if offered
+            else ""
+        )
+    )
+    user_content = (
+        f"{text}\n\nRespuesta anterior de BAXY:\n{(previous_reply or '')[:_REPLY_PROMPT_CHARACTERS]}"
+        if offered
+        else text
     )
     return {
         "messages": [
             {"role": "system", "content": system_message},
-            {"role": "user", "content": text},
+            {"role": "user", "content": user_content},
         ],
         "response_format": {
             "type": "json_schema",
@@ -1329,7 +1455,9 @@ def _build_direct_argument_payload(
         },
         "temperature": 0.0,
         "seed": 0,
-        "max_tokens": 192,
+        # M67: room for a model that writes the reply into arguments anyway, instead of JSON cut mid-string; the
+        # copy that goes is still the reply itself. A well-behaved decode stops long before.
+        "max_tokens": 768 if offered else 192,
         "chat_template_kwargs": {"enable_thinking": False},
     }
 
@@ -19445,6 +19573,7 @@ class LlmRuntime:
         *,
         stated_fields: tuple[str, ...] = (),
         response_language: str | None = None,
+        previous_reply: str | None = None,
     ) -> DirectArgumentExtraction:
         """Extract once, deriving literal provenance and a same-call fallback.
 
@@ -19463,6 +19592,12 @@ class LlmRuntime:
         ``response_language`` is the turn's decided language (M47, FINAL F-w09-t5: «Set a reminder for tomorrow at
         noon…» was asked «¿alarma o recordatorio?»). A fallback written in the other language is dropped, so the
         caller formulates the question again in the person's language.
+
+        ``previous_reply`` is BAXY's last reply in the conversation (M67, FINAL F-w14-t3 «perfect, copialo al
+        clipboard», F-w15-t4 «save that as a note porfa»). When the operation has a field that holds a text of its
+        own, the same decode says whether the request takes that reply as the content; the reply (or the code of its
+        one ``` block) is then copied into the field verbatim, the other values may be grounded in it too, and a
+        value still missing is left out for the caller to ask alone. The model never writes the reply.
         """
 
         function = tool.get("function") if isinstance(tool, dict) else None
@@ -19504,6 +19639,7 @@ class LlmRuntime:
                 ),
                 ",".join(sorted(stated_fields)),
                 response_language or "",
+                previous_reply or "",
             )
         )
 
@@ -19514,6 +19650,7 @@ class LlmRuntime:
                 copy.deepcopy(value.arguments),
                 tuple(value.evidence),
                 value.fallback_question,
+                value.previous_reply_field,
             )
 
         cached = getattr(self, "_direct_argument_handoff", None)
@@ -19564,6 +19701,8 @@ class LlmRuntime:
             and "const" not in contract
         )
         asked_fields = tuple(field for field in required_fields if field not in stated_fields) or required_fields
+        reply = (previous_reply or "").strip()
+        reply_fields = _previous_reply_fields(schema, open_string_fields, reply)
         payload = _build_direct_argument_payload(
             text=text,
             canonical_name=canonical_name,
@@ -19572,6 +19711,8 @@ class LlmRuntime:
             required_fields=asked_fields,
             open_string_fields=open_string_fields,
             response_language=response_language,
+            previous_reply=reply or None,
+            previous_reply_fields=reply_fields,
         )
 
         # One semantic decode only. A valid abstention is a successful result,
@@ -19583,9 +19724,7 @@ class LlmRuntime:
         except (json.JSONDecodeError, KeyError, IndexError, TypeError) as error:
             raise ValueError("la extracción directa devolvió JSON inválido") from error
         expected_keys = {
-            "grounded",
-            "arguments",
-            "fallback_question",
+            *payload["response_format"]["json_schema"]["schema"]["required"],
         }
         if (
             not isinstance(envelope, dict)
@@ -19625,6 +19764,18 @@ class LlmRuntime:
         ):
             fallback_question = ""
         arguments = envelope.get("arguments")
+        reply_field = envelope.get("previous_reply_field", "none")
+        if reply_field in reply_fields:
+            return retain(
+                _with_previous_reply(
+                    arguments,
+                    schema,
+                    reply_field,
+                    (envelope.get("previous_reply_part") == "code" and _single_fenced_code(reply)) or reply,
+                    f"{text}\n{reply}",
+                    open_string_fields,
+                )
+            )
         if envelope["grounded"] is False:
             if arguments is not None:
                 raise ValueError("una abstención directa contiene argumentos")
