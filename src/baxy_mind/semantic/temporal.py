@@ -1273,6 +1273,61 @@ _NOTIFICATION_CHANGE = (
 )
 
 
+# D39 (owner, 2026-09-29; v3d-final F-s040 «Cancela las alarmas, por favor.» → «¿Qué alarma deseas cancelar?»): the
+# alarms named in the plural without saying which are read first, and BAXY offers to cancel all of them with the list
+# («Tienes 3 alarmas (7:00, 8:30 y 12:00). ¿Las cancelo todas?»); they are cancelled only when the person says yes.
+# This replaces the plural branch of the which-alarm clarification of uso real 2026-09-24. A plural that says which
+# («mis alarmas de la mañana», «my alarms for tomorrow», «las de las 7») is still asked.
+_PLURAL_ALARM_CANCELLATION = re.compile(
+    r"^(?:(?:por\s+favor|porfa|oye|baxy|please|hey)\s*,?\s+)*"
+    r"(?:apaga(?:me)?|quita(?:me)?|borra(?:me)?|elimina(?:me)?|cancela(?:me)?|desactiva(?:me)?|remove|delete|cancel|"
+    r"turn\s+off|clear|disable)\s+"
+    r"(?:(?:mis|las|todas\s+(?:mis|las)|my|the|all(?:\s+(?:of\s+)?(?:my|the))?)\s+)?(?:alarmas|alarms)"
+    r"(?:\s*,?\s*(?:por\s+favor|porfa|please))?[\s.!]*$"
+)
+
+
+def plural_alarm_cancellation(text: str) -> bool:
+    """«Cancela las alarmas», «quita todas mis alarmas», «cancel my alarms»: every alarm, none said (D39)."""
+
+    return _PLURAL_ALARM_CANCELLATION.match(_strip_request_envelope(_fold(str(text or ""))).strip()) is not None
+
+
+# D39: the yes to the offer («sí», «dale», «sí, cancélalas todas», «yes, all of them»); anything else is not it.
+_ALARM_OFFER_ASSENT = re.compile(
+    r"^[¿?¡!\s]*(?:si|dale|ok|okey|okay|bueno|claro|por\s+favor|yes|yeah|yep|sure|please|go\s+ahead|do\s+it|hazlo|"
+    r"hacelo|todas|all\s+of\s+them|cancelalas|cancela(?:las)?\s+todas|borralas|quitalas|cancel\s+(?:them|all)(?:\s+of\s+them)?)"
+    r"(?:[,\s]+(?:si|dale|por\s+favor|please|hazlo|hacelo|todas(?:\s+ellas)?|all(?:\s+of\s+them)?|cancelalas(?:\s+todas)?|"
+    r"cancela(?:las)?\s+todas|borralas|quitalas|cancel\s+(?:them|all)(?:\s+of\s+them)?|go\s+ahead))*[\s.!]*$"
+)
+
+
+def assents_to_alarm_offer(text: str) -> bool:
+    return _ALARM_OFFER_ASSENT.match(_fold(str(text or "")).strip()) is not None
+
+
+def alarm_cancellation_request(clocks: tuple[tuple[int, int], ...], english: bool) -> str | None:
+    """The request that cancels each offered alarm by its local (hour, minute), one clause each, as the readers of a
+    cancellation read it; None with none, or with more than a plan can hold (eight steps). Each clock says its part
+    of the day, so the alarm at 7:00 is never the one at 19:00."""
+
+    if not clocks or len(clocks) > 8:
+        return None
+
+    def said(hour: int, minute: int) -> str:
+        if hour > 12 or (hour == 0 and not english):
+            return f"{hour}:{minute:02d}"
+        if english:
+            return f"{hour % 12 or 12}:{minute:02d} {'am' if hour < 12 else 'pm'}"
+        return f"{hour}:{minute:02d} {'de la mañana' if hour < 12 else 'de la tarde'}"
+
+    if english:
+        return " and ".join(f"cancel the alarm at {said(hour, minute)}" for hour, minute in clocks)
+    return " y ".join(
+        f"cancela la alarma de {'la' if hour == 1 else 'las'} {said(hour, minute)}" for hour, minute in clocks
+    )
+
+
 def _clock_article(clock: str) -> str:
     """«la» before one o'clock, «las» before the others («de la una», «a las 9:00»)."""
 
