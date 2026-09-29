@@ -1862,12 +1862,25 @@ def conversation_only_content_request(text: str) -> bool:
         r"guarda|guardala|guardalo|guardame|guardar|save|escritorio|desktop|documentos|downloads|descargas|"
         r"abre|abri|abrilo|abrila|open|envia|enviar|mandalo|mandala|mandaselo|mandasela|manda|send|imprime|print)\b)"
         r"(?:hazme|haceme|hace|haz|armame|arma|escribime|escribeme|escribe|redactame|redacta|"
+        # M78 (DEV-D v3l p35-t1 «Has un análisis de FODA sobre la empresa Adidas…» → «No hago análisis de FODA.»):
+        # «has un/una» is «haz» misspelt.
+        r"has\s+(?=un|una)|"
         r"dame|pasame|buscame|busca|quiero|necesito|make\s+me|write\s+me|write|draft|give\s+me|find\s+me)\b"
         r".{0,48}\b(?:curriculum|curriculums|cv|carta|oficio|texto|poema|cuento|resumen|ensayo|"
         r"lista|triangulo|tabla|esquema|discurso|mensaje\s+de\s+cumpleanos|formato|plantilla|"
         # Dev corpus 2026-09-23 «por favor escribe una queja para levis»: the complaint is written here.
         r"queja|reclamo|reclamacion|complaint|"
         r"resume|cover\s+letter|essay|poem|letter|template|outline|table)\b|"
+        # M78: a business analysis (a SWOT/FODA/DAFO, a PESTEL, a market or competitor analysis) is drafted here like
+        # an essay, whichever verb asks for it; never a limit. «Haz un análisis del disco» is this PC's, not this.
+        r"^(?![^\n]{0,160}\b(?:archivo|archivos|file|files|carpeta|folder|guarda|guardalo|guardala|guardar|save|"
+        r"envia|enviar|send|imprime|print|excel|word|powerpoint|presentacion|slides?)\b)"
+        r"[¿¡\s]*(?:(?:por\s+favor|porfa|please)\s*,?\s*)?(?:(?:puedes|podrias|can\s+you|could\s+you)\s+)?"
+        r"(?:haz|hazme|haceme|has|hacer|hacerme|me\s+haces|realiza|realizame|realizar|elabora|elaborame|elaborar|"
+        r"prepara|preparame|escribe|escribeme|redacta|"
+        r"redactame|dame|do|make|prepare|write|draft|create|give\s+me|i\s+need|i\s+want|quiero|necesito)\b"
+        r".{0,32}\b(?:foda|dafo|swot|pestel|(?:analisis|estudio)\s+(?:de\s+)?(?:mercado|la\s+competencia)|"
+        r"(?:market|competitor|competitive)\s+(?:analysis|research))\b|"
         r"^(?:formato|plantilla|ejemplo|modelo|template|example)\s+(?:de|of)\b.{1,96}$|"
         r"^(?:buscame|busca|dame|decime|dime|find\s+me|give\s+me)\b.{0,32}"
         r"\b(?:palabras|words|sinonimos|synonyms|antonimos|antonyms|rimas|rhymes)\b.{0,96}$|"

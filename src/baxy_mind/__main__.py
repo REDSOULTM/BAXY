@@ -2483,6 +2483,7 @@ def _served_surface_reread(
     game_catalog: GameCatalogIndex,
     on_signal: PendingTurnSignal | None,
     already_signaled: list[bool],
+    decided_request: str | None = None,
 ) -> dict[str, Any] | None:
     """The turn decided again on the canonical surface of a request about to be refused, or None.
 
@@ -2493,20 +2494,38 @@ def _served_surface_reread(
     lookup comment in ``_decide_turn_result``): the nearest neighbours of an out-of-catalogue request turned
     honest limits into questions. Here the evidence is a word the readers know standing where the person
     said another one; a limit of something BAXY does not have keeps its words and stays a limit.
+
+    M78 (DEV-D v3l s010 «deactivates the speaker now» → «Turn off the speaker.», p12-t2 «Bring up 24/7 stores near
+    me» after «Which request should I cancel?»): a limit the contextual decider gave (``decided_request`` is its
+    restatement) is also re-read on the canonical surface of that restatement, and on the message as said when it
+    is a complete request: inside a conversation the readers stepped aside for the decider, and «Turn off the
+    audio.» (audio.mute) or «Bring up 24/7 stores near me» (web.search) are what they prove.
     """
 
-    canonical = semantic_surface.canonical(objective)
-    if canonical is None:
-        return None
+    candidates = [semantic_surface.canonical(objective)]
+    if decided_request is not None:
+        restated = decided_request.strip()
+        # The restatement itself is not re-read: «Pon la alarma en el celular usando la app del reloj.» (w02-t4, an
+        # honest limit) would become a question about an alarm; only its canonical surface, a word the readers know
+        # standing where the decider wrote another, is evidence.
+        candidates += [
+            objective if effect_request_is_authoritative(objective) else None,
+            semantic_surface.canonical(restated) if restated else None,
+        ]
     previous = _previous_user_request(history if isinstance(history, list) else [], objective)
-    reading = semantic_reading.read(
-        canonical,
-        available_operations=tuple(tool.name for tool in planner_catalog.tools),
-        application_names=application_names,
-        game_catalog=game_catalog,
-        previous_user_text=previous,
-    )
-    if reading.effects is None and reading.clarification is None:
+    canonical = None
+    for candidate in dict.fromkeys(text for text in candidates if text):
+        reading = semantic_reading.read(
+            candidate,
+            available_operations=tuple(tool.name for tool in planner_catalog.tools),
+            application_names=application_names,
+            game_catalog=game_catalog,
+            previous_user_text=previous,
+        )
+        if reading.effects is not None or reading.clarification is not None:
+            canonical = candidate
+            break
+    if canonical is None:
         # Fase 3.5b M13: only what the readers prove on the canonical surface overrides a limit; the
         # domain gate over the shortlist turned honest limits into actions and is retired.
         return None
@@ -4322,7 +4341,7 @@ def _context_decided_result(
     *,
     llm: Any,
     planner_catalog: PlannerCatalog,
-    on_limit: Callable[[], dict[str, Any] | None] | None = None,
+    on_limit: Callable[[str], dict[str, Any] | None] | None = None,
 ) -> dict[str, Any]:
     """The turn as the contextual decider reads it (``semantic.decider``), with the whole conversation.
 
@@ -4390,6 +4409,10 @@ def _context_decided_result(
         # cien-105/106 «post a letter to Eris» → «What should the letter say?», vetoed by the App as a question about
         # what cannot be done: the boundary of an unreachable place holds here too (apply_out_of_world_boundary).
         decided = semantic_decider.ContextDecision(request=text, decision="limit", operations=(), question="")
+    if decided.decision == "limit" and conversation_only_content_request(text):
+        # M78 (DEV-D v3l p35-t1 «…análisis de FODA…» refused): content written in the conversation (an analysis, a
+        # letter, code) is what BAXY does; a limit on it is false.
+        decided = semantic_decider.ContextDecision(request=decided.request, decision="talk", operations=(), question="")
     reference = None
     # M56 (v3c-final F-w14-t1): code the person asks for is written, whatever the decider's rewrite of it says.
     if decided.decision == "talk" and "web.search" in available_operations and not asks_for_code(text):
@@ -4441,7 +4464,8 @@ def _context_decided_result(
         result["question"] = question
     else:
         if decided.decision == "limit" and on_limit is not None:
-            reread = on_limit()
+            # M78: the decider's restatement (after the fidelity check) is re-read with the message.
+            reread = on_limit(decided.request or "")
             if reread is not None:
                 _append_turn_audit(
                     {
@@ -4711,6 +4735,9 @@ def _decide_turn_result(
     unresolved_input_kind = (
         None
         if non_target_language is not None
+        # M78 (DEV-D v3l p35-t1): content asked for («Has un análisis de FODA…», four sentences long) is addressed to
+        # BAXY, never overheard speech to clarify.
+        or content_drafting
         or explicit_clarification is not None
         or deferred_clarification is not None
         or missing_open_referent
@@ -5047,6 +5074,17 @@ def _decide_turn_result(
         or talk_act_decision
         or stable_no_effect_decision
     )
+    if (
+        non_target_language is None
+        and content_drafting
+        and explicit_conversation_decision is not None
+        and explicit_conversation_decision.get("conversation_kind") == "unsupported"
+    ):
+        # M78 (DEV-D v3l p35-t1 «Has un análisis de FODA sobre la empresa Adidas…» → «No hago análisis de FODA.»):
+        # content BAXY writes in the conversation is never beyond what he does.
+        explicit_conversation_decision = _conversation_turn_decision(
+            "knowledge", _explicit_response_language(objective),
+        )
     # Resolve the speech act before catalog candidates can prime a related
     # effect. The existing candidate-free guard includes personal/live reads
     # and compound actions; only agreement on stable knowledge closes here.
@@ -5141,7 +5179,7 @@ def _decide_turn_result(
         # No reader proved this message, or it follows earlier turns and no conversation reader kept it:
         # the contextual decider decides it (Fase 3.5b F4), not the shortlist, the native selector and
         # the gates.
-        def reread_limit() -> dict[str, Any] | None:
+        def reread_limit(decided_request: str) -> dict[str, Any] | None:
             # Tanda 3 «Pausa el speaker.», «añadir una nueva lista para material escolar»: a limit the decider
             # gives to words the readers prove once they stand in their canonical surface is that request.
             if served_surface is not None or non_target_language is not None:
@@ -5158,6 +5196,7 @@ def _decide_turn_result(
                 game_catalog=game_catalog,
                 on_signal=on_signal,
                 already_signaled=already_signaled,
+                decided_request=decided_request,
             )
 
         return _context_decided_result(
