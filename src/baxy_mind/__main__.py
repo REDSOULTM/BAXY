@@ -3253,8 +3253,15 @@ def _ground_explicit_arguments(
 
     if operation == "notification.schedule" and (change := semantic_temporal.notification_change(evidence)) is not None:
         # M58 (v3d-final F-s019, F-s044, F-s095): the new time of a moved alarm, timer or reminder, its kind and what
-        # it is for, read from the change the person asked for; the cancellation is its own step.
-        moved = change.schedule_arguments()
+        # it is for, read from the change the person asked for; the cancellation is its own step. M62 (v3e2-final
+        # F-s044 «…from 3 to 4»): with neither clock saying its part of the day, the new one takes the part of the day
+        # the old one was said with earlier in this conversation; with none said, it is asked.
+        said_before = [
+            str(item.get("content") or "")
+            for item in reversed(history if isinstance(history, list) else [])
+            if isinstance(item, dict) and item.get("content") != evidence
+        ]
+        moved = change.schedule_arguments(semantic_temporal.change_part_of_day(change, said_before))
         moved = _normalize_grounded_operation_arguments(operation, moved, moved["dueUtc"])
         return moved if moved is not None and validate_json_schema_instance(moved, schema) else None
     if operation == "web.search":
@@ -3460,6 +3467,12 @@ def _ground_explicit_arguments(
         # KNOWLEDGE1505/1507 «decime una curiosidad»: the curiosity reader
         # supplies the subject from its own list; the person named none, so
         # the literal check would discard every pick and the turn asked back.
+        return explicit if validate_json_schema_instance(explicit, schema) else None
+    if operation == "notification.list" and explicit == {"limit": 50} and semantic_temporal.plural_alarm_cancellation(
+        evidence
+    ):
+        # M62 (v3e2-final F-s040): the offer of every alarm reads as many as the catalog lets it; the bound is the
+        # reader's, not a number the person says.
         return explicit if validate_json_schema_instance(explicit, schema) else None
     if operation == "filesystem.known.list" and explicit.get("folder") in (
         effect_intent._known_folder_listing_request(evidence),
@@ -7119,6 +7132,8 @@ def _run_sidecar(
                             schema,
                             application_names,
                             game_catalog,
+                            # M62 (F-s044): a moved alarm takes its part of the day from what was said before.
+                            history=history if step.operation == "notification.schedule" else None,
                         )
                         if explicit_arguments is not None:
                             arguments_by_step[step.step_id] = explicit_arguments
@@ -7162,6 +7177,31 @@ def _run_sidecar(
                         if grounded is None and "dueUtc" in schema.get("required", []):
                             fields = ("dueUtc",)
                     if grounded is None:
+                        change = (
+                            semantic_temporal.notification_change(objective)
+                            if request["operation"] == "notification.schedule"
+                            else None
+                        )
+                        if change is not None and change.clocks_lack_the_part_of_day() and "dueUtc" in fields:
+                            # M62 (v3e2-final F-s044 «change the reminder … from 3 to 4» → «¿Cuándo, en tus
+                            # propias palabras, sería el momento adecuado para esta alarma?», in Spanish): what is
+                            # missing is only the part of the day of the new time, asked in the person's language.
+                            raise PlannerClarification(
+                                llm.formulate_missing_argument_question(
+                                    objective,
+                                    str(request["purpose"]),
+                                    tool,
+                                    ("dueUtc",),
+                                    response_language="en" if change.english else "es",
+                                    ask_as={
+                                        "dueUtc": (
+                                            f"only whether {change.new_literal} is in the morning or in the "
+                                            f"afternoon or evening (the {change.noun} at {change.old} was not said "
+                                            "with its part of the day); nothing else"
+                                        )
+                                    },
+                                )
+                            )
                         raise PlannerClarification(
                             llm.formulate_missing_argument_question(
                                 objective,
