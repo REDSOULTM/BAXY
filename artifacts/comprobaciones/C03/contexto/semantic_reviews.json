@@ -17,8 +17,8 @@
   },
   "54": {
    "verdict": "bien",
-   "reply": "Entendido.",
-   "head": "02c986e9"
+   "reply": "Entendido, el volumen está a 50.",
+   "head": "f06d1655"
   },
   "57": {
    "verdict": "bien",
@@ -27,8 +27,8 @@
   },
   "24": {
    "verdict": "bien",
-   "reply": "Hay dos películas llamadas Colony: una canadiense de terror de 2013 y otra surcoreana de thriller que se presentó en mayo de 2026 en Cannes.",
-   "head": "f63c6aee"
+   "reply": "Colony es una película surcoreana de thriller y terror dirigida por Yeon Sang-ho, protagonizada por Jun Ji-hyun y Koo Kyo-hwan, que se presentó en mayo de 2026 en el Festival de Cannes y en los cines de Corea del Sur.",
+   "head": "f06d1655"
   },
   "35": {
    "verdict": "bien",
@@ -36,9 +36,9 @@
    "head": "02c986e9"
   },
   "25": {
-   "verdict": "bien",
-   "reply": "Hay dos películas llamadas Colony: una canadiense de terror de 2013 y otra surcoreana de thriller que se presentó en mayo de 2026 en Cannes.",
-   "head": "f63c6aee"
+   "verdict": "mal",
+   "reply": "Colony puede referirse al Old Colony Club en Nueva York, a Cabana Colony en Florida, al álbum de In Flames o a Colony Park en Pensilvania.",
+   "head": "f06d1655"
   }
  },
  "heldout-2026-09-22": {
