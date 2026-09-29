@@ -455,3 +455,14 @@ Se adoptan M53 (recetas, argumentos y rankings consultados en Wikimedia; «de me
 fuente; cálculo con unidades; enlace «fuente»), M54 y M55. Los retrocesos medidos son de la búsqueda general
 (DuckDuckGo vuelve a dar captcha en esta red) y de lectores que M56 corrige (el SQL mandado a la web, «latest song» como
 ranking, lugares de otra ciudad, colocar ventanas cuando una app no está abierta). Paso 7: M57 permite medir 2 huecos.
+
+## D39. «Cancela las alarmas» en plural: todas, confirmando (dueño, 2026-09-29 ~00:10)
+Sustituye la rama plural de la regla de uso real del 24-09 (que preguntaba «¿Qué alarma deseas cancelar?» y el revisor
+contaba como repregunta, F-s040): BAXY lee las alarmas pendientes y pregunta con la lista («Tienes 3 alarmas (7:00,
+8:30 y 12:00). ¿Las cancelo todas?»); cancela sólo si la persona dice que sí; con una sola la nombra y confirma; sin
+ninguna, lo dice.
+
+## D40. v3d medido (bb1ab315: v3c + M56) y paso 7 con 2 huecos (2026-09-29 00:10)
+FINAL gastado, mismo revisor: **133/202 = 65,8 %** (v3c 128; +10/−5), 1 inventado, ⚠ 3, 12 repreguntas, búsqueda
+caída 1 (v3c 17). Automática 162/202. DEV-D con 2 huecos (M57): 260/332 (v3c 256) pero ⚠ 8 (2,4 %) y el pico de VRAM
+sólo baja 160 MiB (BAXY ≈ 3 750–3 880 MiB): 2 huecos no se adopta. Se mide KV q4_0 con 3 huecos (M59).
