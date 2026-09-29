@@ -55,7 +55,7 @@ from .semantic.web import (
     weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
     weather_asks_coming_days, weather_asks_week, weather_sun_events_asked, place_containers,
 )
-from .semantic.temporal import _DAY_WORDS, clock_elsewhere, clock_later_asked
+from .semantic.temporal import _DAY_WORDS, clock_elsewhere, clock_later_asked, plural_alarm_cancellation
 from .semantic.games import _edit_distance
 from . import effect_intent
 from .effect_intent import (
@@ -7002,6 +7002,8 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
             if day_name != "mañana"
             else f"En {seen['location']}, mañana: {figures[0]}, de {low} a {high} °C, {rain} % de lluvia."
         )
+    if operation == "notification.list" and (alarms := _offered_alarms(payload, user_text)) is not None:
+        return _alarm_offer_final(alarms, english)
     if operation == "task.list" and _listed_task_titles(payload):
         # M58 (v3d-final F-w05-t4): the open tasks read, each title once with how many times it is there.
         open_titles = [
@@ -7947,6 +7949,68 @@ _TASKS_MORE = re.compile(
     rf"\b{_TASK_COUNT}\s+(?:(?:tareas?|pendientes?|cosas?|tasks?|items?|things?)\s+)?(?:mas|more)\b"
 )
 _TASKS_TOTAL = re.compile(rf"\b(?:tienes|hay|you\s+have|there\s+are)\s+{_TASK_COUNT}\s+(?:tareas|pendientes|tasks)\b")
+
+
+def _offered_alarms(payload: dict, user_text: str) -> list[dict] | None:
+    """D39: the alarms a verified read found for «cancela las alarmas» (each with its local time), or None when the
+    payload is not that read."""
+
+    if not isinstance(payload, dict) or payload.get("operation") != "notification.list":
+        return None
+    seen = payload.get("seen")
+    if not isinstance(seen, dict) or not isinstance(seen.get("scheduled"), list) or not plural_alarm_cancellation(
+        user_text or ""
+    ):
+        return None
+    return [
+        entry for entry in seen["scheduled"]
+        if isinstance(entry, dict) and entry.get("kind") in {"alarma", "alarm"} and isinstance(entry.get("time"), str)
+    ]
+
+
+_ALARM_CANCEL_CLAIM = re.compile(
+    r"\b(?:cancele|he\s+cancelado|(?:ya\s+)?(?:estan|quedaron|fueron)\s+(?:canceladas|borradas|eliminadas)|borre|"
+    r"elimine|quite|apague|desactive|i\s+(?:cancell?ed|deleted|removed|turned\s+off)|(?:have|has|were|are)\s+been\s+"
+    r"(?:cancell?ed|deleted|removed))\b"
+)
+
+
+def _alarm_offer_defect(text: str, payload: dict, user_text: str) -> str:
+    """D39 (owner, 2026-09-29): «cancela las alarmas» is answered with the alarms read and the offer to cancel them
+    («Tienes 3 alarmas (7:00, 8:30 y 12:00). ¿Las cancelo todas?»): nothing was cancelled yet, every time read is
+    said, and with any alarm the reply asks."""
+
+    alarms = _offered_alarms(payload, user_text)
+    if alarms is None:
+        return ""
+    if _ALARM_CANCEL_CLAIM.search(_reading_fold(text)) is not None:
+        return "effect_claim"
+    if alarms and (
+        "?" not in text
+        or any(entry["time"] not in text and entry["time"].lstrip("0") not in text for entry in alarms)
+    ):
+        return "alarm_offer_missing"
+    return ""
+
+
+def _alarm_offer_final(alarms: list[dict], english: bool) -> str:
+    """D39: the offer said from the read, when no draft could say it."""
+
+    if not alarms:
+        return "You have no alarms set." if english else "No tienes alarmas programadas."
+    count = sum(int(entry.get("howMany") or 1) for entry in alarms)
+    times = [
+        entry["time"] + (f" {entry['day']}" if entry.get("day") else f" ({entry['date']})" if entry.get("date") else "")
+        for entry in alarms
+    ]
+    listed = times[0] if len(times) == 1 else ", ".join(times[:-1]) + (" and " if english else " y ") + times[-1]
+    if count == 1:
+        return f"You have one alarm, at {listed}. Shall I cancel it?" if english else (
+            f"Tienes una alarma, a las {listed}. ¿La cancelo?"
+        )
+    return f"You have {count} alarms ({listed}). Shall I cancel them all?" if english else (
+        f"Tienes {count} alarmas ({listed}). ¿Las cancelo todas?"
+    )
 
 
 def _task_listing_defect(text: str, payload: dict) -> str:
@@ -9908,7 +9972,7 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         # is a pasted listing, not a report a companion would say; pages are
         # named by title and site. The safety-net report has that shape.
         return "search_report_pasted_urls"
-    task_defect = _task_listing_defect(text, payload)
+    task_defect = _task_listing_defect(text, payload) or _alarm_offer_defect(text, payload, user_text)
     if task_defect:
         return task_defect
     folded = _reading_fold(text)
@@ -13170,6 +13234,15 @@ def compose_visible_defect(
                 _value = observed_dict.get(_key) if isinstance(observed_dict, dict) else None
                 if isinstance(_value, str) and _value.strip():
                     question_text = question_text.replace(_value, " ")
+            question_text = re.sub(r"[¿?][^?¿]*\??\s*$", "", question_text).strip()
+        if (
+            operation == "notification.list"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and plural_alarm_cancellation(user_text or "")
+        ):
+            # D39 (owner, 2026-09-29): «cancela las alarmas» is answered by the alarms read and the one question
+            # whether to cancel them (_alarm_offer_defect demands it); that trailing question is the owner's.
             question_text = re.sub(r"[¿?][^?¿]*\??\s*$", "", question_text).strip()
         if "?" in question_text or "¿" in question_text:
             return "extra_claim"
@@ -20014,6 +20087,17 @@ class LlmRuntime:
                 "dice: su tipo, su título entre comillas sólo si tiene, y cuándo suena (la hora, y mañana o la "
                 "fecha cuando vienen). Sin propósito, sin interpretación, sin otros elementos."
             )
+            if plural_alarm_cancellation(user_text or ""):
+                # D39 (owner, 2026-09-29): the person asked to cancel the alarms; they were only read.
+                instruct(
+                    "\nThe person asked to cancel their alarms and nothing was cancelled yet: say how many alarms "
+                    "(kind alarm) there are with the time of each, and ask whether to cancel them all («Shall I cancel "
+                    "them all?»); with one, name its time and ask whether to cancel it; with none, say there are none."
+                    if response_language == "en"
+                    else "\nLa persona pidió cancelar sus alarmas y todavía no se canceló nada: di cuántas alarmas "
+                    "(tipo alarma) hay con la hora de cada una y pregunta si las cancelas todas («¿Las cancelo "
+                    "todas?»); con una, di su hora y pregunta si la cancelas; sin ninguna, di que no hay."
+                )
         if (
             visible_situation.get("operation") == "bluetooth.radio.status"
             and isinstance(visible_situation.get("seen"), dict)
@@ -22025,6 +22109,13 @@ class LlmRuntime:
                     else "Contesta este mensaje. No se leyó nada en este turno: no afirmes fechas, días ni cifras de ahora."
                 ),
                 # Tanda 8: «Agregado: tomates.», «Ya tienes en la lista: …», «Sí, está lista para recoger.».
+                "alarm_offer_missing": (
+                    "Nothing was cancelled yet. Say how many alarms there are with the time of each (seen.scheduled "
+                    "of kind alarm) and ask whether to cancel them all (with one, name it and ask to cancel it)."
+                    if response_language == "en"
+                    else "Todavía no se canceló nada. Di cuántas alarmas hay con la hora de cada una (seen.scheduled de "
+                    "tipo alarma) y pregunta si las cancelas todas (con una, nómbrala y pregunta si la cancelas)."
+                ),
                 "effect_claim": (
                     "Nothing ran this turn: do not say you did, are doing or will do anything. If the person asked "
                     "for it, say in one sentence that you did not do it."
