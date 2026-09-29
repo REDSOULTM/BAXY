@@ -318,6 +318,32 @@ internal sealed class MindPlanSession
             _ = _host.TryMarkResolved(registry, prepared);
             execution.PendingOperation = null;
             Persist(execution);
+            string failure = MindPlanBoundary.WithStepTarget(response.Message, arguments);
+
+            if (MindPlanBoundary.IndependentRemainder(execution, response) is { } remainder)
+            {
+                // M56 (v3c-final F-w06-t1 «pon el word a la izquierda y el chrome a la derecha» with
+                // Word closed): the first window's resolve failed and Chrome was never placed. A step
+                // that changed nothing ends only its own chain; the steps that do not depend on it
+                // still run, and the end says what was done and what was not, with its target.
+                var continued = new PendingMindPlanExecution(
+                    execution.Objective,
+                    remainder,
+                    execution.ReplanCount)
+                {
+                    DeferredFailure = MindPlanBoundary.MergeFailures(execution.DeferredFailure, failure),
+                };
+                foreach (JsonNode? observation in execution.Observations)
+                {
+                    continued.Observations.Add(observation?.DeepClone());
+                }
+
+                continued.CompletedMessages.AddRange(execution.CompletedMessages);
+                _pending = continued;
+                Persist(continued);
+                execution = continued;
+                continue;
+            }
 
             if (MindPlanBoundary.MayReplan(execution, response))
             {
@@ -342,7 +368,10 @@ internal sealed class MindPlanSession
                     var replanned = new PendingMindPlanExecution(
                         execution.Objective,
                         replacement.Steps,
-                        execution.ReplanCount + 1);
+                        execution.ReplanCount + 1)
+                    {
+                        DeferredFailure = execution.DeferredFailure,
+                    };
                     foreach (JsonNode? observation in execution.Observations)
                     {
                         replanned.Observations.Add(observation?.DeepClone());
@@ -358,11 +387,19 @@ internal sealed class MindPlanSession
 
             FinishWithFailure(
                 execution,
-                response.Message);
+                failure);
             return;
         }
 
         Clear();
+        if (execution.DeferredFailure is { } deferred)
+        {
+            _host.Publish(
+                MissionNarration.CreateFailureMessage(execution.CompletedMessages, deferred),
+                UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+            return;
+        }
+
         if (execution.CompletedMessages.Count == 1)
         {
             _host.Publish(
@@ -650,7 +687,9 @@ internal sealed class MindPlanSession
     {
         Clear();
         _host.Publish(
-            MissionNarration.CreateFailureMessage(execution.CompletedMessages, reason),
+            MissionNarration.CreateFailureMessage(
+                execution.CompletedMessages,
+                MindPlanBoundary.MergeFailures(execution.DeferredFailure, reason)),
             UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
     }
 
