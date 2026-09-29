@@ -123,6 +123,7 @@ from .semantic.conversation import (
     asks_an_extended_answer,
     asks_baxys_name,
     asks_for_code,
+    asks_to_make,
     asks_to_order,
     asks_what_this_is,
     assent_without_action,
@@ -133,6 +134,7 @@ from .semantic.conversation import (
     quoted_translation_phrase,
     random_draw_request,
     recall_asked,
+    requested_infinitive_stems,
     sarcasm_question,
     spelling_word,
     versus_contenders,
@@ -1287,7 +1289,8 @@ def _build_direct_argument_payload(
         # reading dueUtc as a UTC date to compute. The literal is what it copies; the mind converts it.
         + (
             " dueUtc es la hora tal como la dijo la persona («a las 5 de la tarde», «mañana a las 9:50», "
-            "«en 10 minutos»): cópiala literal; la conversión a UTC la hace el sistema."
+            "«en 10 minutos»): cópiala literal; la conversión a UTC la hace el sistema. Si falta, la pregunta pide "
+            "cuándo, con palabras de la persona, sin nombrar UTC, zonas horarias ni formatos."
             if "dueUtc" in schema.get("properties", {})
             else ""
         )
@@ -1350,7 +1353,9 @@ def validate_missing_argument_clarification(
         )
     ):
         raise ValueError("la aclaración no es una única pregunta acotada")
-    return _question_opening(question)
+    # M54 (v3b-final F-w05-t3): the same-call question of the argument extraction asked the date «en formato UTC»,
+    # read off the field dueUtc; the person says when in their words and the mind converts them.
+    return _question_opening(_question_without_time_format(question))
 
 
 def _question_opening(question: str) -> str:
@@ -4010,6 +4015,51 @@ _PLURAL_VERB_WITH_YO = re.compile(r"\b(?:lo|la|los|las|le|les)\s+[a-z]{2,}(?:an|
 _DOUBLED_E_FIRST_PERSON = re.compile(r"\b[a-z]+eeo\b")
 
 
+# M54 (v3b-devD D-s004 «recomprar el último billete…» → «No recomprobo el billete…»): the first person a limit
+# denies («no X-o») of a verb the person wrote as an infinitive. Folded.
+_NEGATED_FIRST_PERSON_VERB = re.compile(
+    r"(?:^|[.:;,!¡]\s*|\byo\s+)no\s+(?:(?:me|te|se|lo|la|los|las|le|les|nos)\s+)?([a-zñ]{4,}o)\b"
+)
+
+
+def _first_person_forms(stem: str) -> set[str]:
+    """The present first persons a Spanish stem may take: regular, with its diphthong (recomiendo, cuento, adquiero),
+    its closed vowel (repito), the -go of tener, poner, venir, salir, traer and decir (obtengo, propongo, distraigo,
+    predigo, deshago), and the spelling changes of -cer/-cir, -ger/-gir, -guir and -uir (conozco, venzo, protejo,
+    distingo, construyo)."""
+
+    stems = {stem}
+    for vowel, changed in (("e", "ie"), ("o", "ue"), ("e", "i"), ("i", "ie")):
+        cut = stem.rfind(vowel)
+        if cut > 0:
+            stems.add(stem[:cut] + changed + stem[cut + 1:])
+    forms: set[str] = set()
+    for base in stems:
+        forms |= {base + "o", base + "yo", base + "go", base + "igo"}
+        if base.endswith("c"):
+            forms |= {base[:-1] + "zco", base[:-1] + "zo", base[:-1] + "go"}
+        if base.endswith("g"):
+            forms.add(base[:-1] + "jo")
+        if base.endswith("gu"):
+            forms.add(base[:-1] + "o")
+    return forms
+
+
+def limit_breaks_the_asked_verb(value: object, request: object) -> bool:
+    """The limit denies, in the first person, a verb the person wrote, conjugated into a word that is no form of it
+    («recomprobo» for «recomprar»): the two share their first five letters, and it is none of its first persons."""
+
+    stems = requested_infinitive_stems(request)
+    if not stems:
+        return False
+    for found in _NEGATED_FIRST_PERSON_VERB.finditer(_reading_fold(str(value or ""))):
+        verb = found.group(1)
+        for stem in stems:
+            if verb[:5] == stem[:5] and verb not in _first_person_forms(stem):
+                return True
+    return False
+
+
 def visible_reply_breaks_first_person(value: object) -> bool:
     """BAXY's «yo» with a plural verb («no la activan yo») or an invented first person («leeo»)."""
 
@@ -4515,6 +4565,17 @@ _CAUSE_FACT = {
     "microphone_already_unmuted": (
         "the microphone was already active, not muted, so nothing changed"
     ),
+    # M54 (v3b-final F-w02-t4, F-w11-t3): the output level already at the end the person moves it towards.
+    "volume_already_at_maximum": (
+        "the volume was already at its maximum (100%), so nothing changed"
+    ),
+    "volume_already_at_maximum_muted": (
+        "the volume was already at its maximum (100%) but the sound is muted, so nothing changed and nothing is "
+        "heard; say it plainly and ask whether to unmute it, without saying it was unmuted"
+    ),
+    "volume_already_at_minimum": (
+        "the volume was already at its minimum (0%), so nothing changed"
+    ),
     "external_verification_failed": (
         "the change could not be observed afterwards, so it is not confirmed"
     ),
@@ -4556,6 +4617,22 @@ _CAUSE_FACT = {
 
 # An identifier the PC assigns (windowId, taskId, noteId, eventId…): the person never knows it (M39).
 _INTERNAL_IDENTIFIER_FIELD = re.compile(r"(?:Id|ID|Ids|_id)$")
+# M54: a field whose name carries a machine time format (dueUtc): the person says when, the system converts.
+_MACHINE_TIME_FIELD = re.compile(r"(?:Utc|UTC|Iso|ISO)$")
+# «en formato UTC», «(UTC)», «in ISO 8601 format», «hora UTC»: the format named in a question to the person.
+_TIME_FORMAT_JARGON = re.compile(
+    r"\s*\(\s*(?:UTC|ISO(?:[\s-]*8601)?)\s*\)"
+    r"|\s*,?\s+(?:en|in)\s+(?:(?:el|the)\s+)?(?:formato\s+)?(?:UTC|ISO(?:[\s-]*8601)?)(?:\s+(?:format|time))?\b"
+    r"|\s+(?:UTC|ISO[\s-]*8601)\b",
+)
+
+
+def _question_without_time_format(question: str) -> str:
+    """The question without a machine time format: the person answers in their own words and the mind converts them
+    (a person who said UTC is answered in UTC all the same)."""
+
+    cleaned = _TIME_FORMAT_JARGON.sub("", question)
+    return re.sub(r"\s+([?,.])", r"\1", cleaned)
 
 def _situation_from_facts(facts: dict) -> dict:
     raw = facts.get("situation")
@@ -6777,6 +6854,13 @@ _DETERMINISTIC_FAILURES = {
         "No pude confirmar que se hiciera el cambio.",
         "I couldn't confirm that the change was made.",
     ),
+    # M54 (v3b-final F-w02-t4, F-w11-t3): the level already at its end is the whole fact, said plainly.
+    "volume_already_at_maximum": ("El volumen ya está al máximo.", "The volume is already at maximum."),
+    "volume_already_at_maximum_muted": (
+        "El volumen ya está al máximo, pero en silencio. ¿Lo activo?",
+        "The volume is already at maximum, but muted. Should I unmute it?",
+    ),
+    "volume_already_at_minimum": ("El volumen ya está al mínimo.", "The volume is already at minimum."),
 }
 
 
@@ -6900,6 +6984,28 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
         else:
             head = f"Hay {total} ventanas; en esta página van {listed}: " if partial else "Ventanas abiertas: "
         return head + ", ".join(names) + "."
+    if operation == "web.search" and seen.get("authority") == "openstreetmap_nominatim":
+        # M54 (v3b-final F-p06-t3): the places OpenStreetMap returned inside the asked place are the answer, so they
+        # are told by their names and streets as the read writes them (the nearest first), never as not found.
+        places: list[str] = []
+        for item in _search_results_of(payload)[:3]:
+            if not isinstance(item, dict):
+                continue
+            title = str(item.get("title") or "").strip()
+            parts = [part.strip() for part in str(item.get("snippet") or "").split(",") if part.strip()]
+            if parts and _reading_fold(parts[0]) == _reading_fold(title):
+                parts = parts[1:]
+            # A house number is not a street («8, Calle de Hernán Cortés»).
+            street = next((part for part in parts if not part.isdigit()), "")
+            # A place without a name is titled by its OpenStreetMap type, in lower case («parking»): its street names it.
+            generic = not title or title.islower()
+            place = street if generic else (f"{title} ({street})" if street else title)
+            if place and place not in places:
+                places.append(place)
+        if not places:
+            return ""
+        listed = ", ".join(places[:-1]) + (" and " if english else " y ") + places[-1] if len(places) > 1 else places[0]
+        return f"I found: {listed}." if english else f"Encontré: {listed}."
     return ""
 
 
@@ -8092,6 +8198,13 @@ _SEARCH_NOT_FOUND = re.compile(
 )
 
 
+_CURRENCY_SIGN_NAMES = {
+    "$": frozenset({"peso", "pesos", "dolar", "dolares", "dollar", "dollars"}),
+    "€": frozenset({"euro", "euros"}),
+    "£": frozenset({"libra", "libras", "pound", "pounds"}),
+}
+
+
 def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> list[str]:
     """The words of the report that no result and no request shares.
 
@@ -8120,6 +8233,11 @@ def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> 
     observed = set(re.findall(r"[a-z]+", _reading_fold(results_text))) | set(
         re.findall(r"[a-z]+", _reading_fold(f"{user_text} {near_voice}"))
     )
+    # M54 (v3b-final F-w13-t2 «40 litros de nafta súper cuestan 82.360 pesos» over «$82.360»): a currency sign the
+    # pages write is said with its name.
+    for sign, names in _CURRENCY_SIGN_NAMES.items():
+        if sign in results_text:
+            observed |= names
     results = [item for item in _search_results_of(payload) if isinstance(item, dict)]
 
     def page_text(items: list[dict]) -> str:
@@ -8345,6 +8463,49 @@ def _search_not_found_report(text: str, situation: dict) -> bool:
     return not _asserts_failure(rest)
 
 
+# M54 (v3b-final F-p03-t1 «can you find the note called grocery?» over a verified note list that holds only «Llego
+# tarde hoy»): «I cannot find a note called "grocery"» was vetoed as a failure asserted, and the retry published «No
+# found a note titled grocery». A verified listing that does not hold the named item is told as not found; the item
+# the clause names (quoted, or after called/named/titled/llamada/titulada) must be in no listed entry.
+_LISTING_NOT_FOUND_CLAUSE = re.compile(
+    r"\b(?:i\s+)?(?:can'?t|cannot|couldn'?t|could\s+not|didn'?t|did\s+not|don'?t|do\s+not)\s+(?:find|see)\b"
+    r"|\bno\s+(?:(?:lo|la|los|las)\s+)?(?:encuentro|encontre|veo|pude\s+encontrar|hay\s+ningun[oa]?)\b"
+    r"|\bthere\s+(?:is|are)\s+no\b|\bnot\s+found\b"
+)
+_LISTING_NAMED_ITEM = re.compile(
+    r"[«\"“]([^»\"”]{1,120})[»\"”]|\b(?:called|named|titled|llamad[oa]s?|titulad[oa]s?)\s+([^\s,;.]+(?:\s+[^\s,;.]+)?)"
+)
+_LISTING_KEYS = ("notes", "items", "files", "entries", "names", "tasks", "events", "reminders", "notifications")
+
+
+def _listing_not_found_report(text: str, situation: dict) -> bool:
+    if situation.get("verified") is not True or situation.get("succeeded") is not True:
+        return False
+    observed = _merged_observed(situation)
+    listed = [observed[key] for key in _LISTING_KEYS if isinstance(observed.get(key), list)]
+    if not listed:
+        return False
+    entries = " \n ".join(
+        _reading_fold(" ".join(str(value) for value in entry.values() if isinstance(value, str)))
+        if isinstance(entry, dict) else _reading_fold(str(entry))
+        for group in listed for entry in group
+    )
+    folded = _accent_folded_with_punctuation(text)
+    clauses = re.split(r"[.;:!?\n]+|,\s*(?:but|pero|and|y)\b", folded)
+    found = [clause for clause in clauses if _LISTING_NOT_FOUND_CLAUSE.search(clause)]
+    if not found:
+        return False
+    items = [
+        item
+        for clause in found for match in _LISTING_NAMED_ITEM.finditer(clause)
+        if (item := _reading_fold(match.group(1) or match.group(2)).strip(" «»\"'“”"))
+    ]
+    if not items or any(item in entries for item in items):
+        return False
+    rest = " . ".join(clause for clause in clauses if not _LISTING_NOT_FOUND_CLAUSE.search(clause))
+    return not _asserts_failure(rest)
+
+
 # «según Tripadvisor», «according to BBC Mundo»: a source named by its proper name.
 _SEARCH_NAMED_SOURCE = re.compile(
     r"\b(?:[Ss]eg[uú]n|[Aa]ccording\s+to|[Dd]e\s+acuerdo\s+con)\s+(?:(?:el|la|los|las|the)\s+)?[A-ZÁÉÍÓÚÑ][\w.-]*"
@@ -8566,19 +8727,30 @@ def _search_term_found(term: str, observed: set[str]) -> bool:
     return len(term) >= 5 and len(stem) >= 4 and any(len(word) >= 4 and word.startswith(stem) for word in observed)
 
 
-def _search_result_is_about(query: str, item: dict, titled: bool) -> bool:
+def _search_result_is_about(query: str, item: dict, titled: bool, dropped: frozenset[str] = frozenset()) -> bool:
     """«titled»: the source's pages are about their title (an encyclopedia article, a headline). A general engine's
     page title is often the site's own, so there the snippet may carry the query's words instead, and half of them
-    is enough."""
+    is enough. «dropped»: names of the query that no result carries and the report does not say, left out."""
 
-    terms = _search_query_terms(query)
+    terms = [term for term in _search_query_terms(query) if term not in dropped]
     if not terms:
         return False
     title = set(re.findall(r"[a-z0-9]+", _reading_fold(str(item.get("title") or ""))))
     observed = title | set(re.findall(r"[a-z0-9]+", _reading_fold(str(item.get("snippet") or ""))))
-    names = _search_query_names(query)
+    names = [name for name in _search_query_names(query) if name not in dropped]
     if names:
         if not all(_search_term_found(name, observed) for name in names):
+            return False
+        # M54 (v3b-final F-p08-t2 «stage shows in Cape Town» → the article «Cape Town Stadium»): an article whose title
+        # names something narrower than the place asked about (a word that is neither a name nor a word of the query)
+        # is about that thing; it answers only if its title carries one of the other words asked.
+        others = [term for term in terms if term not in names]
+        narrower = [
+            word for word in title
+            if len(word) >= 4 and not word.isdigit() and word not in _SEARCH_QUERY_FRAME_WORDS
+            and not any(_search_term_found(term, {word}) for term in terms)
+        ]
+        if titled and others and narrower and not any(_search_term_found(term, title) for term in others):
             return False
     elif titled and not any(_search_term_found(term, title) for term in terms):
         return False
@@ -8588,6 +8760,36 @@ def _search_result_is_about(query: str, item: dict, titled: bool) -> bool:
         # «Cómo llegar a Parquelandia Resort»).
         return matched >= (len(terms) + 1) // 2
     return matched >= (len(terms) if len(terms) <= 2 else len(terms) // 2 + 1)
+
+
+def _search_query_unseen_names(query: str, results: list) -> frozenset[str]:
+    """The names of the query (folded) that no result carries, when at least one other name is carried."""
+
+    names = _search_query_names(query)
+    observed = [
+        set(re.findall(r"[a-z0-9]+", _reading_fold(f"{item.get('title') or ''} {item.get('snippet') or ''}")))
+        for item in results
+        if isinstance(item, dict)
+    ]
+    unseen = frozenset(name for name in names if not any(_search_term_found(name, words) for words in observed))
+    return unseen if len(unseen) < len(names) else frozenset()
+
+
+def _search_report_says_unseen_name(text: str, payload: dict, user_text: str) -> list[str]:
+    """The query's names, as the query writes them, that no result carries and the report says (the retry is told to
+    leave them out, not to give up: v3b-final F-w13-t2 «…cuesta $82.360 en Córdoba» over the country's price)."""
+
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    query = seen.get("query") if isinstance(seen.get("query"), str) and seen.get("query").strip() else user_text
+    unseen = _search_query_unseen_names(str(query or ""), _search_results_of(payload))
+    said = set(re.findall(r"[a-z0-9]+", _reading_fold(text)))
+    spelled: list[str] = []
+    for raw in str(query or "").split():
+        word = raw.strip("¿¡?!.,;:\"'«»()“”")
+        folded = _reading_fold(word)
+        if folded in unseen and _search_term_found(folded, said) and word not in spelled:
+            spelled.append(word)
+    return spelled
 
 
 def _search_report_from_no_pertinent_result(text: str, payload: dict, user_text: str) -> bool:
@@ -8607,12 +8809,35 @@ def _search_report_from_no_pertinent_result(text: str, payload: dict, user_text:
     results = [item for item in _search_results_of(payload) if isinstance(item, dict)]
     authority = str(seen.get("authority") or "")
     titled = authority.startswith("wikipedia_") or authority == "google_news_rss_search"
-    if any(_search_result_is_about(str(query), item, titled) for item in results):
+    # M54 (v3b-final F-w13-t2 «¿Cuánto me sale cargar 40 litros de nafta Super en Córdoba?»): the pages gave the
+    # country's price for 40 litres and none named Córdoba, and every draft that said the price died, «Córdoba» or not.
+    # A name of the query that no result carries is left out of the judgment when the report does not say it (then it
+    # claims nothing about it) and another name still binds the results to the query.
+    unseen = _search_query_unseen_names(str(query), results)
+    said = set(re.findall(r"[a-z0-9]+", _reading_fold(text)))
+    dropped = unseen if not any(_search_term_found(name, said) for name in unseen) else frozenset()
+    if any(_search_result_is_about(str(query), item, titled, dropped) for item in results):
         return False
     return any(
         _SEARCH_NOT_FOUND.match(_reading_fold(sentence)) is None
         for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip())
         if sentence.strip()
+    )
+
+
+def _search_report_denies_found_places(text: str, payload: dict) -> bool:
+    """M54 (v3b-final F-p06-t3 «Mejor en calle Génova» → «No encontré aparcamiento en la calle Génova en Madrid» over
+    five car parks of Chueca, the next streets): the places OpenStreetMap returns are of the asked kind inside the asked
+    place by construction, so they cannot be reported as not found nor as absent."""
+
+    if _search_results_text(payload) is None:
+        return False
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    if seen.get("authority") != "openstreetmap_nominatim":
+        return False
+    return any(
+        _SEARCH_NOT_FOUND.match(folded) is not None or _SEARCH_ABSENCE_CLAIM.search(folded) is not None
+        for folded in (_reading_fold(sentence) for sentence in re.split(r"(?<=[.!?;])\s+", str(text).strip()))
     )
 
 
@@ -8651,6 +8876,46 @@ def _search_report_proposal_as_fact(text: str, payload: dict, user_text: str) ->
             naming = [words for words in results if thing and all(_search_term_found(word, words) for word in thing)]
             if naming and all(words & _SEARCH_PROPOSAL_WORDS for words in naming):
                 return True
+    return False
+
+
+# M54 (review of v3b-final): «No hay taquerías específicas con servicio a domicilio» over five directory pages, «No hay
+# aparcamiento para motocicletas en el centro» over a list of car parks: that a thing does not exist is a fact of the
+# world only a page can state. What the pages do not carry was not found. Folded.
+_SEARCH_ABSENCE_CLAIM = re.compile(
+    r"\bno\s+(?:hay|habra|habia|existen?|existira|tienen?|cuentan?\s+con|ofrecen?|disponen?\s+de|venden?)\b|"
+    r"\bno\s+se\s+(?:venden?|ofrecen?)\b|\bningun[oa]?\s+[a-z]+\s+(?:tiene|ofrece|cuenta)\b|"
+    r"\bthere\s+(?:is|are|was|were|will\s+be)\s+no\b|\bthere\s+(?:isn'?t|aren'?t|won'?t\s+be)\b|"
+    r"\b(?:doesn'?t|does\s+not|don'?t|do\s+not)\s+(?:have|offer|exist)\b|\bnone\s+(?:of\s+them\s+)?(?:is|are|has|have)\b"
+)
+_SEARCH_RESULT_NEGATION = r"(?:\b(?:no|not|sin|ningun[oa]?|none|never|nunca|without|nadie|nothing|nada)\b|n't\b)"
+
+
+def _search_report_absence_claim(text: str, payload: dict) -> bool:
+    """A sentence of the report says a thing does not exist or is not offered, and no result denies one of its words
+    (a negation at most three words before it: «sin servicio a domicilio», «no hay aparcamiento»)."""
+
+    if _search_results_text(payload) is None:
+        return False
+    results = [
+        _reading_fold(f"{item.get('title') or ''} {item.get('snippet') or ''}")
+        for item in _search_results_of(payload)
+        if isinstance(item, dict)
+    ]
+    for sentence in re.split(r"(?<=[.!?;])\s+", str(text).strip()):
+        folded = _reading_fold(sentence)
+        if _SEARCH_NOT_FOUND.match(folded) is not None or _SEARCH_ABSENCE_CLAIM.search(folded) is None:
+            continue
+        words = {
+            word for word in re.findall(r"[a-z]{5,}", folded)
+            if word not in _SEARCH_QUERY_FRAME_WORDS and word not in _SEARCH_REPORT_GRAMMAR_WORDS
+        }
+        if not any(
+            re.search(_SEARCH_RESULT_NEGATION + r"(?:\W+[\w']+){0,3}?\W+" + re.escape(word[:5]), result) is not None
+            for result in results
+            for word in words
+        ):
+            return True
     return False
 
 
@@ -9034,6 +9299,79 @@ def _weather_answer_instruction(user_text: str, language: str) -> str:
     return fields + _weather_focus(user_text, english) + closing
 
 
+# M54 (review of the official-window run v3b-final, F-s066 «¿hará bueno para San Juan?» → «Mañana será más frío, con
+# 29.3 °C y llovizna» next to 29.3 °C now): a comparison between days is a fact of both days' figures. Folded.
+_WEATHER_COMPARISONS = (
+    ("colder", re.compile(
+        r"\bmas\s+(?:frio|fria|fresco|fresca|fresquito)\b|\bmenos\s+(?:calor|caluros[oa]|calid[oa]|templad[oa])\b|"
+        r"\brefrescar?a\b|\b(?:bajar?an?|descender?an?)\s+(?:las?\s+)?temperaturas?\b|\bcolder\b|\bcooler\b|"
+        r"\bless\s+(?:hot|warm)\b|\btemperatures?\s+(?:will\s+)?(?:drop|fall)\b"
+    )),
+    ("warmer", re.compile(
+        r"\bmas\s+(?:calor|caluros[oa]|calid[oa]|templad[oa])\b|\bmenos\s+(?:frio|fria|fresco|fresca)\b|"
+        r"\b(?:subir?an?|aumentar?an?)\s+(?:las?\s+)?temperaturas?\b|\bwarmer\b|\bhotter\b|\bless\s+(?:cold|cool)\b|"
+        r"\btemperatures?\s+(?:will\s+)?rise\b"
+    )),
+    ("wetter", re.compile(
+        r"\bmas\s+(?:lluvia|lluvios[oa]|probabilidad\s+de\s+lluvia)\b|\bllovera\s+mas\b|\bmore\s+rain\b|\bwetter\b|"
+        r"\brainier\b|\b(?:higher|greater)\s+chance\s+of\s+rain\b"
+    )),
+    ("drier", re.compile(
+        r"\bmenos\s+(?:lluvia|lluvios[oa]|probabilidad\s+de\s+lluvia)\b|\bllovera\s+menos\b|\bless\s+rain\b|\bdrier\b|"
+        r"\bdryer\b|\b(?:lower|smaller)\s+chance\s+of\s+rain\b"
+    )),
+)
+
+
+def _weather_unsupported_comparison(text: str, seen: dict) -> bool:
+    """A sentence compares a day with today (colder, warmer, more or less rain) and the figures of the read do not
+    show it. Colder or warmer needs both the maximum and the minimum to move that way, one of them by a degree or more
+    (29,3 → 29,3 now, 30,5 → 29,3 at the top but 25,8 → 26,2 at the bottom is not «más frío»); more or less rain needs
+    the rain chances to differ that way. A day before today is never read, so «que ayer» is never shown."""
+
+    today = seen.get("today") if isinstance(seen.get("today"), dict) else None
+    days: list[tuple[str, dict]] = []
+    if isinstance(seen.get("tomorrow"), dict):
+        # «por la mañana» is a time of day and «pasado mañana» a later day, not tomorrow.
+        days.append(("(?<!la )(?<!pasado )manana|tomorrow", seen["tomorrow"]))
+    for block in (seen.get("tomorrow"), *(seen.get("laterDays") or [])):
+        weekday = _reading_fold(str(block.get("weekday") or "")) if isinstance(block, dict) else ""
+        if weekday:
+            days.append((re.escape(weekday), block))
+
+    def figure(block: dict | None, key: str) -> float | None:
+        value = block.get(key) if isinstance(block, dict) else None
+        return float(value) if isinstance(value, (int, float)) and not isinstance(value, bool) else None
+
+    for sentence in re.split(r"(?<=[.!?;])\s+", _reading_fold(text)):
+        said = [kind for kind, pattern in _WEATHER_COMPARISONS if pattern.search(sentence)]
+        if not said:
+            continue
+        if re.search(r"\b(?:ayer|yesterday)\b", sentence):
+            return True
+        day = next((block for words, block in days if re.search(rf"\b(?:{words})\b", sentence)), None)
+        if day is None:
+            # Only a day the read carries is compared with today; a sentence naming none compares nothing it can show.
+            continue
+        for kind in said:
+            if kind in {"colder", "warmer"}:
+                changes = [
+                    (figure(day, key) - figure(today, key))
+                    for key in ("maxC", "minC")
+                    if figure(day, key) is not None and figure(today, key) is not None
+                ]
+                sign = -1 if kind == "colder" else 1
+                if len(changes) != 2 or any(sign * change < 0 for change in changes) or max(
+                    sign * change for change in changes
+                ) < 1:
+                    return True
+            else:
+                later, now = figure(day, "rainProbabilityPercent"), figure(today, "rainProbabilityPercent")
+                if later is None or now is None or (later <= now if kind == "wetter" else later >= now):
+                    return True
+    return False
+
+
 def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     """REOPEN1993 grupo W: every number in a weather reply is an observed one
     (temperatures, wind, humidity, rain probability) and the place is named;
@@ -9098,6 +9436,8 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
             or (unit.startswith(("mm", "mil")) and amount in _weather_number_forms(rain_mm))
         ):
             return "invented_number"
+    if _weather_unsupported_comparison(text, seen):
+        return "weather_unsupported_comparison"
     asks = _reading_fold(user_text or "")
     tomorrow = seen.get("tomorrow")
     asks_tomorrow = _weather_asks_tomorrow(user_text or "")
@@ -9633,6 +9973,11 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
             _reading_fold(text),
         ):
             return "search_result_denied"
+        if _search_report_denies_found_places(text, payload):
+            # M54: an OpenStreetMap place list is the answer, so neither «no lo encontré» nor «no hay» fits it.
+            return "search_places_denied"
+        if _search_report_absence_claim(text, payload):
+            return "search_report_absence_claim"
         if _search_report_off_subject(text, payload, user_text) or _search_report_from_no_pertinent_result(
             text, payload, user_text
         ):
@@ -10172,7 +10517,12 @@ _TASK_METADISCOURSE = re.compile(
     r"(?<!shooter )(?<!shooter en )"
     r"(?:en |in )?primera persona(?! shooter)|"
     r"first person(?! shooter| view| perspective| camera| combat)|"
-    r"sin (?:c[oó]digo|t[eé]rminos internos)|no internal (?:codes?|terms?)",
+    r"sin (?:c[oó]digo|t[eé]rminos internos)|no internal (?:codes?|terms?)|"
+    # M54 (v3b-final F-p08-t3 «What is the venue of the event?» → «The venue is not specified in the provided
+    # information»): the facts the writer was given are the prompt, not something the person gave or can see.
+    r"\b(?:the|this|la|esta|los|estos|las|estas) (?:provided|given|supplied) (?:information|info|data|facts|context)\b|"
+    r"\b(?:information|info|data|facts|context) (?:provided|given|supplied)(?! by)\b|"
+    r"\b(?:informaci[oó]n|datos|hechos|contexto|situaci[oó]n) (?:proporcionad|suministrad|facilitad)[oa]s?\b",
     re.IGNORECASE,
 )
 
@@ -11918,6 +12268,7 @@ def compose_visible_defect(
         and not _looks_like_capability_question(user_text)
         and not (kind == "conversation" and _failure_word_is_the_persons(failure_assertions, user_text))
         and not _search_not_found_report(stripped, situation)
+        and not _listing_not_found_report(stripped, situation)
     ):
         return "asserted_failure"
     if intent == "welcome" or kind == "welcome":
@@ -12075,8 +12426,9 @@ def compose_visible_defect(
     # Owner's test 2026-09-21 (turn 205): «el micrófono ya estaba silenciado» is
     # the typed cause of the failure (microphone_already_muted), not a claim
     # beyond the facts; the mute words of that cause are the fact.
+    # M54: «ya está al máximo, pero en silencio» is the typed cause volume_already_at_maximum_muted.
     mute_is_the_cause = any(
-        str(code).startswith("microphone_already_")
+        str(code).startswith("microphone_already_") or str(code) == "volume_already_at_maximum_muted"
         for code in _situation_error_codes(situation)
     )
     if mentions_mute and "muted" not in observed_dict and operation != "audio.mute" and not mute_is_the_cause:
@@ -12928,10 +13280,13 @@ def _unsupported_answer_contract_failure(
         return "unsupported_malformed_modal"
     if visible_reply_invents_a_spanish_infinitive(content):
         return "unsupported_invented_infinitive"
-    if visible_reply_breaks_first_person(content):
+    if visible_reply_breaks_first_person(content) or limit_breaks_the_asked_verb(content, request):
         return "unsupported_broken_person"
-    if asks_to_order(request) and _MAKING_ACT.search(_policy_guard_text(content)) is not None:
-        # v3a-final F-w11-t1: ordering tacos is not preparing them.
+    if _MAKING_ACT.search(_policy_guard_text(content)) is not None and (
+        asks_to_order(request) or not asks_to_make(request)
+    ):
+        # v3a-final F-w11-t1: ordering tacos is not preparing them. M54 (v3b-devD D-s042 «quiero pastel de camote de
+        # una panadería local» → «No preparo el pastel…»): making is denied only when making was asked.
         return "unsupported_changed_act"
     if visible_reply_breaks_word_case(content, request):
         return "unsupported_broken_case"
@@ -17540,6 +17895,10 @@ class LlmRuntime:
                 # person; what is asked is which item, by its name or title.
                 | ({"ask_as": "which one, by its name or title; never an ID or code"}
                    if _INTERNAL_IDENTIFIER_FIELD.search(field) else {})
+                # M54 (v3b-final F-w05-t3 «apúntamelo como recordatorio un mes antes» → «¿Cuál es la fecha y hora
+                # exacta en formato UTC…?»): the machine format of a time field is the system's to convert.
+                | ({"ask_as": "when, in the person's own words (a day and an hour); never a format, a time zone or UTC"}
+                   if _MACHINE_TIME_FIELD.search(field) else {})
                 for field in unresolved_fields
             ],
         }
@@ -20510,11 +20869,37 @@ class LlmRuntime:
                     )
                 ),
                 "search_report_off_subject": (
-                    "No result is about what was asked: say briefly, in one sentence, that you could not find it; "
-                    "do not give facts about anything else."
+                    (
+                        "No result names " + ", ".join("«" + name + "»" for name in unseen_names) + ": say what "
+                        "they state without placing it there, in one sentence; if nothing answers, say briefly that "
+                        "you could not find it."
+                        if response_language == "en"
+                        else "Ningún resultado nombra " + ", ".join("«" + name + "»" for name in unseen_names)
+                        + ": di lo que afirman sin atribuirlo a eso, en una oración; si nada lo contesta, di "
+                        "brevemente que no lo encontraste."
+                    )
+                    if (unseen_names := _search_report_says_unseen_name(candidate, visible_situation, user_text))
+                    else "No result is about what was asked: say briefly, in one sentence, that you could not find "
+                    "it; do not give facts about anything else."
                     if response_language == "en"
                     else "Ningún resultado trata de lo que se preguntó: di brevemente, en una oración, que no lo "
                     "encontraste; no des datos de otra cosa."
+                ),
+                "search_report_absence_claim": (
+                    "No result says that it does not exist or is not offered: say only, briefly, that you could not "
+                    "find it; never that there is none."
+                    if response_language == "en"
+                    else "Ningún resultado dice que eso no exista o no se ofrezca: di sólo, en breve, que no lo "
+                    "encontraste; nunca que no hay."
+                ),
+                "search_places_denied": (
+                    "These results are what was asked, found in that place: name one or two of them with their "
+                    "street, as the results write them, in one sentence; never say you did not find it, and add no "
+                    "quality a result does not state."
+                    if response_language == "en"
+                    else "Estos resultados son lo pedido, encontrado en ese lugar: nombra uno o dos con su calle, "
+                    "tal como los escriben los resultados, en una oración; nunca digas que no lo encontraste ni "
+                    "añadas cualidades que ningún resultado dice."
                 ),
                 "search_report_proposal_as_fact": (
                     "A result only says that is proposed or planned: say it is proposed (or planned), never that it "
@@ -20908,6 +21293,13 @@ class LlmRuntime:
                     else "Use only the observed numbers from seen.monitors (width, height, refreshHz) and seen.monitorCount; no other number."
                     if response_language == "en"
                     else "Usa sólo los números observados de seen.monitors (width, height, refreshHz) y seen.monitorCount; ningún otro número."
+                ),
+                "weather_unsupported_comparison": (
+                    "Do not compare the days (colder, warmer, more or less rain): the figures do not show it. Say "
+                    "each day's observed figures as they are."
+                    if response_language == "en"
+                    else "No compares los días (más frío, más calor, más o menos lluvia): las cifras no lo muestran. "
+                    "Di las cifras observadas de cada día tal cual."
                 ),
                 "reversed_state": (
                     "State the observed Bluetooth radio state exactly: seen.radioOn true is on, false is off."

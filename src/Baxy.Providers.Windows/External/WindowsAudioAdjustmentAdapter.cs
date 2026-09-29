@@ -46,6 +46,18 @@ internal sealed class WindowsAudioAdjustmentAdapter : IExternalOperationAdapter
             using IWindowsAudioEndpoint endpoint = _openDefaultOutput();
             int baseline = Percent(endpoint.ReadVolumeScalar());
             bool baselineMuted = endpoint.ReadMuted();
+            // M54 (v3b-final F-w02-t4, F-w11-t3 «súbele harto a la música» at 100 % and muted): a level already at
+            // the end the person moves it towards cannot change, so no effect can be observed; the honest fact is
+            // the state, said before any boundary is crossed (same contract as the microphone), with the mute that
+            // explains why nothing is heard.
+            if (direction == "up" ? baseline >= 100 : baseline <= 0)
+            {
+                return ValueTask.FromResult(ExternalJson.FailureBeforeEffect(
+                    operation,
+                    direction == "down"
+                        ? "volume_already_at_minimum"
+                        : baselineMuted ? "volume_already_at_maximum_muted" : "volume_already_at_maximum"));
+            }
             int requested = Math.Clamp(
                 baseline + (direction == "up" ? amount : -amount), 0, 100);
             effectBoundary.Cross(cancellationToken);

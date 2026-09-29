@@ -5700,6 +5700,15 @@ _RECOVERY_PROMPT_VOCABULARY = (
 )
 
 
+# M54 (v3b-final F-p10-t2 «me gustaría que me mostraras el ejemplo de la calculadora científica» → «¿Podrías
+# explicarme paso a paso cómo instalar y ejecutar ese código en tu computadora?»): a clarification asks the one thing
+# missing; asking the person to explain, teach or show how to do something is their request handed back. Folded.
+_RECOVERY_MIRRORED_REQUEST = re.compile(
+    r"\b(?:explica|explicame|explicarme|explicas|ensename|ensenarme|ensenas|muestrame|mostrarme|me\s+muestras|"
+    r"explain|teach|show)\b(?:\s+\w+){0,5}?\s+(?:como|how)\b|\bpaso\s+a\s+paso\b|\bstep\s+by\s+step\b"
+)
+
+
 def _recovery_question_repeats_a_previous_turn(
     question: str,
     history: object,
@@ -5753,6 +5762,8 @@ def _recovery_question_is_valid(
         return False
     folded = read_fold(value)
     if any(term in folded for term in _RECOVERY_PROMPT_VOCABULARY):
+        return False
+    if _RECOVERY_MIRRORED_REQUEST.search(folded) is not None:
         return False
     _ = objective
     return not _recovery_question_repeats_a_previous_turn(value, history)
@@ -5813,6 +5824,14 @@ def _recover_failed_turn(
                     {
                         "name": "total_recovery",
                         "mode": result.get("kind"),
+                        # M54 (v3b-devD D-s005, D-s037): a limit recovered after its wording failed is published as
+                        # conversationKind «unsupported»; the audit said only «conversation», so the run read it as
+                        # talk. The audit carries what the result carries.
+                        **(
+                            {"conversation_kind": result["conversationKind"]}
+                            if result.get("conversationKind")
+                            else {}
+                        ),
                         "operation": result.get("operation"),
                         "effect_operations": list(result.get("effectOperations") or []),
                         "effect_verification": "not_applicable",
@@ -5989,6 +6008,9 @@ def _recovery_visible_from_compose(
         return "conversation", ""
     if _recovery_question_is_valid(text):
         return "clarify", text
+    if text.endswith("?") and _RECOVERY_MIRRORED_REQUEST.search(read_fold(text)) is not None:
+        # M54: the person's request handed back is neither a question to publish nor a reply.
+        return "conversation", ""
     return "conversation", text
 
 
