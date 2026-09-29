@@ -417,7 +417,10 @@ internal static class UserMessagePolicy
             // A7 C (DEV-A3 t217 «¿qué hora será de aquí a doce minutos?»): the mind adds the minutes to the
             // observed clock (M40) and its guard checks that later time; the current clock is not the answer.
             bool laterClockRequested = IsLaterClockRequest(userText);
-            if (clockRequested && !countdownRequested && !laterClockRequested
+            // M63 (v3f-final F-s019): a failure about the clock the person named («no hay alarma a las 8:00») owes
+            // that clock, not this PC's current one.
+            bool namedClockFailure = draft.Intent == "error" && PersonNamedClocks(userText).Count > 0;
+            if (clockRequested && !countdownRequested && !laterClockRequested && !namedClockFailure
                 && !PreservesObservedClock(draft.Source, modelText))
             {
                 return "missing_literal_fact";
@@ -430,7 +433,7 @@ internal static class UserMessagePolicy
             {
                 return "missing_literal_fact";
             }
-            if (InventedClock(draft.Source, modelText))
+            if (InventedClock(draft.Source, modelText, userText))
             {
                 return "missing_literal_fact";
             }
@@ -450,7 +453,7 @@ internal static class UserMessagePolicy
             {
                 return "missing_literal_fact";
             }
-            if (!countdownRequested && !laterClockRequested && InventedExtraClock(draft.Source, modelText))
+            if (!countdownRequested && !laterClockRequested && InventedExtraClock(draft.Source, modelText, userText))
             {
                 return "missing_literal_fact";
             }
@@ -2699,16 +2702,21 @@ internal static class UserMessagePolicy
         return cut < 0 ? string.Empty : trimmed[..(cut + 1)];
     }
 
-    private static bool InventedExtraClock(string source, string result)
+    private static bool InventedExtraClock(string source, string result, string? userText)
     {
         if (!TryDerivedLocalClock(source, out string hhmm))
         {
             return false;
         }
 
+        // M63: a clock the person named (the alarm to move) is not another reading of this PC's clock.
+        HashSet<(int Hour, int Minute)> named = PersonNamedClocks(userText);
         foreach (Match match in MatchClockTokens(result))
         {
-            if (!ClockAppears(match.Value, hhmm))
+            if (!ClockAppears(match.Value, hhmm)
+                && !named.Contains((
+                    int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture) % 12,
+                    int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture))))
             {
                 return true;
             }
@@ -3048,14 +3056,63 @@ internal static class UserMessagePolicy
             && !FoldForPolicy(source).Contains(rest, StringComparison.Ordinal);
     }
 
-    private static bool InventedClock(string source, string result)
+    private static bool InventedClock(string source, string result, string? userText)
     {
         if (TryDerivedLocalClock(source, out _) || ContainsClockPattern(source))
         {
             return false;
         }
 
-        return ContainsClockPattern(result);
+        // M63 (v3f-final F-s019 «Cambia la alarma despertador de las 8:00 a las 9:00.»): the failure carried no
+        // clock and «no estaba configurada para las 8:00 … ¿la establezco para las 9:00?» died as invented. A clock
+        // the person named is theirs to hear back, in any equivalent form; the mind judges the same
+        // (llm._failure_invents_a_clock).
+        HashSet<(int Hour, int Minute)> named = PersonNamedClocks(userText);
+        foreach (Match match in ReplyClockTokens.Matches(result))
+        {
+            int hour = int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
+            int minute = int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture);
+            if (!named.Contains((hour % 12, minute)))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // «8:00», «08:00», «8:00 a. m.», «20:00» in the reply; the hour is compared on the twelve-hour dial, since the
+    // part of the day may be said on either side and a person's «las 8» is the reply's «20:00» as well.
+    private static readonly Regex ReplyClockTokens = new(
+        @"(?<!\d)(\d{1,2}):(\d{2})(?!\d)",
+        RegexOptions.CultureInvariant);
+
+    // The clocks the person named: «8:00», «08:00», «8:00 a. m.», «8 am», «las 8 (de la mañana)», «at 8». The twin
+    // of the mind's semantic.temporal.spoken_clocks, read on the twelve-hour dial.
+    private static readonly Regex PersonClockTokens = new(
+        @"(?<!\d)(\d{1,2}):(\d{2})(?!\d)"
+            + @"|(?<![\d:])(\d{1,2})(?![\d:])(?=\s*(?:[ap]\.?\s*m\b|(?:de|en|por)\s+la\s+(?:manana|madrugada|tarde|noche)"
+            + @"|en\s+punto|o'?\s*clock))"
+            + @"|\b(?:las?|at)\s+(\d{1,2})(?![\d:])",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+    private static HashSet<(int Hour, int Minute)> PersonNamedClocks(string? userText)
+    {
+        var named = new HashSet<(int Hour, int Minute)>();
+        foreach (Match match in PersonClockTokens.Matches(FoldForPolicy(userText ?? string.Empty)))
+        {
+            (string hour, string minute) = match.Groups[1].Success
+                ? (match.Groups[1].Value, match.Groups[2].Value)
+                : (match.Groups[3].Success ? match.Groups[3].Value : match.Groups[4].Value, "0");
+            int statedHour = int.Parse(hour, CultureInfo.InvariantCulture);
+            int statedMinute = int.Parse(minute, CultureInfo.InvariantCulture);
+            if (statedHour <= 24 && statedMinute <= 59)
+            {
+                named.Add((statedHour % 12, statedMinute));
+            }
+        }
+
+        return named;
     }
 
     private static bool ContainsClockPattern(string text)

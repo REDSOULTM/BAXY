@@ -287,6 +287,14 @@ def spoken_clocks(folded: str) -> tuple[SpokenClock, ...]:
     return (SpokenClock(noon.group(0), 0 if midnight else 12, 0, True),)
 
 
+def named_clock_dial(text: str) -> frozenset[tuple[int, int]]:
+    """M63 (v3f-final F-s019 «Cambia la alarma despertador de las 8:00 a las 9:00.»): the clocks the person named, on
+    the twelve-hour dial, so that «8:00», «08:00», «8:00 a. m.», «las 8 de la mañana» and «20:00» said back are the
+    same time. The twin of the App's UserMessagePolicy.PersonNamedClocks."""
+
+    return frozenset((clock.hour % 12, clock.minute) for clock in spoken_clocks(_fold(str(text or ""))))
+
+
 def spoken_clock(folded: str) -> SpokenClock | None:
     """The first of ``spoken_clocks``, or None."""
 

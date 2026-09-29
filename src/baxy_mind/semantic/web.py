@@ -3288,6 +3288,25 @@ def _weather_asks_rain(user_text: str) -> bool:
     ) is not None
 
 
+def weather_asks_whether_it_rains(user_text: str) -> bool:
+    """M63 (v3f-final F-w01-t6 «¿va a llover donde vive mi hermana?» → «en ñuñoa»): whether it rains today or
+    tomorrow, asked yes or no («¿va a llover?», «¿lloverá mañana?», «will it rain»), is answered plainly before its
+    chance. Asked for the chance or an amount («¿qué probabilidad de lluvia hay?», «how many inches»), for rain gear
+    («¿me llevo el chubasquero?») or for later days («el fin de semana», «el martes») the figures are the answer
+    (uso real tandas 2, 6 and 8)."""
+
+    folded = _reading_fold(user_text)
+    return (
+        re.search(r"\b(?:llov\w*|llueve|llueva|rain|raining|rains)\b", folded) is not None
+        and re.search(
+            r"\b(?:cuant\w*|how\s+(?:much|many)|pulgadas|inches|milimetros|millimeters|probabilidad\w*|"
+            r"probabilit\w*|chances?|porcentaje|percent\w*)\b",
+            folded,
+        ) is None
+        and not weather_asks_coming_days(user_text)
+    )
+
+
 def _weather_asks_tomorrow(user_text: str) -> bool:
     """The weather question is about tomorrow or a later day."""
 

@@ -55,7 +55,9 @@ from .semantic.web import (
     weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
     weather_asks_coming_days, weather_asks_week, weather_sun_events_asked, place_containers,
 )
-from .semantic.temporal import _DAY_WORDS, clock_elsewhere, clock_later_asked, plural_alarm_cancellation
+from .semantic.temporal import (
+    _DAY_WORDS, clock_elsewhere, clock_later_asked, named_clock_dial, plural_alarm_cancellation,
+)
 from .semantic.games import _edit_distance
 from . import effect_intent
 from .effect_intent import (
@@ -161,7 +163,7 @@ from .semantic.notes import _PERSONAL_RECORD_STORE, names_an_own_record_store, n
 from .semantic.request import _conversation_response_language
 from .semantic.system import reports_the_gpu_stopped
 from .semantic.ui import asks_about_buttons, asks_to_see_the_screen
-from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_future, weather_asks_later_in_the_day, weather_asks_later_today, weather_asks_rain_now, weather_asks_today
+from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_future, weather_asks_later_in_the_day, weather_asks_later_today, weather_asks_rain_now, weather_asks_today, weather_asks_whether_it_rains
 
 
 MAX_CONTEXT_TOKENS = 12288
@@ -5697,6 +5699,21 @@ def _clock_fact_defect(
     return "reversed_result" if any(value != observed and value not in allowed for value in values) else ""
 
 
+_REPLY_CLOCK = re.compile(r"(?<!\d)(\d{1,2}):(\d{2})(?!\d)")
+
+
+def _failure_invents_a_clock(text: str, user_text: str, situation: dict) -> bool:
+    """M63 (v3f-final F-s019 «Cambia la alarma despertador de las 8:00 a las 9:00.»): a failure that read no clock
+    says only the clocks the person named, in any equivalent form («8:00», «08:00», «20:00» for «las 8»); any other
+    is invented. The twin of the App's UserMessagePolicy.InventedClock, so that the mind retries what the App would
+    drop (the App dropped the right answer when it counted the person's own clocks as invented)."""
+
+    if _local_clock_from_situation(situation) or _REPLY_CLOCK.search(json.dumps(situation, ensure_ascii=False)):
+        return False
+    named = named_clock_dial(user_text)
+    return any((int(hour) % 12, int(minute)) not in named for hour, minute in _REPLY_CLOCK.findall(text))
+
+
 # Familias del catálogo activo, no una lista fija del corpus. El shell manda
 # las operaciones configuradas y aquí sólo se les pone nombre de persona: una
 # respuesta de capacidades describe lo que el producto sirve hoy.
@@ -7092,6 +7109,18 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
                 break
         if day is None and _weather_asks_tomorrow(user_text or "") and isinstance(seen.get("tomorrow"), dict):
             day, day_name = seen["tomorrow"], ("tomorrow" if english else "mañana")
+        if weather_asks_whether_it_rains(user_text or "") and not weather_asks_rain_now(user_text or ""):
+            # M63 (v3f-final F-w01-t6): «¿va a llover?» (today or tomorrow) is answered plainly, not with the day's
+            # figures beside a sky its own chance contradicts.
+            if day is not None:
+                rain_days = [("mañana", "tomorrow", day)]
+            else:
+                rain_days = [("hoy", "today", seen.get("today"))]
+                if weather_asks_future(user_text or ""):
+                    rain_days.append(("mañana", "tomorrow", seen.get("tomorrow")))
+            answer = _weather_rain_final(seen["location"], rain_days, english)
+            if answer:
+                return answer
         if day is None:
             if not isinstance(seen.get("temperatureC"), (int, float)) or not isinstance(seen.get("condition"), str):
                 return ""
@@ -7134,29 +7163,20 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
                     else f"{now}; hoy: de {low} a {high} °C, {rain} % de lluvia."
                 )
             coming = seen.get("tomorrow") if weather_asks_future(user_text or "") else None
-            figures = [coming.get(key) for key in ("condition", "minC", "maxC", "rainProbabilityPercent")] if (
-                isinstance(coming, dict)
-            ) else []
-            if figures and isinstance(figures[0], str) and all(isinstance(value, (int, float)) for value in figures[1:]):
+            said = _forecast_day_said(coming, english) if isinstance(coming, dict) else ""
+            if said:
                 # M58 (v3d-final F-s066): asked in the future with no day, what is coming is tomorrow's read too.
-                low, high, rain = (_decimal_said(value, english) for value in figures[1:])
-                return (
-                    f"{now}; tomorrow: {figures[0]}, {low} to {high} °C, {rain}% chance of rain."
-                    if english
-                    else f"{now}; mañana: {figures[0]}, de {low} a {high} °C, {rain} % de lluvia."
-                )
+                return f"{now}; tomorrow: {said}." if english else f"{now}; mañana: {said}."
             return f"{now}."
-        figures = [day.get("condition"), day.get("minC"), day.get("maxC"), day.get("rainProbabilityPercent")]
-        if not isinstance(figures[0], str) or not all(isinstance(value, (int, float)) for value in figures[1:]):
+        said = _forecast_day_said(day, english)
+        if not said:
             return ""
-        low, high = (_decimal_said(value, english) for value in figures[1:3])
-        rain = _decimal_said(figures[3], english)
         return (
-            f"In {seen['location']}, {day_name}: {figures[0]}, {low} to {high} °C, {rain}% chance of rain."
+            f"In {seen['location']}, {day_name}: {said}."
             if english
-            else f"En {seen['location']}, el {day_name}: {figures[0]}, de {low} a {high} °C, {rain} % de lluvia."
+            else f"En {seen['location']}, el {day_name}: {said}."
             if day_name != "mañana"
-            else f"En {seen['location']}, mañana: {figures[0]}, de {low} a {high} °C, {rain} % de lluvia."
+            else f"En {seen['location']}, mañana: {said}."
         )
     if operation == "notification.list" and (offer := _offered_alarms(payload, user_text)) is not None:
         return _alarm_offer_final(offer, english)
@@ -9554,16 +9574,22 @@ def _weather_focus(user_text: str, english: bool) -> str:
         )
     coming = weather_asks_coming_days(user_text)
     if _weather_asks_rain(user_text):
+        # M63 (v3f-final F-w01-t6): a yes-or-no rain question is answered yes or no first, as the chance says.
+        plain = weather_asks_whether_it_rains(user_text)
         return (
             "The person asked about rain (or rain gear, or an amount of rain): answer with the rain "
             "probability of the day asked, tomorrow's for tomorrow"
             + (", the matching day of seen.laterDays for a later day or the likeliest days for the week." if coming
                else " or a later day.")
+            + (" Say first whether it will rain (yes, it may, or no rain is expected) as that probability says; "
+               "a sky (condition) that says otherwise goes with «though», never as a second fact." if plain else "")
             if english
             else "La persona preguntó por la lluvia (o por algo para la lluvia, o una cantidad): contesta "
             "con la probabilidad de lluvia del día preguntado, la de mañana para mañana"
             + (", la del día de seen.laterDays para un día posterior o los días más probables para la semana."
                if coming else " o un día posterior.")
+            + (" Di primero si va a llover (sí, puede que llueva o no se espera lluvia) según esa probabilidad; "
+               "un cielo (condition) que diga otra cosa va con «aunque», nunca como otro hecho." if plain else "")
         )
     if weather_asks_week(user_text):
         # Uso real tanda 6 «cuál es el pronóstico del tiempo para la semana» got today and tomorrow only. Tanda 6b:
@@ -9902,6 +9928,114 @@ def _raining_now(seen: dict) -> bool:
     ) is not None
 
 
+# M63 (v3f-final F-w01-t6 «¿Va a llover en Ñuñoa?» → «…mañana: llovizna, de 7,9 a 23 °C, 0 % de lluvia.»): the
+# forecast named drizzle for a day it gave a 0 % rain chance (the day's worst sky and its likeliest rain are two
+# readings), and the reply said both as facts without saying whether it would rain. Below LOW the rain is not
+# expected, from HIGH it is likely; a day's sky against its own chance is said with a concession, never beside it.
+_RAIN_CHANCE_LOW, _RAIN_CHANCE_HIGH = 20, 50
+_DRY_CONDITION = re.compile(r"\b(?:despejad\w*|solead\w*|clear|sunny)\b")
+_CONCESSION = re.compile(r"\b(?:aunque|pero|sin\s+embargo|a\s+pesar|although|though|but|however|even\s+if)\b")
+_RAIN_DENIED = re.compile(
+    r"\bno\s+(?:(?:se\s+)?(?:espera|esperan|preve|preven|pronostica|anuncia|va\s+a|habra|hay|parece)\s+)?(?:que\s+)?"
+    r"(?:lluvi\w*|llov\w*|llueve|llueva)\b|\bno\s+(?:hay|habra|se\s+esperan?)\s+(?:\w+\s+){1,3}lluvi\w*|"
+    r"\bsin\s+lluvia\b|\bsec[oa]\b|"
+    r"\b(?:no\s+rain|won'?t\s+rain|will\s+not\s+rain|not\s+(?:expected|likely|going)\s+to\s+rain|"
+    r"rain\s+is\s+(?:not\s+expected|unlikely)|unlikely\s+to\s+rain|dry)\b"
+)
+_RAIN_AFFIRMED = re.compile(
+    r"\bsi\b(?=\s*[,.:;!])|\b(?:va\s+a\s+llover|llovera|lloviznara|llueve|llueva|podria\s+llover|habra\s+lluvia|"
+    r"se\s+espera\s+lluvia|yes|will\s+rain|(?:may|might|could)\s+rain|rain\s+is\s+(?:likely|possible|expected)|"
+    r"likely\s+to\s+rain)\b"
+)
+
+
+def _rain_verdict_said(folded_text: str) -> bool | None:
+    """Whether the reply says it will rain (True), it will not (False), or neither (None)."""
+
+    if _RAIN_DENIED.search(folded_text) is not None:
+        return False
+    if _RAIN_AFFIRMED.search(folded_text) is not None:
+        return True
+    return None
+
+
+def _weather_sky_contradiction(folded_text: str, seen: dict) -> bool:
+    """A forecast day's rainy sky said with its low rain chance (or a clear sky with a high one) as two facts."""
+
+    if _CONCESSION.search(folded_text) is not None:
+        return False
+    now_sky = _reading_fold(str(seen.get("condition") or ""))
+    for day in (seen.get("tomorrow"), *(seen.get("laterDays") or [])):
+        if not isinstance(day, dict) or not isinstance(chance := day.get("rainProbabilityPercent"), (int, float)):
+            continue
+        sky = _reading_fold(str(day.get("condition") or ""))
+        if _sky_contradicts_chance(sky, chance) and sky != now_sky and sky in folded_text and _states_weather_number(folded_text, chance):
+            return True
+    return False
+
+
+def _sky_contradicts_chance(sky: str, chance: float) -> bool:
+    folded = _reading_fold(sky)
+    return (_RAINY_CONDITION.search(folded) is not None and chance < _RAIN_CHANCE_LOW) or (
+        _DRY_CONDITION.search(folded) is not None and chance >= _RAIN_CHANCE_HIGH
+    )
+
+
+def _forecast_day_said(day: dict, english: bool) -> str:
+    """A forecast day's sky, range and rain chance for the last resort; a sky its own chance contradicts (M63,
+    «llovizna» at 0 %) goes after the chance with a concession instead of beside it as a second fact."""
+
+    sky, low, high, chance = (day.get(key) for key in ("condition", "minC", "maxC", "rainProbabilityPercent"))
+    if not isinstance(sky, str) or not all(isinstance(value, (int, float)) for value in (low, high, chance)):
+        return ""
+    low, high, rain = (_decimal_said(value, english) for value in (low, high, chance))
+    figures = f"{low} to {high} °C, {rain}% chance of rain" if english else f"de {low} a {high} °C, {rain} % de lluvia"
+    if _sky_contradicts_chance(sky, chance):
+        return f"{figures}, though the forecast shows {sky}" if english else f"{figures}, aunque el pronóstico marca {sky}"
+    return f"{sky}, {figures}"
+
+
+def _weather_rain_final(location: str, days: list[tuple[str, str, dict]], english: bool) -> str:
+    """The last resort for rain asked (M63): whether it will rain, from the chance of each day asked (today,
+    tomorrow), with those chances; a day whose sky says otherwise is told with «aunque». ``days`` are (Spanish
+    label, English label, read)."""
+
+    read = [(es, en, day) for es, en, day in days if isinstance(day, dict) and isinstance(
+        day.get("rainProbabilityPercent"), (int, float))]
+    if not read:
+        return ""
+    top = max(day["rainProbabilityPercent"] for _, _, day in read)
+    level = 2 if top >= _RAIN_CHANCE_HIGH else 1 if top >= _RAIN_CHANCE_LOW else 0
+    verdict = (
+        ("no rain is expected", "rain is possible", "rain is likely")
+        if english else ("no se espera lluvia", "puede que llueva", "es probable que llueva")
+    )[level]
+    caveat = ""
+    for es, en, day in read:
+        sky = str(day.get("condition") or "").strip()
+        # The sky goes against the answer: a rainy one when no rain is expected, a clear one when rain is likely.
+        if sky and level != 1 and _sky_contradicts_chance(sky, _RAIN_CHANCE_HIGH if level == 2 else 0):
+            if len(read) == 1:
+                caveat = f", though the forecast shows {sky}" if english else f", aunque el pronóstico marca {sky}"
+            else:
+                caveat = f", though {en}'s forecast shows {sky}" if english else (
+                    f", aunque el pronóstico de {es} marca {sky}"
+                )
+            break
+    chances = [(es, en, _decimal_said(day["rainProbabilityPercent"], english)) for es, en, day in read]
+    if len(chances) == 1:
+        es, en, chance = chances[0]
+        return (
+            f"In {location} {verdict} {en}: {chance}% chance{caveat}."
+            if english else f"En {location} {verdict} {es}: {chance} % de probabilidad{caveat}."
+        )
+    if english:
+        said = " and ".join(f"{chance}% {en}" for _, en, chance in chances)
+        return f"In {location} {verdict}: {said}{caveat}."
+    said = " y ".join(f"{es} {chance} %" for es, _, chance in chances)
+    return f"En {location} {verdict}: {said} de probabilidad{caveat}."
+
+
 def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     """REOPEN1993 grupo W: every number in a weather reply is an observed one
     (temperatures, wind, humidity, rain probability) and the place is named;
@@ -9968,6 +10102,8 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
             return "invented_number"
     if _weather_unsupported_comparison(text, seen):
         return "weather_unsupported_comparison"
+    if _weather_sky_contradiction(folded_text, seen):
+        return "weather_contradiction"
     asks = _reading_fold(user_text or "")
     tomorrow = seen.get("tomorrow")
     asks_tomorrow = _weather_asks_tomorrow(user_text or "")
@@ -10117,6 +10253,14 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
             _states_weather_number(text, value) for value in probabilities
         ):
             return "missing_state"
+        if said_now is None and probabilities and weather_asks_whether_it_rains(user_text or ""):
+            # M63 (v3f-final F-w01-t6): a yes or no said to «¿va a llover?» is the chances' («no se espera lluvia»
+            # with 70 % is reversed, as «va a llover» with 4 %). The chances alone still answer it (owner
+            # 2026-09-24, test_concision: «¿lloverá?» → «Hay un 6 % de probabilidad de lluvia hoy y un 35 % mañana.»).
+            verdict = _rain_verdict_said(folded_text)
+            top = max(probabilities)
+            if (verdict is False and top >= _RAIN_CHANCE_HIGH) or (verdict is True and top < _RAIN_CHANCE_LOW):
+                return "reversed_result"
     # M58 (v3d-final F-s066 «¿hará bueno para San Juan?»): asked in the future with no day named, the answer carries
     # tomorrow's read (its sky, a temperature or its rain), not the weather now alone.
     future = not narrow_measures and weather_asks_future(user_text or "") and isinstance(tomorrow, dict)
@@ -12772,6 +12916,8 @@ def compose_visible_defect(
     if is_failure:
         if _SUCCESS_OPENERS.match(stripped) is not None:
             return "reversed_polarity"
+        if _failure_invents_a_clock(stripped, user_text, situation):
+            return "extra_claim"
         if re.match(
             # NETWORK1737 «qué redes wifi hay» with the radio off: «La causa del
             # fallo es que la radio…» narrates the composer instruction; the
@@ -22393,6 +22539,15 @@ class LlmRuntime:
                     else "Use only the observed numbers from seen.monitors (width, height, refreshHz) and seen.monitorCount; no other number."
                     if response_language == "en"
                     else "Usa sólo los números observados de seen.monitors (width, height, refreshHz) y seen.monitorCount; ningún otro número."
+                ),
+                # M63 (v3f-final F-w01-t6): a sky said against its own rain chance.
+                "weather_contradiction": (
+                    "Do not say a rainy sky and a rain probability that contradicts it as two facts: say whether "
+                    "it will rain as the probability says and, if the forecast sky says otherwise, add it with "
+                    "«though»."
+                    if response_language == "en"
+                    else "No digas un cielo de lluvia y una probabilidad que lo contradice como dos hechos: di si "
+                    "va a llover según la probabilidad y, si el cielo previsto dice otra cosa, añádelo con «aunque»."
                 ),
                 "weather_unsupported_comparison": (
                     "Do not compare the days (colder, warmer, more or less rain): the figures do not show it. Say "
