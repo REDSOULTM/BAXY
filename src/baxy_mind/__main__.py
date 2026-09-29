@@ -7543,6 +7543,8 @@ def _run_sidecar(
                             user_text,
                             str(message.get("intent", "status"))[:32],
                             facts,
+                            # M71 (held-out v3j t14): what the person wrote, beside the request as understood.
+                            said=str(message.get("userText", ""))[:4096],
                         )
                     except TimeoutError:
                         # The budget ran out before a draft was accepted: that

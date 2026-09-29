@@ -54,7 +54,7 @@ from .semantic.network import (
 from .semantic.web import (
     weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
     weather_asks_coming_days, weather_asks_week, weather_sun_events_asked, place_containers, searched_clause,
-    ASKED_UNCONFIRMED_WORDS, asked_dimension_words,
+    ASKED_UNCONFIRMED_WORDS, asked_dimension_words, carried_subjects, names_subject,
 )
 from .semantic.temporal import (
     _DAY_WORDS, clock_elsewhere, clock_later_asked, named_clock_dial, plural_alarm_cancellation,
@@ -8961,6 +8961,40 @@ def _search_report_names_nothing(text: str, payload: dict, user_text: str) -> bo
     )
 
 
+def _search_report_leaves_out_subject(text: str, payload: dict, user_text: str, said: str | None) -> list[str]:
+    """M71 (held-out v3j t14 «averiguá qué dijo la crítica» after «anoche vi Oppenheimer…»): the subjects, as the
+    understood request or the query writes them, that the report must name and does not.
+
+    The search was about a name the conversation carried, not the person's own message (``said``;
+    semantic.web.carried_subjects), and «Una crítica de un científico de Infobae se menciona y John Carpenter no se
+    subió a los elogios de la película.» was published without saying which film. A report that states something
+    names at least one such subject that the results write. Without the person's message (``said`` None) nothing is
+    required; saying it was not found is left to the not-found, which names what was looked up (M64, M70)."""
+
+    if said is None or _search_results_text(payload) is None:
+        return []
+    if all(
+        _SEARCH_NOT_FOUND.match(_reading_fold(sentence)) is not None
+        for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip())
+        if sentence.strip()
+    ):
+        return []
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    pages = "\n".join(
+        f"{item.get('title') or ''} {item.get('snippet') or ''}"
+        for item in _search_results_of(payload)
+        if isinstance(item, dict)
+    )
+    subjects = [
+        subject
+        for subject in carried_subjects(user_text or "", str(seen.get("query") or ""), said)
+        if names_subject(pages, subject)
+    ]
+    if any(names_subject(text, subject) for subject in subjects):
+        return []
+    return subjects
+
+
 def _search_report_sentences(text: str, payload: dict, user_text: str) -> list[_ReportSentence]:
     """The sentences of the report of a verified search, each measured against the pages and the request; empty
     without results."""
@@ -10777,7 +10811,7 @@ def _wifi_place_fact_defect(text: str, payload: dict) -> str:
     return ""
 
 
-def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said: str | None = None) -> str:
     """El texto público conserva los hechos que el payload le dio.
 
     Sin esto, «el volumen es el número correspondiente» pasaba con `level` en
@@ -11053,6 +11087,9 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
             # M70 (held-out v3h t14): «Nadie lo dijo.» over five pages about the critics. After the specific defects,
             # whose hints say better what to change.
             return "search_report_names_nothing"
+        if _search_report_leaves_out_subject(text, payload, user_text, said):
+            # M71 (held-out v3j t14): the subject the conversation carried is named, whatever the report says of it.
+            return "search_report_leaves_out_subject"
     written = seen.get("writtenText") if isinstance(seen, dict) else None
     if payload.get("operation") == "clipboard.write.text" and isinstance(written, str) and written:
         # CLIPBOARD1359: «Hola» / «Buen día.» were published after a verified
@@ -20330,8 +20367,13 @@ class LlmRuntime:
         facts: dict,
         *,
         timeout: float | None = None,
+        said: str | None = None,
     ) -> str:
-        """Convierte hechos internos seguros en el único texto visible al usuario."""
+        """Convierte hechos internos seguros en el único texto visible al usuario.
+
+        ``user_text`` es el pedido tal como el turno lo entendió (dialogue state); ``said``, el mensaje propio de la
+        persona cuando se conoce: M71 (held-out v3j t14) exige que el informe de una búsqueda nombre el tema que la
+        conversación trajo y el mensaje no escribe."""
         compose_deadline = (
             None
             if timeout is None
@@ -22205,7 +22247,7 @@ class LlmRuntime:
                 or bool(compose_visible_defect(candidate, intent, user_text, facts))
                 or echoes_an_instruction(candidate)
                 or _truncated_fact_word(candidate, visible_situation)
-                or bool(_payload_fact_defect(candidate, visible_situation, user_text))
+                or bool(_payload_fact_defect(candidate, visible_situation, user_text, said=said))
             )
 
         def publishable(candidate: str) -> bool:
@@ -22225,7 +22267,7 @@ class LlmRuntime:
                 return "copied_instruction"
             if _truncated_fact_word(candidate, visible_situation):
                 return "invented"
-            payload_defect = _payload_fact_defect(candidate, visible_situation, user_text)
+            payload_defect = _payload_fact_defect(candidate, visible_situation, user_text, said=said)
             if payload_defect:
                 return payload_defect
             if intent == "status" and _starts_with_request_imperative(candidate):
@@ -22549,6 +22591,21 @@ class LlmRuntime:
                     "oraciones, di lo que los resultados afirman sobre lo preguntado, nombrándolo; si ninguno lo "
                     "dice, di que no lo encontraste, nombrando lo que se preguntó."
                 ),
+                # M71 (held-out v3j t14 «Una crítica de un científico de Infobae se menciona y John Carpenter…»): the
+                # person did not say which film; the retry names it and says who said what, not which outlet.
+                "search_report_leaves_out_subject": (
+                    "Name " + " or ".join("«" + subject + "»" for subject in subjects) + " in your reply: the "
+                    "person did not say it in this message. In one or two sentences, say who said what about it, with "
+                    "the person a result names as the one who says it; never a newspaper or a site («it is "
+                    "mentioned», «according to …», «a review from …»)."
+                    if response_language == "en"
+                    else "Nombrá " + " o ".join("«" + subject + "»" for subject in subjects) + " en tu respuesta: la "
+                    "persona no lo dijo en este mensaje. En una o dos oraciones, di quién dijo qué sobre eso, con la "
+                    "persona que nombra un resultado como quien lo dice; nunca un diario ni un sitio («se menciona», "
+                    "«según …», «una crítica de …»)."
+                )
+                if (subjects := _search_report_leaves_out_subject(candidate, visible_situation, user_text, said))
+                else "",
                 "search_report_absence_claim": (
                     "No result says that it does not exist or is not offered: say only, briefly, that you could not "
                     "find it; never that there is none."

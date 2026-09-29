@@ -3661,3 +3661,80 @@ def asked_dimension_words(text: str) -> frozenset[str]:
         if asks.search(folded) is not None:
             words |= named
     return frozenset(words)
+
+
+# M71 (held-out v3j t14): after «anoche vi Oppenheimer y me gustó bastante», «averiguá qué dijo la crítica» was
+# understood as «Buscá qué dijo la crítica sobre Oppenheimer.», and the report «Una crítica de un científico de Infobae
+# se menciona y John Carpenter no se subió a los elogios de la película.» never said which film: the person, who did
+# not name it in this message, cannot tell what the report is about. A name the understood request or the query writes
+# (a capitalised word inside the text, joined with the next by «of», «de», «the»…: «The Last of Us») that the person's
+# own message does not write is the subject the conversation carried, and the report names it.
+_NAME_JOINERS = frozenset({"of", "the", "de", "del", "la", "las", "los", "el"})
+_NAME_WHERE_TO_LOOK = frozenset({"google", "bing", "duckduckgo", "internet", "web", "wikipedia", "youtube", "baxy"})
+_NAME_OPENERS = "¿¡\"'«(“‘"
+_NAME_CLOSERS = ".,;:!?»\")”’…"
+
+
+def _written_names(text: str) -> list[str]:
+    """The names a text writes, as it writes them: runs of capitalised words that do not open a sentence (English
+    «I» apart), joined across «of», «de», «the»… only when another capitalised word follows."""
+
+    names: list[str] = []
+    run: list[str] = []
+    joiners: list[str] = []
+    opening = True
+    for raw in str(text or "").split():
+        word = raw.lstrip(_NAME_OPENERS)
+        bare = word.rstrip(_NAME_CLOSERS)
+        if not bare:
+            continue
+        if bare[:1].isupper() and not opening and bare != "I":
+            run.extend([*joiners, bare])
+            joiners = []
+        elif run and bare == word and _reading_fold(bare) in _NAME_JOINERS:
+            joiners.append(bare)
+        elif run:
+            names.append(" ".join(run))
+            run, joiners = [], []
+        if bare != word and run:
+            names.append(" ".join(run))
+            run, joiners = [], []
+        opening = word[-1] in ".?!:"
+    if run:
+        names.append(" ".join(run))
+    return names
+
+
+def _name_words(name: str) -> frozenset[str]:
+    """The folded words that identify a name («The Last of Us» → «last»; «James Cameron» → «james», «cameron»)."""
+
+    return frozenset(
+        word for word in re.findall(r"[a-z0-9]+", _reading_fold(name))
+        if len(word) >= 3 and word not in _NAME_JOINERS and word != "us"
+    )
+
+
+def carried_subjects(understood: str, query: str, said: str) -> tuple[str, ...]:
+    """The names of the understood request and of the query that the person's own message (``said``) does not write:
+    the subject this turn took from the conversation. Empty when the person named it, or nothing names one."""
+
+    said_words = set(re.findall(r"[a-z0-9]+", _reading_fold(said)))
+    subjects: list[str] = []
+    for name in [*_written_names(understood), *_written_names(query)]:
+        words = _name_words(name)
+        if (
+            not words
+            or words <= _NAME_WHERE_TO_LOOK
+            or words & said_words
+            or any(words & _name_words(subject) for subject in subjects)
+        ):
+            continue
+        subjects.append(name)
+    return tuple(subjects)
+
+
+def names_subject(text: str, subject: str) -> bool:
+    """The text names the subject: one of its identifying words, in any case or accent («Last of Us» names «The Last
+    of Us», «Nolan» names «Christopher Nolan»)."""
+
+    return bool(_name_words(subject) & set(re.findall(r"[a-z0-9]+", _reading_fold(text))))
