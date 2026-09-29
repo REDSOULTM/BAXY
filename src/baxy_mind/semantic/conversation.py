@@ -2255,9 +2255,11 @@ def asks_for_code(current: object, prior_user_texts: tuple[str, ...] = ()) -> bo
 
 
 # v3a-final F-w11-t1 «pideme unos tacos al pastor porfa» → «los tacos al pastor del partido no los preparo yo»: the
-# limit named another act. Ordering or buying something is not making it.
+# limit named another act. Ordering or buying something is not making it. M78 (DEV-D v3l w06-t3 «¿Me pedirías una
+# muzza grande a la pizzería de la esquina?» → «No hago pizzas.»): the courteous conditional and the other persons of
+# «pedir» order too.
 _ORDERING_ACT = re.compile(
-    r"\b(?:pide\w*|pidas|pedi|pedime|pedir|pedirme|ordena\w*|encarga\w*|compra\w*|comprar|consigue\w*|"
+    r"\b(?:pide\w*|pida\w*|pidas|pidi\w*|pedi|pedime|pedir\w*|ordena\w*|encarga\w*|compra\w*|comprar|consigue\w*|"
     r"order|buy|get\s+me)\b"
 )
 

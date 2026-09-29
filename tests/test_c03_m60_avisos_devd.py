@@ -137,11 +137,6 @@ PATATAS_CREATED = {
 
 # D-s004 (v3c, v3d) and D-w03-t3 (q4): the limit said with a reason is clipped to the limit.
 @pytest.mark.parametrize(("user_text", "drafts", "published"), [
-    ("recomprar el último billete de tren a huesca",
-     ["No recomprobo billetes de tren porque eso no es lo que hago en este PC.",
-      "No recompré el billete porque eso no lo hago.",
-      "No recompraré el último billete de tren a Huesca."],
-     "No recomprobo billetes de tren."),
     ("prende la luz de la cosina",
      ["No enciendo la luz de la cocina porque eso no es lo que hago.",
       "Eso no lo hago porque no apago ni enciendo luces.",
@@ -151,6 +146,27 @@ PATATAS_CREATED = {
 def test_a_limit_given_with_a_reason_is_told_without_it(user_text: str, drafts: list[str], published: str) -> None:
     assert llm.compose_visible_defect(drafts[0], "error", user_text, {"situation": LIMIT}) == "limit_gives_a_reason"
     assert _compose(drafts, user_text, "error", LIMIT) == published
+
+
+RECOMPRAR = "recomprar el último billete de tren a huesca"
+RECOMPRAR_DRAFTS = [
+    "No recomprobo billetes de tren porque eso no es lo que hago en este PC.",
+    "No recompré el billete porque eso no lo hago.",
+    "No recompraré el último billete de tren a Huesca.",
+]
+
+
+def test_a_limit_with_a_verb_form_that_does_not_exist_is_never_clipped_into_the_reply() -> None:
+    # M60 clipped the reason and published «No recomprobo billetes de tren.»; the independent review of DEV-D v3l
+    # (M78, D-s004) marks it: «recomprobo» is no form of «recomprar». The broken first person is judged first, and the
+    # clipped limit is not publishable either.
+    assert llm.compose_visible_defect(RECOMPRAR_DRAFTS[0], "error", RECOMPRAR, {"situation": LIMIT}) == (
+        "limit_broken_person"
+    )
+    assert _compose(RECOMPRAR_DRAFTS, RECOMPRAR, "error", LIMIT) != "No recomprobo billetes de tren."
+    assert _compose([RECOMPRAR_DRAFTS[0], "Eso no lo hago: recomprar billetes de tren."], RECOMPRAR, "error", LIMIT) == (
+        "Eso no lo hago: recomprar billetes de tren."
+    )
 
 
 def test_the_second_limit_draft_clips_to_the_plain_limit() -> None:

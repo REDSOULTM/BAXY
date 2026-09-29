@@ -4,12 +4,13 @@
 from __future__ import annotations
 
 import re
+from datetime import date
 from typing import Iterable
 from .display import _KNOWN_FOLDER_ENUM, _KNOWN_FOLDER_WORDS
 from .grammar import _fold, _match, _has, _strip_request_envelope, _without_address, _request_head, _head_forms, _head_is, _negative_action_forms, _is_negative_effect_clause, _is_meta_or_tool_denial, _OPEN, _LIST, _READ, _SEARCH, _explicit_google_search_query, ARITHMETIC_EXPRESSION, _request_body_surface
 from .intent import EffectIntent, _entity_key, _append, _append_all
 from .catalog import ApplicationCatalogIndex, _application_name_key, build_application_catalog_index
-from .temporal import _BOUNDED_TEMPORAL_SELECTOR, _DAY, _MONTH, _WEEKDAYS, is_window_phrase
+from .temporal import _BOUNDED_TEMPORAL_SELECTOR, _DAY, _MONTH, _WEEKDAYS, is_window_phrase, spoken_date
 from .lexicon import GIVEN_NAMES, SOCIAL_NETWORK
 from .notes import OWN_EVENT_NOUN, own_event_reference
 from .windows import minimize_all_request
@@ -476,6 +477,31 @@ def weather_asks_coming_days(text: str) -> bool:
         or weather_asks_later_day(text)
         or _has(_fold(text), rf"\b{_WEEKDAY_NAME}\b")
     )
+
+
+def weather_asked_date(text: str, today: date) -> date | None:
+    """The calendar date a weather question names, read from ``today`` (the first day of the read); None when it
+    names none.
+
+    M78 (DEV-D v3l p20-t1 «I need weather info for the 1st of March», p20-t2 «…weather info for March 2nd», p21-t1
+    «…for Marshall on the 5th»): today's weather was given, once as if it were March 2nd's. A date is a day of the
+    forecast or a day it does not reach; either way it is the day asked, never today."""
+
+    said = spoken_date(_fold(text))
+    return None if said is None else said.on_or_after(today)
+
+
+def weather_names_date(text: str) -> bool:
+    """The weather question names a calendar date («the 1st of March», «el 5», «March 2nd») (M78)."""
+
+    return spoken_date(_fold(text)) is not None
+
+
+def weather_asks_later_time(text: str) -> bool:
+    """The weather question asks about a time after today: tomorrow, a later day, a weekday, the week or a date
+    (M78 DEV-D v3l s048 «Estara alto the air quality the next week?»)."""
+
+    return _weather_asks_tomorrow(text) or weather_asks_coming_days(text) or weather_names_date(text)
 
 
 _WHAT_IS_THE_WEATHER = (

@@ -168,7 +168,7 @@ from .semantic.notes import _PERSONAL_RECORD_STORE, names_an_own_record_store, n
 from .semantic.request import _conversation_response_language
 from .semantic.system import reports_the_gpu_stopped
 from .semantic.ui import asks_about_buttons, asks_to_see_the_screen
-from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_future, weather_asks_later_in_the_day, weather_asks_later_today, weather_asks_rain_now, weather_asks_today, weather_asks_whether_it_rains
+from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_future, weather_asks_later_in_the_day, weather_asks_later_today, weather_asks_rain_now, weather_asks_today, weather_asks_whether_it_rains, weather_asked_date, weather_asks_later_time, weather_names_date
 
 
 MAX_CONTEXT_TOKENS = 12288
@@ -2853,6 +2853,11 @@ def limit_voice_defect(text: object, request: object = "") -> str:
         effect_intent.self_close_request(str(request or ""))
     ):
         return "limit_third_person"
+    # M78 (DEV-D v3l s004 «recomprar el último billete de tren a huesca»): the limit contract refused «No recomprobo…»
+    # and the recovered limit, judged here only, published it. A first person that is no form of the verb asked is
+    # broken in either path.
+    if visible_reply_breaks_first_person(text) or limit_breaks_the_asked_verb(text, request):
+        return "limit_broken_person"
     # M62: the act denied is the act asked (checked before the reason, so the retry is told about the act).
     if _limit_changes_the_act(text, request):
         return "limit_changed_act"
@@ -3609,6 +3614,18 @@ _INVENTED_SELF_ACTIVITY = re.compile(
     r"|en\s+mi\s+tiempo\s+libre,?\s+(?:me\s+gusta|suelo|hago|paso)"
     r")(?![\w])"
 )
+# M78 (DEV-D v3l s099 «your speech slower it» → «I speak slowly now.»): how fast or loud BAXY's voice speaks is the
+# voice's own setting, which no operation changes; a reply saying it now speaks slower (or will) claims a change
+# nothing made. How he words his replies (formal, brief, in Spanish) is his conduct and is not read here. Folded.
+_OWN_VOICE_CHANGE = re.compile(
+    r"(?<![\w])(?:"
+    r"i(?:\s+will|'ll|\s+am\s+going\s+to|'m\s+going\s+to|\s+am\s+now|'m\s+now|\s+now|\s+am|'m)?\s+(?:speak|talk)(?:ing)?|"
+    r"(?:ahora\s+|ya\s+)?(?:hablo|hablare|voy\s+a\s+hablar(?:te)?|estoy\s+hablando(?:te)?|te\s+hablo|te\s+hablare)"
+    r")\s+(?:\w+\s+){0,2}?(?:(?:mas|more|less|menos|a\s+bit|un\s+poco|much)\s+)?"
+    r"(?:slow(?:ly|er)?|fast(?:er)?|quick(?:ly|er)?|loud(?:ly|er)?|soft(?:ly|er)?|quiet(?:ly|er)?|"
+    r"despacio|lento|lentamente|rapido|rapidamente|deprisa|alto|fuerte|suave|bajito)"
+    r"(?![\w])"
+)
 # What BAXY says to the person is the conversation itself: «te pongo un ejemplo», «te
 # traigo una curiosidad», «let me bring you a fun fact».
 _SPOKEN_OBJECT = re.compile(
@@ -3685,6 +3702,7 @@ def visible_reply_claims_an_effect(value: object, request: object = "") -> bool:
                 if not set(re.findall(r"[a-z]+", match.group(0))) <= asked_words
             )
             claims.extend((sentence, match) for match in _INVENTED_SELF_ACTIVITY.finditer(sentence))
+            claims.extend((folded, match) for match in _OWN_VOICE_CHANGE.finditer(folded))
             if _CONDITIONAL_OFFER.search(sentence) is None:
                 claims.extend((sentence, match) for match in _PROMISED_EFFECT_CLAIM.finditer(sentence))
         for source, match in claims:
@@ -7350,6 +7368,30 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
         where = "" if title.casefold().endswith("youtube") else (" on YouTube" if english else " en YouTube")
         return f"Now playing «{title}»{where}." if english else f"Está sonando «{title}»{where}."
     if operation == "weather.current" and isinstance(seen.get("location"), str):
+        out_of_reach = seen.get("outOfReach")
+        if isinstance(out_of_reach, dict):
+            # M78: the limit of the read, said with the dates it has (_weather_asked_reach).
+            if out_of_reach.get("read") == "airQuality":
+                return (
+                    "The air quality is only read as it is now, not for a later time."
+                    if english
+                    else "La calidad del aire sólo se lee como está ahora, no para más adelante."
+                )
+            asked = _weather_date_said(out_of_reach.get("askedDate"), english)
+            until = _weather_date_said(out_of_reach.get("readUntil"), english)
+            if not asked or not until:
+                return ""
+            return (
+                f"The forecast for {seen['location']} only goes up to {until}; {asked} is beyond it."
+                if english
+                else f"El pronóstico de {seen['location']} llega sólo hasta el {until}; el {asked} queda fuera."
+            )
+        if isinstance(seen.get("askedDay"), dict):
+            said = _forecast_day_said(seen["askedDay"], english)
+            when = _weather_date_said(seen["askedDay"].get("date"), english)
+            if not said or not when:
+                return ""
+            return f"In {seen['location']}, {when}: {said}." if english else f"En {seen['location']}, el {when}: {said}."
         folded_request = fold(user_text or "")
         day: dict | None = None
         day_name = ""
@@ -10286,6 +10328,18 @@ def _weather_focus(user_text: str, english: bool) -> str:
             else "La persona preguntó dónde está: di seen.location con seen.region y seen.country como "
             "el lugar aproximado de este PC, y nada del clima."
         )
+    if weather_asks_air(user_text) and weather_asks_later_time(user_text):
+        # M78 (DEV-D v3l s048 «Estara alto the air quality the next week?» → today's index alone): the air is read
+        # as it is now; a later time is beyond the read (_weather_asked_reach).
+        return (
+            "The person asked about the air at a later time, and the air quality is read only as it is now "
+            "(seen.outOfReach): say plainly that the air quality is only read as it is now, not for that time, "
+            "with no figure."
+            if english
+            else "La persona preguntó por el aire en un momento posterior, y la calidad del aire sólo se lee como "
+            "está ahora (seen.outOfReach): di simplemente que la calidad del aire sólo se lee como está ahora, no "
+            "para ese momento, sin ninguna cifra."
+        )
     if weather_asks_air(user_text):
         return (
             "The person asked about the air: give the index, its category and PM2.5; if "
@@ -10317,6 +10371,22 @@ def _weather_focus(user_text: str, english: bool) -> str:
             if english
             else "La persona preguntó por el índice UV: da seen.uvIndex (ahora) y today.uvIndexMax (el máximo de "
             "hoy); si son null, di que no se pudo leer el índice UV."
+        )
+    if weather_names_date(user_text):
+        # M78 (DEV-D v3l p20-t1/p20-t2/p21-t1/p25-t2): a date named is that day of the read (seen.askedDay) or a day
+        # the read does not cover (seen.outOfReach); today's weather is never given for it (_weather_asked_reach).
+        return (
+            "The person asked about a date. If seen.askedDay is sent, give that day's sky, maximum, minimum and rain "
+            "probability, naming its date. If seen.outOfReach is sent, the forecast does not cover that date: say "
+            "plainly that the forecast only goes up to seen.outOfReach.readUntil and the date asked is beyond it, "
+            "naming both dates, with no temperature or other figure. If neither is sent, the date is today: give the "
+            "weather now."
+            if english
+            else "La persona preguntó por una fecha. Si se envía seen.askedDay, da el cielo, la máxima, la mínima y "
+            "la probabilidad de lluvia de ese día, nombrando su fecha. Si se envía seen.outOfReach, el pronóstico no "
+            "cubre esa fecha: di simplemente que el pronóstico llega sólo hasta seen.outOfReach.readUntil y que la "
+            "fecha preguntada queda fuera, nombrando las dos fechas, sin temperatura ni ninguna otra cifra. Si no se "
+            "envía ninguno, la fecha es hoy: da el tiempo de ahora."
         )
     coming = weather_asks_coming_days(user_text)
     if _weather_asks_rain(user_text):
@@ -10422,6 +10492,57 @@ def _weather_days(seen: dict) -> list[dict]:
     return [day for day in (seen.get("today"), seen.get("tomorrow"), *(seen.get("laterDays") or [])) if isinstance(day, dict)]
 
 
+_WEATHER_MONTHS = (
+    ("enero", "January"), ("febrero", "February"), ("marzo", "March"), ("abril", "April"), ("mayo", "May"),
+    ("junio", "June"), ("julio", "July"), ("agosto", "August"), ("septiembre", "September"), ("octubre", "October"),
+    ("noviembre", "November"), ("diciembre", "December"),
+)
+
+
+def _weather_date_said(value: object, english: bool) -> str:
+    """An ISO date of the read as a reply says it («1 de marzo», «March 1»); empty when it is not one."""
+
+    try:
+        day = date.fromisoformat(str(value))
+    except ValueError:
+        return ""
+    spanish, english_name = _WEATHER_MONTHS[day.month - 1]
+    return f"{english_name} {day.day}" if english else f"{day.day} de {spanish}"
+
+
+def _weather_asked_reach(seen: dict, user_text: str) -> dict | None:
+    """What of the read answers a question about a named date or, for the air, a later time; None otherwise.
+
+    M78 (DEV-D v3l p20-t1 «weather info for the 1st of March», p20-t2 «…for March 2nd» → «…on March 2 is currently
+    28.7 °C», p25-t2 «…on the 5th of March», s048 «…the air quality the next week?»): the reply gave today's read for a
+    day it does not cover. A date the read carries is that day (``askedDay``); a date it does not carry, or the air at
+    a later time (read only as it is now), is ``outOfReach``: the limit is said, with no figure of another day."""
+
+    days = _weather_days(seen)
+    try:
+        today = date.fromisoformat(str(days[0].get("date"))) if days else None
+    except ValueError:
+        today = None
+    if today is None:
+        return None
+    if weather_asks_air(user_text):
+        return {"outOfReach": {"read": "airQuality", "readFor": "now"}} if weather_asks_later_time(user_text) else None
+    asked = weather_asked_date(user_text, today)
+    if asked is None or asked == today:
+        return None
+    for day in days:
+        if day.get("date") == asked.isoformat():
+            return {"askedDay": day}
+    return {
+        "outOfReach": {
+            "read": "forecast",
+            "askedDate": asked.isoformat(),
+            "readFrom": days[0].get("date"),
+            "readUntil": days[-1].get("date"),
+        }
+    }
+
+
 def _weather_day_values(days: list[dict], key: str) -> list[float]:
     return [day[key] for day in days if isinstance(day.get(key), (int, float)) and not isinstance(day.get(key), bool)]
 
@@ -10501,6 +10622,10 @@ def _project_weather_read(seen: dict, user_text: str) -> dict:
         projected = {key: seen[key] for key in ("location", "region", "country") if key in seen}
         projected[day] = {key: block[key] for key in ("date", "weekday", *sorted(events)) if key in block}
         return projected
+    reach = _weather_asked_reach(seen, user_text)
+    if reach is not None:
+        # M78: only the day asked, or the limit of the read, is sent; today's figures cannot answer another day.
+        return {**{key: seen[key] for key in ("location", "region", "country") if key in seen}, **reach}
     projected = dict(seen)
     if not weather_asks_coming_days(user_text):
         projected.pop("laterDays", None)
@@ -10546,7 +10671,10 @@ def _weather_answer_instruction(user_text: str, language: str) -> str:
     # Uso real tanda 6: the days after tomorrow are read too (seen.laterDays); they are sent only when the
     # question asks them (``_compose_situation_payload``), so the reach said is the reach sent.
     coverage = (
-        (
+        # M78: a date named has its own reach in the focus (seen.askedDay or seen.outOfReach).
+        ""
+        if weather_names_date(user_text) or (weather_asks_air(user_text) and weather_asks_later_time(user_text))
+        else (
             "seen.laterDays are the days after tomorrow (date, weekday, condition, maxC, minC, "
             "rainProbabilityPercent); for a day after the last of them, say the forecast does not reach it. "
             if english
@@ -10782,6 +10910,15 @@ def _weather_rain_final(location: str, days: list[tuple[str, str, dict]], englis
     return f"En {location} {verdict}: {said} de probabilidad{caveat}."
 
 
+# M78: a reply about a time the read does not cover says where the read ends («sólo llega hasta», «queda fuera»,
+# «only goes up to», «beyond it», «only as it is now»). «No puedo ver…» would be a failure over a verified read (the
+# composer's and the App's asserted-failure vetoes); the reach of the read is said instead.
+_WEATHER_REACH_DENIED = re.compile(
+    r"\b(?:hasta|fuera|mas\s+alla|solo|solamente|unicamente|no\s+llega|up\s+to|until|beyond|only|not\s+for|"
+    r"doesn['’]?t\s+(?:reach|cover|go)|does\s+not\s+(?:reach|cover|go))\b"
+)
+
+
 def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     """REOPEN1993 grupo W: every number in a weather reply is an observed one
     (temperatures, wind, humidity, rain probability) and the place is named;
@@ -10805,7 +10942,9 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
                 observed |= _weather_clock_forms(block.get(key))
     # Uso real tanda 6: the days after tomorrow, sent when the question asks them.
     later = [day for day in seen.get("laterDays") or [] if isinstance(day, dict)]
-    for block in later:
+    # M78: the one day a named date asked (_weather_asked_reach).
+    asked_day = seen.get("askedDay") if isinstance(seen.get("askedDay"), dict) else None
+    for block in [*later, *([asked_day] if asked_day else [])]:
         for key in ("maxC", "minC", "rainProbabilityPercent"):
             observed |= _weather_number_forms(block.get(key))
     air = seen.get("airQuality")
@@ -10821,8 +10960,13 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     asked_numbers = set(re.findall(r"(?<![\w.,])\d+(?:[.,]\d+)?(?![\w]|[.,]\d)", user_text or ""))
     # A7 E3 (FINAL t323 «el sábado (3 de octubre)»): the day, month and year of a date the read carries are that
     # day's date, said like the person's numbers: never as a measurement.
-    for block in [seen.get("today"), seen.get("tomorrow"), *later]:
-        date_value = block.get("date") if isinstance(block, dict) else None
+    out_of_reach = seen.get("outOfReach") if isinstance(seen.get("outOfReach"), dict) else None
+    reach_dates = [out_of_reach.get(key) for key in ("askedDate", "readFrom", "readUntil")] if out_of_reach else []
+    for date_value in [
+        *(block.get("date") if isinstance(block, dict) else None
+          for block in [seen.get("today"), seen.get("tomorrow"), *later, asked_day]),
+        *reach_dates,
+    ]:
         if isinstance(date_value, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", date_value):
             year, month, day = date_value.split("-")
             asked_numbers |= {year, month, day, month.lstrip("0"), day.lstrip("0")}
@@ -10846,6 +10990,9 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
             or (unit.startswith(("mm", "mil")) and amount in _weather_number_forms(rain_mm))
         ):
             return "invented_number"
+    if out_of_reach is not None:
+        # M78: nothing measured was sent for a time the read does not cover; the reply says that it cannot be seen.
+        return "" if _WEATHER_REACH_DENIED.search(folded_text) is not None else "missing_state"
     if _weather_unsupported_comparison(text, seen):
         return "weather_unsupported_comparison"
     if _weather_sky_contradiction(folded_text, seen):
@@ -10883,6 +11030,11 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
             and not (len(asked_place) >= 3 and re.search(r"\b" + re.escape(asked_place) + r"\b", folded_text))
         ):
             return "missing_state"
+    if asked_day is not None:
+        # M78: a date the read covers is answered with that day's figures.
+        figures = [asked_day.get(key) for key in ("maxC", "minC", "rainProbabilityPercent")]
+        figures = [value for value in figures if isinstance(value, (int, float)) and not isinstance(value, bool)]
+        return "missing_state" if figures and not any(_states_weather_number(text, value) for value in figures) else ""
     if asks_own_place(user_text or ""):
         # Tanda 4c «i'd like to know my current location»: the place read is the
         # answer (named above); the weather was not asked. Uso real tanda 6 «let me
@@ -13343,7 +13495,10 @@ def compose_visible_defect(
         # SCREEN1807: the screen-text lens sentence copied as the reply.
         r"cita cada una de esas l[ií]neas|quote each of those lines|"
         r"escribe a continuaci[oó]n las l[ií]neas|write the lines of seen|l[ií]neas de seen\.lines|"
-        r"l[ií]neas y escribe:|lines and (?:then )?writes?:",
+        r"l[ií]neas y escribe:|lines and (?:then )?writes?:|"
+        # M78 (DEV-D v3l w20-t4 «…no se puede determinar sin información adicional en los datos de situation»): the
+        # facts' own field names are the machinery, not what the person is told.
+        r"datos de (?:la )?situation|(?:the )?situation data|datos de seen|(?:the )?seen data",
         folded,
     )
     if (
@@ -23688,6 +23843,13 @@ class LlmRuntime:
                     "Say only that you do not do it, in one short sentence, and stop: no reason why."
                     if response_language == "en"
                     else "Di sólo que eso no lo haces, en una frase corta, y termina: sin decir por qué."
+                ),
+                # M78 (DEV-D v3l s004 «No recomprobo…»).
+                "limit_broken_person": (
+                    "That verb form does not exist: say «I don't do that» and name what you do not do with a noun."
+                    if response_language == "en"
+                    else "Esa forma del verbo no existe: di «Eso no lo hago» y nombra con un sustantivo lo que no "
+                    "haces."
                 ),
                 "limit_third_person": (
                     "You are BAXY: say it in the first person («I don't …»), never «BAXY does not»."
