@@ -1276,8 +1276,25 @@ def _history_has_pending_clarification(
 def _alarm_clocks(observed: dict) -> tuple[tuple[int, int], ...]:
     """D39: the local (hour, minute) of each alarm a verified notification.list read, once each, in order."""
 
+    clocks = offered_alarm_clocks(observed)
+    return clocks if clocks is not None else ()
+
+
+def offered_alarm_clocks(observed: dict) -> tuple[tuple[int, int], ...] | None:
+    """D39 and M62: the local (hour, minute) of each alarm a yes to «¿las cancelo todas?» cancels, in order; None when
+    the read cannot be offered whole.
+
+    v3e2-final F-s040 «Cancela las alarmas, por favor.» → «Hay ocho alarmas a las 05:20, 06:00, 06:45, 08:30, 08:40 y
+    09:00; ¿las cancelo todas?» over a read of 20 of 38 notifications with 16 alarms, several at the same minute: the
+    yes cancels each alarm by its clock (notification.cancel.at), which picks exactly one alarm at that clock and
+    refuses to choose among several; a plan holds eight steps; and a cut read does not hold every alarm. So the offer
+    of all of them is made only when each alarm read has its own clock, there are eight at most and the read is whole;
+    otherwise the person is asked which one."""
+
     from datetime import datetime, timezone
 
+    if not isinstance(observed, dict) or observed.get("resultsMayBeTruncated") is True:
+        return None
     clocks: list[tuple[int, int]] = []
     for entry in observed.get("notifications") or []:
         if not isinstance(entry, dict) or entry.get("kind") != "alarm" or not isinstance(entry.get("nextRunUtc"), str):
@@ -1285,8 +1302,9 @@ def _alarm_clocks(observed: dict) -> tuple[tuple[int, int], ...]:
         try:
             instant = datetime.fromisoformat(entry["nextRunUtc"].replace("Z", "+00:00"))
         except ValueError:
-            continue
+            return None
         local = (instant if instant.tzinfo else instant.replace(tzinfo=timezone.utc)).astimezone()
-        if (local.hour, local.minute) not in clocks:
-            clocks.append((local.hour, local.minute))
-    return tuple(clocks)
+        if (local.hour, local.minute) in clocks:
+            return None
+        clocks.append((local.hour, local.minute))
+    return tuple(clocks) if len(clocks) <= 8 else None

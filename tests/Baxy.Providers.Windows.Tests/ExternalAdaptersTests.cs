@@ -2719,6 +2719,65 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // M62 (v3e2-final F-p05-t1, Nominatim's answers of 2026-09-29): the car parks around the
+    // Plaza del Polvorista were told by their whole addresses with nothing saying how near they
+    // are. Each site carries its distance to the square, nearest first, and one farther than
+    // the square's surroundings (1.5 km at least) is left out.
+    [Test]
+    public async Task APlaceReadSaysHowFarEachSiteIsAndLeavesOutTheFarOnes()
+    {
+        var handler = new SearchSourcesHttpHandler();
+        handler.Routes.Add(("q=Plaza del Polvorista", new(HttpStatusCode.OK,
+            """[{"lat":"36.5948388","lon":"-6.2270183","boundingbox":["36.5945842","36.5950933","-6.2272746","-6.2267619"],"display_name":"Plaza del Polvorista, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"}]""",
+            "application/json")));
+        handler.Routes.Add(("q=parking", new(HttpStatusCode.OK,
+            """[{"osm_type":"way","osm_id":1,"name":"","type":"parking","lat":"36.5902","lon":"-6.2190","display_name":"Avenida de Europa, Las Viñas, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":2,"name":"","type":"parking","lat":"36.5958","lon":"-6.2260","display_name":"Avenida de la Bajamar, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":3,"name":"","type":"parking","lat":"36.6100","lon":"-6.2400","display_name":"Calle Lejana, El Puerto de Santa María, Cádiz, España"}]""",
+            "application/json")));
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"aparcamiento en Plaza del Polvorista"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            JsonElement results = receipt.Result!.Value.GetProperty("results");
+            Assert.That(results.GetArrayLength(), Is.EqualTo(2), "the car park 2 km away is not near the square");
+            Assert.That(results[0].GetProperty("snippet").GetString(), Does.StartWith("Avenida de la Bajamar"));
+            Assert.That(results[0].GetProperty("distanceMeters").GetInt32(), Is.InRange(130, 160));
+            Assert.That(results[1].GetProperty("distanceMeters").GetInt32(), Is.InRange(850, 950));
+        });
+    }
+
+    [Test]
+    public async Task APlaceWithSitesOnlyFarAwayHasNoneNear()
+    {
+        var handler = new SearchSourcesHttpHandler();
+        handler.Routes.Add(("q=Plaza del Polvorista", new(HttpStatusCode.OK,
+            """[{"lat":"36.5948388","lon":"-6.2270183","boundingbox":["36.5945842","36.5950933","-6.2272746","-6.2267619"],"display_name":"Plaza del Polvorista, Valdelagrana, El Puerto de Santa María, Cádiz, España"}]""",
+            "application/json")));
+        handler.Routes.Add(("q=parking", new(HttpStatusCode.OK,
+            """[{"osm_type":"way","osm_id":3,"name":"","type":"parking","lat":"36.6100","lon":"-6.2400","display_name":"Calle Lejana, El Puerto de Santa María, Cádiz, España"}]""",
+            "application/json")));
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"aparcamiento en Plaza del Polvorista"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("web_search_places_not_found_near"));
+            Assert.That(handler.Asked, Has.Count.EqualTo(2), "nothing else is searched for a place that was found");
+        });
+    }
+
     // Real answer of 2026-09-28: «La Puntilla, El Puerto» geocodes to a bar in Ceuta
     // named «El Puerto». A place whose address lacks «Puntilla» is not the place; the
     // first part is asked alone and the candidate in El Puerto de Santa María wins.

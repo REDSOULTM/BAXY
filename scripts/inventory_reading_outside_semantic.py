@@ -114,6 +114,8 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
     ("llm.py", "_search_report_shows_the_search"): ("GROUNDING", _GROUNDING_SEARCH),
     ("llm.py", "_search_report_off_subject"): (
         "GROUNDING", "the proper names the person wrote are the subject the report must be about"),
+    ("llm.py", "_places_whole_address"): (
+        "GROUNDING", "the tail of an address the person wrote themselves may be said back (M62)"),
     ("llm.py", "_weather_fact_defect"): (
         "GROUNDING", "a number the person said is theirs to repeat, never a measurement; what the weather "
         "question asks is read by semantic.web"),

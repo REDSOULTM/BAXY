@@ -161,7 +161,7 @@ from .semantic.notes import _PERSONAL_RECORD_STORE, names_an_own_record_store, n
 from .semantic.request import _conversation_response_language
 from .semantic.system import reports_the_gpu_stopped
 from .semantic.ui import asks_about_buttons, asks_to_see_the_screen
-from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_future, weather_asks_later_today, weather_asks_rain_now, weather_asks_today
+from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_future, weather_asks_later_in_the_day, weather_asks_later_today, weather_asks_rain_now, weather_asks_today
 
 
 MAX_CONTEXT_TOKENS = 12288
@@ -2288,6 +2288,9 @@ def _shaped_conversation_answer_violates_contract(
         return True
     if visible_reply_asserts_an_unread_machine_state(value, request=request):
         return True
+    if visible_reply_calls_the_person_baxy(value):
+        # M62 (v3e2-final F-p07-t4 «Have a great day, BAXY!»): BAXY is the one speaking.
+        return True
     # No operation ran in a conversation turn: a claimed effect or the person's
     # records stated unread are invented (owner's test 2026-09-21, turn 189 «Claro,
     # ya le hice click.»; uso real 2026-09-23 «No hay queso en la lista. Se añadirá.»).
@@ -2706,10 +2709,53 @@ def limit_voice_defect(text: object, request: object = "") -> str:
         effect_intent.self_close_request(str(request or ""))
     ):
         return "limit_third_person"
+    # M62: the act denied is the act asked (checked before the reason, so the retry is told about the act).
+    if _limit_changes_the_act(text, request):
+        return "limit_changed_act"
+    if _limit_names_no_act(text, request):
+        return "limit_names_no_act"
     # Independent review B1: «¿por qué no puedes…?» asks for the reason.
     if _LIMIT_REASON.search(folded) and not dialogue_slot.asks_for_the_reason(str(request or "")):
         return "limit_gives_a_reason"
     return ""
+
+
+# M62 (v3e2-final F-w11-t1 «pideme unos tacos al pastor porfa…» → «No hago tacos al pastor.»): the talk reply's
+# «no preparo» was refused (M50), and the recovered limit said «no hago» with the dish as its object — making it
+# again. «Hago» with a thing as its object is making that thing; «eso no lo hago», «no hago pedidos» are not.
+_LIMIT_DOES_A_THING = re.compile(
+    r"\bno\s+(?:(?:lo|la|los|las|te|le|les)\s+)?hago\s+(?:(?:un|una|unos|unas|el|la|los|las|tu|tus|esos?|esas?)\s+)?"
+    r"(?!(?:eso|esto|nada|yo|por|para|porque|aqui|aca|desde|en|con|ya|pedidos?|compras?|encargos?)\b)[a-z]"
+)
+
+
+def _limit_changes_the_act(text: object, request: object) -> bool:
+    """The limit denies making a thing when the person asked to order or buy it, or denies making, cooking or
+    preparing it when making was not asked (M50/M54, v3a-final and v3e2-final F-w11-t1)."""
+
+    guarded = _policy_guard_text(text)
+    if asks_to_order(request) and (
+        _MAKING_ACT.search(guarded) is not None or _LIMIT_DOES_A_THING.search(_reading_fold(str(text or ""))) is not None
+    ):
+        return True
+    return _MAKING_ACT.search(guarded) is not None and not asks_to_make(request)
+
+
+# M62 (v3e2-final F-s064 «ahora sígueme, repite todo lo que diga» → «No hago el pedido.»; the same run's «No hago el
+# pedido de agregar el número de móvil de Pedro»): the limit denied «the request» instead of naming what it does not
+# do. «El pedido» is an act only when an order was asked («no hago pedidos de comida»).
+_LIMIT_META_OBJECT = re.compile(
+    r"\bno\s+(?:(?:lo|la)\s+)?(?:hago|cumplo|atiendo|proceso|realizo|ejecuto|puedo\s+(?:hacer|cumplir|atender))\s+"
+    r"(?:el|la|ese|esa|este|esta|tu|su)\s+(?:pedido|solicitud|peticion|encargo)\b|"
+    r"\bi\s+(?:do\s+not|don'?t|can'?t|cannot|won'?t)\s+(?:do|fulfil+|process|handle|complete|carry\s+out)\s+"
+    r"(?:the|that|this|your)\s+(?:request|order)\b"
+)
+
+
+def _limit_names_no_act(text: object, request: object) -> bool:
+    """The limit denies «el pedido» / «the request» itself, and the person did not ask to order anything."""
+
+    return _LIMIT_META_OBJECT.search(_reading_fold(str(text or ""))) is not None and not asks_to_order(request)
 
 
 # cien-106 «post a letter to Eris» → «I cannot post a letter to Eris because I do not have the ability to send
@@ -4103,6 +4149,25 @@ _PERSON_IN_THIRD = re.compile(
 )
 
 
+# M62 (v3e2-final F-p07-t4 «Okay, that's all; see ya!» → «Have a great day, BAXY!»): BAXY is the one speaking; the
+# person is never called by his name. Its name as a vocative: after a comma or a greeting and closing the sentence
+# («…, BAXY!», «bye BAXY»), or opening it («BAXY, …»). «Hola, soy BAXY» names himself and stays.
+_PERSON_CALLED_BAXY = re.compile(
+    r"(?:,\s*|\b(?:hola|hi|hey|hello|bye|adios|chao|chau|gracias|thanks|thank\s+you|see\s+you|see\s+ya|goodbye|"
+    r"good\s+bye|nos\s+vemos|hasta\s+luego|hasta\s+pronto|cuidate|take\s+care)\s+)baxy\s*(?:[!.?…]|$)|"
+    r"^\W*baxy\s*,"
+)
+
+
+def visible_reply_calls_the_person_baxy(value: object) -> bool:
+    """The reply addresses the person as «BAXY», BAXY's own name (see above)."""
+
+    return any(
+        _PERSON_CALLED_BAXY.search(_reading_fold(sentence).strip()) is not None
+        for sentence in re.split(r"(?<=[.!?…])\s+", str(value or "").strip())
+    )
+
+
 def visible_reply_speaks_of_the_person(value: object, request: object = "") -> bool:
     """The reply names the person it is talking to in the third person (unless the person wrote it so)."""
 
@@ -4521,6 +4586,11 @@ _CAUSE_FACT = {
     # Tanda 7 «quién ganó el game de los Lakers anoche» → «…los resultados de búsqueda son irrelevantes»: the code
     # became prose about a search. The lookup is invisible; what the person hears is that it was not found.
     "web_search_results_irrelevant": "it was not found; say only that, briefly",
+    # M62 (v3e2-final F-p05-t1): OpenStreetMap has sites of that kind only farther than the named place's
+    # surroundings (1.5 km at least).
+    "web_search_places_not_found_near": (
+        "nothing of that kind was found near the place the person named; say only that, briefly, naming the place"
+    ),
     # D32 (2026-09-28): no search source answered (Wikipedia and the general engine unreachable or blocked), so
     # nothing was looked up — not the same as not found. No cause is given (a «porque…» would be invented) and the
     # lookup stays invisible; the way out the owner chose is opening it in the person's own browser.
@@ -4639,6 +4709,18 @@ _CAUSE_FACT = {
     # and the three drafts narrated that jargon («La operación de búsqueda relativa…»).
     "media_seek_postcondition_not_verified": (
         "the jump in the playback could not be confirmed afterwards, so it is not known whether it moved"
+    ),
+    # M62 (v3e2-final F-s019 «Cambia la alarma despertador de las 8:00 a las 9:00.» → «…porque el reloj de
+    # notificaciones no se encontró»): the bare code became jargon. The fact is that nothing rings at that time; the
+    # change stopped before setting the new one.
+    "notification_clock_not_found": (
+        "there is no alarm or reminder set at the time the person named, so nothing was cancelled, changed or set; "
+        "say it plainly with that time, and if they asked to move it to another time you may ask whether to set one "
+        "then"
+    ),
+    "notification_clock_ambiguous": (
+        "several alarms or reminders are set at that same time and they cannot be told apart, so none was cancelled "
+        "or changed"
     ),
     "acting": "still working",
     # M38 (official-window rehearsal 2026-09-28 «what is the timer now?»): the bare «unclear request» was copied into
@@ -6007,7 +6089,11 @@ def _compose_situation_payload(
                 if key in visible_seen
             }
         elif operation == "notification.list":
-            visible_seen = _project_notification_listing(visible_seen, language)
+            listing = _project_notification_listing(visible_seen, language)
+            # D39/M62: «cancela las alarmas» is answered with the alarms alone and whether the yes cancels them all.
+            visible_seen = (
+                _alarm_offer_seen(visible_seen, listing) if plural_alarm_cancellation(user_text or "") else listing
+            )
         elif operation == "notification.schedule":
             visible_seen = _project_scheduled_notification(visible_seen, situation, language)
         elif operation == "ocr.read":
@@ -6229,6 +6315,13 @@ def _compose_situation_payload(
         payload["operation"] = operation
     if situation.get("verified") is True and situation.get("succeeded") is True:
         payload = project_window_inventory(payload, user_text)
+    results_text = _search_results_text(payload)
+    if results_text and user_text:
+        # M62 (v3e2-final F-w13-t2 «y si cargo 40 litros cuanto me sale» → «…$73.000 por 40 litros», a full tank's
+        # price): what the asked quantity costs at the unit price read is computed here; the narrator copies it.
+        totals = semantic_quantities.priced_totals(user_text, results_text, language)
+        if totals:
+            payload["calculation"] = [item.sentence for item in totals[:3]]
     return payload
 
 
@@ -7025,6 +7118,21 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
                 # The rain asked for today, with no hour, is today's probability.
                 said = _decimal_said(today_rain, english)
                 now += f"; {said}% chance of rain today" if english else f"; hoy, {said} % de lluvia"
+            today = seen.get("today")
+            if weather_asks_later_in_the_day(user_text or "") and not _weather_asks_rain(user_text or "") and not (
+                weather_asked_measures(user_text or "") - {"temperature"}
+            ) and isinstance(today, dict) and all(
+                isinstance(today.get(key), (int, float)) for key in ("minC", "maxC", "rainProbabilityPercent")
+            ):
+                # M62 (v3e2-final F-p07-t1 «…later today»): a later part of today is today's read too.
+                low, high, rain = (
+                    _decimal_said(today[key], english) for key in ("minC", "maxC", "rainProbabilityPercent")
+                )
+                return (
+                    f"{now}; today: {low} to {high} °C, {rain}% chance of rain."
+                    if english
+                    else f"{now}; hoy: de {low} a {high} °C, {rain} % de lluvia."
+                )
             coming = seen.get("tomorrow") if weather_asks_future(user_text or "") else None
             figures = [coming.get(key) for key in ("condition", "minC", "maxC", "rainProbabilityPercent")] if (
                 isinstance(coming, dict)
@@ -7050,8 +7158,8 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
             if day_name != "mañana"
             else f"En {seen['location']}, mañana: {figures[0]}, de {low} a {high} °C, {rain} % de lluvia."
         )
-    if operation == "notification.list" and (alarms := _offered_alarms(payload, user_text)) is not None:
-        return _alarm_offer_final(alarms, english)
+    if operation == "notification.list" and (offer := _offered_alarms(payload, user_text)) is not None:
+        return _alarm_offer_final(offer, english)
     if operation == "task.list" and _listed_task_titles(payload):
         # M58 (v3d-final F-w05-t4): the open tasks read, each title once with how many times it is there.
         open_titles = [
@@ -7098,6 +7206,11 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
             # A place without a name is titled by its OpenStreetMap type, in lower case («parking»): its street names it.
             generic = not title or title.islower()
             place = street if generic else (f"{title} ({street})" if street else title)
+            # M62 (v3e2-final F-p05-t1): how far each is from the named place.
+            meters = item.get("distanceMeters")
+            if place and isinstance(meters, int) and not isinstance(meters, bool):
+                away = f"{meters} m" if meters < 1000 else _decimal_said(round(meters / 1000, 1), english) + " km"
+                place = f"{place} ({'' if english else 'a '}{away}{' away' if english else ''})"
             if place and place not in places:
                 places.append(place)
         if not places:
@@ -8025,21 +8138,42 @@ _TASKS_MORE = re.compile(
 _TASKS_TOTAL = re.compile(rf"\b(?:tienes|hay|you\s+have|there\s+are)\s+{_TASK_COUNT}\s+(?:tareas|pendientes|tasks)\b")
 
 
-def _offered_alarms(payload: dict, user_text: str) -> list[dict] | None:
-    """D39: the alarms a verified read found for «cancela las alarmas» (each with its local time), or None when the
+def _alarm_offer_seen(observed: dict, listing: dict) -> dict:
+    """D39 and M62: what the offer for «cancela las alarmas» is said from — the alarms read, each clock once with how
+    many ring at it, their number (reminders are not offered), and whether the yes can cancel them all (``offer``
+    «all») or the person is asked which one (``offer`` «which»: an alarm shares its minute with another, there are
+    more than a plan holds, or the read was cut; ``dialogue.offered_alarm_clocks``).
+
+    v3e2-final F-s040: given the whole listing («count»: 38, reminders and alarms), the offer said «ocho alarmas» for
+    six times over sixteen alarms read."""
+
+    alarms = [
+        {key: entry[key] for key in ("time", "day", "date", "howMany") if key in entry}
+        for entry in listing.get("scheduled") or []
+        if isinstance(entry, dict) and entry.get("kind") in {"alarma", "alarm"} and isinstance(entry.get("time"), str)
+    ]
+    seen: dict = {
+        "alarmCount": sum(int(entry.get("howMany") or 1) for entry in alarms),
+        "alarms": alarms,
+        "offer": "all" if dialogue_slot.offered_alarm_clocks(observed) is not None else "which",
+    }
+    if observed.get("resultsMayBeTruncated") is True:
+        seen["moreNotRead"] = True
+    return seen
+
+
+def _offered_alarms(payload: dict, user_text: str) -> dict | None:
+    """D39: the offer's reading (``_alarm_offer_seen``) of a verified read for «cancela las alarmas», or None when the
     payload is not that read."""
 
     if not isinstance(payload, dict) or payload.get("operation") != "notification.list":
         return None
     seen = payload.get("seen")
-    if not isinstance(seen, dict) or not isinstance(seen.get("scheduled"), list) or not plural_alarm_cancellation(
+    if not isinstance(seen, dict) or not isinstance(seen.get("alarms"), list) or not plural_alarm_cancellation(
         user_text or ""
     ):
         return None
-    return [
-        entry for entry in seen["scheduled"]
-        if isinstance(entry, dict) and entry.get("kind") in {"alarma", "alarm"} and isinstance(entry.get("time"), str)
-    ]
+    return seen
 
 
 _ALARM_CANCEL_CLAIM = re.compile(
@@ -8054,9 +8188,10 @@ def _alarm_offer_defect(text: str, payload: dict, user_text: str) -> str:
     («Tienes 3 alarmas (7:00, 8:30 y 12:00). ¿Las cancelo todas?»): nothing was cancelled yet, every time read is
     said, and with any alarm the reply asks."""
 
-    alarms = _offered_alarms(payload, user_text)
-    if alarms is None:
+    offer = _offered_alarms(payload, user_text)
+    if offer is None:
         return ""
+    alarms = offer["alarms"]
     if _ALARM_CANCEL_CLAIM.search(_reading_fold(text)) is not None:
         return "effect_claim"
     if alarms and (
@@ -8064,20 +8199,49 @@ def _alarm_offer_defect(text: str, payload: dict, user_text: str) -> str:
         or any(entry["time"] not in text and entry["time"].lstrip("0") not in text for entry in alarms)
     ):
         return "alarm_offer_missing"
+    # M62 (v3e2-final F-s040 «Hay ocho alarmas a las 05:20, 06:00, 06:45, 08:30, 08:40 y 09:00»): how many alarms are
+    # said is how many were read (seen.alarmCount), or how many times ring when each time is counted once.
+    prose = _reading_fold(text)
+    questions = " ".join(re.findall(r"¿[^?]*\?|[^.;:!?¿]*\?", prose))
+    if offer.get("offer") == "which" and re.search(
+        r"\bcancel(?:o|amos)\s+todas\b|\bcancel(?:arlas|alas)\s+todas\b|\bcancel\s+(?:them\s+)?all\b", questions,
+    ):
+        # The yes could not cancel them all (``_alarm_offer_seen``): it is not offered.
+        return "alarm_offer_not_whole"
+    for found in _ALARMS_TOTAL.finditer(prose):
+        if _TASK_COUNT_WORDS.get(found.group("n"), found.group("n")) not in {
+            str(offer["alarmCount"]), str(len(alarms)),
+        }:
+            return "alarm_count_wrong"
     return ""
 
 
-def _alarm_offer_final(alarms: list[dict], english: bool) -> str:
+_ALARMS_TOTAL = re.compile(
+    rf"\b(?:tienes|hay|son|you\s+have|there\s+are)\s+(?:(?:un\s+total\s+de|in\s+total)\s+)?{_TASK_COUNT}\s+"
+    r"(?:alarmas|alarms)\b"
+)
+
+
+def _alarm_offer_final(offer: dict, english: bool) -> str:
     """D39: the offer said from the read, when no draft could say it."""
 
+    alarms = offer["alarms"]
     if not alarms:
         return "You have no alarms set." if english else "No tienes alarmas programadas."
-    count = sum(int(entry.get("howMany") or 1) for entry in alarms)
+    count = offer["alarmCount"]
     times = [
         entry["time"] + (f" {entry['day']}" if entry.get("day") else f" ({entry['date']})" if entry.get("date") else "")
+        + (f" (×{entry['howMany']})" if int(entry.get("howMany") or 1) > 1 else "")
         for entry in alarms
     ]
     listed = times[0] if len(times) == 1 else ", ".join(times[:-1]) + (" and " if english else " y ") + times[-1]
+    if offer.get("offer") == "which":
+        # M62: the yes could not cancel them all (several at one time, more than a plan holds, or a cut read).
+        return (
+            f"You have {count} alarms ({listed}). Which one should I cancel?"
+            if english
+            else f"Tienes {count} alarmas ({listed}). ¿Cuál cancelo?"
+        )
     if count == 1:
         return f"You have one alarm, at {listed}. Shall I cancel it?" if english else (
             f"Tienes una alarma, a las {listed}. ¿La cancelo?"
@@ -8235,6 +8399,10 @@ def _search_results_text(payload: dict) -> str | None:
             value = item.get(key)
             if isinstance(value, str) and value.strip():
                 parts.append(re.sub(r"[/._?=&%:-]+", " ", value) if key == "url" else value)
+        meters = item.get("distanceMeters")
+        if isinstance(meters, int) and not isinstance(meters, bool):
+            # M62: how far a place read is, in metres and in kilometres, is a figure of the read too.
+            parts.append(f"{meters} m {meters / 1000:g} km {round(meters / 1000, 1):g} km")
     return "\n".join(parts) if parts else None
 
 
@@ -8490,11 +8658,24 @@ def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> 
     results = [item for item in _search_results_of(payload) if isinstance(item, dict)]
 
     def page_text(items: list[dict]) -> str:
-        return "\n".join(str(item.get(key) or "") for item in items for key in ("title", "snippet"))
+        return "\n".join(
+            [str(item.get(key) or "") for item in items for key in ("title", "snippet")]
+            # M62: how far a place read is (metres and kilometres).
+            + [
+                f"{item['distanceMeters']} m {item['distanceMeters'] / 1000:g} km "
+                f"{round(item['distanceMeters'] / 1000, 1):g} km"
+                for item in items
+                if isinstance(item.get("distanceMeters"), int) and not isinstance(item.get("distanceMeters"), bool)
+            ]
+        )
 
+    # M62 (F-w13-t2): the total BAXY computed from a unit price read is a figure of the read too.
+    computed = " ".join(item.sentence for item in semantic_quantities.priced_totals(user_text or "", results_text))
     words: list[str] = []
     for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip()):
-        numbers = _search_report_unsourced_numbers(sentence, page_text(results) + "\n" + (user_text or ""))
+        numbers = _search_report_unsourced_numbers(
+            sentence, page_text(results) + "\n" + (user_text or "") + "\n" + computed,
+        )
         if _SEARCH_NOT_FOUND.match(_reading_fold(sentence)) is not None:
             # Uso real tanda 6 «…¿qué hora será?»: «No se indica la hora exacta de la salida del sol» died on
             # «exacta» and the turn ended in ⚠. Saying what was not found claims nothing of the world; its numbers
@@ -9100,6 +9281,30 @@ def _search_report_from_no_pertinent_result(text: str, payload: dict, user_text:
     )
 
 
+def _places_whole_address(text: str, payload: dict, user_text: str = "") -> bool:
+    """M62 (v3e2-final F-p05-t1 «Encontré aparcamiento en Calle Aurora, Valdelagrana, El Puerto de Santa María, Bahía
+    de Cádiz, Cádiz, Andalucía, 11500, España y …»): a place OpenStreetMap read is said by its name or street, not by
+    its whole address. Two consecutive parts of the tail of an address (province, region, postcode, country: «Cádiz,
+    Andalucía», «11500, España») said together, and not said so by the person, are the whole address copied; a street
+    that carries a country's name («Avenida de España») is not."""
+
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    if seen.get("authority") != "openstreetmap_nominatim":
+        return False
+    said = _reading_fold(text)
+    asked = _reading_fold(user_text or "")
+    for item in _search_results_of(payload):
+        if not isinstance(item, dict):
+            continue
+        parts = [_reading_fold(part.strip()) for part in str(item.get("snippet") or "").split(",") if part.strip()]
+        tail = parts[-4:] if len(parts) >= 5 else []
+        for first, second in zip(tail, tail[1:]):
+            joined = r"(?<!\w)" + re.escape(first) + r"\s*,\s*" + re.escape(second) + r"(?!\w)"
+            if re.search(joined, said) and not re.search(joined, asked):
+                return True
+    return False
+
+
 def _search_report_denies_found_places(text: str, payload: dict) -> bool:
     """M54 (v3b-final F-p06-t3 «Mejor en calle Génova» → «No encontré aparcamiento en la calle Génova en Madrid» over
     five car parks of Chueca, the next streets): the places OpenStreetMap returns are of the asked kind inside the asked
@@ -9389,6 +9594,17 @@ def _weather_focus(user_text: str, english: bool) -> str:
             if english
             else "La persona preguntó por mañana o un día posterior: da el cielo, la máxima, la mínima y la "
             "probabilidad de lluvia de mañana."
+        )
+    if weather_asks_later_in_the_day(user_text) and not measures:
+        # M62 (v3e2-final F-p07-t1 «…later today» → only the temperature at 00:45): the rest of today is today's read.
+        return (
+            "The person asked about later today: give today's maximum and minimum (today.maxC, today.minC) and its "
+            "rain probability (today.rainProbabilityPercent) in seen.location, naming it; the temperature now alone "
+            "does not answer it."
+            if english
+            else "La persona preguntó por más tarde hoy: da la máxima y la mínima de hoy (today.maxC, today.minC) y "
+            "su probabilidad de lluvia (today.rainProbabilityPercent) en seen.location, nombrándolo; la temperatura "
+            "de ahora sola no lo contesta."
         )
     if weather_asks_future(user_text) and not measures:
         # M58 (v3d-final F-s066 «¿hará bueno para San Juan?»): what is coming is tomorrow's read.
@@ -9909,6 +10125,18 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         if isinstance(tomorrow.get(key), (int, float))
     ):
         return "missing_state"
+    # M62 (v3e2-final F-p07-t1 «I must verify the weather in Foster City later today.»): a later part of today is
+    # answered with today's read (its maximum or minimum), not the temperature now alone.
+    today = seen.get("today")
+    later_today = (
+        not narrow_measures and not rain_asked and not asks_tomorrow and not coming and not future
+        and weather_asks_later_in_the_day(user_text or "") and isinstance(today, dict)
+    )
+    if later_today and not any(
+        _states_weather_number(text, today.get(key)) for key in ("maxC", "minC")
+        if isinstance(today.get(key), (int, float))
+    ):
+        return "missing_state"
     for measure, key in (
         ("humidity", "humidityPercent"), ("wind", "windKmh"), ("apparent", "apparentC"), ("dew_point", "dewPointC"),
     ):
@@ -9921,6 +10149,7 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         and not coming
         and not narrow_measures
         and not future
+        and not later_today
     ):
         return "missing_state"
     return ""
@@ -10085,6 +10314,11 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         return "search_report_shows_the_search"
     if _not_found_invents_a_cause(text, payload):
         return "search_not_found_invents_a_cause"
+    results_text = _search_results_text(payload)
+    if results_text and semantic_quantities.underived_price(text, user_text or "", results_text):
+        # M62 (v3e2-final F-w13-t2): the money a report gives for the asked quantity is the unit price read or the
+        # total computed from it (payload «calculation»), never another figure of the page (a full tank's price).
+        return "underived_price"
     if _search_report_unsourced_claim(text, payload, user_text):
         # WEB1879 H0060: a sentence of the report summarised causes in its own
         # voice; no result contains them. Reinstated in WEB1889: the turn no
@@ -10326,6 +10560,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
             return "search_report_off_subject"
         if _search_report_proposal_as_fact(text, payload, user_text):
             return "search_report_proposal_as_fact"
+        if _places_whole_address(text, payload, user_text):
+            return "places_whole_address"
     written = seen.get("writtenText") if isinstance(seen, dict) else None
     if payload.get("operation") == "clipboard.write.text" and isinstance(written, str) and written:
         # CLIPBOARD1359: «Hola» / «Buen día.» were published after a verified
@@ -12626,7 +12862,8 @@ def compose_visible_defect(
             and _ALREADY_STATEMENT.search(_accent_folded_with_punctuation(stripped)) is not None
         ):
             return "missing_failure"
-        parts = stripped.split(":", 1)
+        # M62 (v3e2-final F-s019): the colon of a clock («a las 8:00») is not a label's.
+        parts = re.split(r"(?<!\d):(?!\d)", stripped, maxsplit=1)
         if len(parts) == 2:
             tail_tokens = re.findall(r"[a-záéíóúñ]{3,}", parts[1].casefold())
             if not tail_tokens or (
@@ -13495,7 +13732,12 @@ def compose_visible_defect(
             if tokens and not any(token.casefold() in folded for token in tokens):
                 return "missing_name"
     # Tanda 6 («nunca inventa»): whatever the route, no date about today that this PC's calendar denies.
-    return _calendar_contradiction(stripped, user_text, _reply_calendar_moment(_situation_from_facts(facts)))
+    calendar = _calendar_contradiction(stripped, user_text, _reply_calendar_moment(_situation_from_facts(facts)))
+    if calendar:
+        return calendar
+    # M62 (v3e2-final F-p07-t4 «Have a great day, BAXY!»): BAXY never calls the person by its own name. Judged last,
+    # so a draft with another defect is told that one first.
+    return "person_called_baxy" if visible_reply_calls_the_person_baxy(stripped) else ""
 
 
 def _spanish_modal_is_malformed(value: object) -> bool:
@@ -13643,7 +13885,9 @@ def _unsupported_request_anchor_token(request: object) -> str:
 # v3a-final F-w11-t1 «pideme unos tacos al pastor» → «…los tacos al pastor del partido no los preparo yo»: a limit on
 # ordering something that says BAXY does not make it names another act. The verbs of making a thing, in the reply.
 _MAKING_ACT = re.compile(
-    r"\b(?:prepar\w*|cocin\w*|fabric\w*|horne\w*|elabor\w*|cook\w*|bak(?:e|es|ing)|brew\w*)\b"
+    # M62: «la luz de la cocina» (DEV-D w03-t3) is the kitchen, not cooking: the verb's forms, not the noun.
+    r"\b(?:prepar\w*|cocin(?:o|ar\w*|amos|are|aria|ado|ada|ados|adas)|fabric\w*|horne\w*|elabor\w*|cook\w*|"
+    r"bak(?:e|es|ing)|brew\w*)\b"
 )
 
 
@@ -13688,9 +13932,7 @@ def _unsupported_answer_contract_failure(
         return "unsupported_invented_infinitive"
     if visible_reply_breaks_first_person(content) or limit_breaks_the_asked_verb(content, request):
         return "unsupported_broken_person"
-    if _MAKING_ACT.search(_policy_guard_text(content)) is not None and (
-        asks_to_order(request) or not asks_to_make(request)
-    ):
+    if _limit_changes_the_act(content, request):
         # v3a-final F-w11-t1: ordering tacos is not preparing them. M54 (v3b-devD D-s042 «quiero pastel de camote de
         # una panadería local» → «No preparo el pastel…»): making is denied only when making was asked.
         return "unsupported_changed_act"
@@ -16293,6 +16535,12 @@ class LlmRuntime:
                         )
                         if conversation_claim_defect(content, text, prior_user_requests) in {"false_date", "hedged_date"}
                         else (
+                            # M62 (v3e2-final F-p07-t4 «Have a great day, BAXY!»).
+                            "BAXY es tu propio nombre: nunca llames BAXY a la persona. Responde en una sola frase, "
+                            "sin nombrarla."
+                        )
+                        if visible_reply_calls_the_person_baxy(content)
+                        else (
                             # Uso real 2026-09-23 (tanda 2): «Te traigo una hamburguesa»,
                             # «Se añadirá.», «no hay queso en la lista». The generic
                             # repair did not say what was wrong with the draft.
@@ -18477,12 +18725,15 @@ class LlmRuntime:
         unresolved_fields: tuple[str, ...],
         *,
         response_language: str | None = None,
+        ask_as: dict[str, str] | None = None,
     ) -> str:
         """Formulate one schema-grounded question without operation templates.
 
         ``response_language`` (M47) is the turn's decided language; when known it
         binds the question instead of «el idioma del pedido», because the
         objective may be the decider's restatement in the other language.
+        ``ask_as`` (M62) narrows what is asked of a field when a reader knows
+        which part of it is missing (the part of the day of a moved alarm).
         """
 
         function = tool.get("function") if isinstance(tool, dict) else None
@@ -18522,6 +18773,7 @@ class LlmRuntime:
                 # exacta en formato UTC…?»): the machine format of a time field is the system's to convert.
                 | ({"ask_as": "when, in the person's own words (a day and an hour); never a format, a time zone or UTC"}
                    if _MACHINE_TIME_FIELD.search(field) else {})
+                | ({"ask_as": ask_as[field]} if ask_as and ask_as.get(field) else {})
                 for field in unresolved_fields
             ],
         }
@@ -20274,17 +20526,37 @@ class LlmRuntime:
                 "dice: su tipo, su título entre comillas sólo si tiene, y cuándo suena (la hora, y mañana o la "
                 "fecha cuando vienen). Sin propósito, sin interpretación, sin otros elementos."
             )
-            if plural_alarm_cancellation(user_text or ""):
-                # D39 (owner, 2026-09-29): the person asked to cancel the alarms; they were only read.
-                instruct(
-                    "\nThe person asked to cancel their alarms and nothing was cancelled yet: say how many alarms "
-                    "(kind alarm) there are with the time of each, and ask whether to cancel them all («Shall I cancel "
-                    "them all?»); with one, name its time and ask whether to cancel it; with none, say there are none."
-                    if response_language == "en"
-                    else "\nLa persona pidió cancelar sus alarmas y todavía no se canceló nada: di cuántas alarmas "
-                    "(tipo alarma) hay con la hora de cada una y pregunta si las cancelas todas («¿Las cancelo "
-                    "todas?»); con una, di su hora y pregunta si la cancelas; sin ninguna, di que no hay."
+        alarm_offer = _offered_alarms(visible_situation, user_text or "")
+        if alarm_offer is not None:
+            # D39 (owner, 2026-09-29): the person asked to cancel the alarms; they were only read. M62 (v3e2-final
+            # F-s040): the count said is seen.alarmCount, and the yes is offered only when it can cancel them all.
+            instruct(
+                (
+                    "\nThe person asked to cancel their alarms and nothing was cancelled yet. seen.alarms are the "
+                    "alarms read (time, tomorrow or the date when not today, howMany when several ring at the same "
+                    "time) and seen.alarmCount how many there are: say that number and the time of each. "
+                    + (
+                        "Then ask whether to cancel them all («Shall I cancel them all?»); with one, name its time "
+                        "and ask whether to cancel it; with none, say there are none."
+                        if alarm_offer.get("offer") == "all"
+                        else "Do not offer to cancel them all (several ring at the same time, or there are too many "
+                        "for one yes): ask which one to cancel, without saying what you cannot do."
+                    )
                 )
+                if response_language == "en"
+                else (
+                    "\nLa persona pidió cancelar sus alarmas y todavía no se canceló nada. seen.alarms son las "
+                    "alarmas leídas (time, mañana o la fecha cuando no es hoy, howMany cuando varias suenan a la "
+                    "misma hora) y seen.alarmCount cuántas son: di ese número y la hora de cada una. "
+                    + (
+                        "Después pregunta si las cancelas todas («¿Las cancelo todas?»); con una, di su hora y "
+                        "pregunta si la cancelas; sin ninguna, di que no hay."
+                        if alarm_offer.get("offer") == "all"
+                        else "No ofrezcas cancelarlas todas (varias suenan a la misma hora o son demasiadas para un "
+                        "solo sí): pregunta cuál cancelas, sin decir qué no puedes hacer."
+                    )
+                )
+            )
         if (
             visible_situation.get("operation") == "bluetooth.radio.status"
             and isinstance(visible_situation.get("seen"), dict)
@@ -20768,6 +21040,30 @@ class LlmRuntime:
                 "es el correcto, otra versión o no confirmado). Sólo prosa: sin saltos "
                 "de línea, sin lista, sin URLs."
             )
+            if (visible_situation.get("seen") or {}).get("authority") == "openstreetmap_nominatim":
+                # M62 (v3e2-final F-p05-t1 «Encontré aparcamiento en Calle Aurora, Valdelagrana, El Puerto de Santa
+                # María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España y …»): the places are said as a person
+                # says them, with how far they are.
+                instruct(
+                    " These results are places of the kind asked around the place named, nearest first; "
+                    "distanceMeters is how far each is from it. Name one to three by their name (or their street "
+                    "when they have none) with how far each is; never the whole address (no district, town, "
+                    "province, region, postcode or country)."
+                    if response_language == "en"
+                    else " Estos resultados son sitios de la clase pedida alrededor del lugar nombrado, el más cercano "
+                    "primero; distanceMeters es a cuánto está cada uno de él. Nombra de uno a tres por su nombre (o "
+                    "su calle si no tienen) con a cuánto está cada uno; nunca la dirección entera (sin barrio, "
+                    "ciudad, provincia, región, código postal ni país)."
+                )
+            if visible_situation.get("calculation"):
+                # M62 (v3e2-final F-w13-t2): the cost of the asked quantity is BAXY's own calculation.
+                instruct(
+                    " calculation is what the quantity asked costs at the unit price a result states, already "
+                    "computed: give that total (and that unit price); no other amount of money."
+                    if response_language == "en"
+                    else " calculation es lo que cuesta la cantidad pedida al precio por unidad que da un resultado, "
+                    "ya calculado: da ese total (y ese precio por unidad); ninguna otra cifra de dinero."
+                )
             near = (visible_situation.get("seen") or {}).get("near")
             if isinstance(near, str) and near.strip():
                 # Uso real tanda 4c «comida para llevar cerca»: the search ran near this PC's city.
@@ -22210,6 +22506,27 @@ class LlmRuntime:
                     "qué no haces, nombrado con un sustantivo; no empieces por el pedido ni "
                     "lo repitas como si lo pidieras tú."
                 ),
+                # M62 (v3e2-final F-w11-t1, F-s064).
+                "limit_changed_act": (
+                    "The person asked you to order or buy it, not to make it: say in your own first person, with "
+                    "the verb of ordering, that you do not order that."
+                    if response_language == "en" and asks_to_order(user_text)
+                    else "Lo pedido es encargarlo o comprarlo, no hacerlo: di en tu primera persona, con el verbo "
+                    "de pedir o encargar, que eso no lo pides."
+                    if asks_to_order(user_text)
+                    else "Say in your own first person that you do not do what was asked, with the verb the person "
+                    "used; do not say you do not make, cook or prepare it."
+                    if response_language == "en"
+                    else "Di en tu primera persona que no haces lo que se pidió, con el verbo que usó la persona; no "
+                    "digas que no lo preparas, cocinas ni haces."
+                ),
+                "limit_names_no_act": (
+                    "Name what you do not do with the verb of what was asked and its object, not «the request»: "
+                    "say in your own first person that you do not do that."
+                    if response_language == "en"
+                    else "Nombra lo que no haces con el verbo de lo pedido y su objeto, no «el pedido» ni «la "
+                    "solicitud»: di en tu primera persona que eso no lo haces."
+                ),
                 "limit_gives_a_reason": (
                     "Say only that you do not do it, in one short sentence, and stop: no reason why."
                     if response_language == "en"
@@ -22311,13 +22628,70 @@ class LlmRuntime:
                     if response_language == "en"
                     else "Contesta este mensaje. No se leyó nada en este turno: no afirmes fechas, días ni cifras de ahora."
                 ),
+                # M62 (v3e2-final F-w13-t2 «…$73.000 por 40 litros» over a full tank's price).
+                "underived_price": (
+                    (
+                        "A figure of money in your reply («"
+                        + semantic_quantities.underived_price(
+                            candidate, user_text or "", _search_results_text(visible_situation) or "",
+                        )
+                        + "») is not what the asked quantity costs. Exact calculation: "
+                        + "; ".join(
+                            item.sentence for item in semantic_quantities.priced_totals(
+                                user_text or "", _search_results_text(visible_situation) or "", "en",
+                            )
+                        )
+                        + ". Give that total (and the unit price if you name it), nothing else."
+                    )
+                    if response_language == "en"
+                    else (
+                        "Una cifra de dinero de tu respuesta («"
+                        + semantic_quantities.underived_price(
+                            candidate, user_text or "", _search_results_text(visible_situation) or "",
+                        )
+                        + "») no es lo que cuesta la cantidad pedida. Cálculo exacto: "
+                        + "; ".join(
+                            item.sentence for item in semantic_quantities.priced_totals(
+                                user_text or "", _search_results_text(visible_situation) or "",
+                            )
+                        )
+                        + ". Da ese total (y el precio por unidad si lo nombras), nada más."
+                    )
+                ),
+                # M62 (v3e2-final F-p05-t1: the car parks told by their whole addresses).
+                "places_whole_address": (
+                    "Name one to three places by their name or their street only, with how far each is "
+                    "(distanceMeters); never the town, province, region, postcode or country."
+                    if response_language == "en"
+                    else "Nombra de uno a tres sitios sólo por su nombre o su calle, con a cuánto está cada uno "
+                    "(distanceMeters); nunca la ciudad, la provincia, la región, el código postal ni el país."
+                ),
+                # M62 (v3e2-final F-p07-t4 «Have a great day, BAXY!»).
+                "person_called_baxy": (
+                    "BAXY is your own name: never call the person BAXY; say it without naming them."
+                    if response_language == "en"
+                    else "BAXY es tu propio nombre: nunca llames BAXY a la persona; dilo sin nombrarla."
+                ),
                 # Tanda 8: «Agregado: tomates.», «Ya tienes en la lista: …», «Sí, está lista para recoger.».
                 "alarm_offer_missing": (
-                    "Nothing was cancelled yet. Say how many alarms there are with the time of each (seen.scheduled "
-                    "of kind alarm) and ask whether to cancel them all (with one, name it and ask to cancel it)."
+                    "Nothing was cancelled yet. Say how many alarms there are (seen.alarmCount) with the time of each "
+                    "(seen.alarms) and ask whether to cancel them all (with one, name it and ask to cancel it)."
                     if response_language == "en"
-                    else "Todavía no se canceló nada. Di cuántas alarmas hay con la hora de cada una (seen.scheduled de "
-                    "tipo alarma) y pregunta si las cancelas todas (con una, nómbrala y pregunta si la cancelas)."
+                    else "Todavía no se canceló nada. Di cuántas alarmas hay (seen.alarmCount) con la hora de cada una "
+                    "(seen.alarms) y pregunta si las cancelas todas (con una, nómbrala y pregunta si la cancelas)."
+                ),
+                # M62 (v3e2-final F-s040 «Hay ocho alarmas…» over sixteen read at six times).
+                "alarm_count_wrong": (
+                    "The number of alarms is seen.alarmCount: say that number, not another."
+                    if response_language == "en"
+                    else "El número de alarmas es seen.alarmCount: di ese número, no otro."
+                ),
+                "alarm_offer_not_whole": (
+                    "Do not offer to cancel them all: say how many there are with the time of each and ask which "
+                    "one to cancel, without saying what you cannot do."
+                    if response_language == "en"
+                    else "No ofrezcas cancelarlas todas: di cuántas hay con la hora de cada una y pregunta cuál "
+                    "cancelas, sin decir qué no puedes hacer."
                 ),
                 "effect_claim": (
                     "Nothing ran this turn: do not say you did, are doing or will do anything. If the person asked "

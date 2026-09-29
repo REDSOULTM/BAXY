@@ -14,6 +14,10 @@ duration, so the quantities are read here — durations with the same unit words
 - ``underived_figure``   a figure in a talk reply that neither the conversation states nor the declared calculation
                          gives: a derived measure («4,54 km/h»), or an aggregate («el promedio es 3,14», F-w12-t3)
                          with no data to aggregate. Other numbers («669 primos», years) are not judged.
+- ``priced_totals``      M62: what the quantity the person asks about costs at a unit price a read states («40 litros»
+                         at «el litro … $1.460» → $58.400), computed here;
+- ``underived_price``    the amount of money a report gives for that quantity that is neither the unit price read nor
+                         the computed total (v3e2-final F-w13-t2: «$73.000 por 40 litros» from a full tank's price).
 """
 
 from __future__ import annotations
@@ -27,7 +31,10 @@ from typing import Iterable
 
 from .normalize import fold
 
-__all__ = ["Measure", "measures", "evaluate", "derived_facts", "underived_figure", "numbers_in", "format_number"]
+__all__ = [
+    "Measure", "measures", "evaluate", "derived_facts", "underived_figure", "numbers_in", "format_number",
+    "PricedTotal", "priced_totals", "underived_price",
+]
 
 # dimension: (length, time, mass, volume) exponents
 _LENGTH, _TIME, _MASS, _VOLUME = (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1)
@@ -57,6 +64,7 @@ _unit("kg kgs kilo kilos kilogramo kilogramos kilogram kilograms", 1000, _MASS)
 _unit("lb lbs libra libras pound pounds", Fraction(45359237, 100000), _MASS)
 _unit("ml mililitro mililitros milliliter milliliters", 1, _VOLUME)
 _unit("l lt lts litro litros liter liters litre litres", 1000, _VOLUME)
+_unit("galon galones gallon gallons gal", Fraction(3785411784, 1000000), _VOLUME)
 
 _SPEED_UNITS = {"km/h": Fraction(1000, 3600), "kmh": Fraction(1000, 3600), "km por hora": Fraction(1000, 3600),
                 "kilometros por hora": Fraction(1000, 3600), "m/s": Fraction(1), "mph": Fraction(1609344, 3600000),
@@ -372,4 +380,154 @@ def underived_figure(reply: str, request: str, prior_requests: Iterable[str] = (
             if any(_close(said, value, _decimals(match.group("number"))) for value in (mean, total)):
                 continue
         return match.group(0)
+    return ""
+
+
+# ------------------------------------------------------------------ what a quantity costs at a price read (M62)
+
+# v3e2-final F-w13-t2 «y si cargo 40 litros cuanto me sale» after the fuel price was asked: the page said «el litro de
+# nafta súper se ubica en $1.460 … lo que equivale a $73.000 … por un tanque completo», and the report said «$1.460 el
+# litro, lo que suma $73.000 por 40 litros» (40 × 1.460 = 58.400). The unit price is read here, the total is computed
+# here on exact fractions, and a report may give for that quantity only the unit price or that total.
+_CURRENCY = r"(?:us\$|u\$s|\$|€|£)"
+_CURRENCY_WORD = r"(?:pesos?|dolares|dolar|dollars?|euros?|soles|bolivares|reales)"
+_MONEY_NUMBER = r"\d[\d.,]*\d|\d"
+# A price unit is a volume or a mass: a word of three letters or more before the price («el litro de nafta … $1.460»),
+# any of its words after it («$1.460/l», «$1.460 el litro», «1.460 pesos por litro»).
+_PRICE_UNIT_WORD = "|".join(
+    sorted((re.escape(word) for word, (_, dimension) in _UNITS.items() if dimension in {_VOLUME, _MASS}),
+           key=len, reverse=True)
+)
+_LONG_PRICE_UNIT_WORD = "|".join(
+    sorted((re.escape(word) for word, (_, dimension) in _UNITS.items()
+            if dimension in {_VOLUME, _MASS} and len(word) >= 3), key=len, reverse=True)
+)
+_UNIT_THEN_PRICE = re.compile(
+    rf"\b(?P<unit>{_LONG_PRICE_UNIT_WORD})\b[^\d$€£\n.;]{{0,40}}?"
+    rf"(?:(?P<sign>{_CURRENCY})\s?(?P<amount>{_MONEY_NUMBER})|(?P<worded>{_MONEY_NUMBER})\s*(?P<word>{_CURRENCY_WORD})\b)"
+)
+_PRICE_THEN_UNIT = re.compile(
+    rf"(?:(?P<sign>{_CURRENCY})\s?(?P<amount>{_MONEY_NUMBER})|(?P<worded>{_MONEY_NUMBER})\s*(?P<word>{_CURRENCY_WORD}))"
+    rf"\s*(?:/|el|la|por|per|a|each|cada|the|an?)\s*(?:(?:un|una|1)\s+)?(?P<unit>{_PRICE_UNIT_WORD})\b"
+)
+_MONEY = re.compile(
+    rf"{_CURRENCY}\s?(?P<amount>{_MONEY_NUMBER})|(?<![\w.,])(?P<worded>{_MONEY_NUMBER})\s*{_CURRENCY_WORD}\b"
+)
+
+
+@dataclass(frozen=True)
+class PricedTotal:
+    sentence: str  # «40 litros × $1.460 por litro = $58.400»
+    total: Fraction
+    unit_price: Fraction
+
+
+def _money(raw: str) -> Fraction | None:
+    """«1.460» and «1,460» as thousands, «3.99» and «3,5» as decimals, «1.460,50» and «1,460.50» both ways."""
+
+    raw = raw.strip()
+    try:
+        if re.fullmatch(r"\d{1,3}(?:\.\d{3})+(?:,\d+)?", raw):
+            return Fraction(raw.replace(".", "").replace(",", "."))
+        if re.fullmatch(r"\d{1,3}(?:,\d{3})+(?:\.\d+)?", raw):
+            return Fraction(raw.replace(",", ""))
+        return Fraction(raw.replace(",", "."))
+    except (ValueError, ZeroDivisionError):
+        return None
+
+
+def _money_said(value: Fraction, like: str, language: str = "es") -> str:
+    """``value`` written the way the page wrote its price ``like`` («$1.460» → «$58.400»; «$1,460» → «$58,400»;
+    «1.200 pesos» → «2.400 pesos»); a price without separators is written in the reply's language."""
+
+    whole = round(float(value), 2).is_integer()
+    text = f"{float(value):,.0f}" if whole else f"{float(value):,.2f}"
+    number = re.search(_MONEY_NUMBER, like)
+    written = number.group(0) if number else ""
+    dotted = re.search(r"\d\.\d{3}(?!\d)", written) or (re.search(r"\d,\d{1,2}(?!\d)", written) and "." not in written)
+    unseparated = not re.search(r"[.,]", written)
+    if dotted or (unseparated and language == "es"):
+        text = text.replace(",", "\0").replace(".", ",").replace("\0", ".")
+    return like[:number.start()] + text + like[number.end():] if number else text
+
+
+def _unit_prices(evidence: str) -> list[tuple[Fraction, Fraction, tuple[int, int, int, int], str, str, str]]:
+    """(price, unit size in base units, dimension, the price as written, the unit word, the words around it) of each
+    unit price the evidence states."""
+
+    folded = fold(evidence)
+    found: list[tuple[Fraction, Fraction, tuple[int, int, int, int], str, str, str]] = []
+    for pattern in (_UNIT_THEN_PRICE, _PRICE_THEN_UNIT):
+        for match in pattern.finditer(folded):
+            raw = match.group("amount") or match.group("worded")
+            price = _money(raw) if raw else None
+            unit = _UNITS.get(match.group("unit"))
+            if price is None or price <= 0 or unit is None:
+                continue
+            said = (match.group("sign") or "") + raw + (" " + match.group("word") if match.group("word") else "")
+            around = folded[max(0, match.start() - 40):match.end()]
+            entry = (price, unit[0], unit[1], said, match.group("unit"), around)
+            if all(entry[:3] != other[:3] for other in found):
+                found.append(entry)
+    return found
+
+
+# Words of a request that do not say what is priced («¿cuánto me sale cargar 40 litros…?»).
+_PRICE_FRAME_WORDS = frozenset(
+    {
+        "cuanto", "cuanta", "cuesta", "cuestan", "sale", "salen", "saldria", "vale", "valen", "precio", "cargar",
+        "cargo", "echar", "echo", "llenar", "comprar", "compro", "pagar", "pago", "hoy", "ahora", "aqui", "much",
+        "cost", "costs", "would", "price", "fill", "buy", "pay", "today", "for", "the", "que", "con", "por", "para",
+        "unos", "unas", "como", "esta", "estan",
+    }
+)
+
+
+def _priced_words(request: str) -> set[str]:
+    """What the request prices: its words of four letters or more that are neither a unit nor its frame."""
+
+    return {
+        word for word in re.findall(r"[a-z]{4,}", fold(request))
+        if word not in _PRICE_FRAME_WORDS and word not in _UNITS
+    }
+
+
+def priced_totals(request: str, evidence: str, language: str = "es") -> list[PricedTotal]:
+    """What the one volume or mass the request states costs at each unit price the evidence states."""
+
+    asked = [item for item in measures(request) if item.dimension in {_VOLUME, _MASS}]
+    if len(asked) != 1 or asked[0].value <= 0:
+        return []
+    quantity = asked[0]
+    said_quantity = fold(request)[quantity.start:quantity.end]
+    prices = [entry for entry in _unit_prices(evidence) if entry[2] == quantity.dimension]
+    # «40 litros de nafta súper» next to «el litro de Diésel … $755»: when the request names what it prices and some
+    # price is said next to those words, only those prices are its.
+    named = _priced_words(request)
+    about = [entry for entry in prices if any(re.search(rf"\b{word}\b", entry[5]) for word in named)]
+    totals: list[PricedTotal] = []
+    for price, size, _dimension, written, unit_name, _around in about or prices:
+        total = quantity.value / size * price
+        per = (" por " if language == "es" else " per ") + unit_name
+        sentence = f"{said_quantity} × {written}{per} = {_money_said(total, written, language)}"
+        if all(total != other.total for other in totals):
+            totals.append(PricedTotal(sentence, total, price))
+    return totals
+
+
+def underived_price(reply: str, request: str, evidence: str) -> str:
+    """The amount of money the reply gives that is neither a unit price read nor a computed total, when the request
+    states a quantity and the evidence a price for its unit; "" otherwise."""
+
+    totals = priced_totals(request, evidence)
+    if not totals:
+        return ""
+    allowed = [item.total for item in totals] + [item.unit_price for item in totals]
+    for match in _MONEY.finditer(fold(reply)):
+        raw = match.group("amount") or match.group("worded")
+        value = _money(raw) if raw else None
+        if value is None:
+            continue
+        if not any(abs(value - expected) <= expected / 100 for expected in allowed):
+            return match.group(0).strip()
     return ""
