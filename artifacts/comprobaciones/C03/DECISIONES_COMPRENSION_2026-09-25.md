@@ -522,3 +522,16 @@ argumentos son **53/57 frente a 54/57** de `full3`, así que la caída de argume
 de decisión sigue: no cumple la regla (decisión ≥ `full3`, argumentos ≥ 55/57, ninguna clase −2 pts). Se queda `full3`
 con las guardas M64/M65. El siguiente LoRA se entrena con el formato de argumentos plano que pide la app (o la app pasa
 al anidado, medido igual), con P0 + P1 + P2 y cuotas por clase para no perder decisión.
+
+## D47. DEV-D con revisor independiente: 64 %, no 80 % (2026-09-29 ~17:40)
+Corrección: las cifras de DEV-D en ventana citadas hasta ahora (v3e2/v3f 267/332 = 80,4 %) eran la puntuación
+**automática** (decisión + argumentos), no la del revisor. El mismo revisor independiente del FINAL revisó DEV-D por
+primera vez: **v3l (a017d6fc, M67–M73) 212/332 = 63,9 %**; con el mismo criterio v3f 215/332 = 64,8 % (−3, dentro del
+ruido; 5 turnos de v3l cayeron porque el navegador del producto no respondió). Inventados 11 (v3f 8), ⚠ 7 = 2,1 %
+(3 por el veto de «could not be reached», M74), repreguntas de datos dados 15. No-ok por causa: argumentos o
+repregunta 31, búsqueda 27, límites o alcance 19, otros 16, redacción 14, conocimiento o código 13.
+En paralelo, el guion del dueño sube a 56/60 y el held-out a 28/30 (v3k), cien 98/100: lo arreglado por M64–M74 son
+los casos del dueño; en DEV-D (conversaciones escritas y corpus públicos) la distancia a la meta de FINAL-2 (≥ 85 %)
+sigue siendo ≈ 21 puntos. Siguiente: tres frentes con mecanismos generales (repreguntas/lugar por defecto/jerga,
+informes de búsqueda que inventan o dicen «no encontré» con el dato leído, límites falsos y fechas fuera de alcance)
+y el decisor (full7, full8).
