@@ -177,12 +177,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # v3b: M49–M52, M50, M51, último recurso de media
 # M55: colocar ventanas por destino
 # v3c: M53, M54, M55
+# v3d: M56, M57
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "e3edeb0aed5ddd02c045e0ef2ff694ab648f76b73894a9139013828ee42d51b9"
+        "0eac1d846ae06109ccfa2ba5608b8f032a7e90fa3eb7f5a83a189a18806d3239"
     ),
     "src/baxy_mind/llm.py": (
-        "39b138a723a6669e5022029297aa287b9fc262596facb9ccedb513a39fcc442a"
+        "83cf3d667561df2e955aefbdec582ec587dabed934a6f7c9f04510e4330ede74"
     ),
 }
 
