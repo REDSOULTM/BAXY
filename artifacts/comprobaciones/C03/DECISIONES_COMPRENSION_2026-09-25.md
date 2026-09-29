@@ -440,3 +440,18 @@ catálogo 24 → 1 de 195, p90 3,58 → 2,09 s), M50 (código pedido), M51 (bús
 último recurso de media: el revisor sube 18 turnos sobre la base, sin retroceso en DEV-C, reserva, capa A ni 742.
 Registro real: log:86 («hazme un triángulo con las estaciones del año») pasa de charla a web.search (a revisar).
 Siguiente: v3c = + M53 (conocimiento consultado, D35), M54 (redacción fiel a las lecturas), M55 (colocar ventanas).
+
+## D38. v3c medido (426d08e7: v3b + M53 conocimiento consultado, M54 redacción fiel a las lecturas, M55 ventanas) (2026-09-28 23:10)
+| medida | v3b | v3c |
+|---|---|---|
+| FINAL gastado, revisor (mismo) | 126/202 | **128/202 = 63,4 %** (11 mejoran, 9 empeoran: 6 por la búsqueda general caída en esta red) |
+| inventados / ⚠ / repreguntas | 3 / 2 / 12 | 2 / 3 / 11 |
+| DEV-D ventana | 256/332 | 256/332 |
+| DEV-C (mente) | 252/301 | 250/301 (2 rotos) |
+| reserva | 85,7 % | 85,6 % (2 rotos) |
+| capa A / 742 | 96,4 % / = | 96,4 % / 0 distintas |
+| VRAM BAXY (pico en la app) | — | ≈ 4 042 MiB (meta ≤ 3 800) |
+Se adoptan M53 (recetas, argumentos y rankings consultados en Wikimedia; «de memoria, puede no ser exacto» sin
+fuente; cálculo con unidades; enlace «fuente»), M54 y M55. Los retrocesos medidos son de la búsqueda general
+(DuckDuckGo vuelve a dar captcha en esta red) y de lectores que M56 corrige (el SQL mandado a la web, «latest song» como
+ranking, lugares de otra ciudad, colocar ventanas cuando una app no está abierta). Paso 7: M57 permite medir 2 huecos.
