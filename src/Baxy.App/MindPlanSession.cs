@@ -275,7 +275,11 @@ internal sealed class MindPlanSession
                 return;
             }
 
-            if (response.Status == OperationStatuses.Completed && response.Verified)
+            // M69 (guion v3h t47 «activa mi microfono» already active): a step whose asked
+            // state already held changed nothing and needs nothing; the state read is its
+            // outcome, told as a result (one step) or in the summary, and the plan goes on.
+            if ((response.Status == OperationStatuses.Completed && response.Verified)
+                || OperationResponseProjection.AskedStateAlreadyHeld(response))
             {
                 CompleteStep(execution, registry, prepared, step, response);
                 continue;
@@ -460,7 +464,9 @@ internal sealed class MindPlanSession
                         client, registry, confirmation.Prepared, cancellationToken,
                         confirmation.Token);
                     execution.Confirmation = null;
-                    if (response.Status == OperationStatuses.Completed && response.Verified)
+                    // M69: a confirmed step whose asked state already held is done, as above.
+                    if ((response.Status == OperationStatuses.Completed && response.Verified)
+                        || OperationResponseProjection.AskedStateAlreadyHeld(response))
                     {
                         CompleteStep(
                             execution,

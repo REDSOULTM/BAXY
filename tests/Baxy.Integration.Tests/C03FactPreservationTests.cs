@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using Baxy.App;
+using Baxy.Contracts;
 using NUnit.Framework;
 
 namespace Baxy.Integration.Tests;
@@ -310,6 +311,74 @@ public sealed class C03FactPreservationTests
         UserMessageDraft draft = UserMessagePolicy.Create(facts, UserMessageEvent.Status);
         Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "activa mi microfono"), Is.Null);
     }
+
+    // M69 (guion v3h t47): «activa mi microfono» with the microphone already active. The typed
+    // «asked state already held» failure crosses no boundary and is published as a result: the
+    // final says the state and claims no effect; a limit reached («volume_already_at_*») or a
+    // conflict («zip_already_exists») stays an error.
+    [TestCase(OperationStatuses.Failed, "microphone_already_unmuted", false, true)]
+    [TestCase(OperationStatuses.Failed, "microphone_already_muted", false, true)]
+    [TestCase(OperationStatuses.Failed, "airplane_mode_already_on", false, true)]
+    [TestCase(OperationStatuses.Failed, "airplane_mode_already_off", false, true)]
+    [TestCase(OperationStatuses.Failed, "volume_already_at_maximum", false, false)]
+    [TestCase(OperationStatuses.Failed, "volume_already_at_maximum_muted", false, false)]
+    [TestCase(OperationStatuses.Failed, "zip_already_exists", false, false)]
+    [TestCase(OperationStatuses.Failed, "microphone_already_unmuted", true, false)]
+    [TestCase(OperationStatuses.Pending, "microphone_already_unmuted", false, false)]
+    [TestCase(OperationStatuses.Failed, "microphone_mute_postread_mismatch", false, false)]
+    public void OnlyAnAskedStateThatAlreadyHeldIsTheResult(
+        string status, string errorCode, bool effectMayHaveOccurred, bool held)
+    {
+        var response = new OperationResponse(
+            ProtocolTypes.OperationResponse, Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"), Guid.NewGuid().ToString("D"), status,
+            AlreadyHeldFacts(errorCode), false, false, null, errorCode, effectMayHaveOccurred);
+        Assert.That(OperationResponseProjection.AskedStateAlreadyHeld(response), Is.EqualTo(held));
+    }
+
+    [TestCase("El micrófono ya está activo.", "activa mi microfono", null)]
+    [TestCase("Tu micrófono ya estaba activo, así que no cambié nada.", "activa mi microfono", null)]
+    [TestCase("The microphone is already on.", "unmute my microphone", null)]
+    [TestCase("Listo, activé el micrófono.", "activa mi microfono", "reversed_result")]
+    [TestCase("Activé tu micrófono.", "activa mi microfono", "reversed_result")]
+    public void AskedStateAlreadyHeldIsAResultThatClaimsNoEffect(string reply, string request, string? rejection)
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            AlreadyHeldFacts("microphone_already_unmuted"), UserMessageEvent.Status);
+        Assert.Multiple(() =>
+        {
+            Assert.That(PublicResponseRoute.FromDraft(draft), Is.EqualTo(PublicResponseRoute.Result));
+            Assert.That(UserMessagePolicy.IsAskedStateAlreadyHeld(draft.Source), Is.True);
+            Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, request), Is.EqualTo(rejection));
+        });
+    }
+
+    [Test]
+    public void AskedStateAlreadyHeldIsReadInsideAWrappedStepFailure()
+    {
+        string wrapped = TurnVisibleFacts.Failure("mission_failed", new JsonObject
+        {
+            ["stepCount"] = 0,
+            ["steps"] = new JsonArray(),
+            ["reason"] = JsonNode.Parse(AlreadyHeldFacts("airplane_mode_already_off")),
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That(UserMessagePolicy.IsAskedStateAlreadyHeld(wrapped), Is.True);
+            Assert.That(UserMessagePolicy.IsAskedStateAlreadyHeld(AlreadyHeldFacts("volume_already_at_minimum")), Is.False);
+        });
+    }
+
+    private static string AlreadyHeldFacts(string errorCode) => new JsonObject
+    {
+        ["kind"] = "operation",
+        ["operation"] = errorCode.StartsWith("microphone_", StringComparison.Ordinal)
+            ? "audio.microphone.mute" : "system.settings.set",
+        ["polarity"] = "failure",
+        ["verified"] = false,
+        ["succeeded"] = false,
+        ["error"] = errorCode,
+    }.ToJsonString();
 
     [Test]
     public void PriorFilenameRemainsHumanVocabularyInAConversationRecovery()

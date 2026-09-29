@@ -4660,17 +4660,24 @@ _CAUSE_FACT = {
     "smtc_postcondition_not_verified": (
         "the player did not reach the requested state, so the change is not confirmed"
     ),
+    # M69 (guion v3h t47 «activa mi microfono» already on → «…no hubo cambios al intentar silenciarlo»): the
+    # operation's name says «mute» for both directions, so each fact names what was asked, what holds and that
+    # nothing was attempted.
     "microphone_already_muted": (
-        "the microphone was already muted, so nothing changed"
+        "the person asked to mute (silence) the microphone and it was already muted, not picking up sound; "
+        "nothing was attempted and nothing changed"
     ),
     "airplane_mode_already_on": (
-        "airplane mode was already on (every radio off), so nothing changed"
+        "the person asked to turn airplane mode on and it was already on (every radio off); "
+        "nothing was attempted and nothing changed"
     ),
     "airplane_mode_already_off": (
-        "airplane mode was already off (the radios were on), so nothing changed"
+        "the person asked to turn airplane mode off and it was already off (the radios were on); "
+        "nothing was attempted and nothing changed"
     ),
     "microphone_already_unmuted": (
-        "the microphone was already active, not muted, so nothing changed"
+        "the person asked to turn the microphone on (unmute it) and it was already on: active, not muted, "
+        "picking up sound; nothing was attempted and nothing changed"
     ),
     # M54 (v3b-final F-w02-t4, F-w11-t3): the output level already at the end the person moves it towards.
     "volume_already_at_maximum": (
@@ -5423,6 +5430,65 @@ def _failure_is_an_unchanged_state(situation: dict) -> bool:
     return any("_already_" in code for code in _situation_error_codes(situation))
 
 
+# M69 (guion v3h t46/t47): the typed codes whose asked state already holds. The adapter read the state and crossed no
+# boundary; the App publishes it as a result, not an error. «volume_already_at_*» stays a failure (the asked change,
+# louder or quieter, cannot happen) and «zip_already_exists» is a conflict. Twin of
+# UserMessagePolicy.AskedStateAlreadyHeldCodes.
+_ASKED_STATE_ALREADY_HELD = frozenset({
+    "microphone_already_muted",
+    "microphone_already_unmuted",
+    "airplane_mode_already_on",
+    "airplane_mode_already_off",
+})
+
+
+def _failure_is_an_asked_state_held(situation: dict) -> bool:
+    """The failure told is that the asked state already held («microphone_already_unmuted»): nothing was attempted.
+    Twin of UserMessagePolicy.IsAskedStateAlreadyHeld."""
+
+    return any(code in _ASKED_STATE_ALREADY_HELD for code in _situation_error_codes(situation))
+
+
+# M69 (guion v3h t47): «no hubo cambios al intentar silenciarlo» claims an attempt (at the opposite state) that the
+# adapter never made; the asked state already held.
+_ATTEMPT_CLAIM = re.compile(
+    r"\b(?:al\s+)?intent(?:ar|e|é|o|ó|arlo|arla|ando|amos)\b|\btrat(?:ar|e|é|o|ó|ando)\s+de\b|"
+    r"\b(?:i\s+)?(?:tried|trying|attempted|attempting)\b|\bwhen\s+i\s+tried\b"
+)
+
+# M69 (guion v3h t46): the microphone said off («está desactivado», «is off») or on («está activo», «is on»); for the
+# microphone off is muted and on is unmuted. Casefolded text, accents kept; «no está activo» is off, not on. Only the
+# present state: «estaba activo», «was on» tell the baseline.
+_MICROPHONE_NOUN = r"\b(?:micr[oó]fono|microphone|mic|micro)\s+(?:\w+\s+){0,2}?"
+_MICROPHONE_SAID_OFF = re.compile(
+    _MICROPHONE_NOUN
+    + r"(?:no\s+est[aá]\s+(?:activ|encendid|habilitad|funcionando)|"
+    r"(?:est[aá]|qued[oó]|sigue|contin[uú]a)\s+(?:desactivad|apagad|inactiv|deshabilitad)|"
+    r"(?:is|stays|remains)\s+(?:off\b|disabled|inactive|deactivated|turned\s+off)|"
+    r"(?:is\s+not|isn'?t)\s+(?:on\b|active|enabled))"
+)
+_MICROPHONE_SAID_ON = re.compile(
+    _MICROPHONE_NOUN
+    # «micrófono está» ends in «no »: the negation is a word of its own.
+    + r"(?:(?<!\bno )(?:est[aá]|qued[oó]|sigue|contin[uú]a)\s+(?:activ|encendid|habilitad|reactivad)|"
+    r"(?:is|stays|remains)\s+(?:on\b|active|enabled|live\b|turned\s+on))"
+)
+
+
+def _microphone_muted_fact(situation: dict) -> bool | None:
+    """M69: whether the microphone is muted now — the post-read, or the state that already held."""
+
+    observed = _merged_observed(situation)
+    if str(situation.get("operation") or "") == "audio.microphone.mute" and isinstance(observed.get("muted"), bool):
+        return observed["muted"]
+    codes = _situation_error_codes(situation)
+    if "microphone_already_muted" in codes:
+        return True
+    if "microphone_already_unmuted" in codes:
+        return False
+    return None
+
+
 # Saying that it already was so: «ya estaba activo», «ya está en silencio», «it was already on». Twin of
 # UserMessagePolicy.AlreadyStatement.
 # Independent review A2: «Ya está, activé tu micrófono» is «done» said over a failure; «ya está» is the state only
@@ -5450,6 +5516,15 @@ def _situation_error_codes(situation: dict) -> tuple[str, ...]:
             reason = None
     if isinstance(reason, dict):
         codes.extend(_situation_error_codes(reason))
+    # M69: a step whose asked state already held counts as done and travels among the mission's steps.
+    for step in situation.get("steps") or []:
+        if isinstance(step, str) and step.lstrip().startswith("{"):
+            try:
+                step = json.loads(step)
+            except json.JSONDecodeError:
+                continue
+        if isinstance(step, dict):
+            codes.extend(_situation_error_codes(step))
     return tuple(codes)
 
 
@@ -5910,7 +5985,10 @@ def _compose_situation_payload(
         for key in ("cancelledRequest", "cancelledAction"):
             if key in situation:
                 payload[key] = _compose_action_facts(situation[key])
-    if polarity == "failure":
+    if polarity == "failure" and kind == "operation" and cause_key in _ASKED_STATE_ALREADY_HELD:
+        # M69 (guion v3h t47): the asked state already held; nothing failed and nothing was attempted.
+        payload["outcome"] = "already_as_asked"
+    elif polarity == "failure":
         payload["outcome"] = "failed"
     elif cause_key in {"remaining_steps_cancelled", "memory_cancelled", "clarification_cancelled"}:
         # Successful cancellation does not complete the requested action.
@@ -6097,6 +6175,13 @@ def _compose_situation_payload(
                 for key in ("folderName", "source", "extension", "count", "filesInFolder")
                 if key in visible_seen
             }
+        elif operation == "audio.microphone.mute" and isinstance(visible_seen.get("muted"), bool):
+            # M69 (guion v3h t46 «activalo» after muting): «muted: false» was composed «El micrófono está
+            # desactivado.», the opposite of the truth. The narrator gets the microphone's state in words.
+            projected = {"microphone": _microphone_state_words(visible_seen["muted"], language)}
+            if isinstance(visible_seen.get("baselineMuted"), bool):
+                projected["microphoneBefore"] = _microphone_state_words(visible_seen["baselineMuted"], language)
+            visible_seen = projected
         elif operation == "media.play.youtube":
             # MUSIC1553: the process id and the IPC authority are not for the
             # person; the query, the observed title and the state are.
@@ -6340,6 +6425,14 @@ def _compose_situation_payload(
         if totals:
             payload["calculation"] = [item.sentence for item in totals[:3]]
     return payload
+
+
+def _microphone_state_words(muted: bool, language: str) -> str:
+    """M69: the microphone's mute flag said as its state, never as a bare boolean."""
+
+    if language == "en":
+        return "muted: silenced, not picking up sound" if muted else "active: on, not muted, picking up sound"
+    return "silenciado: no capta sonido" if muted else "activo: encendido, sin silenciar, capta sonido"
 
 
 def _visible_compose_facts(prompt_facts: dict) -> dict | None:
@@ -6858,7 +6951,10 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
         has_audio = "level" in observed or "muted" in observed
         if "level" in observed:
             bits.append("Name the volume number.")
-        if "muted" in observed:
+        if "muted" in observed and situation.get("operation") == "audio.microphone.mute":
+            # M69 (guion v3h t46): «muted: false» told as «desactivado»; seen.microphone says the state in words.
+            bits.append("Say whether the microphone is now active or muted, as seen.microphone says.")
+        elif "muted" in observed:
             bits.append("Describe whether sound is silenced.")
         if clock and asks_calendar_part(user_text):
             bits.append(_calendar_instruction(user_text))
@@ -13006,6 +13102,12 @@ def compose_visible_defect(
             if not _names_the_boundary(folded):
                 return "missing_failure"
             return limit_voice_defect(stripped, user_text)
+        if _failure_is_an_asked_state_held(situation) and _ATTEMPT_CLAIM.search(
+            _accent_folded_with_punctuation(stripped)
+        ):
+            # M69 (guion v3h t47): «…no hubo cambios al intentar silenciarlo» over an unmute that already held; the
+            # adapter read the state and attempted nothing.
+            return "extra_claim"
         if not _asserts_failure(stripped) and not (
             # Uso real 2026-09-23 «qué música se está reproduciendo» with no player
             # found: «No hay un video de YouTube en ejecución» IS the failure told,
@@ -13214,6 +13316,19 @@ def compose_visible_defect(
     )
     if mentions_mute and "muted" not in observed_dict and operation != "audio.mute" and not mute_is_the_cause:
         return "extra_claim"
+    # M69 (guion v3h t46 «activalo»): «El micrófono está desactivado.» over muted=false. For the microphone, off or
+    # disabled is muted and on or active is unmuted, in both languages; the state is the post-read or the one that
+    # already held.
+    microphone_muted = _microphone_muted_fact(situation)
+    microphone_said = folded
+    if microphone_muted is not None and "muted" not in observed_dict:
+        # The state that already held is still the state: «ya estaba desactivado» says it off now.
+        microphone_said = re.sub(r"\bestaba\b", "está", folded)
+        microphone_said = re.sub(r"\bwas(?:\s+already)?\b", "is", microphone_said)
+    if microphone_muted is False and _MICROPHONE_SAID_OFF.search(microphone_said):
+        return "reversed_mute"
+    if microphone_muted is True and _MICROPHONE_SAID_ON.search(microphone_said):
+        return "reversed_mute"
     if "muted" in observed_dict:
         muted = observed_dict.get("muted") is True
         # MIC1813: «micrófono está silenciado» contains «no esta silenci»; the
@@ -20464,6 +20579,14 @@ class LlmRuntime:
                 instruct("\n" + refuse_line + "Do not say you tried and failed.")
             elif response_language == "en":
                 instruct("\nEnglish only. Name the failure cause in prose.")
+            if _failure_is_an_asked_state_held(situation):
+                # M69 (guion v3h t47): the operation's name says «mute» for both directions; the cause names
+                # what was asked and what holds.
+                instruct(
+                    "\nThe state the person asked for already held, so nothing was attempted and nothing changed. "
+                    "Say that current state in one short sentence, as the cause says; do not say you tried, "
+                    "failed or did it."
+                )
             if cause == "memory_disabled":
                 # MEMORY1251 H0452: every draft restated the datum as already
                 # remembered («Sí, recuerdo que tu color favorito es el azul»)
@@ -22260,7 +22383,11 @@ class LlmRuntime:
                     else "El destinatario que pidió la persona ES el canal de pruebas del dueño y el mensaje llegó ahí de verdad: di que lo enviaste a ese canal y no digas que no fue enviado a nadie."
                 ),
                 "extra_claim": (
-                    "Answer what you will not do, in your own words."
+                    # M69 (guion v3h t47): «no hubo cambios al intentar silenciarlo» over an unmute already held.
+                    "Nothing was attempted: the state the person asked for already held. Say that state in one "
+                    "short sentence; do not say you tried."
+                    if _failure_is_an_asked_state_held(situation)
+                    else "Answer what you will not do, in your own words."
                     if _looks_like_refuse_question(user_text)
                     # Uso real tanda 6 «let me know my current location»: a weather reply that says more than was
                     # asked is told the asked focus again.
@@ -22294,7 +22421,14 @@ class LlmRuntime:
                 # Tanda 6c «Quiero el sound de nuevo please» (sound already on at volume 0): three drafts said it
                 # was silenced. A volume of 0 is a level, not a mute; the hint says which state was read.
                 "reversed_mute": (
-                    "The sound is on, not muted: say it is active, and give its volume as a level."
+                    # M69 (guion v3h t46): the microphone has no volume; its state is active or muted.
+                    (
+                        "The microphone is on, not muted: say it is active."
+                        if _microphone_muted_fact(situation) is False
+                        else "The microphone is muted: say it is silenced."
+                    )
+                    if str(situation.get("operation") or "") == "audio.microphone.mute"
+                    else "The sound is on, not muted: say it is active, and give its volume as a level."
                     if _merged_observed(situation).get("muted") is False
                     else "Name audio or speakers and the mute state."
                 ),

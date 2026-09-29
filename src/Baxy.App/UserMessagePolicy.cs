@@ -478,7 +478,9 @@ internal static class UserMessagePolicy
             {
                 return "reversed_result";
             }
-            if (draft.Intent == "error"
+            // M69 (guion v3h t47): the asked state that already held is published as a result; its final still
+            // tells the unchanged state and never an effect («Listo, activé el micrófono»).
+            if ((draft.Intent == "error" || IsAskedStateAlreadyHeld(draft.Source))
                 && ReversesFailedResult(draft.Source, modelText))
             {
                 return "reversed_result";
@@ -3646,39 +3648,61 @@ internal static class UserMessagePolicy
     /// The typed failure is that the target already had the asked state («microphone_already_unmuted»).
     /// Twin of the mind's _failure_is_an_unchanged_state.
     /// </summary>
-    private static bool IsAlreadyStateFailure(string source)
-    {
-        return TryReadJson(source, out JsonElement root) && HasAlreadyError(root, 0);
+    private static bool IsAlreadyStateFailure(string source) =>
+        TryReadJson(source, out JsonElement root)
+        && HasErrorCode(root, 0, static code => code.Contains("_already_", StringComparison.Ordinal));
 
-        static bool HasAlreadyError(JsonElement node, int depth)
+    // M69 (guion v3h t46/t47): «activa mi microfono» with the microphone already active. The typed codes whose asked
+    // state already holds: the adapter read the state and crossed no boundary, so the person is told that state as a
+    // result, not an error. «volume_already_at_*» stays a failure (the asked change, louder or quieter, cannot
+    // happen), and «zip_already_exists» is a conflict. Twin of the mind's _ASKED_STATE_ALREADY_HELD.
+    private static readonly HashSet<string> AskedStateAlreadyHeldCodes = new(StringComparer.Ordinal)
+    {
+        "microphone_already_muted",
+        "microphone_already_unmuted",
+        "airplane_mode_already_on",
+        "airplane_mode_already_off",
+    };
+
+    internal static bool IsAskedStateAlreadyHeldCode(string? code) =>
+        code is not null && AskedStateAlreadyHeldCodes.Contains(code);
+
+    /// <summary>
+    /// M69: the failure told is that the asked state already held («microphone_already_unmuted»), in the failure or
+    /// in the step failure it wraps. Twin of the mind's _failure_is_an_asked_state_held.
+    /// </summary>
+    internal static bool IsAskedStateAlreadyHeld(string source) =>
+        TryReadJson(source, out JsonElement root)
+        && HasErrorCode(root, 0, static code => AskedStateAlreadyHeldCodes.Contains(code));
+
+    private static bool HasErrorCode(JsonElement node, int depth, Func<string, bool> matches)
+    {
+        if (depth > 4 || node.ValueKind != JsonValueKind.Object)
         {
-            if (depth > 4 || node.ValueKind != JsonValueKind.Object)
-            {
-                return false;
-            }
-            foreach (JsonProperty property in node.EnumerateObject())
-            {
-                if (property.Value.ValueKind == JsonValueKind.Object && HasAlreadyError(property.Value, depth + 1))
-                {
-                    return true;
-                }
-                if (property.Value.ValueKind != JsonValueKind.String)
-                {
-                    continue;
-                }
-                string text = property.Value.GetString() ?? string.Empty;
-                if (property.NameEquals("error") && text.Contains("_already_", StringComparison.Ordinal))
-                {
-                    return true;
-                }
-                if (property.NameEquals("reason") && TryReadJson(text, out JsonElement wrapped)
-                    && HasAlreadyError(wrapped, depth + 1))
-                {
-                    return true;
-                }
-            }
             return false;
         }
+        foreach (JsonProperty property in node.EnumerateObject())
+        {
+            if (property.Value.ValueKind == JsonValueKind.Object && HasErrorCode(property.Value, depth + 1, matches))
+            {
+                return true;
+            }
+            if (property.Value.ValueKind != JsonValueKind.String)
+            {
+                continue;
+            }
+            string text = property.Value.GetString() ?? string.Empty;
+            if (property.NameEquals("error") && matches(text))
+            {
+                return true;
+            }
+            if (property.NameEquals("reason") && TryReadJson(text, out JsonElement wrapped)
+                && HasErrorCode(wrapped, depth + 1, matches))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private const string AbsenceStatement =
