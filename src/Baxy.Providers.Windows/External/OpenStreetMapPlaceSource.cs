@@ -236,7 +236,11 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
             }
             // Doubled, plus one in the preferred country: more words of the place always win, and
             // the country breaks a tie (Nominatim's own order, by importance, breaks the rest).
-            int score = 2 * wanted.Count(named.Contains) + (inCountry ? 1 : 0);
+            // M58 (v3d-final F-p06-t3 «calle Génova, Madrid»): Villa del Prado's Calle Génova carries
+            // «Madrid» only in «Comunidad de Madrid» and came first. The town the place is said to be
+            // in counts first when it is the candidate's own town (its city, town or village).
+            int score = 2 * wanted.Count(named.Contains) + (inCountry ? 1 : 0)
+                + (within is null ? 0 : 8 * within.Count(words => LocalityHolds(address, words)));
             if (read && (best is null || score > best.Value.Score))
                 best = (score, edges[0], edges[1], edges[2], edges[3]);
         }
@@ -250,6 +254,22 @@ internal sealed class OpenStreetMapPlaceSource(HttpClient http)
             + Coordinate(longitude + halfWidth) + "," + Coordinate(latitude - halfHeight),
             latitude,
             longitude);
+    }
+
+    // El pueblo o la ciudad de la dirección de Nominatim es exactamente el lugar dicho («Madrid»,
+    // no «Las Rozas de Madrid» ni «Comunidad de Madrid»).
+    private static readonly string[] LocalityKeys = ["city", "town", "village", "municipality", "hamlet"];
+
+    private static bool LocalityHolds(JsonElement address, string[] words)
+    {
+        if (address.ValueKind != JsonValueKind.Object) return false;
+        foreach (string key in LocalityKeys)
+        {
+            string[] locality = PlaceWords(Text(address, key));
+            if (locality.Length > 0 && locality.Length == words.Length && words.All(locality.Contains))
+                return true;
+        }
+        return false;
     }
 
     // Cada sitio: su nombre (o su clase), su dirección y su página en OpenStreetMap,
