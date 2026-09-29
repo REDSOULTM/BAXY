@@ -3560,6 +3560,9 @@ def _ground_explicit_arguments(
         "media.control",
         "media.play.query",
         "media.play.youtube",
+        # D39 (M58): the clock reader of a cancellation owns hour, minute and period; «las 7:05» grounded
+        # its minute as the literal «5», which «05» never is, and the minute was dropped (7:00 cancelled).
+        "notification.cancel.at",
         # VIDEO1929 H0737 «quiero ver stranger things en nerflix»: el extractor
         # conserva el título literal y aporta el único servicio del catálogo;
         # exigir que «netflix» apareciera escrito tal cual tiraba esa lectura y
@@ -4423,6 +4426,29 @@ def _prepare_turn_result(
     conversation left so far (the serve loop owns it); it is read, never written, here.
     """
 
+    accepted_cancellation = (
+        dialogue_state.accepted_alarm_cancellation(str(message.get("text", "")))
+        if dialogue_state is not None
+        else None
+    )
+    if accepted_cancellation is not None:
+        # D39 (owner, 2026-09-29): «sí» to «Tienes 3 alarmas (…). ¿Las cancelo todas?» is the cancellation of each
+        # alarm read, said as one request («cancela la alarma de las 7:00 de la mañana y …») that every reader reads.
+        history = list(message.get("history") or [])
+        if history and isinstance(history[-1], dict) and history[-1].get("role") == "user":
+            history[-1] = {**history[-1], "content": accepted_cancellation}
+        result = _decide_turn_result(
+            {**message, "text": accepted_cancellation, "history": history, "pendingObjective": None},
+            llm=llm,
+            planner_catalog=planner_catalog,
+            encoder=encoder,
+            tool_by_name=tool_by_name,
+            application_names=application_names,
+            game_catalog=game_catalog,
+            on_signal=on_signal,
+        )
+        result.setdefault("objective", accepted_cancellation)
+        return result
     if dialogue_slot.read_slot({}, message.get("history") or [], str(message.get("text", ""))).antecedents:
         return _decide_turn_result(
             message,
