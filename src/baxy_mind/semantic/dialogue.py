@@ -514,6 +514,61 @@ def is_social(text: str) -> bool:
     return bool(folded) and _SOCIAL.fullmatch(folded) is not None
 
 
+# M88 (DEV-D v3r D-p24-t5 «That is confirmed to proceed.» after «I could not play Hustlers on Netflix because the
+# service requires a sign-in…», the third run in a row): a go-ahead — the person confirms, approves or tells BAXY to
+# proceed with something — was answered in a turn that ran nothing («The plan is confirmed to proceed.», «Confirmed,
+# the procedure will proceed.», «I confirm the action will proceed.»). The writer was never told that nothing ran and
+# nothing was waiting for a yes, so it acknowledged the go-ahead; the vetoes on its wording chased each new phrasing.
+# The go-ahead is read here, from the person's message: a word that approves proceeding, with nothing else said but
+# fillers. A bare «sí», «ok», «dale» or «vale» is an answer or an acknowledgement, not read here, and neither is
+# «sigue» (see below).
+_GO_AHEAD_CORE = re.compile(
+    r"\b(?:confirm\w*|proceed\w*|proced\w*|approv\w*|aprob\w*|aprueb\w*|autoriz\w*|authoriz\w*|adelante|"
+    r"go\s+ahead|do\s+it|hazlo|hacelo|haganlo|hagalo|hagamoslo|let'?s\s+do\s+it|green\s+light|luz\s+verde)\b"
+)
+# «sigue», «continúa», «go on» are left out: after a story or an answer they ask for more of it, which is talk.
+_GO_AHEAD_FILLER = frozenset(
+    """
+    yes yeah yep yup ok okay okey sure please si sip dale vale bueno claro porfa por favor entonces pues ya ahora
+    that is thats it its it's everything all set to then so now you can may i we the action plan it's everything's
+    for me with lo la eso esto todo esta esta todo con puedes podes puede pueden eso con el la este esta ahi
+    right alright good fine just go let us let's
+    """.split()
+)
+
+
+def gives_go_ahead(text: str) -> bool:
+    """The whole message is a go-ahead: it confirms, approves or tells BAXY to proceed («That is confirmed to
+    proceed.», «ok, hazlo», «adelante», «you may proceed»), and says nothing else (see above)."""
+
+    folded = _fold(text).strip(" ¿?¡!.,")
+    if not folded or "?" in str(text or "") or _GO_AHEAD_CORE.search(folded) is None:
+        return False
+    rest = _GO_AHEAD_CORE.sub(" ", folded)
+    return all(word in _GO_AHEAD_FILLER for word in re.findall(r"[a-z']+", rest))
+
+
+def go_ahead_with_nothing_pending(text: str, last_reply: str | None) -> bool:
+    """M88: a go-ahead (``gives_go_ahead``) after a reply of BAXY's that asked nothing: nothing is waiting for that yes.
+    After a question, the go-ahead answers it and is read as usual."""
+
+    return gives_go_ahead(text) and not str(last_reply or "").rstrip().endswith("?")
+
+
+# What a reply says to tell that nothing was done (folded): a negation of doing or having done. «No problem» and
+# «sin problema» agree to something and are not one.
+_NOT_DONE = re.compile(r"\b(?:no|not|nothing|nada|nunca|never|todavia|aun|yet)\b|n'?t\b")
+_AGREEING_NO = re.compile(r"\b(?:no\s+(?:problem|worries|hay\s+problema)|sin\s+problemas?|why\s+not|por\s+que\s+no)\b")
+
+
+def says_nothing_was_done(reply: str) -> bool:
+    """M88: the reply says, in some words, that something was not (yet) done — the only true answer to a go-ahead
+    that nothing was waiting for, in a turn that ran nothing."""
+
+    folded = _AGREEING_NO.sub(" ", _fold(reply))
+    return _NOT_DONE.search(folded) is not None
+
+
 _CLITIC_TAIL = re.compile(r"(?:me|te|se|nos)?(?P<clitic>los|las|lo|la|les|le)$")
 _LEADING_FILLER = re.compile(r"^(?:(?:y|e|ahora|pues|bueno|oye|che|baxy|por\s+favor|porfa)\b[\s,]*)+", re.IGNORECASE)
 _TRAILING_VALUE = re.compile(

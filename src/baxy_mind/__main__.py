@@ -3190,7 +3190,16 @@ def _reference_lookup(objective: str, history: object) -> "semantic_knowledge.Re
     reads back from the same request.
     """
 
-    return semantic_knowledge.reference_lookup(objective, _prior_user_texts(history, objective))
+    # M88: BAXY's last answer is the referent of «¿cuánto sería eso de harina en gramos?».
+    last_reply = next(
+        (
+            str(item.get("content") or "")
+            for item in reversed(history if isinstance(history, list) else [])
+            if isinstance(item, dict) and item.get("role") == "assistant"
+        ),
+        "",
+    )
+    return semantic_knowledge.reference_lookup(objective, _prior_user_texts(history, objective), last_reply)
 
 
 def _decided_value(value: Any, contract: dict[str, Any]) -> Any:

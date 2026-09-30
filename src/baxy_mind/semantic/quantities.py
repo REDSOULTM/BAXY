@@ -18,6 +18,11 @@ duration, so the quantities are read here — durations with the same unit words
                          at «el litro … $1.460» → $58.400), computed here;
 - ``underived_price``    the amount of money a report gives for that quantity that is neither the unit price read nor
                          the computed total (v3e2-final F-w13-t2: «$73.000 por 40 litros» from a full tank's price).
+- ``conversion_asked``   M88: a pure conversion between two units of one kind («2 cucharadas en cucharaditas»),
+                         computed; a kitchen quantity that depends on what is measured is looked up instead
+                         (``semantic.knowledge``).
+- ``unsure_figures``     M88: the figures of an answer from memory given more precisely than memory holds (D-s111
+                         «1.080 km en línea recta», «2 horas y 15 minutos»).
 """
 
 from __future__ import annotations
@@ -33,7 +38,7 @@ from .normalize import fold
 
 __all__ = [
     "Measure", "measures", "evaluate", "derived_facts", "underived_figure", "numbers_in", "format_number",
-    "PricedTotal", "priced_totals", "underived_price",
+    "PricedTotal", "priced_totals", "underived_price", "Conversion", "conversion_asked", "unsure_figures",
 ]
 
 # dimension: (length, time, mass, volume) exponents
@@ -297,6 +302,10 @@ def derived_facts(text: str, language: str = "es") -> list[tuple[str, Fraction, 
         if len(same) >= 2:
             total = sum((item.value for item in same), Fraction(0))
             facts.append(("total " + format_number(total, 2, language), total, dimension))
+    # M88: a pure conversion asked («¿cuántas cucharaditas son 2 cucharadas?») is BAXY's arithmetic too.
+    conversion = conversion_asked(text, language)
+    if conversion is not None:
+        facts.append((conversion.sentence, conversion.value, (0, 0, 0, 0)))
     return facts
 
 
@@ -531,3 +540,113 @@ def underived_price(reply: str, request: str, evidence: str) -> str:
         if not any(abs(value - expected) <= expected / 100 for expected in allowed):
             return match.group(0).strip()
     return ""
+
+
+# ------------------------------------------------------------------ kitchen measures and pure conversions (M88)
+
+# M88 (step 6 of goal v3: figures and recipes are looked up): a conversion between two units of the same kind with a
+# fixed factor is pure arithmetic and BAXY computes it; any other kitchen quantity (how much salt per litre, how many
+# grams a cup of a named flour weighs) depends on the thing measured and needs a source. The metric spoons are 15 and
+# 5 ml (their ratio, 3, is the same in the US spoons); a cup is 240, 250 or 236 ml depending on the country, and a
+# «cucharón» is no measure at all: neither is converted here.
+_SPOONS: dict[str, tuple[Fraction, tuple[int, int, int, int]]] = {
+    **dict.fromkeys("cucharada cucharadas tablespoon tablespoons tbsp".split(), (Fraction(15), _VOLUME)),
+    **dict.fromkeys("cucharadita cucharaditas teaspoon teaspoons tsp".split(), (Fraction(5), _VOLUME)),
+}
+_CONVERSION_UNITS = {**_UNITS, **_SPOONS}
+_CONVERSION_UNIT_WORD = "|".join(sorted((re.escape(word) for word in _CONVERSION_UNITS), key=len, reverse=True))
+_CONVERTED = rf"(?P<number>{_NUMBER})\s*(?P<source>{_CONVERSION_UNIT_WORD})"
+_CONVERSION_ASKED = (
+    # «¿cuántas cucharaditas son 2 cucharadas?», «how many ml are in 3 tablespoons»
+    re.compile(
+        rf"\b(?:cuant[oa]s|how\s+many)\s+(?P<target>{_CONVERSION_UNIT_WORD})\s+(?:son|serian|seria|hay\s+en|hay|"
+        r"tiene|tienen|caben\s+en|entran\s+en|equivalen\s+a|equivale\s+a|are\s+there\s+in|are\s+in|in|is|are|make)\s+"
+        rf"(?:(?:un|una|a|an)\s+)?{_CONVERTED}(?![\w/])"
+    ),
+    # «3 litros en ml», «convierte 2 cucharadas a cucharaditas», «2 tbsp to tsp»
+    re.compile(rf"(?<![\w.,/]){_CONVERTED}\s+(?:en|a|in|to|into)\s+(?P<target>{_CONVERSION_UNIT_WORD})(?![\w/])"),
+)
+
+
+@dataclass(frozen=True)
+class Conversion:
+    sentence: str  # «2 cucharadas = 6 cucharaditas»
+    value: Fraction  # in the unit asked
+
+
+def conversion_asked(text: str, language: str = "es") -> Conversion | None:
+    """The pure conversion the text asks (a quantity said in one unit, asked in another of the same kind), computed;
+    None when the text asks none (see above)."""
+
+    folded = fold(text)
+    for pattern in _CONVERSION_ASKED:
+        for found in pattern.finditer(folded):
+            number = _number(found.group("number"))
+            source = _CONVERSION_UNITS.get(found.group("source"))
+            target = _CONVERSION_UNITS.get(found.group("target"))
+            if number is None or source is None or target is None or source[1] != target[1] or source == target:
+                continue
+            value = number * source[0] / target[0]
+            said = f"{found.group('number')} {found.group('source')}"
+            return Conversion(f"{said} = {format_number(value, 3, language)} {found.group('target')}", value)
+    return None
+
+
+# ------------------------------------------------------------------ figures memory cannot vouch for (M88)
+
+# M88 (DEV-D v3r D-s111 «¿Cuál es la distancia de Barcelona a París?», nothing pertinent read): the answer from memory
+# (D35) said «1.080 km en línea recta … 1.100 por carretera … el tren tarda 10 horas y 30 minutos, el avión 2 horas y 15
+# minutos» (about 830 km, 1 030 km and 6 h 30 in fact). A notice that it may not be exact does not make a figure given
+# to three digits or to the quarter hour an approximation: memory keeps orders of magnitude, not digits. A figure of a
+# memory answer is said round — two significant digits at most, a duration to the half hour — and what the person said
+# is theirs. Judged: a figure followed by a unit or a percentage, preceded by a currency, or written with thousands.
+_MEMORY_UNIT_WORDS = frozenset(
+    set(_CONVERSION_UNITS)
+    | {
+        "%", "por", "percent", "grados", "degrees", "habitantes", "inhabitants", "personas", "people", "anos", "years",
+        "tazas", "taza", "cups", "cup", "calorias", "calories", "kcal", "millones", "million", "millions", "mil",
+        "thousand", "billones", "billion", "billions", "peso", "pesos", "dolar", "dolares", "dollar", "dollars",
+        "euro", "euros", "soles", "reales",
+    }
+)
+_MEMORY_FIGURE = re.compile(
+    rf"(?P<sign>{_CURRENCY}\s?)?(?<![\w.,:/])(?P<number>\d{{1,3}}(?:[.,]\d{{3}})+(?![.,]?\d)|\d+(?:[.,]\d+)?)"
+    r"(?![\w/]|[.,]\d|:\d)(?P<after>\s*(?:%|[a-z]+))?"
+)
+_HOURS_AND_MINUTES = re.compile(
+    r"(?<![\w.,])(?P<hours>\d{1,3})\s*(?:h|hr|hrs|horas?|hours?)\b\s*(?:y|and|,)?\s*(?P<minutes>\d{1,2})"
+    r"(?:\s*(?:min|mins|minutos?|minutes?)\b)?"
+)
+_LIST_ORDINAL = re.compile(r"^\s*\d+[.)]\s", re.MULTILINE)
+
+
+def _significant_digits(raw: str) -> int:
+    if re.fullmatch(r"\d{1,3}(?:[.,]\d{3})+", raw):
+        return len(re.sub(r"[.,]", "", raw).strip("0")) or 1
+    if re.search(r"[.,]", raw):
+        return len(re.sub(r"[.,]", "", raw).lstrip("0")) or 1
+    return len(raw.strip("0")) or 1
+
+
+def unsure_figures(reply: str, said: Iterable[str] = ()) -> list[str]:
+    """The figures of an answer from memory given more precisely than memory holds (see above), as written (folded)."""
+
+    folded = _LIST_ORDINAL.sub(lambda found: " " * len(found.group(0)), fold(reply))
+    person = numbers_in(said)
+    unsure: list[str] = []
+    for found in _MEMORY_FIGURE.finditer(folded):
+        raw = found.group("number")
+        after = (found.group("after") or "").strip()
+        separated = re.fullmatch(r"\d{1,3}(?:[.,]\d{3})+", raw) is not None
+        if not (found.group("sign") or separated or after in _MEMORY_UNIT_WORDS):
+            continue
+        value = _money(raw) if separated else _number(raw)
+        if value is None or value in person or _significant_digits(raw) <= 2:
+            continue
+        figure = found.group(0).strip()
+        if figure not in unsure:
+            unsure.append(figure)
+    for found in _HOURS_AND_MINUTES.finditer(folded):
+        if int(found.group("minutes")) % 30 and found.group(0).strip() not in unsure:
+            unsure.append(found.group(0).strip())
+    return unsure

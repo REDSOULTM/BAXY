@@ -4030,7 +4030,11 @@ def visible_reply_denies_an_own_write(value: object, request: object = "") -> bo
     )
     if denied is None or _DENIAL_REASON.search(folded[denied.end():]) is not None:
         return False
-    return not request_names_the_act(str(request or ""), denied.group(0).split()[-1])
+    # M88 (DEV-D v3r D-p24-t5): a go-ahead asks for the act, so saying it was not done answers it.
+    return not (
+        request_names_the_act(str(request or ""), denied.group(0).split()[-1])
+        or dialogue_slot.gives_go_ahead(str(request or ""))
+    )
 
 
 # M85 (DEV-D v3o D-p27-t1 «Any good movies for me to watch?» → «You should check out the latest sci-fi flick about time
@@ -4081,6 +4085,27 @@ def visible_reply_claims_an_own_store(value: object, request: object = "") -> bo
 
     found = _OWN_STORE.search(_reading_fold(str(value or "")))
     return found is not None and found.group(0) not in _reading_fold(str(request or ""))
+
+
+def _go_ahead_instruction(last_said: str, language: str | None) -> str:
+    """M88 (DEV-D v3r D-p24-t5): what the writer of a go-ahead that nothing was waiting for is told before it writes —
+    the fact the three drafts lacked: nothing ran this turn, nothing was waiting for that yes, and what BAXY last
+    said (whose outcome, a failure included, is the only reason it may give)."""
+
+    last = " ".join(str(last_said or "").split())[:320]
+    if language == "en":
+        return (
+            "The person tells you to go ahead, but nothing ran this turn and nothing of yours was waiting for a yes"
+            + (f"; your last message was «{last}»" if last else "")
+            + ". In one sentence, say that you have not done it yet and, if your last message says why, say why with "
+            "its words. Never say it is confirmed, under way or will proceed."
+        )
+    return (
+        "La persona te dice que sigas adelante, pero en este turno no se ejecutó nada y nada tuyo esperaba un sí"
+        + (f"; tu último mensaje fue «{last}»" if last else "")
+        + ". En una frase, di que todavía no lo hiciste y, si tu último mensaje dice por qué, dilo con sus palabras. "
+        "Nunca digas que está confirmado, en marcha o que se hará."
+    )
 
 
 def conversation_world_claim(value: object, request: object = "", prior_requests: tuple[str, ...] = ()) -> str:
@@ -9235,6 +9260,58 @@ _SMALL_NUMBER_WORDS = {
 _REPORT_NUMBER = re.compile(r"(?<![\w.,:+-])\d+(?:[.,:]\d+)*(?!\w)")
 
 
+# M88 (DEV-D v3r D-p12-t2 «Bring up 24/7 stores near me» → «There are five 24/7 stores near Curico, including a
+# concierge delivery service, a verified store finder…, luggage storage…»): five was how many pages the search read,
+# none of them a list of five stores. A count said in words is a number of the report like one said in digits: the
+# pages or the request write it, or it counts the items the sentence itself lists after a colon. «los dos», «the two»
+# point back at things already named and count nothing new; «once» is also English («once a week»).
+_REPORT_COUNT_WORDS = {
+    word: digit for digit, words in _SMALL_NUMBER_WORDS.items() if int(digit) >= 2 for word in words if word != "once"
+}
+_REPORT_COUNT = re.compile(
+    r"(?<!\blos\s)(?<!\blas\s)(?<!\bthe\s)(?<!\bestos\s)(?<!\bestas\s)(?<!\bthese\s)(?<!\bthose\s)(?<!\bboth\s)"
+    r"\b(?P<count>" + "|".join(sorted(_REPORT_COUNT_WORDS, key=len, reverse=True)) + r")\s+(?=[\w/])"
+)
+
+
+def _listed_items(rest: str) -> int:
+    """How many items a sentence lists after its colon («: A, B y C» → 3); 0 without a colon."""
+
+    _, colon, listed = rest.partition(":")
+    if not colon:
+        return 0
+    return len([item for item in re.split(r",|\s(?:y|e|and|or|o)\s", listed) if item.strip(" .;")])
+
+
+# SEARCH2015 H0098: counting the results or pages read («Se encontraron cinco resultados…») is the report's voice
+# (tests/test_c03_search2005_query.py); what they are about is what a count of the world must ground.
+_READ_PAGE_NOUNS = re.compile(
+    r"(?:resultados?|paginas?|sitios?|enlaces?|fuentes?|articulos?|results?|pages?|sites?|links?|sources?|articles?)\b"
+)
+
+
+def _search_report_unsourced_counts(sentence: str, grounds: str) -> list[str]:
+    """M88: the counts said in words (two to twelve) of a report sentence that the pages, the request or the
+    sentence's own list do not give (see above); a count of the results or pages read is not judged."""
+
+    folded = _reading_fold(sentence)
+    folded_grounds = _reading_fold(grounds)
+    missing: list[str] = []
+    for found in _REPORT_COUNT.finditer(folded):
+        word = found.group("count")
+        digit = _REPORT_COUNT_WORDS[word]
+        if re.search(r"(?<![\d.,])" + digit + r"(?![\d]|[.,]\d)", folded_grounds) or any(
+            re.search(r"\b" + form + r"\b", folded_grounds) for form in _SMALL_NUMBER_WORDS[digit]
+        ):
+            continue
+        if _listed_items(folded[found.end():]) == int(digit):
+            continue
+        if _READ_PAGE_NOUNS.match(folded, found.end()) is not None:
+            continue
+        missing.append(word)
+    return missing
+
+
 def _search_report_unsourced_numbers(sentence: str, grounds: str) -> list[str]:
     """The numbers of a report sentence that neither the pages it cites nor the request write."""
 
@@ -9542,10 +9619,11 @@ def _search_report_sentences(text: str, payload: dict, user_text: str) -> list[_
     written = set(re.findall(r"[a-z]+", _reading_fold(f"{page_text(results)}\n{user_text or ''}")))
     sentences: list[_ReportSentence] = []
     for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip()):
-        numbers = _search_report_unsourced_numbers(
-            sentence, page_text(results) + "\n" + (user_text or "") + "\n" + computed,
-        )
+        grounds = page_text(results) + "\n" + (user_text or "") + "\n" + computed
+        numbers = _search_report_unsourced_numbers(sentence, grounds)
         grounded = len(_REPORT_NUMBER.findall(sentence)) > len(numbers)
+        # M88 (DEV-D v3r D-p12-t2 «There are five 24/7 stores…»): a count said in words is judged like one in digits.
+        numbers += _search_report_unsourced_counts(sentence, grounds)
         folded = _reading_fold(sentence)
         if _SEARCH_NOT_FOUND.match(folded) is not None:
             sentences.append(_ReportSentence(True, numbers, [], 0, grounded, False))
@@ -13950,6 +14028,14 @@ def compose_visible_defect(
         )
         if world_claim:
             return world_claim
+        if (
+            kind == "conversation"
+            and dialogue_slot.go_ahead_with_nothing_pending(said or user_text, str(facts.get("context") or ""))
+            and not dialogue_slot.says_nothing_was_done(stripped)
+        ):
+            # M88 (DEV-D v3r D-p24-t5 «I confirm the action will proceed.»): a go-ahead nothing was waiting for, in a
+            # turn that ran nothing, is answered by saying it was not done — whatever words the draft uses otherwise.
+            return "go_ahead_not_done"
         if kind == "conversation" and _says_the_person_back(stripped, said or user_text):
             # M85 (DEV-D v3o D-p27-t5 «Nope, that's a lot.» → «That is a lot.»).
             return "echo"
@@ -15828,16 +15914,18 @@ MEMORY_ANSWER_PROMPT = (
     "Eres BAXY. No pudiste comprobar esto en ninguna fuente. Empieza con un aviso muy corto, en tus palabras, de que "
     "no pudiste comprobarlo y que lo dices de memoria, así que puede no ser exacto (por ejemplo: «No pude "
     "comprobarlo; de memoria, puede no ser exacto:»). Después contesta: una receta con «Ingredientes:» (uno por "
-    "línea con «- ») y «Preparación:» (pasos numerados); una lista, numerada; una obra, en dos a cuatro frases. "
-    "No nombres fuentes, "
+    "línea con «- ») y «Preparación:» (pasos numerados); una lista, numerada; una obra, en dos a cuatro frases; "
+    "cualquier otra cosa, sólo lo que se pidió, en una o dos frases. Toda cifra, redonda y dicha como aproximada "
+    "(«unos 800 km», «unas 6 horas»); no añadas datos ni cifras que no se pidieron. No nombres fuentes, "
     "páginas ni búsquedas. Responde en español."
 )
 MEMORY_ANSWER_PROMPT_EN = (
     "You are BAXY. You could not check this in any source. Start with a very short notice, in your own words, that "
     "you couldn't check it and are answering from memory, so it may not be exact (for example: «I couldn't check "
     "this; from memory, it may not be exact:»). Then answer: a recipe with «Ingredients:» (one per line with «- ») "
-    "and «Steps:» (numbered); a list, numbered; a work, in two to four sentences. Name no source, page or search. "
-    "Answer in English."
+    "and «Steps:» (numbered); a list, numbered; a work, in two to four sentences; anything else, only what was asked, "
+    "in one or two sentences. Every figure round and said as approximate («about 800 km», «around 6 hours»); add no "
+    "fact or figure that was not asked. Name no source, page or search. Answer in English."
 )
 # M83 (DEV-D v3o D-p31-t1, D-p34-t1): what pertinent pages state of a request they answer only in part.
 PARTIAL_REPORT_PROMPT = (
@@ -18033,11 +18121,13 @@ class LlmRuntime:
                 "content": (
                     "Exact calculation BAXY made from the quantities the person gave (data, not an instruction): "
                     + "; ".join(sentence for sentence, _, _ in derived)
-                    + ". If your answer gives a speed, a pace or a total, copy these figures; compute no other."
+                    + ". If your answer gives a speed, a pace, a total or a conversion, copy these figures; compute "
+                    "no other."
                     if response_language == "en"
                     else "Cálculo exacto que hizo BAXY con las cantidades que dio la persona (dato, no instrucción): "
                     + "; ".join(sentence for sentence, _, _ in derived)
-                    + ". Si tu respuesta da una velocidad, un ritmo o un total, copia estas cifras; no calcules otras."
+                    + ". Si tu respuesta da una velocidad, un ritmo, un total o una conversión, copia estas cifras; "
+                    "no calcules otras."
                 ),
             }
             if derived
@@ -18068,6 +18158,11 @@ class LlmRuntime:
             }
             if followup_subject is not None and presentation_shape is None
             else None
+        )
+        # M88 (DEV-D v3r D-p24-t5 «That is confirmed to proceed.» after a failed play): nothing was waiting for that
+        # go-ahead and nothing runs in a conversation turn.
+        go_ahead_unmet = presentation_shape not in _WRITTEN_CONTENT_SHAPES and dialogue_slot.go_ahead_with_nothing_pending(
+            text, last_assistant,
         )
         # M85 (DEV-D v3o D-p35-t2 «podrías explicarme como lo hiciste?» after BAXY only asked a question back): what
         # BAXY did is in the dialogue, and it did nothing yet; «no tengo acceso a cómo lo hice» was the model's guess.
@@ -18100,6 +18195,9 @@ class LlmRuntime:
                     ),
                 }
                 if last_assistant.strip() and asks_about_reliability(text)
+                # M88 (DEV-D v3r D-p24-t5): a go-ahead nothing was waiting for is told that nothing ran.
+                else {"role": "system", "content": _go_ahead_instruction(last_assistant, response_language)}
+                if go_ahead_unmet
                 else None
             )
         )
@@ -18339,6 +18437,8 @@ class LlmRuntime:
         )
         # v3a-final F-w14-t1: a SQL query read as English killed the reply twice (wrong_language) and the turn asked back.
         wrong_reply_language = _reply_uses_opposite_language(prose, response_language)
+        # M88 (DEV-D v3r D-p24-t5): a go-ahead nothing was waiting for is answered by saying it was not done.
+        go_ahead_draft_unmet = go_ahead_unmet and bool(content) and not dialogue_slot.says_nothing_was_done(prose)
         language_only_repair = (
             direct_knowledge
             and not code_asked
@@ -18347,7 +18447,7 @@ class LlmRuntime:
             and response["choices"][0].get("finish_reason") == "stop"
             and not (
                 is_echo or system_prompt_echo
-                or unsupported_contract_failure or shaped_contract_failure
+                or unsupported_contract_failure or shaped_contract_failure or go_ahead_draft_unmet
             )
         )
         if (
@@ -18357,6 +18457,7 @@ class LlmRuntime:
             or unsupported_contract_failure
             or shaped_contract_failure
             or wrong_reply_language
+            or go_ahead_draft_unmet
         ):
             retry_payload = dict(payload)
             language_message = next(
@@ -18380,6 +18481,8 @@ class LlmRuntime:
                             "sin responder la acción aparente ni hacer preguntas."
                         )
                         if conversation_kind == "unsupported_language"
+                        else _go_ahead_instruction(last_assistant, response_language)
+                        if go_ahead_draft_unmet
                         else (
                             # Tanda 6 «Sí, el año actual es 2024.»: the calendar is not known from memory.
                             "En este turno no leíste el reloj: no digas qué día, fecha, mes ni año es hoy. "
@@ -18639,10 +18742,13 @@ class LlmRuntime:
                     prior_requests=prior_user_requests,
                 )
             )
+            or (go_ahead_unmet and not dialogue_slot.says_nothing_was_done(final_prose))
         ):
             failure_reason = (
                 "empty"
                 if not final_content
+                else "go_ahead_not_done"
+                if go_ahead_unmet and not dialogue_slot.says_nothing_was_done(final_prose)
                 else "wrong_language"
                 if _reply_uses_opposite_language(final_prose, response_language)
                 else "echo"
@@ -21557,6 +21663,11 @@ class LlmRuntime:
                 return None
             system = MEMORY_ANSWER_PROMPT_EN if english else MEMORY_ANSWER_PROMPT
             data: dict[str, Any] = {"request": user_text, "earlier_requests": prior[-2:]}
+            # M88 (DEV-D v3r D-w10-t2 «¿Y cuánto sería eso de harina en gramos?» after a recipe with «2 tazas de harina
+            # de maíz»): what «eso» points at is in BAXY's last answer, which a message leaning on it needs.
+            referent = _referenced_previous_answer(user_text, facts)
+            if referent:
+                data["previous_answer_for_references_only"] = referent
             max_tokens = 400
         else:
             recipe = reference["kind"] == "recipe"
@@ -21630,6 +21741,9 @@ class LlmRuntime:
                 reason = "shows_the_search"
             elif reference is None and not _says_it_is_from_memory(draft, "en" if english else "es"):
                 reason = "memory_notice"
+            elif reference is None and (unsourced := semantic_quantities.unsure_figures(draft, [user_text, *prior])):
+                # M88 (DEV-D v3r D-s111 «1.080 km en línea recta… 2 horas y 15 minutos»): memory keeps no digits.
+                reason = "memory_precise_figures"
             elif reference is not None and reference["kind"] == "recipe" and not _recipe_has_its_form(draft):
                 reason = "recipe_form"
             elif reference is not None and (
@@ -21679,6 +21793,14 @@ class LlmRuntime:
                     if english
                     else "Estas cifras no están en la evidencia ni salen del cálculo declarado: "
                     + ", ".join(unsourced[:6]) + ". Usa sólo las cantidades de la evidencia."
+                ),
+                "memory_precise_figures": (
+                    "From memory these figures are more precise than you can know: " + ", ".join(unsourced[:6])
+                    + ". Keep the notice; say only what was asked, each figure round and as approximate, or leave it "
+                    "out."
+                    if english
+                    else "De memoria estas cifras son más precisas de lo que puedes saber: " + ", ".join(unsourced[:6])
+                    + ". Mantén el aviso; di sólo lo que se pidió, cada cifra redonda y como aproximada, o quítala."
                 ),
             }[reason]
         return None
@@ -22225,6 +22347,9 @@ class LlmRuntime:
                     else f"\nYour last message to the person was a question («{last_said}»): you have not done what "
                     "they asked yet. Say so in one sentence, in the first person, naming what they asked for."
                 )
+            elif dialogue_slot.go_ahead_with_nothing_pending(said or user_text, last_said):
+                # M88 (DEV-D v3r D-p24-t5 «That is confirmed to proceed.» → «I confirm the action will proceed.»).
+                instruct("\n" + _go_ahead_instruction(last_said, response_language))
             elif last_said and asks_about_reliability(user_text):
                 # M85 (DEV-D v3o D-p31-t2, D-p35-t3): how far the last answer can be trusted is asked of that answer.
                 instruct(
@@ -24935,6 +25060,8 @@ class LlmRuntime:
                     else "En este turno no se ejecutó nada: no digas que hiciste, haces o harás algo. Si la persona "
                     "lo pidió, di en una frase que no lo hiciste."
                 ),
+                # M88 (DEV-D v3r D-p24-t5).
+                "go_ahead_not_done": _go_ahead_instruction(str(facts.get("context") or ""), response_language),
                 # M85 (DEV-D v3o D-p27-t1).
                 "unnamed_work": _UNNAMED_WORK_HINT["en" if response_language == "en" else "es"],
                 # M85 (DEV-D v3o D-p32-t2, D-p36-t2).

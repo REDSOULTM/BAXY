@@ -11,6 +11,9 @@ what stays talk — an open suggestion («una receta vegetariana»), code, an ex
   right after a work's lookup that names no other work is about that same work (F-p11-t2 «¿por qué es peligroso el
   anillo?» after the summary of *El hobbit*).
 - ``servings_asked``    how many people a recipe is asked for («pa 6», «para 6 personas», «for four»).
+- ``kitchen_quantity``  M88: how much of an ingredient, or a kitchen measure of it, is asked («cuánta sal le echo al
+  agua», «cuánto sería eso de harina en gramos»): a figure that depends on the thing measured, looked up with what the
+  conversation carried (kind ``quantity``).
 """
 
 from __future__ import annotations
@@ -21,13 +24,15 @@ from typing import Iterable
 
 from .conversation import asks_for_code
 from .normalize import fold, spelled_out
+from .quantities import conversion_asked
 
-__all__ = ["ReferenceLookup", "reference_lookup", "servings_asked"]
+__all__ = ["ReferenceLookup", "kitchen_quantity", "reference_lookup", "servings_asked"]
 
 
 @dataclass(frozen=True)
 class ReferenceLookup:
-    """A named referent to look up: ``kind`` is ``recipe`` or ``plot``; ``query`` is what ``web.search`` is asked."""
+    """A named referent to look up: ``kind`` is ``recipe``, ``plot``, ``ranking`` or ``quantity`` (M88); ``query`` is
+    what ``web.search`` is asked."""
 
     kind: str
     subject: str
@@ -266,18 +271,120 @@ def _direct(text: str) -> ReferenceLookup | None:
     return _recipe(folded) or _plot(text, folded) or _ranking(folded)
 
 
-def reference_lookup(text: str, prior_requests: Iterable[str] = ()) -> ReferenceLookup | None:
+# M88 (step 6 of goal v3: facts with figures and recipes are looked up before they are said; DEV-D v3r D-w01-t2 «oye y
+# cuánta sal le echo al agua, más o menos, cachai» after a timer «pa los tallarines» → «Al menos un cucharón de sal.»,
+# D-w01-t3 «ya y pa 3 litros cuántas cucharaditas serían» → «…equivale aproximadamente a 12 cucharaditas», D-w10-t2
+# «¿Y cuánto sería eso de harina en gramos?» after «2 tazas de harina de maíz» → «…aproximadamente a 400 gramos»; about
+# 10 g per litre, 5–6 teaspoons and 280–300 g): how much of an ingredient, or a kitchen measure of it, is a figure that
+# depends on the thing measured, and the talk recited it wrong. It is looked up, with the ingredient, the dish and the
+# quantity the conversation carried; a pure conversion between units of one kind is computed instead
+# (``semantic.quantities.conversion_asked``). Folded.
+_INGREDIENT = (
+    r"sal|azucar|harina|harinas|arroz|agua|aceite|mantequilla|manteca|margarina|leche|crema|nata|huevos?|levadura|"
+    r"polvos?\s+de\s+hornear|bicarbonato|pasta|fideos|tallarines|espaguetis?|spaghetti|macarrones|queso|maiz|maicena|"
+    r"avena|cacao|chocolate|miel|vinagre|yogurt?|carne|pollo|pescado|papas|patatas|porotos|frijoles|lentejas|"
+    r"garbanzos|quinoa|canela|pimienta|ajo|cebolla|tomates?|gelatina|"
+    r"salt|sugar|flour|rice|water|oil|butter|milk|cream|eggs?|yeast|baking\s+(?:powder|soda)|noodles|macaroni|cheese|"
+    r"cornmeal|cornstarch|corn|oats|cocoa|honey|vinegar|meat|chicken|fish|potatoes|beans|lentils|chickpeas|cinnamon|"
+    r"pepper|garlic|onions?|tomato(?:es)?"
+)
+_KITCHEN_MEASURE = (
+    r"tazas?|cucharadas?|cucharaditas?|cucharon(?:es)?|pizcas?|cups?|tablespoons?|teaspoons?|tbsp|tsp|pinch(?:es)?"
+)
+_INGREDIENT_WORD = re.compile(rf"\b(?:{_INGREDIENT})\b")
+_KITCHEN_MEASURE_WORD = re.compile(rf"\b(?:{_KITCHEN_MEASURE})\b")
+_AMOUNT_ASKED = re.compile(r"\b(?:cuant[oa]s?|how\s+(?:much|many))\b")
+_UNIT_ASKED = re.compile(
+    rf"\b(?:en|in|cuant[oa]s|how\s+many)\s+(?P<unit>gramos|grams|kilos|kilogramos|ml|mililitros|litros|onzas|ounces|"
+    rf"{_KITCHEN_MEASURE})\b"
+)
+# The person's own things, and a taste asked («¿cuánto te gusta el chocolate?»), are no figure of the world.
+_OWN_THINGS = re.compile(
+    r"\b(?:mi|mis|tu|tus|my|your|lista|listas|list|lists|nota|notas|notes|gusta|gustan|like|love|prefer\w*|"
+    r"favorit\w*)\b"
+)
+_KITCHEN_LEAD = re.compile(
+    r"^(?:(?:oye|oiga|ya|y|e|ok|okay|bueno|entonces|pues|and|so|baxy|hey|ah|mira|che|a\s+ver|vale)\b[\s,]*)+"
+)
+_KITCHEN_TAIL = re.compile(
+    r"(?:[\s,]+(?:mas\s+o\s+menos|cachai|cachay|po|pues|porfa|por\s+favor|please|pls|approximately|roughly|"
+    r"more\s+or\s+less|nomas|parce|pana|we|wey|weon|mas\s+o\s+menos\s+cachai))+$"
+)
+_POINTS_BACK = re.compile(r"\b(?:eso|esto|esa|esas|esos|lo|that|this|it|those)\b")
+# «2 tazas de harina de maíz», «1 cucharadita de sal», «un cucharón de sal», «two cups of flour».
+_MEASURED_INGREDIENT = re.compile(
+    rf"(?P<phrase>(?:\d+(?:[.,/]\d+)?|un|una|medio|media|dos|tres|cuatro|cinco|one|two|three|four|five|half\s+a)\s+"
+    rf"(?:{_KITCHEN_MEASURE}|gramos|grams|g|ml|litros?|liters?|kilos?)\s+(?:de|of)\s+"
+    r"(?P<ingredient>[a-z]+(?:\s+(?:de|del)\s+[a-z]+)?))"
+)
+
+
+def _kitchen_clause(folded: str) -> str:
+    clause = folded.strip(" ¿?¡!.,;")
+    for _ in range(3):
+        clause = _KITCHEN_TAIL.sub("", _KITCHEN_LEAD.sub("", clause).strip(" ¿?¡!.,;")).strip(" ¿?¡!.,;")
+    return clause
+
+
+def kitchen_quantity(
+    text: str, prior_requests: Iterable[str] = (), last_reply: str = "",
+) -> ReferenceLookup | None:
+    """How much of an ingredient, or a kitchen measure of one, the request asks (see above), with the query that looks
+    it up; None for a pure conversion, the person's own things or anything else."""
+
+    folded = spelled_out(fold(text))
+    if (
+        _AMOUNT_ASKED.search(folded) is None and _UNIT_ASKED.search(folded) is None
+        or _OWN_THINGS.search(folded) is not None
+        or conversion_asked(text) is not None
+    ):
+        return None
+    earlier = [spelled_out(fold(request)) for request in reversed(list(prior_requests)) if str(request or "").strip()]
+    reply = spelled_out(fold(last_reply))
+    named = _INGREDIENT_WORD.search(folded) is not None
+    if not named and not (
+        _KITCHEN_MEASURE_WORD.search(folded) is not None
+        and any(_INGREDIENT_WORD.search(said) is not None for said in (reply, *earlier[:2]))
+    ):
+        return None
+    clause = _kitchen_clause(folded)
+    unit = _UNIT_ASKED.search(clause)
+    measured = next(
+        (
+            found for found in _MEASURED_INGREDIENT.finditer(reply)
+            if not named or any(word in clause.split() for word in found.group("ingredient").split() if len(word) > 3)
+        ),
+        None,
+    )
+    if measured is not None and _POINTS_BACK.search(clause) is not None and unit is not None:
+        # «¿cuánto sería eso de harina en gramos?» after «2 tazas de harina de maíz»: that measure, in the unit asked.
+        query = f"{measured.group('phrase')} {'in' if unit.group(0).startswith('in') else 'en'} {unit.group('unit')}"
+    else:
+        # What the conversation said to cook with, or for, that the request leaves out: its ingredients and dishes.
+        carried = [
+            word
+            for said in (reply, *earlier[:2])
+            for word in dict.fromkeys(found.group(0) for found in _INGREDIENT_WORD.finditer(said))
+            if word not in clause
+        ]
+        query = " ".join([clause, *dict.fromkeys(carried)][:4])
+    language = _language(folded, re.search(r"\b(?:how|much|many|salt|sugar|flour|cups?)\b", folded) is not None)
+    return ReferenceLookup("quantity", clause, query, language)
+
+
+def reference_lookup(text: str, prior_requests: Iterable[str] = (), last_reply: str = "") -> ReferenceLookup | None:
     """The named dish or work this request asks about, to be looked up before anything is said about it.
 
     ``prior_requests`` are the person's earlier messages, oldest first: a question about the story right after a
-    work's lookup, naming no other work, looks that same work up again (its plot answers the question).
+    work's lookup, naming no other work, looks that same work up again (its plot answers the question). M88: how much
+    of an ingredient is asked (``kitchen_quantity``), with ``last_reply``, BAXY's last answer, as a referent.
     """
 
     # M56 (v3c-final F-w14-t1 «escribeme un query de sql q me saque los users activos del ultimo mes»): code asked
     # for is written by the model; nothing in it is a dish, a work or a ranking to look up.
     if asks_for_code(text):
         return None
-    direct = _direct(text)
+    direct = _direct(text) or kitchen_quantity(text, prior_requests, last_reply)
     if direct is not None:
         return direct
     earlier = [str(request) for request in prior_requests if str(request or "").strip()]

@@ -109,6 +109,8 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
     ("llm.py", "_ocr_unsupported_terms.stems"): (
         "GROUNDING", "a word of the screen report must be read on screen or said by the person"),
     ("llm.py", "_search_report_unsourced_numbers"): ("GROUNDING", _GROUNDING_SEARCH),
+    # M88 (DEV-D v3r D-p12-t2): a count said in words, grounded like one in digits.
+    ("llm.py", "_search_report_unsourced_counts"): ("GROUNDING", _GROUNDING_SEARCH),
     ("llm.py", "_search_report_sentences"): ("GROUNDING", _GROUNDING_SEARCH),
     ("llm.py", "_search_report_speaks_as_a_page"): ("GROUNDING", _GROUNDING_SEARCH),
     ("llm.py", "_search_report_shows_the_search"): ("GROUNDING", _GROUNDING_SEARCH),
