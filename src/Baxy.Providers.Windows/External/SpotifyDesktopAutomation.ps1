@@ -74,6 +74,48 @@ function Wait-BaxyPoll([DateTime]$Deadline,[int]$IntervalMilliseconds){
     Start-Sleep -Milliseconds $delay
     return $true
 }
+function Confirm-BaxySpotifyForeground([IntPtr]$Handle){
+    # A press is a physical click at the control's screen coordinates: it must
+    # land on Spotify, never on whatever window came to the front meanwhile.
+    if([BaxySpotifyNative]::GetForegroundWindow() -eq $Handle){return $true}
+    [void][BaxySpotifyNative]::SetForegroundWindow($Handle)
+    $foregroundDeadline=(Get-Date).AddMilliseconds(250)
+    do {
+        if([BaxySpotifyNative]::GetForegroundWindow() -eq $Handle){return $true}
+    } while((Wait-BaxyPoll $foregroundDeadline 25))
+    return $false
+}
+# BEGIN playback-evidence (pure; exercised with plain data by
+# tests/test_spotify_desktop_automation_latency.py)
+function Get-BaxySpotifyPauseName([string]$PlayName){
+    # Spotify relabels a play control while its context plays: «reproducir X»
+    # becomes «pausar X» (and «play X» «pause X»).
+    foreach($pair in @(@('reproducir','pausar'),@('play','pause'))){
+        if($PlayName -eq $pair[0]){return $pair[1]}
+        if($PlayName.StartsWith($pair[0]+' ')){return $pair[1]+$PlayName.Substring($pair[0].Length)}
+    }
+    return ''
+}
+function Test-BaxySpotifyNear($Rect,$Anchor){
+    return [Math]::Abs(($Rect.Left+$Rect.Width/2)-($Anchor.Left+$Anchor.Width/2)) -le 48 -and [Math]::Abs(($Rect.Top+$Rect.Height/2)-($Anchor.Top+$Anchor.Height/2)) -le 48
+}
+function Test-BaxySpotifyPlaybackVerified([string]$Mode,[bool]$Pause,[bool]$IdentityMatches,[string]$Observed,[string]$Before,[bool]$PauseBefore,[bool]$SelectedFlipped){
+    if($Mode -ne 'query'){return $IdentityMatches -and $Pause}
+    if(-not $Pause -or $Observed -eq ''){return $false}
+    # Heldout t17 (v3i/v3j): a client restored paused on the very track the
+    # chosen result starts with. «Now playing changed» alone can never hold
+    # there, so two other observations also prove this press started playback:
+    # the pressed control now reads as its pause label, or the client showed a
+    # loaded track with no Pause control before the press and shows Pause now.
+    return $Observed -ne $Before -or $SelectedFlipped -or ($Before -ne '' -and -not $PauseBefore)
+}
+function Test-BaxySpotifyRepress([int]$Presses,[double]$SincePressMilliseconds,[bool]$Pause,[bool]$PauseBefore,[string]$Observed,[string]$Before,[bool]$SelectedFlipped,[bool]$ControlStillPlayable){
+    # One bounded re-press, only when the first press left no trace at all: the
+    # same control still offers play at the same place, the pause state and the
+    # now-playing identity are exactly as before the press.
+    return $Presses -eq 1 -and $SincePressMilliseconds -ge 5000 -and $ControlStillPlayable -and -not $SelectedFlipped -and $Pause -eq $PauseBefore -and $Observed -eq $Before
+}
+# END playback-evidence
 function Read-BaxySpotifySearchValue([Windows.Automation.AutomationElement]$searchElement){
     $controls=@($searchElement)
     try {
@@ -119,14 +161,7 @@ try {
     } while((Wait-BaxyPoll $searchDeadline 300))
     if($null -eq $process){throw 'spotify_window_missing'}
     if($null -eq $search){throw 'spotify_search_box_missing'}
-    [void][BaxySpotifyNative]::SetForegroundWindow($process.MainWindowHandle)
-    $foregroundDeadline=(Get-Date).AddMilliseconds(250)
-    $foregroundVerified=$false
-    do {
-        $foregroundVerified=[BaxySpotifyNative]::GetForegroundWindow() -eq $process.MainWindowHandle
-        if($foregroundVerified){break}
-    } while((Wait-BaxyPoll $foregroundDeadline 25))
-    if(-not $foregroundVerified){throw 'spotify_foreground_not_verified'}
+    if(-not (Confirm-BaxySpotifyForeground $process.MainWindowHandle)){throw 'spotify_foreground_not_verified'}
     # Spotify's search combo displays a transient suggestion overlay.  UIA may
     # still expose controls from the page behind that overlay, so clicking one
     # is not a verified selection.  Navigate to the canonical desktop search
@@ -207,6 +242,7 @@ try {
         if($null -eq $candidate){[pscustomobject]@{ok=$false;effectObserved=$effect;error='spotify_exact_result_not_found'}|ConvertTo-Json -Compress;exit 2}
         if($null -eq $playCandidate){
             $stage='candidate'
+            if(-not (Confirm-BaxySpotifyForeground $process.MainWindowHandle)){throw 'spotify_foreground_not_verified'}
             InvokeElement $candidate
             $stage='result'
             $detailDeadline=(Get-Date).AddSeconds(12)
@@ -244,8 +280,17 @@ try {
         [pscustomobject]@{ok=$false;effectObserved=$effect;error='spotify_exact_play_control_not_found'}|ConvertTo-Json -Compress;exit 2
     }
     $selectedControlName=[string]$playCandidate.Current.Name
+    $selectedFold=Fold($selectedControlName)
+    $selectedRect=$playCandidate.Current.BoundingRectangle
+    $selectedPauseName=Get-BaxySpotifyPauseName $selectedFold
+    # A same-named context that was already playing is not this press's doing.
+    $flipBefore=$false
+    foreach($element in $all){try{if($element.Current.ControlType -eq [Windows.Automation.ControlType]::Button -and $selectedPauseName -and (Fold([string]$element.Current.Name)) -eq $selectedPauseName -and ($selectedPauseName -notin @('pausar','pause') -or (Test-BaxySpotifyNear $element.Current.BoundingRectangle $selectedRect))){$flipBefore=$true;break}}catch{}}
+    if(-not (Confirm-BaxySpotifyForeground $process.MainWindowHandle)){throw 'spotify_foreground_not_verified'}
     $effect=$true
     InvokeElement $playCandidate
+    $presses=1
+    $pressedAt=Get-Date
     $stage='play_clicked'
     $deadline=(Get-Date).AddSeconds(15)
     $verified=$false
@@ -256,14 +301,30 @@ try {
             $all=$root.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.Condition]::TrueCondition)
             $nowPlaying=$false
             $pause=$false
+            $selectedFlipped=$false
+            $replayControl=$null
             $prefix=Fold(('Est'+[char]0x00E1+'s escuchando:'))
             foreach($element in $all){try{$name=Fold([string]$element.Current.Name);if($name.StartsWith($prefix+' ')){$playingIdentity=$name.Substring($prefix.Length+1);$titleMatches=$playingIdentity -eq $foldTitle -or $playingIdentity.StartsWith($foldTitle+' de ');$identityMatches=-not $candidateIdentity -or $playingIdentity.Contains(' de '+$candidateIdentity);if($titleMatches -and $identityMatches){$nowPlaying=$true}};if($element.Current.ControlType -eq [Windows.Automation.ControlType]::Button -and $name -in @('pausar','pause')){$pause=$true}}catch{}}
+            foreach($element in $all){try{
+                if($element.Current.ControlType -eq [Windows.Automation.ControlType]::Button){
+                    $name=Fold([string]$element.Current.Name)
+                    $rect=$element.Current.BoundingRectangle
+                    # A bare «pausar» is also the player bar's own control: only
+                    # the one standing where the pressed control stood counts.
+                    if(-not $flipBefore -and $selectedPauseName -and $name -eq $selectedPauseName -and ($name -notin @('pausar','pause') -or (Test-BaxySpotifyNear $rect $selectedRect))){$selectedFlipped=$true}
+                    if($name -eq $selectedFold -and -not $element.Current.IsOffscreen -and $rect.Width -gt 0 -and $rect.Height -gt 0 -and (Test-BaxySpotifyNear $rect $selectedRect)){$replayControl=$element}
+                }
+            }catch{}}
             $observedNowPlaying=''
             foreach($element in $all){try{$name=Fold([string]$element.Current.Name);if($name.StartsWith($prefix+' ')){$observedNowPlaying=$name.Substring($prefix.Length+1);break}}catch{}}
-            $windowTitle=Fold((Get-Process -Id $process.Id -ErrorAction Stop).MainWindowTitle)
-            $windowMatch=$windowTitle -eq $foldTitle -or $windowTitle.EndsWith(' '+$foldTitle) -or $windowTitle.StartsWith($foldTitle+' ')
-            $verified=if($Mode -eq 'query'){$pause -and $observedNowPlaying -ne '' -and $observedNowPlaying -ne $beforeNowPlaying}else{$nowPlaying -and $pause}
+            $verified=Test-BaxySpotifyPlaybackVerified $Mode $pause $nowPlaying $observedNowPlaying $beforeNowPlaying $pauseAlready $selectedFlipped
             $playObservationError=$null
+            if(-not $verified -and (Test-BaxySpotifyRepress $presses (((Get-Date)-$pressedAt).TotalMilliseconds) $pause $pauseAlready $observedNowPlaying $beforeNowPlaying $selectedFlipped ($null -ne $replayControl))){
+                # The first press landed before the client took it (a client
+                # restored seconds earlier). Counted before pressing: never twice.
+                $presses=2
+                if(Confirm-BaxySpotifyForeground $process.MainWindowHandle){InvokeElement $replayControl}
+            }
         } catch {
             $verified=$false
             $playObservationError=$_
@@ -273,7 +334,7 @@ try {
     if(-not $verified -and $null -ne $playObservationError){throw $playObservationError}
     $failure=if($verified){$null}else{'spotify_'+$stage+'_not_verified'}
     $observedTitle=(Get-Process -Id $process.Id -ErrorAction Stop).MainWindowTitle
-    [pscustomobject]@{ok=$verified;effectObserved=$effect;error=$failure;title=$observedTitle;selectedControl=$selectedControlName;beforeNowPlaying=$beforeNowPlaying;observedNowPlaying=$observedNowPlaying;processId=$process.Id}|ConvertTo-Json -Compress
+    [pscustomobject]@{ok=$verified;effectObserved=$effect;error=$failure;title=$observedTitle;selectedControl=$selectedControlName;beforeNowPlaying=$beforeNowPlaying;observedNowPlaying=$observedNowPlaying;pauseBefore=$pauseAlready;selectedFlipped=$selectedFlipped;presses=$presses;processId=$process.Id}|ConvertTo-Json -Compress
 } catch {
     [pscustomobject]@{ok=$false;effectObserved=$effect;error='spotify_uia_failed';stage=$stage;detail=$_.Exception.Message}|ConvertTo-Json -Compress
     exit 2

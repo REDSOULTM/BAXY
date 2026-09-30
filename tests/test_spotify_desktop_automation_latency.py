@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import json
 import re
+import subprocess
 from pathlib import Path
+
+import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,9 +35,10 @@ def test_spotify_polling_is_bounded_by_the_original_terminal_horizons() -> None:
     assert "$deadline=(Get-Date).AddSeconds(15)" in SOURCE
 
     calls = re.findall(r"Wait-BaxyPoll \$(\w+) (\d+)", SOURCE)
+    # M86: the foreground wait is one helper, confirmed before every press.
     assert calls == [
-        ("searchDeadline", "300"),
         ("foregroundDeadline", "25"),
+        ("searchDeadline", "300"),
         ("searchPageDeadline", "500"),
         ("detailDeadline", "500"),
         ("deadline", "500"),
@@ -54,10 +59,13 @@ def test_spotify_success_paths_observe_before_their_first_poll() -> None:
     )
 
     foreground = _between(
-        "[void][BaxySpotifyNative]::SetForegroundWindow",
-        "if(-not $foregroundVerified)",
+        "function Confirm-BaxySpotifyForeground",
+        "# BEGIN playback-evidence",
     )
     assert foreground.index("GetForegroundWindow()") < foreground.index(
+        "SetForegroundWindow("
+    )
+    assert foreground.index("SetForegroundWindow(") < foreground.index(
         "Wait-BaxyPoll $foregroundDeadline"
     )
 
@@ -147,4 +155,129 @@ def test_spotify_removed_blind_waits_without_weakening_exact_postreads() -> None
     # Playback still needs both the exact now-playing identity and Pause control.
     assert "$titleMatches -and $identityMatches" in SOURCE
     assert "$name -in @('pausar','pause')" in SOURCE
-    assert "}else{$nowPlaying -and $pause}" in SOURCE
+    assert "if($Mode -ne 'query'){return $IdentityMatches -and $Pause}" in SOURCE
+    assert (
+        "$verified=Test-BaxySpotifyPlaybackVerified $Mode $pause $nowPlaying"
+        in SOURCE
+    )
+
+
+# M86 (held-out t17 «tengo ganas de escuchar reggaetón», 3 of 6 real runs failed
+# with spotify_play_clicked_not_verified after the full 15 s postread): the
+# playback evidence and the single re-press are pure functions of what UIA shows,
+# run here in PowerShell over plain data instead of a Spotify window.
+_AFTER = "after feat young miko de conep young miko"
+_LOFI = "sunrise de mxgnetic"
+_T, _F = "$true", "$false"
+
+
+def _verified(mode, pause, identity, observed, before, pause_before, flipped):
+    return (
+        f"Test-BaxySpotifyPlaybackVerified '{mode}' {pause} {identity} "
+        f"'{observed}' '{before}' {pause_before} {flipped}"
+    )
+
+
+def _repress(presses, since, pause, pause_before, observed, before, flipped, control):
+    return (
+        f"Test-BaxySpotifyRepress {presses} {since} {pause} {pause_before} "
+        f"'{observed}' '{before}' {flipped} {control}"
+    )
+
+
+def _rect(left, top, width=32, height=32):
+    return f"([pscustomobject]@{{Left={left};Top={top};Width={width};Height={height}}})"
+
+
+_CASES = {
+    # v3i/v3j: the client restored paused on the track the result starts with.
+    "cold_same_track_now_playing": (
+        _verified("query", _T, _F, _AFTER, _AFTER, _F, _F), True),
+    "same_track_already_playing_without_flip": (
+        _verified("query", _T, _F, _AFTER, _AFTER, _T, _F), False),
+    "same_track_already_playing_with_flip": (
+        _verified("query", _T, _F, _AFTER, _AFTER, _T, _T), True),
+    "now_playing_changed": (
+        _verified("query", _T, _F, _AFTER, _LOFI, _T, _F), True),
+    "changed_but_no_pause_control": (
+        _verified("query", _F, _F, _AFTER, _LOFI, _F, _F), False),
+    "pause_but_nothing_loaded": (
+        _verified("query", _T, _F, "", "", _F, _T), False),
+    "nothing_loaded_before_then_playing": (
+        _verified("query", _T, _F, _AFTER, "", _F, _F), True),
+    "exact_needs_identity_and_pause": (
+        _verified("exact", _T, _T, _AFTER, _AFTER, _T, _F), True),
+    "exact_never_accepts_flip_without_identity": (
+        _verified("exact", _T, _F, _AFTER, "", _F, _T), False),
+    "exact_identity_without_pause": (
+        _verified("exact", _F, _T, _AFTER, "", _F, _F), False),
+    # The first press left no trace five seconds later: one more press.
+    "repress_when_first_press_left_no_trace": (
+        _repress(1, 5200, _F, _F, _AFTER, _AFTER, _F, _T), True),
+    "repress_waits_five_seconds": (
+        _repress(1, 4500, _F, _F, _AFTER, _AFTER, _F, _T), False),
+    "repress_only_once": (
+        _repress(2, 9000, _F, _F, _AFTER, _AFTER, _F, _T), False),
+    "repress_needs_the_same_control": (
+        _repress(1, 6000, _F, _F, _AFTER, _AFTER, _F, _F), False),
+    "no_repress_after_now_playing_moved": (
+        _repress(1, 6000, _F, _F, _LOFI, _AFTER, _F, _T), False),
+    "no_repress_after_pause_appeared": (
+        _repress(1, 6000, _T, _F, _AFTER, _AFTER, _F, _T), False),
+    "no_repress_after_flip": (
+        _repress(1, 6000, _T, _T, _AFTER, _AFTER, _T, _T), False),
+    "pause_name_of_named_play": (
+        "Get-BaxySpotifyPauseName 'reproducir reggaeton mix'", "pausar reggaeton mix"),
+    "pause_name_of_english_play": ("Get-BaxySpotifyPauseName 'play x'", "pause x"),
+    "pause_name_of_generic_play": ("Get-BaxySpotifyPauseName 'reproducir'", "pausar"),
+    "pause_name_needs_a_play_word": ("Get-BaxySpotifyPauseName 'playlist'", ""),
+    "pause_name_of_unrelated_control": (
+        "Get-BaxySpotifyPauseName 'reproductor de video'", ""),
+    "near_same_place": (
+        f"Test-BaxySpotifyNear {_rect(110, 240)} {_rect(100, 230)}", True),
+    "near_rejects_player_bar": (
+        f"Test-BaxySpotifyNear {_rect(600, 900)} {_rect(100, 230)}", False),
+}
+
+
+@pytest.fixture(scope="module")
+def playback_evidence(tmp_path_factory) -> dict[str, object]:
+    block = _between("# BEGIN playback-evidence", "# END playback-evidence")
+    lines = [block, "$r=[ordered]@{}"]
+    for name, (expression, _) in _CASES.items():
+        lines.append(f"$r['{name}']=({expression})")
+    lines.append("$r|ConvertTo-Json -Compress")
+    script = tmp_path_factory.mktemp("m86") / "evidence.ps1"
+    script.write_text("\n".join(lines), encoding="utf-8-sig")
+    completed = subprocess.run(
+        ["powershell", "-NoProfile", "-NonInteractive", "-ExecutionPolicy",
+         "Bypass", "-File", str(script)],
+        capture_output=True, text=True, encoding="utf-8", timeout=60, check=True,
+    )
+    return json.loads(completed.stdout.strip().splitlines()[-1])
+
+
+@pytest.mark.parametrize("name", sorted(_CASES))
+def test_spotify_playback_evidence_decisions(playback_evidence, name) -> None:
+    assert playback_evidence[name] == _CASES[name][1]
+
+
+def test_spotify_press_is_bounded_and_counted_before_the_second_click() -> None:
+    playback = _between(
+        "$deadline=(Get-Date).AddSeconds(15)",
+        "if(-not $verified -and $null -ne $playObservationError)",
+    )
+    repress = playback[playback.index("Test-BaxySpotifyRepress"):]
+    # The counter moves before the click, so an exception in the click can
+    # never lead to a third press; each press confirms Spotify is in front.
+    assert repress.index("$presses=2") < repress.index("InvokeElement $replayControl")
+    assert repress.index("Confirm-BaxySpotifyForeground") < repress.index(
+        "InvokeElement $replayControl"
+    )
+    first_press = _between("$selectedControlName=", "$stage='play_clicked'")
+    assert first_press.index("Confirm-BaxySpotifyForeground") < first_press.index(
+        "InvokeElement $playCandidate"
+    )
+    # The re-press stays inside the original 15 s postread horizon.
+    assert "$deadline=(Get-Date).AddSeconds(15)" in SOURCE
+    assert "presses=$presses" in SOURCE
