@@ -576,3 +576,12 @@ Palo Alto, p34-t3 vago, p37-t2 repregunta, w05-t3 sin el disco, w10-t4 YouTube s
 Estado frente a las metas de cierre: DEV-D revisor ≥ 85 % alcanzado en desarrollo; faltan ⚠ ≤ 1 %, 0 inventados,
 automática ≥ 90 %, held-out ≥ 29/30 («cerralo», decisor → full9), reserva ≥ 88 %, cien 100/100 y Full. FINAL-2 no se
 corre hasta que DEV-D sostenga las metas con margen.
+
+## D52. DEV-D v3u: 283/332 = 85,2 % (30861483 = M87–M90); las cifras de memoria se cortan (2026-09-30 ~20:15)
+Mismo revisor: **v3u 283/332 = 85,2 %** (v3r 284): arreglados 13, rotos 14. ⚠ **1 = 0,3 %** (v3r 5), repreguntas 1,
+inventados 4 (s061 atribución a un artículo; s111, p29-t2, w01-t3 = cifras dichas de memoria y erróneas). Automática
+290/332 = 87,3 %; VRAM 3 758 MiB. Las cantidades de cocina se buscan pero la redacción no usa lo leído (w01-t2 «a gusto»
+con «10 g por litro» leído; w10-t2 sin gramos). Decisión de producto, compatible con D35 y el paso 6 del goal: la
+respuesta de memoria con aviso (D35) queda para lo que no es una cifra; cuando lo pedido es una cantidad, distancia,
+duración, fecha o recuento, se dice que no se encontró (paso 6: las cifras se buscan antes de afirmar; si no se puede,
+se dice). Agentes M92 (memoria y cifras, cocina con lo leído) y M93 (rotos y redacción de v3u).
