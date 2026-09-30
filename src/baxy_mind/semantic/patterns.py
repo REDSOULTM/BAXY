@@ -1723,10 +1723,15 @@ _ECHO_MODE = re.compile(
     # verb in any person or form («repites», «repetir», «imitando», «repeating»), with a few words between it and
     # what is said next, is the same mode. A negated one («no repitas…») is not asked for. These two replace the
     # imperative-only readings of «repite/imita … lo que digo» and «repeat everything I say».
-    r"(?<!\bno\s)(?:repit|repet|imit)\w*\s+(?:\w+\s+){0,4}?(?:lo\s+mismo\s+que|(?:todo\s+|cada\s+cosa\s+|"
+    # M84 (DEV-D v3o D-s107 «para de repetir lo que digo» → «No hago lo que no es parte de lo que hago»): stopping the
+    # repetition («para de», «deja de», «stop») does not ask for the mode either; it is said to BAXY as talk.
+    r"(?<!\bno\s)(?<!\bpara\sde\s)(?<!\bparen\sde\s)(?<!\bdeja\sde\s)(?<!\bdejen\sde\s)(?<!\bdeje\sde\s)"
+    r"(?<!\bdejar\sde\s)(?<!\bparar\sde\s)(?<!\bpare\sde\s)(?:repit|repet|imit)\w*\s+(?:\w+\s+){0,4}?"
+    r"(?:lo\s+mismo\s+que|(?:todo\s+|cada\s+cosa\s+|"
     r"cualquier\s+cosa\s+)?lo\s+que|(?:cada|cualquier)\s+cosa\s+que)\s+(?:yo\s+)?(?:te\s+)?"
     r"(?:digo|diga|escribo|escriba|hablo|hable)|"
-    r"(?<!\bnot\s)(?<!n't\s)(?:(?:repeat|echo|parrot|mimic)\w*\s+(?:\w+\s+){0,4}?|say\s+)(?:back\s+)?(?:everything|"
+    r"(?<!\bnot\s)(?<!n't\s)(?<!\bstop\s)(?<!\bquit\s)(?:(?:repeat|echo|parrot|mimic)\w*\s+(?:\w+\s+){0,4}?|say\s+)"
+    r"(?:back\s+)?(?:everything|"
     r"anything|whatever|every\s+word|each\s+word|what)\s+(?:that\s+)?i\s+(?:say|type|write)"
     r")\b"
 )
@@ -1737,6 +1742,70 @@ def echo_mode_request(text: str) -> bool:
 
     return _ECHO_MODE.search(_fold(text)) is not None
 
+
+# M84 (DEV-D v3o D-s092 «enciende la repetición» → «¿La repetición de qué?»): the player's repeat or shuffle mode is
+# no action of media.control (next, pause, play, previous, stop, toggle); turning it on or off is a limit.
+_MEDIA_REPEAT_MODE = re.compile(
+    r"\b(?:(?:enciende|encender|enciendeme|activa|activar|activame|pon|poner|ponle|prende|prender|quita|quitar|"
+    r"desactiva|desactivar|apaga|apagar|turn\s+(?:on|off)|enable|disable|switch\s+(?:on|off)|put\s+on)\s+"
+    r"(?:(?:el|la|the)\s+)?(?:modo\s+)?(?:repeticion|aleatorio|shuffle|loop|bucle|repeat)(?:\s+mode)?|"
+    r"(?:repite|repetir|repeat|loop)\s+(?:(?:la|esta|esa|el|this|that|the|current)\s+)?"
+    r"(?:cancion|song|tema|track|playlist|album)(?:\s+(?:en\s+bucle|on\s+loop|una\s+y\s+otra\s+vez|over\s+and\s+over))?"
+    r"[\s.!?]*$)"
+)
+# M84 (DEV-D v3o D-s006 «confirmen el pedido» → «¿Qué pedido confirmo?»): an order placed with a shop is confirmed,
+# placed or tracked there; no operation buys or follows an order. Cancelling one is left out: «cancela el pedido» is
+# also what the person asked BAXY.
+_SHOP_ORDER_HANDLING = re.compile(
+    r"\b(?:confirma|confirmen|confirmar|confirmame|confirm|realiza|realicen|realizar|haz|hagan|hacer|place|rastrea|"
+    r"rastreen|rastrear|track)\s+(?:(?:el|mi|la|mis|los|my|the|an?|this|that|este|ese)\s+)?(?:pedidos?|orders?)\b"
+)
+# M84 (DEV-D v3o D-s122 «How much is my phone, I mean my electric bill?» → «What's your monthly electric bill?»): what
+# the person owes on a bill or holds on an account is theirs to read with the company; no operation reads it.
+_OWN_BILL_AMOUNT = re.compile(
+    r"\b(?:how\s+much|cuanto|cuanta|cual\s+es|what(?:'s|s|\s+is))\b.{0,40}\b(?:my|mi|mis)\s+(?:\w+\s+){0,2}?"
+    r"(?:bills?|facturas?|boletas?|recibos?|cuentas?\s+de\s+(?:la\s+)?(?:luz|agua|gas|telefono|celular|internet)|"
+    r"saldo|balance)\b"
+)
+
+
+def media_repeat_mode_request(text: str) -> bool:
+    """The player's repeat or shuffle mode turned on or off, or the song asked to repeat (see above)."""
+
+    return _MEDIA_REPEAT_MODE.search(_fold(text)) is not None
+
+
+# M84 (DEV-D v3o D-p02-t1 «Saca foto ahora» → a screenshot, D-s094 «Snap a pic after 10 seconds, no, 20 seconds.» → an
+# alarm): a photo taken with nothing of the screen named is the camera's, which BAXY does not use. «saca una foto de
+# la pantalla» is a capture; «una foto de X» names what is photographed and is left to the readers.
+_CAMERA_PHOTO = re.compile(
+    r"^[¿¡\s]*(?:(?:por\s+favor|please|porfa|oye|hey|baxy)[\s,]+)*(?:(?:puedes|podrias|can\s+you|could\s+you)\s+)?"
+    r"(?:saca|sacame|sacanos|sacar|toma|tomame|tomanos|tomar|haz|hazme|hace|haceme|hacer|take|snap|shoot)\s+"
+    r"(?:(?:me|us|una|un|la|el|a|an|the|my|mi|nueva|new|quick|rapida)\s+)*"
+    r"(?:foto|fotos|fotografia|fotografias|selfie|selfies|pic|pics|picture|pictures|photo|photos|photograph)\b"
+    r"(?!\s+(?:de|del|of)\b)"
+)
+_SCREEN_NAMED = r"\b(?:pantalla|pantallazo|screen|screenshot|captura|capture|escritorio|desktop|ventana|window|monitor)\b"
+
+
+def camera_photo_request(text: str) -> bool:
+    """A photo asked of the camera: taken, with nothing of the screen named (see above)."""
+
+    folded = _fold(text)
+    return _CAMERA_PHOTO.search(folded) is not None and not _has(folded, _SCREEN_NAMED)
+
+
+def unserved_personal_request(text: str) -> bool:
+    """M84: a request no operation serves, whatever its grammar says of authority (see the readers above): the
+    player's repeat mode, an order with a shop, the person's own bill, a photo of the camera."""
+
+    folded = _fold(text)
+    return (
+        media_repeat_mode_request(text)
+        or _SHOP_ORDER_HANDLING.search(folded) is not None
+        or _OWN_BILL_AMOUNT.search(folded) is not None
+        or camera_photo_request(text)
+    )
 
 def unsupported_effect_demonstration_request(text: str) -> bool:
     """Recognize a requested demonstration without granting effect authority."""
@@ -2118,9 +2187,28 @@ def unsupported_live_machine_query(text: str) -> bool:
 
 
 # M80: music services the catalog does not play on (it plays on Spotify and on YouTube), and the verbs of playing.
-_UNOFFERED_MUSIC_SERVICE = (
-    r"\b(?:pandora|deezer|tidal|soundcloud|apple\s+music|amazon\s+music|iheart\s*radio|napster|audiomack|qobuz)\b"
+# M84 (DEV-D v3o D-s050 «Reproduce mi estación de Pandora Sensación de comodidad» played «Pandora & Jordi» on
+# YouTube): the service is named where a service stands — after «en / on / from», as «mi Pandora», «la estación de
+# Pandora», «Pandora station», «Pandora to play», «open Pandora». «pon música de Pandora» names the band.
+_UNOFFERED_SERVICE_NAME = (
+    r"(?:pandora|deezer|tidal|soundcloud|apple\s+music|amazon\s+music|iheart\s*radio|napster|audiomack|qobuz)"
 )
+_UNOFFERED_MUSIC_SERVICE = (
+    rf"\b(?:en|on|in|from|desde|via|through|using)\s+(?:(?:mi|my|la|el|the)\s+)?"
+    rf"(?:(?:app|aplicacion|cuenta|account)\s+(?:de\s+)?)?{_UNOFFERED_SERVICE_NAME}\b|"
+    rf"\b(?:estacion|estaciones|emisora|station|stations|playlist|cuenta|account|app|aplicacion)\s+(?:de|of|en|on)\s+"
+    rf"{_UNOFFERED_SERVICE_NAME}\b|"
+    rf"\b(?:mi|my)\s+{_UNOFFERED_SERVICE_NAME}\b|"
+    rf"\b{_UNOFFERED_SERVICE_NAME}\s+(?:station|stations|radio|app|playlist|account)\b|"
+    rf"\b{_UNOFFERED_SERVICE_NAME}\s*,?\s+(?:to\s+)?(?:play|plays|pon|ponme|reproduce|reproduceme|toca|tocame)\b|"
+    rf"\b(?:open|abre|abreme|abrir|start|inicia|launch)\s+{_UNOFFERED_SERVICE_NAME}\b"
+)
+
+
+def unoffered_music_service_named(folded: str) -> bool:
+    """The request names a music service BAXY does not play on, where a service stands (see above)."""
+
+    return _has(folded, _UNOFFERED_MUSIC_SERVICE) and not _has(folded, r"\b(?:spotify|youtube)\b")
 _MUSIC_PLAY_VERB = (
     r"\b(?:play|plays|playing|put\s+on|listen|stream|pon|pone|ponme|poneme|reproduce|reproduci|reproduceme|"
     r"reproducir|toca|tocame|tocar|escuchar|escucha|quiero\s+oir)\b"
@@ -2485,9 +2573,13 @@ def known_unsupported_effect_request(
             # M80 (DEV-D v3m D-s069 «I need Pandora to play me a birthday song.» → «Which music provider should be
             # used…?»): music is played on Spotify or YouTube only; a request that names another music service is
             # the limit said plainly, never a question for the service the person already named.
-            _has(folded, _MUSIC_PLAY_VERB) and _has(folded, _UNOFFERED_MUSIC_SERVICE),
+            _has(folded, _MUSIC_PLAY_VERB) and unoffered_music_service_named(folded),
             {"media.play.unoffered_service"},
         ),
+        # M84 (DEV-D v3o D-s092, D-s006, D-s122): the repeat mode, an order with a shop, the person's own bill.
+        (media_repeat_mode_request(text), {"media.repeat.mode"}),
+        (_SHOP_ORDER_HANDLING.search(folded) is not None, {"commerce.order.manage"}),
+        (_OWN_BILL_AMOUNT.search(folded) is not None, {"account.bill.read"}),
         (
             # WEATHER2023 boundary «qué clima hacía en Buenos Aires en 1990»:
             # the weather of the past (a past-tense verb or a year) has no
@@ -6764,6 +6856,17 @@ def _has_contradictory_correction(
         text,
         flags=re.IGNORECASE,
     )
+    # M84 (DEV-D v3o D-w04-t1 «…a ver a mi vieja y no sé qué llevar de ropa, ¿cómo va a estar el clima allá?» failed
+    # twice and asked «¿Podrías decirme qué ropa…?»): not knowing («no sé qué», «I don't know what») tells why the
+    # person asks; it takes back nothing. «que no se cierre» still says what must not happen.
+    text = re.sub(
+        r"\bno\s+(?:lo\s+)?se\s+(?=(?:que|qu[eé]|como|cual|cuando|donde|si|bien|nada)\b|[,.;!?]|$)|"
+        r"\bno\s+tengo\s+(?:ni\s+)?(?:idea|claro)\b|\bno\s+estoy\s+segur[oa]\b|"
+        r"\bi\s+(?:don'?t|do\s+not)\s+know\b|\b(?:i'?m\s+)?not\s+sure\b",
+        "",
+        text,
+        flags=re.IGNORECASE,
+    )
     return (
         _has(
             text,
@@ -10484,7 +10587,11 @@ def _review_media_and_email_effects(
         )
         and _has(folded, r"\b(?:reproduce|reproducir|play|pon)\b")
     )
-    if _explicit_named_music_query(folded) is not None and _desired_music_query(folded) is not None:
+    if unoffered_music_service_named(folded):
+        # M84 (DEV-D v3o D-s050): music asked on a service BAXY does not play on is no play here, neither on YouTube
+        # nor on Spotify; the known limit (``known_unsupported_effect_request``) says so.
+        pass
+    elif _explicit_named_music_query(folded) is not None and _desired_music_query(folded) is not None:
         # MUSIC1559: music named without a provider («pon música de daft punk»)
         # plays from YouTube in the local player; «en Spotify» keeps Spotify.
         _append(
@@ -12740,7 +12847,7 @@ def _resolve_clause_effects(
         # event repeated daily or hourly is a repeating reminder («pon el almuerzo todos los días a
         # las doce y media»); the calendar holds single events.
         return EffectIntent((event_operation,), (text.strip(),))
-    if "media.play.query" in available and (
+    if "media.play.query" in available and not unoffered_music_service_named(folded) and (
         _direct_media_discovery_or_play_request(folded)
         # VIDEO1715: the readers fold the text themselves; the raw text keeps
         # the capitals that mark a proper title («poné Tom and Jerry»).

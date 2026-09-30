@@ -4522,6 +4522,10 @@ def _rearm_in_context(
     return audited(None, "model_rejected" if rewritten else "model_failed", rewritten)
 
 
+# M84: the operations a moment counted from BAXY's last answer is set with (``semantic.temporal.anchored_offset_request``).
+_ANCHORED_SCHEDULE_OPERATIONS = frozenset({"notification.schedule", "reminder.create", "calendar.event.create"})
+
+
 def _context_decided_result(
     message: dict[str, Any],
     *,
@@ -4539,10 +4543,22 @@ def _context_decided_result(
     text = str(message.get("text", ""))
     history = message.get("history") or []
     available_operations = tuple(tool.name for tool in planner_catalog.tools)
-    decided = llm.decide_in_context(
-        text, history, ((tool.name, tool.description) for tool in planner_catalog.tools),
-        signatures={tool.name: semantic_decider.argument_signature(tool.schema) for tool in planner_catalog.tools},
-    )
+    context = dialogue_slot.read_slot({}, history, text)
+    antecedent = context.antecedents[0] if context.antecedents else None
+    placed = dialogue_slot.place_substituted(text, antecedent)
+    placed_read = resolve_explicit_effects(placed, available_operations) if placed is not None else None
+    read_before_decider = placed_read is not None and placed_read.operations == ("system.time",)
+    if read_before_decider:
+        # M84 (DEV-D v3o D-w02-t2 «y si allá son las 10 de la mañana acá qué hora es» after «qué hora es en madrid» →
+        # restated «¿Qué hora es en Madrid si allá son las 10…?» and talked): «allá» is the place just asked, and the
+        # time said there is converted on the clock read (``_place_clock_facts``), never by the decider.
+        decided = semantic_decider.ContextDecision(request=placed, decision="action", operations=("system.time",),
+                                                   question="")
+    else:
+        decided = llm.decide_in_context(
+            text, history, ((tool.name, tool.description) for tool in planner_catalog.tools),
+            signatures={tool.name: semantic_decider.argument_signature(tool.schema) for tool in planner_catalog.tools},
+        )
     # M64 (v3f-final F-w14-t3): which fields the decider filled, never their values, so a turn whose arguments went
     # wrong can be told apart from one whose decider gave none.
     argument_fields = [name for name, _ in decided.arguments]
@@ -4594,6 +4610,24 @@ def _context_decided_result(
         decided = semantic_decider.ContextDecision(
             fidelity.request, decided.decision, decided.operations, decided.question, decided.arguments,
         )
+    anchored = semantic_temporal.anchored_offset_request(text, context.last_reply)
+    anchored_read = resolve_explicit_effects(anchored, available_operations) if anchored is not None else None
+    if anchored_read is not None and set(anchored_read.operations) <= _ANCHORED_SCHEDULE_OPERATIONS:
+        # M84 (DEV-D v3o D-w08-t3 «ponme recordatorio una ora antes d ese partido» → «¿Cuándo es ese partido?», D-w02-t3
+        # «ponme una alarma media hora antes de eso» → «Pon una alarma a las 10:30.»): the moment BAXY just gave, less
+        # or plus the duration, is the time; the readers read the request that says it, the decider's is not used.
+        decided = semantic_decider.ContextDecision(anchored, "action", tuple(anchored_read.operations), "")
+    if decided.decision == "action" and anchored_read is None:
+        asked = resolve_explicit_clarification_intent(text, available_operations)
+        if asked is not None and "list_entries" in asked.missing_fields and set(asked.operations) & set(decided.operations):
+            # M84 (DEV-D v3o D-p17-t3 «nevermind add an item to my swimming list» → «Add swimming to my list.», and
+            # «swimming» was added): the readers prove the entry was not said (M80); the list's name is never its
+            # entry, and the decider's restatement does not fill it.
+            decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
+    if decided.decision == "limit" and dialogue_slot.takes_back(text, antecedent):
+        # M84 (DEV-D v3o D-p01-t3 «no, cancel», D-p14-t3 «Cancelar foto» → «No cancelo la foto.»): taking back what was
+        # just asked is said to BAXY, never a limit of cancelling.
+        decided = semantic_decider.ContextDecision(request=text, decision="talk", operations=(), question="")
     # cien-107 100: with a block of history the decider answered «talk» («Write a letter to Eris.»), the knowledge
     # contract let «…because I do not have access to external communication channels…» through; talk is bounded too.
     if decided.decision in {"clarify", "talk"} and effect_intent.out_of_world_request(text):
@@ -4719,7 +4753,7 @@ def _context_decided_result(
             "stages": [] if reference is None else [
                 {"name": "reference_looked_up", "kind": reference.kind, "query": reference.query},
             ],
-            "decider_timings": getattr(llm, "_last_decider_timings", None),
+            "decider_timings": None if read_before_decider else getattr(llm, "_last_decider_timings", None),
             "final": {
                 "kind": result["kind"],
                 "intent_operations": result["intentOperations"],
@@ -5235,8 +5269,12 @@ def _decide_turn_result(
         else _talk_act_turn_decision(objective, explicit_intent, turn_reading.clarification)
     )
     # A request the readers prove has no operation (the known unsupported contracts).
-    known_limit_requested = effect_request_is_authoritative(objective) and known_unsupported_effect_request(
-        objective, available_operations,
+    known_limit_requested = (
+        effect_request_is_authoritative(objective) and known_unsupported_effect_request(objective, available_operations)
+        # M84 (DEV-D v3o s092, s006, s122, p02-t1, s094): the repeat mode, an order with a shop, the person's own bill
+        # and a photo of the camera are requests however they are said («confirmen», «…, no, 20 seconds»); the
+        # decider asked about them or served a capture or an alarm nearby.
+        or effect_intent.unserved_personal_request(objective)
     )
     explicit_conversation_decision = (
         _explicit_unsupported_turn_decision(objective)
@@ -5352,6 +5390,8 @@ def _decide_turn_result(
         # operation (browser.tabs.list, app.close, audio.volume.adjust) that
         # does not, and the model then asked or confirmed.
         and not known_unsupported_effect_request(objective, available_operations)
+        # M84 (DEV-D v3o D-p02-t1 «Saca foto ahora» → a screenshot): a photo of the camera is no capture of the screen.
+        and not effect_intent.unserved_personal_request(objective)
     ):
         # This is still interpretation, not an execution milestone. Composing
         # progress here spent the same deadline needed to decide and answer.

@@ -313,6 +313,106 @@ def spoken_clock(folded: str) -> SpokenClock | None:
     return clocks[0] if clocks else None
 
 
+# --- A time counted from the moment BAXY just gave -------------------------------
+# M84 (DEV-D v3o D-w08-t3 «ponme recordatorio una ora antes d ese partido» after «América juega este 27 de septiembre
+# de 2026 contra Necaxa a las 21:00 horas.» → «¿Cuándo es ese partido?»; D-w02-t3 «ponme una alarma media hora antes
+# de eso» after the time here of 10:00 in Madrid → «¿Cuándo…?»): «eso», «ese partido», «that» point at the one moment
+# BAXY's last answer gave, and the duration before or after it is counted here, not asked and not left to the model.
+# «ora» is «hora» as the ear or the keyboard left it (owner 2026-09-19: lo mal dicho lo arregla BAXY).
+_OFFSET_AMOUNT = (
+    r"(?P<amount>media|half\s+an?|un\s+cuarto\s+de|a\s+quarter\s+of\s+an?|una?|an?|one|\d{1,3}|dos|tres|cuatro|cinco|"
+    r"diez|quince|veinte|treinta|cuarenta|two|three|four|five|ten|fifteen|twenty|thirty|forty)"
+)
+_OFFSET_UNIT = r"(?P<unit>horas?|oras?|hours?|hrs?|h|minutos?|minutes?|mins?|min)"
+_ANCHORED_OFFSET = re.compile(
+    rf"\b{_OFFSET_AMOUNT}\s+{_OFFSET_UNIT}\s+(?P<sign>antes|despues|before|after|earlier|later)"
+    r"(?:\s+(?:de|d|del|than|of))?\s+(?:(?:eso|esto|that|it|then)\b|(?:ese|esa|este|esta|that|the)\s+[a-z]+\b)"
+)
+_OFFSET_NUMBERS = {
+    "una": 1, "un": 1, "a": 1, "an": 1, "one": 1, "dos": 2, "two": 2, "tres": 3, "three": 3, "cuatro": 4, "four": 4,
+    "cinco": 5, "five": 5, "diez": 10, "ten": 10, "quince": 15, "fifteen": 15, "veinte": 20, "twenty": 20,
+    "treinta": 30, "thirty": 30, "cuarenta": 40, "forty": 40,
+}
+# The day a moment is said on, as BAXY wrote it: «el 27 de septiembre de 2026», «mañana», «el viernes».
+_ANCHOR_DAY = re.compile(
+    r"\b(?:(?:el|este|this|on)\s+)?(?:(?:lunes|martes|miercoles|jueves|viernes|sabado|domingo|monday|tuesday|"
+    r"wednesday|thursday|friday|saturday|sunday)\s+)?\d{1,2}\s+de\s+(?:enero|febrero|marzo|abril|mayo|junio|julio|"
+    r"agosto|septiembre|setiembre|octubre|noviembre|diciembre)(?:\s+de\s+\d{4})?\b|"
+    r"\b(?:(?:on\s+)?(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday),?\s+)?(?:january|february|march|"
+    r"april|may|june|july|august|september|october|november|december)\s+\d{1,2}(?:st|nd|rd|th)?(?:,?\s+\d{4})?\b|"
+    r"\b(?:pasado\s+manana|(?<!la\s)(?<!esta\s)manana|hoy|today|tomorrow|(?:el\s+|este\s+|on\s+|this\s+)?(?:lunes|martes|miercoles|"
+    r"jueves|viernes|sabado|domingo|monday|tuesday|wednesday|thursday|friday|saturday|sunday))\b"
+)
+_HERE_WORD = r"\b(?:aqui|aca|here|hora\s+local|local\s+time)\b"
+
+
+def _offset_minutes(found: re.Match[str]) -> int | None:
+    amount = found.group("amount")
+    unit = found.group("unit")
+    hours = unit.startswith(("h", "o"))
+    if amount == "media" or amount.startswith("half"):
+        return 30 if hours else None
+    if amount.startswith(("un cuarto", "a quarter")):
+        return 15 if hours else None
+    value = int(amount) if amount.isdecimal() else _OFFSET_NUMBERS.get(amount)
+    if value is None:
+        return None
+    return value * 60 if hours else value
+
+
+def _anchor_clock(folded_reply: str) -> SpokenClock | None:
+    """The one moment of a reply: its only resolved clock, or, of several, the one said of «here»."""
+
+    clocks = [clock for clock in spoken_clocks(folded_reply) if clock.resolved]
+    if len(clocks) == 1:
+        return clocks[0]
+    here = []
+    for clock in clocks:
+        start = folded_reply.find(clock.literal)
+        clause_start = max(folded_reply.rfind(mark, 0, start) for mark in (",", ".", ";", ":", "\n"))
+        after = folded_reply[start + len(clock.literal):]
+        clause_end = min([after.find(mark) for mark in (",", ".", ";", "\n") if after.find(mark) >= 0] or [len(after)])
+        if _has(folded_reply[clause_start + 1:start], _HERE_WORD) or _has(after[:clause_end], _HERE_WORD):
+            here.append(clock)
+    return here[0] if len(here) == 1 else None
+
+
+def anchored_offset_request(text: str, reply: str | None) -> str | None:
+    """``text`` with «<duration> antes/después de eso» replaced by the moment it names, counted from the one moment
+    ``reply`` (BAXY's last answer) gave, in the day it gave; None when the message counts from nothing pointed at, or
+    the reply gives no single moment, or the count leaves that day."""
+
+    said = " ".join(str(text or "").split())
+    folded = _fold(said)
+    found = _ANCHORED_OFFSET.search(folded)
+    if found is None or not reply or len(folded) != len(said):
+        return None
+    minutes = _offset_minutes(found)
+    answer = " ".join(str(reply).split())
+    folded_answer = _fold(answer)
+    anchor = _anchor_clock(folded_answer)
+    if minutes is None or anchor is None:
+        return None
+    sign = -1 if found.group("sign") in {"antes", "before", "earlier"} else 1
+    moment = anchor.hour * 60 + anchor.minute + sign * minutes
+    if not 0 <= moment < 24 * 60:
+        return None
+    days = {match.group(0).strip() for match in _ANCHOR_DAY.finditer(folded_answer)}
+    if len(days) > 1:
+        return None
+    day = ""
+    if days:
+        start = folded_answer.find(next(iter(days)))
+        day = (answer if len(answer) == len(folded_answer) else folded_answer)[start:start + len(next(iter(days)))]
+    spanish = _has(folded, r"\b(?:ponme|pon|pone|poneme|recuerdame|recordame|avisame|antes|despues|alarma|recordatorio|"
+                           r"de|el|la|una)\b")
+    clock = f"{moment // 60:02d}:{moment % 60:02d}"
+    when = (f"{day} a las {clock}" if spanish else f"{day} at {clock}").strip()
+    if spanish and day and not re.match(r"(?i)(?:el|este|hoy|mañana|manana|pasado)\b", day):
+        when = f"el {when}"
+    return (said[: found.start()] + when + said[found.end():]).strip()
+
+
 # --- The time of another place ---------------------------------------------------
 # Uso real 2026-09-23 «in the eastern timezone, what time is it now» → «20:19»
 # (this PC's clock; Eastern was 19:19), «qué hora es en tokio», «hora entre aquí

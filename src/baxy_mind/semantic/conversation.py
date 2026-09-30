@@ -2270,10 +2270,23 @@ _ORDERING_ACT = re.compile(
 )
 
 
+# M84 (DEV-D v3o D-s042 «quiero pastel de camote de una panadería local» → the recovered limit «No hago pasteles de
+# camote.»): something wanted from a shop is bought there, however the buying is said.
+_WANTED_FROM_A_SHOP = re.compile(
+    r"\b(?:quiero|quisiera|queremos|me\s+gustaria|want|i'?d\s+like|i\s+would\s+like)\b"
+    r"(?!\s+(?:to\s+)?(?:saber|ver|conocer|ir|visitar|llamar|buscar|encontrar|know|see|go|visit|check|call|find|look)\b)"
+    r".{1,80}?\b(?:de|del|desde|en|from|at)\s+"
+    r"(?:(?:un|una|la|el|mi|a|an|the|my)\s+)?(?:panaderia|pasteleria|tienda|supermercado|super|restaurante|restaurant|"
+    r"almacen|minimarket|farmacia|botilleria|verduleria|carniceria|cafeteria|local|bakery|store|shop|market|"
+    r"supermarket|pharmacy|deli|cafe)\b"
+)
+
+
 def asks_to_order(request: object) -> bool:
     """The request orders or buys something («pídeme unos tacos», «order a pizza»): an act done by asking someone."""
 
-    return _ORDERING_ACT.search(_reading_fold(str(request or ""))) is not None
+    folded = _reading_fold(str(request or ""))
+    return _ORDERING_ACT.search(folded) is not None or _WANTED_FROM_A_SHOP.search(folded) is not None
 
 
 # M54 (v3b-devD D-s042 «quiero pastel de camote de una panadería local» → «No preparo el pastel de camote…»): a limit
