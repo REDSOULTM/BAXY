@@ -157,6 +157,10 @@ def message_request_any_channel(text: str) -> tuple[str, str, str | None] | None
             continue
         if _fold(recipient) in _MSG_PRONOUN_RECIPIENTS:
             continue
+        if _fold(recipient).split()[0] in {"me", "us", "yo", "mi", "nos"}:
+            # M91 (reserva «tell me the best story that was ever written»): «tell me X that …» asks BAXY to tell the
+            # person something; «that» opens a relative clause, not a message to someone called «me X».
+            continue
         if len(recipient.encode("utf-8")) > 512 or len(body.encode("utf-8")) > 16_384 or len(recipient.split()) > 6:
             continue
         channel: str | None = None
@@ -298,7 +302,7 @@ _INBOX_ARRIVAL = (
     r"me\s+(?:escribio|escribieron|mando|mandaron|envio|enviaron)|"
     r"me\s+han?\s+(?:escrito|mandado|enviado)|"
     r"received|receive|gotten|got|did\s+i\s+get|have\s+i|do\s+i\s+have|is\s+there|are\s+there|"
-    r"sent\s+me|wrote\s+me|emailed\s+me|came\s+in|arrived)\b"
+    r"sent\s+me|wrote\s+me|emailed\s+me|came\s+in|arrived|sent\s+to\s+me|e-?mails\s+me)\b"
 )
 
 
@@ -333,7 +337,10 @@ _MAIL_WRITING = (
 _OTHERS_SENDING = (
     r"\bme\s+(?:mando|mandaron|envio|enviaron|escribio|escribieron)\b|"
     r"\bme\s+han?\s+(?:escrito|mandado|enviado)\b|"
-    r"\b(?:sent|emailed|wrote|written)\s+me\b"
+    r"\b(?:sent|emailed|wrote|written)\s+me\b|"
+    # M91 (reserva «has Laura emailed me back yet», «all the mails sent to me from the bank»): the mail others sent the
+    # person, said in the present or with «to me», is what arrived.
+    r"\b(?:sent|written)\s+to\s+me\b|\be-?mails\s+me\b"
 )
 
 

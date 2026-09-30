@@ -173,6 +173,12 @@ def _desired_media_request(
     return resolve(order) if order is not None else None
 
 
+# The usted and subjunctive forms said alone as interjections (surprise, calling attention, urging): folded.
+_LONE_INTERJECTION = re.compile(
+    r"(?:vaya|vayan|venga|vengan|oiga|oigan|mire|miren|diga|digame|ande|fijese|figurese|vamos)(?:\s+(?:vaya|pues|ya))?"
+)
+
+
 def _imperative_rewrite_request(
     objective: str,
     resolve: Callable[[str], EffectIntent | None],
@@ -180,7 +186,12 @@ def _imperative_rewrite_request(
     """«envíeme un recordatorio…», «establecer recordatorio…», «recuérda me la reunión…» read as the tú/voseo
     order they say (``grammar.imperative_rewrites``), after an address; only a rewrite that resolves on its own."""
 
-    for rewrite in imperative_rewrites(_without_address(objective) or objective):
+    said = _without_address(objective) or objective
+    if _LONE_INTERJECTION.fullmatch(_fold(said).strip(" ¿?¡!.,;:")) is not None:
+        # M91 (reserva «vaya»): an interjection said alone is no order in another person («vaya» → «ve» read the
+        # screen); «silencie» alone still is.
+        return None
+    for rewrite in imperative_rewrites(said):
         effects = resolve(rewrite)
         if effects is not None:
             return effects

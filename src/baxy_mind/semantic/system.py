@@ -315,6 +315,9 @@ def process_inventory_arguments(text: str) -> dict[str, object] | None:
 # ruido?»: food and drink are made or brought in the physical world, where BAXY has no hands; the honest turn is
 # a plain limit, never a question about the PC. «pon en marcha una taza de café» (MASSIVE iot_coffee) starts it.
 _ERRAND = (
+    # M91 (reserva «muéstrame un video para hacer tortilla»): the dish as what a video, a recipe or a lesson is for
+    # («para hacer», «cómo preparar», «how to cook») is something to see or read, not an errand.
+    r"(?<!para\s)(?<!como\s)(?<!how\sto\s)"
     r"\b(?:prepara|preparame|preparar|prepararme|haz|hazme|hace|haceme|hacer|hacerme|"
     r"sirve|sirveme|servime|servirme|trae|traeme|traer|traerme|cocina|cociname|cocinar|"
     r"cocinarme|calienta|calientame|calentarme|pon(?:er|me)?\s+en\s+marcha|"

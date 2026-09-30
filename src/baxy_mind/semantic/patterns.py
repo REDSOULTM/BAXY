@@ -24,7 +24,7 @@ from .files import _pdf_summary_request, _file_trash_request, process_report_fil
 from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
 from .system import _weather_read_intent, physical_world_request, weather_place_known_only_through_someone
-from .notes import list_entry_request, list_read_request, list_removal_request, list_creation_without_items, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder, said_repetition, _CALENDAR_PLACE, reminder_inventory_question, AGENDA_NOT_A_READ
+from .notes import puts_into_the_agenda, list_entry_request, list_read_request, list_removal_request, list_creation_without_items, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder, said_repetition, _CALENDAR_PLACE, reminder_inventory_question, AGENDA_NOT_A_READ
 from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, _latest_email_domain, _notification_listing_request, inbox_read_request, social_network_request, contact_book_request
 from .ui import _clipboard_copy_domain, _clipboard_paste_domain, calculator_expression_request, literal_clipboard_write_text, _review_input_and_capture_effects, _VISIBLE_CLICK_APP_CONTEXT, _gerund_click_label, _visible_click_label, _click_in_application, _visible_click_intent
 from .apps import self_close_request, _APPLICATION_TRAILING_REQUEST, _application_target_forms, _CLOSE_TRAILING_COURTESY, _close_target_forms, deictic_close_request, _bounded_application_literal, _authenticated_application_list, _OPEN_STATE_CONDITION, close_all_request, _has_multiple_installed_entities, _append_domain_actions, _open_application_spans, _CATALOG_INSTALL_VERB, _opened_applications
@@ -1955,6 +1955,10 @@ def conversation_only_content_request(text: str) -> bool:
         r"^(?![^\n]{0,160}\b(?:archivo|archivos|file|files|carpeta|folder|nota|notas|note|notes|"
         r"guarda|guardala|guardalo|guardame|guardar|save|escritorio|desktop|documentos|downloads|descargas|"
         r"abre|abri|abrilo|abrila|open|envia|enviar|mandalo|mandala|mandaselo|mandasela|manda|send|imprime|print)\b)"
+        # M91 (reserva «dame una lista de cosas que hacer»): the things to do, said with nothing they are about, may be
+        # the person's own to-do list; the decider reads it, the readers do not close it as a list to write.
+        r"(?![^\n]{0,64}\b(?:cosas|tareas)\s+(?:que|por)\s+hacer"
+        r"(?:\s+(?:hoy|manana|esta\s+semana|este\s+fin\s+de\s+semana))?[\s.!?]*$)"
         r"(?:hazme|haceme|hace|haz|armame|arma|escribime|escribeme|escribe|redactame|redacta|"
         # M78 (DEV-D v3l p35-t1 «Has un análisis de FODA sobre la empresa Adidas…» → «No hago análisis de FODA.»):
         # «has un/una» is «haz» misspelt.
@@ -2799,6 +2803,15 @@ def _incomplete_scheduled_request(
     if reminder is None and desire is not None:
         # «necesito que me recuerden las reuniones del lunes»: an impersonal «recuerden» asks the same.
         reminder = re.match(r"^(?:recuerdes|recuerde|recuerden|avises|avise|avisen)\s+(?P<title>.+)$", body)
+    if reminder is not None and re.match(
+        # «recuérdame que…» stays a reminder: folded, «qué» and «que» are one word.
+        r"(?:recuerdame|recordame|remind\s+me)\s+(?:cual|cuales|cuanto|cuanta|cuantos|cuantas|donde|quien|quienes|"
+        r"what|which|how\s+(?:many|much)|where|who)\b",
+        body,
+    ):
+        # M91 (reserva «recuérdame cuántas notas tengo»): «remind me how many/which…» asks to be told now, never a
+        # reminder whose moment is missing.
+        return None
     alarm = wake is not None or (
         noun_request is not None and noun_request.group("noun") in {"alarma", "alarm", "timer", "temporizador"}
     )
@@ -3236,7 +3249,10 @@ def _clarification_intent_of(
         if not _has(
             folded,
             r"\b(?:calendar|calendario|commitments?|compromisos?|tasks?|tareas?|"
-            r"notes?|notas?|files?|archivos?|reminders?|recordatorios?)\b",
+            r"notes?|notas?|files?|archivos?|reminders?|recordatorios?|"
+            # M91 (reserva «get me the top stories from the guardian»): news, headlines or a forecast fetched from a
+            # source are read, never bought.
+            r"news|noticias|headlines?|titulares|stories|updates?|scores?|results?|weather|forecast)\b",
         ):
             return ClarificationIntent(
                 ("web.search",),
@@ -3346,10 +3362,16 @@ def _clarification_intent_of(
     # radio said switched on, names no station either.
     bare_radio = (
         re.fullmatch(
-            r"(?:(?:pon|ponme|pone|toca|tocame|reproduce|enciende|prende|activa|sintoniza|sintonice|sintonizar|"
-            r"escucha|escuchar|oir|play|put\s+on|turn\s+on|start|inicia|tune\s+in\s+to)\s+)?"
+            # M91 (reserva «que alguien encienda la radio», «could you help me listen to the radio», «cambia de
+            # emisora»): said to anyone, politely, as a wish or as a change of station, the radio with no station
+            # named still asks which one.
+            r"(?:(?:que\s+)?(?:alguien|someone|somebody)\s+|(?:puedes|podrias|can\s+you|could\s+you|will\s+you)"
+            r"(?:\s+please)?\s+|(?:let'?s|vamos\s+a)\s+|(?:help\s+me|ayudame\s+a)\s+(?:in\s+)?)?"
+            r"(?:(?:pon|ponme|pone|ponga|poner|toca|tocame|tocar|reproduce|enciende|encienda|encender|prende|prenda|"
+            r"prender|activa|sintoniza|sintonice|sintonizar|escucha|escuchar|oir|play|put\s+on|turn\s+on|start|inicia|"
+            r"tune\s+in\s+to|listen(?:ing)?\s+to|cambia(?:\s+de)?|cambie(?:\s+de)?|change|switch)\s+)?"
             r"(?:(?:la|el|una|un|the|a|some)\s+)?"
-            r"(?:radio|emisora|fm|am|station|(?:canal|estacion)\s+de\s+radio|radio\s+(?:station|channel))"
+            r"(?:radio|emisora|fm|am|station|(?:canal|estacion|emisora)\s+de\s+radio|radio\s+(?:station|channel))"
             r"(?:\s+(?:encendida|prendida|puesta|on))?"
             r"(?:\s+(?:por\s+favor|please|ahora(?:\s+mismo)?|now|right\s+now))?[\s.!?]*",
             folded,
@@ -3503,7 +3525,9 @@ def _clarification_intent_of(
             r"(?:if|whether|what|when)\b|"
             r"^[^\w]*message\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+"
             r"(?:and\s+tell|and\s+say|that|saying)\b|"
-            r"^[^\w]*tell\s+[a-z0-9][a-z0-9 _-]{0,80}?\s+that\b|"
+            # M91 (reserva «tell me the best story that was ever written»): «tell me/us …» is said to BAXY; its «that»
+            # opens a relative clause, never a message to a third person.
+            r"^[^\w]*tell\s+(?!(?:me|us)\b)[a-z0-9][a-z0-9 _-]{0,80}?\s+that\b|"
             rf"^[^\w]*{message_speech_act}\s+(?:a\s+)?"
             r"[a-z0-9][a-z0-9 ._-]{0,80}?\s+(?:que|el\s+texto|el\s+mensaje)\b|"
             # MSGCLAR «mandale al grupo Musica: prueba 1 …»: a dictation colon
@@ -7406,6 +7430,19 @@ def _is_direct_request(text: str) -> bool:
     ) or _head_is(_request_head(text), request_head)  # the head's forms: clitics, voseo (semantic.grammar)
 
 
+def _puts_into_the_agenda(text: str) -> bool:
+    """M91 (reserva «I need Friday's dinner put on the calendar», «apunte la cena en mi agenda»): what goes into the
+    calendar is no read of it (``notes._INTO_THE_AGENDA``, and the participle «put on the calendar»)."""
+
+    return puts_into_the_agenda(text) or (
+        _has(
+            text, r"\b(?:put|puesto|puesta|poner|added|anadid[oa]|agregad[oa])\s+(?:on|to|en|a|al)\s+(?:the|my|el|mi)\s+"
+                  r"(?:calendar|calendario|agenda)\b",
+        )
+        and not _has(text, r"^(?:has|habias|have\s+you|did\s+you)\b")
+    )
+
+
 def _strict_catalog_request(
     text: str,
     available_operations: frozenset[str],
@@ -8259,6 +8296,16 @@ def _strict_catalog_request(
             r"(?:[,;]|\by\b|\band\b|$))",
         ):
             found_domains = [item for item in found_domains if item[1] != "task.list"]
+        if _puts_into_the_agenda(text):
+            found_domains = [item for item in found_domains if item[1] != "calendar.event.list"]
+        if any(operation == "media.status" for _, operation in found_domains) and _has(
+            text,
+            r"\b(?:teams?|equipos?|league|liga|match(?:es)?|partidos?|games?|tournament|torneo|cup|copa|"
+            r"premier|nba|nfl|mlb|nhl|champions|mundial|playoffs?|final)\b",
+        ):
+            # M91 (reserva «who is playing tonight in the NBA»): teams playing a match are sport, a public lookup, not
+            # what this PC plays.
+            found_domains = [item for item in found_domains if item[1] != "media.status"]
         if any(operation == "wifi.status" for _, operation in found_domains) and _has(
             text,
             r"\b(?:que|cuales|what|which)\s+redes\b|\bredes\s+(?:wifi\s+)?(?:hay|disponibles|cerca)\b|"
@@ -8557,6 +8604,7 @@ def _strict_catalog_request(
         )
         # «necesito que me recuerden las reuniones del lunes»: a reminder asked, not the agenda read.
         and not _has(text, AGENDA_NOT_A_READ)
+        and not _puts_into_the_agenda(text)
     ):
         resolved = intent("calendar.event.list")
         if resolved is not None:
@@ -10639,7 +10687,8 @@ def _review_media_and_email_effects(
             matches,
             folded,
             "media.play.youtube" if not spotify and radio_station_query(folded) is not None else "media.play.query",
-            rf"\b(?:{_RADIO_PLAY}|que|what|whats|cual|which)\b",
+            # M91: a change of station to one named tunes it (``media.radio_station_query``).
+            rf"\b(?:{_RADIO_PLAY}|que|what|whats|cual|which|cambia|cambiame|cambie|change|switch)\b",
         )
     elif _bare_spoken_number_media_query(folded) is not None:
         _append(
@@ -10757,7 +10806,7 @@ def _review_media_and_email_effects(
             "media.control",
             (
                 r"\b(?:siguiente|next|anterior|previous|viene|sigue|antes|forward|back|deten(?:e|er)?|para|parar|stop|"
-                r"skip\w*|salta\w*|pasa|pasar|past|passed|cambia\w*)\b"
+                r"skip\w*|salta\w*|pasa|pasar|past|passed|cambia\w*|proximo|ultimo|last)\b"
                 if media_transport
                 else r"\b(?:cambia|cambiar|change|switch)\b"
                 if change_current_artist
@@ -12669,6 +12718,9 @@ def _resolve_clause_effects(
         and resolve_game_catalog_app_id(text, authenticated_games) is None
         and not near_catalog_game_candidates(text, authenticated_games)
         and not _has(folded, r"\b(?:desde|en|from|in|on)\s+(?:steam|epic(?:\s+games)?)\b")
+        # M91 (reserva «ve al siguiente episodio de la serie»): going to the next or the previous episode moves what
+        # plays, not the browser.
+        and _media_transport_action(folded) is None
     ):
         # Resolve the destination through the existing verified search dependency.
         return EffectIntent(("web.search", "browser.navigate"), (text, text))
