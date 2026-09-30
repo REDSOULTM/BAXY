@@ -26,8 +26,17 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     private const int VerificationAttempts = 300;
     private static readonly TimeSpan ObservationDelay = TimeSpan.FromMilliseconds(100);
     private static readonly TimeSpan CatalogLifetime = TimeSpan.FromMinutes(5);
+    // M89 (DEV-D v3r D-w11-t5 «¿Me abres el Spotify?»): app.open started and never completed; the shell gave up
+    // at 90 s and restarted the core («el tiempo de espera se agotó»). Three waits had no clock of their own: the
+    // 300 polls (each one a whole process inventory, so far more than the 30 s they were meant to be), the
+    // catalog's PowerShell read, and bringing a window to the front of a thread that may not answer. Each one
+    // now ends on the clock, so the call always returns its own verdict well inside the shell's wait.
+    internal static readonly TimeSpan VerificationBudget = TimeSpan.FromSeconds(30);
+    internal static readonly TimeSpan DefaultCatalogReadBudget = TimeSpan.FromSeconds(20);
+    internal static readonly TimeSpan ForegroundBudget = TimeSpan.FromSeconds(2);
 
     private readonly IInstalledApplicationPlatform _platform;
+    private readonly TimeSpan _catalogReadBudget;
     private readonly object _catalogLock = new();
     private IReadOnlyList<InstalledApplicationEntry>? _catalog;
     private Task<IReadOnlyList<InstalledApplicationEntry>>? _catalogLoadTask;
@@ -39,8 +48,14 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     }
 
     internal WindowsInstalledApplicationOpenProvider(IInstalledApplicationPlatform platform)
+        : this(platform, DefaultCatalogReadBudget)
+    {
+    }
+
+    internal WindowsInstalledApplicationOpenProvider(IInstalledApplicationPlatform platform, TimeSpan catalogReadBudget)
     {
         _platform = platform ?? throw new ArgumentNullException(nameof(platform));
+        _catalogReadBudget = catalogReadBudget;
     }
 
     public async ValueTask<ApplicationOpenResult> OpenAsync(
@@ -154,7 +169,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 reusedExisting: reused);
         }
 
-        for (int attempt = 0; attempt <= VerificationAttempts; attempt++)
+        Stopwatch verification = Stopwatch.StartNew();
+        for (int attempt = 0; attempt <= VerificationAttempts && verification.Elapsed < VerificationBudget; attempt++)
         {
             InstalledApplicationObservation? candidate;
             try
@@ -527,15 +543,36 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 return _catalog;
             }
 
-            _catalogLoadTask ??= _platform.ReadCatalogAsync(cancellationToken).AsTask();
+            _catalogLoadTask ??= ReadCatalogWithinBudgetAsync();
             loadTask = _catalogLoadTask;
         }
 
         try
         {
-            IReadOnlyList<InstalledApplicationEntry> loaded = await loadTask
-                .WaitAsync(cancellationToken)
-                .ConfigureAwait(false);
+            IReadOnlyList<InstalledApplicationEntry> loaded;
+            try
+            {
+                loaded = await loadTask.WaitAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (TimeoutException)
+            {
+                // M89: a refresh that did not answer in time leaves the last catalog read in force; with none, the
+                // inventory fails as it does for an unreadable catalog.
+                lock (_catalogLock)
+                {
+                    if (ReferenceEquals(_catalogLoadTask, loadTask))
+                    {
+                        _catalogLoadTask = null;
+                    }
+
+                    if (_catalog is not null)
+                    {
+                        return _catalog;
+                    }
+                }
+
+                throw new InvalidOperationException("The installed application catalog did not answer in time.");
+            }
             lock (_catalogLock)
             {
                 _catalog = loaded;
@@ -562,12 +599,46 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         }
     }
 
+    private async Task<IReadOnlyList<InstalledApplicationEntry>> ReadCatalogWithinBudgetAsync()
+    {
+        // The read is shared by every caller that joins it, so it runs on its own budget, not on the first caller's
+        // token; the PowerShell read is killed when the budget ends.
+        using var budget = new CancellationTokenSource(_catalogReadBudget);
+        try
+        {
+            return await _platform.ReadCatalogAsync(budget.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (budget.IsCancellationRequested)
+        {
+            throw new TimeoutException("The installed application catalog did not answer in time.");
+        }
+    }
+
+    private async ValueTask RequestForegroundWithinBudgetAsync(long windowHandle, CancellationToken cancellationToken)
+    {
+        // The handoff attaches to the foreground thread and moves the target window synchronously; a window whose
+        // thread does not answer would hold this call without end. Focus is a courtesy (TryFocusAsync), so a
+        // handoff still pending at the budget is left behind and the window is observed as it is.
+        Task request = Task.Factory.StartNew(
+            () => _platform.RequestForeground(windowHandle),
+            CancellationToken.None,
+            TaskCreationOptions.LongRunning,
+            TaskScheduler.Default);
+        try
+        {
+            await request.WaitAsync(ForegroundBudget, cancellationToken).ConfigureAwait(false);
+        }
+        catch (TimeoutException)
+        {
+        }
+    }
+
     private async ValueTask<InstalledApplicationObservation?> TryFocusAsync(
         InstalledApplicationEntry entry,
         InstalledApplicationObservation candidate,
         CancellationToken cancellationToken)
     {
-        _platform.RequestForeground(candidate.WindowHandle);
+        await RequestForegroundWithinBudgetAsync(candidate.WindowHandle, cancellationToken).ConfigureAwait(false);
         InstalledApplicationObservation? Observe(bool requireForeground) =>
             _platform.Inventory(entry).FirstOrDefault(item =>
                 item.ProcessId == candidate.ProcessId

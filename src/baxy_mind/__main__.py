@@ -47,9 +47,10 @@ from .semantic import surface as semantic_surface
 from .semantic import temporal as semantic_temporal
 from .semantic import ui as semantic_ui
 from .semantic.system import names_this_place, weather_destination_there
-from .semantic.patterns import output_level_request
+from .semantic.patterns import list_entries_said_before, output_level_request
 from .semantic.web import (
     asks_for_information,
+    asks_latest_release,
     names_own_data,
     near_the_person,
     news_lookup_query,
@@ -4533,6 +4534,8 @@ def _rearm_in_context(
 
 # M84: the operations a moment counted from BAXY's last answer is set with (``semantic.temporal.anchored_offset_request``).
 _ANCHORED_SCHEDULE_OPERATIONS = frozenset({"notification.schedule", "reminder.create", "calendar.event.create"})
+# M89: the reads of what is installed on this PC (never the newest published release).
+_INSTALLED_SOFTWARE_READS = frozenset({"software.python.status", "software.python.package.status", "app.installed"})
 
 
 def _clock_read_request(text: str, history: object) -> str | None:
@@ -4602,6 +4605,16 @@ def _context_decided_result(
         # Arkansas?»): the person's own data never goes to the web (00_IDENTIDAD, invariant 6). What only the person
         # knows (where mom lives, who Miguel is) is asked, never looked up.
         decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
+    if (
+        decided.decision == "action"
+        and decided.operations
+        and set(decided.operations) <= _INSTALLED_SOFTWARE_READS
+        and "web.search" in available_operations
+        and asks_latest_release(text)
+    ):
+        # M89 (DEV-D v3r D-w20-t3 «btw what's the latest version of Python right now?» → «Están instaladas las versiones
+        # 3.13.3, 3.12.10 y 3.10.0»): the newest release is public and looked up; the copy on this PC is not it.
+        decided = semantic_decider.ContextDecision(request=text, decision="action", operations=("web.search",), question="")
     clock_request = (
         _clock_read_request(text, history)
         if decided.decision in {"talk", "clarify"} and "system.time" in available_operations
@@ -4656,7 +4669,13 @@ def _context_decided_result(
         decided = semantic_decider.ContextDecision(anchored, "action", tuple(anchored_read.operations), "")
     if decided.decision == "action" and anchored_read is None:
         asked = resolve_explicit_clarification_intent(text, available_operations)
-        if asked is not None and "list_entries" in asked.missing_fields and set(asked.operations) & set(decided.operations):
+        if (
+            asked is not None
+            and "list_entries" in asked.missing_fields
+            and set(asked.operations) & set(decided.operations)
+            # M89 (DEV-D v3r D-p37-t2): entries the person said just before, which BAXY's question was about, were said.
+            and not list_entries_said_before(text, antecedent, context.last_reply)
+        ):
             # M84 (DEV-D v3o D-p17-t3 «nevermind add an item to my swimming list» → «Add swimming to my list.», and
             # «swimming» was added): the readers prove the entry was not said (M80); the list's name is never its
             # entry, and the decider's restatement does not fill it.

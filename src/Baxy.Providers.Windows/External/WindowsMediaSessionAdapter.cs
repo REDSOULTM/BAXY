@@ -561,6 +561,13 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                 writer.WriteString("sourceAppUserModelId", session.SourceAppUserModelId);
                 writer.WriteString("title", properties.Title);
                 writer.WriteString("artist", properties.Artist);
+                // M89 (DEV-D v3r D-w05-t3 «de qué disco es esta»): the album is part of what the session
+                // publishes; without it the reply could only repeat the song's name.
+                if (!string.IsNullOrWhiteSpace(properties.AlbumTitle))
+                {
+                    writer.WriteString("album", properties.AlbumTitle);
+                }
+
                 writer.WriteString("playbackStatus", status.ToString().ToLowerInvariant());
                 writer.WriteString("authority", "windows_smtc_current_session_read");
                 writer.WriteEndObject();
