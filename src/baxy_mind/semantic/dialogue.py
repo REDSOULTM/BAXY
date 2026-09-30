@@ -1123,6 +1123,9 @@ class RetimedNotification:
     kind: str
     cancel_at_request: str | None
     schedule_arguments: dict[str, str]
+    # The moment it was read at: the new time is checked to be ahead of that same clock, so one turn uses one «now»
+    # (the M76 tests pinned 2026-09-29 and broke on 2026-09-30 against the machine's clock).
+    read_at: datetime | None = None
 
 
 class DialogueState:
@@ -1323,7 +1326,7 @@ class DialogueState:
             if moment is None:
                 return None
             due = moment.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
-        return RetimedNotification(kind, cancel_at, {"dueUtc": due, "kind": kind, "title": title})
+        return RetimedNotification(kind, cancel_at, {"dueUtc": due, "kind": kind, "title": title}, now)
 
     def pointed_listed_title(self, text: str) -> str | None:
         """M76 (DEV-D v3l D-w17-t2 «mark the first one done» after «You have 13 tasks on your list, including

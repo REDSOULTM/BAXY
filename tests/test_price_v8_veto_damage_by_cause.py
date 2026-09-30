@@ -197,12 +197,15 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # M78
 # M76
 # M79 (DEV-D v3m): re-pin tras la redacción (foco del clima proyectado, idioma sin nombres propios, vetos de frase rota, jerga y alcance).
+# M79 M80 M81 M82
+# M82
+# M82
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "a91dea9fd8f7701c469b6f00269beaad02b37a97a66ded863441cda87dc89f6d"
+        "a712524dbfc1c2819cac86e50686ac6c0bff2468f7520dd83bccb003ed847551"
     ),
     "src/baxy_mind/llm.py": (
-        "bd6c1fd5ea9d3e785705df61db740666e0c5eac53214de8064867f9e1e0d4115"
+        "e24e8dc2366069e8955dc5b03d4d7482b11ae658c62e6499559b035f6cec9e6f"
     ),
 }
 

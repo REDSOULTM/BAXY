@@ -169,8 +169,11 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # M78
 # M76
 # M79 (DEV-D v3m): re-pin tras la redacción.
+# M79 M80 M81 M82
+# M82
+# M82
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "791b018702ef306f9bbf2486a557006b98ec1d9a6c746e75d783ec1f682a0f2c"
+    "03f53dc1b1959686b2ad7ce56d3ed63e4221d942709e0785205d97e9c885f5f5"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"

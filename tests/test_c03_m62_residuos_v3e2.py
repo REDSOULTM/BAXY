@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import copy
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -78,7 +78,10 @@ def test_f_s040_the_offer_is_said_from_the_alarms_alone() -> None:
     assert "count" not in seen and "scheduled" not in seen
 
 
-def test_f_s040_the_recorded_offer_is_refused_and_the_final_asks_which() -> None:
+def test_f_s040_the_recorded_offer_is_refused_and_the_final_asks_which(monkeypatch) -> None:
+    # The alarms were read on 2026-09-29; judged on another day they would carry their date (M82: the recorded read is
+    # judged on its own day, not on the machine's).
+    monkeypatch.setattr(llm, "_local_today", lambda: date(2026, 9, 29))
     payload = llm._compose_situation_payload(_situation("F-s040"), "es", F_S040)
     published = "Hay ocho alarmas a las 05:20, 06:00, 06:45, 08:30, 08:40 y 09:00; ¿las cancelo todas?"
     assert llm._payload_fact_defect(published, payload, F_S040) == "alarm_offer_not_whole"

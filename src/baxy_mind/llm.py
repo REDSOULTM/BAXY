@@ -8406,6 +8406,12 @@ def _page_read_quote_defect(text: str, seen: dict) -> str:
     return ""
 
 
+def _local_today() -> date:
+    """The local date the listing is told from (one place, so a recorded read can be judged on its own day)."""
+
+    return datetime.now().astimezone().date()
+
+
 def _project_notification_listing(observed: dict, language: str) -> dict:
     """AGENDA1435 «listá los timers»: kind, title and next run of each scheduled
     alarm or reminder, plus the count; the task identities stay out.
@@ -8416,7 +8422,7 @@ def _project_notification_listing(observed: dict, language: str) -> dict:
 
     entries = observed.get("notifications")
     scheduled: list[dict] = []
-    today = datetime.now().astimezone().date()
+    today = _local_today()
     for entry in (entries if isinstance(entries, list) else []):
         if not isinstance(entry, dict):
             continue
@@ -9469,7 +9475,11 @@ def _search_report_speaks_as_a_page(text: str, payload: dict, user_text: str) ->
     asked = _reading_fold(user_text or "")
     folded = _reading_fold(unquoted)
 
-    read = _reading_fold(_search_results_text(payload) or "")
+    # Only a result's title: a headline reported is news, a snippet pasted in its first person is the page speaking
+    # (test_c03_uso_real_compose «Nuestro conversor de moneda le permite…» stays vetoed).
+    read = _reading_fold("\n".join(
+        str(item.get("title") or "") for item in _search_results_of(payload) if isinstance(item, dict)
+    ))
 
     def reported(said: str, found: re.Match[str]) -> bool:
         sentence = re.split(r"[.!?;]", said[: found.start()])[-1]

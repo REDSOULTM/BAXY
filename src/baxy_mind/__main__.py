@@ -21,7 +21,7 @@ import unicodedata
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from functools import partial
 from pathlib import Path
@@ -3890,7 +3890,10 @@ def _retimed_step_arguments(
         arguments = {**arguments, "kind": retimed.kind} if arguments is not None else None
     elif operation == "notification.schedule":
         due = retimed.schedule_arguments["dueUtc"]
-        arguments = _normalize_grounded_operation_arguments(operation, dict(retimed.schedule_arguments), due)
+        read_at = retimed.read_at.astimezone(timezone.utc) if retimed.read_at is not None else None
+        arguments = _normalize_grounded_operation_arguments(
+            operation, dict(retimed.schedule_arguments), due, now_utc=read_at,
+        )
     else:
         return None
     return arguments if arguments is not None and validate_json_schema_instance(arguments, schema) else None
