@@ -128,9 +128,9 @@ def test_d_w10_t1_d_s017_a_recipe_read_from_no_recipe_is_said_from_memory(ident:
         request_text, {}, _situation(ident), "en" if english else "es", writer._post, None, "t",
     )
     assert answer == honest
-    assert writer.requests[0]["messages"][0]["content"] == (
-        llm.MEMORY_ANSWER_PROMPT_EN if english else llm.MEMORY_ANSWER_PROMPT
-    )
+    # M87: the form asked for is the recipe's.
+    assert writer.requests[0]["messages"][0]["content"] == llm._memory_answer_prompt(request_text, [], english)
+    assert ("«Ingredients:»" if english else "«Ingredientes:»") in writer.requests[0]["messages"][0]["content"]
     # What v3o published instead: the encyclopedia's arepa, and «not found»; the read carried no recipe.
     assert TURNS["D-w10-t1"]["reply"].startswith("Las arepas de queso se elaboran")
     assert TURNS["D-s017"]["reply"] == "I did not find a mac and cheese recipe."
@@ -202,9 +202,7 @@ def test_d_p24_t1_d_s111_with_nothing_pertinent_read_memory_answers_with_its_not
     answer = writer._answer_after_not_found(reply, TURNS[ident]["text"], _facts(ident), said=None, deadline=None)
     assert answer == honest
     english = ident == "D-p24-t1"
-    assert writer.requests[0]["messages"][0]["content"] == (
-        llm.MEMORY_ANSWER_PROMPT_EN if english else llm.MEMORY_ANSWER_PROMPT
-    )
+    assert writer.requests[0]["messages"][0]["content"] == llm._memory_answer_prompt(TURNS[ident]["text"], [], english)
 
 
 def test_an_answer_from_memory_without_its_notice_is_not_said() -> None:

@@ -759,6 +759,10 @@ internal static class UserMessagePolicy
     /// <summary>
     /// The clock some minutes or hours from now («¿qué hora será de aquí a doce minutos?», «what time will it be
     /// in 2 hours»). Same heads as the mind's semantic.temporal clock_later_asked; the two must not diverge.
+    /// M87 (DEV-D v3r D-s025 «si pasan cuarenta minutos, ¿qué hora será?»): M85 taught the mind the span said as time
+    /// that passes («si pasan», «cuando pasen», «pasados», «after», «if … pass») and not this twin; the mind's correct
+    /// «Serán las 17:54.» (the clock forty minutes on) was then judged here as a plain clock request and filtered as
+    /// missing_literal_fact for not stating the current one.
     /// </summary>
     internal static bool IsLaterClockRequest(string? text)
     {
@@ -769,7 +773,8 @@ internal static class UserMessagePolicy
                 RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
             && Regex.IsMatch(
                 folded,
-                @"\b(?:de\s+aqui\s+a|dentro\s+de|en|in)\s+(?:[a-z0-9]+\s+){0,3}(?:minutos?|horas?|minutes?|hours?)\b",
+                @"\b(?:de\s+aqui\s+a|dentro\s+de|en|in|after|(?:si|cuando)\s+(?:pasan|pasen|transcurren|transcurran)"
+                + @"|pasad[oa]s|(?:if|when)(?:\s+another)?)\s+(?:[a-z0-9]+\s+){0,3}(?:minutos?|horas?|minutes?|hours?)\b",
                 RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
     }
 

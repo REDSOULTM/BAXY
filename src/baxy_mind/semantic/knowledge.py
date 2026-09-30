@@ -11,6 +11,7 @@ what stays talk — an open suggestion («una receta vegetariana»), code, an ex
   right after a work's lookup that names no other work is about that same work (F-p11-t2 «¿por qué es peligroso el
   anillo?» after the summary of *El hobbit*).
 - ``servings_asked``    how many people a recipe is asked for («pa 6», «para 6 personas», «for four»).
+- ``memory_answer_form`` the form of an answer said from memory: a recipe, a list or a few sentences (M87).
 """
 
 from __future__ import annotations
@@ -22,7 +23,7 @@ from typing import Iterable
 from .conversation import asks_for_code
 from .normalize import fold, spelled_out
 
-__all__ = ["ReferenceLookup", "reference_lookup", "servings_asked"]
+__all__ = ["ReferenceLookup", "memory_answer_form", "reference_lookup", "servings_asked"]
 
 
 @dataclass(frozen=True)
@@ -374,3 +375,27 @@ def works_recommendation(text: str) -> bool:
         return False
     # A capitalized word past the first is a name (a title, an actor, a service).
     return not any(word[:1].isupper() for word in re.findall(r"[^\W\d_]+", raw)[1:] if word not in {"I", "TV"})
+
+
+# M87 (DEV-D v3r D-p23-t2 «Look for a drama film.», D-p29-t2 «Search for scary movies.»): the answer from memory was
+# asked for in the three forms at once (a recipe, a list, a work) and the model wrote all three — «Ingredients:» of a
+# drama film, «A recipe for a spooky atmosphere» after ten horror films. The form is read here from what was asked.
+_SEVERAL = re.compile(
+    r"\b(?:movies|films|series|shows|books|novels|songs|albums|podcasts|documentaries|games|"
+    r"peliculas|pelis|libros|novelas|canciones|discos|documentales|juegos|"
+    r"list|lista|listado|top|examples|ejemplos|options|opciones|ideas|recommendations|recomendaciones)\b"
+    r"|(?<![\d.,])\d{1,2}\s+(?:[a-z]+\s+)?[a-z]+s\b"
+)
+
+
+def memory_answer_form(text: str, prior_requests: Iterable[str] = ()) -> str:
+    """The form of an answer said from memory: ``recipe`` for a dish, ``list`` for several things asked for (works of
+    a kind in plural, a list, «los últimos 10 presidentes»), ``prose`` otherwise."""
+
+    lookup = reference_lookup(text, prior_requests)
+    folded = spelled_out(fold(text))
+    if (lookup is not None and lookup.kind == "recipe") or _CULINARY.search(folded) is not None:
+        return "recipe"
+    if (lookup is not None and lookup.kind == "ranking") or _SEVERAL.search(folded) is not None:
+        return "list"
+    return "prose"
