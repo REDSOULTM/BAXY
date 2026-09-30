@@ -775,6 +775,69 @@ def list_entry_request(text: str) -> tuple[str, str] | None:
     return item, listed
 
 
+# M80 (DEV-D v3m D-p06-t2, D-p06-t3, D-p08-t3): a change of the task just made says only what changes: the list it
+# goes on («cámbialo a la lista Comida», «Add to the Walmart list»), or its new name («from bacon to eggs», «Change
+# to that eggs», «cambia el tocino por huevos»).
+_LIST_DESTINATION = re.compile(
+    r"\b(?:a|al|to|into|onto|en|in|on|para)\s+" + _LIST_DETERMINER + _LIST_NAME + _LIST_CLOSE, re.IGNORECASE,
+)
+_CHANGE_LEAD = r"^(?:(?:no|nope|wait|actually|oh|mejor|perdon|sorry|espera)\s*,?\s+)*"
+_CHANGE_VERB = (
+    r"(?:change|switch|rename|replace|make|swap|cambia(?:lo|la|me)?|cambie|cambiar|renombra(?:lo|la)?|"
+    r"reemplaza(?:lo|la)?|sustituye(?:lo|la)?)"
+)
+_NEW_NAME = r"(?P<new>[^,;.!?]+?)[\s.!]*$"
+_TITLE_FROM_TO = re.compile(
+    r"\b(?:from|de)\s+(?P<old>[^,;.!?]+?)\s+(?:to|into|a|por)\s+(?:(?:that|this)\s+)?" + _NEW_NAME
+)
+_TITLE_TO = re.compile(
+    _CHANGE_LEAD + _CHANGE_VERB + r"\s+(?:(?:it|that|this|eso|esto)\s+)?(?:to|into|a|por)\s+(?:(?:that|this)\s+)?"
+    + _NEW_NAME
+)
+_TITLE_FOR = re.compile(
+    _CHANGE_LEAD + _CHANGE_VERB + r"\s+(?:(?:the|el|la|los|las|mi|my)\s+)?(?P<old>[^,;.!?]+?)\s+(?:for|with|por|con)\s+"
+    + _NEW_NAME
+)
+_LEADING_ARTICLE = r"^(?:(?:the|a|an|some|el|la|los|las|un|una|unos|unas)\s+)"
+
+
+def _named(value: str) -> str:
+    return re.sub(_LEADING_ARTICLE, "", value.strip(" \"'«»“”"), flags=re.IGNORECASE).strip(" \"'«»“”")
+
+
+def task_change(text: str, title: str) -> dict[str, str]:
+    """M80: what a change of the task titled ``title`` changes, in the person's words: ``details`` for the list it
+    goes on, ``title`` for its new name (from the old one, or said alone after a pronoun). Empty when neither is read.
+    Each sentence is read on its own («Change to that eggs. Add to the Walmart list.»)."""
+
+    changed: dict[str, str] = {}
+    old_title = _fold(_named(title))
+    for sentence in re.split(r"(?<=[.;!?])\s+", " ".join(str(text or "").split())):
+        folded = _fold(sentence)
+        destination = _LIST_DESTINATION.search(sentence)
+        if destination is not None and not _has(_fold(destination.group("list")), _LIST_NOT_TASKS):
+            changed.setdefault("details", destination.group("list").strip(" ,;:\"'«»“”"))
+        renamed = None
+        found = _TITLE_FROM_TO.search(folded) or _TITLE_FOR.match(folded)
+        if found is not None and _fold(_named(found.group("old"))) == old_title:
+            renamed = found
+        elif (found := _TITLE_TO.match(folded)) is not None:
+            renamed = found
+        if renamed is None:
+            continue
+        # The name as written when the fold kept the offsets (accents), else as folded.
+        source = sentence if len(sentence) == len(folded) else folded
+        new = _named(source[renamed.start("new"):renamed.end("new")])
+        if (
+            new
+            and _fold(new) != old_title
+            and _LIST_DESTINATION.search(f"a {new}") is None
+            and re.fullmatch(r"(?:it|that|this|eso|esto|lo|la)", _fold(new)) is None
+        ):
+            changed.setdefault("title", new)
+    return changed
+
+
 _LIST_CREATION = re.compile(
     r"^(?:(?:por\s+favor|please)\s*,?\s+)?"
     r"(?:(?:quiero|quisiera|necesito|tengo\s+que|i\s+(?:need|want)\s+to|let's)\s+)?"

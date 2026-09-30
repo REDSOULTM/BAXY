@@ -40,6 +40,7 @@ from .semantic import decider as semantic_decider
 from .semantic import dialogue as dialogue_slot
 from .semantic import knowledge as semantic_knowledge
 from .semantic.apps import deictic_close_request
+from .semantic.notes import task_change
 from .semantic import levels as semantic_levels
 from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
@@ -3764,6 +3765,115 @@ def _person_message(history: object, objective: str) -> str:
     if isinstance(last, dict) and last.get("role") == "user" and str(last.get("content") or "").strip():
         return str(last["content"])
     return objective
+
+
+def _unschedulable_time_question(
+    llm: object,
+    operation: str,
+    objective: str,
+    person: str,
+    tool: dict,
+    response_language: str | None,
+    *,
+    now: datetime | None = None,
+) -> str:
+    """M80 (DEV-D v3m D-s104 «Programa una alarma nueva para la cena a las 18:00 hoy.» at 19:35 → «¿Cuál es la hora
+    exacta, qué tipo de recordatorio y qué título…?»; D-s108 «Set a 'wake-up' alarm for Monday, Tuesday and Wednesday of
+    this week for 7am» on a Tuesday → «What time… and what should the title be?»): the time, the kind and what it is for
+    were said; one notification cannot ring at that moment (today's clock already past, several days). Only when it
+    rings is asked, saying why. Empty when the moment said is one a notification holds."""
+
+    if operation not in {"notification.schedule", "reminder.create"}:
+        return ""
+    now = now or datetime.now().astimezone()
+    unschedulable = next(
+        (found for text in dict.fromkeys((objective, person))
+         if (found := semantic_temporal.unschedulable_time(text, now)) is not None),
+        None,
+    )
+    if unschedulable is None:
+        return ""
+    clock = unschedulable.clock
+    if not unschedulable.ahead and len(unschedulable.passed) == 1:
+        ask = (
+            f"only when it should ring instead: the {clock} of {unschedulable.passed[0]} the person asked for already "
+            f"passed (it is {now:%H:%M} now); say that first, then ask for another day or another time; "
+            "the time, the kind and what it is for were already said, never ask them"
+        )
+    else:
+        days = ", ".join((*unschedulable.passed, *unschedulable.ahead))
+        passed = (
+            f"; {', '.join(unschedulable.passed)} of this week already passed (it is {now:%A %H:%M} now)"
+            if unschedulable.passed else ""
+        )
+        ask = (
+            f"only which one day it should ring: one alarm or reminder rings at a single moment and the person named "
+            f"several days ({days}) at {clock}{passed}; say that first; the time, the kind and what it is for were "
+            "already said, never ask them"
+        )
+    return llm.formulate_missing_argument_question(
+        objective, "", tool, ("dueUtc",),
+        **({"response_language": response_language} if response_language else {}),
+        ask_as={"dueUtc": ask},
+    )
+
+
+_TASK_CHANGE_FIELDS = ("title", "details", "due")
+
+
+def _edited_task_arguments(
+    llm: object,
+    objective: str,
+    person: str,
+    tool: dict,
+    edited: dict[str, object],
+    said: str,
+    response_language: str | None,
+) -> tuple[dict | None, str]:
+    """M80 (DEV-D v3m D-p06-t2, D-p06-t3 «Change that from bacon to eggs.» → «Which task…?», D-p08-t3 «No, cámbialo
+    a la lista Comida» → «¿Cuál es el título de la tarea y cuál es la fecha límite?»): task.update replaces every
+    editable field, so a change of the task this conversation just made or changed takes its identity, its version
+    and every field the person did not change from what the store verified (``DialogueState.edited_task``); only what
+    changes is read from what was said (the readers first, else the model, each value grounded in what was said).
+    (None, "") when nothing here decides it; (None, question) asks what to change."""
+
+    schema = tool["function"]["parameters"]
+    properties = schema.get("properties") if isinstance(schema.get("properties"), dict) else {}
+    changes: dict[str, object] = {}
+    for text in dict.fromkeys((person, objective)):
+        changes = dict(task_change(text, str(edited["title"])))
+        if changes:
+            break
+    if not changes:
+        changes_schema = {
+            "type": "object",
+            "properties": {name: properties[name] for name in _TASK_CHANGE_FIELDS if name in properties},
+            "required": [],
+            "additionalProperties": False,
+        }
+        changes_tool = {"type": "function", "function": {**tool["function"], "parameters": changes_schema}}
+        extraction = llm.extract_direct_arguments(
+            objective, changes_tool, **({"response_language": response_language} if response_language else {}),
+        )
+        changes = _said_optional_arguments(extraction.arguments, changes_schema, said)
+    if isinstance(changes.get("due"), str):
+        due = _canonical_due_utc(str(changes["due"]), objective)
+        if due is None:
+            changes.pop("due")
+        else:
+            changes["due"] = due
+    changes = {name: value for name, value in changes.items() if value != edited.get(name)}
+    if not changes:
+        return None, llm.formulate_missing_argument_question(
+            objective, "", tool, ("title",),
+            **({"response_language": response_language} if response_language else {}),
+            ask_as={"title": (
+                f"only what to change in «{edited['title']}» (its name or the list it is on); the task is the one "
+                "just made, never ask which one"
+            )},
+        )
+    arguments = {name: edited[name] for name in ("taskId", "expectedVersion", *_TASK_CHANGE_FIELDS)} | changes
+    return (arguments, "") if validate_json_schema_instance(arguments, schema) else (None, "")
 
 
 def _retimed_step_arguments(
@@ -7550,13 +7660,28 @@ def _run_sidecar(
                 )
                 question = ""
                 said = _conversation_grounding_source(objective, message.get("history"))
-                if arguments is None and not _previous_reply_may_be_content(tool, message.get("history")):
+                turn_language = (
+                    message.get("responseLanguage") if message.get("responseLanguage") in {"es", "en", "mixed"} else None
+                )
+                person = _person_message(message.get("history"), objective)
+                if arguments is None:
+                    # M80 (DEV-D v3m D-s104, D-s108): a moment no notification holds asks only when, saying why.
+                    question = _unschedulable_time_question(
+                        llm, operation, objective, person, tool, turn_language,
+                    )
+                edited = dialogue_state.edited_task() if operation == "task.update" else None
+                if arguments is None and not question and edited is not None:
+                    # M80 (DEV-D v3m D-p06-t2, D-p06-t3, D-p08-t3): what was not changed is kept from the verified task.
+                    arguments, question = _edited_task_arguments(
+                        llm, objective, person, tool, edited, said, turn_language,
+                    )
+                if arguments is None and not question and not _previous_reply_may_be_content(tool, message.get("history")):
                     # M42b: what the decider read, grounded in what was said, is enough on its own; the separate
                     # extraction call runs only when a required value is still missing.
                     arguments = _decided_arguments_alone(
                         operation, str(message.get("text", "")), tool, said,
                     )
-                if arguments is None:
+                if arguments is None and not question:
                     # M47 (FINAL F-w09-t5, F-p02-t3): the shell sends the language the turn decision chose; the
                     # objective may be the decider's restatement in the other language, so it cannot decide it.
                     response_language = message.get("responseLanguage")

@@ -1110,6 +1110,10 @@ _LISTED_POINTER = re.compile(
 )
 
 
+# M80: the writes whose verified result is the whole task (identity, version, title, details, due).
+_TASK_WRITES = ("task.create", "task.update", "task.complete", "task.reopen", "task.restore")
+
+
 @dataclass(frozen=True)
 class RetimedNotification:
     """M76: the notification just set, moved: its ``kind`` (the cancellation of the last one takes only it), the
@@ -1163,8 +1167,12 @@ class DialogueState:
         self.previous_operations: tuple[str, ...] = ()  # M76: what the turn before the last one verified
         self._notification: dict[str, str] | None = None  # M76: the alarm, timer or reminder set, as verified
         self._listed: tuple[str, ...] = ()  # M76: the titles of the tasks read, in the order they were told
+        self._task: dict[str, object] | None = None  # M80: the task last created or changed, as verified
 
     def expect(self, request: str, operations: object) -> None:
+        if self.operations and not set(self.operations) & set(_TASK_WRITES):
+            # M80: another effect done after the task leaves «cámbialo» without that task; a question does not.
+            self._task = None
         self.previous_operations = self.operations
         self.request = str(request or "").strip() or None
         self.intended = tuple(str(op) for op in operations) if isinstance(operations, (list, tuple)) else ()
@@ -1219,6 +1227,22 @@ class DialogueState:
             self._facts["reminder"] = str(observed.get("title") or request)
         elif operation == "notification.list" and plural_alarm_cancellation(request):
             self._alarm_offer = _alarm_clocks(observed)
+        elif operation in _TASK_WRITES:
+            # M80 (DEV-D v3m D-p06-t2, D-p08-t3): the task as the store verified it after the write, for a change of
+            # it in the next turns that says only what changes.
+            if (
+                isinstance(observed.get("taskId"), str)
+                and isinstance(observed.get("title"), str)
+                and isinstance(observed.get("version"), int)
+                and not observed.get("deleted")
+            ):
+                self._task = {
+                    "taskId": observed["taskId"],
+                    "expectedVersion": observed["version"],
+                    "title": observed["title"],
+                    "details": str(observed.get("details") or ""),
+                    "due": observed.get("dueUtc") if isinstance(observed.get("dueUtc"), str) else None,
+                }
         elif operation in {"task.list", "task.search"} and isinstance(observed.get("tasks"), list):
             # M76 (DEV-D v3l D-w17-t2): the tasks read, in the order they were told, for «the first one».
             self._listed = tuple(
@@ -1314,6 +1338,14 @@ class DialogueState:
         ordinal = pointed.pop()
         index = next(value for words, value in _ORDINAL_INDEX.items() if re.fullmatch(words, ordinal))
         return self._listed[index] if -len(self._listed) <= index < len(self._listed) else None
+
+    def edited_task(self) -> dict[str, object] | None:
+        """M80 (DEV-D v3m D-p06-t2 «Change to that eggs. Add to the Walmart list.», D-p06-t3, D-p08-t3 «No, cámbialo a
+        la lista Comida» → «¿Cuál es el título de la tarea y cuál es la fecha límite?»): the task this conversation
+        last created or changed, as the store verified it (identity, version, title, details, due), while no other
+        effect came after it. A change of it keeps every field the person did not change. None when there is none."""
+
+        return dict(self._task) if self._task is not None else None
 
     def cancel_last_alarm(self, in_spanish: bool) -> str | None:
         """«cancela el último temporizador» / «cancel the last timer» when the last turn set an alarm or a timer: a
