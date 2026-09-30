@@ -35,7 +35,8 @@ internal sealed class WikipediaSearchSource(HttpClient http)
     internal static bool IsEncyclopedic(string query)
     {
         string[] words = FoldedWords(query);
-        return !words.Any(TimeBoundWords.Contains) && !words.Any(OpinionWords.Contains) && !AsksWorth(words);
+        return !words.Any(TimeBoundWords.Contains) && !words.Any(OpinionWords.Contains) && !AsksWorth(words)
+            && !AsksWhatItIsWorth(words);
     }
 
     // M65 (conv-v3g held-out t14 «qué dijo la crítica sobre Oppenheimer» → «The Act of Killing», t15 «¿la serie
@@ -62,6 +63,19 @@ internal sealed class WikipediaSearchSource(HttpClient http)
         return false;
     }
 
+    // M81 (DEV-D v3m D-s012 «lo que vale la acción de Movistar» → el artículo del canal «Acción por Movistar Plus+»):
+    // «cuánto vale», «lo que vale» preguntan un precio de hoy, como «cuánto cuesta»; «vale la pena» es opinión.
+    private static bool AsksWhatItIsWorth(string[] words)
+    {
+        for (int i = 0; i + 1 < words.Length; i++)
+        {
+            if (words[i] is "cuanto" or "cuantos" or "lo" && words[i + 1] is "vale" or "valen"
+                && !(i + 3 < words.Length && words[i + 2] == "la" && words[i + 3] == "pena"))
+                return true;
+        }
+        return false;
+    }
+
     private static readonly HashSet<string> TimeBoundWords = new(StringComparer.Ordinal)
     {
         "hoy", "ahora", "actual", "actualmente", "anoche", "ayer", "manana",
@@ -77,6 +91,8 @@ internal sealed class WikipediaSearchSource(HttpClient http)
         "schedules", "loto", "loteria", "sorteo", "sorteos", "lottery", "lotto",
         // F-w01-t4 «¿cuánto sale el pisco…?»: «sale» es «cuesta» en Chile y Argentina.
         "sale",
+        // M81 (D-s012): la cotización de una acción cambia cada día.
+        "cotiza", "cotizan", "stock", "stocks", "shares",
     };
 
     // El idioma de la consulta elige la Wikipedia que se pregunta primero; la otra

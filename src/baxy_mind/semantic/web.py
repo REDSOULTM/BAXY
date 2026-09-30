@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 from datetime import date
 from typing import Iterable
 from .display import _KNOWN_FOLDER_ENUM, _KNOWN_FOLDER_WORDS
@@ -1075,6 +1076,11 @@ _OWN_RELATIVE = (
     r"\b(?:el|la|los|las|al|del|the)\s+(?:abuel[oa]s?|suegr[oa]s?|tias?|tios?|cunad[oa]s?|sobrin[oa]s?|niet[oa]s?|"
     r"mama|novi[oa]|espos[oa]|marido|wife|husband|kids|grandma|grandpa|in-laws?)\b(?!\s+(?:de|del|of)\b)"
 )
+# M81 (DEV-D v3m D-s020 «It's going to rain en la casa de mamá?» → the whole sentence to the web): «mamá» and «papá»
+# said bare, written with their accent, name the person's own mother or father («la casa de mamá», «llamé a papá»);
+# folded they would be «mama» (a breast, «cáncer de mama») and «papa» (the pope, a potato), so they are read unfolded.
+# Someone else's («la mamá de Messi») is not.
+_OWN_PARENT_ACCENTED = r"\b(?:mamá|papá|mamita|papito)\b(?!\s+(?:de|del)\b)"
 # 3. this PC or device;
 _THIS_DEVICE = (
     r"\b(?:este|esta|this)\s+(?:pc|equipo|computador(?:a)?|ordenador|laptop|portatil|notebook|maquina|machine|"
@@ -1089,6 +1095,8 @@ _NAME_TITLES = frozenset(
     "profeta prophet apostol virgen beato".split()
 )
 _SURNAME_PARTICLES = frozenset("de del da di van von le".split())
+# M81 (DEV-D v3m D-s053 «¿Miguel sigue viviendo en Arkansas?» went to the web): whether someone still lives, works or
+# goes somewhere («sigue», «anda», «keeps») is about a person of the person's life, like «vive» or «still».
 _AFTER_A_BARE_NAME = frozenset(
     """
     es era fue sera esta estaba estuvo tiene tenia tuvo cumple cumplio vive vivia trabaja trabajo llamo llama llego
@@ -1098,6 +1106,7 @@ _AFTER_A_BARE_NAME = frozenset(
     yesterday said says called calls call told tells wants want can could should turns turned turn lives lived live
     works worked work got gets get coming came comes come moved married like likes think thinks need needs still also
     too really ever again not this that the a an my me him her say tell go send text ask know bring meet visit
+    sigue seguia siguio anda andaba keeps kept
     """.split()
 )
 _WORK_OR_FAME = (
@@ -1151,7 +1160,8 @@ def names_own_data(text: str) -> bool:
     # «what's grandma's birthday»: a contracted «is» is not a possessive.
     folded = re.sub(r"\b(what|that|it|who|where|when|how|there|here|he|she)['’]s\b", r"\1 is", folded)
     return (
-        _has(folded, _FIRST_PERSON_OWN)
+        re.search(_OWN_PARENT_ACCENTED, unicodedata.normalize("NFC", str(text or "")).casefold()) is not None
+        or _has(folded, _FIRST_PERSON_OWN)
         or _has(folded, _OWN_RELATIVE)
         or _has(folded, _THIS_DEVICE)
         or _bare_given_name(folded)
@@ -3459,6 +3469,42 @@ _NOT_A_PUBLIC_LOOKUP = re.compile(
 )
 
 
+# M81 (DEV-D v3m D-p34-t3 «¿Cómo podría encontrar un listado de cápsulas del tiempo conocidas?» → «No encontré…»
+# while the read held Wikipedia's category of them): where to find something is answered by naming where it is.
+_WHERE_TO_FIND = re.compile(
+    r"\b(?:como|donde|en\s+donde|de\s+donde)\s+(?:(?:lo|la|los|las|me)\s+)?(?:podria|puedo|podemos|se\s+puede|"
+    r"puede|podre|pudiera)\s+(?:encontrar|conseguir|hallar|ver|leer|consultar|buscar)\b|"
+    r"\b(?:where|how)\s+(?:can|could|do|would|should)\s+(?:i|we|one|you)\s+(?:find|get|see|read|look\s+up|access)\b|"
+    r"\bwhere\s+(?:is|are)\s+(?:there\s+)?(?:a|an|the)\s+(?:list|listing|database|catalog|index|archive)\b"
+)
+
+
+def asks_where_to_find(text: str) -> bool:
+    """The person asks where or how they could find something themselves (``_WHERE_TO_FIND``)."""
+
+    return _WHERE_TO_FIND.search(_reading_fold(str(text or ""))) is not None
+
+
+def question_names(text: str) -> set[str]:
+    """The words a question writes with a capital that are not a sentence's first word (English «I» apart): the
+    subject a search report must be about. Folded, without the quotes around them or an English possessive.
+
+    M81 (DEV-D v3m D-p19-t2): «Yes, that's right. Who's in it?» made «Who's», the head of its second sentence, a name
+    no page carries, and «…'After the Wedding'?» made «Wedding'» one with its closing quote; every faithful report of
+    the cast died as off subject."""
+
+    names: set[str] = set()
+    opening = True
+    for raw in str(text or "").split():
+        word = raw.strip("¿¡?!.,;:\"'«»()“”‘’")
+        if word and not opening and word[:1].isupper() and word != "I":
+            name = _reading_fold(re.sub(r"['’]s$", "", word))
+            if len(name) >= 2:
+                names.add(name)
+        opening = raw.rstrip("\"'»”’)")[-1:] in {".", "?", "!", ":"}
+    return names
+
+
 def not_a_public_lookup(objective: str) -> bool:
     """What the public-lookup guard never sends to the web (moved from ``__main__._names_own_data``)."""
 
@@ -3471,7 +3517,8 @@ def not_a_public_lookup(objective: str) -> bool:
     # theirs, and a question about it never leaves the PC.
     return (
         _NOT_A_PUBLIC_LOOKUP.search(folded) is not None
-        or names_own_data(folded)
+        # M81: unfolded, so «mamá» keeps the accent that tells it from «mama».
+        or names_own_data(str(objective or ""))
         or _latest_email_domain(folded)
         # M56 (v3c-final F-w14-t1 «escribeme un query de sql q me saque los users activos del ultimo mes» → the
         # guard read public_lookup, web.search failed): code asked for is written by the model, never looked up.
@@ -3606,6 +3653,7 @@ _SEARCHED_WH_ES = {
 }
 _SEARCHED_WH_EN = frozenset({"what", "who", "where", "when", "which", "why", "whose", "how"})
 _SEARCHED_COPULA_EN = frozenset({"is", "are", "was", "were"})
+_SEARCHED_PLACE_PREPOSITION_EN = frozenset({"in", "on", "at", "inside", "behind", "near", "under", "with", "from"})
 _SEARCHED_AUXILIARY_EN = frozenset(
     {"do", "does", "did", "can", "could", "will", "would", "should", "has", "have", "had", "may", "might", "am"}
 )
@@ -3682,7 +3730,11 @@ def searched_clause(text: str, language: str) -> tuple[str, bool] | None:
             rest = words[span:]
             if contracted in {"s", "re"}:
                 copula = "is" if contracted == "s" else "are"
-                if _asks_for_the_subject(wh, keys[span:span + 1]):
+                if _asks_for_the_subject(wh, keys[span:span + 1]) or (
+                    keys[span:span + 1] and keys[span] in _SEARCHED_PLACE_PREPOSITION_EN
+                ):
+                    # M79/M81 (DEV-D v3m D-p19-t2 «Who's in the movie 'After the Wedding'?» → «…who in the movie …
+                    # is»): the subject is the one asked about; «in …» is where, and the copula stays with it.
                     return " ".join([lead, copula, *rest]), True
                 return " ".join([lead, *rest, copula]), True
             following = keys[span] if len(keys) > span else ""

@@ -2239,7 +2239,13 @@ _CODE_ASKED = re.compile(
     rf"\b{_CODE_WRITING_VERB}\b.{{0,60}}\b{_CODE_PIECE_NOUN}|"
     rf"\b{_CODE_WRITING_VERB}\b.{{0,160}}\b(?:en|in|a|to|into|para|for|con|with|using|usando)\s+(?:el\s+|the\s+)?"
     rf"(?:lenguaje\s+(?:de\s+programacion\s+)?)?{_CODE_LANGUAGE_NAME}|"
-    rf"^[\s¿¡]*(?:y\s+|and\s+)?(?:ahora\s+|now\s+)?(?:en|in)\s+{_CODE_LANGUAGE_NAME}[\s?!.]*$"
+    rf"^[\s¿¡]*(?:y\s+|and\s+)?(?:ahora\s+|now\s+)?(?:en|in)\s+{_CODE_LANGUAGE_NAME}[\s?!.]*$|"
+    # M81 (DEV-D v3m D-w20-t1 «estoy haciendo un script en Python y necesito leer un CSV y sacar el promedio de la
+    # columna price, can you write it?» → «Puedes usar pandas…»): the piece of code described first and asked for
+    # after with a pronoun («write it», «escríbelo», «¿lo puedes escribir?»).
+    rf"\b{_CODE_PIECE_NOUN}.{{0,240}}\b(?:(?:write|code|make)\s+(?:it|this|that|one)|"
+    r"(?:escrib[ei]|haz|hace|codea)(?:lo|la|melo|mela)|"
+    r"(?:lo|la|me\s+lo|me\s+la)\s+(?:puedes|podes|podrias|podras)\s+(?:escribir|hacer|codear))\b"
 )
 
 

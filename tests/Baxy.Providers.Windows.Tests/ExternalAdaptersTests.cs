@@ -2081,7 +2081,8 @@ public sealed class ExternalAdaptersTests
         Assert.Multiple(() =>
         {
             Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
-            Assert.That(receipt.Result?.GetProperty("query").GetString(), Is.EqualTo("comida para llevar cerca Curico"));
+            // M81 (DEV-D v3m D-p12-t2 → Curico, Indiana): the city goes with this PC's country.
+            Assert.That(receipt.Result?.GetProperty("query").GetString(), Is.EqualTo("comida para llevar cerca Curico Chile"));
             Assert.That(receipt.Result?.GetProperty("near").GetString(), Is.EqualTo("Curico"));
             Assert.That(handler.Asked.Where(uri => !uri.Host.Contains("ipwho", StringComparison.Ordinal)),
                 Has.All.Matches<Uri>(uri => !uri.Query.Contains("33.03", StringComparison.Ordinal)
@@ -2412,6 +2413,11 @@ public sealed class ExternalAdaptersTests
             Assert.That(WikipediaSearchSource.IsEncyclopedic("qué piensa la gente de Colony"), Is.False);
             Assert.That(WikipediaSearchSource.IsEncyclopedic("is Dune worth watching"), Is.False);
             Assert.That(WikipediaSearchSource.IsEncyclopedic("quién dirigió Oppenheimer"), Is.True);
+            // M81 (DEV-D v3m D-s012): what a share is worth today is not an encyclopedia's.
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("Cuánto vale la acción de Movistar"), Is.False);
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("how much is Tesla stock"), Is.False);
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("¿Vale la pena Dune?"), Is.False);
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("qué vale más en el Monopoly"), Is.True);
         });
     }
 

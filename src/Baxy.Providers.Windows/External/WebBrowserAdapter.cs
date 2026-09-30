@@ -602,7 +602,12 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             }
             near = place.Value.Name;
             nearCountry = place.Value.CountryCode;
-            query = query + " " + near;
+            // M81 (DEV-D v3m D-p12-t2 «Bring up 24/7 stores near me» → tiendas de Curico, Indiana): una ciudad
+            // sola tiene homónimas en otros países; el motor general recibe también el país de este PC.
+            string country = place.Value.Country.Trim();
+            query = country.Length > 0 && !near.Contains(country, StringComparison.OrdinalIgnoreCase)
+                ? query + " " + near + " " + country
+                : query + " " + near;
         }
         string[] queryTokens = SearchTokens(query);
         if (queryTokens.Length == 0)

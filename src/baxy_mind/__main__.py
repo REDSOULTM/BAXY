@@ -50,6 +50,7 @@ from .semantic.system import names_this_place, weather_destination_there
 from .semantic.patterns import output_level_request
 from .semantic.web import (
     asks_for_information,
+    names_own_data,
     near_the_person,
     news_lookup_query,
     place_fixed_by_conversation,
@@ -4552,6 +4553,11 @@ def _context_decided_result(
     ):
         # Fase 3.5b M19 (cien-104 «ábreme eso porfa» after the time → «Abre el navegador» → a browser opened): a
         # pointer with no antecedent in what was said is asked, never filled with an object the model brought.
+        decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
+    if decided.decision == "action" and decided.operations == ("web.search",) and names_own_data(text):
+        # M81 (DEV-D v3m D-s020 «It's going to rain en la casa de mamá?», D-s053 «¿Miguel sigue viviendo en
+        # Arkansas?»): the person's own data never goes to the web (00_IDENTIDAD, invariant 6). What only the person
+        # knows (where mom lives, who Miguel is) is asked, never looked up.
         decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
     unasked_action: dict[str, Any] | None = None
     if decided.decision == "action":
