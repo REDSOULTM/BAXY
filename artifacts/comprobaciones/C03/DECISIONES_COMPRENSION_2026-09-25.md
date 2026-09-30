@@ -565,3 +565,14 @@ argumentos 14, límite o alcance 12, conocimiento o código 10, redacción 10, o
 p27-t1 recomendación sin título, p31-t2 contradicción, p35-t2 ⚠, w08-t2 partido ya pasado como próximo, w08-t3
 repregunta la fecha recién dada. Batería previa (d946de8b): 742 sin cambios, capa A 96,5 %, reserva 85,8 %, DEV-C 252.
 Distancia a la meta de FINAL-2 (≥ 85 %): ≈ 6,4 puntos en DEV-D.
+
+## D51. DEV-D v3r: 284/332 = 85,5 % con revisor (50cee2c6 = M83–M86) (2026-09-30 ~18:00)
+Mismo revisor y criterio: **v3r 284/332 = 85,5 %** (v3o 261, v3m 241, v3l 212): arreglados 32, rotos 9. Automática
+286/332 = 86,1 % (+19/−6, McNemar p = 0,015), VRAM pico por proceso 3 754 MiB, p50 decisión 2,05 s. Inventados 3 (s111
+distancia Barcelona–París de memoria y errónea; p12-t2 «five 24/7 stores» no leído; p24-t5 confirmación sin efecto),
+⚠ 5 = 1,5 % (s001, s025, p23-t2, p24-t1, p29-t2: nuevos, en turnos tocados por M83/M85 → agente M87), repreguntas 1.
+Conocimiento sin aviso errado: sal para la pasta, cucharaditas, gramos de harina. Rotos: p20-t2 servicio no reconoce
+Palo Alto, p34-t3 vago, p37-t2 repregunta, w05-t3 sin el disco, w10-t4 YouTube sin sonar, w11-t5 Spotify tiempo agotado.
+Estado frente a las metas de cierre: DEV-D revisor ≥ 85 % alcanzado en desarrollo; faltan ⚠ ≤ 1 %, 0 inventados,
+automática ≥ 90 %, held-out ≥ 29/30 («cerralo», decisor → full9), reserva ≥ 88 %, cien 100/100 y Full. FINAL-2 no se
+corre hasta que DEV-D sostenga las metas con margen.
