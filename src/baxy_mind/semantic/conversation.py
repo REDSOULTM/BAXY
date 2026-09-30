@@ -14,7 +14,7 @@ from dataclasses import dataclass
 
 from .. import effect_intent
 from .catalog import ApplicationCatalogIndex, GameCatalogIndex, build_application_catalog_index
-from .dialogue import _history_has_pending_clarification, _previous_user_request
+from .dialogue import _history_has_pending_clarification, _previous_user_request, read_slot, retracts_the_last_effect
 from .grammar import ARITHMETIC_EXPRESSION, SPOKEN_NUMBER, spoken_number_request
 from .intent import EffectIntent
 from .patterns import conversation_only_content_request, echo_mode_request
@@ -737,6 +737,10 @@ def stable_no_effect(
                 return resumed
         return None
     if _history_has_pending_clarification(history, pending_clarification):
+        return None
+    if retracts_the_last_effect(objective, read_slot({}, history, objective).last_reply):
+        # M85 (DEV-D v3o D-p09-t3): «never mind do not add barbells…» right after «I've added barbells…» takes the
+        # effect back; it is decided with the conversation, never closed as talk about a rule.
         return None
     folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
     if not folded:
@@ -2208,6 +2212,122 @@ _ABILITY_QUESTION = re.compile(
     r"\bwould\s+you\s+be\s+(?:able|capable)\s+(?:to|of)\b|"
     r"\bdo\s+you\s+have\s+the\s+(?:ability|capacity)\s+to\b"
 )
+
+
+# M85 (DEV-D v3o D-p09-t3, D-w01-t2): a reply may say BAXY did not do an act only when the person asked about that act
+# of his («¿añadiste…?», «did you add…?») or asked for it («añade leche» → «No lo añadí: …»), not when they forbade it.
+_ASKS_ABOUT_OWN_ACT = re.compile(
+    r"\b(?:did|have|has|had)\s+you\b|\b(?:you|u)\s+(?:added|removed|deleted|created|saved|put|set|did)\b|"
+    r"\b[a-z]{2,}(?:aste|iste)\b|\b(?:has|habias|hayas)\s+[a-z]+(?:ado|ido)\b"
+)
+
+
+def request_names_the_act(request: str, act: str) -> bool:
+    """The request asks about BAXY's own act, or asks for ``act`` (a verb form the reply denies) without forbidding it."""
+
+    asked = _reading_fold(str(request or ""))
+    if _ASKS_ABOUT_OWN_ACT.search(asked) is not None:
+        return True
+    stem = re.escape(_reading_fold(str(act or ""))[:3])
+    return bool(stem) and any(
+        re.search(r"\b(?:no|not|don'?t|never|nunca|jamas)\s+(?:[a-z']+\s+){0,2}$", asked[:said.start()]) is None
+        for said in re.finditer(rf"\b{stem}[a-z]*", asked)
+    )
+
+
+# M85 (DEV-D v3o D-p36-t2): the lines characters say inside quotes in a written dialogue are theirs.
+_QUOTED_SPEECH = re.compile(r"\"[^\"\n]*\"|«[^»\n]*»|“[^”\n]*”")
+
+
+def without_quoted_speech(text: str) -> str:
+    """The text with what it quotes («…», "…", “…”) taken out: the words said around the quotes."""
+
+    return _QUOTED_SPEECH.sub(" ", str(text or ""))
+
+
+def ends_asking_the_person(text: str) -> bool:
+    """M85 (DEV-D v3o D-p27-t1): the reply ends with a question to the person."""
+
+    return re.search(r"\?[\s\"»”')]*$", str(text or "").strip()) is not None
+
+
+# M85 (DEV-D v3o D-p27-t1 «…so I can't recommend anything specific. What kind of movies do you usually enjoy?»): what
+# BAXY cannot say yet — recommend, tell, choose, know — before asking for what is missing. Folded text.
+_SAYING_INABILITY = re.compile(
+    r"\b(?:can\s*not|can['’]t|cannot|no\s+(?:te\s+|le\s+|les\s+)?puedo)\s+(?:\w+\s+)?"
+    r"(?:recommend|suggest|say|tell|know|choose|pick|guess|decide|recomendar\w*|sugerir\w*|decir\w*|saber|"
+    r"elegir\w*|adivinar\w*|decidir\w*)\b"
+)
+
+
+def without_saying_inability(text: str) -> str:
+    """The folded text with «I can't recommend», «no puedo decirte…» taken out (twin: UserMessagePolicy)."""
+
+    return _SAYING_INABILITY.sub(" ", _reading_fold(str(text or "")))
+
+
+# M85 (DEV-D v3o D-p32-t2 «Dame las claves que mencionas en esa respuesta en forma de lista o tabla.» → one sentence;
+# D-p36-t2 «agrega a la conversación un fragmento donde se dan cuenta que…» → «El Xenomorfo logró evadir la
+# expulsión.»): content asked in a shape — a list, a table, more lines of a dialogue — is written in that shape.
+_LIST_OR_TABLE_ASKED = re.compile(
+    r"\b(?:(?:en|como|a\s+modo\s+de|con)\s+(?:(?:forma|formato)\s+de\s+)?(?:una\s+)?(?:lista|tabla|puntos|vinetas)|"
+    r"(?:as|in(?:to)?)\s+(?:a\s+)?(?:(?:bulleted|numbered)\s+)?(?:list|table|bullet\s*points?)|bullet\s*points?|"
+    r"(?:enumera|enumeralas|enumeralos|enumerame|list\s+them))\b"
+)
+_TABLE_ASKED = re.compile(r"\b(?:tabla|table)\b")
+_DIALOGUE_ADDED = re.compile(
+    r"^(?:agrega\w*|anade\w*|add|continua\w*|sigue\s+(?:con\s+)?|continue)\s+(?:(?:a|al|en|to|into|with)\s+)?"
+    r"(?:(?:la|el|the|this|esta|este|our|nuestra|nuestro)\s+)?"
+    r"(?:conversacion|dialogo|guion|escena|conversation|dialogue|script|scene)\b"
+)
+
+
+def asks_a_list_or_table(text: str) -> bool:
+    """«… en forma de lista o tabla», «as a bulleted list», «enuméralas»."""
+
+    return _LIST_OR_TABLE_ASKED.search(_reading_fold(str(text or ""))) is not None
+
+
+def asks_a_table(text: str) -> bool:
+    """A table is named among the shapes asked («en forma de lista o tabla» names both)."""
+
+    return asks_a_list_or_table(text) and _TABLE_ASKED.search(_reading_fold(str(text or ""))) is not None
+
+
+def content_shape_asked(text: str) -> str | None:
+    """The shape the content is asked in: «dialogue» (more lines of it), «table» (a table and no list named), «list»."""
+
+    if adds_to_a_dialogue(text):
+        return "dialogue"
+    if asks_a_table(text) and re.search(r"\b(?:lista|list)\b", _reading_fold(str(text or ""))) is None:
+        return "table"
+    return "list" if asks_a_list_or_table(text) else None
+
+
+def adds_to_a_dialogue(text: str) -> bool:
+    """«agrega a la conversación un fragmento…», «continue the dialogue…»: more lines of the dialogue being written."""
+
+    return _DIALOGUE_ADDED.match(_strip_request_envelope(_reading_fold(str(text or ""))).strip()) is not None
+
+
+# M85 (DEV-D v3o D-p35-t2 «podrías explicarme como lo hiciste?» after BAXY only asked «¿Quieres que el análisis de FODA
+# de Adidas incluya datos específicos…?»: «no tengo acceso a cómo lo hice» three times, ⚠): the person asks how, what or
+# whether BAXY did something. When BAXY's last message was a question, nothing was done yet, and that is the answer.
+_OWN_PAST_ACT_QUESTION = re.compile(
+    r"\b(?:como|how|que|what|por\s*que|why|cuando|when|de\s+donde|where|ya)\b.{0,40}?"
+    r"\b(?:(?:lo|la|los|las|me|nos)\s+)?(?:hiciste|hicistes|lograste|realizaste|conseguiste|sacaste|calculaste|"
+    r"armaste|elaboraste|preparaste|escribiste|redactaste|obtuviste|did\s+you\s+(?:do|make|get|come\s+up\s+with|"
+    r"write|find|work\s+(?:it|that)\s+out)|have\s+you\s+(?:done|made|finished))\b|"
+    r"^\W*(?:did|have)\s+you\s+(?:do|done|make|made|finish\w*)\b|"
+    r"\b(?:explica\w*|expl[ií]came|cuenta\w*|dime|tell\s+me|explain)\b.{0,30}\b(?:como|how)\s+(?:lo\s+|la\s+)?"
+    r"(?:hiciste|hicistes|you\s+did)\b"
+)
+
+
+def asks_about_own_past_act(user_text: str) -> bool:
+    """«¿cómo lo hiciste?», «¿qué hiciste?», «¿ya lo hiciste?», «how did you do it?», «what did you do?»."""
+
+    return _OWN_PAST_ACT_QUESTION.search(_reading_fold(str(user_text or ""))) is not None
 
 
 def asks_whether_able(user_text: str) -> bool:
