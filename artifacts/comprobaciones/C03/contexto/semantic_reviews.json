@@ -2,8 +2,8 @@
  "dueno-2026-09-21": {
   "21": {
    "verdict": "bien",
-   "reply": "He cerrado las ventanas de Edge que estaban abiertas.",
-   "head": "7ba5c5e9"
+   "reply": "He cerrado la ventana de YouTube y la de restaurar páginas en Edge.",
+   "head": "5761e1ab"
   },
   "16": {
    "verdict": "bien",
@@ -27,13 +27,13 @@
   },
   "24": {
    "verdict": "bien",
-   "reply": "La gente ve en Colony una exploración de la mente colectiva frente al individualismo extremo.",
-   "head": "7ba5c5e9"
+   "reply": "Hay dos películas llamadas Colony: una canadiense de terror de 2013 y otra surcoreana de thriller que se presentó en mayo de 2026 en Cannes.",
+   "head": "5761e1ab"
   },
   "35": {
    "verdict": "bien",
-   "reply": "El primer libro de zombies fue La isla mágica, que tiene un capítulo titulado 'Fallecidos vivientes que trabajan en los campos de caña de azúcar'.",
-   "head": "7ba5c5e9"
+   "reply": "William Seabrok fue el primero en hablar de zombies en su libro La isla mágica.",
+   "head": "5761e1ab"
   },
   "25": {
    "verdict": "mal",
