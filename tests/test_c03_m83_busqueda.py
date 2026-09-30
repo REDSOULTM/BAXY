@@ -190,26 +190,35 @@ def test_d_p31_t1_a_partial_draft_the_pages_do_not_support_is_not_said() -> None
     assert len(writer.requests) == 2
 
 
-@pytest.mark.parametrize("ident, honest", [
-    ("D-p24-t1", "I couldn't check this; from memory, it may not be exact: The Lord of the Rings: The Fellowship of the "
-                 "Ring (2001) is a fantasy film starring Elijah Wood."),
-    ("D-s111", "No pude comprobarlo; de memoria, puede no ser exacto: son unos 1.000 km por carretera."),
-])
-def test_d_p24_t1_d_s111_with_nothing_pertinent_read_memory_answers_with_its_notice(ident: str, honest: str) -> None:
+def test_d_p24_t1_with_nothing_pertinent_read_memory_answers_with_its_notice() -> None:
+    ident = "D-p24-t1"
+    honest = (
+        "I couldn't check this; from memory, it may not be exact: The Lord of the Rings: The Fellowship of the Ring is "
+        "a fantasy film starring Elijah Wood."
+    )
     reply = TURNS[ident]["reply"]
     assert llm._SEARCH_NOT_FOUND.match(llm._reading_fold(reply))
     writer = _Writer([honest])
     answer = writer._answer_after_not_found(reply, TURNS[ident]["text"], _facts(ident), said=None, deadline=None)
     assert answer == honest
-    english = ident == "D-p24-t1"
-    assert writer.requests[0]["messages"][0]["content"] == llm._memory_answer_prompt(TURNS[ident]["text"], [], english)
+    assert writer.requests[0]["messages"][0]["content"] == llm._memory_answer_prompt(TURNS[ident]["text"], [], True)
+
+
+def test_d_s111_a_figure_asked_is_not_said_from_memory() -> None:
+    # M92 (D52; DEV-D v3u D-s111 «…unos 1.100 kilómetros…»): the distance is a figure; not found stays the answer.
+    reply = TURNS["D-s111"]["reply"]
+    writer = _Writer([])
+    assert writer._answer_after_not_found(reply, TURNS["D-s111"]["text"], _facts("D-s111"), said=None, deadline=None) == ""
+    assert writer.requests == []
 
 
 def test_an_answer_from_memory_without_its_notice_is_not_said() -> None:
-    reply = TURNS["D-s111"]["reply"]
-    silent = "La distancia entre Barcelona y París es de unos 1.000 km."
+    # M92: D-p24-t1 (D-s111 asks a figure, which memory no longer answers at all).
+    reply = TURNS["D-p24-t1"]["reply"]
+    silent = "The Lord of the Rings: The Fellowship of the Ring is a fantasy film starring Elijah Wood."
     writer = _Writer([silent, silent])
-    assert writer._answer_after_not_found(reply, TURNS["D-s111"]["text"], _facts("D-s111"), said=None, deadline=None) == ""
+    assert writer._answer_after_not_found(reply, TURNS["D-p24-t1"]["text"], _facts("D-p24-t1"), said=None, deadline=None) == ""
+    assert len(writer.requests) == 2
 
 
 @pytest.mark.parametrize("ident", ["D-w08-t1", "D-s012"])
@@ -232,12 +241,13 @@ def test_a_report_that_says_something_is_not_a_not_found() -> None:
 
 def test_the_answer_after_a_not_found_runs_in_compose_user_message() -> None:
     # The three recorded drafts of D-s111 are rejected as they were in v3o and the last resort says «No encontré…»;
-    # then memory answers.
+    # M92 (D52): the distance is a figure, so memory is not asked and the not-found stands.
     honest = "No pude comprobarlo; de memoria, puede no ser exacto: son unos 1.000 km por carretera."
     drafts = [item["draft"] for item in TURNS["D-s111"]["drafts"]]
     writer = _Writer([drafts[0], drafts[1], drafts[1], honest])
     reply = writer.compose_user_message(TURNS["D-s111"]["text"], "status", _facts("D-s111"))
-    assert reply == honest
+    assert reply.startswith("No encontré")
+    assert writer.drafts == [honest]
 
 
 # ------------------------------------------------------------------ 4. a namesake is not the kind asked for

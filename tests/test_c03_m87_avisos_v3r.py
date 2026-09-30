@@ -210,7 +210,8 @@ def test_d_p29_t2_a_refused_memory_answer_is_retried_and_the_second_is_said() ->
     honest = "I couldn't check this; from memory, it may not be exact:\n1. The Conjuring (2013)\n2. Hereditary (2018)"
     writer = _Writer([_recorded("D-p29-t2", "from_memory"), honest])
     answer = writer._answer_after_not_found(reply, "Search for scary movies.", _facts("D-p29-t2"), said=None, deadline=None)
-    assert answer == honest
+    # M92 (D52, DEV-D v3u D-p29-t2 «It (1982)»): the years a list from memory brackets are dropped.
+    assert answer == "I couldn't check this; from memory, it may not be exact:\n1. The Conjuring\n2. Hereditary"
     assert len(writer.requests) == 2
     assert "numbered list" in writer.requests[0]["messages"][0]["content"]
     assert "no headings" in writer.requests[1]["messages"][-1]["content"]

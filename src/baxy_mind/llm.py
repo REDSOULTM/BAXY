@@ -6945,6 +6945,11 @@ def _compose_situation_payload(
         totals = semantic_quantities.priced_totals(user_text, results_text, language)
         if totals:
             payload["calculation"] = [item.sentence for item in totals[:3]]
+        # M92 (DEV-D v3u D-w01-t3 «pa 3 litros» over «sal por litro … es de 10 gramos»): a per-unit rule read, applied
+        # to the quantity asked, is computed here too.
+        rated = semantic_quantities.rated_totals(user_text, results_text, language)
+        if rated:
+            payload["rule_calculation"] = [item.sentence for item in rated[:3]]
     return payload
 
 
@@ -9704,6 +9709,8 @@ def _search_report_sentences(text: str, payload: dict, user_text: str) -> list[_
 
     # M62 (F-w13-t2): the total BAXY computed from a unit price read is a figure of the read too.
     computed = " ".join(item.sentence for item in semantic_quantities.priced_totals(user_text or "", results_text))
+    # M92 (D-w01-t3): so is what a per-unit rule read gives for the quantity asked.
+    computed += " " + " ".join(item.sentence for item in semantic_quantities.rated_totals(user_text or "", results_text))
     computed += " " + births
     # M70: the words the pages and the request write (no link, and not the query the mind sent), for the inflection
     # of a changing stem.
@@ -9911,10 +9918,15 @@ _SEARCH_MECHANICS = re.compile(
     # Otra menciona que John Carpenter…» and «Un artículo de La Vanguardia indica que…» would have been published: a
     # page, article or source that speaks, or «otra» that says, is the search shown the same.
     r"(?:un|una|otro|otra|cierto|cierta|algun|alguna|el|la|este|esta|ese|esa)\s+"
-    r"(?:pagina|articulo|nota|fuente|sitio|medio|publicacion|reportaje)(?:\s+(?:de|del)(?:\s+[a-z0-9]+){1,3}?)?\s+"
+    # M92 (DEV-D v3u D-w10-t2 «Un conversor de cocina menciona que la harina es más ligera…»): a tool, a table or a
+    # guide that speaks is a page that speaks.
+    r"(?:pagina|articulo|nota|fuente|sitio|medio|publicacion|reportaje|conversor|convertidor|calculadora|tabla|guia|"
+    r"blog|foro|herramienta|web)(?:\s+(?:de|del)(?:\s+[a-z0-9]+){1,3}?)?\s+"
     r"(?:dice|indica|senala|menciona|afirma|sostiene|asegura|informa|explica|cuenta|reporta|comenta)|"
     r"otra\s+(?:dice|afirma|indica|sostiene|menciona|senala|asegura|cuenta)|"
-    r"(?:one|another|an?|the|this|that)\s+(?:page|article|source|site|outlet|piece)(?:\s+(?:from|by|on)(?:\s+[a-z0-9]+)"
+    r"(?:one|another|an?|the|this|that)\s+(?:(?:kitchen|cooking|online|recipe|news|web)\s+)?"
+    r"(?:page|article|source|site|outlet|piece|converter|calculator|table|chart|"
+    r"guide|blog|forum|tool|website)(?:\s+(?:from|by|on)(?:\s+[a-z0-9]+)"
     r"{1,3}?)?\s+(?:says|states|claims|mentions|notes|reports|explains|indicates)|"
     r"another\s+(?:mentions|notes|reports|indicates)|"
     # M77 (DEV-D v3l D-p27-t2 «None of the results state which genre…», D-s063 «…in the provided results», D-p34-t1
@@ -12080,6 +12092,50 @@ def _wifi_place_fact_defect(text: str, payload: dict) -> str:
     return ""
 
 
+# M92 (DEV-D v3u D-w01-t2 «oye y cuánta sal le echo al agua, más o menos» → «Se le pone a gusto.», D-w01-t3 «pa 3
+# litros» → three drafts computing 1,5, 30–75 and 150 over «sal por litro … es de 10 gramos»): the amount of an
+# ingredient asked is answered with a figure — the one the read gives, or the one BAXY computed from a per-unit rule
+# it gives (``semantic.quantities.rated_totals``) — or told not found. Folded.
+_SPOKEN_FIGURE = re.compile(
+    r"\d|½|¼|¾|\b(?:dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|quince|veinte|treinta|cuarenta|"
+    r"cincuenta|cien|ciento|mil|medio|media|two|three|four|five|six|seven|eight|nine|ten|twelve|twenty|hundred|half|"
+    r"(?:un|una|a|an|one)\s+(?:taza|tazas|cucharada|cucharadas|cucharadita|cucharaditas|pizca|puñado|punado|gramo|"
+    r"kilo|litro|cup|tablespoon|teaspoon|pinch|handful|gram|liter|litre))\b"
+)
+
+
+def _ingredient_amount_asked(payload: dict, user_text: str) -> bool:
+    """M92: the request, or the query the search sent for it (which carries the ingredient the conversation named),
+    asks how much of an ingredient (``semantic.knowledge.kitchen_quantity``), and the pages read state quantities
+    («700 gramos de harina», «10 g por litro»): an answer-shaped figure may be there."""
+
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    return any(
+        semantic_knowledge.kitchen_quantity(asked) is not None
+        for asked in (user_text, str(seen.get("query") or "")) if asked
+    ) and bool(semantic_quantities.measures(_search_results_text(payload) or ""))
+
+
+def _amount_report_defect(text: str, payload: dict, user_text: str, results_text: str) -> str:
+    """M92: a report of a search for how much of an ingredient that answers with no figure, or without the figure BAXY
+    computed from a per-unit rule the read gives; a not-found is always a report."""
+
+    if not _ingredient_amount_asked(payload, user_text):
+        return ""
+    answering = [
+        part for part in re.split(r"(?<=[.!?;])\s+", str(text or "").strip())
+        if part.strip() and _SEARCH_NOT_FOUND.match(_reading_fold(part)) is None
+    ]
+    if not answering:
+        return ""
+    rated = semantic_quantities.rated_totals(user_text, results_text)
+    if rated and not semantic_quantities.gives_a_total(" ".join(answering), rated):
+        return "rule_calculation_not_given"
+    if not rated and _SPOKEN_FIGURE.search(_reading_fold(" ".join(answering))) is None:
+        return "amount_without_figure"
+    return ""
+
+
 def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said: str | None = None) -> str:
     """El texto público conserva los hechos que el payload le dio.
 
@@ -12114,6 +12170,10 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
         # M62 (v3e2-final F-w13-t2): the money a report gives for the asked quantity is the unit price read or the
         # total computed from it (payload «calculation»), never another figure of the page (a full tank's price).
         return "underived_price"
+    if results_text:
+        amount_defect = _amount_report_defect(text, payload, user_text or "", results_text)
+        if amount_defect:
+            return amount_defect
     if _search_report_unsourced_claim(text, payload, user_text):
         # WEB1879 H0060: a sentence of the report summarised causes in its own
         # voice; no result contains them. Reinstated in WEB1889: the turn no
@@ -16041,26 +16101,35 @@ MEMORY_ANSWER_PROMPT = (
     "no pudiste comprobarlo y que lo dices de memoria, así que puede no ser exacto (por ejemplo: «No pude "
     "comprobarlo; de memoria, puede no ser exacto:»). Después contesta sólo lo pedido, {form}. No nombres fuentes, "
     "páginas ni búsquedas, no digas lo que puedes o no puedes hacer y no añadas títulos, secciones ni consejos que "
-    "no se pidieron. Toda cifra, redonda y dicha como aproximada («unos 800 km», «unas 6 horas»); no añadas datos ni cifras que no se pidieron. Responde en español."
+    "no se pidieron; no añadas datos que no se pidieron. Responde en español."
 )
 MEMORY_ANSWER_PROMPT_EN = (
     "You are BAXY. You could not check this in any source. Start with a very short notice, in your own words, that "
     "you couldn't check it and are answering from memory, so it may not be exact (for example: «I couldn't check "
     "this; from memory, it may not be exact:»). Then answer only what was asked, {form}. Name no source, page or "
-    "search, do not say what you can or cannot do, and add no headings, sections or advice that were not asked for. Every figure "
-    "round and said as approximate («about 800 km», «around 6 hours»); add no fact or figure that was not asked. "
-    "Answer in English."
+    "search, do not say what you can or cannot do, and add no headings, sections or advice that were not asked for; "
+    "add no fact that was not asked. Answer in English."
+)
+# M92 (D52; DEV-D v3u D-s111, D-p29-t2 «It (1982)», D-w01-t3 «600 cucharaditas»): memory says no figure — no quantity,
+# distance, duration, date, year or count — in prose or in a list. A recipe is the one form whose figures memory gives
+# (D35 names recipes; D-w10-t1 v3r was right), and then it is whole: v3u's «prepara la masa según la receta habitual»,
+# with no quantity, was no recipe.
+_NO_FIGURES = (
+    "sin ninguna cifra: ni cantidades, distancias, duraciones, fechas, años ni recuentos",
+    "with no figure at all: no quantities, distances, durations, dates, years or counts",
 )
 _MEMORY_ANSWER_FORMS = {
     "recipe": (
-        "como receta: «Ingredientes:» (uno por línea con «- ») y «Preparación:» (pasos numerados)",
-        "as a recipe: «Ingredients:» (one per line with «- ») and «Steps:» (numbered)",
+        "como receta completa: «Ingredientes:» (uno por línea con «- », cada uno con su cantidad redonda y "
+        "aproximada, «unas 2 tazas») y «Preparación:» (pasos numerados, completos, sin remitir a otra receta)",
+        "as a whole recipe: «Ingredients:» (one per line with «- », each with its round, approximate quantity, «about "
+        "2 cups») and «Steps:» (numbered, complete, never pointing to another recipe)",
     ),
     "list": (
-        "como lista numerada, un nombre por línea con su año si lo sabes",
-        "as a numbered list, one name per line with its year if you know it",
+        "como lista numerada, un nombre por línea, " + _NO_FIGURES[0],
+        "as a numbered list, one name per line, " + _NO_FIGURES[1],
     ),
-    "prose": ("en dos a cuatro frases", "in two to four sentences"),
+    "prose": ("en dos a cuatro frases, " + _NO_FIGURES[0], "in two to four sentences, " + _NO_FIGURES[1]),
 }
 
 
@@ -16218,6 +16287,39 @@ def _recipe_has_its_form(draft: str) -> bool:
     listed = sum(1 for line in lines if line.startswith(("- ", "• ", "* ")))
     steps = sum(1 for line in lines if re.match(r"\d+[.)]\s", line))
     return listed >= 2 and steps >= 1
+
+
+# M92 (DEV-D v3u D-w10-t1 «Prepara la masa de maíz según la receta habitual»): a step that sends the cook to another
+# recipe, the usual one or the packet's. Folded.
+_RECIPE_DEFERRED = re.compile(
+    r"\b(?:segun|como\s+(?:indica|dice|en))\s+(?:la\s+)?(?:receta|instrucciones|paquete|empaque|envase)\b"
+    r"|\breceta\s+(?:habitual|de\s+siempre|tradicional\s+de\s+la\s+masa)\b|\bcomo\s+de\s+costumbre\b"
+    r"|\b(?:according\s+to|following|as\s+per)\s+(?:the\s+|your\s+)?(?:usual\s+)?(?:recipe|package|packet|instructions)\b"
+    r"|\busual\s+recipe\b|\bas\s+usual\b"
+)
+# An ingredient line with a quantity: a figure, a spoken amount, or «al gusto» for what is added to taste.
+_INGREDIENT_QUANTITY = re.compile(
+    r"\d|½|¼|¾|\b(?:un|una|uno|medio|media|dos|tres|cuatro|cinco|seis|ocho|diez|doce|pizca|punado|chorrito|al\s+gusto|"
+    r"a\s+gusto|a|an|one|two|three|four|five|six|half|pinch|dash|handful|to\s+taste)\b"
+)
+# What is fried in or sprinkled needs no quantity («Aceite para freír»).
+_INGREDIENT_WITHOUT_MEASURE = re.compile(r"\b(?:para\s+(?:freir|untar|engrasar|servir|decorar)|for\s+(?:frying|greasing|serving))\b")
+
+
+def _memory_recipe_incomplete(draft: str) -> bool:
+    """M92 (D-w10-t1): a recipe from memory that is no recipe — not in its form, half its ingredients without a
+    quantity, or a step that sends the cook to another recipe."""
+
+    if not _recipe_has_its_form(draft):
+        return True
+    ingredients = [
+        _reading_fold(line) for line in str(draft or "").splitlines() if line.strip().startswith(("- ", "• ", "* "))
+    ]
+    measured = [
+        line for line in ingredients
+        if _INGREDIENT_QUANTITY.search(line) is not None or _INGREDIENT_WITHOUT_MEASURE.search(line) is not None
+    ]
+    return 2 * len(measured) < len(ingredients) or _RECIPE_DEFERRED.search(_reading_fold(draft)) is not None
 
 
 def _says_it_is_from_memory(draft: str, language: str) -> bool:
@@ -21803,12 +21905,14 @@ class LlmRuntime:
         """M53 (D35): the answer to a recipe or plot lookup, written from the page it read, or from memory when
         nothing could be consulted. None hands the turn to the ordinary composition (not one of these, or two
         drafts that broke the contract). ``memory``: M83, what the search could not state is said from memory
-        (``_answer_after_not_found``)."""
+        (``_answer_after_not_found``). M92 (D52): never a figure asked, and no figure in prose or a list from memory;
+        a recipe from memory is a whole one."""
 
         reference = None if memory else _reference_of(situation)
         prior = [str(item) for item in (facts.get("priorRequests") or []) if isinstance(item, str)]
         english = response_language == "en"
         ratio: Fraction | None = None
+        form = ""
         if reference is None:
             lookup = None if memory else semantic_knowledge.reference_lookup(user_text, prior)
             if not memory and (
@@ -21820,6 +21924,11 @@ class LlmRuntime:
                 or not (_failed_reference_lookup(situation) or (lookup.kind == "recipe" and _read_no_recipe(situation)))
             ):
                 return None
+            if semantic_knowledge.asks_a_figure(user_text):
+                # M92 (D52; DEV-D v3u D-s111 the distance Barcelona–París, D-w01-t3 teaspoons of salt for 3 litres): a
+                # figure asked is looked up; what could not be looked up is said not found, never given from memory.
+                return None
+            form = semantic_knowledge.memory_answer_form(user_text, prior)
             system = _memory_answer_prompt(user_text, prior, english)
             data: dict[str, Any] = {"request": user_text, "earlier_requests": prior[-2:]}
             # M88 (DEV-D v3r D-w10-t2 «¿Y cuánto sería eso de harina en gramos?» after a recipe with «2 tazas de harina
@@ -21885,6 +21994,9 @@ class LlmRuntime:
             except TimeoutError:
                 break
             draft = str(response["choices"][0]["message"].get("content") or "").strip()
+            if reference is None and form != "recipe":
+                # M92 (DEV-D v3u D-p29-t2 «6. It (1982)»): the bracketed years of a list from memory are dropped.
+                draft = semantic_quantities.without_listed_years(draft)
             finish = _finish_reason_of(response)
             unsourced: list[str] = []
             if not draft:
@@ -21912,9 +22024,20 @@ class LlmRuntime:
                 # jargon terms —, missing_literal_fact); the mind's twin of that judgement runs here before it goes
                 # out, as the compose loop's preserves_contract runs it on every other draft.
                 reason = visible
-            elif reference is None and (unsourced := semantic_quantities.unsure_figures(draft, [user_text, *prior])):
+            elif reference is None and form == "recipe" and _memory_recipe_incomplete(draft):
+                # M92 (DEV-D v3u D-w10-t1 «Prepara la masa de maíz según la receta habitual», no quantity at all).
+                reason = "memory_recipe_incomplete"
+            elif reference is None and form == "recipe" and (
+                unsourced := semantic_quantities.unsure_figures(draft, [user_text, *prior])
+            ):
                 # M88 (DEV-D v3r D-s111 «1.080 km en línea recta… 2 horas y 15 minutos»): memory keeps no digits.
                 reason = "memory_precise_figures"
+            elif reference is None and form != "recipe" and (
+                unsourced := semantic_quantities.unsaid_figures(draft, [user_text, *prior])
+            ):
+                # M92 (D52; DEV-D v3u D-s111 «unos 1.100 kilómetros», D-w01-t3 «unas 600 cucharaditas»): in prose or a
+                # list, memory says no figure the person did not say.
+                reason = "memory_figures"
             elif reference is not None and reference["kind"] == "recipe" and not _recipe_has_its_form(draft):
                 reason = "recipe_form"
             elif reference is not None and (
@@ -21972,6 +22095,20 @@ class LlmRuntime:
                     if english
                     else "De memoria estas cifras son más precisas de lo que puedes saber: " + ", ".join(unsourced[:6])
                     + ". Mantén el aviso; di sólo lo que se pidió, cada cifra redonda y como aproximada, o quítala."
+                ),
+                "memory_figures": (
+                    "From memory you give no figure: remove " + ", ".join(unsourced[:6]) + " and anything that "
+                    "depends on them. Keep the notice and the rest."
+                    if english
+                    else "De memoria no das cifras: quita " + ", ".join(unsourced[:6]) + " y lo que dependa de "
+                    "ellas. Mantén el aviso y el resto."
+                ),
+                "memory_recipe_incomplete": (
+                    "That is not a whole recipe: give each ingredient its round, approximate quantity and write every "
+                    "step, never pointing to another recipe or «the usual one»."
+                    if english
+                    else "Eso no es una receta completa: da a cada ingrediente su cantidad redonda y aproximada y "
+                    "escribe cada paso, sin remitir a otra receta ni a «la habitual»."
                 ),
             }.get(reason) or (
                 "Write only the short notice and then the answer asked for, in the form asked: nothing about what you "
@@ -23469,6 +23606,28 @@ class LlmRuntime:
                     if response_language == "en"
                     else " calculation es lo que cuesta la cantidad pedida al precio por unidad que da un resultado, "
                     "ya calculado: da ese total (y ese precio por unidad); ninguna otra cifra de dinero."
+                )
+            if visible_situation.get("rule_calculation"):
+                # M92 (DEV-D v3u D-w01-t3): what the quantity asked comes to under a per-unit rule read is BAXY's own
+                # calculation; the writer states it and computes nothing else.
+                instruct(
+                    " rule_calculation applies a per-unit rule a result states to the quantity asked, already "
+                    "computed: answer with that result, in its unit; if it is not in the unit asked, give it in its "
+                    "own unit. Compute no other figure."
+                    if response_language == "en"
+                    else " rule_calculation aplica a la cantidad pedida una regla por unidad que da un resultado, ya "
+                    "calculada: contesta con ese resultado, en su unidad; si no está en la unidad pedida, dalo en la "
+                    "suya. No calcules ninguna otra cifra."
+                )
+            if _ingredient_amount_asked(visible_situation, user_text or ""):
+                # M92 (DEV-D v3u D-w01-t2 «Se le pone a gusto.»): an amount asked is answered with the amount a
+                # result states for it, or not found.
+                instruct(
+                    " The person asked an amount: say the figure a result gives for it; if none gives one, say you "
+                    "did not find it."
+                    if response_language == "en"
+                    else " La persona preguntó una cantidad: di la cifra que da un resultado para eso; si ninguno la "
+                    "da, di que no la encontraste."
                 )
             near = (visible_situation.get("seen") or {}).get("near")
             if isinstance(near, str) and near.strip():
@@ -25249,6 +25408,32 @@ class LlmRuntime:
                         )
                         + ". Da ese total (y el precio por unidad si lo nombras), nada más."
                     )
+                ),
+                # M92 (DEV-D v3u D-w01-t3): the per-unit rule read, applied to the quantity asked.
+                "rule_calculation_not_given": (
+                    "Answer with BAXY's calculation from the rule a result states: "
+                    + "; ".join(
+                        item.sentence for item in semantic_quantities.rated_totals(
+                            user_text or "", _search_results_text(visible_situation) or "", "en",
+                        )
+                    )
+                    + ". Give that result in its unit, in one sentence; no other figure."
+                    if response_language == "en"
+                    else "Contesta con el cálculo de BAXY a partir de la regla que da un resultado: "
+                    + "; ".join(
+                        item.sentence for item in semantic_quantities.rated_totals(
+                            user_text or "", _search_results_text(visible_situation) or "",
+                        )
+                    )
+                    + ". Da ese resultado en su unidad, en una oración; ninguna otra cifra."
+                ),
+                # M92 (DEV-D v3u D-w01-t2 «Se le pone a gusto.»).
+                "amount_without_figure": (
+                    "An amount was asked: say the figure a result gives for it, with its unit; if no result gives "
+                    "one, say only that you did not find it."
+                    if response_language == "en"
+                    else "Se preguntó una cantidad: di la cifra que da un resultado para eso, con su unidad; si "
+                    "ninguno la da, di sólo que no la encontraste."
                 ),
                 # M62 (v3e2-final F-p05-t1: the car parks told by their whole addresses).
                 "places_whole_address": (
