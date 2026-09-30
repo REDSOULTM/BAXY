@@ -556,3 +556,12 @@ murió a la 01:10 en el ejemplo 1 600 (redpc se suspendió) y no se relanza tal 
 parejas y con clarify en 6,1 % (como `full3`), 4 587 ejemplos, lanzado 13:25 con un seguro de no-suspensión sólo mientras
 entrena (SetThreadExecutionState; sin tocar la configuración de energía). Regla igual: decisión ≥ 237, argumentos
 ≥ 55/57, ninguna clase −2 pts, luego integrado.
+
+## D50. DEV-D v3o: 261/332 = 78,6 % con revisor (5761e1ab = M79–M82) (2026-09-30 ~15:20)
+Mismo revisor y criterio: **v3o 261/332 = 78,6 %** (v3m 241, v3l 212): arreglados 26, rotos 6. Inventados 3 (8),
+⚠ 5 = 1,5 % (4), repreguntas de datos dados 1 (6). Automática 273/332 = 82,2 %; VRAM pico por proceso 3 790 MiB;
+p50 decisión 2,15 s. El aislamiento de alarmas por raíz de datos (M80) funciona en la app. No-ok por causa: búsqueda 15,
+argumentos 14, límite o alcance 12, conocimiento o código 10, redacción 10, otros 10. Rotos: p24-t2 repregunta,
+p27-t1 recomendación sin título, p31-t2 contradicción, p35-t2 ⚠, w08-t2 partido ya pasado como próximo, w08-t3
+repregunta la fecha recién dada. Batería previa (d946de8b): 742 sin cambios, capa A 96,5 %, reserva 85,8 %, DEV-C 252.
+Distancia a la meta de FINAL-2 (≥ 85 %): ≈ 6,4 puntos en DEV-D.
