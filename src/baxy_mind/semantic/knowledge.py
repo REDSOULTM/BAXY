@@ -60,6 +60,30 @@ _RECIPE_DISH = (
                rf"necesitan|has|have|needs?|goes\s+into|go\s+into)\s+{_ARTICLE}?{_DISH}"),
     re.compile(rf"\b(?:recetas?|recipes?)\s+(?!de\b|del\b|para\b|pa\b|for\b|of\b){_DISH}"),
 )
+# M81 (DEV-D v3m D-s017 «a good southern style mac n cheese recipe» → a roux made with the drained pasta): English
+# names the dish before «recipe». The dish is the run of words right before it, back to an article, a praise, a
+# pronoun or a verb («I need a banana bread recipe» → «banana bread»; «my grandma recipe» is nobody's dish).
+_RECIPE_AFTER_DISH = re.compile(r"\brecipes?\b")
+_BEFORE_THE_DISH = frozenset({
+    "a", "an", "the", "some", "any", "my", "your", "our", "his", "her", "their", "this", "that", "these", "those",
+    "good", "great", "nice", "easy", "simple", "quick", "classic", "best", "tasty", "delicious", "authentic",
+    "homemade", "traditional", "proper", "favorite", "favourite", "new", "old", "fashioned", "family", "grandma",
+    "grandmas", "mom", "moms", "i", "me", "you", "we", "need", "want", "have", "give", "get", "find", "save", "send",
+    "share", "is", "are", "what", "whats", "for", "of", "to", "do", "please", "and", "or", "with", "s",
+})
+
+
+def _recipe_named_before(folded: str) -> str | None:
+    found = _RECIPE_AFTER_DISH.search(folded)
+    if found is None:
+        return None
+    words = re.findall(r"[a-z]+", folded[: found.start()])
+    dish: list[str] = []
+    for word in reversed(words):
+        if word in _BEFORE_THE_DISH or len(dish) == 5:
+            break
+        dish.insert(0, word)
+    return " ".join(dish) if dish and not all(word in _NOT_A_DISH for word in dish) else None
 # A category, a meal or a pronoun is no dish: «una receta vegetariana», «algo para la cena», «make it».
 _NOT_A_DISH = frozenset({
     "algo", "eso", "esto", "esa", "ese", "esta", "este", "comida", "comidas", "cena", "almuerzo", "desayuno", "once",
@@ -69,7 +93,7 @@ _NOT_A_DISH = frozenset({
     "something", "food", "dinner", "lunch", "breakfast", "meal", "meals", "it", "that", "this", "one", "dish",
     "dishes", "vegetarian", "vegan", "healthy", "easy", "quick", "simple", "dessert", "desserts", "list", "sure",
     "me", "te", "le", "lo", "la", "you", "sense", "money", "time", "tiempo", "dinero", "plata", "caso", "falta",
-    "faltan", "reservation", "reserva",
+    "faltan", "reservation", "reserva", "please", "porfa",
 })
 
 _PLOT_CUE = re.compile(
@@ -131,6 +155,9 @@ def _recipe(folded: str) -> ReferenceLookup | None:
                 continue
             language = _language(folded, _ENGLISH_CULINARY.search(folded) is not None)
             return ReferenceLookup("recipe", dish, ("recipe " if language == "en" else "receta ") + dish, language)
+    named = _recipe_named_before(folded)
+    if named is not None and len(named) >= 3:
+        return ReferenceLookup("recipe", named, "recipe " + named, "en")
     return None
 
 

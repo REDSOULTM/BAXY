@@ -56,7 +56,8 @@ from .semantic.web import (
     weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
     weather_asks_coming_days, weather_asks_week, weather_sun_events_asked, place_containers, searched_clause,
     ASKED_UNCONFIRMED_WORDS, asked_dimension_words, carried_subjects, names_subject, PLACE_KIND_WORDS,
-    request_common_words, asks_this_year, undefined_asked_phrases,
+    request_common_words, asks_this_year, undefined_asked_phrases, question_names, news_lookup_query,
+    asks_where_to_find,
 )
 from .semantic.temporal import (
     _DAY_WORDS, clock_elsewhere, clock_later_asked, named_clock_dial, plural_alarm_cancellation,
@@ -7320,6 +7321,53 @@ def _decimal_said(value: object, english: bool) -> str:
     return text if english else text.replace(".", ",")
 
 
+def _spelled_as_read(clause: str, payload: dict) -> str:
+    """M81 (DEV-D v3m D-w08-t1 «cuanto qedo el america anoche» → «No encontré cuánto qedo el america anoche»): a word
+    of the not-found clause that no result writes, one letter away from a word the results write the same way
+    otherwise, is the person's typo said back; the results' spelling is used (owner, 2026-09-19: what was misheard or
+    mistyped BAXY fixes)."""
+
+    written: dict[str, str] = {}
+    for word in re.findall(r"[^\W\d_]{4,}", _search_results_text(payload) or ""):
+        written.setdefault(_reading_fold(word), word.lower() if not word.isupper() else word)
+    if not written:
+        return clause
+
+    def respelled(found: re.Match[str]) -> str:
+        word = found.group(0)
+        key = _reading_fold(word)
+        if len(key) < 4 or key in written:
+            return word
+        # A letter left out inside the word («qedo» of «quedó»); a different or an added last letter is an inflection
+        # («llueve» / «llueva», «casa» / «casas»), never a typo to fix.
+        near = [
+            seen for folded, seen in written.items()
+            if len(folded) == len(key) + 1
+            and any(folded[:index] + folded[index + 1:] == key for index in range(1, len(key)))
+        ]
+        return near[0] if len(near) == 1 else word
+
+    return re.sub(r"[^\W\d_]+", respelled, clause)
+
+
+def _asked_news_headlines_final(payload: dict, user_text: str, language: str) -> str:
+    """M81: the first three headlines of a news read, quoted as read, when the person asked what is happening
+    (``semantic.web.news_lookup_query``) and the news feed answered; empty otherwise."""
+
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    if not str(seen.get("authority") or "").startswith("google_news") or news_lookup_query(user_text or "") is None:
+        return ""
+    titles = [
+        re.sub(r"\s+", " ", str(item.get("title") or "")).strip(" «»\"")
+        for item in _search_results_of(payload) if isinstance(item, dict)
+    ]
+    titles = [title for title in titles if title][:3]
+    if not titles:
+        return ""
+    quoted = "; ".join(f"«{title}»" for title in titles)
+    return f"Here are the headlines: {quoted}." if language == "en" else f"Estas son las noticias: {quoted}."
+
+
 def _deterministic_final(situation: dict, payload: dict, user_text: str, language: str) -> str:
     english = language == "en"
     operation = str(situation.get("operation") or payload.get("operation") or "")
@@ -9351,13 +9399,24 @@ def _search_report_speaks_as_a_page(text: str, payload: dict, user_text: str) ->
     asked = _reading_fold(user_text or "")
     folded = _reading_fold(unquoted)
 
+    read = _reading_fold(_search_results_text(payload) or "")
+
     def reported(said: str, found: re.Match[str]) -> bool:
         sentence = re.split(r"[.!?;]", said[: found.start()])[-1]
         return _REPORTED_SPEECH.search(sentence) is not None
 
+    def quoted(said: str, found: re.Match[str]) -> bool:
+        # M81 (DEV-D v3m D-s021 «…cómo el gris conquistó nuestra vida»): the headline's own «nuestra vida», said
+        # with the word that follows it in the result, is the headline reported, not the page speaking to BAXY's
+        # listener.
+        following = re.match(r"\s+([a-z0-9]+)", said[found.end():])
+        return following is not None and re.search(
+            r"\b" + re.escape(found.group()) + r"\s+" + re.escape(following.group(1)) + r"\b", read
+        ) is not None
+
     return any(
         re.search(r"\b" + re.escape(_reading_fold(found.group()).strip(" ¿¡")) + r"\b", asked) is None
-        and not (pattern is _PAGE_FIRST_PERSON_PLURAL and reported(said, found))
+        and not (pattern is _PAGE_FIRST_PERSON_PLURAL and (reported(said, found) or quoted(said, found)))
         for pattern, said in (
             (_PAGE_FIRST_PERSON_PLURAL, folded),
             (_PAGE_CALL_TO_READER, unquoted.casefold()),
@@ -9587,6 +9646,18 @@ _SEARCH_RESULTS_TAIL = re.compile(
 )
 
 
+# M81 (DEV-D v3m D-p31-t1 «No encontré en los resultados una lista de los últimos 10 presidentes…», D-p34-t1 «No
+# encontré en los resultados nombres específicos de cápsulas…»): the same closing phrase said right after the
+# not-found verb; clipped, the not-found report is whole.
+_SEARCH_RESULTS_AFTER_NOT_FOUND = re.compile(
+    r"\b(no\s+(?:lo\s+|la\s+)?(?:encontr[eé]|hall[eé])|i\s+(?:couldn'?t|could\s+not|didn'?t|did\s+not)\s+find)\s+"
+    r"(?:en|in|entre|among)\s+(?:los|las|estos|estas|mis|the|these|my)\s+(?:(?:provided|available)\s+)?"
+    r"(?:search\s+)?(?:resultados|results|p[aá]ginas|pages|fuentes|sources)"
+    r"(?:\s+(?:disponibles|proporcionad[oa]s|de\s+(?:la\s+)?b[uú]squeda))?\s+",
+    re.IGNORECASE,
+)
+
+
 # M60 (DEV-D p16-t1 v3c, web_search_unavailable): the cause asks to offer opening it in the person's browser, and
 # «I can open the search page in your web browser» / «open the search in your web browser?» is that offer, a search
 # the person would run, not BAXY's lookup shown. Folded text.
@@ -9620,19 +9691,24 @@ def _search_report_shows_the_search(text: str, payload: dict, user_text: str) ->
         str(item.get(key) or "") for item in _search_results_of(payload) if isinstance(item, dict)
         for key in ("title", "snippet")
     ))
+    # M81 (DEV-D v3m D-p34-t3): where the person could find something is answered by naming the site or page that
+    # holds it; that is the answer, not the lookup shown. How BAXY searched stays invisible.
+    where_asked = asks_where_to_find(user_text)
     named_source = (
         _reading_fold(found.group(0))
         for found in _SEARCH_NAMED_SOURCE.finditer(re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(text)))
     )
     for found in (
-        *(match.group(0) for match in _SEARCH_ATTRIBUTION.finditer(folded)),
+        *(match.group(0) for match in _SEARCH_ATTRIBUTION.finditer(folded) if not where_asked),
         *(match.group(0) for match in _SEARCH_MECHANICS.finditer(folded)),
         *(match.group(0) for match in _SEARCH_NARRATED_ABSENCE.finditer(folded)),
-        *named_source,
+        *(() if where_asked else named_source),
     ):
         # A snippet that itself says «según la OMS» may be repeated with its words.
         if found not in grounds:
             return True
+    if where_asked:
+        return False
     for host in _search_result_hosts(payload, limit=len(_search_results_of(payload))):
         if host in folded:
             return True
@@ -9685,6 +9761,19 @@ def _search_report_names_a_page(text: str, payload: dict, user_text: str) -> boo
     return False
 
 
+def _search_report_repeats_a_quote(text: str, payload: dict) -> bool:
+    """M81 (DEV-D v3m D-p27-t3 «What movies are there with Eugene Dynarski?» → «…two movies directed by Steven
+    Spielberg: "Eugene Dynarski" (the title itself implies the film), "Eugene Dynarski" (…), and "Eugene
+    Dynarski" (…)»): a report of a verified search that quotes the same thing twice lists nothing it read; the
+    titles the page gave («El diablo sobre ruedas», «Encuentros en la tercera fase») were replaced by the name asked."""
+
+    if _search_results_text(payload) is None:
+        return False
+    quoted = [_reading_fold(found).strip() for found in re.findall(r"[«\"“]([^»\"”]{1,200})[»\"”]", str(text))]
+    quoted = [item for item in quoted if item]
+    return len(quoted) != len(set(quoted))
+
+
 def _search_report_off_subject(text: str, payload: dict, user_text: str) -> bool:
     """The search did not answer and the report says something anyway.
 
@@ -9705,9 +9794,9 @@ def _search_report_off_subject(text: str, payload: dict, user_text: str) -> bool
         if _places_inside_named_place(payload):
             return False
     else:
-        names = {
-            _reading_fold(name) for name in re.findall(r"(?<=\s)(?!I\b)[A-ZÁÉÍÓÚÑ][\w'-]+", str(user_text or ""))
-        } - {"google", "bing", "duckduckgo", "internet", "web", "wikipedia", "youtube"}  # where to look, not what
+        names = question_names(str(user_text or "")) - {
+            "google", "bing", "duckduckgo", "internet", "web", "wikipedia", "youtube",  # where to look, not what
+        }
         if not names:
             return False
         found = _reading_fold(results_text)
@@ -9754,6 +9843,8 @@ _SEARCH_QUERY_FRAME_WORDS = frozenset(
         # M77 (DEV-D v3l D-w10-t2 «¿Y cuánto sería eso de harina en gramos, por favor?»): the person's whole sentence
         # reached the general engine; its courtesy and its pointing back («eso», «sería», «por favor») ask nothing.
         "eso", "esto", "seria", "serian", "favor", "porfa", "please", "gracias", "thanks",
+        # M81 (DEV-D v3m D-p34-t3 «¿Cómo podría encontrar un listado…?»): the modal of the question asks nothing.
+        "podria", "podrias", "podriamos", "puedo", "podemos", "pudiera", "might", "may",
     }
 )
 _SEARCH_TERM_SYNONYMS = (
@@ -9895,6 +9986,9 @@ def _search_report_from_no_pertinent_result(text: str, payload: dict, user_text:
     near = seen.get("near") if isinstance(seen.get("near"), str) else ""
     if near and str(query).endswith(" " + near):
         query = str(query)[: -len(near) - 1]
+    elif near and " " + near + " " in str(query) and len(str(query).rsplit(" " + near + " ", 1)[1].split()) <= 3:
+        # M81: the provider also adds this PC's country after the city («… Curico Chile»).
+        query = str(query).rsplit(" " + near + " ", 1)[0]
     if not _search_query_terms(str(query or "")):
         return False
     results = [item for item in _search_results_of(payload) if isinstance(item, dict)]
@@ -11400,6 +11494,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
     if _search_report_shows_the_search(text, payload, user_text):
         # Owner rule 2026-09-24: the lookup is invisible (see _search_report_shows_the_search).
         return "search_report_shows_the_search"
+    if _search_report_repeats_a_quote(text, payload):
+        return "search_report_repeats_a_quote"
     if _not_found_invents_a_cause(text, payload):
         return "search_not_found_invents_a_cause"
     if _place_existence_denied(text, payload):
@@ -22980,7 +23076,7 @@ class LlmRuntime:
         def search_clip(candidate: str) -> str:
             # M41: «…in the search results.» / «…en los resultados de búsqueda.» at the end names the lookup; clipped,
             # the not-found report is whole. Kept only if the clipped draft passes every check.
-            clipped = _SEARCH_RESULTS_TAIL.sub("", candidate or "").rstrip(" ,;")
+            clipped = _SEARCH_RESULTS_TAIL.sub("", _SEARCH_RESULTS_AFTER_NOT_FOUND.sub(r"\1 ", candidate or "")).rstrip(" ,;")
             if not candidate or clipped == (candidate or "").rstrip(" ,;") or not clipped:
                 return candidate
             clipped = clipped if clipped.endswith((".", "!", "?")) else clipped + "."
@@ -24139,10 +24235,17 @@ class LlmRuntime:
                 # looked up is named in the person's words (the request, else the query sent), never a fact.
                 observed = situation.get("observed") if isinstance(situation.get("observed"), dict) else {}
                 candidates = []
+                headlines = _asked_news_headlines_final(visible_situation, user_text, response_language)
+                if headlines:
+                    # M81 (DEV-D v3m D-s021 «qué está pasando por el mundo»): the news asked for was read; when every
+                    # draft retold a headline in words of its own, the headlines themselves are the answer, quoted,
+                    # never «No lo encontré».
+                    candidates.append(headlines)
                 for source in dict.fromkeys((user_text, str(observed.get("query") or ""))):
                     read = searched_clause(source, response_language)
                     if read is not None:
                         clause, asked = read
+                        clause = _spelled_as_read(clause, visible_situation)
                         candidates.append(
                             f"I couldn't find {'out ' if asked else ''}{clause}." if response_language == "en"
                             else f"No encontré {clause}."

@@ -1882,6 +1882,26 @@ def conversation_only_content_request(text: str) -> bool:
         r".{0,32}\b(?:foda|dafo|swot|pestel|(?:analisis|estudio)\s+(?:de\s+)?(?:mercado|la\s+competencia)|"
         r"(?:market|competitor|competitive)\s+(?:analysis|research))\b|"
         r"^(?:formato|plantilla|ejemplo|modelo|template|example)\s+(?:de|of)\b.{1,96}$|"
+        # M81 (DEV-D v3m D-p36-t2/t3 «agrega a la conversación un fragmento donde…», «…características físicas del
+        # xenomorfo»): adding to the dialogue, story or scene being written is writing more of it.
+        r"^(?![^\n]*\b(?:instagram|whatsapp|facebook|telegram|discord|grupo|group|chat)\b)"
+        r"(?:agrega\w*|anade\w*|add)\s+(?:a|al|en|to|into)\s+(?:(?:la|el|the|this|esta|este|our|nuestra|nuestro)\s+)?"
+        r"(?:conversacion|dialogo|historia|relato|cuento|guion|escena|story|conversation|dialogue|script|scene)\b"
+        r"(?!\s+(?:a|to)\s)|"
+        # M81 (DEV-D v3m D-s030 «Me puedes ayudar a crear una carta de finalización de contrato…» → the requirements
+        # of such a letter, not the letter): creating a letter or a piece of prose is writing it.
+        r"^(?![^\n]{0,160}\b(?:archivo|file|carpeta|folder|guarda\w*|save|word|envia\w*|send|imprime|print)\b)"
+        r"(?:(?:me\s+)?(?:puedes|podrias|can\s+you|could\s+you)\s+)?(?:ayudar(?:me)?\s+a\s+|ayudame\s+a\s+|help\s+me\s+)?"
+        r"(?:crea|creame|crear|crearme|create)\s+(?:un|una|el|la|a|an|the)\s+(?:\w+\s+)?"
+        r"(?:carta|texto|poema|cuento|ensayo|discurso|curriculum|cv|queja|reclamo|letter|essay|poem|speech|resume|"
+        r"cover\s+letter)\b|"
+        # M81 (DEV-D v3m D-p32-t2 «Dame las claves que mencionas en esa respuesta en forma de lista o tabla.»): the
+        # same content asked again as a list or a table is written again in that shape.
+        r"^(?![^\n]{0,160}\b(?:archivo|archivos|file|files|carpeta|folder|nota|notas|note|notes|guarda|guardalo|"
+        r"guardala|guardar|save|excel|word|envia|enviar|send|imprime|print)\b)"
+        r"(?:dame|damelo|damela|pasame|pasamelo|ponlo|ponmelo|ponmela|hazlo|hazmelo|escribelo|escribemelo|"
+        r"give\s+me|put|make|write)\b.{0,96}\b(?:en\s+(?:forma|formato)\s+de|como|as\s+an?|in\s+an?)\s+"
+        r"(?:lista|tabla|esquema|list|table|bullet\s+points)\b|"
         r"^(?:buscame|busca|dame|decime|dime|find\s+me|give\s+me)\b.{0,32}"
         r"\b(?:palabras|words|sinonimos|synonyms|antonimos|antonyms|rimas|rhymes)\b.{0,96}$|"
         # Tanda 3 2026-09-24 «¿puedes crear un programa en java para resolver una ecuación…?» → «No creo
