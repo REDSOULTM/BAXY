@@ -3630,6 +3630,62 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // M86 (held-out t17 «tengo ganas de escuchar reggaetón»): a query press the
+    // client never showed playing stays an honest ambiguous failure and is never
+    // retried by the adapter — the script already spent its one re-press.
+    [Test]
+    public async Task SpotifyQueryPressNotSeenPlayingIsNeverRetried()
+    {
+        var runner = new SequencedProcessRunner([
+            "{\"ok\":false,\"effectObserved\":true,\"error\":\"spotify_play_clicked_not_verified\",\"title\":\"Spotify Premium\",\"selectedControl\":\"Reproducir Reggaetón Mix\",\"beforeNowPlaying\":\"after de conep\",\"observedNowPlaying\":\"after de conep\",\"pauseBefore\":false,\"selectedFlipped\":false,\"presses\":2,\"processId\":42}",
+            "{\"ok\":true,\"effectObserved\":true,\"title\":\"Wrong retry\",\"processId\":42}",
+        ]);
+        var adapter = new SpotifyDesktopAdapter(runner);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.query",
+            Json("""{"provider":"spotify","query":"reggaetón"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectObserved, Is.True);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("spotify_play_clicked_not_verified"));
+            Assert.That(receipt.Result, Is.Null);
+            Assert.That(runner.Calls, Is.EqualTo(1));
+        });
+    }
+
+    // M86: the cold client restored paused on the result's first track; the
+    // script proved playback by the paused-to-playing change after its press.
+    [Test]
+    public async Task SpotifyQueryPlaybackSeenAfterThePressIsVerified()
+    {
+        var runner = new StubProcessRunner(
+            "{\"ok\":true,\"effectObserved\":true,\"error\":null,\"title\":\"Conep - After (feat. Young Miko)\",\"selectedControl\":\"Reproducir Reggaetón Mix\",\"beforeNowPlaying\":\"after feat young miko de conep young miko\",\"observedNowPlaying\":\"after feat young miko de conep young miko\",\"pauseBefore\":false,\"selectedFlipped\":false,\"presses\":1,\"processId\":42}");
+        var adapter = new SpotifyDesktopAdapter(runner);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.query",
+            Json("""{"provider":"spotify","query":"reggaetón"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.EffectObserved, Is.True);
+            Assert.That(receipt.Result?.GetProperty("title").GetString(),
+                Is.EqualTo("Conep - After (feat. Young Miko)"));
+            Assert.That(receipt.Result?.GetProperty("query").GetString(), Is.EqualTo("reggaetón"));
+            Assert.That(receipt.Result?.GetProperty("playbackStatus").GetString(), Is.EqualTo("playing"));
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
+                Is.EqualTo("spotify_windows_uia_postread"));
+            Assert.That(runner.LastArguments[^1], Is.EqualTo("query"));
+        });
+    }
+
     // 2026-09-22 (owner's turn 148): with no Spotify process the automation died
     // after crossing the boundary and the failure travelled as an ambiguous effect.
     // Tanda 6 «pasar al siguiente episodio» with nothing playing was told Spotify was

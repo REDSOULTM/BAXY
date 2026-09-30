@@ -73,6 +73,9 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
                     // convergence, 12 s detail discovery and 15 s playback
                     // postread stages. The process budget must cover that
                     // verified path instead of aborting midway through it.
+                    // M86: the script's single re-press of a press that left
+                    // no trace happens inside the 15 s postread, so the
+                    // budget is unchanged.
                     TimeSpan.FromSeconds(55),
                     cancellationToken).ConfigureAwait(false);
                 string? line = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
