@@ -544,3 +544,15 @@ búsqueda 16 (27), conocimiento o código 13 (13), límite o alcance 12 (19), ot
 rota, s104 repregunta hora teniendo «18:00», s125 vencidos→retiros, p19-t2 «no encontré» con el reparto leído, p27-t4
 incoherente, w19-t4 jerga de fallo. Siguiente: redacción (idioma de la conversación, dato pedido y no el de ahora,
 frases rotas), argumentos residuales (task.update parcial, hora con parte del día pasada), búsqueda y conocimiento.
+
+## D49. `full7` rechazado; la causa común con `full6` son las parejas mínimas; `full8` → `full9` (2026-09-30 13:30)
+`full7` (P0 sólo con T1–T21 = datos de `full3` con argumentos; 3 170) aislado en DEV-A con el esquema anidado:
+decisión **227/260** (igual que `full6`; `full3` 237), arreglados 9, rotos 16, argumentos 49/52. Quitar T22–T27 no
+lo arregló. Los rotos que comparten `full6` y `full7` y no tiene `full3`: «Dime el pronóstico», «I need weather info
+now», «Cancela mi temporizador», «mutealo un toque» → clarify. Lo único de P0 que `full3` no tenía y enseña eso son
+las **parejas mínimas** (una acción con el dato quitado → clarify, R7 §2.3): el modelo generaliza «falta un valor →
+pregunta» a campos con valor por defecto. `full8` (P0 + públicas + T22–T27 con cuotas, con parejas y 11 % de clarify)
+murió a la 01:10 en el ejemplo 1 600 (redpc se suspendió) y no se relanza tal cual: **`full9`** = los mismos datos sin
+parejas y con clarify en 6,1 % (como `full3`), 4 587 ejemplos, lanzado 13:25 con un seguro de no-suspensión sólo mientras
+entrena (SetThreadExecutionState; sin tocar la configuración de energía). Regla igual: decisión ≥ 237, argumentos
+≥ 55/57, ninguna clase −2 pts, luego integrado.
