@@ -592,6 +592,57 @@ def substituted_reference(text: str, antecedent: str) -> str | None:
     return with_object(text, antecedent_object(antecedent))
 
 
+# M84 (DEV-D v3o D-p01-t3 «no, cancel» after «show christmas list» → «I do not cancel: canceling a list is not something
+# I do.»; D-p14-t3 «Cancelar foto» after BAXY said it takes no slow-motion photos → «No cancelo la foto.»): taking back
+# what was just asked is said to BAXY, whole («no, cancel», «olvídalo») or naming only what that request named.
+_TAKE_BACK = re.compile(
+    r"^(?:(?:no|nop|nah|mejor|bueno|ok|okay|oh)[\s,.!]+)*(?:cancela|cancelala|cancelalo|cancelar|cancel|anula|anular|"
+    r"olvida|olvidate\s+de|olvidalo|forget(?:\s+about)?|never\s*mind|nevermind|deja|dejalo|dejala)"
+    r"(?:\s+(?:el|la|los|las|lo|mi|the|my|that|this|it|eso|esa|ese))?(?:\s+(?P<object>[a-z]+(?:\s+[a-z]+){0,2}))?"
+    r"[\s.!]*$"
+)
+
+
+def takes_back(text: str, antecedent: str | None) -> bool:
+    """The whole message takes back the request before it (see above): a bare refusal, or a cancellation whose object
+    words were all said in that request."""
+
+    folded = _fold(text).strip(" ¿?¡!.,")
+    if not folded or not antecedent:
+        return False
+    if _REFUSAL.fullmatch(folded):
+        return True
+    found = _TAKE_BACK.fullmatch(folded)
+    if found is None:
+        return False
+    named = [word for word in _words(found.group("object") or "") if word not in _STOPWORDS]
+    said = {word[:4] for word in _words(antecedent)}
+    return all(word[:4] in said for word in named)
+
+
+def place_substituted(text: str, antecedent: str | None) -> str | None:
+    """M84 (DEV-D v3o D-w02-t2 «y si allá son las 10 de la mañana acá qué hora es» after «qué hora es en madrid» → a
+    reply that failed): «allá», «there» is the place whose time the request before asked; it is said by its name
+    («… si en Madrid son las 10 …»), in the person's words. None without that place."""
+
+    from .temporal import clock_elsewhere
+
+    if not antecedent:
+        return None
+    asked = clock_elsewhere(_fold(antecedent))
+    said = " ".join(str(text or "").split())
+    folded = _fold(said)
+    found = _PLACE_ANAPHOR.search(folded)
+    if asked is None or found is None or len(folded) != len(said) or len(_PLACE_ANAPHOR.findall(folded)) != 1:
+        return None
+    before = folded[: found.start()].split()
+    preposition = "" if before and before[-1] in {"en", "in", "at", "de", "from"} else (
+        "en " if spanish(said) else "in "
+    )
+    place = asked.said.title() if asked.said == asked.place else asked.said
+    return said[: found.start()] + preposition + place + said[found.end():]
+
+
 # How much, how long or how politely an order is said, never what it acts on («seguí un rato», «pause it now»).
 _ORDER_TAIL = _DEGREE | frozenset(
     "un una ya ahora de nuevo otra vez porfa por favor please pls now again a bit for sec second moment nomas mas more "

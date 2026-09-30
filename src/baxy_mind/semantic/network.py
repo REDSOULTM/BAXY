@@ -176,6 +176,7 @@ _CALENDAR_WAS = (
     r"(?:es|son|era|eran|sera|seran|fue|fueron|cae|caen|caera|caeran|cayo|cayeron|toca|tocara|tenemos|tendremos|"
     r"is|are|was|were|will\s+be|falls?(?:\s+on)?|fell(?:\s+on)?)"
 )
+_CALENDAR_FELL = r"(?:cae|caen|caera|caeran|cayo|cayeron|caia|caian)"
 _RELATIVE_CALENDAR_QUESTION = re.compile(
     rf"(?:(?:y|and)\s+)?{_CALENDAR_ASK}(?:"
     rf"(?:que|cual|cuales|what|which)\s+{_CALENDAR_UNITS}\s+{_CALENDAR_WAS}\s+(?P<after>.+)|"
@@ -183,7 +184,12 @@ _RELATIVE_CALENDAR_QUESTION = re.compile(
     rf"what(?:'s|’s|\s+is|\s+was|\s+will\s+be)\s+(?:the\s+)?(?:date|day)\s+(?:of\s+)?(?P<after_what>.+)|"
     rf"(?:cuando|when)\s+{_CALENDAR_WAS}\s+(?P<after_when>.+)|"
     rf"(?P<before>.+?)\s*,?\s*(?:que|cual|cuales|what|which)\s+{_CALENDAR_UNITS}\s+"
-    rf"(?:{_CALENDAR_WAS}|(?:is|was|will)\s+it(?:\s+be)?)"
+    rf"(?:{_CALENDAR_WAS}|(?:is|was|will)\s+it(?:\s+be)?)|"
+    # M84 (DEV-D v3o D-s003 «El finde pasado, ¿en qué cayó?» was read as last weekend's weather): «caer en» says
+    # the date a day falls on, with or without the unit («¿en qué cae el lunes?», «X, ¿en qué cayó?»).
+    rf"en\s+(?:que|cual)\s+(?:{_CALENDAR_UNITS}\s+)?{_CALENDAR_FELL}\s+(?P<after_fell>.+)|"
+    rf"(?P<before_fell>.+?)\s*,?\s*en\s+(?:que|cual)\s+(?:{_CALENDAR_UNITS}\s+)?{_CALENDAR_FELL}|"
+    rf"(?:on\s+)?(?:what|which)\s+{_CALENDAR_UNITS}\s+(?:did|does|will)\s+(?P<after_did>.+?)\s+fall(?:\s+on)?"
     r")"
 )
 

@@ -1428,8 +1428,13 @@ def _live_weather_request(folded: str) -> bool:
     ) and not _has(
         folded, r"\bclima\s+(?:laboral|politico|social|economico|de\s+trabajo|organizacional|familiar)\b"
     )
+    # M84 (DEV-D v3o D-s020 «It's going to rain en la casa de mamá?» was closed as a hypothesis): a statement about
+    # the weather to come said with a question mark asks it, as «is it going to rain?» does.
+    declared_question = _has(folded, r"^[¿¡\s]*(?:it'?s|it\s+is|it'?ll|it\s+will)\s+(?:going\s+to\s+)?\w") and (
+        folded.rstrip().endswith("?")
+    )
     weather = (
-        weather_head and _names_weather(folded)
+        (weather_head or declared_question) and _names_weather(folded)
         or weather_noun
         or _asks_weather_indirectly(folded)
         or _forecast_question(folded)

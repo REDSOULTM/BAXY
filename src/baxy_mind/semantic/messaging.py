@@ -485,7 +485,13 @@ _SOCIAL_ACCOUNT_READ = (
     rf"{SOCIAL_NETWORK}\b|"
     # A status for a network with what it says, as the message opens: «estado de facebook día ocupado».
     rf"^(?:(?:mi|my)\s+)?(?:estado|status)\s+(?:de|en|on|for)\s+{SOCIAL_NETWORK}[\s:,-]+\w|"
-    rf"^(?:(?:mi|my)\s+)?{SOCIAL_NETWORK}\s+(?:status|estado)[\s:,-]+\w"
+    rf"^(?:(?:mi|my)\s+)?{SOCIAL_NETWORK}\s+(?:status|estado)[\s:,-]+\w|"
+    # M84 (DEV-D v3o D-s018 «ha comentado alguien en mi comentario» → «¿En qué comentario te refieres?»): who
+    # commented, liked or answered what the person posted is read on the network, named or not.
+    r"\b(?:comentado|comento|comentaron|comenta|respondido|respondio|respondieron|reaccionado|reacciono|likeado|"
+    r"dado\s+like|dio\s+like|dieron\s+like|commented|replied|reacted|liked)\b.{0,30}\b(?:mi|mis|my)\s+"
+    r"(?:comentarios?|publicacion(?:es)?|posts?|fotos?|historias?|tuits?|tweets?|estados?|reels?|comments?|photos?|"
+    r"stories|story|status)\b"
 )
 # Dev corpus 2026-09-23 «queja a apple y hacerles saber que mi aplicación falló»: a complaint made to a company is
 # posted to it (read as feedback to BAXY before). Writing the complaint text is a draft (patterns
@@ -503,7 +509,9 @@ _ASKED_OF_THE_ACCOUNT = (
     r"\b(?:que|what|como|how|cuant[oa]s?|many|any|alg[uo]n[oa]?s?|hay|tengo|have|nuev[oa]s?|new|latest|"
     r"ultim[oa]s?|recientes?|pasa|pasando|paso|happen\w*|going\s+on|revisa|check|mira|look|muestra|muestrame|"
     r"show|dime|decime|tell|lee|leeme|read|likes?|seguidores|followers|comentarios|comments|fotos?|photos?|"
-    r"posts?|publicaciones|mensajes|messages|notificaciones|notifications)\b"
+    r"posts?|publicaciones|mensajes|messages|notificaciones|notifications|"
+    # M84 (DEV-D v3o D-s115 «my facebook update in every three hour should be available»): its updates too.
+    r"updates?|actualizaci\w+)\b"
 )
 # «abre facebook», «entra a mi instagram»: going to the site is navigation. «abrir tuit a apple» is a post.
 _SOCIAL_NAVIGATION = (

@@ -522,6 +522,7 @@ from .semantic.patterns import (  # noqa: F401 - moved to baxy_mind.semantic.pat
     _completed_missing_image_subject_request,
     unsupported_live_machine_query,
     known_unsupported_effect_request,
+    unserved_personal_request,
     resolve_explicit_clarification,
     _TEMPORAL_NUMBER_WORDS,
     _IP_LIST_REQUEST,

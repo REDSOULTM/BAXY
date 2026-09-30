@@ -85,6 +85,8 @@ def _weather_location(text: str) -> str | None:
             or _has(folded_place, _GENERIC_PLACE)
             # Tanda 7: «casa de mi hermana» is no town; a town may still be named after it («… en Lima»).
             or _has(folded_place, rf"^(?:{_SOMEONES_PLACE})")
+            # M84 (DEV-D v3o D-s020): «mamá» in «la casa de mamá», «mom's» in «at mom's» are a person, not a town.
+            or _has(folded_place, rf"^(?:{_KIN}|{_KIN_EN}(?:['’]s)?)(?:\s+(?:house|place|home))?(?:\s|$)")
             or len(place.encode("utf-8")) > 128
         ):
             continue
@@ -132,11 +134,22 @@ def weather_destination_there(text: str) -> str | None:
 # Tanda 7 «¿Va a llover tomorrow at my sister's?» was answered for this PC's town as «en casa de tu hermana»: a
 # place said only through a person («casa de mi hermana», «lo de mi vieja», «where my dad lives», «at my mom's»)
 # is somewhere BAXY does not know. It is asked, never taken for here.
+# M84 (DEV-D v3o D-s020 «It's going to rain en la casa de mamá?» → «No tengo información sobre el clima en la casa de
+# tu mamá»): a relative is named without «mi» too («mamá», «la abuela», «mom»); where they live is the person's own
+# datum, asked for, never a limit and never looked up.
+_KIN = (
+    r"(?:(?:el|la|los|las)\s+)?(?:mama|mami|mamita|papa|papi|papito|viej[oa]|abuel[oa]s?|abu|tia|tio|tias|tios|"
+    r"madre|padre|padres|suegr[oa]s?|herman[oa]s?|prim[oa]s?|madrina|padrino|nona|nono)\b"
+)
+_KIN_EN = r"(?:mom|mum|mommy|mother|dad|daddy|father|grandma|granny|grandpa|grandparents|parents|auntie|aunt|uncle)"
 _SOMEONES_PLACE = (
     r"\b(?:(?:la\s+)?casa\s+de\s+(?:mi|mis|tu|tus|su|sus|nuestr[oa]s?)\s+\w+|lo\s+de\s+(?:mi|mis|tu|tus|su|sus)\s+\w+|"
+    rf"(?:la\s+)?casa\s+de\s+{_KIN}|lo\s+de\s+{_KIN}|donde\s+(?:vive|viven|trabaja|trabajan|esta|estan)\s+{_KIN}|"
     r"donde\s+(?:vive|viven|trabaja|trabajan|esta|estan)\s+(?:mi|mis|tu|tus|su|sus)\s+\w+|"
     r"(?:at|to|in|near|by)\s+(?:my|your|his|her|our|their)\s+\w+['’]s\b|"
     r"(?:my|your|his|her|our|their)\s+\w+['’]s\s+(?:house|place|home)|"
+    rf"(?:at|to|in|near|by)\s+{_KIN_EN}['’]s\b|{_KIN_EN}['’]s\s+(?:house|place|home)|"
+    rf"where\s+{_KIN_EN}\s+(?:lives|works|is|stays)|"
     r"where\s+(?:my|your|his|her|our|their)\s+\w+\s+(?:lives|live|works|work|is|are|stays))"
 )
 
