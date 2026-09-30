@@ -612,8 +612,15 @@ internal static class UserMessagePolicy
             // keeps its out_of_catalog boundary (plan post-goal 2026-09-20,
             // Fase 1 grupo F; mirrors the mind's own extra_claim veto).
             ("looks_like_failure",
-                LooksLikeFailure(reply)
+                // M85 (DEV-D v3o D-p36-t2): what the characters of a written dialogue say inside quotes is theirs.
+                LooksLikeFailure(WithoutQuotedSpeech(reply))
                 && !(unsupportedByMind && !ClaimsFailedAttempt(reply))
+                // M85 (DEV-D v3o D-p27-t1 «I don't know what you like, so I can't recommend anything specific. What
+                // kind of movies do you usually enjoy?»): what BAXY cannot say yet (recommend, tell, choose), said to
+                // ask the person for what is missing, is a question, not a failure told. «I can't browse the
+                // internet… What do you like?» still is one. Twin of the mind's asserted_failure exemption.
+                && !(EndsAskingThePerson(reply) && !ClaimsFailedAttempt(reply)
+                    && !LooksLikeFailure(WithoutSayingInability(WithoutQuotedSpeech(reply))))
                 // M75 (DEV-D v3l D-p02-t2): «No puedo hacer fotos» answers «¿Serías capaz de hacer foto ahora?».
                 && !(AsksWhetherAble(user) && !ClaimsFailedAttempt(reply))
                 && !OnlyEchoesThePersonsFailures(reply, userText)
@@ -1222,11 +1229,24 @@ internal static class UserMessagePolicy
         || folded.Contains("quien te pregunta", StringComparison.Ordinal)
         || folded.Contains("proposito de", StringComparison.Ordinal));
 
-    private static bool LooksLikeAmbiguousAction(string user) =>
-        ContainsAny(
-            user,
-            ["abreme eso", "abre eso", "cierra aquello", "open that", "close that",
-                "hazlo", "do it", "do that", "haz eso", "open it", "close it"]);
+    // M85 (DEV-D v3o D-p35-t1 «Has un análisis de FODA sobre la empresa Adidas… A la vez hazlo con la experiencia que
+    // tendría un experto en marketing.»: the FODA the mind wrote was refused as ambiguous_without_question and the turn
+    // asked back): a pointer with no object is the request only when it is (nearly) all the message, as the mind's
+    // INTENT_AMBIGUOUS_ACTION reads it; «hazlo con la experiencia de…» inside a request that names the work is not.
+    private static readonly string[] AmbiguousActionTokens =
+        ["abreme eso", "abre eso", "cierra aquello", "open that", "close that",
+            "hazlo", "do it", "do that", "haz eso", "open it", "close it"];
+
+    private static bool LooksLikeAmbiguousAction(string user)
+    {
+        int words = user.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length;
+        return AmbiguousActionTokens.Any(token =>
+            words <= token.Split(' ').Length + 3
+            && Regex.IsMatch(
+                user,
+                @"(?<![\p{L}\p{N}])" + Regex.Escape(token) + @"(?![\p{L}\p{N}])",
+                RegexOptions.CultureInvariant));
+    }
 
     private static bool LooksLikeKnowledgeQuestion(string user) =>
         ContainsAny(user, UserMessagePhrases.KnowledgeAsks);
@@ -1655,6 +1675,24 @@ internal static class UserMessagePolicy
 
     // Past-tense own failure: «no pude», «no logré», «I couldn't», «failed to».
     // A present limit («no puedo», «I cannot») is not an attempt.
+    // M85: twins of semantic.conversation.without_quoted_speech and ends_asking_the_person.
+    private static readonly Regex QuotedSpeech = new(
+        "\"[^\"\\n]*\"|«[^»\\n]*»|“[^”\\n]*”", RegexOptions.CultureInvariant);
+
+    internal static string WithoutQuotedSpeech(string reply) => QuotedSpeech.Replace(reply ?? string.Empty, " ");
+
+    private static readonly Regex SayingInability = new(
+        @"\b(?:can\s*not|can['’]t|cannot|no\s+(?:te\s+|le\s+|les\s+)?puedo)\s+(?:\w+\s+)?"
+        + @"(?:recommend|suggest|say|tell|know|choose|pick|guess|decide|recomendar\w*|sugerir\w*|decir\w*|saber|"
+        + @"elegir\w*|adivinar\w*|decidir\w*)\b",
+        RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+
+    internal static string WithoutSayingInability(string reply) =>
+        SayingInability.Replace(FoldForPolicy(reply ?? string.Empty), " ");
+
+    internal static bool EndsAskingThePerson(string reply) =>
+        Regex.IsMatch((reply ?? string.Empty).Trim(), "\\?[\\s\"»”')]*$", RegexOptions.CultureInvariant);
+
     private static bool ClaimsFailedAttempt(string reply) =>
         Regex.IsMatch(
             FoldForPolicy(reply),
@@ -2060,7 +2098,13 @@ internal static class UserMessagePolicy
         @"\b" + CodeWritingVerb + @"\b.{0,60}\b" + CodePieceNoun + "|"
         + @"\b" + CodeWritingVerb + @"\b.{0,160}\b(?:en|in|a|to|into|para|for|con|with|using|usando)\s+(?:el\s+|the\s+)?"
         + @"(?:lenguaje\s+(?:de\s+programacion\s+)?)?" + CodeLanguageName + "|"
-        + @"^[\s¿¡]*(?:y\s+|and\s+)?(?:ahora\s+|now\s+)?(?:en|in)\s+" + CodeLanguageName + @"[\s?!.]*$",
+        + @"^[\s¿¡]*(?:y\s+|and\s+)?(?:ahora\s+|now\s+)?(?:en|in)\s+" + CodeLanguageName + @"[\s?!.]*$|"
+        // M85 (DEV-D v3o D-w20-t1 «estoy haciendo un script en Python y necesito leer un CSV y sacar el promedio de la
+        // columna price, can you write it?»: the mind wrote the script and this twin refused it as internal_code, ⚠):
+        // the piece of code described first and asked for after with a pronoun, as M81 already reads it in the mind.
+        + @"\b" + CodePieceNoun + @".{0,240}\b(?:(?:write|code|make)\s+(?:it|this|that|one)|"
+        + @"(?:escrib[ei]|haz|hace|codea)(?:lo|la|melo|mela)|"
+        + @"(?:lo|la|me\s+lo|me\s+la)\s+(?:puedes|podes|podrias|podras)\s+(?:escribir|hacer|codear))\b",
         RegexOptions.CultureInvariant);
 
     internal static bool AsksForCode(string? userText, string? priorUserText) =>

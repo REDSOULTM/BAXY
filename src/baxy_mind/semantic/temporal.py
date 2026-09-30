@@ -49,8 +49,12 @@ _COUNTDOWN_TARGET = re.compile(
 _CLOCK_LATER = re.compile(
     r"\b(?:que\s+hora\s+(?:sera|seran|va\s+a\s+ser)|what\s+time\s+(?:will\s+it\s+be|is\s+it\s+going\s+to\s+be))\b"
 )
+# M85 (DEV-D v3o D-s025 «si pasan cuarenta minutos, ¿qué hora será?» → «la hora será la que indique tu reloj más esos
+# cuarenta minutos»): the span said as time that passes is the same span.
 _LATER_BY = re.compile(
-    r"\b(?:de\s+aqui\s+a|dentro\s+de|en|in)\s+(?P<n>(?:[a-z0-9]+\s+){0,3}?)(?P<unit>minutos?|horas?|minutes?|hours?)\b"
+    r"\b(?:de\s+aqui\s+a|dentro\s+de|en|in|after|(?:si|cuando)\s+(?:pasan|pasen|transcurren|transcurran)|"
+    r"pasad[oa]s|(?:if|when)(?:\s+another)?)\s+(?P<n>(?:[a-z0-9]+\s+){0,3}?)(?P<unit>minutos?|horas?|minutes?|hours?)"
+    r"(?:\s+(?:pass|go\s+by|have\s+passed|more))?\b"
 )
 
 
@@ -690,6 +694,43 @@ def clock_elsewhere(folded: str) -> ClockElsewhere | None:
     clock_is_there = clock is not None and here is not None and here.start() > position
     zone_asked = _has(rest, r"\b(?:time\s*zones?|timezones?|zona\s+horaria|huso\s+horario)\b")
     return ClockElsewhere(place, place, clock, clock_is_there, difference, zone_asked)
+
+
+# M85 (DEV-D v3o D-w02-t2 «y si allá son las 10 de la mañana acá qué hora es» after «qué hora es en madrid»: talked,
+# and the writer said this PC's clock as the answer, ⚠ clock_pattern): «allá», «allí», «there» in a clock question
+# point at the place of the clock question before it. Only a place the person named in their own earlier question.
+_CLOCK_PLACE_ANAPHOR = re.compile(r"\b(?:alla|alli|over\s+there|there)\b")
+
+
+def clock_there_request(text: str, prior_user_texts: Iterable[str]) -> str | None:
+    """«y si allá son las 10 de la mañana acá qué hora es» after «qué hora es en madrid» → «y si en madrid son las 10
+    de la mañana acá qué hora es»: the message with «allá» said as the place of the last clock question that named
+    one, when that reads as the time of another place; None otherwise."""
+
+    said = " ".join(str(text or "").split())
+    folded = _fold(said)
+    anaphor = _CLOCK_PLACE_ANAPHOR.search(folded)
+    if anaphor is None or clock_elsewhere(folded) is not None:
+        return None
+    # The person's own spelling is kept where folding kept the length (accents, capitals).
+    written = said if len(folded) == len(said) else folded
+    for prior in reversed(tuple(prior_user_texts)):
+        prior_said = " ".join(str(prior or "").split())
+        prior_folded = _fold(prior_said)
+        before = clock_elsewhere(prior_folded)
+        if before is None:
+            continue
+        found = re.search(r"\b" + re.escape(before.said) + r"\b", prior_folded)
+        place = (
+            prior_said[found.start():found.end()]
+            if found is not None and len(prior_folded) == len(prior_said)
+            else before.said
+        )
+        lead = "in" if re.fullmatch(r"(?:over\s+)?there", anaphor.group(0)) else "en"
+        resolved = f"{written[:anaphor.start()]}{lead} {place}{written[anaphor.end():]}"
+        read = clock_elsewhere(_fold(resolved))
+        return resolved if read is not None and read.place == before.place else None
+    return None
 
 
 _WEEKDAYS = (

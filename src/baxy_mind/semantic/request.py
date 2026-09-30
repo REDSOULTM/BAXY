@@ -447,6 +447,20 @@ _LIMIT = re.compile(
     r"limitaciones|restriccion|restricciones|refuse|refuses|"
     r"limit|limits|limitation|limitations|restriction|restrictions)\b"
 )
+# M85: how sure, reliable or right BAXY or his answer is («¿estás seguro al 100%?», «¿qué tan confiable puedes ser?»,
+# «are you sure?», «is that right?»). Folded.
+_RELIABILITY_ASKED = re.compile(
+    r"\b(?:(?:estas|esta|eres|es|son|seras)\s+(?:(?:\w+\s+)?(?:100|cien)\s*%?\s*)?(?:segur[oa]s?|ciert[oa]s?|correct[oa]s?|"
+    r"verdad|confiables?|fiables?|precis[oa]s?)|(?:que\s+tan|cuan|how)\s+(?:confiable|fiable|segur[oa]|precis[oa]|"
+    r"reliable|trustworthy|accurate|sure|certain)|puedo\s+(?:confiar|fiarme)|can\s+i\s+(?:trust|rely)|"
+    r"are\s+you\s+(?:\w+\s+)?(?:sure|certain)|is\s+(?:that|this|it)\s+(?:really\s+)?(?:right|correct|true|accurate))\b"
+)
+def asks_about_reliability(text: object) -> bool:
+    """«¿estás seguro?», «¿qué tan confiable puedes ser?», «is that right?»: how far BAXY's answer can be trusted."""
+
+    return _RELIABILITY_ASKED.search(fold(str(text or ""))) is not None
+
+
 _NEGATED_DOING = re.compile(
     r"\b(?:no|nunca|jamas|never|not|cannot|cant|wont)\s+"
     r"(?:(?:me|te|le|nos|os|les|suelo|sueles|suele|suelen)\s+)*"
@@ -757,6 +771,9 @@ def _read_intents(ask: str) -> frozenset[str]:
         and not continue_constraint
         and not _contains_any(folded, _NEGATIVE_TOKENS)
         and _KNOWING_ABOUT_A_TOPIC.search(folded) is None
+        # M85 (DEV-D v3o D-p35-t3 «¿Qué tan confiable puedes ser?» → a list of what BAXY does): how far he can be
+        # trusted is asked of his answers, not of what he does on the PC.
+        and _RELIABILITY_ASKED.search(folded) is None
     )
     # «Qué puedes hacer y qué no haces» pide capacidades: el override que ya
     # gobernaba las frases enteras gobierna también la forma.

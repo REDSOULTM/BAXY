@@ -50,7 +50,8 @@ from .semantic import knowledge as semantic_knowledge
 from .semantic import quantities as semantic_quantities
 from .semantic.grammar import spoken_number_request
 from .semantic.network import (
-    asks_calendar_part, calendar_parts_asked, days_until_asked, present_calendar_question, relative_calendar_days,
+    asks_calendar_part, calendar_parts_asked, days_until_asked, hours_until_asked, present_calendar_question,
+    relative_calendar_days,
 )
 from .semantic.web import (
     weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
@@ -129,6 +130,7 @@ from .semantic.conversation import (
     ambiguous_action_verb,
     asks_a_laugh,
     asks_a_polar_question_about_the_person,
+    asks_about_own_past_act,
     asks_an_extended_answer,
     asks_baxys_name,
     asks_for_code,
@@ -138,17 +140,22 @@ from .semantic.conversation import (
     asks_whether_able,
     assent_without_action,
     assistant_desire_thing,
+    content_shape_asked,
     coordinates_actions,
+    ends_asking_the_person,
     names_a_current_public_office,
     quoted_literals,
     quoted_translation_phrase,
     random_draw_request,
     recall_asked,
+    request_names_the_act,
     requested_infinitive_stems,
     sarcasm_question,
     spelling_word,
     translation_without_its_text,
     versus_contenders,
+    without_quoted_speech,
+    without_saying_inability,
 )
 from .semantic.apps import asks_to_close, asks_to_install_or_remove, object_asked_to_close, wants_to_work_in_it
 from .semantic.audio import asks_about_mute
@@ -166,7 +173,7 @@ from .semantic.network import (
     names_the_time,
 )
 from .semantic.notes import _PERSONAL_RECORD_STORE, names_an_own_record_store, names_the_title
-from .semantic.request import _conversation_response_language
+from .semantic.request import _conversation_response_language, asks_about_reliability
 from .semantic.system import reports_the_gpu_stopped
 from .semantic.ui import asks_about_buttons, asks_to_see_the_screen
 from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_future, weather_asks_later_in_the_day, weather_asks_later_today, weather_asks_rain_now, weather_asks_today, weather_asks_whether_it_rains, weather_asked_date, weather_asks_later_time, weather_asks_past, weather_names_date
@@ -1984,6 +1991,32 @@ def _normalized_dialogue_text(value: object) -> str:
     )
 
 
+# M85 (DEV-D v3o D-p27-t5 «Nope, that's a lot.» → «That is a lot.»): the person's statement said back, with its
+# interjection dropped or a contraction spelled out, is still an echo.
+_ECHO_INTERJECTION = frozenset(
+    "nope no nah yeah yep yes ok okay oh ah well so si sí vale bueno pues ya uh hmm mm".split()
+)
+_ECHO_CONTRACTIONS = {"s": "is", "re": "are", "m": "am", "ll": "will", "ve": "have", "d": "would", "t": "not"}
+
+
+def _echo_words(value: object) -> list[str]:
+    words = _normalized_dialogue_text(value).split()
+    spelled = [_ECHO_CONTRACTIONS.get(word, word) for word in words]
+    while spelled and spelled[0] in _ECHO_INTERJECTION:
+        spelled.pop(0)
+    return spelled
+
+
+def _says_the_person_back(reply: object, request: object) -> bool:
+    """A short reply whose words are the person's own words (interjections and contractions aside)."""
+
+    said, asked = _echo_words(reply), _echo_words(request)
+    if not (0 < len(said) <= 8 and said == asked):
+        return False
+    # A greeting, thanks or a goodbye is answered in kind («hola» → «¡Hola!»).
+    return not (dialogue_slot.is_social(str(request or "")) or read_request(str(request or "")).greets)
+
+
 def _literal_recall_reference(
     history: object,
     current: object,
@@ -2413,6 +2446,51 @@ _PREFERENCE_FUNCTION_WORDS = frozenset({
 _WRITTEN_CONTENT_SHAPES = frozenset({"free_content", "content_draft", "roleplay_draft", "translation", "spelling"})
 
 
+def _content_shape_instruction(request: object, language: str | None) -> str:
+    """M85 (DEV-D v3o D-p32-t2, D-p36-t2): the shape the person asked the content in, said to the writer, or ""."""
+
+    english = language == "en"
+    shape = content_shape_asked(str(request or ""))
+    if shape == "dialogue":
+        return (
+            "Write only the new lines of the dialogue before, each one with the name of who speaks followed by a "
+            "colon, as in that dialogue; keep what the work is really like."
+            if english
+            else "Escribe sólo las líneas nuevas del diálogo anterior, cada una con el nombre de quien habla seguido "
+            "de dos puntos, como en ese diálogo; respeta cómo es de verdad la obra."
+        )
+    if shape == "table":
+        return (
+            "Write it as a table: one row per line, its columns separated by « | »."
+            if english
+            else "Escríbelo como tabla: una fila por línea, con sus columnas separadas por « | »."
+        )
+    if shape == "list":
+        return (
+            "Write it as a list: one item per line, each starting with «- »."
+            if english
+            else "Escríbelo como lista: un elemento por línea, cada uno empezando por «- »."
+        )
+    return ""
+
+
+# The reply's own lines (wording, not the person's): a speaker's label, a list item.
+_SPEAKER_LINE = re.compile(r"^\s*[^\W\d_][\w .'’-]{0,40}:\s*\S")
+_LIST_LINE = re.compile(r"^\s*(?:[-•*·–]|\d{1,2}[.)])\s*\S")
+
+
+def _misses_content_shape(value: object, request: object) -> bool:
+    """A list asked written as one line, or new dialogue lines asked written with no speaker (M85)."""
+
+    lines = [line for line in str(value or "").splitlines() if line.strip()]
+    shape = content_shape_asked(str(request or ""))
+    if shape == "dialogue":
+        return not any(_SPEAKER_LINE.match(line) for line in lines)
+    if shape in {"list", "table"}:
+        return sum(1 for line in lines if _LIST_LINE.match(line) or line.count("|") >= 2) < 2
+    return False
+
+
 def _shaped_conversation_answer_violates_contract(
     value: object,
     request: object,
@@ -2459,7 +2537,7 @@ def _shaped_conversation_answer_violates_contract(
         return True
     if shape is None:
         # Shaped replies carry their own question rules; the unshaped one is held to the prompt's «sin ofertas».
-        return visible_reply_offers_more(value)
+        return visible_reply_offers_more(value) or _misses_content_shape(value, request)
     content = str(value or "").strip()
     if shape == "roleplay_draft":
         participants = _roleplay_participant_names(request)
@@ -2495,7 +2573,7 @@ def _shaped_conversation_answer_violates_contract(
     if shape in {"content_draft", "translation"}:
         return not content or _normalized_dialogue_text(content) == (
             _normalized_dialogue_text(request)
-        )
+        ) or (shape == "content_draft" and _misses_content_shape(content, request))
     if shape == "how_it_works":
         # Several sentences are expected; a question back, a chat-only
         # self-description (no PC) or a universal behaviour claim («siempre
@@ -3900,7 +3978,15 @@ _SETTLED_PLAN = re.compile(
     r"in\s+progress|on\s+its\s+way)|(?:is\s+)?confirmed\s+to\s+(?:proceed|go\s+ahead|start)|"
     r"(?:el|tu|este|ese|la)?\s*(?:plan|pedido|reserva|solicitud|compra|todo|eso)\s+(?:ya\s+)?(?:esta|queda|quedo|fue|"
     r"ha\s+sido)\s+"
-    r"(?:ya\s+)?(?:confirmad[oa]|aprobad[oa]|en\s+marcha|en\s+curso))\b"
+    r"(?:ya\s+)?(?:confirmad[oa]|aprobad[oa]|en\s+marcha|en\s+curso)|"
+    # M85 (DEV-D v3o p24-t5 «Confirmed, the procedure will proceed.» with nothing played): the settlement said as the
+    # sentence's own opening word, and the plan, procedure or request said to go ahead from now on.
+    r"^\W*(?:confirmed|approved|confirmad[oa]|aprobad[oa])\b(?!\s+(?:that|by|que|por)\b)|"
+    r"(?:the|your|this|that|it|el|tu|este|ese|la|lo)\s+(?:(?:plan|procedure|process|order|request|operation|playback|"
+    r"booking|purchase|procedimiento|proceso|operacion|reproduccion|pedido|solicitud|reserva|compra)\s+)?"
+    r"(?:(?:will|shall)\s+(?:now\s+)?|(?:is|are)\s+(?:now\s+)?(?:going\s+to\s+)?)(?:proceed(?:ing)?|go(?:ing)?\s+ahead)|"
+    r"(?:el|la|tu|este|ese|esta)\s+(?:plan|procedimiento|proceso|pedido|solicitud|operacion|reproduccion|reserva|"
+    r"compra)\s+(?:se\s+)?(?:procedera|seguira\s+adelante|va\s+a\s+(?:proceder|seguir\s+adelante)))\b"
 )
 # M79 (DEV-D v3m p27-t4/t5 «I don't have any movies featuring Eugene Dynarski in my database.»): BAXY has no database,
 # catalog or records of his own to look things up in; saying so invents where an answer would come from. Folded.
@@ -3922,6 +4008,74 @@ def visible_reply_settles_a_plan(value: object, request: object = "") -> bool:
     return False
 
 
+# M85 (DEV-D v3o D-p09-t3 «never mind do not add barbells to my fitness list» → «I did not add barbells to your fitness
+# list.» right after adding them; D-w01-t2 «oye y cuánta sal le echo al agua» → «No he añadido sal al agua.»): a turn that
+# ran nothing has no write of its own to deny either, unless the person asked about that act or for it
+# (semantic.conversation.request_names_the_act), or the denial says why («No lo añadí: no leí tu lista.»).
+_DENIAL_REASON = re.compile(r"^[^.!?]*?(?::|;|\bporque\b|\bya\s+que\b|\bpues\b|\bbecause\b|\bsince\b)\s*\S")
+
+
+def visible_reply_denies_an_own_write(value: object, request: object = "") -> bool:
+    """A write told as not done («I did not add», «No he añadido»), bare, in a reply to something that did not ask
+    about it nor for it."""
+
+    folded = _reading_fold(str(value or ""))
+    denied = next(
+        (
+            found for found in _NEGATED_OWN_WRITE.finditer(folded)
+            # A failed attempt («no pude», «I couldn't») is the failure checks' (asserted_failure), not a denial.
+            if re.search(r"\b(?:pude|could|couldn'?t|able)\b", found.group(0)) is None
+        ),
+        None,
+    )
+    if denied is None or _DENIAL_REASON.search(folded[denied.end():]) is not None:
+        return False
+    return not request_names_the_act(str(request or ""), denied.group(0).split()[-1])
+
+
+# M85 (DEV-D v3o D-p27-t1 «Any good movies for me to watch?» → «You should check out the latest sci-fi flick about time
+# travel, it's really gripping.», with nothing read): a work recommended or called new with no title is a work nobody can
+# find; it stands for a real one only by its name. Folded.
+_WORK_NOUN = (
+    r"(?:movies?|films?|flicks?|series|shows?|documentar(?:y|ies)|books?|novels?|songs?|albums?|games?|"
+    r"peliculas?|pelis?|series|documentales?|libros?|novelas?|canciones|cancion|temas?|discos?|albumes|album|juegos?)"
+)
+_UNNAMED_WORK_FRAME = re.compile(
+    r"\b(?:check\s+out|you\s+(?:should|could|might|must|would)\s+(?:(?:really|definitely)\s+)?(?:watch|see|read|try|"
+    r"listen\s+to|play|enjoy|like|love)|i\s+(?:would\s+)?(?:recommend|suggest)|(?:te|le|les)\s+(?:recomiendo|"
+    r"recomendaria|sugiero)|(?:deberias|podrias)\s+(?:ver|leer|escuchar|jugar|probar)|"
+    r"(?:the|a|an|la|el|una|un)\s+(?:(?:very|really|muy)\s+)?(?:latest|newest|new|recent|brand\s+new|nuev[oa]|"
+    r"ultim[oa]|reciente))\b"
+)
+
+
+_UNNAMED_WORK_HINT = {
+    "es": "No leíste qué se estrena ni qué es nuevo: si recomiendas, nombra por su título, entre comillas, obras que "
+    "conozcas, sin decir que son nuevas, recientes ni las últimas. Una o dos frases.",
+    "en": "You read nothing about what is new or out now: if you recommend, name works you know by their title, in "
+    "quotation marks, without calling them new, recent or the latest. One or two sentences.",
+}
+
+
+def visible_reply_recommends_an_unnamed_work(value: object) -> bool:
+    """A sentence that recommends, or calls new, a work (a movie, a book, a song) without naming any."""
+
+    for sentence in re.split(r"(?<=[.!?…])\s+|\n+", str(value or "").strip()):
+        if "?" in sentence or "¿" in sentence or re.search(
+            r"[\"«“][^\"»”]+[\"»”]|‘[^’]+’|(?<!\w)'[^']+'(?!\w)", sentence,
+        ):
+            continue
+        folded = _reading_fold(sentence)
+        frame = _UNNAMED_WORK_FRAME.search(folded)
+        if frame is None or re.search(rf"\b{_WORK_NOUN}\b", folded) is None:
+            continue
+        # A title: a capitalized word that is not the sentence's first, nor «I» / «BAXY».
+        words = re.findall(r"[^\W\d_][\w'’-]*", sentence)
+        if not any(word[:1].isupper() and word not in {"I", "BAXY"} for word in words[1:]):
+            return True
+    return False
+
+
 def visible_reply_claims_an_own_store(value: object, request: object = "") -> bool:
     """BAXY speaks of a database, catalog or records of his own (see above), unless the person named it."""
 
@@ -3939,6 +4093,10 @@ def conversation_world_claim(value: object, request: object = "", prior_requests
 
     if visible_reply_claims_an_effect(value, request) or visible_reply_settles_a_plan(value, request):
         return "effect_claim"
+    if visible_reply_denies_an_own_write(value, request):
+        return "own_write_denied"
+    if visible_reply_recommends_an_unnamed_work(value):
+        return "unnamed_work"
     if visible_reply_claims_an_own_store(value, request):
         return "own_store_claim"
     if visible_reply_asserts_unread_personal_records(value, request, tuple(prior_requests)):
@@ -5290,7 +5448,14 @@ def _calendar_facts(local: datetime, user_text: str, language: str) -> dict[str,
     until = days_until_asked(user_text, local.date())
     if until is not None:
         # M37: the days left are counted here; the narrator copies them with today's weekday.
-        return {"weekday": _weekday_name(local, language), "until": until[0], "days_until": until[1]}
+        facts: dict[str, object] = {"weekday": _weekday_name(local, language), "until": until[0], "days_until": until[1]}
+        if hours_until_asked(user_text):
+            # M85 (DEV-D v3o D-s001): asked in hours, the time left until that day begins is counted here too.
+            day = local.date() + timedelta(days=until[1])
+            start = datetime(day.year, day.month, day.day, tzinfo=local.tzinfo)
+            hours, minutes = divmod(max(0, int((start - local).total_seconds() // 60)) if until[1] else 0, 60)
+            facts["hours_until"] = f"{hours} h" + (f" {minutes} min" if minutes else "")
+        return facts
     asked = relative_calendar_days(user_text, local.date())
     if asked:
         return {"asked_days": [{"date": day.isoformat(), "weekday": _weekday_name(day, language)} for day in asked]}
@@ -5313,6 +5478,11 @@ def _calendar_facts(local: datetime, user_text: str, language: str) -> dict[str,
 def _calendar_instruction(user_text: str) -> str:
     """What the narrator states from the calendar facts _calendar_facts carries."""
 
+    if days_until_asked(user_text, date(2000, 1, 3)) is not None and hours_until_asked(user_text):
+        return (
+            "Say that today is weekday and how much time is left until the day named in until: hours_until, copied; "
+            "0 h means it is already that day. Never compute or guess a number."
+        )
     if days_until_asked(user_text, date(2000, 1, 3)) is not None:
         return (
             "Say that today is weekday and how many days are left until the day named in until: days_until, "
@@ -5348,6 +5518,10 @@ def _misses_calendar_facts(text: str, facts: dict) -> bool:
     counts only as the capitalised month, not the English modal); the year likewise. Tanda 6: the days asked
     relative to today are named each by its day of the month and weekday, and no other date is written."""
 
+    hours_until = str(facts.get("hours_until") or "").split()
+    if hours_until and hours_until[0] != "0" and re.search(rf"(?<!\d){hours_until[0]}(?!\d)", text) is None:
+        # M85 (DEV-D v3o D-s001): asked in hours, the hours counted are the answer («Quedan dos días» is not).
+        return True
     asked = facts.get("asked_days")
     if isinstance(asked, list) and asked:
         try:
@@ -7450,6 +7624,28 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
                 spanish, english_text = _DETERMINISTIC_FAILURES[code]
                 return english_text if english else spanish
         return ""
+    if operation == "system.time" and isinstance(payload.get("clockAt"), str):
+        # M85 (DEV-D v3o D-w02-t2): another place's clock, or a said time converted between here and there, is told
+        # with the figures _place_clock_facts computed; the hours apart and the zone stay the writer's.
+        clock, given = payload.get("clock"), payload.get("given")
+        if (
+            not isinstance(clock, str) or not re.fullmatch(r"\d{2}:\d{2}", clock)
+            or (given is not None and not (isinstance(given, str) and re.fullmatch(r"\d{2}:\d{2}", given)))
+            or set(payload) - {"clock", "clockAt", "given", "givenAt", "place", "country", "day", "operation", "kind"}
+        ):
+            return ""
+        here = "here" if english else "aquí"
+
+        def at(place: object) -> str:
+            name = str(place or "").strip()
+            return here if name == here else (f"in {name}" if english else f"en {name}")
+
+        day = str(payload.get("day") or "").strip()
+        if english:
+            then = f"it's {clock} {at(payload['clockAt'])}" + (f", {day}" if day else "")
+            return (f"If it's {given} {at(payload.get('givenAt'))}, {then}." if given else then[:1].upper() + then[1:] + ".")
+        then = f"{at(payload['clockAt'])} son las {clock}" + (f" {re.sub(r'^el ', 'del ', day)}" if day else "")
+        return f"Si {at(payload.get('givenAt'))} son las {given}, {then}." if given else then[:1].upper() + then[1:] + "."
     if operation == "system.time":
         clock = payload.get("clock")
         if not isinstance(clock, str) or not re.fullmatch(r"\d{2}:\d{2}", clock) or set(payload) - {
@@ -13754,6 +13950,12 @@ def compose_visible_defect(
         )
         if world_claim:
             return world_claim
+        if kind == "conversation" and _says_the_person_back(stripped, said or user_text):
+            # M85 (DEV-D v3o D-p27-t5 «Nope, that's a lot.» → «That is a lot.»).
+            return "echo"
+        if kind == "conversation" and _misses_content_shape(stripped, said or user_text):
+            # M85 (DEV-D v3o D-p32-t2, D-p36-t2): a list, a table or dialogue lines asked and not written so.
+            return "content_shape"
     blob = f"{user_text} {json.dumps(situation, ensure_ascii=False)}".casefold()
     folded = stripped.casefold()
     # Un destino que ya estaba en ejecución no lo abrió este turno. El recibo lo
@@ -13927,6 +14129,10 @@ def compose_visible_defect(
     if visible_reply_breaks_article_agreement(vocabulary_text):
         return "wrong_gender"
     failure_assertions = stripped
+    if kind == "conversation":
+        # M85 (DEV-D v3o D-p36-t2): what the characters of a written dialogue say, inside quotes, is theirs, not BAXY's
+        # («Ash: "No puedo dejarlo ir."»). Twin of UserMessagePolicy.WithoutQuotedSpeech.
+        failure_assertions = without_quoted_speech(failure_assertions)
     presence = _merged_observed(situation)
     if (
         situation.get("operation") in {"media.play.youtube", "media.play.query", "media.play.exact"}
@@ -14391,6 +14597,14 @@ def compose_visible_defect(
         # is able; three such drafts died here and the turn ended in ⚠. A failed attempt claimed is still a failure
         # (twin: UserMessagePolicy looks_like_failure).
         and not (kind == "conversation" and asks_whether_able(user_text) and _FAILED_ATTEMPT.search(folded) is None)
+        # M85 (DEV-D v3o D-p27-t1 «Any good movies for me to watch?» → «I don't know what you like, so I can't recommend
+        # anything specific. What kind of movies do you usually enjoy?», refused; the fallback invented a film): what
+        # BAXY cannot do yet, said to ask the person for what is missing, is a question, not a failure told
+        # (twin: UserMessagePolicy looks_like_failure).
+        and not (
+            kind == "conversation" and ends_asking_the_person(stripped) and _FAILED_ATTEMPT.search(folded) is None
+            and not _asserts_failure(without_saying_inability(without_quoted_speech(stripped)))
+        )
         and not (kind == "conversation" and _failure_word_is_the_persons(failure_assertions, user_text))
         and not _search_not_found_report(stripped, situation)
         and not _listing_not_found_report(stripped, situation)
@@ -17617,6 +17831,10 @@ class LlmRuntime:
             ),
             "",
         )
+        if presentation_shape == "constraint_ack" and dialogue_slot.retracts_the_last_effect(text, last_assistant):
+            # M85 (DEV-D v3o D-p09-t3): a prohibition of what BAXY's last reply reports done is about that effect;
+            # the acknowledgement of a rule, written without the dialogue, denied what the dialogue shows.
+            presentation_shape = None
         # Only an explicitly classified elliptical follow-up needs the
         # reference resolver.  A welcome message is normal conversation
         # history, not evidence that a new greeting or topic is elliptical.
@@ -17679,6 +17897,8 @@ class LlmRuntime:
             and starts_new_definition_topic(
                 text, [message["content"] for message in prior_messages],
             )
+            # M85: a question about the last answer (how sure it is, how it was done) is about the dialogue.
+            and not (asks_about_reliability(text) or asks_about_own_past_act(text))
             else prior_messages
         )
         direct_knowledge = conversation_kind == "knowledge" and presentation_shape is None
@@ -17849,6 +18069,47 @@ class LlmRuntime:
             if followup_subject is not None and presentation_shape is None
             else None
         )
+        # M85 (DEV-D v3o D-p35-t2 «podrías explicarme como lo hiciste?» after BAXY only asked a question back): what
+        # BAXY did is in the dialogue, and it did nothing yet; «no tengo acceso a cómo lo hice» was the model's guess.
+        last_answer_message = (
+            {
+                "role": "system",
+                "content": (
+                    "Your last message to the person was a question: you have not done what they asked yet. Say so "
+                    "in one sentence, in the first person, naming what they asked for."
+                    if response_language == "en"
+                    else "Tu último mensaje a la persona fue una pregunta: todavía no hiciste lo que pidió. Dilo en "
+                    "una frase, en primera persona, nombrando lo que pidió."
+                ),
+            }
+            if last_assistant.rstrip().endswith("?") and asks_about_own_past_act(text)
+            else (
+                # M85 (DEV-D v3o D-p31-t2 «¿estás seguro al 100% que esto es así?» after «No encontré una lista…» →
+                # «No, no es así; hay una lista completa de diez presidentes…», D-p35-t3 «¿Qué tan confiable puedes
+                # ser?» → a list of what BAXY does): how far the last answer can be trusted is asked of that answer.
+                {
+                    "role": "system",
+                    "content": (
+                        "The person asks how far they can trust your previous answer. Answer about that answer as you "
+                        "gave it, in one or two sentences: add no fact that is not in it, and if it said you did not "
+                        "find or did not know something, say so."
+                        if response_language == "en"
+                        else "La persona pregunta cuánto puede fiarse de tu respuesta anterior. Contesta sobre esa "
+                        "respuesta tal como la diste, en una o dos frases: no añadas datos que no estén en ella, y si "
+                        "en ella dijiste que no encontraste o no sabías algo, dilo así."
+                    ),
+                }
+                if last_assistant.strip() and asks_about_reliability(text)
+                else None
+            )
+        )
+        # M85 (DEV-D v3o D-p32-t2, D-p36-t2): the content's shape asked (a list, a table, more dialogue lines).
+        content_shape = (
+            _content_shape_instruction(text, response_language)
+            if presentation_shape in {None, "content_draft"} and not code_asked
+            else ""
+        )
+        content_shape_message = {"role": "system", "content": content_shape} if content_shape else None
         # El encargo de este turno: la política de conversación, la de idioma,
         # el ancla y el tema del seguimiento. La respuesta pública no puede
         # reproducirlo —«(Note: I'm responding in English as per the internal
@@ -17874,6 +18135,8 @@ class LlmRuntime:
                 CPU_BRIEF_PRESENTATION_PROMPT if cpu_brief_presentation else None,
                 code_message["content"] if code_message is not None else None,
                 derived_message["content"] if derived_message is not None else None,
+                last_answer_message["content"] if last_answer_message is not None else None,
+                content_shape or None,
             )
             if isinstance(text_sent, str) and text_sent
         ]
@@ -17967,6 +18230,8 @@ class LlmRuntime:
                 *([cpu_brief_message] if cpu_brief_message is not None else []),
                 *([code_message] if code_message is not None else []),
                 *([derived_message] if derived_message is not None else []),
+                *([last_answer_message] if last_answer_message is not None else []),
+                *([content_shape_message] if content_shape_message is not None else []),
                 *generation_history,
                 {"role": "user", "content": presentation_text},
             ],
@@ -18037,7 +18302,10 @@ class LlmRuntime:
         is_echo = (
             not mirror_is_a_valid_answer
             and bool(content)
-            and (_normalized_dialogue_text(content) == _normalized_dialogue_text(text))
+            and (
+                _normalized_dialogue_text(content) == _normalized_dialogue_text(text)
+                or _says_the_person_back(content, text)
+            )
         )
         system_prompt_echo = echoes_system_message(
             content,
@@ -18125,6 +18393,19 @@ class LlmRuntime:
                         )
                         if visible_reply_calls_the_person_baxy(content)
                         else (
+                            # M85 (DEV-D v3o D-p09-t3, D-w01-t2): the denial of a write nobody asked about.
+                            "En este turno no hiciste nada: no digas lo que hiciste ni lo que no hiciste. Contesta, "
+                            "en una sola frase, lo que la persona dice o pregunta, con lo que muestra la conversación."
+                            if response_language != "en"
+                            else "You did nothing in this turn: do not say what you did or did not do. Answer, in "
+                            "one sentence, what the person says or asks, with what the conversation shows."
+                        )
+                        if presentation_shape not in _WRITTEN_CONTENT_SHAPES
+                        and conversation_world_claim(content, text, prior_user_requests) == "own_write_denied"
+                        else _UNNAMED_WORK_HINT["en" if response_language == "en" else "es"]
+                        if presentation_shape not in _WRITTEN_CONTENT_SHAPES
+                        and conversation_world_claim(content, text, prior_user_requests) == "unnamed_work"
+                        else (
                             # Uso real 2026-09-23 (tanda 2): «Te traigo una hamburguesa»,
                             # «Se añadirá.», «no hay queso en la lista». The generic
                             # repair did not say what was wrong with the draft.
@@ -18158,6 +18439,9 @@ class LlmRuntime:
                             "No inventes hechos ni ofrezcas acciones."
                         )
                         if shaped_contract_failure and presentation_shape == "observation_ack"
+                        # M85: a list, a table or dialogue lines asked and not written so.
+                        else content_shape
+                        if shaped_contract_failure and content_shape and _misses_content_shape(content, text)
                         else (
                             "La respuesta debe ser una sola oración declarativa "
                             "que cumpla exactamente el contrato del primer mensaje "
@@ -21930,6 +22214,29 @@ class LlmRuntime:
                         "do not ask."
                     )
                 )
+            last_said = " ".join(str(facts.get("context") or "").split())[:320]
+            if last_said.endswith("?") and asks_about_own_past_act(user_text):
+                # M85 (DEV-D v3o D-p35-t2 «podrías explicarme como lo hiciste?» after BAXY only asked a question):
+                # three drafts said «no tengo acceso» to how it was done; nothing was done yet.
+                instruct(
+                    f"\nTu último mensaje a la persona fue una pregunta («{last_said}»): todavía no hiciste lo que "
+                    "pidió. Dilo en una frase, en primera persona, nombrando lo que pidió."
+                    if response_language != "en"
+                    else f"\nYour last message to the person was a question («{last_said}»): you have not done what "
+                    "they asked yet. Say so in one sentence, in the first person, naming what they asked for."
+                )
+            elif last_said and asks_about_reliability(user_text):
+                # M85 (DEV-D v3o D-p31-t2, D-p35-t3): how far the last answer can be trusted is asked of that answer.
+                instruct(
+                    f"\nTu respuesta anterior fue: «{last_said}». La persona pregunta cuánto puede fiarse de ella: "
+                    "contesta sobre esa respuesta tal como la diste, sin añadir datos que no estén en ella."
+                    if response_language != "en"
+                    else f"\nYour previous answer was: «{last_said}». The person asks how far they can trust it: answer "
+                    "about that answer as you gave it, adding no fact that is not in it."
+                )
+            if _content_shape_instruction(user_text, response_language):
+                # M85 (DEV-D v3o D-p32-t2, D-p36-t2): the content's shape asked (a list, a table, dialogue lines).
+                instruct("\n" + _content_shape_instruction(user_text, response_language))
             user_folded = (user_text or "").casefold()
             prior_asked = facts.get("priorRequests")
             if asks_for_code(
@@ -22274,8 +22581,10 @@ class LlmRuntime:
         if dense_fact_contract or dense_inventory:
             payload["max_tokens"] = 512
         elif _search_results_text(visible_situation) is not None:
-            # Owner rule 2026-09-24: a web answer is one or two sentences.
-            payload["max_tokens"] = 160
+            # Owner rule 2026-09-24: a web answer is one or two sentences. M85 (DEV-D v3o D-p27-t3 ⚠): a draft that ran
+            # on to 160 tokens spent 4.0 of the 5 s budget and left no time for the shorter retry; no web answer
+            # published in the window runs (v3a…v3o) was longer than 327 characters, well inside 120 tokens.
+            payload["max_tokens"] = 120
         if (
             visible_situation.get("operation") == "notification.list"
             and isinstance(visible_situation.get("seen"), dict)
@@ -24625,6 +24934,24 @@ class LlmRuntime:
                     if response_language == "en"
                     else "En este turno no se ejecutó nada: no digas que hiciste, haces o harás algo. Si la persona "
                     "lo pidió, di en una frase que no lo hiciste."
+                ),
+                # M85 (DEV-D v3o D-p27-t1).
+                "unnamed_work": _UNNAMED_WORK_HINT["en" if response_language == "en" else "es"],
+                # M85 (DEV-D v3o D-p32-t2, D-p36-t2).
+                "content_shape": _content_shape_instruction(user_text, response_language),
+                # M85 (DEV-D v3o D-p27-t5).
+                "echo": (
+                    "Do not say the person's words back: answer them in your own words, in one sentence."
+                    if response_language == "en"
+                    else "No repitas las palabras de la persona: contéstale con las tuyas, en una frase."
+                ),
+                # M85 (DEV-D v3o D-p09-t3, D-w01-t2).
+                "own_write_denied": (
+                    "Nothing ran this turn: do not say what you did or did not do. Answer, in one sentence, what the "
+                    "person says or asks."
+                    if response_language == "en"
+                    else "En este turno no se ejecutó nada: no digas lo que hiciste ni lo que no hiciste. Contesta, en "
+                    "una frase, lo que la persona dice o pregunta."
                 ),
                 **dict.fromkeys(
                     ("unread_records", "unobserved_answer"),

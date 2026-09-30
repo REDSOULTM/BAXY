@@ -298,8 +298,9 @@ def test_the_answer_publishes_on_the_first_stage_and_the_writer_is_told_to_hide_
     assert "una o dos oraciones cortas" in sent
     assert "Nunca menciones la búsqueda, las páginas, los sitios ni ninguna fuente" in sent
     assert "gironaguia.com" not in sent.split("seen.results son")[1]
-    # Two short sentences fit; a walk through the pages does not.
-    assert client.payloads[0]["max_tokens"] == 160
+    # Two short sentences fit; a walk through the pages does not. M85 (DEV-D v3o D-p27-t3 ⚠): 120, so that a draft cut
+    # by its budget still leaves the shorter retry its time inside the 5 s composition.
+    assert client.payloads[0]["max_tokens"] == 120
 
 
 def test_a_draft_that_shows_the_search_is_repaired_with_its_own_hint() -> None:

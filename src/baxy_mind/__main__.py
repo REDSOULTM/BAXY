@@ -4526,6 +4526,21 @@ def _rearm_in_context(
 _ANCHORED_SCHEDULE_OPERATIONS = frozenset({"notification.schedule", "reminder.create", "calendar.event.create"})
 
 
+def _clock_read_request(text: str, history: object) -> str | None:
+    """The request as a read of this PC's clock, when the readers prove one (M85): the time of another place (with
+    «allá» said as the place of the person's last clock question) or this clock some minutes or hours later."""
+
+    folded = effect_intent._fold(text)
+    if semantic_temporal.clock_elsewhere(folded) is not None or semantic_temporal.clock_later_asked(text) is not None:
+        return text
+    prior = [
+        str(turn.get("content") or "")
+        for turn in (history if isinstance(history, list) else [])
+        if isinstance(turn, dict) and turn.get("role") == "user" and str(turn.get("content") or "").strip() != text.strip()
+    ]
+    return semantic_temporal.clock_there_request(text, prior)
+
+
 def _context_decided_result(
     message: dict[str, Any],
     *,
@@ -4578,6 +4593,19 @@ def _context_decided_result(
         # Arkansas?»): the person's own data never goes to the web (00_IDENTIDAD, invariant 6). What only the person
         # knows (where mom lives, who Miguel is) is asked, never looked up.
         decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
+    clock_request = (
+        _clock_read_request(text, history)
+        if decided.decision in {"talk", "clarify"} and "system.time" in available_operations
+        else None
+    )
+    if clock_request is not None:
+        # M85 (DEV-D v3o D-w02-t2 «y si allá son las 10 de la mañana acá qué hora es» after «qué hora es en madrid»,
+        # D-s025 «si pasan cuarenta minutos, ¿qué hora será?»): a clock the readers prove — another place's, «allá»
+        # being the place of the clock question before, or this clock later on — is this PC's clock read (system.time
+        # converts and adds), never an hour the writer says from memory.
+        decided = semantic_decider.ContextDecision(
+            request=clock_request, decision="action", operations=("system.time",), question="",
+        )
     unasked_action: dict[str, Any] | None = None
     if decided.decision == "action":
         slot = dialogue_slot.read_slot({}, history, text)
@@ -4690,9 +4718,11 @@ def _context_decided_result(
             question = ""
             objective = text
             result["objective"] = text
-        if not _recovery_question_is_valid(question, objective, history):
+        if not (
+            _recovery_question_is_valid(question, objective, history) and _recovery_question_is_valid(question, text)
+        ):
             question = llm.clarify_after_turn_failure(objective, history=history, timeout=2.5)
-            if not _recovery_question_is_valid(question):
+            if not (_recovery_question_is_valid(question) and _recovery_question_is_valid(question, text)):
                 raise PlannerContractError("aclaración del decisor inválida")
         result["kind"] = "clarify"
         result["question"] = question
@@ -6349,7 +6379,9 @@ def _recovery_question_is_valid(
         return False
     if _RECOVERY_MIRRORED_REQUEST.search(folded) is not None:
         return False
-    _ = objective
+    # M85 (DEV-D v3o D-p04-t1 «Dónde?» → «¿Dónde?»): the person's own question said back asks nothing.
+    if objective and dialogue_slot.says_the_message_back(value, objective):
+        return False
     return not _recovery_question_repeats_a_previous_turn(value, history)
 
 

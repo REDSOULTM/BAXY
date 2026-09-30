@@ -207,6 +207,59 @@ def read_slot(message: dict, history: object, current: str) -> DialogueSlot:
     return DialogueSlot(pending_request, pending_question, tuple(antecedents), last_reply, held, tuple(transcript))
 
 
+# M85 (DEV-D v3o D-p09-t3 «never mind do not add barbells to my fitness list» right after «I've added barbells to your
+# fitness list.», the same in v3f and v3m): the prohibition was closed as talk, and the reply «I did not add barbells
+# to your fitness list.» denied what BAXY had just done. A prohibition of the very act BAXY's last reply reports done,
+# on the same thing, takes that act back: it is about the last effect, never a standing rule to acknowledge.
+_RETRACTION_LEAD = re.compile(
+    r"^(?:(?:(?:never\s*mind|nevermind|forget\s+(?:it|that)|scratch\s+that|actually|wait|oh|"
+    r"olvidalo|olvida\s+(?:eso|lo)|mejor|pensandolo\s+bien|no\s+importa|dejalo|espera|pera|ah|oye)\b[\s,.;:!]*)|"
+    r"(?:no|nope)\s*[,.;:!]+\s*)+"
+)
+_RETRACTION_VERB = re.compile(
+    r"^(?:(?P<es>no|nunca|jamas)\s+(?:(?:me|te|le|les|lo|la|los|las|nos)\s+)?|(?:don'?t|do\s+not|never)\s+)"
+    r"(?P<verb>[a-z]+)\s+(?P<rest>.+)$"
+)
+_FAILED_REPORT = re.compile(
+    r"\b(?:no\s+(?:pude|se\s+pudo|logre|encontre)|could\s*n[o']t|was\s*n[o']t\s+able|not\s+able|failed|"
+    r"no\s+(?:he|ha)\s+\w+(?:ado|ido))\b"
+)
+
+
+def retracts_the_last_effect(text: str, last_reply: str | None) -> bool:
+    """«never mind, don't add barbells to my list» after «I've added barbells to your fitness list.»: the person takes
+    back the effect BAXY's last reply reports as done (the same act, on the same thing). A question, a failure told
+    or a reply about something else leaves the prohibition a prohibition."""
+
+    reply = _fold(str(last_reply or ""))
+    if not reply or "?" in reply or _FAILED_REPORT.search(reply) is not None:
+        return False
+    said = _RETRACTION_LEAD.sub("", _fold(str(text or "")).strip(" ¿?¡!.,")).strip()
+    found = _RETRACTION_VERB.match(said)
+    if found is None:
+        return False
+    verb = found.group("verb")
+    # The act: the same stem in the report («add» → «added», «añadas» → «añadido», «pongas» → «puse» is left out).
+    stem = verb[:4] if len(verb) > 5 else verb[:3]
+    done = re.search(r"\b" + re.escape(stem) + r"[a-z]*\b", reply)
+    # «El audio no está silenciado.» reports a state the act did not bring about.
+    if done is None or re.search(r"\b(?:no|not|nunca|never|isn'?t|wasn'?t)\b(?:\s+\w+){0,2}\s*$", reply[:done.start()]):
+        return False
+    things = [
+        word for word in _WORD.findall(found.group("rest"))
+        if len(word) >= 4 and word not in _STOPWORDS and word not in _FRAME_WORDS
+        and word not in {"list", "lista", "listas", "lists", "please", "porfa", "favor", "anymore", "ahora", "todavia"}
+    ]
+    return bool(things) and re.search(r"\b" + re.escape(things[0]) + r"\b", reply) is not None
+
+
+def says_the_message_back(question: str, said: str) -> bool:
+    """M85 (DEV-D v3o D-p04-t1 «Dónde?» → «¿Dónde?»): a question that is the person's own message, word for word."""
+
+    words = _WORD.findall(_fold(str(said or "")))
+    return bool(words) and _WORD.findall(_fold(str(question or ""))) == words
+
+
 def _object_pronoun(folded: str) -> bool:
     """A verb with a fused object pronoun whose object is not said.
 
