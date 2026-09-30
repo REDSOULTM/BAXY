@@ -10,7 +10,9 @@ from .display import _KNOWN_FOLDER_ENUM, _KNOWN_FOLDER_WORDS
 from .grammar import _fold, _match, _has, _strip_request_envelope, _without_address, _request_head, _head_forms, _head_is, _negative_action_forms, _is_negative_effect_clause, _is_meta_or_tool_denial, _OPEN, _LIST, _READ, _SEARCH, _explicit_google_search_query, ARITHMETIC_EXPRESSION, _request_body_surface
 from .intent import EffectIntent, _entity_key, _append, _append_all
 from .catalog import ApplicationCatalogIndex, _application_name_key, build_application_catalog_index
-from .temporal import _BOUNDED_TEMPORAL_SELECTOR, _DAY, _MONTH, _WEEKDAYS, is_window_phrase, spoken_date
+from .temporal import (
+    _BOUNDED_TEMPORAL_SELECTOR, _DAY, _LAST_WEEKEND, _MONTH, _PAST_WEEKDAY, _WEEKDAYS, is_window_phrase, spoken_date,
+)
 from .lexicon import GIVEN_NAMES, SOCIAL_NETWORK
 from .notes import OWN_EVENT_NOUN, own_event_reference
 from .windows import minimize_all_request
@@ -368,8 +370,17 @@ _WEATHER_SUNRISE = (
 _WEATHER_SUNSET = (
     r"\b(?:(?:puesta|caida|entrada)\s+del?\s+sol|atardecer|atardece|anochecer|anochece|"
     # Tanda 6 «cuando se ponga el sol mañana»: the subjunctive says the same sun time.
-    r"oscurece|ocaso|atardezca|anochezca|oscurezca|"
-    r"se\s+(?:pone|ponga|oculta|oculte|esconde|esconda)\s+el\s+sol|sunset|dusk|"
+    r"ocaso|atardezca|anochezca|"
+    # M79 (DEV-D v3m s054 «la hora en que comenzará a oscurecerse», s080 «¿a qué hora ya no habrá la luz del sol por
+    # las calles hoy?»): the sunset read was answered with the temperature. Getting dark, in any form, and the
+    # daylight that ends are the sunset; a screen or a picture that darkens is not.
+    r"(?:se\s+)?(?:oscurec(?:e|er|erse|era|eria|iendo|ido|ida|a)|oscurezca)(?!\s+(?:(?:la|el|mi|tu|su|esta|este)\s+)?"
+    r"(?:pantalla|monitor|screen|imagen|foto|fondo|ventana|habitacion|pieza|cuarto))|"
+    r"se\s+(?:hace|hara|haga|pone|ponga)\s+de\s+noche|"
+    r"(?:ya\s+)?no\s+(?:hay|habra|haya|queda|quedara|quede)\s+(?:mas\s+)?(?:la\s+)?luz(?:\s+(?:del?\s+)?(?:sol|dia)|"
+    r"\s+natural)|hasta\s+(?:que\s+hora|cuando)\s+(?:hay|habra|queda|dura)\s+(?:la\s+)?luz|"
+    r"se\s+(?:pone|ponga|oculta|oculte|esconde|esconda)\s+el\s+sol|sunset|sundown|dusk|nightfall|"
+    r"(?:gets?|getting|goes|go|turns?)\s+dark|(?:no\s+more|last)\s+(?:day)?light|daylight\s+(?:ends?|is\s+over)|"
     r"(?:the\s+)?sun\s+(?:sets?|goes?\s+down))\b"
 )
 _WEATHER_SUN_TIME = f"(?:{_WEATHER_SUNRISE}|{_WEATHER_SUNSET})"
@@ -445,6 +456,9 @@ def weather_asks_later_day(text: str) -> bool:
     «pasado mañana»)."""
 
     folded = _fold(text)
+    if weather_asks_past(text):
+        # M79 (DEV-D v3m s003): «el fin de semana pasado» is a weekend already gone, not a later day.
+        return False
     if _has(folded, r"\b(?:pasado\s+manana|fin\s+de\s+semana|finde|weekend|next\s+week|(?:proxima|siguiente)\s+semana|"
                     r"semana\s+que\s+viene)\b"):
         return True
@@ -472,11 +486,28 @@ def weather_asks_coming_days(text: str) -> bool:
     """The weather question is about the days after tomorrow: the week, a later day, or a day named by its
     weekday («¿el sábado podremos comer afuera?»)."""
 
-    return (
+    return not weather_asks_past(text) and (
         weather_asks_week(text)
         or weather_asks_later_day(text)
         or _has(_fold(text), rf"\b{_WEEKDAY_NAME}\b")
     )
+
+
+# M79 (DEV-D v3m s003 «El finde pasado, ¿en qué cayó?» → «El fin de semana pasado en Curicó fue despejado con una
+# máxima de 17.5 °C…», today's read told as last weekend's): a day already gone is no day of the forecast, which
+# starts today. Folded.
+_WEATHER_PAST_DAY = (
+    r"\b(?:ayer|anteayer|antier|anoche|yesterday|last\s+night|(?:la\s+)?semana\s+pasada|(?:the\s+)?last\s+week|"
+    r"hace\s+(?:\d{1,2}|dos|tres|cuatro|cinco|seis|siete|unos\s+dias)\s+dias|(?:\d{1,2}|two|three|four|five|six|seven)"
+    r"\s+days\s+ago)\b|" + _LAST_WEEKEND + "|" + _PAST_WEEKDAY
+)
+
+
+def weather_asks_past(text: str) -> bool:
+    """The weather question is about a day already gone: yesterday, last night, last weekend, a weekday «pasado»
+    (M79)."""
+
+    return _has(_fold(text), _WEATHER_PAST_DAY)
 
 
 def weather_asked_date(text: str, today: date) -> date | None:
@@ -3594,6 +3625,22 @@ _SEARCHED_PREPOSITION = frozenset({"a", "de", "en", "por", "para", "con", "desde
 _SEARCHED_SECOND_PERSON = {"es": {"me": "te", "mi": "tu", "mis": "tus"}, "en": {"my": "your", "me": "you"}}
 
 
+# M79 (DEV-D v3m p19-t2 «Who's in the movie 'After the Wedding'?» → «I couldn't find out who in the movie 'After the
+# Wedding' is.»): when «who» or «what» is the subject and «is» joins it to a place, a gerund or an adverb («who is in
+# the movie», «what's playing», «what's new»), the indirect question keeps that order; only a noun after «is» is the
+# subject that «is» follows («what the capital of Peru is»).
+_SUBJECT_PREDICATE_EN = frozenset(
+    {"in", "on", "at", "with", "from", "behind", "by", "near", "inside", "under", "up", "new", "next", "there",
+     "here", "open", "available", "better", "best", "worse", "happening", "wrong", "going", "coming", "playing",
+     "showing", "running", "starring"}
+)
+
+
+def _asks_for_the_subject(wh: str, following: list[str]) -> bool:
+    word = following[0] if following else ""
+    return wh in {"who", "what", "which"} and (word in _SUBJECT_PREDICATE_EN or word.endswith("ing"))
+
+
 def searched_clause(text: str, language: str) -> tuple[str, bool] | None:
     """What a search looked for, said by BAXY after «No encontré» / «I couldn't find»: (the clause, whether it is an
     indirect question, «find out» in English). None when the text is not one plain question or lookup in
@@ -3634,11 +3681,16 @@ def searched_clause(text: str, language: str) -> tuple[str, bool] | None:
             lead = " ".join([wh, *keys[1:span]])
             rest = words[span:]
             if contracted in {"s", "re"}:
-                return " ".join([lead, *rest, "is" if contracted == "s" else "are"]), True
+                copula = "is" if contracted == "s" else "are"
+                if _asks_for_the_subject(wh, keys[span:span + 1]):
+                    return " ".join([lead, copula, *rest]), True
+                return " ".join([lead, *rest, copula]), True
             following = keys[span] if len(keys) > span else ""
             if following in _SEARCHED_AUXILIARY_EN or not rest:
                 return None
             if following in _SEARCHED_COPULA_EN:
+                if _asks_for_the_subject(wh, keys[span + 1:span + 2]):
+                    return " ".join([lead, following, *rest[1:]]), True
                 return " ".join([lead, *rest[1:], following]), True
             return " ".join([lead, *rest]), True
         if question:

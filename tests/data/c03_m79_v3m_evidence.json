@@ -1,0 +1,647 @@
+{
+ "D-s003": {
+  "text": "El finde pasado, ¿en qué cayó?",
+  "published": "El fin de semana pasado en Curicó fue despejado con una máxima de 17.5 °C y una mínima de 11.4 °C, sin probabilidad de lluvia.",
+  "note": "Pregunta qué fecha fue el finde pasado; da el tiempo de hoy presentado como el del finde pasado.",
+  "stages": [
+   {
+    "stage": "first",
+    "intent": "status",
+    "language": "es",
+    "reason": "",
+    "published": true,
+    "payload": {
+     "seen": {
+      "location": "Curico",
+      "region": "Region de Curico",
+      "country": "Chile",
+      "locatedBy": "public_ip_address",
+      "observedAtLocal": "2026-09-29T19:15",
+      "timezone": "America/Santiago",
+      "temperatureC": 14.5,
+      "apparentC": 11.4,
+      "humidityPercent": 67,
+      "windKmh": 18.8,
+      "precipitationMm": 0,
+      "uvIndex": 0.4,
+      "dewPointC": 8.5,
+      "weatherCode": 0,
+      "condition": "despejado",
+      "today": {
+       "date": "2026-09-29",
+       "weekday": "martes",
+       "maxC": 17.5,
+       "minC": 11.4,
+       "rainProbabilityPercent": 8,
+       "uvIndexMax": 4.7,
+       "sunrise": "07:26",
+       "sunset": "19:47"
+      },
+      "tomorrow": {
+       "date": "2026-09-30",
+       "weekday": "miércoles",
+       "maxC": 19.6,
+       "minC": 10.7,
+       "rainProbabilityPercent": 4,
+       "uvIndexMax": 6.9,
+       "condition": "llovizna",
+       "sunrise": "07:25",
+       "sunset": "19:48"
+      },
+      "laterDays": [
+       {
+        "date": "2026-10-01",
+        "weekday": "jueves",
+        "condition": "nublado",
+        "maxC": 23.7,
+        "minC": 14.3,
+        "rainProbabilityPercent": 11
+       },
+       {
+        "date": "2026-10-02",
+        "weekday": "viernes",
+        "condition": "llovizna",
+        "maxC": 19.4,
+        "minC": 12.3,
+        "rainProbabilityPercent": 40
+       },
+       {
+        "date": "2026-10-03",
+        "weekday": "sábado",
+        "condition": "nublado",
+        "maxC": 18,
+        "minC": 11.9,
+        "rainProbabilityPercent": 18
+       },
+       {
+        "date": "2026-10-04",
+        "weekday": "domingo",
+        "condition": "nublado",
+        "maxC": 18.7,
+        "minC": 12.4,
+        "rainProbabilityPercent": 2
+       },
+       {
+        "date": "2026-10-05",
+        "weekday": "lunes",
+        "condition": "llovizna",
+        "maxC": 20.7,
+        "minC": 10.9,
+        "rainProbabilityPercent": 28
+       }
+      ],
+      "airQuality": {
+       "usAqi": 50,
+       "category": "buena",
+       "pm25": 8.7,
+       "pm10": 12.3
+      },
+      "authority": "open_meteo_forecast_v1"
+     },
+     "operation": "weather.current"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"weather.current\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"location\":\"Curico\",\"region\":\"Region de Curico\",\"country\":\"Chile\",\"locatedBy\":\"public_ip_address\",\"observedAtLocal\":\"2026-09-29T19:15\",\"timezone\":\"America/Santiago\",\"temperatureC\":14.5,\"apparentC\":11.4,\"humidityPercent\":67,\"windKmh\":18.8,\"precipitationMm\":0,\"uvIndex\":0.4,\"dewPointC\":8.5,\"weatherCode\":0,\"condition\":\"despejado\",\"today\":{\"date\":\"2026-09-29\",\"weekday\":\"martes\",\"maxC\":17.5,\"minC\":11.4,\"rainProbabilityPercent\":8,\"uvIndexMax\":4.7,\"sunrise\":\"07:26\",\"sunset\":\"19:47\"},\"tomorrow\":{\"date\":\"2026-09-30\",\"weekday\":\"miércoles\",\"maxC\":19.6,\"minC\":10.7,\"rainProbabilityPercent\":4,\"uvIndexMax\":6.9,\"condition\":\"llovizna\",\"sunrise\":\"07:25\",\"sunset\":\"19:48\"},\"laterDays\":[{\"date\":\"2026-10-01\",\"weekday\":\"jueves\",\"condition\":\"nublado\",\"maxC\":23.7,\"minC\":14.3,\"rainProbabilityPercent\":11},{\"date\":\"2026-10-02\",\"weekday\":\"viernes\",\"condition\":\"llovizna\",\"maxC\":19.4,\"minC\":12.3,\"rainProbabilityPercent\":40},{\"date\":\"2026-10-03\",\"weekday\":\"sábado\",\"condition\":\"nublado\",\"maxC\":18,\"minC\":11.9,\"rainProbabilityPercent\":18},{\"date\":\"2026-10-04\",\"weekday\":\"domingo\",\"condition\":\"nublado\",\"maxC\":18.7,\"minC\":12.4,\"rainProbabilityPercent\":2},{\"date\":\"2026-10-05\",\"weekday\":\"lunes\",\"condition\":\"llovizna\",\"maxC\":20.7,\"minC\":10.9,\"rainProbabilityPercent\":28}],\"airQuality\":{\"usAqi\":50,\"category\":\"buena\",\"pm25\":8.7,\"pm10\":12.3},\"authority\":\"open_meteo_forecast_v1\"}}",
+    "draft": "El fin de semana pasado en Curicó fue despejado con una máxima de 17.5 °C y una mínima de 11.4 °C, sin probabilidad de lluvia."
+   }
+  ]
+ },
+ "D-s047": {
+  "text": "cuál es el nombre de la música que se está reproduciendo ahora",
+  "published": "Ahora se está pausado la canción \"Noc turne\" de Zeitgeister.",
+  "note": "Dato correcto pero frase rota: «Ahora se está pausado la canción».",
+  "stages": [
+   {
+    "stage": "first",
+    "intent": "status",
+    "language": "es",
+    "reason": "",
+    "published": true,
+    "payload": {
+     "seen": {
+      "sourceAppUserModelId": "SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify",
+      "title": "Noc turne",
+      "artist": "Zeitgeister",
+      "playbackStatus": "paused",
+      "authority": "windows_smtc_current_session_read"
+     },
+     "operation": "media.status"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"media.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"sourceAppUserModelId\":\"SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify\",\"title\":\"Noc turne\",\"artist\":\"Zeitgeister\",\"playbackStatus\":\"paused\",\"authority\":\"windows_smtc_current_session_read\"}}",
+    "draft": "Ahora se está pausado la canción \"Noc turne\" de Zeitgeister."
+   }
+  ]
+ },
+ "D-s054": {
+  "text": "Necesito la hora en que comenzará a oscurecerse.",
+  "published": "Ahora hace 14.5 °C bajo un cielo despejado en Curicó.",
+  "note": "Pedía la hora del anochecer; la lectura tenía la puesta de sol (19:47) y da la temperatura.",
+  "stages": [
+   {
+    "stage": "first",
+    "intent": "status",
+    "language": "es",
+    "reason": "",
+    "published": true,
+    "payload": {
+     "seen": {
+      "location": "Curico",
+      "region": "Region de Curico",
+      "country": "Chile",
+      "locatedBy": "public_ip_address",
+      "observedAtLocal": "2026-09-29T19:15",
+      "timezone": "America/Santiago",
+      "temperatureC": 14.5,
+      "apparentC": 11.4,
+      "humidityPercent": 67,
+      "windKmh": 18.8,
+      "precipitationMm": 0,
+      "uvIndex": 0.4,
+      "dewPointC": 8.5,
+      "weatherCode": 0,
+      "condition": "despejado",
+      "today": {
+       "date": "2026-09-29",
+       "weekday": "martes",
+       "maxC": 17.5,
+       "minC": 11.4,
+       "rainProbabilityPercent": 8,
+       "uvIndexMax": 4.7,
+       "sunrise": "07:26",
+       "sunset": "19:47"
+      },
+      "tomorrow": {
+       "date": "2026-09-30",
+       "weekday": "miércoles",
+       "maxC": 19.6,
+       "minC": 10.7,
+       "rainProbabilityPercent": 4,
+       "uvIndexMax": 6.9,
+       "condition": "llovizna",
+       "sunrise": "07:25",
+       "sunset": "19:48"
+      },
+      "airQuality": {
+       "usAqi": 50,
+       "category": "buena",
+       "pm25": 8.7,
+       "pm10": 12.3
+      },
+      "authority": "open_meteo_forecast_v1"
+     },
+     "operation": "weather.current"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"weather.current\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"location\":\"Curico\",\"region\":\"Region de Curico\",\"country\":\"Chile\",\"locatedBy\":\"public_ip_address\",\"observedAtLocal\":\"2026-09-29T19:15\",\"timezone\":\"America/Santiago\",\"temperatureC\":14.5,\"apparentC\":11.4,\"humidityPercent\":67,\"windKmh\":18.8,\"precipitationMm\":0,\"uvIndex\":0.4,\"dewPointC\":8.5,\"weatherCode\":0,\"condition\":\"despejado\",\"today\":{\"date\":\"2026-09-29\",\"weekday\":\"martes\",\"maxC\":17.5,\"minC\":11.4,\"rainProbabilityPercent\":8,\"uvIndexMax\":4.7,\"sunrise\":\"07:26\",\"sunset\":\"19:47\"},\"tomorrow\":{\"date\":\"2026-09-30\",\"weekday\":\"miércoles\",\"maxC\":19.6,\"minC\":10.7,\"rainProbabilityPercent\":4,\"uvIndexMax\":6.9,\"condition\":\"llovizna\",\"sunrise\":\"07:25\",\"sunset\":\"19:48\"},\"laterDays\":[{\"date\":\"2026-10-01\",\"weekday\":\"jueves\",\"condition\":\"nublado\",\"maxC\":23.7,\"minC\":14.3,\"rainProbabilityPercent\":11},{\"date\":\"2026-10-02\",\"weekday\":\"viernes\",\"condition\":\"llovizna\",\"maxC\":19.4,\"minC\":12.3,\"rainProbabilityPercent\":40},{\"date\":\"2026-10-03\",\"weekday\":\"sábado\",\"condition\":\"nublado\",\"maxC\":18,\"minC\":11.9,\"rainProbabilityPercent\":18},{\"date\":\"2026-10-04\",\"weekday\":\"domingo\",\"condition\":\"nublado\",\"maxC\":18.7,\"minC\":12.4,\"rainProbabilityPercent\":2},{\"date\":\"2026-10-05\",\"weekday\":\"lunes\",\"condition\":\"llovizna\",\"maxC\":20.7,\"minC\":10.9,\"rainProbabilityPercent\":28}],\"airQuality\":{\"usAqi\":50,\"category\":\"buena\",\"pm25\":8.7,\"pm10\":12.3},\"authority\":\"open_meteo_forecast_v1\"}}",
+    "draft": "Ahora hace 14.5 °C bajo un cielo despejado en Curicó."
+   }
+  ]
+ },
+ "D-s080": {
+  "text": "¿a qué hora ya no habrá la luz del sol por las calles hoy?",
+  "published": "En Curicó hace 14.5 °C con cielo despejado.",
+  "note": "Pedía la hora de la puesta de sol (19:47, leída) y da la temperatura.",
+  "stages": [
+   {
+    "stage": "first",
+    "intent": "status",
+    "language": "es",
+    "reason": "",
+    "published": true,
+    "payload": {
+     "seen": {
+      "location": "Curico",
+      "region": "Region de Curico",
+      "country": "Chile",
+      "locatedBy": "public_ip_address",
+      "observedAtLocal": "2026-09-29T19:15",
+      "timezone": "America/Santiago",
+      "temperatureC": 14.5,
+      "apparentC": 11.4,
+      "humidityPercent": 67,
+      "windKmh": 18.8,
+      "precipitationMm": 0,
+      "uvIndex": 0.4,
+      "dewPointC": 8.5,
+      "weatherCode": 0,
+      "condition": "despejado",
+      "today": {
+       "date": "2026-09-29",
+       "weekday": "martes",
+       "maxC": 17.5,
+       "minC": 11.4,
+       "rainProbabilityPercent": 8,
+       "uvIndexMax": 4.7,
+       "sunrise": "07:26",
+       "sunset": "19:47"
+      },
+      "tomorrow": {
+       "date": "2026-09-30",
+       "weekday": "miércoles",
+       "maxC": 19.6,
+       "minC": 10.7,
+       "rainProbabilityPercent": 4,
+       "uvIndexMax": 6.9,
+       "condition": "llovizna",
+       "sunrise": "07:25",
+       "sunset": "19:48"
+      },
+      "airQuality": {
+       "usAqi": 50,
+       "category": "buena",
+       "pm25": 8.7,
+       "pm10": 12.3
+      },
+      "authority": "open_meteo_forecast_v1"
+     },
+     "operation": "weather.current"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"weather.current\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"location\":\"Curico\",\"region\":\"Region de Curico\",\"country\":\"Chile\",\"locatedBy\":\"public_ip_address\",\"observedAtLocal\":\"2026-09-29T19:15\",\"timezone\":\"America/Santiago\",\"temperatureC\":14.5,\"apparentC\":11.4,\"humidityPercent\":67,\"windKmh\":18.8,\"precipitationMm\":0,\"uvIndex\":0.4,\"dewPointC\":8.5,\"weatherCode\":0,\"condition\":\"despejado\",\"today\":{\"date\":\"2026-09-29\",\"weekday\":\"martes\",\"maxC\":17.5,\"minC\":11.4,\"rainProbabilityPercent\":8,\"uvIndexMax\":4.7,\"sunrise\":\"07:26\",\"sunset\":\"19:47\"},\"tomorrow\":{\"date\":\"2026-09-30\",\"weekday\":\"miércoles\",\"maxC\":19.6,\"minC\":10.7,\"rainProbabilityPercent\":4,\"uvIndexMax\":6.9,\"condition\":\"llovizna\",\"sunrise\":\"07:25\",\"sunset\":\"19:48\"},\"laterDays\":[{\"date\":\"2026-10-01\",\"weekday\":\"jueves\",\"condition\":\"nublado\",\"maxC\":23.7,\"minC\":14.3,\"rainProbabilityPercent\":11},{\"date\":\"2026-10-02\",\"weekday\":\"viernes\",\"condition\":\"llovizna\",\"maxC\":19.4,\"minC\":12.3,\"rainProbabilityPercent\":40},{\"date\":\"2026-10-03\",\"weekday\":\"sábado\",\"condition\":\"nublado\",\"maxC\":18,\"minC\":11.9,\"rainProbabilityPercent\":18},{\"date\":\"2026-10-04\",\"weekday\":\"domingo\",\"condition\":\"nublado\",\"maxC\":18.7,\"minC\":12.4,\"rainProbabilityPercent\":2},{\"date\":\"2026-10-05\",\"weekday\":\"lunes\",\"condition\":\"llovizna\",\"maxC\":20.7,\"minC\":10.9,\"rainProbabilityPercent\":28}],\"airQuality\":{\"usAqi\":50,\"category\":\"buena\",\"pm25\":8.7,\"pm10\":12.3},\"authority\":\"open_meteo_forecast_v1\"}}",
+    "draft": "En Curicó hace 14.5 °C con cielo despejado."
+   }
+  ]
+ },
+ "D-p19-t2": {
+  "text": "Yes, that's right. Who's in it?",
+  "published": "I couldn't find out who in the movie 'After the Wedding' is.",
+  "note": "La lectura traía el reparto (Mads Mikkelsen); dice que no lo encontró, con frase rota.",
+  "stages": [
+   {
+    "stage": "first",
+    "intent": "status",
+    "language": "en",
+    "reason": "search_report_off_subject",
+    "published": false,
+    "payload": {
+     "seen": {
+      "query": "Who's in the movie 'After the Wedding'?",
+      "count": 2,
+      "results": [
+       {
+        "title": "After the Wedding (2006 film)",
+        "url": "https://en.wikipedia.org/wiki/After_the_Wedding_(2006_film)",
+        "snippet": "After the Wedding (Danish: Efter brylluppet) is a 2006 drama film directed by Susanne Bier and starring Mads Mikkelsen and Sidse Babett Knudsen. The film was a critical success and was nominated for the Academy Award for Best Foreign Language Film, but lost to The Lives of Others."
+       },
+       {
+        "title": "Wedding Daze",
+        "url": "https://en.wikipedia.org/wiki/Wedding_Daze",
+        "snippet": "Wedding Daze (originally titled The Pleasure of Your Company) is a 2006 American romantic comedy film written and directed by Michael Ian Black and starring Jason Biggs and Isla Fisher alongside Joe Pantoliano, Joanna Gleason, Edward Herrmann, and Michael Weston. The film follows Anderson (Biggs), who successfully proposes to stranger Katie (Fisher) after his girlfriend dies. Wedding Daze premiered at the Toronto International Film Festival on September 10, 2006, and was released theatrically in the United Kingdom by Pathé on June 1, 2007."
+       }
+      ],
+      "authority": "wikipedia_en_api"
+     },
+     "operation": "web.search"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"Who's in the movie 'After the Wedding'?\",\"count\":2,\"results\":[{\"title\":\"After the Wedding (2006 film)\",\"url\":\"https://en.wikipedia.org/wiki/After_the_Wedding_(2006_film)\",\"snippet\":\"After the Wedding (Danish: Efter brylluppet) is a 2006 drama film directed by Susanne Bier and starring Mads Mikkelsen and Sidse Babett Knudsen. The film was a critical success and was nominated for the Academy Award for Best Foreign Language Film, but lost to The Lives of Others.\"},{\"title\":\"Wedding Daze\",\"url\":\"https://en.wikipedia.org/wiki/Wedding_Daze\",\"snippet\":\"Wedding Daze (originally titled The Pleasure of Your Company) is a 2006 American romantic comedy film written and directed by Michael Ian Black and starring Jason Biggs and Isla Fisher alongside Joe Pantoliano, Joanna Gleason, Edward Herrmann, and Michael Weston. The film follows Anderson (Biggs), who successfully proposes to stranger Katie (Fisher) after his girlfriend dies. Wedding Daze premiered at the Toronto International Film Festival on September 10, 2006, and was released theatrically in the United Kingdom by Pathé on June 1, 2007.\"}],\"authority\":\"wikipedia_en_api\"}}",
+    "draft": "The 2006 film stars Mads Mikkelsen and Sidse Babett Knudsen, while the 2006 romantic comedy Wedding Daze features Jason Biggs and Isla Fisher."
+   },
+   {
+    "stage": "retry",
+    "intent": "status",
+    "language": "en",
+    "reason": "search_report_off_subject",
+    "published": false,
+    "payload": {
+     "seen": {
+      "query": "Who's in the movie 'After the Wedding'?",
+      "count": 2,
+      "results": [
+       {
+        "title": "After the Wedding (2006 film)",
+        "url": "https://en.wikipedia.org/wiki/After_the_Wedding_(2006_film)",
+        "snippet": "After the Wedding (Danish: Efter brylluppet) is a 2006 drama film directed by Susanne Bier and starring Mads Mikkelsen and Sidse Babett Knudsen. The film was a critical success and was nominated for the Academy Award for Best Foreign Language Film, but lost to The Lives of Others."
+       },
+       {
+        "title": "Wedding Daze",
+        "url": "https://en.wikipedia.org/wiki/Wedding_Daze",
+        "snippet": "Wedding Daze (originally titled The Pleasure of Your Company) is a 2006 American romantic comedy film written and directed by Michael Ian Black and starring Jason Biggs and Isla Fisher alongside Joe Pantoliano, Joanna Gleason, Edward Herrmann, and Michael Weston. The film follows Anderson (Biggs), who successfully proposes to stranger Katie (Fisher) after his girlfriend dies. Wedding Daze premiered at the Toronto International Film Festival on September 10, 2006, and was released theatrically in the United Kingdom by Pathé on June 1, 2007."
+       }
+      ],
+      "authority": "wikipedia_en_api"
+     },
+     "operation": "web.search"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"Who's in the movie 'After the Wedding'?\",\"count\":2,\"results\":[{\"title\":\"After the Wedding (2006 film)\",\"url\":\"https://en.wikipedia.org/wiki/After_the_Wedding_(2006_film)\",\"snippet\":\"After the Wedding (Danish: Efter brylluppet) is a 2006 drama film directed by Susanne Bier and starring Mads Mikkelsen and Sidse Babett Knudsen. The film was a critical success and was nominated for the Academy Award for Best Foreign Language Film, but lost to The Lives of Others.\"},{\"title\":\"Wedding Daze\",\"url\":\"https://en.wikipedia.org/wiki/Wedding_Daze\",\"snippet\":\"Wedding Daze (originally titled The Pleasure of Your Company) is a 2006 American romantic comedy film written and directed by Michael Ian Black and starring Jason Biggs and Isla Fisher alongside Joe Pantoliano, Joanna Gleason, Edward Herrmann, and Michael Weston. The film follows Anderson (Biggs), who successfully proposes to stranger Katie (Fisher) after his girlfriend dies. Wedding Daze premiered at the Toronto International Film Festival on September 10, 2006, and was released theatrically in the United Kingdom by Pathé on June 1, 2007.\"}],\"authority\":\"wikipedia_en_api\"}}",
+    "draft": "The 2006 film *After the Wedding* stars Mads Mikkelsen and Sidse Babett Knudsen."
+   },
+   {
+    "stage": "third",
+    "intent": "status",
+    "language": "en",
+    "reason": "search_report_off_subject",
+    "published": false,
+    "payload": {
+     "seen": {
+      "query": "Who's in the movie 'After the Wedding'?",
+      "count": 2,
+      "results": [
+       {
+        "title": "After the Wedding (2006 film)",
+        "url": "https://en.wikipedia.org/wiki/After_the_Wedding_(2006_film)",
+        "snippet": "After the Wedding (Danish: Efter brylluppet) is a 2006 drama film directed by Susanne Bier and starring Mads Mikkelsen and Sidse Babett Knudsen. The film was a critical success and was nominated for the Academy Award for Best Foreign Language Film, but lost to The Lives of Others."
+       },
+       {
+        "title": "Wedding Daze",
+        "url": "https://en.wikipedia.org/wiki/Wedding_Daze",
+        "snippet": "Wedding Daze (originally titled The Pleasure of Your Company) is a 2006 American romantic comedy film written and directed by Michael Ian Black and starring Jason Biggs and Isla Fisher alongside Joe Pantoliano, Joanna Gleason, Edward Herrmann, and Michael Weston. The film follows Anderson (Biggs), who successfully proposes to stranger Katie (Fisher) after his girlfriend dies. Wedding Daze premiered at the Toronto International Film Festival on September 10, 2006, and was released theatrically in the United Kingdom by Pathé on June 1, 2007."
+       }
+      ],
+      "authority": "wikipedia_en_api"
+     },
+     "operation": "web.search"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"Who's in the movie 'After the Wedding'?\",\"count\":2,\"results\":[{\"title\":\"After the Wedding (2006 film)\",\"url\":\"https://en.wikipedia.org/wiki/After_the_Wedding_(2006_film)\",\"snippet\":\"After the Wedding (Danish: Efter brylluppet) is a 2006 drama film directed by Susanne Bier and starring Mads Mikkelsen and Sidse Babett Knudsen. The film was a critical success and was nominated for the Academy Award for Best Foreign Language Film, but lost to The Lives of Others.\"},{\"title\":\"Wedding Daze\",\"url\":\"https://en.wikipedia.org/wiki/Wedding_Daze\",\"snippet\":\"Wedding Daze (originally titled The Pleasure of Your Company) is a 2006 American romantic comedy film written and directed by Michael Ian Black and starring Jason Biggs and Isla Fisher alongside Joe Pantoliano, Joanna Gleason, Edward Herrmann, and Michael Weston. The film follows Anderson (Biggs), who successfully proposes to stranger Katie (Fisher) after his girlfriend dies. Wedding Daze premiered at the Toronto International Film Festival on September 10, 2006, and was released theatrically in the United Kingdom by Pathé on June 1, 2007.\"}],\"authority\":\"wikipedia_en_api\"}}",
+    "draft": "The movie 'After the Wedding' stars Mads Mikkelsen and Sidse Babett Knudsen."
+   },
+   {
+    "stage": "not_found_fallback",
+    "intent": "status",
+    "language": "en",
+    "reason": "",
+    "published": true,
+    "payload": {
+     "seen": {
+      "query": "Who's in the movie 'After the Wedding'?",
+      "count": 2,
+      "results": [
+       {
+        "title": "After the Wedding (2006 film)",
+        "url": "https://en.wikipedia.org/wiki/After_the_Wedding_(2006_film)",
+        "snippet": "After the Wedding (Danish: Efter brylluppet) is a 2006 drama film directed by Susanne Bier and starring Mads Mikkelsen and Sidse Babett Knudsen. The film was a critical success and was nominated for the Academy Award for Best Foreign Language Film, but lost to The Lives of Others."
+       },
+       {
+        "title": "Wedding Daze",
+        "url": "https://en.wikipedia.org/wiki/Wedding_Daze",
+        "snippet": "Wedding Daze (originally titled The Pleasure of Your Company) is a 2006 American romantic comedy film written and directed by Michael Ian Black and starring Jason Biggs and Isla Fisher alongside Joe Pantoliano, Joanna Gleason, Edward Herrmann, and Michael Weston. The film follows Anderson (Biggs), who successfully proposes to stranger Katie (Fisher) after his girlfriend dies. Wedding Daze premiered at the Toronto International Film Festival on September 10, 2006, and was released theatrically in the United Kingdom by Pathé on June 1, 2007."
+       }
+      ],
+      "authority": "wikipedia_en_api"
+     },
+     "operation": "web.search"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"Who's in the movie 'After the Wedding'?\",\"count\":2,\"results\":[{\"title\":\"After the Wedding (2006 film)\",\"url\":\"https://en.wikipedia.org/wiki/After_the_Wedding_(2006_film)\",\"snippet\":\"After the Wedding (Danish: Efter brylluppet) is a 2006 drama film directed by Susanne Bier and starring Mads Mikkelsen and Sidse Babett Knudsen. The film was a critical success and was nominated for the Academy Award for Best Foreign Language Film, but lost to The Lives of Others.\"},{\"title\":\"Wedding Daze\",\"url\":\"https://en.wikipedia.org/wiki/Wedding_Daze\",\"snippet\":\"Wedding Daze (originally titled The Pleasure of Your Company) is a 2006 American romantic comedy film written and directed by Michael Ian Black and starring Jason Biggs and Isla Fisher alongside Joe Pantoliano, Joanna Gleason, Edward Herrmann, and Michael Weston. The film follows Anderson (Biggs), who successfully proposes to stranger Katie (Fisher) after his girlfriend dies. Wedding Daze premiered at the Toronto International Film Festival on September 10, 2006, and was released theatrically in the United Kingdom by Pathé on June 1, 2007.\"}],\"authority\":\"wikipedia_en_api\"}}",
+    "draft": "I couldn't find out who in the movie 'After the Wedding' is."
+   }
+  ]
+ },
+ "D-p20-t2": {
+  "text": "The city is Palo Alto, and weather info for March 2nd.",
+  "published": "The weather forecast only goes up to September 29, 2026, and the date you asked about, March 2, 2027, is beyond that range.",
+  "note": "Dice que el pronóstico llega sólo al 29 de septiembre; la lectura llega al 5 de octubre.",
+  "stages": [
+   {
+    "stage": "first",
+    "intent": "status",
+    "language": "en",
+    "reason": "missing_state",
+    "published": false,
+    "payload": {
+     "seen": {
+      "location": "Palo Alto",
+      "region": "California",
+      "country": "Estados Unidos",
+      "outOfReach": {
+       "read": "forecast",
+       "askedDate": "2027-03-02",
+       "readFrom": "2026-09-29",
+       "readUntil": "2026-10-05"
+      }
+     },
+     "operation": "weather.current"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"weather.current\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"location\":\"Palo Alto\",\"region\":\"California\",\"country\":\"Estados Unidos\",\"locatedBy\":\"named_place_geocoded\",\"observedAtLocal\":\"2026-09-29T15:15\",\"timezone\":\"America/Los_Angeles\",\"temperatureC\":30.4,\"apparentC\":29.5,\"humidityPercent\":28,\"windKmh\":10.1,\"precipitationMm\":0,\"uvIndex\":4.8,\"dewPointC\":9.9,\"weatherCode\":0,\"condition\":\"despejado\",\"today\":{\"date\":\"2026-09-29\",\"weekday\":\"martes\",\"maxC\":30.5,\"minC\":10.9,\"rainProbabilityPercent\":0,\"uvIndexMax\":6.1,\"sunrise\":\"07:02\",\"sunset\":\"18:54\"},\"tomorrow\":{\"date\":\"2026-09-30\",\"weekday\":\"miércoles\",\"maxC\":30.6,\"minC\":13.6,\"rainProbabilityPercent\":0,\"uvIndexMax\":6.1,\"condition\":\"despejado\",\"sunrise\":\"07:03\",\"sunset\":\"18:52\"},\"laterDays\":[{\"date\":\"2026-10-01\",\"weekday\":\"jueves\",\"condition\":\"nublado\",\"maxC\":30.1,\"minC\":11.9,\"rainProbabilityPercent\":0},{\"date\":\"2026-10-02\",\"weekday\":\"viernes\",\"condition\":\"nublado\",\"maxC\":30.5,\"minC\":19.1,\"rainProbabilityPercent\":0},{\"date\":\"2026-10-03\",\"weekday\":\"sábado\",\"condition\":\"nublado\",\"maxC\":32.9,\"minC\":20.8,\"rainProbabilityPercent\":0},{\"date\":\"2026-10-04\",\"weekday\":\"domingo\",\"condition\":\"despejado\",\"maxC\":31.2,\"minC\":20.2,\"rainProbabilityPercent\":0},{\"date\":\"2026-10-05\",\"weekday\":\"lunes\",\"condition\":\"despejado\",\"maxC\":32.7,\"minC\":20.9,\"rainProbabilityPercent\":0}],\"airQuality\":{\"usAqi\":57,\"category\":\"moderada\",\"pm25\":10.9,\"pm10\":14.2},\"authority\":\"open_meteo_forecast_v1\"}}",
+    "draft": "The weather forecast for Palo Alto on March 2nd is not available because the data was read from September 29, 2026, to October 5, 2026, and the request was made on March 2, 2027."
+   },
+   {
+    "stage": "retry",
+    "intent": "status",
+    "language": "en",
+    "reason": "",
+    "published": true,
+    "payload": {
+     "seen": {
+      "location": "Palo Alto",
+      "region": "California",
+      "country": "Estados Unidos",
+      "outOfReach": {
+       "read": "forecast",
+       "askedDate": "2027-03-02",
+       "readFrom": "2026-09-29",
+       "readUntil": "2026-10-05"
+      }
+     },
+     "operation": "weather.current"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"weather.current\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"location\":\"Palo Alto\",\"region\":\"California\",\"country\":\"Estados Unidos\",\"locatedBy\":\"named_place_geocoded\",\"observedAtLocal\":\"2026-09-29T15:15\",\"timezone\":\"America/Los_Angeles\",\"temperatureC\":30.4,\"apparentC\":29.5,\"humidityPercent\":28,\"windKmh\":10.1,\"precipitationMm\":0,\"uvIndex\":4.8,\"dewPointC\":9.9,\"weatherCode\":0,\"condition\":\"despejado\",\"today\":{\"date\":\"2026-09-29\",\"weekday\":\"martes\",\"maxC\":30.5,\"minC\":10.9,\"rainProbabilityPercent\":0,\"uvIndexMax\":6.1,\"sunrise\":\"07:02\",\"sunset\":\"18:54\"},\"tomorrow\":{\"date\":\"2026-09-30\",\"weekday\":\"miércoles\",\"maxC\":30.6,\"minC\":13.6,\"rainProbabilityPercent\":0,\"uvIndexMax\":6.1,\"condition\":\"despejado\",\"sunrise\":\"07:03\",\"sunset\":\"18:52\"},\"laterDays\":[{\"date\":\"2026-10-01\",\"weekday\":\"jueves\",\"condition\":\"nublado\",\"maxC\":30.1,\"minC\":11.9,\"rainProbabilityPercent\":0},{\"date\":\"2026-10-02\",\"weekday\":\"viernes\",\"condition\":\"nublado\",\"maxC\":30.5,\"minC\":19.1,\"rainProbabilityPercent\":0},{\"date\":\"2026-10-03\",\"weekday\":\"sábado\",\"condition\":\"nublado\",\"maxC\":32.9,\"minC\":20.8,\"rainProbabilityPercent\":0},{\"date\":\"2026-10-04\",\"weekday\":\"domingo\",\"condition\":\"despejado\",\"maxC\":31.2,\"minC\":20.2,\"rainProbabilityPercent\":0},{\"date\":\"2026-10-05\",\"weekday\":\"lunes\",\"condition\":\"despejado\",\"maxC\":32.7,\"minC\":20.9,\"rainProbabilityPercent\":0}],\"airQuality\":{\"usAqi\":57,\"category\":\"moderada\",\"pm25\":10.9,\"pm10\":14.2},\"authority\":\"open_meteo_forecast_v1\"}}",
+    "draft": "The weather forecast only goes up to September 29, 2026, and the date you asked about, March 2, 2027, is beyond that range."
+   }
+  ]
+ },
+ "D-p25-t2": {
+  "text": "I see, can you check on the 5th of March to be more specific",
+  "published": "El pronóstico termina el 5 de octubre de 2026, así que la fecha del 5 de marzo de 2027 está fuera de alcance.",
+  "note": "Límite correcto, pero en español en una charla en inglés.",
+  "stages": [
+   {
+    "stage": "first",
+    "intent": "status",
+    "language": "mixed",
+    "reason": "missing_state",
+    "published": false,
+    "payload": {
+     "seen": {
+      "location": "Martínez",
+      "region": "California",
+      "country": "Estados Unidos",
+      "outOfReach": {
+       "read": "forecast",
+       "askedDate": "2027-03-05",
+       "readFrom": "2026-09-29",
+       "readUntil": "2026-10-05"
+      }
+     },
+     "operation": "weather.current"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"weather.current\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"location\":\"Martínez\",\"region\":\"California\",\"country\":\"Estados Unidos\",\"locatedBy\":\"named_place_geocoded\",\"observedAtLocal\":\"2026-09-29T15:30\",\"timezone\":\"America/Los_Angeles\",\"temperatureC\":32.6,\"apparentC\":29.9,\"humidityPercent\":22,\"windKmh\":17.3,\"precipitationMm\":0,\"uvIndex\":4.4,\"dewPointC\":8.1,\"weatherCode\":0,\"condition\":\"despejado\",\"today\":{\"date\":\"2026-09-29\",\"weekday\":\"martes\",\"maxC\":32.5,\"minC\":13.4,\"rainProbabilityPercent\":0,\"uvIndexMax\":6,\"sunrise\":\"07:02\",\"sunset\":\"18:54\"},\"tomorrow\":{\"date\":\"2026-09-30\",\"weekday\":\"miércoles\",\"maxC\":32.6,\"minC\":17.8,\"rainProbabilityPercent\":0,\"uvIndexMax\":6,\"condition\":\"despejado\",\"sunrise\":\"07:03\",\"sunset\":\"18:52\"},\"laterDays\":[{\"date\":\"2026-10-01\",\"weekday\":\"jueves\",\"condition\":\"nublado\",\"maxC\":32.4,\"minC\":14.4,\"rainProbabilityPercent\":0},{\"date\":\"2026-10-02\",\"weekday\":\"viernes\",\"condition\":\"nublado\",\"maxC\":33.2,\"minC\":20,\"rainProbabilityPercent\":0},{\"date\":\"2026-10-03\",\"weekday\":\"sábado\",\"condition\":\"nublado\",\"maxC\":35,\"minC\":21.7,\"rainProbabilityPercent\":0},{\"date\":\"2026-10-04\",\"weekday\":\"domingo\",\"condition\":\"parcialmente nublado\",\"maxC\":33.9,\"minC\":21.1,\"rainProbabilityPercent\":2},{\"date\":\"2026-10-05\",\"weekday\":\"lunes\",\"condition\":\"despejado\",\"maxC\":35.3,\"minC\":22.1,\"rainProbabilityPercent\":1}],\"airQuality\":{\"usAqi\":58,\"category\":\"moderada\",\"pm25\":7.8,\"pm10\":10},\"authority\":\"open_meteo_forecast_v1\"}}",
+    "draft": "No hay pronóstico de tiempo para Martínez, California, el 5 de marzo de 2027, ya que la información más reciente disponible es del 29 de septiembre de 2026."
+   },
+   {
+    "stage": "retry",
+    "intent": "status",
+    "language": "mixed",
+    "reason": "",
+    "published": true,
+    "payload": {
+     "seen": {
+      "location": "Martínez",
+      "region": "California",
+      "country": "Estados Unidos",
+      "outOfReach": {
+       "read": "forecast",
+       "askedDate": "2027-03-05",
+       "readFrom": "2026-09-29",
+       "readUntil": "2026-10-05"
+      }
+     },
+     "operation": "weather.current"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"weather.current\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"location\":\"Martínez\",\"region\":\"California\",\"country\":\"Estados Unidos\",\"locatedBy\":\"named_place_geocoded\",\"observedAtLocal\":\"2026-09-29T15:30\",\"timezone\":\"America/Los_Angeles\",\"temperatureC\":32.6,\"apparentC\":29.9,\"humidityPercent\":22,\"windKmh\":17.3,\"precipitationMm\":0,\"uvIndex\":4.4,\"dewPointC\":8.1,\"weatherCode\":0,\"condition\":\"despejado\",\"today\":{\"date\":\"2026-09-29\",\"weekday\":\"martes\",\"maxC\":32.5,\"minC\":13.4,\"rainProbabilityPercent\":0,\"uvIndexMax\":6,\"sunrise\":\"07:02\",\"sunset\":\"18:54\"},\"tomorrow\":{\"date\":\"2026-09-30\",\"weekday\":\"miércoles\",\"maxC\":32.6,\"minC\":17.8,\"rainProbabilityPercent\":0,\"uvIndexMax\":6,\"condition\":\"despejado\",\"sunrise\":\"07:03\",\"sunset\":\"18:52\"},\"laterDays\":[{\"date\":\"2026-10-01\",\"weekday\":\"jueves\",\"condition\":\"nublado\",\"maxC\":32.4,\"minC\":14.4,\"rainProbabilityPercent\":0},{\"date\":\"2026-10-02\",\"weekday\":\"viernes\",\"condition\":\"nublado\",\"maxC\":33.2,\"minC\":20,\"rainProbabilityPercent\":0},{\"date\":\"2026-10-03\",\"weekday\":\"sábado\",\"condition\":\"nublado\",\"maxC\":35,\"minC\":21.7,\"rainProbabilityPercent\":0},{\"date\":\"2026-10-04\",\"weekday\":\"domingo\",\"condition\":\"parcialmente nublado\",\"maxC\":33.9,\"minC\":21.1,\"rainProbabilityPercent\":2},{\"date\":\"2026-10-05\",\"weekday\":\"lunes\",\"condition\":\"despejado\",\"maxC\":35.3,\"minC\":22.1,\"rainProbabilityPercent\":1}],\"airQuality\":{\"usAqi\":58,\"category\":\"moderada\",\"pm25\":7.8,\"pm10\":10},\"authority\":\"open_meteo_forecast_v1\"}}",
+    "draft": "El pronóstico termina el 5 de octubre de 2026, así que la fecha del 5 de marzo de 2027 está fuera de alcance."
+   }
+  ]
+ },
+ "D-p25-t3": {
+  "text": "How humid do you expect it to be?",
+  "published": "En Martínez la humedad es del 22% hoy y del 22% mañana.",
+  "note": "En español en una charla en inglés, y da humedad «de mañana» que no leyó.",
+  "stages": [
+   {
+    "stage": "first",
+    "intent": "status",
+    "language": "mixed",
+    "reason": "",
+    "published": true,
+    "payload": {
+     "seen": {
+      "location": "Martínez",
+      "region": "California",
+      "country": "Estados Unidos",
+      "locatedBy": "named_place_geocoded",
+      "observedAtLocal": "2026-09-29T15:30",
+      "timezone": "America/Los_Angeles",
+      "temperatureC": 32.6,
+      "apparentC": 29.9,
+      "humidityPercent": 22,
+      "windKmh": 17.3,
+      "precipitationMm": 0,
+      "uvIndex": 4.4,
+      "dewPointC": 8.1,
+      "weatherCode": 0,
+      "condition": "despejado",
+      "today": {
+       "date": "2026-09-29",
+       "weekday": "martes",
+       "maxC": 32.5,
+       "minC": 13.4,
+       "rainProbabilityPercent": 0,
+       "uvIndexMax": 6,
+       "sunrise": "07:02",
+       "sunset": "18:54"
+      },
+      "tomorrow": {
+       "date": "2026-09-30",
+       "weekday": "miércoles",
+       "maxC": 32.6,
+       "minC": 17.8,
+       "rainProbabilityPercent": 0,
+       "uvIndexMax": 6,
+       "condition": "despejado",
+       "sunrise": "07:03",
+       "sunset": "18:52"
+      },
+      "airQuality": {
+       "usAqi": 58,
+       "category": "moderada",
+       "pm25": 7.8,
+       "pm10": 10
+      },
+      "authority": "open_meteo_forecast_v1"
+     },
+     "operation": "weather.current"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"weather.current\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"location\":\"Martínez\",\"region\":\"California\",\"country\":\"Estados Unidos\",\"locatedBy\":\"named_place_geocoded\",\"observedAtLocal\":\"2026-09-29T15:30\",\"timezone\":\"America/Los_Angeles\",\"temperatureC\":32.6,\"apparentC\":29.9,\"humidityPercent\":22,\"windKmh\":17.3,\"precipitationMm\":0,\"uvIndex\":4.4,\"dewPointC\":8.1,\"weatherCode\":0,\"condition\":\"despejado\",\"today\":{\"date\":\"2026-09-29\",\"weekday\":\"martes\",\"maxC\":32.5,\"minC\":13.4,\"rainProbabilityPercent\":0,\"uvIndexMax\":6,\"sunrise\":\"07:02\",\"sunset\":\"18:54\"},\"tomorrow\":{\"date\":\"2026-09-30\",\"weekday\":\"miércoles\",\"maxC\":32.6,\"minC\":17.8,\"rainProbabilityPercent\":0,\"uvIndexMax\":6,\"condition\":\"despejado\",\"sunrise\":\"07:03\",\"sunset\":\"18:52\"},\"laterDays\":[{\"date\":\"2026-10-01\",\"weekday\":\"jueves\",\"condition\":\"nublado\",\"maxC\":32.4,\"minC\":14.4,\"rainProbabilityPercent\":0},{\"date\":\"2026-10-02\",\"weekday\":\"viernes\",\"condition\":\"nublado\",\"maxC\":33.2,\"minC\":20,\"rainProbabilityPercent\":0},{\"date\":\"2026-10-03\",\"weekday\":\"sábado\",\"condition\":\"nublado\",\"maxC\":35,\"minC\":21.7,\"rainProbabilityPercent\":0},{\"date\":\"2026-10-04\",\"weekday\":\"domingo\",\"condition\":\"parcialmente nublado\",\"maxC\":33.9,\"minC\":21.1,\"rainProbabilityPercent\":2},{\"date\":\"2026-10-05\",\"weekday\":\"lunes\",\"condition\":\"despejado\",\"maxC\":35.3,\"minC\":22.1,\"rainProbabilityPercent\":1}],\"airQuality\":{\"usAqi\":58,\"category\":\"moderada\",\"pm25\":7.8,\"pm10\":10},\"authority\":\"open_meteo_forecast_v1\"}}",
+    "draft": "En Martínez la humedad es del 22% hoy y del 22% mañana."
+   }
+  ]
+ },
+ "D-w19-t4": {
+  "text": "ok entonces ponme una alarma a las 8:40 para pedirlo yo",
+  "published": "No se pudo programar la alarma porque el sistema no pudo verificar la causa del fallo externo.",
+  "note": "No programa la alarma: «el sistema no pudo verificar la causa del fallo externo» (jerga).",
+  "stages": [
+   {
+    "stage": "first",
+    "intent": "error",
+    "language": "es",
+    "reason": "",
+    "published": true,
+    "payload": {
+     "outcome": "failed",
+     "reason": {
+      "outcome": "unverified",
+      "effect": "unknown",
+      "cause": "external effect ambiguous",
+      "operation": "notification.schedule"
+     }
+    },
+    "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":{\"kind\":\"operation\",\"operation\":\"notification.schedule\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"notification_scheduler_failed\",\"cause\":\"external_effect_ambiguous\",\"effectUncertain\":true}}",
+    "draft": "No se pudo programar la alarma porque el sistema no pudo verificar la causa del fallo externo."
+   }
+  ]
+ },
+ "D-w04-t4": {
+  "text": "Mejor a las 6 en punto, que si no no llego al micro",
+  "published": null,
+  "note": "Sin respuesta publicada: la cancelación falló por alarmas repetidas a las 6:15.",
+  "stages": [
+   {
+    "stage": "first",
+    "intent": "error",
+    "language": "es",
+    "reason": "",
+    "published": true,
+    "payload": {
+     "outcome": "failed",
+     "reason": {
+      "outcome": "failed",
+      "cause": "several alarms or reminders are set at that same time and they cannot be told apart, so none was cancelled or changed",
+      "operation": "notification.cancel.at"
+     }
+    },
+    "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":{\"kind\":\"operation\",\"operation\":\"notification.cancel.at\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"notification_clock_ambiguous\"}}",
+    "draft": "No se pudo cambiar el recordatorio porque varias alarmas estaban programadas para las 6:15 y no se pudieron distinguir para cancelar o modificar ninguna."
+   }
+  ]
+ },
+ "D-s007": {
+  "text": "hazme una lista de los destinatarios y remitentes de los emails de la ultima semana",
+  "published": null,
+  "note": "Sin respuesta publicada (composition_failed).",
+  "stages": [
+   {
+    "stage": "first",
+    "intent": "conversation",
+    "language": "es",
+    "reason": "internal_code",
+    "published": false,
+    "payload": {
+     "kind": "conversation"
+    },
+    "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+    "draft": "No tengo acceso a los emails de la última semana para listar los destinatarios y remitentes."
+   },
+   {
+    "stage": "retry",
+    "intent": "conversation",
+    "language": "es",
+    "reason": "copied_instruction",
+    "published": false,
+    "payload": {
+     "kind": "conversation"
+    },
+    "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+    "draft": "La lista de destinatarios y remitentes no está disponible en la situación proporcionada."
+   },
+   {
+    "stage": "third",
+    "intent": "conversation",
+    "language": "es",
+    "reason": "internal_code",
+    "published": false,
+    "payload": {
+     "kind": "conversation"
+    },
+    "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+    "draft": "No puedo generar esa lista porque no tengo acceso a tu historial de correos electrónicos ni a los datos de la última semana."
+   }
+  ]
+ }
+}

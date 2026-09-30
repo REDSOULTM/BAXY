@@ -627,6 +627,25 @@ def _proper_name_tokens(text: str) -> set[str]:
     return names
 
 
+def _without_proper_names(text: str) -> str:
+    """``text`` without its capitalised words that do not open a sentence (the names of ``_proper_name_tokens``)."""
+
+    kept = []
+    for sentence in re.split(r"([.!?¡¿]+)", str(text or "")):
+        first = True
+
+        def drop(found: re.Match[str]) -> str:
+            nonlocal first
+            word = found.group(0)
+            if first:
+                first = False
+                return word
+            return "" if word[:1].isupper() and not word.isupper() else word
+
+        kept.append(re.sub(r"[^\W\d_]+", drop, sentence))
+    return "".join(kept)
+
+
 def _language_evidence(text: str, folded: str) -> tuple[int, int]:
     tokens = set(re.findall(r"[a-z]+", folded)) - _proper_name_tokens(text)
     spanish = len(tokens & _ES_WORDS)
@@ -637,7 +656,10 @@ def _language_evidence(text: str, folded: str) -> tuple[int, int]:
     english += 2 * sum(
         1 for phrase in _EN_PHRASES if re.search(rf"\b{re.escape(phrase)}\b", folded)
     )
-    if _SPANISH_ORTHOGRAPHY.search(text or ""):
+    # M79 (DEV-D v3m p25-t2/p25-t3 «Check the weather in Martínez on March 5.», «How humid is it expected to be in
+    # Martínez?» → replies in Spanish inside an English conversation): the accent of a name says nothing of the
+    # language spoken, as its words do not (above); only the person's own words and marks count.
+    if _SPANISH_ORTHOGRAPHY.search(_without_proper_names(text or "")):
         spanish += 2
     if _ENGLISH_CONTRACTION.search(text or ""):
         english += 2
