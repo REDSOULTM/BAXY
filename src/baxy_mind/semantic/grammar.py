@@ -437,6 +437,10 @@ def _strip_request_envelope(text: str) -> str:
             r"^[¿?¡!\s]*(?:(?:s[ií]|yes|ok(?:ay)?|perfecto|perfect)\s*[,;:.!]+\s*|"
             r"no\s*[,;:]\s*(?:mejor|en realidad|actually|on second thought)"
             rf"\s*[,;:]?\s+(?=(?:{_COVERAGE_ACTION_HEAD})\b)|"
+            # M80 (DEV-D v3m D-p17-t3 «nevermind add an item to my swimming list»): taking the last request back
+            # before a new order leaves the order.
+            r"(?:never\s*mind|forget\s+(?:it|that)|olvidalo|olvida\s+eso|no\s+importa|dejalo)\s*[,;:.!]*\s+"
+            rf"(?=(?:{_COVERAGE_ACTION_HEAD})\b)|"
             # APPS1535 «Y quema, abre Saint Rose.», «Y bueno, abre…»: a spoken
             # opener of a conjunction, one word and a comma before an order.
             r"(?:y|and)\s+(?!que\b|si\b|no\b)[a-z]{2,10}\s*,\s*"

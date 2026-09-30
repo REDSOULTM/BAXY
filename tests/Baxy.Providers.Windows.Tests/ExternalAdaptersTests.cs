@@ -989,6 +989,53 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    [TestCase("notification.cancel.latest", """{"kind":"reminder"}""")]
+    [TestCase("notification.cancel.at", """{"kind":"alarm","hour":6,"minute":45,"period":"am"}""")]
+    public async Task NotificationCancellationIsScopedToTheNotificationsThisDataRootSet(
+        string operation, string arguments)
+    {
+        // M80 (DEV-D v3m D-w16-t2, D-w18-t5): the scheduler is shared by every BAXY data root of the user; six runs
+        // left six alarms at 06:45 and «cancel the latest» picked another run's reminder.
+        using TemporaryDirectory temporary = new();
+        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
+        await File.WriteAllTextAsync(scheduler, "# fixture");
+        var runner = new CapturingProcessRunner("{\"ok\":false,\"matchCount\":0}");
+        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, runner, scheduler);
+
+        await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        int root = Array.IndexOf(runner.Arguments, "-AlarmRoot");
+        Assert.That(root, Is.GreaterThan(0));
+        Assert.That(runner.Arguments[root + 1], Is.EqualTo(Path.Combine(temporary.Path, "scheduled-notifications")));
+    }
+
+    [Test]
+    public async Task NotificationListShowsOnlyTheNotificationsThisDataRootSet()
+    {
+        using TemporaryDirectory temporary = new();
+        string scheduler = Path.Combine(temporary.Path, "WindowsScheduledNotification.ps1");
+        await File.WriteAllTextAsync(scheduler, "# fixture");
+        const string own = "BAXY-Alarm-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+        const string other = "BAXY-Alarm-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+        string alarms = Path.Combine(temporary.Path, "scheduled-notifications");
+        Directory.CreateDirectory(alarms);
+        await File.WriteAllTextAsync(Path.Combine(alarms, own + ".ps1"), "# ring");
+        string next = DateTimeOffset.UtcNow.AddHours(3).ToString("O");
+        string output = $$"""{"ok":true,"tasks":[{"taskName":"{{own}}","state":"Ready","nextRunUtc":"{{next}}"},{"taskName":"{{other}}","state":"Ready","nextRunUtc":"{{next}}"}]}""";
+        var adapter = new WindowsScheduledNotificationAdapter(
+            temporary.Path, new StubProcessRunner(output), scheduler);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "notification.list", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("count").GetInt32(), Is.EqualTo(1));
+            Assert.That(receipt.Result?.GetProperty("notifications").GetArrayLength(), Is.EqualTo(1));
+        });
+    }
+
     [Test]
     public async Task NamedGameInstallationReadsSteamAndEpicManifestsAndExistingDirectories()
     {
@@ -4051,7 +4098,7 @@ public sealed class ExternalAdaptersTests
 
     private sealed class CapturingProcessRunner(string output) : IExternalProcessRunner
     {
-        internal IReadOnlyList<string> Arguments { get; private set; } = [];
+        internal string[] Arguments { get; private set; } = [];
 
         public ValueTask<ExternalProcessResult> RunAsync(
             string executable, IReadOnlyList<string> arguments, TimeSpan timeout,

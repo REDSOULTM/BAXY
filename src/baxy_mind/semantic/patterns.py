@@ -2097,6 +2097,16 @@ def unsupported_live_machine_query(text: str) -> bool:
     )
 
 
+# M80: music services the catalog does not play on (it plays on Spotify and on YouTube), and the verbs of playing.
+_UNOFFERED_MUSIC_SERVICE = (
+    r"\b(?:pandora|deezer|tidal|soundcloud|apple\s+music|amazon\s+music|iheart\s*radio|napster|audiomack|qobuz)\b"
+)
+_MUSIC_PLAY_VERB = (
+    r"\b(?:play|plays|playing|put\s+on|listen|stream|pon|pone|ponme|poneme|reproduce|reproduci|reproduceme|"
+    r"reproducir|toca|tocame|tocar|escuchar|escucha|quiero\s+oir)\b"
+)
+
+
 def known_unsupported_effect_request(
     text: str,
     available_operations: Iterable[str],
@@ -2450,6 +2460,13 @@ def known_unsupported_effect_request(
             _has(folded, r"\b(?:pon|pone|poneme|ponme|poné|reproduce|reproduci|reprodúceme|play|put(?:\s+on)?|start|inicia|dale|ver|mira|mirar|watch|quiero\s+ver|quisiera\s+ver)\b")
             and _has(folded, r"\b(?:en|on|in)\s+(?:amazon\s+)?(?:prime\s*video|primevideo|prime)\b"),
             {"streaming.play.prime_video"},
+        ),
+        (
+            # M80 (DEV-D v3m D-s069 «I need Pandora to play me a birthday song.» → «Which music provider should be
+            # used…?»): music is played on Spotify or YouTube only; a request that names another music service is
+            # the limit said plainly, never a question for the service the person already named.
+            _has(folded, _MUSIC_PLAY_VERB) and _has(folded, _UNOFFERED_MUSIC_SERVICE),
+            {"media.play.unoffered_service"},
         ),
         (
             # WEATHER2023 boundary «qué clima hacía en Buenos Aires en 1990»:

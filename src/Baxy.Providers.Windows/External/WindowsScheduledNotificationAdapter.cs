@@ -138,6 +138,8 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                     _schedulerScript, "-Mode", "resolve-at", "-Kind", kind,
                     "-Hour", hour.ToString(System.Globalization.CultureInfo.InvariantCulture),
                     "-Minute", minute.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                    // M80: only the notifications this data root set are candidates.
+                    "-AlarmRoot", _alarmRoot,
                     .. (period is null ? [] : new[] { "-Period", period })],
                 TimeSpan.FromSeconds(30), cancellationToken).ConfigureAwait(false);
         }
@@ -309,6 +311,9 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                 Match identity = Regex.Match(taskName, "^BAXY-(Alarm|Reminder)-[0-9a-f]{32}$",
                     RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100));
                 if (!identity.Success) continue;
+                // M80 (DEV-D v3m D-w16-t2): the scheduler is shared by every BAXY data root of this user; the
+                // notifications listed are the ones this data root set (its ring script is here).
+                if (!File.Exists(Path.Combine(_alarmRoot, taskName + ".ps1"))) continue;
                 string? nextRun = task.TryGetProperty("nextRunUtc", out JsonElement nextElement)
                     && nextElement.ValueKind == JsonValueKind.String ? nextElement.GetString() : null;
                 string state = task.TryGetProperty("state", out JsonElement stateElement)
@@ -428,7 +433,9 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         ExternalProcessResult process = await _runner.RunAsync(
             "powershell.exe",
             ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
-                _schedulerScript, "-Mode", "cancel", "-Kind", kind],
+                _schedulerScript, "-Mode", "cancel", "-Kind", kind,
+                // M80 (DEV-D v3m D-w18-t5): the latest is the last one this data root set that is still pending.
+                "-AlarmRoot", _alarmRoot],
             TimeSpan.FromSeconds(30),
             cancellationToken).ConfigureAwait(false);
         return Parse(operation, process, expectedTaskName: null, effectBoundary,

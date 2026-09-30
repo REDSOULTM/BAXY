@@ -196,9 +196,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # M77
 # M78
 # M76
+# M80 (DEV-D v3m): re-pin tras los argumentos (hora pasada o varios días, servicio de música no ofrecido, cambio parcial de la tarea recién hecha, «nevermind»).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "a91dea9fd8f7701c469b6f00269beaad02b37a97a66ded863441cda87dc89f6d"
+        "9d553c307b476ac3cb18ba56c51ce53ee753fb913a7edce54171456cc0481cd0"
     ),
     "src/baxy_mind/llm.py": (
         "7be9542a3a8bbc679b5448c3b764f27c2d22d17da186f88b6e45f977b3091997"

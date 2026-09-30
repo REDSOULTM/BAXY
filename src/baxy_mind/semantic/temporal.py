@@ -1363,6 +1363,61 @@ def timed_task(text: str) -> TimedTask | None:
     return TimedTask(title, " ".join(due.split()))
 
 
+@dataclass(frozen=True)
+class UnschedulableTime:
+    """M80: the clock the person said (``clock``, as said) on days one alarm or reminder cannot ring at: ``passed``
+    the days said whose moment is already past, ``ahead`` those still to come (the words as said)."""
+
+    clock: str
+    passed: tuple[str, ...]
+    ahead: tuple[str, ...]
+
+
+_THIS_WEEK = r"\b(?:this\s+week|esta\s+semana)\b"
+_TODAY_WORD = r"\b(?:hoy|today|tonight|esta\s+(?:tarde|noche|manana))\b"
+
+
+def unschedulable_time(text: str, now: datetime) -> UnschedulableTime | None:
+    """M80 (DEV-D v3m D-s104 «…para la cena a las 18:00 hoy.» at 19:35, D-s108 «…for Monday, Tuesday and Wednesday of
+    this week for 7am» on a Tuesday): one clock said for a moment no single notification holds: today's clock already
+    past, or several days (some of them maybe past this week). Every value was said; what is left is only which moment,
+    and why. None for a date, a clock without its part of the day, two clocks or any moment one notification holds.
+    ``now`` is the local time with its zone."""
+
+    folded = _fold(str(text or ""))
+    clocks = spoken_clocks(folded)
+    if len(clocks) != 1 or not clocks[0].resolved or spoken_date(folded) is not None:
+        return None
+    clock = clocks[0]
+    at = time(clock.hour, clock.minute)
+    this_week = re.search(_THIS_WEEK, folded) is not None
+    named = [
+        (index, found.group(0))
+        for index, names in enumerate(_WEEKDAYS)
+        if (found := re.search(rf"\b(?:{'|'.join(names)})\b", folded)) is not None
+    ]
+    if named:
+        passed: list[str] = []
+        ahead: list[str] = []
+        for index, word in named:
+            offset = index - now.weekday()
+            if not this_week:
+                offset %= 7
+            moment = datetime.combine(now.date() + timedelta(days=offset), at, tzinfo=now.tzinfo)
+            if not this_week and moment <= now:
+                moment += timedelta(days=7)
+            (passed if moment <= now else ahead).append(word)
+        if len(named) == 1 and not passed:
+            return None
+        return UnschedulableTime(clock.literal, tuple(passed), tuple(ahead))
+    today = re.search(_TODAY_WORD, folded)
+    if today is None or spoken_day(folded, now.weekday()) != (0, 0):
+        return None
+    if datetime.combine(now.date(), at, tzinfo=now.tzinfo) > now:
+        return None
+    return UnschedulableTime(clock.literal, (today.group(0),), ())
+
+
 _CHANGE_CLOCK = rf"{_CLOCK_HOUR}{_CLOCK_MINUTES}?(?:\s*{_CLOCK_PERIOD})?"
 _CHANGE_NOUN = r"(?P<noun>alarma|alerta|temporizador|recordatorio|aviso|despertador|alarm|alert|timer|reminder)"
 _REMINDER_NOUNS = frozenset({"recordatorio", "aviso", "reminder"})

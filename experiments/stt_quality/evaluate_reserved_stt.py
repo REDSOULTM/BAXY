@@ -185,8 +185,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # M77
 # M78
 # M76
+# M80 (DEV-D v3m): re-pin tras los argumentos (hora pasada o varios días, servicio de música no ofrecido, cambio parcial de la tarea recién hecha, «nevermind»).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "dd1dd4ba5ba4f59f4694302bb26b8d22434bbf7fdd391c1a2f849889bfa97bd5"
+    "1ff0b09c7da8310799ce667e36b244a3f5245942ec1623df00625e6d45069518"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
