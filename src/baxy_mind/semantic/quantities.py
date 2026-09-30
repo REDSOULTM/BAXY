@@ -22,7 +22,11 @@ duration, so the quantities are read here — durations with the same unit words
                          computed; a kitchen quantity that depends on what is measured is looked up instead
                          (``semantic.knowledge``).
 - ``unsure_figures``     M88: the figures of an answer from memory given more precisely than memory holds (D-s111
-                         «1.080 km en línea recta», «2 horas y 15 minutos»).
+                         «1.080 km en línea recta», «2 horas y 15 minutos»); since M92 judged on recipes only.
+- ``unsaid_figures``     M92 (D52): the figures of a prose or list answer from memory the person did not say, which
+                         memory never gives; ``without_listed_years`` drops the bracketed years of such a list.
+- ``rated_totals``       M92: the quantity the request states under a per-unit rule a read states («3 litros» ×
+                         «10 g por litro» = 30 g), computed; ``gives_a_total`` says whether a reply states it.
 """
 
 from __future__ import annotations
@@ -39,6 +43,7 @@ from .normalize import fold
 __all__ = [
     "Measure", "measures", "evaluate", "derived_facts", "underived_figure", "numbers_in", "format_number",
     "PricedTotal", "priced_totals", "underived_price", "Conversion", "conversion_asked", "unsure_figures",
+    "unsaid_figures", "without_listed_years", "RatedTotal", "rated_totals", "gives_a_total",
 ]
 
 # dimension: (length, time, mass, volume) exponents
@@ -650,3 +655,160 @@ def unsure_figures(reply: str, said: Iterable[str] = ()) -> list[str]:
         if int(found.group("minutes")) % 30 and found.group(0).strip() not in unsure:
             unsure.append(found.group(0).strip())
     return unsure
+
+
+# M92 (D52; DEV-D v3u D-s111 «…unos 1.100 kilómetros… unas 2 horas y media… entre 8 y 9 horas», D-p29-t2 «6. It (1982)»,
+# D-w01-t3 «unas 600 cucharaditas»): said round, memory's figures were still wrong. An answer from memory in prose or as a
+# list says no figure the person did not say: no quantity, distance, duration, date, year or count. A number that is
+# part of a name («Apollo 11», «Scary Movie 3», «28 Days Later») is the name; a year never is.
+_ANY_FIGURE = re.compile(
+    r"(?<![\w.,/:-])(?P<number>\d{1,3}(?:[.,]\d{3})+(?![\w]|[.,]\d)|\d+(?:[.,]\d+)?(?![\w/]|[.,]\d))"
+)
+_WORDED_FIGURE = re.compile(
+    r"\b(?:(?P<word>" + "|".join(sorted((w for w in _NUMBER_WORDS if _NUMBER_WORDS[w] > 1), key=len, reverse=True))
+    + r")\s+(?P<unit>[a-z%]+)|(?:cientos|miles|millones|decenas|docenas|hundreds|thousands|millions|dozens)\s+(?:de|of)\b)"
+)
+_LISTED_YEAR = re.compile(r"[ \t]*\(\s*\d{4}(?:\s*[-–]\s*\d{2,4})?\s*\)", re.MULTILINE)
+
+
+def _part_of_a_name(text: str, start: int, end: int, listed: bool) -> bool:
+    """A number next to a capitalized word that does not open its sentence («Apollo 11», «28 Days Later»); an item of a
+    list is a name even when its first word is that capitalized one."""
+
+    before = re.search(r"([^\W\d_][\w'’-]*)[ \t]+$", text[:start])
+    after = re.match(r"[ \t]+([^\W\d_][\w'’-]*)", text[end:])
+    opens = before is not None and re.search(r"(?:\A|[.!?:\n])\s*$", text[:before.start(1)]) is not None
+    return (before is not None and before.group(1)[:1].isupper() and (listed or not opens)) or (
+        after is not None and after.group(1)[:1].isupper()
+    )
+
+
+def unsaid_figures(reply: str, said: Iterable[str] = ()) -> list[str]:
+    """M92 (D52): the figures of an answer from memory that the person did not say (see above), as written."""
+
+    original = str(reply or "")
+    items = [
+        (line.start(), line.end()) for line in re.finditer(r"(?m)^[ \t]*(?:\d+[.)]|[-•*])[ \t].*$", original)
+    ]
+    text = _LIST_ORDINAL.sub(lambda found: " " * len(found.group(0)), original)
+    person = numbers_in(said)
+    unsaid: list[str] = []
+    for found in _ANY_FIGURE.finditer(text):
+        raw = found.group("number")
+        separated = re.fullmatch(r"\d{1,3}(?:[.,]\d{3})+", raw) is not None
+        value = _money(raw) if separated else _number(raw)
+        if value is None or value in person:
+            continue
+        year = re.fullmatch(r"1\d{3}|20\d{2}", raw) is not None
+        listed = any(start <= found.start() < end for start, end in items)
+        if not year and _part_of_a_name(text, found.start(), found.end(), listed):
+            continue
+        if raw not in unsaid:
+            unsaid.append(raw)
+    folded = fold(text)
+    for found in _WORDED_FIGURE.finditer(folded):
+        if found.group("word") and found.group("unit") not in _MEMORY_UNIT_WORDS:
+            continue
+        if found.group(0) not in unsaid:
+            unsaid.append(found.group(0))
+    return unsaid
+
+
+def without_listed_years(reply: str) -> str:
+    """M92 (D-p29-t2 «6. It (1982)»): the years a list from memory wrote in brackets after each name, dropped."""
+
+    return _LISTED_YEAR.sub("", str(reply or ""))
+
+
+# ------------------------------------------------------------------ a per-unit rule read, applied (M92)
+
+# M92 (D52; DEV-D v3u D-w01-t3 «ya y pa 3 litros cuántas cucharaditas serían» over «La medida ideal de sal por litro de
+# agua para pasta es de 10 gramos»): the three drafts computed 1,5, «entre 30 y 75» and 150 and were refused, and memory
+# said «600 cucharaditas». A rule the read states per unit («10 g por litro», «por litro … es de 10 gramos») applied to
+# the one quantity the request states of that unit's kind is BAXY's own calculation, like a price (M62). A spoon count
+# is given only when the read states what that spoon weighs; otherwise the total stays in the rule's unit.
+_RATE_NUMBER = r"\d+(?:[.,]\d+)?"
+_RATE_UNIT = r"(?:" + _UNIT_WORD + r")"
+_RATE_THEN_UNIT = re.compile(
+    rf"(?<![\w.,/])(?P<number>{_RATE_NUMBER})\s*(?P<unit>{_RATE_UNIT})(?:\s+de\s+[a-z]+(?:\s+[a-z]+)?)?"
+    rf"(?:\s*/\s*|\s+(?:por|per|each|a|al|every)\s+)(?:cada\s+)?(?:(?:un|una|1)\s+)?(?P<per>{_RATE_UNIT})(?![\w/])"
+)
+_UNIT_THEN_RATE = re.compile(
+    rf"\b(?:por|per)\s+(?:cada\s+)?(?:(?:un|una|1)\s+)?(?P<per>{_RATE_UNIT})\b[^.;\n\d]{{0,60}}?"
+    rf"\b(?:es|son|seria|serian|is|are|=|:)\s+(?:de\s+|of\s+)?(?:(?:unos|unas|about|around)\s+)?"
+    rf"(?P<number>{_RATE_NUMBER})\s*(?P<unit>{_RATE_UNIT})(?![\w/])"
+)
+_SPOON_ASKED = re.compile(
+    r"\b(?:cuant[oa]s|how\s+many|en|in)\s+(?P<spoon>cucharaditas?|cucharadas?|teaspoons?|tablespoons?|tsp|tbsp)\b"
+)
+_SPOON_KIND = {
+    "cucharadita": "tsp", "cucharaditas": "tsp", "teaspoon": "tsp", "teaspoons": "tsp", "tsp": "tsp",
+    "cucharada": "tbsp", "cucharadas": "tbsp", "tablespoon": "tbsp", "tablespoons": "tbsp", "tbsp": "tbsp",
+}
+_SPOON_WEIGHT = (
+    re.compile(
+        r"\b(?:una|1|a|one)\s+(?P<spoon>cucharaditas?|cucharadas?|teaspoons?|tablespoons?|tsp|tbsp)\b[^.;\n\d]{0,40}?"
+        rf"(?P<number>{_RATE_NUMBER})\s*(?P<unit>g|gr|gramos?|grams?)\b"
+    ),
+    re.compile(
+        rf"(?<![\w.,/])(?P<number>{_RATE_NUMBER})\s*(?P<unit>g|gr|gramos?|grams?)\b[^.;\n\d]{{0,40}}?"
+        r"\b(?:una|1|a|one)\s+(?P<spoon>cucharaditas?|cucharadas?|teaspoons?|tablespoons?|tsp|tbsp)\b"
+    ),
+)
+
+
+@dataclass(frozen=True)
+class RatedTotal:
+    sentence: str  # «3 litros × 10 gramos por litro = 30 gramos»
+    values: tuple[Fraction, ...]  # the total, and the spoons when the read gives what one weighs
+
+
+def rated_totals(request: str, evidence: str, language: str = "es") -> list[RatedTotal]:
+    """What the one quantity the request states comes to under each per-unit rule the evidence states (see above)."""
+
+    stated = measures(request)
+    folded = fold(evidence)
+    spoon = _SPOON_ASKED.search(fold(request))
+    weights = [
+        (_number(found.group("number")), _UNITS[found.group("unit")][0])
+        for pattern in _SPOON_WEIGHT for found in pattern.finditer(folded)
+        if spoon is not None and _SPOON_KIND.get(found.group("spoon")) == _SPOON_KIND.get(spoon.group("spoon"))
+        and found.group("unit") in _UNITS
+    ]
+    totals: list[RatedTotal] = []
+    for pattern in (_RATE_THEN_UNIT, _UNIT_THEN_RATE):
+        for found in pattern.finditer(folded):
+            number = _number(found.group("number"))
+            unit = _UNITS.get(found.group("unit"))
+            per = _UNITS.get(found.group("per"))
+            if number is None or number <= 0 or unit is None or per is None or unit[1] == per[1]:
+                continue
+            asked = [item for item in stated if item.dimension == per[1] and item.value > 0]
+            if len(asked) != 1:
+                continue
+            total = asked[0].value / per[0] * number
+            said_quantity = fold(request)[asked[0].start:asked[0].end]
+            per_word = " por " if language == "es" else " per "
+            sentence = (
+                f"{said_quantity} × {found.group('number')} {found.group('unit')}{per_word}{found.group('per')} = "
+                f"{format_number(total, 1, language)} {found.group('unit')}"
+            )
+            values: tuple[Fraction, ...] = (total,)
+            weight = next((value * size for value, size in weights if value), None)
+            if weight and unit[1] == _MASS and spoon is not None:
+                spoons = total * unit[0] / weight
+                sentence += f" = {format_number(spoons, 1, language)} {spoon.group('spoon')}"
+                values += (spoons,)
+            if all(sentence != other.sentence for other in totals):
+                totals.append(RatedTotal(sentence, values))
+    return totals
+
+
+def gives_a_total(reply: str, totals: Iterable[RatedTotal]) -> bool:
+    """The reply states one of the computed totals (to about a tenth)."""
+
+    written = numbers_in([reply]) + [_money(raw) for raw in re.findall(r"\d{1,3}(?:\.\d{3})+", fold(reply))]
+    return any(
+        value is not None and abs(value - expected) <= max(abs(expected) / 10, Fraction(1, 10))
+        for item in totals for expected in item.values for value in written
+    )

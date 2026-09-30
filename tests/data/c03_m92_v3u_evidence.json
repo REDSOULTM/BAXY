@@ -1,0 +1,1200 @@
+{
+ "D-s111": {
+  "run": "v3u-devD",
+  "text": "¿Cuál es la distancia de Barcelona a París?",
+  "lived": [],
+  "published": "No pude comprobarlo; de memoria, la distancia entre Barcelona y París es de unos 1.100 kilómetros. El viaje en avión suele durar unas 2 horas y media, mientras que en tren puede tardar entre 8 y 9 horas dependiendo del recorrido.",
+  "decision": "action:web.search",
+  "invented": true,
+  "ok": false,
+  "note": "De memoria: «unos 1.100 km, 2,5 h de vuelo y 8–9 h de tren»; el tren directo tarda ~6,5 h.",
+  "stages": [
+   {
+    "stage": "first",
+    "intent": "status",
+    "language": "es",
+    "reason": "search_report_unsourced_claim",
+    "published": false,
+    "draft": "La distancia entre Barcelona y París es de aproximadamente 1.100 kilómetros.",
+    "payload": {
+     "seen": {
+      "query": "¿Cuál es la distancia de Barcelona a París?",
+      "count": 1,
+      "results": [
+       {
+        "title": "Partido de Liga de Campeones de la UEFA entre F. C. Barcelona y París Saint-Germain (vuelta de octavos de 2017)",
+        "url": "https://es.wikipedia.org/wiki/Partido_de_Liga_de_Campeones_de_la_UEFA_entre_F._C._Barcelona_y_Par%C3%ADs_Saint-Germain_(vuelta_de_octavos_de_2017)",
+        "snippet": "El partido de fútbol correspondiente a la vuelta de los octavos de final de la Liga de Campeones de la UEFA 2016-17, fue celebrado el 8 de marzo de 2017 en el Camp Nou de Barcelona, entre los equipos Fútbol Club Barcelona y el París Saint-Germain. El Barcelona dio vuelta al marcador global, por 6-5, que perdía por cuatro goles de diferencia en contra desde el choque de ida en París."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     },
+     "operation": "web.search"
+    },
+    "situation": {
+     "kind": "operation",
+     "operation": "web.search",
+     "polarity": "success",
+     "verified": true,
+     "succeeded": true,
+     "observed": {
+      "version": 1,
+      "query": "¿Cuál es la distancia de Barcelona a París?",
+      "count": 1,
+      "results": [
+       {
+        "title": "Partido de Liga de Campeones de la UEFA entre F. C. Barcelona y París Saint-Germain (vuelta de octavos de 2017)",
+        "url": "https://es.wikipedia.org/wiki/Partido_de_Liga_de_Campeones_de_la_UEFA_entre_F._C._Barcelona_y_Par%C3%ADs_Saint-Germain_(vuelta_de_octavos_de_2017)",
+        "snippet": "El partido de fútbol correspondiente a la vuelta de los octavos de final de la Liga de Campeones de la UEFA 2016-17, fue celebrado el 8 de marzo de 2017 en el Camp Nou de Barcelona, entre los equipos Fútbol Club Barcelona y el París Saint-Germain. El Barcelona dio vuelta al marcador global, por 6-5, que perdía por cuatro goles de diferencia en contra desde el choque de ida en París."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     }
+    }
+   },
+   {
+    "stage": "retry",
+    "intent": "status",
+    "language": "es",
+    "reason": "search_report_shows_the_search",
+    "published": false,
+    "draft": "En los resultados no aparece la distancia entre Barcelona y París.",
+    "payload": {
+     "seen": {
+      "query": "¿Cuál es la distancia de Barcelona a París?",
+      "count": 1,
+      "results": [
+       {
+        "title": "Partido de Liga de Campeones de la UEFA entre F. C. Barcelona y París Saint-Germain (vuelta de octavos de 2017)",
+        "url": "https://es.wikipedia.org/wiki/Partido_de_Liga_de_Campeones_de_la_UEFA_entre_F._C._Barcelona_y_Par%C3%ADs_Saint-Germain_(vuelta_de_octavos_de_2017)",
+        "snippet": "El partido de fútbol correspondiente a la vuelta de los octavos de final de la Liga de Campeones de la UEFA 2016-17, fue celebrado el 8 de marzo de 2017 en el Camp Nou de Barcelona, entre los equipos Fútbol Club Barcelona y el París Saint-Germain. El Barcelona dio vuelta al marcador global, por 6-5, que perdía por cuatro goles de diferencia en contra desde el choque de ida en París."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     },
+     "operation": "web.search"
+    },
+    "situation": {
+     "kind": "operation",
+     "operation": "web.search",
+     "polarity": "success",
+     "verified": true,
+     "succeeded": true,
+     "observed": {
+      "version": 1,
+      "query": "¿Cuál es la distancia de Barcelona a París?",
+      "count": 1,
+      "results": [
+       {
+        "title": "Partido de Liga de Campeones de la UEFA entre F. C. Barcelona y París Saint-Germain (vuelta de octavos de 2017)",
+        "url": "https://es.wikipedia.org/wiki/Partido_de_Liga_de_Campeones_de_la_UEFA_entre_F._C._Barcelona_y_Par%C3%ADs_Saint-Germain_(vuelta_de_octavos_de_2017)",
+        "snippet": "El partido de fútbol correspondiente a la vuelta de los octavos de final de la Liga de Campeones de la UEFA 2016-17, fue celebrado el 8 de marzo de 2017 en el Camp Nou de Barcelona, entre los equipos Fútbol Club Barcelona y el París Saint-Germain. El Barcelona dio vuelta al marcador global, por 6-5, que perdía por cuatro goles de diferencia en contra desde el choque de ida en París."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     }
+    }
+   },
+   {
+    "stage": "third",
+    "intent": "status",
+    "language": "es",
+    "reason": "",
+    "published": true,
+    "draft": "No encontré ninguna información sobre la distancia entre Barcelona y París en los resultados.",
+    "payload": {
+     "seen": {
+      "query": "¿Cuál es la distancia de Barcelona a París?",
+      "count": 1,
+      "results": [
+       {
+        "title": "Partido de Liga de Campeones de la UEFA entre F. C. Barcelona y París Saint-Germain (vuelta de octavos de 2017)",
+        "url": "https://es.wikipedia.org/wiki/Partido_de_Liga_de_Campeones_de_la_UEFA_entre_F._C._Barcelona_y_Par%C3%ADs_Saint-Germain_(vuelta_de_octavos_de_2017)",
+        "snippet": "El partido de fútbol correspondiente a la vuelta de los octavos de final de la Liga de Campeones de la UEFA 2016-17, fue celebrado el 8 de marzo de 2017 en el Camp Nou de Barcelona, entre los equipos Fútbol Club Barcelona y el París Saint-Germain. El Barcelona dio vuelta al marcador global, por 6-5, que perdía por cuatro goles de diferencia en contra desde el choque de ida en París."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     },
+     "operation": "web.search"
+    },
+    "situation": {
+     "kind": "operation",
+     "operation": "web.search",
+     "polarity": "success",
+     "verified": true,
+     "succeeded": true,
+     "observed": {
+      "version": 1,
+      "query": "¿Cuál es la distancia de Barcelona a París?",
+      "count": 1,
+      "results": [
+       {
+        "title": "Partido de Liga de Campeones de la UEFA entre F. C. Barcelona y París Saint-Germain (vuelta de octavos de 2017)",
+        "url": "https://es.wikipedia.org/wiki/Partido_de_Liga_de_Campeones_de_la_UEFA_entre_F._C._Barcelona_y_Par%C3%ADs_Saint-Germain_(vuelta_de_octavos_de_2017)",
+        "snippet": "El partido de fútbol correspondiente a la vuelta de los octavos de final de la Liga de Campeones de la UEFA 2016-17, fue celebrado el 8 de marzo de 2017 en el Camp Nou de Barcelona, entre los equipos Fútbol Club Barcelona y el París Saint-Germain. El Barcelona dio vuelta al marcador global, por 6-5, que perdía por cuatro goles de diferencia en contra desde el choque de ida en París."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     }
+    }
+   },
+   {
+    "stage": "from_memory",
+    "intent": "consulted",
+    "language": "es",
+    "reason": "",
+    "published": true,
+    "draft": "No pude comprobarlo; de memoria, la distancia entre Barcelona y París es de unos 1.100 kilómetros. El viaje en avión suele durar unas 2 horas y media, mientras que en tren puede tardar entre 8 y 9 horas dependiendo del recorrido.",
+    "payload": {
+     "request": "¿Cuál es la distancia de Barcelona a París?",
+     "earlier_requests": [
+      "¿Cuál es la distancia de Barcelona a París?"
+     ]
+    },
+    "situation": {
+     "kind": "operation",
+     "operation": "web.search",
+     "polarity": "success",
+     "verified": true,
+     "succeeded": true,
+     "observed": {
+      "version": 1,
+      "query": "¿Cuál es la distancia de Barcelona a París?",
+      "count": 1,
+      "results": [
+       {
+        "title": "Partido de Liga de Campeones de la UEFA entre F. C. Barcelona y París Saint-Germain (vuelta de octavos de 2017)",
+        "url": "https://es.wikipedia.org/wiki/Partido_de_Liga_de_Campeones_de_la_UEFA_entre_F._C._Barcelona_y_Par%C3%ADs_Saint-Germain_(vuelta_de_octavos_de_2017)",
+        "snippet": "El partido de fútbol correspondiente a la vuelta de los octavos de final de la Liga de Campeones de la UEFA 2016-17, fue celebrado el 8 de marzo de 2017 en el Camp Nou de Barcelona, entre los equipos Fútbol Club Barcelona y el París Saint-Germain. El Barcelona dio vuelta al marcador global, por 6-5, que perdía por cuatro goles de diferencia en contra desde el choque de ida en París."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     }
+    }
+   }
+  ]
+ },
+ "D-p24-t1": {
+  "run": "v3u-devD",
+  "text": "I am in a mood to watch movie online and I need your help to search for a nice Fantasy Movie like Elijah Wood.",
+  "lived": [],
+  "published": "I couldn't check this; from memory, it may not be exact: Elijah Wood is best known for playing Frodo in The Lord of the Rings, so a similar fantasy movie would be The Hobbit trilogy. Other options that share that epic fantasy style include The Chronicles of Narnia or The Hunger Games.",
+  "decision": "action:web.search",
+  "invented": false,
+  "ok": true,
+  "note": "De memoria con aviso: El Hobbit y Narnia son recomendaciones razonables.",
+  "stages": [
+   {
+    "stage": "first",
+    "intent": "status",
+    "language": "en",
+    "reason": "search_report_off_subject",
+    "published": false,
+    "draft": "I Don't Feel at Home in This World Anymore and Pawn Shop Chronicles are movies featuring Elijah Wood.",
+    "payload": {
+     "seen": {
+      "query": "a nice fantasy movie like Elijah Wood",
+      "count": 3,
+      "results": [
+       {
+        "title": "Ya no me siento a gusto en este mundo",
+        "url": "https://es.wikipedia.org/wiki/Ya_no_me_siento_a_gusto_en_este_mundo",
+        "snippet": "Ya no me siento a gusto en este mundo (título en inglés: I Don't Feel at Home in This World Anymore) es una película estadounidense de comedia policíaca y suspense escrita y dirigida por Macon Blair en su debut en la dirección, protagonizada por Melanie Lynskey, Elijah Wood, David Yow, Jane Levy y Devon Graye. Fue estrenada mundialmente en el Festival de Cine de Sundance el 19 de enero de 2017 y vía streaming el 24 de febrero de 2017 por Netflix."
+       },
+       {
+        "title": "Pawn Shop Chronicles",
+        "url": "https://es.wikipedia.org/wiki/Pawn_Shop_Chronicles",
+        "snippet": "Pawn Shop Chronicles es una película del año 2013, protagonizada por Paul Walker, Elijah Wood, Brendan Fraser, Matt Dillon y Norman Reedus y dirigida por Wayne Kramer."
+       },
+       {
+        "title": "Flipper (película de 1996)",
+        "url": "https://es.wikipedia.org/wiki/Flipper_(pel%C3%ADcula_de_1996)",
+        "snippet": "Flipper es una película de 1996, adaptación de la película de 1963, protagonizada por Paul Hogan y Elijah Wood."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     },
+     "operation": "web.search"
+    },
+    "situation": {
+     "kind": "operation",
+     "operation": "web.search",
+     "polarity": "success",
+     "verified": true,
+     "succeeded": true,
+     "observed": {
+      "version": 1,
+      "query": "a nice fantasy movie like Elijah Wood",
+      "count": 3,
+      "results": [
+       {
+        "title": "Ya no me siento a gusto en este mundo",
+        "url": "https://es.wikipedia.org/wiki/Ya_no_me_siento_a_gusto_en_este_mundo",
+        "snippet": "Ya no me siento a gusto en este mundo (título en inglés: I Don't Feel at Home in This World Anymore) es una película estadounidense de comedia policíaca y suspense escrita y dirigida por Macon Blair en su debut en la dirección, protagonizada por Melanie Lynskey, Elijah Wood, David Yow, Jane Levy y Devon Graye. Fue estrenada mundialmente en el Festival de Cine de Sundance el 19 de enero de 2017 y vía streaming el 24 de febrero de 2017 por Netflix."
+       },
+       {
+        "title": "Pawn Shop Chronicles",
+        "url": "https://es.wikipedia.org/wiki/Pawn_Shop_Chronicles",
+        "snippet": "Pawn Shop Chronicles es una película del año 2013, protagonizada por Paul Walker, Elijah Wood, Brendan Fraser, Matt Dillon y Norman Reedus y dirigida por Wayne Kramer."
+       },
+       {
+        "title": "Flipper (película de 1996)",
+        "url": "https://es.wikipedia.org/wiki/Flipper_(pel%C3%ADcula_de_1996)",
+        "snippet": "Flipper es una película de 1996, adaptación de la película de 1963, protagonizada por Paul Hogan y Elijah Wood."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     }
+    }
+   },
+   {
+    "stage": "retry",
+    "intent": "status",
+    "language": "en",
+    "reason": "wrong_language",
+    "published": false,
+    "draft": "Ya no me siento a gusto en este mundo y Pawn Shop Chronicles son películas protagonizadas por Elijah Wood.",
+    "payload": {
+     "seen": {
+      "query": "a nice fantasy movie like Elijah Wood",
+      "count": 3,
+      "results": [
+       {
+        "title": "Ya no me siento a gusto en este mundo",
+        "url": "https://es.wikipedia.org/wiki/Ya_no_me_siento_a_gusto_en_este_mundo",
+        "snippet": "Ya no me siento a gusto en este mundo (título en inglés: I Don't Feel at Home in This World Anymore) es una película estadounidense de comedia policíaca y suspense escrita y dirigida por Macon Blair en su debut en la dirección, protagonizada por Melanie Lynskey, Elijah Wood, David Yow, Jane Levy y Devon Graye. Fue estrenada mundialmente en el Festival de Cine de Sundance el 19 de enero de 2017 y vía streaming el 24 de febrero de 2017 por Netflix."
+       },
+       {
+        "title": "Pawn Shop Chronicles",
+        "url": "https://es.wikipedia.org/wiki/Pawn_Shop_Chronicles",
+        "snippet": "Pawn Shop Chronicles es una película del año 2013, protagonizada por Paul Walker, Elijah Wood, Brendan Fraser, Matt Dillon y Norman Reedus y dirigida por Wayne Kramer."
+       },
+       {
+        "title": "Flipper (película de 1996)",
+        "url": "https://es.wikipedia.org/wiki/Flipper_(pel%C3%ADcula_de_1996)",
+        "snippet": "Flipper es una película de 1996, adaptación de la película de 1963, protagonizada por Paul Hogan y Elijah Wood."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     },
+     "operation": "web.search"
+    },
+    "situation": {
+     "kind": "operation",
+     "operation": "web.search",
+     "polarity": "success",
+     "verified": true,
+     "succeeded": true,
+     "observed": {
+      "version": 1,
+      "query": "a nice fantasy movie like Elijah Wood",
+      "count": 3,
+      "results": [
+       {
+        "title": "Ya no me siento a gusto en este mundo",
+        "url": "https://es.wikipedia.org/wiki/Ya_no_me_siento_a_gusto_en_este_mundo",
+        "snippet": "Ya no me siento a gusto en este mundo (título en inglés: I Don't Feel at Home in This World Anymore) es una película estadounidense de comedia policíaca y suspense escrita y dirigida por Macon Blair en su debut en la dirección, protagonizada por Melanie Lynskey, Elijah Wood, David Yow, Jane Levy y Devon Graye. Fue estrenada mundialmente en el Festival de Cine de Sundance el 19 de enero de 2017 y vía streaming el 24 de febrero de 2017 por Netflix."
+       },
+       {
+        "title": "Pawn Shop Chronicles",
+        "url": "https://es.wikipedia.org/wiki/Pawn_Shop_Chronicles",
+        "snippet": "Pawn Shop Chronicles es una película del año 2013, protagonizada por Paul Walker, Elijah Wood, Brendan Fraser, Matt Dillon y Norman Reedus y dirigida por Wayne Kramer."
+       },
+       {
+        "title": "Flipper (película de 1996)",
+        "url": "https://es.wikipedia.org/wiki/Flipper_(pel%C3%ADcula_de_1996)",
+        "snippet": "Flipper es una película de 1996, adaptación de la película de 1963, protagonizada por Paul Hogan y Elijah Wood."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     }
+    }
+   },
+   {
+    "stage": "third",
+    "intent": "status",
+    "language": "en",
+    "reason": "",
+    "published": true,
+    "draft": "I could not find a movie like Elijah Wood in the results.",
+    "payload": {
+     "seen": {
+      "query": "a nice fantasy movie like Elijah Wood",
+      "count": 3,
+      "results": [
+       {
+        "title": "Ya no me siento a gusto en este mundo",
+        "url": "https://es.wikipedia.org/wiki/Ya_no_me_siento_a_gusto_en_este_mundo",
+        "snippet": "Ya no me siento a gusto en este mundo (título en inglés: I Don't Feel at Home in This World Anymore) es una película estadounidense de comedia policíaca y suspense escrita y dirigida por Macon Blair en su debut en la dirección, protagonizada por Melanie Lynskey, Elijah Wood, David Yow, Jane Levy y Devon Graye. Fue estrenada mundialmente en el Festival de Cine de Sundance el 19 de enero de 2017 y vía streaming el 24 de febrero de 2017 por Netflix."
+       },
+       {
+        "title": "Pawn Shop Chronicles",
+        "url": "https://es.wikipedia.org/wiki/Pawn_Shop_Chronicles",
+        "snippet": "Pawn Shop Chronicles es una película del año 2013, protagonizada por Paul Walker, Elijah Wood, Brendan Fraser, Matt Dillon y Norman Reedus y dirigida por Wayne Kramer."
+       },
+       {
+        "title": "Flipper (película de 1996)",
+        "url": "https://es.wikipedia.org/wiki/Flipper_(pel%C3%ADcula_de_1996)",
+        "snippet": "Flipper es una película de 1996, adaptación de la película de 1963, protagonizada por Paul Hogan y Elijah Wood."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     },
+     "operation": "web.search"
+    },
+    "situation": {
+     "kind": "operation",
+     "operation": "web.search",
+     "polarity": "success",
+     "verified": true,
+     "succeeded": true,
+     "observed": {
+      "version": 1,
+      "query": "a nice fantasy movie like Elijah Wood",
+      "count": 3,
+      "results": [
+       {
+        "title": "Ya no me siento a gusto en este mundo",
+        "url": "https://es.wikipedia.org/wiki/Ya_no_me_siento_a_gusto_en_este_mundo",
+        "snippet": "Ya no me siento a gusto en este mundo (título en inglés: I Don't Feel at Home in This World Anymore) es una película estadounidense de comedia policíaca y suspense escrita y dirigida por Macon Blair en su debut en la dirección, protagonizada por Melanie Lynskey, Elijah Wood, David Yow, Jane Levy y Devon Graye. Fue estrenada mundialmente en el Festival de Cine de Sundance el 19 de enero de 2017 y vía streaming el 24 de febrero de 2017 por Netflix."
+       },
+       {
+        "title": "Pawn Shop Chronicles",
+        "url": "https://es.wikipedia.org/wiki/Pawn_Shop_Chronicles",
+        "snippet": "Pawn Shop Chronicles es una película del año 2013, protagonizada por Paul Walker, Elijah Wood, Brendan Fraser, Matt Dillon y Norman Reedus y dirigida por Wayne Kramer."
+       },
+       {
+        "title": "Flipper (película de 1996)",
+        "url": "https://es.wikipedia.org/wiki/Flipper_(pel%C3%ADcula_de_1996)",
+        "snippet": "Flipper es una película de 1996, adaptación de la película de 1963, protagonizada por Paul Hogan y Elijah Wood."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     }
+    }
+   },
+   {
+    "stage": "from_memory",
+    "intent": "consulted",
+    "language": "en",
+    "reason": "",
+    "published": true,
+    "draft": "I couldn't check this; from memory, it may not be exact: Elijah Wood is best known for playing Frodo in The Lord of the Rings, so a similar fantasy movie would be The Hobbit trilogy. Other options that share that epic fantasy style include The Chronicles of Narnia or The Hunger Games.",
+    "payload": {
+     "request": "Search for a nice fantasy movie like Elijah Wood.",
+     "earlier_requests": [
+      "I am in a mood to watch movie online and I need your help to search for a nice Fantasy Movie like Elijah Wood."
+     ]
+    },
+    "situation": {
+     "kind": "operation",
+     "operation": "web.search",
+     "polarity": "success",
+     "verified": true,
+     "succeeded": true,
+     "observed": {
+      "version": 1,
+      "query": "a nice fantasy movie like Elijah Wood",
+      "count": 3,
+      "results": [
+       {
+        "title": "Ya no me siento a gusto en este mundo",
+        "url": "https://es.wikipedia.org/wiki/Ya_no_me_siento_a_gusto_en_este_mundo",
+        "snippet": "Ya no me siento a gusto en este mundo (título en inglés: I Don't Feel at Home in This World Anymore) es una película estadounidense de comedia policíaca y suspense escrita y dirigida por Macon Blair en su debut en la dirección, protagonizada por Melanie Lynskey, Elijah Wood, David Yow, Jane Levy y Devon Graye. Fue estrenada mundialmente en el Festival de Cine de Sundance el 19 de enero de 2017 y vía streaming el 24 de febrero de 2017 por Netflix."
+       },
+       {
+        "title": "Pawn Shop Chronicles",
+        "url": "https://es.wikipedia.org/wiki/Pawn_Shop_Chronicles",
+        "snippet": "Pawn Shop Chronicles es una película del año 2013, protagonizada por Paul Walker, Elijah Wood, Brendan Fraser, Matt Dillon y Norman Reedus y dirigida por Wayne Kramer."
+       },
+       {
+        "title": "Flipper (película de 1996)",
+        "url": "https://es.wikipedia.org/wiki/Flipper_(pel%C3%ADcula_de_1996)",
+        "snippet": "Flipper es una película de 1996, adaptación de la película de 1963, protagonizada por Paul Hogan y Elijah Wood."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     }
+    }
+   }
+  ]
+ },
+ "D-p29-t2": {
+  "run": "v3u-devD",
+  "text": "Search for scary movies.",
+  "lived": [
+   {
+    "role": "user",
+    "content": "Can you find me some movies featuring Gil Bellows?"
+   },
+   {
+    "role": "assistant",
+    "content": "Gil Bellows stars in the films Love and a .45 (1994), Scary Stories to Tell in the Dark (2019), and The Promotion (2008)."
+   }
+  ],
+  "published": "I couldn't check this; from memory, it may not be exact:\n1. The Thing (1982)\n2. Alien (1979)\n3. Hereditary (2018)\n4. The Exorcist (1973)\n5. Get Out (2017)\n6. It (1982)\n7. The Shining (1980)\n8. A Quiet Place (2018)\n9. Sinister (2012)\n10. The Conjuring (2013)",
+  "decision": "action:web.search",
+  "invented": true,
+  "ok": false,
+  "note": "De memoria: «It (1982)» (es de 1990/2017).",
+  "stages": [
+   {
+    "stage": "first",
+    "intent": "status",
+    "language": "en",
+    "reason": "search_report_off_subject",
+    "published": false,
+    "draft": "Scary Movie is a 2000 American black comedy directed by Keenen Ivory Wayans and written by his brothers Shawn Wayans and Marlon Wayans. Scary Movie 5 is a 2013 American black comedy that is the fifth installment in the Scary Movie franchise.",
+    "payload": {
+     "seen": {
+      "query": "scary movies",
+      "count": 5,
+      "results": [
+       {
+        "title": "Scary Movie",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie",
+        "snippet": "Scary Movie (titulada Scary Movie: Una película de miedo en Hispanoamérica) es una película estadounidense de humor negro del año 2000, dirigida por Keenen Ivory Wayans y escrita por sus hermanos Shawn Wayans y Marlon Wayans, quienes también actúan en la película. Las bromas de mal gusto, su lenguaje soez y escenas escatológicas han sido las claves de su éxito en Estados Unidos. Principalmente parodia a las películas Scream y I Know What You Did Last Summer; sobre todo en la trama, pero también en el asesino principal (Ghostface), en el rótulo o en el propio nombre de la película, «Scary Movie», que es repetido en Scream varias veces haciendo referencia realmente a películas de terror."
+       },
+       {
+        "title": "Scary Movie 3",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie_3",
+        "snippet": "Scary movie 3 (conocida como Scary Movie 3: Una película de miedo 3 y Scary Movie 3: No hay dos sin 3 en Hispanoamérica) es una película estadounidense de comedia y satírica de 2003 dirigida por David Zucker. Es la tercera parte de la saga cómica y de parodias Scary Movie. El elenco de la película está conformado por Anna Faris, Regina Hall quienes vuelven en sus roles de Cindy Campbell y Brenda Meeks respectivamente de anteriores películas así como la integración de nuevos actores a la franquicia tales como Charlie Sheen, Anthony Anderson, Kevin Hart y Simon Rex."
+       },
+       {
+        "title": "Scary Movie (película de 2026)",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie_(pel%C3%ADcula_de_2026)",
+        "snippet": "Scary Movie (coloquialmente conocida como Scary Movie 6 y Scary Movie: terroríficamente incorrecta en Hispanoamérica), es una película de parodia estadounidense de 2026 dirigida por Michael Tiddes y escrita por Marlon Wayans, Shawn Wayans, Keenen Ivory Wayans, Craig Wayans y Rick Alvarez. Es la sexta entrega de la serie de películas Scary Movie y se la ha descrito como la secuela espiritual de las dos primeras películas. Está protagonizada por Marlon, Shawn, Anna Faris y Regina Hall."
+       },
+       {
+        "title": "Scary Movie 5",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie_5",
+        "snippet": "Scary Movie 5 (estilizado como Scary MoVie) es una película estadounidense de humor negro de 2013. Es la quinta entrega de la saga de películas paródicas Scary Movie. Fue dirigida por Malcolm D. Lee, escrita por David Zucker y se estrenó el 12 de abril de 2013 en Estados Unidos y el 2 de mayo de 2013 en España."
+       },
+       {
+        "title": "Scary Movie 2",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie_2",
+        "snippet": "Scary Movie 2 (conocida también como Scary Movie 2: Otra película de miedo en Hispanoamérica) es una película de comedia cinematográfica estadounidense de 2001, y es la segunda película de la franquicia Scary Movie. Se presentó con el subtítulo de «Mentimos», haciendo referencia al eslogan «No habrá clemencia. No habrá vergüenza."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     },
+     "operation": "web.search"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"scary movies\",\"count\":5,\"results\":[{\"title\":\"Scary Movie\",\"url\":\"https://es.wikipedia.org/wiki/Scary_Movie\",\"snippet\":\"Scary Movie (titulada Scary Movie: Una película de miedo en Hispanoamérica) es una película estadounidense de humor negro del año 2000, dirigida por Keenen Ivory Wayans y escrita por sus hermanos Shawn Wayans y Marlon Wayans, quienes también actúan en la película. Las bromas de mal gusto, su lenguaje soez y escenas escatológicas han sido las claves de su éxito en Estados Unidos. Principalmente parodia a las películas Scream y I Know What You Did Last Summer; sobre todo en la trama, pero también en el asesino principal (Ghostface), en el rótulo o en el propio nombre de la película, «Scary Movie», que es repetido en Scream varias veces haciendo referencia realmente a películas de terror.\"},{\"title\":\"Scary Movie 3\",\"url\":\"https://es.wikipedia.org/wiki/Scary_Movie_3\",\"snippet\":\"Scary movie 3 (conocida como Scary Movie 3: Una película de miedo 3 y Scary Movie 3: No hay dos sin 3 en Hispanoamérica) es una película estadounidense de comedia y satírica de 2003 dirigida por David Zucker. Es la tercera parte de la saga cómica y de parodias Scary Movie. El elenco de la película está conformado por Anna Faris, Regina Hall quienes vuelven en sus roles de Cindy Campbell y Brenda Meeks respectivamente de anteriores películas así como la integración de nuevos actores a la franquicia tales como Charlie Sheen, Anthony Anderson, Kevin Hart y Simon Rex.\"},{\"title\":\"Scary Movie (película de 2026)\",\"url\":\"https://es.wikipedia.org/wiki/Scary_Movie_(pel%C3%ADcula_de_2026)\",\"snippet\":\"Scary Movie (coloquialmente conocida como Scary Movie 6 y Scary Movie: terroríficamente incorrecta en Hispanoamérica), es una película de parodia estadounidense de 2026 dirigida por Michael Tiddes y escrita por Marlon Wayans, Shawn Wayans, Keenen Ivory Wayans, Craig Wayans y Rick Alvarez. Es la sexta entrega de"
+   },
+   {
+    "stage": "retry",
+    "intent": "status",
+    "language": "en",
+    "reason": "search_report_shows_the_search",
+    "published": false,
+    "draft": "There is no direct answer in the results for a generic \"scary movie,\" but the snippets describe specific films like the 2000 \"Scary Movie\" or the 2003 \"Scary Movie 3\" which are comedies and parodies.",
+    "payload": {
+     "seen": {
+      "query": "scary movies",
+      "count": 5,
+      "results": [
+       {
+        "title": "Scary Movie",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie",
+        "snippet": "Scary Movie (titulada Scary Movie: Una película de miedo en Hispanoamérica) es una película estadounidense de humor negro del año 2000, dirigida por Keenen Ivory Wayans y escrita por sus hermanos Shawn Wayans y Marlon Wayans, quienes también actúan en la película. Las bromas de mal gusto, su lenguaje soez y escenas escatológicas han sido las claves de su éxito en Estados Unidos. Principalmente parodia a las películas Scream y I Know What You Did Last Summer; sobre todo en la trama, pero también en el asesino principal (Ghostface), en el rótulo o en el propio nombre de la película, «Scary Movie», que es repetido en Scream varias veces haciendo referencia realmente a películas de terror."
+       },
+       {
+        "title": "Scary Movie 3",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie_3",
+        "snippet": "Scary movie 3 (conocida como Scary Movie 3: Una película de miedo 3 y Scary Movie 3: No hay dos sin 3 en Hispanoamérica) es una película estadounidense de comedia y satírica de 2003 dirigida por David Zucker. Es la tercera parte de la saga cómica y de parodias Scary Movie. El elenco de la película está conformado por Anna Faris, Regina Hall quienes vuelven en sus roles de Cindy Campbell y Brenda Meeks respectivamente de anteriores películas así como la integración de nuevos actores a la franquicia tales como Charlie Sheen, Anthony Anderson, Kevin Hart y Simon Rex."
+       },
+       {
+        "title": "Scary Movie (película de 2026)",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie_(pel%C3%ADcula_de_2026)",
+        "snippet": "Scary Movie (coloquialmente conocida como Scary Movie 6 y Scary Movie: terroríficamente incorrecta en Hispanoamérica), es una película de parodia estadounidense de 2026 dirigida por Michael Tiddes y escrita por Marlon Wayans, Shawn Wayans, Keenen Ivory Wayans, Craig Wayans y Rick Alvarez. Es la sexta entrega de la serie de películas Scary Movie y se la ha descrito como la secuela espiritual de las dos primeras películas. Está protagonizada por Marlon, Shawn, Anna Faris y Regina Hall."
+       },
+       {
+        "title": "Scary Movie 5",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie_5",
+        "snippet": "Scary Movie 5 (estilizado como Scary MoVie) es una película estadounidense de humor negro de 2013. Es la quinta entrega de la saga de películas paródicas Scary Movie. Fue dirigida por Malcolm D. Lee, escrita por David Zucker y se estrenó el 12 de abril de 2013 en Estados Unidos y el 2 de mayo de 2013 en España."
+       },
+       {
+        "title": "Scary Movie 2",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie_2",
+        "snippet": "Scary Movie 2 (conocida también como Scary Movie 2: Otra película de miedo en Hispanoamérica) es una película de comedia cinematográfica estadounidense de 2001, y es la segunda película de la franquicia Scary Movie. Se presentó con el subtítulo de «Mentimos», haciendo referencia al eslogan «No habrá clemencia. No habrá vergüenza."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     },
+     "operation": "web.search"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"scary movies\",\"count\":5,\"results\":[{\"title\":\"Scary Movie\",\"url\":\"https://es.wikipedia.org/wiki/Scary_Movie\",\"snippet\":\"Scary Movie (titulada Scary Movie: Una película de miedo en Hispanoamérica) es una película estadounidense de humor negro del año 2000, dirigida por Keenen Ivory Wayans y escrita por sus hermanos Shawn Wayans y Marlon Wayans, quienes también actúan en la película. Las bromas de mal gusto, su lenguaje soez y escenas escatológicas han sido las claves de su éxito en Estados Unidos. Principalmente parodia a las películas Scream y I Know What You Did Last Summer; sobre todo en la trama, pero también en el asesino principal (Ghostface), en el rótulo o en el propio nombre de la película, «Scary Movie», que es repetido en Scream varias veces haciendo referencia realmente a películas de terror.\"},{\"title\":\"Scary Movie 3\",\"url\":\"https://es.wikipedia.org/wiki/Scary_Movie_3\",\"snippet\":\"Scary movie 3 (conocida como Scary Movie 3: Una película de miedo 3 y Scary Movie 3: No hay dos sin 3 en Hispanoamérica) es una película estadounidense de comedia y satírica de 2003 dirigida por David Zucker. Es la tercera parte de la saga cómica y de parodias Scary Movie. El elenco de la película está conformado por Anna Faris, Regina Hall quienes vuelven en sus roles de Cindy Campbell y Brenda Meeks respectivamente de anteriores películas así como la integración de nuevos actores a la franquicia tales como Charlie Sheen, Anthony Anderson, Kevin Hart y Simon Rex.\"},{\"title\":\"Scary Movie (película de 2026)\",\"url\":\"https://es.wikipedia.org/wiki/Scary_Movie_(pel%C3%ADcula_de_2026)\",\"snippet\":\"Scary Movie (coloquialmente conocida como Scary Movie 6 y Scary Movie: terroríficamente incorrecta en Hispanoamérica), es una película de parodia estadounidense de 2026 dirigida por Michael Tiddes y escrita por Marlon Wayans, Shawn Wayans, Keenen Ivory Wayans, Craig Wayans y Rick Alvarez. Es la sexta entrega de"
+   },
+   {
+    "stage": "third",
+    "intent": "status",
+    "language": "en",
+    "reason": "search_report_off_subject",
+    "published": false,
+    "draft": "Scary Movie is a 2000 black comedy film directed by Keenen Ivory Wayans and written by his brothers Shawn Wayans and Marlon Wayans.",
+    "payload": {
+     "seen": {
+      "query": "scary movies",
+      "count": 5,
+      "results": [
+       {
+        "title": "Scary Movie",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie",
+        "snippet": "Scary Movie (titulada Scary Movie: Una película de miedo en Hispanoamérica) es una película estadounidense de humor negro del año 2000, dirigida por Keenen Ivory Wayans y escrita por sus hermanos Shawn Wayans y Marlon Wayans, quienes también actúan en la película. Las bromas de mal gusto, su lenguaje soez y escenas escatológicas han sido las claves de su éxito en Estados Unidos. Principalmente parodia a las películas Scream y I Know What You Did Last Summer; sobre todo en la trama, pero también en el asesino principal (Ghostface), en el rótulo o en el propio nombre de la película, «Scary Movie», que es repetido en Scream varias veces haciendo referencia realmente a películas de terror."
+       },
+       {
+        "title": "Scary Movie 3",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie_3",
+        "snippet": "Scary movie 3 (conocida como Scary Movie 3: Una película de miedo 3 y Scary Movie 3: No hay dos sin 3 en Hispanoamérica) es una película estadounidense de comedia y satírica de 2003 dirigida por David Zucker. Es la tercera parte de la saga cómica y de parodias Scary Movie. El elenco de la película está conformado por Anna Faris, Regina Hall quienes vuelven en sus roles de Cindy Campbell y Brenda Meeks respectivamente de anteriores películas así como la integración de nuevos actores a la franquicia tales como Charlie Sheen, Anthony Anderson, Kevin Hart y Simon Rex."
+       },
+       {
+        "title": "Scary Movie (película de 2026)",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie_(pel%C3%ADcula_de_2026)",
+        "snippet": "Scary Movie (coloquialmente conocida como Scary Movie 6 y Scary Movie: terroríficamente incorrecta en Hispanoamérica), es una película de parodia estadounidense de 2026 dirigida por Michael Tiddes y escrita por Marlon Wayans, Shawn Wayans, Keenen Ivory Wayans, Craig Wayans y Rick Alvarez. Es la sexta entrega de la serie de películas Scary Movie y se la ha descrito como la secuela espiritual de las dos primeras películas. Está protagonizada por Marlon, Shawn, Anna Faris y Regina Hall."
+       },
+       {
+        "title": "Scary Movie 5",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie_5",
+        "snippet": "Scary Movie 5 (estilizado como Scary MoVie) es una película estadounidense de humor negro de 2013. Es la quinta entrega de la saga de películas paródicas Scary Movie. Fue dirigida por Malcolm D. Lee, escrita por David Zucker y se estrenó el 12 de abril de 2013 en Estados Unidos y el 2 de mayo de 2013 en España."
+       },
+       {
+        "title": "Scary Movie 2",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie_2",
+        "snippet": "Scary Movie 2 (conocida también como Scary Movie 2: Otra película de miedo en Hispanoamérica) es una película de comedia cinematográfica estadounidense de 2001, y es la segunda película de la franquicia Scary Movie. Se presentó con el subtítulo de «Mentimos», haciendo referencia al eslogan «No habrá clemencia. No habrá vergüenza."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     },
+     "operation": "web.search"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"scary movies\",\"count\":5,\"results\":[{\"title\":\"Scary Movie\",\"url\":\"https://es.wikipedia.org/wiki/Scary_Movie\",\"snippet\":\"Scary Movie (titulada Scary Movie: Una película de miedo en Hispanoamérica) es una película estadounidense de humor negro del año 2000, dirigida por Keenen Ivory Wayans y escrita por sus hermanos Shawn Wayans y Marlon Wayans, quienes también actúan en la película. Las bromas de mal gusto, su lenguaje soez y escenas escatológicas han sido las claves de su éxito en Estados Unidos. Principalmente parodia a las películas Scream y I Know What You Did Last Summer; sobre todo en la trama, pero también en el asesino principal (Ghostface), en el rótulo o en el propio nombre de la película, «Scary Movie», que es repetido en Scream varias veces haciendo referencia realmente a películas de terror.\"},{\"title\":\"Scary Movie 3\",\"url\":\"https://es.wikipedia.org/wiki/Scary_Movie_3\",\"snippet\":\"Scary movie 3 (conocida como Scary Movie 3: Una película de miedo 3 y Scary Movie 3: No hay dos sin 3 en Hispanoamérica) es una película estadounidense de comedia y satírica de 2003 dirigida por David Zucker. Es la tercera parte de la saga cómica y de parodias Scary Movie. El elenco de la película está conformado por Anna Faris, Regina Hall quienes vuelven en sus roles de Cindy Campbell y Brenda Meeks respectivamente de anteriores películas así como la integración de nuevos actores a la franquicia tales como Charlie Sheen, Anthony Anderson, Kevin Hart y Simon Rex.\"},{\"title\":\"Scary Movie (película de 2026)\",\"url\":\"https://es.wikipedia.org/wiki/Scary_Movie_(pel%C3%ADcula_de_2026)\",\"snippet\":\"Scary Movie (coloquialmente conocida como Scary Movie 6 y Scary Movie: terroríficamente incorrecta en Hispanoamérica), es una película de parodia estadounidense de 2026 dirigida por Michael Tiddes y escrita por Marlon Wayans, Shawn Wayans, Keenen Ivory Wayans, Craig Wayans y Rick Alvarez. Es la sexta entrega de"
+   },
+   {
+    "stage": "not_found_fallback",
+    "intent": "status",
+    "language": "en",
+    "reason": "",
+    "published": true,
+    "draft": "I couldn't find it.",
+    "payload": {
+     "seen": {
+      "query": "scary movies",
+      "count": 5,
+      "results": [
+       {
+        "title": "Scary Movie",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie",
+        "snippet": "Scary Movie (titulada Scary Movie: Una película de miedo en Hispanoamérica) es una película estadounidense de humor negro del año 2000, dirigida por Keenen Ivory Wayans y escrita por sus hermanos Shawn Wayans y Marlon Wayans, quienes también actúan en la película. Las bromas de mal gusto, su lenguaje soez y escenas escatológicas han sido las claves de su éxito en Estados Unidos. Principalmente parodia a las películas Scream y I Know What You Did Last Summer; sobre todo en la trama, pero también en el asesino principal (Ghostface), en el rótulo o en el propio nombre de la película, «Scary Movie», que es repetido en Scream varias veces haciendo referencia realmente a películas de terror."
+       },
+       {
+        "title": "Scary Movie 3",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie_3",
+        "snippet": "Scary movie 3 (conocida como Scary Movie 3: Una película de miedo 3 y Scary Movie 3: No hay dos sin 3 en Hispanoamérica) es una película estadounidense de comedia y satírica de 2003 dirigida por David Zucker. Es la tercera parte de la saga cómica y de parodias Scary Movie. El elenco de la película está conformado por Anna Faris, Regina Hall quienes vuelven en sus roles de Cindy Campbell y Brenda Meeks respectivamente de anteriores películas así como la integración de nuevos actores a la franquicia tales como Charlie Sheen, Anthony Anderson, Kevin Hart y Simon Rex."
+       },
+       {
+        "title": "Scary Movie (película de 2026)",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie_(pel%C3%ADcula_de_2026)",
+        "snippet": "Scary Movie (coloquialmente conocida como Scary Movie 6 y Scary Movie: terroríficamente incorrecta en Hispanoamérica), es una película de parodia estadounidense de 2026 dirigida por Michael Tiddes y escrita por Marlon Wayans, Shawn Wayans, Keenen Ivory Wayans, Craig Wayans y Rick Alvarez. Es la sexta entrega de la serie de películas Scary Movie y se la ha descrito como la secuela espiritual de las dos primeras películas. Está protagonizada por Marlon, Shawn, Anna Faris y Regina Hall."
+       },
+       {
+        "title": "Scary Movie 5",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie_5",
+        "snippet": "Scary Movie 5 (estilizado como Scary MoVie) es una película estadounidense de humor negro de 2013. Es la quinta entrega de la saga de películas paródicas Scary Movie. Fue dirigida por Malcolm D. Lee, escrita por David Zucker y se estrenó el 12 de abril de 2013 en Estados Unidos y el 2 de mayo de 2013 en España."
+       },
+       {
+        "title": "Scary Movie 2",
+        "url": "https://es.wikipedia.org/wiki/Scary_Movie_2",
+        "snippet": "Scary Movie 2 (conocida también como Scary Movie 2: Otra película de miedo en Hispanoamérica) es una película de comedia cinematográfica estadounidense de 2001, y es la segunda película de la franquicia Scary Movie. Se presentó con el subtítulo de «Mentimos», haciendo referencia al eslogan «No habrá clemencia. No habrá vergüenza."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     },
+     "operation": "web.search"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"scary movies\",\"count\":5,\"results\":[{\"title\":\"Scary Movie\",\"url\":\"https://es.wikipedia.org/wiki/Scary_Movie\",\"snippet\":\"Scary Movie (titulada Scary Movie: Una película de miedo en Hispanoamérica) es una película estadounidense de humor negro del año 2000, dirigida por Keenen Ivory Wayans y escrita por sus hermanos Shawn Wayans y Marlon Wayans, quienes también actúan en la película. Las bromas de mal gusto, su lenguaje soez y escenas escatológicas han sido las claves de su éxito en Estados Unidos. Principalmente parodia a las películas Scream y I Know What You Did Last Summer; sobre todo en la trama, pero también en el asesino principal (Ghostface), en el rótulo o en el propio nombre de la película, «Scary Movie», que es repetido en Scream varias veces haciendo referencia realmente a películas de terror.\"},{\"title\":\"Scary Movie 3\",\"url\":\"https://es.wikipedia.org/wiki/Scary_Movie_3\",\"snippet\":\"Scary movie 3 (conocida como Scary Movie 3: Una película de miedo 3 y Scary Movie 3: No hay dos sin 3 en Hispanoamérica) es una película estadounidense de comedia y satírica de 2003 dirigida por David Zucker. Es la tercera parte de la saga cómica y de parodias Scary Movie. El elenco de la película está conformado por Anna Faris, Regina Hall quienes vuelven en sus roles de Cindy Campbell y Brenda Meeks respectivamente de anteriores películas así como la integración de nuevos actores a la franquicia tales como Charlie Sheen, Anthony Anderson, Kevin Hart y Simon Rex.\"},{\"title\":\"Scary Movie (película de 2026)\",\"url\":\"https://es.wikipedia.org/wiki/Scary_Movie_(pel%C3%ADcula_de_2026)\",\"snippet\":\"Scary Movie (coloquialmente conocida como Scary Movie 6 y Scary Movie: terroríficamente incorrecta en Hispanoamérica), es una película de parodia estadounidense de 2026 dirigida por Michael Tiddes y escrita por Marlon Wayans, Shawn Wayans, Keenen Ivory Wayans, Craig Wayans y Rick Alvarez. Es la sexta entrega de"
+   },
+   {
+    "stage": "from_memory",
+    "intent": "consulted",
+    "language": "en",
+    "reason": "",
+    "published": true,
+    "draft": "I couldn't check this; from memory, it may not be exact:\n1. The Thing (1982)\n2. Alien (1979)\n3. Hereditary (2018)\n4. The Exorcist (1973)\n5. Get Out (2017)\n6. It (1982)\n7. The Shining (1980)\n8. A Quiet Place (2018)\n9. Sinister (2012)\n10. The Conjuring (2013)",
+    "payload": {
+     "request": "Search for scary movies.",
+     "earlier_requests": [
+      "Can you find me some movies featuring Gil Bellows?",
+      "Search for scary movies."
+     ]
+    },
+    "situation": "{\"kind\": \"operation\", \"operation\": \"web.search\", \"polarity\": \"success\", \"verified\": true, \"succeeded\": true, \"observed\": {\"version\": 1, \"query\": \"scary movies\", \"count\": 5, \"results\": [{\"title\": \"Scary Movie\", \"url\": \"https://es.wikipedia.org/wiki/Scary_Movie\", \"snippet\": \"Scary Movie (titulada Scary Movie: Una película de miedo en Hispanoamérica) es una película estadounidense de humor negro del año 2000, dirigida por Keenen Ivory Wayans y escrita por sus hermanos Shawn Wayans y Marlon Wayans, quienes también actúan en la película. Las bromas de mal gusto, su lenguaje soez y escenas escatológicas han sido las claves de su éxito en Estados Unidos. Principalmente parodia a las películas Scream y I Know What You Did Last Summer; sobre todo en la trama, pero también en el asesino principal (Ghostface), en el rótulo o en el propio nombre de la película, «Scary Movie», que es repetido en Scream varias veces haciendo referencia realmente a películas de terror.\"}, {\"title\": \"Scary Movie 3\", \"url\": \"https://es.wikipedia.org/wiki/Scary_Movie_3\", \"snippet\": \"Scary movie 3 (conocida como Scary Movie 3: Una película de miedo 3 y Scary Movie 3: No hay dos sin 3 en Hispanoamérica) es una película estadounidense de comedia y satírica de 2003 dirigida por David Zucker. Es la tercera parte de la saga cómica y de parodias Scary Movie. El elenco de la película está conformado por Anna Faris, Regina Hall quienes vuelven en sus roles de Cindy Campbell y Brenda Meeks respectivamente de anteriores películas así como la integración de nuevos actores a la franquicia tales como Charlie Sheen, Anthony Anderson, Kevin Hart y Simon Rex.\"}, {\"title\": \"Scary Movie (película de 2026)\", \"url\": \"https://es.wikipedia.org/wiki/Scary_Movie_(pel%C3%ADcula_de_2026)\", \"snippet\": \"Scary Movie (coloquialmente conocida como Scary Movie 6 y Scary Movie: terroríficamente incorrecta en Hispanoamérica), es una película de parodia estadounidense de 2026 dirigida por Michael Tiddes y escrita por Marlon Wayans, Shawn Wayans, Keenen Ivory Wayans, Craig Wayans y R"
+   }
+  ]
+ },
+ "D-w01-t2": {
+  "run": "v3u-devD",
+  "text": "oye y cuánta sal le echo al agua, más o menos, cachai",
+  "lived": [
+   {
+    "role": "user",
+    "content": "oye baxy ponme un timer de 12 minutos pa los tallarines po"
+   },
+   {
+    "role": "assistant",
+    "content": "He programado el temporizador de 12 minutos para los tallarines para las 19:44."
+   }
+  ],
+  "published": "Se le pone a gusto.",
+  "decision": "action:web.search",
+  "invented": false,
+  "ok": false,
+  "note": "«Se le pone a gusto» aunque la lectura traía la regla de 10 g por litro.",
+  "stages": [
+   {
+    "stage": "first",
+    "intent": "status",
+    "language": "es",
+    "reason": "",
+    "published": true,
+    "draft": "Se le pone a gusto.",
+    "payload": {
+     "seen": {
+      "query": "cuanta sal le echo al agua para los tallarines",
+      "count": 5,
+      "results": [
+       {
+        "title": "Una receta práctica y sorprendente: cómo hacer los mejores tallarines ...",
+        "url": "https://tn.com.ar/cocina/2024/05/20/una-receta-practica-y-sorprendente-como-hacer-los-mejores-tallarines-caseros-con-solo-cuatro-ingredientes/",
+        "snippet": "700 gramos de harina Cuatro huevos frescos Sal fina (se le pone a gusto) Agua (la cantidad necesaria para hervir y cocinar) Cómo hacer los mejores tallarines caseros: modo de preparación"
+       },
+       {
+        "title": "Calculadora de cantidad de agua y sal para hervir pasta",
+        "url": "https://lavidacotidiana.es/calculadora-cantidad-agua-hervir-pasta/",
+        "snippet": "Calcula la cantidad exacta de agua , sal y tiempo de cocción para tu pasta según el tipo y los comensales. Resultados al instante."
+       },
+       {
+        "title": "La regla del 1, 100 y 10: cuánta sal hay que echarle a la ... - El Tiempo",
+        "url": "https://www.eltiempo.com/cultura/gente/la-regla-del-1-100-y-10-cuanta-sal-hay-que-echarle-a-la-pasta-cocida-segun-chef-italiano-3521378",
+        "snippet": "Las personas suelen calcular mal la cantidad de sal para su pasta. Foto:iStock La regla del 1, 100 y 10 Uno de los métodos más extendidos para calcular la sal es la conocida regla del 1, 100 y 10."
+       },
+       {
+        "title": "PASTA CASERA: Cómo hacer tallarines frescos - Las Recetas de MJ",
+        "url": "https://www.lasrecetasdemj.com/2023/03/pasta-casera-como-hacer-tallarines.html",
+        "snippet": "Hacer pasta en casa no es difícil, aunque es verdad que cuanto más practiquemos mejor nos saldrá. Porque lo que sí está claro es que la pasta fresca casera es insuperable, casi no necesita acompañamientos. Hoy vamos a hacer tallarines caseros y los vamos a presentar con muy poquitos ingredientes, todos de calidad, para que la pasta sea la auténtica protagonista."
+       },
+       {
+        "title": "Como hacer tallarines: 5 pasos sencillos y deliciosos",
+        "url": "https://cocinarrecetasdepostres.net/como-hacer-tallarines/",
+        "snippet": "Huevos: Los huevos son fundamentales, ya que no solo aportan sabor, sino también color y textura a la masa. Sal : La sal realza el sabor de los tallarines , así que no olvides añadirla en la masa y al agua de cocción. Aceite de oliva: Este ingrediente opcional le dará un toque de suavidad y sabor a la masa, haciendo su preparación más ..."
+       }
+      ],
+      "authority": "duckduckgo_lite_https"
+     },
+     "operation": "web.search"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"cuanta sal le echo al agua para los tallarines\",\"count\":5,\"results\":[{\"title\":\"Una receta práctica y sorprendente: cómo hacer los mejores tallarines ...\",\"url\":\"https://tn.com.ar/cocina/2024/05/20/una-receta-practica-y-sorprendente-como-hacer-los-mejores-tallarines-caseros-con-solo-cuatro-ingredientes/\",\"snippet\":\"700 gramos de harina Cuatro huevos frescos Sal fina (se le pone a gusto) Agua (la cantidad necesaria para hervir y cocinar) Cómo hacer los mejores tallarines caseros: modo de preparación\"},{\"title\":\"Calculadora de cantidad de agua y sal para hervir pasta\",\"url\":\"https://lavidacotidiana.es/calculadora-cantidad-agua-hervir-pasta/\",\"snippet\":\"Calcula la cantidad exacta de agua , sal y tiempo de cocción para tu pasta según el tipo y los comensales. Resultados al instante.\"},{\"title\":\"La regla del 1, 100 y 10: cuánta sal hay que echarle a la ... - El Tiempo\",\"url\":\"https://www.eltiempo.com/cultura/gente/la-regla-del-1-100-y-10-cuanta-sal-hay-que-echarle-a-la-pasta-cocida-segun-chef-italiano-3521378\",\"snippet\":\"Las personas suelen calcular mal la cantidad de sal para su pasta. Foto:iStock La regla del 1, 100 y 10 Uno de los métodos más extendidos para calcular la sal es la conocida regla del 1, 100 y 10.\"},{\"title\":\"PASTA CASERA: Cómo hacer tallarines frescos - Las Recetas de MJ\",\"url\":\"https://www.lasrecetasdemj.com/2023/03/pasta-casera-como-hacer-tallarines.html\",\"snippet\":\"Hacer pasta en casa no es difícil, aunque es verdad que cuanto más practiquemos mejor nos saldrá. Porque lo que sí está claro es que la pasta fresca casera es insuperable, casi no necesita acompañamientos. Hoy vamos a hacer tallarines caseros y los vamos a presentar con muy poquitos ingredientes, todos de calidad, para que la pasta sea la auténtica protagonista.\"},{\"title\":\"Como hacer tallarines: 5 pasos sencillos y deliciosos\",\"url\":\"https://cocinarrecetasdepostres.net/como-hacer-tallarines/\",\"snippet\":\"Hue"
+   }
+  ]
+ },
+ "D-w01-t3": {
+  "run": "v3u-devD",
+  "text": "ya y pa 3 litros cuántas cucharaditas serían",
+  "lived": [
+   {
+    "role": "user",
+    "content": "oye baxy ponme un timer de 12 minutos pa los tallarines po"
+   },
+   {
+    "role": "assistant",
+    "content": "He programado el temporizador de 12 minutos para los tallarines para las 19:44."
+   },
+   {
+    "role": "user",
+    "content": "oye y cuánta sal le echo al agua, más o menos, cachai"
+   },
+   {
+    "role": "assistant",
+    "content": "Se le pone a gusto."
+   }
+  ],
+  "published": "No pude comprobarlo; de memoria, puede no ser exacto:\n1. Una cucharadita estándar equivale a aproximadamente 5 mililitros.\n2. Para 3 litros (3000 mililitros) se necesitan unas 600 cucharaditas.",
+  "decision": "action:web.search",
+  "invented": true,
+  "ok": false,
+  "note": "De memoria: «para 3 litros unas 600 cucharaditas» (de sal): absurdo; son ~30 g, unas 5–6.",
+  "stages": [
+   {
+    "stage": "first",
+    "intent": "status",
+    "language": "es",
+    "reason": "search_report_unsourced_claim",
+    "published": false,
+    "draft": "Para 3 litros de agua, la hidratación requiere media cucharadita de sal por litro, lo que suma 1,5 cucharaditas en total.",
+    "payload": {
+     "seen": {
+      "query": "para 3 litros cuantas cucharaditas serian sal agua tallarines",
+      "count": 5,
+      "results": [
+       {
+        "title": "Convertir Líquidos de Cocina | ml, Cuchara, Taza",
+        "url": "https://www.rivocalc.com/es-es/comida/conversion-liquidos",
+        "snippet": "Cómo Convertir Líquidos de Cocina entre ml, Cucharas y Tazas La cocina española mezcla dos sistemas de medida sin mayor ceremonia. Los ingredientes sólidos se pesan en gramos en la báscula, pero los líquidos ( agua , leche, aceite, vino) casi siempre se miden por volumen: cucharadita , cucharada, taza o vaso. Una receta de familia en cucharadas, una receta internacional en tazas o un litro ..."
+       },
+       {
+        "title": "¿Cuántas cucharadas de sal se le pone a un litro de agua?",
+        "url": "https://es.phongnhaexplorer.com/pyr/cocina/cuantas-cucharadas-de-sal-se-le-pone-a-un-litro-de-agua.html",
+        "snippet": "La medida ideal de sal por litro de agua para pasta es de 10 gramos, lo que equivale a una cucharada sopera rasa de sal gruesa. Esta proporción por cada 100 gramos de pasta asegura el sabor perfecto. En cambio, la hidratación requiere solo media cucharadita de té de sal por litro de agua ."
+       },
+       {
+        "title": "Convertidor de medidas de cocción: convierta cucharaditas, cucharadas ...",
+        "url": "https://yotoolgen.com/es/convertidor-de-medidas-de-coccion/",
+        "snippet": "Convierta medidas de cocción entre cucharaditas , cucharadas, tazas, onzas líquidas, mililitros, litros y gramos con este conversor en línea gratuito. Perfecto para escalar recetas y cambiar entre unidades métricas e imperiales. ¿Cuáles son las medidas de cocción? Las medidas de cocción son unidades estandarizadas que se utilizan para cuantificar los ingredientes en las recetas. Los dos ..."
+       },
+       {
+        "title": "Equivalencias de Cucharaditas y Tazas | PDF | Litro | Receta",
+        "url": "https://es.scribd.com/document/479123800/valenciagastronomica-com-Cuanto-es-una-cucharadita-Tabla-de-equivalencia-de-medidas-de-la-cocina",
+        "snippet": "Este documento proporciona una tabla detallada de equivalencias de medidas comunes utilizadas en la cocina, incluyendo cucharadas, tazas, vasos y gramos. Explica cuántos mililitros o gramos equivalen a una cucharadita , cucharada, taza o vaso para ingredientes líquidos y sólidos como agua , aceite, harina, azúcar y mantequilla. El objetivo es ayudar a los cocineros a seguir recetas con ..."
+       },
+       {
+        "title": "¿Cuántas cucharadas de sal por litro de agua? Pregunta Y Responde",
+        "url": "https://es.phongnhaexplorer.com/pyr/cocina/cuantas-cucharadas-de-sal-por-litro-de-agua.html",
+        "snippet": "Cuántas cucharadas de sal por litro de agua : Proporciones El uso de cuántas cucharadas de sal por litro de agua varía según la preparación específica que realice. Conocer la medida exacta resulta vital para alcanzar el sabor equilibrado en sus comidas o la concentración adecuada en sus soluciones. Aprenda las proporciones correctas para evitar excesos y mejorar sus resultados culinarios ..."
+       }
+      ],
+      "authority": "duckduckgo_lite_https"
+     },
+     "operation": "web.search"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"para 3 litros cuantas cucharaditas serian sal agua tallarines\",\"count\":5,\"results\":[{\"title\":\"Convertir Líquidos de Cocina | ml, Cuchara, Taza\",\"url\":\"https://www.rivocalc.com/es-es/comida/conversion-liquidos\",\"snippet\":\"Cómo Convertir Líquidos de Cocina entre ml, Cucharas y Tazas La cocina española mezcla dos sistemas de medida sin mayor ceremonia. Los ingredientes sólidos se pesan en gramos en la báscula, pero los líquidos ( agua , leche, aceite, vino) casi siempre se miden por volumen: cucharadita , cucharada, taza o vaso. Una receta de familia en cucharadas, una receta internacional en tazas o un litro ...\"},{\"title\":\"¿Cuántas cucharadas de sal se le pone a un litro de agua?\",\"url\":\"https://es.phongnhaexplorer.com/pyr/cocina/cuantas-cucharadas-de-sal-se-le-pone-a-un-litro-de-agua.html\",\"snippet\":\"La medida ideal de sal por litro de agua para pasta es de 10 gramos, lo que equivale a una cucharada sopera rasa de sal gruesa. Esta proporción por cada 100 gramos de pasta asegura el sabor perfecto. En cambio, la hidratación requiere solo media cucharadita de té de sal por litro de agua .\"},{\"title\":\"Convertidor de medidas de cocción: convierta cucharaditas, cucharadas ...\",\"url\":\"https://yotoolgen.com/es/convertidor-de-medidas-de-coccion/\",\"snippet\":\"Convierta medidas de cocción entre cucharaditas , cucharadas, tazas, onzas líquidas, mililitros, litros y gramos con este conversor en línea gratuito. Perfecto para escalar recetas y cambiar entre unidades métricas e imperiales. ¿Cuáles son las medidas de cocción? Las medidas de cocción son unidades estandarizadas que se utilizan para cuantificar los ingredientes en las recetas. Los dos ...\"},{\"title\":\"Equivalencias de Cucharaditas y Tazas | PDF | Litro | Receta\",\"url\":\"https://es.scribd.com/document/479123800/valenciagastronomica-com-Cuanto-es-una-cucharadita-Tabla-de-equivalencia-de-medidas-de-la-cocina\",\"snippet\":\"Este documento proporc"
+   },
+   {
+    "stage": "retry",
+    "intent": "status",
+    "language": "es",
+    "reason": "search_report_unsourced_claim",
+    "published": false,
+    "draft": "Una cucharada sopera rasa contiene aproximadamente 10 gramos de sal, mientras que una cucharadita de té contiene alrededor de 2,5 gramos. Para 3 litros de agua necesitarías entre 30 y 75 gramos de sal dependiendo del tipo de sal y la intensidad de sabor deseada.",
+    "payload": {
+     "seen": {
+      "query": "para 3 litros cuantas cucharaditas serian sal agua tallarines",
+      "count": 5,
+      "results": [
+       {
+        "title": "Convertir Líquidos de Cocina | ml, Cuchara, Taza",
+        "url": "https://www.rivocalc.com/es-es/comida/conversion-liquidos",
+        "snippet": "Cómo Convertir Líquidos de Cocina entre ml, Cucharas y Tazas La cocina española mezcla dos sistemas de medida sin mayor ceremonia. Los ingredientes sólidos se pesan en gramos en la báscula, pero los líquidos ( agua , leche, aceite, vino) casi siempre se miden por volumen: cucharadita , cucharada, taza o vaso. Una receta de familia en cucharadas, una receta internacional en tazas o un litro ..."
+       },
+       {
+        "title": "¿Cuántas cucharadas de sal se le pone a un litro de agua?",
+        "url": "https://es.phongnhaexplorer.com/pyr/cocina/cuantas-cucharadas-de-sal-se-le-pone-a-un-litro-de-agua.html",
+        "snippet": "La medida ideal de sal por litro de agua para pasta es de 10 gramos, lo que equivale a una cucharada sopera rasa de sal gruesa. Esta proporción por cada 100 gramos de pasta asegura el sabor perfecto. En cambio, la hidratación requiere solo media cucharadita de té de sal por litro de agua ."
+       },
+       {
+        "title": "Convertidor de medidas de cocción: convierta cucharaditas, cucharadas ...",
+        "url": "https://yotoolgen.com/es/convertidor-de-medidas-de-coccion/",
+        "snippet": "Convierta medidas de cocción entre cucharaditas , cucharadas, tazas, onzas líquidas, mililitros, litros y gramos con este conversor en línea gratuito. Perfecto para escalar recetas y cambiar entre unidades métricas e imperiales. ¿Cuáles son las medidas de cocción? Las medidas de cocción son unidades estandarizadas que se utilizan para cuantificar los ingredientes en las recetas. Los dos ..."
+       },
+       {
+        "title": "Equivalencias de Cucharaditas y Tazas | PDF | Litro | Receta",
+        "url": "https://es.scribd.com/document/479123800/valenciagastronomica-com-Cuanto-es-una-cucharadita-Tabla-de-equivalencia-de-medidas-de-la-cocina",
+        "snippet": "Este documento proporciona una tabla detallada de equivalencias de medidas comunes utilizadas en la cocina, incluyendo cucharadas, tazas, vasos y gramos. Explica cuántos mililitros o gramos equivalen a una cucharadita , cucharada, taza o vaso para ingredientes líquidos y sólidos como agua , aceite, harina, azúcar y mantequilla. El objetivo es ayudar a los cocineros a seguir recetas con ..."
+       },
+       {
+        "title": "¿Cuántas cucharadas de sal por litro de agua? Pregunta Y Responde",
+        "url": "https://es.phongnhaexplorer.com/pyr/cocina/cuantas-cucharadas-de-sal-por-litro-de-agua.html",
+        "snippet": "Cuántas cucharadas de sal por litro de agua : Proporciones El uso de cuántas cucharadas de sal por litro de agua varía según la preparación específica que realice. Conocer la medida exacta resulta vital para alcanzar el sabor equilibrado en sus comidas o la concentración adecuada en sus soluciones. Aprenda las proporciones correctas para evitar excesos y mejorar sus resultados culinarios ..."
+       }
+      ],
+      "authority": "duckduckgo_lite_https"
+     },
+     "operation": "web.search"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"para 3 litros cuantas cucharaditas serian sal agua tallarines\",\"count\":5,\"results\":[{\"title\":\"Convertir Líquidos de Cocina | ml, Cuchara, Taza\",\"url\":\"https://www.rivocalc.com/es-es/comida/conversion-liquidos\",\"snippet\":\"Cómo Convertir Líquidos de Cocina entre ml, Cucharas y Tazas La cocina española mezcla dos sistemas de medida sin mayor ceremonia. Los ingredientes sólidos se pesan en gramos en la báscula, pero los líquidos ( agua , leche, aceite, vino) casi siempre se miden por volumen: cucharadita , cucharada, taza o vaso. Una receta de familia en cucharadas, una receta internacional en tazas o un litro ...\"},{\"title\":\"¿Cuántas cucharadas de sal se le pone a un litro de agua?\",\"url\":\"https://es.phongnhaexplorer.com/pyr/cocina/cuantas-cucharadas-de-sal-se-le-pone-a-un-litro-de-agua.html\",\"snippet\":\"La medida ideal de sal por litro de agua para pasta es de 10 gramos, lo que equivale a una cucharada sopera rasa de sal gruesa. Esta proporción por cada 100 gramos de pasta asegura el sabor perfecto. En cambio, la hidratación requiere solo media cucharadita de té de sal por litro de agua .\"},{\"title\":\"Convertidor de medidas de cocción: convierta cucharaditas, cucharadas ...\",\"url\":\"https://yotoolgen.com/es/convertidor-de-medidas-de-coccion/\",\"snippet\":\"Convierta medidas de cocción entre cucharaditas , cucharadas, tazas, onzas líquidas, mililitros, litros y gramos con este conversor en línea gratuito. Perfecto para escalar recetas y cambiar entre unidades métricas e imperiales. ¿Cuáles son las medidas de cocción? Las medidas de cocción son unidades estandarizadas que se utilizan para cuantificar los ingredientes en las recetas. Los dos ...\"},{\"title\":\"Equivalencias de Cucharaditas y Tazas | PDF | Litro | Receta\",\"url\":\"https://es.scribd.com/document/479123800/valenciagastronomica-com-Cuanto-es-una-cucharadita-Tabla-de-equivalencia-de-medidas-de-la-cocina\",\"snippet\":\"Este documento proporc"
+   },
+   {
+    "stage": "third",
+    "intent": "status",
+    "language": "es",
+    "reason": "search_report_unsourced_claim",
+    "published": false,
+    "draft": "Para 3 litros necesitarías 150 gramos de sal, que es lo que equivalen a unas 15 cucharaditas de té.",
+    "payload": {
+     "seen": {
+      "query": "para 3 litros cuantas cucharaditas serian sal agua tallarines",
+      "count": 5,
+      "results": [
+       {
+        "title": "Convertir Líquidos de Cocina | ml, Cuchara, Taza",
+        "url": "https://www.rivocalc.com/es-es/comida/conversion-liquidos",
+        "snippet": "Cómo Convertir Líquidos de Cocina entre ml, Cucharas y Tazas La cocina española mezcla dos sistemas de medida sin mayor ceremonia. Los ingredientes sólidos se pesan en gramos en la báscula, pero los líquidos ( agua , leche, aceite, vino) casi siempre se miden por volumen: cucharadita , cucharada, taza o vaso. Una receta de familia en cucharadas, una receta internacional en tazas o un litro ..."
+       },
+       {
+        "title": "¿Cuántas cucharadas de sal se le pone a un litro de agua?",
+        "url": "https://es.phongnhaexplorer.com/pyr/cocina/cuantas-cucharadas-de-sal-se-le-pone-a-un-litro-de-agua.html",
+        "snippet": "La medida ideal de sal por litro de agua para pasta es de 10 gramos, lo que equivale a una cucharada sopera rasa de sal gruesa. Esta proporción por cada 100 gramos de pasta asegura el sabor perfecto. En cambio, la hidratación requiere solo media cucharadita de té de sal por litro de agua ."
+       },
+       {
+        "title": "Convertidor de medidas de cocción: convierta cucharaditas, cucharadas ...",
+        "url": "https://yotoolgen.com/es/convertidor-de-medidas-de-coccion/",
+        "snippet": "Convierta medidas de cocción entre cucharaditas , cucharadas, tazas, onzas líquidas, mililitros, litros y gramos con este conversor en línea gratuito. Perfecto para escalar recetas y cambiar entre unidades métricas e imperiales. ¿Cuáles son las medidas de cocción? Las medidas de cocción son unidades estandarizadas que se utilizan para cuantificar los ingredientes en las recetas. Los dos ..."
+       },
+       {
+        "title": "Equivalencias de Cucharaditas y Tazas | PDF | Litro | Receta",
+        "url": "https://es.scribd.com/document/479123800/valenciagastronomica-com-Cuanto-es-una-cucharadita-Tabla-de-equivalencia-de-medidas-de-la-cocina",
+        "snippet": "Este documento proporciona una tabla detallada de equivalencias de medidas comunes utilizadas en la cocina, incluyendo cucharadas, tazas, vasos y gramos. Explica cuántos mililitros o gramos equivalen a una cucharadita , cucharada, taza o vaso para ingredientes líquidos y sólidos como agua , aceite, harina, azúcar y mantequilla. El objetivo es ayudar a los cocineros a seguir recetas con ..."
+       },
+       {
+        "title": "¿Cuántas cucharadas de sal por litro de agua? Pregunta Y Responde",
+        "url": "https://es.phongnhaexplorer.com/pyr/cocina/cuantas-cucharadas-de-sal-por-litro-de-agua.html",
+        "snippet": "Cuántas cucharadas de sal por litro de agua : Proporciones El uso de cuántas cucharadas de sal por litro de agua varía según la preparación específica que realice. Conocer la medida exacta resulta vital para alcanzar el sabor equilibrado en sus comidas o la concentración adecuada en sus soluciones. Aprenda las proporciones correctas para evitar excesos y mejorar sus resultados culinarios ..."
+       }
+      ],
+      "authority": "duckduckgo_lite_https"
+     },
+     "operation": "web.search"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"para 3 litros cuantas cucharaditas serian sal agua tallarines\",\"count\":5,\"results\":[{\"title\":\"Convertir Líquidos de Cocina | ml, Cuchara, Taza\",\"url\":\"https://www.rivocalc.com/es-es/comida/conversion-liquidos\",\"snippet\":\"Cómo Convertir Líquidos de Cocina entre ml, Cucharas y Tazas La cocina española mezcla dos sistemas de medida sin mayor ceremonia. Los ingredientes sólidos se pesan en gramos en la báscula, pero los líquidos ( agua , leche, aceite, vino) casi siempre se miden por volumen: cucharadita , cucharada, taza o vaso. Una receta de familia en cucharadas, una receta internacional en tazas o un litro ...\"},{\"title\":\"¿Cuántas cucharadas de sal se le pone a un litro de agua?\",\"url\":\"https://es.phongnhaexplorer.com/pyr/cocina/cuantas-cucharadas-de-sal-se-le-pone-a-un-litro-de-agua.html\",\"snippet\":\"La medida ideal de sal por litro de agua para pasta es de 10 gramos, lo que equivale a una cucharada sopera rasa de sal gruesa. Esta proporción por cada 100 gramos de pasta asegura el sabor perfecto. En cambio, la hidratación requiere solo media cucharadita de té de sal por litro de agua .\"},{\"title\":\"Convertidor de medidas de cocción: convierta cucharaditas, cucharadas ...\",\"url\":\"https://yotoolgen.com/es/convertidor-de-medidas-de-coccion/\",\"snippet\":\"Convierta medidas de cocción entre cucharaditas , cucharadas, tazas, onzas líquidas, mililitros, litros y gramos con este conversor en línea gratuito. Perfecto para escalar recetas y cambiar entre unidades métricas e imperiales. ¿Cuáles son las medidas de cocción? Las medidas de cocción son unidades estandarizadas que se utilizan para cuantificar los ingredientes en las recetas. Los dos ...\"},{\"title\":\"Equivalencias de Cucharaditas y Tazas | PDF | Litro | Receta\",\"url\":\"https://es.scribd.com/document/479123800/valenciagastronomica-com-Cuanto-es-una-cucharadita-Tabla-de-equivalencia-de-medidas-de-la-cocina\",\"snippet\":\"Este documento proporc"
+   },
+   {
+    "stage": "not_found_fallback",
+    "intent": "status",
+    "language": "es",
+    "reason": "",
+    "published": true,
+    "draft": "No lo encontré.",
+    "payload": {
+     "seen": {
+      "query": "para 3 litros cuantas cucharaditas serian sal agua tallarines",
+      "count": 5,
+      "results": [
+       {
+        "title": "Convertir Líquidos de Cocina | ml, Cuchara, Taza",
+        "url": "https://www.rivocalc.com/es-es/comida/conversion-liquidos",
+        "snippet": "Cómo Convertir Líquidos de Cocina entre ml, Cucharas y Tazas La cocina española mezcla dos sistemas de medida sin mayor ceremonia. Los ingredientes sólidos se pesan en gramos en la báscula, pero los líquidos ( agua , leche, aceite, vino) casi siempre se miden por volumen: cucharadita , cucharada, taza o vaso. Una receta de familia en cucharadas, una receta internacional en tazas o un litro ..."
+       },
+       {
+        "title": "¿Cuántas cucharadas de sal se le pone a un litro de agua?",
+        "url": "https://es.phongnhaexplorer.com/pyr/cocina/cuantas-cucharadas-de-sal-se-le-pone-a-un-litro-de-agua.html",
+        "snippet": "La medida ideal de sal por litro de agua para pasta es de 10 gramos, lo que equivale a una cucharada sopera rasa de sal gruesa. Esta proporción por cada 100 gramos de pasta asegura el sabor perfecto. En cambio, la hidratación requiere solo media cucharadita de té de sal por litro de agua ."
+       },
+       {
+        "title": "Convertidor de medidas de cocción: convierta cucharaditas, cucharadas ...",
+        "url": "https://yotoolgen.com/es/convertidor-de-medidas-de-coccion/",
+        "snippet": "Convierta medidas de cocción entre cucharaditas , cucharadas, tazas, onzas líquidas, mililitros, litros y gramos con este conversor en línea gratuito. Perfecto para escalar recetas y cambiar entre unidades métricas e imperiales. ¿Cuáles son las medidas de cocción? Las medidas de cocción son unidades estandarizadas que se utilizan para cuantificar los ingredientes en las recetas. Los dos ..."
+       },
+       {
+        "title": "Equivalencias de Cucharaditas y Tazas | PDF | Litro | Receta",
+        "url": "https://es.scribd.com/document/479123800/valenciagastronomica-com-Cuanto-es-una-cucharadita-Tabla-de-equivalencia-de-medidas-de-la-cocina",
+        "snippet": "Este documento proporciona una tabla detallada de equivalencias de medidas comunes utilizadas en la cocina, incluyendo cucharadas, tazas, vasos y gramos. Explica cuántos mililitros o gramos equivalen a una cucharadita , cucharada, taza o vaso para ingredientes líquidos y sólidos como agua , aceite, harina, azúcar y mantequilla. El objetivo es ayudar a los cocineros a seguir recetas con ..."
+       },
+       {
+        "title": "¿Cuántas cucharadas de sal por litro de agua? Pregunta Y Responde",
+        "url": "https://es.phongnhaexplorer.com/pyr/cocina/cuantas-cucharadas-de-sal-por-litro-de-agua.html",
+        "snippet": "Cuántas cucharadas de sal por litro de agua : Proporciones El uso de cuántas cucharadas de sal por litro de agua varía según la preparación específica que realice. Conocer la medida exacta resulta vital para alcanzar el sabor equilibrado en sus comidas o la concentración adecuada en sus soluciones. Aprenda las proporciones correctas para evitar excesos y mejorar sus resultados culinarios ..."
+       }
+      ],
+      "authority": "duckduckgo_lite_https"
+     },
+     "operation": "web.search"
+    },
+    "situation": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"para 3 litros cuantas cucharaditas serian sal agua tallarines\",\"count\":5,\"results\":[{\"title\":\"Convertir Líquidos de Cocina | ml, Cuchara, Taza\",\"url\":\"https://www.rivocalc.com/es-es/comida/conversion-liquidos\",\"snippet\":\"Cómo Convertir Líquidos de Cocina entre ml, Cucharas y Tazas La cocina española mezcla dos sistemas de medida sin mayor ceremonia. Los ingredientes sólidos se pesan en gramos en la báscula, pero los líquidos ( agua , leche, aceite, vino) casi siempre se miden por volumen: cucharadita , cucharada, taza o vaso. Una receta de familia en cucharadas, una receta internacional en tazas o un litro ...\"},{\"title\":\"¿Cuántas cucharadas de sal se le pone a un litro de agua?\",\"url\":\"https://es.phongnhaexplorer.com/pyr/cocina/cuantas-cucharadas-de-sal-se-le-pone-a-un-litro-de-agua.html\",\"snippet\":\"La medida ideal de sal por litro de agua para pasta es de 10 gramos, lo que equivale a una cucharada sopera rasa de sal gruesa. Esta proporción por cada 100 gramos de pasta asegura el sabor perfecto. En cambio, la hidratación requiere solo media cucharadita de té de sal por litro de agua .\"},{\"title\":\"Convertidor de medidas de cocción: convierta cucharaditas, cucharadas ...\",\"url\":\"https://yotoolgen.com/es/convertidor-de-medidas-de-coccion/\",\"snippet\":\"Convierta medidas de cocción entre cucharaditas , cucharadas, tazas, onzas líquidas, mililitros, litros y gramos con este conversor en línea gratuito. Perfecto para escalar recetas y cambiar entre unidades métricas e imperiales. ¿Cuáles son las medidas de cocción? Las medidas de cocción son unidades estandarizadas que se utilizan para cuantificar los ingredientes en las recetas. Los dos ...\"},{\"title\":\"Equivalencias de Cucharaditas y Tazas | PDF | Litro | Receta\",\"url\":\"https://es.scribd.com/document/479123800/valenciagastronomica-com-Cuanto-es-una-cucharadita-Tabla-de-equivalencia-de-medidas-de-la-cocina\",\"snippet\":\"Este documento proporc"
+   },
+   {
+    "stage": "partial_after_not_found",
+    "intent": "status",
+    "language": "es",
+    "reason": "copied_instruction",
+    "published": false,
+    "draft": "Los datos proporcionados explican que en la cocina española los líquidos se miden por volumen usando cucharaditas, cucharadas o tazas, pero no especifican cuántas cucharaditas equivalen exactamente a 3 litros. No encontré la cifra concreta para esa conversión.",
+    "payload": {
+     "request": "ya y pa 3 litros cuántas cucharaditas serían",
+     "results": [
+      {
+       "title": "Convertir Líquidos de Cocina | ml, Cuchara, Taza",
+       "text": "Cómo Convertir Líquidos de Cocina entre ml, Cucharas y Tazas La cocina española mezcla dos sistemas de medida sin mayor ceremonia. Los ingredientes sólidos se pesan en gramos en la báscula, pero los líquidos ( agua , leche, aceite, vino) casi siempre se miden por volumen: cucharadita , cucharada, taza o vaso. Una receta de familia en cucharadas, una receta internacional en tazas o un litro ..."
+      },
+      {
+       "title": "¿Cuántas cucharadas de sal se le pone a un litro de agua?",
+       "text": "La medida ideal de sal por litro de agua para pasta es de 10 gramos, lo que equivale a una cucharada sopera rasa de sal gruesa. Esta proporción por cada 100 gramos de pasta asegura el sabor perfecto. En cambio, la hidratación requiere solo media cucharadita de té de sal por litro de agua ."
+      },
+      {
+       "title": "Equivalencias de Cucharaditas y Tazas | PDF | Litro | Receta",
+       "text": "Este documento proporciona una tabla detallada de equivalencias de medidas comunes utilizadas en la cocina, incluyendo cucharadas, tazas, vasos y gramos. Explica cuántos mililitros o gramos equivalen a una cucharadita , cucharada, taza o vaso para ingredientes líquidos y sólidos como agua , aceite, harina, azúcar y mantequilla. El objetivo es ayudar a los cocineros a seguir recetas con ..."
+      }
+     ]
+    },
+    "situation": "{\"kind\": \"operation\", \"operation\": \"web.search\", \"polarity\": \"success\", \"verified\": true, \"succeeded\": true, \"observed\": {\"version\": 1, \"query\": \"para 3 litros cuantas cucharaditas serian sal agua tallarines\", \"count\": 5, \"results\": [{\"title\": \"Convertir Líquidos de Cocina | ml, Cuchara, Taza\", \"url\": \"https://www.rivocalc.com/es-es/comida/conversion-liquidos\", \"snippet\": \"Cómo Convertir Líquidos de Cocina entre ml, Cucharas y Tazas La cocina española mezcla dos sistemas de medida sin mayor ceremonia. Los ingredientes sólidos se pesan en gramos en la báscula, pero los líquidos ( agua , leche, aceite, vino) casi siempre se miden por volumen: cucharadita , cucharada, taza o vaso. Una receta de familia en cucharadas, una receta internacional en tazas o un litro ...\"}, {\"title\": \"¿Cuántas cucharadas de sal se le pone a un litro de agua?\", \"url\": \"https://es.phongnhaexplorer.com/pyr/cocina/cuantas-cucharadas-de-sal-se-le-pone-a-un-litro-de-agua.html\", \"snippet\": \"La medida ideal de sal por litro de agua para pasta es de 10 gramos, lo que equivale a una cucharada sopera rasa de sal gruesa. Esta proporción por cada 100 gramos de pasta asegura el sabor perfecto. En cambio, la hidratación requiere solo media cucharadita de té de sal por litro de agua .\"}, {\"title\": \"Convertidor de medidas de cocción: convierta cucharaditas, cucharadas ...\", \"url\": \"https://yotoolgen.com/es/convertidor-de-medidas-de-coccion/\", \"snippet\": \"Convierta medidas de cocción entre cucharaditas , cucharadas, tazas, onzas líquidas, mililitros, litros y gramos con este conversor en línea gratuito. Perfecto para escalar recetas y cambiar entre unidades métricas e imperiales. ¿Cuáles son las medidas de cocción? Las medidas de cocción son unidades estandarizadas que se utilizan para cuantificar los ingredientes en las recetas. Los dos ...\"}, {\"title\": \"Equivalencias de Cucharaditas y Tazas | PDF | Litro | Receta\", \"url\": \"https://es.scribd.com/document/479123800/valenciagastronomica-com-Cuanto-es-una-cucharadita-Tabla-de-equivalencia-de-medidas-de-la-co"
+   },
+   {
+    "stage": "partial_after_not_found_retry",
+    "intent": "status",
+    "language": "es",
+    "reason": "copied_instruction",
+    "published": false,
+    "draft": "Los datos proporcionados explican que en la cocina española los líquidos se miden por volumen usando cucharaditas, cucharadas o tazas, pero no especifican cuántas cucharaditas equivalen exactamente a 3 litros. No encontré la cifra exacta para esa conversión.",
+    "payload": {
+     "request": "ya y pa 3 litros cuántas cucharaditas serían",
+     "results": [
+      {
+       "title": "Convertir Líquidos de Cocina | ml, Cuchara, Taza",
+       "text": "Cómo Convertir Líquidos de Cocina entre ml, Cucharas y Tazas La cocina española mezcla dos sistemas de medida sin mayor ceremonia. Los ingredientes sólidos se pesan en gramos en la báscula, pero los líquidos ( agua , leche, aceite, vino) casi siempre se miden por volumen: cucharadita , cucharada, taza o vaso. Una receta de familia en cucharadas, una receta internacional en tazas o un litro ..."
+      },
+      {
+       "title": "¿Cuántas cucharadas de sal se le pone a un litro de agua?",
+       "text": "La medida ideal de sal por litro de agua para pasta es de 10 gramos, lo que equivale a una cucharada sopera rasa de sal gruesa. Esta proporción por cada 100 gramos de pasta asegura el sabor perfecto. En cambio, la hidratación requiere solo media cucharadita de té de sal por litro de agua ."
+      },
+      {
+       "title": "Equivalencias de Cucharaditas y Tazas | PDF | Litro | Receta",
+       "text": "Este documento proporciona una tabla detallada de equivalencias de medidas comunes utilizadas en la cocina, incluyendo cucharadas, tazas, vasos y gramos. Explica cuántos mililitros o gramos equivalen a una cucharadita , cucharada, taza o vaso para ingredientes líquidos y sólidos como agua , aceite, harina, azúcar y mantequilla. El objetivo es ayudar a los cocineros a seguir recetas con ..."
+      }
+     ]
+    },
+    "situation": "{\"kind\": \"operation\", \"operation\": \"web.search\", \"polarity\": \"success\", \"verified\": true, \"succeeded\": true, \"observed\": {\"version\": 1, \"query\": \"para 3 litros cuantas cucharaditas serian sal agua tallarines\", \"count\": 5, \"results\": [{\"title\": \"Convertir Líquidos de Cocina | ml, Cuchara, Taza\", \"url\": \"https://www.rivocalc.com/es-es/comida/conversion-liquidos\", \"snippet\": \"Cómo Convertir Líquidos de Cocina entre ml, Cucharas y Tazas La cocina española mezcla dos sistemas de medida sin mayor ceremonia. Los ingredientes sólidos se pesan en gramos en la báscula, pero los líquidos ( agua , leche, aceite, vino) casi siempre se miden por volumen: cucharadita , cucharada, taza o vaso. Una receta de familia en cucharadas, una receta internacional en tazas o un litro ...\"}, {\"title\": \"¿Cuántas cucharadas de sal se le pone a un litro de agua?\", \"url\": \"https://es.phongnhaexplorer.com/pyr/cocina/cuantas-cucharadas-de-sal-se-le-pone-a-un-litro-de-agua.html\", \"snippet\": \"La medida ideal de sal por litro de agua para pasta es de 10 gramos, lo que equivale a una cucharada sopera rasa de sal gruesa. Esta proporción por cada 100 gramos de pasta asegura el sabor perfecto. En cambio, la hidratación requiere solo media cucharadita de té de sal por litro de agua .\"}, {\"title\": \"Convertidor de medidas de cocción: convierta cucharaditas, cucharadas ...\", \"url\": \"https://yotoolgen.com/es/convertidor-de-medidas-de-coccion/\", \"snippet\": \"Convierta medidas de cocción entre cucharaditas , cucharadas, tazas, onzas líquidas, mililitros, litros y gramos con este conversor en línea gratuito. Perfecto para escalar recetas y cambiar entre unidades métricas e imperiales. ¿Cuáles son las medidas de cocción? Las medidas de cocción son unidades estandarizadas que se utilizan para cuantificar los ingredientes en las recetas. Los dos ...\"}, {\"title\": \"Equivalencias de Cucharaditas y Tazas | PDF | Litro | Receta\", \"url\": \"https://es.scribd.com/document/479123800/valenciagastronomica-com-Cuanto-es-una-cucharadita-Tabla-de-equivalencia-de-medidas-de-la-co"
+   },
+   {
+    "stage": "from_memory",
+    "intent": "consulted",
+    "language": "es",
+    "reason": "",
+    "published": true,
+    "draft": "No pude comprobarlo; de memoria, puede no ser exacto:\n1. Una cucharadita estándar equivale a aproximadamente 5 mililitros.\n2. Para 3 litros (3000 mililitros) se necesitan unas 600 cucharaditas.",
+    "payload": {
+     "request": "ya y pa 3 litros cuántas cucharaditas serían",
+     "earlier_requests": [
+      "oye y cuánta sal le echo al agua, más o menos, cachai",
+      "ya y pa 3 litros cuántas cucharaditas serían"
+     ]
+    },
+    "situation": "{\"kind\": \"operation\", \"operation\": \"web.search\", \"polarity\": \"success\", \"verified\": true, \"succeeded\": true, \"observed\": {\"version\": 1, \"query\": \"para 3 litros cuantas cucharaditas serian sal agua tallarines\", \"count\": 5, \"results\": [{\"title\": \"Convertir Líquidos de Cocina | ml, Cuchara, Taza\", \"url\": \"https://www.rivocalc.com/es-es/comida/conversion-liquidos\", \"snippet\": \"Cómo Convertir Líquidos de Cocina entre ml, Cucharas y Tazas La cocina española mezcla dos sistemas de medida sin mayor ceremonia. Los ingredientes sólidos se pesan en gramos en la báscula, pero los líquidos ( agua , leche, aceite, vino) casi siempre se miden por volumen: cucharadita , cucharada, taza o vaso. Una receta de familia en cucharadas, una receta internacional en tazas o un litro ...\"}, {\"title\": \"¿Cuántas cucharadas de sal se le pone a un litro de agua?\", \"url\": \"https://es.phongnhaexplorer.com/pyr/cocina/cuantas-cucharadas-de-sal-se-le-pone-a-un-litro-de-agua.html\", \"snippet\": \"La medida ideal de sal por litro de agua para pasta es de 10 gramos, lo que equivale a una cucharada sopera rasa de sal gruesa. Esta proporción por cada 100 gramos de pasta asegura el sabor perfecto. En cambio, la hidratación requiere solo media cucharadita de té de sal por litro de agua .\"}, {\"title\": \"Convertidor de medidas de cocción: convierta cucharaditas, cucharadas ...\", \"url\": \"https://yotoolgen.com/es/convertidor-de-medidas-de-coccion/\", \"snippet\": \"Convierta medidas de cocción entre cucharaditas , cucharadas, tazas, onzas líquidas, mililitros, litros y gramos con este conversor en línea gratuito. Perfecto para escalar recetas y cambiar entre unidades métricas e imperiales. ¿Cuáles son las medidas de cocción? Las medidas de cocción son unidades estandarizadas que se utilizan para cuantificar los ingredientes en las recetas. Los dos ...\"}, {\"title\": \"Equivalencias de Cucharaditas y Tazas | PDF | Litro | Receta\", \"url\": \"https://es.scribd.com/document/479123800/valenciagastronomica-com-Cuanto-es-una-cucharadita-Tabla-de-equivalencia-de-medidas-de-la-co"
+   }
+  ]
+ },
+ "D-w10-t1": {
+  "run": "v3u-devD",
+  "text": "Buenas, qué pena la molestia, ¿me regalas una receta sencilla de arepas de queso?",
+  "lived": [],
+  "published": "No pude comprobarlo; de memoria, puede no ser exacto:\nIngredientes:\n- Harina de maíz (masa para arepas)\n- Queso rallado\n- Aceite o mantequilla para freír\n- Sal y agua para la masa\n\nPreparación:\n1. Prepara la masa de maíz según la receta habitual, añadiendo un poco de sal y agua hasta lograr la consistencia correcta.\n2. Estira la masa en discos redondos y coloca una capa generosa de queso rallado en el centro de cada disco.\n3. Cierra la arepa envolviendo el queso y aplástala ligeramente con las manos para sellar los bordes.\n4. Calienta una sartén con un poco de aceite o mantequilla a fuego medio.\n5. Freí las arepas durante unos 3-4 minutos por lado hasta que estén doradas y el queso se haya derretido.\n6. Retíralas de la sartén y sirve calientes.",
+  "decision": "action:web.search",
+  "invented": false,
+  "ok": false,
+  "note": "De memoria: receta sin cantidades y «prepara la masa según la receta habitual».",
+  "stages": [
+   {
+    "stage": "from_memory",
+    "intent": "consulted",
+    "language": "es",
+    "reason": "",
+    "published": true,
+    "draft": "No pude comprobarlo; de memoria, puede no ser exacto:\nIngredientes:\n- Harina de maíz (masa para arepas)\n- Queso rallado\n- Aceite o mantequilla para freír\n- Sal y agua para la masa\n\nPreparación:\n1. Prepara la masa de maíz según la receta habitual, añadiendo un poco de sal y agua hasta lograr la consistencia correcta.\n2. Estira la masa en discos redondos y coloca una capa generosa de queso rallado en el centro de cada disco.\n3. Cierra la arepa envolviendo el queso y aplástala ligeramente con las manos para sellar los bordes.\n4. Calienta una sartén con un poco de aceite o mantequilla a fuego medio.\n5. Freí las arepas durante unos 3-4 minutos por lado hasta que estén doradas y el queso se haya derretido.\n6. Retíralas de la sartén y sirve calientes.",
+    "payload": {
+     "request": "Dame una receta sencilla de arepas de queso.",
+     "earlier_requests": [
+      "Buenas, qué pena la molestia, ¿me regalas una receta sencilla de arepas de queso?"
+     ]
+    },
+    "situation": {
+     "kind": "operation",
+     "operation": "web.search",
+     "polarity": "success",
+     "verified": true,
+     "succeeded": true,
+     "observed": {
+      "version": 1,
+      "query": "receta arepas de queso",
+      "count": 2,
+      "results": [
+       {
+        "title": "Arepa",
+        "url": "https://es.wikipedia.org/wiki/Arepa",
+        "snippet": "La arepa es un alimento tradicional y esencial en las gastronomías de Colombia y Venezuela, elaborado principalmente con masa de maíz molido (harina de maíz), que se prepara de forma redonda y aplanada, cocinándose en plancha (budare), horneada o frita, logrando una corteza crujiente y un interior tierno. Constituye un alimento cotidiano que se consume en cualquier momento del día —desayuno, almuerzo, cena o como acompañante— ya sea sola, con mantequilla, queso o rellena con ingredientes variados como carne mechada, pollo, huevos, aguacate, frijoles negros, chorizo o combinaciones regionales. Su origen se remonta a las culturas indígenas precolombinas del norte de Sudamérica, mucho antes de la llegada de los europeos, cuando diversos pueblos originarios procesaban el maíz —cultivo central en su dieta— para preparar tortas cocidas sobre superficies calientes. El nombre «arepa» deriva del vocablo cumanagoto erepa, que designaba al maíz en esa lengua caribe de grupos que habitaban la cost"
+       },
+       {
+        "title": "Arepa de choclo",
+        "url": "https://es.wikipedia.org/wiki/Arepa_de_choclo",
+        "snippet": "La arepa de choclo, de chócolo, de maíz tierno o de maíz verde, chorreada, cosposa, tortilla de choclo, de maíz o de tiesto, toquera o toquete es un plato típico a base de maíz de varios países latinoamericanos como Colombia, Costa Rica, Ecuador, México y Venezuela. Tiene una preparación idéntica a la de las cachapas, y, en algunos casos, similar a los panqueques, pero no se hace con harina de trigo, sino con granos de maíz entero. Sus ingredientes incluyen panela o azúcar, sal, mantequilla, queso campesino, etc. Se cocina en comal, sartén o tiesto."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     }
+    }
+   }
+  ]
+ },
+ "D-w10-t2": {
+  "run": "v3u-devD",
+  "text": "¿Y cuánto sería eso de harina en gramos, por favor?",
+  "lived": [
+   {
+    "role": "user",
+    "content": "Buenas, qué pena la molestia, ¿me regalas una receta sencilla de arepas de queso?"
+   },
+   {
+    "role": "assistant",
+    "content": "No pude comprobarlo; de memoria, puede no ser exacto:\nIngredientes:\n- Harina de maíz (masa para arepas)\n- Queso rallado\n- Aceite o mantequilla para freír\n- Sal y agua para la masa\n\nPreparación:\n1. Prepara la masa de maíz según la receta habitual, añadiendo un poco de sal y agua hasta lograr la consistencia correcta.\n2. Estira la masa en discos redondos y coloca una capa generosa de queso rallado en el centro de cada disco.\n3. Cierra la arepa envolviendo el queso y aplástala ligeramente con las manos para sellar los bordes.\n4. Calienta una sartén con un poco de aceite o mantequilla a fuego medio.\n5. Freí las arepas durante unos 3-4 minutos por lado hasta que estén doradas y el queso se haya derretido.\n6. Retíralas de la sartén y sirve calientes."
+   }
+  ],
+  "published": "Un conversor de cocina menciona que la harina es más ligera que el azúcar, pero no especifica la cantidad exacta en gramos.",
+  "decision": "action:web.search",
+  "invented": false,
+  "ok": false,
+  "note": "Metadiscurso sobre «un conversor de cocina» y no da gramos de harina.",
+  "stages": [
+   {
+    "stage": "first",
+    "intent": "status",
+    "language": "es",
+    "reason": "",
+    "published": true,
+    "draft": "Estoy trabajando en el pedido solicitado.",
+    "payload": {
+     "kind": "status",
+     "state": "working on the current step"
+    },
+    "situation": {
+     "kind": "status",
+     "polarity": "success",
+     "cause": "acting",
+     "phase": "acting"
+    }
+   },
+   {
+    "stage": "first",
+    "intent": "status",
+    "language": "es",
+    "reason": "search_report_unsourced_claim",
+    "published": false,
+    "draft": "La harina de maíz equivale aproximadamente a 120 gramos por taza.",
+    "payload": {
+     "seen": {
+      "query": "cuanto seria eso de harina en gramos maiz queso aceite",
+      "count": 1,
+      "results": [
+       {
+        "title": "Conversor de cocina: gramos, tazas, cucharadas — por ingrediente",
+        "url": "https://toututils.com/es/conversor-cocina/",
+        "snippet": "Convierte gramos , mililitros, tazas y cucharadas para cada ingrediente. Las equivalencias tienen en cuenta la densidad real (la harina es más ligera que el azúcar). Ingrediente Harina Azúcar blanco Azúcar glas Azúcar moreno Mantequilla Arroz (crudo) Copos de avena Cacao en polvo Miel Leche Agua Aceite Sal fina Cantidad gramos (g) kilogramos (kg) mililitros (ml) litros (l) tazas (240 ml ..."
+       }
+      ],
+      "authority": "duckduckgo_lite_https"
+     },
+     "operation": "web.search"
+    },
+    "situation": {
+     "kind": "operation",
+     "operation": "web.search",
+     "polarity": "success",
+     "verified": true,
+     "succeeded": true,
+     "observed": {
+      "version": 1,
+      "query": "cuanto seria eso de harina en gramos maiz queso aceite",
+      "count": 1,
+      "results": [
+       {
+        "title": "Conversor de cocina: gramos, tazas, cucharadas — por ingrediente",
+        "url": "https://toututils.com/es/conversor-cocina/",
+        "snippet": "Convierte gramos , mililitros, tazas y cucharadas para cada ingrediente. Las equivalencias tienen en cuenta la densidad real (la harina es más ligera que el azúcar). Ingrediente Harina Azúcar blanco Azúcar glas Azúcar moreno Mantequilla Arroz (crudo) Copos de avena Cacao en polvo Miel Leche Agua Aceite Sal fina Cantidad gramos (g) kilogramos (kg) mililitros (ml) litros (l) tazas (240 ml ..."
+       }
+      ],
+      "authority": "duckduckgo_lite_https"
+     }
+    }
+   },
+   {
+    "stage": "retry",
+    "intent": "status",
+    "language": "es",
+    "reason": "",
+    "published": true,
+    "draft": "Un conversor de cocina menciona que la harina es más ligera que el azúcar, pero no especifica la cantidad exacta en gramos.",
+    "payload": {
+     "seen": {
+      "query": "cuanto seria eso de harina en gramos maiz queso aceite",
+      "count": 1,
+      "results": [
+       {
+        "title": "Conversor de cocina: gramos, tazas, cucharadas — por ingrediente",
+        "url": "https://toututils.com/es/conversor-cocina/",
+        "snippet": "Convierte gramos , mililitros, tazas y cucharadas para cada ingrediente. Las equivalencias tienen en cuenta la densidad real (la harina es más ligera que el azúcar). Ingrediente Harina Azúcar blanco Azúcar glas Azúcar moreno Mantequilla Arroz (crudo) Copos de avena Cacao en polvo Miel Leche Agua Aceite Sal fina Cantidad gramos (g) kilogramos (kg) mililitros (ml) litros (l) tazas (240 ml ..."
+       }
+      ],
+      "authority": "duckduckgo_lite_https"
+     },
+     "operation": "web.search"
+    },
+    "situation": {
+     "kind": "operation",
+     "operation": "web.search",
+     "polarity": "success",
+     "verified": true,
+     "succeeded": true,
+     "observed": {
+      "version": 1,
+      "query": "cuanto seria eso de harina en gramos maiz queso aceite",
+      "count": 1,
+      "results": [
+       {
+        "title": "Conversor de cocina: gramos, tazas, cucharadas — por ingrediente",
+        "url": "https://toututils.com/es/conversor-cocina/",
+        "snippet": "Convierte gramos , mililitros, tazas y cucharadas para cada ingrediente. Las equivalencias tienen en cuenta la densidad real (la harina es más ligera que el azúcar). Ingrediente Harina Azúcar blanco Azúcar glas Azúcar moreno Mantequilla Arroz (crudo) Copos de avena Cacao en polvo Miel Leche Agua Aceite Sal fina Cantidad gramos (g) kilogramos (kg) mililitros (ml) litros (l) tazas (240 ml ..."
+       }
+      ],
+      "authority": "duckduckgo_lite_https"
+     }
+    }
+   }
+  ]
+ },
+ "v3r:D-w10-t1": {
+  "run": "v3r-devD",
+  "text": "Buenas, qué pena la molestia, ¿me regalas una receta sencilla de arepas de queso?",
+  "lived": [],
+  "published": "No pude comprobarlo; de memoria, puede no ser exacto:\n\nIngredientes:\n- 2 tazas de harina de maíz\n- 1 taza de leche\n- 1 cucharadita de sal\n- 1/2 taza de queso rallado\n- Aceite para freír\n- Un poco de agua\n\nPreparación:\n1. En un bol, mezcla la harina con la sal y el queso rallado.\n2. Añade la leche poco a poco hasta formar una masa homogénea y suave.\n3. Estira la masa con las manos o un rodillo hasta obtener círculos de unos 10 cm de diámetro.\n4. Calienta una sartén con un poco de aceite y fríe las arepas hasta que queden doradas por ambos lados.\n5. Sirve calientes, acompañadas de tu elección de acompañamiento.\n\n1. La harina de maíz es el ingrediente principal para la masa.\n2. El queso se mezcla directamente en la harina para darle sabor.\n3. Se cocinan en sartén con aceite hasta dorar.\n\nLa arepa de queso es un plato tradicional colombiano hecho con masa de maíz. Se prepara mezclando harina, leche y queso rallado para crear una masa suave. Al freírse en sartén hasta dorar, resulta un snack delicioso y reconfortante.",
+  "decision": "action:web.search",
+  "invented": false,
+  "ok": true,
+  "note": "De memoria con aviso: receta de arepas de queso correcta.",
+  "stages": [
+   {
+    "stage": "from_memory",
+    "intent": "consulted",
+    "language": "es",
+    "reason": "",
+    "published": true,
+    "draft": "No pude comprobarlo; de memoria, puede no ser exacto:\n\nIngredientes:\n- 2 tazas de harina de maíz\n- 1 taza de leche\n- 1 cucharadita de sal\n- 1/2 taza de queso rallado\n- Aceite para freír\n- Un poco de agua\n\nPreparación:\n1. En un bol, mezcla la harina con la sal y el queso rallado.\n2. Añade la leche poco a poco hasta formar una masa homogénea y suave.\n3. Estira la masa con las manos o un rodillo hasta obtener círculos de unos 10 cm de diámetro.\n4. Calienta una sartén con un poco de aceite y fríe las arepas hasta que queden doradas por ambos lados.\n5. Sirve calientes, acompañadas de tu elección de acompañamiento.\n\n1. La harina de maíz es el ingrediente principal para la masa.\n2. El queso se mezcla directamente en la harina para darle sabor.\n3. Se cocinan en sartén con aceite hasta dorar.\n\nLa arepa de queso es un plato tradicional colombiano hecho con masa de maíz. Se prepara mezclando harina, leche y queso rallado para crear una masa suave. Al freírse en sartén hasta dorar, resulta un snack delicioso y reconfortante.",
+    "payload": {
+     "request": "Dame una receta sencilla de arepas de queso.",
+     "earlier_requests": [
+      "Buenas, qué pena la molestia, ¿me regalas una receta sencilla de arepas de queso?"
+     ]
+    },
+    "situation": {
+     "kind": "operation",
+     "operation": "web.search",
+     "polarity": "success",
+     "verified": true,
+     "succeeded": true,
+     "observed": {
+      "version": 1,
+      "query": "receta arepas de queso",
+      "count": 2,
+      "results": [
+       {
+        "title": "Arepa",
+        "url": "https://es.wikipedia.org/wiki/Arepa",
+        "snippet": "La arepa es un alimento tradicional y esencial en las gastronomías de Colombia y Venezuela, elaborado principalmente con masa de maíz molido (harina de maíz), que se prepara de forma redonda y aplanada, cocinándose en plancha (budare), horneada o frita, logrando una corteza crujiente y un interior tierno. Constituye un alimento cotidiano que se consume en cualquier momento del día —desayuno, almuerzo, cena o como acompañante— ya sea sola, con mantequilla, queso o rellena con ingredientes variados como carne mechada, pollo, huevos, aguacate, frijoles negros, chorizo o combinaciones regionales. Su origen se remonta a las culturas indígenas precolombinas del norte de Sudamérica, mucho antes de la llegada de los europeos, cuando diversos pueblos originarios procesaban el maíz —cultivo central en su dieta— para preparar tortas cocidas sobre superficies calientes. El nombre «arepa» deriva del vocablo cumanagoto erepa, que designaba al maíz en esa lengua caribe de grupos que habitaban la cost"
+       },
+       {
+        "title": "Arepa de choclo",
+        "url": "https://es.wikipedia.org/wiki/Arepa_de_choclo",
+        "snippet": "La arepa de choclo, de chócolo, de maíz tierno o de maíz verde, chorreada, cosposa, tortilla de choclo, de maíz o de tiesto, toquera o toquete es un plato típico a base de maíz de varios países latinoamericanos como Colombia, Costa Rica, Ecuador, México y Venezuela. Tiene una preparación idéntica a la de las cachapas, y, en algunos casos, similar a los panqueques, pero no se hace con harina de trigo, sino con granos de maíz entero. Sus ingredientes incluyen panela o azúcar, sal, mantequilla, queso campesino, etc. Se cocina en comal, sartén o tiesto."
+       }
+      ],
+      "authority": "wikipedia_es_api"
+     }
+    }
+   }
+  ]
+ }
+}

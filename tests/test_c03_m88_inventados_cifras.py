@@ -9,7 +9,8 @@ Each case is a real turn of window/v3r-devD (HEAD 50cee2c6): its drafts, payload
   M79/M85 chased its wordings. The go-ahead is read from the person's message (semantic.dialogue.gives_go_ahead), the
   writer is told the fact before it writes, and its answer must say it was not done (``go_ahead_not_done``).
 - s111 «¿Cuál es la distancia de Barcelona a París?»: the answer from memory (D35) gave «1.080 km en línea recta» and
-  «2 horas y 15 minutos». A figure from memory is said round (semantic.quantities.unsure_figures).
+  «2 horas y 15 minutos». A figure from memory is said round (semantic.quantities.unsure_figures). Superseded by M92
+  (D52): a figure asked is never said from memory; the round-figure rule stays for a recipe from memory.
 - p12-t2 (and v3e2 w06-t4): «There are five 24/7 stores…», «Hay dos pizzerías abiertas…» — five and two were how many
   pages were read. A count in words is judged like one in digits (llm._search_report_unsourced_counts).
 - w01-t2, w01-t3, w10-t2: salt for the pasta water, teaspoons for 3 litres, grams of two cups of corn flour recited
@@ -201,31 +202,26 @@ def test_a_figure_the_person_said_is_theirs() -> None:
     assert quantities.unsure_figures("De memoria: 125 ml de leche.", ["¿cuánta leche?"]) == ["125 ml"]
 
 
-def test_the_memory_answer_with_precise_figures_is_written_again() -> None:
-    case = _case("D-s111")
-    recorded = _stage("D-s111", "from_memory")["draft"]
-    rounded = "No pude comprobarlo; de memoria, puede no ser exacto: unos 1.000 kilómetros por carretera."
-    writer = _Writer([recorded, rounded])
+def test_a_figure_asked_is_never_answered_from_memory() -> None:
+    # M92 (D52, superseding M88's round figures): the distance of D-s111 and the grams of D-w10-t2 are figures; the
+    # writer is not even asked, and the not-found report stands.
     failure = {"kind": "failure", "reason": {"operation": "web.search", "error": "web_search_results_irrelevant"}}
-
-    reply = writer._compose_consulted_answer(case["text"], {}, failure, "es", writer._post, None, "t", memory=True)
-
-    assert reply == rounded
-    assert "Toda cifra, redonda y dicha como aproximada" in _said_to_the_model(writer.sent[0])
-    assert "1.080 kilometros" in _said_to_the_model(writer.sent[1])
-    # Two answers with figures memory cannot hold leave the not-found report standing.
-    assert _Writer([recorded])._compose_consulted_answer(
-        case["text"], {}, failure, "es", _Writer([recorded])._post, None, "t", memory=True,
-    ) is None
+    for ident in ("D-s111", "D-w10-t2"):
+        writer = _Writer(["No pude comprobarlo; de memoria, puede no ser exacto: unos 1.000 kilómetros por carretera."])
+        facts = {"priorRequests": _prior(ident)}
+        assert writer._compose_consulted_answer(
+            _case(ident)["text"], facts, failure, "es", writer._post, None, "t", memory=True,
+        ) is None
+        assert writer.sent == []
 
 
 def test_the_memory_answer_gets_the_answer_a_follow_up_points_at() -> None:
-    case = _case("D-w10-t2")
-    writer = _Writer(["No pude comprobarlo; de memoria, puede no ser exacto: unos 300 gramos."])
+    # M92: the same follow-up asking no figure («¿y de dónde viene eso?»).
+    writer = _Writer(["No pude comprobarlo; de memoria, puede no ser exacto: la harina de maíz viene del maíz molido."])
     facts = {"context": _last_reply("D-w10-t2"), "priorRequests": _prior("D-w10-t2")}
     failure = {"kind": "failure", "reason": {"operation": "web.search", "error": "web_search_results_irrelevant"}}
 
-    writer._compose_consulted_answer(case["text"], facts, failure, "es", writer._post, None, "t", memory=True)
+    writer._compose_consulted_answer("¿y de dónde viene eso?", facts, failure, "es", writer._post, None, "t", memory=True)
 
     sent = json.loads(writer.sent[0]["messages"][1]["content"])
     assert "2 tazas de harina de maíz" in sent["previous_answer_for_references_only"]

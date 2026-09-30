@@ -15,6 +15,8 @@ what stays talk — an open suggestion («una receta vegetariana»), code, an ex
 - ``kitchen_quantity``  M88: how much of an ingredient, or a kitchen measure of it, is asked («cuánta sal le echo al
   agua», «cuánto sería eso de harina en gramos»): a figure that depends on the thing measured, looked up with what the
   conversation carried (kind ``quantity``).
+- ``asks_a_figure``     M92 (D52): what is asked is a quantity, distance, duration, date, year or count, which memory
+  never answers.
 """
 
 from __future__ import annotations
@@ -27,7 +29,9 @@ from .conversation import asks_for_code
 from .normalize import fold, spelled_out
 from .quantities import conversion_asked
 
-__all__ = ["ReferenceLookup", "kitchen_quantity", "memory_answer_form", "reference_lookup", "servings_asked"]
+__all__ = [
+    "ReferenceLookup", "asks_a_figure", "kitchen_quantity", "memory_answer_form", "reference_lookup", "servings_asked",
+]
 
 
 @dataclass(frozen=True)
@@ -506,3 +510,36 @@ def memory_answer_form(text: str, prior_requests: Iterable[str] = ()) -> str:
     if (lookup is not None and lookup.kind == "ranking") or _SEVERAL.search(folded) is not None:
         return "list"
     return "prose"
+
+
+# M92 (D52; DEV-D v3u D-s111 «¿Cuál es la distancia de Barcelona a París?» → «de memoria… unos 1.100 kilómetros… 2 horas
+# y media… entre 8 y 9 horas», D-w01-t3 «ya y pa 3 litros cuántas cucharaditas serían» → «de memoria… unas 600
+# cucharaditas»): the answer from memory (D35) is kept for what is not a figure. When what is asked is a quantity, a
+# distance, a duration, a date, a year or a count, memory does not say it (step 6 of goal v3: figures are looked up; if
+# that is impossible, it is said). Folded, with the short forms spelled out.
+_FIGURE_NOUN = (
+    r"distancia|altura|poblacion|superficie|extension|longitud|peso|velocidad|temperatura|duracion|fecha|ano|edad|"
+    r"precio|distance|height|population|area|length|weight|speed|temperature|duration|date|year|age|price"
+)
+_FIGURE_ASKED = re.compile(
+    # «cuánto», «cuánta sal», «cuántas cucharaditas» (not «en cuanto», «cuanto antes», «unos cuantos»).
+    r"(?<!\ben )(?<!\bpor )(?<!\bunos )(?<!\bunas )\bcuant[oa]s?\b(?!\s+(?:antes|mas|menos)\b)"
+    r"|\bhow\s+(?:much|many|far|long|old|tall|big|high|deep|heavy|often|fast|large)\b"
+    r"|\b(?:que|cual\s+es\s+(?:la|el)|cuales\s+son\s+(?:las|los)|a\s+que|what(?:'?s|\s+is|\s+are|\s+was)?\s+the|what)"
+    rf"\s+(?:{_FIGURE_NOUN})\b"
+    r"|\b(?:la|the)\s+(?:distancia|distance)\s+(?:de|entre|from|between)\b"
+    r"|\ben\s+que\s+ano\b|\bin\s+(?:what|which)\s+year\b"
+    r"|\bque\s+tan\s+(?:lejos|alt[oa]|grande|larg[oa]|profund[oa]|rapid[oa]|car[oa]|cerca|viej[oa])\b"
+    r"|(?:^|[¿,;]\s*|\by\s+)cuando\s+(?:nacio|murio|fue|se\s+[a-z]+|ocurrio|empezo|comenzo|termino|salio|llego|paso)\b"
+    r"|^\s*when\s+(?:was|were|did)\b|\bnumero\s+de\b|\bnumber\s+of\b"
+)
+# A taste or a wish is no figure of the world («¿cuánto te gusta?»).
+_FIGURE_NOT_ASKED = re.compile(r"\bcuant[oa]s?\s+(?:te|me|le|nos|les)\s+(?:gusta|gustan|quiere|quieres|importa)\b")
+
+
+def asks_a_figure(text: str) -> bool:
+    """M92 (D52): what the request asks is a figure — a quantity, a distance, a duration, a date, a year or a count
+    («¿cuál es la distancia de Barcelona a París?», «cuántas cucharaditas», «how many», «¿en qué año…?»)."""
+
+    folded = spelled_out(fold(text))
+    return _FIGURE_ASKED.search(folded) is not None and _FIGURE_NOT_ASKED.search(folded) is None

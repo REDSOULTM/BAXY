@@ -327,7 +327,8 @@ def test_a_named_page_or_link_is_not_published() -> None:
 
 
 def test_when_nothing_could_be_consulted_the_answer_is_from_memory_and_says_so() -> None:
-    silent = "Ingredientes:\n- harina\n- zapallo\nPreparación:\n1. Amasa.\n2. Fríe."
+    # M92 (D52): a recipe from memory is a whole one, each ingredient with its quantity.
+    silent = "Ingredientes:\n- 2 tazas de harina\n- 500 g de zapallo\nPreparación:\n1. Amasa.\n2. Fríe."
     honest = "No pude comprobarlo; de memoria, puede no ser exacto:\n" + silent
     writer = _Writer([silent, honest])
     situation = {
