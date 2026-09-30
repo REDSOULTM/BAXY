@@ -155,7 +155,9 @@ def test_w02_t2_the_decider_s_talk_is_this_pc_s_clock_read_with_the_place() -> N
         planner_catalog=PlannerCatalog([_tool("system.time"), _tool("web.search")]),
     )
     assert result["kind"] == "action" and result["operation"] == "system.time"
-    assert result["objective"] == "y si en madrid son las 10 de la mañana acá qué hora es"
+    # M84's place substitution runs first and keeps the person's own spelling of the place («Madrid»); M85's reader
+    # gives the same request. Either way the objective is this one, whatever the capital.
+    assert result["objective"].casefold() == "y si en madrid son las 10 de la mañana acá qué hora es"
 
 
 def test_s025_a_clock_later_on_talked_is_this_pc_s_clock_read() -> None:
