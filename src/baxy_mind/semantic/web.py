@@ -827,6 +827,35 @@ def _entity_lookup_query(text: str) -> str | None:
     return entity
 
 
+# M90 (cien-110 073 «what is cache memory, one sentence»): English asks what a concept is with a bare noun («what is
+# photosynthesis», «what is cache memory»), so the missing article, which marks a name in Spanish («qué es doom
+# eternal» against «qué es una GPU»), is no evidence of one there.
+_ENGLISH_WHAT_IS = re.compile(
+    r"^[¿?¡!\s]*(?:(?:tell\s+me|do\s+you\s+know|i\s+(?:want|need)\s+to\s+know)\s+)?what\s+(?:is|was)\s+",
+    re.IGNORECASE,
+)
+
+
+def common_concept_definition(text: str, known_names: Iterable[str] = ()) -> bool:
+    """M90 (cien-110 073): «what is cache memory, one sentence» asks what a common concept is, a stable definition
+    answered in conversation, not a named thing looked up (``_entity_lookup_query``, REGLAS_ORO rule 1).
+
+    Read only in an English what-is question, where the bare noun says nothing; the thing is still a name when it
+    carries its marks: a capital as the person wrote it («what is Monkey C»), a digit or a sign («C++», «Marvel vs.
+    Capcom»), more than four words, or an installed program or game by that name (``known_names``: «what is steam»).
+    «who is» always asks for someone, and a Spanish question keeps the article as its evidence."""
+
+    entity = _entity_lookup_query(text)
+    if entity is None:
+        return False
+    said = _without_address(text) or text.strip()
+    if _ENGLISH_WHAT_IS.match(said) is None:
+        return False
+    if re.fullmatch(r"[a-z]+(?:[ -][a-z]+){0,3}", entity) is None:
+        return False
+    return _entity_key(entity) not in {_entity_key(str(name)) for name in known_names}
+
+
 # Fase 3.5 (owner test 2026-09-21 turns 23, 35, 58; real log): what people think of a public work
 # and a record or dated fact are answered from public pages, never from the model's memory. A
 # question about quality («¿la nueva peli de X es buena?», «¿X vale la pena?», «qué piensa la gente

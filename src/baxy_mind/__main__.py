@@ -214,6 +214,7 @@ from .semantic.arguments import (  # noqa: F401 - moved to baxy_mind.semantic.ar
     _explicit_system_status_scope,
 )
 from .semantic.web import (
+    common_concept_definition,
     not_a_public_lookup,
 )
 
@@ -5224,6 +5225,11 @@ def _decide_turn_result(
                 or _general_factoid_prompt(objective)
                 or _personal_checkin_statement(objective)
                 or _closed_unsupported_request(objective)
+                # M90 (cien-110 073 «what is cache memory, one sentence» → web.search, then a definition read off a
+                # page): a common concept's definition is stable knowledge, answered in conversation.
+                or common_concept_definition(
+                    objective, (*application_names, *(entry[3] for entry in game_catalog.entries)),
+                )
             )
         )
     )

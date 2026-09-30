@@ -79,6 +79,16 @@ _SOCIAL_ACTS: tuple[tuple[str, dict[str, str]], ...] = (
                 r"todo bien|que dices de (?:nuevo|bueno)|que (?:hay|me cuentas|cuentas)(?: de (?:nuevo|bueno))?|"
                 r"que onda|que hubo|quiubo|que novedades)"
             ),
+            # M90 (cien-110 077 «still there?» after «Don't open Word» → rewritten «Is Word still open?» and a window
+            # read; cien-110 029 «¿sigues ahí?» was right only because the turn before named nothing): asking whether
+            # the one answering is there is said to BAXY, before any reader or decider looks for a thing in it. The
+            # whole message is the check, so «¿sigue abierto Word?» or «is Word still there?» never matches.
+            "presence": (
+                r"(?:(?:todavia|aun)\s+)?(?:sigues|seguis|estas)\s+(?:(?:por\s+)?(?:ahi|aqui|aca|alli)|conmigo)"
+                r"(?:\s+(?:todavia|aun))?|"
+                r"(?:(?:todavia|aun)\s+)?(?:sigues|seguis|estas)(?=\s*\?)|"
+                r"(?:me\s+)?(?:escuchas|oyes)(?=\s*\?)|hay\s+alguien(?:\s+ahi)?"
+            ),
         },
     ),
     (
@@ -106,6 +116,11 @@ _SOCIAL_ACTS: tuple[tuple[str, dict[str, str]], ...] = (
                 r"(?:how are you doing|how are you|how is it going|"
                 r"how['’]?s it going|what(?:['’]?s| is) (?:up|new))"
             ),
+            "presence": (
+                r"(?:are\s+)?you\s+(?:still\s+)?(?:there|here|around|with\s+me)|"
+                r"still\s+(?:there|here|around|with\s+me)|"
+                r"(?:can|do)\s+you\s+hear\s+me|(?:is\s+)?any\s*(?:one|body)\s+there"
+            ),
         },
     ),
 )
@@ -119,7 +134,8 @@ def _social_turn_pattern(parts: dict[str, str]) -> str:
         rf"(?:{greeting}(?:{_SOCIAL_SEPARATOR}{greeting})?"
         rf"|{parts['farewell']}|{parts['gratitude']}|{parts['game']})"
     )
-    wellbeing = parts["wellbeing"]
+    # A presence check («still there?», «¿sigues ahí?») stands where asking how he is stands: alone or after a greeting.
+    wellbeing = rf"(?:{parts['wellbeing']}|{parts['presence']})"
     return (
         r"[¿?¡!\s]*"
         rf"(?:{parts['acknowledgement']}{_SOCIAL_SEPARATOR})?"

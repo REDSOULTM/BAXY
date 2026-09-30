@@ -562,6 +562,30 @@ _IDENTITY_ORIGIN_SIGNAL = (
 _IDENTITY_OWN_FACT = (
     r"\b(?:baxy|pc|computadora?|ordenador|equipo|computer|machine|programa|program)\b"
 )
+# M90 (cien-110 079 «quién eres» → «Soy BAXY, un programa que vive y corre en este PC. No tengo nombre propio ni
+# edad, …»; the same in cien-108 and 109): his name is one of his facts, BAXY; saying he has none contradicts it.
+_IDENTITY_NAME_DENIED = (
+    r"\b(?:no\s+tengo|ni|sin|carezco\s+de)\s+(?:un\s+)?nombre\b|"
+    r"\b(?:don\s+t|do\s+not)\s+have\s+(?:a\s+)?(?:real\s+|proper\s+|own\s+)?name\b|"
+    r"\bi\s+have\s+no\s+(?:real\s+|proper\s+|own\s+)?name\b|\bnor\s+a\s+name\b|\bnameless\b"
+)
+
+
+def _identity_answer_head(content: str, request: object) -> str:
+    """M90 (cien-110 079): an identity answer whose sentences after the first deny his name keeps its first sentence
+    when that sentence alone meets the identity contract («Soy BAXY, un programa que vive y corre en este PC.»);
+    otherwise the answer stays as it is and the contract judges it."""
+
+    folded = _policy_guard_text(content)
+    head = re.split(r"(?<=[.!…])\s+", content.strip(), maxsplit=1)[0].strip()
+    if (
+        head == content.strip()
+        or re.search(_IDENTITY_NAME_DENIED, folded) is None
+        or re.search(_IDENTITY_NAME_DENIED, _policy_guard_text(head)) is not None
+        or _shaped_conversation_answer_violates_contract(head, request, "identity")
+    ):
+        return content
+    return head
 
 
 CONTENT_DRAFT_PRESENTATION_PROMPT = (
@@ -2621,6 +2645,8 @@ def _shaped_conversation_answer_violates_contract(
                 - set(re.findall(_INVENTED_ORIGIN, _policy_guard_text(str(request or ""))))
             )
             or re.search(_INVENTED_TASTE, folded_content) is not None
+            # M90 (cien-110 079): his name is BAXY; denying he has one contradicts it.
+            or re.search(_IDENTITY_NAME_DENIED, folded_content) is not None
         )
     if shape == "versus_opinion":
         folded_content = _policy_guard_text(content)
@@ -18273,6 +18299,13 @@ class LlmRuntime:
             # yet, and the bounded retry below writes one.
             content = _complete_sentences(content)
             message = {**message, "content": content}
+        if presentation_shape == "identity" and content:
+            # M90 (cien-110 079): the first sentence already said who he is; the one that denied his name is dropped
+            # instead of writing the whole answer again.
+            head = _identity_answer_head(content, text)
+            if head != content:
+                content = head
+                message = {**message, "content": head}
 
         def judged(value: str) -> str:
             """M50: in a reply to a code request only the prose around the code is judged; all code is the content."""
@@ -18599,6 +18632,12 @@ class LlmRuntime:
             ):
                 # WEB1455: the published text is message.content, not
                 # final_content; both must carry the kept sentence.
+                final_content = head
+                message = {**message, "content": head}
+        if presentation_shape == "identity" and final_content:
+            # M90 (cien-110 079): the retried answer is kept to its first sentence the same way.
+            head = _identity_answer_head(final_content, text)
+            if head != final_content:
                 final_content = head
                 message = {**message, "content": head}
         final_prose = judged(final_content)
