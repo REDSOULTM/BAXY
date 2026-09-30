@@ -168,7 +168,7 @@ from .semantic.notes import _PERSONAL_RECORD_STORE, names_an_own_record_store, n
 from .semantic.request import _conversation_response_language
 from .semantic.system import reports_the_gpu_stopped
 from .semantic.ui import asks_about_buttons, asks_to_see_the_screen
-from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_future, weather_asks_later_in_the_day, weather_asks_later_today, weather_asks_rain_now, weather_asks_today, weather_asks_whether_it_rains, weather_asked_date, weather_asks_later_time, weather_names_date
+from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_future, weather_asks_later_in_the_day, weather_asks_later_today, weather_asks_rain_now, weather_asks_today, weather_asks_whether_it_rains, weather_asked_date, weather_asks_later_time, weather_asks_past, weather_names_date
 
 
 MAX_CONTEXT_TOKENS = 12288
@@ -2446,6 +2446,8 @@ def _shaped_conversation_answer_violates_contract(
         return True
     if visible_reply_invents_a_spanish_infinitive(value) or visible_reply_breaks_word_case(value, request):
         return True
+    if visible_reply_breaks_estar_participle(value):
+        return True
     if visible_reply_is_a_fixed_stall(value):
         return True
     # M53 design B (F-s097 «4,54 km/h» for 5 km in 1 h 10 min, F-w12-t3 «el promedio … es 3,14» with no data): a
@@ -3888,6 +3890,44 @@ def visible_reply_answers_an_unobserved_polar_question(value: object, request: o
     return _UNREAD_RECORD_HONESTY.search(honest) is None and not _unsupported_answer_has_inability(text)
 
 
+# M79 (DEV-D v3m p24-t5 «That is confirmed to proceed.» → «The plan is confirmed to proceed.», with nothing played): a
+# conversation turn runs nothing, so a plan, an order or a request said to be confirmed, approved or under way is a
+# settled effect nobody made. Folded; a question or an offer under a condition is not a claim.
+_SETTLED_PLAN = re.compile(
+    r"\b(?:(?:the|your|this|that|it|everything|all)\s+(?:(?:plan|order|request|booking|reservation|purchase|playback|"
+    r"movie|search)\s+)?(?:is|has\s+been|was|are|have\s+been)\s+(?:now\s+|all\s+)?(?:confirmed|approved|underway|"
+    r"in\s+progress|on\s+its\s+way)|(?:is\s+)?confirmed\s+to\s+(?:proceed|go\s+ahead|start)|"
+    r"(?:el|tu|este|ese|la)?\s*(?:plan|pedido|reserva|solicitud|compra|todo|eso)\s+(?:ya\s+)?(?:esta|queda|quedo|fue|"
+    r"ha\s+sido)\s+"
+    r"(?:ya\s+)?(?:confirmad[oa]|aprobad[oa]|en\s+marcha|en\s+curso))\b"
+)
+# M79 (DEV-D v3m p27-t4/t5 «I don't have any movies featuring Eugene Dynarski in my database.»): BAXY has no database,
+# catalog or records of his own to look things up in; saying so invents where an answer would come from. Folded.
+_OWN_STORE = re.compile(
+    r"\b(?:in|on|from|en|de)\s+(?:my|mi|mis)\s+(?:own\s+)?(?:database|data\s*base|data|knowledge\s+base|records?|"
+    r"catalog(?:ue)?|files|base\s+de\s+datos|base\s+de\s+conocimientos?|registros?|catalogo|archivos|datos)\b"
+)
+
+
+def visible_reply_settles_a_plan(value: object, request: object = "") -> bool:
+    """A plan or order said to be confirmed or under way in a turn that ran nothing (see above)."""
+
+    for sentence in re.split(r"(?<=[.!?…])\s+|\n+", str(value or "")):
+        if "?" in sentence or "¿" in sentence:
+            continue
+        folded = _reading_fold(sentence)
+        if _CONDITIONAL_OFFER.search(folded) is None and _SETTLED_PLAN.search(folded) is not None:
+            return True
+    return False
+
+
+def visible_reply_claims_an_own_store(value: object, request: object = "") -> bool:
+    """BAXY speaks of a database, catalog or records of his own (see above), unless the person named it."""
+
+    found = _OWN_STORE.search(_reading_fold(str(value or "")))
+    return found is not None and found.group(0) not in _reading_fold(str(request or ""))
+
+
 def conversation_world_claim(value: object, request: object = "", prior_requests: tuple[str, ...] = ()) -> str:
     """Why a reply written with no operation run claims something of the person's world, or "".
 
@@ -3896,8 +3936,10 @@ def conversation_world_claim(value: object, request: object = "", prior_requests
     answer yes or no about something of theirs («unobserved_answer»).
     """
 
-    if visible_reply_claims_an_effect(value, request):
+    if visible_reply_claims_an_effect(value, request) or visible_reply_settles_a_plan(value, request):
         return "effect_claim"
+    if visible_reply_claims_an_own_store(value, request):
+        return "own_store_claim"
     if visible_reply_asserts_unread_personal_records(value, request, tuple(prior_requests)):
         return "unread_records"
     if visible_reply_answers_an_unobserved_polar_question(value, request):
@@ -4293,6 +4335,21 @@ def limit_breaks_the_asked_verb(value: object, request: object) -> bool:
             if verb[:5] == stem[:5] and verb not in _first_person_forms(stem):
                 return True
     return False
+
+
+# M79 (DEV-D v3m s047 «Ahora se está pausado la canción "Noc turne" de Zeitgeister.»): «se» with «estar» and a
+# participle mixes the passive («se ha pausado») with the state («está pausada»); no Spanish sentence says it. The
+# gerund («se está pausando») is a different form and stays. Folded, quoted titles aside.
+_REFLEXIVE_ESTAR_PARTICIPLE = re.compile(
+    r"\bse\s+(?:esta|estan|estaba|estaban|estuvo|estara)\s+(?:ya\s+)?[a-z]{3,}(?:ado|ada|ados|adas|ido|ida|idos|idas)\b"
+)
+
+
+def visible_reply_breaks_estar_participle(value: object) -> bool:
+    """«se está pausado»: a reflexive «estar» with a participle (see above)."""
+
+    unquoted = re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(value or ""))
+    return _REFLEXIVE_ESTAR_PARTICIPLE.search(_reading_fold(unquoted)) is not None
 
 
 def visible_reply_breaks_first_person(value: object) -> bool:
@@ -4869,6 +4926,12 @@ _CAUSE_FACT = {
         "this PC has no usable Wi-Fi adapter right now, so no network can be seen"
     ),
     "mission_failed": "mission unfinished",
+    # M79 (DEV-D v3m w19-t4 «…porque el sistema no pudo verificar la causa del fallo externo», w09-t3 «…porque el
+    # efecto externo es ambiguo»): the bare code read as prose became jargon, and a failure where it may have worked.
+    "external_effect_ambiguous": (
+        "it was attempted, but afterwards it could not be confirmed whether it took effect, so it may or may not "
+        "have been done; say that plainly, without technical words, and that the person can check it"
+    ),
     # A7 E5 (DEV-A3 t388 «baxy poné la casa de papel en netflix»): the typed cause was dropped for «external effect
     # ambiguous», and the drafts narrated that jargon. What is known is that the service asks to sign in.
     "netflix_authentication_required": "Netflix asks to sign in on this PC, so nothing was played",
@@ -7395,6 +7458,13 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
                     if english
                     else "La calidad del aire sólo se lee como está ahora, no para más adelante."
                 )
+            if out_of_reach.get("askedTime") == "past":
+                # M79 (DEV-D v3m s003): a day already gone is before the read.
+                return (
+                    f"I only read the weather in {seen['location']} from today on, not past days."
+                    if english
+                    else f"El tiempo de {seen['location']} sólo lo leo desde hoy, no el de días pasados."
+                )
             asked = _weather_date_said(out_of_reach.get("askedDate"), english)
             until = _weather_date_said(out_of_reach.get("readUntil"), english)
             if not asked or not until:
@@ -9705,9 +9775,12 @@ def _search_report_off_subject(text: str, payload: dict, user_text: str) -> bool
         if _places_inside_named_place(payload):
             return False
     else:
+        # M79 (DEV-D v3m p19-t2 «Who's in the movie 'After the Wedding'?»): a name in quotes is still a name, and the
+        # quote that closes it is not part of it («Wedding'» matched no result that names the film).
         names = {
-            _reading_fold(name) for name in re.findall(r"(?<=\s)(?!I\b)[A-ZÁÉÍÓÚÑ][\w'-]+", str(user_text or ""))
-        } - {"google", "bing", "duckduckgo", "internet", "web", "wikipedia", "youtube"}  # where to look, not what
+            _reading_fold(name).strip("'’-")
+            for name in re.findall(r"(?<=[\s'‘\"“«(])(?!I\b)[A-ZÁÉÍÓÚÑ][\w'’-]+", str(user_text or ""))
+        } - {"google", "bing", "duckduckgo", "internet", "web", "wikipedia", "youtube", ""}  # where to look, not what
         if not names:
             return False
         found = _reading_fold(results_text)
@@ -10346,15 +10419,26 @@ def _weather_focus(user_text: str, english: bool) -> str:
             else "La persona preguntó dónde está: di seen.location con seen.region y seen.country como "
             "el lugar aproximado de este PC, y nada del clima."
         )
-    if weather_asks_air(user_text) and weather_asks_later_time(user_text):
+    if weather_asks_past(user_text) and not weather_asks_air(user_text):
+        # M79 (DEV-D v3m s003): the read starts today (_weather_asked_reach); a day already gone is not in it.
+        return (
+            "The person asked about a day already gone, and the forecast is read only from today on "
+            "(seen.outOfReach): say plainly that you only read the weather from today on, not past days, with no "
+            "figure and nothing about how it was."
+            if english
+            else "La persona preguntó por un día que ya pasó, y el pronóstico sólo se lee desde hoy "
+            "(seen.outOfReach): di simplemente que sólo lees el tiempo desde hoy, no el de días pasados, sin ninguna "
+            "cifra ni nada de cómo estuvo."
+        )
+    if weather_asks_air(user_text) and (weather_asks_later_time(user_text) or weather_asks_past(user_text)):
         # M78 (DEV-D v3l s048 «Estara alto the air quality the next week?» → today's index alone): the air is read
         # as it is now; a later time is beyond the read (_weather_asked_reach).
         return (
-            "The person asked about the air at a later time, and the air quality is read only as it is now "
+            "The person asked about the air at another time than now, and the air quality is read only as it is now "
             "(seen.outOfReach): say plainly that the air quality is only read as it is now, not for that time, "
             "with no figure."
             if english
-            else "La persona preguntó por el aire en un momento posterior, y la calidad del aire sólo se lee como "
+            else "La persona preguntó por el aire en otro momento que ahora, y la calidad del aire sólo se lee como "
             "está ahora (seen.outOfReach): di simplemente que la calidad del aire sólo se lee como está ahora, no "
             "para ese momento, sin ninguna cifra."
         )
@@ -10481,10 +10565,14 @@ def _weather_focus(user_text: str, english: bool) -> str:
             for name in ("humidity", "wind", "apparent", "dew_point")
             if name in measures
         ]
+        # M79 (DEV-D v3m p25-t3 «How humid do you expect it to be?» → «…la humedad es del 22% hoy y del 22% mañana»):
+        # these measures are read only as they are now; no other day's value is read (_weather_measure_for_another_day).
         return (
-            "The person asked about " + " and ".join(asked) + ": give that value."
+            "The person asked about " + " and ".join(asked) + ": give that value, which is read only as it is now; "
+            "never give it for tomorrow or another day."
             if english
-            else "La persona preguntó por " + " y ".join(asked) + ": da ese valor."
+            else "La persona preguntó por " + " y ".join(asked) + ": da ese valor, que sólo se lee como está ahora; "
+            "nunca lo des para mañana ni para otro día."
         )
     if "temperature" in weather_asked_measures(user_text):
         return (
@@ -10528,6 +10616,38 @@ def _weather_date_said(value: object, english: bool) -> str:
     return f"{english_name} {day.day}" if english else f"{day.day} de {spanish}"
 
 
+def _calendar_day_of(value: object) -> tuple[int, int] | None:
+    """(month, day) of an ISO date of the read; None when it is not one."""
+
+    try:
+        day = date.fromisoformat(str(value))
+    except ValueError:
+        return None
+    return day.month, day.day
+
+
+_SAID_MONTH = {
+    name: index + 1 for index, names in enumerate(_WEATHER_MONTHS) for name in (names[0], names[1].lower(), names[1][:3].lower())
+}
+_SAID_MONTH_PATTERN = "|".join(sorted(_SAID_MONTH, key=len, reverse=True))
+_SAID_CALENDAR_DAY = re.compile(
+    rf"\b(?P<day>\d{{1,2}})(?:st|nd|rd|th)?\s+(?:de\s+|of\s+)?(?P<month>{_SAID_MONTH_PATTERN})\b|"
+    rf"\b(?P<month_first>{_SAID_MONTH_PATTERN})\.?\s+(?:the\s+)?(?P<day_after>\d{{1,2}})(?:st|nd|rd|th)?\b"
+)
+
+
+def _calendar_days_said(folded_text: str) -> list[tuple[int, int]]:
+    """Every (month, day) a folded reply names («5 de octubre», «October 5th», «the 5th of March»)."""
+
+    days = []
+    for found in _SAID_CALENDAR_DAY.finditer(folded_text):
+        month = _SAID_MONTH[found.group("month") or found.group("month_first")]
+        day = int(found.group("day") or found.group("day_after"))
+        if 1 <= day <= 31:
+            days.append((month, day))
+    return days
+
+
 def _weather_asked_reach(seen: dict, user_text: str) -> dict | None:
     """What of the read answers a question about a named date or, for the air, a later time; None otherwise.
 
@@ -10544,7 +10664,12 @@ def _weather_asked_reach(seen: dict, user_text: str) -> dict | None:
     if today is None:
         return None
     if weather_asks_air(user_text):
-        return {"outOfReach": {"read": "airQuality", "readFor": "now"}} if weather_asks_later_time(user_text) else None
+        later = weather_asks_later_time(user_text) or weather_asks_past(user_text)
+        return {"outOfReach": {"read": "airQuality", "readFor": "now"}} if later else None
+    if weather_asks_past(user_text):
+        # M79 (DEV-D v3m s003 «¿En qué cayó el fin de semana pasado?» → today's read told as last weekend's): a day
+        # already gone is before the first day of the read.
+        return {"outOfReach": {"read": "forecast", "askedTime": "past", "readFrom": days[0].get("date")}}
     asked = weather_asked_date(user_text, today)
     if asked is None or asked == today:
         return None
@@ -10691,7 +10816,8 @@ def _weather_answer_instruction(user_text: str, language: str) -> str:
     coverage = (
         # M78: a date named has its own reach in the focus (seen.askedDay or seen.outOfReach).
         ""
-        if weather_names_date(user_text) or (weather_asks_air(user_text) and weather_asks_later_time(user_text))
+        if weather_names_date(user_text) or weather_asks_past(user_text)
+        or (weather_asks_air(user_text) and weather_asks_later_time(user_text))
         else (
             "seen.laterDays are the days after tomorrow (date, weekday, condition, maxC, minC, "
             "rainProbabilityPercent); for a day after the last of them, say the forecast does not reach it. "
@@ -10715,6 +10841,10 @@ def _weather_answer_instruction(user_text: str, language: str) -> str:
         "unidades (°C, km/h, %); sin otras lecturas. " + coverage
         + "Dilo directamente, sin nombrar de dónde se leyó. No se abrió ni se cambió nada."
     )
+    if coverage == "":
+        # M79: a date, a past day or the air at another time is sent as that day or the reach of the read
+        # (_project_weather_read), without the fields of now that ``fields`` describes.
+        fields = ""
     return fields + _weather_focus(user_text, english) + closing
 
 
@@ -10937,6 +11067,36 @@ _WEATHER_REACH_DENIED = re.compile(
 )
 
 
+_WEATHER_NOW_ONLY_MEASURES = (
+    ("humidity", "humidityPercent"), ("wind", "windKmh"), ("apparent", "apparentC"), ("dew_point", "dewPointC"),
+)
+
+
+def _weather_measure_for_another_day(text: str, seen: dict, measures: frozenset[str]) -> bool:
+    """A measure read only as it is now (humidity, wind, feels-like, dew point) said for tomorrow or a later day.
+
+    M79 (DEV-D v3m p25-t3 «How humid do you expect it to be?» → «En Martínez la humedad es del 22% hoy y del 22%
+    mañana.»): the read has no humidity for tomorrow; the value of now was repeated as tomorrow's. A clause that names
+    another day and states one of those values says it of that day."""
+
+    values = [seen.get(key) for measure, key in _WEATHER_NOW_ONLY_MEASURES if measure in measures]
+    values = [value for value in values if isinstance(value, (int, float)) and not isinstance(value, bool)]
+    if not values:
+        return False
+    weekdays = [
+        _reading_fold(str(day.get("weekday") or ""))
+        for day in (seen.get("tomorrow"), *(seen.get("laterDays") or []))
+        if isinstance(day, dict) and day.get("weekday")
+    ]
+    another_day = re.compile(
+        r"\b(?:(?<!la\s)manana|tomorrow" + "".join("|" + re.escape(day) for day in weekdays if day) + r")\b"
+    )
+    for clause in re.split(r"[.;:,](?=\s|$)|\s(?:y|e|and|pero|but|while|mientras)\s", _reading_fold(text)):
+        if another_day.search(clause) and any(_states_weather_number(clause, value) for value in values):
+            return True
+    return False
+
+
 def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     """REOPEN1993 grupo W: every number in a weather reply is an observed one
     (temperatures, wind, humidity, rain probability) and the place is named;
@@ -11010,7 +11170,20 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
             return "invented_number"
     if out_of_reach is not None:
         # M78: nothing measured was sent for a time the read does not cover; the reply says that it cannot be seen.
-        return "" if _WEATHER_REACH_DENIED.search(folded_text) is not None else "missing_state"
+        if _WEATHER_REACH_DENIED.search(folded_text) is None:
+            return "missing_state"
+        # M79 (DEV-D v3m p20-t2 «The weather forecast only goes up to September 29, 2026…» with the read reaching
+        # October 5): a day the reply names is the day asked or the last day read; the first day read said as where
+        # the forecast ends is a false reach.
+        allowed = {
+            said for key in ("askedDate", "readUntil") for said in [_calendar_day_of(out_of_reach.get(key))] if said
+        }
+        said_days = _calendar_days_said(folded_text)
+        if out_of_reach.get("askedTime") == "past" or _calendar_day_of(out_of_reach.get("readUntil")) in said_days:
+            allowed |= {said for said in [_calendar_day_of(out_of_reach.get("readFrom"))] if said}
+        if any(day not in allowed for day in said_days):
+            return "extra_claim"
+        return ""
     if _weather_unsupported_comparison(text, seen):
         return "weather_unsupported_comparison"
     if _weather_sky_contradiction(folded_text, seen):
@@ -11197,11 +11370,11 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         if isinstance(today.get(key), (int, float))
     ):
         return "missing_state"
-    for measure, key in (
-        ("humidity", "humidityPercent"), ("wind", "windKmh"), ("apparent", "apparentC"), ("dew_point", "dewPointC"),
-    ):
+    for measure, key in _WEATHER_NOW_ONLY_MEASURES:
         if measure in narrow_measures and seen.get(key) is not None and not _states_weather_number(text, seen.get(key)):
             return "missing_state"
+    if _weather_measure_for_another_day(text, seen, narrow_measures):
+        return "extra_claim"
     if (
         not any(form in text for form in _weather_number_forms(seen.get("temperatureC")))
         and not rain_asked
@@ -12954,8 +13127,12 @@ def compose_visible_defect(
     intent: str,
     user_text: str,
     facts: dict,
+    *,
+    said: str | None = None,
 ) -> str:
     """Reject a composed reply that a person would read as a filled hole.
+
+    ``said`` is the person's own message when it is known (the App judges the reply against it).
 
     Shipped entry for goal 06: polarity, no internal codes, no copied Spotify,
     no invented infinitives, no canned stall.
@@ -13048,6 +13225,8 @@ def compose_visible_defect(
         re.IGNORECASE,
     ) is not None or visible_reply_breaks_first_person(stripped):
         return "broken_person_conjugation"
+    if visible_reply_breaks_estar_participle(stripped):
+        return "broken_estar_participle"
     # Un hueco por rellenar no es una respuesta: «La hora actual es [hora
     # actual en español].» (conocimiento-3/t3).
     placeholder = re.search(r"\[[^\]]{3,}\]|\{[^}]{3,}\}|<[a-z ]{3,}>", stripped)
@@ -13281,6 +13460,13 @@ def compose_visible_defect(
     if "no está clara" in stripped.casefold() or "no esta clara" in stripped.casefold():
         return "internal_code"
     if "borrador no cumple" in stripped.casefold():
+        return "internal_code"
+    # M79 (DEV-D v3m w19-t4, w09-t3): the cause code «external_effect_ambiguous» said in words is still the code.
+    if re.search(
+        r"\b(?:efecto|fallo|error)\s+externo\b|\bexternal\s+(?:effect|failure|error)\b|\befecto\s+(?:es\s+)?ambiguo\b|"
+        r"\beffect\s+(?:is\s+|was\s+)?ambiguous\b",
+        _reading_fold(stripped),
+    ) is not None and "extern" not in _reading_fold(user_text or ""):
         return "internal_code"
     if (
         re.search(
@@ -13901,7 +14087,10 @@ def compose_visible_defect(
     if is_failure:
         if _SUCCESS_OPENERS.match(stripped) is not None:
             return "reversed_polarity"
-        if _failure_invents_a_clock(stripped, user_text, situation):
+        # M79 (DEV-D v3m w04-t4 «Mejor a las 6 en punto…» → «…varias alarmas estaban programadas para las 6:15…», ⚠
+        # missing_literal_fact): the App judges the clocks against the person's own message, not the request as the
+        # mind understood it («…de mañana a las 6:15 a las 6:00»); its twin reads the same words.
+        if _failure_invents_a_clock(stripped, said if said else user_text, situation):
             return "extra_claim"
         if re.match(
             # NETWORK1737 «qué redes wifi hay» with the radio off: «La causa del
@@ -22066,7 +22255,9 @@ class LlmRuntime:
         if (
             visible_situation.get("operation") == "weather.current"
             and isinstance(visible_situation.get("seen"), dict)
-            and "temperatureC" in visible_situation["seen"]
+            # M79 (DEV-D v3m p20-t2, s054): the projected reads (the sun time asked, the day asked or the reach of the
+            # read, the place) carry no temperature, and their focus was never sent; every weather read names its place.
+            and ("temperatureC" in visible_situation["seen"] or "location" in visible_situation["seen"])
         ):
             # REOPEN1993 grupo W: the read is the weather itself; the reply says
             # what was asked of it with the observed numbers (owner 2026-09-24: only that).
@@ -22877,7 +23068,7 @@ class LlmRuntime:
         def blocked(candidate: str) -> bool:
             return (
                 candidate in cut_by_length
-                or bool(compose_visible_defect(candidate, intent, user_text, facts))
+                or bool(compose_visible_defect(candidate, intent, user_text, facts, said=said))
                 or echoes_an_instruction(candidate)
                 or _truncated_fact_word(candidate, visible_situation)
                 or bool(_payload_fact_defect(candidate, visible_situation, user_text, said=said))
@@ -22893,7 +23084,7 @@ class LlmRuntime:
         def rejection_reason(candidate: str) -> str:
             if candidate in cut_by_length:
                 return "cut_by_length"
-            defect = compose_visible_defect(candidate, intent, user_text, facts)
+            defect = compose_visible_defect(candidate, intent, user_text, facts, said=said)
             if defect:
                 return defect
             if echoes_an_instruction(candidate):
@@ -23146,6 +23337,11 @@ class LlmRuntime:
         def hint_for(defect: str, candidate: str = "") -> str:
             candidate = candidate or text
             return {
+                # M79 (DEV-D v3m s047 «Ahora se está pausado la canción…»).
+                "broken_estar_participle": (
+                    "Say the state with «está» and the participle agreeing with its noun («la canción está "
+                    "pausada»), or the act with «se ha» («se ha pausado»); never «se está pausado»."
+                ),
                 "broken_person_conjugation": (
                     (
                         "Say it of yourself in the first person singular, with that verb correctly conjugated."
@@ -23510,7 +23706,14 @@ class LlmRuntime:
                         else "Success. State what was seen."
                     )
                 ),
-                "internal_code": "Sin códigos internos ni jerga de contrato.",
+                "internal_code": (
+                    # M79 (DEV-D v3m s007 «No tengo acceso a los emails de la última semana…» three times, w02-t2):
+                    # «no tengo acceso» is refused, and the generic hint never said what to say instead.
+                    "Nunca digas que no tienes acceso. Si es algo que no haces, di llanamente, en primera persona, "
+                    "que eso no lo haces, nombrándolo con un sustantivo del pedido; si no, contesta lo que sabes."
+                    if "no tengo acceso" in _reading_fold(candidate)
+                    else "Sin códigos internos ni jerga de contrato."
+                ),
                 "task_title_not_named": (
                     "Name the tasks by their titles exactly as written, in quotation marks: "
                     if response_language == "en"
@@ -24043,6 +24246,14 @@ class LlmRuntime:
                     if response_language == "en"
                     else "No ofrezcas cancelarlas todas: di cuántas hay con la hora de cada una y pregunta cuál "
                     "cancelas, sin decir qué no puedes hacer."
+                ),
+                # M79 (DEV-D v3m p27-t4 «…in my database»).
+                "own_store_claim": (
+                    "You have no database, catalog or records of your own: never say you looked in one. Answer from "
+                    "what you know, or say plainly that you do not know it."
+                    if response_language == "en"
+                    else "No tienes base de datos, catálogo ni registros propios: nunca digas que buscaste en uno. "
+                    "Contesta con lo que sabes o di llanamente que no lo sabes."
                 ),
                 "effect_claim": (
                     "Nothing ran this turn: do not say you did, are doing or will do anything. If the person asked "

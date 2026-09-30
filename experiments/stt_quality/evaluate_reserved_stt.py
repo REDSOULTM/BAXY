@@ -185,8 +185,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # M77
 # M78
 # M76
+# M79 (DEV-D v3m): re-pin tras la redacción.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "dd1dd4ba5ba4f59f4694302bb26b8d22434bbf7fdd391c1a2f849889bfa97bd5"
+    "791b018702ef306f9bbf2486a557006b98ec1d9a6c746e75d783ec1f682a0f2c"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
