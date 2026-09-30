@@ -1845,6 +1845,15 @@ internal class CdpBrowserSession : IDisposable
         return null;
     }
 
+    // M89: 60 polls of 250 ms = 15 s of a watch page that never got its video source.
+    internal const int YouTubeStallReloadAttempt = 60;
+
+    /// <summary>A watch page whose video has no data yet (readyState 0, with or without a source: ctx-dueno
+    /// «ready0 network2 no_source», v3r w10-t4 «ready0 playing network2 source») and no gate (sign-in,
+    /// consent, unavailable) in front: a stalled load, which one reload clears.</summary>
+    internal static bool YouTubeWatchPageStalled(bool watchPage, string ready, string gate) =>
+        watchPage && ready == "0" && gate == "none";
+
     internal virtual async ValueTask<CdpMediaPlaybackResult> PlayYouTubeAsync(
         string query,
         Uri watchUri,
@@ -1872,9 +1881,13 @@ internal class CdpBrowserSession : IDisposable
         await socket.ConnectAsync(webSocket, cancellationToken).ConfigureAwait(false);
 
         string playbackFailure = "youtube_playback_not_verified_video_missing";
+        bool reloaded = false;
         // ctx-dueno-01..03 (2026-09-22, notebook): the first watch page of a fresh
         // profile stayed «ready0 network2 no_source» for the whole 30 s and the
         // same query verified in 6 s a minute later; the probe now waits 45 s.
+        // M89 (DEV-D v3r D-w10-t4, the run's first watch page): it stayed so for all
+        // 45 s again, and the next watch page of the same profile played in 6 s. A
+        // page stalled that way for 15 s is reloaded once, within the same 45 s.
         for (int attempt = 0; attempt <= 180; attempt++)
         {
             if (attempt > 0)
@@ -1917,6 +1930,13 @@ internal class CdpBrowserSession : IDisposable
                 playbackFailure = $"youtube_playback_not_verified_"
                     + $"{(watchPage ? "watch" : "other")}_ready{ready}_{playback}_"
                     + $"network{network}_{source}_{gate}";
+                if (!reloaded && attempt >= YouTubeStallReloadAttempt
+                    && YouTubeWatchPageStalled(watchPage, ready, gate))
+                {
+                    reloaded = true;
+                    _ = await CommandAsync(socket, "Page.reload", null, cancellationToken)
+                        .ConfigureAwait(false);
+                }
             }
             if (fields.Length == 7
                 && (fields[0].Contains("youtube.com/watch", StringComparison.OrdinalIgnoreCase)

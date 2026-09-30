@@ -463,6 +463,31 @@ def _completed_missing_list_entries_request(
     return f"añade {answer} a la {listed}"
 
 
+def list_entries_said_before(text: str, previous_user_text: str | None, last_reply: str | None) -> bool:
+    """M89 (DEV-D v3r D-p37-t2 «beer and chips» → «What would you like me to do with beer and chips?» → «Include items
+    on the shopping list» → «Would you like me to add beer and chips to your shopping list?»): the mirror of
+    ``_completed_missing_list_entries_request``. The entries were the person's last message, the one BAXY's question
+    was about; the list named now takes them («items», «las cosas» point back at them). Only a short content message
+    (no request head, no question, no refusal) that BAXY's question quotes."""
+
+    if not previous_user_text or not last_reply or not str(last_reply).rstrip().endswith("?"):
+        return False
+    if list_creation_without_items(_fold(text)) is None:
+        return False
+    said = str(previous_user_text).strip().strip("\"'“”«»").strip(" .!")
+    folded = _strip_request_envelope(_fold(said))
+    if (
+        not folded
+        or len(folded.split()) > 12
+        or "?" in said
+        or _head_is(_request_head(folded), _COVERAGE_ACTION_HEAD)
+        or _negative_action_forms(folded)
+        or re.fullmatch(r"(?:no|nada|ninguna|none|nothing|cancela|cancelar|cancel|olvidalo|dejalo)\b.*", folded)
+    ):
+        return False
+    return re.search(rf"(?<!\w){re.escape(folded)}(?!\w)", _fold(str(last_reply))) is not None
+
+
 def _contextual_output_level_target(
     text: str, previous_user_text: str, available_operations: Iterable[str],
 ) -> bool:

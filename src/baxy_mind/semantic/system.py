@@ -43,7 +43,7 @@ def _weather_location(text: str) -> str | None:
     prepositions = r"en|in|de|para|for|at" if _names_weather(_fold(query)) else r"en|in|at"
     for match in re.finditer(rf"\b(?:{prepositions})\s+(?=(?P<place>[^,;:.!?]+))", query, re.IGNORECASE):
         candidate = match.group("place").strip(" \t\r\n.,;:")
-        if _names_a_time(_fold(candidate)):
+        if _names_a_time(_fold(candidate)) or _leads_with_a_time(candidate):
             continue
         if (
             _has(_fold(match.group(0)), r"^para\b")
@@ -101,9 +101,17 @@ def _weather_location(text: str) -> str | None:
 _THERE = r"\b(?:alla|alli|ahi|there|over\s+there)\b"
 # M76 (DEV-D v3l D-p25-t1 «I'm visiting Martinez soon and would like the check the weather there please» → the weather
 # of Curicó): a place visited is gone to as well, and a verb of visiting takes it with no preposition.
+# M89 (DEV-D v3r D-w04-t1 «mañana viajo temprano a Rosario … ¿cómo va a estar el clima allá?» → Curicó's weather):
+# when or how the person goes may sit between the verb and its «a / to» («viajo temprano a», «flying out tomorrow to»).
+_GOING_WHEN = (
+    r"(?:\s+(?:temprano|tarde|manana|mañana|hoy|pronto|luego|despues|después|ya|solo|sola|de\s+viaje|de\s+vacaciones|"
+    r"en\s+(?:auto|bus|tren|avion|avión|moto)|early|late|tomorrow|today|tonight|soon|out|back|alone|by\s+(?:car|bus|train|plane)))"
+    r"{0,3}"
+)
 _GOING_TO = re.compile(
     r"\b(?:(?:me\s+voy|nos\s+vamos|voy|vamos|viajo|viajamos|ire|iremos|going|heading|headed|traveling|travelling|"
-    r"flying|driving|trip)\s+(?:a|al|para|to|hacia)|visiting|visit|visitar[eé]?|visitaremos|visitando|visito|visitamos)\s+"
+    rf"flying|driving|trip){_GOING_WHEN}\s+(?:a|al|para|to|hacia)|visiting|visit|visitar[eé]?|visitaremos|visitando|visito|"
+    r"visitamos)\s+"
     r"(?P<place>[A-ZÁÉÍÓÚÑ][\w'’-]*(?:\s+(?:(?:de|del|de\s+la|de\s+los|de\s+las)\s+)?[A-ZÁÉÍÓÚÑ][\w'’-]*)*)"
 )
 
@@ -175,6 +183,18 @@ def _without_trailing_time(place: str) -> str:
         ):
             return " ".join(words[:index])
     return place
+
+
+def _leads_with_a_time(candidate: str) -> bool:
+    """M89 (DEV-D v3r D-p20-t2 «What's the weather forecast for March 2nd in Palo Alto?» → the weather service was
+    asked for «March 2nd in Palo Alto» and knew no such place): a time said first («March 2nd», «mañana», «el
+    viernes») with the place after its own «in / en / at» is not the place; the next preposition names it."""
+
+    words = candidate.split()
+    for index in range(1, len(words) - 1):
+        if _fold(words[index]) in {"en", "in", "at"} and _names_a_time(_fold(" ".join(words[:index]))):
+            return True
+    return False
 
 
 def _names_a_time(folded: str) -> bool:

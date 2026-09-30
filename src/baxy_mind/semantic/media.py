@@ -596,7 +596,21 @@ _MEDIA_IDENTITY_QUESTION = re.compile(
 )
 
 
-def asks_what_is_playing(user_text: str | None) -> bool:
-    """Who made what is playing or which song it is («qué canción es», «who sings this»)."""
+# M89 (DEV-D v3r D-w05-t3 «de qué disco es esta» → «Está sonando Piano Bar de Charly García.»): which album it is from.
+_MEDIA_ALBUM_QUESTION = re.compile(
+    r"\b(?:(?:de\s+)?(?:que|cual)\s+(?:disco|album|lp)|(?:what|which)\s+(?:album|record|lp)|"
+    r"album\s+(?:is\s+(?:this|that|it)|de\s+(?:esta|esa|este|ese))|(?:disco|album)\s+(?:es|era)\b)"
+)
 
-    return _MEDIA_IDENTITY_QUESTION.search(_fold(user_text or "")) is not None
+
+def asks_the_album(user_text: str | None) -> bool:
+    """Which album what is playing comes from («de qué disco es esta», «what album is this»)."""
+
+    return _MEDIA_ALBUM_QUESTION.search(_fold(user_text or "")) is not None
+
+
+def asks_what_is_playing(user_text: str | None) -> bool:
+    """Who made what is playing, which song it is or which album it is from («qué canción es», «who sings this»,
+    «de qué disco es esta»)."""
+
+    return _MEDIA_IDENTITY_QUESTION.search(_fold(user_text or "")) is not None or asks_the_album(user_text)

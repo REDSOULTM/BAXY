@@ -542,6 +542,22 @@ _WHAT_IS_THE_WEATHER = (
 )
 
 
+def _closing_question(text: str) -> str | None:
+    """M89 (DEV-D v3r D-w04-t1 «Che, mañana viajo temprano a Rosario a ver a mi vieja y no sé qué llevar de ropa,
+    ¿cómo va a estar el clima allá?»): the question a message closes with, opened by its own «¿» or after a sentence
+    of its own; None when the message is that question alone. What comes before it is context (where the person
+    goes, what for), and the question is read on its own."""
+
+    raw = str(text or "").strip()
+    opening = raw.rfind("¿")
+    if opening > 0:
+        return raw[opening:]
+    sentences = [part for part in re.split(r"(?<=[.!;])\s+", raw) if part.strip()]
+    if len(sentences) > 1 and sentences[-1].rstrip().endswith("?"):
+        return sentences[-1]
+    return None
+
+
 def _weather_lookup_query(text: str) -> str | None:
     """WEB1445: the person's weather request without its request verbs, accents
     kept (the engine answers «va a llover mañana» and «clima hoy», not the folded
@@ -553,7 +569,8 @@ def _weather_lookup_query(text: str) -> str | None:
     folded = _fold(text)
     indirect = _asks_weather_indirectly(folded) or _forecast_question(folded)
     if not _live_weather_request(folded):
-        return None
+        clause = _closing_question(text)
+        return _weather_lookup_query(clause) if clause is not None else None
     if _has(folded, r"^[¿?¡!\s]*(?:que|what)\s+(?:es|son|is|are|significa|means)\b") and not (
         # «what is the weather in Paris», «what is the air quality in Denver» ask it as «what's» does; «qué es el
         # clima», «what is air pollution» ask what the thing is, unless a time to come is named with it.
@@ -1150,6 +1167,17 @@ def _bare_given_name(folded: str) -> bool:
     return False
 
 
+# M89 (DEV-D v3r D-p24-t2 «Search for something else and I change my mind. Now I want to watch Drama movies like
+# Lizzo.» → the search became a question as the person's own data): a possessive inside a set phrase names no thing of
+# the person's («change my mind», «in my opinion», «para mi gusto», «dios mío»). Folded.
+_POSSESSIVE_IDIOM = (
+    r"\b(?:(?:change|changed|changing|make\s+up|made\s+up|making\s+up)\s+my\s+mind|on\s+my\s+mind|"
+    r"in\s+my\s+(?:opinion|view|experience)|to\s+my\s+(?:taste|surprise|mind)|for\s+my\s+taste|my\s+bad|"
+    r"oh\s+my\s+(?:god|gosh|goodness)|(?:en|a)\s+mi\s+(?:opinion|parecer|juicio|gusto)|para\s+mi\s+gusto|"
+    r"dios\s+mio|madre\s+mia)\b"
+)
+
+
 def names_own_data(text: str) -> bool:
     """Whether a request asks about the person's own data: their things, plans or past, their relatives, a person of
     their life named by a given name, this PC, or an event of their agenda (see above). Where the person is («cerca
@@ -1157,6 +1185,7 @@ def names_own_data(text: str) -> bool:
     (``_location_recommendation_request``)."""
 
     folded = re.sub(_NEAR_THE_PERSON, " ", _fold(text))
+    folded = re.sub(_POSSESSIVE_IDIOM, " ", folded)
     # «what's grandma's birthday»: a contracted «is» is not a possessive.
     folded = re.sub(r"\b(what|that|it|who|where|when|how|there|here|he|she)['’]s\b", r"\1 is", folded)
     return (
@@ -3482,6 +3511,29 @@ _WHERE_TO_FIND = re.compile(
     r"\b(?:where|how)\s+(?:can|could|do|would|should)\s+(?:i|we|one|you)\s+(?:find|get|see|read|look\s+up|access)\b|"
     r"\bwhere\s+(?:is|are)\s+(?:there\s+)?(?:a|an|the)\s+(?:list|listing|database|catalog|index|archive)\b"
 )
+
+
+# M89 (DEV-D v3r D-w20-t3 «btw what's the latest version of Python right now?» → the versions installed on this PC):
+# the newest release of a program is public (rule 1: what changes is looked up); the installed one is asked with
+# «installed», «tengo», «have» or «my PC». Folded.
+_LATEST_RELEASE = (
+    r"\b(?:(?:latest|newest|most\s+recent|last)\s+(?:stable\s+)?(?:version|release|update)|"
+    r"(?:ultima|ultimo|mas\s+reciente|mas\s+nueva|mas\s+nuevo)\s+(?:version\s+(?:estable\s+)?|"
+    r"actualizacion|lanzamiento)|version\s+mas\s+(?:reciente|nueva|actual)|"
+    r"(?:ultima|nueva)\s+version\b|(?:latest|newest)\s+\w+\s+(?:version|release))"
+)
+_INSTALLED_COPY = (
+    r"\b(?:instalad[oa]s?|installed|tengo|tienes|tiene|tenemos|have|has|got|mi\s+(?:pc|computador[a]?|ordenador|equipo|"
+    r"maquina|laptop|notebook)|my\s+(?:pc|computer|laptop|machine)|este\s+(?:pc|equipo)|this\s+(?:pc|computer|machine)|"
+    r"(?:de|del|en)\s+(?:aqui|aca)|on\s+here)\b"
+)
+
+
+def asks_latest_release(text: str) -> bool:
+    """The newest published release of something is asked, not the copy on this PC (see above)."""
+
+    folded = _fold(str(text or ""))
+    return _has(folded, _LATEST_RELEASE) and not _has(folded, _INSTALLED_COPY)
 
 
 def asks_where_to_find(text: str) -> bool:
