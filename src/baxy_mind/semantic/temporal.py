@@ -168,7 +168,18 @@ _CLOCK_HOUR = r"(?:[01]?[0-9]|2[0-3]|" + "|".join(sorted(_CLOCK_HOUR_WORDS, key=
 _CLOCK_MINUTE_WORD = (
     r"(?:[0-5]?[0-9]|" + "|".join(sorted(_CLOCK_MINUTE_WORDS, key=len, reverse=True)) + r")"
 )
-_CLOCK_MINUTES = rf"(?::[0-5][0-9]|\s+y\s+{_CLOCK_MINUTE_WORD}|\s+menos\s+{_CLOCK_MINUTE_WORD})"
+# M91 (reserva «at seven fifteen am»): English says the minutes straight after the hour.
+_ENGLISH_CLOCK_MINUTE_WORDS = {
+    "oh five": 5, "o five": 5, "ten": 10, "fifteen": 15, "twenty": 20, "twenty five": 25, "twenty-five": 25,
+    "thirty": 30, "thirty five": 35, "thirty-five": 35, "forty": 40, "forty five": 45, "forty-five": 45,
+    "fifty": 50, "fifty five": 55, "fifty-five": 55,
+}
+_ENGLISH_CLOCK_MINUTE = "(?:" + "|".join(
+    re.escape(word).replace(r"\ ", r"\s+") for word in sorted(_ENGLISH_CLOCK_MINUTE_WORDS, key=len, reverse=True)
+) + ")"
+_CLOCK_MINUTES = (
+    rf"(?::[0-5][0-9]|\s+y\s+{_CLOCK_MINUTE_WORD}|\s+menos\s+{_CLOCK_MINUTE_WORD}|\s+{_ENGLISH_CLOCK_MINUTE}\b)"
+)
 # The part of the day said after the hour. «a. m.» keeps its dots optional and
 # needs the «m» to end a word, so «a mi casa» is never a morning. The accented
 # spellings let a reader of the person's own text use it too.
@@ -233,10 +244,15 @@ def _read_clock(found: re.Match[str], folded: str) -> SpokenClock | None:
     colon = minutes_text.startswith(":")
     raw_hour = found.group("hour")
     hour = int(raw_hour) if raw_hour.isdecimal() else _CLOCK_HOUR_WORDS[raw_hour]
-    minute_word = re.sub(r"^(?::|\s+(?:y|menos)\s+)", "", minutes_text)
+    minute_word = re.sub(r"^(?::|\s+(?:y|menos)\s+|\s+)", "", minutes_text)
     minute = 0
     if minute_word:
-        minute = int(minute_word) if minute_word.isdecimal() else _CLOCK_MINUTE_WORDS[minute_word]
+        english = " ".join(minute_word.split())
+        minute = (
+            int(minute_word) if minute_word.isdecimal()
+            else _CLOCK_MINUTE_WORDS[minute_word] if minute_word in _CLOCK_MINUTE_WORDS
+            else _ENGLISH_CLOCK_MINUTE_WORDS[english]
+        )
     if minute > 59:
         return None
     if minutes_text.lstrip().startswith("menos") and minute:

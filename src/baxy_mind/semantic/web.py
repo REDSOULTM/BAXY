@@ -95,6 +95,8 @@ _WEATHER_WORDS = (
     r"llovera|llovio|temperature|temperatura|frio|fria|calor|cold|hot|caluroso|calurosa|"
     # Tanda 9 «is it humid?», «will it be hotter tomorrow?»: how the air feels, and its comparatives.
     r"humid|muggy|hotter|colder|warmer|chilly|"
+    # M91 (reserva «is tonight going to be sticky», «un día bochornoso»): heavy, damp heat said by its feel.
+    r"sticky(?!\s+notes?)|steamy|sweltering|bochorno|bochornos[oa]|sofocante|"
     # Uso real 2026-09-23 (MASSIVE weather_query): «necesitaré protector solar», «nieve», «viento».
     r"nieve|nevar|nevara|nevando|snow|snowing|viento|wind|windy|humedad|humidity|soleado|sunny|"
     r"cloudy|tormenta|storm|granizo|paraguas|umbrella|protector\s+solar|sunscreen|lloviendo|"
@@ -257,7 +259,9 @@ _WEATHER_DAY_QUESTION = (
     r"cool)(?:\s+(?:day|weather))?(?:\s+(?:out|outside))?"
     # «will it be a good idea to buy a car tomorrow» is not the weather: only a place or a time follows.
     r"(?=[\s.?!,]*$|\s+(?:at|in|on|by|this|next|tomorrow|today|tonight|around|near|over)\b)|"
-    r"(?:va\s+a\s+(?:hacer|estar|ser)|hara|estara|sera)\s+(?:un\s+)?(?:buen|mal|bonito|lindo|feo)\s+(?:dia|tiempo)\b)"
+    r"(?:va\s+a\s+(?:hacer|estar|ser)|hara|estara|sera)\s+(?:un\s+)?(?:buen|mal|bonito|lindo|feo)\s+(?:dia|tiempo)\b|"
+    # M91 (reserva «¿hará bueno el sábado?»): «hacer bueno/malo» is the weather of the day said.
+    r"(?:va\s+a\s+hacer|hara)\s+(?:bueno|malo)\b)"
 )
 
 
@@ -338,8 +342,11 @@ _WEATHER_GEAR = (
 # cortos hoy», «i need jacket after ten am or not»: whether it is needed, whether one may wear it, or the choice left
 # open («or not», «sí o no») asks it as well.
 _WEATHER_GEAR_ASKED = (
-    r"^[¿¡\s]*(?:que|cual|cuales|deberia|deberiamos|debo|conviene|hace\s+falta|(?:es|sera)\s+necesario|"
-    r"(?:me\s+)?puedo|can\s+i|should|do\s+i|will\s+i)\b|"
+    # M91 (reserva «which coat should I take»): the English asking words open the same question.
+    r"^[¿¡\s]*(?:que|cual|cuales|what|which|deberia|deberiamos|debo|conviene|hace\s+falta|(?:es|sera)\s+necesario|"
+    r"(?:me\s+)?puedo|can\s+i|should|do\s+i|will\s+i|"
+    # M91 (reserva «tengo que llevarme el abrigo mañana»): the need said as a statement, its question mark dropped.
+    r"(?:yo\s+)?(?:tengo\s+que|necesito|necesitare|voy\s+a\s+necesitar))\b|"
     r"\b(?:or\s+not|o\s+no|si\s+o\s+no|yes\s+or\s+no)[\s.!?]*$"
 )
 _WEATHER_GEAR_DECISION = (
@@ -351,7 +358,8 @@ _WEATHER_GEAR_DECISION = (
 # («me puedo poner pantalones cortos hoy mientras compramos»).
 _WEATHER_GEAR_ELSEWHERE = (
     r"\b(?:compr\w*|buy\w*)\s+(?:\w+\s+){0,3}?" + _WEATHER_GEAR[2:] + "|"
-    r"\b(?:nuev[oa]s?|new|recomienda\w*|recommend\w*|precio|price|cuesta|cost|tienda|store|shop|"
+    r"\b(?:nuev[oa]s?|new|recomienda\w*|recommend\w*|precio|price|cuesta|cost|tienda|store|shop|buy|purchase|"
+    r"comprar|compro|compre|"
     r"donde|where|deje|perdi|lost|talla|size|lavar|wash|tintoreria)\b"
 )
 _WEATHER_AMOUNT = (
@@ -1088,7 +1096,9 @@ _FIRST_PERSON_TALLY = (
 # Things of this PC and of BAXY's stores are read on the PC, never priced or counted on the web.
 _LOCAL_THING = (
     r"\b(?:archivos?|carpetas?|notas?|tareas?|recordatorios?|ventanas?|pestanas?|descargas?|capturas?|mensajes?|"
-    r"correos?|alarmas?|pc|computadora|ordenador|baxy|files?|folders?|notes?|tasks?|windows?|tabs?|emails?)\b"
+    r"correos?|alarmas?|pc|computadora|ordenador|baxy|files?|folders?|notes?|tasks?|windows?|tabs?|emails?|"
+    # M91 (reserva «quién fue el último contacto que me escribió»): the person's contacts and calls are theirs.
+    r"contactos?|contacts?|llamadas?|calls?)\b"
 )
 
 
@@ -1203,7 +1213,18 @@ _POSSESSIVE_IDIOM = (
     r"\b(?:(?:change|changed|changing|make\s+up|made\s+up|making\s+up)\s+my\s+mind|on\s+my\s+mind|"
     r"in\s+my\s+(?:opinion|view|experience)|to\s+my\s+(?:taste|surprise|mind)|for\s+my\s+taste|my\s+bad|"
     r"oh\s+my\s+(?:god|gosh|goodness)|(?:en|a)\s+mi\s+(?:opinion|parecer|juicio|gusto)|para\s+mi\s+gusto|"
-    r"dios\s+mio|madre\s+mia)\b"
+    r"dios\s+mio|madre\s+mia|"
+    # M91 (reserva «my options for a bus to X»): the options open to the person are what the public offers them
+    # (timetables, fares, routes), never something of theirs.
+    r"(?:my|mis|mi)\s+(?:options?|choices?|alternatives?|opciones|opcion|alternativas?))\b"
+)
+# M91 (reserva «una receta para la cena de esta noche»): an occasion of the person's said as what a public thing is
+# for (a recipe, ideas, music, a gift for tonight's dinner) is not asked about; the thing is looked up. Folded.
+_THING_FOR_AN_OCCASION = (
+    r"\b(?:recetas?|recipes?|ideas?|menus?|platos?|dishes?|postres?|desserts?|musica|music|canciones|songs|playlists?|"
+    r"regalos?|gifts?|ropa|outfits?|vinos?|wines?|decoracion|decorations?|juegos?|games?)\b(?:\s+\w+){0,3}?\s+"
+    rf"(?:para|for)\s+(?:(?:la|el|las|los|the|this|esta|este|tonight['’]?s|today['’]?s)\s+)?(?:\w+\s+)?{OWN_EVENT_NOUN}\b"
+    r"(?:\s+(?:de|del|of|on|for|this|esta|este|hoy|manana|tonight|today|tomorrow|noche|tarde|night|evening)\b)*"
 )
 
 
@@ -1215,6 +1236,7 @@ def names_own_data(text: str) -> bool:
 
     folded = re.sub(_NEAR_THE_PERSON, " ", _fold(text))
     folded = re.sub(_POSSESSIVE_IDIOM, " ", folded)
+    folded = re.sub(_THING_FOR_AN_OCCASION, " ", folded)
     # «what's grandma's birthday»: a contracted «is» is not a possessive.
     folded = re.sub(r"\b(what|that|it|who|where|when|how|there|here|he|she)['’]s\b", r"\1 is", folded)
     return (
@@ -1293,6 +1315,10 @@ def record_fact_query(text: str) -> str | None:
         return None
     subject = re.sub(r"^(?:cual|quien|cuando|what|who|which|when)\s+\S+\s+", "", folded)
     if _has(subject, _NOT_PUBLIC_WORK) or _has(folded, r"\b(?:dije|dijiste|hice|hiciste|te\s+pedi|said|asked)\b"):
+        return None
+    if _has(subject, _LOCAL_THING) or names_own_data(folded):
+        # M91 (reserva «what was the last message from my boss»): the last mail, note or task is read where it is kept,
+        # never looked up as a public first or last.
         return None
     return _original_words(text, folded).strip()
 
@@ -2640,14 +2666,20 @@ _PUBLIC_PLACE = (
 # Tanda 3 paraphrases of «busca un restaurante en mi zona»: «gasolineras cercanas», «farmacias abiertas cerca», «por
 # aquí», «around here», «close to me» say the same nearness.
 _NEAR_THE_PERSON = (
-    r"\b(?:cerca\s+de\s+(?:mi|aqui|aca|donde\s+estoy)|cerca(?=[\s.!?]*$)|cercan[oa]s?|near\s+(?:me|here|by)|nearby|"
+    # M91 (reserva «cercanos a mí»): the nearness said with the person after it is one phrase, not «cercanos» and a
+    # possessive of theirs.
+    r"\b(?:cerca\s+de\s+(?:mi|aqui|aca|donde\s+estoy)|cerca(?=[\s.!?]*$)|"
+    r"cercan[oa]s?(?:\s+a\s+(?:mi|aqui|aca|donde\s+estoy))?|near\s+(?:me|here|by)|nearby|"
     r"nearest|closest|close\s+(?:to\s+me|by)|por\s+(?:aqui|aca)|around\s+(?:here|me|town)|in\s+town|"
     # MASSIVE recommendation_locations / takeaway_query (dev corpus 2026-09-24) «qué bares hay a mi alrededor», «en mi
     # vecindario», «más cercano a mi ubicación», «alrededor del centro», «holidays in my location».
     r"a\s+mi\s+alrededor|alrededor\s+(?:mio|mia|de\s+(?:mi|aqui|aca)|del\s+centro)|"
-    r"(?:en|de|a)\s+(?:mi|la|esta|este)\s+(?:zona|area|ciudad|barrio|comuna|pueblo|region|provincia|pais|vecindario|"
-    r"ubicacion|localidad|sector)|"
-    r"(?:in|around)\s+(?:my|the|this)\s+(?:local\s+)?(?:area|city|neighbou?rhood|town|region|country|location)|"
+    # M91 (reserva «para mi área», «in my home town»): the area the figures are for, and the town the person lives in,
+    # are where the person is too.
+    r"(?:en|de|a|para|por)\s+(?:mi|la|esta|este)\s+(?:zona|area|ciudad|barrio|comuna|pueblo|region|provincia|pais|"
+    r"vecindario|ubicacion|localidad|sector)|"
+    r"(?:in|around|for)\s+(?:my|the|this)\s+(?:local\s+)?(?:area|city|neighbou?rhood|(?:home\s*)?town|hometown|"
+    r"region|country|location)|"
     r"near\s+my\s+location|local\s+area|"
     r"en\s+un\s+radio\s+de|within\s+(?:a\s+)?\w+\s+(?:miles?|km|kilometers?|kilometres?))\b"
 )

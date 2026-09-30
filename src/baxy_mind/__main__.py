@@ -40,7 +40,7 @@ from .semantic import decider as semantic_decider
 from .semantic import dialogue as dialogue_slot
 from .semantic import knowledge as semantic_knowledge
 from .semantic.apps import deictic_close_request
-from .semantic.notes import task_change
+from .semantic.notes import list_creation_said, task_change
 from .semantic import levels as semantic_levels
 from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
@@ -4676,6 +4676,9 @@ def _context_decided_result(
             and set(asked.operations) & set(decided.operations)
             # M89 (DEV-D v3r D-p37-t2): entries the person said just before, which BAXY's question was about, were said.
             and not list_entries_said_before(text, antecedent, context.last_reply)
+            # M91 (reserva «haz una nueva lista de la compra»): a list asked for new is complete when it is made; only
+            # an entry that names nothing is missing a value.
+            and not list_creation_said(effect_intent._fold(text))
         ):
             # M84 (DEV-D v3o D-p17-t3 «nevermind add an item to my swimming list» → «Add swimming to my list.», and
             # «swimming» was added): the readers prove the entry was not said (M80); the list's name is never its

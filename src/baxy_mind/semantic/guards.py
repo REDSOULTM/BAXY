@@ -377,14 +377,23 @@ _ADDRESSED_OPENING = (
     r"[\s¡!]*(?:(?:por|para|de|desde|hasta|en|a|con|sobre|durante|segun|for|in|to|from|at|with|about|since|until|"
     r"during)\s+)?"
     r"(?:cual|cuales|cuanto|cuanta|cuantos|cuantas|quien|quienes|por\s+que|"
-    r"what|which|who|whom|where|when|why|how)\b"
+    r"what|which|who|whom|where|when|why|how|"
+    # M91 (reserva «qué día de la semana cayó el …», «puedo saber lo que tengo …»): a «qué» that asks a thing, and
+    # asking to be let know, open a question too, with the question mark dropped by the ear.
+    r"que\s+(?:dia|dias|fecha|hora|horas|ano|mes|semana|tiempo|clima|temperatura|significa|pasa|paso|tal)|"
+    r"(?:puedo|podria|quiero|quisiera|necesito)\s+saber)\b"
 )
 # MASSIVE qa_factoid «con toda la información que pueda recopilar en internet podría proporcionarme la mejor
 # explicación…»: a request put to the listener (you could, can you) is said to BAXY wherever it sits.
 _ADDRESSED_REQUEST = (
     r"\b(?:podria|podrias|puedes|podes|puede|pudieras|pudiera)\s+(?:usted\s+|tu\s+|vos\s+)?"
     r"(?:\w+(?:rme|rnos|rle|rles)|me\s+\w+r|nos\s+\w+r)\b|"
-    r"\b(?:could|can|would|will)\s+you\s+\w+"
+    r"\b(?:could|can|would|will)\s+you\s+\w+|"
+    # M91 (reserva «si una manzana cuesta dos euros … cuánto pago por cinco»): the amount asked inside a problem is
+    # asked of BAXY, wherever the question word sits.
+    r"\b(?:cuanto|cuanta|cuantos|cuantas)\s+(?:\w+\s+)?(?:debo|debe|debemos|tengo\s+que|tenemos\s+que|pago|pagar|"
+    r"pagaria|cuesta|cuestan|costaria|es|son|seria|serian|queda|quedan|sobra|sobran)\b|"
+    r"\bhow\s+(?:much|many)\s+(?:\w+\s+)?(?:do|does|did|will|would|should|must|is|are|was|were)\b"
 )
 
 

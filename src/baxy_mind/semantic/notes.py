@@ -35,6 +35,27 @@ _AGENDA_CHANGE_HEAD = (
     r"create|make|book|mark|block|delete|remove|cancel|clear|erase|move|change|reschedule|remind|notify|"
     r"alert|wake|search|find|open|planificar|planear|plan)"
 )
+# M91: an order that puts something into the calendar or marks it, in any person («agregue», «ponga», «add»), with
+# the calendar as where it goes («en mi calendario», «on the calendar») or as what is marked («mark my calendar»).
+_AGENDA_WRITE_VERB = (
+    # «programa» and «agenda» are also nouns («este programa en el calendario»): only their unambiguous forms.
+    r"(?:anade|anadir|anada|agrega|agregar|agregue|pon|poner|pone|ponga|ponme|programar|programe|"
+    r"agendar|agende|anota|anotar|anote|apunta|apuntar|apunte|marca|marcar|marque|bloquea|bloquear|bloquee|"
+    r"add|put|schedule|mark|block|pencil|enter|insert)"
+)
+_INTO_THE_AGENDA = (
+    rf"\b{_AGENDA_WRITE_VERB}\b.*\b(?:en|a|al|in|on|onto|to|into)\s+(?:(?:mi|el|la|my|the|our)\s+)?(?:\w+\s+)?"
+    r"(?:calendarios?|calendars?|agenda)\b|"
+    r"\b(?:mark|block|marca|marque|bloquea|bloquee)\s+(?:off\s+)?(?:mi|my|el|the)\s+(?:\w+\s+)?(?:calendario|calendar|agenda)\b"
+)
+# «¿has puesto la cena en mi calendario?», «have you put…», «did you add…»: whether it was put is read (below).
+_ASKED_WHETHER_PUT = r"^(?:has|habias|hayas|have\s+you|did\s+you|you\s+(?:put|added))\b"
+
+
+def puts_into_the_agenda(folded: str) -> bool:
+    """M91: an order that puts something into the calendar (``_INTO_THE_AGENDA``), not the question whether it was."""
+
+    return _has(folded, _INTO_THE_AGENDA) and not _has(folded, _ASKED_WHETHER_PUT)
 _AGENDA_QUESTION_HEAD = (
     r"(?:que|cual|cuales|cuando|donde|como|cuanto|cuanta|cuantos|cuantas|a|what|which|when|where|how|dime|"
     r"decime|dame|muestra|muestrame|mostrame|ensename|lee|leeme|revisa|consulta|mira|tell|show|give|read|"
@@ -126,6 +147,12 @@ def agenda_read_request(text: str) -> bool:
         # «cuántos contactos tengo en mi agenda»: the address book, not the calendar (messaging.contact_book_request).
         or _has(folded, r"\b(?:contactos?|contacts?|telefonos|numeros\s+de\s+telefono|phone\s+numbers)\b")
         or _has(folded, AGENDA_NOT_A_READ)
+        # M91 (reserva «ponga la cena del viernes en mi calendario», «block my calendar tomorrow»): something put
+        # into the calendar, in any person or place of the sentence, changes it.
+        or puts_into_the_agenda(folded)
+        # M91 (reserva «when will my pizza arrive»): an order or a parcel on its way is a shop's, not the agenda.
+        or _has(folded, r"\b(?:delivered|delivery|deliver|pedido|pedidos|order|orders|paquete|package|parcel|"
+                        r"envio|shipment|shipping)\b")
     ):
         return False
     head = _request_head(folded)
@@ -195,7 +222,8 @@ def agenda_read_request(text: str) -> bool:
     if re.search(
         r"^(?:como|how)\s+(?:sera|es|va\s+a\s+ser|se\s+ve|luce|pinta|will|is|looks?)\s+(?:be\s+)?(?:mi|my)\s+"
         r"(?:dia|day|semana|week|proxima\s+semana|next\s+week|manana|tomorrow|fin\s+de\s+semana|weekend)\b"
-        r"|^what'?s?\s+(?:is\s+)?my\s+(?:day|week|weekend)\s+like\b",
+        # M91 (reserva «what does my coming weekend look like»): the span to come, and «look like», ask the same.
+        r"|^what'?s?\s+(?:is\s+|does\s+)?my\s+(?:(?:upcoming|coming|next)\s+)?(?:day|week|weekend)\s+(?:looks?\s+)?like\b",
         folded,
     ):
         # «cómo será mi próxima semana».
@@ -869,6 +897,14 @@ def list_creation_without_items(folded: str) -> str | None:
     return None
 
 
+def list_creation_said(folded: str) -> bool:
+    """M91 (reserva «haz una nueva lista de la compra»): a new list asked for, not an entry to put on one. The list
+    made empty is the whole request; only an entry that names nothing leaves something unsaid."""
+
+    body = _strip_request_envelope(folded).strip(" ¿?¡!.,")
+    return not _has(folded, _LIST_NOT_TASKS) and _LIST_CREATION.match(body) is not None
+
+
 # Dev set 2 (2026-09-24): «we're out of paint so take bathroom painting off the list» and «eliminar mi lista de
 # tareas pendientes» read the list instead. An entry taken off a list is its task sent to the recoverable trash
 # (task.delete, after task.resolve.exact finds it by the title it was added with); a whole list removed is every
@@ -1021,7 +1057,11 @@ _LIST_READ_VERB = (
     r"(?:dime|decime|di|decir|dame|diga|digame|lee|leeme|leer|lea|repite|repiteme|repetir|repasa|repasame|muestra|"
     r"muestrame|mostrame|mostrar|muestre|ensename|revisa|revisame|revisar|revise|consulta|consultar|consulte|recita|"
     r"comprueba|comprobar|compruebe|chequea|chequear|abre|abreme|abrir|abra|reune|reuneme|reunir|trae|traeme|saca|"
-    r"sacame|ver)"
+    r"sacame|ver|"
+    # M91 (reserva «hágame saber la lista», «infórmeme de la lista», «encuentre la lista»): being let know, informed of
+    # or finding the list is reading it.
+    r"(?:hazme|hagame|hacerme)\s+saber|inform(?:a|e)me\s+(?:sobre|de)|informarme\s+(?:sobre|de)|encuentra|encuentrame|"
+    r"encontrar|encuentre)"
 )
 _LIST_READ_VERB_EN = (
     r"(?:read|tell|show|repeat|say|give|recite|check|review|open|display|(?:bring|pull|bing)\s+up|go\s+over|look\s+at)"
@@ -1053,7 +1093,8 @@ _WHOLE_LIST_READ = (
     rf"(?:que\s+es\s+(?:esto|eso)|what(?:'s|s|\s+is)\s+(?:this|that))\s+(?:en|de|on|in)\s+{_OWN_LIST}",
     # Tanda 8 «vale, léemela otra vez la lista de la compra» (the rewrite of «vale, léemela otra vez»): the list said
     # after its pronoun and «otra vez» before it.
-    rf"{_LIST_READ_VERB}(?:mel[oa]s?|l[oa]s?)?(?:\s+{_AGAIN})?\s+(?:lo\s+que\s+(?:hay|tengo)\s+en\s+|el\s+contenido\s+de\s+)?"
+    rf"{_LIST_READ_VERB}(?:mel[oa]s?|l[oa]s?)?(?:\s+{_AGAIN})?\s+(?:lo\s+que\s+(?:hay|tengo)\s+en\s+|el\s+contenido\s+de\s+|"
+    r"(?:los|las)\s+(?:elementos|articulos|cosas|entradas|items)\s+de\s+)?"
     rf"{_OWN_LIST}(?:\s+{_AGAIN})?",
     rf"(?:dejame|quiero|quisiera|me\s+gustaria|necesito|puedo)\s+(?:escuchar|oir|ver|saber|revisar|leer|consultar|repasar|"
     rf"comprobar|chequear|abrir)\s+(?:lo\s+que\s+(?:hay|tengo)\s+en\s+)?{_OWN_LIST}",

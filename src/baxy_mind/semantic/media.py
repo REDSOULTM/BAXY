@@ -210,10 +210,23 @@ def _media_transport_action(text: str) -> str | None:
         rf"(?:(?:de|this|the|esta|este|la|el|a\s+(?:esta|este|la|el))\s+)?(?:current\s+)?{media_object}"
         r"(?:\s+(?:actual|current))?"
     )
+    # M91 (reserva «ve al próximo episodio de la serie», «go back to the last episode in this show»): the episode
+    # moved to may name the show it belongs to, and going back to the last one is the previous one.
+    of_the_show = (
+        r"(?:\s+(?:del|de\s+(?:este|esta|el|la|mi)|of\s+(?:the|this|my)|in\s+(?:the|this|my)|on\s+(?:the|this|my))\s+"
+        r"(?:podcast|serie|series|show|programa|audiolibro|audiobook))?"
+    )
+    if _has(
+        folded,
+        r"^[^\w]*(?:(?:por favor|please)\s*[,;:]?\s*)?(?:go\s+back|vuelve|volver|regresa|regresar)\s+(?:to|a|al)\s+"
+        rf"(?:(?:the|el|la)\s+)?(?:last|ultimo|previous|anterior)\s+{media_object}{of_the_show}"
+        r"(?:\s*[,;:]?\s*(?:por favor|porfa|please))?[\s.!?]*$",
+    ):
+        return "previous"
     for action, direction, movement, relative, replaced in (
-        ("next", r"(?:siguiente|next)",
+        ("next", r"(?:siguiente|next|proximo)",
          r"(?:skipp?(?:\s+forward)?|skipp?ea(?:r|la|lo)?|dale\s+skip|salta(?:te|tela|la|lo)?|saltar|saltea|saltear|"
-         r"pasa|pasar|go\s+pas(?:t|sed))",
+         r"pasa|pasar|go\s+pas(?:t|sed)|go|ve|ir|anda)",
          r"(?:viene|sigue)",
          rf"(?:(?:skipp?(?:\s+forward)?|skipp?ea(?:r|la|lo)?|dale\s+skip|salta(?:te|tela|la|lo)?|saltar|saltea|"
          rf"pasa|pasar|go\s+pas(?:t|sed)|cambia(?:le|r)?)\s+{current})"),
@@ -231,12 +244,13 @@ def _media_transport_action(text: str) -> str | None:
         if _has(
             folded,
             r"^[^\w]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
-            rf"(?:(?:(?:pon|pone|ponme|reproduce|reproducir|play|toca|tocame)\s+)?{nominal}|{replaced}|"
+            rf"(?:(?:(?:pon|pone|ponme|reproduce|reproducir|play|toca|tocame|inicia|iniciar|comienza|comenzar|"
+            rf"empieza|empezar|start|begin)\s+)?{nominal}|{replaced}|"
             rf"{movement}\s+(?:(?:to|a)\s+{destination}|al\s+"
             rf"(?:{direction}\s+{media_object}|{media_object}\s+que\s+{relative}))|"
             rf"(?:go|skip)\s+{step_direction}\s+one\s+{media_object}"
             r"(?:\s+in\s+(?:the\s+)?(?:current\s+)?queue)?)"
-            r"(?:\s+(?:now|ya|ahora))?(?:\s*[,;:]?\s*(?:por favor|porfa|please))?[\s.!?]*$",
+            rf"{of_the_show}(?:\s+(?:now|ya|ahora))?(?:\s*[,;:]?\s*(?:por favor|porfa|please))?[\s.!?]*$",
         ):
             return action
     return None
@@ -322,6 +336,8 @@ _RADIO_ASK = (
 )
 _RADIO_COURTESY = r"(?:para\s+mi|for\s+me|por\s+favor|porfa|please|ahora|now|actualmente|currently|right\s+now)"
 _RADIO_REQUEST = re.compile(
+    # M91 (reserva «vamos a poner la cadena ser», «let's tune in to …»): the order said as a proposal is the order.
+    r"(?:(?:let'?s|lets|let\s+us|vamos\s+a)\s+)?"
     rf"(?:{_RADIO_PLAY}|{_RADIO_ASK})\s+(?:(?:a|al|la|el|en|to|the)\s+)?(?P<station>.+?)"
     rf"(?:\s+{_RADIO_COURTESY})*"
 )
@@ -369,6 +385,13 @@ def radio_station_query(text: str) -> str | None:
     """The radio station to play, as the local player searches it («99.9 FM en vivo»), or None."""
 
     folded = " ".join(re.sub(r"[¿?¡!,;:]", " ", _strip_request_envelope(_fold(text))).split()).strip(" .")
+    # M91 (reserva «cambia la emisora a la noventa y cinco», «switch the station to …»): changing the station to one
+    # named is tuning it.
+    folded = re.sub(
+        rf"^(?:cambia|cambiame|cambie|change|switch)\s+(?:(?:la|el|the)\s+)?(?P<noun>{_STATION_NOUN})\s+(?:a|al|to)\s+"
+        r"(?:(?:la|el|the)\s+)?",
+        r"sintoniza \g<noun> ", folded,
+    )
     found = _RADIO_REQUEST.fullmatch(folded)
     if found is None:
         return None
@@ -385,6 +408,19 @@ def radio_station_query(text: str) -> str | None:
         named = re.fullmatch(
             rf"{_STATION_NOUN}\s+(?P<name>.+)|(?P<before>.+?)\s+radio|(?P<inside>.+?\s+{_STATION_NOUN}\s+.+)", station,
         )
+        # M91 (reserva «pon los cuarenta principales en la radio», «play the morning show on the radio»): what is named
+        # to hear on the radio, with no room or device after it, is the station or show to tune; the radio of a room
+        # («en la radio del dormitorio») is still a device.
+        medium = re.fullmatch(r"(?P<what>.+?)\s+(?:en|on|in)\s+(?:la|the)\s+radio", station)
+        if medium is not None and not re.fullmatch(
+            r"(?:(?:la|el|the|some|algo\s+de|un\s+poco\s+de)\s+)?(?:algo|something|anything|musica|music|canciones|"
+            r"songs|lo\s+que\s+sea|cualquier\s+cosa)",
+            medium.group("what"),
+        ):
+            query = f"radio {medium.group('what')}"
+            if _has(query, _RADIO_NOT_A_STATION) or len(query.encode("utf-8")) > 200:
+                return None
+            return f"{query} en vivo"
         if named is None:
             return _station_named_by_itself(folded, station)
         # «un canal de radio para…», «mi radio», «la estación de radio», «the radio station»: a station that is
