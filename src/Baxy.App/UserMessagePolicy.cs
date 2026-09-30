@@ -3433,11 +3433,18 @@ internal static class UserMessagePolicy
         // and the answer says only that it was not found («No lo encontré», «I
         // couldn't find it»); that is the scope of the read, not a failed search.
         // Twin of the mind's mask in compose_visible_defect.
+        // M83 (D35, owner: «sin fuente, BAXY responde de memoria y lo avisa en corto»): when the pages did not state
+        // what was asked, the answer from memory opens with that notice («No pude comprobarlo; de memoria…», «I
+        // couldn't check this; from memory…»); it is the scope of the read too, not a failed search. Twin of the
+        // mind's _says_it_is_from_memory.
         string withoutNotFound = Regex.Replace(
             FoldForPolicy(result),
             @"\b(?:no\s+(?:(?:lo|la|los|las)\s+)?(?:encontre|halle|pude\s+encontrar(?:lo|la|los|las)?)"
             + @"|(?:i\s+)?(?:couldn[’']?t|could\s+not|didn[’']?t|did\s+not|wasn[’']?t\s+able\s+to|was\s+not\s+able\s+to)\s+find)"
-            + @"[^.;]{0,120}",
+            + @"[^.;]{0,120}"
+            + @"|\bno\s+(?:lo\s+|la\s+)?pude\s+comprobar(?:lo|la)?\b(?=[^.]{0,80}\bde\s+memoria\b)[^.:\n]{0,80}"
+            + @"|\b(?:i\s+)?(?:couldn[’']?t|could\s+not|wasn[’']?t\s+able\s+to)\s+(?:check|verify)\b"
+            + @"(?=[^.]{0,80}\bfrom\s+memory\b)[^.:\n]{0,80}",
             " ",
             RegexOptions.CultureInvariant);
         return Regex.Replace(

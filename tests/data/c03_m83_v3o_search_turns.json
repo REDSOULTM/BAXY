@@ -1,0 +1,677 @@
+{
+ "source": "window/v3o-devD (real app, HEAD 5761e1ab, 2026-09-30): run.map.json, RUN.jsonl, compose-audit.jsonl",
+ "turns": {
+  "D-s017": {
+   "text": "a good southern style mac n cheese recipe",
+   "reply": "I did not find a mac and cheese recipe.",
+   "payload": {
+    "seen": {
+     "query": "recipe cheese",
+     "count": 1,
+     "results": [
+      {
+       "title": "Pimento cheese",
+       "url": "https://en.wikipedia.org/wiki/Pimento_cheese",
+       "snippet": "Pimento cheese (or pimiento cheese) is a spread typically made of cheese, mayonnaise, and pimentos and is typically served on crackers and vegetables or in sandwiches. There are ingredient variations among family recipe, commercial recipe, and regional versions. Although the recipe has its origins in the Northern United States, it is generally most closely associated with the cuisine of the Southern United States."
+      }
+     ],
+     "authority": "wikipedia_en_api"
+    },
+    "operation": "web.search"
+   },
+   "drafts": [
+    {
+     "stage": "first",
+     "reason": "search_report_shows_the_search",
+     "draft": "The search results only mention pimento cheese as a spread made with cheese, mayonnaise, and pimentos, but do not provide a recipe for mac and cheese."
+    },
+    {
+     "stage": "retry",
+     "reason": "search_report_shows_the_search",
+     "draft": "The provided search results only discuss pimento cheese, a spread made from cheese, mayonnaise, and pimentos, and do not contain a recipe for mac and cheese."
+    },
+    {
+     "stage": "third",
+     "reason": "",
+     "draft": "I did not find a mac and cheese recipe in the results."
+    }
+   ]
+  },
+  "D-w10-t1": {
+   "text": "Buenas, qué pena la molestia, ¿me regalas una receta sencilla de arepas de queso?",
+   "reply": "Las arepas de queso se elaboran con masa de maíz molido y se rellenan con queso, cocinándose en plancha, horneadas o fritas.",
+   "payload": {
+    "seen": {
+     "query": "receta arepas de queso",
+     "count": 2,
+     "results": [
+      {
+       "title": "Arepa",
+       "url": "https://es.wikipedia.org/wiki/Arepa",
+       "snippet": "La arepa es un alimento tradicional y esencial en las gastronomías de Colombia y Venezuela, elaborado principalmente con masa de maíz molido (harina de maíz), que se prepara de forma redonda y aplanada, cocinándose en plancha (budare), horneada o frita, logrando una corteza crujiente y un interior tierno. Constituye un alimento cotidiano que se consume en cualquier momento del día —desayuno, almuerzo, cena o como acompañante— ya sea sola, con mantequilla, queso o rellena con ingredientes variados como carne mechada, pollo, huevos, aguacate, frijoles negros, chorizo o combinaciones regionales. Su origen se remonta a las culturas indígenas precolombinas del norte de Sudamérica, mucho antes de la llegada de los europeos, cuando diversos pueblos originarios procesaban el maíz —cultivo central en su dieta— para preparar tortas cocidas sobre superficies calientes. El nombre «arepa» deriva del vocablo cumanagoto erepa, que designaba al maíz en esa lengua caribe de grupos que habitaban la cost"
+      },
+      {
+       "title": "Arepa de choclo",
+       "url": "https://es.wikipedia.org/wiki/Arepa_de_choclo",
+       "snippet": "La arepa de choclo, de chócolo, de maíz tierno o de maíz verde, chorreada, cosposa, tortilla de choclo, de maíz o de tiesto, toquera o toquete es un plato típico a base de maíz de varios países latinoamericanos como Colombia, Costa Rica, Ecuador, México y Venezuela. Tiene una preparación idéntica a la de las cachapas, y, en algunos casos, similar a los panqueques, pero no se hace con harina de trigo, sino con granos de maíz entero. Sus ingredientes incluyen panela o azúcar, sal, mantequilla, queso campesino, etc. Se cocina en comal, sartén o tiesto."
+      }
+     ],
+     "authority": "wikipedia_es_api"
+    },
+    "operation": "web.search"
+   },
+   "drafts": [
+    {
+     "stage": "first",
+     "reason": "",
+     "draft": "Las arepas de queso se elaboran con masa de maíz molido y se rellenan con queso, cocinándose en plancha, horneadas o fritas."
+    }
+   ]
+  },
+  "D-p19-t1": {
+   "text": "I'd like to watch a movie called After the Wedding with Spanish subtitles on.",
+   "reply": "Which streaming service should I use to play 'After the Wedding' with Spanish subtitles?",
+   "payload": null,
+   "drafts": []
+  },
+  "D-p19-t2": {
+   "text": "Yes, that's right. Who's in it?",
+   "reply": "The 2006 film stars Mads Mikkelsen and Sidse Babett Knudsen, while the 2006 romantic comedy Wedding Daze features Jason Biggs and Isla Fisher.",
+   "payload": {
+    "seen": {
+     "query": "Who's in the movie 'After the Wedding'?",
+     "count": 2,
+     "results": [
+      {
+       "title": "After the Wedding (2006 film)",
+       "url": "https://en.wikipedia.org/wiki/After_the_Wedding_(2006_film)",
+       "snippet": "After the Wedding (Danish: Efter brylluppet) is a 2006 drama film directed by Susanne Bier and starring Mads Mikkelsen and Sidse Babett Knudsen. The film was a critical success and was nominated for the Academy Award for Best Foreign Language Film, but lost to The Lives of Others."
+      },
+      {
+       "title": "Wedding Daze",
+       "url": "https://en.wikipedia.org/wiki/Wedding_Daze",
+       "snippet": "Wedding Daze (originally titled The Pleasure of Your Company) is a 2006 American romantic comedy film written and directed by Michael Ian Black and starring Jason Biggs and Isla Fisher alongside Joe Pantoliano, Joanna Gleason, Edward Herrmann, and Michael Weston. The film follows Anderson (Biggs), who successfully proposes to stranger Katie (Fisher) after his girlfriend dies. Wedding Daze premiered at the Toronto International Film Festival on September 10, 2006, and was released theatrically in the United Kingdom by Pathé on June 1, 2007."
+      }
+     ],
+     "authority": "wikipedia_en_api"
+    },
+    "operation": "web.search"
+   },
+   "drafts": [
+    {
+     "stage": "first",
+     "reason": "",
+     "draft": "The 2006 film stars Mads Mikkelsen and Sidse Babett Knudsen, while the 2006 romantic comedy Wedding Daze features Jason Biggs and Isla Fisher."
+    }
+   ]
+  },
+  "D-p19-t3": {
+   "text": "What's the genre?",
+   "reply": "I couldn't find out what the genre is.",
+   "payload": {
+    "seen": {
+     "query": "What's the genre?",
+     "count": 5,
+     "results": [
+      {
+       "title": "Genre",
+       "url": "https://en.wikipedia.org/wiki/Genre",
+       "snippet": "Genre ( ZHAHN-rə; French for 'kind, sort') is any style or form of communication and art in any mode (written, spoken, digital, visual, auditory, etc.) with socially agreed-upon elements, or conventions, developed over time. In popular usage, it normally describes a category of literature, music, or other forms of art or entertainment, based on some set of stylistic or thematic criteria, as in literary genres, film genres, music genres, comics genres, etc. Often, works fit into multiple genres by way of borrowing and recombining these conventions."
+      },
+      {
+       "title": "Music genre",
+       "url": "https://en.wikipedia.org/wiki/Music_genre",
+       "snippet": "A music genre is a conventional category that identifies some pieces of music as belonging to a shared tradition or set of conventions. Genre is to be distinguished from musical form and musical style, although in practice these terms are sometimes used interchangeably. Music can be divided into genres in numerous ways, sometimes broadly and with polarity, e.g., popular music as opposed to art music or folk music, or, as another example, religious music and secular music."
+      },
+      {
+       "title": "Yuri (genre)",
+       "url": "https://en.wikipedia.org/wiki/Yuri_(genre)",
+       "snippet": "Yuri (Japanese: 百合; lit. \"lily\"), also known by the wasei-eigo construction girls' love (ガールズラブ, gāruzu rabu), is a genre of Japanese media focusing on intimate relationships between female characters. While lesbian relationships are a commonly associated theme, the genre is also inclusive of works depicting emotional and spiritual relationships between women that are not necessarily romantic or sexual in nature."
+      },
+      {
+       "title": "Thriller (genre)",
+       "url": "https://en.wikipedia.org/wiki/Thriller_(genre)",
+       "snippet": "Thriller is a genre of fiction with numerous, often overlapping, subgenres, including crime, horror, and detective fiction. Thrillers are characterized and defined by the moods they elicit, giving their audiences heightened feelings of suspense, excitement, surprise, anticipation and anxiety. This genre is well suited for making thriller films and television programs."
+      },
+      {
+       "title": "Film genre",
+       "url": "https://en.wikipedia.org/wiki/Film_genre",
+       "snippet": "A film genre is a stylistic or thematic category for motion pictures based on similarities either in the narrative elements, aesthetic approach, or the emotional response to the film. Drawing heavily from the theories of literary-genre criticism, film genres are usually delineated by \"conventions, iconography, settings, narratives, characters and actors\". One can also classify films by the tone, theme/topic, mood, format, target audience, or budget."
+      }
+     ],
+     "authority": "wikipedia_en_api"
+    },
+    "operation": "web.search"
+   },
+   "drafts": [
+    {
+     "stage": "first",
+     "reason": "search_report_defines_the_ask",
+     "draft": "Genre is any style or form of communication and art in any mode with socially agreed-upon elements or conventions developed over time."
+    },
+    {
+     "stage": "retry",
+     "reason": "search_report_defines_the_ask",
+     "draft": "A genre is a style or form of communication and art in any mode with socially agreed-upon elements or conventions developed over time."
+    },
+    {
+     "stage": "third",
+     "reason": "search_report_defines_the_ask",
+     "draft": "Genre is a conventional category for art or entertainment based on shared conventions."
+    },
+    {
+     "stage": "not_found_fallback",
+     "reason": "",
+     "draft": "I couldn't find out what the genre is."
+    }
+   ]
+  },
+  "D-p24-t1": {
+   "text": "I am in a mood to watch movie online and I need your help to search for a nice Fantasy Movie like Elijah Wood.",
+   "reply": "I could not find a movie like Elijah Wood.",
+   "payload": {
+    "seen": {
+     "query": "a nice fantasy movie like Elijah Wood",
+     "count": 3,
+     "results": [
+      {
+       "title": "Ya no me siento a gusto en este mundo",
+       "url": "https://es.wikipedia.org/wiki/Ya_no_me_siento_a_gusto_en_este_mundo",
+       "snippet": "Ya no me siento a gusto en este mundo (título en inglés: I Don't Feel at Home in This World Anymore) es una película estadounidense de comedia policíaca y suspense escrita y dirigida por Macon Blair en su debut en la dirección, protagonizada por Melanie Lynskey, Elijah Wood, David Yow, Jane Levy y Devon Graye. Fue estrenada mundialmente en el Festival de Cine de Sundance el 19 de enero de 2017 y vía streaming el 24 de febrero de 2017 por Netflix."
+      },
+      {
+       "title": "Pawn Shop Chronicles",
+       "url": "https://es.wikipedia.org/wiki/Pawn_Shop_Chronicles",
+       "snippet": "Pawn Shop Chronicles es una película del año 2013, protagonizada por Paul Walker, Elijah Wood, Brendan Fraser, Matt Dillon y Norman Reedus y dirigida por Wayne Kramer."
+      },
+      {
+       "title": "Flipper (película de 1996)",
+       "url": "https://es.wikipedia.org/wiki/Flipper_(pel%C3%ADcula_de_1996)",
+       "snippet": "Flipper es una película de 1996, adaptación de la película de 1963, protagonizada por Paul Hogan y Elijah Wood."
+      }
+     ],
+     "authority": "wikipedia_es_api"
+    },
+    "operation": "web.search"
+   },
+   "drafts": [
+    {
+     "stage": "first",
+     "reason": "search_report_off_subject",
+     "draft": "I Don't Feel at Home in This World Anymore and Pawn Shop Chronicles are movies featuring Elijah Wood."
+    },
+    {
+     "stage": "retry",
+     "reason": "wrong_language",
+     "draft": "Ya no me siento a gusto en este mundo y Pawn Shop Chronicles son películas protagonizadas por Elijah Wood."
+    },
+    {
+     "stage": "third",
+     "reason": "",
+     "draft": "I could not find a movie like Elijah Wood in the results."
+    }
+   ]
+  },
+  "D-s111": {
+   "text": "¿Cuál es la distancia de Barcelona a París?",
+   "reply": "No encontré ninguna información sobre la distancia entre Barcelona y París.",
+   "payload": {
+    "seen": {
+     "query": "¿Cuál es la distancia de Barcelona a París?",
+     "count": 1,
+     "results": [
+      {
+       "title": "Partido de Liga de Campeones de la UEFA entre F. C. Barcelona y París Saint-Germain (vuelta de octavos de 2017)",
+       "url": "https://es.wikipedia.org/wiki/Partido_de_Liga_de_Campeones_de_la_UEFA_entre_F._C._Barcelona_y_Par%C3%ADs_Saint-Germain_(vuelta_de_octavos_de_2017)",
+       "snippet": "El partido de fútbol correspondiente a la vuelta de los octavos de final de la Liga de Campeones de la UEFA 2016-17, fue celebrado el 8 de marzo de 2017 en el Camp Nou de Barcelona, entre los equipos Fútbol Club Barcelona y el París Saint-Germain. El Barcelona dio vuelta al marcador global, por 6-5, que perdía por cuatro goles de diferencia en contra desde el choque de ida en París."
+      }
+     ],
+     "authority": "wikipedia_es_api"
+    },
+    "operation": "web.search"
+   },
+   "drafts": [
+    {
+     "stage": "first",
+     "reason": "search_report_unsourced_claim",
+     "draft": "La distancia entre Barcelona y París es de aproximadamente 1.100 kilómetros."
+    },
+    {
+     "stage": "retry",
+     "reason": "search_report_shows_the_search",
+     "draft": "En los resultados no aparece la distancia entre Barcelona y París."
+    },
+    {
+     "stage": "third",
+     "reason": "",
+     "draft": "No encontré ninguna información sobre la distancia entre Barcelona y París en los resultados."
+    }
+   ]
+  },
+  "D-s012": {
+   "text": "Quiero saber, hum, lo que vale la acción de Movistar, sí de Movistar.",
+   "reply": "No encontré información sobre el precio de la acción de Movistar.",
+   "payload": {
+    "seen": {
+     "query": "Cuánto vale la acción de Movistar",
+     "count": 5,
+     "results": [
+      {
+       "title": "La película de acción más intensa y violenta de los últimos años está en Movistar Plus y es una oda a las arte",
+       "url": "https://news.google.com/rss/articles/CBMi9wFBVV95cUxNd0JpdnRtWFRVbEMtaWtsblZTUFRPOVBzT3hkcFZlLWUyWVA3cDBkNHdYNnVwVk5IVlMxVkhYcl90bVpzbmhrSkNxQ1QxbjA1QTBrR3pacjRWaTJVVUd1SVNxak9OYmppMlByZ3Mtclp2MkNqaThTcTNFUHVqcEdJU1NXUlM1TmRPOGpXVVYwTGFyd2p0cG1GYTBUNnNwR0xmVjZ2SHR2Mm90dkNBeDVfRlp4RDdEQ0JMMGF3Zy13c0VRU1VsUm1oNXdPQXV4TVBKb2tDWWc1ZU1BVWJZRkhPQ0Q1UlZTSkFKWENGRENrV0doWFZnY2dr0gGLAkFVX3lxTFBYY1B5dVk2cGJDazFFcGxXZHJETGVkQ0owNTFsOENDOG5OeVFsUEpiRnNHVGNhem5GR0RuVDdCRC0xZWNnSC1oTDk4OEdPMk9QUk5YRjVQR0dlMWVzdEd0eFFUQXBxYXJGOE9OdFJjR1dvaXpIOEVRRThSVUwwWDFkMkU4dDhqQzctclhyMklQN0MxMlV2ME1qWGY1TWJIMnpIb1lENl9KWGpvUmk5QTN5SlZVVks2MmdJUW9aRU9LdFl0eVNIeUxqaHVyNGVNMjZPODl4UklvckZhcmItLVE1OFY2VFVJcU1IRDFham1YUVJoUnJ1dTBCN3FzRVpuYno0U3NYUWhlRHJPUQ",
+       "snippet": "Diario AS, Sat, 26 Sep 2026 12:00:00 GMT"
+      },
+      {
+       "title": "Movistar Plus estrenará una de las películas de acción más originales del año 2026",
+       "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxQSzJ5VzE3akpoN2FkSmNEMDFGdDRsWW5yOEZDMl9lTnZFYkNnMkpiX1ByTzhvQU92cTZLRUVDYTBYQkt6aVl2TzU5NTllR2pPZUpneWU3dVR1elByYV9BRTJYZHFtZG1HTTFOcHVqOFZfdFl0TU92RmU2YTRxMlo0WnFKM051LTZUdmkxNWYtU2pHdkJ0dXlhTldNVFZQd21u",
+       "snippet": "ADSLZone, Tue, 22 Sep 2026 05:03:55 GMT"
+      },
+      {
+       "title": "Un abril de cine llega a Movistar Plus+: de la acción de ‘Laberinto en llamas’ a la comedia romántica de ‘Coartadas’",
+       "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxNX244cGRRSGw4eXhMaG85bXBuSWxQbDUyWjNiaVVKdGVJdVRKeFBtMEFCcFVtOUwwWXFWV3ZqQ2I5Tmp3LVJXY0xna1lGczRQN0laeGlLNmQ0ZGJKY3RQWFlXZVZzNDZWOWZRMDFWZE5fVVZZcjYwdEo5UDZqSnpuUXlHdkpSa1g2LTdDQVowOV9ZWnlKZXdBSDdEQWdjWEp1ZVBBZnZ30gG6AUFVX3lxTE1QbDZuOWczNVZFLWJoQWZ2dmVqQzhYZDlvaDZMSVNHOTlBZldiWnZBZFUycGluLUlSNGU5VUJZVU03NUJUVzc3NnJLbk4zc0NPNFoyVTdUbXFRNXUwYkVaajVxdlI0ME5vQl9hTjdlSGxDYmFmZVgtY0RWSlZqc21tbEFaVE93dXZ5aEJjVVNXS05SdndJSTdVWUdCWkNYel9pQkJWSHhQQ2x6dFJMOUQxX3FRYndOc1J1QQ",
+       "snippet": "EL PAÍS, Sat, 18 Apr 2026 07:00:00 GMT"
+      },
+      {
+       "title": "10 películas de acción imprescindibles en Movistar Plus que no te dejarán despegarte del sofá",
+       "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTFBVWVBOeERBMjFwTWFBWXV5STBQUUhrRHg1Q3J1dkRBc25NTXlNdUhkMGZSOW1QV21WdkwxdWR3c3BUQjEwSWVfaUFrTm9NUHd5SFJIWE5tVU1sS1E0RUhEakhvRjdwdmhTNGpSRVdFLS1pWkZ2VGp1WXZXTFlDQQ",
+       "snippet": "Movistar Plus, Wed, 27 May 2026 07:00:00 GMT"
+      },
+      {
+       "title": "Esta es una de las grandes películas de acción de 2025 y ya la puedes ver en Movistar+",
+       "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxOR2hyLXBIdkpZU2N4WURTMjNfV1ZFRGtNeTFhNTlVc3R2Y051bVk0T2FnMVRDT0ZwRDhjN1h3UUhVMUp2RlZKVTEyeFNGZFNQdEpRejlmdUQ5c3dtZXJ0TEY3MjY4ekw1aUxoTDQ5eVlad0FYSjdabmdUSFk1RlZkbENfbTM5TmFLM05HeG1BNktkWjk4b0tKU3VieXZJTUhnMjVFWWFldk5BZmdUdE5haHY2ZFp5SVhiR01ISm1lVmhiRXJhSVE",
+       "snippet": "Hipertextual, Sun, 19 Jul 2026 07:00:00 GMT"
+      }
+     ],
+     "authority": "google_news_rss_search"
+    },
+    "operation": "web.search"
+   },
+   "drafts": [
+    {
+     "stage": "first",
+     "reason": "",
+     "draft": "No encontré información sobre el precio de la acción de Movistar en los resultados."
+    }
+   ]
+  },
+  "D-p29-t1": {
+   "text": "Can you find me some movies featuring Gil Bellows?",
+   "reply": "Gil Bellows is a Canadian actor who has appeared in films such as Scary Stories to Tell in the Dark (2019), Love and a .45 (1994), and The Promotion (2008).",
+   "payload": {
+    "seen": {
+     "query": "movies featuring Gil Bellows",
+     "count": 4,
+     "results": [
+      {
+       "title": "Gil Bellows",
+       "url": "https://en.wikipedia.org/wiki/Gil_Bellows",
+       "snippet": "Gil Bellows (born June 28, 1967) is a Canadian actor, producer, screenwriter, and director. Upon graduating from the American Academy of Dramatic Arts, he began acting in films and television. Bellows also earned critical acclaim for his stage performances in The Snake and the Vein (1990–1992), Flaubert's Latest (1992), and his first starring role in Love and a .45 (1994)."
+      },
+      {
+       "title": "Scary Stories to Tell in the Dark (film)",
+       "url": "https://en.wikipedia.org/wiki/Scary_Stories_to_Tell_in_the_Dark_(film)",
+       "snippet": "Scary Stories to Tell in the Dark is a 2019 supernatural horror film directed by André Øvredal, based on the children's book series of the same name by Alvin Schwartz. The screenplay was adapted by the Hageman Brothers, from a screen story by Guillermo del Toro (who also produced), as well as Patrick Melton and Marcus Dunstan. The film, an international co-production of the United States, Canada and Mexico, stars Zoe Colletti, Michael Garza, Gabriel Rush, Austin Zajur, Natalie Ganzhorn, Austin Abrams, Dean Norris, Gil Bellows, and Lorraine Toussaint."
+      },
+      {
+       "title": "Love and a .45",
+       "url": "https://en.wikipedia.org/wiki/Love_and_a_.45",
+       "snippet": "Love and a .45 is a 1994 American independent black comedy romantic-crime thriller film written and directed by C.M. Talkington, starring Gil Bellows and Renée Zellweger. It co-stars Rory Cochrane, Jeffrey Combs, Jace Alexander, Michael Bowen, Jack Nance, Ann Wedgeworth, Peter Fonda, and Wiley Wiggins. Set in rural Texas, the film follows a criminal and his girlfriend who plan a convenience store robbery to pay off debts to local gangsters."
+      },
+      {
+       "title": "The Promotion (film)",
+       "url": "https://en.wikipedia.org/wiki/The_Promotion_(film)",
+       "snippet": "The Promotion is a 2008 American comedy film written and directed by Steven Conrad. The film stars Seann William Scott, John C. Reilly, Jenna Fischer, Lili Taylor, Fred Armisen, and Gil Bellows. A look at the quest for the American Dream, it focuses on two grocery store managers vying for a promotion."
+      }
+     ],
+     "authority": "wikipedia_en_api"
+    },
+    "operation": "web.search"
+   },
+   "drafts": [
+    {
+     "stage": "first",
+     "reason": "search_report_unsourced_claim",
+     "draft": "Gil Bellows appeared in the films Scary Stories to Tell in the Dark, Love and a .45, and The Promotion."
+    },
+    {
+     "stage": "retry",
+     "reason": "",
+     "draft": "Gil Bellows is a Canadian actor who has appeared in films such as Scary Stories to Tell in the Dark (2019), Love and a .45 (1994), and The Promotion (2008)."
+    }
+   ]
+  },
+  "D-p29-t2": {
+   "text": "Search for scary movies.",
+   "reply": "Scary Movie is a 2000 American black comedy directed by Keenen Ivory Wayans and written by his brothers Shawn Wayans and Marlon Wayans. Scary Movie 3 is a 2003 American comedy and satire directed by David Zucker.",
+   "payload": {
+    "seen": {
+     "query": "scary movies",
+     "count": 5,
+     "results": [
+      {
+       "title": "Scary Movie",
+       "url": "https://es.wikipedia.org/wiki/Scary_Movie",
+       "snippet": "Scary Movie (titulada Scary Movie: Una película de miedo en Hispanoamérica) es una película estadounidense de humor negro del año 2000, dirigida por Keenen Ivory Wayans y escrita por sus hermanos Shawn Wayans y Marlon Wayans, quienes también actúan en la película. Las bromas de mal gusto, su lenguaje soez y escenas escatológicas han sido las claves de su éxito en Estados Unidos. Principalmente parodia a las películas Scream y I Know What You Did Last Summer; sobre todo en la trama, pero también en el asesino principal (Ghostface), en el rótulo o en el propio nombre de la película, «Scary Movie», que es repetido en Scream varias veces haciendo referencia realmente a películas de terror."
+      },
+      {
+       "title": "Scary Movie 3",
+       "url": "https://es.wikipedia.org/wiki/Scary_Movie_3",
+       "snippet": "Scary movie 3 (conocida como Scary Movie 3: Una película de miedo 3 y Scary Movie 3: No hay dos sin 3 en Hispanoamérica) es una película estadounidense de comedia y satírica de 2003 dirigida por David Zucker. Es la tercera parte de la saga cómica y de parodias Scary Movie. El elenco de la película está conformado por Anna Faris, Regina Hall quienes vuelven en sus roles de Cindy Campbell y Brenda Meeks respectivamente de anteriores películas así como la integración de nuevos actores a la franquicia tales como Charlie Sheen, Anthony Anderson, Kevin Hart y Simon Rex."
+      },
+      {
+       "title": "Scary Movie 5",
+       "url": "https://es.wikipedia.org/wiki/Scary_Movie_5",
+       "snippet": "Scary Movie 5 (estilizado como Scary MoVie) es una película estadounidense de humor negro de 2013. Es la quinta entrega de la saga de películas paródicas Scary Movie. Fue dirigida por Malcolm D. Lee, escrita por David Zucker y se estrenó el 12 de abril de 2013 en Estados Unidos y el 2 de mayo de 2013 en España."
+      },
+      {
+       "title": "Scary Movie (película de 2026)",
+       "url": "https://es.wikipedia.org/wiki/Scary_Movie_(pel%C3%ADcula_de_2026)",
+       "snippet": "Scary Movie (coloquialmente conocida como Scary Movie 6 y Scary Movie: terroríficamente incorrecta en Hispanoamérica), es una película de parodia estadounidense de 2026 dirigida por Michael Tiddes y escrita por Marlon Wayans, Shawn Wayans, Keenen Ivory Wayans, Craig Wayans y Rick Alvarez. Es la sexta entrega de la serie de películas Scary Movie y se la ha descrito como la secuela espiritual de las dos primeras películas. Está protagonizada por Marlon, Shawn, Anna Faris y Regina Hall."
+      },
+      {
+       "title": "Scary Movie 2",
+       "url": "https://es.wikipedia.org/wiki/Scary_Movie_2",
+       "snippet": "Scary Movie 2 (conocida también como Scary Movie 2: Otra película de miedo en Hispanoamérica) es una película de comedia cinematográfica estadounidense de 2001, y es la segunda película de la franquicia Scary Movie. Se presentó con el subtítulo de «Mentimos», haciendo referencia al eslogan «No habrá clemencia. No habrá vergüenza."
+      }
+     ],
+     "authority": "wikipedia_es_api"
+    },
+    "operation": "web.search"
+   },
+   "drafts": [
+    {
+     "stage": "first",
+     "reason": "",
+     "draft": "Scary Movie is a 2000 American black comedy directed by Keenen Ivory Wayans and written by his brothers Shawn Wayans and Marlon Wayans. Scary Movie 3 is a 2003 American comedy and satire directed by David Zucker."
+    }
+   ]
+  },
+  "D-p31-t1": {
+   "text": "Dime los últimos 10 presidentes democráticos que gobernaron argentina desde la vuelta de la democracia y como se a desarrollado la economía y como a afectado la convertibilidad a los sueldos de los trabajadores y sus posibilidades de ascenso social.",
+   "reply": "No encontré una lista de los últimos diez presidentes ni detalles sobre el desarrollo económico, la convertibilidad, los sueldos o el ascenso social.",
+   "payload": {
+    "seen": {
+     "query": "los últimos 10 presidentes democráticos de Argentina desde la vuelta de la democracia, cómo se desarrolló la economía y cómo afectó la convertibilidad a los sueldos y al ascenso social",
+     "count": 2,
+     "results": [
+      {
+       "title": "Timeline: Presidentes de Argentina desde la vuelta a la democracia en ...",
+       "url": "https://www.timetoast.com/timelines/presidentes-de-argentina-desde-la-vuelta-a-la-democracia-en-1983",
+       "snippet": "Pricing + Sign up Presidentes de Argentina desde la vuelta a la democracia en 1983 By facebooker_10225338865160752 Dec 10 , 1983 Raúl Ricardo Alfonsín Raúl Ricardo Alfonsín (Chascomús, Buenos Aires; 12 de marzo de 1927-Buenos Aires, 31 de marzo de 2009) fue un abogado, político, estadista y promotor de los derechos humanos argentino."
+      },
+      {
+       "title": "Línea de tiempo: Presidencias en Argentina",
+       "url": "https://es.scribd.com/document/631715656/LINEA-DE-TIEMPO-PRESIDENCIAS-Argentina",
+       "snippet": "El documento resume la línea de tiempo de los presidentes de Argentina desde la Década Infame de 1930 hasta 1942, seguida por la dictadura nacional católica y el ascenso de Perón al poder en 1946. Luego de su derrocamiento en 1955, hubo varios golpes militares y dictaduras hasta el retorno de la democracia en 1983. Desde entonces, el documento lista los presidentes democráticos de ..."
+      }
+     ],
+     "authority": "duckduckgo_lite_https"
+    },
+    "operation": "web.search"
+   },
+   "drafts": [
+    {
+     "stage": "first",
+     "reason": "",
+     "draft": "No encontré en los resultados una lista de los últimos diez presidentes ni detalles sobre el desarrollo económico, la convertibilidad, los sueldos o el ascenso social."
+    }
+   ]
+  },
+  "D-p34-t1": {
+   "text": "Elabora una lista con las cápsulas del tiempo más famosas de la historia, especificando las fechas en las que fueron creadas, y en el caso de que hayan sido abiertas, el contenido además de la fecha de apertura.",
+   "reply": "No encontré nombres específicos de cápsulas del tiempo famosas con sus fechas de creación y apertura.",
+   "payload": {
+    "seen": {
+     "query": "Elabora una lista con las cápsulas del tiempo más famosas de la historia, especificando las fechas en las que fueron creadas, y en el caso de que hayan sido abiertas, el contenido además de la fecha de apertura.",
+     "count": 4,
+     "results": [
+      {
+       "title": "Estas son las cápsulas del tiempo más increíbles que el ser humano ha ...",
+       "url": "https://www.bloglenovo.es/vida-tecnologica/sabias-que/capsulas-del-tiempo-mas-increibles-ser-humano-ha-enterrado/",
+       "snippet": "Descubre las cápsulas del tiempo más famosas de la historia, qué contienen, quién las creó y cuándo está previsto que algunas se abran."
+      },
+      {
+       "title": "Breve historia de las cápsulas de Tiempo - Lomography",
+       "url": "https://www.lomography.es/magazine/65610-breve-historia-de-las-capsulas-de-tiempo",
+       "snippet": "Las \" Cápsulas de Tiempo \" son grupos de objetos que se entierran o se guardan para luego ser re-abiertas en el futuro. Hay quien dice que es lo más cerca que llegaremos a estar de viajar en el tiempo . Se trata de una manera única de comunicarse con las generaciones del futuro a través de objetos hoy."
+      },
+      {
+       "title": "Cómo crear una cápsula del tiempo digital",
+       "url": "https://es.scribd.com/document/649458873/Capsula-del-Tiempo-proyecto",
+       "snippet": "Describe varias cápsulas del tiempo famosas como la Cripta de la Civilización y las cápsulas de Westinghouse. También ofrece consejos sobre qué tipo de contenido incluir como fotos, videos, música y proyectos creativos."
+      },
+      {
+       "title": "¿Qué onda con las cápsulas del tiempo? - Algarabía",
+       "url": "https://algarabia.com/las-capsulas-del-tiempo-2/",
+       "snippet": "Este monumento construido en 1968 en Amarillo, Texas, consta de cuatro cápsulas que conmemoran el centenario del descubrimiento del helio. Cada una sería abierta 25, 50, 100 y 1000 años después de su fecha de construcción."
+      }
+     ],
+     "authority": "duckduckgo_lite_https"
+    },
+    "operation": "web.search"
+   },
+   "drafts": [
+    {
+     "stage": "first",
+     "reason": "",
+     "draft": "No encontré en los resultados nombres específicos de cápsulas del tiempo famosas con sus fechas de creación y apertura."
+    }
+   ]
+  },
+  "D-w08-t1": {
+   "text": "cuanto qedo el america anoche",
+   "reply": "No encontré cuánto quedó el america anoche.",
+   "payload": {
+    "seen": {
+     "query": "cuanto qedo el america anoche",
+     "count": 5,
+     "results": [
+      {
+       "title": "América Resultados, estadísticas y highlights - ESPN (MX)",
+       "url": "https://www.espn.com.mx/futbol/equipo/_/id/227/america",
+       "snippet": "Visita ESPN (MX) y disfruta de resultados en vivo, highlights y las últimas noticias de América . Conoce la tabla de posiciones y el calendario completo de la temporada 2026-27."
+      },
+      {
+       "title": "Cómo quedó América vs. Rayados hoy: Marcador y goles de la semifinal de ...",
+       "url": "https://www.sportingnews.com/mx/futbol/news/como-quedo-america-rayados-hoy-marcador-goles-leagues-cup-2026/21b1cdb1cc364f4b7bee609e",
+       "snippet": "A continuación, The Sporting News te trae cómo quedó el partido entre América y Rayados por la semifinal de la Leagues Cup 2026."
+      },
+      {
+       "title": "América Resultados 2026 - ESPN (MX)",
+       "url": "https://www.espn.com.mx/futbol/equipo/resultados/_/id/227/mex.america",
+       "snippet": "Conoce todos los resultados del América para la temporada 2026 en ESPN (MX). Incluye todos los resultados del América en todos sus partidos nacionales e internacionales."
+      },
+      {
+       "title": "América vs. Chivas EN VIVO por el Apertura 2026 de Liga MX ... - TUDN",
+       "url": "https://www.tudn.com/futbol/liga-mx/america-vs-chivas-en-vivo-apertura-2026-liga-mx-minuto-a-minuto-partido",
+       "snippet": "El Clásico Nacional no decepcionó en su edición del Apertura 2026 de la Liga MX, tanto América como Chivas se brindaron, dividieron tiempos de dominio y terminaron dando un espectáculo digno de equipos grandes con un 2-2 final que dejó alegre a la afición reunida en el Estadio Banorte."
+      },
+      {
+       "title": "Cómo quedó América vs. Chivas hoy: Marcador y goles del partido por el ...",
+       "url": "https://www.sportingnews.com/mx/futbol/news/como-quedo-america-chivas-hoy-marcador-goles-apertura-2026/12f5e874e8a638332e1c073a",
+       "snippet": "Cómo quedó América vs. Chivas hoy: Marcador del partido por el Apertura 2026 América y Chivas empataron 2-2 en el Estadio Azteca, por la Jornada 9 del Apertura 2026 de la Liga MX."
+      }
+     ],
+     "authority": "duckduckgo_lite_https"
+    },
+    "operation": "web.search"
+   },
+   "drafts": [
+    {
+     "stage": "first",
+     "reason": "search_report_shows_the_search",
+     "draft": "No hay información sobre un resultado de América de anoche en los datos disponibles."
+    },
+    {
+     "stage": "retry",
+     "reason": "search_report_off_subject",
+     "draft": "Ayer empataron 2-2 y terminaron dando un espectáculo digno de equipos grandes."
+    },
+    {
+     "stage": "third",
+     "reason": "search_report_unsourced_claim",
+     "draft": "No sé cómo quedó América anoche porque los resultados que tengo son de hoy y de la temporada 2026."
+    },
+    {
+     "stage": "not_found_fallback",
+     "reason": "",
+     "draft": "No encontré cuánto quedó el america anoche."
+    }
+   ]
+  },
+  "D-w08-t2": {
+   "text": "y cuando juega el sigiente",
+   "reply": "América juega este 27 de septiembre de 2026 contra Necaxa a las 21:00 horas.",
+   "payload": {
+    "seen": {
+     "query": "Cuándo juega el siguiente partido del América",
+     "count": 5,
+     "results": [
+      {
+       "title": "Cuándo juega y dónde ver al América: Día, hora, canal de TV y streaming ...",
+       "url": "https://www.sportingnews.com/mx/futbol/news/como-ver-al-america-horario-canal-tv-streaming-alineaciones-partido/mrbto5htextzpcg2oeezqegl",
+       "snippet": "Los detalles para ver el próximo partido del América : día del juego, horario, qué canales lo transmiten por televisión y qué plataformas por streaming online."
+      },
+      {
+       "title": "Partidos de Club América: Resultados y calendario - 365Scores",
+       "url": "https://www.365scores.com/es-mx/football/team/club-america-1255/matches",
+       "snippet": "Mis marcadores en vivo de los partidos de Club América : próximos partidos , cuándo juega , alineaciones, posiciones, resultados y estadísticas de la temporada."
+      },
+      {
+       "title": "Club America Calendario y Próximos Partidos - Futbol24",
+       "url": "https://www.futbol24.com/es/equipo/Mexico/Club-America/calendario",
+       "snippet": "Club America próximos partidos y calendario. Próximos partidos , horarios de inicio y todos los próximos partidos en todas las competiciones."
+      },
+      {
+       "title": "CF América - Todos los partidos del club por fecha",
+       "url": "https://www.transfermarkt.mx/cf-america/vereinsspielplan/verein/3631",
+       "snippet": "Todos los partidos del club por fecha Este es un resumen completo de todos los encuentros por un club en orden cronológico."
+      },
+      {
+       "title": "¿Contra quién, a qué hora y dónde ver el partido de América HOY?",
+       "url": "https://www.futboltotal.com.mx/futbol-mexicano/liga-mx/america-donde-ver-en-vivo-partido-hoy/2026/09/",
+       "snippet": "Ya no busques más, este es el duelo siguiente del conjunto de Coapa. América juega este 27 de Septiembre del 2026 De esta forma, te decimos contra quién, a qué hora y dónde ver el encuentro del América : Partido : Necaxa vs América Torneo: Liga MX - Jornada 10 Fecha: Domingo 27 de septiembre de 2026 Hora: 21:00 horas (Tiempo del Centro ..."
+      }
+     ],
+     "authority": "duckduckgo_lite_https"
+    },
+    "operation": "web.search"
+   },
+   "drafts": [
+    {
+     "stage": "first",
+     "reason": "",
+     "draft": "América juega este 27 de septiembre de 2026 contra Necaxa a las 21:00 horas."
+    }
+   ]
+  },
+  "D-w17-t4": {
+   "text": "anything big in the news today",
+   "reply": "These are today's headlines: \"Retiro y nuevo proyecto: gobierno da giro en controvertida reforma constitucional de seguridad\"; \"El desempleo trepa a su nivel más alto desde 2021 y ya hay casi un millón de desocupados\"; \"Núñez tras denegación de visa a Estados Unidos: \"Pediremos un pronunciamiento institucional del Senado porque hay razones políticas\"\".",
+   "payload": {
+    "seen": {
+     "edition": "es-419/CL",
+     "count": 5,
+     "headlines": [
+      {
+       "title": "Retiro y nuevo proyecto: gobierno da giro en controvertida reforma constitucional de seguridad",
+       "source": "BioBioChile",
+       "publishedAt": "Wed, 30 Sep 2026 13:19:18 GMT"
+      },
+      {
+       "title": "El desempleo trepa a su nivel más alto desde 2021 y ya hay casi un millón de desocupados",
+       "source": "La Tercera",
+       "publishedAt": "Wed, 30 Sep 2026 12:07:47 GMT"
+      },
+      {
+       "title": "Núñez tras denegación de visa a Estados Unidos: “Pediremos un pronunciamiento institucional del Senado porque hay razones políticas”",
+       "source": "La Tercera",
+       "publishedAt": "Wed, 30 Sep 2026 13:56:39 GMT"
+      },
+      {
+       "title": "El CDE se le cruza a los notarios que se niegan a jubilar: los acusa de impugnar de “manera impropia una ley aprobada democráticamente”",
+       "source": "La Tercera",
+       "publishedAt": "Wed, 30 Sep 2026 11:06:44 GMT"
+      },
+      {
+       "title": "Cordero por nombramientos judiciales: revela sugerencia de senadora Carvajal, veto a Jessica González y amenazas a exministra Ríos",
+       "source": "La Tercera",
+       "publishedAt": "Wed, 30 Sep 2026 12:05:01 GMT"
+      }
+     ],
+     "authority": "google_news_rss_es419_cl"
+    },
+    "operation": "web.news.headlines"
+   },
+   "drafts": [
+    {
+     "stage": "first",
+     "reason": "wrong_language",
+     "draft": "Here are today's headlines:\nRetiro y nuevo proyecto: gobierno da giro en controvertida reforma constitucional de seguridad; El desempleo trepa a su nivel más alto desde 2021 y ya hay casi un millón de desocupados; Núñez tras denegación de visa a Estados Unidos: \"Pediremos un pronunciamiento institucional del Senado porque hay razones políticas\""
+    },
+    {
+     "stage": "retry",
+     "reason": "",
+     "draft": "These are today's headlines: \"Retiro y nuevo proyecto: gobierno da giro en controvertida reforma constitucional de seguridad\"; \"El desempleo trepa a su nivel más alto desde 2021 y ya hay casi un millón de desocupados\"; \"Núñez tras denegación de visa a Estados Unidos: \"Pediremos un pronunciamiento institucional del Senado porque hay razones políticas\"\"."
+    }
+   ]
+  },
+  "D-w17-t5": {
+   "text": "tell me more about the second one",
+   "reply": "In August 2026, the headline unemployment rate was 4.1%, unchanged from July but slightly up to 4.141% in more precise data. The headline rate had also been 4.3% in April and 4.1% in August after adding 162,000 jobs.",
+   "payload": {
+    "seen": {
+     "query": "more about the unemployment headline",
+     "count": 5,
+     "results": [
+      {
+       "title": "May's Headline Jobs Numbers Mask Underlying Labor Market Slack",
+       "url": "https://www.americanprogress.org/article/mays-headline-jobs-numbers-mask-underlying-labor-market-slack/",
+       "snippet": "May's Headline Jobs Numbers Mask Underlying Labor Market Slack The May 2026 jobs report shows continued job growth and a stable unemployment rate, but there are also signs that labor market ..."
+      },
+      {
+       "title": "Flash Report: U.S. Unemployment Flows in August",
+       "url": "https://www.stlouisfed.org/on-the-economy/2026/sep/flash-report-unemployment-remains-steady-payrolls-rise-august",
+       "snippet": "The headline U.S. unemployment rate was 4.1% in August, unchanged from its July level. More precise data show the rate rose slightly to 4.141% from 4.090% during this period. This slight uptick was primarily driven by unemployed workers choosing to keep looking for jobs rather than leaving the labor force. The labor market remains healthy from a historical perspective, with conditions in ..."
+      },
+      {
+       "title": "Flash Report: Headline Unemployment Steady in April, but Job ...",
+       "url": "https://www.stlouisfed.org/on-the-economy/2026/may/flash-report-headline-unemployment-steady-april-job-separations-rise",
+       "snippet": "The headline U.S. unemployment rate was 4.3% in April, unchanged from its March level. More precise data show the rate rose slightly to 4.337% from 4.256% during this period. This uptick was primarily driven by more workers leaving or losing their jobs and becoming unemployed, reversing the decline in job separations observed in March. The labor market continues to demonstrate resiliency, with ..."
+      },
+      {
+       "title": "The US economy added 162,000 jobs in August, more than double ...",
+       "url": "https://www.cnn.com/2026/09/04/economy/us-jobs-report-august",
+       "snippet": "The US labor market in August roused from its early summer slumber by adding 162,000 jobs, more than double what economists had expected, while the unemployment rate remained at 4.1%, new data ..."
+      },
+      {
+       "title": "The Unemployment Rate Isn't the Whole Story: What the Headline Number ...",
+       "url": "https://mondo.com/insights/unemployment-rate-isnt-the-whole-story-what-the-headline-number-leaves-out/",
+       "snippet": "Every month, headlines focus on the U.S. unemployment rate as a barometer of the economy. While it's an important indicator, it doesn't tell the complete story of labor market health. The official unemployment rate excludes several groups of people who want work or are working fewer hours than they'd prefer. Understanding who is, and isn't, counted provides a more accurate view of ..."
+      }
+     ],
+     "authority": "duckduckgo_lite_https"
+    },
+    "operation": "web.search"
+   },
+   "drafts": [
+    {
+     "stage": "first",
+     "reason": "search_report_unsourced_claim",
+     "draft": "The headline unemployment rate has been steady at 4.1% in August, though more precise data show it rose slightly to 4.141%."
+    },
+    {
+     "stage": "retry",
+     "reason": "",
+     "draft": "In August 2026, the headline unemployment rate was 4.1%, unchanged from July but slightly up to 4.141% in more precise data. The headline rate had also been 4.3% in April and 4.1% in August after adding 162,000 jobs."
+    }
+   ]
+  },
+  "D-p27-t1": {
+   "text": "Any good movies for me to watch?",
+   "reply": "You should check out the latest sci-fi flick about time travel, it's really gripping.",
+   "payload": null,
+   "drafts": []
+  }
+ }
+}

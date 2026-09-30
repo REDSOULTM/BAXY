@@ -3949,3 +3949,72 @@ def undefined_asked_phrases(text: str) -> tuple[str, ...]:
     return tuple(
         found.group("phrase") for pattern in _UNDEFINED_ASKED for found in pattern.finditer(folded)
     )
+
+
+# M83 (DEV-D v3o D-p24-t1 «…a nice Fantasy Movie like Elijah Wood» → «I could not find a movie like Elijah Wood», D-s111
+# «¿Cuál es la distancia de Barcelona a París?» → «No encontré…», D-p34-t1 the famous time capsules, D-p31-t1 the
+# presidents since 1983): D35 (owner, 2026-09-28) «sin fuente, BAXY responde de memoria y lo avisa en corto; no se calla».
+# What memory may answer is what an encyclopedia keeps: nothing that changes with the day or the hour, nothing near the
+# person, nothing of theirs, no opinion. Twin of WikipediaSearchSource.IsEncyclopedic (its time-bound and opinion
+# words), plus the readers of the mind for changing facts, the person's own data, what is near and what comes next.
+_TIME_BOUND_WORDS = (
+    r"\b(?:hoy|ahora|actual|actualmente|anoche|ayer|manana|noticias?|precios?|cuesta|cuestan|cotiza\w*|horarios?|abre|"
+    r"cierra|marcador|cerca|comprar|ofertas?|clima|pronostico|cartelera|estrenos?|today|now|current|currently|tonight|"
+    r"yesterday|tomorrow|latest|news|prices?|costs?|schedules?|hours|opens|closes|scores?|near|nearby|buy|deals?|"
+    r"weather|forecast|showtimes|loto|loteria|sorteos?|lottery|lotto|sale|stocks?|shares|trending|tendencias?|"
+    r"opinion|opiniones|opina|opinan|critica|criticas|criticos|resenas?|reviews?|ratings?|worth|recomendable|"
+    r"(?:cuanto|cuantos|lo\s+que)\s+valen?(?!\s+la\s+pena)|"
+    # What goes on now, on the roads or online, and what a place offers today (DEV-D v3m/v3o D-s021 «qué está pasando
+    # por el mundo», D-s063 a traffic update, D-p16 valet parking at a hotel, D-p23-t1 online movies).
+    r"pasando|sucediendo|ocurriendo|happening|going\s+on|traffic|trafico|transito|atascos?|congestion|"
+    r"(?:online|en\s+linea|streaming)\s+(?:movies?|films?|shows?|series|stores?|shops?)|"
+    r"(?:peliculas?|pelis?|series|tiendas?)\s+(?:online|en\s+linea)|"
+    r"parking|aparcamiento|estacionamiento|valet|disponibles?|available|"
+    # «tell me more about the second one»: an item of what was just read, which memory never saw (D-w17-t5).
+    r"(?:the|el|la|lo)\s+(?:first|second|third|fourth|fifth|last|primer[oa]?|segund[oa]|tercer[oa]?|cuart[oa]|"
+    r"quint[oa]|ultim[oa])(?:\s+(?:one|uno|una))?(?=\s*[?.!]*$|\s+(?:one|uno|una)\b))\b"
+)
+# «movies in Santa Rosa», «películas en Ñuñoa»: what the cinemas of a town show (DEV-D v3o D-p26-t2, D-p28-t2).
+_SHOWING_IN_A_PLACE = re.compile(
+    r"\b(?:movies?|films?|pel[ií]culas?|pelis?|cartelera|showtimes?|shows?)\s+(?:in|en|at|near)\s+"
+    r"(?:(?:the|el|la)\s+)?[A-ZÁÉÍÓÚÑ]"
+)
+# «¿y cuándo juega el siguiente?», «the next episode», «the upcoming release»: an event still to come.
+_UPCOMING = (
+    r"\b(?:siguientes?|proxim[oa]s?|que\s+viene|next|upcoming|coming\s+up|"
+    r"cuando\s+(?:juega|juegan|jugara|jugaran|toca|se\s+juega)|when\s+(?:do|does|will)\s+\S+(?:\s+\S+){0,3}\s+play)\b"
+)
+
+
+def asks_upcoming(text: str) -> bool:
+    """M83 (DEV-D v3o D-w08-t2 «y cuando juega el sigiente»): the request asks about an event still to come (the next
+    one, the upcoming one, when a team plays)."""
+
+    return _has(_fold(text), _UPCOMING)
+
+
+def memory_may_answer(text: str) -> bool:
+    """Whether what the request asks is kept by memory as an encyclopedia keeps it (see above): None of it changes
+    with the day, is near the person, is theirs, is an opinion or is still to come."""
+
+    folded = _fold(text)
+    if not folded.strip(" ¿?¡!.,"):
+        return False
+    return not (
+        _has(folded, _TIME_BOUND_WORDS)
+        or _has(folded, _UPCOMING)
+        or _has(folded, _NEAR_THE_PERSON)
+        or asks_this_year(text)
+        or names_own_data(text)
+        or record_fact_query(text) is not None
+        or public_opinion_query(text) is not None
+        or news_lookup_query(text) is not None
+        or _names_weather(folded)
+        or _road_traffic_request(folded)
+        or cinema_listing(text)
+        or asks_where_to_find(text)
+        or _SHOWING_IN_A_PLACE.search(str(text or "")) is not None
+        # «a cuánto está el yen frente al peso chileno»: a rate moves every day.
+        or _has(folded, rf"{_CURRENCY}.{{0,60}}{_CURRENCY}|\b(?:tipos?|tasas?)\s+de\s+cambio\b|\bexchange\s+rates?\b")
+        or _has(folded, r"\ba\s+(?:cuanto|como)\s+(?:esta|estan|anda|andan|va|van)\b")
+    )

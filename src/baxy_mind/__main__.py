@@ -4605,6 +4605,7 @@ def _context_decided_result(
         # letter, code) is what BAXY does; a limit on it is false.
         decided = semantic_decider.ContextDecision(request=decided.request, decision="talk", operations=(), question="")
     reference = None
+    recommended = False
     # M56 (v3c-final F-w14-t1): code the person asks for is written, whatever the decider's rewrite of it says.
     if decided.decision == "talk" and "web.search" in available_operations and not asks_for_code(text):
         # M53 (D35): what the decider answers by talking but is a named dish's recipe or a named work's plot is
@@ -4616,6 +4617,14 @@ def _context_decided_result(
                     request=said, decision="action", operations=("web.search",), question="",
                 )
                 break
+        if reference is None and semantic_knowledge.works_recommendation(text):
+            # M83 (DEV-D v3o D-p27-t1 «Any good movies for me to watch?» → «…the latest sci-fi flick about time
+            # travel»): works of a kind asked for with none named are recommended from what is looked up, as the decider
+            # itself chose in v3m; its talk flips on this request.
+            recommended = True
+            decided = semantic_decider.ContextDecision(
+                request=decided.request or text, decision="action", operations=("web.search",), question="",
+            )
     objective = decided.request or text
     result: dict[str, Any] = {
         "type": "turn.result",
@@ -4702,9 +4711,9 @@ def _context_decided_result(
             "decision_path": "context_decider",
             "candidate_operations": list(available_operations),
             "raw_decision": {
-                "mode": "talk" if reference is not None else decided.decision,
+                "mode": "talk" if reference is not None or recommended else decided.decision,
                 "request": decided.request,
-                "effect_operations": [] if reference is not None else list(decided.operations),
+                "effect_operations": [] if reference is not None or recommended else list(decided.operations),
                 "argument_fields": argument_fields,
                 **({} if unasked_action is None else {"unasked_action": unasked_action}),
                 **(
@@ -4716,9 +4725,11 @@ def _context_decided_result(
                     }
                 ),
             },
-            "stages": [] if reference is None else [
-                {"name": "reference_looked_up", "kind": reference.kind, "query": reference.query},
-            ],
+            "stages": (
+                [{"name": "reference_looked_up", "kind": reference.kind, "query": reference.query}]
+                if reference is not None
+                else [{"name": "recommendation_looked_up"}] if recommended else []
+            ),
             "decider_timings": getattr(llm, "_last_decider_timings", None),
             "final": {
                 "kind": result["kind"],
@@ -5129,6 +5140,16 @@ def _decide_turn_result(
             pending_clarification=message.get("pendingClarification"),
         )
     )
+    if (
+        in_conversation
+        and literal_recall_decision is None
+        and stable_no_effect_decision is not None
+        and dialogue_slot.asks_attribute_of_the_last(objective)
+    ):
+        # M83 (DEV-D v3o D-p19-t3 «What's the genre?» after the cast of «After the Wedding»): read alone it is a
+        # definition, answered «I don't know» and looked up as «genre». It asks an attribute of what the conversation
+        # just named, so the contextual decider, which reads the conversation, decides it.
+        stable_no_effect_decision = None
     stable_no_effect_is_closed = (
         explicit_non_action
         or literal_recall_decision is not None
@@ -7673,6 +7694,13 @@ def _run_sidecar(
                     message.get("responseLanguage") if message.get("responseLanguage") in {"es", "en", "mixed"} else None
                 )
                 person = _person_message(message.get("history"), objective)
+                headline = dialogue_state.pointed_headline(person) if operation == "web.search" else None
+                if headline is not None and validate_json_schema_instance(
+                    {"query": headline}, tool["function"]["parameters"],
+                ):
+                    # M83 (DEV-D v3o D-w17-t5 «tell me more about the second one»): the headline pointed at by its
+                    # place in the news just read is looked up as it was written, never as the decider retold it.
+                    arguments = {"query": headline}
                 if arguments is None:
                     # M80 (DEV-D v3m D-s104, D-s108): a moment no notification holds asks only when, saying why.
                     question = _unschedulable_time_question(

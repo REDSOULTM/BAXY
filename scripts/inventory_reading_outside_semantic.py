@@ -147,6 +147,10 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
         "GROUNDING",
         "M51: the query's content words, the evidence a search result is about what was asked",
     ),
+    ("llm.py", "LlmRuntime._compose_partial_report"): (
+        "GROUNDING",
+        "M83: a name or figure a page carries is found data only when the person's request did not already say it",
+    ),
     ("llm.py", "LlmRuntime.clarify_unresolved_input"): (
         "WORDING", "the question BAXY writes must not echo the person's words (echo check); the kind of input "
         "was read by semantic.guards"),

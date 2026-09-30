@@ -43,8 +43,12 @@ _ENGLISH_CULINARY = re.compile(rf"\b(?:{_CULINARY_EN})\b")
 
 _ARTICLE = r"(?:(?:el|la|los|las|un|una|unos|unas|del|al|a|an|the|some|my|mi|mis|unas?\s+ricas?)\s+)"
 # The dish ends where the request goes on: punctuation, how many it is for, when, or the rest of the sentence.
+# M83 (DEV-D v3o D-s017 «…southern-style mac and cheese recipe» restated by the decider → the query «recipe cheese»):
+# «and» joins the two halves of a dish («mac and cheese», «rice and beans») as «y» does in Spanish; it ends the dish
+# only before what goes on with the request, like «y no», «y me».
 _DISH_END = (
-    r"(?=\s*(?:[,.;:!?¿¡()]|$)|\s+(?:para|for|que|porque|pero|y\s+(?:no|me|te|que)|and|but|so|esta|este|hoy|manana|"
+    r"(?=\s*(?:[,.;:!?¿¡()]|$)|\s+(?:para|for|que|porque|pero|y\s+(?:no|me|te|que)|"
+    r"and\s+(?:i|me|you|we|then|also|tell|give|show|send|how|what|it|please|make|explain)|but|so|esta|este|hoy|manana|"
     r"tonight|today|tomorrow|paso|step|en\s+(?:la|el|casa|mi)|at\s+home|por\s+favor|please|nomas|no\s+mas|simple|"
     r"facil|rapido|rapida|casero|casera|easy|quick|sin\s+horno|como\s+(?:lo|la)|like)\b)"
 )
@@ -71,6 +75,7 @@ _BEFORE_THE_DISH = frozenset({
     "grandmas", "mom", "moms", "i", "me", "you", "we", "need", "want", "have", "give", "get", "find", "save", "send",
     "share", "is", "are", "what", "whats", "for", "of", "to", "do", "please", "and", "or", "with", "s",
 })
+_DISH_CONNECTORS = frozenset({"and", "with", "or"})
 
 
 def _recipe_named_before(folded: str) -> str | None:
@@ -79,8 +84,14 @@ def _recipe_named_before(folded: str) -> str | None:
         return None
     words = re.findall(r"[a-z]+", folded[: found.start()])
     dish: list[str] = []
-    for word in reversed(words):
-        if word in _BEFORE_THE_DISH or len(dish) == 5:
+    for index in range(len(words) - 1, -1, -1):
+        word = words[index]
+        if len(dish) == 6:
+            break
+        # M83 (DEV-D v3o D-s017 «a good southern-style mac and cheese recipe» → «cheese»): a connector between two
+        # words of the dish («mac and cheese», «fish and chips») is part of its name.
+        joins = word in _DISH_CONNECTORS and dish and index > 0 and words[index - 1] not in _BEFORE_THE_DISH
+        if word in _BEFORE_THE_DISH and not joins:
             break
         dish.insert(0, word)
     return " ".join(dish) if dish and not all(word in _NOT_A_DISH for word in dish) else None
@@ -328,3 +339,38 @@ def servings_asked(text: str, prior_requests: Iterable[str] = ()) -> int | None:
         if 1 <= count <= 100 and (explicit_noun or (raw.isdigit() and found.group(0).split()[0] in {"para", "pa", "for"})):
             return count
     return None
+
+
+# M83 (DEV-D v3o D-p27-t1 «Any good movies for me to watch?»): the decider answered it by talking in v3l and v3o and
+# looked it up in v3m, with the same code (its LoRA, full3, flips on this request); the talk recommended «the latest
+# sci-fi flick about time travel», a film that does not exist. Works to watch, read or hear, asked for with no title
+# named, are recommended from what is looked up (or, with nothing pertinent read, from memory with its notice, D35),
+# never from a recency the model cannot know.
+_WORK_KIND = (
+    r"(?:movies?|films?|series|shows?|tv\s+shows?|books?|novels?|songs?|albums?|podcasts?|documentar(?:y|ies)|"
+    r"peliculas?|pelis?|libros?|novelas?|canciones|cancion|discos?|documentales?)"
+)
+_WORKS_RECOMMENDATION = re.compile(
+    rf"\b(?:(?:any|some)\s+(?:good|nice|great|fun)\s+{_WORK_KIND}|"
+    rf"recommend(?:\s+me)?\s+(?:(?:a|an|some|any)\s+)?(?:(?:good|nice|great|fun)\s+)?{_WORK_KIND}|"
+    rf"(?:what|which)\s+{_WORK_KIND}\s+(?:should|could|can)\s+i\s+(?:watch|read|see|listen\s+to)|"
+    rf"(?:recomiend\w*|recomendarme|recomendame)\s+(?:(?:un|una|unos|unas|algun|alguna|algunos|algunas)\s+)?"
+    rf"(?:(?:buen|buena|buenos|buenas)\s+)?{_WORK_KIND}|"
+    rf"(?:alguna?s?|unas?)\s+(?:buen[oa]s?\s+)?{_WORK_KIND}\s+(?:para|que)\s+(?:ver|leer|escuchar))\b"
+)
+# A work, a person or a service named («like Elijah Wood», «como Titanic», «on Netflix», a quoted title) or the person's
+# own list make another request.
+_WORK_NAMED = re.compile(
+    r"\b(?:like|como|similar|parecid[oa]s?|with|con|by|de|del|starring|featuring|on|en|my|mi|mis)\s+\S|[\"«“]"
+)
+
+
+def works_recommendation(text: str) -> bool:
+    """«Any good movies for me to watch?», «recomiéndame un buen libro»: works of a kind asked for, none named."""
+
+    raw = str(text or "")
+    folded = spelled_out(fold(raw))
+    if _WORKS_RECOMMENDATION.search(folded) is None or _WORK_NAMED.search(folded) is not None:
+        return False
+    # A capitalized word past the first is a name (a title, an actor, a service).
+    return not any(word[:1].isupper() for word in re.findall(r"[^\W\d_]+", raw)[1:] if word not in {"I", "TV"})

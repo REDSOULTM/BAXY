@@ -915,6 +915,25 @@ def value_from_reply(text: str, reply: str | None) -> str | None:
     return said[: pointer.start()] + values.pop() + said[pointer.end():]
 
 
+# M83 (DEV-D v3o D-p19-t3 «What's the genre?» right after the cast of «After the Wedding» was read): a question for an
+# attribute with the definite article and no owner («what's the genre», «¿cuál es la trama?», «who's the director»)
+# asks it of what the conversation just named. Alone it read as a definition, and «genre» was looked up.
+_ATTRIBUTE_OF_THE_LAST = re.compile(
+    r"(?:what|which|who|cual|cuales|quien|quienes|que)(?:'s|s|\s+(?:is|was|are|were|es|era|fue|son|eran|fueron))?\s+"
+    r"(?:the|el|la|los|las|su|sus|its|their)\s+(?:main\s+|principal\s+)?"
+    r"(?:genres?|plot|cast|rating|runtime|director|directora|author|autor|autora|score|ending|story|premise|budget|"
+    r"soundtrack|title|release\s+date|actors|characters|lead|genero|generos|trama|reparto|final|argumento|sinopsis|"
+    r"duracion|puntuacion|titulo|fecha\s+de\s+estreno|actores|personajes|protagonista|price|precio|address|direccion|"
+    r"population|poblacion|capital)"
+)
+
+
+def asks_attribute_of_the_last(text: str) -> bool:
+    """The whole message asks an attribute of something it does not name (see above)."""
+
+    return _ATTRIBUTE_OF_THE_LAST.fullmatch(followup(text).folded) is not None
+
+
 def leans_on_context(text: str) -> bool:
     """The trigger: the message's form leans on the turn before (see the section comment). Talk never does."""
 
@@ -922,7 +941,7 @@ def leans_on_context(text: str) -> bool:
     folded = said.folded
     if not folded or _SOCIAL.fullmatch(folded) or _REFUSAL.fullmatch(folded) or _PROHIBITION.match(folded):
         return False
-    if said.fragment or refers_back(text) or _OWN_LISTING.fullmatch(folded):
+    if said.fragment or refers_back(text) or _OWN_LISTING.fullmatch(folded) or asks_attribute_of_the_last(text):
         return True
     # A name of its own in a question («y quién ganó el Mundial?») is a new subject: that question is complete.
     names_something = re.search(r"\s(?!I\b)[A-ZÁÉÍÓÚÑ]", said.said) is not None or re.search(r"[\"«“]", said.said)
@@ -1171,6 +1190,7 @@ class DialogueState:
         self._notification: dict[str, str] | None = None  # M76: the alarm, timer or reminder set, as verified
         self._listed: tuple[str, ...] = ()  # M76: the titles of the tasks read, in the order they were told
         self._task: dict[str, object] | None = None  # M80: the task last created or changed, as verified
+        self._headlines: tuple[str, ...] = ()  # M83: the headlines read, in the order they were told
 
     def expect(self, request: str, operations: object) -> None:
         if self.operations and not set(self.operations) & set(_TASK_WRITES):
@@ -1254,6 +1274,13 @@ class DialogueState:
             )
         elif operation == "web.search" and observed.get("query"):
             self._facts["topic"] = str(observed["query"])
+        elif operation == "web.news.headlines" and isinstance(observed.get("headlines"), list):
+            # M83 (DEV-D v3o D-w17-t5 «tell me more about the second one»): the headlines read, in the order they
+            # were told, for «the second one».
+            self._headlines = tuple(
+                str(item["title"]).strip() for item in observed["headlines"]
+                if isinstance(item, dict) and isinstance(item.get("title"), str) and item["title"].strip()
+            )
         elif operation in {"audio.volume", "audio.volume.adjust"} and observed.get("level") is not None:
             self._facts["volume"] = str(observed["level"])
         elif operation.startswith("system.settings") and observed.get("setting") and observed.get("value") is not None:
@@ -1341,6 +1368,21 @@ class DialogueState:
         ordinal = pointed.pop()
         index = next(value for words, value in _ORDINAL_INDEX.items() if re.fullmatch(words, ordinal))
         return self._listed[index] if -len(self._listed) <= index < len(self._listed) else None
+
+    def pointed_headline(self, text: str) -> str | None:
+        """M83 (DEV-D v3o D-w17-t5 «tell me more about the second one» after three Chilean headlines → the search
+        «more about the unemployment headline» read United States figures): the headline an ordinal points at in the
+        news the turn before read, as it was written; what more is asked of it is looked up by it. None unless that
+        turn read headlines and the message points at exactly one of them."""
+
+        if not self._headlines or "web.news.headlines" not in self.previous_operations:
+            return None
+        pointed = {found.group("ordinal") for found in _LISTED_POINTER.finditer(_fold(text))}
+        if len(pointed) != 1:
+            return None
+        ordinal = pointed.pop()
+        index = next(value for words, value in _ORDINAL_INDEX.items() if re.fullmatch(words, ordinal))
+        return self._headlines[index] if -len(self._headlines) <= index < len(self._headlines) else None
 
     def edited_task(self) -> dict[str, object] | None:
         """M80 (DEV-D v3m D-p06-t2 «Change to that eggs. Add to the Walmart list.», D-p06-t3, D-p08-t3 «No, cámbialo a
