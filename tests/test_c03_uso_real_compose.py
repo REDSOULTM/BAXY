@@ -272,7 +272,10 @@ def test_a_verified_capture_is_described_to_the_writer_and_told_on_the_first_sta
 def test_denying_the_verified_capture_is_never_published() -> None:
     denied = "No puedo hacer una captura de pantalla. No tengo acceso a la pantalla."
     client = Recorder([denied] * 3)
-    assert client.compose_user_message("haz una captura de pantalla", "status", _capture_facts()) == ""
+    # M107: the denial is never published; the verified capture is told from its facts.
+    assert client.compose_user_message("haz una captura de pantalla", "status", _capture_facts()) == (
+        "Hice la captura de pantalla."
+    )
 
 
 # --- weather named as the person named the place ---------------------------------

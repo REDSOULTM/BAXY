@@ -102,20 +102,26 @@ public sealed class A7AvisosTests
             Is.EqualTo("I turned the volume down to 40%; it is muted."));
     }
 
+    // M107: a failure or an unverified result is no longer left without a final; it is told from its facts — the
+    // typed cause the result carries, or the plain «couldn't confirm» of an effect that may have happened — and
+    // never as done (M107SueloAccionesTests).
     [Test]
-    public void AFailureOrAnUnverifiedResultHasNoDeterministicFinal()
+    public void AFailureOrAnUnverifiedResultIsToldFromItsFactsNeverAsDone()
     {
         var failure = new UserMessageDraft(VolumeNotConfirmed, "error", null);
         Assert.That(
             ModelMessageComposer.DeterministicFinal(
                 failure, "subele 10", ModelMessageComposer.CreateFacts(failure), "Subí el volumen."),
-            Is.Null);
+            Is.EqualTo("No pude confirmar que se hiciera el cambio."));
+        // As OperationVisibleFacts.FromOutcome writes an effect that happened and was not verified.
         var unverified = new UserMessageDraft(
-            Volume.Replace("\"verified\":true", "\"verified\":false", StringComparison.Ordinal), "status", null);
+            Volume.Replace("\"verified\":true", "\"verified\":false", StringComparison.Ordinal)
+                .Replace("\"polarity\":\"success\"", "\"polarity\":\"failure\"", StringComparison.Ordinal),
+            "error", null);
         Assert.That(
             ModelMessageComposer.DeterministicFinal(
                 unverified, "bajale 10", ModelMessageComposer.CreateFacts(unverified), "El volumen está en 40 %."),
-            Is.Null);
+            Is.EqualTo("Intenté cambiar el volumen, pero no pude confirmar si se hizo."));
     }
 
     [Test]

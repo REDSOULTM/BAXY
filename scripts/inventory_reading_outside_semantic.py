@@ -140,7 +140,7 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
         "WORDING", "picks which of the person's words a limit must quote (an anchor), not what they asked"),
     ("llm.py", "_cut_request_tail"): ("WORDING", "the last words of a cut message, quoted back in the question"),
     ("llm.py", "_bare_path_name"): ("WORDING", "the file name of a pasted path, quoted back in the question"),
-    ("llm.py", "_deterministic_final"): (
+    ("llm.py", "_told_result_final"): (
         "WORDING",
         "A7 last resort: the day or later hour the person named picks which verified value the sentence tells",
     ),

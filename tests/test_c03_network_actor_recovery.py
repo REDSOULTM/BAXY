@@ -57,7 +57,10 @@ def test_next_repair_uses_latest_wlan_draft_without_demanding_first_person():
 
 def test_unrepaired_actor_still_exhausts_without_publishing_wrong_subject():
     client = Recorder(['No estoy conectado a ninguna red wifi.'] * 3)
-    assert client.compose_user_message('¿A qué wifi estoy conectado?', 'status', facts('wifi.status', False)) == ''
+    # M107: the wrong subject is never published; the verified read is told from its facts instead of no final.
+    assert client.compose_user_message('¿A qué wifi estoy conectado?', 'status', facts('wifi.status', False)) == (
+        'Consulté el Wi-Fi: no está conectado.'
+    )
     assert len(client.payloads) == 3
 
 

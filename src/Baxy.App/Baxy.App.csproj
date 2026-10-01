@@ -25,6 +25,8 @@
       <Link>FieldUiHost\field-native-bridge.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <!-- M107: the operation floor's data, one file read by the mind and by this twin (OperationFloor). -->
+    <EmbeddedResource Include="..\baxy_mind\data\operation_floor.v1.json" LogicalName="Baxy.App.OperationFloor.json" />
   </ItemGroup>
   <Target Name="CopyDevelopmentCore"
           AfterTargets="Build"

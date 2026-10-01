@@ -312,10 +312,11 @@ def test_the_netflix_sign_in_is_told_as_the_failure_it_was() -> None:
     assert text == "No pude poner nada en Netflix: pide iniciar sesión en este PC."
 
 
-def test_an_unverified_result_has_no_deterministic_final() -> None:
+def test_an_unverified_result_is_never_told_as_done() -> None:
+    # M107: the failed change has its floor (the plain clause, failed), never the observed level as if it held.
     unverified = {**VOLUME, "verified": False, "succeeded": False, "polarity": "failure"}
     payload = llm._compose_situation_payload(unverified, "es", "bajale 10")
-    assert llm._deterministic_final(unverified, payload, "bajale 10", "es") == ""
+    assert llm._deterministic_final(unverified, payload, "bajale 10", "es") == "No pude cambiar el volumen."
 
 
 def test_the_weather_template_names_the_day_asked_from_the_read() -> None:

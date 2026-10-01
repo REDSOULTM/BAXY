@@ -287,10 +287,12 @@ internal static class ModelMessageComposer
     }
 
     /// <summary>
-    /// A7 twin of the mind's llm._deterministic_final: when every composition of a verified result was refused,
-    /// the observed values are told in one short sentence of the person's language. Only a verified, successful
-    /// result is told this way, and the sentence passes the same acceptance as a composed one; a failure or an
-    /// unverified result keeps the honest composition-failure line.
+    /// A7 twin of the mind's llm._deterministic_final: when every composition of a result was refused (or the mind
+    /// returned none), the result is told in one short sentence of the person's language. A verified result with an
+    /// own sentence here (the clock, the volume, a YouTube title) says its observed values; a typed failure whose
+    /// cause is known says it whole; any other action — done, failed, left uncertain, or a mission step by step — is
+    /// said by <see cref="OperationFloor"/> (M107), from the same data the mind reads. The sentence passes the same
+    /// acceptance as a composed one.
     /// </summary>
     internal static string? DeterministicFinal(
         UserMessageDraft draft,
@@ -300,7 +302,7 @@ internal static class ModelMessageComposer
     {
         ArgumentNullException.ThrowIfNull(draft);
         ArgumentNullException.ThrowIfNull(facts);
-        if (draft.Intent != "status" || !UserMessagePolicy.IsStructuredFacts(draft.Source))
+        if (draft.Intent is not ("status" or "error") || !UserMessagePolicy.IsStructuredFacts(draft.Source))
         {
             return null;
         }
@@ -315,25 +317,45 @@ internal static class ModelMessageComposer
             return null;
         }
 
-        if (source is null
-            || source["verified"] is not JsonValue verified || !verified.TryGetValue(out bool isVerified) || !isVerified
-            || source["succeeded"] is not JsonValue succeeded || !succeeded.TryGetValue(out bool hasSucceeded)
-            || !hasSucceeded
-            || source["operation"] is not JsonValue operationValue
-            || !operationValue.TryGetValue(out string? operation))
+        if (source is null)
+        {
+            return null;
+        }
+
+        // A mind that answered nothing («no_response») left an empty text: the request then says the language.
+        bool english = LooksEnglish(string.IsNullOrWhiteSpace(rejectedText) ? userText : rejectedText);
+        bool done = ReadBool(source, "verified") == true && ReadBool(source, "succeeded") == true;
+        string? text = done
+            ? VerifiedResultFinal(source, userText, draft.Source, english)
+            : OperationFloor.FailureSentence(source, english);
+        text ??= OperationFloor.Final(source, english);
+        if (text is null)
+        {
+            return null;
+        }
+
+        string? priorUserText = facts["priorRequests"] is JsonArray prior
+            ? string.Join(" ", prior.Select(static item => (string?)item))
+            : null;
+        return AcceptPublishedConversation(text, draft, userText, priorUserText);
+    }
+
+    // The verified results the App tells with their own observed values; null for any other.
+    private static string? VerifiedResultFinal(JsonObject source, string userText, string draftSource, bool english)
+    {
+        if (ReadString(source, "operation") is not { } operation)
         {
             return null;
         }
 
         JsonObject? seen = source["observed"] as JsonObject;
-        bool english = LooksEnglish(rejectedText ?? userText);
         string? text = null;
         if (operation == "system.time")
         {
             if (!UserMessagePolicy.IsCountdownRequest(userText)
                 && !UserMessagePolicy.IsLaterClockRequest(userText)
                 && !UserMessagePolicy.AsksCalendarDate(userText)
-                && UserMessagePolicy.TryDerivedLocalClock(draft.Source, out string hhmm))
+                && UserMessagePolicy.TryDerivedLocalClock(draftSource, out string hhmm))
             {
                 text = english ? $"It's {hhmm}." : $"Son las {hhmm}.";
             }
@@ -356,17 +378,9 @@ internal static class ModelMessageComposer
         }
         // A search the App could not phrase has no fixed sentence here: the owner's zero-fixed-visible-prose census
         // (A7 had put «No lo encontré.» in this place) keeps that wording in the mind, whose not-found fallback is
-        // written from the turn; the App's own last resort only states values it observed.
-
-        if (text is null)
-        {
-            return null;
-        }
-
-        string? priorUserText = facts["priorRequests"] is JsonArray prior
-            ? string.Join(" ", prior.Select(static item => (string?)item))
-            : null;
-        return AcceptPublishedConversation(text, draft, userText, priorUserText);
+        // written from the turn; the App's own last resort only states values it observed (the operation floor
+        // tells no verified search either: by the owner's rule the search is not shown).
+        return text;
     }
 
     private static string? ReadString(JsonObject? node, string key) =>
@@ -392,7 +406,9 @@ internal static class ModelMessageComposer
     }
 
     // BAXY's own refused sentence (or else the request) decides the language of the fallback: Spanish unless
-    // English function words outnumber Spanish ones; accents and inverted marks are Spanish.
+    // English function words outnumber Spanish ones; accents and inverted marks are Spanish. M107: the floor of an
+    // action the mind answered nothing for reads the request alone («open google keep for me» was told in Spanish),
+    // so the common request words of each language count too; a word both languages write («me», «a», «no») never.
     private static bool LooksEnglish(string? text)
     {
         if (string.IsNullOrWhiteSpace(text) || text.IndexOfAny(['á', 'é', 'í', 'ó', 'ú', 'ñ', '¿', '¡']) >= 0)
@@ -403,9 +419,13 @@ internal static class ModelMessageComposer
         string[] words = text.ToLowerInvariant().Split(
             [' ', ',', '.', '?', '!', ';', ':'], StringSplitOptions.RemoveEmptyEntries);
         int english = words.Count(static word => word is "the" or "is" or "it" or "i" or "what" or "you" or "to"
-            or "my" or "of" or "and" or "in" or "on" or "time" or "play" or "show" or "like");
+            or "my" or "of" or "and" or "in" or "on" or "time" or "play" or "show" or "like"
+            or "for" or "please" or "can" or "could" or "this" or "that" or "open" or "close" or "turn" or "off"
+            or "with" or "from" or "at" or "are" or "do" or "how" or "where" or "which" or "your" or "set" or "an");
         int spanish = words.Count(static word => word is "el" or "la" or "es" or "que" or "de" or "los" or "las"
-            or "en" or "y" or "mi" or "mis" or "por" or "un" or "una" or "hora" or "pon" or "ponme");
+            or "en" or "y" or "mi" or "mis" or "por" or "un" or "una" or "hora" or "pon" or "ponme"
+            or "para" or "con" or "del" or "al" or "abre" or "cierra" or "favor" or "lo" or "se" or "quiero"
+            or "puedes" or "esta" or "este" or "como" or "pero" or "hay");
         return english > spanish;
     }
 

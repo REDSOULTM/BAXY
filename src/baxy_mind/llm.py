@@ -43,6 +43,7 @@ from typing import Any, Callable, Iterable, NamedTuple
 from urllib.parse import parse_qs, urlparse
 
 from . import corrector
+from . import operation_floor
 from .semantic.normalize import _accent_folded_with_punctuation, _policy_guard_text, alternation, fold
 from .semantic import dialogue as dialogue_slot
 from .semantic import decider as semantic_decider
@@ -8173,48 +8174,10 @@ def _ambiguous_action_question(user_text: str, language: str) -> str:
 # A7 (goal v3 paso 5, «un resultado verificado siempre se puede decir»): when every draft was vetoed or the writer
 # ran out of time, a verified result is still told, with its observed values copied into one short sentence per
 # operation in the person's language. It passes the same publishable() gate as any draft and never states an effect
-# the result did not verify. The typed failures below say only the cause the result carries.
-_DETERMINISTIC_FAILURES = {
-    "netflix_authentication_required": (
-        "No pude poner nada en Netflix: pide iniciar sesión en este PC.",
-        "I couldn't play anything on Netflix: it asks to sign in on this PC.",
-    ),
-    "disney_authentication_required": (
-        "No pude poner nada en Disney+: pide iniciar sesión en este PC.",
-        "I couldn't play anything on Disney+: it asks to sign in on this PC.",
-    ),
-    "external_verification_failed": (
-        "No pude confirmar que se hiciera el cambio.",
-        "I couldn't confirm that the change was made.",
-    ),
-    # M54 (v3b-final F-w02-t4, F-w11-t3): the level already at its end is the whole fact, said plainly.
-    "volume_already_at_maximum": ("El volumen ya está al máximo.", "The volume is already at maximum."),
-    "volume_already_at_maximum_muted": (
-        "El volumen ya está al máximo, pero en silencio. ¿Lo activo?",
-        "The volume is already at maximum, but muted. Should I unmute it?",
-    ),
-    "volume_already_at_minimum": ("El volumen ya está al mínimo.", "The volume is already at minimum."),
-    # M60 (DEV-D p16-t1 v3c, p25-t1 v3c, w10-t6 v3d): every draft of these typed failures was vetoed and the turn
-    # ended in ⚠; each says its cause fact (_CAUSE_FACT) and, for the search, the browser offer the owner chose.
-    "web_search_unavailable": (
-        "No pude buscarlo ahora; puedo abrirlo en tu navegador.",
-        "I couldn't look it up right now; I can open it in your web browser.",
-    ),
-    "weather_service_unavailable": (
-        "No pude leer el tiempo: el servicio meteorológico no respondió.",
-        "I couldn't read the weather: the weather service didn't answer.",
-    ),
-    "media_seek_postcondition_not_verified": (
-        "No pude confirmar el salto en la reproducción.",
-        "I couldn't confirm the jump in the playback.",
-    ),
-    # M101 (owner script v3z2 t45 «silencia mi microfono» already muted): three drafts died and the turn ended in ⚠;
-    # the asked state that already held (_ASKED_STATE_ALREADY_HELD) is told as it was read.
-    "microphone_already_muted": ("El micrófono ya estaba silenciado.", "The microphone was already muted."),
-    "microphone_already_unmuted": ("El micrófono ya estaba activo.", "The microphone was already on."),
-    "airplane_mode_already_on": ("El modo avión ya estaba activado.", "Airplane mode was already on."),
-    "airplane_mode_already_off": ("El modo avión ya estaba desactivado.", "Airplane mode was already off."),
-}
+# the result did not verify. The typed failures say only the cause the result carries (M54 levels at their end, M60
+# typed causes, M101 asked states already held); since M107 they live in data/operation_floor.v1.json, which the App's
+# twin reads too, beside the plain clause of every operation that the floor of any other result is built from.
+_DETERMINISTIC_FAILURES = operation_floor.failure_sentences()
 
 
 def _decimal_said(value: object, english: bool) -> str:
@@ -8270,6 +8233,15 @@ def _asked_news_headlines_final(payload: dict, user_text: str, language: str) ->
 
 
 def _deterministic_final(situation: dict, payload: dict, user_text: str, language: str) -> str:
+    """The final of a result no draft could tell: its own sentence when the operation has one (_told_result_final),
+    else the floor every action has (M107, operation_floor): the plain clause of the operation, done, failed or left
+    uncertain, with what was observed — and for a mission, each step's."""
+
+    told = _told_result_final(situation, payload, user_text, language)
+    return told or operation_floor.floor_final(situation, language == "en")
+
+
+def _told_result_final(situation: dict, payload: dict, user_text: str, language: str) -> str:
     english = language == "en"
     operation = str(situation.get("operation") or payload.get("operation") or "")
     seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
