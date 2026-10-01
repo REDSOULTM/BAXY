@@ -16,8 +16,8 @@ v3r-devD, the recipe from memory the review found right).
   the person did not say; the bracketed years of a list are dropped (semantic.quantities.unsaid_figures,
   without_listed_years).
 - D-w10-t1 «¿me regalas una receta sencilla de arepas de queso?» → a recipe from memory with no quantity and «prepara la
-  masa según la receta habitual». A recipe is the one form memory gives with figures (D35; v3r's was right), and only
-  whole: every ingredient with its round quantity and no step pointing elsewhere (``memory_recipe_incomplete``).
+  masa según la receta habitual». M92 asked memory for a whole recipe; superseded by M95 (D52): no recipe is said from
+  memory at all.
 - D-w01-t2 «cuánta sal le echo al agua, más o menos» → «Se le pone a gusto.»: an amount asked is answered with a figure
   or told not found (``amount_without_figure``).
 - D-w10-t2 «¿Y cuánto sería eso de harina en gramos?» → «Un conversor de cocina menciona…»: a converter, a table or a
@@ -224,35 +224,20 @@ def test_figures_memory_does_not_say(draft: str, figures: list[str]) -> None:
     assert quantities.unsaid_figures(draft, ["cuéntame"]) == figures
 
 
-# ------------------------------------------------------------------ a recipe from memory is a whole one
+# ------------------------------------------------------------------ a recipe is not said from memory (M95)
 
 
-def test_d_w10_t1_the_recorded_recipe_without_quantities_is_no_recipe() -> None:
-    recorded = _stage("D-w10-t1", "from_memory")["draft"]
-    assert llm._memory_recipe_incomplete(recorded)
-    whole = _stage("D-w10-t1", "from_memory")["draft"].split("Ingredientes:")[0] + (
-        "Ingredientes:\n- 2 tazas de harina de maíz precocida\n- 2 tazas de agua tibia\n- 1 cucharadita de sal\n"
-        "- 1 taza de queso rallado\n- Aceite para freír\n\nPreparación:\n1. Mezcla la harina, el agua y la sal.\n"
-        "2. Añade el queso y forma bolas aplastadas.\n3. Dóralas en la sartén unos 5 minutos por lado."
-    )
-    writer = _Writer([recorded, whole])
-    situation = _search_situation("D-w10-t1")
-    reply = writer._compose_consulted_answer(
-        "Dame una receta sencilla de arepas de queso.", {}, situation, "es", writer._post, None, "t",
-    )
-    assert reply == whole
-    assert "cada uno con su cantidad" in writer.sent[0]["messages"][0]["content"]
-    assert "sin remitir a otra receta" in writer.sent[1]["messages"][-1]["content"]
-
-
-def test_the_whole_recipe_from_memory_of_v3r_is_still_said() -> None:
-    recorded = _stage("v3r:D-w10-t1", "from_memory")["draft"]
-    assert not llm._memory_recipe_incomplete(recorded)
-    writer = _Writer([recorded])
-    assert writer._compose_consulted_answer(
-        "Dame una receta sencilla de arepas de queso.", {}, _search_situation("D-w10-t1"), "es", writer._post, None,
-        "t",
-    ) == recorded
+@pytest.mark.parametrize("ident", ["D-w10-t1", "v3r:D-w10-t1"])
+def test_no_recipe_is_said_from_memory(ident: str) -> None:
+    # M92 asked memory for a whole recipe; M95 (D52; DEV-D v3x D-w10-t1 «1 taza de agua» for 2 of maize flour): a recipe
+    # is its quantities and memory gives none. The writer is not even asked; the not-found report stands.
+    writer = _Writer([_stage(ident, "from_memory")["draft"]])
+    for memory in (False, True):
+        assert writer._compose_consulted_answer(
+            "Dame una receta sencilla de arepas de queso.", {}, _search_situation("D-w10-t1"), "es", writer._post,
+            None, "t", memory=memory,
+        ) is None
+    assert writer.sent == []
 
 
 # ------------------------------------------------------------------ a per-unit rule read, applied to the quantity asked
