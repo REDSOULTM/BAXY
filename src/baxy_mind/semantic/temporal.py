@@ -2325,6 +2325,71 @@ def offset_retiming(text: str, setting_request: str) -> int | None:
     return shift or None
 
 
+_ISO_DATE = re.compile(r"(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})(?:T00:00(?::00)?(?:Z|[+-]00:00)?)?")
+
+
+def task_due_date(value: str, *, today: date | None = None) -> str | None:
+    """M115 (DEV-F v4e2 F-s022 «renovar el passport antes del 15 de noviembre» → the task kept no date; v4d F-w39-t3
+    «…hacer esos ejercicios de gases para el jueves» → «el sistema la considera inválida»): the day a task is for, as
+    the task store reads it (``YYYY-MM-DD``), from what the person said of it («15 de noviembre», «el jueves»,
+    «mañana») or that day already written so; None when it names no one day."""
+
+    raw = " ".join(str(value or "").split())
+    today = today or datetime.now().astimezone().date()
+    iso = _ISO_DATE.fullmatch(raw)
+    if iso is not None:
+        try:
+            return date(int(iso.group("year")), int(iso.group("month")), int(iso.group("day"))).isoformat()
+        except ValueError:
+            return None
+    folded = _fold(raw)
+    said = spoken_date(folded)
+    if said is not None:
+        meant = said.on_or_after(today)
+        return meant.isoformat() if meant is not None else None
+    day = spoken_day(folded, today.weekday())
+    if day is None or day == (0, 1):
+        return None
+    return (today + timedelta(days=day[0])).isoformat()
+
+
+def iso_day_said(value: str, said: str, *, today: date | None = None) -> bool:
+    """A day written ``YYYY-MM-DD`` is said when what the person said names that same day (M115)."""
+
+    if _ISO_DATE.fullmatch(" ".join(str(value or "").split())) is None:
+        return False
+    today = today or datetime.now().astimezone().date()
+    written = task_due_date(value, today=today)
+    return written is not None and written == task_due_date(said, today=today)
+
+
+_DIAL_ONLY_CLOCK = re.compile(r"(?<![\d:])(?:[1-9]|1[0-2]):[0-5]\d$")
+
+
+def moved_to_clock(text: str, old: datetime) -> Retiming | None:
+    """M115 (DEV-F v4e2 F-w12-t2 «no, cachai que mejor a las 6 y cuarto, el vuelo llega antes…», F-w15-t4 «hmm no, the
+    kids won't be home till 7:15, push it there», F-w07-t4 «uy no, espérate, que me toca tanquear antes: córrelo a las 6
+    y cuarto»): once the turn is decided as moving the notification just set (cancel it, set it again), its new time is
+    the one clock the message says other than the old one, wherever it says it. None with no such clock, more than one,
+    or a length of time said beside it."""
+
+    if said_durations(text):
+        return None
+    clocks = {
+        # «till 7:15» says no part of the day (its digits read as 07:15): the dial time nearer the old one is meant.
+        (clock.hour, clock.minute, clock.resolved and _DIAL_ONLY_CLOCK.search(clock.literal) is None)
+        for clock in spoken_clocks(_fold(str(text or "")))
+        if not (
+            clock.minute == old.minute
+            and (clock.hour == old.hour if clock.resolved else clock.hour % 12 == old.hour % 12)
+        )
+    }
+    if len(clocks) != 1:
+        return None
+    hour, minute, resolved = clocks.pop()
+    return Retiming(None, hour, minute, resolved)
+
+
 def retimed_local_moment(retiming: Retiming, old: datetime, now: datetime | None = None) -> datetime | None:
     """The new local moment of a notification set for ``old`` (local, with its zone): the clock on the same day, in
     the part of the day nearer the old time when it said none (6:45 → «6:30» is 6:30, 18:00 → «7» is 19:00). None

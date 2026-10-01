@@ -3957,7 +3957,8 @@ def _edited_task_arguments(
         )
         changes = _said_optional_arguments(extraction.arguments, changes_schema, said)
     if isinstance(changes.get("due"), str):
-        due = _canonical_due_utc(str(changes["due"]), objective)
+        # M115: a day said with no clock is the task's day, as the store reads it.
+        due = _canonical_due_utc(str(changes["due"]), objective) or semantic_temporal.task_due_date(str(changes["due"]))
         if due is None:
             changes.pop("due")
         else:
@@ -4130,6 +4131,16 @@ def _normalize_grounded_operation_arguments(
         prompt = literal_vision_prompt(objective)
         if prompt is not None:
             normalized["prompt"] = prompt
+    if operation == "task.create" and isinstance(normalized.get("due"), str):
+        # M115 (DEV-F v4e2 F-s022, v4d F-w39-t3 «…para el jueves» → «el sistema la considera inválida»): the store reads
+        # a day or a moment; what was said of it is written so, and a day nobody can tell is left out.
+        due = _canonical_due_utc(normalized["due"], context, now_utc=now_utc) or semantic_temporal.task_due_date(
+            normalized["due"], today=now_utc.astimezone().date() if now_utc is not None else None,
+        )
+        if due is None:
+            normalized.pop("due")
+        else:
+            normalized["due"] = due
     if operation in {"notification.schedule", "reminder.create"}:
         raw_due = normalized.get("dueUtc")
         if not isinstance(raw_due, str):
@@ -8235,6 +8246,17 @@ def _run_sidecar(
                     if "notification.schedule" in expected_operations
                     else None
                 )
+                if (
+                    retimed is None
+                    and "notification.schedule" in expected_operations
+                    and set(expected_operations) & {"notification.cancel.at", "notification.cancel.latest"}
+                ):
+                    # M115 (DEV-F v4e2 F-w12-t2, F-w15-t4, F-w07-t4): the plan already moves the notification just set;
+                    # its new time is the one clock the person said, or else the one the restatement says, and the
+                    # rest (its kind, what it is for, the old time to cancel) is what was verified setting it.
+                    retimed = dialogue_state.retimed_notification(
+                        _person_message(history, objective), moving=True,
+                    ) or dialogue_state.retimed_notification(objective, moving=True)
                 enumerated_note_arguments = _fully_enumerated_note_create_arguments(
                     objective
                 )

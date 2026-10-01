@@ -25,8 +25,8 @@ from .patterns import (
     resolve_application_installed_name,
 )
 from .temporal import (
-    SpokenClock, agenda_window, clock_elsewhere, moment_then_title_reminder, plural_alarm_cancellation, spoken_date,
-    spoken_window, trailing_day,
+    SpokenClock, agenda_window, clock_elsewhere, moment_then_title_reminder, plural_alarm_cancellation, said_durations,
+    spoken_date, spoken_window, trailing_day,
 )
 from .web import news_lookup_query, public_query_body
 from .windows import start_menu_request
@@ -2578,6 +2578,10 @@ _KNOWN_FOLDER_NAMED = (
 )
 
 
+_SEEK_FORWARD = r"\b(?:adelant\w*|avanz\w*|forward|ahead|skip\s+ahead|fast[\s-]?forward)\b"
+_SEEK_BACKWARD = r"\b(?:atras\w*|retroced\w*|regres\w*|devuelv\w*|rewind|back(?:wards?)?)\b"
+
+
 def partial_explicit_arguments(operation: str, evidence: str, schema: dict) -> dict[str, object]:
     """M76: the values of a request the readers know while another required one is still missing, so the question
     asks only for that one (a film named with no service: its title; a search in the folder named: that folder).
@@ -2592,6 +2596,15 @@ def partial_explicit_arguments(operation: str, evidence: str, schema: dict) -> d
     folders = {folder for folder, pattern in _KNOWN_FOLDER_NAMED if re.search(pattern, effect_intent._fold(evidence))}
     if len(folders) == 1:
         known["folder"] = folders.pop()
+    if operation == "media.seek.relative":
+        # M115 (DEV-F v4e2 F-w43-t3 «adelantala un minuto que la intro es eterna» → «¿Cuántos segundos…?»): one length
+        # said with the way it goes is the seek, in seconds.
+        durations = said_durations(evidence)
+        folded = effect_intent._fold(evidence)
+        forward = re.search(_SEEK_FORWARD, folded) is not None
+        backward = re.search(_SEEK_BACKWARD, folded) is not None
+        if len(durations) == 1 and forward != backward:
+            known["seconds"] = durations[0][1] * 60 * (-1 if backward else 1)
     properties = schema.get("properties") if isinstance(schema, dict) else None
     if not isinstance(properties, dict):
         return {}
