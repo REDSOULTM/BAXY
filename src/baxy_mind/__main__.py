@@ -5098,6 +5098,117 @@ def _moved_notification_result(message: dict[str, Any], request: str) -> dict[st
     return result
 
 
+def _direct_arguments_result(
+    message: dict[str, Any],
+    *,
+    llm: Any,
+    tool: dict,
+    application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
+    game_catalog: GameCatalogIndex = GameCatalogIndex(),
+    dialogue_state: dialogue_slot.DialogueState,
+) -> tuple[dict[str, Any] | None, str]:
+    """The «arguments» request: the operation's grounded arguments, or None with the question for what is missing."""
+
+    operation = str(message.get("operation", ""))
+    objective = _with_session_alarm_selector(
+        str(message.get("text", "")), message.get("history"),
+    )
+    arguments = _ground_explicit_arguments(
+        operation,
+        objective,
+        tool["function"]["parameters"],
+        application_names,
+        game_catalog,
+        history=message.get("history"),
+    )
+    question = ""
+    said = _conversation_grounding_source(objective, message.get("history"))
+    turn_language = (
+        message.get("responseLanguage") if message.get("responseLanguage") in {"es", "en", "mixed"} else None
+    )
+    person = _person_message(message.get("history"), objective)
+    headline = dialogue_state.pointed_headline(person) if operation == "web.search" else None
+    if headline is not None and validate_json_schema_instance(
+        {"query": headline}, tool["function"]["parameters"],
+    ):
+        # M83 (DEV-D v3o D-w17-t5 «tell me more about the second one»): the headline pointed at by its
+        # place in the news just read is looked up as it was written, never as the decider retold it.
+        arguments = {"query": headline}
+    if arguments is None:
+        # M80 (DEV-D v3m D-s104, D-s108): a moment no notification holds asks only when, saying why.
+        question = _unschedulable_time_question(
+            llm, operation, objective, person, tool, turn_language,
+        )
+    edited = dialogue_state.edited_task() if operation == "task.update" else None
+    if arguments is None and not question and edited is not None:
+        # M80 (DEV-D v3m D-p06-t2, D-p06-t3, D-p08-t3): what was not changed is kept from the verified task.
+        arguments, question = _edited_task_arguments(
+            llm, objective, person, tool, edited, said, turn_language,
+        )
+    if arguments is None and not question and not _previous_reply_may_be_content(tool, message.get("history")):
+        # M42b: what the decider read, grounded in what was said, is enough on its own; the separate
+        # extraction call runs only when a required value is still missing.
+        arguments = _decided_arguments_alone(
+            operation, str(message.get("text", "")), tool, said,
+        )
+    if arguments is None and not question:
+        # M47 (FINAL F-w09-t5, F-p02-t3): the shell sends the language the turn decision chose; the
+        # objective may be the decider's restatement in the other language, so it cannot decide it.
+        response_language = message.get("responseLanguage")
+        language_argument = (
+            {"response_language": response_language}
+            if response_language in {"es", "en", "mixed"}
+            else {}
+        )
+        # M67 (FINAL F-w14-t3 «perfect, copialo al clipboard» after a ```sql answer, F-w15-t4 «save that
+        # as a note porfa» after a packing list): the model reads BAXY's last reply beside the objective
+        # and says whether it is the content; code copies it verbatim into that field.
+        previous_reply = _previous_reply(message.get("history"))
+        extraction = llm.extract_direct_arguments(
+            objective,
+            tool,
+            stated_fields=_stated_argument_fields(
+                operation, objective, tool["function"]["parameters"],
+            ),
+            **language_argument,
+            **({"previous_reply": previous_reply} if previous_reply else {}),
+        )
+        if extraction.previous_reply_field and previous_reply:
+            # The reply is literally what BAXY said (M43's trusted source), whole and not cut.
+            objective_source = f"{objective}\n{previous_reply}"
+            said = f"{said}\n{previous_reply}"
+        else:
+            objective_source = objective
+        extracted = extraction.arguments
+        if extracted is None:
+            # M76 (DEV-D v3l D-p19-t1): an abstention keeps what the readers know, so what is asked is
+            # only what is still missing (the service of a film named by its title).
+            extracted = partial_explicit_arguments(
+                operation, objective, tool["function"]["parameters"],
+            ) or None
+        decided_arguments = _with_decided_arguments(
+            operation,
+            str(message.get("text", "")),
+            extracted,
+            tool["function"]["parameters"],
+            said,
+        )
+        arguments, question = prepare_direct_argument_result(
+            llm,
+            objective,
+            tool,
+            extracted if decided_arguments is None else decided_arguments,
+            # A question written before the decider's values were added may ask for one of them.
+            extraction.fallback_question if decided_arguments is None else "",
+            trusted_source=objective_source if decided_arguments is None else said,
+            **language_argument,
+        )
+    arguments = _with_conversation_place(
+        operation, arguments, message.get("history"), tool["function"]["parameters"],
+    )
+    return arguments, question
+
+
 def _prepare_turn_result(
     message: dict[str, Any],
     *,
@@ -8147,101 +8258,13 @@ def _run_sidecar(
                 tool = tool_by_name.get(operation)
                 if tool is None:
                     raise ValueError(f"tool desconocida: {operation}")
-                objective = _with_session_alarm_selector(
-                    str(message.get("text", "")), message.get("history"),
-                )
-                arguments = _ground_explicit_arguments(
-                    operation,
-                    objective,
-                    tool["function"]["parameters"],
-                    application_names,
-                    game_catalog,
-                    history=message.get("history"),
-                )
-                question = ""
-                said = _conversation_grounding_source(objective, message.get("history"))
-                turn_language = (
-                    message.get("responseLanguage") if message.get("responseLanguage") in {"es", "en", "mixed"} else None
-                )
-                person = _person_message(message.get("history"), objective)
-                headline = dialogue_state.pointed_headline(person) if operation == "web.search" else None
-                if headline is not None and validate_json_schema_instance(
-                    {"query": headline}, tool["function"]["parameters"],
-                ):
-                    # M83 (DEV-D v3o D-w17-t5 «tell me more about the second one»): the headline pointed at by its
-                    # place in the news just read is looked up as it was written, never as the decider retold it.
-                    arguments = {"query": headline}
-                if arguments is None:
-                    # M80 (DEV-D v3m D-s104, D-s108): a moment no notification holds asks only when, saying why.
-                    question = _unschedulable_time_question(
-                        llm, operation, objective, person, tool, turn_language,
-                    )
-                edited = dialogue_state.edited_task() if operation == "task.update" else None
-                if arguments is None and not question and edited is not None:
-                    # M80 (DEV-D v3m D-p06-t2, D-p06-t3, D-p08-t3): what was not changed is kept from the verified task.
-                    arguments, question = _edited_task_arguments(
-                        llm, objective, person, tool, edited, said, turn_language,
-                    )
-                if arguments is None and not question and not _previous_reply_may_be_content(tool, message.get("history")):
-                    # M42b: what the decider read, grounded in what was said, is enough on its own; the separate
-                    # extraction call runs only when a required value is still missing.
-                    arguments = _decided_arguments_alone(
-                        operation, str(message.get("text", "")), tool, said,
-                    )
-                if arguments is None and not question:
-                    # M47 (FINAL F-w09-t5, F-p02-t3): the shell sends the language the turn decision chose; the
-                    # objective may be the decider's restatement in the other language, so it cannot decide it.
-                    response_language = message.get("responseLanguage")
-                    language_argument = (
-                        {"response_language": response_language}
-                        if response_language in {"es", "en", "mixed"}
-                        else {}
-                    )
-                    # M67 (FINAL F-w14-t3 «perfect, copialo al clipboard» after a ```sql answer, F-w15-t4 «save that
-                    # as a note porfa» after a packing list): the model reads BAXY's last reply beside the objective
-                    # and says whether it is the content; code copies it verbatim into that field.
-                    previous_reply = _previous_reply(message.get("history"))
-                    extraction = llm.extract_direct_arguments(
-                        objective,
-                        tool,
-                        stated_fields=_stated_argument_fields(
-                            operation, objective, tool["function"]["parameters"],
-                        ),
-                        **language_argument,
-                        **({"previous_reply": previous_reply} if previous_reply else {}),
-                    )
-                    if extraction.previous_reply_field and previous_reply:
-                        # The reply is literally what BAXY said (M43's trusted source), whole and not cut.
-                        objective_source = f"{objective}\n{previous_reply}"
-                        said = f"{said}\n{previous_reply}"
-                    else:
-                        objective_source = objective
-                    extracted = extraction.arguments
-                    if extracted is None:
-                        # M76 (DEV-D v3l D-p19-t1): an abstention keeps what the readers know, so what is asked is
-                        # only what is still missing (the service of a film named by its title).
-                        extracted = partial_explicit_arguments(
-                            operation, objective, tool["function"]["parameters"],
-                        ) or None
-                    decided_arguments = _with_decided_arguments(
-                        operation,
-                        str(message.get("text", "")),
-                        extracted,
-                        tool["function"]["parameters"],
-                        said,
-                    )
-                    arguments, question = prepare_direct_argument_result(
-                        llm,
-                        objective,
-                        tool,
-                        extracted if decided_arguments is None else decided_arguments,
-                        # A question written before the decider's values were added may ask for one of them.
-                        extraction.fallback_question if decided_arguments is None else "",
-                        trusted_source=objective_source if decided_arguments is None else said,
-                        **language_argument,
-                    )
-                arguments = _with_conversation_place(
-                    operation, arguments, message.get("history"), tool["function"]["parameters"],
+                arguments, question = _direct_arguments_result(
+                    message,
+                    llm=llm,
+                    tool=tool,
+                    application_names=application_names,
+                    game_catalog=game_catalog,
+                    dialogue_state=dialogue_state,
                 )
                 write_request_message(
                     {
