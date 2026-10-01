@@ -4722,9 +4722,31 @@ def _context_decided_result(
     placed = dialogue_slot.place_substituted(text, antecedent)
     placed_read = resolve_explicit_effects(placed, available_operations) if placed is not None else None
     closing = _close_of_the_just_opened(text, history, available_operations, application_names)
-    read_before_decider = closing is not None or (placed_read is not None and placed_read.operations == ("system.time",))
+    said_before = [
+        str(turn.get("content") or "") for turn in reversed(history)
+        if isinstance(turn, dict) and str(turn.get("content") or "") != text
+    ]
+    offered = semantic_temporal.accepted_notification_offer(
+        text, context.last_reply,
+    ) or semantic_temporal.answered_timer_length(text, context.last_reply, said_before)
+    offered_read = resolve_explicit_effects(offered, available_operations) if offered is not None else None
+    if offered_read is not None and not set(offered_read.operations) <= _ANCHORED_SCHEDULE_OPERATIONS:
+        offered_read = None
+    read_before_decider = (
+        closing is not None
+        or offered_read is not None
+        or (placed_read is not None and placed_read.operations == ("system.time",))
+    )
     if closing is not None:
         decided = closing
+    elif offered_read is not None:
+        # M110 (DEV-F v4d F-w33-t4 «Yeah, go on» after «Shall I move the alarm to 17:00?» → «What time is the Spurs
+        # game?»; F-w45-t3 «go with 12…» after «How long for the garlic knots?»): the yes to BAXY's offer of a
+        # notification at one time, or the length that answers its «how long?», is that notification, read as one
+        # request.
+        decided = semantic_decider.ContextDecision(
+            request=str(offered), decision="action", operations=tuple(offered_read.operations), question="",
+        )
     elif read_before_decider:
         # M84 (DEV-D v3o D-w02-t2 «y si allá son las 10 de la mañana acá qué hora es» after «qué hora es en madrid» →
         # restated «¿Qué hora es en Madrid si allá son las 10…?» and talked): «allá» is the place just asked, and the
@@ -4849,7 +4871,8 @@ def _context_decided_result(
         decided = semantic_decider.ContextDecision(
             fidelity.request, decided.decision, decided.operations, decided.question, decided.arguments,
         )
-    anchored = semantic_temporal.anchored_offset_request(text, context.last_reply)
+    # M110: the thing named («la junta», «kick-off») may have its moment further back in the conversation.
+    anchored = semantic_temporal.anchored_offset_request(text, context.last_reply, said_before)
     anchored_read = resolve_explicit_effects(anchored, available_operations) if anchored is not None else None
     if anchored_read is not None and set(anchored_read.operations) <= _ANCHORED_SCHEDULE_OPERATIONS:
         # M84 (DEV-D v3o D-w08-t3 «ponme recordatorio una ora antes d ese partido» → «¿Cuándo es ese partido?», D-w02-t3
