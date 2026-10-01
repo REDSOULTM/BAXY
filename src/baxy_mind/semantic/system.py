@@ -352,10 +352,20 @@ _HOME_CONTROL = (
 )
 
 
-def physical_world_request(folded: str) -> bool:
-    """An errand with food or drink, or a device of the house to control (see above)."""
+# M94 (DEV-D D-s064 «¿Sería posible suprimir mi orden de recogida en Lyft de las 16:00 h…» → «Puedes contactar al
+# soporte de Lyft»): a ride (a taxi, Uber, Lyft, a pickup) asked for, booked or called off is an errand outside this PC.
+_RIDE_ERRAND = (
+    r"\b(?:pide|pideme|pedir|pedirme|pidan|llama|llamame|llamar|reserva|reservame|reservar|cancela|cancelame|"
+    r"cancelar|cancele|anula|anular|anulame|suprime|suprimir|suprimeme|elimina|eliminar|book|order|call|get|cancel|"
+    r"schedule|reschedule)\b.{0,60}"
+    r"\b(?:taxi|taxis|uber|lyft|cabify|didi|remis|cab|cabs|ride|rides|recogida|pickup|pick-up)\b"
+)
 
-    return _has(folded, _ERRAND) or (
+
+def physical_world_request(folded: str) -> bool:
+    """An errand with food or drink, a ride, or a device of the house to control (see above)."""
+
+    return _has(folded, _ERRAND) or _has(folded, _RIDE_ERRAND) or (
         _has(folded, _HOME_CONTROL)
         and (_has(folded, _HOME_APPLIANCE) or (_has(folded, _HOME_LIGHT) and _has(folded, _HOME_ROOM)))
     )

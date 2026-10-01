@@ -24,7 +24,7 @@ from .files import _pdf_summary_request, _file_trash_request, process_report_fil
 from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
 from .system import _weather_read_intent, physical_world_request, weather_place_known_only_through_someone
-from .notes import puts_into_the_agenda, list_entry_request, list_read_request, list_removal_request, list_creation_without_items, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder, said_repetition, _CALENDAR_PLACE, reminder_inventory_question, AGENDA_NOT_A_READ
+from .notes import puts_into_the_agenda, takes_off_the_agenda, list_entry_request, list_read_request, list_removal_request, list_creation_without_items, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder, said_repetition, _CALENDAR_PLACE, reminder_inventory_question, AGENDA_NOT_A_READ
 from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, _latest_email_domain, _notification_listing_request, inbox_read_request, social_network_request, contact_book_request
 from .ui import _clipboard_copy_domain, _clipboard_paste_domain, calculator_expression_request, literal_clipboard_write_text, _review_input_and_capture_effects, _VISIBLE_CLICK_APP_CONTEXT, _gerund_click_label, _visible_click_label, _click_in_application, _visible_click_intent
 from .apps import self_close_request, _APPLICATION_TRAILING_REQUEST, _application_target_forms, _CLOSE_TRAILING_COURTESY, _close_target_forms, deictic_close_request, _bounded_application_literal, _authenticated_application_list, _OPEN_STATE_CONDITION, close_all_request, _has_multiple_installed_entities, _append_domain_actions, _open_application_spans, _CATALOG_INSTALL_VERB, _opened_applications
@@ -1803,8 +1803,13 @@ def media_repeat_mode_request(text: str) -> bool:
 # M84 (DEV-D v3o D-p02-t1 «Saca foto ahora» → a screenshot, D-s094 «Snap a pic after 10 seconds, no, 20 seconds.» → an
 # alarm): a photo taken with nothing of the screen named is the camera's, which BAXY does not use. «saca una foto de
 # la pantalla» is a capture; «una foto de X» names what is photographed and is left to the readers.
+# M94 (DEV-D D-p02-t2 «¿Serías capaz de hacer foto ahora?», D-p07-t2 «Quiero hacer fotos en modo ráfaga» → talk about
+# the camera app): being able to take one, or wanting to, asks for the same photo.
 _CAMERA_PHOTO = re.compile(
-    r"^[¿¡\s]*(?:(?:por\s+favor|please|porfa|oye|hey|baxy)[\s,]+)*(?:(?:puedes|podrias|can\s+you|could\s+you)\s+)?"
+    r"^[¿¡\s]*(?:(?:por\s+favor|please|porfa|oye|hey|baxy)[\s,]+)*"
+    r"(?:(?:puedes|podrias|can\s+you|could\s+you|(?:serias|seria|eres|estas|are\s+you|would\s+you\s+be)\s+"
+    r"(?:capaz|able)\s+(?:de|to)|quiero|quisiera|necesito|i\s+want\s+to|i\s+would\s+like\s+to|i'd\s+like\s+to|"
+    r"i\s+need\s+to)\s+)?"
     r"(?:saca|sacame|sacanos|sacar|toma|tomame|tomanos|tomar|haz|hazme|hace|haceme|hacer|take|snap|shoot)\s+"
     r"(?:(?:me|us|una|un|la|el|a|an|the|my|mi|nueva|new|quick|rapida)\s+)*"
     r"(?:foto|fotos|fotografia|fotografias|selfie|selfies|pic|pics|picture|pictures|photo|photos|photograph)\b"
@@ -1820,9 +1825,37 @@ def camera_photo_request(text: str) -> bool:
     return _CAMERA_PHOTO.search(folded) is not None and not _has(folded, _SCREEN_NAMED)
 
 
+# M94 (DEV-D D-s007 «hazme una lista de los destinatarios y remitentes de los emails de la ultima semana» → «No tengo
+# acceso a tu bandeja…» answered as a list to write): the person's mails taken together (listed, counted, summarised,
+# who sent or got them) are read by no operation; the mailbox read is the latest mail alone.
+_MAIL_PLURAL = r"(?:correos|e-?mails|mails|mensajes\s+de\s+correo)"
+_MAIL_COLLECTION = re.compile(
+    r"\b(?:(?:los|las|mis|tus|my|your|the|todos\s+(?:los|mis)|all\s+(?:of\s+)?(?:my|the))\s+(?:\w+\s+)?"
+    rf"{_MAIL_PLURAL}|(?:mi|my|la|the)\s+(?:bandeja(?:\s+de\s+entrada)?|inbox)|"
+    rf"(?:cuantos|cuantas|how\s+many)\s+(?:\w+\s+)?{_MAIL_PLURAL})\b"
+)
+_MAIL_TAKEN_TOGETHER = (
+    r"\b(?:lista|listame|listado|list|destinatarios|remitentes|senders?|recipients?|cuantos|cuantas|how\s+many|"
+    r"resumen|resumeme|resume|resumir|summari[sz]e|summary|todos|all)\b"
+)
+_ONE_MAIL = r"\b(?:ultimo|latest|most\s+recent|newest|last\s+(?:e-?mail|mail|message))\b"
+
+
+def person_mail_collection_request(text: str) -> bool:
+    """The person's mails asked for together, not the latest one (see above)."""
+
+    folded = _fold(text)
+    return (
+        _MAIL_COLLECTION.search(folded) is not None
+        and _has(folded, _MAIL_TAKEN_TOGETHER)
+        and not _has(folded, _ONE_MAIL)
+    )
+
+
 def unserved_personal_request(text: str) -> bool:
     """M84: a request no operation serves, whatever its grammar says of authority (see the readers above): the
-    player's repeat mode, an order with a shop, the person's own bill, a photo of the camera."""
+    player's repeat mode, an order with a shop, the person's own bill, a photo of the camera; M94: the person's mails
+    taken together."""
 
     folded = _fold(text)
     return (
@@ -1830,6 +1863,7 @@ def unserved_personal_request(text: str) -> bool:
         or _SHOP_ORDER_HANDLING.search(folded) is not None
         or _OWN_BILL_AMOUNT.search(folded) is not None
         or camera_photo_request(text)
+        or person_mail_collection_request(text)
     )
 
 def unsupported_effect_demonstration_request(text: str) -> bool:
@@ -1904,6 +1938,10 @@ def conversation_only_content_request(text: str) -> bool:
     such as Wi-Fi, Steam, a window, or the clipboard cannot close a turn.
     """
 
+    if person_mail_collection_request(text):
+        # M94 (DEV-D D-s007): a list or a summary of the person's mails is made of mails no operation reads; it is
+        # no text to write here.
+        return False
     folded = _strip_explicit_no_action_frame(
         _strip_request_envelope(_fold(text)).strip()
     )
@@ -2301,6 +2339,8 @@ def known_unsupported_effect_request(
                     r"\b(?:limpia|limpiar|limpie|despeja|despejar|despeje|vacia|vaciar|vacie|clear|wipe)\s+"
                     r"(?:(?:mi|el|la|my|the)\s+)?(?:agenda|calendario|calendar|horario|schedule)\b",
                 )
+                # M94 (DEV-D D-s016): an entry taken off the calendar (``semantic.notes.takes_off_the_agenda``).
+                or takes_off_the_agenda(folded)
             )
             and not _has(folded, r"\b(?:alarmas?|alarms?|recordatorios?|reminders?|notas?|notes?|archivos?|files?)\b"),
             {"calendar.event.delete"},
@@ -4102,7 +4142,12 @@ def _clarification_intent_of(
             return ClarificationIntent(("reminder.create",), ("due_time",))
         if _time_only_reminder_request(folded):
             return ClarificationIntent(("reminder.create",), ("title",))
-    if "task.create" in available and list_creation_without_items(folded) is not None:
+    if (
+        "task.create" in available
+        and list_creation_without_items(folded) is not None
+        # M94 (DEV-D D-s007): a list of the person's mails is no list of theirs to fill (a limit).
+        and not person_mail_collection_request(folded)
+    ):
         # «por favor crea una nueva lista»: a list is its entries; what goes on it is asked.
         return ClarificationIntent(("task.create",), ("list_entries",))
     if "task.create" in available and _task_without_title(folded):
@@ -7409,6 +7454,9 @@ def _is_direct_request(text: str) -> bool:
         r"descarga|descargar|descargame|download|multiplica|multiplicame|suma|sumame|resta|restame|divide|divideme|calcula|calculame|multiply|subtract|calculate|compute|escanea|scan|"
         r"desconecta|disconnect|cambia|change|"
         r"cancela|cancelar|cancel|"
+        # M94 (DEV-D D-s064 «¿Sería posible suprimir mi orden de recogida en Lyft…»): suppressing or annulling
+        # something is cancelling it.
+        r"suprime|suprimir|suprimela|suprimelo|anula|anular|anulame|anulala|anulalo|"
         rf"{_SCHEDULING_BY_ITSELF}|"
         rf"a(?=\s+que\b)|donde|where|hablame|que|cual|cuales|con\s+que|"
         r"el(?=\s+(?:equipo|computador|pc)\b.{0,96}\b(?:red|network)\b)|"

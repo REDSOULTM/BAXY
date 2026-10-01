@@ -296,6 +296,46 @@ public sealed class PlannerAppBoundaryTests
     }
 
     [Test]
+    public void AFailedStepNamesWhatItWasAbout()
+    {
+        // M94 (DEV-D D-s102, D-s087, D-p24-t4, D-w07-t2, D-w09-t3, D-p37-t3): the facts of a failed or unverified
+        // step said only the cause; the grounded argument that names what was tried goes with them.
+        const string failed =
+            """{"kind":"operation","operation":"app.open","polarity":"failure","verified":false,"succeeded":false,"error":"app_not_found"}""";
+        static string Target(string message) => JsonNode.Parse(message)!["target"]!.GetValue<string>();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Target(MindPlanBoundary.WithStepTarget(failed, new JsonObject { ["appId"] = "Notion" })),
+                Is.EqualTo("Notion"));
+            Assert.That(Target(MindPlanBoundary.WithStepTarget(failed, new JsonObject { ["location"] = "Ushuaia, Argentina" })),
+                Is.EqualTo("Ushuaia, Argentina"));
+            Assert.That(Target(MindPlanBoundary.WithStepTarget(
+                    failed, new JsonObject { ["service"] = "netflix", ["title"] = "Paddington 2" })),
+                Is.EqualTo("Paddington 2"));
+            Assert.That(Target(MindPlanBoundary.WithStepTarget(failed, new JsonObject { ["expression"] = "960/12" })),
+                Is.EqualTo("960/12"));
+            Assert.That(Target(MindPlanBoundary.WithStepTarget(failed, new JsonObject { ["folder"] = "documents" })),
+                Is.EqualTo("documents"));
+            Assert.That(Target(MindPlanBoundary.WithStepTarget(
+                    failed, new JsonObject { ["query"] = "cumbia para cocinar" })),
+                Is.EqualTo("cumbia para cocinar"));
+            // A catalog id is no name, and identifiers, versions or free text are never a target.
+            Assert.That(MindPlanBoundary.WithStepTarget(failed, new JsonObject { ["appId"] = "windows.calculator" }),
+                Is.EqualTo(failed));
+            Assert.That(MindPlanBoundary.WithStepTarget(
+                    failed, new JsonObject { ["appId"] = "Microsoft.WindowsCamera_8wekyb3d8bbwe!App" }),
+                Is.EqualTo(failed));
+            Assert.That(MindPlanBoundary.WithStepTarget(
+                    failed, new JsonObject { ["taskId"] = "a1", ["expectedVersion"] = 2, ["text"] = "hola" }),
+                Is.EqualTo(failed));
+            // A target the facts already carry stays theirs.
+            const string named = """{"kind":"operation","target":"Word","error":"window_not_found"}""";
+            Assert.That(MindPlanBoundary.WithStepTarget(named, new JsonObject { ["title"] = "otro" }), Is.EqualTo(named));
+        });
+    }
+
+    [Test]
     public void TaskDeletePlanIsGroundedFromTheVerifiedResolver()
     {
         var plan = new MindPlanResult(

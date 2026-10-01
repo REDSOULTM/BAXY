@@ -1726,7 +1726,12 @@ def apply_non_effect_conversation_classification(
         decision.get("mode") == "conversation"
         and decision.get("conversation_kind") == "unsupported"
         and not decision.get("effect_operations")
-        and effect_intent.known_unsupported_effect_request(objective, available_operations)
+        and (
+            effect_intent.known_unsupported_effect_request(objective, available_operations)
+            # M94 (DEV-D D-p02-t2 «¿Serías capaz de hacer foto ahora?» → «No, no puedo hacer fotos» told as knowledge):
+            # a request no operation serves keeps its limit when it is asked as a question.
+            or effect_intent.unserved_personal_request(objective)
+        )
     ):
         # LIMITS1701 «Puedes ver tu propio código y analizar si hay alguna
         # falla.»: a request the known-unsupported contract closed is a
