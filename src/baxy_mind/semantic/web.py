@@ -12,7 +12,8 @@ from .grammar import _fold, _match, _has, _strip_request_envelope, _without_addr
 from .intent import EffectIntent, _entity_key, _append, _append_all
 from .catalog import ApplicationCatalogIndex, _application_name_key, build_application_catalog_index
 from .temporal import (
-    _BOUNDED_TEMPORAL_SELECTOR, _DAY, _LAST_WEEKEND, _MONTH, _PAST_WEEKDAY, _WEEKDAYS, is_window_phrase, spoken_date,
+    _BOUNDED_TEMPORAL_SELECTOR, _DAY, _LAST_WEEKEND, _MONTH, _PAST_WEEKDAY, _WEEKDAYS, is_window_phrase, spoken_clocks,
+    spoken_date,
 )
 from .lexicon import GIVEN_NAMES, SOCIAL_NETWORK
 from .notes import OWN_EVENT_NOUN, own_event_reference
@@ -535,6 +536,20 @@ def weather_names_date(text: str) -> bool:
     """The weather question names a calendar date («the 1st of March», «el 5», «March 2nd») (M78)."""
 
     return spoken_date(_fold(text)) is not None
+
+
+def weather_asked_clock(text: str) -> str | None:
+    """M93 (DEV-D v3u D-s014 «¿qué previsión de tiempo hay para las cuatro?» → only the weather now): the clock the
+    weather question asks about («las cuatro», «4pm»), as the person said it; None for a question with no clock, with
+    two, or about the sun (its time is the answer, not what is asked about). The read has no forecast by the hour."""
+
+    folded = _fold(text)
+    if weather_asks_sun_time(text):
+        return None
+    clocks = spoken_clocks(folded)
+    if len(clocks) != 1:
+        return None
+    return re.sub(r"^(?:para|a|at|for|by|around|hacia|sobre)\s+", "", clocks[0].literal)
 
 
 def weather_asks_later_time(text: str) -> bool:
@@ -4017,6 +4032,13 @@ def request_common_words(text: str) -> frozenset[str]:
         if bare[:1].islower():
             words |= {word for word in re.findall(r"[a-z0-9]+", _reading_fold(bare)) if len(word) >= 4}
     return frozenset(words)
+
+
+def words_asked(*texts: str) -> frozenset[str]:
+    """M93 (DEV-D v3u D-w06-t4): every folded word of the request, the query sent for it and the place it was searched
+    near: what a report may say back without saying anything it read."""
+
+    return frozenset(re.findall(r"[a-z0-9]+", _reading_fold(" ".join(str(text or "") for text in texts))))
 
 
 # M77 (DEV-D v3l D-w14-t1 «¿quién ha ganado la Vuelta este año?» → «Jonas Vingegaard conquistó la Vuelta a España

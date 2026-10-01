@@ -1073,3 +1073,19 @@ def _language_neutral_reply(text: str) -> bool:
         r"s[ií]|yes|yep|no|nope|ok|okay|dale|vale|bueno|listo|adelante|go\s+ahead)[\s.!?]*",
         text or "", re.IGNORECASE,
     ) is not None
+
+
+# M93 (DEV-D v3u D-s042 «quiero pastel de camote…» → «No encargo pastels ni panaderías.»): a Spanish noun ending in «l»,
+# «d», «z» or «j» takes «-es» in the plural («pasteles», «redes», «luces»). The borrowings Spanish writes with «-s» are
+# left out.
+_ENGLISH_PLURAL_BORROWINGS = frozenset({"email", "mail", "gmail", "hotmail", "ipad", "ipod", "android", "cloud"})
+
+
+def words_with_es_plural(request: str) -> frozenset[str]:
+    """The folded words of the request whose Spanish plural is «-es», when the request does not write them with «-s»."""
+
+    words = set(re.findall(r"[a-zñ]+", fold(str(request or ""))))
+    return frozenset(
+        word for word in words
+        if len(word) >= 4 and word[-1] in "ldzj" and word not in _ENGLISH_PLURAL_BORROWINGS and word + "s" not in words
+    )

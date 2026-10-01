@@ -430,7 +430,41 @@ def anchored_offset_request(text: str, reply: str | None) -> str | None:
     when = (f"{day} a las {clock}" if spanish else f"{day} at {clock}").strip()
     if spanish and day and not re.match(r"(?i)(?:el|este|hoy|mañana|manana|pasado)\b", day):
         when = f"el {when}"
+    # M93 (DEV-D v3u D-w08-t3 «ponme recordatorio una ora antes d ese partido» → «ponme recordatorio el sábado 3 de
+    # octubre de 2026 a las 19:00» → «¿Qué título quieres para el recordatorio…?»): the thing pointed at («ese
+    # partido») is what the reminder is for; it stays, named with its article.
+    pointed = re.search(r"\b(?P<determiner>ese|esa|este|esta|that|the)\s+(?P<noun>[a-z]+)$", found.group(0))
+    if pointed is not None:
+        noun = said[found.start() + pointed.start("noun"): found.start() + pointed.end("noun")]
+        article = "la" if pointed.group("determiner") in {"esa", "esta"} else "el"
+        when += f" para {article} {noun}" if spanish else f" for the {noun}"
     return (said[: found.start()] + when + said[found.end():]).strip()
+
+
+# M93 (DEV-D v3u D-w08-t3): the reminder the anchored request writes, «ponme recordatorio el sábado 3 de octubre de
+# 2026 a las 19:00 para el partido», and the same said by a person («set a reminder tomorrow at 7pm for the game»): the
+# moment first, then what it is for. Same-length folded.
+_MOMENT_THEN_TITLE_REMINDER = re.compile(
+    r"^(?:(?:por\s+favor|porfa|oye|please|hey)\s*,?\s+)?"
+    r"(?:ponme|pon|poneme|pone|creame|crea|hazme|haz|agendame|agenda|set|create|make|add)\s+"
+    r"(?:(?:un|una|a|me\s+a)\s+)?(?:recordatorio|reminder)\s+(?P<when>.+?)\s+"
+    r"(?:para|for|about|sobre)\s+(?P<title>[^\d,;:.!?]+?)[\s.!]*$"
+)
+
+
+def moment_then_title_reminder(text: str) -> tuple[str, str] | None:
+    """(title, moment) of a reminder asked with its moment first and then what it is for, both as written; None
+    unless the moment holds exactly one clock with its part of the day."""
+
+    said = " ".join(str(text or "").split())
+    found = _MOMENT_THEN_TITLE_REMINDER.match(_same_length_fold(said))
+    if found is None:
+        return None
+    clocks = spoken_clocks(found.group("when"))
+    title = said[found.start("title"):found.end("title")].strip()
+    if len(clocks) != 1 or not clocks[0].resolved or not re.search(r"[^\W\d_]", title):
+        return None
+    return title, said[found.start("when"):found.end("when")].strip()
 
 
 # --- The time of another place ---------------------------------------------------

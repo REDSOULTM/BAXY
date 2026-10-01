@@ -496,7 +496,18 @@ def _trimmed(request: str, spans: list[tuple[int, int, str]]) -> str | None:
     for start, end in reversed(merged):
         lead = _LEAD_IN.search(result[:start])
         if lead is None:
-            return None
+            # M93 (DEV-D v3u D-w08-t2 «y cuando juega el sigiente» after «el América» → «¿Cuándo juega el Club América
+            # su próximo partido?»): a capitalised word the decider put in front of a name that was said («Club
+            # América») is a title of that name; the name said stays and the word goes. Anything else is no complement.
+            follows = re.match(r"\s+([^\W\d_][\w'’-]*)", result[end:])
+            if (
+                follows is None
+                or not follows.group(1)[:1].isupper()
+                or not re.fullmatch(r"(?:[^\W\d_][\w'’-]*\s*)+", request[start:end])
+            ):
+                return None
+            result = result[:start] + result[end:].lstrip()
+            continue
         result = result[:lead.start()] + result[end:]
     result = re.sub(r"\s+([?.!,;:])", r"\1", " ".join(result.split()))
     result = re.sub(r",([?.!])", r"\1", result).strip(" ,")

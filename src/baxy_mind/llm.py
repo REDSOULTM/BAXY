@@ -54,7 +54,7 @@ from .semantic.network import (
     relative_calendar_days,
 )
 from .semantic.web import (
-    weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures,
+    weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures, weather_asked_clock, words_asked,
     weather_asks_coming_days, weather_asks_week, weather_sun_events_asked, place_containers, searched_clause,
     ASKED_UNCONFIRMED_WORDS, asked_dimension_words, carried_subjects, names_subject, PLACE_KIND_WORDS,
     request_common_words, asks_this_year, undefined_asked_phrases, question_names, news_lookup_query,
@@ -173,7 +173,8 @@ from .semantic.network import (
     names_the_time,
 )
 from .semantic.notes import _PERSONAL_RECORD_STORE, names_an_own_record_store, names_the_title
-from .semantic.request import _conversation_response_language, asks_about_reliability
+from .semantic.patterns import conversation_only_content_request
+from .semantic.request import _conversation_response_language, asks_about_reliability, words_with_es_plural
 from .semantic.system import reports_the_gpu_stopped
 from .semantic.ui import asks_about_buttons, asks_to_see_the_screen
 from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_future, weather_asks_later_in_the_day, weather_asks_later_today, weather_asks_rain_now, weather_asks_today, weather_asks_whether_it_rains, weather_asked_date, weather_asks_later_time, weather_asks_past, weather_names_date
@@ -2520,6 +2521,21 @@ def _misses_content_shape(value: object, request: object) -> bool:
     return False
 
 
+def conversation_reply_speaks_of_the_system(
+    value: object, request: object, prior_requests: tuple[str, ...] = (),
+) -> bool:
+    """M93 (DEV-D v3u D-p31-t2 «…estas seguro al 100% que esto es así», D-p35-t3 «¿Qué tan confiable puedes ser?»): the
+    mind published «No, no estoy seguro al 100% porque no tengo acceso a datos históricos ni a mis propias
+    herramientas…» and «Soy BAXY, vivo en el PC y no tengo acceso a datos en tiempo real…»; the App refused both as
+    internal_code (its UserMessagePolicy twin of the composer's check) and composed again from a bare conversation
+    payload: «No tengo certeza absoluta de que no lo encontré…» and three drafts that copied the instructions
+    (composition_failed). The conversation reply is judged here by the same rule, so its own retry repairs it."""
+
+    return compose_visible_defect(
+        str(value or ""), "conversation", str(request or ""), {"priorRequests": list(prior_requests)},
+    ) == "internal_code"
+
+
 def _shaped_conversation_answer_violates_contract(
     value: object,
     request: object,
@@ -2543,6 +2559,8 @@ def _shaped_conversation_answer_violates_contract(
     if visible_reply_calls_the_person_baxy(value):
         # M62 (v3e2-final F-p07-t4 «Have a great day, BAXY!»): BAXY is the one speaking.
         return True
+    if shape not in _WRITTEN_CONTENT_SHAPES and conversation_reply_speaks_of_the_system(value, request, prior_requests):
+        return True
     # No operation ran in a conversation turn: a claimed effect or the person's
     # records stated unread are invented (owner's test 2026-09-21, turn 189 «Claro,
     # ya le hice click.»; uso real 2026-09-23 «No hay queso en la lista. Se añadirá.»).
@@ -2552,7 +2570,11 @@ def _shaped_conversation_answer_violates_contract(
         return True
     if visible_reply_restates_the_request(value, request):
         return True
-    if visible_reply_invents_a_spanish_infinitive(value) or visible_reply_breaks_word_case(value, request):
+    if (
+        visible_reply_invents_a_spanish_infinitive(value)
+        or visible_reply_breaks_word_case(value, request)
+        or visible_reply_breaks_spanish_plural(value, request)
+    ):
         return True
     if visible_reply_breaks_estar_participle(value):
         return True
@@ -2959,6 +2981,14 @@ _LIMIT_ASKS_THE_PERSON = re.compile(
 )
 
 
+_LIMIT_CLITICS = r"(?:me|te|se|le|lo|la|nos|les|los|las)?"
+_LIMIT_ACT_IS_NOT_ACT = re.compile(
+    rf"^[a-zñ]+(?:ar|er|ir){_LIMIT_CLITICS}\b[^.;:]*?\bno\s+es\s+(?:(?:el|lo)\s+mismo\s+que\s+)?"
+    rf"[a-zñ]+(?:ar|er|ir){_LIMIT_CLITICS}\b|"
+    r"^[a-z]+ing\b[^.;:]*?\b(?:is\s+not|isn'?t)\s+(?:the\s+same\s+as\s+)?(?!(?:some|no|any|every)thing\b)[a-z]+ing\b"
+)
+
+
 def limit_voice_defect(text: object, request: object = "") -> str:
     """Why a limit does not say, in BAXY's own first person, that he does not do it."""
 
@@ -2972,6 +3002,10 @@ def limit_voice_defect(text: object, request: object = "") -> str:
         # M89 (DEV-D v3r D-s042 «No te pido encargar o comprar un pastel…»): the limit denies asking the person to do
         # it, not doing it.
         return "limit_asks_the_person"
+    # M93 (DEV-D v3u D-p02-t1 «No saco fotos: sacar una foto no es tomarla yo.»): the explanation after the colon that
+    # says one act is not another act («sacar … no es tomarla», «taking … isn't snapping») explains nothing.
+    if any(_LIMIT_ACT_IS_NOT_ACT.match(part.strip()) for part in re.split(r"[:;]", folded)[1:]):
+        return "limit_act_is_not_act"
     if _LIMIT_PERSON_VOICE.match(body) or any(
         _LIMIT_REQUEST_SUBJECT.match(clause.strip())
         for clause in {folded, body}
@@ -4163,7 +4197,14 @@ def conversation_world_claim(value: object, request: object = "", prior_requests
     answer yes or no about something of theirs («unobserved_answer»).
     """
 
-    if visible_reply_claims_an_effect(value, request) or visible_reply_settles_a_plan(value, request):
+    if (visible_reply_claims_an_effect(value, request) or visible_reply_settles_a_plan(value, request)) and not (
+        # M93 (DEV-D v3u D-p35-t2 «podrías explicarme como lo hiciste?» after a SWOT analysis BAXY wrote: both replies
+        # died as shaped_presentation and the turn ended in «No entendí bien tu pregunta»): how BAXY did what it wrote
+        # in the conversation is told with «lo hice…»; that writing is no effect on the PC.
+        asks_about_own_past_act(str(request or ""))
+        and bool(prior_requests)
+        and conversation_only_content_request(str(prior_requests[-1]))
+    ):
         return "effect_claim"
     if visible_reply_denies_an_own_write(value, request):
         return "own_write_denied"
@@ -4484,6 +4525,32 @@ _FIXED_STALL_REPLIES = frozenset(
 )
 
 
+# M93 (DEV-D v3u D-w11-t1 «…un 100% de probabilidad de que llovenga.»): the model glued «venga» to the stem of
+# another verb. «-tenga» and «-venga» are only the subjunctive of «tener» and «venir» and of the verbs made from them
+# with their own prefixes («mantenga», «convenga»); any other stem in front of them is no Spanish word.
+_TENER_VENIR_PREFIXES = {
+    "t": frozenset({"", "ob", "con", "man", "de", "re", "sos", "entre", "abs", "a"}),
+    "v": frozenset({"", "con", "pro", "inter", "pre", "sobre", "de", "a", "re", "contra", "circun", "sub"}),
+}
+_TENER_VENIR_SUBJUNCTIVE = re.compile(r"(?P<prefix>[a-zñ]*)(?P<stem>[tv])enga(?:s|mos|n)?")
+
+
+def _invented_tener_venir_subjunctive(token: str) -> bool:
+    found = _TENER_VENIR_SUBJUNCTIVE.fullmatch(token)
+    return found is not None and found.group("prefix") not in _TENER_VENIR_PREFIXES[found.group("stem")]
+
+
+def visible_reply_breaks_spanish_plural(value: object, request: object = "") -> bool:
+    """M93 (DEV-D v3u D-s042 «No encargo pastels ni panaderías.» for «pastel de camote»): a Spanish reply writes a word
+    of the request whose plural is «-es» (semantic.request.words_with_es_plural) with a bare English «-s»."""
+
+    text = str(value or "")
+    if _message_response_language(text) != "es":
+        return False
+    said = set(re.findall(r"[a-zñ]+", _reading_fold(text)))
+    return any(word + "s" in said for word in words_with_es_plural(str(request or "")))
+
+
 def visible_reply_invents_a_spanish_infinitive(value: object) -> bool:
     """Reject prose that builds an infinitive out of a conjugated stem.
 
@@ -4505,7 +4572,7 @@ def visible_reply_invents_a_spanish_infinitive(value: object) -> bool:
     if not folded:
         return False
     if any(
-        token in _MEASURED_INVENTED_VISIBLE_TOKENS
+        token in _MEASURED_INVENTED_VISIBLE_TOKENS or _invented_tener_venir_subjunctive(token)
         for token in re.findall(r"[a-zñáéíóúü]+", folded)
     ):
         return True
@@ -4761,12 +4828,23 @@ _NEGATED_FAILURE = re.compile(
 )
 
 
+# M93 (held-out v3v t10): the list of open programs and windows, as the inventory_failed cause names it. Folded.
+_OPEN_PROGRAMS_LIST = re.compile(
+    r"\b(?:programas|ventanas|aplicaciones|apps|procesos)(?:\s*,?\s+(?:y|e|o)\s+(?:las\s+|los\s+)?"
+    r"(?:programas|ventanas|aplicaciones|apps|procesos))?\s+abiert[oa]s\b"
+)
+
+
 def _asserts_failure(text: str) -> bool:
     # Same assertion scope as UserMessagePolicy.LooksLikeFailure: negating one
     # failure does not erase an independent failure later in the sentence.
     assertions = _NEGATED_FAILURE.sub("", _accent_folded_with_punctuation(text))
+    # M93 (held-out v3v t10 «El Bloc de notas no pudo abrirse porque…», missing_failure): «no pudo abrirse» is «no se
+    # pudo abrir» with its pronoun after the verb. Twin: UserMessagePolicy.LooksLikeFailure.
     return _FAILURE_MARKERS.search(text) is not None or re.search(
-        r"\b(?:fallos?|failed)\b|\bno\s+(?:encontre|se\s+(?:pudo|pudieron|encontro|encontraron))\b", assertions
+        r"\b(?:fallos?|failed)\b|\bno\s+(?:encontre|se\s+(?:pudo|pudieron|encontro|encontraron))\b|"
+        r"\bno\s+pud(?:o|ieron)\s+[a-z]+(?:arse|erse|irse)\b",
+        assertions,
     ) is not None
 
 
@@ -9929,6 +10007,14 @@ _SEARCH_MECHANICS = re.compile(
     r"guide|blog|forum|tool|website)(?:\s+(?:from|by|on)(?:\s+[a-z0-9]+)"
     r"{1,3}?)?\s+(?:says|states|claims|mentions|notes|reports|explains|indicates)|"
     r"another\s+(?:mentions|notes|reports|indicates)|"
+    # M93 (DEV-D v3u D-s061 «…cientos de miles de empleados, como se menciona en el artículo revisado por Nicholas
+    # Ferraro…»): the page said in the passive («se menciona en el artículo», «as stated in the article») or by who
+    # wrote or reviewed it is the page named the same.
+    r"(?:como\s+)?se\s+(?:menciona|indica|dice|senala|afirma|explica|informa|cuenta|detalla)\s+en\s+"
+    r"(?:el|la|un|una|este|esta|ese|esa)\s+(?:pagina|articulo|nota|fuente|sitio|publicacion|reportaje|post|web)|"
+    r"(?:el|un|este|ese)\s+articulo\s+(?:revisado|publicado|escrito|firmado)\s+(?:por|en)|"
+    r"(?:as\s+)?(?:mentioned|stated|noted|explained|reported|said)\s+(?:in|on)\s+(?:the|an?|this|that)\s+"
+    r"(?:page|article|source|site|post|piece)|(?:the|an?|this|that)\s+article\s+(?:reviewed|published|written)\s+by|"
     # M77 (DEV-D v3l D-p27-t2 «None of the results state which genre…», D-s063 «…in the provided results», D-p34-t1
     # «Los fragmentos mencionan…», D-p31-t1 «La información visible solo confirma…», «Los resultados no mencionan…»):
     # the results, fragments or visible information named as what speaks, or qualified as the ones given, are the
@@ -10707,6 +10793,136 @@ def _search_report_stale_day(text: str, payload: dict) -> tuple[str, date] | Non
     return None
 
 
+# M93 (DEV-D v3u D-s027 «Concierto en 6th street mañana» → «Mañana hay un evento gratuito en 6th Street & Broadway…»
+# over a Facebook post of Pittsburg, Kansas, «¡Dos eventos GRATIS mañana!», with no date): the «mañana» of a page that
+# carries no date is the day after it was written, which nobody knows. Said as the person's tomorrow, it is a day the
+# read does not give. A date written in the page that is that day, or a news item published today, gives it.
+_UNDATED_RELATIVE_DAYS = {"manana": 1, "tomorrow": 1, "ayer": -1, "yesterday": -1, "anoche": -1}
+
+
+def _search_report_undated_relative_day(text: str, payload: dict) -> str:
+    """The relative day («mañana», «ayer») a report sentence takes from a result that says it without a date; ""."""
+
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    items = [
+        item for item in [*_search_results_of(payload), *(seen.get("headlines") or [])] if isinstance(item, dict)
+    ]
+    today = _report_today()
+    for sentence in re.split(r"(?<=[.!?;])\s+", str(text).strip()):
+        folded = _reading_fold(sentence)
+        if _SEARCH_NOT_FOUND.match(folded) is not None:
+            continue
+        # «de la mañana», «por la mañana» are a part of the day; a capitalised «Ayer» inside the sentence is a name
+        # («directed by David Ayer», replay of v3m D-p27-t1).
+        words = set(re.findall(r"[a-z0-9]+", re.sub(r"\bla\s+manana\b", " ", folded)))
+        lowered = {
+            _reading_fold(token) for index, token in enumerate(re.findall(r"[^\W\d_]+", sentence))
+            if index == 0 or not token[:1].isupper()
+        }
+        relative = sorted(words & lowered & set(_UNDATED_RELATIVE_DAYS))
+        if not relative:
+            continue
+        best: tuple[int, dict] | None = None
+        for item in items:
+            page = set(re.findall(r"[a-z0-9]+", _reading_fold(f"{item.get('title') or ''} {item.get('snippet') or ''}")))
+            shared = len({word for word in words & page if len(word) >= 5 and word not in _RELATIVE_DAY_WORDS})
+            if shared >= 2 and (best is None or shared > best[0]):
+                best = (shared, item)
+        if best is None:
+            continue
+        item = best[1]
+        page_text = _reading_fold(f"{item.get('title') or ''} {item.get('snippet') or ''}")
+        page_words = set(re.findall(r"[a-z0-9]+", re.sub(r"\bla\s+manana\b", " ", page_text)))
+        for word in relative:
+            if word not in page_words:
+                continue
+            if _result_published_day(item) == today:
+                continue
+            target = today + timedelta(days=_UNDATED_RELATIVE_DAYS[word])
+            dated = False
+            for pattern in _CALENDAR_DATE_PATTERNS:
+                for match in pattern.finditer(page_text):
+                    month = match["month"]
+                    number = int(month) if month.isdigit() else _CALENDAR_MONTH_NUMBERS.get(month)
+                    if number == target.month and int(match["day"]) == target.day and (
+                        match["year"] is None or int(match["year"]) == target.year
+                    ):
+                        dated = True
+            if not dated:
+                return word
+    return ""
+
+
+# M93 (DEV-D v3u D-s021 «me gustaría saber qué está pasando por el mundo» → «Alemania, campeona del mundo, criticó a
+# Jürgen Klopp…» over «Campeón del mundo con Alemania critica a Jürgen Klopp: …»): a headline retold with a name it
+# writes after a preposition («con Alemania») as the one who acts turns who did it around. The sentence that opens
+# with that name, retelling a headline that opens otherwise and keeps the name behind «con», «de», «en»…, is that.
+_HEADLINE_PREPOSITIONS = frozenset(
+    {"con", "de", "del", "en", "para", "por", "contra", "sin", "sobre", "ante", "with", "for", "of", "in", "against",
+     "from", "about", "on", "at"}
+)
+_SENTENCE_LEAD = re.compile(r"^[\W\d_]*(?:(?:y|e|and|pero|but|ademas|also|el|la|los|las|the)\s+)*", re.IGNORECASE)
+
+
+def _search_report_moves_the_subject(text: str, payload: dict) -> str:
+    """The name a report sentence makes the subject of a headline that writes it as a complement; ""."""
+
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    if seen.get("authority") != "google_news_rss_search":
+        return ""
+    titles = [
+        str(item.get("title") or "")
+        for item in [*_search_results_of(payload), *(seen.get("headlines") or [])] if isinstance(item, dict)
+    ]
+    for sentence in re.split(r"(?<=[.!?;])\s+", re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(text)).strip()):
+        body = sentence[_SENTENCE_LEAD.match(sentence).end():]
+        head = re.match(r"([^\W\d_][\w'’-]*)", body)
+        if head is None:
+            continue
+        name = head.group(1)
+        key = _reading_fold(name)
+        words = set(re.findall(r"[a-z0-9]+", _reading_fold(sentence)))
+        for title in titles:
+            tokens = re.findall(r"[^\W_][\w'’-]*", title)
+            folded_tokens = [_reading_fold(token) for token in tokens]
+            if key not in folded_tokens[1:] or folded_tokens[:1] == [key]:
+                continue
+            place = folded_tokens.index(key)
+            if not tokens[place][:1].isupper() or folded_tokens[place - 1] not in _HEADLINE_PREPOSITIONS:
+                continue
+            shared = {word for word in words & set(folded_tokens) if len(word) >= 5 and word != key}
+            if len(shared) >= 2:
+                return name
+    return ""
+
+
+# M93 (DEV-D v3u D-w06-t4 «Bueno, dale, buscame las que estén abiertas cerca» → «Las pizzerías abiertas están cerca de
+# Curico.» over five pages that named Giuseppe, Errázuriz 2970): a report whose every word is the request's, the
+# query's or the place it was searched near says back what was asked and nothing of what was read. A yes-or-no question
+# answered with its own words is an answer; a request to find something is not.
+def _search_report_echoes_the_ask(text: str, payload: dict, user_text: str) -> bool:
+    if _search_results_text(payload) is None or "?" in str(user_text or ""):
+        return False
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    asked = words_asked(str(user_text or ""), str(seen.get("query") or ""), str(seen.get("near") or ""))
+    sentences = [part for part in re.split(r"(?<=[.!?;])\s+", str(text).strip()) if part.strip()]
+    if not sentences:
+        return False
+    for sentence in sentences:
+        folded = _reading_fold(sentence)
+        if _SEARCH_NOT_FOUND.match(folded) is not None or re.search(r"\d", sentence):
+            return False
+        content = [
+            word for word in re.findall(r"[a-z0-9]+", folded)
+            if len(word) >= 5 and word not in _SEARCH_REPORT_GRAMMAR_WORDS
+        ]
+        if not content or any(
+            not any(word[:5] == said[:5] for said in asked if len(said) >= 4) for word in content
+        ):
+            return False
+    return True
+
+
 def _search_report_other_year(text: str, payload: dict, user_text: str) -> str:
     """M77 (DEV-D v3l D-w14-t1 «¿quién ha ganado la Vuelta este año?» → «Jonas Vingegaard conquistó la Vuelta a
     España 2025» in 2026): what a result states of another year does not answer a question about this one. The year
@@ -11032,6 +11248,19 @@ def _weather_focus(user_text: str, english: bool) -> str:
             "envía ninguno, la fecha es hoy: da el tiempo de ahora."
         )
     coming = weather_asks_coming_days(user_text)
+    clock = weather_asked_clock(user_text)
+    if clock is not None:
+        # M93 (DEV-D v3u D-s014 «¿qué previsión de tiempo hay para las cuatro?» → «Actualmente hace 16.8 °C…»): the read
+        # has no forecast by the hour; the hour asked is answered by saying so, with the day's own figures.
+        return (
+            f"The person asked about the weather at {clock}, and the read has no forecast by the hour: say in a few "
+            f"words that you do not have the forecast for {clock} (only for the whole day), then give that day's sky, "
+            "maximum, minimum and rain probability (tomorrow's for tomorrow, today's otherwise)."
+            if english
+            else f"La persona preguntó por el tiempo a {clock}, y la lectura no trae pronóstico por hora: di en pocas "
+            f"palabras que no tienes el pronóstico para {clock} (sólo el del día entero) y da el cielo, la máxima, la "
+            "mínima y la probabilidad de lluvia de ese día (los de mañana para mañana, los de hoy si no)."
+        )
     if _weather_asks_rain(user_text):
         # M63 (v3f-final F-w01-t6): a yes-or-no rain question is answered yes or no first, as the chance says.
         plain = weather_asks_whether_it_rains(user_text)
@@ -11638,6 +11867,13 @@ def _weather_measure_for_another_day(text: str, seen: dict, measures: frozenset[
     return False
 
 
+# M93: saying that the read has no forecast for the hour asked. Folded.
+_WEATHER_HOUR_UNREAD = re.compile(
+    r"\bpor\s+horas?\b|\bhora\s+a\s+hora\b|\bpara\s+esa\s+hora\b|\ba\s+esa\s+hora\b|\bhourly\b|\bby\s+the\s+hour\b|"
+    r"\bhour[\s-]by[\s-]hour\b|\bfor\s+that\s+(?:hour|time)\b|\bat\s+that\s+(?:hour|time)\b"
+)
+
+
 def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     """REOPEN1993 grupo W: every number in a weather reply is an observed one
     (temperatures, wind, humidity, rain probability) and the place is named;
@@ -11790,7 +12026,22 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         if isinstance(air, dict) and not _states_weather_number(text, air.get("usAqi")):
             return "missing_state"
         return ""
+    asked_clock = weather_asked_clock(user_text or "")
+    if (
+        asked_clock is not None
+        and _WEATHER_HOUR_UNREAD.search(folded_text) is None
+        and re.search(r"\b" + re.escape(_reading_fold(asked_clock)) + r"\b", folded_text) is None
+    ):
+        # M93 (DEV-D v3u D-s014 «¿qué previsión de tiempo hay para las cuatro?» → «Actualmente hace 16.8 °C…»): the hour
+        # asked is not in the read; the reply says so, or names the hour it speaks of.
+        return "missing_state"
     if sun_time:
+        # M93 (DEV-D v3u D-s054 «Necesito la hora en que comenzará a oscurecerse.» → «Mañana en Curicó, el sol se
+        # pondrá a las 19:48.» with only today's sunset sent): the day said is the day of the sun time sent.
+        if not asks_tomorrow and not isinstance(tomorrow, dict) and re.search(
+            r"(?<!\bla\s)\bmanana\b|\btomorrow\b", folded_text,
+        ):
+            return "weather_wrong_day"
         # Uso real tanda 2 «el horario de la caída del sol para mañana»: the asked
         # day's sun time is the answer (tomorrow's for tomorrow or a later day).
         # Tanda 6b: the event asked (sunrise or sunset) is the answer; the other event's time is another fact.
@@ -12136,6 +12387,59 @@ def _amount_report_defect(text: str, payload: dict, user_text: str, results_text
     return ""
 
 
+# M93 (DEV-D v3u D-s062 «Go al homescreen» → window.minimize.all failed → «…porque el intento de cerrar todas las
+# ventanas falló…»): the act a report names is the operation's own. Minimizing, maximizing, restoring, closing and
+# opening are different acts; a report of one that names another, and never its own, tells something that was not
+# tried. Folded words.
+_OPERATION_ACTS = {
+    "minimize": r"\bminimi[zs]\w*|\bminimiz\w*",
+    "maximize": r"\bmaximi[zs]\w*|\bmaximiz\w*",
+    "restore": r"\brestaur\w*|\brestor\w*",
+    "close": r"\bcerr\w*|\bcierr\w*|\bclos(?:e|ed|ing|es)\b",
+    "open": r"\babr(?:ir|e|i|o|io|ieron|irla|irlo|irse|iendo)\b|\babiert[oa]s?\b|\bopen(?:ed|ing|s)?\b",
+}
+
+
+# M93 (DEV-D v3u D-w18-t4 «remind me en 45 minutes to take a break» → «Te he recordado para que tomes un descanso a las
+# 20:23.»): a notification just scheduled rings later; saying BAXY already reminded, or that it already rang, tells a
+# thing that has not happened. Folded.
+_SCHEDULED_TOLD_AS_RUNG = re.compile(
+    r"\b(?:ya\s+)?te\s+(?:he|habia)\s+(?:recordado|avisado|notificado|despertado)\b|"
+    r"\bte\s+(?:recorde|avise|notifique|desperte)\b|\b(?:ya\s+)?(?:sono|ha\s+sonado)\b|"
+    r"\bi(?:'ve|\s+have)\s+(?:already\s+)?(?:reminded|notified|alerted)\s+you\b|"
+    r"\bi\s+(?:already\s+)?(?:reminded|notified|alerted)\s+you\b|"
+    r"\b(?:it|the\s+(?:alarm|reminder|timer))\s+(?:already\s+)?(?:rang|went\s+off)\b"
+)
+
+
+def _schedule_told_as_rung(text: str, payload: dict) -> bool:
+    """A verified alarm or reminder still to ring, reported as if it had already rung."""
+
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    return (
+        payload.get("operation") in {"notification.schedule", "reminder.create"}
+        and bool(seen)
+        and not payload.get("cause")
+        and _SCHEDULED_TOLD_AS_RUNG.search(_reading_fold(text)) is not None
+    )
+
+
+def _report_changes_the_act(text: str, payload: dict) -> str:
+    """The other act a report of a window or application operation names instead of its own; ""."""
+
+    reason = payload.get("reason") if isinstance(payload.get("reason"), dict) else {}
+    operation = str(payload.get("operation") or reason.get("operation") or "")
+    if not operation.startswith(("window.", "app.")):
+        return ""
+    own = [act for act in _OPERATION_ACTS if act in operation.split(".")]
+    if len(own) != 1:
+        return ""
+    folded = _reading_fold(text)
+    if re.search(_OPERATION_ACTS[own[0]], folded):
+        return ""
+    return next((act for act, pattern in _OPERATION_ACTS.items() if act != own[0] and re.search(pattern, folded)), "")
+
+
 def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said: str | None = None) -> str:
     """El texto público conserva los hechos que el payload le dio.
 
@@ -12150,6 +12454,10 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
     window_defect = window_fact_defect(text, payload, user_text)
     if window_defect:
         return window_defect
+    if _report_changes_the_act(text, payload):
+        return "report_changes_the_act"
+    if _schedule_told_as_rung(text, payload):
+        return "schedule_told_as_rung"
     if _search_report_speaks_as_a_page(text, payload, user_text):
         return "search_report_page_voice"
     if payload.get("operation") == "web.search" and _search_report_names_the_person_as_finder(text):
@@ -12424,15 +12732,24 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
         if _search_report_stale_day(text, payload) is not None:
             # M77 (DEV-D v3l D-p05-t2): a dated headline's «mañana» is its own day's.
             return "search_report_stale_day"
+        if _search_report_undated_relative_day(text, payload):
+            # M93 (DEV-D v3u D-s027): an undated page's «mañana» is no known day.
+            return "search_report_undated_day"
         if _search_report_defines_the_ask(text, payload, user_text):
             # M77 (DEV-D v3l D-p19-t3, D-p23-t2, D-w17-t5): the word asked with is not what was asked.
             return "search_report_defines_the_ask"
     if _search_report_why_title_as_fact(text, payload):
         # M77 (DEV-D v3l D-s021): «Por qué X» does not state X.
         return "search_report_why_title_as_fact"
+    if _search_report_moves_the_subject(text, payload):
+        # M93 (DEV-D v3u D-s021): «Campeón del mundo con Alemania critica…» is not «Alemania criticó…».
+        return "search_report_moves_the_subject"
     if results_text is not None:
         if _places_whole_address(text, payload, user_text):
             return "places_whole_address"
+        if _search_report_echoes_the_ask(text, payload, user_text):
+            # M93 (DEV-D v3u D-w06-t4): «Las pizzerías abiertas están cerca de Curico.» says only what was asked.
+            return "search_report_echoes_the_ask"
         if _search_report_names_nothing(text, payload, user_text):
             # M70 (held-out v3h t14): «Nadie lo dijo.» over five pages about the critics. After the specific defects,
             # whose hints say better what to change.
@@ -13758,7 +14075,7 @@ def compose_visible_defect(
     if visible_reply_invents_a_spanish_infinitive(stripped) or visible_reply_breaks_word_case(
         # An observed name («watchOS» in a page title) is written as it was seen.
         stripped, f"{user_text} {json.dumps(facts, ensure_ascii=False, default=str)}",
-    ):
+    ) or visible_reply_breaks_spanish_plural(stripped, user_text):
         return "invented"
     # A literal identifier supplied by the person (for example a filename)
     # is not leaked protocol metadata. Exempt only the same complete token
@@ -14726,7 +15043,9 @@ def compose_visible_defect(
             folded,
         ):
             return "metadiscourse"
-        if re.search(r"abiert|\bis open\b", folded) and not re.search(
+        # M93 (held-out v3v t10 «abrí el bloc de notas», inventory_failed): «…no pudo leer la lista de programas y
+        # ventanas abiertos» names the list that could not be read, the failure's own cause; it claims nothing open.
+        if re.search(r"abiert|\bis open\b", _OPEN_PROGRAMS_LIST.sub(" ", folded)) and not re.search(
             # CLOSE1371 «cierra steam» with no Steam window: «no tiene ninguna
             # ventana abierta» / «no está abierto» state the absence, they do
             # not claim the application is open.
@@ -15959,6 +16278,9 @@ def _unsupported_answer_contract_failure(
         return "unsupported_changed_act"
     if visible_reply_breaks_word_case(content, request):
         return "unsupported_broken_case"
+    if visible_reply_breaks_spanish_plural(content, request):
+        # M93 (DEV-D v3u D-s042 «No encargo pastels…»).
+        return "unsupported_broken_plural"
     if visible_reply_is_a_fixed_stall(content):
         return "unsupported_fixed_stall"
     normalized = _policy_guard_text(content)
@@ -18750,6 +19072,18 @@ class LlmRuntime:
                             "sin nombrarla."
                         )
                         if visible_reply_calls_the_person_baxy(content)
+                        else (
+                            # M93 (DEV-D v3u D-p31-t2, D-p35-t3): what BAXY has access to is not the answer.
+                            "Do not speak of what you have or lack access to, of your data, tools or updates, or of "
+                            "how you work. Answer in one sentence what the person says or asks, with what the "
+                            "conversation shows; if you cannot be sure of it, say so plainly."
+                            if response_language == "en"
+                            else "No hables de a qué tienes o no tienes acceso, de tus datos, herramientas o "
+                            "actualizaciones ni de cómo funcionas. Contesta en una sola frase lo que la persona dice o "
+                            "pregunta, con lo que muestra la conversación; si no puedes asegurarlo, dilo llanamente."
+                        )
+                        if presentation_shape not in _WRITTEN_CONTENT_SHAPES
+                        and conversation_reply_speaks_of_the_system(content, text, prior_user_requests)
                         else (
                             # M85 (DEV-D v3o D-p09-t3, D-w01-t2): the denial of a write nobody asked about.
                             "En este turno no hiciste nada: no digas lo que hiciste ni lo que no hiciste. Contesta, "
@@ -24670,6 +25004,53 @@ class LlmRuntime:
                     )
                     if (stale := _search_report_stale_day(candidate, visible_situation)) is not None
                     else ""
+                ),
+                # M93 (DEV-D v3u D-s062 «…el intento de cerrar todas las ventanas falló…» for a minimize).
+                "report_changes_the_act": (
+                    "Name the act that was tried, with its own verb (the operation's: minimize is not close, open is "
+                    "not close); say nothing of any other act."
+                    if response_language == "en"
+                    else "Nombra el acto que se intentó, con su propio verbo (el de la operación: minimizar no es "
+                    "cerrar, abrir no es cerrar); no hables de ningún otro acto."
+                ),
+                # M93 (DEV-D v3u D-s054 «Mañana … el sol se pondrá a las 19:48» with today's sunset).
+                "weather_wrong_day": (
+                    "The sun time sent is today's: say it of today, never of tomorrow."
+                    if response_language == "en"
+                    else "La hora del sol enviada es la de hoy: dila de hoy, nunca de mañana."
+                ),
+                # M93 (DEV-D v3u D-w18-t4 «Te he recordado … a las 20:23»).
+                "schedule_told_as_rung": (
+                    "It has not rung yet: say that you will remind them (or that the alarm will ring) at the time "
+                    "scheduled, in the future, never that you already reminded them."
+                    if response_language == "en"
+                    else "Todavía no ha sonado: di que se lo recordarás (o que la alarma sonará) a la hora programada, "
+                    "en futuro, nunca que ya se lo recordaste."
+                ),
+                # M93 (DEV-D v3u D-s027, D-s021, D-w06-t4).
+                "search_report_undated_day": (
+                    "The page that says it gives no date: its «tomorrow» or «yesterday» is not the person's. Do not say "
+                    "it happens on that day; say what the page states and where, or, if nothing read answers for the "
+                    "person's day, say briefly, in one sentence, that you could not find it."
+                    if response_language == "en"
+                    else "La página que lo dice no tiene fecha: su «mañana» o «ayer» no es el de la persona. No digas que "
+                    "ocurre ese día; di lo que la página afirma y dónde, o, si nada de lo leído contesta para el día de "
+                    "la persona, di brevemente, en una oración, que no lo encontraste."
+                ),
+                "search_report_moves_the_subject": (
+                    "Keep who does what as the headline says it: the name the headline writes after «with», «of» or "
+                    "«in» is not the one who acts. Quote such a headline whole, between «», or leave it out."
+                    if response_language == "en"
+                    else "Conserva quién hace qué como lo dice el titular: el nombre que el titular escribe tras «con», "
+                    "«de» o «en» no es quien actúa. Cita ese titular entero, entre «», o déjalo fuera."
+                ),
+                "search_report_echoes_the_ask": (
+                    "That only says back what was asked. Give what the results name (a name, a place, an address, a "
+                    "figure), in one or two sentences; if none names it, say briefly that you could not find it."
+                    if response_language == "en"
+                    else "Eso sólo repite lo que se pidió. Da lo que los resultados nombran (un nombre, un lugar, una "
+                    "dirección, una cifra), en una o dos oraciones; si ninguno lo nombra, di brevemente que no lo "
+                    "encontraste."
                 ),
                 # M77 (DEV-D v3l D-p19-t3 «Genre is any style…», D-p23-t2, D-w17-t5).
                 "search_report_defines_the_ask": (

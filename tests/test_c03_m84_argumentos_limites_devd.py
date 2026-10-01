@@ -160,7 +160,7 @@ AMERICA = "América juega este 27 de septiembre de 2026 contra Necaxa a las 21:0
 
 def test_an_hour_before_the_match_just_given() -> None:
     anchored = anchored_offset_request("ponme recordatorio una ora antes d ese partido", AMERICA)
-    assert anchored == "ponme recordatorio este 27 de septiembre de 2026 a las 20:00"
+    assert anchored == "ponme recordatorio este 27 de septiembre de 2026 a las 20:00 para el partido"  # M93: what it is for stays
     intent = resolve_explicit_effects(anchored, SCHEDULE)
     assert intent is not None and intent.operations == ("reminder.create",)
 
@@ -290,7 +290,7 @@ def test_the_decider_does_not_count_the_moment() -> None:
                ("user", "y cuando juega el sigiente"), ("assistant", AMERICA)]
     result = _decided("ponme recordatorio una ora antes d ese partido", history, model)
     assert result["kind"] == "action" and result["operation"] == "reminder.create"
-    assert result["objective"] == "ponme recordatorio este 27 de septiembre de 2026 a las 20:00"
+    assert result["objective"] == "ponme recordatorio este 27 de septiembre de 2026 a las 20:00 para el partido"  # M93
 
 
 def test_there_is_the_place_just_asked_and_the_decider_is_not_asked() -> None:
