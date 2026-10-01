@@ -134,7 +134,8 @@ def test_d_p37_t2_the_entries_the_question_was_about_go_on_the_list_named() -> N
     model = _Decider("Add beer and chips to the shopping list.", "action", ("task.create",), title="beer and chips",
                      details="shopping list")
     result = _decided(TURNS["D-p37-t2"]["text"], BEER, model)
-    assert result["kind"] == "action" and result["operation"] == "task.create"
+    # M113: the restatement names two entries, and each is a task of its own (M111 makes each one a step).
+    assert result["kind"] == "plan" and result["effectOperations"] == ["task.create", "task.create"]
     assert list_entries_said_before("Include items on the shopping list", "beer and chips",
                                     "What would you like me to do with beer and chips?")
 

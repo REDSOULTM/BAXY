@@ -192,10 +192,11 @@ def test_the_answer_puts_the_entries_on_the_list_asked_for():
     effects = resolve_explicit_effects(
         "leche y pan", OPERATIONS, previous_user_text="crea una lista de la compra",
     )
-    assert effects is not None and effects.operations == ("task.create",)
-    assert sidecar._ground_explicit_arguments(
-        "task.create", effects.evidence[0], SCHEMAS["task.create"],
-    ) == {"title": "leche y pan", "details": "lista de la compra"}
+    # M113: each entry enumerated is a task of its own.
+    assert effects is not None and effects.operations == ("task.create", "task.create")
+    assert [
+        sidecar._ground_explicit_arguments("task.create", clause, SCHEMAS["task.create"]) for clause in effects.evidence
+    ] == [{"title": "leche", "details": "lista de la compra"}, {"title": "pan", "details": "lista de la compra"}]
     assert resolve_explicit_effects("no, déjalo", OPERATIONS, previous_user_text="crea una lista de la compra") is None
 
 

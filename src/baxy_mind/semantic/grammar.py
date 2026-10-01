@@ -945,6 +945,42 @@ def _is_past_or_hypothetical_state(text: str) -> bool:
     )
 
 
+_HYPOTHESIS_FRAME = (
+    r"\b(?:hipoteticamente|hypothetically|supongamos|suponiendo|imagina|imaginate|imagine)\b|"
+    r"\b(?:que|what)\s+(?:ocurriria|pasaria|would\s+happen)\s+(?:si|if)\b"
+)
+_ASKS_AN_ACT = (
+    r"\b(?:can|could|would|will)\s+you\b|\b(?:me\s+)?(?:puedes|podes|podrias|puede|podria)\b|"
+    # «¿me abres la carpeta…?», «¿nos pones música?»: the present second person asked for oneself.
+    r"^[¿¡\s]*(?:me|nos)\s+[a-z]+(?:as|es|is)\b"
+)
+
+
+def past_or_hypothetical_message(text: str) -> bool:
+    """The whole message is about a past or hypothetical state (a story, a hypothesis), not a request now.
+
+    M113 (DEV-F w18-t1 «Right, can you pull up my Downloads folder? I'm after the council tax letter I saved last
+    week…», w39-t1 «dónde quedó el apunte.pdf? lo bajé ayer…»): a past-tense sentence beside a sentence that asks
+    for an act now is the context of that request. A hypothesis frame («supongamos», «imagine») still covers the
+    whole message, and a single sentence is judged as before.
+    """
+
+    if not _is_past_or_hypothetical_state(text):
+        return False
+    sentences = [part for part in re.split(r"(?<=[.?!;])\s+", text.strip()) if part.strip(" ,.?!;¿¡")]
+    if len(sentences) < 2 or _has(text, _HYPOTHESIS_FRAME):
+        return True
+    for sentence in sentences:
+        if _is_past_or_hypothetical_state(sentence):
+            continue
+        body = _strip_request_envelope(sentence)
+        if _head_is(_request_head(body), _COVERAGE_ACTION_HEAD) or (
+            sentence.rstrip().endswith("?") and _has(sentence, _ASKS_AN_ACT)
+        ):
+            return False
+    return True
+
+
 def _is_machine_knowledge_or_diagnosis(text: str) -> bool:
     """Separate measuring this machine from talking *about* hardware.
 

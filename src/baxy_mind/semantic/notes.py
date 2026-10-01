@@ -926,6 +926,41 @@ def list_entry_request(text: str) -> tuple[str, str] | None:
     return item, listed
 
 
+# M113 (DEV-F v4d w08 «Apúntame en la lista de la compra pimientos del piquillo, aceite y dos barras de pan», then
+# «Tacha el aceite» found no task «aceite»): each thing enumerated for a list is an entry of its own, so each can be
+# ticked off or taken off by its name. Commas between digits («1,5 kilos») and quoted names keep one entry.
+_ENTRY_SEPARATOR = re.compile(r"(?<!\d)\s*,\s*(?!\d)|\s+(?:y|e|and|&)\s+", re.IGNORECASE)
+MAX_LIST_ENTRIES = 8
+
+
+def list_entries(text: str) -> tuple[tuple[str, ...], str] | None:
+    """(entries, list) of a list entry request (``list_entry_request``), its enumerated entries apart; None for any
+    other shape."""
+
+    found = list_entry_request(text)
+    if found is None:
+        return None
+    item, listed = found
+    if re.search(r"[\"'«»“”]", item):
+        return (item,), listed
+    parts: tuple[str, ...] = ()
+    for part in _ENTRY_SEPARATOR.split(item):
+        part = part.strip(" ,;:")
+        if part and _fold(part) not in {_fold(kept) for kept in parts}:
+            parts += (part,)
+    if not 2 <= len(parts) <= MAX_LIST_ENTRIES:
+        return (item,), listed
+    return parts, listed
+
+
+def list_entry_said(entry: str, listed: str) -> str:
+    """The request that puts one entry on the list, in the list's language, as ``list_entry_request`` reads it."""
+
+    if _fold(listed).startswith("lista"):
+        return f"añade {entry} a la {listed}"
+    return f"add {entry} to the {listed}"
+
+
 # M80 (DEV-D v3m D-p06-t2, D-p06-t3, D-p08-t3): a change of the task just made says only what changes: the list it
 # goes on («cámbialo a la lista Comida», «Add to the Walmart list»), or its new name («from bacon to eggs», «Change
 # to that eggs», «cambia el tocino por huevos»).

@@ -3199,6 +3199,34 @@ def browser_search_pronoun_intent(text: str, history: object, available_operatio
 _NAMED_PUBLIC_SITE = r"(?:youtube|gmail|github|chatgpt)"
 
 
+_BARE_DOMAIN = r"\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}(?:/\S*)?\b"
+
+
+def bare_domain_names_an_application(
+    folded: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex = (),
+) -> bool:
+    """A bare dotted name whose name part is an installed application's name is no plain domain.
+
+    M113 (DEV-F s035 «Could you open up Paint.NET for me?» → navigated to paint.net): «Paint.NET», «Battle.net» or
+    «Node.js» are written like domains. When the whole name, or the name before its last dot, is what the Start
+    catalog calls an installed application, an opening of it is not read as a navigation: the turn is left to the
+    decider with the conversation.
+    """
+
+    catalog = build_application_catalog_index(application_names)
+    if not catalog.keys:
+        return False
+    for found in re.finditer(_BARE_DOMAIN, folded):
+        name = found.group(0).split("/", 1)[0]
+        if name.startswith("www."):
+            continue
+        stem = name.rsplit(".", 1)[0]
+        if {name, name.replace(".", " "), stem, stem.replace(".", " ")} & catalog.keys:
+            return True
+    return False
+
+
 def _review_web_and_browser_effects(
     matches: list[tuple[int, int, str]],
     folded: str,
@@ -3206,6 +3234,7 @@ def _review_web_and_browser_effects(
     *,
     context_browser: str | None,
     web_search_requested: bool,
+    application_names: Iterable[str] | ApplicationCatalogIndex = (),
 ) -> None:
     """Append explicit web-search, navigation, page, and tab effects."""
 
@@ -3318,11 +3347,7 @@ def _review_web_and_browser_effects(
                 priority=1,
             )
     has_url = _has(folded, r"https?://\S+")
-    has_bare_domain = _has(
-        folded,
-        r"\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+"
-        r"[a-z]{2,63}(?:/\S*)?\b",
-    ) and not _has(
+    has_bare_domain = _has(folded, _BARE_DOMAIN) and not _has(
         folded,
         r"\b(?:archivo|file|carpeta|folder|escritorio|desktop|"
         r"documentos|documents|descargas|downloads)\b",
@@ -3356,7 +3381,7 @@ def _review_web_and_browser_effects(
                 r"(?:(?!https?://)[^,;\r\n]){0,160}https?://\S+"
             ),
         )
-    elif has_bare_domain and navigate:
+    elif has_bare_domain and navigate and not bare_domain_names_an_application(folded, application_names):
         _append(
             matches,
             folded,

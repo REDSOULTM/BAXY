@@ -4774,6 +4774,14 @@ def _context_decided_result(
     offered_read = resolve_explicit_effects(offered, available_operations) if offered is not None else None
     if offered_read is not None and not set(offered_read.operations) <= _ANCHORED_SCHEDULE_OPERATIONS:
         offered_read = None
+    taken_back = (
+        semantic_temporal.cancelled_notification_just_set(text, context.last_reply) if offered_read is None else None
+    )
+    taken_back_read = resolve_explicit_effects(taken_back, available_operations) if taken_back is not None else None
+    if taken_back_read is not None and taken_back_read.operations == ("notification.cancel.latest",):
+        # M113 (DEV-F v4d F-w45-t4 «scratch the garlic knots one» after «Done, 12-minute timer for the garlic knots.» →
+        # task.delete): the notification BAXY just reported setting, taken back by what it is for, is the latest one.
+        offered, offered_read = taken_back, taken_back_read
     read_before_decider = (
         closing is not None
         or offered_read is not None
@@ -4956,7 +4964,11 @@ def _context_decided_result(
                 decided.request, "action", tuple(restated.operations), decided.question, decided.arguments,
             )
     # M110: the thing named («la junta», «kick-off») may have its moment further back in the conversation.
-    anchored = semantic_temporal.anchored_offset_request(text, context.last_reply, said_before)
+    anchored = semantic_temporal.anchored_offset_request(
+        text, context.last_reply, said_before,
+        # M113 (DEV-F v4d F-w18-t3 «Remind me the day before the first one's due, nine in the morning»): days counted
+        # from a date said earlier in the conversation.
+    ) or semantic_temporal.anchored_day_request(text, context.last_reply, said_before)
     anchored_read = resolve_explicit_effects(anchored, available_operations) if anchored is not None else None
     if anchored_read is not None and set(anchored_read.operations) <= _ANCHORED_SCHEDULE_OPERATIONS:
         # M84 (DEV-D v3o D-w08-t3 «ponme recordatorio una ora antes d ese partido» → «¿Cuándo es ese partido?», D-w02-t3

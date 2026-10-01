@@ -34,7 +34,7 @@ import pytest
 
 from baxy_mind import __main__ as sidecar
 from baxy_mind.semantic import levels
-from baxy_mind.semantic.notes import list_entry_request
+from baxy_mind.semantic.notes import list_entries, list_entry_request
 from baxy_mind.semantic.reading import read
 from baxy_mind import llm
 from baxy_mind.semantic.reading import plain_talk
@@ -171,7 +171,8 @@ def test_the_loudness_complaint_still_asks_how_much_volume() -> None:
 )
 def test_a_list_named_before_its_entries_is_a_list_entry(text: str, entry: str, listed: str) -> None:
     assert list_entry_request(text) == (entry, listed)
-    assert _effects(text) == ("task.create",)
+    # M113: each entry enumerated is a task of its own.
+    assert _effects(text) == ("task.create",) * len(list_entries(text)[0])
 
 
 @pytest.mark.parametrize(
