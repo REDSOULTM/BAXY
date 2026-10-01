@@ -585,3 +585,22 @@ con «10 g por litro» leído; w10-t2 sin gramos). Decisión de producto, compat
 respuesta de memoria con aviso (D35) queda para lo que no es una cifra; cuando lo pedido es una cantidad, distancia,
 duración, fecha o recuento, se dice que no se encontró (paso 6: las cifras se buscan antes de afirmar; si no se puede,
 se dice). Agentes M92 (memoria y cifras, cocina con lo leído) y M93 (rotos y redacción de v3u).
+
+## D53 — 2026-10-01: escala y sopa de LoRA sin entrenar, retirada (regla prerregistrada)
+
+Investigación R9 (con fuentes: WiSE-FT, Model soups, LoRA Soups) propuso escalar `full3` o promediarlo con `full1`/`full2`
+sin reentrenar. Regla de entrada fijada antes de medir: DEV-A ≥ base + 2 y DEV-D ≥ base + 2, sin perder > 2 puntos en
+ninguna clase, inventadas no peor, argumentos ≥ 55/57, latencia de generación ≤ base + 50 ms. Arnés aislado (variante C,
+servidor nuevo por variante; el control V0a = V0b reproduce exacto 237/260 y 300/332). Resultados (DEV-A / DEV-D):
+`full3`×0,8 237 / 304; ×1,2 231 / 298; `full3`+`full2` viva 233 / 298; tercios viva 234 / 306; fusionadas a rango 16
+233 / 304 y 231 / 305 (la fusión no reproduce la sopa viva: `full1`–`full3` son casi ortogonales, 72–82 % de energía).
+Ninguna cumple → se queda `full3`×1,0 y se cierra la vía. También descartado el catálogo reducido por familias (etapa 0:
+cobertura 0,904 con el diseño prerregistrado a ≤ 80 operaciones y +0,8 s por turno). Ficheros en el scratchpad
+`cn/soup/exp1_table.md` y `cn/catred/ETAPA0.md`.
+
+## D54 — 2026-10-01: auditoría de la reserva (decisión pendiente del dueño)
+
+Auditoría independiente de los 346 fallos de la reserva (v3w, 2 411/2 757 = 87,5 %): A 126 BAXY se equivoca, B 114 la
+especificación automática (derivada de MASSIVE) está mal según las reglas del dueño, C 87 ambiguos, D 19 ininteligibles.
+Con B corregido sería 91,6 %. No se cambian las etiquetas sin el dueño (no relajar pruebas); los A se atacan en código
+(M97: +19/−0 en réplica sin GPU).
