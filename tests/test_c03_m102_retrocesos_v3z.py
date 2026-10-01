@@ -75,12 +75,15 @@ def _set(kind: str, title: str, due: datetime, request: str) -> DialogueState:
 W18_SAID = "y remind me en 45 minutes to take a break"
 W18_REPLY = "Recuerda tomar un descanso a las 03:12."
 MOVE = "wait no, make it una hora"
+# M108: one fixed «now» for every test here (the bare-number test failed at 09:15 with «mejor a las 9»: the 9 nearer the
+# timer was already past on the machine's clock). No test reads the machine's date or hour.
+NOW = datetime(2026, 3, 4, 15, 0, tzinfo=CHILE)
 
 
 def test_a_new_duration_moves_the_reminder_just_set_without_the_decider() -> None:
-    due = datetime.now(CHILE).replace(microsecond=0) + timedelta(minutes=45)
+    due = NOW + timedelta(minutes=45)
     state = _set("reminder", "tomar un descanso", due, W18_SAID)
-    request = state.moved_notification_request(MOVE, zone=CHILE)
+    request = state.moved_notification_request(MOVE, now=NOW, zone=CHILE)
     assert request is not None and "«tomar un descanso»" in request and f"{due:%H:%M}" in request
     assert request.endswith("una hora")
 
@@ -107,18 +110,17 @@ def test_a_new_duration_moves_the_reminder_just_set_without_the_decider() -> Non
 
     # The plan (after the shell's expect) cancels the latest reminder and sets it again an hour from now.
     state.expect(result["objective"], result["effectOperations"])
-    moved = state.retimed_notification(MOVE)
+    moved = state.retimed_notification(MOVE, now=NOW)
     assert moved is not None
     assert sidecar._retimed_step_arguments("notification.cancel.latest", moved, CANCEL_LATEST) == {"kind": "reminder"}
-    before = datetime.now(timezone.utc)
     scheduled = sidecar._retimed_step_arguments("notification.schedule", moved, SCHEDULE)
     assert scheduled is not None and (scheduled["kind"], scheduled["title"]) == ("reminder", "tomar un descanso")
     due_utc = datetime.fromisoformat(scheduled["dueUtc"].replace("Z", "+00:00"))
-    assert timedelta(minutes=59) < due_utc - before < timedelta(minutes=61)
+    assert due_utc - NOW == timedelta(hours=1)
 
 
 def test_a_new_clock_moves_the_alarm_just_set() -> None:
-    now = datetime.now(CHILE).replace(second=0, microsecond=0)
+    now = NOW
     tomorrow = (now + timedelta(days=1)).replace(hour=6, minute=45)
     state = _set("alarm", "despertar", tomorrow, "pon una alarma mañana a las 6:45 para despertar")
     request = state.moved_notification_request("Actually, make it 6:30.", now=now, zone=CHILE)
@@ -126,24 +128,37 @@ def test_a_new_clock_moves_the_alarm_just_set() -> None:
 
 
 def test_only_a_move_of_what_the_last_turn_set_is_decided_here() -> None:
-    due = datetime.now(CHILE) + timedelta(minutes=45)
+    due = NOW + timedelta(minutes=45)
     state = _set("reminder", "tomar un descanso", due, W18_SAID)
     # Another request, not a move of the time.
-    assert state.moved_notification_request("y otro para regar las plantas", zone=CHILE) is None
+    assert state.moved_notification_request("y otro para regar las plantas", now=NOW, zone=CHILE) is None
     # A turn in between that set nothing: no move.
     state.expect("¿qué hora es?", ["system.time"])
-    assert state.moved_notification_request(MOVE, zone=CHILE) is None
+    assert state.moved_notification_request(MOVE, now=NOW, zone=CHILE) is None
     # Nothing set at all.
-    assert DialogueState().moved_notification_request(MOVE, zone=CHILE) is None
+    assert DialogueState().moved_notification_request(MOVE, now=NOW, zone=CHILE) is None
 
 
-def test_a_bare_number_after_a_timer_is_left_to_the_decider() -> None:
+@pytest.mark.parametrize(
+    ("now", "clock_nine"),
+    [
+        # At 15:00, the 9 nearer a timer due at 15:05 is 21:00: a clock said, the move is decided here.
+        (NOW, "a las 21:00"),
+        # M108: at 09:15 (the hour the test failed at) that 9 is 09:00, already past: the decider reads it.
+        (NOW.replace(hour=9, minute=15), None),
+    ],
+)
+def test_a_bare_number_after_a_timer_is_left_to_the_decider(now: datetime, clock_nine: str | None) -> None:
     # Tanda 7 «actually make it 9» after a timer of 5 minutes: the minutes as much as the clock.
-    state = _set("alarm", "temporizador", datetime.now(CHILE) + timedelta(minutes=5), "pon un temporizador de 5 minutos")
-    assert state.moved_notification_request("actually make it 9", zone=CHILE) is None
-    assert state.moved_notification_request("no, mejor 10", zone=CHILE) is None
-    assert state.moved_notification_request("actually make it 9 minutes", zone=CHILE) is not None
-    assert state.moved_notification_request("mejor a las 9", zone=CHILE) is not None
+    state = _set("alarm", "temporizador", now + timedelta(minutes=5), "pon un temporizador de 5 minutos")
+    assert state.moved_notification_request("actually make it 9", now=now, zone=CHILE) is None
+    assert state.moved_notification_request("no, mejor 10", now=now, zone=CHILE) is None
+    assert state.moved_notification_request("actually make it 9 minutes", now=now, zone=CHILE) is not None
+    moved = state.moved_notification_request("mejor a las 9", now=now, zone=CHILE)
+    if clock_nine is None:
+        assert moved is None
+    else:
+        assert moved is not None and moved.endswith(clock_nine)
 
 
 # ------------------------------------------------------------------ 2. a go-ahead is never a limit

@@ -202,6 +202,13 @@ def test_a_name_too_long_or_with_quotes_is_not_said() -> None:
 CHILE = timezone(timedelta(hours=-3))
 SET = "recuérdame en 40 minutos sacar la ropa de la lavadora"
 MOVE = "ah no, mejor en una hora"
+# M108: the PC's clock is fixed for these tests (no test reads the machine's date or hour).
+NOW = datetime(2026, 3, 4, 15, 0, tzinfo=CHILE)
+
+
+@pytest.fixture
+def fixed_clock(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(llm, "_local_now", lambda: NOW.astimezone())
 
 
 def _scheduled(due: datetime, title: str = "sacar la ropa de la lavadora", kind: str = "reminder") -> dict:
@@ -220,8 +227,8 @@ def _clock(due: datetime) -> str:
     return f"{'la' if local.hour == 1 else 'las'} {local:%H:%M}"
 
 
-def test_the_move_is_a_plan_and_its_floor_says_each_step() -> None:
-    first_due = datetime.now(CHILE).replace(microsecond=0) + timedelta(minutes=40)
+def test_the_move_is_a_plan_and_its_floor_says_each_step(fixed_clock: None) -> None:
+    first_due = NOW + timedelta(minutes=40)
     state = DialogueState()
     state.expect(SET, ["notification.schedule"])
     state.record(_scheduled(first_due))
@@ -249,16 +256,16 @@ def test_the_move_is_a_plan_and_its_floor_says_each_step() -> None:
     assert result["effectOperations"] == ["notification.cancel.latest", "notification.schedule"]
 
     # What the shell's mission returns once both steps ran: the latest reminder cancelled, the same one set again.
-    new_due = datetime.now(CHILE).replace(microsecond=0) + timedelta(hours=1)
+    new_due = NOW + timedelta(hours=1)
     cancelled = _op("notification.cancel.latest", {"kind": "reminder", "taskName": "BAXY-Reminder-m107",
                                                    "canceled": True,
                                                    "authority": "windows_task_scheduler_absence_postread"})
     mission = {"kind": "status", "polarity": "success", "cause": "mission_completed", "stepCount": 2,
                "steps": [_step(cancelled), _step(_scheduled(new_due))], "completedRequest": result["objective"]}
-    day = "" if new_due.astimezone().date() == datetime.now().astimezone().date() else "mañana a "
+    day = "" if new_due.astimezone().date() == NOW.astimezone().date() else "mañana a "
     final = (f"Cancelé el último recordatorio y puse el recordatorio «sacar la ropa de la lavadora» para "
              f"{day}{_clock(new_due)}.")
-    assert operation_floor.floor_final(mission, False) == final
+    assert operation_floor.floor_final(mission, False, now=NOW) == final
     # Every draft is vetoed: a time the facts do not hold, the move told as a second reminder, a promise.
     drafts = [
         f"Listo, te aviso a las {(new_due + timedelta(minutes=7)).astimezone():%H:%M}.",
@@ -287,11 +294,11 @@ def test_a_move_whose_new_time_could_not_be_set_says_what_was_done() -> None:
 
 def test_a_move_with_nothing_left_to_cancel_says_so() -> None:
     nothing = _op("notification.cancel.latest", {"kind": "reminder", "canceled": False})
-    new_due = datetime.now(CHILE).replace(microsecond=0) + timedelta(minutes=90)
+    new_due = NOW + timedelta(minutes=90)
     mission = {"kind": "status", "polarity": "success", "cause": "mission_completed", "stepCount": 2,
                "steps": [_step(nothing), _step(_scheduled(new_due, "llamar a la abuela"))]}
-    day = "" if new_due.astimezone().date() == datetime.now().astimezone().date() else "mañana a "
-    assert operation_floor.floor_final(mission, False) == (
+    day = "" if new_due.astimezone().date() == NOW.astimezone().date() else "mañana a "
+    assert operation_floor.floor_final(mission, False, now=NOW) == (
         "No había ningún recordatorio pendiente que cancelar y puse el recordatorio «llamar a la abuela» para "
         f"{day}{_clock(new_due)}."
     )
@@ -305,7 +312,7 @@ def test_a_move_with_nothing_left_to_cancel_says_so() -> None:
     ],
 )
 def test_the_scheduled_time_carries_its_day_when_it_is_not_today(days: int, spanish: str, english: str) -> None:
-    now = datetime.now().astimezone().replace(hour=10, minute=0, second=0, microsecond=0)
+    now = NOW.astimezone().replace(hour=10, minute=0)
     due = now + timedelta(days=days, hours=5, minutes=30)
     local = due.astimezone()
     months = operation_floor.floor_data()["templates"]

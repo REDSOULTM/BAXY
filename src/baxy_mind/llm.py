@@ -38,6 +38,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from fractions import Fraction
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, Iterable, NamedTuple
 from urllib.parse import parse_qs, urlparse
@@ -5127,6 +5128,70 @@ def visible_reply_is_a_fixed_stall(value: object) -> bool:
 _SNAKE_CODE = re.compile(r"\b[a-z]{2,}(?:_[a-z0-9]+){1,}\b")
 _DOTTED_OP = re.compile(r"\b[a-z]{2,}(?:\.[a-z][a-z0-9]*){1,}\b")
 _IDENTIFIER_TOKEN = re.compile(r"[\w-]+(?:[._][\w-]+)+")
+# M108 (M107's report): the report of a verified effect leaked the contract in shapes the snake and dotted checks do
+# not see — «verified=true succeeded=true», «succeeded: true», «{"state": "off"}», «TARGET_NOT_FOUND», «0x80070005»,
+# «windowId». Judged on the report of a result (status, error) only, once links and mail addresses are out; a token the
+# person wrote or the result observed (a file «miInforme.txt», a page quoting JSON, the code a window showed) is
+# theirs. Product names keep their spelling («Baxy.App», «iPhone», «macOS», «RTX 4060 Ti»): none is a
+# lowercase hump, a key with its value, an upper snake or a hex code. Twin: UserMessagePolicy.LeaksContractToken.
+_CONTRACT_TOKENS = (
+    re.compile(r"\b[A-Za-z_][A-Za-z0-9_]{2,}=\S"),
+    re.compile(r"\b[A-Za-z_][A-Za-z0-9_]{2,}\s*[:=]\s*(?:true|false|null)\b", re.IGNORECASE),
+    re.compile(r"\{\s*\"[^\"{}\n]{1,64}\"\s*:|\"[A-Za-z_][\w.-]{0,63}\"\s*:\s*(?:true|false|null|-?\d|\"|\{|\[)"),
+    re.compile(r"\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\b"),
+    re.compile(r"\b0x[0-9A-Fa-f]{4,}\b"),
+    re.compile(r"\b[a-z]{2,}(?:[A-Z][a-z0-9]+)+\b"),
+)
+_LINK_OR_ADDRESS = re.compile(r"(?:\bhttps?://|\bwww\.)\S+|\b[\w.%+-]+@[\w-]+(?:\.[\w-]+)+\b", re.IGNORECASE)
+# What a result says about itself, never what it observed.
+_CONTRACT_FIELDS_NOT_OBSERVED = frozenset({
+    "operation", "operations", "authority", "error", "errorCode", "code", "cause", "kind", "polarity", "diagnosticCode",
+})
+
+
+def _observed_strings(situation: object) -> str:
+    """Every string the result observed (mission steps and reasons decoded)."""
+
+    texts: list[str] = []
+
+    def walk(value: object, key: str = "", depth: int = 0) -> None:
+        if depth > 8 or key in _CONTRACT_FIELDS_NOT_OBSERVED:
+            return
+        if isinstance(value, str):
+            if value.lstrip().startswith("{"):
+                try:
+                    decoded = json.loads(value)
+                except ValueError:
+                    decoded = None
+                if isinstance(decoded, dict):
+                    walk(decoded, key, depth + 1)
+                    return
+            texts.append(value)
+        elif isinstance(value, dict):
+            for child_key, child in value.items():
+                walk(child, str(child_key), depth + 1)
+        elif isinstance(value, (list, tuple)):
+            for child in value:
+                walk(child, key, depth + 1)
+
+    walk(situation)
+    return "\n".join(texts)
+
+
+def visible_reply_leaks_a_contract_token(text: str, situation: object, own_words: Iterable[str] = ()) -> bool:
+    """The report of a result names a contract token nobody said or observed (see above). A field named in prose before
+    a colon («your open windows: …») is English, not the contract; only a field written with its value as the contract
+    writes it is (key=value, a boolean or null, JSON)."""
+
+    own = "\n".join((_observed_strings(situation), *own_words)).casefold()
+    judged = _LINK_OR_ADDRESS.sub(" ", text or "")
+    return any(
+        found.group(0).casefold() not in own
+        for pattern in _CONTRACT_TOKENS
+        for found in pattern.finditer(judged)
+    )
+
+
 _WEB_HOST = re.compile(
     r"\b(?:https?://|www\.)(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+"
     r"[a-z]{2,63}\b",
@@ -6733,7 +6798,7 @@ def _scheduled_notification_defect(text: str, dues: list[datetime]) -> str:
                 for day in days
             ):
                 return "extra_claim"
-    today = datetime.now().astimezone().date()
+    today = _local_now().date()
     relative = _reading_fold(text)
     for offset, word in (
         (0, r"\b(?:hoy|today|tonight|esta\s+(?:noche|tarde)|this\s+(?:afternoon|evening))\b"),
@@ -8238,7 +8303,7 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
     uncertain, with what was observed — and for a mission, each step's."""
 
     told = _told_result_final(situation, payload, user_text, language)
-    return told or operation_floor.floor_final(situation, language == "en")
+    return told or operation_floor.floor_final(situation, language == "en", _local_now())
 
 
 def _told_result_final(situation: dict, payload: dict, user_text: str, language: str) -> str:
@@ -8361,7 +8426,7 @@ def _told_result_final(situation: dict, payload: dict, user_text: str, language:
         when = ""
         if due is not None:
             local = due.astimezone()
-            today = datetime.now().astimezone().date()
+            today = _local_now().date()
             clock = f"{'la' if local.hour == 1 else 'las'} {local:%H:%M}"
             spanish_month, english_month = _WEATHER_MONTHS[local.month - 1]
             if english:
@@ -8719,13 +8784,97 @@ def _missing_remembered_words(text: str, value: str) -> list[str]:
     ]
 
 
-# A verified navigation reported as a promise (WEB1259: «Voy a youtube.»).
-_PROMISED_NAVIGATION = re.compile(
-    r"^\W*(?:(?:s[ií]|claro|ok|okay|dale|listo|perfecto|bueno|bien)[,.!\s]+)?"
-    r"(?:voy|vamos|ir[eé]|iremos|te\s+llevo|te\s+llevar[eé]|te\s+voy|"
-    r"i(?:'ll| will| am going to|'m going to)|let'?s\s+go|going\s+to|we(?:'ll| will))\b",
-    re.IGNORECASE,
+# A verified effect reported as a promise. WEB1259 «Voy a youtube.» (a navigation, since 2026-09); M108 (M107's
+# report): «Voy a hacerlo enseguida.», «I'll do it right away», «Procederé a apagar el bluetooth.» passed the gate on a
+# verified result. What was verified already happened: it is told done or as it was seen, never promised. A sentence
+# that opens (after a «sí», «claro», «ok»…) with a first-person act still to come is the promise: «voy a…», «procedo
+# a…», a future of a catalog act or of doing («apagaré», «abriré», «haré», «procederé»), a present with «enseguida»
+# («lo hago enseguida», «ahora mismo lo apago»), «I'll…», «I'm going to…», «let me…». What a verified notice will do
+# is its own fact («te avisaré a las 9», «I'll remind you at 9»), and so is what BAXY will not do by itself («lo dejo
+# así hasta que me lo pidas», «I'll keep it muted until you ask»): those verbs are no promise of the act. Folded.
+_PROMISE_LEAD = (
+    r"^[\s\"'«“]*(?:(?:si|claro(?:\s+que\s+si)?|ok(?:ay|ey)?|vale|dale|listo|perfecto|bueno|bien|entendido|"
+    r"de\s+acuerdo|por\s+supuesto|sure|of\s+course|alright|all\s+right|got\s+it|no\s+problem|yes|yeah|okay)"
+    r"\s*[,.!:;—–-]*\s*)*"
 )
+_PROMISE_CLITIC = r"(?:me|te|se|lo|la|le|los|las|les|nos)\s+"
+_PROMISE_SOON = (
+    r"(?:ahora\s+mismo|ya\s+mismo|enseguida|en\s+seguida|de\s+inmediato|inmediatamente|en\s+un\s+(?:momento|segundo|"
+    r"instante)|en\s+breve|right\s+away|right\s+now|in\s+a\s+(?:moment|second|sec))"
+)
+_SPANISH_PROMISE = re.compile(
+    _PROMISE_LEAD + r"(?:(?:" + _PROMISE_SOON + r"|ahora|ya)\s*,?\s*)?"
+    r"(?:me\s+(?:pongo\s+a|encargo|ocupo)\b|(?:" + _PROMISE_CLITIC + r"){0,2}"
+    r"(?:(?:voy|vamos)\s+a\s+(?:" + _PROMISE_CLITIC + r")?(?P<act>\w+)|procedo\s+a\b|llevo\s+a\b|(?P<word>\w+)))"
+)
+# «Enseguida lo hago», «ahora mismo lo apago», «lo hago enseguida»: a present told with how soon it will be.
+_SPANISH_PROMISE_PRESENT = re.compile(
+    _PROMISE_LEAD + r"(?:" + _PROMISE_SOON + r"\s*,?\s*(?:" + _PROMISE_CLITIC + r"){1,2}\w+o\b|"
+    r"(?:" + _PROMISE_CLITIC + r"){1,2}\w+o\s+" + _PROMISE_SOON + r")"
+)
+_ENGLISH_PROMISE = re.compile(
+    _PROMISE_LEAD + r"(?:" + _PROMISE_SOON + r"\s*,?\s*)?"
+    r"(?:i'll|i\s+will|i\s+shall|i'm\s+going\s+to|i\s+am\s+going\s+to|i'm\s+about\s+to|i\s+am\s+about\s+to|"
+    r"let\s+me|we'll|we\s+will|let's\s+go|going\s+to|i'm\s+on\s+it|on\s+it)\b(?:\s+(?P<act>\w+))?"
+)
+# The acts a verified notice or a state left as it is are told with («te voy a avisar», «I'll remind you», «let me
+# know», «I'll be here», «I'll keep it muted»).
+_NOT_A_PROMISED_ACT = re.compile(
+    r"^(?:avis|record|notific|despert|alert|estar\b|seguir|qued|dej|manten|"
+    r"(?:remind|notify|let|alert|wake|ping|ring|be|keep|leave|stay|know|tell)\b)"
+)
+# Doing in general, besides each catalog act (operation_floor.spanish_infinitives): «lo haré», «procederé».
+_SPANISH_PROMISE_VERBS = frozenset({
+    "hacer", "proceder", "intentar", "encargar", "ocupar", "ir", "llevar", "mostrar", "ver", "terminar", "conseguir",
+    "lograr", "arreglar", "resolver", "realizar", "completar",
+})
+_SPANISH_FUTURE_STEMS = {
+    "hacer": "har", "poner": "pondr", "decir": "dir", "salir": "saldr", "tener": "tendr", "venir": "vendr",
+    "querer": "querr", "saber": "sabr", "deshacer": "deshar", "rehacer": "rehar", "reponer": "repondr",
+}
+
+
+@lru_cache(maxsize=1)
+def _spanish_promised_futures() -> frozenset[str]:
+    """«apagaré», «abriremos», «haré»: the first-person futures of every catalog act and of doing, folded. An
+    infinitive with «é» after it is no preterite («recuperaré» is not «recuperé»); «dejar» is a state left, not an
+    act promised (see above)."""
+
+    verbs = (operation_floor.spanish_infinitives() | _SPANISH_PROMISE_VERBS) - {"dejar"}
+    stems = {_SPANISH_FUTURE_STEMS.get(verb, verb) for verb in verbs}
+    return frozenset(_reading_fold(stem + ending) for stem in stems for ending in ("é", "emos"))
+
+
+def visible_reply_promises_the_act(text: str) -> bool:
+    """A sentence of the reply promises an act instead of telling it done (see above)."""
+
+    for part in re.split(r"[.!?;:\n¡¿]+", (text or "").replace("’", "'")):
+        sentence = _reading_fold(part)
+        if not sentence:
+            continue
+        if _SPANISH_PROMISE_PRESENT.match(sentence) is not None:
+            return True
+        found = _SPANISH_PROMISE.match(sentence)
+        if found is not None:
+            if found.group("act") is not None:
+                if _NOT_A_PROMISED_ACT.match(found.group("act")) is None:
+                    return True
+            elif found.group("word") is None or found.group("word") in _spanish_promised_futures():
+                return True
+        found = _ENGLISH_PROMISE.match(sentence)
+        if found is not None and (found.group("act") is None or _NOT_A_PROMISED_ACT.match(found.group("act")) is None):
+            return True
+    return False
+
+
+def _verified_effect(situation: object) -> bool:
+    """A result the PC verified done: one operation verified and succeeded, or a mission whose every step was."""
+
+    if not isinstance(situation, dict):
+        return False
+    if str(situation.get("cause") or "").strip().lower() == "mission_completed":
+        return True
+    return bool(situation.get("operation")) and situation.get("verified") is True and situation.get("succeeded") is True
 
 
 def _memory_value_forms(value: object) -> list[str]:
@@ -9351,7 +9500,7 @@ def _page_read_quote_defect(text: str, seen: dict) -> str:
 def _local_today() -> date:
     """The local date the listing is told from (one place, so a recorded read can be judged on its own day)."""
 
-    return datetime.now().astimezone().date()
+    return _local_now().date()
 
 
 def _project_notification_listing(observed: dict, language: str) -> dict:
@@ -9414,7 +9563,7 @@ def _project_scheduled_notification(observed: dict, situation: dict, language: s
     due = _verified_notification_due(situation)
     if due is not None:
         local = due.astimezone()
-        today = datetime.now().astimezone().date()
+        today = _local_now().date()
         projected["scheduledLocalTime"] = f"{local:%H:%M}"
         if local.date() == today + timedelta(days=1):
             projected["scheduledDay"] = "tomorrow" if language == "en" else "mañana"
@@ -14935,6 +15084,13 @@ def compose_visible_defect(
         or _DOTTED_OP.search(_WEB_HOST.sub("", without_user_identifiers)) is not None
     ):
         return "internal_code"
+    reported = _situation_from_facts(facts)
+    if intent in {"status", "error"} and reported.get("kind") != "conversation":
+        # M108: the report of a result names no contract token, and what was verified is never promised.
+        if visible_reply_leaks_a_contract_token(stripped, reported, identifier_sources):
+            return "internal_code"
+        if intent == "status" and _verified_effect(reported) and visible_reply_promises_the_act(stripped):
+            return "promised_effect"
     if re.search(r"</?think>", stripped, re.IGNORECASE) is not None:
         return "internal_code"
     if "el mensaje es" in stripped.casefold():
@@ -25731,14 +25887,6 @@ class LlmRuntime:
                 return "imperative_echo"
             if (
                 intent == "status"
-                and situation.get("operation") in {"browser.navigate", "browser.navigate.named", "streaming.navigate"}
-                and situation.get("verified") is True
-                and situation.get("succeeded") is True
-                and _PROMISED_NAVIGATION.match(candidate) is not None
-            ):
-                return "promised_effect"
-            if (
-                intent == "status"
                 and situation.get("verified") is True
                 and situation.get("succeeded") is True
                 and _ACTION_ATTRIBUTED_TO_USER.search(candidate) is not None
@@ -26679,9 +26827,16 @@ class LlmRuntime:
                     )
                 ),
                 "promised_effect": (
-                    "It already happened: say you opened the site, in the past."
+                    (
+                        "It already happened: say you opened the site, in the past."
+                        if response_language == "en"
+                        else "Ya ocurrió: di que abriste el sitio, en pasado."
+                    )
+                    if situation.get("operation") in {"browser.navigate", "browser.navigate.named", "streaming.navigate"}
+                    # M108: any verified act, told done, never promised.
+                    else "It already happened and was verified: say what you did, in the past, promising nothing."
                     if response_language == "en"
-                    else "Ya ocurrió: di que abriste el sitio, en pasado."
+                    else "Ya ocurrió y está verificado: di lo que hiciste, en pasado, sin prometer nada."
                 ),
                 "action_attributed_to_user": (
                     "You did it, not the person: say what you did, in the first person."
