@@ -2296,3 +2296,17 @@ def conversation_note_title(request: str, conversation: Sequence[str]) -> str | 
         if set(words) <= set(re.findall(r"[a-z0-9]+", folded)) and re.findall(r"[a-z0-9]+", folded) != words
     ]
     return holding[0] if len(holding) == 1 else None
+
+
+# M110 (DEV-F v4d F-w45-t5 «and the pizza, how many minutes till I pull it out?» → the reminders already due): what is
+# still to ring is read from what is scheduled; the due read is for the ones that already rang, asked as such.
+_OVERDUE_WORDS = (
+    r"\b(?:vencid[oa]s?|overdue|past\s+due|atrasad[oa]s?|ya\s+(?:sonaron|pasaron|vencieron)|already\s+(?:rang|went\s+off)|"
+    r"went\s+off|missed|perdi|me\s+perdi)\b"
+)
+
+
+def asks_overdue_notifications(text: str) -> bool:
+    """Whether the person asks for the alarms or reminders that already rang (see above)."""
+
+    return _has(_fold(text), _OVERDUE_WORDS)

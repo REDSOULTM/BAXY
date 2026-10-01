@@ -40,7 +40,7 @@ from .semantic import decider as semantic_decider
 from .semantic import dialogue as dialogue_slot
 from .semantic import knowledge as semantic_knowledge
 from .semantic.apps import bare_close_pronoun, close_request_for_opened, deictic_close_request
-from .semantic.notes import conversation_note_title, list_creation_said, names_own_event, task_change
+from .semantic.notes import asks_overdue_notifications, conversation_note_title, list_creation_said, names_own_event, task_change
 from .semantic import levels as semantic_levels
 from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
@@ -4649,11 +4649,6 @@ def _rearm_in_context(
 
 # M84: the operations a moment counted from BAXY's last answer is set with (``semantic.temporal.anchored_offset_request``).
 _ANCHORED_SCHEDULE_OPERATIONS = frozenset({"notification.schedule", "reminder.create", "calendar.event.create"})
-# M110: the words that ask for the reminders that already rang (notification.list.due), folded.
-_OVERDUE_WORDS = (
-    r"\b(?:vencid[oa]s?|overdue|past\s+due|atrasad[oa]s?|ya\s+(?:sonaron|pasaron|vencieron)|already\s+(?:rang|went\s+off)|"
-    r"went\s+off|missed|perdi|me\s+perdi)\b"
-)
 # M89: the reads of what is installed on this PC (never the newest published release).
 _INSTALLED_SOFTWARE_READS = frozenset({"software.python.status", "software.python.package.status", "app.installed"})
 # M103: the reads a decider chooses for «¿qué estoy viendo en <reproductor>?» (the media session, a window state).
@@ -4851,7 +4846,7 @@ def _context_decided_result(
         decided.decision == "action"
         and decided.operations == ("notification.list.due",)
         and "notification.list" in available_operations
-        and not re.search(_OVERDUE_WORDS, effect_intent._fold(text))
+        and not asks_overdue_notifications(text)
     ):
         # M110 (DEV-F v4d F-w45-t5 «and the pizza, how many minutes till I pull it out?» → the reminders already due,
         # «The pizza reminder is not set yet.»): what is still to ring is in the list of what is scheduled; the due
