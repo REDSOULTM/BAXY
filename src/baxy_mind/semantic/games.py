@@ -216,7 +216,10 @@ def steam_library_title(text: str) -> str | None:
                 r"it|this|that|them|my|the|something|anything|un\s+juego|a\s+game|algun\s+juego|any\s+game)$|"
                 # Uso real 2026-09-24 «jugar un juego de carreras», «quiero jugar un partida de trivial»: a kind
                 # of game names no title; «puedes jugar póker conmigo» asks BAXY to play, not to launch a game.
-                r"^(?:un|una|unos|unas|a|an|algun|alguna|some|any)\s|\b(?:conmigo|with\s+me|contra\s+mi|against\s+me)$",
+                r"^(?:un|una|unos|unas|a|an|algun|alguna|some|any)\s|\b(?:conmigo|with\s+me|contra\s+mi|against\s+me)$|"
+                # M100 (reserva A7 «juega de nuevo por favor» → the game library read for «de nuevo»): «again» is
+                # no title; «juega de nuevo» is «play it again».
+                r"^(?:de\s+nuevo|otra\s+vez|nuevamente|again)(?:\s+(?:por\s+favor|porfa|please|ahora|now))?$",
             ):
                 match = None
         if match is None:

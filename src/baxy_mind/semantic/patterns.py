@@ -2774,8 +2774,18 @@ _REMINDER_IDIOM = re.compile(
     # Uso real 2026-09-24 «no te olvides de recordarme el cumpleaños de mi hermano el veinte de abril»,
     # «acuérdate de recordarme esto»: BAXY asked not to forget to remind is asked to remind.
     r"(?:no\s+te\s+olvides|acuerdate|acordate)\s+de\s+(?:recordarme|avisarme)|"
-    r"don'?t\s+forget\s+to\s+remind\s+me(?:\s+(?:to|about|of))?)\s+"
+    r"don'?t\s+forget\s+to\s+remind\s+me(?:\s+(?:to|about|of))?|"
+    # M100 (reserva A10 «recuerda que me mueva para que no engorde» → advice): «recuerda que me» with what the person
+    # is to do, in the subjunctive, is «recuérdame»; a statement in the indicative («recuerda que me gusta el té», «que me
+    # duele») is something to keep, not a reminder.
+    r"recuerda(?=\s+que\s+me\s+(?!(?:gusta|gustan|encanta|encantan|duele|duelen|llamo|llaman|toca|tocan|queda|quedan|"
+    r"falta|faltan|cuesta|cuestan|molesta|molestan|interesa|interesan|importa|importan|preocupa|preocupan|pasa|"
+    r"dijiste|dijo|dijeron|prometiste|debe|deben|debes|ha|han|has|he|hace|hacen|sale|salen|va|van|fue|fueron|"
+    r"parece|parecen|cae|caen|da|dan|tiene|tienen|tienes|toca|vale|sirve|sirven|conviene|apetece|queda)\b)[a-z]+[ae]\b))"
+    r"\s+"
 )
+# M100 (reserva A10): a purpose said after the order («para que no engorde», «so I don't forget») does not negate it.
+_PURPOSE_TAIL = re.compile(r"\s+(?:para\s+(?:que\s+)?no|so\s+(?:that\s+)?(?:i|we)\s+(?:don'?t|do\s+not|won'?t)|so\s+as\s+not\s+to)\b.*$")
 
 
 def _incomplete_scheduled_request(
@@ -2786,6 +2796,8 @@ def _incomplete_scheduled_request(
     # Uso real 2026-09-23 «no dejes que me olvide de comprarle un regalo a mi hermana»: the idiom asks
     # for a reminder; its «no» negates the forgetting, not the order.
     folded = _REMINDER_IDIOM.sub("recuerdame ", _strip_request_envelope(_fold(text)), count=1)
+    if _has(folded, r"^(?:recuerdame|recordame|remind\s+me|avisame)\b"):
+        folded = _PURPOSE_TAIL.sub("", folded)
     # Keep scope checks on the whole request before reading a temporal preface.
     # Quoted payloads and multi-clause requests remain with the existing paths.
     if (
@@ -2849,7 +2861,10 @@ def _incomplete_scheduled_request(
     # «puedes recordarme que…», «notificarme sobre el evento», «alert me at the time of the event».
     reminder = re.match(
         r"^(?:recuerdame|recordame|recordarme|avisame|avisarme|notificame|notificarme|alertame|"
-        r"remind\s+me|alert\s+me|notify\s+me)(?:\s+(?P<title>.+))?$",
+        r"remind\s+me|alert\s+me|notify\s+me|"
+        # M100 (reserva A10 «me gustaría ser notificado de las misas de los domingos…»): being notified, wished for.
+        r"ser\s+(?:notificad[oa]s?|avisad[oa]s?|alertad[oa]s?|recordad[oa]s?)|to\s+be\s+(?:notified|reminded|alerted))"
+        r"(?:\s+(?P<title>.+))?$",
         body,
     )
     if reminder is None and desire is not None:
@@ -3138,6 +3153,16 @@ def _clarification_intent_of(
             ("reminder.create",),
             ("reminder_title", "recurrence_time"),
         )
+    # M100 (reserva A10 «necesito algo todos los lunes pon un recordatorio» → the reminders listed): a reminder ordered
+    # for something left unnamed («algo», «something») asks what it is about and when.
+    unnamed_reminder = re.fullmatch(
+        r"(?:(?:necesito|quiero|tengo|hay|i\s+need|i\s+have)\s+)?(?:algo|una\s+cosa|something)\b[^,;.]*?[\s,;.]+"
+        r"(?:pon(?:me)?|crea(?:me)?|programa(?:me)?|set|create|make)\s+(?:me\s+)?(?:un|una|a|an)\s+(?:recordatorio|reminder)"
+        r"[\s.!?]*",
+        folded,
+    )
+    if "reminder.create" in available and unnamed_reminder is not None:
+        return ClarificationIntent(("reminder.create",), ("what_to_remind_or_notify_about", "due_time"))
     deictic_song_replay = (
         re.fullmatch(
             r"(?:quiero|i\s+want\s+to)\s+(?:reproducir|play)\s+"
@@ -8571,8 +8596,19 @@ def _strict_catalog_request(
                 and _has(text, r"\b" + _NETFLIX_SPELLED + r"\b")
             )
         )
+        # M100 (reserva A10 «necesito algo todos los lunes pon un recordatorio» → reminder.list): a reminder, alarm, task
+        # or note ordered made anywhere in the request is no read of the ones kept.
+        makes_a_kept_item = found_operation_set <= {
+            "reminder.list", "notification.list", "task.list", "note.list"
+        } and _has(
+            text,
+            r"\b(?:pon|ponme|pone|poneme|crea|creame|programa|programame|agrega|agregame|anade|anademe|establece|"
+            r"fija|set|create|add|schedule|make)\s+(?:me\s+)?(?:un|una|otro|otra|a|an|another)\s+(?:nuev[oa]\s+|new\s+)?"
+            r"(?:recordatorio|alarma|tarea|nota|reminder|alarm|task|note)\b",
+        )
         generic_surface_safe = not (
             starts_with_non_observation_action
+            or makes_a_kept_item
             or semantic_domain_conflict
             or literal_read_conflict
             or weak_single_domain
@@ -10674,6 +10710,16 @@ def _pointed_media_question(folded: str, head: str) -> bool:
             _head_is(head, r"(?:que|what|cual|which|como|how|quien|who|dime|tell|decime|sabes|conoces|know)")
             # Uso real 2026-09-23 «en qué año salió esta canción»: the question word after a preposition.
             or _has(folded, r"^(?:en|de|desde|para|a|in|from|since|for)\s+(?:que|cual|quien|what|which|who|cuando|when)\b")
+            # M100 (reserva A1 «quiero saber más sobre esta canción» → «¿qué canción?»): wanting to know about the song,
+            # or being told about it, asks the same; «este tema» said so is a topic of the conversation.
+            or (
+                _has(
+                    folded,
+                    r"^(?:(?:quiero|quisiera|me\s+gustaria|necesito)\s+(?:saber|conocer)|(?:i\s+(?:want|would\s+like|need)|"
+                    r"i'?d\s+like)\s+to\s+(?:know|learn)|cuentame|contame|hablame)\b",
+                )
+                and _has(folded, r"\b(?:cancion|song|track|artista|artist|cantante|singer)\b")
+            )
         )
         and _has(folded, _POINTED_MEDIA)
         # «¿Qué canción está sonando en mi cabeza?» is not this PC's playback.
