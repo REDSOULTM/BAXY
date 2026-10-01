@@ -635,3 +635,14 @@ decisor 24, lectores de efectos 7, recuperación 6, conversación explícita 4, 
 generalización (DEV-D 92 % frente a DEV-E/F 85–87 %) es del código alrededor del decisor —lectores y reglas afinados con
 frases vistas—, no del modelo. Siguiente paso: que el producto confíe en el decisor (M112) y que los argumentos del decisor
 lleguen intactos (M110, M111), medido en DEV-F y confirmado en DEV-E por agregados.
+
+## D58 — 2026-10-01 (dueño): BAXY ayuda al decisor, nunca es un lastre
+
+Regla del dueño: el código de BAXY alrededor del decisor no puede empeorar lo que el modelo acierta; sólo puede ayudarle en
+sus errores. Métrica fija desde ahora en cada medida: «lastre» = turnos en que el decisor aislado (mismo prompt y
+historial) acierta y el producto falla, en decisión y en argumentos; meta 0. Cada lector, guarda o corrección lleva su
+cuenta de arreglos frente a roturas contra el decisor aislado (DEV-D, DEV-F, reserva; DEV-E sólo en agregado) y se estrecha
+a los errores del modelo o se retira si resta. Excepciones sólo explícitas: seguridad (VS Code, política de riesgo, envíos
+reales) y reglas del dueño ya escritas (D35 recetas y cifras buscadas, volumen relativo sin cantidad pregunta, etc.).
+Nota de honestidad: el 98 % del decisor es sólo la decisión en DEV-E aislado; la puntuación del producto (decisión,
+argumentos y ejecución) es 76,6 % en DEV-E, así que la meta del FINAL-2 (≥ 90 %) no está cumplida.
