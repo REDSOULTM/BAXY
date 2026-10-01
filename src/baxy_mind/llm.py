@@ -128,6 +128,7 @@ from .semantic.conversation import (
     _recalled_speaker,
     _roleplay_participant_names,
     ambiguous_action_verb,
+    asked_act_clause,
     asks_a_laugh,
     asks_a_polar_question_about_the_person,
     asks_about_own_past_act,
@@ -3141,6 +3142,36 @@ def limit_voice_defect(text: object, request: object = "") -> str:
     return ""
 
 
+# M101 (DEV-D v3z D-s037 «Eso no lo hago: tomar una foto de la playa no es algo que yo realice.», D-s042 «Eso no lo
+# hago: comprar un pastel de camote en una panadería local no lo preparo yo.»): the limit named the thing asked and then
+# said it again as the subject of a second denial; both drafts died (limit_echoes_request, limit_changed_act) and the
+# turns ended with no final. What the opening names is the whole limit; the denial repeated after it is cut.
+_LIMIT_ECHOED_DENIAL = re.compile(
+    r"^(?P<opening>\s*(?:eso|esto)\s+no\s+lo\s+hago|\s*i\s+(?:don'?t|do\s+not)\s+do\s+that)\s*:\s*(?P<named>[^.;:!?]+?)"
+    r"\s+(?:no|est[aá]\s+fuera|queda\s+fuera|(?:is|are)\s+(?:not|outside|beyond|something)|isn'?t|aren'?t)\b",
+    re.IGNORECASE,
+)
+# A clause cut inside itself («tomar una foto que | no salga movida») ends in a word that leads what was cut.
+_LIMIT_NAMED_OPEN_END = frozenset(
+    "que de del la el los las lo un una a al en con por para y e o u ni sin si cuando donde como "
+    "that which who the a an of to in on for with and or if when where".split()
+)
+
+
+def limit_without_its_echo(text: object) -> str:
+    """«Eso no lo hago: <lo pedido> no lo preparo yo.» → «Eso no lo hago: <lo pedido>.»; empty when the text is not a
+    limit of that shape (see above). The caller judges the result like any other draft."""
+
+    found = _LIMIT_ECHOED_DENIAL.match(str(text or ""))
+    if found is None:
+        return ""
+    named = found.group("named").strip(" ,—–-")
+    if len(named.split()) < 2 or _reading_fold(named.split()[-1]) in _LIMIT_NAMED_OPEN_END:
+        return ""
+    opening = found.group("opening").strip()
+    return f"{opening[:1].upper()}{opening[1:]}: {named}."
+
+
 # M62 (v3e2-final F-w11-t1 «pideme unos tacos al pastor porfa…» → «No hago tacos al pastor.»): the talk reply's
 # «no preparo» was refused (M50), and the recovered limit said «no hago» with the dish as its object — making it
 # again. «Hago» with a thing as its object is making that thing; «eso no lo hago», «no hago pedidos» are not.
@@ -4918,12 +4949,18 @@ _FAILURE_MARKERS = re.compile(
     # nada» states the failure entire — nothing changed — and died in
     # missing_failure; that nothing changed is affirming it did not happen.
     r"no cambi[oó] nada|no cambi[eé] nada|no se cambi[oó] nada|no hubo cambios?|"
+    # M101 (owner script v3z2 t45 «silencia mi microfono», already muted): «…no hubo ningún cambio» as well.
+    r"no hubo ning[uú]n cambio|"
     r"nothing (?:was )?changed|no change was made|"
     # ctx-dueno-05 (2026-09-22, «en Steam ve a Crash Bandicoot»): «Intenté hacer
     # clic … pero no hay nada en la pantalla con ese nombre, así que no se
     # realizó la acción» died in missing_failure after the two drafts that named
     # the failure differently died in missing_prior_open and reversed_polarity.
     r"no se realiz[oó]|no se hizo|no se pudo|no se pudieron|no fue posible|no realic[eé]|"
+    # M101 (DEV-D v3z D-p31-t2, turn_runtime_failure): «No he procesado tu mensaje porque no logré interpretar…» says
+    # the failure entire and died in missing_failure; the App's LooksLikeFailure already reads «no logré» and «no
+    # completé» as failures (twin).
+    r"no logr[eé]|no complet[eé]|"
     r"was not (?:done|performed|carried out)|could not be (?:done|performed)|"
     # DOWNLOAD2047: «no se guardó nada», «no se bajó la portada» say the failure.
     r"no se (?:guard[oó]|baj[oó]|descarg[oó]) |nada se guard[oó]|nada fue guardad[oa]|no guard[eé] nada|"
@@ -4986,6 +5023,25 @@ def _failure_word_is_the_persons(text: str, user_text: str) -> bool:
     if _FAILURE_CAUSE.search(_accent_folded_with_punctuation(rest)) is not None:
         return False
     return rest != str(text) and not _asserts_failure(rest)
+
+
+def talk_reply_tells_a_failure(reply: object, request: object) -> bool:
+    """M101 (DEV-D v3z D-p31-t2 «…estas seguro al 100% que esto es así» → recovered «No tengo certeza absoluta ni
+    puedo garantizar resultados…»): a talk reply that tells a failure of BAXY's, which the App's conversation policy
+    refuses as looks_like_failure (twin of its exemptions: a question to the person that claims no failed attempt,
+    whether BAXY is able, the person's own «fallos»). The App's reading of a knowledge question is narrower than the
+    mind's, so that exemption is not assumed: the recovery then asks back instead of handing the App a refusal."""
+
+    text = str(reply or "")
+    told = without_quoted_speech(text)
+    if not _asserts_failure(told):
+        return False
+    failed_attempt = _FAILED_ATTEMPT.search(_reading_fold(text)) is not None
+    if ends_asking_the_person(text) and not failed_attempt and not _asserts_failure(without_saying_inability(told)):
+        return False
+    if asks_whether_able(str(request or "")) and not failed_attempt:
+        return False
+    return not _failure_word_is_the_persons(text, str(request or ""))
 
 
 # Twin of UserMessagePolicy.EchoedFailures.
@@ -6197,8 +6253,10 @@ def _microphone_muted_fact(situation: dict) -> bool | None:
 # UserMessagePolicy.AlreadyStatement.
 # Independent review A2: «Ya está, activé tu micrófono» is «done» said over a failure; «ya está» is the state only
 # before a word («ya está activo»), and «I already did it» is BAXY's act.
+# M101 (owner script v3z2 t45 «El micrófono estaba ya silenciado…», refused three times): «estaba ya» is «ya estaba».
 _ALREADY_STATEMENT = re.compile(
-    r"\bya\s+(?:estaba|estaban|era|eran)\b|\bya\s+estan?\s+(?=[a-z])|(?<!\bi )(?<!\bi've )(?<!\bi have )\balready\b"
+    r"\bya\s+(?:estaba|estaban|era|eran)\b|\b(?:estaba|estaban|era|eran)\s+ya\b|\bya\s+estan?\s+(?=[a-z])|"
+    r"(?<!\bi )(?<!\bi've )(?<!\bi have )\balready\b"
 )
 
 
@@ -6230,6 +6288,14 @@ def _situation_error_codes(situation: dict) -> tuple[str, ...]:
         if isinstance(step, dict):
             codes.extend(_situation_error_codes(step))
     return tuple(codes)
+
+
+def _failure_opened_the_page(situation: dict) -> bool:
+    """M101 (DEV-D v3z D-w10-t4): the typed failure is a YouTube page that opened and whose playback was not confirmed;
+    its cause fact (_CAUSE_FACT «youtube_playback_not_verified») says the page opened, so saying so claims nothing
+    unverified."""
+
+    return any(_cause_fact_key(code) == "youtube_playback_not_verified" for code in _situation_error_codes(situation))
 
 
 def _merged_observed(situation: dict) -> dict:
@@ -7859,6 +7925,12 @@ _DETERMINISTIC_FAILURES = {
         "No pude confirmar el salto en la reproducción.",
         "I couldn't confirm the jump in the playback.",
     ),
+    # M101 (owner script v3z2 t45 «silencia mi microfono» already muted): three drafts died and the turn ended in ⚠;
+    # the asked state that already held (_ASKED_STATE_ALREADY_HELD) is told as it was read.
+    "microphone_already_muted": ("El micrófono ya estaba silenciado.", "The microphone was already muted."),
+    "microphone_already_unmuted": ("El micrófono ya estaba activo.", "The microphone was already on."),
+    "airplane_mode_already_on": ("El modo avión ya estaba activado.", "Airplane mode was already on."),
+    "airplane_mode_already_off": ("El modo avión ya estaba desactivado.", "Airplane mode was already off."),
 }
 
 
@@ -7932,6 +8004,32 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
             if isinstance(code, str) and code in _DETERMINISTIC_FAILURES:
                 spanish, english_text = _DETERMINISTIC_FAILURES[code]
                 return english_text if english else spanish
+        if any(code in {"out_of_catalog", "out-of-catalog"} for code in codes if isinstance(code, str)):
+            # M101 (DEV-D v3z D-s037, D-s042): a decided limit is said in BAXY's own words with the thing asked as the
+            # person said it, or as the plain limit when it cannot be said that way; never no final.
+            opening = "I don't do that" if english else "Eso no lo hago"
+            asked = asked_act_clause(user_text, "en" if english else "es")
+            return f"{opening}: {asked}." if asked else f"{opening}."
+        unverified = reason if isinstance(reason, dict) else situation
+        target = str(unverified.get("target") or situation.get("target") or "").strip()
+        if target and len(target) <= 200 and "«" not in target and "»" not in target:
+            # M101 (DEV-D v3z D-w10-t4 «ponme música tropical en YouTube»): the page opened and playback was not
+            # confirmed; three honest drafts died and the turn ended with no final. The unverified effect is reported
+            # naming its target, never as done.
+            if any(
+                isinstance(code, str) and _cause_fact_key(code) == "youtube_playback_not_verified" for code in codes
+            ):
+                return (
+                    f"The YouTube page opened, but I couldn't confirm that «{target}» is playing."
+                    if english
+                    else f"La página de YouTube se abrió, pero no pude confirmar que «{target}» esté sonando."
+                )
+            if unverified.get("effectUncertain") is True or situation.get("effectUncertain") is True:
+                return (
+                    f"I couldn't confirm the result for «{target}»."
+                    if english
+                    else f"No pude confirmar el resultado con «{target}»."
+                )
         return ""
     if operation == "system.time" and isinstance(payload.get("clockAt"), str):
         # M85 (DEV-D v3o D-w02-t2): another place's clock, or a said time converted between here and there, is told
@@ -7980,6 +8078,12 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
         if clock_later_asked(user_text) is not None:
             return f"It will be {clock}." if english else f"Serán las {clock}."
         return f"It's {clock}." if english else f"Son las {clock}."
+    observed = situation.get("observed") if isinstance(situation.get("observed"), dict) else {}
+    if operation == "audio.microphone.mute" and type(observed.get("muted")) is bool:
+        # M101 (owner script v3z2): a verified microphone change is told with the state read after it.
+        if observed["muted"]:
+            return "The microphone is muted." if english else "El micrófono está silenciado."
+        return "The microphone is on." if english else "El micrófono está activo."
     if operation in {"audio.volume", "audio.volume.adjust"} and type(seen.get("level")) is int:
         # The master output only; an application's own level is another read.
         level = seen["level"]
@@ -15277,7 +15381,11 @@ def compose_visible_defect(
             return "metadiscourse"
         # M93 (held-out v3v t10 «abrí el bloc de notas», inventory_failed): «…no pudo leer la lista de programas y
         # ventanas abiertos» names the list that could not be read, the failure's own cause; it claims nothing open.
-        if re.search(r"abiert|\bis open\b", _OPEN_PROGRAMS_LIST.sub(" ", folded)) and not re.search(
+        # M101 (DEV-D v3z D-w10-t4 «He abierto YouTube, pero no he podido confirmar si la música tropical está
+        # sonando.», refused three times and no final): when the failure is a YouTube page that opened and did not
+        # confirm playback, the open page is its cause fact, not a reversed result.
+        page_opened = _failure_opened_the_page(situation)
+        if not page_opened and re.search(r"abiert|\bis open\b", _OPEN_PROGRAMS_LIST.sub(" ", folded)) and not re.search(
             # CLOSE1371 «cierra steam» with no Steam window: «no tiene ninguna
             # ventana abierta» / «no está abierto» state the absence, they do
             # not claim the application is open.
@@ -15302,6 +15410,7 @@ def compose_visible_defect(
                 folded,
             )
             and not _completed_step_operation(situation, "app.open")
+            and not page_opened
         ):
             return "reversed_polarity"
         if cause == "mission_failed" and re.search(
@@ -19174,6 +19283,17 @@ class LlmRuntime:
             if head != content:
                 content = head
                 message = {**message, "content": head}
+        if presentation_shape is None and conversation_kind == "unsupported" and content:
+            # M101 (DEV-D v3z D-s037, D-s042): the limit that named the thing asked keeps that naming, without the
+            # denial said again after it.
+            unechoed = limit_without_its_echo(content)
+            if (
+                unechoed
+                and _unsupported_answer_contract_failure(content, text)
+                and not _unsupported_answer_contract_failure(unechoed, text)
+            ):
+                content = unechoed
+                message = {**message, "content": unechoed}
 
         def judged(value: str) -> str:
             """M50: in a reply to a code request only the prose around the code is judged; all code is the content."""
@@ -19557,6 +19677,16 @@ class LlmRuntime:
                 # final_content; both must carry the kept sentence.
                 final_content = head
                 message = {**message, "content": head}
+        if presentation_shape is None and conversation_kind == "unsupported" and final_content:
+            # M101: the retried limit is kept to what its opening named the same way.
+            unechoed = limit_without_its_echo(final_content)
+            if (
+                unechoed
+                and _unsupported_answer_contract_failure(final_content, text)
+                and not _unsupported_answer_contract_failure(unechoed, text)
+            ):
+                final_content = unechoed
+                message = {**message, "content": unechoed}
         if presentation_shape == "identity" and final_content:
             # M90 (cien-110 079): the retried answer is kept to its first sentence the same way.
             head = _identity_answer_head(final_content, text)
@@ -24962,6 +25092,10 @@ class LlmRuntime:
             # Kept only if the clipped draft passes every check.
             if cause not in {"out_of_catalog", "out-of-catalog"} or not candidate or publishable(candidate):
                 return candidate
+            # M101 (DEV-D v3z D-s037, D-s042): «Eso no lo hago: <lo pedido> no lo preparo yo.» keeps what it named.
+            unechoed = limit_without_its_echo(candidate)
+            if unechoed and publishable(unechoed):
+                return unechoed
             found = re.search(_LIMIT_REASON.pattern, candidate, re.IGNORECASE)
             if found is None:
                 return candidate

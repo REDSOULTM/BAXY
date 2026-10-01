@@ -2256,7 +2256,7 @@ internal static class UserMessagePolicy
         // same marker in the mind's _FAILURE_MARKERS.
         || Regex.IsMatch(
             normalized,
-            @"\b(?:no\s+cambi[oe]\s+nada|no\s+se\s+cambio\s+nada|no\s+hubo\s+cambios?|nothing\s+(?:was\s+)?changed|no\s+change\s+was\s+made)\b"
+            @"\b(?:no\s+cambi[oe]\s+nada|no\s+se\s+cambio\s+nada|no\s+hubo\s+cambios?|no\s+hubo\s+ningun\s+cambio|nothing\s+(?:was\s+)?changed|no\s+change\s+was\s+made)\b"
             + @"|\b(?:no\s+se\s+realizo|no\s+se\s+hizo|no\s+fue\s+posible|no\s+realice|was\s+not\s+(?:done|performed|carried\s+out)|could\s+not\s+be\s+(?:done|performed))\b"
             + @"|\b(?:no\s+se\s+(?:guardo|bajo|descargo)\s|nada\s+se\s+guardo|nada\s+fue\s+guardad[oa]|no\s+guarde\s+nada|nothing\s+was\s+saved|was\s+not\s+saved)\b"
             // PPTX2051: «the opening is not confirmed» / «cannot be verified» say the failure entire.
@@ -3728,9 +3728,9 @@ internal static class UserMessagePolicy
     // Independent review A2: «Ya está, activé tu micrófono» is «done», not «it already was»; twin of
     // llm._ALREADY_STATEMENT.
     // NonBacktracking takes no lookaround: «ya está» before a state word is «ya está» and a letter, and BAXY's own
-    // «I already…» is excluded by FirstPersonAlready.
+    // «I already…» is excluded by FirstPersonAlready. M101 (owner script v3z2 t45): «estaba ya silenciado» too.
     private const string AlreadyStatement =
-        @"\bya\s+(?:estaba|estaban|era|eran)\b|\bya\s+estan?\s+[a-z]|\balready\b";
+        @"\bya\s+(?:estaba|estaban|era|eran)\b|\b(?:estaba|estaban|era|eran)\s+ya\b|\bya\s+estan?\s+[a-z]|\balready\b";
     private const string FirstPersonAlready = @"\bi(?:'ve|\s+have)?\s+already\b";
 
     /// <summary>
