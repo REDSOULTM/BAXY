@@ -614,3 +614,12 @@ escritores independientes (ocho hablas), doble etiquetado ciego (acuerdo 300/300
 reescritos, segunda pasada 0). SHA-256 `1a8b0f3f…f8020`. Regla: DEV-E sólo mide; se leen sus agregados (automática y
 cifra del revisor), nunca sus filas ni sus fallos para arreglar. Si DEV-E queda lejos de las metas, el FINAL-2 no se corre
 todavía. Las huellas de exclusión de los datos de entrenamiento deben incluir DEV-E antes de generar más datos.
+
+## D56 — 2026-10-01: full9 rechazado; continuar full3 en vez de reentrenar desde cero
+
+`full9` (p0v5 + públicas con cuota + T22–T27, sin parejas mínimas) medido aislado con la regla de exp1: DEV-A decisión 228
+frente a 237 de `full3` (esquema anidado y esquema del producto, igual), DEV-D 290 frente a 300, búsqueda y aclaración peores;
+argumentos 50/54. Las mezclas `full3`+`full9` tampoco cumplen la regla. Es el sexto reentrenamiento desde la base que decide
+peor que `full3` (full4–full9). `full10` (la misma receta + 682 formas de sala limpia) se detuvo al empezar. Siguiente vía:
+`full11a`, continuar el propio `full3` (su adaptador como punto de partida) con una pasada a lr 5e-5 sobre 1 200 filas de
+sus datos originales (réplica, para no olvidar) y las 682 formas nuevas. Misma regla de entrada para adoptarlo.
