@@ -604,3 +604,13 @@ Auditoría independiente de los 346 fallos de la reserva (v3w, 2 411/2 757 = 87,
 especificación automática (derivada de MASSIVE) está mal según las reglas del dueño, C 87 ambiguos, D 19 ininteligibles.
 Con B corregido sería 91,6 %. No se cambian las etiquetas sin el dueño (no relajar pruebas); los A se atacan en código
 (M97: +19/−0 en réplica sin GPU).
+
+## D55 — 2026-10-01: DEV-E, medidor imparcial antes del FINAL-2
+
+DEV-D sube (automática 80 → 91 %, revisor 64 → 89 %) pero DEV-C, sellado y leído sólo en agregado, no se mueve (252 → 251/301).
+Para no gastar el FINAL-2 a ciegas se crea DEV-E: 299 turnos (124 sueltos + 45 conversaciones), sala limpia con cinco
+escritores independientes (ocho hablas), doble etiquetado ciego (acuerdo 300/300 con la regla de DEV-D; lista exacta 90,3 %;
+33 dudosos adjudicados, 1 eliminado), exclusión contra los conjuntos protegidos y los datos de entrenamiento (73 textos
+reescritos, segunda pasada 0). SHA-256 `1a8b0f3f…f8020`. Regla: DEV-E sólo mide; se leen sus agregados (automática y
+cifra del revisor), nunca sus filas ni sus fallos para arreglar. Si DEV-E queda lejos de las metas, el FINAL-2 no se corre
+todavía. Las huellas de exclusión de los datos de entrenamiento deben incluir DEV-E antes de generar más datos.
