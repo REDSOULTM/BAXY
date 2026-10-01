@@ -515,17 +515,20 @@ def _explicit_wifi_profile_arguments(evidence: str) -> dict[str, object] | None:
 _OFFSET_FROM_ANOTHER_MOMENT = r"\s+(?:antes|despues|before|after|earlier\s+than|later\s+than)\b"
 
 
+_ALARM_NOUN = r"\b(?:alarm|alarma|alerta|alert|timer|temporizador|countdown|cuenta\s+regresiva)\b"
+
+
 def _explicit_notification_schedule_arguments(
     evidence: str,
 ) -> dict[str, object] | None:
     """Extract one audible alarm/timer with a single bounded time literal."""
 
-    folded = effect_intent._fold(evidence)
+    # M110 (DEV-F v4d F-w45-t1 «gimme a 25 minute countdown», restated «Set a 25-minute countdown for the pizza.» →
+    # «When would you like the alarm to go off…?»): a countdown is a timer, and «25-minute» is its length.
+    folded = re.sub(r"(?<=\d)-(?=[a-z])", " ", effect_intent._fold(evidence))
     wake_request = effect_intent._wake_alarm_request(folded)
     count_request = effect_intent._count_down_request(folded)
-    if not wake_request and not count_request and not re.search(
-        r"\b(?:alarm|alarma|alerta|alert|timer|temporizador)\b", folded
-    ):
+    if not wake_request and not count_request and not re.search(_ALARM_NOUN, folded):
         return None
     relative_pattern = (
         rf"\b(?P<duration>{effect_intent._RELATIVE_DURATION_PATTERN})\b"
@@ -544,9 +547,7 @@ def _explicit_notification_schedule_arguments(
     if len(relative) + len(clocks) != 1 or (clocks and not clocks[0].resolved):
         return None
     due_literal = (relative[0].group("duration") if relative else clocks[0].literal).strip()
-    noun = re.search(
-        r"\b(?:alarm|alarma|alerta|alert|timer|temporizador)\b", evidence, re.IGNORECASE
-    )
+    noun = re.search(_ALARM_NOUN, evidence, re.IGNORECASE)
     if noun is None and not wake_request and not count_request:
         return None
     title_start = noun.start() if noun is not None else 0
@@ -580,7 +581,7 @@ def _explicit_relative_reminder_arguments(
     """Preserve one closed relative reminder's literal time and title."""
 
     duration = (
-        rf"(?:(?:(?:en|in|dentro\s+de|within)\s+){effect_intent._RELATIVE_DURATION_PATTERN}|"
+        rf"(?:(?:(?:en|in|dentro\s+de|within)\s+){effect_intent._RELATIVE_DURATION_PATTERN}(?:\s+m[aá]s\b(?!\s+o\s+menos))?|"
         rf"{effect_intent.CLOCK_PHRASE})"
     )
     # The person's own spelling reaches this reader: «recuérdame», «avísame».
@@ -1864,6 +1865,13 @@ def _explicit_arguments_from_evidence(
         if reminder is not None:
             return {**reminder, "kind": "reminder", "recurrence": repetition}
         alarm = _explicit_notification_schedule_arguments(evidence)
+        if alarm is None and repetition is None and re.search(r"\b(?:recordatorios?|reminders?)\b", folded):
+            # M110 (DEV-F v4d F-w59-t2 «yeah sure mañana at 6:30 pm» restated «Pon un recordatorio mañana a las 6:30
+            # p. m. para la lista de la compra.» → titled «yeah sure mañana», today at 18:30): a reminder asked as a
+            # notification is read by the reminder's own readers, its moment and what it is for.
+            reminder = _explicit_arguments_from_evidence("reminder.create", evidence, application_names, game_catalog)
+            if reminder is not None and set(reminder) == {"dueUtc", "title"}:
+                return {**reminder, "kind": "reminder"}
         return {**alarm, "recurrence": repetition} if alarm is not None and repetition is not None else alarm
 
     if operation == "audio.microphone.mute":
@@ -2235,9 +2243,9 @@ def _canonical_due_utc(
     relative = re.fullmatch(
         rf"(?:(?:en|in|dentro de|within)\s+)?"
         r"(?:(?P<half>media\s+hora|half\s+an?\s+hour)|"
-        rf"(?P<number>{_TEMPORAL_NUMBER_PATTERN})\s*"
+        rf"(?P<number>{_TEMPORAL_NUMBER_PATTERN})[\s-]*"
         rf"(?P<unit>{effect_intent._RELATIVE_DURATION_UNIT}))"
-        r"(?:\s+(?:from now|desde ahora))?",
+        r"(?:\s+mas)?(?:\s+(?:from now|desde ahora))?",
         folded_value,
         re.IGNORECASE,
     )

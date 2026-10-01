@@ -64,7 +64,8 @@ from .semantic.web import (
     asks_where_to_find, asks_upcoming, memory_may_answer,
 )
 from .semantic.temporal import (
-    _DAY_WORDS, clock_elsewhere, clock_later_asked, named_clock_dial, plural_alarm_cancellation,
+    _DAY_WORDS, clock_elsewhere, clock_later_asked, named_clock_dial, plural_alarm_cancellation, said_durations,
+    spoken_clocks, spoken_date, spoken_day,
 )
 from .semantic.games import _edit_distance
 from . import effect_intent
@@ -7387,7 +7388,9 @@ def _compose_situation_payload(
                 _alarm_offer_seen(visible_seen, listing) if plural_alarm_cancellation(user_text or "") else listing
             )
         elif operation in {"notification.schedule", "reminder.create"}:
-            visible_seen = _project_scheduled_notification(visible_seen, situation, language)
+            visible_seen = _project_scheduled_notification(visible_seen, situation, language, user_text or "")
+        elif operation == "notification.cancel.at" and situation.get("verified") is True:
+            visible_seen = _project_cancelled_notification(visible_seen, situation, language)
         elif operation == "ocr.read":
             # SCREEN1407 «leéme lo que dice la pantalla»: the receipt carries the
             # layout boxes, hashes and timestamps (about 30 KB) and the composer
@@ -9599,7 +9602,32 @@ def _project_notification_listing(observed: dict, language: str) -> dict:
     return {"count": count, "scheduled": scheduled}
 
 
-def _project_scheduled_notification(observed: dict, situation: dict, language: str) -> dict:
+def _rings_in(due: datetime, user_text: str, language: str) -> str | None:
+    """M110 (DEV-F v4d F-w09-t4 «avisame en 15 minutes…», F-w45-t1 «gimme a 25 minute countdown»): how long until a
+    verified notification rings, as the person said it when they gave a length (within two minutes of the verified
+    due), or counted when they said no clock or day at all («go with 12» after «How long…?»); None otherwise, or a day
+    or more ahead."""
+
+    remaining = (due - _local_now()).total_seconds() / 60
+    if not 0 < remaining < 24 * 60:
+        return None
+    said = next((literal for literal, minutes in said_durations(user_text) if abs(minutes - remaining) <= 2), None)
+    if said is not None:
+        return said
+    folded = _reading_fold(user_text)
+    if spoken_clocks(folded) or spoken_day(folded, 0) != (0, 1) or spoken_date(folded) is not None:
+        return None
+    hours, minutes = divmod(round(remaining), 60)
+    english = language == "en"
+    parts = []
+    if hours:
+        parts.append(f"{hours} {'hour' if english else 'hora'}{'' if hours == 1 else 's'}")
+    if minutes or not hours:
+        parts.append(f"{minutes} {'minute' if english else 'minuto'}{'' if minutes == 1 else 's'}")
+    return (" and " if english else " y ").join(parts)
+
+
+def _project_scheduled_notification(observed: dict, situation: dict, language: str, user_text: str = "") -> dict:
     """Tanda 5 «set 30 minute timer» died three times in missing_state: the receipt carried only UTC instants
     (dueUtc/nextRunUtc 16:57) and the drafts said 14:27, 16:57 and 17:27 for a timer due at 13:57 local. The person
     hears their own clock: the verified next run goes as local time (and its date when it is not today); the UTC
@@ -9619,7 +9647,49 @@ def _project_scheduled_notification(observed: dict, situation: dict, language: s
             projected["scheduledDay"] = "tomorrow" if language == "en" else "mañana"
         elif local.date() != today:
             projected["scheduledLocalDate"] = local.date().isoformat()
+        rings_in = _rings_in(local, user_text, language)
+        if rings_in is not None:
+            projected["ringsIn"] = rings_in
     return projected
+
+
+def _project_cancelled_notification(observed: dict, situation: dict, language: str) -> dict:
+    """M110 (DEV-F v4d F-w21-t5 «quítame la de las 6:40», F-w35-t4 «quítame la de las 5 y 10» → «Cancelé la alarma.»):
+    the cancelled alarm or reminder is told by its local time (and its day when it is not today), the one the
+    verified absence read was about; the task name and the UTC instants stay with the checks."""
+
+    projected: dict = {}
+    if isinstance(observed.get("canceled"), bool):
+        projected["canceled"] = observed["canceled"]
+    kind = observed.get("kind")
+    if kind in {"alarm", "reminder"}:
+        projected["kind"] = {"alarm": ("alarma", "alarm"), "reminder": ("recordatorio", "reminder")}[kind][
+            1 if language == "en" else 0
+        ]
+    clock = _cancelled_local_clock(observed)
+    if clock is not None:
+        projected["time"] = f"{clock:%H:%M}"
+        today = _local_now().date()
+        if clock.date() == today + timedelta(days=1):
+            projected["day"] = "tomorrow" if language == "en" else "mañana"
+        elif clock.date() != today:
+            projected["date"] = clock.date().isoformat()
+    elif type(observed.get("hour")) is int and 0 <= observed["hour"] <= 23:
+        minute = observed.get("minute") if type(observed.get("minute")) is int else 0
+        projected["time"] = f"{observed['hour']:02d}:{minute:02d}"
+    return projected
+
+
+def _cancelled_local_clock(observed: dict) -> datetime | None:
+    """The local moment the cancelled notification was due, from the verified read (its expected next run)."""
+
+    for key in ("expectedNextRunUtc", "nextRunUtc"):
+        value = observed.get(key)
+        if isinstance(value, str) and value:
+            parsed = _parse_core_utc(value)
+            if parsed is not None:
+                return parsed.astimezone()
+    return None
 
 
 def _local_clock_text(iso_utc: str) -> str | None:
@@ -9644,6 +9714,10 @@ def _observed_local_clocks(situation: dict) -> frozenset[str]:
     if situation.get("verified") is not True or situation.get("succeeded") is not True:
         return frozenset()
     observed = _merged_observed(situation)
+    if situation.get("operation") == "notification.cancel.at":
+        # M110: the cancelled one is told by its time («Cancelé la alarma de las 6:40.»).
+        projected = _project_cancelled_notification(observed, situation, "es")
+        return frozenset({projected["time"]}) if "time" in projected else frozenset()
     if situation.get("operation") == "notification.list":
         entries = observed.get("notifications")
         return frozenset(
