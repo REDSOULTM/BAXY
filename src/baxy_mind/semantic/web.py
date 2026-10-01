@@ -108,7 +108,11 @@ _WEATHER_WORDS = (
     r"rain(?:ed)?\s+out|rainout|"
     # Uso real tanda 5 «¿qué pronostican tus aplicaciones del tiempo para mañana?»: the
     # forecast named by its adjective, and the weather app named by what it tells.
-    r"meteorologic[oa]s?|(?:apps?|aplicacion(?:es)?)\s+del\s+tiempo)\b"
+    r"meteorologic[oa]s?|(?:apps?|aplicacion(?:es)?)\s+del\s+tiempo|"
+    # M104 (reserve v3z en5871 «hows mysore climate today»): the climate of a day is its weather; «climate change»,
+    # «the climate of Chile» stay what they are.
+    r"climate\s+(?:today|now|right\s+now|tonight|tomorrow|this\s+(?:morning|afternoon|evening|week(?:end)?))|"
+    r"(?:today'?s|tonight'?s|tomorrow'?s|current)\s+climate)\b"
 )
 # The weather of the past has no live read («qué clima hacía en 1990», «did it rain yesterday»); rained out is not
 # the past («is my game going to get rained out»).
@@ -1486,7 +1490,9 @@ _WEATHER_HEADS = frozenset(
         "weather",
         "what",
         # Tanda 4c «Whats the air quality hoy?»: the apostrophe the keyboard left out, and the air named first.
+        # M104 (reserve v3z en5871 «hows mysore climate today»): «hows» as well.
         "whats",
+        "hows",
         "air",
         "calidad",
         "aqi",
@@ -2896,6 +2902,22 @@ _NOT_A_NEWS_PLACE = (
     r"reunion(?:es)?|meetings?|clases?|class(?:es)?|llamadas?|calls?|fiestas?|party|trabajo|work|oficina|office|"
     r"casa|home)\b"
 )
+
+
+# M104 (reserve v3z es631 «establecer notificaciones para las noticias sobre el gasoducto sur peruano» → a notification
+# scheduled): being notified of the news on a subject asks BAXY to watch the news and tell when there is some, which no
+# operation does; a notice at a time said («avísame a las ocho de leer las noticias») is an ordinary one. Folded.
+_NEWS_WATCH = re.compile(
+    r"\b(?:notificacion(?:es)?|notifica\w*|notify|notifications?|alertas?|alerta\w*|alerts?|alert\s+me|"
+    r"avisos?|avisame|avisarme|avisa|suscrib\w*|subscribe\w*)\b[^.?!]{0,40}?\b(?:noticias?|news|titulares|headlines)\b"
+)
+
+
+def asks_to_watch_the_news(text: str) -> bool:
+    """Notifications of the news on a subject asked for, with no time said (see above)."""
+
+    folded = _fold(text)
+    return _NEWS_WATCH.search(folded) is not None and not spoken_clocks(folded)
 
 
 def news_lookup_query(text: str) -> str | None:

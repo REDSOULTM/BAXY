@@ -454,7 +454,8 @@ def test_each_model_call_can_be_timed_without_the_persons_words(tmp_path, monkey
 
 
 _NOODLES = "how long should i boil noodles for"
-_ANSWER = "Boil them for eight to ten minutes, until they are tender."
+# M104: a reply with no figure from memory («eight to ten minutes» is one, spelled out); these tests time the handover.
+_ANSWER = "Boil them in plenty of salted water until they are tender."
 _SERVED = ("system.time", "weather.current")
 
 
