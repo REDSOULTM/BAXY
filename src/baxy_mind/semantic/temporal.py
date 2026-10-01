@@ -590,7 +590,8 @@ _CLOCK_ELSEWHERE = (
 # horario» is the zone itself, not a schedule.
 _CLOCK_NOT_A_READ = (
     r"\b(?:alarma|alarm|timer|temporizador|recuerda\w*|recorda\w*|remind|avisa\w*|(?<!huso\s)horario|schedule|"
-    r"a\s+que\s+hora|what\s+time\s+(?:does|do|did|will|should|shall|is\s+the|are\s+the)|"
+    # M114: «what time will it be in Tokyo» is the clock there; «what time will the game start» is an event's.
+    r"a\s+que\s+hora|what\s+time\s+(?:does|do|did|will(?!\s+it\s+be\b)|should|shall|is\s+the|are\s+the)|"
     # «la hora exacta de la puesta de sol en Badalona»: the hour of the sun there is the weather read's, not a clock.
     r"(?:puesta|salida|caida|entrada)\s+del?\s+sol|amanecer|atardecer|anochecer|ocaso|sunrise|sunset|dawn|dusk)\b"
 )
@@ -664,6 +665,8 @@ _NOT_A_PLACE = frozenset({
     "numeros", "numbers", "letras", "words", "voz", "voice", "ingles", "english", "espanol", "spanish",
     "local", "otra", "otro", "another", "other", "cualquier", "any", "reloj", "clock", "punto",
     "segundos", "seconds", "tiempo", "real", "vivo", "directo", "live", "lugar", "place",
+    # M114 (reserve es4309 «en cuántas horas será medianoche en londres»): «en cuántas horas» asks the amount.
+    "cuanto", "cuanta", "cuantos", "cuantas", "how",
 })
 _HERE_TARGET = (
     r"\b(?:aqui|aca|here|mi\s+(?:hora|zona(?:\s+horaria)?|huso(?:\s+horario)?)|my\s+(?:time(?:\s*zone)?|timezone)|"
