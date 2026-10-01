@@ -10859,8 +10859,11 @@ _SEARCH_MECHANICS = re.compile(
     r"none\s+of\s+(?:these|the)\s+pages|"
     # Guion t35 (28-09) «Un resultado dice que la primera obra … mientras que otro afirma …»: results compared aloud
     # are the search shown.
-    r"(?:un|otro|el\s+primer|el\s+segundo)\s+resultado|otro\s+(?:dice|afirma|indica|sostiene)|"
-    r"(?:one|another|the\s+first|the\s+second)\s+result|another\s+(?:says|states|claims)|"
+    # M115 (DEV-F v4e2 F-w26-t2 «…con un resultado de 2-1 frente a Junior»): a match's score is no search result.
+    r"(?:un|otro|el\s+primer|el\s+segundo)\s+resultado(?!\s+(?:de\s+|of\s+)?\d+\s*(?:-|–|a|to)\s*\d+)|"
+    r"otro\s+(?:dice|afirma|indica|sostiene)|"
+    r"(?:one|another|the\s+first|the\s+second)\s+result(?!\s+(?:of\s+)?\d+\s*(?:-|–|to)\s*\d+)|"
+    r"another\s+(?:says|states|claims)|"
     # M70 (held-out v3h t14/t16): once «subió» and «fecha» stopped vetoing them, «Cierta página señala que el nieto…
     # Otra menciona que John Carpenter…» and «Un artículo de La Vanguardia indica que…» would have been published: a
     # page, article or source that speaks, or «otra» that says, is the search shown the same.

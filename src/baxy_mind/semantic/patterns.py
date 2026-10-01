@@ -5982,6 +5982,11 @@ def _desired_music_query_raw(text: str) -> str | None:
     query = named.group("query").strip() if named is not None else _explicit_named_music_query(text)
     if query is None:
         return None
+    reason = re.search(r"\s+(?:q|que|porque|pq|xq|because|since|cause|cuz)\s+", query, re.IGNORECASE)
+    if len(query.split()) > 12 and reason is not None and query[: reason.start()].strip():
+        # M115 (DEV-F v4e2 F-w36-t1 «ponme llueve sobre la ciudad de los bunkers q esta nublao y me bajo la nostalgia» →
+        # a poem about rain): why the person wants it, said after what to play, is not what to play.
+        query = query[: reason.start()].strip()
     if not 1 <= len(query.split()) <= 12 or _has(
         _fold(query),
         # Tanda 6: «pon alarmas a las 7 y a las 8 …» schedules, in the plural too.
