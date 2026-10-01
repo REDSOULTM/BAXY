@@ -558,6 +558,12 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // use only»; §3.a.vi forbids «impermissible scraping»; bing.com/robots.txt disallows
     // /search.
     //
+    // M98: a year said by its relation to today reaches every source as its number
+    // (SearchQueryYear); an article that only names what was asked about answers only
+    // when the general engine cannot; the general engine's first pages are read for
+    // the sentences that answer (SearchPageExcerpt), since its snippets stop before
+    // the fact.
+    //
     // When nothing searched (all unreachable, blocked, or none fits the query) the
     // receipt says web_search_unavailable, so the reply says it could not look it up
     // and offers to open the search in the person's browser; when the general engine
@@ -582,7 +588,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         JsonElement arguments,
         CancellationToken cancellationToken)
     {
-        string query = ExternalJson.RequiredString(arguments, "query").Trim();
+        string query = SearchQueryYear.Anchor(
+            ExternalJson.RequiredString(arguments, "query").Trim(), DateTime.Now.Year);
         string asked = query;
         // Uso real tanda 4c «en qué lugares puedo pedir comida para llevar cerca»
         // buscó sin lugar y devolvió portales de otro país: lo que se busca cerca
@@ -660,7 +667,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         bool encyclopedic = WikipediaSearchSource.IsEncyclopedic(query);
         string terms = string.Join(' ', SearchPertinence.ContentTerms(asked));
         if (!encyclopedic && near is null && terms.Length > 0
-            && !WikipediaSearchSource.FoldedWords(asked).Any(NotNewsWords.Contains))
+            && !WikipediaSearchSource.FoldedWords(asked).Any(NotNewsWords.Contains)
+            && !WikipediaSearchSource.AsksWhatIsShowing(asked))
         {
             List<(string Title, string Url, string Snippet)>? headlines = await ReadNewsAsync(
                 terms, languages[0], cancellationToken).ConfigureAwait(false);
@@ -677,6 +685,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         // answers «who played in the movie directed by Kirill Mikhanovsky» says «film»:
         // when the words found nothing pertinent, the proper names alone are asked once,
         // in the query's language, and judged by the same whole query.
+        // M98: an article that only names what was asked about («Barcelona», «París» for their distance) is kept
+        // aside; it answers only when the general engine cannot be asked or has nothing about the query.
+        (List<(string Title, string Url, string Snippet)> Articles, string Authority)? namesOnly = null;
         if (near is null && encyclopedic && terms.Length > 0)
         {
             string names = string.Join(' ', SearchPertinence.EntityTerms(asked));
@@ -688,8 +699,12 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 List<(string Title, string Url, string Snippet)>? articles = await _wikipedia
                     .SearchAsync(language, words, limit, cancellationToken).ConfigureAwait(false);
                 if (articles is null) continue;
-                List<(string Title, string Url, string Snippet)> pertinent = articles
-                    .Where(item => SearchPertinence.IsPertinent(asked, item.Title, item.Snippet))
+                var judged = articles
+                    .Select(item => (Item: item, Pertinence: SearchPertinence.Judge(asked, item.Title, item.Snippet)))
+                    .ToList();
+                List<(string Title, string Url, string Snippet)> pertinent = judged
+                    .Where(static judgement => judgement.Pertinence == SearchPertinence.Pertinence.About)
+                    .Select(static judgement => judgement.Item)
                     .Take(limit)
                     .ToList();
                 if (pertinent.Count > 0)
@@ -697,6 +712,13 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                     return SearchReceipt(operation, query, near, pertinent,
                         WikipediaSearchSource.Authority(language));
                 }
+                List<(string Title, string Url, string Snippet)> named = judged
+                    .Where(static judgement => judgement.Pertinence == SearchPertinence.Pertinence.NamesOnly)
+                    .Select(static judgement => judgement.Item)
+                    .Take(limit)
+                    .ToList();
+                if (namesOnly is null && named.Count > 0)
+                    namesOnly = (named, WikipediaSearchSource.Authority(language));
             }
         }
 
@@ -707,27 +729,97 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         }
         catch (HttpRequestException)
         {
-            return ExternalJson.FailureBeforeEffect(operation, "web_search_unavailable");
+            return NamesOnlyOr("web_search_unavailable");
         }
         catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
-            return ExternalJson.FailureBeforeEffect(operation, "web_search_unavailable");
+            return NamesOnlyOr("web_search_unavailable");
         }
         if (reading.Candidates.Count == 0 && !reading.IsResultsPage)
         {
             // A block, a captcha or an error page: nothing was searched, and the
             // reply must not pretend the web had no answer.
-            return ExternalJson.FailureBeforeEffect(operation, "web_search_unavailable");
+            return NamesOnlyOr("web_search_unavailable");
         }
         var rejected = new List<(string Title, Uri Url, string Snippet)>();
         List<(string Title, string Url, string Snippet)> results =
             PertinentResults(queryTokens, reading.Candidates, limit, rejected);
         if (results.Count > 0)
         {
+            results = await WithPageExcerptsAsync(asked, results, cancellationToken).ConfigureAwait(false);
             return SearchReceipt(operation, query, near, results, GeneralSearchAuthority);
         }
         RecordSearchRejection(query, queryTokens, reading.Candidates.Count, rejected);
-        return ExternalJson.FailureBeforeEffect(operation, "web_search_results_irrelevant");
+        return NamesOnlyOr("web_search_results_irrelevant");
+
+        ExternalCapabilityReceipt NamesOnlyOr(string failure) => namesOnly is { } kept
+            ? SearchReceipt(operation, query, near, kept.Articles, kept.Authority)
+            : ExternalJson.FailureBeforeEffect(operation, failure);
+    }
+
+    // M98 (DEV-D v3x D-w01-t2, D-p34-t1): the engine's snippet is cut before what was asked. The pages of the first
+    // results are read at once, within a bound of their own, and the sentences of each that carry the most of the
+    // query (SearchPageExcerpt) follow its snippet. A query of one or two content words names a thing or a site, and
+    // its snippets already say what it is: no page is read. A page that does not answer in time, is not HTML or is
+    // not a public https address keeps its snippet alone.
+    private const int ExcerptPages = 3;
+    private static readonly TimeSpan ExcerptBudget = TimeSpan.FromMilliseconds(1_500);
+
+    private async Task<List<(string Title, string Url, string Snippet)>> WithPageExcerptsAsync(
+        string asked,
+        List<(string Title, string Url, string Snippet)> results,
+        CancellationToken cancellationToken)
+    {
+        if (SearchPertinence.ContentTerms(asked).Length < 3) return results;
+        using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        budget.CancelAfter(ExcerptBudget);
+        string[] excerpts = await Task.WhenAll(results.Take(ExcerptPages)
+                .Select(result => ReadPageExcerptAsync(asked, result, budget.Token, cancellationToken)))
+            .ConfigureAwait(false);
+        cancellationToken.ThrowIfCancellationRequested();
+        return results
+            .Select((result, index) => index < excerpts.Length && excerpts[index].Length > 0
+                ? (result.Title, result.Url, result.Snippet + " … " + excerpts[index])
+                : result)
+            .ToList();
+    }
+
+    private async Task<string> ReadPageExcerptAsync(
+        string asked,
+        (string Title, string Url, string Snippet) result,
+        CancellationToken budget,
+        CancellationToken cancellationToken)
+    {
+        if (!Uri.TryCreate(result.Url, UriKind.Absolute, out Uri? page)
+            || page.Scheme != Uri.UriSchemeHttps
+            || page.HostNameType != UriHostNameType.Dns
+            || page.IsLoopback
+            || !page.Host.Contains('.', StringComparison.Ordinal))
+        {
+            return string.Empty;
+        }
+        try
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, page);
+            using HttpResponseMessage response = await _http
+                .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, budget)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode
+                || response.Content.Headers.ContentType?.MediaType is not ("text/html" or "application/xhtml+xml"))
+            {
+                return string.Empty;
+            }
+            string html = await ReadBoundedTextAsync(response, 1_500_000, budget).ConfigureAwait(false);
+            return SearchPageExcerpt.Read(html, asked, result.Title + " " + result.Snippet);
+        }
+        catch (HttpRequestException)
+        {
+            return string.Empty;
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return string.Empty;
+        }
     }
 
     // The search feed of Google News: each headline with its outlet and time. Null when
@@ -877,7 +969,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         foreach (SearchCandidate candidate in candidates)
         {
             if (results.Count >= limit) break;
-            if (IsSearchResultRelevant(verifiableTerms, candidate.Observed))
+            if (IsSearchResultRelevant(verifiableTerms, candidate.Observed)
+                && !SearchPertinence.OfAnotherYear(queryTokens, candidate.Observed))
             {
                 results.Add((candidate.Title, candidate.Url.AbsoluteUri, candidate.Snippet));
             }
