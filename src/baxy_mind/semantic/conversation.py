@@ -2435,10 +2435,15 @@ _MAKING_REQUEST = re.compile(
 
 # M97 (DEV-D v3x D-p29-t3 «I would like to watch this movie with English subtitles»): what the person says they want to
 # do themselves — watch, listen, read, eat, drink —, not an act asked of BAXY.
+# M101 (DEV-D v3z D-s037 «Quiero tomar una foto de esa montaña…» → «No tomo fotos de playas.», refused three times as
+# the person's own act and the turn ended empty): «tomar» a photo, a screenshot or a note is taking it, not drinking.
 _WANTS_TO_CONSUME = re.compile(
     r"\b(?:i\s+(?:would\s+like|want|wanna|d\s+like|need)\s+to|i'?d\s+like\s+to|let'?s|i'?m\s+going\s+to|"
     r"quiero|quisiera|me\s+gustaria|vamos\s+a|voy\s+a|necesito)\s+"
-    r"(?:watch|listen|see|hear|eat|drink|read|ver|mirar|escuchar|oir|comer|beber|tomar|leer)\b"
+    r"(?:watch|listen|see|hear|eat|drink|read|ver|mirar|escuchar|oir|comer|beber|leer|"
+    r"tomar(?!(?:me|te|le|les|nos)?\s+(?:(?:una?|unas|unos|la|las|el|los|otra|otras|otro|mas|varias|algunas)\s+)?"
+    r"(?:fotos?|fotografias?|capturas?|pantallazos?|screenshots?|imagen(?:es)?|selfies?|notas?|apuntes|"
+    r"videos?|medidas?|decisi\w*|asiento)\b))\b"
 )
 
 
@@ -2446,6 +2451,88 @@ def wants_to_consume(request: object) -> bool:
     """The person says they want to watch, listen to, read, eat or drink something themselves (see above)."""
 
     return _WANTS_TO_CONSUME.search(_reading_fold(str(request or ""))) is not None
+
+
+# M101 (DEV-D v3z D-s037, D-s042: every draft of a decided limit was refused and the turn ended with no final): the
+# thing asked, in the person's own words, for the limit said without the writer. The first clause of the request with
+# its lead («y», «oye», «quiero», «¿puedes…», «I want to», «can you») and its courtesy taken off, when it is an act
+# (a Spanish infinitive, an English verb after a lead or as an order) or, after a want, the thing wanted. Words that
+# would have to change person («mi», «me», «my», «you») leave it unsaid.
+_ASKED_FILLERS = frozenset({
+    "y", "e", "and", "pero", "but", "ok", "okay", "vale", "bueno", "entonces", "so", "then", "oye", "hey", "che", "ya",
+    "baxy", "hola", "hi", "hello", "porfa", "please", "pls",
+})
+_ASKED_LEADS_ES = (
+    ("me", "gustaria"), ("me", "puedes"), ("me", "podrias"), ("me", "podes"), ("ayudame", "a"), ("tienes", "que"),
+    ("quiero",), ("quisiera",), ("necesito",), ("deseo",), ("puedes",), ("podrias",), ("podes",), ("pueden",),
+    ("podrian",),
+)
+_ASKED_LEADS_EN = (
+    ("i", "would", "like", "to"), ("i", "would", "love", "to"), ("i'd", "like", "to"), ("id", "like", "to"),
+    ("i", "want", "to"), ("i", "need", "to"), ("i", "wanna"), ("can", "you"), ("could", "you"), ("would", "you"),
+    ("will", "you"), ("i", "would", "like"), ("i'd", "like"), ("id", "like"), ("i", "want"), ("i", "need"),
+)
+_ASKED_WANTS_A_THING = frozenset({
+    ("quiero",), ("quisiera",), ("necesito",), ("deseo",), ("me", "gustaria"), ("i", "would", "like"), ("i'd", "like"),
+    ("id", "like"), ("i", "want"), ("i", "need"),
+})
+_ASKED_OTHER_PERSON = frozenset(
+    "yo me mi mis mio mia conmigo nos nuestro nuestra nuestros nuestras tu tus te ti contigo usted ustedes "
+    "i me my mine myself we us our ours you your yours".split()
+)
+_ASKED_NOT_A_THING = frozenset(
+    "que si como cuando donde cual cuanto quien porque what who where when which why how if that whether".split()
+)
+_ASKED_NOUN_IN_AR = frozenset(
+    "mejor lugar hogar ayer mujer primer tercer cualquier azucar dolar bar mar par collar celular militar "
+    "popular particular taller alfiler altar lunar".split()
+)
+_ASKED_COURTESY = frozenset({"por favor", "porfa", "please", "pls", "plis", "porfavor"})
+
+
+def asked_act_clause(request: object, language: str) -> str:
+    """The thing asked for a limit said without the writer (see above): «tomar una foto de esa montaña», «lo de pastel
+    de camote de una panadería local», «book a table on Titan»; empty when it cannot be said as the person said it."""
+
+    said = " ".join(str(request or "").replace("’", "'").split())
+    if not said or len(said) > 400:
+        return ""
+    words: list[str] = []
+    for word in said.split(" "):
+        bare = word.strip("¿¡\"'«»()")
+        if not bare:
+            continue
+        ends = bare[-1] in ",.;:?!…"
+        bare = bare.rstrip(",.;:?!…\"'»)")
+        if not words and _reading_fold(bare) in _ASKED_FILLERS:
+            continue  # «oye,», «bueno,»: a lead word, not the end of the clause
+        if bare:
+            words.append(bare)
+        if ends and words:
+            break
+    keys = [_reading_fold(word) for word in words]
+    if keys[:2] == ["por", "favor"]:
+        words, keys = words[2:], keys[2:]
+        rest = re.sub(r"^\W*por\s+favor\W*", "", said, flags=re.IGNORECASE)
+        if not keys:
+            return asked_act_clause(rest, language) if rest != said else ""
+    leads = _ASKED_LEADS_EN if language == "en" else _ASKED_LEADS_ES
+    lead = next((found for found in leads if tuple(keys[: len(found)]) == found), ())
+    words, keys = words[len(lead):], keys[len(lead):]
+    while keys and (keys[-1] in _ASKED_COURTESY or " ".join(keys[-2:]) in _ASKED_COURTESY):
+        cut = 2 if " ".join(keys[-2:]) in _ASKED_COURTESY else 1
+        words, keys = words[:-cut], keys[:-cut]
+    if not 2 <= len(words) <= 12 or _ASKED_OTHER_PERSON & set(keys) or keys[0] in _ASKED_NOT_A_THING:
+        return ""
+    clause = " ".join([words[0][:1].lower() + words[0][1:], *words[1:]])
+    if language == "en":
+        # Without a lead an English order cannot be told from a statement or a question; the plain limit is said.
+        return clause if lead and keys[0] not in {"to", "it", "is", "are", "be"} else ""
+    if re.fullmatch(r"[a-zñ]{2,}(?:ar|er|ir)(?:se|lo|la|los|las|le|les)?", keys[0]) and keys[0] not in _ASKED_NOUN_IN_AR:
+        return clause
+    if lead in _ASKED_WANTS_A_THING and not re.search(r"(?:ndo|ado|ido)$", keys[0]):
+        return ("lo del " + " ".join(words[1:])) if keys[0] == "el" else "lo de " + clause
+    return ""
 
 
 def asks_to_make(request: object) -> bool:

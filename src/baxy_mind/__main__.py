@@ -98,6 +98,7 @@ from .llm import (
     _previous_reply_fields,
     _situation_from_facts,
     served_capability_families,
+    talk_reply_tells_a_failure,
     visible_reply_is_only_questions,
 )
 from .llm_transport import ChatCompletionCancellation
@@ -6892,6 +6893,9 @@ def _recovery_visible_from_compose(
             or len(reply) > 4_096
             or dialogue_slot.says_the_message_back(reply, objective)
             or (reply.endswith("?") and _RECOVERY_MIRRORED_REQUEST.search(read_fold(reply)) is not None)
+            # M101 (DEV-D v3z D-p31-t2): a talk reply that tells a failure is refused by the App, whose turn failure
+            # then had no final; the clarification below asks back instead.
+            or talk_reply_tells_a_failure(reply, objective)
         ):
             return "conversation", ""
         return "conversation", reply
