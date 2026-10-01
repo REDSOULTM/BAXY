@@ -157,9 +157,10 @@ def message_request_any_channel(text: str) -> tuple[str, str, str | None] | None
             continue
         if _fold(recipient) in _MSG_PRONOUN_RECIPIENTS:
             continue
-        if _fold(recipient).split()[0] in {"me", "us", "yo", "mi", "nos"}:
+        if _fold(recipient).split()[0] in {"me", "us"}:
             # M91 (reserva «tell me the best story that was ever written»): «tell me X that …» asks BAXY to tell the
-            # person something; «that» opens a relative clause, not a message to someone called «me X».
+            # person something; «that» opens a relative clause, not a message to someone called «me X». A possessive
+            # names a recipient («dile a mi amiga que…», 742 H0584): only the object pronouns are the person.
             continue
         if len(recipient.encode("utf-8")) > 512 or len(body.encode("utf-8")) > 16_384 or len(recipient.split()) > 6:
             continue

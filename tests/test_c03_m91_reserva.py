@@ -324,3 +324,11 @@ def test_mail_others_sent_to_the_person_is_what_arrived() -> None:
 def test_being_let_know_or_finding_the_list_reads_it() -> None:
     for text in ("hágame saber la lista", "infórmeme de los elementos de la lista", "encuentre la lista"):
         assert _effects(text) == ("task.list",), text
+
+
+def test_a_possessive_recipient_is_still_someone_to_message() -> None:
+    # 742 H0584 shape: a possessive names who gets the message; only «tell me/us … that» is said to BAXY.
+    from baxy_mind.semantic.messaging import message_request_any_channel
+
+    assert message_request_any_channel("Dile a mi hermana que llego tarde.") is not None
+    assert message_request_any_channel("tell me a joke that makes me laugh") is None
