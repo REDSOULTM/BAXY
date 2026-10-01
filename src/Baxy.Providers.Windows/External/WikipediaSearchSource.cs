@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -36,7 +37,29 @@ internal sealed class WikipediaSearchSource(HttpClient http)
     {
         string[] words = FoldedWords(query);
         return !words.Any(TimeBoundWords.Contains) && !words.Any(OpinionWords.Contains) && !AsksWorth(words)
-            && !AsksWhatItIsWorth(words);
+            && !AsksWhatItIsWorth(words) && !AsksWhatIsShowing(query);
+    }
+
+    // M98 (DEV-D v3x D-p28-t2 «Look for movies in Union City.» after a cinema of that town → the article on the 1980
+    // film «Union City»): films, cinemas or a billboard in a named place ask what is showing there, a listing the
+    // general engine answers (cinema pages, showtimes) and neither an encyclopedia nor a headline does. Films set,
+    // shot or made in a place («films set in Italy», «películas rodadas en Almería») are a subject, not a listing.
+    private static readonly Regex ShowingIn = new(
+        @"\b(?i:movies|films|pel[ií]culas|pelis|cines?|cinemas?|(?:movie\s+)?theat(?:er|re)s?|showtimes|cartelera)\b"
+        + @"(?:\s+(?!(?i:set|shot|filmed|made|produced|rodad\w*|filmad\w*|ambientad\w*|hech[ao]s?|sobre|about)\b)[\w'’-]+){0,3}?"
+        + @"\s+(?i:in|en|at|near|cerca\s+de)\s+\p{Lu}",
+        RegexOptions.CultureInvariant, TimeSpan.FromSeconds(2));
+
+    internal static bool AsksWhatIsShowing(string query)
+    {
+        try
+        {
+            return ShowingIn.IsMatch(query);
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            return false;
+        }
     }
 
     // M65 (conv-v3g held-out t14 «qué dijo la crítica sobre Oppenheimer» → «The Act of Killing», t15 «¿la serie

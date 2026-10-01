@@ -2501,6 +2501,374 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // M98 (DEV-D v3x D-s111, D-p24-t1): a result that carries the query's names and not what is asked of them only
+    // names what was asked about.
+    [Test]
+    public void AResultThatOnlyNamesWhatWasAskedAboutIsNotItsAnswer()
+    {
+        (string Query, string Title, string Snippet, SearchPertinence.Pertinence Expected)[] cases =
+        [
+            ("¿Qué distancia hay entre Lima y Cusco?", "Clásico Lima–Cusco",
+                "El clásico entre equipos de Lima y Cusco se juega desde 1960.", SearchPertinence.Pertinence.NamesOnly),
+            ("¿Qué distancia hay entre Lima y Cusco?", "Carretera Lima–Cusco",
+                "La carretera une Lima y Cusco; la distancia por ella es de 1.105 km.", SearchPertinence.Pertinence.About),
+            ("a fantasy film with Keanu Reeves", "John Wick",
+                "John Wick is a 2014 American action thriller film starring Keanu Reeves.", SearchPertinence.Pertinence.NamesOnly),
+            ("a fantasy film with Keanu Reeves", "Constantine (film)",
+                "Constantine is a 2005 supernatural fantasy film starring Keanu Reeves.", SearchPertinence.Pertinence.About),
+            ("an epic science fiction film with Keanu Reeves", "The Matrix",
+                "The Matrix is a 1999 epic science fiction action film starring Keanu Reeves.", SearchPertinence.Pertinence.About),
+            ("an epic science fiction film with Keanu Reeves", "Keanu (cat)",
+                "A cat named after an actor.", SearchPertinence.Pertinence.None),
+        ];
+        Assert.Multiple(() =>
+        {
+            foreach ((string query, string title, string snippet, SearchPertinence.Pertinence expected) in cases)
+                Assert.That(SearchPertinence.Judge(query, title, snippet), Is.EqualTo(expected), query + " → " + title);
+        });
+    }
+
+    // M98 (DEV-D v3x D-s111): the encyclopedia's articles only named the two cities; the general engine answers the
+    // distance. With the engine down, the article that names them is still what was read.
+    [Test]
+    public async Task WhatTheArticlesOnlyNameIsAskedToTheGeneralEngine()
+    {
+        HttpAnswer article = WikipediaAnswer("es",
+            ("Clásico Lima–Cusco", "El clásico entre equipos de Lima y Cusco se juega desde 1960.", false));
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["es.wikipedia.org"] = article,
+            ["en.wikipedia.org"] = new(HttpStatusCode.OK, """{"batchcomplete":true}""", "application/json"),
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, SearchResultsPage(
+                ("Distancia Lima - Cusco", "https://rutas.example.pe/lima-cusco",
+                    "La distancia por carretera entre Lima y Cusco es de 1.105 km.")), "text/html"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"¿Qué distancia hay entre Lima y Cusco?"}"""), CancellationToken.None);
+
+        var down = new SearchSourcesHttpHandler { ["es.wikipedia.org"] = article };
+        using var downHttp = new HttpClient(down);
+        using var downAdapter = new WebBrowserAdapter(browser, downHttp);
+        ExternalCapabilityReceipt named = await downAdapter.InvokeAsync(
+            "web.search", Json("""{"query":"¿Qué distancia hay entre Lima y Cusco?"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("duckduckgo_lite_https"));
+            Assert.That(receipt.Result?.GetProperty("results")[0].GetProperty("snippet").GetString(), Does.Contain("1.105 km"));
+            Assert.That(named.Verified, Is.True, named.ErrorCode);
+            Assert.That(named.Result?.GetProperty("authority").GetString(), Is.EqualTo("wikipedia_es_api"));
+            Assert.That(named.Result?.GetProperty("results")[0].GetProperty("title").GetString(), Is.EqualTo("Clásico Lima–Cusco"));
+        });
+    }
+
+    // M98 (DEV-D v3x D-w14-t1 «¿quién ha ganado la Vuelta este año?»): a year said by its relation to today reaches
+    // the sources as its number.
+    [Test]
+    public void AYearSaidByItsRelationToTodayBecomesItsNumber()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(SearchQueryYear.Anchor("¿quién ganó el Giro este año?", 2031), Is.EqualTo("¿quién ganó el Giro 2031?"));
+            Assert.That(SearchQueryYear.Anchor("campeón de la Copa América del año pasado", 2031),
+                Is.EqualTo("campeón de la Copa América de 2030"));
+            Assert.That(SearchQueryYear.Anchor("qué discos salieron en lo que va del año", 2031),
+                Is.EqualTo("qué discos salieron en 2031"));
+            Assert.That(SearchQueryYear.Anchor("dónde será el Mundial el año que viene", 2031),
+                Is.EqualTo("dónde será el Mundial 2032"));
+            Assert.That(SearchQueryYear.Anchor("who won the Masters this year?", 2031), Is.EqualTo("who won the Masters 2031?"));
+            Assert.That(SearchQueryYear.Anchor("this year's Booker shortlist", 2031), Is.EqualTo("2031 Booker shortlist"));
+            Assert.That(SearchQueryYear.Anchor("best laptops of last year", 2031), Is.EqualTo("best laptops of 2030"));
+            Assert.That(SearchQueryYear.Anchor("el año del dragón en China", 2031), Is.EqualTo("el año del dragón en China"));
+        });
+    }
+
+    // M98 (D-w14-t1): who won a race this year is asked with the year. The article of this year's race that does not
+    // say who won only names it; the engine's results of another year are not about it.
+    [Test]
+    public async Task WhoWonThisYearIsAskedWithTheYear()
+    {
+        string year = DateTime.Now.Year.ToString(CultureInfo.InvariantCulture);
+        string last = (DateTime.Now.Year - 1).ToString(CultureInfo.InvariantCulture);
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["es.wikipedia.org"] = WikipediaAnswer("es", ("Giro de Lombardía " + year,
+                "El Giro de Lombardía " + year + " fue la edición de la carrera celebrada en octubre de " + year + ".", false)),
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, SearchResultsPage(
+                ("Ana Ríos ha ganado el Giro de Lombardía " + year, "https://ciclismo.example.com/" + year,
+                    "Ana Ríos se impuso en el Giro de Lombardía " + year + "."),
+                ("Bea Soto ha ganado el Giro de Lombardía " + last, "https://ciclismo.example.com/" + last,
+                    "Bea Soto se impuso en el Giro de Lombardía " + last + ".")), "text/html"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"¿Quién ha ganado el Giro de Lombardía este año?"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("duckduckgo_lite_https"));
+            Assert.That(receipt.Result?.GetProperty("query").GetString(),
+                Is.EqualTo("¿Quién ha ganado el Giro de Lombardía " + year + "?"));
+            Assert.That(receipt.Result?.GetProperty("count").GetInt32(), Is.EqualTo(1));
+            Assert.That(receipt.Result?.GetProperty("results")[0].GetProperty("title").GetString(), Does.Contain("Ana Ríos"));
+            Assert.That(Uri.UnescapeDataString(handler.Asked[0].Uri.Query),
+                Does.Contain("gsrsearch=ganado giro lombardia " + year + "&"));
+        });
+    }
+
+    // M98 (DEV-D v3x D-p28-t2 «Look for movies in Union City.»): what is showing in a named place is a listing the
+    // general engine answers; neither the encyclopedia (the film named like the town) nor the news is asked.
+    [Test]
+    public async Task WhatIsShowingInATownIsAskedToTheGeneralEngine()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("películas en Valdivia"), Is.False);
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("what movies are showing in Springfield"), Is.False);
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("Cines en Rancagua"), Is.False);
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("films set in Italy"), Is.True);
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("películas rodadas en Almería"), Is.True);
+            Assert.That(WikipediaSearchSource.IsEncyclopedic("¿Quién dirigió la película Casablanca?"), Is.True);
+        });
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["es.wikipedia.org"] = WikipediaAnswer("es", ("Valdivia (película)", "Valdivia es una película chilena.", false)),
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, SearchResultsPage(
+                ("Cartelera de cine en Valdivia - películas hoy", "https://cines.example.cl/valdivia",
+                    "Películas en cartelera en los cines de Valdivia y sus horarios.")), "text/html"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"películas en Valdivia"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("duckduckgo_lite_https"));
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host), Is.EqualTo(new[] { "lite.duckduckgo.com" }));
+        });
+    }
+
+    private const string RicePage = """
+        <html><head><title>Arroz</title><script>var dato = "cuánto arroz cocer por persona 999";</script>
+        <style>.arroz{color:red}</style></head><body>
+        <nav>Inicio Recetas Arroz por persona para la cena 2026</nav>
+        <article><h1>Cuánto arroz cocer por persona</h1>
+        <p>Muchos cocineros dudan cuánto arroz cocer por persona cuando preparan una comida familiar.</p>
+        <p>La medida habitual es de 80 gramos de arroz crudo por persona, que se cuecen en el doble de agua.</p>
+        <p>El arroz integral necesita algo más de tiempo de cocción que el blanco.</p>
+        <p>Para una cena de cuatro personas bastan unos 320 gramos de arroz y 640 mililitros de agua.</p>
+        </article><footer>Arroz por persona para la cena, copyright 2026, todos los derechos</footer></body></html>
+        """;
+
+    // M98 (DEV-D v3x D-w01-t2): the sentences of the page that answer, figures first when a figure is asked; never
+    // the page's scripts, menus or footer, and never what the snippet already said.
+    [Test]
+    public void APageIsReadForTheSentencesThatAnswerTheQuery()
+    {
+        string excerpt = SearchPageExcerpt.Read(RicePage, "cuánto arroz cocer por persona para la cena",
+            "Cuánto arroz cocer por persona - Recetas Muchos cocineros dudan cuánto arroz cocer por persona cuando preparan una comida familiar.");
+        Assert.Multiple(() =>
+        {
+            Assert.That(excerpt, Does.Contain("80 gramos de arroz crudo por persona"));
+            Assert.That(excerpt, Does.Contain("320 gramos de arroz"));
+            Assert.That(excerpt.IndexOf("80 gramos", StringComparison.Ordinal),
+                Is.LessThan(excerpt.IndexOf("320 gramos", StringComparison.Ordinal)));
+            Assert.That(excerpt, Does.Not.Contain("999"));
+            Assert.That(excerpt, Does.Not.Contain("copyright"));
+            Assert.That(excerpt, Does.Not.Contain("Muchos cocineros"));
+            Assert.That(excerpt.Length, Is.LessThanOrEqualTo(600));
+            Assert.That(SearchPageExcerpt.Read(RicePage, "historia de la ópera italiana", ""), Is.Empty);
+        });
+    }
+
+    // M98 (D-w01-t2): the general engine's first pages are read within the search, and what answers follows the
+    // snippet; a query of one or two content words reads no page, and a page that cannot be read keeps the snippet.
+    [Test]
+    public async Task TheGeneralEnginesFirstPagesAreReadForWhatTheSnippetCut()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, SearchResultsPage(
+                ("Cuánto arroz cocer por persona - Recetas", "https://cocina.example.com/arroz",
+                    "Muchos cocineros dudan cuánto arroz cocer por persona cuando preparan..."),
+                ("Arroz para la cena por persona: guía", "https://caido.example.com/arroz",
+                    "Guía de arroz por persona para la cena familiar...")), "text/html"),
+            ["cocina.example.com"] = new(HttpStatusCode.OK, RicePage, "text/html"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"cuánto arroz cocer por persona para la cena"}"""), CancellationToken.None);
+
+        var shortHandler = new SearchSourcesHttpHandler
+        {
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, SearchResultsPage(
+                ("Precio del arroz integral hoy", "https://cocina.example.com/arroz", "El arroz integral sube...")), "text/html"),
+            ["cocina.example.com"] = new(HttpStatusCode.OK, RicePage, "text/html"),
+        };
+        using var shortHttp = new HttpClient(shortHandler);
+        using var shortAdapter = new WebBrowserAdapter(browser, shortHttp);
+        ExternalCapabilityReceipt brief = await shortAdapter.InvokeAsync(
+            "web.search", Json("""{"query":"precio del arroz integral hoy"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            JsonElement results = receipt.Result!.Value.GetProperty("results");
+            string first = results[0].GetProperty("snippet").GetString()!;
+            Assert.That(first, Does.StartWith("Muchos cocineros dudan").And.Contain(" … ").And.Contain("80 gramos"));
+            // The sentence the snippet cut is not read twice.
+            Assert.That(first.IndexOf("Muchos cocineros", StringComparison.Ordinal),
+                Is.EqualTo(first.LastIndexOf("Muchos cocineros", StringComparison.Ordinal)));
+            Assert.That(results[1].GetProperty("snippet").GetString(),
+                Is.EqualTo("Guía de arroz por persona para la cena familiar..."));
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host),
+                Does.Contain("cocina.example.com").And.Contain("caido.example.com"));
+            Assert.That(brief.Verified, Is.True, brief.ErrorCode);
+            Assert.That(brief.Result?.GetProperty("results")[0].GetProperty("snippet").GetString(),
+                Is.EqualTo("El arroz integral sube..."));
+            Assert.That(shortHandler.Asked.Select(asked => asked.Uri.Host), Does.Not.Contain("cocina.example.com"));
+        });
+    }
+
+    // M98: a page is decoded in the charset its response declares, else the one its own first bytes declare, else
+    // UTF-8; Latin-1 is read as Windows-1252, as browsers do.
+    [Test]
+    public void APageIsDecodedInTheCharsetItDeclares()
+    {
+        Encoding windows1252 = CodePagesEncodingProvider.Instance.GetEncoding(1252)!;
+        const string Prose = "<p>Según la tradición, la paella lleva azafrán y cuesta 12 €.</p>";
+        Assert.Multiple(() =>
+        {
+            Assert.That(SearchPageReader.Decode(Encoding.Latin1.GetBytes("<p>Según la tradición, azafrán.</p>"), "ISO-8859-1"),
+                Does.Contain("Según la tradición, azafrán."));
+            Assert.That(SearchPageReader.Decode(windows1252.GetBytes("<html><head><meta charset=\"windows-1252\"></head>" + Prose), null),
+                Does.Contain("tradición, la paella lleva azafrán y cuesta 12 €."));
+            Assert.That(SearchPageReader.Decode(windows1252.GetBytes(
+                    "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">" + Prose), null),
+                Does.Contain("cuesta 12 €."));
+            Assert.That(SearchPageReader.Decode(Encoding.UTF8.GetBytes(Prose), null), Does.Contain("Según la tradición"));
+            // The response's charset is the page's, whatever its <meta> says.
+            Assert.That(SearchPageReader.Decode(Encoding.UTF8.GetBytes("<meta charset=\"iso-8859-1\">" + Prose), "utf-8"),
+                Does.Contain("Según la tradición"));
+            Assert.That(SearchPageReader.Decode(Encoding.UTF8.GetBytes(Prose), "no-such-charset"), Does.Contain("azafrán"));
+        });
+    }
+
+    // M98: only a public web address is read; this PC, the local network, Tailscale's range and non-web schemes never.
+    [Test]
+    public void OnlyAPublicWebAddressIsRead()
+    {
+        Assert.Multiple(() =>
+        {
+            foreach (string address in new[] { "https://example.com/a", "http://example.com/a", "https://93.184.216.34/" })
+                Assert.That(SearchPageReader.IsPublicPageAddress(new Uri(address)), Is.True, address);
+            foreach (string address in new[]
+            {
+                "file:///C:/Users/x/secret.txt", "ftp://example.com/a", "http://localhost/admin", "https://127.0.0.1/",
+                "https://10.0.0.5/", "https://172.20.1.1/", "https://192.168.1.1/", "https://169.254.169.254/latest",
+                "https://100.101.102.103/", "https://[::1]/", "https://[fd00::1]/", "https://[fe80::1]/",
+                "https://[::ffff:192.168.0.1]/", "https://router/", "https://printer.local/", "https://nas.home.arpa/",
+                "https://pc.tail1234.ts.net/", "https://user:pass@example.com/",
+            })
+            {
+                Assert.That(SearchPageReader.IsPublicPageAddress(new Uri(address)), Is.False, address);
+            }
+            Assert.That(SearchPageReader.PublicEndpoint([IPAddress.Parse("93.184.216.34")]),
+                Is.EqualTo(IPAddress.Parse("93.184.216.34")));
+            // A name that also resolves into the LAN is trusted with none of its addresses.
+            Assert.That(SearchPageReader.PublicEndpoint([IPAddress.Parse("93.184.216.34"), IPAddress.Parse("192.168.1.10")]),
+                Is.Null);
+            Assert.That(SearchPageReader.PublicEndpoint([IPAddress.Parse("2606:4700::1111")]), Is.Not.Null);
+            Assert.That(SearchPageReader.PublicEndpoint([]), Is.Null);
+        });
+    }
+
+    // M98: a Latin-1 result page is read with its accents, and the request carries only a generic User-Agent.
+    [Test]
+    public async Task ALatinOneResultPageIsReadWithItsAccentsAndNothingOfThePerson()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, SearchResultsPage(
+                ("Paella valenciana: cuánto arroz lleva", "https://recetas.example.es/paella",
+                    "La receta tradicional de la paella valenciana y el arroz que lleva...")), "text/html"),
+            ["recetas.example.es"] = new(HttpStatusCode.OK, "", "text/html; charset=ISO-8859-1",
+                Raw: Encoding.Latin1.GetBytes(
+                    "<html><body><p>Según la tradición, la paella valenciana lleva 400 gramos de arroz para cuatro personas y azafrán.</p></body></html>")),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"cuánto arroz lleva la paella valenciana"}"""), CancellationToken.None);
+
+        AskedRequest page = handler.Asked.Single(asked => asked.Uri.Host == "recetas.example.es");
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("results")[0].GetProperty("snippet").GetString(),
+                Does.Contain("Según la tradición, la paella valenciana lleva 400 gramos de arroz para cuatro personas y azafrán."));
+            Assert.That(page.Headers, Is.EqualTo(new[] { "User-Agent" }));
+            Assert.That(page.UserAgent, Is.EqualTo("BAXY/1.0 page-read"));
+        });
+    }
+
+    // M98: a result in the local network is never read, and neither is a public page's redirect into it.
+    [Test]
+    public async Task AResultPageInTheLocalNetworkIsNeverRead()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, SearchResultsPage(
+                ("Paella valenciana: cuánto arroz lleva", "https://192.168.1.20/paella", "El arroz que lleva la paella valenciana..."),
+                ("Paella valenciana: el arroz que lleva", "https://intranet.local/paella", "Cuánto arroz lleva la paella valenciana..."),
+                ("Arroz de la paella valenciana: cuánto lleva", "https://recetas.example.es/paella", "La paella valenciana lleva arroz...")),
+                "text/html"),
+            ["192.168.1.20"] = new(HttpStatusCode.OK, "<p>La paella valenciana lleva 400 gramos de arroz, dice el router.</p>", "text/html"),
+            ["intranet.local"] = new(HttpStatusCode.OK, "<p>La paella valenciana lleva 400 gramos de arroz, dice la intranet.</p>", "text/html"),
+            ["recetas.example.es"] = new(HttpStatusCode.Found, "", "text/html", Location: "http://127.0.0.1/admin"),
+            ["127.0.0.1"] = new(HttpStatusCode.OK, "<p>La paella valenciana lleva 400 gramos de arroz, dice este PC.</p>", "text/html"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"cuánto arroz lleva la paella valenciana"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("dice"));
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host), Does.Contain("recetas.example.es"));
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host),
+                Has.None.EqualTo("192.168.1.20").And.None.EqualTo("intranet.local").And.None.EqualTo("127.0.0.1"));
+        });
+    }
+
     // M51 F-s012: Wikipedia answered with articles that shared a word with the query;
     // none passes the gate, so Wikipedia did not answer and the engine is asked.
     [Test]
@@ -3080,9 +3448,11 @@ public sealed class ExternalAdaptersTests
         return page.Append("</table></body></html>").ToString();
     }
 
-    private sealed record HttpAnswer(HttpStatusCode Status, string Body, string ContentType);
+    // M98: a body of raw bytes (a page in another charset) and a redirect's Location.
+    private sealed record HttpAnswer(
+        HttpStatusCode Status, string Body, string ContentType, byte[]? Raw = null, string? Location = null);
 
-    private sealed record AskedRequest(Uri Uri, string UserAgent);
+    private sealed record AskedRequest(Uri Uri, string UserAgent, string[] Headers);
 
     // Answers each host with its own reply; a host it does not know is unreachable.
     private sealed class SearchSourcesHttpHandler : HttpMessageHandler
@@ -3104,17 +3474,27 @@ public sealed class ExternalAdaptersTests
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
             Uri uri = request.RequestUri!;
-            Asked.Add(new AskedRequest(uri, request.Headers.UserAgent.ToString()));
+            Asked.Add(new AskedRequest(uri, request.Headers.UserAgent.ToString(),
+                request.Headers.Select(static header => header.Key).ToArray()));
             string address = Uri.UnescapeDataString(uri.AbsoluteUri);
             HttpAnswer? answer = Routes.FirstOrDefault(route => address.Contains(route.Contains, StringComparison.Ordinal)).Answer;
             if (answer is null && !_answers.TryGetValue(uri.Host, out answer))
             {
                 throw new HttpRequestException("unreachable host " + uri.Host);
             }
-            return Task.FromResult(new HttpResponseMessage(answer.Status)
+            HttpContent content;
+            if (answer.Raw is not null)
             {
-                Content = new StringContent(answer.Body, Encoding.UTF8, answer.ContentType),
-            });
+                content = new ByteArrayContent(answer.Raw);
+                content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse(answer.ContentType);
+            }
+            else
+            {
+                content = new StringContent(answer.Body, Encoding.UTF8, answer.ContentType);
+            }
+            var response = new HttpResponseMessage(answer.Status) { Content = content };
+            if (answer.Location is not null) response.Headers.Location = new Uri(answer.Location, UriKind.RelativeOrAbsolute);
+            return Task.FromResult(response);
         }
     }
 

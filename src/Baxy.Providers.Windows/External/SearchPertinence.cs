@@ -9,7 +9,9 @@ namespace Baxy.Providers.Windows.External;
 //     están todos en el título o el extracto; sin nombre propio, alguna palabra de
 //     contenido está en el título, porque un artículo o un titular trata de su título;
 //   - y el título más el extracto repiten las palabras de contenido: todas si son una
-//     o dos, la mayoría estricta si son más.
+//     o dos, la mayoría estricta si son más;
+//   - M98: y, cuando hay nombres, lo que se pregunta de ellos (las otras palabras de
+//     contenido) también está, o el resultado sólo nombra de quién se pregunta.
 // Si ningún resultado pasa, esa fuente no respondió.
 internal static class SearchPertinence
 {
@@ -30,6 +32,9 @@ internal static class SearchPertinence
         "cuantos", "cuantas", "tiene", "tienen", "tener", "sale", "vale", "valen", "cuesta",
         "cuestan", "escribio", "escribe", "escrito", "invento", "descubrio", "fundo",
         "dirigio", "pinto", "compuso", "gano", "ganaron",
+        // M98: el auxiliar de «quién ha ganado» y la preposición de «distancia entre Lima y
+        // Cusco» no son de qué trata la página («el clásico entre equipos de Lima y Cusco»).
+        "ha", "han", "he", "hemos", "entre", "between", "desde", "hasta", "hacia",
         "internet", "web", "google", "bing", "duckduckgo", "wikipedia", "online", "net",
         // Lo que dice que es de hoy o que es un precio: un titular lo cuenta con otras
         // palabras («cotiza», «a cuánto está»), y el tema es lo demás.
@@ -69,24 +74,62 @@ internal static class SearchPertinence
         return entities.ToArray();
     }
 
-    internal static bool IsPertinent(string query, string title, string snippet)
+    internal static bool IsPertinent(string query, string title, string snippet) =>
+        Judge(query, title, snippet) == Pertinence.About;
+
+    internal enum Pertinence
+    {
+        None,
+        // The names the query gives are there, and what it asks of them is not.
+        NamesOnly,
+        About,
+    }
+
+    // M98 (DEV-D v3x D-s111 «¿Cuál es la distancia de Barcelona a París?» → the article on a Barcelona–PSG match,
+    // D-p24-t1 «a nice fantasy movie like Elijah Wood» → three films of his, none of fantasy): the query's names
+    // made the majority of its words, and a page that only names them passed. What the query asks of those names
+    // (its other content words: «distancia», «fantasy») is in the result too, the majority of them, or the result
+    // only names what was asked about. A year the query names (D-w14-t1 «… la Vuelta 2026», SearchQueryYear) is
+    // in the result as a name is: a headline of last year's race is not about this year's.
+    internal static Pertinence Judge(string query, string title, string snippet)
     {
         string[] terms = ContentTerms(query);
-        if (terms.Length == 0) return false;
+        if (terms.Length == 0) return Pertinence.None;
         var titled = new HashSet<string>(WikipediaSearchSource.FoldedWords(title), StringComparer.Ordinal);
         var observed = new HashSet<string>(
             WikipediaSearchSource.FoldedWords(title + " " + snippet), StringComparer.Ordinal);
+        string[] years = terms.Where(IsYear).ToArray();
+        if (!years.All(observed.Contains)) return Pertinence.None;
+        terms = terms.Where(term => !IsYear(term)).ToArray();
+        if (terms.Length == 0) return Pertinence.About;
         string[] entities = EntityTerms(query);
         if (entities.Length > 0)
         {
-            if (!entities.All(entity => WebBrowserAdapter.MatchesSearchTerm(entity, observed))) return false;
+            if (!entities.All(entity => WebBrowserAdapter.MatchesSearchTerm(entity, observed))) return Pertinence.None;
         }
         else if (!terms.Any(term => WebBrowserAdapter.MatchesSearchTerm(term, titled)))
         {
-            return false;
+            return Pertinence.None;
         }
         int matched = terms.Count(term => WebBrowserAdapter.MatchesSearchTerm(term, observed));
         int needed = terms.Length <= 2 ? terms.Length : terms.Length / 2 + 1;
-        return matched >= needed;
+        if (matched < needed) return Pertinence.None;
+        string[] asked = terms.Where(term => !entities.Contains(term)).ToArray();
+        if (entities.Length == 0 || asked.Length == 0) return Pertinence.About;
+        int found = asked.Count(term => WebBrowserAdapter.MatchesSearchTerm(term, observed));
+        return found >= (asked.Length <= 2 ? asked.Length : asked.Length / 2 + 1) ? Pertinence.About : Pertinence.NamesOnly;
     }
+
+    // The general engine's results are judged by the words they share; one that names years and not the one the
+    // query names is about another year («Vingegaard gana La Vuelta 2025» for «… la Vuelta 2026»). One that names
+    // no year may still be about it.
+    internal static bool OfAnotherYear(string[] queryTokens, HashSet<string> observed)
+    {
+        string[] years = queryTokens.Where(IsYear).ToArray();
+        return years.Length > 0 && observed.Any(IsYear) && !years.All(observed.Contains);
+    }
+
+    private static bool IsYear(string term) =>
+        term.Length == 4 && term.All(char.IsAsciiDigit)
+        && (term.StartsWith("19", StringComparison.Ordinal) || term.StartsWith("20", StringComparison.Ordinal));
 }
