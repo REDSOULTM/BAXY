@@ -286,6 +286,13 @@ _NUMERAL = re.compile(
     r"(?<![\w.,])(?P<number>\d+(?:[.,]\d+)*)(?:st|nd|rd|th)?(?P<sign>\s*[°º%])?(?:\s+(?P<unit>[a-z]+)\b)?"
 )
 _NAME_WORD = re.compile(r"[\w'’-]+")
+# M105: the nationalities that qualify a currency or a team, lower case in Spanish; ``stem`` is shared with the
+# country's name («colombianos» / «Colombia», «chileno» / «Chile», «mexican» / «México»). Folded.
+_DEMONYM = re.compile(
+    r"\b(?P<stem>colombian|mexican|argentin|chilen|chilean|uruguay|peruan|peruvian|venezolan|ecuatorian|ecuadorian|"
+    r"bolivian|paraguay|cuban|dominican|filipin|philippin|brasilen|brazilian|canadiense|canadian|australian|"
+    r"estadounidense|japones|japanese)(?:o|a|os|as|es|s|e)?\b"
+)
 # What a removed complement leaves hanging in front of it: its preposition and its article.
 _LEAD_IN = re.compile(
     r"(?:\s*,)?\s+(?:en|de|del|para|por|a|al|con|in|at|on|from|for|near|of|with)(?:\s+(?:el|la|las|los|the))?\s*$",
@@ -453,6 +460,13 @@ def _introduced_spans(
         if not (_values(match.group("number")) & numbers) or not unit_said:
             spans.append((match.start(), end, request[match.start():end]))
 
+    for match in _DEMONYM.finditer(folded_request):
+        # M105 (DEV-D v4a D-w03-t4 «ya. dolar hoy?» in a Chilean conversation → «¿Cuánto vale hoy el dólar en pesos
+        # colombianos?»): a nationality is a name written in lower case; the country it belongs to nobody said.
+        # A capitalised one («Argentina», «Colombian») is a name, judged with the names below.
+        if inside(match.start()) or match.group("stem")[:4] in stems or request[match.start()].isupper():
+            continue
+        spans.append((match.start(), match.end(), request[match.start():match.end()]))
     words = list(_NAME_WORD.finditer(request))
     for index, word in enumerate(words):
         text = word.group(0)
@@ -494,6 +508,11 @@ def _trimmed(request: str, spans: list[tuple[int, int, str]]) -> str | None:
             merged.append([start, end])
     result = request
     for start, end in reversed(merged):
+        if request[start:end].islower() and _DEMONYM.fullmatch(fold(request[start:end])) is not None:
+            # M105 (DEV-D v4a D-w03-t4): a nationality nobody said qualifies the noun before it («en pesos
+            # colombianos» → «en pesos»); the noun stays.
+            result = result[:start] + result[end:]
+            continue
         lead = _LEAD_IN.search(result[:start])
         if lead is None:
             # M93 (DEV-D v3u D-w08-t2 «y cuando juega el sigiente» after «el América» → «¿Cuándo juega el Club América
@@ -558,5 +577,69 @@ def faithful_request(
         and _numbers_said(fold(text), articles=False) <= _numbers_said(fold(trimmed))
     ):
         return Fidelity(trimmed, introduced, "trimmed")
+    carried = _with_the_conversation_name(request, spans, str(text or ""), [str(line or "") for line in conversation])
+    if (
+        carried is not None
+        and not _introduced_spans(carried, said, lines, now)
+        and _numbers_said(fold(text), articles=False) <= _numbers_said(fold(carried))
+    ):
+        return Fidelity(carried, introduced, "carried")
     return Fidelity(" ".join(str(text or "").split()), introduced, "person")
+
+
+def _conversation_names(line: str) -> list[str]:
+    """The names a line writes: runs of capitalised words that do not open a sentence, joined by «de/del/of…»."""
+
+    names: list[str] = []
+    run: list[str] = []
+    words = list(_NAME_WORD.finditer(line))
+    for word in words:
+        text = word.group(0)
+        lead = line[:word.start()].rstrip().rstrip("¿¡\"«“'(").rstrip()
+        opens = not lead or lead[-1] in ".!?:;"
+        if text[:1].isupper() and not opens and fold(text) not in _DAY_WORDS_OF_A_NAME:
+            run.append(text)
+            continue
+        if run and fold(text) in _NAME_CONNECTOR and text[:1].islower():
+            run.append(text)
+            continue
+        if run:
+            while run and fold(run[-1]) in _NAME_CONNECTOR:
+                run.pop()
+            names.append(" ".join(run))
+            run = []
+    while run and fold(run[-1]) in _NAME_CONNECTOR:
+        run.pop()
+    if run:
+        names.append(" ".join(run))
+    return [name for name in names if name]
+
+
+def _with_the_conversation_name(
+    request: str, spans: list[tuple[int, int, str]], text: str, conversation: list[str],
+) -> str | None:
+    """M105 (DEV-D v4a D-w08-t2 «y cuando juega el sigiente» after «cuanto qedo el america anoche» → «¿Cuándo juega el
+    Atlético Nacional el próximo partido?»): the decider put another team where the conversation's own name goes, the
+    fidelity check fell back to the bare message, and the search for «y cuando juega el sigiente» answered with Mexico's
+    national team. In a short follow-up that names nothing itself, the one name the restatement brought stands where
+    the conversation's last name goes: that name replaces it. None when the restatement brought more than one name,
+    anything that is no name, or the last two lines of the conversation name nothing."""
+
+    if len(re.findall(r"[\w'’-]+", text)) > 8 or _conversation_names(f". {text}"):
+        return None
+    merged: list[list[int]] = []
+    for start, end, _ in spans:
+        if merged and re.fullmatch(r"[\s,]*|\s+(?:de|del|la|las|los|of|the)\s+", request[merged[-1][1]:start]):
+            merged[-1][1] = end
+        else:
+            merged.append([start, end])
+    if len(merged) != 1 or not all(what[:1].isupper() for _, _, what in spans):
+        return None
+    start, end = merged[0]
+    lines = [line for line in conversation if line.strip() and " ".join(line.split()) != " ".join(text.split())]
+    for line in reversed(lines[-2:]):
+        names = _conversation_names(line)
+        if names:
+            return " ".join((request[:start] + names[-1] + request[end:]).split())
+    return None
 

@@ -4291,6 +4291,27 @@ public sealed class ExternalAdaptersTests
         Assert.That(receipt.ErrorCode, Is.EqualTo("spotify_client_not_running"));
     }
 
+    // M105 (DEV-D v4a D-s047): «No hay música reproduciéndose porque no se ha abierto ningún video de YouTube» came
+    // from the tab's absence replacing the system session's read.
+    [Test]
+    public async Task ProviderKeepsTheSystemSessionReadOverTheAbsentAssistantTab()
+    {
+        var session = new StubExternalAdapter(new ExternalCapabilityReceipt(
+            "media.status", false, false, null, "media_session_not_found"));
+        var tab = new StubExternalAdapter(new ExternalCapabilityReceipt(
+            "media.status", false, false, null, "youtube_tab_not_found"));
+        using var provider = new WindowsExternalCapabilityProvider([session, tab]);
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
+            "media.status", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("media_session_not_found"));
+            Assert.That(tab.Calls, Is.EqualTo(1));
+        });
+    }
+
     [TestCase("media.control", """{"action":"pause"}""")]
     [TestCase("media.status", "{}")]
     public async Task YouTubeTabControlStandsAsideWithoutASessionTab(string operation, string arguments)

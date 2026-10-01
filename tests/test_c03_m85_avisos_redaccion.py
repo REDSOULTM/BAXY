@@ -379,7 +379,9 @@ def test_p09_t3_the_retry_says_not_to_deny() -> None:
 )
 def test_p24_t5_a_plan_settled_in_a_turn_that_ran_nothing(draft: str) -> None:
     assert llm.visible_reply_settles_a_plan(draft)
-    assert _visible(draft, _case("D-p24-t5")["text"]) == "effect_claim"
+    # M105: after a reply that asked nothing, the go-ahead's own veto (M88) is judged first, with its own hint.
+    assert _visible(draft, _case("D-p24-t5")["text"]) in {"effect_claim", "go_ahead_not_done"}
+    assert llm.conversation_world_claim(draft, _case("D-p24-t5")["text"]) == "effect_claim"
 
 
 @pytest.mark.parametrize(
@@ -393,7 +395,9 @@ def test_other_sentences_settle_nothing(draft: str) -> None:
 
 def test_p24_t5_the_recorded_drafts_die() -> None:
     for stage in ("first", "retry"):
-        assert _visible(_stage("D-p24-t5", stage)["draft"], _case("D-p24-t5")["text"]) == "effect_claim"
+        assert _visible(_stage("D-p24-t5", stage)["draft"], _case("D-p24-t5")["text"]) in {
+            "effect_claim", "go_ahead_not_done",  # M105: the go-ahead's veto is judged first.
+        }
 
 
 def test_p27_t1_a_work_recommended_with_no_title_is_invented() -> None:

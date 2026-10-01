@@ -180,20 +180,27 @@ internal sealed class CoreProcessClient : IAsyncDisposable
             ShellTraceSink.TurnId,
             ShellTraceStages.CoreCallStart,
             operation.OperationName);
+        OperationResponse? response = null;
         try
         {
-            return await SendOperationCoreAsync(
+            response = await SendOperationCoreAsync(
                 operation,
                 timeout,
                 confirmationToken,
                 cancellationToken).ConfigureAwait(false);
+            return response;
         }
         finally
         {
+            // M106: an observation cut to fit the message, or left out, is
+            // counted here («observed.projected», «observed.omitted»).
             ShellTraceSink.Record(
                 ShellTraceScopes.Turn,
                 ShellTraceSink.TurnId,
-                ShellTraceStages.CoreCallEnd);
+                ShellTraceStages.CoreCallEnd,
+                OperationVisibleFacts.ObservedLimit(response?.Message) is { } limit
+                    ? "observed." + limit
+                    : null);
         }
     }
 

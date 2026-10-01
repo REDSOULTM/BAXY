@@ -207,7 +207,8 @@ def test_d_s054_todays_sunset_behind_the_clock_is_past() -> None:
     assert llm._weather_fact_defect("Hoy el sol se puso en Curicó a las 19:48.", payload, text) == ""
     # Read before the sunset, the time to come is said as to come.
     earlier = llm._project_weather_read({**read, "observedAtLocal": "2026-09-30T17:05"}, text)
-    assert "sunsetPassed" not in earlier["today"]
+    # M105: still ahead is marked False (not left unmarked), so «se puso» before it is caught.
+    assert earlier["today"]["sunsetPassed"] is False
     assert llm._weather_fact_defect(published, {"operation": "weather.current", "seen": earlier}, text) == ""
     assert "already happened today" in llm._weather_focus(text, english=True)
 

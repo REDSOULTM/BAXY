@@ -135,6 +135,14 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         }
     }
 
+    /// <summary>
+    /// M105 (DEV-D v4a D-s047 «cuál es el nombre de la música que se está reproduciendo»): the system media session
+    /// read nothing playing (<c>media_session_not_found</c>), then the YouTube tab adapter found no tab of its own and
+    /// its <c>youtube_tab_not_found</c> replaced the system read, so the reply spoke only of a YouTube video.
+    /// </summary>
+    private static bool OnlyNarrowsAnEarlierRead(ExternalCapabilityReceipt? earlier, ExternalCapabilityReceipt later) =>
+        earlier?.ErrorCode == "media_session_not_found" && later.ErrorCode == "youtube_tab_not_found";
+
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,
         JsonElement arguments,
@@ -156,7 +164,9 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             }
             // Tanda 5: a failure that read its player's state (Result: the YouTube tab's video was not playing) is
             // the answer when no later adapter finds a player; a later «no client running here» never hides it.
-            if (lastFailure?.Result is null)
+            // M105 (DEV-D v4a D-s047): nor does the assistant's own YouTube tab being absent hide what the PC's
+            // media session read (nothing plays at all), which answers more than that one tab.
+            if (lastFailure?.Result is null && !OnlyNarrowsAnEarlierRead(lastFailure, receipt))
             {
                 lastFailure = receipt;
             }
