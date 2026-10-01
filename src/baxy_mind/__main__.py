@@ -4805,9 +4805,18 @@ def _context_decided_result(
                                                    question="")
     else:
         decided = llm.decide_in_context(
-            text, history, ((tool.name, tool.description) for tool in planner_catalog.tools),
-            signatures={tool.name: semantic_decider.argument_signature(tool.schema) for tool in planner_catalog.tools},
+            text, history, ((tool.name, tool.description) for tool in planner_catalog.decider_tools),
+            signatures={
+                tool.name: semantic_decider.argument_signature(tool.schema) for tool in planner_catalog.decider_tools
+            },
         )
+        memory = next((op for op in decided.operations if op.startswith("memory.")), None)
+        if memory is not None:
+            # M114: memory is the App's own path (an explicit request, its confirmation); the mind never plans it with
+            # other steps, so the decider's memory choice travels alone and the App answers it.
+            decided = semantic_decider.ContextDecision(
+                decided.request, "action", (memory,), decided.question, decided.arguments,
+            )
     # M64 (v3f-final F-w14-t3): which fields the decider filled, never their values, so a turn whose arguments went
     # wrong can be told apart from one whose decider gave none.
     argument_fields = [name for name, _ in decided.arguments]
@@ -5795,6 +5804,17 @@ def _decide_turn_result(
         # M83 (DEV-D v3o D-p19-t3 «What's the genre?» after the cast of «After the Wedding»): read alone it is a
         # definition, answered «I don't know» and looked up as «genre». It asks an attribute of what the conversation
         # just named, so the contextual decider, which reads the conversation, decides it.
+        stable_no_effect_decision = None
+    if (
+        literal_recall_decision is None
+        and stable_no_effect_decision is not None
+        and "system.time" in available_operations
+        and _clock_read_request(objective, history) is not None
+    ):
+        # M114 (reserve es4309 «en cuántas horas será medianoche en londres inglaterra», DEV-D s025 «si pasan cuarenta
+        # minutos, ¿qué hora será?» → closed as a future state, «No lo he calculado…»): a clock the readers prove —
+        # another place's, or this one later on — is a read of this PC's clock (M85), never a hypothesis to refuse;
+        # the contextual decider decides it, and its talk becomes that read.
         stable_no_effect_decision = None
     stable_no_effect_is_closed = (
         explicit_non_action
