@@ -109,7 +109,10 @@ def test_a_screen_or_a_room_is_no_sunset(text: str) -> None:
 )
 def test_the_sunset_read_answers_and_the_temperature_does_not(case: str, user_text: str) -> None:
     payload = _payload(case, user_text)
-    assert payload["seen"]["today"] == {"date": "2026-09-29", "weekday": "martes", "sunset": "19:47"}
+    # M105: read before 19:47, the sunset is marked still to come.
+    assert payload["seen"]["today"] == {
+        "date": "2026-09-29", "weekday": "martes", "sunset": "19:47", "sunsetPassed": False,
+    }
     assert llm._payload_fact_defect(_stage(case)["draft"], payload, user_text) != ""
     assert llm._payload_fact_defect("Hoy oscurece a las 19:47 en Curicó.", payload, user_text) == ""
 

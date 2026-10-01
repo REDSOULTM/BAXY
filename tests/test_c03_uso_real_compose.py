@@ -190,7 +190,13 @@ def _absence_facts(error: str = "youtube_tab_not_found") -> dict:
     ],
 )
 def test_the_absence_told_is_the_failure_told(asked: str, draft: str) -> None:
-    assert llm.compose_visible_defect(draft, "error", asked, _absence_facts()) == ""
+    # M105 (DEV-D v4a D-s047): the general «nothing is playing» is told by the system media session's read; the
+    # assistant's own YouTube tab missing tells only of that tab.
+    assert llm.compose_visible_defect(draft, "error", asked, _absence_facts("media_session_not_found")) == ""
+    general = llm._GENERAL_PLAYBACK_ABSENCE.search(llm._accent_folded_with_punctuation(draft)) is not None
+    assert llm.compose_visible_defect(draft, "error", asked, _absence_facts()) == (
+        "absence_beyond_check" if general else ""
+    )
 
 
 @pytest.mark.parametrize(
