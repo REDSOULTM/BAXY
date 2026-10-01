@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from .grammar import _COVERAGE_ACTION_HEAD, _RELATIVE_DURATION_PATTERN, _head_is
 from .levels import followup_antecedent
@@ -34,6 +34,7 @@ from .temporal import (
     alarm_cancellation_request,
     assents_to_alarm_offer,
     notification_retiming,
+    offset_retiming,
     plural_alarm_cancellation,
     retimed_local_moment,
     spoken_clocks,
@@ -1492,6 +1493,8 @@ class DialogueState:
             self._facts["alarm_noun"] = noun.group(0) if noun is not None else "alarm"
             if all(isinstance(observed.get(key), str) and observed[key] for key in ("kind", "title", "dueUtc")):
                 self._notification = {key: observed[key] for key in ("kind", "title", "dueUtc")}
+                # M113: the request that set it, for a later «mejor media hora antes» counted from the same moment.
+                self._notification["request"] = request
         elif operation == "reminder.create":
             self._facts["reminder"] = str(observed.get("title") or request)
         elif operation == "notification.list" and plural_alarm_cancellation(request):
@@ -1592,7 +1595,14 @@ class DialogueState:
 
         retiming = notification_retiming(text)
         set_by = self.operations if deciding else self.previous_operations
-        if retiming is None or self._notification is None or "notification.schedule" not in set_by:
+        if self._notification is None or "notification.schedule" not in set_by:
+            return None
+        # M113 (DEV-F v4d F-w55-t2 «no, mejor media hora antes, una hora es mucho» after «…a las 10…, recordámelo una
+        # hora antes»): a new count before or after the same moment moves the notification by the difference.
+        shift = (
+            offset_retiming(text, self._notification.get("request") or "") if retiming is None else None
+        )
+        if retiming is None and shift is None:
             return None
         english = not spanish(text)
         kind, title = self._notification["kind"], self._notification["title"]
@@ -1605,7 +1615,12 @@ class DialogueState:
         except ValueError:
             return None
         cancel_at = alarm_cancellation_request(((old.hour, old.minute),), english)
-        if retiming.duration is not None:
+        if retiming is None:
+            shifted = old + timedelta(minutes=shift or 0)
+            if shifted <= (now or datetime.now(old.tzinfo)):
+                return None
+            due = shifted.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+        elif retiming.duration is not None:
             due = f"{'in' if english else 'en'} {retiming.duration}"
         else:
             moment = retimed_local_moment(retiming, old, now)

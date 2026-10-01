@@ -229,9 +229,11 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # M111
 # M112
 # M110 lectura en semantic
+# M113
+# M113
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "0adaef665b73040f50d4df67438825260e7e91f3da532f75f3a671b1d5759188"
+        "887c1528fc37151cf18e8df386495533461c83354ee2d4ad2c08dc892f3da64c"
     ),
     "src/baxy_mind/llm.py": (
         "07cd49e92fd01f73280661e9dc1afe80c657bf277ef19737b512f59fae0559ec"

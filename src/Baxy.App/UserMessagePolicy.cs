@@ -3667,13 +3667,23 @@ internal static class UserMessagePolicy
             string scope = @"(?:en|in)\s+(?:el\s+catalogo(?:\s+de\s+(?:la\s+autoridad\s+observada|inicio\s+de\s+windows))?"
                 + @"|the\s+(?:(?:observed|windows\s+start(?:\s+application)?)\s+)?catalog(?:ue)?"
                 + @"(?:\s+of\s+the\s+observed\s+authority)?)";
-            string absent = $@"(?:no\s+se\s+encontro\s+{target}|{target}\s+(?:was\s+)?not\s+found)\s+{scope}";
+            // M113 (DEV-F v4d w14-t1 «open Obsidian porfa…» → «No se pudo abrir Obsidian porque no aparece en el
+            // catálogo de inicio de Windows.» died as reversed_result and the turn had no final): the absence read is
+            // told in the ways people tell it — not there, not found, not listed, not installed, on this PC.
+            string missing = @"(?:no\s+(?:esta(?:\s+(?:presente|instalad[ao]))?|aparece|figura|se\s+encuentra|existe)"
+                + @"|(?:(?:it|that)\s+)?(?:is\s+not|isn't|was\s+not|wasn't)\s+(?:found|installed|listed|present)"
+                + @"|it's\s+not\s+(?:found|installed|listed|present)"
+                + @"|(?:it\s+)?(?:does\s+not|doesn't)\s+appear)";
+            string here = $@"(?:\s+(?:{scope}|(?:en|in|on)\s+(?:este|esta|this)\s+"
+                + @"(?:equipo|pc|computador|computadora|ordenador|computer|device|machine)))?";
+            string absent = $@"(?:no\s+se\s+encontro\s+{target}|{target}\s+(?:was\s+)?not\s+found)\s+{scope}"
+                + $@"|{target}\s+{missing}{here}";
             string cannotOpen = @"(?:no\s+(?:se\s+)?(?:pude|pudo|puedo|puede)\s+abrir"
                 + @"|(?:i\s+)?(?:couldn't|could\s+not|cannot|can't)\s+open)";
             string supported = $@"(?:{absent})(?:,\s*(?:por\s+lo\s+que|asi\s+que|so)\s+"
                 + $@"(?:{cannotOpen}|it\s+(?:cannot|can't|could\s+not)\s+be\s+opened))?"
-                + $@"|{cannotOpen}\s+{target}\s+(?:porque|because)\s+"
-                + $@"(?:no\s+esta(?:\s+presente)?|(?:it\s+is|it's)\s+not\s+found)\s+{scope}";
+                + $@"|{cannotOpen}\s+{target}\s+(?:porque|because|ya\s+que|since)\s+"
+                + $@"(?:(?:la\s+aplicacion|the\s+app(?:lication)?)\s+)?{missing}{here}";
             result = Regex.Replace(assertions, @"[^.;\n]+[.;]?", clause =>
                 Regex.IsMatch(clause.Value.Trim().TrimEnd('.', ';'), $@"\A(?:{supported})\z",
                     RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)

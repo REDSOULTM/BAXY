@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from .. import effect_intent
 from .catalog import ApplicationCatalogIndex, GameCatalogIndex, build_application_catalog_index
 from .dialogue import _history_has_pending_clarification, _previous_user_request, read_slot, retracts_the_last_effect
-from .grammar import ARITHMETIC_EXPRESSION, SPOKEN_NUMBER, spoken_number_request
+from .grammar import ARITHMETIC_EXPRESSION, SPOKEN_NUMBER, past_or_hypothetical_message, spoken_number_request
 from .intent import EffectIntent
 from .patterns import conversation_only_content_request, echo_mode_request
 from .request import (
@@ -985,9 +985,7 @@ def stable_no_effect(
     # noun and a machine noun before the colon, so an ordinary request cannot
     # trip it.
     explicit_denial_frame = hypothesis_folded != folded
-    past_or_hypothetical = effect_intent._is_past_or_hypothetical_state(
-        hypothesis_folded
-    )
+    past_or_hypothetical = past_or_hypothetical_message(hypothesis_folded)
     counterfactual_hypothetical = effect_intent._has(
         hypothesis_folded,
         # Owner's mother 2026-09-21 «Si tuvieras un sueño, cuál te gustaría que
@@ -1218,7 +1216,8 @@ def catalog_unavailable(
     if not folded:
         return False
     bare_application = effect_intent._application_name_key(folded.rstrip(" ?!."))
-    application_keys = build_application_catalog_index(application_names).keys
+    applications = build_application_catalog_index(application_names)
+    application_keys = applications.keys
     requested_common_applications = tuple(
         name
         for name in _COMMON_BARE_APPLICATION_REQUESTS
@@ -1265,6 +1264,9 @@ def catalog_unavailable(
     unavailable_game = (
         game_request
         and effect_intent._authenticated_game_target(folded, game_catalog) is None
+        # M113 (DEV-F s035 «Could you open up Paint.NET for me, would you?»): an opening that names an installed
+        # application (or a name built on one) is no game missing from the library; the decider reads it.
+        and (applications.occurrence_pattern is None or applications.occurrence_pattern.search(folded) is None)
     )
     return bool(unavailable_application or unavailable_game)
 
