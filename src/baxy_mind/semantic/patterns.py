@@ -5017,6 +5017,42 @@ def resolve_application_window_status_name(
     return None
 
 
+# M103 (owner script t22 «¿Sabes qué peli estoy viendo en potplayer?» → media.status read Spotify's session and said
+# «Estás escuchando … en Spotify, no en PotPlayer»): what a named player shows is asked of that application, and its
+# window title carries it; the current media session is whichever application spoke last. Spotify and the browsers
+# keep the media session read (their session is the player itself).
+_SHOWN_IN_APPLICATION = re.compile(
+    r"\b(?:que|cual|what|which)\b(?:\s+[a-z]+){0,2}?\s+"
+    r"(?:(?:estoy|estas|esta|estamos|tengo)\s+(?:viendo|mirando|escuchando|oyendo|reproduciendo|puest[oa])|"
+    r"veo|miro|escucho|(?:se\s+)?(?:esta\s+)?(?:reproduce|reproduciendo|sonando|suena|pasando|puest[oa])|"
+    r"am\s+i\s+(?:watching|listening\s+to|playing)|(?:is|s)\s+(?:playing|on|showing)|"
+    r"(?:is|are)\s+(?:you|we|they)\s+(?:watching|playing))\s+"
+    r"(?:en|in|on)\s+(?:el\s+|la\s+|the\s+)?(?P<target>[^,;.!?]+?)[\s?!.]*$"
+)
+_SESSION_PLAYERS = re.compile(
+    r"\b(?:spotify|chrome|google chrome|edge|microsoft edge|firefox|opera|opera gx|brave|navegador|browser)\b"
+)
+
+
+def application_shown_media_name(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> str | None:
+    """The installed application whose window says what the person is watching or hearing in it, or None."""
+
+    folded = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.").replace("'", " ")
+    match = _SHOWN_IN_APPLICATION.search(folded)
+    if match is None or _SESSION_PLAYERS.search(match.group("target")):
+        return None
+    catalog = build_application_catalog_index(application_names)
+    for form, _ in _application_target_forms(match.group("target")):
+        key = _application_name_key(form)
+        exact = [name for name, candidate in catalog.entries if candidate == key]
+        if len(exact) == 1:
+            return exact[0]
+    return resolve_application_catalog_app_id(match.group("target"), catalog)
+
+
 def resolve_application_window_followup_name(
     text: str,
     previous_requests: Iterable[str],

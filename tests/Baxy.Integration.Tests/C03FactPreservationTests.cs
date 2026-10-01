@@ -338,6 +338,8 @@ public sealed class C03FactPreservationTests
 
     [TestCase("El micrófono ya está activo.", "activa mi microfono", null)]
     [TestCase("Tu micrófono ya estaba activo, así que no cambié nada.", "activa mi microfono", null)]
+    // M103 (owner script t45): the same statement, the other word order.
+    [TestCase("El micrófono estaba ya activo, así que no hubo ningún cambio.", "enciende el micro", null)]
     [TestCase("The microphone is already on.", "unmute my microphone", null)]
     [TestCase("Listo, activé el micrófono.", "activa mi microfono", "reversed_result")]
     [TestCase("Activé tu micrófono.", "activa mi microfono", "reversed_result")]

@@ -2418,6 +2418,37 @@ _WANTED_FROM_A_SHOP = re.compile(
 )
 
 
+# M103 (owner script t40): what keeps a reply made of the person's own words from being an echo — they asked a
+# question (restating it with the answer answers it: «what is the capital of Peru» → «The capital of Peru is Lima.») or
+# asked BAXY to say, repeat or write something.
+_SAY_IT_ASKED = re.compile(r"\b(?:di|dime|decime|repite|repeti|repitelo|say|repeat|escribe|write|copia|copy)\b")
+_QUESTION_HEAD = re.compile(
+    r"^[\s¿¡]*(?:que|cual|quien|como|donde|cuando|cuanto|cuantos|cuantas|por|what|which|who|whom|whose|how|where|"
+    r"when|why|is|are|was|were|do|does|did|can|could|will|would|should|sabes|conoces|hay|tienes)\b"
+)
+
+
+def asks_or_has_words_said(request: object) -> bool:
+    """The message is a question, or asks BAXY to say, repeat or write something."""
+
+    said = str(request or "")
+    folded = _reading_fold(said)
+    return "?" in said or "¿" in said or _QUESTION_HEAD.search(folded) is not None or (
+        _SAY_IT_ASKED.search(folded) is not None
+    )
+
+
+# M103 (owner script t50 «cierra BAXY» → «No cierro el pedido.»): «el pedido» is a thing only when the person's own
+# words were about an order or a request.
+_REQUEST_NOUN = re.compile(r"\b(?:pedidos?|solicitud\w*|peticion\w*|encargos?|orders?|requests?)\b")
+
+
+def names_a_request_noun(request: object) -> bool:
+    """The person's words name an order or a request («cancela mi pedido», «my order»)."""
+
+    return _REQUEST_NOUN.search(_reading_fold(str(request or ""))) is not None
+
+
 def asks_to_order(request: object) -> bool:
     """The request orders or buys something («pídeme unos tacos», «order a pizza»): an act done by asking someone."""
 

@@ -3728,9 +3728,9 @@ internal static class UserMessagePolicy
     // Independent review A2: «Ya está, activé tu micrófono» is «done», not «it already was»; twin of
     // llm._ALREADY_STATEMENT.
     // NonBacktracking takes no lookaround: «ya está» before a state word is «ya está» and a letter, and BAXY's own
-    // «I already…» is excluded by FirstPersonAlready.
+    // «I already…» is excluded by FirstPersonAlready. M103: «estaba ya silenciado» is the same statement.
     private const string AlreadyStatement =
-        @"\bya\s+(?:estaba|estaban|era|eran)\b|\bya\s+estan?\s+[a-z]|\balready\b";
+        @"\bya\s+(?:estaba|estaban|era|eran)\b|\b(?:estaba|estaban|era|eran)\s+ya\b|\bya\s+estan?\s+[a-z]|\balready\b";
     private const string FirstPersonAlready = @"\bi(?:'ve|\s+have)?\s+already\b";
 
     /// <summary>

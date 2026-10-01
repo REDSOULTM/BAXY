@@ -1277,6 +1277,30 @@ def spanish(text: str) -> bool:
     return _SPANISH_WORD.search(_fold(text)) is not None
 
 
+# M103 (owner script t25): an order to look something up the person says they already gave («te dije que investigues
+# algo», «ya te pedí que lo buscaras», «I told you to look it up»), naming nothing new (a pronoun, «algo», «eso»), or
+# their claim that it is a web search («eso debería ir a web search»). Never a «no» before the verb.
+_REPORTED_SEARCH_ORDER = re.compile(
+    r"\b(?:(?:ya\s+)?te\s+(?:dije|pedi|mande|lo\s+dije|lo\s+pedi)|i\s+(?:already\s+)?(?:told|asked)\s+you)\s+"
+    r"(?:que\s+|to\s+)?(?:lo\s+|la\s+)?"
+    r"(?:investig|busc|averigu|research|search|look\s+(?:it\s+|that\s+|this\s+)?up|google|find\s+out)\w*"
+    r"(?:\s+(?:algo|eso|esto|lo|la|it|that|this|something|about\s+it|for\s+it|sobre\s+(?:eso|esto|ella|el)))?"
+    r"(?=\s*(?:[,.;:!?]|$|\b(?:y|and|pero|but|porque|because)\b))"
+)
+_WEB_SEARCH_CLAIM = re.compile(
+    r"\b(?:eso|esto|that|this|it)\s+(?:deberia|tendria\s+que|tiene\s+que|debe|should|must|has\s+to)\s+"
+    r"(?:ir\s+a|ser|go\s+to|be)\s+(?:(?:un|una|a|an|la|el|the)\s+)?"
+    r"(?:web\s*search|busqueda(?:\s+web|\s+en\s+(?:la\s+)?(?:web|internet))?|search|buscad[oa]|buscarse)\b"
+)
+
+
+def insists_on_searching(text: str) -> bool:
+    """The person insists that what they asked to look up be looked up, naming nothing new to look up."""
+
+    folded = _fold(str(text or ""))
+    return _REPORTED_SEARCH_ORDER.search(folded) is not None or _WEB_SEARCH_CLAIM.search(folded) is not None
+
+
 def _family(operation: str) -> str:
     return operation.split(".", 1)[0]
 
@@ -1505,6 +1529,17 @@ class DialogueState:
         if not operation or operation not in self.intended:
             return user_text
         return self.request
+
+    def insisted_search(self, text: str) -> str | None:
+        """M103 (owner script t25 «…te dije que investigues algo, eso debería ir a web search…» after a search → «¿Qué
+        tema … te gustaría que investiguemos?»): the person insisting that what they asked to look up be looked up,
+        naming nothing new, asks for the topic this conversation last searched, as one request every reader reads.
+        None with nothing searched, or when the message names something of its own to look up."""
+
+        topic = self._facts.get("topic")
+        if not topic or not insists_on_searching(text):
+            return None
+        return f"busca en la web {topic}" if spanish(text) else f"search the web for {topic}"
 
     def accepted_alarm_cancellation(self, text: str) -> str | None:
         """D39 (owner, 2026-09-29): after «cancela las alarmas» BAXY read the alarms and asked whether to cancel them
