@@ -623,3 +623,15 @@ argumentos 50/54. Las mezclas `full3`+`full9` tampoco cumplen la regla. Es el se
 peor que `full3` (full4–full9). `full10` (la misma receta + 682 formas de sala limpia) se detuvo al empezar. Siguiente vía:
 `full11a`, continuar el propio `full3` (su adaptador como punto de partida) con una pasada a lr 5e-5 sobre 1 200 filas de
 sus datos originales (réplica, para no olvidar) y las 682 formas nuevas. Misma regla de entrada para adoptarlo.
+
+## D57 — 2026-10-01: el decisor generaliza; la brecha está en el código que lo rodea
+
+`full11a` (continuar `full3` con 1 200 filas propias + 682 formas nuevas, lr 5e-5) no cumple la regla: DEV-A 231 (−6),
+DEV-D 300 (=). Para juzgar sin el sesgo de selección de `full3` (elegido por DEV-A/DEV-B) se midieron aislados los tres
+decisores en DEV-E (sólo agregados) y DEV-F (iterable): `full3` 293/299 y 270/280, `full11a` 293 y 267, `full9` 290 y 263.
+`full3` se queda. Hallazgo: el decisor solo acierta la decisión en el 98 % de DEV-E y el 96 % de DEV-F, pero el producto
+en la app real sólo en el 85 % y el 87 %. La app pierde decisiones correctas del decisor (DEV-E agregado: camino del
+decisor 24, lectores de efectos 7, recuperación 6, conversación explícita 4, aclaración explícita 2). La brecha de
+generalización (DEV-D 92 % frente a DEV-E/F 85–87 %) es del código alrededor del decisor —lectores y reglas afinados con
+frases vistas—, no del modelo. Siguiente paso: que el producto confíe en el decisor (M112) y que los argumentos del decisor
+lleguen intactos (M110, M111), medido en DEV-F y confirmado en DEV-E por agregados.
