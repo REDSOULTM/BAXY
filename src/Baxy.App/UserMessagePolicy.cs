@@ -651,7 +651,10 @@ internal static class UserMessagePolicy
             ("ambiguous_without_question",
                 LooksLikeAmbiguousAction(user)
                 && !reply.Contains('?', StringComparison.Ordinal)
-                && !reply.Contains('¿', StringComparison.Ordinal)),
+                && !reply.Contains('¿', StringComparison.Ordinal)
+                // M109 (DEV-D v4d D-p24-t4 «Yes, do it for me.» → «I have not done it yet because the service asks to
+                // sign in on this PC first.»): the act said not done, with why, answers «do it».
+                && !SaysNotDoneAndWhy(said)),
             ("unusable_answer",
                 said.Contains("usar esa respuesta", StringComparison.Ordinal)
                 || said.Contains("unusable answer", StringComparison.Ordinal)),
@@ -1263,6 +1266,24 @@ internal static class UserMessagePolicy
                 user,
                 @"(?<![\p{L}\p{N}])" + Regex.Escape(token) + @"(?![\p{L}\p{N}])",
                 RegexOptions.CultureInvariant));
+    }
+
+    /// <summary>
+    /// M109: the reply says the act asked is not done (yet) and gives why («I have not done it yet because…», «No lo he
+    /// hecho: …»). Folded text. Twin of semantic.dialogue.says_not_done_and_why.
+    /// </summary>
+    internal static bool SaysNotDoneAndWhy(string folded)
+    {
+        Match found = Regex.Match(
+            folded ?? string.Empty,
+            @"\b(?:i\s+(?:have\s+not|haven['’]?t|did\s+not|didn['’]?t)\s+(?:yet\s+)?(?:done|do|did)\s+(?:it|that|this|anything)"
+            + @"|(?:todavia|aun)\s+no\s+(?:lo\s+|la\s+|eso\s+)?(?:he\s+hecho|hice)|no\s+(?:lo|la|eso)\s+(?:he\s+hecho|hice))\b",
+            RegexOptions.CultureInvariant);
+        return found.Success
+            && Regex.IsMatch(
+                folded![(found.Index + found.Length)..],
+                @"(?::|;|\bporque\b|\bya\s+que\b|\bpues\b|\bbecause\b|\bsince\b)\s*\S",
+                RegexOptions.CultureInvariant);
     }
 
     private static bool LooksLikeKnowledgeQuestion(string user) =>
@@ -3745,12 +3766,18 @@ internal static class UserMessagePolicy
             return;
         }
 
+        // M109 (DEV-D v4d D-w17-t4 «anything big in the news today»): the headlines a verified news read observed are
+        // the same kind of data — «… “No acepto que se ponga en duda mi palabra”» is a senator's words in a headline,
+        // not a failure of the read —; the report died as reversed_result and the turn ended with no final. Twin of
+        // the mind's _without_observed_search_vocabulary, which masks results and headlines alike.
         if (root.TryGetProperty("operation", out JsonElement operation) && operation.ValueKind == JsonValueKind.String
-            && operation.GetString() == "web.search"
+            && operation.GetString() is ("web.search" or "web.news.headlines")
             && root.TryGetProperty("verified", out JsonElement verified) && verified.ValueKind == JsonValueKind.True
             && root.TryGetProperty("succeeded", out JsonElement succeeded) && succeeded.ValueKind == JsonValueKind.True
             && root.TryGetProperty("observed", out JsonElement observed) && observed.ValueKind == JsonValueKind.Object
-            && observed.TryGetProperty("results", out JsonElement results) && results.ValueKind == JsonValueKind.Array)
+            && (observed.TryGetProperty("results", out JsonElement results)
+                || observed.TryGetProperty("headlines", out results))
+            && results.ValueKind == JsonValueKind.Array)
         {
             if (observed.TryGetProperty("query", out JsonElement query))
             {

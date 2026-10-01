@@ -6856,10 +6856,11 @@ def _recover_failed_turn(
             else None
         )
         kind, text = (
-            _recovery_visible_from_compose(llm, objective, talk=True) if understood_talk else ("conversation", "")
+            _recovery_visible_from_compose(llm, objective, talk=True, history=history)
+            if understood_talk else ("conversation", "")
         )
         if not text:
-            kind, text = _recovery_visible_from_compose(llm, objective, limit=is_limit)
+            kind, text = _recovery_visible_from_compose(llm, objective, limit=is_limit, history=history)
         if kind == "clarify" and (not nothing_to_clarify or understood_talk):
             # M97 (reserve A11, DEV-D v3o–v3x composition_failed): talk whose wording failed twice and whose reply the
             # composer could not write either asks back rather than publishing nothing.
@@ -6926,8 +6927,21 @@ def _recover_failed_turn(
     )
 
 
+def _recovery_conversation_facts(history: object, objective: str) -> dict[str, Any]:
+    """M109 (DEV-D v4d D-p23-t5, D-p24-t5): what the recovery's composer knows of the conversation — BAXY's last message
+    («context») and the person's earlier ones («priorRequests») —, the same data the App's composition carries. Without
+    them the writer told «if your earlier messages say you do not do that, say so again» had no earlier message."""
+
+    items = [item for item in history if isinstance(item, dict)] if isinstance(history, list) else []
+    last = next(
+        (str(item.get("content") or "") for item in reversed(items) if item.get("role") == "assistant"), "",
+    ).strip()
+    prior = list(_prior_user_texts(history, objective))
+    return {**({"context": last} if last else {}), **({"priorRequests": prior} if prior else {})}
+
+
 def _recovery_visible_from_compose(
-    llm: Any, objective: str, *, limit: bool = False, talk: bool = False,
+    llm: Any, objective: str, *, limit: bool = False, talk: bool = False, history: object = None,
 ) -> tuple[str, str]:
     """Use model-authored recovery text. A question is a question, not silence.
 
@@ -6942,13 +6956,17 @@ def _recovery_visible_from_compose(
     compose = getattr(llm, "compose_user_message", None)
     if not callable(compose):
         return "conversation", ""
+    conversation = _recovery_conversation_facts(history, objective)
     if talk:
         try:
             reply = str(
                 compose(
                     objective,
                     "conversation",
-                    {"situation": json.dumps({"kind": "conversation", "polarity": "success"}, ensure_ascii=False)},
+                    {
+                        **conversation,
+                        "situation": json.dumps({"kind": "conversation", "polarity": "success"}, ensure_ascii=False),
+                    },
                 )
                 or ""
             ).strip()
@@ -6977,6 +6995,8 @@ def _recovery_visible_from_compose(
                 # entender bien la solicitud, explícalo de nuevo».
                 "error" if limit else "clarification",
                 {
+                    # M109: the question back asks about this conversation, not about the message alone.
+                    **({} if limit else conversation),
                     "situation": json.dumps(
                         {"kind": "failure", "cause": "out_of_catalog", "polarity": "failure"}
                         if limit

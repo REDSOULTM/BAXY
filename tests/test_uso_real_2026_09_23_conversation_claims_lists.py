@@ -405,7 +405,8 @@ def test_a_claiming_draft_is_retried_with_a_hint_that_names_the_claim():
         content = (
             "Te traigo una hamburguesa con queso."
             if len(payloads) == 1
-            else '{"answer":"No puedo traerte comida: vivo en este PC."}'
+            # M109: «No puedo traerte comida…» tells a failure, which the App refuses; the limit is said as one.
+            else '{"answer":"No traigo comida: vivo en este PC."}'
         )
         return {"choices": [{"message": {"content": content}, "finish_reason": "stop"}]}
 
@@ -414,7 +415,7 @@ def test_a_claiming_draft_is_retried_with_a_hint_that_names_the_claim():
         "me gustaría una hamburguesa con queso",
         history=[], temperature=0.0, conversation_kind="knowledge", response_language="es",
     )
-    assert answer == "No puedo traerte comida: vivo en este PC."
+    assert answer == "No traigo comida: vivo en este PC."
     assert calls == []
     assert len(payloads) == 2
     hint = payloads[1]["messages"][1]["content"]
