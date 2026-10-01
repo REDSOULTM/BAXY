@@ -117,20 +117,16 @@ HONEST_ES = (
     ("D-w10-t1", "Dame una receta sencilla de arepas de queso."),
     ("D-s017", "Give me a good southern-style mac and cheese recipe."),
 ])
-def test_d_w10_t1_d_s017_a_recipe_read_from_no_recipe_is_said_from_memory(ident: str, request_text: str) -> None:
+def test_d_w10_t1_d_s017_a_recipe_read_from_no_recipe_is_not_said_from_memory(ident: str, request_text: str) -> None:
+    # M83 said it from memory; M95 (D52; DEV-D v3x D-w10-t1 «1 taza de agua» for 2 of maize flour): a recipe is its
+    # quantities and memory gives none, so the writer is not asked and the ordinary not-found report stands.
     english = ident == "D-s017"
-    honest = HONEST_ES if not english else (
-        "I couldn't check this; from memory, it may not be exact:\nIngredients:\n- 8 oz elbow macaroni\n"
-        "- 2 cups cheddar\n- 2 cups milk\nSteps:\n1. Boil the macaroni.\n2. Stir in the milk and cheese and bake."
-    )
-    writer = _Writer([honest])
+    writer = _Writer([HONEST_ES])
     answer = writer._compose_consulted_answer(
         request_text, {}, _situation(ident), "en" if english else "es", writer._post, None, "t",
     )
-    assert answer == honest
-    # M87: the form asked for is the recipe's.
-    assert writer.requests[0]["messages"][0]["content"] == llm._memory_answer_prompt(request_text, [], english)
-    assert ("«Ingredients:»" if english else "«Ingredientes:»") in writer.requests[0]["messages"][0]["content"]
+    assert answer is None
+    assert writer.requests == []
     # What v3o published instead: the encyclopedia's arepa, and «not found»; the read carried no recipe.
     assert TURNS["D-w10-t1"]["reply"].startswith("Las arepas de queso se elaboran")
     assert TURNS["D-s017"]["reply"] == "I did not find a mac and cheese recipe."

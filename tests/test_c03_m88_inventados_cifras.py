@@ -9,8 +9,8 @@ Each case is a real turn of window/v3r-devD (HEAD 50cee2c6): its drafts, payload
   M79/M85 chased its wordings. The go-ahead is read from the person's message (semantic.dialogue.gives_go_ahead), the
   writer is told the fact before it writes, and its answer must say it was not done (``go_ahead_not_done``).
 - s111 «¿Cuál es la distancia de Barcelona a París?»: the answer from memory (D35) gave «1.080 km en línea recta» and
-  «2 horas y 15 minutos». A figure from memory is said round (semantic.quantities.unsure_figures). Superseded by M92
-  (D52): a figure asked is never said from memory; the round-figure rule stays for a recipe from memory.
+  «2 horas y 15 minutos». A figure from memory was said round. Superseded by M92 (D52): a figure asked is never said
+  from memory; and by M95 (D52): nor is a recipe, so the round-figure rule is gone.
 - p12-t2 (and v3e2 w06-t4): «There are five 24/7 stores…», «Hay dos pizzerías abiertas…» — five and two were how many
   pages were read. A count in words is judged like one in digits (llm._search_report_unsourced_counts).
 - w01-t2, w01-t3, w10-t2: salt for the pasta water, teaspoons for 3 litres, grams of two cups of corn flour recited
@@ -173,33 +173,11 @@ def test_the_minds_own_conversation_reply_is_held_to_the_same_answer() -> None:
 
 
 def test_the_recorded_memory_answer_gives_figures_memory_cannot_hold() -> None:
+    # Superseded by M92 (D52, no figure from memory) and M95 (no recipe from memory either): the recorded answer has
+    # figures the person never said.
     draft = _stage("D-s111", "from_memory")["draft"]
 
-    assert quantities.unsure_figures(draft, [_case("D-s111")["text"]]) == ["1.080 kilometros", "2 horas y 15 minutos"]
-
-
-@pytest.mark.parametrize(
-    "draft",
-    [
-        "No pude comprobarlo; de memoria, puede no ser exacto: unos 1.000 kilómetros por carretera.",
-        "No pude comprobarlo; de memoria: alrededor de 850 km en línea recta y unas 6 horas y 30 minutos en tren.",
-        "I couldn't check this; from memory, it may not be exact: about 1,000 km by road.",
-        "No pude comprobarlo; de memoria: se publicó en 1967 y vendió más de 30 millones de copias.",
-        "No pude comprobarlo; de memoria: la RTX 4060 tiene 8 GB.",
-    ],
-)
-def test_round_figures_from_memory_are_kept(draft: str) -> None:
-    assert quantities.unsure_figures(draft, ["¿Cuál es la distancia de Barcelona a París?"]) == []
-
-
-def test_the_recipe_from_memory_the_review_found_right_keeps_its_quantities() -> None:
-    # D-w10-t1: «2 tazas de harina de maíz», «1 cucharadita de sal», «1/2 taza», «10 cm».
-    assert quantities.unsure_figures(_stage("D-w10-t1", "from_memory")["draft"], [_case("D-w10-t1")["text"]]) == []
-
-
-def test_a_figure_the_person_said_is_theirs() -> None:
-    assert quantities.unsure_figures("De memoria: 125 ml de leche por cada 250 g de harina.", ["tengo 125 ml"]) == []
-    assert quantities.unsure_figures("De memoria: 125 ml de leche.", ["¿cuánta leche?"]) == ["125 ml"]
+    assert quantities.unsaid_figures(draft, [_case("D-s111")["text"]])
 
 
 def test_a_figure_asked_is_never_answered_from_memory() -> None:

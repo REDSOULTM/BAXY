@@ -21,8 +21,6 @@ duration, so the quantities are read here — durations with the same unit words
 - ``conversion_asked``   M88: a pure conversion between two units of one kind («2 cucharadas en cucharaditas»),
                          computed; a kitchen quantity that depends on what is measured is looked up instead
                          (``semantic.knowledge``).
-- ``unsure_figures``     M88: the figures of an answer from memory given more precisely than memory holds (D-s111
-                         «1.080 km en línea recta», «2 horas y 15 minutos»); since M92 judged on recipes only.
 - ``unsaid_figures``     M92 (D52): the figures of a prose or list answer from memory the person did not say, which
                          memory never gives; ``without_listed_years`` drops the bracketed years of such a list.
 - ``rated_totals``       M92: the quantity the request states under a per-unit rule a read states («3 litros» ×
@@ -42,7 +40,7 @@ from .normalize import fold
 
 __all__ = [
     "Measure", "measures", "evaluate", "derived_facts", "underived_figure", "numbers_in", "format_number",
-    "PricedTotal", "priced_totals", "underived_price", "Conversion", "conversion_asked", "unsure_figures",
+    "PricedTotal", "priced_totals", "underived_price", "Conversion", "conversion_asked",
     "unsaid_figures", "without_listed_years", "RatedTotal", "rated_totals", "gives_a_total",
 ]
 
@@ -597,14 +595,10 @@ def conversion_asked(text: str, language: str = "es") -> Conversion | None:
     return None
 
 
-# ------------------------------------------------------------------ figures memory cannot vouch for (M88)
+# ------------------------------------------------------------------ figures memory cannot vouch for (M88, M92)
 
-# M88 (DEV-D v3r D-s111 «¿Cuál es la distancia de Barcelona a París?», nothing pertinent read): the answer from memory
-# (D35) said «1.080 km en línea recta … 1.100 por carretera … el tren tarda 10 horas y 30 minutos, el avión 2 horas y 15
-# minutos» (about 830 km, 1 030 km and 6 h 30 in fact). A notice that it may not be exact does not make a figure given
-# to three digits or to the quarter hour an approximation: memory keeps orders of magnitude, not digits. A figure of a
-# memory answer is said round — two significant digits at most, a duration to the half hour — and what the person said
-# is theirs. Judged: a figure followed by a unit or a percentage, preceded by a currency, or written with thousands.
+# The units after which a number written in words is a figure («dos tazas», «tres millones»). M88's round figures of a
+# memory answer are gone: since M92 memory gives no figure in prose or a list, and since M95 no recipe either (D52).
 _MEMORY_UNIT_WORDS = frozenset(
     set(_CONVERSION_UNITS)
     | {
@@ -614,47 +608,7 @@ _MEMORY_UNIT_WORDS = frozenset(
         "euro", "euros", "soles", "reales",
     }
 )
-_MEMORY_FIGURE = re.compile(
-    rf"(?P<sign>{_CURRENCY}\s?)?(?<![\w.,:/])(?P<number>\d{{1,3}}(?:[.,]\d{{3}})+(?![.,]?\d)|\d+(?:[.,]\d+)?)"
-    r"(?![\w/]|[.,]\d|:\d)(?P<after>\s*(?:%|[a-z]+))?"
-)
-_HOURS_AND_MINUTES = re.compile(
-    r"(?<![\w.,])(?P<hours>\d{1,3})\s*(?:h|hr|hrs|horas?|hours?)\b\s*(?:y|and|,)?\s*(?P<minutes>\d{1,2})"
-    r"(?:\s*(?:min|mins|minutos?|minutes?)\b)?"
-)
 _LIST_ORDINAL = re.compile(r"^\s*\d+[.)]\s", re.MULTILINE)
-
-
-def _significant_digits(raw: str) -> int:
-    if re.fullmatch(r"\d{1,3}(?:[.,]\d{3})+", raw):
-        return len(re.sub(r"[.,]", "", raw).strip("0")) or 1
-    if re.search(r"[.,]", raw):
-        return len(re.sub(r"[.,]", "", raw).lstrip("0")) or 1
-    return len(raw.strip("0")) or 1
-
-
-def unsure_figures(reply: str, said: Iterable[str] = ()) -> list[str]:
-    """The figures of an answer from memory given more precisely than memory holds (see above), as written (folded)."""
-
-    folded = _LIST_ORDINAL.sub(lambda found: " " * len(found.group(0)), fold(reply))
-    person = numbers_in(said)
-    unsure: list[str] = []
-    for found in _MEMORY_FIGURE.finditer(folded):
-        raw = found.group("number")
-        after = (found.group("after") or "").strip()
-        separated = re.fullmatch(r"\d{1,3}(?:[.,]\d{3})+", raw) is not None
-        if not (found.group("sign") or separated or after in _MEMORY_UNIT_WORDS):
-            continue
-        value = _money(raw) if separated else _number(raw)
-        if value is None or value in person or _significant_digits(raw) <= 2:
-            continue
-        figure = found.group(0).strip()
-        if figure not in unsure:
-            unsure.append(figure)
-    for found in _HOURS_AND_MINUTES.finditer(folded):
-        if int(found.group("minutes")) % 30 and found.group(0).strip() not in unsure:
-            unsure.append(found.group(0).strip())
-    return unsure
 
 
 # M92 (D52; DEV-D v3u D-s111 «…unos 1.100 kilómetros… unas 2 horas y media… entre 8 y 9 horas», D-p29-t2 «6. It (1982)»,

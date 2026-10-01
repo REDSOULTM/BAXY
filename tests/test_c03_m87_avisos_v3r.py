@@ -159,8 +159,9 @@ def test_only_the_form_asked_is_in_the_prompt() -> None:
     assert "numbered list" in listing and "Ingredients" not in listing
     prose = llm._memory_answer_prompt("Look for a drama film.", [], True)
     assert "two to four sentences" in prose and "Ingredients" not in prose and "list" not in prose
-    recipe = llm._memory_answer_prompt("Dame una receta sencilla de arepas de queso.", [], False)
-    assert "«Ingredientes:»" in recipe and "lista" not in recipe
+    # M95 (D52): no recipe is asked of memory, so there is no recipe form.
+    with pytest.raises(KeyError):
+        llm._memory_answer_prompt("Dame una receta sencilla de arepas de queso.", [], False)
 
 
 # The shell's jargon terms, as ModelMessageComposer sends them (UserMessagePolicy.ForbiddenResponseTerms).

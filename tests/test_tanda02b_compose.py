@@ -141,10 +141,17 @@ def test_a_recomposed_conversation_cannot_answer_the_previous_topic_with_an_unre
 @pytest.mark.parametrize("reply", [
     "¡Ave, César! ¿Cómo estás? ¿Qué tal si contamos un chiste rápido? 😄",
     "¡Ave! Hoy te saludo como un romano.",
-    "La Revolución Francesa empezó en 1789.",
+    "La Revolución Francesa empezó en París.",
 ])
 def test_a_social_or_knowledge_reply_without_a_present_claim_is_published(reply: str) -> None:
     assert llm.compose_visible_defect(reply, "conversation", "¡ave, cesar!", _WITH_CONTEXT) == ""
+
+
+def test_a_year_from_memory_is_no_present_claim_but_is_memory() -> None:
+    # M95 (D52): «1789» is not about today, and no message of the conversation states it: a figure from memory.
+    assert llm.compose_visible_defect(
+        "La Revolución Francesa empezó en 1789.", "conversation", "¡ave, cesar!", _WITH_CONTEXT,
+    ) == "memory_figures"
 
 
 def test_a_follow_up_may_restate_what_the_previous_answer_said() -> None:
