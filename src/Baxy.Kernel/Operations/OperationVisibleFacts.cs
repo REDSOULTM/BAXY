@@ -266,9 +266,20 @@ public static class OperationVisibleFacts
         }
     }
 
-    // Cut at a word boundary near the bound, never inside a surrogate pair.
-    private static string Shortened(string value, int length)
+    /// <summary>
+    /// A text cut to <paramref name="length"/> at a word boundary near the bound, never inside a surrogate pair,
+    /// marked with «…». M116: the App bounds the arguments a failed step carries (Baxy.App.AttemptedArguments) the
+    /// same way.
+    /// </summary>
+    public static string Shortened(string value, int length)
     {
+        ArgumentNullException.ThrowIfNull(value);
+        ArgumentOutOfRangeException.ThrowIfLessThan(length, 2);
+        if (value.Length <= length)
+        {
+            return value;
+        }
+
         int keep = length;
         if (char.IsHighSurrogate(value[keep - 1]))
         {

@@ -229,17 +229,122 @@ internal static class MindPlanBoundary
         "recipient",
     ];
 
+    private const string NotDoneKey = "notDone";
+    private const int MaximumNotDone = 4;
+
     /// <summary>
     /// M56 (v3c-final F-w06-t1 «ninguna de las aplicaciones tenía una ventana abierta»): a
     /// failed step's facts name the application it was about, from its own grounded
     /// arguments, so the reply says which window was missing instead of guessing. M94: any
     /// step names what it was about (<see cref="TargetArguments"/>); a catalog id
-    /// («windows.calculator», an AUMID) is not a name.
+    /// («windows.calculator», an AUMID) is not a name. M116: the facts also carry every
+    /// argument of the step a person can read (<see cref="AttemptedArguments"/>), so the
+    /// reply says what was attempted — to whom, which words, where — beside the cause.
     /// </summary>
-    internal static string WithStepTarget(string message, JsonObject? arguments)
+    internal static string WithStepFacts(string message, JsonObject? arguments)
     {
         ArgumentNullException.ThrowIfNull(message);
-        string? application = null;
+        string? target = StepTarget(arguments);
+        JsonObject? attempted = AttemptedArguments.Project(arguments);
+        if (target is null && attempted is null)
+        {
+            return message;
+        }
+
+        JsonObject? facts = ParsedFacts(message);
+        if (facts is null)
+        {
+            return message;
+        }
+
+        bool changed = false;
+        if (target is not null && !facts.ContainsKey("target"))
+        {
+            facts["target"] = target;
+            changed = true;
+        }
+
+        if (attempted is not null && !facts.ContainsKey(AttemptedArguments.Key))
+        {
+            facts[AttemptedArguments.Key] = attempted;
+            changed = true;
+        }
+
+        return changed ? facts.ToJsonString() : message;
+    }
+
+    /// <summary>
+    /// M116 (DEV-F v4e2 F-w30-t2, F-w30-t3, F-w30-t4, F-w58-t4: «maximízalo», «ponlo a la izquierda» with Obsidian
+    /// absent or Discord closed): the plan's resolve failed and its facts named only the window looked for, never the
+    /// effect that would have followed. The effects left undone by a failure (<paramref name="kept"/> still run) go with
+    /// its facts as <c>notDone</c>: each one's operation, what it was about — its own target, or the failed step's when
+    /// it acts on what that step was producing — and its readable arguments. Reads left undone are not listed.
+    /// </summary>
+    internal static string WithNotDone(
+        string failure,
+        PendingMindPlanExecution execution,
+        IReadOnlyCollection<MindPlanStep> kept)
+    {
+        ArgumentNullException.ThrowIfNull(failure);
+        ArgumentNullException.ThrowIfNull(execution);
+        ArgumentNullException.ThrowIfNull(kept);
+        if (execution.NextIndex < 0 || execution.NextIndex >= execution.Steps.Count)
+        {
+            return failure;
+        }
+
+        JsonObject? facts = ParsedFacts(failure);
+        if (facts is null || facts.ContainsKey(NotDoneKey))
+        {
+            return failure;
+        }
+
+        var keptIds = new HashSet<string>(kept.Select(static step => step.Id), StringComparer.Ordinal);
+        var dependents = new HashSet<string>(StringComparer.Ordinal) { execution.CurrentStep.Id };
+        var notDone = new JsonArray();
+        for (int index = execution.NextIndex + 1; index < execution.Steps.Count; index++)
+        {
+            MindPlanStep step = execution.Steps[index];
+            bool dependent = step.DependsOn.Any(dependents.Contains);
+            if (dependent)
+            {
+                dependents.Add(step.Id);
+            }
+
+            if (keptIds.Contains(step.Id) || IsReadOnly(step.Operation) || notDone.Count == MaximumNotDone)
+            {
+                continue;
+            }
+
+            var entry = new JsonObject { ["operation"] = step.Operation };
+            if (StepTarget(step.Arguments) is { } own)
+            {
+                entry["target"] = own;
+            }
+            else if (dependent && facts["target"] is { } inherited)
+            {
+                entry["target"] = inherited.DeepClone();
+            }
+
+            if (AttemptedArguments.Project(step.Arguments) is { } attempted)
+            {
+                entry[AttemptedArguments.Key] = attempted;
+            }
+
+            notDone.Add(entry);
+        }
+
+        if (notDone.Count == 0)
+        {
+            return failure;
+        }
+
+        facts[NotDoneKey] = notDone;
+        return facts.ToJsonString();
+    }
+
+    private static string? StepTarget(JsonObject? arguments)
+    {
         foreach (string key in TargetArguments)
         {
             if (arguments?[key] is JsonValue value
@@ -247,33 +352,23 @@ internal static class MindPlanBoundary
                 && !string.IsNullOrWhiteSpace(named)
                 && !(key == "appId" && named.IndexOfAny(['.', '!']) >= 0))
             {
-                application = named;
-                break;
+                return named.Trim();
             }
         }
 
-        if (application is null)
-        {
-            return message;
-        }
+        return null;
+    }
 
-        JsonObject? facts;
+    private static JsonObject? ParsedFacts(string message)
+    {
         try
         {
-            facts = JsonNode.Parse(message) as JsonObject;
+            return JsonNode.Parse(message) as JsonObject;
         }
         catch (JsonException)
         {
-            return message;
+            return null;
         }
-
-        if (facts is null || facts.ContainsKey("target"))
-        {
-            return message;
-        }
-
-        facts["target"] = application.Trim();
-        return facts.ToJsonString();
     }
 
     /// <summary>
@@ -315,6 +410,19 @@ internal static class MindPlanBoundary
                 }
 
                 second["target"] = targets;
+                // M116: what each one attempted and left undone stays beside its target.
+                foreach (string key in new[] { AttemptedArguments.Key, NotDoneKey })
+                {
+                    if (Concatenated(first[key], second[key]) is { } both)
+                    {
+                        second[key] = both;
+                    }
+                    else if (key == NotDoneKey && first[key] is { } undoneBefore)
+                    {
+                        second[key] = undoneBefore.DeepClone();
+                    }
+                }
+
                 return second.ToJsonString();
             }
         }
@@ -324,6 +432,25 @@ internal static class MindPlanBoundary
         }
 
         return later;
+    }
+
+    private static JsonArray? Concatenated(JsonNode? first, JsonNode? second)
+    {
+        if (first is null || second is null)
+        {
+            return null;
+        }
+
+        var both = new JsonArray();
+        foreach (JsonNode? node in new[] { first, second })
+        {
+            foreach (JsonNode? item in node is JsonArray many ? many : new JsonArray(node.DeepClone()))
+            {
+                both.Add(item?.DeepClone());
+            }
+        }
+
+        return both;
     }
 
     internal static bool MustRetainAmbiguousEffect(OperationResponse response)

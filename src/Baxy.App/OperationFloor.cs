@@ -225,11 +225,66 @@ internal static class OperationFloor
 
         // Only a verified result picks its variant by what it observed (muted, on, the kind set): a state read
         // beside a failure is the one that held, not the one asked.
-        string attempted = (string)((JsonArray)entry[language]!)[0]!
-            + ObjectNamed(entry, observed, language, templates, step["target"] is JsonValue target
-                && target.TryGetValue(out string? targetText) ? targetText : null);
+        string attempted = AttemptedClause(entry, step, observed, language, templates);
+        // M116: a read that only looked for what an effect needed (the window to place) is told by the effect it
+        // left undone — «no pude colocar la ventana «Obsidian» a la izquierda» — when the facts carry it.
+        if (Flag(entry, "quiet") == true && step["notDone"] is JsonArray notDone)
+        {
+            var undone = new List<string>();
+            foreach (JsonObject item in notDone.OfType<JsonObject>())
+            {
+                if (Text(item, "operation") is { } undoneOperation
+                    && Data.Value["operations"] is JsonObject operations
+                    && operations[undoneOperation] is JsonObject undoneEntry
+                    && AttemptedClause(undoneEntry, item, new JsonObject(), language, templates) is { Length: > 0 } said)
+                {
+                    undone.Add(said);
+                }
+            }
+
+            if (undone.Count > 0)
+            {
+                attempted = Joined(undone, templates);
+            }
+        }
+
         return T(templates, Uncertain(step) ? "uncertain" : "failed")
             .Replace("{clause}", attempted, StringComparison.Ordinal);
+    }
+
+    // The plain clause of a step not done, with what it was about and, since M116, what it attempted: the client and
+    // the side said in words, the message's text quoted (data «attempted» and «content»).
+    private static string AttemptedClause(
+        JsonObject entry, JsonObject step, JsonObject observed, string language, JsonObject templates)
+    {
+        string clause = (string)((JsonArray)entry[language]!)[0]!
+            + ObjectNamed(entry, observed, language, templates, step["target"] is JsonValue target
+                && target.TryGetValue(out string? targetText) ? targetText : null);
+        if (step["attempted"] is not JsonObject attempted)
+        {
+            return clause;
+        }
+
+        foreach (JsonObject spec in ((JsonArray)Data.Value["attempted"]!).OfType<JsonObject>())
+        {
+            if (Text(attempted, Text(spec, "key")!) is { } value
+                && spec["values"] is JsonObject values
+                && values[value] is JsonObject said)
+            {
+                clause += " " + Text(said, language);
+            }
+        }
+
+        foreach (JsonNode? key in (JsonArray)Data.Value["content"]!)
+        {
+            string text = Usable(attempted[(string)key!], LongestContent);
+            if (text.Length > 0)
+            {
+                return clause + T(templates, "detail") + Quote(text, templates);
+            }
+        }
+
+        return clause;
     }
 
     private static bool Uncertain(JsonObject step) =>

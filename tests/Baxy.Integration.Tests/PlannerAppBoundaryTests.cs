@@ -279,13 +279,13 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(MindPlanBoundary.IndependentRemainder(typing, notFound), Is.Null);
             Assert.That(MindPlanBoundary.IndependentRemainder(openFailed, notFound), Is.Null, "only a read is stepped over");
 
-            string word = MindPlanBoundary.WithStepTarget(notFound.Message, new JsonObject { ["applicationName"] = "Word" });
+            string word = MindPlanBoundary.WithStepFacts(notFound.Message, new JsonObject { ["applicationName"] = "Word" });
             Assert.That(JsonNode.Parse(word)!["target"]!.GetValue<string>(), Is.EqualTo("Word"));
-            Assert.That(MindPlanBoundary.WithStepTarget(notFound.Message, new JsonObject { ["windowId"] = "w1" }),
+            Assert.That(MindPlanBoundary.WithStepFacts(notFound.Message, new JsonObject { ["windowId"] = "w1" }),
                 Is.EqualTo(notFound.Message));
-            Assert.That(MindPlanBoundary.WithStepTarget("prosa", new JsonObject { ["applicationName"] = "Word" }),
+            Assert.That(MindPlanBoundary.WithStepFacts("prosa", new JsonObject { ["applicationName"] = "Word" }),
                 Is.EqualTo("prosa"));
-            string chrome = MindPlanBoundary.WithStepTarget(
+            string chrome = MindPlanBoundary.WithStepFacts(
                 notFound.Message, new JsonObject { ["applicationName"] = "Google Chrome" });
             Assert.That(JsonNode.Parse(MindPlanBoundary.MergeFailures(word, chrome))!["target"]!.AsArray()
                     .Select(static node => node!.GetValue<string>()),
@@ -306,37 +306,41 @@ public sealed class PlannerAppBoundaryTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(Target(MindPlanBoundary.WithStepTarget(failed, new JsonObject { ["appId"] = "Notion" })),
+            Assert.That(Target(MindPlanBoundary.WithStepFacts(failed, new JsonObject { ["appId"] = "Notion" })),
                 Is.EqualTo("Notion"));
-            Assert.That(Target(MindPlanBoundary.WithStepTarget(failed, new JsonObject { ["location"] = "Ushuaia, Argentina" })),
+            Assert.That(Target(MindPlanBoundary.WithStepFacts(failed, new JsonObject { ["location"] = "Ushuaia, Argentina" })),
                 Is.EqualTo("Ushuaia, Argentina"));
-            Assert.That(Target(MindPlanBoundary.WithStepTarget(
+            Assert.That(Target(MindPlanBoundary.WithStepFacts(
                     failed, new JsonObject { ["service"] = "netflix", ["title"] = "Paddington 2" })),
                 Is.EqualTo("Paddington 2"));
-            Assert.That(Target(MindPlanBoundary.WithStepTarget(failed, new JsonObject { ["expression"] = "960/12" })),
+            Assert.That(Target(MindPlanBoundary.WithStepFacts(failed, new JsonObject { ["expression"] = "960/12" })),
                 Is.EqualTo("960/12"));
-            Assert.That(Target(MindPlanBoundary.WithStepTarget(failed, new JsonObject { ["folder"] = "documents" })),
+            Assert.That(Target(MindPlanBoundary.WithStepFacts(failed, new JsonObject { ["folder"] = "documents" })),
                 Is.EqualTo("documents"));
-            Assert.That(Target(MindPlanBoundary.WithStepTarget(
+            Assert.That(Target(MindPlanBoundary.WithStepFacts(
                     failed, new JsonObject { ["query"] = "cumbia para cocinar" })),
                 Is.EqualTo("cumbia para cocinar"));
             // M111 (DEV-F v4d F-s005: a draft for Tyler failed with Discord closed and nothing said for whom): the
             // person a message was for is what it was about; its words are not.
-            Assert.That(Target(MindPlanBoundary.WithStepTarget(
+            Assert.That(Target(MindPlanBoundary.WithStepFacts(
                     failed, new JsonObject { ["channel"] = "discord", ["recipient"] = "Tyler", ["text"] = "a las 9" })),
                 Is.EqualTo("Tyler"));
             // A catalog id is no name, and identifiers, versions or free text are never a target.
-            Assert.That(MindPlanBoundary.WithStepTarget(failed, new JsonObject { ["appId"] = "windows.calculator" }),
+            Assert.That(MindPlanBoundary.WithStepFacts(failed, new JsonObject { ["appId"] = "windows.calculator" }),
                 Is.EqualTo(failed));
-            Assert.That(MindPlanBoundary.WithStepTarget(
+            Assert.That(MindPlanBoundary.WithStepFacts(
                     failed, new JsonObject { ["appId"] = "Microsoft.WindowsCamera_8wekyb3d8bbwe!App" }),
                 Is.EqualTo(failed));
-            Assert.That(MindPlanBoundary.WithStepTarget(
-                    failed, new JsonObject { ["taskId"] = "a1", ["expectedVersion"] = 2, ["text"] = "hola" }),
-                Is.EqualTo(failed));
+            // M116: free text is no target, but it is what was attempted; the id and the version are neither.
+            JsonNode taskFacts = JsonNode.Parse(MindPlanBoundary.WithStepFacts(
+                failed, new JsonObject { ["taskId"] = "a1", ["expectedVersion"] = 2, ["text"] = "hola" }))!;
+            Assert.That(taskFacts["target"], Is.Null);
+            Assert.That(taskFacts["attempted"]!.ToJsonString(), Is.EqualTo("""{"text":"hola"}"""));
             // A target the facts already carry stays theirs.
             const string named = """{"kind":"operation","target":"Word","error":"window_not_found"}""";
-            Assert.That(MindPlanBoundary.WithStepTarget(named, new JsonObject { ["title"] = "otro" }), Is.EqualTo(named));
+            JsonNode namedFacts = JsonNode.Parse(MindPlanBoundary.WithStepFacts(named, new JsonObject { ["title"] = "otro" }))!;
+            Assert.That(namedFacts["target"]!.GetValue<string>(), Is.EqualTo("Word"));
+            Assert.That(namedFacts["attempted"]!["title"]!.GetValue<string>(), Is.EqualTo("otro"));
         });
     }
 

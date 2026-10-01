@@ -694,6 +694,125 @@
    },
    "es": "",
    "en": ""
+  },
+  {
+   "id": "m116-draft-client-closed",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "message.draft",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "whatsapp_client_not_running",
+     "target": "Ana",
+     "attempted": {
+      "channel": "whatsapp",
+      "recipient": "Ana",
+      "text": "llego tarde al ensayo"
+     }
+    }
+   },
+   "es": "No pude dejar escrito el mensaje para «Ana» en WhatsApp: «llego tarde al ensayo».",
+   "en": "I couldn't leave the message written for «Ana» on WhatsApp: «llego tarde al ensayo»."
+  },
+  {
+   "id": "m116-draft-discord-uncertain",
+   "situation": {
+    "kind": "operation",
+    "operation": "message.draft",
+    "polarity": "failure",
+    "verified": false,
+    "succeeded": false,
+    "error": "draft_not_verified",
+    "effectUncertain": true,
+    "target": "Tomás",
+    "attempted": {
+     "channel": "discord",
+     "recipient": "Tomás",
+     "text": "the raid starts at 9"
+    }
+   },
+   "es": "Intenté dejar escrito el mensaje para «Tomás» en Discord: «the raid starts at 9», pero no pude confirmar si se hizo.",
+   "en": "I tried to leave the message written for «Tomás» on Discord: «the raid starts at 9», but I couldn't confirm whether it was done."
+  },
+  {
+   "id": "m116-snap-left-undone",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "window.resolve",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "app_not_found",
+     "target": "Nébula",
+     "attempted": {
+      "applicationName": "Nébula"
+     },
+     "notDone": [
+      {
+       "operation": "window.snap",
+       "target": "Nébula",
+       "attempted": {
+        "side": "left"
+       }
+      }
+     ]
+    }
+   },
+   "es": "No pude colocar la ventana «Nébula» a la izquierda.",
+   "en": "I couldn't snap the window «Nébula» on the left."
+  },
+  {
+   "id": "m116-maximize-undone",
+   "situation": {
+    "kind": "operation",
+    "operation": "window.resolve",
+    "polarity": "failure",
+    "verified": false,
+    "succeeded": false,
+    "error": "app_not_found",
+    "target": "Nébula",
+    "attempted": {
+     "applicationName": "Nébula"
+    },
+    "notDone": [
+     {
+      "operation": "window.maximize",
+      "target": "Nébula"
+     }
+    ]
+   },
+   "es": "No pude maximizar la ventana «Nébula».",
+   "en": "I couldn't maximize the window «Nébula»."
+  },
+  {
+   "id": "m116-draft-done-for",
+   "situation": {
+    "kind": "operation",
+    "operation": "message.draft",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "version": 1,
+     "channel": "discord",
+     "displayName": "Tomás"
+    }
+   },
+   "es": "Dejé escrito el mensaje para «Tomás».",
+   "en": "I left the message written for «Tomás»."
   }
  ]
 }
