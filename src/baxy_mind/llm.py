@@ -136,6 +136,7 @@ from .semantic.conversation import (
     asks_baxys_name,
     asks_for_code,
     asks_to_make,
+    asks_or_has_words_said,
     asks_to_order,
     asks_what_this_is,
     asks_whether_able,
@@ -145,6 +146,7 @@ from .semantic.conversation import (
     coordinates_actions,
     ends_asking_the_person,
     names_a_current_public_office,
+    names_a_request_noun,
     quoted_literals,
     quoted_translation_phrase,
     random_draw_request,
@@ -2045,10 +2047,28 @@ def _says_the_person_back(reply: object, request: object) -> bool:
     """A short reply whose words are the person's own words (interjections and contractions aside)."""
 
     said, asked = _echo_words(reply), _echo_words(request)
-    if not (0 < len(said) <= 8 and said == asked):
+    if not (0 < len(said) <= 8 and said == asked) and not _mirrors_the_person(said, asked, request):
         return False
     # A greeting, thanks or a goodbye is answered in kind («hola» → «¡Hola!»).
     return not (dialogue_slot.is_social(str(request or "")) or read_request(str(request or "")).greets)
+
+
+# M103 (owner script t40 «No lo hiciste mentiroso, nose no lo vi» → «No lo hice mentiroso, pero no lo vi.»): the
+# person's sentence turned to the first person, one filler swapped, is their words said back too. Asked to say or
+# repeat something, or asked a question, a reply in their words is the answer (semantic.conversation).
+
+
+def _same_word_stem(word: str, other: str) -> bool:
+    """Equal, or one verb's two persons («hice»/«hiciste», «vi»/«viste»): a shared start of three letters."""
+
+    return word == other or (min(len(word), len(other)) >= 4 and word[:3] == other[:3])
+
+
+def _mirrors_the_person(said: list[str], asked: list[str], request: object) -> bool:
+    if not 4 <= len(said) <= 12 or asks_or_has_words_said(request):
+        return False
+    theirs = [word for word in said if any(_same_word_stem(word, other) for other in asked)]
+    return len(said) - len(theirs) <= 1 and len(theirs) >= 0.8 * len(asked)
 
 
 def _repeats_the_last_answer(reply: object, last_answer: object, request: object) -> bool:
@@ -3165,7 +3185,14 @@ def limit_voice_defect(text: object, request: object = "") -> str:
     if _limit_names_no_act(text, request):
         return "limit_names_no_act"
     # Independent review B1: «¿por qué no puedes…?» asks for the reason.
-    if _LIMIT_REASON.search(folded) and not dialogue_slot.asks_for_the_reason(str(request or "")):
+    if (
+        _LIMIT_REASON.search(folded)
+        and not dialogue_slot.asks_for_the_reason(str(request or ""))
+        # M103 (owner script t50/t51 «baxy, cierra baxy» → «No cierro BAXY desde el chat, ya que se cierra con la X de
+        # su ventana o con Alt+F4.» refused, and «No cierro el pedido.» published): how BAXY is closed is what the
+        # self-close limit says (its system line asks for it), however the clause is joined.
+        and not (effect_intent.self_close_request(str(request or "")) and _SAYS_HOW_BAXY_CLOSES.search(folded))
+    ):
         return "limit_gives_a_reason"
     return ""
 
@@ -3232,16 +3259,32 @@ _LIMIT_META_OBJECT = re.compile(
 )
 
 
+# M103 (owner script t50/t51 «cierra BAXY» → «No cierro el pedido.»): any act of BAXY's said of «el pedido» denies the
+# request, not an act, unless the person's own words were about an order or a request.
+_LIMIT_ACT_ON_THE_REQUEST = re.compile(
+    r"\bno\s+(?:(?:lo|la|me|te|se)\s+)?[a-zñ]{2,}o\s+(?:el|la|ese|esa|este|esta|tu|su)\s+"
+    r"(?:pedido|solicitud|peticion|encargo)\s*(?:[.!,;:]|$)"
+)
+
+
 def _limit_names_no_act(text: object, request: object) -> bool:
     """The limit denies «el pedido» / «the request» itself, and the person did not ask to order anything."""
 
-    return _LIMIT_META_OBJECT.search(_reading_fold(str(text or ""))) is not None and not asks_to_order(request)
+    folded = _reading_fold(str(text or ""))
+    if asks_to_order(request):
+        return False
+    return _LIMIT_META_OBJECT.search(folded) is not None or (
+        _LIMIT_ACT_ON_THE_REQUEST.search(folded) is not None
+        and not names_a_request_noun(request)
+    )
 
 
 # cien-106 «post a letter to Eris» → «I cannot post a letter to Eris because I do not have the ability to send
 # messages or interact with external entities»: the limit is said plainly (00_IDENTIDAD, owner's concision rule);
 # a reason for it is a claim about BAXY nobody checked (he does send messages).
 _LIMIT_REASON = re.compile(r"\b(?:porque|ya\s+que|puesto\s+que|dado\s+que|debido\s+a|because|since)\b")
+# M103: the way BAXY's own window is closed (its X, Alt+F4), said by the self-close limit.
+_SAYS_HOW_BAXY_CLOSES = re.compile(r"\balt\s*\+?\s*f4\b|\b(?:la|the|its|su)\s+x\b")
 
 
 # Tanda 3 and 4 2026-09-24 «No reanudo la lectura de la lección de francés.», «No leo libros en voz alta»: BAXY
@@ -6304,6 +6347,8 @@ def _microphone_muted_fact(situation: dict) -> bool | None:
 # Independent review A2: «Ya está, activé tu micrófono» is «done» said over a failure; «ya está» is the state only
 # before a word («ya está activo»), and «I already did it» is BAXY's act.
 # M101 (owner script v3z2 t45 «El micrófono estaba ya silenciado…», refused three times): «estaba ya» is «ya estaba».
+# M103 (owner script t45 «silencia mi microfono», already muted): «El micrófono estaba ya silenciado, por lo que no
+# hubo ningún cambio.» says it the other way round; three drafts died on missing_failure and the turn showed ⚠.
 _ALREADY_STATEMENT = re.compile(
     r"\bya\s+(?:estaba|estaban|era|eran)\b|\b(?:estaba|estaban|era|eran)\s+ya\b|\bya\s+estan?\s+(?=[a-z])|"
     r"(?<!\bi )(?<!\bi've )(?<!\bi have )\balready\b"
@@ -15763,6 +15808,12 @@ def compose_visible_defect(
     if intent == "conversation" or kind == "conversation":
         if _unverified_present_fact(stripped, user_text, facts) is not None:
             return "unverified_present_fact"
+        if not asks_for_code(said or user_text, ()) and _repeats_the_last_answer(
+            stripped, facts.get("context"), said or user_text
+        ):
+            # M103 (owner script t41 «Dimelo tu, te mande la mision a tiu» → t40's reply again, word for word): the App's
+            # conversation fallback is held to the mind's M99 check; the previous answer travels as the context.
+            return "repeats_last_answer"
         followup_subject = followup_topic(user_text, facts.get("priorRequests"))
         # Lo que la persona pidió decide si una pregunta puede ser la respuesta.
         # Por sus capacidades, sus límites o por seguir hablando se contesta con
@@ -26823,6 +26874,14 @@ class LlmRuntime:
                     "Do not say the person's words back: answer them in your own words, in one sentence."
                     if response_language == "en"
                     else "No repitas las palabras de la persona: contéstale con las tuyas, en una frase."
+                ),
+                # M103 (owner script t41).
+                "repeats_last_answer": (
+                    "Your previous answer was already said: do not say it again. Answer what the person says now, in "
+                    "one sentence of your own."
+                    if response_language == "en"
+                    else "Tu respuesta anterior ya se dijo: no la repitas. Contesta lo que la persona dice ahora, en "
+                    "una frase tuya."
                 ),
                 # M85 (DEV-D v3o D-p09-t3, D-w01-t2).
                 "own_write_denied": (

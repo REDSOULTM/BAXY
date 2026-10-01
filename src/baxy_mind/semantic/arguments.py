@@ -18,7 +18,11 @@ from .. import effect_intent
 from . import lexicon as semantic_lexicon
 from .catalog import GameCatalogIndex, resolve_game_catalog_app_id
 from .notes import agenda_event_request, said_repetition, stated_event_reminder, task_completion_title
-from .patterns import resolve_application_catalog_app_id, resolve_application_installed_name
+from .patterns import (
+    application_shown_media_name,
+    resolve_application_catalog_app_id,
+    resolve_application_installed_name,
+)
 from .temporal import (
     SpokenClock, agenda_window, clock_elsewhere, moment_then_title_reminder, plural_alarm_cancellation, spoken_date,
     spoken_window,
@@ -942,7 +946,7 @@ def _explicit_arguments_from_evidence(
             evidence, application_names,
         ) or effect_intent.conditional_open_pause_app(
             evidence, application_names,
-        )
+        ) or application_shown_media_name(evidence, application_names)
         if application_name is not None:
             return {"applicationName": application_name}
         pairs = effect_intent.application_snap_pairs(evidence, application_names, absent=True)

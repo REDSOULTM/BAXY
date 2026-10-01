@@ -47,7 +47,7 @@ from .semantic import surface as semantic_surface
 from .semantic import temporal as semantic_temporal
 from .semantic import ui as semantic_ui
 from .semantic.system import names_this_place, weather_destination_there
-from .semantic.patterns import list_entries_said_before, output_level_request
+from .semantic.patterns import application_shown_media_name, list_entries_said_before, output_level_request
 from .semantic.web import (
     asks_for_information,
     asks_latest_release,
@@ -4105,6 +4105,32 @@ def _normalize_grounded_operation_arguments(
     return normalized
 
 
+def _evidence_of_expected_operations(
+    expected: tuple[str, ...],
+    recognized: tuple[str, ...],
+    evidence: tuple[str, ...],
+) -> tuple[str, ...] | None:
+    """The readers' clause for each effect the turn decided, or None when they read another request."""
+
+    if recognized == expected:
+        return evidence
+    # M103 (owner script t36 «abre steam y ve a la biblioteca»): the readers add a look before the click
+    # (input.visible.controls, H0096) on the click's own clause; the turn decided open + click. Dropping a step that
+    # only repeats a kept step's clause loses nothing the person said, so the kept clauses still ground the steps.
+    kept: list[str] = []
+    cursor = 0
+    for index, operation in enumerate(recognized):
+        if cursor < len(expected) and operation == expected[cursor]:
+            kept.append(evidence[index])
+            cursor += 1
+    if cursor != len(expected):
+        return None
+    dropped = [evidence[index] for index, operation in enumerate(recognized) if operation not in expected]
+    if any(clause not in kept for clause in dropped) or len(dropped) + len(kept) != len(recognized):
+        return None
+    return tuple(kept)
+
+
 def _expand_effect_plan(
     operations: tuple[str, ...],
     evidence: tuple[str, ...] = (),
@@ -4577,6 +4603,8 @@ def _rearm_in_context(
 _ANCHORED_SCHEDULE_OPERATIONS = frozenset({"notification.schedule", "reminder.create", "calendar.event.create"})
 # M89: the reads of what is installed on this PC (never the newest published release).
 _INSTALLED_SOFTWARE_READS = frozenset({"software.python.status", "software.python.package.status", "app.installed"})
+# M103: the reads a decider chooses for «¿qué estoy viendo en <reproductor>?» (the media session, a window state).
+_SHOWN_MEDIA_READS = frozenset({"media.status", "window.application.status", "window.active", "window.resolve"})
 
 
 def _clock_read_request(text: str, history: object) -> str | None:
@@ -4744,6 +4772,14 @@ def _context_decided_result(
         decided = semantic_decider.ContextDecision(
             request=decided.request, decision="action", operations=("calendar.event.list",), question="",
         )
+    if (
+        "window.resolve" in available_operations
+        and (decided.decision in {"talk", "clarify"} or set(decided.operations) <= _SHOWN_MEDIA_READS)
+        and application_shown_media_name(text, application_names) is not None
+    ):
+        # M103 (owner script t22 «¿Sabes qué peli estoy viendo en potplayer?» → media.status read Spotify): what a named
+        # player shows is its window's title; with no window of it open, the read says so.
+        decided = semantic_decider.ContextDecision(request=text, decision="action", operations=("window.resolve",), question="")
     clock_request = (
         _clock_read_request(text, history)
         if decided.decision in {"talk", "clarify"} and "system.time" in available_operations
@@ -5068,6 +5104,8 @@ def _prepare_turn_result(
 
     accepted_cancellation = (
         dialogue_state.accepted_alarm_cancellation(str(message.get("text", "")))
+        # M103 (owner script t25): «te dije que investigues algo» after a search is that search again, said whole.
+        or dialogue_state.insisted_search(str(message.get("text", "")))
         if dialogue_state is not None
         else None
     )
@@ -7679,15 +7717,20 @@ def _run_sidecar(
                         history,
                         (tool.name for tool in planner_catalog.tools),
                     )
-                expected_evidence = (
-                    (objective,)
-                    if len(expected_operations) == 1
-                    else _restore_evidence_surfaces(
-                        objective,
+                recognized_evidence = (
+                    _evidence_of_expected_operations(
+                        expected_operations,
+                        recognized_expected.operations,
                         recognized_expected.evidence,
                     )
                     if recognized_expected is not None
-                    and recognized_expected.operations == expected_operations
+                    else None
+                )
+                expected_evidence = (
+                    (objective,)
+                    if len(expected_operations) == 1
+                    else _restore_evidence_surfaces(objective, recognized_evidence)
+                    if recognized_evidence is not None
                     else ()
                 )
                 snap_split = window_snap_plan_split(
