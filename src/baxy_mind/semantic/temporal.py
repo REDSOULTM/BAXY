@@ -590,7 +590,8 @@ _CLOCK_ELSEWHERE = (
 # horario» is the zone itself, not a schedule.
 _CLOCK_NOT_A_READ = (
     r"\b(?:alarma|alarm|timer|temporizador|recuerda\w*|recorda\w*|remind|avisa\w*|(?<!huso\s)horario|schedule|"
-    r"a\s+que\s+hora|what\s+time\s+(?:does|do|did|will|should|shall|is\s+the|are\s+the)|"
+    # M114: «what time will it be in Tokyo» is the clock there; «what time will the game start» is an event's.
+    r"a\s+que\s+hora|what\s+time\s+(?:does|do|did|will(?!\s+it\s+be\b)|should|shall|is\s+the|are\s+the)|"
     # «la hora exacta de la puesta de sol en Badalona»: the hour of the sun there is the weather read's, not a clock.
     r"(?:puesta|salida|caida|entrada)\s+del?\s+sol|amanecer|atardecer|anochecer|ocaso|sunrise|sunset|dawn|dusk)\b"
 )
@@ -664,6 +665,8 @@ _NOT_A_PLACE = frozenset({
     "numeros", "numbers", "letras", "words", "voz", "voice", "ingles", "english", "espanol", "spanish",
     "local", "otra", "otro", "another", "other", "cualquier", "any", "reloj", "clock", "punto",
     "segundos", "seconds", "tiempo", "real", "vivo", "directo", "live", "lugar", "place",
+    # M114 (reserve es4309 «en cuántas horas será medianoche en londres»): «en cuántas horas» asks the amount.
+    "cuanto", "cuanta", "cuantos", "cuantas", "how",
 })
 _HERE_TARGET = (
     r"\b(?:aqui|aca|here|mi\s+(?:hora|zona(?:\s+horaria)?|huso(?:\s+horario)?)|my\s+(?:time(?:\s*zone)?|timezone)|"
@@ -934,6 +937,122 @@ MONTH_NUMBERS = {
     "november": 11, "diciembre": 12, "december": 12,
 }
 _MONTH = alternation(tuple(MONTH_NUMBERS))
+
+
+# M113 (DEV-F v4d F-w18-t3 «Remind me the day before the first one's due, nine in the morning» after «…the first one due
+# on 1 November.» → a reminder tomorrow at 9:00): days counted from a date said earlier in the conversation. The thing
+# named after «before/antes de» is found in the newest message that names it with one date; that date, less or plus the
+# days, is the day, and the clock is the one the person says.
+_DAY_COUNT = r"(?P<count>the|a|an|one|two|three|el|un|una|dos|tres|\d)"
+_DAY_OFFSET = re.compile(
+    rf"\b(?:{_DAY_COUNT}\s+)?(?P<unit>days?|dias?)\s+(?P<sign>before|after|antes|despues)(?:\s+(?P<of>of|de|del))?\s+"
+    r"(?P<what>[^,.;!?]+)"
+    r"|\b(?:el\s+)?dia\s+(?P<sign2>anterior|siguiente)\s+(?:a|al)\s+(?P<what2>[^,.;!?]+)"
+    r"|\b(?:la\s+)?vispera\s+(?:de|del)\s+(?P<what3>[^,.;!?]+)"
+)
+_DAY_COUNT_VALUES = {"two": 2, "dos": 2, "three": 3, "tres": 3}
+_ONE_DATE = re.compile(
+    rf"\b(?P<day>\d{{1,2}})(?:st|nd|rd|th)?\s+(?:de\s+|of\s+)?(?P<month>{_MONTH})\b(?:,?\s+(?:de\s+)?(?P<year>\d{{4}}))?"
+    rf"|\b(?P<month2>{_MONTH})\s+(?P<day2>\d{{1,2}})(?:st|nd|rd|th)?\b(?:,?\s+(?P<year2>\d{{4}}))?"
+)
+_POINTER = r"(?:eso|esto|that|it|this|then|ese\s+dia|that\s+day)"
+_SPANISH_MONTHS = (
+    "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre",
+    "diciembre",
+)
+_ENGLISH_MONTHS = (
+    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November",
+    "December",
+)
+
+
+def _one_date(folded_line: str, today: date) -> date | None:
+    """The one date a message gives (its day and month, and its year or the next time that day comes), or None."""
+
+    found = list(_ONE_DATE.finditer(folded_line))
+    if len({match.group(0) for match in found}) != 1:
+        return None
+    match = found[0]
+    day = int(match.group("day") or match.group("day2"))
+    month = MONTH_NUMBERS[match.group("month") or match.group("month2")]
+    year_said = match.group("year") or match.group("year2")
+    year = int(year_said) if year_said else today.year
+    try:
+        moment = date(year, month, day)
+        if not year_said and moment < today:
+            moment = date(year + 1, month, day)
+    except ValueError:
+        return None
+    return moment
+
+
+def anchored_day_request(
+    text: str, reply: str | None, earlier: Iterable[str] = (), *, today: date | None = None,
+) -> str | None:
+    """The reminder request «the day before <thing said earlier>, <clock>» makes («set a reminder on 31 October at
+    09:00 for the first one's due»), in the person's language; None unless the message counts days from a thing that
+    the newest message naming it dates once, and says one clock with its part of the day."""
+
+    said = " ".join(str(text or "").split())
+    folded = _fold(said)
+    found = _DAY_OFFSET.search(folded)
+    if found is None or len(folded) != len(said):
+        return None
+    clocks = [clock for clock in spoken_clocks(folded) if clock.resolved]
+    if len(clocks) != 1:
+        return None
+    group = next(name for name in ("what", "what2", "what3") if found.group(name))
+    what_start, what_end = found.span(group)
+    clock_start = folded.find(clocks[0].literal, what_start)
+    if 0 <= clock_start < what_end:
+        # «el día antes de eso a las 8»: the clock closes what the days are counted from.
+        what_end = clock_start
+    what = folded[what_start:what_end].strip()
+    title = said[what_start:what_end].strip()
+    if found.group("of") == "del":
+        title = f"el {title}"
+    sign_word = found.group("sign") or found.group("sign2") or "before"
+    sign = -1 if sign_word in {"before", "antes", "anterior"} else 1
+    count = found.group("count") or "one"
+    days = _DAY_COUNT_VALUES.get(count, int(count) if count.isdecimal() else 1)
+    if found.group("unit") and found.group("unit").endswith("s") and days == 1:
+        return None
+    today = today or date.today()
+    pointer = re.fullmatch(_POINTER, what) is not None
+    words = {word for word in re.findall(r"[a-z]{4,}", what) if word not in _NOT_A_POINTED_THING}
+    if not pointer and not words:
+        return None
+    lines = (reply, *earlier) if not pointer else (reply,)
+    anchor = next(
+        (
+            moment for line in lines
+            if line and (pointer or words & set(re.findall(r"[a-z]{4,}", _fold(str(line)))))
+            and (moment := _one_date(_fold(" ".join(str(line).split())), today)) is not None
+        ),
+        None,
+    )
+    if anchor is None:
+        return None
+    moment = anchor + timedelta(days=sign * days)
+    clock = f"{clocks[0].hour:02d}:{clocks[0].minute:02d}"
+    spanish = _has(folded, r"\b(?:recuerdame|recordame|recordar|avisame|ponme|pon|antes|despues|dia|vispera|de|el|la)\b")
+    for_what = "" if pointer else (f" para {title}" if spanish else f" for {title}")
+    alarm = _has(folded, r"\b(?:alarmas?|alarms?|despertador|despiertame|wake\s+me)\b")
+    try:
+        coming = date(today.year, moment.month, moment.day)
+        if coming < today:
+            coming = date(today.year + 1, moment.month, moment.day)
+    except ValueError:
+        coming = None
+    # The year is said only when that day's next coming is not the one counted («el 2 de marzo de 2028»).
+    year = "" if coming == moment else (f" de {moment.year}" if spanish else f" {moment.year}")
+    if spanish:
+        noun = "una alarma" if alarm else "un recordatorio"
+        return f"ponme {noun} el {moment.day} de {_SPANISH_MONTHS[moment.month - 1]}{year} a las {clock}{for_what}"
+    noun = "an alarm" if alarm else "a reminder"
+    return f"set {noun} on {moment.day} {_ENGLISH_MONTHS[moment.month - 1]}{year} at {clock}{for_what}"
+
+
 _ENGLISH_ORDINALS = (
     "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth",
     "eleventh", "twelfth", "thirteenth", "fourteenth", "fifteenth", "sixteenth", "seventeenth",
@@ -958,7 +1077,10 @@ _NOT_A_DAY_AFTER = (
 _SPOKEN_DATE = re.compile(
     rf"\b(?:(?P<day>{_DAY})\s+(?:(?:de|of)\s+)?(?P<month>{_MONTH})"
     rf"|(?P<month_first>{_MONTH})\s+(?:the\s+)?(?P<day_after>{_DAY})"
-    rf"|(?:el|on\s+the|the|dia)\s+(?P<day_alone>{_DAY})(?!\s+(?:(?:de|of)\s+)?{_MONTH}\b))"
+    rf"|(?:el|on\s+the|the|dia)\s+(?P<day_alone>{_DAY})(?!\s+(?:(?:de|of)\s+)?{_MONTH}\b)"
+    # M113 (DEV-F v4d F-w18-t3 «…for the first one's due»): «the first one», «the second time», «first thing» count
+    # things, not days.
+    r"(?!\s+(?:one|ones|time|times|thing|things|uno|una|vez)\b))"
     r"(?:,?\s+(?:(?:de|del|of)\s+)?(?P<year>\d{4})|\s+(?:(?:de|del|of)\s+)?(?P<this_year>este\s+ano|this\s+year))?"
     + _NOT_A_DAY_AFTER
 )
@@ -1908,6 +2030,48 @@ def answered_timer_length(text: str, reply: str | None, earlier: Iterable[str] =
     return f"pon un temporizador de {value} {'horas' if hours else 'minutos'}{what}".replace("de 1 horas", "de 1 hora")
 
 
+# M113 (DEV-F v4d F-w45-t4 «ugh wait, scratch the garlic knots one, I'll just watch them» after «Done, 12-minute timer
+# for the garlic knots.» → task.delete): the person takes back the notification BAXY just reported setting, named by what
+# it is for or by its noun; that is the latest one set.
+_TAKE_BACK = re.compile(
+    r"\b(?:cancel|cancell?ing|scratch|kill|drop|forget|remove|delete|nix|ditch|scrap|"
+    r"cancela|cancelala|cancelalo|cancelar|quita|quitala|quitalo|quitar|borra|borrala|borralo|borrar|elimina|eliminala|"
+    r"eliminalo|anula|anulala|anulalo|olvida|olvidate|saca|sacala|sacalo)\b"
+)
+_SET_REPORT_FILLER = frozenset({
+    "done", "listo", "lista", "minute", "minutes", "minuto", "minutos", "hour", "hours", "hora", "horas", "timer",
+    "alarm", "reminder", "temporizador", "alarma", "recordatorio", "the", "for", "your", "para", "con", "una", "uno",
+    "set", "puesto", "puesta", "ready", "okay", "countdown", "cuenta", "regresiva", "will", "ring", "sonara", "sonar",
+})
+
+
+def cancelled_notification_just_set(text: str, reply: str | None) -> str | None:
+    """The request that cancels the notification BAXY's last reply reports setting («cancel the last timer»), in the
+    reply's language; None unless the message takes something back and names that notification, by a word of what it
+    is for or by its own noun."""
+
+    answer = _fold(" ".join(str(reply or "").split()))
+    folded = _fold(str(text or ""))
+    noun = re.search(_NOTIFICATION_NOUN + r"|\bcount\s*down\b|\bcountdown\b", answer)
+    if noun is None or answer.endswith("?") or _TAKE_BACK.search(folded) is None:
+        return None
+    if re.search(r"\b(?:cancel\w*|borr\w+|elimin\w+|quit\w+|deleted|removed)\b", answer):
+        return None
+    reported = {word for word in re.findall(r"[a-z]{4,}", answer) if word not in _SET_REPORT_FILLER}
+    said = set(re.findall(r"[a-z]{4,}", folded))
+    named_noun = re.search(_NOTIFICATION_NOUN + r"|\bcount\s*down\b|\bcountdown\b", folded) is not None
+    if not (reported & said or named_noun):
+        return None
+    word = noun.group(0)
+    english = re.search(r"\b(?:timer|alarm|reminder|countdown|count\s*down|alert|notification)s?\b", word) is not None
+    if english:
+        kind = "alarm" if word.startswith("alarm") else "reminder" if word.startswith("reminder") else "timer"
+        return f"cancel the last {kind}"
+    if word.startswith("alarma"):
+        return "cancela la última alarma"
+    return "cancela el último recordatorio" if word.startswith("recordatorio") else "cancela el último temporizador"
+
+
 def accepted_notification_offer(text: str, reply: str | None) -> str | None:
     """The request a yes to BAXY's offer to set or move an alarm, a timer or a reminder makes («set the alarm on
     Saturday at 17:00»), in the offer's language; None unless the message is only a yes and the reply's last question
@@ -2128,6 +2292,37 @@ def notification_retiming(text: str) -> Retiming | None:
     if len(clocks) != 1:
         return None
     return Retiming(None, clocks[0].hour, clocks[0].minute, clocks[0].resolved)
+
+
+# M113 (DEV-F v4d F-w55-t2 «no, mejor media hora antes, una hora es mucho» after «mañana a las 10 tengo turno…,
+# recordámelo una hora antes»): the change gives a new count before or after the same moment the notification was
+# counted from; the notification moves by the difference (one hour before → half an hour before is 30 minutes later).
+_OFFSET_RETIMING = re.compile(
+    rf"^(?P<opening>(?:{_RETIMING_OPENING}\s*[,.;!]?\s+)*)(?P<verb>{_RETIMING_VERB}\s+)?(?:que\s+sea\s+|make\s+it\s+)?"
+    rf"{_OFFSET_AMOUNT}\s+{_OFFSET_UNIT}\s+(?P<sign>antes|before|despues|after|earlier|later)\b"
+    r"(?:\s*[,;]\s*.*|\s+(?:que|porque|because|since|so|then|pues|asi)\b.*)?[\s.!]*$"
+)
+_COUNTED_OFFSET = re.compile(
+    rf"\b{_OFFSET_AMOUNT}\s+{_OFFSET_UNIT}\s+(?P<sign>antes|before|despues|after|earlier|later)\b"
+)
+
+
+def offset_retiming(text: str, setting_request: str) -> int | None:
+    """The minutes a notification set «<duration> antes/después» of a moment moves when the message gives another
+    count from that moment; None unless the message opens with the change and says only the new count, and the request
+    that set it said exactly one count."""
+
+    folded = _same_length_fold(" ".join(str(text or "").split()))
+    found = _OFFSET_RETIMING.match(folded)
+    counted = list(_COUNTED_OFFSET.finditer(_fold(str(setting_request or ""))))
+    if found is None or not (found.group("opening") or found.group("verb")) or len(counted) != 1:
+        return None
+    new, old = _offset_minutes(found), _offset_minutes(counted[0])
+    if new is None or old is None:
+        return None
+    before = {"antes", "before", "earlier"}
+    shift = (-new if found.group("sign") in before else new) - (-old if counted[0].group("sign") in before else old)
+    return shift or None
 
 
 def retimed_local_moment(retiming: Retiming, old: datetime, now: datetime | None = None) -> datetime | None:

@@ -4774,6 +4774,14 @@ def _context_decided_result(
     offered_read = resolve_explicit_effects(offered, available_operations) if offered is not None else None
     if offered_read is not None and not set(offered_read.operations) <= _ANCHORED_SCHEDULE_OPERATIONS:
         offered_read = None
+    taken_back = (
+        semantic_temporal.cancelled_notification_just_set(text, context.last_reply) if offered_read is None else None
+    )
+    taken_back_read = resolve_explicit_effects(taken_back, available_operations) if taken_back is not None else None
+    if taken_back_read is not None and taken_back_read.operations == ("notification.cancel.latest",):
+        # M113 (DEV-F v4d F-w45-t4 «scratch the garlic knots one» after «Done, 12-minute timer for the garlic knots.» →
+        # task.delete): the notification BAXY just reported setting, taken back by what it is for, is the latest one.
+        offered, offered_read = taken_back, taken_back_read
     read_before_decider = (
         closing is not None
         or offered_read is not None
@@ -4797,9 +4805,18 @@ def _context_decided_result(
                                                    question="")
     else:
         decided = llm.decide_in_context(
-            text, history, ((tool.name, tool.description) for tool in planner_catalog.tools),
-            signatures={tool.name: semantic_decider.argument_signature(tool.schema) for tool in planner_catalog.tools},
+            text, history, ((tool.name, tool.description) for tool in planner_catalog.decider_tools),
+            signatures={
+                tool.name: semantic_decider.argument_signature(tool.schema) for tool in planner_catalog.decider_tools
+            },
         )
+        memory = next((op for op in decided.operations if op.startswith("memory.")), None)
+        if memory is not None:
+            # M114: memory is the App's own path (an explicit request, its confirmation); the mind never plans it with
+            # other steps, so the decider's memory choice travels alone and the App answers it.
+            decided = semantic_decider.ContextDecision(
+                decided.request, "action", (memory,), decided.question, decided.arguments,
+            )
     # M64 (v3f-final F-w14-t3): which fields the decider filled, never their values, so a turn whose arguments went
     # wrong can be told apart from one whose decider gave none.
     argument_fields = [name for name, _ in decided.arguments]
@@ -4956,7 +4973,11 @@ def _context_decided_result(
                 decided.request, "action", tuple(restated.operations), decided.question, decided.arguments,
             )
     # M110: the thing named («la junta», «kick-off») may have its moment further back in the conversation.
-    anchored = semantic_temporal.anchored_offset_request(text, context.last_reply, said_before)
+    anchored = semantic_temporal.anchored_offset_request(
+        text, context.last_reply, said_before,
+        # M113 (DEV-F v4d F-w18-t3 «Remind me the day before the first one's due, nine in the morning»): days counted
+        # from a date said earlier in the conversation.
+    ) or semantic_temporal.anchored_day_request(text, context.last_reply, said_before)
     anchored_read = resolve_explicit_effects(anchored, available_operations) if anchored is not None else None
     if anchored_read is not None and set(anchored_read.operations) <= _ANCHORED_SCHEDULE_OPERATIONS:
         # M84 (DEV-D v3o D-w08-t3 «ponme recordatorio una ora antes d ese partido» → «¿Cuándo es ese partido?», D-w02-t3
@@ -5783,6 +5804,17 @@ def _decide_turn_result(
         # M83 (DEV-D v3o D-p19-t3 «What's the genre?» after the cast of «After the Wedding»): read alone it is a
         # definition, answered «I don't know» and looked up as «genre». It asks an attribute of what the conversation
         # just named, so the contextual decider, which reads the conversation, decides it.
+        stable_no_effect_decision = None
+    if (
+        literal_recall_decision is None
+        and stable_no_effect_decision is not None
+        and "system.time" in available_operations
+        and _clock_read_request(objective, history) is not None
+    ):
+        # M114 (reserve es4309 «en cuántas horas será medianoche en londres inglaterra», DEV-D s025 «si pasan cuarenta
+        # minutos, ¿qué hora será?» → closed as a future state, «No lo he calculado…»): a clock the readers prove —
+        # another place's, or this one later on — is a read of this PC's clock (M85), never a hypothesis to refuse;
+        # the contextual decider decides it, and its talk becomes that read.
         stable_no_effect_decision = None
     stable_no_effect_is_closed = (
         explicit_non_action

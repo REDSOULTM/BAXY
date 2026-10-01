@@ -361,6 +361,7 @@ class PlannerCatalog:
 
     def __init__(self, tools: Iterable[dict[str, Any]], encoder: Encoder | None = None):
         parsed: list[PlannerTool] = []
+        memory: list[PlannerTool] = []
         for raw in tools:
             function = raw.get("function") if isinstance(raw, dict) else None
             if not isinstance(function, dict):
@@ -373,14 +374,17 @@ class PlannerCatalog:
             schema = function.get("parameters")
             if (
                 not name
-                or name.startswith("memory.")
                 or name == "app.status"
                 or risk == "forbidden_destructive"
                 or not isinstance(schema, dict)
             ):
                 continue
-            parsed.append(PlannerTool(name, description, risk, schema))
+            (memory if name.startswith("memory.") else parsed).append(PlannerTool(name, description, risk, schema))
         parsed.sort(key=lambda item: item.name)
+        # M114: the contextual decider reads the catalog its LoRA was trained and measured on, memory included (the
+        # app's prompt without the eleven memory lines was not the prompt of the isolated 98 %); memory is still never
+        # planned, shortlisted or grounded here: a memory choice goes to the App's own memory path.
+        self._decider_tools = tuple(sorted((*parsed, *memory), key=lambda item: item.name))
         if not parsed:
             raise PlannerContractError("el catálogo planificable está vacío")
         if len({tool.name for tool in parsed}) != len(parsed):
@@ -408,6 +412,12 @@ class PlannerCatalog:
     @property
     def tools(self) -> tuple[PlannerTool, ...]:
         return self._tools
+
+    @property
+    def decider_tools(self) -> tuple[PlannerTool, ...]:
+        """What the contextual decider reads: the planning catalog plus ``memory.*`` (M114), never planned here."""
+
+        return self._decider_tools
 
     @property
     def ranks_semantically(self) -> bool:

@@ -24,7 +24,7 @@ from .files import _pdf_summary_request, _file_trash_request, process_report_fil
 from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
 from .system import _weather_read_intent, physical_world_request, weather_place_known_only_through_someone
-from .notes import puts_into_the_agenda, takes_off_the_agenda, list_entry_request, list_read_request, list_removal_request, list_creation_without_items, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder, said_repetition, _CALENDAR_PLACE, reminder_inventory_question, AGENDA_NOT_A_READ, happening_in_a_span_of_hours
+from .notes import puts_into_the_agenda, takes_off_the_agenda, list_entries, list_entry_said, list_entry_request, list_read_request, list_removal_request, list_creation_without_items, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder, said_repetition, _CALENDAR_PLACE, reminder_inventory_question, AGENDA_NOT_A_READ, happening_in_a_span_of_hours
 from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, message_left_written_request, _latest_email_domain, _notification_listing_request, inbox_read_request, social_network_request, contact_book_request
 from .ui import _clipboard_copy_domain, _clipboard_paste_domain, calculator_expression_request, literal_clipboard_write_text, _review_input_and_capture_effects, _VISIBLE_CLICK_APP_CONTEXT, _gerund_click_label, _visible_click_label, _click_in_application, _visible_click_intent
 from .apps import self_close_request, _APPLICATION_TRAILING_REQUEST, _application_target_forms, _CLOSE_TRAILING_COURTESY, _close_target_forms, deictic_close_request, _bounded_application_literal, _authenticated_application_list, _OPEN_STATE_CONDITION, close_all_request, _has_multiple_installed_entities, _append_domain_actions, _open_application_spans, _CATALOG_INSTALL_VERB, _opened_applications
@@ -11252,6 +11252,7 @@ def _resolve_explicit_effects_single(
         head,
         context_browser=context_browser,
         web_search_requested=web_search_requested,
+        application_names=application_names,
     )
 
     _review_media_and_email_effects(
@@ -12624,9 +12625,14 @@ def _resolve_clause_effects(
             # «pon fortnite», «pon obsidian»: an installed game or catalog
             # application said alone after «pon» is started, never searched as music.
             return resolve_explicit_effects(launch, available, application_names, game_catalog)
-    if "task.create" in available and list_entry_request(text) is not None:
-        # «añadir el brócoli a mi lista de la compra»: the entry is a task on that list.
-        return EffectIntent(("task.create",), (text,))
+    entries = list_entries(text) if "task.create" in available else None
+    if entries is not None:
+        # «añadir el brócoli a mi lista de la compra»: the entry is a task on that list; M113: each entry enumerated
+        # is a task of its own («pimientos del piquillo, aceite y dos barras de pan» are three).
+        items, listed = entries
+        if len(items) == 1:
+            return EffectIntent(("task.create",), (text,))
+        return EffectIntent(("task.create",) * len(items), tuple(list_entry_said(item, listed) for item in items))
     removal = list_removal_request(text)
     if removal is not None and removal.entry is not None and {"task.resolve.exact", "task.delete"} <= available:
         # «take bathroom painting off the list»: the entry's task is found by its title and sent to the trash

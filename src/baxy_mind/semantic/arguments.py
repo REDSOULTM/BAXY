@@ -1329,9 +1329,14 @@ def _explicit_arguments_from_evidence(
         # M111 (DEV-F v4d F-s023 «put on Wuthering Heights by Kate Bush» → «What is the title of the song…?»): the
         # song named is the title Spotify's exact selection looks for, without the artist after «by»/«de»; a version
         # of it («la en vivo», «the acoustic one») is not a title and stays with the extraction.
-        if re.search(_SONG_VERSION, folded):
-            return None
         quoted = re.search(r"[«“\"](?P<title>[^»”\"]{1,200})[»”\"]", evidence)
+        if re.search(_SONG_VERSION, folded):
+            # M113 (DEV-F v4d w36-t2 «no po esa no, la otra, la de estudio» after the live one, restated «Pon la versión
+            # de estudio de «Llueve sobre la ciudad»…» → Spotify looked for «Estudio»): the studio or album version is
+            # the song as recorded, its own title; any other version stays with the extraction.
+            if quoted is not None and re.search(_ALBUM_VERSION, folded) and not re.search(_OTHER_VERSION, folded):
+                return {"provider": "spotify", "title": quoted.group("title").strip()}
+            return None
         if quoted is not None:
             return {"provider": "spotify", "title": quoted.group("title").strip()}
         named = _explicit_live_media_query_arguments(evidence)
@@ -2524,6 +2529,10 @@ _STREAMING_SERVICE_SAID = re.compile(
 _SONG_VERSION = (
     r"\b(?:version|versiones|en\s+vivo|live|acustic[ao]|acoustic|de\s+estudio|studio|remix|remasterizad[ao]|"
     r"remastered|unplugged|cover|karaoke|instrumental)\b"
+)
+_ALBUM_VERSION = r"\b(?:de\s+estudio|studio|del\s+(?:disco|album|cd)|(?:album|record)\s+version|original)\b"
+_OTHER_VERSION = (
+    r"\b(?:en\s+vivo|live|acustic[ao]|acoustic|remix|remasterizad[ao]|remastered|unplugged|cover|karaoke|instrumental)\b"
 )
 _ARTIST_AFTER_TITLE = re.compile(
     r"\s+(?:by|de|del|of)\s+(?:(?:los|las|la|el|the)\s+)?[A-ZÁÉÍÓÚÑ][\w'’.&-]*"

@@ -424,11 +424,14 @@ def test_what_is_set_after_a_timer_and_a_reminder_is_read_back_in_context():
     ],
 )
 def test_an_entry_said_after_the_list_is_the_same_entry(text, entry, listed):
-    from baxy_mind.semantic.notes import list_entry_request
+    from baxy_mind.semantic.notes import list_entries, list_entry_request
     from baxy_mind.semantic.reading import read
 
     assert list_entry_request(text) == (entry, listed)
-    assert read(text, available_operations=OPERATIONS).effects.operations == ("task.create",)
+    # M113: each entry enumerated is a task of its own.
+    assert read(text, available_operations=OPERATIONS).effects.operations == (
+        ("task.create",) * len(list_entries(text)[0])
+    )
 
 
 @pytest.mark.parametrize(
