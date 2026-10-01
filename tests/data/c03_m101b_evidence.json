@@ -1,0 +1,209 @@
+{
+ "schema": "baxy.c03-m101b-evidence.v1",
+ "run": "%LOCALAPPDATA%/BAXY/comprension-2026-09-25/window/v4a-devD",
+ "code": "e4c7b368",
+ "set": "DEV-D (development)",
+ "turns": [
+  {
+   "id": "D-p16-t1",
+   "text": "Oh, I meant to search for valet parking at the Kenzi Rose Garden.",
+   "terminal": "composition_failed",
+   "kind": "action",
+   "operation": "web.search",
+   "decision_path": "context_decider",
+   "reply": "",
+   "error": "composition_failed: reversed_result;retry_exhausted",
+   "shell_stages": [
+    "submit.received:None",
+    "bridge.crossed:None",
+    "queue.wait.end:None",
+    "mind.request.start:voice.cancel.id.958.budget_ms.3000",
+    "visible.indication:understanding",
+    "decision.start:None",
+    "mind.request.start:turn.decide.id.959.budget_ms.22000",
+    "visible.indication:understanding",
+    "decision.ready:action",
+    "arguments.start:None",
+    "mind.request.start:arguments.id.960.budget_ms.20000",
+    "arguments.end:None",
+    "visible.indication:acting",
+    "core.call.start:web.search",
+    "mind.request.start:message.compose.id.961.budget_ms.5000",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "core.call.end:None",
+    "compose.start:status",
+    "mind.request.start:message.compose.id.962.budget_ms.10000",
+    "compose.end:None",
+    "visible.indication:working",
+    "visible.indication:working",
+    "response.final:None",
+    "response.final:None",
+    "visible.text:None",
+    "mind.request.start:voice.speak.id.963.budget_ms.5000"
+   ],
+   "turn_audit": [
+    {
+     "decider_timings": {
+      "predicted_ms": 920.26,
+      "predicted_n": 52,
+      "prompt_ms": 278.735,
+      "prompt_n": 225
+     },
+     "decision_path": "context_decider",
+     "final": {
+      "effect_operations": [
+       "web.search"
+      ],
+      "intent_operations": [
+       "web.search"
+      ],
+      "kind": "action"
+     },
+     "phase": "final",
+     "raw_decision": {
+      "argument_fields": [
+       "query"
+      ],
+      "effect_operations": [
+       "web.search"
+      ],
+      "mode": "action",
+      "request": "Search for valet parking at the Kenzi Rose Garden."
+     },
+     "request_id": "959",
+     "schema": "baxy.mind-turn-audit.v1",
+     "stages": []
+    }
+   ],
+   "compose": [
+    {
+     "stage": "first",
+     "intent": "status",
+     "reason": "search_report_unsourced_claim",
+     "published": false,
+     "draft": "I could not find valet parking at the Kenzi Rose Garden. The nearby parking spots are at Avenue El Qadissia (400 meters), Rue du Temple (500 meters), and Boulevard Mohammed VI (810 meters).",
+     "situation": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"valet parking at the Kenzi Rose Garden\",\"count\":5,\"results\":[{\"title\":\"parking\",\"url\":\"https://www.openstreetmap.org/way/325334606\",\"snippet\":\"Avenue El Qadissia, L'Hivernage, Guéliz ⴳⵉⵍⵉⵣ گليز, Arrondissement de Gueliz مقاطعة كليز, Marrakesh, Pachalik de Marrakech, Marrakesh Prefecture, Marrakech-Safi, 40020, Morocco\",\"distanceMeters\":400},{\"title\":\"parking\",\"url\":\"https://www.openstreetmap.org/way/1247217232\",\"snippet\":\"Rue du Temple, El Hara, Arrondissement de …"
+    },
+    {
+     "stage": "retry",
+     "intent": "status",
+     "reason": "",
+     "published": true,
+     "draft": "No results mention valet parking for the Kenzi Rose Garden.",
+     "situation": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"valet parking at the Kenzi Rose Garden\",\"count\":5,\"results\":[{\"title\":\"parking\",\"url\":\"https://www.openstreetmap.org/way/325334606\",\"snippet\":\"Avenue El Qadissia, L'Hivernage, Guéliz ⴳⵉⵍⵉⵣ گليز, Arrondissement de Gueliz مقاطعة كليز, Marrakesh, Pachalik de Marrakech, Marrakesh Prefecture, Marrakech-Safi, 40020, Morocco\",\"distanceMeters\":400},{\"title\":\"parking\",\"url\":\"https://www.openstreetmap.org/way/1247217232\",\"snippet\":\"Rue du Temple, El Hara, Arrondissement de …"
+    }
+   ]
+  },
+  {
+   "id": "D-w08-t3",
+   "text": "ponme recordatorio una ora antes d ese partido",
+   "terminal": "composition_failed",
+   "kind": "action",
+   "operation": "reminder.create",
+   "decision_path": "context_decider",
+   "reply": "",
+   "error": "composition_failed: no_response;retry_exhausted",
+   "shell_stages": [
+    "submit.received:None",
+    "bridge.crossed:None",
+    "queue.wait.end:None",
+    "mind.request.start:voice.cancel.id.1480.budget_ms.3000",
+    "visible.indication:understanding",
+    "decision.start:None",
+    "mind.request.start:turn.decide.id.1481.budget_ms.22000",
+    "visible.indication:understanding",
+    "decision.ready:action",
+    "arguments.start:None",
+    "mind.request.start:arguments.id.1482.budget_ms.20000",
+    "arguments.end:None",
+    "visible.indication:acting",
+    "core.call.start:reminder.create",
+    "core.call.end:None",
+    "compose.start:status",
+    "mind.request.start:message.compose.id.1483.budget_ms.5000",
+    "compose.end:None",
+    "visible.indication:working",
+    "mind.request.start:message.compose.id.1484.budget_ms.5000",
+    "response.final:None",
+    "response.final:None",
+    "visible.text:None",
+    "compose.start:welcome",
+    "mind.request.start:voice.speak.id.1485.budget_ms.5000",
+    "mind.request.start:message.compose.id.1486.budget_ms.10000",
+    "compose.end:None",
+    "visible.text:None",
+    "mind.request.start:voice.speak.id.1487.budget_ms.5000"
+   ],
+   "turn_audit": [
+    {
+     "decider_timings": {
+      "predicted_ms": 2113.528,
+      "predicted_n": 111,
+      "prompt_ms": 301.889,
+      "prompt_n": 247
+     },
+     "decision_path": "context_decider",
+     "final": {
+      "effect_operations": [
+       "reminder.create"
+      ],
+      "intent_operations": [
+       "reminder.create"
+      ],
+      "kind": "action"
+     },
+     "phase": "final",
+     "raw_decision": {
+      "argument_fields": [
+       "dueUtc",
+       "kind",
+       "title"
+      ],
+      "decider_request": "Ponme un recordatorio el sábado 3 de octubre de 2026 a las 7:00 pm para el partido de la Selección Mexicana.",
+      "effect_operations": [
+       "reminder.create"
+      ],
+      "fidelity": {
+       "introduced": [
+        "a las 7:00 pm"
+       ],
+       "kind": "person"
+      },
+      "mode": "action",
+      "request": "ponme recordatorio el sábado 3 de octubre de 2026 a las 19:00 para el partido"
+     },
+     "request_id": "1481",
+     "schema": "baxy.mind-turn-audit.v1",
+     "stages": []
+    }
+   ],
+   "compose": [
+    {
+     "stage": "first",
+     "intent": "status",
+     "reason": "extra_claim",
+     "published": false,
+     "draft": "He creado el recordatorio para el partido del sábado 3 de octubre de 2026 a las 19:00.",
+     "situation": "{\"kind\":\"operation\",\"operation\":\"reminder.create\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true}"
+    },
+    {
+     "stage": "retry",
+     "intent": "status",
+     "reason": "extra_claim",
+     "published": false,
+     "draft": "Te he programado un recordatorio para el partido del sábado 3 de octubre de 2026 a las 19:00.",
+     "situation": "{\"kind\":\"operation\",\"operation\":\"reminder.create\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true}"
+    },
+    {
+     "stage": "third",
+     "intent": "status",
+     "reason": "extra_claim",
+     "published": false,
+     "draft": "He programado un recordatorio para el sábado 3 de octubre de 2026 a las 19:00 para el partido.",
+     "situation": "{\"kind\":\"operation\",\"operation\":\"reminder.create\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true}"
+    }
+   ]
+  }
+ ]
+}

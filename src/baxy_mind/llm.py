@@ -8141,6 +8141,22 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
                     if english
                     else f"No pude confirmar el resultado con «{target}»."
                 )
+        reminder = reason if isinstance(reason, dict) and reason.get("operation") else situation
+        if str(reminder.get("operation") or operation) == "reminder.create":
+            # M101b (DEV-D v4a D-w08-t3): a reminder that was not created is said with the cause its code carries.
+            if "verification_failed" in codes or reminder.get("effectUncertain") is True:
+                return (
+                    "I couldn't confirm that the reminder was created."
+                    if english
+                    else "No pude confirmar que el recordatorio quedara creado."
+                )
+            if "invalid_reminder" in codes:
+                return (
+                    "I couldn't create the reminder: the time given has already passed or isn't valid."
+                    if english
+                    else "No pude crear el recordatorio: la hora indicada ya pasó o no es válida."
+                )
+            return "I couldn't create the reminder." if english else "No pude crear el recordatorio."
         return ""
     if operation == "system.time" and isinstance(payload.get("clockAt"), str):
         # M85 (DEV-D v3o D-w02-t2): another place's clock, or a said time converted between here and there, is told
@@ -8190,6 +8206,14 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
             return f"It will be {clock}." if english else f"Serán las {clock}."
         return f"It's {clock}." if english else f"Son las {clock}."
     observed = situation.get("observed") if isinstance(situation.get("observed"), dict) else {}
+    if operation == "reminder.create":
+        # M101b (DEV-D v4a D-w08-t3 «ponme recordatorio una ora antes d ese partido»): the verified reminder carried no
+        # observed record and the three drafts died (extra_claim) on a date the facts did not hold; the final says what
+        # was verified — the reminder created, with its title when the record was read — and no time it did not read.
+        title = str(observed.get("title") or "").strip()
+        if title and len(title) <= 120 and "«" not in title and "»" not in title:
+            return f"I created the reminder «{title}»." if english else f"Creé el recordatorio «{title}»."
+        return "I created the reminder." if english else "Creé el recordatorio."
     if operation == "audio.microphone.mute" and type(observed.get("muted")) is bool:
         # M101 (owner script v3z2): a verified microphone change is told with the state read after it.
         if observed["muted"]:
@@ -14574,6 +14598,9 @@ _NON_ANSWER_CAUSES = frozenset({
 _TITLED_ITEM_WRITES = frozenset({
     "note.create", "note.update", "note.trash", "note.restore",
     "task.create", "task.update", "task.delete", "task.complete", "task.reopen", "task.restore",
+    # M101b (DEV-D v4a D-w08-t3): a reminder is named by its title too («Creé el recordatorio «Partido»»); the
+    # rule wanted the word «título» from it, so no report of a read reminder record could pass.
+    "reminder.create",
 })
 # A write told as not done (the reply's wording, folded): «I did not remove», «no añadí», «no se ha borrado».
 _NEGATED_OWN_WRITE = re.compile(
