@@ -119,12 +119,35 @@ SOUND_SWITCH_OFF = (
 # 2026-09-23) «silencio altavoces», «altavoces en silencio»: the silence with the speakers or the sound it falls on,
 # still with no verb.
 _SILENCED_OBJECT = rf"(?:(?:los|las|el|la|the|mis|my)\s+)?(?:{SPEAKER_NOUN}|sonidos?|sounds?|audio)"
+# M97 (reserve, MASSIVE audio_volume_mute): a silence order whose only complement is a span of time («silencia por
+# dos horas», «quédate callado un rato», «be quiet for another hour», «mudo por una hora») is the mute too, said to
+# the PC. BAXY has no timer that gives the sound back; the reply says so (the owner's rule for a timed mute). «Cállate»
+# with no span is not here: said alone to BAXY it may be about his voice.
+_SPAN_OF_TIME = (
+    r"(?:(?:por|durante|for|during)\s+)?"
+    r"(?:(?:otr[oa]s?|un[oa]?|unos|unas|medi[oa]|an?|another|the\s+next|next|(?:los|las)\s+proxim[oa]s|par\s+de|"
+    r"couple\s+of|few|\d+|dos|tres|cuatro|cinco|diez|quince|veinte|treinta|two|three|four|five|ten|fifteen|twenty|"
+    r"thirty)\s+)*"
+    r"(?:horas?|minutos?|mins?|ratos?|ratito|segundos?|hours?|minutes?|while|bit)"
+)
+_SILENCE_ORDER = (
+    r"(?:silencia(?:lo|la|me)?|silenciar|mutea(?:lo|me)?|mutear|mute|callate|callese|callense|"
+    r"quedate\s+callad[oa]|be\s+quiet|keep\s+quiet|stay\s+quiet|quiet\s+down|shut\s+up|silence|silencio|mudo|"
+    r"(?:pon(?:lo|me)?|deja(?:lo)?|put|go)\s+(?:(?:en|on|in)\s+)?(?:silencio|mudo|mute))"
+)
+TIMED_SILENCE = (
+    rf"(?:(?:por\s+favor|porfa|please)\s*,?\s+)?{_SILENCE_ORDER}"
+    r"(?:\s+(?:todo|everything|it|el\s+sonido|el\s+audio|the\s+sound|the\s+audio))?"
+    rf"\s+{_SPAN_OF_TIME}(?:\s+(?:mas|more))?(?:\s*,?\s+(?:por\s+favor|porfa|please))?"
+)
 BARE_SILENCE = (
     r"^[¿?¡!\s]*(?:"
     rf"(?:silencio|mudo|silence|quiet)(?:\s+(?:(?:en|a|on|for)\s+)?{_SILENCED_OBJECT})?|"
-    rf"{_SILENCED_OBJECT}\s+(?:en\s+)?(?:silencio|mudo|mute)"
+    rf"{_SILENCED_OBJECT}\s+(?:en\s+)?(?:silencio|mudo|mute)|"
+    rf"{TIMED_SILENCE}"
     r")(?:\s+(?:total|por\s+favor|porfa|please|ya|ahora))?[\s.!?]*$"
 )
+
 
 # ---------------------------------------------------------------- stopping a noise (audio.mute, muted = true)
 # Tanda 2026-09-23 «¡detén este horrible ruido!»: a stop order whose object is a noise asks for silence. It was

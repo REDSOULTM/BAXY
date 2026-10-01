@@ -1388,7 +1388,15 @@ def agenda_window(folded: str, now: datetime) -> tuple[datetime, datetime] | Non
     """The window an agenda read covers: the one it says, or the next ``UPCOMING_DAYS`` from ``now``
     when it says none («qué tengo por venir»); None when it says more than one."""
 
+    # M97 (reserve «what is happening after one and before three p.m.»): a span said by its two edges is the span
+    # from one to the other.
+    folded = re.sub(r"\bdespues\s+de\s+(.{1,40}?)\s+y\s+antes\s+de\s+", r"de \1 a ", folded)
+    folded = re.sub(r"\bafter\s+(.{1,40}?)\s+and\s+before\s+", r"from \1 to ", folded)
     windows = _said_windows(_hyphens_as_spaces(folded), now)
+    if not windows and spoken_clock(folded) is not None:
+        # M97 (reserve «estoy libre a las cuatro de la tarde»): an hour with no day said is today's.
+        midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        return midnight, midnight + timedelta(days=1)
     if not windows:
         return now, now + timedelta(days=UPCOMING_DAYS)
     return windows[0] if len(windows) == 1 else None

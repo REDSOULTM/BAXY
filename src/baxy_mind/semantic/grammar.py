@@ -1058,6 +1058,10 @@ def _system_status_domain(text: str) -> bool:
         return False
     if _has(text, _CONNECTED_INVENTORY):
         return False
+    if _has(text, r"^(?:que|cuales|what|which)\s+(?:listas?|lists?|notas?|notes?)\b"):
+        # M97 (reserve «what lists are in my notebook»): the person's lists or notes asked for, kept on the machine,
+        # are not its status.
+        return False
     if _has(
         text,
         r"\b(?:computador|computer|pc|ram|cpu)\b",

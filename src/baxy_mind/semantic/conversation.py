@@ -2433,6 +2433,21 @@ _MAKING_REQUEST = re.compile(
 )
 
 
+# M97 (DEV-D v3x D-p29-t3 «I would like to watch this movie with English subtitles»): what the person says they want to
+# do themselves — watch, listen, read, eat, drink —, not an act asked of BAXY.
+_WANTS_TO_CONSUME = re.compile(
+    r"\b(?:i\s+(?:would\s+like|want|wanna|d\s+like|need)\s+to|i'?d\s+like\s+to|let'?s|i'?m\s+going\s+to|"
+    r"quiero|quisiera|me\s+gustaria|vamos\s+a|voy\s+a|necesito)\s+"
+    r"(?:watch|listen|see|hear|eat|drink|read|ver|mirar|escuchar|oir|comer|beber|tomar|leer)\b"
+)
+
+
+def wants_to_consume(request: object) -> bool:
+    """The person says they want to watch, listen to, read, eat or drink something themselves (see above)."""
+
+    return _WANTS_TO_CONSUME.search(_reading_fold(str(request or ""))) is not None
+
+
 def asks_to_make(request: object) -> bool:
     """The request asks to make, cook or prepare something («hazme una tortilla», «bake a cake»)."""
 
@@ -2444,12 +2459,21 @@ def asks_to_make(request: object) -> bool:
 _REQUEST_INFINITIVE = re.compile(r"\b([a-zñ]{3,}?)(?:ar|er|ir)(?:me|te|se|le|lo|la|nos|les|los|las)?\b")
 
 
-def requested_infinitive_stems(request: object) -> tuple[str, ...]:
-    """The stems of the Spanish infinitives of the request («recomprar» → «recompr»), five letters or more."""
+# M97 (reserve es2205 «silencia por dos horas» → «Eso no lo hago: no silento las horas.»): the verb asked as an order
+# («silencia», «recuérdame», «cancélalo») is the verb a limit denies too; its stem is the word without its vowel and
+# clitics. A noun that ends the same way («la agenda») only adds a stem whose first persons are checked as well.
+_REQUEST_IMPERATIVE = re.compile(r"\b([a-zñ]{5,}?)[ae](?:me|te|se|le|lo|la|nos|les|los|las){0,2}\b")
 
+
+def requested_infinitive_stems(request: object) -> tuple[str, ...]:
+    """The stems of the Spanish infinitives and orders of the request («recomprar» → «recompr», «silencia» →
+    «silenci»), five letters or more."""
+
+    folded = _reading_fold(str(request or ""))
     stems: list[str] = []
-    for found in _REQUEST_INFINITIVE.finditer(_reading_fold(str(request or ""))):
-        stem = found.group(1)
-        if len(stem) >= 5 and stem not in stems:
-            stems.append(stem)
+    for pattern in (_REQUEST_INFINITIVE, _REQUEST_IMPERATIVE):
+        for found in pattern.finditer(folded):
+            stem = found.group(1)
+            if len(stem) >= 5 and stem not in stems:
+                stems.append(stem)
     return tuple(stems)

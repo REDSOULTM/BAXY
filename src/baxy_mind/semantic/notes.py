@@ -134,6 +134,37 @@ def _window_tail(tail: str) -> bool:
     return not tail or is_window_phrase(tail)
 
 
+# M97 (reserve, MASSIVE calendar_query): «what is happening» bounded by two hours of a day («de dos a cuatro de la
+# tarde», «between one and three», «after one and before three p.m.») asks what the person has then; the world's news
+# has no hours. Folded.
+_SPAN_CLOCK = (
+    r"(?:las?\s+)?(?:\d{1,2}(?::\d{2})?|una|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|"
+    r"one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|noon|mediodia|midday)\b"
+)
+_HAPPENING_HEAD = re.compile(
+    r"^(?:que|what)\s*(?:'?s|\s+is|\s+es)?\s*(?:esta\s+pasando|pasa|hay|ocurre|sucede|tengo|happening|happens|"
+    r"going\s+on|is\s+happening|is\s+going\s+on)\b"
+)
+_SPAN_OF_HOURS = re.compile(
+    rf"\b(?:de|desde|from)\s+{_SPAN_CLOCK}.{{0,40}}?\b(?:a|hasta|to|till|until)\s+{_SPAN_CLOCK}|"
+    rf"\b(?:entre|between)\s+{_SPAN_CLOCK}.{{0,40}}?\b(?:y|and)\s+{_SPAN_CLOCK}|"
+    rf"\b(?:despues\s+de|after)\s+{_SPAN_CLOCK}.{{0,40}}?\b(?:antes\s+de|before)\s+{_SPAN_CLOCK}"
+)
+
+
+# M97: an hour said as when («a las cuatro de la tarde», «hoy a las cinco», «at four»), the whole tail.
+_AT_A_CLOCK = re.compile(
+    r"^(?:(?:hoy|manana|today|tomorrow|esta\s+tarde|this\s+afternoon)\s+)?(?:a\s+las?|at|around|sobre\s+las?)\s+"
+    r"[a-z0-9:.\s]{1,40}$"
+)
+
+
+def happening_in_a_span_of_hours(folded: str) -> bool:
+    """«qué pasa hoy de dos a cuatro de la tarde», «what is happening after one and before three p.m.» (see above)."""
+
+    return _HAPPENING_HEAD.match(folded) is not None and _SPAN_OF_HOURS.search(folded) is not None
+
+
 def agenda_read_request(text: str) -> bool:
     """A question about the person's own agenda: what they have (planned, to do, coming up), their
     schedule or plans for a window, when their own event is, their next events. Not a change to the
@@ -200,6 +231,10 @@ def agenda_read_request(text: str) -> bool:
         # «am I busy this weekend», «estoy ocupado este fin de semana»: whether the agenda has something.
         # Said without a window, only the English question asks it («estoy ocupado» is a statement).
         tail = busy.group("tail")
+        if _AT_A_CLOCK.match(tail.strip()) is not None and spoken_clock(tail) is not None:
+            # M97 (reserve «estoy libre a las cuatro de la tarde», question marks dropped): free at an hour is the
+            # agenda read at that hour.
+            return True
         return _window_tail(tail) and bool(tail.strip() or folded.startswith(("am ", "are ", "will ")))
     somewhere = re.fullmatch(
         r"(?:(?:yo\s+)?(?:tengo|tenemos)\s+que\s+(?:estar|ir)\s+(?:en\s+|a\s+)?(?:algun\s+(?:lado|lugar|sitio)|"
@@ -209,6 +244,8 @@ def agenda_read_request(text: str) -> bool:
     if somewhere is not None:
         # «tengo que estar en algún lado entre las ocho de la mañana y las cinco de la tarde hoy».
         return _window_tail(somewhere.group("tail"))
+    if happening_in_a_span_of_hours(folded):
+        return True
     how_is = re.fullmatch(
         rf"(?:como|how)\s+(?:(?:tengo|tenemos)\s+(?:el|la)\s+(?:dia|semana|{AGENDA_NOUN})|"
         rf"(?:esta|va|luce|pinta|is|does|looks?)\s+(?:el|la|the)\s+{AGENDA_NOUN})\b(?P<tail>.*)",

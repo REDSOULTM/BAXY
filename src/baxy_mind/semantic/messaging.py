@@ -10,7 +10,8 @@ from .notes import _AGENDA_LISTING
 from .web import _OWN_RELATIVE, _bare_given_name
 
 
-_MSG_VERB = r"(?:m[aá]nd[aá](?:le|me|les)?|env[ií]a(?:le|me|les)?|envi[aá](?:le|me|les)?|escrib[ií](?:le|me)?|escr[ií]be(?:le|me)?|send|write|text|message)"
+# M97: the «usted» order too («mándele», «envíele», «escríbale»).
+_MSG_VERB = r"(?:m[aá]nd[aá](?:le|me|les)?|env[ií]a(?:le|me|les)?|envi[aá](?:le|me|les)?|escrib[ií](?:le|me)?|escr[ií]be(?:le|me)?|m[aá]nde(?:le|les)|env[ií]e(?:le|les)?|escr[ií]ba(?:le|les)|send|write|text|message)"
 
 
 _MSG_OBJECT = r"(?:(?:un|una|el|a|an|the)\s+)?(?:mensaje|message|texto|text)"
@@ -38,6 +39,13 @@ def _message_channel_name(word: str) -> str:
 
 
 _MSG_TO = r"(?:a|al\s+grupo|al|para|to|en\s+el\s+grupo|en)"
+
+
+# M97: answering someone, in Spanish orders (tú, vos, usted, with the clitic of the one answered).
+_REPLY_VERB_ES = (
+    r"respond[eé](?:le|les)?|resp[oó]nde(?:le|les)?|responda(?:le|les)?|responder(?:le|les)?|"
+    r"contest[aá](?:le|les)?|cont[eé]sta(?:le|les)?|conteste(?:le|les)?|contestar(?:le|les)?"
+)
 
 
 _MSG_ON = r"(?:en|por|via|v[ií]a|on|through)"
@@ -95,6 +103,16 @@ _MSG_ANY_PATTERNS = tuple(
         # «let Lucas know that I'm late», «tell Lucas that I'm late»
         rf"^\s*let\s+{_MSG_REC}\s+know\s+(?:that\s+)?{_MSG_BODY}{_MSG_END}",
         rf"^\s*tell\s+{_MSG_REC}\s+that\s+{_MSG_BODY}{_MSG_END}",
+        # M97 (reserve, MASSIVE email_sendemail): a reply to someone with its words is a message to them, said as
+        # «respóndele a Ana que…», «contéstale a Lucas: …», «reply to John saying…», «answer Ana that…»,
+        # «reply "thank you" to John».
+        rf"^\s*(?:{_REPLY_VERB_ES})\s+(?:a|al)\s+{_MSG_REC}\s+{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
+        # «informa a mi equipo que la reunión es mañana», «inform my team that…»: telling them is a message to them.
+        rf"^\s*(?:inf[oó]rma(?:le|les)?|inf[oó]rme(?:le|les)?|informar(?:le|les)?|inform)\s+(?:a\s+|al\s+)?{_MSG_REC}\s+"
+        rf"(?:de\s+que|que|that)\s+{_MSG_BODY}{_MSG_END}",
+        rf"^\s*(?:reply|respond|answer|write\s+back)\s+(?:to\s+)?{_MSG_REC}\s+(?:saying|that\s+says|that|with|:)\s*{_MSG_BODY}{_MSG_END}",
+        rf"^\s*(?:reply|respond|write\s+back)\s+(?P<body>[\"“]?[^\"”]{{1,200}}?[\"”]?)\s+to\s+"
+        rf"(?P<rec>(?!(?:the|this|that|it|all|every|my|your|his|her|their|an?)\b)[^\s,:;.!?]+(?:\s+[^\s,:;.!?]+)?){_MSG_END}",
     )
 )
 
@@ -157,6 +175,9 @@ def message_request_any_channel(text: str) -> tuple[str, str, str | None] | None
             continue
         if _fold(recipient) in _MSG_PRONOUN_RECIPIENTS:
             continue
+        if _has(_fold(recipient), r"\b(?:correos?|e-?mails?|mails?|mensajes?|messages?)\b"):
+            # M97: «responde al último correo diciendo…» answers a mail (email.latest.reply), not someone named so.
+            continue
         if _fold(recipient).split()[0] in {"me", "us"}:
             # M91 (reserva «tell me the best story that was ever written»): «tell me X that …» asks BAXY to tell the
             # person something; «that» opens a relative clause, not a message to someone called «me X». A possessive
@@ -214,12 +235,32 @@ _EMAIL_VERB_TO_SOMEONE = (
 )
 
 
+# M97 (reserve, MASSIVE email_sendemail): someone looked up in the person's contacts in order to write them a mail
+# («busca a X en mis contactos y envíale un correo», «find X in my contacts and send her an email») is the recipient of
+# that mail. The lookup is how the person thinks of it; the mail is what is asked, and its address is what is missing.
+_CONTACT_THEN_MAIL = re.compile(
+    r"^(?:find|look\s+up|look\s+for|search(?:\s+for)?|get|pull\s+up|busca(?:me)?|encuentra(?:me)?|ubica|localiza)\s+"
+    r"(?:a\s+)?[a-z]+(?:\s+[a-z]+)?\s+(?:from|in|on|en|de|entre)\s+(?:my|mis|mi)\s+"
+    r"(?:contacts?(?:\s+list)?|address\s+book|contactos?|agenda)\s*,?\s+(?:and|y|e)\s+(?:then\s+|luego\s+|despues\s+)?"
+    r"(?:send|write|e-?mail|mail|envia(?:le)?|manda(?:le)?|escribe(?:le)?|enviale|mandale|escribele|enviele|mandele)\b"
+    r"(?:\s+(?:her|him|them|le|les|a|an|un|una|el|the))*\s+(?:e-?mail|mail|correo(?:\s+electronico)?)\b"
+)
+
+
+def contact_found_then_mailed(text: str) -> bool:
+    """Someone looked up in the contacts to be sent a mail (see above)."""
+
+    return _CONTACT_THEN_MAIL.match(_strip_request_envelope(_fold(text)).strip(" .!?¿¡")) is not None
+
+
 def email_request_without_address(text: str) -> bool:
     """«enviá un correo a juan», «escribile un mail a Lucas que diga hola»: mail
     asked for a name that is not an address → the address is what is missing."""
 
     if email_send_request(text) is not None:
         return False
+    if contact_found_then_mailed(text):
+        return True
     draft = message_draft_request(text)
     if draft is not None:
         return draft[0] == "email" and _MAIL_ADDRESS.match(draft[1].strip()) is None
