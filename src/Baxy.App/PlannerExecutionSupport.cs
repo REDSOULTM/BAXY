@@ -224,6 +224,9 @@ internal static class MindPlanBoundary
     [
         "applicationName", "app", "appId", "title", "name", "fileName", "query", "expression", "location", "place",
         "folder", "topic",
+        // M111 (DEV-F v4d F-s005, F-s014: drafts that failed with the client closed named no one): the person a
+        // message was for.
+        "recipient",
     ];
 
     /// <summary>

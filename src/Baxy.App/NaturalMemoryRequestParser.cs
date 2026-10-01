@@ -342,7 +342,10 @@ internal static partial class NaturalMemoryRequestParser
             return MemoryParseResult.AskToSave();
         }
 
-        if (AmbiguousSavePattern().IsMatch(foldedCommand))
+        // M111 (DEV-F v4d F-w10-t3 «save that in a note called home network» → «What content should be saved…?»):
+        // «that» saved in a note, a task or a list goes to that record, never to BAXY's memory; the mind reads it.
+        if (AmbiguousSavePattern().IsMatch(foldedCommand)
+            && !RecordDestinationPattern().IsMatch(foldedCommand))
         {
             return MemoryParseResult.ClarifySave();
         }
@@ -1724,6 +1727,12 @@ internal static partial class NaturalMemoryRequestParser
         + "guarda[ ]+esa[ ]+preferencia(?:[ ]+.+)?)$",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex AmbiguousSavePattern();
+
+    [GeneratedRegex(
+        "\\b(?:en|in|as|como|to|into)[ ]+(?:(?:una|un|la|el|las|los|mis|mi|a|an|the|my)[ ]+)?(?:(?:nueva|new)[ ]+)?"
+        + "(?:nota|notas|note|notes|tarea|tareas|task|tasks|lista|list|pendientes|to-?do)\\b",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex RecordDestinationPattern();
 
     [GeneratedRegex(
         "^(?:esto|this|eso|that|esa[ ]+(?:preferencia|preference)|lo[ ]+del[ ]+estilo|that[ ]+setting)$",

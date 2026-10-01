@@ -489,6 +489,10 @@ def _introduced_spans(
             for said_word in named_set
         ):
             continue
+        if len(bare) >= 4 and any(_one_transposition(bare, said_word) for said_word in said_set):
+            # M111 (DEV-F v4d F-s003 «abreme el wrod» restated «Abre Word.» → asked which application): two letters
+            # swapped are the same word mistyped or misheard (owner rule 2026-09-19: BAXY fixes what was said wrong).
+            continue
         # «Ñuñoa» for «ñuñoa»: the name continues a said name through «de/del».
         back = index - 1
         while back >= 0 and fold(words[back].group(0)) in _NAME_CONNECTOR:
@@ -498,6 +502,20 @@ def _introduced_spans(
                 continue
         spans.append((word.start(), word.end(), text))
     return sorted(spans)
+
+
+def _one_transposition(word: str, said: str) -> bool:
+    """``word`` is ``said`` with two neighbouring letters swapped («word» / «wrod»)."""
+
+    if len(word) != len(said) or word == said:
+        return False
+    differ = [index for index, (first, second) in enumerate(zip(word, said)) if first != second]
+    return (
+        len(differ) == 2
+        and differ[1] == differ[0] + 1
+        and word[differ[0]] == said[differ[1]]
+        and word[differ[1]] == said[differ[0]]
+    )
 
 
 def _trimmed(request: str, spans: list[tuple[int, int, str]]) -> str | None:
