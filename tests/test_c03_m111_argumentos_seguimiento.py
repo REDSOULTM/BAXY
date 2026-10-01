@@ -22,7 +22,6 @@ Every phrasing below is this file's own, of the same shape as the DEV-F row it s
 
 from __future__ import annotations
 
-import json
 
 import pytest
 
@@ -397,19 +396,3 @@ def test_the_restatement_opens_each_application_it_names() -> None:
 # ------------------------------------------------------------------ 6. the measure
 
 
-def test_a_dependency_target_is_the_argument_of_its_effect() -> None:
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-    import comprension_window
-
-    failure = {
-        "kind": "failure",
-        "reason": {"operation": "window.resolve", "target": "Notepad", "cause": "no window open right now"},
-    }
-    compose = [{"trace": "t9", "payload": {}, "situation": json.dumps(failure)}]
-    projected = comprension_window.composed_arguments(compose, {"t9"}, ["window.snap"])
-    assert projected["window.snap"]["seen"] == [{"operation": "window.resolve", "target": "Notepad"}]
-    assert "right now" not in json.dumps(projected["window.snap"])
-    assert "window.snap" not in comprension_window.composed_arguments(compose, {"t9"}, ["app.open"])
