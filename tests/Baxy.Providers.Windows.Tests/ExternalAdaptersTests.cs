@@ -2963,6 +2963,116 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    private const string ArepasPage = """
+        <html><head><title>Arepas de queso fáciles</title>
+        <script type="application/ld+json">{"@context":"https://schema.org","@graph":[
+          {"@type":"WebSite","name":"Cocina de prueba"},
+          {"@type":["Recipe"],"name":"Arepas de queso","description":"Arepas rellenas de queso, crujientes por fuera. Ideales para el desayuno.",
+           "recipeYield":["4","4 arepas"],
+           "recipeIngredient":["2 tazas de harina de maíz precocida","2 1/2 tazas de agua tibia","1 cucharadita de sal &amp; pimienta","200 g de queso rallado"],
+           "recipeInstructions":[{"@type":"HowToSection","name":"Masa","itemListElement":[
+             {"@type":"HowToStep","text":"Mezcla el agua con la sal y agrega la harina poco a poco."},
+             {"@type":"HowToStep","text":"Amasa 2 minutos y agrega el queso."}]},
+             {"@type":"HowToStep","text":"Forma 4 bolas, aplánalas y cocínalas 5 minutos por lado en un sartén caliente."}]}
+        ]}</script></head><body><p>Hoy te enseño unas arepas de queso.</p></body></html>
+        """;
+
+    // M102 (DEV-D v3z D-w10-t1): a recipe page publishes its recipe as schema.org data; it is read with its quantities,
+    // its steps (sections included) and its servings, and only for the dish asked.
+    [Test]
+    public void ARecipePageIsReadFromItsPublishedData()
+    {
+        SearchPageRecipe.PageRecipe? read = SearchPageRecipe.Read(ArepasPage, "Arepas de queso fáciles", ["arepas", "queso"]);
+        Assert.Multiple(() =>
+        {
+            Assert.That(read, Is.Not.Null);
+            Assert.That(read!.Value.Name, Is.EqualTo("Arepas de queso"));
+            Assert.That(read.Value.Recipe.Ingredients, Does.Contain("2 1/2 tazas de agua tibia").And.Contain("1 cucharadita de sal & pimienta"));
+            Assert.That(read.Value.Recipe.Steps, Has.Length.EqualTo(3));
+            Assert.That(read.Value.Recipe.Steps[1], Is.EqualTo("Amasa 2 minutos y agrega el queso."));
+            Assert.That(read.Value.Recipe.Servings, Is.EqualTo(4));
+            Assert.That(read.Value.Recipe.Description, Is.EqualTo("Arepas rellenas de queso, crujientes por fuera."));
+            // Another dish, or a page with no data, is no recipe read.
+            Assert.That(SearchPageRecipe.Read(ArepasPage, "Arepas de queso fáciles", ["pan", "pascua"]), Is.Null);
+            Assert.That(SearchPageRecipe.Read(RicePage, "Cuánto arroz cocer", ["arroz"]), Is.Null);
+            Assert.That(SearchPageRecipe.Read(
+                ArepasPage.Replace("\"recipeInstructions\"", "\"otherInstructions\"", StringComparison.Ordinal),
+                "Arepas de queso", ["arepas", "queso"]), Is.Null);
+        });
+    }
+
+    // M102 (DEV-D v3z D-s017, D-w10-t1): with the dish in neither recipe book, the general engine is asked once, and the
+    // first of its pages that publishes the recipe answers as the recipe read; the encyclopedia is not asked.
+    [Test]
+    public async Task ARecipeNoBookHasIsReadFromAResultsPage()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, SearchResultsPage(
+                ("Arepas de queso - Recetas de casa", "https://sinreceta.example.com/arepas",
+                    "Las arepas de queso son un clásico de la cocina venezolana y colombiana..."),
+                ("Arepas de queso fáciles", "https://cocina.example.com/arepas-de-queso",
+                    "Receta de arepas de queso caseras con harina de maíz...")), "text/html"),
+            ["sinreceta.example.com"] = new(HttpStatusCode.OK, RicePage, "text/html"),
+            ["cocina.example.com"] = new(HttpStatusCode.OK, ArepasPage, "text/html"),
+        };
+        handler.Routes.Add(("wikibooks.org", new(HttpStatusCode.OK, """{"batchcomplete":true}""", "application/json")));
+        handler.Routes.Add(("lllang=en", new(HttpStatusCode.OK, """{"batchcomplete":true}""", "application/json")));
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"receta arepas de queso"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("reference").GetString(), Is.EqualTo("recipe"));
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("recipe_page_jsonld"));
+            Assert.That(receipt.Result?.GetProperty("servings").GetInt32(), Is.EqualTo(4));
+            JsonElement first = receipt.Result!.Value.GetProperty("results")[0];
+            Assert.That(first.GetProperty("url").GetString(), Is.EqualTo("https://cocina.example.com/arepas-de-queso"));
+            Assert.That(first.GetProperty("snippet").GetString(),
+                Does.Contain("Ingredientes (para 4 personas):").And.Contain("- 2 tazas de harina de maíz precocida")
+                    .And.Contain("3. Forma 4 bolas"));
+            Assert.That(handler.Asked.Count(asked => asked.Uri.Host == "lite.duckduckgo.com"), Is.EqualTo(1));
+            Assert.That(handler.Asked.Where(asked => asked.Uri.Host.EndsWith("example.com", StringComparison.Ordinal))
+                .All(asked => asked.UserAgent == "BAXY/1.0 page-read"));
+        });
+    }
+
+    // M102: with no page publishing the recipe, the search goes on with the engine's reading (not asked twice).
+    [Test]
+    public async Task ARecipeNoPagePublishesKeepsTheEnginesResults()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, SearchResultsPage(
+                ("Arepas de queso - Recetas de casa", "https://sinreceta.example.com/arepas",
+                    "Las arepas de queso son un clásico de la cocina venezolana y colombiana...")), "text/html"),
+            ["sinreceta.example.com"] = new(HttpStatusCode.OK, RicePage, "text/html"),
+        };
+        handler.Routes.Add(("wikibooks.org", new(HttpStatusCode.OK, """{"batchcomplete":true}""", "application/json")));
+        handler.Routes.Add(("wikipedia.org", new(HttpStatusCode.OK, """{"batchcomplete":true}""", "application/json")));
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"receta arepas de queso"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("duckduckgo_lite_https"));
+            Assert.That(receipt.Result?.TryGetProperty("reference", out _), Is.False);
+            Assert.That(handler.Asked.Count(asked => asked.Uri.Host == "lite.duckduckgo.com"), Is.EqualTo(1));
+        });
+    }
+
     // The plot of a named work is its article's plot section, one request.
     [Test]
     public async Task AWorksPlotIsReadFromItsArticle()

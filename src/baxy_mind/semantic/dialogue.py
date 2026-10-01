@@ -26,7 +26,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
-from .grammar import _COVERAGE_ACTION_HEAD, _head_is
+from .grammar import _COVERAGE_ACTION_HEAD, _RELATIVE_DURATION_PATTERN, _head_is
 from .levels import followup_antecedent
 from .normalize import alternation, fold, spelled_out
 from .patterns import datetime_followup_antecedent
@@ -1310,6 +1310,11 @@ _LISTED_POINTER = re.compile(
 )
 
 
+# M102: a move said with a bare number («actually make it 9», «no, mejor 10»), and the words that make a number a clock.
+_BARE_RETIME_NUMBER = re.compile(r"(?:^|[\s,])(?:\d{1,2}|" + alternation(frozenset(_NUMBER_WORDS)) + r")[\s.!]*$")
+_CLOCK_SAID = re.compile(r"\d:\d|\b(?:las?|at|am|pm|a\.\s?m|p\.\s?m|o'?clock|en\s+punto|de\s+la\s+(?:manana|tarde|noche))\b")
+
+
 # M80: the writes whose verified result is the whole task (identity, version, title, details, due).
 _TASK_WRITES = ("task.create", "task.update", "task.complete", "task.reopen", "task.restore")
 
@@ -1505,16 +1510,18 @@ class DialogueState:
         return [("verificado", f"{label}: {self._facts[key]}") for key, label in self._LABELS if key in self._facts]
 
     def retimed_notification(
-        self, text: str, *, now: datetime | None = None, zone: timezone | None = None,
+        self, text: str, *, now: datetime | None = None, zone: timezone | None = None, deciding: bool = False,
     ) -> "RetimedNotification | None":
         """M76 (DEV-D v3l D-w16-t2, D-w04-t4, D-w18-t5): «Actually, make it 6:30.» right after the turn that set an
         alarm, a timer or a reminder moves that one (``temporal.notification_retiming``): it is cancelled and set
         again at the new time with its kind and what it was for, as verified. A clock keeps the day of the old time
         and, when it says no part of the day, the part nearer the old time. None unless the turn before verified
-        setting one."""
+        setting one. ``deciding``: read while this turn is decided, before ``expect`` made the turn that set it the
+        one before."""
 
         retiming = notification_retiming(text)
-        if retiming is None or self._notification is None or "notification.schedule" not in self.previous_operations:
+        set_by = self.operations if deciding else self.previous_operations
+        if retiming is None or self._notification is None or "notification.schedule" not in set_by:
             return None
         english = not spanish(text)
         kind, title = self._notification["kind"], self._notification["title"]
@@ -1535,6 +1542,45 @@ class DialogueState:
                 return None
             due = moment.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
         return RetimedNotification(kind, cancel_at, {"dueUtc": due, "kind": kind, "title": title}, now)
+
+    def moved_notification_request(
+        self, text: str, *, now: datetime | None = None, zone: timezone | None = None,
+    ) -> str | None:
+        """M102 (DEV-D v3z D-w18-t5 «wait no, make it una hora» after «remind me en 45 minutes to take a break»): the
+        decider restated it as «Recuerda tomar un descanso a las 04:12.», one more reminder an hour after the first and
+        never the first cancelled. A move of the notification the last turn set is decided here, as the request the
+        plan carries (cancel the one set, set it again); the plan takes its arguments from ``retimed_notification``.
+        None unless the message moves the notification the last turn verified setting."""
+
+        moved = self.retimed_notification(text, now=now, zone=zone, deciding=True)
+        if moved is None or self._notification is None:
+            return None
+        said = _fold(text)
+        if (
+            not moved.schedule_arguments["dueUtc"].startswith(("in ", "en "))
+            and _BARE_RETIME_NUMBER.search(said) is not None
+            and _CLOCK_SAID.search(said) is None
+            and re.search(_RELATIVE_DURATION_PATTERN, _fold(self.request or "")) is not None
+        ):
+            # Tanda 7 «actually make it 9» after a timer of 5 minutes: a bare number after a notification set by a
+            # duration may be the minutes as much as the clock; the decider reads it with the conversation.
+            return None
+        try:
+            old = datetime.fromisoformat(self._notification["dueUtc"].replace("Z", "+00:00")).astimezone(zone)
+        except ValueError:
+            return None
+        english = not spanish(text)
+        due = moved.schedule_arguments["dueUtc"]
+        if due.startswith(("in ", "en ")):
+            when = due
+        else:
+            new = datetime.fromisoformat(due.replace("Z", "+00:00")).astimezone(zone)
+            when = f"at {new:%H:%M}" if english else f"a las {new:%H:%M}"
+        title = moved.schedule_arguments["title"]
+        if english:
+            return f"cancel the {moved.kind} «{title}» set for {old:%H:%M} and set it again {when}"
+        noun, pronoun = ("el recordatorio", "lo") if moved.kind == "reminder" else ("la alarma", "la")
+        return f"cancela {noun} «{title}» de las {old:%H:%M} y vuelve a poner{pronoun} {when}"
 
     def pointed_listed_title(self, text: str) -> str | None:
         """M76 (DEV-D v3l D-w17-t2 «mark the first one done» after «You have 13 tasks on your list, including

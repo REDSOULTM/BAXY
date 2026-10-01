@@ -4762,6 +4762,12 @@ def _context_decided_result(
         # M84 (DEV-D v3o D-p01-t3 «no, cancel», D-p14-t3 «Cancelar foto» → «No cancelo la foto.»): taking back what was
         # just asked is said to BAXY, never a limit of cancelling.
         decided = semantic_decider.ContextDecision(request=text, decision="talk", operations=(), question="")
+    if decided.decision == "limit" and (dialogue_slot.is_assent(text) or dialogue_slot.gives_go_ahead(text)):
+        # M102 (DEV-D v3z D-p24-t4 «Yes, do it for me.» after «The streaming of Hustlers failed because Netflix requires a
+        # sign-in on this PC…» → «I do not handle tasks outside my scope.»): a yes or a go-ahead asks for nothing new, so
+        # it is never a limit; what stands in the way (the failure just told, or nothing waiting for the yes) is said in
+        # talk, with the conversation in front of the writer (M88 holds it to saying nothing was done).
+        decided = semantic_decider.ContextDecision(request=text, decision="talk", operations=(), question="")
     # cien-107 100: with a block of history the decider answered «talk» («Write a letter to Eris.»), the knowledge
     # contract let «…because I do not have access to external communication channels…» through; talk is bounded too.
     if decided.decision in {"clarify", "talk"} and effect_intent.out_of_world_request(text):
@@ -4911,6 +4917,45 @@ def _context_decided_result(
     return result
 
 
+_MOVED_NOTIFICATION_PLAN = ("notification.cancel.latest", "notification.schedule")
+
+
+def _moved_notification_result(message: dict[str, Any], request: str) -> dict[str, Any]:
+    """M102: the turn that moves the notification just set — cancel the latest of its kind and set it again — as the
+    plan the shell runs, with ``request`` (``DialogueState.moved_notification_request``) as its objective."""
+
+    result: dict[str, Any] = {
+        "type": "turn.result",
+        "id": message.get("id"),
+        "kind": "plan",
+        "operation": None,
+        "intentOperations": list(_MOVED_NOTIFICATION_PLAN),
+        "effectOperations": list(_MOVED_NOTIFICATION_PLAN),
+        "question": "",
+        "reply": "",
+        "objective": request,
+    }
+    language = _read_reply_language(str(message.get("text", "")), message.get("history") or [])
+    if language in {"es", "en", "mixed"}:
+        result["responseLanguage"] = language
+    _append_turn_audit(
+        {
+            "schema": "baxy.mind-turn-audit.v1",
+            "request_id": message.get("id"),
+            "phase": "final",
+            "decision_path": "moved_notification",
+            "raw_decision": {"mode": "action", "request": request, "effect_operations": list(_MOVED_NOTIFICATION_PLAN)},
+            "stages": [],
+            "final": {
+                "kind": "plan",
+                "intent_operations": list(_MOVED_NOTIFICATION_PLAN),
+                "effect_operations": list(_MOVED_NOTIFICATION_PLAN),
+            },
+        }
+    )
+    return result
+
+
 def _prepare_turn_result(
     message: dict[str, Any],
     *,
@@ -4954,6 +4999,16 @@ def _prepare_turn_result(
         result.setdefault("objective", accepted_cancellation)
         return result
     if dialogue_slot.read_slot({}, message.get("history") or [], str(message.get("text", ""))).antecedents:
+        moved = (
+            dialogue_state.moved_notification_request(str(message.get("text", "")))
+            if dialogue_state is not None
+            else None
+        )
+        if moved is not None:
+            # M102 (DEV-D v3z D-w18-t5 «wait no, make it una hora»): the notification the last turn set is moved
+            # (cancelled and set again), never a second one beside it; the plan takes its arguments from the dialogue
+            # state (``_retimed_step_arguments``).
+            return _moved_notification_result(message, moved)
         return _decide_turn_result(
             message,
             llm=llm,

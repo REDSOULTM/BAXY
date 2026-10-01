@@ -659,13 +659,45 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 return ExternalJson.FailureBeforeEffect(operation, "web_search_places_not_found_near");
         }
 
+        // M102: the general engine's reading for a recipe no book had, kept for the rest of the search (it is asked
+        // once), or whether it could not be reached.
+        SearchChannelReading? recipeSearch = null;
+        bool generalUnreachable = false;
         if (near is null && WikimediaReferenceSource.Parse(asked) is { } reference)
         {
+            string[] cueLanguages = WikimediaReferenceSource.CueLanguages(asked, languages);
             WikimediaReferenceSource.ReferenceReading? read = await _references
-                .ReadAsync(reference, WikimediaReferenceSource.CueLanguages(asked, languages), cancellationToken)
+                .ReadAsync(reference, cueLanguages, cancellationToken)
                 .ConfigureAwait(false);
             if (read is { } found)
                 return ReferenceReceipt(operation, query, reference.Kind, found);
+            if (reference.Kind == WikimediaReferenceSource.ReferenceKind.Recipe)
+            {
+                // M102 (DEV-D v3z D-s017, D-w10-t1): neither recipe book has the dish; the general engine's first
+                // pages are read for the recipe they publish as data (SearchPageRecipe), before any encyclopedia.
+                try
+                {
+                    recipeSearch = await ReadGeneralSearchAsync(query, cancellationToken).ConfigureAwait(false);
+                }
+                catch (HttpRequestException)
+                {
+                    generalUnreachable = true;
+                }
+                catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
+                {
+                    generalUnreachable = true;
+                }
+                if (recipeSearch is { } pages)
+                {
+                    List<(string Title, string Url, string Snippet)> recipePages =
+                        PertinentResults(queryTokens, pages.Candidates, limit, []);
+                    WikimediaReferenceSource.ReferenceReading? published = await ReadPageRecipeAsync(
+                            recipePages, reference.Named, cueLanguages[0], cancellationToken)
+                        .ConfigureAwait(false);
+                    if (published is { } recipe)
+                        return ReferenceReceipt(operation, query, reference.Kind, recipe);
+                }
+            }
         }
 
         bool encyclopedic = WikipediaSearchSource.IsEncyclopedic(query);
@@ -726,10 +758,11 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             }
         }
 
+        if (generalUnreachable) return NamesOnlyOr("web_search_unavailable");
         SearchChannelReading reading;
         try
         {
-            reading = await ReadGeneralSearchAsync(query, cancellationToken).ConfigureAwait(false);
+            reading = recipeSearch ?? await ReadGeneralSearchAsync(query, cancellationToken).ConfigureAwait(false);
         }
         catch (HttpRequestException)
         {
@@ -807,6 +840,64 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
             return string.Empty;
+        }
+    }
+
+    // M102: the first pages of the results are read at once, within the excerpts' bound, and the first in the
+    // results' order that publishes the dish's recipe as data (SearchPageRecipe) is the recipe read; null when none
+    // does. Each page goes through SearchPageReader (public addresses only, no cookie, generic User-Agent).
+    private const int RecipePages = 3;
+    private static readonly TimeSpan RecipeBudget = TimeSpan.FromMilliseconds(2_500);
+
+    private async Task<WikimediaReferenceSource.ReferenceReading?> ReadPageRecipeAsync(
+        List<(string Title, string Url, string Snippet)> results,
+        string[] named,
+        string language,
+        CancellationToken cancellationToken)
+    {
+        if (results.Count == 0) return null;
+        using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        budget.CancelAfter(RecipeBudget);
+        var pages = results.Take(RecipePages).ToList();
+        SearchPageRecipe.PageRecipe?[] read = await Task.WhenAll(pages
+                .Select(result => ReadOneRecipeAsync(result.Url, result.Title, named, budget.Token, cancellationToken)))
+            .ConfigureAwait(false);
+        cancellationToken.ThrowIfCancellationRequested();
+        for (int index = 0; index < read.Length; index++)
+        {
+            if (read[index] is not { } found) continue;
+            return new WikimediaReferenceSource.ReferenceReading(
+                found.Name,
+                pages[index].Url,
+                WikimediaReferenceSource.RecipeEvidence(found.Name, found.Recipe, language),
+                RecipePageAuthority,
+                found.Recipe.Servings);
+        }
+        return null;
+    }
+
+    internal const string RecipePageAuthority = "recipe_page_jsonld";
+
+    private async Task<SearchPageRecipe.PageRecipe?> ReadOneRecipeAsync(
+        string url,
+        string title,
+        string[] named,
+        CancellationToken budget,
+        CancellationToken cancellationToken)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? page)) return null;
+        try
+        {
+            string? html = await _pages.ReadHtmlAsync(page, budget).ConfigureAwait(false);
+            return html is null ? null : SearchPageRecipe.Read(html, title, named);
+        }
+        catch (HttpRequestException)
+        {
+            return null;
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return null;
         }
     }
 
