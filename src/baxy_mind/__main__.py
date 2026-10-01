@@ -39,7 +39,7 @@ from . import effect_intent
 from .semantic import decider as semantic_decider
 from .semantic import dialogue as dialogue_slot
 from .semantic import knowledge as semantic_knowledge
-from .semantic.apps import deictic_close_request
+from .semantic.apps import bare_close_pronoun, close_request_for_opened, deictic_close_request
 from .semantic.notes import list_creation_said, task_change
 from .semantic import levels as semantic_levels
 from .semantic import reading as semantic_reading
@@ -3572,6 +3572,12 @@ def _ground_explicit_arguments(
         # WEB1451 «qué pasó hoy en el mundo»: the news reader supplies the
         # word «noticias»; the scope words are the person's own.
         return explicit if validate_json_schema_instance(explicit, schema) else None
+    if operation == "web.search" and explicit.get("query") == effect_intent.public_opinion_query(evidence):
+        # M96 (held-out conv-v3v t14 «averiguá qué dijo la crítica» after «anoche vi Oppenheimer…», restated «¿Qué
+        # dijo la crítica de Oppenheimer?»): the opinion reader supplies «opiniones»/«reviews» like the news reader
+        # supplies «noticias», and the work is the person's words; the literal check dropped the query and the turn
+        # asked the restatement back («¿Qué crítica específica…?»).
+        return explicit if validate_json_schema_instance(explicit, schema) else None
     if (
         operation == "web.search"
         and effect_intent.curiosity_request(evidence)
@@ -4580,12 +4586,45 @@ def _clock_read_request(text: str, history: object) -> str | None:
     return semantic_temporal.clock_there_request(text, prior)
 
 
+def _close_of_the_just_opened(
+    text: str,
+    history: object,
+    available_operations: tuple[str, ...],
+    application_names: tuple[str, ...] | ApplicationCatalogIndex,
+) -> semantic_decider.ContextDecision | None:
+    """M96 (held-out t11 «cerralo» after «abrí el bloc de notas», 28/30 oscillating: the decider asked «¿Quieres que
+    cierre el Bloc de notas?» in five of seven runs). A bare close pronoun right after the person asked to open one
+    application closes that application, by its name; with two or more opened it asks which. Never the window in
+    front (2026-09-22: «cerralo» read as the active window closed VS Code). None when the request before it opened
+    nothing: the decider reads the turn as before."""
+
+    pronoun, english = bare_close_pronoun(effect_intent._fold(text))
+    if not pronoun or "app.close" not in available_operations:
+        return None
+    slot = dialogue_slot.read_slot({}, history, text)
+    antecedent = next((said for said in slot.antecedents if not dialogue_slot.is_social(said)), None)
+    read = resolve_explicit_effects(antecedent, available_operations, application_names) if antecedent else None
+    opened = [said for operation, said in zip(read.operations, read.evidence) if operation == "app.open"] if read else []
+    if not opened:
+        return None
+    # With one opened: the person's own words for it («el bloc de notas») first, then the name the open reader kept.
+    named_forms = (dialogue_slot.antecedent_object(antecedent), opened[0]) if len(opened) == 1 else ()
+    for named in dict.fromkeys(filter(None, named_forms)):
+        request = close_request_for_opened(named, english)
+        closing = resolve_explicit_effects(request, available_operations, application_names)
+        if closing is not None and closing.operations == ("app.close",):
+            return semantic_decider.ContextDecision(request=request, decision="action", operations=("app.close",),
+                                                    question="")
+    return semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
+
+
 def _context_decided_result(
     message: dict[str, Any],
     *,
     llm: Any,
     planner_catalog: PlannerCatalog,
     on_limit: Callable[[str], dict[str, Any] | None] | None = None,
+    application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
 ) -> dict[str, Any]:
     """The turn as the contextual decider reads it (``semantic.decider``), with the whole conversation.
 
@@ -4601,8 +4640,11 @@ def _context_decided_result(
     antecedent = context.antecedents[0] if context.antecedents else None
     placed = dialogue_slot.place_substituted(text, antecedent)
     placed_read = resolve_explicit_effects(placed, available_operations) if placed is not None else None
-    read_before_decider = placed_read is not None and placed_read.operations == ("system.time",)
-    if read_before_decider:
+    closing = _close_of_the_just_opened(text, history, available_operations, application_names)
+    read_before_decider = closing is not None or (placed_read is not None and placed_read.operations == ("system.time",))
+    if closing is not None:
+        decided = closing
+    elif read_before_decider:
         # M84 (DEV-D v3o D-w02-t2 «y si allá son las 10 de la mañana acá qué hora es» after «qué hora es en madrid» →
         # restated «¿Qué hora es en Madrid si allá son las 10…?» and talked): «allá» is the place just asked, and the
         # time said there is converted on the clock read (``_place_clock_facts``), never by the decider.
@@ -5546,6 +5588,7 @@ def _decide_turn_result(
 
         return _context_decided_result(
             message, llm=llm, planner_catalog=planner_catalog, on_limit=reread_limit,
+            application_names=application_names,
         )
     if explicit_intent is not None:
         _emit_early_turn_signal(
