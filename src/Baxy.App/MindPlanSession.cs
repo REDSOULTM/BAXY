@@ -311,12 +311,14 @@ internal sealed class MindPlanSession
                 execution.PendingOperation = null;
                 Clear();
                 // M94 (DEV-D D-p24-t4 «Hustlers» on Netflix behind a sign-in, D-w09-t3): the
-                // unverified step names what it was about, like a failed one.
+                // unverified step names what it was about, like a failed one. M116: and what
+                // it attempted, and the effects left undone after it.
                 _host.Publish(
                     OperationResponseProjection.CarriesOperationFacts(response.Message)
                         ? MissionNarration.CreateFailureMessage(
                             execution.CompletedMessages,
-                            MindPlanBoundary.WithStepTarget(response.Message, arguments))
+                            MindPlanBoundary.WithNotDone(
+                                MindPlanBoundary.WithStepFacts(response.Message, arguments), execution, []))
                         : MissionNarration.CreateUncertainEffectMessage(execution, terminal: true),
                     UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
                 return;
@@ -325,7 +327,7 @@ internal sealed class MindPlanSession
             _ = _host.TryMarkResolved(registry, prepared);
             execution.PendingOperation = null;
             Persist(execution);
-            string failure = MindPlanBoundary.WithStepTarget(response.Message, arguments);
+            string failure = MindPlanBoundary.WithStepFacts(response.Message, arguments);
 
             if (MindPlanBoundary.IndependentRemainder(execution, response) is { } remainder)
             {
@@ -338,7 +340,9 @@ internal sealed class MindPlanSession
                     remainder,
                     execution.ReplanCount)
                 {
-                    DeferredFailure = MindPlanBoundary.MergeFailures(execution.DeferredFailure, failure),
+                    DeferredFailure = MindPlanBoundary.MergeFailures(
+                        execution.DeferredFailure,
+                        MindPlanBoundary.WithNotDone(failure, execution, remainder)),
                 };
                 foreach (JsonNode? observation in execution.Observations)
                 {
@@ -394,7 +398,7 @@ internal sealed class MindPlanSession
 
             FinishWithFailure(
                 execution,
-                failure);
+                MindPlanBoundary.WithNotDone(failure, execution, []));
             return;
         }
 
@@ -515,13 +519,19 @@ internal sealed class MindPlanSession
                     // wifi_profile_not_found: the generic confirmed_no_effect reason
                     // hid the operation's own failure facts, so the final said «no
                     // hubo efecto» instead of the cause. A confirmed step that fails
-                    // with a typed error carries the same facts as an ordinary step.
+                    // with a typed error carries the same facts as an ordinary step
+                    // (M116: what it attempted and what it left undone, too).
                     FinishWithFailure(
                         execution,
                         string.Equals(response.Status, OperationStatuses.Failed, StringComparison.Ordinal)
                         && !string.IsNullOrWhiteSpace(response.ErrorCode)
                         && OperationResponseProjection.CarriesOperationFacts(response.Message)
-                            ? response.Message
+                            ? MindPlanBoundary.WithNotDone(
+                                MindPlanBoundary.WithStepFacts(
+                                    response.Message,
+                                    JsonNode.Parse(confirmation.Prepared.Arguments.GetRawText()) as JsonObject),
+                                execution,
+                                [])
                             : TurnVisibleFacts.Failure("confirmed_no_effect"));
                     return;
                 default:

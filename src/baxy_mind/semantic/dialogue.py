@@ -33,6 +33,7 @@ from .patterns import datetime_followup_antecedent
 from .temporal import (
     alarm_cancellation_request,
     assents_to_alarm_offer,
+    moved_to_clock,
     notification_retiming,
     offset_retiming,
     plural_alarm_cancellation,
@@ -1585,13 +1586,15 @@ class DialogueState:
 
     def retimed_notification(
         self, text: str, *, now: datetime | None = None, zone: timezone | None = None, deciding: bool = False,
+        moving: bool = False,
     ) -> "RetimedNotification | None":
         """M76 (DEV-D v3l D-w16-t2, D-w04-t4, D-w18-t5): «Actually, make it 6:30.» right after the turn that set an
         alarm, a timer or a reminder moves that one (``temporal.notification_retiming``): it is cancelled and set
         again at the new time with its kind and what it was for, as verified. A clock keeps the day of the old time
         and, when it says no part of the day, the part nearer the old time. None unless the turn before verified
         setting one. ``deciding``: read while this turn is decided, before ``expect`` made the turn that set it the
-        one before."""
+        one before. ``moving``: the turn is already decided as moving it, so its new time may be said anywhere in the
+        message (``temporal.moved_to_clock``)."""
 
         retiming = notification_retiming(text)
         set_by = self.operations if deciding else self.previous_operations
@@ -1602,7 +1605,7 @@ class DialogueState:
         shift = (
             offset_retiming(text, self._notification.get("request") or "") if retiming is None else None
         )
-        if retiming is None and shift is None:
+        if retiming is None and shift is None and not moving:
             return None
         english = not spanish(text)
         kind, title = self._notification["kind"], self._notification["title"]
@@ -1614,6 +1617,10 @@ class DialogueState:
             old = datetime.fromisoformat(self._notification["dueUtc"].replace("Z", "+00:00")).astimezone(zone)
         except ValueError:
             return None
+        if retiming is None and shift is None:
+            retiming = moved_to_clock(text, old)
+            if retiming is None:
+                return None
         cancel_at = alarm_cancellation_request(((old.hour, old.minute),), english)
         if retiming is None:
             shifted = old + timedelta(minutes=shift or 0)

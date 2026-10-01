@@ -111,8 +111,40 @@ def _step(step: dict, english: bool, templates: dict, now: datetime | None) -> s
         return ""
     # Only a verified result picks its variant by what it observed (muted, on, the kind set): a state read beside a
     # failure is the one that held, not the one asked.
-    clause = entry[language][0] + _object(entry, observed, language, templates, step.get("target"))
+    clause = _attempted_clause(entry, step, observed, language, templates)
+    # M116: a read that only looked for what an effect needed (the window to place) is told by the effect it left
+    # undone — «no pude colocar la ventana «Obsidian» a la izquierda» — when the facts carry it.
+    if entry.get("quiet"):
+        undone = [
+            said for item in (step.get("notDone") if isinstance(step.get("notDone"), list) else [])
+            if (said := _attempted_clause(_entry({"operation": (item or {}).get("operation")}), item, {}, language,
+                                          templates) if isinstance(item, dict) else "")
+        ]
+        clause = _joined(undone, templates) if undone else clause
     return templates["uncertain" if _uncertain(step) else "failed"].format(clause=clause)
+
+
+def _attempted_clause(entry: dict, step: dict, observed: dict, language: str, templates: dict) -> str:
+    """The plain clause of a step not done, with what it was about and, since M116, what it attempted: the client
+    and the side said in words, the message's text quoted (data ``attempted`` and ``content``)."""
+
+    if not entry:
+        return ""
+    clause = entry[language][0] + _object(entry, observed, language, templates, step.get("target"))
+    attempted = step.get("attempted")
+    if not isinstance(attempted, dict):
+        return clause
+    data = floor_data()
+    for spec in data["attempted"]:
+        value = attempted.get(spec["key"])
+        said = spec["values"].get(value) if isinstance(value, str) else None
+        if said:
+            clause += " " + said[language]
+    for key in data["content"]:
+        text = _usable(attempted.get(key), _LONGEST_CONTENT)
+        if text:
+            return clause + templates["detail"] + templates["quote"].format(value=text)
+    return clause
 
 
 def _uncertain(step: dict) -> bool:

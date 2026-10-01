@@ -220,6 +220,10 @@ APP_FILES: dict[str, tuple[str, str]] = {
     "FieldProductChannel.cs": ("OTHER", "model identity strings of the runtime manifest"),
 }
 APP_METHODS: dict[tuple[str, str], tuple[str, str]] = {
+    # M116: a failed step's facts carry its grounded arguments; this only shapes an argument value for display.
+    ("AttemptedArguments.cs", "Said"): (
+        "GROUNDING", "a grounded argument value shown as the person would say it: no ids, URL host/path only, a path's "
+        "last name only; nothing of the person's words is read here"),
     ("NaturalMemoryRequestParser.cs", "ContainsSensitiveMaterial"): (
         "MIRROR", "the App refuses to store a secret whatever was read (also used by MemoryOperationProtection)"),
     ("NaturalMemoryRequestParser.cs", "TryCreateSensitiveSave"): (

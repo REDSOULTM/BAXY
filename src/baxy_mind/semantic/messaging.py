@@ -122,6 +122,13 @@ _MSG_PRONOUN_RECIPIENTS = frozenset({
 })
 
 
+def pronoun_recipient(value: object) -> bool:
+    """M115 (DEV-F v4e2 F-w47-t2 «Contéstale por WhatsApp que sí, que me viene genial…» → drafted to «me»): a pronoun
+    names nobody a message can go to; who it goes to is still to be said."""
+
+    return isinstance(value, str) and _fold(value).strip(" .,") in _MSG_PRONOUN_RECIPIENTS | {"te", "ti"}
+
+
 def message_request_named_client(text: str) -> tuple[str, str, str] | None:
     """(recipient, body, client) of a message for a named person or group in a
     NAMED chat client (WhatsApp or Discord): «mandale un mensaje a vicho por wsp

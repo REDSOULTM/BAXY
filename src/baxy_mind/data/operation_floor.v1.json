@@ -1,6 +1,6 @@
 {
  "schema": "baxy.operation-floor.v1",
- "source": "M107 (2026-10-01): the floor of an action whose every draft was refused or whose writer ran out of time. Each catalog operation has its plain clause (infinitive, then first-person past) in Spanish and English; the sentence is built only from the turn's facts: the operation, whether it was verified, failed or left uncertain, and the observed fields named below (the identity of what was acted on, a list read, a state read after). Read by the mind (baxy_mind.operation_floor) and by the App (Baxy.App.OperationFloor, embedded resource), so both say the same sentence. noSuccessFloor: a verified result whose answer is a value only its own final says (the clock, the PC's measurements) or that is not shown (a web search, owner's rule 2026-09-24). anonymous: the target is no name to say (a search query, a folder key). variants: the clause (and its facts) a verified result takes by an observed field; a failure keeps the plain clause, since a state read beside it is the one that held.",
+ "source": "M107 (2026-10-01): the floor of an action whose every draft was refused or whose writer ran out of time. Each catalog operation has its plain clause (infinitive, then first-person past) in Spanish and English; the sentence is built only from the turn's facts: the operation, whether it was verified, failed or left uncertain, and the observed fields named below (the identity of what was acted on, a list read, a state read after). Read by the mind (baxy_mind.operation_floor) and by the App (Baxy.App.OperationFloor, embedded resource), so both say the same sentence. noSuccessFloor: a verified result whose answer is a value only its own final says (the clock, the PC's measurements) or that is not shown (a web search, owner's rule 2026-09-24). anonymous: the target is no name to say (a search query, a folder key). variants: the clause (and its facts) a verified result takes by an observed field; a failure keeps the plain clause, since a state read beside it is the one that held. attempted (M116): what a failed or uncertain step attempted, said in words (the client, the side) beside its target, with its text quoted (content keys); a quiet read that failed is told by the effects it left undone (notDone).",
  "templates": {
   "es": {
    "done": "{clause}",
@@ -70,6 +70,7 @@
  "listNames": ["title", "displayName", "name", "application", "app", "label", "subject", "fileName", "ssid", "processName", "address"],
  "listCounts": ["count", "totalCount", "matchCount", "fileCount"],
  "content": ["text", "content", "body"],
+ "attempted": [{"key": "channel", "values": {"whatsapp": {"es": "en WhatsApp", "en": "on WhatsApp"}, "discord": {"es": "en Discord", "en": "on Discord"}}}, {"key": "side", "values": {"left": {"es": "a la izquierda", "en": "on the left"}, "right": {"es": "a la derecha", "en": "on the right"}}}],
  "operations": {
   "app.close": {"es": ["cerrar la ventana", "cerré la ventana"], "en": ["close the window", "closed the window"]},
   "app.installed": {"es": ["comprobar si la aplicación está instalada", "comprobé la aplicación"], "en": ["check whether the app is installed", "checked the app"],
@@ -195,10 +196,10 @@
   "memory.session.clear": {"es": ["borrar lo recordado en esta conversación", "borré lo recordado en esta conversación"], "en": ["clear what this conversation remembered", "cleared what this conversation remembered"]},
   "memory.status": {"es": ["consultar la memoria", "consulté la memoria"], "en": ["check the memory", "checked the memory"],
    "facts": [{"key": "enabled", "es": ["está activa", "está desactivada"], "en": ["it is on", "it is off"]}]},
-  "message.draft": {"es": ["dejar escrito el mensaje", "dejé escrito el mensaje"], "en": ["leave the message written", "left the message written"]},
+  "message.draft": {"es": ["dejar escrito el mensaje", "dejé escrito el mensaje"], "en": ["leave the message written", "left the message written"], "objectWord": {"es": "para", "en": "for"}},
   "message.recipient.resolve": {"es": ["buscar el contacto", "busqué el contacto"], "en": ["look for the contact", "looked for the contact"], "quiet": true},
-  "message.send": {"es": ["enviar el mensaje", "envié el mensaje"], "en": ["send the message", "sent the message"]},
-  "message.send.test": {"es": ["enviar el mensaje de prueba", "envié el mensaje de prueba"], "en": ["send the test message", "sent the test message"]},
+  "message.send": {"es": ["enviar el mensaje", "envié el mensaje"], "en": ["send the message", "sent the message"], "objectWord": {"es": "a", "en": "to"}},
+  "message.send.test": {"es": ["enviar el mensaje de prueba", "envié el mensaje de prueba"], "en": ["send the test message", "sent the test message"], "objectWord": {"es": "a", "en": "to"}},
   "network.dns.status": {"es": ["consultar los servidores DNS", "consulté los servidores DNS"], "en": ["check the DNS servers", "checked the DNS servers"]},
   "network.ip.list": {"es": ["consultar las direcciones IP", "consulté las direcciones IP"], "en": ["check the IP addresses", "checked the IP addresses"]},
   "network.ping": {"es": ["hacer ping a la dirección", "hice ping a la dirección"], "en": ["ping the address", "pinged the address"]},

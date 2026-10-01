@@ -6967,12 +6967,114 @@ def _failure_invents_a_clock(text: str, user_text: str, situation: dict) -> bool
     """M63 (v3f-final F-s019 «Cambia la alarma despertador de las 8:00 a las 9:00.»): a failure that read no clock
     says only the clocks the person named, in any equivalent form («8:00», «08:00», «20:00» for «las 8»); any other
     is invented. The twin of the App's UserMessagePolicy.InventedClock, so that the mind retries what the App would
-    drop (the App dropped the right answer when it counted the person's own clocks as invented)."""
+    drop (the App dropped the right answer when it counted the person's own clocks as invented). M116: a clock in
+    what the failed step attempted (the words of a message said in an earlier turn) was named too."""
 
     if _local_clock_from_situation(situation) or _REPLY_CLOCK.search(json.dumps(situation, ensure_ascii=False)):
         return False
     named = named_clock_dial(user_text)
+    for said in attempted_texts(situation):
+        named |= named_clock_dial(said)
     return any((int(hour) % 12, int(minute)) not in named for hour, minute in _REPLY_CLOCK.findall(text))
+
+
+_ATTEMPTED_DEPTH = 3
+_ATTEMPTED_TEXT = 280
+_ATTEMPTED_ITEMS = 5
+_NOT_DONE_ITEMS = 4
+
+
+def _attempted_value(value: object, depth: int) -> object:
+    """A copy of what the App projected as attempted, bounded again (the App's bounds are the authority)."""
+
+    if isinstance(value, bool) or isinstance(value, (int, float)):
+        return value
+    if isinstance(value, str):
+        text = " ".join(value.split())
+        return text[:_ATTEMPTED_TEXT] if text else None
+    if depth >= _ATTEMPTED_DEPTH:
+        return None
+    if isinstance(value, list):
+        items = [kept for item in value[:_ATTEMPTED_ITEMS] if (kept := _attempted_value(item, depth + 1)) is not None]
+        return items or None
+    if isinstance(value, dict):
+        kept_items = {
+            str(key): kept for key, item in value.items()
+            if isinstance(key, str) and (kept := _attempted_value(item, depth + 1)) is not None
+        }
+        return kept_items or None
+    return None
+
+
+def _attempted_facts(value: object) -> object:
+    """M116: the arguments a failed or unverified step attempted (one object, or one per merged failure)."""
+
+    return _attempted_value(value, 0) if isinstance(value, (dict, list)) else None
+
+
+def _not_done_facts(value: object, language: str) -> list[dict]:
+    """M116: the effects a failure left undone, each with what it acts on and what it would have used, and its plain
+    clause in the reply's language (operation_floor), so the writer names the act and never the catalog id."""
+
+    if not isinstance(value, list):
+        return []
+    operations = operation_floor.floor_data()["operations"]
+    told: list[dict] = []
+    for entry in value[:_NOT_DONE_ITEMS]:
+        if not isinstance(entry, dict) or not isinstance(entry.get("operation"), str):
+            continue
+        clause = operations.get(entry["operation"], {}).get("en" if language == "en" else "es")
+        item: dict = {"action": clause[0] if clause else entry["operation"]}
+        if entry.get("target") not in (None, "", []):
+            item["target"] = _attempted_value(entry["target"], 1)
+        attempted = _attempted_facts(entry.get("attempted"))
+        if attempted:
+            item["attempted"] = attempted
+        told.append(item)
+    return told
+
+
+def _carries_attempt(payload: object) -> bool:
+    """M116: the writer's facts (or their mission's reason) say what a failed step attempted or left undone."""
+
+    if not isinstance(payload, dict):
+        return False
+    return bool(payload.get("attempted") or payload.get("notDone")) or _carries_attempt(payload.get("reason"))
+
+
+def attempted_texts(situation: object, depth: int = 0) -> list[str]:
+    """M116: every text a failed step attempted or left undone (the words of a message, a name, a folder), found
+    in the facts and in a mission's reason. Values the facts carry are no claim of the writer's own."""
+
+    if depth > 6:
+        return []
+    if isinstance(situation, str) and situation.lstrip().startswith("{"):
+        try:
+            situation = json.loads(situation)
+        except json.JSONDecodeError:
+            return []
+    if not isinstance(situation, dict):
+        return []
+    found: list[str] = []
+
+    def strings(node: object) -> None:
+        if isinstance(node, str):
+            found.append(node)
+        elif isinstance(node, dict):
+            for item in node.values():
+                strings(item)
+        elif isinstance(node, list):
+            for item in node:
+                strings(item)
+
+    strings(situation.get("attempted"))
+    not_done = situation.get("notDone")
+    for entry in not_done if isinstance(not_done, list) else []:
+        if isinstance(entry, dict):
+            strings(entry.get("attempted"))
+            strings(entry.get("target"))
+    found.extend(attempted_texts(situation.get("reason"), depth + 1))
+    return found
 
 
 # Familias del catálogo activo, no una lista fija del corpus. El shell manda
@@ -7156,6 +7258,16 @@ def _compose_situation_payload(
     target = situation.get("target")
     if target not in (None, "", []):
         payload["target"] = target
+    # M116 (DEV-F v4e2 F-s014 «déjale escrito a la Lupita en WhatsApp…» → «No pude dejar escrito el mensaje
+    # «Lupita».»): a step that failed or was left unverified carries what it attempted (the App's
+    # Baxy.App.AttemptedArguments: to whom, which words, where) and the effects it left undone, so the final says
+    # them beside the cause.
+    attempted = _attempted_facts(situation.get("attempted"))
+    if attempted:
+        payload["attempted"] = attempted
+    not_done = _not_done_facts(situation.get("notDone"), language)
+    if not_done:
+        payload["notDone"] = not_done
     if kind == "confirmation":
         # The current user text can be an invalid reply or a recovery request.
         # Describe the pending invocation, not an action inferred from that reply.
@@ -10859,8 +10971,11 @@ _SEARCH_MECHANICS = re.compile(
     r"none\s+of\s+(?:these|the)\s+pages|"
     # Guion t35 (28-09) «Un resultado dice que la primera obra … mientras que otro afirma …»: results compared aloud
     # are the search shown.
-    r"(?:un|otro|el\s+primer|el\s+segundo)\s+resultado|otro\s+(?:dice|afirma|indica|sostiene)|"
-    r"(?:one|another|the\s+first|the\s+second)\s+result|another\s+(?:says|states|claims)|"
+    # M115 (DEV-F v4e2 F-w26-t2 «…con un resultado de 2-1 frente a Junior»): a match's score is no search result.
+    r"(?:un|otro|el\s+primer|el\s+segundo)\s+resultado(?!\s+(?:de\s+|of\s+)?\d+\s*(?:-|–|a|to)\s*\d+)|"
+    r"otro\s+(?:dice|afirma|indica|sostiene)|"
+    r"(?:one|another|the\s+first|the\s+second)\s+result(?!\s+(?:of\s+)?\d+\s*(?:-|–|to)\s*\d+)|"
+    r"another\s+(?:says|states|claims)|"
     # M70 (held-out v3h t14/t16): once «subió» and «fecha» stopped vetoing them, «Cierta página señala que el nieto…
     # Otra menciona que John Carpenter…» and «Un artículo de La Vanguardia indica que…» would have been published: a
     # page, article or source that speaks, or «otra» that says, is the search shown the same.
@@ -24615,6 +24730,18 @@ class LlmRuntime:
                 instruct("\n" + refuse_line + "Do not say you tried and failed.")
             elif response_language == "en":
                 instruct("\nEnglish only. Name the failure cause in prose.")
+            if _carries_attempt(visible_situation) and cause not in {"out_of_catalog", "out-of-catalog"}:
+                # M116 (DEV-F v4e2 F-s014, F-w05-t2, F-w30-t3): the facts say what was attempted and what was left
+                # undone; the final names it with the cause, never as done.
+                instruct(
+                    "\nThe facts carry what was attempted (attempted) and, if any, what was left undone (notDone): "
+                    "name it with its values (who it was for, the words of the message, where, the side, the "
+                    "amount) in the same sentence as the cause. Never say it was done."
+                    if response_language == "en"
+                    else "\nLos hechos traen lo que se intentó (attempted) y, si hay, lo que quedó sin hacer "
+                    "(notDone): nómbralo con sus valores (para quién, las palabras del mensaje, dónde, el lado, la "
+                    "cantidad) en la misma frase que la causa. Nunca digas que se hizo."
+                )
             if _failure_is_an_asked_state_held(situation):
                 # M69 (guion v3h t47): the operation's name says «mute» for both directions; the cause names
                 # what was asked and what holds.

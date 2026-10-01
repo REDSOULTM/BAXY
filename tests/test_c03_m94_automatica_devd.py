@@ -7,7 +7,7 @@ DEV-D texts are quoted as evidence; every other phrasing is this file's own.
 
 1. A failed or unverified step said only its cause (D-s102 «abre google keep» → ``app_not_found``; D-s087 the weather
    of «Abingdon Virginia»; D-p22-t2/D-p24-t4 a Netflix title behind a sign-in; D-w07-t2 «1850 entre 7»; D-w09-t3 the
-   newest file of Descargas; D-p37-t3 «chips»): the App now names what was tried (C#: ``MindPlanBoundary.WithStepTarget``,
+   newest file of Descargas; D-p37-t3 «chips»): the App now names what was tried (C#: ``MindPlanBoundary.WithStepFacts``,
    tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs); here, the composer keeps that target in the facts.
 2. Limits a reader closed wrong or not at all: the person's mails taken together (D-s007, a list to write), an entry
    taken off the calendar (D-s016, the calendar listed), a ride called off «¿sería posible…?» (D-s064, advice as

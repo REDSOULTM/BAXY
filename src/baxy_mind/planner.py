@@ -1134,6 +1134,13 @@ def _value_is_grounded(
         false_signal = bool(tokens & _FALSE_CUES)
         return true_signal != false_signal and value is true_signal
     if isinstance(value, (int, float)):
+        if property_name == "seconds" and isinstance(value, int) and value:
+            # M115 (DEV-F v4e2 F-w43-t3 «adelantala un minuto…» → «¿Cuántos segundos…?»): seconds said as the
+            # minutes or hours they make are said.
+            from .semantic.temporal import said_durations
+
+            if any(minutes * 60 == abs(value) for _, minutes in said_durations(source)):
+                return True
         return _number_is_grounded(value, source)
     if isinstance(value, list):
         item_schema = schema.get("items")
@@ -1144,6 +1151,17 @@ def _value_is_grounded(
         return False
     if "const" in schema:
         return value == schema["const"]
+    if property_name == "recipient":
+        from .semantic.messaging import pronoun_recipient
+
+        if pronoun_recipient(value):
+            return False
+    if property_name == "due":
+        # M115 (DEV-F v4e2 F-s022): a task's day written as the store reads it is said when the person named that day.
+        from .semantic.temporal import iso_day_said
+
+        if iso_day_said(value, source):
+            return True
     enum = schema.get("enum")
     if isinstance(enum, list):
         aliases = _ENUM_EVIDENCE_ALIASES.get(value, (value,))
