@@ -197,7 +197,8 @@ def test_a_removed_task_is_named_by_its_title(draft: str) -> None:
 def test_a_removal_told_as_not_done_is_still_vetoed() -> None:
     draft = "I did not remove the chips from your shopping list because you requested that."
     facts = {"situation": CHIPS_DELETED, "priorRequests": CHIPS_PRIOR}
-    assert _compose([draft], CHIPS, "status", CHIPS_DELETED, priorRequests=CHIPS_PRIOR) == ""
+    # M107: the vetoed draft is not published; the verified removal is told from its facts instead of no final.
+    assert _compose([draft], CHIPS, "status", CHIPS_DELETED, priorRequests=CHIPS_PRIOR) == "I removed the task «chips»."
     assert llm.compose_visible_defect(draft, "status", CHIPS, facts) != ""
 
 
@@ -374,6 +375,9 @@ def test_three_shortened_titles_end_in_the_created_item() -> None:
     assert _compose(drafts, PATATAS, "status", PATATAS_CREATED) == "Añadí «patatas y patatas y huevos»."
 
 
-def test_an_unverified_task_write_has_no_template() -> None:
+def test_an_unverified_task_write_is_never_told_as_written() -> None:
+    # M107: a write that failed has a final too — the failure, never «Añadí…».
     unverified = {**PATATAS_CREATED, "verified": False, "succeeded": False, "polarity": "failure"}
-    assert llm._deterministic_final(unverified, {"seen": unverified["observed"]}, PATATAS, "es") == ""
+    assert llm._deterministic_final(unverified, {"seen": unverified["observed"]}, PATATAS, "es") == (
+        "No pude anotar la tarea «patatas y patatas y huevos»."
+    )

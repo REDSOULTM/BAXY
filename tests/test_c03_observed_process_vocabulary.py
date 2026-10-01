@@ -64,7 +64,9 @@ def test_process_vocabulary_requires_the_exact_verified_operation(change):
     else:
         value["situation"]["observed"]["processes"][0]["name"] = "other-worker"
     client = Recorder(["The process baxy-core uses 4.5% CPU."] * 3)
-    assert client.compose_user_message("Which process uses the most CPU?", "status", value) == ""
+    # M107: the unobserved name is never published; a verified read is then told from its facts.
+    floor = "I checked the running programs; there is 1: «other-worker»." if change == "different_name" else ""
+    assert client.compose_user_message("Which process uses the most CPU?", "status", value) == floor
     assert len(client.requests) == 3
 
 

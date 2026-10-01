@@ -140,5 +140,8 @@ def test_process_uncertainty_does_not_hide_a_separate_failure_claim():
 
 def test_unknown_process_state_alone_does_not_answer_the_window_question():
     client = Recorder(["I cannot tell whether Orbit 23 is running from this observation."] * 3)
-    assert client.compose_user_message("Is Orbit 23 open?", "status", {"situation": situation()}) == ""
+    # M107: the vetoed drafts are not published; the window read is told from its facts.
+    assert client.compose_user_message("Is Orbit 23 open?", "status", {"situation": situation()}) == (
+        "I checked the app «Orbit 23»: it has no open window."
+    )
     assert len(client.payloads) == 3
