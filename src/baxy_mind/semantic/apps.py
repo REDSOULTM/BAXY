@@ -147,6 +147,40 @@ def deictic_close_request(folded: str) -> bool:
     return _DEICTIC_CLOSE_REQUEST.match(folded) is not None
 
 
+# M96 (held-out t11 «cerralo» right after «abrí el bloc de notas», 28/30 oscillating): the pronoun alone, with the
+# fillers said around it. Never «esta ventana» or «the active window»: those name the window in front.
+_CLOSE_FILLER = (
+    r"(?:ya|ok|okay|okey|vale|dale|bueno|listo|bien|perfecto|ahora|entonces|y|pues|oye|che|baxy|"
+    r"now|alright|right|then|so|and|hey|por\s+favor|porfa|please)"
+)
+_BARE_CLOSE_PRONOUN = re.compile(
+    rf"^[¿¡\s]*(?:{_CLOSE_FILLER}\b[\s,.;:!]*)*"
+    r"(?:(?:puedes|podes|podrias|can\s+you|could\s+you|would\s+you)\s+)?"
+    r"(?:(?:cierr|cerr)[ae](?:me|te)?(?:lo|la)|cerrarlo|cerrarla|"
+    r"(?:cierra|cierre|cerra|cerrar)\s+(?:eso|esto|aquello)|"
+    r"(?:lo|la)\s+(?:cierras|cerras|cierra|cierre)|"
+    r"(?P<english>(?:close|shut|quit)\s+(?:it|that|this)(?:\s+(?:one|app|down))?))"
+    r"(?:[\s,.;:!]+(?:ya|ahora|porfa|por\s+favor|please|now|then|entonces|tambien|too|nomas|pues))*"
+    r"[\s?!.]*$"
+)
+
+
+def bare_close_pronoun(folded: str) -> tuple[bool, bool]:
+    """«cerralo», «ya, ciérrala», «ok close that»: (closes what a pronoun points at, said in English)."""
+
+    found = _BARE_CLOSE_PRONOUN.match(folded)
+    return found is not None, found is not None and found.group("english") is not None
+
+
+def close_request_for_opened(opened: str, english: bool) -> str:
+    """The close of what an open read named, in the person's words: «abre la calculadora» → «Cierra la calculadora»,
+    «notepad» → «Close notepad». The open verb the reader may keep is replaced, never the application's name."""
+
+    name = re.sub(rf"^\s*{_OPEN}(?:me)?\s+", "", opened.strip(), count=1, flags=re.IGNORECASE)
+    name = re.sub(r"[\s,]+(?:por\s+favor|porfa|please)[\s.!]*$", "", name, flags=re.IGNORECASE).strip(" .,!")
+    return f"{'Close' if english else 'Cierra'} {name}"
+
+
 def _bounded_application_literal(candidate: str) -> str | None:
     """Keep literal presence queries bounded without asserting membership."""
 

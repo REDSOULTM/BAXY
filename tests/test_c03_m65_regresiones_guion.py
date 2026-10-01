@@ -165,7 +165,9 @@ def test_the_pronoun_closes_what_was_just_opened_in_the_persons_verb_in_another_
 
     assert result["kind"] == "action"
     assert result["operation"] == "app.close"
-    assert result["objective"] == "Cierra el Bloc de notas."
+    # M96: the pronoun's referent is read (``_close_of_the_just_opened``), no longer the decider's restatement; this
+    # harness has no application catalog, so the name is the one the open reader kept.
+    assert result["objective"] == "Cierra bloc de notas"
 
 
 def test_a_pointer_filled_with_an_object_nobody_said_is_still_asked() -> None:
