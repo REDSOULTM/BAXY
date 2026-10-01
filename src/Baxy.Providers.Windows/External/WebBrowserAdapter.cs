@@ -20,6 +20,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     private readonly OpenStreetMapPlaceSource _places;
     private readonly FrankfurterRateSource _rates;
     private readonly WikimediaReferenceSource _references;
+    private readonly SearchPageReader _pages;
     private readonly string? _searchDiagnosticPath;
 
     // El perfil del navegador colgaba del directorio del turno, de modo que cada
@@ -68,6 +69,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _places = new OpenStreetMapPlaceSource(_http);
         _rates = new FrankfurterRateSource(_http);
         _references = new WikimediaReferenceSource(_http);
+        _pages = new SearchPageReader();
     }
 
     internal WebBrowserAdapter(
@@ -83,6 +85,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _places = new OpenStreetMapPlaceSource(_http);
         _rates = new FrankfurterRateSource(_http);
         _references = new WikimediaReferenceSource(_http);
+        _pages = new SearchPageReader(_http);
     }
 
     public bool CanHandle(string operation) => operation is
@@ -148,6 +151,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     {
         _browser.Dispose();
         _http.Dispose();
+        _pages.Dispose();
     }
 
     private async ValueTask<ExternalCapabilityReceipt> ControlAsync(
@@ -761,7 +765,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // results are read at once, within a bound of their own, and the sentences of each that carry the most of the
     // query (SearchPageExcerpt) follow its snippet. A query of one or two content words names a thing or a site, and
     // its snippets already say what it is: no page is read. A page that does not answer in time, is not HTML or is
-    // not a public https address keeps its snippet alone.
+    // not a public web address (SearchPageReader) keeps its snippet alone.
     private const int ExcerptPages = 3;
     private static readonly TimeSpan ExcerptBudget = TimeSpan.FromMilliseconds(1_500);
 
@@ -790,27 +794,11 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken budget,
         CancellationToken cancellationToken)
     {
-        if (!Uri.TryCreate(result.Url, UriKind.Absolute, out Uri? page)
-            || page.Scheme != Uri.UriSchemeHttps
-            || page.HostNameType != UriHostNameType.Dns
-            || page.IsLoopback
-            || !page.Host.Contains('.', StringComparison.Ordinal))
-        {
-            return string.Empty;
-        }
+        if (!Uri.TryCreate(result.Url, UriKind.Absolute, out Uri? page)) return string.Empty;
         try
         {
-            using var request = new HttpRequestMessage(HttpMethod.Get, page);
-            using HttpResponseMessage response = await _http
-                .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, budget)
-                .ConfigureAwait(false);
-            if (!response.IsSuccessStatusCode
-                || response.Content.Headers.ContentType?.MediaType is not ("text/html" or "application/xhtml+xml"))
-            {
-                return string.Empty;
-            }
-            string html = await ReadBoundedTextAsync(response, 1_500_000, budget).ConfigureAwait(false);
-            return SearchPageExcerpt.Read(html, asked, result.Title + " " + result.Snippet);
+            string? html = await _pages.ReadHtmlAsync(page, budget).ConfigureAwait(false);
+            return html is null ? string.Empty : SearchPageExcerpt.Read(html, asked, result.Title + " " + result.Snippet);
         }
         catch (HttpRequestException)
         {
@@ -1010,6 +998,15 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         int maximumBytes,
         CancellationToken cancellationToken)
     {
+        byte[] body = await ReadBoundedBytesAsync(response, maximumBytes, cancellationToken).ConfigureAwait(false);
+        return Encoding.UTF8.GetString(body);
+    }
+
+    internal static async Task<byte[]> ReadBoundedBytesAsync(
+        HttpResponseMessage response,
+        int maximumBytes,
+        CancellationToken cancellationToken)
+    {
         using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken)
             .ConfigureAwait(false);
         using var buffer = new MemoryStream();
@@ -1027,7 +1024,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         {
             ArrayPool<byte>.Shared.Return(chunk);
         }
-        return Encoding.UTF8.GetString(buffer.GetBuffer(), 0, (int)buffer.Length);
+        return buffer.ToArray();
     }
 
     private static readonly Regex HtmlTag = new(

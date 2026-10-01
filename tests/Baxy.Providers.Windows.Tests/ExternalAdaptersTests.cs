@@ -2750,6 +2750,125 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // M98: a page is decoded in the charset its response declares, else the one its own first bytes declare, else
+    // UTF-8; Latin-1 is read as Windows-1252, as browsers do.
+    [Test]
+    public void APageIsDecodedInTheCharsetItDeclares()
+    {
+        Encoding windows1252 = CodePagesEncodingProvider.Instance.GetEncoding(1252)!;
+        const string Prose = "<p>Según la tradición, la paella lleva azafrán y cuesta 12 €.</p>";
+        Assert.Multiple(() =>
+        {
+            Assert.That(SearchPageReader.Decode(Encoding.Latin1.GetBytes("<p>Según la tradición, azafrán.</p>"), "ISO-8859-1"),
+                Does.Contain("Según la tradición, azafrán."));
+            Assert.That(SearchPageReader.Decode(windows1252.GetBytes("<html><head><meta charset=\"windows-1252\"></head>" + Prose), null),
+                Does.Contain("tradición, la paella lleva azafrán y cuesta 12 €."));
+            Assert.That(SearchPageReader.Decode(windows1252.GetBytes(
+                    "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">" + Prose), null),
+                Does.Contain("cuesta 12 €."));
+            Assert.That(SearchPageReader.Decode(Encoding.UTF8.GetBytes(Prose), null), Does.Contain("Según la tradición"));
+            // The response's charset is the page's, whatever its <meta> says.
+            Assert.That(SearchPageReader.Decode(Encoding.UTF8.GetBytes("<meta charset=\"iso-8859-1\">" + Prose), "utf-8"),
+                Does.Contain("Según la tradición"));
+            Assert.That(SearchPageReader.Decode(Encoding.UTF8.GetBytes(Prose), "no-such-charset"), Does.Contain("azafrán"));
+        });
+    }
+
+    // M98: only a public web address is read; this PC, the local network, Tailscale's range and non-web schemes never.
+    [Test]
+    public void OnlyAPublicWebAddressIsRead()
+    {
+        Assert.Multiple(() =>
+        {
+            foreach (string address in new[] { "https://example.com/a", "http://example.com/a", "https://93.184.216.34/" })
+                Assert.That(SearchPageReader.IsPublicPageAddress(new Uri(address)), Is.True, address);
+            foreach (string address in new[]
+            {
+                "file:///C:/Users/x/secret.txt", "ftp://example.com/a", "http://localhost/admin", "https://127.0.0.1/",
+                "https://10.0.0.5/", "https://172.20.1.1/", "https://192.168.1.1/", "https://169.254.169.254/latest",
+                "https://100.101.102.103/", "https://[::1]/", "https://[fd00::1]/", "https://[fe80::1]/",
+                "https://[::ffff:192.168.0.1]/", "https://router/", "https://printer.local/", "https://nas.home.arpa/",
+                "https://pc.tail1234.ts.net/", "https://user:pass@example.com/",
+            })
+            {
+                Assert.That(SearchPageReader.IsPublicPageAddress(new Uri(address)), Is.False, address);
+            }
+            Assert.That(SearchPageReader.PublicEndpoint([IPAddress.Parse("93.184.216.34")]),
+                Is.EqualTo(IPAddress.Parse("93.184.216.34")));
+            // A name that also resolves into the LAN is trusted with none of its addresses.
+            Assert.That(SearchPageReader.PublicEndpoint([IPAddress.Parse("93.184.216.34"), IPAddress.Parse("192.168.1.10")]),
+                Is.Null);
+            Assert.That(SearchPageReader.PublicEndpoint([IPAddress.Parse("2606:4700::1111")]), Is.Not.Null);
+            Assert.That(SearchPageReader.PublicEndpoint([]), Is.Null);
+        });
+    }
+
+    // M98: a Latin-1 result page is read with its accents, and the request carries only a generic User-Agent.
+    [Test]
+    public async Task ALatinOneResultPageIsReadWithItsAccentsAndNothingOfThePerson()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, SearchResultsPage(
+                ("Paella valenciana: cuánto arroz lleva", "https://recetas.example.es/paella",
+                    "La receta tradicional de la paella valenciana y el arroz que lleva...")), "text/html"),
+            ["recetas.example.es"] = new(HttpStatusCode.OK, "", "text/html; charset=ISO-8859-1",
+                Raw: Encoding.Latin1.GetBytes(
+                    "<html><body><p>Según la tradición, la paella valenciana lleva 400 gramos de arroz para cuatro personas y azafrán.</p></body></html>")),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"cuánto arroz lleva la paella valenciana"}"""), CancellationToken.None);
+
+        AskedRequest page = handler.Asked.Single(asked => asked.Uri.Host == "recetas.example.es");
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("results")[0].GetProperty("snippet").GetString(),
+                Does.Contain("Según la tradición, la paella valenciana lleva 400 gramos de arroz para cuatro personas y azafrán."));
+            Assert.That(page.Headers, Is.EqualTo(new[] { "User-Agent" }));
+            Assert.That(page.UserAgent, Is.EqualTo("BAXY/1.0 page-read"));
+        });
+    }
+
+    // M98: a result in the local network is never read, and neither is a public page's redirect into it.
+    [Test]
+    public async Task AResultPageInTheLocalNetworkIsNeverRead()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, SearchResultsPage(
+                ("Paella valenciana: cuánto arroz lleva", "https://192.168.1.20/paella", "El arroz que lleva la paella valenciana..."),
+                ("Paella valenciana: el arroz que lleva", "https://intranet.local/paella", "Cuánto arroz lleva la paella valenciana..."),
+                ("Arroz de la paella valenciana: cuánto lleva", "https://recetas.example.es/paella", "La paella valenciana lleva arroz...")),
+                "text/html"),
+            ["192.168.1.20"] = new(HttpStatusCode.OK, "<p>La paella valenciana lleva 400 gramos de arroz, dice el router.</p>", "text/html"),
+            ["intranet.local"] = new(HttpStatusCode.OK, "<p>La paella valenciana lleva 400 gramos de arroz, dice la intranet.</p>", "text/html"),
+            ["recetas.example.es"] = new(HttpStatusCode.Found, "", "text/html", Location: "http://127.0.0.1/admin"),
+            ["127.0.0.1"] = new(HttpStatusCode.OK, "<p>La paella valenciana lleva 400 gramos de arroz, dice este PC.</p>", "text/html"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"cuánto arroz lleva la paella valenciana"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("dice"));
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host), Does.Contain("recetas.example.es"));
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host),
+                Has.None.EqualTo("192.168.1.20").And.None.EqualTo("intranet.local").And.None.EqualTo("127.0.0.1"));
+        });
+    }
+
     // M51 F-s012: Wikipedia answered with articles that shared a word with the query;
     // none passes the gate, so Wikipedia did not answer and the engine is asked.
     [Test]
@@ -3329,9 +3448,11 @@ public sealed class ExternalAdaptersTests
         return page.Append("</table></body></html>").ToString();
     }
 
-    private sealed record HttpAnswer(HttpStatusCode Status, string Body, string ContentType);
+    // M98: a body of raw bytes (a page in another charset) and a redirect's Location.
+    private sealed record HttpAnswer(
+        HttpStatusCode Status, string Body, string ContentType, byte[]? Raw = null, string? Location = null);
 
-    private sealed record AskedRequest(Uri Uri, string UserAgent);
+    private sealed record AskedRequest(Uri Uri, string UserAgent, string[] Headers);
 
     // Answers each host with its own reply; a host it does not know is unreachable.
     private sealed class SearchSourcesHttpHandler : HttpMessageHandler
@@ -3353,17 +3474,27 @@ public sealed class ExternalAdaptersTests
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
             Uri uri = request.RequestUri!;
-            Asked.Add(new AskedRequest(uri, request.Headers.UserAgent.ToString()));
+            Asked.Add(new AskedRequest(uri, request.Headers.UserAgent.ToString(),
+                request.Headers.Select(static header => header.Key).ToArray()));
             string address = Uri.UnescapeDataString(uri.AbsoluteUri);
             HttpAnswer? answer = Routes.FirstOrDefault(route => address.Contains(route.Contains, StringComparison.Ordinal)).Answer;
             if (answer is null && !_answers.TryGetValue(uri.Host, out answer))
             {
                 throw new HttpRequestException("unreachable host " + uri.Host);
             }
-            return Task.FromResult(new HttpResponseMessage(answer.Status)
+            HttpContent content;
+            if (answer.Raw is not null)
             {
-                Content = new StringContent(answer.Body, Encoding.UTF8, answer.ContentType),
-            });
+                content = new ByteArrayContent(answer.Raw);
+                content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse(answer.ContentType);
+            }
+            else
+            {
+                content = new StringContent(answer.Body, Encoding.UTF8, answer.ContentType);
+            }
+            var response = new HttpResponseMessage(answer.Status) { Content = content };
+            if (answer.Location is not null) response.Headers.Location = new Uri(answer.Location, UriKind.RelativeOrAbsolute);
+            return Task.FromResult(response);
         }
     }
 
