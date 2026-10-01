@@ -365,7 +365,8 @@ def test_p09_t3_the_retry_says_not_to_deny() -> None:
         response_language="en",
     )
     assert answer == "Barbells are already on your fitness list."
-    assert "do not say what you did or did not do" in _system_text(writer.sent[1])
+    # M109: the hint also says what to write (a bare denial answers nothing; the act asked, not done, says why).
+    assert "a bare «I did not …» answers nothing" in _system_text(writer.sent[1])
 
 
 @pytest.mark.parametrize(
@@ -454,7 +455,9 @@ def test_p35_t3_what_baxy_does_is_still_a_capability_question() -> None:
 
 
 def test_p31_t2_the_reply_is_told_to_answer_about_the_last_answer() -> None:
-    writer = _Writer(["No, no puedo asegurarlo: no encontré esa lista."])
+    # M109: «no puedo asegurarlo» is a failure told, which the App refuses; the repair is the answer.
+    writer = _Writer(["No, no puedo asegurarlo: no encontré esa lista.",
+                      '{"answer": "Es lo que recuerdo de esa época, pero no lo he comprobado."}'])
     writer.chat(_case("D-p31-t2")["text"], history=_case("D-p31-t2")["lived"], conversation_kind="knowledge",
                 response_language="es")
     system = _system_text(writer.sent[0])

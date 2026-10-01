@@ -4479,11 +4479,57 @@ def visible_reply_claims_an_unrun_ability(value: object, request: object = "") -
     return False
 
 
-_CLAIMED_ABILITY_HINT = {
-    "es": "En este turno no hiciste nada: no digas que puedes hacerlo. Si tus mensajes anteriores dicen que eso no lo "
-    "haces, dilo de nuevo; si no, di llanamente que no lo has hecho. Una frase.",
-    "en": "You did nothing in this turn: do not say you can do it. If your earlier messages say you do not do that, "
-    "say so again; otherwise say plainly that you have not done it. One sentence.",
+def _claimed_ability_instruction(last_said: str, language: str | None) -> str:
+    """M109 (DEV-D v4d D-p23-t5 «Actually do English subtitles.» after «I do not add subtitles to movies.»): the M105
+    hint told the writer «say plainly that you have not done it», and the bare «I did not add English subtitles to the
+    movie.» it then wrote died as own_write_denied twice; the turn had no final. The hint now says what to write that
+    every veto accepts: the limit said again in other words, or the act not done with its reason after a colon (a
+    denial that says why is no bare denial), with BAXY's last message as the data that reason comes from."""
+
+    last = " ".join(str(last_said or "").split())[:320]
+    if language == "en":
+        return (
+            "You did nothing in this turn: do not say you can do it"
+            + (f". Your last message was «{last}»" if last else "")
+            + ". In one sentence, either say again in other words that you do not do that, if your last message says "
+            "so, or say that you have not done it and why, after a colon («I have not done that: …»)."
+        )
+    return (
+        "En este turno no hiciste nada: no digas que puedes hacerlo"
+        + (f". Tu último mensaje fue «{last}»" if last else "")
+        + ". En una frase, o di de nuevo con otras palabras que eso no lo haces, si tu último mensaje lo dice, o di que "
+        "no lo has hecho y por qué, tras dos puntos («No lo he hecho: …»)."
+    )
+
+
+def _own_write_denied_instruction(language: str | None) -> str:
+    """M85's hint for a bare denial of a write (DEV-D v3o D-p09-t3, D-w01-t2), with (M109, DEV-D v4d D-p23-t5) what to
+    write when the person did ask for the act: «do not say what you did or did not do» left no answer to «Actually do
+    English subtitles.», and its accumulation with the claimed-ability hint contradicted it."""
+
+    if language == "en":
+        return (
+            "Nothing ran this turn: a bare «I did not …» answers nothing. Answer, in one sentence, what the person says "
+            "or asks, with what the conversation shows; if they asked you to do something, say that you do not do it, "
+            "or that you have not done it and why, after a colon («I have not done that: …»)."
+        )
+    return (
+        "En este turno no se ejecutó nada: un «no lo hice» a secas no contesta nada. Contesta, en una frase, lo que la "
+        "persona dice o pregunta, con lo que muestra la conversación; si te pidió hacer algo, di que eso no lo haces, "
+        "o que no lo has hecho y por qué, tras dos puntos («No lo he hecho: …»)."
+    )
+
+
+# M109 (DEV-D v4d D-p23-t5, D-p24-t5): a talk reply that tells a failure («I cannot add English subtitles to the
+# movie.», «I cannot sign you in…») is refused by the App's conversation policy (looks_like_failure), whose fallback
+# then composes with no conversation at all. The writer is told what to say instead, before the App sees it.
+_TOLD_FAILURE_HINT = {
+    "es": "No lo cuentes como algo que no pudiste o no puedes hacer: sin «no puedo», «no pude» ni «falló». Si es algo "
+    "que no haces, dilo en presente («No …»); si todavía no está hecho, di que no lo has hecho y por qué, tras dos "
+    "puntos («No lo he hecho: …»). Una frase con tus palabras, sin repetir tu mensaje anterior.",
+    "en": "Do not tell it as something you could not or cannot do: no «cannot», «can't», «could not» or «failed». If it "
+    "is something you do not do, say so in the present («I don't …»); if it is not done yet, say that you have not done "
+    "it and why, after a colon («I have not done that: …»). One sentence of your own, not your previous message again.",
 }
 
 
@@ -4509,9 +4555,12 @@ def _go_ahead_instruction(last_said: str, language: str | None) -> str:
     said (whose outcome, a failure included, is the only reason it may give)."""
 
     last = " ".join(str(last_said or "").split())[:320]
+    # M109 (DEV-D v4d D-p24-t5): after a question of BAXY's the go-ahead answers nothing it asked.
+    asked = last.endswith("?")
     if language == "en":
         return (
-            "The person tells you to go ahead, but nothing ran this turn and nothing of yours was waiting for a yes"
+            "The person tells you to go ahead, but nothing ran this turn and "
+            + ("their yes does not answer what you asked" if asked else "nothing of yours was waiting for a yes")
             + (f"; your last message was «{last}»" if last else "")
             + ". In one sentence, say that you have not done it yet and, if your last message says why, give that "
             # M105 (DEV-D v4a D-p24-t4): «…because the streaming of Hustlers failed because…» was refused as a failure.
@@ -4519,7 +4568,8 @@ def _go_ahead_instruction(last_said: str, language: str | None) -> str:
             "the words failed, could not or cannot. Never say it is confirmed, under way or will proceed."
         )
     return (
-        "La persona te dice que sigas adelante, pero en este turno no se ejecutó nada y nada tuyo esperaba un sí"
+        "La persona te dice que sigas adelante, pero en este turno no se ejecutó nada y "
+        + ("su sí no contesta lo que preguntaste" if asked else "nada tuyo esperaba un sí")
         + (f"; tu último mensaje fue «{last}»" if last else "")
         + ". En una frase, di que todavía no lo hiciste y, si tu último mensaje dice por qué, da ese motivo como lo "
         "que aún falta (por ejemplo, que el servicio pide iniciar sesión en este PC antes), sin las palabras falló, "
@@ -15437,6 +15487,8 @@ def compose_visible_defect(
         _looks_like_ambiguous_action(user_text)
         and "?" not in stripped
         and "¿" not in stripped
+        # M109 (DEV-D v4d D-p24-t4): the act said not done, with why, answers «do it» (twin of the App's check).
+        and not dialogue_slot.says_not_done_and_why(stripped)
     ):
         return "clarification_not_a_question"
     if (
@@ -20161,6 +20213,26 @@ class LlmRuntime:
         wrong_reply_language = _reply_uses_opposite_language(prose, response_language)
         # M88 (DEV-D v3r D-p24-t5): a go-ahead nothing was waiting for is answered by saying it was not done.
         go_ahead_draft_unmet = go_ahead_unmet and bool(content) and _go_ahead_reply_unmet(prose, text)
+
+        def refused_as_told_failure(value: str) -> bool:
+            """M109 (DEV-D v4d D-p23-t5 «Actually do English subtitles.» → «I cannot add English subtitles to the
+            movie.», D-p24-t5 → «I cannot sign you in or access your PC's account.»): talk that tells a failure is
+            refused by the App (looks_like_failure, twin ``talk_reply_tells_a_failure``), whose fallback composes with
+            no conversation. Judged here, the draft is written again with what to say instead. The App spares a limit
+            the turn decided, a knowledge question and a place no operation reaches; the twin spares a limit, every
+            question or ask to say, and that place (``effect_intent.out_of_world_request``)."""
+
+            return (
+                bool(value)
+                and conversation_kind not in {"unsupported", "unsupported_language"}
+                and presentation_shape not in _WRITTEN_CONTENT_SHAPES
+                and not code_asked
+                and not asks_or_has_words_said(text)
+                and not effect_intent.out_of_world_request(text)
+                and talk_reply_tells_a_failure(value, text)
+            )
+
+        app_refuses_told_failure = refused_as_told_failure(prose)
         # M95 (D52; DEV-D D-p28-t3): an unshaped talk answer states no figure from memory.
         figures_judged = conversation_kind in {None, "knowledge", "followup"} and presentation_shape is None and not code_asked
         memory_figures = (
@@ -20177,7 +20249,7 @@ class LlmRuntime:
             and not (
                 is_echo or system_prompt_echo
                 or unsupported_contract_failure or shaped_contract_failure or go_ahead_draft_unmet or memory_figures
-                or misquoted or repeats_last
+                or misquoted or repeats_last or app_refuses_told_failure
             )
         )
         if (
@@ -20191,6 +20263,7 @@ class LlmRuntime:
             or memory_figures
             or misquoted
             or repeats_last
+            or app_refuses_told_failure
         ):
             retry_payload = dict(payload)
             language_message = next(
@@ -20284,14 +20357,7 @@ class LlmRuntime:
                         )
                         if presentation_shape not in _WRITTEN_CONTENT_SHAPES
                         and conversation_reply_speaks_of_the_system(content, text, prior_user_requests)
-                        else (
-                            # M85 (DEV-D v3o D-p09-t3, D-w01-t2): the denial of a write nobody asked about.
-                            "En este turno no hiciste nada: no digas lo que hiciste ni lo que no hiciste. Contesta, "
-                            "en una sola frase, lo que la persona dice o pregunta, con lo que muestra la conversación."
-                            if response_language != "en"
-                            else "You did nothing in this turn: do not say what you did or did not do. Answer, in "
-                            "one sentence, what the person says or asks, with what the conversation shows."
-                        )
+                        else _own_write_denied_instruction(response_language)
                         if presentation_shape not in _WRITTEN_CONTENT_SHAPES
                         and conversation_world_claim(content, text, prior_user_requests) == "own_write_denied"
                         else _UNNAMED_WORK_HINT["en" if response_language == "en" else "es"]
@@ -20300,9 +20366,18 @@ class LlmRuntime:
                         else _UNREAD_SHOWTIMES_HINT["en" if response_language == "en" else "es"]
                         if presentation_shape not in _WRITTEN_CONTENT_SHAPES
                         and conversation_world_claim(content, text, prior_user_requests) == "unread_showtimes"
-                        else _CLAIMED_ABILITY_HINT["en" if response_language == "en" else "es"]
+                        else _claimed_ability_instruction(last_assistant, response_language)
                         if presentation_shape not in _WRITTEN_CONTENT_SHAPES
                         and conversation_world_claim(content, text, prior_user_requests) == "claimed_ability"
+                        # M109 (DEV-D v4d D-p24-t5 «That is confirmed to proceed.» after a question of BAXY's): a go-ahead
+                        # answered with the act settled or promised is told what to say instead — that it is not done
+                        # yet, and why.
+                        else _go_ahead_instruction(last_assistant, response_language)
+                        if presentation_shape not in _WRITTEN_CONTENT_SHAPES
+                        and conversation_world_claim(content, text, prior_user_requests) == "effect_claim"
+                        and dialogue_slot.gives_go_ahead(text)
+                        else _TOLD_FAILURE_HINT["en" if response_language == "en" else "es"]
+                        if app_refuses_told_failure
                         else (
                             # Uso real 2026-09-23 (tanda 2): «Te traigo una hamburguesa»,
                             # «Se añadirá.», «no hay queso en la lista». The generic
@@ -20534,7 +20609,7 @@ class LlmRuntime:
             kept = _without_memory_figures(final_content, remembered)
             first_only_remembered = (memory_figures or misquoted) and not (
                 is_echo or system_prompt_echo or unsupported_contract_failure or shaped_contract_failure
-                or wrong_reply_language or go_ahead_draft_unmet or repeats_last
+                or wrong_reply_language or go_ahead_draft_unmet or repeats_last or app_refuses_told_failure
             )
             if not kept and first_only_remembered and final_content != content:
                 # M104 (reserve v3z en14787 «what is the difference between roman and grigorean calendar» → no reply):
@@ -20599,12 +20674,16 @@ class LlmRuntime:
                 )
             )
             or (go_ahead_unmet and _go_ahead_reply_unmet(final_prose, text))
+            # M109: a repair that still tells a failure goes to the turn's recovery, not to the App's refusal.
+            or refused_as_told_failure(final_prose)
         ):
             failure_reason = (
                 "empty"
                 if not final_content
                 else "go_ahead_not_done"
                 if go_ahead_unmet and _go_ahead_reply_unmet(final_prose, text)
+                else "told_failure"
+                if refused_as_told_failure(final_prose)
                 else "wrong_language"
                 if _reply_uses_opposite_language(final_prose, response_language)
                 else "echo"
@@ -26063,7 +26142,40 @@ class LlmRuntime:
                         "deterministic_fallback", deterministic, deterministic, response, "", True,
                     )
                     return deterministic
+            question = talk_clarification_floor() if drafts_rejected else ""
+            if question:
+                record_stage("clarification_fallback", question, question, response, "", True)
+                return question
             return ""
+
+        def talk_clarification_floor() -> str:
+            """M109 (DEV-D v4d D-p23-t5, D-p24-t5: the App's conversation fallback, three drafts vetoed, no final): talk
+            in a turn that ran nothing, whose every draft was refused, asks the person the one thing missing — the
+            mind's own recovery floor (``__main__._recover_failed_turn``), composed from the same conversation (its
+            last message and the person's earlier ones). Never a fixed sentence: empty when that question cannot be
+            written either."""
+
+            if intent != "conversation" or str(situation.get("kind") or intent) != "conversation" or any(
+                situation.get(key) for key in ("operation", "reason", "steps")
+            ):
+                return ""
+            remaining = None if compose_deadline is None else compose_deadline - time.monotonic()
+            if remaining is not None and remaining <= 0:
+                return ""
+            asked = {
+                key: value for key, value in facts.items()
+                if key in {"context", "priorRequests", "reading", "traceId", "capabilities"}
+            }
+            asked["situation"] = json.dumps(
+                {"kind": "clarification", "cause": "ambiguous_request", "polarity": "pending"}, ensure_ascii=False,
+            )
+            try:
+                question = self.compose_user_message(
+                    user_text, "clarification", asked, timeout=remaining, said=said, _drafted_only=True,
+                ).strip()
+            except (OSError, TimeoutError, ValueError):
+                return ""
+            return question if question.endswith("?") and not _says_the_person_back(question, said or user_text) else ""
 
         try:
             response = post(payload)
@@ -27304,7 +27416,11 @@ class LlmRuntime:
                     "Contesta con lo que sabes o di llanamente que no lo sabes."
                 ),
                 "effect_claim": (
-                    "Nothing ran this turn: do not say you did, are doing or will do anything. If the person asked "
+                    # M109 (DEV-D v4d D-p24-t5 «That is confirmed to proceed.» after a question of BAXY's: «The plan is
+                    # confirmed to proceed.» three times under the generic hint): a go-ahead is told what to say.
+                    _go_ahead_instruction(str(facts.get("context") or ""), response_language)
+                    if dialogue_slot.gives_go_ahead(said or user_text)
+                    else "Nothing ran this turn: do not say you did, are doing or will do anything. If the person asked "
                     "for it, say in one sentence that you did not do it."
                     if response_language == "en"
                     else "En este turno no se ejecutó nada: no digas que hiciste, haces o harás algo. Si la persona "
@@ -27333,7 +27449,7 @@ class LlmRuntime:
                 # M85 (DEV-D v3o D-p27-t1).
                 "unnamed_work": _UNNAMED_WORK_HINT["en" if response_language == "en" else "es"],
                 "unread_showtimes": _UNREAD_SHOWTIMES_HINT["en" if response_language == "en" else "es"],
-                "claimed_ability": _CLAIMED_ABILITY_HINT["en" if response_language == "en" else "es"],
+                "claimed_ability": _claimed_ability_instruction(str(facts.get("context") or ""), response_language),
                 # M85 (DEV-D v3o D-p32-t2, D-p36-t2).
                 "content_shape": _content_shape_instruction(user_text, response_language),
                 # M85 (DEV-D v3o D-p27-t5).
@@ -27351,13 +27467,7 @@ class LlmRuntime:
                     "una frase tuya."
                 ),
                 # M85 (DEV-D v3o D-p09-t3, D-w01-t2).
-                "own_write_denied": (
-                    "Nothing ran this turn: do not say what you did or did not do. Answer, in one sentence, what the "
-                    "person says or asks."
-                    if response_language == "en"
-                    else "En este turno no se ejecutó nada: no digas lo que hiciste ni lo que no hiciste. Contesta, en "
-                    "una frase, lo que la persona dice o pregunta."
-                ),
+                "own_write_denied": _own_write_denied_instruction(response_language),
                 **dict.fromkeys(
                     ("unread_records", "unobserved_answer"),
                     "Nothing of the person's was read this turn: do not say what their lists, notes, alarms, "

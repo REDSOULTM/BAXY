@@ -607,6 +607,26 @@ def says_nothing_was_done(reply: str) -> bool:
     return _NOT_DONE.search(folded) is not None
 
 
+# M109 (DEV-D v4d D-p24-t4 «Yes, do it for me.» → «I have not done it yet because the service asks to sign in on this PC
+# first.», the M88 answer, refused by the App as ambiguous_without_question; the turn asked «What specific detail is
+# missing…?» and the next go-ahead had nothing to go on): «do it» with no object is asked about, unless the reply says
+# it is not done and why — the answer M88 asks for. Folded. Twin: UserMessagePolicy.SaysNotDoneAndWhy.
+_NOT_DONE_YET = re.compile(
+    r"\b(?:i\s+(?:have\s+not|haven['’]?t|did\s+not|didn['’]?t)\s+(?:yet\s+)?(?:done|do|did)\s+(?:it|that|this|anything)|"
+    r"(?:todavia|aun)\s+no\s+(?:lo\s+|la\s+|eso\s+)?(?:he\s+hecho|hice)|no\s+(?:lo|la|eso)\s+(?:he\s+hecho|hice))\b"
+)
+_NOT_DONE_REASON = re.compile(r"(?::|;|\bporque\b|\bya\s+que\b|\bpues\b|\bbecause\b|\bsince\b)\s*\S")
+
+
+def says_not_done_and_why(reply: str) -> bool:
+    """The reply says the act asked is not done (yet) and gives why («I have not done it yet because…», «No lo he
+    hecho: …») — see above."""
+
+    folded = _fold(reply)
+    found = _NOT_DONE_YET.search(folded)
+    return found is not None and _NOT_DONE_REASON.search(folded[found.end():]) is not None
+
+
 _CLITIC_TAIL = re.compile(r"(?:me|te|se|nos)?(?P<clitic>los|las|lo|la|les|le)$")
 _LEADING_FILLER = re.compile(r"^(?:(?:y|e|ahora|pues|bueno|oye|che|baxy|por\s+favor|porfa)\b[\s,]*)+", re.IGNORECASE)
 _TRAILING_VALUE = re.compile(
