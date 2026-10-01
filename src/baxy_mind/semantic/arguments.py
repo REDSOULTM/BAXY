@@ -25,7 +25,7 @@ from .patterns import (
 )
 from .temporal import (
     SpokenClock, agenda_window, clock_elsewhere, moment_then_title_reminder, plural_alarm_cancellation, spoken_date,
-    spoken_window,
+    spoken_window, trailing_day,
 )
 from .web import news_lookup_query, public_query_body
 from .windows import start_menu_request
@@ -635,6 +635,10 @@ def _explicit_relative_reminder_arguments(
     due, title = readings.pop()
     if not due or not title:
         return None
+    beside = trailing_day(title) if re.match(effect_intent.CLOCK_PHRASE, effect_intent._fold(due)) else None
+    if beside is not None:
+        # M110: «…para pagar la luz mañana a las 8:00»: the day before the clock is the moment's, not the title's.
+        title, due = beside[0], f"{beside[1]} {due}"
     return {"dueUtc": due, "title": title}
 
 

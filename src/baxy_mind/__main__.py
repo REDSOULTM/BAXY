@@ -4607,6 +4607,11 @@ def _rearm_in_context(
 
 # M84: the operations a moment counted from BAXY's last answer is set with (``semantic.temporal.anchored_offset_request``).
 _ANCHORED_SCHEDULE_OPERATIONS = frozenset({"notification.schedule", "reminder.create", "calendar.event.create"})
+# M110: the words that ask for the reminders that already rang (notification.list.due), folded.
+_OVERDUE_WORDS = (
+    r"\b(?:vencid[oa]s?|overdue|past\s+due|atrasad[oa]s?|ya\s+(?:sonaron|pasaron|vencieron)|already\s+(?:rang|went\s+off)|"
+    r"went\s+off|missed|perdi|me\s+perdi)\b"
+)
 # M89: the reads of what is installed on this PC (never the newest published release).
 _INSTALLED_SOFTWARE_READS = frozenset({"software.python.status", "software.python.package.status", "app.installed"})
 # M103: the reads a decider chooses for «¿qué estoy viendo en <reproductor>?» (the media session, a window state).
@@ -4801,6 +4806,18 @@ def _context_decided_result(
             request=decided.request, decision="action", operations=("calendar.event.list",), question="",
         )
     if (
+        decided.decision == "action"
+        and decided.operations == ("notification.list.due",)
+        and "notification.list" in available_operations
+        and not re.search(_OVERDUE_WORDS, effect_intent._fold(text))
+    ):
+        # M110 (DEV-F v4d F-w45-t5 «and the pizza, how many minutes till I pull it out?» → the reminders already due,
+        # «The pizza reminder is not set yet.»): what is still to ring is in the list of what is scheduled; the due
+        # read is for the ones that already rang.
+        decided = semantic_decider.ContextDecision(
+            request=decided.request, decision="action", operations=("notification.list",), question="",
+        )
+    if (
         "window.resolve" in available_operations
         and (decided.decision in {"talk", "clarify"} or set(decided.operations) <= _SHOWN_MEDIA_READS)
         and application_shown_media_name(text, application_names) is not None
@@ -4879,6 +4896,20 @@ def _context_decided_result(
         # «ponme una alarma media hora antes de eso» → «Pon una alarma a las 10:30.»): the moment BAXY just gave, less
         # or plus the duration, is the time; the readers read the request that says it, the decider's is not used.
         decided = semantic_decider.ContextDecision(anchored, "action", tuple(anchored_read.operations), "")
+    if (
+        decided.decision == "action"
+        and anchored_read is None
+        and fidelity.kind == "person"
+        and set(decided.operations) <= {"notification.schedule", "reminder.create"}
+        and any(semantic_temporal.spoken_clocks(effect_intent._fold(what)) for what in fidelity.introduced)
+        and not semantic_temporal.spoken_clocks(effect_intent._fold(text))
+        and not semantic_temporal.said_only_a_clock(text)
+        and not semantic_temporal.said_durations(text)
+    ):
+        # M110 (DEV-F v4d F-w46-t3 «poneme una alarma para ese día bien temprano» restated «…el sábado 2 de octubre a
+        # las 5:00» → «¿Cuándo y con qué título…?» as an action): the time was the decider's, not the person's, and the
+        # message says none; when it rings is asked.
+        decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
     if decided.decision == "action" and anchored_read is None:
         asked = resolve_explicit_clarification_intent(text, available_operations)
         if (

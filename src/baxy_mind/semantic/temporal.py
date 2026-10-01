@@ -1521,7 +1521,8 @@ _SAID_DAY = (
     rf"(?:\d{{1,2}}\s+de\s+{_MONTH}(?:\s+de\s+\d{{4}})?|{_MONTH}\s+\d{{1,2}}(?:st|nd|rd|th)?(?:,?\s+\d{{4}})?)|"
     rf"(?:(?:el|este|this|on|next|el\s+proximo|this\s+coming)\s+)?{_SAID_WEEKDAY})"
 )
-_DAY_BEFORE_TIME = re.compile(rf"\b{_SAID_DAY}\s*,?\s*$")
+# «la reunión de mañana a las nueve»: a day after «de / del / of» names the thing, and stays in what it is for.
+_DAY_BEFORE_TIME = re.compile(rf"(?<!\bde\s)(?<!\bdel\s)(?<!\bof\s)\b{_SAID_DAY}\s*,?\s*$")
 _DAY_AFTER_TIME = re.compile(rf"\s*,?\s*{_SAID_DAY}\b")
 # The words that open an answer or a request and say nothing of it («órale, pues», «yeah sure», «ok»).
 _OPENING_WORDS = (
@@ -1608,6 +1609,17 @@ _SAID_DURATION = re.compile(
     r"\b(?P<duration>(?P<number>\d{1,3}|" + "|".join(sorted(_DURATION_NUMBER_WORDS, key=len, reverse=True))
     + r")[\s-]*(?P<unit>minutos?|minutes?|mins?|min|horas?|hours?|hrs?|h)|(?P<half>media\s+hora|half\s+an?\s+hour))\b"
 )
+
+
+def trailing_day(text: str) -> tuple[str, str] | None:
+    """(``text`` without it, the day) when ``text`` ends with a day («pagar la luz mañana» → («pagar la luz»,
+    «mañana»)); None otherwise. M110: the day a reader left at the end of a title belongs to the moment after it."""
+
+    said = str(text or "")
+    found = _DAY_BEFORE_TIME.search(_same_length_fold(said))
+    if found is None or not said[: found.start()].strip(" ,"):
+        return None
+    return said[: found.start()].rstrip(" ,"), said[found.start("day"):].strip(" ,")
 
 
 def said_durations(text: str) -> tuple[tuple[str, int], ...]:
