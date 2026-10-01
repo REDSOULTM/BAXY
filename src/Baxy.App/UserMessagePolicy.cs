@@ -3402,6 +3402,9 @@ internal static class UserMessagePolicy
         // the person named is theirs to hear back, in any equivalent form; the mind judges the same
         // (llm._failure_invents_a_clock).
         HashSet<(int Hour, int Minute)> named = PersonNamedClocks(userText);
+        // M116: a clock in what the failed step attempted (the words of a message said in an earlier turn) was
+        // named too; the twin of llm._failure_invents_a_clock.
+        named.UnionWith(PersonNamedClocks(string.Join(" ", AttemptedTexts(source))));
         foreach (Match match in ReplyClockTokens.Matches(result))
         {
             int hour = int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
@@ -3429,6 +3432,98 @@ internal static class UserMessagePolicy
             + @"|en\s+punto|o'?\s*clock))"
             + @"|\b(?:las?|at)\s+(\d{1,2})(?![\d:])",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+    /// <summary>
+    /// M116: every text a failed step attempted or left undone (Baxy.App.AttemptedArguments: the words of a message,
+    /// a name, a folder), in the facts and in a mission's reason. Values the facts carry are no claim of the
+    /// writer's own. Twin of llm.attempted_texts.
+    /// </summary>
+    internal static List<string> AttemptedTexts(string source)
+    {
+        var found = new List<string>();
+        if (TryReadJson(source, out JsonElement root))
+        {
+            CollectAttempted(root, found, 0);
+        }
+
+        return found;
+    }
+
+    private static void CollectAttempted(JsonElement facts, List<string> found, int depth)
+    {
+        if (depth > 6)
+        {
+            return;
+        }
+
+        if (facts.ValueKind == JsonValueKind.String
+            && facts.GetString() is { } nested
+            && nested.TrimStart().StartsWith('{')
+            && TryReadJson(nested, out JsonElement decoded))
+        {
+            facts = decoded;
+        }
+
+        if (facts.ValueKind != JsonValueKind.Object)
+        {
+            return;
+        }
+
+        if (facts.TryGetProperty("attempted", out JsonElement attempted))
+        {
+            CollectStrings(attempted, found);
+        }
+
+        if (facts.TryGetProperty("notDone", out JsonElement notDone) && notDone.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement entry in notDone.EnumerateArray())
+            {
+                if (entry.ValueKind != JsonValueKind.Object)
+                {
+                    continue;
+                }
+
+                if (entry.TryGetProperty("attempted", out JsonElement undone))
+                {
+                    CollectStrings(undone, found);
+                }
+
+                if (entry.TryGetProperty("target", out JsonElement target))
+                {
+                    CollectStrings(target, found);
+                }
+            }
+        }
+
+        if (facts.TryGetProperty("reason", out JsonElement reason))
+        {
+            CollectAttempted(reason, found, depth + 1);
+        }
+    }
+
+    private static void CollectStrings(JsonElement node, List<string> found)
+    {
+        switch (node.ValueKind)
+        {
+            case JsonValueKind.String:
+                found.Add(node.GetString()!);
+                break;
+            case JsonValueKind.Object:
+                foreach (JsonProperty property in node.EnumerateObject())
+                {
+                    CollectStrings(property.Value, found);
+                }
+
+                break;
+            case JsonValueKind.Array:
+                foreach (JsonElement item in node.EnumerateArray())
+                {
+                    CollectStrings(item, found);
+                }
+
+                break;
+        }
+    }
 
     private static HashSet<(int Hour, int Minute)> PersonNamedClocks(string? userText)
     {
