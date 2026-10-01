@@ -3493,6 +3493,10 @@ internal static class UserMessagePolicy
             @"\b(?:no\s+(?:(?:lo|la|los|las)\s+)?(?:encontre|halle|pude\s+encontrar(?:lo|la|los|las)?)"
             + @"|(?:i\s+)?(?:couldn[’']?t|could\s+not|didn[’']?t|did\s+not|wasn[’']?t\s+able\s+to|was\s+not\s+able\s+to)\s+find)"
             + @"[^.;]{0,120}"
+            // M101b (DEV-D v4a D-p16-t1 «No results mention valet parking for the Kenzi Rose Garden.»): the mind's
+            // _SEARCH_NOT_FOUND_CLAUSE reads «no results», «not found» and «sin resultados» as the not-found of the
+            // search too; this twin read the report as a reversed result and the turn ended with no final.
+            + @"|\b(?:not\s+found|no\s+results|sin\s+resultados)\b[^.;]{0,120}"
             + @"|\bno\s+(?:lo\s+|la\s+)?pude\s+comprobar(?:lo|la)?\b(?=[^.]{0,80}\bde\s+memoria\b)[^.:\n]{0,80}"
             + @"|\b(?:i\s+)?(?:couldn[’']?t|could\s+not|wasn[’']?t\s+able\s+to)\s+(?:check|verify)\b"
             + @"(?=[^.]{0,80}\bfrom\s+memory\b)[^.:\n]{0,80}",
