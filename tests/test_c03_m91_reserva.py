@@ -293,8 +293,8 @@ def test_remind_me_how_many_asks_to_be_told() -> None:
 
 def test_news_fetched_from_a_source_is_read_not_bought() -> None:
     assert resolve_explicit_clarification_intent("get me the top stories from the guardian", OPERATIONS) is None
-    asked = resolve_explicit_clarification_intent("get me a large pizza from luigi's", OPERATIONS)
-    assert asked is not None and asked.missing_fields == ("product_lookup_or_purchase",)
+    # M112 (DEV-F v4d w38-t1): an order from a store is no longer asked as lookup-or-purchase before the decider.
+    assert resolve_explicit_clarification_intent("get me a large pizza from luigi's", OPERATIONS) is None
 
 
 def test_which_coat_to_wear_is_the_weather_but_not_which_to_buy() -> None:

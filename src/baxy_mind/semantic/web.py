@@ -1257,6 +1257,11 @@ _OWN_EVENT_SAID = (
 )
 
 
+# Spanish clitics before their verb; «me» is English too («show me Ana's photos»), so it counts only in Spanish.
+_CLITIC_BEFORE_A_VERB = frozenset({"te", "se", "nos", "os", "le", "les"})
+_SPANISH_FUNCTION_WORD = r"\b(?:que|cuant[oa]s?|como|donde|cuando|por|para|hoy|el|los|las|del|y|en|una?|mis?|es|son|hay)\b"
+
+
 def _bare_given_name(folded: str) -> bool:
     if _has(folded, _WORK_OR_FAME):
         return False
@@ -1264,6 +1269,14 @@ def _bare_given_name(folded: str) -> bool:
     bare = [re.sub(r"['’]s$", "", word) for word in words]
     for index, name in enumerate(bare):
         if name not in GIVEN_NAMES or (index and (bare[index - 1] in _NAME_TITLES or bare[index - 1] in GIVEN_NAMES)):
+            continue
+        if index and (
+            bare[index - 1] in _CLITIC_BEFORE_A_VERB
+            or (bare[index - 1] == "me" and _has(folded, _SPANISH_FUNCTION_WORD))
+        ):
+            # M112 (DEV-F v4d w47-t3 «¿cuántos dólares me dan hoy por cada euro?» → the exchange rate asked as the
+            # person's own data): a word right after «me», «te», «le», «nos», «se» is the verb they go with («me dan»),
+            # never a person's name.
             continue
         following = bare[index + 1] if index + 1 < len(bare) else None
         if words[index] != name or following is None:
