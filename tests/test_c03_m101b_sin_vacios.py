@@ -64,8 +64,8 @@ def test_the_evidence_is_the_two_empty_turns() -> None:
     [
         (None, "es", "Creé el recordatorio."),
         (None, "en", "I created the reminder."),
-        ({"title": "Partido del domingo", "dueUtc": "2026-10-04T21:00:00+00:00"}, "es",
-         "Creé el recordatorio «Partido del domingo»."),
+        # M106: a record read with its due is also told at its time (tests/test_c03_m106_observacion_acotada.py).
+        ({"title": "Partido del domingo"}, "es", "Creé el recordatorio «Partido del domingo»."),
     ],
 )
 def test_a_verified_reminder_has_a_final_from_its_facts(observed: dict | None, language: str, final: str) -> None:

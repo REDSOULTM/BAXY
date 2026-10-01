@@ -165,7 +165,12 @@ internal sealed class ReminderHandler(
 
 internal static class ReminderResultJson
 {
-    public static JsonElement Record(LocalTaskRecord item) => Write(writer => WriteItem(writer, item));
+    // M106 (DEV-D v4a D-w08-t3): the record is the whole result, so its own
+    // «version» (the revision every caller reads as expectedVersion) is the only
+    // one; the schema version beside it repeated the key, and the observation
+    // that reached the mind lost the reminder's title and time.
+    public static JsonElement Record(LocalTaskRecord item) =>
+        Write(writer => WriteItem(writer, item), schemaVersion: false);
     public static JsonElement Selection(LocalTaskRecord item) => Write(writer =>
     {
         writer.WriteString("reminderId", item.Id);
@@ -194,12 +199,15 @@ internal static class ReminderResultJson
         writer.WriteBoolean("deleted", item.Deleted);
         writer.WriteNumber("version", item.Version);
     }
-    private static JsonElement Write(Action<Utf8JsonWriter> body)
+    private static JsonElement Write(Action<Utf8JsonWriter> body, bool schemaVersion = true)
     {
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
         {
-            writer.WriteStartObject(); writer.WriteNumber("version", 1); body(writer); writer.WriteEndObject();
+            writer.WriteStartObject();
+            if (schemaVersion) writer.WriteNumber("version", 1);
+            body(writer);
+            writer.WriteEndObject();
         }
         using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
         return document.RootElement.Clone();

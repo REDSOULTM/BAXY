@@ -6501,13 +6501,18 @@ def _local_clock_from_situation(situation: dict) -> str | None:
 def _verified_notification_due(situation: dict) -> datetime | None:
     """Use the verified next run, distinct from the requested due and current clock."""
     if (
-        situation.get("operation") != "notification.schedule"
+        situation.get("operation") not in {"notification.schedule", "reminder.create"}
         or situation.get("verified") is not True
         or situation.get("succeeded") is not True
     ):
         return None
     observed = _merged_observed(situation)
     due = observed.get("dueUtc")
+    if situation.get("operation") == "reminder.create":
+        # M106 (DEV-D v4a D-w08-t3 «ponme recordatorio una ora antes d ese partido»): the local reminder's record is
+        # read back after the write, so its due is its verified time; once the record reached the mind, the drafts
+        # that said that time («el sábado 3 de octubre a las 19:00») are judged by it like an alarm's.
+        return _parse_core_utc(due) if isinstance(due, str) else None
     next_run = observed.get("nextRunUtc")
     if not isinstance(due, str) or not isinstance(next_run, str):
         return None
@@ -7098,7 +7103,7 @@ def _compose_situation_payload(
             visible_seen = (
                 _alarm_offer_seen(visible_seen, listing) if plural_alarm_cancellation(user_text or "") else listing
             )
-        elif operation == "notification.schedule":
+        elif operation in {"notification.schedule", "reminder.create"}:
             visible_seen = _project_scheduled_notification(visible_seen, situation, language)
         elif operation == "ocr.read":
             # SCREEN1407 «leéme lo que dice la pantalla»: the receipt carries the
@@ -8211,9 +8216,30 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
         # observed record and the three drafts died (extra_claim) on a date the facts did not hold; the final says what
         # was verified — the reminder created, with its title when the record was read — and no time it did not read.
         title = str(observed.get("title") or "").strip()
-        if title and len(title) <= 120 and "«" not in title and "»" not in title:
-            return f"I created the reminder «{title}»." if english else f"Creé el recordatorio «{title}»."
-        return "I created the reminder." if english else "Creé el recordatorio."
+        named = f" «{title}»" if title and len(title) <= 120 and "«" not in title and "»" not in title else ""
+        # M106: once the record reaches the mind its verified due is said at the person's clock, as an alarm's is.
+        due = _verified_notification_due(situation)
+        when = ""
+        if due is not None:
+            local = due.astimezone()
+            today = datetime.now().astimezone().date()
+            clock = f"{'la' if local.hour == 1 else 'las'} {local:%H:%M}"
+            spanish_month, english_month = _WEATHER_MONTHS[local.month - 1]
+            if english:
+                day = (
+                    "" if local.date() == today
+                    else "tomorrow at " if local.date() == today + timedelta(days=1)
+                    else f"{english_month} {local.day} at "
+                )
+                when = f" for {day}{local:%H:%M}"
+            else:
+                day = (
+                    "" if local.date() == today
+                    else "mañana a " if local.date() == today + timedelta(days=1)
+                    else f"el {local.day} de {spanish_month} a "
+                )
+                when = f" para {day}{clock}"
+        return f"I created the reminder{named}{when}." if english else f"Creé el recordatorio{named}{when}."
     if operation == "audio.microphone.mute" and type(observed.get("muted")) is bool:
         # M101 (owner script v3z2): a verified microphone change is told with the state read after it.
         if observed["muted"]:
