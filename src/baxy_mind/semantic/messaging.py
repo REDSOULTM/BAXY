@@ -451,6 +451,26 @@ def after_opening_the_mailbox(text: str) -> str | None:
 _FIRST_PERSON_ACCOUNT = r"^i\s+(?!(?:want|wanna|need|would|'d)\b)"
 
 
+# M100 (reserva A2 «algún correo con noticias de la iluminación» → a web search of the news): the mail asked about with
+# its «hay / tengo» left out («¿algún correo de mi jefe?», «any emails about the project?») is the person's own mail.
+_ELIDED_MAIL_QUESTION = (
+    r"^(?:(?:y|and)\s+)?(?:algun|alguno|algunos|ningun|any|some)\s+(?:(?:nuevo|nuevos|new)\s+)?"
+    rf"{_MAIL_NOUN}(?:\s+(?:nuevos?|new))?\b"
+)
+# M100 (reserva A2 «ya paco se ha puesto en contacto» → «Paco ya se ha puesto en contacto», «has ben got in touch» →
+# «I'm here»): whether someone got in touch with the person is answered by what reached them, the latest mail, never
+# said from memory. A name of one to three words; the whole sentence.
+_GOT_IN_TOUCH = (
+    r"^(?:(?:ya|todavia|aun|al\s+final)\s+)?(?:[a-z]+(?:\s+[a-z]+){0,2}\s+)?(?:(?:ya|todavia|aun)\s+)?"
+    r"(?:se\s+(?:ha|habra|habia)\s+puesto|se\s+puso)\s+en\s+contacto(?:\s+conmigo)?"
+    r"(?:\s+[a-z]+(?:\s+[a-z]+){0,2})?(?:\s+(?:ya|todavia|aun))?$|"
+    r"^(?:(?:ya|todavia|aun)\s+)?(?:[a-z]+(?:\s+[a-z]+){0,2}\s+)?(?:me\s+(?:ha|habra)\s+contactado|me\s+contacto)"
+    r"(?:\s+[a-z]+(?:\s+[a-z]+){0,2})?(?:\s+(?:ya|todavia|aun))?$|"
+    r"^(?:has|have|did)\s+(?!(?:you|i|we)\b)[a-z]+(?:\s+[a-z]+){0,2}\s+(?:(?:got|gotten|get|been)\s+in\s+touch|contacted|contact|"
+    r"reached\s+out|reach\s+out|written|wrote|write|emailed|email)(?:\s+(?:with\s+)?(?:me|us))?(?:\s+(?:yet|already|back))*$"
+)
+
+
 def inbox_read_request(text: str) -> bool:
     """Uso real 2026-09-23: the person asks what arrived in their mail — to look
     at it («revisa mis correos nuevos», «check any mail from amazon»), whether
@@ -464,7 +484,17 @@ def inbox_read_request(text: str) -> bool:
     return (
         bool(folded)
         and len(folded) <= 400
-        and _latest_email_domain(folded)
+        and (
+            _latest_email_domain(folded)
+            or (
+                _has(folded, _ELIDED_MAIL_QUESTION)
+                and not _has(folded, _NOT_THE_INBOX)
+                and not _has(re.sub(_OTHERS_SENDING, " ", folded), _MAIL_WRITING)
+                # «algún correo para mandarle a Pedro»: a mail to be sent.
+                and not _has(folded, r"\b(?:para|to)\s+(?:mand\w*|envi\w*|escrib\w*|send|write)\b")
+            )
+            or _has(folded, _GOT_IN_TOUCH)
+        )
         and not _negative_action_forms(folded)
         and not _has(folded, _FIRST_PERSON_ACCOUNT)
         and not _has(folded, _MAIL_HANDLING)
@@ -621,6 +651,11 @@ _CONTACT_DATUM = (
     r"(?:phone|cell|mobile)(?:\s+number)?|area\s+code|codigo\s+de\s+area|prefijo|"
     r"(?:informacion|info|datos|detalles|details)(?:\s+de\s+contacto)?|contact\s+(?:info|information|details|number))"
 )
+# What only someone known has: a mail address or the details to reach them (a phone number is also a shop's).
+_PERSONAL_DATUM = (
+    r"(?:direccion\s+de\s+(?:correo(?:\s+electronico)?|e-?mail)|(?:e-?mail|mail)\s+address|"
+    r"(?:informacion|info|datos|detalles)\s+de\s+contacto|contact\s+(?:info|information|details))"
+)
 # «el correo de juan» is also the mail Juan sent: it is his address only when asked for as a datum.
 _MAIL_DATUM = r"(?:correo(?:\s+electronico)?|e-?mail|mail)"
 _ASKS_FOR_A_DATUM = (
@@ -665,6 +700,24 @@ def _datum_of_someone_of_their_life(folded: str) -> bool:
         if _person_of_their_life(found.group("owner")):
             return True
     if any(found.group("owner") in GIVEN_NAMES for found in re.finditer(rf"\b(?P<owner>[a-z]+)(?=\s+{datum}\b)", folded)):
+        return True
+    if (
+        _has(folded, _ASKS_FOR_A_DATUM)
+        or _has(
+            folded,
+            r"^(?:me\s+)?(?:puede|puedes|podria|podrias|could\s+you|can\s+you|would\s+you)\s+"
+            r"(?:decirme|darme|pasarme|buscarme|tell\s+me|give\s+me|get\s+me|find)\b",
+        )
+    ) and _has(
+        folded,
+        rf"\b{_PERSONAL_DATUM}\s+(?:de|para|of|for)\s+"
+        r"(?!(?:soporte|support|ventas|sales|servicio|service|atencion|empresa|company|tienda|store|banco|bank|hotel|"
+        r"restaurante|restaurant|hospital|clinica|clinic|universidad|university|escuela|school|oficina|office|"
+        r"gobierno|government|ayuntamiento|municipio|policia|police)$)[a-z]{3,}$",
+    ):
+        # M100 (reserva A2 «cuál es la dirección de correo electrónico de rosa», «la información de contacto de josep»
+        # → looked up on the web): a mail address or contact details asked of someone named by one bare name is
+        # someone the person knows, even with a name that is also a word («rosa»); a company is said with more.
         return True
     # «la nueva dirección de correo de juan que añadí el viernes», «the email address for bill that i added».
     return _has(
@@ -791,3 +844,61 @@ def chat_message_dispatch(objective: str) -> bool:
         )
         is not None
     )
+
+
+# --- Answering the latest mail (M100, reserva A13) ---------------------------------------------------------------
+# Reserve «that last email needs to be answer a. s. a. p.», «este último correo debe ser respondido lo más rápido
+# posible» → the latest mail was answered with «a. s. a. p.» or with words of the decider's restatement: a reply sent
+# with words nobody gave (rule 10). The reply asked for carries its words only when the person says them: after
+# «diciendo / que / con / :» («contesta al último correo diciendo que llego a las tres», «reply to the last email
+# saying thanks»), quoted, or between the verb and the mail or the one answered («responde «sí» al último correo»,
+# «reply yes to that email», «reply thank you to John»). How soon it must go (asap, cuanto antes, hoy) is no reply. Folded.
+_REPLY_ASKED = re.compile(
+    r"\b(?:respond\w*|contest\w*|reply|replies|replied|replying|answer|answers|answered|"
+    r"answering|write\s+back)\b"
+)
+_REPLIED_MAIL = (
+    r"(?:(?:el|al|a\s+(?:ese|este|el)|ese|este|the|that|this|my)\s+)?(?:(?:ultimo|ultima|last|latest|most\s+recent|"
+    r"newest|nuevo|new)\s+)?(?:correo(?:\s+electronico)?|e-?mail|mail|mensaje|message)(?:\s+(?:ultimo|nuevo))?"
+)
+_REPLY_WORDS = (
+    re.compile(
+        r"(?:\b(?:diciendo|avisando|informando|contando|explicando|confirmando)(?:le|les)?(?:\s+que)?|\bque\s+diga|\bcon\s+(?:el\s+texto|las\s+palabras|la\s+frase)|\bsaying|"
+        r"\btelling\s+(?:him|her|them)|\bwith\s+(?:the\s+(?:text|words))?|\bthat\s+says|:)\s*(?P<words>\S.*)$"
+    ),
+    re.compile(r"[\"“«](?P<words>[^\"”»]{1,400})[\"”»]"),
+    re.compile(rf"\b(?:respond\w*|contest\w*|reply|answer)\s+(?:con\s+)?(?P<words>\S.{{0,200}}?)\s+(?:al|a|to)\s+(?:{_REPLIED_MAIL}|\w+)\b"),
+    re.compile(r"\b(?:respond\w*|contest\w*)(?:le|les)?\s+que\s+(?P<words>\S.*)$"),
+)
+# «responde al correo que …»: what follows is the reply's words, unless it says which mail it is («el correo que me
+# mandó Juan», «the mail that came in»).
+_AFTER_THE_MAIL = re.compile(rf"\b{_REPLIED_MAIL}\s+(?:que|that)\s+(?P<words>\S.*)$")
+_WHICH_MAIL = re.compile(
+    r"^(?:(?:me\s+)?(?:mando|mandaron|envio|enviaron|escribio|escribieron|llego|llegaron|recibi)\b|"
+    r"(?:\w+\s+)?(?:sent|wrote|came|arrived|got|received)\b|i\s+(?:got|received)\b)"
+)
+# How soon or how: never the words of the reply.
+_NOT_REPLY_WORDS = re.compile(
+    r"^(?:(?:lo\s+)?(?:mas\s+)?(?:rapido|pronto)(?:\s+posible)?|cuanto\s+antes|ya|ahora(?:\s+mismo)?|hoy|pronto|"
+    r"urgente(?:mente)?|a\.?\s*s\.?\s*a\.?\s*p\.?|asap|as\s+soon\s+as\s+possible|now|right\s+(?:now|away)|today|soon|"
+    r"immediately|urgently|quickly|it|lo|la|le|por\s+favor|please)[\s.!?]*$"
+)
+
+
+def latest_mail_reply_without_words(text: str) -> bool:
+    """The person asks to answer a mail and gives no words for the reply (see above). False when the text asks no
+    reply (an answer to BAXY's question, a follow-up) or carries the reply's words."""
+
+    folded = _strip_request_envelope(_fold(text)).strip(" .!?¿¡")
+    if not folded or _REPLY_ASKED.search(folded) is None:
+        return False
+    for pattern in (*_REPLY_WORDS, _AFTER_THE_MAIL):
+        for found in pattern.finditer(folded):
+            words = found.group("words").strip(" .,!?¿¡")
+            if (
+                words
+                and _NOT_REPLY_WORDS.match(words) is None
+                and (pattern is not _AFTER_THE_MAIL or _WHICH_MAIL.match(words) is None)
+            ):
+                return False
+    return True

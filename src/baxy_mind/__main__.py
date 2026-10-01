@@ -40,7 +40,7 @@ from .semantic import decider as semantic_decider
 from .semantic import dialogue as dialogue_slot
 from .semantic import knowledge as semantic_knowledge
 from .semantic.apps import bare_close_pronoun, close_request_for_opened, deictic_close_request
-from .semantic.notes import list_creation_said, task_change
+from .semantic.notes import list_creation_said, names_own_event, task_change
 from .semantic import levels as semantic_levels
 from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
@@ -206,7 +206,7 @@ from .semantic.arguments import (
     window_snap_plan_split,
     window_snap_side_for_step,
 )
-from .semantic.messaging import chat_message_dispatch, message_body
+from .semantic.messaging import chat_message_dispatch, latest_mail_reply_without_words, message_body
 from .semantic.arguments import (  # noqa: F401 - moved to baxy_mind.semantic.arguments; callers migrate
     _SYSTEM_STATUS_SCOPES,
     _explicit_calendar_event_arguments,
@@ -4730,6 +4730,19 @@ def _context_decided_result(
         # M89 (DEV-D v3r D-w20-t3 «btw what's the latest version of Python right now?» → «Están instaladas las versiones
         # 3.13.3, 3.12.10 y 3.10.0»): the newest release is public and looked up; the copy on this PC is not it.
         decided = semantic_decider.ContextDecision(request=text, decision="action", operations=("web.search",), question="")
+    if (
+        decided.decision == "action"
+        and decided.operations
+        and set(decided.operations) <= {"task.search", "notification.list.due"}
+        and "calendar.event.list" in available_operations
+        and names_own_event(text)
+    ):
+        # M100 (reserva A1 «what time is the black tie gala dinner supposed to begin», «con quién me encuentro yo hoy»
+        # → task.search; «meeting reminders from three to five» → the internal due step): an event of the person's, or
+        # who they meet, is read from their calendar.
+        decided = semantic_decider.ContextDecision(
+            request=decided.request, decision="action", operations=("calendar.event.list",), question="",
+        )
     clock_request = (
         _clock_read_request(text, history)
         if decided.decision in {"talk", "clarify"} and "system.time" in available_operations
@@ -4816,6 +4829,17 @@ def _context_decided_result(
             # «swimming» was added): the readers prove the entry was not said (M80); the list's name is never its
             # entry, and the decider's restatement does not fill it.
             decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
+    if (
+        decided.decision == "action"
+        and "email.latest.reply" in decided.operations
+        and latest_mail_reply_without_words(text)
+    ):
+        # M100 (reserva A13 «that last email needs to be answer a. s. a. p.» → answered «a. s. a. p.»): a reply goes
+        # with the words the person said, never with how soon or with the restatement's; with none, what to answer is
+        # asked.
+        decided = semantic_decider.ContextDecision(
+            request=text, decision="clarify", operations=("email.latest.reply",), question="",
+        )
     if decided.decision == "limit" and dialogue_slot.takes_back(text, antecedent):
         # M84 (DEV-D v3o D-p01-t3 «no, cancel», D-p14-t3 «Cancelar foto» → «No cancelo la foto.»): taking back what was
         # just asked is said to BAXY, never a limit of cancelling.

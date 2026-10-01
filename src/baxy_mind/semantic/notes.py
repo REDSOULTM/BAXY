@@ -183,6 +183,38 @@ def happening_in_a_span_of_hours(folded: str) -> bool:
     return _HAPPENING_HEAD.match(folded) is not None and _SPAN_OF_HOURS.search(folded) is not None
 
 
+# M100 (reserva A1 «what time is the black tie gala dinner supposed to begin», «con quién me encuentro yo hoy»,
+# «meeting reminders from three to five»): a read of the person's own things that names an event (a meeting, a dinner,
+# a party) or who they meet is a read of their calendar; tasks are searched by what they say, events are not tasks.
+# Folded.
+_MEETING_SOMEONE = (
+    r"\bcon\s+quien(?:es)?\s+(?:me\s+)?(?:encuentro|reuno|veo|junto|cito|almuerzo|ceno|como|quede|tengo)\b|"
+    r"\bwho\s+(?:am\s+i|are\s+we|will\s+i|do\s+i|do\s+we)\s+(?:meeting|meet|seeing|see|having\s+\w+\s+with)\b"
+)
+_TASK_OR_NOTE_STORE = r"\b(?:tareas?|tasks?|pendientes?|to-?dos?|listas?|lists?|notas?|notes?|apuntes?)\b"
+
+
+# M100 (reserva A1 «es el cumpleaños de alguien» → «¿de quién es el cumpleaños?»): whether someone has a birthday (on
+# a day, or now) is what the person's calendar holds; asking whose turns the question around. Folded.
+_SOMEONES_BIRTHDAY = re.compile(
+    r"(?:(?:hoy|manana|today|tomorrow)\s+)?(?:(?:es|sera|hay|tenemos|tengo)\s+(?:el\s+|un\s+|algun\s+)?(?:cumpleanos|cumple)\s+de\s+(?:alguien|algun[oa]|"
+    r"alguna\s+persona)|alguien\s+(?:cumple(?:\s+anos)?|esta\s+de\s+cumpleanos)|"
+    r"(?:hay|tengo|tenemos)\s+(?:algun|un|algunos)\s+(?:cumpleanos|cumples)|"
+    r"(?:is\s+(?:it|today|tomorrow)|will\s+it\s+be)\s+(?:any|some)(?:one|body)'?s\s+birthday|"
+    r"(?:does|will)\s+(?:any|some)(?:one|body)\s+have\s+a\s+birthday|(?:is|are)\s+there\s+(?:a|any)\s+birthdays?|"
+    r"(?:any|some)(?:one|body)'?s\s+birthday)(?P<tail>.*)"
+)
+
+
+def names_own_event(text: str) -> bool:
+    """A read of the person's own things that is about an event of theirs or who they meet (see above)."""
+
+    folded = _strip_request_envelope(_fold(text))
+    return not _has(folded, _TASK_OR_NOTE_STORE) and (
+        _has(folded, rf"\b{_EVENT_NOUN}\b") or _has(folded, _MEETING_SOMEONE)
+    )
+
+
 def agenda_read_request(text: str) -> bool:
     """A question about the person's own agenda: what they have (planned, to do, coming up), their
     schedule or plans for a window, when their own event is, their next events. Not a change to the
@@ -265,6 +297,9 @@ def agenda_read_request(text: str) -> bool:
         return _window_tail(somewhere.group("tail"))
     if happening_in_a_span_of_hours(folded):
         return True
+    someones_birthday = _SOMEONES_BIRTHDAY.fullmatch(folded)
+    if someones_birthday is not None:
+        return _window_tail(someones_birthday.group("tail").strip())
     how_is = re.fullmatch(
         rf"(?:como|how)\s+(?:(?:tengo|tenemos)\s+(?:el|la)\s+(?:dia|semana|{AGENDA_NOUN})|"
         rf"(?:esta|va|luce|pinta|is|does|looks?)\s+(?:el|la|the)\s+{AGENDA_NOUN})\b(?P<tail>.*)",
@@ -372,10 +407,34 @@ _REMINDER_INVENTORY = re.compile(
 )
 
 
+# M100 (reserva A1 «pusiste el recordatorio sobre la reunión de mañana» → «No, no lo he puesto», «te dije que me
+# recordaras algo» → «no tengo acceso a tu historial»): whether BAXY set a reminder or an alarm, or whether the person
+# asked to be reminded, is answered by reading what is set, never from memory. Folded, whole sentence.
+_SET_IT = (
+    r"(?:pusiste|has\s+puesto|habias\s+puesto|creaste|has\s+creado|programaste|has\s+programado|guardaste|"
+    r"has\s+guardado|anotaste|has\s+anotado|hiciste|has\s+hecho|activaste|has\s+activado|configuraste|"
+    r"(?:did|have)\s+you\s+(?:set|put|create|created|make|made|save|saved|schedule|scheduled|add|added)(?:\s+up)?)"
+)
+_WHETHER_SET = re.compile(
+    rf"^(?:(?:y\s+|and\s+)?(?:ya|already|alguna\s+vez)\s+)?(?:me\s+|te\s+)?{_SET_IT}\s+"
+    rf"(?:(?:el|la|los|las|un|una|mi|mis|ese|esa|the|a|an|my|that|those)\s+)?(?:\w+\s+)?(?P<kind>{_INVENTORY_KIND})\b.*$"
+)
+_ASKED_TO_BE_REMINDED = re.compile(
+    r"^(?:(?:yo\s+)?te\s+(?:dije|pedi|habia\s+dicho|habia\s+pedido)|(?:did|have)\s+i\s+(?:ask(?:ed)?|tell|told)\s+you|"
+    r"i\s+(?:asked|told)\s+you)\s+(?:que\s+me\s+(?:recordaras|recordases|avisaras|avisases|despertaras)|"
+    r"(?:to\s+)?(?:remind|wake|alert)\s+me)\b.*$"
+)
+
+
 def reminder_inventory_question(text: str) -> tuple[str, ...]:
     """The reads a question about BAXY's own reminders, alarms or timers asks for (see above); () for any other."""
 
     folded = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.,")
+    if _ASKED_TO_BE_REMINDED.fullmatch(folded) is not None:
+        return ("reminder.list",) if not _has(folded, r"\b(?:despertaras|wake)\b") else ("notification.list",)
+    whether = _WHETHER_SET.fullmatch(folded)
+    if whether is not None:
+        return ("reminder.list",) if whether.group("kind").startswith("r") else ("notification.list",)
     if _REMINDER_INVENTORY.fullmatch(folded) is None:
         return ()
     kinds = re.findall(_INVENTORY_KIND, folded)
@@ -1174,6 +1233,12 @@ _WHOLE_LIST_READ = (
     rf"(?:let\s+me|i\s+(?:want|need|would\s+like)\s+to|can\s+i)\s+(?:hear|see|check|review|read|open)\s+{_OWN_LIST}",
     rf"(?:is|are)\s+{_OWN_LIST}\s+(?:free|empty|clear|done|full|finished|complete)",
     rf"(?:do\s+i\s+have|have\s+i\s+got|is\s+there|are\s+there)\s+{_ANYTHING}\s+(?:(?:left|still)\s+)?(?:on|in)\s+{_OWN_LIST}",
+    # M100 (reserva A1 «algo que quede de la lista» → «¿qué tarea borro?»): what is still left on the list, said with
+    # «queda / falta» and the «hay» left out, or «anything left on the list», is the list read.
+    rf"(?:(?:hay|queda|tengo)\s+)?(?:algo|alguna\s+cosa|algo\s+mas|cosas)\s+(?:que\s+)?(?:quede|queden|queda|quedan|falte|"
+    rf"falten|falta|faltan|pendientes?|por\s+hacer)\s+(?:(?:todavia|aun|ya)\s+)?(?:en|de|dentro\s+de)\s+{_OWN_LIST}",
+    rf"(?:(?:is|are)\s+there\s+)?(?:anything|something|things|stuff)\s+(?:(?:still|else)\s+)?(?:left|remaining|pending)\s+"
+    rf"(?:on|in)\s+{_OWN_LIST}",
     *_LIST_INVENTORY,
     # Dev set 2 «did i make a shopping list», «hice una lista de compra»: whether a named list exists is a search
     # for its name.
