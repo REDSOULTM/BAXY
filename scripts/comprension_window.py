@@ -250,7 +250,9 @@ def operation_nodes(node: object, found: dict[str, list[Any]]) -> None:
             operation_nodes(value, found)
 
 
-def composed_arguments(compose: list[dict[str, Any]], trace_ids: set[str]) -> dict[str, dict[str, Any]]:
+def composed_arguments(
+    compose: list[dict[str, Any]], trace_ids: set[str], effects: Any = (),
+) -> dict[str, dict[str, Any]]:
     found: dict[str, list[Any]] = {}
     for record in compose:
         if str(record.get("trace")) not in trace_ids:
@@ -261,6 +263,19 @@ def composed_arguments(compose: list[dict[str, Any]], trace_ids: set[str]) -> di
         except json.JSONDecodeError:
             situation = None
         operation_nodes([record.get("payload"), situation], found)
+    # M111 (DEV-F v4d F-w30-t2 «maximizalo», F-w08-t3 «tacha el aceite»): the window or the task an effect acts on is
+    # resolved by its dependency step (``window.resolve``, ``task.resolve.exact``); what that step was asked to find
+    # (its target, or the windows it read) is the effect's argument, also when the effect itself never ran. The
+    # prose of a failure («… no open window right now …») is no argument and stays out.
+    for effect in effects or ():
+        domain = effect.split(".")[0]
+        for resolver in (f"{domain}.resolve", f"{domain}.resolve.exact"):
+            if resolver != effect and resolver in found:
+                found[effect] = [*found.get(effect, []), *(
+                    {key: value for key, value in node.items() if key not in {"cause", "error"}}
+                    for node in found[resolver]
+                )]
+                break
     return {operation: {"seen": nodes} for operation, nodes in found.items()}
 
 
@@ -329,7 +344,7 @@ def records(
             record["latency_s"] = seen["clock_latency"]
             record["latency_from"] = "clock"
         if compose and segment:
-            arguments = composed_arguments(compose, segment["ids"])
+            arguments = composed_arguments(compose, segment["ids"], record.get("effects"))
             if arguments:
                 record["arguments"] = arguments
                 record["arguments_from"] = "compose"

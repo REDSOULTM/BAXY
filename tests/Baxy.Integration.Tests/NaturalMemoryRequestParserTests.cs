@@ -235,6 +235,30 @@ public sealed class NaturalMemoryRequestParserTests
         });
     }
 
+    // M111 (DEV-F v4d F-w10-t3): «that» saved in a note, a task or a list is that record, never BAXY's memory.
+    [TestCase("save that in a note called router settings")]
+    [TestCase("guarda eso en una nota que se llame claves del wifi")]
+    [TestCase("guarda esto como nota")]
+    [TestCase("save this to my notes please")]
+    [TestCase("guarda eso en la lista de pendientes")]
+    public void ThatSavedInARecordIsNotAMemorySave(string text)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.NoRoute), result.ToString());
+            Assert.That(result.Operation, Is.Null);
+        });
+    }
+
+    [TestCase("remember that")]
+    [TestCase("guarda eso para siempre")]
+    public void ThatSavedWithNoRecordStillAsksWhatToRemember(string text)
+    {
+        Assert.That(NaturalMemoryRequestParser.Classify(text).Outcome, Is.EqualTo(MemoryParseOutcome.Clarify));
+    }
+
     [TestCase("abrí el administrador de tareas")]
     [TestCase("ouvre le gestionnaire des tâches")]
     public void ApplicationAdministratorWordsDoNotBecomeAuthorityMemory(string text)

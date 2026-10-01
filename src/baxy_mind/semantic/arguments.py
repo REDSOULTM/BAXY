@@ -17,6 +17,7 @@ from urllib.parse import urlencode, urlsplit
 from .. import effect_intent
 from . import lexicon as semantic_lexicon
 from .catalog import GameCatalogIndex, resolve_game_catalog_app_id
+from .grammar import titled_note_with_content
 from .notes import agenda_event_request, said_repetition, stated_event_reminder, task_completion_title
 from .patterns import (
     application_shown_media_name,
@@ -916,9 +917,10 @@ def _explicit_arguments_from_evidence(
         return {**adjustment, "setting": "brightness"} if adjustment is not None else None
 
     if operation == "system.settings.set":
-        airplane = effect_intent.airplane_mode_request(evidence)
-        if airplane is not None:
-            return {"setting": "airplane_mode", "value": airplane}
+        # REOPEN1957 H0107 airplane mode; M111 (DEV-F v4d F-w56-t3) the night light and do-not-disturb, switched the same way.
+        switched = effect_intent.setting_switch_request(evidence)
+        if switched is not None:
+            return {"setting": switched[0], "value": switched[1]}
         level = effect_intent._literal_brightness_level(evidence)
         return {"setting": "brightness", "value": level} if level is not None else None
 
@@ -1009,8 +1011,9 @@ def _explicit_arguments_from_evidence(
         return {"client": located[0], "name": located[1]} if located is not None else None
 
     if operation == "message.draft":
-        # MSG1837: channel, recipient and text are the person's literal.
-        draft = effect_intent.message_draft_request(evidence)
+        # MSG1837: channel, recipient and text are the person's literal. M111: a draft said as one left written, or
+        # with the order not to send it, is read without that order.
+        draft = effect_intent.message_left_written_request(evidence) or effect_intent.message_draft_request(evidence)
         return {"channel": draft[0], "recipient": draft[1], "text": draft[2]} if draft is not None else None
 
     if operation == "email.send":
@@ -1297,7 +1300,7 @@ def _explicit_arguments_from_evidence(
             r"(?:(?:la|the)\s+(?:serie|series|pel[ií]cula|peli|movie|film)\s+)?"
             r"(?P<title>.+?)\s+"
             r"(?:en|in|on|desde|from|through|usando|using)\s+"
-            r"(?:netflix|nerflix|netlix|netfix|netflis|neflix|"
+            r"(?:netflix|nerflix|netlix|netfix|netflis|neflix|netflx|netflex|nexflix|"
             r"disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|dinsey|dizney)\b",
             clause_literal(evidence),
             re.IGNORECASE,
@@ -1316,6 +1319,22 @@ def _explicit_arguments_from_evidence(
 
     if operation == "media.play.query":
         return _explicit_live_media_query_arguments(evidence)
+
+    if operation == "media.play.exact":
+        # M111 (DEV-F v4d F-s023 «put on Wuthering Heights by Kate Bush» → «What is the title of the song…?»): the
+        # song named is the title Spotify's exact selection looks for, without the artist after «by»/«de»; a version
+        # of it («la en vivo», «the acoustic one») is not a title and stays with the extraction.
+        if re.search(_SONG_VERSION, folded):
+            return None
+        quoted = re.search(r"[«“\"](?P<title>[^»”\"]{1,200})[»”\"]", evidence)
+        if quoted is not None:
+            return {"provider": "spotify", "title": quoted.group("title").strip()}
+        named = _explicit_live_media_query_arguments(evidence)
+        query = named.get("query") if isinstance(named, dict) else None
+        if not isinstance(query, str):
+            return None
+        title = _ARTIST_AFTER_TITLE.sub("", query).strip(" .,")
+        return {"provider": "spotify", "title": title} if title else None
 
     if operation == "media.play.youtube":
         # MUSIC1553: the person's own words name what to play; the provider
@@ -1506,6 +1525,10 @@ def _explicit_arguments_from_evidence(
     if operation == "task.resolve.exact" and (completed := task_completion_title(evidence)) is not None:
         # M76 (DEV-D v3l D-w17-t2): the task marked done is found by the title the person wrote.
         return {"title": completed}
+
+    if operation == "note.create" and (titled := titled_note_with_content(evidence)) is not None:
+        # M111 (DEV-F v4d F-s021): «crea una nota que se llame X y pon ahí: Y» names the note and fills it.
+        return {"title": titled[0], "content": titled[1]}
 
     if operation == "note.create":
         # This closed form carries both required literals in one atomic effect
@@ -2042,6 +2065,15 @@ def _explicit_arguments_from_evidence(
             query = query_match.group("query").strip()
             if query:
                 return {"folder": "all_known", "query": query}
+        named_file = said_file_name(evidence)
+        if named_file is not None:
+            # M111 (DEV-F v4d F-s020 «busca la cotizacion del depto … en documentos creo que se llamaba cotizacion
+            # algo» → «¿Cuál es el nombre exacto…?»): the name the person says the file has is what is searched, in the
+            # known folder named, else in all of them.
+            folder = next(
+                (canonical for canonical, pattern in _KNOWN_FOLDER_NAMED if re.search(pattern, folded)), "all_known",
+            )
+            return {"folder": folder, "query": named_file}
 
     if operation == "audio.volume":
         if (
@@ -2469,10 +2501,51 @@ _WATCH_NAMED_TITLE = re.compile(
 
 # The services of streaming.play.named, as the reader of a named title spells them (VIDEO1921, VIDEO1947).
 _STREAMING_SERVICE_SAID = re.compile(
-    r"\b(?:netflix|nerflix|netlix|netfix|netflis|neflix|disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|"
+    r"\b(?:netflix|nerflix|netlix|netfix|netflis|neflix|netflx|netflex|nexflix|disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|"
     r"dinsey|dizney)\b",
     re.IGNORECASE,
 )
+
+
+# M111: a version of a song asked for («la versión en vivo», «the acoustic one»), and the artist named after its title
+# («… by Kate Bush», «… de Natalia Lafourcade»: a capitalised name, so «Canción de cuna» keeps its «de»).
+_SONG_VERSION = (
+    r"\b(?:version|versiones|en\s+vivo|live|acustic[ao]|acoustic|de\s+estudio|studio|remix|remasterizad[ao]|"
+    r"remastered|unplugged|cover|karaoke|instrumental)\b"
+)
+_ARTIST_AFTER_TITLE = re.compile(
+    r"\s+(?:by|de|del|of)\s+(?:(?:los|las|la|el|the)\s+)?[A-ZÁÉÍÓÚÑ][\w'’.&-]*"
+    r"(?:\s+(?:[A-ZÁÉÍÓÚÑ][\w'’.&-]*|y|and|&|de|del|la|los|las|the))*\s*$",
+)
+
+
+# M111 (DEV-F v4d F-s020 «… creo que se llamaba cotizacion algo»): the name a file is said to have, up to four words,
+# without the «algo» / «something» that leaves its end open.
+_SAID_FILE_NAME = re.compile(
+    r"\b(?:se\s+llama(?:ba)?|se\s+llamar[ií]a|llamad[oa]|titulad[oa]|(?:is|was)\s+called|called|named|titled)\s+"
+    r"[«\"“']?(?P<name>[^\s«»\"“”',;:!?]+(?:\s+(?!(?:algo|something|or|o|y|and|creo|i)\b)[^\s«»\"“”',;:!?]+){0,3})"
+    r"[»\"”']?(?:\s+(?:o\s+)?(?:algo(?:\s+as[ií])?|something(?:\s+like\s+that)?|or\s+something|creo|i\s+think))?"
+    r"(?:\s+(?:en|in)\s+(?:(?:mis|my|la|el|las|the)\s+)?(?:carpeta\s+(?:de\s+)?)?"
+    r"(?:documentos|documents|descargas|downloads|escritorio|desktop)(?:\s+folder)?)?"
+    r"[\s.!?]*$",
+    re.IGNORECASE,
+)
+
+
+def said_file_name(text: str) -> str | None:
+    """The name the person says a file has («se llamaba cotización algo» → «cotización»), or None."""
+
+    match = _SAID_FILE_NAME.search(text.strip())
+    if match is None:
+        return None
+    name = match.group("name").strip(" .")
+    return name if name and _fold_text(name) not in {"algo", "something", "asi", "eso", "that", "it"} else None
+
+
+def _fold_text(text: str) -> str:
+    return "".join(
+        ch for ch in unicodedata.normalize("NFKD", text.casefold()) if not unicodedata.combining(ch)
+    )
 
 
 # M76 (DEV-D v3l D-w15-t2 «vale, resumemelo en tres puntos» after «el informe trimestral que guardé en Documentos» →

@@ -40,7 +40,7 @@ from .semantic import decider as semantic_decider
 from .semantic import dialogue as dialogue_slot
 from .semantic import knowledge as semantic_knowledge
 from .semantic.apps import bare_close_pronoun, close_request_for_opened, deictic_close_request
-from .semantic.notes import list_creation_said, names_own_event, task_change
+from .semantic.notes import conversation_note_title, list_creation_said, names_own_event, task_change
 from .semantic import levels as semantic_levels
 from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
@@ -3704,6 +3704,7 @@ def _ground_explicit_arguments(
         "message.recipient.resolve",
         "email.send",
         "media.control",
+        "media.play.exact",
         "media.play.query",
         "media.play.youtube",
         # D39 (M58): the clock reader of a cancellation owns hour, minute and period; «las 7:05» grounded
@@ -4849,6 +4850,36 @@ def _context_decided_result(
         decided = semantic_decider.ContextDecision(
             fidelity.request, decided.decision, decided.operations, decided.question, decided.arguments,
         )
+    edited_draft = (
+        effect_intent.edited_draft_request(text, list(_prior_user_texts(history, text)))
+        if decided.decision != "action" and "message.draft" in available_operations
+        else None
+    )
+    if edited_draft is not None:
+        # M111 (DEV-F v4d F-w01-t4 «mejor cámbialo, ponle que llego como 10 minutos tarde…» → «No puedo cambiar el
+        # mensaje…»): new words for the message just left written are that draft again, to the same person in the same
+        # client; leaving a message written is never a limit.
+        decided = semantic_decider.ContextDecision(
+            request=edited_draft, decision="action", operations=("message.draft",), question="",
+        )
+    if (
+        decided.decision == "action"
+        and len(decided.operations) == 1
+        # The moments of alarms and reminders keep their own readers (``semantic.temporal``).
+        and not set(decided.operations) & (_CLOCK_SET_OPERATIONS | {"notification.cancel.at"})
+    ):
+        restated = resolve_explicit_effects(decided.request, available_operations, application_names)
+        if (
+            restated is not None
+            and 1 < len(restated.operations) <= 8
+            and set(restated.operations) == set(decided.operations)
+        ):
+            # M111 (DEV-F v4d F-s015 «¿Me abres la calculadora y el Bloc de notas?» → «Abre la Calculadora y el Bloc
+            # de notas.» with one app.open, and only the Calculator opened): the restatement names the operation as
+            # many times as the readers read it; each one is a step.
+            decided = semantic_decider.ContextDecision(
+                decided.request, "action", tuple(restated.operations), decided.question, decided.arguments,
+            )
     anchored = semantic_temporal.anchored_offset_request(text, context.last_reply)
     anchored_read = resolve_explicit_effects(anchored, available_operations) if anchored is not None else None
     if anchored_read is not None and set(anchored_read.operations) <= _ANCHORED_SCHEDULE_OPERATIONS:
@@ -5139,6 +5170,23 @@ def _direct_arguments_result(
         question = _unschedulable_time_question(
             llm, operation, objective, person, tool, turn_language,
         )
+    if arguments is None and not question and operation == "message.draft":
+        # M111 («mándaselo a Ana», «déjaselo escrito a Álvaro por WhatsApp»): the words are those of the message
+        # written before in this conversation (the person's last draft, or BAXY's reply the person asked to write);
+        # who it goes to is this message's.
+        earlier = list(_prior_user_texts(message.get("history"), person))
+        forwarded = effect_intent.forwarded_draft(
+            person,
+            earlier,
+            _previous_reply(message.get("history")),
+            bool(earlier) and (
+                conversation_only_content_request(earlier[-1]) or effect_intent.asks_to_write_a_message(earlier[-1])
+            ),
+        )
+        if forwarded is not None:
+            candidate = {"channel": forwarded[0], "recipient": forwarded[1], "text": forwarded[2]}
+            if validate_json_schema_instance(candidate, tool["function"]["parameters"]):
+                arguments = candidate
     edited = dialogue_state.edited_task() if operation == "task.update" else None
     if arguments is None and not question and edited is not None:
         # M80 (DEV-D v3m D-p06-t2, D-p06-t3, D-p08-t3): what was not changed is kept from the verified task.
@@ -5206,6 +5254,18 @@ def _direct_arguments_result(
     arguments = _with_conversation_place(
         operation, arguments, message.get("history"), tool["function"]["parameters"],
     )
+    if operation in {"note.read", "note.trash"} and not (isinstance(arguments, dict) and arguments.get("noteId")):
+        # M111 (DEV-F v4d F-w03-t6 «la nota del snippet, léemela» → note «Snippet» not found): a note named by a word
+        # of the title it was given earlier in the conversation is that note.
+        conversation = [
+            str(item.get("content") or "") for item in message.get("history") or [] if isinstance(item, dict)
+        ]
+        titled = conversation_note_title(objective, conversation) or conversation_note_title(
+            person, conversation,
+        )
+        candidate = {**(arguments if isinstance(arguments, dict) else {}), "title": titled}
+        if titled is not None and validate_json_schema_instance(candidate, tool["function"]["parameters"]):
+            arguments, question = candidate, ""
     return arguments, question
 
 

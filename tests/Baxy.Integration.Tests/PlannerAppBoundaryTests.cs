@@ -320,6 +320,11 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(Target(MindPlanBoundary.WithStepTarget(
                     failed, new JsonObject { ["query"] = "cumbia para cocinar" })),
                 Is.EqualTo("cumbia para cocinar"));
+            // M111 (DEV-F v4d F-s005: a draft for Tyler failed with Discord closed and nothing said for whom): the
+            // person a message was for is what it was about; its words are not.
+            Assert.That(Target(MindPlanBoundary.WithStepTarget(
+                    failed, new JsonObject { ["channel"] = "discord", ["recipient"] = "Tyler", ["text"] = "a las 9" })),
+                Is.EqualTo("Tyler"));
             // A catalog id is no name, and identifiers, versions or free text are never a target.
             Assert.That(MindPlanBoundary.WithStepTarget(failed, new JsonObject { ["appId"] = "windows.calculator" }),
                 Is.EqualTo(failed));

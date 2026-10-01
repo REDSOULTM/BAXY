@@ -148,7 +148,7 @@ def _named_browser_music_request(text: str) -> tuple[str, str | None] | None:
 # VIDEO1947: Disney+ joins the closed streaming catalog; the same short, closed
 # alternation of misspellings (the owner's ear, not another service).
 _NETFLIX_SPELLED = (
-    r"(?:netflix|nerflix|netlix|netfix|netflis|neflix|"
+    r"(?:netflix|nerflix|netlix|netfix|netflis|neflix|netflx|netflex|nexflix|"
     r"disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|dinsey|dizney|east\s*plus)"
 )
 

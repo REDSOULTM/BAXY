@@ -25,7 +25,7 @@ from .games import _corrected_game_launch_title, _edit_distance, near_catalog_ga
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
 from .system import _weather_read_intent, physical_world_request, weather_place_known_only_through_someone
 from .notes import puts_into_the_agenda, takes_off_the_agenda, list_entry_request, list_read_request, list_removal_request, list_creation_without_items, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder, said_repetition, _CALENDAR_PLACE, reminder_inventory_question, AGENDA_NOT_A_READ, happening_in_a_span_of_hours
-from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, _latest_email_domain, _notification_listing_request, inbox_read_request, social_network_request, contact_book_request
+from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, message_left_written_request, _latest_email_domain, _notification_listing_request, inbox_read_request, social_network_request, contact_book_request
 from .ui import _clipboard_copy_domain, _clipboard_paste_domain, calculator_expression_request, literal_clipboard_write_text, _review_input_and_capture_effects, _VISIBLE_CLICK_APP_CONTEXT, _gerund_click_label, _visible_click_label, _click_in_application, _visible_click_intent
 from .apps import self_close_request, _APPLICATION_TRAILING_REQUEST, _application_target_forms, _CLOSE_TRAILING_COURTESY, _close_target_forms, deictic_close_request, _bounded_application_literal, _authenticated_application_list, _OPEN_STATE_CONDITION, close_all_request, _has_multiple_installed_entities, _append_domain_actions, _open_application_spans, _CATALOG_INSTALL_VERB, _opened_applications
 
@@ -2380,7 +2380,9 @@ def known_unsupported_effect_request(
             _has(folded, rf"\b{_OPEN}\b")
             and _has(folded, r"\b(?:archivo|file)\b")
             and not _has(folded, r"\b(?:ultimo|ultima|latest|reciente|newest)\b"),
-            {"filesystem.file.open.named"},
+            # M111 (DEV-F v4d F-s025 «abreme el archivo presupuesto_finca.xlsx q esta en documentos» → «No abro
+            # archivos»): ``file.open`` opens a named file of a known folder.
+            {"filesystem.file.open.named", "file.open"},
         ),
         (
             _has(folded, r"\b(?:incognito|privad[ao]|private)\b")
@@ -6328,8 +6330,9 @@ def _explicit_named_music_query(text: str) -> str | None:
             r"\b(?:archivo|file|carpeta|folder|pagina|page|fondo|wallpaper|"
             r"portapapeles|clipboard|contrasena|password)\b|"
             # VIDEO1715: a title on a named streaming service is that service's
-            # session, never the local YouTube playback.
-            r"\b(?:en|on)\s+(?:youtube|netflix|apple\s+music|apple\s+tv|disney|prime|hbo|max|"
+            # session, never the local YouTube playback. M111 (DEV-F v4d F-s038 «… en netflx porfa»): however the
+            # service is spelled (VIDEO1921).
+            r"\b(?:en|on)\s+(?:youtube|" + _NETFLIX_SPELLED + r"|apple\s+music|apple\s+tv|prime|hbo|max|"
             r"crunchyroll|star|paramount|twitch|hulu|peacock)\b",
         )
         or _has(_fold(query), _NAMED_APPLICATION_PLACE)
@@ -11351,13 +11354,38 @@ def _strict_composition_segments_are_grounded(
     return tuple(operations) == expected.operations
 
 
-def airplane_mode_request(text: str) -> int | None:
+# M111 (DEV-F v4d F-w56-t3 «enciéndeme la luz nocturna» → «¿Qué ajuste específico deseas cambiar y a qué valor?»): the
+# settings switched on or off, each by the words that name it.
+_SWITCHED_SETTINGS = (
+    ("airplane_mode", r"\b(?:modo\s+avion|airplane\s+mode|flight\s+mode)\b"),
+    ("night_light", r"\b(?:luz\s+nocturna|night\s*light|filtro\s+de\s+luz\s+azul|blue\s+light\s+filter)\b"),
+    ("do_not_disturb", r"\b(?:(?:modo\s+)?no\s+molestar|do\s+not\s+disturb|dnd)\b"),
+)
+
+
+def setting_switch_request(text: str) -> tuple[str, int] | None:
+    """M111: (setting, 1 on / 0 off) of an order to switch airplane mode, the night light or do-not-disturb; None for
+    anything else, a question about its state included."""
+
+    folded = _fold(text)
+    named = [(setting, words) for setting, words in _SWITCHED_SETTINGS if _has(folded, words)]
+    if len(named) != 1:
+        return None
+    setting, words = named[0]
+    value = airplane_mode_request(text, words)
+    return (setting, value) if value is not None else None
+
+
+def airplane_mode_request(
+    text: str, setting_words: str = r"\b(?:modo\s+avion|airplane\s+mode|flight\s+mode)\b",
+) -> int | None:
     """REOPEN1957 H0107 «poneme el modo avión»: 1 to switch airplane mode on
     (every radio off), 0 to switch it off; None when the text is not an
-    airplane-mode order or asks about its state."""
+    airplane-mode order or asks about its state. M111: ``setting_words`` reads another switched setting the same
+    way (``setting_switch_request``)."""
 
     folded = _strip_request_envelope(_fold(text)).strip().rstrip(".!?").strip()
-    if not _has(folded, r"\b(?:modo\s+avion|airplane\s+mode|flight\s+mode)\b"):
+    if not _has(folded, setting_words):
         return None
     if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(folded):
         return None
@@ -11365,7 +11393,7 @@ def airplane_mode_request(text: str) -> int | None:
         return None
     if _has(folded, r"\b(?:apaga|apagame|apagar|desactiva|desactivame|desactivar|quita|quitame|quitar|saca|sacame|sacar|turn\s+off|disable|switch\s+off|off)\b"):
         return 0
-    if _has(folded, r"\b(?:pon|pone|poneme|poner|activa|activame|activar|prende|prendeme|prender|enciende|encendeme|turn\s+on|enable|switch\s+on|put|set|on)\b"):
+    if _has(folded, r"\b(?:pon|pone|poneme|ponme|poner|activa|activame|activar|prende|prendeme|prender|enciende|encendeme|enciendeme|encender|activala|activalo|prendela|prendelo|turn\s+on|enable|switch\s+on|put|set|on)\b"):
         return 1
     return None
 
@@ -12627,6 +12655,10 @@ def _resolve_clause_effects(
         # REOPEN1993 grupo E: no client named → the recipient is looked up in the
         # clients and, when unique, the message is sent (confirmed in normal mode).
         return EffectIntent(("message.recipient.resolve", "message.send"), (text, text))
+    if "message.draft" in available and message_left_written_request(text) is not None:
+        # M111 (DEV-F v4d F-s014, F-w05-t2): a message the person asks to leave written, or orders not to send, is a
+        # draft, read before any reader that sends one.
+        return EffectIntent(("message.draft",), (text,))
     if {"message.recipient.resolve", "message.send"} <= available and message_request_named_client(text) is not None:
         # Owner 2026-09-21 «Mandale un mensaje a vicho por wsp diciendole hola»: the
         # client IS named → the person is looked up in that client and the message
@@ -12964,7 +12996,7 @@ def _resolve_clause_effects(
         and not _has_contradictory_correction(folded)
     ):
         return EffectIntent(("system.settings.adjust",), (folded,))
-    if "system.settings.set" in available and airplane_mode_request(text) is not None:
+    if "system.settings.set" in available and setting_switch_request(text) is not None:
         # REOPEN1957 H0107 «poneme el modo avión»: every radio off (or on again).
         return EffectIntent(("system.settings.set",), (folded,))
     if "system.settings.status" in available and airplane_mode_question(text):
@@ -14024,6 +14056,19 @@ def _resolve_clause_effects(
     )
 
 
+# M111: what the person says they have not done yet (perfect tense, folded): «no lo he abierto», «todavía no la he
+# leído», «I haven't opened it».
+_PAST_STATEMENT_BODY = (
+    r"(?:(?:y|and|pero|but)\s+)?(?:(?:todavia|aun)\s+)?(?:"
+    r"no\s+(?:(?:me|te|lo|la|los|las|le|les)\s+)?(?:he|hemos|habia|habiamos)\s+\w+(?:ado|ido|isto|ierto|cho)"
+    r"(?:\s+(?:todavia|aun|nada))?"
+    r"|i\s+(?:haven'?t|have\s+not|hadn'?t|didn'?t|did\s+not)\s+(?:\w+\s+){0,2}?"
+    r"(?:opened|open|read|seen|see|checked|check|looked|heard|watched)(?:\s+(?:it|them|that))?(?:\s+yet)?)"
+)
+_PAST_STATEMENT = re.compile(r"^" + _PAST_STATEMENT_BODY + r"[\s.!?]*$")
+_PAST_STATEMENT_TAIL = re.compile(r"(?:\s*,\s*|\s+)" + _PAST_STATEMENT_BODY + r"[\s.!?]*$")
+
+
 def unresolved_compound_contract(
     text: str,
     available_operations: Iterable[str],
@@ -14058,6 +14103,12 @@ def unresolved_compound_contract(
         )
     folded = _strip_request_envelope(_fold(re.sub(r"[\r\n]+", " . ", text)))
     clauses = _request_clauses(folded)
+    # M111 (DEV-F v4d F-w01-t1 «léeme el último correo que me llegó, … y no lo he abierto» → asked for the sender):
+    # what the person says at the end that they have not done is a statement, not a negated order; the request is the
+    # rest.
+    said = _PAST_STATEMENT_TAIL.sub("", folded).strip(" ,")
+    if said and said != folded and not _PAST_STATEMENT.match(folded):
+        return unresolved_compound_contract(said, available, application_names, game_catalog)
     authenticated_applications = build_application_catalog_index(
         application_names,
     )
@@ -14155,6 +14206,15 @@ def unresolved_compound_contract(
         and resolved_intent.operations == ("game.launch",)
         and _corrected_game_launch_title(folded) is not None
     )
+    # M111 (DEV-F v4d F-s014 «… pero no se lo mandes eh»): the order not to send a message left written is that
+    # draft's own constraint, not a negated second effect.
+    benign_draft_not_sent = (
+        isinstance(resolved_intent, EffectIntent)
+        and resolved_intent.operations == ("message.draft",)
+        and message_left_written_request(text) is not None
+    )
+    if benign_draft_not_sent:
+        return None
     if (
         (
             _is_negative_effect_clause(folded)

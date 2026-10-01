@@ -385,10 +385,12 @@ def open_named_file_request(text: str) -> tuple[str, str] | None:
     if _is_negative_effect_clause(folded) or folder_txt_zip_open_mission(text) is not None:
         return None
     match = re.match(
-        rf"^[¿?¡!\s]*(?:abr[eií](?:me|lo|la)?|abrir|open)\s+"
+        rf"^[¿?¡!\s]*(?:[aá]br[eií](?:me|lo|la)?|abrir|open)\s+"
         rf"(?:(?:el|la|the|a)\s+)?(?:(?:archivo|file|fichero|zip|pdf|documento|document|imagen|image|foto|photo)\s+)?"
         rf"(?P<name>[^\s/\\:*?\"<>|]+(?:\s+[^\s/\\:*?\"<>|]+){{0,4}}?\.[a-z0-9]{{1,5}})\s+"
-        rf"(?:del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}|imagenes|pictures)\b",
+        # M111 (DEV-F v4d F-s025 «… presupuesto_finca.xlsx q esta en documentos»): where the file is, said as a clause.
+        rf"(?:(?:q|que)\s+(?:est[aá]|tengo|guard[eé])\s+en|that'?s\s+in|which\s+is\s+in|"
+        rf"del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mis|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}|imagenes|pictures)\b",
         raw,
         re.IGNORECASE,
     )
