@@ -2553,6 +2553,12 @@ def _served_surface_reread(
             objective if effect_request_is_authoritative(objective) else None,
             semantic_surface.canonical(restated) if restated else None,
         ]
+        if dialogue_slot.dependency(objective, dialogue_slot.read_slot(message, history, objective)) is not None:
+            # M112 (DEV-F v4d w52-t2 «sí, dale, bájalo a 30» after the battery was read → the decider's limit re-read
+            # as said and the volume set to 30): a message that leans on the conversation names its object there;
+            # read alone, the readers fill it with their own default. Only the decider's restatement, which carries
+            # it, is re-read.
+            candidates = [semantic_surface.canonical(restated) if restated else None]
     previous = _previous_user_request(history if isinstance(history, list) else [], objective)
     canonical = None
     for candidate in dict.fromkeys(text for text in candidates if text):
@@ -3015,6 +3021,41 @@ def _explicit_stable_no_effect_turn_decision(
 ) -> dict[str, object] | None:
     read = stable_no_effect(objective, history, pending_clarification=pending_clarification)
     return _conversation_turn_decision(*read) if read is not None else None
+
+
+def _conversation_reader_keeps_followup(
+    objective: str,
+    *,
+    non_target_language: bool,
+    catalog_fact: bool,
+    recalled: bool,
+    explicit_non_action: bool,
+    social_act: bool,
+    reaction: bool,
+) -> bool:
+    """M112: whether a conversation reader's closure of a follow-up stands without the contextual decider.
+
+    The readers read the message alone. A reaction («uf, está muy fuerte», «jaja no lo entendí») is about what just
+    happened, and a message whose form leans on the turn before («no esa, la otra», «ahí tiene que estar el PDF…
+    ¿me lo resumes?», ``dialogue.leans_on_context``) names its object there: both are the contextual decider's, which
+    sees the conversation (DEV-F v4d w28-t5, w60-t2, w19-t2; the decider alone was right on every follow-up these
+    readers lost). What holds whatever was said before keeps its reader: a language BAXY does not answer in, a limit
+    of the catalog (a known unsupported contract, an application or game that is not installed), the words recalled
+    or drawn on request, an explicit «don't do anything» or prohibition, a social act, and talk or a question that
+    stands on its own (M83: «What is photosynthesis?» names what it asks about).
+    """
+
+    if (
+        non_target_language
+        or catalog_fact
+        or recalled
+        or explicit_non_action
+        or social_act
+        or effect_intent.explicit_negative_constraint(objective)
+        or dialogue_slot.is_social(objective)
+    ):
+        return True
+    return not (reaction or dialogue_slot.leans_on_context(objective))
 
 
 def _catalog_unavailable_turn_decision(
@@ -5218,7 +5259,8 @@ def _decide_turn_result(
     ``served_surface`` is None on the request as said and ``()`` on the re-read of its canonical surface
     (``_served_surface_reread``), which is never re-read again.
     ``in_conversation``: the message follows earlier turns. Only the conversation readers (talk,
-    complaints, social acts, known limits) keep it; everything else is the contextual decider's, which
+    social acts, known limits) keep it, and only when what they read stands without the turn before
+    (M112, ``_conversation_reader_keeps_followup``); everything else is the contextual decider's, which
     reads the whole conversation (Fase 3.5b F4: with the history, the effect and clarification readers
     lost more follow-ups than they proved).
     """
@@ -5338,6 +5380,9 @@ def _decide_turn_result(
             lambda clause: resolve_explicit_effects(clause, authenticated_operations, application_names, game_catalog),
         )
         is not None
+        # M112 (DEV-F v4d w38-t1 «get me a large pepperoni with extra jalapeños from the Domino's on Elm St»): an order
+        # addressed to BAXY is never overheard talk; what it asks (here a limit) is the contextual decider's.
+        or effect_request_is_authoritative(objective)
     ):
         # Fase 3.5 (owner 2026-09-21, turns 156–167, 208): a long message right
         # after BAXY spoke is the person talking to BAXY, not a conversation the
@@ -5637,6 +5682,7 @@ def _decide_turn_result(
         # decider asked about them or served a capture or an alarm nearby.
         or effect_intent.unserved_personal_request(objective)
     )
+    social_decision: dict[str, object] | None = None
     explicit_conversation_decision = (
         _explicit_unsupported_turn_decision(objective)
         if non_target_language is not None
@@ -5651,10 +5697,12 @@ def _decide_turn_result(
         )
         or known_limit_requested
         else catalog_unavailable_decision
-        or _explicit_social_turn_decision(
-            objective,
-            history,
-            pending_clarification=message.get("pendingClarification"),
+        or (
+            social_decision := _explicit_social_turn_decision(
+                objective,
+                history,
+                pending_clarification=message.get("pendingClarification"),
+            )
         )
         or _explicit_nonunderstanding_turn_decision(
             objective,
@@ -5675,6 +5723,30 @@ def _decide_turn_result(
         explicit_conversation_decision = _conversation_turn_decision(
             "knowledge", _explicit_response_language(objective),
         )
+    if (
+        in_conversation
+        and explicit_conversation_decision is not None
+        and not _conversation_reader_keeps_followup(
+            objective,
+            non_target_language=non_target_language is not None,
+            catalog_fact=known_limit_requested
+            or known_unsupported_effect_request(objective, available_operations)
+            or catalog_unavailable_decision is not None
+            or (unresolved_compound_effects is not None and unsupported_effect_demonstration_request(objective)),
+            recalled=literal_recall_decision is not None,
+            explicit_non_action=explicit_non_action,
+            social_act=explicit_conversation_decision is social_decision,
+            reaction=explicit_conversation_decision is talk_act_decision
+            and semantic_reading.plain_talk(objective, effects=explicit_intent, clarification=turn_reading.clarification)
+            == "reaction",
+        )
+    ):
+        # M112 (DEV-F v4d w19-t2 «Ahí tiene que estar el PDF… ¿Me lo resumes?» → «No resumo documentos.», w28-t5 «uf
+        # está muy fuerte» after the music started → social talk, w60-t2 «no esa no la otra la del disco» → knowledge):
+        # a follow-up is read by the contextual decider, which has the conversation in front of it; a conversation
+        # reader that reads the message alone keeps it only when what it reads holds whatever came before.
+        explicit_conversation_decision = None
+        stable_no_effect_decision = None
     # Resolve the speech act before catalog candidates can prime a related
     # effect. The existing candidate-free guard includes personal/live reads
     # and compound actions; only agreement on stable knowledge closes here.
@@ -6063,13 +6135,24 @@ def _decide_turn_result(
                 )
             else:
                 intent_operations = []
-    decision = apply_compound_effect_conservation_veto(
-        decision,
-        unresolved_compound_effects,
-        tool_by_name,
-        llm,
-        application_names,
-    )
+    try:
+        decision = apply_compound_effect_conservation_veto(
+            decision,
+            unresolved_compound_effects,
+            tool_by_name,
+            llm,
+            application_names,
+        )
+    except PlannerContractError:
+        if explicit_intent is None or explicit_conversation_decision is not None or served_surface is not None:
+            raise
+        # M112 (DEV-F v4d w01-t1 «léeme el último correo que me llegó, creo que es de mi jefa… y no lo he abierto» →
+        # the readers proved the mail read, «no lo he abierto» left a clause they could not read, the turn failed twice
+        # and asked «¿el asunto o el remitente?»): readers that cannot read the whole message are not sure of it; the
+        # contextual decider, which reads all of it, decides the turn instead of failing it.
+        return _context_decided_result(
+            message, llm=llm, planner_catalog=planner_catalog, application_names=application_names,
+        )
     decision = validate_turn_decision(
         decision,
         {tool.name for tool in shortlist},

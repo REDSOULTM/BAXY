@@ -2380,7 +2380,9 @@ def known_unsupported_effect_request(
             _has(folded, rf"\b{_OPEN}\b")
             and _has(folded, r"\b(?:archivo|file)\b")
             and not _has(folded, r"\b(?:ultimo|ultima|latest|reciente|newest)\b"),
-            {"filesystem.file.open.named"},
+            # M112 (DEV-F v4d s025 «abreme el archivo presupuesto_finca.xlsx q esta en documentos» → «No abro
+            # archivos»): file.open opens a file named in a known folder, so this contract is inert while it exists.
+            {"filesystem.file.open.named", "file.open"},
         ),
         (
             _has(folded, r"\b(?:incognito|privad[ao]|private)\b")
@@ -2634,8 +2636,8 @@ def known_unsupported_effect_request(
             # test mailbox regardless of sender, so a request that names mail
             # keeps that path; a chat client or no channel at all is this limit.
             (
-                _has(folded, r"\b(?:que|what)\s+me\s+(?:escribi[oó]|escribieron|mand[oó]|mandaron|envi[oó]|enviaron|dijo|dijeron|puso|pusieron)\b"
-                             r"|\bwhat\s+did\s+\w+(?:\s+\w+)?\s+(?:write|send|say|text)\s+(?:to\s+)?me\b"
+                _asks_what_was_said_to_me(folded)
+                or _has(folded, r"\bwhat\s+did\s+\w+(?:\s+\w+)?\s+(?:write|send|say|text)\s+(?:to\s+)?me\b"
                              r"|\b(?:lee|leeme|leer|leelo|leela|leelos|leelas|mostra|mostrame|muestra|muestrame|dime|decime|read|show)\b.{0,40}\b(?:mensajes?|messages?|chats?|dms?|texts?)\b.{0,30}\b(?:de|from|of)\s+\w+")
                 and not _has(folded, r"\b(?:correos?|mails?|e-?mails?|emails?|inbox|bandeja|gmail|outlook)\b")
             ),
@@ -3314,27 +3316,10 @@ def _clarification_intent_of(
             ("note.search",),
             ("shared_note_source",),
         )
-    providerless_store_request = re.fullmatch(
-        r"(?:get|bring|order)\s+(?:me\s+)?"
-        r"(?P<item>[a-z0-9][a-z0-9 ,.&'-]{1,160}?)\s+from\s+"
-        r"(?:(?:uh+|um+|er+|eh+)\s+from\s+)?"
-        r"(?P<store>[a-z0-9][a-z0-9 .'-]{1,80})[\s.!?]*",
-        folded,
-        re.IGNORECASE,
-    )
-    if "web.search" in available and providerless_store_request is not None:
-        if not _has(
-            folded,
-            r"\b(?:calendar|calendario|commitments?|compromisos?|tasks?|tareas?|"
-            r"notes?|notas?|files?|archivos?|reminders?|recordatorios?|"
-            # M91 (reserva «get me the top stories from the guardian»): news, headlines or a forecast fetched from a
-            # source are read, never bought.
-            r"news|noticias|headlines?|titulares|stories|updates?|scores?|results?|weather|forecast)\b",
-        ):
-            return ClarificationIntent(
-                ("web.search",),
-                ("product_lookup_or_purchase",),
-            )
+    # M112 (DEV-F v4d w38-t1 «get me a large pepperoni with extra jalapeños from the Domino's on Elm St» → «¿Quieres
+    # que busque…?»): «get X from a store» is no longer asked as lookup-or-purchase before the decider; an order of food
+    # or goods is a limit and a lookup is a search, which the contextual decider tells apart (it did on every
+    # clarification turn of DEV-D and DEV-F), and a yes/no offer that asks for no value is what D3 forbids.
     dynamic_market_alert = (
         _has(folded, r"\b(?:avisame|notificame|alert\s+me|notify\s+me)\b")
         and _has(folded, r"\b(?:acciones|stocks?|shares?)\b")
@@ -5653,16 +5638,37 @@ def _is_effect_receipt_clause(text: str) -> bool:
     )
 
 
+_SAID_TO_ME = re.compile(
+    r"\b(?:que|qué)\s+(?:fue\s+lo\s+ultimo\s+que\s+)?me\s+"
+    r"(?:escribi[oó]|escribieron|mand[oó]|mandaron|envi[oó]|enviaron|dijo|dijeron|puso|pusieron)\b"
+)
+# M112 (DEV-F v4d w19-t2 «Ahí tiene que estar el PDF de la hipoteca que me mandó el banco ayer. ¿Me lo resumes?» →
+# «No resumo documentos.»): «que me mandó» right after a thing named with its article («el PDF de la hipoteca»)
+# says which thing it is (a relative clause); only after a pause or a verb («dime qué me dijo», «¿qué me escribió?»)
+# does it ask what someone said.
+_NAMED_THING_BEFORE = re.compile(
+    r"\b(?:el|la|los|las|un|una|unos|unas|del|al|este|esta|estos|estas|ese|esa|esos|esas|mi|mis|tu|tus|su|sus)\s+"
+    r"(?:[^\s,.;:!?¿¡]+\s+){0,4}[^\s,.;:!?¿¡]+\s*$"
+)
+
+
+def _asks_what_was_said_to_me(folded: str) -> bool:
+    """«qué me dijo/escribió/mandó X» asked, never «el PDF que me mandó el banco» (see above)."""
+
+    return any(
+        _NAMED_THING_BEFORE.search(folded[: found.start()]) is None for found in _SAID_TO_ME.finditer(folded)
+    )
+
+
 def chat_read_request(folded: str) -> bool:
     """A request to read what someone wrote in a chat client or to read a chat:
     «qué (fue lo último que) me dijo/escribió X (en wsp)», «leé/leeme lo último
     que me dijo X», «puedes leer una conversación mía de whatsapp», «read my
     last message from X». False for mail (its own reader) and for sending."""
 
-    return (_has(
+    return (_asks_what_was_said_to_me(folded) or _has(
         folded,
-        r"\b(?:que|qué)\s+(?:fue\s+lo\s+ultimo\s+que\s+)?me\s+(?:dijo|escribio|mando|envio|puso)\b"
-        r"|\b(?:lee|leeme|leer|leas|leerme|read)\s+(?:me\s+)?(?:lo\s+ultimo\s+que\s+me\s+(?:dijo|escribio|mando)|"
+        r"\b(?:lee|leeme|leer|leas|leerme|read)\s+(?:me\s+)?(?:lo\s+ultimo\s+que\s+me\s+(?:dijo|escribio|mando)|"
         r"(?:una|la|mi|my|a|the)\s+(?:conversacion|conversation|chat)|(?:el|los|mis|the|my)\s+(?:ultimos?\s+)?(?:mensajes?|messages?)|"
         r"(?:the\s+)?last\s+message)\b"
         r"|\bwhat\s+did\s+\S+\s+(?:say|write|text)\s+(?:to\s+)?me\b",

@@ -6073,16 +6073,6 @@ def test_status_public_discovery_and_stored_note_requests_are_deterministic(
             ("shared_note_source",),
         ),
         (
-            "Get me coffee coffee from Safeway",
-            "web.search",
-            ("product_lookup_or_purchase",),
-        ),
-        (
-            "Get milk, eggs, and bread from uhh from Aldi.",
-            "web.search",
-            ("product_lookup_or_purchase",),
-        ),
-        (
             "In the living room, play League of Legends.",
             "game.launch",
             ("local_pc_or_supported_device",),
