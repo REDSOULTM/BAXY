@@ -89,6 +89,24 @@ AGENDA_NOT_A_READ = (
     r"\b(?:recuerd[a-z]*|recordar[a-z]*|recordame|recordamelo|remind[a-z]*|avisa(?:me|rme)?|avisen|avise|"
     r"notifica(?:me|rme)?|limpia|limpiar|limpie|limpiame|despeja|despejar|despeje|vacia|vaciar|vacie|clear|wipe)\b"
 )
+# M94 (DEV-D D-s016 «please take off my calendar on saturday the 6th birthday party for john» → the calendar listed):
+# what is taken off, out of or from the calendar is removed from it, whatever the entry is called («la cena», «John's
+# party»), and events are never removed (``known_unsupported_effect_request``). «take» only with «off»: «take the dates
+# from my calendar» reads them, «take a look at my calendar» too.
+_AGENDA_TAKEN_OFF = re.compile(
+    r"\b(?:(?:borra|borrar|borrame|borre|elimina|eliminar|eliminame|elimine|quita|quitar|quitame|quite|saca|sacar|"
+    r"sacame|saque|cancela|cancelar|cancelame|cancele|delete|remove|erase|strike|scratch|drop)\b"
+    r"(?:\s+\S+){0,6}?\s+(?:off|from|out\s+of|de|del)|take\b(?:\s+\S+){0,6}?\s+off)"
+    r"\s+(?:(?:mi|el|la|my|the)\s+)?(?:agenda|calendario|calendar)\b"
+)
+
+
+def takes_off_the_agenda(folded: str) -> bool:
+    """An entry taken off the person's calendar (folded words; see above)."""
+
+    return _AGENDA_TAKEN_OFF.search(folded) is not None
+
+
 _READ_OF_EVENT_HEAD = (
     r"(?:que|cual|cuales|cuando|donde|quien|quienes|cuanto|a|what|which|when|where|who|dime|decime|"
     r"cuentame|contame|hablame|tell|mas|more|is|are|will|does|do)"
@@ -154,6 +172,7 @@ def agenda_read_request(text: str) -> bool:
         # «cuántos contactos tengo en mi agenda»: the address book, not the calendar (messaging.contact_book_request).
         or _has(folded, r"\b(?:contactos?|contacts?|telefonos|numeros\s+de\s+telefono|phone\s+numbers)\b")
         or _has(folded, AGENDA_NOT_A_READ)
+        or takes_off_the_agenda(folded)
         # M91 (reserva «ponga la cena del viernes en mi calendario», «block my calendar tomorrow»): something put
         # into the calendar, in any person or place of the sentence, changes it.
         or puts_into_the_agenda(folded)

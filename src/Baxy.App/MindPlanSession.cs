@@ -310,10 +310,13 @@ internal sealed class MindPlanSession
                 _ = _host.TryMarkResolved(registry, prepared);
                 execution.PendingOperation = null;
                 Clear();
+                // M94 (DEV-D D-p24-t4 «Hustlers» on Netflix behind a sign-in, D-w09-t3): the
+                // unverified step names what it was about, like a failed one.
                 _host.Publish(
                     OperationResponseProjection.CarriesOperationFacts(response.Message)
                         ? MissionNarration.CreateFailureMessage(
-                            execution.CompletedMessages, response.Message)
+                            execution.CompletedMessages,
+                            MindPlanBoundary.WithStepTarget(response.Message, arguments))
                         : MissionNarration.CreateUncertainEffectMessage(execution, terminal: true),
                     UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
                 return;

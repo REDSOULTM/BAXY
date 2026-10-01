@@ -265,6 +265,10 @@ _LOCAL_SCOPE_COURTESY_FRAME = (
 )
 
 
+# M94: the infinitive «¿sería posible …?» asks for, with its clitics («suprimirla», «cancelármelo»).
+_POLITE_INFINITIVE = r"[a-z]+(?:ar|er|ir)(?:me|te|se|nos|lo|la|los|las|le|les|melo|mela|selo|sela)?\b"
+
+
 _REQUEST_PREFIX = (
     # A delimited present-time frame leaves the following request intact.
     # Future/past times and quoted content are not request wrappers.
@@ -303,7 +307,11 @@ _REQUEST_PREFIX = (
     # request for the trailing words.
     rf"(?:hazme\s+un\s+favor|one\s+thing|una\s+cosa(?:\s+please)?)"
     rf"\s*[,;:.!?\-\u2013\u2014]+{_PREFIX_GAP}|"
-    r"(?:puedes|podes|podrias|podria|me\s+(?:puedes|podes|podrias|podria)|can you|could you|would you)\s+|"
+    r"(?:puedes|podes|podrias|podria|me\s+(?:puedes|podes|podrias|podria)|can you|could you|would you|"
+    # M94 (DEV-D D-s064 «¿Sería posible suprimir mi orden de recogida en Lyft…» → «Puedes contactar al soporte de
+    # Lyft»): asking whether it would be possible to do something is asking for it, as with «¿podrías…?». Only the
+    # conditional: «¿es posible viajar a Marte?» asks about the world.
+    rf"(?:(?:me|te|le)\s+)?seria\s+posible(?=\s+{_POLITE_INFINITIVE})|would\s+it\s+be\s+possible\s+(?:for\s+you\s+)?to)\s+|"
     # Fase 3.5: «volvé a prender el micrófono» — repeating is aspect, not the
     # action; the request is the infinitive, as after «¿podés …?».
     r"(?:vuelve|volve|volver|vuelvas|vuelva)\s+a\s+(?=[a-z]+(?:ar|er|ir)(?:me|te|se|lo|la|los|las|le|les)?\b)|"
@@ -918,9 +926,11 @@ def _is_past_or_hypothetical_state(text: str) -> bool:
             r"\b(?:tenia|tenias|teniamos|tenian|habia|habian|estaba|estaban|"
             r"era|eran|fue|fueron|quedaba|quedaban|had|was|were|"
             r"used\s+to)\b|"
-            r"\b(?:tendria|tendrias|seria|serian|tuviera|tuvieras|tuviese|"
+            # M94 (DEV-D D-s064): «¿sería posible suprimir…?», «would it be possible to cancel…» ask for the act.
+            rf"\b(?:tendria|tendrias|seria(?!\s+posible\s+{_POLITE_INFINITIVE})|serian|tuviera|tuvieras|tuviese|"
             # «i would like a timer set» is a polite desire, not a hypothesis.
-            r"abriria|abririas|quedaria(?:s|mos|n)?|would(?!\s+(?:you|like|love)\b)|hipoteticamente|"
+            r"abriria|abririas|quedaria(?:s|mos|n)?|would(?!\s+(?:you|like|love|it\s+be\s+possible\s+to)\b)|"
+            r"hipoteticamente|"
             r"hypothetically|supongamos|suponiendo|imagina|imagine)\b|"
             r"\bif\b.{0,64}\b(?:another|other)\s+(?:computer|device)\b|"
             r"\b(?:si|if)\b.{0,64}\b(?:otro|otra|another|other)\s+"

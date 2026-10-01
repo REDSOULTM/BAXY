@@ -213,16 +213,43 @@ internal static class MindPlanBoundary
         && descriptor.Risk == OperationRisks.ReadOnly;
 
     /// <summary>
+    /// The grounded arguments that name what a step was about, in the order one is chosen.
+    /// M94 (DEV-D D-s102 «abre google keep», D-s087 the weather of «Abingdon Virginia», D-p24-t4
+    /// «Hustlers» on Netflix, D-w07-t2 «1850 entre 7», D-w09-t3 the newest file of Descargas, D-p37-t3
+    /// «chips»): a failed or unverified step's facts said only the cause, so the reply named the
+    /// thing from the person's words and nothing showed which one was tried. Identifiers, versions
+    /// and free text are never a target.
+    /// </summary>
+    private static readonly string[] TargetArguments =
+    [
+        "applicationName", "app", "appId", "title", "name", "fileName", "query", "expression", "location", "place",
+        "folder", "topic",
+    ];
+
+    /// <summary>
     /// M56 (v3c-final F-w06-t1 «ninguna de las aplicaciones tenía una ventana abierta»): a
     /// failed step's facts name the application it was about, from its own grounded
-    /// arguments, so the reply says which window was missing instead of guessing.
+    /// arguments, so the reply says which window was missing instead of guessing. M94: any
+    /// step names what it was about (<see cref="TargetArguments"/>); a catalog id
+    /// («windows.calculator», an AUMID) is not a name.
     /// </summary>
     internal static string WithStepTarget(string message, JsonObject? arguments)
     {
         ArgumentNullException.ThrowIfNull(message);
-        if (arguments?["applicationName"] is not JsonValue value
-            || !value.TryGetValue(out string? application)
-            || string.IsNullOrWhiteSpace(application))
+        string? application = null;
+        foreach (string key in TargetArguments)
+        {
+            if (arguments?[key] is JsonValue value
+                && value.TryGetValue(out string? named)
+                && !string.IsNullOrWhiteSpace(named)
+                && !(key == "appId" && named.IndexOfAny(['.', '!']) >= 0))
+            {
+                application = named;
+                break;
+            }
+        }
+
+        if (application is null)
         {
             return message;
         }
