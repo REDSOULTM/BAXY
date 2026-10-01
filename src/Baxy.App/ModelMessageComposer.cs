@@ -292,13 +292,15 @@ internal static class ModelMessageComposer
     /// own sentence here (the clock, the volume, a YouTube title) says its observed values; a typed failure whose
     /// cause is known says it whole; any other action — done, failed, left uncertain, or a mission step by step — is
     /// said by <see cref="OperationFloor"/> (M107), from the same data the mind reads. The sentence passes the same
-    /// acceptance as a composed one.
+    /// acceptance as a composed one. <paramref name="clock"/> (M108) is the PC's clock the day words are told against
+    /// (the system clock when null).
     /// </summary>
     internal static string? DeterministicFinal(
         UserMessageDraft draft,
         string userText,
         JsonObject facts,
-        string? rejectedText)
+        string? rejectedText,
+        TimeProvider? clock = null)
     {
         ArgumentNullException.ThrowIfNull(draft);
         ArgumentNullException.ThrowIfNull(facts);
@@ -328,7 +330,7 @@ internal static class ModelMessageComposer
         string? text = done
             ? VerifiedResultFinal(source, userText, draft.Source, english)
             : OperationFloor.FailureSentence(source, english);
-        text ??= OperationFloor.Final(source, english);
+        text ??= OperationFloor.Final(source, english, clock);
         if (text is null)
         {
             return null;

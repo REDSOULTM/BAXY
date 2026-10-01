@@ -28,6 +28,24 @@ def floor_data() -> dict:
     return json.loads(_DATA.read_text(encoding="utf-8"))
 
 
+_CLITICS = ("nos", "les", "los", "las", "me", "te", "se", "lo", "la", "le")
+
+
+@lru_cache(maxsize=1)
+def spanish_infinitives() -> frozenset[str]:
+    """M108: the verb of every operation's plain clause («apagar», «abrir», «buscarlo» → «buscar»). The final gate
+    reads a first-person future of any of them as an act promised (llm.visible_reply_promises_the_act)."""
+
+    verbs: set[str] = set()
+    for entry in floor_data()["operations"].values():
+        variants = (entry.get("variants") or {}).get("values") or {}
+        for clause in (entry["es"][0], *(variant["es"][0] for variant in variants.values())):
+            verb = clause.split()[0]
+            clitic = next((c for c in _CLITICS if verb.endswith(c) and verb[: -len(c)].endswith(("ar", "er", "ir"))), "")
+            verbs.add(verb[: len(verb) - len(clitic)])
+    return frozenset(verbs)
+
+
 def failure_sentences() -> dict[str, tuple[str, str]]:
     """The typed failures whose cause is said whole: code -> (Spanish, English)."""
 

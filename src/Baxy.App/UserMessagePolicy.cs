@@ -385,6 +385,18 @@ internal static class UserMessagePolicy
         }
         if (draft.Intent is "status" or "error")
         {
+            // M108 twin of compose_visible_defect: the report of a result names no contract token, and what was
+            // verified is never promised.
+            if (!IsConversationSituation(draft.Source)
+                && LeaksContractToken(modelText, draft.Source, string.Concat(userText, "\n", priorUserText)))
+            {
+                return "internal_code";
+            }
+            if (draft.Intent == "status" && !IsConversationSituation(draft.Source)
+                && IsVerifiedEffect(draft.Source) && PromisesTheAct(modelText))
+            {
+                return "promised_effect";
+            }
             if (AttributesBaxyActionToUser(draft.Source, modelText))
             {
                 return "wrong_actor";
@@ -1876,6 +1888,223 @@ internal static class UserMessagePolicy
         return folded.StartsWith("name the ", StringComparison.Ordinal)
             && !asked.Contains("name the ", StringComparison.Ordinal);
     }
+
+    // M108 (M107's report) twin of llm._CONTRACT_TOKENS: the report of a verified effect leaked the contract in shapes
+    // the snake and dotted checks do not see («verified=true succeeded=true», «succeeded: true», «{"state": "off"}»,
+    // «TARGET_NOT_FOUND», «0x80070005», «windowId»). Judged on the report of a result (status, error) only, once links
+    // and mail addresses are out; a token the person wrote or the result observed is theirs.
+    // Product names keep their spelling («Baxy.App», «iPhone», «macOS», «RTX 4060 Ti»).
+    private static readonly Regex[] ContractTokens =
+    [
+        new(@"\b[A-Za-z_][A-Za-z0-9_]{2,}=\S", RegexOptions.CultureInvariant),
+        new(@"\b[A-Za-z_][A-Za-z0-9_]{2,}\s*[:=]\s*(?:true|false|null)\b",
+            RegexOptions.CultureInvariant | RegexOptions.IgnoreCase),
+        new(@"\{\s*""[^""{}\n]{1,64}""\s*:|""[A-Za-z_][\w.-]{0,63}""\s*:\s*(?:true|false|null|-?\d|""|\{|\[)",
+            RegexOptions.CultureInvariant),
+        new(@"\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\b", RegexOptions.CultureInvariant),
+        new(@"\b0x[0-9A-Fa-f]{4,}\b", RegexOptions.CultureInvariant),
+        new(@"\b[a-z]{2,}(?:[A-Z][a-z0-9]+)+\b", RegexOptions.CultureInvariant),
+    ];
+
+    private static readonly Regex LinkOrAddress = new(
+        @"(?:\bhttps?://|\bwww\.)\S+|\b[\w.%+-]+@[\w-]+(?:\.[\w-]+)+\b",
+        RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+
+    // What a result says about itself, never what it observed.
+    private static readonly HashSet<string> ContractFieldsNotObserved = new(StringComparer.Ordinal)
+    {
+        "operation", "operations", "authority", "error", "errorCode", "code", "cause", "kind", "polarity",
+        "diagnosticCode",
+    };
+
+    /// <summary>The report of a result names a contract token nobody said or observed (twin of
+    /// llm.visible_reply_leaks_a_contract_token). A field named in prose before a colon («your open windows: …») is
+    /// English, not the contract; only a field written with its value as the contract writes it is.</summary>
+    internal static bool LeaksContractToken(string reply, string source, string? ownWords)
+    {
+        var observed = new StringBuilder();
+        if (TryReadJson(source, out JsonElement root))
+        {
+            CollectObserved(root, string.Empty, 0, observed);
+        }
+
+        string own = string.Concat(observed.ToString(), "\n", ownWords).ToLowerInvariant();
+        string judged = LinkOrAddress.Replace(reply ?? string.Empty, " ");
+        return ContractTokens.Any(pattern => pattern.Matches(judged)
+            .Any(found => !own.Contains(found.Value.ToLowerInvariant(), StringComparison.Ordinal)));
+    }
+
+    private static void CollectObserved(JsonElement value, string key, int depth, StringBuilder texts)
+    {
+        if (depth > 8 || ContractFieldsNotObserved.Contains(key))
+        {
+            return;
+        }
+
+        switch (value.ValueKind)
+        {
+            case JsonValueKind.String:
+                string text = value.GetString() ?? string.Empty;
+                if (text.TrimStart().StartsWith('{') && TryReadJson(text, out JsonElement decoded))
+                {
+                    CollectObserved(decoded, key, depth + 1, texts);
+                    return;
+                }
+
+                texts.Append(text).Append('\n');
+                break;
+            case JsonValueKind.Object:
+                foreach (JsonProperty property in value.EnumerateObject())
+                {
+                    CollectObserved(property.Value, property.Name, depth + 1, texts);
+                }
+
+                break;
+            case JsonValueKind.Array:
+                foreach (JsonElement child in value.EnumerateArray())
+                {
+                    CollectObserved(child, key, depth + 1, texts);
+                }
+
+                break;
+        }
+    }
+
+    // M108 twin of llm.visible_reply_promises_the_act: a verified effect reported as a promise («Voy a hacerlo
+    // enseguida.», «I'll do it right away», «Procederé a apagar el bluetooth.»). A sentence that opens (after a «sí»,
+    // «claro», «ok»…) with a first-person act still to come is the promise; what a verified notice will do («te avisaré
+    // a las 9», «I'll remind you») and a state left as it is («lo dejo así», «I'll keep it muted») are no promise.
+    private const string PromiseLead =
+        @"^[\s""'«“]*(?:(?:si|claro(?:\s+que\s+si)?|ok(?:ay|ey)?|vale|dale|listo|perfecto|bueno|bien|entendido|"
+        + @"de\s+acuerdo|por\s+supuesto|sure|of\s+course|alright|all\s+right|got\s+it|no\s+problem|yes|yeah|okay)"
+        + @"\s*[,.!:;—–-]*\s*)*";
+
+    private const string PromiseClitic = @"(?:me|te|se|lo|la|le|los|las|les|nos)\s+";
+
+    private const string PromiseSoon =
+        @"(?:ahora\s+mismo|ya\s+mismo|enseguida|en\s+seguida|de\s+inmediato|inmediatamente|en\s+un\s+(?:momento|segundo|"
+        + @"instante)|en\s+breve|right\s+away|right\s+now|in\s+a\s+(?:moment|second|sec))";
+
+    private static readonly Regex SpanishPromise = new(
+        PromiseLead + @"(?:(?:" + PromiseSoon + @"|ahora|ya)\s*,?\s*)?"
+        + @"(?:me\s+(?:pongo\s+a|encargo|ocupo)\b|(?:" + PromiseClitic + @"){0,2}"
+        + @"(?:(?:voy|vamos)\s+a\s+(?:" + PromiseClitic + @")?(?<act>\w+)|procedo\s+a\b|llevo\s+a\b|(?<word>\w+)))",
+        RegexOptions.CultureInvariant);
+
+    private static readonly Regex SpanishPromisePresent = new(
+        PromiseLead + @"(?:" + PromiseSoon + @"\s*,?\s*(?:" + PromiseClitic + @"){1,2}\w+o\b|"
+        + @"(?:" + PromiseClitic + @"){1,2}\w+o\s+" + PromiseSoon + @")",
+        RegexOptions.CultureInvariant);
+
+    private static readonly Regex EnglishPromise = new(
+        PromiseLead + @"(?:" + PromiseSoon + @"\s*,?\s*)?"
+        + @"(?:i'll|i\s+will|i\s+shall|i'm\s+going\s+to|i\s+am\s+going\s+to|i'm\s+about\s+to|i\s+am\s+about\s+to|"
+        + @"let\s+me|we'll|we\s+will|let's\s+go|going\s+to|i'm\s+on\s+it|on\s+it)\b(?:\s+(?<act>\w+))?",
+        RegexOptions.CultureInvariant);
+
+    private static readonly Regex NotAPromisedAct = new(
+        @"^(?:avis|record|notific|despert|alert|estar\b|seguir|qued|dej|manten|"
+        + @"(?:remind|notify|let|alert|wake|ping|ring|be|keep|leave|stay|know|tell)\b)",
+        RegexOptions.CultureInvariant);
+
+    // Doing in general, besides each catalog act (OperationFloor.SpanishInfinitives): «lo haré», «procederé».
+    private static readonly string[] SpanishPromiseVerbs =
+    [
+        "hacer", "proceder", "intentar", "encargar", "ocupar", "ir", "llevar", "mostrar", "ver", "terminar",
+        "conseguir", "lograr", "arreglar", "resolver", "realizar", "completar",
+    ];
+
+    private static readonly Dictionary<string, string> SpanishFutureStems = new(StringComparer.Ordinal)
+    {
+        ["hacer"] = "har", ["poner"] = "pondr", ["decir"] = "dir", ["salir"] = "saldr", ["tener"] = "tendr",
+        ["venir"] = "vendr", ["querer"] = "querr", ["saber"] = "sabr", ["deshacer"] = "deshar", ["rehacer"] = "rehar",
+        ["reponer"] = "repondr",
+    };
+
+    private static readonly Lazy<HashSet<string>> SpanishPromisedFutures = new(() =>
+    {
+        var futures = new HashSet<string>(StringComparer.Ordinal);
+        foreach (string verb in OperationFloor.SpanishInfinitives.Concat(SpanishPromiseVerbs))
+        {
+            if (verb == "dejar")
+            {
+                continue;
+            }
+
+            string stem = SpanishFutureStems.GetValueOrDefault(verb, verb);
+            futures.Add(FoldForPolicy(stem + "é"));
+            futures.Add(FoldForPolicy(stem + "emos"));
+        }
+
+        return futures;
+    });
+
+    /// <summary>A sentence of the reply promises an act instead of telling it done.</summary>
+    internal static bool PromisesTheAct(string reply)
+    {
+        foreach (string part in Regex.Split((reply ?? string.Empty).Replace('’', '\''), @"[.!?;:\n¡¿]+"))
+        {
+            string sentence = Regex.Replace(FoldForPolicy(part), @"\s+", " ").Trim();
+            if (sentence.Length == 0)
+            {
+                continue;
+            }
+
+            if (SpanishPromisePresent.IsMatch(sentence))
+            {
+                return true;
+            }
+
+            Match found = SpanishPromise.Match(sentence);
+            if (found.Success)
+            {
+                if (found.Groups["act"].Success)
+                {
+                    if (!NotAPromisedAct.IsMatch(found.Groups["act"].Value))
+                    {
+                        return true;
+                    }
+                }
+                else if (!found.Groups["word"].Success || SpanishPromisedFutures.Value.Contains(found.Groups["word"].Value))
+                {
+                    return true;
+                }
+            }
+
+            found = EnglishPromise.Match(sentence);
+            if (found.Success && (!found.Groups["act"].Success || !NotAPromisedAct.IsMatch(found.Groups["act"].Value)))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>A result the PC verified done: one operation verified and succeeded, or a completed mission.</summary>
+    private static bool IsVerifiedEffect(string source)
+    {
+        if (!TryReadJson(source, out JsonElement root))
+        {
+            return false;
+        }
+
+        if (root.TryGetProperty("cause", out JsonElement cause) && cause.ValueKind == JsonValueKind.String
+            && string.Equals(cause.GetString()?.Trim(), "mission_completed", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return root.TryGetProperty("operation", out JsonElement operation) && operation.ValueKind == JsonValueKind.String
+            && !string.IsNullOrEmpty(operation.GetString())
+            && root.TryGetProperty("verified", out JsonElement verified) && verified.ValueKind == JsonValueKind.True
+            && root.TryGetProperty("succeeded", out JsonElement succeeded) && succeeded.ValueKind == JsonValueKind.True;
+    }
+
+    private static bool IsConversationSituation(string source) =>
+        TryReadJson(source, out JsonElement root)
+        && root.TryGetProperty("kind", out JsonElement kind) && kind.ValueKind == JsonValueKind.String
+        && kind.GetString() == "conversation";
 
     private static bool ContainsInternalCode(string reply, string? userText = null)
     {
