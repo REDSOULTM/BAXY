@@ -536,6 +536,22 @@ def is_social(text: str) -> bool:
     return bool(folded) and _SOCIAL.fullmatch(folded) is not None
 
 
+# M99 (reserva A6 «quieres netflix and chill» → Netflix opened): asking whether BAXY wants something («¿quieres un
+# café?», «do you want pizza?») offers it to BAXY; it orders nothing. Wanting an act («¿quieres poner música?», «do you
+# want to play some jazz?», «¿quieres que la ponga?») is the polite order and is left out.
+_OFFER_TO_BAXY = re.compile(
+    r"(?:(?:y|and|oye|hey|baxy)[\s,]+)*(?:tu\s+)?(?:quieres|queres|quisieras|te\s+gustaria|te\s+apetece|do\s+you\s+want|"
+    r"would\s+you\s+like|wanna|you\s+want)\s+"
+    r"(?!(?:que|to|me|te|le|nos|lo|la|los|las|if|si)\b)(?![a-z]+(?:ar|er|ir)(?:me|te|lo|la|le|nos|los|las|les)?\b)\S"
+)
+
+
+def offers_to_baxy(text: str) -> bool:
+    """«¿quieres netflix and chill?», «do you want a coffee?»: something offered to BAXY, no order (see above)."""
+
+    return _OFFER_TO_BAXY.match(_fold(text).strip(" ¿?¡!.,")) is not None
+
+
 # M88 (DEV-D v3r D-p24-t5 «That is confirmed to proceed.» after «I could not play Hustlers on Netflix because the
 # service requires a sign-in…», the third run in a row): a go-ahead — the person confirms, approves or tells BAXY to
 # proceed with something — was answered in a turn that ran nothing («The plan is confirmed to proceed.», «Confirmed,

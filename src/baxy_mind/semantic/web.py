@@ -294,6 +294,55 @@ def _outdoor_plan_question(folded: str) -> bool:
     )
 
 
+# M99 (reserva A5): the weather asked through what it decides, never by name. Whether a chore of the snow is needed
+# («will I need to shovel the driveway this morning», «¿tendré que quitar la nieve de la entrada?»), whether to open the
+# car's roof to the sky («should I open the sunroof», «¿debería abrir el techo solar?»), or at what time to go out
+# walking or running («¿a qué hora debería salir a correr?»). Each is asked by the person as a question of need, advice
+# or time; the same words said as an order («abre el techo solar») stay an order.
+_WEATHER_CHORE = (
+    r"\b(?:shovel\w*|palea\w*|quitar\s+(?:la\s+)?nieve|clear\w*\s+(?:the\s+|my\s+)?(?:snow|driveway|sidewalk|walkway)|"
+    r"(?:limpi|despej)\w*\s+(?:(?:el|la|mi|las|los)\s+)?(?:camino\s+de\s+(?:la\s+)?entrada|entrada\s+de\s+(?:la\s+)?casa|"
+    r"acera|vereda|nieve))\b"
+)
+_WEATHER_ROOF = (
+    r"\b(?:open|opening|abrir|abro|abra|bajar|bajo)\s+(?:the\s+|my\s+|el\s+|la\s+|mi\s+)?"
+    r"(?:sun\s*roof|moon\s*roof|convertible\s+top|techo\s+(?:solar|corredizo|del\s+auto|del\s+coche)|quemacocos|capota)\b"
+)
+_WEATHER_OUTING = (
+    r"\b(?:salir|irme|ir|go|head\s+out)\s+(?:a\s+|for\s+a\s+|to\s+)?"
+    r"(?:andar|caminar|correr|pasear|trotar|(?:dar\s+)?(?:un\s+)?paseo|walk|run|jog|hike|bike\s+ride|bici(?:cleta)?)\b"
+)
+_WEATHER_ADVICE_ASKED = (
+    r"^[¿¡\s]*(?:(?:will|should|do|can|could)\s+(?:i|we)|(?:yo\s+)?(?:deberia|deberiamos|debo|conviene|me\s+conviene|"
+    r"nos\s+conviene|puedo|podemos|tendre\s+que|tendremos\s+que|tengo\s+que|necesitare|necesitaremos|"
+    r"voy\s+a\s+(?:tener|necesitar)))\b|"
+    r"\b(?:a\s+que\s+hora|cuando|what\s+time|when)\s+(?:deberia|deberiamos|debo|conviene|me\s+conviene|nos\s+conviene|"
+    r"es\s+mejor|should\s+(?:i|we))\b"
+)
+# «¿sabes el tiempo?», «dime el tiempo»: the weather named alone after a word that asks it.
+_BARE_WEATHER_ASK = (
+    r"^[¿¡\s]*(?:sabes|sabe|sabeis|me\s+(?:dices|das|cuentas)|dime|decime|digame|dame|cuentame|que\s+tal)\s+"
+    r"(?:el|del)\s+tiempo[\s.!?]*$"
+)
+# «abre la temperatura», «muéstrame el pronóstico»: opening or showing the temperature or the forecast is asking it
+# (no application by that name is installed to open).
+_WEATHER_SHOWN = (
+    r"^[¿¡\s]*(?:abre|abreme|abrir|muestra|muestrame|mostrame|ensename|open|show(?:\s+me)?)\s+(?:la|el|the)\s+"
+    r"(?:temperatura|temperature|pronostico|forecast)(?:\s+(?:de\s+)?(?:hoy|manana|ahora|today|tomorrow|now))?"
+    r"[\s.!?]*$"
+)
+
+
+def _weather_decides_it(folded: str) -> bool:
+    """M99: a chore of the snow, the car's roof or the time to go out, asked as need, advice or time (see above)."""
+
+    return _has(folded, _WEATHER_ADVICE_ASKED) and (
+        (_has(folded, _WEATHER_CHORE) and (_has(folded, WEATHER_WHEN) or "?" in folded))
+        or _has(folded, _WEATHER_ROOF)
+        or (_has(folded, _WEATHER_OUTING) and _has(folded, r"\b(?:a\s+que\s+hora|what\s+time|when|cuando)\b"))
+    )
+
+
 def _forecast_question(folded: str) -> bool:
     """The forecast asked by naming it as the subject of a time to come, whether the weather holds, or whether
     a plan in the open air can be done on a day to come."""
@@ -302,6 +351,9 @@ def _forecast_question(folded: str) -> bool:
         return False
     return (
         _outdoor_plan_question(folded)
+        or _weather_decides_it(folded)
+        or _has(folded, _BARE_WEATHER_ASK)
+        or _has(folded, _WEATHER_SHOWN)
         or (_has(folded, _WEATHER_SUBJECT_QUESTION) and _has(folded, WEATHER_WHEN))
         or _has(folded, _WEATHER_HOLDS_QUESTION)
         or (
@@ -2721,6 +2773,25 @@ def cinema_listing(text: str) -> bool:
     return _has(text, _SHOWING_FILMS) and (_has(text, _NEAR_THE_PERSON) or _has(text, _IN_THEATERS))
 
 
+# M99 (DEV-D v3x D-p28-t1 «I want to watch a movie at Century 25 Union Landing and XD.» → «I cannot order or buy movies
+# for you…»): a film to watch at a place named asks what that place shows; nothing is bought. A language named after
+# «in» («movies in English») is no place.
+_LANGUAGE_NAME = (
+    r"(?:English|Spanish|Espa[nñ]ol|Ingl[eé]s|French|Franc[eé]s|German|Alem[aá]n|Italian[oa]?|Portugu[eé]s|Portuguese|"
+    r"Japanese|Japon[eé]s|Korean|Coreano|Chinese|Chino|Castellano|Latino)\b"
+)
+
+
+def asks_what_a_cinema_shows(text: str) -> bool:
+    """What the cinemas near the person, or one named, are showing (``cinema_listing``, see above)."""
+
+    raw = str(text or "")
+    if cinema_listing(_fold(raw)):
+        return True
+    found = _SHOWING_IN_A_PLACE.search(raw)
+    return found is not None and re.match(_LANGUAGE_NAME, raw[found.end() - 1:]) is None
+
+
 # Uso real tanda 4c «en qué lugares puedo pedir comida para llevar cerca» and «dime que esta pasando en mi ciudad»
 # were searched without the place and found portals and news of another country. Near the person is near this
 # PC: the search carries this PC's city (``nearby``; only the city name leaves, read from the PC's public
@@ -2865,7 +2936,12 @@ _PUBLIC_EVENT = (
 _CALENDAR_SYSTEM = (
     r"\b(?:calendarios?|calendars?)\s+(?:romano|gregoriano|juliano|chino|lunar|maya|azteca|hebreo|judio|islamico|"
     r"musulman|escolar|academico|laboral|deportivo|roman|gregorian|julian|chinese|mayan|aztec|hebrew|jewish|"
-    r"islamic|school|academic)\b|\b(?:diferencias?\s+entre|difference\s+between)\b"
+    r"islamic|school|academic)\b|\b(?:diferencias?\s+entre|difference\s+between)\b|"
+    # M99 (reserva A6 «…el calendario de conciertos de selena gomez» → the person's agenda): the calendar of a kind of
+    # public event (a singer's concerts, a team's matches, a tour) is published, not kept by the person.
+    r"\b(?:calendarios?|calendars?|agenda|schedules?|fechas)\s+(?:de\s+|of\s+)?(?:(?:los|las|the)\s+)?"
+    r"(?:conciertos|partidos|giras?|shows|funciones|presentaciones|carreras|concerts|games|matches|tours?|races)\b|"
+    r"\b(?:concert|tour|game|match|race)\s+(?:calendar|schedule|dates)\b"
 )
 _OWN_AGENDA = r"\b(?:mi|mis|my)\s+(?:calendario|calendar|agenda|eventos?|events?)\b|\b(?:tengo|tenemos|i\s+have|do\s+i\s+have)\b"
 

@@ -175,7 +175,9 @@ from .semantic.network import (
 )
 from .semantic.notes import _PERSONAL_RECORD_STORE, names_an_own_record_store, names_the_title
 from .semantic.patterns import conversation_only_content_request
-from .semantic.request import _conversation_response_language, asks_about_reliability, words_with_es_plural
+from .semantic.request import (
+    _conversation_response_language, addressed_language, asks_about_reliability, words_with_es_plural,
+)
 from .semantic.system import reports_the_gpu_stopped
 from .semantic.ui import asks_about_buttons, asks_to_see_the_screen
 from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_future, weather_asks_later_in_the_day, weather_asks_later_today, weather_asks_rain_now, weather_asks_today, weather_asks_whether_it_rains, weather_asked_date, weather_asks_later_time, weather_asks_past, weather_names_date
@@ -614,7 +616,11 @@ CODE_REQUEST_PROMPT = (
     "un bloque ``` con el nombre del lenguaje; ese bloque es el único formato permitido. Lo más corto que funcione, "
     "sin comentarios. Fuera del bloque, como mucho una frase breve en el idioma de la persona. Si pide cambiar el "
     "código de antes o pasarlo a otro lenguaje, reescríbelo entero con el cambio. Nunca digas que no puedes mostrar "
-    "código ni lo describas en lugar de escribirlo."
+    "código ni lo describas en lugar de escribirlo. "
+    # M99 (DEV-D v3x D-p30-t2/t3: «bpy.ops.mesh.primitive_sphere_add», which Blender does not have, and a cube and a
+    # sphere «fusionados» written as two separate objects).
+    "Usa sólo funciones y parámetros que existen con ese nombre exacto en esa biblioteca; si se pide unir, combinar o "
+    "fusionar lo creado, el código hace esa unión."
 )
 CODE_REQUEST_PROMPT_EN = (
     "The person asks for code (a program, a function, a script, a query) or a change to the code before. Writing "
@@ -622,7 +628,8 @@ CODE_REQUEST_PROMPT_EN = (
     "named with its language; that block is the only formatting allowed. The shortest code that works, no "
     "comments. Outside the block, at most one short sentence in the person's language. If they ask to change the "
     "code before or carry it to another language, rewrite it whole with the change. Never say you cannot show "
-    "code and never describe it instead of writing it."
+    "code and never describe it instead of writing it. Use only functions and parameters that exist under that "
+    "exact name in that library; if joining, combining or merging what was made is asked, the code does that join."
 )
 # The budget of a code reply: a short program fits; a reply cut inside its code is never published.
 CODE_REPLY_MAX_TOKENS = 640
@@ -2043,6 +2050,17 @@ def _says_the_person_back(reply: object, request: object) -> bool:
     return not (dialogue_slot.is_social(str(request or "")) or read_request(str(request or "")).greets)
 
 
+def _repeats_the_last_answer(reply: object, last_answer: object, request: object) -> bool:
+    """M99 (DEV-D v3x D-p31-t3 «Gracias por tu aportación…» → BAXY's previous answer again, word for word): a reply that
+    is BAXY's last message again, or a sentence-long piece of it, answers nothing of what the person says now. Asked to
+    say it again («repite», «what did you say»), it is the answer."""
+
+    said, last = _normalized_dialogue_text(reply), _normalized_dialogue_text(last_answer)
+    if not said or not last or recall_asked(request) is not None:
+        return False
+    return said == last or (len(said.split()) >= 6 and said in last)
+
+
 def _literal_recall_reference(
     history: object,
     current: object,
@@ -2520,6 +2538,16 @@ def _misses_content_shape(value: object, request: object) -> bool:
     if shape in {"list", "table"}:
         return sum(1 for line in lines if _LIST_LINE.match(line) or line.count("|") >= 2) < 2
     return False
+
+
+def _new_dialogue_lines(value: object, last_answer: object) -> str:
+    """M99 (DEV-D v3x D-p36-t3): the lines of a dialogue reply that BAXY's last answer does not already hold, in order;
+    "" when every line is old (the reply is then not changed here)."""
+
+    said = {_normalized_dialogue_text(line) for line in str(last_answer or "").splitlines() if line.strip()}
+    lines = [line for line in str(value or "").splitlines() if line.strip()]
+    kept = [line for line in lines if _normalized_dialogue_text(line) not in said]
+    return "\n".join(kept) if kept and len(kept) < len(lines) else ""
 
 
 def conversation_reply_speaks_of_the_system(
@@ -4296,6 +4324,28 @@ def _go_ahead_instruction(last_said: str, language: str | None) -> str:
         + (f"; tu último mensaje fue «{last}»" if last else "")
         + ". En una frase, di que todavía no lo hiciste y, si tu último mensaje dice por qué, dilo con sus palabras. "
         "Nunca digas que está confirmado, en marcha o que se hará."
+    )
+
+
+def _call_off_instruction(last_said: str, language: str | None) -> str:
+    """M99 (DEV-D v3x D-p01-t3 «no, cancel» after a search that had already answered → «I have cancelled the Christmas
+    list search.», «I cannot cancel tasks or lists…», then «I will not proceed with the cancellation.»): the person
+    calls off what they asked; nothing of it is running and nothing runs now. The writer is told so, with BAXY's last
+    message, and acknowledges it."""
+
+    last = " ".join(str(last_said or "").split())[:320]
+    if language == "en":
+        return (
+            "The person calls off what they asked just before. Nothing of it is running and nothing runs now"
+            + (f"; your last message was «{last}»" if last else "")
+            + ". Acknowledge it in one short sentence: you leave it there. Do not say you cancelled, undid or "
+            "stopped anything, and do not say you cannot cancel."
+        )
+    return (
+        "La persona deja sin efecto lo que pidió justo antes. Nada de eso está en curso y ahora no se ejecuta nada"
+        + (f"; tu último mensaje fue «{last}»" if last else "")
+        + ". Acéptalo en una frase corta: lo dejas ahí. No digas que cancelaste, deshiciste o detuviste algo, ni "
+        "que no puedes cancelar."
     )
 
 
@@ -11358,10 +11408,15 @@ def _weather_focus(user_text: str, english: bool) -> str:
         # Tanda 6b: only the asked event of the asked day is sent (_project_weather_read).
         return (
             "The person asked when the sun rises or sets: give the sun time sent, with its event (sunrise is "
-            "when the sun rises, sunset when it sets) and its day (tomorrow's for tomorrow or a later day)."
+            "when the sun rises, sunset when it sets) and its day (tomorrow's for tomorrow or a later day). "
+            # M99 (DEV-D v3x D-s054): today's sun time already behind the clock.
+            "A sun time marked sunrisePassed or sunsetPassed already happened today: say it in the past (the sun set "
+            "at …), never as still to come."
             if english
             else "La persona preguntó a qué hora sale o se pone el sol: da la hora del sol enviada, con su evento "
-            "(sunrise es cuando sale, sunset cuando se pone) y su día (la de mañana para mañana o un día posterior)."
+            "(sunrise es cuando sale, sunset cuando se pone) y su día (la de mañana para mañana o un día posterior). "
+            "Una hora del sol marcada sunrisePassed o sunsetPassed ya pasó hoy: dila en pasado (el sol se puso a "
+            "las …), nunca como algo por venir."
         )
     if "uv" in measures:
         # Uso real tanda 6 «Dime el UV index»: the index now and the day's peak are both read.
@@ -11664,6 +11719,21 @@ def _false_week_range(text: str, seen: dict) -> bool:
     return False
 
 
+def _clock_minutes(value: object) -> int | None:
+    found = re.search(r"(?:^|T)(\d{1,2}):(\d{2})", str(value or ""))
+    return int(found.group(1)) * 60 + int(found.group(2)) if found else None
+
+
+def _sun_time_passed(seen: dict, block: dict, event: str) -> bool:
+    """M99: today's ``event`` (sunrise/sunset) is earlier than the reading's local clock (``observedAtLocal``), on the
+    same day."""
+
+    observed = str(seen.get("observedAtLocal") or "")
+    day = str(block.get("date") or "")
+    now, at = _clock_minutes(observed.split("T")[-1] if "T" in observed else ""), _clock_minutes(block.get(event))
+    return now is not None and at is not None and (not day or observed.startswith(day)) and at < now
+
+
 def _project_weather_read(seen: dict, user_text: str) -> dict:
     """What of the weather read the narrator gets: the part the question asks (the checks keep the whole read).
 
@@ -11681,6 +11751,12 @@ def _project_weather_read(seen: dict, user_text: str) -> dict:
         block = seen.get(day) if isinstance(seen.get(day), dict) else {}
         projected = {key: seen[key] for key in ("location", "region", "country") if key in seen}
         projected[day] = {key: block[key] for key in ("date", "weekday", *sorted(events)) if key in block}
+        if day == "today":
+            # M99 (DEV-D v3x D-s054 «…comenzará a oscurecerse» at 22:50 → «Se pondrá el sol … a las 19:48 de hoy»): a sun
+            # time of today already behind the reading's own clock is said as past.
+            projected[day].update({
+                f"{event}Passed": True for event in sorted(events) if _sun_time_passed(seen, block, event)
+            })
         return projected
     reach = _weather_asked_reach(seen, user_text)
     if reach is not None:
@@ -12021,6 +12097,15 @@ _WEATHER_HOUR_UNREAD = re.compile(
 )
 
 
+# M99: a sun event said as still to come. Folded.
+_SUN_STILL_TO_COME = re.compile(
+    r"\b(?:se\s+)?(?:pondra|saldra|ocultara|oscurecera|anochecera|amanecera|atardecera)\b|"
+    r"\b(?:va|van)\s+a\s+(?:salir|ponerse|oscurecer|anochecer|amanecer|atardecer)\b|"
+    r"\b(?:comenzara|empezara)\s+a\s+oscurecer|"
+    r"\bwill\s+(?:set|rise|go\s+down|come\s+up|get\s+dark)\b|\bis\s+going\s+to\s+(?:set|rise|go\s+down|get\s+dark)\b"
+)
+
+
 def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     """REOPEN1993 grupo W: every number in a weather reply is an observed one
     (temperatures, wind, humidity, rain probability) and the place is named;
@@ -12202,6 +12287,13 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         clocks = [clock for clock in clocks if isinstance(clock, str) and clock]
         if clocks and not any(said(clock) for clock in clocks):
             return "missing_state"
+        if (
+            isinstance(block, dict)
+            and any(block.get(f"{event}Passed") is True for event in events)
+            and _SUN_STILL_TO_COME.search(folded_text) is not None
+        ):
+            # M99 (DEV-D v3x D-s054): today's sun time behind the clock told as still to come.
+            return "weather_sun_time_passed"
         if any(
             said(day.get(other)) and day.get(other) not in clocks
             for day in (seen.get("today"), tomorrow) if isinstance(day, dict)
@@ -12586,6 +12678,25 @@ def _schedule_told_as_rung(text: str, payload: dict) -> bool:
     )
 
 
+# M99 (DEV-D v3x D-w18-t4 «Recuerda en 45 minutos que te toca tomar un descanso a las 23:56.»): the report of a reminder
+# just scheduled opened on an order to the person to remember, where BAXY is the one who reminds. Folded.
+_SCHEDULE_TOLD_AS_ORDER = re.compile(
+    r"^[¡\s]*(?:recuerda|recorda|acuerdate|no\s+(?:te\s+)?olvides|remember|don'?t\s+forget|do\s+not\s+forget)\b"
+)
+
+
+def _schedule_told_as_order(text: str, payload: dict) -> bool:
+    """A verified alarm or reminder still to ring, reported as an order to the person to remember (see above)."""
+
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    return (
+        payload.get("operation") in {"notification.schedule", "reminder.create"}
+        and bool(seen)
+        and not payload.get("cause")
+        and _SCHEDULE_TOLD_AS_ORDER.search(_reading_fold(text)) is not None
+    )
+
+
 def _report_changes_the_act(text: str, payload: dict) -> str:
     """The other act a report of a window or application operation names instead of its own; ""."""
 
@@ -12649,6 +12760,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
         return "report_changes_the_act"
     if _schedule_told_as_rung(text, payload):
         return "schedule_told_as_rung"
+    if _schedule_told_as_order(text, payload):
+        return "schedule_told_as_order"
     if _search_report_speaks_as_a_page(text, payload, user_text):
         return "search_report_page_voice"
     if payload.get("operation") == "web.search" and _search_report_names_the_person_as_finder(text):
@@ -14896,6 +15009,11 @@ def compose_visible_defect(
     if re.search(r"\bya terminado\b", folded) and "ha terminado" not in folded:
         return "invented"
     language = _conversation_response_language(user_text, facts)
+    if language in {"es", "en"} and (
+        intent == "clarification" or _situation_from_facts(facts).get("kind") == "clarification"
+    ):
+        # M99 (DEV-D v3x D-w15-t3): the question back is judged in the language the person speaks.
+        language = addressed_language(said or user_text, language)
     # El idioma de la respuesta se lee con el mismo owner que fija el del turno,
     # y sólo se veta cuando la evidencia del texto es de un solo idioma: «I will
     # not open any programs.» ante un pedido español pasaba los dos literales de
@@ -18960,6 +19078,14 @@ class LlmRuntime:
         go_ahead_unmet = presentation_shape not in _WRITTEN_CONTENT_SHAPES and dialogue_slot.go_ahead_with_nothing_pending(
             text, last_assistant,
         )
+        # M99 (DEV-D v3x D-p01-t3): the person calls off what they asked just before, and nothing of it is running;
+        # undoing an effect BAXY reports done is the retraction above, not this.
+        called_off = (
+            presentation_shape not in _WRITTEN_CONTENT_SHAPES
+            and bool(prior_user_requests)
+            and dialogue_slot.takes_back(text, prior_user_requests[-1])
+            and not dialogue_slot.retracts_the_last_effect(text, last_assistant)
+        )
         # M85 (DEV-D v3o D-p35-t2 «podrías explicarme como lo hiciste?» after BAXY only asked a question back): what
         # BAXY did is in the dialogue, and it did nothing yet; «no tengo acceso a cómo lo hice» was the model's guess.
         last_answer_message = (
@@ -18983,17 +19109,27 @@ class LlmRuntime:
                     "content": (
                         "The person asks how far they can trust your previous answer. Answer about that answer as you "
                         "gave it, in one or two sentences: add no fact that is not in it, and if it said you did not "
-                        "find or did not know something, say so."
+                        "find or did not know something, say so. "
+                        # M99 (DEV-D v3x D-p35-t3: both drafts spoke of «access to real-time data», refused, and the
+                        # recovery said «Puedo ser muy confiable»).
+                        "If it does not say where it was read, it came from what you know, unchecked: say that, and "
+                        "that the important points are worth checking. Do not speak of access, real-time data, "
+                        "tools or updates."
                         if response_language == "en"
                         else "La persona pregunta cuánto puede fiarse de tu respuesta anterior. Contesta sobre esa "
                         "respuesta tal como la diste, en una o dos frases: no añadas datos que no estén en ella, y si "
-                        "en ella dijiste que no encontraste o no sabías algo, dilo así."
+                        "en ella dijiste que no encontraste o no sabías algo, dilo así. Si no dice de dónde se leyó, "
+                        "salió de lo que sabes, sin comprobarlo: dilo, y que conviene verificar lo importante. No "
+                        "hables de acceso, de datos en tiempo real, de herramientas ni de actualizaciones."
                     ),
                 }
                 if last_assistant.strip() and asks_about_reliability(text)
                 # M88 (DEV-D v3r D-p24-t5): a go-ahead nothing was waiting for is told that nothing ran.
                 else {"role": "system", "content": _go_ahead_instruction(last_assistant, response_language)}
                 if go_ahead_unmet
+                # M99 (DEV-D v3x D-p01-t3 «no, cancel» → «I will not proceed with the cancellation.»).
+                else {"role": "system", "content": _call_off_instruction(last_assistant, response_language)}
+                if called_off
                 else None
             )
         )
@@ -19212,6 +19348,13 @@ class LlmRuntime:
             content,
             payload["messages"],
         ) or repeats_a_sent_instruction(content, turn_instructions, text)
+        # M99 (DEV-D v3x D-p31-t3): BAXY's last message said again is no answer to this one. Code rewritten whole and
+        # written content (a draft rewritten as a list, a translation) are content of their own.
+        repeats_last = (
+            not code_asked
+            and presentation_shape not in _WRITTEN_CONTENT_SHAPES
+            and _repeats_the_last_answer(content, last_assistant, text)
+        )
         unsupported_contract_failure_reason = (
             _unsupported_answer_contract_failure(content, text)
             if presentation_shape is None and conversation_kind == "unsupported"
@@ -19258,7 +19401,7 @@ class LlmRuntime:
             and not (
                 is_echo or system_prompt_echo
                 or unsupported_contract_failure or shaped_contract_failure or go_ahead_draft_unmet or memory_figures
-                or misquoted
+                or misquoted or repeats_last
             )
         )
         if (
@@ -19271,6 +19414,7 @@ class LlmRuntime:
             or go_ahead_draft_unmet
             or memory_figures
             or misquoted
+            or repeats_last
         ):
             retry_payload = dict(payload)
             language_message = next(
@@ -19296,6 +19440,15 @@ class LlmRuntime:
                         if conversation_kind == "unsupported_language"
                         else _go_ahead_instruction(last_assistant, response_language)
                         if go_ahead_draft_unmet
+                        else (
+                            # M99 (DEV-D v3x D-p31-t3): the draft was BAXY's last message again.
+                            "Your draft repeated your previous message word for word. Answer, in one or two sentences, "
+                            "what the person says now, without repeating your previous message."
+                            if response_language == "en"
+                            else "Tu borrador repetía palabra por palabra tu mensaje anterior. Contesta, en una o dos "
+                            "frases, lo que la persona dice ahora, sin repetir tu mensaje anterior."
+                        )
+                        if repeats_last
                         else (
                             # M95 (D52; DEV-D D-p28-t3 «*Hustlers* is a 2019 film»): name the figure and say why.
                             "These figures are not in the conversation: " + ", ".join(memory_figures[:4]) + ". From "
@@ -19340,11 +19493,18 @@ class LlmRuntime:
                             # M93 (DEV-D v3u D-p31-t2, D-p35-t3): what BAXY has access to is not the answer.
                             "Do not speak of what you have or lack access to, of your data, tools or updates, or of "
                             "how you work. Answer in one sentence what the person says or asks, with what the "
-                            "conversation shows; if you cannot be sure of it, say so plainly."
+                            "conversation shows; if you cannot be sure of it, say so plainly. "
+                            # M99 (DEV-D v3x D-p31-t3, D-p27-t5): this repair wrote BAXY's last answer, or the
+                            # person's words, back.
+                            "Do not repeat your previous message or the person's words."
                             if response_language == "en"
                             else "No hables de a qué tienes o no tienes acceso, de tus datos, herramientas o "
                             "actualizaciones ni de cómo funcionas. Contesta en una sola frase lo que la persona dice o "
-                            "pregunta, con lo que muestra la conversación; si no puedes asegurarlo, dilo llanamente."
+                            "pregunta, con lo que muestra la conversación; si no puedes asegurarlo, dilo llanamente. "
+                            "No repitas tu mensaje anterior ni las palabras de la persona."
+                        ) + (
+                            # M99 (DEV-D v3x D-p35-t3): the repair keeps what the turn was told of the last answer.
+                            " " + last_answer_message["content"] if last_answer_message is not None else ""
                         )
                         if presentation_shape not in _WRITTEN_CONTENT_SHAPES
                         and conversation_reply_speaks_of_the_system(content, text, prior_user_requests)
@@ -19563,6 +19723,12 @@ class LlmRuntime:
             if head != final_content:
                 final_content = head
                 message = {**message, "content": head}
+        added_lines = _new_dialogue_lines(final_content, last_assistant) if content_shape_asked(text) == "dialogue" else ""
+        if added_lines and added_lines != final_content:
+            # M99 (DEV-D v3x D-p36-t3 «agrega a la conversación características físicas del xenomorfo»): asked for new
+            # lines of the dialogue, the reply wrote the whole dialogue again; the lines already said are dropped.
+            final_content = added_lines
+            message = {**message, "content": added_lines}
         remembered = (
             talk_memory_figures(final_content, text, dialogue_said, prior_user_requests)
             + talk_misquotes_itself(final_content, dialogue_said)
@@ -19588,8 +19754,17 @@ class LlmRuntime:
             or _reply_uses_opposite_language(final_prose, response_language)
             or (
                 not mirror_is_a_valid_answer
-                and _normalized_dialogue_text(final_content)
-                == _normalized_dialogue_text(text)
+                and (
+                    _normalized_dialogue_text(final_content) == _normalized_dialogue_text(text)
+                    # M99 (DEV-D v3x D-p27-t5 «Nope, that's a lot.» → «That's a lot.» from the repair).
+                    or _says_the_person_back(final_content, text)
+                )
+            )
+            # M99 (DEV-D v3x D-p31-t3): the repair that wrote BAXY's last message again.
+            or (
+                not code_asked
+                and presentation_shape not in _WRITTEN_CONTENT_SHAPES
+                and _repeats_the_last_answer(final_content, last_assistant, text)
             )
             or echoes_system_message(
                 final_content,
@@ -19631,8 +19806,14 @@ class LlmRuntime:
                 if _reply_uses_opposite_language(final_prose, response_language)
                 else "echo"
                 if not mirror_is_a_valid_answer
-                and _normalized_dialogue_text(final_content)
-                == _normalized_dialogue_text(text)
+                and (
+                    _normalized_dialogue_text(final_content) == _normalized_dialogue_text(text)
+                    or _says_the_person_back(final_content, text)
+                )
+                else "repeats_last_answer"
+                if not code_asked
+                and presentation_shape not in _WRITTEN_CONTENT_SHAPES
+                and _repeats_the_last_answer(final_content, last_assistant, text)
                 else "system_echo"
                 if echoes_system_message(final_content, final_messages)
                 else _unsupported_answer_contract_failure(final_content, text)
@@ -22936,6 +23117,12 @@ class LlmRuntime:
         previous_answer = _referenced_previous_answer(user_text, facts)
         situation = _situation_from_facts(facts)
         consulted_refused: list[str] = []
+        if response_language in {"es", "en"} and (
+            intent == "clarification" or str(situation.get("kind") or "") == "clarification"
+        ):
+            # M99 (DEV-D v3x D-w15-t3): a question back to the person is in their language, not the one they asked a
+            # translation into.
+            response_language = addressed_language(said or user_text, response_language)
         consulted = self._compose_consulted_answer(
             user_text, facts, situation, response_language, post, compose_deadline, trace_id,
             refused=consulted_refused,
@@ -25387,6 +25574,22 @@ class LlmRuntime:
                     "The sun time sent is today's: say it of today, never of tomorrow."
                     if response_language == "en"
                     else "La hora del sol enviada es la de hoy: dila de hoy, nunca de mañana."
+                ),
+                # M99 (DEV-D v3x D-s054 «Se pondrá el sol … a las 19:48 de hoy» at 22:50).
+                "weather_sun_time_passed": (
+                    "That sun time already passed today: say it in the past (the sun set at that time), never as "
+                    "still to come."
+                    if response_language == "en"
+                    else "Esa hora del sol ya pasó hoy: dila en pasado (el sol se puso a esa hora), nunca como algo por "
+                    "venir."
+                ),
+                # M99 (DEV-D v3x D-w18-t4 «Recuerda en 45 minutos que te toca tomar un descanso a las 23:56.»).
+                "schedule_told_as_order": (
+                    "Say that you will remind them (or that the alarm will ring) at the time scheduled; do not give "
+                    "the person an order («remember…»)."
+                    if response_language == "en"
+                    else "Di que se lo recordarás (o que la alarma sonará) a la hora programada; no le des una orden a "
+                    "la persona («recuerda…»)."
                 ),
                 # M93 (DEV-D v3u D-w18-t4 «Te he recordado … a las 20:23»).
                 "schedule_told_as_rung": (

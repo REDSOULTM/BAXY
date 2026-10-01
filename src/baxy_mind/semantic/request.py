@@ -853,6 +853,18 @@ def response_language(
     return read_request(text, conversation_language).language
 
 
+def addressed_language(text: str, fallback: str) -> str:
+    """M99 (DEV-D v3x D-w15-t3 «traducelo al ingles que es para mi jefa» → «Could you clarify which specific detail is
+    missing?»): the language a translation or a piece of writing is asked in is the content's, not the person's. What
+    BAXY asks the person back is in the language their own words speak; ``fallback`` otherwise."""
+
+    folded = fold(text or "")
+    if not (_contains_any(folded, _TRANSLATION_TOKENS) or _WRITING_REQUEST.match(folded) is not None):
+        return fallback
+    spanish, english = _language_evidence(text or "", folded)
+    return _select_language(spanish, english, None) if spanish or english else fallback
+
+
 def spoken_language(text: str) -> str:
     """Voice of already composed text; quoted language requests are not instructions."""
     spanish, english = _language_evidence(text, fold(text))

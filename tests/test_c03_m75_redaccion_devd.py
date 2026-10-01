@@ -187,16 +187,28 @@ TRADUCELO = "traducelo al ingles que es para mi jefa"
 AMBIGUOUS = (
     '{"kind":"clarification","polarity":"pending","cause":"ambiguous_request"}'
 )
-TRADUCELO_DRAFTS = [
+# M99 (DEV-D v3x D-w15-t3, independent review): the English drafts v3l published were wrong — the question back is in
+# the person's language, not the one the translation is asked into. They are refused now; the Spanish ones are asked.
+TRADUCELO_ENGLISH_DRAFTS = [
     "Could you clarify which specific detail is missing?",
     "Can you tell me which detail is missing?",
     "Could you please confirm the specific detail you need for your boss?",
+]
+TRADUCELO_DRAFTS = [
+    "¿Qué texto quieres que traduzca al inglés?",
+    "¿Cuál es el texto que quieres traducir para tu jefa?",
+    "¿Qué quieres que traduzca?",
 ]
 
 
 @pytest.mark.parametrize("draft", TRADUCELO_DRAFTS)
 def test_d_w15_t3_asking_what_to_translate_is_the_reply(draft: str) -> None:
     assert _visible(draft, "clarification", TRADUCELO, AMBIGUOUS) == ""
+
+
+@pytest.mark.parametrize("draft", TRADUCELO_ENGLISH_DRAFTS)
+def test_d_w15_t3_the_question_back_in_the_translations_language_is_refused(draft: str) -> None:
+    assert _visible(draft, "clarification", TRADUCELO, AMBIGUOUS) == "wrong_language"
 
 
 def test_d_w15_t3_the_first_question_is_published() -> None:
