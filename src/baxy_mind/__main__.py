@@ -51,6 +51,7 @@ from .semantic.patterns import list_entries_said_before, output_level_request
 from .semantic.web import (
     asks_for_information,
     asks_latest_release,
+    asks_what_a_cinema_shows,
     names_own_data,
     near_the_person,
     news_lookup_query,
@@ -4623,6 +4624,45 @@ def _close_of_the_just_opened(
     return semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
 
 
+# M99: the operations whose object is a part of this PC that a request has to name (the keyboard's language, the
+# desktop's background, a routine that fires on a phrase): the decider bringing it is not the person asking for it
+# («hazme saber cuando escuches sobre España» restated as a routine that takes screenshots). Measured on the reserve
+# replay; a wider set (the family gates of every operation) refused hundreds of reads the decider got right.
+_OBJECT_NAMED_OPERATIONS = frozenset({"input.keyboard.layout", "desktop.wallpaper.set", "routine.phrase.create"})
+_CLOCK_SET_OPERATIONS = frozenset({"notification.schedule", "reminder.create", "calendar.event.create", "timer.start"})
+
+
+def _decided_domain_unnamed(
+    operations: tuple[str, ...],
+    text: str,
+    history: object,
+    application_names: tuple[str, ...] | ApplicationCatalogIndex,
+    available_operations: tuple[str, ...],
+) -> bool:
+    """M99 (reserva A6 «empezar ted en español» → «Cambia el idioma del teclado a español.», «enséñame un color suave» →
+    «Cambia el fondo de escritorio…»): the decider's restatement named the thing its operation acts on, and neither the
+    message nor anything the person said before names it. The curated family gates (``operation_domain_is_grounded``,
+    one-sided) are the readers' measure of that; False on every message of the person is an act nobody asked for."""
+
+    said = [text, *(
+        str(turn.get("content") or "")
+        for turn in (history if isinstance(history, list) else [])
+        if isinstance(turn, dict) and turn.get("role") == "user"
+    )]
+    previous = next((item for item in reversed(said[1:]) if item.strip() and item.strip() != text.strip()), None)
+    return bool(operations) and any(
+        operation in _OBJECT_NAMED_OPERATIONS
+        and all(
+            operation_domain_is_grounded(
+                item, operation, application_names,
+                previous_user_text=previous, available_operations=available_operations,
+            ) is False
+            for item in dict.fromkeys(said)
+        )
+        for operation in operations
+    )
+
+
 def _context_decided_result(
     message: dict[str, Any],
     *,
@@ -4717,9 +4757,27 @@ def _context_decided_result(
             # M65 (conv-v3g owner script t30 «Di la palabra"algo"» → «Escribe la palabra «algo».»): saying is not
             # typing into the window in front; nothing in the message or the question it answers asks to write.
             unasked = "untyped"
+        elif _decided_domain_unnamed(decided.operations, text, history, application_names, available_operations):
+            unasked = "unnamed_domain"
+        elif dialogue_slot.offers_to_baxy(text):
+            # M99 (reserva A6 «quieres netflix and chill» → Netflix opened): something offered to BAXY orders nothing.
+            unasked = "offer"
+        elif (
+            set(decided.operations) & _CLOCK_SET_OPERATIONS
+            and semantic_temporal.said_only_a_clock(text)
+            and not str(slot.last_reply or "").rstrip().endswith("?")
+            and not _history_has_pending_clarification(history, message.get("pendingClarification"))
+        ):
+            # M99 (reserva A6 «las dos menos cuarto» → an alarm at 10:15): a clock said alone, answering no question of
+            # BAXY's, sets nothing; what it is for is asked.
+            unasked = "bare_clock"
         if unasked is not None:
             unasked_action = {"kind": unasked, "request": decided.request, "operations": list(decided.operations)}
-            decided = semantic_decider.ContextDecision(request=text, decision="talk", operations=(), question="")
+            decided = semantic_decider.ContextDecision(
+                # M99 (reserva A6): an act on a thing nobody named, or a clock said alone, is asked about.
+                request=text, decision="clarify" if unasked in {"unnamed_domain", "bare_clock"} else "talk",
+                operations=(), question="",
+            )
     # M64 (v3f-final F-w01-t4 «…el mistral de 35» restated «…Mistral de 350 ml…», F-s054 «…mañana en Santiago?»): a
     # number, unit, date, clock time or name of the restatement nobody said never travels as the objective.
     descriptions = {tool.name: tool.description for tool in planner_catalog.tools}
@@ -4771,6 +4829,14 @@ def _context_decided_result(
         # M78 (DEV-D v3l p35-t1 «…análisis de FODA…» refused): content written in the conversation (an analysis, a
         # letter, code) is what BAXY does; a limit on it is false.
         decided = semantic_decider.ContextDecision(request=decided.request, decision="talk", operations=(), question="")
+    if (
+        decided.decision in {"limit", "talk"}
+        and "web.search" in available_operations
+        and asks_what_a_cinema_shows(text)
+    ):
+        # M99 (DEV-D v3x D-p28-t1 «I want to watch a movie at Century 25 Union Landing…» → «I cannot order or buy
+        # movies…»): what a cinema shows is looked up; the limit was about buying, which nobody asked.
+        decided = semantic_decider.ContextDecision(request=text, decision="action", operations=("web.search",), question="")
     reference = None
     recommended = False
     # M56 (v3c-final F-w14-t1): code the person asks for is written, whatever the decider's rewrite of it says.
@@ -6616,7 +6682,9 @@ def _recover_failed_turn(
                 history=history,
                 timeout=2.5,
             )
-            if not _recovery_question_is_valid(question):
+            # M99 (DEV-D v3x D-s053 «¿Miguel sigue viviendo en Arkansas?» → «¿Te refieres a Miguel o a alguien más?»):
+            # the recovery question is judged against the message too, as the decider's is.
+            if not _recovery_question_is_valid(question, objective, history):
                 raise ValueError("invalid_recovery_question")
             return audited(
                 {
@@ -6740,9 +6808,13 @@ def _recovery_visible_from_compose(
         return "conversation", ""
     if not text or len(text) > 4_096:
         return "conversation", ""
-    if _recovery_question_is_valid(text):
+    if _recovery_question_is_valid(text, objective):
         return "clarify", text
-    if text.endswith("?") and _RECOVERY_MIRRORED_REQUEST.search(read_fold(text)) is not None:
+    if text.endswith("?") and (
+        _RECOVERY_MIRRORED_REQUEST.search(read_fold(text)) is not None
+        # M99 (DEV-D v3x D-s053): a question that offers back the one named asks nothing, here too.
+        or (_recovery_question_is_valid(text) and not _recovery_question_is_valid(text, objective))
+    ):
         # M54: the person's request handed back is neither a question to publish nor a reply.
         return "conversation", ""
     return "conversation", text

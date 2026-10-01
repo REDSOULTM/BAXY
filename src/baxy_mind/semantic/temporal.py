@@ -44,6 +44,29 @@ _COUNTDOWN_TARGET = re.compile(
 )
 
 
+_HOUR_WORD = r"(?:\d{1,2}|" + "|".join(sorted(_COUNTDOWN_HOUR_WORDS, key=len, reverse=True)) + r")"
+# M99 (reserva A6 «las dos menos cuarto» → an alarm nobody asked for): a message that is only a clock time, with no act
+# and no day of its own. Folded.
+_ONLY_A_CLOCK = re.compile(
+    r"[¿¡\s]*(?:(?:a|para|hasta)\s+)?(?:(?:la|las)\s+)?" + _HOUR_WORD
+    + r"(?:[:.h]\d{2})?(?:\s+(?:y|menos)\s+(?:media|cuarto|\d{1,2}|" + "|".join(_COUNTDOWN_HOUR_WORDS) + r"))?"
+    r"(?:\s+(?:en\s+punto|de\s+la\s+(?:manana|madrugada|tarde|noche)|[ap]\.?\s*m\.?))?[\s.!?]*"
+    r"|[\s]*(?:at\s+)?(?:(?:a\s+)?quarter\s+(?:to|past|after)\s+|half\s+past\s+)?" + _HOUR_WORD
+    + r"(?:[:.]\d{2})?(?:\s+(?:o'?\s*clock|[ap]\.?\s*m\.?))?[\s.!?]*"
+)
+
+
+def said_only_a_clock(text: str) -> bool:
+    """«las dos menos cuarto», «a las siete y media», «quarter to two»: the whole message is a clock time (see above).
+    A bare number («dos») is a clock only after «la/las», «at» or with its part of the day."""
+
+    folded = _fold(str(text or "")).strip()
+    if _ONLY_A_CLOCK.fullmatch(folded) is None:
+        return False
+    return re.search(r"\b(?:la|las|at|quarter|half|clock|[ap]\.?\s*m|manana|madrugada|tarde|noche|punto)\b|\d[:.h]\d",
+                     folded) is not None
+
+
 # M40 (official-window rehearsal 2026-09-28 «¿qué hora será de aquí a doce minutos?»: three drafts added the
 # minutes themselves, wrongly, and the turn failed): the clock later on is computed from the observed one.
 _CLOCK_LATER = re.compile(

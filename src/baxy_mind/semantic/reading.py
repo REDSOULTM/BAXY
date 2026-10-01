@@ -169,6 +169,9 @@ def _desired_media_request(
         # MASSIVE general_joke «i want to hear a joke», «me gustaría escuchar algunos buenos chistes»:
         # a joke is told by BAXY, not played.
         return None
+    if re.search(r"\b(?:informacion|information|info|datos|data|detalles|details)\b", _fold(objective)):
+        # M99 (reserva A6 «important house information» → Spotify played «house»): information is read, not played.
+        return None
     order = spoken_media_order(_without_address(objective) or objective)
     return resolve(order) if order is not None else None
 

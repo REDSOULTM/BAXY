@@ -780,7 +780,8 @@ _LIST_ENTRY_AFTER = re.compile(
 )
 # A playlist or a list of songs is music, not a list of things to do or buy.
 _LIST_NOT_TASKS = (
-    r"\b(?:canciones?|temas?|musica|songs?|music|videos?|reproduccion|playlists?|favoritos|favorites|"
+    # M99 (reserva A6 «agregar una canción a la lista en ejecución» → a task): «canciones?» never read the singular.
+    r"\b(?:cancion(?:es)?|temas?|musica|songs?|music|videos?|reproduccion|playlists?|favoritos|favorites|"
     r"spotify|youtube|inicio|startup|contactos?|contacts?|bloqueados?|blocked)\b"
 )
 # «agregar un nuevo elemento a la lista»: an entry that names nothing.

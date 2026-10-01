@@ -6234,7 +6234,10 @@ def _explicit_named_music_query(text: str) -> str | None:
             _fold(query),
             r"^(?:(?:el|la|the|un|una|a|an)\s+)?(?:audio|volumen|volume|sonido|sound|"
             r"recordatorios?|reminders?|alarmas?|alarms?|temporizador(?:es)?|timers?|nota|note|tarea|task|evento|"
-            r"event)\b",
+            r"event|"
+            # M99 (reserva A6 «por favor pon luz natural» → a YouTube video): a light or its brightness is set, never
+            # played.
+            r"luz|luces|light|lights|lamparas?|lamps?|brillo|brightness)\b",
         )
         # Uso real 2026-09-23 «pon hamburguesa en mi lista de comestibles» (a list
         # entry), «ponme lo último sobre el precio de las acciones de mercadona»
