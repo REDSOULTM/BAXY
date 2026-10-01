@@ -91,7 +91,35 @@ def _weather_location(text: str) -> str | None:
         ):
             continue
         return place
-    return weather_destination_there(text)
+    return _place_before_the_weather(text) or weather_destination_there(text)
+
+
+# M104 (reserve v3z en5871 «hows mysore climate today», «how is mysore weather today» read this PC's town): English
+# names the place before the weather noun, as an attributive («London weather», «Mysore climate today»). Only right
+# after a question head and only words that are no time, article, possessive or weather word.
+_PLACE_BEFORE_THE_WEATHER = re.compile(
+    r"^[¿?¡!\s]*(?:(?:how|what)(?:'?s|\s+is|\s+will\s+be)|tell\s+me|give\s+me|check)\s+(?:the\s+)?"
+    r"(?P<place>[^\W\d_][\w'’-]*(?:\s+[^\W\d_][\w'’-]*){0,2}?)(?:'s)?\s+(?:weather|climate|forecast)\b",
+    re.IGNORECASE,
+)
+_NOT_A_PLACE_WORD = frozenset({
+    "the", "a", "an", "my", "your", "our", "this", "that", "local", "current", "todays", "today's", "today", "tonights",
+    "tonight's", "tomorrows", "tomorrow's", "tomorrow", "tonight", "weekend", "weekly", "daily", "hourly", "outside",
+    "it", "is", "be", "like", "here", "there",
+})
+
+
+def _place_before_the_weather(text: str) -> str | None:
+    found = _PLACE_BEFORE_THE_WEATHER.match(str(text or "").strip())
+    if found is None:
+        return None
+    place = found.group("place").strip()
+    words = _fold(place).split()
+    if not words or any(word in _NOT_A_PLACE_WORD for word in words) or _names_a_time(_fold(place)) or _has(
+        _fold(place), _WEATHER_WORDS,
+    ):
+        return None
+    return place
 
 
 # M58 (v3d-final F-w15-t1 «este weekend me voy a San Antonio con unos friends, like, can you check el weather para el

@@ -3639,7 +3639,9 @@ def _clarification_intent_of(
     desired_volume = _EXPLICIT_DESIRE_REQUEST.match(folded)
     relative_spoken_volume = (
         re.fullmatch(
-            r"(?:(?:speak|talk)\s+(?:softer|quieter|louder)|"
+            # M104 (reserve v3z en3590 «speak loudly» → «I cannot speak aloud…»): the adverb asks the same as the
+            # comparative, and «speak up» is «speak louder».
+            r"(?:(?:speak|talk)\s+(?:(?:more\s+)?(?:softly|quietly|loudly)|softer|quieter|louder)|speak\s+up|"
             r"turn\s+(?:(?:the\s+)?volume\s+(?:up|down)|"
             r"(?:up|down)\s+(?:the\s+)?volume)|"
             r"(?:raise|lower|increase|decrease)\s+(?:the\s+)?volume)"

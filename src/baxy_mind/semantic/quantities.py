@@ -36,12 +36,14 @@ from dataclasses import dataclass
 from fractions import Fraction
 from typing import Iterable
 
+from .grammar import _CARDINAL_WORDS, SPOKEN_NUMBER, spoken_cardinal
 from .normalize import fold
 
 __all__ = [
-    "Measure", "measures", "evaluate", "derived_facts", "underived_figure", "numbers_in", "format_number",
+    "Measure", "measures", "evaluate", "derived_facts", "underived_figure", "numbers_in", "spoken_numbers_in",
+    "format_number",
     "PricedTotal", "priced_totals", "underived_price", "Conversion", "conversion_asked",
-    "unsaid_figures", "without_listed_years", "RatedTotal", "rated_totals", "gives_a_total",
+    "unsaid_figures", "spelled_figure", "without_listed_years", "RatedTotal", "rated_totals", "gives_a_total",
 ]
 
 # dimension: (length, time, mass, volume) exponents
@@ -339,6 +341,51 @@ def numbers_in(texts: Iterable[str]) -> list[Fraction]:
     return found
 
 
+# M104 (reserve v3z en13040 «what is the square root of nine», es14615 «dividir doscientos por cuatro», es13460 «el
+# producto de dieciocho y treinta y uno»): the person said the numbers in words, so a talk answer computed from them was
+# refused as figures from memory. A number said in words is said: a run of number words is read as the numbers it holds
+# («dieciocho y treinta y uno» → 18, 31; «six hundred and twenty five» → 625). A lone «un / una / uno / one» is an
+# article or a pronoun and «once» an English adverb as often as eleven: alone, they give no number.
+_SPOKEN_RUN = re.compile(rf"(?<![\w-]){SPOKEN_NUMBER}(?![\w-])")
+_NOT_A_NUMBER_ALONE = frozenset({"un", "una", "uno", "one", "once"})
+
+
+def spoken_numbers_in(texts: Iterable[str]) -> list[Fraction]:
+    """Every number the texts say in words (see above), as its value; digits are ``numbers_in``'s."""
+
+    found: list[Fraction] = []
+    for text in texts:
+        folded = re.sub(r"(?<=[a-z])-(?=[a-z])", " ", fold(text))
+        for run in _SPOKEN_RUN.finditer(folded):
+            tokens = run.group(0).split()
+            if any(character.isdigit() for character in run.group(0)) or (
+                len(tokens) == 1 and tokens[0] in _NOT_A_NUMBER_ALONE
+            ):
+                continue
+            start = 0
+            while start < len(tokens):
+                if tokens[start] in {"y", "and"}:
+                    start += 1
+                    continue
+                # The longest run of words from here that is one well-formed number; a word that starts none is skipped.
+                end = next(
+                    (
+                        stop for stop in range(len(tokens), start, -1)
+                        if tokens[stop - 1] not in {"y", "and"}
+                        and spoken_cardinal(" ".join(tokens[start:stop])) is not None
+                    ),
+                    None,
+                )
+                if end is None:
+                    start += 1
+                    continue
+                value = spoken_cardinal(" ".join(tokens[start:end]))
+                if value is not None and not (end - start == 1 and tokens[start] in _NOT_A_NUMBER_ALONE):
+                    found.append(Fraction(value))
+                start = end
+    return found
+
+
 def _close(value: Fraction, expected: Fraction, decimals_shown: int) -> bool:
     tolerance = Fraction(1, 2 * 10 ** decimals_shown) + abs(expected) / 1000
     return abs(value - expected) <= tolerance
@@ -618,9 +665,16 @@ _LIST_ORDINAL = re.compile(r"^\s*\d+[.)]\s", re.MULTILINE)
 _ANY_FIGURE = re.compile(
     r"(?<![\w.,/:-])(?P<number>\d{1,3}(?:[.,]\d{3})+(?![\w]|[.,]\d)|\d+(?:[.,]\d+)?(?![\w/]|[.,]\d))"
 )
+# M104 (reserve v3z en13580, en9930: the M95 retry wrote «eight thousand … meters», «seven to eight minutes»): every
+# cardinal word counts («trescientos metros», «diecisiete minutos»), and only a unit ends the match, so «two hundred»
+# does not hide the «hundred thousand» after it.
+_FIGURE_NUMBER_WORDS = (
+    {w for w in _NUMBER_WORDS if _NUMBER_WORDS[w] > 1} | (set(_CARDINAL_WORDS) - {"un", "una", "uno", "one", "cero"})
+)
 _WORDED_FIGURE = re.compile(
-    r"\b(?:(?P<word>" + "|".join(sorted((w for w in _NUMBER_WORDS if _NUMBER_WORDS[w] > 1), key=len, reverse=True))
-    + r")\s+(?P<unit>[a-z%]+)|(?:cientos|miles|millones|decenas|docenas|hundreds|thousands|millions|dozens)\s+(?:de|of)\b)"
+    r"\b(?:(?P<word>" + "|".join(sorted(_FIGURE_NUMBER_WORDS, key=len, reverse=True))
+    + r")\s+(?P<unit>" + "|".join(sorted((re.escape(w) for w in _MEMORY_UNIT_WORDS), key=len, reverse=True))
+    + r")(?![\w%])|(?:cientos|miles|millones|decenas|docenas|hundreds|thousands|millions|dozens)\s+(?:de|of)\b)"
 )
 _LISTED_YEAR = re.compile(r"[ \t]*\(\s*\d{4}(?:\s*[-–]\s*\d{2,4})?\s*\)", re.MULTILINE)
 
@@ -666,6 +720,14 @@ def unsaid_figures(reply: str, said: Iterable[str] = ()) -> list[str]:
         if found.group(0) not in unsaid:
             unsaid.append(found.group(0))
     return unsaid
+
+
+def spelled_figure(figure: str) -> bool:
+    """M104: an ``unsaid_figures`` item that is a number word with its unit («eight minutes», «tres millones»), not a
+    vague amount («millones de»)."""
+
+    found = _WORDED_FIGURE.fullmatch(fold(str(figure or "")))
+    return found is not None and bool(found.group("word"))
 
 
 def without_listed_years(reply: str) -> str:

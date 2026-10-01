@@ -118,9 +118,10 @@ def test_a_question_that_is_not_one_bounded_question_is_formulated_again() -> No
 
 
 def test_talk_is_answered_and_carries_no_request_to_resume() -> None:
-    llm = _Decider(ContextDecision("¿Cuántos años vive un perro?", "talk", (), ""))
+    # M104: a figure of the world («¿cuántos años vive un perro?») is looked up now (D52); talk is asked here.
+    llm = _Decider(ContextDecision("¿Por qué ladran los perros?", "talk", (), ""))
 
-    result = _turn("¿cuántos años vive un perro?", llm)
+    result = _turn("¿por qué ladran los perros?", llm)
 
     assert result["kind"] == "conversation"
     assert result["conversationKind"] == "knowledge"
@@ -285,8 +286,17 @@ def test_talk_about_an_unreachable_place_is_its_limit_too() -> None:
 
 
 def test_asking_about_an_unreachable_place_is_still_talk() -> None:
+    llm = _Decider(ContextDecision("Why is Eris called a dwarf planet?", "talk", (), ""))
+
+    result = _turn("why is Eris called a dwarf planet", llm)
+
+    assert result["conversationKind"] == "knowledge"
+
+
+def test_a_figure_of_an_unreachable_place_is_looked_up_never_a_limit() -> None:
+    # M104 (D52): «how far is Eris from the sun» asks a figure of the world; it is looked up, as any other.
     llm = _Decider(ContextDecision("How far is Eris from the Sun?", "talk", (), ""))
 
     result = _turn("how far is Eris from the sun", llm)
 
-    assert result["conversationKind"] == "knowledge"
+    assert result["kind"] == "action" and result["operation"] == "web.search"

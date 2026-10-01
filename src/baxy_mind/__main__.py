@@ -51,6 +51,7 @@ from .semantic.patterns import list_entries_said_before, output_level_request
 from .semantic.web import (
     asks_for_information,
     asks_latest_release,
+    asks_to_watch_the_news,
     asks_what_a_cinema_shows,
     names_own_data,
     near_the_person,
@@ -2758,7 +2759,12 @@ _ADMITS_NOT_KNOWING = re.compile(
     r"\bno\s+(?:lo\s+|la\s+)?(?:conozco|se|tengo\s+(?:informacion|datos|acceso|idea))\b|"
     r"\bdesconozco\b|\bno\s+estoy\s+(?:segur[oa]|familiarizad[oa])\b|"
     r"\bi\s+(?:don'?t|do\s+not)\s+(?:know|have\s+(?:information|access|any\s+information|data))\b|"
-    r"\bi'?m\s+not\s+(?:sure|familiar)\b|\bi\s+am\s+not\s+(?:sure|familiar)\b|\bi\s+have\s+no\s+information\b"
+    r"\bi'?m\s+not\s+(?:sure|familiar)\b|\bi\s+am\s+not\s+(?:sure|familiar)\b|\bi\s+have\s+no\s+information\b|"
+    # M104 (D52): the talk told to give no figure from memory says it has not checked it (the M95 retry asks it to);
+    # that figure is looked up like anything else BAXY does not know.
+    r"\bno\s+(?:lo\s+|la\s+|los\s+|las\s+)?(?:tengo|he)\s+(?:comprobad|verificad|confirmad|consultad)[oa]s?\b|"
+    r"\bno\s+(?:esta|estan)\s+(?:comprobad|verificad)[oa]s?\b|"
+    r"\bi\s+(?:have\s+not|haven'?t)\s+(?:checked|verified|confirmed|looked\s+(?:it\s+)?up)\b"
 )
 
 
@@ -4840,6 +4846,15 @@ def _context_decided_result(
         decided = semantic_decider.ContextDecision(
             request=text, decision="clarify", operations=("email.latest.reply",), question="",
         )
+    if (
+        decided.decision == "action"
+        and set(decided.operations) & {"notification.schedule", "reminder.create"}
+        and asks_to_watch_the_news(text)
+    ):
+        # M104 (reserve v3z es631 «establecer notificaciones para las noticias sobre el gasoducto sur peruano» → a
+        # notification scheduled for nothing): watching the news to tell when there is some is no operation; the
+        # limit says so, never a notice nobody can fill.
+        decided = semantic_decider.ContextDecision(request=text, decision="limit", operations=(), question="")
     if decided.decision == "limit" and dialogue_slot.takes_back(text, antecedent):
         # M84 (DEV-D v3o D-p01-t3 «no, cancel», D-p14-t3 «Cancelar foto» → «No cancelo la foto.»): taking back what was
         # just asked is said to BAXY, never a limit of cancelling.
@@ -6668,6 +6683,7 @@ def _recover_failed_turn(
     *,
     attempts: int = 2,
     failure_kinds: tuple[str, ...] = (),
+    conversation_kinds: tuple[str | None, ...] = (),
 ) -> dict[str, Any]:
     """Return a total, fail-closed clarification after two turn failures.
 
@@ -6676,6 +6692,10 @@ def _recover_failed_turn(
     with empty user-facing fields and zero action authority. The shell may make
     one separately bounded ``message.compose`` attempt, but deterministic
     protocol prose must never be presented as model-authored text.
+
+    ``conversation_kinds`` (M104) are the kinds the failed attempts decided: talk whose wording failed is recovered as
+    the talk it was understood to be (``conversationKind`` «knowledge», «social», «followup»), never as a conversation
+    of no kind.
     """
 
     objective = str(message.get("text", ""))[:2_048]
@@ -6788,6 +6808,14 @@ def _recover_failed_turn(
         understood_talk = (
             not is_limit and bool(failure_kinds) and set(failure_kinds) == {CONVERSATION_WORDING_FAILURE}
         )
+        # M104 (reserve v3z en13040 «what is the square root of nine» and 17 more → «conversation» with no kind): the
+        # kind the attempts decided, when they agree on one talk kind.
+        decided_talk_kinds = {kind for kind in conversation_kinds if kind}
+        understood_kind = (
+            next(iter(decided_talk_kinds))
+            if understood_talk and len(decided_talk_kinds) == 1 and decided_talk_kinds <= {"knowledge", "social", "followup"}
+            else None
+        )
         kind, text = (
             _recovery_visible_from_compose(llm, objective, talk=True) if understood_talk else ("conversation", "")
         )
@@ -6832,7 +6860,7 @@ def _recover_failed_turn(
                 # boundary did not travel with the reply, then published its
                 # own «I couldn't understand the request properly», which is
                 # false. A limit is a limit also when it is recovered.
-                "conversationKind": "unsupported" if is_limit else None,
+                "conversationKind": "unsupported" if is_limit else understood_kind,
                 "turn_attempts": max(0, attempts),
                 "turn_recovery": "protocol_fallback",
                 "recovery_attempts": 1,
@@ -7550,6 +7578,8 @@ def _run_sidecar(
                 break
             elif kind == "turn.decide":
                 turn_failure_kinds: list[str] = []
+                # M104: the conversation kind each failed attempt had decided (None when it decided none).
+                turn_failure_conversation_kinds: list[str | None] = []
                 if llm is None:
                     turn_result = _recover_failed_turn(
                         message,
@@ -7598,6 +7628,7 @@ def _run_sidecar(
                     except Exception as error:  # noqa: BLE001 - stable telemetry only
                         failure_kind = _turn_failure_kind(error)
                         turn_failure_kinds.append(failure_kind)
+                        turn_failure_conversation_kinds.append(getattr(error, "conversation_kind", None))
                         _audit_turn_attempt_failure(message, error, failure_kind)
                         raise
 
@@ -7620,6 +7651,7 @@ def _run_sidecar(
                         # One attempt when a limit's wording failed (it is not retried).
                         attempts=len(turn_failure_kinds) or 2,
                         failure_kinds=tuple(turn_failure_kinds),
+                        conversation_kinds=tuple(turn_failure_conversation_kinds),
                     )
                 # The request this turn decided is the last one now; its operations (the effects, or those a
                 # question is about) wait for their verified results (message.compose).

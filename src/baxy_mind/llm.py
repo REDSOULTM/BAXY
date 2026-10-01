@@ -2583,22 +2583,35 @@ def talk_memory_figures(reply: str, request: str, dialogue: Iterable[str] = (), 
     ``dialogue`` is every earlier message of the conversation (the person's and BAXY's: a figure BAXY already said is
     the conversation's), ``person`` the person's own earlier messages. When the conversation writes numbers, a figure
     may be computed from them (a tip, a division, a unit conversion of a figure read before), so only a year is judged
-    then, and none when the person wrote a year themselves («nací en 1995, ¿en qué año cumplo 30?»)."""
+    then, and none when the person wrote a year themselves («nací en 1995, ¿en qué año cumplo 30?»).
+
+    M104 (reserve v3z): a number is said in digits or in words, on both sides. The person's «square root of nine» or
+    «dividir doscientos por cuatro» gives numbers (``semantic.quantities.spoken_numbers_in``), so the answer computed
+    from them is not memory; and the answer's own figure spelled out with its unit («seven to eight minutes», «eight
+    thousand meters», which the M95 retry wrote to get past a veto that read only digits) is a figure like «7 minutes»."""
 
     said = [str(request or ""), *(str(item or "") for item in dialogue)]
     text = _HEX_COLOUR.sub(" ", str(reply or ""))
     named = set(re.findall(r"\w+", fold(" ".join(said))))
+    said_numbers = [*semantic_quantities.numbers_in(said), *semantic_quantities.spoken_numbers_in(said)]
     unsaid = [
         figure for figure in semantic_quantities.unsaid_figures(text, said)
-        if any(character.isdigit() for character in figure)
-        # «Windows 11 trae…» after «¿qué tiene de nuevo windows?»: a number after a name the conversation said, even
-        # when that name opens the sentence, is part of the name.
-        and not any(
-            fold(found.group(1)) in named
-            for found in re.finditer(rf"\b([A-Z][\w'’-]*)[ \t]+{re.escape(figure)}(?![\w]|[.,]\d)", text)
+        if (
+            any(character.isdigit() for character in figure)
+            # «Windows 11 trae…» after «¿qué tiene de nuevo windows?»: a number after a name the conversation said,
+            # even when that name opens the sentence, is part of the name.
+            and not any(
+                fold(found.group(1)) in named
+                for found in re.finditer(rf"\b([A-Z][\w'’-]*)[ \t]+{re.escape(figure)}(?![\w]|[.,]\d)", text)
+            )
+        )
+        or (
+            # A number word with its unit, whose number the conversation did not say («dos tazas» after «dos tazas»).
+            semantic_quantities.spelled_figure(figure)
+            and not set(semantic_quantities.spoken_numbers_in([figure])) <= set(said_numbers)
         )
     ]
-    if not unsaid or not semantic_quantities.numbers_in(said):
+    if not unsaid or not said_numbers:
         return unsaid
     if any(_is_a_year(value) for value in semantic_quantities.numbers_in([str(request or ""), *person])):
         return []
@@ -2646,7 +2659,10 @@ def _without_memory_figures(reply: str, figures: Iterable[str]) -> str:
     kept = [
         sentence for sentence in re.split(r"(?<=[.!?…])\s+", str(reply or "").strip())
         if sentence.strip() and not any(
-            re.search(rf"(?<![\w.,]){re.escape(figure)}(?![\w]|[.,]\d)", sentence) for figure in marked
+            re.search(rf"(?<![\w.,]){re.escape(figure)}(?![\w]|[.,]\d)", sentence)
+            # M104: a figure in words is found folded («Ocho minutos» → «ocho minutos»).
+            or re.search(rf"(?<![\w.,]){re.escape(fold(figure))}(?![\w]|[.,]\d)", fold(sentence))
+            for figure in marked
         )
     ]
     return " ".join(kept).strip()
@@ -19912,12 +19928,23 @@ class LlmRuntime:
             # what it never said, keeps only its sentences without them (the words kept are the model's); none left is
             # no answer.
             kept = _without_memory_figures(final_content, remembered)
+            first_only_remembered = (memory_figures or misquoted) and not (
+                is_echo or system_prompt_echo or unsupported_contract_failure or shaped_contract_failure
+                or wrong_reply_language or go_ahead_draft_unmet or repeats_last
+            )
+            if not kept and first_only_remembered and final_content != content:
+                # M104 (reserve v3z en14787 «what is the difference between roman and grigorean calendar» → no reply):
+                # the retry was all figures; the first draft, whose only defect was its figures, keeps its sentences
+                # without them (the model's words, as above).
+                kept = _without_memory_figures(content, [*memory_figures, *misquoted])
             if not kept or talk_memory_figures(kept, text, dialogue_said, prior_user_requests) or talk_misquotes_itself(
                 kept, dialogue_said,
             ):
+                # M104 (reserve v3z en13040 and 17 more: «conversation» with no kind): the kind the turn decided travels
+                # with the failure, as every other rejection of this reply carries it.
                 raise self._rejected_reply(verdict_key, "memory_figures" if talk_memory_figures(
                     final_content, text, dialogue_said, prior_user_requests,
-                ) else "misquotes_itself")
+                ) else "misquotes_itself", conversation_kind)
             final_content = kept
             message = {**message, "content": kept}
         final_prose = judged(final_content)

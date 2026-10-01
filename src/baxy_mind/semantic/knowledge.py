@@ -17,6 +17,8 @@ what stays talk — an open suggestion («una receta vegetariana»), code, an ex
   conversation carried (kind ``quantity``).
 - ``asks_a_figure``     M92 (D52): what is asked is a quantity, distance, duration, date, year or count, which memory
   never answers.
+- ``figure_lookup``     M104 (D52): a figure of the world asked as such («how tall is mount everest») is looked up
+  with the person's words (kind ``figure``); one computed from the person's numbers, or of their own things, is not.
 """
 
 from __future__ import annotations
@@ -27,17 +29,18 @@ from typing import Iterable
 
 from .conversation import asks_for_code
 from .normalize import fold, spelled_out
-from .quantities import conversion_asked
+from .quantities import conversion_asked, numbers_in, spoken_numbers_in
 
 __all__ = [
-    "ReferenceLookup", "asks_a_figure", "kitchen_quantity", "memory_answer_form", "reference_lookup", "servings_asked",
+    "ReferenceLookup", "asks_a_figure", "figure_lookup", "kitchen_quantity", "memory_answer_form", "reference_lookup",
+    "servings_asked",
 ]
 
 
 @dataclass(frozen=True)
 class ReferenceLookup:
-    """A named referent to look up: ``kind`` is ``recipe``, ``plot``, ``ranking`` or ``quantity`` (M88); ``query`` is
-    what ``web.search`` is asked."""
+    """A named referent to look up: ``kind`` is ``recipe``, ``plot``, ``ranking``, ``quantity`` (M88) or ``figure``
+    (M104); ``query`` is what ``web.search`` is asked."""
 
     kind: str
     subject: str
@@ -309,7 +312,7 @@ _OWN_THINGS = re.compile(
     r"favorit\w*)\b"
 )
 _KITCHEN_LEAD = re.compile(
-    r"^(?:(?:oye|oiga|ya|y|e|ok|okay|bueno|entonces|pues|and|so|baxy|hey|ah|mira|che|a\s+ver|vale)\b[\s,]*)+"
+    r"^(?:(?:oye|oiga|ya|y|e|ok|okay|bueno|entonces|pues|and|so|baxy|olly|hey|ah|mira|che|a\s+ver|vale)\b[\s,]*)+"
 )
 _KITCHEN_TAIL = re.compile(
     r"(?:[\s,]+(?:mas\s+o\s+menos|cachai|cachay|po|pues|porfa|por\s+favor|please|pls|approximately|roughly|"
@@ -401,7 +404,7 @@ def reference_lookup(text: str, prior_requests: Iterable[str] = (), last_reply: 
     # for is written by the model; nothing in it is a dish, a work or a ranking to look up.
     if asks_for_code(text):
         return None
-    direct = _direct(text) or kitchen_quantity(text, prior_requests, last_reply)
+    direct = _direct(text) or kitchen_quantity(text, prior_requests, last_reply) or figure_lookup(text)
     if direct is not None:
         return direct
     earlier = [str(request) for request in prior_requests if str(request or "").strip()]
@@ -555,3 +558,67 @@ def asks_a_figure(text: str) -> bool:
 
     folded = spelled_out(fold(text))
     return _FIGURE_ASKED.search(folded) is not None and _FIGURE_NOT_ASKED.search(folded) is None
+
+
+# M104 (D52, step 6 of goal v3; reserve v3z en13580 «how tall is mount everest» → «Mount Everest is 8,848.86 meters
+# tall.», en13823 «how far away is the sun», en9930 «how long should i boil the egg» → «…seven to eight minutes»,
+# en14316 «how large is alaska», es13823 «que tan lejos esta el sol»): a figure of the world asked of the talk was
+# answered from memory, or refused twice as memory and recovered with no answer. A figure is looked up before it is
+# said, so a figure of the world asked as such is a lookup, with the person's words as the query. Not a figure of the
+# world: one computed from numbers the person gives (digits or words: «cuánto es doscientos por cuatro»), a conversion,
+# the person's or BAXY's own things, this PC, the clock and the calendar of today, and a question that names nothing
+# to look up («how much does it cost?»).
+_NOT_THE_WORLDS_FIGURE = re.compile(
+    r"\b(?:mi|mis|tu|tus|my|your|our|nuestr[oa]s?|you|te|contigo|conmigo|usted|baxy|olly|tengo|tenemos|"
+    r"llevo|llevamos|i\s+have|i'?ve|do\s+i\s+have|have\s+i|am\s+i|"
+    r"hoy|today|ahora|now|tonight|esta\s+noche|manana|tomorrow|ayer|yesterday|falta|faltan|quedan?|until|till|left|"
+    r"hora|horas|time|reloj|clock|fecha|date|calendario|calendar|agenda|cumpleanos|birthday|"
+    r"pc|computadora|computador|ordenador|equipo|computer|laptop|bateria|battery|ram|memoria|memory|disco|disk|cpu|"
+    r"procesador|processor|gpu|almacenamiento|storage|espacio|space|volumen|volume|brillo|brightness|pantalla|screen|"
+    r"archivos?|files?|carpetas?|folders?|ventanas?|windows|pestanas?|tabs?|apps?|aplicacion\w*|programas?|"
+    r"procesos?|process\w*|descarga\w*|download\w*|instala\w*|install\w*|actualiza\w*|update\w*|wifi|internet|"
+    r"notas?|notes?|recordatorios?|reminders?|alarmas?|alarms?|temporizador\w*|timers?|tareas?|tasks?|eventos?|"
+    r"events?|reunion\w*|meetings?|citas?|appointments?|correos?|emails?|mails?|mensajes?|messages?|lista|list|"
+    r"pedido|order|carrito|cart|cancion\w*|songs?|playlist|"
+    # The weather has its own read («cuánto calor hace en Extremadura»).
+    r"clima|weather|temperatura|temperature|lluvia|rain|calor|frio|fria|hot|cold|humedad|humidity|viento|wind|"
+    # Someone's phone or address is a contact, never a figure of the world («el número de teléfono de Emilia», «el
+    # número de mamá»); the person's family are their own.
+    r"telefonos?|phones?|celular|movil|contactos?|contacts?|direccion|address|mama|papa|madre|padre|herman[oa]s?|"
+    r"abuel[oa]s?|esposa|esposo|novi[oa]|jef[ae]|mom|dad|mother|father|sister|brother|wife|husband|boss)\b"
+)
+# The words of the frame that ask the figure, and what refers back without naming: none of them is what to look up.
+_FIGURE_FRAME_WORDS = frozenset({
+    "cuanto", "cuanta", "cuantos", "cuantas", "que", "cual", "cuales", "como", "cuando", "donde", "tan", "es", "son",
+    "era", "fue", "fueron", "esta", "estan", "estamos", "hay", "habia", "tiene", "tienen", "mide", "miden", "pesa",
+    "pesan", "cuesta", "cuestan", "costaria", "vale", "valen", "tarda", "tardan", "demora", "dura", "duran", "debo",
+    "deberia", "puedo", "hace", "hacer", "eso", "esto", "esa", "ese", "ello", "numero", "nacio", "murio", "paso",
+    "ocurrio", "empezo", "comenzo", "termino", "salio", "llego", "lejos", "alto", "alta", "grande", "largo", "larga",
+    "profundo", "profunda", "rapido", "rapida", "caro", "cara", "cerca", "viejo", "vieja", "ano", "anos",
+    "how", "much", "many", "far", "long", "old", "tall", "big", "high", "deep", "heavy", "often", "fast", "large",
+    "what", "whats", "which", "when", "where", "who", "the", "and", "are", "was", "were", "been", "being", "does",
+    "did", "should", "would", "could", "can", "will", "shall", "must", "need", "needs", "take", "takes", "cost",
+    "costs", "weigh", "weighs", "measure", "get", "make", "made", "this", "that", "these", "those", "there", "away",
+    "from", "with", "for", "about", "number", "year", "years", "per", "una", "uno", "unos", "unas", "los", "las",
+    "del", "por", "para", "con", "sin", "entre", "desde", "hasta", "sobre", "the", "its", "it's", "one",
+} | {word for word in re.findall(r"[a-z]+", _FIGURE_NOUN)})
+
+
+def figure_lookup(text: str) -> ReferenceLookup | None:
+    """A figure of the world the request asks (see above), with the query that looks it up; None otherwise."""
+
+    folded = spelled_out(fold(text))
+    if (
+        not asks_a_figure(text)
+        or asks_for_code(text)
+        or conversion_asked(text) is not None
+        or numbers_in([folded])
+        or spoken_numbers_in([folded])
+    ):
+        return None
+    # The address before the question («olly, how long…») is no word of it.
+    clause = _kitchen_clause(folded)
+    if _NOT_THE_WORLDS_FIGURE.search(clause) is not None or not any(len(word) >= 3 and word not in _FIGURE_FRAME_WORDS for word in re.findall(r"[a-z]+", clause)):
+        return None
+    language = _language(folded, re.search(r"\b(?:how|what|when|which|is|are|the)\b", folded) is not None)
+    return ReferenceLookup("figure", clause, clause, language)
