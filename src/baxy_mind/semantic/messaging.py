@@ -321,6 +321,205 @@ def message_draft_request(text: str) -> tuple[str, str, str] | None:
     return None
 
 
+# M111 (DEV-F v4d: «déjale escrito a la Lupita en WhatsApp que paso por ella a las 8 y media, pero no se lo mandes eh»,
+# «draft a discord message to tyler saying … dont send it yet», «dejale escrito un wsp a la paula que voy …»): a message
+# the person asks to LEAVE WRITTEN, said with the verbs of leaving it written or drafting it, or with any message verb
+# and an order not to send it. The order not to send is the person's, never part of the text.
+_DRAFT_VERB = (
+    r"(?:(?:y|and|also|tambi[eé]n|ahora|now|then|luego)\s+)?"
+    r"(?:d[eé]j(?:a|ale|ales|ame|ele|eles)\s+escrito|dej[aá](?:le|les|me)?\s+escrito|"
+    r"(?:d[eé]ja(?:le|les)?|dej[aá](?:le|les)?)\s+(?:un\s+|el\s+)?borrador(?:\s+de)?|"
+    r"redact[aá](?:le|les|me)?|red[aá]cta(?:le|les|me)?|"
+    r"draft|write\s+up|leave\s+(?:a\s+)?(?:written\s+)?(?:draft|message)(?:\s+written)?)"
+)
+
+
+_NOT_SENT = re.compile(
+    r"(?:^|[\s,;.(—-]+)(?:(?:pero|y|but|and|tho)\s+)?"
+    r"(?:sin\s+(?:enviar|mandar)(?:lo|la|selo|sela)?(?:\s+(?:todav[ií]a|a[uú]n))?|"
+    r"no\s+(?:se\s+)?(?:lo|la)\s+(?:mandes|mand[eé]s|env[ií]es|envi[eé]s)|"
+    r"d[eé]ja(?:lo|la)\s+sin\s+(?:enviar|mandar)|"
+    r"(?:do\s+not|don'?t|dont)\s+send(?:\s+(?:it|that|this))?|without\s+sending(?:\s+it)?)\b.*$",
+    re.IGNORECASE,
+)
+
+
+def _without_not_sent(text: str) -> tuple[str, bool]:
+    """The request without the person's order not to send it, and whether that order was there."""
+
+    match = _NOT_SENT.search(text)
+    if match is None:
+        return text, False
+    return text[: match.start()].rstrip(" ,;.—-"), True
+
+
+_LEFT_WRITTEN_PATTERNS = tuple(
+    re.compile(pattern, re.IGNORECASE)
+    for pattern in (
+        # «déjale escrito a la Lupita en WhatsApp que paso por ella», «draft a message to Tyler on Discord saying …»
+        rf"^\s*{_DRAFT_VERB}\s+(?:{_MSG_OBJECT}\s+)?{_MSG_TO}\s+{_MSG_REC}\s+{_MSG_ON}\s+{_MSG_CHANNEL}\s*{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
+        # «deja escrito en WhatsApp a la Flor: llego tarde», «draft on discord to Tyler: …»
+        rf"^\s*{_DRAFT_VERB}\s+(?:{_MSG_OBJECT}\s+)?{_MSG_ON}\s+{_MSG_CHANNEL}\s+{_MSG_TO}\s+{_MSG_REC}\s*{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
+        # «dejale escrito un wsp a la paula que voy», «draft a discord message to tyler saying the raid starts at 9»
+        rf"^\s*{_DRAFT_VERB}\s+{_MSG_OBJECT_CHANNEL}\s+{_MSG_TO}\s+{_MSG_REC}\s*{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
+        # «déjale escrito a Ana que llego tarde por WhatsApp»
+        rf"^\s*{_DRAFT_VERB}\s+(?:{_MSG_OBJECT}\s+)?{_MSG_TO}\s+(?P<rec>[^\s,:;]+(?:\s+[^\s,:;]+)?)\s*{_MSG_SEP}\s*{_MSG_BODY}"
+        rf"\s+{_MSG_ON}\s+{_MSG_CHANNEL}{_MSG_END}",
+    )
+)
+
+
+def asks_not_to_send(text: str) -> bool:
+    """The person says the message is not to be sent («sin enviarlo», «no se lo mandes», «don't send it yet»)."""
+
+    return _without_not_sent(_strip_request_envelope(text).strip())[1]
+
+
+def message_left_written_request(text: str) -> tuple[str, str, str] | None:
+    """M111: (channel, recipient, body) of a chat message the person asks to leave written and not send: the verbs
+    of leaving it written or drafting it, or any message order with the order not to send it. The body is the
+    person's own words without that order; the channel is WhatsApp or Discord. None otherwise."""
+
+    raw = _strip_request_envelope(text).strip()
+    if not raw or len(raw.encode("utf-8")) > 2048 or "aclaracion confiable del usuario:" in _fold(raw):
+        return None
+    raw, not_sent = _without_not_sent(raw)
+    found: tuple[str, str, str] | None = None
+    for pattern in _LEFT_WRITTEN_PATTERNS:
+        match = pattern.match(raw)
+        if match is None:
+            continue
+        groups = match.groupdict()
+        channel = _message_channel_name(groups.get("ch") or groups.get("och") or "")
+        recipient = re.sub(
+            r"^(?:el\s+grupo|la\s+|el\s+|the\s+group|the\s+)\s*", "", (groups.get("rec") or "").strip(), flags=re.IGNORECASE,
+        ).strip(" .")
+        body = (groups.get("body") or "").strip().lstrip(":").strip()
+        body = re.sub(
+            r"^(?:que\s+diga\s+|que\s+dice\s+|diciendo(?:le)?\s+(?:que\s+)?|dici[eé]ndole\s+(?:que\s+)?|saying\s+(?:that\s+)?|"
+            r"that\s+says\s+|que\s+|that\s+)",
+            "", body, flags=re.IGNORECASE,
+        ).strip()
+        found = (channel, recipient, body)
+        break
+    if found is None and not_sent:
+        found = message_draft_request(raw)
+    if found is None:
+        return None
+    channel, recipient, body = found
+    body = body.strip().strip("«»\"“”'").strip()
+    body = body.rstrip(" .!?") if len(body) > 1 else body
+    if channel not in {"whatsapp", "discord"} or not recipient or not body:
+        return None
+    if re.search(r"\b" + _MSG_CHANNEL_WORDS + r"\b", _fold(recipient)) or _fold(recipient) in _MSG_PRONOUN_RECIPIENTS | {
+        "mensaje", "message",
+    }:
+        return None
+    if len(recipient.encode("utf-8")) > 512 or len(recipient.split()) > 6 or len(body.encode("utf-8")) > 16_384:
+        return None
+    return channel, recipient, body
+
+
+# M111 (DEV-F v4d F-w01-t4 «mejor cámbialo, ponle que llego como 10 minutos tarde…» after a draft for Mariana → «No
+# puedo cambiar el mensaje…»): the new words of the message just left written, said whole. «poné media hora mejor»
+# changes a part of the old words and is not read here.
+_DRAFT_CHANGE = re.compile(
+    r"^(?:(?:no|uy|ay|oye|ah|ups|perd[oó]n|sorry|oops|wait|actually|mejor|better|y|and)[\s,.!]+)*"
+    r"(?:(?:c[aá]mbia(?:lo|la)|cambi[aá](?:lo|la)|modif[ií]ca(?:lo|la)|corr[ií]ge(?:lo|la)|change\s+it|fix\s+it)"
+    r"(?:\s+(?:mejor|please|porfa|por\s+favor))?[\s,.;:]+(?:(?:y|and)\s+)?)?"
+    r"(?:mejor\s+)?"
+    r"(?:p[oó]n(?:le|ele)|pon[eé](?:le)?|pon|escr[ií]be(?:le)?|escrib[ií](?:le)?|d[ií]le|dec[ií]le|"
+    r"make\s+it\s+say|have\s+it\s+say|write|say|tell\s+(?:him|her|them))\s+"
+    r"(?:mejor\s+|instead\s+)?(?:que|that)\s+(?P<body>.+?)[\s.!?]*$",
+    re.IGNORECASE,
+)
+
+
+def edited_draft_request(text: str, earlier_user_texts: list[str]) -> str | None:
+    """M111: the request that leaves written again the message of the last draft asked in this conversation, with
+    the new words said whole now; None without such a draft or such words. The recipient and the client are the ones
+    the person named for that draft; every word of the result was said by the person."""
+
+    change = _DRAFT_CHANGE.match(_strip_request_envelope(text).strip())
+    if change is None:
+        return None
+    body = _without_not_sent(change.group("body").strip().strip("«»\"“”'").strip())[0]
+    if len(body.split()) < 2:
+        return None
+    for earlier in reversed(earlier_user_texts[-4:]):
+        draft = message_left_written_request(earlier)
+        if draft is None:
+            continue
+        channel, recipient, _old = draft
+        client = "WhatsApp" if channel == "whatsapp" else "Discord"
+        if re.search(r"\b(?:draft|write\s+up|leave)\b", _fold(earlier)):
+            return f"draft a {client} message to {recipient} saying {body}"
+        return f"déjale escrito a {recipient} en {client} que {body}"
+    return None
+
+
+# M111 («mándaselo a Ana», «déjaselo escrito a Álvaro por WhatsApp», «send it to Tyler on Discord»): a message pointed
+# at with a pronoun and no words of its own; the person says only who it goes to (and maybe the client).
+_FORWARDED = re.compile(
+    r"^(?:(?:y|and|also|tambi[eé]n|ahora|now|then|luego)\s+)?"
+    r"(?:m[aá]nd[aá]selo|m[aá]ndaselo|env[ií][aá]selo|p[aá]s[aá]selo|d[eé]j[aá]selo(?:\s+escrito)?|escr[ií]b[eí]selo|"
+    r"reenv[ií][aá]selo|send\s+(?:it|that|this)|forward\s+(?:it|that|this)|leave\s+(?:it|that|this)\s+(?:written|drafted))"
+    r"(?:\s+(?:tambi[eé]n|too|also))?\s+(?:a|al|to)\s+"
+    r"(?P<rec>[^\s,:;.!?][^,:;.!?]{0,60}?)(?:\s+" + _MSG_ON + r"\s+" + _MSG_CHANNEL + r")?"
+    r"(?:\s+(?:tambi[eé]n|too|also))?[\s,.!?]*$",
+    re.IGNORECASE,
+)
+
+
+_ASKED_TO_WRITE = re.compile(
+    r"^(?:(?:me\s+)?(?:puedes|podes|podrias|could\s+you|can\s+you)\s+)?(?:please\s+)?"
+    r"(?:escribe(?:me)?|escribi(?:me)?|redacta(?:me)?|arma(?:me)?|haz(?:me)?|hace(?:me)?|prepara(?:me)?|"
+    r"write(?:\s+me)?|draft(?:\s+me)?|compose(?:\s+me)?)\s+"
+    r"(?:(?:un|una|el|la|a|an|the)\s+)?(?:\w+\s+)?(?:mensaje|message|texto|text|saludo|greeting|respuesta|reply|"
+    r"excusa|disculpa|apology|felicitacion)\b"
+)
+
+
+def asks_to_write_a_message(text: str) -> bool:
+    """M111: the person asks BAXY to write the words of a message («redáctame un mensaje para…»); the reply is them."""
+
+    return _ASKED_TO_WRITE.match(_strip_request_envelope(_fold(text)).strip()) is not None
+
+
+def forwarded_draft(
+    text: str, earlier_user_texts: list[str], previous_reply: str | None, reply_was_asked_for: bool,
+) -> tuple[str, str, str] | None:
+    """M111: (channel, recipient, body) of «mándaselo a Ana»: the recipient (and the client, when said) are this
+    message's; the body is the one of the last message left written in this conversation, or BAXY's previous reply
+    when the person's previous message asked BAXY to write it. None when the message says words of its own, when
+    nothing was written before, or when no client is known."""
+
+    raw, _not_sent = _without_not_sent(_strip_request_envelope(text).strip())
+    match = _FORWARDED.match(raw)
+    if match is None:
+        return None
+    recipient = re.sub(
+        r"^(?:el\s+grupo|la\s+|el\s+|the\s+group|the\s+)\s*", "", match.group("rec").strip(), flags=re.IGNORECASE,
+    ).strip(" .")
+    if not recipient or _fold(recipient) in _MSG_PRONOUN_RECIPIENTS or len(recipient.split()) > 6:
+        return None
+    channel = _message_channel_name(match.group("ch")) if match.group("ch") else None
+    earlier_draft = next(
+        (draft for earlier in reversed(earlier_user_texts[-4:]) if (draft := message_left_written_request(earlier))),
+        None,
+    )
+    if reply_was_asked_for and previous_reply and previous_reply.strip():
+        body = previous_reply.strip()
+    elif earlier_draft is not None:
+        body = earlier_draft[2]
+    else:
+        return None
+    channel = channel or (earlier_draft[0] if earlier_draft is not None else None)
+    if channel not in {"whatsapp", "discord"} or len(body.encode("utf-8")) > 16_384:
+        return None
+    return channel, recipient, body
+
+
 _MAIL_NOUN = (
     r"\b(?:correos?(?:\s+electronicos?)?|e-?mails?|mails?|buzon|inbox|mailbox|"
     r"bandeja\s+de\s+entrada)\b"

@@ -1289,6 +1289,36 @@ def window_inventory_arguments(text: str) -> dict[str, object] | None:
     return result
 
 
+# M111 (DEV-F v4d F-s021 «crea una nota que se llame regalos navidad y pone ahi: polera de colo colo…» → a YouTube
+# search for the gifts beside the note): the note named and what to put in it, said as two clauses of one note. What
+# is put «there» is the note's content, never something to play.
+_TITLED_NOTE_WITH_CONTENT = re.compile(
+    r"^[¿?¡!\s]*(?:cr[eé][aá](?:me)?|crear|create|make|haz(?:me)?|hac[eé](?:me)?|hacer|guard[aá](?:me)?|guardar|save|"
+    r"abr[ií]|abre|start)\s+"
+    r"(?:(?:una?|a)\s+)?(?:(?:nueva|new)\s+)?(?:nota|note)\s+"
+    r"(?:que\s+se\s+llam[ea]|llamad[ao]|titulad[ao]|con\s+(?:el\s+)?(?:t[ií]tulo|nombre)(?:\s+de)?|"
+    r"named|called|titled|with\s+the\s+title)\s+"
+    r"[«\"“']?(?P<title>[^,:;«»\"“”]+?)[»\"”']?\s*(?:,\s*|\s+)(?:(?:y|and|e)\s+)?"
+    r"(?:p[oó]n(?:e|le|ele)?|pon[eé](?:le)?|escr[ií]be(?:le)?|escrib[ií](?:le)?|an[oó]ta(?:le)?|anot[aá](?:le)?|"
+    r"ag(?:r)?[eé]ga(?:le)?|agreg[aá](?:le)?|put|write|add)\s+"
+    r"(?:(?:ah[ií]|all[ií]|ac[aá]|en\s+ella|adentro|dentro|in\s+it|there|inside)\s*)?(?:(?:que|that)\s+|:\s*)?"
+    r"(?P<content>\S.*?)[\s.!?]*$",
+    re.IGNORECASE,
+)
+
+
+def titled_note_with_content(text: str) -> tuple[str, str] | None:
+    """M111: (title, content) of a note named and filled in one request, in the words given; None otherwise."""
+
+    match = _TITLED_NOTE_WITH_CONTENT.match(_strip_request_envelope(text).strip())
+    if match is None:
+        return None
+    title, content = match.group("title").strip(), match.group("content").strip()
+    if not title or not content or len(title.split()) > 8:
+        return None
+    return title, content
+
+
 def _literal_note_payload_request(text: str) -> bool:
     """Recognize a positive note request whose subordinate text is literal data."""
 
@@ -1296,6 +1326,8 @@ def _literal_note_payload_request(text: str) -> bool:
     desired = _explicit_desire_request(text)
     if desired is not None:
         text = desired.group("body")
+    if titled_note_with_content(text) is not None:
+        return True
     return _has(
         text,
         r"^[¿?¡!\s]*(?:"

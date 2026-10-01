@@ -14,14 +14,23 @@ from __future__ import annotations
 import json
 from datetime import datetime, timedelta, timezone
 
+import pytest
+
 from baxy_mind import llm
 from test_c03_m101b_sin_vacios import _Scripted
 
 _ASKED = "ponme recordatorio una hora antes de ese partido"
+# M108: the PC's clock the replies are told against is fixed (no test reads the machine's date or hour).
+_NOW = datetime(2026, 3, 4, 13, 0, tzinfo=timezone.utc)
+
+
+@pytest.fixture(autouse=True)
+def _fixed_clock(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(llm, "_local_now", lambda: _NOW.astimezone())
 
 
 def _due(days: int = 3) -> datetime:
-    return (datetime.now(timezone.utc) + timedelta(days=days)).replace(minute=0, second=0, microsecond=0)
+    return _NOW + timedelta(days=days)
 
 
 def _reminder(due: datetime, **extra: object) -> dict:
@@ -57,7 +66,7 @@ def test_a_draft_with_another_time_gives_way_to_the_verified_one() -> None:
 def test_tomorrow_is_said_as_the_word_the_person_hears() -> None:
     due = _due(days=1)
     local = due.astimezone()
-    expected = "mañana" if local.date() == datetime.now().astimezone().date() + timedelta(days=1) else _spanish_date(local)
+    expected = "mañana" if local.date() == _NOW.astimezone().date() + timedelta(days=1) else _spanish_date(local)
     final = llm._deterministic_final(_reminder(due), {}, _ASKED, "es")
     assert expected in final and f"{local:%H:%M}" in final
 

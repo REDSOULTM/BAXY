@@ -184,23 +184,27 @@ public sealed class M107SueloAccionesTests
     [Test]
     public void AMovedNotificationIsToldStepByStep()
     {
-        // An hour from now, or a minute from now when that would cross midnight (the day words are tested in Python).
-        DateTimeOffset due = DateTimeOffset.Now.AddMinutes(61);
-        if (due.ToLocalTime().Date != DateTimeOffset.Now.Date)
-        {
-            due = DateTimeOffset.Now.AddSeconds(30);
-        }
-
+        // M108: the PC's clock is fixed (no test depends on today's date or the hour): an hour after 10:00 local of a
+        // fixed day is the same day (the day words are tested in Python).
+        var now = new DateTimeOffset(new DateTime(2026, 3, 4, 10, 0, 0, DateTimeKind.Local));
+        var clockNow = new FixedTime(now.ToUniversalTime());
+        DateTimeOffset due = now.AddMinutes(61);
         string clock = due.ToLocalTime().ToString("HH:mm", CultureInfo.InvariantCulture);
         string article = due.ToLocalTime().Hour == 1 ? "la" : "las";
         var draft = new UserMessageDraft(Moved(due), "status", null);
         JsonObject facts = ModelMessageComposer.CreateFacts(draft);
         Assert.That(
-            ModelMessageComposer.DeterministicFinal(draft, "espera, mejor dentro de una hora", facts, ""),
+            ModelMessageComposer.DeterministicFinal(draft, "espera, mejor dentro de una hora", facts, "", clockNow),
             Is.EqualTo($"Cancelé el último recordatorio y puse el recordatorio «estirar las piernas» para {article} {clock}."));
         Assert.That(
-            ModelMessageComposer.DeterministicFinal(draft, "wait, make it in an hour instead", facts, null),
+            ModelMessageComposer.DeterministicFinal(draft, "wait, make it in an hour instead", facts, null, clockNow),
             Is.EqualTo($"I cancelled the latest reminder and I scheduled the reminder «estirar las piernas» for {clock}."));
+        // The same reminder told a day later is for tomorrow.
+        Assert.That(
+            ModelMessageComposer.DeterministicFinal(
+                draft, "espera, mejor dentro de una hora", facts, "", new FixedTime(now.AddDays(-1).ToUniversalTime())),
+            Is.EqualTo(
+                $"Cancelé el último recordatorio y puse el recordatorio «estirar las piernas» para mañana a {article} {clock}."));
     }
 
     [Test]
@@ -282,5 +286,10 @@ public sealed class M107SueloAccionesTests
         }
 
         throw new DirectoryNotFoundException("No repository root above the test directory.");
+    }
+
+    private sealed class FixedTime(DateTimeOffset utcNow) : TimeProvider
+    {
+        public override DateTimeOffset GetUtcNow() => utcNow;
     }
 }

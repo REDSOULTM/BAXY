@@ -2245,3 +2245,68 @@ def names_an_own_record_store(said: object) -> bool:
     return re.search(rf"\b{_PERSONAL_RECORD_STORE}\b", folded) is not None and _FIRST_PERSON_MARK.search(
         folded
     ) is not None
+
+
+# --- A note named by part of its title (M111) --------------------------------------------------------------------
+# DEV-F v4d F-w03-t6 «ah, y la nota del snippet, léemela» after «mete ese código en una nota, title it leap year
+# snippet» → «Léeme la nota del snippet.» → note «Snippet» not found: the note was named a few turns before, whole;
+# the word the person uses now is part of that title.
+_NOTE_REFERENCE = re.compile(
+    r"\b(?:nota|note)\s+(?:(?:del?|de\s+la|de\s+los|sobre\s+(?:el|la|los)?|about(?:\s+the)?|on(?:\s+the)?|"
+    r"called|named|llamad[ao]|titulad[ao])\s+)(?P<ref>[^,.;:!?«»\"“”]+)"
+    r"|\b(?:the|my)\s+(?P<ref_en>[^,.;:!?«»\"“”]+?)\s+note\b",
+    re.IGNORECASE,
+)
+_NOTE_TITLE_GIVEN = re.compile(
+    r"\b(?:title\s+it|titled|called|named|que\s+se\s+llame|ll[aá]mala|llamad[ao]|titulad[ao]|con\s+el\s+t[ií]tulo|"
+    r"de\s+t[ií]tulo)\s+[«\"“']?(?P<title>[^,.;:!?«»\"“”']+)",
+    re.IGNORECASE,
+)
+_QUOTED = re.compile(r"[«\"“](?P<title>[^«»\"“”]{1,80})[»\"”]")
+_REFERENCE_FILLER = frozenset({"el", "la", "los", "las", "the", "a", "an", "un", "una", "esa", "ese", "that", "this"})
+
+
+def conversation_note_title(request: str, conversation: Sequence[str]) -> str | None:
+    """M111: the one title named for a note earlier in the conversation that holds every word the request uses for
+    the note («la nota del snippet» → «leap year snippet»); None when the request names no note by a word, or no
+    single title holds it."""
+
+    reference = _NOTE_REFERENCE.search(str(request or ""))
+    if reference is None:
+        return None
+    words = [
+        word for word in re.findall(r"[a-z0-9]+", _fold(reference.group("ref") or reference.group("ref_en") or ""))
+        if word not in _REFERENCE_FILLER
+    ]
+    if not words or len(words) > 4:
+        return None
+    titles: dict[str, str] = {}
+    for line in conversation:
+        line = str(line or "")
+        if re.search(r"\b(?:notas?|notes?)\b", _fold(line)) is None:
+            continue
+        candidates = [match.group("title") for match in _NOTE_TITLE_GIVEN.finditer(line)]
+        candidates += [match.group("title") for match in _QUOTED.finditer(line)]
+        for candidate in candidates:
+            title = " ".join(candidate.split()).strip(" .")
+            if title:
+                titles.setdefault(_fold(title), title)
+    holding = [
+        title for folded, title in titles.items()
+        if set(words) <= set(re.findall(r"[a-z0-9]+", folded)) and re.findall(r"[a-z0-9]+", folded) != words
+    ]
+    return holding[0] if len(holding) == 1 else None
+
+
+# M110 (DEV-F v4d F-w45-t5 «and the pizza, how many minutes till I pull it out?» → the reminders already due): what is
+# still to ring is read from what is scheduled; the due read is for the ones that already rang, asked as such.
+_OVERDUE_WORDS = (
+    r"\b(?:vencid[oa]s?|overdue|past\s+due|atrasad[oa]s?|ya\s+(?:sonaron|pasaron|vencieron)|already\s+(?:rang|went\s+off)|"
+    r"went\s+off|missed|perdi|me\s+perdi)\b"
+)
+
+
+def asks_overdue_notifications(text: str) -> bool:
+    """Whether the person asks for the alarms or reminders that already rang (see above)."""
+
+    return _has(_fold(text), _OVERDUE_WORDS)

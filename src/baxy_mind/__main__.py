@@ -40,7 +40,7 @@ from .semantic import decider as semantic_decider
 from .semantic import dialogue as dialogue_slot
 from .semantic import knowledge as semantic_knowledge
 from .semantic.apps import bare_close_pronoun, close_request_for_opened, deictic_close_request
-from .semantic.notes import list_creation_said, names_own_event, task_change
+from .semantic.notes import asks_overdue_notifications, conversation_note_title, list_creation_said, names_own_event, task_change
 from .semantic import levels as semantic_levels
 from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
@@ -2553,6 +2553,12 @@ def _served_surface_reread(
             objective if effect_request_is_authoritative(objective) else None,
             semantic_surface.canonical(restated) if restated else None,
         ]
+        if dialogue_slot.dependency(objective, dialogue_slot.read_slot(message, history, objective)) is not None:
+            # M112 (DEV-F v4d w52-t2 «sí, dale, bájalo a 30» after the battery was read → the decider's limit re-read
+            # as said and the volume set to 30): a message that leans on the conversation names its object there;
+            # read alone, the readers fill it with their own default. Only the decider's restatement, which carries
+            # it, is re-read.
+            candidates = [semantic_surface.canonical(restated) if restated else None]
     previous = _previous_user_request(history if isinstance(history, list) else [], objective)
     canonical = None
     for candidate in dict.fromkeys(text for text in candidates if text):
@@ -3015,6 +3021,41 @@ def _explicit_stable_no_effect_turn_decision(
 ) -> dict[str, object] | None:
     read = stable_no_effect(objective, history, pending_clarification=pending_clarification)
     return _conversation_turn_decision(*read) if read is not None else None
+
+
+def _conversation_reader_keeps_followup(
+    objective: str,
+    *,
+    non_target_language: bool,
+    catalog_fact: bool,
+    recalled: bool,
+    explicit_non_action: bool,
+    social_act: bool,
+    reaction: bool,
+) -> bool:
+    """M112: whether a conversation reader's closure of a follow-up stands without the contextual decider.
+
+    The readers read the message alone. A reaction («uf, está muy fuerte», «jaja no lo entendí») is about what just
+    happened, and a message whose form leans on the turn before («no esa, la otra», «ahí tiene que estar el PDF…
+    ¿me lo resumes?», ``dialogue.leans_on_context``) names its object there: both are the contextual decider's, which
+    sees the conversation (DEV-F v4d w28-t5, w60-t2, w19-t2; the decider alone was right on every follow-up these
+    readers lost). What holds whatever was said before keeps its reader: a language BAXY does not answer in, a limit
+    of the catalog (a known unsupported contract, an application or game that is not installed), the words recalled
+    or drawn on request, an explicit «don't do anything» or prohibition, a social act, and talk or a question that
+    stands on its own (M83: «What is photosynthesis?» names what it asks about).
+    """
+
+    if (
+        non_target_language
+        or catalog_fact
+        or recalled
+        or explicit_non_action
+        or social_act
+        or effect_intent.explicit_negative_constraint(objective)
+        or dialogue_slot.is_social(objective)
+    ):
+        return True
+    return not (reaction or dialogue_slot.leans_on_context(objective))
 
 
 def _catalog_unavailable_turn_decision(
@@ -3704,6 +3745,7 @@ def _ground_explicit_arguments(
         "message.recipient.resolve",
         "email.send",
         "media.control",
+        "media.play.exact",
         "media.play.query",
         "media.play.youtube",
         # D39 (M58): the clock reader of a cancellation owns hour, minute and period; «las 7:05» grounded
@@ -4722,9 +4764,31 @@ def _context_decided_result(
     placed = dialogue_slot.place_substituted(text, antecedent)
     placed_read = resolve_explicit_effects(placed, available_operations) if placed is not None else None
     closing = _close_of_the_just_opened(text, history, available_operations, application_names)
-    read_before_decider = closing is not None or (placed_read is not None and placed_read.operations == ("system.time",))
+    said_before = [
+        str(turn.get("content") or "") for turn in reversed(history)
+        if isinstance(turn, dict) and str(turn.get("content") or "") != text
+    ]
+    offered = semantic_temporal.accepted_notification_offer(
+        text, context.last_reply,
+    ) or semantic_temporal.answered_timer_length(text, context.last_reply, said_before)
+    offered_read = resolve_explicit_effects(offered, available_operations) if offered is not None else None
+    if offered_read is not None and not set(offered_read.operations) <= _ANCHORED_SCHEDULE_OPERATIONS:
+        offered_read = None
+    read_before_decider = (
+        closing is not None
+        or offered_read is not None
+        or (placed_read is not None and placed_read.operations == ("system.time",))
+    )
     if closing is not None:
         decided = closing
+    elif offered_read is not None:
+        # M110 (DEV-F v4d F-w33-t4 «Yeah, go on» after «Shall I move the alarm to 17:00?» → «What time is the Spurs
+        # game?»; F-w45-t3 «go with 12…» after «How long for the garlic knots?»): the yes to BAXY's offer of a
+        # notification at one time, or the length that answers its «how long?», is that notification, read as one
+        # request.
+        decided = semantic_decider.ContextDecision(
+            request=str(offered), decision="action", operations=tuple(offered_read.operations), question="",
+        )
     elif read_before_decider:
         # M84 (DEV-D v3o D-w02-t2 «y si allá son las 10 de la mañana acá qué hora es» after «qué hora es en madrid» →
         # restated «¿Qué hora es en Madrid si allá son las 10…?» and talked): «allá» is the place just asked, and the
@@ -4777,6 +4841,18 @@ def _context_decided_result(
         # who they meet, is read from their calendar.
         decided = semantic_decider.ContextDecision(
             request=decided.request, decision="action", operations=("calendar.event.list",), question="",
+        )
+    if (
+        decided.decision == "action"
+        and decided.operations == ("notification.list.due",)
+        and "notification.list" in available_operations
+        and not asks_overdue_notifications(text)
+    ):
+        # M110 (DEV-F v4d F-w45-t5 «and the pizza, how many minutes till I pull it out?» → the reminders already due,
+        # «The pizza reminder is not set yet.»): what is still to ring is in the list of what is scheduled; the due
+        # read is for the ones that already rang.
+        decided = semantic_decider.ContextDecision(
+            request=decided.request, decision="action", operations=("notification.list",), question="",
         )
     if (
         "window.resolve" in available_operations
@@ -4849,13 +4925,58 @@ def _context_decided_result(
         decided = semantic_decider.ContextDecision(
             fidelity.request, decided.decision, decided.operations, decided.question, decided.arguments,
         )
-    anchored = semantic_temporal.anchored_offset_request(text, context.last_reply)
+    edited_draft = (
+        effect_intent.edited_draft_request(text, list(_prior_user_texts(history, text)))
+        if decided.decision != "action" and "message.draft" in available_operations
+        else None
+    )
+    if edited_draft is not None:
+        # M111 (DEV-F v4d F-w01-t4 «mejor cámbialo, ponle que llego como 10 minutos tarde…» → «No puedo cambiar el
+        # mensaje…»): new words for the message just left written are that draft again, to the same person in the same
+        # client; leaving a message written is never a limit.
+        decided = semantic_decider.ContextDecision(
+            request=edited_draft, decision="action", operations=("message.draft",), question="",
+        )
+    if (
+        decided.decision == "action"
+        and len(decided.operations) == 1
+        # The moments of alarms and reminders keep their own readers (``semantic.temporal``).
+        and not set(decided.operations) & (_CLOCK_SET_OPERATIONS | {"notification.cancel.at"})
+    ):
+        restated = resolve_explicit_effects(decided.request, available_operations, application_names)
+        if (
+            restated is not None
+            and 1 < len(restated.operations) <= 8
+            and set(restated.operations) == set(decided.operations)
+        ):
+            # M111 (DEV-F v4d F-s015 «¿Me abres la calculadora y el Bloc de notas?» → «Abre la Calculadora y el Bloc
+            # de notas.» with one app.open, and only the Calculator opened): the restatement names the operation as
+            # many times as the readers read it; each one is a step.
+            decided = semantic_decider.ContextDecision(
+                decided.request, "action", tuple(restated.operations), decided.question, decided.arguments,
+            )
+    # M110: the thing named («la junta», «kick-off») may have its moment further back in the conversation.
+    anchored = semantic_temporal.anchored_offset_request(text, context.last_reply, said_before)
     anchored_read = resolve_explicit_effects(anchored, available_operations) if anchored is not None else None
     if anchored_read is not None and set(anchored_read.operations) <= _ANCHORED_SCHEDULE_OPERATIONS:
         # M84 (DEV-D v3o D-w08-t3 «ponme recordatorio una ora antes d ese partido» → «¿Cuándo es ese partido?», D-w02-t3
         # «ponme una alarma media hora antes de eso» → «Pon una alarma a las 10:30.»): the moment BAXY just gave, less
         # or plus the duration, is the time; the readers read the request that says it, the decider's is not used.
         decided = semantic_decider.ContextDecision(anchored, "action", tuple(anchored_read.operations), "")
+    if (
+        decided.decision == "action"
+        and anchored_read is None
+        and fidelity.kind == "person"
+        and set(decided.operations) <= {"notification.schedule", "reminder.create"}
+        and any(semantic_temporal.spoken_clocks(effect_intent._fold(what)) for what in fidelity.introduced)
+        and not semantic_temporal.spoken_clocks(effect_intent._fold(text))
+        and not semantic_temporal.said_only_a_clock(text)
+        and not semantic_temporal.said_durations(text)
+    ):
+        # M110 (DEV-F v4d F-w46-t3 «poneme una alarma para ese día bien temprano» restated «…el sábado 2 de octubre a
+        # las 5:00» → «¿Cuándo y con qué título…?» as an action): the time was the decider's, not the person's, and the
+        # message says none; when it rings is asked.
+        decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
     if decided.decision == "action" and anchored_read is None:
         asked = resolve_explicit_clarification_intent(text, available_operations)
         if (
@@ -5098,6 +5219,146 @@ def _moved_notification_result(message: dict[str, Any], request: str) -> dict[st
     return result
 
 
+def _direct_arguments_result(
+    message: dict[str, Any],
+    *,
+    llm: Any,
+    tool: dict,
+    application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
+    game_catalog: GameCatalogIndex = GameCatalogIndex(),
+    dialogue_state: dialogue_slot.DialogueState,
+) -> tuple[dict[str, Any] | None, str]:
+    """The «arguments» request: the operation's grounded arguments, or None with the question for what is missing."""
+
+    operation = str(message.get("operation", ""))
+    objective = _with_session_alarm_selector(
+        str(message.get("text", "")), message.get("history"),
+    )
+    arguments = _ground_explicit_arguments(
+        operation,
+        objective,
+        tool["function"]["parameters"],
+        application_names,
+        game_catalog,
+        history=message.get("history"),
+    )
+    question = ""
+    said = _conversation_grounding_source(objective, message.get("history"))
+    turn_language = (
+        message.get("responseLanguage") if message.get("responseLanguage") in {"es", "en", "mixed"} else None
+    )
+    person = _person_message(message.get("history"), objective)
+    headline = dialogue_state.pointed_headline(person) if operation == "web.search" else None
+    if headline is not None and validate_json_schema_instance(
+        {"query": headline}, tool["function"]["parameters"],
+    ):
+        # M83 (DEV-D v3o D-w17-t5 «tell me more about the second one»): the headline pointed at by its
+        # place in the news just read is looked up as it was written, never as the decider retold it.
+        arguments = {"query": headline}
+    if arguments is None:
+        # M80 (DEV-D v3m D-s104, D-s108): a moment no notification holds asks only when, saying why.
+        question = _unschedulable_time_question(
+            llm, operation, objective, person, tool, turn_language,
+        )
+    if arguments is None and not question and operation == "message.draft":
+        # M111 («mándaselo a Ana», «déjaselo escrito a Álvaro por WhatsApp»): the words are those of the message
+        # written before in this conversation (the person's last draft, or BAXY's reply the person asked to write);
+        # who it goes to is this message's.
+        earlier = list(_prior_user_texts(message.get("history"), person))
+        forwarded = effect_intent.forwarded_draft(
+            person,
+            earlier,
+            _previous_reply(message.get("history")),
+            bool(earlier) and (
+                conversation_only_content_request(earlier[-1]) or effect_intent.asks_to_write_a_message(earlier[-1])
+            ),
+        )
+        if forwarded is not None:
+            candidate = {"channel": forwarded[0], "recipient": forwarded[1], "text": forwarded[2]}
+            if validate_json_schema_instance(candidate, tool["function"]["parameters"]):
+                arguments = candidate
+    edited = dialogue_state.edited_task() if operation == "task.update" else None
+    if arguments is None and not question and edited is not None:
+        # M80 (DEV-D v3m D-p06-t2, D-p06-t3, D-p08-t3): what was not changed is kept from the verified task.
+        arguments, question = _edited_task_arguments(
+            llm, objective, person, tool, edited, said, turn_language,
+        )
+    if arguments is None and not question and not _previous_reply_may_be_content(tool, message.get("history")):
+        # M42b: what the decider read, grounded in what was said, is enough on its own; the separate
+        # extraction call runs only when a required value is still missing.
+        arguments = _decided_arguments_alone(
+            operation, str(message.get("text", "")), tool, said,
+        )
+    if arguments is None and not question:
+        # M47 (FINAL F-w09-t5, F-p02-t3): the shell sends the language the turn decision chose; the
+        # objective may be the decider's restatement in the other language, so it cannot decide it.
+        response_language = message.get("responseLanguage")
+        language_argument = (
+            {"response_language": response_language}
+            if response_language in {"es", "en", "mixed"}
+            else {}
+        )
+        # M67 (FINAL F-w14-t3 «perfect, copialo al clipboard» after a ```sql answer, F-w15-t4 «save that
+        # as a note porfa» after a packing list): the model reads BAXY's last reply beside the objective
+        # and says whether it is the content; code copies it verbatim into that field.
+        previous_reply = _previous_reply(message.get("history"))
+        extraction = llm.extract_direct_arguments(
+            objective,
+            tool,
+            stated_fields=_stated_argument_fields(
+                operation, objective, tool["function"]["parameters"],
+            ),
+            **language_argument,
+            **({"previous_reply": previous_reply} if previous_reply else {}),
+        )
+        if extraction.previous_reply_field and previous_reply:
+            # The reply is literally what BAXY said (M43's trusted source), whole and not cut.
+            objective_source = f"{objective}\n{previous_reply}"
+            said = f"{said}\n{previous_reply}"
+        else:
+            objective_source = objective
+        extracted = extraction.arguments
+        if extracted is None:
+            # M76 (DEV-D v3l D-p19-t1): an abstention keeps what the readers know, so what is asked is
+            # only what is still missing (the service of a film named by its title).
+            extracted = partial_explicit_arguments(
+                operation, objective, tool["function"]["parameters"],
+            ) or None
+        decided_arguments = _with_decided_arguments(
+            operation,
+            str(message.get("text", "")),
+            extracted,
+            tool["function"]["parameters"],
+            said,
+        )
+        arguments, question = prepare_direct_argument_result(
+            llm,
+            objective,
+            tool,
+            extracted if decided_arguments is None else decided_arguments,
+            # A question written before the decider's values were added may ask for one of them.
+            extraction.fallback_question if decided_arguments is None else "",
+            trusted_source=objective_source if decided_arguments is None else said,
+            **language_argument,
+        )
+    arguments = _with_conversation_place(
+        operation, arguments, message.get("history"), tool["function"]["parameters"],
+    )
+    if operation in {"note.read", "note.trash"} and not (isinstance(arguments, dict) and arguments.get("noteId")):
+        # M111 (DEV-F v4d F-w03-t6 «la nota del snippet, léemela» → note «Snippet» not found): a note named by a word
+        # of the title it was given earlier in the conversation is that note.
+        conversation = [
+            str(item.get("content") or "") for item in message.get("history") or [] if isinstance(item, dict)
+        ]
+        titled = conversation_note_title(objective, conversation) or conversation_note_title(
+            person, conversation,
+        )
+        candidate = {**(arguments if isinstance(arguments, dict) else {}), "title": titled}
+        if titled is not None and validate_json_schema_instance(candidate, tool["function"]["parameters"]):
+            arguments, question = candidate, ""
+    return arguments, question
+
+
 def _prepare_turn_result(
     message: dict[str, Any],
     *,
@@ -5218,7 +5479,8 @@ def _decide_turn_result(
     ``served_surface`` is None on the request as said and ``()`` on the re-read of its canonical surface
     (``_served_surface_reread``), which is never re-read again.
     ``in_conversation``: the message follows earlier turns. Only the conversation readers (talk,
-    complaints, social acts, known limits) keep it; everything else is the contextual decider's, which
+    social acts, known limits) keep it, and only when what they read stands without the turn before
+    (M112, ``_conversation_reader_keeps_followup``); everything else is the contextual decider's, which
     reads the whole conversation (Fase 3.5b F4: with the history, the effect and clarification readers
     lost more follow-ups than they proved).
     """
@@ -5338,6 +5600,9 @@ def _decide_turn_result(
             lambda clause: resolve_explicit_effects(clause, authenticated_operations, application_names, game_catalog),
         )
         is not None
+        # M112 (DEV-F v4d w38-t1 «get me a large pepperoni with extra jalapeños from the Domino's on Elm St»): an order
+        # addressed to BAXY is never overheard talk; what it asks (here a limit) is the contextual decider's.
+        or effect_request_is_authoritative(objective)
     ):
         # Fase 3.5 (owner 2026-09-21, turns 156–167, 208): a long message right
         # after BAXY spoke is the person talking to BAXY, not a conversation the
@@ -5637,6 +5902,7 @@ def _decide_turn_result(
         # decider asked about them or served a capture or an alarm nearby.
         or effect_intent.unserved_personal_request(objective)
     )
+    social_decision: dict[str, object] | None = None
     explicit_conversation_decision = (
         _explicit_unsupported_turn_decision(objective)
         if non_target_language is not None
@@ -5651,10 +5917,12 @@ def _decide_turn_result(
         )
         or known_limit_requested
         else catalog_unavailable_decision
-        or _explicit_social_turn_decision(
-            objective,
-            history,
-            pending_clarification=message.get("pendingClarification"),
+        or (
+            social_decision := _explicit_social_turn_decision(
+                objective,
+                history,
+                pending_clarification=message.get("pendingClarification"),
+            )
         )
         or _explicit_nonunderstanding_turn_decision(
             objective,
@@ -5675,6 +5943,30 @@ def _decide_turn_result(
         explicit_conversation_decision = _conversation_turn_decision(
             "knowledge", _explicit_response_language(objective),
         )
+    if (
+        in_conversation
+        and explicit_conversation_decision is not None
+        and not _conversation_reader_keeps_followup(
+            objective,
+            non_target_language=non_target_language is not None,
+            catalog_fact=known_limit_requested
+            or known_unsupported_effect_request(objective, available_operations)
+            or catalog_unavailable_decision is not None
+            or (unresolved_compound_effects is not None and unsupported_effect_demonstration_request(objective)),
+            recalled=literal_recall_decision is not None,
+            explicit_non_action=explicit_non_action,
+            social_act=explicit_conversation_decision is social_decision,
+            reaction=explicit_conversation_decision is talk_act_decision
+            and semantic_reading.plain_talk(objective, effects=explicit_intent, clarification=turn_reading.clarification)
+            == "reaction",
+        )
+    ):
+        # M112 (DEV-F v4d w19-t2 «Ahí tiene que estar el PDF… ¿Me lo resumes?» → «No resumo documentos.», w28-t5 «uf
+        # está muy fuerte» after the music started → social talk, w60-t2 «no esa no la otra la del disco» → knowledge):
+        # a follow-up is read by the contextual decider, which has the conversation in front of it; a conversation
+        # reader that reads the message alone keeps it only when what it reads holds whatever came before.
+        explicit_conversation_decision = None
+        stable_no_effect_decision = None
     # Resolve the speech act before catalog candidates can prime a related
     # effect. The existing candidate-free guard includes personal/live reads
     # and compound actions; only agreement on stable knowledge closes here.
@@ -6063,13 +6355,24 @@ def _decide_turn_result(
                 )
             else:
                 intent_operations = []
-    decision = apply_compound_effect_conservation_veto(
-        decision,
-        unresolved_compound_effects,
-        tool_by_name,
-        llm,
-        application_names,
-    )
+    try:
+        decision = apply_compound_effect_conservation_veto(
+            decision,
+            unresolved_compound_effects,
+            tool_by_name,
+            llm,
+            application_names,
+        )
+    except PlannerContractError:
+        if explicit_intent is None or explicit_conversation_decision is not None or served_surface is not None:
+            raise
+        # M112 (DEV-F v4d w01-t1 «léeme el último correo que me llegó, creo que es de mi jefa… y no lo he abierto» →
+        # the readers proved the mail read, «no lo he abierto» left a clause they could not read, the turn failed twice
+        # and asked «¿el asunto o el remitente?»): readers that cannot read the whole message are not sure of it; the
+        # contextual decider, which reads all of it, decides the turn instead of failing it.
+        return _context_decided_result(
+            message, llm=llm, planner_catalog=planner_catalog, application_names=application_names,
+        )
     decision = validate_turn_decision(
         decision,
         {tool.name for tool in shortlist},
@@ -6856,10 +7159,11 @@ def _recover_failed_turn(
             else None
         )
         kind, text = (
-            _recovery_visible_from_compose(llm, objective, talk=True) if understood_talk else ("conversation", "")
+            _recovery_visible_from_compose(llm, objective, talk=True, history=history)
+            if understood_talk else ("conversation", "")
         )
         if not text:
-            kind, text = _recovery_visible_from_compose(llm, objective, limit=is_limit)
+            kind, text = _recovery_visible_from_compose(llm, objective, limit=is_limit, history=history)
         if kind == "clarify" and (not nothing_to_clarify or understood_talk):
             # M97 (reserve A11, DEV-D v3o–v3x composition_failed): talk whose wording failed twice and whose reply the
             # composer could not write either asks back rather than publishing nothing.
@@ -6926,8 +7230,21 @@ def _recover_failed_turn(
     )
 
 
+def _recovery_conversation_facts(history: object, objective: str) -> dict[str, Any]:
+    """M109 (DEV-D v4d D-p23-t5, D-p24-t5): what the recovery's composer knows of the conversation — BAXY's last message
+    («context») and the person's earlier ones («priorRequests») —, the same data the App's composition carries. Without
+    them the writer told «if your earlier messages say you do not do that, say so again» had no earlier message."""
+
+    items = [item for item in history if isinstance(item, dict)] if isinstance(history, list) else []
+    last = next(
+        (str(item.get("content") or "") for item in reversed(items) if item.get("role") == "assistant"), "",
+    ).strip()
+    prior = list(_prior_user_texts(history, objective))
+    return {**({"context": last} if last else {}), **({"priorRequests": prior} if prior else {})}
+
+
 def _recovery_visible_from_compose(
-    llm: Any, objective: str, *, limit: bool = False, talk: bool = False,
+    llm: Any, objective: str, *, limit: bool = False, talk: bool = False, history: object = None,
 ) -> tuple[str, str]:
     """Use model-authored recovery text. A question is a question, not silence.
 
@@ -6942,13 +7259,17 @@ def _recovery_visible_from_compose(
     compose = getattr(llm, "compose_user_message", None)
     if not callable(compose):
         return "conversation", ""
+    conversation = _recovery_conversation_facts(history, objective)
     if talk:
         try:
             reply = str(
                 compose(
                     objective,
                     "conversation",
-                    {"situation": json.dumps({"kind": "conversation", "polarity": "success"}, ensure_ascii=False)},
+                    {
+                        **conversation,
+                        "situation": json.dumps({"kind": "conversation", "polarity": "success"}, ensure_ascii=False),
+                    },
                 )
                 or ""
             ).strip()
@@ -6977,6 +7298,8 @@ def _recovery_visible_from_compose(
                 # entender bien la solicitud, explícalo de nuevo».
                 "error" if limit else "clarification",
                 {
+                    # M109: the question back asks about this conversation, not about the message alone.
+                    **({} if limit else conversation),
                     "situation": json.dumps(
                         {"kind": "failure", "cause": "out_of_catalog", "polarity": "failure"}
                         if limit
@@ -8127,101 +8450,13 @@ def _run_sidecar(
                 tool = tool_by_name.get(operation)
                 if tool is None:
                     raise ValueError(f"tool desconocida: {operation}")
-                objective = _with_session_alarm_selector(
-                    str(message.get("text", "")), message.get("history"),
-                )
-                arguments = _ground_explicit_arguments(
-                    operation,
-                    objective,
-                    tool["function"]["parameters"],
-                    application_names,
-                    game_catalog,
-                    history=message.get("history"),
-                )
-                question = ""
-                said = _conversation_grounding_source(objective, message.get("history"))
-                turn_language = (
-                    message.get("responseLanguage") if message.get("responseLanguage") in {"es", "en", "mixed"} else None
-                )
-                person = _person_message(message.get("history"), objective)
-                headline = dialogue_state.pointed_headline(person) if operation == "web.search" else None
-                if headline is not None and validate_json_schema_instance(
-                    {"query": headline}, tool["function"]["parameters"],
-                ):
-                    # M83 (DEV-D v3o D-w17-t5 «tell me more about the second one»): the headline pointed at by its
-                    # place in the news just read is looked up as it was written, never as the decider retold it.
-                    arguments = {"query": headline}
-                if arguments is None:
-                    # M80 (DEV-D v3m D-s104, D-s108): a moment no notification holds asks only when, saying why.
-                    question = _unschedulable_time_question(
-                        llm, operation, objective, person, tool, turn_language,
-                    )
-                edited = dialogue_state.edited_task() if operation == "task.update" else None
-                if arguments is None and not question and edited is not None:
-                    # M80 (DEV-D v3m D-p06-t2, D-p06-t3, D-p08-t3): what was not changed is kept from the verified task.
-                    arguments, question = _edited_task_arguments(
-                        llm, objective, person, tool, edited, said, turn_language,
-                    )
-                if arguments is None and not question and not _previous_reply_may_be_content(tool, message.get("history")):
-                    # M42b: what the decider read, grounded in what was said, is enough on its own; the separate
-                    # extraction call runs only when a required value is still missing.
-                    arguments = _decided_arguments_alone(
-                        operation, str(message.get("text", "")), tool, said,
-                    )
-                if arguments is None and not question:
-                    # M47 (FINAL F-w09-t5, F-p02-t3): the shell sends the language the turn decision chose; the
-                    # objective may be the decider's restatement in the other language, so it cannot decide it.
-                    response_language = message.get("responseLanguage")
-                    language_argument = (
-                        {"response_language": response_language}
-                        if response_language in {"es", "en", "mixed"}
-                        else {}
-                    )
-                    # M67 (FINAL F-w14-t3 «perfect, copialo al clipboard» after a ```sql answer, F-w15-t4 «save that
-                    # as a note porfa» after a packing list): the model reads BAXY's last reply beside the objective
-                    # and says whether it is the content; code copies it verbatim into that field.
-                    previous_reply = _previous_reply(message.get("history"))
-                    extraction = llm.extract_direct_arguments(
-                        objective,
-                        tool,
-                        stated_fields=_stated_argument_fields(
-                            operation, objective, tool["function"]["parameters"],
-                        ),
-                        **language_argument,
-                        **({"previous_reply": previous_reply} if previous_reply else {}),
-                    )
-                    if extraction.previous_reply_field and previous_reply:
-                        # The reply is literally what BAXY said (M43's trusted source), whole and not cut.
-                        objective_source = f"{objective}\n{previous_reply}"
-                        said = f"{said}\n{previous_reply}"
-                    else:
-                        objective_source = objective
-                    extracted = extraction.arguments
-                    if extracted is None:
-                        # M76 (DEV-D v3l D-p19-t1): an abstention keeps what the readers know, so what is asked is
-                        # only what is still missing (the service of a film named by its title).
-                        extracted = partial_explicit_arguments(
-                            operation, objective, tool["function"]["parameters"],
-                        ) or None
-                    decided_arguments = _with_decided_arguments(
-                        operation,
-                        str(message.get("text", "")),
-                        extracted,
-                        tool["function"]["parameters"],
-                        said,
-                    )
-                    arguments, question = prepare_direct_argument_result(
-                        llm,
-                        objective,
-                        tool,
-                        extracted if decided_arguments is None else decided_arguments,
-                        # A question written before the decider's values were added may ask for one of them.
-                        extraction.fallback_question if decided_arguments is None else "",
-                        trusted_source=objective_source if decided_arguments is None else said,
-                        **language_argument,
-                    )
-                arguments = _with_conversation_place(
-                    operation, arguments, message.get("history"), tool["function"]["parameters"],
+                arguments, question = _direct_arguments_result(
+                    message,
+                    llm=llm,
+                    tool=tool,
+                    application_names=application_names,
+                    game_catalog=game_catalog,
+                    dialogue_state=dialogue_state,
                 )
                 write_request_message(
                     {

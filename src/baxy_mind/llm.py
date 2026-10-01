@@ -38,6 +38,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from fractions import Fraction
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, Iterable, NamedTuple
 from urllib.parse import parse_qs, urlparse
@@ -63,7 +64,8 @@ from .semantic.web import (
     asks_where_to_find, asks_upcoming, memory_may_answer,
 )
 from .semantic.temporal import (
-    _DAY_WORDS, clock_elsewhere, clock_later_asked, named_clock_dial, plural_alarm_cancellation,
+    _DAY_WORDS, clock_elsewhere, clock_later_asked, named_clock_dial, plural_alarm_cancellation, said_durations,
+    spoken_clocks, spoken_date, spoken_day,
 )
 from .semantic.games import _edit_distance
 from . import effect_intent
@@ -4478,11 +4480,57 @@ def visible_reply_claims_an_unrun_ability(value: object, request: object = "") -
     return False
 
 
-_CLAIMED_ABILITY_HINT = {
-    "es": "En este turno no hiciste nada: no digas que puedes hacerlo. Si tus mensajes anteriores dicen que eso no lo "
-    "haces, dilo de nuevo; si no, di llanamente que no lo has hecho. Una frase.",
-    "en": "You did nothing in this turn: do not say you can do it. If your earlier messages say you do not do that, "
-    "say so again; otherwise say plainly that you have not done it. One sentence.",
+def _claimed_ability_instruction(last_said: str, language: str | None) -> str:
+    """M109 (DEV-D v4d D-p23-t5 «Actually do English subtitles.» after «I do not add subtitles to movies.»): the M105
+    hint told the writer «say plainly that you have not done it», and the bare «I did not add English subtitles to the
+    movie.» it then wrote died as own_write_denied twice; the turn had no final. The hint now says what to write that
+    every veto accepts: the limit said again in other words, or the act not done with its reason after a colon (a
+    denial that says why is no bare denial), with BAXY's last message as the data that reason comes from."""
+
+    last = " ".join(str(last_said or "").split())[:320]
+    if language == "en":
+        return (
+            "You did nothing in this turn: do not say you can do it"
+            + (f". Your last message was «{last}»" if last else "")
+            + ". In one sentence, either say again in other words that you do not do that, if your last message says "
+            "so, or say that you have not done it and why, after a colon («I have not done that: …»)."
+        )
+    return (
+        "En este turno no hiciste nada: no digas que puedes hacerlo"
+        + (f". Tu último mensaje fue «{last}»" if last else "")
+        + ". En una frase, o di de nuevo con otras palabras que eso no lo haces, si tu último mensaje lo dice, o di que "
+        "no lo has hecho y por qué, tras dos puntos («No lo he hecho: …»)."
+    )
+
+
+def _own_write_denied_instruction(language: str | None) -> str:
+    """M85's hint for a bare denial of a write (DEV-D v3o D-p09-t3, D-w01-t2), with (M109, DEV-D v4d D-p23-t5) what to
+    write when the person did ask for the act: «do not say what you did or did not do» left no answer to «Actually do
+    English subtitles.», and its accumulation with the claimed-ability hint contradicted it."""
+
+    if language == "en":
+        return (
+            "Nothing ran this turn: a bare «I did not …» answers nothing. Answer, in one sentence, what the person says "
+            "or asks, with what the conversation shows; if they asked you to do something, say that you do not do it, "
+            "or that you have not done it and why, after a colon («I have not done that: …»)."
+        )
+    return (
+        "En este turno no se ejecutó nada: un «no lo hice» a secas no contesta nada. Contesta, en una frase, lo que la "
+        "persona dice o pregunta, con lo que muestra la conversación; si te pidió hacer algo, di que eso no lo haces, "
+        "o que no lo has hecho y por qué, tras dos puntos («No lo he hecho: …»)."
+    )
+
+
+# M109 (DEV-D v4d D-p23-t5, D-p24-t5): a talk reply that tells a failure («I cannot add English subtitles to the
+# movie.», «I cannot sign you in…») is refused by the App's conversation policy (looks_like_failure), whose fallback
+# then composes with no conversation at all. The writer is told what to say instead, before the App sees it.
+_TOLD_FAILURE_HINT = {
+    "es": "No lo cuentes como algo que no pudiste o no puedes hacer: sin «no puedo», «no pude» ni «falló». Si es algo "
+    "que no haces, dilo en presente («No …»); si todavía no está hecho, di que no lo has hecho y por qué, tras dos "
+    "puntos («No lo he hecho: …»). Una frase con tus palabras, sin repetir tu mensaje anterior.",
+    "en": "Do not tell it as something you could not or cannot do: no «cannot», «can't», «could not» or «failed». If it "
+    "is something you do not do, say so in the present («I don't …»); if it is not done yet, say that you have not done "
+    "it and why, after a colon («I have not done that: …»). One sentence of your own, not your previous message again.",
 }
 
 
@@ -4508,9 +4556,12 @@ def _go_ahead_instruction(last_said: str, language: str | None) -> str:
     said (whose outcome, a failure included, is the only reason it may give)."""
 
     last = " ".join(str(last_said or "").split())[:320]
+    # M109 (DEV-D v4d D-p24-t5): after a question of BAXY's the go-ahead answers nothing it asked.
+    asked = last.endswith("?")
     if language == "en":
         return (
-            "The person tells you to go ahead, but nothing ran this turn and nothing of yours was waiting for a yes"
+            "The person tells you to go ahead, but nothing ran this turn and "
+            + ("their yes does not answer what you asked" if asked else "nothing of yours was waiting for a yes")
             + (f"; your last message was «{last}»" if last else "")
             + ". In one sentence, say that you have not done it yet and, if your last message says why, give that "
             # M105 (DEV-D v4a D-p24-t4): «…because the streaming of Hustlers failed because…» was refused as a failure.
@@ -4518,7 +4569,8 @@ def _go_ahead_instruction(last_said: str, language: str | None) -> str:
             "the words failed, could not or cannot. Never say it is confirmed, under way or will proceed."
         )
     return (
-        "La persona te dice que sigas adelante, pero en este turno no se ejecutó nada y nada tuyo esperaba un sí"
+        "La persona te dice que sigas adelante, pero en este turno no se ejecutó nada y "
+        + ("su sí no contesta lo que preguntaste" if asked else "nada tuyo esperaba un sí")
         + (f"; tu último mensaje fue «{last}»" if last else "")
         + ". En una frase, di que todavía no lo hiciste y, si tu último mensaje dice por qué, da ese motivo como lo "
         "que aún falta (por ejemplo, que el servicio pide iniciar sesión en este PC antes), sin las palabras falló, "
@@ -5127,6 +5179,70 @@ def visible_reply_is_a_fixed_stall(value: object) -> bool:
 _SNAKE_CODE = re.compile(r"\b[a-z]{2,}(?:_[a-z0-9]+){1,}\b")
 _DOTTED_OP = re.compile(r"\b[a-z]{2,}(?:\.[a-z][a-z0-9]*){1,}\b")
 _IDENTIFIER_TOKEN = re.compile(r"[\w-]+(?:[._][\w-]+)+")
+# M108 (M107's report): the report of a verified effect leaked the contract in shapes the snake and dotted checks do
+# not see — «verified=true succeeded=true», «succeeded: true», «{"state": "off"}», «TARGET_NOT_FOUND», «0x80070005»,
+# «windowId». Judged on the report of a result (status, error) only, once links and mail addresses are out; a token the
+# person wrote or the result observed (a file «miInforme.txt», a page quoting JSON, the code a window showed) is
+# theirs. Product names keep their spelling («Baxy.App», «iPhone», «macOS», «RTX 4060 Ti»): none is a
+# lowercase hump, a key with its value, an upper snake or a hex code. Twin: UserMessagePolicy.LeaksContractToken.
+_CONTRACT_TOKENS = (
+    re.compile(r"\b[A-Za-z_][A-Za-z0-9_]{2,}=\S"),
+    re.compile(r"\b[A-Za-z_][A-Za-z0-9_]{2,}\s*[:=]\s*(?:true|false|null)\b", re.IGNORECASE),
+    re.compile(r"\{\s*\"[^\"{}\n]{1,64}\"\s*:|\"[A-Za-z_][\w.-]{0,63}\"\s*:\s*(?:true|false|null|-?\d|\"|\{|\[)"),
+    re.compile(r"\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\b"),
+    re.compile(r"\b0x[0-9A-Fa-f]{4,}\b"),
+    re.compile(r"\b[a-z]{2,}(?:[A-Z][a-z0-9]+)+\b"),
+)
+_LINK_OR_ADDRESS = re.compile(r"(?:\bhttps?://|\bwww\.)\S+|\b[\w.%+-]+@[\w-]+(?:\.[\w-]+)+\b", re.IGNORECASE)
+# What a result says about itself, never what it observed.
+_CONTRACT_FIELDS_NOT_OBSERVED = frozenset({
+    "operation", "operations", "authority", "error", "errorCode", "code", "cause", "kind", "polarity", "diagnosticCode",
+})
+
+
+def _observed_strings(situation: object) -> str:
+    """Every string the result observed (mission steps and reasons decoded)."""
+
+    texts: list[str] = []
+
+    def walk(value: object, key: str = "", depth: int = 0) -> None:
+        if depth > 8 or key in _CONTRACT_FIELDS_NOT_OBSERVED:
+            return
+        if isinstance(value, str):
+            if value.lstrip().startswith("{"):
+                try:
+                    decoded = json.loads(value)
+                except ValueError:
+                    decoded = None
+                if isinstance(decoded, dict):
+                    walk(decoded, key, depth + 1)
+                    return
+            texts.append(value)
+        elif isinstance(value, dict):
+            for child_key, child in value.items():
+                walk(child, str(child_key), depth + 1)
+        elif isinstance(value, (list, tuple)):
+            for child in value:
+                walk(child, key, depth + 1)
+
+    walk(situation)
+    return "\n".join(texts)
+
+
+def visible_reply_leaks_a_contract_token(text: str, situation: object, own_words: Iterable[str] = ()) -> bool:
+    """The report of a result names a contract token nobody said or observed (see above). A field named in prose before
+    a colon («your open windows: …») is English, not the contract; only a field written with its value as the contract
+    writes it is (key=value, a boolean or null, JSON)."""
+
+    own = "\n".join((_observed_strings(situation), *own_words)).casefold()
+    judged = _LINK_OR_ADDRESS.sub(" ", text or "")
+    return any(
+        found.group(0).casefold() not in own
+        for pattern in _CONTRACT_TOKENS
+        for found in pattern.finditer(judged)
+    )
+
+
 _WEB_HOST = re.compile(
     r"\b(?:https?://|www\.)(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+"
     r"[a-z]{2,63}\b",
@@ -6733,7 +6849,7 @@ def _scheduled_notification_defect(text: str, dues: list[datetime]) -> str:
                 for day in days
             ):
                 return "extra_claim"
-    today = datetime.now().astimezone().date()
+    today = _local_now().date()
     relative = _reading_fold(text)
     for offset, word in (
         (0, r"\b(?:hoy|today|tonight|esta\s+(?:noche|tarde)|this\s+(?:afternoon|evening))\b"),
@@ -7272,7 +7388,9 @@ def _compose_situation_payload(
                 _alarm_offer_seen(visible_seen, listing) if plural_alarm_cancellation(user_text or "") else listing
             )
         elif operation in {"notification.schedule", "reminder.create"}:
-            visible_seen = _project_scheduled_notification(visible_seen, situation, language)
+            visible_seen = _project_scheduled_notification(visible_seen, situation, language, user_text or "")
+        elif operation == "notification.cancel.at" and situation.get("verified") is True:
+            visible_seen = _project_cancelled_notification(visible_seen, situation, language)
         elif operation == "ocr.read":
             # SCREEN1407 «leéme lo que dice la pantalla»: the receipt carries the
             # layout boxes, hashes and timestamps (about 30 KB) and the composer
@@ -8238,7 +8356,7 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
     uncertain, with what was observed — and for a mission, each step's."""
 
     told = _told_result_final(situation, payload, user_text, language)
-    return told or operation_floor.floor_final(situation, language == "en")
+    return told or operation_floor.floor_final(situation, language == "en", _local_now())
 
 
 def _told_result_final(situation: dict, payload: dict, user_text: str, language: str) -> str:
@@ -8361,7 +8479,7 @@ def _told_result_final(situation: dict, payload: dict, user_text: str, language:
         when = ""
         if due is not None:
             local = due.astimezone()
-            today = datetime.now().astimezone().date()
+            today = _local_now().date()
             clock = f"{'la' if local.hour == 1 else 'las'} {local:%H:%M}"
             spanish_month, english_month = _WEATHER_MONTHS[local.month - 1]
             if english:
@@ -8719,13 +8837,97 @@ def _missing_remembered_words(text: str, value: str) -> list[str]:
     ]
 
 
-# A verified navigation reported as a promise (WEB1259: «Voy a youtube.»).
-_PROMISED_NAVIGATION = re.compile(
-    r"^\W*(?:(?:s[ií]|claro|ok|okay|dale|listo|perfecto|bueno|bien)[,.!\s]+)?"
-    r"(?:voy|vamos|ir[eé]|iremos|te\s+llevo|te\s+llevar[eé]|te\s+voy|"
-    r"i(?:'ll| will| am going to|'m going to)|let'?s\s+go|going\s+to|we(?:'ll| will))\b",
-    re.IGNORECASE,
+# A verified effect reported as a promise. WEB1259 «Voy a youtube.» (a navigation, since 2026-09); M108 (M107's
+# report): «Voy a hacerlo enseguida.», «I'll do it right away», «Procederé a apagar el bluetooth.» passed the gate on a
+# verified result. What was verified already happened: it is told done or as it was seen, never promised. A sentence
+# that opens (after a «sí», «claro», «ok»…) with a first-person act still to come is the promise: «voy a…», «procedo
+# a…», a future of a catalog act or of doing («apagaré», «abriré», «haré», «procederé»), a present with «enseguida»
+# («lo hago enseguida», «ahora mismo lo apago»), «I'll…», «I'm going to…», «let me…». What a verified notice will do
+# is its own fact («te avisaré a las 9», «I'll remind you at 9»), and so is what BAXY will not do by itself («lo dejo
+# así hasta que me lo pidas», «I'll keep it muted until you ask»): those verbs are no promise of the act. Folded.
+_PROMISE_LEAD = (
+    r"^[\s\"'«“]*(?:(?:si|claro(?:\s+que\s+si)?|ok(?:ay|ey)?|vale|dale|listo|perfecto|bueno|bien|entendido|"
+    r"de\s+acuerdo|por\s+supuesto|sure|of\s+course|alright|all\s+right|got\s+it|no\s+problem|yes|yeah|okay)"
+    r"\s*[,.!:;—–-]*\s*)*"
 )
+_PROMISE_CLITIC = r"(?:me|te|se|lo|la|le|los|las|les|nos)\s+"
+_PROMISE_SOON = (
+    r"(?:ahora\s+mismo|ya\s+mismo|enseguida|en\s+seguida|de\s+inmediato|inmediatamente|en\s+un\s+(?:momento|segundo|"
+    r"instante)|en\s+breve|right\s+away|right\s+now|in\s+a\s+(?:moment|second|sec))"
+)
+_SPANISH_PROMISE = re.compile(
+    _PROMISE_LEAD + r"(?:(?:" + _PROMISE_SOON + r"|ahora|ya)\s*,?\s*)?"
+    r"(?:me\s+(?:pongo\s+a|encargo|ocupo)\b|(?:" + _PROMISE_CLITIC + r"){0,2}"
+    r"(?:(?:voy|vamos)\s+a\s+(?:" + _PROMISE_CLITIC + r")?(?P<act>\w+)|procedo\s+a\b|llevo\s+a\b|(?P<word>\w+)))"
+)
+# «Enseguida lo hago», «ahora mismo lo apago», «lo hago enseguida»: a present told with how soon it will be.
+_SPANISH_PROMISE_PRESENT = re.compile(
+    _PROMISE_LEAD + r"(?:" + _PROMISE_SOON + r"\s*,?\s*(?:" + _PROMISE_CLITIC + r"){1,2}\w+o\b|"
+    r"(?:" + _PROMISE_CLITIC + r"){1,2}\w+o\s+" + _PROMISE_SOON + r")"
+)
+_ENGLISH_PROMISE = re.compile(
+    _PROMISE_LEAD + r"(?:" + _PROMISE_SOON + r"\s*,?\s*)?"
+    r"(?:i'll|i\s+will|i\s+shall|i'm\s+going\s+to|i\s+am\s+going\s+to|i'm\s+about\s+to|i\s+am\s+about\s+to|"
+    r"let\s+me|we'll|we\s+will|let's\s+go|going\s+to|i'm\s+on\s+it|on\s+it)\b(?:\s+(?P<act>\w+))?"
+)
+# The acts a verified notice or a state left as it is are told with («te voy a avisar», «I'll remind you», «let me
+# know», «I'll be here», «I'll keep it muted»).
+_NOT_A_PROMISED_ACT = re.compile(
+    r"^(?:avis|record|notific|despert|alert|estar\b|seguir|qued|dej|manten|"
+    r"(?:remind|notify|let|alert|wake|ping|ring|be|keep|leave|stay|know|tell)\b)"
+)
+# Doing in general, besides each catalog act (operation_floor.spanish_infinitives): «lo haré», «procederé».
+_SPANISH_PROMISE_VERBS = frozenset({
+    "hacer", "proceder", "intentar", "encargar", "ocupar", "ir", "llevar", "mostrar", "ver", "terminar", "conseguir",
+    "lograr", "arreglar", "resolver", "realizar", "completar",
+})
+_SPANISH_FUTURE_STEMS = {
+    "hacer": "har", "poner": "pondr", "decir": "dir", "salir": "saldr", "tener": "tendr", "venir": "vendr",
+    "querer": "querr", "saber": "sabr", "deshacer": "deshar", "rehacer": "rehar", "reponer": "repondr",
+}
+
+
+@lru_cache(maxsize=1)
+def _spanish_promised_futures() -> frozenset[str]:
+    """«apagaré», «abriremos», «haré»: the first-person futures of every catalog act and of doing, folded. An
+    infinitive with «é» after it is no preterite («recuperaré» is not «recuperé»); «dejar» is a state left, not an
+    act promised (see above)."""
+
+    verbs = (operation_floor.spanish_infinitives() | _SPANISH_PROMISE_VERBS) - {"dejar"}
+    stems = {_SPANISH_FUTURE_STEMS.get(verb, verb) for verb in verbs}
+    return frozenset(_reading_fold(stem + ending) for stem in stems for ending in ("é", "emos"))
+
+
+def visible_reply_promises_the_act(text: str) -> bool:
+    """A sentence of the reply promises an act instead of telling it done (see above)."""
+
+    for part in re.split(r"[.!?;:\n¡¿]+", (text or "").replace("’", "'")):
+        sentence = _reading_fold(part)
+        if not sentence:
+            continue
+        if _SPANISH_PROMISE_PRESENT.match(sentence) is not None:
+            return True
+        found = _SPANISH_PROMISE.match(sentence)
+        if found is not None:
+            if found.group("act") is not None:
+                if _NOT_A_PROMISED_ACT.match(found.group("act")) is None:
+                    return True
+            elif found.group("word") is None or found.group("word") in _spanish_promised_futures():
+                return True
+        found = _ENGLISH_PROMISE.match(sentence)
+        if found is not None and (found.group("act") is None or _NOT_A_PROMISED_ACT.match(found.group("act")) is None):
+            return True
+    return False
+
+
+def _verified_effect(situation: object) -> bool:
+    """A result the PC verified done: one operation verified and succeeded, or a mission whose every step was."""
+
+    if not isinstance(situation, dict):
+        return False
+    if str(situation.get("cause") or "").strip().lower() == "mission_completed":
+        return True
+    return bool(situation.get("operation")) and situation.get("verified") is True and situation.get("succeeded") is True
 
 
 def _memory_value_forms(value: object) -> list[str]:
@@ -9351,7 +9553,7 @@ def _page_read_quote_defect(text: str, seen: dict) -> str:
 def _local_today() -> date:
     """The local date the listing is told from (one place, so a recorded read can be judged on its own day)."""
 
-    return datetime.now().astimezone().date()
+    return _local_now().date()
 
 
 def _project_notification_listing(observed: dict, language: str) -> dict:
@@ -9400,7 +9602,32 @@ def _project_notification_listing(observed: dict, language: str) -> dict:
     return {"count": count, "scheduled": scheduled}
 
 
-def _project_scheduled_notification(observed: dict, situation: dict, language: str) -> dict:
+def _rings_in(due: datetime, user_text: str, language: str) -> str | None:
+    """M110 (DEV-F v4d F-w09-t4 «avisame en 15 minutes…», F-w45-t1 «gimme a 25 minute countdown»): how long until a
+    verified notification rings, as the person said it when they gave a length (within two minutes of the verified
+    due), or counted when they said no clock or day at all («go with 12» after «How long…?»); None otherwise, or a day
+    or more ahead."""
+
+    remaining = (due - _local_now()).total_seconds() / 60
+    if not 0 < remaining < 24 * 60:
+        return None
+    said = next((literal for literal, minutes in said_durations(user_text) if abs(minutes - remaining) <= 2), None)
+    if said is not None:
+        return said
+    folded = _reading_fold(user_text)
+    if spoken_clocks(folded) or spoken_day(folded, 0) != (0, 1) or spoken_date(folded) is not None:
+        return None
+    hours, minutes = divmod(round(remaining), 60)
+    english = language == "en"
+    parts = []
+    if hours:
+        parts.append(f"{hours} {'hour' if english else 'hora'}{'' if hours == 1 else 's'}")
+    if minutes or not hours:
+        parts.append(f"{minutes} {'minute' if english else 'minuto'}{'' if minutes == 1 else 's'}")
+    return (" and " if english else " y ").join(parts)
+
+
+def _project_scheduled_notification(observed: dict, situation: dict, language: str, user_text: str = "") -> dict:
     """Tanda 5 «set 30 minute timer» died three times in missing_state: the receipt carried only UTC instants
     (dueUtc/nextRunUtc 16:57) and the drafts said 14:27, 16:57 and 17:27 for a timer due at 13:57 local. The person
     hears their own clock: the verified next run goes as local time (and its date when it is not today); the UTC
@@ -9414,13 +9641,55 @@ def _project_scheduled_notification(observed: dict, situation: dict, language: s
     due = _verified_notification_due(situation)
     if due is not None:
         local = due.astimezone()
-        today = datetime.now().astimezone().date()
+        today = _local_now().date()
         projected["scheduledLocalTime"] = f"{local:%H:%M}"
         if local.date() == today + timedelta(days=1):
             projected["scheduledDay"] = "tomorrow" if language == "en" else "mañana"
         elif local.date() != today:
             projected["scheduledLocalDate"] = local.date().isoformat()
+        rings_in = _rings_in(local, user_text, language)
+        if rings_in is not None:
+            projected["ringsIn"] = rings_in
     return projected
+
+
+def _project_cancelled_notification(observed: dict, situation: dict, language: str) -> dict:
+    """M110 (DEV-F v4d F-w21-t5 «quítame la de las 6:40», F-w35-t4 «quítame la de las 5 y 10» → «Cancelé la alarma.»):
+    the cancelled alarm or reminder is told by its local time (and its day when it is not today), the one the
+    verified absence read was about; the task name and the UTC instants stay with the checks."""
+
+    projected: dict = {}
+    if isinstance(observed.get("canceled"), bool):
+        projected["canceled"] = observed["canceled"]
+    kind = observed.get("kind")
+    if kind in {"alarm", "reminder"}:
+        projected["kind"] = {"alarm": ("alarma", "alarm"), "reminder": ("recordatorio", "reminder")}[kind][
+            1 if language == "en" else 0
+        ]
+    clock = _cancelled_local_clock(observed)
+    if clock is not None:
+        projected["time"] = f"{clock:%H:%M}"
+        today = _local_now().date()
+        if clock.date() == today + timedelta(days=1):
+            projected["day"] = "tomorrow" if language == "en" else "mañana"
+        elif clock.date() != today:
+            projected["date"] = clock.date().isoformat()
+    elif type(observed.get("hour")) is int and 0 <= observed["hour"] <= 23:
+        minute = observed.get("minute") if type(observed.get("minute")) is int else 0
+        projected["time"] = f"{observed['hour']:02d}:{minute:02d}"
+    return projected
+
+
+def _cancelled_local_clock(observed: dict) -> datetime | None:
+    """The local moment the cancelled notification was due, from the verified read (its expected next run)."""
+
+    for key in ("expectedNextRunUtc", "nextRunUtc"):
+        value = observed.get(key)
+        if isinstance(value, str) and value:
+            parsed = _parse_core_utc(value)
+            if parsed is not None:
+                return parsed.astimezone()
+    return None
 
 
 def _local_clock_text(iso_utc: str) -> str | None:
@@ -9445,6 +9714,10 @@ def _observed_local_clocks(situation: dict) -> frozenset[str]:
     if situation.get("verified") is not True or situation.get("succeeded") is not True:
         return frozenset()
     observed = _merged_observed(situation)
+    if situation.get("operation") == "notification.cancel.at":
+        # M110: the cancelled one is told by its time («Cancelé la alarma de las 6:40.»).
+        projected = _project_cancelled_notification(observed, situation, "es")
+        return frozenset({projected["time"]}) if "time" in projected else frozenset()
     if situation.get("operation") == "notification.list":
         entries = observed.get("notifications")
         return frozenset(
@@ -14935,6 +15208,13 @@ def compose_visible_defect(
         or _DOTTED_OP.search(_WEB_HOST.sub("", without_user_identifiers)) is not None
     ):
         return "internal_code"
+    reported = _situation_from_facts(facts)
+    if intent in {"status", "error"} and reported.get("kind") != "conversation":
+        # M108: the report of a result names no contract token, and what was verified is never promised.
+        if visible_reply_leaks_a_contract_token(stripped, reported, identifier_sources):
+            return "internal_code"
+        if intent == "status" and _verified_effect(reported) and visible_reply_promises_the_act(stripped):
+            return "promised_effect"
     if re.search(r"</?think>", stripped, re.IGNORECASE) is not None:
         return "internal_code"
     if "el mensaje es" in stripped.casefold():
@@ -15281,6 +15561,8 @@ def compose_visible_defect(
         _looks_like_ambiguous_action(user_text)
         and "?" not in stripped
         and "¿" not in stripped
+        # M109 (DEV-D v4d D-p24-t4): the act said not done, with why, answers «do it» (twin of the App's check).
+        and not dialogue_slot.says_not_done_and_why(stripped)
     ):
         return "clarification_not_a_question"
     if (
@@ -20005,6 +20287,26 @@ class LlmRuntime:
         wrong_reply_language = _reply_uses_opposite_language(prose, response_language)
         # M88 (DEV-D v3r D-p24-t5): a go-ahead nothing was waiting for is answered by saying it was not done.
         go_ahead_draft_unmet = go_ahead_unmet and bool(content) and _go_ahead_reply_unmet(prose, text)
+
+        def refused_as_told_failure(value: str) -> bool:
+            """M109 (DEV-D v4d D-p23-t5 «Actually do English subtitles.» → «I cannot add English subtitles to the
+            movie.», D-p24-t5 → «I cannot sign you in or access your PC's account.»): talk that tells a failure is
+            refused by the App (looks_like_failure, twin ``talk_reply_tells_a_failure``), whose fallback composes with
+            no conversation. Judged here, the draft is written again with what to say instead. The App spares a limit
+            the turn decided, a knowledge question and a place no operation reaches; the twin spares a limit, every
+            question or ask to say, and that place (``effect_intent.out_of_world_request``)."""
+
+            return (
+                bool(value)
+                and conversation_kind not in {"unsupported", "unsupported_language"}
+                and presentation_shape not in _WRITTEN_CONTENT_SHAPES
+                and not code_asked
+                and not asks_or_has_words_said(text)
+                and not effect_intent.out_of_world_request(text)
+                and talk_reply_tells_a_failure(value, text)
+            )
+
+        app_refuses_told_failure = refused_as_told_failure(prose)
         # M95 (D52; DEV-D D-p28-t3): an unshaped talk answer states no figure from memory.
         figures_judged = conversation_kind in {None, "knowledge", "followup"} and presentation_shape is None and not code_asked
         memory_figures = (
@@ -20021,7 +20323,7 @@ class LlmRuntime:
             and not (
                 is_echo or system_prompt_echo
                 or unsupported_contract_failure or shaped_contract_failure or go_ahead_draft_unmet or memory_figures
-                or misquoted or repeats_last
+                or misquoted or repeats_last or app_refuses_told_failure
             )
         )
         if (
@@ -20035,6 +20337,7 @@ class LlmRuntime:
             or memory_figures
             or misquoted
             or repeats_last
+            or app_refuses_told_failure
         ):
             retry_payload = dict(payload)
             language_message = next(
@@ -20128,14 +20431,7 @@ class LlmRuntime:
                         )
                         if presentation_shape not in _WRITTEN_CONTENT_SHAPES
                         and conversation_reply_speaks_of_the_system(content, text, prior_user_requests)
-                        else (
-                            # M85 (DEV-D v3o D-p09-t3, D-w01-t2): the denial of a write nobody asked about.
-                            "En este turno no hiciste nada: no digas lo que hiciste ni lo que no hiciste. Contesta, "
-                            "en una sola frase, lo que la persona dice o pregunta, con lo que muestra la conversación."
-                            if response_language != "en"
-                            else "You did nothing in this turn: do not say what you did or did not do. Answer, in "
-                            "one sentence, what the person says or asks, with what the conversation shows."
-                        )
+                        else _own_write_denied_instruction(response_language)
                         if presentation_shape not in _WRITTEN_CONTENT_SHAPES
                         and conversation_world_claim(content, text, prior_user_requests) == "own_write_denied"
                         else _UNNAMED_WORK_HINT["en" if response_language == "en" else "es"]
@@ -20144,9 +20440,18 @@ class LlmRuntime:
                         else _UNREAD_SHOWTIMES_HINT["en" if response_language == "en" else "es"]
                         if presentation_shape not in _WRITTEN_CONTENT_SHAPES
                         and conversation_world_claim(content, text, prior_user_requests) == "unread_showtimes"
-                        else _CLAIMED_ABILITY_HINT["en" if response_language == "en" else "es"]
+                        else _claimed_ability_instruction(last_assistant, response_language)
                         if presentation_shape not in _WRITTEN_CONTENT_SHAPES
                         and conversation_world_claim(content, text, prior_user_requests) == "claimed_ability"
+                        # M109 (DEV-D v4d D-p24-t5 «That is confirmed to proceed.» after a question of BAXY's): a go-ahead
+                        # answered with the act settled or promised is told what to say instead — that it is not done
+                        # yet, and why.
+                        else _go_ahead_instruction(last_assistant, response_language)
+                        if presentation_shape not in _WRITTEN_CONTENT_SHAPES
+                        and conversation_world_claim(content, text, prior_user_requests) == "effect_claim"
+                        and dialogue_slot.gives_go_ahead(text)
+                        else _TOLD_FAILURE_HINT["en" if response_language == "en" else "es"]
+                        if app_refuses_told_failure
                         else (
                             # Uso real 2026-09-23 (tanda 2): «Te traigo una hamburguesa»,
                             # «Se añadirá.», «no hay queso en la lista». The generic
@@ -20378,7 +20683,7 @@ class LlmRuntime:
             kept = _without_memory_figures(final_content, remembered)
             first_only_remembered = (memory_figures or misquoted) and not (
                 is_echo or system_prompt_echo or unsupported_contract_failure or shaped_contract_failure
-                or wrong_reply_language or go_ahead_draft_unmet or repeats_last
+                or wrong_reply_language or go_ahead_draft_unmet or repeats_last or app_refuses_told_failure
             )
             if not kept and first_only_remembered and final_content != content:
                 # M104 (reserve v3z en14787 «what is the difference between roman and grigorean calendar» → no reply):
@@ -20443,12 +20748,16 @@ class LlmRuntime:
                 )
             )
             or (go_ahead_unmet and _go_ahead_reply_unmet(final_prose, text))
+            # M109: a repair that still tells a failure goes to the turn's recovery, not to the App's refusal.
+            or refused_as_told_failure(final_prose)
         ):
             failure_reason = (
                 "empty"
                 if not final_content
                 else "go_ahead_not_done"
                 if go_ahead_unmet and _go_ahead_reply_unmet(final_prose, text)
+                else "told_failure"
+                if refused_as_told_failure(final_prose)
                 else "wrong_language"
                 if _reply_uses_opposite_language(final_prose, response_language)
                 else "echo"
@@ -25731,14 +26040,6 @@ class LlmRuntime:
                 return "imperative_echo"
             if (
                 intent == "status"
-                and situation.get("operation") in {"browser.navigate", "browser.navigate.named", "streaming.navigate"}
-                and situation.get("verified") is True
-                and situation.get("succeeded") is True
-                and _PROMISED_NAVIGATION.match(candidate) is not None
-            ):
-                return "promised_effect"
-            if (
-                intent == "status"
                 and situation.get("verified") is True
                 and situation.get("succeeded") is True
                 and _ACTION_ATTRIBUTED_TO_USER.search(candidate) is not None
@@ -25915,7 +26216,40 @@ class LlmRuntime:
                         "deterministic_fallback", deterministic, deterministic, response, "", True,
                     )
                     return deterministic
+            question = talk_clarification_floor() if drafts_rejected else ""
+            if question:
+                record_stage("clarification_fallback", question, question, response, "", True)
+                return question
             return ""
+
+        def talk_clarification_floor() -> str:
+            """M109 (DEV-D v4d D-p23-t5, D-p24-t5: the App's conversation fallback, three drafts vetoed, no final): talk
+            in a turn that ran nothing, whose every draft was refused, asks the person the one thing missing — the
+            mind's own recovery floor (``__main__._recover_failed_turn``), composed from the same conversation (its
+            last message and the person's earlier ones). Never a fixed sentence: empty when that question cannot be
+            written either."""
+
+            if intent != "conversation" or str(situation.get("kind") or intent) != "conversation" or any(
+                situation.get(key) for key in ("operation", "reason", "steps")
+            ):
+                return ""
+            remaining = None if compose_deadline is None else compose_deadline - time.monotonic()
+            if remaining is not None and remaining <= 0:
+                return ""
+            asked = {
+                key: value for key, value in facts.items()
+                if key in {"context", "priorRequests", "reading", "traceId", "capabilities"}
+            }
+            asked["situation"] = json.dumps(
+                {"kind": "clarification", "cause": "ambiguous_request", "polarity": "pending"}, ensure_ascii=False,
+            )
+            try:
+                question = self.compose_user_message(
+                    user_text, "clarification", asked, timeout=remaining, said=said, _drafted_only=True,
+                ).strip()
+            except (OSError, TimeoutError, ValueError):
+                return ""
+            return question if question.endswith("?") and not _says_the_person_back(question, said or user_text) else ""
 
         try:
             response = post(payload)
@@ -26679,9 +27013,16 @@ class LlmRuntime:
                     )
                 ),
                 "promised_effect": (
-                    "It already happened: say you opened the site, in the past."
+                    (
+                        "It already happened: say you opened the site, in the past."
+                        if response_language == "en"
+                        else "Ya ocurrió: di que abriste el sitio, en pasado."
+                    )
+                    if situation.get("operation") in {"browser.navigate", "browser.navigate.named", "streaming.navigate"}
+                    # M108: any verified act, told done, never promised.
+                    else "It already happened and was verified: say what you did, in the past, promising nothing."
                     if response_language == "en"
-                    else "Ya ocurrió: di que abriste el sitio, en pasado."
+                    else "Ya ocurrió y está verificado: di lo que hiciste, en pasado, sin prometer nada."
                 ),
                 "action_attributed_to_user": (
                     "You did it, not the person: say what you did, in the first person."
@@ -27149,7 +27490,11 @@ class LlmRuntime:
                     "Contesta con lo que sabes o di llanamente que no lo sabes."
                 ),
                 "effect_claim": (
-                    "Nothing ran this turn: do not say you did, are doing or will do anything. If the person asked "
+                    # M109 (DEV-D v4d D-p24-t5 «That is confirmed to proceed.» after a question of BAXY's: «The plan is
+                    # confirmed to proceed.» three times under the generic hint): a go-ahead is told what to say.
+                    _go_ahead_instruction(str(facts.get("context") or ""), response_language)
+                    if dialogue_slot.gives_go_ahead(said or user_text)
+                    else "Nothing ran this turn: do not say you did, are doing or will do anything. If the person asked "
                     "for it, say in one sentence that you did not do it."
                     if response_language == "en"
                     else "En este turno no se ejecutó nada: no digas que hiciste, haces o harás algo. Si la persona "
@@ -27178,7 +27523,7 @@ class LlmRuntime:
                 # M85 (DEV-D v3o D-p27-t1).
                 "unnamed_work": _UNNAMED_WORK_HINT["en" if response_language == "en" else "es"],
                 "unread_showtimes": _UNREAD_SHOWTIMES_HINT["en" if response_language == "en" else "es"],
-                "claimed_ability": _CLAIMED_ABILITY_HINT["en" if response_language == "en" else "es"],
+                "claimed_ability": _claimed_ability_instruction(str(facts.get("context") or ""), response_language),
                 # M85 (DEV-D v3o D-p32-t2, D-p36-t2).
                 "content_shape": _content_shape_instruction(user_text, response_language),
                 # M85 (DEV-D v3o D-p27-t5).
@@ -27196,13 +27541,7 @@ class LlmRuntime:
                     "una frase tuya."
                 ),
                 # M85 (DEV-D v3o D-p09-t3, D-w01-t2).
-                "own_write_denied": (
-                    "Nothing ran this turn: do not say what you did or did not do. Answer, in one sentence, what the "
-                    "person says or asks."
-                    if response_language == "en"
-                    else "En este turno no se ejecutó nada: no digas lo que hiciste ni lo que no hiciste. Contesta, en "
-                    "una frase, lo que la persona dice o pregunta."
-                ),
+                "own_write_denied": _own_write_denied_instruction(response_language),
                 **dict.fromkeys(
                     ("unread_records", "unobserved_answer"),
                     "Nothing of the person's was read this turn: do not say what their lists, notes, alarms, "

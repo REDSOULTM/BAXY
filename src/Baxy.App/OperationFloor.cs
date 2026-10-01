@@ -22,6 +22,58 @@ internal static class OperationFloor
 
     private static readonly Lazy<JsonObject> Data = new(Load);
 
+    private static readonly string[] Clitics = ["nos", "les", "los", "las", "me", "te", "se", "lo", "la", "le"];
+
+    private static readonly Lazy<IReadOnlySet<string>> Infinitives = new(LoadInfinitives);
+
+    /// <summary>
+    /// M108 twin of operation_floor.spanish_infinitives: the verb of every operation's plain clause («apagar»,
+    /// «abrir», «buscarlo» → «buscar»). The final gate reads a first-person future of any of them as an act promised
+    /// (UserMessagePolicy.PromisesTheAct).
+    /// </summary>
+    internal static IReadOnlySet<string> SpanishInfinitives => Infinitives.Value;
+
+    private static HashSet<string> LoadInfinitives()
+    {
+        var verbs = new HashSet<string>(StringComparer.Ordinal);
+        if (Data.Value["operations"] is not JsonObject operations)
+        {
+            return verbs;
+        }
+
+        foreach ((string _, JsonNode? node) in operations)
+        {
+            if (node is not JsonObject entry)
+            {
+                continue;
+            }
+
+            var clauses = new List<string?> { (entry["es"] as JsonArray)?[0]?.GetValue<string>() };
+            if (entry["variants"] is JsonObject variants && variants["values"] is JsonObject values)
+            {
+                clauses.AddRange(values.Select(pair => ((pair.Value as JsonObject)?["es"] as JsonArray)?[0]?.GetValue<string>()));
+            }
+
+            foreach (string? clause in clauses)
+            {
+                if (string.IsNullOrWhiteSpace(clause))
+                {
+                    continue;
+                }
+
+                string verb = clause.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
+                string? clitic = Clitics.FirstOrDefault(c =>
+                    verb.EndsWith(c, StringComparison.Ordinal)
+                    && verb[..^c.Length] is { } stem
+                    && (stem.EndsWith("ar", StringComparison.Ordinal) || stem.EndsWith("er", StringComparison.Ordinal)
+                        || stem.EndsWith("ir", StringComparison.Ordinal)));
+                verbs.Add(clitic is null ? verb : verb[..^clitic.Length]);
+            }
+        }
+
+        return verbs;
+    }
+
     private static JsonObject Load()
     {
         using Stream stream = typeof(OperationFloor).Assembly.GetManifestResourceStream(ResourceName)
@@ -60,7 +112,7 @@ internal static class OperationFloor
     }
 
     /// <summary>The sentence for one operation result or one mission, or null when there is no action to tell.</summary>
-    internal static string? Final(JsonObject situation, bool english)
+    internal static string? Final(JsonObject situation, bool english, TimeProvider? clock = null)
     {
         ArgumentNullException.ThrowIfNull(situation);
         JsonObject templates = Templates(english);
@@ -68,7 +120,7 @@ internal static class OperationFloor
         string text;
         if (cause is "mission_completed" or "mission_failed")
         {
-            text = Mission(situation, cause, english, templates);
+            text = Mission(situation, cause, english, templates, clock ?? TimeProvider.System);
         }
         else if (Text(situation, "kind") != "operation")
         {
@@ -77,14 +129,14 @@ internal static class OperationFloor
         }
         else
         {
-            text = Step(situation, english, templates);
+            text = Step(situation, english, templates, clock ?? TimeProvider.System);
         }
 
         return Sentence(text);
     }
 
     private static string Mission(
-        JsonObject situation, string cause, bool english, JsonObject templates)
+        JsonObject situation, string cause, bool english, JsonObject templates, TimeProvider clock)
     {
         List<JsonObject> steps = DecodedSteps(situation["steps"]);
         var told = new List<string>();
@@ -96,7 +148,7 @@ internal static class OperationFloor
                 continue;
             }
 
-            string clause = Step(step, english, templates);
+            string clause = Step(step, english, templates, clock);
             if (clause.Length > 0)
             {
                 told.Add(clause);
@@ -110,7 +162,7 @@ internal static class OperationFloor
 
         JsonObject? reason = Decoded(situation["reason"]) as JsonObject;
         string failed = reason is not null && !string.IsNullOrEmpty(Text(reason, "operation"))
-            ? Step(reason, english, templates)
+            ? Step(reason, english, templates, clock)
             : string.Empty;
         if (told.Count == 0)
         {
@@ -127,7 +179,7 @@ internal static class OperationFloor
         return Joined(told, templates) + T(templates, uncertain ? "and" : "but") + failed;
     }
 
-    private static string Step(JsonObject step, bool english, JsonObject templates)
+    private static string Step(JsonObject step, bool english, JsonObject templates, TimeProvider clock)
     {
         JsonObject? entry = Entry(step);
         if (entry is null)
@@ -159,7 +211,7 @@ internal static class OperationFloor
                 + ObjectNamed(entry, observed, language, templates, target: null);
             if (Flag(entry, "when") == true)
             {
-                clause += When(step, observed, templates);
+                clause += When(step, observed, templates, clock);
             }
 
             return T(templates, "done").Replace(
@@ -262,7 +314,7 @@ internal static class OperationFloor
         return string.Empty;
     }
 
-    private static string When(JsonObject step, JsonObject observed, JsonObject templates)
+    private static string When(JsonObject step, JsonObject observed, JsonObject templates, TimeProvider clock)
     {
         DateTimeOffset? due = Utc(Text(observed, "dueUtc"));
         if (Text(step, "operation") == "notification.schedule")
@@ -276,15 +328,15 @@ internal static class OperationFloor
         }
 
         DateTimeOffset local = instant.ToLocalTime();
-        DateTime today = DateTimeOffset.Now.ToLocalTime().Date;
+        DateTime today = clock.GetUtcNow().ToLocalTime().Date;
         string article = T(templates, local.Hour == 1 ? "articleOne" : "article");
-        string clock = local.ToString("HH:mm", CultureInfo.InvariantCulture);
+        string hhmm = local.ToString("HH:mm", CultureInfo.InvariantCulture);
         string said = local.Date == today
             ? T(templates, "whenToday")
             : local.Date == today.AddDays(1) ? T(templates, "whenTomorrow") : T(templates, "whenDate");
         said = said
             .Replace("{article}", article, StringComparison.Ordinal)
-            .Replace("{clock}", clock, StringComparison.Ordinal)
+            .Replace("{clock}", hhmm, StringComparison.Ordinal)
             .Replace("{day}", local.Day.ToString(CultureInfo.InvariantCulture), StringComparison.Ordinal)
             .Replace("{month}", (string)((JsonArray)templates["months"]!)[local.Month - 1]!, StringComparison.Ordinal);
         return " " + Regex.Replace(said.Trim(), @"\s+", " ", RegexOptions.CultureInvariant);

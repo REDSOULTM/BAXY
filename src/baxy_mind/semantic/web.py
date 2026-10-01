@@ -1257,6 +1257,11 @@ _OWN_EVENT_SAID = (
 )
 
 
+# Spanish clitics before their verb; «me» is English too («show me Ana's photos»), so it counts only in Spanish.
+_CLITIC_BEFORE_A_VERB = frozenset({"te", "se", "nos", "os", "le", "les"})
+_SPANISH_FUNCTION_WORD = r"\b(?:que|cuant[oa]s?|como|donde|cuando|por|para|hoy|el|los|las|del|y|en|una?|mis?|es|son|hay)\b"
+
+
 def _bare_given_name(folded: str) -> bool:
     if _has(folded, _WORK_OR_FAME):
         return False
@@ -1264,6 +1269,14 @@ def _bare_given_name(folded: str) -> bool:
     bare = [re.sub(r"['’]s$", "", word) for word in words]
     for index, name in enumerate(bare):
         if name not in GIVEN_NAMES or (index and (bare[index - 1] in _NAME_TITLES or bare[index - 1] in GIVEN_NAMES)):
+            continue
+        if index and (
+            bare[index - 1] in _CLITIC_BEFORE_A_VERB
+            or (bare[index - 1] == "me" and _has(folded, _SPANISH_FUNCTION_WORD))
+        ):
+            # M112 (DEV-F v4d w47-t3 «¿cuántos dólares me dan hoy por cada euro?» → the exchange rate asked as the
+            # person's own data): a word right after «me», «te», «le», «nos», «se» is the verb they go with («me dan»),
+            # never a person's name.
             continue
         following = bare[index + 1] if index + 1 < len(bare) else None
         if words[index] != name or following is None:
@@ -3685,6 +3698,24 @@ _NOT_A_PUBLIC_LOOKUP = re.compile(
 )
 
 
+# M108 (layer A, real log:86 «hazme un triangulo con las estaciones del ano» → web.search; the replay before M100–M104
+# answered it in talk): the public-lookup guard (a model) read a piece to make as public information. A figure, a
+# drawing or a piece of verse or fiction asked to be made («hazme un triángulo con…», «dibújame una estrella…», «make
+# me a pyramid with…», «escribe un poema…») is made by BAXY in the conversation, never looked up; a known one named
+# with «la/el/the» («la letra de la canción…», «busca el poema de Neruda») still is. Folded.
+_COMPOSED_PIECE = re.compile(
+    r"^[¿¡\s]*(?:(?:por\s+favor|porfa|please)\s*,?\s*)?(?:(?:me\s+)?(?:puedes|podrias|can\s+you|could\s+you)\s+)?"
+    r"(?:hazme|haceme|haz|hace|has|hacer(?:me)?|armame|arma|creame|crea|crear(?:me)?|dibujame|dibuja|dibujar(?:me)?|"
+    r"inventame|inventa|componme|compone|escribeme|escribime|escribe|make(?:\s+me)?|draw(?:\s+me)?|create|compose|"
+    r"write(?:\s+me)?|invent|come\s+up\s+with)\s+"
+    r"(?:un|una|unos|unas|otro|otra|a|an|some|another)\s+(?:\w+\s+)?"
+    r"(?:triangulos?|piramides?|circulos?|cuadrados?|rombos?|estrellas?|dibujos?|figuras?|acrosticos?|poemas?|"
+    r"poesias?|versos?|cuentos?|relatos?|fabulas?|canciones?|cancion|rimas?|haikus?|chistes?|adivinanzas?|trabalenguas|"
+    r"triangles?|pyramids?|circles?|squares?|diamonds?|stars?|drawings?|figures?|shapes?|acrostics?|poems?|verses?|"
+    r"stor(?:y|ies)|tales?|fables?|songs?|rhymes?|jokes?|riddles?|limericks?|tongue\s+twisters?)\b"
+)
+
+
 # M81 (DEV-D v3m D-p34-t3 «¿Cómo podría encontrar un listado de cápsulas del tiempo conocidas?» → «No encontré…»
 # while the read held Wikipedia's category of them): where to find something is answered by naming where it is.
 _WHERE_TO_FIND = re.compile(
@@ -3755,7 +3786,11 @@ def not_a_public_lookup(objective: str) -> bool:
     # any mail from amazon» went to web.search: the person's received mail is
     # theirs, and a question about it never leaves the PC.
     return (
-        _NOT_A_PUBLIC_LOOKUP.search(folded) is not None
+        # M108: a message of punctuation alone («?», «¿?», «...») names nothing to look up; after a reply it asks what
+        # BAXY meant, which is said in talk.
+        re.search(r"\w", folded) is None
+        or _COMPOSED_PIECE.search(folded) is not None
+        or _NOT_A_PUBLIC_LOOKUP.search(folded) is not None
         # M81: unfolded, so «mamá» keeps the accent that tells it from «mama».
         or names_own_data(str(objective or ""))
         or _latest_email_domain(folded)

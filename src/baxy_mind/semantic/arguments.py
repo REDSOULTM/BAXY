@@ -17,6 +17,7 @@ from urllib.parse import urlencode, urlsplit
 from .. import effect_intent
 from . import lexicon as semantic_lexicon
 from .catalog import GameCatalogIndex, resolve_game_catalog_app_id
+from .grammar import titled_note_with_content
 from .notes import agenda_event_request, said_repetition, stated_event_reminder, task_completion_title
 from .patterns import (
     application_shown_media_name,
@@ -25,7 +26,7 @@ from .patterns import (
 )
 from .temporal import (
     SpokenClock, agenda_window, clock_elsewhere, moment_then_title_reminder, plural_alarm_cancellation, spoken_date,
-    spoken_window,
+    spoken_window, trailing_day,
 )
 from .web import news_lookup_query, public_query_body
 from .windows import start_menu_request
@@ -515,17 +516,20 @@ def _explicit_wifi_profile_arguments(evidence: str) -> dict[str, object] | None:
 _OFFSET_FROM_ANOTHER_MOMENT = r"\s+(?:antes|despues|before|after|earlier\s+than|later\s+than)\b"
 
 
+_ALARM_NOUN = r"\b(?:alarm|alarma|alerta|alert|timer|temporizador|countdown|cuenta\s+regresiva)\b"
+
+
 def _explicit_notification_schedule_arguments(
     evidence: str,
 ) -> dict[str, object] | None:
     """Extract one audible alarm/timer with a single bounded time literal."""
 
-    folded = effect_intent._fold(evidence)
+    # M110 (DEV-F v4d F-w45-t1 «gimme a 25 minute countdown», restated «Set a 25-minute countdown for the pizza.» →
+    # «When would you like the alarm to go off…?»): a countdown is a timer, and «25-minute» is its length.
+    folded = re.sub(r"(?<=\d)-(?=[a-z])", " ", effect_intent._fold(evidence))
     wake_request = effect_intent._wake_alarm_request(folded)
     count_request = effect_intent._count_down_request(folded)
-    if not wake_request and not count_request and not re.search(
-        r"\b(?:alarm|alarma|alerta|alert|timer|temporizador)\b", folded
-    ):
+    if not wake_request and not count_request and not re.search(_ALARM_NOUN, folded):
         return None
     relative_pattern = (
         rf"\b(?P<duration>{effect_intent._RELATIVE_DURATION_PATTERN})\b"
@@ -544,9 +548,7 @@ def _explicit_notification_schedule_arguments(
     if len(relative) + len(clocks) != 1 or (clocks and not clocks[0].resolved):
         return None
     due_literal = (relative[0].group("duration") if relative else clocks[0].literal).strip()
-    noun = re.search(
-        r"\b(?:alarm|alarma|alerta|alert|timer|temporizador)\b", evidence, re.IGNORECASE
-    )
+    noun = re.search(_ALARM_NOUN, evidence, re.IGNORECASE)
     if noun is None and not wake_request and not count_request:
         return None
     title_start = noun.start() if noun is not None else 0
@@ -580,7 +582,7 @@ def _explicit_relative_reminder_arguments(
     """Preserve one closed relative reminder's literal time and title."""
 
     duration = (
-        rf"(?:(?:(?:en|in|dentro\s+de|within)\s+){effect_intent._RELATIVE_DURATION_PATTERN}|"
+        rf"(?:(?:(?:en|in|dentro\s+de|within)\s+){effect_intent._RELATIVE_DURATION_PATTERN}(?:\s+m[aá]s\b(?!\s+o\s+menos))?|"
         rf"{effect_intent.CLOCK_PHRASE})"
     )
     # The person's own spelling reaches this reader: «recuérdame», «avísame».
@@ -634,6 +636,10 @@ def _explicit_relative_reminder_arguments(
     due, title = readings.pop()
     if not due or not title:
         return None
+    beside = trailing_day(title) if re.match(effect_intent.CLOCK_PHRASE, effect_intent._fold(due)) else None
+    if beside is not None:
+        # M110: «…para pagar la luz mañana a las 8:00»: the day before the clock is the moment's, not the title's.
+        title, due = beside[0], f"{beside[1]} {due}"
     return {"dueUtc": due, "title": title}
 
 
@@ -916,9 +922,10 @@ def _explicit_arguments_from_evidence(
         return {**adjustment, "setting": "brightness"} if adjustment is not None else None
 
     if operation == "system.settings.set":
-        airplane = effect_intent.airplane_mode_request(evidence)
-        if airplane is not None:
-            return {"setting": "airplane_mode", "value": airplane}
+        # REOPEN1957 H0107 airplane mode; M111 (DEV-F v4d F-w56-t3) the night light and do-not-disturb, switched the same way.
+        switched = effect_intent.setting_switch_request(evidence)
+        if switched is not None:
+            return {"setting": switched[0], "value": switched[1]}
         level = effect_intent._literal_brightness_level(evidence)
         return {"setting": "brightness", "value": level} if level is not None else None
 
@@ -1009,8 +1016,9 @@ def _explicit_arguments_from_evidence(
         return {"client": located[0], "name": located[1]} if located is not None else None
 
     if operation == "message.draft":
-        # MSG1837: channel, recipient and text are the person's literal.
-        draft = effect_intent.message_draft_request(evidence)
+        # MSG1837: channel, recipient and text are the person's literal. M111: a draft said as one left written, or
+        # with the order not to send it, is read without that order.
+        draft = effect_intent.message_left_written_request(evidence) or effect_intent.message_draft_request(evidence)
         return {"channel": draft[0], "recipient": draft[1], "text": draft[2]} if draft is not None else None
 
     if operation == "email.send":
@@ -1297,7 +1305,7 @@ def _explicit_arguments_from_evidence(
             r"(?:(?:la|the)\s+(?:serie|series|pel[ií]cula|peli|movie|film)\s+)?"
             r"(?P<title>.+?)\s+"
             r"(?:en|in|on|desde|from|through|usando|using)\s+"
-            r"(?:netflix|nerflix|netlix|netfix|netflis|neflix|"
+            r"(?:netflix|nerflix|netlix|netfix|netflis|neflix|netflx|netflex|nexflix|"
             r"disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|dinsey|dizney)\b",
             clause_literal(evidence),
             re.IGNORECASE,
@@ -1316,6 +1324,22 @@ def _explicit_arguments_from_evidence(
 
     if operation == "media.play.query":
         return _explicit_live_media_query_arguments(evidence)
+
+    if operation == "media.play.exact":
+        # M111 (DEV-F v4d F-s023 «put on Wuthering Heights by Kate Bush» → «What is the title of the song…?»): the
+        # song named is the title Spotify's exact selection looks for, without the artist after «by»/«de»; a version
+        # of it («la en vivo», «the acoustic one») is not a title and stays with the extraction.
+        if re.search(_SONG_VERSION, folded):
+            return None
+        quoted = re.search(r"[«“\"](?P<title>[^»”\"]{1,200})[»”\"]", evidence)
+        if quoted is not None:
+            return {"provider": "spotify", "title": quoted.group("title").strip()}
+        named = _explicit_live_media_query_arguments(evidence)
+        query = named.get("query") if isinstance(named, dict) else None
+        if not isinstance(query, str):
+            return None
+        title = _ARTIST_AFTER_TITLE.sub("", query).strip(" .,")
+        return {"provider": "spotify", "title": title} if title else None
 
     if operation == "media.play.youtube":
         # MUSIC1553: the person's own words name what to play; the provider
@@ -1506,6 +1530,10 @@ def _explicit_arguments_from_evidence(
     if operation == "task.resolve.exact" and (completed := task_completion_title(evidence)) is not None:
         # M76 (DEV-D v3l D-w17-t2): the task marked done is found by the title the person wrote.
         return {"title": completed}
+
+    if operation == "note.create" and (titled := titled_note_with_content(evidence)) is not None:
+        # M111 (DEV-F v4d F-s021): «crea una nota que se llame X y pon ahí: Y» names the note and fills it.
+        return {"title": titled[0], "content": titled[1]}
 
     if operation == "note.create":
         # This closed form carries both required literals in one atomic effect
@@ -1864,6 +1892,13 @@ def _explicit_arguments_from_evidence(
         if reminder is not None:
             return {**reminder, "kind": "reminder", "recurrence": repetition}
         alarm = _explicit_notification_schedule_arguments(evidence)
+        if alarm is None and repetition is None and re.search(r"\b(?:recordatorios?|reminders?)\b", folded):
+            # M110 (DEV-F v4d F-w59-t2 «yeah sure mañana at 6:30 pm» restated «Pon un recordatorio mañana a las 6:30
+            # p. m. para la lista de la compra.» → titled «yeah sure mañana», today at 18:30): a reminder asked as a
+            # notification is read by the reminder's own readers, its moment and what it is for.
+            reminder = _explicit_arguments_from_evidence("reminder.create", evidence, application_names, game_catalog)
+            if reminder is not None and set(reminder) == {"dueUtc", "title"}:
+                return {**reminder, "kind": "reminder"}
         return {**alarm, "recurrence": repetition} if alarm is not None and repetition is not None else alarm
 
     if operation == "audio.microphone.mute":
@@ -2042,6 +2077,15 @@ def _explicit_arguments_from_evidence(
             query = query_match.group("query").strip()
             if query:
                 return {"folder": "all_known", "query": query}
+        named_file = said_file_name(evidence)
+        if named_file is not None:
+            # M111 (DEV-F v4d F-s020 «busca la cotizacion del depto … en documentos creo que se llamaba cotizacion
+            # algo» → «¿Cuál es el nombre exacto…?»): the name the person says the file has is what is searched, in the
+            # known folder named, else in all of them.
+            folder = next(
+                (canonical for canonical, pattern in _KNOWN_FOLDER_NAMED if re.search(pattern, folded)), "all_known",
+            )
+            return {"folder": folder, "query": named_file}
 
     if operation == "audio.volume":
         if (
@@ -2235,9 +2279,9 @@ def _canonical_due_utc(
     relative = re.fullmatch(
         rf"(?:(?:en|in|dentro de|within)\s+)?"
         r"(?:(?P<half>media\s+hora|half\s+an?\s+hour)|"
-        rf"(?P<number>{_TEMPORAL_NUMBER_PATTERN})\s*"
+        rf"(?P<number>{_TEMPORAL_NUMBER_PATTERN})[\s-]*"
         rf"(?P<unit>{effect_intent._RELATIVE_DURATION_UNIT}))"
-        r"(?:\s+(?:from now|desde ahora))?",
+        r"(?:\s+mas)?(?:\s+(?:from now|desde ahora))?",
         folded_value,
         re.IGNORECASE,
     )
@@ -2469,10 +2513,51 @@ _WATCH_NAMED_TITLE = re.compile(
 
 # The services of streaming.play.named, as the reader of a named title spells them (VIDEO1921, VIDEO1947).
 _STREAMING_SERVICE_SAID = re.compile(
-    r"\b(?:netflix|nerflix|netlix|netfix|netflis|neflix|disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|"
+    r"\b(?:netflix|nerflix|netlix|netfix|netflis|neflix|netflx|netflex|nexflix|disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|"
     r"dinsey|dizney)\b",
     re.IGNORECASE,
 )
+
+
+# M111: a version of a song asked for («la versión en vivo», «the acoustic one»), and the artist named after its title
+# («… by Kate Bush», «… de Natalia Lafourcade»: a capitalised name, so «Canción de cuna» keeps its «de»).
+_SONG_VERSION = (
+    r"\b(?:version|versiones|en\s+vivo|live|acustic[ao]|acoustic|de\s+estudio|studio|remix|remasterizad[ao]|"
+    r"remastered|unplugged|cover|karaoke|instrumental)\b"
+)
+_ARTIST_AFTER_TITLE = re.compile(
+    r"\s+(?:by|de|del|of)\s+(?:(?:los|las|la|el|the)\s+)?[A-ZÁÉÍÓÚÑ][\w'’.&-]*"
+    r"(?:\s+(?:[A-ZÁÉÍÓÚÑ][\w'’.&-]*|y|and|&|de|del|la|los|las|the))*\s*$",
+)
+
+
+# M111 (DEV-F v4d F-s020 «… creo que se llamaba cotizacion algo»): the name a file is said to have, up to four words,
+# without the «algo» / «something» that leaves its end open.
+_SAID_FILE_NAME = re.compile(
+    r"\b(?:se\s+llama(?:ba)?|se\s+llamar[ií]a|llamad[oa]|titulad[oa]|(?:is|was)\s+called|called|named|titled)\s+"
+    r"[«\"“']?(?P<name>[^\s«»\"“”',;:!?]+(?:\s+(?!(?:algo|something|or|o|y|and|creo|i)\b)[^\s«»\"“”',;:!?]+){0,3})"
+    r"[»\"”']?(?:\s+(?:o\s+)?(?:algo(?:\s+as[ií])?|something(?:\s+like\s+that)?|or\s+something|creo|i\s+think))?"
+    r"(?:\s+(?:en|in)\s+(?:(?:mis|my|la|el|las|the)\s+)?(?:carpeta\s+(?:de\s+)?)?"
+    r"(?:documentos|documents|descargas|downloads|escritorio|desktop)(?:\s+folder)?)?"
+    r"[\s.!?]*$",
+    re.IGNORECASE,
+)
+
+
+def said_file_name(text: str) -> str | None:
+    """The name the person says a file has («se llamaba cotización algo» → «cotización»), or None."""
+
+    match = _SAID_FILE_NAME.search(text.strip())
+    if match is None:
+        return None
+    name = match.group("name").strip(" .")
+    return name if name and _fold_text(name) not in {"algo", "something", "asi", "eso", "that", "it"} else None
+
+
+def _fold_text(text: str) -> str:
+    return "".join(
+        ch for ch in unicodedata.normalize("NFKD", text.casefold()) if not unicodedata.combining(ch)
+    )
 
 
 # M76 (DEV-D v3l D-w15-t2 «vale, resumemelo en tres puntos» after «el informe trimestral que guardé en Documentos» →

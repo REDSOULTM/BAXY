@@ -405,6 +405,7 @@ def _introduced_spans(
     named_words = said_words + re.findall(r"[a-z0-9]+", fold("\n".join(world)))
     named_set = set(named_words)
     stems = {word[:4] for word in named_words}
+    named_by_sound = {word.replace("y", "i") for word in named_set if len(word) >= 4}
     glued = {first + second for first, second in zip(named_words, named_words[1:])}
     numbers = _numbers_said(said_text) | {Fraction(now.year)}
     numbers |= {Fraction(value) for pattern, value in _LEVEL_WORDS if pattern.search(said_text)}
@@ -479,10 +480,18 @@ def _introduced_spans(
         bare = re.sub(r"[-'’]", "", key)
         if bare[:4] in stems or bare in glued or bare in named_set:
             continue
+        if bare.replace("y", "i") in named_by_sound:
+            # M110 (DEV-F v4d F-w03-t4 «qué hora es en Tokyo» restated «…en Tokio?», trimmed to «¿Qué hora es
+            # ahora?» and the clock of here was read): a name spelled with «i» for «y» is the name said.
+            continue
         if len(bare) >= 2 and any(
             len(said_word) >= len(bare) + 2 and said_word[0] == bare[0] and _subsequence(bare, said_word)
             for said_word in named_set
         ):
+            continue
+        if len(bare) >= 4 and any(_one_transposition(bare, said_word) for said_word in said_set):
+            # M111 (DEV-F v4d F-s003 «abreme el wrod» restated «Abre Word.» → asked which application): two letters
+            # swapped are the same word mistyped or misheard (owner rule 2026-09-19: BAXY fixes what was said wrong).
             continue
         # «Ñuñoa» for «ñuñoa»: the name continues a said name through «de/del».
         back = index - 1
@@ -493,6 +502,20 @@ def _introduced_spans(
                 continue
         spans.append((word.start(), word.end(), text))
     return sorted(spans)
+
+
+def _one_transposition(word: str, said: str) -> bool:
+    """``word`` is ``said`` with two neighbouring letters swapped («word» / «wrod»)."""
+
+    if len(word) != len(said) or word == said:
+        return False
+    differ = [index for index, (first, second) in enumerate(zip(word, said)) if first != second]
+    return (
+        len(differ) == 2
+        and differ[1] == differ[0] + 1
+        and word[differ[0]] == said[differ[1]]
+        and word[differ[1]] == said[differ[0]]
+    )
 
 
 def _trimmed(request: str, spans: list[tuple[int, int, str]]) -> str | None:
