@@ -3823,11 +3823,37 @@ def _unschedulable_time_question(
             f"several days ({days}) at {clock}{passed}; say that first; the time, the kind and what it is for were "
             "already said, never ask them"
         )
-    return llm.formulate_missing_argument_question(
-        objective, "", tool, ("dueUtc",),
-        **({"response_language": response_language} if response_language else {}),
-        ask_as={"dueUtc": ask},
-    )
+    language = {"response_language": response_language} if response_language else {}
+    question = llm.formulate_missing_argument_question(objective, "", tool, ("dueUtc",), **language, ask_as={"dueUtc": ask})
+    several = bool(unschedulable.ahead) or len(unschedulable.passed) != 1
+    if question and not _says_why_unschedulable(question, several=several):
+        # M93 (DEV-D v3u D-s104 at 19:23 → «¿A qué día o hora diferente te gustaría que suene la alarma?»): the question
+        # did not say that 18:00 had passed, and «diferente» of what was never said. Asked again once, told so.
+        retried = llm.formulate_missing_argument_question(
+            objective, "", tool, ("dueUtc",), **language,
+            ask_as={"dueUtc": f"{ask}. Your question «{question}» did not say why: open with that short reason, "
+                              "then ask"},
+        )
+        if retried:
+            question = retried
+    return question
+
+
+# M93: a question about when that says why the moment said cannot hold (folded).
+_UNSCHEDULABLE_PASSED = (
+    r"\bya\s+pas\w*|\bpas(?:o|aron|ado|ada|ados|adas)\b|\balready\b|\bpassed\b|\bis\s+(?:past|over|gone)\b|"
+    r"\bhas\s+gone\b|\bearlier\s+than\s+now\b"
+)
+_UNSCHEDULABLE_SEVERAL = (
+    r"\bvari[oa]s\s+dias\b|\bmas\s+de\s+un\s+dia\b|\bun\s+solo\b|\bsolo\s+(?:un|una|puede)\b|\bsolo\s+suena\b|"
+    r"\bseveral\s+days\b|\bmore\s+than\s+one\s+day\b|\bsingle\b|\bonly\s+(?:one|once|rings)\b|\bone\s+(?:day|time|moment)\b"
+)
+
+
+def _says_why_unschedulable(question: str, *, several: bool) -> bool:
+    folded = read_fold(question)
+    pattern = _UNSCHEDULABLE_PASSED + ("|" + _UNSCHEDULABLE_SEVERAL if several else "")
+    return re.search(pattern, folded) is not None
 
 
 _TASK_CHANGE_FIELDS = ("title", "details", "due")
@@ -6415,6 +6441,9 @@ def _recovery_question_is_valid(
         return False
     # M85 (DEV-D v3o D-p04-t1 «Dónde?» → «¿Dónde?»): the person's own question said back asks nothing.
     if objective and dialogue_slot.says_the_message_back(value, objective):
+        return False
+    # M93 (DEV-D v3u D-s053 «¿Miguel sigue viviendo en Arkansas?» → «¿Te refieres a Miguel o a alguien más?»).
+    if objective and dialogue_slot.offers_back_the_named_one(value, objective):
         return False
     return not _recovery_question_repeats_a_previous_turn(value, history)
 

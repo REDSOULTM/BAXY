@@ -2221,8 +2221,10 @@ internal static class UserMessagePolicy
         || normalized.Contains("no puedo", StringComparison.Ordinal)
         || normalized.Contains("no complete", StringComparison.Ordinal)
         || normalized.Contains("no logre", StringComparison.Ordinal)
+        // M93 (held-out v3v t10): «El Bloc de notas no pudo abrirse» is «no se pudo abrir»; twin of llm._asserts_failure.
         || Regex.IsMatch(assertedFailures,
-            @"\b(?:fallos?|failed)\b|\bno\s+(?:encontre|se\s+(?:pudo|pudieron|encontro|encontraron))\b",
+            @"\b(?:fallos?|failed)\b|\bno\s+(?:encontre|se\s+(?:pudo|pudieron|encontro|encontraron))\b"
+            + @"|\bno\s+pud(?:o|ieron)\s+[a-z]+(?:arse|erse|irse)\b",
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
         || normalized.Contains("no recibí", StringComparison.Ordinal)
         || normalized.Contains("no realicé", StringComparison.Ordinal)

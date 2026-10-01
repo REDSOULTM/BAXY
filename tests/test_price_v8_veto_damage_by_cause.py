@@ -205,12 +205,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # M85
 # M87
 # M87 M88 M89 M90
+# M93
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "be68d13526305d968884571921d7937bb85f079e71640d6be48715d3f77a9b33"
+        "b0b89578623dc4d7392148a756a4722328b1137e56034d5a34c3cec84d62d8aa"
     ),
     "src/baxy_mind/llm.py": (
-        "99d512095716d4f28d6d174a7265b45e9cb79bec2f4d21a90e30050a59b7fded"
+        "a130909298b338989f5eac4e68283727320e79723bdc299dfb2ab579f9ccc94f"
     ),
 }
 

@@ -722,17 +722,24 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     // Windows Calculator that is already open — brought to the foreground and
     // verified there, otherwise nothing is typed — and the display is read
     // back through UI Automation (CalculatorResults / CalculatorExpression).
+    // M93 (DEV-D v3r and v3u D-w07-t2 «órale, y divídeme ahí 1850 entre 7» right after the Calculator was reused →
+    // calculator_not_foreground both times): a bare SetForegroundWindow from this helper process is refused by the
+    // foreground lock whenever BAXY itself is not in front (a spoken turn, or the window run). The handoff attaches to
+    // the foreground thread first, as the application open provider does (RequestForeground).
     private const string CalculatorScript = """
         $ErrorActionPreference='Stop';$expr=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]))
         Add-Type -AssemblyName UIAutomationClient;Add-Type -AssemblyName UIAutomationTypes;Add-Type -AssemblyName System.Windows.Forms
-        $sig='using System;using System.Runtime.InteropServices;public static class BaxyCalcWin{[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();}'
-        if(-not ([System.Management.Automation.PSTypeName]'BaxyCalcWin').Type){Add-Type -TypeDefinition $sig}
+        $sig='using System;using System.Runtime.InteropServices;public static class BaxyCalcWin2{[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();[DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr h, out uint p);[DllImport("kernel32.dll")] public static extern uint GetCurrentThreadId();[DllImport("user32.dll")] public static extern bool AttachThreadInput(uint a, uint b, bool f);[DllImport("user32.dll")] public static extern bool BringWindowToTop(IntPtr h);[DllImport("user32.dll")] public static extern bool ShowWindowAsync(IntPtr h, int c);}'
+        if(-not ([System.Management.Automation.PSTypeName]'BaxyCalcWin2').Type){Add-Type -TypeDefinition $sig}
         $root=[System.Windows.Automation.AutomationElement]::RootElement
         $cond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ClassNameProperty,'ApplicationFrameWindow')
         $calc=$null;foreach($f in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){if($f.Current.Name -match '^(Calculadora|Calculator)$'){$calc=$f;break}}
         if($null -eq $calc){[pscustomobject]@{ok=$false;error='calculator_window_not_found'}|ConvertTo-Json -Compress;exit 2}
-        $h=[IntPtr]$calc.Current.NativeWindowHandle;[void][BaxyCalcWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 300
-        if([BaxyCalcWin]::GetForegroundWindow() -ne $h){[pscustomobject]@{ok=$false;error='calculator_not_foreground'}|ConvertTo-Json -Compress;exit 3}
+        $h=[IntPtr]$calc.Current.NativeWindowHandle;$fg=[BaxyCalcWin2]::GetForegroundWindow();$fp=[uint32]0;$ft=[BaxyCalcWin2]::GetWindowThreadProcessId($fg,[ref]$fp);$ct=[BaxyCalcWin2]::GetCurrentThreadId();$att=$false
+        if($ft -ne 0 -and $ft -ne $ct){$att=[BaxyCalcWin2]::AttachThreadInput($ct,$ft,$true)}
+        try{[void][BaxyCalcWin2]::ShowWindowAsync($h,9);[void][BaxyCalcWin2]::BringWindowToTop($h);[void][BaxyCalcWin2]::SetForegroundWindow($h)}finally{if($att){[void][BaxyCalcWin2]::AttachThreadInput($ct,$ft,$false)}}
+        Start-Sleep -Milliseconds 300
+        if([BaxyCalcWin2]::GetForegroundWindow() -ne $h){[pscustomobject]@{ok=$false;error='calculator_not_foreground'}|ConvertTo-Json -Compress;exit 3}
         $keys=($expr -replace '[^0-9+\-*/().]','')
         if($keys.Length -eq 0){[pscustomobject]@{ok=$false;error='calculator_expression_invalid'}|ConvertTo-Json -Compress;exit 4}
         [System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 150

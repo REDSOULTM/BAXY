@@ -260,6 +260,28 @@ def says_the_message_back(question: str, said: str) -> bool:
     return bool(words) and _WORD.findall(_fold(str(question or ""))) == words
 
 
+# M93 (DEV-D v3u D-s053 «¿Miguel sigue viviendo en Arkansas?» → «¿Te refieres a Miguel o a alguien más?»): a question
+# that offers back the one the person named, or «someone else», asks nothing the person has not said; which Miguel, or
+# who he is, is the question. Folded.
+_NAMED_OR_ANOTHER = re.compile(
+    r"^\W*(?:te\s+refieres|hablas|me\s+hablas|preguntas|quieres\s+decir)\s+(?:a|de|por)\s+(?P<es>.+?)\s+o\s+"
+    r"(?:a\s+|de\s+|por\s+)?(?:alguien|otra\s+persona|otro|otra|algun\s+otro|alguna\s+otra)\b|"
+    r"^\W*(?:do\s+you\s+mean|are\s+you\s+(?:talking|asking)\s+about)\s+(?P<en>.+?)\s+or\s+"
+    r"(?:someone|somebody|another|anyone|a\s+different)\b"
+)
+
+
+def offers_back_the_named_one(question: str, said: str) -> bool:
+    """The question offers the person's own named one «or someone else» (see above)."""
+
+    found = _NAMED_OR_ANOTHER.match(_fold(str(question or "")))
+    if found is None:
+        return False
+    named = _WORD.findall(found.group("es") or found.group("en") or "")
+    spoken = set(_WORD.findall(_fold(str(said or ""))))
+    return bool(named) and all(word in spoken or word in {"el", "la", "the"} for word in named)
+
+
 def _object_pronoun(folded: str) -> bool:
     """A verb with a fused object pronoun whose object is not said.
 

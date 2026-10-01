@@ -19,7 +19,10 @@ from . import lexicon as semantic_lexicon
 from .catalog import GameCatalogIndex, resolve_game_catalog_app_id
 from .notes import agenda_event_request, said_repetition, stated_event_reminder, task_completion_title
 from .patterns import resolve_application_catalog_app_id, resolve_application_installed_name
-from .temporal import SpokenClock, agenda_window, clock_elsewhere, plural_alarm_cancellation, spoken_date, spoken_window
+from .temporal import (
+    SpokenClock, agenda_window, clock_elsewhere, moment_then_title_reminder, plural_alarm_cancellation, spoken_date,
+    spoken_window,
+)
 from .web import news_lookup_query, public_query_body
 from .windows import start_menu_request
 
@@ -1668,7 +1671,7 @@ def _explicit_arguments_from_evidence(
         relative_reminder = _explicit_relative_reminder_arguments(evidence)
         if relative_reminder is not None:
             return relative_reminder
-        stated = stated_event_reminder(evidence)
+        stated = stated_event_reminder(evidence) or moment_then_title_reminder(evidence)
         if stated is not None:
             return {"dueUtc": stated[1], "title": stated[0]}
         reminder = re.search(
@@ -2282,8 +2285,16 @@ def _canonical_due_utc(
     said_date = spoken_date(clock_source)
     spoken_day = effect_intent.spoken_day(clock_source, local_now.weekday())
     if said_date is not None and spoken_day != (0, 1):
-        # A date and another day word («mañana», «el lunes») disagree on the day.
-        return None
+        # A date and another day word («mañana», «el lunes») disagree on the day. M93 (DEV-D v3u D-w08-t3 «…el sábado
+        # 3 de octubre de 2026 a las 19:00»): the weekday of that very date names the same day.
+        dated = said_date.on_or_after(local_now.date())
+        if not (
+            spoken_day is not None
+            and spoken_day[1] == 7
+            and dated is not None
+            and dated.weekday() == (local_now.weekday() + spoken_day[0]) % 7
+        ):
+            return None
 
     def materialize_date(local_date: date) -> datetime | None:
         naive = datetime.combine(local_date, datetime_time(hour, minute))

@@ -1227,18 +1227,12 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                     }
 
                     string? applicationId = null;
-                    if (packaged)
+                    if (packaged && !TryReadPackagedIdentity(
+                            () => ReadApplicationUserModelId(process.Id), strongIdentityOnly, out applicationId))
                     {
-                        try
-                        {
-                            applicationId = ReadApplicationUserModelId(process.Id);
-                        }
-                        catch (ApplicationInventoryException) when (strongIdentityOnly)
-                        {
-                            // An unreadable foreign process is not a candidate for
-                            // this package; only candidates need a strong identity.
-                            continue;
-                        }
+                        // An unreadable foreign process is not a candidate for
+                        // this package; only candidates need a strong identity.
+                        continue;
                     }
                     if (strongIdentityOnly
                         ? packaged && !string.Equals(entry.AppUserModelId, applicationId, StringComparison.Ordinal)
@@ -1317,6 +1311,28 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         }
 
         return observations;
+    }
+
+    /// <summary>
+    /// The package identity of a visible process. M93 (DEV-D v3u D-s119 «Abrir la app de photos.», D-w11-t5 «¿Me abres
+    /// el Spotify?»): both packaged apps ended in inventory_failed in about a second, while the Calculator (its own
+    /// provider) and an unknown app were answered; one visible process whose identity could not be read aborted the
+    /// whole open inventory. For opening, an unreadable process keeps no identity and is judged by its name and title
+    /// like a classic one (false keeps the old skip of the strong inventory that closing and window resolution use).
+    /// </summary>
+    internal static bool TryReadPackagedIdentity(
+        Func<string?> read, bool strongIdentityOnly, out string? applicationId)
+    {
+        try
+        {
+            applicationId = read();
+            return true;
+        }
+        catch (ApplicationInventoryException)
+        {
+            applicationId = null;
+            return !strongIdentityOnly;
+        }
     }
 
     private static void AddHostedFrameWindows(
