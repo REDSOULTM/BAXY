@@ -55,7 +55,14 @@ _ASKED_WHETHER_PUT = r"^(?:has|habias|hayas|have\s+you|did\s+you|you\s+(?:put|ad
 def puts_into_the_agenda(folded: str) -> bool:
     """M91: an order that puts something into the calendar (``_INTO_THE_AGENDA``), not the question whether it was."""
 
-    return _has(folded, _INTO_THE_AGENDA) and not _has(folded, _ASKED_WHETHER_PUT)
+    # M91b (r4-calendar-01 «Qué compromisos marca mi agenda para esta jornada»): a question about what the agenda shows
+    # («marca» said of the agenda) is a read of it, never an order to write into it.
+    return (
+        _has(folded, _INTO_THE_AGENDA)
+        and not _has(folded, _ASKED_WHETHER_PUT)
+        and not _has(folded, r"^\W*(?:que|cual|cuales|cuando|donde|what|which|when|where)\b")
+        and "?" not in folded
+    )
 _AGENDA_QUESTION_HEAD = (
     r"(?:que|cual|cuales|cuando|donde|como|cuanto|cuanta|cuantos|cuantas|a|what|which|when|where|how|dime|"
     r"decime|dame|muestra|muestrame|mostrame|ensename|lee|leeme|revisa|consulta|mira|tell|show|give|read|"

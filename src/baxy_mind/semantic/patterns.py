@@ -8298,7 +8298,9 @@ def _strict_catalog_request(
             found_domains = [item for item in found_domains if item[1] != "task.list"]
         if _puts_into_the_agenda(text):
             found_domains = [item for item in found_domains if item[1] != "calendar.event.list"]
-        if any(operation == "media.status" for _, operation in found_domains) and _has(
+        # M91b (r6-composition-54 «List backups, games, tabs, front window, playback, and sound»): only a request whose
+        # one domain is what plays can be sport; «games» listed beside «playback» is the game catalog.
+        if [operation for _, operation in found_domains] == ["media.status"] and _has(
             text,
             r"\b(?:teams?|equipos?|league|liga|match(?:es)?|partidos?|games?|tournament|torneo|cup|copa|"
             r"premier|nba|nfl|mlb|nhl|champions|mundial|playoffs?|final)\b",
