@@ -344,6 +344,26 @@ internal static class ObservedResponseLiterals
                 names.Add(token.Value);
             }
         }
+        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+            && node.TryGetProperty("operation", out JsonElement mediaOperation)
+            && mediaOperation.ValueKind == JsonValueKind.String
+            && mediaOperation.GetString()!.StartsWith("media.", StringComparison.Ordinal)
+            && node.TryGetProperty("verified", out JsonElement mediaVerified) && mediaVerified.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("succeeded", out JsonElement mediaSucceeded) && mediaSucceeded.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("observed", out JsonElement mediaObserved) && mediaObserved.ValueKind == JsonValueKind.Object)
+        {
+            // M97 (DEV-D v3x D-s047 «cuál es el nombre de la música que se está reproduciendo ahora»): the title read
+            // («CHÉVERE (premium_remix)»), its artist and album are observed data, underscores included; the mind
+            // published the reply and this check refused it as internal_code until the turn ended with no final.
+            foreach (string key in new[] { "title", "artist", "album" })
+            {
+                if (mediaObserved.TryGetProperty(key, out JsonElement mediaValue) && mediaValue.ValueKind == JsonValueKind.String
+                    && mediaValue.GetString() is { Length: > 0 and <= 4096 } mediaText && !string.IsNullOrWhiteSpace(mediaText))
+                {
+                    names.Add(mediaText.Trim());
+                }
+            }
+        }
         if (node.TryGetProperty("steps", out JsonElement steps) && steps.ValueKind == JsonValueKind.Array && depth < 8)
         {
             foreach (JsonElement step in steps.EnumerateArray())

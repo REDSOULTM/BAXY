@@ -24,6 +24,22 @@ public sealed class C03UsoRealComposeTests
             Is.Null);
     }
 
+    private const string PlayingRemix =
+        """{"kind":"operation","operation":"media.status","polarity":"success","verified":true,"succeeded":true,"observed":{"version":1,"title":"LUNA (club_edit)","artist":"MARA SOL","album":"LUNA (club_edit)","playbackStatus":"playing"}}""";
+
+    // M97 (DEV-D v3x D-s047): the title read, underscores and all, is observed data; the reply that quotes it is not
+    // internal code. A code that is not the title still is.
+    [Test]
+    public void TheTitleReadIsNotInternalCode()
+    {
+        var draft = new UserMessageDraft(PlayingRemix, "status", null);
+        const string request = "qué canción está sonando";
+        Assert.That(UserMessagePolicy.ModelResponseRejectionReason(
+            "Está sonando \"LUNA (club_edit)\" de MARA SOL.", draft, request), Is.Null);
+        Assert.That(UserMessagePolicy.ModelResponseRejectionReason(
+            "Está sonando \"LUNA (club_edit)\" de MARA SOL vía media_status.", draft, request), Is.EqualTo("internal_code"));
+    }
+
     private const string PlaceNotFound =
         """{"kind":"failure","polarity":"failure","cause":"mission_failed","stepCount":0,"steps":[],"reason":{"kind":"operation","operation":"weather.current","polarity":"failure","verified":false,"succeeded":false,"error":"weather_place_not_found"}}""";
 

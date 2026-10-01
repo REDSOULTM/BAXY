@@ -390,10 +390,11 @@ def _turn_failure_kind(error: BaseException) -> str:
     """Name the failure class of one turn attempt that did not raise a contract error."""
 
     reason = str(getattr(error, "audit_reason", ""))
-    if (
-        isinstance(error, ConversationReplyContractError)
-        and reason.startswith("unsupported_")
-        and reason != "unsupported_language"
+    if isinstance(error, ConversationReplyContractError) and (
+        (reason.startswith("unsupported_") and reason != "unsupported_language")
+        # M97 (DEV-D v3x D-s064 «¿Sería posible suprimir mi orden de recogida en Lyft…»): the turn decided a limit and
+        # its drafts failed another contract (shaped_presentation, echo); it is still the limit's wording that failed.
+        or getattr(error, "conversation_kind", None) == "unsupported"
     ):
         return LIMIT_WORDING_FAILURE
     if isinstance(error, ConversationReplyContractError):
@@ -6637,8 +6638,17 @@ def _recover_failed_turn(
             )
         except Exception:  # noqa: BLE001 - use the protocol safety floor
             pass
-        kind, text = _recovery_visible_from_compose(llm, objective, limit=is_limit)
-        if kind == "clarify" and not nothing_to_clarify:
+        understood_talk = (
+            not is_limit and bool(failure_kinds) and set(failure_kinds) == {CONVERSATION_WORDING_FAILURE}
+        )
+        kind, text = (
+            _recovery_visible_from_compose(llm, objective, talk=True) if understood_talk else ("conversation", "")
+        )
+        if not text:
+            kind, text = _recovery_visible_from_compose(llm, objective, limit=is_limit)
+        if kind == "clarify" and (not nothing_to_clarify or understood_talk):
+            # M97 (reserve A11, DEV-D v3o–v3x composition_failed): talk whose wording failed twice and whose reply the
+            # composer could not write either asks back rather than publishing nothing.
             return audited(
                 {
                     "type": "turn.result",
@@ -6703,17 +6713,41 @@ def _recover_failed_turn(
 
 
 def _recovery_visible_from_compose(
-    llm: Any, objective: str, *, limit: bool = False,
+    llm: Any, objective: str, *, limit: bool = False, talk: bool = False,
 ) -> tuple[str, str]:
     """Use model-authored recovery text. A question is a question, not silence.
 
     Returns ``("clarify", question)``, ``("conversation", reply)`` or
     ``("conversation", "")`` when the model produces nothing usable.
+
+    ``talk`` (M97, reserve A11 «tengo una reunión hoy al mediodía» → «»): the turn understood talk and only the wording
+    of its reply failed; the composer answers it as conversation (the App's conversation situation), and a reply that
+    asks back is still the reply.
     """
 
     compose = getattr(llm, "compose_user_message", None)
     if not callable(compose):
         return "conversation", ""
+    if talk:
+        try:
+            reply = str(
+                compose(
+                    objective,
+                    "conversation",
+                    {"situation": json.dumps({"kind": "conversation", "polarity": "success"}, ensure_ascii=False)},
+                )
+                or ""
+            ).strip()
+        except Exception:  # noqa: BLE001 - the clarification below is the next floor
+            return "conversation", ""
+        if (
+            not reply
+            or len(reply) > 4_096
+            or dialogue_slot.says_the_message_back(reply, objective)
+            or (reply.endswith("?") and _RECOVERY_MIRRORED_REQUEST.search(read_fold(reply)) is not None)
+        ):
+            return "conversation", ""
+        return "conversation", reply
     try:
         text = str(
             compose(

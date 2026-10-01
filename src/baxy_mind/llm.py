@@ -154,11 +154,12 @@ from .semantic.conversation import (
     spelling_word,
     translation_without_its_text,
     versus_contenders,
+    wants_to_consume,
     without_quoted_speech,
     without_saying_inability,
 )
 from .semantic.apps import asks_to_close, asks_to_install_or_remove, object_asked_to_close, wants_to_work_in_it
-from .semantic.audio import asks_about_mute
+from .semantic.audio import asks_a_timed_silence, asks_about_mute
 from .semantic.display import monitor_facts_asked
 from .semantic.media import asks_the_album, asks_what_is_playing
 from .semantic.network import (
@@ -3076,6 +3077,22 @@ _LIMIT_ACT_IS_NOT_ACT = re.compile(
 )
 
 
+# M97 (DEV-D v3x D-p29-t3 «I would like to watch this movie with English subtitles» → «I do not watch movies with
+# English subtitles.»): watching, listening, reading, eating or drinking is what the person said they want to do; the
+# limit denies BAXY's own act (putting it on, playing it, ordering it), never the person's (semantic.conversation.
+# wants_to_consume reads the request). Folded.
+_LIMIT_DENIES_CONSUMING = re.compile(
+    r"\bi\s+(?:do\s+not|don'?t)\s+(?:watch|listen|see|hear|eat|drink|read)\b|"
+    r"(?:^|[.:;,]\s*|\byo\s+)no\s+(?:(?:la|lo|las|los|le|les)\s+)?(?:veo|miro|escucho|oigo|como|bebo|tomo|leo)\b"
+)
+
+
+def _limit_denies_the_persons_act(folded_limit: str, request: object) -> bool:
+    """The limit denies, as BAXY's act, the consuming the person said they want to do (see above)."""
+
+    return wants_to_consume(request) and _LIMIT_DENIES_CONSUMING.search(folded_limit) is not None
+
+
 def limit_voice_defect(text: object, request: object = "") -> str:
     """Why a limit does not say, in BAXY's own first person, that he does not do it."""
 
@@ -3105,8 +3122,14 @@ def limit_voice_defect(text: object, request: object = "") -> str:
     # M78 (DEV-D v3l s004 «recomprar el último billete de tren a huesca»): the limit contract refused «No recomprobo…»
     # and the recovered limit, judged here only, published it. A first person that is no form of the verb asked is
     # broken in either path.
-    if visible_reply_breaks_first_person(text) or limit_breaks_the_asked_verb(text, request):
+    if (
+        visible_reply_breaks_first_person(text)
+        or limit_breaks_the_asked_verb(text, request)
+        or visible_reply_says_a_vulgarity(text, request)
+    ):
         return "limit_broken_person"
+    if _limit_denies_the_persons_act(folded, request):
+        return "limit_persons_act"
     # M62: the act denied is the act asked (checked before the reason, so the retry is told about the act).
     if _limit_changes_the_act(text, request):
         return "limit_changed_act"
@@ -4735,6 +4758,22 @@ def visible_reply_breaks_estar_participle(value: object) -> bool:
 
     unquoted = re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(value or ""))
     return _REFLEXIVE_ESTAR_PARTICIPLE.search(_reading_fold(unquoted)) is not None
+
+
+# M97 (reserve es315 «por favor cállate por otra hora» → «Eso no lo hago: no cago por otra hora.»): the model's first
+# person of a verb landed on a vulgar word. BAXY never says a vulgarity the person did not say first. Folded words.
+_VULGAR_WORD = re.compile(
+    r"\b(?:cag(?:o|as|a|an|ar|ue|ado|ada|ando|on)|mierdas?|jod(?:er|o|e|ido|ida|idos|idas)|put[oa]s?|"
+    r"pendej[oa]s?|cabron(?:es|a|as)?|gilipollas|carajo|vergas?|ching(?:ar|a|o|ado|ada)|follar|follo|"
+    r"fuck\w*|shit\w*|bitch\w*|asshole\w*|cunt\w*|crap)\b"
+)
+
+
+def visible_reply_says_a_vulgarity(value: object, request: object = "") -> bool:
+    """A vulgar word in BAXY's reply that the person did not write (see above)."""
+
+    said = set(_VULGAR_WORD.findall(_reading_fold(str(request or ""))))
+    return any(word not in said for word in _VULGAR_WORD.findall(_reading_fold(str(value or ""))))
 
 
 def visible_reply_breaks_first_person(value: object) -> bool:
@@ -8059,6 +8098,23 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
                 said = _decimal_said(today_rain, english)
                 now += f"; {said}% chance of rain today" if english else f"; hoy, {said} % de lluvia"
             today = seen.get("today")
+            if weather_asked_clock(user_text or "") is not None and not (
+                weather_asked_measures(user_text or "") - {"temperature"}
+            ) and isinstance(today, dict) and all(
+                isinstance(today.get(key), (int, float)) for key in ("minC", "maxC", "rainProbabilityPercent")
+            ):
+                # M97 (DEV-D v3x D-s014 «¿qué previsión de tiempo hay para las cuatro?»): the hour asked is not in the
+                # read; the day it falls in is, and the reply says the read is not by the hour.
+                low, high, rain = (
+                    _decimal_said(today[key], english) for key in ("minC", "maxC", "rainProbabilityPercent")
+                )
+                return (
+                    f"I don't read the forecast by the hour; today in {seen['location']}: {low} to {high} °C, "
+                    f"{rain}% chance of rain."
+                    if english
+                    else f"El pronóstico no lo leo por horas; hoy en {seen['location']}: de {low} a {high} °C, "
+                    f"{rain} % de lluvia."
+                )
             if weather_asks_later_in_the_day(user_text or "") and not _weather_asks_rain(user_text or "") and not (
                 weather_asked_measures(user_text or "") - {"temperature"}
             ) and isinstance(today, dict) and all(
@@ -12246,11 +12302,15 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     today = seen.get("today")
     later_today = (
         not narrow_measures and not rain_asked and not asks_tomorrow and not coming and not future
-        and weather_asks_later_in_the_day(user_text or "") and isinstance(today, dict)
+        # M97 (DEV-D v3x D-s014): an hour asked of today's forecast is answered with today's read too.
+        and (weather_asks_later_in_the_day(user_text or "") or asked_clock is not None) and isinstance(today, dict)
     )
     if later_today and not any(
         _states_weather_number(text, today.get(key)) for key in ("maxC", "minC")
         if isinstance(today.get(key), (int, float))
+    ) and not (
+        # M93: for an hour asked, the weather now told beside «not by the hour» answers too.
+        asked_clock is not None and any(form in text for form in _weather_number_forms(seen.get("temperatureC")))
     ):
         return "missing_state"
     for measure, key in _WEATHER_NOW_ONLY_MEASURES:
@@ -14170,6 +14230,17 @@ def _verified_titled_item_write(situation: dict, operation: str, cause: str) -> 
     )
 
 
+# M97: a span of time named in a timed mute's reply, and the words that say nothing brings the sound back by itself
+# («hasta que me lo pidas», «no lo reactivo solo», «until you ask», «won't turn it back on»). Folded.
+_TIMED_SPAN_WORD = re.compile(r"\b(?:horas?|minutos?|rato|ratito|hours?|minutes?|while)\b")
+_NO_TIMER_SAID = re.compile(
+    r"\b(?:hasta\s+que|until|no\s+(?:lo\s+|la\s+|el\s+sonido\s+)?(?:reactiv|vuelv|devuelv|activ|quit|desactiv|restaur)\w*|"
+    r"(?:won'?t|will\s+not|do\s+not|don'?t|can'?t|cannot)\s+(?:\w+\s+){0,3}(?:back|unmute|restore|by\s+itself|on\s+my\s+own)|"
+    r"no\s+tengo\s+(?:un\s+)?(?:temporizador|reloj)|no\s+(?:hay|pongo)\s+(?:un\s+)?temporizador|"
+    r"(?:no|not)\s+(?:\w+\s+){0,3}(?:solo|sola|por\s+si\s+solo|by\s+itself|automatic\w*|automatica\w*))"
+)
+
+
 def compose_visible_defect(
     text: str,
     intent: str,
@@ -14205,6 +14276,9 @@ def compose_visible_defect(
             return ""
     if visible_reply_is_a_fixed_stall(stripped):
         return "stall"
+    if visible_reply_says_a_vulgarity(stripped, f"{user_text} {said or ''}"):
+        # M97 (reserve es315): never a vulgarity the person did not say.
+        return "vulgarity"
     if visible_reply_invents_a_spanish_infinitive(stripped) or visible_reply_breaks_word_case(
         # An observed name («watchOS» in a page title) is written as it was seen.
         stripped, f"{user_text} {json.dumps(facts, ensure_ascii=False, default=str)}",
@@ -14663,6 +14737,17 @@ def compose_visible_defect(
                 return "memory_figures"
     blob = f"{user_text} {json.dumps(situation, ensure_ascii=False)}".casefold()
     folded = stripped.casefold()
+    if (
+        kind == "operation"
+        and operation == "audio.mute"
+        and polarity == "success"
+        and asks_a_timed_silence(said or user_text)
+        and _TIMED_SPAN_WORD.search(_reading_fold(stripped)) is not None
+        and _NO_TIMER_SAID.search(_reading_fold(stripped)) is None
+    ):
+        # M97 (reserve, MASSIVE audio_volume_mute «silencia por dos horas»): nothing gives the sound back when the span
+        # ends; «Silencié el audio por dos horas» promises a timer nobody set.
+        return "timed_mute_promised"
     # Un destino que ya estaba en ejecución no lo abrió este turno. El recibo lo
     # trae —`alreadyRunning`, publicado como `was_running_before_open`— y en
     # APPS1029 la prosa lo dijo en tres vueltas de once y lo omitió en ocho,
@@ -16417,7 +16502,11 @@ def _unsupported_answer_contract_failure(
         return "unsupported_malformed_modal"
     if visible_reply_invents_a_spanish_infinitive(content):
         return "unsupported_invented_infinitive"
-    if visible_reply_breaks_first_person(content) or limit_breaks_the_asked_verb(content, request):
+    if (
+        visible_reply_breaks_first_person(content)
+        or limit_breaks_the_asked_verb(content, request)
+        or visible_reply_says_a_vulgarity(content, request)
+    ):
         return "unsupported_broken_person"
     if _limit_changes_the_act(content, request):
         # v3a-final F-w11-t1: ordering tacos is not preparing them. M54 (v3b-devD D-s042 «quiero pastel de camote de
@@ -16784,11 +16873,14 @@ class ConversationReplyContractError(ValueError):
 
     audit_stage = "conversation_reply"
 
-    def __init__(self, audit_reason: str) -> None:
+    def __init__(self, audit_reason: str, conversation_kind: str | None = None) -> None:
         # Preserve the stable internal exception contract while carrying the
         # machine-readable audit reason separately.
         super().__init__("respuesta conversacional vacía o repetida")
         self.audit_reason = audit_reason
+        # M97 (DEV-D v3x D-s064): the kind the turn decided travels with the failure, so a limit whose wording failed
+        # any contract is recovered as the limit, never as an empty conversation.
+        self.conversation_kind = conversation_kind
 
 
 class _PreparedChat:
@@ -18332,13 +18424,14 @@ class LlmRuntime:
         self,
         key: tuple[object, ...] | None,
         reason: str,
+        conversation_kind: str | None = None,
     ) -> ConversationReplyContractError:
         """The contracts' verdict on a greedy reply, kept for the retries of this request (``key`` None: not greedy)."""
 
         cache = getattr(self, "_rejected_reply_cache", None)
         if key is not None and cache is not None:
             cache[key] = reason
-        return ConversationReplyContractError(reason)
+        return ConversationReplyContractError(reason, conversation_kind)
 
     def prepare_chat(
         self,
@@ -18564,7 +18657,7 @@ class LlmRuntime:
             else None
         )
         if rejected is not None:
-            raise ConversationReplyContractError(rejected)
+            raise ConversationReplyContractError(rejected, conversation_kind)
         draw = (
             random_draw_request(text)
             if conversation_kind not in {"unsupported", "unsupported_language"}
@@ -19068,7 +19161,7 @@ class LlmRuntime:
         if response["choices"][0].get("finish_reason") == "length":
             if code_asked and not cpu_fallback:
                 # M50: code cut by its budget does not run; half a program is never published.
-                raise self._rejected_reply(verdict_key, "truncated_code")
+                raise self._rejected_reply(verdict_key, "truncated_code", conversation_kind)
             # Tanda 4f: a story stopped by its budget was published ending in
             # «…donde». Keep the finished sentences; none left means no answer
             # yet, and the bounded retry below writes one.
@@ -19424,7 +19517,7 @@ class LlmRuntime:
                 presentation_shape=presentation_shape,
             )
             if response["choices"][0].get("finish_reason") == "length":
-                raise self._rejected_reply(verdict_key, "truncated_structured_reply")
+                raise self._rejected_reply(verdict_key, "truncated_structured_reply", conversation_kind)
             if retry_content:
                 try:
                     structured = json.loads(retry_content)
@@ -19443,7 +19536,7 @@ class LlmRuntime:
                 elif structured is not None or retry_content.startswith(("{", "[")):
                     # A truncated/invalid wire envelope is not public prose.
                     # Previously JSON parse failure published the raw envelope.
-                    raise self._rejected_reply(verdict_key, "invalid_structured_reply")
+                    raise self._rejected_reply(verdict_key, "invalid_structured_reply", conversation_kind)
         else:
             final_messages = payload["messages"]
         final_content = str(message.get("content") or "").strip()
@@ -19552,7 +19645,7 @@ class LlmRuntime:
             # This is an internal contract failure, never user-facing prose.
             # The total turn boundary retries the side-effect-free decision and
             # then asks the model for one candidate-free semantic clarification.
-            raise self._rejected_reply(verdict_key, failure_reason)
+            raise self._rejected_reply(verdict_key, failure_reason, conversation_kind)
         # Ignore a malformed/model-invented tool call even when an external
         # endpoint violates the chat contract.
         return message.get("content") or "", []
@@ -22425,6 +22518,7 @@ class LlmRuntime:
         trace_id: str,
         *,
         memory: bool = False,
+        refused: list[str] | None = None,
     ) -> str | None:
         """M53 (D35): the answer to a recipe or plot lookup, written from the page it read, or from memory when
         nothing could be consulted. None hands the turn to the ordinary composition (not one of these, or two
@@ -22585,6 +22679,9 @@ class LlmRuntime:
             )
             if not reason:
                 return draft
+            if refused is not None:
+                # M97: the caller's last resort knows a draft was written and refused (not a model out of time).
+                refused.append(reason)
             repair = {
                 "empty": "Write the answer now." if english else "Escribe ahora la respuesta.",
                 "truncated": (
@@ -22838,8 +22935,10 @@ class LlmRuntime:
         trace_id = str(facts.get("traceId") or "")[:128]
         previous_answer = _referenced_previous_answer(user_text, facts)
         situation = _situation_from_facts(facts)
+        consulted_refused: list[str] = []
         consulted = self._compose_consulted_answer(
             user_text, facts, situation, response_language, post, compose_deadline, trace_id,
+            refused=consulted_refused,
         )
         if consulted is not None:
             return consulted
@@ -23501,6 +23600,19 @@ class LlmRuntime:
             and str(situation.get("operation") or "") != "audio.mute"
         ):
             instruct("\nDo not mention mute: it is not in observed.")
+        if (
+            str(situation.get("operation") or "") == "audio.mute"
+            and polarity == "success"
+            and asks_a_timed_silence(said or user_text)
+        ):
+            # M97: the person asked for a span; nothing gives the sound back when it ends.
+            instruct(
+                "\nThe person asked for a span of time: say the sound is muted and stays so until they ask; nothing "
+                "turns it back on by itself."
+                if response_language == "en"
+                else "\nLa persona pidió un tiempo: di que el sonido quedó silenciado y que sigue así hasta que lo "
+                "pida; nada lo vuelve a activar solo."
+            )
         required_facts = [
             str(value).strip()
             for value in (facts.get("requiredFacts") or [])
@@ -24885,7 +24997,77 @@ class LlmRuntime:
         # Congelar las instrucciones del turno antes de añadir correcciones.
         # Reconstruir sólo los hechos en los reintentos perdía el tema resuelto.
         turn_instructions = "".join(sent_instructions[2:]) if cause != "acting" else ""
-        response = post(payload)
+
+        def last_resort(response: object, *, drafts_rejected: bool = False) -> str:
+            # Los tres candidatos cayeron. Una pregunta ambigua todavía se puede
+            # hacer; la lista de páginas de una búsqueda ya no es un final (regla
+            # del dueño 2026-09-24: la búsqueda no se ve), así que sin ella el
+            # turno termina como cualquier otro sin borrador publicable.
+            ambiguous_question = _ambiguous_action_question(user_text, response_language)
+            if ambiguous_question and publishable(ambiguous_question):
+                record_stage(
+                    "ambiguous_fallback", ambiguous_question, ambiguous_question,
+                    response, "", True,
+                )
+                return ambiguous_question
+            if isinstance(situation, dict) and str(situation.get("cause") or "").strip().lower() == (
+                "clarification_cancelled"
+            ):
+                # M45 (FINAL t22): the cancellation already happened in the shell and ran nothing. When no draft
+                # can say only that, the fact is said as it is instead of failing the turn.
+                dropped = "OK, cancelled." if response_language == "en" else "Vale, lo dejo."
+                if publishable(dropped):
+                    record_stage("cancelled_fallback", dropped, dropped, response, "", True)
+                    return dropped
+            if drafts_rejected and isinstance(situation, dict) and situation.get("operation") == "web.search":
+                # Verification 2026-09-25 (held-out «averiguá qué dijo la crítica»): three drafts copied the page's
+                # tagline and the turn ended in ⚠. By the owner's rule, what no draft can say from the pages in
+                # BAXY's own voice was not found. A model that ran out of time proved nothing: that still raises.
+                # M64 (v3f-final F-w12-t4 → t5): «No lo encontré.» left the next turn without its topic; what was
+                # looked up is named in the person's words (the request, else the query sent), never a fact.
+                observed = situation.get("observed") if isinstance(situation.get("observed"), dict) else {}
+                candidates = []
+                headlines = _asked_news_headlines_final(visible_situation, user_text, response_language)
+                if headlines:
+                    # M81 (DEV-D v3m D-s021 «qué está pasando por el mundo»): the news asked for was read; when every
+                    # draft retold a headline in words of its own, the headlines themselves are the answer, quoted,
+                    # never «No lo encontré».
+                    candidates.append(headlines)
+                for source in dict.fromkeys((user_text, str(observed.get("query") or ""))):
+                    read = searched_clause(source, response_language)
+                    if read is not None:
+                        clause, asked = read
+                        clause = _spelled_as_read(clause, visible_situation)
+                        candidates.append(
+                            f"I couldn't find {'out ' if asked else ''}{clause}." if response_language == "en"
+                            else f"No encontré {clause}."
+                        )
+                candidates.append("I couldn't find it." if response_language == "en" else "No lo encontré.")
+                for not_found in candidates:
+                    if publishable(not_found):
+                        record_stage("not_found_fallback", not_found, not_found, response, "", True)
+                        return not_found
+            # A7: a verified result (or a typed failure with its known cause) is told with its observed values,
+            # through the same gate as a draft, whether the drafts were vetoed or the writer ran out of time.
+            if isinstance(situation, dict):
+                deterministic = _deterministic_final(situation, visible_situation, user_text, response_language)
+                if deterministic and publishable(deterministic):
+                    record_stage(
+                        "deterministic_fallback", deterministic, deterministic, response, "", True,
+                    )
+                    return deterministic
+            return ""
+
+        try:
+            response = post(payload)
+        except OSError:
+            # M97 (DEV-D v3x D-s017 «a good southern style mac n cheese recipe»): the answer from memory was written,
+            # refused and spent the budget, and the first draft was never asked; the verified result still reaches the
+            # last resort (a refused draft counts as one) instead of ending with no final. A model that ran out of time
+            # with nothing written proved nothing and still raises.
+            if fallback := last_resort(None, drafts_rejected=bool(consulted_refused)):
+                return fallback
+            raise
         first_raw = (response["choices"][0]["message"].get("content") or "").strip()
         text = _strip_prompt_labels(first_raw)
         text = capital_lead(title_clip(acting_clip(limit_clip(screen_clip(search_clip(text))))))
@@ -25844,6 +26026,14 @@ class LlmRuntime:
                     else "El acto que niegas es tuyo: di que tú no encargas ni haces eso, nunca que no le pides a la "
                     "persona que lo haga."
                 ),
+                # M97 (DEV-D v3x D-p29-t3).
+                "limit_persons_act": (
+                    "Watching, listening or eating is what the person does: say in your own first person what you do "
+                    "not do yourself (put it on, play it, order it), never that you do not watch, listen or eat."
+                    if response_language == "en"
+                    else "Ver, escuchar o comer lo hace la persona: di en tu primera persona lo que tú no haces "
+                    "(ponerlo, reproducirlo, pedirlo), nunca que no lo ves, no lo escuchas ni no lo comes."
+                ),
                 # M78 (DEV-D v3l s004 «No recomprobo…»).
                 "limit_broken_person": (
                     "That verb form does not exist: say «I don't do that» and name what you do not do with a noun."
@@ -25855,6 +26045,19 @@ class LlmRuntime:
                     "You are BAXY: say it in the first person («I don't …»), never «BAXY does not»."
                     if response_language == "en"
                     else "Eres BAXY: dilo en primera persona («no …»), nunca «BAXY no …» ni «que realice BAXY»."
+                ),
+                # M97.
+                "vulgarity": (
+                    "Write it again without that vulgar word; use the plain verb of what was asked."
+                    if response_language == "en"
+                    else "Escríbelo de nuevo sin esa palabra grosera; usa el verbo llano de lo que se pidió."
+                ),
+                "timed_mute_promised": (
+                    "Say the sound is muted and that it stays muted until the person asks: nothing turns it back on "
+                    "when that time is up."
+                    if response_language == "en"
+                    else "Di que el sonido quedó silenciado y que sigue así hasta que la persona lo pida: nada lo "
+                    "vuelve a activar cuando pase ese tiempo."
                 ),
                 "unstated_already_running": (
                     ("Name the app" + (" («" + str(_app_open_observed_name(situation)) + "»)" if _app_open_observed_name(situation) else "")
@@ -26150,66 +26353,6 @@ class LlmRuntime:
         if repair_machine_actor:
             retry_payload = _machine_actor_repair_payload(payload, text, gguf)
             sent_instructions.append(_MACHINE_ACTOR_FEEDBACK)
-        def last_resort(response: object, *, drafts_rejected: bool = False) -> str:
-            # Los tres candidatos cayeron. Una pregunta ambigua todavía se puede
-            # hacer; la lista de páginas de una búsqueda ya no es un final (regla
-            # del dueño 2026-09-24: la búsqueda no se ve), así que sin ella el
-            # turno termina como cualquier otro sin borrador publicable.
-            ambiguous_question = _ambiguous_action_question(user_text, response_language)
-            if ambiguous_question and publishable(ambiguous_question):
-                record_stage(
-                    "ambiguous_fallback", ambiguous_question, ambiguous_question,
-                    response, "", True,
-                )
-                return ambiguous_question
-            if isinstance(situation, dict) and str(situation.get("cause") or "").strip().lower() == (
-                "clarification_cancelled"
-            ):
-                # M45 (FINAL t22): the cancellation already happened in the shell and ran nothing. When no draft
-                # can say only that, the fact is said as it is instead of failing the turn.
-                dropped = "OK, cancelled." if response_language == "en" else "Vale, lo dejo."
-                if publishable(dropped):
-                    record_stage("cancelled_fallback", dropped, dropped, response, "", True)
-                    return dropped
-            if drafts_rejected and isinstance(situation, dict) and situation.get("operation") == "web.search":
-                # Verification 2026-09-25 (held-out «averiguá qué dijo la crítica»): three drafts copied the page's
-                # tagline and the turn ended in ⚠. By the owner's rule, what no draft can say from the pages in
-                # BAXY's own voice was not found. A model that ran out of time proved nothing: that still raises.
-                # M64 (v3f-final F-w12-t4 → t5): «No lo encontré.» left the next turn without its topic; what was
-                # looked up is named in the person's words (the request, else the query sent), never a fact.
-                observed = situation.get("observed") if isinstance(situation.get("observed"), dict) else {}
-                candidates = []
-                headlines = _asked_news_headlines_final(visible_situation, user_text, response_language)
-                if headlines:
-                    # M81 (DEV-D v3m D-s021 «qué está pasando por el mundo»): the news asked for was read; when every
-                    # draft retold a headline in words of its own, the headlines themselves are the answer, quoted,
-                    # never «No lo encontré».
-                    candidates.append(headlines)
-                for source in dict.fromkeys((user_text, str(observed.get("query") or ""))):
-                    read = searched_clause(source, response_language)
-                    if read is not None:
-                        clause, asked = read
-                        clause = _spelled_as_read(clause, visible_situation)
-                        candidates.append(
-                            f"I couldn't find {'out ' if asked else ''}{clause}." if response_language == "en"
-                            else f"No encontré {clause}."
-                        )
-                candidates.append("I couldn't find it." if response_language == "en" else "No lo encontré.")
-                for not_found in candidates:
-                    if publishable(not_found):
-                        record_stage("not_found_fallback", not_found, not_found, response, "", True)
-                        return not_found
-            # A7: a verified result (or a typed failure with its known cause) is told with its observed values,
-            # through the same gate as a draft, whether the drafts were vetoed or the writer ran out of time.
-            if isinstance(situation, dict):
-                deterministic = _deterministic_final(situation, visible_situation, user_text, response_language)
-                if deterministic and publishable(deterministic):
-                    record_stage(
-                        "deterministic_fallback", deterministic, deterministic, response, "", True,
-                    )
-                    return deterministic
-            return ""
-
         # tanda-02: a model that does not answer in time (a timeout or a dropped
         # local connection, both OSError) reaches the same last resort as three
         # rejected drafts; with nothing to say it still raises.

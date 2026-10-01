@@ -24,7 +24,7 @@ from .files import _pdf_summary_request, _file_trash_request, process_report_fil
 from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
 from .system import _weather_read_intent, physical_world_request, weather_place_known_only_through_someone
-from .notes import puts_into_the_agenda, takes_off_the_agenda, list_entry_request, list_read_request, list_removal_request, list_creation_without_items, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder, said_repetition, _CALENDAR_PLACE, reminder_inventory_question, AGENDA_NOT_A_READ
+from .notes import puts_into_the_agenda, takes_off_the_agenda, list_entry_request, list_read_request, list_removal_request, list_creation_without_items, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder, said_repetition, _CALENDAR_PLACE, reminder_inventory_question, AGENDA_NOT_A_READ, happening_in_a_span_of_hours
 from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, _latest_email_domain, _notification_listing_request, inbox_read_request, social_network_request, contact_book_request
 from .ui import _clipboard_copy_domain, _clipboard_paste_domain, calculator_expression_request, literal_clipboard_write_text, _review_input_and_capture_effects, _VISIBLE_CLICK_APP_CONTEXT, _gerund_click_label, _visible_click_label, _click_in_application, _visible_click_intent
 from .apps import self_close_request, _APPLICATION_TRAILING_REQUEST, _application_target_forms, _CLOSE_TRAILING_COURTESY, _close_target_forms, deictic_close_request, _bounded_application_literal, _authenticated_application_list, _OPEN_STATE_CONDITION, close_all_request, _has_multiple_installed_entities, _append_domain_actions, _open_application_spans, _CATALOG_INSTALL_VERB, _opened_applications
@@ -77,6 +77,9 @@ def _news_headlines_request(text: str) -> bool:
     if not folded or not _public_live_lookup_request(folded):
         return False
     if _has(folded, _WEATHER_WORDS):
+        return False
+    if happening_in_a_span_of_hours(folded):
+        # M97 (reserve «qué pasa hoy de dos a cuatro de la tarde»): two hours of the day bound the person's agenda.
         return False
     return _has(folded, r"\b(?:news|headlines|noticias|titulares|breaking\s+news)\b") or re.match(
         r"^[¿?¡!\s]*(?:que|what)\s+"
@@ -2290,6 +2293,13 @@ def known_unsupported_effect_request(
 
     folded = _fold(text)
     available = frozenset(available_operations)
+    # M97 (reserve «envíe un correo a mi asistente para cancelar todas las citas de mañana»): what a mail or a message
+    # asks someone else to do is its content, never an act of BAXY's that he lacks.
+    said_in_a_message = (
+        email_send_request(text) is not None
+        or email_request_without_address(text)
+        or message_request_any_channel(text) is not None
+    )
     contracts = (
         (
             # Owner's test 2026-09-21 (turns 210-213): BAXY does not close itself
@@ -2342,7 +2352,8 @@ def known_unsupported_effect_request(
                 # M94 (DEV-D D-s016): an entry taken off the calendar (``semantic.notes.takes_off_the_agenda``).
                 or takes_off_the_agenda(folded)
             )
-            and not _has(folded, r"\b(?:alarmas?|alarms?|recordatorios?|reminders?|notas?|notes?|archivos?|files?)\b"),
+            and not _has(folded, r"\b(?:alarmas?|alarms?|recordatorios?|reminders?|notas?|notes?|archivos?|files?)\b")
+            and not said_in_a_message,
             {"calendar.event.delete"},
         ),
         (
@@ -2361,7 +2372,8 @@ def known_unsupported_effect_request(
                 r"cambie|alter|modify|edit|change)\b(?:\s+\S+){0,3}?\s+"
                 r"(?:citas?|appointments?|eventos?|events?|reuniones|reunion|meetings?)\b",
             )
-            and not _has(folded, r"\b(?:alarmas?|alarms?|recordatorios?|reminders?|notas?|notes?|archivos?|files?)\b"),
+            and not _has(folded, r"\b(?:alarmas?|alarms?|recordatorios?|reminders?|notas?|notes?|archivos?|files?)\b")
+            and not said_in_a_message,
             {"calendar.event.update"},
         ),
         (
@@ -5817,7 +5829,6 @@ _MUSIC_OWN_COLLECTION = re.compile(
     r"liked|saved|guardad\w*|my\s+(?:music|songs)|que\s+me\s+gust\w*)\b"
 )
 _MUSIC_COLLECTION_CONTAINER = re.compile(r"\b(?:playlists?|lista\s+de\s+reproduccion|lista|biblioteca|library)\b")
-_MUSIC_TASTE = re.compile(r"\b(?:favorit\w*|preferid\w*|que\s+me\s+gust\w*)\b")
 # Tanda 4 «pon algo para dormir», «pon algo nuevo» ask: a purpose and «nuevo» name no music; a character does.
 _MUSIC_PURPOSE = re.compile(r"\b(?:para|for|to)\s+\w+.*$")
 
@@ -5831,11 +5842,12 @@ def _music_clause_names_content(clause: str) -> bool:
         # música?»): next to the person's own collection only a genre named says what to play; how the collection
         # is qualified («preferidas», «de siempre», «descargadas») does not (independent review REV2). A taste
         # («mi cantante de jazz favorito», uso real) names a person, not the collection: it still asks.
-        return (
-            _MUSIC_COLLECTION_CONTAINER.search(body) is not None
-            and _MUSIC_TASTE.search(body) is None
-            and re.search(r"\b" + MUSIC_GENRE + r"\b", body) is not None
-        )
+        if _MUSIC_COLLECTION_CONTAINER.search(body) is None:
+            return False
+        # M97 (reserve «mi lista de reproducción de música rap favorita»): with the list said, a taste qualifies the
+        # list, and the genre still names what to play. A list named by anything else («mi playlist de gym») is the
+        # person's own collection, which no operation reads: it is asked, never searched (tanda 4).
+        return re.search(r"\b" + MUSIC_GENRE + r"\b", body) is not None
     body = _MUSIC_PURPOSE.sub(" ", body)
     return any(word not in _MUSIC_GENERIC_WORDS for word in re.findall(r"[a-z0-9ñ]+", body))
 
@@ -12914,8 +12926,12 @@ def _resolve_clause_effects(
         re.fullmatch(
             r"(?:(?:(?:please\s+)?tell\s+me|show\s+me|muestra|dime)\s+"
             r"(?:what|which|que|cuales)?\s*(?:alarms?|alarmas?)\s+"
-            r"(?:are\s+on|are\s+active|estan\s+activas?|hay)|"
-            r"(?:is\s+there|hay)\s+(?:(?:an?|una?)\s+)?(?:alarm|alarma)\s+"
+            # M97: «dime qué alarmas tengo (puestas)».
+            r"(?:are\s+on|are\s+active|estan\s+activas?|hay|tengo(?:\s+(?:puestas|programadas|activas))?)|"
+            # M97: «is there an alarm set for seven», «¿tengo alguna alarma para mañana a las seis?», «hay alguna alarma
+            # puesta para las ocho».
+            r"(?:is\s+there|are\s+there|hay|tengo|do\s+i\s+have)\s+(?:(?:an?|una?|alguna?|any)\s+)?(?:alarms?|alarmas?)\s+"
+            r"(?:(?:set|puestas?|programadas?|activas?)\s+)?"
             r"(?:for|at|para|a\s+las?)\s+\S.{0,48}|"
             r"(?:check|comprueba|revisa)\s+(?:if|si)\s+"
             r"(?:(?:an?|una?)\s+)?(?:alarm|alarma)\s+"
@@ -12926,8 +12942,13 @@ def _resolve_clause_effects(
         )
         is not None
     )
-    if "notification.diagnose" in available and alarm_status_request:
-        return EffectIntent(("notification.diagnose",), (folded,))
+    if alarm_status_request and (listing := next(
+        (operation for operation in ("notification.list", "notification.diagnose") if operation in available), None,
+    )):
+        # M97 (reserve «please tell me what alarms are on», «hay una alarma para las diez de la mañana»): which alarms
+        # are set is read by listing them (catalog: notification.list «ver qué alarmas … hay programados y cuándo
+        # suenan»); notification.diagnose checks whether they work and lists none.
+        return EffectIntent((listing,), (folded,))
     if "notification.schedule" in available and _direct_alarm_schedule_request(folded):
         return EffectIntent(("notification.schedule",), (folded,))
     if (nominal_schedule := nominal_schedule_request(folded)) in available:

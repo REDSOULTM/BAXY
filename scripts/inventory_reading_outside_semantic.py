@@ -107,6 +107,9 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
     ("llm.py", "talk_memory_figures"): (
         "GROUNDING", "M95: a figure of a talk answer is the conversation's only when its words (the person's or BAXY's "
         "earlier answers) contain it, or the name it follows"),
+    # M97 (reserve es315 «no cago…»).
+    ("llm.py", "visible_reply_says_a_vulgarity"): (
+        "GROUNDING", "a vulgar word of the reply is allowed only when the person wrote it first"),
     ("llm.py", "_failure_word_is_the_persons"): (
         "GROUNDING", "the «fallos» of the reply may be the person's own word said back, never BAXY's failure"),
     ("llm.py", "_ocr_unsupported_terms.stems"): (

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import re
 from . import lexicon
+from .normalize import fold
 from .grammar import _match, _has, _head_is, _is_past_or_hypothetical_state, _UNMUTE_VERB, _SET_VOLUME_VERB, _VOLUME_UP_VERB, _VOLUME_DOWN_VERB, _indirect_audio_mute_state_query, _PERCENTAGE_WORD_VALUES
 
 
@@ -425,3 +426,10 @@ def asks_about_mute(user_text: str | None) -> bool:
     """The request says «silenciar» or «mute» (the composer does not name a mute nobody read)."""
 
     return re.search(r"silenci|\bmute\b", (user_text or "").casefold()) is not None
+
+
+def asks_a_timed_silence(user_text: str | None) -> bool:
+    """M97: the mute asked for a span of time («silencia por dos horas», «be quiet for another hour»): the composer
+    says the sound stays off until the person asks for it, since nothing gives it back by itself."""
+
+    return _has(fold(user_text or ""), rf"^[¿?¡!\s]*{lexicon.TIMED_SILENCE}[\s.!?]*$")

@@ -16,7 +16,7 @@ from .temporal import (
     spoken_date,
 )
 from .lexicon import GIVEN_NAMES, SOCIAL_NETWORK
-from .notes import OWN_EVENT_NOUN, own_event_reference
+from .notes import OWN_EVENT_NOUN, happening_in_a_span_of_hours, own_event_reference
 from .windows import minimize_all_request
 from .network import _direct_current_time_request
 from .media import _youtube_search_query
@@ -1604,7 +1604,8 @@ def _public_live_lookup_request(folded: str) -> bool:
     # «que esta pasando alrededor mio»: what happens today, or in a place, is the news of it (``news_lookup_query``).
     # MASSIVE news_query «actualización sobre el gorila copito de nieve»: an update about a subject is its news; the
     # person's own tasks or orders are not.
-    todays_events = news_lookup_query(folded) is not None or (
+    # M97: two hours of the day bound the person's agenda, not the news (notes.happening_in_a_span_of_hours).
+    todays_events = (news_lookup_query(folded) is not None and not happening_in_a_span_of_hours(folded)) or (
         _has(
             folded,
             r"^(?:(?:alguna?s?|any|the|las?|ultimas?|latest)\s+)*(?:actualizacion(?:es)?|novedad(?:es)?|updates?)\s+"
