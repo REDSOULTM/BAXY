@@ -128,6 +128,7 @@ from .semantic.conversation import (
     _recalled_speaker,
     _roleplay_participant_names,
     ambiguous_action_verb,
+    asked_act_clause,
     asks_a_laugh,
     asks_a_polar_question_about_the_person,
     asks_about_own_past_act,
@@ -175,7 +176,9 @@ from .semantic.network import (
 )
 from .semantic.notes import _PERSONAL_RECORD_STORE, names_an_own_record_store, names_the_title
 from .semantic.patterns import conversation_only_content_request
-from .semantic.request import _conversation_response_language, asks_about_reliability, words_with_es_plural
+from .semantic.request import (
+    _conversation_response_language, addressed_language, asks_about_reliability, words_with_es_plural,
+)
 from .semantic.system import reports_the_gpu_stopped
 from .semantic.ui import asks_about_buttons, asks_to_see_the_screen
 from .semantic.web import _weather_asks_rain, _weather_asks_tomorrow, weather_asks_future, weather_asks_later_in_the_day, weather_asks_later_today, weather_asks_rain_now, weather_asks_today, weather_asks_whether_it_rains, weather_asked_date, weather_asks_later_time, weather_asks_past, weather_names_date
@@ -614,7 +617,11 @@ CODE_REQUEST_PROMPT = (
     "un bloque ``` con el nombre del lenguaje; ese bloque es el único formato permitido. Lo más corto que funcione, "
     "sin comentarios. Fuera del bloque, como mucho una frase breve en el idioma de la persona. Si pide cambiar el "
     "código de antes o pasarlo a otro lenguaje, reescríbelo entero con el cambio. Nunca digas que no puedes mostrar "
-    "código ni lo describas en lugar de escribirlo."
+    "código ni lo describas en lugar de escribirlo. "
+    # M99 (DEV-D v3x D-p30-t2/t3: «bpy.ops.mesh.primitive_sphere_add», which Blender does not have, and a cube and a
+    # sphere «fusionados» written as two separate objects).
+    "Usa sólo funciones y parámetros que existen con ese nombre exacto en esa biblioteca; si se pide unir, combinar o "
+    "fusionar lo creado, el código hace esa unión."
 )
 CODE_REQUEST_PROMPT_EN = (
     "The person asks for code (a program, a function, a script, a query) or a change to the code before. Writing "
@@ -622,7 +629,8 @@ CODE_REQUEST_PROMPT_EN = (
     "named with its language; that block is the only formatting allowed. The shortest code that works, no "
     "comments. Outside the block, at most one short sentence in the person's language. If they ask to change the "
     "code before or carry it to another language, rewrite it whole with the change. Never say you cannot show "
-    "code and never describe it instead of writing it."
+    "code and never describe it instead of writing it. Use only functions and parameters that exist under that "
+    "exact name in that library; if joining, combining or merging what was made is asked, the code does that join."
 )
 # The budget of a code reply: a short program fits; a reply cut inside its code is never published.
 CODE_REPLY_MAX_TOKENS = 640
@@ -2043,6 +2051,17 @@ def _says_the_person_back(reply: object, request: object) -> bool:
     return not (dialogue_slot.is_social(str(request or "")) or read_request(str(request or "")).greets)
 
 
+def _repeats_the_last_answer(reply: object, last_answer: object, request: object) -> bool:
+    """M99 (DEV-D v3x D-p31-t3 «Gracias por tu aportación…» → BAXY's previous answer again, word for word): a reply that
+    is BAXY's last message again, or a sentence-long piece of it, answers nothing of what the person says now. Asked to
+    say it again («repite», «what did you say»), it is the answer."""
+
+    said, last = _normalized_dialogue_text(reply), _normalized_dialogue_text(last_answer)
+    if not said or not last or recall_asked(request) is not None:
+        return False
+    return said == last or (len(said.split()) >= 6 and said in last)
+
+
 def _literal_recall_reference(
     history: object,
     current: object,
@@ -2520,6 +2539,16 @@ def _misses_content_shape(value: object, request: object) -> bool:
     if shape in {"list", "table"}:
         return sum(1 for line in lines if _LIST_LINE.match(line) or line.count("|") >= 2) < 2
     return False
+
+
+def _new_dialogue_lines(value: object, last_answer: object) -> str:
+    """M99 (DEV-D v3x D-p36-t3): the lines of a dialogue reply that BAXY's last answer does not already hold, in order;
+    "" when every line is old (the reply is then not changed here)."""
+
+    said = {_normalized_dialogue_text(line) for line in str(last_answer or "").splitlines() if line.strip()}
+    lines = [line for line in str(value or "").splitlines() if line.strip()]
+    kept = [line for line in lines if _normalized_dialogue_text(line) not in said]
+    return "\n".join(kept) if kept and len(kept) < len(lines) else ""
 
 
 def conversation_reply_speaks_of_the_system(
@@ -3139,6 +3168,36 @@ def limit_voice_defect(text: object, request: object = "") -> str:
     if _LIMIT_REASON.search(folded) and not dialogue_slot.asks_for_the_reason(str(request or "")):
         return "limit_gives_a_reason"
     return ""
+
+
+# M101 (DEV-D v3z D-s037 «Eso no lo hago: tomar una foto de la playa no es algo que yo realice.», D-s042 «Eso no lo
+# hago: comprar un pastel de camote en una panadería local no lo preparo yo.»): the limit named the thing asked and then
+# said it again as the subject of a second denial; both drafts died (limit_echoes_request, limit_changed_act) and the
+# turns ended with no final. What the opening names is the whole limit; the denial repeated after it is cut.
+_LIMIT_ECHOED_DENIAL = re.compile(
+    r"^(?P<opening>\s*(?:eso|esto)\s+no\s+lo\s+hago|\s*i\s+(?:don'?t|do\s+not)\s+do\s+that)\s*:\s*(?P<named>[^.;:!?]+?)"
+    r"\s+(?:no|est[aá]\s+fuera|queda\s+fuera|(?:is|are)\s+(?:not|outside|beyond|something)|isn'?t|aren'?t)\b",
+    re.IGNORECASE,
+)
+# A clause cut inside itself («tomar una foto que | no salga movida») ends in a word that leads what was cut.
+_LIMIT_NAMED_OPEN_END = frozenset(
+    "que de del la el los las lo un una a al en con por para y e o u ni sin si cuando donde como "
+    "that which who the a an of to in on for with and or if when where".split()
+)
+
+
+def limit_without_its_echo(text: object) -> str:
+    """«Eso no lo hago: <lo pedido> no lo preparo yo.» → «Eso no lo hago: <lo pedido>.»; empty when the text is not a
+    limit of that shape (see above). The caller judges the result like any other draft."""
+
+    found = _LIMIT_ECHOED_DENIAL.match(str(text or ""))
+    if found is None:
+        return ""
+    named = found.group("named").strip(" ,—–-")
+    if len(named.split()) < 2 or _reading_fold(named.split()[-1]) in _LIMIT_NAMED_OPEN_END:
+        return ""
+    opening = found.group("opening").strip()
+    return f"{opening[:1].upper()}{opening[1:]}: {named}."
 
 
 # M62 (v3e2-final F-w11-t1 «pideme unos tacos al pastor porfa…» → «No hago tacos al pastor.»): the talk reply's
@@ -4299,6 +4358,28 @@ def _go_ahead_instruction(last_said: str, language: str | None) -> str:
     )
 
 
+def _call_off_instruction(last_said: str, language: str | None) -> str:
+    """M99 (DEV-D v3x D-p01-t3 «no, cancel» after a search that had already answered → «I have cancelled the Christmas
+    list search.», «I cannot cancel tasks or lists…», then «I will not proceed with the cancellation.»): the person
+    calls off what they asked; nothing of it is running and nothing runs now. The writer is told so, with BAXY's last
+    message, and acknowledges it."""
+
+    last = " ".join(str(last_said or "").split())[:320]
+    if language == "en":
+        return (
+            "The person calls off what they asked just before. Nothing of it is running and nothing runs now"
+            + (f"; your last message was «{last}»" if last else "")
+            + ". Acknowledge it in one short sentence: you leave it there. Do not say you cancelled, undid or "
+            "stopped anything, and do not say you cannot cancel."
+        )
+    return (
+        "La persona deja sin efecto lo que pidió justo antes. Nada de eso está en curso y ahora no se ejecuta nada"
+        + (f"; tu último mensaje fue «{last}»" if last else "")
+        + ". Acéptalo en una frase corta: lo dejas ahí. No digas que cancelaste, deshiciste o detuviste algo, ni "
+        "que no puedes cancelar."
+    )
+
+
 def conversation_world_claim(value: object, request: object = "", prior_requests: tuple[str, ...] = ()) -> str:
     """Why a reply written with no operation run claims something of the person's world, or "".
 
@@ -4918,12 +4999,18 @@ _FAILURE_MARKERS = re.compile(
     # nada» states the failure entire — nothing changed — and died in
     # missing_failure; that nothing changed is affirming it did not happen.
     r"no cambi[oó] nada|no cambi[eé] nada|no se cambi[oó] nada|no hubo cambios?|"
+    # M101 (owner script v3z2 t45 «silencia mi microfono», already muted): «…no hubo ningún cambio» as well.
+    r"no hubo ning[uú]n cambio|"
     r"nothing (?:was )?changed|no change was made|"
     # ctx-dueno-05 (2026-09-22, «en Steam ve a Crash Bandicoot»): «Intenté hacer
     # clic … pero no hay nada en la pantalla con ese nombre, así que no se
     # realizó la acción» died in missing_failure after the two drafts that named
     # the failure differently died in missing_prior_open and reversed_polarity.
     r"no se realiz[oó]|no se hizo|no se pudo|no se pudieron|no fue posible|no realic[eé]|"
+    # M101 (DEV-D v3z D-p31-t2, turn_runtime_failure): «No he procesado tu mensaje porque no logré interpretar…» says
+    # the failure entire and died in missing_failure; the App's LooksLikeFailure already reads «no logré» and «no
+    # completé» as failures (twin).
+    r"no logr[eé]|no complet[eé]|"
     r"was not (?:done|performed|carried out)|could not be (?:done|performed)|"
     # DOWNLOAD2047: «no se guardó nada», «no se bajó la portada» say the failure.
     r"no se (?:guard[oó]|baj[oó]|descarg[oó]) |nada se guard[oó]|nada fue guardad[oa]|no guard[eé] nada|"
@@ -4986,6 +5073,25 @@ def _failure_word_is_the_persons(text: str, user_text: str) -> bool:
     if _FAILURE_CAUSE.search(_accent_folded_with_punctuation(rest)) is not None:
         return False
     return rest != str(text) and not _asserts_failure(rest)
+
+
+def talk_reply_tells_a_failure(reply: object, request: object) -> bool:
+    """M101 (DEV-D v3z D-p31-t2 «…estas seguro al 100% que esto es así» → recovered «No tengo certeza absoluta ni
+    puedo garantizar resultados…»): a talk reply that tells a failure of BAXY's, which the App's conversation policy
+    refuses as looks_like_failure (twin of its exemptions: a question to the person that claims no failed attempt,
+    whether BAXY is able, the person's own «fallos»). The App's reading of a knowledge question is narrower than the
+    mind's, so that exemption is not assumed: the recovery then asks back instead of handing the App a refusal."""
+
+    text = str(reply or "")
+    told = without_quoted_speech(text)
+    if not _asserts_failure(told):
+        return False
+    failed_attempt = _FAILED_ATTEMPT.search(_reading_fold(text)) is not None
+    if ends_asking_the_person(text) and not failed_attempt and not _asserts_failure(without_saying_inability(told)):
+        return False
+    if asks_whether_able(str(request or "")) and not failed_attempt:
+        return False
+    return not _failure_word_is_the_persons(text, str(request or ""))
 
 
 # Twin of UserMessagePolicy.EchoedFailures.
@@ -6197,8 +6303,10 @@ def _microphone_muted_fact(situation: dict) -> bool | None:
 # UserMessagePolicy.AlreadyStatement.
 # Independent review A2: «Ya está, activé tu micrófono» is «done» said over a failure; «ya está» is the state only
 # before a word («ya está activo»), and «I already did it» is BAXY's act.
+# M101 (owner script v3z2 t45 «El micrófono estaba ya silenciado…», refused three times): «estaba ya» is «ya estaba».
 _ALREADY_STATEMENT = re.compile(
-    r"\bya\s+(?:estaba|estaban|era|eran)\b|\bya\s+estan?\s+(?=[a-z])|(?<!\bi )(?<!\bi've )(?<!\bi have )\balready\b"
+    r"\bya\s+(?:estaba|estaban|era|eran)\b|\b(?:estaba|estaban|era|eran)\s+ya\b|\bya\s+estan?\s+(?=[a-z])|"
+    r"(?<!\bi )(?<!\bi've )(?<!\bi have )\balready\b"
 )
 
 
@@ -6230,6 +6338,14 @@ def _situation_error_codes(situation: dict) -> tuple[str, ...]:
         if isinstance(step, dict):
             codes.extend(_situation_error_codes(step))
     return tuple(codes)
+
+
+def _failure_opened_the_page(situation: dict) -> bool:
+    """M101 (DEV-D v3z D-w10-t4): the typed failure is a YouTube page that opened and whose playback was not confirmed;
+    its cause fact (_CAUSE_FACT «youtube_playback_not_verified») says the page opened, so saying so claims nothing
+    unverified."""
+
+    return any(_cause_fact_key(code) == "youtube_playback_not_verified" for code in _situation_error_codes(situation))
 
 
 def _merged_observed(situation: dict) -> dict:
@@ -7859,6 +7975,12 @@ _DETERMINISTIC_FAILURES = {
         "No pude confirmar el salto en la reproducción.",
         "I couldn't confirm the jump in the playback.",
     ),
+    # M101 (owner script v3z2 t45 «silencia mi microfono» already muted): three drafts died and the turn ended in ⚠;
+    # the asked state that already held (_ASKED_STATE_ALREADY_HELD) is told as it was read.
+    "microphone_already_muted": ("El micrófono ya estaba silenciado.", "The microphone was already muted."),
+    "microphone_already_unmuted": ("El micrófono ya estaba activo.", "The microphone was already on."),
+    "airplane_mode_already_on": ("El modo avión ya estaba activado.", "Airplane mode was already on."),
+    "airplane_mode_already_off": ("El modo avión ya estaba desactivado.", "Airplane mode was already off."),
 }
 
 
@@ -7932,6 +8054,32 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
             if isinstance(code, str) and code in _DETERMINISTIC_FAILURES:
                 spanish, english_text = _DETERMINISTIC_FAILURES[code]
                 return english_text if english else spanish
+        if any(code in {"out_of_catalog", "out-of-catalog"} for code in codes if isinstance(code, str)):
+            # M101 (DEV-D v3z D-s037, D-s042): a decided limit is said in BAXY's own words with the thing asked as the
+            # person said it, or as the plain limit when it cannot be said that way; never no final.
+            opening = "I don't do that" if english else "Eso no lo hago"
+            asked = asked_act_clause(user_text, "en" if english else "es")
+            return f"{opening}: {asked}." if asked else f"{opening}."
+        unverified = reason if isinstance(reason, dict) else situation
+        target = str(unverified.get("target") or situation.get("target") or "").strip()
+        if target and len(target) <= 200 and "«" not in target and "»" not in target:
+            # M101 (DEV-D v3z D-w10-t4 «ponme música tropical en YouTube»): the page opened and playback was not
+            # confirmed; three honest drafts died and the turn ended with no final. The unverified effect is reported
+            # naming its target, never as done.
+            if any(
+                isinstance(code, str) and _cause_fact_key(code) == "youtube_playback_not_verified" for code in codes
+            ):
+                return (
+                    f"The YouTube page opened, but I couldn't confirm that «{target}» is playing."
+                    if english
+                    else f"La página de YouTube se abrió, pero no pude confirmar que «{target}» esté sonando."
+                )
+            if unverified.get("effectUncertain") is True or situation.get("effectUncertain") is True:
+                return (
+                    f"I couldn't confirm the result for «{target}»."
+                    if english
+                    else f"No pude confirmar el resultado con «{target}»."
+                )
         return ""
     if operation == "system.time" and isinstance(payload.get("clockAt"), str):
         # M85 (DEV-D v3o D-w02-t2): another place's clock, or a said time converted between here and there, is told
@@ -7980,6 +8128,12 @@ def _deterministic_final(situation: dict, payload: dict, user_text: str, languag
         if clock_later_asked(user_text) is not None:
             return f"It will be {clock}." if english else f"Serán las {clock}."
         return f"It's {clock}." if english else f"Son las {clock}."
+    observed = situation.get("observed") if isinstance(situation.get("observed"), dict) else {}
+    if operation == "audio.microphone.mute" and type(observed.get("muted")) is bool:
+        # M101 (owner script v3z2): a verified microphone change is told with the state read after it.
+        if observed["muted"]:
+            return "The microphone is muted." if english else "El micrófono está silenciado."
+        return "The microphone is on." if english else "El micrófono está activo."
     if operation in {"audio.volume", "audio.volume.adjust"} and type(seen.get("level")) is int:
         # The master output only; an application's own level is another read.
         level = seen["level"]
@@ -10055,6 +10209,26 @@ _PAGE_SELF_DESCRIPTION = re.compile(
     r"\b(?:live|real[-\s]time|up[-\s]to[-\s]date|interactive)\s+(?:traffic|maps?|updates|forecasts?|data|weather)\b|"
     r"\bmapas?\s+interactivos?\b"
 )
+# M102 (DEV-D v3z D-p12-t2 «Bring up 24/7 stores near me» → «There are 24/7 delivery services and verified store maps
+# available near Curico.»): a page's finder, locator or map said to be there is the page describing itself, and no
+# store was named. Judged after the unsourced words, whose hint names them (M88 D-p12-t2 «five 24/7 stores»).
+_PAGE_FINDER = re.compile(
+    r"\b(?:finders?|locators?|buscadores?\s+de\s+(?:tiendas|locales|lugares|negocios))\b|"
+    r"\b(?:maps?|mapas?|listings?|listados?|directory|directories|directorios?)\b(?:\s+\w+){0,2}\s+"
+    r"(?:available|disponibles?)\b"
+)
+
+
+def _search_report_offers_a_finder(text: str, payload: dict, user_text: str) -> bool:
+    """M102: the report of a verified search names a page's finder, locator or available map as what was found."""
+
+    if _search_results_text(payload) is None:
+        return False
+    asked = _reading_fold(user_text or "")
+    return any(
+        re.search(r"\b" + re.escape(found.group().strip()) + r"\b", asked) is None
+        for found in _PAGE_FINDER.finditer(_reading_fold(re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(text))))
+    )
 # Tanda 7 «Bob Dean afirma que … nunca lo hemos estado»: a first person plural inside what a named person says or
 # believes is theirs, reported, not the page speaking.
 _REPORTED_SPEECH = re.compile(
@@ -10163,6 +10337,11 @@ _SEARCH_MECHANICS = re.compile(
     # the results, fragments or visible information named as what speaks, or qualified as the ones given, are the
     # search shown the same.
     r"none\s+of\s+(?:the|these|my)\s+(?:\w+\s+)?results|ninguno\s+de\s+(?:los|estos)\s+(?:\w+\s+)?resultados|"
+    # M102 (DEV-D v3z D-p26-t2 «Santa Rosa Cinemas, Roxy Stadium 14 … are the places mentioned for movies in Santa
+    # Rosa.»): what was found called the places, names or options «mentioned» or «listed» tells the pages that named them.
+    r"(?:the|these|those)\s+(?:places|ones|options|names|venues|spots|locations|titles|items)\s+"
+    r"(?:mentioned|listed|cited)|(?:los|las|estos|estas|esos|esas)\s+(?:lugares|sitios|opciones|nombres|locales|"
+    r"titulos)\s+(?:mencionad[oa]s|citad[oa]s|listad[oa]s)|"
     r"(?:the|these|my)\s+(?:provided|returned|available|given|retrieved|visible)\s+(?:search\s+)?(?:results|information|"
     r"snippets)|(?:los|estos|mis)\s+resultados\s+(?:disponibles|proporcionados|obtenidos|encontrados|mostrados|"
     r"visibles)|(?:los|estos|esos)\s+(?:fragmentos|extractos|snippets)|(?:the|these|those)\s+(?:snippets|excerpts)|"
@@ -10359,6 +10538,43 @@ _BROWSER_SEARCH_OFFER = re.compile(
 )
 
 
+# FINAL v1 F-p08-t2 «You can find theatre, dance, and stage shows in Cape Town through sites like What's on in Cape
+# Town and Cape Tourism» (reviewed right): sites offered as sites, where to look, are not counted among what was found.
+_OFFERED_AS_SITES = re.compile(r"\b(?:sites?|websites?|sitios?(?:\s+web)?|paginas?(?:\s+web)?|apps?)\s+(?:like|such\s+as|como)\b")
+
+
+def _search_result_site_brands(payload: dict) -> set[str]:
+    """M102: the names of the sites the results belong to (folded): the last part of a result's title («… | Fandango»,
+    «… - Southern Cravings») when it is its host's name («fandango.com», «southerncravings.com»)."""
+
+    brands: set[str] = set()
+    for item in _search_results_of(payload):
+        if not isinstance(item, dict) or not isinstance(item.get("url"), str):
+            continue
+        labels = [label for label in (urlparse(item["url"].strip()).hostname or "").casefold().split(".") if label]
+        if len(labels) < 2:
+            continue
+        # «fandango.com» → fandango; «elpais.com.uy», «bbc.co.uk» → elpais, bbc.
+        label = labels[-3] if len(labels) >= 3 and len(labels[-2]) <= 3 and len(labels[-1]) == 2 else labels[-2]
+        parts = re.split(r"\s+[|\-–—:]\s+", str(item.get("title") or "").strip())
+        if len(parts) < 2:
+            continue
+        brand = _reading_fold(parts[-1]).strip(" .")
+        if len(label) < 4 or re.sub(r"[^a-z0-9]", "", brand) != label:
+            continue
+        # «Model Y | Tesla»: a name the title also gives as its subject, or that another site's result carries, is
+        # what the pages are about, not only where they were read.
+        elsewhere = " ".join(parts[:-1]) + " " + " ".join(
+            f"{other.get('title') or ''} {other.get('snippet') or ''}"
+            for other in _search_results_of(payload)
+            if isinstance(other, dict) and isinstance(other.get("url"), str)
+            and label not in (urlparse(other["url"].strip()).hostname or "").casefold()
+        )
+        if re.search(r"\b" + re.escape(brand) + r"\b", _reading_fold(elsewhere)) is None:
+            brands.add(brand)
+    return brands
+
+
 def _search_report_shows_the_search(text: str, payload: dict, user_text: str) -> bool:
     """The answer to a verified search tells the search: a source cited, a result's site named, or how it was
     found. The person's own words and a snippet's own words are not the search showing."""
@@ -10389,6 +10605,15 @@ def _search_report_shows_the_search(text: str, payload: dict, user_text: str) ->
         _reading_fold(found.group(0))
         for found in _SEARCH_NAMED_SOURCE.finditer(re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(text)))
     )
+    if not where_asked and not _OFFERED_AS_SITES.search(folded) and any(
+        re.search(r"\b" + re.escape(brand) + r"\b", folded) is not None
+        and re.search(r"\b" + re.escape(brand) + r"\b", _reading_fold(user_text or "")) is None
+        for brand in _search_result_site_brands(payload)
+    ):
+        # M102 (DEV-D v3z D-p26-t2 «Santa Rosa Cinemas, Roxy Stadium 14, Airport Stadium 12, and Fandango are the places
+        # …»): «Movie Showtimes and Theaters near Santa Rosa, CA | Fandango» is Fandango's page; the site a result
+        # belongs to is where it was read, never one of the things found.
+        return True
     for found in (
         *(match.group(0) for match in _SEARCH_ATTRIBUTION.finditer(folded) if not where_asked),
         *(match.group(0) for match in _SEARCH_MECHANICS.finditer(folded)),
@@ -11358,10 +11583,15 @@ def _weather_focus(user_text: str, english: bool) -> str:
         # Tanda 6b: only the asked event of the asked day is sent (_project_weather_read).
         return (
             "The person asked when the sun rises or sets: give the sun time sent, with its event (sunrise is "
-            "when the sun rises, sunset when it sets) and its day (tomorrow's for tomorrow or a later day)."
+            "when the sun rises, sunset when it sets) and its day (tomorrow's for tomorrow or a later day). "
+            # M99 (DEV-D v3x D-s054): today's sun time already behind the clock.
+            "A sun time marked sunrisePassed or sunsetPassed already happened today: say it in the past (the sun set "
+            "at …), never as still to come."
             if english
             else "La persona preguntó a qué hora sale o se pone el sol: da la hora del sol enviada, con su evento "
-            "(sunrise es cuando sale, sunset cuando se pone) y su día (la de mañana para mañana o un día posterior)."
+            "(sunrise es cuando sale, sunset cuando se pone) y su día (la de mañana para mañana o un día posterior). "
+            "Una hora del sol marcada sunrisePassed o sunsetPassed ya pasó hoy: dila en pasado (el sol se puso a "
+            "las …), nunca como algo por venir."
         )
     if "uv" in measures:
         # Uso real tanda 6 «Dime el UV index»: the index now and the day's peak are both read.
@@ -11664,6 +11894,21 @@ def _false_week_range(text: str, seen: dict) -> bool:
     return False
 
 
+def _clock_minutes(value: object) -> int | None:
+    found = re.search(r"(?:^|T)(\d{1,2}):(\d{2})", str(value or ""))
+    return int(found.group(1)) * 60 + int(found.group(2)) if found else None
+
+
+def _sun_time_passed(seen: dict, block: dict, event: str) -> bool:
+    """M99: today's ``event`` (sunrise/sunset) is earlier than the reading's local clock (``observedAtLocal``), on the
+    same day."""
+
+    observed = str(seen.get("observedAtLocal") or "")
+    day = str(block.get("date") or "")
+    now, at = _clock_minutes(observed.split("T")[-1] if "T" in observed else ""), _clock_minutes(block.get(event))
+    return now is not None and at is not None and (not day or observed.startswith(day)) and at < now
+
+
 def _project_weather_read(seen: dict, user_text: str) -> dict:
     """What of the weather read the narrator gets: the part the question asks (the checks keep the whole read).
 
@@ -11681,6 +11926,12 @@ def _project_weather_read(seen: dict, user_text: str) -> dict:
         block = seen.get(day) if isinstance(seen.get(day), dict) else {}
         projected = {key: seen[key] for key in ("location", "region", "country") if key in seen}
         projected[day] = {key: block[key] for key in ("date", "weekday", *sorted(events)) if key in block}
+        if day == "today":
+            # M99 (DEV-D v3x D-s054 «…comenzará a oscurecerse» at 22:50 → «Se pondrá el sol … a las 19:48 de hoy»): a sun
+            # time of today already behind the reading's own clock is said as past.
+            projected[day].update({
+                f"{event}Passed": True for event in sorted(events) if _sun_time_passed(seen, block, event)
+            })
         return projected
     reach = _weather_asked_reach(seen, user_text)
     if reach is not None:
@@ -12021,6 +12272,15 @@ _WEATHER_HOUR_UNREAD = re.compile(
 )
 
 
+# M99: a sun event said as still to come. Folded.
+_SUN_STILL_TO_COME = re.compile(
+    r"\b(?:se\s+)?(?:pondra|saldra|ocultara|oscurecera|anochecera|amanecera|atardecera)\b|"
+    r"\b(?:va|van)\s+a\s+(?:salir|ponerse|oscurecer|anochecer|amanecer|atardecer)\b|"
+    r"\b(?:comenzara|empezara)\s+a\s+oscurecer|"
+    r"\bwill\s+(?:set|rise|go\s+down|come\s+up|get\s+dark)\b|\bis\s+going\s+to\s+(?:set|rise|go\s+down|get\s+dark)\b"
+)
+
+
 def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     """REOPEN1993 grupo W: every number in a weather reply is an observed one
     (temperatures, wind, humidity, rain probability) and the place is named;
@@ -12202,6 +12462,13 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         clocks = [clock for clock in clocks if isinstance(clock, str) and clock]
         if clocks and not any(said(clock) for clock in clocks):
             return "missing_state"
+        if (
+            isinstance(block, dict)
+            and any(block.get(f"{event}Passed") is True for event in events)
+            and _SUN_STILL_TO_COME.search(folded_text) is not None
+        ):
+            # M99 (DEV-D v3x D-s054): today's sun time behind the clock told as still to come.
+            return "weather_sun_time_passed"
         if any(
             said(day.get(other)) and day.get(other) not in clocks
             for day in (seen.get("today"), tomorrow) if isinstance(day, dict)
@@ -12586,6 +12853,25 @@ def _schedule_told_as_rung(text: str, payload: dict) -> bool:
     )
 
 
+# M99 (DEV-D v3x D-w18-t4 «Recuerda en 45 minutos que te toca tomar un descanso a las 23:56.»): the report of a reminder
+# just scheduled opened on an order to the person to remember, where BAXY is the one who reminds. Folded.
+_SCHEDULE_TOLD_AS_ORDER = re.compile(
+    r"^[¡\s]*(?:recuerda|recorda|acuerdate|no\s+(?:te\s+)?olvides|remember|don'?t\s+forget|do\s+not\s+forget)\b"
+)
+
+
+def _schedule_told_as_order(text: str, payload: dict) -> bool:
+    """A verified alarm or reminder still to ring, reported as an order to the person to remember (see above)."""
+
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    return (
+        payload.get("operation") in {"notification.schedule", "reminder.create"}
+        and bool(seen)
+        and not payload.get("cause")
+        and _SCHEDULE_TOLD_AS_ORDER.search(_reading_fold(text)) is not None
+    )
+
+
 def _report_changes_the_act(text: str, payload: dict) -> str:
     """The other act a report of a window or application operation names instead of its own; ""."""
 
@@ -12631,6 +12917,28 @@ def _note_content_described(text: str, payload: dict) -> bool:
     return re.search(rf"\b{described.group('kind')}\b", unquoted) is not None
 
 
+def _search_report_recipe_not_read(text: str, payload: dict, user_text: str) -> bool:
+    """M102 (DEV-D v3z D-s017 «a good southern style mac n cheese recipe» → «Southern-style mac and cheese uses a
+    creamy no-cook sauce with cheddar…», D-w10-t1 «¿me regalas una receta sencilla de arepas de queso?» → the
+    encyclopedia's sentence about the arepa): a named dish's recipe asked for, and no page read that is one (no recipe
+    reference, no page with its ingredients listed and its steps numbered). D52: a recipe is its quantities and steps;
+    what was read is not it, so the report says the recipe was not found."""
+
+    if payload.get("operation") != "web.search" or _search_results_text(payload) is None:
+        return False
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    if seen.get("reference") is not None or not semantic_knowledge.asks_one_recipe(user_text or ""):
+        return False
+    if any(_recipe_has_its_form(str(item.get("snippet") or "")) for item in _search_results_of(payload)
+           if isinstance(item, dict)):
+        return False
+    return any(
+        _SEARCH_NOT_FOUND.match(_reading_fold(sentence)) is None
+        for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip())
+        if sentence.strip()
+    )
+
+
 def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said: str | None = None) -> str:
     """El texto público conserva los hechos que el payload le dio.
 
@@ -12649,6 +12957,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
         return "report_changes_the_act"
     if _schedule_told_as_rung(text, payload):
         return "schedule_told_as_rung"
+    if _schedule_told_as_order(text, payload):
+        return "schedule_told_as_order"
     if _search_report_speaks_as_a_page(text, payload, user_text):
         return "search_report_page_voice"
     if payload.get("operation") == "web.search" and _search_report_names_the_person_as_finder(text):
@@ -12682,6 +12992,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
         return "search_report_runs_long"
     if _search_report_names_a_page(text, payload, user_text):
         return "search_report_names_a_page"
+    if _search_report_offers_a_finder(text, payload, user_text):
+        return "search_report_page_voice"
     if (
         _search_results_text(payload) is not None
         and _entity_lookup_query(user_text or "") is None
@@ -12697,6 +13009,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
         return task_defect
     if _note_content_described(text, payload):
         return "note_content_described"
+    if _search_report_recipe_not_read(text, payload, user_text):
+        return "search_report_recipe_not_read"
     folded = _reading_fold(text)
     seen = payload.get("seen")
     # A wifi reading observes the WLAN connection, not internet reachability.
@@ -14896,6 +15210,11 @@ def compose_visible_defect(
     if re.search(r"\bya terminado\b", folded) and "ha terminado" not in folded:
         return "invented"
     language = _conversation_response_language(user_text, facts)
+    if language in {"es", "en"} and (
+        intent == "clarification" or _situation_from_facts(facts).get("kind") == "clarification"
+    ):
+        # M99 (DEV-D v3x D-w15-t3): the question back is judged in the language the person speaks.
+        language = addressed_language(said or user_text, language)
     # El idioma de la respuesta se lee con el mismo owner que fija el del turno,
     # y sólo se veta cuando la evidencia del texto es de un solo idioma: «I will
     # not open any programs.» ante un pedido español pasaba los dos literales de
@@ -15277,7 +15596,11 @@ def compose_visible_defect(
             return "metadiscourse"
         # M93 (held-out v3v t10 «abrí el bloc de notas», inventory_failed): «…no pudo leer la lista de programas y
         # ventanas abiertos» names the list that could not be read, the failure's own cause; it claims nothing open.
-        if re.search(r"abiert|\bis open\b", _OPEN_PROGRAMS_LIST.sub(" ", folded)) and not re.search(
+        # M101 (DEV-D v3z D-w10-t4 «He abierto YouTube, pero no he podido confirmar si la música tropical está
+        # sonando.», refused three times and no final): when the failure is a YouTube page that opened and did not
+        # confirm playback, the open page is its cause fact, not a reversed result.
+        page_opened = _failure_opened_the_page(situation)
+        if not page_opened and re.search(r"abiert|\bis open\b", _OPEN_PROGRAMS_LIST.sub(" ", folded)) and not re.search(
             # CLOSE1371 «cierra steam» with no Steam window: «no tiene ninguna
             # ventana abierta» / «no está abierto» state the absence, they do
             # not claim the application is open.
@@ -15302,6 +15625,7 @@ def compose_visible_defect(
                 folded,
             )
             and not _completed_step_operation(situation, "app.open")
+            and not page_opened
         ):
             return "reversed_polarity"
         if cause == "mission_failed" and re.search(
@@ -16707,6 +17031,81 @@ PARTIAL_REPORT_PROMPT_EN = (
     "date, a figure), as something you know: never with «the data», «the results», «the information» or «the "
     "sources». Answer in English."
 )
+
+
+# M102 (DEV-D v3z D-p31-t1, both partial drafts «Los resultados mencionan que Javier Milei será el 13° presidente…, pero
+# no listan los nombres…», «Los datos proporcionados confirman que …»): the 4B opened with the results as the speaker
+# twice although the prompt and the retry told it not to, and the «No encontré» stood over what the pages did state. The
+# frame is taken off the draft's own words (what the results «mention» is said, what they «do not list» is not found),
+# and the result is judged again by every check; nothing is added that the draft did not say.
+_PARTIAL_FRAME = re.compile(
+    r"^\s*(?:(?:los|estos|esos)\s+(?:resultados|datos|textos|fragmentos|extractos)|la\s+informaci[oó]n)"
+    r"(?:\s+(?:proporcionad[oa]s|disponibles?|obtenid[oa]s|encontrad[oa]s|visibles?|le[ií]d[oa]s))?"
+    r"\s+(?:(?:s[oó]lo|solamente|[uú]nicamente)\s+)?(?:mencionan?|confirman?|indican?|dicen|dice|se[nñ]alan?|muestran?|"
+    r"afirman?|recogen?|precisan?)\s+que\s+"
+    r"|^\s*(?:the|these)\s+(?:(?:provided|available|search)\s+)?(?:results|data|snippets|texts|sources|information)"
+    r"\s+(?:only\s+)?(?:mentions?|confirms?|states?|shows?|says?|indicates?|notes?)\s+that\s+",
+    re.IGNORECASE,
+)
+_PARTIAL_ABSENCE = re.compile(
+    r"(?P<lead>,?\s*(?:pero|aunque|y)\s+)no\s+(?:(?:se\s+)?(?:listan?|mencionan?|dan|incluyen?|detallan?|especifican?|"
+    r"nombran?|precisan?|indican?|recogen?|aparecen?|encuentran?))\b"
+    r"|(?P<lead_en>,?\s*(?:but|although|and)\s+)(?:they\s+)?(?:do\s+not|don'?t|does\s+not|doesn'?t)\s+"
+    r"(?:list|mention|give|include|detail|specify|name|state|show)\b",
+    re.IGNORECASE,
+)
+_PARTIAL_ABSENT_SENTENCE = re.compile(
+    r"^\s*(?:tampoco|no)\s+se\s+(?:encuentran?|mencionan?|dan|incluyen?|detallan?|especifican?|nombran?|indican?|"
+    r"recogen?|precisan?)\b|^\s*(?:there\s+(?:is|are)\s+no|nor\s+(?:is|are))\b",
+    re.IGNORECASE,
+)
+_PARTIAL_WHERE_READ = re.compile(
+    r"\s+(?:en|de|entre)\s+(?:los|estos|esos|las|estas)\s+(?:textos|resultados|datos|fragmentos|extractos|fuentes|"
+    r"p[aá]ginas)(?:\s+(?:proporcionad[oa]s|disponibles|obtenid[oa]s|le[ií]d[oa]s|consultad[oa]s))?(?=\s*[.!]?\s*$)"
+    r"|\s+(?:in|from|among)\s+(?:the|these)\s+(?:(?:provided|available)\s+)?(?:texts|results|data|snippets|sources|"
+    r"pages)(?=\s*[.!]?\s*$)",
+    re.IGNORECASE,
+)
+
+
+def _unframed_partial(draft: str, english: bool) -> str:
+    """M102: the partial report's own words without the results as their speaker (see above), each thing not found
+    said in a sentence of its own («No encontré …»); "" when nothing is left."""
+
+    not_found = "I couldn't find " if english else "No encontré "
+    sentences = [part.strip() for part in re.split(r"(?<=[.!?])\s+", str(draft or "").strip()) if part.strip()]
+    said: list[str] = []
+    for sentence in sentences:
+        sentence = _PARTIAL_WHERE_READ.sub("", sentence.rstrip(".!")).strip()
+        parts: list[str] = []
+        absent = _PARTIAL_ABSENT_SENTENCE.match(sentence)
+        if absent is not None:
+            parts.append(not_found + sentence[absent.end():].strip())
+        else:
+            sentence = _PARTIAL_FRAME.sub("", sentence, count=1)
+            found = _PARTIAL_ABSENCE.search(sentence)
+            if found is None:
+                parts.append(sentence)
+            else:
+                # «…, pero no listan los nombres … ni mencionan cifras …»: the second verb of the absence was the
+                # results' too.
+                missing = re.sub(
+                    r"\b(ni|nor)\s+(?:se\s+)?(?:mencionan?|listan?|dan|incluyen?|detallan?|especifican?|nombran?|"
+                    r"mention|list|give|include|specify)\s+",
+                    r"\1 ",
+                    sentence[found.end():].strip(),
+                )
+                parts += [sentence[: found.start()], not_found + missing if missing else ""]
+        for part in parts:
+            part = part.strip(" ,;")
+            if not part or part.casefold() == not_found.strip().casefold():
+                continue
+            if said and part.startswith(not_found) and said[-1].startswith(not_found):
+                # Two things not found are one sentence: a report runs two at most.
+                said[-1] = said[-1].rstrip(".") + (", nor " if english else ", ni ") + part[len(not_found):] + "."
+                continue
+            said.append(part[0].upper() + part[1:] + ".")
+    return " ".join(said)
 
 
 def _carries_unasked_data(text: str, asked: set[str]) -> bool:
@@ -18960,6 +19359,14 @@ class LlmRuntime:
         go_ahead_unmet = presentation_shape not in _WRITTEN_CONTENT_SHAPES and dialogue_slot.go_ahead_with_nothing_pending(
             text, last_assistant,
         )
+        # M99 (DEV-D v3x D-p01-t3): the person calls off what they asked just before, and nothing of it is running;
+        # undoing an effect BAXY reports done is the retraction above, not this.
+        called_off = (
+            presentation_shape not in _WRITTEN_CONTENT_SHAPES
+            and bool(prior_user_requests)
+            and dialogue_slot.takes_back(text, prior_user_requests[-1])
+            and not dialogue_slot.retracts_the_last_effect(text, last_assistant)
+        )
         # M85 (DEV-D v3o D-p35-t2 «podrías explicarme como lo hiciste?» after BAXY only asked a question back): what
         # BAXY did is in the dialogue, and it did nothing yet; «no tengo acceso a cómo lo hice» was the model's guess.
         last_answer_message = (
@@ -18983,17 +19390,27 @@ class LlmRuntime:
                     "content": (
                         "The person asks how far they can trust your previous answer. Answer about that answer as you "
                         "gave it, in one or two sentences: add no fact that is not in it, and if it said you did not "
-                        "find or did not know something, say so."
+                        "find or did not know something, say so. "
+                        # M99 (DEV-D v3x D-p35-t3: both drafts spoke of «access to real-time data», refused, and the
+                        # recovery said «Puedo ser muy confiable»).
+                        "If it does not say where it was read, it came from what you know, unchecked: say that, and "
+                        "that the important points are worth checking. Do not speak of access, real-time data, "
+                        "tools or updates."
                         if response_language == "en"
                         else "La persona pregunta cuánto puede fiarse de tu respuesta anterior. Contesta sobre esa "
                         "respuesta tal como la diste, en una o dos frases: no añadas datos que no estén en ella, y si "
-                        "en ella dijiste que no encontraste o no sabías algo, dilo así."
+                        "en ella dijiste que no encontraste o no sabías algo, dilo así. Si no dice de dónde se leyó, "
+                        "salió de lo que sabes, sin comprobarlo: dilo, y que conviene verificar lo importante. No "
+                        "hables de acceso, de datos en tiempo real, de herramientas ni de actualizaciones."
                     ),
                 }
                 if last_assistant.strip() and asks_about_reliability(text)
                 # M88 (DEV-D v3r D-p24-t5): a go-ahead nothing was waiting for is told that nothing ran.
                 else {"role": "system", "content": _go_ahead_instruction(last_assistant, response_language)}
                 if go_ahead_unmet
+                # M99 (DEV-D v3x D-p01-t3 «no, cancel» → «I will not proceed with the cancellation.»).
+                else {"role": "system", "content": _call_off_instruction(last_assistant, response_language)}
+                if called_off
                 else None
             )
         )
@@ -19174,6 +19591,17 @@ class LlmRuntime:
             if head != content:
                 content = head
                 message = {**message, "content": head}
+        if presentation_shape is None and conversation_kind == "unsupported" and content:
+            # M101 (DEV-D v3z D-s037, D-s042): the limit that named the thing asked keeps that naming, without the
+            # denial said again after it.
+            unechoed = limit_without_its_echo(content)
+            if (
+                unechoed
+                and _unsupported_answer_contract_failure(content, text)
+                and not _unsupported_answer_contract_failure(unechoed, text)
+            ):
+                content = unechoed
+                message = {**message, "content": unechoed}
 
         def judged(value: str) -> str:
             """M50: in a reply to a code request only the prose around the code is judged; all code is the content."""
@@ -19212,6 +19640,13 @@ class LlmRuntime:
             content,
             payload["messages"],
         ) or repeats_a_sent_instruction(content, turn_instructions, text)
+        # M99 (DEV-D v3x D-p31-t3): BAXY's last message said again is no answer to this one. Code rewritten whole and
+        # written content (a draft rewritten as a list, a translation) are content of their own.
+        repeats_last = (
+            not code_asked
+            and presentation_shape not in _WRITTEN_CONTENT_SHAPES
+            and _repeats_the_last_answer(content, last_assistant, text)
+        )
         unsupported_contract_failure_reason = (
             _unsupported_answer_contract_failure(content, text)
             if presentation_shape is None and conversation_kind == "unsupported"
@@ -19258,7 +19693,7 @@ class LlmRuntime:
             and not (
                 is_echo or system_prompt_echo
                 or unsupported_contract_failure or shaped_contract_failure or go_ahead_draft_unmet or memory_figures
-                or misquoted
+                or misquoted or repeats_last
             )
         )
         if (
@@ -19271,6 +19706,7 @@ class LlmRuntime:
             or go_ahead_draft_unmet
             or memory_figures
             or misquoted
+            or repeats_last
         ):
             retry_payload = dict(payload)
             language_message = next(
@@ -19296,6 +19732,15 @@ class LlmRuntime:
                         if conversation_kind == "unsupported_language"
                         else _go_ahead_instruction(last_assistant, response_language)
                         if go_ahead_draft_unmet
+                        else (
+                            # M99 (DEV-D v3x D-p31-t3): the draft was BAXY's last message again.
+                            "Your draft repeated your previous message word for word. Answer, in one or two sentences, "
+                            "what the person says now, without repeating your previous message."
+                            if response_language == "en"
+                            else "Tu borrador repetía palabra por palabra tu mensaje anterior. Contesta, en una o dos "
+                            "frases, lo que la persona dice ahora, sin repetir tu mensaje anterior."
+                        )
+                        if repeats_last
                         else (
                             # M95 (D52; DEV-D D-p28-t3 «*Hustlers* is a 2019 film»): name the figure and say why.
                             "These figures are not in the conversation: " + ", ".join(memory_figures[:4]) + ". From "
@@ -19340,11 +19785,18 @@ class LlmRuntime:
                             # M93 (DEV-D v3u D-p31-t2, D-p35-t3): what BAXY has access to is not the answer.
                             "Do not speak of what you have or lack access to, of your data, tools or updates, or of "
                             "how you work. Answer in one sentence what the person says or asks, with what the "
-                            "conversation shows; if you cannot be sure of it, say so plainly."
+                            "conversation shows; if you cannot be sure of it, say so plainly. "
+                            # M99 (DEV-D v3x D-p31-t3, D-p27-t5): this repair wrote BAXY's last answer, or the
+                            # person's words, back.
+                            "Do not repeat your previous message or the person's words."
                             if response_language == "en"
                             else "No hables de a qué tienes o no tienes acceso, de tus datos, herramientas o "
                             "actualizaciones ni de cómo funcionas. Contesta en una sola frase lo que la persona dice o "
-                            "pregunta, con lo que muestra la conversación; si no puedes asegurarlo, dilo llanamente."
+                            "pregunta, con lo que muestra la conversación; si no puedes asegurarlo, dilo llanamente. "
+                            "No repitas tu mensaje anterior ni las palabras de la persona."
+                        ) + (
+                            # M99 (DEV-D v3x D-p35-t3): the repair keeps what the turn was told of the last answer.
+                            " " + last_answer_message["content"] if last_answer_message is not None else ""
                         )
                         if presentation_shape not in _WRITTEN_CONTENT_SHAPES
                         and conversation_reply_speaks_of_the_system(content, text, prior_user_requests)
@@ -19557,12 +20009,28 @@ class LlmRuntime:
                 # final_content; both must carry the kept sentence.
                 final_content = head
                 message = {**message, "content": head}
+        if presentation_shape is None and conversation_kind == "unsupported" and final_content:
+            # M101: the retried limit is kept to what its opening named the same way.
+            unechoed = limit_without_its_echo(final_content)
+            if (
+                unechoed
+                and _unsupported_answer_contract_failure(final_content, text)
+                and not _unsupported_answer_contract_failure(unechoed, text)
+            ):
+                final_content = unechoed
+                message = {**message, "content": unechoed}
         if presentation_shape == "identity" and final_content:
             # M90 (cien-110 079): the retried answer is kept to its first sentence the same way.
             head = _identity_answer_head(final_content, text)
             if head != final_content:
                 final_content = head
                 message = {**message, "content": head}
+        added_lines = _new_dialogue_lines(final_content, last_assistant) if content_shape_asked(text) == "dialogue" else ""
+        if added_lines and added_lines != final_content:
+            # M99 (DEV-D v3x D-p36-t3 «agrega a la conversación características físicas del xenomorfo»): asked for new
+            # lines of the dialogue, the reply wrote the whole dialogue again; the lines already said are dropped.
+            final_content = added_lines
+            message = {**message, "content": added_lines}
         remembered = (
             talk_memory_figures(final_content, text, dialogue_said, prior_user_requests)
             + talk_misquotes_itself(final_content, dialogue_said)
@@ -19588,8 +20056,17 @@ class LlmRuntime:
             or _reply_uses_opposite_language(final_prose, response_language)
             or (
                 not mirror_is_a_valid_answer
-                and _normalized_dialogue_text(final_content)
-                == _normalized_dialogue_text(text)
+                and (
+                    _normalized_dialogue_text(final_content) == _normalized_dialogue_text(text)
+                    # M99 (DEV-D v3x D-p27-t5 «Nope, that's a lot.» → «That's a lot.» from the repair).
+                    or _says_the_person_back(final_content, text)
+                )
+            )
+            # M99 (DEV-D v3x D-p31-t3): the repair that wrote BAXY's last message again.
+            or (
+                not code_asked
+                and presentation_shape not in _WRITTEN_CONTENT_SHAPES
+                and _repeats_the_last_answer(final_content, last_assistant, text)
             )
             or echoes_system_message(
                 final_content,
@@ -19631,8 +20108,14 @@ class LlmRuntime:
                 if _reply_uses_opposite_language(final_prose, response_language)
                 else "echo"
                 if not mirror_is_a_valid_answer
-                and _normalized_dialogue_text(final_content)
-                == _normalized_dialogue_text(text)
+                and (
+                    _normalized_dialogue_text(final_content) == _normalized_dialogue_text(text)
+                    or _says_the_person_back(final_content, text)
+                )
+                else "repeats_last_answer"
+                if not code_asked
+                and presentation_shape not in _WRITTEN_CONTENT_SHAPES
+                and _repeats_the_last_answer(final_content, last_assistant, text)
                 else "system_echo"
                 if echoes_system_message(final_content, final_messages)
                 else _unsupported_answer_contract_failure(final_content, text)
@@ -22842,18 +23325,23 @@ class LlmRuntime:
                 "chat_template_kwargs": {"enable_thinking": False},
             })
             draft = str(response["choices"][0]["message"].get("content") or "").strip()
-            reason = "empty" if not draft else "truncated" if _finish_reason_of(response) == "length" else (
-                "wrong_language" if _reply_uses_opposite_language(draft, language) else ""
-            ) or (
-                compose_visible_defect(draft, "status", user_text, facts)
-                or ("invented" if _truncated_fact_word(draft, payload) else "")
-                or _payload_fact_defect(draft, payload, user_text, said=said)
-            )
-            if not reason and all(
-                _SEARCH_NOT_FOUND.match(_reading_fold(part)) is not None
-                for part in re.split(r"(?<=[.!?;])\s+", draft) if part.strip()
-            ):
-                reason = "only_not_found"
+
+            def judged(candidate: str) -> str:
+                defect = (
+                    "wrong_language" if _reply_uses_opposite_language(candidate, language) else ""
+                ) or (
+                    compose_visible_defect(candidate, "status", user_text, facts)
+                    or ("invented" if _truncated_fact_word(candidate, payload) else "")
+                    or _payload_fact_defect(candidate, payload, user_text, said=said)
+                )
+                if not defect and all(
+                    _SEARCH_NOT_FOUND.match(_reading_fold(part)) is not None
+                    for part in re.split(r"(?<=[.!?;])\s+", candidate) if part.strip()
+                ):
+                    defect = "only_not_found"
+                return defect
+
+            reason = "empty" if not draft else "truncated" if _finish_reason_of(response) == "length" else judged(draft)
             _capture_compose_stage(
                 trace=trace_id, stage="partial_after_not_found" + ("_retry" if attempt else ""), intent="status",
                 language=language, greeting="none", payload=data, raw=draft, clipped=draft, reason=reason,
@@ -22862,6 +23350,22 @@ class LlmRuntime:
             )
             if not reason:
                 return draft
+            unframed = (
+                _unframed_partial(draft, english)
+                if reason in {"copied_instruction", "search_report_shows_the_search"}
+                else ""
+            )
+            if unframed and unframed != draft:
+                # M102 (DEV-D v3z D-p31-t1): the draft's own words without the results as their speaker.
+                unframed_reason = judged(unframed)
+                _capture_compose_stage(
+                    trace=trace_id, stage="partial_after_not_found_unframed", intent="status",
+                    language=language, greeting="none", payload=data, raw=draft, clipped=unframed,
+                    reason=unframed_reason, finish_reason=_finish_reason_of(response), published=not unframed_reason,
+                    situation=json.dumps(situation, ensure_ascii=False)[:2048],
+                )
+                if not unframed_reason:
+                    return unframed
             if reason in {"copied_instruction", "search_report_shows_the_search"}:
                 # M89 (DEV-D v3r D-p31-t1, D-p34-t1): both drafts opened «Los datos proporcionados mencionan…»; the
                 # retry is told its own defect instead of being sampled again blind.
@@ -22936,6 +23440,12 @@ class LlmRuntime:
         previous_answer = _referenced_previous_answer(user_text, facts)
         situation = _situation_from_facts(facts)
         consulted_refused: list[str] = []
+        if response_language in {"es", "en"} and (
+            intent == "clarification" or str(situation.get("kind") or "") == "clarification"
+        ):
+            # M99 (DEV-D v3x D-w15-t3): a question back to the person is in their language, not the one they asked a
+            # translation into.
+            response_language = addressed_language(said or user_text, response_language)
         consulted = self._compose_consulted_answer(
             user_text, facts, situation, response_language, post, compose_deadline, trace_id,
             refused=consulted_refused,
@@ -24962,6 +25472,10 @@ class LlmRuntime:
             # Kept only if the clipped draft passes every check.
             if cause not in {"out_of_catalog", "out-of-catalog"} or not candidate or publishable(candidate):
                 return candidate
+            # M101 (DEV-D v3z D-s037, D-s042): «Eso no lo hago: <lo pedido> no lo preparo yo.» keeps what it named.
+            unechoed = limit_without_its_echo(candidate)
+            if unechoed and publishable(unechoed):
+                return unechoed
             found = re.search(_LIMIT_REASON.pattern, candidate, re.IGNORECASE)
             if found is None:
                 return candidate
@@ -25214,6 +25728,14 @@ class LlmRuntime:
                     if response_language == "en"
                     else "No pegues direcciones: da la respuesta misma en una o dos oraciones, en prosa, sin nombrar ningún sitio."
                 ),
+                # M102 (DEV-D v3z D-s017, D-w10-t1).
+                "search_report_recipe_not_read": (
+                    "Nothing you read is the recipe, with its quantities and steps: say only, in the first person and "
+                    "in one short sentence, that you did not find the recipe, naming the dish."
+                    if response_language == "en"
+                    else "Nada de lo que leíste es la receta, con sus cantidades y pasos: di sólo, en primera persona y "
+                    "en una oración corta, que no encontraste la receta, nombrando el plato."
+                ),
                 "search_report_page_voice": (
                     "Speak in your own voice: say the answer as something you know, in one or two sentences, without naming any page or site; never speak as the page («we», «our», «we tell you»), never copy its questions, its instructions to the reader or what it says it offers; if no page states the answer, say only that you did not find it."
                     if response_language == "en"
@@ -25387,6 +25909,22 @@ class LlmRuntime:
                     "The sun time sent is today's: say it of today, never of tomorrow."
                     if response_language == "en"
                     else "La hora del sol enviada es la de hoy: dila de hoy, nunca de mañana."
+                ),
+                # M99 (DEV-D v3x D-s054 «Se pondrá el sol … a las 19:48 de hoy» at 22:50).
+                "weather_sun_time_passed": (
+                    "That sun time already passed today: say it in the past (the sun set at that time), never as "
+                    "still to come."
+                    if response_language == "en"
+                    else "Esa hora del sol ya pasó hoy: dila en pasado (el sol se puso a esa hora), nunca como algo por "
+                    "venir."
+                ),
+                # M99 (DEV-D v3x D-w18-t4 «Recuerda en 45 minutos que te toca tomar un descanso a las 23:56.»).
+                "schedule_told_as_order": (
+                    "Say that you will remind them (or that the alarm will ring) at the time scheduled; do not give "
+                    "the person an order («remember…»)."
+                    if response_language == "en"
+                    else "Di que se lo recordarás (o que la alarma sonará) a la hora programada; no le des una orden a "
+                    "la persona («recuerda…»)."
                 ),
                 # M93 (DEV-D v3u D-w18-t4 «Te he recordado … a las 20:23»).
                 "schedule_told_as_rung": (

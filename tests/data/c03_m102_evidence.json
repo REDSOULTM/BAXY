@@ -1,0 +1,234 @@
+{
+ "D-p12-t2": {
+  "run": "v3z-devD",
+  "trace": "t163",
+  "text": "Bring up 24/7 stores near me",
+  "draft": "There are 24/7 delivery services and verified store maps available near Curico.",
+  "payload": {
+   "seen": {
+    "query": "Bring up 24/7 stores near me Curico Chile",
+    "near": "Curico",
+    "count": 5,
+    "results": [
+     {
+      "title": "Curico 24/7 On Demand Delivery | Concierge Service Near Me ...",
+      "url": "https://stayrunners.com/en/countries/Chile/cities/Curico/services/24-hour-on-demand-delivery-service-curico",
+      "snippet": "Need on-demand delivery, instant delivery, or late night errands in Curico ? StayRunners is your 24 hour on-demand delivery service! We deliver alcohol, groceries, snacks, medicine, toiletries, pet food, baby supplies, and anything else you need."
+     },
+     {
+      "title": "Curico Alcohol & Vape Map - 1,000+ Verified Stores | Beer, Wine ...",
+      "url": "https://stayrunners.com/en/countries/chile/cities/curico/staymaps",
+      "snippet": "StayMaps Curico is a verified 24/7 store finder that shows real-time hours for liquor stores , vape shops, and cannabis dispensaries in Curico . Unlike Google Maps, our runners physically verify store hours every day. … We partner with local stores for 24/7 delivery. 24/7 Delivery Backup: Store closed? If a store is closed, StayMaps offers instant 24/7 delivery through StayRunners."
+     },
+     {
+      "title": "Instagram video by Distribuidora Curicó \"ATIEMPO\" • Sep 24, 2026 ...",
+      "url": "https://www.instagram.com/reel/DdrJa6cRkLH/",
+      "snippet": "Te damos 4 opciones de entrega de tus productos 😉- Envios a domicilio dentro de Santiago desde solo $3.500🏠- Retirar en Puente Alto (te envió dirección por interno)💯- Entregas en metro Protectora de la infancia, otro metro con cargo adicional.- Envios a todo Chile por Starken y Chilexpress (Por pagar) 📥-#suplementos#lipo6# ..."
+     },
+     {
+      "title": "24 Hour Stores Near Me: Stores Open 24 Hours Today | CalendarHours",
+      "url": "https://calendarhours.com/stores-open-24-hours/",
+      "snippet": "Find stores open 24 hours near you, including grocery stores , pharmacies, convenience stores , gas stations, restaurants, coffee shops, gyms and other overnight services."
+     },
+     {
+      "title": "All stores near me in Curicó | Mapdoor",
+      "url": "https://mapdoor.com/cl/vs/valpara%C3%ADso/all-stores",
+      "snippet": "Explore all stores in Curicó , with contact details and hours for DHL, FedEx, Starbucks, McDonald's, Adidas, Shell, and more on our interactive map"
+     }
+    ],
+    "authority": "duckduckgo_lite_https"
+   },
+   "operation": "web.search"
+  }
+ },
+ "D-p26-t2": {
+  "run": "v3z-devD",
+  "trace": "t214",
+  "text": "Can you search for movies in Santa ROsa.",
+  "draft": "Santa Rosa Cinemas, Roxy Stadium 14, Airport Stadium 12, and Fandango are the places mentioned for movies in Santa Rosa.",
+  "payload": {
+   "seen": {
+    "query": "movies in Santa Rosa",
+    "count": 5,
+    "results": [
+     {
+      "title": "Santa Rosa Cinemas - Movie Tickets & Concessions",
+      "url": "https://www.santarosacinemas.com/",
+      "snippet": "Santa Rosa Cinemas - The number one spot for the latest hollywood hits. We are your hometown movie theatre. The destination for new movies , classic hollywood hits and all things cinema."
+     },
+     {
+      "title": "Roxy Stadium 14 Movie Theater in Santa Rosa, CA",
+      "url": "https://www.santarosacinemas.com/movie-theatres/santa-rosa/california/roxy-14",
+      "snippet": "Find movie showtimes, tickets, concessions, directions, and theatre information for Roxy Stadium 14 in Santa Rosa , CA."
+     },
+     {
+      "title": "Movie Showtimes and Theaters near Santa Rosa, CA | Fandango",
+      "url": "https://www.fandango.com/santa-rosa_ca_movietimes",
+      "snippet": "Discover showtimes and movie theaters near you with Fandango! Find showtimes, tickets, and more for your favorite cinema experience in Santa Rosa , CA"
+     },
+     {
+      "title": "Airport Stadium 12 - Santa Rosa, CA Showtimes and Movie Tickets ...",
+      "url": "https://www.showtimes.com/movie-theaters/airport-stadium-12-8782/",
+      "snippet": "Airport Stadium 12, Santa Rosa , CA movie times and showtimes. Movie theater information and online movie tickets."
+     },
+     {
+      "title": "Roxy Stadium 14 - Santa Rosa, CA Showtimes and Movie Tickets | Cinema ...",
+      "url": "https://www.showtimes.com/movie-theaters/roxy-stadium-14-8783/",
+      "snippet": "Roxy Stadium 14, Santa Rosa , CA movie times and showtimes. Movie theater information and online movie tickets."
+     }
+    ],
+    "authority": "duckduckgo_lite_https"
+   },
+   "operation": "web.search"
+  }
+ },
+ "D-p31-t1": {
+  "run": "v3z-devD",
+  "trace": "t230",
+  "text": "Dime los últimos 10 presidentes democráticos que gobernaron argentina desde la vuelta de la democracia y como se a desarrollado la economía y como a afectado la convertibilidad a los sueldos de los trabajadores y sus posibilidades de ascenso social.",
+  "draft": "No encontré en los resultados una lista de los últimos 10 presidentes ni detalles sobre el desarrollo económico y la convertibilidad.",
+  "payload": {
+   "seen": {
+    "query": "los últimos 10 presidentes democráticos de Argentina desde la vuelta de la democracia, cómo se desarrolló la economía y cómo afectó la convertibilidad a los sueldos y al ascenso social",
+    "count": 5,
+    "results": [
+     {
+      "title": "Cronología de los 13 presidentes argentinos en 40 años de democracia",
+      "url": "https://www.infobae.com/politica/2023/12/10/cronologia-de-los-13-presidentes-argentinos-en-40-anos-de-democracia/",
+      "snippet": "Milei asumirá el cargo como líder de La Libertad Avanza, el partido político que más rápido ascendió al poder en estos 40 años de democracia . … Cuando Javier Milei reciba hoy la banda y el bastón presidencial de Alberto Fernández se convertirá en el 13° presidente de Argentina desde el regreso de la democracia, en 1983, hasta la actualidad. A cuarenta años de la recuperación del Estado de derecho y de espaldas al Congreso que lo consagró junto a su candidata a vicepresidenta, Victoria Villarruel , hace 10 días, Milei dará hoy su primer discurso inaugural como el 13° presidente de la democracia. Asunción presidencial 2023 40 años de democracia Elecciones Argentina 2023 Infobae Data Últimas noticias Javier Milei Presidentes argentinos"
+     },
+     {
+      "title": "Últimos Gobiernos Democráticos de Argentina: Análisis y Contexto",
+      "url": "https://www.studocu.com/es-ar/document/instituto-mariano-moreno/ciencias-sociales/ultimos-gobiernos-democraticos-de-argentina-analisis-y-contexto/141780738",
+      "snippet": "Este documento analiza los últimos gobiernos democráticos de Argentina , desde Raúl Alfonsín hasta Javier Milei, destacando sus políticas económicas, sociales y los desafíos enfrentados, como la inflación y la deuda externa. Se abordan las reformas significativas y los eventos clave que marcaron cada mandato."
+     },
+     {
+      "title": "Resumen de Presidentes de Argentina (2003-2025): Modelos Económicos y ...",
+      "url": "https://www.studocu.com/es-ar/document/universidad-nacional-del-chaco-austral/historia-economica-y-social/resumen-de-presidentes-de-argentina-2003-2025-modelos-economicos-y-conflictos/162071389",
+      "snippet": "Explora los modelos económicos de los presidentes argentinos y sus implicaciones sociales desde Kirchner hasta Milei en este análisis detallado."
+     },
+     {
+      "title": "Siete presidentes y diez mandatos constitucionales: los jefes de Estado ...",
+      "url": "https://www.infobae.com/historias/2023/11/20/siete-presidentes-y-diez-mandatos-constitucionales-los-jefes-de-estado-que-gobernaron-el-pais-desde-1983/",
+      "snippet": "Desde el regreso de la democracia, los jefes de Estado debieron sortear crisis económicas y sociales. Algunos no terminaron sus mandatos, otros lograron reelegir y cada elección encierra una ..."
+     },
+     {
+      "title": "La posición política de los Presidentes de Argentina 1983/2026",
+      "url": "https://enelrecinto.com.ar/la-posicion-politica-de-los-presidentes-de-argentina-1983-2026/",
+      "snippet": "Prensa En el Recinto. Cuando hablamos del período democrático inaugurado el 10 de diciembre de 1983, y se evalúa el derrotero de la política argentina , de acuerdo a los gobiernos que fueron electos por el pueblo argentino, no dejamos de sorprendernos en cuanto a la posición política que tuvieron los distintos presidentes , y las consecuencias que tuvieron en la economía y el andamiaje ..."
+     }
+    ],
+    "authority": "duckduckgo_lite_https"
+   },
+   "operation": "web.search"
+  }
+ },
+ "F-p08-t2": {
+  "run": "final-once",
+  "trace": "t231",
+  "text": "I wish to see a Stage show.",
+  "draft": "You can find theatre, dance, and stage shows in Cape Town through sites like What's on in Cape Town and Cape Tourism.",
+  "payload": {
+   "seen": {
+    "query": "stage shows in Cape Town",
+    "count": 5,
+    "results": [
+     {
+      "title": "Theatre, Dance, and Stage Shows | What's on in Cape Town",
+      "url": "https://whatsonincapetown.com/cape-town-stage-shows/",
+      "snippet": "What’s on Stage in Cape Town: The Best Theatre, Musical & Dance Productions Discover a world of imaginative performance art …"
+     },
+     {
+      "title": "Live Shows in Cape Town | Performances, Musicals & Acts",
+      "url": "https://allevents.in/cape-town/performances",
+      "snippet": "Find live performances in Cape Town — musicals, variety shows, dance and stage acts. Browse upcoming shows by date and venue …"
+     },
+     {
+      "title": "A Guide to The Top Theatres in Cape Town - Cape Tourism",
+      "url": "https://www.capetourism.com/theatres-in-cape-town/",
+      "snippet": "21 de nov de 2023 · Uncover Cape Town's rich theatrical tapestry, from classic venues to avant-garde stages, in this comprehensive …"
+     },
+     {
+      "title": "Theatre, Music, Comedy, Dance Performances | What's on in CT",
+      "url": "https://whatsonincapetown.com/performance/",
+      "snippet": "Where to catch the most interesting performances in Cape Town and surrounds, from theatre and music to comedy and dance. …"
+     },
+     {
+      "title": "Cape Town Arts & Theatre Tickets - Upcoming event tickets in Cape …",
+      "url": "https://www.ticketmaster.co.za/discover/cape-town?categoryId=KZFzniwnSyZfZ7v7na",
+      "snippet": "Buy Cape Town arts & theatre tickets on Ticketmaster. Find your favorite arts & theatre event tickets, schedules and seating charts …"
+     }
+    ],
+    "authority": "bing_html_https"
+   },
+   "operation": "web.search"
+  }
+ },
+ "D-s017": {
+  "run": "v3z-devD",
+  "trace": "t17",
+  "text": "a good southern style mac n cheese recipe",
+  "draft": "Southern-style mac and cheese uses a creamy no-cook sauce with cheddar, Monterey Jack, mozzarella, eggs, and evaporated milk, baked until golden brown and bubbly.",
+  "payload": {
+   "seen": {
+    "query": "recipe southern style mac and cheese",
+    "count": 5,
+    "results": [
+     {
+      "title": "Southern Style Macaroni And Cheese",
+      "url": "https://www.melissassouthernstylekitchen.com/southern-style-macaroni-cheese/",
+      "snippet": "This gooey, baked Southern Style Macaroni and Cheese is rich and indulgent, featuring a creamy, no-cook sauce. It's the perfect mouthwatering side dish for busy weeknights or when you're entertaining guests. What You'll Love About this Southern Style Macaroni and Cheese Recipe Ingredients to Make Southern Style Macaroni and Cheese Recipe When it comes to... … How To Make Southern Style Macaroni and Cheese Oven – Bake mac and cheese per the cook time in the recipe until golden brown and bubbly. Leftovers: You can store leftover Southern mac and cheese in an airtight container chilled in the refrigerator for up to 3-4 days."
+     },
+     {
+      "title": "Southern Baked Mac and Cheese (Soul Food Recipe)",
+      "url": "https://cookswithsoul.com/southern-mac-and-cheese-soul-food/",
+      "snippet": "Southern baked mac and cheese is rich and creamy, made with cheddar, Monterey Jack, mozzarella, eggs, and evaporated milk, and has a golden, bubbly crust. … Southern Mac and Cheese Recipe FAQs Why doesn’t this Southern baked mac and cheese recipe call for butter? If you tried this Southern Baked Mac and Cheese or any other recipe on our blog, consider leaving us a 🌟 star rating and let us know how it went in the 📝 comments!"
+     },
+     {
+      "title": "Southern-Style Mac and Cheese - Southern Cravings",
+      "url": "https://www.southerncravings.com/southern-style-mac-and-cheese/",
+      "snippet": "This Southern-style mac and cheese recipe is a true soul food classic! With just a few ingredients, including a generous amount of freshly shredded cheese , butter, and milk, it's unbelievably hearty, comforting, and crowd-pleasing. … With its lasagna-style layering and toasted cheesy topping, this Southern mac and cheese is a go-to for family dinners and gatherings. I don’t think there is one dish I love more than this Southern-style mac and cheese. Unsalted butter: You can’t have a Southern-style mac and cheese recipe without some butter!"
+     },
+     {
+      "title": "Southern Macaroni and Cheese (The BEST Recipe!) - Oh Sweet Basil",
+      "url": "https://ohsweetbasil.com/southern-macaroni-and-cheese-recipe/",
+      "snippet": "This Southern Baked Mac & Cheese is rich, creamy & packed with flavor. Perfect for holiday dinners, potlucks and weeknight comfort food."
+     },
+     {
+      "title": "Southern Mac and Cheese Recipe - Food & Wine",
+      "url": "https://www.foodandwine.com/recipes/southern-style-mac-n-cheese",
+      "snippet": "This mac and cheese with cream cheese , cheddar, and Colby-Jack gets additional flavor from bay leaves and dry mustard for a perfect Southern Thanksgiving side dish."
+     }
+    ],
+    "authority": "duckduckgo_lite_https"
+   },
+   "operation": "web.search"
+  }
+ },
+ "D-w10-t1": {
+  "run": "v3z-devD",
+  "trace": "t285",
+  "text": "Buenas, qué pena la molestia, ¿me regalas una receta sencilla de arepas de queso?",
+  "draft": "Las arepas de queso se elaboran con masa de maíz molido y se rellenan con queso, cocinándose en plancha, horneadas o fritas.",
+  "payload": {
+   "seen": {
+    "query": "receta arepas de queso",
+    "count": 2,
+    "results": [
+     {
+      "title": "Arepa",
+      "url": "https://es.wikipedia.org/wiki/Arepa",
+      "snippet": "La arepa es un alimento tradicional y esencial en las gastronomías de Colombia y Venezuela, elaborado principalmente con masa de maíz molido (harina de maíz), que se prepara de forma redonda y aplanada, cocinándose en plancha (budare), horneada o frita, logrando una corteza crujiente y un interior tierno. Constituye un alimento cotidiano que se consume en cualquier momento del día —desayuno, almuerzo, cena o como acompañante— ya sea sola, con mantequilla, queso o rellena con ingredientes variados como carne mechada, pollo, huevos, aguacate, frijoles negros, chorizo o combinaciones regionales. Su origen se remonta a las culturas indígenas precolombinas del norte de Sudamérica, mucho antes de la llegada de los europeos, cuando diversos pueblos originarios procesaban el maíz —cultivo central en su dieta— para preparar tortas cocidas sobre superficies calientes. El nombre «arepa» deriva del vocablo cumanagoto erepa, que designaba al maíz en esa lengua caribe de grupos que habitaban la cost"
+     },
+     {
+      "title": "Arepa de choclo",
+      "url": "https://es.wikipedia.org/wiki/Arepa_de_choclo",
+      "snippet": "La arepa de choclo, de chócolo, de maíz tierno o de maíz verde, chorreada, cosposa, tortilla de choclo, de maíz o de tiesto, toquera o toquete es un plato típico a base de maíz de varios países latinoamericanos como Colombia, Costa Rica, Ecuador, México y Venezuela. Tiene una preparación idéntica a la de las cachapas, y, en algunos casos, similar a los panqueques, pero no se hace con harina de trigo, sino con granos de maíz entero. Sus ingredientes incluyen panela o azúcar, sal, mantequilla, queso campesino, etc. Se cocina en comal, sartén o tiesto."
+     }
+    ],
+    "authority": "wikipedia_es_api"
+   },
+   "operation": "web.search"
+  }
+ }
+}

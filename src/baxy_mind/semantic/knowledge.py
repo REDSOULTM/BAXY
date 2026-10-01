@@ -377,6 +377,18 @@ def kitchen_quantity(
     return ReferenceLookup("quantity", clause, query, language)
 
 
+_ONE_RECIPE = re.compile(r"\b(?:receta|recipe)\b")
+
+
+def asks_one_recipe(text: str) -> bool:
+    """M102 (DEV-D v3z D-s017 «a good southern style mac n cheese recipe», D-w10-t1 «¿me regalas una receta sencilla de
+    arepas de queso?»): the request asks for a named dish's recipe, one, whose quantities and steps are the answer.
+    Recipes searched for (SEARCH2005 «search for pizza recipes») are the pages that have them, not one recipe."""
+
+    lookup = reference_lookup(text)
+    return lookup is not None and lookup.kind == "recipe" and _ONE_RECIPE.search(fold(text)) is not None
+
+
 def reference_lookup(text: str, prior_requests: Iterable[str] = (), last_reply: str = "") -> ReferenceLookup | None:
     """The named dish or work this request asks about, to be looked up before anything is said about it.
 

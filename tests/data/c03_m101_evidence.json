@@ -1,0 +1,720 @@
+{
+ "schema": "baxy.c03-m101-evidence.v1",
+ "run": "%LOCALAPPDATA%/BAXY/comprension-2026-09-25/window/v3z-devD",
+ "code": "38d03aa2",
+ "set": "DEV-D (development)",
+ "meaning_of_no_response": "UserMessagePolicy.ModelResponseRejectionReason returns no_response when the mind's message.compose answered an empty text: every draft of the mind's compose was vetoed and its last_resort had no deterministic final. The App's composition of the turn's final then had no text, PendingModelMessageQueue.ExhaustAsync found no ModelMessageComposer.DeterministicFinal (verified successes only) and reported «no_response;retry_exhausted» with reply \"\".",
+ "turns": [
+  {
+   "id": "D-s037",
+   "text": "Quiero tomar una foto de esa montaña, mejor que sea de la playa.",
+   "terminal": "composition_failed",
+   "kind": "conversation",
+   "conversation_kind": "unsupported",
+   "operation": null,
+   "decision_path": "recovery",
+   "recovery": "protocol_fallback",
+   "reply": "",
+   "error": "composition_failed: no_response;retry_exhausted",
+   "shell_stages": [
+    "submit.received:None",
+    "bridge.crossed:None",
+    "queue.wait.end:None",
+    "mind.request.start:voice.cancel.id.218.budget_ms.3000",
+    "visible.indication:understanding",
+    "decision.start:None",
+    "mind.request.start:turn.decide.id.219.budget_ms.22000",
+    "visible.indication:understanding",
+    "decision.ready:conversation",
+    "compose.start:error",
+    "mind.request.start:message.compose.id.220.budget_ms.5000",
+    "compose.end:None",
+    "visible.indication:working",
+    "mind.request.start:message.compose.id.221.budget_ms.5000",
+    "response.final:None",
+    "response.final:None",
+    "visible.text:None",
+    "compose.start:welcome",
+    "mind.request.start:voice.speak.id.222.budget_ms.5000",
+    "mind.request.start:message.compose.id.223.budget_ms.10000",
+    "compose.end:None",
+    "visible.text:None",
+    "mind.request.start:voice.speak.id.224.budget_ms.5000"
+   ],
+   "turn_audit": [
+    {
+     "error_type": "ConversationReplyContractError",
+     "failure_kind": "limit_wording",
+     "failure_reason": "unsupported_limit_echoes_request",
+     "failure_stage": "conversation_reply",
+     "phase": "attempt_failure",
+     "raw_decision": null,
+     "request_id": "219",
+     "schema": "baxy.mind-turn-audit.v1",
+     "stages": []
+    },
+    {
+     "final": {
+      "effect_operations": [],
+      "intent_operations": [],
+      "kind": "conversation"
+     },
+     "phase": "recovery",
+     "raw_decision": null,
+     "recovery": {
+      "failure_code": "turn_runtime_failure",
+      "failure_kinds": [
+       "limit_wording"
+      ],
+      "kind": "protocol_fallback",
+      "turn_attempts": 1
+     },
+     "request_id": "219",
+     "schema": "baxy.mind-turn-audit.v1",
+     "stages": [
+      {
+       "conversation_kind": "unsupported",
+       "effect_operations": [],
+       "effect_verification": "not_applicable",
+       "mode": "conversation",
+       "name": "total_recovery",
+       "operation": null
+      }
+     ]
+    }
+   ],
+   "raw_conversation_replies": [
+    {
+     "attempt": 1,
+     "conversation_kind": "unsupported",
+     "history_users": 0,
+     "raw_reply": "Eso no lo hago: tomar una foto de la playa no es algo que yo realice."
+    },
+    {
+     "attempt": 2,
+     "conversation_kind": "unsupported",
+     "history_users": 0,
+     "raw_reply": "Eso no lo hago: tomar una foto de la playa no es algo que yo realice."
+    }
+   ],
+   "mind_recovery_compose": [
+    {
+     "stage": "first",
+     "intent": "error",
+     "reason": "limit_persons_act",
+     "published": false,
+     "draft": "No tomo fotos de playas porque eso está fuera de lo que hago en este PC.",
+     "situation": "{\"kind\": \"failure\", \"cause\": \"out_of_catalog\", \"polarity\": \"failure\"}"
+    },
+    {
+     "stage": "retry",
+     "intent": "error",
+     "reason": "limit_persons_act",
+     "published": false,
+     "draft": "No tomo fotos porque no hago esa tarea.",
+     "situation": "{\"kind\": \"failure\", \"cause\": \"out_of_catalog\", \"polarity\": \"failure\"}"
+    },
+    {
+     "stage": "third",
+     "intent": "error",
+     "reason": "limit_persons_act",
+     "published": false,
+     "draft": "No tomo fotos ni tomo de la playa.",
+     "situation": "{\"kind\": \"failure\", \"cause\": \"out_of_catalog\", \"polarity\": \"failure\"}"
+    }
+   ],
+   "app_error_compose": [
+    {
+     "stage": "first",
+     "intent": "error",
+     "reason": "limit_persons_act",
+     "published": false,
+     "draft": "No tomo fotos de playas porque eso está fuera de lo que hago en este PC.",
+     "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"out_of_catalog\"}",
+     "payload": {
+      "outcome": "failed",
+      "cause": "outside what I do"
+     }
+    },
+    {
+     "stage": "retry",
+     "intent": "error",
+     "reason": "limit_persons_act",
+     "published": false,
+     "draft": "No tomo fotos porque no hago esa tarea.",
+     "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"out_of_catalog\"}",
+     "payload": {
+      "outcome": "failed",
+      "cause": "outside what I do"
+     }
+    },
+    {
+     "stage": "third",
+     "intent": "error",
+     "reason": "limit_persons_act",
+     "published": false,
+     "draft": "No tomo fotos ni tomo de la playa.",
+     "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"out_of_catalog\"}",
+     "payload": {
+      "outcome": "failed",
+      "cause": "outside what I do"
+     }
+    }
+   ]
+  },
+  {
+   "id": "D-s042",
+   "text": "quiero pastel de camote de una panadería local",
+   "terminal": "composition_failed",
+   "kind": "conversation",
+   "conversation_kind": "unsupported",
+   "operation": null,
+   "decision_path": "recovery",
+   "recovery": "protocol_fallback",
+   "reply": "",
+   "error": "composition_failed: no_response;retry_exhausted",
+   "shell_stages": [
+    "submit.received:None",
+    "bridge.crossed:None",
+    "queue.wait.end:None",
+    "mind.request.start:voice.cancel.id.247.budget_ms.3000",
+    "visible.indication:understanding",
+    "decision.start:None",
+    "mind.request.start:turn.decide.id.248.budget_ms.22000",
+    "visible.indication:understanding",
+    "decision.ready:conversation",
+    "compose.start:error",
+    "mind.request.start:message.compose.id.249.budget_ms.5000",
+    "compose.end:None",
+    "visible.indication:working",
+    "mind.request.start:message.compose.id.250.budget_ms.5000",
+    "response.final:None",
+    "visible.text:None",
+    "response.final:None",
+    "compose.start:welcome",
+    "mind.request.start:voice.speak.id.251.budget_ms.5000",
+    "mind.request.start:message.compose.id.252.budget_ms.10000",
+    "compose.end:None",
+    "visible.text:None",
+    "mind.request.start:voice.speak.id.253.budget_ms.5000"
+   ],
+   "turn_audit": [
+    {
+     "error_type": "ConversationReplyContractError",
+     "failure_kind": "limit_wording",
+     "failure_reason": "unsupported_changed_act",
+     "failure_stage": "conversation_reply",
+     "phase": "attempt_failure",
+     "raw_decision": null,
+     "request_id": "248",
+     "schema": "baxy.mind-turn-audit.v1",
+     "stages": []
+    },
+    {
+     "final": {
+      "effect_operations": [],
+      "intent_operations": [],
+      "kind": "conversation"
+     },
+     "phase": "recovery",
+     "raw_decision": null,
+     "recovery": {
+      "failure_code": "turn_runtime_failure",
+      "failure_kinds": [
+       "limit_wording"
+      ],
+      "kind": "protocol_fallback",
+      "turn_attempts": 1
+     },
+     "request_id": "248",
+     "schema": "baxy.mind-turn-audit.v1",
+     "stages": [
+      {
+       "conversation_kind": "unsupported",
+       "effect_operations": [],
+       "effect_verification": "not_applicable",
+       "mode": "conversation",
+       "name": "total_recovery",
+       "operation": null
+      }
+     ]
+    }
+   ],
+   "raw_conversation_replies": [
+    {
+     "attempt": 1,
+     "conversation_kind": "unsupported",
+     "history_users": 0,
+     "raw_reply": "Eso no lo hago: comprar un pastel de camote en una panadería local no lo preparo yo."
+    },
+    {
+     "attempt": 2,
+     "conversation_kind": "unsupported",
+     "history_users": 0,
+     "raw_reply": "No preparo el pastel de camote de una panadería local."
+    }
+   ],
+   "mind_recovery_compose": [
+    {
+     "stage": "first",
+     "intent": "error",
+     "reason": "limit_changed_act",
+     "published": false,
+     "draft": "No hago pasteles de camote porque eso está fuera de mis capacidades.",
+     "situation": "{\"kind\": \"failure\", \"cause\": \"out_of_catalog\", \"polarity\": \"failure\"}"
+    },
+    {
+     "stage": "retry",
+     "intent": "error",
+     "reason": "limit_asks_the_person",
+     "published": false,
+     "draft": "No te pido encargar o comprar un pastel de camote en una panadería local.",
+     "situation": "{\"kind\": \"failure\", \"cause\": \"out_of_catalog\", \"polarity\": \"failure\"}"
+    },
+    {
+     "stage": "third",
+     "intent": "error",
+     "reason": "invented",
+     "published": false,
+     "draft": "No encargo pastels ni panaderías porque eso no es lo que hago.",
+     "situation": "{\"kind\": \"failure\", \"cause\": \"out_of_catalog\", \"polarity\": \"failure\"}"
+    }
+   ],
+   "app_error_compose": [
+    {
+     "stage": "first",
+     "intent": "error",
+     "reason": "limit_changed_act",
+     "published": false,
+     "draft": "No hago pasteles de camote porque eso está fuera de mis capacidades.",
+     "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"out_of_catalog\"}",
+     "payload": {
+      "outcome": "failed",
+      "cause": "outside what I do"
+     }
+    },
+    {
+     "stage": "retry",
+     "intent": "error",
+     "reason": "limit_asks_the_person",
+     "published": false,
+     "draft": "No te pido encargar o comprar un pastel de camote en una panadería local.",
+     "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"out_of_catalog\"}",
+     "payload": {
+      "outcome": "failed",
+      "cause": "outside what I do"
+     }
+    },
+    {
+     "stage": "third",
+     "intent": "error",
+     "reason": "invented",
+     "published": false,
+     "draft": "No encargo pastels ni panaderías porque eso no es lo que hago.",
+     "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"out_of_catalog\"}",
+     "payload": {
+      "outcome": "failed",
+      "cause": "outside what I do"
+     }
+    }
+   ]
+  },
+  {
+   "id": "D-p31-t2",
+   "text": "Gracias por la información, estas seguro al 100% que esto es así",
+   "terminal": "composition_failed",
+   "kind": "conversation",
+   "conversation_kind": null,
+   "operation": null,
+   "decision_path": "recovery",
+   "recovery": "protocol_fallback",
+   "reply": "",
+   "error": "composition_failed: no_response;retry_exhausted",
+   "shell_stages": [
+    "submit.received:None",
+    "bridge.crossed:None",
+    "queue.wait.end:None",
+    "mind.request.start:voice.cancel.id.1233.budget_ms.3000",
+    "visible.indication:understanding",
+    "decision.start:None",
+    "mind.request.start:turn.decide.id.1234.budget_ms.22000",
+    "visible.indication:understanding",
+    "visible.indication:understanding",
+    "visible.indication:understanding",
+    "visible.indication:understanding",
+    "visible.indication:understanding",
+    "decision.ready:conversation",
+    "compose.start:error",
+    "mind.request.start:message.compose.id.1235.budget_ms.5000",
+    "compose.end:None",
+    "visible.indication:working",
+    "mind.request.start:message.compose.id.1236.budget_ms.5000",
+    "response.final:None",
+    "visible.text:None",
+    "response.final:None"
+   ],
+   "turn_audit": [
+    {
+     "error_type": "ConversationReplyContractError",
+     "failure_kind": "conversation_wording",
+     "failure_reason": "shaped_presentation",
+     "failure_stage": "conversation_reply",
+     "phase": "attempt_failure",
+     "raw_decision": null,
+     "request_id": "1234",
+     "schema": "baxy.mind-turn-audit.v1",
+     "stages": []
+    },
+    {
+     "error_type": "ConversationReplyContractError",
+     "failure_kind": "conversation_wording",
+     "failure_reason": "shaped_presentation",
+     "failure_stage": "conversation_reply",
+     "phase": "attempt_failure",
+     "raw_decision": null,
+     "request_id": "1234",
+     "schema": "baxy.mind-turn-audit.v1",
+     "stages": []
+    },
+    {
+     "final": {
+      "effect_operations": [],
+      "intent_operations": [],
+      "kind": "conversation"
+     },
+     "phase": "recovery",
+     "raw_decision": null,
+     "recovery": {
+      "failure_code": "turn_runtime_failure",
+      "failure_kinds": [
+       "conversation_wording",
+       "conversation_wording"
+      ],
+      "kind": "protocol_fallback",
+      "turn_attempts": 2
+     },
+     "request_id": "1234",
+     "schema": "baxy.mind-turn-audit.v1",
+     "stages": [
+      {
+       "effect_operations": [],
+       "effect_verification": "not_applicable",
+       "mode": "conversation",
+       "name": "total_recovery",
+       "operation": null
+      }
+     ]
+    }
+   ],
+   "raw_conversation_replies": [
+    {
+     "attempt": 1,
+     "conversation_kind": "knowledge",
+     "history_users": 1,
+     "raw_reply": "No, no estoy seguro al 100% porque no tengo acceso a datos históricos detallados sobre los últimos 10 presidentes ni su impacto económico."
+    },
+    {
+     "attempt": 2,
+     "conversation_kind": "knowledge",
+     "history_users": 0,
+     "raw_reply": "{\n  \"answer\": \"No tengo acceso a esa información específica ni puedo verificarla con certeza.\"\n}"
+    }
+   ],
+   "mind_recovery_compose": [
+    {
+     "stage": "first",
+     "intent": "conversation",
+     "reason": "copied_instruction",
+     "published": false,
+     "draft": "Sí, estoy seguro al 100% de que la información proporcionada es correcta.",
+     "situation": "{\"kind\": \"conversation\", \"polarity\": \"success\"}"
+    },
+    {
+     "stage": "retry",
+     "intent": "conversation",
+     "reason": "",
+     "published": true,
+     "draft": "No tengo certeza absoluta ni puedo garantizar resultados, ya que no puedo predecir el comportamiento de un ordenador ni saber cómo reaccionará la persona.",
+     "situation": "{\"kind\": \"conversation\", \"polarity\": \"success\"}"
+    }
+   ],
+   "app_error_compose": [
+    {
+     "stage": "first",
+     "intent": "error",
+     "reason": "missing_failure",
+     "published": false,
+     "draft": "No estoy seguro al 100% porque no entendí bien tu mensaje.",
+     "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"turn_runtime_failure\",\"operationAttempted\":false,\"retryable\":true}",
+     "payload": {
+      "operationAttempted": false,
+      "retryable": true,
+      "outcome": "failed",
+      "cause": "request interpretation failed"
+     }
+    },
+    {
+     "stage": "retry",
+     "intent": "error",
+     "reason": "missing_failure",
+     "published": false,
+     "draft": "Tengo dudas sobre mi interpretación de tu mensaje.",
+     "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"turn_runtime_failure\",\"operationAttempted\":false,\"retryable\":true}",
+     "payload": {
+      "operationAttempted": false,
+      "retryable": true,
+      "outcome": "failed",
+      "cause": "request interpretation failed"
+     }
+    },
+    {
+     "stage": "third",
+     "intent": "error",
+     "reason": "missing_failure",
+     "published": false,
+     "draft": "No he procesado tu mensaje porque no logré interpretar correctamente lo que dijiste.",
+     "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"turn_runtime_failure\",\"operationAttempted\":false,\"retryable\":true}",
+     "payload": {
+      "operationAttempted": false,
+      "retryable": true,
+      "outcome": "failed",
+      "cause": "request interpretation failed"
+     }
+    }
+   ]
+  },
+  {
+   "id": "D-w10-t4",
+   "text": "Y mientras tanto ponme música tropical en YouTube",
+   "terminal": "composition_failed",
+   "kind": "action",
+   "conversation_kind": null,
+   "operation": "media.play.youtube",
+   "decision_path": "context_decider",
+   "recovery": null,
+   "reply": "",
+   "error": "composition_failed: no_response;retry_exhausted",
+   "shell_stages": [
+    "submit.received:None",
+    "bridge.crossed:None",
+    "queue.wait.end:None",
+    "mind.request.start:voice.cancel.id.1523.budget_ms.3000",
+    "visible.indication:awaiting_reply",
+    "visible.indication:understanding",
+    "decision.start:None",
+    "mind.request.start:turn.decide.id.1524.budget_ms.22000",
+    "decision.ready:action",
+    "arguments.start:None",
+    "mind.request.start:arguments.id.1525.budget_ms.20000",
+    "arguments.end:None",
+    "visible.indication:acting",
+    "core.call.start:media.play.youtube",
+    "visible.indication:acting",
+    "mind.request.start:message.compose.id.1526.budget_ms.5000",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "mind.request.start:message.compose.id.1527.budget_ms.5000",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "mind.request.start:message.compose.id.1528.budget_ms.5000",
+    "visible.indication:acting",
+    "mind.request.start:message.compose.id.1529.budget_ms.5000",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "mind.request.start:message.compose.id.1530.budget_ms.5000",
+    "visible.indication:acting",
+    "mind.request.start:message.compose.id.1531.budget_ms.5000",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "mind.request.start:message.compose.id.1532.budget_ms.5000",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "mind.request.start:message.compose.id.1533.budget_ms.5000",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "mind.request.start:message.compose.id.1534.budget_ms.5000",
+    "visible.indication:acting",
+    "mind.request.start:message.compose.id.1535.budget_ms.5000",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "mind.request.start:message.compose.id.1536.budget_ms.5000",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "mind.request.start:message.compose.id.1537.budget_ms.5000",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "mind.request.start:message.compose.id.1538.budget_ms.5000",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "mind.request.start:message.compose.id.1539.budget_ms.5000",
+    "visible.indication:acting",
+    "visible.indication:acting",
+    "core.call.end:None",
+    "compose.start:error",
+    "mind.request.start:message.compose.id.1540.budget_ms.5000",
+    "compose.end:None",
+    "visible.indication:working",
+    "visible.indication:working",
+    "visible.text:None",
+    "mind.request.start:voice.speak.id.1541.budget_ms.5000",
+    "response.final:None",
+    "response.final:None"
+   ],
+   "turn_audit": [
+    {
+     "decider_timings": {
+      "predicted_ms": 804.373,
+      "predicted_n": 42,
+      "prompt_ms": 292.008,
+      "prompt_n": 221
+     },
+     "decision_path": "context_decider",
+     "final": {
+      "effect_operations": [
+       "media.play.youtube"
+      ],
+      "intent_operations": [
+       "media.play.youtube"
+      ],
+      "kind": "action"
+     },
+     "phase": "final",
+     "raw_decision": {
+      "argument_fields": [
+       "query"
+      ],
+      "effect_operations": [
+       "media.play.youtube"
+      ],
+      "mode": "action",
+      "request": "Pon música tropical en YouTube."
+     },
+     "request_id": "1524",
+     "schema": "baxy.mind-turn-audit.v1",
+     "stages": []
+    }
+   ],
+   "raw_conversation_replies": [],
+   "mind_recovery_compose": [],
+   "app_error_compose": [
+    {
+     "stage": "first",
+     "intent": "error",
+     "reason": "reversed_polarity",
+     "published": false,
+     "draft": "Abri YouTube y busqué música tropical, pero el video no empezó a reproducirse.",
+     "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":{\"kind\":\"operation\",\"operation\":\"media.play.youtube\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"youtube_playback_not_verified_watch_ready0_playing_network2_source_none\",\"cause\":\"external_effect_ambiguous\",\"effectUncertain\":true,\"target\":\"música tropical\"}}",
+     "payload": {
+      "outcome": "failed",
+      "reason": {
+       "target": "música tropical",
+       "outcome": "unverified",
+       "effect": "unknown",
+       "cause": "the YouTube page opened in the browser but the video did not start playing, so playback is not confirmed",
+       "operation": "media.play.youtube"
+      }
+     }
+    },
+    {
+     "stage": "retry",
+     "intent": "error",
+     "reason": "reversed_polarity",
+     "published": false,
+     "draft": "He abierto YouTube, pero no he podido confirmar si la música tropical está sonando.",
+     "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":{\"kind\":\"operation\",\"operation\":\"media.play.youtube\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"youtube_playback_not_verified_watch_ready0_playing_network2_source_none\",\"cause\":\"external_effect_ambiguous\",\"effectUncertain\":true,\"target\":\"música tropical\"}}",
+     "payload": {
+      "outcome": "failed",
+      "reason": {
+       "target": "música tropical",
+       "outcome": "unverified",
+       "effect": "unknown",
+       "cause": "the YouTube page opened in the browser but the video did not start playing, so playback is not confirmed",
+       "operation": "media.play.youtube"
+      }
+     }
+    },
+    {
+     "stage": "third",
+     "intent": "error",
+     "reason": "reversed_polarity",
+     "published": false,
+     "draft": "No abrí el video de música tropical en YouTube porque no confirmé que sonara.",
+     "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":{\"kind\":\"operation\",\"operation\":\"media.play.youtube\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"youtube_playback_not_verified_watch_ready0_playing_network2_source_none\",\"cause\":\"external_effect_ambiguous\",\"effectUncertain\":true,\"target\":\"música tropical\"}}",
+     "payload": {
+      "outcome": "failed",
+      "reason": {
+       "target": "música tropical",
+       "outcome": "unverified",
+       "effect": "unknown",
+       "cause": "the YouTube page opened in the browser but the video did not start playing, so playback is not confirmed",
+       "operation": "media.play.youtube"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "owner_script_turn": {
+  "run": "scratchpad/cn/conv-v3z2/dueno-2026-09-21 (owner script dueno-2026-09-21, turn 45)",
+  "score_row": {
+   "n": 45,
+   "clase": "-",
+   "text": "silencia mi microfono",
+   "expected": "silenciar el micrófono (o decir con verdad que ya estaba silenciado)",
+   "route": "error",
+   "reply": "⚠ (no_response;retry_exhausted)",
+   "ops": [
+    "audio.microphone.mute:started",
+    "audio.microphone.mute:completed"
+   ],
+   "verdict": "bien"
+  },
+  "app_status_compose": [
+   {
+    "stage": "first",
+    "intent": "status",
+    "reason": "missing_failure",
+    "published": false,
+    "draft": "El micrófono está silenciado.",
+    "situation": "{\"kind\":\"operation\",\"operation\":\"audio.microphone.mute\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"microphone_already_muted\"}",
+    "payload": {
+     "outcome": "already_as_asked",
+     "cause": "the person asked to mute (silence) the microphone and it was already muted, not picking up sound; nothing was attempted and nothing changed",
+     "operation": "audio.microphone.mute"
+    }
+   },
+   {
+    "stage": "retry",
+    "intent": "status",
+    "reason": "missing_failure",
+    "published": false,
+    "draft": "Tu micrófono estaba silenciado por lo que pediste, por lo que no hubo ningún cambio.",
+    "situation": "{\"kind\":\"operation\",\"operation\":\"audio.microphone.mute\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"microphone_already_muted\"}",
+    "payload": {
+     "outcome": "already_as_asked",
+     "cause": "the person asked to mute (silence) the microphone and it was already muted, not picking up sound; nothing was attempted and nothing changed",
+     "operation": "audio.microphone.mute"
+    }
+   },
+   {
+    "stage": "third",
+    "intent": "status",
+    "reason": "missing_failure",
+    "published": false,
+    "draft": "El micrófono estaba ya silenciado, por lo que no hubo ningún cambio.",
+    "situation": "{\"kind\":\"operation\",\"operation\":\"audio.microphone.mute\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"microphone_already_muted\"}",
+    "payload": {
+     "outcome": "already_as_asked",
+     "cause": "the person asked to mute (silence) the microphone and it was already muted, not picking up sound; nothing was attempted and nothing changed",
+     "operation": "audio.microphone.mute"
+    }
+   }
+  ]
+ }
+}

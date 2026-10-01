@@ -18,7 +18,7 @@ from .grammar import (
     imperative_rewrites,
 )
 from .intent import EffectIntent
-from .media import spoken_media_order
+from .media import player_opened_to_play, spoken_media_order
 from .messaging import after_opening_the_mailbox
 from .normalize import fold as _fold
 from .patterns import (
@@ -169,8 +169,48 @@ def _desired_media_request(
         # MASSIVE general_joke «i want to hear a joke», «me gustaría escuchar algunos buenos chistes»:
         # a joke is told by BAXY, not played.
         return None
+    if re.search(r"\b(?:informacion|information|info|datos|data|detalles|details)\b", _fold(objective)):
+        # M99 (reserva A6 «important house information» → Spotify played «house»): information is read, not played.
+        return None
     order = spoken_media_order(_without_address(objective) or objective)
     return resolve(order) if order is not None else None
+
+
+# M100 (reserva A10 «me gustaría ser notificado de las misas de los domingos a las once de la mañana» → «no encuentro un
+# pedido»): being notified or reminded, wished for, is the order «avísame / remind me» with the same words. Folded.
+_WISHED_NOTICE = re.compile(
+    r"^(?:(?:yo\s+)?(?:me\s+gustaria|me\s+encantaria|quiero|quisiera|necesito|preferiria)\s+"
+    r"(?:ser\s+(?:notificad[oa]s?|avisad[oa]s?|alertad[oa]s?|recordad[oa]s?)|"
+    r"que\s+me\s+(?:avises|avisaras|avisen|notifiques|notificaras|notifiquen|recuerdes|recordaras|recuerden|alertes))|"
+    r"(?:i\s+(?:would\s+like|want|need)|i'?d\s+like)\s+(?:to\s+be\s+(?:notified|reminded|alerted)|"
+    r"you\s+to\s+(?:notify|remind|alert)\s+me))\s+(?P<rest>\S.*)$"
+)
+
+
+def _wished_notice_request(
+    objective: str,
+    resolve: Callable[[str], EffectIntent | None],
+) -> EffectIntent | None:
+    """«me gustaría ser avisado de la reunión mañana a las diez», «I'd like to be reminded of the rent on Friday at
+    nine» read as «avísame de la reunión…», «remind me of the rent…» (see above); only when that order resolves."""
+
+    found = _WISHED_NOTICE.match(_fold(_without_address(objective) or objective).strip(" ¿?¡!.,"))
+    if found is None:
+        return None
+    head = "remind me" if found.group(0).startswith("i") else "avisame"
+    return resolve(f"{head} {found.group('rest')}")
+
+
+def _player_opened_to_play_request(
+    objective: str,
+    resolve: Callable[[str], EffectIntent | None],
+) -> EffectIntent | None:
+    """M100 (reserva A14): «abre spotify y pon X», «open the music app and play a song» read as the order to play X
+    there (``media.player_opened_to_play``); only when that order resolves to playing."""
+
+    order = player_opened_to_play(_without_address(objective) or objective)
+    found = resolve(order) if order is not None else None
+    return found if found is not None and all(op.startswith("media.play") for op in found.operations) else None
 
 
 # The usted and subjunctive forms said alone as interjections (surprise, calling attention, urging): folded.
@@ -404,6 +444,8 @@ def utterance_form(
         ("addressed", _addressed_request),
         ("desired_media", _desired_media_request),
         ("mailbox_opened", _mailbox_opened_to_read),
+        ("wished_notice", _wished_notice_request),
+        ("player_opened_to_play", _player_opened_to_play_request),
         ("imperative_rewrite", _imperative_rewrite_request),
     ):
         effects = form(text, resolve)

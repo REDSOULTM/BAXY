@@ -120,6 +120,7 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
     ("llm.py", "_search_report_sentences"): ("GROUNDING", _GROUNDING_SEARCH),
     ("llm.py", "_search_report_speaks_as_a_page"): ("GROUNDING", _GROUNDING_SEARCH),
     ("llm.py", "_search_report_shows_the_search"): ("GROUNDING", _GROUNDING_SEARCH),
+    ("llm.py", "_search_report_offers_a_finder"): ("GROUNDING", _GROUNDING_SEARCH),
     ("llm.py", "_search_report_off_subject"): (
         "GROUNDING", "the proper names the person wrote are the subject the report must be about"),
     ("llm.py", "_headline_words"): (

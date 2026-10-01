@@ -595,7 +595,8 @@ def test_only_the_asked_event_of_the_asked_day_is_sent() -> None:
         "tomorrow": {"date": "2026-09-25", "weekday": "viernes", "sunrise": "07:31"},
     }
     today = llm._compose_situation_payload(_WEATHER, "en", "what time is sunset today")["seen"]
-    assert today["today"] == {"date": "2026-09-24", "weekday": "jueves", "sunset": "19:44"}
+    # M99 (DEV-D v3x D-s054): the read is of 21:45, after that sunset, so it is marked as passed.
+    assert today["today"] == {"date": "2026-09-24", "weekday": "jueves", "sunset": "19:44", "sunsetPassed": True}
     assert "tomorrow" not in today
     assert "temperatureC" not in llm._weather_answer_instruction(_T1, "es")
 

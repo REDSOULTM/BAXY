@@ -513,6 +513,20 @@ _SPOKEN_MEDIA_ORDER = re.compile(
     r"(?:\S.{0,80}?\s+)?(?:que\s+tal\s+si|y\s+si|por\s+que\s+no)\s+(?:me\s+)?(?:pones|reproduces|tocas)\s+(?P<suggested>\S.*)|"
     # «solo reproduce canciones de mi lista», «just play some jazz»: the order with «just» in front.
     r"(?:solo|solamente|just|only)\s+(?P<just>(?:pon|ponme|reproduce|toca|tocame|play|put\s+on)\s+\S.*)|"
+    # M100 (reserva A3 «dame algunos buenos sonidos» → «no puedo reproducir sonidos»): sounds, music or songs given
+    # to the person are played.
+    r"(?:dame|danos|damos)\s+(?P<given>(?:(?:algunos|algunas|unos|unas|un\s+poco\s+de|algo\s+de)\s+)?"
+    r"(?:buen[oa]s\s+|lind[oa]s\s+)?(?:sonidos|musica|canciones|temas)\b.*)|"
+    r"(?:give\s+(?:me|us))\s+(?P<english_given>(?:(?:some|a\s+few|a\s+little)\s+)?(?:good\s+|nice\s+|great\s+)?"
+    r"(?:sounds|music|songs|tunes|beats|jams)\b.*)|"
+    # M100 (reserva A7, «play» said as «jugar»): «juega de nuevo», «jugala otra vez» is «play it again»; a game is never
+    # named «de nuevo».
+    r"(?:juega|juegala|juegalo|juga|jugala|jugalo)\s+(?P<again>(?:de\s+nuevo|otra\s+vez|nuevamente)"
+    r"(?:\s+(?:por\s+favor|porfa|please))?)|"
+    # «abre los medios y juega villancicos», «medios abiertos jugar cascabeles»: «jugar» after the media named is
+    # playing them.
+    r"(?:\S.{0,40}?\s+)?(?:medios|multimedia|reproductor|musica)\b(?:\s+\S+){0,3}?\s+(?:y\s+)?(?:juega|jugar|juga)\s+"
+    r"(?P<media_played>(?!(?:a|al|el\s+juego|un\s+juego|juegos?|partidas?)\b)\S.*)|"
     # A desire or an invitation to listen: «quiero escuchar…», «mi deseo es escuchar…», «escuchemos…»,
     # «vamos a poner…», «déjame que escuche…».
     r"(?:(?:yo|che|bueno|y)\s+)?"
@@ -568,6 +582,31 @@ _SPOKEN_MEDIA_ORDER = re.compile(
 )
 
 
+# M100 (reserva A14 «abre spotify y abre ejercicio», «iniciar la aplicación de música y reproducir una canción para mí»
+# → only the app opened): the music player opened in order to play something is the order to play it there (playing
+# opens the player). The second verb may be «abre» too, said of what plays. Folded.
+_PLAYER_OPENED_TO_PLAY = re.compile(
+    r"(?:abre|abri|abreme|abrime|abrir|inicia|iniciar|inicie|arranca|arrancar|lanza|lanzar|open|launch|start)\s+"
+    r"(?:(?:el|la|mi|the|my)\s+)?(?P<player>spotify|(?:aplicacion|app)\s+de\s+musica|reproductor(?:\s+de\s+musica)?|"
+    r"music\s+(?:app|player)|spotify\s+app)\s*,?\s+(?:y|and)\s+(?:(?:luego|despues|then)\s+)?"
+    r"(?:pon|ponme|pone|poneme|poner|reproduce|reproducir|reproduci|toca|tocar|tocame|abre|abri|abrir|play|open|put\s+on)"
+    r"\s+(?P<what>\S.{0,160}?)(?:\s+(?:en|on)\s+(?:el\s+|la\s+)?(?:spotify|reproductor))?"
+)
+
+
+def player_opened_to_play(text: str) -> str | None:
+    """«pon <what> en spotify» / «play <what> on spotify» for the player opened to play it (see above); None for
+    anything else."""
+
+    folded = _strip_request_envelope(_fold(text)).strip(" .!?¿¡")
+    found = _PLAYER_OPENED_TO_PLAY.fullmatch(folded)
+    if found is None:
+        return None
+    english = found.group(0).startswith(("open", "launch", "start"))
+    what = _original_clause(text, found.group("what").strip())
+    return f"play {what} on spotify" if english else f"pon {what} en spotify"
+
+
 def spoken_media_order(text: str) -> str | None:
     """The order «pon …»/«play …» a request to listen said another way stands for, in the person's
     words («escuchemos a Soda Stereo» → «pon Soda Stereo»), or None when it is not one of those ways.
@@ -587,6 +626,8 @@ def spoken_media_order(text: str) -> str | None:
     rest = _original_clause(text, rest.strip())
     if kind == "just":
         return rest
+    if kind == "again":
+        return f"reproduce {rest}"
     if kind == "searched":
         verb = "pon" if found.group("search").startswith(("bus", "encuentra")) else "play"
         # A show named only by its kind leaves the pick to the search, which the local player's YouTube search

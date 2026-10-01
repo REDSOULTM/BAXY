@@ -40,7 +40,7 @@ from .semantic import decider as semantic_decider
 from .semantic import dialogue as dialogue_slot
 from .semantic import knowledge as semantic_knowledge
 from .semantic.apps import bare_close_pronoun, close_request_for_opened, deictic_close_request
-from .semantic.notes import list_creation_said, task_change
+from .semantic.notes import list_creation_said, names_own_event, task_change
 from .semantic import levels as semantic_levels
 from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
@@ -51,6 +51,7 @@ from .semantic.patterns import list_entries_said_before, output_level_request
 from .semantic.web import (
     asks_for_information,
     asks_latest_release,
+    asks_what_a_cinema_shows,
     names_own_data,
     near_the_person,
     news_lookup_query,
@@ -97,6 +98,7 @@ from .llm import (
     _previous_reply_fields,
     _situation_from_facts,
     served_capability_families,
+    talk_reply_tells_a_failure,
     visible_reply_is_only_questions,
 )
 from .llm_transport import ChatCompletionCancellation
@@ -205,7 +207,7 @@ from .semantic.arguments import (
     window_snap_plan_split,
     window_snap_side_for_step,
 )
-from .semantic.messaging import chat_message_dispatch, message_body
+from .semantic.messaging import chat_message_dispatch, latest_mail_reply_without_words, message_body
 from .semantic.arguments import (  # noqa: F401 - moved to baxy_mind.semantic.arguments; callers migrate
     _SYSTEM_STATUS_SCOPES,
     _explicit_calendar_event_arguments,
@@ -4624,6 +4626,45 @@ def _close_of_the_just_opened(
     return semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
 
 
+# M99: the operations whose object is a part of this PC that a request has to name (the keyboard's language, the
+# desktop's background, a routine that fires on a phrase): the decider bringing it is not the person asking for it
+# («hazme saber cuando escuches sobre España» restated as a routine that takes screenshots). Measured on the reserve
+# replay; a wider set (the family gates of every operation) refused hundreds of reads the decider got right.
+_OBJECT_NAMED_OPERATIONS = frozenset({"input.keyboard.layout", "desktop.wallpaper.set", "routine.phrase.create"})
+_CLOCK_SET_OPERATIONS = frozenset({"notification.schedule", "reminder.create", "calendar.event.create", "timer.start"})
+
+
+def _decided_domain_unnamed(
+    operations: tuple[str, ...],
+    text: str,
+    history: object,
+    application_names: tuple[str, ...] | ApplicationCatalogIndex,
+    available_operations: tuple[str, ...],
+) -> bool:
+    """M99 (reserva A6 «empezar ted en español» → «Cambia el idioma del teclado a español.», «enséñame un color suave» →
+    «Cambia el fondo de escritorio…»): the decider's restatement named the thing its operation acts on, and neither the
+    message nor anything the person said before names it. The curated family gates (``operation_domain_is_grounded``,
+    one-sided) are the readers' measure of that; False on every message of the person is an act nobody asked for."""
+
+    said = [text, *(
+        str(turn.get("content") or "")
+        for turn in (history if isinstance(history, list) else [])
+        if isinstance(turn, dict) and turn.get("role") == "user"
+    )]
+    previous = next((item for item in reversed(said[1:]) if item.strip() and item.strip() != text.strip()), None)
+    return bool(operations) and any(
+        operation in _OBJECT_NAMED_OPERATIONS
+        and all(
+            operation_domain_is_grounded(
+                item, operation, application_names,
+                previous_user_text=previous, available_operations=available_operations,
+            ) is False
+            for item in dict.fromkeys(said)
+        )
+        for operation in operations
+    )
+
+
 def _context_decided_result(
     message: dict[str, Any],
     *,
@@ -4690,6 +4731,19 @@ def _context_decided_result(
         # M89 (DEV-D v3r D-w20-t3 «btw what's the latest version of Python right now?» → «Están instaladas las versiones
         # 3.13.3, 3.12.10 y 3.10.0»): the newest release is public and looked up; the copy on this PC is not it.
         decided = semantic_decider.ContextDecision(request=text, decision="action", operations=("web.search",), question="")
+    if (
+        decided.decision == "action"
+        and decided.operations
+        and set(decided.operations) <= {"task.search", "notification.list.due"}
+        and "calendar.event.list" in available_operations
+        and names_own_event(text)
+    ):
+        # M100 (reserva A1 «what time is the black tie gala dinner supposed to begin», «con quién me encuentro yo hoy»
+        # → task.search; «meeting reminders from three to five» → the internal due step): an event of the person's, or
+        # who they meet, is read from their calendar.
+        decided = semantic_decider.ContextDecision(
+            request=decided.request, decision="action", operations=("calendar.event.list",), question="",
+        )
     clock_request = (
         _clock_read_request(text, history)
         if decided.decision in {"talk", "clarify"} and "system.time" in available_operations
@@ -4718,9 +4772,27 @@ def _context_decided_result(
             # M65 (conv-v3g owner script t30 «Di la palabra"algo"» → «Escribe la palabra «algo».»): saying is not
             # typing into the window in front; nothing in the message or the question it answers asks to write.
             unasked = "untyped"
+        elif _decided_domain_unnamed(decided.operations, text, history, application_names, available_operations):
+            unasked = "unnamed_domain"
+        elif dialogue_slot.offers_to_baxy(text):
+            # M99 (reserva A6 «quieres netflix and chill» → Netflix opened): something offered to BAXY orders nothing.
+            unasked = "offer"
+        elif (
+            set(decided.operations) & _CLOCK_SET_OPERATIONS
+            and semantic_temporal.said_only_a_clock(text)
+            and not str(slot.last_reply or "").rstrip().endswith("?")
+            and not _history_has_pending_clarification(history, message.get("pendingClarification"))
+        ):
+            # M99 (reserva A6 «las dos menos cuarto» → an alarm at 10:15): a clock said alone, answering no question of
+            # BAXY's, sets nothing; what it is for is asked.
+            unasked = "bare_clock"
         if unasked is not None:
             unasked_action = {"kind": unasked, "request": decided.request, "operations": list(decided.operations)}
-            decided = semantic_decider.ContextDecision(request=text, decision="talk", operations=(), question="")
+            decided = semantic_decider.ContextDecision(
+                # M99 (reserva A6): an act on a thing nobody named, or a clock said alone, is asked about.
+                request=text, decision="clarify" if unasked in {"unnamed_domain", "bare_clock"} else "talk",
+                operations=(), question="",
+            )
     # M64 (v3f-final F-w01-t4 «…el mistral de 35» restated «…Mistral de 350 ml…», F-s054 «…mañana en Santiago?»): a
     # number, unit, date, clock time or name of the restatement nobody said never travels as the objective.
     descriptions = {tool.name: tool.description for tool in planner_catalog.tools}
@@ -4758,9 +4830,26 @@ def _context_decided_result(
             # «swimming» was added): the readers prove the entry was not said (M80); the list's name is never its
             # entry, and the decider's restatement does not fill it.
             decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
+    if (
+        decided.decision == "action"
+        and "email.latest.reply" in decided.operations
+        and latest_mail_reply_without_words(text)
+    ):
+        # M100 (reserva A13 «that last email needs to be answer a. s. a. p.» → answered «a. s. a. p.»): a reply goes
+        # with the words the person said, never with how soon or with the restatement's; with none, what to answer is
+        # asked.
+        decided = semantic_decider.ContextDecision(
+            request=text, decision="clarify", operations=("email.latest.reply",), question="",
+        )
     if decided.decision == "limit" and dialogue_slot.takes_back(text, antecedent):
         # M84 (DEV-D v3o D-p01-t3 «no, cancel», D-p14-t3 «Cancelar foto» → «No cancelo la foto.»): taking back what was
         # just asked is said to BAXY, never a limit of cancelling.
+        decided = semantic_decider.ContextDecision(request=text, decision="talk", operations=(), question="")
+    if decided.decision == "limit" and (dialogue_slot.is_assent(text) or dialogue_slot.gives_go_ahead(text)):
+        # M102 (DEV-D v3z D-p24-t4 «Yes, do it for me.» after «The streaming of Hustlers failed because Netflix requires a
+        # sign-in on this PC…» → «I do not handle tasks outside my scope.»): a yes or a go-ahead asks for nothing new, so
+        # it is never a limit; what stands in the way (the failure just told, or nothing waiting for the yes) is said in
+        # talk, with the conversation in front of the writer (M88 holds it to saying nothing was done).
         decided = semantic_decider.ContextDecision(request=text, decision="talk", operations=(), question="")
     # cien-107 100: with a block of history the decider answered «talk» («Write a letter to Eris.»), the knowledge
     # contract let «…because I do not have access to external communication channels…» through; talk is bounded too.
@@ -4772,6 +4861,14 @@ def _context_decided_result(
         # M78 (DEV-D v3l p35-t1 «…análisis de FODA…» refused): content written in the conversation (an analysis, a
         # letter, code) is what BAXY does; a limit on it is false.
         decided = semantic_decider.ContextDecision(request=decided.request, decision="talk", operations=(), question="")
+    if (
+        decided.decision in {"limit", "talk"}
+        and "web.search" in available_operations
+        and asks_what_a_cinema_shows(text)
+    ):
+        # M99 (DEV-D v3x D-p28-t1 «I want to watch a movie at Century 25 Union Landing…» → «I cannot order or buy
+        # movies…»): what a cinema shows is looked up; the limit was about buying, which nobody asked.
+        decided = semantic_decider.ContextDecision(request=text, decision="action", operations=("web.search",), question="")
     reference = None
     recommended = False
     # M56 (v3c-final F-w14-t1): code the person asks for is written, whatever the decider's rewrite of it says.
@@ -4911,6 +5008,45 @@ def _context_decided_result(
     return result
 
 
+_MOVED_NOTIFICATION_PLAN = ("notification.cancel.latest", "notification.schedule")
+
+
+def _moved_notification_result(message: dict[str, Any], request: str) -> dict[str, Any]:
+    """M102: the turn that moves the notification just set — cancel the latest of its kind and set it again — as the
+    plan the shell runs, with ``request`` (``DialogueState.moved_notification_request``) as its objective."""
+
+    result: dict[str, Any] = {
+        "type": "turn.result",
+        "id": message.get("id"),
+        "kind": "plan",
+        "operation": None,
+        "intentOperations": list(_MOVED_NOTIFICATION_PLAN),
+        "effectOperations": list(_MOVED_NOTIFICATION_PLAN),
+        "question": "",
+        "reply": "",
+        "objective": request,
+    }
+    language = _read_reply_language(str(message.get("text", "")), message.get("history") or [])
+    if language in {"es", "en", "mixed"}:
+        result["responseLanguage"] = language
+    _append_turn_audit(
+        {
+            "schema": "baxy.mind-turn-audit.v1",
+            "request_id": message.get("id"),
+            "phase": "final",
+            "decision_path": "moved_notification",
+            "raw_decision": {"mode": "action", "request": request, "effect_operations": list(_MOVED_NOTIFICATION_PLAN)},
+            "stages": [],
+            "final": {
+                "kind": "plan",
+                "intent_operations": list(_MOVED_NOTIFICATION_PLAN),
+                "effect_operations": list(_MOVED_NOTIFICATION_PLAN),
+            },
+        }
+    )
+    return result
+
+
 def _prepare_turn_result(
     message: dict[str, Any],
     *,
@@ -4954,6 +5090,16 @@ def _prepare_turn_result(
         result.setdefault("objective", accepted_cancellation)
         return result
     if dialogue_slot.read_slot({}, message.get("history") or [], str(message.get("text", ""))).antecedents:
+        moved = (
+            dialogue_state.moved_notification_request(str(message.get("text", "")))
+            if dialogue_state is not None
+            else None
+        )
+        if moved is not None:
+            # M102 (DEV-D v3z D-w18-t5 «wait no, make it una hora»): the notification the last turn set is moved
+            # (cancelled and set again), never a second one beside it; the plan takes its arguments from the dialogue
+            # state (``_retimed_step_arguments``).
+            return _moved_notification_result(message, moved)
         return _decide_turn_result(
             message,
             llm=llm,
@@ -6617,7 +6763,9 @@ def _recover_failed_turn(
                 history=history,
                 timeout=2.5,
             )
-            if not _recovery_question_is_valid(question):
+            # M99 (DEV-D v3x D-s053 «¿Miguel sigue viviendo en Arkansas?» → «¿Te refieres a Miguel o a alguien más?»):
+            # the recovery question is judged against the message too, as the decider's is.
+            if not _recovery_question_is_valid(question, objective, history):
                 raise ValueError("invalid_recovery_question")
             return audited(
                 {
@@ -6745,6 +6893,9 @@ def _recovery_visible_from_compose(
             or len(reply) > 4_096
             or dialogue_slot.says_the_message_back(reply, objective)
             or (reply.endswith("?") and _RECOVERY_MIRRORED_REQUEST.search(read_fold(reply)) is not None)
+            # M101 (DEV-D v3z D-p31-t2): a talk reply that tells a failure is refused by the App, whose turn failure
+            # then had no final; the clarification below asks back instead.
+            or talk_reply_tells_a_failure(reply, objective)
         ):
             return "conversation", ""
         return "conversation", reply
@@ -6774,9 +6925,13 @@ def _recovery_visible_from_compose(
         return "conversation", ""
     if not text or len(text) > 4_096:
         return "conversation", ""
-    if _recovery_question_is_valid(text):
+    if _recovery_question_is_valid(text, objective):
         return "clarify", text
-    if text.endswith("?") and _RECOVERY_MIRRORED_REQUEST.search(read_fold(text)) is not None:
+    if text.endswith("?") and (
+        _RECOVERY_MIRRORED_REQUEST.search(read_fold(text)) is not None
+        # M99 (DEV-D v3x D-s053): a question that offers back the one named asks nothing, here too.
+        or (_recovery_question_is_valid(text) and not _recovery_question_is_valid(text, objective))
+    ):
         # M54: the person's request handed back is neither a question to publish nor a reply.
         return "conversation", ""
     return "conversation", text
