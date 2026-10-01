@@ -54,6 +54,7 @@ from .semantic.network import (
     relative_calendar_days,
 )
 from .semantic.web import (
+    talks_of_films,
     weather_asks_sun_time, asks_own_place, weather_asks_air, weather_asked_measures, weather_asked_clock, words_asked,
     weather_asks_coming_days, weather_asks_week, weather_sun_events_asked, place_containers, searched_clause,
     ASKED_UNCONFIRMED_WORDS, asked_dimension_words, carried_subjects, names_subject, PLACE_KIND_WORDS,
@@ -2727,6 +2728,8 @@ def _shaped_conversation_answer_violates_contract(
         visible_reply_invents_a_spanish_infinitive(value)
         or visible_reply_breaks_word_case(value, request)
         or visible_reply_breaks_spanish_plural(value, request)
+        # M105 (DEV-D v4a D-s076 «sentadillas búlgar»).
+        or visible_reply_cuts_a_word(value)
     ):
         return True
     if visible_reply_breaks_estar_participle(value):
@@ -4292,10 +4295,17 @@ _SETTLED_PLAN = re.compile(
     # sentence's own opening word, and the plan, procedure or request said to go ahead from now on.
     r"^\W*(?:confirmed|approved|confirmad[oa]|aprobad[oa])\b(?!\s+(?:that|by|que|por)\b)|"
     r"(?:the|your|this|that|it|el|tu|este|ese|la|lo)\s+(?:(?:plan|procedure|process|order|request|operation|playback|"
-    r"booking|purchase|procedimiento|proceso|operacion|reproduccion|pedido|solicitud|reserva|compra)\s+)?"
+    r"booking|purchase|action|task|step|procedimiento|proceso|operacion|reproduccion|pedido|solicitud|reserva|compra|"
+    r"accion|tarea|paso)\s+)?"
     r"(?:(?:will|shall)\s+(?:now\s+)?|(?:is|are)\s+(?:now\s+)?(?:going\s+to\s+)?)(?:proceed(?:ing)?|go(?:ing)?\s+ahead)|"
     r"(?:el|la|tu|este|ese|esta)\s+(?:plan|procedimiento|proceso|pedido|solicitud|operacion|reproduccion|reserva|"
-    r"compra)\s+(?:se\s+)?(?:procedera|seguira\s+adelante|va\s+a\s+(?:proceder|seguir\s+adelante)))\b"
+    r"compra|accion|tarea|paso)\s+(?:se\s+)?(?:procedera|seguira\s+adelante|va\s+a\s+(?:proceder|seguir\s+adelante))|"
+    # M105 (DEV-D v4a D-p24-t5 «That is confirmed to proceed.» → «I confirm the action will proceed.» with nothing run, the
+    # same words M88 met after a reply that asked nothing; here the reply before had asked a question): BAXY's own
+    # confirmation that an act goes ahead, and the act promised as BAXY's next step, in a turn that runs nothing.
+    r"(?:\bi\s+(?:hereby\s+)?confirm|\b(?:te\s+|le\s+|se\s+)?confirmo)\b.*?\b(?:will|shall|going\s+to|proceed\w*|"
+    r"go(?:es|ing)?\s+ahead|start\w*|begin\w*|procedera|procedere|seguira|se\s+hara|se\s+realizara|en\s+marcha)|"
+    r"\bi(?:'ll|\s+will|\s+am\s+going\s+to)\s+(?:now\s+)?proceed\b|\bprocedere\b|\bprocedo\s+(?:a|con)\b)\b"
 )
 # M79 (DEV-D v3m p27-t4/t5 «I don't have any movies featuring Eugene Dynarski in my database.»): BAXY has no database,
 # catalog or records of his own to look things up in; saying so invents where an answer would come from. Folded.
@@ -4370,6 +4380,15 @@ _UNNAMED_WORK_HINT = {
 }
 
 
+# M105 (DEV-D v4a D-p28-t3).
+_UNREAD_SHOWTIMES_HINT = {
+    "es": "No leíste la cartelera: no digas qué película dan en un cine ni a qué hora. Si es lo que la persona quiere "
+    "saber, di llanamente que no tienes comprobada la cartelera. Una frase.",
+    "en": "You read no listing: do not say which film a cinema shows or at what time. If that is what the person "
+    "wants, say plainly that you have not checked the showtimes. One sentence.",
+}
+
+
 def visible_reply_recommends_an_unnamed_work(value: object) -> bool:
     """A sentence that recommends, or calls new, a work (a movie, a book, a song) without naming any."""
 
@@ -4389,11 +4408,97 @@ def visible_reply_recommends_an_unnamed_work(value: object) -> bool:
     return False
 
 
+# M105 (DEV-D v4a D-p28-t3 «Hustlers is perfect.» after «Look for movies in Union City.» → «Hustlers is playing at the
+# Union City theater.», with nothing read): what a cinema shows, and when, is today's listing; a turn that read none
+# cannot state it. Folded.
+_SHOWTIME_CLAIM = re.compile(
+    r"\b(?:is|are)\s+(?:now\s+|currently\s+|still\s+)?(?:playing|showing|screening|on\s+screen)\s+(?:at|in)\b|"
+    r"\b(?:now|currently)\s+(?:playing|showing|screening)\b|\bin\s+theaters?\s+(?:now|today|tonight)\b|"
+    r"\bshowtimes?\s+(?:are|is|at|for|include)\b|\bshows?\s+at\s+\d|\bscreenings?\s+at\s+\d|"
+    r"\b(?:esta|estan|sigue|siguen)\s+en\s+(?:cartelera|cartel|el\s+cine|los\s+cines|cines)\b|"
+    r"\b(?:se\s+)?(?:exhibe|exhiben|proyecta|proyectan|estrena|estrenan|dan|da)\s+en\s+(?:el\s+|los\s+|la\s+)?"
+    r"(?:cine|cines|sala|salas|cinemark|cinepolis|teatro)\b|\b(?:hay\s+)?funcion(?:es)?\s+(?:a|de)\s+las\s+\d"
+)
+# Not knowing it, not having read it, or offering to look it up claims no listing.
+_SHOWTIME_HEDGE = re.compile(
+    r"\b(?:no|not|nunca|never|sin|si|if|whether|unless|puedo\s+buscar|could\s+look|can\s+look|can\s+check)\b|n't\b"
+)
+_CINEMA_CONTEXT = re.compile(
+    r"\b(?:movies?|films?|theaters?|theatres?|cinemas?|cinemark|cineplex|imax|xd|showtimes?|screenings?|cine|cines|"
+    r"peliculas?|cartelera|funcion(?:es)?|estreno)\b"
+)
+
+
+def visible_reply_claims_unread_showtimes(
+    value: object, request: object = "", prior_requests: tuple[str, ...] = (),
+) -> bool:
+    """A film said to be showing at a cinema, or its showtimes given (see above), in a conversation about films or
+    cinemas, by a turn that read no listing."""
+
+    folded = _reading_fold(str(value or ""))
+    claimed = any(
+        _SHOWTIME_CLAIM.search(sentence) is not None and _SHOWTIME_HEDGE.search(sentence) is None
+        for sentence in re.split(r"(?<=[.!?…])\s+|\n+", folded)
+        if "?" not in sentence
+    )
+    if not claimed:
+        return False
+    # The reply's own words, or the person's (semantic.web.talks_of_films), speak of films or cinemas.
+    return _CINEMA_CONTEXT.search(folded) is not None or talks_of_films(str(request or ""), *prior_requests)
+
+
+# M105 (DEV-D v4a D-p23-t5 «Actually do English subtitles.» → «I can add English subtitles to your videos.», right after
+# «I do not add subtitles to movies.»): a turn that ran nothing claims it can do the act asked. What BAXY does is the
+# catalog's, and a turn that does none of it has no ground for «I can»: either the act is not served (a false
+# capability) or it was not done (an empty offer standing for the act). Folded; a question, a condition or a denial is
+# not such a claim, and neither is what BAXY says, writes or explains in the conversation itself.
+_CLAIMED_ABILITY = re.compile(
+    r"(?<!\bno\s)(?<!\bnot\s)\b(?:i\s+can|i\s+am\s+able\s+to|i'?m\s+able\s+to|i\s+could|puedo|podria|soy\s+capaz\s+de)"
+    r"\s+(?:also\s+|now\s+|tambien\s+|ahora\s+)?(?:add|put|turn|set|enable|activate|switch|change|play|install|download|"
+    r"subtitle|record|book|order|buy|anadir|agregar|anadirle|agregarle|poner|ponerle|activar|encender|apagar|cambiar|"
+    r"reproducir|instalar|descargar|grabar|reservar|comprar|pedir)\b"
+)
+
+
+def visible_reply_claims_an_unrun_ability(value: object, request: object = "") -> bool:
+    """An act said to be within BAXY's reach (see above) in a turn that ran nothing; not when the person asked what
+    BAXY can do, which the capability answer gives."""
+
+    if asks_whether_able(str(request or "")) or _looks_like_capability_question(str(request or "")):
+        return False
+    for sentence in re.split(r"(?<=[.!?…])\s+|\n+", str(value or "")):
+        if "?" in sentence or "¿" in sentence:
+            continue
+        folded = _reading_fold(sentence)
+        if _CONDITIONAL_OFFER.search(folded) is None and re.search(r"\b(?:if|si|cuando|when)\b", folded) is None and (
+            _CLAIMED_ABILITY.search(folded) is not None
+        ):
+            return True
+    return False
+
+
+_CLAIMED_ABILITY_HINT = {
+    "es": "En este turno no hiciste nada: no digas que puedes hacerlo. Si tus mensajes anteriores dicen que eso no lo "
+    "haces, dilo de nuevo; si no, di llanamente que no lo has hecho. Una frase.",
+    "en": "You did nothing in this turn: do not say you can do it. If your earlier messages say you do not do that, "
+    "say so again; otherwise say plainly that you have not done it. One sentence.",
+}
+
+
 def visible_reply_claims_an_own_store(value: object, request: object = "") -> bool:
     """BAXY speaks of a database, catalog or records of his own (see above), unless the person named it."""
 
     found = _OWN_STORE.search(_reading_fold(str(value or "")))
     return found is not None and found.group(0) not in _reading_fold(str(request or ""))
+
+
+def _go_ahead_reply_unmet(reply: str, request: str) -> bool:
+    """Whether a reply to a go-ahead nothing was waiting for (M88) fails it: it must say it was not done, and (M105,
+    DEV-D v4a D-p24-t4 «Yes, do it for me.» after a Netflix sign-in failure → «I have not done it yet because the
+    streaming of Hustlers failed because…», refused as a failure told in talk, and the App fell back to «What specific
+    detail is missing…?») it must not tell that as a failure, which the App's conversation policy refuses."""
+
+    return not dialogue_slot.says_nothing_was_done(reply) or talk_reply_tells_a_failure(reply, request)
 
 
 def _go_ahead_instruction(last_said: str, language: str | None) -> str:
@@ -4406,14 +4511,17 @@ def _go_ahead_instruction(last_said: str, language: str | None) -> str:
         return (
             "The person tells you to go ahead, but nothing ran this turn and nothing of yours was waiting for a yes"
             + (f"; your last message was «{last}»" if last else "")
-            + ". In one sentence, say that you have not done it yet and, if your last message says why, say why with "
-            "its words. Never say it is confirmed, under way or will proceed."
+            + ". In one sentence, say that you have not done it yet and, if your last message says why, give that "
+            # M105 (DEV-D v4a D-p24-t4): «…because the streaming of Hustlers failed because…» was refused as a failure.
+            "reason as what is still needed (for example, that the service asks to sign in on this PC first), without "
+            "the words failed, could not or cannot. Never say it is confirmed, under way or will proceed."
         )
     return (
         "La persona te dice que sigas adelante, pero en este turno no se ejecutó nada y nada tuyo esperaba un sí"
         + (f"; tu último mensaje fue «{last}»" if last else "")
-        + ". En una frase, di que todavía no lo hiciste y, si tu último mensaje dice por qué, dilo con sus palabras. "
-        "Nunca digas que está confirmado, en marcha o que se hará."
+        + ". En una frase, di que todavía no lo hiciste y, si tu último mensaje dice por qué, da ese motivo como lo "
+        "que aún falta (por ejemplo, que el servicio pide iniciar sesión en este PC antes), sin las palabras falló, "
+        "no pude ni no puedo. Nunca digas que está confirmado, en marcha o que se hará."
     )
 
 
@@ -4462,6 +4570,10 @@ def conversation_world_claim(value: object, request: object = "", prior_requests
         return "unnamed_work"
     if visible_reply_claims_an_own_store(value, request):
         return "own_store_claim"
+    if visible_reply_claims_unread_showtimes(value, request, tuple(prior_requests)):
+        return "unread_showtimes"
+    if visible_reply_claims_an_unrun_ability(value, request):
+        return "claimed_ability"
     if visible_reply_asserts_unread_personal_records(value, request, tuple(prior_requests)):
         return "unread_records"
     if visible_reply_answers_an_unobserved_polar_question(value, request):
@@ -4799,6 +4911,39 @@ def visible_reply_breaks_spanish_plural(value: object, request: object = "") -> 
         return False
     said = set(re.findall(r"[a-zñ]+", _reading_fold(text)))
     return any(word + "s" in said for word in words_with_es_plural(str(request or "")))
+
+
+# M105 (DEV-D v4a D-s076 «…flexiones con peso y sentadillas búlgar.»): the model cut the last word of a clause; what is
+# left is a singular-looking stem after a plural noun («sentadillas búlgar[as]»), which Spanish never writes. A plural
+# noun in «-as»/«-os» and, closing the clause, a word in «-ar», «-or», «-al», «-il» or «-ul» with no plural «-s». Folded.
+_CUT_AFTER_PLURAL = re.compile(
+    r"\b(?P<noun>[a-zñ]{3,}[ao]s)\s+(?P<word>[a-zñ]{2,}(?:ar|or|al|il|ul))(?=\s*(?:[.,;:!)\n]|$))"
+)
+# Plural-looking words that are no noun before an adjective: articles, pronouns, numbers, adverbs, weekdays.
+_NOT_A_PLURAL_NOUN = frozenset({
+    "las", "los", "unas", "unos", "esas", "esos", "estas", "estos", "aquellas", "aquellos", "otras", "otros", "todas",
+    "todos", "muchas", "muchos", "pocas", "pocos", "algunas", "algunos", "nosotras", "nosotros", "vosotras", "vosotros",
+    "ellas", "ellos", "ambas", "ambos", "nuestras", "nuestros", "vuestras", "vuestros", "cuantas", "cuantos", "tantas",
+    "tantos", "varias", "varios", "demas", "mas", "menos", "apenas", "quizas", "jamas", "atras", "despues", "antes",
+    "entonces", "acaso", "dos", "tres", "seis", "vamos", "somos", "estamos", "tenemos", "hacemos", "podemos",
+    "queremos", "vemos", "sabemos", "damos", "ponemos", "vas", "das", "estas", "eras", "fueras", "tienes",
+})
+
+
+def visible_reply_cuts_a_word(value: object) -> bool:
+    """A Spanish reply whose clause ends in a word cut short after a plural noun (see above). The lexicon, when the
+    runtime has it, keeps a word it knows."""
+
+    text = str(value or "")
+    if _message_response_language(text) != "es":
+        return False
+    for found in _CUT_AFTER_PLURAL.finditer(_reading_fold(text)):
+        if found.group("noun") in _NOT_A_PLURAL_NOUN:
+            continue
+        if corrector.lexicon_available() and corrector.known_spanish(found.group("word")):
+            continue
+        return True
+    return False
 
 
 def visible_reply_invents_a_spanish_infinitive(value: object) -> bool:
@@ -5459,8 +5604,10 @@ _CAUSE_FACT = {
     "media_session_not_found": (
         "nothing is playing right now that could be controlled, so nothing was changed"
     ),
+    # M105 (DEV-D v4a D-s047): only that tab was looked for; the old «no YouTube video … is playing» became «No hay
+    # música reproduciéndose», an absence nobody read.
     "youtube_tab_not_found": (
-        "no YouTube video opened by the assistant is playing, so nothing was changed"
+        "the YouTube tab the assistant opens is not open, so only that tab was checked and nothing was changed"
     ),
     # Tanda 5 «pausar el audiolibro»: the video of the assistant's YouTube tab had already ended or was paused.
     "youtube_playing_video_not_found": (
@@ -6269,6 +6416,26 @@ def _failure_is_an_absence(situation: dict) -> bool:
     «media_session_not_found»). Twin of UserMessagePolicy.IsNotFoundFailure."""
 
     return any("not_found" in code for code in _situation_error_codes(situation))
+
+
+def _only_the_session_tab_read(situation: dict) -> bool:
+    """M105 (DEV-D v4a D-s047): the failure is that the assistant's own YouTube tab was not found, and no reading of
+    the PC's media session came with it; nothing was read about what else plays."""
+
+    codes = set(_situation_error_codes(situation))
+    return "youtube_tab_not_found" in codes and "media_session_not_found" not in codes
+
+
+# M105 (DEV-D v4a D-s047): saying nothing plays on the PC at all («no hay música», «nothing is playing»). Folded.
+_GENERAL_PLAYBACK_ABSENCE = re.compile(
+    r"(?:\bno\s+hay\s+(?:nada|musica|ninguna\s+cancion|cancion(?:es)?|audio|sonido)\b|"
+    r"\bnada\s+(?:se\s+)?(?:esta\s+)?(?:sonando|reproduciendo\w*|suena)\b|"
+    r"\bno\s+(?:se\s+)?(?:esta|estan)\s+(?:sonando|reproduciendo\w*)\s+(?:nada|musica|ninguna)\b|"
+    r"\bno\s+suena\s+nada\b|\bnothing\s+(?:is\s+)?playing\b|\bno\s+(?:music|song|audio)\s+(?:is\s+)?playing\b|"
+    r"\bthere\s+is\s+no\s+(?:music|song|audio)\b|\bnot\s+playing\s+anything\b)"
+    # «Ahora no está sonando nada en YouTube» keeps to what was checked.
+    r"(?!\s+(?:en|on|in)\s+(?:(?:la|el|tu|the|your)\s+)?(?:pestana\s+de\s+|tab\s+of\s+)?youtube\b)"
+)
 
 
 # Saying that the thing is not there: «no hay», «ningún», «no está sonando»,
@@ -9967,6 +10134,7 @@ class _ReportSentence(NamedTuple):
     named: bool  # a content word or a number of it is the pages' or the request's
     translated: bool  # it says in its language what pages in the other language say
     titles: list[str] = []  # the words of a title it writes that no page and no request writes (M77)
+    listed: int = 0  # how many names the pages write it lists (M105)
 
 
 # M77 (DEV-D v3l D-p27-t3 «Eugene Dynarski appeared in two movies directed by Steven Spielberg: The Biker and Close
@@ -10023,6 +10191,25 @@ def _unread_title_words(sentence: str, observed: set[str], written: set[str]) ->
     return unread
 
 
+_LISTED_NAME = re.compile(
+    r"(?<![\w'’])[A-Z][\w'’:-]*(?:\s+(?:(?:of|the|a|an|and|in|on|to|de|del|la|el|los|las|y|en)\s+)?[A-Z0-9][\w'’:-]*)*"
+)
+
+
+def _listed_page_names(sentence: str, pages: str) -> int:
+    """M105: how many names a report sentence writes, past its first word, that the pages write as they stand."""
+
+    read = _reading_fold(pages)
+    # A quoted title is the page named, not a list of what it holds.
+    unquoted = re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " | ", str(sentence))
+    names = {
+        _reading_fold(found.group(0)).strip(" :")
+        for found in _LISTED_NAME.finditer(unquoted)
+        if found.start() > 0 and len(found.group(0)) >= 4
+    }
+    return sum(1 for name in names if name and name in read)
+
+
 def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> list[str]:
     """The words of the report that no result and no request shares.
 
@@ -10053,7 +10240,11 @@ def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> 
         if sentence.translated:
             # M77 (D-p27-t3): a translated sentence keeps the titles the pages write.
             lettered = sentence.titles
-        elif len(lettered) == 1 and sentence.content >= 8:
+        elif len(lettered) == 1 and (sentence.content >= 8 or sentence.listed >= 2):
+            # M105 (DEV-D v4a D-p27-t1 «You can watch popular films like Spider-Man: No Way Home, The Matrix
+            # Resurrections, and Don't Look Up.» died on «films» over pages that write «movies», and the turn said
+            # «I couldn't find it.»): one paraphrased common word in a sentence that lists names the pages write is
+            # the report's wording around what was read.
             lettered = []
         words.extend(word for word in sentence.numbers + lettered if word not in words)
     return words
@@ -10209,6 +10400,11 @@ def _search_report_sentences(text: str, payload: dict, user_text: str) -> list[_
             _ReportSentence(
                 False, numbers, lettered, content, grounded or shared > 0, translated,
                 _unread_title_words(sentence, observed, written) if translated else [],
+                # A name of its own («Disney+» beside «Netflix, HBO Max») is never the report's wording.
+                0 if any(
+                    word[:1].isupper() and _reading_fold(word) in lettered
+                    for word in re.findall(r"[^\W\d_][\w'’-]*", sentence)[1:]
+                ) else _listed_page_names(sentence, page_text(results)),
             )
         )
     return sentences
@@ -10404,7 +10600,9 @@ _SEARCH_MECHANICS = re.compile(
     r"(?:mentioned|listed|cited)|(?:los|las|estos|estas|esos|esas)\s+(?:lugares|sitios|opciones|nombres|locales|"
     r"titulos)\s+(?:mencionad[oa]s|citad[oa]s|listad[oa]s)|"
     r"(?:the|these|my)\s+(?:provided|returned|available|given|retrieved|visible)\s+(?:search\s+)?(?:results|information|"
-    r"snippets)|(?:los|estos|mis)\s+resultados\s+(?:disponibles|proporcionados|obtenidos|encontrados|mostrados|"
+    # M105 (DEV-D v4a D-p23-t2 «I could not find specific drama films mentioned in the provided text.»).
+    r"snippets|texts?|data|sources|pages|content|passages?|documents?)|"
+    r"(?:el|los|este|estos)\s+textos?\s+(?:proporcionad|dad|suministrad|facilitad|disponible)[oa]?s?|(?:los|estos|mis)\s+resultados\s+(?:disponibles|proporcionados|obtenidos|encontrados|mostrados|"
     r"visibles)|(?:los|estos|esos)\s+(?:fragmentos|extractos|snippets)|(?:the|these|those)\s+(?:snippets|excerpts)|"
     # «The snippet describes a drama movie called Hustlers…», «El fragmento dice…».
     r"(?:the|this|that)\s+(?:snippet|excerpt)|(?:el|este|ese)\s+(?:snippet|extracto|fragmento)\s+(?:no\s+)?"
@@ -10568,9 +10766,11 @@ def _place_existence_denied(text: str, payload: dict) -> bool:
 _SEARCH_RESULTS_TAIL = re.compile(
     # M77 (DEV-D v3l D-s063 «…in the provided results.», D-s012 «…en los resultados disponibles.»): the results
     # qualified as the ones given are the same closing phrase.
-    r"\s*,?\s+(?:in|from|among|within|en|entre|de)\s+(?:the|these|my|los|estos|mis|las|estas)\s+"
+    # M105 (DEV-D v4a D-p23-t2 «…mentioned in the provided text.»): the text given, and what it «mentions», too.
+    r"(?:\s+(?:mentioned|listed|named|mencionad[oa]s?|listad[oa]s?|nombrad[oa]s?))?"
+    r"\s*,?\s+(?:in|from|among|within|en|entre|de)\s+(?:the|these|my|this|los|estos|mis|las|estas|el|este)\s+"
     r"(?:(?:provided|returned|available|given|retrieved)\s+)?(?:search\s+)?(?:results|resultados|fuentes|p[aá]ginas|"
-    r"pages|sources)(?:\s+(?:disponibles|proporcionad[oa]s|obtenid[oa]s|encontrad[oa]s))?"
+    r"pages|sources|texts?|textos?)(?:\s+(?:disponibles?|proporcionad[oa]s?|obtenid[oa]s?|encontrad[oa]s?|dad[oa]s?))?"
     r"(?:\s+de\s+(?:la\s+)?b[uú]squeda)?"
     r"(?:\s+(?:that\s+i\s+found|que\s+encontr[eé]))?(?=\s*[.!]?\s*$)",
     re.IGNORECASE,
@@ -11646,13 +11846,17 @@ def _weather_focus(user_text: str, english: bool) -> str:
             "The person asked when the sun rises or sets: give the sun time sent, with its event (sunrise is "
             "when the sun rises, sunset when it sets) and its day (tomorrow's for tomorrow or a later day). "
             # M99 (DEV-D v3x D-s054): today's sun time already behind the clock.
-            "A sun time marked sunrisePassed or sunsetPassed already happened today: say it in the past (the sun set "
-            "at …), never as still to come."
+            "A sun time with sunrisePassed or sunsetPassed true already happened today: say it in the past (the sun set "
+            "at …), never as still to come. "
+            # M105 (DEV-D v4a D-s054/D-s080): and one with it false is still to come.
+            "With it false, it has not happened yet today: say it as still to come (the sun will set at …), never "
+            "in the past."
             if english
             else "La persona preguntó a qué hora sale o se pone el sol: da la hora del sol enviada, con su evento "
             "(sunrise es cuando sale, sunset cuando se pone) y su día (la de mañana para mañana o un día posterior). "
-            "Una hora del sol marcada sunrisePassed o sunsetPassed ya pasó hoy: dila en pasado (el sol se puso a "
-            "las …), nunca como algo por venir."
+            "Una hora del sol con sunrisePassed o sunsetPassed en true ya pasó hoy: dila en pasado (el sol se puso a "
+            "las …), nunca como algo por venir. Con false aún no llega hoy: dila como algo por venir (el sol se "
+            "pondrá a las …), nunca en pasado."
         )
     if "uv" in measures:
         # Uso real tanda 6 «Dime el UV index»: the index now and the day's peak are both read.
@@ -11960,14 +12164,19 @@ def _clock_minutes(value: object) -> int | None:
     return int(found.group(1)) * 60 + int(found.group(2)) if found else None
 
 
-def _sun_time_passed(seen: dict, block: dict, event: str) -> bool:
-    """M99: today's ``event`` (sunrise/sunset) is earlier than the reading's local clock (``observedAtLocal``), on the
-    same day."""
+def _sun_time_passed(seen: dict, block: dict, event: str) -> bool | None:
+    """M99: whether today's ``event`` (sunrise/sunset) is earlier than the reading's local clock (``observedAtLocal``,
+    the place's own time), on the same day; ``None`` when the read cannot tell (no clock, no time, another day).
+
+    M105 (DEV-D v4a D-s054/D-s080): the time still ahead is marked too (``False``), so the narrator and the check
+    know that «se puso» at 04:45 for a 19:49 sunset is wrong, not only that «se pondrá» at 22:45 is."""
 
     observed = str(seen.get("observedAtLocal") or "")
     day = str(block.get("date") or "")
     now, at = _clock_minutes(observed.split("T")[-1] if "T" in observed else ""), _clock_minutes(block.get(event))
-    return now is not None and at is not None and (not day or observed.startswith(day)) and at < now
+    if now is None or at is None or (day and not observed.startswith(day)):
+        return None
+    return at < now
 
 
 def _project_weather_read(seen: dict, user_text: str) -> dict:
@@ -11990,9 +12199,9 @@ def _project_weather_read(seen: dict, user_text: str) -> dict:
         if day == "today":
             # M99 (DEV-D v3x D-s054 «…comenzará a oscurecerse» at 22:50 → «Se pondrá el sol … a las 19:48 de hoy»): a sun
             # time of today already behind the reading's own clock is said as past.
-            projected[day].update({
-                f"{event}Passed": True for event in sorted(events) if _sun_time_passed(seen, block, event)
-            })
+            # M105 (DEV-D v4a D-s054 at 04:45 → «El sol se puso a las 19:49 hoy»): one still ahead is marked False.
+            passed = {event: _sun_time_passed(seen, block, event) for event in sorted(events)}
+            projected[day].update({f"{event}Passed": value for event, value in passed.items() if value is not None})
         return projected
     reach = _weather_asked_reach(seen, user_text)
     if reach is not None:
@@ -12341,6 +12550,14 @@ _SUN_STILL_TO_COME = re.compile(
     r"\bwill\s+(?:set|rise|go\s+down|come\s+up|get\s+dark)\b|\bis\s+going\s+to\s+(?:set|rise|go\s+down|get\s+dark)\b"
 )
 
+# M105 (DEV-D v4a D-s054/D-s080): a sun event said as already happened. Folded.
+_SUN_ALREADY_HAPPENED = re.compile(
+    r"\b(?:se\s+)?(?:puso|salio|oculto|oscurecio|anochecio|amanecio|atardecio)\b|"
+    r"\bya\s+(?:se\s+)?(?:fue|ha\s+puesto|ha\s+salido|esta\s+oscuro)\b|\bse\s+ha\s+(?:puesto|ocultado)\b|"
+    r"\b(?:the\s+)?sun\s+(?:set|rose|went\s+down|came\s+up|has\s+(?:set|risen|gone\s+down))\b|"
+    r"\b(?:it\s+)?(?:got|has\s+gotten|became)\s+dark\b"
+)
+
 
 def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     """REOPEN1993 grupo W: every number in a weather reply is an observed one
@@ -12530,6 +12747,15 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
         ):
             # M99 (DEV-D v3x D-s054): today's sun time behind the clock told as still to come.
             return "weather_sun_time_passed"
+        if (
+            isinstance(block, dict)
+            and any(block.get(f"{event}Passed") is False for event in events)
+            and not any(block.get(f"{event}Passed") is True for event in events)
+            and _SUN_ALREADY_HAPPENED.search(folded_text) is not None
+        ):
+            # M105 (DEV-D v4a D-s054/D-s080 at 04:45 «El sol se puso a las 19:49 hoy»): today's sun time still ahead of
+            # the clock told as already happened.
+            return "weather_sun_time_ahead"
         if any(
             said(day.get(other)) and day.get(other) not in clocks
             for day in (seen.get("today"), tomorrow) if isinstance(day, dict)
@@ -13865,7 +14091,10 @@ _TASK_METADISCOURSE = re.compile(
     r"sin (?:c[oó]digo|t[eé]rminos internos)|no internal (?:codes?|terms?)|"
     # M54 (v3b-final F-p08-t3 «What is the venue of the event?» → «The venue is not specified in the provided
     # information»): the facts the writer was given are the prompt, not something the person gave or can see.
-    r"\b(?:the|this|la|esta|los|estos|las|estas) (?:provided|given|supplied) (?:information|info|data|facts|context)\b|"
+    r"\b(?:the|this|la|esta|los|estos|las|estas) (?:provided|given|supplied) (?:information|info|data|facts|context|"
+    # M105 (DEV-D v4a D-p23-t2 «…in the provided text»).
+    r"texts?|content|passages?|documents?)\b|"
+    r"\b(?:el|los|este|estos) textos? (?:proporcionad|suministrad|facilitad|dad)[oa]s?\b|"
     r"\b(?:information|info|data|facts|context) (?:provided|given|supplied)(?! by)\b|"
     r"\b(?:informaci[oó]n|datos|hechos|contexto|situaci[oó]n) (?:proporcionad|suministrad|facilitad)[oa]s?\b|"
     # M89 (DEV-D v3r D-p35-t3 «…solo refleje lo que me diste en la situación…»): «la situación» is the prompt's name
@@ -14657,7 +14886,7 @@ def compose_visible_defect(
     if visible_reply_invents_a_spanish_infinitive(stripped) or visible_reply_breaks_word_case(
         # An observed name («watchOS» in a page title) is written as it was seen.
         stripped, f"{user_text} {json.dumps(facts, ensure_ascii=False, default=str)}",
-    ) or visible_reply_breaks_spanish_plural(stripped, user_text):
+    ) or visible_reply_breaks_spanish_plural(stripped, user_text) or visible_reply_cuts_a_word(stripped):
         return "invented"
     # A literal identifier supplied by the person (for example a filename)
     # is not leaked protocol metadata. Exempt only the same complete token
@@ -15076,20 +15305,21 @@ def compose_visible_defect(
     )
     if ran_nothing and cause != "acting":
         prior = facts.get("priorRequests")
+        if (
+            kind == "conversation"
+            and dialogue_slot.go_ahead_with_nothing_pending(said or user_text, str(facts.get("context") or ""))
+            and _go_ahead_reply_unmet(stripped, said or user_text)
+        ):
+            # M88 (DEV-D v3r D-p24-t5 «I confirm the action will proceed.»): a go-ahead nothing was waiting for, in a
+            # turn that ran nothing, is answered by saying it was not done — whatever words the draft uses otherwise.
+            # M105: judged before the world claims, whose generic hint would hide this one.
+            return "go_ahead_not_done"
         world_claim = conversation_world_claim(
             stripped, user_text, tuple(str(item) for item in prior if isinstance(item, str))
             if isinstance(prior, list) else (),
         )
         if world_claim:
             return world_claim
-        if (
-            kind == "conversation"
-            and dialogue_slot.go_ahead_with_nothing_pending(said or user_text, str(facts.get("context") or ""))
-            and not dialogue_slot.says_nothing_was_done(stripped)
-        ):
-            # M88 (DEV-D v3r D-p24-t5 «I confirm the action will proceed.»): a go-ahead nothing was waiting for, in a
-            # turn that ran nothing, is answered by saying it was not done — whatever words the draft uses otherwise.
-            return "go_ahead_not_done"
         if kind == "conversation" and _says_the_person_back(stripped, said or user_text):
             # M85 (DEV-D v3o D-p27-t5 «Nope, that's a lot.» → «That is a lot.»).
             return "echo"
@@ -15739,6 +15969,12 @@ def compose_visible_defect(
             # M69 (guion v3h t47): «…no hubo cambios al intentar silenciarlo» over an unmute that already held; the
             # adapter read the state and attempted nothing.
             return "extra_claim"
+        if _only_the_session_tab_read(situation) and _GENERAL_PLAYBACK_ABSENCE.search(
+            _accent_folded_with_punctuation(stripped)
+        ):
+            # M105 (DEV-D v4a D-s047 «No hay música reproduciéndose porque no se ha abierto ningún video de YouTube»):
+            # only the assistant's own YouTube tab was looked for; what the PC plays was not read.
+            return "absence_beyond_check"
         if not _asserts_failure(stripped) and not (
             # Uso real 2026-09-23 «qué música se está reproduciendo» with no player
             # found: «No hay un video de YouTube en ejecución» IS the failure told,
@@ -19743,7 +19979,7 @@ class LlmRuntime:
         # v3a-final F-w14-t1: a SQL query read as English killed the reply twice (wrong_language) and the turn asked back.
         wrong_reply_language = _reply_uses_opposite_language(prose, response_language)
         # M88 (DEV-D v3r D-p24-t5): a go-ahead nothing was waiting for is answered by saying it was not done.
-        go_ahead_draft_unmet = go_ahead_unmet and bool(content) and not dialogue_slot.says_nothing_was_done(prose)
+        go_ahead_draft_unmet = go_ahead_unmet and bool(content) and _go_ahead_reply_unmet(prose, text)
         # M95 (D52; DEV-D D-p28-t3): an unshaped talk answer states no figure from memory.
         figures_judged = conversation_kind in {None, "knowledge", "followup"} and presentation_shape is None and not code_asked
         memory_figures = (
@@ -19880,6 +20116,12 @@ class LlmRuntime:
                         else _UNNAMED_WORK_HINT["en" if response_language == "en" else "es"]
                         if presentation_shape not in _WRITTEN_CONTENT_SHAPES
                         and conversation_world_claim(content, text, prior_user_requests) == "unnamed_work"
+                        else _UNREAD_SHOWTIMES_HINT["en" if response_language == "en" else "es"]
+                        if presentation_shape not in _WRITTEN_CONTENT_SHAPES
+                        and conversation_world_claim(content, text, prior_user_requests) == "unread_showtimes"
+                        else _CLAIMED_ABILITY_HINT["en" if response_language == "en" else "es"]
+                        if presentation_shape not in _WRITTEN_CONTENT_SHAPES
+                        and conversation_world_claim(content, text, prior_user_requests) == "claimed_ability"
                         else (
                             # Uso real 2026-09-23 (tanda 2): «Te traigo una hamburguesa»,
                             # «Se añadirá.», «no hay queso en la lista». The generic
@@ -20175,13 +20417,13 @@ class LlmRuntime:
                     prior_requests=prior_user_requests,
                 )
             )
-            or (go_ahead_unmet and not dialogue_slot.says_nothing_was_done(final_prose))
+            or (go_ahead_unmet and _go_ahead_reply_unmet(final_prose, text))
         ):
             failure_reason = (
                 "empty"
                 if not final_content
                 else "go_ahead_not_done"
-                if go_ahead_unmet and not dialogue_slot.says_nothing_was_done(final_prose)
+                if go_ahead_unmet and _go_ahead_reply_unmet(final_prose, text)
                 else "wrong_language"
                 if _reply_uses_opposite_language(final_prose, response_language)
                 else "echo"
@@ -25996,6 +26238,14 @@ class LlmRuntime:
                     else "Esa hora del sol ya pasó hoy: dila en pasado (el sol se puso a esa hora), nunca como algo por "
                     "venir."
                 ),
+                # M105 (DEV-D v4a D-s054/D-s080).
+                "weather_sun_time_ahead": (
+                    "That sun time has not happened yet today: say it as still to come (the sun will set at that "
+                    "time), never in the past."
+                    if response_language == "en"
+                    else "Esa hora del sol aún no llega hoy: dila como algo por venir (el sol se pondrá a esa hora), "
+                    "nunca en pasado."
+                ),
                 # M99 (DEV-D v3x D-w18-t4 «Recuerda en 45 minutos que te toca tomar un descanso a las 23:56.»).
                 "schedule_told_as_order": (
                     "Say that you will remind them (or that the alarm will ring) at the time scheduled; do not give "
@@ -26203,6 +26453,14 @@ class LlmRuntime:
                     else "Name audio or speakers and the mute state."
                 ),
                 "reversed_polarity": "Failure. Do not say it is open or that you opened it.",
+                # M105 (DEV-D v4a D-s047).
+                "absence_beyond_check": (
+                    "Only the YouTube tab that you, the assistant, open was looked for and it is not open: say only "
+                    "that; whether anything else plays on the PC was not read."
+                    if response_language == "en"
+                    else "Sólo se buscó la pestaña de YouTube que abres tú como asistente y no está abierta: di sólo "
+                    "eso; no se leyó si suena otra cosa en el PC."
+                ),
                 # M45: the cancelled question ran nothing; saying or promising its effect is invented.
                 "cancelled_effect_claim": (
                     "The person cancelled the pending question: nothing was done and nothing will be done. "
@@ -26894,6 +27152,8 @@ class LlmRuntime:
                 ),
                 # M85 (DEV-D v3o D-p27-t1).
                 "unnamed_work": _UNNAMED_WORK_HINT["en" if response_language == "en" else "es"],
+                "unread_showtimes": _UNREAD_SHOWTIMES_HINT["en" if response_language == "en" else "es"],
+                "claimed_ability": _CLAIMED_ABILITY_HINT["en" if response_language == "en" else "es"],
                 # M85 (DEV-D v3o D-p32-t2, D-p36-t2).
                 "content_shape": _content_shape_instruction(user_text, response_language),
                 # M85 (DEV-D v3o D-p27-t5).

@@ -2772,6 +2772,13 @@ _PLACE_IN_A_PLACE = (
 )
 
 
+def talks_of_films(*texts: str) -> bool:
+    """M105 (DEV-D v4a D-p28-t3): the person speaks of films or of cinemas in any of these messages."""
+
+    return any(_has(_fold(str(text or "")), _SHOWING_FILMS) or _has(_fold(str(text or "")), _IN_THEATERS)
+               for text in texts)
+
+
 def cinema_listing(text: str) -> bool:
     """MASSIVE recommendation_movies «what movies are playing at the movies tonight», «movies that are playing near
     me»: what the cinemas show, never what this PC plays."""
