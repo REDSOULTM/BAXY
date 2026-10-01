@@ -10105,6 +10105,26 @@ _PAGE_SELF_DESCRIPTION = re.compile(
     r"\b(?:live|real[-\s]time|up[-\s]to[-\s]date|interactive)\s+(?:traffic|maps?|updates|forecasts?|data|weather)\b|"
     r"\bmapas?\s+interactivos?\b"
 )
+# M102 (DEV-D v3z D-p12-t2 «Bring up 24/7 stores near me» → «There are 24/7 delivery services and verified store maps
+# available near Curico.»): a page's finder, locator or map said to be there is the page describing itself, and no
+# store was named. Judged after the unsourced words, whose hint names them (M88 D-p12-t2 «five 24/7 stores»).
+_PAGE_FINDER = re.compile(
+    r"\b(?:finders?|locators?|buscadores?\s+de\s+(?:tiendas|locales|lugares|negocios))\b|"
+    r"\b(?:maps?|mapas?|listings?|listados?|directory|directories|directorios?)\b(?:\s+\w+){0,2}\s+"
+    r"(?:available|disponibles?)\b"
+)
+
+
+def _search_report_offers_a_finder(text: str, payload: dict, user_text: str) -> bool:
+    """M102: the report of a verified search names a page's finder, locator or available map as what was found."""
+
+    if _search_results_text(payload) is None:
+        return False
+    asked = _reading_fold(user_text or "")
+    return any(
+        re.search(r"\b" + re.escape(found.group().strip()) + r"\b", asked) is None
+        for found in _PAGE_FINDER.finditer(_reading_fold(re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(text))))
+    )
 # Tanda 7 «Bob Dean afirma que … nunca lo hemos estado»: a first person plural inside what a named person says or
 # believes is theirs, reported, not the page speaking.
 _REPORTED_SPEECH = re.compile(
@@ -10213,6 +10233,11 @@ _SEARCH_MECHANICS = re.compile(
     # the results, fragments or visible information named as what speaks, or qualified as the ones given, are the
     # search shown the same.
     r"none\s+of\s+(?:the|these|my)\s+(?:\w+\s+)?results|ninguno\s+de\s+(?:los|estos)\s+(?:\w+\s+)?resultados|"
+    # M102 (DEV-D v3z D-p26-t2 «Santa Rosa Cinemas, Roxy Stadium 14 … are the places mentioned for movies in Santa
+    # Rosa.»): what was found called the places, names or options «mentioned» or «listed» tells the pages that named them.
+    r"(?:the|these|those)\s+(?:places|ones|options|names|venues|spots|locations|titles|items)\s+"
+    r"(?:mentioned|listed|cited)|(?:los|las|estos|estas|esos|esas)\s+(?:lugares|sitios|opciones|nombres|locales|"
+    r"titulos)\s+(?:mencionad[oa]s|citad[oa]s|listad[oa]s)|"
     r"(?:the|these|my)\s+(?:provided|returned|available|given|retrieved|visible)\s+(?:search\s+)?(?:results|information|"
     r"snippets)|(?:los|estos|mis)\s+resultados\s+(?:disponibles|proporcionados|obtenidos|encontrados|mostrados|"
     r"visibles)|(?:los|estos|esos)\s+(?:fragmentos|extractos|snippets)|(?:the|these|those)\s+(?:snippets|excerpts)|"
@@ -10409,6 +10434,43 @@ _BROWSER_SEARCH_OFFER = re.compile(
 )
 
 
+# FINAL v1 F-p08-t2 «You can find theatre, dance, and stage shows in Cape Town through sites like What's on in Cape
+# Town and Cape Tourism» (reviewed right): sites offered as sites, where to look, are not counted among what was found.
+_OFFERED_AS_SITES = re.compile(r"\b(?:sites?|websites?|sitios?(?:\s+web)?|paginas?(?:\s+web)?|apps?)\s+(?:like|such\s+as|como)\b")
+
+
+def _search_result_site_brands(payload: dict) -> set[str]:
+    """M102: the names of the sites the results belong to (folded): the last part of a result's title («… | Fandango»,
+    «… - Southern Cravings») when it is its host's name («fandango.com», «southerncravings.com»)."""
+
+    brands: set[str] = set()
+    for item in _search_results_of(payload):
+        if not isinstance(item, dict) or not isinstance(item.get("url"), str):
+            continue
+        labels = [label for label in (urlparse(item["url"].strip()).hostname or "").casefold().split(".") if label]
+        if len(labels) < 2:
+            continue
+        # «fandango.com» → fandango; «elpais.com.uy», «bbc.co.uk» → elpais, bbc.
+        label = labels[-3] if len(labels) >= 3 and len(labels[-2]) <= 3 and len(labels[-1]) == 2 else labels[-2]
+        parts = re.split(r"\s+[|\-–—:]\s+", str(item.get("title") or "").strip())
+        if len(parts) < 2:
+            continue
+        brand = _reading_fold(parts[-1]).strip(" .")
+        if len(label) < 4 or re.sub(r"[^a-z0-9]", "", brand) != label:
+            continue
+        # «Model Y | Tesla»: a name the title also gives as its subject, or that another site's result carries, is
+        # what the pages are about, not only where they were read.
+        elsewhere = " ".join(parts[:-1]) + " " + " ".join(
+            f"{other.get('title') or ''} {other.get('snippet') or ''}"
+            for other in _search_results_of(payload)
+            if isinstance(other, dict) and isinstance(other.get("url"), str)
+            and label not in (urlparse(other["url"].strip()).hostname or "").casefold()
+        )
+        if re.search(r"\b" + re.escape(brand) + r"\b", _reading_fold(elsewhere)) is None:
+            brands.add(brand)
+    return brands
+
+
 def _search_report_shows_the_search(text: str, payload: dict, user_text: str) -> bool:
     """The answer to a verified search tells the search: a source cited, a result's site named, or how it was
     found. The person's own words and a snippet's own words are not the search showing."""
@@ -10439,6 +10501,15 @@ def _search_report_shows_the_search(text: str, payload: dict, user_text: str) ->
         _reading_fold(found.group(0))
         for found in _SEARCH_NAMED_SOURCE.finditer(re.sub(r"[«\"“][^»\"”]{1,400}[»\"”]", " ", str(text)))
     )
+    if not where_asked and not _OFFERED_AS_SITES.search(folded) and any(
+        re.search(r"\b" + re.escape(brand) + r"\b", folded) is not None
+        and re.search(r"\b" + re.escape(brand) + r"\b", _reading_fold(user_text or "")) is None
+        for brand in _search_result_site_brands(payload)
+    ):
+        # M102 (DEV-D v3z D-p26-t2 «Santa Rosa Cinemas, Roxy Stadium 14, Airport Stadium 12, and Fandango are the places
+        # …»): «Movie Showtimes and Theaters near Santa Rosa, CA | Fandango» is Fandango's page; the site a result
+        # belongs to is where it was read, never one of the things found.
+        return True
     for found in (
         *(match.group(0) for match in _SEARCH_ATTRIBUTION.finditer(folded) if not where_asked),
         *(match.group(0) for match in _SEARCH_MECHANICS.finditer(folded)),
@@ -12742,6 +12813,28 @@ def _note_content_described(text: str, payload: dict) -> bool:
     return re.search(rf"\b{described.group('kind')}\b", unquoted) is not None
 
 
+def _search_report_recipe_not_read(text: str, payload: dict, user_text: str) -> bool:
+    """M102 (DEV-D v3z D-s017 «a good southern style mac n cheese recipe» → «Southern-style mac and cheese uses a
+    creamy no-cook sauce with cheddar…», D-w10-t1 «¿me regalas una receta sencilla de arepas de queso?» → the
+    encyclopedia's sentence about the arepa): a named dish's recipe asked for, and no page read that is one (no recipe
+    reference, no page with its ingredients listed and its steps numbered). D52: a recipe is its quantities and steps;
+    what was read is not it, so the report says the recipe was not found."""
+
+    if payload.get("operation") != "web.search" or _search_results_text(payload) is None:
+        return False
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    if seen.get("reference") is not None or not semantic_knowledge.asks_one_recipe(user_text or ""):
+        return False
+    if any(_recipe_has_its_form(str(item.get("snippet") or "")) for item in _search_results_of(payload)
+           if isinstance(item, dict)):
+        return False
+    return any(
+        _SEARCH_NOT_FOUND.match(_reading_fold(sentence)) is None
+        for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip())
+        if sentence.strip()
+    )
+
+
 def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said: str | None = None) -> str:
     """El texto público conserva los hechos que el payload le dio.
 
@@ -12795,6 +12888,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
         return "search_report_runs_long"
     if _search_report_names_a_page(text, payload, user_text):
         return "search_report_names_a_page"
+    if _search_report_offers_a_finder(text, payload, user_text):
+        return "search_report_page_voice"
     if (
         _search_results_text(payload) is not None
         and _entity_lookup_query(user_text or "") is None
@@ -12810,6 +12905,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
         return task_defect
     if _note_content_described(text, payload):
         return "note_content_described"
+    if _search_report_recipe_not_read(text, payload, user_text):
+        return "search_report_recipe_not_read"
     folded = _reading_fold(text)
     seen = payload.get("seen")
     # A wifi reading observes the WLAN connection, not internet reachability.
@@ -16825,6 +16922,81 @@ PARTIAL_REPORT_PROMPT_EN = (
     "date, a figure), as something you know: never with «the data», «the results», «the information» or «the "
     "sources». Answer in English."
 )
+
+
+# M102 (DEV-D v3z D-p31-t1, both partial drafts «Los resultados mencionan que Javier Milei será el 13° presidente…, pero
+# no listan los nombres…», «Los datos proporcionados confirman que …»): the 4B opened with the results as the speaker
+# twice although the prompt and the retry told it not to, and the «No encontré» stood over what the pages did state. The
+# frame is taken off the draft's own words (what the results «mention» is said, what they «do not list» is not found),
+# and the result is judged again by every check; nothing is added that the draft did not say.
+_PARTIAL_FRAME = re.compile(
+    r"^\s*(?:(?:los|estos|esos)\s+(?:resultados|datos|textos|fragmentos|extractos)|la\s+informaci[oó]n)"
+    r"(?:\s+(?:proporcionad[oa]s|disponibles?|obtenid[oa]s|encontrad[oa]s|visibles?|le[ií]d[oa]s))?"
+    r"\s+(?:(?:s[oó]lo|solamente|[uú]nicamente)\s+)?(?:mencionan?|confirman?|indican?|dicen|dice|se[nñ]alan?|muestran?|"
+    r"afirman?|recogen?|precisan?)\s+que\s+"
+    r"|^\s*(?:the|these)\s+(?:(?:provided|available|search)\s+)?(?:results|data|snippets|texts|sources|information)"
+    r"\s+(?:only\s+)?(?:mentions?|confirms?|states?|shows?|says?|indicates?|notes?)\s+that\s+",
+    re.IGNORECASE,
+)
+_PARTIAL_ABSENCE = re.compile(
+    r"(?P<lead>,?\s*(?:pero|aunque|y)\s+)no\s+(?:(?:se\s+)?(?:listan?|mencionan?|dan|incluyen?|detallan?|especifican?|"
+    r"nombran?|precisan?|indican?|recogen?|aparecen?|encuentran?))\b"
+    r"|(?P<lead_en>,?\s*(?:but|although|and)\s+)(?:they\s+)?(?:do\s+not|don'?t|does\s+not|doesn'?t)\s+"
+    r"(?:list|mention|give|include|detail|specify|name|state|show)\b",
+    re.IGNORECASE,
+)
+_PARTIAL_ABSENT_SENTENCE = re.compile(
+    r"^\s*(?:tampoco|no)\s+se\s+(?:encuentran?|mencionan?|dan|incluyen?|detallan?|especifican?|nombran?|indican?|"
+    r"recogen?|precisan?)\b|^\s*(?:there\s+(?:is|are)\s+no|nor\s+(?:is|are))\b",
+    re.IGNORECASE,
+)
+_PARTIAL_WHERE_READ = re.compile(
+    r"\s+(?:en|de|entre)\s+(?:los|estos|esos|las|estas)\s+(?:textos|resultados|datos|fragmentos|extractos|fuentes|"
+    r"p[aá]ginas)(?:\s+(?:proporcionad[oa]s|disponibles|obtenid[oa]s|le[ií]d[oa]s|consultad[oa]s))?(?=\s*[.!]?\s*$)"
+    r"|\s+(?:in|from|among)\s+(?:the|these)\s+(?:(?:provided|available)\s+)?(?:texts|results|data|snippets|sources|"
+    r"pages)(?=\s*[.!]?\s*$)",
+    re.IGNORECASE,
+)
+
+
+def _unframed_partial(draft: str, english: bool) -> str:
+    """M102: the partial report's own words without the results as their speaker (see above), each thing not found
+    said in a sentence of its own («No encontré …»); "" when nothing is left."""
+
+    not_found = "I couldn't find " if english else "No encontré "
+    sentences = [part.strip() for part in re.split(r"(?<=[.!?])\s+", str(draft or "").strip()) if part.strip()]
+    said: list[str] = []
+    for sentence in sentences:
+        sentence = _PARTIAL_WHERE_READ.sub("", sentence.rstrip(".!")).strip()
+        parts: list[str] = []
+        absent = _PARTIAL_ABSENT_SENTENCE.match(sentence)
+        if absent is not None:
+            parts.append(not_found + sentence[absent.end():].strip())
+        else:
+            sentence = _PARTIAL_FRAME.sub("", sentence, count=1)
+            found = _PARTIAL_ABSENCE.search(sentence)
+            if found is None:
+                parts.append(sentence)
+            else:
+                # «…, pero no listan los nombres … ni mencionan cifras …»: the second verb of the absence was the
+                # results' too.
+                missing = re.sub(
+                    r"\b(ni|nor)\s+(?:se\s+)?(?:mencionan?|listan?|dan|incluyen?|detallan?|especifican?|nombran?|"
+                    r"mention|list|give|include|specify)\s+",
+                    r"\1 ",
+                    sentence[found.end():].strip(),
+                )
+                parts += [sentence[: found.start()], not_found + missing if missing else ""]
+        for part in parts:
+            part = part.strip(" ,;")
+            if not part or part.casefold() == not_found.strip().casefold():
+                continue
+            if said and part.startswith(not_found) and said[-1].startswith(not_found):
+                # Two things not found are one sentence: a report runs two at most.
+                said[-1] = said[-1].rstrip(".") + (", nor " if english else ", ni ") + part[len(not_found):] + "."
+                continue
+            said.append(part[0].upper() + part[1:] + ".")
+    return " ".join(said)
 
 
 def _carries_unasked_data(text: str, asked: set[str]) -> bool:
@@ -23023,18 +23195,23 @@ class LlmRuntime:
                 "chat_template_kwargs": {"enable_thinking": False},
             })
             draft = str(response["choices"][0]["message"].get("content") or "").strip()
-            reason = "empty" if not draft else "truncated" if _finish_reason_of(response) == "length" else (
-                "wrong_language" if _reply_uses_opposite_language(draft, language) else ""
-            ) or (
-                compose_visible_defect(draft, "status", user_text, facts)
-                or ("invented" if _truncated_fact_word(draft, payload) else "")
-                or _payload_fact_defect(draft, payload, user_text, said=said)
-            )
-            if not reason and all(
-                _SEARCH_NOT_FOUND.match(_reading_fold(part)) is not None
-                for part in re.split(r"(?<=[.!?;])\s+", draft) if part.strip()
-            ):
-                reason = "only_not_found"
+
+            def judged(candidate: str) -> str:
+                defect = (
+                    "wrong_language" if _reply_uses_opposite_language(candidate, language) else ""
+                ) or (
+                    compose_visible_defect(candidate, "status", user_text, facts)
+                    or ("invented" if _truncated_fact_word(candidate, payload) else "")
+                    or _payload_fact_defect(candidate, payload, user_text, said=said)
+                )
+                if not defect and all(
+                    _SEARCH_NOT_FOUND.match(_reading_fold(part)) is not None
+                    for part in re.split(r"(?<=[.!?;])\s+", candidate) if part.strip()
+                ):
+                    defect = "only_not_found"
+                return defect
+
+            reason = "empty" if not draft else "truncated" if _finish_reason_of(response) == "length" else judged(draft)
             _capture_compose_stage(
                 trace=trace_id, stage="partial_after_not_found" + ("_retry" if attempt else ""), intent="status",
                 language=language, greeting="none", payload=data, raw=draft, clipped=draft, reason=reason,
@@ -23043,6 +23220,22 @@ class LlmRuntime:
             )
             if not reason:
                 return draft
+            unframed = (
+                _unframed_partial(draft, english)
+                if reason in {"copied_instruction", "search_report_shows_the_search"}
+                else ""
+            )
+            if unframed and unframed != draft:
+                # M102 (DEV-D v3z D-p31-t1): the draft's own words without the results as their speaker.
+                unframed_reason = judged(unframed)
+                _capture_compose_stage(
+                    trace=trace_id, stage="partial_after_not_found_unframed", intent="status",
+                    language=language, greeting="none", payload=data, raw=draft, clipped=unframed,
+                    reason=unframed_reason, finish_reason=_finish_reason_of(response), published=not unframed_reason,
+                    situation=json.dumps(situation, ensure_ascii=False)[:2048],
+                )
+                if not unframed_reason:
+                    return unframed
             if reason in {"copied_instruction", "search_report_shows_the_search"}:
                 # M89 (DEV-D v3r D-p31-t1, D-p34-t1): both drafts opened «Los datos proporcionados mencionan…»; the
                 # retry is told its own defect instead of being sampled again blind.
@@ -25400,6 +25593,14 @@ class LlmRuntime:
                     "Do not paste addresses: give the answer itself in one or two sentences, in prose, without naming any site."
                     if response_language == "en"
                     else "No pegues direcciones: da la respuesta misma en una o dos oraciones, en prosa, sin nombrar ningún sitio."
+                ),
+                # M102 (DEV-D v3z D-s017, D-w10-t1).
+                "search_report_recipe_not_read": (
+                    "Nothing you read is the recipe, with its quantities and steps: say only, in the first person and "
+                    "in one short sentence, that you did not find the recipe, naming the dish."
+                    if response_language == "en"
+                    else "Nada de lo que leíste es la receta, con sus cantidades y pasos: di sólo, en primera persona y "
+                    "en una oración corta, que no encontraste la receta, nombrando el plato."
                 ),
                 "search_report_page_voice": (
                     "Speak in your own voice: say the answer as something you know, in one or two sentences, without naming any page or site; never speak as the page («we», «our», «we tell you»), never copy its questions, its instructions to the reader or what it says it offers; if no page states the answer, say only that you did not find it."
