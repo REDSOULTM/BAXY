@@ -5810,6 +5810,24 @@ _CAUSE_FACT = {
     "youtube_tab_playback_state_not_verified": (
         "the YouTube video did not reach the requested state, so the change is not confirmed"
     ),
+    # M122 (owner 2026-10-02): pages, videos and streaming open in the person's own browser, with their sessions.
+    # What the assistant could not confirm there is said as such: it was opened, the rest is for the person to check.
+    "user_browser_navigation_unconfirmed": (
+        "the page was opened in the person's own web browser, but afterwards it could not be confirmed that the "
+        "browser shows it; say it was opened there and that they can check it, without technical words"
+    ),
+    "user_browser_playback_unconfirmed": (
+        "the video was opened in the person's own web browser, but it could not be confirmed that it started "
+        "playing; say that plainly and that they can check it there"
+    ),
+    "user_browser_streaming_playback_unconfirmed": (
+        "the streaming service was opened in the person's own web browser, with their signed-in session, but it "
+        "could not be confirmed that the title started playing; say that plainly and that they can pick it there"
+    ),
+    "user_browser_tabs_not_automatable": (
+        "the page is open in the person's own web browser, where the assistant opens pages and controls what plays "
+        "but cannot read or move through its tabs, so nothing was done"
+    ),
     "smtc_postcondition_not_verified": (
         "the player did not reach the requested state, so the change is not confirmed"
     ),

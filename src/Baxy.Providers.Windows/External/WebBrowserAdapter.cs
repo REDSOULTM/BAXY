@@ -14,6 +14,11 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
 {
     private readonly CdpBrowserSession _browser;
     private readonly CdpBrowserSessionContext? _sessionContext;
+    // Owner 2026-10-02: pages, videos and streaming open in the person's own
+    // browser (their default, their sessions). The product's CDP browser stays
+    // as the fallback when no default browser resolves or it cannot launch.
+    private readonly UserBrowserSurface? _userBrowser;
+    private bool _userBrowserInUse;
     private readonly HttpClient _http;
     private readonly PublicPlaceLocator _locator;
     private readonly WikipediaSearchSource _wikipedia;
@@ -57,6 +62,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     {
         _browser = new CdpBrowserSession(SharedBrowserProfile(dataRoot, "edge"));
         _sessionContext = sessionContext;
+        _userBrowser = new UserBrowserSurface(new WindowsUserBrowserPlatform());
         _searchDiagnosticPath = Path.Combine(dataRoot, "captures", "web-search-rejections.jsonl");
         _http = new HttpClient(new SocketsHttpHandler
         {
@@ -75,11 +81,13 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     internal WebBrowserAdapter(
         CdpBrowserSession browser,
         HttpClient http,
-        CdpBrowserSessionContext? sessionContext = null)
+        CdpBrowserSessionContext? sessionContext = null,
+        UserBrowserSurface? userBrowser = null)
     {
         _browser = browser ?? throw new ArgumentNullException(nameof(browser));
         _http = http ?? throw new ArgumentNullException(nameof(http));
         _sessionContext = sessionContext;
+        _userBrowser = userBrowser;
         _locator = new PublicPlaceLocator(_http.GetStringAsync);
         _wikipedia = new WikipediaSearchSource(_http);
         _places = new OpenStreetMapPlaceSource(_http);
@@ -161,6 +169,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         string action = ExternalJson.RequiredString(arguments, "action");
+        if (UserBrowserHoldsThePage)
+            return ExternalJson.FailureBeforeEffect(operation, UserBrowserTabsNotAutomatable);
         CdpBrowserSession browser = _sessionContext?.Active ?? _browser;
         effectBoundary.Cross(cancellationToken);
         CdpBrowserControlResult control = await browser.ControlAsync(action, cancellationToken)
@@ -187,7 +197,15 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         Uri target = RequireWebUri(ExternalJson.RequiredString(arguments, "url"));
-        _sessionContext?.Activate(_browser);
+        if (_userBrowser?.Resolve() is { } userBrowser
+            && await _userBrowser.NavigateAsync(
+                operation, userBrowser, target, effectBoundary, cancellationToken).ConfigureAwait(false)
+                is { } opened)
+        {
+            UseUserBrowser();
+            return opened;
+        }
+        UseProductBrowser();
         effectBoundary.Cross(cancellationToken);
         CdpNavigationResult navigation = await _browser.NavigateAsync(target, cancellationToken)
             .ConfigureAwait(false);
@@ -206,6 +224,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     {
         int maximumCharacters = Math.Clamp(
             ExternalJson.OptionalInt(arguments, "maximumCharacters", 12_000), 256, 32_768);
+        if (UserBrowserHoldsThePage)
+            return ExternalJson.FailureBeforeEffect(operation, UserBrowserTabsNotAutomatable);
         CdpBrowserSession browser = _sessionContext?.Active ?? _browser;
         CdpPageReadResult page = await browser.ReadPageAsync(maximumCharacters, cancellationToken)
             .ConfigureAwait(false);
@@ -231,6 +251,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 20), 1, 50);
+        if (UserBrowserHoldsThePage)
+            return ExternalJson.FailureBeforeEffect(operation, UserBrowserTabsNotAutomatable);
         CdpBrowserSession browser = _sessionContext?.Active ?? _browser;
         CdpBrowserTabsResult tabs = await browser.ListTabsAsync(limit, cancellationToken)
             .ConfigureAwait(false);
@@ -269,7 +291,15 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         {
             return ExternalJson.Failure(operation, "streaming_resource_service_mismatch");
         }
-        _sessionContext?.Activate(_browser);
+        if (_userBrowser?.Resolve() is { } userBrowser
+            && await _userBrowser.StreamingNavigateAsync(
+                operation, userBrowser, service, target, effectBoundary, cancellationToken)
+                .ConfigureAwait(false) is { } opened)
+        {
+            UseUserBrowser();
+            return opened;
+        }
+        UseProductBrowser();
         effectBoundary.Cross(cancellationToken);
         CdpNavigationResult navigation = await _browser.NavigateAsync(target, cancellationToken)
             .ConfigureAwait(false);
@@ -311,7 +341,15 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         string title = ExternalJson.RequiredString(arguments, "title").Trim();
         if (service is not ("netflix" or "disney_plus") || title.Length == 0)
             return ExternalJson.Failure(operation, "streaming_named_argument_invalid");
-        _sessionContext?.Activate(_browser);
+        if (_userBrowser?.Resolve() is { } userBrowser
+            && await _userBrowser.PlayStreamingNamedAsync(
+                operation, userBrowser, service, title, effectBoundary, cancellationToken)
+                .ConfigureAwait(false) is { } started)
+        {
+            UseUserBrowser();
+            return started;
+        }
+        UseProductBrowser();
         effectBoundary.Cross(cancellationToken);
         CdpStreamingPlaybackResult playback = service == "disney_plus"
             ? await _browser.PlayDisneyAsync(title, cancellationToken).ConfigureAwait(false)
@@ -379,24 +417,20 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         string query = ExternalJson.RequiredString(arguments, "query");
-        Uri search = new("https://www.youtube.com/results?search_query="
-            + Uri.EscapeDataString(query));
-        using var request = new HttpRequestMessage(HttpMethod.Get, search);
-        request.Headers.UserAgent.ParseAdd("Mozilla/5.0 BAXY/1.0");
-        using HttpResponseMessage response = await _http.SendAsync(
-            request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-        response.EnsureSuccessStatusCode();
-        string html = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-        if (Encoding.UTF8.GetByteCount(html) > 4_000_000)
-            return effectBoundary.Failure(operation, "youtube_search_response_too_large");
-        Match video = Regex.Match(
-            html,
-            "\\\"videoRenderer\\\":\\{\\\"videoId\\\":\\\"([A-Za-z0-9_-]{11})\\\"",
-            RegexOptions.CultureInvariant);
-        if (!video.Success)
-            return effectBoundary.Failure(operation, "youtube_result_not_found");
-        Uri watchUri = new("https://www.youtube.com/watch?v=" + video.Groups[1].Value);
-        _sessionContext?.Activate(_browser);
+        YouTubeSearchResult video = await YouTubeSearch.FirstVideoAsync(_http, query, cancellationToken)
+            .ConfigureAwait(false);
+        if (!video.Found)
+            return effectBoundary.Failure(operation, video.ErrorCode);
+        if (_userBrowser?.Resolve() is { } userBrowser
+            && await _userBrowser.PlayYouTubeAsync(
+                operation, userBrowser, query, video, effectBoundary, cancellationToken)
+                .ConfigureAwait(false) is { } started)
+        {
+            UseUserBrowser();
+            return started;
+        }
+        Uri watchUri = video.WatchUri;
+        UseProductBrowser();
         effectBoundary.Cross(cancellationToken);
         CdpMediaPlaybackResult playback = await _browser.PlayYouTubeAsync(
             query, watchUri, cancellationToken)
@@ -1372,7 +1406,28 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         return uri;
     }
 
-    private static bool HostMatchesService(string host, string service)
+    internal const string UserBrowserTabsNotAutomatable = "user_browser_tabs_not_automatable";
+
+    // The last page was opened in the person's browser and no CDP session took
+    // over since: its tabs are not BAXY's to read or drive (no debug port on the
+    // person's profile), and acting on the product browser instead would act on
+    // a page the person is not looking at.
+    private bool UserBrowserHoldsThePage =>
+        _sessionContext?.UserBrowserHoldsThePage ?? _userBrowserInUse;
+
+    private void UseUserBrowser()
+    {
+        _userBrowserInUse = true;
+        _sessionContext?.UseUserBrowser();
+    }
+
+    private void UseProductBrowser()
+    {
+        _userBrowserInUse = false;
+        _sessionContext?.Activate(_browser);
+    }
+
+    internal static bool HostMatchesService(string host, string service)
     {
         string[] suffixes = service switch
         {
@@ -1467,10 +1522,26 @@ internal sealed class CdpBrowserSessionContext
 
     internal CdpBrowserSession? Active => Volatile.Read(ref _active);
 
+    private volatile bool _userBrowserHoldsThePage;
+
+    /// <summary>
+    /// The last page went to the person's own browser (M122): no CDP session is
+    /// the active one, and the tab steps that need CDP say so instead of acting
+    /// on a product browser the person is not looking at.
+    /// </summary>
+    internal bool UserBrowserHoldsThePage => _userBrowserHoldsThePage && Active is null;
+
     internal void Activate(CdpBrowserSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        _userBrowserHoldsThePage = false;
         Volatile.Write(ref _active, session);
+    }
+
+    internal void UseUserBrowser()
+    {
+        Volatile.Write(ref _active, null);
+        _userBrowserHoldsThePage = true;
     }
 
     internal void Deactivate(CdpBrowserSession session)
