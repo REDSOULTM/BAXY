@@ -4547,7 +4547,22 @@ def _go_ahead_reply_unmet(reply: str, request: str) -> bool:
     streaming of Hustlers failed because…», refused as a failure told in talk, and the App fell back to «What specific
     detail is missing…?») it must not tell that as a failure, which the App's conversation policy refuses."""
 
-    return not dialogue_slot.says_nothing_was_done(reply) or talk_reply_tells_a_failure(reply, request)
+    return (
+        not dialogue_slot.says_nothing_was_done(reply)
+        or talk_reply_tells_a_failure(reply, request)
+        # M118 (cien-113 048 «haz eso» after «keep chatting without opening apps» → «No lo he hecho: no tengo la
+        # capacidad de mantener conversaciones sin abrir aplicaciones.»): talking is what BAXY is doing; a limit on it
+        # is false whatever the last message said.
+        or _DENIES_TALKING.search(_reading_fold(reply)) is not None
+    )
+
+
+_DENIES_TALKING = re.compile(
+    r"\bno\s+(?:tengo\s+(?:la\s+)?(?:capacidad|posibilidad)\s+de|puedo|se|soy\s+capaz\s+de)\s+(?:mantener\s+|tener\s+|seguir\s+)?"
+    r"(?:una\s+|la\s+)?(?:conversa\w*|hablar|charlar|chatear)"
+    r"|\b(?:can'?t|cannot|can\s+not|am\s+not\s+able\s+to|(?:do\s+not|don'?t)\s+have\s+the\s+(?:ability|capacity)\s+to)\s+"
+    r"(?:have\s+|keep\s+|hold\s+|carry\s+on\s+)?(?:a\s+)?(?:conversations?|chat\w*|talk\w*)"
+)
 
 
 def _go_ahead_instruction(last_said: str, language: str | None) -> str:

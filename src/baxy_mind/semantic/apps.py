@@ -165,6 +165,19 @@ _BARE_CLOSE_PRONOUN = re.compile(
 )
 
 
+_ACTIVE_WINDOW = re.compile(
+    r"\b(?:(?:la\s+)?ventana\s+(?:activa|actual|en\s+primer\s+plano|de\s+adelante|del\s+frente|que\s+tengo\s+abierta)|"
+    r"(?:the\s+)?(?:active|current|front|foreground|focused)\s+(?:window|app|application)|"
+    r"(?:la\s+)?(?:app|aplicacion|programa)\s+(?:activa|actual|en\s+primer\s+plano))\b"
+)
+
+
+def names_the_active_window(text: str) -> bool:
+    """M118: a request that names the window in front («Cierra la ventana activa.», «close the current window»)."""
+
+    return _ACTIVE_WINDOW.search(_fold(str(text or ""))) is not None
+
+
 def bare_close_pronoun(folded: str) -> tuple[bool, bool]:
     """«cerralo», «ya, ciérrala», «ok close that»: (closes what a pronoun points at, said in English)."""
 

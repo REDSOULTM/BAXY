@@ -222,6 +222,9 @@ class _Decider:
     def formulate_explicit_clarification_question(self, *_a, **_k):
         return "¿Qué pongo en la lista?"
 
+    def clarify_after_turn_failure(self, *_a, **_k):
+        return "¿Qué quieres que haga?"
+
     def chat(self, *_a, **_k):
         return "Respuesta.", []
 
@@ -273,3 +276,85 @@ def test_overheard_talk_is_the_deciders_and_only_its_question_is_the_overheard_o
     result = _turn(OVERHEARD, asks)
     assert asks.decisions == 1 and result["kind"] == "clarify"
     assert asks.unresolved == ["overheard_speech"] and result.get("preserveObjective") is False
+
+
+# ------------------------------------------------------------------ 7–10. after the decider (later tandas of M118)
+
+
+def _follow(text: str, history: list[tuple[str, str]], model: _Decider) -> dict:
+    names = ("app.close", "window.active", "audio.volume", "task.create", "memory.save", "memory.recall", "memory.list",
+             "calendar.event.list", "web.search")
+    tools = [_tool(name, _schema({}, [])) for name in names]
+    turns = [{"role": role, "content": content} for role, content in history]
+    return sidecar._context_decided_result(
+        {"id": "m118", "text": text, "history": [*turns, {"role": "user", "content": text}]},
+        llm=model, planner_catalog=PlannerCatalog(tools),
+    )
+
+
+CHAT = [("user", "explícame qué es un router, una frase"), ("assistant", "Un router reparte la conexión entre tus equipos.")]
+
+
+def test_a_pronoun_is_never_the_window_in_front() -> None:
+    # cien-113 008 «cierra aquello» → «Cierra la ventana activa.» → app.close of the Notepad in front (safety).
+    for text, restated in (("cierra aquello", "Cierra la ventana activa."), ("ciérralo ya", "Cierra la aplicación activa."),
+                           ("close that one", "Close the active window."), ("shut it", "Close the current window.")):
+        result = _follow(text, CHAT, _Decider(ContextDecision(restated, "action", ("app.close",), "")))
+        assert result["kind"] == "clarify" and result["effectOperations"] == [], text
+    # An application opened just before is what the pronoun closes, by its name.
+    opened = [("user", "abre la calculadora"), ("assistant", "Abrí la Calculadora.")]
+    result = _follow("ciérrala", opened, _Decider(ContextDecision("Cierra la calculadora.", "action", ("app.close",), "")))
+    assert result["kind"] == "action" and result["operation"] == "app.close"
+
+
+def test_do_that_with_nothing_named_is_asked_never_refused() -> None:
+    # cien-113 048 «haz eso» after «keep chatting without opening apps» → a false limit on chatting.
+    history = [("user", "sigue charlando sin abrir nada"), ("assistant", "Claro, seguimos conversando sin abrir programas.")]
+    for text in ("haz eso", "do that", "ok, haz esto ahora"):
+        for decision in ("talk", "limit"):
+            result = _follow(text, history, _Decider(ContextDecision(text, decision, (), "")))
+            assert result["kind"] == "clarify", (text, decision)
+    # After an offer of BAXY's, «haz eso» answers it: the decider's reading stands.
+    offered = [("user", "qué tal el clima"), ("assistant", "No lo sé sin mirar. ¿Quieres que lo busque?")]
+    result = _follow("haz eso", offered, _Decider(ContextDecision("Busca el clima.", "action", ("web.search",), "")))
+    assert result["kind"] == "action"
+
+
+def test_a_remate_of_what_was_just_done_is_not_asked_again() -> None:
+    # Owner script t57 «al volumen» after the volume set to 100 → «¿Cuánto le subo?».
+    done = [("user", "déjalo en 80"), ("assistant", "Dejé el volumen en 80 y el sonido no está silenciado.")]
+    for text in ("al volumen", "el volumen", "sonido"):
+        result = _follow(text, done, _Decider(ContextDecision(text, "clarify", (), "¿Cuánto le subo?")))
+        assert result["kind"] == "conversation", text
+    # A new value, or what BAXY did not report, is still the decider's question.
+    for text in ("el brillo", "volumen 90"):
+        result = _follow(text, done, _Decider(ContextDecision(text, "clarify", (), "¿Qué hago con eso?")))
+        assert result["kind"] == "clarify", text
+
+
+def test_memory_is_only_what_the_person_asks_of_it() -> None:
+    for text in ("acuérdate que mi equipo favorito es el Colo-Colo", "remember that I take my tea without sugar",
+                 "guardá que mi sobrina se llama Pía", "¿qué recuerdas de mis gustos?", "olvida que soy vegetariano",
+                 "me gustaría que recordases que odio el cilantro"):
+        result = _follow(text, CHAT, _Decider(ContextDecision(text, "action", ("memory.save",), "")))
+        assert result["kind"] == "action" and result["operation"] == "memory.save", text
+    # Questions about the person's contacts, plans or friends are not BAXY's memory: they are asked.
+    for text in ("cuántos de mis amigos viven en Valdivia", "dame el teléfono de la Coni", "qué planes tengo con mi primo"):
+        result = _follow(text, CHAT, _Decider(ContextDecision(text, "action", ("memory.recall",), "")))
+        assert result["kind"] == "clarify" and result["effectOperations"] == [], text
+    # A personal fact said without asking to keep it is asked about before it is kept.
+    text = "el santo de mi abuela es el 3 de junio"
+    result = _follow(text, CHAT, _Decider(ContextDecision(text, "action", ("memory.save",), "")))
+    assert result["kind"] == "clarify"
+    # What else the decider chose stands without the memory step.
+    text = "anota comprar pan"
+    result = _follow(text, CHAT, _Decider(ContextDecision(text, "action", ("task.create", "memory.save"), "")))
+    assert result["kind"] == "action" and result["operation"] == "task.create"
+
+
+def test_the_writer_never_denies_talking_to_a_go_ahead() -> None:
+    from baxy_mind.llm import _go_ahead_reply_unmet
+
+    assert _go_ahead_reply_unmet("No lo he hecho: no tengo la capacidad de mantener conversaciones sin abrir programas.", "dale")
+    assert _go_ahead_reply_unmet("I have not done it: I can't have conversations without opening apps.", "go ahead")
+    assert not _go_ahead_reply_unmet("Todavía no lo hice: antes hay que iniciar sesión en el servicio.", "dale")

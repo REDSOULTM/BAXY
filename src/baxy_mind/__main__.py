@@ -39,7 +39,7 @@ from . import effect_intent
 from .semantic import decider as semantic_decider
 from .semantic import dialogue as dialogue_slot
 from .semantic import knowledge as semantic_knowledge
-from .semantic.apps import bare_close_pronoun, close_request_for_opened, deictic_close_request
+from .semantic.apps import bare_close_pronoun, close_request_for_opened, deictic_close_request, names_the_active_window
 from .semantic.notes import (
     asks_overdue_notifications,
     conversation_note_title,
@@ -49,6 +49,7 @@ from .semantic.notes import (
     task_change,
 )
 from .semantic import levels as semantic_levels
+from .semantic.memory import explicit_memory_request
 from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
 from .semantic import temporal as semantic_temporal
@@ -4926,7 +4927,26 @@ def _context_decided_result(
             },
         )
         memory = next((op for op in decided.operations if op.startswith("memory.")), None)
-        if memory is not None:
+        if memory is not None and not any(
+            explicit_memory_request(said) for said in (text, _previous_user_request(history, text) or "")
+        ):
+            # M118 (reserve v4g after M114 put memory back in the decider's catalog: «mis contactos son mayormente
+            # masculinos o femeninos», «lugares de vacaciones», «cuando se acerca el cumpleaños de mi amigo», «give me
+            # petey's telephone number» → memory.recall, 9 of 25 breaks): BAXY's memory is the person's explicit request
+            # only (memory instrument). A memory choice nobody asked for is not the request: what else the decider chose,
+            # else what the readers prove in the message, else it is asked — what only the person knows is asked (M81),
+            # and a personal fact said without asking to keep it is asked about before it is kept (the App's AskToSave).
+            others = tuple(op for op in decided.operations if not op.startswith("memory."))
+            read = resolve_explicit_effects(text, available_operations, application_names) if not others else None
+            if others:
+                decided = semantic_decider.ContextDecision(
+                    decided.request, "action", others, decided.question, decided.arguments,
+                )
+            elif read is not None and not any(op.startswith("memory.") for op in read.operations):
+                decided = semantic_decider.ContextDecision(text, "action", tuple(read.operations), "")
+            else:
+                decided = semantic_decider.ContextDecision(text, "clarify", (), "")
+        elif memory is not None:
             # M114: memory is the App's own path (an explicit request, its confirmation); the mind never plans it with
             # other steps, so the decider's memory choice travels alone and the App answers it.
             decided = semantic_decider.ContextDecision(
@@ -4935,12 +4955,19 @@ def _context_decided_result(
     # M64 (v3f-final F-w14-t3): which fields the decider filled, never their values, so a turn whose arguments went
     # wrong can be told apart from one whose decider gave none.
     argument_fields = [name for name, _ in decided.arguments]
+    closes_a_pronoun = bare_close_pronoun(effect_intent._fold(text))[0]
     if (
         decided.decision == "action"
-        and (_deictic_open_request(text) or deictic_close_request(effect_intent._fold(text)))
-        and not dialogue_slot.restatement_was_said(
-            decided.request,
-            [text, *(str(turn.get("content") or "") for turn in history if isinstance(turn, dict))],
+        and (_deictic_open_request(text) or deictic_close_request(effect_intent._fold(text)) or closes_a_pronoun)
+        and (
+            not dialogue_slot.restatement_was_said(
+                decided.request,
+                [text, *(str(turn.get("content") or "") for turn in history if isinstance(turn, dict))],
+            )
+            # M118 (safety; cien-113 008 «cierra aquello» with nothing before it → «Cierra la ventana activa.» →
+            # window.active and app.close of the Notepad in front, stopped only by the App's confirmation; 2026-09-22
+            # «cerralo» closed VS Code): a pronoun is never the window in front.
+            or (closes_a_pronoun and names_the_active_window(decided.request))
         )
     ):
         # Fase 3.5b M19 (cien-104 «ábreme eso porfa» after the time → «Abre el navegador» → a browser opened): a
@@ -5158,6 +5185,15 @@ def _context_decided_result(
         # sign-in on this PC…» → «I do not handle tasks outside my scope.»): a yes or a go-ahead asks for nothing new, so
         # it is never a limit; what stands in the way (the failure just told, or nothing waiting for the yes) is said in
         # talk, with the conversation in front of the writer (M88 holds it to saying nothing was done).
+        decided = semantic_decider.ContextDecision(request=text, decision="talk", operations=(), question="")
+    if decided.decision in {"talk", "limit"} and dialogue_slot.do_that_with_nothing_named(text, context.last_reply):
+        # M118 (cien-113 048 «haz eso» after «keep chatting without opening apps»: the decider talked and the writer
+        # invented «no tengo la capacidad de mantener conversaciones…»): «do that» with nothing to do named before it
+        # is asked («¿Qué es eso?»), never answered or refused.
+        decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
+    if decided.decision == "clarify" and dialogue_slot.remate_of_what_was_done(text, context.last_reply):
+        # M118 (owner script t57 «al volumen» after «He puesto el volumen en 100…» → «¿Cuánto le subo?»; conv-v3z2
+        # talked): naming only what was just done asks nothing again; it is answered as the remate it is.
         decided = semantic_decider.ContextDecision(request=text, decision="talk", operations=(), question="")
     # cien-107 100: with a block of history the decider answered «talk» («Write a letter to Eris.»), the knowledge
     # contract let «…because I do not have access to external communication channels…» through; talk is bounded too.
