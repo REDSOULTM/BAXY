@@ -118,7 +118,10 @@ _WEATHER_WORDS = (
 # the past («is my game going to get rained out»).
 _PAST_WEATHER = (
     r"\b(?:hacia|hizo|hubo|estuvo|estaba|fue|llovio|was|were|did|rained(?!\s+out))\b|"
-    r"\b(?:19|20)\d\d\b|\b(?:ayer|anteayer|yesterday|la\s+semana\s+pasada|last\s+week)\b"
+    r"\b(?:19|20)\d\d\b|\b(?:ayer|anteayer|yesterday|la\s+semana\s+pasada|last\s+week)\b|"
+    # M126 (reserve es5301 «qué tiempo hará el veinte de marzo de dos mil diecisiete»: the decider looked it up): a
+    # year said in words is no day a live read reaches either.
+    r"\b(?:mil\s+novecientos|dos\s+mil|two\s+thousand)\b"
 )
 # Uso real 2026-09-23: «qué tiempo hace en santiago», «cómo va a estar el tiempo hoy
 # en ñuñoa»: «el tiempo» is the weather inside a weather frame only; «cuánto
@@ -616,7 +619,11 @@ def weather_asks_later_time(text: str) -> bool:
 
 
 _WHAT_IS_THE_WEATHER = (
-    r"^[¿?¡!\s]*what\s+(?:is|are)\s+(?:the|today'?s|tomorrow'?s|tonight'?s)\s+(?:weather|forecast|temperature|"
+    r"^[¿?¡!\s]*what\s+(?:is|are)\s+(?:the|today'?s|tomorrow'?s|tonight'?s)\s+"
+    # M126 (reserve en826 «what is the current temperature outside», en3406 «what is the ten day forecast»: the
+    # decider read the weather, the product looked them up): the reading said with how current or how far ahead.
+    r"(?:(?:current|present|latest|local|outdoor|outside|hourly|daily|weekly|weekend|extended|\d{1,2}|one|two|three|"
+    r"four|five|six|seven|eight|nine|ten|fourteen|fifteen)[\s-]+(?:days?[\s-]+)?)?(?:weather|forecast|temperature|"
     r"humidity|air\s+quality|air\s+pollution|aqi|pollution\s+levels?|wind|rain|chance\s+of\s+rain)\b"
 )
 
@@ -684,7 +691,11 @@ def _weather_lookup_query(text: str) -> str | None:
     query = re.sub(r"(?:^|\s+)(?:en|in|on)\s+(?:google|internet|la\s+web|the\s+web)\b\s*", " ", query, flags=re.IGNORECASE)
     query = re.sub(r"^\s*(?:el|la|los|las|the)\s+", "", query, count=1, flags=re.IGNORECASE)
     query = re.sub(r"\s+", " ", query).strip(" ?!.,;:")
-    return query if query and (indirect or _names_weather(_fold(query))) else None
+    # M126 (D58; reserve against the isolated decider: «cómo está el tiempo ahora», «qué tiempo hace ahora», «qué tiempo
+    # hará el próximo miércoles» went to web.search where the decider read the weather, REOPEN1993 group W): stripping
+    # the asking frame leaves «tiempo ahora», whose «tiempo» no longer names the weather; the whole message named it
+    # inside that frame.
+    return query if query and (indirect or _names_weather(_fold(query)) or _names_weather(folded)) else None
 
 
 _TOPIC_RESEARCH = re.compile(
