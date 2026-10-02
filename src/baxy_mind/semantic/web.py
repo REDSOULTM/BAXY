@@ -4385,3 +4385,30 @@ def memory_may_answer(text: str) -> bool:
         or _has(folded, rf"{_CURRENCY}.{{0,60}}{_CURRENCY}|\b(?:tipos?|tasas?)\s+de\s+cambio\b|\bexchange\s+rates?\b")
         or _has(folded, r"\ba\s+(?:cuanto|como)\s+(?:esta|estan|anda|andan|va|van)\b")
     )
+
+
+# M131 (D58; first-turn readers against the isolated decider full3: reserve v1/v2, DEV-D, DEV-F): the typed reads that
+# answer a public question more specifically than a web search does, as the catalog serves them. Where a first message
+# was read as a plain web search and the decider chose one of them, both were right by the labels, and the decider's
+# was the more specific: the world's news as the day's headlines («qué está pasando en el mundo», D-s021, es2098), the
+# coming days' weather as the weather read with its later days («va a llover en Tandil el domingo», F-s031; «weekly
+# weather report», es2917), the song playing now as what this PC plays («averigua qué canción es esta», es6134). The
+# decider never chose one of them where the search was the right answer. Left out on purpose: ``system.time`` reads
+# only today's clock, and the weekday of another day of the calendar is looked up
+# (``_public_calendar_fact_lookup_request``); a personal read (memory, agenda) the decider chose for a public question
+# was its error the search fixed (es15020 «cuántos años tiene santiago segura», es11999 «dime todos los eventos de hoy
+# en mi ciudad»).
+_TYPED_READS_OVER_SEARCH = frozenset({"weather.current", "web.news.headlines", "media.status"})
+
+
+def typed_read_over_search(operations: Iterable[str]) -> bool:
+    """Whether the decider's operations are one typed read that serves a public question better than a web search."""
+
+    chosen = tuple(operations)
+    return len(chosen) == 1 and chosen[0] in _TYPED_READS_OVER_SEARCH
+
+
+def search_has_typed_reads(available_operations: Iterable[str]) -> bool:
+    """Whether the catalog serves any of those typed reads: without one, the decider has nothing better to choose."""
+
+    return not _TYPED_READS_OVER_SEARCH.isdisjoint(available_operations)
