@@ -56,6 +56,7 @@ from .semantic import ui as semantic_ui
 from .semantic.system import names_this_place, weather_destination_there
 from .semantic.patterns import (
     application_shown_media_name,
+    clarification_awaits_decider,
     list_entries_said_before,
     names_a_kind_of_music,
     output_level_request,
@@ -214,6 +215,8 @@ from .semantic.arguments import (
     _presentation_arguments,
     _select_referenced_predecessor,
     closes_the_active_window,
+    conversation_pdf,
+    corrected_song_title,
     literal_ocr_language,
     literal_vision_prompt,
     names_spotify,
@@ -3541,7 +3544,12 @@ def _ground_explicit_arguments(
             for item in reversed(history if isinstance(history, list) else [])
             if isinstance(item, dict) and item.get("content") != evidence
         ]
-        moved = change.schedule_arguments(semantic_temporal.change_part_of_day(change, said_before))
+        part_of_day = semantic_temporal.change_part_of_day(change, said_before)
+        if part_of_day is None and change.clocks_lack_the_part_of_day():
+            # D61 sets a new hour without its part of the day at the next time it comes; a moved one is read against
+            # the old one, so with neither said it is still asked (M62), never moved by the clock.
+            return None
+        moved = change.schedule_arguments(part_of_day)
         moved = _normalize_grounded_operation_arguments(operation, moved, moved["dueUtc"])
         return moved if moved is not None and validate_json_schema_instance(moved, schema) else None
     if operation == "web.search":
@@ -4676,6 +4684,13 @@ def _rearm_in_context(
         # request closes that request; it does not turn the offer into an effect.
         return audited(slot.pending_request, "pattern")
     if dependency == "answer" and slot.pending_request:
+        # D61: «no, mejor a las 7:20» to a question about «ponme una alarma a las 7 pa mañana» replaces the hour the
+        # request said; joined after it, the hour of 1 to 12 left without its part of the day (no longer asked) would
+        # stand next to the new one.
+        replaced = dialogue_slot.corrected_request(slot.pending_request, objective)
+        replaced_effects = effects_of(replaced) if replaced is not None else ()
+        if replaced_effects and dialogue_slot.same_family(replaced_effects, effects_of(slot.pending_request)):
+            return audited(replaced, "pattern")
         try:
             asked = resolve_explicit_clarification_intent(
                 slot.pending_request, available_operations, application_names,
@@ -5545,6 +5560,15 @@ def _direct_arguments_result(
         arguments = _decided_arguments_alone(
             operation, str(message.get("text", "")), tool, said,
         )
+    if arguments is None and not question and operation == "document.pdf.read":
+        # M127 (DEV-C v4i C-w10-t4): the PDF named by its file name earlier in the conversation is read where that
+        # conversation said it is, never asked again.
+        named = conversation_pdf(
+            objective,
+            [str(item.get("content") or "") for item in message.get("history") or [] if isinstance(item, dict)],
+        )
+        if named is not None and validate_json_schema_instance(named, tool["function"]["parameters"]):
+            arguments = named
     if arguments is None and not question:
         # M47 (FINAL F-w09-t5, F-p02-t3): the shell sends the language the turn decision chose; the
         # objective may be the decider's restatement in the other language, so it cannot decide it.
@@ -5612,7 +5636,31 @@ def _direct_arguments_result(
         candidate = {**(arguments if isinstance(arguments, dict) else {}), "title": titled}
         if titled is not None and validate_json_schema_instance(candidate, tool["function"]["parameters"]):
             arguments, question = candidate, ""
+    if operation == "media.play.exact":
+        arguments, question = _corrected_song_arguments(person, message.get("history"), arguments, question, tool)
     return arguments, question
+
+
+def _corrected_song_arguments(
+    person: str, history: object, arguments: dict[str, Any] | None, question: str, tool: dict,
+) -> tuple[dict[str, Any] | None, str]:
+    """M127 (D58; DEV-F v4i F-w36-t2, F-w60-t2): «la otra, la de estudio / la del disco» plays the song the person asked
+    for just before (``semantic.arguments.corrected_song_title``); a title that is part of that song, or holds it, is
+    the model's and stays."""
+
+    earlier = _prior_user_texts(history, person)
+    song = corrected_song_title(person, earlier[-1], _previous_reply(history) or "") if earlier else None
+    if song is None:
+        return arguments, question
+    title = arguments.get("title") if isinstance(arguments, dict) else None
+    if isinstance(title, str) and title.strip():
+        said, kept = effect_intent._fold(song), effect_intent._fold(title)
+        if kept in said or said in kept:
+            return arguments, question
+    candidate = {**(arguments if isinstance(arguments, dict) else {}), "provider": "spotify", "title": song}
+    if not validate_json_schema_instance(candidate, tool["function"]["parameters"]):
+        return arguments, question
+    return candidate, ""
 
 
 def _prepare_turn_result(
@@ -5839,6 +5887,22 @@ def _decide_turn_result(
                 message, llm=llm, planner_catalog=planner_catalog, application_names=application_names,
                 decided_beforehand=played,
             )
+    if (
+        explicit_clarification is not None
+        and served_surface is None
+        and not in_conversation
+        and clarification_awaits_decider(explicit_clarification.missing_fields)
+    ):
+        # M126 (D58; reserve against the isolated decider, ``clarification_awaits_decider``): a question that never
+        # fixed the decider and broke it where it was right waits for it; what it decides is the turn, handed over
+        # without asking it twice.
+        decider_tools, signatures = _decider_catalog(planner_catalog)
+        return _context_decided_result(
+            message, llm=llm, planner_catalog=planner_catalog, application_names=application_names,
+            decided_beforehand=llm.decide_in_context(
+                str(message.get("text", "")), message.get("history") or [], decider_tools, signatures=signatures,
+            ),
+        )
     missing_open_referent = (
         non_target_language is None
         and not content_drafting
@@ -6155,6 +6219,16 @@ def _decide_turn_result(
         game_catalog=game_catalog,
         previous_user_text=_previous_user_request(history, objective),
     )
+    if (
+        live_public_intent is not None
+        and live_public_intent.operations == ("web.search",)
+        and turn_reading.effects is not None
+        and turn_reading.effects.operations == ("weather.current",)
+    ):
+        # M126 (D58; DEV-F F-w50-t1 «Oye, ¿qué tiempo va a hacer el sábado en Santiago? Que me voy de ruta con la bici»
+        # → web.search where the isolated decider read the weather): the public live lookup took a weather question
+        # the reading gate reads as the weather read; a live weather question is the typed read (REOPEN1993 group W).
+        live_public_intent = None
     explicit_intent = (
         None
         if non_target_language is not None or stable_no_effect_is_closed
@@ -7019,7 +7093,7 @@ def _decide_turn_result(
         and non_target_language is None
         and "web.search" in available_operations
         and planner_catalog.get("web.search") is not None
-        and _reference_lookup(objective, history) is not None
+        and (looked_up := _reference_lookup(objective, history)) is not None
     ):
         # M53 (D35): a named dish's recipe or a named work's plot is looked up before anything is said about it.
         shortlist = _shortlist_with_required_effects(shortlist, ("web.search",), planner_catalog)
@@ -7028,7 +7102,8 @@ def _decide_turn_result(
             {tool.name for tool in shortlist},
         )
         intent_operations = ["web.search"]
-        turn_audit["stages"].append(_turn_audit_stage("reference_looked_up", decision))
+        # D61: the kind looked up rides the audit, as on the decider's path (comprension_eval score --d35 reads it).
+        turn_audit["stages"].append({**_turn_audit_stage("reference_looked_up", decision), "kind": looked_up.kind})
 
     reply_text = ""
     # El idioma con el que se redacta la respuesta viaja con ella: el shell no

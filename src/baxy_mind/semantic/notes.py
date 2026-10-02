@@ -664,8 +664,8 @@ def agenda_event_request(text: str) -> AgendaEvent | None:
         missing.append("repetition_the_calendar_cannot_hold")
     elif timing.start is None and not whole_day:
         missing.append("start_time" if said_day or timing.end is not None else "event_date_and_time")
-    elif timing.start is not None and not timing.start.resolved:
-        missing.append("am_pm_or_part_of_day_for_supplied_hour")
+    # D61 (owner, 2026-10-02): a start hour said without its part of the day («el viernes a las 3») is not asked; it
+    # is the next time that hour comes on the day said (semantic.arguments._canonical_due_utc).
     return AgendaEvent(title, timing, whole_day, tuple(missing), repeat)
 
 
@@ -686,7 +686,8 @@ def stated_event_reminder(text: str) -> tuple[str, str] | None:
     folded = _fold(body)
     found = _STATED_EVENT_REMINDER.match(folded)
     clock = spoken_clock(found.group("due")) if found is not None else None
-    if found is None or clock is None or not clock.resolved:
+    # D61: «tengo cita a las cinco, recuérdamelo» is the next five that comes (the due reader picks it).
+    if found is None or clock is None:
         return None
     words = body.split()
 
@@ -1520,8 +1521,9 @@ _WAKE_REPEAT = r"(?:todos\s+los\s+dias|cada\s+dia|todas\s+las\s+mananas|cada\s+m
 
 
 def _wake_alarm_request(text: str) -> bool:
-    """Recognize a direct wake-up alarm with one explicit clock (its part of the day
-    said, «a las seis y cuarto de la mañana») or one duration, and at most a day."""
+    """Recognize a direct wake-up alarm with one explicit clock («a las seis y cuarto de la mañana»; D61: an hour
+    without its part of the day, «despertame a las 8», is the next time it comes) or one duration, and at most a
+    day."""
 
     folded = _strip_request_envelope(_fold(text))
     found = re.fullmatch(
@@ -1543,7 +1545,6 @@ def _wake_alarm_request(text: str) -> bool:
     day = rf"(?:{_WAKE_DAY}|{_WAKE_REPEAT})"
     return (
         clock is not None
-        and clock.resolved
         and re.fullmatch(
             # Uso real 2026-09-23 «despiértame a las seis de la mañana del jueves para tener tiempo
             # para la reunión»: what the alarm is for, said after it, does not change it.

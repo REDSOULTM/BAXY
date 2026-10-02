@@ -12,12 +12,15 @@ group must appear in the folded arguments the mind grounds for that operation.
          action whose gold carries ``args``, the mind's ``arguments`` step too. Resumes by id.
   score  accuracy (all, singles, conversation turns, follow-ups that depend on the previous turn), by source and
          by decision path (``--audit``: the mind's turn audit); ``--blind`` prints aggregates only (DEV-B, FINAL).
+         D61 (owner, 2026-10-02), only when asked, after the gold's own figures: ``--accept FILE`` also counts the
+         alternative decisions FILE accepts per id; ``--d35`` also counts a recipe or figure looked up first (the
+         audit's ``reference_looked_up`` stage, joined through the shell trace for a window run) where the gold talks.
 
 usage:
   comprension_eval.py run --set S.jsonl --out RUN.jsonl [--audit AUDIT.jsonl] [--src DIR] [--limit N]
                           [--gguf G.gguf] [--ctx 12288] [--decider-adapter A.gguf]
   comprension_eval.py score --set S.jsonl --run RUN.jsonl [--audit AUDIT.jsonl] [--base RUN0.jsonl] [--blind]
-                            [--json SUMMARY.json]
+                            [--json SUMMARY.json] [--accept ACCEPT.jsonl] [--d35]
 """
 
 from __future__ import annotations
@@ -346,6 +349,50 @@ def decision_paths(audit: pathlib.Path | None) -> dict[str, str]:
     return paths
 
 
+def read_accepted(path: pathlib.Path) -> dict[str, dict[str, Any]]:
+    """D61: ``{"id", "accept": [labels], "reason"}`` per line — decisions the owner accepts besides the set's gold."""
+    accepted: dict[str, dict[str, Any]] = {}
+    for row in read_jsonl(path):
+        labels = row.get("accept")
+        if not row.get("id") or not isinstance(labels, list) or not labels or not str(row.get("reason") or "").strip():
+            raise ValueError(f"{path.name}: cada fila lleva id, accept (etiquetas) y reason: {row}")
+        for label in labels:
+            label_matches(label, {})  # an unknown label fails here, not while scoring
+        accepted[row["id"]] = row
+    return accepted
+
+
+def reference_lookups(run_path: pathlib.Path, audit: pathlib.Path | None) -> set[str]:
+    """D61 (D35): the ids whose final turn audit carries the ``reference_looked_up`` stage — a recipe, a work or a
+    figure the mind looked up first (``__main__``: M53 on the decider's «talk» and on an explicit knowledge
+    conversation); a company's analysis (D59.8, kind ``analysis``) is not D35.
+
+    A ``run`` record is the audit's ``cn-<id>``; a window record (``comprension_window.py records``) is joined through
+    the shell trace next to the run, as ``records`` does. Only the audit is read, never a text."""
+    audit = audit or run_path.parent / "turn-audit.jsonl"
+    if not audit.is_file():
+        raise FileNotFoundError(f"--d35 necesita la auditoría de turnos: {audit}")
+    import comprension_window as window  # noqa: PLC0415 — it imports this module
+
+    finals = window.audit_finals(window.read_capture(audit))
+    trace = run_path.parent / "shell-trace.jsonl"
+    segments = window.trace_segments(window.read_capture(trace)) if trace.is_file() else {}
+    found: set[str] = set()
+    for record in read_jsonl(run_path):
+        segment = segments.get(str(record.get("turn_id")))
+        candidates = [f"cn-{record['id']}"] + list(reversed(segment["decides"] if segment else []))
+        final = next((finals[request] for request in candidates if request in finals), None)
+        if final is not None and any(
+            isinstance(stage, dict)
+            and stage.get("name") == "reference_looked_up"
+            # A real company's analysis is looked up by D59.8, not by D35 (recipes, works, figures, dated facts).
+            and stage.get("kind") != "analysis"
+            for stage in final.get("stages") or []
+        ):
+            found.add(record["id"])
+    return found
+
+
 def got(record: dict[str, Any]) -> str:
     if "error" in record:
         return "error"
@@ -360,6 +407,67 @@ def got(record: dict[str, Any]) -> str:
     return str(record.get("kind"))
 
 
+def _d61_lines(
+    judged: list[dict[str, Any]],
+    records: dict[str, dict[str, Any]],
+    results: dict[str, tuple[bool, bool]],
+    groups: dict[str, list[dict[str, Any]]],
+    accept: pathlib.Path | None,
+    d35: bool,
+    run_path: pathlib.Path,
+    audit: pathlib.Path | None,
+    blind: bool,
+    summary: dict[str, Any],
+) -> list[str]:
+    """D61 (owner, 2026-10-02): the same turns scored again with what the owner also accepts — the alternative
+    decisions of ``--accept`` and, with ``--d35``, a recipe or a figure looked up first where the gold talks. The
+    figures above stay the set's own gold; these follow them."""
+    accepted = read_accepted(accept) if accept is not None else {}
+    looked_up = reference_lookups(run_path, audit) if d35 else set()
+    cause: dict[str, str] = {}
+    alternative: dict[str, tuple[bool, bool]] = {}
+    for row in judged:
+        record = records[row["id"]]
+        decided, right = results[row["id"]]
+        if not right and row["id"] in accepted and verdict({"gold": accepted[row["id"]]["accept"]}, record)[1]:
+            decided, right = True, True
+            cause[row["id"]] = "aceptada"
+        if (
+            not right
+            and "error" not in record
+            and row["id"] in looked_up
+            and "talk" in row["gold"]
+            and "web.search" in operations(record)
+            and record.get("kind") in {"action", "plan"}
+        ):
+            decided, right = True, True
+            cause[row["id"]] = "D35"
+        alternative[row["id"]] = (decided, right)
+    sources = " + ".join(
+        part for part in (f"aceptadas de {accept.name}" if accept is not None else "", "D35 buscar primero" if d35 else "")
+        if part
+    )
+    counts = Counter(cause.values())
+    lines = [
+        f"  con D61 ({sources}): +{len(cause)} turnos (aceptadas {counts['aceptada']}, D35 {counts['D35']}; "
+        f"turnos con consulta D35 en la auditoría {len(looked_up & set(records))})"
+    ]
+    summary["d61"] = {"accepted": counts["aceptada"], "d35": counts["D35"], "d35_lookups": len(looked_up & set(records))}
+    for name, subset in groups.items():
+        right = sum(alternative[row["id"]][1] for row in subset)
+        decided = sum(alternative[row["id"]][0] for row in subset)
+        summary["d61"][name] = {"right": right, "n": len(subset), "decision_only": decided}
+        pct = 100 * right / len(subset) if subset else 0.0
+        lines.append(f"    {name:13} {right}/{len(subset)} = {pct:.1f} %   (sólo decisión {decided}/{len(subset)})")
+    if not blind:
+        for row in judged:
+            if row["id"] in cause:
+                lines.append(
+                    f"    D61 {row['id']} [{cause[row['id']]}] {row['gold']} -> {got(records[row['id']])} | {row['text'][:90]}"
+                )
+    return lines
+
+
 def score(
     set_path: pathlib.Path,
     run_path: pathlib.Path,
@@ -367,6 +475,8 @@ def score(
     base: pathlib.Path | None,
     blind: bool,
     summary_path: pathlib.Path | None,
+    accept: pathlib.Path | None = None,
+    d35: bool = False,
 ) -> None:
     rows = read_jsonl(set_path)
     records = {record["id"]: record for record in read_jsonl(run_path)}
@@ -481,6 +591,8 @@ def score(
                     f"  NO {row['id']} [{paths.get(row['id'], '?')}] {row['gold']} -> {got(record)} "
                     f"| {row['text'][:100]} || {said}"
                 )
+    if accept is not None or d35:
+        lines.extend(_d61_lines(judged, records, results, groups, accept, d35, run_path, audit, blind, summary))
     print("\n".join(lines))
     if summary_path:
         summary_path.write_text(
@@ -519,12 +631,20 @@ def main(argv: list[str]) -> int:
     scorer.add_argument("--base", type=pathlib.Path)
     scorer.add_argument("--blind", action="store_true")
     scorer.add_argument("--json", type=pathlib.Path)
+    scorer.add_argument(
+        "--accept", type=pathlib.Path,
+        help="D61: JSONL {id, accept: [labels], reason} — decisions the owner also accepts; scored after the gold's figures",
+    )
+    scorer.add_argument(
+        "--d35", action="store_true",
+        help="D61: a recipe or figure looked up first (audit stage reference_looked_up) where the gold talks also counts",
+    )
     sub.add_parser("selftest")
     args = parser.parse_args(argv)
     if args.command == "run":
         run(args.set, args.out, args.audit, args.src, args.limit, args.gguf, args.ctx, args.decider_adapter)
     elif args.command == "score":
-        score(args.set, args.run, args.audit, args.base, args.blind, args.json)
+        score(args.set, args.run, args.audit, args.base, args.blind, args.json, args.accept, args.d35)
     else:
         self_test()
         print("selftest ok")

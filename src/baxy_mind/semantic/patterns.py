@@ -17,7 +17,7 @@ from .windows import deictic_window_mutation, _FOCUS_HEAD_ONLY, _FOCUS_HEAD_WITH
 from .display import screen_light_as_brightness, _KNOWN_FOLDER_WORDS, _KNOWN_FOLDER_ENUM, screen_inventory_request, _display_status_question, _without_screen_state_preface, _BRIGHTNESS_OBJECT, _BRIGHTNESS_UP_VERB, _BRIGHTNESS_DOWN_VERB, _BRIGHTNESS_ABSOLUTE, _BRIGHTNESS_ENGLISH_TURN, _BRIGHTNESS_RELATIVE_WORDS, brightness_status_request, _BRIGHTNESS_SET_VERB, _BRIGHTNESS_EXTREME_VALUES, wallpaper_request
 from .intent import EffectIntent, _entity_key, _is_negated_match, _append, _append_all
 from .catalog import ApplicationCatalogIndex, GameCatalogIndex, build_game_catalog_index, _authenticated_game_target, resolve_game_catalog_app_id, _application_name_key, build_application_catalog_index, _catalog_alias_key, _installed_game_named, installed_game_title
-from .temporal import _CALENDAR_MONTH_TOKEN, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, spoken_clock, clock_elsewhere, other_place_clock_question, notification_change, plural_alarm_cancellation
+from .temporal import _CALENDAR_MONTH_TOKEN, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, alarm_for_hour, spoken_clock, clock_elsewhere, other_place_clock_question, notification_change, plural_alarm_cancellation
 from .media import _youtube_search_query, youtube_play_query, _direct_media_discovery_or_play_request, _named_browser_music_request, _NETFLIX_SPELLED, _underspecified_video_request, _title_case_media_title, _media_transport_action, _resume_existing_media, _REMOVABLE_MEDIA, _bare_spoken_number_media_query, radio_station_query, spoken_media_order, MUSIC_GENRE, _RADIO_PLAY, own_recent_listening_request, purpose_music_query
 from .web import asks_for_information, public_opinion_query, record_fact_query, _public_route_lookup_request, _public_calendar_fact_lookup_request, _WEATHER_WORDS, _weather_lookup_query, _research_question_query, _public_live_lookup_request, _public_product_correction_lookup_request, _public_commerce_lookup_request, _FILESYSTEM_OBJECT_NOUN, operation_identity_is_a_near_miss, curiosity_request, web_image_request, _NAVIGATION_CLIENT, client_navigation_target, _authenticated_application_identity_conflict, _browser_page_domain, browser_back_arguments, browser_new_tab_arguments, browser_close_all_tabs_arguments, _historical_note_search_request, _stored_note_search_query, _nominal_reminder_lookup_title, _location_recommendation_request, _NAMED_BROWSER_SITE_REQUEST, _installed_browser_search_query, _completed_browser_search_pronoun_request, _NAMED_PUBLIC_SITE, _review_web_and_browser_effects, web_download_request, NAMED_CDP_BROWSERS, _named_browser_match, _named_browser, public_event_subject, cinema_listing, asks_to_watch_the_news
 from .files import _pdf_summary_request, _file_trash_request, process_report_file_request, _file_creation_request, known_folder_file_path, _current_directory_file_count, _DUPLICATE_FILES, _known_folder_recent_listing, _known_folder_listing_request, _review_file_and_game_effects, folder_txt_zip_open_mission, open_named_file_request, _office_document_roundtrip_intent
@@ -2855,6 +2855,7 @@ def _incomplete_scheduled_request(
         word for word, value in {**_ENGLISH_SMALL_NUMBERS, **_SPANISH_SMALL_NUMBERS}.items()
         if 0 <= value <= 23
     ) + r")"
+    loose_clock = clock is None
     if clock is None:
         clock = re.search(
             rf"\b(?:for|para)\s+(?:las?\s+)?{number}\b"
@@ -2986,10 +2987,14 @@ def _incomplete_scheduled_request(
             return ClarificationIntent((operation,), ("valid_hour_0_to_23",))
         # The shared clock reader hears the minutes and the part of the day
         # wherever it was said («a las cinco y media de la mañana», «esta tarde
-        # a las cinco», «a las diez a. m.»); only an hour left without one asks.
+        # a las cinco», «a las diez a. m.»). D61 (owner, 2026-10-02): an hour
+        # left without one is the next time it comes (the due reader picks it),
+        # not asked; only a clock the reader cannot hear at all still asks.
         spoken = spoken_clock(folded)
-        if spoken is not None and not spoken.resolved:
-            return ClarificationIntent((operation,), ("am_pm_or_part_of_day_for_supplied_hour",))
+        if spoken is None and loose_clock and alarm_for_hour(folded) is not None:
+            # D61 (reviewed literal H0036 «set an alarm for 8»): the hour after «for/para» on an alarm is its clock,
+            # read by the alarm's readers as the next time it comes.
+            return None
         if spoken is None and not (
             _has(literal_clock, r"\b\d{1,2}:\d{2}\b|\b(?:0|1[3-9]|2[0-3])\b")
             or any(
@@ -3058,6 +3063,25 @@ def names_a_kind_of_music(text: str) -> bool:
     literals H0009, H0066: what to play is asked)."""
 
     return _KIND_OF_MUSIC.search(_fold(text)) is not None
+
+
+# M126 (D58): the clarifications whose question never fixed the isolated decider and broke it where it was right —
+# reserve against full3 (v1 and v2 labels): «i want a meeting till three o'clock» (the meeting's start), «necesito
+# hacer algo hoy» (what is on the agenda, read by the decider as the task list), «retoma harry potter por donde paré»
+# (the decider's limit; the question asked for a player). The other questions keep their reason to ask first: the
+# decider talks or refuses them (amount, recipient, station, due time…) or the question is the honest limit (a
+# repetition the calendar cannot hold). The hour without its part of the day is no longer asked at all (D61).
+_CLARIFICATIONS_THE_DECIDER_READS = frozenset({
+    ("start_time",),
+    ("event_title", "start_time", "end_time_or_duration"),
+    ("source_app",),
+})
+
+
+def clarification_awaits_decider(missing_fields: Iterable[str]) -> bool:
+    """The explicit clarification is the contextual decider's to read first: what it decides is the turn."""
+
+    return tuple(missing_fields) in _CLARIFICATIONS_THE_DECIDER_READS
 
 
 def resolve_explicit_clarification_intent(
@@ -6479,7 +6503,8 @@ def _direct_alarm_schedule_request(text: str) -> bool:
             rf"^(?:(?:please|por\s+favor)\s+)?"
             rf"(?:{_SCHEDULING_VERB}|new|nueva|ring|sound)\b|\bwake\s+up\s+alarm\b",
         )
-        and _reminder_has_actionable_due(folded)
+        # D61 (H0036 «set an alarm for 8»): the hour after «for/para» on an alarm is its moment too.
+        and (_reminder_has_actionable_due(folded) or alarm_for_hour(folded) is not None)
         and not _has(body, r"\b(?:check|comprueba|revisa|is\s+there|hay)\b")
     )
 
