@@ -17896,6 +17896,42 @@ def _read_about_organization(situation: dict, user_text: str, prior: list[str]) 
     return {"kind": "analysis", "title": lookup.subject, "text": text, "servings": None, "seen": observed}
 
 
+# The sections of a SWOT in both languages (REFERENCE_ANALYSIS_PROMPT).
+_SWOT_SECTIONS = (
+    ("fortalezas", "debilidades", "oportunidades", "amenazas"),
+    ("strengths", "weaknesses", "opportunities", "threats"),
+)
+_ANALYSIS_POINT = re.compile(r"^\s*(?:[-*•]|\d+[.)])\s+\S")
+
+
+def _whole_part_of_cut_analysis(draft: str) -> str:
+    """M124 (DEV-D v4i D-p35-t1 «Has un análisis de FODA sobre la empresa Adidas…»; D59.8 consulted analysis): the
+    analysis written in the person's tone ran past its budget in the closing «En resumen,» after its four sections
+    were complete, and every draft died as «truncated» (composition_failed). What the budget cut is kept up to its last
+    finished sentence when every section it opened has a point under it, and a SWOT all four sections; "" otherwise.
+    The words kept are the model's."""
+
+    kept = _complete_sentences(draft)
+    if not kept:
+        return ""
+    lines = [line.strip() for line in kept.splitlines() if line.strip()]
+    headings = [
+        index for index, line in enumerate(lines)
+        if len(line) <= 48 and line.strip("*#_ ").endswith(":") and not _ANALYSIS_POINT.match(line)
+    ]
+    if any(
+        not (index + 1 < len(lines) and _ANALYSIS_POINT.match(lines[index + 1])) for index in headings
+    ):
+        return ""
+    folded_draft, folded_kept = _reading_fold(draft), _reading_fold(kept)
+    for sections in _SWOT_SECTIONS:
+        if any(section in folded_draft for section in sections) and not all(
+            section in folded_kept for section in sections
+        ):
+            return ""
+    return kept
+
+
 # M87 (DEV-D v3r D-p23-t2, D-p29-t2): the three forms offered at once were all written («Ingredients:» of a drama film);
 # the form of the answer is read from the request (semantic.knowledge.memory_answer_form) and only that one is asked.
 MEMORY_ANSWER_PROMPT = (
@@ -24200,6 +24236,11 @@ class LlmRuntime:
                 # M92 (DEV-D v3u D-p29-t2 «6. It (1982)»): the bracketed years of a list from memory are dropped.
                 draft = semantic_quantities.without_listed_years(draft)
             finish = _finish_reason_of(response)
+            if finish == "length" and reference is not None and reference["kind"] == "analysis":
+                # M124 (DEV-D v4i D-p35-t1): an analysis cut after its sections were whole keeps its whole part.
+                whole = _whole_part_of_cut_analysis(draft)
+                if whole:
+                    draft, finish = whole, "length_whole_part"
             unsourced: list[str] = []
             if not draft:
                 reason = "empty"
