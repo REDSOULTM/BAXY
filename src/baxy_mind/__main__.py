@@ -4752,6 +4752,42 @@ def _decided_domain_unnamed(
     )
 
 
+def _decider_catalog(
+    planner_catalog: PlannerCatalog,
+) -> tuple[tuple[tuple[str, str], ...], dict[str, tuple[str, ...]]]:
+    """The operations the contextual decider reads, and the argument fields of each."""
+
+    tools = planner_catalog.decider_tools
+    return (
+        tuple((tool.name, tool.description) for tool in tools),
+        {tool.name: semantic_decider.argument_signature(tool.schema) for tool in tools},
+    )
+
+
+def _warm_context_decider(llm: Any, planner_catalog: PlannerCatalog) -> None:
+    """M117: the decider's catalog prompt is read into its slot when the catalog is configured (``warm_decider``)."""
+
+    warm = getattr(llm, "warm_decider", None)
+    if warm is None:
+        return
+    decider_tools, signatures = _decider_catalog(planner_catalog)
+    warm(decider_tools, signatures=signatures)
+
+
+def _prepare_context_decision(llm: Any, message: dict[str, Any], planner_catalog: PlannerCatalog) -> None:
+    """M117: ask the contextual decider for this message now, beside the readers (``LlmRuntime.prepare_decision``).
+
+    ``_context_decided_result`` sends the same message with the same catalog, so the prepared reply is the one it
+    would have waited for; a turn a conversation reader keeps never reads it.
+    """
+
+    prepare = getattr(llm, "prepare_decision", None)
+    if prepare is None:
+        return
+    decider_tools, signatures = _decider_catalog(planner_catalog)
+    prepare(str(message.get("text", "")), message.get("history") or [], decider_tools, signatures=signatures)
+
+
 def _context_decided_result(
     message: dict[str, Any],
     *,
@@ -4815,12 +4851,8 @@ def _context_decided_result(
         decided = semantic_decider.ContextDecision(request=placed, decision="action", operations=("system.time",),
                                                    question="")
     else:
-        decided = llm.decide_in_context(
-            text, history, ((tool.name, tool.description) for tool in planner_catalog.decider_tools),
-            signatures={
-                tool.name: semantic_decider.argument_signature(tool.schema) for tool in planner_catalog.decider_tools
-            },
-        )
+        decider_tools, signatures = _decider_catalog(planner_catalog)
+        decided = llm.decide_in_context(text, history, decider_tools, signatures=signatures)
         memory = next((op for op in decided.operations if op.startswith("memory.")), None)
         if memory is not None:
             # M114: memory is the App's own path (an explicit request, its confirmation); the mind never plans it with
@@ -5517,6 +5549,10 @@ def _decide_turn_result(
     lost more follow-ups than they proved).
     """
     already_signaled = [] if already_signaled is None else already_signaled
+    if in_conversation:
+        # M117: a follow-up is the contextual decider's unless a conversation reader keeps it; its decision starts
+        # now, beside those readers. A first message the readers prove spends no decode.
+        _prepare_context_decision(llm, message, planner_catalog)
 
     objective = str(message.get("text", ""))
     history = message.get("history") or []
@@ -7921,6 +7957,7 @@ def _run_sidecar(
                     # longer than 45 seconds; 90 seconds remains inside the
                     # shell's 120-second authenticated handshake boundary.
                     _require_catalog_llm_ready(llm)
+                    _warm_context_decider(llm, lexical_catalog)
                 write_request_message(
                     {
                         "type": "catalog.ready",

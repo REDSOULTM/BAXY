@@ -7,6 +7,7 @@ read the same words differently. There is one now.
 
 from __future__ import annotations
 
+import functools
 import re
 import unicodedata
 
@@ -16,7 +17,14 @@ __all__ = ["fold", "fold_in_place", "alternation", "spelled_out"]
 def fold(value: object) -> str:
     """Lowercase, without diacritics, with whitespace collapsed («Súbelo  YA» → «subelo ya»)."""
 
-    decomposed = unicodedata.normalize("NFKD", str(value or "").casefold())
+    return _fold_text(str(value or ""))
+
+
+# M117 (latency, window v4f-devF): one turn.decide folded ~7 000 strings, most of them the same catalog names and
+# clauses again (2.0 M calls in 280 turns, a quarter of the readers' CPU). The fold is a pure function of the text.
+@functools.lru_cache(maxsize=16384)
+def _fold_text(text: str) -> str:
+    decomposed = unicodedata.normalize("NFKD", text.casefold())
     return " ".join("".join(ch for ch in decomposed if not unicodedata.combining(ch)).split())
 
 
