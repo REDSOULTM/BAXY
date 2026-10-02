@@ -6,20 +6,24 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
 {
     private readonly string _dataRoot;
     private readonly CdpBrowserSessionContext? _sessionContext;
+    private readonly UserBrowserSurface? _userBrowser;
     private readonly Dictionary<string, CdpBrowserSession> _browsers = new(StringComparer.Ordinal);
 
-    internal NamedBrowserAdapter(string dataRoot)
-        : this(dataRoot, sessionContext: null)
+    internal NamedBrowserAdapter(string dataRoot, CdpBrowserSessionContext? sessionContext)
+        : this(dataRoot, sessionContext, opera: null,
+            userBrowser: new UserBrowserSurface(new WindowsUserBrowserPlatform()))
     {
     }
 
     internal NamedBrowserAdapter(
         string dataRoot,
         CdpBrowserSessionContext? sessionContext,
-        CdpBrowserSession? opera = null)
+        CdpBrowserSession? opera = null,
+        UserBrowserSurface? userBrowser = null)
     {
         _dataRoot = Path.GetFullPath(dataRoot);
         _sessionContext = sessionContext;
+        _userBrowser = userBrowser;
         if (opera is not null)
             _browsers.Add("opera", opera);
     }
@@ -55,6 +59,34 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         if (browser == "opera" && !_browsers.ContainsKey("opera")
             && ResolveBrowser("opera") is null && ResolveBrowser("opera_gx") is not null)
             browser = "opera_gx";
+        // M122 (owner 2026-10-02): the browser named is the person's own default
+        // one, so the page opens there, in their profile and signed-in sessions,
+        // not in a private profile of the same browser.
+        if (!_browsers.ContainsKey(browser)
+            && _userBrowser?.Resolve() is { } userBrowser
+            && string.Equals(userBrowser.Family, browser, StringComparison.Ordinal)
+            && Uri.TryCreate(arguments.TryGetProperty("url", out JsonElement url)
+                    && url.ValueKind == JsonValueKind.String ? url.GetString() : null,
+                UriKind.Absolute, out Uri? address)
+            && address.Scheme is "http" or "https")
+        {
+            ExternalCapabilityReceipt? opened;
+            try
+            {
+                opened = await _userBrowser.NavigateAsync(
+                    operation, userBrowser, address, effectBoundary, cancellationToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (
+                cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
+            {
+                return effectBoundary.Failure(operation, UserBrowserSurface.NavigationUnconfirmed);
+            }
+            if (opened is not null)
+            {
+                _sessionContext?.UseUserBrowser();
+                return opened;
+            }
+        }
         if (!_browsers.TryGetValue(browser, out CdpBrowserSession? session))
         {
             string? executable = ResolveBrowser(browser);
