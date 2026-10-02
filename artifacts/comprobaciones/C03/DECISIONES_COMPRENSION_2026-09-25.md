@@ -660,3 +660,14 @@ argumentos y ejecución) es 76,6 % en DEV-E, así que la meta del FINAL-2 (≥ 9
 6. **«Avísame cuando haya noticias de X»:** límite honesto (no vigila) y ofrecer buscar ahora.
 7. **Turno no entendido sin pregunta válida:** una pregunta corta con las palabras de la persona (no un «no pude entender» fijo).
 8. **Análisis de empresas reales (FODA…):** consultar primero la empresa y escribir con lo leído (+1–2 s).
+
+**D59, adenda (dueño, 2026-10-02):** Outlook no se configura en este PC. BAXY conserva la capacidad de correo; cuando el
+cliente no está configurado lo dice con honestidad (nombrando lo que se intentó, M116) y eso cuenta como conducta correcta.
+
+## D60 — 2026-10-02 (dueño): las cosas se abren en el navegador del usuario
+
+Lo web (navegar, YouTube, Disney+, HBO, Netflix…) se abre en el navegador predeterminado del usuario —en este PC, Opera, con
+sus sesiones iniciadas—, no en el perfil Edge propio del producto, y BAXY debe poder usarlo (verificar lo que suena y
+controlarlo). Agente M122: historial de cómo lo hacían BAXYs anteriores, diseño (UserChoice, ShellExecute, SMTC/UIA para
+verificar sin tomar el perfil), implementación; Edge queda sólo como respaldo explícito. Nunca reiniciar ni cerrar el
+navegador del usuario, ni leer sus datos de navegación.
