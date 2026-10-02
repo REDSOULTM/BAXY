@@ -695,3 +695,12 @@ M129 aplicó D61 al pie de la letra y «agendá una reunión el viernes a las 3�
 en un día que la persona nombra (mañana, el viernes, una fecha), 1–6 es la tarde, 7–11 la mañana y 12 el mediodía;
 hoy sigue D61 (la próxima vez que llega) y una hora ya pasada que rueda sola a mañana también. Lo dicho («de la
 madrugada», «am», 24 h) manda siempre. Mecanismo M130 (`_canonical_due_utc`), integrado tras v4k.
+
+## D63. v4k medido (main ad77e102: M126 lectores, M127 argumentos, M128 historial, M129 D61) (2026-10-02 15:50)
+Oro original → con D61 (`score --d35 --accept`): DEV-F 238 → 242/280 = 86,4 % (p50 2,78 s) · DEV-E 239 → 246/299 =
+82,3 % (p50 2,67 s; v4j 236 → 245) · DEV-D 305 → 309/332 = 93,1 % (p50 2,02 s) · reserva v1 89,9 % / v2 93,9 %
+(+8/−0) · 742: sólo los 6 cambios de D61 · capa A sin cambios · DEV-C 257/301 = 85,4 % (v4j 253) · held-out 30/30 ·
+guion 52/60 + 4 por revisar (t36 Steam «biblioteca» no encontrada: inestable conocido, en v4j bien) · VRAM pico 3 798
+MiB. Lastre de decisión frente al decisor aislado: DEV-E 41 → 36 (11 cambiadas después, mayormente D35; 14 el decisor
+de la App escribió otra cosa; 10 lectores de primer turno), DEV-F 20, DEV-D 12. Siguiente: M131 (lectores de primer
+turno sin arreglos esperan al decisor) y M130 (D61b) a la ronda v4l.
