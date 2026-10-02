@@ -101,6 +101,12 @@ HISTORY_TURNS = 4
 HISTORY_CHARACTERS = 1500
 # M49: each value the decider writes is bounded; one that reaches the bound was cut by the grammar (M67).
 ARGUMENT_VALUE_CHARACTERS = 120
+# M128 (D58; windows v4i-devF/v4i-devD: 4 of 612 BAXY messages): when every draft of a reply was refused, the App puts
+# a neutral marker with the diagnostic code in BAXY's place (``MainWindowViewModel.CompositionFailureFallback``,
+# «⚠ (no_response;retry_exhausted)»). It is the App's diagnostic, not something BAXY said, and the decider was trained
+# and measured on conversations without it: F-w22-t3 «the signed one» after «summarize the lease PDF in there?» → ⚠
+# was read as a file to open (file.open) where the isolated decider read the PDF.
+_COMPOSITION_FAILURE_MARKER = re.compile(r"⚠ \([^()\n]+\)")
 
 
 @dataclass(frozen=True, slots=True)
@@ -212,9 +218,16 @@ def messages(system: str, text: str, history: list[dict[str, str]] | None) -> li
     of «Hola, soy BAXY. ¿En qué puedo ayudarte hoy?»): what BAXY says before the person has said anything (the
     welcome of every new conversation, a start-up notice) is not a turn of the conversation, and the decider was
     trained and measured without it. It came first in the history of every first and second turn.
+
+    M128 (D58): nor is the App's composition-failure marker (``_COMPOSITION_FAILURE_MARKER``) BAXY's reply; the
+    person's request before it stays, so what they ask next still has its referent.
     """
 
-    prior = [turn for turn in (history or []) if turn.get("role") in {"user", "assistant"} and turn.get("content")]
+    prior = [
+        turn for turn in (history or [])
+        if turn.get("role") in {"user", "assistant"} and turn.get("content")
+        and not (turn.get("role") == "assistant" and _COMPOSITION_FAILURE_MARKER.fullmatch(str(turn["content"])))
+    ]
     prior = prior[next((index for index, turn in enumerate(prior) if turn.get("role") == "user"), len(prior)):]
     if prior and prior[-1].get("role") == "user" and prior[-1].get("content") == text:
         prior = prior[:-1]
