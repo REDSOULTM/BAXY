@@ -3060,6 +3060,26 @@ def names_a_kind_of_music(text: str) -> bool:
     return _KIND_OF_MUSIC.search(_fold(text)) is not None
 
 
+# M126 (D58): the clarifications whose question never fixed the isolated decider and broke it where it was right —
+# reserve against full3 (v1 and v2 labels): «i want a meeting till three o'clock» (the meeting's start), «necesito
+# hacer algo hoy» (what is on the agenda, read by the decider as the task list), «retoma harry potter por donde paré»
+# (the decider's limit; the question asked for a player). The other questions keep their reason to ask first: the
+# decider talks or refuses them (amount, recipient, station, due time…), reviewed literals ask them (the hour without
+# its part of the day: H0036, H0197, H0222, H0234, H0473, H0119) or the question is the honest limit (a repetition
+# the calendar cannot hold).
+_CLARIFICATIONS_THE_DECIDER_READS = frozenset({
+    ("start_time",),
+    ("event_title", "start_time", "end_time_or_duration"),
+    ("source_app",),
+})
+
+
+def clarification_awaits_decider(missing_fields: Iterable[str]) -> bool:
+    """The explicit clarification is the contextual decider's to read first: what it decides is the turn."""
+
+    return tuple(missing_fields) in _CLARIFICATIONS_THE_DECIDER_READS
+
+
 def resolve_explicit_clarification_intent(
     text: str,
     available_operations: Iterable[str],

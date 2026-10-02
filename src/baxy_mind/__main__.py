@@ -56,6 +56,7 @@ from .semantic import ui as semantic_ui
 from .semantic.system import names_this_place, weather_destination_there
 from .semantic.patterns import (
     application_shown_media_name,
+    clarification_awaits_decider,
     list_entries_said_before,
     names_a_kind_of_music,
     output_level_request,
@@ -5839,6 +5840,22 @@ def _decide_turn_result(
                 message, llm=llm, planner_catalog=planner_catalog, application_names=application_names,
                 decided_beforehand=played,
             )
+    if (
+        explicit_clarification is not None
+        and served_surface is None
+        and not in_conversation
+        and clarification_awaits_decider(explicit_clarification.missing_fields)
+    ):
+        # M126 (D58; reserve against the isolated decider, ``clarification_awaits_decider``): a question that never
+        # fixed the decider and broke it where it was right waits for it; what it decides is the turn, handed over
+        # without asking it twice.
+        decider_tools, signatures = _decider_catalog(planner_catalog)
+        return _context_decided_result(
+            message, llm=llm, planner_catalog=planner_catalog, application_names=application_names,
+            decided_beforehand=llm.decide_in_context(
+                str(message.get("text", "")), message.get("history") or [], decider_tools, signatures=signatures,
+            ),
+        )
     missing_open_referent = (
         non_target_language is None
         and not content_drafting
@@ -6155,6 +6172,16 @@ def _decide_turn_result(
         game_catalog=game_catalog,
         previous_user_text=_previous_user_request(history, objective),
     )
+    if (
+        live_public_intent is not None
+        and live_public_intent.operations == ("web.search",)
+        and turn_reading.effects is not None
+        and turn_reading.effects.operations == ("weather.current",)
+    ):
+        # M126 (D58; DEV-F F-w50-t1 «Oye, ¿qué tiempo va a hacer el sábado en Santiago? Que me voy de ruta con la bici»
+        # → web.search where the isolated decider read the weather): the public live lookup took a weather question
+        # the reading gate reads as the weather read; a live weather question is the typed read (REOPEN1993 group W).
+        live_public_intent = None
     explicit_intent = (
         None
         if non_target_language is not None or stable_no_effect_is_closed
