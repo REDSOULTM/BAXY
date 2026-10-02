@@ -312,7 +312,9 @@ internal static class UserMessagePolicy
             || LooksLikeRestatingDefinitionAsk(FoldForPolicy(vocabularyText))
             || HasRepeatedWord(FoldForPolicy(judgedText))
             || ContainsPersonMetadiscourse(FoldForPolicy(modelText))
-            || ContainsInternalCode(vocabularyText, string.Concat(userText, " ", priorUserText))
+            || ContainsInternalCode(
+                ObservedResponseLiterals.WithoutObservedIdentifiers(vocabularyText, draft.Source),
+                string.Concat(userText, " ", priorUserText))
             || FoldForPolicy(modelText).Contains("hecho ya ocurrido", StringComparison.Ordinal)
             || FoldForPolicy(modelText).Contains("hola saludo", StringComparison.Ordinal))
         {

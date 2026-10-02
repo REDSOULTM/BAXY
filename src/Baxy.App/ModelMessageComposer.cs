@@ -273,7 +273,8 @@ internal static class ModelMessageComposer
             && !UserMessagePolicy.IsSafeConversationReply(
                 userText,
                 draft.Intent is "status" or "error"
-                    ? ObservedResponseLiterals.WithoutObservedNames(accepted, draft.Source)
+                    ? ObservedResponseLiterals.WithoutObservedIdentifiers(
+                        ObservedResponseLiterals.WithoutObservedNames(accepted, draft.Source), draft.Source)
                     : accepted,
                 priorUserText: priorUserText,
                 clarification: draft.Intent == "clarification",
