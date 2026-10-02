@@ -588,6 +588,42 @@ def gives_go_ahead(text: str) -> bool:
     return all(word in _GO_AHEAD_FILLER for word in re.findall(r"[a-z']+", rest))
 
 
+_DO_THAT = re.compile(
+    r"^(?:(?:ya|bueno|entonces|pues|baxy|oye|ok|okay)[\s,]+)*"
+    r"(?:haz|hace|has|hacer|do|just\s+do|go\s+do)\s+(?:eso|esto|aquello|that|this)"
+    r"(?:[\s,]+(?:ya|ahora|porfa|por\s+favor|please|now|then|entonces))*$"
+)
+
+
+def do_that_with_nothing_named(text: str, last_reply: str | None) -> bool:
+    """M118 (cien-113 048 «haz eso» after «keep chatting without opening apps», answered with a false limit): «do that»
+    points at a thing to do; after a reply of BAXY's that offered or asked nothing, nothing to do was named, and what
+    «eso» is gets asked."""
+
+    folded = _fold(text).strip(" ¿?¡!.,")
+    return _DO_THAT.match(folded) is not None and not str(last_reply or "").rstrip().endswith("?")
+
+
+def remate_of_what_was_done(text: str, last_reply: str | None) -> bool:
+    """M118 (owner script t57 «al volumen» right after «ahora subelo a 100» → «He puesto el volumen en 100…» was asked
+    «¿Cuánto le subo?»): a short tail that only names what BAXY just reported done — no number, no word BAXY did not
+    say — is a remate of it, never a new request whose amount is asked again."""
+
+    reply = _fold(str(last_reply or "")).strip()
+    folded = _fold(text).strip(" ¿?¡!.,")
+    words = re.findall(r"[a-z0-9]+", folded)
+    content = [word for word in words if len(word) >= 4]
+    said = set(re.findall(r"[a-z0-9]+", reply))
+    return bool(
+        reply
+        and not reply.endswith("?")
+        and 1 <= len(words) <= 3
+        and not any(word.isdigit() for word in words)
+        and content
+        and all(word in said for word in content)
+    )
+
+
 def go_ahead_with_nothing_pending(text: str, last_reply: str | None) -> bool:
     """M88: a go-ahead (``gives_go_ahead``) after a reply of BAXY's that asked nothing: nothing is waiting for that yes.
     After a question, the go-ahead answers it and is read as usual."""

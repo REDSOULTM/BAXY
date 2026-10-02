@@ -13,23 +13,51 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
     private static readonly string[] DiagnosticIntegerProperties =
         ["taskCount", "firedReceiptCount", "issueCount"];
     private readonly string _alarmRoot;
-    private readonly IExternalProcessRunner _runner;
+    private readonly IScheduledNotificationBackend _backend;
     private readonly string _schedulerScript;
 
+    // M119: the Task Scheduler COM API answers in-process (~2 s of powershell.exe per turn less);
+    // the script stays as the fallback when the scheduler cannot be reached that way.
     internal WindowsScheduledNotificationAdapter(string dataRoot)
-        : this(dataRoot, new ExternalProcessRunner(), Path.Combine(
+        : this(dataRoot, new WindowsTaskSchedulerHost(), new ExternalProcessRunner(), Path.Combine(
             AppContext.BaseDirectory, "WindowsScheduledNotification.ps1"))
     {
     }
 
     internal WindowsScheduledNotificationAdapter(
         string dataRoot,
+        ITaskSchedulerHost scheduler,
         IExternalProcessRunner runner,
         string schedulerScript)
+        : this(dataRoot, runner, schedulerScript,
+            scheduler ?? throw new ArgumentNullException(nameof(scheduler)))
     {
-        _alarmRoot = Path.Combine(Path.GetFullPath(dataRoot), "scheduled-notifications");
-        _runner = runner ?? throw new ArgumentNullException(nameof(runner));
+    }
+
+    /// <summary>The script alone, as before M119.</summary>
+    internal WindowsScheduledNotificationAdapter(
+        string dataRoot,
+        IExternalProcessRunner runner,
+        string schedulerScript)
+        : this(dataRoot, runner, schedulerScript, scheduler: null)
+    {
+    }
+
+    private WindowsScheduledNotificationAdapter(
+        string dataRoot,
+        IExternalProcessRunner runner,
+        string schedulerScript,
+        ITaskSchedulerHost? scheduler)
+    {
+        string root = Path.GetFullPath(dataRoot);
+        _alarmRoot = Path.Combine(root, "scheduled-notifications");
         _schedulerScript = Path.GetFullPath(schedulerScript);
+        var script = new ScriptScheduledNotificationBackend(
+            runner ?? throw new ArgumentNullException(nameof(runner)), _schedulerScript);
+        _backend = scheduler is null
+            ? script
+            : new NativeScheduledNotificationBackend(
+                scheduler, script, Path.Combine(root, "notification-scheduler-fallback.jsonl"));
     }
 
     public bool CanHandle(string operation) => operation is
@@ -132,16 +160,16 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         ExternalProcessResult resolved;
         try
         {
-            resolved = await _runner.RunAsync(
-                "powershell.exe",
-                ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
-                    _schedulerScript, "-Mode", "resolve-at", "-Kind", kind,
-                    "-Hour", hour.ToString(System.Globalization.CultureInfo.InvariantCulture),
-                    "-Minute", minute.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            resolved = await _backend.RunAsync(
+                new ScheduledNotificationRequest("resolve-at", kind)
+                {
+                    Hour = hour,
+                    Minute = minute,
                     // M80: only the notifications this data root set are candidates.
-                    "-AlarmRoot", _alarmRoot,
-                    .. (period is null ? [] : new[] { "-Period", period })],
-                TimeSpan.FromSeconds(30), cancellationToken).ConfigureAwait(false);
+                    AlarmRoot = _alarmRoot,
+                    Period = period,
+                },
+                cancellationToken).ConfigureAwait(false);
         }
         catch (Exception exception) when (exception is IOException or JsonException
             or UnauthorizedAccessException or TimeoutException or InvalidDataException)
@@ -161,12 +189,13 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         try
         {
             effectBoundary.Cross(cancellationToken);
-            ExternalProcessResult canceled = await _runner.RunAsync(
-                "powershell.exe",
-                ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
-                    _schedulerScript, "-Mode", "cancel-exact", "-Kind", kind,
-                    "-TaskName", taskName!, "-DueUtc", nextRunUtc!],
-                TimeSpan.FromSeconds(30), cancellationToken).ConfigureAwait(false);
+            ExternalProcessResult canceled = await _backend.RunAsync(
+                new ScheduledNotificationRequest("cancel-exact", kind)
+                {
+                    TaskName = taskName!,
+                    DueUtc = nextRunUtc!,
+                },
+                cancellationToken).ConfigureAwait(false);
             return Parse(operation, canceled, taskName, effectBoundary, writer =>
             {
                 writer.WriteString("kind", kind);
@@ -241,12 +270,9 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         string operation,
         CancellationToken cancellationToken)
     {
-        ExternalProcessResult process = await _runner.RunAsync(
-            "powershell.exe",
-            ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
-                _schedulerScript, "-Mode", "diagnose", "-Kind", "reminder",
-                "-AlarmRoot", _alarmRoot],
-            TimeSpan.FromSeconds(30), cancellationToken).ConfigureAwait(false);
+        ExternalProcessResult process = await _backend.RunAsync(
+            new ScheduledNotificationRequest("diagnose", "reminder") { AlarmRoot = _alarmRoot },
+            cancellationToken).ConfigureAwait(false);
         string? line = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
             .LastOrDefault();
         if (process.ExitCode != 0 || line is null)
@@ -285,12 +311,9 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         // AGENDA1435 «listá los timers»: the scheduled BAXY tasks (alarms and
         // reminders) with the title kept in each ring script and the next run.
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 20), 1, 50);
-        ExternalProcessResult process = await _runner.RunAsync(
-            "powershell.exe",
-            ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
-                _schedulerScript, "-Mode", "diagnose", "-Kind", "reminder",
-                "-AlarmRoot", _alarmRoot],
-            TimeSpan.FromSeconds(30), cancellationToken).ConfigureAwait(false);
+        ExternalProcessResult process = await _backend.RunAsync(
+            new ScheduledNotificationRequest("diagnose", "reminder") { AlarmRoot = _alarmRoot },
+            cancellationToken).ConfigureAwait(false);
         string? line = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
             .LastOrDefault();
         if (process.ExitCode != 0 || line is null)
@@ -404,15 +427,15 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         string ringScript = Path.Combine(_alarmRoot, taskName + ".ps1");
         string receipt = Path.Combine(_alarmRoot, taskName + ".fired");
         WriteRingScript(ringScript, receipt, title);
-        ExternalProcessResult process = await _runner.RunAsync(
-            "powershell.exe",
-            ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
-                _schedulerScript, "-Mode", recurrence is null ? "schedule" : "schedule-recurring",
-                "-Kind", kind,
-                "-TaskName", taskName, "-DueUtc", due.ToString("O"),
-                "-RingScriptPath", ringScript,
-                .. (recurrence is null ? [] : new[] { "-Recurrence", recurrence })],
-            TimeSpan.FromSeconds(30),
+        ExternalProcessResult process = await _backend.RunAsync(
+            new ScheduledNotificationRequest(
+                recurrence is null ? "schedule" : "schedule-recurring", kind)
+            {
+                TaskName = taskName,
+                DueUtc = due.ToString("O"),
+                RingScriptPath = ringScript,
+                Recurrence = recurrence,
+            },
             cancellationToken).ConfigureAwait(false);
         return Parse(operation, process, taskName, effectBoundary, writer =>
         {
@@ -430,13 +453,9 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         CancellationToken cancellationToken)
     {
         effectBoundary.Cross(cancellationToken);
-        ExternalProcessResult process = await _runner.RunAsync(
-            "powershell.exe",
-            ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
-                _schedulerScript, "-Mode", "cancel", "-Kind", kind,
-                // M80 (DEV-D v3m D-w18-t5): the latest is the last one this data root set that is still pending.
-                "-AlarmRoot", _alarmRoot],
-            TimeSpan.FromSeconds(30),
+        ExternalProcessResult process = await _backend.RunAsync(
+            // M80 (DEV-D v3m D-w18-t5): the latest is the last one this data root set that is still pending.
+            new ScheduledNotificationRequest("cancel", kind) { AlarmRoot = _alarmRoot },
             cancellationToken).ConfigureAwait(false);
         return Parse(operation, process, expectedTaskName: null, effectBoundary,
             writer => writer.WriteString("kind", kind));

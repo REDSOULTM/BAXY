@@ -1055,6 +1055,22 @@ def list_creation_without_items(folded: str) -> str | None:
     return None
 
 
+def named_list_creation(folded: str) -> bool:
+    """M118 (D58, DEV-D D-s088 «create a new list of my pending bills» asked «What items should be included…?» where the
+    isolated decider made it): a new list asked for by its name is made with that name, as M91 reads it after the
+    decider; only a list named by nothing («crea una nueva lista») asks what goes on it."""
+
+    body = _strip_request_envelope(folded).strip(" ¿?¡!.,")
+    found = None if _has(folded, _LIST_NOT_TASKS) else _LIST_CREATION.match(body)
+    named = re.sub(
+        r"^\s*(?:de(?:\s+la|\s+los|\s+las|l)?|para(?:\s+la|\s+el)?|of|for)\s+", "", (found.group("name") or "") if found else "",
+    )
+    # «crea una nueva lista para mí», «create a list for me»: who it is for is no name.
+    return bool(named.strip()) and re.fullmatch(
+        r"(?:mi|me|ti|vos|usted|ustedes|nosotr[oa]s|el|ella|ellos|ellas|you|us|him|her|them|myself)", named.strip(),
+    ) is None
+
+
 def list_creation_said(folded: str) -> bool:
     """M91 (reserva «haz una nueva lista de la compra»): a new list asked for, not an entry to put on one. The list
     made empty is the whole request; only an entry that names nothing leaves something unsaid."""

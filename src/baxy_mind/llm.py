@@ -4547,7 +4547,22 @@ def _go_ahead_reply_unmet(reply: str, request: str) -> bool:
     streaming of Hustlers failed because…», refused as a failure told in talk, and the App fell back to «What specific
     detail is missing…?») it must not tell that as a failure, which the App's conversation policy refuses."""
 
-    return not dialogue_slot.says_nothing_was_done(reply) or talk_reply_tells_a_failure(reply, request)
+    return (
+        not dialogue_slot.says_nothing_was_done(reply)
+        or talk_reply_tells_a_failure(reply, request)
+        # M118 (cien-113 048 «haz eso» after «keep chatting without opening apps» → «No lo he hecho: no tengo la
+        # capacidad de mantener conversaciones sin abrir aplicaciones.»): talking is what BAXY is doing; a limit on it
+        # is false whatever the last message said.
+        or _DENIES_TALKING.search(_reading_fold(reply)) is not None
+    )
+
+
+_DENIES_TALKING = re.compile(
+    r"\bno\s+(?:tengo\s+(?:la\s+)?(?:capacidad|posibilidad)\s+de|puedo|se|soy\s+capaz\s+de)\s+(?:mantener\s+|tener\s+|seguir\s+)?"
+    r"(?:una\s+|la\s+)?(?:conversa\w*|hablar|charlar|chatear)"
+    r"|\b(?:can'?t|cannot|can\s+not|am\s+not\s+able\s+to|(?:do\s+not|don'?t)\s+have\s+the\s+(?:ability|capacity)\s+to)\s+"
+    r"(?:have\s+|keep\s+|hold\s+|carry\s+on\s+)?(?:a\s+)?(?:conversations?|chat\w*|talk\w*)"
+)
 
 
 def _go_ahead_instruction(last_said: str, language: str | None) -> str:
@@ -18007,6 +18022,18 @@ class ConversationReplyContractError(ValueError):
         self.conversation_kind = conversation_kind
 
 
+# The contextual decider's budget for one decision (``decide_in_context``, ``prepare_decision``).
+DECIDER_TIMEOUT_SECONDS = 8.0
+# Reading its catalog prompt once at start-up (``warm_decider``): ≈6 400 tokens, 3.7–3.9 s on the GPU profile.
+DECIDER_WARMUP_SECONDS = 30.0
+
+
+def _decider_payload_key(payload: dict[str, Any]) -> str:
+    """Every byte a contextual decision is generated from: a prepared reply serves only the same request."""
+
+    return json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
 class _PreparedChat:
     """One conversation reply generated beside the checks that may still withdraw it.
 
@@ -18265,6 +18292,8 @@ class LlmRuntime:
             | None
         ) = None
         self._speculative_chat_handoff: _PreparedChat | None = None
+        # M117: the contextual decision started with the turn (``prepare_decision``), keyed by its whole payload.
+        self._prepared_decision: tuple[str, ChatCompletionCancellation, Future] | None = None
         self._direct_argument_handoff: (
             tuple[
                 str,
@@ -18728,6 +18757,7 @@ class LlmRuntime:
 
         self._retire_deferred_language_work()
         self._retire_deferred_count_work()
+        self._retire_prepared_decision()
         with self._lifecycle_lock_for():
             close_event = getattr(self, "_close_event", None)
             if close_event is None:
@@ -18797,6 +18827,16 @@ class LlmRuntime:
         self._speculative_chat_handoff = None
         if prepared is not None:
             prepared.retire()
+
+    def _retire_prepared_decision(self) -> None:
+        """Close a contextual decision prepared for a turn that no longer reads it."""
+
+        prepared = getattr(self, "_prepared_decision", None)
+        self._prepared_decision = None
+        if prepared is not None:
+            _, cancellation, future = prepared
+            cancellation.cancel()
+            future.cancel()
 
     def _retire_deferred_count_work(self) -> None:
         """Cancel a speculative V that no longer has a valid consumer."""
@@ -18879,6 +18919,7 @@ class LlmRuntime:
             getattr(self, "_parallel_turn_verification", False)
         )
         self._retire_prepared_chat()
+        self._retire_prepared_decision()
 
     def begin_request_attempt(self, timeout: float, *, attempt: int) -> None:
         """Cap one logical attempt inside the existing total request budget."""
@@ -18935,6 +18976,7 @@ class LlmRuntime:
             and request_attempt == 0
         )
         self._retire_prepared_chat()
+        self._retire_prepared_decision()
 
     def end_request(self) -> None:
         self._retire_deferred_language_work()
@@ -18951,6 +18993,7 @@ class LlmRuntime:
             getattr(self, "_parallel_turn_verification", False)
         )
         self._retire_prepared_chat()
+        self._retire_prepared_decision()
 
     def _effective_request_timeout(self, requested: float | None = None) -> float:
         request_timeout = getattr(self, "_request_timeout", 19.0)
@@ -21282,20 +21325,14 @@ class LlmRuntime:
             )
         return result
 
-    def decide_in_context(
+    def _decider_payload(
         self,
         text: str,
         history: list[dict[str, str]] | None,
         tools: Iterable[tuple[str, str]],
-        *,
-        timeout: float = 8.0,
-        signatures: dict[str, tuple[str, ...]] | None = None,
-    ) -> semantic_decider.ContextDecision:
-        """Decide the turn with the whole conversation and the catalog (``semantic.decider``).
-
-        The prompt is fixed for a catalog, so it is built once and stays cached in the reserved slot; only the
-        conversation and the last message are decoded each turn.
-        """
+        signatures: dict[str, tuple[str, ...]] | None,
+    ) -> tuple[dict[str, Any], list[str]]:
+        """The contextual decider's request for one turn and the operation names it may answer."""
 
         tools = tuple(sorted(tools))
         key = (tools, tuple(sorted((signatures or {}).items())) if signatures is not None else None)
@@ -21323,7 +21360,112 @@ class LlmRuntime:
         adapter = getattr(self, "_decider_adapter", None)
         if adapter is not None:
             payload.update(adapter.request_fields())
-        response = self._post(payload, timeout=self._normalize_request_budget(timeout), reserved_slot=True)
+        return payload, names
+
+    def prepare_decision(
+        self,
+        text: str,
+        history: list[dict[str, str]] | None,
+        tools: Iterable[tuple[str, str]],
+        *,
+        timeout: float = DECIDER_TIMEOUT_SECONDS,
+        signatures: dict[str, tuple[str, ...]] | None = None,
+    ) -> None:
+        """Start the contextual decision of this turn on its reserved slot while the readers still read it.
+
+        M117 (window v4f-devF): the readers ran before the decider was asked, 0.18 s p50 of CPU in front of every
+        decided turn. The request is the one ``decide_in_context`` would send, byte for byte; it hands the reply
+        over only to a call with that same payload, and a turn the readers decide retires it unread
+        (``end_request``). Only the multi-slot profile has a reserved slot to start it on.
+        """
+
+        self._retire_prepared_decision()
+        if not getattr(self, "_parallel_turn_verification", False):
+            return
+        payload, _ = self._decider_payload(text, history, tools, signatures)
+        budget = self._normalize_request_budget(timeout)
+        cancellation = ChatCompletionCancellation()
+        decision: Future = Future()
+
+        def decide() -> None:
+            if not decision.set_running_or_notify_cancel():
+                return
+            try:
+                decision.set_result(
+                    self._post(payload, timeout=budget, reserved_slot=True, cancellation=cancellation)
+                )
+            except BaseException as error:  # noqa: BLE001 - handed to its consumer, which asks again
+                decision.set_exception(error)
+
+        self._prepared_decision = (_decider_payload_key(payload), cancellation, decision)
+        threading.Thread(target=decide, name="baxy-prepared-decision", daemon=True).start()
+
+    def warm_decider(
+        self,
+        tools: Iterable[tuple[str, str]],
+        *,
+        signatures: dict[str, tuple[str, ...]] | None = None,
+    ) -> None:
+        """Read the contextual decider's catalog into its reserved slot as soon as the catalog is configured.
+
+        M117 (every window run: D-s001 6 139 tokens in 3.7 s, F-s002 6 478 in 3.9 s): the first decided turn after
+        start-up prefilled the whole catalog prompt. It is the same bytes every decision begins with, so it is read
+        once beforehand and one token is decoded; the first turn then reads only its own message. A failure leaves
+        the first turn reading it, as before.
+        """
+
+        if not getattr(self, "_parallel_turn_verification", False):
+            return
+        payload, _ = self._decider_payload("", [], tools, signatures)
+        payload["max_tokens"] = 1
+
+        def warm() -> None:
+            try:
+                self._post(payload, timeout=DECIDER_WARMUP_SECONDS, max_attempts=1, reserved_slot=True)
+            except Exception:  # noqa: BLE001 - optional: the first turn reads the catalog itself
+                return
+
+        threading.Thread(target=warm, name="baxy-decider-warmup", daemon=True).start()
+
+    def _prepared_decision_response(self, payload: dict[str, Any], timeout: float) -> dict[str, Any] | None:
+        """The prepared reply to exactly ``payload``, or None when the decider has to be asked now."""
+
+        prepared = getattr(self, "_prepared_decision", None)
+        self._prepared_decision = None
+        if prepared is None:
+            return None
+        key, cancellation, decision = prepared
+        if key != _decider_payload_key(payload):
+            cancellation.cancel()
+            decision.cancel()
+            return None
+        try:
+            return decision.result(timeout=self._effective_request_timeout(timeout))
+        except TimeoutError as error:
+            cancellation.cancel()
+            raise TimeoutError("se agotó el presupuesto del decisor") from error
+        except Exception:  # noqa: BLE001 - cancelled or transport: asked again like a retry
+            return None
+
+    def decide_in_context(
+        self,
+        text: str,
+        history: list[dict[str, str]] | None,
+        tools: Iterable[tuple[str, str]],
+        *,
+        timeout: float = DECIDER_TIMEOUT_SECONDS,
+        signatures: dict[str, tuple[str, ...]] | None = None,
+    ) -> semantic_decider.ContextDecision:
+        """Decide the turn with the whole conversation and the catalog (``semantic.decider``).
+
+        The prompt is fixed for a catalog, so it is built once and stays cached in the reserved slot; only the
+        conversation and the last message are decoded each turn.
+        """
+
+        payload, names = self._decider_payload(text, history, tools, signatures)
+        response = self._prepared_decision_response(payload, timeout)
+        if response is None:
+            response = self._post(payload, timeout=self._normalize_request_budget(timeout), reserved_slot=True)
         # M49: what the server spent on this decision (prompt tokens it had to evaluate, tokens it wrote), for the
         # turn audit; a reserved slot that lost its cached catalog shows as a large prompt_n.
         timings = response.get("timings") if isinstance(response, dict) else None
