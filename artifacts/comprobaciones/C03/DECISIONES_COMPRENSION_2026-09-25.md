@@ -671,3 +671,21 @@ sus sesiones iniciadas—, no en el perfil Edge propio del producto, y BAXY debe
 controlarlo). Agente M122: historial de cómo lo hacían BAXYs anteriores, diseño (UserChoice, ShellExecute, SMTC/UIA para
 verificar sin tomar el perfil), implementación; Edge queda sólo como respaldo explícito. Nunca reiniciar ni cerrar el
 navegador del usuario, ni leer sus datos de navegación.
+
+## D61. Hora sin am/pm, app ausente y recetas/cifras (dueño, 2026-10-02 ~12:00)
+Tres choques entre literales revisados y etiquetas de conjuntos (M126), resueltos por el dueño:
+1. **«Pon una alarma a las 7» sin mañana/tarde → la próxima 7 que venga**, sin preguntar (si son las 15:00, las
+   19:00). Sustituye a lo revisado en H0036, H0197, H0222, H0234, H0473 y H0119 (preguntaban am/pm); las etiquetas
+   v2 de la reserva ya pedían actuar.
+2. **«Abre Obsidian» con la app no instalada → comprobar y decir que no está instalada** (`app.installed`), como
+   lo revisado (H0289, H0558, H0249, H0503, H0691). El oro de DEV-F y de la reserva v2 acepta esa respuesta.
+3. **Recetas y cifras → buscar primero (D35 se mantiene).** En los conjuntos DEV, donde el oro dice responder de
+   memoria y BAXY consultó por D35, ambas cuentan como correctas; se informan las dos cifras (oro original y D35).
+
+## D62. v4j medido (main 62ec7c38: M124 regresiones v4i, M125 sin saludo en el decisor) (2026-10-02 12:10)
+DEV-F 238/280 = 85,0 % (v4i 239; p50 2,60 s) · DEV-E 236/299 = 78,9 % (v4i 235; p50 2,55 s) · DEV-D 304/332 =
+91,6 % (v4i 300; p50 1,99 s) · reserva v1 89,6 % / v2 93,6 % (= v4i, 0/0) · 742: 0 cambios frente a v4i · capa A
++2 (log:38 límite de leer chats, log:104 CV en la conversación) · guion 54/60 (+3 por revisar) · held-out 30/30 ·
+DEV-C 253/301. A/B M125 (53 min GPU): ni los flags del servidor ni el saludo explican que el decisor de la App
+escriba otra cosa (cambian ≤ 8 decisiones por conjunto, neto ≈ 0). M128: 11 de 19 de esas divergencias en F/D se
+deben a turnos previos que fallaron en esta máquina (el historial vivido no trae el dato que el oro da por sabido).
