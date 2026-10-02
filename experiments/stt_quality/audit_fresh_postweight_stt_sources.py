@@ -223,8 +223,10 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # M126-M128
 # M129
 # M129
+# M130
+# M131
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "117040f6a76911a8ea0da6c3ef19f1ff732fecd4c4960fc91372cdc97a93f02c"
+    "1f348d5d0aa6c164fa8cadf703d8402970ec0848af4f1f32adbbeda16bcc3c87"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"

@@ -117,7 +117,8 @@ def test_the_arguments_carry_the_next_time_that_hour_comes() -> None:
 def test_an_event_starts_the_next_time_that_hour_comes_on_its_day() -> None:
     event = sidecar._explicit_calendar_event_arguments("agenda una reunión mañana de 3 a 4", now_utc=_at(2, 15))
     assert event is not None
-    assert _local(event["startUtc"]) == _at(3, 3) and _local(event["endUtc"]) == _at(3, 4)
+    # D61b (owner, 2026-10-02): on a day the person names, 1 to 6 is the afternoon; the end follows the start.
+    assert _local(event["startUtc"]) == _at(3, 15) and _local(event["endUtc"]) == _at(3, 16)
 
 
 class _Model:

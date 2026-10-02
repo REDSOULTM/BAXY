@@ -2371,10 +2371,16 @@ def _canonical_due_utc(
         ):
             return None
 
-    def materialize_date(local_date: date) -> datetime | None:
+    def materialize_date(local_date: date, *, said_day: bool = True) -> datetime | None:
         # D61: of the hours the clock may be, the first still ahead on that day; when none is, the first of them (the
         # day then rolls as for any passed moment).
-        moments = [datetime.combine(local_date, datetime_time(hour, minute)) for hour in hours]
+        day_hours = hours
+        if said_day and len(hours) == 2 and local_date != local_now.date():
+            # D61b (owner, 2026-10-02): on another day the person named, an hour without its part of the day is a
+            # daytime hour — 1 to 6 the afternoon, 7 to 11 the morning, 12 noon («el viernes a las 3» → 15:00).
+            base = clock.hour % 12
+            day_hours = (base + 12,) if 1 <= base <= 6 else ((12,) if base == 0 else (base,))
+        moments = [datetime.combine(local_date, datetime_time(hour, minute)) for hour in day_hours]
         threshold = local_now.replace(tzinfo=None) + timedelta(seconds=5)
         naive = next((moment for moment in moments if moment > threshold), moments[0])
         if now_utc is None:
@@ -2422,7 +2428,8 @@ def _canonical_due_utc(
     if due is None:
         return None
     if roll and due <= now + timedelta(seconds=5):
-        due = materialize(days + roll)
+        # A moment already passed today rolls to its next time; that day was not said (D61, not D61b).
+        due = materialize_date(local_now.date() + timedelta(days=days + roll), said_day=days != 0)
     if due is None or due <= now + timedelta(seconds=5):
         return None
     return due.isoformat().replace("+00:00", "Z")
