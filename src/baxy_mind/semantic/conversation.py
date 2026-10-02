@@ -37,7 +37,7 @@ from .patterns import (
     reassurance_statement,
     reported_own_schedule,
 )
-from .web import visual_content_request
+from .web import asks_to_watch_the_news, visual_content_request
 
 
 # Un acto social completo no pide nada: saludar, despedirse, agradecer o
@@ -1778,6 +1778,10 @@ def _conversation_presentation_shape(
     if _FREE_CONTENT_THING_CUE.match(_policy_guard_text(_strip_request_envelope(semantic_text))) is not None:
         # KNOWLEDGE1144 «contame un chiste»; tanda-02: the bare noun, after other turns.
         return "free_content"
+    # D59 §6 (owner, 2026-10-02) «avísame cuando haya noticias de X»: BAXY does not watch the news; the limit says so
+    # and offers to search the news on X now, whatever kind the turn was given.
+    if asks_to_watch_the_news(semantic_text):
+        return "news_watch_limit"
     # Tanda 4f «configuré una alarma para despertarme por la mañana»: an alarm the person set is what they tell,
     # acknowledged without an offer, whatever came before in the conversation.
     if reported_own_schedule(semantic_text):

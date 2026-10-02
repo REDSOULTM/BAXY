@@ -358,8 +358,10 @@ _ERRAND = (
     r"sopa|soup|huevos?|eggs?|tostadas?|toast|pancakes|panqueques|snack|merienda)\b"
 )
 # MASSIVE iot_* (dev corpus 2026-09-23): the devices of the house are not this PC. An appliance is one by its
-# name; a light or its colour is one only in a room of the house («las luces de la cocina», «colores oscuros en
-# la casa»), since «baja las luces» alone is the screen's brightness here.
+# name; a light or its colour is one in a room of the house («las luces de la cocina», «colores oscuros en la
+# casa»). D59 §3 (owner, 2026-10-02, supersedes the old reading of «baja las luces» as the screen's brightness):
+# BAXY controls the notebook, not the house, so the lights themselves («baja las luces», «turn off the lights»)
+# are the house too; the screen's brightness is only when the screen, its brightness or the PC is named.
 _HOME_APPLIANCE = (
     r"\b(?:cafetera|coffee\s+maker|aspiradora|robot\s+aspirador|roomba|vacuum(?:\s+cleaner)?|lavadora|"
     r"washing\s+machine|washer|secadora|dryer|lavavajillas|lavaplatos|dishwasher|horno|oven|microondas|"
@@ -372,11 +374,28 @@ _HOME_ROOM = (
     r"bano|comedor|jardin|garaje|pasillo|patio)|"
     r"(?:in|of)\s+(?:the\s+|my\s+)?(?:house|home|kitchen|bedroom|living\s+room|bathroom|hallway|garden|garage))\b"
 )
+# D59 §3: the lights as such, with no room: plural lights or lamps, or «la luz» / «the light» with its article
+# («pon luz natural» is a look, not a lamp).
+_THE_LIGHTS = (
+    r"\b(?:luces|lamparas?|lights|lamps?|(?:la|esa|esta|the|that|this)\s+(?:luz|light))\b"
+)
+# What makes a light not the house's: the screen, its brightness, the keyboard, the PC itself, a Windows feature
+# named with the word («luz nocturna», «night light», «modo claro», «light mode»), or lights to see or hear.
+_LIGHT_NOT_OF_THE_HOUSE = (
+    r"\b(?:pantallas?|screens?|monitor(?:es|s)?|display|brillo|brightness|teclado|keyboard|notebook|laptop|"
+    r"portatil|computador[a]?|computer|pc|ordenador|nocturna|night|azul|blue|"
+    r"(?:light|dark)\s+(?:mode|theme)|modo\s+(?:claro|oscuro)|tema\s+(?:claro|oscuro)|"
+    # A video, a song or a picture of lights is something to see or hear («pon un video de luces de navidad»).
+    r"videos?|youtube|canciones|cancion|songs?|musica|music|playlist|fotos?|photos?|imagen(?:es)?|images?|"
+    r"fondo|wallpaper|peliculas?|movies?)\b"
+)
 _HOME_CONTROL = (
     r"\b(?:enciende|encender|enciendeme|prende|prender|prendeme|apaga|apagar|apagame|pon|poner|ponme|"
     r"pon(?:er)?\s+en\s+marcha|arranca|arrancar|activa|activar|desactiva|desactivar|sube|subir|baja|bajar|"
     r"ajusta|ajustar|cambia|cambiar|regula|regular|atenua|atenuar|abre|abrir|cierra|cerrar|"
-    r"turn\s+(?:on|off|up|down)|switch\s+(?:on|off)|start|stop|dim|brighten|set|open|close|run)\b"
+    r"turn\s+(?:on|off|up|down)|switch\s+(?:on|off)|start|stop|dim|brighten|set|open|close|run|"
+    # D59 §3 «turn the lights down», «switch the lamp off»: the particle said after the thing.
+    r"turn\s+(?:[a-z]+\s+){1,3}(?:on|off|up|down)|switch\s+(?:[a-z]+\s+){1,3}(?:on|off))\b"
 )
 
 
@@ -395,7 +414,11 @@ def physical_world_request(folded: str) -> bool:
 
     return _has(folded, _ERRAND) or _has(folded, _RIDE_ERRAND) or (
         _has(folded, _HOME_CONTROL)
-        and (_has(folded, _HOME_APPLIANCE) or (_has(folded, _HOME_LIGHT) and _has(folded, _HOME_ROOM)))
+        and (
+            _has(folded, _HOME_APPLIANCE)
+            or (_has(folded, _HOME_LIGHT) and _has(folded, _HOME_ROOM))
+            or (_has(folded, _THE_LIGHTS) and not _has(folded, _LIGHT_NOT_OF_THE_HOUSE))
+        )
     )
 
 

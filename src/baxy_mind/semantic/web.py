@@ -1626,6 +1626,9 @@ def _live_weather_request(folded: str) -> bool:
 def _public_live_lookup_request(folded: str) -> bool:
     """Recognize live feeds that require a public lookup to answer."""
 
+    if asks_to_watch_the_news(folded):
+        # D59 §6 «dime cuando haya noticias del partido»: told when there are some is a watch, never a lookup now.
+        return False
     head = _request_head(folded)
     news_consumption = (
         re.match(
@@ -2929,7 +2932,26 @@ _NOT_A_NEWS_PLACE = (
 # operation does; a notice at a time said («avísame a las ocho de leer las noticias») is an ordinary one. Folded.
 _NEWS_WATCH = re.compile(
     r"\b(?:notificacion(?:es)?|notifica\w*|notify|notifications?|alertas?|alerta\w*|alerts?|alert\s+me|"
-    r"avisos?|avisame|avisarme|avisa|suscrib\w*|subscribe\w*)\b[^.?!]{0,40}?\b(?:noticias?|news|titulares|headlines)\b"
+    r"avisos?|avisame|avisarme|avisa|avisenme|me\s+avisas|me\s+avises|suscrib\w*|subscribe\w*|"
+    # D59 §6 (owner, 2026-10-02) «let me know when there's news about X», «keep me posted on the news about X»,
+    # «mantenme al tanto de las noticias de X»: being kept told is watching too.
+    r"let\s+me\s+know|keep\s+me\s+(?:posted|updated|informed)|ping\s+me|"
+    r"mantenme\s+(?:al\s+tanto|informad[oa])|tenme\s+al\s+tanto)\b"
+    r"[^.?!]{0,40}?\b(?:noticias?|news|titulares|headlines)\b|"
+    # «dime cuando haya noticias de X», «tell me when there's news about X»: told when, not now («dime si hay
+    # noticias de X» asks now).
+    r"\b(?:dime|decime|tell\s+me|me\s+dices|me\s+dirias)\s+(?:cuando|apenas|en\s+cuanto|when|whenever|as\s+soon\s+as|"
+    r"once)\b[^.?!]{0,40}?\b(?:noticias?|news|titulares|headlines)\b"
+)
+# «avísame en diez minutos para leer las noticias», «get hourly notification on sports news»: a notice after a while
+# said, or at a period said, is an ordinary one, like a time.
+_NOTICE_AFTER_A_WHILE = re.compile(
+    r"\b(?:en|dentro\s+de|in|after)\s+(?:\d+|un|una|unos|unas|media|dos|tres|cinco|diez|quince|veinte|treinta|"
+    r"a|an|one|two|three|five|ten|fifteen|twenty|thirty|half\s+an?)\s+(?:minutos?|horas?|segundos?|dias?|"
+    r"minutes?|hours?|seconds?|days?)\b|"
+    r"\b(?:hourly|daily|weekly|every\s+(?:hour|day|morning|night|evening|week)|each\s+(?:hour|day|morning)|"
+    r"cada\s+(?:hora|dia|manana|noche|tarde|semana)|diari[oa]s?|diariamente|semanal(?:es|mente)?|"
+    r"todos\s+los\s+dias|todas\s+las\s+(?:mananas|noches|tardes))\b"
 )
 
 
@@ -2937,7 +2959,35 @@ def asks_to_watch_the_news(text: str) -> bool:
     """Notifications of the news on a subject asked for, with no time said (see above)."""
 
     folded = _fold(text)
-    return _NEWS_WATCH.search(folded) is not None and not spoken_clocks(folded)
+    return (
+        _NEWS_WATCH.search(folded) is not None
+        and not spoken_clocks(folded)
+        and _NOTICE_AFTER_A_WHILE.search(folded) is None
+    )
+
+
+_NEWS_WATCH_SUBJECT = re.compile(
+    r"\b(?:noticias?|news|titulares|headlines)\s+(?:de\s+la|de\s+los|de\s+las|del|de|sobre|acerca\s+de|en\s+torno\s+a|"
+    r"about|on|of|regarding|concerning|for)\s+(?P<subject>[^.?!¿¡]+)",
+    re.IGNORECASE,
+)
+
+
+def news_watch_subject(text: str) -> str:
+    """D59 §6: the subject of the news the person wants to be told of, in their own words («bitcoin», «the Artemis
+    mission»); empty when none is named."""
+
+    found = _NEWS_WATCH_SUBJECT.search(str(text or ""))
+    if found is None:
+        return ""
+    subject = re.sub(
+        r"[\s,;:]+(?:por\s+favor|porfa|porfis|please|pls|gracias|thanks|thank\s+you|cuando\s+.*|when\s+.*|apenas\s+.*|"
+        r"as\s+soon\s+as\s+.*)$",
+        "",
+        found.group("subject").strip(),
+        flags=re.IGNORECASE,
+    )
+    return subject.strip(" ,;:\"'«»")[:120]
 
 
 def news_lookup_query(text: str) -> str | None:
