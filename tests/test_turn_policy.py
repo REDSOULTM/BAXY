@@ -90,6 +90,13 @@ from baxy_mind.llm import (
     visible_text_leaks_internal_vocabulary,
 )
 from baxy_mind.planner import PlannerCatalog, PlannerContractError
+from baxy_mind.semantic.decider import ContextDecision
+
+
+def _decider_talks(text: str, *_args: object, **_kwargs: object) -> ContextDecision:
+    """M123 (D58): a stable no-effect reading is confirmed by the contextual decider first; here it talks."""
+
+    return ContextDecision(request=text, decision="talk", operations=(), question="")
 
 
 @pytest.mark.parametrize(
@@ -1668,6 +1675,8 @@ def test_confirmed_stable_knowledge_cannot_be_reopened_by_catalog_candidates(
     tool = _goal03c_catalog_tool("backup.create")
 
     class Runtime:
+        decide_in_context = staticmethod(_decider_talks)
+
         @staticmethod
         def _verify_semantic_effect_shape(objective: str) -> tuple[str, str]:
             assert objective == text
@@ -1807,6 +1816,8 @@ def test_identity_question_cannot_be_consumed_as_an_old_slot_value(user_text: st
     class Runtime(_ProposedLeafLlm):
         def operation_is_the_requested_effect(self, *_args: object) -> bool:
             return False
+        decide_in_context = staticmethod(_decider_talks)
+
 
         def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
             return {"mode": "conversation", "operation": None, "question": "",
@@ -1862,6 +1873,8 @@ def test_content_drafting_closes_before_message_delivery_clarification() -> None
         @staticmethod
         def formulate_explicit_clarification_question(*_args: object) -> str:
             raise AssertionError("content drafting must close before clarification")
+        decide_in_context = staticmethod(_decider_talks)
+
 
         @staticmethod
         def detect_response_language(_text: str) -> str:
@@ -4514,6 +4527,8 @@ def test_cpu_bare_deictic_route_uses_its_measured_clarification_budget(
     observed: list[float] = []
 
     class Runtime:
+        decide_in_context = staticmethod(_decider_talks)
+
         @staticmethod
         def clarify_missing_referent(
             _text: str,
@@ -7954,6 +7969,8 @@ def test_preclassification_progress_cannot_exhaust_an_answerable_turn(
     text: str,
 ) -> None:
     class ConversationalLlm(_WithheldEffectLlm):
+        decide_in_context = staticmethod(_decider_talks)
+
         def compose_user_message(self, *_args: object, **_kwargs: object) -> str:
             raise TimeoutError("optional progress consumed the turn budget")
 
@@ -8004,6 +8021,8 @@ def test_preclassification_progress_cannot_exhaust_an_answerable_turn(
 )
 def test_complete_explanation_uses_the_existing_knowledge_path(text: str) -> None:
     class ExplanationLlm(_WithheldEffectLlm):
+        decide_in_context = staticmethod(_decider_talks)
+
         def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
             raise AssertionError(
                 "a complete explanation does not need a second turn classifier"
@@ -8065,6 +8084,8 @@ def test_complete_turn_retains_answer_before_final_question(
                 "effect_operations": [], "effect_verification": "not_applicable",
                 "response_language": "es",
             }
+        decide_in_context = staticmethod(_decider_talks)
+
 
         def chat(self, *_args: object, **_kwargs: object) -> tuple[str, list[object]]:
             return reply, []

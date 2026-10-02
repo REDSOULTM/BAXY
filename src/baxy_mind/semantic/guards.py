@@ -393,7 +393,22 @@ _ADDRESSED_REQUEST = (
     # asked of BAXY, wherever the question word sits.
     r"\b(?:cuanto|cuanta|cuantos|cuantas)\s+(?:\w+\s+)?(?:debo|debe|debemos|tengo\s+que|tenemos\s+que|pago|pagar|"
     r"pagaria|cuesta|cuestan|costaria|es|son|seria|serian|queda|quedan|sobra|sobran)\b|"
-    r"\bhow\s+(?:much|many)\s+(?:\w+\s+)?(?:do|does|did|will|would|should|must|is|are|was|were)\b"
+    r"\bhow\s+(?:much|many)\s+(?:\w+\s+)?(?:do|does|did|will|would|should|must|is|are|was|were)\b|"
+    # M123 (DEV-F F-s012 «Oye, pues nada, hazme un ping al 1.1.1.1, que el Valorant me va a tirones…», DEV-D D-p24-t1
+    # «…I need your help to search for a nice Fantasy Movie…», D-p19-t1 «I'd like to watch a movie called After the
+    # Wedding…», D-p34-t1 «Elabora una lista con las cápsulas del tiempo…»): an order with the listener's «me», help
+    # asked of the listener, a wish to watch or hear something, or a piece of writing ordered, is said to BAXY.
+    r"\b(?:haz|hace|di|deci|da|pon|pone|busca|ayuda|muestra|mostra|manda|envia|cuenta|conta|explica|recuerda|recorda|"
+    r"avisa|trae|pasa|lee|escribe|recomienda|sugiere|prepara|ensena|dibuja|reproduce|abre|anota|apunta|calcula|"
+    r"traduce)(?:me|nos)\b|"
+    r"\b(?:your\s+help|help\s+me|tu\s+ayuda|su\s+ayuda|ayudame|ayudeme)\b|"
+    r"\b(?:i'?d\s+like\s+to|i\s+would\s+like\s+to|i\s+want\s+to|i\s+wanna|quiero|quisiera|me\s+gustaria)\s+"
+    r"(?:watch|listen\s+to|hear|play|see|ver|escuchar|oir|jugar|mirar)\b|"
+    r"^[\s¡!]*(?:elabora|elaborame|redacta|redactame|prepara|preparame|recomienda|recomiendame|sugiere|sugiereme)\b|"
+    # M123 (reserva es14838 «qué es un filtro de densidad neutra y querría uno degradado…», es8568 «enviarás una
+    # invitación de calendario a juan y elena…»): a definition asked, or an order put in the listener's future.
+    r"^[\s¡!]*(?:que\s+(?:es|son)\s|(?!(?:veras|fueras|tuvieras|quisieras|pudieras|dijeras|sabras)\s)"
+    r"\w+(?:aras|eras|iras)\s)"
 )
 
 
