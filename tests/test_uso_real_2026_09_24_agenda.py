@@ -114,11 +114,11 @@ def test_the_reading_reads_the_order_said_another_way(text: str, operation: str)
     assert reading.effects is not None and reading.effects.operations == (operation,)
 
 
-def test_what_the_rewritten_order_misses_is_asked_as_for_the_tu_order() -> None:
-    clarification = resolve_explicit_clarification_intent("Establecer una alarma para las siete", OPERATIONS)
-
-    assert clarification is not None
-    assert clarification.missing_fields == ("am_pm_or_part_of_day_for_supplied_hour",)
+def test_the_rewritten_order_is_asked_nothing_the_tu_order_is_not() -> None:
+    # D61 (owner, 2026-10-02): «para las siete» with no part of the day is the next seven, asked neither as the tú order
+    # nor as the infinitive.
+    assert resolve_explicit_clarification_intent("Establecer una alarma para las siete", OPERATIONS) is None
+    assert resolve_explicit_clarification_intent("pon una alarma para las siete", OPERATIONS) is None
 
 
 def test_a_long_order_said_with_usted_is_said_to_baxy_not_overheard() -> None:
@@ -326,12 +326,7 @@ def test_a_repetition_no_alarm_or_reminder_holds_is_asked(text: str, operation: 
         ("acuérdate de recordarme esto", "reminder.create", ("due_time",)),
         ("necesito que me recuerden el pago del gimnasio", "reminder.create", ("due_time",)),
         ("el sábado es el cumpleaños de mi sobrina, recuérdamelo", "reminder.create", ("due_time",)),
-        ("remind me to call the bank at three o'clock", "reminder.create",
-         ("am_pm_or_part_of_day_for_supplied_hour",)),
-        ("wake me up at seven o'clock tomorrow", "notification.schedule",
-         ("am_pm_or_part_of_day_for_supplied_hour",)),
-        ("establecer un recordatorio para el domingo ir al mercado a las nueve", "reminder.create",
-         ("am_pm_or_part_of_day_for_supplied_hour",)),
+        # D61 (owner, 2026-10-02): an hour without its part of the day is no longer asked (test below).
         # D39 (owner, 2026-09-29): «quita todas mis alarmas» (all of them, none said) is no longer asked: the alarms
         # are read and offered with their times (tests/test_c03_d39_cancelar_alarmas.py). Alarms said which still are.
         ("delete my alarms for tomorrow", "notification.cancel.at", ("which_alarm",)),
@@ -344,6 +339,19 @@ def test_only_what_is_missing_is_asked(text: str, operation: str, missing: tuple
     assert clarification is not None
     assert clarification.operations == (operation,)
     assert clarification.missing_fields == missing
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "remind me to call the bank at three o'clock",
+        "wake me up at seven o'clock tomorrow",
+        "establecer un recordatorio para el domingo ir al mercado a las nueve",
+    ],
+)
+def test_an_hour_without_its_part_of_the_day_is_not_asked(text: str) -> None:
+    # D61 (owner, 2026-10-02): the next time that hour comes, said back in the reply; these asked am/pm before.
+    assert resolve_explicit_clarification_intent(text, OPERATIONS) is None
 
 
 def test_a_time_counted_from_now_is_still_a_moment() -> None:

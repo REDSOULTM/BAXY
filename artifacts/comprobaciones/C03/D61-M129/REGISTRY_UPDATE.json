@@ -1,0 +1,26 @@
+{
+  "schema": "d61-m129-registry-update-v1",
+  "decision": "D61 (dueño, 2026-10-02), artifacts/comprobaciones/C03/DECISIONES_COMPRENSION_2026-09-25.md en codex/kiro-goal-c03",
+  "agent": "M129",
+  "updated_at": "2026-10-02T15:00:00-03:00",
+  "reason": "D61.1: una hora de 1 a 12 sin mañana/tarde («pon una alarma a las 7») se programa sin preguntar a la próxima vez que llega esa hora en el día dicho (a las 15:00 → 19:00; a las 05:00 → 07:00; «a las 12» igual); la respuesta dice la hora elegida para poder corregirla. Sustituye a la pregunta am/pm que estos literales revisados tenían como conducta esperada.",
+  "registry": "%LOCALAPPDATA%/BAXY/C03-survey-requirements336-private/requirements.jsonl (privado; los literales no salen de esa carpeta)",
+  "registry_before_sha256": "d3ce948437f0a415dfbead0f87c7248cda993a7b7a5a2b97394839be00edeb20",
+  "registry_after_sha256": "5a2c00087dd1c3e84d1e013cbb384ee5ccd86d8ad511d54663a3c612cb27bf08",
+  "registry_backup": "requirements.jsonl.before-D61.bak",
+  "labels": "%LOCALAPPDATA%/BAXY/semantic-corpus-v1/labels_real_log.json (etiquetas a mano que semantic_corpus.py score lee antes que la corrida de referencia acreditada)",
+  "labels_before_sha256": "76f49fd6b4e7ebeadcfb4a682c338a7a93162412349933dd36cf75924d9fae21",
+  "labels_after_sha256": "922b4dfff1f190bf6d7dee5b01117b89c7414882322f655285f0f5ef40492cbf",
+  "labels_backup": "labels_real_log.json.before-D61.bak",
+  "touched_ids": {
+    "H0036": {"before": "pregunta am/pm (covered)", "after": "notification.schedule a la próxima 8; dice la hora elegida", "label": {"expect": "effect", "families": ["notification.manage"]}},
+    "H0197": {"before": "pregunta am/pm (covered)", "after": "notification.schedule a la próxima 7; dice la hora elegida", "label": {"expect": "effect", "families": ["notification.manage"]}},
+    "H0222": {"before": "pregunta am/pm (covered)", "after": "reminder.create a la próxima 5; dice la hora elegida", "label": {"expect": "effect", "families": ["notification.manage"]}},
+    "H0234": {"before": "pregunta am/pm (covered)", "after": "notification.schedule a la próxima 7; dice la hora elegida", "label": {"expect": "effect", "families": ["notification.manage"]}},
+    "H0473": {"before": "pregunta am/pm (covered)", "after": "notification.schedule (despertar) a la próxima 8; dice la hora elegida", "label": {"expect": "effect", "families": ["notification.manage"]}},
+    "H0119": {"before": "pregunta am/pm (covered)", "after": "calendar.event.create el viernes a la próxima 3 de ese día; dice la hora elegida", "label": {"expect": "effect", "families": ["calendar.manage"]}}
+  },
+  "verification_status": "Los seis pasan de covered a open (con *_before_d61 conservados): la conducta nueva está medida sin modelo (lit_offline: las seis deciden la acción sin pasar por el decisor) pero no en la ventana oficial; M129 no corre la App (A/B en la GPU).",
+  "counters": {"covered_before": 680, "covered_after": 674, "open_after": 68, "total": 742},
+  "offline_effect": "742 literales sin modelo: 6 cambios, exactamente estos (clarify → acción); ningún otro literal cambia."
+}

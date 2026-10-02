@@ -5693,9 +5693,9 @@ def test_reminder_content_cannot_be_reclassified_by_an_embedded_event_noun() -> 
     assert clarification.missing_fields == ("due_time",)
 
 
-def test_calendar_event_with_an_open_hour_remains_a_calendar_clarification() -> None:
-    # Uso real 2026-09-23: a start without an end lasts an hour, so the end is no longer asked;
-    # «a las 9» with no part of the day still is, and the event stays a calendar event.
+def test_calendar_event_with_an_open_hour_is_not_asked() -> None:
+    # Uso real 2026-09-23: a start without an end lasts an hour, so the end is no longer asked. D61 (owner,
+    # 2026-10-02): «a las 9» with no part of the day is not asked either — it is the next 9 of that day.
     text = "Crea un evento llamado Revisión el domingo a las 9"
 
     clarification = resolve_explicit_clarification_intent(
@@ -5703,9 +5703,7 @@ def test_calendar_event_with_an_open_hour_remains_a_calendar_clarification() -> 
         {"calendar.event.create", "reminder.create"},
     )
 
-    assert clarification is not None
-    assert clarification.operations == ("calendar.event.create",)
-    assert clarification.missing_fields == ("am_pm_or_part_of_day_for_supplied_hour",)
+    assert clarification is None
 
 
 def test_telegraphic_calendar_invite_requests_missing_event_details() -> None:
@@ -5719,7 +5717,7 @@ def test_telegraphic_calendar_invite_requests_missing_event_details() -> None:
     assert clarification.missing_fields == ("event_title", "event_time")
 
 
-def test_incomplete_calendar_after_an_independent_read_still_clarifies() -> None:
+def test_a_calendar_hour_after_an_independent_read_is_not_asked() -> None:
     text = "Dime la hora local. Después crea una reunión mañana a las 9."
 
     clarification = resolve_explicit_clarification_intent(
@@ -5727,10 +5725,9 @@ def test_incomplete_calendar_after_an_independent_read_still_clarifies() -> None
         {"system.time", "calendar.event.create"},
     )
 
-    assert clarification is not None
-    assert clarification.operations == ("calendar.event.create",)
-    # Uso real 2026-09-23: the end is no longer asked (an hour); «a las 9» still misses its part of the day.
-    assert clarification.missing_fields == ("am_pm_or_part_of_day_for_supplied_hour",)
+    # Uso real 2026-09-23: the end is no longer asked (an hour). D61 (owner, 2026-10-02): nor is the part of the day
+    # of «a las 9» — the next 9 of that day.
+    assert clarification is None
 
 
 @pytest.mark.parametrize(

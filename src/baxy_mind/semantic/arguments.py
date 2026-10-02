@@ -25,8 +25,8 @@ from .patterns import (
     resolve_application_installed_name,
 )
 from .temporal import (
-    SpokenClock, agenda_window, clock_elsewhere, moment_then_title_reminder, plural_alarm_cancellation, said_durations,
-    spoken_date, spoken_window, trailing_day,
+    SpokenClock, agenda_window, alarm_for_hour, clock_elsewhere, moment_then_title_reminder, plural_alarm_cancellation,
+    said_durations, spoken_date, spoken_window, trailing_day,
 )
 from .web import news_lookup_query, public_query_body
 from .windows import start_menu_request
@@ -542,12 +542,17 @@ def _explicit_notification_schedule_arguments(
         # M76 (DEV-D v3l D-w02-t3 «ponme una alarma media hora antes de eso» → an alarm half an hour from now): a
         # duration counted from another moment is not a delay from now; that moment is not read here.
         return None
-    # One clock whose part of the day was said, after the hour or elsewhere
-    # («esta tarde a las cinco»); the day is read from the whole request.
+    # One clock, its part of the day said after the hour or elsewhere («esta tarde a las cinco») or, unsaid, the next
+    # time it comes (D61); the day is read from the whole request.
     clocks = effect_intent.spoken_clocks(folded)
-    if len(relative) + len(clocks) != 1 or (clocks and not clocks[0].resolved):
+    # D61 (reviewed literal H0036 «set an alarm for 8»): the hour after «for/para» on an alarm is its clock.
+    loose = alarm_for_hour(folded) if not relative and not clocks else None
+    if loose is not None:
+        due_literal = loose
+    elif len(relative) + len(clocks) != 1:
         return None
-    due_literal = (relative[0].group("duration") if relative else clocks[0].literal).strip()
+    else:
+        due_literal = (relative[0].group("duration") if relative else clocks[0].literal).strip()
     noun = re.search(_ALARM_NOUN, evidence, re.IGNORECASE)
     if noun is None and not wake_request and not count_request:
         return None
@@ -690,8 +695,11 @@ _DEFAULT_EVENT_MINUTES = 60
 
 
 def _clock_literal(clock: SpokenClock) -> str:
-    """One resolved clock written so the due reader reads it back unchanged («a las 9:00 a. m.»)."""
+    """One clock written so the due reader reads it back unchanged: «a las 9:00 a. m.» when resolved; «a las 3» or
+    «a las 3 y 15» when its part of the day was not said (D61: the due reader takes the next time it comes)."""
 
+    if not clock.resolved:
+        return f"a las {clock.hour}" + (f" y {clock.minute}" if clock.minute else "")
     return f"a las {clock.hour % 12 or 12}:{clock.minute:02d} {'a. m.' if clock.hour < 12 else 'p. m.'}"
 
 
@@ -722,11 +730,17 @@ def _explicit_calendar_event_arguments(
         start_utc = datetime.fromisoformat(start_text.replace("Z", "+00:00")) if start_text else None
         end_utc = None
         if start_utc is not None:
-            if timing.end is not None and timing.end.resolved:
+            if timing.end is not None:
                 local_start = start_utc.astimezone(local_now.tzinfo)
-                local_end = local_start.replace(hour=timing.end.hour, minute=timing.end.minute)
+                # D61: an end hour without its part of the day is the next time it comes after the start.
+                ends = [
+                    local_start.replace(hour=hour, minute=timing.end.minute)
+                    for hour in ((timing.end.hour,) if timing.end.resolved else sorted(
+                        {timing.end.hour % 12, timing.end.hour % 12 + 12}))
+                ]
+                local_end = next((end for end in ends if end > local_start), ends[0])
                 end_utc = _local_civil_utc(local_end.replace(tzinfo=None), local_now.tzinfo)
-            elif timing.end is None:
+            else:
                 end_utc = start_utc + timedelta(minutes=timing.minutes or _DEFAULT_EVENT_MINUTES)
     if start_utc is None or end_utc is None or end_utc <= start_utc:
         return None
@@ -2329,9 +2343,13 @@ def _canonical_due_utc(
     # day may be said elsewhere in the request («esta tarde a las cinco»).
     clock_source = f"{folded_value} {folded_context}".strip().replace("maniana", "manana")
     clock = effect_intent.spoken_clock(clock_source)
-    if clock is None or not clock.resolved:
+    if clock is None:
         return None
-    hour, minute = clock.hour, clock.minute
+    minute = clock.minute
+    # D61 (owner, 2026-10-02): an hour of 1 to 12 said without its part of the day («pon una alarma a las 7») is the
+    # next time that hour comes on the day said — at 15:00 the 19:00, at 05:00 the 07:00; «a las 12» noon or
+    # midnight alike. The reply tells the time chosen, so the person can correct it.
+    hours = (clock.hour,) if clock.resolved else tuple(sorted({clock.hour % 12, clock.hour % 12 + 12}))
     local_now = (
         datetime.now().astimezone()
         if now_utc is None
@@ -2354,7 +2372,11 @@ def _canonical_due_utc(
             return None
 
     def materialize_date(local_date: date) -> datetime | None:
-        naive = datetime.combine(local_date, datetime_time(hour, minute))
+        # D61: of the hours the clock may be, the first still ahead on that day; when none is, the first of them (the
+        # day then rolls as for any passed moment).
+        moments = [datetime.combine(local_date, datetime_time(hour, minute)) for hour in hours]
+        threshold = local_now.replace(tzinfo=None) + timedelta(seconds=5)
+        naive = next((moment for moment in moments if moment > threshold), moments[0])
         if now_utc is None:
             fold_zero = naive.replace(fold=0).astimezone(timezone.utc)
             fold_one = naive.replace(fold=1).astimezone(timezone.utc)

@@ -319,7 +319,8 @@ def test_d_w08_t3_the_match_stays_what_the_reminder_is_for() -> None:
     assert _canonical_due_utc(arguments["dueUtc"], anchored, now_utc=now) == "2026-10-03T22:00:00Z"
     # A weekday that is not that date's still disagrees.
     assert _canonical_due_utc("el viernes 3 de octubre de 2026 a las 19:00", "", now_utc=now) is None
-    assert moment_then_title_reminder("ponme un recordatorio a las 5 para algo") is None
+    # D61 (owner, 2026-10-02): an hour without its part of the day is the next time it comes, no longer left out.
+    assert moment_then_title_reminder("ponme un recordatorio a las 5 para algo") == ("algo", "a las 5")
 
 
 # ------------------------------------------------------------------ 7. held-out v3v t10: an open not confirmed

@@ -3544,7 +3544,12 @@ def _ground_explicit_arguments(
             for item in reversed(history if isinstance(history, list) else [])
             if isinstance(item, dict) and item.get("content") != evidence
         ]
-        moved = change.schedule_arguments(semantic_temporal.change_part_of_day(change, said_before))
+        part_of_day = semantic_temporal.change_part_of_day(change, said_before)
+        if part_of_day is None and change.clocks_lack_the_part_of_day():
+            # D61 sets a new hour without its part of the day at the next time it comes; a moved one is read against
+            # the old one, so with neither said it is still asked (M62), never moved by the clock.
+            return None
+        moved = change.schedule_arguments(part_of_day)
         moved = _normalize_grounded_operation_arguments(operation, moved, moved["dueUtc"])
         return moved if moved is not None and validate_json_schema_instance(moved, schema) else None
     if operation == "web.search":
@@ -4679,6 +4684,13 @@ def _rearm_in_context(
         # request closes that request; it does not turn the offer into an effect.
         return audited(slot.pending_request, "pattern")
     if dependency == "answer" and slot.pending_request:
+        # D61: «no, mejor a las 7:20» to a question about «ponme una alarma a las 7 pa mañana» replaces the hour the
+        # request said; joined after it, the hour of 1 to 12 left without its part of the day (no longer asked) would
+        # stand next to the new one.
+        replaced = dialogue_slot.corrected_request(slot.pending_request, objective)
+        replaced_effects = effects_of(replaced) if replaced is not None else ()
+        if replaced_effects and dialogue_slot.same_family(replaced_effects, effects_of(slot.pending_request)):
+            return audited(replaced, "pattern")
         try:
             asked = resolve_explicit_clarification_intent(
                 slot.pending_request, available_operations, application_names,
