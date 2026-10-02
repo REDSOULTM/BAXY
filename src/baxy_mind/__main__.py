@@ -44,7 +44,6 @@ from .semantic.notes import (
     asks_overdue_notifications,
     conversation_note_title,
     list_creation_said,
-    named_list_creation,
     names_own_event,
     task_change,
 )
@@ -5797,17 +5796,6 @@ def _decide_turn_result(
             previous_user_text=_previous_user_request(history, objective),
         )
     )
-    if (
-        explicit_clarification is not None
-        and served_surface is None
-        and explicit_clarification.missing_fields == ("list_entries",)
-        and named_list_creation(effect_intent._fold(objective))
-    ):
-        # M118 (D58, DEV-D D-s088 «create a new list of my pending bills» → «What items should be included…?» where the
-        # isolated decider made it): a new list named by what it is for is the contextual decider's, as M91 reads it
-        # after the decider; what goes on it is asked when the decider refuses it and its canonical surface is re-read
-        # (tanda 3 «añadir una nueva lista para material escolar»).
-        explicit_clarification = None
     missing_open_referent = (
         non_target_language is None
         and not content_drafting

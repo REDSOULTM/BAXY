@@ -226,7 +226,9 @@ def test_what_the_person_played_last_resumes_their_player(text: str) -> None:
         "pon una canción de mi lista de reproducción",
         "ponme algo de mi biblioteca de spotify",
         "play whatever from my library",
-        "pon lo que sea de mi playlist de gym",
+        # D59.4 (owner, 2026-10-02): «pon lo que sea de mi playlist de gym» is music for the gym, searched and played
+        # (test_c03_m121_d59_b).
+        "pon lo que sea de mi playlist favorita",
     ],
 )
 def test_a_free_choice_within_another_own_collection_is_a_plain_limit(text: str) -> None:

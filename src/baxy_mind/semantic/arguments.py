@@ -18,7 +18,7 @@ from .. import effect_intent
 from . import lexicon as semantic_lexicon
 from .catalog import GameCatalogIndex, resolve_game_catalog_app_id
 from .grammar import titled_note_with_content
-from .notes import agenda_event_request, said_repetition, stated_event_reminder, task_completion_title
+from .notes import agenda_event_request, new_list_title, said_repetition, stated_event_reminder, task_completion_title
 from .patterns import (
     application_shown_media_name,
     resolve_application_catalog_app_id,
@@ -1614,6 +1614,10 @@ def _explicit_arguments_from_evidence(
             query = clause_literal(stored_query)
             if query and len(query.encode("utf-8")) <= 512:
                 return {"query": query}
+
+    if operation == "task.create" and (new_list := new_list_title(evidence)) is not None:
+        # D59.5 (owner, 2026-10-02): the new list is made empty, titled as the person named it.
+        return {"title": new_list}
 
     if operation == "task.create" and (list_entry := effect_intent.list_entry_request(evidence)) is not None:
         # «añadir el brócoli a mi lista de la compra»: the entry is the title (its

@@ -18,13 +18,13 @@ from .display import screen_light_as_brightness, _KNOWN_FOLDER_WORDS, _KNOWN_FOL
 from .intent import EffectIntent, _entity_key, _is_negated_match, _append, _append_all
 from .catalog import ApplicationCatalogIndex, GameCatalogIndex, build_game_catalog_index, _authenticated_game_target, resolve_game_catalog_app_id, _application_name_key, build_application_catalog_index, _catalog_alias_key, _installed_game_named, installed_game_title
 from .temporal import _CALENDAR_MONTH_TOKEN, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, spoken_clock, clock_elsewhere, other_place_clock_question, notification_change, plural_alarm_cancellation
-from .media import _youtube_search_query, youtube_play_query, _direct_media_discovery_or_play_request, _named_browser_music_request, _NETFLIX_SPELLED, _underspecified_video_request, _title_case_media_title, _media_transport_action, _resume_existing_media, _REMOVABLE_MEDIA, _bare_spoken_number_media_query, radio_station_query, spoken_media_order, MUSIC_GENRE, _RADIO_PLAY, own_recent_listening_request
+from .media import _youtube_search_query, youtube_play_query, _direct_media_discovery_or_play_request, _named_browser_music_request, _NETFLIX_SPELLED, _underspecified_video_request, _title_case_media_title, _media_transport_action, _resume_existing_media, _REMOVABLE_MEDIA, _bare_spoken_number_media_query, radio_station_query, spoken_media_order, MUSIC_GENRE, _RADIO_PLAY, own_recent_listening_request, purpose_music_query
 from .web import asks_for_information, public_opinion_query, record_fact_query, _public_route_lookup_request, _public_calendar_fact_lookup_request, _WEATHER_WORDS, _weather_lookup_query, _research_question_query, _public_live_lookup_request, _public_product_correction_lookup_request, _public_commerce_lookup_request, _FILESYSTEM_OBJECT_NOUN, operation_identity_is_a_near_miss, curiosity_request, web_image_request, _NAVIGATION_CLIENT, client_navigation_target, _authenticated_application_identity_conflict, _browser_page_domain, browser_back_arguments, browser_new_tab_arguments, browser_close_all_tabs_arguments, _historical_note_search_request, _stored_note_search_query, _nominal_reminder_lookup_title, _location_recommendation_request, _NAMED_BROWSER_SITE_REQUEST, _installed_browser_search_query, _completed_browser_search_pronoun_request, _NAMED_PUBLIC_SITE, _review_web_and_browser_effects, web_download_request, NAMED_CDP_BROWSERS, _named_browser_match, _named_browser, public_event_subject, cinema_listing
 from .files import _pdf_summary_request, _file_trash_request, process_report_file_request, _file_creation_request, known_folder_file_path, _current_directory_file_count, _DUPLICATE_FILES, _known_folder_recent_listing, _known_folder_listing_request, _review_file_and_game_effects, folder_txt_zip_open_mission, open_named_file_request, _office_document_roundtrip_intent
 from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
 from .system import _weather_read_intent, physical_world_request, weather_place_known_only_through_someone
-from .notes import puts_into_the_agenda, takes_off_the_agenda, list_entries, list_entry_said, list_entry_request, list_read_request, list_removal_request, list_creation_without_items, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder, said_repetition, _CALENDAR_PLACE, reminder_inventory_question, AGENDA_NOT_A_READ, happening_in_a_span_of_hours
+from .notes import puts_into_the_agenda, takes_off_the_agenda, list_entries, list_entry_said, list_entry_request, list_read_request, list_removal_request, list_creation_without_items, list_creation_said, new_list_title, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder, said_repetition, _CALENDAR_PLACE, reminder_inventory_question, AGENDA_NOT_A_READ, happening_in_a_span_of_hours
 from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, message_left_written_request, _latest_email_domain, _notification_listing_request, inbox_read_request, social_network_request, contact_book_request
 from .ui import _clipboard_copy_domain, _clipboard_paste_domain, calculator_expression_request, literal_clipboard_write_text, _review_input_and_capture_effects, _VISIBLE_CLICK_APP_CONTEXT, _gerund_click_label, _visible_click_label, _click_in_application, _visible_click_intent
 from .apps import self_close_request, _APPLICATION_TRAILING_REQUEST, _application_target_forms, _CLOSE_TRAILING_COURTESY, _close_target_forms, deictic_close_request, _bounded_application_literal, _authenticated_application_list, _OPEN_STATE_CONDITION, close_all_request, _has_multiple_installed_entities, _append_domain_actions, _open_application_spans, _CATALOG_INSTALL_VERB, _opened_applications
@@ -443,14 +443,43 @@ def _completed_missing_list_entries_request(
     """«crea una lista de la compra» → «¿qué pongo en ella?» → «leche y pan»: the answer
     is what goes on the list asked for, read like «añade leche y pan a la lista de la
     compra». Only after a request the resolver itself asks the entries of, and only for
-    a short content answer (no request head, no question, no refusal)."""
+    a short content answer (no request head, no question, no refusal).
+
+    D59.5 (owner, 2026-10-02): a new list is now made empty and the final offers to add things to it; what the person
+    names next («sí, leche y pan») goes on that list the same way. A yes alone, thanks or a remark adds nothing."""
 
     if not previous_user_text:
         return None
     prior = resolve_explicit_clarification_intent(previous_user_text, available_operations)
-    if prior is None or prior.operations != ("task.create",) or prior.missing_fields != ("list_entries",):
+    made_empty = new_list_title(previous_user_text)
+    if made_empty is not None and made_empty != "New list" and "task.create" in set(available_operations):
+        listed = made_empty[0].lower() + made_empty[1:]
+        text = re.sub(
+            r"^\s*(?:s[ií]|yes|yeah|yep|dale|ok|okay|claro|sure|bueno|vale|perfecto|ya)\s*[,.:;!]+\s*", "", text,
+            flags=re.IGNORECASE,
+        )
+        said = _fold(text)
+        if (
+            re.fullmatch(
+                r"(?:(?:s[ií]|yes|yeah|yep|dale|ok|okay|claro|sure|bueno|vale|perfecto|genial|great|cool|nice|listo|"
+                r"ya|muchas|gracias|thanks|thank|you|thx|de\s+acuerdo|por\s+favor|please|porfa)[\s,.!]*)+",
+                said,
+            )
+            # Only entries: never a question, another request or anything longer than a few of them.
+            or len(said.split()) > 12
+            or re.match(
+                r"(?:que|como|cuando|donde|quien|cual|cuanto|cuantos|por\s*que|what|how|when|where|who|which|why|is|"
+                r"are|do|does|can|could|puedes|podrias|dime|tell)\b",
+                said,
+            )
+            or asks_for_information(text)
+            or resolve_explicit_effects(text, available_operations) is not None
+        ):
+            return None
+    elif prior is None or prior.operations != ("task.create",) or prior.missing_fields != ("list_entries",):
         return None
-    listed = list_creation_without_items(_fold(previous_user_text))
+    else:
+        listed = list_creation_without_items(_fold(previous_user_text))
     answer = text.strip().strip("\"'“”«»").strip(" .!")
     folded = _strip_request_envelope(_fold(answer))
     if (
@@ -4169,10 +4198,14 @@ def _clarification_intent_of(
     if (
         "task.create" in available
         and list_creation_without_items(folded) is not None
+        # D59.5 (owner, 2026-10-02): a new list asked for is made empty, and the final offers to add things
+        # (``new_list_title``); one named as content to write is the decider's. Only an entry that names nothing
+        # («añade un elemento a la lista») is asked.
+        and not list_creation_said(folded)
         # M94 (DEV-D D-s007): a list of the person's mails is no list of theirs to fill (a limit).
         and not person_mail_collection_request(folded)
     ):
-        # «por favor crea una nueva lista»: a list is its entries; what goes on it is asked.
+        # «añade un elemento a mi lista»: an entry is named by what it is; what goes on the list is asked.
         return ClarificationIntent(("task.create",), ("list_entries",))
     if "task.create" in available and _task_without_title(folded):
         # AGENDA1021/TIME1199 H0043 «crea una tarea para el viernes»: only a
@@ -5914,8 +5947,9 @@ def _music_clause_names_content(clause: str) -> bool:
         if _MUSIC_COLLECTION_CONTAINER.search(body) is None:
             return False
         # M97 (reserve «mi lista de reproducción de música rap favorita»): with the list said, a taste qualifies the
-        # list, and the genre still names what to play. A list named by anything else («mi playlist de gym») is the
-        # person's own collection, which no operation reads: it is asked, never searched (tanda 4).
+        # list, and the genre still names what to play. A list named by anything else is the person's own collection,
+        # which no operation reads: it is asked, never searched (tanda 4); a list named by its purpose («mi playlist de
+        # gym») is music for it (D59.4, ``purpose_music_query``, read before this).
         return re.search(r"\b" + MUSIC_GENRE + r"\b", body) is not None
     body = _MUSIC_PURPOSE.sub(" ", body)
     return any(word not in _MUSIC_GENERIC_WORDS for word in re.findall(r"[a-z0-9ñ]+", body))
@@ -5941,6 +5975,10 @@ def _desired_music_query(text: str) -> str | None:
 def _desired_music_query_raw(text: str) -> str | None:
     """Extract a bounded genre, artist or title query without choosing music."""
 
+    purpose = purpose_music_query(text)
+    if purpose is not None:
+        # D59.4: music for a purpose is searched for that purpose.
+        return purpose
     folded = _strip_request_envelope(_fold(text))
     request = re.fullmatch(
         r"(?:(?:i\s+)?(?:need|want)|necesito|quiero)\s+"
@@ -6051,6 +6089,8 @@ def own_collection_free_choice(text: str) -> bool:
         )
         and _has(folded, _FREE_CHOICE_IN_OWN_COLLECTION)
         and _has(folded, _OWN_FAVOURITE)
+        # D59.4: «pon lo que sea de mi playlist de gym» is music for the gym, searched and played.
+        and purpose_music_query(text) is None
     )
 
 
@@ -6249,6 +6289,11 @@ def _title_by_performer(query: str) -> bool:
 def _explicit_named_music_query(text: str) -> str | None:
     """Keep the supplied artist/title of one current imperative verbatim."""
 
+    purpose = purpose_music_query(text)
+    if purpose is not None:
+        # D59.4 (owner, 2026-10-02): music, songs or a playlist for a purpose («mi playlist de gym») is music for it,
+        # searched and played; the purpose is the query, never the person's own collection.
+        return purpose
     named = re.fullmatch(
         rf"{_NAMED_MUSIC_PLAY_VERB}\s+"
         # Uso real 2026-09-23 «pon algo de rock north roll», «play something from keane's hopes and
@@ -12630,6 +12675,16 @@ def _resolve_clause_effects(
             # «pon fortnite», «pon obsidian»: an installed game or catalog
             # application said alone after «pon» is started, never searched as music.
             return resolve_explicit_effects(launch, available, application_names, game_catalog)
+    if (
+        "task.create" in available
+        and new_list_title(text) is not None
+        and not person_mail_collection_request(_fold(text))
+    ):
+        # D59.5 (owner, 2026-10-02; reserve «haz una lista de la compra por favor», «empieza una nueva lista» asked what
+        # goes on it): a new list with nothing on it is made empty with its name, and the final offers to add things.
+        # A list named as content to write («haz una lista de países de Europa») is no list of the person's
+        # (``new_list_title`` is None).
+        return EffectIntent(("task.create",), (text,))
     entries = list_entries(text) if "task.create" in available else None
     if entries is not None:
         # «añadir el brócoli a mi lista de la compra»: the entry is a task on that list; M113: each entry enumerated

@@ -9,7 +9,7 @@ made it. Each rule with breaks was narrowed to where the model is wrong; the tes
 2. The stable-knowledge reader and the public-lookup guard disagreeing is no proof: the contextual decider decides.
 3. A rate of what BAXY just said («y eso cuánto sale por metro?») is worked out from its numbers, never searched.
 4. «¿Cómo se hace <plato>?» with the kitchen said beside it is a recipe (D35: looked up).
-5. A new list named by what it is for is made; only a list named by nothing asks what goes on it.
+5. A new list named by what it is for is made; D59.5 (owner, 2026-10-02): a list named by nothing is made empty too.
 6. The decider's values: a free text said in other words is said; an enum member named in the person's language is
    that member; a day written with a year of the decider's own is the day said; the words of a message, a note or a
    reminder the decider gave are not replaced by the readers' reading; a value cut at the end is no value.
@@ -27,7 +27,6 @@ from baxy_mind.planner import PlannerCatalog, enum_member_named, validate_argume
 from baxy_mind.semantic import knowledge, notes, temporal
 from baxy_mind.semantic.decider import ContextDecision, said_in_other_words
 from baxy_mind.semantic.dialogue import DialogueState
-from baxy_mind.semantic.normalize import fold
 
 
 def _schema(properties: dict, required: list[str]) -> dict:
@@ -151,20 +150,21 @@ def test_a_value_left_open_at_the_end_is_cut() -> None:
 # ------------------------------------------------------------------ 5. a new list named by what it is for
 
 
-def test_a_named_new_list_is_the_deciders_and_an_unnamed_one_asks() -> None:
-    for text in ("crea una lista nueva de regalos de navidad", "make a new list for the beach weekend"):
-        assert notes.named_list_creation(fold(text)), text
-        # The reader still knows what such a list lacks (asked when the decider refuses it and the surface is re-read).
-        intent = resolve_explicit_clarification_intent(text, ("task.create", "note.create"))
-        assert intent is not None and intent.missing_fields == ("list_entries",), text
-        model = _Decider(ContextDecision(text, "action", ("task.create",), ""))
+def test_a_new_list_named_or_not_is_made_empty() -> None:
+    # D59.5 (owner, 2026-10-02): the readers make the new list empty (titled as named, «Lista nueva» when not) and the
+    # final offers to add things; nothing is asked and the decider is not needed.
+    for text, title in (
+        ("crea una lista nueva de regalos de navidad", "Lista de regalos de navidad"),
+        ("make a new list for the beach weekend", "List for the beach weekend"),
+        ("crea una lista nueva", "Lista nueva"),
+        ("make a new list for me", "New list"),
+        ("crea una nueva lista para mí", "Lista nueva"),
+    ):
+        assert notes.new_list_title(text) == title, text
+        assert resolve_explicit_clarification_intent(text, ("task.create", "note.create")) is None, text
+        model = _Decider(ContextDecision(text, "clarify", (), ""))
         result = _turn(text, model)
-        assert model.decisions == 1 and result["kind"] == "action" and result["operation"] == "task.create", text
-    for text in ("crea una lista nueva", "make a new list for me", "crea una nueva lista para mí"):
-        assert not notes.named_list_creation(fold(text)), text
-        model = _Decider(ContextDecision(text, "action", ("task.create",), ""))
-        result = _turn(text, model)
-        assert model.decisions == 0 and result["kind"] == "clarify", text
+        assert model.decisions == 0 and result["kind"] == "action" and result["operation"] == "task.create", text
 
 
 # ------------------------------------------------------------------ 3. a rate of what BAXY just said

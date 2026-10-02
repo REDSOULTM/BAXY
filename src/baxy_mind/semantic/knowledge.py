@@ -28,7 +28,7 @@ from dataclasses import dataclass
 from typing import Iterable
 
 from .conversation import asks_for_code
-from .normalize import fold, spelled_out
+from .normalize import fold, fold_in_place, spelled_out
 from .quantities import conversion_asked, numbers_in, spoken_numbers_in
 
 __all__ = [
@@ -284,9 +284,98 @@ def _ranking(folded: str) -> ReferenceLookup | None:
     return None
 
 
+# D59.8 (owner, 2026-10-02; DEV-D D-p35-t1 «Has un análisis de FODA sobre la empresa Adidas…» written from memory): the
+# analysis of a real, named organization (a SWOT/FODA/DAFO, its pros and cons, its strengths and weaknesses, a business
+# or market analysis of it) is written from what is read about it first: ``web.search`` on its name with «empresa» /
+# «company» (+1 search), then the analysis from those pages (figures only if read, D52). A topic that is no named
+# organization («pros y contras del teletrabajo», «un FODA de mi emprendimiento», «a SWOT for a coffee shop») stays talk.
+# A business framework is asked of an organization: the name in its own capitals says which one. Any other analysis,
+# or the pros and cons («pros y contras de Python», «análisis de Hamlet»), is of an organization only when the person
+# says it is one («de la empresa Falabella», «Acme Inc.»).
+_BUSINESS_ANALYSIS = (
+    r"(?:(?:analisis|estudio)\s+(?:de\s+)?)?(?P<framework>foda|dafo|swot)(?:\s+(?:analysis|analisis))?|"
+    r"(?:analisis|estudio)\s+(?P<business>estrategico|empresarial|de\s+negocio|financiero|de\s+mercado|"
+    r"de\s+la\s+competencia)|"
+    r"(?P<business_en>business|strategic|market|competitor|competitive|financial)\s+analysis"
+)
+_ANALYSIS_ASKED = (
+    rf"{_BUSINESS_ANALYSIS}|"
+    # A PESTEL is as often of a country or a market («un análisis PESTEL de Chile»).
+    r"(?:(?:analisis|estudio)\s+(?:de\s+)?)?pestel(?:\s+(?:analysis|analisis))?|"
+    r"pros\s+y\s+contras|ventajas\s+y\s+desventajas|fortalezas\s+y\s+debilidades|pros\s+and\s+cons|"
+    r"strengths\s+and\s+weaknesses|analisis|analysis"
+)
+# Who asks for it: an order or a wish, a question for the pros and cons, or the analysis named alone. A question about an
+# analysis already written («¿cómo hiciste el FODA de Adidas?») asks for none.
+_ANALYSIS_HEAD = (
+    r"(?:(?:por\s+favor|please|oye|hey|ok)\s*,?\s*)?"
+    r"(?:(?:me\s+)?(?:puedes|podrias|can\s+you|could\s+you|would\s+you)\s+)?"
+    r"(?:(?:haz|hazme|has(?=\s+(?:un|una)\b)|hacer|hacerme|haceme|realiza|realizame|realizar|elabora|elaborame|"
+    r"elaborar|prepara|preparame|preparar|escribe|escribeme|escribir|redacta|redactame|redactar|dame|darme|dime|"
+    r"decirme|quiero|necesito|me\s+haces|genera|generar|make|do|write|draft|create|give\s+me|tell\s+me|run|generate|"
+    r"i\s+(?:need|want)|i'?d\s+like)\b(?:\s+(?:me|nos|us|un|una|el|la|los|las|an?|the|breve|rapido|corto|completo|"
+    r"detallado|pequeno|quick|brief|short|full|detailed|small|simple))*\s+"
+    r"|(?:cuales|que)\s+son\s+(?:los|las)\s+|what\s+are\s+(?:the\s+)?|(?:los|las|the)\s+)?"
+)
+_ORGANIZATION_NOUN = (
+    r"(?:empresa|compania|marca|corporacion|firma|startup|multinacional|banco|aerolinea|cadena|tienda|"
+    r"company|brand|corporation|firm|bank|airline|retailer|chain|store)"
+)
+_ANALYSIS_OF = re.compile(
+    rf"^{_ANALYSIS_HEAD}(?:{_ANALYSIS_ASKED})\s+(?:de|del|sobre|para|of|on|about|for)\s+"
+    rf"(?:(?P<org>(?:(?:la|el|the)\s+)?{_ORGANIZATION_NOUN})\s+)?(?P<name>[\w&'.-]+(?:\s+[\w&'.-]+){{0,3}}?)"
+    r"(?=\s*(?:[,;:!?¿¡()]|\.(?:\s|$)|$)|\s+(?:y|e|and|para|for|con|with|en|in|utilizando|usando|using|desde|from|"
+    r"como|as|que|that|por\s+favor|please)\b)"
+)
+# «Nike's SWOT», «Tesla pros and cons»: the organization said first.
+_ANALYSIS_OF_NAMED_FIRST = re.compile(
+    rf"^{_ANALYSIS_HEAD}(?:(?:a|an|the|un|una)\s+)?(?P<name>[\w&.-]+(?:\s+[\w&.-]+){{0,2}}?)(?:'s)?\s+"
+    rf"(?:{_ANALYSIS_ASKED})[\s.!?]*$"
+)
+_NOT_AN_ORGANIZATION = re.compile(
+    r"^(?:un|una|unos|unas|mi|mis|tu|tus|su|sus|nuestr[oa]s?|vuestr[oa]s?|este|esta|ese|esa|a|an|my|our|your|their|"
+    r"this|that|these|those|some|any|el|la|los|las|the|lo|eso|esto|it|them|ellos|ellas|de|del|of|for|para|donde|"
+    r"where|que|which|who|quien|cual|en|in)\b"
+)
+_ORGANIZATION_SUFFIX = re.compile(r"\b(?:inc|corp|ltd|llc|gmbh|s\.?\s?a|s\.?\s?l|s\.?\s?a\.?\s?s|plc|co)\.?$")
+
+
+def _analysis(text: str) -> ReferenceLookup | None:
+    raw = " ".join(str(text or "").split())
+    same = fold_in_place(raw)
+    body = same.strip(" ¿?¡!.,")
+    lead = len(same) - len(same.lstrip(" ¿?¡!.,"))
+    found = _ANALYSIS_OF.match(body) or _ANALYSIS_OF_NAMED_FIRST.match(body)
+    if found is None:
+        return None
+    name = raw[lead + found.start("name"):lead + found.end("name")].strip(" .'")
+    folded_name = fold(name)
+    if not name or _NOT_AN_ORGANIZATION.match(folded_name):
+        return None
+    groups = found.groupdict()
+    business = any(groups.get(key) for key in ("framework", "business", "business_en"))
+    named = (
+        groups.get("org") is not None
+        or _ORGANIZATION_SUFFIX.search(folded_name) is not None
+        # Its own capital, where the person wrote it, is a proper name («SWOT of Tesla», «FODA de Coca-Cola»); not at
+        # the start of the message (unless said as the owner, «Nike's SWOT») nor in a message all in capitals.
+        or (
+            business
+            and name[:1].isupper()
+            and (found.start("name") > 0 or body[found.end("name"):].startswith("'s"))
+            and not raw.isupper()
+        )
+    )
+    if not named:
+        return None
+    english_cue = re.search(r"\b(?:swot|analysis|pros\s+and\s+cons|strengths)\b", fold(raw)) is not None
+    language = _language(fold(raw), english_cue)
+    return ReferenceLookup("analysis", name, name + (" company" if language == "en" else " empresa"), language)
+
+
 def _direct(text: str) -> ReferenceLookup | None:
     folded = spelled_out(fold(text))
-    return _recipe(folded) or _plot(text, folded) or _ranking(folded)
+    return _recipe(folded) or _plot(text, folded) or _ranking(folded) or _analysis(text)
 
 
 # M88 (step 6 of goal v3: facts with figures and recipes are looked up before they are said; DEV-D v3r D-w01-t2 «oye y
