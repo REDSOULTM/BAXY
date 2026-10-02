@@ -206,9 +206,16 @@ def response_schema(operations: Iterable[str], *, with_arguments: bool = False) 
 
 
 def messages(system: str, text: str, history: list[dict[str, str]] | None) -> list[dict[str, str]]:
-    """The conversation as it was, without the current message when the history already ends with it."""
+    """The conversation as it was, without the current message when the history already ends with it.
+
+    M125 (D58; window v4i-devF F-s002: the app's decider read 42 prompt tokens where the isolated one read 23, the 19
+    of «Hola, soy BAXY. ¿En qué puedo ayudarte hoy?»): what BAXY says before the person has said anything (the
+    welcome of every new conversation, a start-up notice) is not a turn of the conversation, and the decider was
+    trained and measured without it. It came first in the history of every first and second turn.
+    """
 
     prior = [turn for turn in (history or []) if turn.get("role") in {"user", "assistant"} and turn.get("content")]
+    prior = prior[next((index for index, turn in enumerate(prior) if turn.get("role") == "user"), len(prior)):]
     if prior and prior[-1].get("role") == "user" and prior[-1].get("content") == text:
         prior = prior[:-1]
     prior = prior[-HISTORY_TURNS:]
