@@ -2997,6 +2997,30 @@ def explorer_count_request(text: str) -> str | None:
     return match.group("extension").lstrip("*")
 
 
+# A notice asked for when a mail or a message arrives («notificarme cuando jose me envíe un correo», «let me know when
+# I get an email from Ana»): a watch over the inbox, which no operation keeps (``_clarification_intent_of``).
+_INCOMING_MESSAGE_WATCH = re.compile(
+    r"^(?:\w+\s+){0,2}?(?:avisame|avisarme|avisa|notificame|notificarme|notifica|notificar|alertame|alertarme|"
+    r"alert\s+me|notify\s+me|let\s+me\s+know|ping\s+me)\b.{0,20}?\b(?:cuando|en\s+cuanto|apenas|si|when|as\s+soon\s+as|"
+    r"if|once)\b.{0,60}\b(?:correos?|e-?mails?|mails?|mensajes?|messages?|whatsapps?)\b"
+)
+
+
+_KIND_OF_MUSIC = re.compile(
+    r"\b(?:musica|cancion|canciones|songs?|music)\s+(?:de\s+)?"
+    r"(?!(?:en|on|in|de|del|mi|mis|tu|tus|my|your|por|para|for|to|a|al|y|and|que|please|favor|porfa|ahora|now|aqui|"
+    r"here|spotify|youtube|ya|musica|music|cancion|canciones|songs?|apps?|aplicacion|player|reproductor)\b)[a-z]{3,}"
+)
+
+
+def names_a_kind_of_music(text: str) -> bool:
+    """M123 (D58, reserva es11335 «…todas las canciones de música lenta», es393 «pon una canción retro en mi
+    playlist»): music asked for with what kind it is («lenta», «retro», «hits»), not a bare «pon música» (reviewed
+    literals H0009, H0066: what to play is asked)."""
+
+    return _KIND_OF_MUSIC.search(_fold(text)) is not None
+
+
 def resolve_explicit_clarification_intent(
     text: str,
     available_operations: Iterable[str],
@@ -3062,6 +3086,11 @@ def _clarification_intent_of(
     if known_unsupported_effect_request(text, available):
         # LIMITS1677 «subí el volumen de spotify»: a known effect with no
         # operation has no field to clarify; the limit answers it.
+        return None
+    if _INCOMING_MESSAGE_WATCH.search(folded) is not None:
+        # M123 (D58, reserva es17170 «notificarme cuando jose me envíe un correo electrónico» → «¿Cuándo quieres que te
+        # notifique…?», where the isolated decider gave the limit): BAXY keeps no watch on the mailbox; a notice of a
+        # message yet to arrive has no time to ask for. The contextual decider decides it.
         return None
     if "email.send" in available and email_request_without_address(text):
         # Fase 7: a mail for a name and no address asks the address (never guesses one).
@@ -4236,6 +4265,14 @@ def streaming_service_named(text: str) -> str:
     return "netflix"
 
 
+_GENERIC_OPEN_TARGETS = frozenset(
+    {
+        "juego", "juegos", "game", "games", "app", "apps", "aplicacion", "aplicaciones", "application",
+        "applications", "programa", "programas", "program", "programs",
+    }
+)
+
+
 def near_catalog_application_candidates(
     text: str,
     application_names: Iterable[str] | ApplicationCatalogIndex,
@@ -4268,6 +4305,10 @@ def near_catalog_application_candidates(
     if not key or len(key) < 3 or len(key.split()) > 2 or not re.fullmatch(r"[a-z0-9 .+-]+", key):
         return ()
     if key in catalog.keys:
+        return ()
+    if key in _GENERIC_OPEN_TARGETS:
+        # M123 (D58, reserva es10302 «inicia el juego» → «Que hay de nuevo en la última versión» opened, «juego» two
+        # edits from «nuevo»): a kind of thing names no application; what to open is the contextual decider's.
         return ()
     scored: list[tuple[int, int, str]] = []
     for name, entry_key in catalog.entries:

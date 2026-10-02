@@ -377,7 +377,8 @@ def test_d_p19_t3_the_genre_of_the_film_just_read_is_the_deciders() -> None:
 
 
 def test_a_definition_that_names_its_subject_keeps_its_readers() -> None:
-    # «What is photosynthesis?» names what it asks about: the readers keep it (as before M83), not the decider.
+    # «What is photosynthesis?» names what it asks about: the readers keep it (as before M83), not the decider
+    # (M123: a common concept's definition, M90, is one of the readings that close before it).
     model = _Decider(decider.ContextDecision("x", "talk", (), ""))
     _turn("What is photosynthesis?", model, P19)
     assert model.decided == 0

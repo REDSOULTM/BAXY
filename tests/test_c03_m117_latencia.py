@@ -258,5 +258,7 @@ def test_the_turn_prepares_exactly_what_the_decider_is_asked(history: list[dict[
         # The decider reads the memory lines too (M114): the prepared request carries the same catalog.
         assert "memory.save" in {name for name, _ in llm.prepared[-1][2]}
     else:
-        # A first message goes through every reader first; one they prove spends no decode on a guess.
-        assert not llm.prepared and not llm.asked
+        # A first message goes through every reader first and nothing is prepared. M123 (D58): the readers' «past
+        # event» talk is no proof against the decider; it is asked once, after them, and its search stands.
+        assert not llm.prepared and len(llm.asked) == 1
+        assert result["kind"] == "action" and result["operation"] == "web.search"

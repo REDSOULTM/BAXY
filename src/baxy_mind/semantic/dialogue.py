@@ -696,7 +696,10 @@ _FEEDBACK_TALK = re.compile(
 _EMBEDDED_QUESTION = re.compile(
     r"\b(?:por\s+que|quien|quienes|donde|cuando|cuanto|cuantos|que\s+(?:paso|ocurrio|sucedio))\s+"
     r"(?:fue|fueron|es|son|era|hubo|hay|habra|sera|paso|ocurrio|sucedio|gano|ganaron|murio|empezo|termina|"
-    r"termino|esta|estan)\b"
+    r"termino|esta|estan)\b|"
+    # M123 (D58, reserva en8308 «yesterday at noontime in times square what was the protest about» → talk that made
+    # up there was no protest, where the isolated decider looked it up): the same question in English.
+    r"\b(?:what|why|who|where|when|how\s+(?:much|many))\s+(?:was|were|is|are|did|happened|will|won|died)\b"
 )
 _REACTION_TALK = re.compile(r"^(?:jaja\w*|jeje\w*|jsjs\w*|lol|xd+|wow|uf+|que\s+(?:raro|bueno|lindo|loco|risa))\b")
 # Tanda 8 «i don't really know» was looked up on the web: not knowing, said alone, tells something about the person

@@ -82,6 +82,9 @@ def test_an_opening_that_names_an_installed_application_is_no_missing_game() -> 
     games = build_game_catalog_index(())
     assert not catalog_unavailable("Would you open up Krita.org for me?", None, ["Krita"], games)
     assert catalog_unavailable("open Hollow Knight", None, ["Krita"], games)
+    # M123 (D58): an opening that names a folder, a reminder or music is no missing game; the decider reads it.
+    for text in ("abre la carpeta de proyectos", "open my reminder about the dentist", "let's play some chill music"):
+        assert not catalog_unavailable(text, None, ["Krita"], games)
 
 
 # ------------------------------------------------------------------ 3. the notification just set, taken back

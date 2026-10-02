@@ -28,6 +28,7 @@ import pytest
 from baxy_mind import llm
 from baxy_mind.__main__ import _retry_side_effect_free_turn
 from baxy_mind.llm import ConversationReplyContractError
+from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.request import INTENT_CAPABILITY, INTENT_IDENTITY, read_request
 from baxy_mind.semantic.patterns import (
     conversation_only_content_request,
@@ -86,25 +87,36 @@ def test_typing_saving_opening_or_searching_code_is_not_a_draft(text: str) -> No
     assert not conversation_only_content_request(text)
 
 
+class _DraftingDecider(_RefusingLlm):
+    """M123 (D58): the contextual decider, asked first about a draft the readers read, talks (DEV-D/F: it did on every
+    code draft; the refusal of the real run was the retired selector's)."""
+
+    def decide_in_context(self, text: str, *_args: object, **_kwargs: object) -> ContextDecision:
+        self.decided.append(text)
+        return ContextDecision(request=text, decision="talk", operations=(), question="")
+
+
 @pytest.mark.parametrize(
-    "text",
+    ("text", "decided"),
     [
-        "Escribe un ejemplo de página HTML con ecuaciones matemáticas.",
-        "write an example html page with a table please",
-        "hazme una consulta sql de ejemplo",
+        ("Escribe un ejemplo de página HTML con ecuaciones matemáticas.", True),
+        ("write an example html page with a table please", True),
+        # Code named as code is the reader's before the decider (M56: the decider's restatement of code does not
+        # stand).
+        ("hazme una consulta sql de ejemplo", False),
     ],
 )
-def test_a_drafted_piece_of_code_is_answered_never_refused(text: str) -> None:
+def test_a_drafted_piece_of_code_is_answered_never_refused(text: str, decided: bool) -> None:
     # The real run: the selector proposed a file operation, the strict checks refused it and the turn became
-    # «No escribo páginas HTML… Eso no lo hago.» after 11.5 s. The draft is decided before the model.
-    model = _RefusingLlm(proposal="filesystem.write.text")
+    # «No escribo páginas HTML… Eso no lo hago.» after 11.5 s.
+    model = _DraftingDecider(proposal="filesystem.write.text")
 
     result = _turn(text, model)
 
     assert result["kind"] == "conversation"
     assert result["effectOperations"] == []
     assert result.get("conversationKind") != "unsupported"
-    assert model.decided == []
+    assert model.decided == ([text] if decided else [])
 
 
 # ------------------------------------------------------------------ what he knows about a topic is the topic

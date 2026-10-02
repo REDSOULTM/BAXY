@@ -4,8 +4,8 @@ Evidence: a per-rule ledger of DEV-D and DEV-F replayed offline with the isolate
 prompt) as the model's output, attributing every change between the isolated decider and the product to the rule that
 made it. Each rule with breaks was narrowed to where the model is wrong; the tests use phrasings of our own.
 
-1. Long talk with no order verb the readers know (overheard speech) is read by the contextual decider; only its
-   question, when it asks, is the overheard one.
+1. Long talk with no order verb the readers know (overheard speech) asks the overheard question before the decider
+   (M123: safety exception to D58; a request said to BAXY with words of its own is not overheard).
 2. The stable-knowledge reader and the public-lookup guard disagreeing is no proof: the contextual decider decides.
 3. A rate of what BAXY just said («y eso cuánto sale por metro?») is worked out from its numbers, never searched.
 4. «¿Cómo se hace <plato>?» with the kitchen said beside it is a recipe (D35: looked up).
@@ -19,6 +19,8 @@ No test reads the machine's date or hour except through the day the person names
 from __future__ import annotations
 
 from datetime import date
+
+import pytest
 
 from baxy_mind import __main__ as sidecar
 from baxy_mind import llm as llm_module
@@ -258,7 +260,8 @@ def _turn(text: str, model: _Decider) -> dict:
 def test_the_stable_reader_and_the_lookup_guard_disagreeing_is_the_deciders() -> None:
     text = "¿cuál es la diferencia entre un mamífero y un reptil?"
     agreed = _Decider(ContextDecision(text, "talk", (), ""), public=False)
-    assert _turn(text, agreed)["kind"] == "conversation" and agreed.decisions == 0
+    # M123 (D58): a stable-knowledge reading no longer closes a turn before the decider, guard or not.
+    assert _turn(text, agreed)["kind"] == "conversation" and agreed.decisions == 1
     disagreed = _Decider(ContextDecision(text, "talk", (), ""), public=True)
     result = _turn(text, disagreed)
     assert disagreed.decisions == 1
@@ -268,14 +271,39 @@ def test_the_stable_reader_and_the_lookup_guard_disagreeing_is_the_deciders() ->
 OVERHEARD = "y entonces el vecino le dijo a mi primo que el auto había quedado en el taller toda la semana pasada"
 
 
-def test_overheard_talk_is_the_deciders_and_only_its_question_is_the_overheard_one() -> None:
-    talk = _Decider(ContextDecision(OVERHEARD, "talk", (), ""))
-    result = _turn(OVERHEARD, talk)
-    assert talk.decisions == 1 and result["kind"] == "conversation"
-    asks = _Decider(ContextDecision(OVERHEARD, "clarify", (), "¿Qué necesitas?"))
-    result = _turn(OVERHEARD, asks)
-    assert asks.decisions == 1 and result["kind"] == "clarify"
-    assert asks.unresolved == ["overheard_speech"] and result.get("preserveObjective") is False
+def test_overheard_talk_is_asked_about_before_the_decider_and_never_acted_on() -> None:
+    # M123 (safety exception to D58, the 742 reviewed literals: H0735 scheduled a notification out of a TV
+    # dialogue, nine more were answered as talk): talk addressed to someone else asks the overheard question,
+    # whatever the decider would read in it.
+    for decision in (ContextDecision(OVERHEARD, "talk", (), ""),
+                     ContextDecision(OVERHEARD, "action", ("task.create",), ""),
+                     ContextDecision(OVERHEARD, "clarify", (), "¿Qué necesitas?")):
+        model = _Decider(decision)
+        result = _turn(OVERHEARD, model)
+        assert model.decisions == 0 and result["kind"] == "clarify" and result["effectOperations"] == []
+        assert model.unresolved == ["overheard_speech"]
+
+
+def test_after_earlier_turns_overheard_talk_is_still_never_acted_on() -> None:
+    model = _Decider(ContextDecision(OVERHEARD, "action", ("task.create",), ""))
+    result = sidecar._context_decided_result(
+        {"id": "m123", "text": OVERHEARD, "history": [{"role": "user", "content": OVERHEARD}]},
+        llm=model, planner_catalog=PlannerCatalog([_tool("task.create", _schema({}, []))]), overheard=True,
+    )
+    assert result["kind"] == "clarify" and result["effectOperations"] == []
+    assert model.unresolved == ["overheard_speech"]
+
+
+@pytest.mark.parametrize("text", [
+    # M118's DEV-D/F requests (our phrasings): an order with the listener's «me», help asked, a wish to watch, a
+    # piece of writing ordered — said to BAXY, never overheard.
+    "bueno pues mira nada que hazme un ping al router de casa porque el juego online me va fatal desde esta mañana",
+    "I am bored tonight and I really need your help to search for a good sci-fi film like the ones with robots in it",
+    "I'd like to watch a documentary called Planet Earth with English subtitles on the big screen in the living room",
+    "Elabora una lista con los inventos más famosos del siglo veinte indicando quién los creó y en qué año aparecieron",
+])
+def test_a_long_request_said_to_baxy_is_not_overheard(text: str) -> None:
+    assert sidecar._unresolved_input_kind(text, ()) != "overheard_speech"
 
 
 # ------------------------------------------------------------------ 7–10. after the decider (later tandas of M118)
