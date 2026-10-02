@@ -646,3 +646,17 @@ a los errores del modelo o se retira si resta. Excepciones sólo explícitas: se
 reales) y reglas del dueño ya escritas (D35 recetas y cifras buscadas, volumen relativo sin cantidad pregunta, etc.).
 Nota de honestidad: el 98 % del decisor es sólo la decisión en DEV-E aislado; la puntuación del producto (decisión,
 argumentos y ejecución) es 76,6 % en DEV-E, así que la meta del FINAL-2 (≥ 90 %) no está cumplida.
+
+## D59 — 2026-10-02 (dueño): respuestas a las decisiones pendientes
+
+1. **BAXY se adapta al PC.** WhatsApp y Discord están instalados y con sesión: si un pedido de mensaje los encuentra
+   cerrados, BAXY los abre para dejar el borrador (nunca envía sin confirmación). Después de cada prueba se cierra lo que la
+   prueba abrió; si falta RAM se puede cerrar lo necesario (autorización 2026-09-17). Outlook no está configurado: BAXY lo dice.
+2. **Reserva:** se corrigen las 114 etiquetas de la clase B de la auditoría (D54), con registro de cada cambio y su motivo;
+   la versión anterior se conserva y las cifras se dan con ambas mientras dure la transición.
+3. **«baja las luces» sin habitación:** BAXY controla el notebook, no la casa → límite («no controlo las luces de tu casa»).
+4. **Playlist por propósito** («pon mi playlist de gym», «party songs»): buscar y reproducir música para ese propósito.
+5. **Lista nueva sin ítems:** se crea vacía y se ofrece agregar cosas.
+6. **«Avísame cuando haya noticias de X»:** límite honesto (no vigila) y ofrecer buscar ahora.
+7. **Turno no entendido sin pregunta válida:** una pregunta corta con las palabras de la persona (no un «no pude entender» fijo).
+8. **Análisis de empresas reales (FODA…):** consultar primero la empresa y escribir con lo leído (+1–2 s).
