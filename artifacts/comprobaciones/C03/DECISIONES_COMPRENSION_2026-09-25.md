@@ -714,3 +714,11 @@ VRAM 3 794 MiB · Full verde (pytest 22 427, Integración 4 020). Diferencias de
 corrida a corrida con el mismo build (v4l2) antes de atribuirlas. Fallos de DEV-E (agregado): primer turno 150/169,
 tras turno bien 98/111, tras turno fallido 12/19 — sin una causa dominante; 20 de 22 de argumentos también los falla el
 decisor aislado.
+
+## D65. Varianza de corrida a corrida y siguiente vía: full12 (2026-10-02 20:15)
+Repetición con el mismo build (v4l2 frente a v4l): DEV-F +2/−1 turnos cambian de veredicto, DEV-E +2/−0, DEV-D 0/−3;
+con D61: F 241 (v4l 239), E 248 (248), D 305 (308). Diferencias de ±3 entre rondas son ruido; DEV-E se estabiliza en
+≈ 82,9 % con los mecanismos alrededor del decisor. Siguiente vía (paso 3 del plan): `full12` = continuar `full3`
+entrenando sólo los tokens de los argumentos (la decisión fuera de la pérdida), lr bajo, datos de entrenamiento sin
+solapamiento con evaluación. Regla prerregistrada: decisión ≥ full3 − 2 en DEV-F/D/E y argumentos ≥ full3 + 5 en F+D
+sin bajar en E.
