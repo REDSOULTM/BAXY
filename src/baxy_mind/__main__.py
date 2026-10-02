@@ -214,6 +214,8 @@ from .semantic.arguments import (
     _presentation_arguments,
     _select_referenced_predecessor,
     closes_the_active_window,
+    conversation_pdf,
+    corrected_song_title,
     literal_ocr_language,
     literal_vision_prompt,
     names_spotify,
@@ -5545,6 +5547,15 @@ def _direct_arguments_result(
         arguments = _decided_arguments_alone(
             operation, str(message.get("text", "")), tool, said,
         )
+    if arguments is None and not question and operation == "document.pdf.read":
+        # M127 (DEV-C v4i C-w10-t4): the PDF named by its file name earlier in the conversation is read where that
+        # conversation said it is, never asked again.
+        named = conversation_pdf(
+            objective,
+            [str(item.get("content") or "") for item in message.get("history") or [] if isinstance(item, dict)],
+        )
+        if named is not None and validate_json_schema_instance(named, tool["function"]["parameters"]):
+            arguments = named
     if arguments is None and not question:
         # M47 (FINAL F-w09-t5, F-p02-t3): the shell sends the language the turn decision chose; the
         # objective may be the decider's restatement in the other language, so it cannot decide it.
@@ -5612,7 +5623,31 @@ def _direct_arguments_result(
         candidate = {**(arguments if isinstance(arguments, dict) else {}), "title": titled}
         if titled is not None and validate_json_schema_instance(candidate, tool["function"]["parameters"]):
             arguments, question = candidate, ""
+    if operation == "media.play.exact":
+        arguments, question = _corrected_song_arguments(person, message.get("history"), arguments, question, tool)
     return arguments, question
+
+
+def _corrected_song_arguments(
+    person: str, history: object, arguments: dict[str, Any] | None, question: str, tool: dict,
+) -> tuple[dict[str, Any] | None, str]:
+    """M127 (D58; DEV-F v4i F-w36-t2, F-w60-t2): «la otra, la de estudio / la del disco» plays the song the person asked
+    for just before (``semantic.arguments.corrected_song_title``); a title that is part of that song, or holds it, is
+    the model's and stays."""
+
+    earlier = _prior_user_texts(history, person)
+    song = corrected_song_title(person, earlier[-1], _previous_reply(history) or "") if earlier else None
+    if song is None:
+        return arguments, question
+    title = arguments.get("title") if isinstance(arguments, dict) else None
+    if isinstance(title, str) and title.strip():
+        said, kept = effect_intent._fold(song), effect_intent._fold(title)
+        if kept in said or said in kept:
+            return arguments, question
+    candidate = {**(arguments if isinstance(arguments, dict) else {}), "provider": "spotify", "title": song}
+    if not validate_json_schema_instance(candidate, tool["function"]["parameters"]):
+        return arguments, question
+    return candidate, ""
 
 
 def _prepare_turn_result(

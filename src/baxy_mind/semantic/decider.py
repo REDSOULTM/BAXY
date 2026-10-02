@@ -381,6 +381,56 @@ def _said_days(folded: str, now: datetime) -> set[tuple[int, int]]:
     return {((now + timedelta(days=offset)).day, (now + timedelta(days=offset)).month) for offset in offsets}
 
 
+# M127 (DEV-C v4i C-w10-t5 «listo recuérdemelo el día antes a las 6 de la tarde» after «La cita que aparece es el 3 de
+# octubre…», restated «Recuérdame el 2 de octubre a las 18:00 la cita del 3 de octubre.» → the person's words were the
+# objective and the reminder was titled «listo recuerdemelo el dia antes»): days the message counts before or after
+# another day («el día antes», «dos días después», «la víspera», «the day before»).
+_SAID_DAY_OFFSET = re.compile(
+    r"\b(?:(?P<count>un|una|one|a|dos|two|tres|three|\d{1,2})\s+)?(?:(?:el|the)\s+)?(?:dias?|days?)\s+"
+    r"(?P<sign>antes|despues|before|after|earlier|later)\b"
+    r"|\b(?:el\s+)?dia\s+(?P<sign2>anterior|siguiente)\b|\b(?:la\s+)?(?P<eve>vispera)\b"
+)
+_DAY_OFFSET_COUNTS = {"un": 1, "una": 1, "one": 1, "a": 1, "dos": 2, "two": 2, "tres": 3, "three": 3}
+
+
+def _day_offsets(folded_message: str) -> set[int]:
+    """The signed day counts ``folded_message`` says one day is from another (``_SAID_DAY_OFFSET``)."""
+
+    offsets: set[int] = set()
+    for found in _SAID_DAY_OFFSET.finditer(folded_message):
+        count = found.group("count")
+        days = 1 if count is None else _DAY_OFFSET_COUNTS.get(count, int(count) if count.isdecimal() else 1)
+        word = found.group("sign") or found.group("sign2") or "antes"
+        offsets.add(-days if word in {"antes", "before", "earlier", "anterior"} else days)
+    return offsets
+
+
+def _days_counted_from(dates: set[tuple[int, int]], offsets: set[int], now: datetime) -> set[tuple[int, int]]:
+    """(day, month) of each date said moved by each day count said."""
+
+    found: set[tuple[int, int]] = set()
+    for day, month in dates:
+        try:
+            base = datetime(now.year, month, day)
+        except ValueError:
+            continue
+        for offset in offsets:
+            moved = base + timedelta(days=offset)
+            found.add((moved.day, moved.month))
+    return found
+
+
+def _one_letter_dropped(said: str, word: str) -> bool:
+    """``said`` is ``word`` written with one of its letters left out («exel» / «excel»), never its first one."""
+
+    return (
+        len(said) >= 4
+        and len(word) == len(said) + 1
+        and said[0] == word[0]
+        and any(word[:index] + word[index + 1:] == said for index in range(1, len(word)))
+    )
+
+
 def _dates(folded: str) -> list[tuple[int, int, int, int]]:
     """(start, end, day, month) of each date said with its month («el 1 de octubre», «november 10th»)."""
 
@@ -409,7 +459,11 @@ def _introduced_spans(
     said_text = spelled_out(fold("\n".join(said)))
     said_words = re.findall(r"[a-z0-9]+", said_text)
     said_set = set(said_words)
-    named_words = said_words + re.findall(r"[a-z0-9]+", fold("\n".join(world)))
+    # M127 (DEV-C v4i C-p07-t2 «…parking near U Street?» → «Is there handicap parking Street?»): a name is matched
+    # against the words as written too; the chat spelling (``spelled_out``) reads that «U» as «you».
+    named_words = said_words + re.findall(r"[a-z0-9]+", fold("\n".join(said))) + re.findall(
+        r"[a-z0-9]+", fold("\n".join(world)),
+    )
     named_set = set(named_words)
     stems = {word[:4] for word in named_words}
     named_by_sound = {word.replace("y", "i") for word in named_set if len(word) >= 4}
@@ -421,6 +475,8 @@ def _introduced_spans(
     said_clocks = {(c.hour % 12) * 60 + c.minute for line in said for c in spoken_clocks(fold(line))}
     said_dates = {(day, month) for line in said for _, _, day, month in _dates(fold(line))}
     said_dates |= _said_days(said_text, now)
+    # M127 (C-w10-t5): «el día antes» of a day said is said, as a clock less a duration said is (``derived`` below).
+    said_dates |= _days_counted_from(said_dates, _day_offsets(fold(said[0]) if said else ""), now)
 
     spans: list[tuple[int, int, str]] = []
     covered: list[tuple[int, int]] = []
@@ -499,6 +555,13 @@ def _introduced_spans(
         if len(bare) >= 4 and any(_one_transposition(bare, said_word) for said_word in said_set):
             # M111 (DEV-F v4d F-s003 «abreme el wrod» restated «Abre Word.» → asked which application): two letters
             # swapped are the same word mistyped or misheard (owner rule 2026-09-19: BAXY fixes what was said wrong).
+            continue
+        if not re.search(r"(?i)\b(?:a|al|para|con|to|for|with)$", lead) and any(
+            _one_letter_dropped(said_word, bare) for said_word in said_set
+        ):
+            # M127 (DEV-C v4i C-w16-t1 «regaleme el exel abierto» restated «Abre Excel.» → «¿Cuál es el nombre exacto de
+            # la aplicación…?»): a word said with one letter left out is the name it misses it from (same owner rule).
+            # Never a person addressed («escríbele a Marta» for «a mara» is someone else).
             continue
         # «Ñuñoa» for «ñuñoa»: the name continues a said name through «de/del».
         back = index - 1

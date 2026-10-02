@@ -236,8 +236,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # D59.7 datos
 # M125
 # M124 regresiones v4i
+# M127
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "7f8c73234057775db49093418f2b52028ca83813cbbfaf676b9a89e0d875950c"
+    "3a2bdeefe797935942b604709adeefbeb022c7bcb8b0170fdcbbfdcc7961f670"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
