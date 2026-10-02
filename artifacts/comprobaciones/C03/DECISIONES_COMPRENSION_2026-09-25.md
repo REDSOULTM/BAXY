@@ -704,3 +704,13 @@ guion 52/60 + 4 por revisar (t36 Steam «biblioteca» no encontrada: inestable c
 MiB. Lastre de decisión frente al decisor aislado: DEV-E 41 → 36 (11 cambiadas después, mayormente D35; 14 el decisor
 de la App escribió otra cosa; 10 lectores de primer turno), DEV-F 20, DEV-D 12. Siguiente: M131 (lectores de primer
 turno sin arreglos esperan al decisor) y M130 (D61b) a la ronda v4l.
+
+## D64. v4l medido (main aa8c94a5: M130 D61b, M131 búsqueda de primer turno espera al decisor) (2026-10-02 19:05)
+Con D61 (`--d35 --accept`): DEV-F 239/280 = 85,4 % (v4k 242; p50 2,83 s) · DEV-E 248/299 = 82,9 % (v4k 246; p50
+2,60 s) · DEV-D 308/332 = 92,8 % (v4k 309; p50 2,00 s) · reserva 89,9 / 93,9 % (0/0) · 742 y capa A sin cambios ·
+DEV-C 257/301 · held-out 30/30 · guion 49/60 + 7 por revisar (16, 17 y 54 pasan de bien a revisar con respuestas
+correctas a la vista; Steam t36/t38/t42 falla en v4k y v4l: Steam arranca en frío porque cada corrida lo cierra) ·
+VRAM 3 794 MiB · Full verde (pytest 22 427, Integración 4 020). Diferencias de ±3 entre rondas: se mide la varianza de
+corrida a corrida con el mismo build (v4l2) antes de atribuirlas. Fallos de DEV-E (agregado): primer turno 150/169,
+tras turno bien 98/111, tras turno fallido 12/19 — sin una causa dominante; 20 de 22 de argumentos también los falla el
+decisor aislado.
