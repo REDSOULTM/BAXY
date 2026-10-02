@@ -25,6 +25,166 @@ internal static class ObservedResponseLiterals
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100));
     }
 
+    private static readonly Regex IdentifierToken = new(@"[\w-]+(?:[._][\w-]+)+", RegexOptions.CultureInvariant);
+
+    // What a result says about itself, never what it observed (twin of the keys llm._observed_identifier_tokens skips).
+    private static readonly HashSet<string> NotObservedKeys = new(StringComparer.Ordinal)
+    {
+        "operation", "operations", "authority", "windowId", "endpointIdHash",
+    };
+
+    // A mission step that is itself the state read (_observed_maps_from_situation).
+    private static readonly string[] StepStateKeys = ["utc", "muted", "level", "online"];
+
+    /// <summary>
+    /// M124 (conv-v4i t59 «pues investigala dime si tiene buena o malas reseñas»): twin of the mind's
+    /// llm._observed_identifier_tokens (A7 E4). An identifier written inside an observed value — the publisher
+    /// «levelup.com» of a Google News result's snippet, a file name inside a window title — is what was seen, not an
+    /// internal code. The mind exempted it and published «… levelup.com también la llama una de las mejores
+    /// adaptaciones de videojuegos.»; this twin refused it as internal_code and, a verified search having no floor,
+    /// the turn ended in ⚠. Only the complete observed token is blanked, for the code-shape checks alone.
+    /// </summary>
+    internal static string WithoutObservedIdentifiers(string text, string source)
+    {
+        HashSet<string> observed = ObservedIdentifierTokens(source);
+        return observed.Count == 0 || string.IsNullOrEmpty(text)
+            ? text
+            : IdentifierToken.Replace(text, match => observed.Contains(match.Value) ? string.Empty : match.Value);
+    }
+
+    private static HashSet<string> ObservedIdentifierTokens(string source)
+    {
+        var tokens = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (string.IsNullOrWhiteSpace(source) || !source.TrimStart().StartsWith('{'))
+        {
+            return tokens;
+        }
+
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(source);
+            JsonElement root = document.RootElement;
+            if (root.ValueKind != JsonValueKind.Object)
+            {
+                return tokens;
+            }
+
+            // _merged_observed: the result's own observation, then each mission step's; a later key replaces one.
+            var merged = new Dictionary<string, JsonElement>(StringComparer.Ordinal);
+            var documents = new List<JsonDocument>();
+            try
+            {
+                if (root.TryGetProperty("observed", out JsonElement observed) && observed.ValueKind == JsonValueKind.Object)
+                {
+                    Merge(observed, merged);
+                }
+
+                if (root.TryGetProperty("steps", out JsonElement steps) && steps.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (JsonElement step in steps.EnumerateArray())
+                    {
+                        if (step.ValueKind != JsonValueKind.String
+                            || step.GetString() is not { } raw || !raw.TrimStart().StartsWith('{'))
+                        {
+                            continue;
+                        }
+
+                        JsonDocument parsed;
+                        try
+                        {
+                            parsed = JsonDocument.Parse(raw);
+                        }
+                        catch (JsonException)
+                        {
+                            continue;
+                        }
+
+                        documents.Add(parsed);
+                        JsonElement stepRoot = parsed.RootElement;
+                        if (stepRoot.ValueKind != JsonValueKind.Object)
+                        {
+                            continue;
+                        }
+
+                        if (stepRoot.TryGetProperty("observed", out JsonElement nested)
+                            && nested.ValueKind == JsonValueKind.Object)
+                        {
+                            Merge(nested, merged);
+                        }
+                        else if (StepStateKeys.Any(key => stepRoot.TryGetProperty(key, out _)))
+                        {
+                            Merge(stepRoot, merged);
+                        }
+                    }
+                }
+
+                foreach ((string key, JsonElement value) in merged)
+                {
+                    CollectIdentifiers(value, key, 0, tokens);
+                }
+            }
+            finally
+            {
+                foreach (JsonDocument parsed in documents)
+                {
+                    parsed.Dispose();
+                }
+            }
+
+            if (root.TryGetProperty("operation", out JsonElement operation) && operation.ValueKind == JsonValueKind.String)
+            {
+                tokens.Remove(operation.GetString() ?? string.Empty);
+            }
+        }
+        catch (JsonException)
+        {
+            // Legacy prose, malformed facts and dialogue grant no exemption.
+        }
+
+        return tokens;
+    }
+
+    private static void Merge(JsonElement map, Dictionary<string, JsonElement> merged)
+    {
+        foreach (JsonProperty property in map.EnumerateObject())
+        {
+            merged[property.Name] = property.Value;
+        }
+    }
+
+    private static void CollectIdentifiers(JsonElement value, string key, int depth, HashSet<string> tokens)
+    {
+        if (depth > 16 || NotObservedKeys.Contains(key))
+        {
+            return;
+        }
+
+        switch (value.ValueKind)
+        {
+            case JsonValueKind.String:
+                foreach (Match token in IdentifierToken.Matches(value.GetString() ?? string.Empty))
+                {
+                    tokens.Add(token.Value);
+                }
+
+                break;
+            case JsonValueKind.Object:
+                foreach (JsonProperty property in value.EnumerateObject())
+                {
+                    CollectIdentifiers(property.Value, property.Name, depth + 1, tokens);
+                }
+
+                break;
+            case JsonValueKind.Array:
+                foreach (JsonElement child in value.EnumerateArray())
+                {
+                    CollectIdentifiers(child, key, depth + 1, tokens);
+                }
+
+                break;
+        }
+    }
+
     private static void CollectSource(string source, HashSet<string> names, int depth)
     {
         if (depth > 8)

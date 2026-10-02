@@ -17,7 +17,7 @@ from .catalog import ApplicationCatalogIndex, GameCatalogIndex, build_applicatio
 from .dialogue import _history_has_pending_clarification, _previous_user_request, read_slot, retracts_the_last_effect
 from .grammar import ARITHMETIC_EXPRESSION, SPOKEN_NUMBER, past_or_hypothetical_message, spoken_number_request
 from .intent import EffectIntent
-from .patterns import conversation_only_content_request, echo_mode_request
+from .patterns import chat_read_request, conversation_only_content_request, echo_mode_request
 from .request import (
     INTENT_AMBIGUOUS_ACTION,
     INTENT_CAPABILITY,
@@ -765,7 +765,14 @@ def stable_no_effect_preempts(objective: str) -> bool:
       * the parrot mode («di lo mismo que yo hasta que te avise», uso real tanda 5): a known contract with no
         operation, the same catalog fact the known-limit reader states;
       * code asked for («hazme una consulta sql de ejemplo»): the decider's restatement of it does not stand (M56,
-        v3c-final F-w14-t1) and a draft refused was the real run of uso real tanda 6.
+        v3c-final F-w14-t1) and a draft refused was the real run of uso real tanda 6;
+      * M124 (layer A, owner's real log log:38): what someone wrote in a chat («qué fue lo último que me dijo X en
+        wsp», ``chat_read_request``): no operation reads a chat, and the decider located the chat instead;
+      * M124 (owner's mother 2026-09-21, log:104 «hazme un curriculum», log:106 «formato de curriculum en word»): a
+        piece of writing asked for (a CV, a letter, an official letter, a template, a poem…, ``_WRITTEN_PIECE``) is
+        written in the conversation; the decider created an Office document with nothing written in it. A list or a
+        table asked for stays the decider's (reserve es11162 «quiero eliminar manzanas de la lista», es12310 «dame la
+        lista de billetes de tren…» were the person's list and a search).
     It also keeps the readings where it and the decider agree on every measured turn (reserve and DEV-D/F: no fix, no
     break; the decider talked), so they spend no decode and the reviewed literals keep their decision: a question about
     BAXY himself («quién eres»), a closed factoid or a sum («cuánto es 25 por 4»), a joke asked for, and the definition
@@ -787,11 +794,20 @@ def stable_no_effect_preempts(objective: str) -> bool:
         or _personal_checkin_statement(objective)
         or echo_mode_request(objective)
         or (conversation_only_content_request(objective) and asks_for_code(objective))
+        or chat_read_request(folded)
+        or (conversation_only_content_request(objective) and _WRITTEN_PIECE.search(folded) is not None)
         or read_request(objective).has(INTENT_IDENTITY)
         or _general_factoid_prompt(objective)
         or re.search(r"\b(?:chistes?|jokes?)\b", folded) is not None
         or _KIND_DEFINITION.match(folded) is not None
     )
+
+
+# M124: the pieces of writing a content request names (``conversation_only_content_request``), never a list or a table.
+_WRITTEN_PIECE = re.compile(
+    r"\b(?:curriculums?|cv|carta|cartas|oficio|poema|poemas|cuento|cuentos|relato|ensayo|discurso|queja|reclamo|"
+    r"reclamacion|plantilla|cover\s+letter|(?:a|my|un|mi)\s+resume|essay|poem|letter|template|complaint)\b"
+)
 
 
 # «qué es un agujero negro», «what is a caftan»: the definition of a kind of thing, with nothing of the person's or of
