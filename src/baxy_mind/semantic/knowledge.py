@@ -52,6 +52,13 @@ class ReferenceLookup:
 _CULINARY_ES = r"recetas?|ingredientes?|cocina|cocinar|cocino|cocinando|hornear|horneo|horno"
 _CULINARY_EN = r"recipes?|ingredients?|kitchen|cook|cooking|bake|baking|oven"
 _CULINARY = re.compile(rf"\b(?:{_CULINARY_ES}|{_CULINARY_EN})\b")
+# M118 (D58 with D35, DEV-F F-w31-t1 «como se hace el pebre? lo quiero hacer pal asado…», F-w34-t1 «¿cómo se hace una
+# tortilla de patatas para cuatro personas? Con cebolla…»): the public-lookup guard searched these and the contextual
+# decider talks them; a meal or an ingredient said beside the dish says the kitchen too, for the recipe reader alone.
+_FOOD_CUE = re.compile(
+    r"\b(?:asado|parrilla|cebollas?|ajos?|huevos?|harina|patatas|papas|tomates?|aceite|mantequilla|azucar|"
+    r"barbecue|onions?|garlic|eggs?|flour|butter)\b"
+)
 _ENGLISH_CULINARY = re.compile(rf"\b(?:{_CULINARY_EN})\b")
 
 _ARTICLE = r"(?:(?:el|la|los|las|un|una|unos|unas|del|al|a|an|the|some|my|mi|mis|unas?\s+ricas?)\s+)"
@@ -71,6 +78,9 @@ _RECIPE_DISH = (
                rf"(?:(?:hacer|preparar|making|make)\s+)?{_ARTICLE}?{_DISH}"),
     re.compile(rf"\b(?:ingredientes?|ingredients?)\b(?:\s+[a-z]+){{0,3}}?\s+(?:de|del|para|pa|for|of|in)\s+"
                rf"(?:(?:hacer|preparar|making|make)\s+)?{_ARTICLE}?{_DISH}"),
+    # M118: «¿cómo se hace el pebre?», «how do you make shepherd's pie», with the kitchen said beside it.
+    re.compile(rf"\b(?:como\s+se\s+(?:hace|hacen|prepara|preparan)|how\s+(?:do\s+(?:you|i)|to)\s+(?:make|prepare))\s+"
+               rf"{_ARTICLE}?{_DISH}"),
     re.compile(rf"\b(?:hacer|hago|hacemos|preparar|preparo|cocinar|cocino|hornear|horneo|make|making|cook|cooking|"
                rf"bake|baking|prepare)\s+{_ARTICLE}?{_DISH}"),
     re.compile(rf"\b(?:ingredientes?|ingredients?)\b(?:\s+[a-z]+){{0,2}}?\s+(?:lleva|llevan|tiene|tienen|necesita|"
@@ -163,7 +173,7 @@ def _language(folded: str, english_cue: bool) -> str:
 
 
 def _recipe(folded: str) -> ReferenceLookup | None:
-    if _CULINARY.search(folded) is None:
+    if _CULINARY.search(folded) is None and _FOOD_CUE.search(folded) is None:
         return None
     for pattern in _RECIPE_DISH:
         for found in pattern.finditer(folded):
@@ -404,7 +414,7 @@ def reference_lookup(text: str, prior_requests: Iterable[str] = (), last_reply: 
     # for is written by the model; nothing in it is a dish, a work or a ranking to look up.
     if asks_for_code(text):
         return None
-    direct = _direct(text) or kitchen_quantity(text, prior_requests, last_reply) or figure_lookup(text)
+    direct = _direct(text) or kitchen_quantity(text, prior_requests, last_reply) or figure_lookup(text, last_reply)
     if direct is not None:
         return direct
     earlier = [str(request) for request in prior_requests if str(request or "").strip()]
@@ -604,7 +614,31 @@ _FIGURE_FRAME_WORDS = frozenset({
 } | {word for word in re.findall(r"[a-z]+", _FIGURE_NOUN)})
 
 
-def figure_lookup(text: str) -> ReferenceLookup | None:
+_POINTS_BACK = re.compile(r"\b(?:eso|esto|that|this)\b")
+# A rate of it: per metre, per person, each.
+_PER_UNIT = re.compile(
+    r"\b(?:por|per|cada|each|a)\s+(?:(?:un|una|el|la|a|an)\s+)?"
+    r"(?:metros?|m2|kilos?|kg|gramos?|litros?|personas?|unidad(?:es)?|piezas?|horas?|dias?|semanas?|mes(?:es)?|anos?|"
+    r"cuotas?|meters?|metres?|square|feet|foot|pounds?|lbs?|persons?|people|heads?|units?|pieces?|hours?|days?|weeks?|"
+    r"months?|years?|items?)\b"
+)
+
+
+def rate_of_what_was_said(text: str, last_reply: str) -> bool:
+    """M118 (D58, DEV-F F-w24-t4 «y eso cuanto sale por metro?» after «Pisos laminados para 42 m²: total 4.830.000
+    pesos…» → looked up as «eso cuanto sale por metro»): a rate of what BAXY just said, pointed at, is computed from
+    the numbers it said (D35: calculations are worked out, not searched); the decider's answer stands."""
+
+    folded = spelled_out(fold(text))
+    return (
+        asks_a_figure(text)
+        and _POINTS_BACK.search(folded) is not None
+        and _PER_UNIT.search(folded) is not None
+        and bool(numbers_in([spelled_out(fold(last_reply or ""))]))
+    )
+
+
+def figure_lookup(text: str, last_reply: str = "") -> ReferenceLookup | None:
     """A figure of the world the request asks (see above), with the query that looks it up; None otherwise."""
 
     folded = spelled_out(fold(text))
@@ -619,6 +653,8 @@ def figure_lookup(text: str) -> ReferenceLookup | None:
     # The address before the question («olly, how long…») is no word of it.
     clause = _kitchen_clause(folded)
     if _NOT_THE_WORLDS_FIGURE.search(clause) is not None or not any(len(word) >= 3 and word not in _FIGURE_FRAME_WORDS for word in re.findall(r"[a-z]+", clause)):
+        return None
+    if rate_of_what_was_said(text, last_reply):
         return None
     language = _language(folded, re.search(r"\b(?:how|what|when|which|is|are|the)\b", folded) is not None)
     return ReferenceLookup("figure", clause, clause, language)

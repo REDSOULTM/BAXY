@@ -610,6 +610,44 @@ def faithful_request(
     return Fidelity(" ".join(str(text or "").split()), introduced, "person")
 
 
+# Words that carry no content of their own: a restatement may add or drop them freely.
+_FUNCTION_WORDS = frozenset({
+    "para", "pero", "porque", "como", "este", "esta", "esto", "estos", "estas", "ese", "esa", "eso", "unos", "unas",
+    "sobre", "desde", "hasta", "donde", "cuando", "tambien", "solo", "todo", "toda", "todos", "todas", "mismo",
+    "with", "that", "this", "these", "those", "from", "have", "will", "your", "about", "into", "then", "than",
+    "there", "their", "they", "what", "when", "which", "would", "could", "should",
+})
+
+
+def said_in_other_words(value: str, said: Iterable[str], *, now: datetime | None = None) -> bool:
+    """M118 (D58, DEV-F F-w28-t4 «ponme algo de lo-fi pa concentrarme» → query «lo-fi para concentrarse», F-w01-t4 the
+    draft «…con 10 minutos de retraso porque tengo dentista antes», F-s022 details «…porque el viaje a Cancún…» after
+    «el trip a Cancún»): a free text the decider wrote is what was said, in its own words, when it brings no number,
+    unit, date, clock time or name nobody said (``_introduced_spans``, the restatement's own check) and at least three
+    in four of its content words share their stem with a word said. A literal check dropped these values and the turn
+    asked again for what the person had given; the decider is never overruled on words alone."""
+
+    text = " ".join(str(value or "").split())
+    lines = [str(line or "") for line in said]
+    if not text or not any(line.strip() for line in lines):
+        return False
+    said_text = spelled_out(fold("\n".join(lines)))
+    if any(
+        # What is written as it was said (an address «192.168.1.64», «a las 11:30» quoted from BAXY) is said.
+        " ".join(spelled_out(fold(what)).split()) not in " ".join(said_text.split())
+        for _, _, what in _introduced_spans(text, lines, [], now or datetime.now())
+    ):
+        return False
+    said_stems = {word[:5] for word in re.findall(r"[a-z0-9]+", said_text)}
+    content = [
+        word for word in re.findall(r"[a-z]+", spelled_out(fold(text)))
+        if len(word) >= 4 and word not in _FUNCTION_WORDS
+    ]
+    if not content:
+        return False
+    return 4 * sum(word[:5] in said_stems for word in content) >= 3 * len(content)
+
+
 def _conversation_names(line: str) -> list[str]:
     """The names a line writes: runs of capitalised words that do not open a sentence, joined by «de/del/of…»."""
 
