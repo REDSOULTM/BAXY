@@ -689,3 +689,9 @@ DEV-F 238/280 = 85,0 % (v4i 239; p50 2,60 s) · DEV-E 236/299 = 78,9 % (v4i 235;
 DEV-C 253/301. A/B M125 (53 min GPU): ni los flags del servidor ni el saludo explican que el decisor de la App
 escriba otra cosa (cambian ≤ 8 decisiones por conjunto, neto ≈ 0). M128: 11 de 19 de esas divergencias en F/D se
 deben a turnos previos que fallaron en esta máquina (el historial vivido no trae el dato que el oro da por sabido).
+
+## D61b. Hora sin mañana/tarde en un día nombrado (dueño, 2026-10-02 ~13:00)
+M129 aplicó D61 al pie de la letra y «agendá una reunión el viernes a las 3» quedaba a las 03:00. Decisión del dueño:
+en un día que la persona nombra (mañana, el viernes, una fecha), 1–6 es la tarde, 7–11 la mañana y 12 el mediodía;
+hoy sigue D61 (la próxima vez que llega) y una hora ya pasada que rueda sola a mañana también. Lo dicho («de la
+madrugada», «am», 24 h) manda siempre. Mecanismo M130 (`_canonical_due_utc`), integrado tras v4k.
