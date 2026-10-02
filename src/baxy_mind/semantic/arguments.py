@@ -11,7 +11,7 @@ from __future__ import annotations
 import re
 import unicodedata
 from datetime import date, datetime, time as datetime_time, timedelta, timezone
-from typing import Any
+from typing import Any, Iterable
 from urllib.parse import urlencode, urlsplit
 
 from .. import effect_intent
@@ -2544,6 +2544,32 @@ _ARTIST_AFTER_TITLE = re.compile(
 )
 
 
+def corrected_song_title(message: str, previous_request: str, previous_reply: str = "") -> str | None:
+    """M127 (DEV-F v4i F-w36-t2 «no po esa no, la otra, la de estudio» after «ponme llueve sobre la ciudad de los
+    bunkers…» → Spotify looked for «canción de estudio»; F-w60-t2 «no esa no la otra la del disco» after «pone el baile
+    de los que sobran» → «la canción del disco de los que sobran»): a message that asks for the studio or album version
+    and names no song is the song the person asked to play just before; that song, as BAXY's last reply quoted it when
+    the quote is part of it, is the title. None when the message names a song itself, asks for another version (live,
+    acoustic…), or the request before it named none."""
+
+    folded = _fold_text(message)
+    if (
+        not re.search(_ALBUM_VERSION, folded)
+        or re.search(_OTHER_VERSION, folded)
+        or _explicit_arguments_from_evidence("media.play.exact", message) is not None
+        or _explicit_live_media_query_arguments(message) is not None
+    ):
+        return None
+    before = _explicit_arguments_from_evidence("media.play.exact", previous_request) if previous_request else None
+    title = before.get("title") if isinstance(before, dict) else None
+    if not isinstance(title, str) or not title.strip():
+        return None
+    for quoted in re.findall(r"[«“\"]([^»”\"]{2,200})[»”\"]", previous_reply or ""):
+        if _fold_text(quoted).strip() and _fold_text(quoted).strip() in _fold_text(title):
+            return quoted.strip()
+    return title.strip()
+
+
 # M111 (DEV-F v4d F-s020 «… creo que se llamaba cotizacion algo»): the name a file is said to have, up to four words,
 # without the «algo» / «something» that leaves its end open.
 _SAID_FILE_NAME = re.compile(
@@ -2580,6 +2606,31 @@ _KNOWN_FOLDER_NAMED = (
     ("documents", r"\b(?:documents|documentos)\b"),
     ("downloads", r"\b(?:downloads|descargas)\b"),
 )
+
+
+_PDF_FILE_NAME = re.compile(r"[«“\"']?(?P<name>[^\s«»“”\"'\\/:*?<>|]{1,200}\.pdf)\b[»”\"']?", re.IGNORECASE)
+
+
+def conversation_pdf(request: str, conversation: Iterable[str]) -> dict[str, str] | None:
+    """M127 (DEV-C v4i C-w10-t4 «digame que fecha sale la cita ahi en ese papel» after «Encontré dos en Descargas:
+    «autorizacion_eps_0925.pdf» y …» and «ya abrí «autorizacion_eps_0925.pdf»», restated «Lee el PDF
+    «autorizacion_eps_0925.pdf» de Documentos…» → «¿En qué carpeta se encuentra el archivo…?»): the one PDF the request
+    names by its file name, written as such earlier in the conversation, is read in the known folder the newest line
+    that wrote it with one, or in every known folder when no line did (PDF1689). None otherwise."""
+
+    names = {found.group("name") for found in _PDF_FILE_NAME.finditer(request)}
+    if len(names) != 1:
+        return None
+    name = names.pop()
+    key = effect_intent._fold(name)
+    lines = [effect_intent._fold(line) for line in conversation if key in effect_intent._fold(line)]
+    if not lines:
+        return None
+    for line in reversed(lines):
+        folders = {folder for folder, pattern in _KNOWN_FOLDER_NAMED if re.search(pattern, line)}
+        if len(folders) == 1:
+            return {"fileName": name, "folder": folders.pop()}
+    return {"fileName": name, "folder": "all_known"}
 
 
 _SEEK_FORWARD = r"\b(?:adelant\w*|avanz\w*|forward|ahead|skip\s+ahead|fast[\s-]?forward)\b"
