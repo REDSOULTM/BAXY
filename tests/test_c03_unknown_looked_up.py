@@ -11,6 +11,7 @@ import pytest
 
 from baxy_mind.__main__ import _prepare_turn_result
 from baxy_mind.planner import PlannerCatalog
+from baxy_mind.semantic.decider import ContextDecision
 from test_c03_pointless_questions import _tool
 
 
@@ -25,6 +26,12 @@ class _KnowledgeLlm:
             "effect_count": "zero", "effect_operations": [], "effect_verification": "not_applicable",
             "response_language": "es",
         }
+
+    @staticmethod
+    def decide_in_context(text: str, *_args: object, **_kwargs: object) -> ContextDecision:
+        # M123 (D58): a stable reading that waits for the contextual decider («¿qué es el zorbing?») is kept when it
+        # talks.
+        return ContextDecision(request=text, decision="talk", operations=(), question="")
 
     def chat(self, *_args: object, **_kwargs: object) -> tuple[str, list[object]]:
         return self.reply, []

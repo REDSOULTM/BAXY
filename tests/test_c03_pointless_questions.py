@@ -334,7 +334,9 @@ def test_named_music_is_played_not_asked_for(text: str, query: str) -> None:
         "play song",
         "pon mi música favorita ahora",
         "play my favorite music",
-        "pon una canción para dormir",
+        # D59.4 (owner, 2026-10-02): «pon una canción para dormir» names its purpose; it is music for sleeping,
+        # searched and played (test_c03_m121_d59_b). A purpose said with no music («pon algo para dormir») still asks.
+        "pon algo para dormir",
         "pon la canción que me gusta",
         "play a new song",
     ],

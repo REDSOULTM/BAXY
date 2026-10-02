@@ -37,7 +37,7 @@ from .patterns import (
     reassurance_statement,
     reported_own_schedule,
 )
-from .web import visual_content_request
+from .web import asks_to_watch_the_news, visual_content_request
 
 
 # Un acto social completo no pide nada: saludar, despedirse, agradecer o
@@ -719,6 +719,89 @@ def _closed_unsupported_request(objective: str) -> bool:
     )
 
 
+def _component_description(folded: str) -> bool:
+    """«describe el disco duro del ordenador», «tell me about the graphics card»: what a kind of PC part is, not the
+    state of this PC's (no «actual», «uso», «libre», «cuánto»)."""
+
+    return re.match(
+        (
+            r"^[¿?¡!\s]*(?:describe(?:\s+about)?|describeme|explain|"
+            r"tell\s+me\s+about)\s+"
+            r"(?:(?:el|la|un|una|the|a)\s+)?"
+            r"(?:(?:computer|pc|ordenador|computador)\s+)?"
+            r"(?:disco\s+duro|hard\s+(?:drive|disk)|ssd|hdd|"
+            r"procesador|processor|cpu|"
+            r"tarjeta\s+grafica|graphics\s+card|gpu|memoria\s+ram|ram)\b"
+        ),
+        folded,
+        re.IGNORECASE,
+    ) is not None and not effect_intent._has(
+        folded,
+        (
+            r"\b(?:actual|actualmente|ahora|current|currently|right\s+now|"
+            r"estado|status|uso|usage|usando|using|libre|free|capacidad|capacity|"
+            r"temperatura|temperature|cuanto|cuanta|how\s+much)\b"
+        ),
+    )
+
+
+def stable_no_effect_preempts(objective: str) -> bool:
+    """M123 (D58): whether a ``stable_no_effect`` reading closes the turn before the contextual decider.
+
+    Measured against the isolated decider on the reserve (2 757 first messages), the reading as a whole fixed 11 turns
+    and broke 29 (33 with the v2 labels, D59): «what is the stock price of hdfc», «what is on my to do list today»,
+    «cómo se está fuera hoy», «recordatorio de reunión», «no quiero ninguna alarma» were closed as talk or as a limit
+    where the decider looked up, listed, asked or cancelled; on DEV-D/F it changed nothing. It keeps the turn only
+    where it is certain and the decider is wrong in a known way:
+      * an explicit «don't do anything» frame or a prohibition («no cierres Chrome», «do not talk»): no effect may
+        come of it (safety; the readers that read it are ``explicit_non_action_frame`` and
+        ``explicit_negative_constraint``);
+      * a description of a kind of PC part («describe el disco duro del ordenador»): the decider read this PC's
+        status (reserva en14414, es14414);
+      * the person telling how they are or what they like («oye olly me gusta la música de sigur ros»): the decider
+        played it (reserva en4550, es4550);
+      * a plain assent to the yes/no question about such a request (owner's mother 2026-09-21: «sí» was asked the
+        same question again);
+      * the parrot mode («di lo mismo que yo hasta que te avise», uso real tanda 5): a known contract with no
+        operation, the same catalog fact the known-limit reader states;
+      * code asked for («hazme una consulta sql de ejemplo»): the decider's restatement of it does not stand (M56,
+        v3c-final F-w14-t1) and a draft refused was the real run of uso real tanda 6.
+    It also keeps the readings where it and the decider agree on every measured turn (reserve and DEV-D/F: no fix, no
+    break; the decider talked), so they spend no decode and the reviewed literals keep their decision: a question about
+    BAXY himself («quién eres»), a closed factoid or a sum («cuánto es 25 por 4»), a joke asked for, and the definition
+    of a kind of thing («qué es un agujero negro», «what is a caftan»; never «what is the stock price…», «what is my
+    next reminder», which the decider looked up or read).
+    Everything else it reads is decided by the decider first; the reading is kept only when the decider makes the same
+    decision (its «talk», or its «limit» for a limit), and still keeps the effect readers off the turns it closes
+    (``__main__``: ``stable_awaits_decider``, ``stable_no_effect_is_closed``).
+    """
+
+    folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
+    return bool(
+        "aclaracion confiable del usuario:" in effect_intent._fold(objective)
+        or effect_intent.explicit_non_action_frame(objective)
+        or effect_intent.explicit_negative_constraint(objective)
+        # A reassurance («no te preocupes si se abrió steam», reviewed literal H0059) asks for nothing.
+        or effect_intent.reassurance_statement(objective)
+        or _component_description(folded)
+        or _personal_checkin_statement(objective)
+        or echo_mode_request(objective)
+        or (conversation_only_content_request(objective) and asks_for_code(objective))
+        or read_request(objective).has(INTENT_IDENTITY)
+        or _general_factoid_prompt(objective)
+        or re.search(r"\b(?:chistes?|jokes?)\b", folded) is not None
+        or _KIND_DEFINITION.match(folded) is not None
+    )
+
+
+# «qué es un agujero negro», «what is a caftan»: the definition of a kind of thing, with nothing of the person's or of
+# the moment in it (M123: the definition reader's seven breaks all asked «what is the/my…» or «what are…»).
+_KIND_DEFINITION = re.compile(
+    r"^[¿?¡!\s]*(?:(?:oye|hey|ok\s+google|alexa|olly|baxy)[\s,]+)?(?:que\s+es\s+(?:un|una)|what\s+is\s+(?:a|an)|"
+    r"what's\s+(?:a|an))\s+(?!.*\b(?:mi|mis|my|hoy|today|ahora|now|actual|current|proximo|proxima|next)\b)[a-z]"
+)
+
+
 def stable_no_effect(
     objective: str,
     history: object = None,
@@ -788,26 +871,7 @@ def stable_no_effect(
             r"sonando|playing|usando|using)\b"
         ),
     )
-    component_description = re.match(
-        (
-            r"^[¿?¡!\s]*(?:describe(?:\s+about)?|describeme|explain|"
-            r"tell\s+me\s+about)\s+"
-            r"(?:(?:el|la|un|una|the|a)\s+)?"
-            r"(?:(?:computer|pc|ordenador|computador)\s+)?"
-            r"(?:disco\s+duro|hard\s+(?:drive|disk)|ssd|hdd|"
-            r"procesador|processor|cpu|"
-            r"tarjeta\s+grafica|graphics\s+card|gpu|memoria\s+ram|ram)\b"
-        ),
-        folded,
-        re.IGNORECASE,
-    ) is not None and not effect_intent._has(
-        folded,
-        (
-            r"\b(?:actual|actualmente|ahora|current|currently|right\s+now|"
-            r"estado|status|uso|usage|usando|using|libre|free|capacidad|capacity|"
-            r"temperatura|temperature|cuanto|cuanta|how\s+much)\b"
-        ),
-    )
+    component_description = _component_description(folded)
     geographic_factoid = (
         re.match(
             (
@@ -1261,8 +1325,24 @@ def catalog_unavailable(
         )
         is not None
     )
+    # M123 (D58; reserve against the isolated decider, v2 labels: fix 2, break 8): «open bad religion folder», «abre la
+    # carpeta de aplicaciones», «abrir un recordatorio sobre…», «open media play jingle bells», «let's play music hits»
+    # were closed as a game missing from the library. An opening that names a folder, a reminder, music or another
+    # thing BAXY serves is no game; the contextual decider reads it. A bare name stays the catalog's limit (reviewed
+    # literal H0406 «Abre una app que no existe llamada AplicacionFantasmaXYZ»).
+    names_something_served = (
+        re.search(
+            r"\b(?:carpetas?|folders?|archivos?|files?|documentos?|documents?|recordatorios?|reminders?|alarmas?|"
+            r"alarms?|notas?|notes?|music|musica|songs?|cancion|canciones|videos?|radio|podcasts?|playlists?|media|"
+            r"audiolibros?|audiobooks?|stock|precio|price)\b",
+            folded,
+            re.IGNORECASE,
+        )
+        is not None
+    )
     unavailable_game = (
         game_request
+        and not names_something_served
         and effect_intent._authenticated_game_target(folded, game_catalog) is None
         # M113 (DEV-F s035 «Could you open up Paint.NET for me, would you?»): an opening that names an installed
         # application (or a name built on one) is no game missing from the library; the decider reads it.
@@ -1778,6 +1858,10 @@ def _conversation_presentation_shape(
     if _FREE_CONTENT_THING_CUE.match(_policy_guard_text(_strip_request_envelope(semantic_text))) is not None:
         # KNOWLEDGE1144 «contame un chiste»; tanda-02: the bare noun, after other turns.
         return "free_content"
+    # D59 §6 (owner, 2026-10-02) «avísame cuando haya noticias de X»: BAXY does not watch the news; the limit says so
+    # and offers to search the news on X now, whatever kind the turn was given.
+    if asks_to_watch_the_news(semantic_text):
+        return "news_watch_limit"
     # Tanda 4f «configuré una alarma para despertarme por la mañana»: an alarm the person set is what they tell,
     # acknowledged without an offer, whatever came before in the conversation.
     if reported_own_schedule(semantic_text):

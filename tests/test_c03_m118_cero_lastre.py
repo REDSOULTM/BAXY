@@ -4,12 +4,12 @@ Evidence: a per-rule ledger of DEV-D and DEV-F replayed offline with the isolate
 prompt) as the model's output, attributing every change between the isolated decider and the product to the rule that
 made it. Each rule with breaks was narrowed to where the model is wrong; the tests use phrasings of our own.
 
-1. Long talk with no order verb the readers know (overheard speech) is read by the contextual decider; only its
-   question, when it asks, is the overheard one.
+1. Long talk with no order verb the readers know (overheard speech) asks the overheard question before the decider
+   (M123: safety exception to D58; a request said to BAXY with words of its own is not overheard).
 2. The stable-knowledge reader and the public-lookup guard disagreeing is no proof: the contextual decider decides.
 3. A rate of what BAXY just said («y eso cuánto sale por metro?») is worked out from its numbers, never searched.
 4. «¿Cómo se hace <plato>?» with the kitchen said beside it is a recipe (D35: looked up).
-5. A new list named by what it is for is made; only a list named by nothing asks what goes on it.
+5. A new list named by what it is for is made; D59.5 (owner, 2026-10-02): a list named by nothing is made empty too.
 6. The decider's values: a free text said in other words is said; an enum member named in the person's language is
    that member; a day written with a year of the decider's own is the day said; the words of a message, a note or a
    reminder the decider gave are not replaced by the readers' reading; a value cut at the end is no value.
@@ -20,6 +20,8 @@ from __future__ import annotations
 
 from datetime import date
 
+import pytest
+
 from baxy_mind import __main__ as sidecar
 from baxy_mind import llm as llm_module
 from baxy_mind.effect_intent import resolve_explicit_clarification_intent
@@ -27,7 +29,6 @@ from baxy_mind.planner import PlannerCatalog, enum_member_named, validate_argume
 from baxy_mind.semantic import knowledge, notes, temporal
 from baxy_mind.semantic.decider import ContextDecision, said_in_other_words
 from baxy_mind.semantic.dialogue import DialogueState
-from baxy_mind.semantic.normalize import fold
 
 
 def _schema(properties: dict, required: list[str]) -> dict:
@@ -151,20 +152,21 @@ def test_a_value_left_open_at_the_end_is_cut() -> None:
 # ------------------------------------------------------------------ 5. a new list named by what it is for
 
 
-def test_a_named_new_list_is_the_deciders_and_an_unnamed_one_asks() -> None:
-    for text in ("crea una lista nueva de regalos de navidad", "make a new list for the beach weekend"):
-        assert notes.named_list_creation(fold(text)), text
-        # The reader still knows what such a list lacks (asked when the decider refuses it and the surface is re-read).
-        intent = resolve_explicit_clarification_intent(text, ("task.create", "note.create"))
-        assert intent is not None and intent.missing_fields == ("list_entries",), text
-        model = _Decider(ContextDecision(text, "action", ("task.create",), ""))
+def test_a_new_list_named_or_not_is_made_empty() -> None:
+    # D59.5 (owner, 2026-10-02): the readers make the new list empty (titled as named, «Lista nueva» when not) and the
+    # final offers to add things; nothing is asked and the decider is not needed.
+    for text, title in (
+        ("crea una lista nueva de regalos de navidad", "Lista de regalos de navidad"),
+        ("make a new list for the beach weekend", "List for the beach weekend"),
+        ("crea una lista nueva", "Lista nueva"),
+        ("make a new list for me", "New list"),
+        ("crea una nueva lista para mí", "Lista nueva"),
+    ):
+        assert notes.new_list_title(text) == title, text
+        assert resolve_explicit_clarification_intent(text, ("task.create", "note.create")) is None, text
+        model = _Decider(ContextDecision(text, "clarify", (), ""))
         result = _turn(text, model)
-        assert model.decisions == 1 and result["kind"] == "action" and result["operation"] == "task.create", text
-    for text in ("crea una lista nueva", "make a new list for me", "crea una nueva lista para mí"):
-        assert not notes.named_list_creation(fold(text)), text
-        model = _Decider(ContextDecision(text, "action", ("task.create",), ""))
-        result = _turn(text, model)
-        assert model.decisions == 0 and result["kind"] == "clarify", text
+        assert model.decisions == 0 and result["kind"] == "action" and result["operation"] == "task.create", text
 
 
 # ------------------------------------------------------------------ 3. a rate of what BAXY just said
@@ -258,7 +260,8 @@ def _turn(text: str, model: _Decider) -> dict:
 def test_the_stable_reader_and_the_lookup_guard_disagreeing_is_the_deciders() -> None:
     text = "¿cuál es la diferencia entre un mamífero y un reptil?"
     agreed = _Decider(ContextDecision(text, "talk", (), ""), public=False)
-    assert _turn(text, agreed)["kind"] == "conversation" and agreed.decisions == 0
+    # M123 (D58): a stable-knowledge reading no longer closes a turn before the decider, guard or not.
+    assert _turn(text, agreed)["kind"] == "conversation" and agreed.decisions == 1
     disagreed = _Decider(ContextDecision(text, "talk", (), ""), public=True)
     result = _turn(text, disagreed)
     assert disagreed.decisions == 1
@@ -268,14 +271,39 @@ def test_the_stable_reader_and_the_lookup_guard_disagreeing_is_the_deciders() ->
 OVERHEARD = "y entonces el vecino le dijo a mi primo que el auto había quedado en el taller toda la semana pasada"
 
 
-def test_overheard_talk_is_the_deciders_and_only_its_question_is_the_overheard_one() -> None:
-    talk = _Decider(ContextDecision(OVERHEARD, "talk", (), ""))
-    result = _turn(OVERHEARD, talk)
-    assert talk.decisions == 1 and result["kind"] == "conversation"
-    asks = _Decider(ContextDecision(OVERHEARD, "clarify", (), "¿Qué necesitas?"))
-    result = _turn(OVERHEARD, asks)
-    assert asks.decisions == 1 and result["kind"] == "clarify"
-    assert asks.unresolved == ["overheard_speech"] and result.get("preserveObjective") is False
+def test_overheard_talk_is_asked_about_before_the_decider_and_never_acted_on() -> None:
+    # M123 (safety exception to D58, the 742 reviewed literals: H0735 scheduled a notification out of a TV
+    # dialogue, nine more were answered as talk): talk addressed to someone else asks the overheard question,
+    # whatever the decider would read in it.
+    for decision in (ContextDecision(OVERHEARD, "talk", (), ""),
+                     ContextDecision(OVERHEARD, "action", ("task.create",), ""),
+                     ContextDecision(OVERHEARD, "clarify", (), "¿Qué necesitas?")):
+        model = _Decider(decision)
+        result = _turn(OVERHEARD, model)
+        assert model.decisions == 0 and result["kind"] == "clarify" and result["effectOperations"] == []
+        assert model.unresolved == ["overheard_speech"]
+
+
+def test_after_earlier_turns_overheard_talk_is_still_never_acted_on() -> None:
+    model = _Decider(ContextDecision(OVERHEARD, "action", ("task.create",), ""))
+    result = sidecar._context_decided_result(
+        {"id": "m123", "text": OVERHEARD, "history": [{"role": "user", "content": OVERHEARD}]},
+        llm=model, planner_catalog=PlannerCatalog([_tool("task.create", _schema({}, []))]), overheard=True,
+    )
+    assert result["kind"] == "clarify" and result["effectOperations"] == []
+    assert model.unresolved == ["overheard_speech"]
+
+
+@pytest.mark.parametrize("text", [
+    # M118's DEV-D/F requests (our phrasings): an order with the listener's «me», help asked, a wish to watch, a
+    # piece of writing ordered — said to BAXY, never overheard.
+    "bueno pues mira nada que hazme un ping al router de casa porque el juego online me va fatal desde esta mañana",
+    "I am bored tonight and I really need your help to search for a good sci-fi film like the ones with robots in it",
+    "I'd like to watch a documentary called Planet Earth with English subtitles on the big screen in the living room",
+    "Elabora una lista con los inventos más famosos del siglo veinte indicando quién los creó y en qué año aparecieron",
+])
+def test_a_long_request_said_to_baxy_is_not_overheard(text: str) -> None:
+    assert sidecar._unresolved_input_kind(text, ()) != "overheard_speech"
 
 
 # ------------------------------------------------------------------ 7–10. after the decider (later tandas of M118)

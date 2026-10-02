@@ -585,12 +585,16 @@ internal static class UserMessagePolicy
 
         string said = FoldForPolicy(reply);
         string user = FoldForPolicy(userText);
+        // D59 §7 (owner, 2026-10-02): a turn not understood is asked about with
+        // the person's own words quoted («¿Qué quieres que haga con "…"?»); the
+        // quote is theirs, not the request handed back, and it answers nothing.
+        bool asksWithTheirWords = clarification && AsksWithThePersonsWords(userText, reply);
         (string Reason, bool Failed)[] checks =
         [
             ("clock_request", NaturalSystemStatusRequestParser.IsCurrentTimeRequest(userText)),
             ("clock_reply", NaturalSystemStatusRequestParser.IsCurrentTimeRequest(reply)),
             ("restates_request",
-                !IsGreetingRequest(userText) && RestatesTheRequest(userText, reply)),
+                !IsGreetingRequest(userText) && RestatesTheRequest(userText, reply) && !asksWithTheirWords),
             ("clock_pattern", ContainsClockPattern(reply)),
             ("internal_code", ContainsInternalCode(reply, string.Concat(userText, " ", priorUserText))),
             ("unverified_success", ClaimsUnverifiedSuccess(reply)),
@@ -612,7 +616,7 @@ internal static class UserMessagePolicy
             // request echoed back as a yes/no.
             ("echoes_request",
                 !IsGreetingRequest(userText) && EchoesRequestAsQuestion(userText, reply)
-                && !AsksForDeclaredText(said, missingFields)),
+                && !AsksForDeclaredText(said, missingFields) && !asksWithTheirWords),
             ("greets_out_of_world", GreetsOutOfWorldTarget(said)),
             ("unverified_connectivity", ClaimsUnverifiedConnectivity(said)),
             // UI1659 «Go to the announcements channel in Discord.»: the mind
@@ -666,7 +670,9 @@ internal static class UserMessagePolicy
             ("out_of_world_question",
                 LooksLikeOutOfWorldRequest(user)
                 && AsksAboutTheOutOfWorldRequest(user, reply)
-                && !AsksForDeclaredImageSubject(user, said, missingFields)),
+                && !AsksForDeclaredImageSubject(user, said, missingFields)
+                // D59 §6: searching the news on it now is a search of this PC's world.
+                && !(AsksToBeToldOfNews(user) && OffersOnlyANewsSearch(said))),
             ("restates_definition_ask", LooksLikeRestatingDefinitionAsk(said)),
             ("definition_as_action", RestatesDefinitionAsAction(userText, reply)),
             ("broken_modal_gerund", HasBrokenModalGerund(reply)),
@@ -676,7 +682,7 @@ internal static class UserMessagePolicy
             // saludo delante de la respuesta no es el defecto; quedarse sólo
             // en el saludo sí lo es.
             ("knowledge_not_answered",
-                !hasRequiredInput && LooksLikeKnowledgeQuestion(user)
+                !hasRequiredInput && LooksLikeKnowledgeQuestion(user) && !asksWithTheirWords
                 // KNOW1833: a long declarative statement («…, that is why pipes
                 // burst in winter, at least that is what they told me.») carries
                 // ask words that lead no clause; the mind's overheard-speech
@@ -1045,6 +1051,14 @@ internal static class UserMessagePolicy
             return false;
         }
 
+        // D59 §6 (owner, 2026-10-02) «avísame cuando haya noticias de X»: the
+        // limit offers to search those news now; that offer is the ruling, not
+        // a proposal of its own (twin of the mind's news_watch_limit shape).
+        if (AsksToBeToldOfNews(user) && OffersOnlyANewsSearch(said))
+        {
+            return false;
+        }
+
         // A classified clarification already belongs to the requested action.
         // Still reject every family absent from that request below.
         if (!clarification && !ContainsCatalogActionVerb(user))
@@ -1072,6 +1086,25 @@ internal static class UserMessagePolicy
         // person themself asked for, which is not a proposal of its own.
         return !coveredFamilyNamed && !SharesCatalogActionVerb(user, said);
     }
+
+    // D59 §6: being told when there are news on something (the mind's
+    // semantic.web.asks_to_watch_the_news, on folded text).
+    private static readonly Regex NewsWatchRequest = new(
+        @"\b(?:notificacion(?:es)?|notifica\w*|notify|notifications?|alertas?|alerta\w*|alerts?|alert\s+me|"
+        + @"avisos?|avisame|avisarme|avisa|avisenme|me\s+avisas|me\s+avises|suscrib\w*|subscribe\w*|"
+        + @"let\s+me\s+know|keep\s+me\s+(?:posted|updated|informed)|ping\s+me|"
+        + @"mantenme\s+(?:al\s+tanto|informad[oa])|tenme\s+al\s+tanto)\b[^.?!]{0,40}?\b(?:noticias?|news|titulares|headlines)\b|"
+        + @"\b(?:dime|decime|tell\s+me|me\s+dices|me\s+dirias)\s+(?:cuando|apenas|en\s+cuanto|when|whenever|as\s+soon\s+as|"
+        + @"once)\b[^.?!]{0,40}?\b(?:noticias?|news|titulares|headlines)\b",
+        RegexOptions.CultureInvariant);
+
+    private static bool AsksToBeToldOfNews(string user) => NewsWatchRequest.IsMatch(user);
+
+    private static bool OffersOnlyANewsSearch(string said) =>
+        Regex.IsMatch(said, @"\b(?:busc\w*|busqu\w*|search\w*|look\s+(?:up|for))\b",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
+        && Regex.IsMatch(said, @"\b(?:noticias?|news|titulares|headlines)\b",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
 
     private static bool UserCoversCatalogFamily(string user, string[] family)
     {
@@ -1718,6 +1751,27 @@ internal static class UserMessagePolicy
         "\"[^\"\\n]*\"|«[^»\\n]*»|“[^”\\n]*”", RegexOptions.CultureInvariant);
 
     internal static string WithoutQuotedSpeech(string reply) => QuotedSpeech.Replace(reply ?? string.Empty, " ");
+
+    // D59 §7: one short question whose only quote is a run of the person's own
+    // words (the mind's semantic.dialogue.words_floor_question).
+    internal static bool AsksWithThePersonsWords(string userText, string reply)
+    {
+        string question = (reply ?? string.Empty).Trim();
+        MatchCollection quotes = QuotedSpeech.Matches(question);
+        if (!question.EndsWith('?') || quotes.Count != 1)
+        {
+            return false;
+        }
+
+        static string Words(string value) =>
+            Regex.Replace(Regex.Replace(FoldForPolicy(value), @"[^\p{L}\p{N}]+", " "), @"\s+", " ").Trim();
+
+        string quoted = Words(quotes[0].Value);
+        string frame = Words(QuotedSpeech.Replace(question, " "));
+        return quoted.Length > 0
+            && frame.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length <= 8
+            && (" " + Words(userText) + " ").Contains(" " + quoted + " ", StringComparison.Ordinal);
+    }
 
     private static readonly Regex SayingInability = new(
         @"\b(?:can\s*not|can['’]t|cannot|no\s+(?:te\s+|le\s+|les\s+)?puedo)\s+(?:\w+\s+)?"

@@ -8,8 +8,9 @@ is the person's message, which is what the writer got for these situations (dial
 - D-p02-t2 «¿Serías capaz de hacer foto ahora?» (conversation, gold: the limit): «No puedo hacer fotos.» answers
   whether BAXY is able; three such drafts died on asserted_failure (in v3c, v3d, v3e2, v3f and v3l alike).
 - D-w02-t2 «y si allá son las 10 de la mañana acá qué hora es» (error, turn_runtime_failure): every draft was rightly
-  vetoed (an invented limit, an invented answer, a guessed reason). No fixed final replaces it (owner's review): the ⚠
-  stays until the turn itself is answered (a clock conversion from the place of the previous turn).
+  vetoed (an invented limit, an invented answer, a guessed reason). No fixed final replaces it (owner's review); D59 §7
+  (owner, 2026-10-02): the floor is a short question with the person's own words («¿Qué quieres que haga con "si allá
+  son las 10…"?»).
 - D-w15-t3 «traducelo al ingles que es para mi jefa» (clarification): what is to be translated is only pointed at, so
   asking which is the reply; all three questions died on knowledge_question.
 """
@@ -177,9 +178,12 @@ def test_d_w02_t2_the_recorded_drafts_are_still_vetoed() -> None:
 
 
 def test_d_w02_t2_stays_without_a_fixed_final() -> None:
-    # Owner's review of M75: a fixed «No pude entender…» would turn the ⚠ into a false failure (the message was
-    # understood; its wording failed) and the product has no fixed visible replies. The ⚠ stays; the cause is open.
-    assert _compose(HORA_DRAFTS, HORA_ALLA, "error", NOT_UNDERSTOOD) == ("", 3)
+    # Owner's review of M75: a fixed «No pude entender…» would turn the ⚠ into a false failure, and the product has no
+    # fixed visible replies. D59 §7 (owner, 2026-10-02, supersedes leaving the ⚠): with every draft vetoed, the turn is
+    # asked about with the person's own words, a few of them.
+    assert _compose(HORA_DRAFTS, HORA_ALLA, "error", NOT_UNDERSTOOD) == (
+        '¿Qué quieres que haga con "si allá son las 10…"?', 3,
+    )
 
 
 # ------------------------------------------------------------------ D-w15-t3: a translation of something pointed at

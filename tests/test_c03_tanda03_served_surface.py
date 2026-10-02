@@ -102,8 +102,6 @@ def test_what_is_said_another_way_reads_as_the_served_request(said: str, operati
 @pytest.mark.parametrize(
     ("said", "operation"),
     [
-        ("agrega una nueva lista de pendientes", "task.create"),
-        ("add a list for my trip", "task.create"),
         # «algo movido» names the music by its character since tanda 4; «algo» alone names nothing.
         ("haz sonar algo", "media.play.query"),
     ],
@@ -113,6 +111,16 @@ def test_what_is_said_another_way_asks_its_missing_value(said: str, operation: s
     assert canonical is not None
     reading = read(canonical, available_operations=OPERATIONS)
     assert reading.clarification is not None and reading.clarification.operations == (operation,)
+
+
+@pytest.mark.parametrize("said", ["agrega una nueva lista de pendientes", "add a list for my trip"])
+def test_a_new_list_said_another_way_is_made_empty(said: str) -> None:
+    # D59.5 (owner, 2026-10-02): a new list with nothing on it is made empty; what goes on it is offered, not asked.
+    canonical = surface.canonical(said)
+    assert canonical is not None
+    reading = read(canonical, available_operations=OPERATIONS)
+    assert reading.clarification is None
+    assert reading.effects is not None and reading.effects.operations == ("task.create",)
 
 
 # ------------------------------------------------------------------ the turn
@@ -256,13 +264,14 @@ def test_a_vetoed_proposal_said_another_way_with_the_music_named_plays_it() -> N
     assert llm.chats == 0
 
 
-def test_a_list_added_is_a_list_created_and_its_items_are_asked() -> None:
+def test_a_list_added_is_a_list_created_empty() -> None:
+    # D59.5 (owner, 2026-10-02): the new list is made empty (its items were asked before).
     llm = _RefusingLlm()
 
     result = _turn("agrega una nueva lista para el viaje", llm)
 
-    assert result["kind"] == "clarify"
-    assert result["intentOperations"] == ["task.create"]
+    assert result["kind"] == "action"
+    assert result["operation"] == "task.create"
     assert llm.chats == 0
 
 

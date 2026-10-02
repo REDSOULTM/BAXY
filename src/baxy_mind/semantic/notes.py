@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from typing import Callable, Iterable, Sequence
 from .grammar import TASK_REMINDER_HEAD, _RELATIVE_DURATION_PATTERN, _fold, _match, _has, _strip_request_envelope, _request_body_surface, _request_head, _head_is, _LIST, _READ, _CREATE, _request_clauses
 from .intent import EffectIntent, _append
-from .normalize import _accent_folded_with_punctuation
+from .normalize import _accent_folded_with_punctuation, fold_in_place
 from .temporal import _absolute_calendar_range_parts, _DEICTIC_DAY, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, CLOCK_PHRASE, EventTiming, event_timing, spoken_clock, is_window_phrase, says_a_window
 
 
@@ -1028,9 +1028,13 @@ _LIST_CREATION = re.compile(
     r"^(?:(?:por\s+favor|please)\s*,?\s+)?"
     r"(?:(?:quiero|quisiera|necesito|tengo\s+que|i\s+(?:need|want)\s+to|let's)\s+)?"
     r"(?:(?:crea|creame|crear|haz|hazme|hacer|arma|armame|armar|empieza|empezar|comienza|comenzar|"
-    r"inicia|iniciar|create|make|start|nueva|new)\s+(?:(?:una|un|la|a|the)\s+)?"
+    r"inicia|iniciar|create|make|start|begin|nueva|new)\s+(?:(?:una|un|la|a|the|my)\s+)?"
     # Dev set 2: «abre la lista de la compra» opens the one there is (a read); a list is opened new only as one.
-    r"|(?:abre|abrir)\s+(?:(?:una|un)\s+|la\s+(?=nueva\s)))(?:(?:nueva|new)\s+)?(?:lista|list)"
+    r"|(?:abre|abrir)\s+(?:(?:una|un)\s+|la\s+(?=nueva\s)))(?:(?:nueva|new)\s+)?"
+    # D59.5 (owner, 2026-10-02) «make a packing list»: in English the kind of list goes before the word.
+    r"(?P<kind>(?:shopping|grocery|groceries|packing|to[\s-]?do|todo|wish|gift|guest|reading|bucket|christmas|"
+    r"holiday|birthday|party|travel|trip|camping|movie|book|chores?|errands?|task|work|school|weekly)\s+(?=list\b))?"
+    r"(?:lista|list)"
     r"(?:\s+(?:nueva|new))?(?P<name>\s+(?:de(?:\s+la|\s+los|\s+las|l)?|para(?:\s+la|\s+el)?|of|for)\s+[^,;.!?]{1,60})?"
     r"[\s.!?]*$"
 )
@@ -1046,6 +1050,8 @@ def list_creation_without_items(folded: str) -> str | None:
         return None
     found = _LIST_CREATION.match(body)
     if found is not None:
+        if found.group("kind"):
+            return found.group("kind").strip() + " list"
         return "lista" + (found.group("name") or "")
     # «agregar un nuevo elemento a la lista», «puedes agregar un artículo a mi lista
     # de compras»: an entry that names nothing asks the same thing.
@@ -1055,28 +1061,77 @@ def list_creation_without_items(folded: str) -> str | None:
     return None
 
 
-def named_list_creation(folded: str) -> bool:
-    """M118 (D58, DEV-D D-s088 «create a new list of my pending bills» asked «What items should be included…?» where the
-    isolated decider made it): a new list asked for by its name is made with that name, as M91 reads it after the
-    decider; only a list named by nothing («crea una nueva lista») asks what goes on it."""
-
-    body = _strip_request_envelope(folded).strip(" ¿?¡!.,")
-    found = None if _has(folded, _LIST_NOT_TASKS) else _LIST_CREATION.match(body)
-    named = re.sub(
-        r"^\s*(?:de(?:\s+la|\s+los|\s+las|l)?|para(?:\s+la|\s+el)?|of|for)\s+", "", (found.group("name") or "") if found else "",
-    )
-    # «crea una nueva lista para mí», «create a list for me»: who it is for is no name.
-    return bool(named.strip()) and re.fullmatch(
-        r"(?:mi|me|ti|vos|usted|ustedes|nosotr[oa]s|el|ella|ellos|ellas|you|us|him|her|them|myself)", named.strip(),
-    ) is None
-
-
 def list_creation_said(folded: str) -> bool:
     """M91 (reserva «haz una nueva lista de la compra»): a new list asked for, not an entry to put on one. The list
     made empty is the whole request; only an entry that names nothing leaves something unsaid."""
 
     body = _strip_request_envelope(folded).strip(" ¿?¡!.,")
     return not _has(folded, _LIST_NOT_TASKS) and _LIST_CREATION.match(body) is not None
+
+
+# What a list's name says when it is content to write rather than a list of the person's to fill («make a list of the
+# best movies of 2020», «lista de cosas que hacer», M91: the decider reads those).
+_LIST_NAME_IS_CONTENT = re.compile(
+    r"\b(?:mejor(?:es)?|peor(?:es)?|best|worst|top|most|mas|menos|ideas?|famos[oa]s?|famous|sobre|about|que|which|"
+    r"what|how|como|why|porque|cosas|things)\b|\d"
+)
+# «haz/hazme/make/arma una lista de …» also asks for content written in the conversation («haz una lista de países de
+# Europa»); with those verbs only a list of the person's own kind is made: what they buy, do, pack, give, invite, read,
+# watch or pay. «crea», «create», «empieza», «start», «nueva» ask for a new list whatever it holds.
+_WRITING_LIST_VERB = re.compile(
+    r"^(?:(?:por\s+favor|please)\s*,?\s+)?(?:(?:quiero|quisiera|necesito|tengo\s+que|i\s+(?:need|want)\s+to|let's)\s+)?"
+    r"(?:haz|hazme|hacer|arma|armame|armar|make)\b"
+)
+_PERSONAL_LIST_NAME = re.compile(
+    r"\b(?:compras?|super|supermercado|mercado|almacen|feria|tareas?|pendientes?|quehaceres|deberes|regalos?|"
+    r"invitados?|viajes?|vacaciones|equipaje|maleta|deseos|lectura|cumpleanos|navidad|boda|mudanza|gimnasio|"
+    r"colegio|escuela|trabajo|casa|limpieza|cuentas|gastos|facturas|shopping|groceries|grocery|packing|chores|"
+    r"errands|tasks?|bills|gifts?|guests?|trip|travel|holiday|vacation|wishes|wish|reading|birthday|christmas|"
+    r"wedding|moving|gym|school|work|home|cleaning|expenses)\b"
+)
+# Who the list is for is no name: «crea una nueva lista para mí», «create a list for me».
+_LIST_FOR_WHOM = re.compile(
+    r"(?:para|for)\s+(?:mi|me|ti|vos|usted|ustedes|nosotr[oa]s|el|ella|ellos|ellas|you|us|him|her|them|myself)"
+)
+
+
+def _said_as(text: str, folded_piece: str) -> str:
+    """The piece of the person's text a folded piece was read from (their capitals and accents), or the folded one."""
+
+    at = fold_in_place(text).find(folded_piece)
+    return text[at:at + len(folded_piece)] if at >= 0 else folded_piece
+
+
+def new_list_title(text: str) -> str | None:
+    """D59.5 (owner, 2026-10-02): a new list asked for with nothing on it («crea una lista de la compra», «make a
+    packing list», «crea una nueva lista») is made empty, and the final offers to add things. Its title: the list as
+    the person named it («Lista de la compra», «Packing list»), or «Lista nueva» / «New list» when they named none.
+    None when no new list is asked, or when its name is content to write (``_LIST_NAME_IS_CONTENT``)."""
+
+    folded = _fold(text)
+    body = _strip_request_envelope(folded).strip(" ¿?¡!.,")
+    found = None if _has(folded, _LIST_NOT_TASKS) else _LIST_CREATION.match(body)
+    if found is None:
+        return None
+    english = re.search(r"\blist\b", found.group(0)) is not None
+    kind = (found.group("kind") or "").strip()
+    if kind:
+        return re.sub(r"^to[\s-]?do$", "to-do", kind).capitalize() + " list"
+    name = re.sub(r"\s+(?:por\s+favor|porfa|porfis|please|pls|plz|ahora|now|ya)$", "", (found.group("name") or "").strip())
+    if not name or _LIST_FOR_WHOM.fullmatch(name):
+        return "New list" if english else "Lista nueva"
+    if (
+        _LIST_NAME_IS_CONTENT.search(name)
+        or len(name.split()) > 6
+        or (
+            _WRITING_LIST_VERB.match(body) is not None
+            # «make a new list for the beach weekend»: a list asked for new is a list of the person's.
+            and re.search(r"\b(?:nueva|new)\b", found.group(0)) is None
+            and _PERSONAL_LIST_NAME.search(name) is None
+        )
+    ):
+        return None
+    return ("List " if english else "Lista ") + _said_as(text, name).strip(" .!?")
 
 
 # Dev set 2 (2026-09-24): «we're out of paint so take bathroom painting off the list» and «eliminar mi lista de

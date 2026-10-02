@@ -22,8 +22,11 @@ it, and a yes or a value after it answers that request (``read_slot``).
 
 from __future__ import annotations
 
+import functools
+import json
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from datetime import datetime, timedelta, timezone
 
 from .grammar import _COVERAGE_ACTION_HEAD, _RELATIVE_DURATION_PATTERN, _head_is
@@ -253,6 +256,58 @@ def retracts_the_last_effect(text: str, last_reply: str | None) -> bool:
         and word not in {"list", "lista", "listas", "lists", "please", "porfa", "favor", "anymore", "ahora", "todavia"}
     ]
     return bool(things) and re.search(r"\b" + re.escape(things[0]) + r"\b", reply) is not None
+
+
+# D59 §7 (owner, 2026-10-02): a turn that was not understood, and for which no valid question could be written, is
+# asked about with the person's own words, a few of them, never answered with a fixed «no pude entender». The words
+# are the message's, as written, without the fillers that open it and the function words a cut leaves at its end.
+_FLOOR_WORDS = 6
+_FLOOR_OPENING_FILLERS = frozenset({
+    "y", "e", "o", "pero", "pues", "entonces", "oye", "oiga", "hey", "ey", "baxy", "ok", "okay", "vale", "bueno",
+    "eh", "ah", "mmm", "um", "uh", "and", "so", "but", "well", "hmm", "please", "porfa",
+})
+_FLOOR_TRAILING_FUNCTION_WORDS = frozenset({
+    "de", "del", "la", "el", "los", "las", "lo", "le", "que", "a", "al", "en", "y", "e", "o", "u", "con", "por",
+    "para", "un", "una", "unos", "unas", "mi", "mis", "tu", "tus", "su", "sus", "se", "si", "no", "me", "te",
+    "of", "the", "a", "an", "to", "and", "or", "in", "on", "with", "for", "at", "my", "your", "if", "that", "is",
+})
+
+
+@functools.lru_cache(maxsize=1)
+def _words_floor_templates() -> dict[str, str]:
+    """D59.7: the wording lives in data (no fixed visible prose in the source)."""
+
+    path = Path(__file__).resolve().parent.parent / "data" / "words_floor_question.v1.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def words_floor_question(said: str, language: str) -> str:
+    """«¿Qué quieres que haga con "si allá son las 10…"?», «What should I do with "the blue one"?»: the question of a
+    turn not understood, built from the message (see above); "" when the message has no word to quote."""
+
+    tokens = [
+        token.strip("¿?¡!.,;:…\"'«»“”()[]")
+        for token in re.sub(r"\s+", " ", str(said or "")).split(" ")
+    ]
+    tokens = [token for token in tokens if token]
+    while len(tokens) > 1 and _fold(tokens[0]) in _FLOOR_OPENING_FILLERS:
+        tokens.pop(0)
+    if len(tokens) > 1 and _fold(" ".join(tokens[:2])) == "por favor":
+        tokens = tokens[2:]
+    while len(tokens) > 1 and _fold(tokens[-1]) in {"please", "porfa", "porfis", "gracias", "thanks"}:
+        tokens.pop()
+    if len(tokens) > 1 and _fold(" ".join(tokens[-2:])) == "por favor":
+        tokens = tokens[:-2]
+    cut = len(tokens) > _FLOOR_WORDS
+    words = tokens[:_FLOOR_WORDS]
+    if cut:
+        while len(words) > 1 and _fold(words[-1]) in _FLOOR_TRAILING_FUNCTION_WORDS:
+            words.pop()
+    if not words:
+        return ""
+    quoted = " ".join(words) + ("…" if cut else "")
+    templates = _words_floor_templates()
+    return templates["en" if language == "en" else "es"].replace("{quoted}", quoted)
 
 
 def says_the_message_back(question: str, said: str) -> bool:
@@ -696,7 +751,10 @@ _FEEDBACK_TALK = re.compile(
 _EMBEDDED_QUESTION = re.compile(
     r"\b(?:por\s+que|quien|quienes|donde|cuando|cuanto|cuantos|que\s+(?:paso|ocurrio|sucedio))\s+"
     r"(?:fue|fueron|es|son|era|hubo|hay|habra|sera|paso|ocurrio|sucedio|gano|ganaron|murio|empezo|termina|"
-    r"termino|esta|estan)\b"
+    r"termino|esta|estan)\b|"
+    # M123 (D58, reserva en8308 «yesterday at noontime in times square what was the protest about» → talk that made
+    # up there was no protest, where the isolated decider looked it up): the same question in English.
+    r"\b(?:what|why|who|where|when|how\s+(?:much|many))\s+(?:was|were|is|are|did|happened|will|won|died)\b"
 )
 _REACTION_TALK = re.compile(r"^(?:jaja\w*|jeje\w*|jsjs\w*|lol|xd+|wow|uf+|que\s+(?:raro|bueno|lindo|loco|risa))\b")
 # Tanda 8 «i don't really know» was looked up on the web: not knowing, said alone, tells something about the person

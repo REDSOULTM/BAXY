@@ -32,6 +32,7 @@ from baxy_mind import llm
 from baxy_mind.effect_intent import operation_domain_is_grounded
 from baxy_mind.llm import LlmRuntime
 from baxy_mind.planner import PlannerCatalog
+from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.network import calendar_parts_asked
 from baxy_mind.semantic.patterns import conversation_only_content_request, resolve_explicit_clarification_intent
 from baxy_mind.semantic.reading import read
@@ -89,6 +90,11 @@ class _Writer:
     @staticmethod
     def decide_turn(*_args: object, **_kwargs: object) -> dict[str, object]:
         raise AssertionError("a deterministic reading owns this turn")
+
+    @staticmethod
+    def decide_in_context(text: str, *_args: object, **_kwargs: object) -> ContextDecision:
+        # M123 (D58): a draft the readers read is confirmed by the contextual decider first; it talks.
+        return ContextDecision(request=text, decision="talk", operations=(), question="")
 
     @staticmethod
     def retire_deferred_response_language(_text: str) -> None:

@@ -227,7 +227,8 @@ def test_a_genre_next_to_the_list_names_content_even_with_a_taste(clause: str) -
     "clause",
     ["pon mi playlist favorita", "pon mis canciones preferidas", "pon mi lista de canciones de siempre",
      "pon mi cantante de jazz favorito",
-     # The person's own list named by its purpose is still asked, never searched (tanda 4).
+     # The genre reader names nothing in a list named by its purpose; D59.4 (owner, 2026-10-02) plays it as music for
+     # that purpose, read before this one (semantic.media.purpose_music_query, test_c03_m121_d59_b).
      "play my workout playlist", "pon mi playlist de viaje largo"],
 )
 def test_how_the_collection_is_qualified_still_names_nothing(clause: str) -> None:

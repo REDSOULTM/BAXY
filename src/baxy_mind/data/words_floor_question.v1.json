@@ -1,0 +1,5 @@
+{
+ "_doc": "D59.7 (dueño 2026-10-02): la pregunta de un turno no entendido se arma con las palabras de la persona; plantilla por idioma, {quoted} = sus palabras.",
+ "es": "¿Qué quieres que haga con \"{quoted}\"?",
+ "en": "What should I do with \"{quoted}\"?"
+}

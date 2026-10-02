@@ -44,7 +44,6 @@ from .semantic.notes import (
     asks_overdue_notifications,
     conversation_note_title,
     list_creation_said,
-    named_list_creation,
     names_own_event,
     task_change,
 )
@@ -55,7 +54,12 @@ from .semantic import surface as semantic_surface
 from .semantic import temporal as semantic_temporal
 from .semantic import ui as semantic_ui
 from .semantic.system import names_this_place, weather_destination_there
-from .semantic.patterns import application_shown_media_name, list_entries_said_before, output_level_request
+from .semantic.patterns import (
+    application_shown_media_name,
+    list_entries_said_before,
+    names_a_kind_of_music,
+    output_level_request,
+)
 from .semantic.web import (
     asks_for_information,
     asks_latest_release,
@@ -201,6 +205,7 @@ from .semantic.conversation import (
     random_draw_request,
     social_act,
     stable_no_effect,
+    stable_no_effect_preempts,
 )
 from .semantic.arguments import (
     _canonical_due_utc,
@@ -217,7 +222,12 @@ from .semantic.arguments import (
     window_snap_plan_split,
     window_snap_side_for_step,
 )
-from .semantic.messaging import chat_message_dispatch, latest_mail_reply_without_words, message_body
+from .semantic.messaging import (
+    chat_message_dispatch,
+    latest_mail_reply_without_words,
+    message_body,
+    social_network_request,
+)
 from .semantic.arguments import (  # noqa: F401 - moved to baxy_mind.semantic.arguments; callers migrate
     _SYSTEM_STATUS_SCOPES,
     _explicit_calendar_event_arguments,
@@ -4898,6 +4908,7 @@ def _context_decided_result(
     on_limit: Callable[[str], dict[str, Any] | None] | None = None,
     application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
     overheard: bool = False,
+    decided_beforehand: semantic_decider.ContextDecision | None = None,
 ) -> dict[str, Any]:
     """The turn as the contextual decider reads it (``semantic.decider``), with the whole conversation.
 
@@ -4905,7 +4916,8 @@ def _context_decided_result(
     the shortlist, the native selector and the gates together; the readers keep only the first message of a
     conversation they prove. The restated request travels as ``objective``: the arguments step reads it.
     ``overheard``: the first message reads as talk the microphone caught (``semantic.guards._overheard_speech``);
-    only when the decider asks is the question the overheard one (M118).
+    only when the decider asks is the question the overheard one (M118). ``decided_beforehand``: the decider was
+    already asked about this message (M123: after a reader whose reading it did not confirm); it is not asked twice.
     """
 
     text = str(message.get("text", ""))
@@ -4956,8 +4968,11 @@ def _context_decided_result(
         decided = semantic_decider.ContextDecision(request=placed, decision="action", operations=("system.time",),
                                                    question="")
     else:
-        decider_tools, signatures = _decider_catalog(planner_catalog)
-        decided = llm.decide_in_context(text, history, decider_tools, signatures=signatures)
+        if decided_beforehand is not None:
+            decided = decided_beforehand
+        else:
+            decider_tools, signatures = _decider_catalog(planner_catalog)
+            decided = llm.decide_in_context(text, history, decider_tools, signatures=signatures)
         memory = next((op for op in decided.operations if op.startswith("memory.")), None)
         if memory is not None and not any(
             explicit_memory_request(said) for said in (text, _previous_user_request(history, text) or "")
@@ -5199,14 +5214,12 @@ def _context_decided_result(
         decided = semantic_decider.ContextDecision(
             request=text, decision="clarify", operations=("email.latest.reply",), question="",
         )
-    if (
-        decided.decision == "action"
-        and set(decided.operations) & {"notification.schedule", "reminder.create"}
-        and asks_to_watch_the_news(text)
-    ):
+    if decided.decision != "limit" and asks_to_watch_the_news(text):
         # M104 (reserve v3z es631 «establecer notificaciones para las noticias sobre el gasoducto sur peruano» → a
         # notification scheduled for nothing): watching the news to tell when there is some is no operation; the
-        # limit says so, never a notice nobody can fill.
+        # limit says so, never a notice nobody can fill. D59 §6 (owner, 2026-10-02): whatever was decided (today's
+        # headlines read, a talk, a question about the time), and the limit offers to search the news now (the
+        # «news_watch_limit» shape).
         decided = semantic_decider.ContextDecision(request=text, decision="limit", operations=(), question="")
     if decided.decision == "limit" and dialogue_slot.takes_back(text, antecedent):
         # M84 (DEV-D v3o D-p01-t3 «no, cancel», D-p14-t3 «Cancelar foto» → «No cancelo la foto.»): taking back what was
@@ -5272,6 +5285,12 @@ def _context_decided_result(
             decided = semantic_decider.ContextDecision(
                 request=decided.request or text, decision="action", operations=("web.search",), question="",
             )
+    if overheard and decided.decision != "clarify":
+        # M123 (safety exception to D58; reviewed literal H0735 «a ocho de la noche descansar domingo, tu tenes que
+        # firmar 10 hojas en blanco y un cheque» → a notification scheduled): talk addressed to someone else is never
+        # acted on nor answered, whatever the decider read in it; the overheard question is asked (below).
+        decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
+        reference, recommended = None, False
     objective = decided.request or text
     result: dict[str, Any] = {
         "type": "turn.result",
@@ -5800,14 +5819,26 @@ def _decide_turn_result(
     if (
         explicit_clarification is not None
         and served_surface is None
-        and explicit_clarification.missing_fields == ("list_entries",)
-        and named_list_creation(effect_intent._fold(objective))
+        and not in_conversation
+        and set(explicit_clarification.operations) == {"media.play.query"}
+        # A bare «pon música» asks what to play (reviewed literals H0009, H0066, H0526): nothing names it.
+        and names_a_kind_of_music(objective)
     ):
-        # M118 (D58, DEV-D D-s088 «create a new list of my pending bills» → «What items should be included…?» where the
-        # isolated decider made it): a new list named by what it is for is the contextual decider's, as M91 reads it
-        # after the decider; what goes on it is asked when the decider refuses it and its canonical surface is re-read
-        # (tanda 3 «añadir una nueva lista para material escolar»).
-        explicit_clarification = None
+        # M123 (D58; reserve against the isolated decider: es11335 «reproducir y reproduce aleatoriamente todas las
+        # canciones de música lenta», es393 «pon una canción retro en mi playlist» were asked what to play where the
+        # decider played what was named): music named by its kind is the contextual decider's to read first. Its
+        # known error is to refuse or talk about the person's own music (the radio and the playlists the reader asks
+        # about: 20 turns of limit); then the question below is asked. What it plays or asks is its decision, handed
+        # over without asking it twice.
+        decider_tools, signatures = _decider_catalog(planner_catalog)
+        played = llm.decide_in_context(
+            str(message.get("text", "")), message.get("history") or [], decider_tools, signatures=signatures,
+        )
+        if played.decision not in {"talk", "limit"}:
+            return _context_decided_result(
+                message, llm=llm, planner_catalog=planner_catalog, application_names=application_names,
+                decided_beforehand=played,
+            )
     missing_open_referent = (
         non_target_language is None
         and not content_drafting
@@ -5860,13 +5891,13 @@ def _decide_turn_result(
         # after BAXY spoke is the person talking to BAXY, not a conversation the
         # microphone overheard (DIALOGUE1513's rows all arrive with no dialogue).
         unresolved_input_kind = None
+    # M123 (safety exception to D58; the 742 reviewed literals on 853d821f: H0006, H0297, H0332, H0372, H0429, H0441,
+    # H0483, H0610, H0694 answered as talk and H0735 «a ocho de la noche descansar domingo, tu tenes que firmar 10 hojas
+    # en blanco y un cheque» scheduled): talk addressed to someone else is never acted on nor answered; the overheard
+    # question is asked before the decider, as reviewed (DIALOGUE1513). The four DEV-D/F requests M118 measured
+    # («hazme un ping…», «I'd like to watch…», «I need your help…», «Elabora una lista…») are addressed to BAXY, and
+    # the overheard reader now reads them so (``guards._ADDRESSED_REQUEST``).
     overheard = unresolved_input_kind == "overheard_speech"
-    if overheard:
-        # M118 (D58; DEV-D/F against the isolated decider: 0 fixes, 4 breaks — «Oye, pues nada, hazme un ping al
-        # 1.1.1.1, que el Valorant me va a tirones…», «I'd like to watch a movie called After the Wedding…», «Elabora
-        # una lista con las cápsulas del tiempo más famosas…»): long talk with no order verb the readers know is read by
-        # the contextual decider, which reads all of it. Only when the decider asks is the question the overheard one.
-        unresolved_input_kind = None
     if unresolved_input_kind == "bare_path":
         known_path = effect_intent.known_folder_file_path(objective)
         if known_path is not None and known_path[0] in available_operations:
@@ -6072,6 +6103,23 @@ def _decide_turn_result(
             )
         )
     )
+    # M123 (D58; reserve against the isolated decider: fix 11, break 29, 33 with v2 labels): a stable no-effect reading
+    # closes the turn before the decider only where it is certain and the decider is wrong in a known way
+    # (``stable_no_effect_preempts``).
+    # Any other reading waits for the contextual decider and is kept only as what comes after the same decision (its
+    # «talk» for knowledge, a follow-up or a social act; its «limit» for a limit): the reply and its checks (an unknown
+    # looked up, a recipe looked up, an answer that only asks back). What it closes still keeps the effect readers off
+    # (above).
+    stable_awaits_decider = (
+        literal_recall_decision is None
+        and stable_no_effect_decision is not None
+        and not stable_no_effect_preempts(objective)
+        # M90 (cien-110 073 «what is cache memory, one sentence»: the decider looked a common concept up and read a
+        # definition off a page): a common concept's definition stays the reader's.
+        and not common_concept_definition(
+            objective, (*application_names, *(entry[3] for entry in game_catalog.entries)),
+        )
+    )
     live_public_intent = effect_intent._weather_read_intent(
         effect_intent._strip_request_envelope(objective), available_operations
     ) or effect_intent._news_read_intent(
@@ -6207,6 +6255,9 @@ def _decide_turn_result(
         and content_drafting
         and explicit_conversation_decision is not None
         and explicit_conversation_decision.get("conversation_kind") == "unsupported"
+        # M123 (D58, reserva es15557 «necesito que tuitees una queja» → a complaint written out as if posted): content
+        # to be published on a social network is the post BAXY does not make; the limit stands.
+        and not social_network_request(objective)
     ):
         # M78 (DEV-D v3l p35-t1 «Has un análisis de FODA sobre la empresa Adidas…» → «No hago análisis de FODA.»):
         # content BAXY writes in the conversation is never beyond what he does.
@@ -6292,6 +6343,8 @@ def _decide_turn_result(
         # Dev corpus 2026-09-23 «what is mom's email address»: a «what is» question the readers prove is a
         # request with no operation keeps its limit; the shape verifier answered it from memory.
         and not known_limit_requested
+        # M123: the contextual decider, asked below, is what confirms a knowledge reading.
+        and not stable_awaits_decider
         and callable(verify_shape)
     ):
         try:
@@ -6315,6 +6368,8 @@ def _decide_turn_result(
         and not known_unsupported_effect_request(objective, available_operations)
         # M84 (DEV-D v3o D-p02-t1 «Saca foto ahora» → a screenshot): a photo of the camera is no capture of the screen.
         and not effect_intent.unserved_personal_request(objective)
+        # M123: a knowledge reading that waits for the decider is withdrawn or kept by the decider itself.
+        and not (stable_awaits_decider and explicit_conversation_decision is stable_no_effect_decision)
     ):
         # This is still interpretation, not an execution milestone. Composing
         # progress here spent the same deadline needed to decide and answer.
@@ -6345,6 +6400,8 @@ def _decide_turn_result(
         and explicit_conversation_decision is stable_no_effect_decision
         and explicit_conversation_decision.get("conversation_kind") == "knowledge"
         and non_target_language is None
+        # M123: the decider decides it anyway (below); the guard's model call is not spent.
+        and not stable_awaits_decider
         and public_lookup()
     ):
         # M118 (D58; DEV-D/F: the stable-knowledge reader and the public-lookup guard disagreed on 8 first messages, and
@@ -6356,6 +6413,24 @@ def _decide_turn_result(
         # M118: talk the microphone may have caught is the contextual decider's, never a conversation reader's reply
         # to it (DIALOGUE1513: answered as if it were addressed to BAXY).
         explicit_conversation_decision = None
+    decided_beforehand: semantic_decider.ContextDecision | None = None
+    if (
+        stable_awaits_decider
+        and explicit_intent is None
+        and explicit_conversation_decision is not None
+        and explicit_conversation_decision is stable_no_effect_decision
+    ):
+        # M123 (D58): the reading is the contextual decider's to confirm. The same decision («limit» for a limit,
+        # «talk» for the rest) keeps the reading's conversation (below); anything else is its decision, handed over
+        # without asking it twice.
+        decider_tools, signatures = _decider_catalog(planner_catalog)
+        decided_beforehand = llm.decide_in_context(
+            str(message.get("text", "")), message.get("history") or [], decider_tools, signatures=signatures,
+        )
+        same_decision = "limit" if explicit_conversation_decision.get("conversation_kind") == "unsupported" else "talk"
+        if decided_beforehand.decision != same_decision:
+            explicit_conversation_decision = None
+    decider_confirmed = decided_beforehand is not None and explicit_conversation_decision is not None
     if explicit_conversation_decision is None and (explicit_intent is None or in_conversation):
         # No reader proved this message, or it follows earlier turns and no conversation reader kept it:
         # the contextual decider decides it (Fase 3.5b F4), not the shortlist, the native selector and
@@ -6382,7 +6457,7 @@ def _decide_turn_result(
 
         return _context_decided_result(
             message, llm=llm, planner_catalog=planner_catalog, on_limit=reread_limit,
-            application_names=application_names, overheard=overheard,
+            application_names=application_names, overheard=overheard, decided_beforehand=decided_beforehand,
         )
     if explicit_intent is not None:
         _emit_early_turn_signal(
@@ -6765,6 +6840,9 @@ def _decide_turn_result(
         decision["mode"] == "conversation"
         and decision.get("conversation_kind") in {"knowledge", "unsupported"}
         and non_target_language is None
+        # M123 (D58, DEV-D D-s096 as in M118): what the contextual decider already confirmed as talk or as a limit is
+        # not turned into a search by the guard.
+        and not decider_confirmed
         and public_lookup()
     ):
         shortlist = _shortlist_with_required_effects(shortlist, ("web.search",), planner_catalog)
@@ -6779,6 +6857,8 @@ def _decide_turn_result(
         and decision["conversation_kind"] in {"knowledge", "social"}
         and not decision["effect_operations"]
         and shortlist
+        # M123: the contextual decider, which had the catalog in front of it, already chose to talk.
+        and not decider_confirmed
     ):
         observing = _catalog_answers_the_request(
             routing_objective,
@@ -7331,6 +7411,9 @@ def _recover_failed_turn(
     ``conversation_kinds`` (M104) are the kinds the failed attempts decided: talk whose wording failed is recovered as
     the talk it was understood to be (``conversationKind`` «knowledge», «social», «followup»), never as a conversation
     of no kind.
+
+    D59 §7 (owner, 2026-10-02): when the model ran and still wrote no valid question for a turn it did not understand,
+    the question is the one built with the person's own words (``_words_floor_result``).
     """
 
     objective = str(message.get("text", ""))[:2_048]
@@ -7477,6 +7560,15 @@ def _recover_failed_turn(
                     "failure_code": failure_code,
                 }
             )
+        if (
+            not text
+            # The model ran (its turn attempts failed, its composer answered nothing usable); with the model offline
+            # or unavailable, the protocol still writes no prose of its own.
+            and failure_kinds
+            and callable(getattr(llm, "compose_user_message", None))
+            and (floor := _words_floor_result(message, objective, nothing_to_clarify, attempts, failure_code))
+        ):
+            return audited(floor)
         return audited(
             {
                 "type": "turn.result",
@@ -7521,6 +7613,37 @@ def _recover_failed_turn(
             "failure_code": failure_code,
         }
     )
+
+
+def _words_floor_result(
+    message: dict[str, Any], objective: str, nothing_to_clarify: bool, attempts: int, failure_code: object,
+) -> dict[str, Any] | None:
+    """D59 §7 (owner, 2026-10-02): a turn not understood whose recovery wrote no valid question asks with the person's
+    own words (``semantic.dialogue.words_floor_question``), never a fixed «no pude entender»; None when the turn had
+    nothing to clarify (a limit, a capability, talk understood) or the message has no word to quote."""
+
+    if nothing_to_clarify:
+        return None
+    question = dialogue_slot.words_floor_question(
+        objective, "en" if _explicit_response_language(objective) == "en" else "es",
+    )
+    if not question:
+        return None
+    return {
+        "type": "turn.result",
+        "id": message.get("id"),
+        "kind": "clarify",
+        "operation": None,
+        "intentOperations": [],
+        "effectOperations": [],
+        "preserveObjective": False,
+        "question": question,
+        "reply": "",
+        "turn_attempts": max(0, attempts),
+        "turn_recovery": "words_floor_question",
+        "recovery_attempts": 1,
+        "failure_code": failure_code,
+    }
 
 
 def _recovery_conversation_facts(history: object, objective: str) -> dict[str, Any]:

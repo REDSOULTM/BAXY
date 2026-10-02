@@ -242,9 +242,12 @@ def test_an_effect_left_uncertain_names_its_target() -> None:
 
 
 def test_a_turn_failure_keeps_no_fixed_final() -> None:
-    # Owner's review of M75: «No pude entender…» fixed would be a false failure; only a draft says it.
+    # Owner's review of M75: «No pude entender…» fixed would be a false failure. D59 §7 (owner, 2026-10-02): when no
+    # draft can be said, the turn is asked about with the person's own words, never a fixed sentence.
     asked = "¿y estás completamente seguro de eso?"
-    assert _final(asked, TURN_FAILURE, ["Tengo dudas."] * 3) == ""
+    assert _final(asked, TURN_FAILURE, ["Tengo dudas."] * 3) == (
+        '¿Qué quieres que haga con "estás completamente seguro de eso"?'
+    )
 
 
 class _Composer:

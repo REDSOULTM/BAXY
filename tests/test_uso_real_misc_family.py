@@ -173,7 +173,13 @@ def test_the_devices_of_the_house_and_errands_are_a_plain_limit_never_a_song(tex
     assert intent is None or not {"media.play.query", "media.play.youtube"} & set(intent.operations)
 
 
-@pytest.mark.parametrize("text", ["baja las luces", "baja la luz de la pantalla", "pon despacito de luis fonsi"])
+def test_the_lights_with_no_room_are_the_house() -> None:
+    # D59 §3 (owner, 2026-10-02, supersedes «baja las luces» read as the screen's brightness): BAXY controls the
+    # notebook, not the house.
+    assert known_unsupported_effect_request("baja las luces", _OPS)
+
+
+@pytest.mark.parametrize("text", ["baja la luz de la pantalla", "pon despacito de luis fonsi"])
 def test_the_screen_light_and_a_song_are_not_the_house(text: str) -> None:
     assert not known_unsupported_effect_request(text, _OPS)
 
