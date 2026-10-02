@@ -32,7 +32,7 @@ internal static class UserBrowserScripts
           $queue = New-Object System.Collections.Generic.Queue[object]
           $queue.Enqueue(@($root, 0))
           $visited = 0
-          while ($queue.Count -gt 0 -and $visited -lt 600) {
+          while ($queue.Count -gt 0 -and $visited -lt 1500) {
             $pair = $queue.Dequeue()
             $node = $pair[0]; $depth = $pair[1]
             $visited++
@@ -48,7 +48,7 @@ internal static class UserBrowserScripts
                 }
               }
             }
-            if ($depth -ge 14) { continue }
+            if ($depth -ge 24) { continue }
             $child = $walker.GetFirstChild($node)
             while ($child -ne $null) {
               $queue.Enqueue(@($child, ($depth + 1)))
@@ -111,9 +111,13 @@ internal static class UserBrowserScripts
           $want = Fold $Title
           $playWords = @('reproducir', 'ver ahora', 'continuar', 'reanudar', 'play', 'watch now', 'resume', 'continue watching')
           $documentCondition = New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty, $CT::Document)
+          # A search box is an edit or, with role=combobox, a combo box; both take a value.
           $editCondition = New-Object System.Windows.Automation.AndCondition(
-            (New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty, $CT::Edit)),
-            (New-Object System.Windows.Automation.PropertyCondition($AE::IsValuePatternAvailableProperty, $true)))
+            (New-Object System.Windows.Automation.OrCondition(
+              (New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty, $CT::Edit)),
+              (New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty, $CT::ComboBox)))),
+            (New-Object System.Windows.Automation.PropertyCondition($AE::IsValuePatternAvailableProperty, $true)),
+            (New-Object System.Windows.Automation.PropertyCondition($AE::IsEnabledProperty, $true)))
           $pickCondition = New-Object System.Windows.Automation.OrCondition(
             (New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty, $CT::Hyperlink)),
             (New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty, $CT::Button)),
@@ -123,7 +127,17 @@ internal static class UserBrowserScripts
           $chosen = ''
           $typed = -not $TypeSearch
           while ((Get-Date) -lt $deadline) {
-            $document = $root.FindFirst($descendants, $documentCondition)
+            # The page of the active tab is the document named as the window
+            # title begins; side panels (Opera GX's sidebar web panels) are
+            # documents too and are never touched.
+            $windowTitle = [string]$root.Current.Name
+            $documents = $root.FindAll($descendants, $documentCondition)
+            $document = $null
+            foreach ($candidate in $documents) {
+              $documentName = [string]$candidate.Current.Name
+              if ($documentName -and $windowTitle.StartsWith($documentName)) { $document = $candidate; break }
+            }
+            if ($document -eq $null -and $documents.Count -eq 1) { $document = $documents[0] }
             if ($document -eq $null) { Start-Sleep -Milliseconds 500; continue }
             if (-not $typed) {
               $step = 'search'

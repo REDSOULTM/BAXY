@@ -159,19 +159,31 @@ elegido. Las sesiones SMTC se leen como ya hacía `media.status`.
   «Learn more» del contenido y la dirección pasó a
   `https://www.iana.org/help/example-domains`. Prueba que UIA lee el
   omnibox de Chromium y pulsa elementos de la página.
-- **Pendiente de ejecutar** (no se hizo: BAXY estaba en marcha midiendo y una
-  sesión multimedia nueva habría entrado en sus lecturas):
-  `.\scripts\check_user_browser.ps1` — abre `example.com` y un video de
-  YouTube en el navegador predeterminado (dos pestañas nuevas, no cierra
-  nada), informa dirección y SMTC (`SourceAppUserModelId` real de Opera GX) y
-  pausa el video que empezó. Se niega a correr si `Baxy.exe` está en marcha.
-  No se ha probado aún contra Opera GX real: su campo de dirección por UIA y
-  su sesión SMTC son la parte sin medir.
+- **Opera GX real, 2026-10-02 01:20** (Opera estaba cerrado; ningún `Baxy.exe`
+  en marcha; video silencioso para no sonar de madrugada), con
+  `UserBrowserLiveCheck` (lo que corre `scripts/check_user_browser.ps1`):
+  - Primera vuelta: YouTube **verificado** por SMTC (sesión
+    `OperaSoftware.OperaGXWebBrowser.1732473326`, título del video, `playing`)
+    y **pausado** por SMTC (`paused`, verificado). La navegación quedó
+    **incierta**: el campo de dirección de Opera GX (`AddressTextfieldView`,
+    «Campo de dirección») está a profundidad 15 del árbol y el recorrido
+    paraba en 14. Arreglado (profundidad 24, 1500 nodos; el primer campo,
+    `AddressBarViewGx`, tiene valor vacío y se salta).
+  - Segunda vuelta: navegación **verificada**
+    (`finalUrl https://example.com/`, `user_browser_uia_address_postread`,
+    lectura ~1 s), YouTube verificado y pausado otra vez.
+  - Paso de página en Opera GX, sobre pestañas propias: «Learn more» pulsado
+    por UIA en example.com (la dirección pasó a iana.org); en duckduckgo.com
+    el título se escribió en su buscador, que es un `ComboBox` (rol
+    combobox), no un `Edit`: el guion acepta los dos. Opera GX expone sus
+    paneles laterales como documentos en la vista cruda; en la vista de
+    control sólo aparece el de la pestaña, y el guion elige el documento cuyo
+    nombre empieza el título de la ventana.
+  - Quedó abierto Opera GX con las pestañas de la comprobación (example.com,
+    iana.org, duck.ai y dos videos de YouTube en pausa); no se cerró nada.
 
 ## Pendiente
 
-- Correr la comprobación manual con Opera GX y, si Opera no publica sesión
-  SMTC o su campo de dirección no se lee, ajustar los tokens o el recorrido.
 - Netflix/Disney+ en Opera con la cuenta del dueño: los nombres accesibles de
   fichas y botones están tomados de lo medido por CDP en VIDEO1947/1919, no
   comprobados por UIA en Opera.
