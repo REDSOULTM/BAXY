@@ -16,5 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Fixtures\Wikimedia\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Fixtures\ScheduledNotification\*.xml" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
