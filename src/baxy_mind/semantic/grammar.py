@@ -137,6 +137,13 @@ def _compiled(pattern: str) -> re.Pattern[str]:
     return re.compile(pattern, re.IGNORECASE)
 
 
+# M117 (latency, window v4f-devF): the readers ask the same reading of the same clause many times in one turn
+# (631 k envelope strips, 125 k heads, 40 k clause splits in 280 turns). This module reads only its argument and its
+# own constants (its imports, ``normalize.fold`` and ``request.spoken_language``, are pure too), so a reading of a
+# text is kept and handed back as it was computed: str, bool or tuple, never a mutable value.
+_text_reading = functools.lru_cache(maxsize=8192)
+
+
 def _match(text: str, pattern: str) -> re.Match[str] | None:
     # Tanda-07 (uso real 2026-09-25): one turn reads ~770 distinct patterns and the re module keeps 512, so
     # every turn compiled ~600 of them again — 95 % of a deterministic decision (0.3–1.9 s) was compiling.
@@ -408,6 +415,7 @@ def _strip_trailing_means_directive(text: str) -> str:
     return text[: found.start()].rstrip()
 
 
+@_text_reading
 def _strip_trailing_social_closure(text: str) -> str:
     """Drop a trailing social closure without ever emptying the request.
 
@@ -423,6 +431,7 @@ def _strip_trailing_social_closure(text: str) -> str:
     return text[: found.start()].rstrip()
 
 
+@_text_reading
 def _strip_request_envelope(text: str) -> str:
     """Remove bounded request prefaces without changing their action bodies.
 
@@ -484,6 +493,7 @@ def _strip_request_envelope(text: str) -> str:
     return current
 
 
+@_text_reading
 def _request_body_surface(text: str) -> str:
     """The body ``_strip_request_envelope`` reads, in the person's own writing.
 
@@ -546,6 +556,7 @@ def _explicit_desire_request(text: str) -> re.Match[str] | None:
     )
 
 
+@_text_reading
 def _request_head(text: str) -> str:
     topic = _machine_status_topic(text)
     if topic is not None:
@@ -1355,6 +1366,7 @@ def titled_note_with_content(text: str) -> tuple[str, str] | None:
     return title, content
 
 
+@_text_reading
 def _literal_note_payload_request(text: str) -> bool:
     """Recognize a positive note request whose subordinate text is literal data."""
 
@@ -1919,6 +1931,7 @@ def _explicit_google_search_query(text: str) -> str | None:
     return None
 
 
+@_text_reading
 def _request_clauses(text: str) -> tuple[str, ...]:
     if _literal_note_payload_request(text):
         # Actions mentioned after the content marker remain stored text.
