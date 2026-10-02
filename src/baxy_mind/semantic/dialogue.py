@@ -22,8 +22,11 @@ it, and a yes or a value after it answers that request (``read_slot``).
 
 from __future__ import annotations
 
+import functools
+import json
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from datetime import datetime, timedelta, timezone
 
 from .grammar import _COVERAGE_ACTION_HEAD, _RELATIVE_DURATION_PATTERN, _head_is
@@ -270,6 +273,14 @@ _FLOOR_TRAILING_FUNCTION_WORDS = frozenset({
 })
 
 
+@functools.lru_cache(maxsize=1)
+def _words_floor_templates() -> dict[str, str]:
+    """D59.7: the wording lives in data (no fixed visible prose in the source)."""
+
+    path = Path(__file__).resolve().parent.parent / "data" / "words_floor_question.v1.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def words_floor_question(said: str, language: str) -> str:
     """«¿Qué quieres que haga con "si allá son las 10…"?», «What should I do with "the blue one"?»: the question of a
     turn not understood, built from the message (see above); "" when the message has no word to quote."""
@@ -295,7 +306,8 @@ def words_floor_question(said: str, language: str) -> str:
     if not words:
         return ""
     quoted = " ".join(words) + ("…" if cut else "")
-    return f'What should I do with "{quoted}"?' if language == "en" else f'¿Qué quieres que haga con "{quoted}"?'
+    templates = _words_floor_templates()
+    return templates["en" if language == "en" else "es"].replace("{quoted}", quoted)
 
 
 def says_the_message_back(question: str, said: str) -> bool:
