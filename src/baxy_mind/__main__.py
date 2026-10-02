@@ -71,6 +71,8 @@ from .semantic.web import (
     news_lookup_query,
     place_fixed_by_conversation,
     place_query_in_conversation,
+    search_has_typed_reads,
+    typed_read_over_search,
 )
 from .semantic.windows import start_menu_request
 from .corrector import catalog_correction_terms
@@ -6504,6 +6506,33 @@ def _decide_turn_result(
         same_decision = "limit" if explicit_conversation_decision.get("conversation_kind") == "unsupported" else "talk"
         if decided_beforehand.decision != same_decision:
             explicit_conversation_decision = None
+    if (
+        decided_beforehand is None
+        and explicit_intent is not None
+        and explicit_intent.operations == ("web.search",)
+        and (explicit_intent is live_public_intent or explicit_intent is turn_reading.effects)
+        and search_has_typed_reads(available_operations)
+        and served_surface is None
+        and not in_conversation
+        and non_target_language is None
+        and not known_limit_requested
+        and unresolved_compound_effects is None
+    ):
+        # M131 (D58; ledger of the first-turn readers against the isolated decider: reserve v1/v2, DEV-D, DEV-F): a first
+        # message read as a plain web search waits for the decider. Where the decider chose a typed read that serves the
+        # question more specifically (``typed_read_over_search``: the day's headlines, the weather with its later days,
+        # what this PC plays), its decision is the turn, handed over without asking it twice. Any other decision keeps
+        # the search: its talk, question, limit or a personal read are the decider's errors the search fixed (12 + 7 on
+        # the reserve, 0 broken).
+        decider_tools, signatures = _decider_catalog(planner_catalog)
+        searched = llm.decide_in_context(
+            str(message.get("text", "")), message.get("history") or [], decider_tools, signatures=signatures,
+        )
+        if searched.decision == "action" and typed_read_over_search(searched.operations):
+            return _context_decided_result(
+                message, llm=llm, planner_catalog=planner_catalog, application_names=application_names,
+                decided_beforehand=searched,
+            )
     decider_confirmed = decided_beforehand is not None and explicit_conversation_decision is not None
     if explicit_conversation_decision is None and (explicit_intent is None or in_conversation):
         # No reader proved this message, or it follows earlier turns and no conversation reader kept it:

@@ -16,6 +16,7 @@ import pytest
 from baxy_mind.__main__ import _general_factoid_prompt, _prepare_turn_result
 from baxy_mind.planner import PlannerCatalog
 from baxy_mind.semantic import dialogue, reading
+from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.guards import _unresolved_input_kind, cut_request_tail
 from baxy_mind.semantic.patterns import (
     effect_request_is_authoritative,
@@ -380,6 +381,15 @@ class _ClosedLlm:
         return None
 
 
+class _SearchDeciderTalks(_ClosedLlm):
+    """M131 (D58): a first message read as a plain web search asks the contextual decider whether a typed read serves
+    it better; when it talks, the search stands."""
+
+    @staticmethod
+    def decide_in_context(text: str, *_args: object, **_kwargs: object) -> ContextDecision:
+        return ContextDecision(request=text, decision="talk", operations=(), question="")
+
+
 def _turn(text: str, llm: object) -> dict[str, object]:
     tools = {
         name: _tool(name, required=required)
@@ -432,7 +442,7 @@ def test_the_turn_is_a_plain_limit(text: str) -> None:
     ],
 )
 def test_the_turn_acts_on_the_read_request(text: str, operation: str) -> None:
-    result = _turn(text, _ClosedLlm())
+    result = _turn(text, _SearchDeciderTalks())
 
     assert result["kind"] == "action"
     assert result["operation"] == operation

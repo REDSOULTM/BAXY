@@ -29,6 +29,7 @@ import pytest
 from baxy_mind import __main__ as sidecar
 from baxy_mind.effect_intent import operation_domain_is_grounded
 from baxy_mind.planner import PlannerCatalog
+from baxy_mind.semantic.decider import ContextDecision
 from baxy_mind.semantic.guards import _overheard_speech
 from baxy_mind.semantic.normalize import fold
 from baxy_mind.semantic.reading import read
@@ -74,6 +75,12 @@ class _NoModel:
     @staticmethod
     def decide_turn(*_args: object, **_kwargs: object) -> dict[str, object]:
         raise AssertionError("a deterministic reading owns this turn")
+
+    @staticmethod
+    def decide_in_context(text: str, *_args: object, **_kwargs: object) -> ContextDecision:
+        # M131 (D58): a first message read as a plain web search asks the contextual decider whether a typed read
+        # serves it better; when it talks, the search stands.
+        return ContextDecision(request=text, decision="talk", operations=(), question="")
 
     @staticmethod
     def retire_deferred_response_language(_text: str) -> None:
