@@ -176,7 +176,8 @@ def test_a_playlist_or_a_pointed_entry_is_not_a_task(text):
 @pytest.mark.parametrize(
     "text",
     [
-        "por favor crea una nueva lista", "necesito hacer una lista", "crea una lista de la compra",
+        # D59.5 (owner, 2026-10-02): a new list is made empty and the final offers to add things
+        # (test_c03_m121_d59_b); only an entry that names nothing asks what goes on the list.
         "agregar un nuevo elemento a la lista", "puedes agregar un artículo a mi lista de compras",
     ],
 )
@@ -189,6 +190,7 @@ def test_a_list_with_nothing_on_it_asks_what_goes_on_it(text):
 
 
 def test_the_answer_puts_the_entries_on_the_list_asked_for():
+    # D59.5: the list was made empty and the final offered to add things; the answer goes on it.
     effects = resolve_explicit_effects(
         "leche y pan", OPERATIONS, previous_user_text="crea una lista de la compra",
     )

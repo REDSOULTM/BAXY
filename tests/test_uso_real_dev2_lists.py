@@ -279,8 +279,9 @@ def test_an_entry_only_pointed_at_or_unnamed_asks_what_goes_on_the_list(text):
     assert _decision(text) == ("clarify", "task.create")
 
 
-def test_a_list_opened_new_is_still_asked_what_goes_on_it():
-    assert _decision("abre una lista nueva") == ("clarify", "task.create")
+def test_a_list_opened_new_is_made_empty():
+    # D59.5 (owner, 2026-10-02): a new list is made empty and the final offers to add things (it was asked before).
+    assert _decision("abre una lista nueva") == ("action", "task.create")
     assert list_creation_without_items(fold("abre la lista de la compra")) is None
 
 

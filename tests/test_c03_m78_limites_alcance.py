@@ -391,15 +391,19 @@ def test_what_is_not_an_analysis_to_write_stays_what_it_was(text: str) -> None:
 
 
 def test_a_limit_the_decider_gives_to_content_is_talk() -> None:
-    result, model = _turn("Make a SWOT analysis of Tesla.", "Make a SWOT analysis of Tesla.", WELCOME)
+    text = "Make a SWOT analysis of my coffee shop."
+    result, model = _turn(text, text, WELCOME)
     assert result["kind"] == "conversation" and result["conversationKind"] == "knowledge"
     assert model.chats == 1
 
 
-def test_the_foda_request_is_answered_not_refused_nor_asked() -> None:
-    result, model = _turn(FODA, FODA)
-    assert result["kind"] == "conversation" and result.get("conversationKind") != "unsupported"
-    assert model.chats == 1
+@pytest.mark.parametrize("text", [FODA, "Make a SWOT analysis of Tesla."])
+def test_the_foda_request_is_answered_not_refused_nor_asked(text: str) -> None:
+    # D59.8 (owner, 2026-10-02): a named organization's analysis is written from what is read about it first
+    # (test_c03_m121_d59_b): the turn looks it up, never refuses or asks.
+    result, model = _turn(text, text)
+    assert result["kind"] == "action" and result["operation"] == "web.search"
+    assert model.chats == 0
 
 
 # ------------------------------------------------------------------ the wording of a limit

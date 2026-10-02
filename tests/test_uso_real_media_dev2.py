@@ -163,9 +163,9 @@ def test_a_remark_or_another_act_plays_nothing(text: str) -> None:
     [
         # Nothing named.
         "pon otras canciones", "pon canciones", "play some music", "please turn on my music", "enciende la música",
-        # The person's own collection (owner ruling, tanda 4).
-        "quiero algo de música qué tal si pones mi playlist de ejercicio",
-        "i want some music how about playing my workout playlist",
+        # The person's own collection (owner ruling, tanda 4). D59.4 (owner, 2026-10-02): a playlist named by its
+        # purpose («mi playlist de ejercicio», «my workout playlist») is music for it, played (test_c03_m121_d59_b).
+        "quiero algo de música qué tal si pones mi playlist de siempre",
         "solo reproduce canciones de mi lista de reproducción",
     ],
 )

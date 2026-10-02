@@ -252,13 +252,14 @@ def test_other_asks_do_not_press_the_windows_key(text):
 # Tanda 4c moved the free choice within the collection («cualquier cosa de mi playlist reciente», «anything from my
 # playlist», «algo de mi biblioteca») and what was played last out of this list: they are complete, and resume the
 # player or are a plain limit (test_c03_tanda04c_complete_requests). A collection named with nothing chosen is still
-# asked, and none of them is ever searched.
+# asked, and none of them is ever searched. D59.4 (owner, 2026-10-02): a playlist named by its purpose («mi playlist de
+# gym») is music for that purpose, searched and played (test_c03_m121_d59_b); one named by its own name stays here.
 @pytest.mark.parametrize(
     "text",
     [
         "play my liked songs",
         "reproduce mis canciones guardadas",
-        "pon mi playlist de gym",
+        "pon mi playlist «Viaje 2024»",
         "reproduce mi biblioteca de spotify",
         "play my saved music",
     ],

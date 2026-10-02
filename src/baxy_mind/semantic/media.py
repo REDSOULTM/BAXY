@@ -281,6 +281,100 @@ def own_recent_listening_request(text: str) -> bool:
     return _head_is(_request_head(folded), _OWN_LISTENING_PLAY_HEAD) and _has(folded, _OWN_RECENT_LISTENING)
 
 
+# D59.4 (owner, 2026-10-02; reserve en5683 «play my playlist party songs», en936 «…my jogging playlist», tanda 4
+# «pon mi playlist de gym» asked «¿qué playlist?»): music, songs or a playlist asked for a purpose — an activity, an
+# occasion — is music for that purpose, searched and played like any music named («música para entrenar», «party
+# songs»). Only a playlist named by the person's own name for it («mi playlist "Viaje 2024"», a year, any word that is no
+# purpose) stays theirs. Each purpose: its folded words, then the query in Spanish and the English adjective.
+_PURPOSES = (
+    (r"gym|gimnasio|gimnacio|gimnasia|ejercicios?|entrenar|entreno|entrenamiento|pesas|crossfit|cardio|"
+     r"workouts?|work\s+out|working\s+out|exercis(?:e|ing)|training|lifting", "música para entrenar", "workout"),
+    (r"correr|trotar|trote|running|jogging|jog", "música para correr", "running"),
+    (r"estudiar|estudio|study|studying|concentrarme|concentrarse|concentrar|concentracion|focus|focusing",
+     "música para estudiar", "study"),
+    (r"leer|lectura|reading", "música para leer", "reading"),
+    (r"trabajar|trabajo|work|working", "música para trabajar", "work"),
+    (r"fiestas?|carrete|party|parties|partying", "música de fiesta", "party"),
+    (r"bailar|baile|dance|dancing", "música para bailar", "dance"),
+    (r"dormir|siesta|sleep|sleeping|nap", "música para dormir", "sleep"),
+    (r"relajarme|relajarse|relajar|relax|relaxing|descansar", "música para relajarse", "relaxing"),
+    (r"meditar|meditacion|meditation", "música para meditar", "meditation"),
+    (r"yoga", "música para yoga", "yoga"),
+    (r"cocinar|cooking", "música para cocinar", "cooking"),
+    (r"viajes?|viajar|road\s*trips?|roadtrips?|travel(?:l?ing)?|carretera", "música para viajar", "road trip"),
+    (r"manejar|conducir|driving", "música para manejar", "driving"),
+    (r"limpiar|limpieza|cleaning", "música para limpiar", "cleaning"),
+    (r"caminar|pasear|paseo|walking|dog\s*walking|walk", "música para caminar", "walking"),
+    (r"cenar|cena|dinner", "música para la cena", "dinner"),
+)
+_PURPOSE_HEAD = (
+    r"(?:pon|pone|ponme|poneme|ponnos|reproduce|reproduceme|reproducime|reproduci|reproducir|toca|tocame|"
+    r"inicia|iniciar|empieza|arranca|enciende|prende|quiero\s+(?:escuchar|oir)|quiero|necesito(?:\s+escuchar)?|"
+    r"escuchar|escuchemos|play|put\s+on|start|turn\s+on|listen\s+to|let'?s\s+(?:hear|listen\s+to)|"
+    r"i\s+(?:want|need)(?:\s+to\s+(?:hear|listen\s+to))?|i'?d\s+like(?:\s+to\s+(?:hear|listen\s+to))?)"
+)
+_ENGLISH_PURPOSE_HEAD = re.compile(r"^(?:open|play|put|start|turn|listen|let|i)\b")
+_PURPOSE_CONTAINER = re.compile(
+    r"\b(?:musica|music|canciones|cancion|temas|tema|songs?|tracks?|tunes|beats|playlists?|"
+    r"lista\s+de\s+(?:reproduccion|canciones|musica)|mix)\b"
+)
+_ENGLISH_CONTAINER = re.compile(r"\b(?:music|songs?|tracks?|tunes|beats)\b")
+# What may stand beside the container and the purpose: articles and possessives, the connectors that tie the purpose
+# on, a free choice within it, the provider, courtesy. Any other word names the list itself, which stays theirs.
+_PURPOSE_FILLER = frozenset(
+    "mi|mis|my|tu|your|la|el|las|los|lo|the|una|un|unas|unos|a|an|some|algo|de|del|para|pa|pal|for|to|con|with|al|"
+    "hacer|ir|go|while|mientras|favorita|favoritas|favorito|favorite|favourite|preferida|cualquier|cosa|que|sea|"
+    "whatever|anything|something|random|aleatoria|aleatorio|aleatorias|shuffle|en|on|in|from|desde|spotify|youtube|"
+    "por|favor|please|porfa|pls|ahora|now|ya|un|poco|bit|little|musica|music|canciones|cancion|temas|tema|song|songs|"
+    "track|tracks|tunes|playlist|playlists|mix|largo|larga|largos|long".split("|")
+)
+
+
+def purpose_music_query(text: str) -> str | None:
+    """«pon mi playlist de gym» → «música para entrenar», «put on party songs» → «party songs», «música para
+    estudiar», «my workout playlist» → «workout music»: what to search and play for a purpose said with music, songs or
+    a playlist. None when no purpose is said, when the playlist is named by anything else (quoted, a number, a word
+    that is no purpose) or when the message is no order to play it."""
+
+    raw = str(text or "")
+    if re.search(r"[«»\"“”]", raw):
+        return None
+    folded = _strip_request_envelope(_fold(raw)).strip(" .!?¿¡,")
+    # Reserve en936 «open up and play music from my jogging playlist»: the player opened to play it is the same order.
+    head = re.match(rf"(?:(?:open(?:\s+up)?|abre(?:lo)?)\s+(?:and|y)\s+)?(?:{_PURPOSE_HEAD})\s+(?=\S)", folded)
+    rest = folded[head.end():] if head is not None else folded
+    music_first = re.match(r"(?:(?:algo|un\s+poco)\s+de\s+|some\s+)?(?:musica|music|canciones|songs)\b", folded)
+    if head is None and music_first is None:
+        return None
+    container = _PURPOSE_CONTAINER.search(rest)
+    if container is None or re.search(r"\d", rest):
+        return None
+    found = None
+    for words, spanish, english in _PURPOSES:
+        match = re.search(rf"\b(?:{words})\b", rest)
+        if match is not None:
+            found = (match, spanish, english)
+            break
+    if found is None:
+        return None
+    match, spanish, english = found
+    leftover = (rest[: min(match.start(), container.start())] + " "
+                + rest[min(match.end(), container.end()): max(match.start(), container.start())] + " "
+                + rest[max(match.end(), container.end()):])
+    if any(word not in _PURPOSE_FILLER for word in re.findall(r"[a-zñ']+", leftover)):
+        return None
+    english_said = (
+        _ENGLISH_PURPOSE_HEAD.match(folded) is not None
+        if head is not None
+        else _ENGLISH_CONTAINER.search(rest) is not None
+    )
+    if not english_said:
+        return spanish
+    # «party songs» are searched as songs; any other container as music for it.
+    songs = re.match(r"\s+(songs|tracks|tunes)\b", rest[match.end():])
+    return f"{english} {songs.group(1)}" if songs is not None else f"{english} music"
+
+
 def _resume_existing_media(text: str) -> bool:
     """Distinguish continuation of loaded media from selecting new content."""
 
