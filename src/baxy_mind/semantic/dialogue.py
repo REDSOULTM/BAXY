@@ -255,6 +255,49 @@ def retracts_the_last_effect(text: str, last_reply: str | None) -> bool:
     return bool(things) and re.search(r"\b" + re.escape(things[0]) + r"\b", reply) is not None
 
 
+# D59 §7 (owner, 2026-10-02): a turn that was not understood, and for which no valid question could be written, is
+# asked about with the person's own words, a few of them, never answered with a fixed «no pude entender». The words
+# are the message's, as written, without the fillers that open it and the function words a cut leaves at its end.
+_FLOOR_WORDS = 6
+_FLOOR_OPENING_FILLERS = frozenset({
+    "y", "e", "o", "pero", "pues", "entonces", "oye", "oiga", "hey", "ey", "baxy", "ok", "okay", "vale", "bueno",
+    "eh", "ah", "mmm", "um", "uh", "and", "so", "but", "well", "hmm", "please", "porfa",
+})
+_FLOOR_TRAILING_FUNCTION_WORDS = frozenset({
+    "de", "del", "la", "el", "los", "las", "lo", "le", "que", "a", "al", "en", "y", "e", "o", "u", "con", "por",
+    "para", "un", "una", "unos", "unas", "mi", "mis", "tu", "tus", "su", "sus", "se", "si", "no", "me", "te",
+    "of", "the", "a", "an", "to", "and", "or", "in", "on", "with", "for", "at", "my", "your", "if", "that", "is",
+})
+
+
+def words_floor_question(said: str, language: str) -> str:
+    """«¿Qué quieres que haga con "si allá son las 10…"?», «What should I do with "the blue one"?»: the question of a
+    turn not understood, built from the message (see above); "" when the message has no word to quote."""
+
+    tokens = [
+        token.strip("¿?¡!.,;:…\"'«»“”()[]")
+        for token in re.sub(r"\s+", " ", str(said or "")).split(" ")
+    ]
+    tokens = [token for token in tokens if token]
+    while len(tokens) > 1 and _fold(tokens[0]) in _FLOOR_OPENING_FILLERS:
+        tokens.pop(0)
+    if len(tokens) > 1 and _fold(" ".join(tokens[:2])) == "por favor":
+        tokens = tokens[2:]
+    while len(tokens) > 1 and _fold(tokens[-1]) in {"please", "porfa", "porfis", "gracias", "thanks"}:
+        tokens.pop()
+    if len(tokens) > 1 and _fold(" ".join(tokens[-2:])) == "por favor":
+        tokens = tokens[:-2]
+    cut = len(tokens) > _FLOOR_WORDS
+    words = tokens[:_FLOOR_WORDS]
+    if cut:
+        while len(words) > 1 and _fold(words[-1]) in _FLOOR_TRAILING_FUNCTION_WORDS:
+            words.pop()
+    if not words:
+        return ""
+    quoted = " ".join(words) + ("…" if cut else "")
+    return f'What should I do with "{quoted}"?' if language == "en" else f'¿Qué quieres que haga con "{quoted}"?'
+
+
 def says_the_message_back(question: str, said: str) -> bool:
     """M85 (DEV-D v3o D-p04-t1 «Dónde?» → «¿Dónde?»): a question that is the person's own message, word for word."""
 

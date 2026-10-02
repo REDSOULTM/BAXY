@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Baxy.Providers.Windows.Applications;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -330,6 +331,19 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         string channel = RequiredString(arguments, "channel");
         string recipient = RequiredString(arguments, "recipient");
         string text = RequiredString(arguments, "text");
+        // D59 §1: a closed client is opened first (app.open of that client, its
+        // window waited for on a bounded clock); never sent from here.
+        DesktopClientReadiness client = await _automation.EnsureClientOpenAsync(
+            channel,
+            cancellationToken).ConfigureAwait(false);
+        if (!client.Ready)
+        {
+            return Failure(
+                "message.draft",
+                client.ErrorCode ?? $"{channel}_client_not_running",
+                client.Opened);
+        }
+
         DesktopRecipientObservation observation = await _automation.ResolveAsync(
             channel,
             recipient,
@@ -369,6 +383,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 ("text", text),
                 ("draftVisible", true),
                 ("sent", false),
+                ("clientOpened", client.Opened),
                 ("evidenceHash", draft.EvidenceHash),
                 ("authority", "desktop_client_composer_ocr_postread")));
     }
@@ -393,6 +408,18 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         {
             return await SendTestMailAsync(requestedRecipient, forced, text, cancellationToken)
                 .ConfigureAwait(false);
+        }
+
+        // D59 §1: the test channel's client is opened first when it is closed.
+        DesktopClientReadiness client = await _automation.EnsureClientOpenAsync(
+            channel,
+            cancellationToken).ConfigureAwait(false);
+        if (!client.Ready)
+        {
+            return Failure(
+                "message.send.test",
+                client.ErrorCode ?? $"{channel}_client_not_running",
+                client.Opened);
         }
 
         DesktopRecipientObservation observation = await _automation.ResolveAsync(
@@ -434,6 +461,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 ("forcedDestination", forced),
                 ("text", text),
                 ("sent", true),
+                ("clientOpened", client.Opened),
                 ("evidenceHash", sent.EvidenceHash),
                 ("authority", "desktop_client_send_ocr_postread")));
     }
@@ -592,8 +620,22 @@ internal sealed record DesktopMessageObservation(
     string EvidenceHash,
     string? ErrorCode);
 
+// D59 §1 (owner, 2026-10-02): WhatsApp and Discord are installed and signed in on
+// this PC, so a message request that finds the client closed opens it first.
+// Ready: the client's window is up (already, or after the open); Opened: the
+// product opened it in this turn; ErrorCode when it could not be made ready.
+internal sealed record DesktopClientReadiness(bool Ready, bool Opened, string? ErrorCode)
+{
+    internal static readonly DesktopClientReadiness AlreadyOpen = new(true, false, null);
+}
+
 internal interface IDesktopMessagingAutomation
 {
+    ValueTask<DesktopClientReadiness> EnsureClientOpenAsync(
+        string channel,
+        CancellationToken cancellationToken) =>
+        ValueTask.FromResult(DesktopClientReadiness.AlreadyOpen);
+
     ValueTask<DesktopRecipientObservation> ResolveAsync(
         string channel,
         string recipient,
@@ -624,6 +666,79 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private const ushort VirtualKeyDown = 0x28;
     private const uint KeyUp = 0x0002;
     private const uint Unicode = 0x0004;
+
+    // D59 §1: after the client's open is verified, its main window must show
+    // (Discord draws an updater splash first) within this clock, and then gets a
+    // short settle so its chat list is drawn before the chat is searched.
+    internal static readonly TimeSpan ClientReadyBudget = TimeSpan.FromSeconds(15);
+    private static readonly TimeSpan ClientSettleDelay = TimeSpan.FromSeconds(2);
+    private static readonly TimeSpan ClientReadyPoll = TimeSpan.FromMilliseconds(250);
+
+    private IApplicationOpenProvider? _clientOpener;
+
+    internal WindowsDesktopMessagingAutomation()
+    {
+    }
+
+    internal WindowsDesktopMessagingAutomation(IApplicationOpenProvider clientOpener)
+    {
+        _clientOpener = clientOpener ?? throw new ArgumentNullException(nameof(clientOpener));
+    }
+
+    public async ValueTask<DesktopClientReadiness> EnsureClientOpenAsync(
+        string channel,
+        CancellationToken cancellationToken)
+    {
+        if (FindWindow(channel).Handle != 0)
+        {
+            return DesktopClientReadiness.AlreadyOpen;
+        }
+
+        // The same app.open the person can ask for: the installed client is
+        // resolved from the Start catalog and launched (or its tray instance
+        // shown), and its window verified.
+        _clientOpener ??= new WindowsInstalledApplicationOpenProvider();
+        ApplicationOpenResult opened = await _clientOpener.OpenAsync(
+            new ApplicationOpenRequest(ClientApplicationName(channel), "msgclient_" + Guid.NewGuid().ToString("N")),
+            cancellationToken).ConfigureAwait(false);
+        if (ClientOpenFailure(channel, opened) is { } failure)
+        {
+            return failure;
+        }
+
+        var clock = Stopwatch.StartNew();
+        while (clock.Elapsed < ClientReadyBudget)
+        {
+            (nint handle, _) = FindWindow(channel);
+            if (handle != 0 && ClientWindowReady(WindowTitle(handle)))
+            {
+                await Task.Delay(ClientSettleDelay, cancellationToken).ConfigureAwait(false);
+                return new(true, true, null);
+            }
+
+            await Task.Delay(ClientReadyPoll, cancellationToken).ConfigureAwait(false);
+        }
+
+        return new(false, true, $"{channel}_client_open_not_verified");
+    }
+
+    internal static string ClientApplicationName(string channel) =>
+        string.Equals(channel, "whatsapp", StringComparison.Ordinal) ? "WhatsApp" : "Discord";
+
+    // Not installed is said as such; any other open failure leaves the client
+    // unverified (the launch may have happened).
+    internal static DesktopClientReadiness? ClientOpenFailure(string channel, ApplicationOpenResult opened) =>
+        opened.Succeeded && opened.Verified
+            ? null
+            : string.Equals(opened.ErrorCode, ApplicationOpenErrorCodes.ApplicationNotFound, StringComparison.Ordinal)
+                ? new(false, false, $"{channel}_client_not_installed")
+                : new(false, opened.Receipt.LaunchIssued, $"{channel}_client_open_not_verified");
+
+    // A titled main window that is not the updater splash.
+    internal static bool ClientWindowReady(string title) =>
+        title.Trim().Length > 0
+        && !title.Contains("Updater", StringComparison.OrdinalIgnoreCase)
+        && !title.Contains("Updating", StringComparison.OrdinalIgnoreCase);
 
     public async ValueTask<DesktopRecipientObservation> ResolveAsync(
         string channel,

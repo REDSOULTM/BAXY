@@ -5199,14 +5199,12 @@ def _context_decided_result(
         decided = semantic_decider.ContextDecision(
             request=text, decision="clarify", operations=("email.latest.reply",), question="",
         )
-    if (
-        decided.decision == "action"
-        and set(decided.operations) & {"notification.schedule", "reminder.create"}
-        and asks_to_watch_the_news(text)
-    ):
+    if decided.decision != "limit" and asks_to_watch_the_news(text):
         # M104 (reserve v3z es631 «establecer notificaciones para las noticias sobre el gasoducto sur peruano» → a
         # notification scheduled for nothing): watching the news to tell when there is some is no operation; the
-        # limit says so, never a notice nobody can fill.
+        # limit says so, never a notice nobody can fill. D59 §6 (owner, 2026-10-02): whatever was decided (today's
+        # headlines read, a talk, a question about the time), and the limit offers to search the news now (the
+        # «news_watch_limit» shape).
         decided = semantic_decider.ContextDecision(request=text, decision="limit", operations=(), question="")
     if decided.decision == "limit" and dialogue_slot.takes_back(text, antecedent):
         # M84 (DEV-D v3o D-p01-t3 «no, cancel», D-p14-t3 «Cancelar foto» → «No cancelo la foto.»): taking back what was
@@ -7331,6 +7329,9 @@ def _recover_failed_turn(
     ``conversation_kinds`` (M104) are the kinds the failed attempts decided: talk whose wording failed is recovered as
     the talk it was understood to be (``conversationKind`` «knowledge», «social», «followup»), never as a conversation
     of no kind.
+
+    D59 §7 (owner, 2026-10-02): when the model ran and still wrote no valid question for a turn it did not understand,
+    the question is the one built with the person's own words (``_words_floor_result``).
     """
 
     objective = str(message.get("text", ""))[:2_048]
@@ -7477,6 +7478,15 @@ def _recover_failed_turn(
                     "failure_code": failure_code,
                 }
             )
+        if (
+            not text
+            # The model ran (its turn attempts failed, its composer answered nothing usable); with the model offline
+            # or unavailable, the protocol still writes no prose of its own.
+            and failure_kinds
+            and callable(getattr(llm, "compose_user_message", None))
+            and (floor := _words_floor_result(message, objective, nothing_to_clarify, attempts, failure_code))
+        ):
+            return audited(floor)
         return audited(
             {
                 "type": "turn.result",
@@ -7521,6 +7531,37 @@ def _recover_failed_turn(
             "failure_code": failure_code,
         }
     )
+
+
+def _words_floor_result(
+    message: dict[str, Any], objective: str, nothing_to_clarify: bool, attempts: int, failure_code: object,
+) -> dict[str, Any] | None:
+    """D59 §7 (owner, 2026-10-02): a turn not understood whose recovery wrote no valid question asks with the person's
+    own words (``semantic.dialogue.words_floor_question``), never a fixed «no pude entender»; None when the turn had
+    nothing to clarify (a limit, a capability, talk understood) or the message has no word to quote."""
+
+    if nothing_to_clarify:
+        return None
+    question = dialogue_slot.words_floor_question(
+        objective, "en" if _explicit_response_language(objective) == "en" else "es",
+    )
+    if not question:
+        return None
+    return {
+        "type": "turn.result",
+        "id": message.get("id"),
+        "kind": "clarify",
+        "operation": None,
+        "intentOperations": [],
+        "effectOperations": [],
+        "preserveObjective": False,
+        "question": question,
+        "reply": "",
+        "turn_attempts": max(0, attempts),
+        "turn_recovery": "words_floor_question",
+        "recovery_attempts": 1,
+        "failure_code": failure_code,
+    }
 
 
 def _recovery_conversation_facts(history: object, objective: str) -> dict[str, Any]:

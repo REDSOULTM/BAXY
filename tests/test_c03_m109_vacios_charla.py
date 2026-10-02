@@ -195,7 +195,10 @@ def test_an_operation_report_gets_no_talk_floor() -> None:
     failed = json.dumps({"kind": "failure", "polarity": "failure", "cause": "turn_runtime_failure",
                          "operationAttempted": False, "retryable": True})
     writer = _Writer(["Tengo dudas."] * 3 + ["¿Qué quieres que haga?"])
-    assert writer.compose_user_message("¿y eso es seguro?", "error", {"situation": failed}) == ""
+    # D59 §7 (owner, 2026-10-02): no talk floor is composed; the turn not understood is asked with the person's words.
+    assert writer.compose_user_message("¿y eso es seguro?", "error", {"situation": failed}) == (
+        '¿Qué quieres que haga con "eso es seguro"?'
+    )
     assert len(writer.sent) == 3
 
 
