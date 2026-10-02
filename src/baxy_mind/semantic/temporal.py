@@ -382,6 +382,29 @@ def spoken_clock(folded: str) -> SpokenClock | None:
     return clocks[0] if clocks else None
 
 
+# D61 (owner, 2026-10-02; reviewed literal H0036 «set an alarm for 8»): on an alarm, an hour after «for/para» with no
+# «at/a las» is its clock when nothing but the end, a day or a «please» follows it — never a length («for 8 minutes»),
+# a count or what the alarm is for («para una reunión»).
+_ALARM_FOR_HOUR = re.compile(
+    r"\b(?:alarm|alarma)\b.*?\b(?P<lead>for|para)\s+(?P<hour>\d{1,2}|"
+    + "|".join(sorted(_CLOCK_HOUR_WORDS, key=len, reverse=True)) + r")"
+    r"(?=\s*(?:$|[,;!?]|\.(?!\d)|(?:de\s+)?(?:hoy|manana|today|tomorrow|tonight|please|por\s+favor|porfa)\b))"
+)
+
+
+def alarm_for_hour(folded: str) -> str | None:
+    """«set an alarm for 8» → «at 8», «pon una alarma para 7» → «a las 7»: the hour as a clock ``spoken_clock`` reads
+    (D61: without its part of the day, the next time it comes), or None."""
+
+    found = _ALARM_FOR_HOUR.search(folded)
+    if found is None or spoken_clocks(folded):
+        return None
+    hour = found.group("hour")
+    if hour.isdecimal() and not 1 <= int(hour) <= 23:
+        return None
+    return f"{'at' if found.group('lead') == 'for' else 'a las'} {hour}"
+
+
 # --- A time counted from the moment BAXY just gave -------------------------------
 # M84 (DEV-D v3o D-w08-t3 «ponme recordatorio una ora antes d ese partido» after «América juega este 27 de septiembre
 # de 2026 contra Necaxa a las 21:00 horas.» → «¿Cuándo es ese partido?»; D-w02-t3 «ponme una alarma media hora antes
@@ -539,7 +562,7 @@ _MOMENT_THEN_TITLE_REMINDER = re.compile(
 
 def moment_then_title_reminder(text: str) -> tuple[str, str] | None:
     """(title, moment) of a reminder asked with its moment first and then what it is for, both as written; None
-    unless the moment holds exactly one clock with its part of the day."""
+    unless the moment holds exactly one clock (D61: without its part of the day, the next time it comes)."""
 
     said = " ".join(str(text or "").split())
     found = _MOMENT_THEN_TITLE_REMINDER.match(_same_length_fold(said))
@@ -547,7 +570,7 @@ def moment_then_title_reminder(text: str) -> tuple[str, str] | None:
         return None
     clocks = spoken_clocks(found.group("when"))
     title = said[found.start("title"):found.end("title")].strip()
-    if len(clocks) != 1 or not clocks[0].resolved or not re.search(r"[^\W\d_]", title):
+    if len(clocks) != 1 or not re.search(r"[^\W\d_]", title):
         return None
     return title, said[found.start("when"):found.end("when")].strip()
 

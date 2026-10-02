@@ -258,7 +258,7 @@ def test_a_marked_day_or_span_takes_the_whole_day(text, title, start, end) -> No
         ("necesito programar una reunión con esta persona", ("event_date_and_time",)),
         ("crea un evento para el viernes", ("start_time",)),
         ("quiero una reunión hasta las tres en punto", ("start_time",)),
-        ("reunirme con pablo mañana a las tres", ("am_pm_or_part_of_day_for_supplied_hour",)),
+        # D61 (owner, 2026-10-02): «reunirme con pablo mañana a las tres» is no longer asked (test below).
         ("pon reunión de almuerzo a las doce del mediodía cada miércoles de marzo",
          ("repetition_the_calendar_cannot_hold",)),
     ],

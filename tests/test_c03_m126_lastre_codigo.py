@@ -5,7 +5,8 @@ Ledger against the isolated decider (full3) on the reserve (2 757 first messages
 
 1. Explicit clarifications whose question never fixed the decider and broke it where it was right (the meeting's
    start, «necesito hacer algo hoy», where to resume a book) wait for the decider; what it decides is the turn. The
-   rest keep asking first (the hour without its part of the day is asked by reviewed literals).
+   rest keep asking first (the hour without its part of the day, asked by reviewed literals until D61, is no longer
+   asked: tests/test_c03_m129_d61_hora.py).
 2. A live weather question is the typed weather read (REOPEN1993 group W), as the decider reads it: the asking frame
    stripped («tiempo ahora») no longer hid it, «what is the current temperature» / «the ten day forecast» are read, and
    the public live lookup no longer takes a question the reading gate reads as the weather. A year said in words is no
@@ -126,8 +127,8 @@ def test_resuming_a_book_by_where_it_stopped_is_the_deciders_limit() -> None:
 @pytest.mark.parametrize(
     "text",
     [
-        # The hour without its part of the day: asked by reviewed literals (H0036, H0197, H0222, H0234, H0473, H0119).
-        "recuérdame la junta de mañana a las cinco",
+        # The hour without its part of the day («recuérdame la junta de mañana a las cinco») was here until D61 (owner,
+        # 2026-10-02): it is no longer asked at all (tests/test_c03_m129_d61_hora.py).
         # A repetition no alarm or reminder holds: the question is the honest limit.
         "please set a team meeting at ten a. m. for every tuesday in may",
     ],

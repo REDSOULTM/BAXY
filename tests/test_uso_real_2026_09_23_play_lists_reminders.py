@@ -278,8 +278,8 @@ def test_the_due_moment_is_the_one_said(value, context, now, expected_local):
         ("a las cinco", "recuérdame empezar la cena esta tarde a las cinco"),
         # A span is not one date.
         ("a las cinco de la manana", "despiértame a las cinco de la mañana esta semana"),
-        # No part of the day for a 1–12 hour.
-        ("a las cinco", "recuérdame a las cinco sacar la basura"),
+        # D61 (owner, 2026-10-02): a 1–12 hour without its part of the day is no longer here — it is the next time
+        # it comes (tests/test_c03_m129_d61_hora.py).
     ],
 )
 def test_a_moment_that_is_not_one_future_instant_is_not_invented(value, context):
@@ -306,11 +306,16 @@ def test_a_complete_alarm_or_reminder_is_scheduled_without_a_question(text, oper
     assert reading.effects is not None and reading.effects.operations == (operation,)
 
 
-@pytest.mark.parametrize("text", ["quiero una alarma a las 7", "recuérdame a las cinco y media sacar la basura"])
-def test_an_hour_without_its_part_of_the_day_is_still_asked(text):
+@pytest.mark.parametrize(
+    ("text", "operation"),
+    [("quiero una alarma a las 7", "notification.schedule"),
+     ("recuérdame a las cinco y media sacar la basura", "reminder.create")],
+)
+def test_an_hour_without_its_part_of_the_day_is_scheduled_without_a_question(text, operation):
+    # D61 (owner, 2026-10-02): these asked morning or afternoon; now the next time that hour comes is scheduled.
     reading = read(text, available_operations=OPERATIONS)
-    assert reading.clarification is not None
-    assert reading.clarification.missing_fields == ("am_pm_or_part_of_day_for_supplied_hour",)
+    assert reading.clarification is None
+    assert reading.effects is not None and reading.effects.operations == (operation,)
 
 
 def test_reading_the_reminders_stays_a_read():
