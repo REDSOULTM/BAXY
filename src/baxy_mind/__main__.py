@@ -7093,7 +7093,7 @@ def _decide_turn_result(
         and non_target_language is None
         and "web.search" in available_operations
         and planner_catalog.get("web.search") is not None
-        and _reference_lookup(objective, history) is not None
+        and (looked_up := _reference_lookup(objective, history)) is not None
     ):
         # M53 (D35): a named dish's recipe or a named work's plot is looked up before anything is said about it.
         shortlist = _shortlist_with_required_effects(shortlist, ("web.search",), planner_catalog)
@@ -7102,7 +7102,8 @@ def _decide_turn_result(
             {tool.name for tool in shortlist},
         )
         intent_operations = ["web.search"]
-        turn_audit["stages"].append(_turn_audit_stage("reference_looked_up", decision))
+        # D61: the kind looked up rides the audit, as on the decider's path (comprension_eval score --d35 reads it).
+        turn_audit["stages"].append({**_turn_audit_stage("reference_looked_up", decision), "kind": looked_up.kind})
 
     reply_text = ""
     # El idioma con el que se redacta la respuesta viaja con ella: el shell no
