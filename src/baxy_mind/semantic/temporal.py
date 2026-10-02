@@ -2363,6 +2363,18 @@ def iso_day_said(value: str, said: str, *, today: date | None = None) -> bool:
     return written is not None and written == task_due_date(said, today=today)
 
 
+def said_day_of(value: str, said: str, *, today: date | None = None) -> str | None:
+    """M118 (D58, DEV-F F-s022 due «2025-11-15» for «renovar el passport antes del 15 de noviembre»): the decider wrote
+    the day the person named with a year of its own; the day said, with the same month and day, is that day as the task
+    store reads it. None when the value is no written day or what was said names another."""
+
+    iso = _ISO_DATE.fullmatch(" ".join(str(value or "").split()))
+    if iso is None:
+        return None
+    meant = task_due_date(said, today=today)
+    return meant if meant is not None and meant[5:] == f"{iso.group('month')}-{iso.group('day')}" else None
+
+
 _DIAL_ONLY_CLOCK = re.compile(r"(?<![\d:])(?:[1-9]|1[0-2]):[0-5]\d$")
 
 

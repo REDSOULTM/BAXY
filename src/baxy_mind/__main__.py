@@ -39,9 +39,17 @@ from . import effect_intent
 from .semantic import decider as semantic_decider
 from .semantic import dialogue as dialogue_slot
 from .semantic import knowledge as semantic_knowledge
-from .semantic.apps import bare_close_pronoun, close_request_for_opened, deictic_close_request
-from .semantic.notes import asks_overdue_notifications, conversation_note_title, list_creation_said, names_own_event, task_change
+from .semantic.apps import bare_close_pronoun, close_request_for_opened, deictic_close_request, names_the_active_window
+from .semantic.notes import (
+    asks_overdue_notifications,
+    conversation_note_title,
+    list_creation_said,
+    named_list_creation,
+    names_own_event,
+    task_change,
+)
 from .semantic import levels as semantic_levels
+from .semantic.memory import explicit_memory_request
 from .semantic import reading as semantic_reading
 from .semantic import surface as semantic_surface
 from .semantic import temporal as semantic_temporal
@@ -110,6 +118,7 @@ from .planner import (
     PlannerTool,
     attach_arguments,
     conditional_predecessors,
+    enum_member_named,
     guarding_predecessors,
     is_required_predecessor,
     normalize_grounded_arguments,
@@ -3266,8 +3275,8 @@ def _decided_value(value: Any, contract: dict[str, Any]) -> Any:
     types = set(declared if isinstance(declared, list) else [declared])
     enum = contract.get("enum")
     if isinstance(enum, list):
-        folded = str(value).strip().casefold()
-        return next((item for item in enum if str(item).casefold() == folded), None)
+        # M118 (D58): the decider may name the member in the person's language («Descargas» → downloads).
+        return enum_member_named(value, enum)
     if "integer" in types and not isinstance(value, bool):
         if isinstance(value, int):
             return value
@@ -3282,7 +3291,11 @@ def _decided_value(value: Any, contract: dict[str, Any]) -> Any:
     if "boolean" in types:
         return value if isinstance(value, bool) else None
     if "string" in types:
-        if isinstance(value, str) and len(value) >= semantic_decider.ARGUMENT_VALUE_CHARACTERS:
+        if isinstance(value, str) and (
+            len(value) >= semantic_decider.ARGUMENT_VALUE_CHARACTERS
+            # M118 (DEV-F F-w42-t3, code cut at «…dni[-1].upper()\n    if \n»): lines left open at the end are cut too.
+            or ("\n" in value and value != value.rstrip())
+        ):
             # M67 (FINAL F-w14-t3): a text at the decider's bound is the start of a longer one (a query, a list BAXY
             # wrote), grounded but cut; the extraction reads it whole instead.
             return None
@@ -3305,13 +3318,32 @@ def _with_decided_arguments(
     decider gave nothing new for this operation.
     """
 
+    decided = _decided_fields(operation, request, schema, trusted_source)
+    if decided is None:
+        return None
+    merged = dict(arguments) if isinstance(arguments, dict) else {}
+    added = False
+    for name, value, field_schema in decided:
+        if name in merged and validate_argument_grounding({name: merged[name]}, field_schema, trusted_source):
+            continue
+        if validate_argument_grounding({name: value}, field_schema, trusted_source):
+            merged[name] = value
+            added = True
+    return merged if added else None
+
+
+def _decided_fields(
+    operation: str, request: str, schema: dict[str, object], trusted_source: str,
+) -> list[tuple[str, Any, dict[str, Any]]] | None:
+    """The decider's values for ``operation`` that a field may take, each with its one-field schema; None when the
+    decider gave none for this request. Identifiers stay with the kernel's dependencies and times with ``temporal``."""
+
     remembered = _DECIDED_ARGUMENTS.get(" ".join(request.split()))
     properties = schema.get("properties")
     if remembered is None or operation not in remembered[0] or not isinstance(properties, dict):
         return None
-    merged = dict(arguments) if isinstance(arguments, dict) else {}
     identities = set(_DETERMINISTIC_DEPENDENCY_FIELDS.get(operation, ()))
-    added = False
+    fields: list[tuple[str, Any, dict[str, Any]]] = []
     for name, raw in remembered[1]:
         contract = properties.get(name)
         if (
@@ -3322,16 +3354,86 @@ def _with_decided_arguments(
             or contract.get("format") in {"date-time", "date", "time"}
         ):
             continue
+        if name == "due":
+            raw = semantic_temporal.said_day_of(raw, trusted_source) or raw
         value = _decided_value(raw, contract)
         if value is None:
             continue
-        field_schema = {"type": "object", "properties": {name: contract}, "required": [name], "additionalProperties": False}
-        if name in merged and validate_argument_grounding({name: merged[name]}, field_schema, trusted_source):
-            continue
-        if validate_argument_grounding({name: value}, field_schema, trusted_source):
+        fields.append(
+            (name, value, {"type": "object", "properties": {name: contract}, "required": [name], "additionalProperties": False})
+        )
+    return fields
+
+
+# M118 (D58): the fields whose value is the person's words (a message, a note, a title, a search), where a restatement
+# may say the same thing differently; names of people, places in the catalog, paths and addresses stay literal.
+_LITERAL_ONLY_FIELDS = frozenset({"appId", "recipient", "url", "resourceUri", "relativePath", "path", "host", "name"})
+
+
+def _free_text_field(name: str, contract: dict[str, Any]) -> bool:
+    declared = contract.get("type")
+    types = set(declared if isinstance(declared, list) else [declared])
+    return (
+        "string" in types
+        and "enum" not in contract
+        and "const" not in contract
+        and name not in _LITERAL_ONLY_FIELDS
+    )
+
+
+def _with_decided_restatements(operation: str, request: str, schema: dict[str, object], trusted_source: str) -> str:
+    """M118 (D58): the trusted source with each free text the decider wrote that says what was said in other words
+    (``semantic.decider.said_in_other_words``): the literal grounding dropped them and the turn asked again for what the
+    person gave. What the decider brought that nobody said (a number, a name) still grounds nothing."""
+
+    decided = _decided_fields(operation, request, schema, trusted_source) or []
+    lines = trusted_source.splitlines()
+    restated = [
+        value
+        for name, value, field_schema in decided
+        if _free_text_field(name, field_schema["properties"][name])
+        and not validate_argument_grounding({name: value}, field_schema, trusted_source)
+        and semantic_decider.said_in_other_words(value, lines)
+    ]
+    return "\n".join([trusted_source, *restated]) if restated else trusted_source
+
+
+# M118 (D58): the fields whose words are what the operation delivers (a message, a note, what a reminder says); the
+# decider's wording of them stands over the readers'. A task's title and details keep the list model (M113: the entry,
+# the list it goes on), a search its query (D32, M53) and a song its title: there the readers' value is the operation's
+# own shape, not a reading of the person's words.
+_DECIDER_WORDING_FIELDS = frozenset({"text", "content", "body", "subject", "message"})
+_DECIDER_TITLED_OPERATIONS = ("note.", "notification.schedule", "reminder.create", "calendar.event.")
+
+
+def _with_decider_values_kept(
+    operation: str, request: str, arguments: dict[str, Any], schema: dict[str, object], trusted_source: str,
+) -> dict[str, Any]:
+    """M118 (D58, DEV-F F-w55-t5 «eso mandalo a una nota, titulala dentista» → the readers' title ««Dentista»» with
+    its quotes, F-w12-t1 «…una alarma pa las 6 y 40 mañana, que tengo que ir a buscar a la Trini al aeropuerto» → the
+    readers' title «alarma mañana a las 6:40»): the words the decider gave for what the operation delivers, grounded
+    in what was said, are never replaced by the readers' reading of the same field; what the decider left out keeps
+    the readers' value. The readers' arguments when the result would not hold the schema."""
+
+    decided = _decided_fields(operation, request, schema, trusted_source)
+    if not decided:
+        return arguments
+    merged = dict(arguments)
+    for name, value, field_schema in decided:
+        if (
+            name in merged
+            and merged[name] != value
+            and (
+                name in _DECIDER_WORDING_FIELDS
+                or (name == "title" and operation.startswith(_DECIDER_TITLED_OPERATIONS))
+            )
+            and _free_text_field(name, field_schema["properties"][name])
+            and validate_argument_grounding({name: value}, field_schema, trusted_source)
+        ):
             merged[name] = value
-            added = True
-    return merged if added else None
+    if merged != arguments and validate_json_schema_instance(merged, schema):
+        return merged
+    return arguments
 
 
 def _conversation_grounding_source(objective: str, history: object) -> str:
@@ -4795,12 +4897,15 @@ def _context_decided_result(
     planner_catalog: PlannerCatalog,
     on_limit: Callable[[str], dict[str, Any] | None] | None = None,
     application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
+    overheard: bool = False,
 ) -> dict[str, Any]:
     """The turn as the contextual decider reads it (``semantic.decider``), with the whole conversation.
 
     Fase 3.5b F2–F4: with the conversation in front of it, the model decides a turn better than the readers,
     the shortlist, the native selector and the gates together; the readers keep only the first message of a
     conversation they prove. The restated request travels as ``objective``: the arguments step reads it.
+    ``overheard``: the first message reads as talk the microphone caught (``semantic.guards._overheard_speech``);
+    only when the decider asks is the question the overheard one (M118).
     """
 
     text = str(message.get("text", ""))
@@ -4854,7 +4959,26 @@ def _context_decided_result(
         decider_tools, signatures = _decider_catalog(planner_catalog)
         decided = llm.decide_in_context(text, history, decider_tools, signatures=signatures)
         memory = next((op for op in decided.operations if op.startswith("memory.")), None)
-        if memory is not None:
+        if memory is not None and not any(
+            explicit_memory_request(said) for said in (text, _previous_user_request(history, text) or "")
+        ):
+            # M118 (reserve v4g after M114 put memory back in the decider's catalog: «mis contactos son mayormente
+            # masculinos o femeninos», «lugares de vacaciones», «cuando se acerca el cumpleaños de mi amigo», «give me
+            # petey's telephone number» → memory.recall, 9 of 25 breaks): BAXY's memory is the person's explicit request
+            # only (memory instrument). A memory choice nobody asked for is not the request: what else the decider chose,
+            # else what the readers prove in the message, else it is asked — what only the person knows is asked (M81),
+            # and a personal fact said without asking to keep it is asked about before it is kept (the App's AskToSave).
+            others = tuple(op for op in decided.operations if not op.startswith("memory."))
+            read = resolve_explicit_effects(text, available_operations, application_names) if not others else None
+            if others:
+                decided = semantic_decider.ContextDecision(
+                    decided.request, "action", others, decided.question, decided.arguments,
+                )
+            elif read is not None and not any(op.startswith("memory.") for op in read.operations):
+                decided = semantic_decider.ContextDecision(text, "action", tuple(read.operations), "")
+            else:
+                decided = semantic_decider.ContextDecision(text, "clarify", (), "")
+        elif memory is not None:
             # M114: memory is the App's own path (an explicit request, its confirmation); the mind never plans it with
             # other steps, so the decider's memory choice travels alone and the App answers it.
             decided = semantic_decider.ContextDecision(
@@ -4863,12 +4987,19 @@ def _context_decided_result(
     # M64 (v3f-final F-w14-t3): which fields the decider filled, never their values, so a turn whose arguments went
     # wrong can be told apart from one whose decider gave none.
     argument_fields = [name for name, _ in decided.arguments]
+    closes_a_pronoun = bare_close_pronoun(effect_intent._fold(text))[0]
     if (
         decided.decision == "action"
-        and (_deictic_open_request(text) or deictic_close_request(effect_intent._fold(text)))
-        and not dialogue_slot.restatement_was_said(
-            decided.request,
-            [text, *(str(turn.get("content") or "") for turn in history if isinstance(turn, dict))],
+        and (_deictic_open_request(text) or deictic_close_request(effect_intent._fold(text)) or closes_a_pronoun)
+        and (
+            not dialogue_slot.restatement_was_said(
+                decided.request,
+                [text, *(str(turn.get("content") or "") for turn in history if isinstance(turn, dict))],
+            )
+            # M118 (safety; cien-113 008 «cierra aquello» with nothing before it → «Cierra la ventana activa.» →
+            # window.active and app.close of the Notepad in front, stopped only by the App's confirmation; 2026-09-22
+            # «cerralo» closed VS Code): a pronoun is never the window in front.
+            or (closes_a_pronoun and names_the_active_window(decided.request))
         )
     ):
         # Fase 3.5b M19 (cien-104 «ábreme eso porfa» after the time → «Abre el navegador» → a browser opened): a
@@ -5087,6 +5218,15 @@ def _context_decided_result(
         # it is never a limit; what stands in the way (the failure just told, or nothing waiting for the yes) is said in
         # talk, with the conversation in front of the writer (M88 holds it to saying nothing was done).
         decided = semantic_decider.ContextDecision(request=text, decision="talk", operations=(), question="")
+    if decided.decision in {"talk", "limit"} and dialogue_slot.do_that_with_nothing_named(text, context.last_reply):
+        # M118 (cien-113 048 «haz eso» after «keep chatting without opening apps»: the decider talked and the writer
+        # invented «no tengo la capacidad de mantener conversaciones…»): «do that» with nothing to do named before it
+        # is asked («¿Qué es eso?»), never answered or refused.
+        decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
+    if decided.decision == "clarify" and dialogue_slot.remate_of_what_was_done(text, context.last_reply):
+        # M118 (owner script t57 «al volumen» after «He puesto el volumen en 100…» → «¿Cuánto le subo?»; conv-v3z2
+        # talked): naming only what was just done asks nothing again; it is answered as the remate it is.
+        decided = semantic_decider.ContextDecision(request=text, decision="talk", operations=(), question="")
     # cien-107 100: with a block of history the decider answered «talk» («Write a letter to Eris.»), the knowledge
     # contract let «…because I do not have access to external communication channels…» through; talk is bounded too.
     if decided.decision in {"clarify", "talk"} and effect_intent.out_of_world_request(text):
@@ -5108,7 +5248,13 @@ def _context_decided_result(
     reference = None
     recommended = False
     # M56 (v3c-final F-w14-t1): code the person asks for is written, whatever the decider's rewrite of it says.
-    if decided.decision == "talk" and "web.search" in available_operations and not asks_for_code(text):
+    if (
+        decided.decision == "talk"
+        and "web.search" in available_operations
+        and not asks_for_code(text)
+        # M118 (D58): a rate of what BAXY just said is worked out from its numbers, whatever the restatement names.
+        and not semantic_knowledge.rate_of_what_was_said(text, context.last_reply or "")
+    ):
         # M53 (D35): what the decider answers by talking but is a named dish's recipe or a named work's plot is
         # looked up first; the arguments step reads the same query from the same request.
         for said in dict.fromkeys((decided.request or text, text)):
@@ -5149,6 +5295,24 @@ def _context_decided_result(
             result["responseLanguage"] = language
     elif decided.decision == "clarify":
         question = decided.question
+        if overheard:
+            # M118 (DIALOGUE1513): the decider asks about talk the microphone caught; the question says no request for
+            # BAXY was found in it and asks whether the person needs something, and nothing in it is an objective.
+            try:
+                overheard_question = llm.clarify_unresolved_input(
+                    text,
+                    "overheard_speech",
+                    timeout=(
+                        DEICTIC_CLARIFICATION_CPU_BUDGET_SECONDS
+                        if os.environ.get("BAXY_MIND_NGL", "").strip() == "0"
+                        else TURN_DECIDE_RECOVERY_BUDGET_SECONDS
+                    ),
+                )
+            except (ValueError, RuntimeError):  # the decider's own question stands
+                overheard_question = ""
+            if overheard_question and _recovery_question_is_valid(overheard_question):
+                question = overheard_question
+                result["preserveObjective"] = False
         person_language = _read_reply_language(text, history)
         question_language = _decisive_request_language(question) if question else None
         if person_language in {"es", "en"} and question_language in {"es", "en"} and person_language != question_language:
@@ -5308,6 +5472,15 @@ def _direct_arguments_result(
     )
     question = ""
     said = _conversation_grounding_source(objective, message.get("history"))
+    # M118 (D58): what the decider wrote in other words of what was said is said, and what it gave is never replaced by
+    # the readers' reading of the same field.
+    said = _with_decided_restatements(
+        operation, str(message.get("text", "")), tool["function"]["parameters"], said,
+    )
+    if arguments is not None:
+        arguments = _with_decider_values_kept(
+            operation, str(message.get("text", "")), arguments, tool["function"]["parameters"], said,
+        )
     turn_language = (
         message.get("responseLanguage") if message.get("responseLanguage") in {"es", "en", "mixed"} else None
     )
@@ -5624,6 +5797,17 @@ def _decide_turn_result(
             previous_user_text=_previous_user_request(history, objective),
         )
     )
+    if (
+        explicit_clarification is not None
+        and served_surface is None
+        and explicit_clarification.missing_fields == ("list_entries",)
+        and named_list_creation(effect_intent._fold(objective))
+    ):
+        # M118 (D58, DEV-D D-s088 «create a new list of my pending bills» → «What items should be included…?» where the
+        # isolated decider made it): a new list named by what it is for is the contextual decider's, as M91 reads it
+        # after the decider; what goes on it is asked when the decider refuses it and its canonical surface is re-read
+        # (tanda 3 «añadir una nueva lista para material escolar»).
+        explicit_clarification = None
     missing_open_referent = (
         non_target_language is None
         and not content_drafting
@@ -5675,6 +5859,13 @@ def _decide_turn_result(
         # Fase 3.5 (owner 2026-09-21, turns 156–167, 208): a long message right
         # after BAXY spoke is the person talking to BAXY, not a conversation the
         # microphone overheard (DIALOGUE1513's rows all arrive with no dialogue).
+        unresolved_input_kind = None
+    overheard = unresolved_input_kind == "overheard_speech"
+    if overheard:
+        # M118 (D58; DEV-D/F against the isolated decider: 0 fixes, 4 breaks — «Oye, pues nada, hazme un ping al
+        # 1.1.1.1, que el Valorant me va a tirones…», «I'd like to watch a movie called After the Wedding…», «Elabora
+        # una lista con las cápsulas del tiempo más famosas…»): long talk with no order verb the readers know is read by
+        # the contextual decider, which reads all of it. Only when the decider asks is the question the overheard one.
         unresolved_input_kind = None
     if unresolved_input_kind == "bare_path":
         known_path = effect_intent.known_folder_file_path(objective)
@@ -5776,7 +5967,7 @@ def _decide_turn_result(
             # A new command can lack a value without supplying one for the
             # preceding request. Keep its own objective for the next answer.
             result["startsNewObjective"] = True
-        if unresolved_input_kind in {"overheard_speech", "noise", "echoed_words"}:
+        if unresolved_input_kind in {"noise", "echoed_words"}:
             # Nothing in it was a request: there is no objective for the next
             # message to complete, so talk after it is never joined to it.
             result["preserveObjective"] = False
@@ -6138,6 +6329,33 @@ def _decide_turn_result(
         )
         if withdrawn_closed_refusal:
             explicit_conversation_decision = None
+    public_lookup_read: list[bool] = []
+
+    def public_lookup() -> bool:
+        # The public-lookup guard is a model call: read once per turn.
+        if not public_lookup_read:
+            public_lookup_read.append(
+                _public_lookup_applies(objective, routing_objective, llm, available_operations, planner_catalog)
+            )
+        return public_lookup_read[0]
+
+    if (
+        explicit_intent is None
+        and explicit_conversation_decision is not None
+        and explicit_conversation_decision is stable_no_effect_decision
+        and explicit_conversation_decision.get("conversation_kind") == "knowledge"
+        and non_target_language is None
+        and public_lookup()
+    ):
+        # M118 (D58; DEV-D/F: the stable-knowledge reader and the public-lookup guard disagreed on 8 first messages, and
+        # the guard's search broke D-s096 «¿Cuál es la diferencia entre un Int y Float…?» where the isolated decider
+        # talked): two readings that disagree are no proof; the contextual decider decides the turn (and a recipe or a
+        # figure it answers by talking is still looked up, D35).
+        explicit_conversation_decision = None
+    if overheard and explicit_intent is None:
+        # M118: talk the microphone may have caught is the contextual decider's, never a conversation reader's reply
+        # to it (DIALOGUE1513: answered as if it were addressed to BAXY).
+        explicit_conversation_decision = None
     if explicit_conversation_decision is None and (explicit_intent is None or in_conversation):
         # No reader proved this message, or it follows earlier turns and no conversation reader kept it:
         # the contextual decider decides it (Fase 3.5b F4), not the shortlist, the native selector and
@@ -6164,7 +6382,7 @@ def _decide_turn_result(
 
         return _context_decided_result(
             message, llm=llm, planner_catalog=planner_catalog, on_limit=reread_limit,
-            application_names=application_names,
+            application_names=application_names, overheard=overheard,
         )
     if explicit_intent is not None:
         _emit_early_turn_signal(
@@ -6315,9 +6533,7 @@ def _decide_turn_result(
             ((tool_by_name.get(operation) or {}).get("function") or {}).get("risk") == "read_only"
             for operation in withdrawn_effects
         )
-        and _public_lookup_applies(
-            objective, routing_objective, llm, available_operations, planner_catalog,
-        )
+        and public_lookup()
     ):
         # Uso real 2026-09-23 «qué hora es en tokio» (system.time reads only this
         # PC's clock), «cuánto está el dólar hoy en chile», «dime alguna noticia de
@@ -6549,9 +6765,7 @@ def _decide_turn_result(
         decision["mode"] == "conversation"
         and decision.get("conversation_kind") in {"knowledge", "unsupported"}
         and non_target_language is None
-        and _public_lookup_applies(
-            objective, routing_objective, llm, available_operations, planner_catalog,
-        )
+        and public_lookup()
     ):
         shortlist = _shortlist_with_required_effects(shortlist, ("web.search",), planner_catalog)
         decision = validate_turn_decision(

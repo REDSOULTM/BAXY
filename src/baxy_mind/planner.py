@@ -121,6 +121,12 @@ _ENUM_EVIDENCE_ALIASES = {
         "downloaded",
         "descargas",
         "descargue",
+        # M118 (DEV-F F-w39-t1 «…el apunte_termo_u2.pdf? lo bajé ayer…» → the decider's folder «Descargas»): «bajar» a
+        # file is downloading it.
+        "lo baje",
+        "la baje",
+        "los baje",
+        "las baje",
     ),
     # Tanda 3 «Muéstrame mi Gallery.»: Explorer's Gallery (Galería) is the pictures folder shown (lexicon.GALLERY_NOUNS,
     # which semantic.surface rewrites the same way); a proposal naming it is grounded, not asked which folder.
@@ -895,6 +901,22 @@ def _validate_property(value: Any, contract: Any) -> bool:
     if isinstance(value, dict):
         return validate_json_schema_instance(value, contract)
     return True
+
+
+def enum_member_named(value: object, enum: list[Any]) -> Any | None:
+    """M118 (D58, DEV-F F-w19-t2 folder «Descargas»): the member of ``enum`` a value names, by the member itself or by
+    one of the words that ground it (``_ENUM_EVIDENCE_ALIASES``); None when it names none."""
+
+    key = identity_text(str(value))
+    if not key:
+        return None
+    for member in enum:
+        if identity_text(str(member)) == key:
+            return member
+    for member in enum:
+        if any(identity_text(alias) == key for alias in _ENUM_EVIDENCE_ALIASES.get(member, ())):
+            return member
+    return None
 
 
 def validate_argument_grounding(
