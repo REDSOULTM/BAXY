@@ -113,6 +113,7 @@ from .llm import (
     _merged_observed,
     _native_selection_description,
     _previous_reply_fields,
+    _single_fenced_code,
     _situation_from_facts,
     served_capability_families,
     talk_reply_tells_a_failure,
@@ -3311,10 +3312,15 @@ def _decided_value(value: Any, contract: dict[str, Any]) -> Any:
     if "boolean" in types:
         return value if isinstance(value, bool) else None
     if "string" in types:
+        if isinstance(value, (list, dict)):
+            # M141: a list or an object is never one text; its rendering («['Spotify', 'Discord']») grounds by words.
+            return None
         if isinstance(value, str) and (
             len(value) >= semantic_decider.ARGUMENT_VALUE_CHARACTERS
             # M118 (DEV-F F-w42-t3, code cut at «…dni[-1].upper()\n    if \n»): lines left open at the end are cut too.
-            or ("\n" in value and value != value.rstrip())
+            # M141 (DEV-G v4n G-w06-t3 «guárdalo en un archivo que se llame suma.py» → «def sumar(a, b):\n    return
+            # a + b\n»): a closed last line followed by its line break is whole, not open.
+            or ("\n" in value and value.rstrip("\r\n") != value.rstrip())
         ):
             # M67 (FINAL F-w14-t3): a text at the decider's bound is the start of a longer one (a query, a list BAXY
             # wrote), grounded but cut; the extraction reads it whole instead.
@@ -3330,15 +3336,20 @@ def _with_decided_arguments(
     arguments: object,
     schema: dict[str, object],
     trusted_source: str,
+    *,
+    serves: tuple[str, ...] = (),
+    previous_reply: str | None = None,
 ) -> dict[str, Any] | None:
     """Fill what the extraction left out or could not ground with what the decider read.
 
     Each value must be grounded in the trusted text like any model-proposed literal; identifiers stay with the
     kernel's dependencies and times with ``temporal`` (the decider's own ISO dates are not trusted). None when the
-    decider gave nothing new for this operation.
+    decider gave nothing new for this operation. ``serves`` and ``previous_reply``: see ``_decided_fields``.
     """
 
-    decided = _decided_fields(operation, request, schema, trusted_source)
+    decided = _decided_fields(
+        operation, request, schema, trusted_source, serves=serves, previous_reply=previous_reply,
+    )
     if decided is None:
         return None
     merged = dict(arguments) if isinstance(arguments, dict) else {}
@@ -3400,14 +3411,28 @@ def _schema_field_of(name: str, operation: str, properties: dict[str, Any], requ
 
 
 def _decided_fields(
-    operation: str, request: str, schema: dict[str, object], trusted_source: str,
+    operation: str,
+    request: str,
+    schema: dict[str, object],
+    trusted_source: str,
+    *,
+    serves: tuple[str, ...] = (),
+    previous_reply: str | None = None,
 ) -> list[tuple[str, Any, dict[str, Any]]] | None:
     """The decider's values for ``operation`` that a field may take, each with its one-field schema; None when the
-    decider gave none for this request. Identifiers stay with the kernel's dependencies and times with ``temporal``."""
+    decider gave none for this request. Identifiers stay with the kernel's dependencies and times with ``temporal``.
+
+    ``serves``: the decided operations this one is the catalog's prerequisite of (M141, a plan's ``window.resolve``
+    before the decided ``window.snap``), whose values it may take too. ``previous_reply``: BAXY's last reply, whole; a
+    free text the decider wrote that is that reply (or its one code block) in the same words is the reply verbatim."""
 
     remembered = _DECIDED_ARGUMENTS.get(" ".join(request.split()))
     properties = schema.get("properties")
-    if remembered is None or operation not in remembered[0] or not isinstance(properties, dict):
+    if (
+        remembered is None
+        or not ({operation, *serves} & set(remembered[0]))
+        or not isinstance(properties, dict)
+    ):
         return None
     identities = set(_DETERMINISTIC_DEPENDENCY_FIELDS.get(operation, ()))
     required = schema.get("required") if isinstance(schema.get("required"), list) else []
@@ -3428,13 +3453,127 @@ def _decided_fields(
             continue
         if name == "due":
             raw = semantic_temporal.said_day_of(raw, trusted_source) or raw
-        value = _decided_value(raw, contract)
+        verbatim = (
+            _reply_the_decider_wrote(raw, previous_reply)
+            if previous_reply and _free_text_field(name, contract)
+            else None
+        )
+        value = verbatim if verbatim is not None else _decided_value(raw, contract)
         if value is None:
             continue
         fields.append(
             (name, value, {"type": "object", "properties": {name: contract}, "required": [name], "additionalProperties": False})
         )
     return fields
+
+
+def _reply_the_decider_wrote(value: Any, previous_reply: str) -> str | None:
+    """M141 (DEV-G v4o G-w06-t3 «guárdalo en un archivo que se llame suma.py» after BAXY's ```python block → the
+    decider's ``text`` «def sumar(a, b):\\n    return a + b\\n» → «¿Cuál es el código…?»): BAXY's previous reply, or its
+    one code block, verbatim when the decider's free text is it in the same words (or, cut at the decider's bound, its
+    start). The decider's values are whitespace-folded and bounded, so code and lists travel only through here (M67)."""
+
+    if not isinstance(value, str) or not value.strip():
+        return None
+    written = " ".join(value.split())
+    cut = len(value) >= semantic_decider.ARGUMENT_VALUE_CHARACTERS
+    for candidate in (_single_fenced_code(previous_reply), previous_reply.strip()):
+        if not candidate:
+            continue
+        said = " ".join(candidate.split())
+        if said == written or (cut and said.startswith(written)):
+            return candidate
+    return None
+
+
+def _decided_reply_field(operation: str, request: str, schema: dict[str, object], previous_reply: str | None) -> bool:
+    """M141: the decider wrote BAXY's previous reply (``_reply_the_decider_wrote``) into one of this operation's fields."""
+
+    if not previous_reply:
+        return False
+    reply = previous_reply.strip()
+    candidates = {reply, _single_fenced_code(reply) or reply}
+    return any(
+        value in candidates
+        for _, value, _ in _decided_fields(operation, request, schema, "", previous_reply=reply) or ()
+    )
+
+
+def _said_single_members(schema: dict[str, object], trusted_source: str) -> dict[str, Any]:
+    """M141: each required field with one possible value (a one-member enum, a const) that was said — Spotify for
+    ``media.play.query``'s provider. Nothing is chosen: the field can take no other value."""
+
+    properties = schema.get("properties") if isinstance(schema.get("properties"), dict) else {}
+    required = schema.get("required") if isinstance(schema.get("required"), list) else []
+    said: dict[str, Any] = {}
+    for field in required:
+        contract = properties.get(field)
+        if not isinstance(contract, dict):
+            continue
+        members = contract.get("enum") if isinstance(contract.get("enum"), list) else (
+            [contract["const"]] if "const" in contract else []
+        )
+        if len(members) != 1:
+            continue
+        field_schema = {"type": "object", "properties": {field: contract}, "required": [field], "additionalProperties": False}
+        if validate_argument_grounding({field: members[0]}, field_schema, trusted_source):
+            said[field] = members[0]
+    return said
+
+
+def _plan_step_decided_arguments(
+    operation: str,
+    plan_operations: tuple[str, ...],
+    objective: str,
+    tool: dict,
+    history: object,
+    *,
+    extracted: object = None,
+    after_extraction: bool = False,
+) -> dict[str, Any] | None:
+    """M141 (DEV-G v4o G-s040 «open Notepad and put it on the left half of the screen please» → the decider's
+    {"app": "Notepad", "side": "left"}; G-s116 «abrí spotify y ponime algo de jazz tranqui…» → {"app.open":
+    "Spotify", "media.play.query": "jazz tranquilo"}; both → «¿Cuál es el nombre… de la aplicación…?»): a plan step
+    takes what the decider read, as one operation does (M42b, M136), so the planner's extraction runs only for what
+    is still missing and asks only for that.
+
+    Before the extraction, only a step whose operation the decider decided, and only when its values (with each
+    one-valued field that was said) fill the whole step. After the extraction failed, its values are completed with
+    the decider's, and a catalog prerequisite of a decided effect (``window.resolve`` before ``window.snap``) may take
+    them too. An operation that is two steps of the plan takes none: the decider's values cannot say which step is
+    whose. Every value grounds in what was said in this conversation (M43); the arguments, or None."""
+
+    if plan_operations.count(operation) != 1:
+        return None
+    schema = tool["function"]["parameters"]
+    served: tuple[str, ...] = ()
+    if after_extraction:
+        served = tuple(dict.fromkeys(
+            effect for effect in plan_operations if operation in required_predecessors(effect)
+        ))
+        if len(served) != 1 or plan_operations.count(served[0]) != 1:
+            served = ()
+    elif _previous_reply_may_be_content(tool, history):
+        # As M42b: a content that may be BAXY's last reply is read by the extraction, not by the decider alone.
+        return None
+    said = _conversation_grounding_source(objective, history)
+    said = _with_decided_restatements(operation, objective, schema, said)
+    said = _with_every_known_folder_unsaid(operation, schema, said)
+    read = dict(extracted) if isinstance(extracted, dict) else {}
+    base = {**_said_single_members(schema, said), **read}
+    decided = _with_decided_arguments(operation, objective, base, schema, said, serves=served)
+    if decided is None:
+        if not after_extraction or base == read:
+            return None
+        # The extraction's values completed with a one-valued field that was said.
+        decided = base
+    grounded = normalize_grounded_arguments(decided, schema, said)
+    if grounded is None:
+        return None
+    normalized = _normalize_grounded_operation_arguments(operation, grounded, objective)
+    if normalized is None or not validate_json_schema_instance(normalized, schema):
+        return None
+    return normalized
 
 
 # M136 (DEV-G v4n G-s123 «resúmeme el pdf ese que se llama contrato_arriendo_2026…», G-w40-t1 «busca un archivo que se
@@ -3591,12 +3730,14 @@ def _previous_reply_may_be_content(tool: dict, history: object) -> bool:
 
 
 def _decided_arguments_alone(
-    operation: str, request: str, tool: dict, trusted_source: str,
+    operation: str, request: str, tool: dict, trusted_source: str, *, previous_reply: str | None = None,
 ) -> dict[str, Any] | None:
     """The decider's values when they ground every required field and the operation's own normalization."""
 
     schema = tool["function"]["parameters"]
-    decided = _with_decided_arguments(operation, request, {}, schema, trusted_source)
+    decided = _with_decided_arguments(
+        operation, request, {}, schema, trusted_source, previous_reply=previous_reply,
+    )
     if decided is None:
         return None
     grounded = normalize_grounded_arguments(decided, schema, trusted_source)
@@ -5662,11 +5803,23 @@ def _direct_arguments_result(
         arguments, question = _edited_task_arguments(
             llm, objective, person, tool, edited, said, turn_language,
         )
-    if arguments is None and not question and not _previous_reply_may_be_content(tool, message.get("history")):
+    # M141 (DEV-G v4o G-w06-t3 «guárdalo en un archivo que se llame suma.py» → «¿Cuál es el código…?»): when the
+    # decider wrote BAXY's last reply (its code) as the content, that reply is the content verbatim and is said.
+    last_reply = _previous_reply(message.get("history"))
+    reply_written = (
+        last_reply
+        if _decided_reply_field(operation, str(message.get("text", "")), tool["function"]["parameters"], last_reply)
+        else None
+    )
+    if reply_written is not None:
+        said = f"{said}\n{reply_written}"
+    if arguments is None and not question and (
+        reply_written is not None or not _previous_reply_may_be_content(tool, message.get("history"))
+    ):
         # M42b: what the decider read, grounded in what was said, is enough on its own; the separate
         # extraction call runs only when a required value is still missing.
         arguments = _decided_arguments_alone(
-            operation, str(message.get("text", "")), tool, said,
+            operation, str(message.get("text", "")), tool, said, previous_reply=reply_written,
         )
     if arguments is None and not question and operation == "document.pdf.read":
         # M127 (DEV-C v4i C-w10-t4): the PDF named by its file name earlier in the conversation is read where that
@@ -5718,6 +5871,7 @@ def _direct_arguments_result(
             extracted,
             tool["function"]["parameters"],
             said,
+            previous_reply=reply_written,
         )
         arguments, question = prepare_direct_argument_result(
             llm,
@@ -8823,6 +8977,7 @@ def _run_sidecar(
                     )
                 arguments_by_step: dict[str, dict] = {}
                 argument_requests: list[dict] = []
+                plan_operations = tuple(step.operation for step in proposal.steps)
                 # M76 (DEV-D v3l D-w16-t2 «Actually, make it 6:30.», D-w04-t4, D-w18-t5): moving the notification the
                 # last turn set takes its new time from the person's message and the rest from what was verified.
                 retimed = (
@@ -8931,6 +9086,14 @@ def _run_sidecar(
                             if authored is not None and validate_json_schema_instance(authored, schema):
                                 arguments_by_step[step.step_id] = authored
                                 continue
+                    decided_step = _plan_step_decided_arguments(
+                        step.operation, plan_operations, objective, tool, history,
+                    )
+                    if decided_step is not None:
+                        # M141 (DEV-G v4o G-s040, G-s116): what the decider read fills the step; the extraction
+                        # call is spent only on the steps still missing a value.
+                        arguments_by_step[step.step_id] = decided_step
+                        continue
                     argument_requests.append(
                         {
                             "id": step.step_id,
@@ -8968,6 +9131,13 @@ def _run_sidecar(
                         )
                         if grounded is None and "dueUtc" in schema.get("required", []):
                             fields = ("dueUtc",)
+                    if grounded is None:
+                        # M141: what the extraction left out or could not ground is completed with what the decider
+                        # read before anything is asked.
+                        grounded = _plan_step_decided_arguments(
+                            str(request["operation"]), plan_operations, objective, tool, history,
+                            extracted=arguments, after_extraction=True,
+                        )
                     if grounded is None:
                         change = (
                             semantic_temporal.notification_change(objective)
