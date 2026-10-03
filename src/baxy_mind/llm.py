@@ -10686,6 +10686,31 @@ _CURRENCY_SIGN_NAMES = {
     "€": frozenset({"euro", "euros"}),
     "£": frozenset({"libra", "libras", "pound", "pounds"}),
 }
+# M146 (DEV-H v4o H-s001 «oye, ¿me podrias decir a como anda el dolar hoy?» over the reference rate «1 USD = 981.19
+# CLP»): «Hoy el dólar está a 981.19 pesos chilenos.» died as search_report_unsourced_claim on «pesos» and «chilenos»,
+# the turn ended in ⚠ (v4o) or in a false «No encontré…» (v4p, v4q). A currency code the pages write is said with its
+# name, as a sign is; its figures are still the pages' own. Folded; the codes the rate source serves (Frankfurter).
+_CURRENCY_CODE_NAMES = {
+    "USD": frozenset({"dolar", "dolares", "dollar", "dollars", "estadounidense", "estadounidenses"}),
+    "EUR": frozenset({"euro", "euros"}),
+    "GBP": frozenset({"libra", "libras", "esterlina", "esterlinas", "pound", "pounds", "sterling"}),
+    "JPY": frozenset({"yen", "yenes", "japones", "japoneses", "japanese"}),
+    "CAD": frozenset({"dolar", "dolares", "dollar", "dollars", "canadiense", "canadienses", "canadian"}),
+    "AUD": frozenset({"dolar", "dolares", "dollar", "dollars", "australiano", "australianos", "australian"}),
+    "NZD": frozenset({"dolar", "dolares", "dollar", "dollars", "neozelandes", "neozelandeses"}),
+    "CHF": frozenset({"franco", "francos", "suizo", "suizos", "franc", "francs", "swiss"}),
+    "CNY": frozenset({"yuan", "yuanes", "renminbi", "chino", "chinos", "chinese"}),
+    "INR": frozenset({"rupia", "rupias", "rupee", "rupees", "india", "indian"}),
+    "MXN": frozenset({"peso", "pesos", "mexicano", "mexicanos", "mexican"}),
+    "CLP": frozenset({"peso", "pesos", "chileno", "chilenos", "chilean"}),
+    "ARS": frozenset({"peso", "pesos", "argentino", "argentinos", "argentine"}),
+    "COP": frozenset({"peso", "pesos", "colombiano", "colombianos", "colombian"}),
+    "UYU": frozenset({"peso", "pesos", "uruguayo", "uruguayos", "uruguayan"}),
+    "DOP": frozenset({"peso", "pesos", "dominicano", "dominicanos", "dominican"}),
+    "PHP": frozenset({"peso", "pesos", "filipino", "filipinos", "philippine"}),
+    "BRL": frozenset({"real", "reales", "reais", "brasileno", "brasilenos", "brazilian"}),
+    "PEN": frozenset({"sol", "soles", "peruano", "peruanos", "peruvian"}),
+}
 
 
 # M70 (held-out v3h t14 «averiguá qué dijo la crítica»): «Otra menciona que John Carpenter no se subió a los elogios» over
@@ -10950,6 +10975,10 @@ def _search_report_sentences(text: str, payload: dict, user_text: str) -> list[_
     # pages write is said with its name.
     for sign, names in _CURRENCY_SIGN_NAMES.items():
         if sign in results_text:
+            observed |= names
+    for code, names in _CURRENCY_CODE_NAMES.items():
+        # M146: the code as the pages write it, a whole upper-case word («981.19 CLP»).
+        if re.search(rf"(?<![A-Za-z]){code}(?![A-Za-z])", results_text):
             observed |= names
     results = [item for item in _search_results_of(payload) if isinstance(item, dict)]
 
@@ -16142,20 +16171,29 @@ def compose_visible_defect(
         return "extra_claim"
     if "spotify" in folded and "spotify" not in blob and not _said_misspelled(user_text, "spotify"):
         return "unmentioned_name"
-    if re.search(
-        r"observable state|observed state|observed status|"
-        r"\bthe status is\b|"
-        r"\bstatus update\b|\bstatus:\s*success\b|\bpolarity\b|"
-        r"request analysis|failure in request|"
-        # Fase 3.5 (corpus A/C: «Sí, pero el análisis de la solicitud falló»):
-        # the cause code request_analysis_failed read aloud in Spanish.
-        r"an[aá]lisis de (?:la|tu) (?:solicitud|petici[oó]n)|an[aá]lisis del pedido|"
-        r"(?:la|tu) solicitud fall[oó]|el an[aá]lisis fall[oó]|"
-        r"one english sentence|^una frase\b|\bcontrato\b|"
-        r"responder en espa|con una frase|dato adicional|no tengo acceso|"
-        r"idioma obligatorio|mandatory language|situacion del turno|"
-        r"situación del turno|segun la situacion|según la situación",
-        folded,
+    # M146 (DEV-G v4p/v4q G-s087 «resúmeme el pdf del contrato de alquiler que tengo en documentos», file absent):
+    # «No pude leer el contrato de alquiler porque el archivo no se encontró en la carpeta documentos.» died three
+    # times here and the turn ended in ⚠. «contrato» is the prompt's word for its own contract, but a word of this
+    # list the person said is theirs (the same exemption as the prompt echo below); everything else still counts. Their
+    # own message when it is known, not the request as the model understood it (H-w37-t1 below).
+    said_folded = (said or user_text or "").casefold()
+    if any(
+        found.group(0) not in said_folded
+        for found in re.finditer(
+            r"observable state|observed state|observed status|"
+            r"\bthe status is\b|"
+            r"\bstatus update\b|\bstatus:\s*success\b|\bpolarity\b|"
+            r"request analysis|failure in request|"
+            # Fase 3.5 (corpus A/C: «Sí, pero el análisis de la solicitud falló»):
+            # the cause code request_analysis_failed read aloud in Spanish.
+            r"an[aá]lisis de (?:la|tu) (?:solicitud|petici[oó]n)|an[aá]lisis del pedido|"
+            r"(?:la|tu) solicitud fall[oó]|el an[aá]lisis fall[oó]|"
+            r"one english sentence|^una frase\b|\bcontrato\b|"
+            r"responder en espa|con una frase|dato adicional|no tengo acceso|"
+            r"idioma obligatorio|mandatory language|situacion del turno|"
+            r"situación del turno|segun la situacion|según la situación",
+            folded,
+        )
     ):
         return "internal_code"
     if "estado observable" in folded or re.search(
@@ -17083,43 +17121,56 @@ def compose_visible_defect(
                 operation == "app.open" and _claims_it_performed_the_open(folded)
             ):
                 return "missing_state"
-        verified_media_transport = (
-            operation == "media.control"
-            and situation.get("verified") is True
-            and situation.get("succeeded") is True
-            # MUSIC1593: the local YouTube player reports and stops its own
-            # playback with the same fields as an SMTC session.
-            and observed_dict.get("authority") in {"windows_smtc", "local_youtube_player"}
-            and isinstance(observed_dict.get("sourceAppUserModelId"), str)
-            and bool(observed_dict["sourceAppUserModelId"].strip())
-            and observed_dict.get("playbackStatus") in {"playing", "paused", "stopped"}
-        ) or (
-            # MUSIC1553: the local YouTube playback names what plays by its
-            # observed title; «título» need not be said for the quote to count.
-            operation == "media.play.youtube"
-            and situation.get("verified") is True
-            and situation.get("succeeded") is True
-            and observed_dict.get("playbackStatus") == "playing"
-        ) or (
-            # MUSIC1747 «pon michael jackson en spotify»: the Spotify client
-            # playback names what plays by its observed title the same way.
-            operation in {"media.play.query", "media.play.exact"}
-            and situation.get("verified") is True
-            and situation.get("succeeded") is True
-            and observed_dict.get("playbackStatus") == "playing"
-            and isinstance(observed_dict.get("title"), str)
-        ) or (
-            # Las filas de vídeo «pon Stranger Things en Netflix»: la
-            # reproducción en la sesión de streaming nombra lo que se ve por su
-            # título observado, igual que Spotify o el reproductor local. Sin
-            # estar aquí, el guardián exigía además la palabra «título» en la
-            # respuesta, y los tres borradores —«Ya está reproduciendo Stranger
-            # Things en Netflix»— morían en missing_name con el vídeo avanzando.
-            operation == "streaming.play.named"
-            and situation.get("verified") is True
-            and situation.get("succeeded") is True
-            and observed_dict.get("playbackStatus") == "playing"
-            and isinstance(observed_dict.get("title"), str)
+        def media_transport(operation: str, situation: dict, observed_dict: dict) -> bool:
+            return (
+                operation == "media.control"
+                and situation.get("verified") is True
+                and situation.get("succeeded") is True
+                # MUSIC1593: the local YouTube player reports and stops its own
+                # playback with the same fields as an SMTC session.
+                and observed_dict.get("authority") in {"windows_smtc", "local_youtube_player"}
+                and isinstance(observed_dict.get("sourceAppUserModelId"), str)
+                and bool(observed_dict["sourceAppUserModelId"].strip())
+                and observed_dict.get("playbackStatus") in {"playing", "paused", "stopped"}
+            ) or (
+                # MUSIC1553: the local YouTube playback names what plays by its
+                # observed title; «título» need not be said for the quote to count.
+                operation == "media.play.youtube"
+                and situation.get("verified") is True
+                and situation.get("succeeded") is True
+                and observed_dict.get("playbackStatus") == "playing"
+            ) or (
+                # MUSIC1747 «pon michael jackson en spotify»: the Spotify client
+                # playback names what plays by its observed title the same way.
+                operation in {"media.play.query", "media.play.exact"}
+                and situation.get("verified") is True
+                and situation.get("succeeded") is True
+                and observed_dict.get("playbackStatus") == "playing"
+                and isinstance(observed_dict.get("title"), str)
+            ) or (
+                # Las filas de vídeo «pon Stranger Things en Netflix»: la
+                # reproducción en la sesión de streaming nombra lo que se ve por su
+                # título observado, igual que Spotify o el reproductor local. Sin
+                # estar aquí, el guardián exigía además la palabra «título» en la
+                # respuesta, y los tres borradores —«Ya está reproduciendo Stranger
+                # Things en Netflix»— morían en missing_name con el vídeo avanzando.
+                operation == "streaming.play.named"
+                and situation.get("verified") is True
+                and situation.get("succeeded") is True
+                and observed_dict.get("playbackStatus") == "playing"
+                and isinstance(observed_dict.get("title"), str)
+            )
+
+        # M146 (DEV-G v4p/v4q G-s116 «abrí spotify y ponime algo de jazz tranqui…», plan app.open + media.play.query
+        # verified): «Abrí Spotify y ya está reproduciendo "Vendla - After Winter Comes Spring"…» died three times as
+        # missing_name, because the mission has no operation of its own and only a single playback was let name what
+        # plays by its title. A step of the mission that verified that playback, with that same title, names it the
+        # same way; the title must still be in the reply.
+        verified_media_transport = media_transport(operation, situation, observed_dict) or any(
+            isinstance(step.get("observed"), dict)
+            and step["observed"].get("title") == observed_dict.get("title")
+            and media_transport(str(step.get("operation") or ""), step, step["observed"])
+            for step in _situation_steps(situation)
         )
         # H0516 «… guarda una captura en el escritorio …»: la captura de pantalla
         # no lleva ruta —queda en la carpeta privada de BAXY— y dos de los tres
@@ -17539,6 +17590,15 @@ def compose_visible_defect(
             played = observed_dict.get("title") if isinstance(observed_dict, dict) else None
             if isinstance(played, str) and played.strip():
                 question_text = _without_media_title(question_text, played)
+        if _verified_titled_item_write(situation, operation, cause):
+            # M146 (DEV-F v4p F-w47-t4 «Apúntamelo en una nota…»): the note was stored with the person's question as its
+            # title («…¿cuántos dólares me dan hoy por cada euro»); quoted as observed it is the note's name, not BAXY
+            # asking, like a media title above. A question of BAXY's own words is still one.
+            for written in [situation, *_situation_steps(situation)]:
+                stored = written.get("observed") if isinstance(written.get("observed"), dict) else {}
+                title = stored.get("title")
+                if isinstance(title, str) and title.strip():
+                    question_text = re.sub(re.escape(title.strip()), " ", question_text, flags=re.IGNORECASE)
         if (
             operation == "web.search"
             and situation.get("verified") is True
@@ -24376,6 +24436,7 @@ class LlmRuntime:
         *,
         memory: bool = False,
         refused: list[str] | None = None,
+        said: str | None = None,
     ) -> str | None:
         """M53 (D35): the answer to a recipe or plot lookup, written from the page it read, or from memory when
         nothing could be consulted. None hands the turn to the ordinary composition (not one of these, or two
@@ -24467,6 +24528,13 @@ class LlmRuntime:
         for attempt in range(2):
             if deadline is not None and deadline - time.monotonic() < (3.0 if attempt else 0.5):
                 break
+            if attempt and deadline is None and (remaining := self._request_remaining_seconds()) is not None and (
+                remaining < 3.0
+            ):
+                # M146 (DEV-D v4m–v4p D-p35-t1, five compositions with no final in each run): the App's composition
+                # carries no deadline of its own, only the request's budget; the first draft spent ~7 s of it and the
+                # retry was asked anyway with too little left. The request's own remaining budget decides it too.
+                break
             payload = {
                 "messages": [*messages, *([{"role": "system", "content": repair}] if repair else [])],
                 "temperature": 0.2 if attempt else 0.0,
@@ -24479,6 +24547,13 @@ class LlmRuntime:
                 response = post(payload)
             except TimeoutError:
                 break
+            except Exception:
+                # M146 (D-p35-t1): a retry that could not be asked (its budget gone, the completion cancelled, the
+                # connection dropped) leaves the sourced part as the last resort, as a retry out of time does; with
+                # nothing kept the failure is the caller's, as before.
+                if sourced_part:
+                    break
+                raise
             draft = str(response["choices"][0]["message"].get("content") or "").strip()
             if reference is None:
                 # M92 (DEV-D v3u D-p29-t2 «6. It (1982)»): the bracketed years of a list from memory are dropped.
@@ -24505,10 +24580,14 @@ class LlmRuntime:
                 reason = "memory_notice"
             elif reference is None and (visible := compose_visible_defect(
                 draft, "status", user_text, {**facts, "situation": json.dumps(situation, ensure_ascii=False)},
+                said=said,
             ) or ("internal_term" if any(
                 _names_forbidden_term(without_observed_names(draft, situation).casefold(), str(term).strip())
                 for term in facts.get("forbiddenResponseTerms") or []
-                if str(term).strip() and _reading_fold(str(term)) not in _reading_fold(user_text)
+                # M146 (H-w37-t1): asked only when the person wrote it, here or before (Twin:
+                # UserMessagePolicy.LeakedInternalTerm), never because the understood request words it.
+                if str(term).strip()
+                and _reading_fold(str(term)) not in _reading_fold(" ".join([said or user_text, *prior]))
             ) else "")):
                 # M87 (DEV-D v3r D-p23-t2, D-p24-t1, D-p29-t2): the answer from memory is published over the verified
                 # search like any report of it, and the App judges it so (reversed_result, unsafe_language — its
@@ -24670,7 +24749,7 @@ class LlmRuntime:
             if not memory_kept:
                 return ""
             return self._compose_consulted_answer(
-                user_text, facts, situation, language, post, deadline, trace_id, memory=True,
+                user_text, facts, situation, language, post, deadline, trace_id, memory=True, said=said,
             ) or ""
         except Exception:  # noqa: BLE001 - the answer after a not-found is optional; the not-found report stands
             return ""
@@ -24848,7 +24927,7 @@ class LlmRuntime:
             response_language = addressed_language(said or user_text, response_language)
         consulted = self._compose_consulted_answer(
             user_text, facts, situation, response_language, post, compose_deadline, trace_id,
-            refused=consulted_refused,
+            refused=consulted_refused, said=said,
         )
         if consulted is not None:
             return consulted
@@ -25556,8 +25635,16 @@ class LlmRuntime:
         # nombrar «router» al explicar qué es un router es responder. El prompt
         # de Granite los prohíbe en bloque, así que además se levanta la
         # prohibición de forma explícita para los que trae el pedido.
-        topic = followup_topic(user_text, facts.get("priorRequests"))
-        folded_request = _reading_fold(f"{user_text} {topic or ''}")
+        # M146 (DEV-H v4q H-w37-t1 «toy conectado a internet? me anda re lento todo»): the decider understood
+        # «¿Está conectado el router a internet?», so «router» counted as asked here, «El router está conectado a
+        # internet.» went out and the App refused it as unsafe_language — it reads the person's own words and earlier
+        # requests (Twin: UserMessagePolicy.LeakedInternalTerm with ModelMessageComposer's priorUserText). A term is
+        # asked only when the person wrote it; the understood request is the model's wording, not theirs.
+        prior_said = facts.get("priorRequests")
+        folded_request = _reading_fold(" ".join([
+            said or user_text,
+            *(str(item) for item in prior_said if isinstance(item, str)),
+        ] if isinstance(prior_said, list) else [said or user_text]))
         asked_terms = [
             str(value).strip()
             for value in (facts.get("forbiddenResponseTerms") or [])
@@ -27800,6 +27887,22 @@ class LlmRuntime:
                          if response_language == "en"
                          else "Nombra la app que abriste: «" + str(_app_open_observed_name(situation)) + "».")
                         if situation.get("operation") == "app.open" and _app_open_observed_name(situation)
+                        # M146 (DEV-F v4o/v4p F-w47-t4 «Apúntamelo en una nota…», a note titled with the person's
+                        # question «…¿cuántos dólares me dan hoy por cada euro»): told only «Include names and numbers
+                        # from seen», every draft answered the question with a rate nothing read («Hoy, por cada euro te
+                        # dan 1,09 dólares.») and died as missing_name. The veto stands; the hint says what to name:
+                        # the saved item by its title, quoted, and nothing about what it says.
+                        else (
+                            "Say what you did to it and name it by its title, quoted exactly: «"
+                            + str(_merged_observed(situation).get("title")) + "». "
+                            "Do not answer, explain or add to what it says."
+                            if response_language == "en"
+                            else "Di lo que hiciste y nómbralo por su título, citado tal cual: «"
+                            + str(_merged_observed(situation).get("title")) + "». "
+                            "No respondas, expliques ni añadas nada a lo que dice."
+                        )
+                        if _verified_titled_item_write(situation, str(situation.get("operation") or ""), cause)
+                        and str(_merged_observed(situation).get("title") or "").strip()
                         else "Include names and numbers from seen."
                     )
                 ),
