@@ -253,9 +253,12 @@ _SPOKEN_CLOCK = re.compile(
 )
 
 
+# M138 (DEV-G v4n G-s073 «programame una alarma pa las 7 que manana madrugo» → «¿A qué hora…?», where the isolated
+# decider set it at 7): «pa las» is «para las» here too (M110 read it so in ``_CLOCK_LEAD``; this selector did not, and
+# the incomplete-schedule reader asked for the hour that was said).
 _CLOCK_TIME_SELECTOR = (
     r"\b(?:[01]?[0-9]|2[0-3]):[0-5][0-9]\b|"
-    rf"\b(?:a las?|para las?|at)\s+(?:las\s+)?{_CLOCK_HOUR}{_CLOCK_MINUTES}?"
+    rf"\b(?:a las?|para las?|pa las?|at)\s+(?:las\s+)?{_CLOCK_HOUR}{_CLOCK_MINUTES}?"
     rf"(?:\s*{_CLOCK_PERIOD})?(?=\s|$|[,;:.?!])|"
     rf"\b{_CLOCK_HOUR}{_CLOCK_MINUTES}?\s*{_CLOCK_PERIOD}(?=\s|$|[,;:.?!])|"
     rf"\b{_CLOCK_HOUR}{_O_CLOCK}\b|"

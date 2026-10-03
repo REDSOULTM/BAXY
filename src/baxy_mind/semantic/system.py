@@ -178,10 +178,17 @@ _KIN = (
     r"madre|padre|padres|suegr[oa]s?|herman[oa]s?|prim[oa]s?|madrina|padrino|nona|nono)\b"
 )
 _KIN_EN = r"(?:mom|mum|mommy|mother|dad|daddy|father|grandma|granny|grandpa|grandparents|parents|auntie|aunt|uncle)"
+# M138 (DEV-G v4n G-s043 «oye, ¿va a llover donde anda mi compadre ahorita?» → the weather of this PC's town, where the
+# isolated decider asked where the compadre is): where someone «anda», «se encuentra» or «se queda» is said with the
+# other verbs of being somewhere.
+_IS_SOMEWHERE = (
+    r"(?:vive|viven|trabaja|trabajan|esta|estan|anda|andan|se\s+encuentra|se\s+encuentran|se\s+queda|se\s+quedan|"
+    r"reside|residen)"
+)
 _SOMEONES_PLACE = (
     r"\b(?:(?:la\s+)?casa\s+de\s+(?:mi|mis|tu|tus|su|sus|nuestr[oa]s?)\s+\w+|lo\s+de\s+(?:mi|mis|tu|tus|su|sus)\s+\w+|"
-    rf"(?:la\s+)?casa\s+de\s+{_KIN}|lo\s+de\s+{_KIN}|donde\s+(?:vive|viven|trabaja|trabajan|esta|estan)\s+{_KIN}|"
-    r"donde\s+(?:vive|viven|trabaja|trabajan|esta|estan)\s+(?:mi|mis|tu|tus|su|sus)\s+\w+|"
+    rf"(?:la\s+)?casa\s+de\s+{_KIN}|lo\s+de\s+{_KIN}|donde\s+{_IS_SOMEWHERE}\s+{_KIN}|"
+    rf"donde\s+{_IS_SOMEWHERE}\s+(?:mi|mis|tu|tus|su|sus)\s+\w+|"
     r"(?:at|to|in|near|by)\s+(?:my|your|his|her|our|their)\s+\w+['’]s\b|"
     r"(?:my|your|his|her|our|their)\s+\w+['’]s\s+(?:house|place|home)|"
     rf"(?:at|to|in|near|by)\s+{_KIN_EN}['’]s\b|{_KIN_EN}['’]s\s+(?:house|place|home)|"

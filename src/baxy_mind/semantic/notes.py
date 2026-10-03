@@ -215,12 +215,27 @@ def names_own_event(text: str) -> bool:
     )
 
 
+def the_question_asked(text: str) -> str:
+    """M138 (DEV-G v4n G-s002 «¿cómo se prepara el agua de jamaica? la quiero hacer para la comida del domingo con mis
+    suegros», G-w42-t1 «when do the Lakers play next? my buddy wants to come over and watch it» → the person's calendar,
+    «Outlook no configurado», where the isolated decider talked and looked up the game): what is said after the question
+    mark is the context of the question, not the question; an event of the person's («la comida del domingo») or a «my»
+    in it does not make the question one about their agenda. The question itself still does («¿cuándo es mi cita? la
+    tengo con el dentista»)."""
+
+    asked, mark, after = str(text or "").rpartition("?")
+    if mark and re.search(r"\w", after) and len(asked.split()) >= 3:
+        return asked + mark
+    return str(text or "")
+
+
 def agenda_read_request(text: str) -> bool:
     """A question about the person's own agenda: what they have (planned, to do, coming up), their
     schedule or plans for a window, when their own event is, their next events. Not a change to the
     agenda, not BAXY's own alarms (``_AGENDA_LISTING``), not a public schedule, not a statement that
     goes on to ask something else («tengo una cita mañana, recuérdame»)."""
 
+    text = the_question_asked(text)
     envelope = _strip_request_envelope(_fold(text))
     # «up coming events»: the transcription splits the word.
     folded = re.sub(r"\bup\s+coming\b", "upcoming", envelope.strip(" ¿?¡!.,;:"))

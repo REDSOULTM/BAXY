@@ -332,6 +332,23 @@ def _direct_process_inventory_request(text: str) -> bool:
     )
 
 
+# M138 (DEV-G v4n G-w33-t1 «baxy check si tengo internet» → a web search for «check si tengo internet», where the
+# isolated decider read the network state; «chequea la conexión a internet» was searched too): internet had, checked or
+# working is this PC's connection, never a place to look things up («busca en internet…» keeps its search). Folded.
+_CHECK_HEAD = (
+    r"(?:check|chequea|chequear|checa|checar|revisa|revisar|verifica|verificar|comprueba|comprobar|mira|fijate|"
+    r"averigua|confirma|confirm|verify|see|test|prueba)"
+)
+_INTERNET_LINK = (
+    r"(?:(?:el|la|mi|the|my)\s+)?(?:internet(?:\s+connection)?|conexion(?:\s+(?:a|de)\s+internet)?|connection)"
+)
+_HAS_THE_LINK = (
+    r"(?:(?:yo\s+)?(?:tengo|tenemos|hay)|(?:do\s+)?(?:i|we)\s+(?:have|got|still\s+have)|is\s+there|there\s+is)\s+"
+    r"(?:(?:una?|an?|any)\s+)?"
+)
+_LINK_WORKS = r"(?:funciona|anda|sirve|works|is\s+working|is\s+up|is\s+down|esta\s+funcionando|esta\s+caid[oa])"
+
+
 def _local_internet_connection_query(text: str) -> bool:
     """A current local connection check is not a request for internet content."""
     machine_en = r"(?:this|the|my)\s+(?:computer|pc|machine)"
@@ -343,8 +360,14 @@ def _local_internet_connection_query(text: str) -> bool:
         rf"(?:is\s+{machine_en}|am\s+i)\s+{state_en}|"
         rf"(?:check|verify)\s+(?:whether|if)\s+{machine_en}\s+is\s+{state_en}|"
         rf"esta\s+{machine_es}\s+{state_es}|"
-        rf"(?:comprueba|revisa|verifica)\s+si\s+{machine_es}\s+esta\s+{state_es}"
-        r")(?:\s+(?:right\s+now|now|ahora|actualmente))?[.!?\s]*",
+        rf"(?:comprueba|revisa|verifica)\s+si\s+{machine_es}\s+esta\s+{state_es}|"
+        # M138: «check si tengo internet», «¿hay internet?», «do I have internet», «chequea la conexión a internet»,
+        # «check if the internet is working», «¿funciona el internet?».
+        rf"{_CHECK_HEAD}\s+(?:(?:si|if|whether)\s+)?(?:{_HAS_THE_LINK})?{_INTERNET_LINK}(?:\s+{_LINK_WORKS})?|"
+        rf"{_HAS_THE_LINK}{_INTERNET_LINK}(?:\s+{_LINK_WORKS})?|{_INTERNET_LINK}\s+{_LINK_WORKS}|"
+        rf"(?:{_CHECK_HEAD}\s+(?:(?:si|if|whether)\s+)?)?(?:is|does)\s+{_INTERNET_LINK}\s+(?:work|working|up|down)|"
+        rf"(?:{_CHECK_HEAD}\s+(?:(?:si|if|whether)\s+)?)?(?:funciona|anda|sirve)\s+{_INTERNET_LINK}"
+        r")(?:\s+(?:right\s+now|now|ahora|ahorita|actualmente|todavia|still))?[.!?\s]*",
         text,
         re.IGNORECASE,
     ) is not None

@@ -5826,6 +5826,11 @@ def _messages_arrived_question(folded: str) -> bool:
     arrived as messages, with no mail named, is the chats (read by the deferred computer-use engine), never a
     sentence to look up or answer from memory. Not writing one, and not an error message."""
 
+    # M138 (DEV-G v4n G-s042 «déjame escrito un mensaje de whatsapp para mi mamá diciendo que llego tarde porque hay
+    # mucho trancón» → «Eso no lo hago», where the isolated decider drafted it): what a message says («diciendo que
+    # llego tarde», «saying I'm running late») is its words, not messages that arrived; and a message left written
+    # («déjame escrito») is one being written.
+    folded = _MESSAGE_WORDS_SAID.sub("", folded)
     return (
         _has(folded, r"\b(?:mensajes?|messages?|texts?|dms?|sms)\b")
         and _has(
@@ -5840,9 +5845,16 @@ def _messages_arrived_question(folded: str) -> bool:
         and not _has(
             folded,
             r"\b(?:error|errores|sistema|system|windows|consola|console|warning|advertencia)\b|"
-            r"\b(?:envi\w*|mand\w*|escrib\w*|redact\w*|respond\w*|contest\w*|send|write|compose|reply)\b",
+            r"\b(?:envi\w*|mand\w*|escrib\w*|escrit[oa]s?|redact\w*|respond\w*|contest\w*|send|write|written|compose|"
+            r"reply)\b",
         )
     )
+
+
+# M138: the words a message carries, from the verb that introduces them to the end. Folded.
+_MESSAGE_WORDS_SAID = re.compile(
+    r"\b(?:diciendo(?:le|les)?|que\s+(?:le\s+|les\s+)?diga|saying|that\s+says|telling\s+(?:him|her|them))\b.*$"
+)
 
 
 def _other_device_effect_scope(text: str) -> bool:
@@ -6379,6 +6391,10 @@ _NOT_A_PERFORMER = (
     r"bluetooth|pc|computador(?:a)?|ordenador|equipo|ciento|encima|debajo|fondo|aqui|ahi|alli|aca|siempre|hoy|fin|"
     r"dos|tres|cuatro|cinco|diez|quince|veinte|treinta|medi[oa]|horas?|minutos?|segundos?)"
 )
+# M138 (DEV-G v4n G-s096 «baxy please play that song provenza by karol g in spotify ya mismo que la necesito» → YouTube
+# and «¿qué video?», where the isolated decider played it on Spotify): Spotify named as where to play is «en», «on» or,
+# in English and spanglish, «in Spotify». Folded.
+_ON_SPOTIFY = r"\b(?:en|on|in)\s+spotify\b"
 
 
 def _title_by_performer(query: str) -> bool:
@@ -6422,6 +6438,14 @@ def _explicit_named_music_query(text: str) -> str | None:
         return None
     folded = _fold(text)
     query = named.group("query").strip()
+    partitive = re.fullmatch(
+        r"(?:some|a\s+(?:bit|little)\s+of|un\s+poco\s+de)\s+(?!(?:of|de|del)\b)(?P<name>\S.*)", query, re.IGNORECASE,
+    )
+    if named.group("music") is None and partitive is not None and _bare_music_name(partitive.group("name")):
+        # M138 (DEV-G v4n G-w07-t1 «play some Khruangbin» → «What song by Khruangbin would you like to play?», where the
+        # isolated decider played Khruangbin): some of a performer said alone names the performer, as «algo de
+        # Khruangbin» does («some jazz», a kind, is read below).
+        query = partitive.group("name")
     query = _music_named_by_its_maker(query) or query
     qualified = _qualified_music_query(query) if named.group("music") is None else None
     if qualified is not None:
@@ -6439,9 +6463,9 @@ def _explicit_named_music_query(text: str) -> str | None:
         # (a genre, an artist) is the thing to play there; a generic noun
         # («música», «una canción») still asks what to play.
         and not (
-            _has(_fold(query), r"\S\s+(?:en|on)\s+spotify\b")
+            _has(_fold(query), rf"\S\s+{_ON_SPOTIFY}")
             and not _has(
-                re.sub(r"\s+(?:en|on)\s+spotify\b.*$", "", _fold(query)).strip(),
+                re.sub(rf"\s+{_ON_SPOTIFY}.*$", "", _fold(query)).strip(),
                 r"^(?:(?:una?|la|el|los|las|algo\s+de|some|a|the)\s+)?"
                 r"(?:m[uú]sica|music|canci[oó]n(?:es)?|songs?|temas?|tracks?|algo|something|"
                 r"cualquier\s+cosa|anything|lo\s+que\s+sea)$",
@@ -6507,7 +6531,7 @@ def _explicit_named_music_query(text: str) -> str | None:
         return None
     # MUSIC1749: «pon michael jackson en spotify» names the provider, not the
     # music; the query is what precedes it.
-    query = re.sub(r"\s*[,;:]?\s+(?:en|on)\s+spotify\b.*$", "", query, flags=re.IGNORECASE).strip(" ,;:.!?")
+    query = re.sub(rf"\s*[,;:]?\s+{_ON_SPOTIFY}.*$", "", query, flags=re.IGNORECASE).strip(" ,;:.!?")
     return query or None
 
 
@@ -6671,7 +6695,7 @@ def _media_play_domain(text: str) -> bool:
     )
     return (
         (
-            _has(text, r"\b(?:en|on)\s+spotify\b")
+            _has(text, _ON_SPOTIFY)
             or explicit_spotify_context
             or direct_query
             or _desired_music_query(text) is not None
@@ -10949,7 +10973,7 @@ def _review_media_and_email_effects(
 ) -> None:
     """Append Spotify/media controls and read-only email effects."""
 
-    spotify_target = _has(folded, r"\b(?:en|on)\s+spotify\b")
+    spotify_target = _has(folded, _ON_SPOTIFY)
     spotify = spotify_target or context_spotify
     change_current_artist = _has(
         folded,
