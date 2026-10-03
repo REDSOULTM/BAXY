@@ -30,6 +30,7 @@ import json
 import math
 import os
 import pathlib
+import re
 import sys
 import time
 import unicodedata
@@ -107,13 +108,55 @@ def label_matches(label: str, record: dict[str, Any]) -> list[str]:
     raise ValueError(f"etiqueta de oro desconocida: {label}")
 
 
-def args_hold(groups: list[list[str]], arguments: dict[str, Any] | None) -> bool:
+def args_hold(groups: list[list[str]], arguments: dict[str, Any] | None, *, equivalent: bool = False) -> bool:
     if not arguments:
         return False
     haystack = fold(json.dumps(arguments, ensure_ascii=False))
+    if equivalent:
+        haystack = equivalent_forms(haystack)
     return all(
         any(fold(alternative) in haystack for alternative in group) for group in groups
     )
+
+
+# D71 (owner, 2026-10-03): a turn is complete when BAXY did what was asked, even when the datum is said another way. Form
+# only, never another result: a hyphen between word parts is a space («25-minute» = «25 minute»), and a spoken length is
+# also its number of minutes and seconds («media hora» = 30 min = 1800).
+_SPOKEN_LENGTHS = (
+    (r"\bhora y media\b|\ban hour and a half\b|\bone and a half hours?\b|\b1\.5 hours?\b", 90),
+    (r"\btres cuartos de hora\b|\bthree quarters of an hour\b", 45),
+    (r"\bmedia hora\b|\bhalf an hour\b|\bhalf hour\b", 30),
+    (r"\bun cuarto de hora\b|\ba quarter of an hour\b|\bquarter hour\b", 15),
+    (r"\buna hora\b|\ban hour\b|\bone hour\b", 60),
+)
+
+
+def equivalent_forms(haystack: str) -> str:
+    """``haystack`` with the forms D71 counts as the same datum appended (see above)."""
+    extra = [re.sub(r"(?<=\w)-(?=\w)", " ", haystack)]
+    for pattern, minutes in _SPOKEN_LENGTHS:
+        if re.search(pattern, haystack):
+            extra.append(f"{minutes} min {minutes} minutos {minutes} minutes {minutes * 60}")
+    return " | ".join([haystack, *extra])
+
+
+def verdict_equivalent(row: dict[str, Any], record: dict[str, Any]) -> tuple[bool, bool]:
+    """``verdict`` with D71's equivalent forms of the arguments (the decision is judged the same)."""
+    if not record or "error" in record:
+        return False, False
+    decided = False
+    for label in row["gold"]:
+        matched = label_matches(label, record)
+        if not matched:
+            continue
+        decided = True
+        groups = (row.get("args") or {}).get(label)
+        if not groups:
+            return True, True
+        grounded = record.get("arguments") or {}
+        if any(args_hold(groups, grounded.get(op), equivalent=True) for op in matched):
+            return True, True
+    return decided, False
 
 
 def verdict(row: dict[str, Any], record: dict[str, Any]) -> tuple[bool, bool]:
@@ -432,6 +475,10 @@ def _d61_lines(
         if not right and row["id"] in accepted and verdict({"gold": accepted[row["id"]]["accept"]}, record)[1]:
             decided, right = True, True
             cause[row["id"]] = "aceptada"
+        if not right and verdict_equivalent(row, record)[1]:
+            # D71 (owner, 2026-10-03): the datum done, said another way.
+            decided, right = True, True
+            cause[row["id"]] = "D71"
         if (
             not right
             and "error" not in record
@@ -449,10 +496,12 @@ def _d61_lines(
     )
     counts = Counter(cause.values())
     lines = [
-        f"  con D61 ({sources}): +{len(cause)} turnos (aceptadas {counts['aceptada']}, D35 {counts['D35']}; "
+        f"  con D61 ({sources}) y D71 (mismo dato dicho de otra forma): +{len(cause)} turnos (aceptadas "
+        f"{counts['aceptada']}, D35 {counts['D35']}, D71 {counts['D71']}; "
         f"turnos con consulta D35 en la auditoría {len(looked_up & set(records))})"
     ]
-    summary["d61"] = {"accepted": counts["aceptada"], "d35": counts["D35"], "d35_lookups": len(looked_up & set(records))}
+    summary["d61"] = {"accepted": counts["aceptada"], "d35": counts["D35"], "d71": counts["D71"],
+                      "d35_lookups": len(looked_up & set(records))}
     for name, subset in groups.items():
         right = sum(alternative[row["id"]][1] for row in subset)
         decided = sum(alternative[row["id"]][0] for row in subset)
