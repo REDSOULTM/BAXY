@@ -1,0 +1,103 @@
+n=100 published=100 other=0
+
+001	t1	published_final	Buenas	Buenas, ¿en qué puedo ayudarte hoy?
+002	t2	published_final	qué puedes hacer aquí en el PC	Puedo abrir y cerrar programas, mover ventanas, ajustar el audio y llevar tareas, además de otras funciones.
+003	t3	published_final	explícame qué es un SSD, una frase	Un SSD es un disco de estado sólido que almacena datos en chips de memoria en lugar de discos magnéticos giratorios.
+004	t4	published_final	y por qué conviene en un portátil	Porque un SSD hace que el portátil arranque y abra programas mucho más rápido que un disco duro tradicional.
+005	t5	published_final	¿Qué hora es?	La hora es 15:35.
+006	t6	published_final	Dime la hora y el estado del audio.	La hora es 15:35 y el audio está activo al 70% en los auriculares HyperX, sin estar silenciado.
+007	t7	published_final	traduce 'good evening' al español, nada más	buenas noches
+008	t8	published_final	cierra aquello	¿Qué quieres que cierre exactamente?
+009	t9	published_final	no abras Paint	Entendido, no tocaré Paint.
+010	t10	published_final	manda un paquete a Io	No envío paquetes: enviar un paquete a Io no es lo que hago.
+011	t11	published_final	Hello	Hello, I'm BAXY. How can I help you today?
+012	t12	published_final	what are you able to do on this machine	I can open and close apps, move and focus windows, read and set audio, and take notes, among other capabilities.
+013	t13	published_final	define DNS in one sentence	DNS is the system that translates human-readable domain names into the numerical IP addresses computers use to locate each other on the internet.
+014	t14	published_final	why would a PC need that	A PC needs DNS to find the correct IP address for websites and services so it can connect to them without typing long numbers.
+015	t15	published_final	What time is it?	The time is 15:35.
+016	t16	published_final	don't open Paint	I won't open Paint.
+017	t17	published_final	What will you never do	I only perform the specific tasks you request on this PC and do nothing beyond that.
+018	t18	published_final	sigue sin abrir programas	Seguiré hablando sin abrir ningún programa.
+019	t19	published_final	are you connected?	Yes, this PC is online.
+020	t20	published_final	book a ferry to Europa	I do not book ferries to Europa.
+021	t21	published_final	Hola de nuevo	Hola de nuevo, ¿en qué puedo ayudarte hoy?
+022	t22	published_final	en qué me puedes ayudar en este equipo	Puedo abrir y cerrar programas, mover ventanas, ajustar el audio y llevar tareas, además de otras funciones.
+023	t23	published_final	qué no haces en este PC, sin abrir nada	En este PC solo hago lo que me pides entre las cosas que puedo hacer y no hago nada más.
+024	t24	published_final	¿Tengo internet?	Sí, tienes internet.
+025	t25	published_final	dime la hora local	La hora local es 15:35.
+026	t26	published_final	ábreme eso	¿Qué abro?
+027	t27	published_final	open that	What would you like me to open?
+028	t28	published_final	traduce 'see you' al español, nada más	nos vemos
+029	t29	published_final	¿sigues ahí?	Sí, estoy aquí y listo para lo que necesites.
+030	t30	published_final	send flowers to Deimos	I do not send flowers to Deimos.
+031	t31	published_final	Hey there	Hey there, I'm BAXY. How can I help you today?
+032	t32	published_final	who is speaking	I am BAXY, a program running on this PC. I do not have a body, tastes, or free time.
+033	t33	published_final	describe yourself in one line	I am BAXY, a program that lives and runs on this PC.
+034	t34	published_final	explícame qué es un firewall, una frase	Un firewall es un sistema de seguridad que actúa como una barrera entre tu red y el exterior para bloquear accesos no deseados.
+035	t35	published_final	para qué lo usaría yo en casa	Lo usarías en casa para proteger tu red doméstica de intrusos y ataques externos.
+036	t36	published_final	the time, please	The time is 15:36.
+037	t37	published_final	no lances Steam	Entendido, no lanzaré Steam.
+038	t38	published_final	if it didn't happen, say so	I didn't do that.
+039	t39	published_final	solo un hola	Hola.
+040	t40	published_final	hire a guide on Ceres	I do not hire guides on Ceres.
+041	t41	published_final	Qué hay	Todo bien, ¿y tú?
+042	t42	published_final	what do you do on this computer	I can open and close apps, move and focus windows, read and set the audio, and take notes, among other things.
+043	t43	published_final	explícame qué es Bluetooth, una frase	Bluetooth es un estándar de comunicación inalámbrica que permite conectar dispositivos cercanos sin cables.
+044	t44	published_final	por qué sigue siendo útil	Sigue siendo útil porque ofrece una conexión inalámbrica universal, rápida y de bajo consumo para audífonos, relojes y otros periféricos.
+045	t45	published_final	Could you tell me the time?	The time is 15:36.
+046	t46	published_final	Dime la hora y el volumen.	La hora es 15:36 y el volumen está en 70, con el sonido activo en los auriculares HyperX.
+047	t47	published_final	keep chatting without opening apps	I will keep chatting without opening any apps.
+048	t48	published_final	haz eso	¿Qué detalle específico falta para hacer eso?
+049	t49	published_final	hazlo	¿Qué acción quieres que haga?
+050	t50	published_final	order soup on Vesta	I do not order soup on Vesta.
+051	t51	published_final	Hi again	Hi again. I'm ready to help with whatever you need.
+052	t52	published_final	qué sabes hacer en esta máquina	Puedo abrir y cerrar programas, mover ventanas, ajustar el audio y llevar tareas, además de otras funciones.
+053	t53	published_final	define hibernation in one line	Hibernation is a power-saving mode that saves your current state to disk and shuts down most power to the system.
+054	t54	published_final	y cuándo conviene usarla	Conviene usarla cuando necesitas desconectar el equipo por días o semanas sin perder tus datos abiertos, ya que guarda todo en el disco duro y se despierta al encenderlo.
+055	t55	published_final	hora local, please	La hora local es 15:36.
+056	t56	published_final	Who are you	I am BAXY, a companion program that lives and runs on this PC. I do not have a body, tastes, or free time.
+057	t57	published_final	don't launch Terminal	I won't launch the Terminal.
+058	t58	published_final	¿hay red?	Sí, el PC está en línea.
+059	t59	published_final	traduce 'good luck' al español, nada más	¡mucho éxito!
+060	t60	published_final	ship a piano to Charon	I do not ship pianos to Charon.
+061	t61	published_final	Buenos días, compa	Buenos días, compa. ¿En qué puedo ayudarte hoy?
+062	t62	published_final	Explícame qué puedes hacer y qué no, sin abrir nada	Puedo abrir y cerrar programas, mover ventanas, leer el audio y llevar tareas, además de otras funciones.
+063	t63	published_final	why do computers use IPv4	Computers use IPv4 because it is a legacy standard that has been in use for decades and remains widely supported in existing infrastructure.
+064	t64	published_final	gracias, ¿qué hora es?	La hora es 15:36.
+065	t65	published_final	local clock time?	The local clock time is 15:36.
+066	t66	published_final	close that	What would you like me to do?
+067	t67	published_final	continúa sin lanzar apps	Seguiré hablando sin abrir ninguna aplicación.
+068	t68	published_final	online?	El PC está en línea.
+069	t69	published_final	un saludo corto	Hola, ¿en qué puedo ayudarte hoy?
+070	t70	published_final	reserve a bunk on Triton	I do not reserve bunks on Triton.
+071	t71	published_final	Good afternoon	Good afternoon. How can I help you today?
+072	t72	published_final	de qué te ocupas en este PC	Puedo abrir y cerrar programas, mover ventanas, ajustar el audio y tomar notas, además de otras tareas.
+073	t73	published_final	what is cache memory, one sentence	Cache memory is a small, very fast type of RAM located close to the CPU that stores frequently used data to speed up processing.
+074	t74	published_final	y por qué importa al abrir programas	Importa porque reduce el tiempo de carga al guardar los datos más usados cerca del procesador, evitando que este busque información en la memoria principal.
+075	t75	published_final	hora ahora	La hora actual es 15:37.
+076	t76	published_final	Don't open Word	I won't open Word.
+077	t77	published_final	still there?	Yeah, I'm still here. What's up?
+078	t78	published_final	traduce 'please' al español, nada más	por favor
+079	t79	published_final	quién eres	Soy BAXY, un programa que vive y corre en este PC.
+080	t80	published_final	buy a kite on Sedna	I don't buy kites on Sedna.
+081	t81	published_final	hey, what can you do on this PC	I can open and close apps, move and focus windows, read and set the audio, and take notes, among other things.
+082	t82	published_final	qué no haces, una frase	En este PC solo hago lo que me pides entre las cosas que puedo hacer y no hago nada más.
+083	t83	published_final	define hexadecimal, una frase	El hexadecimal es un sistema numérico de base dieciseis que utiliza dígitos del cero al nueve y las letras del A al F para representar valores.
+084	t84	published_final	y eso cómo se usa	Se usa para representar datos binarios de forma compacta en programación y redes, agrupando cuatro bits en cada dígito.
+085	t85	published_final	clock now	The current time is 15:37.
+086	t86	published_final	no abras nada ahora	Entendido, no tocaré nada ahora.
+087	t87	published_final	Have I got internet	Yes, the PC is online.
+088	t88	published_final	preséntate breve	Soy BAXY, un compañero que vive y corre en este PC.
+089	t89	published_final	quién está hablando	Estoy hablando BAXY.
+090	t90	published_final	rent a studio on Haumea	I do not do that: renting a studio on Haumea.
+091	t91	published_final	¿Estás?	Sí, estoy aquí. ¿Qué necesitas?
+092	t92	published_final	dime la hora por favor	La hora es 15:37.
+093	t93	published_final	explícame qué es un kernel, una frase	Un kernel es el núcleo del sistema operativo que gestiona los recursos de hardware y coordina la ejecución de los programas.
+094	t94	published_final	para qué lo necesita el PC	El PC necesita el kernel para gestionar los recursos del hardware y coordinar la ejecución de todos los programas que se instalan.
+095	t95	published_final	What time is it now	The current time is 15:37.
+096	t96	published_final	ábreme eso porfa	¿Qué te gustaría que haga?
+097	t97	published_final	don't open the calculator	I won't open the calculator.
+098	t98	published_final	keep talking without opening apps	I will keep talking without opening any apps.
+099	t99	published_final	describe yourself briefly	I am BAXY, a program that lives and runs on this PC. I do not have a body, hobbies, or free time.
+100	t100	published_final	post a letter to Eris	I do not do that: sending a letter to Eris.
+no escribo paired.txt: ya existen (usa --force)

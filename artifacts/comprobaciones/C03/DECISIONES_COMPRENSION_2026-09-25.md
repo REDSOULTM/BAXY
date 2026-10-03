@@ -671,3 +671,97 @@ sus sesiones iniciadas—, no en el perfil Edge propio del producto, y BAXY debe
 controlarlo). Agente M122: historial de cómo lo hacían BAXYs anteriores, diseño (UserChoice, ShellExecute, SMTC/UIA para
 verificar sin tomar el perfil), implementación; Edge queda sólo como respaldo explícito. Nunca reiniciar ni cerrar el
 navegador del usuario, ni leer sus datos de navegación.
+
+## D61. Hora sin am/pm, app ausente y recetas/cifras (dueño, 2026-10-02 ~12:00)
+Tres choques entre literales revisados y etiquetas de conjuntos (M126), resueltos por el dueño:
+1. **«Pon una alarma a las 7» sin mañana/tarde → la próxima 7 que venga**, sin preguntar (si son las 15:00, las
+   19:00). Sustituye a lo revisado en H0036, H0197, H0222, H0234, H0473 y H0119 (preguntaban am/pm); las etiquetas
+   v2 de la reserva ya pedían actuar.
+2. **«Abre Obsidian» con la app no instalada → comprobar y decir que no está instalada** (`app.installed`), como
+   lo revisado (H0289, H0558, H0249, H0503, H0691). El oro de DEV-F y de la reserva v2 acepta esa respuesta.
+3. **Recetas y cifras → buscar primero (D35 se mantiene).** En los conjuntos DEV, donde el oro dice responder de
+   memoria y BAXY consultó por D35, ambas cuentan como correctas; se informan las dos cifras (oro original y D35).
+
+## D62. v4j medido (main 62ec7c38: M124 regresiones v4i, M125 sin saludo en el decisor) (2026-10-02 12:10)
+DEV-F 238/280 = 85,0 % (v4i 239; p50 2,60 s) · DEV-E 236/299 = 78,9 % (v4i 235; p50 2,55 s) · DEV-D 304/332 =
+91,6 % (v4i 300; p50 1,99 s) · reserva v1 89,6 % / v2 93,6 % (= v4i, 0/0) · 742: 0 cambios frente a v4i · capa A
++2 (log:38 límite de leer chats, log:104 CV en la conversación) · guion 54/60 (+3 por revisar) · held-out 30/30 ·
+DEV-C 253/301. A/B M125 (53 min GPU): ni los flags del servidor ni el saludo explican que el decisor de la App
+escriba otra cosa (cambian ≤ 8 decisiones por conjunto, neto ≈ 0). M128: 11 de 19 de esas divergencias en F/D se
+deben a turnos previos que fallaron en esta máquina (el historial vivido no trae el dato que el oro da por sabido).
+
+## D61b. Hora sin mañana/tarde en un día nombrado (dueño, 2026-10-02 ~13:00)
+M129 aplicó D61 al pie de la letra y «agendá una reunión el viernes a las 3» quedaba a las 03:00. Decisión del dueño:
+en un día que la persona nombra (mañana, el viernes, una fecha), 1–6 es la tarde, 7–11 la mañana y 12 el mediodía;
+hoy sigue D61 (la próxima vez que llega) y una hora ya pasada que rueda sola a mañana también. Lo dicho («de la
+madrugada», «am», 24 h) manda siempre. Mecanismo M130 (`_canonical_due_utc`), integrado tras v4k.
+
+## D63. v4k medido (main ad77e102: M126 lectores, M127 argumentos, M128 historial, M129 D61) (2026-10-02 15:50)
+Oro original → con D61 (`score --d35 --accept`): DEV-F 238 → 242/280 = 86,4 % (p50 2,78 s) · DEV-E 239 → 246/299 =
+82,3 % (p50 2,67 s; v4j 236 → 245) · DEV-D 305 → 309/332 = 93,1 % (p50 2,02 s) · reserva v1 89,9 % / v2 93,9 %
+(+8/−0) · 742: sólo los 6 cambios de D61 · capa A sin cambios · DEV-C 257/301 = 85,4 % (v4j 253) · held-out 30/30 ·
+guion 52/60 + 4 por revisar (t36 Steam «biblioteca» no encontrada: inestable conocido, en v4j bien) · VRAM pico 3 798
+MiB. Lastre de decisión frente al decisor aislado: DEV-E 41 → 36 (11 cambiadas después, mayormente D35; 14 el decisor
+de la App escribió otra cosa; 10 lectores de primer turno), DEV-F 20, DEV-D 12. Siguiente: M131 (lectores de primer
+turno sin arreglos esperan al decisor) y M130 (D61b) a la ronda v4l.
+
+## D64. v4l medido (main aa8c94a5: M130 D61b, M131 búsqueda de primer turno espera al decisor) (2026-10-02 19:05)
+Con D61 (`--d35 --accept`): DEV-F 239/280 = 85,4 % (v4k 242; p50 2,83 s) · DEV-E 248/299 = 82,9 % (v4k 246; p50
+2,60 s) · DEV-D 308/332 = 92,8 % (v4k 309; p50 2,00 s) · reserva 89,9 / 93,9 % (0/0) · 742 y capa A sin cambios ·
+DEV-C 257/301 · held-out 30/30 · guion 49/60 + 7 por revisar (16, 17 y 54 pasan de bien a revisar con respuestas
+correctas a la vista; Steam t36/t38/t42 falla en v4k y v4l: Steam arranca en frío porque cada corrida lo cierra) ·
+VRAM 3 794 MiB · Full verde (pytest 22 427, Integración 4 020). Diferencias de ±3 entre rondas: se mide la varianza de
+corrida a corrida con el mismo build (v4l2) antes de atribuirlas. Fallos de DEV-E (agregado): primer turno 150/169,
+tras turno bien 98/111, tras turno fallido 12/19 — sin una causa dominante; 20 de 22 de argumentos también los falla el
+decisor aislado.
+
+## D65. Varianza de corrida a corrida y siguiente vía: full12 (2026-10-02 20:15)
+Repetición con el mismo build (v4l2 frente a v4l): DEV-F +2/−1 turnos cambian de veredicto, DEV-E +2/−0, DEV-D 0/−3;
+con D61: F 241 (v4l 239), E 248 (248), D 305 (308). Diferencias de ±3 entre rondas son ruido; DEV-E se estabiliza en
+≈ 82,9 % con los mecanismos alrededor del decisor. Siguiente vía (paso 3 del plan): `full12` = continuar `full3`
+entrenando sólo los tokens de los argumentos (la decisión fuera de la pérdida), lr bajo, datos de entrenamiento sin
+solapamiento con evaluación. Regla prerregistrada: decisión ≥ full3 − 2 en DEV-F/D/E y argumentos ≥ full3 + 5 en F+D
+sin bajar en E.
+
+## D66. v4m medido (main afa40592: M133 app ausente D61.2, M134 redacciones sin final) (2026-10-03 00:50)
+Con D61: DEV-F 241/280 = 86,1 % (p50 2,64 s) · DEV-E 250/299 = 83,6 % (p50 2,75 s) · DEV-D 306/332 = 92,2 % (p50
+1,98 s) — dentro del ruido ±3 de v4l. Sin final: F 0 (2–3), D 1 (2), E 5/299 (5–6). Reserva 89,9 / 93,9 % · 742: sólo
+H0406 → `app.installed` (D61.2) · capa A sin cambios · DEV-C 257/301 · held-out 30/30 · guion 52/60 + 4 por revisar
+(Steam t36/t38/t42 sigue: M132 entra en v4n) · VRAM 3 796 MiB. full12: OOM en redpc a ~920/2 141 (23:08), reanudado
+desde el ejemplo 800 a las 00:11. Incidente M132 (~22:30): en una prueba en vivo con el dueño usando el PC, el clic por
+OCR pulsó «biblioteca» una vez en el panel de VS Code; M132 ata el clic a la ventana de la app abierta.
+
+## D67. El lastre de seguimiento es del historial vivido; DEV-G para ver lo que falla en primer turno (2026-10-03 01:40)
+1. **Corrida vivida** (full3 aislado, perfil app, sobre DEV-F/DEV-D con el historial que la App vivió en v4m en vez del
+   del oro): el lastre de decisión cae de 14 a 1 en F y de 13 a 3 en D; el de argumentos, de 9 a 4 y de 1 a 1. Con el
+   mismo historial, el decisor aislado falla donde falla el producto: el lastre de seguimiento no es código alrededor del
+   decisor, sino turnos anteriores que en este PC salen distintos del oro (un PDF que no existe, una búsqueda sin la hora
+   del partido, una oferta de bajar el brillo que no se hizo). Lastre de código real que queda en F/D: ≈ 5 turnos.
+2. En DEV-E (agregado) el lastre de v4m es 42 = decisor en contexto, seguimiento 17 + primer turno 13; lectores
+   explícitos de primer turno 8; conversación explícita 3; recuperación 1. Los 24 de primer turno no dependen del
+   historial y F/D (iterados) casi no los tienen (≈ 2). Para verlos sin abrir DEV-E se crea **DEV-G**.
+3. **DEV-G** (`sets/DEV-G.jsonl`, sha256 `796f828b…e222e`, 300 turnos: 125 sueltos + 45 conversaciones de 3–5 turnos,
+   ocho hablas): mismo encargo de escritor que DEV-E y cadena de `build_f.py` (`dev_g/build_g.py`); cinco escritores de
+   sala limpia de tres familias de modelos; reglas de oro de E más las del dueño D59–D61 (reglas 11–19); exclusión en
+   tres rondas (91 → 2 → 0 coincidencias, cada texto reescrito por su escritor) con las huellas protegidas + las de E y F
+   + `excl_extra_g.npz` (DEV-F y los datos de full12); doble etiquetado ciego (acuerdo compatible 300/300, conjunto
+   idéntico 85,7 %); adjudicador ciego en 94 filas (1: 74, 2: 10, nueva: 10, 0 descartadas); el coordinador devolvió
+   `ask` a dos recordatorios sin hora (X001, X006: la regla 11 trata la hora sin mañana/tarde, no la hora que falta; 3 de
+   4 etiquetas lo aceptaban). Decisor aislado full3 en DEV-G: decisión 295/300, argumentos 167/179 (en E: 293/299). DEV-G
+   es **iterable**; DEV-E sigue sólo como medida.
+4. M135 (rama `opus/m135-borrado-inventado`): un informe de una operación que no borra no puede decir que algo se
+   borró (F-w47-t2 «Se borró el borrador…», igual en v4i, v4k y v4m); entra en la ronda siguiente a v4n.
+
+## D68. full12 rechazado por su regla prerregistrada; v4n medido (2026-10-03 04:00)
+1. **full12** (full3 continuado entrenando sólo los tokens de los argumentos, lr 3e-5, 1 época, 2 141 ejemplos sin
+   solapamiento; reanudado tras un OOM desde el ejemplo 800; GGUF sha256 `e815194e…`), medido con `full12/REGLA.md`
+   (decisor aislado, perfil app, misma sesión que R0 = full3): decisión F 258/280 (full3 270), D 282/332 (301), E 283/299
+   (293); argumentos F+D 217 (228), E 141/160 (146). Falla las dos partes de la regla: **rechazado, se queda full3**.
+   Enmascarar la decisión en la pérdida no la protege (los pesos son compartidos) y tampoco mejora los argumentos. Es el
+   séptimo adaptador (full4–full9, full11a, full12) que no supera a full3; no se reentrena mirando estos conjuntos.
+2. **v4n** (main a4d067df: M132 clic atado a la app abierta, Steam en frío, PotPlayer), con D61: DEV-F 243/280 = 86,8 %
+   (v4m 241; p50 2,58 s), DEV-E 250/299 = 83,6 % (= v4m; p50 2,71 s), DEV-D 306/332 = 92,2 % (= v4m; p50 1,93 s), todo
+   dentro del ruido ±3. DEV-C 257/301 = 85,4 % (=). Guion **53/60** + 4 por revisar (v4m 52; meta 53 cumplida),
+   held-out 30/30, cien-120 100/100 publicadas, 0 efectos de más (frente a cien-119 sólo cambian redacciones). El pytest
+   completo de la cadena dio 56 fallos + 24 errores, todos 0xC0000142 (procesos hijo powershell/git que no arrancaron);
+   los 80 repetidos pasan; Integración 4 031/4 031.
