@@ -1,4 +1,4 @@
-param([Parameter(Mandatory=$true)][string]$LabelBase64)
+param([Parameter(Mandatory=$true)][string]$LabelBase64,[long]$WindowHandle=0)
 $ErrorActionPreference='Stop'
 Add-Type -AssemblyName UIAutomationClient
 Add-Type -AssemblyName UIAutomationTypes
@@ -135,9 +135,15 @@ try {
               @('5','Cinco','Five'),@('6','Seis','Six'),@('7','Siete','Seven'),@('8','Ocho','Eight'),@('9','Nueve','Nine'))
     foreach($d in $digits){ foreach($form in $d){ if([string]::Equals($form,$label,[StringComparison]::OrdinalIgnoreCase)){ $aliases=$d } } }
   }
+  # M132: a click bound to the application just opened reads that application's window, never the one that
+  # happens to be in front (measured: the front fell to the person's editor while the label was looked for).
+  $bound=$WindowHandle -ne 0
+  if($bound){$hwnd=[IntPtr]$WindowHandle;if(-not [BaxyVisibleClickNative]::IsWindowVisible($hwnd)){Emit $false $false 'visible_button_not_found' '' '' $false $false 'uia';exit 3}}
+  else {
   $hwnd=[BaxyVisibleClickNative]::GetForegroundWindow()
   if($hwnd -eq [IntPtr]::Zero){Emit $false $false 'active_window_not_found' '' '' $false $false 'uia';exit 2}
   $hwnd=[BaxyVisibleClickNative]::LargestVisible($hwnd)
+  }
   Start-Sleep -Milliseconds 500
   $root=[System.Windows.Automation.AutomationElement]::FromHandle($hwnd)
   $tree=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)
@@ -147,7 +153,7 @@ try {
   }
   $matches=@(Find-NamedControls $root $aliases)
   if($matches.Count -eq 0){
-    $native=@([BaxyVisibleClickNative]::FindVisibleButtons([string[]]$aliases))
+    $native=@(if($bound){}else{[BaxyVisibleClickNative]::FindVisibleButtons([string[]]$aliases)})
     if($native.Count -gt 1){Emit $false $false 'visible_button_ambiguous' '' '' $false $false 'uia';exit 4}
     if($native.Count -eq 1){
       $nativeButton=$native[0];$name=[BaxyVisibleClickNative]::Text($nativeButton);$identity=('hwnd.'+$nativeButton.ToInt64())
