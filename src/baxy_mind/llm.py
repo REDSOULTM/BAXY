@@ -16265,13 +16265,15 @@ def compose_visible_defect(
         failure_assertions = without_quoted_speech(failure_assertions)
     presence = _merged_observed(situation)
     if (
-        situation.get("operation") in {"media.play.youtube", "media.play.query", "media.play.exact"}
+        str(situation.get("operation") or "").startswith("media.")
         and situation.get("verified") is True
         and situation.get("succeeded") is True
         and isinstance(presence, dict)
     ):
         # MUSIC1749: the observed title is not a statement about the outcome
-        # («… Can't Stop …» is the song, not a failure).
+        # («… Can't Stop …» is the song, not a failure). M140 (DEV-G v4o G-s099 «skip esta cancion» → «Está sonando MC
+        # Hammer - U Can't Touch This.» died as asserted_failure three times): the song a control or a status read
+        # observed is the song too.
         for key in ("title", "artist"):
             value = presence.get(key)
             if isinstance(value, str) and value.strip():
@@ -28090,12 +28092,15 @@ class LlmRuntime:
                 ),
                 "unstated_already_running": (
                     ("Name the app" + (" («" + str(_app_open_observed_name(situation)) + "»)" if _app_open_observed_name(situation) else "")
-                     + ". Say it was already open. Never say you opened, launched "
-                     "or reopened it.")
+                     + " and say only that it was already open («Notepad was already open.»). Nobody opened it "
+                     "now: neither BAXY nor the person.")
                     if response_language == "en"
+                    # M142 (held-out v4o t10 «abrí el bloc de notas», the rioplatense imperative): «Nunca digas que la
+                    # abriste» read as said of the person; three drafts wrote «…cuando lo abriste» and the turn had no
+                    # final. The hint is impersonal and shows the sentence.
                     else ("Nombra la app" + (" («" + str(_app_open_observed_name(situation)) + "»)" if _app_open_observed_name(situation) else "")
-                          + ". Di que ya estaba abierta. Nunca digas que la abriste "
-                          "ni que la volviste a abrir.")
+                          + " y di sólo que ya estaba abierta («El Bloc de notas ya estaba abierto.»). Nadie la abrió "
+                          "ahora: ni BAXY ni la persona.")
                 ),
                 "invented_prior_open_state": (
                     "The app was closed and you opened it now. Do not say it was already open."

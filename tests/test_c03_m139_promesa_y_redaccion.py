@@ -223,14 +223,18 @@ CALCULATOR_OPENED = json.dumps({
         ("ábreme el bloc de notas porfa",
          "Abrió el Bloc de notas, ya que estaba ejecutándose antes de que la operación se iniciara.",
          "El Bloc de notas ya estaba abierto."),
+        # M142 (held-out v4o t10, the rioplatense imperative): the first of three drafts that died.
+        ("abrí el bloc de notas",
+         "Abriste el Bloc de notas, que ya estaba abierto antes de tu acción.", "El Bloc de notas ya estaba abierto."),
     ],
 )
 def test_an_app_already_running_is_told_already_open(said: str, first: str, kept: str) -> None:
     writer = _Drafts([first, kept])
     assert writer.compose_user_message(said, "status", {"situation": NOTEPAD_ALREADY_RUNNING}) == kept
     hint = _system_text(writer.requests[1])
-    assert "Di que ya estaba abierta" in hint
-    assert "Lo hiciste tú" not in hint
+    # M142: the hint says it was already open, shows the sentence and says nobody opened it, BAXY nor the person.
+    assert "di sólo que ya estaba abierta" in hint and "Nadie la abrió" in hint
+    assert "Lo hiciste tú" not in hint and "la abriste" not in hint
 
 
 def test_an_app_opened_now_still_hears_that_it_did_it() -> None:
