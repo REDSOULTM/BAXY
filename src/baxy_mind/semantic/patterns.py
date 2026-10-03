@@ -5275,25 +5275,42 @@ def unresolved_application_open_name(
         return None
     # An explicit application noun establishes the domain without guessing
     # whether an unfamiliar bare name denotes an app, file, site or game.
+    # M133 (D61.2; reviewed literal H0406 «Abre una app que no existe llamada AplicacionFantasmaXYZ», owner note
+    # «verificar la ausencia antes de afirmar una causa»): an application the person names «llamada X» / «called X»
+    # is read by its presence like any other named application. «mi»/«my» is an article here («can you open my
+    # itunes», reserve en1994).
     wrapper = _match(
         request.group("target"),
-        r"^(?:(?:el|la|un|una|the|a|an)\s+)?"
-        r"(?:aplicacion|application|app|programa|program)\s+",
+        r"^(?:(?:el|la|un|una|mi|the|a|an|my)\s+)?"
+        r"(?:aplicacion|application|app|programa|program)\s+"
+        r"(?:(?:(?:que\s+no\s+existe|that\s+does\s+not\s+exist)\s+)?(?:llamad[ao]|que\s+se\s+llama|called|named)\s+)?",
     )
     # Folding proves grammar only. Recover the original tokens for the read
     # so the provider receives the person's name, including case and accents.
     target_words = len(request.group("target").split())
     raw_target = " ".join(text.split()[-target_words:])
+    trailing_noun = False
     if wrapper is None and build_application_catalog_index(application_names).entries:
         # A bare name is enough when it is software people open by name and a
         # verified catalog is present to prove it absent; «abrí la puerta»
-        # stays outside because ``puerta`` is not.
+        # stays outside because ``puerta`` is not. M133 (D61.2, reserve en9233 «open pandora», en1994 «can you open
+        # my itunes»): the music services BAXY does not play on are desktop applications too, and «open the itunes
+        # app» names the same software with its noun after it.
+        courtesy = (
+            r"(?:\s*[,;:]?\s+(?:por favor|please|para mi|for me|ahora|now|"
+            r"dale|porfa|porfi|porfis|pls|plz))?[\s?!.]*$"
+        )
+        openable = rf"(?:{_KNOWN_SOFTWARE}|{_UNOFFERED_SERVICE_NAME})"
         wrapper = _match(
             request.group("target"),
-            rf"^(?:(?:el|la|the)\s+)?(?={_KNOWN_SOFTWARE}"
-            r"(?:\s*[,;:]?\s+(?:por favor|please|para mi|for me|ahora|now|"
-            r"dale|porfa|porfi|porfis|pls|plz))?[\s?!.]*$)",
+            rf"^(?:(?:el|la|mi|the|my)\s+)?(?={openable}{courtesy})",
         )
+        if wrapper is None:
+            wrapper = _match(
+                request.group("target"),
+                rf"^(?:(?:el|la|mi|the|my)\s+)?(?={openable}\s+(?:app|application){courtesy})",
+            )
+            trailing_noun = wrapper is not None
     if proper_name and wrapper is None and build_application_catalog_index(application_names).entries:
         # APPS1549 «abre Saint Rose.»: a proper name (every word capitalized,
         # no article, at most four words) after an open head is a name the
@@ -5316,6 +5333,11 @@ def unresolved_application_open_name(
     # The explicit application wrapper was consumed above. Strip only its
     # request suffix, never another article or program word inside the name.
     raw_name = _APPLICATION_TRAILING_REQUEST.sub("", raw_name.rstrip(" ?!.")).rstrip()
+    if trailing_noun:
+        raw_name = re.sub(r"\s+(?:app|application)$", "", raw_name, flags=re.IGNORECASE)
+    if resolve_application_catalog_app_id("abre " + raw_name, application_names) is not None:
+        # «open spotify app», «open my spotify»: a name the catalog holds is opened, never read for its presence.
+        return None
     name = _bounded_application_literal(raw_name)
     # Courtesy is a request envelope, not a separate effect clause.
     if name is None or len(_request_clauses(_strip_request_envelope(folded))) != 1:

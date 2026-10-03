@@ -104,6 +104,9 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
     ("llm.py", "visible_reply_claims_an_effect"): (
         "GROUNDING", "a claimed act that repeats the person's own words is not invented (asked_words)"),
     ("llm.py", "_screen_count_defect"): ("GROUNDING", "a number the person said may be repeated"),
+    ("llm.py", "_clocks_written_in_observed_titles.walk"): (
+        "GROUNDING", "M134: clocks inside observed titles/names a verified operation returned, never the person's words",
+    ),
     ("llm.py", "talk_memory_figures"): (
         "GROUNDING", "M95: a figure of a talk answer is the conversation's only when its words (the person's or BAXY's "
         "earlier answers) contain it, or the name it follows"),
