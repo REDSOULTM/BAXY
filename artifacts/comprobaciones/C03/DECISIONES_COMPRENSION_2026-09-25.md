@@ -722,3 +722,11 @@ con D61: F 241 (v4l 239), E 248 (248), D 305 (308). Diferencias de ±3 entre ron
 entrenando sólo los tokens de los argumentos (la decisión fuera de la pérdida), lr bajo, datos de entrenamiento sin
 solapamiento con evaluación. Regla prerregistrada: decisión ≥ full3 − 2 en DEV-F/D/E y argumentos ≥ full3 + 5 en F+D
 sin bajar en E.
+
+## D66. v4m medido (main afa40592: M133 app ausente D61.2, M134 redacciones sin final) (2026-10-03 00:50)
+Con D61: DEV-F 241/280 = 86,1 % (p50 2,64 s) · DEV-E 250/299 = 83,6 % (p50 2,75 s) · DEV-D 306/332 = 92,2 % (p50
+1,98 s) — dentro del ruido ±3 de v4l. Sin final: F 0 (2–3), D 1 (2), E 5/299 (5–6). Reserva 89,9 / 93,9 % · 742: sólo
+H0406 → `app.installed` (D61.2) · capa A sin cambios · DEV-C 257/301 · held-out 30/30 · guion 52/60 + 4 por revisar
+(Steam t36/t38/t42 sigue: M132 entra en v4n) · VRAM 3 796 MiB. full12: OOM en redpc a ~920/2 141 (23:08), reanudado
+desde el ejemplo 800 a las 00:11. Incidente M132 (~22:30): en una prueba en vivo con el dueño usando el PC, el clic por
+OCR pulsó «biblioteca» una vez en el panel de VS Code; M132 ata el clic a la ventana de la app abierta.
