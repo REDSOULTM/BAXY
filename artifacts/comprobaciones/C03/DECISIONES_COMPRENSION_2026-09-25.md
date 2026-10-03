@@ -765,3 +765,31 @@ OCR pulsó «biblioteca» una vez en el panel de VS Code; M132 ata el clic a la 
    held-out 30/30, cien-120 100/100 publicadas, 0 efectos de más (frente a cien-119 sólo cambian redacciones). El pytest
    completo de la cadena dio 56 fallos + 24 errores, todos 0xC0000142 (procesos hijo powershell/git que no arrancaron);
    los 80 repetidos pasan; Integración 4 031/4 031.
+
+## D69. v4o: los arreglos hallados en DEV-G se generalizan en parte a DEV-E; DEV-H (2026-10-03 08:00)
+1. **DEV-G en la App (v4n, main 7412b381)**: 243/300 = 81,0 % con D35 (DEV-E 83,6 %); decisor aislado 295/300; lastre 51
+   (27 decisión + 24 argumentos), 28 de ellos en primer turno. A diferencia de F/D, con el historial vivido el lastre
+   apenas baja (27 → 21): es código. Con el mismo prompt (prompt_n idéntico) el decisor de la App y el aislado discrepan
+   en ≈ 4 turnos casi empatados (no invarianza por lote de llama.cpp); no se persigue.
+2. Mecanismos sobre DEV-G (filas iterables; reglas de entrada: prueba con la fila real, variantes propias, casos que no
+   cambian, familia C03 verde): **M135** veto de un borrado afirmado sin operación que borre; **M136** los argumentos del
+   decisor llegan a los campos del esquema (clave por operación, prefijo «app» → appId, parte dicha de un nombre de app,
+   all_known para la carpeta no dicha de una lectura, «he bajado» = Descargas); **M137** «X antes» de una hora dicha y la
+   hora suelta movida con su parte del día; **M138** lectores de primer turno estrechados (pregunta antes del «?», «check
+   si tengo internet», «donde anda mi compadre», borrador «diciendo que…», «pa las 7», «some X», «in spotify»; offline
+   DEV-G +7 decisiones, D/F/reserva/742 sin cambios); **M139** una respuesta de conversación o de recuperación no promete
+   un acto en el mundo («I will get a pepperoni pie delivered» → límite) y ocho redacciones sin final; arreglos de
+   integración (sin igualdad de texto en el decisor; error que afirma el acto = missing_failure). Full verde (pytest
+   22 603, Integración 4 060). main 0db83e48.
+3. **v4o** (con D61): **DEV-G 269/300 = 89,7 %** (+28/−3; de los 3 rotos: un artefacto del registro, un historial vivido
+   distinto y un «Can't» de un título → M140), **DEV-E 257/299 = 86,0 %** (v4n 250; +10/−5; lastre 42 → 37), DEV-F
+   243/280 = 86,8 % (=), DEV-D 305/332 = 91,9 % (v4n 306). El 90 % de DEV-E exige 269 (+12).
+4. Después de v4o, en integración: **M140** (título y artista observados por cualquier operación media.* no son un fallo
+   dicho) y **M141** (los argumentos del decisor llegan a los pasos de los planes; el código que BAXY acaba de escribir
+   va al archivo pedido). Pendiente de diseño: «pásame esta ventana a la izquierda» (la ventana del frente es la de BAXY)
+   y note.update tras crear la nota (falta encadenar note.read → note.update en el Kernel).
+5. **DEV-H** (`sets/DEV-H.jsonl`, sha256 `8b7e94ec…903ee`, 300 turnos, misma forma que DEV-E y DEV-G, regla 20 del
+   dueño añadida: recordatorio sin hora acepta la operación o preguntar): 5 escritores de sala limpia, exclusión en tres
+   rondas (91 → 1 → 0, incluidas las huellas de DEV-G), doble etiquetado ciego (acuerdo 300/300, conjunto idéntico
+   83,3 %), adjudicador en 95 filas (1: 63, 2: 15, nueva: 15, unión: 2, 0 descartadas). Iterable; sirve para no seguir
+   iterando sobre DEV-G ya mirado.
