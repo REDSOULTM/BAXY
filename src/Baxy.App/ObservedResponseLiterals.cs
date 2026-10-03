@@ -49,12 +49,84 @@ internal static class ObservedResponseLiterals
         HashSet<string> observed = ObservedIdentifierTokens(source);
         return observed.Count == 0 || string.IsNullOrEmpty(text)
             ? text
-            : IdentifierToken.Replace(text, match => observed.Contains(match.Value) ? string.Empty : match.Value);
+            : IdentifierToken.Replace(
+                text, match => observed.Contains(IdentifierKey(match.Value)) ? string.Empty : match.Value);
+    }
+
+    // M134: an identifier compared without case or accents («cotización-pisos.pdf» is «cotizacion-pisos.pdf»); twin of
+    // llm._identifier_key.
+    private static string IdentifierKey(string token)
+    {
+        string decomposed = token.ToLowerInvariant().Normalize(System.Text.NormalizationForm.FormD);
+        var kept = new System.Text.StringBuilder(decomposed.Length);
+        foreach (char character in decomposed)
+        {
+            if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(character)
+                != System.Globalization.UnicodeCategory.NonSpacingMark)
+            {
+                kept.Append(character);
+            }
+        }
+
+        return kept.ToString().Normalize(System.Text.NormalizationForm.FormC);
+    }
+
+    // M134 (DEV-F v4i–v4l2 F-w22-t2, F-w24-t4; DEV-D D-w15-t3): what a failed result says it tried — «target» and
+    // «attempted» of the failure or of its steps — is the person's thing named back («No encontré lease.pdf en
+    // Descargas»), not a contract code. Twin of llm._attempted_targets.
+    private static readonly HashSet<string> AttemptedKeys = new(StringComparer.Ordinal) { "target", "attempted" };
+
+    private static void CollectAttemptedIdentifiers(JsonElement node, int depth, HashSet<string> tokens)
+    {
+        if (depth > 8)
+        {
+            return;
+        }
+
+        switch (node.ValueKind)
+        {
+            case JsonValueKind.String:
+                if (node.GetString() is { } raw && raw.TrimStart().StartsWith('{'))
+                {
+                    try
+                    {
+                        using JsonDocument wrapped = JsonDocument.Parse(raw);
+                        CollectAttemptedIdentifiers(wrapped.RootElement, depth + 1, tokens);
+                    }
+                    catch (JsonException)
+                    {
+                        // Prose is not a result.
+                    }
+                }
+
+                break;
+            case JsonValueKind.Object:
+                foreach (JsonProperty property in node.EnumerateObject())
+                {
+                    if (AttemptedKeys.Contains(property.Name))
+                    {
+                        CollectIdentifiers(property.Value, property.Name, 0, tokens);
+                    }
+                    else
+                    {
+                        CollectAttemptedIdentifiers(property.Value, depth + 1, tokens);
+                    }
+                }
+
+                break;
+            case JsonValueKind.Array:
+                foreach (JsonElement child in node.EnumerateArray())
+                {
+                    CollectAttemptedIdentifiers(child, depth + 1, tokens);
+                }
+
+                break;
+        }
     }
 
     private static HashSet<string> ObservedIdentifierTokens(string source)
     {
-        var tokens = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var tokens = new HashSet<string>(StringComparer.Ordinal);
         if (string.IsNullOrWhiteSpace(source) || !source.TrimStart().StartsWith('{'))
         {
             return tokens;
@@ -131,9 +203,10 @@ internal static class ObservedResponseLiterals
                 }
             }
 
+            CollectAttemptedIdentifiers(root, 0, tokens);
             if (root.TryGetProperty("operation", out JsonElement operation) && operation.ValueKind == JsonValueKind.String)
             {
-                tokens.Remove(operation.GetString() ?? string.Empty);
+                tokens.Remove(IdentifierKey(operation.GetString() ?? string.Empty));
             }
         }
         catch (JsonException)
@@ -164,7 +237,7 @@ internal static class ObservedResponseLiterals
             case JsonValueKind.String:
                 foreach (Match token in IdentifierToken.Matches(value.GetString() ?? string.Empty))
                 {
-                    tokens.Add(token.Value);
+                    tokens.Add(IdentifierKey(token.Value));
                 }
 
                 break;

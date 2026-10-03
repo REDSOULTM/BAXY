@@ -5968,6 +5968,17 @@ def _situation_from_facts(facts: dict) -> dict:
     return {}
 
 
+def _addressed_to_the_person(intent: str, situation: dict) -> bool:
+    """M99/M134: what is said to the person themselves — a question back, or the failure of what they asked — rather
+    than a piece written for someone else. «traducelo al ingles que es para mi jefa» with the file not found (DEV-D
+    D-w15-t3, v4i–v4l2): «The file was not found…» was told in the language of the translation that never happened."""
+
+    return (
+        intent in {"clarification", "error"}
+        or str(situation.get("kind") or "") in {"clarification", "failure"}
+    )
+
+
 _CAUSE_FACT_FAMILIES = ("youtube_playback_not_verified",)
 
 
@@ -9980,7 +9991,38 @@ def _observed_local_clocks(situation: dict) -> frozenset[str]:
             for key in ("title", "snippet")
             for hour, minute in re.findall(r"(?<!\d)(\d{1,2}):(\d{2})(?!\d)", str(item.get(key) or ""))
         )
-    return frozenset()
+    return _clocks_written_in_observed_titles(observed)
+
+
+# M134 (DEV-F v4l2 F-w59-t2 «yeah sure mañana at 6:30 pm» → task.create titled «comprar huevos, leche de avena y
+# tortillas, mañana a las 18:30»): «He creado la tarea "…, mañana a las 18:30"» quoted the observed title and died as
+# an invented clock (extra_claim) in all three drafts; the turn ended in ⚠. A clock written inside what a verified read
+# or write observed as a name or a text is that title's words, not a reading of the PC's clock. Only those keys count:
+# a timestamp («createdAtUtc») is UTC, never a local clock to say.
+_TITLED_CLOCK_KEYS = frozenset({"title", "name", "text", "details"})
+
+
+def _clocks_written_in_observed_titles(observed: object) -> frozenset[str]:
+    clocks: set[str] = set()
+
+    def walk(value: object, key: str = "", depth: int = 0) -> None:
+        if depth > 6:
+            return
+        if isinstance(value, str):
+            if key in _TITLED_CLOCK_KEYS:
+                clocks.update(
+                    f"{int(hour):02d}:{minute}"
+                    for hour, minute in re.findall(r"(?<!\d)(\d{1,2}):(\d{2})(?!\d)", value)
+                )
+        elif isinstance(value, dict):
+            for child_key, child in value.items():
+                walk(child, str(child_key), depth + 1)
+        elif isinstance(value, (list, tuple)):
+            for child in value:
+                walk(child, key, depth + 1)
+
+    walk(observed)
+    return frozenset(clocks)
 
 
 def _known_listing_in_payload(payload: dict) -> dict | None:
@@ -15318,9 +15360,46 @@ def _said_misspelled(user_text: str, name: str) -> bool:
     )
 
 
+_ATTEMPTED_KEYS = frozenset({"target", "attempted"})
+
+
+def _attempted_targets(situation: object, depth: int = 0) -> list[object]:
+    """M134: what a result says it tried — the «target» and «attempted» of a failure or of its steps, decoded."""
+
+    found: list[object] = []
+    if depth > 8:
+        return found
+    if isinstance(situation, str) and situation.lstrip().startswith("{"):
+        try:
+            situation = json.loads(situation)
+        except ValueError:
+            return found
+    if isinstance(situation, dict):
+        for key, value in situation.items():
+            if key in _ATTEMPTED_KEYS:
+                found.append(value)
+            else:
+                found.extend(_attempted_targets(value, depth + 1))
+    elif isinstance(situation, (list, tuple)):
+        for value in situation:
+            found.extend(_attempted_targets(value, depth + 1))
+    return found
+
+
+def _identifier_key(token: str) -> str:
+    """An identifier compared without case or accents («cotización-pisos.pdf» is «cotizacion-pisos.pdf»)."""
+
+    return fold(token)
+
+
 def _observed_identifier_tokens(situation: dict) -> set[str]:
     """A7 E4 (DEV-A3 t103): a file name inside an observed window title («baxy-guardia.txt: Bloc de notas») is what
-    was seen, not an internal code; only the observed values count, never the operation that read them."""
+    was seen, not an internal code; only the observed values count, never the operation that read them.
+
+    M134 (DEV-F v4i–v4l2 F-w22-t2 «great, can you summarize the lease PDF in there?», F-w24-t4, DEV-D D-w15-t3): the
+    file a failed read tried («target»/«attempted»: «lease.pdf», «cotizacion-pisos.pdf», «informe_trimestral.txt») is
+    the person's thing named back, not a contract code; every draft that said «no encontré lease.pdf en Descargas»
+    died as internal_code and the turn ended in ⚠ in every round. Twin: ObservedResponseLiterals.ObservedIdentifierTokens."""
 
     tokens: set[str] = set()
 
@@ -15328,7 +15407,7 @@ def _observed_identifier_tokens(situation: dict) -> set[str]:
         if key in {"operation", "operations", "authority", "windowId", "endpointIdHash"}:
             return
         if isinstance(value, str):
-            tokens.update(match.casefold() for match in _IDENTIFIER_TOKEN.findall(value))
+            tokens.update(_identifier_key(match) for match in _IDENTIFIER_TOKEN.findall(value))
         elif isinstance(value, dict):
             for child_key, child in value.items():
                 walk(child, str(child_key))
@@ -15337,7 +15416,8 @@ def _observed_identifier_tokens(situation: dict) -> set[str]:
                 walk(child, key)
 
     walk(_merged_observed(situation))
-    operation = str(situation.get("operation") or "").casefold()
+    walk(_attempted_targets(situation))
+    operation = _identifier_key(str(situation.get("operation") or ""))
     tokens.discard(operation)
     return tokens
 
@@ -15447,13 +15527,13 @@ def compose_visible_defect(
     if isinstance(prior_requests, list):
         identifier_sources.extend(item for item in prior_requests if isinstance(item, str))
     user_identifiers = {
-        match.casefold()
+        _identifier_key(match)
         for source in identifier_sources
         for match in _IDENTIFIER_TOKEN.findall(source)
     } | _observed_identifier_tokens(_situation_from_facts(facts))
     vocabulary_text = without_observed_names(stripped, _situation_from_facts(facts))
     without_user_identifiers = _IDENTIFIER_TOKEN.sub(
-        lambda match: "" if match[0].casefold() in user_identifiers else match[0],
+        lambda match: "" if _identifier_key(match[0]) in user_identifiers else match[0],
         vocabulary_text,
     )
     if (
@@ -16061,10 +16141,9 @@ def compose_visible_defect(
     if re.search(r"\bya terminado\b", folded) and "ha terminado" not in folded:
         return "invented"
     language = _conversation_response_language(user_text, facts)
-    if language in {"es", "en"} and (
-        intent == "clarification" or _situation_from_facts(facts).get("kind") == "clarification"
-    ):
-        # M99 (DEV-D v3x D-w15-t3): the question back is judged in the language the person speaks.
+    if language in {"es", "en"} and _addressed_to_the_person(intent, _situation_from_facts(facts)):
+        # M99 (DEV-D v3x D-w15-t3): the question back is judged in the language the person speaks; M134: the failure
+        # told too.
         language = addressed_language(said or user_text, language)
     # El idioma de la respuesta se lee con el mismo owner que fija el del turno,
     # y sólo se veta cuando la evidencia del texto es de un solo idioma: «I will
@@ -17912,23 +17991,50 @@ def _whole_part_of_cut_analysis(draft: str) -> str:
     The words kept are the model's."""
 
     kept = _complete_sentences(draft)
-    if not kept:
-        return ""
+    return kept if kept and _analysis_keeps_its_form(draft, kept) else ""
+
+
+def _is_analysis_heading(line: str) -> bool:
+    return len(line) <= 48 and line.strip("*#_ ").endswith(":") and not _ANALYSIS_POINT.match(line)
+
+
+def _analysis_keeps_its_form(draft: str, kept: str) -> bool:
+    """What is kept of an analysis still has a point under every section it opens and, in a SWOT, all four."""
+
     lines = [line.strip() for line in kept.splitlines() if line.strip()]
-    headings = [
-        index for index, line in enumerate(lines)
-        if len(line) <= 48 and line.strip("*#_ ").endswith(":") and not _ANALYSIS_POINT.match(line)
-    ]
+    headings = [index for index, line in enumerate(lines) if _is_analysis_heading(line)]
     if any(
         not (index + 1 < len(lines) and _ANALYSIS_POINT.match(lines[index + 1])) for index in headings
     ):
-        return ""
+        return False
     folded_draft, folded_kept = _reading_fold(draft), _reading_fold(kept)
-    for sections in _SWOT_SECTIONS:
-        if any(section in folded_draft for section in sections) and not all(
-            section in folded_kept for section in sections
-        ):
-            return ""
+    return not any(
+        any(section in folded_draft for section in sections)
+        and not all(section in folded_kept for section in sections)
+        for sections in _SWOT_SECTIONS
+    )
+
+
+def _analysis_without_unsourced_points(draft: str, carries_unsourced: Callable[[str], bool]) -> str:
+    """M134 (DEV-D v4j–v4l2 D-p35-t1 «Has un análisis de FODA sobre la empresa Adidas…», after M124 kept its whole
+    part): the analysis said «…un recuerdo de una noche de fiesta en los 80» in one point, a figure the page does not
+    carry, and every draft died as unsourced_figures (seed 53, temperature 0: the App's five compositions wrote it
+    word for word, 20 s and no final). A point (a listed line) or a prose sentence that says a figure nobody gave is
+    left out; the rest are the model's words, each already sourced. Kept only while every section it opens keeps a
+    point and a SWOT its four sections; "" otherwise — the figure is never published."""
+
+    kept_lines: list[str] = []
+    for line in draft.splitlines():
+        if not carries_unsourced(line):
+            kept_lines.append(line)
+            continue
+        if _ANALYSIS_POINT.match(line) or _is_analysis_heading(line.strip()):
+            continue
+        sentences = [part for part in re.split(r"(?<=[.!?])\s+", line) if part.strip()]
+        kept_lines.append(" ".join(part for part in sentences if not carries_unsourced(part)))
+    kept = re.sub(r"\n{3,}", "\n\n", "\n".join(kept_lines)).strip()
+    if not kept or carries_unsourced(kept) or not _analysis_keeps_its_form(draft, kept):
+        return ""
     return kept
 
 
@@ -24216,6 +24322,8 @@ class LlmRuntime:
         ]
         stage = "from_memory" if reference is None else "consulted_" + str(reference["kind"])
         repair = ""
+        # M134 (DEV-D D-p35-t1): a refused analysis without its unsourced points, the last resort when no draft passes.
+        sourced_part = ""
         for attempt in range(2):
             if deadline is not None and deadline - time.monotonic() < (3.0 if attempt else 0.5):
                 break
@@ -24282,6 +24390,12 @@ class LlmRuntime:
                 unsourced := _reference_unsourced_figures(draft, reference["text"], [user_text, *prior], ratio)
             ):
                 reason = "unsourced_figures"
+                if reference["kind"] == "analysis" and not sourced_part:
+                    # M134 (DEV-D D-p35-t1): the points that say an unsourced figure are left out, never published;
+                    # kept for when the retry does not come (the deadline) or does not pass either.
+                    sourced_part = _analysis_without_unsourced_points(draft, lambda part: bool(
+                        _reference_unsourced_figures(part, reference["text"], [user_text, *prior], ratio)
+                    ))
             else:
                 reason = ""
             _capture_compose_stage(
@@ -24349,6 +24463,16 @@ class LlmRuntime:
                 else "Escribe sólo el aviso corto y después la respuesta pedida, en la forma pedida: nada de lo que puedes "
                 "o no puedes hacer, sin títulos, sin otras secciones y sin consejos."
             )
+        if sourced_part:
+            # M134 (DEV-D D-p35-t1): seed 53 at temperature 0 wrote the same point every time and the retry never came
+            # inside the deadline; the analysis goes without that point rather than not at all.
+            _capture_compose_stage(
+                trace=trace_id, stage=stage + "_sourced_part", intent="consulted",
+                language="en" if english else "es", greeting="none", payload=data, raw=sourced_part,
+                clipped=sourced_part, reason="", finish_reason="unsourced_points_left_out", published=True,
+                situation=json.dumps(situation, ensure_ascii=False)[:2048],
+            )
+            return sourced_part
         return None
 
     def composition_is_reproducible(self, facts: dict) -> bool:
@@ -24578,11 +24702,9 @@ class LlmRuntime:
         previous_answer = _referenced_previous_answer(user_text, facts)
         situation = _situation_from_facts(facts)
         consulted_refused: list[str] = []
-        if response_language in {"es", "en"} and (
-            intent == "clarification" or str(situation.get("kind") or "") == "clarification"
-        ):
+        if response_language in {"es", "en"} and _addressed_to_the_person(intent, situation):
             # M99 (DEV-D v3x D-w15-t3): a question back to the person is in their language, not the one they asked a
-            # translation into.
+            # translation into; M134: so is the failure told.
             response_language = addressed_language(said or user_text, response_language)
         consulted = self._compose_consulted_answer(
             user_text, facts, situation, response_language, post, compose_deadline, trace_id,
