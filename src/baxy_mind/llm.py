@@ -16043,6 +16043,12 @@ def compose_visible_defect(
             stripped, user_text, tuple(str(item) for item in prior if isinstance(item, str))
             if isinstance(prior, list) else (),
         )
+        if world_claim == "effect_claim" and intent == "error" and not (
+            _asserts_failure(stripped) or _names_the_boundary(stripped.casefold())
+        ):
+            # M139 × the out-of-catalog contract: an error turn whose draft claims the act and tells no failure nor
+            # limit («Claro, ya la reservé.») wants the failure said (its hint), not only the effect forbidden.
+            return "missing_failure"
         if world_claim:
             return world_claim
         if kind == "conversation" and _says_the_person_back(stripped, said or user_text):

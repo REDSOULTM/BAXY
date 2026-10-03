@@ -223,10 +223,17 @@ def the_question_asked(text: str) -> str:
     in it does not make the question one about their agenda. The question itself still does («¿cuándo es mi cita? la
     tengo con el dentista»)."""
 
+    return question_with_context(text) or str(text or "")
+
+
+def question_with_context(text: str) -> str | None:
+    """The question of a message that goes on after its question mark (see ``the_question_asked``); None when nothing
+    follows it."""
+
     asked, mark, after = str(text or "").rpartition("?")
     if mark and re.search(r"\w", after) and len(asked.split()) >= 3:
         return asked + mark
-    return str(text or "")
+    return None
 
 
 def agenda_read_request(text: str) -> bool:

@@ -46,7 +46,7 @@ from .semantic.notes import (
     list_creation_said,
     names_own_event,
     task_change,
-    the_question_asked,
+    question_with_context,
 )
 from .semantic import levels as semantic_levels
 from .semantic.memory import explicit_memory_request
@@ -5132,10 +5132,10 @@ def _context_decided_result(
         # Fase 3.5b M19 (cien-104 «ábreme eso porfa» after the time → «Abre el navegador» → a browser opened): a
         # pointer with no antecedent in what was said is asked, never filled with an object the model brought.
         decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
-    question_asked = the_question_asked(text)
+    question_asked = question_with_context(text)
     if decided.decision == "action" and decided.operations == ("web.search",) and (
         names_own_data(text)
-        if question_asked == text
+        if question_asked is None
         # M138 (DEV-G v4n G-w42-t1 «when do the Lakers play next? my buddy wants to come over and watch it» → asked
         # what only the person knows, where the isolated decider looked the game up): what is said after the question
         # is its context. Only the question, and what the decider would look up, are read for the person's own data.
