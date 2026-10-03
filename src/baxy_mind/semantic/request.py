@@ -765,7 +765,7 @@ def _read_intents(ask: str) -> frozenset[str]:
     # Pregunta por quien contesta y por lo que hace: capacidad si no marca un
     # borde, límite si lo marca. La forma manda sobre la frase exacta.
     about_you = (
-        _INTERROGATIVE.search(folded) is not None
+        _INTERROGATIVE.search(_QUE_CONNECTIVE.sub(" ", folded)) is not None
         and _SECOND_PERSON.search(folded) is not None
         and (_DOING.search(folded) is not None or _LIMIT.search(folded) is not None)
         and not continue_constraint
@@ -945,6 +945,13 @@ def _refers_back(folded: str) -> bool:
 _INTERROGATIVE = re.compile(
     r"\b(?:que|cual|cuales|como|cuando|donde|cuanto|cuanta|cuantos|cuantas|"
     r"quien|quienes|what|which|how|when|where|why|who|whom|whose)\b"
+)
+# M139 (DEV-G v4n G-w33-t4 «bueno, ya que no puedes con eso, al menos ponme una alarma para las 9 de la noche»): the
+# «que» of a causal or temporal connective («ya que», «puesto que», «dado que», «antes de que») asks nothing; read as
+# «¿qué…?» beside «no puedes», the alarm was answered as a question about BAXY's limits and never reached the decider.
+# «para qué» and «así que» stay: «¿para qué sirves?» asks. Twin of UserMessagePolicy.WithoutQueConnectives. Folded.
+_QUE_CONNECTIVE = re.compile(
+    r"\b(?:ya|puesto|dado|visto|antes\s+de|despues\s+de|hasta|a\s+menos|siempre|mientras)\s+que\b"
 )
 _LEADING_CONNECTOR = re.compile(
     r"^(?:y|e|and|pero|but|ok|vale|bueno|entonces|so|then|oye|hey)\s+"
