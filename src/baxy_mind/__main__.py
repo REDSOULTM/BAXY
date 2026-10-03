@@ -3341,10 +3341,57 @@ def _with_decided_arguments(
     for name, value, field_schema in decided:
         if name in merged and validate_argument_grounding({name: merged[name]}, field_schema, trusted_source):
             continue
-        if validate_argument_grounding({name: value}, field_schema, trusted_source):
+        if not validate_argument_grounding({name: value}, field_schema, trusted_source):
+            value = _said_part_of_a_name(name, value, field_schema, trusted_source) or (
+                # M136: a folder the decider chose and nobody said is every known folder, when that grounds.
+                "all_known" if "all_known" in (field_schema["properties"][name].get("enum") or []) else None
+            )
+        if value is not None and validate_argument_grounding({name: value}, field_schema, trusted_source):
             merged[name] = value
             added = True
     return merged if added else None
+
+
+# M136 (DEV-G v4n G-s097 «baxy abreme el obs…» → the decider's «OBS Studio» → «¿Cuál es el nombre exacto de la
+# aplicación…?»): an application's name the decider completed with words nobody said keeps the words the person said.
+_SAID_NAME_FIELDS = frozenset({"appId", "name"})
+
+
+def _said_part_of_a_name(name: str, value: Any, field_schema: dict[str, Any], trusted_source: str) -> Any:
+    """The longest run of the decider's words for an application's name that grounds on its own; None when none does."""
+
+    if name not in _SAID_NAME_FIELDS or not isinstance(value, str):
+        return None
+    words = value.split()
+    for size in range(len(words) - 1, 0, -1):
+        for start in range(len(words) - size + 1):
+            part = " ".join(words[start:start + size])
+            if len(part) >= 2 and validate_argument_grounding({name: part}, field_schema, trusted_source):
+                return part
+    return None
+
+
+def _schema_field_of(name: str, operation: str, properties: dict[str, Any], required: list[Any]) -> str | None:
+    """M136 (DEV-G v4n G-s040 «open Notepad and put it on the left half» → {"app": "Notepad"}; G-s116 «abrí spotify y
+    ponime algo de jazz» → {"app.open": "Spotify", "media.play.query": "jazz tranquilo"}): the field of this
+    operation's schema a decider's value names — the field itself, the operation's one free required text when the
+    value is keyed by the operation, or the one field whose name begins with the decider's («app» → «appId»)."""
+
+    if name in properties:
+        return name
+    if name == operation:
+        free = [
+            field for field in required
+            if isinstance(properties.get(field), dict)
+            and properties[field].get("type") == "string"
+            and "enum" not in properties[field]
+            and "const" not in properties[field]
+        ]
+        return free[0] if len(free) == 1 else None
+    if len(name) < 3:
+        return None
+    named = [field for field in properties if field.casefold().startswith(name.casefold())]
+    return named[0] if len(named) == 1 else None
 
 
 def _decided_fields(
@@ -3358,8 +3405,13 @@ def _decided_fields(
     if remembered is None or operation not in remembered[0] or not isinstance(properties, dict):
         return None
     identities = set(_DETERMINISTIC_DEPENDENCY_FIELDS.get(operation, ()))
+    required = schema.get("required") if isinstance(schema.get("required"), list) else []
+    given = {name for name, _ in remembered[1]}
     fields: list[tuple[str, Any, dict[str, Any]]] = []
-    for name, raw in remembered[1]:
+    for decided_name, raw in remembered[1]:
+        name = _schema_field_of(decided_name, operation, properties, required)
+        if name is None or (name != decided_name and name in given):
+            continue
         contract = properties.get(name)
         if (
             not isinstance(contract, dict)
@@ -3378,6 +3430,29 @@ def _decided_fields(
             (name, value, {"type": "object", "properties": {name: contract}, "required": [name], "additionalProperties": False})
         )
     return fields
+
+
+# M136 (DEV-G v4n G-s123 «resúmeme el pdf ese que se llama contrato_arriendo_2026…», G-w40-t1 «busca un archivo que se
+# llama cotizacion_mudanza» → the decider's folder «Documentos»/«Descargas», nobody's → «¿En qué carpeta…?»): a read of a
+# named file where the person names no folder looks in every known folder, as the readers do (PDF1689); a write or a
+# deletion keeps asking.
+_EVERY_KNOWN_FOLDER_READS = frozenset({"document.pdf.read", "document.text.read", "filesystem.known.search"})
+
+
+def _with_every_known_folder_unsaid(operation: str, schema: dict[str, object], trusted_source: str) -> str:
+    """The trusted source with «all known» when this read's folder enum holds it and no member of it was said."""
+
+    if operation not in _EVERY_KNOWN_FOLDER_READS:
+        return trusted_source
+    properties = schema.get("properties") if isinstance(schema.get("properties"), dict) else {}
+    for field, contract in properties.items():
+        members = contract.get("enum") if isinstance(contract, dict) else None
+        if not isinstance(members, list) or "all_known" not in members:
+            continue
+        field_schema = {"type": "object", "properties": {field: contract}, "required": [field], "additionalProperties": False}
+        if not any(validate_argument_grounding({field: member}, field_schema, trusted_source) for member in members):
+            return f"{trusted_source}\nall known"
+    return trusted_source
 
 
 # M118 (D58): the fields whose value is the person's words (a message, a note, a title, a search), where a restatement
@@ -5513,6 +5588,7 @@ def _direct_arguments_result(
     said = _with_decided_restatements(
         operation, str(message.get("text", "")), tool["function"]["parameters"], said,
     )
+    said = _with_every_known_folder_unsaid(operation, tool["function"]["parameters"], said)
     if arguments is not None:
         arguments = _with_decider_values_kept(
             operation, str(message.get("text", "")), arguments, tool["function"]["parameters"], said,
