@@ -28092,12 +28092,15 @@ class LlmRuntime:
                 ),
                 "unstated_already_running": (
                     ("Name the app" + (" («" + str(_app_open_observed_name(situation)) + "»)" if _app_open_observed_name(situation) else "")
-                     + ". Say it was already open. Never say you opened, launched "
-                     "or reopened it.")
+                     + " and say only that it was already open («Notepad was already open.»). Nobody opened it "
+                     "now: neither BAXY nor the person.")
                     if response_language == "en"
+                    # M142 (held-out v4o t10 «abrí el bloc de notas», the rioplatense imperative): «Nunca digas que la
+                    # abriste» read as said of the person; three drafts wrote «…cuando lo abriste» and the turn had no
+                    # final. The hint is impersonal and shows the sentence.
                     else ("Nombra la app" + (" («" + str(_app_open_observed_name(situation)) + "»)" if _app_open_observed_name(situation) else "")
-                          + ". Di que ya estaba abierta. Nunca digas que la abriste "
-                          "ni que la volviste a abrir.")
+                          + " y di sólo que ya estaba abierta («El Bloc de notas ya estaba abierto.»). Nadie la abrió "
+                          "ahora: ni BAXY ni la persona.")
                 ),
                 "invented_prior_open_state": (
                     "The app was closed and you opened it now. Do not say it was already open."
