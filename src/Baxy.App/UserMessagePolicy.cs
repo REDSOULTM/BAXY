@@ -4143,8 +4143,19 @@ internal static class UserMessagePolicy
             return false;
         }
 
-        return !LooksLikeFailure(result);
+        return !LooksLikeFailure(result) && !TellsFailureAsTheMindReadsIt(result);
     }
+
+    // M134 (DEV-D v4i–v4l2 D-w15-t3 «traducelo al ingles que es para mi jefa», known_file_not_found): the mind
+    // published «The file was not found at the specified location.» — its _FAILURE_MARKERS read «not found» as the
+    // failure told — and this twin refused it as reversed_result in every round, so the turn had no final. The markers
+    // of the mind's list that LooksLikeFailure lacked; judged only against a failed result, where saying the thing was
+    // not found, or that time ran out, is the failure itself.
+    private static bool TellsFailureAsTheMindReadsIt(string result) =>
+        Regex.IsMatch(
+            FoldForPolicy(result),
+            @"\bnot\s+found\b|\bno\s+l[ao]\s+encontre\b|\btime\s+ran\s+out\b|\bse\s+agoto\b",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
 
     // Independent review A2: «Ya está, activé tu micrófono» is «done», not «it already was»; twin of
     // llm._ALREADY_STATEMENT.
