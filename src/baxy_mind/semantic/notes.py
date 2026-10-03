@@ -5,11 +5,12 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from datetime import date
 from typing import Callable, Iterable, Sequence
 from .grammar import TASK_REMINDER_HEAD, _RELATIVE_DURATION_PATTERN, _fold, _match, _has, _strip_request_envelope, _request_body_surface, _request_head, _head_is, _LIST, _READ, _CREATE, _request_clauses
 from .intent import EffectIntent, _append
 from .normalize import _accent_folded_with_punctuation, fold_in_place
-from .temporal import _absolute_calendar_range_parts, _DEICTIC_DAY, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, CLOCK_PHRASE, EventTiming, event_timing, spoken_clock, is_window_phrase, says_a_window
+from .temporal import _absolute_calendar_range_parts, _DEICTIC_DAY, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, CLOCK_PHRASE, EventTiming, event_timing, spoken_clock, is_window_phrase, says_a_window, task_due_date
 
 
 # --- The person's own agenda, read (uso real 2026-09-23) --------------------------------------------
@@ -1060,16 +1061,19 @@ def _named(value: str) -> str:
     return re.sub(_LEADING_ARTICLE, "", value.strip(" \"'«»“”"), flags=re.IGNORECASE).strip(" \"'«»“”")
 
 
-def task_change(text: str, title: str) -> dict[str, str]:
+def task_change(text: str, title: str, *, today: date | None = None) -> dict[str, str]:
     """M80: what a change of the task titled ``title`` changes, in the person's words: ``details`` for the list it
-    goes on, ``title`` for its new name (from the old one, or said alone after a pronoun). Empty when neither is read.
-    Each sentence is read on its own («Change to that eggs. Add to the Walmart list.»)."""
+    goes on, ``title`` for its new name (from the old one, or said alone after a pronoun), ``due`` for the day it moves
+    to (M144, ``YYYY-MM-DD``). Empty when none is read. Each sentence is read on its own («Change to that eggs. Add to
+    the Walmart list.»)."""
 
     changed: dict[str, str] = {}
     old_title = _fold(_named(title))
+    unnamed: list[str] = []  # what each sentence says besides a new name or a list
     for sentence in re.split(r"(?<=[.;!?])\s+", " ".join(str(text or "").split())):
         folded = _fold(sentence)
         destination = _LIST_DESTINATION.search(sentence)
+        unnamed.append(sentence[:destination.start()] + sentence[destination.end():] if destination else sentence)
         if destination is not None and not _has(_fold(destination.group("list")), _LIST_NOT_TASKS):
             changed.setdefault("details", destination.group("list").strip(" ,;:\"'«»“”"))
         renamed = None
@@ -1090,6 +1094,15 @@ def task_change(text: str, title: str) -> dict[str, str]:
             and re.fullmatch(r"(?:it|that|this|eso|esto|lo|la)", _fold(new)) is None
         ):
             changed.setdefault("title", new)
+            unnamed[-1] = source[:renamed.start("new")] + source[renamed.end("new"):]
+    # M144 (DEV-H v4p H-w30-t2 «mejor ponlo para mañana» after «Anotado: pagar la luz.» → «¿Cuál es el título de la
+    # tarea que deseas modificar y qué fecha…?»): the one day said of the task just made, outside its new name or its
+    # list, is its new day as the task store reads it («para mañana», «el viernes», «el 15»); a clock is a reminder's.
+    rest = " ".join(unnamed)
+    if not spoken_clock(_fold(rest)):
+        day = task_due_date(rest, today=today)
+        if day is not None:
+            changed["due"] = day
     return changed
 
 

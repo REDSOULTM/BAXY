@@ -610,6 +610,15 @@ def _explicit_relative_reminder_arguments(
         r"(?:\s+(?:por\s+la\s+(?:ma[nñ]ana|tarde|noche)|esta\s+(?:ma[nñ]ana|tarde|noche)|pasado\s+ma[nñ]ana|"
         r"hoy|ma[nñ]ana|today|tonight|tomorrow|this\s+(?:morning|afternoon|evening)))?"
     )
+    # M144 (DEV-H v4p H-w38-t3 «and set another one for the day after, same time» restated «Set another dentist
+    # reminder for tomorrow at 3:30pm.» → «¿Cuál?»): «otro/another» is the article of one more reminder, and English
+    # names what it is for before the noun («a dentist reminder»), with the day it rings before its clock.
+    article = r"(?:un|una|a|an|otro|otra|another|one\s+more)"
+    weekday = r"(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)"
+    day_before = (
+        r"(?:(?:for|on)\s+)?(?:today|tonight|tomorrow|the\s+day\s+after\s+tomorrow|(?:this\s+|next\s+)?" + weekday
+        + r"|(?:the\s+)?\d{1,2}(?:st|nd|rd|th)?(?:\s+of)?\s+[a-z]+|[a-z]+\s+\d{1,2}(?:st|nd|rd|th)?)\s+"
+    )
     patterns = (
         rf"{lead}{remind}\s+"
         rf"(?P<due>{duration})\s+(?:(?:que|to|de)\s+)?(?P<title>.+?)[.!?]*$",
@@ -618,9 +627,12 @@ def _explicit_relative_reminder_arguments(
         rf"{lead}(?P<due>{duration}),?\s+"
         rf"{remind}\s+"
         rf"(?:(?:que|to|de)\s+)?(?P<title>.+?)[.!?]*$",
-        rf"{lead}(?:ponme|set)\s+(?:(?:un|a)\s+)?"
+        rf"{lead}(?:ponme|set)\s+(?:{article}\s+)?"
         rf"(?:recordatorio|reminder)\s+(?P<due>{duration})\s+"
         rf"(?:para|to)\s+(?P<title>.+?)[.!?]*$",
+        rf"{lead}(?:set|create|make|add|schedule|give\s+me)\s+(?:{article}\s+)?(?:new\s+)?"
+        rf"(?!(?:(?:{article}|the|my|your|this|that|new)\s+)+reminder\b)"
+        rf"(?P<title>[^\W\d_][^\d,;:.!?]*?)\s+reminder\s+(?:{day_before})?(?:for\s+)?(?P<due>{duration}){day_after}[.!?]*$",
         rf"{lead}(?:recordatorio|reminder)\s+(?:de|to)\s+"
         rf"(?P<title>.+?)\s+(?P<due>{duration}){day_after}[.!?]*$",
         rf"{lead}(?:set\s+)?(?:a\s+)?reminder\s+to\s+"
@@ -631,7 +643,7 @@ def _explicit_relative_reminder_arguments(
         # for as a thing, its subject, then its moment.
         rf"{lead}(?:dame|ponme|pon|creame|crea|hazme|haz|programa|programame|quiero|quisiera|necesito|"
         r"establece|establecer|fija|fijame|env[ií]ame|m[aá]ndame|create|give\s+me|send\s+me|set)\s+"
-        r"(?:(?:un|una|a|an)\s+)?(?:(?:nuevo|new)\s+)?"
+        rf"(?:{article}\s+)?(?:(?:nuevo|new)\s+)?"
         r"(?:(?:notificaci[oó]n|aviso|alerta|notification|alert)\s+(?:de|of)\s+)?"
         r"(?:recordatorio|reminder|notificaci[oó]n|aviso|alerta|notification|alert)\s+"
         rf"(?:para|de|sobre|about|for|to)\s+(?P<title>.+?)\s+(?P<due>{duration}){day_after}[.!?]*$",
