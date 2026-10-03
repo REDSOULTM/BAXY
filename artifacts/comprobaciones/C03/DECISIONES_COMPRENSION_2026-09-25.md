@@ -793,3 +793,23 @@ OCR pulsó «biblioteca» una vez en el panel de VS Code; M132 ata el clic a la 
    rondas (91 → 1 → 0, incluidas las huellas de DEV-G), doble etiquetado ciego (acuerdo 300/300, conjunto idéntico
    83,3 %), adjudicador en 95 filas (1: 63, 2: 15, nueva: 15, unión: 2, 0 descartadas). Iterable; sirve para no seguir
    iterando sobre DEV-G ya mirado.
+
+## D70. v4p y v4q: DEV-G y DEV-H suben, DEV-E se queda en 86 % (2026-10-03 14:45)
+1. **v4p** (main 88c8e4b8: M140 título observado, M141 argumentos del decisor en planes y código a archivo, M142 pista
+   «ya estaba abierta» impersonal), con D61: DEV-E 256/299 = 85,6 %, DEV-G 269/300, **DEV-H 258/300 = 86,0 %** (primera
+   medida limpia: la de v4o corrió con un llama-server de una evaluación aislada al lado —carrera en `gpu.flag`— y se
+   descartó), DEV-F 241, DEV-D 305; reserva 90,0 / 94,0 % (0/0), 742 sin cambios, DEV-C 255, held-out 30/30 (M142
+   recuperó «abrí el bloc de notas»), guion 52/60 + 5 por revisar (t21 cierra Edge igual que en v4o con otra redacción;
+   t42 Steam inestable).
+2. **v4q** (main con M143 lectores de DEV-H —incluido el arreglo de seguridad «escríbeme en python…» que armaba un
+   message.send— y M144 avisos en conversación: respuestas cortas a la pregunta de la hora, «half three», «la misma
+   hora», D61b con la parte del día del decisor), Full verde (pytest 22 754, Integración 4 060): **DEV-H 276/300 = 92,0 %**
+   (+21/−3), **DEV-G 270/300 = 90,0 %**, **DEV-E 257/299 = 86,0 %** (= v4o). Lo hallado en G y H no son las clases que
+   fallan en E: tres rondas seguidas en 256–257.
+3. En G y H, de 36 turnos con la decisión bien y los argumentos mal (v4p), ≈ 9 son del entorno de la corrida (ventanas
+   de apps que el conjunto supone abiertas; alarmas de otras conversaciones a la misma hora), ≈ 5 del puntuador (un
+   recordatorio puesto a la hora absoluta correcta frente a «30 min» en el oro) y el resto reales (la mitad ya en
+   M143/M144). Dos huecos de producto detrás de lo que parecía entorno → **M145** («esta ventana» = la del frente para
+   operaciones de ventana no destructivas; mover o cancelar el aviso que puso esta conversación aunque haya otros a la
+   misma hora). Los ⚠ sin final de DEV-E oscilan 1–6 por ronda (meta ≤ 3); en G/F/D/H los que quedan son vetos de
+   redacción sobre respuestas verdaderas → **M146**.
