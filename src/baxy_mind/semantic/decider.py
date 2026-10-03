@@ -26,7 +26,8 @@ from .grammar import _CARDINAL_WORDS, spoken_cardinal
 from .normalize import fold, fold_in_place, spelled_out
 from .quantities import _UNITS, measures
 from .temporal import (
-    _SPOKEN_DATE, _TOMORROW, _WEEKDAYS, MONTH_NUMBERS, bare_hour_with_its_part, spoken_clocks, taken_back_time,
+    _SPOKEN_DATE, _TOMORROW, _WEEKDAYS, MONTH_NUMBERS, SpokenDate, _day_value, bare_hour_with_its_part, spoken_clocks,
+    taken_back_time,
 )
 
 DECISIONS = ("action", "clarify", "talk", "limit")
@@ -393,7 +394,16 @@ def _said_days(folded: str, now: datetime) -> set[tuple[int, int]]:
     for measure in measures(folded):
         if measure.dimension == (0, 1, 0, 0) and measure.value % 86400 == 0:
             offsets.update({int(measure.value // 86400), -int(measure.value // 86400)})
-    return {((now + timedelta(days=offset)).day, (now + timedelta(days=offset)).month) for offset in offsets}
+    days = {((now + timedelta(days=offset)).day, (now + timedelta(days=offset)).month) for offset in offsets}
+    # M144 (DEV-H v4p H-w13-t2 «pa el quince, tipo ocho am…» restated «…el 15 de octubre a las 8:00…» → the person's
+    # words were the objective and «¿Cuándo es el quince?» was asked): a day of the month said alone is that day of the
+    # next month it comes in (``SpokenDate.on_or_after``, the reminders' own reading).
+    for found in _SPOKEN_DATE.finditer(re.sub(r"(?<=[a-z])-(?=[a-z])", " ", folded)):
+        if found.group("day_alone"):
+            on = SpokenDate("", _day_value(found.group("day_alone")), None, None, False).on_or_after(now.date())
+            if on is not None:
+                days.add((on.day, on.month))
+    return days
 
 
 # M127 (DEV-C v4i C-w10-t5 «listo recuérdemelo el día antes a las 6 de la tarde» after «La cita que aparece es el 3 de
@@ -503,6 +513,16 @@ def _introduced_spans(
         covered.append((start, end))
         if (day, month) not in said_dates:
             spans.append((start, end, request[start:end]))
+    for found in _SPOKEN_DATE.finditer(re.sub(r"(?<=[a-z])-(?=[a-z])", " ", folded_request)):
+        # M144: «el día 13» of the restatement is the next 13th, judged as the dates with their month above (in digits:
+        # «the second song» counts no day).
+        if not found.group("day_alone") or not found.group("day_alone")[:1].isdigit() or inside(found.start("day_alone")):
+            continue
+        on = SpokenDate("", _day_value(found.group("day_alone")), None, None, False).on_or_after(now.date())
+        covered.append((found.start("day_alone"), found.end("day_alone")))
+        if on is None or (on.day, on.month) not in said_dates:
+            spans.append((found.start("day_alone"), found.end("day_alone"),
+                          request[found.start("day_alone"):found.end("day_alone")]))
     # «media hora antes de eso» is only earlier, «dentro de una hora» only later (v3f-devD D-w02-t3 «…antes de eso» after
     # «las 10» was restated «a las 10:30»); a message that says neither may go either way.
     message = fold(said[0]) if said else ""

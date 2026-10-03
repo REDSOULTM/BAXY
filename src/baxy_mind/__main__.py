@@ -21,7 +21,7 @@ import unicodedata
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from functools import partial
 from pathlib import Path
@@ -3677,6 +3677,34 @@ def _with_decider_values_kept(
     return arguments
 
 
+def _with_decided_part_of_day(operation: str, request: str, arguments: Any) -> Any:
+    """M144 (D58; DEV-H v4p H-w45-t1 «tengo dentista el jueves a las 4:30, so ponme un reminder» → set at 04:30, where
+    the isolated decider set 16:30): a clock written on the dial («a las 4:30», no part of the day said) is read as
+    written, 04:30; the decider read its part of the day from what it is for (a dentist at 16:30, an alarm before a
+    flight at 04:50). When the decider's own moment is that same clock twelve hours away, its part of the day is the
+    one meant, on the day the readers read."""
+
+    if operation not in _REMINDER_OPERATIONS or not isinstance(arguments, dict):
+        return arguments
+    due = arguments.get("dueUtc")
+    clocks = semantic_temporal.spoken_clocks(effect_intent._fold(request))
+    if not isinstance(due, str) or len(clocks) != 1 or not clocks[0].on_the_dial:
+        return arguments
+    remembered = _DECIDED_ARGUMENTS.get(" ".join(request.split()))
+    decided_due = dict(remembered[1]).get("dueUtc") if remembered is not None else None
+    written = re.search(r"T(?P<hour>\d{2}):(?P<minute>\d{2})", decided_due) if isinstance(decided_due, str) else None
+    try:
+        moment = datetime.fromisoformat(due.replace("Z", "+00:00")).astimezone()
+    except ValueError:
+        return arguments
+    if written is None or int(written["minute"]) != moment.minute or int(written["hour"]) != (moment.hour + 12) % 24:
+        return arguments
+    shifted = moment + timedelta(hours=12 if moment.hour < 12 else -12)
+    if shifted <= datetime.now().astimezone():
+        return arguments
+    return {**arguments, "dueUtc": shifted.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")}
+
+
 def _conversation_grounding_source(objective: str, history: object) -> str:
     """M43: the request, the person's recent turns and BAXY's last reply, the text a decided value may come from.
 
@@ -5091,6 +5119,72 @@ def _close_of_the_just_opened(
 # replay; a wider set (the family gates of every operation) refused hundreds of reads the decider got right.
 _OBJECT_NAMED_OPERATIONS = frozenset({"input.keyboard.layout", "desktop.wallpaper.set", "routine.phrase.create"})
 _CLOCK_SET_OPERATIONS = frozenset({"notification.schedule", "reminder.create", "calendar.event.create", "timer.start"})
+_REMINDER_OPERATIONS = frozenset({"notification.schedule", "reminder.create"})
+
+
+def _decider_says_the_anchored_moment(decided: semantic_decider.ContextDecision, anchored: str) -> bool:
+    """M144 (DEV-H v4p H-w44-t2 «remind me twenty minutes before that» after «Kick-off is at 8pm.»: the decider's «Remind
+    me at 7:40pm tonight about the Arsenal match.» was replaced by «remind me at 19:40», titled «remind me»): when the
+    decider's action says the same one clock and the same day the count from the conversation gives, its request stands
+    (D58) and keeps what the reminder is for; the count only overrules a moment it does not confirm."""
+
+    if decided.decision != "action" or not decided.operations or not set(decided.operations) <= _ANCHORED_SCHEDULE_OPERATIONS:
+        return False
+
+    def moment(request: str) -> tuple[list[tuple[int, int]], str | None]:
+        clocks = semantic_temporal.spoken_clocks(effect_intent._fold(request))
+        return [(clock.hour, clock.minute) for clock in clocks if clock.resolved], semantic_temporal.task_due_date(request)
+
+    said, counted = moment(decided.request), moment(anchored)
+    # «tonight» and no day said are the same day.
+    today = {None, datetime.now().astimezone().date().isoformat()}
+    return len(said[0]) == 1 and said[0] == counted[0] and (said[1] == counted[1] or {said[1], counted[1]} <= today)
+
+
+def _clock_completes_the_last_request(text: str, history: object, available_operations: tuple[str, ...]) -> bool:
+    """M144 (DEV-H v4p H-w06-t4 «a las 3» after «recuérdame comprar tinto para la oficina», which BAXY answered by
+    noting a task, → «¿Qué quieres que haga exactamente a las 3?»): the person's last message asked for a reminder or an
+    alarm without its hour (what the readers would ask of it, ``due_time``/``alarm_time``); a clock said alone next is
+    that hour, whether or not BAXY asked for it."""
+
+    earlier = _prior_user_texts(history, text)
+    if not earlier:
+        return False
+    asked = resolve_explicit_clarification_intent(earlier[-1], available_operations)
+    return (
+        asked is not None
+        and bool({"due_time", "alarm_time"} & set(asked.missing_fields))
+        and set(asked.operations) <= _CLOCK_SET_OPERATIONS
+    )
+
+
+def _reminder_day_without_clock(
+    decided: semantic_decider.ContextDecision, text: str, available_operations: tuple[str, ...],
+) -> effect_intent.ClarificationIntent | None:
+    """M144: the hour a reminder the decider set lacks, when its restatement says the day and what it is for and neither
+    it, the message nor the decider's values say a clock or a delay: what the readers ask of the same request said
+    first (``due_time``). None otherwise."""
+
+    if not decided.operations or not set(decided.operations) <= _REMINDER_OPERATIONS:
+        return None
+    folded = effect_intent._fold(text)
+    if (
+        semantic_temporal.spoken_clocks(folded)
+        or semantic_temporal.said_only_a_clock(text)
+        or semantic_temporal.said_durations(text)
+        or semantic_temporal.alarm_for_hour(folded) is not None
+    ):
+        return None
+    if any(
+        # A moment the decider gave at an hour other than midnight was read from somewhere («a la misma hora»).
+        isinstance(value, str) and re.search(r"T(?!00:00)\d{2}:\d{2}", value)
+        for _, value in decided.arguments
+    ):
+        return None
+    asked = resolve_explicit_clarification_intent(decided.request, available_operations)
+    if asked is None or asked.missing_fields != ("due_time",) or not set(asked.operations) <= _REMINDER_OPERATIONS:
+        return None
+    return asked
 
 
 def _decided_domain_unnamed(
@@ -5376,6 +5470,7 @@ def _context_decided_result(
             and semantic_temporal.said_only_a_clock(text)
             and not str(slot.last_reply or "").rstrip().endswith("?")
             and not _history_has_pending_clarification(history, message.get("pendingClarification"))
+            and not _clock_completes_the_last_request(text, history, available_operations)
         ):
             # M99 (reserva A6 «las dos menos cuarto» → an alarm at 10:15): a clock said alone, answering no question of
             # BAXY's, sets nothing; what it is for is asked.
@@ -5438,7 +5533,11 @@ def _context_decided_result(
         # from a date said earlier in the conversation.
     ) or semantic_temporal.anchored_day_request(text, context.last_reply, said_before)
     anchored_read = resolve_explicit_effects(anchored, available_operations) if anchored is not None else None
-    if anchored_read is not None and set(anchored_read.operations) <= _ANCHORED_SCHEDULE_OPERATIONS:
+    if (
+        anchored_read is not None
+        and set(anchored_read.operations) <= _ANCHORED_SCHEDULE_OPERATIONS
+        and not _decider_says_the_anchored_moment(decided, str(anchored))
+    ):
         # M84 (DEV-D v3o D-w08-t3 «ponme recordatorio una ora antes d ese partido» → «¿Cuándo es ese partido?», D-w02-t3
         # «ponme una alarma media hora antes de eso» → «Pon una alarma a las 10:30.»): the moment BAXY just gave, less
         # or plus the duration, is the time; the readers read the request that says it, the decider's is not used.
@@ -5457,6 +5556,25 @@ def _context_decided_result(
         # las 5:00» → «¿Cuándo y con qué título…?» as an action): the time was the decider's, not the person's, and the
         # message says none; when it rings is asked.
         decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
+    day_only = (
+        _reminder_day_without_clock(decided, text, available_operations)
+        if decided.decision == "action" and anchored_read is None
+        else None
+    )
+    if day_only is not None:
+        # M144 (DEV-H v4p H-w32-t4 «no era eso, quería que me lo pongas de recordatorio el jueves» restated «Ponme un
+        # recordatorio el jueves para inscribirme a las Jornadas…» → «¿Cuándo, día y hora, quieres que te lo
+        # recuerde?»): a reminder with its day and what it is for but no hour asks only the hour, as the same request
+        # said first asks it (``resolve_explicit_clarification_intent``); the restatement stays the objective, so the
+        # answer completes it. Nothing rings at a midnight nobody said.
+        decided = semantic_decider.ContextDecision(
+            request=decided.request,
+            decision="clarify",
+            operations=decided.operations,
+            question=llm.formulate_explicit_clarification_question(
+                decided.request, decided.operations, day_only.missing_fields,
+            ),
+        )
     if decided.decision == "action" and anchored_read is None:
         asked = resolve_explicit_clarification_intent(text, available_operations)
         if (
@@ -5893,6 +6011,7 @@ def _direct_arguments_result(
     arguments = _with_conversation_place(
         operation, arguments, message.get("history"), tool["function"]["parameters"],
     )
+    arguments = _with_decided_part_of_day(operation, str(message.get("text", "")), arguments)
     if operation in {"note.read", "note.trash"} and not (isinstance(arguments, dict) and arguments.get("noteId")):
         # M111 (DEV-F v4d F-w03-t6 «la nota del snippet, léemela» → note «Snippet» not found): a note named by a word
         # of the title it was given earlier in the conversation is that note.
