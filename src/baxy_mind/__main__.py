@@ -219,6 +219,7 @@ from .semantic.arguments import (
     closes_the_active_window,
     conversation_pdf,
     corrected_song_title,
+    due_before_said_moment,
     literal_ocr_language,
     literal_vision_prompt,
     names_spotify,
@@ -3936,20 +3937,21 @@ def _timed_task_arguments(
             str(item.get("content") or "") for item in reversed(history)
             if isinstance(item, dict) and item.get("role") == "user"
         ][:1]
-    task = next(
+    found_in, task = next(
         (
-            found for text in said
+            (text, found) for text in said
             # M76 (DEV-D v3l D-s120): a rest of a stated length is timed too («un descanso de 14 minutos»).
             if (found := semantic_temporal.timed_task(text) or semantic_temporal.timed_break(text)) is not None
         ),
-        None,
+        ("", None),
     )
     if task is None:
         return None
     arguments: dict[str, object] = {"dueUtc": task.due, "title": task.title}
     if operation == "notification.schedule":
         arguments["kind"] = task.kind
-    arguments = _normalize_grounded_operation_arguments(operation, arguments, task.due)
+    # M137 (DEV-G v4n G-s016, DEV-F v4m F-w55-t1): the advance «recordámelo una hora antes» is read from the message.
+    arguments = _normalize_grounded_operation_arguments(operation, arguments, task.due, said=found_in)
     return arguments if arguments is not None and validate_json_schema_instance(arguments, schema) else None
 
 
@@ -4213,8 +4215,10 @@ def _normalize_grounded_operation_arguments(
     context: str = "",
     *,
     now_utc: datetime | None = None,
+    said: str | None = None,
 ) -> dict[str, Any] | None:
-    """Apply closed semantic constraints not expressible by catalog JSON Schema."""
+    """Apply closed semantic constraints not expressible by catalog JSON Schema. ``said``: the person's message the
+    moment was read from, when ``context`` is only that moment (M137)."""
 
     normalized = dict(arguments)
     if operation == "weather.current" and isinstance(normalized.get("location"), str) and names_this_place(
@@ -4267,11 +4271,23 @@ def _normalize_grounded_operation_arguments(
         raw_due = normalized.get("dueUtc")
         if not isinstance(raw_due, str):
             return None
-        due_utc = _canonical_due_utc(
-            raw_due,
-            context,
-            now_utc=now_utc,
+        # M137 (DEV-G v4n G-s016, G-s019; DEV-F v4m F-w55-t1): «remind me an hour before» of the moment said in the
+        # same message rings that long before it, titled with what happens then; the readers read the event's moment.
+        advanced = due_before_said_moment(
+            raw_due, normalized.get("title"), context, context if said is None else said, now_utc=now_utc,
         )
+        if advanced is not None and advanced[0] is None:
+            return None
+        if advanced is not None:
+            due_utc = advanced[0]
+            if isinstance(advanced[1], str) and advanced[1]:
+                normalized["title"] = advanced[1]
+        else:
+            due_utc = _canonical_due_utc(
+                raw_due,
+                context,
+                now_utc=now_utc,
+            )
         if due_utc is None:
             return None
         normalized["dueUtc"] = due_utc

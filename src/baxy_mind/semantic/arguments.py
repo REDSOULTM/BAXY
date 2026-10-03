@@ -26,7 +26,7 @@ from .patterns import (
 )
 from .temporal import (
     SpokenClock, agenda_window, alarm_for_hour, clock_elsewhere, moment_then_title_reminder, plural_alarm_cancellation,
-    said_durations, spoken_date, spoken_window, trailing_day,
+    said_advance, said_durations, spoken_date, spoken_window, trailing_day,
 )
 from .web import news_lookup_query, public_query_body
 from .windows import start_menu_request
@@ -2433,6 +2433,58 @@ def _canonical_due_utc(
     if due is None or due <= now + timedelta(seconds=5):
         return None
     return due.isoformat().replace("+00:00", "Z")
+
+
+def due_before_said_moment(
+    raw_due: str,
+    title: object,
+    context: str,
+    said: str,
+    *,
+    now_utc: datetime | None = None,
+) -> tuple[str | None, object] | None:
+    """M137 (DEV-G v4n G-s016, G-s019; DEV-F v4m F-w55-t1): a notification asked «<duración> antes» of the moment said
+    in the same message (``temporal.said_advance`` on ``said``) rings that long before it: (dueUtc, title), the title
+    being what happens then when the one read is the order or the advance itself («una hora antes de la reunión…»,
+    «tengo turno…, recordámelo una hora antes…»), or None for dueUtc when that leaves the moment past (it is asked, as
+    any past moment). None when no advance counts from the moment ``raw_due`` names: a moment already converted (an
+    ISO time is never counted twice), another clock, or no advance said."""
+
+    if not isinstance(raw_due, str) or not raw_due.strip():
+        return None
+    try:
+        datetime.fromisoformat(raw_due.strip().replace("Z", "+00:00"))
+        return None
+    except ValueError:
+        pass
+    advance = said_advance(said)
+    if advance is None:
+        return None
+    folded_due = effect_intent._fold(raw_due)
+    due_clocks = effect_intent.spoken_clocks(folded_due)
+    if len(due_clocks) == 1:
+        if (due_clocks[0].hour % 12, due_clocks[0].minute) != (advance.clock.hour % 12, advance.clock.minute):
+            return None
+        event = _canonical_due_utc(raw_due, context, now_utc=now_utc)
+    elif not due_clocks and folded_due.strip() and " ".join(folded_due.split()) in effect_intent._fold(advance.phrase):
+        # «una hora» or «an hour before» copied as the moment: the moment is the event's, less that.
+        event = _canonical_due_utc(advance.moment, said, now_utc=now_utc)
+    else:
+        return None
+    if event is None:
+        return None
+    now = (now_utc or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    due = datetime.fromisoformat(event.replace("Z", "+00:00")) - timedelta(minutes=advance.minutes)
+    folded_title = effect_intent._fold(title) if isinstance(title, str) else ""
+    if advance.title and (
+        not folded_title
+        or effect_intent._fold(advance.phrase) in folded_title
+        or re.search(r"\b(?:recu[e]rd|record|avis|acord|remind\s+me)", folded_title)
+    ):
+        title = advance.title
+    if due <= now + timedelta(seconds=5):
+        return None, title
+    return due.isoformat().replace("+00:00", "Z"), title
 
 
 def window_snap_plan_split(
