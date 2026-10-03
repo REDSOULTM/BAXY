@@ -730,6 +730,52 @@ _FUNCTION_WORDS = frozenset({
 })
 
 
+# M147 (DEV-F v4m–v4q F-w05-t5 «pone algo de javiera mena en spotify» → the decider's «Javier Mené», every round, and
+# another artist played): a name the person wrote, respelled by the model a letter or two off, is the person's. Each of the
+# model's words must be a near miss of the said word in its place (the same word folded, or at most one edit in four
+# letters, two in eight); the run is returned as the person wrote it.
+_SAID_WORD = re.compile(r"[^\W_][\w'’.-]*")
+
+
+def _near_miss(model: str, said: str) -> bool:
+    if model == said:
+        return True
+    if min(len(model), len(said)) < 4:
+        return False
+    return _edit_distance(model, said) <= max(1, min(len(model), len(said)) // 4)
+
+
+def as_the_person_spelled(value: str, said: Iterable[str]) -> str | None:
+    """The run of the person's words that ``value`` respells (see above); None when ``value`` is said as it is, or no run
+    of the same length matches every word."""
+
+    wanted = [fold(word) for word in _SAID_WORD.findall(str(value or ""))]
+    if not wanted or len(wanted) > 8:
+        return None
+    for line in said:
+        text = str(line or "")
+        if " ".join(wanted) in " ".join(fold(word) for word in _SAID_WORD.findall(text)):
+            return None
+    for line in said:
+        text = str(line or "")
+        found = list(_SAID_WORD.finditer(text))
+        for start in range(len(found) - len(wanted) + 1):
+            run = found[start:start + len(wanted)]
+            if all(_near_miss(model, fold(match.group(0))) for model, match in zip(wanted, run)):
+                return text[run[0].start():run[-1].end()]
+    return None
+
+
+def _edit_distance(left: str, right: str) -> int:
+    previous = list(range(len(right) + 1))
+    for i, a in enumerate(left, 1):
+        current = [i]
+        for j, b in enumerate(right, 1):
+            current.append(min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + (a != b)))
+        previous = current
+    return previous[-1]
+
+
 def said_in_other_words(value: str, said: Iterable[str], *, now: datetime | None = None) -> bool:
     """M118 (D58, DEV-F F-w28-t4 «ponme algo de lo-fi pa concentrarme» → query «lo-fi para concentrarse», F-w01-t4 the
     draft «…con 10 minutos de retraso porque tengo dentista antes», F-s022 details «…porque el viaje a Cancún…» after
