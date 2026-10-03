@@ -751,3 +751,17 @@ OCR pulsó «biblioteca» una vez en el panel de VS Code; M132 ata el clic a la 
    es **iterable**; DEV-E sigue sólo como medida.
 4. M135 (rama `opus/m135-borrado-inventado`): un informe de una operación que no borra no puede decir que algo se
    borró (F-w47-t2 «Se borró el borrador…», igual en v4i, v4k y v4m); entra en la ronda siguiente a v4n.
+
+## D68. full12 rechazado por su regla prerregistrada; v4n medido (2026-10-03 04:00)
+1. **full12** (full3 continuado entrenando sólo los tokens de los argumentos, lr 3e-5, 1 época, 2 141 ejemplos sin
+   solapamiento; reanudado tras un OOM desde el ejemplo 800; GGUF sha256 `e815194e…`), medido con `full12/REGLA.md`
+   (decisor aislado, perfil app, misma sesión que R0 = full3): decisión F 258/280 (full3 270), D 282/332 (301), E 283/299
+   (293); argumentos F+D 217 (228), E 141/160 (146). Falla las dos partes de la regla: **rechazado, se queda full3**.
+   Enmascarar la decisión en la pérdida no la protege (los pesos son compartidos) y tampoco mejora los argumentos. Es el
+   séptimo adaptador (full4–full9, full11a, full12) que no supera a full3; no se reentrena mirando estos conjuntos.
+2. **v4n** (main a4d067df: M132 clic atado a la app abierta, Steam en frío, PotPlayer), con D61: DEV-F 243/280 = 86,8 %
+   (v4m 241; p50 2,58 s), DEV-E 250/299 = 83,6 % (= v4m; p50 2,71 s), DEV-D 306/332 = 92,2 % (= v4m; p50 1,93 s), todo
+   dentro del ruido ±3. DEV-C 257/301 = 85,4 % (=). Guion **53/60** + 4 por revisar (v4m 52; meta 53 cumplida),
+   held-out 30/30, cien-120 100/100 publicadas, 0 efectos de más (frente a cien-119 sólo cambian redacciones). El pytest
+   completo de la cadena dio 56 fallos + 24 errores, todos 0xC0000142 (procesos hijo powershell/git que no arrancaron);
+   los 80 repetidos pasan; Integración 4 031/4 031.
