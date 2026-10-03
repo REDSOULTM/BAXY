@@ -33,9 +33,19 @@ def _youtube_search_query(text: str) -> str | None:
         or len(query.encode("utf-8")) > 512
         or any(ord(character) < 32 for character in query)
         or _has(folded_query, r"\b(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|documents?|mi\s+pc|my\s+pc|este\s+equipo)\b")
+        or _has(folded_query, _AND_PLAY_IT)
     ):
         return None
     return query
+
+
+# M143 (DEV-H v4o H-s075 «can you find that video of the guy building a treehouse in bali and put it on youtube» → the
+# YouTube results page for «…and put it», where the isolated decider played it): a search whose words go on to order the
+# thing found played («y ponlo», «and put it on», «and play it») asks for the video to play, not for a results page.
+_AND_PLAY_IT = (
+    r"\b(?:y|and)\s+(?:(?:then|luego|despues)\s+)?(?:put\s+(?:it|that|this)(?:\s+on)?|play\s+(?:it|that|this)|"
+    r"pon(?:e|é)?(?:lo|la|melo|mela)|reproduce(?:lo|la)|reproduci(?:lo|la)|dale\s+play)\b"
+)
 
 
 _YOUTUBE_PLAY = re.compile(

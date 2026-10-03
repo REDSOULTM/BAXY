@@ -538,16 +538,27 @@ def _explicit_notification_schedule_arguments(
     # ñ that the accent-free patterns never matched on the raw evidence
     # (TIME1193 probe). The title below still keeps the person's own words.
     relative = list(re.finditer(relative_pattern, folded, re.IGNORECASE))
-    if any(re.match(_OFFSET_FROM_ANOTHER_MOMENT, folded[found.end():]) for found in relative):
-        # M76 (DEV-D v3l D-w02-t3 «ponme una alarma media hora antes de eso» → an alarm half an hour from now): a
-        # duration counted from another moment is not a delay from now; that moment is not read here.
-        return None
     # One clock, its part of the day said after the hour or elsewhere («esta tarde a las cinco») or, unsaid, the next
     # time it comes (D61); the day is read from the whole request.
     clocks = effect_intent.spoken_clocks(folded)
+    counted_from: str | None = None
+    offset_from_a_moment = any(re.match(_OFFSET_FROM_ANOTHER_MOMENT, folded[found.end():]) for found in relative)
+    if offset_from_a_moment or (not relative and not clocks):
+        # M76 (DEV-D v3l D-w02-t3 «ponme una alarma media hora antes de eso» → an alarm half an hour from now): a
+        # duration counted from another moment is not a delay from now; that moment is not read here.
+        # M143 (DEV-H v4o H-s047 «¿me podrías poner una alarma una hora antes de las 9?» → «¿A qué hora…?»): unless
+        # that moment is the clock the advance counts back from (``said_advance``, «an hour before 9» too); the alarm is
+        # read at the advance as written, which the operation's normalization counts back (M137
+        # ``due_before_said_moment``).
+        advance = said_advance(evidence)
+        if advance is None and offset_from_a_moment:
+            return None
+        counted_from = advance.phrase if advance is not None and advance.phrase in evidence else None
     # D61 (reviewed literal H0036 «set an alarm for 8»): the hour after «for/para» on an alarm is its clock.
     loose = alarm_for_hour(folded) if not relative and not clocks else None
-    if loose is not None:
+    if counted_from is not None:
+        due_literal = counted_from
+    elif loose is not None:
         due_literal = loose
     elif len(relative) + len(clocks) != 1:
         return None
@@ -599,6 +610,15 @@ def _explicit_relative_reminder_arguments(
         r"(?:\s+(?:por\s+la\s+(?:ma[nñ]ana|tarde|noche)|esta\s+(?:ma[nñ]ana|tarde|noche)|pasado\s+ma[nñ]ana|"
         r"hoy|ma[nñ]ana|today|tonight|tomorrow|this\s+(?:morning|afternoon|evening)))?"
     )
+    # M144 (DEV-H v4p H-w38-t3 «and set another one for the day after, same time» restated «Set another dentist
+    # reminder for tomorrow at 3:30pm.» → «¿Cuál?»): «otro/another» is the article of one more reminder, and English
+    # names what it is for before the noun («a dentist reminder»), with the day it rings before its clock.
+    article = r"(?:un|una|a|an|otro|otra|another|one\s+more)"
+    weekday = r"(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)"
+    day_before = (
+        r"(?:(?:for|on)\s+)?(?:today|tonight|tomorrow|the\s+day\s+after\s+tomorrow|(?:this\s+|next\s+)?" + weekday
+        + r"|(?:the\s+)?\d{1,2}(?:st|nd|rd|th)?(?:\s+of)?\s+[a-z]+|[a-z]+\s+\d{1,2}(?:st|nd|rd|th)?)\s+"
+    )
     patterns = (
         rf"{lead}{remind}\s+"
         rf"(?P<due>{duration})\s+(?:(?:que|to|de)\s+)?(?P<title>.+?)[.!?]*$",
@@ -607,9 +627,12 @@ def _explicit_relative_reminder_arguments(
         rf"{lead}(?P<due>{duration}),?\s+"
         rf"{remind}\s+"
         rf"(?:(?:que|to|de)\s+)?(?P<title>.+?)[.!?]*$",
-        rf"{lead}(?:ponme|set)\s+(?:(?:un|a)\s+)?"
+        rf"{lead}(?:ponme|set)\s+(?:{article}\s+)?"
         rf"(?:recordatorio|reminder)\s+(?P<due>{duration})\s+"
         rf"(?:para|to)\s+(?P<title>.+?)[.!?]*$",
+        rf"{lead}(?:set|create|make|add|schedule|give\s+me)\s+(?:{article}\s+)?(?:new\s+)?"
+        rf"(?!(?:(?:{article}|the|my|your|this|that|new)\s+)+reminder\b)"
+        rf"(?P<title>[^\W\d_][^\d,;:.!?]*?)\s+reminder\s+(?:{day_before})?(?:for\s+)?(?P<due>{duration}){day_after}[.!?]*$",
         rf"{lead}(?:recordatorio|reminder)\s+(?:de|to)\s+"
         rf"(?P<title>.+?)\s+(?P<due>{duration}){day_after}[.!?]*$",
         rf"{lead}(?:set\s+)?(?:a\s+)?reminder\s+to\s+"
@@ -620,7 +643,7 @@ def _explicit_relative_reminder_arguments(
         # for as a thing, its subject, then its moment.
         rf"{lead}(?:dame|ponme|pon|creame|crea|hazme|haz|programa|programame|quiero|quisiera|necesito|"
         r"establece|establecer|fija|fijame|env[ií]ame|m[aá]ndame|create|give\s+me|send\s+me|set)\s+"
-        r"(?:(?:un|una|a|an)\s+)?(?:(?:nuevo|new)\s+)?"
+        rf"(?:{article}\s+)?(?:(?:nuevo|new)\s+)?"
         r"(?:(?:notificaci[oó]n|aviso|alerta|notification|alert)\s+(?:de|of)\s+)?"
         r"(?:recordatorio|reminder|notificaci[oó]n|aviso|alerta|notification|alert)\s+"
         rf"(?:para|de|sobre|about|for|to)\s+(?P<title>.+?)\s+(?P<due>{duration}){day_after}[.!?]*$",

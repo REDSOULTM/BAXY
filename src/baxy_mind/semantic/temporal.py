@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, datetime, time, timedelta
 from typing import Iterable
 from .grammar import _PERCENTAGE_WORD_VALUES, _RELATIVE_DURATION_PATTERN, _fold, _has, _strip_request_envelope, spoken_cardinal
@@ -51,7 +51,8 @@ _ONLY_A_CLOCK = re.compile(
     r"[¿¡\s]*(?:(?:a|para|hasta)\s+)?(?:(?:la|las)\s+)?" + _HOUR_WORD
     + r"(?:[:.h]\d{2})?(?:\s+(?:y|menos)\s+(?:media|cuarto|\d{1,2}|" + "|".join(_COUNTDOWN_HOUR_WORDS) + r"))?"
     r"(?:\s+(?:en\s+punto|de\s+la\s+(?:manana|madrugada|tarde|noche)|[ap]\.?\s*m\.?))?[\s.!?]*"
-    r"|[\s]*(?:at\s+)?(?:(?:a\s+)?quarter\s+(?:to|past|after)\s+|half\s+past\s+)?" + _HOUR_WORD
+    # M144: «half three» is half past three (British English).
+    r"|[\s]*(?:at\s+)?(?:(?:a\s+)?quarter\s+(?:to|past|after)\s+|half\s+(?:past\s+)?)?" + _HOUR_WORD
     + r"(?:[:.]\d{2})?(?:\s+(?:o'?\s*clock|[ap]\.?\s*m\.?))?[\s.!?]*"
 )
 
@@ -236,7 +237,12 @@ _ENGLISH_MINUTES_BEFORE = {"a quarter": 15, "quarter": 15, "half": 30, "five": 5
                            "twenty five": 25, "twenty-five": 25}
 _BEFORE_HOUR_WORDS = r"(?:a\s+quarter|quarter|half|twenty[\s-]five|twenty|ten|five)\s+(?:past|after|to|till)"
 _ENGLISH_BEFORE_HOUR = (
-    r"(?P<before>(?:a\s+quarter|quarter|half|twenty[\s-]five|twenty|ten|five)\s+(?P<relation>past|after|to|till))\s+"
+    r"(?:(?P<before>(?:a\s+quarter|quarter|half|twenty[\s-]five|twenty|ten|five)\s+(?P<relation>past|after|to|till))\s+|"
+    # M144 (DEV-H v4p H-w38-t2 «half three» answering «what time shall I set that for?» → «What exactly do you want to
+    # do with half three?»): British English says «half three» for half past three. Only an hour in words, and never
+    # a part of something («half one of them»).
+    r"(?P<half>half)\s+(?=(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\b"
+    r"(?!\s+(?:of|the|a|an)\b)))"
 )
 # One clock phrase with its lead («a las cinco y media de la mañana»), for
 # readers that cut a request around its time.
@@ -270,12 +276,15 @@ _CLOCK_TIME_SELECTOR = (
 class SpokenClock:
     """One clock time as said: ``literal`` is its span in the folded text; ``hour`` is
     0–23 when ``resolved`` (a part of the day, a 24-hour value, noon or midnight),
-    otherwise the 1–12 hour whose morning or afternoon was not said."""
+    otherwise the 1–12 hour whose morning or afternoon was not said. ``on_the_dial`` marks a 1–12 hour resolved only
+    because its minutes were written after a colon («a las 4:30»; M144): read as written, while a move of a notification
+    takes the part of the day of the old one and the decider's own part of the day stands (``__main__``)."""
 
     literal: str
     hour: int
     minute: int
     resolved: bool
+    on_the_dial: bool = field(default=False, compare=False)
 
 
 def _read_clock(found: re.Match[str], folded: str) -> SpokenClock | None:
@@ -293,7 +302,11 @@ def _read_clock(found: re.Match[str], folded: str) -> SpokenClock | None:
             else _ENGLISH_CLOCK_MINUTE_WORDS[english]
         )
     before = found.groupdict().get("before")
-    if before:
+    if found.groupdict().get("half"):
+        if minute_word:
+            return None
+        minute = 30  # M144: «half three» is 3:30.
+    elif before:
         if minute_word:
             return None
         minute = _ENGLISH_MINUTES_BEFORE[" ".join(before.split()[:-1])]
@@ -319,7 +332,7 @@ def _read_clock(found: re.Match[str], folded: str) -> SpokenClock | None:
             return SpokenClock(literal, hour, minute, True)
         if elsewhere is None and meal is None:
             # «a las 7:30» is read as written, on the 24-hour clock.
-            return SpokenClock(literal, hour, minute, colon)
+            return SpokenClock(literal, hour, minute, colon, on_the_dial=colon and not raw_hour.startswith("0"))
         if elsewhere is not None:
             period = elsewhere.group("part") or elsewhere.group("english") or "noche"
         else:
@@ -342,6 +355,7 @@ def _is_a_clock(found: re.Match[str]) -> bool:
     return bool(
         found.group("lead")
         or found.group("before")
+        or found.group("half")
         or found.group("period")
         or (found.group("minutes") or "").startswith(":")
         or found.group("oclock")
@@ -2256,6 +2270,13 @@ def notification_change(text: str) -> NotificationChange | None:
         groups = found.groupdict()
         if not title and groups.get("tail"):
             title = f"para {said[found.start('tail'):found.end('tail')].strip()}"
+        day = said[found.start("newday"):found.end("newday")] if groups.get("newday") and not duration else ""
+        beside = trailing_day(title) if not day and not duration else None
+        if beside is not None:
+            # M144 (DEV-H v4p H-w45-t2 «actually ponlo una hora antes de eso» restated «Cambia el recordatorio del
+            # dentista para el jueves a las 15:30.» → set today at 15:30, titled «…para el jueves»): the day said before
+            # the new time is the new moment's, not what the notification is for.
+            title, day = re.sub(r"(?i)(?:^|\s+)(?:para|for|on)$", "", beside[0]).strip(), beside[1]
         return NotificationChange(
             english=bool(english),
             kind="reminder" if found.group("noun") in _REMINDER_NOUNS else "alarm",
@@ -2264,7 +2285,7 @@ def notification_change(text: str) -> NotificationChange | None:
             old=said[found.start("old"):found.end("old")] if found.group("old") else None,
             new_literal=said[found.start("new"):found.end("new")],
             duration=duration,
-            day=said[found.start("newday"):found.end("newday")] if groups.get("newday") and not duration else "",
+            day=day,
         )
     return None
 
@@ -2317,7 +2338,10 @@ def notification_retiming(text: str) -> Retiming | None:
     clocks = spoken_clocks(f"a las {new}")
     if len(clocks) != 1:
         return None
-    return Retiming(None, clocks[0].hour, clocks[0].minute, clocks[0].resolved)
+    # M144 (DEV-H v4p H-w29-t2 «no espera, mejor a las 7:30» after an alarm set at 19:00 → read as 07:30, already past,
+    # so the move was not read and the decider's plan went on): «7:30» says no part of the day either; the old time's
+    # is nearer (``retimed_local_moment``), as for «a las 7».
+    return Retiming(None, clocks[0].hour, clocks[0].minute, clocks[0].resolved and not clocks[0].on_the_dial)
 
 
 # M137b (DEV-G v4n G-w22-t5 «actually make it 8» after «set a reminder for Tuesday evening to check again», restated
@@ -2446,6 +2470,12 @@ _EVENT_GLUE = re.compile(
     r"es|is|de|del|a|at|on|el|la|las|for|para|y|and)$"
 )
 _EVENT_ARTICLE = re.compile(r"^(?:el|la|los|las|un|una|mi|mis|my|the|a|an|our|nuestro|nuestra|su|your|tu)\s+")
+# M143: a clock said right after the advance, as what it counts back from («antes de las 9», «before 9 pm»). Folded.
+_ADVANCE_OF_A_CLOCK = re.compile(
+    rf"\s+(?:(?:de|d)\s+)?(?:las?\s+)?(?P<clock>{_CLOCK_HOUR}{_CLOCK_MINUTES}?(?:{_O_CLOCK})?(?:\s*{_CLOCK_PERIOD})?)"
+    r"(?=\s*$|\s*[,;:.?!]|\s+(?:de\s+)?(?:hoy|manana|today|tomorrow|tonight|esta|este|this|pls|please|por\s+favor|porfa)\b)"
+    r"(?!\s+(?:minutos?|minutes?|horas?|hours?|dias?|days?|segundos?|seconds?)\b)"
+)
 _EVENT_POINTERS = frozenset({"eso", "esto", "ello", "aquello", "that", "this", "it", "then"})
 _EVENT_CONNECTORS = frozenset(
     {"so", "asi", "para", "porque", "because", "cause", "pls", "plz", "please", "por", "porfa", "y", "and", "o", "or",
@@ -2501,6 +2531,16 @@ def said_advance(text: str) -> SaidAdvance | None:
         return None
     advance = counts[0]
     minutes = _offset_minutes(advance)
+    if minutes is not None and (direct := _ADVANCE_OF_A_CLOCK.match(folded, advance.end())) is not None:
+        # M143 (DEV-H v4o H-s047 «¿me podrías poner una alarma una hora antes de las 9?» → «¿A qué hora…?», where the
+        # isolated decider set it at 8): the clock may be what the advance counts back from, said right after it
+        # («una hora antes de las 9», «half an hour before 7 pm»); it is the event's, never the notification's own. The
+        # moment is that clock read with its lead; the phrase is the advance with its clock, as written.
+        lead = "at " if advance.group("sign") != "antes" else "a las "
+        written = lead + direct.group("clock")
+        clocks = spoken_clocks(_fold(written))
+        if len(clocks) == 1 and len(spoken_clocks(folded)) == 0:
+            return SaidAdvance(minutes, written, clocks[0], said[advance.start():direct.end()], "")
     clocks = spoken_clocks(folded)
     if minutes is None or len(clocks) != 1 or _ADVANCE_OF_A_CLAUSE.match(folded, advance.end()):
         return None

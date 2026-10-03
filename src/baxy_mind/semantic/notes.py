@@ -5,11 +5,12 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from datetime import date
 from typing import Callable, Iterable, Sequence
 from .grammar import TASK_REMINDER_HEAD, _RELATIVE_DURATION_PATTERN, _fold, _match, _has, _strip_request_envelope, _request_body_surface, _request_head, _head_is, _LIST, _READ, _CREATE, _request_clauses
 from .intent import EffectIntent, _append
 from .normalize import _accent_folded_with_punctuation, fold_in_place
-from .temporal import _absolute_calendar_range_parts, _DEICTIC_DAY, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, CLOCK_PHRASE, EventTiming, event_timing, spoken_clock, is_window_phrase, says_a_window
+from .temporal import _absolute_calendar_range_parts, _DEICTIC_DAY, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, CLOCK_PHRASE, EventTiming, event_timing, spoken_clock, is_window_phrase, says_a_window, task_due_date
 
 
 # --- The person's own agenda, read (uso real 2026-09-23) --------------------------------------------
@@ -76,6 +77,42 @@ _PUBLIC_SCHEDULE = (
     r"shops?|biblioteca|library|museo|museum|centro|ciudad|city|downtown|town|cerca|nearby|near|"
     r"elecciones|elections?|noticias|news|farmacia|pharmacy|banco|bank|clima|weather|mundo|world|pais|country)\b"
 )
+# M143 (DEV-H v4o H-s003 «oiga parce, ¿a qué hora es que juega mi equipo hoy?» → the Outlook agenda read, where the
+# isolated decider searched): «mi equipo» is the one who plays, not an event of the person's; when someone else plays,
+# competes or races (a team, a player, a driver), the time asked is that match's, a public schedule, whoever's «mi»
+# it is. The person's own match («a qué hora es mi partido») keeps the agenda: it says no third person playing.
+_THEY_PLAY = (
+    r"\b(?:juega|juegan|jugara|jugaran|juegue|jueguen|compite|compiten|competira|corre|corren|correra|"
+    r"plays|playing|compete|competes|races|racing)\b|"
+    # «what time does my team play»; «my play» (the theatre) and «does my play start» are the person's event.
+    r"\b(?:do|does|will)\s+(?:\w+\s+){1,4}play\b(?!\s+(?:starts?|begins?|ends?|finish(?:es)?)\b)"
+)
+# M100: what is the case for the person, in the indicative («me gusta», «me duele», «me falta»), as opposed to what they
+# are to do, in the subjunctive. Folded.
+_STATE_OF_THE_PERSON = (
+    r"(?:gusta|gustan|encanta|encantan|duele|duelen|llamo|llaman|toca|tocan|queda|quedan|"
+    r"falta|faltan|cuesta|cuestan|molesta|molestan|interesa|interesan|importa|importan|preocupa|preocupan|pasa|"
+    r"dijiste|dijo|dijeron|prometiste|debe|deben|debes|ha|han|has|he|hace|hacen|sale|salen|va|van|fue|fueron|"
+    r"parece|parecen|cae|caen|da|dan|tiene|tienen|tienes|toca|vale|sirve|sirven|conviene|apetece|queda)"
+)
+_TOLD_NOW = re.compile(
+    # «recuérdame que…» stays a reminder: folded, «qué» and «que» are one word.
+    r"^[¿?¡!\s]*(?:recuerdame|recordame|remind\s+me)\s+(?:cual|cuales|cuanto|cuanta|cuantos|cuantas|donde|quien|"
+    r"quienes|what|which|how\s+(?:many|much)|where|who|"
+    # M143 (DEV-H v4o H-s016 «oye, recuérdame qué me falta por hacer hoy de mi lista de pendientes» → «¿A qué hora te
+    # falta…?», where the isolated decider read the list): what is the case for the person, in the indicative («qué / lo
+    # que me falta», «lo que tengo»), is asked to be told now; a reminder says what to do («que compre», «que me tome»).
+    rf"(?:que|lo\s+que)\s+(?:me|nos)\s+{_STATE_OF_THE_PERSON}|lo\s+que\s+(?:tengo|tenemos|hay))\b"
+)
+
+
+def asked_to_be_told_now(folded: str) -> bool:
+    """M91: «recuérdame cuántas notas tengo», «remind me what…», M143 «recuérdame qué me falta por hacer»: the person
+    asks to be told now, never a reminder whose moment is missing (folded request, envelope stripped)."""
+
+    return _TOLD_NOW.match(folded) is not None
+
+
 _AGENDA_DETERMINER = r"(?:algo|anything|something|algun|alguna|algunos|algunas|any|some|nada|nothing|un|una|a|an)"
 _AGENDA_HAVE = (
     r"(?:(?:yo\s+)?(?:tengo|tenemos|tendre|tendremos)(?:\s+yo)?|hay|habra|do\s+i\s+have|have\s+i\s+got|"
@@ -336,7 +373,7 @@ def agenda_read_request(text: str) -> bool:
         r"(?:es|son|sera|seran|empieza|comienza|termina|dura|durara|is|are|will|does|do|starts?|ends?)\b.*"
         r"\b(?:mi|mis|my)\b",
         folded,
-    ):
+    ) and not _has(folded, _THEY_PLAY):
         # «cuándo es mi brunch con Jennifer», «what time is my flight»: the person's own event.
         return True
     if re.search(
@@ -924,6 +961,16 @@ _ABSENCE_CONDITION = re.compile(
 )
 
 
+# M143 (DEV-H v4o H-s116 «Ey, anótame en la lista del mercado plátano maduro, arepas de chócolo y queso costeño, ¿sí?»
+# → a fourth entry «¿sí» and «¿Qué título le darías a esta lista…?»): a tag asked after the entries («¿sí?», «¿vale?»,
+# «ok?», «please») asks the person's agreement; it is no entry.
+_TAG_AFTER_THE_ENTRIES = re.compile(
+    r"(?:\s*,\s*¿?|\s*¿)\s*(?:s[ií]|vale|ok(?:ay|ey)?|dale|porfa|por\s+favor|please|pls|right|yeah|ya|bueno|no|cierto|"
+    r"verdad|eh|sabes)\s*[?!.]*\s*$",
+    re.IGNORECASE,
+)
+
+
 def list_entry_request(text: str) -> tuple[str, str] | None:
     """(entry, list) of «añade X a mi lista de la compra», «pon hamburguesa en mi lista de
     comestibles», «add milk to my shopping list», in the person's own writing; None for a
@@ -936,7 +983,7 @@ def list_entry_request(text: str) -> tuple[str, str] | None:
     found = _LIST_ENTRY.match(surface) or _LIST_ENTRY_AFTER.match(surface)
     if found is None:
         return None
-    item = found.group("item").strip(" ,;:\"'«»“”")
+    item = _TAG_AFTER_THE_ENTRIES.sub("", found.group("item")).strip(" ,;:\"'«»“”")
     listed = found.group("list").strip(" ,;:\"'«»“”")
     folded_item = _fold(item)
     if (
@@ -1014,16 +1061,19 @@ def _named(value: str) -> str:
     return re.sub(_LEADING_ARTICLE, "", value.strip(" \"'«»“”"), flags=re.IGNORECASE).strip(" \"'«»“”")
 
 
-def task_change(text: str, title: str) -> dict[str, str]:
+def task_change(text: str, title: str, *, today: date | None = None) -> dict[str, str]:
     """M80: what a change of the task titled ``title`` changes, in the person's words: ``details`` for the list it
-    goes on, ``title`` for its new name (from the old one, or said alone after a pronoun). Empty when neither is read.
-    Each sentence is read on its own («Change to that eggs. Add to the Walmart list.»)."""
+    goes on, ``title`` for its new name (from the old one, or said alone after a pronoun), ``due`` for the day it moves
+    to (M144, ``YYYY-MM-DD``). Empty when none is read. Each sentence is read on its own («Change to that eggs. Add to
+    the Walmart list.»)."""
 
     changed: dict[str, str] = {}
     old_title = _fold(_named(title))
+    unnamed: list[str] = []  # what each sentence says besides a new name or a list
     for sentence in re.split(r"(?<=[.;!?])\s+", " ".join(str(text or "").split())):
         folded = _fold(sentence)
         destination = _LIST_DESTINATION.search(sentence)
+        unnamed.append(sentence[:destination.start()] + sentence[destination.end():] if destination else sentence)
         if destination is not None and not _has(_fold(destination.group("list")), _LIST_NOT_TASKS):
             changed.setdefault("details", destination.group("list").strip(" ,;:\"'«»“”"))
         renamed = None
@@ -1044,6 +1094,15 @@ def task_change(text: str, title: str) -> dict[str, str]:
             and re.fullmatch(r"(?:it|that|this|eso|esto|lo|la)", _fold(new)) is None
         ):
             changed.setdefault("title", new)
+            unnamed[-1] = source[:renamed.start("new")] + source[renamed.end("new"):]
+    # M144 (DEV-H v4p H-w30-t2 «mejor ponlo para mañana» after «Anotado: pagar la luz.» → «¿Cuál es el título de la
+    # tarea que deseas modificar y qué fecha…?»): the one day said of the task just made, outside its new name or its
+    # list, is its new day as the task store reads it («para mañana», «el viernes», «el 15»); a clock is a reminder's.
+    rest = " ".join(unnamed)
+    if not spoken_clock(_fold(rest)):
+        day = task_due_date(rest, today=today)
+        if day is not None:
+            changed["due"] = day
     return changed
 
 
@@ -2143,6 +2202,9 @@ def _review_calendar_message_and_direct_reminder_effects(
         )
         and (temporal or _has(folded, _DEICTIC_DAY))
         and repetition != "unsupported"
+        # M143 (DEV-H v4o H-s016): «recuérdame qué me falta por hacer hoy» asks to be told now; «hoy» is what is asked
+        # about, not when to remind.
+        and not asked_to_be_told_now(folded)
     ):
         _append(
             matches,
