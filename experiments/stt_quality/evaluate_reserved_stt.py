@@ -247,8 +247,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # M134 inventario
 # M132
 # C03 comprensión natural: repin tras M135–M139 (2026-10-03).
+# C03 comprensión natural: repin tras los arreglos de integración de M135–M139 (2026-10-03).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "a2abaf8c8c671ef3ff60d189d18d6fc993d32fff85d2b0820328e50b3372aa67"
+    "a3a7cd5cfde0f24f1ad21fb994a04555b5064fbb1a624f8227cf1b309c524331"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
