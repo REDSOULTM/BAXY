@@ -813,3 +813,14 @@ OCR pulsó «biblioteca» una vez en el panel de VS Code; M132 ata el clic a la 
    operaciones de ventana no destructivas; mover o cancelar el aviso que puso esta conversación aunque haya otros a la
    misma hora). Los ⚠ sin final de DEV-E oscilan 1–6 por ronda (meta ≤ 3); en G/F/D/H los que quedan son vetos de
    redacción sobre respuestas verdaderas → **M146**.
+
+## D71. Decisiones del dueño (2026-10-03 ~18:45): lo hecho cuenta aunque se diga distinto; «ventana activa»
+1. **Puntuación:** un turno cuenta como completo si BAXY hizo lo que había que hacer, aunque el dato quede dicho de otra
+   forma («25-minute» = «25 minutos»; «media hora» = 30 minutos; «hora y media» = 90). Se implementa como equivalencias
+   generales de forma en el puntuador (`comprension_eval`: guiones como espacios, duraciones habladas con su número de
+   minutos), nunca como aceptación de un resultado distinto; se siguen informando la cifra estricta y la de D61.
+2. **«La ventana activa» es la ventana donde la persona está actuando.** Con Opera delante y YouTube detrás, «cierra la
+   ventana activa» cierra Opera, nunca YouTube. Cuando la persona escribe en BAXY, la ventana de BAXY queda delante pero
+   no es la suya: la ventana activa es la que usaba justo antes (la siguiente en el orden de apilado que no sea de BAXY).
+   Vale igual para «esta ventana» en acomodar, maximizar o minimizar (M145). Cerrar sigue pidiendo confirmación; un
+   pronombre con antecedente («ciérralo» tras «abre X») sigue siendo X (M118); nunca VS Code por error (D17).
