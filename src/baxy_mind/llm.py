@@ -13733,6 +13733,27 @@ def _schedule_told_as_order(text: str, payload: dict) -> bool:
     )
 
 
+# M135 (DEV-F v4i/v4k/v4m F-w47-t2, the same draft three rounds: a WhatsApp draft left unverified → «Se borró el
+# borrador para mi contacto…»): a report that says something was deleted, when the operation deletes nothing, tells a
+# thing that did not happen. Affirmative deletions only (a «no se borró nada» is no claim). Folded words.
+_CLAIMED_DELETION = re.compile(
+    r"(?<!\bno\s)(?<!\bnot\s)\b(?:se\s+(?:ha\s+|han\s+)?(?:borro|borraron|elimino|eliminaron)|"
+    r"(?:he|hemos|ha|han)\s+(?:borrado|eliminado)|borre|elimine|"
+    r"(?:was|were|been|has|have)\s+(?:deleted|erased)|i\s+(?:deleted|erased))\b"
+)
+_DELETING_OPERATION = re.compile(r"trash|delete|remove|cancel|clear|uninstall|purge|empty|reset")
+
+
+def _report_claims_a_deletion(text: str, payload: dict) -> bool:
+    """M135: the report of one operation that deletes nothing says that something was deleted (see above)."""
+
+    reason = payload.get("reason") if isinstance(payload.get("reason"), dict) else {}
+    operation = str(payload.get("operation") or reason.get("operation") or "")
+    if not operation or _DELETING_OPERATION.search(operation) or payload.get("completedStepsInOrder"):
+        return False
+    return _CLAIMED_DELETION.search(_reading_fold(text)) is not None
+
+
 def _report_changes_the_act(text: str, payload: dict) -> str:
     """The other act a report of a window or application operation names instead of its own; ""."""
 
@@ -13816,6 +13837,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
         return window_defect
     if _report_changes_the_act(text, payload):
         return "report_changes_the_act"
+    if _report_claims_a_deletion(text, payload):
+        return "report_claims_a_deletion"
     if _schedule_told_as_rung(text, payload):
         return "schedule_told_as_rung"
     if _schedule_told_as_order(text, payload):
@@ -27215,6 +27238,14 @@ class LlmRuntime:
                     if response_language == "en"
                     else "Nombra el acto que se intentó, con su propio verbo (el de la operación: minimizar no es "
                     "cerrar, abrir no es cerrar); no hables de ningún otro acto."
+                ),
+                # M135 (DEV-F F-w47-t2 «Se borró el borrador…» for a draft left unverified).
+                "report_claims_a_deletion": (
+                    "Nothing was deleted: name only the act that was tried, with its own verb, and its outcome; "
+                    "never say that something was deleted or erased."
+                    if response_language == "en"
+                    else "No se borró nada: nombra sólo el acto que se intentó, con su propio verbo, y cómo terminó; "
+                    "nunca digas que algo se borró o se eliminó."
                 ),
                 # M93 (DEV-D v3u D-s054 «Mañana … el sol se pondrá a las 19:48» with today's sunset).
                 "weather_wrong_day": (
