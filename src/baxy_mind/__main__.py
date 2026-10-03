@@ -3368,6 +3368,10 @@ def _with_decided_arguments(
     for name, value, field_schema in decided:
         if name in merged and validate_argument_grounding({name: merged[name]}, field_schema, trusted_source):
             continue
+        if name in _AS_SPELLED_FIELDS and operation.startswith(_AS_SPELLED_LOOKUPS) and isinstance(value, str):
+            # M147 (DEV-F F-w05-t5 «javiera mena» → the decider's «Javier Mené»): the person's spelling of a name a
+            # service looks up (its own search forgives a typo of the person's; a note keeps the model's words).
+            value = semantic_decider.as_the_person_spelled(value, trusted_source.splitlines()) or value
         if not validate_argument_grounding({name: value}, field_schema, trusted_source):
             value = _said_part_of_a_name(name, value, field_schema, trusted_source) or (
                 # M136: a folder the decider chose and nobody said is every known folder, when that grounds.
@@ -3382,6 +3386,9 @@ def _with_decided_arguments(
 # M136 (DEV-G v4n G-s097 «baxy abreme el obs…» → the decider's «OBS Studio» → «¿Cuál es el nombre exacto de la
 # aplicación…?»): an application's name the decider completed with words nobody said keeps the words the person said.
 _SAID_NAME_FIELDS = frozenset({"appId", "name"})
+# M147: the fields that carry a name to look up or play as the person wrote it.
+_AS_SPELLED_FIELDS = frozenset({"query", "title", "artist", "appId", "name"})
+_AS_SPELLED_LOOKUPS = ("media.play", "streaming.", "app.open", "app.installed")  # web search sources forgive no typo
 
 
 def _said_part_of_a_name(name: str, value: Any, field_schema: dict[str, Any], trusted_source: str) -> Any:
