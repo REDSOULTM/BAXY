@@ -46,6 +46,7 @@ from .semantic.notes import (
     list_creation_said,
     names_own_event,
     task_change,
+    the_question_asked,
 )
 from .semantic import levels as semantic_levels
 from .semantic.memory import explicit_memory_request
@@ -5037,7 +5038,17 @@ def _context_decided_result(
         # Fase 3.5b M19 (cien-104 «ábreme eso porfa» after the time → «Abre el navegador» → a browser opened): a
         # pointer with no antecedent in what was said is asked, never filled with an object the model brought.
         decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
-    if decided.decision == "action" and decided.operations == ("web.search",) and names_own_data(text):
+    question_asked = the_question_asked(text)
+    if decided.decision == "action" and decided.operations == ("web.search",) and (
+        names_own_data(text)
+        if question_asked == text
+        # M138 (DEV-G v4n G-w42-t1 «when do the Lakers play next? my buddy wants to come over and watch it» → asked
+        # what only the person knows, where the isolated decider looked the game up): what is said after the question
+        # is its context. Only the question, and what the decider would look up, are read for the person's own data.
+        else names_own_data(question_asked)
+        or names_own_data(decided.request)
+        or any(isinstance(value, str) and names_own_data(value) for _, value in decided.arguments)
+    ):
         # M81 (DEV-D v3m D-s020 «It's going to rain en la casa de mamá?», D-s053 «¿Miguel sigue viviendo en
         # Arkansas?»): the person's own data never goes to the web (00_IDENTIDAD, invariant 6). What only the person
         # knows (where mom lives, who Miguel is) is asked, never looked up.
