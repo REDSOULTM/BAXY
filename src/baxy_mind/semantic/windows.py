@@ -150,7 +150,12 @@ _MINIMIZE_ALL_REQUEST = re.compile(
     r"(?:minimiza|minimizame|minimizar|minimise|minimize)\s+(?:me\s+)?"
     r"(?:todas\s+(?:las\s+)?(?:ventanas|apps|aplicaciones)|todas|todo|"
     r"all(?:\s+(?:the|my|of\s+the))?(?:\s+(?:windows|apps|applications))?|everything)"
-    r"(?:\s+(?:abiertas|open))?(?:\s*,?\s*(?:por\s+favor|porfa|porfis|please|pls))?[\s.!?]*$"
+    r"(?:\s+(?:abiertas|open))?"
+    # M143 (DEV-H v4o H-s089 «minimise everything for a second, i need to find a file on the desktop»): how briefly is
+    # no other order («for a second», «un momento», «un ratito»).
+    r"(?:\s+(?:for\s+a\s+(?:second|sec|moment|minute|bit)|(?:por\s+)?un\s+(?:segundo|segundito|momento|momentito|"
+    r"rato|ratito|minuto)))?"
+    r"(?:\s*,?\s*(?:por\s+favor|porfa|porfis|please|pls))?[\s.!?]*$"
 )
 
 

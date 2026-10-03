@@ -147,11 +147,26 @@ def message_request_named_client(text: str) -> tuple[str, str, str] | None:
     return recipient, body, draft[0]
 
 
+# M143 (DEV-H v4o H-w12-t1 «escríbeme en python una función que me diga si un año es bisiesto…» → message.send to
+# «python una función», refused only because no chat had that name): with no client named, a message needs someone it
+# goes to. The writing verb with the person's own clitic («escríbeme», «mándame», «envíame», «write me», «send me»)
+# makes the person the one who receives what is written — the content is for them, never a message to someone else —
+# and a bare «en» names where or in what it is written («en python», «en la hoja»), never who it goes to («en el
+# grupo Música» still does).
+_TO_THE_PERSON_VERB = re.compile(
+    r"^\s*(?:(?:me\s+)?(?:puedes|podes|podrias|could\s+you|can\s+you)\s+)?(?:please\s+|por\s+favor\s+)?"
+    r"(?:mandame|enviame|escribeme|escribime|mandeme|envieme|escribame|send\s+me|write\s+me|text\s+me|message\s+me)\b"
+)
+_BARE_EN_BEFORE_RECIPIENT = re.compile(r"\ben\s*$")
+
+
 def message_request_any_channel(text: str) -> tuple[str, str, str | None] | None:
     """(recipient, body, client or None) of a message request whose client is
     not named before the text; None when a client leads (message_draft_request
     owns it), or without recipient or body. A client named at the END of the
-    text («… por WhatsApp») is the client; «que dija» (H0408) is «que diga»."""
+    text («… por WhatsApp») is the client; «que dija» (H0408) is «que diga».
+    M143: None when the writing is for the person («escríbeme…») or the only
+    «recipient» is where it is written («escribe en python…»)."""
 
     raw = _strip_request_envelope(text).strip()
     if not raw or len(raw.encode("utf-8")) > 2048 or "aclaracion confiable del usuario:" in _fold(raw):
@@ -161,6 +176,8 @@ def message_request_any_channel(text: str) -> tuple[str, str, str | None] | None
     if _negative_action_forms(_fold(raw)):
         return None
     raw = re.sub(r"\bque\s+dija\b", "que diga", raw, flags=re.IGNORECASE)
+    if _TO_THE_PERSON_VERB.match(_fold(raw)):
+        return None
     for pattern in _MSG_ANY_PATTERNS:
         match = pattern.match(raw)
         if match is None:
@@ -170,6 +187,8 @@ def message_request_any_channel(text: str) -> tuple[str, str, str | None] | None
         if re.search(r"\b" + _MSG_CHANNEL_WORDS + r"\b", _fold(head)):
             # A client named before the text belongs to message_draft_request; a
             # client named INSIDE the text («prueba 1 de WhatsApp») is just words.
+            continue
+        if "rec" in groups and _BARE_EN_BEFORE_RECIPIENT.search(_fold(raw[: match.start("rec")])):
             continue
         recipient = re.sub(r"^(?:el\s+grupo|la\s+|el\s+|the\s+group|the\s+)\s*", "", (groups.get("rec") or "").strip(), flags=re.IGNORECASE).strip(" .")
         body = (groups.get("body") or "").strip().lstrip(":").strip()
@@ -302,6 +321,10 @@ def message_draft_request(text: str) -> tuple[str, str, str] | None:
         # MSGCLAR1851: a resumed objective «<request> <trusted prefix> <answer>»
         # is read as request plus answer by the completion, never as one draft
         # whose text would swallow the prefix.
+        return None
+    if _TO_THE_PERSON_VERB.match(_fold(raw)):
+        # M143: «escríbeme un poema en whatsapp para mi amiga que diga te amo» asks BAXY for the words, written for
+        # the person; with a client named too it is no message to send or leave written.
         return None
     for pattern in _MSG_DRAFT_PATTERNS:
         match = pattern.match(raw)

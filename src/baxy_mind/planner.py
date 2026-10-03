@@ -132,6 +132,9 @@ _ENUM_EVIDENCE_ALIASES = {
         "he bajado",
         "me baje",
         "bajado de internet",
+        # M143 (DEV-H v4o H-w32-t1 «che, abrime lo último que bajé» → the decider's «Descargas» → «¿En qué carpeta
+        # conocida…?»): the relative clause says the same download («lo último que bajé», «lo que bajé ayer»).
+        "que baje",
     ),
     # Tanda 3 «Muéstrame mi Gallery.»: Explorer's Gallery (Galería) is the pictures folder shown (lexicon.GALLERY_NOUNS,
     # which semantic.surface rewrites the same way); a proposal naming it is grounded, not asked which folder.

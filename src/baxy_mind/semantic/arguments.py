@@ -538,16 +538,27 @@ def _explicit_notification_schedule_arguments(
     # ñ that the accent-free patterns never matched on the raw evidence
     # (TIME1193 probe). The title below still keeps the person's own words.
     relative = list(re.finditer(relative_pattern, folded, re.IGNORECASE))
-    if any(re.match(_OFFSET_FROM_ANOTHER_MOMENT, folded[found.end():]) for found in relative):
-        # M76 (DEV-D v3l D-w02-t3 «ponme una alarma media hora antes de eso» → an alarm half an hour from now): a
-        # duration counted from another moment is not a delay from now; that moment is not read here.
-        return None
     # One clock, its part of the day said after the hour or elsewhere («esta tarde a las cinco») or, unsaid, the next
     # time it comes (D61); the day is read from the whole request.
     clocks = effect_intent.spoken_clocks(folded)
+    counted_from: str | None = None
+    offset_from_a_moment = any(re.match(_OFFSET_FROM_ANOTHER_MOMENT, folded[found.end():]) for found in relative)
+    if offset_from_a_moment or (not relative and not clocks):
+        # M76 (DEV-D v3l D-w02-t3 «ponme una alarma media hora antes de eso» → an alarm half an hour from now): a
+        # duration counted from another moment is not a delay from now; that moment is not read here.
+        # M143 (DEV-H v4o H-s047 «¿me podrías poner una alarma una hora antes de las 9?» → «¿A qué hora…?»): unless
+        # that moment is the clock the advance counts back from (``said_advance``, «an hour before 9» too); the alarm is
+        # read at the advance as written, which the operation's normalization counts back (M137
+        # ``due_before_said_moment``).
+        advance = said_advance(evidence)
+        if advance is None and offset_from_a_moment:
+            return None
+        counted_from = advance.phrase if advance is not None and advance.phrase in evidence else None
     # D61 (reviewed literal H0036 «set an alarm for 8»): the hour after «for/para» on an alarm is its clock.
     loose = alarm_for_hour(folded) if not relative and not clocks else None
-    if loose is not None:
+    if counted_from is not None:
+        due_literal = counted_from
+    elif loose is not None:
         due_literal = loose
     elif len(relative) + len(clocks) != 1:
         return None
