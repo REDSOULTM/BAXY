@@ -229,8 +229,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # M134
 # M134 inventario
 # M132
+# C03 comprensión natural: repin tras M135–M139 (2026-10-03).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "074e26f6d6915c8185d52760727ffb62a563672977fb4e5561613610de7479f5"
+    "a2abaf8c8c671ef3ff60d189d18d6fc993d32fff85d2b0820328e50b3372aa67"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
