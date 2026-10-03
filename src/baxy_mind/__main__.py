@@ -424,6 +424,9 @@ def _turn_failure_kind(error: BaseException) -> str:
         # M97 (DEV-D v3x D-s064 «¿Sería posible suprimir mi orden de recogida en Lyft…»): the turn decided a limit and
         # its drafts failed another contract (shaped_presentation, echo); it is still the limit's wording that failed.
         or getattr(error, "conversation_kind", None) == "unsupported"
+        # M139 (DEV-G v4n G-s120): the talk drafts said, as an inability in the present, what BAXY does not do
+        # (llm.talk_reply_tells_a_limit); the turn did not understand it as talk, it met a limit.
+        or reason == "told_limit"
     ):
         return LIMIT_WORDING_FAILURE
     if isinstance(error, ConversationReplyContractError):
