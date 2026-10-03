@@ -83,3 +83,19 @@ def test_nothing_unsaid_is_added() -> None:
     assert _decided(text, ["app.open"], {"app": "Notepad"}, "app.open", APP_OPEN) is None
     text = "abre spotify"
     assert _decided(text, ["app.open"], {"ap": "Spotify"}, "app.open", APP_OPEN) is None
+
+
+OPEN_LATEST = {"type": "object", "properties": {"folder": {"type": "string",
+                                                           "enum": ["desktop", "documents", "downloads", "pictures"]}},
+               "required": ["folder"], "additionalProperties": False}
+
+
+def test_g_w44_t4_what_was_downloaded_is_in_downloads() -> None:
+    for text in ("ahora ábreme lo último que me he bajado", "abre lo último que me bajé",
+                 "open the last thing I downloaded"):
+        got = _decided(text, ["filesystem.file.open.latest"], {"folder": "Descargas"},
+                       "filesystem.file.open.latest", OPEN_LATEST)
+        assert got == {"folder": "downloads"}, text
+    # Lowering the volume is no download.
+    assert _decided("he bajado el volumen, ahora abre lo último", ["filesystem.file.open.latest"],
+                    {"folder": "Documentos"}, "filesystem.file.open.latest", OPEN_LATEST) is None
