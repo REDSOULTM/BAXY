@@ -37,6 +37,12 @@ internal static partial class VisibleControlSurface
         // the topmost window that is not BAXY: when the foreground is ours or
         // has no usable surface, take that window and bring it to the front,
         // because the click lands on whatever is on top.
+        // M132, measured live: the opened client's updater closed while its
+        // label was looked for, the front fell to the person's editor, and
+        // the word was read and pressed there. A click bound to the opened
+        // application reads only that application's window.
+        if (RequiredWindow.Value != 0)
+            return hwnd == RequiredWindow.Value ? await CaptureAsync(hwnd, cancellationToken).ConfigureAwait(false) : null;
         _ = GetWindowThreadProcessId(hwnd, out uint foregroundProcess);
         if (foregroundProcess == unchecked((uint)Environment.ProcessId) || !HasUsableSurface(hwnd))
         {
@@ -48,6 +54,39 @@ internal static partial class VisibleControlSurface
                 hwnd = candidate;
             }
         }
+        return await CaptureAsync(hwnd, cancellationToken).ConfigureAwait(false);
+    }
+
+    private static readonly AsyncLocal<nint> RequiredWindow = new();
+
+    // Binds the reads and presses of the calls made inside the scope to one window: while it is not the one in
+    // front, nothing is captured, so nothing is read or pressed elsewhere.
+    internal static IDisposable RequireWindow(nint window)
+    {
+        nint previous = RequiredWindow.Value;
+        RequiredWindow.Value = window;
+        return new RequiredWindowScope(previous);
+    }
+
+    // The window in front is this one (or a window inside it).
+    internal static bool ForegroundIs(nint window)
+    {
+        nint foreground = GetForegroundWindow();
+        if (foreground == 0 || window == 0)
+            return false;
+        nint root = GetAncestor(foreground, 2);
+        return (root == 0 ? foreground : root) == window;
+    }
+
+    private sealed class RequiredWindowScope(nint previous) : IDisposable
+    {
+        public void Dispose() => RequiredWindow.Value = previous;
+    }
+
+    private static async ValueTask<CapturedWindow?> CaptureAsync(
+        nint hwnd,
+        CancellationToken cancellationToken)
+    {
         if (!TryBounds(hwnd, out int left, out int top, out _, out _))
             return null;
         string directory = Path.Combine(Path.GetTempPath(), "baxy-visible-control");
@@ -107,33 +146,95 @@ internal static partial class VisibleControlSurface
         }
     }
 
-    // True when the opened application shows a usable window and the largest one is now in front (or one of its
-    // own windows already was); false while it has none yet (an updater or splash only, or nothing).
-    internal static async ValueTask<bool> FrontOpenedAsync(
+    // The opened application's largest usable window, brought to the front, and whether it looks drawn; no window
+    // while it has none yet (an updater or splash only, or nothing). Measured on a cold client launch: its main
+    // window came up with the navigation bar over a black page (one colour on 76–96 % of the window) for about
+    // three seconds, and a click on the bar then was undone when the client loaded its start page; once the page
+    // is drawn, one colour covers about a third. A pop-up of the same application over the main window (a chat)
+    // is not what a person opening the application acts on: the main window is brought back in front.
+    internal static async ValueTask<OpenedSurface> FrontOpenedAsync(
         OpenedApplication opened,
+        bool judgeDrawn,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         HashSet<uint> family = ProcessFamily(opened);
         if (family.Count == 0)
-            return false;
-        nint foreground = GetForegroundWindow();
-        if (foreground != 0)
-        {
-            nint root = GetAncestor(foreground, 2);
-            if (root != 0)
-                foreground = root;
-            _ = GetWindowThreadProcessId(foreground, out uint owner);
-            if (family.Contains(owner) && HasUsableSurface(foreground))
-                return true;
-        }
-
+            return default;
         nint target = LargestUsableWindow(family);
         if (target == 0)
-            return false;
-        BringToFront(target);
-        await Task.Delay(250, cancellationToken).ConfigureAwait(false);
-        return true;
+            return default;
+        nint foreground = GetForegroundWindow();
+        nint root = foreground == 0 ? 0 : GetAncestor(foreground, 2);
+        // Measured: the chat pop-up came up over the main window without taking the focus, so the main window was
+        // the foreground and still covered where its navigation is.
+        if ((root == 0 ? foreground : root) != target || CoveredFromAbove(target))
+        {
+            BringToFront(target);
+            await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+        }
+
+        if (!judgeDrawn)
+            return new OpenedSurface(target, Drawn: true);
+        double? share = await DominantColourShareAsync(target, cancellationToken).ConfigureAwait(false);
+        return new OpenedSurface(target, Drawn: share is not { } measured || measured < BlankShare);
+    }
+
+    // One colour over this share of a window is a page still to be drawn (black, white or a spinner on a plain
+    // background); a drawn page measured about a third.
+    private const double BlankShare = 0.7;
+
+    private static async ValueTask<double?> DominantColourShareAsync(
+        nint window,
+        CancellationToken cancellationToken)
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "baxy-visible-control");
+        string? path = null;
+        try
+        {
+            var provider = new WindowsScreenshotProvider(directory);
+            CaptureResult capture = await provider.CaptureWindowAsync(window, cancellationToken)
+                .ConfigureAwait(false);
+            path = Path.Combine(directory, capture.CaptureId + ".bmp");
+            byte[] bmp = await File.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false);
+            return DominantColourShare(bmp);
+        }
+        catch (Exception exception) when (exception is IOException or InvalidOperationException
+            or UnauthorizedAccessException or ArgumentException)
+        {
+            return null;
+        }
+        finally
+        {
+            Delete(path);
+        }
+    }
+
+    // 32-bit BGRA bitmap (the capture's own encoding): the share of sampled pixels in the commonest colour, each
+    // channel quantised to sixteen levels.
+    internal static double? DominantColourShare(byte[] bmp)
+    {
+        const int header = 54;
+        if (bmp.Length <= header || bmp[0] != (byte)'B' || bmp[1] != (byte)'M'
+            || BitConverter.ToInt16(bmp, 28) != 32)
+        {
+            return null;
+        }
+        int pixels = (bmp.Length - header) / 4;
+        if (pixels == 0)
+            return null;
+        int step = Math.Max(1, pixels / 40_000);
+        var counts = new int[4096];
+        int sampled = 0;
+        int best = 0;
+        for (int index = 0; index < pixels; index += step)
+        {
+            int offset = header + index * 4;
+            int bin = ((bmp[offset + 2] >> 4) << 8) | ((bmp[offset + 1] >> 4) << 4) | (bmp[offset] >> 4);
+            best = Math.Max(best, ++counts[bin]);
+            sampled++;
+        }
+        return (double)best / sampled;
     }
 
     private static HashSet<uint> ProcessFamily(OpenedApplication opened)
@@ -236,6 +337,9 @@ internal static partial class VisibleControlSurface
                 return true;
             if (!TryBounds(window, out int left, out int top, out int right, out int bottom))
                 return true;
+            // An updater or splash (measured 500×161) is not the application's surface yet.
+            if (right - left < 300 || bottom - top < 200)
+                return true;
             long area = (long)(right - left) * (bottom - top);
             if (area > bestArea)
             {
@@ -246,6 +350,34 @@ internal static partial class VisibleControlSurface
         };
         _ = EnumWindows(callback, nint.Zero);
         return best;
+    }
+
+    // A visible, uncloaked window that is not always-on-top and sits above the target in the Z order over part
+    // of it (always-on-top windows stay above whatever is brought forward, so they are not counted).
+    private static bool CoveredFromAbove(nint target)
+    {
+        if (!TryBounds(target, out int left, out int top, out int right, out int bottom))
+            return false;
+        bool covered = false;
+        EnumWindowsProc callback = (window, unused) =>
+        {
+            if (window == target)
+                return false;
+            if (!IsWindowVisible(window) || (GetWindowLongPtrW(window, -20).ToInt64() & 0x8) != 0)
+                return true;
+            if (DwmGetWindowAttribute(window, 14, out int cloaked, sizeof(int)) == 0 && cloaked != 0)
+                return true;
+            if (!TryBounds(window, out int otherLeft, out int otherTop, out int otherRight, out int otherBottom))
+                return true;
+            if (otherLeft < right && otherRight > left && otherTop < bottom && otherBottom > top)
+            {
+                covered = true;
+                return false;
+            }
+            return true;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        return covered;
     }
 
     // A background process may not take the foreground by itself; joined to the input of the thread that holds
@@ -269,6 +401,10 @@ internal static partial class VisibleControlSurface
                 _ = AttachThreadInput(current, holder, false);
         }
     }
+
+    // A click bound to the opened application lands only while its window is still the one in front.
+    internal static bool MayPress() =>
+        RequiredWindow.Value == 0 || ForegroundIs(RequiredWindow.Value);
 
     internal static void Click(int screenX, int screenY)
     {
@@ -471,6 +607,8 @@ internal static partial class VisibleControlSurface
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool IsIconic(nint window);
+
+    internal readonly record struct OpenedSurface(nint Window, bool Drawn);
 
     internal readonly record struct OpenedApplication(
         int ProcessId,

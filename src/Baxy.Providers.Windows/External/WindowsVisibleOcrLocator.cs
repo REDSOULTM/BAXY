@@ -50,6 +50,8 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             if (located is null)
                 return null;
             WordHit hit = located.Value;
+            if (!VisibleControlSurface.MayPress())
+                return null;
             VisibleControlSurface.Click(before.Left + hit.CenterX, before.Top + hit.CenterY);
             await Task.Delay(400, cancellationToken).ConfigureAwait(false);
             VisibleControlSurface.CapturedWindow? after =

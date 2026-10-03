@@ -1344,7 +1344,7 @@ public sealed class ExternalAdaptersTests
         string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
         await File.WriteAllTextAsync(script, "# fixture");
         var runner = new SequencedProcessRunner([NotFoundByUia]);
-        var focus = new ScriptedFocus(launched: true, readyAfter: 3);
+        var focus = new ScriptedFocus(launched: true, windowAfter: 3);
         var ocr = new CountingLocator("ocr", hit: true, hitFromCall: 2);
         var adapter = new WindowsVisibleControlAdapter(
             runner, script, ocr, vision: null, focus, ShortTiming);
@@ -1371,7 +1371,7 @@ public sealed class ExternalAdaptersTests
         string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
         await File.WriteAllTextAsync(script, "# fixture");
         var runner = new SequencedProcessRunner([NotFoundByUia]);
-        var focus = new ScriptedFocus(launched: true, readyAfter: int.MaxValue);
+        var focus = new ScriptedFocus(launched: true, windowAfter: int.MaxValue);
         var ocr = new CountingLocator("ocr", hit: true);
         var adapter = new WindowsVisibleControlAdapter(
             runner, script, ocr, vision: null, focus, ShortTiming);
@@ -1397,7 +1397,7 @@ public sealed class ExternalAdaptersTests
         string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
         await File.WriteAllTextAsync(script, "# fixture");
         var runner = new SequencedProcessRunner([NotFoundByUia]);
-        var focus = new ScriptedFocus(launched: false, readyAfter: 0);
+        var focus = new ScriptedFocus(launched: false, windowAfter: 0);
         var ocr = new CountingLocator("ocr", hit: false);
         var adapter = new WindowsVisibleControlAdapter(
             runner, script, ocr, vision: null, focus, ShortTiming);
@@ -1414,6 +1414,162 @@ public sealed class ExternalAdaptersTests
             Assert.That(runner.Calls, Is.GreaterThan(1));
             Assert.That(clock.Elapsed, Is.GreaterThanOrEqualTo(ShortTiming.OpenedLabel));
             Assert.That(clock.Elapsed, Is.LessThan(TimeSpan.FromSeconds(5)));
+            // An application that was already running is not waited on to draw.
+            Assert.That(focus.JudgedDrawn, Is.All.False);
+        });
+    }
+
+    // M132, measured live: a client launched cold shows its navigation over a blank page and then loads its start
+    // page, undoing a click made before. Nothing is looked at or pressed while the page is blank.
+    [Test]
+    public async Task VisibleClickAfterALaunchDoesNotLookWhileThePageIsBlank()
+    {
+        using TemporaryDirectory temporary = new();
+        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
+        await File.WriteAllTextAsync(script, "# fixture");
+        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        var focus = new ScriptedFocus(launched: true, windowAfter: 1, drawnAfter: 4);
+        var ocr = new CountingLocator("ocr", hit: true);
+        var adapter = new WindowsVisibleControlAdapter(
+            runner, script, ocr, vision: null, focus, ShortTiming);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"biblioteca"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(focus.FrontCalls, Is.EqualTo(5));
+            Assert.That(focus.JudgedDrawn, Is.All.True);
+            Assert.That(runner.Calls, Is.EqualTo(1));
+            Assert.That(ocr.Calls, Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task VisibleClickAfterALaunchLooksAnywayOnceTheSettlingTimeHasPassed()
+    {
+        using TemporaryDirectory temporary = new();
+        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
+        await File.WriteAllTextAsync(script, "# fixture");
+        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        // A page that never stops looking blank (a plain dark application) is looked at after the settling time.
+        var focus = new ScriptedFocus(launched: true, windowAfter: 0, drawnAfter: int.MaxValue);
+        var ocr = new CountingLocator("ocr", hit: true);
+        var adapter = new WindowsVisibleControlAdapter(
+            runner, script, ocr, vision: null, focus, ShortTiming);
+        var clock = Stopwatch.StartNew();
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"ajustes"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(clock.Elapsed, Is.GreaterThanOrEqualTo(ShortTiming.LaunchSurface - TimeSpan.FromMilliseconds(50)));
+            Assert.That(runner.Calls, Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task VisibleClickConfirmedLongAfterTheOpeningLooksAtOnce()
+    {
+        using TemporaryDirectory temporary = new();
+        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
+        await File.WriteAllTextAsync(script, "# fixture");
+        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        var focus = new ScriptedFocus(
+            launched: true, windowAfter: 0, drawnAfter: int.MaxValue, noted: TimeSpan.FromSeconds(60));
+        var ocr = new CountingLocator("ocr", hit: true);
+        var adapter = new WindowsVisibleControlAdapter(
+            runner, script, ocr, vision: null, focus, ShortTiming);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"biblioteca"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(focus.FrontCalls, Is.EqualTo(1));
+            Assert.That(runner.Calls, Is.EqualTo(1));
+        });
+    }
+
+    // M132, measured live: while the label was looked for, the front fell to the person's editor, where the same
+    // word was on screen, and it was pressed there. A click after an opening reads the opened window only.
+    [Test]
+    public async Task VisibleClickAfterAnOpeningIsBoundToTheOpenedWindow()
+    {
+        using TemporaryDirectory temporary = new();
+        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
+        await File.WriteAllTextAsync(script, "# fixture");
+        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        var focus = new ScriptedFocus(launched: false, windowAfter: 0);
+        var adapter = new WindowsVisibleControlAdapter(
+            runner, script, ocr: null, vision: null, focus, ShortTiming);
+
+        _ = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"biblioteca"}"""),
+            CancellationToken.None);
+
+        Assert.That(runner.LastArguments, Is.SupersetOf(new[] { "-WindowHandle", "77" }));
+    }
+
+    [Test]
+    public async Task VisibleClickDoesNotReadAnotherWindowWhenTheOpenedOneLostTheFront()
+    {
+        using TemporaryDirectory temporary = new();
+        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
+        await File.WriteAllTextAsync(script, "# fixture");
+        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        var focus = new ScriptedFocus(launched: false, windowAfter: 0, holds: false);
+        var adapter = new WindowsVisibleControlAdapter(
+            runner, script, ocr: null, vision: null, focus, ShortTiming);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"biblioteca"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(runner.Calls, Is.Zero);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
+        });
+    }
+
+    [Test]
+    public void DominantColourShareTellsABlankPageFromADrawnOne()
+    {
+        static byte[] Bitmap(int width, int height, Func<int, (byte B, byte G, byte R)> pixel)
+        {
+            byte[] bmp = new byte[54 + (width * height * 4)];
+            bmp[0] = (byte)'B';
+            bmp[1] = (byte)'M';
+            BitConverter.GetBytes((short)32).CopyTo(bmp, 28);
+            for (int index = 0; index < width * height; index++)
+            {
+                (byte b, byte g, byte r) = pixel(index);
+                bmp[54 + (index * 4)] = b;
+                bmp[54 + (index * 4) + 1] = g;
+                bmp[54 + (index * 4) + 2] = r;
+                bmp[54 + (index * 4) + 3] = 255;
+            }
+            return bmp;
+        }
+
+        // A navigation strip over a black page, and a page of varied content.
+        byte[] blank = Bitmap(100, 100, index => index < 1500 ? ((byte)40, (byte)30, (byte)20) : ((byte)0, (byte)0, (byte)0));
+        byte[] drawn = Bitmap(100, 100, index => ((byte)(index % 7 * 36), (byte)(index % 5 * 50), (byte)(index % 3 * 80)));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(VisibleControlSurface.DominantColourShare(blank), Is.GreaterThan(0.7));
+            Assert.That(VisibleControlSurface.DominantColourShare(drawn), Is.LessThan(0.7));
+            Assert.That(VisibleControlSurface.DominantColourShare([1, 2, 3]), Is.Null);
         });
     }
 
@@ -4750,30 +4906,46 @@ public sealed class ExternalAdaptersTests
         }
     }
 
-    private sealed class ScriptedFocus(bool launched, int readyAfter) : IOpenedApplicationFocus
+    // The opened application shows no window for `windowAfter` calls, then a blank page until call `drawnAfter`,
+    // then its drawn main window.
+    private sealed class ScriptedFocus(
+        bool launched,
+        int windowAfter,
+        int drawnAfter = 0,
+        TimeSpan noted = default,
+        bool holds = true) : IOpenedApplicationFocus
     {
         private bool _taken;
 
         internal int FrontCalls { get; private set; }
+
+        internal List<bool> JudgedDrawn { get; } = [];
 
         public VisibleControlSurface.OpenedApplication? TakeOpened()
         {
             if (_taken)
                 return null;
             _taken = true;
-            return new VisibleControlSurface.OpenedApplication(
-                4242, DateTime.UtcNow.AddSeconds(-1), DateTime.UtcNow, launched);
+            DateTime at = DateTime.UtcNow - noted;
+            return new VisibleControlSurface.OpenedApplication(4242, at.AddSeconds(-1), at, launched);
         }
 
         public VisibleControlSurface.OpenedApplication? PeekOpened() => null;
 
-        public ValueTask<bool> FrontAsync(
+        public ValueTask<VisibleControlSurface.OpenedSurface> FrontAsync(
             VisibleControlSurface.OpenedApplication opened,
+            bool judgeDrawn,
             CancellationToken cancellationToken)
         {
             FrontCalls++;
-            return ValueTask.FromResult(FrontCalls > readyAfter);
+            JudgedDrawn.Add(judgeDrawn);
+            if (FrontCalls <= windowAfter)
+                return ValueTask.FromResult(default(VisibleControlSurface.OpenedSurface));
+            return ValueTask.FromResult(new VisibleControlSurface.OpenedSurface(
+                77, Drawn: !judgeDrawn || FrontCalls > drawnAfter));
         }
+
+        public bool Holds(nint window) => holds;
     }
 
     private sealed class CountingLocator : IVisibleControlLocator
@@ -4838,11 +5010,14 @@ public sealed class ExternalAdaptersTests
     {
         internal int Calls { get; private set; }
 
+        internal IReadOnlyList<string> LastArguments { get; private set; } = [];
+
         public ValueTask<ExternalProcessResult> RunAsync(
             string executable, IReadOnlyList<string> arguments, TimeSpan timeout,
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            LastArguments = arguments.ToArray();
             string output = outputs[Math.Min(Calls, outputs.Count - 1)];
             Calls++;
             return ValueTask.FromResult(new ExternalProcessResult(0, output, ""));
