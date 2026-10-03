@@ -79,6 +79,8 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             int height = box.Groups[4].Success
                 ? int.Parse(box.Groups[4].Value, CultureInfo.InvariantCulture)
                 : 0;
+            if (!VisibleControlSurface.MayPress())
+                return null;
             VisibleControlSurface.Click(
                 before.Left + x + Math.Max(0, width) / 2,
                 before.Top + y + Math.Max(0, height) / 2);
