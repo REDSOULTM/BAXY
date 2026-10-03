@@ -255,6 +255,17 @@ def _known_folder_listing_request(text: str) -> str | None:
     return _KNOWN_FOLDER_ENUM.get(match.group("folder"))
 
 
+# M143 (DEV-H v4o H-s081 «abreme descargas y el ultimo archivo que baje» → only the latest file opened, where the
+# isolated decider opened the folder and then the file): a known folder that is itself what is opened, joined by «y» /
+# «and» to the latest file, is a second thing opened, not where the file is; the latest-file reader leaves the turn
+# to the decider. «abre el último archivo de descargas» still names only where the file is. Folded.
+_FOLDER_OPENED_BESIDE_THE_FILE = (
+    rf"\b{_OPEN}\s+(?:(?:me|up)\s+)?(?:(?:la\s+)?carpeta\s+(?:de\s+)?|(?:mi|my|the|el|la)\s+)?{_KNOWN_FOLDER_WORDS}"
+    r"(?:\s+(?:folder|carpeta))?\s*,?\s+(?:y|and)\s+(?:(?:luego|despues|then|tambien|also)\s+)?"
+    r"(?:(?:el|la|the|my|mi)\s+)?(?:ultimo|ultima|latest|last|most\s+recent|mas\s+reciente|newest)\b"
+)
+
+
 def _review_file_and_game_effects(
     matches: list[tuple[int, int, str]],
     folded: str,
@@ -264,6 +275,7 @@ def _review_file_and_game_effects(
 
     if (
         _head_is(head, _OPEN)
+        and not _has(folded, _FOLDER_OPENED_BESIDE_THE_FILE)
         and _has(folded, r"\b(?:archivo|file)\b")
         and _has(
             folded,

@@ -189,6 +189,21 @@ def literal_clipboard_write_text(text: str) -> str | None:
     return literal or None
 
 
+# M143: a capture ordered, with its verb and its noun («sácale un pantallazo», «toma una captura», «take a
+# screenshot») or the noun said as the verb («screenshot this window», «captura esta ventana»). Folded.
+_CAPTURE_ORDERED = (
+    r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*|(?:puedes|podrias|can you|could you|would you)\s+)?"
+    r"(?:(?:haz|hacer|hace|haceme|hazme|hazle|toma|tomar|tomame|tomale|saca|sacale|sacame|crea|capture|take|grab)\s+"
+    r"(?:(?:una|un|a|the)\s+)?(?:foto de captura|captura(?:\s+de\s+pantalla)?|pantallazo|screenshot|screen\s*shot|"
+    r"screen capture)|captura|capture|screenshot)\b"
+)
+# M143: the window the person points at, or calls the active one. Folded.
+WINDOW_POINTED_AT = (
+    r"\b(?:esta|este|esa|this|that)\s+(?:ventana|window)\b|\bventana\s+(?:activa|actual)\b|"
+    r"\b(?:active|current)\s+window\b"
+)
+
+
 def _review_input_and_capture_effects(
     matches: list[tuple[int, int, str]],
     folded: str,
@@ -313,13 +328,19 @@ def _review_input_and_capture_effects(
             folded,
             r"\b(?:ventana\s+(?:activa|actual)|active\s+window|current\s+window)\b",
         )
+    ) or (
+        # M143 (DEV-H v4o H-s084 «sácale un pantallazo a esta ventana nomás» → the whole screen captured, where the
+        # isolated decider captured the active window): a capture ordered of the window the person is pointing at
+        # («a esta ventana», «de esta ventana», «this window», «la ventana actual») is that window's, whatever the
+        # verb or the noun of the capture; «pantallazo» alone is still the whole screen.
+        _has(folded, _CAPTURE_ORDERED) and _has(folded, WINDOW_POINTED_AT)
     )
     if active_window_capture:
         _append(
             matches,
             folded,
             "capture.active.window",
-            r"\b(?:captura|capture|toma|tomar|take)\b",
+            r"\b(?:captura|capture|toma|tomar|take|pantallazo|screenshot)\b",
         )
     capture_object = _has(
         folded,

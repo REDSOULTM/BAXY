@@ -2446,6 +2446,12 @@ _EVENT_GLUE = re.compile(
     r"es|is|de|del|a|at|on|el|la|las|for|para|y|and)$"
 )
 _EVENT_ARTICLE = re.compile(r"^(?:el|la|los|las|un|una|mi|mis|my|the|a|an|our|nuestro|nuestra|su|your|tu)\s+")
+# M143: a clock said right after the advance, as what it counts back from («antes de las 9», «before 9 pm»). Folded.
+_ADVANCE_OF_A_CLOCK = re.compile(
+    rf"\s+(?:(?:de|d)\s+)?(?:las?\s+)?(?P<clock>{_CLOCK_HOUR}{_CLOCK_MINUTES}?(?:{_O_CLOCK})?(?:\s*{_CLOCK_PERIOD})?)"
+    r"(?=\s*$|\s*[,;:.?!]|\s+(?:de\s+)?(?:hoy|manana|today|tomorrow|tonight|esta|este|this|pls|please|por\s+favor|porfa)\b)"
+    r"(?!\s+(?:minutos?|minutes?|horas?|hours?|dias?|days?|segundos?|seconds?)\b)"
+)
 _EVENT_POINTERS = frozenset({"eso", "esto", "ello", "aquello", "that", "this", "it", "then"})
 _EVENT_CONNECTORS = frozenset(
     {"so", "asi", "para", "porque", "because", "cause", "pls", "plz", "please", "por", "porfa", "y", "and", "o", "or",
@@ -2501,6 +2507,16 @@ def said_advance(text: str) -> SaidAdvance | None:
         return None
     advance = counts[0]
     minutes = _offset_minutes(advance)
+    if minutes is not None and (direct := _ADVANCE_OF_A_CLOCK.match(folded, advance.end())) is not None:
+        # M143 (DEV-H v4o H-s047 «¿me podrías poner una alarma una hora antes de las 9?» → «¿A qué hora…?», where the
+        # isolated decider set it at 8): the clock may be what the advance counts back from, said right after it
+        # («una hora antes de las 9», «half an hour before 7 pm»); it is the event's, never the notification's own. The
+        # moment is that clock read with its lead; the phrase is the advance with its clock, as written.
+        lead = "at " if advance.group("sign") != "antes" else "a las "
+        written = lead + direct.group("clock")
+        clocks = spoken_clocks(_fold(written))
+        if len(clocks) == 1 and len(spoken_clocks(folded)) == 0:
+            return SaidAdvance(minutes, written, clocks[0], said[advance.start():direct.end()], "")
     clocks = spoken_clocks(folded)
     if minutes is None or len(clocks) != 1 or _ADVANCE_OF_A_CLAUSE.match(folded, advance.end()):
         return None

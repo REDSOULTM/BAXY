@@ -110,6 +110,11 @@ def _order_with_talk(
         folded_lead = _fold(lead)
         if _LEAD_NOT_TALK.search(folded_lead) or _OVERHEARD_ACTION_WORDS.search(folded_lead):
             break
+        if resolve(parts[index - 1].strip(_CLAUSE_EDGE_PUNCTUATION)) is not None:
+            # M143 (DEV-H v4o H-s089 «minimise everything for a second, i need to find a file on the desktop» → a file
+            # search, where the isolated decider minimized every window): a clause before that is an order of its own
+            # is no talk; what follows it is said about it (here why), never the request in its place.
+            break
         tail = " ".join(parts[index:]).strip()
         found = resolve(tail)
         if found is not None:
@@ -467,6 +472,11 @@ def read(
     available = tuple(available_operations)
 
     def resolve(candidate: str) -> EffectIntent | None:
+        if resolve_explicit_clarification_intent(candidate, available, application_names) is not None:
+            # M143 (DEV-H v4o H-s092 «so like, is it gonna rain where my grandma lives this weekend?» → this PC's town,
+            # where the isolated decider asked which city): an order read out of talk is read as it would be alone, and
+            # alone it is asked (the clarification goes first); the talk around it leaves it to the decider.
+            return None
         return resolve_explicit_effects(candidate, available, application_names, game_catalog)
 
     effects = resolve_explicit_effects(

@@ -3625,9 +3625,16 @@ def _with_decided_restatements(operation: str, request: str, schema: dict[str, o
     restated = [
         value
         for name, value, field_schema in decided
-        if _free_text_field(name, field_schema["properties"][name])
+        if (
+            _free_text_field(name, field_schema["properties"][name])
+            and semantic_decider.said_in_other_words(value, lines)
+            # M143 (DEV-H v4o H-w21-t1 «che baxy, tirá algún tema de charly garcia de los ochenta, el que sea» → the
+            # decider's media.play.query {"provider": "Spotify"} → «¿Qué proveedor de música debo usar…?»): a field
+            # with one possible member is no choice of the person's; the decider that chose this operation and gave
+            # that member said the only value the field can take (M141 ``_said_single_members`` needs it said).
+            or field_schema["properties"][name].get("enum") == [value]
+        )
         and not validate_argument_grounding({name: value}, field_schema, trusted_source)
-        and semantic_decider.said_in_other_words(value, lines)
     ]
     return "\n".join([trusted_source, *restated]) if restated else trusted_source
 

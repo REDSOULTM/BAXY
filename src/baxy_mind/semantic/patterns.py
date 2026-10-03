@@ -17,16 +17,16 @@ from .windows import deictic_window_mutation, _FOCUS_HEAD_ONLY, _FOCUS_HEAD_WITH
 from .display import screen_light_as_brightness, _KNOWN_FOLDER_WORDS, _KNOWN_FOLDER_ENUM, screen_inventory_request, _display_status_question, _without_screen_state_preface, _BRIGHTNESS_OBJECT, _BRIGHTNESS_UP_VERB, _BRIGHTNESS_DOWN_VERB, _BRIGHTNESS_ABSOLUTE, _BRIGHTNESS_ENGLISH_TURN, _BRIGHTNESS_RELATIVE_WORDS, brightness_status_request, _BRIGHTNESS_SET_VERB, _BRIGHTNESS_EXTREME_VALUES, wallpaper_request
 from .intent import EffectIntent, _entity_key, _is_negated_match, _append, _append_all
 from .catalog import ApplicationCatalogIndex, GameCatalogIndex, build_game_catalog_index, _authenticated_game_target, resolve_game_catalog_app_id, _application_name_key, build_application_catalog_index, _catalog_alias_key, _installed_game_named, installed_game_title
-from .temporal import _CALENDAR_MONTH_TOKEN, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, alarm_for_hour, spoken_clock, clock_elsewhere, other_place_clock_question, notification_change, plural_alarm_cancellation
+from .temporal import said_advance, _CALENDAR_MONTH_TOKEN, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, alarm_for_hour, spoken_clock, clock_elsewhere, other_place_clock_question, notification_change, plural_alarm_cancellation
 from .media import _youtube_search_query, youtube_play_query, _direct_media_discovery_or_play_request, _named_browser_music_request, _NETFLIX_SPELLED, _underspecified_video_request, _title_case_media_title, _media_transport_action, _resume_existing_media, _REMOVABLE_MEDIA, _bare_spoken_number_media_query, radio_station_query, spoken_media_order, MUSIC_GENRE, _RADIO_PLAY, own_recent_listening_request, purpose_music_query
 from .web import asks_for_information, public_opinion_query, record_fact_query, _public_route_lookup_request, _public_calendar_fact_lookup_request, _WEATHER_WORDS, _weather_lookup_query, _research_question_query, _public_live_lookup_request, _public_product_correction_lookup_request, _public_commerce_lookup_request, _FILESYSTEM_OBJECT_NOUN, operation_identity_is_a_near_miss, curiosity_request, web_image_request, _NAVIGATION_CLIENT, client_navigation_target, _authenticated_application_identity_conflict, _browser_page_domain, browser_back_arguments, browser_new_tab_arguments, browser_close_all_tabs_arguments, _historical_note_search_request, _stored_note_search_query, _nominal_reminder_lookup_title, _location_recommendation_request, _NAMED_BROWSER_SITE_REQUEST, _installed_browser_search_query, _completed_browser_search_pronoun_request, _NAMED_PUBLIC_SITE, _review_web_and_browser_effects, web_download_request, NAMED_CDP_BROWSERS, _named_browser_match, _named_browser, public_event_subject, cinema_listing, asks_to_watch_the_news
 from .files import _pdf_summary_request, _file_trash_request, process_report_file_request, _file_creation_request, known_folder_file_path, _current_directory_file_count, _DUPLICATE_FILES, _known_folder_recent_listing, _known_folder_listing_request, _review_file_and_game_effects, folder_txt_zip_open_mission, open_named_file_request, _office_document_roundtrip_intent
 from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
 from .system import _weather_read_intent, physical_world_request, weather_place_known_only_through_someone
-from .notes import puts_into_the_agenda, takes_off_the_agenda, list_entries, list_entry_said, list_entry_request, list_read_request, list_removal_request, list_creation_without_items, list_creation_said, new_list_title, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder, said_repetition, _CALENDAR_PLACE, reminder_inventory_question, AGENDA_NOT_A_READ, happening_in_a_span_of_hours
+from .notes import _STATE_OF_THE_PERSON, asked_to_be_told_now, puts_into_the_agenda, takes_off_the_agenda, list_entries, list_entry_said, list_entry_request, list_read_request, list_removal_request, list_creation_without_items, list_creation_said, new_list_title, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder, said_repetition, _CALENDAR_PLACE, reminder_inventory_question, AGENDA_NOT_A_READ, happening_in_a_span_of_hours
 from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, message_left_written_request, _latest_email_domain, _notification_listing_request, inbox_read_request, social_network_request, contact_book_request
-from .ui import _clipboard_copy_domain, _clipboard_paste_domain, calculator_expression_request, literal_clipboard_write_text, _review_input_and_capture_effects, _VISIBLE_CLICK_APP_CONTEXT, _gerund_click_label, _visible_click_label, _click_in_application, _visible_click_intent
+from .ui import WINDOW_POINTED_AT, _clipboard_copy_domain, _clipboard_paste_domain, calculator_expression_request, literal_clipboard_write_text, _review_input_and_capture_effects, _VISIBLE_CLICK_APP_CONTEXT, _gerund_click_label, _visible_click_label, _click_in_application, _visible_click_intent
 from .apps import self_close_request, _APPLICATION_TRAILING_REQUEST, _application_target_forms, _CLOSE_TRAILING_COURTESY, _close_target_forms, deictic_close_request, _bounded_application_literal, _authenticated_application_list, _OPEN_STATE_CONDITION, close_all_request, _has_multiple_installed_entities, _append_domain_actions, _open_application_spans, _CATALOG_INSTALL_VERB, _opened_applications
 
 
@@ -2819,10 +2819,7 @@ _REMINDER_IDIOM = re.compile(
     # M100 (reserva A10 «recuerda que me mueva para que no engorde» → advice): «recuerda que me» with what the person
     # is to do, in the subjunctive, is «recuérdame»; a statement in the indicative («recuerda que me gusta el té», «que me
     # duele») is something to keep, not a reminder.
-    r"recuerda(?=\s+que\s+me\s+(?!(?:gusta|gustan|encanta|encantan|duele|duelen|llamo|llaman|toca|tocan|queda|quedan|"
-    r"falta|faltan|cuesta|cuestan|molesta|molestan|interesa|interesan|importa|importan|preocupa|preocupan|pasa|"
-    r"dijiste|dijo|dijeron|prometiste|debe|deben|debes|ha|han|has|he|hace|hacen|sale|salen|va|van|fue|fueron|"
-    r"parece|parecen|cae|caen|da|dan|tiene|tienen|tienes|toca|vale|sirve|sirven|conviene|apetece|queda)\b)[a-z]+[ae]\b))"
+    rf"recuerda(?=\s+que\s+me\s+(?!{_STATE_OF_THE_PERSON}\b)[a-z]+[ae]\b))"
     r"\s+"
 )
 # M100 (reserva A10): a purpose said after the order («para que no engorde», «so I don't forget») does not negate it.
@@ -2912,12 +2909,7 @@ def _incomplete_scheduled_request(
     if reminder is None and desire is not None:
         # «necesito que me recuerden las reuniones del lunes»: an impersonal «recuerden» asks the same.
         reminder = re.match(r"^(?:recuerdes|recuerde|recuerden|avises|avise|avisen)\s+(?P<title>.+)$", body)
-    if reminder is not None and re.match(
-        # «recuérdame que…» stays a reminder: folded, «qué» and «que» are one word.
-        r"(?:recuerdame|recordame|remind\s+me)\s+(?:cual|cuales|cuanto|cuanta|cuantos|cuantas|donde|quien|quienes|"
-        r"what|which|how\s+(?:many|much)|where|who)\b",
-        body,
-    ):
+    if reminder is not None and asked_to_be_told_now(body):
         # M91 (reserva «recuérdame cuántas notas tengo»): «remind me how many/which…» asks to be told now, never a
         # reminder whose moment is missing.
         return None
@@ -3004,7 +2996,9 @@ def _incomplete_scheduled_request(
         ):
             return ClarificationIntent((operation,), ("am_pm_or_part_of_day_for_supplied_hour",))
         return None
-    if not _reminder_has_actionable_due(folded):
+    if not _reminder_has_actionable_due(folded) and said_advance(text) is None:
+        # M143 (DEV-H v4o H-s047 «¿me podrías poner una alarma una hora antes de las 9?»): «<duración> antes de las 9»
+        # says when, counted back from that clock (``temporal.said_advance``); it is not asked.
         return ClarificationIntent((operation,), ("alarm_time" if alarm else "due_time",))
     return None
 
@@ -6394,7 +6388,10 @@ _NOT_A_PERFORMER = (
 # M138 (DEV-G v4n G-s096 «baxy please play that song provenza by karol g in spotify ya mismo que la necesito» → YouTube
 # and «¿qué video?», where the isolated decider played it on Spotify): Spotify named as where to play is «en», «on» or,
 # in English and spanglish, «in Spotify». Folded.
-_ON_SPOTIFY = r"\b(?:en|on|in)\s+spotify\b"
+# M143 (DEV-H v4o H-s037 «a ver, ponme algo de Rosalía en el Spotify, lo que sea, da igual» → YouTube, where the
+# isolated decider played it on Spotify): the app said with its article or the person's own («en el Spotify», «en mi
+# Spotify», «on my Spotify», «on the Spotify») is the same place to play.
+_ON_SPOTIFY = r"\b(?:en|on|in)\s+(?:(?:el|the|mi|my)\s+)?spotify\b"
 
 
 def _title_by_performer(query: str) -> bool:
@@ -7764,6 +7761,17 @@ def _puts_into_the_agenda(text: str) -> bool:
     )
 
 
+# M143 (DEV-H v4o H-s070 «can you pull up my downloads folder, I'm trying to find that installer I grabbed earlier» →
+# a search of the known folders, where the isolated decider opened Downloads): a known folder said as the folder that is
+# shown («pull up my downloads folder», «muéstrame la carpeta de descargas») is the folder to open; what the person will
+# look for in it themselves is no search. Folded, envelope stripped.
+_FOLDER_ITSELF_SHOWN = (
+    r"^(?:pull\s+up|bring\s+up|show(?:\s+me)?|display|muestra(?:me)?|ensename|pasame|sacame)\s+"
+    r"(?:(?:my|the|mi|la|el)\s+)?(?:(?:documents|downloads)\s+folder|carpeta\s+(?:de\s+)?(?:mis\s+)?"
+    r"(?:documentos|descargas))\b"
+)
+
+
 def _strict_catalog_request(
     text: str,
     available_operations: frozenset[str],
@@ -8429,7 +8437,7 @@ def _strict_catalog_request(
         ]
         if any(
             operation == "filesystem.known.duplicates" for _, operation in found_domains
-        ):
+        ) or _has(text, _FOLDER_ITSELF_SHOWN):
             found_domains = [
                 item for item in found_domains if item[1] != "filesystem.known.search"
             ]
@@ -9089,6 +9097,8 @@ def _strict_catalog_request(
                 text,
                 r"\b(?:pantalla|screen|escritorio|desktop|screenshot|monitor|display)\b",
             )
+            # M143 (DEV-H v4o H-s084): a capture of the window pointed at is that window's (ui.WINDOW_POINTED_AT).
+            and not _has(text, WINDOW_POINTED_AT)
         ):
             resolved = intent("capture.screenshot")
             if resolved is not None:
