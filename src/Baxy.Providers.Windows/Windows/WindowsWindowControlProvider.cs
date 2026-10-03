@@ -51,9 +51,23 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
     {
         cancellationToken.ThrowIfCancellationRequested();
         WindowSnapshot? snapshot;
+        WindowSnapshot? baxyInFront = null;
         try
         {
             snapshot = _platform.FindForegroundWindow();
+            // M149 (D71.2, dueño 2026-10-03 «cierra la ventana activa … la ventana en la que yo estoy actuando»):
+            // when the person writes to BAXY its own window takes the foreground, but it is not the person's
+            // window: theirs is the one they were using right before, the next one down the z-order that a
+            // person sees (titled, root owner, not minimized) and that is not BAXY's. With Opera in front and
+            // YouTube behind it, that is Opera. Any other foreground (the harness guard Notepad included) stays
+            // exactly what it was. Nothing behind BAXY → nothing is named and nothing is acted on.
+            if (snapshot is not null && OwnProcessNames.Contains(snapshot.Identity.ProcessName))
+            {
+                baxyInFront = snapshot;
+                snapshot = _platform.DesktopWindowsBehind(baxyInFront.Identity)
+                    .FirstOrDefault(static window => window.State != "minimized"
+                        && !OwnProcessNames.Contains(window.Identity.ProcessName));
+            }
         }
         catch (Exception exception) when (exception is Win32Exception
             or InvalidOperationException
@@ -71,15 +85,38 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
 
         string windowId = Issue(snapshot.Identity);
         WindowCandidate candidate = ToCandidate(snapshot, windowId);
-        if (!candidate.Foreground
-            || !_verifier.Verify(snapshot.Identity, candidate, expectedAction: null))
+        bool verified = baxyInFront is null
+            ? candidate.Foreground && _verifier.Verify(snapshot.Identity, candidate, expectedAction: null)
+            : !candidate.Foreground && _verifier.Verify(snapshot.Identity, candidate, expectedAction: null)
+                && ForegroundIsStill(baxyInFront.Identity);
+        if (!verified)
         {
             Revoke(windowId);
             return ValueTask.FromResult(new WindowResolveResult(
                 false, false, [], WindowControlErrorCodes.VerificationFailed));
         }
 
+        // M149: «foreground» on window.active is the window the person is acting in (the mind reads it as
+        // is_current_window_for_user_interaction); behind BAXY's own window that is the verified one under it.
+        if (baxyInFront is not null)
+            candidate = candidate with { Foreground = true };
         return ValueTask.FromResult(new WindowResolveResult(true, true, [candidate], null));
+    }
+
+    // M149: the person's window was read under BAXY's; it stays theirs only while BAXY still holds the front.
+    private bool ForegroundIsStill(WindowIdentity front)
+    {
+        try
+        {
+            return _platform.FindForegroundWindow() is { } now && now.Identity.Handle == front.Handle
+                && now.Identity.ProcessId == front.ProcessId;
+        }
+        catch (Exception exception) when (exception is Win32Exception
+            or InvalidOperationException
+            or NotSupportedException)
+        {
+            return false;
+        }
     }
 
     public ValueTask<WindowResolveResult> ResolveAsync(
@@ -947,6 +984,8 @@ internal interface IWindowControlPlatform
     // MINALL1687: the windows a person sees on the desktop (visible, not cloaked,
     // not a tool window, root owner, titled), excluding the shell and this process.
     IReadOnlyList<WindowSnapshot> DesktopWindows() => [];
+    // M149: the same desktop windows, only those below `front` in the z-order, nearest first.
+    IReadOnlyList<WindowSnapshot> DesktopWindowsBehind(WindowIdentity front) => [];
     bool Execute(WindowIdentity identity, WindowControlAction action);
     bool SetBounds(WindowIdentity identity, WindowBounds bounds);
     // ARRANGE1781: the work area (desktop minus taskbar) of the monitor
@@ -1106,7 +1145,14 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         };
     }
 
-    public IReadOnlyList<WindowSnapshot> DesktopWindows()
+    public IReadOnlyList<WindowSnapshot> DesktopWindows() => EnumerateDesktopWindows(below: 0);
+
+    // M149: EnumWindows walks the top-level windows in z-order, top first; collection starts right after
+    // `front`. A front window that is gone meanwhile yields nothing rather than a guess.
+    public IReadOnlyList<WindowSnapshot> DesktopWindowsBehind(WindowIdentity front) =>
+        front.Handle == 0 ? [] : EnumerateDesktopWindows(front.Handle);
+
+    private List<WindowSnapshot> EnumerateDesktopWindows(nint below)
     {
         // MINALL1687: what the taskbar would show as windows. The shell's own
         // surfaces (desktop, taskbar), cloaked UWP hosts, tool windows, owned
@@ -1114,8 +1160,14 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         // product's own window is left alone.
         var found = new List<WindowSnapshot>();
         int self = Environment.ProcessId;
+        bool collecting = below == 0;
         EnumWindowsProc callback = (handle, _) =>
         {
+            if (!collecting)
+            {
+                collecting = handle == below;
+                return true;
+            }
             if (!IsWindowVisible(handle) || GetAncestor(handle, GetRootOwner) != handle)
                 return true;
             long exStyle = GetWindowLongPtr(handle, ExtendedStyleIndex).ToInt64();
