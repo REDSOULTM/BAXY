@@ -344,7 +344,9 @@ internal static class UserMessagePolicy
             return "clarification_not_a_question";
         }
 
-        if (ContainsStutteredToken(modelText))
+        // M139 (DEV-G v4n G-w36-t4/t5 «Está sonando Chachachá de Jósean Log.» died as internal_code twice and the turn
+        // ended in ⚠): a word the verified result observed (a song's title, an artist) is data, not a stutter.
+        if (ContainsStutteredToken(modelText, ObservedStringWords(draft.Source)))
         {
             return "internal_code";
         }
@@ -611,7 +613,10 @@ internal static class UserMessagePolicy
             ("machine_slot_ask", LooksLikeMachineSlotAsk(said) && !AsksForDeclaredFolder(said, missingFields)),
             ("punctuation_only", IsPunctuationOnly(reply)),
             ("too_thin", IsTooThin(reply)),
-            ("asks_to_invent_clock", AsksToInventClock(said)),
+            // M139 (DEV-G v4n G-w35-t1 «ponme un recordatorio pa mañana de pagar el predial…» → «¿A qué hora te
+            // gustaría que te lo recuerde?», refused twice and the turn ended in ⚠): when the mind declares the time
+            // as the missing value, asking at what time is the clarification itself, not a clock to invent.
+            ("asks_to_invent_clock", AsksToInventClock(said) && !DeclaresMissingTime(missingFields)),
             // UI1647 «Type in the chat box.»: when the mind declares the text
             // as the missing field, the question names the place the person
             // named; repeating that place is the frame of the question, not a
@@ -937,9 +942,20 @@ internal static class UserMessagePolicy
         }
 
         return ContainsAny(
-            FoldForPolicy(text),
+            WithoutQueConnectives(FoldForPolicy(text)),
             UserMessagePhrases.SelfDescriptionAsks);
     }
+
+    // M139 (DEV-G v4n G-w33-t4 «bueno, ya que no puedes con eso, al menos ponme una alarma para las 9 de la noche»):
+    // «ya que no puedes» carried «que no puedes», so the alarm was answered as a question about BAXY's limits and never
+    // reached the mind; the «que» of a causal or temporal connective asks nothing. Twin of the mind's
+    // semantic.request._QUE_CONNECTIVE.
+    private static string WithoutQueConnectives(string folded) =>
+        Regex.Replace(
+            folded,
+            @"\b(?:ya|puesto|dado|visto|antes\s+de|despues\s+de|hasta|a\s+menos|siempre|mientras)\s+que\b",
+            " ",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
 
     internal static bool IsTranslationRequest(string text)
     {
@@ -1222,6 +1238,12 @@ internal static class UserMessagePolicy
         && missingFields.Contains("folder")
         && Regex.IsMatch(folded, @"\b(?:carpeta|directorio|folder|directory)\b",
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+
+    // M139: «due_time», «alarm_time» (llm/semantic.patterns ClarificationIntent), alone or joined in «missingValue».
+    private static bool DeclaresMissingTime(IReadOnlyList<string>? missingFields) =>
+        missingFields is not null
+        && missingFields.Any(static field => Regex.IsMatch(
+            field, @"(?:^|[\s,])(?:due_time|alarm_time|time)(?:$|[\s,])", RegexOptions.CultureInvariant));
 
     private static bool AsksForDeclaredText(string folded, IReadOnlyList<string>? missingFields) =>
         missingFields is not null
@@ -2283,7 +2305,7 @@ internal static class UserMessagePolicy
             || folded.Contains("el mensaje es correcto", StringComparison.Ordinal);
     }
 
-    private static bool ContainsStutteredToken(string reply)
+    private static bool ContainsStutteredToken(string reply, HashSet<string>? observed = null)
     {
         foreach (Match token in Regex.Matches(
             FoldForPolicy(reply),
@@ -2293,7 +2315,7 @@ internal static class UserMessagePolicy
             string word = token.Value;
             // Tanda 6c «haz una carcajada cuando quieras» → «¡Jajajaja!» died here and the shell composed «Claro,
             // te doy una carcajada cuando quieras.»: a laugh written out repeats its syllable by nature.
-            if (IsLaughter(word))
+            if (IsLaughter(word) || observed?.Contains(word) is true)
             {
                 continue;
             }
@@ -2314,6 +2336,50 @@ internal static class UserMessagePolicy
         }
 
         return false;
+    }
+
+    // M139: the folded words of every string a verified result observed («Chachachá» → «chachacha»).
+    private static HashSet<string> ObservedStringWords(string source)
+    {
+        var words = new HashSet<string>(StringComparer.Ordinal);
+        if (TryReadJson(source, out JsonElement root)
+            && root.TryGetProperty("verified", out JsonElement verified) && verified.ValueKind == JsonValueKind.True
+            && root.TryGetProperty("observed", out JsonElement observed))
+        {
+            CollectObservedWords(observed, words, 0);
+        }
+
+        return words;
+    }
+
+    private static void CollectObservedWords(JsonElement node, HashSet<string> words, int depth)
+    {
+        if (depth > 6)
+        {
+            return;
+        }
+        switch (node.ValueKind)
+        {
+            case JsonValueKind.String:
+                foreach (Match word in Regex.Matches(
+                    FoldForPolicy(node.GetString()!), @"[a-zñáéíóúü]{8,}", RegexOptions.CultureInvariant))
+                {
+                    words.Add(word.Value);
+                }
+                break;
+            case JsonValueKind.Object:
+                foreach (JsonProperty property in node.EnumerateObject())
+                {
+                    CollectObservedWords(property.Value, words, depth + 1);
+                }
+                break;
+            case JsonValueKind.Array:
+                foreach (JsonElement item in node.EnumerateArray())
+                {
+                    CollectObservedWords(item, words, depth + 1);
+                }
+                break;
+        }
     }
 
     // «jajajaja», «hahaha», «jejeje», «muajajaja»: one laughing syllable repeated.
@@ -3789,6 +3855,7 @@ internal static class UserMessagePolicy
         result = WithoutLibraryEntitlementConsequence(source, result);
         result = WithoutWebSearchObservedVocabulary(source, result);
         result = WithoutUnlistedNoteFinding(source, result);
+        result = WithoutHeldStepUnchanged(source, result);
 
         if (TryReadJson(source, out JsonElement root)
             && root.TryGetProperty("kind", out JsonElement kind) && kind.ValueKind == JsonValueKind.String && kind.GetString() == "operation"
@@ -3913,6 +3980,21 @@ internal static class UserMessagePolicy
             + @"(?=[^.]{0,80}\bfrom\s+memory\b)[^.:\n]{0,80}",
             " ",
             RegexOptions.CultureInvariant);
+        // M139 (DEV-G v4n G-s037 «aq hora juega el america este fin d semana??» → «No pude comprobarlo; de memoria,
+        // puede no ser exacto: … por lo que no puedo decirte cuándo es este fin de semana sin más detalles.», refused as
+        // reversed_result and the turn ended in ⚠): once the answer says it comes from memory, not being able to tell,
+        // be sure of or confirm what was asked is the scope of memory, not a failed search. Twin of the mind's
+        // compose_visible_defect, which publishes it.
+        if (Regex.IsMatch(FoldForPolicy(result), @"\bde\s+memoria\b|\bfrom\s+memory\b", RegexOptions.CultureInvariant))
+        {
+            withoutNotFound = Regex.Replace(
+                withoutNotFound,
+                @"\bno\s+(?:te\s+|le\s+|lo\s+|la\s+)*(?:puedo|podria)\s+(?:decir\w*|saber\w*|asegurar\w*|confirmar\w*|"
+                + @"precisar\w*|garantizar\w*)\b"
+                + @"|\b(?:i\s+)?(?:can[’']?t|cannot|can\s+not)\s+(?:tell|say|confirm|be\s+sure|guarantee)\b",
+                " ",
+                RegexOptions.CultureInvariant);
+        }
         return Regex.Replace(
             withoutNotFound,
             @"(?<![a-z0-9])[a-z0-9]{3,}(?![a-z0-9])",
@@ -4144,6 +4226,45 @@ internal static class UserMessagePolicy
         }
 
         return !LooksLikeFailure(result) && !TellsFailureAsTheMindReadsIt(result);
+    }
+
+    // M139 (DEV-G v4n G-s021 «bro abre Discord y mutea el micro…», the microphone already muted): in a completed
+    // mission whose step found the asked state already held, «el micrófono ya estaba silenciado, así que no hubo
+    // cambio» tells that step's state — nothing was attempted and nothing changed —, not a failed mission. Only the
+    // unchanged clause is masked, and only when the reply says it already was so. Twin of the mind's mask in
+    // compose_visible_defect.
+    private static string WithoutHeldStepUnchanged(string source, string result)
+    {
+        if (!MissionStepHeldTheAskedState(source)
+            || !Regex.IsMatch(FoldForPolicy(result), AlreadyStatement, RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+        {
+            return result;
+        }
+
+        return Regex.Replace(
+            FoldForPolicy(result),
+            @"\b(?:no\s+(?:se\s+)?cambi[oe]\s+nada|no\s+hubo\s+(?:ningun\s+)?cambios?|nada\s+cambio|"
+            + @"nothing\s+(?:was\s+)?changed|no\s+change\s+was\s+made|there\s+(?:was|were)\s+no\s+changes?)\b",
+            " ",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+    }
+
+    private static bool MissionStepHeldTheAskedState(string source)
+    {
+        if (!TryReadJson(source, out JsonElement root)
+            || !root.TryGetProperty("steps", out JsonElement steps)
+            || steps.ValueKind != JsonValueKind.Array)
+        {
+            return false;
+        }
+        foreach (JsonElement step in steps.EnumerateArray())
+        {
+            if (step.ValueKind == JsonValueKind.String && IsAskedStateAlreadyHeld(step.GetString()!))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     // M134 (DEV-D v4i–v4l2 D-w15-t3 «traducelo al ingles que es para mi jefa», known_file_not_found): the mind

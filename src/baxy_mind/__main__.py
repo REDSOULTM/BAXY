@@ -46,6 +46,7 @@ from .semantic.notes import (
     list_creation_said,
     names_own_event,
     task_change,
+    question_with_context,
 )
 from .semantic import levels as semantic_levels
 from .semantic.memory import explicit_memory_request
@@ -219,6 +220,7 @@ from .semantic.arguments import (
     closes_the_active_window,
     conversation_pdf,
     corrected_song_title,
+    due_before_said_moment,
     literal_ocr_language,
     literal_vision_prompt,
     names_spotify,
@@ -422,6 +424,9 @@ def _turn_failure_kind(error: BaseException) -> str:
         # M97 (DEV-D v3x D-s064 «¿Sería posible suprimir mi orden de recogida en Lyft…»): the turn decided a limit and
         # its drafts failed another contract (shaped_presentation, echo); it is still the limit's wording that failed.
         or getattr(error, "conversation_kind", None) == "unsupported"
+        # M139 (DEV-G v4n G-s120): the talk drafts said, as an inability in the present, what BAXY does not do
+        # (llm.talk_reply_tells_a_limit); the turn did not understand it as talk, it met a limit.
+        or reason == "told_limit"
     ):
         return LIMIT_WORDING_FAILURE
     if isinstance(error, ConversationReplyContractError):
@@ -3341,10 +3346,57 @@ def _with_decided_arguments(
     for name, value, field_schema in decided:
         if name in merged and validate_argument_grounding({name: merged[name]}, field_schema, trusted_source):
             continue
-        if validate_argument_grounding({name: value}, field_schema, trusted_source):
+        if not validate_argument_grounding({name: value}, field_schema, trusted_source):
+            value = _said_part_of_a_name(name, value, field_schema, trusted_source) or (
+                # M136: a folder the decider chose and nobody said is every known folder, when that grounds.
+                "all_known" if "all_known" in (field_schema["properties"][name].get("enum") or []) else None
+            )
+        if value is not None and validate_argument_grounding({name: value}, field_schema, trusted_source):
             merged[name] = value
             added = True
     return merged if added else None
+
+
+# M136 (DEV-G v4n G-s097 «baxy abreme el obs…» → the decider's «OBS Studio» → «¿Cuál es el nombre exacto de la
+# aplicación…?»): an application's name the decider completed with words nobody said keeps the words the person said.
+_SAID_NAME_FIELDS = frozenset({"appId", "name"})
+
+
+def _said_part_of_a_name(name: str, value: Any, field_schema: dict[str, Any], trusted_source: str) -> Any:
+    """The longest run of the decider's words for an application's name that grounds on its own; None when none does."""
+
+    if name not in _SAID_NAME_FIELDS or not isinstance(value, str):
+        return None
+    words = value.split()
+    for size in range(len(words) - 1, 0, -1):
+        for start in range(len(words) - size + 1):
+            part = " ".join(words[start:start + size])
+            if len(part) >= 2 and validate_argument_grounding({name: part}, field_schema, trusted_source):
+                return part
+    return None
+
+
+def _schema_field_of(name: str, operation: str, properties: dict[str, Any], required: list[Any]) -> str | None:
+    """M136 (DEV-G v4n G-s040 «open Notepad and put it on the left half» → {"app": "Notepad"}; G-s116 «abrí spotify y
+    ponime algo de jazz» → {"app.open": "Spotify", "media.play.query": "jazz tranquilo"}): the field of this
+    operation's schema a decider's value names — the field itself, the operation's one free required text when the
+    value is keyed by the operation, or the one field whose name begins with the decider's («app» → «appId»)."""
+
+    if name in properties:
+        return name
+    if name == operation:
+        free = [
+            field for field in required
+            if isinstance(properties.get(field), dict)
+            and properties[field].get("type") == "string"
+            and "enum" not in properties[field]
+            and "const" not in properties[field]
+        ]
+        return free[0] if len(free) == 1 else None
+    if len(name) < 3:
+        return None
+    named = [field for field in properties if field.casefold().startswith(name.casefold())]
+    return named[0] if len(named) == 1 else None
 
 
 def _decided_fields(
@@ -3358,8 +3410,13 @@ def _decided_fields(
     if remembered is None or operation not in remembered[0] or not isinstance(properties, dict):
         return None
     identities = set(_DETERMINISTIC_DEPENDENCY_FIELDS.get(operation, ()))
+    required = schema.get("required") if isinstance(schema.get("required"), list) else []
+    given = {name for name, _ in remembered[1]}
     fields: list[tuple[str, Any, dict[str, Any]]] = []
-    for name, raw in remembered[1]:
+    for decided_name, raw in remembered[1]:
+        name = _schema_field_of(decided_name, operation, properties, required)
+        if name is None or (name != decided_name and name in given):
+            continue
         contract = properties.get(name)
         if (
             not isinstance(contract, dict)
@@ -3378,6 +3435,29 @@ def _decided_fields(
             (name, value, {"type": "object", "properties": {name: contract}, "required": [name], "additionalProperties": False})
         )
     return fields
+
+
+# M136 (DEV-G v4n G-s123 «resúmeme el pdf ese que se llama contrato_arriendo_2026…», G-w40-t1 «busca un archivo que se
+# llama cotizacion_mudanza» → the decider's folder «Documentos»/«Descargas», nobody's → «¿En qué carpeta…?»): a read of a
+# named file where the person names no folder looks in every known folder, as the readers do (PDF1689); a write or a
+# deletion keeps asking.
+_EVERY_KNOWN_FOLDER_READS = frozenset({"document.pdf.read", "document.text.read", "filesystem.known.search"})
+
+
+def _with_every_known_folder_unsaid(operation: str, schema: dict[str, object], trusted_source: str) -> str:
+    """The trusted source with «all known» when this read's folder enum holds it and no member of it was said."""
+
+    if operation not in _EVERY_KNOWN_FOLDER_READS:
+        return trusted_source
+    properties = schema.get("properties") if isinstance(schema.get("properties"), dict) else {}
+    for field, contract in properties.items():
+        members = contract.get("enum") if isinstance(contract, dict) else None
+        if not isinstance(members, list) or "all_known" not in members:
+            continue
+        field_schema = {"type": "object", "properties": {field: contract}, "required": [field], "additionalProperties": False}
+        if not any(validate_argument_grounding({field: member}, field_schema, trusted_source) for member in members):
+            return f"{trusted_source}\nall known"
+    return trusted_source
 
 
 # M118 (D58): the fields whose value is the person's words (a message, a note, a title, a search), where a restatement
@@ -3936,20 +4016,21 @@ def _timed_task_arguments(
             str(item.get("content") or "") for item in reversed(history)
             if isinstance(item, dict) and item.get("role") == "user"
         ][:1]
-    task = next(
+    found_in, task = next(
         (
-            found for text in said
+            (text, found) for text in said
             # M76 (DEV-D v3l D-s120): a rest of a stated length is timed too («un descanso de 14 minutos»).
             if (found := semantic_temporal.timed_task(text) or semantic_temporal.timed_break(text)) is not None
         ),
-        None,
+        ("", None),
     )
     if task is None:
         return None
     arguments: dict[str, object] = {"dueUtc": task.due, "title": task.title}
     if operation == "notification.schedule":
         arguments["kind"] = task.kind
-    arguments = _normalize_grounded_operation_arguments(operation, arguments, task.due)
+    # M137 (DEV-G v4n G-s016, DEV-F v4m F-w55-t1): the advance «recordámelo una hora antes» is read from the message.
+    arguments = _normalize_grounded_operation_arguments(operation, arguments, task.due, said=found_in)
     return arguments if arguments is not None and validate_json_schema_instance(arguments, schema) else None
 
 
@@ -4213,8 +4294,10 @@ def _normalize_grounded_operation_arguments(
     context: str = "",
     *,
     now_utc: datetime | None = None,
+    said: str | None = None,
 ) -> dict[str, Any] | None:
-    """Apply closed semantic constraints not expressible by catalog JSON Schema."""
+    """Apply closed semantic constraints not expressible by catalog JSON Schema. ``said``: the person's message the
+    moment was read from, when ``context`` is only that moment (M137)."""
 
     normalized = dict(arguments)
     if operation == "weather.current" and isinstance(normalized.get("location"), str) and names_this_place(
@@ -4267,11 +4350,23 @@ def _normalize_grounded_operation_arguments(
         raw_due = normalized.get("dueUtc")
         if not isinstance(raw_due, str):
             return None
-        due_utc = _canonical_due_utc(
-            raw_due,
-            context,
-            now_utc=now_utc,
+        # M137 (DEV-G v4n G-s016, G-s019; DEV-F v4m F-w55-t1): «remind me an hour before» of the moment said in the
+        # same message rings that long before it, titled with what happens then; the readers read the event's moment.
+        advanced = due_before_said_moment(
+            raw_due, normalized.get("title"), context, context if said is None else said, now_utc=now_utc,
         )
+        if advanced is not None and advanced[0] is None:
+            return None
+        if advanced is not None:
+            due_utc = advanced[0]
+            if isinstance(advanced[1], str) and advanced[1]:
+                normalized["title"] = advanced[1]
+        else:
+            due_utc = _canonical_due_utc(
+                raw_due,
+                context,
+                now_utc=now_utc,
+            )
         if due_utc is None:
             return None
         normalized["dueUtc"] = due_utc
@@ -5037,7 +5132,17 @@ def _context_decided_result(
         # Fase 3.5b M19 (cien-104 «ábreme eso porfa» after the time → «Abre el navegador» → a browser opened): a
         # pointer with no antecedent in what was said is asked, never filled with an object the model brought.
         decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
-    if decided.decision == "action" and decided.operations == ("web.search",) and names_own_data(text):
+    question_asked = question_with_context(text)
+    if decided.decision == "action" and decided.operations == ("web.search",) and (
+        names_own_data(text)
+        if question_asked is None
+        # M138 (DEV-G v4n G-w42-t1 «when do the Lakers play next? my buddy wants to come over and watch it» → asked
+        # what only the person knows, where the isolated decider looked the game up): what is said after the question
+        # is its context. Only the question, and what the decider would look up, are read for the person's own data.
+        else names_own_data(question_asked)
+        or names_own_data(decided.request)
+        or any(isinstance(value, str) and names_own_data(value) for _, value in decided.arguments)
+    ):
         # M81 (DEV-D v3m D-s020 «It's going to rain en la casa de mamá?», D-s053 «¿Miguel sigue viviendo en
         # Arkansas?»): the person's own data never goes to the web (00_IDENTIDAD, invariant 6). What only the person
         # knows (where mom lives, who Miguel is) is asked, never looked up.
@@ -5513,6 +5618,7 @@ def _direct_arguments_result(
     said = _with_decided_restatements(
         operation, str(message.get("text", "")), tool["function"]["parameters"], said,
     )
+    said = _with_every_known_folder_unsaid(operation, tool["function"]["parameters"], said)
     if arguments is not None:
         arguments = _with_decider_values_kept(
             operation, str(message.get("text", "")), arguments, tool["function"]["parameters"], said,

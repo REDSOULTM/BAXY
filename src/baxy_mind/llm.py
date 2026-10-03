@@ -3839,6 +3839,28 @@ _DONE_ONLY_INFINITIVES = (
     "minimizar", "maximizar", "escribir", "pegar", "copiar", "reiniciar", "conectar", "desconectar", "entrar",
     "ejecutar", "cambiar", "configurar", "ajustar", "crear", "quitar", "cancelar", "vaciar",
 )
+# M139 (DEV-G v4n G-s120 «get a large pepperoni pie delivered from the Domino's on 5th for me» → recovered «I will get
+# a large pepperoni pie delivered from Domino's on 5th for you.», published with nothing run): the acts done in the world
+# by asking someone — calling, booking, paying, having something delivered — are promised or told done by BAXY in
+# the first person as much as saving or opening. Only their first-person forms (the promise and «I …ed», «llamé») are
+# read: their participles name things too («un amigo llamado Juan», «a friend called John»).
+_WORLD_ACT_INFINITIVES = (
+    "llamar", "reservar", "pagar", "encargar", "entregar", "contratar", "conseguir", "transferir",
+)
+_EN_WORLD_ACTS = (
+    # (base, gerund, past); «get» has no past here: «I got it» is understanding.
+    ("get", "getting", ""), ("deliver", "delivering", "delivered"), ("call", "calling", "called"),
+    ("phone", "phoning", "phoned"), ("text", "texting", "texted"), ("email", "emailing", "emailed"),
+    ("message", "messaging", "messaged"), ("reserve", "reserving", "reserved"), ("pay", "paying", "paid"),
+    ("ship", "shipping", "shipped"), ("purchase", "purchasing", "purchased"), ("pick\\s+up", "picking\\s+up", "picked\\s+up"),
+    ("grab", "grabbing", "grabbed"), ("contact", "contacting", "contacted"), ("hire", "hiring", "hired"),
+    ("rent", "renting", "rented"), ("transfer", "transferring", "transferred"), ("cancel", "cancelling", "cancelled"),
+    ("sign\\s+you\\s+up", "signing\\s+you\\s+up", "signed\\s+you\\s+up"), ("subscribe", "subscribing", "subscribed"),
+    ("submit", "submitting", "submitted"), ("post", "posting", "posted"),
+)
+_EN_WORLD_ACT_BASE = "|".join(base for base, _, _ in _EN_WORLD_ACTS)
+_EN_WORLD_ACT_GERUND = "|".join(gerund for _, gerund, _ in _EN_WORLD_ACTS)
+_EN_WORLD_ACT_PAST = "|".join(past for _, _, past in _EN_WORLD_ACTS if past)
 # (first person preterite, third person preterite, participle) of the irregular ones.
 _IRREGULAR_DONE_FORMS = {
     "abrir": ("abrí", "abrió", "abierto"),
@@ -3898,6 +3920,9 @@ _PERSON_WORLD = re.compile(r"(?<![\w])(?:" + _PC_OBJECT + r"|" + _PERSONAL_RECOR
 _DONE_BY_BAXY = re.compile(
     r"(?<![\w])(?:"
     + alternation(frozenset(forms[0] for forms in _DONE_FORMS))
+    # M139: «llamé», «reservé», «pagué»; «I called», «I booked … and paid».
+    + r"|" + alternation(frozenset(_done_forms(infinitive)[0] for infinitive in _WORLD_ACT_INFINITIVES))
+    + r"|i\s+(?:just\s+|already\s+)?(?:" + _EN_WORLD_ACT_PAST + r")"
     + r"|i\s+(?:just\s+|already\s+)?(?:" + _EN_DONE_FORM + r"|did\s+it)"
     + r"|it(?:'s|\s+is)\s+(?:done|open|closed|muted|playing)\s+now"
     + r")(?![\w])"
@@ -3993,13 +4018,17 @@ _IRREGULAR_EFFECT_FORMS = {
     "pedir": ("pido", "pediré", "pidiendo"),
     "hacer": ("hago", "haré", "haciendo"),
     "corregir": ("corrijo", "corregiré", "corrigiendo"),
+    "conseguir": ("consigo", "conseguiré", "consiguiendo"),
+    "transferir": ("transfiero", "transferiré", "transfiriendo"),
 }
+# M139: the world acts are promised in the same forms («te reservo una mesa», «voy a llamar a la pizzería»).
+_PROMISED_INFINITIVES = _EFFECT_INFINITIVES + _WORLD_ACT_INFINITIVES
 _EFFECT_FORMS = tuple(
     _IRREGULAR_EFFECT_FORMS.get(
         infinitive,
         (infinitive[:-2] + "o", infinitive + "é", infinitive[:-2] + ("ando" if infinitive.endswith("ar") else "iendo")),
     )
-    for infinitive in _EFFECT_INFINITIVES
+    for infinitive in _PROMISED_INFINITIVES
 )
 _ENCLITIC = r"(?:me|te|se|le|les|nos)?(?:lo|la|los|las)?"
 # Uso real 2026-09-23 (tanda 2): what BAXY says he does or will do in a turn that runs
@@ -4013,7 +4042,7 @@ _PROMISED_EFFECT_CLAIM = re.compile(
     # «lo guardaré», «te lo recordaré», «subiré el volumen»
     + r"|" + alternation(frozenset(form[1] for form in _EFFECT_FORMS))
     # «voy a guardarla», «lo voy a añadir»
-    + r"|voy\s+a\s+" + alternation(frozenset(_EFFECT_INFINITIVES)) + _ENCLITIC
+    + r"|voy\s+a\s+" + alternation(frozenset(_PROMISED_INFINITIVES)) + _ENCLITIC
     # «estoy guardándola», «te lo estoy añadiendo», «estoy trabajando en eso»
     + r"|estoy\s+(?:\w+\s+)?(?:"
     + alternation(frozenset(form[2] for form in _EFFECT_FORMS))
@@ -4023,13 +4052,14 @@ _PROMISED_EFFECT_CLAIM = re.compile(
     + r"|i(?:'ll|\s+will|'m\s+going\s+to|\s+am\s+going\s+to|'m\s+gonna|\s+shall)\s+(?:\w+\s+)?"
     r"(?:add|save|open|close|put|bring|send|delete|remove|install|download|play|mute|unmute|set|schedule|remind|"
     r"note\s+(?:it|that|this)\s+down|jot|write\s+(?:it|that|this)\s+down|order|buy|cook|make\s+you|get\s+you|"
-    r"fetch|turn|launch|pause|search|look\s+(?:it|that)\s+up|record|store|create|book)"
+    r"fetch|turn|launch|pause|search|look\s+(?:it|that)\s+up|record|store|create|book|" + _EN_WORLD_ACT_BASE + r")"
     r"|let\s+me\s+(?:add|save|open|close|put|bring|send|delete|remove|install|download|play|mute|set|schedule|"
     r"jot|order|buy|cook|make\s+you|get\s+you|fetch|turn|launch|search|look\s+(?:it|that)\s+up|record|store|"
-    r"create|book)"
+    r"create|book|" + _EN_WORLD_ACT_BASE + r")"
     r"|i(?:'m|\s+am)\s+(?:\w+\s+)?(?:adding|saving|opening|closing|putting|bringing|sending|deleting|removing|"
     r"installing|downloading|playing|muting|setting|scheduling|reminding|ordering|buying|cooking|fetching|"
-    r"turning|launching|searching|recording|storing|creating|booking|coding|fixing|working\s+on|writing\s+code)"
+    r"turning|launching|searching|recording|storing|creating|booking|coding|fixing|working\s+on|writing\s+code|"
+    + _EN_WORLD_ACT_GERUND + r")"
     # Impersonal future: «se añadirá», «quedará guardado», «it will be added»
     r"|se\s+(?:añadir|agregar|guardar|anotar|apuntar|programar|agendar|instalar|descargar|reproducir|"
     r"silenciar|enviar|mandar|borrar|eliminar)án?"
@@ -5469,6 +5499,36 @@ def talk_reply_tells_a_failure(reply: object, request: object) -> bool:
     if asks_whether_able(str(request or "")) and not failed_attempt:
         return False
     return not _failure_word_is_the_persons(text, str(request or ""))
+
+
+# M139 (DEV-G v4n G-s120 «…get a large pepperoni pie delivered from the Domino's on 5th for me», decided social): both
+# drafts said the limit — «I can't deliver food or place orders for you.», «…cannot interact with the physical world or
+# order food.» — and died as told_failure (the App refuses a failure told in talk); the recovery then wrote the talk
+# again with nothing to say and published «I will get a large pepperoni pie delivered…». A told failure that is an
+# inability in the present (no attempt failed) and not about knowing or being sure is the limit the model saw: the
+# turn's recovery says it as a limit (conversationKind «unsupported»), which the App publishes. Folded.
+_PRESENT_INABILITY = re.compile(
+    r"\b(?:cannot|can[’']?t|can\s+not|(?:am|i[’']?m)\s+(?:not\s+able|unable)\s+to|no\s+(?:puedo|soy\s+capaz\s+de)|"
+    r"no\s+(?:lo\s+|la\s+|los\s+|las\s+|eso\s+)?(?:hago|manejo)|i\s+(?:do\s+not|don[’']?t)\s+(?:do|handle))\b"
+)
+_KNOWING_INABILITY = re.compile(
+    r"\b(?:cannot|can[’']?t|can\s+not|(?:am|i[’']?m)\s+(?:not\s+able|unable)\s+to|no\s+(?:puedo|soy\s+capaz\s+de))\s+"
+    r"(?:\w+\s+)?(?:know|tell|say|be\s+(?:sure|certain)|guarantee|confirm|predict|guess|verify|check|"
+    r"saber|decir\w*|asegurar\w*|garantizar\w*|confirmar\w*|predecir|adivinar|verificar\w*|comprobar\w*|"
+    r"estar\s+segur[oa])\b"
+)
+
+
+def talk_reply_tells_a_limit(reply: object) -> bool:
+    """A talk reply's told failure that is a present inability to do something, not a failed attempt nor not knowing
+    (see above)."""
+
+    folded = _reading_fold(without_quoted_speech(str(reply or "")))
+    return (
+        _PRESENT_INABILITY.search(folded) is not None
+        and _FAILED_ATTEMPT.search(folded) is None
+        and _KNOWING_INABILITY.search(folded) is None
+    )
 
 
 # Twin of UserMessagePolicy.EchoedFailures.
@@ -13733,6 +13793,27 @@ def _schedule_told_as_order(text: str, payload: dict) -> bool:
     )
 
 
+# M135 (DEV-F v4i/v4k/v4m F-w47-t2, the same draft three rounds: a WhatsApp draft left unverified → «Se borró el
+# borrador para mi contacto…»): a report that says something was deleted, when the operation deletes nothing, tells a
+# thing that did not happen. Affirmative deletions only (a «no se borró nada» is no claim). Folded words.
+_CLAIMED_DELETION = re.compile(
+    r"(?<!\bno\s)(?<!\bnot\s)\b(?:se\s+(?:ha\s+|han\s+)?(?:borro|borraron|elimino|eliminaron)|"
+    r"(?:he|hemos|ha|han)\s+(?:borrado|eliminado)|borre|elimine|"
+    r"(?:was|were|been|has|have)\s+(?:deleted|erased)|i\s+(?:deleted|erased))\b"
+)
+_DELETING_OPERATION = re.compile(r"trash|delete|remove|cancel|clear|uninstall|purge|empty|reset")
+
+
+def _report_claims_a_deletion(text: str, payload: dict) -> bool:
+    """M135: the report of one operation that deletes nothing says that something was deleted (see above)."""
+
+    reason = payload.get("reason") if isinstance(payload.get("reason"), dict) else {}
+    operation = str(payload.get("operation") or reason.get("operation") or "")
+    if not operation or _DELETING_OPERATION.search(operation) or payload.get("completedStepsInOrder"):
+        return False
+    return _CLAIMED_DELETION.search(_reading_fold(text)) is not None
+
+
 def _report_changes_the_act(text: str, payload: dict) -> str:
     """The other act a report of a window or application operation names instead of its own; ""."""
 
@@ -13816,6 +13897,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
         return window_defect
     if _report_changes_the_act(text, payload):
         return "report_changes_the_act"
+    if _report_claims_a_deletion(text, payload):
+        return "report_claims_a_deletion"
     if _schedule_told_as_rung(text, payload):
         return "schedule_told_as_rung"
     if _schedule_told_as_order(text, payload):
@@ -13947,7 +14030,9 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
             for step in prior_steps
         )
         and re.search(
-            r"\b(?:abr\w*|open\w*|lanc\w*|launch\w*|inici\w*|start\w*)\b", folded,
+            # M139 (DEV-G v4n G-s021 «He abierto Discord, pero el micrófono ya estaba silenciado…» died here): «abierto»
+            # is the participle of «abrir», which «abr\w*» never read.
+            r"\b(?:abr\w*|abiert\w*|open\w*|lanc\w*|launch\w*|inici\w*|start\w*)\b", folded,
         )
         is None
     ):
@@ -15958,6 +16043,12 @@ def compose_visible_defect(
             stripped, user_text, tuple(str(item) for item in prior if isinstance(item, str))
             if isinstance(prior, list) else (),
         )
+        if world_claim == "effect_claim" and intent == "error" and not (
+            _asserts_failure(stripped) or _names_the_boundary(stripped.casefold())
+        ):
+            # M139 × the out-of-catalog contract: an error turn whose draft claims the act and tells no failure nor
+            # limit («Claro, ya la reservé.») wants the failure said (its hint), not only the effect forbidden.
+            return "missing_failure"
         if world_claim:
             return world_claim
         if kind == "conversation" and _says_the_person_back(stripped, said or user_text):
@@ -16213,6 +16304,23 @@ def compose_visible_defect(
         # M87 × M88 (DEV-D v3r D-s111): the answer from memory also follows a search whose results did not answer
         # (web_search_results_irrelevant); its D35 notice is the scope of that read there too, not a failure claim.
         failure_assertions = _without_memory_notice(failure_assertions)
+    if (
+        polarity == "success"
+        and _failure_is_an_asked_state_held(situation)
+        and _ALREADY_STATEMENT.search(_accent_folded_with_punctuation(stripped)) is not None
+    ):
+        # M139 (DEV-G v4n G-s021 «bro abre Discord y mutea el micro…», the microphone already muted): in a completed
+        # mission, «el micrófono ya estaba silenciado, así que no hubo cambio» tells the state of the step that found
+        # it already so (nothing attempted, nothing changed), not a failed mission; three drafts died as
+        # asserted_failure or for want of the opening and the turn ended in ⚠. Twin: UserMessagePolicy
+        # WithoutHeldStepUnchanged.
+        failure_assertions = re.sub(
+            r"\b(?:no\s+(?:se\s+)?cambi[oóeé]\s+nada|no\s+hubo\s+(?:ning[uú]n\s+)?cambios?|nada\s+cambi[oó]|"
+            r"nothing\s+(?:was\s+)?changed|no\s+change\s+was\s+made|there\s+(?:was|were)\s+no\s+changes?)\b",
+            " ",
+            failure_assertions,
+            flags=re.IGNORECASE,
+        )
     empty_file_query = _verified_empty_known_file_query(situation)
     if empty_file_query is not None:
         # A successful empty search proves a negative finding, not a failed
@@ -18274,6 +18382,22 @@ def _written_figures(value: str) -> list[tuple[str, Fraction]]:
     return found
 
 
+_SMALL_MEASURE = r"(?:g|gr|grs|gramos?|grams?|ml|mililitros?|millilit(?:er|re)s?|cc)"
+_LARGE_MEASURE = r"(?:kg|kgs|kilos?|kilogramos?|kilograms?|l|lt|lts|litros?|lit(?:er|re)s?)"
+
+
+def _figure_unit_scale(text: str, raw: str) -> Fraction | None:
+    """M139: 1000 when the figure is written in grams or millilitres, 1/1000 in kilos or litres, else None."""
+
+    figure = r"(?<![\d/.,])" + re.escape(raw) + r"\s*(?:de\s+)?"
+    folded = str(text or "").casefold()
+    if re.search(figure + _SMALL_MEASURE + r"\b", folded) is not None:
+        return Fraction(1000)
+    if re.search(figure + _LARGE_MEASURE + r"\b", folded) is not None:
+        return Fraction(1, 1000)
+    return None
+
+
 def _reference_unsourced_figures(
     draft: str, page_text: str, said: Iterable[str], ratio: Fraction | None,
 ) -> list[str]:
@@ -18282,12 +18406,26 @@ def _reference_unsourced_figures(
 
     page = [number for _, number in _written_figures(page_text)]
     person = semantic_quantities.numbers_in(said)
+    # M139 (DEV-G v4n G-w44-t2 «y eso pa dos» after the recipe for four): «1 kg de patatas» and «1/2 litro de aceite»
+    # halved were written «500 g» and «250 ml», as a cook says them; every draft died as unsourced_figures and the turn
+    # ended in ⚠. A figure in grams or millilitres is the page's kilos or litres (and the other way round) times 1000.
+    page_by_unit = {
+        scale: [number for raw, number in _written_figures(page_text) if _figure_unit_scale(page_text, raw) == scale]
+        for scale in (Fraction(1000), Fraction(1, 1000))
+    }
     unsourced: list[str] = []
     for raw, number in _written_figures(draft):
         if number in page or number in person:
             continue
         if ratio is not None and any(
             abs(number - value * ratio) <= max(value * ratio / 8, Fraction(1, 20)) for value in page
+        ):
+            continue
+        scale = _figure_unit_scale(draft, raw)
+        if scale is not None and any(
+            abs(number - value * scale * (ratio or 1)) <= max(value * scale * (ratio or 1) / 8, Fraction(1, 20))
+            # The page wrote it in the other unit: kilos or litres for grams or millilitres, and the reverse.
+            for value in page_by_unit[1 / scale]
         ):
             continue
         if raw not in unsourced:
@@ -21237,7 +21375,7 @@ class LlmRuntime:
                 if not final_content
                 else "go_ahead_not_done"
                 if go_ahead_unmet and _go_ahead_reply_unmet(final_prose, text)
-                else "told_failure"
+                else ("told_limit" if talk_reply_tells_a_limit(final_prose) else "told_failure")
                 if refused_as_told_failure(final_prose)
                 else "wrong_language"
                 if _reply_uses_opposite_language(final_prose, response_language)
@@ -27010,6 +27148,16 @@ class LlmRuntime:
         )
         def hint_for(defect: str, candidate: str = "") -> str:
             candidate = candidate or text
+            if (
+                defect in {"action_attributed_to_user", "missing_state"}
+                and situation.get("operation") == "app.open"
+                and _app_open_was_already_running(situation)
+            ):
+                # M139 (DEV-G v4n G-s011 «dale, abrime el bloc de notas…» with Notepad already running): «Abriste el
+                # Bloc de notas, que ya estaba abierto…» was told «you did it: say what you did», and the retries wrote
+                # «Abrió el Bloc de notas…» — an opening nobody made — until the turn had no final. Nothing was
+                # launched: what is said is that it was already open.
+                defect = "unstated_already_running"
             return {
                 # M79 (DEV-D v3m s047 «Ahora se está pausado la canción…»).
                 "broken_estar_participle": (
@@ -27215,6 +27363,14 @@ class LlmRuntime:
                     if response_language == "en"
                     else "Nombra el acto que se intentó, con su propio verbo (el de la operación: minimizar no es "
                     "cerrar, abrir no es cerrar); no hables de ningún otro acto."
+                ),
+                # M135 (DEV-F F-w47-t2 «Se borró el borrador…» for a draft left unverified).
+                "report_claims_a_deletion": (
+                    "Nothing was deleted: name only the act that was tried, with its own verb, and its outcome; "
+                    "never say that something was deleted or erased."
+                    if response_language == "en"
+                    else "No se borró nada: nombra sólo el acto que se intentó, con su propio verbo, y cómo terminó; "
+                    "nunca digas que algo se borró o se eliminó."
                 ),
                 # M93 (DEV-D v3u D-s054 «Mañana … el sol se pondrá a las 19:48» with today's sunset).
                 "weather_wrong_day": (

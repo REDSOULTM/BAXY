@@ -25,7 +25,9 @@ from typing import Any, Iterable
 from .grammar import _CARDINAL_WORDS, spoken_cardinal
 from .normalize import fold, fold_in_place, spelled_out
 from .quantities import _UNITS, measures
-from .temporal import _SPOKEN_DATE, _TOMORROW, _WEEKDAYS, MONTH_NUMBERS, spoken_clocks, taken_back_time
+from .temporal import (
+    _SPOKEN_DATE, _TOMORROW, _WEEKDAYS, MONTH_NUMBERS, bare_hour_with_its_part, spoken_clocks, taken_back_time,
+)
 
 DECISIONS = ("action", "clarify", "talk", "limit")
 
@@ -510,6 +512,9 @@ def _introduced_spans(
     ) or (1, -1)
     bases = said_clocks | {(now.hour % 12) * 60 + now.minute}
     derived = {(base + sign * int(duration // 60)) % 720 for base in bases for duration in durations for sign in signs}
+    # M137b (DEV-G v4n G-w22-t5 «actually make it 8» after «…Tuesday evening…» restated «…Tuesday at 8 PM…»): the bare
+    # hour the message moves a notification to, in the part of the day the conversation said (or D61b/D61 gives it).
+    another_day = bool(_said_days(fold(request), now) - {(now.day, now.month)}) or bool(_dates(folded_request))
     for clock in spoken_clocks(folded_request):
         start = folded_request.find(clock.literal)
         if start < 0 or inside(start):
@@ -517,7 +522,9 @@ def _introduced_spans(
         end = start + len(clock.literal)
         covered.append((start, end))
         dial = (clock.hour % 12) * 60 + clock.minute
-        if dial not in said_clocks and dial not in derived:
+        if dial not in said_clocks and dial not in derived and not bare_hour_with_its_part(
+            clock, said[0] if said else "", reversed(said[1:]), another_day=another_day, now=now,
+        ):
             spans.append((start, end, request[start:end]))
     for match in _NUMERAL.finditer(folded_request):
         if inside(match.start()):
@@ -547,7 +554,8 @@ def _introduced_spans(
     words = list(_NAME_WORD.finditer(request))
     for index, word in enumerate(words):
         text = word.group(0)
-        if not text[:1].isupper():
+        if not text[:1].isupper() or inside(word.start()):
+            # M137b: «PM» of «at 8 PM» is part of a clock (or a date) judged above as one, never a name.
             continue
         lead = request[:word.start()].rstrip().rstrip("¿¡\"«“'(").rstrip()
         key = fold(text)

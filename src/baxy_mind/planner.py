@@ -127,6 +127,11 @@ _ENUM_EVIDENCE_ALIASES = {
         "la baje",
         "los baje",
         "las baje",
+        # M136 (DEV-G v4n G-w44-t4 «ahora ábreme lo último que me he bajado» → the decider's «Descargas» →
+        # «¿En qué carpeta conocida…?»): the compound past and the reflexive say the same download.
+        "he bajado",
+        "me baje",
+        "bajado de internet",
     ),
     # Tanda 3 «Muéstrame mi Gallery.»: Explorer's Gallery (Galería) is the pictures folder shown (lexicon.GALLERY_NOUNS,
     # which semantic.surface rewrites the same way); a proposal naming it is grounded, not asked which folder.

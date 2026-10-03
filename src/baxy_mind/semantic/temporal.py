@@ -253,9 +253,12 @@ _SPOKEN_CLOCK = re.compile(
 )
 
 
+# M138 (DEV-G v4n G-s073 «programame una alarma pa las 7 que manana madrugo» → «¿A qué hora…?», where the isolated
+# decider set it at 7): «pa las» is «para las» here too (M110 read it so in ``_CLOCK_LEAD``; this selector did not, and
+# the incomplete-schedule reader asked for the hour that was said).
 _CLOCK_TIME_SELECTOR = (
     r"\b(?:[01]?[0-9]|2[0-3]):[0-5][0-9]\b|"
-    rf"\b(?:a las?|para las?|at)\s+(?:las\s+)?{_CLOCK_HOUR}{_CLOCK_MINUTES}?"
+    rf"\b(?:a las?|para las?|pa las?|at)\s+(?:las\s+)?{_CLOCK_HOUR}{_CLOCK_MINUTES}?"
     rf"(?:\s*{_CLOCK_PERIOD})?(?=\s|$|[,;:.?!])|"
     rf"\b{_CLOCK_HOUR}{_CLOCK_MINUTES}?\s*{_CLOCK_PERIOD}(?=\s|$|[,;:.?!])|"
     rf"\b{_CLOCK_HOUR}{_O_CLOCK}\b|"
@@ -2317,6 +2320,64 @@ def notification_retiming(text: str) -> Retiming | None:
     return Retiming(None, clocks[0].hour, clocks[0].minute, clocks[0].resolved)
 
 
+# M137b (DEV-G v4n G-w22-t5 «actually make it 8» after «set a reminder for Tuesday evening to check again», restated
+# «Set a reminder for Tuesday at 8 PM to check again.» → «Could you confirm if you meant 8 PM or 8 AM?»): the part of
+# the day a conversation already said («Tuesday evening», «a las 18:00», «por la mañana») is the part of a bare hour
+# said after it. «good morning» or «buenas noches» greet; they say no part of the day.
+_PART_OF_DAY_SAID = re.compile(
+    _DAY_PART
+    + r"|(?<!\bgood\s)\b(?P<english_bare>morning|afternoon|evening|night)\b"
+    + r"|\b(?:en|por|de)\s+la\s+(?P<spanish_bare>manana|madrugada|tarde|noche)\b"
+)
+
+
+def part_of_day_said(lines: Iterable[str]) -> str | None:
+    """«am» or «pm» of the newest of ``lines`` (newest first) that says a part of the day, in words or with a clock
+    that says it (a. m., p. m., 24 hours); None when none does, or that line says both."""
+
+    for line in lines:
+        folded = _fold(str(line or ""))
+        parts = {
+            "am" if re.match(r"manana|madrugada|morning", word) else "pm"
+            for found in _PART_OF_DAY_SAID.finditer(folded)
+            for word in [next(group for group in found.groups() if group)]
+        }
+        parts |= {"am" if clock.hour < 12 else "pm" for clock in spoken_clocks(folded) if clock.resolved}
+        if parts:
+            return next(iter(parts)) if len(parts) == 1 else None
+    return None
+
+
+def bare_hour_with_its_part(
+    clock: SpokenClock, text: str, earlier: Iterable[str], *, another_day: bool, now: datetime,
+) -> bool:
+    """M137b: ``clock`` (with its part of the day) is the bare hour a message moving a notification says («actually
+    make it 8», «mejor a las 8») in the part of the day the conversation said before (``earlier``, newest first);
+    with none said, the part D61b gives another day the person named (1 to 6 the afternoon, 7 to 11 the morning) or,
+    on no day named, D61's next time that hour comes after ``now``."""
+
+    retiming = notification_retiming(text)
+    if (
+        retiming is None
+        or retiming.duration is not None
+        or retiming.resolved
+        or not clock.resolved
+        or (retiming.hour % 12, retiming.minute) != (clock.hour % 12, clock.minute)
+    ):
+        return False
+    part = part_of_day_said(earlier)
+    base = clock.hour % 12
+    if part is not None:
+        expected = base + 12 if part == "pm" else base
+    elif another_day:
+        expected = base + 12 if 1 <= base <= 6 else (12 if base == 0 else base)
+    else:
+        expected = next(
+            (hour for hour in (base, base + 12) if (hour, clock.minute) > (now.hour, now.minute)), base,
+        )
+    return clock.hour == expected
+
+
 # M113 (DEV-F v4d F-w55-t2 «no, mejor media hora antes, una hora es mucho» after «mañana a las 10 tengo turno…,
 # recordámelo una hora antes»): the change gives a new count before or after the same moment the notification was
 # counted from; the notification moves by the difference (one hour before → half an hour before is 30 minutes later).
@@ -2346,6 +2407,145 @@ def offset_retiming(text: str, setting_request: str) -> int | None:
     before = {"antes", "before", "earlier"}
     shift = (-new if found.group("sign") in before else new) - (-old if counted[0].group("sign") in before else old)
     return shift or None
+
+
+# --- An advance before the moment said in the same message ------------------------
+# M137 (DEV-G v4n G-s016 «I've got a dentist appointment Thursday at 4 over on Maple St, remind me an hour before so…»
+# → set at 16:00; G-s019 «recuérdame una hora antes de la reunión con el banco que es a las 3 de la tarde» → 15:00
+# titled «una hora antes de la reunión con el banco que es»; DEV-F v4m F-w55-t1 «mañana a las 10 tengo turno con el
+# dentista en Palermo, recordámelo una hora antes así no salgo a las corridas» → 10:00): the clock said is the event's,
+# and «<duración> antes» counts back from it. What follows the advance may make it a clause instead of a moment
+# («antes de que llegue», «before I leave», «antes de salir», «before leaving»): then it is not one.
+_ADVANCE_OF_A_CLAUSE = re.compile(
+    r"\s*(?:(?:de\s+|d\s+)?que\b|than\b|(?:de|d)\s+(?:ir|[a-z]+(?:ar|er|ir))(?:me|te|se|lo|la|le|nos|los|las|les)?\b|"
+    r"(?:i|you|u|we|they|he|she)\b|"
+    r"(?!(?:morning|evening|meeting|wedding|briefing|training|screening|boarding|building|ceiling)\b)[a-z]+ing\b)"
+)
+# The head of the order to remind or to ring; a clock right after it, with only its day between, is when it rings.
+_REMIND_HEAD = (
+    r"\b(?:recuerd(?:a|ame|amelo|amela|eme|emelo)|record(?:a|ame|amelo|amela)|avis(?:a|ame|amelo|amela)|"
+    r"acord(?:ate|ame|amelo)|remind\s+me|ping\s+me|alert\s+me|notify\s+me|wake\s+me(?:\s+up)?|"
+    r"alarmas?|alarms?|recordatorios?|reminders?|avisos?|alertas?|alerts?|timers?|temporizador(?:es)?|despertador)\b"
+)
+_OWN_CLOCK = re.compile(
+    rf"{_REMIND_HEAD}(?:[\s,]+(?:me|for|at|on|by|para|pa|a|al|el|la|las|this|este|esta|next|proximo|hoy|today|"
+    rf"tomorrow|tonight|manana|pasado|{_SAID_WEEKDAY}))*[\s,]*$"
+)
+# Where the clause of the event ends: a pause, or the reason that follows the order («so I'm not late», «así no salgo»).
+_EVENT_CLAUSE_END = re.compile(
+    r"\s*[,;.!?]|\s+(?:so|asi|para\s+que|porque|because|cause|que\s+si\s+no|pls|plz|please|por\s+favor|porfa)\b"
+)
+# Words that only lead the event («tengo», «I've got»), say where its moment was («que es», «which is») or are its
+# article: not what it is.
+_EVENT_LEAD = re.compile(
+    r"^(?:(?:y|and|e)\s+)?(?:(?:yo\s+)?tengo|tenemos|hay|me\s+toca|i(?:'ve|’ve|\s+have)?\s+got|i\s+have|"
+    r"we(?:'ve|’ve|\s+have)?\s+got|we\s+have|there(?:'s|’s|\s+is))\s+"
+)
+_EVENT_GLUE = re.compile(
+    r"\s+(?:(?:que|which|that)(?:\s+(?:es|son|sera|empieza|comienza|arranca|is|starts|begins|will\s+be))?|"
+    r"es|is|de|del|a|at|on|el|la|las|for|para|y|and)$"
+)
+_EVENT_ARTICLE = re.compile(r"^(?:el|la|los|las|un|una|mi|mis|my|the|a|an|our|nuestro|nuestra|su|your|tu)\s+")
+_EVENT_POINTERS = frozenset({"eso", "esto", "ello", "aquello", "that", "this", "it", "then"})
+_EVENT_CONNECTORS = frozenset(
+    {"so", "asi", "para", "porque", "because", "cause", "pls", "plz", "please", "por", "porfa", "y", "and", "o", "or",
+     "to", "just", "ok", "okay", "nomas", "no", "si", "pa", "que", "tambien", "too", "also"}
+)
+
+
+@dataclass(frozen=True)
+class SaidAdvance:
+    """A notification asked for «<duración> antes» of a moment said in the same message: ``minutes`` before it,
+    ``moment`` its day and clock as written, ``clock`` that clock, ``phrase`` the advance as written and ``title``
+    what happens then in the person's words ("" when it cannot be told apart from the rest)."""
+
+    minutes: int
+    moment: str
+    clock: SpokenClock
+    phrase: str
+    title: str
+
+
+def _event_title(said: str, folded: str, start: int, end: int, moment: tuple[int, int]) -> str:
+    """What happens at the moment, from the span ``start``–``end`` of the message less the moment itself."""
+
+    parts = [(start, end)]
+    if start <= moment[0] < end or start < moment[1] <= end:
+        parts = [(start, max(start, moment[0])), (min(end, moment[1]), end)]
+    text = " ".join(" ".join(said[first:last].split()) for first, last in parts if last > first)
+    folded_text = " ".join(" ".join(folded[first:last].split()) for first, last in parts if last > first)
+    for pattern in (re.compile(r"^[\s,;:.!?¡¿]+"), _EVENT_LEAD, _EVENT_ARTICLE):
+        found = pattern.match(folded_text)
+        if found is not None:
+            text, folded_text = text[found.end():], folded_text[found.end():]
+    if (relative := re.search(r"\s*,\s*(?:que|which|that)\b", folded_text)) is not None:
+        # «el vuelo, que sale a las 8»: what follows says when, not what.
+        text, folded_text = text[: relative.start()], folded_text[: relative.start()]
+    while (found := _EVENT_GLUE.search(folded_text)) is not None:
+        text, folded_text = text[: found.start()], folded_text[: found.start()]
+    title = text.strip(" ,;:.!?¡¿")
+    return title if re.search(r"[^\W\d_]", title) else ""
+
+
+def said_advance(text: str) -> SaidAdvance | None:
+    """M137: «remind me an hour before», «recuérdame una hora antes de la reunión que es a las 3», «recordámelo media
+    hora antes» with the event's clock said in the same message. None with no advance or more than one count, an
+    advance of a clause («antes de que…»), none or several clocks, or a clock that is the notification's own («remind
+    me at 3, an hour before the meeting»). A thing named after the advance («antes de la cena») must be the event the
+    clock is said of («tomar la pastilla a las 8, media hora antes de la cena» is no advance from 8)."""
+
+    said = " ".join(str(text or "").split())
+    folded = _same_length_fold(said)
+    counts = list(_COUNTED_OFFSET.finditer(folded))
+    if len(counts) != 1 or counts[0].group("sign") not in {"antes", "before", "earlier"}:
+        return None
+    advance = counts[0]
+    minutes = _offset_minutes(advance)
+    clocks = spoken_clocks(folded)
+    if minutes is None or len(clocks) != 1 or _ADVANCE_OF_A_CLAUSE.match(folded, advance.end()):
+        return None
+    clock = clocks[0]
+    clock_start = folded.find(clock.literal)
+    if clock_start < 0 or advance.start() <= clock_start < advance.end() or re.search(_OWN_CLOCK, folded[:clock_start]):
+        return None
+    clock_end = clock_start + len(clock.literal)
+    head, tail = clock_start, clock_end
+    if (before := _DAY_BEFORE_TIME.search(folded[:clock_start])) is not None:
+        head = before.start()
+    if (after := _DAY_AFTER_TIME.match(folded[clock_end:])) is not None:
+        tail = clock_end + after.end()
+    moment = said[head:tail].strip(" ,")
+    rest = folded[advance.end():]
+    lead = re.match(r"\s+(?:de|d|del|al|of)\s+(?=\S)", rest) if advance.group("sign") == "antes" else (
+        re.match(r"\s+(?:of\s+)?(?=\S)", rest)
+    )
+    first_word = re.match(r"[a-z]+", rest[lead.end():]) if lead is not None else None
+    if first_word is not None and first_word.group(0) not in _EVENT_POINTERS | _EVENT_CONNECTORS:
+        # «una hora antes de la reunión con el banco que es a las 3»: the thing named is the event; «…antes del vuelo,
+        # que sale a las 8» says its moment in the clause that follows it.
+        start = advance.end() + lead.end()
+        stop = _EVENT_CLAUSE_END.search(folded, start)
+        while stop is not None and stop.group(0).strip() == "," and re.match(
+            r"\s*(?:que|which|that)\b(?!\s+si\s+no\b)", folded[stop.end():],
+        ):
+            stop = _EVENT_CLAUSE_END.search(folded, stop.end())
+        end = stop.start() if stop is not None else len(folded)
+        title = _event_title(said, folded, start, end, (head, tail))
+        noun = _EVENT_ARTICLE.sub("", _same_length_fold(title)).split()[:1]
+        if not (start <= clock_start < end) and not (noun and re.search(rf"\b{re.escape(noun[0])}\b", folded[:advance.start()])):
+            return None
+    else:
+        # «tengo turno mañana a las 10, recordámelo una hora antes»: the event is the clause that says the clock,
+        # cut where the order to remind or the advance begins.
+        cuts = sorted(
+            {0, len(folded), advance.start(), advance.end()}
+            | {found.start() for found in re.finditer(r"[,;.!?]", folded)}
+            | {edge for found in re.finditer(_REMIND_HEAD, folded) for edge in (found.start(), found.end())}
+        )
+        start = max(cut for cut in cuts if cut <= head)
+        end = min(cut for cut in cuts if cut >= tail)
+        title = _event_title(said, folded, start, end, (head, tail))
+    return SaidAdvance(minutes, moment, clock, said[advance.start():advance.end()], title)
 
 
 _ISO_DATE = re.compile(r"(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})(?:T00:00(?::00)?(?:Z|[+-]00:00)?)?")
