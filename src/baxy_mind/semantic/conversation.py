@@ -1344,8 +1344,9 @@ def catalog_unavailable(
     # M123 (D58; reserve against the isolated decider, v2 labels: fix 2, break 8): «open bad religion folder», «abre la
     # carpeta de aplicaciones», «abrir un recordatorio sobre…», «open media play jingle bells», «let's play music hits»
     # were closed as a game missing from the library. An opening that names a folder, a reminder, music or another
-    # thing BAXY serves is no game; the contextual decider reads it. A bare name stays the catalog's limit (reviewed
-    # literal H0406 «Abre una app que no existe llamada AplicacionFantasmaXYZ»).
+    # thing BAXY serves is no game; the contextual decider reads it. A bare name stays the catalog's limit. M133
+    # (D61.2): a named application («abre una app llamada X», «open my itunes», «open pandora») never reaches here;
+    # the readers check its presence first (``app.installed``, ``unresolved_application_open_name``).
     names_something_served = (
         re.search(
             r"\b(?:carpetas?|folders?|archivos?|files?|documentos?|documents?|recordatorios?|reminders?|alarmas?|"
