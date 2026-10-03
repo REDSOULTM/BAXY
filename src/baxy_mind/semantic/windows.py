@@ -74,6 +74,28 @@ _SNAP_SIDE = (
 )
 
 
+# M145: the half of the screen said for a window with no name («esta ventana a la mitad izquierda», «al lado
+# izquierdo de la pantalla», «snap the active window to the left», «on the right half»).
+_SAID_SNAP_SIDE = re.compile(
+    r"\b(?:(?:a|al|hacia|en|para|on|to|at)\s+(?:la\s+|el\s+|the\s+)?(?:(?:mitad|lado|parte)\s+)?"
+    r"(?P<es>izquierd[ao]|derech[ao]|left|right)|"
+    r"(?:mitad|lado|parte)\s+(?P<half>izquierd[ao]|derech[ao])|"
+    r"(?P<en>left|right)\s+(?:half|side))\b"
+)
+
+
+def said_snap_side(text: str) -> str | None:
+    """M145 (DEV-G v4p G-s041, G-s082, G-s102; DEV-H H-s028): «left» or «right» when the request says one half of the
+    screen and only one; None when it says none or both."""
+
+    sides = {
+        "left" if word.startswith(("izquierd", "left")) else "right"
+        for found in _SAID_SNAP_SIDE.finditer(_fold(str(text or "")))
+        for word in (found.group("es") or found.group("half") or found.group("en"),)
+    }
+    return sides.pop() if len(sides) == 1 else None
+
+
 def explicit_window_title(text: str) -> str | None:
     """Copy one explicitly named window title; never infer a process or HWND."""
     matches = tuple(
