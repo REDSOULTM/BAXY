@@ -178,6 +178,21 @@ def names_the_active_window(text: str) -> bool:
     return _ACTIVE_WINDOW.search(_fold(str(text or ""))) is not None
 
 
+# M145: «esta ventana», «this window» — the window noun pointed at here, never a window «de X» / «of X» another reader
+# names. «esa ventana» / «that window» and a bare pronoun («ponla», «snap it», «cerralo») are not here: they may point
+# back at something the conversation named (M96, M118).
+_POINTED_WINDOW = re.compile(r"\b(?:esta|this)\s+(?:ventana|window)\b(?!\s+(?:de|del|of)\b)")
+
+
+def names_the_window_in_front(text: str) -> bool:
+    """M145 (DEV-G v4p G-s041 «pasame esta ventana a la mitad izquierda», G-s082, G-s102; DEV-H H-s028): a change of
+    a window that names the one in front — «esta ventana», «this window», «la ventana activa», «the current window».
+    Only for a change that loses nothing (snap, move, maximize, minimize, restore); a close keeps M118's rule."""
+
+    folded = _fold(str(text or ""))
+    return _ACTIVE_WINDOW.search(folded) is not None or _POINTED_WINDOW.search(folded) is not None
+
+
 def bare_close_pronoun(folded: str) -> tuple[bool, bool]:
     """«cerralo», «ya, ciérrala», «ok close that»: (closes what a pronoun points at, said in English)."""
 

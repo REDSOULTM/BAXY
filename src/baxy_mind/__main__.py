@@ -39,7 +39,13 @@ from . import effect_intent
 from .semantic import decider as semantic_decider
 from .semantic import dialogue as dialogue_slot
 from .semantic import knowledge as semantic_knowledge
-from .semantic.apps import bare_close_pronoun, close_request_for_opened, deictic_close_request, names_the_active_window
+from .semantic.apps import (
+    bare_close_pronoun,
+    close_request_for_opened,
+    deictic_close_request,
+    names_the_active_window,
+    names_the_window_in_front,
+)
 from .semantic.notes import (
     asks_overdue_notifications,
     conversation_note_title,
@@ -75,7 +81,7 @@ from .semantic.web import (
     search_has_typed_reads,
     typed_read_over_search,
 )
-from .semantic.windows import start_menu_request
+from .semantic.windows import said_snap_side, start_menu_request
 from .corrector import catalog_correction_terms
 from .first_signal import (
     PATH_MODEL,
@@ -1119,6 +1125,11 @@ def _verified_dependency_identity_arguments(
             # M55: a request that docks several windows gives each its own side; the step's purpose
             # picks which of the request's pairs this window is, the side stays the person's.
             explicit = window_snap_side_for_step(objective, purpose, application_names)
+        if explicit is None and operation == "window.snap" and names_the_window_in_front(objective):
+            # M145 (DEV-G v4p G-s041, G-s082, G-s102; DEV-H H-s028): the window in front has no name to read the
+            # side beside; the side is the one half the request says.
+            side = said_snap_side(objective)
+            explicit = {"side": side} if side is not None else None
         if not isinstance(explicit, dict):
             return None
         merged = {**explicit, **arguments}
@@ -3357,6 +3368,10 @@ def _with_decided_arguments(
     for name, value, field_schema in decided:
         if name in merged and validate_argument_grounding({name: merged[name]}, field_schema, trusted_source):
             continue
+        if name in _AS_SPELLED_FIELDS and operation.startswith(_AS_SPELLED_LOOKUPS) and isinstance(value, str):
+            # M147 (DEV-F F-w05-t5 «javiera mena» → the decider's «Javier Mené»): the person's spelling of a name a
+            # service looks up (its own search forgives a typo of the person's; a note keeps the model's words).
+            value = semantic_decider.as_the_person_spelled(value, trusted_source.splitlines()) or value
         if not validate_argument_grounding({name: value}, field_schema, trusted_source):
             value = _said_part_of_a_name(name, value, field_schema, trusted_source) or (
                 # M136: a folder the decider chose and nobody said is every known folder, when that grounds.
@@ -3371,6 +3386,9 @@ def _with_decided_arguments(
 # M136 (DEV-G v4n G-s097 «baxy abreme el obs…» → the decider's «OBS Studio» → «¿Cuál es el nombre exacto de la
 # aplicación…?»): an application's name the decider completed with words nobody said keeps the words the person said.
 _SAID_NAME_FIELDS = frozenset({"appId", "name"})
+# M147: the fields that carry a name to look up or play as the person wrote it.
+_AS_SPELLED_FIELDS = frozenset({"query", "title", "artist", "appId", "name"})
+_AS_SPELLED_LOOKUPS = ("media.play", "streaming.", "app.open", "app.installed")  # web search sources forgive no typo
 
 
 def _said_part_of_a_name(name: str, value: Any, field_schema: dict[str, Any], trusted_source: str) -> Any:
@@ -4583,6 +4601,12 @@ def _evidence_of_expected_operations(
     return tuple(kept)
 
 
+# M145: the window changes that lose nothing and may act on the window in front; closing is never one (M118).
+_FRONT_WINDOW_CHANGES = frozenset(
+    {"window.maximize", "window.minimize", "window.move", "window.restore", "window.snap"}
+)
+
+
 def _expand_effect_plan(
     operations: tuple[str, ...],
     evidence: tuple[str, ...] = (),
@@ -4619,7 +4643,12 @@ def _expand_effect_plan(
         ):
             prerequisite = (
                 "window.active"
-                if operation == "app.close" and closes_the_active_window(literal_evidence)
+                if (operation == "app.close" and closes_the_active_window(literal_evidence))
+                # M145 (DEV-G v4p G-s041 «pasame esta ventana a la mitad izquierda», decided «Coloca la ventana
+                # activa en la mitad izquierda…», G-s082, G-s102; DEV-H H-s028): a change that loses nothing of the
+                # window in front reads that window (window.active), as «maximizá esta ventana» already did; a
+                # window.resolve had no application to look for, and the plan ended «no se pudo determinar cómo».
+                or (operation in _FRONT_WINDOW_CHANGES and names_the_window_in_front(literal_evidence))
                 else prerequisites[0]
             )
             expanded.append(
@@ -5854,6 +5883,93 @@ def _moved_notification_result(message: dict[str, Any], request: str) -> dict[st
     return result
 
 
+def _cancelled_clock(text: str, schema: dict[str, object]) -> dict[str, object] | None:
+    """M145: the clock and kind a cancellation in ``text`` selects, as ``notification.cancel.at``'s arguments: of a
+    move («Cambia la alarma de las 7 a las 7:30»), the old clock; of a cancellation, its own. A move that names no old
+    clock is of the last one set: its kind alone, with ``hour`` None. None without a kind and an hour."""
+
+    change = semantic_temporal.notification_change(text)
+    if change is not None:
+        if change.old is None:
+            return {"kind": change.kind, "hour": None}
+        text = change.cancel_request()
+    selected = _ground_explicit_arguments("notification.cancel.at", text, schema)
+    if not isinstance(selected, dict) or not isinstance(selected.get("hour"), int) or selected.get("kind") not in {
+        "alarm", "reminder",
+    }:
+        return None
+    return selected
+
+
+def _own_notification_cancellation(
+    result: dict[str, Any],
+    message: dict[str, Any],
+    dialogue_state: dialogue_slot.DialogueState | None,
+    tool_by_name: dict[str, dict],
+) -> dict[str, Any]:
+    """M145 (DEV-H v4p H-w29-t2 «no espera, mejor a las 7:30» after «…¿me pones una alarma a las 7 porfa?» → «varias
+    alarmas o recordatorios a esa misma hora… no se pudieron distinguir»; H-w45-t4 «cancel the 7 one»): the store also
+    held alarms of other conversations at 19:00, and ``notification.cancel.at`` refuses two at one clock. When the clock
+    this turn cancels (or moves from) is that of the alarm, timer or reminder this conversation set and verified, and
+    it is the last one it set of its kind (``DialogueState.own_notification_at``), the cancellation is of that one: the
+    latest BAXY set of its kind (``notification.cancel.latest``). Without one of its own there, the turn stays as it
+    was decided and the ambiguity is told as before."""
+
+    if dialogue_state is None or result.get("kind") not in {"action", "plan"}:
+        return result
+    effects = [str(operation) for operation in result.get("effectOperations") or ()]
+    tool = tool_by_name.get("notification.cancel.at")
+    if (
+        effects.count("notification.cancel.at") != 1
+        or "notification.cancel.latest" in effects
+        or "notification.cancel.latest" not in tool_by_name
+        or tool is None
+    ):
+        return result
+    schema = tool["function"]["parameters"]
+    selected = next(
+        (
+            found for found in (
+                _cancelled_clock(str(result.get("objective") or ""), schema),
+                _cancelled_clock(_person_message(message.get("history"), str(message.get("text", ""))), schema),
+            )
+            if found is not None
+        ),
+        None,
+    )
+    if selected is None or not dialogue_state.own_notification_at(
+        str(selected["kind"]), selected["hour"], int(selected.get("minute") or 0),
+        selected.get("period") if selected.get("period") in {"am", "pm"} else None,
+    ):
+        return result
+
+    def own(operations: object) -> list[str]:
+        return [
+            "notification.cancel.latest" if operation == "notification.cancel.at" else str(operation)
+            for operation in operations or ()
+        ]
+
+    kept = {**result, "effectOperations": own(effects), "intentOperations": own(result.get("intentOperations"))}
+    if kept.get("operation") == "notification.cancel.at":
+        kept["operation"] = "notification.cancel.latest"
+    _append_turn_audit(
+        {
+            "schema": "baxy.mind-turn-audit.v1",
+            "request_id": message.get("id"),
+            "phase": "final",
+            "decision_path": "own_notification",
+            "raw_decision": {"mode": "action", "request": kept.get("objective"), "effect_operations": kept["effectOperations"]},
+            "stages": [],
+            "final": {
+                "kind": kept["kind"],
+                "intent_operations": kept["intentOperations"],
+                "effect_operations": kept["effectOperations"],
+            },
+        }
+    )
+    return kept
+
+
 def _direct_arguments_result(
     message: dict[str, Any],
     *,
@@ -6106,16 +6222,22 @@ def _prepare_turn_result(
             # (cancelled and set again), never a second one beside it; the plan takes its arguments from the dialogue
             # state (``_retimed_step_arguments``).
             return _moved_notification_result(message, moved)
-        return _decide_turn_result(
+        # M145: a cancellation at the clock of the notification this conversation set is of that one.
+        return _own_notification_cancellation(
+            _decide_turn_result(
+                message,
+                llm=llm,
+                planner_catalog=planner_catalog,
+                encoder=encoder,
+                tool_by_name=tool_by_name,
+                application_names=application_names,
+                game_catalog=game_catalog,
+                on_signal=on_signal,
+                in_conversation=True,
+            ),
             message,
-            llm=llm,
-            planner_catalog=planner_catalog,
-            encoder=encoder,
-            tool_by_name=tool_by_name,
-            application_names=application_names,
-            game_catalog=game_catalog,
-            on_signal=on_signal,
-            in_conversation=True,
+            dialogue_state,
+            tool_by_name,
         )
     rearmed = _rearm_in_context(
         message,
@@ -9203,6 +9325,10 @@ def _run_sidecar(
                             # M62 (F-s044): a moved alarm takes its part of the day from what was said before.
                             history=history if step.operation == "notification.schedule" else None,
                         )
+                        if explicit_arguments is None and step.operation == "notification.cancel.latest":
+                            # M145: a cancellation made the latest one's (``_own_notification_cancellation``) takes
+                            # its kind from the request that named it («Cambia la alarma de las 7:00 a las 7:15.»).
+                            explicit_arguments = _ground_explicit_arguments(step.operation, objective, schema)
                         if explicit_arguments is not None:
                             arguments_by_step[step.step_id] = explicit_arguments
                             continue

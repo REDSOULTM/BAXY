@@ -254,12 +254,14 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 comprensión natural: repin tras M140–M142 (2026-10-03).
 # C03 comprensión natural: repin tras M143 (2026-10-03).
 # C03 comprensión natural: repin tras M144 (2026-10-03).
+# C03 comprensión natural: repin tras M145–M146 (2026-10-03).
+# C03 comprensión natural: repin tras M147 (2026-10-03).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "928d71f40420c0bc7efd8408fd968c3310daf0e66d5e048c310f5b98081b53cc"
+        "edfb227aa992e45e2334982297179a96b943d78737f742e00c0229342c2ceaff"
     ),
     "src/baxy_mind/llm.py": (
-        "8b8aff48e004aab055e671c6f255abb80588541a396fae8811c0e27fd5a12c5f"
+        "a1669c94f5f789b661efcc40a5e3af336f5adf6247fe7011a3db852b47787593"
     ),
 }
 

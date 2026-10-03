@@ -252,8 +252,10 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 comprensión natural: repin tras M140–M142 (2026-10-03).
 # C03 comprensión natural: repin tras M143 (2026-10-03).
 # C03 comprensión natural: repin tras M144 (2026-10-03).
+# C03 comprensión natural: repin tras M145–M146 (2026-10-03).
+# C03 comprensión natural: repin tras M147 (2026-10-03).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "6c1397f92d3952f52e0b6262c084914eabbc40a162c0d58540a68b57f02ab3dd"
+    "a5990afa3cd039ea75d236c6a9556a283595b31b9de3adf65f5096a1445ce902"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
