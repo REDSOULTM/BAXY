@@ -699,6 +699,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         InstalledApplicationObservation observation,
         bool reused)
     {
+        // M132: a click that follows this opening acts on the application opened (VisibleControlSurface).
+        External.VisibleControlSurface.NoteOpened(observation.ProcessId, launched: !reused);
         var receipt = new ApplicationLaunchReceipt(
             request.InvocationId,
             request.ApplicationId,

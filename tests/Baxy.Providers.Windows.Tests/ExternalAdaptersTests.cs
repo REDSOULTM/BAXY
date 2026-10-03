@@ -1335,6 +1335,128 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // M132 (owner script t36 «abre steam y ve a la biblioteca», launched cold): the click after an opening waits for
+    // the opened application's own window, never looks at another one meanwhile, and then finds the label on it.
+    [Test]
+    public async Task VisibleClickAfterALaunchWaitsForTheOpenedWindowBeforeLooking()
+    {
+        using TemporaryDirectory temporary = new();
+        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
+        await File.WriteAllTextAsync(script, "# fixture");
+        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        var focus = new ScriptedFocus(launched: true, readyAfter: 3);
+        var ocr = new CountingLocator("ocr", hit: true, hitFromCall: 2);
+        var adapter = new WindowsVisibleControlAdapter(
+            runner, script, ocr, vision: null, focus, ShortTiming);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"biblioteca"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("cascadeStage").GetString(), Is.EqualTo("ocr"));
+            // Three answers «no window yet», then two looks on the opened window.
+            Assert.That(focus.FrontCalls, Is.EqualTo(5));
+            Assert.That(runner.Calls, Is.EqualTo(2));
+            Assert.That(ocr.Calls, Is.EqualTo(2));
+        });
+    }
+
+    [Test]
+    public async Task VisibleClickAfterALaunchWhoseWindowNeverShowsPressesNothingElsewhere()
+    {
+        using TemporaryDirectory temporary = new();
+        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
+        await File.WriteAllTextAsync(script, "# fixture");
+        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        var focus = new ScriptedFocus(launched: true, readyAfter: int.MaxValue);
+        var ocr = new CountingLocator("ocr", hit: true);
+        var adapter = new WindowsVisibleControlAdapter(
+            runner, script, ocr, vision: null, focus, ShortTiming);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"biblioteca"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
+            Assert.That(runner.Calls, Is.Zero);
+            Assert.That(ocr.Calls, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task VisibleClickOnTheOpenedWindowStopsLookingAfterTheOpenedLabelBudget()
+    {
+        using TemporaryDirectory temporary = new();
+        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
+        await File.WriteAllTextAsync(script, "# fixture");
+        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        var focus = new ScriptedFocus(launched: false, readyAfter: 0);
+        var ocr = new CountingLocator("ocr", hit: false);
+        var adapter = new WindowsVisibleControlAdapter(
+            runner, script, ocr, vision: null, focus, ShortTiming);
+        var clock = Stopwatch.StartNew();
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"counter strike 2"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
+            Assert.That(runner.Calls, Is.GreaterThan(1));
+            Assert.That(clock.Elapsed, Is.GreaterThanOrEqualTo(ShortTiming.OpenedLabel));
+            Assert.That(clock.Elapsed, Is.LessThan(TimeSpan.FromSeconds(5)));
+        });
+    }
+
+    // M132 (owner script t42 «En steam ve a crash bandicoot», 28 s): on a window that was already there the label
+    // is looked for twice or three times and the honest «not there» comes in a few seconds.
+    [Test]
+    public async Task VisibleClickWithoutAnOpeningAnswersNotFoundWithinSeconds()
+    {
+        using TemporaryDirectory temporary = new();
+        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
+        await File.WriteAllTextAsync(script, "# fixture");
+        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        var ocr = new CountingLocator("ocr", hit: false);
+        var adapter = new WindowsVisibleControlAdapter(runner, script, ocr, vision: null);
+        var clock = Stopwatch.StartNew();
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"crash bandicoot"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
+            Assert.That(runner.Calls, Is.InRange(2, 3));
+            Assert.That(clock.Elapsed, Is.LessThan(TimeSpan.FromSeconds(8)));
+            Assert.That(VisibleClickTiming.Default.SettledLabel, Is.LessThanOrEqualTo(TimeSpan.FromSeconds(3)));
+            Assert.That(VisibleClickTiming.Default.OpenedLabel, Is.LessThanOrEqualTo(TimeSpan.FromSeconds(10)));
+        });
+    }
+
+    private const string NotFoundByUia =
+        "{\"version\":1,\"ok\":false,\"effectObserved\":false," +
+        "\"error\":\"visible_button_not_found\",\"name\":\"\"," +
+        "\"controlIdentity\":\"\",\"absentOrDisabled\":false}";
+
+    private static readonly VisibleClickTiming ShortTiming = new(
+        LaunchSurface: TimeSpan.FromMilliseconds(400),
+        ReusedSurface: TimeSpan.FromMilliseconds(100),
+        OpenedLabel: TimeSpan.FromMilliseconds(1500),
+        SettledLabel: TimeSpan.FromMilliseconds(50),
+        Interval: TimeSpan.FromMilliseconds(20));
+
     [Test]
     public async Task NamedSandboxFilesAppendDiffAndMoveWithHashPostreads()
     {
@@ -4628,14 +4750,42 @@ public sealed class ExternalAdaptersTests
         }
     }
 
+    private sealed class ScriptedFocus(bool launched, int readyAfter) : IOpenedApplicationFocus
+    {
+        private bool _taken;
+
+        internal int FrontCalls { get; private set; }
+
+        public VisibleControlSurface.OpenedApplication? TakeOpened()
+        {
+            if (_taken)
+                return null;
+            _taken = true;
+            return new VisibleControlSurface.OpenedApplication(
+                4242, DateTime.UtcNow.AddSeconds(-1), DateTime.UtcNow, launched);
+        }
+
+        public VisibleControlSurface.OpenedApplication? PeekOpened() => null;
+
+        public ValueTask<bool> FrontAsync(
+            VisibleControlSurface.OpenedApplication opened,
+            CancellationToken cancellationToken)
+        {
+            FrontCalls++;
+            return ValueTask.FromResult(FrontCalls > readyAfter);
+        }
+    }
+
     private sealed class CountingLocator : IVisibleControlLocator
     {
         private readonly bool _hit;
+        private readonly int _hitFromCall;
 
-        internal CountingLocator(string stage, bool hit)
+        internal CountingLocator(string stage, bool hit, int hitFromCall = 1)
         {
             Stage = stage;
             _hit = hit;
+            _hitFromCall = hitFromCall;
         }
 
         internal int Calls { get; private set; }
@@ -4648,7 +4798,7 @@ public sealed class ExternalAdaptersTests
             CancellationToken cancellationToken)
         {
             Calls++;
-            if (!_hit)
+            if (!_hit || Calls < _hitFromCall)
                 return ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
             JsonElement result = JsonSerializer.SerializeToElement(new
             {

@@ -4573,6 +4573,16 @@ def _application_open_request(text: str) -> re.Match[str] | None:
     return request
 
 
+_UNINSTALLER_WORDS = frozenset({"uninstall", "uninstaller", "desinstalar", "desinstalador"})
+
+
+def _names_an_uninstaller(name: str) -> bool:
+    """The Start-menu entry that removes an application («Uninstall PotPlayer-64 bit»), not the application."""
+
+    tokens = _entity_key(name).split()
+    return bool(tokens) and tokens[0] in _UNINSTALLER_WORDS
+
+
 def resolve_application_catalog_app_id(
     text: str,
     application_names: Iterable[str] | ApplicationCatalogIndex,
@@ -4660,6 +4670,12 @@ def resolve_application_catalog_app_id(
         ranked: list[tuple[int, str]] = []
         for name, _ in catalog.entries:
             candidate_tokens = set(_entity_key(name).split())
+            if _names_an_uninstaller(name) and not query_tokens & _UNINSTALLER_WORDS:
+                # M132 (owner script t22 «¿Sabes qué peli estoy viendo en potplayer?» → media.status, «no se pudo
+                # acceder a la información de PotPlayer»): the Start menu lists «Uninstall PotPlayer-64 bit» beside
+                # «PotPlayer 64 bit», so the bare name tied between the two and named neither. An uninstaller is
+                # never the application a person names; it is the one only when they say uninstall.
+                continue
             if query_tokens <= candidate_tokens:
                 score = 90 - min(6, len(candidate_tokens) - len(query_tokens))
                 ranked.append((score, name))

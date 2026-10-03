@@ -15,6 +15,66 @@ internal interface IVisibleControlLocator
         CancellationToken cancellationToken);
 }
 
+// The application app.open brought up moments ago, if any: a click right after an opening acts on it.
+internal interface IOpenedApplicationFocus
+{
+    VisibleControlSurface.OpenedApplication? TakeOpened();
+
+    VisibleControlSurface.OpenedApplication? PeekOpened();
+
+    // True when the opened application shows a usable window and it is in front; false while it has none yet.
+    ValueTask<bool> FrontAsync(
+        VisibleControlSurface.OpenedApplication opened,
+        CancellationToken cancellationToken);
+}
+
+internal sealed class OpenedApplicationFocus : IOpenedApplicationFocus
+{
+    // A click asked in the same breath as the opening, or answered after its confirmation, comes well inside this.
+    private static readonly TimeSpan Freshness = TimeSpan.FromSeconds(90);
+
+    public VisibleControlSurface.OpenedApplication? TakeOpened() =>
+        VisibleControlSurface.TakeOpened(Freshness);
+
+    public VisibleControlSurface.OpenedApplication? PeekOpened() =>
+        VisibleControlSurface.PeekOpened(Freshness);
+
+    public ValueTask<bool> FrontAsync(
+        VisibleControlSurface.OpenedApplication opened,
+        CancellationToken cancellationToken) =>
+        VisibleControlSurface.FrontOpenedAsync(opened, cancellationToken);
+}
+
+internal sealed class NoOpenedApplicationFocus : IOpenedApplicationFocus
+{
+    public VisibleControlSurface.OpenedApplication? TakeOpened() => null;
+
+    public VisibleControlSurface.OpenedApplication? PeekOpened() => null;
+
+    public ValueTask<bool> FrontAsync(
+        VisibleControlSurface.OpenedApplication opened,
+        CancellationToken cancellationToken) => ValueTask.FromResult(false);
+}
+
+// How long a click looks for its label. M132 (owner script t42 «En … ve a crash bandicoot», 28 s for «no hay ningún
+// elemento visible con ese nombre»): a label is waited on only while the surface may still be drawing — an
+// application opened moments ago — and then for a bounded stretch once its window is up; on a window that was
+// already there, a second look settles it and the honest «not there» comes at once.
+internal sealed record VisibleClickTiming(
+    TimeSpan LaunchSurface,
+    TimeSpan ReusedSurface,
+    TimeSpan OpenedLabel,
+    TimeSpan SettledLabel,
+    TimeSpan Interval)
+{
+    internal static VisibleClickTiming Default { get; } = new(
+        LaunchSurface: TimeSpan.FromSeconds(30),
+        ReusedSurface: TimeSpan.FromSeconds(5),
+        OpenedLabel: TimeSpan.FromSeconds(10),
+        SettledLabel: TimeSpan.FromSeconds(3),
+        Interval: TimeSpan.FromMilliseconds(1500));
+}
+
 internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
 {
     private static readonly HashSet<string> CascadeAfter = new(StringComparer.Ordinal)
@@ -40,13 +100,17 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
     private readonly string _script;
     private readonly IVisibleControlLocator? _ocr;
     private readonly IVisibleControlLocator? _vision;
+    private readonly IOpenedApplicationFocus _focus;
+    private readonly VisibleClickTiming _timing;
 
     internal WindowsVisibleControlAdapter()
         : this(
             new ExternalProcessRunner(),
             Path.Combine(AppContext.BaseDirectory, "DesktopClickVisible.ps1"),
             new WindowsVisibleOcrLocator(),
-            new WindowsVisibleVisionLocator())
+            new WindowsVisibleVisionLocator(),
+            new OpenedApplicationFocus(),
+            VisibleClickTiming.Default)
     {
     }
 
@@ -66,12 +130,16 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
         IExternalProcessRunner runner,
         string script,
         IVisibleControlLocator? ocr,
-        IVisibleControlLocator? vision)
+        IVisibleControlLocator? vision,
+        IOpenedApplicationFocus? focus = null,
+        VisibleClickTiming? timing = null)
     {
         _runner = runner;
         _script = script;
         _ocr = ocr;
         _vision = vision;
+        _focus = focus ?? new NoOpenedApplicationFocus();
+        _timing = timing ?? VisibleClickTiming.Default;
     }
 
     public bool CanHandle(string operation) =>
@@ -102,10 +170,35 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
         // navigation about ten seconds after its window exists). A label that
         // no stage finds yet is looked for again, bounded, before the click is
         // declared not found — the way a person waits for a screen to load.
-        DateTime deadline = DateTime.UtcNow + LabelWaitBudget;
+        // M132: that wait belongs to the application just opened, on its own
+        // window; first its window is waited for (a client that updates itself
+        // shows only a small updater at first), then the label for a bounded
+        // stretch. Any other click looks twice and answers.
+        VisibleControlSurface.OpenedApplication? opened = _focus.TakeOpened();
+        DateTime? surfaceSince = null;
         ExternalCapabilityReceipt uia;
         while (true)
         {
+            if (opened is { } application)
+            {
+                bool ready = await _focus.FrontAsync(application, cancellationToken)
+                    .ConfigureAwait(false);
+                if (!ready && surfaceSince is null)
+                {
+                    TimeSpan surfaceBudget = application.Launched
+                        ? _timing.LaunchSurface
+                        : _timing.ReusedSurface;
+                    // Nothing was looked at on another window, so nothing was pressed.
+                    if (DateTime.UtcNow >= application.NotedUtc + surfaceBudget)
+                        return ExternalJson.FailureBeforeEffect(operation, "visible_button_not_found");
+                    await Task.Delay(_timing.Interval, cancellationToken).ConfigureAwait(false);
+                    continue;
+                }
+            }
+
+            surfaceSince ??= DateTime.UtcNow;
+            DateTime deadline = surfaceSince.Value
+                + (opened is null ? _timing.SettledLabel : _timing.OpenedLabel);
             uia = await InvokeUiaAsync(
                 operation, label, cancellationToken).ConfigureAwait(false);
             if (ShouldKeep(uia))
@@ -135,16 +228,13 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
             if ((uia.ErrorCode is not null && !CascadeAfter.Contains(uia.ErrorCode))
                 || DateTime.UtcNow >= deadline)
                 break;
-            await Task.Delay(LabelWaitInterval, cancellationToken).ConfigureAwait(false);
+            await Task.Delay(_timing.Interval, cancellationToken).ConfigureAwait(false);
         }
 
         return uia.ErrorCode is null
             ? ExternalJson.Failure(operation, "visible_button_not_found")
             : uia;
     }
-
-    private static readonly TimeSpan LabelWaitBudget = TimeSpan.FromSeconds(24);
-    private static readonly TimeSpan LabelWaitInterval = TimeSpan.FromMilliseconds(1500);
 
     // Lectura: nombra los controles de la ventana en primer plano, los que se
     // pueden accionar primero. No toca nada, de modo que no cruza frontera de
@@ -157,6 +247,9 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
         string script = ListScript;
         if (!File.Exists(script))
             return ExternalJson.Failure(operation, "visible_controls_script_missing");
+        // M132: a look right after an opening reads the application opened, not what was in front before it.
+        if (_focus.PeekOpened() is { } opened)
+            _ = await _focus.FrontAsync(opened, cancellationToken).ConfigureAwait(false);
         int limit = 40;
         if (arguments.ValueKind == JsonValueKind.Object
             && arguments.TryGetProperty("limit", out JsonElement requested)
