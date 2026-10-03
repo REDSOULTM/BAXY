@@ -3723,6 +3723,22 @@ def _with_decided_part_of_day(operation: str, request: str, arguments: Any) -> A
     return {**arguments, "dueUtc": shifted.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")}
 
 
+def _with_pointed_reminder_title(operation: str, person: str, history: object, arguments: Any) -> Any:
+    """M148 (DEV-F v4q F-w48-t4 «recuérdame eso el domingo a las 3 de la tarde» after «…; mejor lleva paraguas.» →
+    titled «Voy a estar en Zapopan el domingo.»; DEV-D v4q D-w07-t4 «…que le devuelva eso a mi carnal» after
+    «Redondeado hacia arriba, 265.» → «Devolverle eso a mi amigo.»): a reminder that points with «eso» is titled with
+    what the conversation gave (``semantic.dialogue.pointed_reminder_title``); a title that already says it stays."""
+
+    if operation not in _REMINDER_OPERATIONS or not isinstance(arguments, dict):
+        return arguments
+    title = arguments.get("title")
+    if not isinstance(title, str) or not title.strip():
+        return arguments
+    said_before = _prior_user_texts(history, person)
+    pointed = dialogue_slot.pointed_reminder_title(person, _previous_reply(history), title, said_before)
+    return {**arguments, "title": pointed} if pointed else arguments
+
+
 def _conversation_grounding_source(objective: str, history: object) -> str:
     """M43: the request, the person's recent turns and BAXY's last reply, the text a decided value may come from.
 
@@ -5560,8 +5576,13 @@ def _context_decided_result(
         text, context.last_reply, said_before,
         # M113 (DEV-F v4d F-w18-t3 «Remind me the day before the first one's due, nine in the morning»): days counted
         # from a date said earlier in the conversation.
-    ) or semantic_temporal.anchored_day_request(text, context.last_reply, said_before)
-    anchored_read = resolve_explicit_effects(anchored, available_operations) if anchored is not None else None
+    ) or semantic_temporal.anchored_day_request(text, context.last_reply, said_before) or (
+        # M148 (DEV-G v4r G-w19-t4 «pues salgo sobre las 6 de la tarde…» after «recuérdamelo veinte minutos antes de
+        # salir» → «¿A qué hora tienes pensado salir?» → set at 18:00): the moment the answer gives, less the advance the
+        # request asked, is when it rings.
+        semantic_temporal.answered_advance_request(text, context.pending_request, context.last_reply)
+    )
+    anchored_read =resolve_explicit_effects(anchored, available_operations) if anchored is not None else None
     if (
         anchored_read is not None
         and set(anchored_read.operations) <= _ANCHORED_SCHEDULE_OPERATIONS
@@ -6128,6 +6149,7 @@ def _direct_arguments_result(
         operation, arguments, message.get("history"), tool["function"]["parameters"],
     )
     arguments = _with_decided_part_of_day(operation, str(message.get("text", "")), arguments)
+    arguments = _with_pointed_reminder_title(operation, person, message.get("history"), arguments)
     if operation in {"note.read", "note.trash"} and not (isinstance(arguments, dict) and arguments.get("noteId")):
         # M111 (DEV-F v4d F-w03-t6 «la nota del snippet, léemela» → note «Snippet» not found): a note named by a word
         # of the title it was given earlier in the conversation is that note.

@@ -1823,7 +1823,10 @@ def _explicit_arguments_from_evidence(
         domain_kinds = {
             kind
             for kind, pattern in (
-                ("alarm", r"\b(?:alarmas?|alarms?|temporizador(?:es)?|timers?)\b"),
+                # M148 (DEV-F v4q F-w45-t3 «Change the garlic knots countdown to 12 minutes.» → «¿Qué tipo de alarma
+                # o recordatorio necesitas cancelar?»): a countdown is a timer too.
+                ("alarm", r"\b(?:alarmas?|alarms?|temporizador(?:es)?|timers?|countdowns?|count\s*downs?|"
+                          r"cuentas?\s+(?:regresivas?|atras))\b"),
                 ("reminder", r"\b(?:recordatorios?|reminders?)\b"),
             )
             if re.search(pattern, folded)
