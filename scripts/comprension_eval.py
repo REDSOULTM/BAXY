@@ -496,8 +496,8 @@ def _d61_lines(
     )
     counts = Counter(cause.values())
     lines = [
-        f"  con D61 ({sources}) y D71 (mismo dato dicho de otra forma): +{len(cause)} turnos (aceptadas "
-        f"{counts['aceptada']}, D35 {counts['D35']}, D71 {counts['D71']}; "
+        f"  con D61 ({sources}): +{len(cause)} turnos (aceptadas {counts['aceptada']}, D35 {counts['D35']}; "
+        f"D71 mismo dato dicho de otra forma {counts['D71']}; "
         f"turnos con consulta D35 en la auditoría {len(looked_up & set(records))})"
     ]
     summary["d61"] = {"accepted": counts["aceptada"], "d35": counts["D35"], "d71": counts["D71"],
