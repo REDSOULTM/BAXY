@@ -730,3 +730,24 @@ H0406 → `app.installed` (D61.2) · capa A sin cambios · DEV-C 257/301 · held
 (Steam t36/t38/t42 sigue: M132 entra en v4n) · VRAM 3 796 MiB. full12: OOM en redpc a ~920/2 141 (23:08), reanudado
 desde el ejemplo 800 a las 00:11. Incidente M132 (~22:30): en una prueba en vivo con el dueño usando el PC, el clic por
 OCR pulsó «biblioteca» una vez en el panel de VS Code; M132 ata el clic a la ventana de la app abierta.
+
+## D67. El lastre de seguimiento es del historial vivido; DEV-G para ver lo que falla en primer turno (2026-10-03 01:40)
+1. **Corrida vivida** (full3 aislado, perfil app, sobre DEV-F/DEV-D con el historial que la App vivió en v4m en vez del
+   del oro): el lastre de decisión cae de 14 a 1 en F y de 13 a 3 en D; el de argumentos, de 9 a 4 y de 1 a 1. Con el
+   mismo historial, el decisor aislado falla donde falla el producto: el lastre de seguimiento no es código alrededor del
+   decisor, sino turnos anteriores que en este PC salen distintos del oro (un PDF que no existe, una búsqueda sin la hora
+   del partido, una oferta de bajar el brillo que no se hizo). Lastre de código real que queda en F/D: ≈ 5 turnos.
+2. En DEV-E (agregado) el lastre de v4m es 42 = decisor en contexto, seguimiento 17 + primer turno 13; lectores
+   explícitos de primer turno 8; conversación explícita 3; recuperación 1. Los 24 de primer turno no dependen del
+   historial y F/D (iterados) casi no los tienen (≈ 2). Para verlos sin abrir DEV-E se crea **DEV-G**.
+3. **DEV-G** (`sets/DEV-G.jsonl`, sha256 `796f828b…e222e`, 300 turnos: 125 sueltos + 45 conversaciones de 3–5 turnos,
+   ocho hablas): mismo encargo de escritor que DEV-E y cadena de `build_f.py` (`dev_g/build_g.py`); cinco escritores de
+   sala limpia de tres familias de modelos; reglas de oro de E más las del dueño D59–D61 (reglas 11–19); exclusión en
+   tres rondas (91 → 2 → 0 coincidencias, cada texto reescrito por su escritor) con las huellas protegidas + las de E y F
+   + `excl_extra_g.npz` (DEV-F y los datos de full12); doble etiquetado ciego (acuerdo compatible 300/300, conjunto
+   idéntico 85,7 %); adjudicador ciego en 94 filas (1: 74, 2: 10, nueva: 10, 0 descartadas); el coordinador devolvió
+   `ask` a dos recordatorios sin hora (X001, X006: la regla 11 trata la hora sin mañana/tarde, no la hora que falta; 3 de
+   4 etiquetas lo aceptaban). Decisor aislado full3 en DEV-G: decisión 295/300, argumentos 167/179 (en E: 293/299). DEV-G
+   es **iterable**; DEV-E sigue sólo como medida.
+4. M135 (rama `opus/m135-borrado-inventado`): un informe de una operación que no borra no puede decir que algo se
+   borró (F-w47-t2 «Se borró el borrador…», igual en v4i, v4k y v4m); entra en la ronda siguiente a v4n.
