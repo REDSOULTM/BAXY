@@ -2588,7 +2588,91 @@ def said_advance(text: str) -> SaidAdvance | None:
     return SaidAdvance(minutes, moment, clock, said[advance.start():advance.end()], title)
 
 
-_ISO_DATE = re.compile(r"(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})(?:T00:00(?::00)?(?:Z|[+-]00:00)?)?")
+# --- An advance counted from the moment an answer gives ----------------------------
+# M148 (DEV-G v4r G-w19-t4 «pues salgo sobre las 6 de la tarde, así que calcula desde ahí» after «vale, pues
+# recuérdamelo veinte minutos antes de salir» → «¿A qué hora tienes pensado salir?» → set at 18:00, the moment of
+# leaving, where 17:40 was asked; the isolated decider set 16:40): the request counted «<duración> antes» of something
+# whose moment it did not say («antes de salir» is a clause, so ``said_advance`` reads no advance), BAXY asked when, and
+# the answer gives that moment. The notification rings that long before it; what it is for is what the advance counted
+# from. The question is the last one of BAXY's reply; the answer is a moment, never an order with a clock of its own.
+_ASKS_WHEN = re.compile(r"\b(?:a\s+que\s+hora|cuando|what\s+time|when)\b")
+_INFINITIVE_LEAD = re.compile(r"[a-z]*(?:ar|er|ir)(?:me|te|se|lo|la|le|nos|los|las|les)?")
+_ALARM_HEAD = re.compile(r"\b(?:alarmas?|alarms?|despertador|despiertame|despertame|wake\s+me)\b")
+_ANSWERED_DAY = re.compile(rf"\b{_SAID_DAY}\b")
+
+
+def answered_advance_request(
+    text: str, pending: str | None, reply: str | None, *, now: datetime | None = None,
+) -> str | None:
+    """«recuérdame salir a las 17:40» for «salgo sobre las 6 de la tarde» answering «¿A qué hora tienes pensado
+    salir?» about «vale, pues recuérdamelo veinte minutos antes de salir» (``pending``, the person's request BAXY's
+    question was about). None unless the reply's last question asks when, the request asks to be reminded or woken with
+    one count before something named after it and no clock of its own, and the answer says one clock, at most one day,
+    and neither another count nor an order of its own («avísame a las 5» is the notification's own clock). A clock
+    without its part of the day is the next time it comes (D61) when no day is said; with a day it is left alone."""
+
+    question = " ".join(str(reply or "").split())
+    if not question.endswith("?") or _ASKS_WHEN.search(_fold(re.split(r"(?<=[.!?])\s+", question)[-1])) is None:
+        return None
+    request = " ".join(str(pending or "").split())
+    folded_request = _same_length_fold(request)
+    counts = list(_COUNTED_OFFSET.finditer(folded_request))
+    if (
+        len(counts) != 1
+        or counts[0].group("sign") not in {"antes", "before"}
+        or re.search(_REMIND_HEAD, folded_request) is None
+        or spoken_clocks(folded_request)
+    ):
+        return None
+    minutes = _offset_minutes(counts[0])
+    spanish = counts[0].group("sign") == "antes"
+    lead = re.match(r"\s+(?:de|d|del)\s+" if spanish else r"\s+", folded_request[counts[0].end():])
+    if minutes is None or lead is None:
+        return None
+    start = counts[0].end() + lead.end()
+    stop = _EVENT_CLAUSE_END.search(folded_request, start)
+    event = request[start: stop.start() if stop is not None else len(request)].strip(" ,;:.!?¡¿")
+    first = re.match(r"[a-z]+", _same_length_fold(event))
+    if first is None or first.group(0) in _EVENT_POINTERS:
+        # «veinte minutos antes de eso»: what it counts from is pointed at, read by ``anchored_offset_request``.
+        return None
+    said = " ".join(str(text or "").split())
+    answer = _fold(said)
+    written = said if len(said) == len(answer) else answer
+    clocks = spoken_clocks(answer)
+    days = [written[found.start(): found.end()] for found in _ANSWERED_DAY.finditer(answer)] or [
+        request[found.start(): found.end()] for found in _ANSWERED_DAY.finditer(folded_request)
+    ]
+    if len(clocks) != 1 or len(days) > 1 or _COUNTED_OFFSET.search(answer) or re.search(_REMIND_HEAD, answer):
+        return None
+    clock = clocks[0]
+    day = days[0] if days else ""
+    if clock.resolved:
+        moment = clock.hour * 60 + clock.minute
+    elif day:
+        return None
+    else:
+        current = (now or datetime.now().astimezone()).astimezone()
+        later = [hour * 60 + clock.minute for hour in (clock.hour % 12, clock.hour % 12 + 12)
+                 if hour * 60 + clock.minute > current.hour * 60 + current.minute]
+        if not later:
+            return None
+        moment = later[0]
+    moment -= minutes
+    if moment < 0:
+        return None
+    when = f"{moment // 60:02d}:{moment % 60:02d}"
+    day = f"{day} " if day else ""
+    if _ALARM_HEAD.search(folded_request):
+        return f"pon una alarma {day}a las {when} para {event}" if spanish else f"set an alarm {day}at {when} before {event}"
+    if not spanish:
+        return f"remind me {day}at {when} before {event}"
+    if _INFINITIVE_LEAD.fullmatch(first.group(0)):
+        return f"recuérdame {event} {day}a las {when}"
+    return f"recuérdame {day}a las {when} antes de {event}"
+
+
+_ISO_DATE =re.compile(r"(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})(?:T00:00(?::00)?(?:Z|[+-]00:00)?)?")
 
 
 def task_due_date(value: str, *, today: date | None = None) -> str | None:
@@ -2663,6 +2747,30 @@ def moved_to_clock(text: str, old: datetime) -> Retiming | None:
         return None
     hour, minute, resolved = clocks.pop()
     return Retiming(None, hour, minute, resolved)
+
+
+# M148 (DEV-F v4q F-w45-t3 «go with 12, the bag says 10 to 12 but my oven runs cold» after BAXY set «a 25-minute
+# countdown for the garlic knots», planned «Change the garlic knots countdown to 12 minutes.» → «¿Qué tipo de alarma o
+# recordatorio necesitas cancelar?»): a timer moved to a new length rings that long from now. A length counted from
+# another moment («10 minutes later», «media hora antes») moves it by that much and is not its length.
+_LENGTH_SHIFT = re.compile(
+    r"\s+(?:antes|despues|before|after|earlier|later|mas\s+(?:tarde|temprano)|more|less|menos|de\s+mas|de\s+menos)\b"
+)
+
+
+def moved_to_length(text: str) -> Retiming | None:
+    """Once the turn is decided as moving a timer just set, its new length: the one length of time the message says
+    (``said_durations``), with no clock and not counted from another moment. None otherwise."""
+
+    said = " ".join(str(text or "").split())
+    durations = said_durations(said)
+    if len(durations) != 1 or spoken_clocks(_fold(said)):
+        return None
+    folded = _same_length_fold(said)
+    end = folded.find(_same_length_fold(durations[0][0])) + len(durations[0][0])
+    if _LENGTH_SHIFT.match(folded, end):
+        return None
+    return Retiming(duration=durations[0][0])
 
 
 def retimed_local_moment(retiming: Retiming, old: datetime, now: datetime | None = None) -> datetime | None:

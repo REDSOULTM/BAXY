@@ -28,6 +28,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
+from typing import Iterable
 
 from .grammar import _COVERAGE_ACTION_HEAD, _RELATIVE_DURATION_PATTERN, _head_is
 from .levels import followup_antecedent
@@ -37,6 +38,7 @@ from .temporal import (
     alarm_cancellation_request,
     assents_to_alarm_offer,
     moved_to_clock,
+    moved_to_length,
     notification_retiming,
     offset_retiming,
     plural_alarm_cancellation,
@@ -1228,6 +1230,125 @@ def value_from_reply(text: str, reply: str | None) -> str | None:
     return said[: pointer.start()] + values.pop() + said[pointer.end():]
 
 
+# --- What a reminder points at with «eso» -------------------------------------------
+# M148 (DEV-F v4q F-w48-t4 «órale, pues recuérdame eso el domingo a las 3 de la tarde» after «El domingo en Zapopan: 23
+# °C… en la tarde; mejor lleva paraguas.» → titled «Voy a estar en Zapopan el domingo.», another thing the person had
+# said; DEV-D v4q D-w07-t4 «va, ahorita ponle un recordatorio el viernes a las 5 de la tarde que le devuelva eso a mi
+# carnal» after «Redondeado hacia arriba, 265.» → titled «Devolverle eso a mi amigo.»; the isolated decider got neither):
+# «eso» in a reminder is what the conversation last gave to do or to keep. When the whole reminder is «eso»
+# («recuérdame eso», «recuérdamelo», «remind me about that»), it is the one thing BAXY's last reply advised doing; when
+# «eso» is what something is done with («que le devuelva eso»), it is the one figure BAXY's last reply gave as its
+# answer. The words of the reminder stay the decider's or the readers'; only what it points at is said.
+_ADVICE = re.compile(
+    r"(?:^|[.;:!?,]\s*|\b(?:y|asi\s+que|so|and)\s+)(?:(?:te\s+)?(?:conviene|recomiendo|sugiero)|mejor|no\s+olvides|"
+    r"no\s+te\s+olvides\s+de|acuerdate\s+de|deberias|tendrias\s+que|(?:you'?d\s+)?better|"
+    r"you\s+(?:should|might\s+want\s+to|may\s+want\s+to)|i'?d\s+(?:recommend|suggest)|i\s+(?:recommend|suggest)|"
+    r"don'?t\s+forget\s+(?:to\s+)?|remember\s+to|make\s+sure\s+(?:to|you))\s+(?P<action>[a-z][^.;:!?,]*)"
+)
+# The order to remind, with «eso» or its clitic as all it is about.
+_POINTED_REMINDER = re.compile(
+    r"\b(?:(?:recuerd(?:a|ame|eme)|record(?:a|ame)|acord(?:ate|ame)|avis(?:a|ame))(?:\s+(?:de|con))?\s+"
+    r"(?:eso|esto|aquello)|recuerd(?:amelo|amela|emelo)|record(?:amelo|amela)|acordamelo|avisamelo|"
+    r"(?:recordatorio|aviso|alarma)\s+(?:de|para|con|sobre)\s+(?:eso|esto)|"
+    r"(?:remind|ping)\s+me(?:\s+(?:of|about))?\s+(?:that|this|it)|"
+    r"(?:reminder|alarm)\s+(?:for|about|of)\s+(?:that|this|it))\b"
+)
+# What may surround that order and say only when, how or to whom («órale, pues», «el domingo a las 3 de la tarde»).
+_AROUND_A_POINTED_REMINDER = frozenset(
+    """
+    orale pues ok okay okey vale bueno dale va oye baxy porfa por favor please pls then entonces y and el la las los a
+    al at on for para pa en in de del the this este esta ese esa hoy manana tomorrow today tonight tarde noche
+    morning afternoon evening night ahorita luego later si yes yeah sure tambien also too ponme pon ponle set me un
+    una a an same mismo misma hora time
+    """.split()
+)
+# «eso» as what something is done with, in a reminder that says what is done; in English, what is paid, given, sent
+# or returned («pay him that back»): «that» alone opens a clause as often as it points.
+_POINTED_OBJECT = re.compile(
+    r"\b(?:eso|esto|aquello)\b|\b(?:pay|give|send|return|transfer|lend|owe)\s+(?:(?:him|her|them|my\s+\w+|\w+)\s+)?"
+    r"(?:that|it|this)\b"
+)
+_REMINDER_ORDER = re.compile(
+    r"\b(?:recuerd\w*|record\w*|acord\w*|avis\w*|recordatorios?|remind(?:er)?s?|alarmas?|alarms?)\b"
+)
+_TITLE_POINTER = re.compile(r"\b(?:eso|esto|aquello|algo|that|this|it|something)\b")
+_REPLY_FIGURE = re.compile(
+    r"(?<![\d.,:])(?P<number>\d+(?:[.,]\d+)?)(?![\d:])(?P<unit>(?:\s+mil)?\s*(?:%|€|\$|(?:euros?|dolares|dollars|"
+    r"pesos|soles|libras|pounds|bucks|lucas)\b)|\s+mil\b)?"
+)
+
+
+def advised_action(reply: str | None) -> str | None:
+    """The one thing BAXY's ``reply`` advised doing, as written («mejor lleva paraguas» → «lleva paraguas», «you might
+    want to bring an umbrella» → «bring an umbrella»); None with no advice or more than one."""
+
+    said = " ".join(str(reply or "").split())
+    folded = _fold(said)
+    if len(folded) != len(said):
+        said = folded
+    found = [match for match in _ADVICE.finditer(folded) if len(match.group("action").split()) <= 8]
+    if len(found) != 1:
+        return None
+    return said[found[0].start("action"):found[0].end("action")].strip()
+
+
+def _reply_figure(reply: str, said_before: Iterable[str]) -> str | None:
+    """The one number of a short ``reply`` nobody said before (its unit with it), when it says no clock."""
+
+    answer = " ".join(str(reply or "").split())
+    folded = _fold(answer)
+    if len(folded) != len(answer):
+        answer = folded
+    if len(folded.split()) > 12 or spoken_clocks(folded):
+        return None
+    said = {
+        found.group("number").replace(",", ".") for line in said_before for found in _REPLY_FIGURE.finditer(_fold(line))
+    }
+    new = {
+        answer[found.start():found.end()].strip()
+        for found in _REPLY_FIGURE.finditer(folded)
+        if found.group("number").replace(",", ".") not in said
+    }
+    return new.pop() if len(new) == 1 else None
+
+
+def pointed_reminder_title(
+    text: str, reply: str | None, title: str, said_before: Iterable[str] = (),
+) -> str | None:
+    """The reminder's ``title`` with what ``text`` points at said (see above), or None when it already says it, the
+    message points at nothing, or the conversation gives no one thing it points at."""
+
+    folded = _fold(" ".join(str(text or "").split()))
+    folded_title = _fold(title)
+    pointed = _POINTED_REMINDER.search(folded)
+    if pointed is not None:
+        rest = folded[: pointed.start()] + " " + folded[pointed.end():]
+        for clock in spoken_clocks(rest):
+            rest = rest.replace(clock.literal, " ")
+        rest = re.sub(rf"\b(?:{_DAY}|{_RELATIVE_DURATION_PATTERN})\b", " ", rest)
+        if all(word in _AROUND_A_POINTED_REMINDER for word in _WORD.findall(rest)):
+            action = advised_action(reply)
+            if action is None:
+                return None
+            words = [word for word in _WORD.findall(_fold(action)) if len(word) >= 4 and word not in _STOPWORDS]
+            content = words[1:] or words
+            if content and any(re.search(rf"\b{re.escape(word[:5])}", folded_title) for word in content):
+                return None
+            return action
+    if not _REMINDER_ORDER.search(folded) or not _POINTED_OBJECT.search(folded):
+        return None
+    figure = _reply_figure(reply or "", [text, *said_before])
+    pointers = list(_TITLE_POINTER.finditer(folded_title))
+    if (
+        figure is None
+        or re.search(rf"(?<![\d.,]){re.escape(_fold(figure))}", folded_title)
+        or len(pointers) != 1
+        or len(folded_title) != len(title)
+    ):
+        return None
+    return title[: pointers[0].start()] + figure + title[pointers[0].end():]
+
+
 # M83 (DEV-D v3o D-p19-t3 «What's the genre?» right after the cast of «After the Wedding» was read): a question for an
 # attribute with the definite article and no owner («what's the genre», «¿cuál es la trama?», «who's the director»)
 # asks it of what the conversation just named. Alone it read as a definition, and «genre» was looked up.
@@ -1468,6 +1589,11 @@ _LISTED_POINTER = re.compile(
 
 # M102: a move said with a bare number («actually make it 9», «no, mejor 10»), and the words that make a number a clock.
 _BARE_RETIME_NUMBER = re.compile(r"(?:^|[\s,])(?:\d{1,2}|" + alternation(frozenset(_NUMBER_WORDS)) + r")[\s.!]*$")
+# M148: an alarm set as a timer (named so, or set by a length of time), whose move may give it a new length.
+_TIMER_SET = re.compile(
+    r"\b(?:timers?|temporizador(?:es)?|countdowns?|count\s*downs?|cuentas?\s+(?:regresivas?|atras))\b|"
+    + _RELATIVE_DURATION_PATTERN
+)
 _CLOCK_SAID = re.compile(r"\d:\d|\b(?:las?|at|am|pm|a\.\s?m|p\.\s?m|o'?clock|en\s+punto|de\s+la\s+(?:manana|tarde|noche))\b")
 
 
@@ -1770,6 +1896,13 @@ class DialogueState:
             return None
         if retiming is None and shift is None:
             retiming = moved_to_clock(text, old)
+            if retiming is None and kind == "alarm" and _TIMER_SET.search(
+                _fold(f"{self._notification['title']} {self._notification.get('request') or ''}")
+            ):
+                # M148 (DEV-F v4q F-w45-t3 «go with 12…» after «I have set a 25-minute countdown for the garlic knots»,
+                # planned «Change the garlic knots countdown to 12 minutes.» → «¿Qué tipo de alarma…?»): a timer moved
+                # to a new length rings that long from now (``temporal.moved_to_length``).
+                retiming = moved_to_length(text)
             if retiming is None:
                 return None
         cancel_at = alarm_cancellation_request(((old.hour, old.minute),), english)
