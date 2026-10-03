@@ -16265,13 +16265,15 @@ def compose_visible_defect(
         failure_assertions = without_quoted_speech(failure_assertions)
     presence = _merged_observed(situation)
     if (
-        situation.get("operation") in {"media.play.youtube", "media.play.query", "media.play.exact"}
+        str(situation.get("operation") or "").startswith("media.")
         and situation.get("verified") is True
         and situation.get("succeeded") is True
         and isinstance(presence, dict)
     ):
         # MUSIC1749: the observed title is not a statement about the outcome
-        # («… Can't Stop …» is the song, not a failure).
+        # («… Can't Stop …» is the song, not a failure). M140 (DEV-G v4o G-s099 «skip esta cancion» → «Está sonando MC
+        # Hammer - U Can't Touch This.» died as asserted_failure three times): the song a control or a status read
+        # observed is the song too.
         for key in ("title", "artist"):
             value = presence.get(key)
             if isinstance(value, str) and value.strip():
