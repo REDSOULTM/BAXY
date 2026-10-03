@@ -1533,6 +1533,8 @@ class DialogueState:
         self._listed: tuple[str, ...] = ()  # M76: the titles of the tasks read, in the order they were told
         self._task: dict[str, object] | None = None  # M80: the task last created or changed, as verified
         self._headlines: tuple[str, ...] = ()  # M83: the headlines read, in the order they were told
+        # M145: every alarm, timer or reminder this conversation set and has not cancelled, as verified, in order.
+        self._own_notifications: list[dict[str, str]] = []
 
     def expect(self, request: str, operations: object) -> None:
         if self.operations and not set(self.operations) & set(_TASK_WRITES):
@@ -1549,6 +1551,8 @@ class DialogueState:
     def record(self, situation: object) -> None:
         if not isinstance(situation, dict) or self.request is None:
             return
+        for step in _verified_steps(situation):
+            self._keep_own_notification(step)
         operation = str(situation.get("operation") or "")
         if (
             operation not in self.intended
@@ -1629,6 +1633,59 @@ class DialogueState:
             self._facts["volume"] = str(observed["level"])
         elif operation.startswith("system.settings") and observed.get("setting") and observed.get("value") is not None:
             self._facts[str(observed["setting"])] = str(observed["value"])
+
+    def _keep_own_notification(self, step: dict) -> None:
+        """M145: a verified setting of an alarm, a timer or a reminder is this conversation's own; a verified cancel
+        takes the one it names (its task) off. A cancel that does not say which one leaves nothing known as own."""
+
+        operation = str(step.get("operation") or "")
+        observed = step.get("observed") if isinstance(step.get("observed"), dict) else {}
+        if operation == "notification.schedule":
+            kind, due = observed.get("kind"), observed.get("dueUtc")
+            if kind in {"alarm", "reminder"} and isinstance(due, str) and _instant(due) is not None:
+                task = str(observed.get("taskName") or "")
+                self._own_notifications = [
+                    entry for entry in self._own_notifications
+                    if not (task and entry["taskName"] == task)
+                ] + [{"kind": kind, "dueUtc": due, "taskName": task}]
+        elif operation.startswith("notification.cancel"):
+            task = str(observed.get("taskName") or "")
+            known = [entry for entry in self._own_notifications if entry["taskName"]]
+            if task and len(known) == len(self._own_notifications):
+                self._own_notifications = [entry for entry in known if entry["taskName"] != task]
+            else:
+                self._own_notifications = []
+
+    def own_notification_at(
+        self, kind: str, hour: int | None, minute: int = 0, period: str | None = None, *,
+        now: datetime | None = None, zone: timezone | None = None,
+    ) -> bool:
+        """M145 (DEV-H v4p H-w29-t2 «no espera, mejor a las 7:30» after this conversation set its alarm at 19:00, H-w45-t4
+        «cancel the 7 one»): whether the clock a cancellation names (as ``notification.cancel.at`` selects it: a clock
+        without its part of the day is either one) is that of the alarm, timer or reminder of that kind this
+        conversation set last, still to ring, and of no other one it set. Then that one is the latest BAXY set of its
+        kind (``notification.cancel.latest``), and the others in the store at the same clock are not it. ``hour`` None:
+        a move that names no clock («Cambia el recordatorio para el jueves a las 15:30») is of the last one set; it
+        holds when that one is still to ring."""
+
+        moment = now or datetime.now(timezone.utc)
+
+        def pending_at(entry: dict[str, str]) -> bool:
+            when = _instant(entry["dueUtc"])
+            if when is None or when <= moment:
+                return False
+            if hour is None:
+                return entry is own[-1]
+            local = when.astimezone(zone)
+            if period in {"am", "pm"}:
+                wanted = hour % 12 + (12 if period == "pm" else 0)
+                hour_holds = local.hour == wanted
+            else:
+                hour_holds = local.hour % 12 == hour % 12 if hour <= 12 else local.hour == hour
+            return hour_holds and local.minute == minute
+
+        own = [entry for entry in self._own_notifications if entry["kind"] == kind]
+        return bool(own) and pending_at(own[-1]) and sum(pending_at(entry) for entry in own) == 1
 
     def understood(self, user_text: str, situation: object) -> str:
         """The request a composed result answers: the last turn's, as the mind understood it, when the result is
@@ -1838,6 +1895,34 @@ class DialogueState:
         nouns = [noun for kind in kinds for noun in kind[1 if asked.group("es") else 2]]
         named = ", ".join(nouns[:-1]) + (" y " if asked.group("es") else " and ") + nouns[-1] if len(nouns) > 1 else nouns[0]
         return f"{said.said[: asked.end()]} {named}{said.said[asked.end():]}"
+
+
+def _verified_steps(situation: dict) -> list[dict]:
+    """M145: the verified results a composed situation carries — itself, or each step of a mission (its ``steps``, as
+    the App sends them: objects or their JSON text)."""
+
+    steps: list[dict] = [situation] if situation.get("operation") else []
+    for raw in situation.get("steps") or () if isinstance(situation.get("steps"), list) else ():
+        if isinstance(raw, str):
+            try:
+                raw = json.loads(raw)
+            except json.JSONDecodeError:
+                continue
+        if isinstance(raw, dict):
+            steps.append(raw)
+    return [step for step in steps if step.get("verified") is True and step.get("succeeded") is True]
+
+
+def _instant(stamp: str) -> datetime | None:
+    """A UTC stamp as the Core writes it («2026-10-03T22:00:00+00:00», «…Z», up to seven fractions), or None."""
+
+    found = re.fullmatch(r"(\d{4}-\d\d-\d\dT\d\d:\d\d(?::\d\d)?)(?:\.\d+)?(Z|[+-]\d\d:\d\d)", stamp.strip())
+    if found is None:
+        return None
+    try:
+        return datetime.fromisoformat(found.group(1) + ("+00:00" if found.group(2) == "Z" else found.group(2)))
+    except ValueError:
+        return None
 
 
 def _previous_user_request(history: list[object], current_request: str) -> str | None:
