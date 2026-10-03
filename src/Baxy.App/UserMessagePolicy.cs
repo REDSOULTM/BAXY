@@ -310,7 +310,7 @@ internal static class UserMessagePolicy
         string judgedText = codeAsked ? vocabularyText : modelText;
         if (LooksLikeMachineSlotAsk(FoldForPolicy(vocabularyText))
             || LooksLikeRestatingDefinitionAsk(FoldForPolicy(vocabularyText))
-            || HasRepeatedWord(FoldForPolicy(judgedText))
+            || HasRepeatedWord(judgedText)
             || ContainsPersonMetadiscourse(FoldForPolicy(modelText))
             || ContainsInternalCode(
                 ObservedResponseLiterals.WithoutObservedIdentifiers(vocabularyText, draft.Source),
@@ -709,7 +709,7 @@ internal static class UserMessagePolicy
                     || reply.Contains('?', StringComparison.Ordinal)
                     || reply.Contains('¿', StringComparison.Ordinal)
                     || !said.Contains("baxy", StringComparison.Ordinal))),
-            ("repeated_word", HasRepeatedWord(said)),
+            ("repeated_word", HasRepeatedWord(reply)),
             ("invented_time_zone", InventsNamedTimeZone(userText, reply)),
             ("invented_clock_place", InventsClockPlace(reply)),
             ("dumps_interfaces", DumpsUnsolicitedInterfaces(userText, reply)),
@@ -1486,8 +1486,16 @@ internal static class UserMessagePolicy
 
     private static bool StartsWithGreeting(string reply) => GreetingRemainder(reply) is not null;
 
-    private static bool HasRepeatedWord(string folded)
+    /// <summary>
+    /// M146 (DEV-F v4o/v4p F-w34-t2 «¿Y si al final somos ocho?», the consulted recipe for eight): the page's own
+    /// «(del tamaño de una uña)» folded to «una una» and the whole recipe died as internal_code twice, while the mind
+    /// passed it. A stutter is the same word twice as written: «ñ» is a letter of its own and «esta está» are two
+    /// words, so the text is only lowercased, never stripped of its marks. Twin: llm.compose_visible_defect (the
+    /// repeated-word check over the casefolded vocabulary).
+    /// </summary>
+    private static bool HasRepeatedWord(string text)
     {
+        string folded = text.ToLowerInvariant();
         Match? previous = null;
         foreach (Match word in Regex.Matches(
             folded,
