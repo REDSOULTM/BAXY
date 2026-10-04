@@ -2501,6 +2501,11 @@ _CODE_ASKED = re.compile(
     rf"\b{_CODE_WRITING_VERB}\b.{{0,160}}\b(?:en|in|a|to|into|para|for|con|with|using|usando)\s+(?:el\s+|the\s+)?"
     rf"(?:lenguaje\s+(?:de\s+programacion\s+)?)?{_CODE_LANGUAGE_NAME}|"
     rf"^[\s¿¡]*(?:y\s+|and\s+)?(?:ahora\s+|now\s+)?(?:en|in)\s+{_CODE_LANGUAGE_NAME}[\s?!.]*$|"
+    # M161 (DEV-I v4w I-s110 «need una función python que reciba un texto y me diga cuántas vocales tiene…» → looked
+    # up as how many vowels a text has, where the isolated decider wrote it): a piece of code needed or wanted is asked
+    # for as when it is ordered written.
+    rf"\b(?:need|needs|necesito|necesitaria|quiero|quisiera|want|i'?d\s+like)\s+(?:un|una|a|an|some|otro|otra|another)\s+"
+    rf"(?:\w+\s+){{0,2}}?{_CODE_PIECE_NOUN}|"
     # M81 (DEV-D v3m D-w20-t1 «estoy haciendo un script en Python y necesito leer un CSV y sacar el promedio de la
     # columna price, can you write it?» → «Puedes usar pandas…»): the piece of code described first and asked for
     # after with a pronoun («write it», «escríbelo», «¿lo puedes escribir?»).
