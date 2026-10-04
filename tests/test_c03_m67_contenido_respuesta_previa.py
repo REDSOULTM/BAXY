@@ -313,8 +313,11 @@ def test_without_a_previous_reply_the_content_is_still_asked(monkeypatch) -> Non
         [{"role": "user", "content": "copia algo al portapapeles"}],
     )
     assert result["ok"] is False and result["question"] == "¿Qué texto quieres copiar al portapapeles?"
-    payload = runtime._post.call_args.args[0]
+    payload = runtime._post.call_args_list[0].args[0]
     assert "previous_reply_field" not in payload["response_format"]["json_schema"]["schema"]["properties"]
+    # M150: before asking, the decider read the turn (here its reply is no decision, so the question stands).
+    decider = runtime._post.call_args_list[-1].args[0]
+    assert decider["response_format"]["json_schema"]["name"] == "baxy_context_decision"
 
 
 def test_the_model_saying_none_still_asks(monkeypatch) -> None:
