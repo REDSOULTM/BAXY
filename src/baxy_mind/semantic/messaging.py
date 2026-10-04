@@ -364,12 +364,24 @@ _DRAFT_VERB = (
 )
 
 
+# M155 (DEV-I v4u I-s061 «write a WhatsApp to Callum saying I'm stuck on the Northern line and I'll be about twenty
+# minutes late, but leave it for me to send» → sent, where the gold and the isolated decider left it written): the person
+# also keeps the sending for themselves — «leave it for me to send», «I'll send it myself», «let me hit send», «pero lo
+# mando yo», «déjamelo para que lo envíe yo». A «yo lo mando» needs its «pero/y» before it: inside the words of the
+# message («dile que yo lo mando mañana») it is what is said.
 _NOT_SENT = re.compile(
     r"(?:^|[\s,;.(—-]+)(?:(?:pero|y|but|and|tho)\s+)?"
     r"(?:sin\s+(?:enviar|mandar)(?:lo|la|selo|sela)?(?:\s+(?:todav[ií]a|a[uú]n))?|"
     r"no\s+(?:se\s+)?(?:lo|la)\s+(?:mandes|mand[eé]s|env[ií]es|envi[eé]s)|"
     r"d[eé]ja(?:lo|la)\s+sin\s+(?:enviar|mandar)|"
-    r"(?:do\s+not|don'?t|dont)\s+send(?:\s+(?:it|that|this))?|without\s+sending(?:\s+it)?)\b.*$",
+    r"(?:do\s+not|don'?t|dont)\s+send(?:\s+(?:it|that|this))?|without\s+sending(?:\s+it)?|"
+    r"(?:leave|keep)\s+(?:it|this|that)\s+(?:for|to)\s+me\s+to\s+send|"
+    r"let\s+me\s+(?:send|hit\s+send\s+on)\s+(?:it|this|that)|"
+    r"i(?:'ll|\s+will|'d\s+rather)\s+(?:send\s+(?:it|this|that)\s+myself|hit\s+send|do\s+the\s+sending)|"
+    r"(?:do\s+not|don'?t|dont)\s+hit\s+send|"
+    r"d[eé]j[aá](?:me)?(?:lo|la)?\s+(?:para\s+que|que)\s+(?:yo\s+)?(?:se\s+)?(?:lo|la)\s+(?:mande|env[ií]e)|"
+    r"(?:pero|y)\s+(?:yo\s+(?:se\s+)?(?:lo|la)\s+(?:mando|env[ií]o)|(?:se\s+)?(?:lo|la)\s+(?:mando|env[ií]o)\s+yo|"
+    r"yo\s+le\s+doy\s+(?:a\s+)?(?:enviar|send)))\b.*$",
     re.IGNORECASE,
 )
 

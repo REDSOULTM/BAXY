@@ -5605,6 +5605,17 @@ def _context_decided_result(
         )
     if (
         decided.decision == "action"
+        and "message.send" in decided.operations
+        and "message.draft" in available_operations
+        and effect_intent.asks_not_to_send(text)
+    ):
+        # M155 (safety exception to D58; DEV-I v4u I-s061 «… but leave it for me to send»): a message the person orders
+        # not to send is left written, never sent, whoever read it — the readers no longer prove a send for it
+        # (``resolve_explicit_effects``), and the decider's send is held the same way. Its words are read again from
+        # the message (``message.draft`` arguments).
+        decided = semantic_decider.ContextDecision(decided.request, "action", ("message.draft",), decided.question)
+    if (
+        decided.decision == "action"
         and len(decided.operations) == 1
         # The moments of alarms and reminders keep their own readers (``semantic.temporal``).
         and not set(decided.operations) & (_CLOCK_SET_OPERATIONS | {"notification.cancel.at"})
