@@ -190,6 +190,9 @@ public sealed class MissionPlanValidatorTests
     // done or reopened takes its identity and version from the same resolver.
     [TestCase("task.complete", "task.resolve.exact")]
     [TestCase("task.reopen", "task.resolve.exact")]
+    // M160 (DEV-G v4w G-w12-t2 «agrégale que quiero comprarle un ramo de flores» → «¿Cuál es el título de la nota…?»):
+    // a note is changed by the identity and revision its verified read gives.
+    [TestCase("note.update", "note.read")]
     [TestCase("filesystem.read.text", "filesystem.search")]
     [TestCase("filesystem.read.text", "filesystem.list")]
     public void DeferredIdentityConsumersRequireTheirResolvers(

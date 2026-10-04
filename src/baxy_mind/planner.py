@@ -1094,6 +1094,9 @@ def _required_predecessors(operation: str) -> tuple[str, ...]:
         "game.install.commit": ("game.install.prepare",),
         "game.purchase.commit": ("game.purchase.prepare",),
         "message.send": ("message.recipient.resolve",),
+        # M160 (DEV-G v4w G-w12-t2 «agrégale que quiero comprarle un ramo de flores» → «¿Cuál es el título de la nota…?»
+        # on every run since v3d): note.update takes the note's identity and revision, which only a read of it gives.
+        "note.update": ("note.read",),
         "notification.dismiss": ("notification.list.due",),
         "ocr.read": ("capture.screenshot", "capture.active.window"),
         "package.install.commit": ("package.install.prepare",),

@@ -155,6 +155,9 @@ public static class MissionPlanValidator
             "game.install.commit" => ["game.install.prepare"],
             "game.purchase.commit" => ["game.purchase.prepare"],
             "message.send" => ["message.recipient.resolve"],
+            // M160 (DEV-G v4w G-w12-t2 «agrégale que quiero comprarle un ramo de flores» → «¿Cuál es el título de la
+            // nota…?»): a note is changed by its identity and revision, which only the verified read of it gives.
+            "note.update" => ["note.read"],
             "notification.dismiss" => ["notification.list.due"],
             "ocr.read" => ["capture.screenshot", "capture.active.window"],
             "package.install.commit" => ["package.install.prepare"],
@@ -223,7 +226,7 @@ public static class MissionPlanValidator
             "game.install.commit" or "game.purchase.commit"
                 or "package.install.commit" => ["confirmationId"],
             "message.send" => ["recipientId"],
-            "note.read" => ["noteId"],
+            "note.read" or "note.update" => ["noteId"],
             "notification.dismiss" or "reminder.delete" => ["reminderId"],
             "task.delete" or "task.complete" or "task.reopen" => ["taskId"],
             "ocr.read" or "vision.describe" => ["captureId"],
