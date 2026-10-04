@@ -903,6 +903,56 @@ def clock_elsewhere(folded: str) -> ClockElsewhere | None:
     return ClockElsewhere(place, place, clock, clock_is_there, difference, zone_asked)
 
 
+# M162 (DEV-H v4w H-w08-t3 «cuánta diferencia hay con aquí» after «En Lima son las 12:10.» → restated «¿Cuánta
+# diferencia horaria hay entre Buenos Aires y Lima?» and searched as a figure of the world): the hours apart from here,
+# asked with no place named right after BAXY told the clock of one place, are that place's. Said by its name, the
+# request is the clock read of M84, whose difference is computed on the reading (``llm._place_clock_facts``), never by
+# the decider nor by a talk that has no clock of here.
+# The clock told of a place: «en Lima son las 12:10», «son las 01:09 en Tokio», «in Lima it's 12:10», «it's 4:15 pm in
+# London» (not «el pan está a 7.50 en Lima»).
+_CLOCK_TOLD = r"(?:son\s+las|es\s+la|it'?s|it\s+is)\s+(?<![\d.,])\d{1,2}[:.]\d{2}(?![\d.,]\d)"
+_TOLD_PLACE = r"(?P<place>[a-z][a-z'\-]*(?:\s+(?:de\s+|del\s+)?[a-z][a-z'\-]*){0,3}?)"
+_CLOCK_TOLD_OF_PLACE = (
+    re.compile(rf"\b(?:en|in)\s+{_TOLD_PLACE}\s*,?\s+{_CLOCK_TOLD}"),
+    re.compile(rf"{_CLOCK_TOLD}(?:\s*(?:a\.?\s?m\.?|p\.?\s?m\.?|hrs?\.?|horas))?\s+(?:en|in)\s+{_TOLD_PLACE}"
+               r"(?=\s*(?:[,.;!]|$)|\s+(?:right\s+now|now|ahora|ahorita|y|and|el|the)\b)"),
+)
+# The difference of something else («diferencia de precio con aquí»).
+_OTHER_DIFFERENCE = (
+    r"\b(?:diferencia|difference)\s+(?:de|del|en|in|of)\s+(?!(?:la\s+)?(?:hora|horas|horario|time|tiempo)\b)"
+)
+
+
+def hours_apart_from_the_clock_told(text: str, last_reply: str | None) -> str | None:
+    """«cuánta diferencia hay con aquí», «how many hours ahead of here is that?» after «En Lima son las 12:10.»: the
+    request of the hours apart between that place and here, in the person's language; None when the message names a
+    place or a time of its own, asks no difference with here, or the reply told no single place's clock."""
+
+    folded = _fold(text)
+    if (
+        not _has(folded, _DIFFERENCE_CUE)
+        or not _has(folded, _HERE_TARGET)
+        or _has(folded, _OTHER_DIFFERENCE)
+        or clock_elsewhere(folded) is not None
+        or spoken_clock(folded) is not None
+    ):
+        return None
+    reply = _fold(last_reply or "")
+    places = {found.group("place") for pattern in _CLOCK_TOLD_OF_PLACE for found in pattern.finditer(reply)}
+    if len(places) != 1:
+        return None
+    place = next(iter(places))
+    named = " ".join(word if word in {"de", "del"} else word.capitalize() for word in place.split())
+    english = _has(folded, r"\b(?:difference|ahead|behind|how\s+many\s+hours|here)\b")
+    request = (
+        f"what's the time difference between {named} and here?"
+        if english
+        else f"¿cuánta diferencia horaria hay entre {named} y aquí?"
+    )
+    asked = clock_elsewhere(_fold(request))
+    return request if asked is not None and asked.place == place and asked.difference else None
+
+
 # M85 (DEV-D v3o D-w02-t2 «y si allá son las 10 de la mañana acá qué hora es» after «qué hora es en madrid»: talked,
 # and the writer said this PC's clock as the answer, ⚠ clock_pattern): «allá», «allí», «there» in a clock question
 # point at the place of the clock question before it. Only a place the person named in their own earlier question.

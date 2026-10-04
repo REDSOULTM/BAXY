@@ -268,9 +268,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 M158 (2026-10-04): re-pin tras «cancela la de las N» → notification.cancel.at.
 # C03 M159: repin tras la ventana que no cabe en media pantalla (llm.py).
 # C03 comprensión natural: repin tras M160 (2026-10-04).
+# C03 M162: re-pin tras la cuenta sobre lo dicho y la diferencia horaria con aquí.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "bf3c701e10cfb22f86d22f97155cec0950a3c62cb3f0fc3774b6541ea5eacc17"
+        "c754dce0e93fdd229ccf6207db154e130e428ce54c2ad8ec5ade1957f5693635"
     ),
     "src/baxy_mind/llm.py": (
         "d61fde606798cfb6959e02e6daa33def583db4a99edcf67d78ffe15d7dadd599"
