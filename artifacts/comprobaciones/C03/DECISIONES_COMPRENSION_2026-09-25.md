@@ -824,3 +824,18 @@ OCR pulsó «biblioteca» una vez en el panel de VS Code; M132 ata el clic a la 
    no es la suya: la ventana activa es la que usaba justo antes (la siguiente en el orden de apilado que no sea de BAXY).
    Vale igual para «esta ventana» en acomodar, maximizar o minimizar (M145). Cerrar sigue pidiendo confirmación; un
    pronombre con antecedente («ciérralo» tras «abre X») sigue siendo X (M118); nunca VS Code por error (D17).
+
+## D72. v4r y v4s; incidencia de sello de DEV-E (2026-10-03 21:30)
+1. **v4r** (main a496b0a3: M145 ventana del frente y aviso propio, M146 vetos de redacción de más, M147 un nombre que busca
+   un servicio va como lo escribió la persona): **DEV-E 262/299 = 87,6 %** (+4/−1; ⚠ 1/299), DEV-G 276/300 = 92,0 %, DEV-H
+   281/300 = 93,7 %, DEV-F 243, DEV-D 305, held-out 30/30, guion 52/60 + 6 por revisar (t16/t17: YouTube devolvió otro
+   vídeo; t21/t54 redacción; mismo comportamiento que v4q), reserva 89,9/94,0 % (0/0), 742 sin cambios, cien-124 100/100.
+   El pytest de la primera cadena de v4r se detuvo por PID y se relanzó porque M147 entró en `integ/v3z` a mitad de
+   pytest (regla nueva: no fusionar en integración mientras una cadena prueba sobre ella).
+2. **v4s** (M148 «recuérdame eso» y cuentas de tiempo, M149 ventana activa = la de la persona, D71.2): **DEV-E 263/299 =
+   88,0 %** (+1/0). En DEV-E quedan 15 turnos con la decisión bien y el dato mal (sólo cuentas): 8 sin argumentos (BAXY
+   preguntó: 3 por el camino de lectores sin consultar al decisor, 5 por el decisor en contexto cuyos campos se
+   descartaron) y 6 con otro dato verificado → **M150** (antes de preguntar, usar lo que el decisor escribió).
+3. **Incidencia:** al buscar corridas, el agente de M150 imprimió por error con un glob una línea de
+   `window/v4r-devE/RUN.jsonl` (un turno). Declaró no usarla; el coordinador no la vio. M150 se diseñó con los agregados
+   de E citados arriba y filas de F/D/G/H. Se deja constancia por la regla de sello de DEV-E (D55).
