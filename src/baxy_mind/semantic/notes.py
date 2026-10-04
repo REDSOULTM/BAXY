@@ -273,6 +273,52 @@ def question_with_context(text: str) -> str | None:
     return None
 
 
+# M154 (DEV-I v4u I-s053 «baxy fijate en cuanto cerro el blue hoy que tengo que cambiar unos dolares para pagar el
+# alquiler», I-s066 «oye cachai a cuánto está el dólar hoy día, es que tengo que pagarle al gringo del depto», G-s071,
+# H-s093 «whats the dollar to mexican peso rate todya, im wiring money to my cousin in guadalajara»; I-s078 «che, nada,
+# mi viejo me preguntó cuántos habitantes tiene Mar del Plata…», H-s055 «oye, mi cuñado jura que el Betis va segundo…,
+# ¿me miras la clasificación…?» → the decider looked it up and M81 asked back about «tengo que», «my cousin», «mi
+# viejo»): as M138 for what follows a question mark, the person's need said after the question (with a comma, «es
+# que», «porque», «que tengo que…», «I'm…») and who asked it or claims it, said before («mi viejo me preguntó…», «my
+# brother swears that…»), are why it is asked, not what. A report whose question points back at that person («su casa»,
+# «his flat») keeps them in it.
+_REASON_AFTER = re.compile(
+    r"(?:\s*,\s*(?:(?:es\s+que|porque|pq|xq|ya\s+que|que|because|since|cause|cuz|as)\s+)?|"
+    r"\s+(?:es\s+que|porque|pq|xq|ya\s+que|(?P<bare>que)|because|since|cause|cuz)\s+)"
+    r"(?=(?:tengo|tenemos|tenia)\s+que\b|(?:necesito|necesitamos|debo|debemos|quiero|queremos)\s+\w|"
+    r"(?:voy|vamos)\s+a\s+\w|me\s+toca\b|i\s*'?m\s+\w|im\s+\w|i\s+am\s+\w|i\s+(?:have|need|want)\s+to\b|i\s*'?ll\b|"
+    r"we\s*'?re\s+\w|we\s+(?:have|need|want)\s+to\b)"
+)
+_REPORTED_BEFORE = re.compile(
+    r"^(?:[a-z]+\s*,?\s+){0,3}?(?:mi|my)\s+[a-z]+(?:\s+[a-z]+)?\s+(?:me\s+)?"
+    r"(?:pregunto|pregunta|jura|juro|dice|dijo|insiste|asegura|apuesta|swears|swore|says|said|asked(?:\s+me)?|"
+    r"bets|claims|insists|told\s+me)\s+(?:que\s+|that\s+|si\s+|if\s+|whether\s+)?"
+)
+
+
+def question_with_its_reason(text: str) -> str | None:
+    """The question of a message that also tells why it is asked (see above): the words before the person's need, after
+    who asked or claims it; None when the message tells no reason apart from its question."""
+
+    said = " ".join(str(text or "").split())
+    folded = fold_in_place(said)
+    start, end = 0, len(said)
+    reported = _REPORTED_BEFORE.search(folded)
+    if reported is not None and re.search(r"\b(?:su|sus|his|her|their|him|them)\b", folded[reported.end():]) is None:
+        start = reported.end()
+    reason = _REASON_AFTER.search(folded, start)
+    if reason is not None and (
+        # A bare «que» after a time («…el blue hoy que tengo que cambiar…») gives the reason; after a thing it may say
+        # which one («el auto que tengo que comprar»).
+        reason.group("bare") is None or re.search(r"\b(?:hoy|dia|ahora|ahorita|ya|today|now)$", folded[:reason.start()])
+    ):
+        end = reason.start()
+    asked = said[start:end].strip(" ,")
+    if (start, end) == (0, len(said)) or len(asked.split()) < 3:
+        return None
+    return asked
+
+
 def agenda_read_request(text: str) -> bool:
     """A question about the person's own agenda: what they have (planned, to do, coming up), their
     schedule or plans for a window, when their own event is, their next events. Not a change to the
@@ -2487,6 +2533,51 @@ def conversation_note_title(request: str, conversation: Sequence[str]) -> str | 
         if set(words) <= set(re.findall(r"[a-z0-9]+", folded)) and re.findall(r"[a-z0-9]+", folded) != words
     ]
     return holding[0] if len(holding) == 1 else None
+
+
+# --- A note named only by what it is about (M157) ------------------------------------------------------------------
+# DEV-I v4v I-w37-t3 «oye, de paso, crea una nota de la junta de hoy» → «He creado la nota titulada "Junta de hoy" con
+# el contenido "Junta de hoy".», and the next turn «que se decidió subir los precios un 5 por ciento» edited a note it
+# could not name. What a note is about («de la junta de hoy», «about today's meeting») or what it is called gives its
+# title; what it says only the person knows (M81) and is asked. A content dictated in the same message («que diga…»,
+# «: …», «y ponle…», «de comprar pan», «about buying milk») is not this.
+_NOTE_ONLY_NAMED = re.compile(
+    r"\b(?:nota|note)\s+(?:(?:nueva|new)\s+)?"
+    r"(?:de(?!\s+que\b)|del|sobre|acerca\s+del?|llamad[ao]|titulad[ao]|que\s+se\s+llame|"
+    r"con\s+el\s+(?:titulo|nombre)(?:\s+de)?|about|on|called|named|titled)\s+"
+    r"[«\"“']?(?P<topic>(?![a-z]{2,}(?:ar|er|ir|ing)\b)[^:;«»\"“”\n]+?)[»\"”']?"
+    r"(?:[\s,]+(?:porfa|por\s+favor|please|pls|plis|po|pues|nomas|gracias|thanks))*[\s.!?]*$"
+)
+_NOTE_DICTATED = re.compile(
+    r"\b(?:que\s+(?:diga|dice|ponga)|con\s+(?:el\s+)?(?:contenido|texto)|(?:y|e|and)\s+(?:pon\w*|escrib\w*|anot\w*|"
+    r"apunt\w*|agreg\w*|put|write|add)|saying|that\s+says|with\s+(?:the\s+)?(?:content|text))\b"
+)
+# What is saved in the note pointed at before it is named («save that in a note called home network», «guárdamela en
+# una nota que se llame tortilla», «guárdame la de javascript…»): the content is that, not something to ask.
+_NOTE_CONTENT_POINTED = re.compile(
+    r"\b(?:eso|esto|esa|ese|esos|esas|aquello|that|this|it|those|these|them|save|store|keep|guard\w*|salv\w*|"
+    r"\w+[aei](?:me|te|se|nos)?(?:lo|la|los|las))\b"
+)
+_NOTE_FRAME_WORDS = frozenset({
+    "nota", "notas", "note", "notes", "de", "del", "la", "el", "los", "las", "un", "una", "sobre", "acerca", "the", "a",
+    "an", "of", "about", "on",
+})
+
+
+def note_content_unsaid(text: str, content: str) -> bool:
+    """The person named the note only by what it is about or what it is called (see above), and ``content`` says
+    nothing but that; False for an empty content, which invents nothing."""
+
+    folded = _fold(str(text or ""))
+    named = _NOTE_ONLY_NAMED.search(folded)
+    if (
+        named is None
+        or _NOTE_DICTATED.search(named.group("topic")) is not None
+        or _NOTE_CONTENT_POINTED.search(folded[:named.start()]) is not None
+    ):
+        return False
+    written = set(re.findall(r"[a-z0-9]+", _fold(str(content or "")))) - _NOTE_FRAME_WORDS
+    return bool(written) and written <= set(re.findall(r"[a-z0-9]+", named.group("topic")))
 
 
 # M110 (DEV-F v4d F-w45-t5 «and the pizza, how many minutes till I pull it out?» → the reminders already due): what is

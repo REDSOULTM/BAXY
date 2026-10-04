@@ -474,6 +474,26 @@ def _subsequence(short: str, long: str) -> bool:
     return all(letter in letters for letter in short)
 
 
+# M156 (DEV-I v4u I-s038 «abreme el afinity foto ese pa editar una imajen» restated «Abre Affinity Photo.» → «Photo»
+# judged a name nobody said, the person's words kept and «¿Cuál es el nombre exacto de la aplicación…?»): the ear and
+# the keyboard write a name as it sounds in Spanish — «foto» for «Photo», «afinity» for «Affinity», «imajen» for
+# «imagen», «Tokio» for «Tokyo» (M110's «y» for «i», which this replaces). Spellings of one sound are one key; the
+# doubled letter is one.
+_SOUND_SPELLINGS = (
+    (r"ph", "f"), (r"th", "t"), (r"c(?=[ei])", "s"), (r"ck|qu|c", "k"), (r"z", "s"), (r"g(?=[ei])", "j"),
+    (r"ll", "y"), (r"y", "i"), (r"v", "b"), (r"(?<![cs])h", ""), (r"(\w)\1+", r"\1"),
+)
+
+
+def _sound_key(word: str) -> str:
+    """The folded ``word`` as it sounds (see above): «Photo» and «foto», «Affinity» and «afinity» share one key."""
+
+    key = word
+    for spelling, sound in _SOUND_SPELLINGS:
+        key = re.sub(spelling, sound, key)
+    return key
+
+
 def _introduced_spans(
     request: str, said: list[str], world: list[str], now: datetime,
 ) -> list[tuple[int, int, str]]:
@@ -491,7 +511,7 @@ def _introduced_spans(
     )
     named_set = set(named_words)
     stems = {word[:4] for word in named_words}
-    named_by_sound = {word.replace("y", "i") for word in named_set if len(word) >= 4}
+    named_by_sound = {_sound_key(word) for word in named_set if len(word) >= 4}
     glued = {first + second for first, second in zip(named_words, named_words[1:])}
     numbers = _numbers_said(said_text) | {Fraction(now.year)}
     numbers |= {Fraction(value) for pattern, value in _LEVEL_WORDS if pattern.search(said_text)}
@@ -584,9 +604,10 @@ def _introduced_spans(
         bare = re.sub(r"[-'’]", "", key)
         if bare[:4] in stems or bare in glued or bare in named_set:
             continue
-        if bare.replace("y", "i") in named_by_sound:
+        if len(bare) >= 4 and _sound_key(bare) in named_by_sound:
             # M110 (DEV-F v4d F-w03-t4 «qué hora es en Tokyo» restated «…en Tokio?», trimmed to «¿Qué hora es
-            # ahora?» and the clock of here was read): a name spelled with «i» for «y» is the name said.
+            # ahora?» and the clock of here was read): a name spelled with «i» for «y» is the name said. M156: any
+            # spelling of the same sound is (``_sound_key``).
             continue
         if len(bare) >= 2 and any(
             len(said_word) >= len(bare) + 2 and said_word[0] == bare[0] and _subsequence(bare, said_word)

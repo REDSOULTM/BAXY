@@ -27,7 +27,7 @@ import re
 from dataclasses import dataclass
 from typing import Iterable
 
-from .conversation import asks_for_code
+from .conversation import asks_for_code, translates_what_was_said
 from .normalize import fold, fold_in_place, spelled_out
 from .quantities import conversion_asked, numbers_in, spoken_numbers_in
 
@@ -500,8 +500,10 @@ def reference_lookup(text: str, prior_requests: Iterable[str] = (), last_reply: 
     """
 
     # M56 (v3c-final F-w14-t1 «escribeme un query de sql q me saque los users activos del ultimo mes»): code asked
-    # for is written by the model; nothing in it is a dish, a work or a ranking to look up.
-    if asks_for_code(text):
+    # for is written by the model; nothing in it is a dish, a work or a ranking to look up. M157 (DEV-I v4v I-w41-t3
+    # «tradúceme eso al inglés» → «Traduce al inglés «¿Cuántas onzas son 3 tazas de harina de trigo?»».): nor in words
+    # already said that are asked in another language (``translates_what_was_said``).
+    if asks_for_code(text) or translates_what_was_said(text):
         return None
     direct = _direct(text) or kitchen_quantity(text, prior_requests, last_reply) or figure_lookup(text, last_reply)
     if direct is not None:

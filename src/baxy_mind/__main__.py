@@ -51,8 +51,10 @@ from .semantic.notes import (
     conversation_note_title,
     list_creation_said,
     names_own_event,
+    note_content_unsaid,
     task_change,
     question_with_context,
+    question_with_its_reason,
 )
 from .semantic import levels as semantic_levels
 from .semantic.memory import explicit_memory_request
@@ -73,6 +75,7 @@ from .semantic.web import (
     asks_latest_release,
     asks_to_watch_the_news,
     asks_what_a_cinema_shows,
+    currency_conversion_request,
     names_own_data,
     near_the_person,
     news_lookup_query,
@@ -3371,10 +3374,6 @@ def _with_decided_arguments(
     for name, value, field_schema in decided:
         if name in merged and validate_argument_grounding({name: merged[name]}, field_schema, trusted_source):
             continue
-        if name in _AS_SPELLED_FIELDS and operation.startswith(_AS_SPELLED_LOOKUPS) and isinstance(value, str):
-            # M147 (DEV-F F-w05-t5 «javiera mena» → the decider's «Javier Mené»): the person's spelling of a name a
-            # service looks up (its own search forgives a typo of the person's; a note keeps the model's words).
-            value = semantic_decider.as_the_person_spelled(value, trusted_source.splitlines()) or value
         if not validate_argument_grounding({name: value}, field_schema, trusted_source):
             value = _said_part_of_a_name(name, value, field_schema, trusted_source) or (
                 # M136: a folder the decider chose and nobody said is every known folder, when that grounds.
@@ -3389,9 +3388,34 @@ def _with_decided_arguments(
 # M136 (DEV-G v4n G-s097 «baxy abreme el obs…» → the decider's «OBS Studio» → «¿Cuál es el nombre exacto de la
 # aplicación…?»): an application's name the decider completed with words nobody said keeps the words the person said.
 _SAID_NAME_FIELDS = frozenset({"appId", "name"})
-# M147: the fields that carry a name to look up or play as the person wrote it.
-_AS_SPELLED_FIELDS = frozenset({"query", "title", "artist", "appId", "name"})
-_AS_SPELLED_LOOKUPS = ("media.play", "streaming.", "app.open", "app.installed")  # web search sources forgive no typo
+# M147: the fields that carry a name to look up or play as the person wrote it, for the services whose own search
+# forgives a typo of the person's. Web search sources forgive none (D-w08-t1). M157: an application's name is resolved
+# in the catalog of installed applications, for which the readers already chose the name the person's spelling meant
+# («abreme el exel» → Excel, M127), so it keeps that name.
+_AS_SPELLED_FIELDS = frozenset({"query", "title", "artist"})
+_AS_SPELLED_LOOKUPS = ("media.play", "streaming.play")
+
+
+def _as_the_person_spelled(operation: str, arguments: Any, person: str, history: object) -> Any:
+    """M147 (DEV-F F-w05-t5 «pone algo de javiera mena en spotify» → the decider's «Javier Mené», every round, and
+    another artist played): a name a service looks up, respelled by the model a letter or two off from what the person
+    wrote, is looked up as the person wrote it (``semantic.decider.as_the_person_spelled``).
+
+    M157 (DEV-F v4u/v4v F-w05-t5, the same row: seen.query «Javier Mené» in both runs): M147 ran on the decider's values
+    against the grounding source, whose first line is the objective — the decider's own restatement «Pon algo de Javier
+    Mené en Spotify.» —, so the name was always «said as it is» there; and the readers had already read it from that
+    restatement, so the decider's values were never looked at. The respelling now runs once, on the arguments the step
+    returns whoever read them, against what the person and BAXY said in the conversation, never the restatement.
+    """
+
+    if not isinstance(arguments, dict) or not operation.startswith(_AS_SPELLED_LOOKUPS):
+        return arguments
+    said = _conversation_grounding_source(person, history).splitlines()
+    respelled = dict(arguments)
+    for name in _AS_SPELLED_FIELDS & set(arguments):
+        if isinstance(arguments[name], str):
+            respelled[name] = semantic_decider.as_the_person_spelled(arguments[name], said) or arguments[name]
+    return respelled
 
 
 def _said_part_of_a_name(name: str, value: Any, field_schema: dict[str, Any], trusted_source: str) -> Any:
@@ -3594,7 +3618,8 @@ def _plan_step_decided_arguments(
     normalized = _normalize_grounded_operation_arguments(operation, grounded, objective)
     if normalized is None or not validate_json_schema_instance(normalized, schema):
         return None
-    return normalized
+    # M147/M157: a plan step's name to look up goes as the person spelled it too (``_as_the_person_spelled``).
+    return _as_the_person_spelled(operation, normalized, _person_message(history, objective), history)
 
 
 # M136 (DEV-G v4n G-s123 «resúmeme el pdf ese que se llama contrato_arriendo_2026…», G-w40-t1 «busca un archivo que se
@@ -5464,7 +5489,10 @@ def _context_decided_result(
         # Fase 3.5b M19 (cien-104 «ábreme eso porfa» after the time → «Abre el navegador» → a browser opened): a
         # pointer with no antecedent in what was said is asked, never filled with an object the model brought.
         decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
-    question_asked = question_with_context(text)
+    # M154 (DEV-I v4u I-s053 «…a cuánto cerró el blue hoy que tengo que cambiar unos dólares…», H-s093 «…rate todya,
+    # im wiring money to my cousin…», I-s078 «mi viejo me preguntó cuántos habitantes tiene Mar del Plata…»): the need
+    # that makes the person ask, said after the question, and who asked or claims it, said before, are its context too.
+    question_asked = question_with_context(text) or question_with_its_reason(text)
     if decided.decision == "action" and decided.operations == ("web.search",) and (
         names_own_data(text)
         if question_asked is None
@@ -5598,6 +5626,17 @@ def _context_decided_result(
         decided = semantic_decider.ContextDecision(
             request=edited_draft, decision="action", operations=("message.draft",), question="",
         )
+    if (
+        decided.decision == "action"
+        and "message.send" in decided.operations
+        and "message.draft" in available_operations
+        and effect_intent.asks_not_to_send(text)
+    ):
+        # M155 (safety exception to D58; DEV-I v4u I-s061 «… but leave it for me to send»): a message the person orders
+        # not to send is left written, never sent, whoever read it — the readers no longer prove a send for it
+        # (``resolve_explicit_effects``), and the decider's send is held the same way. Its words are read again from
+        # the message (``message.draft`` arguments).
+        decided = semantic_decider.ContextDecision(decided.request, "action", ("message.draft",), decided.question)
     if (
         decided.decision == "action"
         and len(decided.operations) == 1
@@ -5757,6 +5796,21 @@ def _context_decided_result(
         # M99 (DEV-D v3x D-p28-t1 «I want to watch a movie at Century 25 Union Landing…» → «I cannot order or buy
         # movies…»): what a cinema shows is looked up; the limit was about buying, which nobody asked.
         decided = semantic_decider.ContextDecision(request=text, decision="action", operations=("web.search",), question="")
+    converted = (
+        currency_conversion_request(text, decided.request, context.last_reply or "", antecedent or "")
+        if decided.decision == "talk" and "web.search" in available_operations and not asks_for_code(text)
+        else None
+    )
+    if converted is not None:
+        # M154 (D35, D52; DEV-H v4u H-w05-t4 «and in pesos chilenos?» after «Hoy el Bitcoin está en 85.000 dólares.» →
+        # talked «Today Bitcoin is at 1,850,000 Chilean pesos.»; H-s087 «¿cuánto son 350 dólares en euros, más o
+        # menos?» → «Son aproximadamente 320 euros.»): an amount in another currency, or an exchange rate, moves every
+        # day; it is looked up (the reference rate, ``FrankfurterRateSource``), with the amount and the currencies said
+        # in the conversation (``semantic.web.currency_conversion_request``). A rate of what BAXY said in one currency
+        # (M118: «¿y eso cuánto es al mes?») names no second currency and stays the decider's.
+        decided = semantic_decider.ContextDecision(
+            request=converted, decision="action", operations=("web.search",), question="",
+        )
     reference = None
     recommended = False
     # M56 (v3c-final F-w14-t1): code the person asks for is written, whatever the decider's rewrite of it says.
@@ -6225,6 +6279,18 @@ def _direct_arguments_result(
             arguments, question = candidate, ""
     if operation == "media.play.exact":
         arguments, question = _corrected_song_arguments(person, message.get("history"), arguments, question, tool)
+    arguments = _as_the_person_spelled(operation, arguments, person, message.get("history"))
+    if (
+        operation == "note.create"
+        and isinstance(arguments, dict)
+        and note_content_unsaid(person, str(arguments.get("content") or ""))
+    ):
+        # M157 (M81; DEV-I v4v I-w37-t3 «oye, de paso, crea una nota de la junta de hoy» → content «Junta de hoy.», the
+        # title again): a note the person named only by what it is about gets that as its title, and what it says is
+        # asked, whoever wrote the title into the content (the decider, the extraction).
+        arguments, question = None, llm.formulate_missing_argument_question(
+            objective, "", tool, ("content",), **({"response_language": turn_language} if turn_language else {}),
+        )
     return arguments, question
 
 

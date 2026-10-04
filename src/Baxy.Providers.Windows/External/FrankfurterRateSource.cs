@@ -83,7 +83,17 @@ internal sealed class FrankfurterRateSource(HttpClient http)
                     "argentino" or "argentinos" or "argentine" => "ARS",
                     "colombiano" or "colombianos" or "colombian" => "COP",
                     "uruguayo" or "uruguayos" => "UYU",
-                    _ => RegionalPesos.Contains(region.ISOCurrencySymbol) ? region.ISOCurrencySymbol : "unknown",
+                    // M154 (DEV-H H-s093 «whats the dollar to mexican peso rate»): en inglés la
+                    // nacionalidad va delante; sin leerla salía el peso de la región (CLP).
+                    _ => previous switch
+                    {
+                        "mexican" => "MXN",
+                        "chilean" => "CLP",
+                        "argentine" or "argentinian" => "ARS",
+                        "colombian" => "COP",
+                        "uruguayan" => "UYU",
+                        _ => RegionalPesos.Contains(region.ISOCurrencySymbol) ? region.ISOCurrencySymbol : "unknown",
+                    },
                 },
                 _ => null,
             };
