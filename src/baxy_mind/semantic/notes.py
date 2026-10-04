@@ -2535,6 +2535,51 @@ def conversation_note_title(request: str, conversation: Sequence[str]) -> str | 
     return holding[0] if len(holding) == 1 else None
 
 
+# --- A note named only by what it is about (M157) ------------------------------------------------------------------
+# DEV-I v4v I-w37-t3 «oye, de paso, crea una nota de la junta de hoy» → «He creado la nota titulada "Junta de hoy" con
+# el contenido "Junta de hoy".», and the next turn «que se decidió subir los precios un 5 por ciento» edited a note it
+# could not name. What a note is about («de la junta de hoy», «about today's meeting») or what it is called gives its
+# title; what it says only the person knows (M81) and is asked. A content dictated in the same message («que diga…»,
+# «: …», «y ponle…», «de comprar pan», «about buying milk») is not this.
+_NOTE_ONLY_NAMED = re.compile(
+    r"\b(?:nota|note)\s+(?:(?:nueva|new)\s+)?"
+    r"(?:de(?!\s+que\b)|del|sobre|acerca\s+del?|llamad[ao]|titulad[ao]|que\s+se\s+llame|"
+    r"con\s+el\s+(?:titulo|nombre)(?:\s+de)?|about|on|called|named|titled)\s+"
+    r"[«\"“']?(?P<topic>(?![a-z]{2,}(?:ar|er|ir|ing)\b)[^:;«»\"“”\n]+?)[»\"”']?"
+    r"(?:[\s,]+(?:porfa|por\s+favor|please|pls|plis|po|pues|nomas|gracias|thanks))*[\s.!?]*$"
+)
+_NOTE_DICTATED = re.compile(
+    r"\b(?:que\s+(?:diga|dice|ponga)|con\s+(?:el\s+)?(?:contenido|texto)|(?:y|e|and)\s+(?:pon\w*|escrib\w*|anot\w*|"
+    r"apunt\w*|agreg\w*|put|write|add)|saying|that\s+says|with\s+(?:the\s+)?(?:content|text))\b"
+)
+# What is saved in the note pointed at before it is named («save that in a note called home network», «guárdamela en
+# una nota que se llame tortilla», «guárdame la de javascript…»): the content is that, not something to ask.
+_NOTE_CONTENT_POINTED = re.compile(
+    r"\b(?:eso|esto|esa|ese|esos|esas|aquello|that|this|it|those|these|them|save|store|keep|guard\w*|salv\w*|"
+    r"\w+[aei](?:me|te|se|nos)?(?:lo|la|los|las))\b"
+)
+_NOTE_FRAME_WORDS = frozenset({
+    "nota", "notas", "note", "notes", "de", "del", "la", "el", "los", "las", "un", "una", "sobre", "acerca", "the", "a",
+    "an", "of", "about", "on",
+})
+
+
+def note_content_unsaid(text: str, content: str) -> bool:
+    """The person named the note only by what it is about or what it is called (see above), and ``content`` says
+    nothing but that; False for an empty content, which invents nothing."""
+
+    folded = _fold(str(text or ""))
+    named = _NOTE_ONLY_NAMED.search(folded)
+    if (
+        named is None
+        or _NOTE_DICTATED.search(named.group("topic")) is not None
+        or _NOTE_CONTENT_POINTED.search(folded[:named.start()]) is not None
+    ):
+        return False
+    written = set(re.findall(r"[a-z0-9]+", _fold(str(content or "")))) - _NOTE_FRAME_WORDS
+    return bool(written) and written <= set(re.findall(r"[a-z0-9]+", named.group("topic")))
+
+
 # M110 (DEV-F v4d F-w45-t5 «and the pizza, how many minutes till I pull it out?» → the reminders already due): what is
 # still to ring is read from what is scheduled; the due read is for the ones that already rang, asked as such.
 _OVERDUE_WORDS = (
