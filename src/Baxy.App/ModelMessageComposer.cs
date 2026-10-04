@@ -343,6 +343,28 @@ internal static class ModelMessageComposer
         return AcceptPublishedConversation(text, draft, userText, priorUserText);
     }
 
+    /// <summary>
+    /// M153 (DEV-F v4o F-w47-t4 «Apúntamelo en una nota, que luego se me olvida»; sealed set v4s, four task.list reads
+    /// and a notification.schedule): when the mind answered and every draft was refused, the floor was handed to the
+    /// queue, which removed the message before publishing it from the UI thread the turn still held — the turn closed
+    /// as «filtered: no_response» and «Creé la nota «…».» appeared under the next request. A refusal the mind answered
+    /// is final (the queue would not compose it again), so its floor is said here, inside the turn. A mind that did not
+    /// answer, or a message queued ahead (the order is kept), still goes through the queue; null when there is no
+    /// floor.
+    /// </summary>
+    internal static string? InTurnFloor(
+        ModelMessageCompositionOutcome outcome,
+        UserMessageDraft draft,
+        string userText,
+        JsonObject facts,
+        bool messagesQueued)
+    {
+        ArgumentNullException.ThrowIfNull(outcome);
+        return outcome.Text is null && !outcome.Unanswered && !messagesQueued
+            ? DeterministicFinal(draft, userText, facts, outcome.RejectedText)
+            : null;
+    }
+
     // The verified results the App tells with their own observed values; null for any other.
     private static string? VerifiedResultFinal(JsonObject source, string userText, string draftSource, bool english)
     {
@@ -379,11 +401,55 @@ internal static class ModelMessageComposer
                 : english ? " on YouTube" : " en YouTube";
             text = english ? $"Now playing «{title}»{where}." : $"Está sonando «{title}»{where}.";
         }
+        else if (operation == "task.list" && seen?["tasks"] is JsonArray tasks)
+        {
+            text = TaskListFinal(tasks, english);
+        }
         // A search the App could not phrase has no fixed sentence here: the owner's zero-fixed-visible-prose census
         // (A7 had put «No lo encontré.» in this place) keeps that wording in the mind, whose not-found fallback is
         // written from the turn; the App's own last resort only states values it observed (the operation floor
         // tells no verified search either: by the owner's rule the search is not shown).
         return text;
+    }
+
+    /// <summary>
+    /// M153 (sealed set v4s: four reads of seven open tasks ended with no final): twin of the mind's task.list final
+    /// (llm._told_result_final, M58) — the open tasks read, each title once as written, with how many times it is
+    /// there. Nothing else: no task that was not read, no state the read did not give.
+    /// </summary>
+    private static string? TaskListFinal(JsonArray tasks, bool english)
+    {
+        var open = new List<string>();
+        foreach (JsonNode? task in tasks)
+        {
+            if (task is JsonObject entry
+                && ReadString(entry, "title") is { } title
+                && title.Trim() is { Length: > 0 } trimmed
+                && ReadBool(entry, "completed") != true
+                && ReadBool(entry, "deleted") != true)
+            {
+                open.Add(trimmed);
+            }
+        }
+
+        if (open.Count == 0)
+        {
+            return null;
+        }
+
+        List<string> named = open
+            .Distinct(StringComparer.Ordinal)
+            .Select(title =>
+            {
+                int times = open.Count(other => string.Equals(other, title, StringComparison.Ordinal));
+                string again = times == 1 ? string.Empty : english ? $" ({times} times)" : $" ({times} veces)";
+                return $"«{title}»{again}";
+            })
+            .ToList();
+        string listed = named.Count == 1
+            ? named[0]
+            : string.Join(", ", named.Take(named.Count - 1)) + (english ? " and " : " y ") + named[^1];
+        return english ? $"Pending: {listed}." : $"Tienes pendientes {listed}.";
     }
 
     private static string? ReadString(JsonObject? node, string key) =>
