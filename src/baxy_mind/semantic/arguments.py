@@ -615,7 +615,12 @@ def _explicit_relative_reminder_arguments(
     # reminder for tomorrow at 3:30pm.» → «¿Cuál?»): «otro/another» is the article of one more reminder, and English
     # names what it is for before the noun («a dentist reminder»), with the day it rings before its clock.
     article = r"(?:un|una|a|an|otro|otra|another|one\s+more)"
-    weekday = r"(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)"
+    # The orders that ask for a reminder as a thing («ponme», «pon», «crea», «programa», «set», «create»…).
+    order = (
+        r"(?:dame|ponme|pon|creame|crea|hazme|haz|programa|programame|quiero|quisiera|necesito|"
+        r"establece|establecer|fija|fijame|env[ií]ame|m[aá]ndame|create|give\s+me|send\s+me|set)"
+    )
+    weekday =r"(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)"
     day_before = (
         r"(?:(?:for|on)\s+)?(?:today|tonight|tomorrow|the\s+day\s+after\s+tomorrow|(?:this\s+|next\s+)?" + weekday
         + r"|(?:the\s+)?\d{1,2}(?:st|nd|rd|th)?(?:\s+of)?\s+[a-z]+|[a-z]+\s+\d{1,2}(?:st|nd|rd|th)?)\s+"
@@ -628,7 +633,11 @@ def _explicit_relative_reminder_arguments(
         rf"{lead}(?P<due>{duration}),?\s+"
         rf"{remind}\s+"
         rf"(?:(?:que|to|de)\s+)?(?P<title>.+?)[.!?]*$",
-        rf"{lead}(?:ponme|set)\s+(?:{article}\s+)?"
+        # M152 (DEV-H v4s H-w39-t4 «ah ya. oye, pon un recordatorio para cargarla en una hora», restated «Pon un
+        # recordatorio en una hora para cargarla.» → «¿Cuándo quieres que se ejecute este recordatorio?»): the reminder
+        # with its delay first and then what it is for is read under every order the shape with what it is for first
+        # reads (below), not only under «ponme» and «set».
+        rf"{lead}{order}\s+(?:{article}\s+)?"
         rf"(?:recordatorio|reminder)\s+(?P<due>{duration})\s+"
         rf"(?:para|to)\s+(?P<title>.+?)[.!?]*$",
         rf"{lead}(?:set|create|make|add|schedule|give\s+me)\s+(?:{article}\s+)?(?:new\s+)?"
@@ -642,8 +651,7 @@ def _explicit_relative_reminder_arguments(
         # diez a. m.», «ponme un recordatorio para sacar la basura a las ocho de
         # la noche», «send me a reminder to call mom at 6 pm»: the reminder asked
         # for as a thing, its subject, then its moment.
-        rf"{lead}(?:dame|ponme|pon|creame|crea|hazme|haz|programa|programame|quiero|quisiera|necesito|"
-        r"establece|establecer|fija|fijame|env[ií]ame|m[aá]ndame|create|give\s+me|send\s+me|set)\s+"
+        rf"{lead}{order}\s+"
         rf"(?:{article}\s+)?(?:(?:nuevo|new)\s+)?"
         r"(?:(?:notificaci[oó]n|aviso|alerta|notification|alert)\s+(?:de|of)\s+)?"
         r"(?:recordatorio|reminder|notificaci[oó]n|aviso|alerta|notification|alert)\s+"

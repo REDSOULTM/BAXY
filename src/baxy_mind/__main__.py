@@ -5647,12 +5647,21 @@ def _context_decided_result(
     if (
         decided.decision == "action"
         and anchored_read is None
-        and fidelity.kind == "person"
         and set(decided.operations) <= {"notification.schedule", "reminder.create"}
-        and any(semantic_temporal.spoken_clocks(effect_intent._fold(what)) for what in fidelity.introduced)
-        and not semantic_temporal.spoken_clocks(effect_intent._fold(text))
-        and not semantic_temporal.said_only_a_clock(text)
-        and not semantic_temporal.said_durations(text)
+        and (
+            (
+                fidelity.kind == "person"
+                and any(semantic_temporal.spoken_clocks(effect_intent._fold(what)) for what in fidelity.introduced)
+                and not semantic_temporal.spoken_clocks(effect_intent._fold(text))
+                and not semantic_temporal.said_only_a_clock(text)
+                and not semantic_temporal.said_durations(text)
+            )
+            # M152 (DEV-G v4s G-w19-t3 «vale, pues recuérdamelo veinte minutos antes de salir» restated «Recuérdame en
+            # 20 minutos que tengo que ir al aeropuerto.» → set at 21:20, so G-w19-t4 «pues salgo sobre las 6 de la
+            # tarde…» answered no question and was set at 21:20 again): the message says a length, but counted from a
+            # moment nobody placed; the restatement that made it a delay from now is a time nobody said either.
+            or semantic_temporal.advance_restated_as_delay(text, decider_request)
+        )
     ):
         # M110 (DEV-F v4d F-w46-t3 «poneme una alarma para ese día bien temprano» restated «…el sábado 2 de octubre a
         # las 5:00» → «¿Cuándo y con qué título…?» as an action): the time was the decider's, not the person's, and the
