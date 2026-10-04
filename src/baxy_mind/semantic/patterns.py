@@ -25,7 +25,7 @@ from .games import _corrected_game_launch_title, _edit_distance, near_catalog_ga
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
 from .system import _weather_read_intent, physical_world_request, weather_place_known_only_through_someone
 from .notes import _STATE_OF_THE_PERSON, asked_to_be_told_now, puts_into_the_agenda, takes_off_the_agenda, list_entries, list_entry_said, list_entry_request, list_read_request, list_removal_request, list_creation_without_items, list_creation_said, new_list_title, _time_only_reminder_request, _count_down_request, _reminder_has_actionable_due, _multiple_alarm_schedule_intent, _task_without_title, _bare_note_inventory_request, _note_inventory_object, _wake_alarm_request, _bounded_calendar_list_query, _fully_enumerated_note_create_count, _fully_enumerated_note_read_order, _has_fully_enumerated_note_cardinality, enumerated_note_dependency_order, _latest_notification_selector, _active_alarm_stop_request, _alarm_turn_off_request, _exact_local_reminder_title, _review_calendar_message_and_direct_reminder_effects, agenda_read_request, agenda_event_request, stated_event_reminder, said_repetition, _CALENDAR_PLACE, reminder_inventory_question, AGENDA_NOT_A_READ, happening_in_a_span_of_hours
-from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, message_left_written_request, _latest_email_domain, _notification_listing_request, inbox_read_request, social_network_request, contact_book_request
+from .messaging import _MSG_CHANNEL_WORDS, _message_channel_name, message_request_named_client, message_request_any_channel, email_send_request, email_request_without_address, message_draft_request, message_left_written_request, asks_not_to_send, _latest_email_domain, _notification_listing_request, inbox_read_request, social_network_request, contact_book_request
 from .ui import WINDOW_POINTED_AT, _clipboard_copy_domain, _clipboard_paste_domain, calculator_expression_request, literal_clipboard_write_text, _review_input_and_capture_effects, _VISIBLE_CLICK_APP_CONTEXT, _gerund_click_label, _visible_click_label, _click_in_application, _visible_click_intent
 from .apps import self_close_request, _APPLICATION_TRAILING_REQUEST, _application_target_forms, _CLOSE_TRAILING_COURTESY, _close_target_forms, deictic_close_request, _bounded_application_literal, _authenticated_application_list, _OPEN_STATE_CONDITION, close_all_request, _has_multiple_installed_entities, _append_domain_actions, _open_application_spans, _CATALOG_INSTALL_VERB, _opened_applications
 
@@ -1719,9 +1719,12 @@ def confident_non_target_language(text: str) -> str | None:
         return "de"
     # «que horas sao» y «aumenta o volume»: portugues que las pistas de arriba
     # no cubrian.
+    # M155 (DEV-I v4u I-w44-t3 «oiga y allá en orlando qué horas serán, para llamar a mi prima sin despertarla» →
+    # «repita su pedido en español o inglés», where the isolated decider read Orlando's clock): «¿qué horas son?» is
+    # Latin American Spanish; only «que horas são» is Portuguese.
     if _has(
         folded,
-        r"\bque\s+horas\b|\baumenta\s+o\b|\bdiminui\s+o\b",
+        r"\bque\s+horas\s+sao\b|\baumenta\s+o\b|\bdiminui\s+o\b",
     ):
         return "pt"
     return None
@@ -7772,6 +7775,20 @@ _FOLDER_ITSELF_SHOWN = (
 )
 
 
+# M155 (DEV-I v4u I-s043 «qué buena esa respuesta baxy, en serio me salvaste con la tarea» → the task list, where the
+# isolated decider talked): «qué» opening an exclamation of praise («qué buena esa respuesta», «qué bien, …», «what a
+# great answer») is no question, so the catalog reads below never take it as the head of a request to observe («la
+# tarea» is the homework it helped with, not the task list). Only the praise words, and only when what follows is the
+# thing praised, a clause or the end: «¿qué buenas series hay en Netflix?» still asks. Folded, envelope stripped.
+_PRAISE_EXCLAMATION = re.compile(
+    r"^(?:que\s+(?:(?:tan|mas)\s+)?(?:buen[oa]s?|bien|lind[oa]s?|bonit[oa]s?|genial(?:es)?|increible(?:s)?|"
+    r"maravill(?:a|os[oa]s?)|grande|crack|bacan[oa]?s?|chever[oe]s?|padr[ei]s?|guay)"
+    r"(?=\s*(?:$|[,.!;:]|(?:es[aeo]s?|est[aeo]s?|aquel\w*|lo|la|el|los|las|tu|tus|su|sus|que|de|baxy)\b))|"
+    r"what\s+an?\s+(?:(?:really|very|truly)\s+)?(?:great|good|nice|cool|awesome|amazing|lovely|brilliant|fantastic|"
+    r"perfect|helpful)\b)"
+)
+
+
 def _strict_catalog_request(
     text: str,
     available_operations: frozenset[str],
@@ -7790,6 +7807,14 @@ def _strict_catalog_request(
     # at most one remaining non-semantic layer for surface invariance.
     text = _strip_request_envelope(text).strip().rstrip(".!?").rstrip()
     text = _without_screen_state_preface(text)
+    praise = _PRAISE_EXCLAMATION.match(text)
+    if praise is not None:
+        # M155: an exclamation of praise asks for nothing; what follows its clause is read alone («qué bien, ¿qué está
+        # sonando?»), and with nothing after it there is no request.
+        after = re.split(r"[,.!;:]", text[praise.end():], maxsplit=1)
+        text = after[1].strip() if len(after) == 2 else ""
+        if not text:
+            return None
     if "filesystem.known.list" in available_operations and (
         _known_folder_listing_request(text) is not None
         or _known_folder_recent_listing(text) is not None
@@ -8317,7 +8342,11 @@ def _strict_catalog_request(
                 "media.status",
                 # «las cinco y media» is a clock time, not media.
                 # «social media» is a network, not what plays.
-                r"\b(?:(?<!y\s)(?<!menos\s)(?<!social\s)media|multimedia|reproduccion|playing|playback|"
+                # M155 (DEV-I v4u I-s022 «oye, dime cuánto de batería le queda a la laptop, que salgo en media hora» →
+                # what this PC plays, where the isolated decider read the battery): «media hora», «media mañana» is half
+                # of a stretch of time, not media.
+                r"\b(?:(?<!y\s)(?<!menos\s)(?<!social\s)media(?!\s+(?:hora|horas|manana|tarde|noche|jornada))|"
+                r"multimedia|reproduccion|playing|playback|"
                 r"sonando|"
                 r"audiovisual\s+session|sesion\s+audiovisual|media\s+session|"
                 r"(?:track|pista)\s+(?:or|o)\s+(?:video|audio))\b",
@@ -12617,6 +12646,14 @@ def resolve_explicit_effects(
     intent = _resolve_clause_effects(
         text, available, application_names, game_catalog, previous_user_text=previous_user_text,
     )
+    if intent is not None and "message.send" in intent.operations and asks_not_to_send(text):
+        # M155 (safety; DEV-I v4u I-s061 «write a WhatsApp to Callum saying … but leave it for me to send» → sent): a
+        # message the person orders not to send is never read as sent. Left written in its client when the readers
+        # read it so (M111); otherwise («text Callum saying I'm late, don't send it yet», no client named) no reader
+        # proves it and the contextual decider decides.
+        if "message.draft" in available and message_left_written_request(text) is not None:
+            return EffectIntent(("message.draft",), (text,))
+        return None
     if intent is not None:
         return intent
     change = notification_change(text)

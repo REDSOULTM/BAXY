@@ -402,10 +402,23 @@ def spoken_clock(folded: str) -> SpokenClock | None:
 # D61 (owner, 2026-10-02; reviewed literal H0036 «set an alarm for 8»): on an alarm, an hour after «for/para» with no
 # «at/a las» is its clock when nothing but the end, a day or a «please» follows it — never a length («for 8 minutes»),
 # a count or what the alarm is for («para una reunión»).
+# M155 (DEV-I v4u I-s008 «set an alarm for 6 to get up for my run, cheers» → «What time of day should the alarm be set
+# for 6?», where the isolated decider set it): what the alarm is for may follow the hour as a clause of its own («to get
+# up», «para ir al gimnasio», «so I can…») — a verb, never a number («for 6 to 7», «for ten to seven») nor a length.
+# Left as they were (asked): a reason said with «que/porque» («que mañana madrugo») and a purpose that names a day («to
+# get up tomorrow»), where D61b would read a 1–6 as the afternoon of a day said only to place a wake-up.
+_ALARM_PURPOSE_AFTER_HOUR = (
+    r"(?:to|para|pa|so)\s+(?!(?:\d|"
+    + "|".join(sorted(_CLOCK_HOUR_WORDS, key=len, reverse=True))
+    + r"|minutos?|minutes?|mins?|horas?|hours?|y\s+media|half|quarter|cuarto|o'?clock)\b)"
+    r"(?![^,;.!?]*\b(?:manana|tomorrow|tonight|pasado|lunes|martes|miercoles|jueves|viernes|sabado|domingo|monday|"
+    r"tuesday|wednesday|thursday|friday|saturday|sunday|weekend|finde)\b)[a-z]"
+)
 _ALARM_FOR_HOUR = re.compile(
     r"\b(?:alarm|alarma)\b.*?\b(?P<lead>for|para)\s+(?P<hour>\d{1,2}|"
     + "|".join(sorted(_CLOCK_HOUR_WORDS, key=len, reverse=True)) + r")"
-    r"(?=\s*(?:$|[,;!?]|\.(?!\d)|(?:de\s+)?(?:hoy|manana|today|tomorrow|tonight|please|por\s+favor|porfa)\b))"
+    r"(?=\s*(?:$|[,;!?]|\.(?!\d)|(?:de\s+)?(?:hoy|manana|today|tomorrow|tonight|please|por\s+favor|porfa)\b|"
+    + _ALARM_PURPOSE_AFTER_HOUR + r"))"
 )
 
 
