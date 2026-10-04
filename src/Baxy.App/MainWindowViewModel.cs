@@ -3332,6 +3332,19 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         isUser: false,
                         PublicResponseRoute.FromDraft(draft));
                 }
+                else if (ModelMessageComposer.InTurnFloor(
+                             outcome, draft, userText, facts, _modelMessages.Count > 0) is { } floor)
+                {
+                    // M153: the floor of a refusal the mind answered is this turn's final, not the next one's.
+                    LastMessageCompositionFailure =
+                        $"{outcome.Failure ?? "model_response_rejected"};deterministic_fallback";
+                    LastMindRejectedReply ??= outcome.RejectedText;
+                    AddMessageCore(
+                        "BAXY",
+                        floor,
+                        isUser: false,
+                        PublicResponseRoute.FromDraft(draft));
+                }
                 else
                 {
                     LastMessageCompositionFailure = outcome.Failure;

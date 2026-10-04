@@ -10132,6 +10132,29 @@ def _listed_task_titles(payload: dict) -> list[str]:
     return list(dict.fromkeys(titles))
 
 
+# M153: a task told as done (folded): «están completadas», «ya las terminaste», «marqué como hechas», «is completed»,
+# «you've already finished», «all done». A clause that denies it («no», «ninguna», «sin», «not», «none», «yet») is not.
+_TASK_DONE_CLAIM = re.compile(
+    r"\b(?:esta|estan|quedo|quedaron|fue|fueron)\s+(?:ya\s+)?(?:todas\s+|todos\s+)?"
+    r"(?:completad|terminad|hech|tachad|resuelt)[oa]s?\b|"
+    r"\bya\s+(?:(?:las|la|los|lo)\s+)?(?:completaste|terminaste|hiciste|tachaste|marcaste|resolviste)\b|"
+    r"\bmarque\s+como\s+(?:hech|complet|terminad)|"
+    r"\b(?:is|are|was|were|been)\s+(?:all\s+|already\s+)?(?:completed|done|finished|(?:checked|crossed|ticked)\s+off)\b|"
+    r"\byou(?:'ve|\s+have)?\s+(?:already\s+)?(?:completed|finished|(?:checked|crossed|ticked)\s+off)\b|"
+    r"\ball\s+done\b|\bi\s+(?:marked|completed|(?:checked|crossed|ticked)\s+off)\b"
+)
+_TASK_DONE_DENIED = re.compile(
+    r"\b(?:no|ni|ningun[ao]?|nada|nunca|sin|not|none|nothing|never|neither|yet)\b|n't\b"
+)
+
+
+def _says_tasks_done(folded: str) -> bool:
+    return any(
+        _TASK_DONE_CLAIM.search(clause) is not None and _TASK_DONE_DENIED.search(clause) is None
+        for clause in re.split(r"[.;:!?¿¡\n]|\b(?:pero|but)\b", folded)
+    )
+
+
 _TASK_COUNT_WORDS = {
     "un": "1", "una": "1", "uno": "1", "one": "1", "another": "1", "otra": "1", "otro": "1", "dos": "2", "two": "2",
     "tres": "3", "three": "3", "cuatro": "4", "four": "4", "cinco": "5", "five": "5", "seis": "6", "six": "6",
@@ -10264,6 +10287,12 @@ def _task_listing_defect(text: str, payload: dict) -> str:
     folded = _reading_fold(text)
     if any(_reading_fold(title) not in folded for title in titles[:5]):
         return "task_title_not_named"
+    if titles and not any(
+        isinstance(task, dict) and task.get("completed") for task in payload["seen"]["tasks"]
+    ) and _says_tasks_done(_reading_fold(_without_record_titles(text, _record_titles("task.list", payload["seen"])))):
+        # M153: with every task read still open, «Ya completaste todas: …», «All done: …» reverses the read; a done task
+        # denied («ninguna está completada», «none of them is done yet») is the read itself.
+        return "reversed_result"
     if titles:
         # M58 (v3d-final F-w05-t4): «Tienes pendientes "palta y pisco", "ice cream" (2 veces) y una tarea más» over a
         # read of three tasks, all named. How many more there are is how many the reply leaves unnamed; how many there
@@ -14639,6 +14668,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
         # del peso chileno», «bajo la lluvia», «el silencio» son sustantivos o
         # preposiciones de lo leído, no «yo cambio»; sólo el verbo en primera
         # persona afirma un efecto (y cayeron todas las búsquedas de divisas).
+        # M153: a record's title quoted back («hago la cena», «bajo eléctrico») is the person's words, not BAXY's.
+        told = _reading_fold(_without_record_titles(text, _record_titles(payload.get("operation"), seen)))
         if (
             re.search(
                 r"(?<!\bel )(?<!\bdel )(?<!\bal )(?<!\bun )(?<!\bsu )(?<!\btu )(?<!\bmi )(?<!\bde )"
@@ -14650,8 +14681,12 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
                 r"(?<!\bbajo(?=\s+(?:un|una|el|la|los|las)\s+(?:cielo|sol|lluvia|nubes?|nublado|niebla|viento|"
                 r"calor|frio|techo|agua|nieve|temperatura)s?\b))"
                 r"(?<!\bbajo(?=\s+(?:cero|\d)))"
+                # M153 (DEV-G v4s G-w01-t3 «dejame una alarma mañana a las 7 que tengo turno temprano» → «He programado
+                # la alarma para mañana a las 07:00 bajo el título "Turno temprano".», refused): «bajo el título» (or
+                # «el nombre», «la etiqueta») is what the record is called, not «I lower».
+                r"(?<!\bbajo(?=\s+(?:el|la)\s+(?:titulo|nombre|etiqueta)\b))"
                 r"|\bi (?:set|turn|adjust|change|raise|lower|mute)\b",
-                folded,
+                told,
             )
             is not None
         ):
@@ -15577,6 +15612,47 @@ def _verified_titled_item_write(situation: dict, operation: str, cause: str) -> 
         and step.get("succeeded") is True
         for step in _situation_steps(situation)
     )
+
+
+def _record_titles(operation: object, observed: object) -> list[str]:
+    """M153 (sealed set, v4r→v4s metadata: four task.list reads of 7 open tasks and one notification.schedule ended in
+    no_response, every draft and the floor refused): the titles a verified record carries are the person's own words
+    read back — a task's or a note's, a reminder's or an alarm's, each task of a list read. Quoted in a reply they are
+    data, not BAXY's claims: «Te recordaré a las 22:00 poner el celular en silencio» died three times as a mute claimed
+    (extra_claim), a list holding «hago la cena» as a first-person change (reversed_result), and the floor quoting the
+    same titles died with them, so the turn had no final. Titles of three characters or more; nothing else of the
+    record is masked."""
+
+    if not isinstance(observed, dict):
+        return []
+    titles: list[object] = []
+    if operation in _TITLED_ITEM_WRITES or operation == "notification.schedule":
+        titles.append(observed.get("title"))
+    if operation == "task.list" and isinstance(observed.get("tasks"), list):
+        titles.extend(task.get("title") for task in observed["tasks"] if isinstance(task, dict))
+    return [
+        title.strip() for title in titles if isinstance(title, str) and 3 <= len(title.strip()) <= 400
+    ]
+
+
+def _without_record_titles(text: str, titles: Iterable[str]) -> str:
+    """The text with each whole occurrence of an observed record title blanked (longest first), for the lexical claim
+    checks only; the published text keeps every word."""
+
+    for title in sorted(set(titles), key=len, reverse=True):
+        text = re.sub(rf"(?<!\w){re.escape(title)}(?!\w)", " ", text, flags=re.IGNORECASE)
+    return text
+
+
+def _situation_record_titles(situation: dict) -> list[str]:
+    """``_record_titles`` of a verified result, alone or of each verified step of a mission."""
+
+    return [
+        title
+        for node in [situation, *_situation_steps(situation)]
+        if isinstance(node, dict) and node.get("verified") is True and node.get("succeeded") is True
+        for title in _record_titles(node.get("operation"), node.get("observed"))
+    ]
 
 
 # M97: a span of time named in a timed mute's reply, and the words that say nothing brings the sound back by itself
@@ -16982,7 +17058,11 @@ def compose_visible_defect(
         folded,
     ):
         return "wrong_machine_actor"
-    mentions_mute = re.search(r"silenci|\bmuted\b|\bunmuted\b|\bmute\b", folded)
+    # M153: a reminder or a task titled «poner el celular en silencio» / «mute the TV» says no mute of BAXY's.
+    mentions_mute = re.search(
+        r"silenci|\bmuted\b|\bunmuted\b|\bmute\b",
+        _without_record_titles(folded, _situation_record_titles(situation)),
+    )
     # Owner's test 2026-09-21 (turn 205): «el micrófono ya estaba silenciado» is
     # the typed cause of the failure (microphone_already_muted), not a claim
     # beyond the facts; the mute words of that cause are the fact.
@@ -17599,6 +17679,8 @@ def compose_visible_defect(
                 title = stored.get("title")
                 if isinstance(title, str) and title.strip():
                     question_text = re.sub(re.escape(title.strip()), " ", question_text, flags=re.IGNORECASE)
+        # M153: so is a reminder's or an alarm's title («¿Tomaste la pastilla?»), or a task's in a list read.
+        question_text = _without_record_titles(question_text, _situation_record_titles(situation))
         if (
             operation == "web.search"
             and situation.get("verified") is True

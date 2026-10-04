@@ -3141,7 +3141,10 @@ internal static class UserMessagePolicy
         // tsunami's «volumen de agua»): a volume word the observed data carries
         // is reported, not invented.
         string foldedSource = FoldForPolicy(source);
-        if (ContainsAny(foldedSource, ["volumen", "volume"]))
+        // M153 (sealed set v4s, a notification.schedule with three drafts refused and no final): so is a silence the
+        // observed data carries — a reminder titled «Poner el celular en silencio», told «Te recordaré a las 22:00
+        // poner el celular en silencio.», names that title, not a mute of BAXY's (twin of the mind's record titles).
+        if (ContainsAny(foldedSource, ["volumen", "volume", "silenci"]))
         {
             return false;
         }
