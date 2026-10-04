@@ -50,6 +50,7 @@ from .semantic import dialogue as dialogue_slot
 from .semantic import decider as semantic_decider
 from .semantic import knowledge as semantic_knowledge
 from .semantic import quantities as semantic_quantities
+from .semantic import web as semantic_web
 from .semantic.grammar import spoken_number_request
 from .semantic.network import (
     asks_calendar_part, calendar_parts_asked, days_until_asked, hours_until_asked, present_calendar_question,
@@ -2636,10 +2637,17 @@ def talk_memory_figures(reply: str, request: str, dialogue: Iterable[str] = (), 
     M104 (reserve v3z): a number is said in digits or in words, on both sides. The person's «square root of nine» or
     «dividir doscientos por cuatro» gives numbers (``semantic.quantities.spoken_numbers_in``), so the answer computed
     from them is not memory; and the answer's own figure spelled out with its unit («seven to eight minutes», «eight
-    thousand meters», which the M95 retry wrote to get past a veto that read only digits) is a figure like «7 minutes»."""
+    thousand meters», which the M95 retry wrote to get past a veto that read only digits) is a figure like «7 minutes».
 
-    said = [str(request or ""), *(str(item or "") for item in dialogue)]
+    M154 (D52; DEV-H v4u H-s087 «Son aproximadamente 320 euros.» for «¿cuánto son 350 dólares en euros…?», H-w05-t4
+    «Today Bitcoin is at 1,850,000 Chilean pesos.» after «85.000 dólares»): an amount in another currency is not
+    computed from the conversation's numbers unless a rate between the two was said; when the person asks a currency
+    conversion and none was, the amounts in a currency the conversation did not say are memory's too."""
+
+    dialogue, person = [str(item or "") for item in dialogue], [str(item or "") for item in person]
+    said = [str(request or ""), *dialogue]
     text = _HEX_COLOUR.sub(" ", str(reply or ""))
+    converted = _converted_from_memory(text, str(request or ""), dialogue, person)
     named = set(re.findall(r"\w+", fold(" ".join(said))))
     said_numbers = [*semantic_quantities.numbers_in(said), *semantic_quantities.spoken_numbers_in(said)]
     unsaid = [
@@ -2660,10 +2668,30 @@ def talk_memory_figures(reply: str, request: str, dialogue: Iterable[str] = (), 
         )
     ]
     if not unsaid or not said_numbers:
-        return unsaid
-    if any(_is_a_year(value) for value in semantic_quantities.numbers_in([str(request or ""), *person])):
+        judged = unsaid
+    elif any(_is_a_year(value) for value in semantic_quantities.numbers_in([str(request or ""), *person])):
+        judged = []
+    else:
+        judged = [
+            figure for figure in unsaid if (value := semantic_quantities.numbers_in([figure])) and _is_a_year(value[0])
+        ]
+    return list(dict.fromkeys([*judged, *converted]))
+
+
+def _converted_from_memory(reply: str, request: str, dialogue: list[str], person: list[str]) -> list[str]:
+    """M154: the amounts of a talk answer in a currency, when a currency conversion is asked, no rate between the two
+    currencies was said, and the conversation did not say that amount (see ``talk_memory_figures``)."""
+
+    asked = semantic_web.currency_conversion_request(
+        request, "", dialogue[-1] if dialogue else "", person[-1] if person else "",
+    )
+    if asked is None or any(semantic_web.states_the_rate(said, asked) for said in dialogue):
         return []
-    return [figure for figure in unsaid if (value := semantic_quantities.numbers_in([figure])) and _is_a_year(value[0])]
+    said_values = set(semantic_quantities.numbers_in([request, *dialogue]))
+    return [
+        amount for amount in semantic_web.currency_amounts(reply)
+        if not set(semantic_quantities.numbers_in([amount])) <= said_values
+    ]
 
 
 # M95 (DEV-D v3x D-p34-t2 «explícame cómo lo entendiste en la primera pregunta» → «En mi primera respuesta, me referí a

@@ -3497,6 +3497,11 @@ public sealed class ExternalAdaptersTests
                 Is.EqualTo(new FrankfurterRateSource.CurrencyAsk(1000m, "USD", "CLP")));
             Assert.That(FrankfurterRateSource.Parse("20 euros a pesos mexicanos", chile),
                 Is.EqualTo(new FrankfurterRateSource.CurrencyAsk(20m, "EUR", "MXN")));
+            // M154 (DEV-H H-s093): the nationality said before the peso, in English.
+            Assert.That(FrankfurterRateSource.Parse("whats the dollar to mexican peso rate todya", chile),
+                Is.EqualTo(new FrankfurterRateSource.CurrencyAsk(1m, "USD", "MXN")));
+            Assert.That(FrankfurterRateSource.Parse("how many chilean pesos is 85000 dollars", chile),
+                Is.EqualTo(new FrankfurterRateSource.CurrencyAsk(85000m, "USD", "CLP")));
             Assert.That(FrankfurterRateSource.Parse("¿Cuánto está el dólar blue hoy?", chile), Is.Null);
             Assert.That(FrankfurterRateSource.Parse("precio del dólar hoy", chile), Is.Null);
             Assert.That(FrankfurterRateSource.Parse("dólares a pesos", new RegionInfo("ES")), Is.Null);
