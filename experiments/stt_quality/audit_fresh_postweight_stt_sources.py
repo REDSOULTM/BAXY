@@ -250,8 +250,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # C03 comprensión natural: repin tras M157 (2026-10-04).
 # C03 M158 (2026-10-04): re-pin tras «cancela la de las N» → notification.cancel.at.
 # C03 M159: repin tras la ventana que no cabe en media pantalla (llm.py).
+# C03 comprensión natural: repin tras M160 (2026-10-04).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "2b3bcf306f838c035a01c16f573aa9a6442f580901e4a3d6cf41afeec64f2355"
+    "68f47e1632e7a87885092ed193b30eec57627a28f668fd385f6e8dd0bad80458"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
