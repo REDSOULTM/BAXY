@@ -265,9 +265,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 comprensión natural: repin tras M154 (2026-10-04).
 # C03 comprensión natural: repin tras M155 (2026-10-04).
 # C03 comprensión natural: repin tras M157 (2026-10-04).
+# C03 M158 (2026-10-04): re-pin tras «cancela la de las N» → notification.cancel.at.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "9163ac5156b56d1e3099b82f54531cdaeaf4a2609677127380bb656295e3c08e"
+        "72b6b2747fa1e4d572a090a9e555665f5911b50b02cd37798299a1b73396250c"
     ),
     "src/baxy_mind/llm.py": (
         "2a65e38b3c454edb511400dd029e901a87494f482d0ecb40788231cc5549383b"

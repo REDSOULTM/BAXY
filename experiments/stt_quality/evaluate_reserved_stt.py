@@ -265,8 +265,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 comprensión natural: repin tras M155 (2026-10-04).
 # C03 comprensión natural: repin tras resolver M155 + M156 en temporal (2026-10-04).
 # C03 comprensión natural: repin tras M157 (2026-10-04).
+# C03 M158 (2026-10-04): re-pin tras «cancela la de las N» → notification.cancel.at.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "0e6bf734b88ab69a79ed0f8021c74761bdd29858271b37723ea0cbd04ac92516"
+    "36428ef5e815d27df7283a476ae1f998453002ce43ae0bb02f440b67035d12f1"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
