@@ -18816,7 +18816,6 @@ class LlmRuntime:
         self._speculative_chat_handoff: _PreparedChat | None = None
         # M117: the contextual decision started with the turn (``prepare_decision``), keyed by its whole payload.
         self._prepared_decision: tuple[str, ChatCompletionCancellation, Future] | None = None
-        self._finished_decision: tuple[str, dict[str, Any]] | None = None  # M150
         self._direct_argument_handoff: (
             tuple[
                 str,
@@ -19281,7 +19280,6 @@ class LlmRuntime:
         self._retire_deferred_language_work()
         self._retire_deferred_count_work()
         self._retire_prepared_decision()
-        self._finished_decision = None
         with self._lifecycle_lock_for():
             close_event = getattr(self, "_close_event", None)
             if close_event is None:
@@ -19352,22 +19350,13 @@ class LlmRuntime:
         if prepared is not None:
             prepared.retire()
 
-    def _retire_prepared_decision(self, *, keep_finished: bool = False) -> None:
-        """Close a contextual decision prepared for a turn that no longer reads it.
-
-        ``keep_finished`` (M150, at the end of a request): a decision already written is kept, unread, for a later
-        request that sends the same payload (``_prepared_decision_response``) — the arguments step of a turn the
-        readers decided asks it before asking the person for a value. It costs nothing more: one still being written
-        is cancelled as before, so no decode outlives its turn.
-        """
+    def _retire_prepared_decision(self) -> None:
+        """Close a contextual decision prepared for a turn that no longer reads it."""
 
         prepared = getattr(self, "_prepared_decision", None)
         self._prepared_decision = None
         if prepared is not None:
-            key, cancellation, future = prepared
-            if keep_finished and future.done() and not future.cancelled() and future.exception() is None:
-                self._finished_decision = (key, future.result())
-                return
+            _, cancellation, future = prepared
             cancellation.cancel()
             future.cancel()
 
@@ -19526,7 +19515,7 @@ class LlmRuntime:
             getattr(self, "_parallel_turn_verification", False)
         )
         self._retire_prepared_chat()
-        self._retire_prepared_decision(keep_finished=True)
+        self._retire_prepared_decision()
 
     def _effective_request_timeout(self, requested: float | None = None) -> float:
         request_timeout = getattr(self, "_request_timeout", 19.0)
@@ -21914,7 +21903,6 @@ class LlmRuntime:
         """
 
         self._retire_prepared_decision()
-        self._finished_decision = None  # M150: a decision kept from an earlier turn is no longer this one's
         if not getattr(self, "_parallel_turn_verification", False):
             return
         payload, _ = self._decider_payload(text, history, tools, signatures)
@@ -21968,11 +21956,7 @@ class LlmRuntime:
         prepared = getattr(self, "_prepared_decision", None)
         self._prepared_decision = None
         if prepared is None:
-            # M150: the decision a turn the readers decided left written (``_retire_prepared_decision``), read once
-            # by the request that sends the same payload (its arguments step, before it asks the person).
-            finished = getattr(self, "_finished_decision", None)
-            self._finished_decision = None
-            return finished[1] if finished is not None and finished[0] == _decider_payload_key(payload) else None
+            return None
         key, cancellation, decision = prepared
         if key != _decider_payload_key(payload):
             cancellation.cancel()
