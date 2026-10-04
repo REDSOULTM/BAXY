@@ -935,7 +935,8 @@ internal static class PlanObservationProjector
                 ["confirmationId"],
             "game.purchase.commit" => ["confirmationId", "expectedPriceCents"],
             "message.send" => ["recipientId"],
-            "note.read" => ["noteId"],
+            // M160: the rest of a note.update (revision, title, content) comes from the mind, read off the same read.
+            "note.read" or "note.update" => ["noteId"],
             "notification.dismiss" => ["reminderId", "expectedVersion"],
             "office.document.read" => ["documentId"],
             "peripheral.print" => ["deviceId"],

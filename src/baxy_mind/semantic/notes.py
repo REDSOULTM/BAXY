@@ -2580,6 +2580,229 @@ def note_content_unsaid(text: str, content: str) -> bool:
     return bool(written) and written <= set(re.findall(r"[a-z0-9]+", named.group("topic")))
 
 
+# --- What a note keeps when the person points at the conversation (M160) -------------------------------------------
+# DEV-H v4w H-w11-t3 «save that whole thing as a note called banana bread» after the recipe and «350 degrees Fahrenheit
+# is 177 degrees Celsius.» → «What content should be saved…?»; DEV-I v4w I-w18-t3 «perfecto, ¿me la guardas en una nota
+# con esas cantidades?» after the recipe and the flour for 20 → «¿Cuál es la receta…?»; DEV-F v4w F-w34-t3 «Guárdamela en
+# una nota que se llame tortilla» after the recipe for 4 and the quantities for 8 → the decider's «receta de tortilla de
+# patatas con cebolla para cuatro personas»; DEV-G v4w G-w29-t4 «guárdame la de javascript en una nota…» after the code
+# and «37 grados celsius son 98.6…» → «función de celsius a fahrenheit en JavaScript». M67 offers the extraction only
+# BAXY's last reply; what the person points at may be an earlier one, or one and the replies that adjusted it after. The
+# content is BAXY's own words, verbatim: never a summary nobody said.
+
+# A pointing word: a demonstrative, an object pronoun on the verb («guárdamela», «apúntalo»), «guarda la receta».
+_POINTS_AT_SAID = re.compile(
+    r"\b(?:eso|esto|esa|ese|esas|esos|aquello|that|this|it|those|these|them|todo|everything|"
+    r"\w+[aei](?:me|te|se|nos)?(?:lo|la|los|las)|"
+    r"(?:guard|salv)\w*\s+(?:en\s+una\s+nota\s+)?(?:la|el|las|los)\s+[a-z]+|"
+    r"(?:save|store|keep)\s+(?:in\s+a\s+note\s+)?the\s+[a-z]+)\b"
+)
+# «eso», «save that in…», «save that one»: the thing just said (M67), never an earlier one found by the title.
+_POINTS_AT_LAST = re.compile(r"\b(?:eso|esto|aquello)\b|\b(?:that|this)\b(?=\s+(?:in|as|to|into|on|one)\b|\s*[.!?]*$)")
+# More than one reply: both versions, the whole of it, the quantities the last reply adjusted.
+_POINTS_AT_SEVERAL = re.compile(
+    r"\b(?:(?:las|los)\s+dos(?:\s+versiones)?|ambas|ambos|both|todo(?:\s+eso)?|everything|all\s+of\s+(?:it|that|them)|"
+    r"whole\s+thing|(?:esas|estas)\s+cantidades|(?:those|these)\s+(?:amounts|quantities)|"
+    r"(?:con|with)\s+(?:las|los|the)\s+(?:cantidades|amounts|quantities)\s+(?:nuevas|new))\b"
+)
+_NOTE_TITLE_PUT = re.compile(r"\b(?:pon\w*|put)\s+(?:(?:de|como|por|as)\s+)?(?:titulo|nombre|title|name)\b")
+_CODE_FENCE = re.compile(r"^[ \t]*```[ \t]*(?P<language>[A-Za-z0-9_+#-]*)[ \t]*$", re.MULTILINE)
+# A language named as the fence tag or as people say it («la de javascript», «the python one», «la versión en js»).
+_LANGUAGE_NAMES = {
+    "javascript": "javascript", "js": "javascript", "typescript": "typescript", "ts": "typescript",
+    "python": "python", "py": "python", "powershell": "powershell", "ps1": "powershell", "pwsh": "powershell",
+    "bash": "bash", "sql": "sql", "java": "java", "csharp": "csharp", "html": "html", "css": "css", "json": "json",
+    "rust": "rust", "ruby": "ruby", "php": "php", "kotlin": "kotlin", "swift": "swift", "cpp": "cpp",
+}
+# Words that join any two turns («hacer», «sería», «please») and say nothing of what a reply is about.
+_JOINING_WORDS = frozenset({
+    "para", "pero", "como", "cuanto", "cuanta", "cuantos", "cuantas", "esta", "este", "esto", "esos", "esas", "seria",
+    "serian", "hacer", "hace", "that", "this", "what", "with", "from", "have", "your", "about", "unos", "unas", "todo",
+    "todos", "toda", "todas", "entonces", "ahora", "mismo", "misma", "solo", "tambien", "puedes", "podrias", "could",
+    "would", "there", "they", "them", "then", "than", "into", "also", "just", "more", "mejor", "desde", "hasta",
+    "sobre", "entre", "cada", "porque", "donde", "cuando", "quiero", "necesito", "tengo", "tienes", "hola", "gracias",
+    "please", "porfa", "nota", "notas", "note", "notes", "baxy", "dame", "dime", "give", "tell", "make", "hazme",
+    "were", "will", "estan", "eres", "sure", "okay", "vale", "listo", "bueno", "pues", "aqui", "here", "some", "algo",
+    "around", "otra", "otro", "other", "same", "lugar", "instead", "version", "versiones", "receta", "recipe",
+})
+
+
+def _said_words(text: str) -> set[str]:
+    """The words of ``text`` a turn is about: four letters or more, or a number of two digits or more; an identifier
+    in camelCase or snake_case gives its words («validarDni» → validar, dni)."""
+
+    spread = re.sub(r"(?<=[a-z])(?=[A-Z])", " ", str(text or ""))
+    return {
+        word for word in re.findall(r"[a-z0-9]+", _fold(spread).replace("_", " "))
+        if (word.isdigit() and len(word) >= 2) or (len(word) >= 4 and not word.isdigit() and word not in _JOINING_WORDS)
+    }
+
+
+def _same_word(said: str, other: str) -> bool:
+    """One word in two forms: the same, or sharing a stem of four letters or more that is two thirds of the shorter
+    («sopaipilla» / «sopaipillas», «dental» / «dentista»). Numbers only as written."""
+
+    if said == other:
+        return True
+    if said.isdigit() or other.isdigit():
+        return False
+    shared = 0
+    for left, right in zip(said, other):
+        if left != right:
+            break
+        shared += 1
+    return shared >= max(4, -(-2 * min(len(said), len(other)) // 3))
+
+
+def _shares_a_word(words: set[str], others: set[str]) -> bool:
+    return any(_same_word(word, other) for word in words for other in others)
+
+
+def _only_code(reply: str) -> str | None:
+    """The code of a reply that is one fenced block and nothing else; None otherwise."""
+
+    fences = list(_CODE_FENCE.finditer(reply))
+    if len(fences) != 2 or reply[:fences[0].start()].strip() or reply[fences[1].end():].strip():
+        return None
+    code = reply[fences[0].end():fences[1].start()].strip("\n")
+    return code if code.strip() else None
+
+
+def _reply_language(reply: str) -> str | None:
+    fences = [match.group("language").casefold() for match in _CODE_FENCE.finditer(reply)]
+    named = {_LANGUAGE_NAMES.get(tag, tag) for tag in fences if tag}
+    return next(iter(named)) if len(named) == 1 else None
+
+
+def note_title_given(text: str) -> str | None:
+    """M160: the title ``text`` gives the note it asks for («…que se llame tortilla», «called banana bread»)."""
+
+    found = _NOTE_TITLE_GIVEN.search(str(text or ""))
+    title = " ".join(found.group("title").split()).strip(" .") if found else ""
+    return title or None
+
+
+def pointed_note_content(text: str, title: str, exchanges: Sequence[tuple[str, str]]) -> str | None:
+    """M160: what a note the person asks for keeps when ``text`` points at BAXY's words earlier in the conversation and
+    they are not just its last reply (see above). ``exchanges``: each of BAXY's replies with the person's message it
+    answered, oldest first, the current message left out; ``title``: the note's title as known (empty when none).
+
+    - «the javascript one», «la de python»: the most recent reply whose one code block is in that language;
+    - «las dos versiones», «that whole thing», «con esas cantidades»: the last reply and those before it that it went on
+      from, each sharing what it is about with the next (the code and its translation, the recipe and its quantities);
+    - a note titled by what an earlier reply was about («banana bread», «tortilla») when the last exchange says nothing
+      of it: that reply and the ones after it that went on with it (its quantities for 8, a temperature of it);
+    - otherwise None: the last reply is the one meant («eso», «save that in…», «ese código») and M67 offers it, or
+      the content was dictated, or nothing said fits. A reply that is one code block goes as its code."""
+
+    folded = _fold(str(text or ""))
+    replies = [(str(asked or ""), str(reply or "").strip()) for asked, reply in exchanges if str(reply or "").strip()]
+    if (
+        len(replies) < 2
+        or (_POINTS_AT_SAID.search(folded) is None and _POINTS_AT_SEVERAL.search(folded) is None)
+        # «y ponle de título tortilla» names the note; it dictates nothing.
+        or _NOTE_DICTATED.search(_NOTE_TITLE_PUT.sub(" ", folded)) is not None
+        or re.search(r"(?<!\d):\s*\S", folded) is not None
+    ):
+        return None
+    about = [_said_words(asked) | _said_words(reply) for asked, reply in replies]
+
+    def kept(indexes: list[int]) -> str:
+        return "\n\n".join(_only_code(replies[index][1]) or replies[index][1] for index in indexes)
+
+    def goes_on(later: int, earlier: int) -> bool:
+        # The same thing said again: what it is about, or the same code in another language.
+        return _shares_a_word(about[later], about[earlier]) or (
+            _only_code(replies[later][1]) is not None and _only_code(replies[earlier][1]) is not None
+        )
+
+    def going_on_from(start: int) -> list[int]:
+        return [start, *(index for index in range(start + 1, len(replies)) if goes_on(index, start))]
+
+    last = len(replies) - 1
+    if _POINTS_AT_SEVERAL.search(folded) is not None:
+        first = last
+        while first > 0 and last - first < 3 and goes_on(first, first - 1):
+            first -= 1
+        return kept(list(range(first, last + 1))) if first < last else None
+    named = {_LANGUAGE_NAMES[word] for word in re.findall(r"[a-z0-9#+]+", folded) if word in _LANGUAGE_NAMES}
+    in_language = [index for index, (_, reply) in enumerate(replies) if _reply_language(reply) in named]
+    if len(named) == 1 and in_language:
+        return kept([in_language[-1]]) if in_language[-1] != last else None
+    topic = {
+        word for word in re.findall(r"[a-z0-9]+", _fold(str(title or "")))
+        if len(word) >= 3 and word not in _NOTE_FRAME_WORDS and word not in _JOINING_WORDS
+    }
+    if (
+        not topic
+        or _POINTS_AT_LAST.search(folded) is not None
+        or _only_code(replies[last][1]) is not None
+        or _shares_a_word(topic, about[last])
+    ):
+        return None
+    # The title names what BAXY's reply was about, not what the person mentioned in passing (DEV-F F-w53-t4 «…voy a
+    # cambiar plata pal viaje» is no anchor for «anotalo en una nota q se llame viaje lisboa»).
+    anchors = [index for index in range(last) if _shares_a_word(topic, _said_words(replies[index][1]))]
+    return kept(going_on_from(anchors[-1])) if anchors else None
+
+
+# --- What is added to a note (M160) --------------------------------------------------------------------------------
+# DEV-G v4w G-w12-t2 «agrégale que quiero comprarle un ramo de flores» right after «He guardado la nota con el título
+# "ideas para el cumpleaños de juliana".» → restated «Agrega «quiero comprarle un ramo de flores» a la nota «ideas para el
+# cumpleaños de juliana».» → note.update asked «¿Cuál es el título de la nota que deseas editar?» on every run since v3d.
+# note.update replaces the title and the whole content of a note chosen by its identity and revision, which only a read
+# of it gives; what the person adds goes after what the note already says.
+_QUOTED_SPAN = r"«[^»]+»|\"[^\"]+\"|“[^”]+”|‘[^’]+’"
+_NOTE_NAMED_HERE = (
+    r"(?:(?:(?:a|en|de)\s+(?:la|esa|esta|mi|tu)\s+nota|(?:to|in|into|on)\s+(?:the|that|this|my|your)\s+(?:\w+\s+){0,3}?note)"
+    rf"(?:\s+(?:llamada|titulada|called|named)?\s*(?:{_QUOTED_SPAN}|[^\s«\"“‘,.;:!?]+(?:\s+[^\s«\"“‘,.;:!?]+){{0,6}}?))?"
+    r"|(?:to|into|in)\s+(?:it|that)\b)"
+)
+_ADDED_TO_NOTE = re.compile(
+    r"^(?:.*?\b)?(?:agr[eé]g(?:a|ale|ue|uele|ar|arle)|a[ñn][aá]d(?:e|ele|a|ir|irle)|s[uú]m(?:a|ale|ar)|"
+    r"incl[uú]y(?:e|ele|a)|incluir|p[oó]n(?:le)?|an[oó]t(?:a|ale)|ap[uú]nt(?:a|ale)|escr[ií]b(?:e|ele)|"
+    r"m[eé]t(?:e|ele)|add|append|include|put|write)\s+"
+    rf"(?:{_NOTE_NAMED_HERE}\s+)?"
+    r"(?:(?:que|that)\s+)?"
+    rf"(?P<added>{_QUOTED_SPAN}|.+?)"
+    rf"(?:\s+{_NOTE_NAMED_HERE})?"
+    r"(?:[\s,]+(?:tambi[eé]n|tmb|tb|too|also|porfa|por\s+favor|please|pls))*[\s.!?]*$",
+    re.IGNORECASE,
+)
+# «ponle de título…», «put a title»: a title is named, nothing is added.
+_NOT_AN_ADDITION = re.compile(r"^(?:de\s+|como\s+|por\s+|as\s+|a\s+)?(?:t[ií]tulo|nombre|title|name)\b", re.IGNORECASE)
+
+
+def names_a_note(text: str) -> bool:
+    """M160: ``text`` names a note of its own («a la nota de compras», «the note called groceries», «la nota «X»»), so
+    an addition is not to the note the conversation is on."""
+
+    said = str(text or "")
+    return (
+        _NOTE_REFERENCE.search(said) is not None
+        or (_NOTE_TITLE_GIVEN.search(said) is not None and re.search(r"\b(?:nota|note)\b", said, re.IGNORECASE) is not None)
+        or re.search(rf"\b(?:nota|note)\s+(?:{_QUOTED_SPAN})", said, re.IGNORECASE) is not None
+    )
+
+
+def note_addition(text: str) -> str | None:
+    """M160: what ``text`` adds to a note («agrégale que quiero comprarle un ramo de flores», «Agrega «X» a la nota «Y»»,
+    «add buy candles to the note»), as written, without its quotes; None when it adds nothing."""
+
+    found = _ADDED_TO_NOTE.match(" ".join(str(text or "").split()))
+    if found is None:
+        return None
+    added = found.group("added").strip().rstrip(",;")
+    if re.search(r"\b(?:nota|note|llamada|titulada|called|named)\s*$", found.string[:found.start("added")], re.IGNORECASE):
+        # «Agrega a la nota «compras».»: what is quoted right after the note is its name.
+        return None
+    if re.fullmatch(_QUOTED_SPAN, added):
+        added = added[1:-1].strip()
+    if not added or _NOT_AN_ADDITION.match(added) or re.fullmatch(rf"{_NOTE_NAMED_HERE}", added, re.IGNORECASE):
+        return None
+    return added
+
+
 # M110 (DEV-F v4d F-w45-t5 «and the pizza, how many minutes till I pull it out?» → the reminders already due): what is
 # still to ring is read from what is scheduled; the due read is for the ones that already rang, asked as such.
 _OVERDUE_WORDS = (
