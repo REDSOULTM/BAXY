@@ -840,7 +840,7 @@ OCR pulsó «biblioteca» una vez en el panel de VS Code; M132 ata el clic a la 
    `window/v4r-devE/RUN.jsonl` (un turno). Declaró no usarla; el coordinador no la vio. M150 se diseñó con los agregados
    de E citados arriba y filas de F/D/G/H. Se deja constancia por la regla de sello de DEV-E (D55).
 
-## D73. M150 no era la causa; los finales vetados de task.list; DEV-I; M151–M153 (2026-10-04 05:00)
+## D73. M150 no era la causa; los finales vetados de task.list; DEV-I; M151–M153 (2026-10-04 04:00)
 1. **v4t** (M150) dio DEV-E 256 (0 arreglados / 7 rotos frente a v4s, p = 0,016), con la búsqueda web caída en 9 turnos.
    **v4t2** (mismo build, búsqueda estable) dio 257 y **v4u** (M150 retirado, `integ/v3z` 5188260f; entre los builds de v4s
    y v4u sólo cambian pins y documentos) dio 256 frente a v4s: 0 / 7 otra vez. M150 se retiró con una atribución
