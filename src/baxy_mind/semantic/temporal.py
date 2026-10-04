@@ -2192,6 +2192,85 @@ def alarm_cancellation_request(clocks: tuple[tuple[int, int], ...], english: boo
     )
 
 
+# M158 (DEV-I v4u/v4v I-w26-t4 «cancela la de las 7 que mañana no trabajo» after BAXY listed eleven alarms and
+# reminders, one of them at 7:00 → the decider chose notification.cancel.latest, restated «cancela la última alarma», and
+# BAXY cancelled the last one set, which was not the one at 7): a cancellation that names its alarm or reminder by its
+# clock is of the one at that clock. Only one alarm, timer or reminder named by its clock, after a verb of taking it
+# back: «la de las 7», «la alarma de las 6:30», «el recordatorio de mañana a las 9», «the 7 o'clock one», «my 7am
+# alarm», «the alarm at 7». «La reunión de las 7» is no notification; «las de las 7» is D39's plural.
+_CLOCK_CANCEL_VERB = re.compile(
+    r"\b(?:cancel\w*|quit[aeo]\w*|borr[aeo]\w*|elimin\w*|anul\w*|delete|remove|scratch|kill|nix|ditch|scrap|"
+    r"get\s+rid\s+of)\b"
+)
+_NAMED_CLOCK = rf"(?P<clock>{_CLOCK_HOUR}{_CLOCK_MINUTES}?(?:{_O_CLOCK})?(?:\s*{_CLOCK_PERIOD})?)"
+_SPANISH_CLOCK_NAMED_NOTIFICATION = re.compile(
+    r"\b(?:la|el|esa|ese|mi)\s+(?:(?P<noun>alarma|recordatorio|temporizador|despertador)\s+)?"
+    r"(?:(?:de|para)\s+(?:hoy|manana|pasado\s+manana)\s+)?(?:de|para|a)\s+las?\s+" + _NAMED_CLOCK
+    + r"(?=\s|$|[,;:.?!])"
+)
+_ENGLISH_CLOCK_NAMED_NOTIFICATION = (
+    re.compile(r"\b(?:the|my|that)\s+" + _NAMED_CLOCK + r"\s*(?P<noun>one|alarm|reminder|timer|countdown)\b"),
+    re.compile(
+        r"\b(?:the|my|that)\s+(?P<noun>one|alarm|reminder|timer|countdown)\s+(?:set\s+)?(?:at|for)\s+" + _NAMED_CLOCK
+        + r"(?=\s|$|[,;:.?!])"
+    ),
+)
+_ALARM_KIND_NOUN = r"\b(?:alarmas?|alarms?|temporizador(?:es)?|timers?|countdowns?|despertador(?:es)?)\b"
+_REMINDER_KIND_NOUN = r"\b(?:recordatorios?|reminders?)\b"
+
+
+def clock_named_cancellation(text: str, restated: str = "") -> str | None:
+    """M158: the request that cancels the alarm or reminder ``text`` names by its clock, said the way the readers of
+    ``notification.cancel.at`` read it («cancela la alarma de las 7:00», «cancel the alarm at 7:00»). The clock keeps
+    the part of the day said, and only that: a bare 7 stays either 7, as ``notification.cancel.at`` selects it. The kind
+    is the one the message names, else the one ``restated`` (the decider's restatement) names; with neither, the
+    message itself is the request. None unless one notification is named by one clock after a verb of cancelling it,
+    and for a move («cambia la de las 7 a las 8»)."""
+
+    said = " ".join(str(text or "").split())
+    folded = _same_length_fold(said)
+    verb = _CLOCK_CANCEL_VERB.search(folded)
+    if verb is None or notification_change(said) is not None:
+        return None
+    named = [
+        (english, found)
+        for english, patterns in ((False, (_SPANISH_CLOCK_NAMED_NOTIFICATION,)), (True, _ENGLISH_CLOCK_NAMED_NOTIFICATION))
+        for pattern in patterns
+        for found in pattern.finditer(folded)
+        if found.start() >= verb.end()
+    ]
+    if len({found.start("clock") for _, found in named}) != 1:
+        return None
+    english, found = named[0]
+    clocks = spoken_clocks(f"{'at' if english else 'a las'} {found.group('clock')}")
+    if len(clocks) != 1:
+        return None
+    clock = clocks[0]
+    kinds: list[str] = []
+    for source in (found.group("noun") or "", _fold(str(restated or ""))):
+        kinds = [
+            kind for kind, pattern in (("alarm", _ALARM_KIND_NOUN), ("reminder", _REMINDER_KIND_NOUN))
+            if re.search(pattern, source)
+        ]
+        if kinds:
+            break
+    if len(kinds) != 1:
+        return said
+    hour, minute = clock.hour, clock.minute
+    if not clock.resolved or clock.on_the_dial:
+        dial = f"{hour}:{minute:02d}"
+    elif english:
+        dial = f"{hour % 12 or 12}:{minute:02d} {'am' if hour < 12 else 'pm'}"
+    elif hour > 12 or hour == 0:
+        dial = f"{hour}:{minute:02d}"
+    else:
+        dial = f"{hour}:{minute:02d} {'de la mañana' if hour < 12 else 'de la tarde'}"
+    if english:
+        return f"cancel the {kinds[0]} at {dial}"
+    noun = "la alarma" if kinds[0] == "alarm" else "el recordatorio"
+    return f"cancela {noun} de {'la' if dial.startswith('1:') else 'las'} {dial}"
+
+
 def _clock_article(clock: str) -> str:
     """«la» before one o'clock, «las» before the others («de la una», «a las 9:00»)."""
 

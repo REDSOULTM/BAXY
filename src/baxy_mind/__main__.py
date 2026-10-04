@@ -5637,6 +5637,21 @@ def _context_decided_result(
         # (``resolve_explicit_effects``), and the decider's send is held the same way. Its words are read again from
         # the message (``message.draft`` arguments).
         decided = semantic_decider.ContextDecision(decided.request, "action", ("message.draft",), decided.question)
+    clock_cancelled = (
+        semantic_temporal.clock_named_cancellation(text, decided.request)
+        if decided.decision == "action"
+        and decided.operations == ("notification.cancel.latest",)
+        and "notification.cancel.at" in available_operations
+        else None
+    )
+    if clock_cancelled is not None:
+        # M158 (safety exception to D58; DEV-I v4u/v4v I-w26-t4 «cancela la de las 7 que mañana no trabajo» after a list
+        # of eleven alarms and reminders → «cancela la última alarma», and the last one set, not the one at 7, was
+        # cancelled): the alarm or reminder the person names by its clock is the one at that clock
+        # (``notification.cancel.at``), never the last one set whatever it is. When the last one this conversation set
+        # is the one at that clock, M145 (``_own_notification_cancellation``) makes it the latest again. A move
+        # (cancel.latest with schedule) and a cancellation that names no clock stay as decided.
+        decided = semantic_decider.ContextDecision(clock_cancelled, "action", ("notification.cancel.at",), "")
     if (
         decided.decision == "action"
         and len(decided.operations) == 1
