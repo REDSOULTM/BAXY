@@ -833,29 +833,6 @@ def _said_optional_arguments(arguments: object, schema: dict, trusted_source: st
     return kept
 
 
-def _grounded_direct_arguments(
-    objective: str, tool: dict, arguments: object, *, trusted_source: str | None = None,
-) -> tuple[dict | None, Any]:
-    """The operation's arguments when they ground whole in the evidence, else None with the fields still missing
-    (``prepare_direct_argument_result`` without its question; M150 reads it before asking)."""
-
-    schema = tool["function"]["parameters"]
-    source = objective if trusted_source is None else trusted_source
-    if not schema.get("required"):
-        # M76 (DEV-D v3l D-s014, D-s054, D-s080: the weather asked «¿En qué ciudad…?»): with every field optional
-        # there is nothing to ask. A value the person did not say (a town the model brought, this PC's own) is left
-        # out and the operation's default applies; what was said is kept.
-        arguments = _said_optional_arguments(arguments, schema, source)
-    grounded, fields = normalize_objective_arguments(arguments, schema, source)
-    if grounded is not None:
-        operation = str(tool["function"].get("canonical_name") or "")
-        normalized = _normalize_grounded_operation_arguments(operation, grounded, objective)
-        if normalized is not None:
-            return normalized, ()
-        fields = ("dueUtc",) if "dueUtc" in schema.get("required", []) else fields
-    return None, fields
-
-
 def prepare_direct_argument_result(
     llm: object,
     objective: str,
@@ -874,9 +851,29 @@ def prepare_direct_argument_result(
     objective.
     """
 
-    normalized, fields = _grounded_direct_arguments(objective, tool, arguments, trusted_source=trusted_source)
-    if normalized is not None:
-        return normalized, ""
+    schema = tool["function"]["parameters"]
+    if not schema.get("required"):
+        # M76 (DEV-D v3l D-s014, D-s054, D-s080: the weather asked «¿En qué ciudad…?»): with every field optional
+        # there is nothing to ask. A value the person did not say (a town the model brought, this PC's own) is left
+        # out and the operation's default applies; what was said is kept.
+        arguments = _said_optional_arguments(
+            arguments, schema, objective if trusted_source is None else trusted_source,
+        )
+    grounded, fields = normalize_objective_arguments(
+        arguments,
+        schema,
+        objective if trusted_source is None else trusted_source,
+    )
+    if grounded is not None:
+        operation = str(tool["function"].get("canonical_name") or "")
+        normalized = _normalize_grounded_operation_arguments(
+            operation,
+            grounded,
+            objective,
+        )
+        if normalized is not None:
+            return normalized, ""
+        fields = ("dueUtc",) if "dueUtc" in schema.get("required", []) else fields
     if fallback_question:
         return None, fallback_question
     question = llm.formulate_missing_argument_question(
@@ -3260,62 +3257,18 @@ def _stated_argument_fields(operation: str, objective: str, schema: dict[str, ob
 # name or a folder the person had given; the decider had read them (DEV-A: 55 of 57).
 _DECIDED_ARGUMENTS: dict[str, tuple[tuple[str, ...], tuple[tuple[str, Any], ...]]] = {}
 _DECIDED_ARGUMENTS_KEPT = 32
-_DECIDER_READ_REQUESTS: dict[str, None] = {}
 
 
 def _remember_decided_arguments(
     objective: str, operations: tuple[str, ...], arguments: tuple[tuple[str, Any], ...],
 ) -> None:
     key = " ".join(objective.split())
-    if not key:
-        return
-    # M150: a request the decider already read, with or without values, is never asked of it again before a question.
-    _DECIDER_READ_REQUESTS.pop(key, None)
-    _DECIDER_READ_REQUESTS[key] = None
-    while len(_DECIDER_READ_REQUESTS) > _DECIDED_ARGUMENTS_KEPT:
-        _DECIDER_READ_REQUESTS.pop(next(iter(_DECIDER_READ_REQUESTS)))
-    if not arguments:
+    if not key or not arguments:
         return
     _DECIDED_ARGUMENTS.pop(key, None)
     _DECIDED_ARGUMENTS[key] = (tuple(operations), tuple(arguments))
     while len(_DECIDED_ARGUMENTS) > _DECIDED_ARGUMENTS_KEPT:
         _DECIDED_ARGUMENTS.pop(next(iter(_DECIDED_ARGUMENTS)))
-
-
-def _decided_before_asking(
-    llm: Any,
-    request: str,
-    history: object,
-    planner_catalog: "PlannerCatalog | None",
-    operations: tuple[str, ...],
-) -> bool:
-    """M150 (D58, goal v3 «cero repreguntas de un dato dado»): before a turn the readers decided asks the person for a
-    value, the contextual decider reads the turn (the decision prepared beside the readers when it was written, else
-    now) and, when it chose one of ``operations``, its values are remembered for ``request`` as on the decider's own
-    path (``_remember_decided_arguments``): the arguments step takes them with the same guarantees (grounded in what
-    was said; never an identifier nor a moment of the decider's). Window DEV-E v4s (aggregates): 3 turns decided by a
-    reader asked a value the isolated decider had written; DEV-F F-s016 «could you put Andor on Disney plus for me» and
-    F-s013 «Crea una nota que se llame ideas boda Marta con esto: …» are such turns when the extraction abstains. Only
-    a request the decider has not read yet is asked about, once; True when its values for one of ``operations`` are
-    now remembered."""
-
-    key = " ".join(request.split())
-    decide = getattr(llm, "decide_in_context", None)
-    if planner_catalog is None or not key or key in _DECIDER_READ_REQUESTS or decide is None:
-        return False
-    conversation = [item for item in history if isinstance(item, dict)] if isinstance(history, list) else []
-    decider_tools, signatures = _decider_catalog(planner_catalog)
-    try:
-        decided = decide(_person_message(conversation, request), conversation, decider_tools, signatures=signatures)
-    except Exception:  # noqa: BLE001 - no decision (budget, transport, contract): the person is asked, as before
-        _remember_decided_arguments(request, (), ())
-        return False
-    if decided.decision != "action" or not set(operations) & set(decided.operations):
-        # Another reading of the turn is never taken here: the turn stays the readers', and the question stands.
-        _remember_decided_arguments(request, (), ())
-        return False
-    _remember_decided_arguments(request, tuple(decided.operations), tuple(decided.arguments))
-    return bool(decided.arguments)
 
 
 def _prior_user_texts(history: object, current: str) -> tuple[str, ...]:
@@ -3472,12 +3425,6 @@ def _schema_field_of(name: str, operation: str, properties: dict[str, Any], requ
     if len(name) < 3:
         return None
     named = [field for field in properties if field.casefold().startswith(name.casefold())]
-    if not named:
-        # M150 (DEV-H v4r H-w32-t2 «y de qué trata? resumímelo así nomás» → plan file.open + document.pdf.read with the
-        # decider's {"folder": "Descargas", "name": …} → the summary's ``fileName`` asked): the one field whose last
-        # word is the decider's («name» → «fileName»), as «app» begins «appId».
-        last_word = name[:1].upper() + name[1:]
-        named = [field for field in properties if field.endswith(last_word)]
     return named[0] if len(named) == 1 else None
 
 
@@ -6052,13 +5999,8 @@ def _direct_arguments_result(
     application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
     game_catalog: GameCatalogIndex = GameCatalogIndex(),
     dialogue_state: dialogue_slot.DialogueState,
-    planner_catalog: PlannerCatalog | None = None,
 ) -> tuple[dict[str, Any] | None, str]:
-    """The «arguments» request: the operation's grounded arguments, or None with the question for what is missing.
-
-    ``planner_catalog``: the decider's catalog, so that a turn the readers decided reads what the decider wrote before
-    it asks (M150, ``_decided_before_asking``); without it nothing more is asked of the model.
-    """
+    """The «arguments» request: the operation's grounded arguments, or None with the question for what is missing."""
 
     operation = str(message.get("operation", ""))
     objective = _with_session_alarm_selector(
@@ -6193,26 +6135,6 @@ def _direct_arguments_result(
             said,
             previous_reply=reply_written,
         )
-        if (
-            decided_arguments is None
-            and _grounded_direct_arguments(objective, tool, extracted, trusted_source=objective_source)[0] is None
-            and _decided_before_asking(
-                llm, str(message.get("text", "")), message.get("history"), planner_catalog, (operation,),
-            )
-        ):
-            # M150 (D58): a turn the readers decided was about to ask a value; what the decider wrote for this
-            # operation completes the extraction's first, under the same grounding as on the decider's own path.
-            said = _with_decided_restatements(
-                operation, str(message.get("text", "")), tool["function"]["parameters"], said,
-            )
-            decided_arguments = _with_decided_arguments(
-                operation,
-                str(message.get("text", "")),
-                extracted,
-                tool["function"]["parameters"],
-                said,
-                previous_reply=reply_written,
-            )
         arguments, question = prepare_direct_argument_result(
             llm,
             objective,
@@ -9490,16 +9412,6 @@ def _run_sidecar(
                             str(request["operation"]), plan_operations, objective, tool, history,
                             extracted=arguments, after_extraction=True,
                         )
-                    if grounded is None and _decided_before_asking(
-                        llm, objective, history, planner_catalog, plan_operations,
-                    ):
-                        # M150 (D58): a plan the readers decided was about to ask a step's value; what the decider
-                        # wrote for it completes the step first (M141's guarantees), and only what is still missing
-                        # is asked.
-                        grounded = _plan_step_decided_arguments(
-                            str(request["operation"]), plan_operations, objective, tool, history,
-                            extracted=arguments, after_extraction=True,
-                        )
                     if grounded is None:
                         change = (
                             semantic_temporal.notification_change(objective)
@@ -9627,7 +9539,6 @@ def _run_sidecar(
                     application_names=application_names,
                     game_catalog=game_catalog,
                     dialogue_state=dialogue_state,
-                    planner_catalog=planner_catalog,
                 )
                 write_request_message(
                     {
