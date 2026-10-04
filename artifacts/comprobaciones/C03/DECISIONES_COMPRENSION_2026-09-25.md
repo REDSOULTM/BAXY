@@ -901,3 +901,31 @@ OCR pulsó «biblioteca» una vez en el panel de VS Code; M132 ata el clic a la 
      (cbd2eae2), resuelto en 161a0e1a antes de cualquier prueba o push.
    - **M157** (en curso): M147 no se aplica en la App en su propia fila (F-w05-t5: la consulta a Spotify fue «Javier
      Mené» en v4u y en v4v); «tradúceme eso al inglés» → búsqueda; una nota con el título como contenido.
+
+## D75. v4w (M154–M157), M158, fuga de ventanas del Explorador, cadena fantasma (2026-10-04 15:40)
+1. **v4w** (main a84135f8 = integ 3485220e: M154 cifras consultadas y motivo ≠ dato propio, M155 lectores que no pisan al
+   decisor y no-enviar, M156 datos de primer turno, M157 nombre como se dijo en todos los caminos, traducción ≠ búsqueda,
+   nota sin contenido pregunta).
+   - **DEV-E 263/299 = 88,0 %** (estricta 253; +2/0 frente a v4v; 0 `filtered`).
+   - **DEV-I 272/300 = 90,7 %** (+10/−2 frente a v4v, p = 0,04).
+   - Resto: DEV-H 283 (94,3 %), DEV-D 312 (94,0 %), DEV-G 279 (93,0 %), DEV-F 248 (88,6 %).
+   - Batería: reserva 90,0 / 94,0 % (+1/−1), 742 sin cambios, DEV-C 84,4 %, cien-129 100/100.
+   - Guion **54/60**, held-out 30/30.
+   - La primera cadena de v4w salió en rojo sólo por una prueba de M152 que dependía de la hora del día («a las 9» →
+     hora 9; pasadas las 09:00, D61 da las 21:00). Se corrigió con `% 12`; las pruebas que construyen relojes fijan la
+     hora (M108).
+2. **Fuga de ventanas del Explorador.** Cada «abre descargas» de las corridas dejaba un explorer.exe propio, y el
+   limpiador sólo cerraba su lista de apps. Hubo 110 acumuladas (8,5 GB privados; memoria comprometida 63,0 de 63,4 GB;
+   OutOfMemory en git, PowerShell sin arrancar). Se cerraron por PID exacto con cierre normal, nunca el escritorio,
+   según la autorización de RAM del dueño (2026-09-17). El limpiador (`run_procs.py`) ahora cierra los explorer nuevos
+   de cada corrida cuya ventana es una carpeta. Ya cerró 12 en D, F e I.
+3. **Cadena fantasma.** Un lanzamiento con `& disown` siguió vivo. Corrió pytest en paralelo con la cadena buena (2
+   fallos de interferencia, repetidos en verde), fusionó el mismo código y, con la GPU libre al final, repitió DEV-E. Al
+   hacerlo, `window_run.sh` borró los ficheros puntuados de v4w-devE; la cifra 263 ya estaba registrada. Se detuvo por
+   PID antes de que tocara los demás conjuntos. Las cadenas se lanzan sólo como tarea de fondo del harness.
+4. **M158**: «cancela la de las 7» cancela la de las 7, nunca la última puesta (I-w26-t4: con 11 avisos en la corrida,
+   `cancel.latest` canceló otro). Si el decisor elige sólo `cancel.latest` y el mensaje nombra un único aviso por su
+   hora, pasa a `cancel.at` (excepción de seguridad a D58); M145 lo devuelve a `latest` si el último puesto por la
+   conversación es justo ese. Sólo cambia I-w26-t4 en 3 801 decisiones auditadas. Integ b56218e8; se mide en v4x.
+5. **En cola:** medición de techo (E, I y H por la mente con el historial escrito; de E sólo agregados) para separar
+   comprensión de entorno vivido; después, v4x.
