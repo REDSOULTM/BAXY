@@ -839,3 +839,34 @@ OCR pulsó «biblioteca» una vez en el panel de VS Code; M132 ata el clic a la 
 3. **Incidencia:** al buscar corridas, el agente de M150 imprimió por error con un glob una línea de
    `window/v4r-devE/RUN.jsonl` (un turno). Declaró no usarla; el coordinador no la vio. M150 se diseñó con los agregados
    de E citados arriba y filas de F/D/G/H. Se deja constancia por la regla de sello de DEV-E (D55).
+
+## D73. M150 no era la causa; los finales vetados de task.list; DEV-I; M151–M153 (2026-10-04 05:00)
+1. **v4t** (M150) dio DEV-E 256 (0 arreglados / 7 rotos frente a v4s, p = 0,016), con la búsqueda web caída en 9 turnos.
+   **v4t2** (mismo build, búsqueda estable) dio 257 y **v4u** (M150 retirado, `integ/v3z` 5188260f; entre los builds de v4s
+   y v4u sólo cambian pins y documentos) dio 256 frente a v4s: 0 / 7 otra vez. M150 se retiró con una atribución
+   equivocada: la caída la tiene también el código de v4s. No se reintroduce a ciegas; su idea queda anotada.
+2. **Causa de la oscilación, medida sólo con metadatos de DEV-E** (estado terminal, código de veto, bytes, claves; ningún
+   texto): los turnos terminados `filtered: no_response` son 1 en v4s y 5 en v4u (4 task.list y 1 notification.schedule).
+   En task.list, la guarda veta como `reversed_result` (3) o `task_title_not_named` (1) el borrador de un listado de 7
+   tareas pendientes. Con el presupuesto de redacción no da tiempo a otro intento y el turno acaba sin respuesta. Es
+   estocástico: los mismos turnos se publicaron en v4s. En el aviso fueron tres `extra_claim`. Los otros rotos de v4u son
+   argumentos con fecha (scheduledDay) y una búsqueda. Lección: una ronda que sube o baja ±7 en DEV-E con ≤ 1 turno de
+   código cambiado se mira primero en los terminales, antes de atribuirla al mecanismo. Un estado de 263 no es todavía
+   una línea base estable.
+3. **DEV-I sellado** (sha 2c6a5975…, 300 turnos: 125 sueltos, 45 conversaciones de 175 turnos). Con la forma de DEV-E y
+   las reglas de oro 11–20. Lo escribieron 5 escritores de sala limpia en 3 rondas de exclusión (118 → 3 → 0 coincidencias,
+   todo reescrito por su autor y nada descartado). Pasadas ciegas A (Opus) y B (Sonnet): acuerdo de primera etiqueta
+   300/300; 92 filas al adjudicador ciego (83 «1», 4 «2», 4 unión; ningún descarte). Iterable.
+4. **Mecanismos.**
+   - **M151**: el archivo que BAXY acaba de nombrar se lee al pedir su contenido («qué dice», «read it», «give us the
+     gist») o se elige entre los listados por ordinal o palabra («the signed one», «la de pisos», «abre el segundo»). La
+     extensión decide la operación; la carpeta, la última línea que la nombró. Arregla 8 filas de F/G/H; se activa en 11 de
+     todas las filas con historial de F/G/H/I.
+   - **M152**: «pon un recordatorio en una hora para X» se lee sin modelo; un «N antes de algo sin hora» que el decisor
+     reescribió como «en N» pregunta en vez de programar una hora que nadie dijo. De las 9 filas de avisos que fallaban,
+     7 son de historial vivido (la búsqueda no dio la hora del partido, Outlook sin configurar, falta un fichero): ahí
+     preguntar es lo correcto.
+   - **M153** (en curso): ningún turno entendido y hecho termina sin respuesta porque la guarda vete su borrador; vetos
+     falsos sobre listados de tareas y suelo determinista de lo observado.
+   - Se descartaron como mecanismos los fallos de ventanas y batería de F/G/H: el turno anterior, ejecutado de verdad,
+     dio otra respuesta (D67).
