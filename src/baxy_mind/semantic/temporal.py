@@ -431,14 +431,10 @@ _ALARM_PURPOSE_AFTER_HOUR = (
 _ALARM_FOR_HOUR = re.compile(
     r"\b(?:alarm|alarma)\b.*?\b(?P<lead>for|para)\s+(?P<hour>\d{1,2}|"
     + "|".join(sorted(_CLOCK_HOUR_WORDS, key=len, reverse=True)) + r")"
-<<<<<<< HEAD
     # M156: its minutes said straight after it («for 6 30», «para 6.30») are its own.
     r"(?P<minutes>(?:\.|\s+)[0-5][0-9](?!\d))?"
-    r"(?=\s*(?:$|[,;!?]|\.(?!\d)|(?:de\s+)?(?:hoy|manana|today|tomorrow|tonight|please|por\s+favor|porfa)\b))"
-=======
     r"(?=\s*(?:$|[,;!?]|\.(?!\d)|(?:de\s+)?(?:hoy|manana|today|tomorrow|tonight|please|por\s+favor|porfa)\b|"
     + _ALARM_PURPOSE_AFTER_HOUR + r"))"
->>>>>>> opus/m155-lectores-no-pisan
 )
 
 
