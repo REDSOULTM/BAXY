@@ -201,8 +201,21 @@ _ENGLISH_CLOCK_MINUTE_WORDS = {
 _ENGLISH_CLOCK_MINUTE = "(?:" + "|".join(
     re.escape(word).replace(r"\ ", r"\s+") for word in sorted(_ENGLISH_CLOCK_MINUTE_WORDS, key=len, reverse=True)
 ) + ")"
+# M156 (DEV-I v4u I-s050 «baxy necesito que me despiertes a las 6 30 que tengo turno en la clinica» → an alarm at
+# 18:00): the minutes may come straight after the hour, as the ear writes «6 30», the keyboard «6.30» and Spanish says
+# «seis treinta», as English says «six thirty» (M91). Two digits or a word of minutes, never a length («a las 6 30
+# minutos») nor the day of a date («a las 6 15 de octubre»); «media» and «cuarto» still take their «y».
+_STRAIGHT_MINUTE_WORDS = "|".join(
+    sorted((word for word in _CLOCK_MINUTE_WORDS if word not in {"media", "cuarto"}), key=len, reverse=True)
+)
+_STRAIGHT_MINUTES = (
+    rf"(?:(?:\.|\s+)[0-5][0-9](?!\d)|\s+(?:{_STRAIGHT_MINUTE_WORDS})\b)"
+    rf"(?!\s*(?:minutos?|minutes?|mins?|horas?|hours?|hrs?|segundos?|seconds?|dias?|days?)\b"
+    rf"|\s+(?:de\s+|of\s+)?{_CALENDAR_MONTH_TOKEN}\b)"
+)
 _CLOCK_MINUTES = (
-    rf"(?::[0-5][0-9]|\s+y\s+{_CLOCK_MINUTE_WORD}|\s+menos\s+{_CLOCK_MINUTE_WORD}|\s+{_ENGLISH_CLOCK_MINUTE}\b)"
+    rf"(?::[0-5][0-9]|\s+y\s+{_CLOCK_MINUTE_WORD}|\s+menos\s+{_CLOCK_MINUTE_WORD}|\s+{_ENGLISH_CLOCK_MINUTE}\b|"
+    rf"{_STRAIGHT_MINUTES})"
 )
 # The part of the day said after the hour. «a. m.» keeps its dots optional and
 # needs the «m» to end a word, so «a mi casa» is never a morning. The accented
@@ -289,10 +302,11 @@ class SpokenClock:
 
 def _read_clock(found: re.Match[str], folded: str) -> SpokenClock | None:
     minutes_text = found.group("minutes") or ""
-    colon = minutes_text.startswith(":")
+    # M156: «a las 6.30» is written on the dial as «a las 6:30» is (a bare «6.30» is no clock, ``_is_a_clock``).
+    colon = minutes_text.startswith((":", "."))
     raw_hour = found.group("hour")
     hour = int(raw_hour) if raw_hour.isdecimal() else _CLOCK_HOUR_WORDS[raw_hour]
-    minute_word = re.sub(r"^(?::|\s+(?:y|menos)\s+|\s+)", "", minutes_text)
+    minute_word = re.sub(r"^(?::|\.|\s+(?:y|menos)\s+|\s+)", "", minutes_text)
     minute = 0
     if minute_word:
         english = " ".join(minute_word.split())
@@ -405,6 +419,8 @@ def spoken_clock(folded: str) -> SpokenClock | None:
 _ALARM_FOR_HOUR = re.compile(
     r"\b(?:alarm|alarma)\b.*?\b(?P<lead>for|para)\s+(?P<hour>\d{1,2}|"
     + "|".join(sorted(_CLOCK_HOUR_WORDS, key=len, reverse=True)) + r")"
+    # M156: its minutes said straight after it («for 6 30», «para 6.30») are its own.
+    r"(?P<minutes>(?:\.|\s+)[0-5][0-9](?!\d))?"
     r"(?=\s*(?:$|[,;!?]|\.(?!\d)|(?:de\s+)?(?:hoy|manana|today|tomorrow|tonight|please|por\s+favor|porfa)\b))"
 )
 
@@ -419,7 +435,7 @@ def alarm_for_hour(folded: str) -> str | None:
     hour = found.group("hour")
     if hour.isdecimal() and not 1 <= int(hour) <= 23:
         return None
-    return f"{'at' if found.group('lead') == 'for' else 'a las'} {hour}"
+    return f"{'at' if found.group('lead') == 'for' else 'a las'} {hour}{found.group('minutes') or ''}"
 
 
 # --- A time counted from the moment BAXY just gave -------------------------------

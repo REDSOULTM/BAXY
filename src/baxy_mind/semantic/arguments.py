@@ -1345,17 +1345,14 @@ def _explicit_arguments_from_evidence(
         # hay entre el verbo y «en/on Netflix», tal cual: la búsqueda de Netflix
         # es difusa y el recibo dirá el título que de verdad se puso.
         named = re.search(
-            r"^(?:(?:quiero|quisiera|i\s+want\s+to|i\s+wanna|i'd\s+like\s+to)\s+)?"
-            r"(?:reproduc[eií]|play|pon[eé]?(?:me)?|ponme|put(?:\s+on)?|busc[aá]|find|"
-            r"inici[aá]|start|encuentra|encuentras|localiza|locate|ver|watch)\s+"
-            r"(?:(?:la|the)\s+(?:serie|series|pel[ií]cula|peli|movie|film)\s+)?"
+            _STREAMING_PLAY_HEAD
+            + r"(?:(?:la|the)\s+(?:serie|series|pel[ií]cula|peli|movie|film)\s+)?"
             r"(?P<title>.+?)\s+"
             r"(?:en|in|on|desde|from|through|usando|using)\s+"
-            r"(?:netflix|nerflix|netlix|netfix|netflis|neflix|netflx|netflex|nexflix|"
-            r"disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|dinsey|dizney)\b",
+            + _STREAMING_SERVICE_WORD + r"\b",
             clause_literal(evidence),
             re.IGNORECASE,
-        )
+        ) or re.search(_SERVICE_THEN_TITLE, clause_literal(evidence), re.IGNORECASE)
         if named is None:
             return None
         title = named.group("title").strip().strip("\"'«»“”").strip()
@@ -2637,10 +2634,34 @@ _WATCH_NAMED_TITLE = re.compile(
 
 
 # The services of streaming.play.named, as the reader of a named title spells them (VIDEO1921, VIDEO1947).
-_STREAMING_SERVICE_SAID = re.compile(
-    r"\b(?:netflix|nerflix|netlix|netfix|netflis|neflix|netflx|netflex|nexflix|disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|"
-    r"dinsey|dizney)\b",
-    re.IGNORECASE,
+_STREAMING_SERVICE_WORD = (
+    r"(?:netflix|nerflix|netlix|netfix|netflis|neflix|netflx|netflex|nexflix|disney\s*\+|disney\s*plus|disneyplus|"
+    r"disney|dysney|disne|dinsey|dizney)"
+)
+_STREAMING_SERVICE_SAID = re.compile(rf"\b{_STREAMING_SERVICE_WORD}\b", re.IGNORECASE)
+_STREAMING_PLAY_HEAD = (
+    r"^(?:(?:quiero|quisiera|i\s+want\s+to|i\s+wanna|i'd\s+like\s+to)\s+)?"
+    r"(?:reproduc[eií]|play|pon[eé]?(?:me)?|ponme|put(?:\s+on)?|busc[aá]|find|"
+    r"inici[aá]|start|encuentra|encuentras|localiza|locate|ver|watch)\s+"
+)
+# M156 (DEV-I v4u I-s085 «pone en disney plus intensamnete 2 q la quieren ver los chicos» → «¿Qué servicio de
+# streaming y qué título exacto deseas buscar?»): the service may be said before the title. The title is what follows
+# it, as said (the service's own search forgives the ear's typo, and the receipt names what was put), up to why or for
+# whom it is wanted («q la quieren ver…», «porque…», «because…», «so the kids…»); a kind of thing («una peli de
+# terror», «something») is no title and is still asked.
+_WHY_AFTER_TITLE = (
+    r"(?:(?:q|que|k)\s+(?:la|las|lo|los|le|les|me|te|se|nos|ya|mis?|tus?|sus?)\b|porque|porq|pq|xq|ya\s+que|"
+    r"pa\s+que|para\s+que|because|cause|since|so\s+(?:that\s+)?(?:i|we|they|the|my|our)\b|"
+    r"(?:that|which)\s+(?:the|my|our|i|we|they)\b)"
+)
+_SERVICE_THEN_TITLE = (
+    _STREAMING_PLAY_HEAD
+    + r"(?:en|in|on|desde|from)\s+" + _STREAMING_SERVICE_WORD + r"(?!\w)[\s,:]+"
+    r"(?:(?:la|the)\s+(?:serie|series|pel[ií]cula|peli|movie|film)\s+)?"
+    r"(?!(?:(?:una?|an?|some|alguna?|algo\s+de)\s+(?:serie|series|pel[ií]cula|peli|movie|film|show|documental|"
+    r"documentary|cosa|cap[ií]tulo|episodio|episode)s?|algo|something|anything|lo\s+que\s+sea|cualquier\s+cosa)\b)"
+    r"(?P<title>.+?)"
+    rf"(?:\s+{_WHY_AFTER_TITLE}.*)?$"
 )
 
 
