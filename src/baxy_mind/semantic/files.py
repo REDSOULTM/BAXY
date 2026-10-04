@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import re
+from typing import NamedTuple
+
 from .grammar import _fold, _match, _has, _strip_request_envelope, _head_is, _is_negative_effect_clause, _OPEN, _SEARCH
 from .intent import EffectIntent, _is_negated_match, _append
 from .web import _KNOWN_FOLDER_WORDS, _KNOWN_FOLDER_ENUM, _literal_known_file_search
@@ -182,6 +184,162 @@ def known_folder_file_path(text: str) -> tuple[str, dict[str, object]] | None:
     if subdirectory is not None:
         arguments["subdirectory"] = subdirectory
     return "document.text.read", arguments
+
+
+# M151 (DEV-F v4s F-w18-t2 «Yeah, that's the one, give us the gist of it» after «Downloads is open; I can see
+# «council_tax_2026-27.pdf»…» → file.open; F-w22-t3 «the signed one» after «There are two: lease_2026_signed.pdf and
+# lease_2026_draft.pdf. Which one?» → file.open; F-w24-t3 «la de pisos»; DEV-G v4s G-w40-t2 «abre el segundo» after
+# «Encontré dos: «cotizacion_mudanza.pdf» en Descargas y «cotizacion_mudanza_v2.pdf» en Documentos.» → the latest
+# file; G-w40-t3 «resumemelo en corto», G-w44-t5 «qué dice»; DEV-H v4s H-w23-t3 «read it», H-w32-t2 «y de qué trata?
+# resumímelo así nomás»): the file BAXY's last reply named by its file name is the one the person means — the only one
+# it named, or the one of those it listed that the person picks by its place in the list or by a word of its name only.
+# What is done with it is what the person asks: what it says (or, after the person asked for it, the pick alone) is
+# read; «abre el segundo» opens it.
+_NAMED_FILE_EXTENSIONS = frozenset({
+    *(extension.lstrip(".") for extension in _TEXT_FILE_EXTENSIONS),
+    "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "odt", "ods", "odp", "rtf", "zip", "rar", "7z",
+    "jpg", "jpeg", "png", "gif", "bmp", "webp", "mp3", "mp4", "wav", "mkv", "avi", "mov", "exe", "msi",
+})
+_FILE_NAMED_IN_REPLY = re.compile(
+    r"[«“\"](?P<quoted>[^«»“”\"\n]{1,200}?\.(?P<quoted_extension>[A-Za-z0-9]{1,5}))[»”\"]"
+    r"|(?<![\w.\\/-])(?P<bare>\w[\w.()\-]{0,199}\.(?P<bare_extension>[A-Za-z0-9]{1,5}))(?!\w)",
+)
+# What the file says, asked: read it, summarize it, what it says or is about, its gist. Folded. Not «what's in there»
+# nor «qué contiene»: after a folder opened those ask what the folder holds.
+_ASKS_WHAT_IT_SAYS = (
+    r"\b(?:lee(?:me|lo|la|melo|mela|r|rlo|rla|rmelo|rmela)?|resum\w*|que\s+(?:dice|pone|trae)|"
+    r"de\s+que\s+(?:trata|va|se\s+trata|habla)|read|summar\w*|sum\s+(?:it\s+|that\s+|this\s+)?up|gist|"
+    r"tl\s*;?\s*dr|rundown|what\s+(?:does|did)\s+(?:it|that|this)\s+say|what\s+(?:it|that|this)\s+says|"
+    r"what(?:'s|s|\s+is)\s+(?:it|that|this)\s+about)\b"
+)
+_ASKS_TO_OPEN = r"\b(?:abr[ei](?:me|lo|la|melo|mela|los|las)?|abrir(?:lo|la)?|open)\b"
+# A file of its own (a folder, the newest one, another one) is not the one BAXY named.
+_ANOTHER_FILE_SAID = (
+    rf"\b(?:{_KNOWN_FOLDER_WORDS}|ultim[oa]s?|latest|newest|last|recent\w*|mas\s+nuev[oa]|otr[oa]s?|other|another|"
+    r"tod[oa]s|ambos|ambas|both|los\s+dos|las\s+dos)\b"
+)
+_PLACE_IN_THE_LIST = (
+    (r"\b(?:primer[oa]?|first|1st)\b", 0),
+    (r"\b(?:segund[oa]|second|2nd)\b", 1),
+    (r"\b(?:tercer[oa]?|third|3rd)\b", 2),
+    (r"\b(?:cuart[oa]|fourth|4th)\b", 3),
+)
+_NOT_A_DISTINCTIVE_WORD = frozenset({
+    "the", "one", "that", "this", "file", "pdf", "doc", "please", "yeah", "yes", "and", "with",
+    "que", "uno", "una", "ese", "esa", "este", "esta", "archivo", "fichero", "documento", "del", "las", "los", "por",
+    "favor", "porfa", "pues", "con", "sin",
+})
+
+
+class NamedFileMeant(NamedTuple):
+    """M151: what is done with the file BAXY named («read» or «open»), its name as written, and the person's words
+    that ask it (this message, or the request a pick answers)."""
+
+    act: str
+    name: str
+    request: str
+
+
+def files_named_in_reply(reply: str) -> tuple[str, ...]:
+    """The file names a reply of BAXY's wrote (with a file's extension), each once, in the order written."""
+
+    names: list[str] = []
+    for found in _FILE_NAMED_IN_REPLY.finditer(reply or ""):
+        name = (found.group("quoted") or found.group("bare") or "").strip()
+        extension = (found.group("quoted_extension") or found.group("bare_extension") or "").lower()
+        if name and extension in _NAMED_FILE_EXTENSIONS and _fold(name) not in {_fold(seen) for seen in names}:
+            names.append(name)
+    return tuple(names)
+
+
+def _picked_file(folded: str, names: tuple[str, ...]) -> str | None:
+    """The one of ``names`` the message picks by its place in the list or by words only its name has, or None."""
+
+    places = {index for pattern, index in _PLACE_IN_THE_LIST if _has(folded, pattern)}
+    by_place = names[next(iter(places))] if len(places) == 1 and next(iter(places)) < len(names) else None
+    if len(places) > 1 or (places and by_place is None):
+        return None
+    words = [
+        word for word in re.findall(r"[a-z0-9]+", folded)
+        if len(word) >= 3 and word not in _NOT_A_DISTINCTIVE_WORD
+    ]
+    pieces = {
+        name: {piece for piece in re.split(r"[^a-z0-9]+", _fold(name.rsplit(".", 1)[0])) if piece}
+        for name in names
+    }
+
+    def has(name: str, word: str) -> bool:
+        return any(word in {piece, piece + "s", piece + "es"} or piece in {word + "s", word + "es"} for piece in pieces[name])
+
+    by_word: set[str] = set()
+    for word in words:
+        holders = [name for name in names if has(name, word)]
+        if len(holders) == 1:
+            by_word.add(holders[0])
+    if len(by_word) > 1 or (by_place is not None and by_word and by_word != {by_place}):
+        return None
+    return by_place or (next(iter(by_word)) if by_word else None)
+
+
+def named_file_meant(message: str, last_reply: str, request_before: str = "") -> NamedFileMeant | None:
+    """M151: the file BAXY's last reply named that ``message`` means, and what to do with it, or None.
+
+    One name in the reply: the message asks what it says («read it», «qué dice», «give us the gist of it»). Several:
+    the message picks one by its place («abre el segundo») or by a word only its name has («the signed one», «la de
+    pisos»), and asks to open it, to read it, or nothing more after ``request_before`` (the person's message BAXY's
+    reply answered) asked to read or summarize. None when the message names a file, a folder, the newest or another
+    one, asks to open and to read at once, or picks none."""
+
+    folded = _fold(message)
+    names = files_named_in_reply(last_reply)
+    if not names or files_named_in_reply(message) or _has(folded, _ANOTHER_FILE_SAID):
+        return None
+    reads, opens = _has(folded, _ASKS_WHAT_IT_SAYS), _has(folded, _ASKS_TO_OPEN)
+    if reads and opens:
+        return None
+    if len(names) == 1:
+        return NamedFileMeant("read", names[0], message.strip()) if reads else None
+    picked = _picked_file(folded, names)
+    if picked is None:
+        return None
+    if opens:
+        return NamedFileMeant("open", picked, message.strip())
+    if reads:
+        return NamedFileMeant("read", picked, message.strip())
+    before = _fold(request_before)
+    if _has(before, _ASKS_WHAT_IT_SAYS) and not _has(before, _ASKS_TO_OPEN):
+        return NamedFileMeant("read", picked, request_before.strip())
+    return None
+
+
+def named_file_operation(meant: NamedFileMeant) -> str | None:
+    """M151: the operation that does what is asked with the file: its extension decides the reader (a PDF the PDF
+    reader, a text file the text reader, as ``known_folder_file_path``); any file opens. None for a file no reader
+    reads (an Office document, an image)."""
+
+    if meant.act == "open":
+        return "file.open"
+    extension = "." + meant.name.rsplit(".", 1)[-1].lower() if "." in meant.name else ""
+    if extension == ".pdf":
+        return "document.pdf.read"
+    return "document.text.read" if extension in _TEXT_FILE_EXTENSIONS else None
+
+
+_FOLDER_SAID_AS = {
+    "es": {"desktop": "Escritorio", "documents": "Documentos", "downloads": "Descargas"},
+    "en": {"desktop": "Desktop", "documents": "Documents", "downloads": "Downloads"},
+}
+
+
+def named_file_request(meant: NamedFileMeant, folder: str, language: str) -> str:
+    """M151: the request the arguments step reads. A reading keeps the person's words with the file named after them
+    (the reader finds its folder in the conversation, M127); an opening says the file and its folder as
+    ``open_named_file_request`` reads them."""
+
+    if meant.act != "open":
+        return f"{meant.request.rstrip()} («{meant.name}»)"
+    said = _FOLDER_SAID_AS["en" if language == "en" else "es"][folder]
+    return f"Open {meant.name} from {said}." if language == "en" else f"Abre {meant.name} de {said}."
 
 
 def _current_directory_file_count(folded: str) -> bool:
