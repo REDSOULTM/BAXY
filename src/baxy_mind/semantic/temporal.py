@@ -2433,6 +2433,40 @@ def offset_retiming(text: str, setting_request: str) -> int | None:
     return shift or None
 
 
+# M152 (DEV-G v4s G-w19-t3 «vale, pues recuérdamelo veinte minutos antes de salir» after two answers about the traffic,
+# restated «Recuérdame en 20 minutos que tengo que ir al aeropuerto.» → set 20 minutes from then, «Te recordaré a la
+# hora programada, 21:20.»; so G-w19-t4 «pues salgo sobre las 6 de la tarde, así que calcula desde ahí» answered no
+# question and M148's count from the answered moment never ran): a length counted before or after another moment is no
+# delay from now. When neither the message nor the conversation readers place that moment, the restatement that turned the
+# same length into a delay from now («en 20 minutos», «in 30 minutes») rings at a moment nobody said.
+_COUNTED_FROM_A_MOMENT = frozenset({"antes", "before", "despues", "after"})
+_SAID_DELAY = re.compile(rf"\b{_RELATIVE_DUE}\b")
+_AFTER_WHAT = re.compile(r"\s+(?:de|del|d|al|que|of|the|my|your|i|you|we|he|she|they)\b")
+
+
+def advance_restated_as_delay(text: str, restated: str) -> bool:
+    """Whether ``text`` counts one length before or after a moment it does not say («veinte minutos antes de salir»,
+    «half an hour before I leave») and ``restated`` keeps no such count but says that same length once as a delay from
+    now. False when the message says a clock or a delay of its own, or ``said_advance`` reads its moment."""
+
+    said = " ".join(str(text or "").split())
+    folded = _same_length_fold(said)
+    counts = list(_COUNTED_OFFSET.finditer(folded))
+    if len(counts) != 1 or counts[0].group("sign") not in _COUNTED_FROM_A_MOMENT:
+        return False
+    if counts[0].group("sign") in {"despues", "after"} and not _AFTER_WHAT.match(folded, counts[0].end()):
+        # «avísame media hora después» names no moment it counts from: it may well be half an hour from now.
+        return False
+    minutes = _offset_minutes(counts[0])
+    if minutes is None or spoken_clocks(folded) or _SAID_DELAY.search(folded) or said_advance(said) is not None:
+        return False
+    told = _same_length_fold(" ".join(str(restated or "").split()))
+    if _COUNTED_OFFSET.search(told) or spoken_clocks(told):
+        return False
+    delays = [found.group(0) for found in _SAID_DELAY.finditer(told)]
+    return len(delays) == 1 and [length for _, length in said_durations(delays[0])] == [minutes]
+
+
 # --- An advance before the moment said in the same message ------------------------
 # M137 (DEV-G v4n G-s016 «I've got a dentist appointment Thursday at 4 over on Maple St, remind me an hour before so…»
 # → set at 16:00; G-s019 «recuérdame una hora antes de la reunión con el banco que es a las 3 de la tarde» → 15:00

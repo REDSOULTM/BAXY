@@ -82,6 +82,7 @@ from .semantic.web import (
     typed_read_over_search,
 )
 from .semantic.windows import said_snap_side, start_menu_request
+from .semantic.files import named_file_meant, named_file_operation, named_file_request
 from .corrector import catalog_correction_terms
 from .first_signal import (
     PATH_MODEL,
@@ -225,7 +226,9 @@ from .semantic.arguments import (
     _presentation_arguments,
     _select_referenced_predecessor,
     closes_the_active_window,
+    conversation_file_folder,
     conversation_pdf,
+    conversation_text_file,
     corrected_song_title,
     due_before_said_moment,
     literal_ocr_language,
@@ -5299,6 +5302,48 @@ def _prepare_context_decision(llm: Any, message: dict[str, Any], planner_catalog
     prepare(str(message.get("text", "")), message.get("history") or [], decider_tools, signatures=signatures)
 
 
+# M151 (DEV-F/G/H v4s F-w18-t2, F-w22-t3, F-w24-t3, G-w40-t2, G-w40-t3, G-w44-t5, H-w23-t3, H-w32-t2): what the decider
+# chose to open, find or read a file with when the file is the one BAXY's last reply named.
+_NAMED_FILE_OPERATIONS = frozenset({
+    "file.open", "filesystem.file.open.latest", "filesystem.known.search", "document.pdf.read", "document.text.read",
+})
+
+
+def _conversation_named_file(
+    decided: semantic_decider.ContextDecision,
+    text: str,
+    history: list[Any],
+    available_operations: tuple[str, ...],
+) -> semantic_decider.ContextDecision | None:
+    """M151 (D58): the file BAXY's last reply named by its file name, when the person asks what it says or picks it
+    from the ones it listed (``semantic.files.named_file_meant``), is read with the reader its extension takes, or
+    opened, where the conversation said it is — not opened when what it says was asked, nor the newest file, nor a
+    search, nor another file of a similar name. Only a decision that opens, finds or reads a file changes, and only to
+    that one file; a decision of that operation on that same file stays the decider's. None when nothing changes."""
+
+    if decided.decision != "action" or not decided.operations or not set(decided.operations) <= _NAMED_FILE_OPERATIONS:
+        return None
+    earlier = _prior_user_texts(history, text)
+    meant = named_file_meant(text, _previous_reply(history) or "", earlier[-1] if earlier else "")
+    operation = named_file_operation(meant) if meant is not None else None
+    if meant is None or operation is None or operation not in available_operations:
+        return None
+    conversation = [str(item.get("content") or "") for item in history if isinstance(item, dict)]
+    folder = conversation_file_folder(meant.name, conversation)
+    if folder is None or (operation == "file.open" and folder == "all_known"):
+        return None
+    stem = effect_intent._fold(meant.name.rsplit(".", 1)[0])
+    if decided.operations == (operation,) and any(
+        isinstance(value, str) and effect_intent._fold(value).strip() in {stem, effect_intent._fold(meant.name)}
+        for _, value in decided.arguments
+    ):
+        return None
+    language = _read_reply_language(text, history) or _decisive_request_language(_previous_reply(history) or "")
+    return semantic_decider.ContextDecision(
+        named_file_request(meant, folder, language or "es"), "action", (operation,), "",
+    )
+
+
 def _context_decided_result(
     message: dict[str, Any],
     *,
@@ -5571,6 +5616,13 @@ def _context_decided_result(
             decided = semantic_decider.ContextDecision(
                 decided.request, "action", tuple(restated.operations), decided.question, decided.arguments,
             )
+    named_file = _conversation_named_file(decided, text, history, available_operations)
+    if named_file is not None:
+        # M151 (DEV-F v4s F-w18-t2 «Yeah, that's the one, give us the gist of it» after «Downloads is open; I can see
+        # «council_tax_2026-27.pdf»…» → file.open; DEV-G v4s G-w40-t2 «abre el segundo» after «Encontré dos: …» → the
+        # newest file): the file BAXY just named, or the one of those it listed that the person picked, is the one read
+        # or opened.
+        decided = named_file
     # M110: the thing named («la junta», «kick-off») may have its moment further back in the conversation.
     anchored = semantic_temporal.anchored_offset_request(
         text, context.last_reply, said_before,
@@ -5595,12 +5647,21 @@ def _context_decided_result(
     if (
         decided.decision == "action"
         and anchored_read is None
-        and fidelity.kind == "person"
         and set(decided.operations) <= {"notification.schedule", "reminder.create"}
-        and any(semantic_temporal.spoken_clocks(effect_intent._fold(what)) for what in fidelity.introduced)
-        and not semantic_temporal.spoken_clocks(effect_intent._fold(text))
-        and not semantic_temporal.said_only_a_clock(text)
-        and not semantic_temporal.said_durations(text)
+        and (
+            (
+                fidelity.kind == "person"
+                and any(semantic_temporal.spoken_clocks(effect_intent._fold(what)) for what in fidelity.introduced)
+                and not semantic_temporal.spoken_clocks(effect_intent._fold(text))
+                and not semantic_temporal.said_only_a_clock(text)
+                and not semantic_temporal.said_durations(text)
+            )
+            # M152 (DEV-G v4s G-w19-t3 «vale, pues recuérdamelo veinte minutos antes de salir» restated «Recuérdame en
+            # 20 minutos que tengo que ir al aeropuerto.» → set at 21:20, so G-w19-t4 «pues salgo sobre las 6 de la
+            # tarde…» answered no question and was set at 21:20 again): the message says a length, but counted from a
+            # moment nobody placed; the restatement that made it a delay from now is a time nobody said either.
+            or semantic_temporal.advance_restated_as_delay(text, decider_request)
+        )
     ):
         # M110 (DEV-F v4d F-w46-t3 «poneme una alarma para ese día bien temprano» restated «…el sábado 2 de octubre a
         # las 5:00» → «¿Cuándo y con qué título…?» as an action): the time was the decider's, not the person's, and the
@@ -6083,10 +6144,10 @@ def _direct_arguments_result(
         arguments = _decided_arguments_alone(
             operation, str(message.get("text", "")), tool, said, previous_reply=reply_written,
         )
-    if arguments is None and not question and operation == "document.pdf.read":
+    if arguments is None and not question and operation in {"document.pdf.read", "document.text.read"}:
         # M127 (DEV-C v4i C-w10-t4): the PDF named by its file name earlier in the conversation is read where that
-        # conversation said it is, never asked again.
-        named = conversation_pdf(
+        # conversation said it is, never asked again. M151: a text file too.
+        named = (conversation_pdf if operation == "document.pdf.read" else conversation_text_file)(
             objective,
             [str(item.get("content") or "") for item in message.get("history") or [] if isinstance(item, dict)],
         )

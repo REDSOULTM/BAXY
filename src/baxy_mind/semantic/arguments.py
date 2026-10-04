@@ -17,6 +17,7 @@ from urllib.parse import urlencode, urlsplit
 from .. import effect_intent
 from . import lexicon as semantic_lexicon
 from .catalog import GameCatalogIndex, resolve_game_catalog_app_id
+from .files import _TEXT_FILE_EXTENSIONS, files_named_in_reply
 from .grammar import titled_note_with_content
 from .notes import agenda_event_request, new_list_title, said_repetition, stated_event_reminder, task_completion_title
 from .patterns import (
@@ -614,7 +615,12 @@ def _explicit_relative_reminder_arguments(
     # reminder for tomorrow at 3:30pm.» → «¿Cuál?»): «otro/another» is the article of one more reminder, and English
     # names what it is for before the noun («a dentist reminder»), with the day it rings before its clock.
     article = r"(?:un|una|a|an|otro|otra|another|one\s+more)"
-    weekday = r"(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)"
+    # The orders that ask for a reminder as a thing («ponme», «pon», «crea», «programa», «set», «create»…).
+    order = (
+        r"(?:dame|ponme|pon|creame|crea|hazme|haz|programa|programame|quiero|quisiera|necesito|"
+        r"establece|establecer|fija|fijame|env[ií]ame|m[aá]ndame|create|give\s+me|send\s+me|set)"
+    )
+    weekday =r"(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)"
     day_before = (
         r"(?:(?:for|on)\s+)?(?:today|tonight|tomorrow|the\s+day\s+after\s+tomorrow|(?:this\s+|next\s+)?" + weekday
         + r"|(?:the\s+)?\d{1,2}(?:st|nd|rd|th)?(?:\s+of)?\s+[a-z]+|[a-z]+\s+\d{1,2}(?:st|nd|rd|th)?)\s+"
@@ -627,7 +633,11 @@ def _explicit_relative_reminder_arguments(
         rf"{lead}(?P<due>{duration}),?\s+"
         rf"{remind}\s+"
         rf"(?:(?:que|to|de)\s+)?(?P<title>.+?)[.!?]*$",
-        rf"{lead}(?:ponme|set)\s+(?:{article}\s+)?"
+        # M152 (DEV-H v4s H-w39-t4 «ah ya. oye, pon un recordatorio para cargarla en una hora», restated «Pon un
+        # recordatorio en una hora para cargarla.» → «¿Cuándo quieres que se ejecute este recordatorio?»): the reminder
+        # with its delay first and then what it is for is read under every order the shape with what it is for first
+        # reads (below), not only under «ponme» and «set».
+        rf"{lead}{order}\s+(?:{article}\s+)?"
         rf"(?:recordatorio|reminder)\s+(?P<due>{duration})\s+"
         rf"(?:para|to)\s+(?P<title>.+?)[.!?]*$",
         rf"{lead}(?:set|create|make|add|schedule|give\s+me)\s+(?:{article}\s+)?(?:new\s+)?"
@@ -641,8 +651,7 @@ def _explicit_relative_reminder_arguments(
         # diez a. m.», «ponme un recordatorio para sacar la basura a las ocho de
         # la noche», «send me a reminder to call mom at 6 pm»: the reminder asked
         # for as a thing, its subject, then its moment.
-        rf"{lead}(?:dame|ponme|pon|creame|crea|hazme|haz|programa|programame|quiero|quisiera|necesito|"
-        r"establece|establecer|fija|fijame|env[ií]ame|m[aá]ndame|create|give\s+me|send\s+me|set)\s+"
+        rf"{lead}{order}\s+"
         rf"(?:{article}\s+)?(?:(?:nuevo|new)\s+)?"
         r"(?:(?:notificaci[oó]n|aviso|alerta|notification|alert)\s+(?:de|of)\s+)?"
         r"(?:recordatorio|reminder|notificaci[oó]n|aviso|alerta|notification|alert)\s+"
@@ -2725,19 +2734,60 @@ def conversation_pdf(request: str, conversation: Iterable[str]) -> dict[str, str
     names by its file name, written as such earlier in the conversation, is read in the known folder the newest line
     that wrote it with one, or in every known folder when no line did (PDF1689). None otherwise."""
 
-    names = {found.group("name") for found in _PDF_FILE_NAME.finditer(request)}
+    return _conversation_file(request, conversation, _PDF_FILE_NAME)
+
+
+# M151 (DEV-G v4s G-w40-t3 «resumemelo en corto» after «Encontré dos: «cotizacion_mudanza.pdf» en Descargas y
+# «cotizacion_mudanza_v2.pdf» en Documentos.» → read in Descargas): a text file named earlier is read as a PDF is (M127).
+_TEXT_FILE_NAME = re.compile(
+    r"[«“\"']?(?P<name>[^\s«»“”\"'\\/:*?<>|]{1,200}\.(?:"
+    + "|".join(sorted((re.escape(extension.lstrip(".")) for extension in _TEXT_FILE_EXTENSIONS), key=len, reverse=True))
+    + r"))(?![\w.])[»”\"']?",
+    re.IGNORECASE,
+)
+
+
+def conversation_text_file(request: str, conversation: Iterable[str]) -> dict[str, str] | None:
+    """M151: the one text file the request names by its file name, read where the conversation said it is, as
+    ``conversation_pdf`` reads a PDF. None otherwise."""
+
+    return _conversation_file(request, conversation, _TEXT_FILE_NAME)
+
+
+def _conversation_file(request: str, conversation: Iterable[str], file_name: re.Pattern[str]) -> dict[str, str] | None:
+    names = {found.group("name") for found in file_name.finditer(request)}
     if len(names) != 1:
         return None
     name = names.pop()
+    folder = conversation_file_folder(name, conversation)
+    return None if folder is None else {"fileName": name, "folder": folder}
+
+
+def conversation_file_folder(name: str, conversation: Iterable[str]) -> str | None:
+    """The known folder of the file ``name`` as the newest line of the conversation that wrote it with one said it:
+    in a line that lists several files, the folder said right after the name (««x_v2.pdf» en Documentos»); else the
+    one folder the line names; «all_known» when no line said one (PDF1689), None when no line wrote the name."""
+
     key = effect_intent._fold(name)
     lines = [effect_intent._fold(line) for line in conversation if key in effect_intent._fold(line)]
     if not lines:
         return None
     for line in reversed(lines):
-        folders = {folder for folder, pattern in _KNOWN_FOLDER_NAMED if re.search(pattern, line)}
+        # M151 (G-w40-t3): a line that lists files in two folders says each one's right after its name. A line about
+        # one file («No encontré informe.pdf en el escritorio, en documentos ni en descargas») is read whole.
+        right_after = len(files_named_in_reply(line)) > 1 and re.search(
+            rf"(?<![\w.-]){re.escape(key)}[»”\"']?\s*,?\s+(?:en|in|on|de|del|from)\s+"
+            r"(?:(?:la|el|tu|tus|mi|mis|your|my|the)\s+)*(?:carpeta\s+(?:de\s+)?)?(?P<folder>\w+)",
+            line,
+        )
+        said = (
+            {folder for folder, pattern in _KNOWN_FOLDER_NAMED if re.fullmatch(pattern, right_after.group("folder"))}
+            if right_after else set()
+        )
+        folders = said or {folder for folder, pattern in _KNOWN_FOLDER_NAMED if re.search(pattern, line)}
         if len(folders) == 1:
-            return {"fileName": name, "folder": folders.pop()}
-    return {"fileName": name, "folder": "all_known"}
+            return folders.pop()
+    return "all_known"
 
 
 _SEEK_FORWARD = r"\b(?:adelant\w*|avanz\w*|forward|ahead|skip\s+ahead|fast[\s-]?forward)\b"
