@@ -2322,6 +2322,28 @@ def translation_without_its_text(user_text: str) -> bool:
     )
 
 
+# M157 (DEV-I v4v I-w41-t3 «tradúceme eso al inglés» after «¿y en onzas?» → the decider's talk «Traduce al inglés
+# «¿Cuántas onzas son 3 tazas de harina de trigo?»».», read by the kitchen-quantity reader as a measure to look up →
+# web.search «No la encontré ahora.»): a request that opens with the order to translate words already said — quoted, or
+# pointed at («eso», «lo», «that») — asks for those words in another language, never for what they ask.
+_TRANSLATION_ORDER = re.compile(
+    r"^[\s¿¡,.]*(?:(?:oye|oiga|ya|y|e|ok|okay|bueno|ahora|ah|and|now|so|hey|baxy|porfa|please|pls|"
+    r"(?:me\s+)?(?:puedes|podrias|podes)|can\s+you|could\s+you|would\s+you)\b[\s,]*)*"
+    r"(?:traduc\w*|translat\w*)\b"
+)
+_QUOTED = re.compile(r"[«“\"‘']\s*\S")
+
+
+def translates_what_was_said(user_text: object) -> bool:
+    """The request is the order to translate words quoted in it or pointed at (see above)."""
+
+    text = str(user_text or "")
+    folded = _reading_fold(text)
+    return _TRANSLATION_ORDER.match(folded) is not None and (
+        _TRANSLATION_POINTING.search(folded) is not None or _QUOTED.search(text) is not None
+    )
+
+
 # M75 (DEV-D v3l D-p02-t2 «¿Serías capaz de hacer foto ahora?», gold: the limit): a question whether BAXY is able to do
 # something is answered yes or no; «No puedo hacer fotos» is that answer, not a failure of something attempted.
 _ABILITY_QUESTION = re.compile(

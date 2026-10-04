@@ -29,9 +29,13 @@ def test_the_reader() -> None:
 
 
 def test_f_w05_t5_the_query_is_the_persons() -> None:
+    # M157: the respelling runs on the arguments the step returns (``_as_the_person_spelled``), not inside the decider's
+    # values; the App's own path, with the decider's restatement as the text, is in test_c03_m157_regresiones_v4v.
     text = "ya cambiando de tema, pone algo de javiera mena en spotify"
-    main._remember_decided_arguments(text, ("media.play.query",), (("provider", "Spotify"), ("query", "Javier Mené")))
-    got = main._with_decided_arguments("media.play.query", text, {}, PLAY_QUERY, text)
+    history = [{"role": "user", "content": text}]
+    got = main._as_the_person_spelled(
+        "media.play.query", {"provider": "spotify", "query": "Javier Mené"}, text, history,
+    )
     assert got["query"] == "javiera mena"
 
 
