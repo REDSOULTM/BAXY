@@ -266,9 +266,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 comprensión natural: repin tras M155 (2026-10-04).
 # C03 comprensión natural: repin tras M157 (2026-10-04).
 # C03 M158 (2026-10-04): re-pin tras «cancela la de las N» → notification.cancel.at.
+# C03 M160 (2026-10-04): re-pin tras la nota que toma lo señalado y la adición a la nota recién hecha.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "72b6b2747fa1e4d572a090a9e555665f5911b50b02cd37798299a1b73396250c"
+        "bf3c701e10cfb22f86d22f97155cec0950a3c62cb3f0fc3774b6541ea5eacc17"
     ),
     "src/baxy_mind/llm.py": (
         "2a65e38b3c454edb511400dd029e901a87494f482d0ecb40788231cc5549383b"
