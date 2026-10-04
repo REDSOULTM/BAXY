@@ -51,7 +51,11 @@ from .semantic.notes import (
     conversation_note_title,
     list_creation_said,
     names_own_event,
+    names_a_note,
+    note_addition,
     note_content_unsaid,
+    note_title_given,
+    pointed_note_content,
     task_change,
     question_with_context,
     question_with_its_reason,
@@ -345,6 +349,7 @@ _IDENTITY_CONSUMERS = frozenset(
         "game.install.commit",
         "game.purchase.commit",
         "message.send",
+        "note.update",
         "notification.dismiss",
         "ocr.read",
         "package.install.commit",
@@ -931,6 +936,8 @@ _DETERMINISTIC_DEPENDENCY_FIELDS = {
     "game.purchase.commit": ("confirmationId", "expectedPriceCents"),
     "message.send": ("recipientId",),
     "note.read": ("noteId",),
+    # M160: the rest of a note.update (revision, title, what it says) is the read's too (``_note_addition_arguments``).
+    "note.update": ("noteId",),
     "notification.dismiss": ("reminderId", "expectedVersion"),
     "ocr.read": ("captureId",),
     "office.document.read": ("documentId",),
@@ -990,6 +997,8 @@ def _verified_dependency_identity_arguments(
 
     if not isinstance(observations, list):
         return None
+    if operation == "note.update":
+        return _note_addition_arguments(objective, purpose, observations, tool)
     if operation == "filesystem.write.text":
         report = effect_intent.process_report_file_request(effect_intent._fold(objective))
         if report is not None:
@@ -1143,6 +1152,68 @@ def _verified_dependency_identity_arguments(
             return None
         return merged
     return arguments
+
+
+def _note_addition_arguments(
+    objective: str, purpose: str, observations: list[object], tool: dict[str, object],
+) -> dict[str, object] | None:
+    """M160 (DEV-G v4w G-w12-t2 «agrégale que quiero comprarle un ramo de flores» after the note was made → «¿Cuál es
+    el título de la nota que deseas editar?»): note.update replaces a note chosen by its identity and revision with a
+    whole title and content; for an addition («Agrega «X» a la nota «Y».») they are the verified read's, and the content
+    is what the note says followed by what the request adds (``semantic.notes.note_addition``), never rewritten. None
+    when the request adds nothing it can say (a new title, a whole new text): the model grounds those as before."""
+
+    reads = [
+        observation["result"]
+        for observation in observations
+        if isinstance(observation, dict)
+        and observation.get("operation") == "note.read"
+        and observation.get("verified") is True
+        and observation.get("status") == "completed"
+        and isinstance(observation.get("result"), dict)
+    ]
+    added = note_addition(objective) or note_addition(purpose)
+    if len(reads) != 1 or added is None:
+        return None
+    note = reads[0]
+    if (
+        not isinstance(note.get("noteId"), str)
+        or not isinstance(note.get("title"), str)
+        or isinstance(note.get("revision"), bool)
+        or not isinstance(note.get("revision"), int)
+        or note.get("isTrashed")
+    ):
+        return None
+    said = str(note.get("content") or "").rstrip()
+    candidate = {
+        "noteId": note["noteId"],
+        "expectedRevision": note["revision"],
+        "expectedTitle": note["title"],
+        "title": note["title"],
+        "content": f"{said}\n{added}" if said else added,
+    }
+    function = tool.get("function")
+    schema = function.get("parameters") if isinstance(function, dict) else None
+    return candidate if isinstance(schema, dict) and validate_json_schema_instance(candidate, schema) else None
+
+
+def _conversation_note_selector(
+    operation: str,
+    plan_operations: tuple[str, ...],
+    person: str,
+    dialogue_state: dialogue_slot.DialogueState,
+    schema: dict[str, object],
+) -> dict[str, str] | None:
+    """M160 (DEV-G v4w G-w12-t2 «agrégale que quiero comprarle un ramo de flores» right after «He guardado la nota con
+    el título "ideas para el cumpleaños de juliana".»): the read before a note.update is of the note this conversation
+    just made, read or changed (``DialogueState.edited_note_title``), by the title the store verified, when the person
+    names no note of their own. None otherwise: with no note in the conversation, the step is read and asked as before."""
+
+    if operation != "note.read" or "note.update" not in plan_operations or names_a_note(person):
+        return None
+    title = dialogue_state.edited_note_title()
+    selector = {"title": title} if title else None
+    return selector if selector is not None and validate_json_schema_instance(selector, schema) else None
 
 
 def _process_report_file_arguments(
@@ -3826,6 +3897,51 @@ def _previous_reply_may_be_content(tool: dict, history: object) -> bool:
     return bool(_previous_reply_fields(schema, strings, reply))
 
 
+def _conversation_exchanges(history: object) -> list[tuple[str, str]]:
+    """M160: each of BAXY's replies with the person's message it answered, oldest first, without the current message."""
+
+    turns = [item for item in history if isinstance(item, dict)] if isinstance(history, list) else []
+    if turns and turns[-1].get("role") == "user":
+        turns = turns[:-1]
+    exchanges: list[tuple[str, str]] = []
+    asked = ""
+    for item in turns:
+        content = str(item.get("content") or "")
+        if item.get("role") == "user":
+            asked = content
+        elif item.get("role") == "assistant" and content.strip():
+            exchanges.append((asked, content))
+            asked = ""
+    return exchanges
+
+
+def _pointed_note_content(
+    operation: str, request: str, person: str, history: object, schema: dict[str, object], said: str,
+    arguments: object,
+) -> tuple[str, str | None] | None:
+    """M160 (DEV-H v4w H-w11-t3 «save that whole thing as a note called banana bread», DEV-I v4w I-w18-t3 «¿me la
+    guardas en una nota con esas cantidades?», DEV-F v4w F-w34-t3, DEV-G v4w G-w29-t4): the content of a note that
+    points at BAXY's words other than its last reply alone (``semantic.notes.pointed_note_content``), verbatim, with
+    the note's title when one is known and said — the decider's, the readers', or the one the person wrote. None when
+    the last reply is the one meant: M67 offers it to the extraction as before."""
+
+    if operation != "note.create":
+        return None
+    properties = schema.get("properties") if isinstance(schema.get("properties"), dict) else {}
+    contract = properties.get("title")
+    title_schema = {"type": "object", "properties": {"title": contract}, "required": ["title"], "additionalProperties": False}
+    decided = [value for name, value, _ in _decided_fields(operation, request, schema, said) or () if name == "title"]
+    read = [arguments["title"]] if isinstance(arguments, dict) and isinstance(arguments.get("title"), str) else []
+    titles = [
+        title for title in (*decided, *read, note_title_given(person))
+        if isinstance(title, str) and title.strip() and isinstance(contract, dict)
+        and validate_argument_grounding({"title": title}, title_schema, said)
+    ]
+    title = titles[0] if titles else None
+    content = pointed_note_content(person, title or "", _conversation_exchanges(history))
+    return (content, title) if content is not None else None
+
+
 def _decided_arguments_alone(
     operation: str, request: str, tool: dict, trusted_source: str, *, previous_reply: str | None = None,
 ) -> dict[str, Any] | None:
@@ -5394,7 +5510,11 @@ def _context_decided_result(
     available_operations = tuple(tool.name for tool in planner_catalog.tools)
     context = dialogue_slot.read_slot({}, history, text)
     antecedent = context.antecedents[0] if context.antecedents else None
-    placed = dialogue_slot.place_substituted(text, antecedent)
+    # M162 (DEV-H v4w H-w08-t3 «cuánta diferencia hay con aquí» after «En Lima son las 12:10.» → searched): the hours
+    # apart from here, right after BAXY told one place's clock, are that place's clock read, as «allá» is (M84).
+    placed = dialogue_slot.place_substituted(text, antecedent) or semantic_temporal.hours_apart_from_the_clock_told(
+        text, context.last_reply,
+    )
     placed_read = resolve_explicit_effects(placed, available_operations) if placed is not None else None
     closing = _close_of_the_just_opened(text, history, available_operations, application_names)
     said_before = [
@@ -5834,7 +5954,16 @@ def _context_decided_result(
         and "web.search" in available_operations
         and not asks_for_code(text)
         # M118 (D58): a rate of what BAXY just said is worked out from its numbers, whatever the restatement names.
-        and not semantic_knowledge.rate_of_what_was_said(text, context.last_reply or "")
+        # M162 (DEV-I v4w I-w08-t2 «y para la mitad de gente?», DEV-H H-w24-t3 «pasame la brecha en porcentaje»): so
+        # is a recipe scaled, a difference, a gap or a percentage of the numbers it said, all of them said.
+        and not semantic_knowledge.worked_out_from_what_was_said(
+            text,
+            [
+                str(item.get("content") or "") for item in history
+                if isinstance(item, dict) and item.get("role") == "assistant"
+            ],
+            _prior_user_texts(history, text),
+        )
     ):
         # M53 (D35): what the decider answers by talking but is a named dish's recipe or a named work's plot is
         # looked up first; the arguments step reads the same query from the same request.
@@ -6205,7 +6334,24 @@ def _direct_arguments_result(
     )
     if reply_written is not None:
         said = f"{said}\n{reply_written}"
-    if arguments is None and not question and (
+    # M160 (DEV-H v4w H-w11-t3 «save that whole thing as a note called banana bread» after the recipe and a temperature
+    # → «What content should be saved…?»; DEV-F v4w F-w34-t3 «Guárdamela en una nota que se llame tortilla» → the
+    # decider's «receta … para cuatro personas»): the note keeps BAXY's words the person points at, verbatim, when
+    # they are not its last reply alone; with no title known, the extraction reads them in the last reply's place.
+    pointed = None
+    if not question:
+        pointed = _pointed_note_content(
+            operation, str(message.get("text", "")), person, message.get("history"), tool["function"]["parameters"],
+            said, arguments,
+        )
+    if pointed is not None:
+        said = f"{said}\n{pointed[0]}"
+        candidate = {"title": pointed[1], "content": pointed[0]}
+        if pointed[1] is not None and validate_json_schema_instance(candidate, tool["function"]["parameters"]):
+            arguments = candidate
+        else:
+            arguments = None
+    if arguments is None and not question and pointed is None and (
         reply_written is not None or not _previous_reply_may_be_content(tool, message.get("history"))
     ):
         # M42b: what the decider read, grounded in what was said, is enough on its own; the separate
@@ -6234,7 +6380,7 @@ def _direct_arguments_result(
         # M67 (FINAL F-w14-t3 «perfect, copialo al clipboard» after a ```sql answer, F-w15-t4 «save that
         # as a note porfa» after a packing list): the model reads BAXY's last reply beside the objective
         # and says whether it is the content; code copies it verbatim into that field.
-        previous_reply = _previous_reply(message.get("history"))
+        previous_reply = pointed[0] if pointed is not None else _previous_reply(message.get("history"))
         extraction = llm.extract_direct_arguments(
             objective,
             tool,
@@ -9478,6 +9624,12 @@ def _run_sidecar(
                         # M76 (DEV-D v3l D-w17-t2 «mark the first one done»): the task pointed at by its place in the
                         # list the turn before read is resolved by the title that list told.
                         arguments_by_step[step.step_id] = {"title": pointed}
+                        continue
+                    conversation_note = _conversation_note_selector(
+                        step.operation, plan_operations, _person_message(history, objective), dialogue_state, schema,
+                    )
+                    if conversation_note is not None:
+                        arguments_by_step[step.step_id] = conversation_note
                         continue
                     if expected_operations:
                         explicit_arguments = _ground_explicit_arguments(

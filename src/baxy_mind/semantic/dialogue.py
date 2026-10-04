@@ -1599,6 +1599,8 @@ _CLOCK_SAID = re.compile(r"\d:\d|\b(?:las?|at|am|pm|a\.\s?m|p\.\s?m|o'?clock|en\
 
 # M80: the writes whose verified result is the whole task (identity, version, title, details, due).
 _TASK_WRITES = ("task.create", "task.update", "task.complete", "task.reopen", "task.restore")
+# M160: the note results that say which note the conversation is on (made, read or changed), as verified.
+_NOTE_RESULTS = ("note.create", "note.read", "note.update", "note.restore")
 
 
 @dataclass(frozen=True)
@@ -1658,6 +1660,7 @@ class DialogueState:
         self._notification: dict[str, str] | None = None  # M76: the alarm, timer or reminder set, as verified
         self._listed: tuple[str, ...] = ()  # M76: the titles of the tasks read, in the order they were told
         self._task: dict[str, object] | None = None  # M80: the task last created or changed, as verified
+        self._note: str | None = None  # M160: the title of the note last made, read or changed, as verified
         self._headlines: tuple[str, ...] = ()  # M83: the headlines read, in the order they were told
         # M145: every alarm, timer or reminder this conversation set and has not cancelled, as verified, in order.
         self._own_notifications: list[dict[str, str]] = []
@@ -1666,6 +1669,9 @@ class DialogueState:
         if self.operations and not set(self.operations) & set(_TASK_WRITES):
             # M80: another effect done after the task leaves «cámbialo» without that task; a question does not.
             self._task = None
+        if self.operations and not set(self.operations) & set(_NOTE_RESULTS):
+            # M160: as M80, another effect done after the note leaves «agrégale…» without that note.
+            self._note = None
         self.previous_operations = self.operations
         self.request = str(request or "").strip() or None
         self.intended = tuple(str(op) for op in operations) if isinstance(operations, (list, tuple)) else ()
@@ -1740,6 +1746,11 @@ class DialogueState:
                     "details": str(observed.get("details") or ""),
                     "due": observed.get("dueUtc") if isinstance(observed.get("dueUtc"), str) else None,
                 }
+        elif operation in _NOTE_RESULTS:
+            # M160 (DEV-G v4w G-w12-t2 «agrégale que quiero comprarle un ramo de flores» right after the note was made):
+            # the note the conversation is on, by the title the store verified, for an addition that names no note.
+            title = observed.get("title")
+            self._note = title.strip() if isinstance(title, str) and title.strip() and not observed.get("isTrashed") else None
         elif operation in {"task.list", "task.search"} and isinstance(observed.get("tasks"), list):
             # M76 (DEV-D v3l D-w17-t2): the tasks read, in the order they were told, for «the first one».
             self._listed = tuple(
@@ -1995,6 +2006,12 @@ class DialogueState:
         effect came after it. A change of it keeps every field the person did not change. None when there is none."""
 
         return dict(self._task) if self._task is not None else None
+
+    def edited_note_title(self) -> str | None:
+        """M160: the title of the note this conversation last made, read or changed, as the store verified it, while no
+        other effect came after it; None when there is none."""
+
+        return self._note
 
     def cancel_last_alarm(self, in_spanish: bool) -> str | None:
         """«cancela el último temporizador» / «cancel the last timer» when the last turn set an alarm or a timer: a

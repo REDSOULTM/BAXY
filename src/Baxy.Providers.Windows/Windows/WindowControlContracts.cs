@@ -50,7 +50,13 @@ public sealed record WindowActionResult(
     bool Succeeded,
     bool Verified,
     WindowCandidate? Window,
-    string? ErrorCode);
+    string? ErrorCode,
+    WindowRequestedSize? LargerThanRequested = null);
+
+// M159 (DEV-I v4w I-s048 «pasame la ventana de spotify a la derecha»): a placed
+// window whose own minimum size is larger than the half it was asked to take.
+// This is the size it was asked for; Window keeps its larger, observed one.
+public sealed record WindowRequestedSize(int Width, int Height);
 
 public sealed record WindowCloseResult(
     bool Succeeded,
@@ -124,6 +130,9 @@ public interface IWindowControlProvider
 
     // ARRANGE1781: the window takes the left or right half of its monitor's
     // work area («poné chrome a la izquierda»); exact bounds verified.
+    // M159: a window whose own minimum is larger than that half ends flush
+    // against the asked edge at its minimum, inside the work area, and the
+    // result says so (LargerThanRequested).
     ValueTask<WindowActionResult> SnapAsync(
         string windowId,
         string side,

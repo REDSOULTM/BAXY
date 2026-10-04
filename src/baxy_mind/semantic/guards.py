@@ -377,6 +377,9 @@ _ADDRESSED_OPENING = (
     r"[\s¡!]*(?:(?:por|para|de|desde|hasta|en|a|con|sobre|durante|segun|for|in|to|from|at|with|about|since|until|"
     r"during)\s+)?"
     r"(?:cual|cuales|cuanto|cuanta|cuantos|cuantas|quien|quienes|por\s+que|"
+    # M161 (DEV-H v4w H-s093 «whats the dollar to mexican peso rate todya, …»): the ear drops the apostrophe as it
+    # drops the question mark.
+    r"whats|hows|wheres|whos|"
     r"what|which|who|whom|where|when|why|how|"
     # M91 (reserva «qué día de la semana cayó el …», «puedo saber lo que tengo …»): a «qué» that asks a thing, and
     # asking to be let know, open a question too, with the question mark dropped by the ear.
@@ -412,6 +415,68 @@ _ADDRESSED_REQUEST = (
 )
 
 
+# M161 (DEV-I v4w I-s017 «my cousin Dani just texted me from Tokyo, what time is it over there for her», I-s066 «oye
+# cachai a cuánto está el dólar hoy día, es que tengo que pagarle al gringo del depto», I-s078 «che, nada, mi viejo me
+# preguntó cuántos habitantes tiene Mar del Plata…», I-s110 «need una función python que reciba un texto…»; DEV-H
+# H-s004 «che, salió la temporada nueva de The Bear y la quiero arrancar ya, ponémela en Disney…», H-s112 «I'm on a
+# work call and the browser is blasting, drop Chrome's volume to 15…»; DEV-G G-s034, G-s071, G-s123, G-s125 → «no
+# encuentro un pedido para mí» before the decider, which the isolated full3 decider got right): what the person says
+# of themselves (who asked, what for, what is going on) comes before or around the request, and the request still
+# opens its own clause: after a comma, after the discourse markers that open speech, or after who asked it. A clause
+# that opens asking or ordering is said to BAXY as a whole message is. Talk the microphone caught (DIALOGUE1513:
+# H0006, H0297, H0332, H0372, H0429, H0441, H0483, H0610, H0694, H0735) has no such clause and is still asked about.
+_SPEECH_LEAD = re.compile(
+    r"^(?:(?:oye|oiga|hey|ey|che|cachai|cachay|viste|nada|ya|pues|ps|bueno|mira|o\s+sea|osea|anyway|so|like|ok|okay|"
+    r"vale|yo|uh|um|eh|ah|oh|well)\b[\s,]*)+"
+)
+# «mi viejo me preguntó cuántos…», «my boss asked me how many…»: a question relayed is asked of the listener.
+_RELAYED_QUESTION = re.compile(
+    r"^(?:(?:mi|my)\s+)?[a-z]+(?:\s+[a-z]+)?\s+(?:me\s+|nos\s+)?"
+    r"(?:pregunto|pregunta|preguntaba|quiere\s+saber|queria\s+saber|asked(?:\s+me|\s+us)?|asks(?:\s+me|\s+us)?|"
+    r"wants\s+to\s+know)\s+"
+)
+_CLAUSE_ASKS = (
+    # «a cuánto/a cómo está el dólar»: the price or the rate asked («cómo» alone also opens talk).
+    rf"(?:{_ADDRESSED_OPENING}|[\s¡!]*a\s+como\s+(?:esta|estan|anda|andan|sale|salen|va|van)\b)"
+)
+# English order verbs the readers' heads lack, said with their object (H-s112 «drop Chrome's volume to 15», G-s032
+# «order me a large pepperoni…»). Not «get»: G-s120 «…, get a large pepperoni pie delivered…» then reads as social talk
+# (``explicit_conversation``), no better than the question.
+_CLAUSE_ORDER_EN = (
+    r"(?:drop|order)\s+(?:(?:me|us)\s+)?(?:the|my|your|a|an|some|it|this|that|[a-z]+'s)\b"
+)
+# «need una función python que…», «I need a little helper that…»: a thing asked for by what it has to do.
+_THING_ASKED_FOR = (
+    r"(?:i\s+)?(?:need|want|necesito|quiero|quisiera)\s+(?:un|una|a|an)\s+(?:[a-z]+\s+){0,3}?"
+    r"(?:que|that|which|to|para)\b"
+)
+# Question heads the readers also list as order heads: «donde vivía…», «cual si fuera…» open talk after a comma.
+_NOT_AN_ORDER_HEAD = frozenset({"a", "que", "cual", "which", "donde", "where", "what"})
+
+
+def _request_clause(folded: str) -> bool:
+    """A clause of the message that opens asking or ordering (see above), the person's own context around it."""
+
+    for part in re.split(r"[,.;:!]+", folded):
+        clause = _SPEECH_LEAD.sub("", part.strip()).strip()
+        if not clause:
+            continue
+        relayed = _RELAYED_QUESTION.match(clause)
+        if relayed is not None and re.match(_ADDRESSED_OPENING, clause[relayed.end():]) is not None:
+            return True
+        if (
+            re.match(_CLAUSE_ASKS, clause) is not None
+            or re.match(_CLAUSE_ORDER_EN, clause) is not None
+            or re.match(_THING_ASKED_FOR, clause) is not None
+        ):
+            return True
+        for said in (clause, *imperative_rewrites(clause)):
+            head = effect_intent._request_head(said)
+            if head not in _NOT_AN_ORDER_HEAD and effect_intent._head_is(head, effect_intent._COVERAGE_ACTION_HEAD):
+                return True
+    return False
+
+
 def _overheard_speech(folded: str) -> bool:
     """DIALOGUE1513: a long stretch of talk with no request for BAXY.
 
@@ -437,6 +502,7 @@ def _overheard_speech(folded: str) -> bool:
             # infinitive opens ordering too (grammar.imperative_rewrites).
             for said in (folded, *imperative_rewrites(folded))
         )
+        or _request_clause(folded)
     ):
         # MASSIVE (dev corpus 2026-09-23) «cuáles son las predicciones de las votaciones…», «muéstrame la
         # respuesta a este problema…», «chequea en los cines…»: the ear drops the question mark; a message that

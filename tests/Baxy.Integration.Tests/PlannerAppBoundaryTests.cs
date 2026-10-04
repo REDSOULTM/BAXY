@@ -172,6 +172,8 @@ public sealed class PlannerAppBoundaryTests
     // M76 (DEV-D v3l D-w17-t2): marking a task done crosses the planner too, never «¿ID y versión esperada?».
     [TestCase("task.complete", true)]
     [TestCase("task.reopen", true)]
+    // M160 (DEV-G v4w G-w12-t2): changing a note crosses its read, never «¿Cuál es el título de la nota…?».
+    [TestCase("note.update", true)]
     [TestCase("reminder.delete", true)]
     [TestCase("message.send", true)]
     [TestCase("game.install.commit", true)]

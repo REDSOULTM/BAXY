@@ -645,32 +645,103 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 false, false, null, WindowControlErrorCodes.ActionFailed);
         }
 
+        (WindowSnapshot? placed, bool larger) = await ObserveSnapAsync(
+                before.Identity, expected, acceptLarger: true, workArea, cancellationToken)
+            .ConfigureAwait(false);
+        if (placed is null)
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.VerificationFailed);
+        }
+
+        WindowRequestedSize? largerThanRequested = null;
+        if (larger)
+        {
+            // M159 (DEV-I v4w I-s048 «pasame la ventana de spotify a la derecha»): Spotify's
+            // minimum width (814) is larger than half of this 1536 work area. Windows keeps
+            // the asked position and clamps the size, so the window ended at x 768, width
+            // 814, past the right edge, and the exact-half check answered «la verificación
+            // del lado derecho falló» on every try. The window is put flush against the
+            // asked edge at the size it imposes, and that placement is what is verified:
+            // on the edge, inside the work area, with the window's own larger size.
+            largerThanRequested = new WindowRequestedSize(expected.Width, expected.Height);
+            var flush = new WindowBounds(
+                left ? workArea.X : workArea.X + workArea.Width - placed.Bounds.Width,
+                expected.Y,
+                placed.Bounds.Width,
+                placed.Bounds.Height);
+            if (placed.Bounds != flush)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (!_platform.SetBounds(before.Identity, flush))
+                {
+                    return new WindowActionResult(
+                        false, false, null, WindowControlErrorCodes.ActionFailed);
+                }
+                (placed, _) = await ObserveSnapAsync(
+                        before.Identity, flush, acceptLarger: false, workArea, cancellationToken)
+                    .ConfigureAwait(false);
+                if (placed is null)
+                {
+                    return new WindowActionResult(
+                        false, false, null, WindowControlErrorCodes.VerificationFailed);
+                }
+            }
+        }
+
+        string refreshedId = Issue(placed.Identity);
+        WindowCandidate candidate = ToCandidate(placed, refreshedId);
+        if (_verifier.Verify(placed.Identity, candidate, expectedAction: null))
+        {
+            return new WindowActionResult(true, true, candidate, null, largerThanRequested);
+        }
+        Revoke(refreshedId);
+        return new WindowActionResult(
+            false, false, null, WindowControlErrorCodes.VerificationFailed);
+    }
+
+    // The placement read back: the exact target, or (acceptLarger) the window held at a
+    // size larger than the target that it imposes itself. Null when neither settles.
+    private async ValueTask<(WindowSnapshot? Window, bool Larger)> ObserveSnapAsync(
+        WindowIdentity identity,
+        WindowBounds target,
+        bool acceptLarger,
+        WindowBounds workArea,
+        CancellationToken cancellationToken)
+    {
+        WindowBounds? held = null;
         for (int attempt = 0; attempt < StateVerificationAttempts; attempt++)
         {
             cancellationToken.ThrowIfCancellationRequested();
             WindowSnapshot after;
             try
             {
-                after = _platform.Observe(before.Identity);
+                after = _platform.Observe(identity);
             }
             catch (Exception exception) when (exception is Win32Exception
                 or InvalidOperationException
                 or WindowIdentityChangedException)
             {
-                return new WindowActionResult(
-                    false, false, null, WindowControlErrorCodes.VerificationFailed);
+                return (null, false);
             }
-            if (after.Bounds == expected && string.Equals(after.State, "normal", StringComparison.Ordinal))
+            bool normal = string.Equals(after.State, "normal", StringComparison.Ordinal);
+            if (normal && after.Bounds == target)
             {
-                string refreshedId = Issue(after.Identity);
-                WindowCandidate candidate = ToCandidate(after, refreshedId);
-                if (_verifier.Verify(after.Identity, candidate, expectedAction: null))
+                return (after, false);
+            }
+            if (acceptLarger && normal && KeepsLargerMinimum(after.Bounds, target, workArea))
+            {
+                // M159: the same larger bounds on two reads, one delay apart: the window
+                // settled there; a read taken before the move had landed is not trusted.
+                if (after.Bounds == held)
                 {
-                    return new WindowActionResult(true, true, candidate, null);
+                    return (after, true);
                 }
-                Revoke(refreshedId);
-                return new WindowActionResult(
-                    false, false, null, WindowControlErrorCodes.VerificationFailed);
+                held = after.Bounds;
+            }
+            else
+            {
+                held = null;
             }
             if (attempt + 1 < StateVerificationAttempts)
             {
@@ -679,9 +750,25 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             }
         }
 
-        return new WindowActionResult(
-            false, false, null, WindowControlErrorCodes.VerificationFailed);
+        return (null, false);
     }
+
+    // M159: the window refused the asked size only by being larger (its minimum), never
+    // smaller; that size still fits the work area; it kept the asked top edge and either
+    // the asked near edge (Windows clamps the size, not the position) or the asked far
+    // edge (the window pulled itself back onto the screen).
+    internal static bool KeepsLargerMinimum(
+        WindowBounds observed,
+        WindowBounds requested,
+        WindowBounds workArea) =>
+        observed.Width >= requested.Width
+        && observed.Height >= requested.Height
+        && (observed.Width > requested.Width || observed.Height > requested.Height)
+        && observed.Width <= workArea.Width
+        && observed.Height <= workArea.Height
+        && observed.Y == requested.Y
+        && (observed.X == requested.X
+            || observed.X + observed.Width == requested.X + requested.Width);
 
     public async ValueTask<WindowCloseResult> CloseAsync(
         string windowId,

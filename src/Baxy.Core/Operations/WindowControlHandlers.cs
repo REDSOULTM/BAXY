@@ -197,7 +197,8 @@ internal sealed class WindowSnapHandler(IWindowControlProvider provider) : IOper
         WindowActionResult result = await provider.SnapAsync(
             windowId, side, cancellationToken).ConfigureAwait(false);
         return result.Succeeded && result.Verified && result.Window is not null
-            ? OperationOutcome.Success(WindowControlResultJson.Serialize(result.Window, side))
+            ? OperationOutcome.Success(WindowControlResultJson.Serialize(
+                result.Window, side, result.LargerThanRequested))
             : OperationOutcome.Failure(result.ErrorCode ?? "window_bounds_failed");
     }
 }
@@ -255,7 +256,10 @@ internal static class WindowControlResultJson
         return document.RootElement.Clone();
     }
 
-    public static JsonElement Serialize(WindowCandidate window, string side)
+    public static JsonElement Serialize(
+        WindowCandidate window,
+        string side,
+        WindowRequestedSize? largerThanRequested = null)
     {
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
@@ -265,6 +269,17 @@ internal static class WindowControlResultJson
             writer.WriteString("side", side);
             writer.WritePropertyName("window");
             WriteCandidate(writer, window);
+            if (largerThanRequested is not null)
+            {
+                // M159 (DEV-I v4w I-s048): the window is flush against the asked side but
+                // its own minimum is larger than the half; the half it was asked to take
+                // is said beside the size it keeps, never «the half» alone.
+                writer.WriteBoolean("fitsInHalf", false);
+                if (window.Width > largerThanRequested.Width)
+                    writer.WriteNumber("halfWidth", largerThanRequested.Width);
+                if (window.Height > largerThanRequested.Height)
+                    writer.WriteNumber("halfHeight", largerThanRequested.Height);
+            }
             writer.WriteEndObject();
         }
         using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
