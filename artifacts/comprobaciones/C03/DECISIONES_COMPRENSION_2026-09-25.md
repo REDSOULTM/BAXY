@@ -870,3 +870,34 @@ OCR pulsó «biblioteca» una vez en el panel de VS Code; M132 ata el clic a la 
      falsos sobre listados de tareas y suelo determinista de lo observado.
    - Se descartaron como mecanismos los fallos de ventanas y batería de F/G/H: el turno anterior, ejecutado de verdad,
      dio otra respuesta (D67).
+
+## D74. DEV-I base, v4v (M151–M153), D73 del puntuador, M154–M157 (2026-10-04 10:40)
+1. **DEV-I en la App, base v4u** (= código de v4s): 262/300 = 87,3 % con D61 (estricta 258); decisor aislado 293/300 en
+   decisión. Lastre de decisión 17 y de argumentos 14, en su mayoría en mensajes sueltos (sin historial vivido): código.
+2. **Puntuador, D73** (capa D61, la cifra estricta no cambia): cuando el oro acepta `ask` y BAXY sólo publicó una
+   aclaración (todas las rutas del turno son `clarification`, aunque la decisión interna fuera una acción a la que le
+   faltaba un dato), el turno cuenta. DEV-E +0; DEV-I +4; F/G/H/D +1 cada uno.
+3. **v4v** (main 11ce91da: M151 archivo nombrado, M152 avisos, M153 vetos falsos sobre títulos citados y respaldo dentro
+   del turno). **DEV-E 262/299 = 87,6 %** (estricta 251; +6/0 frente a v4u, p = 0,03; 1/2 frente a v4s); **0 turnos
+   `filtered`** (v4s 1, v4u 5): la oscilación de D73 desaparece. DEV-G 277 (92,3 %), DEV-H 279 (93,0 %), DEV-F 245
+   (87,5 %), DEV-D 308 (92,8 %), DEV-I 264 (88,0 %); reserva 90,0 / 94,0 % (0/0), 742 sin cambios, DEV-C 84,7 %, cien-128
+   100/100, held-out 30/30, guion 52/60 + 5 por revisar (el nuevo «??» es t21: «confirmo» tras «cierra edge» cerró Edge;
+   correcto, con otra redacción → 53).
+4. **M151 no se ve en la App**: en la corrida en vivo, la respuesta anterior de BAXY nunca nombra el archivo, porque los
+   ficheros que suponen las conversaciones no existen en este PC (D67). Probado con el historial escrito; queda en el
+   producto.
+5. **Mecanismos para v4w** (integ/v3z 161a0e1a):
+   - **M154**: una conversión de moneda o un tipo de cambio se consulta (Frankfurter), nunca de memoria. La guarda M81
+     separa la pregunta del motivo de la persona («que tengo que cambiar…», «mi viejo me preguntó…»), que no es un dato
+     propio. Frankfurter: «mexican peso» devolvía CLP; ahora MXN.
+   - **M155**: los lectores de primer turno no pisan al decisor («en media hora» no es «media»; un elogio no es «tareas»;
+     «qué horas» no es portugués; «alarm for 6 to get up» aplica D61). **Seguridad**: una orden de no enviar («leave it
+     for me to send», «pero no se lo mandes») sin cliente nombrado acababa en `message.send`; ahora es borrador, y un
+     envío del decisor con esa orden también. I-s111 («búscame en YouTube…») se deja en la búsqueda por el literal
+     revisado H0728 (WEB1481), aunque el oro de DEV-I diga reproducir.
+   - **M156**: «a las 6 30» son las 6:30 (antes las 18:00); servicio y luego título con errata («disney plus
+     intensamnete 2»); un nombre de app que suena igual («afinity foto») no es inventado.
+   - En el merge de M155 con M156 quedó un conflicto real en `semantic/temporal.py` committeado con sus marcadores
+     (cbd2eae2), resuelto en 161a0e1a antes de cualquier prueba o push.
+   - **M157** (en curso): M147 no se aplica en la App en su propia fila (F-w05-t5: la consulta a Spotify fue «Javier
+     Mené» en v4u y en v4v); «tradúceme eso al inglés» → búsqueda; una nota con el título como contenido.
