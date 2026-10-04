@@ -3055,6 +3055,237 @@ _CURRENCY = (
 )
 
 
+# M154 (D35, D52; DEV-H v4u H-w05-t4 «and in pesos chilenos?» after «Hoy el Bitcoin está en 85.000 dólares.» →
+# restated «¿Cuántos pesos chilenos son 85.000 dólares?» and talked: «Today Bitcoin is at 1,850,000 Chilean pesos.»,
+# forty times off; H-s087 «¿cuánto son 350 dólares en euros, más o menos?» → «Son aproximadamente 320 euros.»; DEV-I
+# I-w17-t3 «¿y eso cuánto sería en pesos mexicanos, más o menos?» talked in the isolated decider): an amount in one
+# currency asked in another needs a rate between the two, which moves every day and memory never has. The first-turn
+# market reader missed H-s087 on «más o menos», which it reads as a sum. A currency is read with what tells it apart
+# (the nationality said before or after it, or its code); a peso said with a weight beside it («pesos de 5 kilos»,
+# «mi peso en libras») is no currency, and neither is a pound or a libra «of» something.
+_CURRENCY_FAMILY_WORDS = (
+    ("dollar", r"dolar(?:es)?|dollars?|usd|cad|aud|nzd"),
+    ("euro", r"euros?|eur"),
+    ("pound", r"libras?(?!\s+(?:de|of)\b)|pounds?(?!\s+(?:de|of)\b)|gbp|sterling"),
+    ("yen", r"yen(?:es)?|jpy"),
+    ("yuan", r"yuan(?:es)?|renminbi|cny"),
+    ("franc", r"francos?|francs?|chf"),
+    ("real", r"reales|reais|brl"),
+    ("rupee", r"rupias?|rupees?|inr"),
+    ("sol", r"soles"),
+    ("dirham", r"dirhams?|dirhames"),
+    ("bolivar", r"bolivares"),
+    ("bitcoin", r"bitcoins?|btc"),
+    # The singular «peso» is a weight unless a nationality says which currency it is (``_currency_mentions``).
+    ("peso", r"pesos?(?!\s+(?:de\s+|of\s+)?(?:\d|(?:kilos?|kg|libras?|pounds?|gimnasio|gym|rusas?|libres?|muertos?|"
+             r"corporal|ideal|pluma|pesad\w*|ligeros?)\b))|clp|mxn|ars|uyu"),
+)
+_CURRENCY_MENTION = re.compile(
+    r"\b(?:(?P<before>canadian|australian|mexican|chilean|argentine|argentinian|colombian|uruguayan|swiss|british|"
+    r"brazilian|indian|japanese|chinese|us|u\.s\.|american)\s+)?(?P<word>"
+    + "|".join(f"(?P<{family}>{words})" for family, words in _CURRENCY_FAMILY_WORDS)
+    + r")\b(?:\s+(?P<after>chilen[oa]s?|mexican[oa]s?|argentin[oa]s?|colombian[oa]s?|uruguay[oa]s?|"
+    r"dominican[oa]s?|filipin[oa]s?|cuban[oa]s?|canadienses?|australian[oa]s?|neozelandes(?:es)?|suiz[oa]s?|"
+    r"brasilen[oa]s?|estadounidenses?|american[oa]s?)\b)?"
+)
+# The code that says which currency of a family it is, as the nationality's first five letters; the dollar said
+# American is the bare one.
+_CURRENCY_CODE_QUALIFIER = {
+    "clp": "chile", "mxn": "mexic", "ars": "argen", "uyu": "urugu", "cad": "canad", "aud": "austr", "nzd": "neoze",
+}
+_BARE_DOLLAR = frozenset({"us", "u.s.", "ameri", "estad"})
+# «cuánto», «how much», «a cómo»: a figure is asked; «why», «what currency», «its history»: a fact is explained.
+_CURRENCY_FIGURE_HEAD = (
+    r"\b(?:cuant[oa]s?|how\s+(?:much|many)|a\s+(?:cuanto|como)|en\s+cuanto|convert\w*|conviert\w*|cambiame|"
+    r"pasame\w*|pasalo|pasala)\b"
+)
+# What joins the currency asked to the one it is counted in, right before the second: «350 dólares en euros», «euro vs
+# dollar», «dollar to mexican peso», «por cada euro».
+_CURRENCY_JOINED = re.compile(
+    r"\b(?:en|in|a|al|to|into|vs|versus|contra|frente\s+al?|por|per|for|para)\s+"
+    r"(?:(?:cada|un|una|el|la|los|las|the|an|each|one)\s+)?(?:\d[\d.,]*\s+)?$"
+)
+_CURRENCY_EXPLAINED = (
+    r"\b(?:por\s+que|porque|why|explica\w*|explain\w*|que\s+significa|what\s+does|historia|history|diferencias?|"
+    r"difference|origen|origin|que\s+moneda|cual\s+moneda|which\s+currency|what\s+currency|moneda\s+(?:de|oficial)|"
+    r"currency\s+(?:of|in)|se\s+llama|is\s+called|simbolo|symbol)\b"
+)
+_CURRENCY_RATE_WORDS = r"\b(?:tipos?|tasas?)\s+de\s+cambio\b|\b(?:exchange|conversion)\s+rates?\b"
+# The currency asked right after «en / in / a / to» (with its article): «y en euros», «how much is that in yen».
+_CURRENCY_ASKED_IN = re.compile(r"\b(en|in|a|al|to|into|para)\s+(?:(?:los|las|el|la|the)\s+)?$")
+# An amount right before a currency: «85.000», «18 500», «1,17», «unos 93 millones de».
+_AMOUNT_BEFORE = re.compile(
+    r"(?<![\d.,])(?P<number>\d{1,3}(?:[.,\s]\d{3})+(?:[.,]\d+)?|\d+(?:[.,]\d+)?)"
+    r"(?:\s+(?P<multiplier>mil|millones|millon|thousand|millions?)(?:\s+(?:de|of))?)?\s*(?:de\s+|of\s+)?$"
+)
+
+
+def _currency_mentions(folded: str) -> list[tuple[tuple[str, str], int, int]]:
+    """Each currency the folded text names, as ((family, which one of it), start, end)."""
+
+    mentions = []
+    for found in _CURRENCY_MENTION.finditer(folded):
+        family = next(name for name, _ in _CURRENCY_FAMILY_WORDS if found.group(name))
+        qualifier = found.group("before") or found.group("after") or _CURRENCY_CODE_QUALIFIER.get(found.group("word"), "")
+        if found.group("word") == "peso" and not qualifier:
+            continue
+        mentions.append(((family, "" if qualifier[:5] in _BARE_DOLLAR else qualifier[:5]), found.start(), found.end()))
+    return mentions
+
+
+def _different_currencies(first: tuple[str, str], second: tuple[str, str]) -> bool:
+    """Two currencies: another family, or the same one told apart («dólares canadienses» and «dólares», «pesos
+    mexicanos» and «pesos chilenos»; a bare «pesos» is whichever peso the person means)."""
+
+    if first[0] != second[0]:
+        return True
+    if first[0] == "dollar":
+        return first[1] != second[1]
+    return bool(first[1]) and bool(second[1]) and first[1] != second[1]
+
+
+def asks_currency_conversion(text: str) -> bool:
+    """The text itself asks an amount of one currency in another, how one stands against another, or an exchange
+    rate: «¿cuántos euros son 350 dólares?», «euro vs dollar hoy», «dollar to mexican peso rate», «¿cuántos dólares me
+    dan por cada euro?», «el tipo de cambio del dólar»."""
+
+    folded = fold_in_place(text)
+    if _has(folded, _CURRENCY_EXPLAINED):
+        return False
+    mentions = _currency_mentions(folded)
+    if mentions and _has(folded, _CURRENCY_RATE_WORDS):
+        return True
+    asked = _has(folded, _CURRENCY_FIGURE_HEAD)
+    return any(
+        _different_currencies(first, second)
+        and second_start - first_end <= 60
+        and (asked or _CURRENCY_JOINED.search(folded[first_end:second_start]) is not None)
+        for index, (first, _, first_end) in enumerate(mentions)
+        for second, second_start, _ in mentions[index + 1:]
+    )
+
+
+def _amount_in_currency(reply: str, other_than: tuple[str, str]) -> str | None:
+    """The last amount BAXY's reply gives in a currency other than ``other_than`` («85.000 dólares», «unos 93 millones
+    de pesos chilenos»), as one number and its currency («93000000 pesos chilenos»); None without one."""
+
+    folded = fold_in_place(reply)
+    given = None
+    for currency, start, end in _currency_mentions(folded):
+        amount = _AMOUNT_BEFORE.search(folded[:start])
+        if amount is not None and _different_currencies(currency, other_than):
+            given = (amount, " ".join(str(reply)[start:end].split()))
+    if given is None:
+        return None
+    amount, currency_words = given
+    number = re.sub(r"\s", "", amount.group("number"))
+    if re.fullmatch(r"\d{1,3}(?:[.,]\d{3})+", number):
+        number = re.sub(r"[.,]", "", number)
+    said_multiplier = amount.group("multiplier") or ""
+    multiplier = 1_000 if said_multiplier in {"mil", "thousand"} else 1_000_000 if said_multiplier else 1
+    if multiplier != 1:
+        whole, _, decimals = number.replace(",", ".").partition(".")
+        number = str(int(whole) * multiplier + (int(decimals) * multiplier // 10 ** len(decimals) if decimals else 0))
+    return f"{number} {currency_words}"
+
+
+def currency_amounts(text: str) -> list[str]:
+    """M154: the amounts a text gives in a currency, as written («320» of «Son aproximadamente 320 euros.»,
+    «1,850,000» of «1,850,000 Chilean pesos»)."""
+
+    folded = fold_in_place(text)
+    amounts = []
+    for _, start, _ in _currency_mentions(folded):
+        found = _AMOUNT_BEFORE.search(folded[:start])
+        if found is not None:
+            amounts.append(str(text)[found.start("number"):found.end("number")])
+    return amounts
+
+
+def states_the_rate(text: str, asked: str) -> bool:
+    """M154: the text gives an amount beside two currencies that ``asked`` converts between («Hoy el dólar está a 945
+    pesos.» for «¿cuántos pesos son 100 dólares?», «1 USD = 981.19 CLP»): the rate was said, and what follows from it
+    is computed, not remembered. A bitcoin's price in dollars is no rate between dollars and pesos."""
+
+    if not currency_amounts(text):
+        return False
+    said = [currency for currency, _, _ in _currency_mentions(fold_in_place(text))]
+    wanted = [currency for currency, _, _ in _currency_mentions(fold_in_place(asked))]
+    return any(
+        _different_currencies(first, second)
+        and any(not _different_currencies(first, one) for one in said)
+        and any(not _different_currencies(second, other) for other in said)
+        for index, first in enumerate(wanted)
+        for second in wanted[index + 1:]
+    )
+
+
+def currency_conversion_request(text: str, restated: str = "", last_reply: str = "", antecedent: str = "") -> str | None:
+    """M154 (see above): what is looked up when the person asks a currency conversion or an exchange rate, made only of
+    what was said, never of values nobody said; None when they ask neither.
+
+    - The person's own words name both currencies (or ask the exchange rate): those words.
+    - A follow-up names only the currency wanted, after «en / in / a / to» («and in pesos chilenos?», «how much is that
+      in yen»), and BAXY's last reply gave an amount in another one: the person's request before it with the currency
+      wanted in place of the one it asked in («cuánto está el bitcoin en dólares» → «… en pesos chilenos»); else the
+      decider's restatement (``restated``) when it asks the conversion with currencies said in the conversation; else
+      the person's words when they give their own amount; else BAXY's amount in the currency asked.
+
+    An amount written in groups of three with spaces («18 500 pesos») is written whole: the rate source reads one
+    number.
+    """
+
+    asked = _currency_conversion_asked(text, restated, last_reply, antecedent)
+    return None if asked is None else _SPACED_AMOUNT.sub(lambda found: re.sub(r"\s", "", found.group(0)), asked)
+
+
+_SPACED_AMOUNT = re.compile(r"(?<![\d.,])\d{1,3}(?:[   ]\d{3})+(?![\d])")
+
+
+def _currency_conversion_asked(text: str, restated: str, last_reply: str, antecedent: str) -> str | None:
+    folded = fold_in_place(text)
+    if not folded.strip() or _has(folded, _CURRENCY_EXPLAINED):
+        return None
+    if asks_currency_conversion(text):
+        return text
+    mentions = _currency_mentions(folded)
+    if (
+        not mentions
+        or len(folded.split()) > 12
+        or any(_different_currencies(mentions[0][0], other) for other, _, _ in mentions[1:])
+    ):
+        return None
+    wanted, start, end = mentions[-1]
+    asked_in = _CURRENCY_ASKED_IN.search(folded[:start])
+    given = _amount_in_currency(last_reply, wanted) if asked_in is not None else None
+    if given is None:
+        return None
+    wanted_words = " ".join(str(text)[start:end].split())
+    before = fold_in_place(antecedent)
+    asked_before = [
+        (currency, at, until) for currency, at, until in _currency_mentions(before)
+        if _CURRENCY_ASKED_IN.search(before[:at]) is not None
+    ]
+    if len(asked_before) == 1 and _different_currencies(asked_before[0][0], wanted):
+        _, at, until = asked_before[0]
+        substituted = str(antecedent)[:at] + wanted_words + str(antecedent)[until:]
+        # «cuánto cuesta un iPhone en dólares» → «… en yenes» asks the same figure in the currency wanted; a follow-up
+        # before («and in pesos chilenos?») asked none by itself.
+        if asks_currency_conversion(substituted) or (
+            len(_currency_mentions(fold_in_place(substituted))) == 1 and _has(before, _CURRENCY_FIGURE_HEAD)
+        ):
+            return substituted
+    restated_currencies = {currency[0] for currency, _, _ in _currency_mentions(fold_in_place(restated))}
+    said_currencies = {
+        currency[0] for currency, _, _ in _currency_mentions(fold_in_place(f"{text}\n{last_reply}\n{antecedent}"))
+    }
+    if asks_currency_conversion(restated) and wanted[0] in restated_currencies and restated_currencies <= said_currencies:
+        return restated
+    if re.search(r"\d", folded):
+        return text
+    return f"{given} {asked_in.group(1)} {wanted_words}"
+
+
 # MASSIVE recommendation_events (dev corpus 2026-09-24) «dime todos los eventos que ocurren en milán», «hay
 # exposiciones caninas cerca de la ciudad de nueva york»: gatherings in a place named are the public world's too. A
 # time after «en» («eventos en junio», «en la tarde») or an agenda («en mi calendario») is not a place.

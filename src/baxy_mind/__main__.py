@@ -53,6 +53,7 @@ from .semantic.notes import (
     names_own_event,
     task_change,
     question_with_context,
+    question_with_its_reason,
 )
 from .semantic import levels as semantic_levels
 from .semantic.memory import explicit_memory_request
@@ -73,6 +74,7 @@ from .semantic.web import (
     asks_latest_release,
     asks_to_watch_the_news,
     asks_what_a_cinema_shows,
+    currency_conversion_request,
     names_own_data,
     near_the_person,
     news_lookup_query,
@@ -5464,7 +5466,10 @@ def _context_decided_result(
         # Fase 3.5b M19 (cien-104 «ábreme eso porfa» after the time → «Abre el navegador» → a browser opened): a
         # pointer with no antecedent in what was said is asked, never filled with an object the model brought.
         decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
-    question_asked = question_with_context(text)
+    # M154 (DEV-I v4u I-s053 «…a cuánto cerró el blue hoy que tengo que cambiar unos dólares…», H-s093 «…rate todya,
+    # im wiring money to my cousin…», I-s078 «mi viejo me preguntó cuántos habitantes tiene Mar del Plata…»): the need
+    # that makes the person ask, said after the question, and who asked or claims it, said before, are its context too.
+    question_asked = question_with_context(text) or question_with_its_reason(text)
     if decided.decision == "action" and decided.operations == ("web.search",) and (
         names_own_data(text)
         if question_asked is None
@@ -5757,6 +5762,21 @@ def _context_decided_result(
         # M99 (DEV-D v3x D-p28-t1 «I want to watch a movie at Century 25 Union Landing…» → «I cannot order or buy
         # movies…»): what a cinema shows is looked up; the limit was about buying, which nobody asked.
         decided = semantic_decider.ContextDecision(request=text, decision="action", operations=("web.search",), question="")
+    converted = (
+        currency_conversion_request(text, decided.request, context.last_reply or "", antecedent or "")
+        if decided.decision == "talk" and "web.search" in available_operations and not asks_for_code(text)
+        else None
+    )
+    if converted is not None:
+        # M154 (D35, D52; DEV-H v4u H-w05-t4 «and in pesos chilenos?» after «Hoy el Bitcoin está en 85.000 dólares.» →
+        # talked «Today Bitcoin is at 1,850,000 Chilean pesos.»; H-s087 «¿cuánto son 350 dólares en euros, más o
+        # menos?» → «Son aproximadamente 320 euros.»): an amount in another currency, or an exchange rate, moves every
+        # day; it is looked up (the reference rate, ``FrankfurterRateSource``), with the amount and the currencies said
+        # in the conversation (``semantic.web.currency_conversion_request``). A rate of what BAXY said in one currency
+        # (M118: «¿y eso cuánto es al mes?») names no second currency and stays the decider's.
+        decided = semantic_decider.ContextDecision(
+            request=converted, decision="action", operations=("web.search",), question="",
+        )
     reference = None
     recommended = False
     # M56 (v3c-final F-w14-t1): code the person asks for is written, whatever the decider's rewrite of it says.
