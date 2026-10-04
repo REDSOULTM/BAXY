@@ -76,6 +76,15 @@ def empty_fallback(record: dict[str, Any]) -> bool:
     )
 
 
+def asked_only(record: dict[str, Any]) -> bool:
+    """D73 (DEV-I v4u I-s057 «ponme un recordatorio para mañana, lo de pagar la cuenta de la luz» → «¿A qué hora…?»):
+    an action whose missing value BAXY asked for, and nothing else, was published as a clarification — every BAXY
+    route of the turn is one. The person saw a question, which is what a gold ``ask`` accepts (counted with D61)."""
+
+    routes = record.get("routes") or []
+    return bool(routes) and all(route == "clarification" for route in routes)
+
+
 def label_matches(label: str, record: dict[str, Any]) -> list[str]:
     """The operations that satisfy ``label`` (``[""]`` for a non-operation label); empty when it does not hold."""
     kind = record.get("kind")
@@ -475,6 +484,10 @@ def _d61_lines(
         if not right and row["id"] in accepted and verdict({"gold": accepted[row["id"]]["accept"]}, record)[1]:
             decided, right = True, True
             cause[row["id"]] = "aceptada"
+        if not right and "ask" in row["gold"] and asked_only(record):
+            # D73: the question the gold accepts, asked from an action short of a value.
+            decided, right = True, True
+            cause[row["id"]] = "D73"
         if not right and verdict_equivalent(row, record)[1]:
             # D71 (owner, 2026-10-03): the datum done, said another way.
             decided, right = True, True
@@ -497,10 +510,10 @@ def _d61_lines(
     counts = Counter(cause.values())
     lines = [
         f"  con D61 ({sources}): +{len(cause)} turnos (aceptadas {counts['aceptada']}, D35 {counts['D35']}; "
-        f"D71 mismo dato dicho de otra forma {counts['D71']}; "
+        f"D71 mismo dato dicho de otra forma {counts['D71']}; D73 preguntó lo que el oro acepta {counts['D73']}; "
         f"turnos con consulta D35 en la auditoría {len(looked_up & set(records))})"
     ]
-    summary["d61"] = {"accepted": counts["aceptada"], "d35": counts["D35"], "d71": counts["D71"],
+    summary["d61"] = {"accepted": counts["aceptada"], "d35": counts["D35"], "d71": counts["D71"], "d73": counts["D73"],
                       "d35_lookups": len(looked_up & set(records))}
     for name, subset in groups.items():
         right = sum(alternative[row["id"]][1] for row in subset)
