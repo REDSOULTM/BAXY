@@ -5510,7 +5510,11 @@ def _context_decided_result(
     available_operations = tuple(tool.name for tool in planner_catalog.tools)
     context = dialogue_slot.read_slot({}, history, text)
     antecedent = context.antecedents[0] if context.antecedents else None
-    placed = dialogue_slot.place_substituted(text, antecedent)
+    # M162 (DEV-H v4w H-w08-t3 «cuánta diferencia hay con aquí» after «En Lima son las 12:10.» → searched): the hours
+    # apart from here, right after BAXY told one place's clock, are that place's clock read, as «allá» is (M84).
+    placed = dialogue_slot.place_substituted(text, antecedent) or semantic_temporal.hours_apart_from_the_clock_told(
+        text, context.last_reply,
+    )
     placed_read = resolve_explicit_effects(placed, available_operations) if placed is not None else None
     closing = _close_of_the_just_opened(text, history, available_operations, application_names)
     said_before = [
@@ -5950,7 +5954,16 @@ def _context_decided_result(
         and "web.search" in available_operations
         and not asks_for_code(text)
         # M118 (D58): a rate of what BAXY just said is worked out from its numbers, whatever the restatement names.
-        and not semantic_knowledge.rate_of_what_was_said(text, context.last_reply or "")
+        # M162 (DEV-I v4w I-w08-t2 «y para la mitad de gente?», DEV-H H-w24-t3 «pasame la brecha en porcentaje»): so
+        # is a recipe scaled, a difference, a gap or a percentage of the numbers it said, all of them said.
+        and not semantic_knowledge.worked_out_from_what_was_said(
+            text,
+            [
+                str(item.get("content") or "") for item in history
+                if isinstance(item, dict) and item.get("role") == "assistant"
+            ],
+            _prior_user_texts(history, text),
+        )
     ):
         # M53 (D35): what the decider answers by talking but is a named dish's recipe or a named work's plot is
         # looked up first; the arguments step reads the same query from the same request.

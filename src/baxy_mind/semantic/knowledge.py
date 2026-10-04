@@ -19,6 +19,8 @@ what stays talk — an open suggestion («una receta vegetariana»), code, an ex
   never answers.
 - ``figure_lookup``     M104 (D52): a figure of the world asked as such («how tall is mount everest») is looked up
   with the person's words (kind ``figure``); one computed from the person's numbers, or of their own things, is not.
+- ``worked_out_from_what_was_said`` M162 (D35, M118): a sum on numbers BAXY just said — a recipe scaled, a difference,
+  a gap, a percentage, a rate —, all of them said, is worked out from them and not looked up.
 """
 
 from __future__ import annotations
@@ -727,6 +729,81 @@ def rate_of_what_was_said(text: str, last_reply: str) -> bool:
         and _PER_UNIT.search(folded) is not None
         and bool(numbers_in([spelled_out(fold(last_reply or ""))]))
     )
+
+
+# M162 (D58 with D35 and M118; DEV-I v4w I-w08-t2 «y para la mitad de gente?» after a chipá recipe «Rinde para seis
+# personas…», I-w18-t2 «y pa hacer 20, ¿cuánta harina sería?» after «Para unas 12: masa con 500 g de harina…», DEV-H
+# v4w H-w24-t3 «pasame la brecha en porcentaje» after the blue at $1.405 and the Nación at $1.240, H-w31-t3 «y eso
+# pa'l doble de gente cómo queda?» after the sopaipillas): the decider talked, working the sum out of what BAXY had
+# just said, and M53/M104 read its restatement («¿Cómo queda la receta de sopaipillas pasadas para el doble de
+# gente?», «¿Cuánto es la brecha en porcentaje entre el dólar blue y el oficial…?») as a recipe or a figure of the
+# world and searched it. A sum on BAXY's own numbers is worked out from them (D35: calculations are worked out, not
+# searched) when every number it needs was said and the message names nothing the conversation did not: a recipe
+# scaled by a factor needs its amounts, scaled to a count also the yield they make, and a difference, a gap, a
+# percentage or a proportion two figures. What needs a fact nobody said (a rate between currencies, M154; another
+# recipe; a figure of the world not said) is still looked up. Folded, with the short forms spelled out.
+_SCALED_BY = re.compile(r"\b(?:mitad|doble|triple|cuadruple|half|halve|double|twice|triple|quadruple)\b")
+_COUNT = r"(?P<count>\d{1,3}|" + "|".join(sorted(_NUMBER_WORDS, key=len, reverse=True)) + r")\b"
+_SCALED_TO = re.compile(
+    r"\b(?:(?:para|pa|pal|for)\s+(?:(?:hacer|preparar|make|making)\s+)?|(?:to|para)\s+(?:make|feed|serve|alimentar)\s+)"
+    rf"(?:(?:unas?|unos|about|around)\s+)?{_COUNT}"
+)
+# What the recipe said makes: «Rinde para seis personas», «Para unas 12:», «serves 4», «makes 24 cookies».
+_YIELD = re.compile(
+    r"\b(?:rinde|rinden|alcanza|salen|sirve|serves|makes|yields|para|pa|for)\s+"
+    rf"(?:(?:para|unas?|unos|about|around|aproximadamente|approximately)\s+){{0,2}}{_COUNT}"
+    r"(?!\s*(?:minutos?|min|horas?|grados|segundos|minutes?|hours?|degrees|seconds|°))"
+)
+_COMPARED = re.compile(
+    r"\b(?:diferencia|brecha|difference|gap|porcentaje|percent|percentage|proporcion|ratio)\b|\bpor\s*ciento\b|%"
+)
+# The words that ask the sum, not what it is about.
+_SUM_WORDS = _FIGURE_FRAME_WORDS | _QUESTION_WORDS | frozenset({
+    "mitad", "doble", "triple", "cuadruple", "diferencia", "brecha", "porcentaje", "ciento", "proporcion", "gente",
+    "personas", "persona", "porciones", "raciones", "comensales", "invitados", "seria", "serian", "queda", "quedan",
+    "quedaria", "quedarian", "sale", "salen", "saldria", "saldrian", "pasame", "pasa", "dame", "dime", "decime",
+    "calcula", "calculame", "calculamelo", "sacame", "saca", "hazme", "preparar", "hago", "haria", "hariamos",
+    "necesito", "necesitaria", "necesitamos", "entonces", "ahora", "half", "halve", "double", "twice", "quadruple",
+    "difference", "percent", "percentage", "ratio", "people", "persons", "servings", "portions", "guests", "then",
+    "work", "out", "figure", "tell", "give", "show", "what", "would", "much", "many", "make", "making", "feed",
+    "serve", "need", "them", "those", "these", "between",
+})
+
+
+def worked_out_from_what_was_said(text: str, replies: Iterable[str], person: Iterable[str] = ()) -> bool:
+    """M162 (see above): the message asks a sum on numbers BAXY just said, all of them said. ``replies`` are BAXY's
+    earlier answers, oldest first; ``person`` the person's earlier messages (what the conversation named)."""
+
+    replies = [str(reply) for reply in replies if str(reply or "").strip()]
+    if not replies:
+        return False
+    if rate_of_what_was_said(text, replies[-1]):
+        return True
+    folded = spelled_out(fold(text))
+    last = spelled_out(fold(replies[-1]))
+    recent = [spelled_out(fold(reply)) for reply in replies[-2:]]
+    said_numbers = {*numbers_in(recent), *spoken_numbers_in(recent)}
+    scaled_to = _SCALED_TO.search(folded)
+    own_count = None
+    if _SCALED_BY.search(folded) is not None:
+        needed = bool(numbers_in([last]) or spoken_numbers_in([last]))
+    elif scaled_to is not None:
+        raw = scaled_to.group("count")
+        own_count = int(raw) if raw.isdigit() else _NUMBER_WORDS[raw]
+        needed = _YIELD.search(last) is not None and len({*numbers_in([last]), *spoken_numbers_in([last])}) >= 2
+    elif _COMPARED.search(folded) is not None:
+        needed = len(said_numbers) >= 2
+    else:
+        return False
+    if not needed or asks_for_code(text) or conversion_asked(text) is not None:
+        return False
+    # A number the person brings that is neither BAXY's nor the count asked is a figure nobody said («iPhone 15»).
+    brought = (*numbers_in([folded]), *spoken_numbers_in([folded]))
+    if any(number not in said_numbers and number != own_count for number in brought):
+        return False
+    conversation = spelled_out(fold(" ".join([*replies, *(str(said or "") for said in person)])))
+    named = {word[:4] for word in re.findall(r"[a-z]{4,}", conversation)}
+    return all(word in _SUM_WORDS or word[:4] in named for word in re.findall(r"[a-z]{4,}", folded))
 
 
 def figure_lookup(text: str, last_reply: str = "") -> ReferenceLookup | None:
