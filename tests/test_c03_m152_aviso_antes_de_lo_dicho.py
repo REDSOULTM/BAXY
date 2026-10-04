@@ -124,7 +124,8 @@ def test_a_clock_first_reminder_reads_as_before() -> None:
         ["pon un recordatorio a las 9 para la reunión"],
         schema=REMINDER,
     )
-    assert question == "" and arguments_["title"] == "la reunión" and _local(arguments_["dueUtc"]).hour == 9
+    # D61: «a las 9» with no part of the day is the next 9 — 09:00 or 21:00 by the hour the test runs at.
+    assert question == "" and arguments_["title"] == "la reunión" and _local(arguments_["dueUtc"]).hour % 12 == 9
 
 
 # ------------------------------------------------------------------ 2. a length before a moment nobody placed (G-w19)
