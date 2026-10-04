@@ -268,8 +268,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 M158 (2026-10-04): re-pin tras «cancela la de las N» → notification.cancel.at.
 # C03 M159: repin tras la ventana que no cabe en media pantalla (llm.py).
 # C03 comprensión natural: repin tras M160 (2026-10-04).
+# C03 M162: re-pin tras la cuenta sobre lo dicho y la diferencia horaria con aquí.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "68f47e1632e7a87885092ed193b30eec57627a28f668fd385f6e8dd0bad80458"
+    "39e733238ccbdb64d6717314545c9f6924a7380a757ea864f1fff15905bb0652"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
