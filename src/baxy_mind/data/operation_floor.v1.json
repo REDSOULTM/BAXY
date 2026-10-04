@@ -306,6 +306,6 @@
   "window.resolve": {"es": ["buscar las ventanas", "busqué las ventanas"], "en": ["look for the windows", "looked for the windows"], "quiet": true},
   "window.restore": {"es": ["restaurar la ventana", "restauré la ventana"], "en": ["restore the window", "restored the window"]},
   "window.snap": {"es": ["colocar la ventana", "coloqué la ventana"], "en": ["snap the window", "snapped the window"],
-   "facts": [{"key": "side", "values": {"left": {"es": "a la izquierda", "en": "on the left"}, "right": {"es": "a la derecha", "en": "on the right"}}}]}
+   "facts": [{"key": "side", "values": {"left": {"es": "a la izquierda", "en": "on the left"}, "right": {"es": "a la derecha", "en": "on the right"}}}, {"key": "fitsInHalf", "es": ["", "no cabe en media pantalla y ocupa un poco más"], "en": ["", "it does not fit in half the screen and takes a little more"]}]}
  }
 }

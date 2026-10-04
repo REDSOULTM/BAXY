@@ -10341,6 +10341,45 @@ def _task_listing_defect(text: str, payload: dict) -> str:
     return ""
 
 
+def _snap_beyond_half(payload: object) -> dict | None:
+    """M159 (DEV-I v4w I-s048 «pasame la ventana de spotify a la derecha»): the verified window.snap observation of a
+    window that is flush against the asked side but larger than the half (``fitsInHalf`` false: its own minimum is
+    wider), single-step or among a plan's completed steps. None for every other result, a fitting snap included."""
+
+    if not isinstance(payload, dict):
+        return None
+    seen = payload.get("seen")
+    if payload.get("operation") == "window.snap" and isinstance(seen, dict) and seen.get("fitsInHalf") is False:
+        return seen
+    for step in payload.get("completedStepsInOrder") or []:
+        if isinstance(step, dict):
+            found = _snap_beyond_half(step.get("resultAtThisStep"))
+            if found is not None:
+                return found
+    return None
+
+
+# M159: BAXY's reply (folded) says the window did not fit in the half: «no cabe», «ocupa un poco más», «más ancha
+# que la mitad», «doesn't fit», «wider than half», «a bit more», or names its minimum.
+_SAYS_BEYOND_HALF = re.compile(
+    r"\b(?:no\s+(?:me\s+|le\s+|se\s+)?(?:cabe|cupo|entra|entro|alcanza)|"
+    r"(?:doesn['’]?t|does\s+not|didn['’]?t|did\s+not|can['’]?t|cannot|won['’]?t|wouldn['’]?t)\s+fit|"
+    r"mas\s+(?:ancha|ancho|grande|espacio|de\s+(?:la\s+)?(?:mitad|media))|"
+    r"mas\s+que\s+(?:la\s+)?(?:mitad|media)|"
+    r"ocup\w*\s+(?:un\s+poco\s+|algo\s+|apenas\s+)?mas|"
+    r"(?:wider|larger|bigger|more)\s+than\s+(?:the\s+)?half|"
+    r"(?:a\s+(?:bit|little)|slightly|somewhat)\s+(?:more|wider|larger|bigger)|"
+    r"minim[ao]s?|minimum)\b"
+)
+
+
+def _snap_beyond_half_untold(reply: str, payload: dict) -> bool:
+    """M159: the window did not fit in the half and the reply does not say so; «la puse en la mitad derecha» alone
+    would tell a half it does not occupy."""
+
+    return _snap_beyond_half(payload) is not None and _SAYS_BEYOND_HALF.search(_reading_fold(reply)) is None
+
+
 def _wifi_scan_networks_in_situation(situation: dict) -> dict | None:
     """NETWORK1737: the verified wifi.scan observation of a situation, single-step
     or mission-shaped (radio switched on, then scanned)."""
@@ -14073,6 +14112,9 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
         # A report that says it used or ran a language, a script or a terminal
         # claims a capability the assistant does not have.
         return "claimed_means"
+    if _snap_beyond_half_untold(text, payload):
+        # M159 (DEV-I v4w I-s048): the window is on the asked side but its own minimum is wider than the half.
+        return "snap_beyond_half_untold"
     if (
         payload.get("operation") == "system.status"
         and isinstance(seen, dict)
@@ -25875,6 +25917,21 @@ class LlmRuntime:
                 else "\nseen.radioOn es la radio Bluetooth: true significa encendida, false "
                 "significa apagada. Di cuál, en una oración corta; no se cambió nada."
             )
+        if _snap_beyond_half(visible_situation) is not None:
+            # M159 (DEV-I v4w I-s048 «pasame la ventana de spotify a la derecha»): Spotify will not be narrower than
+            # 814 px and half of this screen is 768; it was put flush against the right edge at its own width. That
+            # is the fact: on that side, and not in half the screen.
+            instruct(
+                "\nfitsInHalf=false in seen means the window is flush against the asked side and inside the "
+                "screen, but its own minimum width is larger than half the screen (halfWidth), so it takes a "
+                "little more than half. Say in one short first-person sentence where you put it and that it "
+                "does not fit in half the screen; never say it is on the half without that"
+                if response_language == "en"
+                else "\nfitsInHalf=false en seen significa que la ventana quedó pegada al lado pedido y dentro de "
+                "la pantalla, pero su ancho mínimo propio es mayor que media pantalla (halfWidth), así que ocupa "
+                "un poco más que la mitad. Di en una oración corta y en primera persona dónde la dejaste y que no "
+                "cabe en media pantalla; no digas que quedó en la mitad sin eso"
+            )
         if (
             visible_situation.get("operation") == "wifi.radio.set"
             and isinstance(visible_situation.get("seen"), dict)
@@ -28058,6 +28115,14 @@ class LlmRuntime:
                     "You also wrote the file named in the filesystem.write.text step: say that you created it, with its exact name, then what it lists."
                     if response_language == "en"
                     else "También escribiste el archivo nombrado en el paso filesystem.write.text: di que lo creaste, con su nombre exacto, y luego qué lista."
+                ),
+                # M159 (DEV-I v4w I-s048): flush against the side, but wider than the half.
+                "snap_beyond_half_untold": (
+                    "The window is on that side but does not fit in half the screen: its own minimum width is "
+                    "larger, so it takes a little more. Say that too, not only the side."
+                    if response_language == "en"
+                    else "La ventana quedó en ese lado pero no cabe en media pantalla: su ancho mínimo propio es "
+                    "mayor, así que ocupa un poco más. Dilo también, no sólo el lado."
                 ),
                 "missing_prior_open": (
                     "You also opened the application in this turn: say that you opened it, then the rest."
