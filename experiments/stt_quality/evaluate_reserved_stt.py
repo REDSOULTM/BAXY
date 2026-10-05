@@ -275,8 +275,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 comprensión natural: repin tras las respuestas revisadas del guion (2026-10-05).
 # C03 comprensión natural: repin tras M166 (2026-10-05).
 # C03 comprensión natural: repin tras M165 (2026-10-05).
+# C03 M168: re-pin tras los partidos desde ESPN (D77).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "2bdfc460812f41162aafb6f5fee5a7bc6af934a86f13057e611e31f69824931d"
+    "5a7eade00c22b1cb40188cafb3313d0dfe36e43c6a39d0af16f3c94a60092948"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

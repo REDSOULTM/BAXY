@@ -273,12 +273,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 comprensión natural: repin tras M164 (2026-10-05).
 # C03 M166: la música que se pide lleva el título y el artista que dijo la persona (semantic.arguments.as_the_person_named).
 # C03 comprensión natural: repin tras M165 (2026-10-05).
+# C03 M168: re-pin tras los partidos desde ESPN (D77).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "2240dbba12e689bf75a1e6a09c8d8468a55e7d88babeee8ebd6864fa6775b940"
+        "4d5d7835f653d77ec492d54ec585554ecaa891277c5689f018096e4d2c985128"
     ),
     "src/baxy_mind/llm.py": (
-        "d61fde606798cfb6959e02e6daa33def583db4a99edcf67d78ffe15d7dadd599"
+        "746a7e4b04574396c5047c970aca2695e3836c57c21435cd21ba08a6d9a147ca"
     ),
 }
 
