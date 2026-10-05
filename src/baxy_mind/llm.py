@@ -10962,6 +10962,157 @@ def _listed_page_names(sentence: str, pages: str) -> int:
     return sum(1 for name in names if name and name in read)
 
 
+# M168 (D77; DEV-G v4y G-w42-t1, DEV-I I-w12-t3, I-w26-t1): ESPN's public calendar (EspnScheduleSource) answers when a
+# team plays, or how its last match went, in one English sentence: «Next game: Los Angeles Lakers play away against
+# Sacramento Kings on Monday 2026-10-05 at 23:00 local time (UTC-03:00), NBA Preseason, at Golden 1 Center.». The report
+# says it in the person's language («Los Lakers juegan el lunes a las 23:00 contra los Kings.»): the weekday, the month
+# and the clock in either language and either dial, «tonight» for today's date, «de visitante» for «away», are figures
+# and words of that read; a weekday, a clock or a name it does not give is not, whatever the language of the sentence
+# (a translated sentence is otherwise judged only by its numbers and titles). A start time ESPN has not confirmed
+# («TBD») has no clock at all.
+_MATCH_AUTHORITY = "espn_public_schedule"
+_MATCH_MOMENT = re.compile(
+    r"\bon (?P<weekday>monday|tuesday|wednesday|thursday|friday|saturday|sunday) (?P<year>\d{4})-(?P<month>\d{2})-"
+    r"(?P<day>\d{2})(?: at (?P<hour>\d{2}):(?P<minute>\d{2}) local time)?"
+)
+# The score read: «beat Unión (Santa Fe) 3-0 at home», «Playing now: Boca Juniors 1, Instituto (Córdoba) 0 (…)».
+_MATCH_SCORES = (
+    re.compile(r"\b(?P<own>\d{1,3})-(?P<other>\d{1,3}) (?:at home|away)\b"),
+    re.compile(r"\bplaying now: [^,]*?(?P<own>\d{1,3}), [^,(]*?(?P<other>\d{1,3})\b"),
+)
+# A score said: «3 a 0», «3-0», «112 to 108».
+_MATCH_SAID_SCORE = re.compile(r"(?<![\d:])\b(\d{1,3})\s*(?:-|–|a|to|por)\s*(\d{1,3})\b(?![\d:])")
+_MATCH_SIDE_WORDS = {
+    "at home": "local casa recibe reciben recibira host hosts hosting home",
+    "away": "visitante visita visitan visitara fuera afuera road visit visits visiting away",
+    "beat": "gano ganaron vencio vencieron derroto derrotaron victoria triunfo won win beat beating",
+    "lost to": "perdio perdieron cayo cayeron derrota lost loss losing",
+    "drew": "empato empataron empate igualo igualaron drew draw tied tie",
+}
+# A national side ESPN names in English and a Spanish report names in Spanish.
+_MATCH_SIDE_NAMES_ES = {
+    "brazil": "brasil", "germany": "alemania", "england": "inglaterra", "france": "francia", "spain": "espana",
+    "italy": "italia", "netherlands": "paises bajos holanda", "united states": "estados unidos eeuu",
+    "belgium": "belgica", "morocco": "marruecos", "japan": "japon", "switzerland": "suiza", "croatia": "croacia",
+    "denmark": "dinamarca", "sweden": "suecia", "norway": "noruega", "poland": "polonia", "scotland": "escocia",
+    "wales": "gales", "ireland": "irlanda", "turkey": "turquia", "south korea": "corea del sur",
+    "saudi arabia": "arabia saudita", "egypt": "egipto", "canada": "canada", "new zealand": "nueva zelanda",
+}
+
+
+def _match_reads(payload: dict) -> list[tuple[str, date, tuple[int, int] | None]]:
+    """The moments of ESPN's calendar read in this payload: weekday (English, folded), local date, clock (None when
+    ESPN has no confirmed start time)."""
+
+    seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    if payload.get("operation") != "web.search" or seen.get("authority") != _MATCH_AUTHORITY:
+        return []
+    reads: list[tuple[str, date, tuple[int, int] | None]] = []
+    for item in _search_results_of(payload):
+        if not isinstance(item, dict):
+            continue
+        found = _MATCH_MOMENT.search(_reading_fold(str(item.get("snippet") or "")))
+        if found is None:
+            continue
+        try:
+            day = date(int(found.group("year")), int(found.group("month")), int(found.group("day")))
+        except ValueError:
+            continue
+        clock = (int(found.group("hour")), int(found.group("minute"))) if found.group("hour") else None
+        reads.append((found.group("weekday"), day, clock))
+    return reads
+
+
+def _match_pages(payload: dict) -> str:
+    return _reading_fold("\n".join(
+        f"{item.get('title') or ''} {item.get('snippet') or ''}" for item in _search_results_of(payload)
+        if isinstance(item, dict)
+    ))
+
+
+def _match_report_grounds(payload: dict) -> str:
+    """M168: the figures and words of ESPN's read as a report in either language may say them."""
+
+    reads = _match_reads(payload)
+    if not reads:
+        return ""
+    months = {number: [name for name, value in _REPORT_MONTHS.items() if value == number] for number in range(1, 13)}
+    today = _report_today()
+    grounds: list[str] = []
+    for weekday, day, clock in reads:
+        index = _WEEKDAY_NUMBERS[weekday]
+        grounds += [_reading_fold(_WEEKDAY_NAMES["es"][index]), weekday, str(day.day), f"{day.day:02d}",
+                    str(day.year), *months[day.month]]
+        if day == today:
+            grounds.append("hoy today tonight noche")
+        elif day == today + timedelta(days=1):
+            grounds.append("manana tomorrow")
+        if clock is not None:
+            hour, minute = clock
+            dial = hour % 12 or 12
+            part = "pm p m noche tarde evening night" if hour >= 12 else "am a m manana morning"
+            grounds += [f"{hour}:{minute:02d}", f"{hour:02d}:{minute:02d}", f"{dial}:{minute:02d}", str(hour),
+                        str(dial), part, "hora local horas local time"]
+    pages = _match_pages(payload)
+    grounds += [words for said, words in _MATCH_SIDE_WORDS.items() if re.search(rf"\b{said}\b", pages)]
+    grounds += [words for name, words in _MATCH_SIDE_NAMES_ES.items() if re.search(rf"\b{name}\b", pages)]
+    return " ".join(grounds)
+
+
+def _match_report_unread(draft: str, payload: dict, user_text: str) -> list[str]:
+    """M168: what a report of ESPN's read says of the match that the read does not give: a weekday that is not the
+    match's, a clock that is not its start (or any clock when ESPN has none), a name no result, no request and no
+    Spanish name of a side writes. A weekday or clock the person said themselves is theirs to repeat."""
+
+    reads = _match_reads(payload)
+    if not reads:
+        return []
+    said = _reading_fold(user_text or "")
+    folded = _reading_fold(draft)
+    unread: list[str] = []
+    weekdays = {_WEEKDAY_NUMBERS[weekday] for weekday, _, _ in reads}
+    for found in re.finditer(rf"\b{_WEEKDAY_WORD}\b", folded):
+        if _WEEKDAY_NUMBERS[found.group(0)] not in weekdays and not re.search(rf"\b{found.group(0)}\b", said):
+            unread.append(found.group(0))
+    starts = {clock for _, _, clock in reads if clock is not None}
+    told = {(clock.hour, clock.minute) for clock in spoken_clocks(said)}
+    for clock in spoken_clocks(folded):
+        matches = any(
+            (clock.hour, clock.minute) == start if clock.resolved
+            else (clock.hour % 12, clock.minute) == (start[0] % 12, start[1])
+            for start in starts
+        )
+        if not matches and (clock.hour, clock.minute) not in told:
+            unread.append(clock.literal.strip(" .,;:!?"))
+    # The score of the match read, either side first; the day of the month is no score.
+    pages = _match_pages(payload)
+    scores = {
+        pair
+        for pattern in _MATCH_SCORES
+        for found in pattern.finditer(pages)
+        for pair in ((found.group("own"), found.group("other")), (found.group("other"), found.group("own")))
+    }
+    if scores:
+        for found in _MATCH_SAID_SCORE.finditer(folded):
+            if (found.group(1), found.group(2)) not in scores and found.group(0) not in unread:
+                unread.append(found.group(0))
+    known =set(re.findall(r"[a-z0-9]+", f"{_match_pages(payload)} {said} {_match_report_grounds(payload)}"))
+    for sentence in re.split(r"(?<=[.!?])\s+", str(draft).strip()):
+        for raw in re.findall(r"[^\W\d_][\w'’-]*", sentence)[1:]:
+            if not raw[:1].isupper():
+                continue
+            for word in re.findall(r"[a-z0-9]+", _reading_fold(raw)):
+                if (
+                    len(word) >= 3
+                    and word not in _WEEKDAY_NUMBERS
+                    and word not in _REPORT_MONTHS
+                    and not any(seen.startswith(word[:4]) for seen in known)
+                    and word not in unread
+                ):
+                    unread.append(word)
+    return unread
+
+
 def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> list[str]:
     """The words of the report that no result and no request shares.
 
@@ -10999,6 +11150,8 @@ def _search_report_unsourced_words(text: str, payload: dict, user_text: str) -> 
             # the report's wording around what was read.
             lettered = []
         words.extend(word for word in sentence.numbers + lettered if word not in words)
+    # M168: what a report of ESPN's calendar says of the match that the calendar does not give.
+    words.extend(word for word in _match_report_unread(text, payload, user_text) if word not in words)
     return words
 
 
@@ -11095,6 +11248,10 @@ def _search_report_sentences(text: str, payload: dict, user_text: str) -> list[_
     # M92 (D-w01-t3): so is what a per-unit rule read gives for the quantity asked.
     computed += " " + " ".join(item.sentence for item in semantic_quantities.rated_totals(user_text or "", results_text))
     computed += " " + births
+    # M168: the moment of a match ESPN's calendar gave, as either language says it.
+    matched = _match_report_grounds(payload)
+    computed += " " + matched
+    observed |= set(re.findall(r"[a-z]+", matched))
     # M70: the words the pages and the request write (no link, and not the query the mind sent), for the inflection
     # of a changing stem.
     written = set(re.findall(r"[a-z]+", _reading_fold(f"{page_text(results)}\n{user_text or ''}")))
@@ -11169,6 +11326,9 @@ def _search_report_sentences(text: str, payload: dict, user_text: str) -> list[_
 def _search_report_unsourced_claim(text: str, payload: dict, user_text: str) -> bool:
     """A sentence of the report states something that is neither in a result nor asked."""
 
+    if _match_reads(payload):
+        # M168 (DEV-H H-w23-t4 «ok who are the lakers playing tonight»): a match's moment is judged whoever asks it.
+        return bool(_search_report_unsourced_words(text, payload, user_text))
     if (
         _entity_lookup_query(user_text or "") is not None
         # WEB1889: la pregunta de investigacion SI es un informe, y esta
@@ -11794,7 +11954,8 @@ _SEARCH_TERM_SYNONYMS = (
     frozenset({"pasta", "pastas", "tallarines", "tallarin", "fideos", "espaguetis", "spaghetti", "macarrones",
                "noodles"}),
 )
-_SEARCH_STRUCTURED_AUTHORITIES = frozenset({"openstreetmap_nominatim", "frankfurter_reference_rates"})
+# M168: a match read from ESPN's calendar answers by construction too.
+_SEARCH_STRUCTURED_AUTHORITIES = frozenset({"openstreetmap_nominatim", "frankfurter_reference_rates", _MATCH_AUTHORITY})
 
 
 def _search_query_terms(query: str) -> list[str]:

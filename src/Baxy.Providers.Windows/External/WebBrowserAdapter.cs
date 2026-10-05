@@ -24,6 +24,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     private readonly WikipediaSearchSource _wikipedia;
     private readonly OpenStreetMapPlaceSource _places;
     private readonly FrankfurterRateSource _rates;
+    private readonly EspnScheduleSource _sports;
     private readonly WikimediaReferenceSource _references;
     private readonly SearchPageReader _pages;
     private readonly string? _searchDiagnosticPath;
@@ -74,6 +75,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _wikipedia = new WikipediaSearchSource(_http);
         _places = new OpenStreetMapPlaceSource(_http);
         _rates = new FrankfurterRateSource(_http);
+        _sports = new EspnScheduleSource(_http);
         _references = new WikimediaReferenceSource(_http);
         _pages = new SearchPageReader();
     }
@@ -82,7 +84,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CdpBrowserSession browser,
         HttpClient http,
         CdpBrowserSessionContext? sessionContext = null,
-        UserBrowserSurface? userBrowser = null)
+        UserBrowserSurface? userBrowser = null,
+        EspnScheduleSource? sports = null)
     {
         _browser = browser ?? throw new ArgumentNullException(nameof(browser));
         _http = http ?? throw new ArgumentNullException(nameof(http));
@@ -92,6 +95,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _wikipedia = new WikipediaSearchSource(_http);
         _places = new OpenStreetMapPlaceSource(_http);
         _rates = new FrankfurterRateSource(_http);
+        _sports = sports ?? new EspnScheduleSource(_http);
         _references = new WikimediaReferenceSource(_http);
         _pages = new SearchPageReader(_http);
     }
@@ -576,6 +580,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // by what the query asks, each source open and keyless, with its terms of use in
     // artifacts/comprobaciones/C03/BUSQUEDA_SIN_CLAVES_D32_2026-09-28.md:
     //   1. a conversion between two currencies → Frankfurter (FrankfurterRateSource);
+    //   1b. M168 (D77): when a named team plays next, or how its last match went → ESPN's public calendar
+    //      (EspnScheduleSource); a team it does not know, or no answer, goes on to the sources below;
     //   2. a kind of place in a named place or near this PC → OpenStreetMap Nominatim
     //      (OpenStreetMapPlaceSource);
     //   3. what changes by the day (news, prices, schedules, «hoy») → the search feed of
@@ -668,6 +674,14 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 .ReadAsync(currencies, cancellationToken).ConfigureAwait(false);
             if (rate is { Count: > 0 })
                 return SearchReceipt(operation, query, near, rate, FrankfurterRateSource.Authority);
+        }
+
+        if (near is null && EspnScheduleSource.Parse(asked) is { } match)
+        {
+            List<(string Title, string Url, string Snippet)>? fixture = await _sports
+                .ReadAsync(match, cancellationToken).ConfigureAwait(false);
+            if (fixture is { Count: > 0 })
+                return SearchReceipt(operation, query, near, fixture, EspnScheduleSource.Authority);
         }
 
         if (OpenStreetMapPlaceSource.Parse(asked, near) is { } placeAsk)
@@ -978,7 +992,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
 
     // The receipt contract the mind reads (seen.results[].title/url/snippet): one
     // shape whatever source answered; «authority» names that source
-    // (frankfurter_reference_rates, openstreetmap_nominatim, google_news_rss_search,
+    // (frankfurter_reference_rates, espn_public_schedule, openstreetmap_nominatim, google_news_rss_search,
     // wikipedia_es_api, wikipedia_en_api or duckduckgo_lite_https).
     // M62: a place read also carries each site's «distanceMeters» from the named place.
     private static ExternalCapabilityReceipt SearchReceipt(

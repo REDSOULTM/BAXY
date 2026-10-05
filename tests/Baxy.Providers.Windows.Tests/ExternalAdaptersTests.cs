@@ -3485,6 +3485,72 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // M168 (D77; DEV-G G-w42-t1 «when do the Lakers play next?» → «I could not find when the Lakers play next.»): when a
+    // named team plays is answered by ESPN's public calendar, with two requests (the team, its calendar) that carry
+    // BAXY's User-Agent, and the same question again within minutes asks nothing new.
+    [Test]
+    public async Task WhenATeamPlaysIsAnsweredByEspnsCalendar()
+    {
+        var handler = new SearchSourcesHttpHandler();
+        handler.Routes.Add(("apis/search/v2", new(HttpStatusCode.OK,
+            EspnScheduleSourceTests.Fixture("search_lakers.json"), "application/json")));
+        handler.Routes.Add(("basketball/nba/teams/13/schedule", new(HttpStatusCode.OK,
+            EspnScheduleSourceTests.Fixture("nba_lakers_schedule.json"), "application/json")));
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http, sports: new EspnScheduleSource(
+            http, static () => EspnScheduleSourceTests.Now, EspnScheduleSourceTests.Santiago));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"When do the Lakers play next?"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt again = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"When do the Lakers play next?"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("espn_public_schedule"));
+            Assert.That(receipt.Result!.Value.GetProperty("results")[0].GetProperty("snippet").GetString(),
+                Does.StartWith("Next game: Los Angeles Lakers play away against Sacramento Kings on Monday 2026-10-05 at 23:00"));
+            Assert.That(again.Result?.GetProperty("authority").GetString(), Is.EqualTo("espn_public_schedule"));
+            Assert.That(handler.Asked.Select(static asked => asked.Uri.AbsoluteUri), Is.EqualTo(new[]
+            {
+                "https://site.api.espn.com/apis/search/v2?query=lakers&limit=8&type=team",
+                "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/13/schedule",
+            }));
+            Assert.That(handler.Asked.Select(static asked => asked.UserAgent),
+                Has.All.Match(@"^BAXY/\d+\.\d+ \(https://github\.com/REDSOULTM/baxy-assistant\)$"));
+        });
+    }
+
+    // M168: a team ESPN does not know leaves the search as it was (here every other source is unreachable, so it could
+    // not be looked up); nothing is answered from ESPN.
+    [Test]
+    public async Task ATeamEspnDoesNotKnowGoesOnToTheOtherSources()
+    {
+        var handler = new SearchSourcesHttpHandler();
+        handler.Routes.Add(("apis/search/v2", new(HttpStatusCode.OK,
+            EspnScheduleSourceTests.Fixture("search_xyzzy.json"), "application/json")));
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(handler);
+        using var adapter = new WebBrowserAdapter(browser, http, sports: new EspnScheduleSource(
+            http, static () => EspnScheduleSourceTests.Now, EspnScheduleSourceTests.Santiago));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"When do the Xyzzy Quux play next?"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("web_search_unavailable"));
+            Assert.That(handler.Asked[0].Uri.AbsoluteUri,
+                Is.EqualTo("https://site.api.espn.com/apis/search/v2?query=xyzzy%20quux&limit=8&type=team"));
+            Assert.That(handler.Asked.Skip(1).Select(static asked => asked.Uri.Host), Has.None.EqualTo("site.api.espn.com"));
+        });
+    }
+
     [Test]
     public void ACurrencyAskNeedsTwoCurrenciesAndNoInformalRate()
     {
