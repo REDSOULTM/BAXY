@@ -960,3 +960,12 @@ del partido» (≈5 filas en G/H/I; probablemente 3–4 en DEV-E). Opciones: API
 NBA, fútbol europeo y sudamericano, no es una API oficial documentada), el navegador del dueño (la vía general de D32,
 con captchas en su red) o dejarlo así. **Decisión del dueño: API pública de ESPN.** Encaja en D32: sin clave ni cuenta,
 uso personal no comercial a ritmo humano; si no responde o no cubre la liga, BAXY lo dice y ofrece el navegador como hoy.
+
+## D78. Avisos sobre la hora real que dio BAXY (dueño, 2026-10-05 ~12:40)
+Con ESPN (D77), BAXY da la hora real del partido y el aviso que sigue se calcula sobre ella (G-w42: «…the Sacramento Kings
+on Monday at 23:00» → «remind me half an hour before that» → 22:30), pero el oro conserva la hora inventada del guion
+escrito (19:00). **Decisión del dueño:** cuenta como acierto, como D71. En el puntuador (capa D61; la estricta se sigue
+informando): un aviso de una conversación, con la operación bien decidida, cuenta si suena exactamente en la única hora
+que dio la respuesta anterior de BAXY en esa conversación vivida menos la única antelación que pidió la persona («media
+hora antes», «20 minutes before», «una hora antes»). Sin antelación, con dos horas en la respuesta o con otra hora, no
+cuenta. v5b: DEV-E +2 (264 → 266), DEV-G +1; v4z +0.

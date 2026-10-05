@@ -149,6 +149,85 @@ def equivalent_forms(haystack: str) -> str:
     return " | ".join([haystack, *extra])
 
 
+# D78 (owner, 2026-10-05): BAXY now gives real match times (ESPN, D77), so «remind me half an hour before that» after
+# «…on Monday at 23:00» rings at 22:30 while the gold keeps the written conversation's invented clock (19:00). A reminder
+# anchored to the moment BAXY itself said in the lived conversation counts when it is exactly that moment less the
+# advance the person asked; one clock in BAXY's previous reply, one advance in the message, or nothing is counted.
+_ADVANCE_SAID = re.compile(r"\b(?:antes|before|ahead)\b")
+_LENGTH_WORDS = {
+    "cinco": 5, "five": 5, "diez": 10, "ten": 10, "quince": 15, "fifteen": 15, "veinte": 20, "twenty": 20,
+    "treinta": 30, "thirty": 30, "cuarenta": 40, "forty": 40, "cuarenta y cinco": 45, "forty five": 45,
+}
+_MINUTES_SAID = re.compile(
+    r"\b(?P<n>\d{1,3}|" + "|".join(sorted(_LENGTH_WORDS, key=len, reverse=True)) + r")\s*(?:minutos?|minutes?|mins?|min)\b"
+)
+_HOURS_SAID = re.compile(r"\b(?P<n>\d{1,2}|dos|two|tres|three)\s*(?:horas?|hours?)\b")
+_CLOCK_SAID = re.compile(
+    r"\b(?P<h>\d{1,2})(?::(?P<m>\d{2}))?\s*(?P<ap>a\.?\s?m\.?|p\.?\s?m\.?)?(?![\d:])"
+)
+
+
+def _advance_minutes(text: str) -> int | None:
+    """The advance a reminder request asks for, in minutes («media hora antes», «20 minutes before»), or None."""
+    folded = fold(text).replace("-", " ")
+    if not _ADVANCE_SAID.search(folded):
+        return None
+    found = []
+    for pattern, minutes in _SPOKEN_LENGTHS:
+        # Longest first in _SPOKEN_LENGTHS; a matched length is taken out so «half an hour» is not also «an hour».
+        if re.search(pattern, folded):
+            found.append(minutes)
+            folded = re.sub(pattern, " ", folded)
+    found += [int(m["n"]) if m["n"].isdigit() else _LENGTH_WORDS[m["n"]] for m in _MINUTES_SAID.finditer(folded)]
+    hours = {"dos": 2, "two": 2, "tres": 3, "three": 3}
+    found += [60 * (int(m["n"]) if m["n"].isdigit() else hours[m["n"]]) for m in _HOURS_SAID.finditer(folded)]
+    return found[0] if len(set(found)) == 1 else None
+
+
+def _clock_said(reply: str) -> int | None:
+    """The one clock (minutes of the day) BAXY's reply gives — «at 23:00», «a las 21:30», «8pm» — or None."""
+    clocks = set()
+    for m in _CLOCK_SAID.finditer(fold(reply)):
+        if m["m"] is None and m["ap"] is None:
+            continue
+        hour, minute = int(m["h"]), int(m["m"] or 0)
+        if hour > 23 or minute > 59:
+            continue
+        ap = (m["ap"] or "").replace(".", "").replace(" ", "")
+        if ap == "pm" and hour < 12:
+            hour += 12
+        elif ap == "am" and hour == 12:
+            hour = 0
+        clocks.add(hour * 60 + minute)
+    return clocks.pop() if len(clocks) == 1 else None
+
+
+def _scheduled_clocks(record: dict[str, Any]) -> set[int]:
+    """The local clocks (minutes of the day) the turn's reminders were set for."""
+    clocks = set()
+    for value in (record.get("arguments") or {}).values():
+        for item in (value or {}).get("seen") or [] if isinstance(value, dict) else []:
+            seen = item.get("seen") if isinstance(item, dict) else None
+            text = str((seen or {}).get("scheduledLocalTime") or "")
+            m = re.fullmatch(r"(\d{1,2}):(\d{2})", text)
+            if m:
+                clocks.add(int(m[1]) * 60 + int(m[2]))
+    return clocks
+
+
+def anchored_to_what_baxy_said(row: dict[str, Any], record: dict[str, Any], previous: dict[str, Any] | None) -> bool:
+    """D78: the reminder rings at the moment BAXY's previous reply gave, less the advance asked (see above)."""
+    if previous is None or not verdict(row, record)[0]:
+        return False
+    if not any(label.split(":", 1)[-1] in ("notification.schedule", "reminder.create") for label in row["gold"]):
+        return False
+    advance = _advance_minutes(str(row.get("text") or ""))
+    moment = _clock_said(str(previous.get("reply") or ""))
+    if advance is None or moment is None:
+        return False
+    return (moment - advance) % 1440 in _scheduled_clocks(record)
+
+
 def verdict_equivalent(row: dict[str, Any], record: dict[str, Any]) -> tuple[bool, bool]:
     """``verdict`` with D71's equivalent forms of the arguments (the decision is judged the same)."""
     if not record or "error" in record:
@@ -488,6 +567,13 @@ def _d61_lines(
             # D73: the question the gold accepts, asked from an action short of a value.
             decided, right = True, True
             cause[row["id"]] = "D73"
+        if not right and row.get("kind") == "conv" and "-t" in str(row["id"]):
+            stem, turn = str(row["id"]).rsplit("-t", 1)
+            previous = records.get(f"{stem}-t{int(turn) - 1}") if turn.isdigit() else None
+            if anchored_to_what_baxy_said(row, record, previous):
+                # D78: the reminder before the moment BAXY itself said in the lived conversation.
+                decided, right = True, True
+                cause[row["id"]] = "D78"
         if not right and verdict_equivalent(row, record)[1]:
             # D71 (owner, 2026-10-03): the datum done, said another way.
             decided, right = True, True
@@ -510,10 +596,10 @@ def _d61_lines(
     counts = Counter(cause.values())
     lines = [
         f"  con D61 ({sources}): +{len(cause)} turnos (aceptadas {counts['aceptada']}, D35 {counts['D35']}; "
-        f"D71 mismo dato dicho de otra forma {counts['D71']}; D73 preguntó lo que el oro acepta {counts['D73']}; "
+        f"D71 mismo dato dicho de otra forma {counts['D71']}; D73 preguntó lo que el oro acepta {counts['D73']}; D78 aviso sobre la hora que dio BAXY {counts['D78']}; "
         f"turnos con consulta D35 en la auditoría {len(looked_up & set(records))})"
     ]
-    summary["d61"] = {"accepted": counts["aceptada"], "d35": counts["D35"], "d71": counts["D71"], "d73": counts["D73"],
+    summary["d61"] = {"accepted": counts["aceptada"], "d35": counts["D35"], "d71": counts["D71"], "d73": counts["D73"], "d78": counts["D78"],
                       "d35_lookups": len(looked_up & set(records))}
     for name, subset in groups.items():
         right = sum(alternative[row["id"]][1] for row in subset)
