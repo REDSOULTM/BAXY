@@ -2186,15 +2186,34 @@ _MEDIA_SITE_SUFFIX = re.compile(r"\s+[-—–|]\s+youtube(?:\s+music)?\s*$", re.
 _MEDIA_TITLE_DECORATION = re.compile(r"\([^()]*\)|\[[^\[\]]*\]")
 _MEDIA_TITLE_PART = re.compile(r"\s+[-—–|]\s+")
 _MEDIA_TITLE_PERFORMERS = re.compile(r"\s*[&,+/]\s*|\s+(?:feat\.?|ft\.?|featuring|x|y|and|con|with)\s+", re.IGNORECASE)
+# M172 (DEV-I v5b I-s047 «ponme algo de Mon Laferte en el spotify» → «Mon Laferte - Mi Buen Amor - Desde El Teatro Fru
+# Fru», I-s049 «what's this song called?»): a part after the first that only says which recording it is («En Vivo»,
+# «Live at Wembley», «2011 Remaster», «Radio Edit», «Versión Acústica», «Desde El Teatro Fru Fru») is not a name the
+# reply owes; «"Mi Buen Amor" de Mon Laferte» names the song. A part that could be a title of its own («Live Forever»,
+# «Desde que te fuiste», «Desde el alma», «Stereo») is not a version: «desde»/«from» counts only before a venue. Over
+# the folded part, whole.
+_MEDIA_TITLE_VERSION = re.compile(
+    r"(?:\d{4}\s+)?(?:remaster(?:ed|izad[oa])?|remasterizacion)(?:\s+(?:version|\d{4}))?(?:\s+\d{4})?"
+    r"|(?:en\s+vivo|ao\s+vivo|en\s+directo|live|acoustic|acustic[oa]|unplugged|radio\s+edit|single\s+(?:version|edit)|"
+    r"bonus\s+track|sped\s+up|slowed(?:\s+(?:and\s+)?reverb)?)(?:\s+(?:version|mix))?"
+    r"|versi[oó]n\s+\w+(?:\s+\w+)?"
+    r"|(?:\w+\s+){1,2}(?:version|remix|edit)"
+    r"|(?:live|en\s+vivo|ao\s+vivo|en\s+directo)\s+(?:at|from|in|en|desde|de)\s+.+"
+    r"|(?:desde|from|grabado\s+en|recorded\s+(?:at|in|live\s+at))\s+(?:\w+\s+){0,3}?"
+    r"(?:teatro|estadio|auditorio|arena|palacio|festival|sala|club|estudio|studio|hall|theatre|theater|stadium|"
+    r"garden|coliseo|foro|concierto|concert|gira|tour)\b.*"
+)
 
 
-def _media_title_names(title: str) -> list[str]:
+def _media_title_names(title: str, *, owed_only: bool = False) -> list[str]:
     """The names in a played title: its parts between « - » without the tab's site or bracketed decoration
-    («(Official Video 1987 Remastered)»), each performer apart («Freddie Mercury & Montserrat Caballé»)."""
+    («(Official Video 1987 Remastered)»), each performer apart («Freddie Mercury & Montserrat Caballé»).
+    ``owed_only`` leaves out a later part that only names the recording (M172)."""
 
     video = _MEDIA_SITE_SUFFIX.sub("", title).strip() or title
     return [
-        name for part in _MEDIA_TITLE_PART.split(_MEDIA_TITLE_DECORATION.sub(" ", video))
+        name for index, part in enumerate(_MEDIA_TITLE_PART.split(_MEDIA_TITLE_DECORATION.sub(" ", video)))
+        if not (owed_only and index and _MEDIA_TITLE_VERSION.fullmatch(_title_fold(part)))
         for name in _MEDIA_TITLE_PERFORMERS.split(part) if _title_fold(name).split()
     ]
 
@@ -2213,7 +2232,7 @@ def _names_media_title(text: str, title: str, *, by_parts: bool) -> bool:
     whole = [_title_words_pattern(title), _title_words_pattern(_MEDIA_SITE_SUFFIX.sub("", title))]
     if any(pattern and re.search(pattern, folded) for pattern in whole):
         return True
-    names = [_title_words_pattern(name) for name in _media_title_names(title)] if by_parts else []
+    names = [_title_words_pattern(name) for name in _media_title_names(title, owed_only=True)] if by_parts else []
     return bool(names) and all(pattern and re.search(pattern, folded) for pattern in names)
 
 
@@ -15802,6 +15821,34 @@ def _observed_identifier_tokens(situation: dict) -> set[str]:
     return tokens
 
 
+_REPEATED_WORD = re.compile(r"\b(\w+)(?:\s+\1){1,}\b")
+
+
+def _observed_repeated_words(situation: dict) -> set[str]:
+    """M172 (DEV-I v5b I-s049 «what's this song called?» over «Mi Buen Amor - Desde El Teatro Fru Fru»): the words a
+    verified result observed already repeated («fru fru», «bora bora»), casefolded. Saying them is data, not a stutter.
+    Twin: UserMessagePolicy.ObservedRepeatedWords."""
+
+    words: set[str] = set()
+    if situation.get("verified") is not True:
+        return words
+
+    def walk(value: object, depth: int = 0) -> None:
+        if depth > 6:
+            return
+        if isinstance(value, str):
+            words.update(found.group(1) for found in _REPEATED_WORD.finditer(value.casefold()))
+        elif isinstance(value, dict):
+            for child in value.values():
+                walk(child, depth + 1)
+        elif isinstance(value, (list, tuple)):
+            for child in value:
+                walk(child, depth + 1)
+
+    walk(_merged_observed(situation))
+    return words
+
+
 # Typed causes whose fact is that a source did not answer: saying so is the cause, not an invented non-answer.
 _NON_ANSWER_CAUSES = frozenset({
     "download_source_unavailable", "weather_service_unavailable", "time_place_service_unavailable",
@@ -16510,8 +16557,10 @@ def compose_visible_defect(
     if cause == "timeout" and "trajo" in folded:
         return "invented"
     # Two observed windows titled «Configuración» on consecutive list lines
-    # are data, not a stutter (WINDOWS1209/000).
-    if re.search(r"\b(\w+)(?:\s+\1){1,}\b", vocabulary_text.casefold()):
+    # are data, not a stutter (WINDOWS1209/000). M172: so is a word the verified result observed repeated
+    # («"Mi Buen Amor - Desde El Teatro Fru Fru"», quoted in part or reordered, which the whole-name mask misses).
+    repeated = {found.group(1) for found in _REPEATED_WORD.finditer(vocabulary_text.casefold())}
+    if repeated and not repeated <= _observed_repeated_words(situation):
         return "invented"
     if re.match(r"^\s*(?:say|di|use|usa)\b", folded):
         return "copied_instruction"
@@ -17709,7 +17758,12 @@ def compose_visible_defect(
                     # MUSIC1573 «poné una canción» → «Bad Bunny»: «Estoy viendo el
                     # video «…» en YouTube» states the playback of the video the
                     # product itself announced; watching is the playing state here.
-                    + (r"|viendo|watching" if operation == "media.play.youtube" else "") + r")|"
+                    + (r"|viendo|watching" if operation == "media.play.youtube" else "")
+                    # M172 (DEV-I v5b I-s047 «He iniciado la reproducción de "Mi Buen Amor" de Mon Laferte en
+                    # Spotify.», missing_state): starting the playback the result verified playing says that state;
+                    # the auxiliary is part of it so «no he iniciado…» stays a negation.
+                    + r"|(?:(?:he|hemos|ha)\s+)?(?:iniciado|inici[eé]|comenzado|comenc[eé]|empezado|empec[eé])\s+"
+                    r"(?:la\s+reproducci[oó]n|a\s+(?:reproducir|sonar))" + r")|"
                     # Uso real 2026-09-23 «para de reproducir»: «La reproducción
                     # se detuvo», «Dejé de reproducir» say the verified stop with a
                     # verb, not an adjective, and both drafts died in missing_state.

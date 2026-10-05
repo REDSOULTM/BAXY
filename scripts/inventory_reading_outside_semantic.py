@@ -153,6 +153,10 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
         "GROUNDING",
         "A7 E4: identifiers inside observed values, so a fragment of an observed title is not internal code",
     ),
+    ("llm.py", "_observed_repeated_words.walk"): (
+        "GROUNDING",
+        "M172: words an observed value already repeats («Fru Fru»), so saying them is not a stutter",
+    ),
     ("llm.py", "_said_misspelled"): (
         "GROUNDING",
         "A7 E1: a name in the reply checked against a word the person wrote with a typo",
