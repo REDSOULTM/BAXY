@@ -4596,8 +4596,21 @@ def _retimed_step_arguments(
 ) -> dict[str, object] | None:
     """M76: the arguments of one step of moving the notification just set, or None for another step."""
 
+    if retimed.set_by == "reminder.create" and operation.startswith("notification."):
+        # M173: a reminder of the store is in no Task Scheduler; notification.cancel.* never takes it.
+        return None
     if operation == "notification.cancel.latest":
         arguments: dict[str, object] | None = {"kind": retimed.kind}
+    elif operation == "reminder.resolve.exact" and retimed.set_by == "reminder.create":
+        # M173: the reminder of the store just made, found by its exact title as verified, to be deleted after it.
+        arguments = {"title": retimed.set_title}
+    elif operation == "reminder.create" and retimed.set_by == "reminder.create":
+        # M173: made again with what it was for and the new moment.
+        due = retimed.schedule_arguments["dueUtc"]
+        read_at = retimed.read_at.astimezone(timezone.utc) if retimed.read_at is not None else None
+        arguments = _normalize_grounded_operation_arguments(
+            operation, {"dueUtc": due, "title": retimed.schedule_arguments["title"]}, due, now_utc=read_at,
+        )
     elif operation == "notification.cancel.at" and retimed.cancel_at_request:
         # The clock is read as a cancellation reads it; the kind is the one verified (a reminder is not an alarm).
         arguments = _ground_explicit_arguments(operation, retimed.cancel_at_request, schema)
@@ -6323,19 +6336,113 @@ def _context_decided_result(
 
 
 _MOVED_NOTIFICATION_PLAN = ("notification.cancel.latest", "notification.schedule")
+# M173: the steps of a planned move of a notice — taking it off, and setting it again.
+_NOTICE_CANCELS = frozenset({"notification.cancel.at", "notification.cancel.latest", "reminder.delete"})
+_NOTICE_SETS = frozenset({"notification.schedule", "reminder.create"})
 
 
-def _moved_notification_result(message: dict[str, Any], request: str) -> dict[str, Any]:
+def _retimed_conversation_notice(
+    dialogue_state: dialogue_slot.DialogueState, history: object, objective: str, *, deciding: bool = False,
+) -> dialogue_slot.RetimedNotification | None:
+    """M115/M173: the notice the last turn set, as a planned move of it moves it: its new time is the one the person's
+    message gives (a clock, a new count from the same moment), or the moment it counts from what BAXY said in this
+    conversation («30 min antes del partido», M110/M168 ``anchored_offset_request``), or else the one the restatement
+    says. None unless the last turn verified setting it and one of them gives a new time."""
+
+    person = _person_message(history, objective)
+    lines = [str(item.get("content") or "") for item in reversed(history if isinstance(history, list) else [])
+             if isinstance(item, dict)]
+    replies = [
+        str(item.get("content") or "") for item in reversed(history if isinstance(history, list) else [])
+        if isinstance(item, dict) and item.get("role") == "assistant"
+    ]
+    anchored = semantic_temporal.anchored_offset_request(
+        person, replies[0] if replies else None, [line for line in lines if line != person],
+    )
+    for said in dict.fromkeys(said for said in (person, anchored, objective) if said):
+        moved = dialogue_state.retimed_notification(said, deciding=deciding, moving=True)
+        if moved is not None:
+            return moved
+    return None
+
+
+def _own_notice_moved(
+    result: dict[str, Any],
+    message: dict[str, Any],
+    dialogue_state: dialogue_slot.DialogueState | None,
+    tool_by_name: dict[str, dict],
+) -> dict[str, Any]:
+    """M173 (DEV-I v5c I-w40-t2 «hmm, push it to 6:45 instead», I-w12-t5 «uh no, correla a 30 min antes del partido…»,
+    I-w04-t2 «actually make it half three», DEV-F v5c F-w55-t2 «no, mejor media hora antes, una hora es mucho»): the
+    decider planned the move right (cancel + set again), but the plan cancelled at the old clock
+    (``notification.cancel.at``), which the run's store held more than once («I couldn't cancel the alarm or
+    reminder.»), or the notice was a reminder of BAXY's store (``reminder.create``), which notification.cancel.* never
+    reads («¿A qué hora y qué tipo de notificación…?»). A planned move of the notice the last turn set, with its new
+    time read (``_retimed_conversation_notice``), moves THAT one by how it was set: the latest of its kind cancelled
+    and set again while it is the last one of its kind this conversation set and it still has to ring (M145), or the
+    reminder of the store deleted by its exact title and made again. A move that names another notice by its clock,
+    and anything else, stays as decided."""
+
+    if dialogue_state is None or result.get("kind") != "plan":
+        return result
+    effects = tuple(str(operation) for operation in result.get("effectOperations") or ())
+    if len(effects) != 2 or effects[0] not in _NOTICE_CANCELS or effects[1] not in _NOTICE_SETS:
+        return result
+    moved = _retimed_conversation_notice(
+        dialogue_state, message.get("history"), str(result.get("objective") or ""), deciding=True,
+    )
+    if moved is None or moved.set_at is None:
+        return result
+    due = moved.schedule_arguments.get("dueUtc") or ""
+    try:
+        new = (
+            None if due.startswith(("in ", "en "))
+            else datetime.fromisoformat(due.replace("Z", "+00:00")).astimezone(moved.set_at.tzinfo)
+        )
+    except ValueError:
+        return result
+    person = _person_message(message.get("history"), str(message.get("text", "")))
+    if any(
+        semantic_temporal.names_another_notice(said, moved.set_at, new)
+        for said in (person, str(result.get("objective") or ""))
+    ):
+        # «y la de las 7 pásala a las 8» right after one set at 6:30: another notice, named by its clock.
+        return result
+    operations = moved.moving_operations
+    needed = (*operations, "reminder.resolve.exact") if moved.set_by == "reminder.create" else operations
+    if operations == effects or any(operation not in tool_by_name for operation in needed):
+        return result
+    if moved.set_by != "reminder.create" and not dialogue_state.own_notification_at(moved.kind, None):
+        return result
+    kept = {**result, "effectOperations": list(operations), "intentOperations": list(operations)}
+    _append_turn_audit(
+        {
+            "schema": "baxy.mind-turn-audit.v1",
+            "request_id": message.get("id"),
+            "phase": "final",
+            "decision_path": "own_notice_moved",
+            "raw_decision": {"mode": "action", "request": kept.get("objective"), "effect_operations": list(operations)},
+            "stages": [],
+            "final": {"kind": "plan", "intent_operations": list(operations), "effect_operations": list(operations)},
+        }
+    )
+    return kept
+
+
+def _moved_notification_result(
+    message: dict[str, Any], request: str, operations: tuple[str, ...] = _MOVED_NOTIFICATION_PLAN,
+) -> dict[str, Any]:
     """M102: the turn that moves the notification just set — cancel the latest of its kind and set it again — as the
-    plan the shell runs, with ``request`` (``DialogueState.moved_notification_request``) as its objective."""
+    plan the shell runs, with ``request`` (``DialogueState.moved_notification_request``) as its objective. M173: a
+    reminder of the store is deleted and made again instead (``operations``, ``DialogueState.moving_operations``)."""
 
     result: dict[str, Any] = {
         "type": "turn.result",
         "id": message.get("id"),
         "kind": "plan",
         "operation": None,
-        "intentOperations": list(_MOVED_NOTIFICATION_PLAN),
-        "effectOperations": list(_MOVED_NOTIFICATION_PLAN),
+        "intentOperations": list(operations),
+        "effectOperations": list(operations),
         "question": "",
         "reply": "",
         "objective": request,
@@ -6349,12 +6456,12 @@ def _moved_notification_result(message: dict[str, Any], request: str) -> dict[st
             "request_id": message.get("id"),
             "phase": "final",
             "decision_path": "moved_notification",
-            "raw_decision": {"mode": "action", "request": request, "effect_operations": list(_MOVED_NOTIFICATION_PLAN)},
+            "raw_decision": {"mode": "action", "request": request, "effect_operations": list(operations)},
             "stages": [],
             "final": {
                 "kind": "plan",
-                "intent_operations": list(_MOVED_NOTIFICATION_PLAN),
-                "effect_operations": list(_MOVED_NOTIFICATION_PLAN),
+                "intent_operations": list(operations),
+                "effect_operations": list(operations),
             },
         }
     )
@@ -6742,19 +6849,25 @@ def _prepare_turn_result(
             # M102 (DEV-D v3z D-w18-t5 «wait no, make it una hora»): the notification the last turn set is moved
             # (cancelled and set again), never a second one beside it; the plan takes its arguments from the dialogue
             # state (``_retimed_step_arguments``).
-            return _moved_notification_result(message, moved)
+            return _moved_notification_result(message, moved, dialogue_state.moving_operations())
         # M145: a cancellation at the clock of the notification this conversation set is of that one.
-        return _own_notification_cancellation(
-            _decide_turn_result(
+        # M173: a planned move of the notice the last turn set moves that one, by how it was set.
+        return _own_notice_moved(
+            _own_notification_cancellation(
+                _decide_turn_result(
+                    message,
+                    llm=llm,
+                    planner_catalog=planner_catalog,
+                    encoder=encoder,
+                    tool_by_name=tool_by_name,
+                    application_names=application_names,
+                    game_catalog=game_catalog,
+                    on_signal=on_signal,
+                    in_conversation=True,
+                ),
                 message,
-                llm=llm,
-                planner_catalog=planner_catalog,
-                encoder=encoder,
-                tool_by_name=tool_by_name,
-                application_names=application_names,
-                game_catalog=game_catalog,
-                on_signal=on_signal,
-                in_conversation=True,
+                dialogue_state,
+                tool_by_name,
             ),
             message,
             dialogue_state,
@@ -9755,20 +9868,19 @@ def _run_sidecar(
                 # last turn set takes its new time from the person's message and the rest from what was verified.
                 retimed = (
                     dialogue_state.retimed_notification(_person_message(history, objective))
-                    if "notification.schedule" in expected_operations
+                    if set(expected_operations) & _NOTICE_SETS
                     else None
                 )
                 if (
                     retimed is None
-                    and "notification.schedule" in expected_operations
-                    and set(expected_operations) & {"notification.cancel.at", "notification.cancel.latest"}
+                    and set(expected_operations) & _NOTICE_SETS
+                    and set(expected_operations) & _NOTICE_CANCELS
                 ):
                     # M115 (DEV-F v4e2 F-w12-t2, F-w15-t4, F-w07-t4): the plan already moves the notification just set;
                     # its new time is the one clock the person said, or else the one the restatement says, and the
                     # rest (its kind, what it is for, the old time to cancel) is what was verified setting it.
-                    retimed = dialogue_state.retimed_notification(
-                        _person_message(history, objective), moving=True,
-                    ) or dialogue_state.retimed_notification(objective, moving=True)
+                    # M173: or the reminder of the store just made, and the moment counted from what BAXY said.
+                    retimed = _retimed_conversation_notice(dialogue_state, history, objective)
                 enumerated_note_arguments = _fully_enumerated_note_create_arguments(
                     objective
                 )

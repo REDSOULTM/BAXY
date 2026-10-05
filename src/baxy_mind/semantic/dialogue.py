@@ -1660,6 +1660,22 @@ class RetimedNotification:
     # The moment it was read at: the new time is checked to be ahead of that same clock, so one turn uses one «now»
     # (the M76 tests pinned 2026-09-29 and broke on 2026-09-30 against the machine's clock).
     read_at: datetime | None = None
+    # M173: how it was set — an alarm or reminder of the Task Scheduler (``notification.schedule``, cancelled with
+    # ``notification.cancel.*``) or a reminder of BAXY's own store (``reminder.create``, deleted by its exact title,
+    # ``set_title``, and created again).
+    set_by: str = "notification.schedule"
+    set_title: str = ""
+    # M173: when it was to ring, local: a move that names another notice by its clock is not of this one.
+    set_at: datetime | None = None
+
+    @property
+    def moving_operations(self) -> tuple[str, str]:
+        """M173: the plan that moves it, by how it was set: the latest of its kind cancelled and set again, or the
+        reminder of the store deleted and created again. Never another notice."""
+
+        if self.set_by == "reminder.create":
+            return ("reminder.delete", "reminder.create")
+        return ("notification.cancel.latest", "notification.schedule")
 
 
 class DialogueState:
@@ -1771,8 +1787,22 @@ class DialogueState:
                 self._notification = {key: observed[key] for key in ("kind", "title", "dueUtc")}
                 # M113: the request that set it, for a later «mejor media hora antes» counted from the same moment.
                 self._notification["request"] = request
+                self._notification["set_by"] = operation
         elif operation == "reminder.create":
             self._facts["reminder"] = str(observed.get("title") or request)
+            if (
+                all(isinstance(observed.get(key), str) and observed[key].strip() for key in ("title", "dueUtc"))
+                and not observed.get("deleted")
+            ):
+                # M173 (DEV-F v5c F-w55-t2 «no, mejor media hora antes, una hora es mucho», DEV-I v5c I-w04-t2 «actually
+                # make it half three», each right after a reminder BAXY made with reminder.create → «¿A qué hora y qué
+                # tipo de notificación…?»): the reminder of the store just made is the notice the conversation moves, as
+                # an alarm set by notification.schedule is; it is moved by its own operations (deleted by its exact
+                # title, created again), never by notification.cancel.*, which reads only the Task Scheduler.
+                self._notification = {
+                    "kind": "reminder", "title": observed["title"], "dueUtc": observed["dueUtc"], "request": request,
+                    "set_by": operation,
+                }
         elif operation == "notification.list" and plural_alarm_cancellation(request):
             self._alarm_offer = _alarm_clocks(observed)
         elif operation in _TASK_WRITES:
@@ -1931,7 +1961,8 @@ class DialogueState:
 
         retiming = notification_retiming(text)
         set_by = self.operations if deciding else self.previous_operations
-        if self._notification is None or "notification.schedule" not in set_by:
+        # M173: or the reminder of the store the last turn made (``reminder.create``).
+        if self._notification is None or self._notification.get("set_by", "notification.schedule") not in set_by:
             return None
         # M113 (DEV-F v4d F-w55-t2 «no, mejor media hora antes, una hora es mucho» after «…a las 10…, recordámelo una
         # hora antes»): a new count before or after the same moment moves the notification by the difference.
@@ -1974,7 +2005,11 @@ class DialogueState:
             if moment is None:
                 return None
             due = moment.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
-        return RetimedNotification(kind, cancel_at, {"dueUtc": due, "kind": kind, "title": title}, now)
+        return RetimedNotification(
+            kind, cancel_at, {"dueUtc": due, "kind": kind, "title": title}, now,
+            set_by=self._notification.get("set_by", "notification.schedule"), set_title=self._notification["title"],
+            set_at=old,
+        )
 
     def moved_notification_request(
         self, text: str, *, now: datetime | None = None, zone: timezone | None = None,
@@ -2010,10 +2045,20 @@ class DialogueState:
             new = datetime.fromisoformat(due.replace("Z", "+00:00")).astimezone(zone)
             when = f"at {new:%H:%M}" if english else f"a las {new:%H:%M}"
         title = moved.schedule_arguments["title"]
+        # M173: a reminder of the store is deleted (to its recoverable trash) and made again, never «cancelled».
+        made = moved.set_by == "reminder.create"
         if english:
-            return f"cancel the {moved.kind} «{title}» set for {old:%H:%M} and set it again {when}"
+            verb = "delete" if made else "cancel"
+            return f"{verb} the {moved.kind} «{title}» set for {old:%H:%M} and set it again {when}"
         noun, pronoun = ("el recordatorio", "lo") if moved.kind == "reminder" else ("la alarma", "la")
-        return f"cancela {noun} «{title}» de las {old:%H:%M} y vuelve a poner{pronoun} {when}"
+        return f"{'borra' if made else 'cancela'} {noun} «{title}» de las {old:%H:%M} y vuelve a poner{pronoun} {when}"
+
+    def moving_operations(self) -> tuple[str, str]:
+        """M173: the plan that moves the notice this conversation last set
+        (``RetimedNotification.moving_operations``)."""
+
+        made = self._notification.get("set_by") if self._notification is not None else None
+        return RetimedNotification("reminder", None, {}, set_by=made or "notification.schedule").moving_operations
 
     def pointed_listed_title(self, text: str) -> str | None:
         """M76 (DEV-D v3l D-w17-t2 «mark the first one done» after «You have 13 tasks on your list, including
