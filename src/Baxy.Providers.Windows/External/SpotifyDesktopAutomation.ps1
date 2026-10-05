@@ -115,6 +115,31 @@ function Test-BaxySpotifyRepress([int]$Presses,[double]$SincePressMilliseconds,[
     # now-playing identity are exactly as before the press.
     return $Presses -eq 1 -and $SincePressMilliseconds -ge 5000 -and $ControlStillPlayable -and -not $SelectedFlipped -and $Pause -eq $PauseBefore -and $Observed -eq $Before
 }
+# M169 (v5a-devG/devI «salsa», «Soda Stereo», «reggaetón», «música para cocinar»:
+# 19 of 43 searches ended in spotify_exact_result_not_found after the whole 12 s
+# with not one playable control on the page). A client whose accessibility tree
+# is still being built exposes the top bar (the search combo) seconds before the
+# page under it: the cold traces read 25-340 elements and no «Reproducir…» for
+# 4-6 s, then about 1 000.
+function Test-BaxySpotifyContentExposed([bool]$ColdStart,[bool]$PlayableSeen){
+    # Discovery may end on the combo alone only for a client that was already
+    # up; a client this request launched also waits (inside the same discovery
+    # horizon) for its page to expose a playable control before searching.
+    return -not $ColdStart -or $PlayableSeen
+}
+function Get-BaxySpotifySearchPageSeconds([bool]$SnapshotReady){
+    # A page that already shows a result or a play control keeps the 12 s
+    # horizon; one that shows nothing playable at all is still being built (or
+    # its search did not land) and gets 20 s.
+    if($SnapshotReady){return 12}
+    return 20
+}
+function Test-BaxySpotifyResearch([int]$Searches,[double]$SinceSearchMilliseconds,[bool]$SnapshotReady){
+    # One bounded re-issue of the same search URI, only when eight seconds after
+    # the first one the page still shows nothing to play. Nothing was pressed
+    # yet, so re-navigating can never repeat an effect.
+    return $Searches -eq 1 -and $SinceSearchMilliseconds -ge 8000 -and -not $SnapshotReady
+}
 # END playback-evidence
 function Read-BaxySpotifySearchValue([Windows.Automation.AutomationElement]$searchElement){
     $controls=@($searchElement)
@@ -141,9 +166,14 @@ function Read-BaxySpotifySearchValue([Windows.Automation.AutomationElement]$sear
     return $null
 }
 try {
+    # M169: a client with no window yet, or whose process started under a
+    # minute ago, is launching now: its accessibility tree is still partial.
+    $settledSince=(Get-Date).AddSeconds(-60)
+    $coldStart=$null -eq (Get-Process Spotify -ErrorAction SilentlyContinue|Where-Object {$_.MainWindowHandle -ne 0 -and $(try{$_.StartTime -lt $settledSince}catch{$true})}|Select-Object -First 1)
     Start-Process 'spotify:'
     $process=$null
     $search=$null
+    $playableSeen=$false
     # The former 500 ms blind startup pause plus 12 s discovery window are
     # retained as one 12.5 s terminal horizon. Observe immediately so a warm
     # client does not pay either pause.
@@ -154,10 +184,10 @@ try {
             try {
                 $root=[Windows.Automation.AutomationElement]::FromHandle($process.MainWindowHandle)
                 $all=$root.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.Condition]::TrueCondition)
-                foreach($element in $all){try{$name=Fold([string]$element.Current.Name);if($element.Current.ControlType -eq [Windows.Automation.ControlType]::ComboBox -and ($name -like '*reproducir*' -or $name -like '*play*')){$search=$element;break}}catch{}}
+                foreach($element in $all){try{$name=Fold([string]$element.Current.Name);$type=$element.Current.ControlType;if($null -eq $search -and $type -eq [Windows.Automation.ControlType]::ComboBox -and ($name -like '*reproducir*' -or $name -like '*play*')){$search=$element};if($type -eq [Windows.Automation.ControlType]::Button -and ($name.StartsWith('reproducir ') -or $name.StartsWith('play '))){$playableSeen=$true};if($null -ne $search -and (Test-BaxySpotifyContentExposed $coldStart $playableSeen)){break}}catch{}}
             } catch {}
         }
-        if($null -ne $search){break}
+        if($null -ne $search -and (Test-BaxySpotifyContentExposed $coldStart $playableSeen)){break}
     } while((Wait-BaxyPoll $searchDeadline 300))
     if($null -eq $process){throw 'spotify_window_missing'}
     if($null -eq $search){throw 'spotify_search_box_missing'}
@@ -166,7 +196,10 @@ try {
     # still expose controls from the page behind that overlay, so clicking one
     # is not a verified selection.  Navigate to the canonical desktop search
     # URI instead and only inspect controls from the resulting page.
-    Start-Process ('spotify:search:'+[Uri]::EscapeDataString($title))
+    $searchUri='spotify:search:'+[Uri]::EscapeDataString($title)
+    Start-Process $searchUri
+    $searchedAt=Get-Date
+    $searches=1
     $stage='searched'
     # The desktop client can take several seconds to replace the previous
     # search page after resolving a spotify:search URI. Keep the original 6 s
@@ -176,8 +209,10 @@ try {
     $expectedPlay=Fold('Reproducir '+$title)
     $prefix=Fold(('Est'+[char]0x00E1+'s escuchando:'))
     # MUSIC1753: a client launched seconds earlier renders its search page late;
-    # the bounded wait is 12 s (the adapter budget of 55 s still covers 12.5 + 12 + 12 + 15).
-    $searchPageDeadline=(Get-Date).AddSeconds(12)
+    # the bounded wait is 12 s. M169: a page that shows nothing playable at all
+    # gets 20 s and one re-issued search (the adapter budget of 65 s covers
+    # 12.5 + 20 + 12 + 15).
+    $searchPageDeadline=$searchedAt.AddSeconds((Get-BaxySpotifySearchPageSeconds $true))
     $searchPageReady=$false
     $searchSnapshotReady=$false
     $searchObservationError=$null
@@ -230,6 +265,13 @@ try {
             $searchObservationError=$_
         }
         if($searchPageReady){break}
+        if($null -eq $searchObservationError){
+            $searchPageDeadline=$searchedAt.AddSeconds((Get-BaxySpotifySearchPageSeconds $searchSnapshotReady))
+            if(Test-BaxySpotifyResearch $searches (((Get-Date)-$searchedAt).TotalMilliseconds) $searchSnapshotReady){
+                $searches=2
+                Start-Process $searchUri
+            }
+        }
     } while((Wait-BaxyPoll $searchPageDeadline 500))
     if(-not $searchPageReady -and $Mode -eq 'query' -and $searchSnapshotReady -and $null -eq $searchObservationError){
         # Reaching this point means the bounded poll exhausted the original
@@ -239,7 +281,7 @@ try {
     }
     if(-not $searchPageReady -and $null -ne $searchObservationError){throw $searchObservationError}
     if($null -eq $playCandidate){
-        if($null -eq $candidate){[pscustomobject]@{ok=$false;effectObserved=$effect;error='spotify_exact_result_not_found'}|ConvertTo-Json -Compress;exit 2}
+        if($null -eq $candidate){[pscustomobject]@{ok=$false;effectObserved=$effect;error='spotify_exact_result_not_found';searches=$searches;coldStart=$coldStart;elements=$(if($null -ne $all){$all.Count}else{0})}|ConvertTo-Json -Compress;exit 2}
         if($null -eq $playCandidate){
             $stage='candidate'
             if(-not (Confirm-BaxySpotifyForeground $process.MainWindowHandle)){throw 'spotify_foreground_not_verified'}
@@ -334,7 +376,7 @@ try {
     if(-not $verified -and $null -ne $playObservationError){throw $playObservationError}
     $failure=if($verified){$null}else{'spotify_'+$stage+'_not_verified'}
     $observedTitle=(Get-Process -Id $process.Id -ErrorAction Stop).MainWindowTitle
-    [pscustomobject]@{ok=$verified;effectObserved=$effect;error=$failure;title=$observedTitle;selectedControl=$selectedControlName;beforeNowPlaying=$beforeNowPlaying;observedNowPlaying=$observedNowPlaying;pauseBefore=$pauseAlready;selectedFlipped=$selectedFlipped;presses=$presses;processId=$process.Id}|ConvertTo-Json -Compress
+    [pscustomobject]@{ok=$verified;effectObserved=$effect;error=$failure;title=$observedTitle;selectedControl=$selectedControlName;beforeNowPlaying=$beforeNowPlaying;observedNowPlaying=$observedNowPlaying;pauseBefore=$pauseAlready;selectedFlipped=$selectedFlipped;presses=$presses;searches=$searches;coldStart=$coldStart;processId=$process.Id}|ConvertTo-Json -Compress
 } catch {
     [pscustomobject]@{ok=$false;effectObserved=$effect;error='spotify_uia_failed';stage=$stage;detail=$_.Exception.Message}|ConvertTo-Json -Compress
     exit 2
