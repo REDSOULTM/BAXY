@@ -765,3 +765,207 @@ OCR pulsó «biblioteca» una vez en el panel de VS Code; M132 ata el clic a la 
    held-out 30/30, cien-120 100/100 publicadas, 0 efectos de más (frente a cien-119 sólo cambian redacciones). El pytest
    completo de la cadena dio 56 fallos + 24 errores, todos 0xC0000142 (procesos hijo powershell/git que no arrancaron);
    los 80 repetidos pasan; Integración 4 031/4 031.
+
+## D69. v4o: los arreglos hallados en DEV-G se generalizan en parte a DEV-E; DEV-H (2026-10-03 08:00)
+1. **DEV-G en la App (v4n, main 7412b381)**: 243/300 = 81,0 % con D35 (DEV-E 83,6 %); decisor aislado 295/300; lastre 51
+   (27 decisión + 24 argumentos), 28 de ellos en primer turno. A diferencia de F/D, con el historial vivido el lastre
+   apenas baja (27 → 21): es código. Con el mismo prompt (prompt_n idéntico) el decisor de la App y el aislado discrepan
+   en ≈ 4 turnos casi empatados (no invarianza por lote de llama.cpp); no se persigue.
+2. Mecanismos sobre DEV-G (filas iterables; reglas de entrada: prueba con la fila real, variantes propias, casos que no
+   cambian, familia C03 verde): **M135** veto de un borrado afirmado sin operación que borre; **M136** los argumentos del
+   decisor llegan a los campos del esquema (clave por operación, prefijo «app» → appId, parte dicha de un nombre de app,
+   all_known para la carpeta no dicha de una lectura, «he bajado» = Descargas); **M137** «X antes» de una hora dicha y la
+   hora suelta movida con su parte del día; **M138** lectores de primer turno estrechados (pregunta antes del «?», «check
+   si tengo internet», «donde anda mi compadre», borrador «diciendo que…», «pa las 7», «some X», «in spotify»; offline
+   DEV-G +7 decisiones, D/F/reserva/742 sin cambios); **M139** una respuesta de conversación o de recuperación no promete
+   un acto en el mundo («I will get a pepperoni pie delivered» → límite) y ocho redacciones sin final; arreglos de
+   integración (sin igualdad de texto en el decisor; error que afirma el acto = missing_failure). Full verde (pytest
+   22 603, Integración 4 060). main 0db83e48.
+3. **v4o** (con D61): **DEV-G 269/300 = 89,7 %** (+28/−3; de los 3 rotos: un artefacto del registro, un historial vivido
+   distinto y un «Can't» de un título → M140), **DEV-E 257/299 = 86,0 %** (v4n 250; +10/−5; lastre 42 → 37), DEV-F
+   243/280 = 86,8 % (=), DEV-D 305/332 = 91,9 % (v4n 306). El 90 % de DEV-E exige 269 (+12).
+4. Después de v4o, en integración: **M140** (título y artista observados por cualquier operación media.* no son un fallo
+   dicho) y **M141** (los argumentos del decisor llegan a los pasos de los planes; el código que BAXY acaba de escribir
+   va al archivo pedido). Pendiente de diseño: «pásame esta ventana a la izquierda» (la ventana del frente es la de BAXY)
+   y note.update tras crear la nota (falta encadenar note.read → note.update en el Kernel).
+5. **DEV-H** (`sets/DEV-H.jsonl`, sha256 `8b7e94ec…903ee`, 300 turnos, misma forma que DEV-E y DEV-G, regla 20 del
+   dueño añadida: recordatorio sin hora acepta la operación o preguntar): 5 escritores de sala limpia, exclusión en tres
+   rondas (91 → 1 → 0, incluidas las huellas de DEV-G), doble etiquetado ciego (acuerdo 300/300, conjunto idéntico
+   83,3 %), adjudicador en 95 filas (1: 63, 2: 15, nueva: 15, unión: 2, 0 descartadas). Iterable; sirve para no seguir
+   iterando sobre DEV-G ya mirado.
+
+## D70. v4p y v4q: DEV-G y DEV-H suben, DEV-E se queda en 86 % (2026-10-03 14:45)
+1. **v4p** (main 88c8e4b8: M140 título observado, M141 argumentos del decisor en planes y código a archivo, M142 pista
+   «ya estaba abierta» impersonal), con D61: DEV-E 256/299 = 85,6 %, DEV-G 269/300, **DEV-H 258/300 = 86,0 %** (primera
+   medida limpia: la de v4o corrió con un llama-server de una evaluación aislada al lado —carrera en `gpu.flag`— y se
+   descartó), DEV-F 241, DEV-D 305; reserva 90,0 / 94,0 % (0/0), 742 sin cambios, DEV-C 255, held-out 30/30 (M142
+   recuperó «abrí el bloc de notas»), guion 52/60 + 5 por revisar (t21 cierra Edge igual que en v4o con otra redacción;
+   t42 Steam inestable).
+2. **v4q** (main con M143 lectores de DEV-H —incluido el arreglo de seguridad «escríbeme en python…» que armaba un
+   message.send— y M144 avisos en conversación: respuestas cortas a la pregunta de la hora, «half three», «la misma
+   hora», D61b con la parte del día del decisor), Full verde (pytest 22 754, Integración 4 060): **DEV-H 276/300 = 92,0 %**
+   (+21/−3), **DEV-G 270/300 = 90,0 %**, **DEV-E 257/299 = 86,0 %** (= v4o). Lo hallado en G y H no son las clases que
+   fallan en E: tres rondas seguidas en 256–257.
+3. En G y H, de 36 turnos con la decisión bien y los argumentos mal (v4p), ≈ 9 son del entorno de la corrida (ventanas
+   de apps que el conjunto supone abiertas; alarmas de otras conversaciones a la misma hora), ≈ 5 del puntuador (un
+   recordatorio puesto a la hora absoluta correcta frente a «30 min» en el oro) y el resto reales (la mitad ya en
+   M143/M144). Dos huecos de producto detrás de lo que parecía entorno → **M145** («esta ventana» = la del frente para
+   operaciones de ventana no destructivas; mover o cancelar el aviso que puso esta conversación aunque haya otros a la
+   misma hora). Los ⚠ sin final de DEV-E oscilan 1–6 por ronda (meta ≤ 3); en G/F/D/H los que quedan son vetos de
+   redacción sobre respuestas verdaderas → **M146**.
+
+## D71. Decisiones del dueño (2026-10-03 ~18:45): lo hecho cuenta aunque se diga distinto; «ventana activa»
+1. **Puntuación:** un turno cuenta como completo si BAXY hizo lo que había que hacer, aunque el dato quede dicho de otra
+   forma («25-minute» = «25 minutos»; «media hora» = 30 minutos; «hora y media» = 90). Se implementa como equivalencias
+   generales de forma en el puntuador (`comprension_eval`: guiones como espacios, duraciones habladas con su número de
+   minutos), nunca como aceptación de un resultado distinto; se siguen informando la cifra estricta y la de D61.
+2. **«La ventana activa» es la ventana donde la persona está actuando.** Con Opera delante y YouTube detrás, «cierra la
+   ventana activa» cierra Opera, nunca YouTube. Cuando la persona escribe en BAXY, la ventana de BAXY queda delante pero
+   no es la suya: la ventana activa es la que usaba justo antes (la siguiente en el orden de apilado que no sea de BAXY).
+   Vale igual para «esta ventana» en acomodar, maximizar o minimizar (M145). Cerrar sigue pidiendo confirmación; un
+   pronombre con antecedente («ciérralo» tras «abre X») sigue siendo X (M118); nunca VS Code por error (D17).
+
+## D72. v4r y v4s; incidencia de sello de DEV-E (2026-10-03 21:30)
+1. **v4r** (main a496b0a3: M145 ventana del frente y aviso propio, M146 vetos de redacción de más, M147 un nombre que busca
+   un servicio va como lo escribió la persona): **DEV-E 262/299 = 87,6 %** (+4/−1; ⚠ 1/299), DEV-G 276/300 = 92,0 %, DEV-H
+   281/300 = 93,7 %, DEV-F 243, DEV-D 305, held-out 30/30, guion 52/60 + 6 por revisar (t16/t17: YouTube devolvió otro
+   vídeo; t21/t54 redacción; mismo comportamiento que v4q), reserva 89,9/94,0 % (0/0), 742 sin cambios, cien-124 100/100.
+   El pytest de la primera cadena de v4r se detuvo por PID y se relanzó porque M147 entró en `integ/v3z` a mitad de
+   pytest (regla nueva: no fusionar en integración mientras una cadena prueba sobre ella).
+2. **v4s** (M148 «recuérdame eso» y cuentas de tiempo, M149 ventana activa = la de la persona, D71.2): **DEV-E 263/299 =
+   88,0 %** (+1/0). En DEV-E quedan 15 turnos con la decisión bien y el dato mal (sólo cuentas): 8 sin argumentos (BAXY
+   preguntó: 3 por el camino de lectores sin consultar al decisor, 5 por el decisor en contexto cuyos campos se
+   descartaron) y 6 con otro dato verificado → **M150** (antes de preguntar, usar lo que el decisor escribió).
+3. **Incidencia:** al buscar corridas, el agente de M150 imprimió por error con un glob una línea de
+   `window/v4r-devE/RUN.jsonl` (un turno). Declaró no usarla; el coordinador no la vio. M150 se diseñó con los agregados
+   de E citados arriba y filas de F/D/G/H. Se deja constancia por la regla de sello de DEV-E (D55).
+
+## D73. M150 no era la causa; los finales vetados de task.list; DEV-I; M151–M153 (2026-10-04 04:00)
+1. **v4t** (M150) dio DEV-E 256 (0 arreglados / 7 rotos frente a v4s, p = 0,016), con la búsqueda web caída en 9 turnos.
+   **v4t2** (mismo build, búsqueda estable) dio 257 y **v4u** (M150 retirado, `integ/v3z` 5188260f; entre los builds de v4s
+   y v4u sólo cambian pins y documentos) dio 256 frente a v4s: 0 / 7 otra vez. M150 se retiró con una atribución
+   equivocada: la caída la tiene también el código de v4s. No se reintroduce a ciegas; su idea queda anotada.
+2. **Causa de la oscilación, medida sólo con metadatos de DEV-E** (estado terminal, código de veto, bytes, claves; ningún
+   texto): los turnos terminados `filtered: no_response` son 1 en v4s y 5 en v4u (4 task.list y 1 notification.schedule).
+   En task.list, la guarda veta como `reversed_result` (3) o `task_title_not_named` (1) el borrador de un listado de 7
+   tareas pendientes. Con el presupuesto de redacción no da tiempo a otro intento y el turno acaba sin respuesta. Es
+   estocástico: los mismos turnos se publicaron en v4s. En el aviso fueron tres `extra_claim`. Los otros rotos de v4u son
+   argumentos con fecha (scheduledDay) y una búsqueda. Lección: una ronda que sube o baja ±7 en DEV-E con ≤ 1 turno de
+   código cambiado se mira primero en los terminales, antes de atribuirla al mecanismo. Un estado de 263 no es todavía
+   una línea base estable.
+3. **DEV-I sellado** (sha 2c6a5975…, 300 turnos: 125 sueltos, 45 conversaciones de 175 turnos). Con la forma de DEV-E y
+   las reglas de oro 11–20. Lo escribieron 5 escritores de sala limpia en 3 rondas de exclusión (118 → 3 → 0 coincidencias,
+   todo reescrito por su autor y nada descartado). Pasadas ciegas A (Opus) y B (Sonnet): acuerdo de primera etiqueta
+   300/300; 92 filas al adjudicador ciego (83 «1», 4 «2», 4 unión; ningún descarte). Iterable.
+4. **Mecanismos.**
+   - **M151**: el archivo que BAXY acaba de nombrar se lee al pedir su contenido («qué dice», «read it», «give us the
+     gist») o se elige entre los listados por ordinal o palabra («the signed one», «la de pisos», «abre el segundo»). La
+     extensión decide la operación; la carpeta, la última línea que la nombró. Arregla 8 filas de F/G/H; se activa en 11 de
+     todas las filas con historial de F/G/H/I.
+   - **M152**: «pon un recordatorio en una hora para X» se lee sin modelo; un «N antes de algo sin hora» que el decisor
+     reescribió como «en N» pregunta en vez de programar una hora que nadie dijo. De las 9 filas de avisos que fallaban,
+     7 son de historial vivido (la búsqueda no dio la hora del partido, Outlook sin configurar, falta un fichero): ahí
+     preguntar es lo correcto.
+   - **M153** (en curso): ningún turno entendido y hecho termina sin respuesta porque la guarda vete su borrador; vetos
+     falsos sobre listados de tareas y suelo determinista de lo observado.
+   - Se descartaron como mecanismos los fallos de ventanas y batería de F/G/H: el turno anterior, ejecutado de verdad,
+     dio otra respuesta (D67).
+
+## D74. DEV-I base, v4v (M151–M153), D73 del puntuador, M154–M157 (2026-10-04 10:40)
+1. **DEV-I en la App, base v4u** (= código de v4s): 262/300 = 87,3 % con D61 (estricta 258); decisor aislado 293/300 en
+   decisión. Lastre de decisión 17 y de argumentos 14, en su mayoría en mensajes sueltos (sin historial vivido): código.
+2. **Puntuador, D73** (capa D61, la cifra estricta no cambia): cuando el oro acepta `ask` y BAXY sólo publicó una
+   aclaración (todas las rutas del turno son `clarification`, aunque la decisión interna fuera una acción a la que le
+   faltaba un dato), el turno cuenta. DEV-E +0; DEV-I +4; F/G/H/D +1 cada uno.
+3. **v4v** (main 11ce91da: M151 archivo nombrado, M152 avisos, M153 vetos falsos sobre títulos citados y respaldo dentro
+   del turno). **DEV-E 262/299 = 87,6 %** (estricta 251; +6/0 frente a v4u, p = 0,03; 1/2 frente a v4s); **0 turnos
+   `filtered`** (v4s 1, v4u 5): la oscilación de D73 desaparece. DEV-G 277 (92,3 %), DEV-H 279 (93,0 %), DEV-F 245
+   (87,5 %), DEV-D 308 (92,8 %), DEV-I 264 (88,0 %); reserva 90,0 / 94,0 % (0/0), 742 sin cambios, DEV-C 84,7 %, cien-128
+   100/100, held-out 30/30, guion 52/60 + 5 por revisar (el nuevo «??» es t21: «confirmo» tras «cierra edge» cerró Edge;
+   correcto, con otra redacción → 53).
+4. **M151 no se ve en la App**: en la corrida en vivo, la respuesta anterior de BAXY nunca nombra el archivo, porque los
+   ficheros que suponen las conversaciones no existen en este PC (D67). Probado con el historial escrito; queda en el
+   producto.
+5. **Mecanismos para v4w** (integ/v3z 161a0e1a):
+   - **M154**: una conversión de moneda o un tipo de cambio se consulta (Frankfurter), nunca de memoria. La guarda M81
+     separa la pregunta del motivo de la persona («que tengo que cambiar…», «mi viejo me preguntó…»), que no es un dato
+     propio. Frankfurter: «mexican peso» devolvía CLP; ahora MXN.
+   - **M155**: los lectores de primer turno no pisan al decisor («en media hora» no es «media»; un elogio no es «tareas»;
+     «qué horas» no es portugués; «alarm for 6 to get up» aplica D61). **Seguridad**: una orden de no enviar («leave it
+     for me to send», «pero no se lo mandes») sin cliente nombrado acababa en `message.send`; ahora es borrador, y un
+     envío del decisor con esa orden también. I-s111 («búscame en YouTube…») se deja en la búsqueda por el literal
+     revisado H0728 (WEB1481), aunque el oro de DEV-I diga reproducir.
+   - **M156**: «a las 6 30» son las 6:30 (antes las 18:00); servicio y luego título con errata («disney plus
+     intensamnete 2»); un nombre de app que suena igual («afinity foto») no es inventado.
+   - En el merge de M155 con M156 quedó un conflicto real en `semantic/temporal.py` committeado con sus marcadores
+     (cbd2eae2), resuelto en 161a0e1a antes de cualquier prueba o push.
+   - **M157** (en curso): M147 no se aplica en la App en su propia fila (F-w05-t5: la consulta a Spotify fue «Javier
+     Mené» en v4u y en v4v); «tradúceme eso al inglés» → búsqueda; una nota con el título como contenido.
+
+## D75. v4w (M154–M157), M158, fuga de ventanas del Explorador, cadena fantasma (2026-10-04 15:40)
+1. **v4w** (main a84135f8 = integ 3485220e: M154 cifras consultadas y motivo ≠ dato propio, M155 lectores que no pisan al
+   decisor y no-enviar, M156 datos de primer turno, M157 nombre como se dijo en todos los caminos, traducción ≠ búsqueda,
+   nota sin contenido pregunta).
+   - **DEV-E 263/299 = 88,0 %** (estricta 253; +2/0 frente a v4v; 0 `filtered`).
+   - **DEV-I 272/300 = 90,7 %** (+10/−2 frente a v4v, p = 0,04).
+   - Resto: DEV-H 283 (94,3 %), DEV-D 312 (94,0 %), DEV-G 279 (93,0 %), DEV-F 248 (88,6 %).
+   - Batería: reserva 90,0 / 94,0 % (+1/−1), 742 sin cambios, DEV-C 84,4 %, cien-129 100/100.
+   - Guion **54/60**, held-out 30/30.
+   - La primera cadena de v4w salió en rojo sólo por una prueba de M152 que dependía de la hora del día («a las 9» →
+     hora 9; pasadas las 09:00, D61 da las 21:00). Se corrigió con `% 12`; las pruebas que construyen relojes fijan la
+     hora (M108).
+2. **Fuga de ventanas del Explorador.** Cada «abre descargas» de las corridas dejaba un explorer.exe propio, y el
+   limpiador sólo cerraba su lista de apps. Hubo 110 acumuladas (8,5 GB privados; memoria comprometida 63,0 de 63,4 GB;
+   OutOfMemory en git, PowerShell sin arrancar). Se cerraron por PID exacto con cierre normal, nunca el escritorio,
+   según la autorización de RAM del dueño (2026-09-17). El limpiador (`run_procs.py`) ahora cierra los explorer nuevos
+   de cada corrida cuya ventana es una carpeta. Ya cerró 12 en D, F e I.
+3. **Cadena fantasma.** Un lanzamiento con `& disown` siguió vivo. Corrió pytest en paralelo con la cadena buena (2
+   fallos de interferencia, repetidos en verde), fusionó el mismo código y, con la GPU libre al final, repitió DEV-E. Al
+   hacerlo, `window_run.sh` borró los ficheros puntuados de v4w-devE; la cifra 263 ya estaba registrada. Se detuvo por
+   PID antes de que tocara los demás conjuntos. Las cadenas se lanzan sólo como tarea de fondo del harness.
+4. **M158**: «cancela la de las 7» cancela la de las 7, nunca la última puesta (I-w26-t4: con 11 avisos en la corrida,
+   `cancel.latest` canceló otro). Si el decisor elige sólo `cancel.latest` y el mensaje nombra un único aviso por su
+   hora, pasa a `cancel.at` (excepción de seguridad a D58); M145 lo devuelve a `latest` si el último puesto por la
+   conversación es justo ese. Sólo cambia I-w26-t4 en 3 801 decisiones auditadas. Integ b56218e8; se mide en v4x.
+5. **En cola:** medición de techo (E, I y H por la mente con el historial escrito; de E sólo agregados) para separar
+   comprensión de entorno vivido; después, v4x.
+
+## D76. Techo con historial escrito, v4x (M158), v4y (M159–M162) y el saludo en el historial (2026-10-04 23:25)
+1. **Repetición y ruido.** El build de v4w medido dos veces dio DEV-E 263 y 264 (la segunda vez por la cadena fantasma de
+   D75). v4x (sólo M158, que cambia una fila) dio 263, con D −5 y G −4 frente a v4w: entre corridas del mismo código el
+   ruido es de ±4–5 turnos por conjunto. Una ronda de un solo mecanismo no se lee por la cifra total.
+2. **Techo con historial escrito** (`comprension_eval run`, nada se ejecuta; E sólo por agregados). La mente decide E
+   278, I 289 y H 293, frente a 279–280, 291 y 294 en la App. El hueco no es el historial vivido. Comparada con el
+   decisor aislado (mismo historial), el lastre de decisión era E 26, I 10 y H 6. Clases: `unresolved_input_clarification`
+   (E 8) y acción donde el oro charla (E 8).
+3. **M161** (una petición clara con contexto personal no es «conversación ajena»: 12 de 2 254 decisiones de mal a bien,
+   ninguna de las 742) y **M162** (una cuenta sobre lo que BAXY acaba de decir se calcula con sus números: escalar,
+   diferencia, porcentaje, diferencia horaria «con aquí»). **M159**: una ventana más ancha que media pantalla (Spotify,
+   814 > 768) queda pegada al lado pedido y se dice. **M160**: la nota toma la respuesta señalada («that whole thing»,
+   «esas cantidades») y «agrégale» lee y edita la nota recién creada (note.read → note.update en mente, kernel y App).
+4. **v4y** (main 93118d5b = integ a0ce7494): **DEV-E 264/299 = 88,3 %** (estricta 253). DEV-H 285 (95,0 %), DEV-I 273
+   (91,0 %), DEV-G 279 (93,0 %), DEV-F 247 (88,2 %), DEV-D 307 (92,5 %). Reserva 90,0 / 94,0 % (0/1), 742 sin cambios,
+   cien-131 100/100, held-out 30/30, guion 52/60 + 5 por revisar. Pytest 23 287, integración 4 083 y kernel 194 en verde.
+5. **Por qué M161 no movió E.** En la App cada sesión empieza con el saludo de BAXY, y `guards._conversation_in_progress`
+   (BAXY habló en los tres últimos mensajes) desactiva la guarda de conversación ajena: en los 299 turnos de E nunca
+   actuó. La medición de techo, sin saludo, sí caía en ella. Se repite la medición con el saludo delante del historial
+   (mind/v4y-w).
+6. **Hipótesis de seguridad para el dueño (sin verificar en vivo):** si la App envía el saludo en el historial, la
+   protección de H0735 (no actuar sobre una conversación ajena captada por el micrófono) no se aplica al primer mensaje
+   hablado de una sesión; queda sólo el criterio del decisor. No se cambia sin su decisión.
+
+## D77. Horarios de partidos: API pública de ESPN (dueño, 2026-10-05 ~10:30)
+Pregunta: BAXY sólo consulta Wikipedia para «¿cuándo juega X?», no encuentra la hora y falla todo aviso «una hora antes
+del partido» (≈5 filas en G/H/I; probablemente 3–4 en DEV-E). Opciones: API pública de ESPN (sin clave ni cuenta, cubre
+NBA, fútbol europeo y sudamericano, no es una API oficial documentada), el navegador del dueño (la vía general de D32,
+con captchas en su red) o dejarlo así. **Decisión del dueño: API pública de ESPN.** Encaja en D32: sin clave ni cuenta,
+uso personal no comercial a ritmo humano; si no responde o no cubre la liga, BAXY lo dice y ofrece el navegador como hoy.
+
+## D78. Avisos sobre la hora real que dio BAXY (dueño, 2026-10-05 ~12:40)
+Con ESPN (D77), BAXY da la hora real del partido y el aviso que sigue se calcula sobre ella (G-w42: «…the Sacramento Kings
+on Monday at 23:00» → «remind me half an hour before that» → 22:30), pero el oro conserva la hora inventada del guion
+escrito (19:00). **Decisión del dueño:** cuenta como acierto, como D71. En el puntuador (capa D61; la estricta se sigue
+informando): un aviso de una conversación, con la operación bien decidida, cuenta si suena exactamente en la única hora
+que dio la respuesta anterior de BAXY en esa conversación vivida menos la única antelación que pidió la persona («media
+hora antes», «20 minutes before», «una hora antes»). Sin antelación, con dos horas en la respuesta o con otra hora, no
+cuenta. v5b: DEV-E +2 (264 → 266), DEV-G +1; v4z +0.
