@@ -2007,6 +2007,54 @@ def timed_task(text: str) -> TimedTask | None:
     return TimedTask(title, " ".join(due.split()))
 
 
+def placed_day_of_moment(request: str, said: str, due: str) -> str | None:
+    """M170 (DEV-I v4y I-w20-t3 «tambien tengo una reunion a las 9, recuerdamelo 15 minutos antes de eso» after the
+    alarm moved to tomorrow at 8, decided «Recuérdame mañana a las 8:45 que tengo una reunión a las 9.»): for a moment
+    ``due`` with no day of its own, read from ``said`` (the person's message, or the request itself) that asks to be
+    reminded some time before it (``said_advance``), the day the request places beside that moment's clock or beside the
+    clock that rings (the moment less the advance: «mañana a las 8:45»), as said. D61b then reads the hour on that day.
+    None with no advance said, when the moment or ``said`` names a day other than that one or a date, or when the request
+    places those clocks on two days, only on today or on none."""
+
+    folded_due = _fold(str(due or ""))
+    due_clocks = spoken_clocks(folded_due)
+    advance = said_advance(str(said or ""))
+    if (
+        advance is None
+        or len(due_clocks) != 1
+        or (due_clocks[0].hour % 12, due_clocks[0].minute) != (advance.clock.hour % 12, advance.clock.minute)
+        or spoken_date(folded_due) is not None
+        or spoken_day(folded_due, 0) != (0, 1)
+    ):
+        return None
+    moment = (due_clocks[0].hour % 12) * 60 + due_clocks[0].minute
+    rings = divmod((moment - advance.minutes) % 720, 60)
+    request_text = " ".join(str(request or "").split())
+    folded_request = _same_length_fold(request_text)
+    days: dict[str, str] = {}
+    for found in _TASK_TIME.finditer(folded_request):
+        clocks = spoken_clocks(_fold(found.group(0)))
+        if not clocks or (clocks[0].hour % 12, clocks[0].minute) not in {divmod(moment, 60), rings}:
+            continue
+        before = _DAY_BEFORE_TIME.search(folded_request[:found.start()])
+        after = _DAY_AFTER_TIME.match(folded_request[found.end():])
+        for match, offset in ((before, 0), (after, found.end())):
+            if match is not None:
+                day = request_text[offset + match.start("day"):offset + match.end("day")]
+                days.setdefault(" ".join(_fold(day).split()), day)
+    if len(days) != 1:
+        return None
+    folded_day, day = next(iter(days.items()))
+    placed = spoken_day(folded_day, 0)
+    if spoken_date(folded_day) is None and placed in {None, (0, 0), (0, 1)}:
+        # «hoy a las 8:45», «tonight at 8:45»: today keeps D61 (the next time it comes), as with no day said.
+        return None
+    folded_said = _fold(str(said or ""))
+    if spoken_date(folded_said) is not None or spoken_day(folded_said, 0) not in {(0, 1), placed}:
+        return None
+    return day
+
+
 @dataclass(frozen=True)
 class UnschedulableTime:
     """M80: the clock the person said (``clock``, as said) on days one alarm or reminder cannot ring at: ``passed``
