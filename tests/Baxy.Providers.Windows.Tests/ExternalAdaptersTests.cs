@@ -4525,6 +4525,83 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // M169 (v5a-devG/devI «salsa», «Soda Stereo», «reggaetón»: the search page of a
+    // client still building its accessibility tree showed nothing playable for the
+    // whole 12 s). The script now waits up to 20 s there with one re-issued search,
+    // so its process gets 65 s; the whole call, the exact retry included, stays
+    // inside the 85 s the App waits for the core.
+    [Test]
+    public async Task SpotifyQueryProcessGetsTheExtendedScriptBudget()
+    {
+        var time = new SteppingTimeProvider();
+        var runner = new TimedSequencedProcessRunner(time, [
+            (TimeSpan.FromSeconds(23), "{\"ok\":false,\"effectObserved\":false,\"error\":\"spotify_exact_result_not_found\",\"searches\":2,\"coldStart\":false,\"elements\":334}"),
+        ]);
+        var adapter = new SpotifyDesktopAdapter(runner, time: time);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.query",
+            Json("""{"provider":"spotify","query":"salsa"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("spotify_exact_result_not_found"));
+            Assert.That(runner.Timeouts, Is.EqualTo(new[] { TimeSpan.FromSeconds(65) }));
+        });
+    }
+
+    [Test]
+    public async Task SpotifyExactRetryGetsOnlyWhatIsLeftOfTheCallBudget()
+    {
+        var time = new SteppingTimeProvider();
+        var runner = new TimedSequencedProcessRunner(time, [
+            (TimeSpan.FromSeconds(30), "{\"ok\":false,\"effectObserved\":false,\"error\":\"spotify_exact_play_control_not_found\"}"),
+            (TimeSpan.FromSeconds(10), "{\"ok\":true,\"effectObserved\":true,\"title\":\"Billie Jean\",\"processId\":42}"),
+        ]);
+        var adapter = new SpotifyDesktopAdapter(runner, time: time);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.exact",
+            Json("""{"provider":"spotify","title":"Billie Jean"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(runner.Timeouts, Is.EqualTo(new[]
+            {
+                TimeSpan.FromSeconds(65),
+                TimeSpan.FromSeconds(85) - TimeSpan.FromSeconds(30) - TimeSpan.FromMilliseconds(400),
+            }));
+        });
+    }
+
+    [Test]
+    public async Task SpotifyExactRetryIsNotStartedWhenTheCallBudgetIsSpent()
+    {
+        var time = new SteppingTimeProvider();
+        var runner = new TimedSequencedProcessRunner(time, [
+            (TimeSpan.FromSeconds(56), "{\"ok\":false,\"effectObserved\":false,\"error\":\"spotify_exact_result_not_found\",\"searches\":2}"),
+            (TimeSpan.FromSeconds(10), "{\"ok\":true,\"effectObserved\":true,\"title\":\"Wrong retry\",\"processId\":42}"),
+        ]);
+        var adapter = new SpotifyDesktopAdapter(runner, time: time);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.exact",
+            Json("""{"provider":"spotify","title":"Billie Jean"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("spotify_exact_result_not_found"));
+            Assert.That(runner.Calls, Is.EqualTo(1));
+        });
+    }
+
     // 2026-09-22 (owner's turn 148): with no Spotify process the automation died
     // after crossing the boundary and the failure travelled as an ambiguous effect.
     // Tanda 6 «pasar al siguiente episodio» with nothing playing was told Spotify was
@@ -5093,6 +5170,40 @@ public sealed class ExternalAdaptersTests
             Calls++;
             return ValueTask.FromResult(new ExternalProcessResult(0, output, ""));
         }
+    }
+
+    // M169: each scripted run advances the clock by its own duration and keeps
+    // the process budget it was given.
+    private sealed class TimedSequencedProcessRunner(
+        SteppingTimeProvider time,
+        IReadOnlyList<(TimeSpan Duration, string Output)> runs) : IExternalProcessRunner
+    {
+        internal int Calls { get; private set; }
+
+        internal List<TimeSpan> Timeouts { get; } = [];
+
+        public ValueTask<ExternalProcessResult> RunAsync(
+            string executable, IReadOnlyList<string> arguments, TimeSpan timeout,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            (TimeSpan duration, string output) = runs[Math.Min(Calls, runs.Count - 1)];
+            Calls++;
+            Timeouts.Add(timeout);
+            time.Advance(duration);
+            return ValueTask.FromResult(new ExternalProcessResult(0, output, ""));
+        }
+    }
+
+    private sealed class SteppingTimeProvider : TimeProvider
+    {
+        private long _ticks;
+
+        public override long TimestampFrequency => TimeSpan.TicksPerSecond;
+
+        public override long GetTimestamp() => _ticks;
+
+        internal void Advance(TimeSpan duration) => _ticks += duration.Ticks;
     }
 
     private static void AssertRetryHorizon(

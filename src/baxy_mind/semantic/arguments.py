@@ -1360,6 +1360,11 @@ def _explicit_arguments_from_evidence(
         if named is None:
             return None
         title = named.group("title").strip().strip("\"'«»“”").strip()
+        if re.match(_DATIVE_PUT, named.group(0)):
+            # M171 (DEV-H v5a H-s074 «baxy ponle bluey en disney plus a la sofi»): the clitic of «ponle/ponles» doubles
+            # who it is put for, and said before the service («ponle bluey a la sofi en disney plus») that «a la
+            # Sofi» is no part of the title.
+            title = re.sub(_FOR_WHOM_AFTER_TITLE, "", title).strip() or title
         if not title or len(title.encode("utf-8")) > 512:
             return None
         # VIDEO1947: the service is the one spelled after the title.
@@ -2663,8 +2668,14 @@ _STREAMING_SERVICE_WORD = (
 _STREAMING_SERVICE_SAID = re.compile(rf"\b{_STREAMING_SERVICE_WORD}\b", re.IGNORECASE)
 _STREAMING_PLAY_HEAD = (
     r"^(?:(?:quiero|quisiera|i\s+want\s+to|i\s+wanna|i'd\s+like\s+to)\s+)?"
-    r"(?:reproduc[eií]|play|pon[eé]?(?:me)?|ponme|put(?:\s+on)?|busc[aá]|find|"
+    # M171 (DEV-H v5a H-s074 «baxy ponle bluey en disney plus a la sofi»): «ponle/ponles/ponele» is «pon».
+    r"(?:reproduc[eií]|play|pon[eé]?(?:me|les?)?|ponme|put(?:\s+on)?|busc[aá]|find|"
     r"inici[aá]|start|encuentra|encuentras|localiza|locate|ver|watch)\s+"
+)
+# M171: «ponle/ponles» (the clitic of who it is for) and that person, «a la Sofi», «a los niños», «a mi hija».
+_DATIVE_PUT = re.compile(r"(?:(?:quiero|quisiera)\s+)?pon[eé]?les?\s", re.IGNORECASE)
+_FOR_WHOM_AFTER_TITLE = re.compile(
+    r"\s+a\s+(?:la|el|los|las|mis?|tus?|sus?|nuestr[oa]s?)\s+[^\W\d_]+$", re.IGNORECASE,
 )
 # M156 (DEV-I v4u I-s085 «pone en disney plus intensamnete 2 q la quieren ver los chicos» → «¿Qué servicio de
 # streaming y qué título exacto deseas buscar?»): the service may be said before the title. The title is what follows
