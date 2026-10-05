@@ -33,6 +33,7 @@ from typing import Iterable
 from .grammar import _COVERAGE_ACTION_HEAD, _RELATIVE_DURATION_PATTERN, _head_is
 from .levels import followup_antecedent
 from .normalize import alternation, fold, spelled_out
+from .notes import changed_entry_names, entry_name
 from .patterns import datetime_followup_antecedent
 from .temporal import (
     alarm_cancellation_request,
@@ -1705,6 +1706,8 @@ class DialogueState:
         self._notification: dict[str, str] | None = None  # M76: the alarm, timer or reminder set, as verified
         self._listed: tuple[str, ...] = ()  # M76: the titles of the tasks read, in the order they were told
         self._task: dict[str, object] | None = None  # M80: the task last created or changed, as verified
+        # M174: every task this conversation created or changed (an entry put on a list in a plan too), as verified.
+        self._entries: dict[str, dict[str, object]] = {}
         self._note: str | None = None  # M160: the title of the note last made, read or changed, as verified
         self._headlines: tuple[str, ...] = ()  # M83: the headlines read, in the order they were told
         # M145: every alarm, timer or reminder this conversation set and has not cancelled, as verified, in order.
@@ -1730,6 +1733,7 @@ class DialogueState:
             return
         for step in _verified_steps(situation):
             self._keep_own_notification(step)
+            self._keep_entry(step)
         operation = str(situation.get("operation") or "")
         if (
             operation not in self.intended
@@ -1784,13 +1788,7 @@ class DialogueState:
                 and isinstance(observed.get("version"), int)
                 and not observed.get("deleted")
             ):
-                self._task = {
-                    "taskId": observed["taskId"],
-                    "expectedVersion": observed["version"],
-                    "title": observed["title"],
-                    "details": str(observed.get("details") or ""),
-                    "due": observed.get("dueUtc") if isinstance(observed.get("dueUtc"), str) else None,
-                }
+                self._task = _verified_task(observed)
         elif operation in _NOTE_RESULTS:
             # M160 (DEV-G v4w G-w12-t2 «agrégale que quiero comprarle un ramo de flores» right after the note was made):
             # the note the conversation is on, by the title the store verified, for an addition that names no note.
@@ -1815,6 +1813,22 @@ class DialogueState:
             self._facts["volume"] = str(observed["level"])
         elif operation.startswith("system.settings") and observed.get("setting") and observed.get("value") is not None:
             self._facts[str(observed["setting"])] = str(observed["value"])
+
+    def _keep_entry(self, step: dict) -> None:
+        """M174: a task this conversation created or changed, alone or as a step of a plan, as the store verified it
+        after the write; a task trashed is no entry any more."""
+
+        operation = str(step.get("operation") or "")
+        observed = step.get("observed") if isinstance(step.get("observed"), dict) else {}
+        task_id = observed.get("taskId")
+        if operation not in _TASK_WRITES + ("task.delete",) or not isinstance(task_id, str):
+            return
+        if observed.get("deleted") or operation == "task.delete":
+            self._entries.pop(task_id, None)
+            return
+        if isinstance(observed.get("title"), str) and isinstance(observed.get("version"), int):
+            self._entries.pop(task_id, None)
+            self._entries[task_id] = _verified_task(observed)
 
     def _keep_own_notification(self, step: dict) -> None:
         """M145: a verified setting of an alarm, a timer or a reminder is this conversation's own; a verified cancel
@@ -2052,6 +2066,19 @@ class DialogueState:
 
         return dict(self._task) if self._task is not None else None
 
+    def changed_entry(self, *texts: str) -> dict[str, object] | None:
+        """M174 (DEV-H v5c H-w04-t3 «espera, el jamón no, mejor queso» after «apunta ahí pan, leche y jamón» → the
+        list's own task updated with nothing changed): the one task of this conversation a change names by its old
+        name («el jamón no, mejor queso», «cambia el jamón por queso»), as the store verified it; None when the change
+        names none of them, or more than one by that name."""
+
+        for text in texts:
+            for name in changed_entry_names(text):
+                found = [entry for entry in self._entries.values() if entry_name(str(entry["title"])) == name]
+                if len(found) == 1:
+                    return dict(found[0])
+        return None
+
     def edited_note_title(self) -> str | None:
         """M160: the title of the note this conversation last made, read or changed, as the store verified it, while no
         other effect came after it; None when there is none."""
@@ -2090,6 +2117,18 @@ class DialogueState:
         nouns = [noun for kind in kinds for noun in kind[1 if asked.group("es") else 2]]
         named = ", ".join(nouns[:-1]) + (" y " if asked.group("es") else " and ") + nouns[-1] if len(nouns) > 1 else nouns[0]
         return f"{said.said[: asked.end()]} {named}{said.said[asked.end():]}"
+
+
+def _verified_task(observed: dict) -> dict[str, object]:
+    """M80: a task as the store verified it after a write: identity, version and every editable field."""
+
+    return {
+        "taskId": observed["taskId"],
+        "expectedVersion": observed["version"],
+        "title": observed["title"],
+        "details": str(observed.get("details") or ""),
+        "due": observed.get("dueUtc") if isinstance(observed.get("dueUtc"), str) else None,
+    }
 
 
 def _verified_steps(situation: dict) -> list[dict]:

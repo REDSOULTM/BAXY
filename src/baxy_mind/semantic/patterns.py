@@ -7309,6 +7309,9 @@ def _review_local_data_effects(
         _head_is(head, r"(?:anota|anotar|anotame|apunta|apuntame|jot)")
         # «apúntame una tarea», «anota un recordatorio»: the created domain named is what is written (_CREATE).
         and not _has(folded, r"\b(?:notas?|notes?|tareas?|tasks?|recordatorios?|reminders?)\b")
+        # M174 (DEV-H v5c H-w30-t1 «anota en mis pendientes pagar la luz» → a note «anota en mis pendientes pagar la
+        # luz» beside the task): the person's pendientes are their tasks (owner D59: never a note unless it is said).
+        and not _has(folded, r"\bpendientes\b")
         # «anota este evento en mi calendario»: written on the calendar, not in a note.
         and not _has(folded, _CALENDAR_PLACE)
     ):

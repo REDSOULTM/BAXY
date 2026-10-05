@@ -49,6 +49,7 @@ from .semantic.apps import (
 from .semantic.notes import (
     asks_overdue_notifications,
     conversation_note_title,
+    entries_on_a_list,
     list_creation_said,
     names_own_event,
     names_a_note,
@@ -4824,6 +4825,32 @@ _FRONT_WINDOW_CHANGES = frozenset(
 )
 
 
+def _plan_effects_read(
+    objective: str,
+    expected_operations: tuple[str, ...],
+    available: tuple[str, ...],
+    history: object,
+    application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
+    game_catalog: GameCatalogIndex = GameCatalogIndex(),
+) -> EffectIntent | None:
+    """What the readers read in the objective of a plan the turn decided, for each step's clause; None when nothing."""
+
+    found = resolve_explicit_effects(
+        objective, available, application_names, game_catalog,
+        previous_user_text=_previous_user_request(history if isinstance(history, list) else [], objective),
+    )
+    if found is None and len(expected_operations) > 1:
+        # M174 (DEV-H v5c H-s116 «Ey, anótame en la lista del mercado plátano maduro, arepas de chócolo y queso costeño,
+        # ¿sí?» → three task.create decided, then «¿Qué título le darías a esta lista…?»): the decision read the order
+        # inside the address and the tag (the reading gate's utterance forms); each step's clause is read from that same
+        # order, as the argument binder of one operation does (``_ground_explicit_arguments``).
+        uttered = semantic_reading.utterance_form(
+            objective, lambda clause: resolve_explicit_effects(clause, available, application_names, game_catalog),
+        )
+        found = uttered[1] if uttered is not None else None
+    return found
+
+
 def _expand_effect_plan(
     operations: tuple[str, ...],
     evidence: tuple[str, ...] = (),
@@ -5366,6 +5393,9 @@ def _close_of_the_just_opened(
 _OBJECT_NAMED_OPERATIONS = frozenset({"input.keyboard.layout", "desktop.wallpaper.set", "routine.phrase.create"})
 _CLOCK_SET_OPERATIONS = frozenset({"notification.schedule", "reminder.create", "calendar.event.create", "timer.start"})
 _REMINDER_OPERATIONS = frozenset({"notification.schedule", "reminder.create"})
+# M174: the writes the decider gives to things put on a list that are not the list's entries: a change of the list's
+# own task, or a note nobody asked for.
+_NOT_LIST_ENTRY_WRITES = frozenset({"task.update", "note.create", "note.update"})
 
 
 def _decider_says_the_anchored_moment(decided: semantic_decider.ContextDecision, anchored: str) -> bool:
@@ -5969,6 +5999,23 @@ def _context_decided_result(
             decided = semantic_decider.ContextDecision(
                 decided.request, "action", tuple(restated.operations), decided.question, decided.arguments,
             )
+    listed_entries = (
+        entries_on_a_list(text, said_before_by_person[::-1])
+        if decided.decision == "action"
+        and decided.operations
+        and set(decided.operations) <= _NOT_LIST_ENTRY_WRITES
+        and "task.create" in available_operations
+        else None
+    )
+    if listed_entries is not None:
+        # M174 (owner D59 and the decider's catalog «anotar algo en una lista (la del súper…)»; DEV-H v5c H-w10-t2
+        # «Agrégale bloqueador, gafas y el cargador del parlante» right after «Crea una lista para el paseo a Santa
+        # Marta» → task.update asking which title to change; DEV-D v5c D-w03-t2 «agrega tomates tmb» after «lista del
+        # super: …» → note.update): things put on a list of the person's, named in the message or made just before it,
+        # are tasks on that list, one per thing; never a change of the list's own task nor a note nobody asked for.
+        # The request is the one the readers read as those entries (the plan grounds each one from it).
+        listed_request, listed_count = listed_entries
+        decided = semantic_decider.ContextDecision(listed_request, "action", ("task.create",) * listed_count, "")
     named_file = _conversation_named_file(decided, text, history, available_operations)
     if named_file is not None:
         # M151 (DEV-F v4s F-w18-t2 «Yeah, that's the one, give us the gist of it» after «Downloads is open; I can see
@@ -6516,7 +6563,14 @@ def _direct_arguments_result(
             candidate = {"channel": forwarded[0], "recipient": forwarded[1], "text": forwarded[2]}
             if validate_json_schema_instance(candidate, tool["function"]["parameters"]):
                 arguments = candidate
-    edited = dialogue_state.edited_task() if operation == "task.update" else None
+    edited = (
+        # M174 (DEV-H v5c H-w04-t3 «espera, el jamón no, mejor queso» after «apunta ahí pan, leche y jamón» → the list's
+        # own task «Lista para la compra del finde» changed): the entry the change names by its old name is the task
+        # changed; else the one this conversation last made or changed (M80).
+        dialogue_state.changed_entry(person, objective) or dialogue_state.edited_task()
+        if operation == "task.update"
+        else None
+    )
     if arguments is None and not question and edited is not None:
         # M80 (DEV-D v3m D-p06-t2, D-p06-t3, D-p08-t3): what was not changed is kept from the verified task.
         arguments, question = _edited_task_arguments(
@@ -9602,12 +9656,13 @@ def _run_sidecar(
                         )
                     expected_operations = tuple(raw_expected_operations)
                 recognized_expected = (
-                    resolve_explicit_effects(
+                    _plan_effects_read(
                         objective,
-                        (tool.name for tool in planner_catalog.tools),
+                        expected_operations,
+                        tuple(tool.name for tool in planner_catalog.tools),
+                        history,
                         application_catalog,
                         game_catalog,
-                        previous_user_text=_previous_user_request(history, objective),
                     )
                     if expected_operations
                     else None
