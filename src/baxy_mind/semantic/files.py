@@ -312,6 +312,18 @@ def named_file_meant(message: str, last_reply: str, request_before: str = "") ->
     return None
 
 
+def only_file_named(message: str, last_reply: str) -> str | None:
+    """M164 (DEV-I v4y I-w27-t3 «could you open it for me?» after «Found it — budget.xlsx is in your Downloads
+    folder.» → asked what to open): the one file BAXY's last reply named, which a pointer in ``message`` can only be.
+    None when the reply named none or several, or the message names a file of its own, a folder, the newest or
+    another one."""
+
+    names = files_named_in_reply(last_reply)
+    if len(names) != 1 or files_named_in_reply(message) or _has(_fold(message), _ANOTHER_FILE_SAID):
+        return None
+    return names[0]
+
+
 def named_file_operation(meant: NamedFileMeant) -> str | None:
     """M151: the operation that does what is asked with the file: its extension decides the reader (a PDF the PDF
     reader, a text file the text reader, as ``known_folder_file_path``); any file opens. None for a file no reader

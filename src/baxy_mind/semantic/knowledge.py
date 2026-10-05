@@ -21,6 +21,8 @@ what stays talk — an open suggestion («una receta vegetariana»), code, an ex
   with the person's words (kind ``figure``); one computed from the person's numbers, or of their own things, is not.
 - ``worked_out_from_what_was_said`` M162 (D35, M118): a sum on numbers BAXY just said — a recipe scaled, a difference,
   a gap, a percentage, a rate —, all of them said, is worked out from them and not looked up.
+- ``converted_from_what_was_said`` M163 (D35, M88): a figure BAXY just said, asked in another unit of a fixed factor
+  (°C↔°F, kg↔lb, km↔miles), or converted by the equivalence it said («200 g per cup»), is converted, not looked up.
 """
 
 from __future__ import annotations
@@ -31,7 +33,9 @@ from typing import Iterable
 
 from .conversation import asks_for_code, translates_what_was_said
 from .normalize import fold, fold_in_place, spelled_out
-from .quantities import conversion_asked, numbers_in, spoken_numbers_in
+from .quantities import (
+    conversion_asked, converts_by_itself, equivalence_said, numbers_in, spoken_numbers_in, unit_asked, unit_figures,
+)
 
 __all__ = [
     "ReferenceLookup", "asks_a_figure", "figure_lookup", "kitchen_quantity", "memory_answer_form", "reference_lookup",
@@ -770,14 +774,78 @@ _SUM_WORDS = _FIGURE_FRAME_WORDS | _QUESTION_WORDS | frozenset({
 })
 
 
+# M163 (D35 with M88 and M162; DEV-G v4y G-w16-t3 «uy y eso cuánto sería en fahrenheit, es que yo no entiendo bien
+# celsius» after «En Cali hay 29°C y soleado.», read as a figure of the world (M104); G-w08-t3 «brilliant, so if the
+# recipe wants 300 g of that, how many cups is it» after «Around 200 g per cup of caster sugar.», restated «How many
+# cups is 300 g of caster sugar?» and read as a kitchen quantity (M88)): both searched where the decider talked. A
+# figure BAXY just said, asked in another unit, is converted, not looked up (D35: calculations are worked out with
+# units): when the two units are of one kind with a fixed factor or formula (°C↔°F, kg↔lb, km↔miles, cm↔inches,
+# l↔gallons; ``semantic.quantities``), or when BAXY's last answer said the equivalence the conversion needs («200 g per
+# cup»). The person's own figure («300 g of that») converts only by that equivalence, or by a fixed factor pointing at
+# what BAXY said. How many grams a cup of a named ingredient weighs, with no equivalence said, is still the kitchen
+# quantity looked up (M88, D35/D52, D61: the cup is no fixed measure and the density is a figure of the world); so is a
+# figure nobody said («¿cuánto pesa un elefante en libras?») and an amount in another currency (M154). The message
+# points back at what was said («eso», «that», «pásamelo») or names nothing the conversation did not («¿y en onzas?»).
+_CONVERSION_POINTS_BACK = re.compile(
+    r"\b(?:eso|esto|esa|ese|esos|esas|that|this|it|those|them)\b|\blo\b(?!\s+(?:que|mismo|de|del)\b)"
+    r"|\b(?:pasa|pasar|pasame|pasarme|convierte|convertir|convierteme|cambia|cambiame|transforma|transformame|dame|"
+    r"dime|decime|ponme|calcula|calculame)(?:lo|la|los|las)\b"
+)
+_CONVERSION_WORDS = _SUM_WORDS | frozenset({
+    "grados", "degrees", "pasa", "pasar", "pasame", "pasalo", "pasamelo", "convierte", "convertir", "convert",
+    "conviertelo", "cambia", "equivale", "equivalen", "about", "roughly", "approximately", "aproximadamente", "more",
+    "less", "puedes", "podrias", "could", "please", "porfa", "favor", "just", "solo", "nomas", "really", "actually",
+})
+
+
+def converted_from_what_was_said(text: str, replies: Iterable[str], person: Iterable[str] = ()) -> bool:
+    """M163 (see above): the message asks a figure BAXY just said in another unit, or the person's own figure by the
+    equivalence BAXY just said. ``replies`` are BAXY's earlier answers, oldest first; ``person`` the person's earlier
+    messages (what the conversation named)."""
+
+    replies = [str(reply) for reply in replies if str(reply or "").strip()]
+    asked = unit_asked(text)
+    if not replies or asked is None or asks_for_code(text) or translates_what_was_said(text):
+        return False
+    last = replies[-1]
+    folded = spelled_out(fold(text))
+    points_back = _CONVERSION_POINTS_BACK.search(folded) is not None
+    own = [figure for figure in unit_figures(text) if (figure.unit, figure.kind) != asked]
+    if own:
+        # «300 g of that»: by the equivalence said, or a fixed factor applied to what BAXY said; never another
+        # ingredient than the one the equivalence was about.
+        if not any(
+            (figure.unit is not None and equivalence_said(last, figure.unit, asked[0]))
+            or (points_back and converts_by_itself(figure, asked) and numbers_in([last]))
+            for figure in own
+        ):
+            return False
+        if any(found.group(0) not in fold(last) for found in _INGREDIENT_WORD.finditer(folded)):
+            return False
+    elif not any(
+        converts_by_itself(figure, asked) or (figure.unit is not None and equivalence_said(last, figure.unit, asked[0]))
+        for figure in unit_figures(last)
+    ):
+        return False
+    if points_back:
+        return True
+    conversation = spelled_out(fold(" ".join([*replies, *(str(said or "") for said in person)])))
+    named = {word[:4] for word in re.findall(r"[a-z]{4,}", conversation)}
+    return all(
+        word in _CONVERSION_WORDS or unit_asked(f"en {word}") is not None or word[:4] in named
+        for word in re.findall(r"[a-z]{4,}", folded)
+    )
+
+
 def worked_out_from_what_was_said(text: str, replies: Iterable[str], person: Iterable[str] = ()) -> bool:
     """M162 (see above): the message asks a sum on numbers BAXY just said, all of them said. ``replies`` are BAXY's
-    earlier answers, oldest first; ``person`` the person's earlier messages (what the conversation named)."""
+    earlier answers, oldest first; ``person`` the person's earlier messages (what the conversation named). M163: a
+    conversion of what was said is one (``converted_from_what_was_said``)."""
 
     replies = [str(reply) for reply in replies if str(reply or "").strip()]
     if not replies:
         return False
-    if rate_of_what_was_said(text, replies[-1]):
+    if rate_of_what_was_said(text, replies[-1]) or converted_from_what_was_said(text, replies, person):
         return True
     folded = spelled_out(fold(text))
     last = spelled_out(fold(replies[-1]))
