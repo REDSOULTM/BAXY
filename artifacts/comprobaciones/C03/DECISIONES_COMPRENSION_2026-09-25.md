@@ -953,3 +953,10 @@ OCR pulsó «biblioteca» una vez en el panel de VS Code; M132 ata el clic a la 
 6. **Hipótesis de seguridad para el dueño (sin verificar en vivo):** si la App envía el saludo en el historial, la
    protección de H0735 (no actuar sobre una conversación ajena captada por el micrófono) no se aplica al primer mensaje
    hablado de una sesión; queda sólo el criterio del decisor. No se cambia sin su decisión.
+
+## D77. Horarios de partidos: API pública de ESPN (dueño, 2026-10-05 ~10:30)
+Pregunta: BAXY sólo consulta Wikipedia para «¿cuándo juega X?», no encuentra la hora y falla todo aviso «una hora antes
+del partido» (≈5 filas en G/H/I; probablemente 3–4 en DEV-E). Opciones: API pública de ESPN (sin clave ni cuenta, cubre
+NBA, fútbol europeo y sudamericano, no es una API oficial documentada), el navegador del dueño (la vía general de D32,
+con captchas en su red) o dejarlo así. **Decisión del dueño: API pública de ESPN.** Encaja en D32: sin clave ni cuenta,
+uso personal no comercial a ritmo humano; si no responde o no cubre la liga, BAXY lo dice y ofrece el navegador como hoy.
