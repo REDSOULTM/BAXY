@@ -2665,6 +2665,17 @@ def _served_surface_reread(
     audio.» (audio.mute) or «Bring up 24/7 stores near me» (web.search) are what they prove.
     """
 
+    previous = _previous_user_request(history if isinstance(history, list) else [], objective)
+
+    def read(text: str) -> semantic_reading.Reading:
+        return semantic_reading.read(
+            text,
+            available_operations=tuple(tool.name for tool in planner_catalog.tools),
+            application_names=application_names,
+            game_catalog=game_catalog,
+            previous_user_text=previous,
+        )
+
     candidates = [semantic_surface.canonical(objective)]
     if decided_request is not None:
         restated = decided_request.strip()
@@ -2681,16 +2692,24 @@ def _served_surface_reread(
             # read alone, the readers fill it with their own default. Only the decider's restatement, which carries
             # it, is re-read.
             candidates = [semantic_surface.canonical(restated) if restated else None]
-    previous = _previous_user_request(history if isinstance(history, list) else [], objective)
+        elif restated and objective not in candidates:
+            # M171 (DEV-I v5a I-w03-t2 «ugh ok, then al menos ponme el night light en el notebook pa no quemarme los
+            # ojos» → decider «Activa la luz nocturna en el notebook.», limit → «Eso no lo hago»; the isolated decider
+            # says limit too, so this corrects the decider, D58): a message the readers prove as an order, whose
+            # openers («ugh ok, then al menos…») keep it from reading as a complete request, is re-read as said when
+            # the decider's own restatement reads as that same order. The two readings agree on an operation of the
+            # catalog, and the limit was the decider's error. A restatement the readers do not prove (an Uber, the
+            # lights of the house, an alarm moved to the phone) or read as another operation leaves the limit.
+            said, decided_reading = read(objective), read(restated)
+            if (
+                said.effects is not None
+                and decided_reading.effects is not None
+                and set(said.effects.operations) == set(decided_reading.effects.operations)
+            ):
+                candidates.append(objective)
     canonical = None
     for candidate in dict.fromkeys(text for text in candidates if text):
-        reading = semantic_reading.read(
-            candidate,
-            available_operations=tuple(tool.name for tool in planner_catalog.tools),
-            application_names=application_names,
-            game_catalog=game_catalog,
-            previous_user_text=previous,
-        )
+        reading = read(candidate)
         if reading.effects is not None or reading.clarification is not None:
             canonical = candidate
             break
