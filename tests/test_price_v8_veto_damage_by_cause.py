@@ -270,9 +270,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 comprensión natural: repin tras M160 (2026-10-04).
 # C03 M162: re-pin tras la cuenta sobre lo dicho y la diferencia horaria con aquí.
 # C03 M163: re-pin tras convertir lo dicho en la charla (quantities, knowledge, __main__).
+# C03 comprensión natural: repin tras M164 (2026-10-05).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "016c6def519cba995f2ef06e5bb0c0db741b58e63c4ac391888944291170f4e5"
+        "32995e74deaf501a59a266c3c1072c072ad63e5264d84b01aa658766673edb28"
     ),
     "src/baxy_mind/llm.py": (
         "d61fde606798cfb6959e02e6daa33def583db4a99edcf67d78ffe15d7dadd599"
