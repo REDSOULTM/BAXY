@@ -255,8 +255,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # C03 comprensión natural: repin tras M161 (2026-10-04).
 # C03 M163: re-pin tras convertir lo dicho en la charla (quantities, knowledge, __main__).
 # C03 comprensión natural: repin tras M164 (2026-10-05).
+# C03 M166: la música que se pide lleva el título y el artista que dijo la persona (semantic.arguments.as_the_person_named).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "52ff79c951f59ca5906df9232356579f664bddbd5eadb7b3135b2eff5f710037"
+    "a7df2c3bef47d8e28c1b7b7ad1c0760c19ace561c9ab1b71b9fdf85542f30c65"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
