@@ -4398,8 +4398,14 @@ def _timed_task_arguments(
     arguments: dict[str, object] = {"dueUtc": task.due, "title": task.title}
     if operation == "notification.schedule":
         arguments["kind"] = task.kind
+    # M170 (DEV-I v4y I-w20-t3, decided «Recuérdame mañana a las 8:45 que tengo una reunión a las 9.»): the request's two
+    # clocks send the reading to the person's message, which names no day («…una reunion a las 9, recuerdamelo 15
+    # minutos antes de eso»); the day the request places beside that moment or the clock that rings («mañana a las
+    # 8:45») rides with it, so D61b reads tomorrow's 9 and not the next 9 (by day, tonight's 21:00, rung at 20:45).
+    placed_day = semantic_temporal.placed_day_of_moment(evidence, found_in, task.due)
+    moment = task.due if placed_day is None else f"{placed_day} {task.due}"
     # M137 (DEV-G v4n G-s016, DEV-F v4m F-w55-t1): the advance «recordámelo una hora antes» is read from the message.
-    arguments = _normalize_grounded_operation_arguments(operation, arguments, task.due, said=found_in)
+    arguments = _normalize_grounded_operation_arguments(operation, arguments, moment, said=found_in)
     return arguments if arguments is not None and validate_json_schema_instance(arguments, schema) else None
 
 
