@@ -33,6 +33,7 @@ from typing import Iterable
 from .grammar import _COVERAGE_ACTION_HEAD, _RELATIVE_DURATION_PATTERN, _head_is
 from .levels import followup_antecedent
 from .normalize import alternation, fold, spelled_out
+from .notes import changed_entry_names, entry_name
 from .patterns import datetime_followup_antecedent
 from .temporal import (
     alarm_cancellation_request,
@@ -1660,6 +1661,22 @@ class RetimedNotification:
     # The moment it was read at: the new time is checked to be ahead of that same clock, so one turn uses one «now»
     # (the M76 tests pinned 2026-09-29 and broke on 2026-09-30 against the machine's clock).
     read_at: datetime | None = None
+    # M173: how it was set — an alarm or reminder of the Task Scheduler (``notification.schedule``, cancelled with
+    # ``notification.cancel.*``) or a reminder of BAXY's own store (``reminder.create``, deleted by its exact title,
+    # ``set_title``, and created again).
+    set_by: str = "notification.schedule"
+    set_title: str = ""
+    # M173: when it was to ring, local: a move that names another notice by its clock is not of this one.
+    set_at: datetime | None = None
+
+    @property
+    def moving_operations(self) -> tuple[str, str]:
+        """M173: the plan that moves it, by how it was set: the latest of its kind cancelled and set again, or the
+        reminder of the store deleted and created again. Never another notice."""
+
+        if self.set_by == "reminder.create":
+            return ("reminder.delete", "reminder.create")
+        return ("notification.cancel.latest", "notification.schedule")
 
 
 class DialogueState:
@@ -1705,6 +1722,8 @@ class DialogueState:
         self._notification: dict[str, str] | None = None  # M76: the alarm, timer or reminder set, as verified
         self._listed: tuple[str, ...] = ()  # M76: the titles of the tasks read, in the order they were told
         self._task: dict[str, object] | None = None  # M80: the task last created or changed, as verified
+        # M174: every task this conversation created or changed (an entry put on a list in a plan too), as verified.
+        self._entries: dict[str, dict[str, object]] = {}
         self._note: str | None = None  # M160: the title of the note last made, read or changed, as verified
         self._headlines: tuple[str, ...] = ()  # M83: the headlines read, in the order they were told
         # M145: every alarm, timer or reminder this conversation set and has not cancelled, as verified, in order.
@@ -1730,6 +1749,7 @@ class DialogueState:
             return
         for step in _verified_steps(situation):
             self._keep_own_notification(step)
+            self._keep_entry(step)
         operation = str(situation.get("operation") or "")
         if (
             operation not in self.intended
@@ -1771,8 +1791,22 @@ class DialogueState:
                 self._notification = {key: observed[key] for key in ("kind", "title", "dueUtc")}
                 # M113: the request that set it, for a later «mejor media hora antes» counted from the same moment.
                 self._notification["request"] = request
+                self._notification["set_by"] = operation
         elif operation == "reminder.create":
             self._facts["reminder"] = str(observed.get("title") or request)
+            if (
+                all(isinstance(observed.get(key), str) and observed[key].strip() for key in ("title", "dueUtc"))
+                and not observed.get("deleted")
+            ):
+                # M173 (DEV-F v5c F-w55-t2 «no, mejor media hora antes, una hora es mucho», DEV-I v5c I-w04-t2 «actually
+                # make it half three», each right after a reminder BAXY made with reminder.create → «¿A qué hora y qué
+                # tipo de notificación…?»): the reminder of the store just made is the notice the conversation moves, as
+                # an alarm set by notification.schedule is; it is moved by its own operations (deleted by its exact
+                # title, created again), never by notification.cancel.*, which reads only the Task Scheduler.
+                self._notification = {
+                    "kind": "reminder", "title": observed["title"], "dueUtc": observed["dueUtc"], "request": request,
+                    "set_by": operation,
+                }
         elif operation == "notification.list" and plural_alarm_cancellation(request):
             self._alarm_offer = _alarm_clocks(observed)
         elif operation in _TASK_WRITES:
@@ -1784,13 +1818,7 @@ class DialogueState:
                 and isinstance(observed.get("version"), int)
                 and not observed.get("deleted")
             ):
-                self._task = {
-                    "taskId": observed["taskId"],
-                    "expectedVersion": observed["version"],
-                    "title": observed["title"],
-                    "details": str(observed.get("details") or ""),
-                    "due": observed.get("dueUtc") if isinstance(observed.get("dueUtc"), str) else None,
-                }
+                self._task = _verified_task(observed)
         elif operation in _NOTE_RESULTS:
             # M160 (DEV-G v4w G-w12-t2 «agrégale que quiero comprarle un ramo de flores» right after the note was made):
             # the note the conversation is on, by the title the store verified, for an addition that names no note.
@@ -1815,6 +1843,22 @@ class DialogueState:
             self._facts["volume"] = str(observed["level"])
         elif operation.startswith("system.settings") and observed.get("setting") and observed.get("value") is not None:
             self._facts[str(observed["setting"])] = str(observed["value"])
+
+    def _keep_entry(self, step: dict) -> None:
+        """M174: a task this conversation created or changed, alone or as a step of a plan, as the store verified it
+        after the write; a task trashed is no entry any more."""
+
+        operation = str(step.get("operation") or "")
+        observed = step.get("observed") if isinstance(step.get("observed"), dict) else {}
+        task_id = observed.get("taskId")
+        if operation not in _TASK_WRITES + ("task.delete",) or not isinstance(task_id, str):
+            return
+        if observed.get("deleted") or operation == "task.delete":
+            self._entries.pop(task_id, None)
+            return
+        if isinstance(observed.get("title"), str) and isinstance(observed.get("version"), int):
+            self._entries.pop(task_id, None)
+            self._entries[task_id] = _verified_task(observed)
 
     def _keep_own_notification(self, step: dict) -> None:
         """M145: a verified setting of an alarm, a timer or a reminder is this conversation's own; a verified cancel
@@ -1931,7 +1975,8 @@ class DialogueState:
 
         retiming = notification_retiming(text)
         set_by = self.operations if deciding else self.previous_operations
-        if self._notification is None or "notification.schedule" not in set_by:
+        # M173: or the reminder of the store the last turn made (``reminder.create``).
+        if self._notification is None or self._notification.get("set_by", "notification.schedule") not in set_by:
             return None
         # M113 (DEV-F v4d F-w55-t2 «no, mejor media hora antes, una hora es mucho» after «…a las 10…, recordámelo una
         # hora antes»): a new count before or after the same moment moves the notification by the difference.
@@ -1974,7 +2019,11 @@ class DialogueState:
             if moment is None:
                 return None
             due = moment.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
-        return RetimedNotification(kind, cancel_at, {"dueUtc": due, "kind": kind, "title": title}, now)
+        return RetimedNotification(
+            kind, cancel_at, {"dueUtc": due, "kind": kind, "title": title}, now,
+            set_by=self._notification.get("set_by", "notification.schedule"), set_title=self._notification["title"],
+            set_at=old,
+        )
 
     def moved_notification_request(
         self, text: str, *, now: datetime | None = None, zone: timezone | None = None,
@@ -2010,10 +2059,20 @@ class DialogueState:
             new = datetime.fromisoformat(due.replace("Z", "+00:00")).astimezone(zone)
             when = f"at {new:%H:%M}" if english else f"a las {new:%H:%M}"
         title = moved.schedule_arguments["title"]
+        # M173: a reminder of the store is deleted (to its recoverable trash) and made again, never «cancelled».
+        made = moved.set_by == "reminder.create"
         if english:
-            return f"cancel the {moved.kind} «{title}» set for {old:%H:%M} and set it again {when}"
+            verb = "delete" if made else "cancel"
+            return f"{verb} the {moved.kind} «{title}» set for {old:%H:%M} and set it again {when}"
         noun, pronoun = ("el recordatorio", "lo") if moved.kind == "reminder" else ("la alarma", "la")
-        return f"cancela {noun} «{title}» de las {old:%H:%M} y vuelve a poner{pronoun} {when}"
+        return f"{'borra' if made else 'cancela'} {noun} «{title}» de las {old:%H:%M} y vuelve a poner{pronoun} {when}"
+
+    def moving_operations(self) -> tuple[str, str]:
+        """M173: the plan that moves the notice this conversation last set
+        (``RetimedNotification.moving_operations``)."""
+
+        made = self._notification.get("set_by") if self._notification is not None else None
+        return RetimedNotification("reminder", None, {}, set_by=made or "notification.schedule").moving_operations
 
     def pointed_listed_title(self, text: str) -> str | None:
         """M76 (DEV-D v3l D-w17-t2 «mark the first one done» after «You have 13 tasks on your list, including
@@ -2051,6 +2110,19 @@ class DialogueState:
         effect came after it. A change of it keeps every field the person did not change. None when there is none."""
 
         return dict(self._task) if self._task is not None else None
+
+    def changed_entry(self, *texts: str) -> dict[str, object] | None:
+        """M174 (DEV-H v5c H-w04-t3 «espera, el jamón no, mejor queso» after «apunta ahí pan, leche y jamón» → the
+        list's own task updated with nothing changed): the one task of this conversation a change names by its old
+        name («el jamón no, mejor queso», «cambia el jamón por queso»), as the store verified it; None when the change
+        names none of them, or more than one by that name."""
+
+        for text in texts:
+            for name in changed_entry_names(text):
+                found = [entry for entry in self._entries.values() if entry_name(str(entry["title"])) == name]
+                if len(found) == 1:
+                    return dict(found[0])
+        return None
 
     def edited_note_title(self) -> str | None:
         """M160: the title of the note this conversation last made, read or changed, as the store verified it, while no
@@ -2090,6 +2162,18 @@ class DialogueState:
         nouns = [noun for kind in kinds for noun in kind[1 if asked.group("es") else 2]]
         named = ", ".join(nouns[:-1]) + (" y " if asked.group("es") else " and ") + nouns[-1] if len(nouns) > 1 else nouns[0]
         return f"{said.said[: asked.end()]} {named}{said.said[asked.end():]}"
+
+
+def _verified_task(observed: dict) -> dict[str, object]:
+    """M80: a task as the store verified it after a write: identity, version and every editable field."""
+
+    return {
+        "taskId": observed["taskId"],
+        "expectedVersion": observed["version"],
+        "title": observed["title"],
+        "details": str(observed.get("details") or ""),
+        "due": observed.get("dueUtc") if isinstance(observed.get("dueUtc"), str) else None,
+    }
 
 
 def _verified_steps(situation: dict) -> list[dict]:
