@@ -270,8 +270,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 comprensión natural: repin tras M160 (2026-10-04).
 # C03 M162: re-pin tras la cuenta sobre lo dicho y la diferencia horaria con aquí.
 # C03 comprensión natural: repin tras M161 (2026-10-04).
+# C03 M163: re-pin tras convertir lo dicho en la charla (quantities, knowledge, __main__).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "166f42f50b8892ec842f162b2b908572bfbe656a4fd864b193ee631baa13aedc"
+    "ff67baef7dda8071e5676cb093788e6844754763dcfb4615846d9caa68377de3"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
