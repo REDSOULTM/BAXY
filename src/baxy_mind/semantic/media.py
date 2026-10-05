@@ -795,3 +795,28 @@ def asks_what_is_playing(user_text: str | None) -> bool:
     «de qué disco es esta»)."""
 
     return _MEDIA_IDENTITY_QUESTION.search(_fold(user_text or "")) is not None or asks_the_album(user_text)
+
+
+# M164 (DEV-G v4y G-s110 «oye, dime qué es esto que está sonando, que me ha encantado y no la reconozco» → audio.status,
+# «El volumen está en 60…»): what it is that sounds, or what the person is hearing, asks which song plays — the media
+# session — never the output's level. Folded.
+_WHAT_SOUNDS = re.compile(
+    r"\bque\s+(?:es\s+|son\s+)?(?:(?:esto|eso|lo)\s+)?(?:que\s+)?(?:(?:se\s+)?(?:esta|estaba|estan)\s+)?"
+    r"(?:sonando|suena|sono)\b|"
+    r"\bque\s+(?:es\s+(?:esto|eso|lo)\s+que\s+)?(?:estoy|estamos|estas)\s+(?:escuchando|oyendo)\b|"
+    r"\bwhat(?:'s|\s*s|\s+is)?\s+(?:(?:this|that)\s+)?(?:(?:that'?s|thats|that\s+is)\s+|(?:is\s+)?)playing\b|"
+    r"\bwhat\s+(?:am\s+i|are\s+we|is\s+this\s+i'?m|s\s+this\s+i'?m)\s+(?:listening\s+to|hearing)\b"
+)
+# The level, the mute or where the sound comes out is the output's status, which audio.status reads.
+_OUTPUT_STATUS_SAID = (
+    r"\b(?:volumen|volume|nivel|level|silencio|silenciad[oa]|mute|muted|mudo|fuerte|alto|bajito|loud|quiet|"
+    r"por\s+donde|donde|where|dispositivo|device|salida|output)\b"
+)
+
+
+def asks_what_sounds(user_text: str | None) -> bool:
+    """M164: the person asks what it is that is sounding or what they are hearing («qué es esto que está sonando»,
+    «what's that playing»), not how loud, whether it is muted, or through which device."""
+
+    folded = _fold(user_text or "")
+    return _WHAT_SOUNDS.search(folded) is not None and not _has(folded, _OUTPUT_STATUS_SAID)
