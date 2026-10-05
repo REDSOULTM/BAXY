@@ -5956,6 +5956,8 @@ def _context_decided_result(
         # M118 (D58): a rate of what BAXY just said is worked out from its numbers, whatever the restatement names.
         # M162 (DEV-I v4w I-w08-t2 «y para la mitad de gente?», DEV-H H-w24-t3 «pasame la brecha en porcentaje»): so
         # is a recipe scaled, a difference, a gap or a percentage of the numbers it said, all of them said.
+        # M163 (DEV-G v4y G-w16-t3 «uy y eso cuánto sería en fahrenheit…», G-w08-t3 «…300 g of that, how many cups is
+        # it»): and a figure it said in another unit, or the person's figure by the equivalence it said.
         and not semantic_knowledge.worked_out_from_what_was_said(
             text,
             [

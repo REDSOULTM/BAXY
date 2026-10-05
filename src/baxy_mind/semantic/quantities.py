@@ -21,6 +21,9 @@ duration, so the quantities are read here — durations with the same unit words
 - ``conversion_asked``   M88: a pure conversion between two units of one kind («2 cucharadas en cucharaditas»),
                          computed; a kitchen quantity that depends on what is measured is looked up instead
                          (``semantic.knowledge``).
+- ``unit_figures``, ``unit_asked``, ``converts_by_itself``, ``equivalence_said``  M163: the figures said with a unit,
+                         the unit a conversion is asked in, and whether one converts into the other — by a fixed factor
+                         or formula (temperature scales, imperial units) or by an equivalence said («200 g per cup»).
 - ``unsaid_figures``     M92 (D52): the figures of a prose or list answer from memory the person did not say, which
                          memory never gives; ``without_listed_years`` drops the bracketed years of such a list.
 - ``rated_totals``       M92: the quantity the request states under a per-unit rule a read states («3 litros» ×
@@ -43,6 +46,7 @@ __all__ = [
     "Measure", "measures", "evaluate", "derived_facts", "underived_figure", "numbers_in", "spoken_numbers_in",
     "format_number",
     "PricedTotal", "priced_totals", "underived_price", "Conversion", "conversion_asked",
+    "UnitFigure", "unit_figures", "unit_asked", "converts_by_itself", "equivalence_said",
     "unsaid_figures", "spelled_figure", "without_listed_years", "RatedTotal", "rated_totals", "gives_a_total",
 ]
 
@@ -640,6 +644,133 @@ def conversion_asked(text: str, language: str = "es") -> Conversion | None:
             said = f"{found.group('number')} {found.group('source')}"
             return Conversion(f"{said} = {format_number(value, 3, language)} {found.group('target')}", value)
     return None
+
+
+# M163 (DEV-G v4y G-w16-t3 «uy y eso cuánto sería en fahrenheit…» after «En Cali hay 29°C y soleado.», G-w08-t3 «…if
+# the recipe wants 300 g of that, how many cups is it» after «Around 200 g per cup of caster sugar.»): the units a
+# figure is converted between. Of one kind with a fixed factor or formula (the units above, the imperial ones and the
+# temperature scales) a conversion is arithmetic; a cup is no fixed measure (M88), so grams and cups convert only by
+# an equivalence said. Folded words → (the unit, its kind); «pie» alone is «a pie», never a unit, and a one-letter
+# symbol is a unit only after a number.
+_UNIT_KIND_OF = {_LENGTH: "length", _TIME: "time", _MASS: "mass", _VOLUME: "volume"}
+_CONVERTED_UNITS: dict[str, tuple[str, str]] = {
+    word: (f"{_UNIT_KIND_OF[dimension]}:{factor}", _UNIT_KIND_OF[dimension])
+    for word, (factor, dimension) in _CONVERSION_UNITS.items()
+}
+
+
+def _converted_unit(words: str, unit: str, kind: str) -> None:
+    for word in words.split():
+        _CONVERTED_UNITS[word] = (unit, kind)
+
+
+_converted_unit("pulgada pulgadas inch inches", "inch", "length")
+_converted_unit("pies feet foot ft", "foot", "length")
+_converted_unit("yarda yardas yard yards", "yard", "length")
+_converted_unit("onza onzas ounce ounces oz", "ounce", "mass")
+_converted_unit("tonelada toneladas tonne tonnes", "tonne", "mass")
+_converted_unit("km/h kmh kph", "km/h", "speed")
+_converted_unit("mph", "mph", "speed")
+_converted_unit("m/s", "m/s", "speed")
+_converted_unit("nudos knots", "knot", "speed")
+_converted_unit("celsius centigrados c", "celsius", "temperature")
+_converted_unit("fahrenheit f", "fahrenheit", "temperature")
+_converted_unit("kelvin k", "kelvin", "temperature")
+_converted_unit("taza tazas cup cups", "cup", "cup")
+_FIXED_KINDS = frozenset({"length", "time", "mass", "volume", "speed", "temperature"})
+_CONVERTED_UNIT_WORD = "|".join(
+    sorted((re.escape(word) for word in _CONVERTED_UNITS if len(word) > 1), key=len, reverse=True)
+)
+# «29°C», «29 °C», «29ºC» (folded «29oc»), «29 grados», «84 degrees fahrenheit»: a temperature, said in digits; with no
+# scale said its scale is not known, but it is a temperature.
+_TEMPERATURE_FIGURE = re.compile(
+    r"(?<![\w.,])\d+(?:[.,]\d+)?"
+    r"(?:\s*°\s*(?P<symbol>[cfk])?(?![a-z])|o(?P<ordinal>[cf])\b|"
+    r"\s*(?:grados|degrees)(?:\s+(?P<scale>celsius|centigrados|fahrenheit|kelvin|[cf])\b)?|"
+    r"\s*(?P<named>celsius|centigrados|fahrenheit|kelvin)\b)"
+)
+_UNIT_FIGURE = re.compile(rf"(?<![\w.,/])(?:{_NUMBER})\s*(?P<unit>{_CONVERTED_UNIT_WORD}|[gmlsh])(?![\w/])")
+# The unit a conversion is asked in: «en fahrenheit», «a grados Fahrenheit», «in cups», «cuántas onzas», «how many
+# cups» — a unit word right after the preposition, so «en 3 litros» is a figure, not the unit asked.
+_UNIT_ASKED_IN = re.compile(
+    rf"\b(?:en|in|a|to|into)\s+(?:(?:grados|degrees)\s+)?(?P<unit>{_CONVERTED_UNIT_WORD})(?![\w/])"
+    rf"|\b(?:cuant[oa]s|how\s+many)\s+(?:(?:grados|degrees)\s+)?(?P<counted>{_CONVERTED_UNIT_WORD})(?![\w/])"
+)
+
+
+@dataclass(frozen=True)
+class UnitFigure:
+    """A figure with its unit (see above): ``unit`` is the unit itself, None for a temperature said with no scale
+    («29 grados»); ``kind`` what it measures."""
+
+    unit: str | None
+    kind: str
+    start: int
+    end: int
+
+
+def unit_figures(text: str) -> list[UnitFigure]:
+    """The figures the text states with a unit a conversion knows (see above), in order."""
+
+    folded = fold(text)
+    found = []
+    for match in _TEMPERATURE_FIGURE.finditer(folded):
+        scale = next((group for group in match.group("symbol", "ordinal", "scale", "named") if group), None)
+        found.append(UnitFigure(_CONVERTED_UNITS[scale][0] if scale else None, "temperature", match.start(), match.end()))
+    for match in _UNIT_FIGURE.finditer(folded):
+        unit, kind = _CONVERTED_UNITS.get(match.group("unit"), ("", ""))
+        if kind and kind != "temperature" and not any(item.start <= match.start() < item.end for item in found):
+            found.append(UnitFigure(unit, kind, match.start(), match.end()))
+    return sorted(found, key=lambda item: item.start)
+
+
+def unit_asked(text: str) -> tuple[str, str] | None:
+    """The unit a conversion is asked in, as (unit, kind) («en fahrenheit» → the Fahrenheit scale), or None."""
+
+    found = _UNIT_ASKED_IN.search(fold(text))
+    return None if found is None else _CONVERTED_UNITS[found.group("unit") or found.group("counted")]
+
+
+def converts_by_itself(figure: UnitFigure, unit: tuple[str, str]) -> bool:
+    """The figure converts into the unit (as ``unit_asked`` gives it) with a fixed factor or formula: the same kind,
+    another unit."""
+
+    return figure.kind == unit[1] and figure.kind in _FIXED_KINDS and figure.unit != unit[0]
+
+
+# An equivalence said between two units: «200 g per cup», «125 g por taza», «about 125 g for a cup», «1 taza = 125 g»,
+# «a cup of plain flour weighs about 125 g», «3 tazas de harina de trigo son unos 375 g» (not «500 g de harina, … 1
+# taza de agua», amounts of a recipe side by side).
+_PER = r"\s+(?:per|por|for|each|cada|in|en|=|to)\s+(?:(?:a|an|one|un|una|1|cada|each)\s+)?"
+_EQUALS = (
+    r"\s+(?:(?:of|de)\s+[a-z]+(?:\s+[a-z]+){0,2}\s+)?(?:=|is|are|equals|weighs|weigh|pesa|pesan|son|es|equivale\s+a|"
+    r"equivalen\s+a|tiene|has|holds|makes)\s+(?:(?:about|around|roughly|approximately|unos|unas|aproximadamente|"
+    r"mas\s+o\s+menos|cerca\s+de|alrededor\s+de)\s+)?"
+)
+
+
+def equivalence_said(text: str, one: str, other: str) -> bool:
+    """The text says how much of one unit makes the other (see above); ``one`` and ``other`` are units as
+    ``unit_figures`` and ``unit_asked`` give them."""
+
+    folded = fold(text)
+    words = {
+        unit: "|".join(
+            sorted((re.escape(word) for word, (said, _) in _CONVERTED_UNITS.items() if said == unit), key=len, reverse=True)
+        )
+        for unit in (one, other)
+    }
+    if one == other or not all(words.values()):
+        return False
+    for first, second in ((one, other), (other, one)):
+        figure = rf"(?<![\w.,/])(?:{_NUMBER})\s*(?:{words[first]})(?![\w/])"
+        named = rf"(?<![\w.,/])(?:(?:a|an|one|un|una|1|cada|each)\s+)?(?:{words[second]})(?![\w/])"
+        if (
+            re.search(figure + _PER + rf"(?:{words[second]})(?![\w/])", folded) is not None
+            or re.search(named + _EQUALS + figure, folded) is not None
+        ):
+            return True
+    return False
 
 
 # ------------------------------------------------------------------ figures memory cannot vouch for (M88, M92)
