@@ -129,6 +129,17 @@ _OBJECT = (
     rf"(?:(?P<{{name}}_volume>{_VOLUME_OBJECT})|(?P<{{name}}_brightness>{_BRIGHTNESS_OBJECT})|"
     rf"(?P<{{name}}_screen>{_SCREEN_OBJECT}))"
 )
+# M167 (DEV-G v4y G-w21-t2 «súbele un poco a esa», with the salsa playlist BAXY had just put on → «¿Cuántos segundos la
+# adelanto?»): what plays, said as the dative of a verb that raises or lowers it («súbele a esa», «bájale un poco a la
+# canción», «súbele 10 a esta rola»), or as the object of an English particle verb («turn this song up a bit»), is
+# turned up or down: its volume. Only so: «sube la canción» may be uploading it, and moving it forward or back
+# («adelántala») is a verb of its own.
+_SONG = r"(?:cancion|cancioncita|rola|tema|pista|track|song|tune|playlist)"
+_SONG_DATIVE = rf"(?:a\s+(?:(?:esa|esta|ese|este|la|el|mi)\s+{_SONG}|esa|esta|eso|esto))"
+_SONG_NAMED = rf"(?:(?:this|that|the|my)\s+{_SONG})"
+_DATIVE_VERB = re.compile(r"(?:sub|baj|aument|reduc|disminu)\w*le")
+_PARTICLE_VERB = re.compile(rf"(?:turn|crank|pump|bump|tone)\s+(?:up|{_DOWN_PARTICLE})")
+_VERB_OBJECT = rf"(?:{_OBJECT}|(?P<{{name}}_song>{_SONG_DATIVE}|{_SONG_NAMED}))"
 
 # «un» and «uno» are also the indefinite article («un poco», «un 10»): never a quantity here.
 _NUMBER_WORDS = {word: value for word, value in _PERCENTAGE_WORD_VALUES.items() if word not in {"un", "uno", "one"}}
@@ -146,8 +157,11 @@ _EXTREME = r"(?:maximo|max|tope|maximum|full|minimo|min|minimum|mitad|half)"
 # An amount is relative («un 10», «en 10», «en un 10», «by 10», a bare «10»); a target is where the level ends
 # («a 40», «al 40», «a un 40», «to 40», «on 40», «al máximo»). After a setting verb an amount is a target too
 # (tanda 3: «deja el brillo en un 45%» was asked which way).
+# M167 (DEV-D v4y D-w18-t3 «like 15», DEV-I I-w15-t3 «unos 15 nomás»): «like», «tipo», «roughly» hedge the amount
+# as «unos» and «about» do.
 _AMOUNT = (
-    rf"(?:(?:en|by)\s+)?(?:(?:un|unos|unas|como|about|around)\s+)?(?P<amount>{_NUMBER})(?:\s*{_UNIT})?"
+    rf"(?:(?:en|by)\s+)?(?:(?:un|unos|unas|como|about|around|like|tipo|roughly|approximately|aproximadamente)\s+)?"
+    rf"(?P<amount>{_NUMBER})(?:\s*{_UNIT})?"
 )
 # Tanda 4 «Incrementa el brightness al level 8» was stepped up by 8 from 100: «al nivel 8», «to level 8» name
 # where the level ends, the same as «al 8».
@@ -175,16 +189,21 @@ def _form(body: str) -> re.Pattern[str]:
 _VERB_FORM = _form(
     rf"(?P<verb>{_UP}|{_DOWN}|{_SET}|{_SPEAK})"
     rf"(?:\s+(?P<rel1>{_RELATIVE}))?"
-    rf"(?:\s+{_OBJECT.format(name='o1')})?"
+    rf"(?:\s+{_VERB_OBJECT.format(name='o1')})?"
     rf"(?:\s+(?P<rel2>{_RELATIVE}))?"
     rf"(?:\s+{_QUANTITY})?"
-    rf"(?:\s+{_OBJECT.format(name='o2')})?"
+    rf"(?:\s+{_VERB_OBJECT.format(name='o2')})?"
     rf"(?:\s+{_COMPARISON})?"
 )
 # «turn the volume down a notch», «bring the brightness up to 80»: the English particle after the object.
 _PARTICLE_FORM = _form(
     rf"(?:turn|crank|bump|pump|tone|dial|bring|knock)\s+{_OBJECT.format(name='o1')}\s+"
     rf"(?:(?P<pup>up)|(?P<pdown>{_DOWN_PARTICLE}))"
+    rf"(?:\s+(?P<rel1>{_RELATIVE}))?(?:\s+{_QUANTITY})?"
+)
+# M167: «turn this song up a bit», «turn the track down 10».
+_SONG_PARTICLE_FORM = _form(
+    rf"(?:turn|crank|bump|pump|tone)\s+(?P<o1_song>{_SONG_NAMED})\s+(?:(?P<pup>up)|(?P<pdown>{_DOWN_PARTICLE}))"
     rf"(?:\s+(?P<rel1>{_RELATIVE}))?(?:\s+{_QUANTITY})?"
 )
 _OBJECT_FORM = _form(
@@ -264,9 +283,21 @@ class Level:
         return f"{verb} {noun} en {self.amount}" if self.amount is not None else f"{verb} {noun}"
 
 
+# M167 (DEV-G v4y G-w21-t3 «subile 10, con eso ya me sirve», DEV-I I-w15-t3 «unos 15 nomás»): what is said after the
+# request to say it is enough («con eso ya me sirve», «nomás», «y ya», «that'll do», «more or less») is no part of it.
+_ENOUGH = re.compile(
+    r"\s+(?:(?:con\s+eso|asi)\s+(?:ya\s+)?(?:me\s+sirve|me\s+basta|basta|alcanza|esta\s+bien|es\s+suficiente|va\s+bien)|"
+    r"con\s+eso\s+(?:ya|nomas)|nomas|no\s+mas|y\s+ya|mas\s+o\s+menos|"
+    r"(?:that'?s|that\s+(?:will|should|would)\s+be|that'?ll\s+be)\s+(?:enough|fine|plenty|good)|"
+    r"(?:that'?ll|that\s+(?:will|should))\s+do|or\s+so|more\s+or\s+less)$"
+)
+
+
 def _clean(text: str) -> str:
     folded = _strip_request_envelope(fold(re.sub(r"[’‘`´]", "'", str(text or ""))))
-    return " ".join(re.sub(r"[¿?¡!.,;:]+", " ", folded).split())
+    cleaned = " ".join(re.sub(r"[¿?¡!.,;:]+", " ", folded).split())
+    enough = _ENOUGH.search(cleaned)
+    return cleaned[: enough.start()] if enough is not None and enough.start() else cleaned
 
 
 def _number(raw: str) -> int | None:
@@ -297,9 +328,9 @@ def _object(found: re.Match[str]) -> str | None | bool:
 
     groups = found.groupdict()
     named = {
-        BRIGHTNESS if kind == "screen" else kind
+        BRIGHTNESS if kind == "screen" else VOLUME if kind == "song" else kind
         for name in ("o1", "o2")
-        for kind in (VOLUME, BRIGHTNESS, "screen")
+        for kind in (VOLUME, BRIGHTNESS, "screen", "song")
         if groups.get(f"{name}_{kind}")
     }
     if len(named) > 1:
@@ -350,6 +381,10 @@ def _comparative(found: re.Match[str], setting: str | None) -> tuple[str | None,
 
 def _verb_level(found: re.Match[str]) -> Level | None:
     verb = found.group("verb")
+    song = found.groupdict().get("o1_song") or found.groupdict().get("o2_song")
+    if song and not (_DATIVE_VERB.fullmatch(verb) if song.startswith("a ") else _PARTICLE_VERB.fullmatch(verb)):
+        # M167: what plays is turned up or down only as the dative of «súbele», «bájale», or after «turn up».
+        return None
     quantity = _quantity(found)
     named = _object(found)
     if quantity is None or named is False:
@@ -453,7 +488,10 @@ def _read(cleaned: str, question: bool) -> Level | None:
     if found is not None:
         return _verb_level(found)
     found = (
-        _PARTICLE_FORM.fullmatch(cleaned) or _OBJECT_FORM.fullmatch(cleaned) or _COMPARATIVE_FORM.fullmatch(cleaned)
+        _PARTICLE_FORM.fullmatch(cleaned)
+        or _SONG_PARTICLE_FORM.fullmatch(cleaned)
+        or _OBJECT_FORM.fullmatch(cleaned)
+        or _COMPARATIVE_FORM.fullmatch(cleaned)
     )
     if found is not None:
         return _stated_level(found)
@@ -525,6 +563,69 @@ def answers_with_amount(question: str | None, answer_text: str) -> bool:
         _SAYS_AMOUNT.search(_clean(answer_text))
         or ("?" in str(question or "") and _ASKS_AMOUNT.search(folded) and not _ASKS_LEVEL.search(folded))
     )
+
+
+# M167 (DEV-I v4y I-w15-t3 «unos 15 nomás» right after BAXY asked «¿Cuánto le subo?» → the decider moved the song 15
+# seconds on): BAXY's own question asks how much (or to what level) to raise or lower the level the person asked about.
+# The way it asks is said with a verb or a noun of the level; one that names seconds, minutes or moving forward or back
+# asks about the position of what plays instead («¿Cuántos segundos la adelanto?»), and is not this question.
+_ASKED_UP = re.compile(r"\b(?:sub[aeio]\w*|aument\w*|alz[aeo]\w*|raise|increase|turn\s+(?:it\s+)?up|louder|up)\b")
+_ASKED_DOWN = re.compile(
+    r"\b(?:baj[aeo]\w*|reduzc\w*|reduc\w*|disminu\w*|lower|decrease|turn\s+(?:it\s+)?down|quieter|down)\b"
+)
+_ASKED_LEVEL_NOUN = re.compile(r"\b(?:volumen|volume|brillo|brightness|sonido|sound|nivel|level)\b")
+_POSITION = re.compile(
+    r"\b(?:segundos?|seconds?|secs?|minutos?|minutes?|mins?|horas?|hours?|adelant\w*|atras\w*|retroced\w*|"
+    r"rebobin\w*|avanz\w*|forward|rewind|skip|seek)\b"
+)
+
+
+def names_position(text: str | None) -> bool:
+    """The words move what plays forward or back, or count seconds or minutes (M167)."""
+
+    return _POSITION.search(fold(str(text or ""))) is not None
+
+
+def answered_level_request(
+    text: str, reply: str | None, pending: str | None, earlier: list[str] | tuple[str, ...] = (),
+) -> str | None:
+    """M167: the request an answer to BAXY's «¿cuánto le subo?» makes («sube el volumen en 15»), or None.
+
+    Only when BAXY's last reply ends by asking how much (or to what level) to raise or lower an output level, the
+    person's request it asked about is one, and the message is that amount or level, hedged or not («unos 15
+    nomás», «like 15», «25», «a 40»). The question says whether a bare number is how much or where to end
+    (``answers_with_amount``); its verb, else the request, says which way; the request, else what was said before
+    it, says the volume or the brightness."""
+
+    said = " ".join(str(reply or "").split())
+    if not said.endswith("?") or not pending:
+        return None
+    question = fold(re.split(r"(?<=[.!?])\s+", said)[-1])
+    if not (_ASKS_AMOUNT.search(question) or _ASKS_LEVEL.search(question)) or _POSITION.search(question):
+        return None
+    up, down = _ASKED_UP.search(question) is not None, _ASKED_DOWN.search(question) is not None
+    if up and down:
+        return None
+    if not (up or down or _ASKED_LEVEL_NOUN.search(question)):
+        return None
+    if read(pending) is None and setting_of(pending) is None:
+        return None
+    found = answer(text)
+    if found is not None and found.amount is not None and not answers_with_amount(question, text):
+        found = Level(None, None, None, found.amount)
+    if found is None:
+        # «subile 10, con eso ya me sirve»: the amount said again with its verb is the same answer.
+        found = read(text)
+        if found is None or (found.amount is None and found.target is None):
+            return None
+    direction = found.direction or (("up" if up else "down") if up or down else direction_of(pending))
+    if found.target is None and direction is None:
+        return None
+    setting = (
+        found.setting or setting_of(question) or setting_of(pending)
+        or next(filter(None, map(setting_of, list(earlier)[:2])), None) or VOLUME
+    )
+    return Level(setting, direction, found.amount, found.target).request(setting)
 
 
 def setting_of(text: str | None) -> str | None:

@@ -172,13 +172,19 @@ def test_eso_is_the_clock_the_message_said(text: str, reply: str) -> None:
     assert temporal.anchored_offset_request(text, reply, [reply]) is None
 
 
-def test_i_w20_t3_fifteen_minutes_before_the_meeting() -> None:
+@pytest.mark.parametrize("now", [RUN, RUN.replace(hour=10, minute=39), RUN.replace(hour=7, minute=0)])
+def test_i_w20_t3_fifteen_minutes_before_the_meeting(monkeypatch: pytest.MonkeyPatch, now: datetime) -> None:
     # The decider's restatement stands and is read as it says.
     restated = "Recuérdame mañana a las 8:45 que tengo una reunión a las 9."
     result = _turn(I20, ContextDecision(restated, "action", ("notification.schedule",), ""))
     assert result["kind"] == "action" and result["objective"] == restated
+    # M170: the clock is fixed (M108); by day the next 9 was tonight's and «mañana» was lost (20:45 at 10:39).
+    normalize = sidecar._normalize_grounded_operation_arguments
+    monkeypatch.setattr(sidecar, "_normalize_grounded_operation_arguments",
+                        lambda *args, **kwargs: normalize(*args, **{**kwargs, "now_utc": kwargs.get("now_utc") or now}))
     arguments_, question = _arguments("notification.schedule", restated, I20)
-    assert question == "" and (_local(arguments_["dueUtc"]).hour, _local(arguments_["dueUtc"]).minute) == (8, 45)
+    assert question == "" and datetime.fromisoformat(arguments_["dueUtc"].replace("Z", "+00:00")) == (
+        now + timedelta(days=1)).replace(hour=8, minute=45)
     # Read from the message's own 9 at 20:52: the 9 of tomorrow morning, less 15 minutes.
     assert _rings("pon una alarma, tengo una reunion a las 9, 15 minutos antes", "a las 9") == datetime(
         2026, 10, 5, 8, 45, tzinfo=LOCAL)
