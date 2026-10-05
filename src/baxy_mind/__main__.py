@@ -89,7 +89,10 @@ from .semantic.web import (
     typed_read_over_search,
 )
 from .semantic.windows import said_snap_side, start_menu_request
-from .semantic.files import named_file_meant, named_file_operation, named_file_request
+from .semantic.media import asks_what_sounds
+from .semantic.files import (
+    NamedFileMeant, named_file_meant, named_file_operation, named_file_request, only_file_named,
+)
 from .corrector import catalog_correction_terms
 from .first_signal import (
     PATH_MODEL,
@@ -5485,6 +5488,40 @@ def _conversation_named_file(
     )
 
 
+def _picks_a_named_file(objective: str, history: object) -> bool:
+    """M164: the message picks one of the files BAXY's last reply named, or asks what it says
+    (``named_file_meant``)."""
+
+    earlier = _prior_user_texts(history, objective)
+    return named_file_meant(objective, _previous_reply(history) or "", earlier[-1] if earlier else "") is not None
+
+
+def _pointed_file_opened(
+    decided: semantic_decider.ContextDecision,
+    text: str,
+    history: list[Any],
+    available_operations: tuple[str, ...],
+) -> semantic_decider.ContextDecision | None:
+    """M164 (D58; DEV-I v4y I-w27-t3 «could you open it for me?» after «Found it — budget.xlsx is in your Downloads
+    folder.» → asked what to open, where the isolated decider opened budget.xlsx): an opening of a pointer («ábrelo»,
+    «open it») right after BAXY named one file, and nothing else, opens that file where the conversation said it is.
+    Only when the decider asked: a pointer with nothing named before stays asked (M19), and any other decision stays
+    the decider's (M151 reads the file decisions). None when nothing changes."""
+
+    if decided.decision != "clarify" or "file.open" not in available_operations or not _deictic_open_request(text):
+        return None
+    name = only_file_named(text, _previous_reply(history) or "")
+    if name is None:
+        return None
+    conversation = [str(item.get("content") or "") for item in history if isinstance(item, dict)]
+    folder = conversation_file_folder(name, conversation)
+    if folder is None or folder == "all_known":
+        return None
+    language = _read_reply_language(text, history) or _decisive_request_language(_previous_reply(history) or "")
+    request = named_file_request(NamedFileMeant("open", name, text), folder, language or "es")
+    return semantic_decider.ContextDecision(request, "action", ("file.open",), "")
+
+
 def _context_decided_result(
     message: dict[str, Any],
     *,
@@ -5663,6 +5700,18 @@ def _context_decided_result(
             request=decided.request, decision="action", operations=("notification.list",), question="",
         )
     if (
+        decided.decision == "action"
+        and decided.operations == ("audio.status",)
+        and "media.status" in available_operations
+        and asks_what_sounds(text)
+    ):
+        # M164 (DEV-G v4y G-s110 «oye, dime qué es esto que está sonando, que me ha encantado y no la reconozco» →
+        # «El volumen está en 60…», where the isolated decider read the media session): what is sounding is the song
+        # that plays, never the output's level; a question about the level, the mute or the device keeps audio.status.
+        decided = semantic_decider.ContextDecision(
+            request=text, decision="action", operations=("media.status",), question="",
+        )
+    if (
         "window.resolve" in available_operations
         and (decided.decision in {"talk", "clarify"} or set(decided.operations) <= _SHOWN_MEDIA_READS)
         and application_shown_media_name(text, application_names) is not None
@@ -5797,6 +5846,11 @@ def _context_decided_result(
         # newest file): the file BAXY just named, or the one of those it listed that the person picked, is the one read
         # or opened.
         decided = named_file
+    pointed_file = _pointed_file_opened(decided, text, history, available_operations)
+    if pointed_file is not None:
+        # M164 (DEV-I v4y I-w27-t3 «could you open it for me?» after «Found it — budget.xlsx is in your Downloads
+        # folder.» → asked): «it» is the one file BAXY just named; it is opened, not asked about.
+        decided = pointed_file
     # M110: the thing named («la junta», «kick-off») may have its moment further back in the conversation.
     anchored = semantic_temporal.anchored_offset_request(
         text, context.last_reply, said_before,
@@ -7096,6 +7150,10 @@ def _decide_turn_result(
         # «lanza una moneda» is a draw, not a program named «moneda» that is not installed.
         if unresolved_compound_effects is not None or compound_clauses is not None
         or literal_recall_decision is not None
+        # M164 (DEV-G v4y G-w40-t2 «abre el segundo» after «Encontré dos: «cotizacion_mudanza.pdf» en Descargas y
+        # «cotizacion_mudanza_v2.pdf» en Documentos.» → «No abro el segundo.»): a pick among the files BAXY just listed
+        # is no game missing from the library; the contextual decider reads it, and M151 opens the file picked.
+        or _picks_a_named_file(objective, history)
         else _catalog_unavailable_turn_decision(
             objective,
             explicit_intent,

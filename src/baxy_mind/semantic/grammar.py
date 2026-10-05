@@ -1931,6 +1931,13 @@ def _explicit_google_search_query(text: str) -> str | None:
     return None
 
 
+# M164: when or how the next order goes, said between «y» and that order («y de una súbele…», «and right away set…»).
+_IMMEDIACY_ADVERB = (
+    r"(?:de\s+una(?:\s+vez)?|ya|ahora(?:\s+mismo)?|enseguida|en\s+seguida|de\s+inmediato|inmediatamente|al\s+tiro|"
+    r"de\s+paso|tambi[eé]n|adem[aá]s|also|now|right\s+away|immediately)"
+)
+
+
 @_text_reading
 def _request_clauses(text: str) -> tuple[str, ...]:
     if _literal_note_payload_request(text):
@@ -1997,6 +2004,11 @@ def _request_clauses(text: str) -> tuple[str, ...]:
             r"\b(?:y|and)\b\s*(?=[¿?¡!\s]*(?:gracias|thanks|thank you|"
             r"por favor|please|que tengas (?:un )?buen dia)\b)|"
             rf"\b(?:pero|but)\b\s*{next_action_head}|"
+            # M164 (DEV-G v4y G-s001 «pon en youtube el resumen del partido de nacional y de una subele el volumen a
+            # 80» → only the video, where the isolated decider planned both): «de una», «ya», «enseguida», «de paso»
+            # between the conjunction and the next order say when or how it goes, as «luego» does; the order after
+            # them is its own clause. Only before an action verb, so «y ya está» stays one clause.
+            rf"(?:[,;]\s*)?\b(?:y|and)\s+{_IMMEDIACY_ADVERB}\s*,?\s*{next_action_head}|"
             rf"(?:[,;]\s*)?\b(?:y|and)\b\s*{next_effect_head})\s*"
         ),
         re.IGNORECASE,
