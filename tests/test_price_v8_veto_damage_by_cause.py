@@ -275,9 +275,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 comprensión natural: repin tras M165 (2026-10-05).
 # C03 M167: repin de identidad tras M167
 # C03 comprensión natural: repin tras M168 (2026-10-05).
+# C03 comprensión natural: repin tras M170 (2026-10-05).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "f038afe0d247b01a50a842741700bcc2ec61db8418fa7327944d13b6e53ddd50"
+        "4c66c84e50ac1822b2965c56ce0d8360f717e0e68bafd25f794f60e001789a3e"
     ),
     "src/baxy_mind/llm.py": (
         "746a7e4b04574396c5047c970aca2695e3836c57c21435cd21ba08a6d9a147ca"
