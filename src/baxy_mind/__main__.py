@@ -4167,6 +4167,14 @@ def _ground_explicit_arguments(
         # spell); the title is the person's words and the moment is read back by the clock reader.
         normalized = _normalize_grounded_operation_arguments(operation, explicit, evidence)
         return normalized if normalized is not None and validate_json_schema_instance(normalized, schema) else None
+    if operation == "notification.schedule" and explicit.get("dueUtc") == semantic_temporal.alarm_for_hour(
+        effect_intent._fold(evidence)
+    ):
+        # M165 (DEV-I v4y I-s008 «set an alarm for 6 to get up for my run, cheers» → «When would you like the alarm to
+        # go off…?»): the hour after «for/para» on an alarm is the hour reader's clock (D61, «at 6»), a word the person
+        # need not spell; the literal check dropped it and the extraction asked. The title is the person's words.
+        normalized = _normalize_grounded_operation_arguments(operation, explicit, evidence)
+        return normalized if normalized is not None and validate_json_schema_instance(normalized, schema) else None
     if (
         operation in {"filesystem.create.directory", "filesystem.write.text", "file.compress", "file.open"}
         and effect_intent.folder_txt_zip_open_mission(evidence) is not None
@@ -5325,6 +5333,11 @@ def _decider_says_the_anchored_moment(decided: semantic_decider.ContextDecision,
     (D58) and keeps what the reminder is for; the count only overrules a moment it does not confirm."""
 
     if decided.decision != "action" or not decided.operations or not set(decided.operations) <= _ANCHORED_SCHEDULE_OPERATIONS:
+        return False
+    if dialogue_slot.says_no_reminder_title(decided.request):
+        # M165 (DEV-G v4y G-w19-t4 «pues salgo sobre las 6 de la tarde, así que calcula desde ahí» restated «Recuérdame
+        # en 5:40 de la tarde.» → set at 18:00, titled with the answer): a request that says only the order and its
+        # moment keeps nothing the reminder is for; the count, at that same moment, says what it is for and is read.
         return False
 
     def moment(request: str) -> tuple[list[tuple[int, int]], str | None]:
@@ -6486,6 +6499,19 @@ def _direct_arguments_result(
     )
     arguments = _with_decided_part_of_day(operation, str(message.get("text", "")), arguments)
     arguments = _with_pointed_reminder_title(operation, person, message.get("history"), arguments)
+    if (
+        operation in _REMINDER_OPERATIONS
+        and isinstance(arguments, dict)
+        and isinstance(arguments.get("title"), str)
+        and dialogue_slot.pointed_reminder_unsaid(person, _previous_reply(message.get("history")), arguments["title"])
+    ):
+        # M165 (DEV-F v4y F-w48-t4 «órale, pues recuérdame eso el domingo a las 3 de la tarde» after a forecast that
+        # failed, so it advised nothing → titled «Recuérdame el domingo a las 3 de la tarde.»): what «eso» points at is
+        # not in the conversation, and the order repeated is no title; what to remind is asked.
+        arguments = None
+        question = llm.formulate_missing_argument_question(
+            objective, "", tool, ("title",), **({"response_language": turn_language} if turn_language else {}),
+        )
     if operation in {"note.read", "note.trash"} and not (isinstance(arguments, dict) and arguments.get("noteId")):
         # M111 (DEV-F v4d F-w03-t6 «la nota del snippet, léemela» → note «Snippet» not found): a note named by a word
         # of the title it was given earlier in the conversation is that note.
