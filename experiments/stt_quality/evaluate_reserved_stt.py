@@ -278,8 +278,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 M167: repin de identidad tras M167
 # C03 comprensión natural: repin tras M168 (2026-10-05).
 # C03 comprensión natural: repin tras M170 (2026-10-05).
+# C03 comprensión natural: repin tras traer el puntuador D71–D78 de main (2026-10-05).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "9824a9c70a8d928dbbfc649273e872fe9ad99d1b14906383da1e347268eb3acf"
+    "a6d502141f812be37bd59bbb41e230c2dda13167950ad72af74175d88448d6db"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
