@@ -980,6 +980,19 @@ _LIST_ENTRY_AFTER = re.compile(
     r"\s*[,:]?\s+(?P<item>(?!(?:de|del|para|of|for)\b)\S.{0,200}?)" + _LIST_CLOSE,
     re.IGNORECASE,
 )
+# M174 (DEV-D v5c D-w03-t1 «lista del super: pan, palta y lece» → a note «Lista del súper»; owner D59 and the decider's
+# catalog: a list of the super is a list of tasks): the list named with no verb and its entries after a colon is the
+# list written down as said to a friend («lista del super: …», «pa la lista del mercado: …», «shopping list: …»). The
+# colon marks where the name ends; the name is a few words and never content to write (``_LIST_NAME_IS_CONTENT``), and
+# a note asked for by its word («crea una nota con la lista de invitados: …») does not start with the list.
+_LIST_HEADING = re.compile(
+    r"^(?:(?:pa|para)\s+)?(?:(?:mi|la|tu|my|the|our)\s+)?"
+    r"(?P<list>(?:lista|list)\s+(?:de(?:\s+la|\s+los|\s+las|l)?|para(?:\s+la|\s+el)?|of|for)\s+"
+    r"[^\W\d_][^,;:.!?\d]{0,40}?"
+    r"|(?:shopping|grocery|to[\s-]?do|todo|packing)\s+list)"
+    r"\s*:\s*(?P<item>\S.{0,200}?)" + _LIST_CLOSE,
+    re.IGNORECASE,
+)
 # A playlist or a list of songs is music, not a list of things to do or buy.
 _LIST_NOT_TASKS = (
     # M99 (reserva A6 «agregar una canción a la lista en ejecución» → a task): «canciones?» never read the singular.
@@ -1027,6 +1040,10 @@ def list_entry_request(text: str) -> tuple[str, str] | None:
     if _ABSENCE_CONDITION.search(_fold(surface)) is not None:
         return None
     found = _LIST_ENTRY.match(surface) or _LIST_ENTRY_AFTER.match(surface)
+    if found is None:
+        found = _LIST_HEADING.match(surface)
+        if found is not None and _LIST_NAME_IS_CONTENT.search(_fold(found.group("list"))):
+            return None
     if found is None:
         return None
     item = _TAG_AFTER_THE_ENTRIES.sub("", found.group("item")).strip(" ,;:\"'«»“”")
@@ -1077,6 +1094,94 @@ def list_entry_said(entry: str, listed: str) -> str:
     return f"add {entry} to the {listed}"
 
 
+# M174 (DEV-H v5c H-w10-t2 «Agrégale bloqueador, gafas y el cargador del parlante» right after «Crea una lista para el
+# paseo a Santa Marta» → task.update asking «¿Qué nombre o título deseas cambiar…?»; DEV-D v5c D-w03-t2 «agrega tomates
+# tmb» after «lista del super: pan, palta y lece» → note.update): entries added with no list named, right after the
+# person made a list or put entries on one, go on that list. The verb is one that adds («agrégale», «añade», «apunta
+# ahí», «súmale», «add … too»); «también», «tmb», «too» may close it. Never a note («agrégale que …» to the note just
+# made is M160's), a pointed or unnamed entry, a playlist, nor a message that names its own list or note.
+_FOLLOW_UP_ADD = re.compile(
+    r"^(?:(?:y|e|and|ah|oh|ok|okay|vale|dale|bueno|ya|also|plus|tambien)\s*[,.]?\s+)*"
+    r"(?:(?:por\s+favor|please)\s*,?\s+)?"
+    r"(?:agrega(?:le|me|r)?|agregue(?:le)?|anade(?:le|me|r)?|anada(?:le)?|apunta(?:le|me|r)?|anota(?:le|me|r)?|"
+    r"suma(?:le|me)?|mete(?:le|me)?|incluye(?:le)?|ponle|add|put|throw\s+in|toss\s+in)"
+    r"(?:\s+(?:ahi|alli|aca|aqui|ademas|tambien|tmb|tb|tbn|too|also|in|there))*\s+"
+    r"(?P<item>[^\s.!?].*?)"
+    r"(?:\s*,?\s*(?:ahi|ademas|tambien|tmb|tb|tbn|too|also|as\s+well|porfa|por\s+favor|please|pls))*[\s.!?]*$"
+)
+_NOT_A_LIST_ENTRY = re.compile(
+    r"^(?:que|that)\b|\b(?:listas?|lists?|notas?|notes?|tareas?|tasks?|recordatorios?|reminders?|alarmas?|alarms?|"
+    r"eventos?|events?|calendario|calendar|agenda)\b"
+)
+_UNNAMED_LISTS = {"lista nueva", "new list"}
+
+
+def _list_made_or_filled(text: str) -> str | None:
+    """M174: the list a person's message made («Crea una lista para el paseo a Santa Marta» → «lista para el paseo a
+    Santa Marta») or put entries on («lista del super: pan…» → «lista del super»), as its entries name it; None when
+    it names no list of its own."""
+
+    made = new_list_title(text)
+    if made is not None and _fold(made) not in _UNNAMED_LISTS:
+        return made[0].lower() + made[1:]
+    filled = list_entries(text)
+    return filled[1] if filled is not None else None
+
+
+def entries_for_the_list_just_named(text: str, earlier: Sequence[str]) -> tuple[tuple[str, ...], str] | None:
+    """M174: (entries, list) of «agrégale X, Y y Z» / «agrega X tmb» when the person's message right before
+    (``earlier``, newest first) made or filled a list, or added to it the same way; None otherwise (a message that
+    names its own list is ``list_entries``'s)."""
+
+    surface = _request_body_surface(text).strip()
+    folded = _fold(surface)
+    found = _FOLLOW_UP_ADD.match(folded)
+    if found is None or _ABSENCE_CONDITION.search(folded) is not None:
+        return None
+    item = _said_as(surface, found.group("item")).strip(" ,;:\"'«»“”")
+    folded_item = _fold(item)
+    if (
+        not item
+        or _NOT_A_LIST_ENTRY.search(folded_item) is not None
+        or _has(folded_item, _LIST_NOT_TASKS)
+        or _has(
+            folded_item, r"^(?:esto|eso|esta|este|esa|ese|estas|estos|esas|esos|aquello|lo|la|it|this|that|these|those)\b",
+        )
+        or re.fullmatch(_UNNAMED_LIST_ENTRY, folded_item) is not None
+    ):
+        return None
+    listed = None
+    for said in list(earlier)[:4]:
+        listed = _list_made_or_filled(said)
+        if listed is not None:
+            break
+        if not isinstance(said, str) or _FOLLOW_UP_ADD.match(_fold(_request_body_surface(said).strip())) is None:
+            # Only an addition of the same kind may stand between the list and this one.
+            return None
+    if listed is None:
+        return None
+    return list_entries(list_entry_said(item, listed))
+
+
+def entries_on_a_list(text: str, earlier: Sequence[str]) -> tuple[str, int] | None:
+    """M174: a message that puts things on a list of the person's, named in it («anótame en la lista del mercado …»,
+    ``list_entries``) or just before it (``entries_for_the_list_just_named``, ``earlier`` newest first): the request
+    the readers read as those entries on that list, and how many; None when the message says «nota» / «note» (a note
+    is only made when it is asked for) or puts nothing on a list."""
+
+    if re.search(r"\b(?:notas?|notes?)\b", _fold(text)):
+        return None
+    found = list_entries(text) or entries_for_the_list_just_named(text, earlier)
+    if found is None:
+        return None
+    items, listed = found
+    joined = items[0] if len(items) == 1 else (
+        ", ".join(items[:-1]) + (" y " if _fold(listed).startswith("lista") else " and ") + items[-1]
+    )
+    request = list_entry_said(joined, listed)
+    return (request, len(items)) if list_entries(request) == (items, listed) else None
+
+
 # M80 (DEV-D v3m D-p06-t2, D-p06-t3, D-p08-t3): a change of the task just made says only what changes: the list it
 # goes on («cámbialo a la lista Comida», «Add to the Walmart list»), or its new name («from bacon to eggs», «Change
 # to that eggs», «cambia el tocino por huevos»).
@@ -1100,11 +1205,48 @@ _TITLE_FOR = re.compile(
     _CHANGE_LEAD + _CHANGE_VERB + r"\s+(?:(?:the|el|la|los|las|mi|my)\s+)?(?P<old>[^,;.!?]+?)\s+(?:for|with|por|con)\s+"
     + _NEW_NAME
 )
+# M174 (DEV-H v5c H-w04-t3 «espera, el jamón no, mejor queso» after «apunta ahí pan, leche y jamón» → the list's own
+# task «Lista para la compra del finde» updated with nothing changed): one entry taken back for another, the old one
+# said first («el jamón no, mejor queso», «la leche no, sino avena») or after the negation («no el jamón, mejor queso»,
+# «not the ham, cheese instead», «no ham, make it cheese»). Read only when the old one is the task changed.
+_NEW_NAME_INSTEAD = r"(?P<new>[^,;.!?]+?)(?:\s+(?:instead|mejor|entonces|then))?[\s.!]*$"
+_TITLE_INSTEAD = re.compile(
+    r"^(?:(?:wait|actually|oh|oops|ups|perdon|sorry|espera|ah|ay|uy)\s*,?\s+)*"
+    r"(?:(?:the|el|la|los|las)\s+)?(?P<old>[^,;.!?]+?)\s+no\s*(?:,\s*|\s+(?=sino\b))"
+    r"(?:(?:mejor|sino|pon(?:le)?|que\s+sea|mas\s+bien)\s+)" + _NEW_NAME_INSTEAD
+)
+_TITLE_NOT_BUT = re.compile(
+    r"^(?:(?:wait|actually|oh|oops|ups|perdon|sorry|espera|ah|ay|uy)\s*,?\s+)*"
+    r"(?:no|not)\s+(?:(?:the|el|la|los|las)\s+)?(?P<old>[^,;.!?]+?)\s*(?:,\s*|\s+(?=(?:sino|but)\b))"
+    r"(?:(?:mejor|sino|but|make\s+it|rather|pon(?:le)?|que\s+sea|mas\s+bien)\s+)?" + _NEW_NAME_INSTEAD
+)
 _LEADING_ARTICLE = r"^(?:(?:the|a|an|some|el|la|los|las|un|una|unos|unas)\s+)"
 
 
 def _named(value: str) -> str:
     return re.sub(_LEADING_ARTICLE, "", value.strip(" \"'«»“”"), flags=re.IGNORECASE).strip(" \"'«»“”")
+
+
+def entry_name(title: str) -> str:
+    """M174: an entry's name as a change names it: folded, its leading article dropped («el jamón» → «jamon»)."""
+
+    return _fold(_named(title))
+
+
+def changed_entry_names(text: str) -> tuple[str, ...]:
+    """M174: the old names a change of one entry for another may say («el jamón no, mejor queso» → «jamon», «cambia el
+    jamón por queso», «from bacon to eggs»), folded, for finding which of the conversation's entries it changes."""
+
+    names: list[str] = []
+    for sentence in re.split(r"(?<=[.;!?])\s+", " ".join(str(text or "").split())):
+        folded = _fold(sentence)
+        for found in (
+            _TITLE_INSTEAD.match(folded), _TITLE_NOT_BUT.match(folded), _TITLE_FROM_TO.search(folded),
+            _TITLE_FOR.match(folded),
+        ):
+            if found is not None and entry_name(found.group("old")):
+                names.append(entry_name(found.group("old")))
+    return tuple(dict.fromkeys(names))
 
 
 def task_change(text: str, title: str, *, today: date | None = None) -> dict[str, str]:
@@ -1123,7 +1265,11 @@ def task_change(text: str, title: str, *, today: date | None = None) -> dict[str
         if destination is not None and not _has(_fold(destination.group("list")), _LIST_NOT_TASKS):
             changed.setdefault("details", destination.group("list").strip(" ,;:\"'«»“”"))
         renamed = None
-        found = _TITLE_FROM_TO.search(folded) or _TITLE_FOR.match(folded)
+        found = (
+            _TITLE_FROM_TO.search(folded) or _TITLE_FOR.match(folded)
+            # M174: «el jamón no, mejor queso», «not the ham, cheese instead».
+            or _TITLE_INSTEAD.match(folded) or _TITLE_NOT_BUT.match(folded)
+        )
         if found is not None and _fold(_named(found.group("old"))) == old_title:
             renamed = found
         elif (found := _TITLE_TO.match(folded)) is not None:
