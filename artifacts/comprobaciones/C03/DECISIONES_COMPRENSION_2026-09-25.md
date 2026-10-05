@@ -929,3 +929,27 @@ OCR pulsó «biblioteca» una vez en el panel de VS Code; M132 ata el clic a la 
    conversación es justo ese. Sólo cambia I-w26-t4 en 3 801 decisiones auditadas. Integ b56218e8; se mide en v4x.
 5. **En cola:** medición de techo (E, I y H por la mente con el historial escrito; de E sólo agregados) para separar
    comprensión de entorno vivido; después, v4x.
+
+## D76. Techo con historial escrito, v4x (M158), v4y (M159–M162) y el saludo en el historial (2026-10-04 23:25)
+1. **Repetición y ruido.** El build de v4w medido dos veces dio DEV-E 263 y 264 (la segunda vez por la cadena fantasma de
+   D75). v4x (sólo M158, que cambia una fila) dio 263, con D −5 y G −4 frente a v4w: entre corridas del mismo código el
+   ruido es de ±4–5 turnos por conjunto. Una ronda de un solo mecanismo no se lee por la cifra total.
+2. **Techo con historial escrito** (`comprension_eval run`, nada se ejecuta; E sólo por agregados). La mente decide E
+   278, I 289 y H 293, frente a 279–280, 291 y 294 en la App. El hueco no es el historial vivido. Comparada con el
+   decisor aislado (mismo historial), el lastre de decisión era E 26, I 10 y H 6. Clases: `unresolved_input_clarification`
+   (E 8) y acción donde el oro charla (E 8).
+3. **M161** (una petición clara con contexto personal no es «conversación ajena»: 12 de 2 254 decisiones de mal a bien,
+   ninguna de las 742) y **M162** (una cuenta sobre lo que BAXY acaba de decir se calcula con sus números: escalar,
+   diferencia, porcentaje, diferencia horaria «con aquí»). **M159**: una ventana más ancha que media pantalla (Spotify,
+   814 > 768) queda pegada al lado pedido y se dice. **M160**: la nota toma la respuesta señalada («that whole thing»,
+   «esas cantidades») y «agrégale» lee y edita la nota recién creada (note.read → note.update en mente, kernel y App).
+4. **v4y** (main 93118d5b = integ a0ce7494): **DEV-E 264/299 = 88,3 %** (estricta 253). DEV-H 285 (95,0 %), DEV-I 273
+   (91,0 %), DEV-G 279 (93,0 %), DEV-F 247 (88,2 %), DEV-D 307 (92,5 %). Reserva 90,0 / 94,0 % (0/1), 742 sin cambios,
+   cien-131 100/100, held-out 30/30, guion 52/60 + 5 por revisar. Pytest 23 287, integración 4 083 y kernel 194 en verde.
+5. **Por qué M161 no movió E.** En la App cada sesión empieza con el saludo de BAXY, y `guards._conversation_in_progress`
+   (BAXY habló en los tres últimos mensajes) desactiva la guarda de conversación ajena: en los 299 turnos de E nunca
+   actuó. La medición de techo, sin saludo, sí caía en ella. Se repite la medición con el saludo delante del historial
+   (mind/v4y-w).
+6. **Hipótesis de seguridad para el dueño (sin verificar en vivo):** si la App envía el saludo en el historial, la
+   protección de H0735 (no actuar sobre una conversación ajena captada por el micrófono) no se aplica al primer mensaje
+   hablado de una sesión; queda sólo el criterio del decisor. No se cambia sin su decisión.
