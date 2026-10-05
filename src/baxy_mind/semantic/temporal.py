@@ -1910,15 +1910,20 @@ def said_durations(text: str) -> tuple[tuple[str, int], ...]:
     folded = _same_length_fold(said)
     found: list[tuple[str, int]] = []
     for match in _SAID_DURATION.finditer(folded):
-        if match.group("half"):
-            minutes = 30
-        else:
-            number = match.group("number")
-            amount = int(number) if number.isdecimal() else _DURATION_NUMBER_WORDS[" ".join(number.split())]
-            minutes = amount * (60 if match.group("unit").startswith("h") else 1)
+        minutes = _duration_minutes(match)
         if minutes:
             found.append((said[match.start("duration"):match.end("duration")], minutes))
     return tuple(found)
+
+
+def _duration_minutes(match: re.Match[str]) -> int:
+    """The minutes of one ``_SAID_DURATION`` match."""
+
+    if match.group("half"):
+        return 30
+    number = match.group("number")
+    amount = int(number) if number.isdecimal() else _DURATION_NUMBER_WORDS[" ".join(number.split())]
+    return amount * (60 if match.group("unit").startswith("h") else 1)
 
 
 @dataclass(frozen=True)
@@ -2234,6 +2239,192 @@ def answered_timer_length(text: str, reply: str | None, earlier: Iterable[str] =
     if english:
         return f"set a {value} {'hour' if hours else 'minute'} timer{what}"
     return f"pon un temporizador de {value} {'horas' if hours else 'minutos'}{what}".replace("de 1 horas", "de 1 hora")
+
+
+# M175 (DEV-F v5c F-w34-t4 «Venga, ponme el temporizador para lo de pochar» after «…Pocha patata y cebolla a fuego lento
+# unos 20 minutos…», DEV-D v5c D-w10-t3 «¿Me pones un temporizador para voltearlas?» after «…Las cocinamos 5 minutos por
+# cada lado.» → «¿Cuántos minutos le pongo al temporizador?»; F-w45-t2 «and one for the garlic knots» after the pizza's
+# 25-minute countdown → 25 minutes for the garlic knots): a timer asked «para» a step or a thing BAXY's recent answer
+# named with one length is that length, titled by the step; a range («10 a 12 min», «2-3 minutos») is its longest end,
+# as M62 reads «later» by the day's maximum. A length said for something else is never borrowed.
+# Only what counts a length down: an alarm or a reminder «para el partido» names a moment, not a step.
+_STEP_NOTICE = re.compile(
+    r"\b(?:temporizador(?:es)?|timers?|count\s*down|countdown|cuenta\s+regresiva|cronometro|avisos?|avisame)\b"
+)
+_STEP_PURPOSE = re.compile(r"\b(?P<lead>para|pa|for|to)\s+(?P<what>[^,.;:!?¿¡()]+)")
+_STEP_GAP = re.compile(r"(?:\s+(?:ahora|now|ya|porfa|please|plis|tambien|too|de\s+cocina|kitchen|nomas|po))*\s*")
+_ONE_MORE_FOR = re.compile(
+    r"\b(?:(?:one|another)(?:\s+more)?|otr[oa]|un[oa]\s+mas)\s+(?P<lead>for|para|pa)\s+(?P<what>[^,.;:!?¿¡()]+)"
+)
+_PURPOSE_LEAD_IN = re.compile(r"(?:(?:lo|eso|la\s+parte|el\s+paso|the\s+part|cuando|when)\s+(?:de\s+|que\s+|of\s+)?)")
+_PURPOSE_TAIL = re.compile(
+    r"(?:\s+(?:por\s+favor|porfa|please|plis|pls|xfa|po|pues|parce|ya|now|ahora|then|entonces|too|tambien|also))+\s*$"
+)
+_PURPOSE_FILLER = frozenset({
+    "lo", "de", "del", "el", "la", "los", "las", "eso", "esa", "ese", "esto", "esta", "este", "estas", "estos", "the",
+    "of", "an", "my", "mi", "mis", "tu", "tus", "su", "sus", "que", "and", "to", "them", "it", "its", "con", "with",
+    "en", "in", "on", "al", "un", "una", "uno", "this", "that", "these", "those", "cuando", "when", "part", "parte",
+    "paso", "step", "thing", "cosa", "les", "le", "se", "me", "for", "para", "por",
+})
+# A moment («para mañana», «for tonight», «for the day after») is when, never a step.
+_PURPOSE_MOMENT = re.compile(
+    r"\b(?:hoy|manana|tarde|noche|dia|dias|semana|today|tomorrow|tonight|morning|evening|afternoon|night|day|days|"
+    r"week|after|despues|luego|rato|later|now|ahora|lunes|martes|miercoles|jueves|viernes|sabado|domingo|monday|"
+    r"tuesday|wednesday|thursday|friday|saturday|sunday)\b"
+)
+# Flipping is the length of one side («5 minutos por lado», «3 minutes each side»).
+_FLIP_STEP = re.compile(r"\b(?:volte\w+|dar(?:le|les|la|las|lo|los)?\s+(?:la\s+)?vuelta|flip\w*|turn\w*\s+(?:\w+\s+)?over)\b")
+_ONE_SIDE = re.compile(
+    r"\b(?:por\s+(?:cada\s+)?(?:lado|cara)|de\s+cada\s+(?:lado|cara)|cada\s+(?:lado|cara)|(?:per|each|a)\s+side|"
+    r"volte\w+|flip\w*|dale(?:s)?\s+(?:la\s+)?vuelta)\b"
+)
+_LENGTH_RANGE_JOIN = re.compile(r"^\s*(?:a|to|-|–|o|or|y|and|hasta)\s*$")
+_SAME_LENGTH_AGAIN = re.compile(
+    r"\b(?:igual(?:ito)?|mism[oa]s?|same|again|otra\s+vez|de\s+nuevo|identic\w*)\b"
+)
+# The step of a word said in the conversation: the word, its plural, or (a verb) another form of it.
+_STEP_VERB = re.compile(r"(?P<stem>[a-z]{3,}?)(?:ar|er|ir)(?:la|las|lo|los|le|les|se)?")
+_STEP_VERB_FORM = r"(?:a|as|an|ar|e|es|en|o|ad|ado|ada|ados|adas|ando|er|ir|ido|ida|iendo)(?:la|las|lo|los|le|les|se)?"
+
+
+@dataclass(frozen=True)
+class _NoticePurpose:
+    """What a timer is asked for: ``said`` in the person's words, ``words`` folded and ``flip`` for a side."""
+
+    said: str
+    lead: str
+    words: tuple[str, ...]
+    flip: bool
+
+
+def _notice_purpose(text: str, *, one_more: bool = False) -> _NoticePurpose | None:
+    said = str(text or "")
+    folded = _same_length_fold(said)
+    notice = _STEP_NOTICE.search(folded)
+    found = _STEP_PURPOSE.match(folded, _STEP_GAP.match(folded, notice.end()).end()) if notice is not None else None
+    if found is None and one_more:
+        found = _ONE_MORE_FOR.search(folded)
+    if found is None or (found.group("lead") == "to" and notice is None):
+        # What the timer is for follows it («un temporizador para voltearlas», «a timer to flip them»); a «para» further
+        # on is about something else («recuérdame comprar tinto para la oficina»).
+        return None
+    start, end = found.span("what")
+    lead_in = _PURPOSE_LEAD_IN.match(folded, start)
+    start = lead_in.end() if lead_in is not None else start
+    tail = _PURPOSE_TAIL.search(folded[:end])
+    end = tail.start() if tail is not None and tail.start() > start else end
+    what = folded[start:end].strip()
+    if not what or _PURPOSE_MOMENT.search(what) or re.search(r"\d", what):
+        return None
+    flip = _FLIP_STEP.search(what) is not None
+    words = tuple(word for word in re.findall(r"[a-z]{3,}", what) if word not in _PURPOSE_FILLER)[:4]
+    if not words and not flip:
+        return None
+    return _NoticePurpose(said[start:end].strip(), found.group("lead"), words, flip)
+
+
+def _step_word_said(word: str, said: Iterable[str]) -> bool:
+    verb = _STEP_VERB.fullmatch(word)
+    for other in said:
+        if other == word or other in {f"{word}s", f"{word}es", f"{word}ed", f"{word}ing"} or (
+            word.endswith("s") and other == word[:-1]
+        ):
+            return True
+        if verb is not None and re.fullmatch(verb.group("stem") + _STEP_VERB_FORM, other):
+            return True
+    return False
+
+
+def _step_named(purpose: _NoticePurpose, clause: str) -> int:
+    """How many of the purpose's words the clause says (a side counts for a flip)."""
+
+    if purpose.flip:
+        return 1 if _ONE_SIDE.search(clause) else 0
+    said = re.findall(r"[a-z]+", clause)
+    return sum(1 for word in purpose.words if _step_word_said(word, said))
+
+
+def _clause_lengths(clause: str) -> tuple[int, ...]:
+    return tuple(minutes for minutes in map(_duration_minutes, _SAID_DURATION.finditer(clause)) if minutes)
+
+
+def _clause_length(clause: str) -> int | None:
+    """The one length a clause says; two joined as a range («10 minutos a 12 minutos») are their longer end."""
+
+    found = [match for match in _SAID_DURATION.finditer(clause) if _duration_minutes(match)]
+    if not found:
+        return None
+    if any(_LENGTH_RANGE_JOIN.match(clause[before.end():after.start()]) is None for before, after in zip(found, found[1:])):
+        return None
+    return max(_duration_minutes(match) for match in found)
+
+
+def _answer_clauses(answer: str) -> list[str]:
+    folded = _same_length_fold(" ".join(str(answer or "").replace("\n", " . ").split()))
+    sentences = re.split(r"(?:(?<!\bmin)(?<!\bmins)(?<!\bseg)\.(?!\d)|[;!?\n])", folded)
+    return [clause.strip() for sentence in sentences for clause in sentence.split(",") if clause.strip()]
+
+
+def step_timer_request(text: str, answers: Iterable[str]) -> str | None:
+    """The timer request a timer asked «para» a step or a thing makes («pon un temporizador de 20 minutos para
+    pochar»), with the length BAXY's recent ``answers`` (newest first) give that step, in the person's language; None
+    unless the message asks a timer or a notice for something and says no length nor clock, and the newest answer
+    naming that step gives it one length (a notification BAXY reports setting, or a clock, is no step)."""
+
+    said = str(text or "")
+    folded = _fold(said)
+    if said_durations(said) or spoken_clocks(folded) or _SAME_LENGTH_AGAIN.search(folded):
+        return None
+    purpose = _notice_purpose(said)
+    if purpose is None:
+        return None
+    for answer in list(answers)[:3]:
+        named: dict[int, set[int]] = {}
+        for clause in _answer_clauses(answer):
+            if re.search(_NOTIFICATION_NOUN + r"|\bcount\s*down\b|\bcountdown\b", clause) or spoken_clocks(clause):
+                # A notification BAXY reports setting, or a moment, is no step.
+                continue
+            score = _step_named(purpose, clause)
+            length = _clause_length(clause) if score else None
+            if length is not None:
+                named.setdefault(score, set()).add(length)
+        if not named:
+            continue
+        lengths = named[max(named)]
+        if len(lengths) != 1:
+            return None
+        return _step_timer_wording(lengths.pop(), purpose)
+    return None
+
+
+def _step_timer_wording(minutes: int, purpose: _NoticePurpose) -> str:
+    hours = minutes // 60 if minutes >= 60 and minutes % 60 == 0 else 0
+    if purpose.lead in {"for", "to"}:
+        amount = hours or minutes
+        article = "an" if str(amount).startswith("8") or amount in {11, 18} else "a"
+        return f"set {article} {amount} {'hour' if hours else 'minute'} timer {purpose.lead} {purpose.said}"
+    length = (f"{hours} hora" if hours == 1 else f"{hours} horas") if hours else f"{minutes} minutos"
+    return f"pon un temporizador de {length} para {purpose.said}"
+
+
+def length_borrowed_for_another(text: str, restated: str, earlier: Iterable[str]) -> bool:
+    """True when the restated timer's length, which the message does not say, was said in the conversation only for
+    something other than what the message asks the timer for («and one for the garlic knots» restated «Set a
+    25-minute countdown for the garlic knots.» after the pizza's 25 minutes)."""
+
+    said = str(text or "")
+    folded = _fold(said)
+    if said_durations(said) or spoken_clocks(folded) or _SAME_LENGTH_AGAIN.search(folded):
+        return False
+    lengths = {minutes for _, minutes in said_durations(restated)}
+    purpose = _notice_purpose(said, one_more=True)
+    if not lengths or purpose is None:
+        return False
+    for line in list(earlier)[:6]:
+        for clause in _answer_clauses(line):
+            if _step_named(purpose, clause) and set(_clause_lengths(clause)) & lengths:
+                return False
+    return True
 
 
 # M113 (DEV-F v4d F-w45-t4 «ugh wait, scratch the garlic knots one, I'll just watch them» after «Done, 12-minute timer

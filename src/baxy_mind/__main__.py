@@ -6031,12 +6031,44 @@ def _context_decided_result(
             # tarde…» answered no question and was set at 21:20 again): the message says a length, but counted from a
             # moment nobody placed; the restatement that made it a delay from now is a time nobody said either.
             or semantic_temporal.advance_restated_as_delay(text, decider_request)
+            # M175 (DEV-F v5c F-w45-t2 «and one for the garlic knots» after «pizza just went in, gimme a 25 minute
+            # countdown» restated «Set a 25-minute countdown for the garlic knots.»): a length said for another thing is
+            # never borrowed; how long this one runs is asked (unless BAXY's answer gave it, below).
+            or semantic_temporal.length_borrowed_for_another(text, decider_request, said_before)
         )
     ):
         # M110 (DEV-F v4d F-w46-t3 «poneme una alarma para ese día bien temprano» restated «…el sábado 2 de octubre a
         # las 5:00» → «¿Cuándo y con qué título…?» as an action): the time was the decider's, not the person's, and the
         # message says none; when it rings is asked.
         decided = semantic_decider.ContextDecision(request=text, decision="clarify", operations=(), question="")
+    stepped = (
+        semantic_temporal.step_timer_request(text, [
+            str(item.get("content") or "") for item in reversed(history)
+            if isinstance(item, dict) and item.get("role") == "assistant"
+        ])
+        if anchored_read is None
+        and (
+            decided.decision == "clarify"
+            or (decided.decision == "action" and set(decided.operations) <= {"notification.schedule", "reminder.create"})
+        )
+        else None
+    )
+    stepped_read = resolve_explicit_effects(stepped, available_operations) if stepped is not None else None
+    if (
+        stepped_read is not None
+        and set(stepped_read.operations) <= {"notification.schedule", "reminder.create"}
+        and not (
+            decided.decision == "action"
+            and {minutes for _, minutes in semantic_temporal.said_durations(decided.request)}
+            == {minutes for _, minutes in semantic_temporal.said_durations(stepped)}
+        )
+    ):
+        # M175 (DEV-F v5c F-w34-t4 «Venga, ponme el temporizador para lo de pochar» after «…Pocha patata y cebolla a
+        # fuego lento unos 20 minutos…», DEV-D v5c D-w10-t3 «¿Me pones un temporizador para voltearlas?» after «…Las
+        # cocinamos 5 minutos por cada lado.» → «¿Cuántos minutos le pongo al temporizador?»): a timer asked for a step
+        # BAXY's recent answer gave one length is that length, titled by the step; a decider that already set that
+        # length keeps its own decision.
+        decided = semantic_decider.ContextDecision(stepped, "action", tuple(stepped_read.operations), "")
     day_only = (
         _reminder_day_without_clock(decided, text, available_operations)
         if decided.decision == "action" and anchored_read is None
