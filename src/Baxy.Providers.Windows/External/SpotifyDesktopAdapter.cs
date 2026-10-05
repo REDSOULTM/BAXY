@@ -9,6 +9,24 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
     private readonly string _scriptPath;
     private readonly string _controlScriptPath;
     private readonly Func<string, bool> _processExists;
+    private readonly TimeProvider _time;
+
+    // The script has bounded 12.5 s discovery, 12 s search convergence (20 s
+    // with one re-issued search when the page shows nothing playable, M169),
+    // 12 s detail discovery and 15 s playback postread stages: 59.5 s. The
+    // process budget must cover that verified path instead of aborting midway
+    // through it. M86: the script's single re-press of a press that left no
+    // trace happens inside the 15 s postread.
+    internal static readonly TimeSpan ScriptBudget = TimeSpan.FromSeconds(65);
+
+    // M169: the App waits 20 s for the core's answer and then 70 s more before
+    // it drops the core (CoreProcessClient), so the whole call, the exact
+    // retry included, ends inside 85 s.
+    internal static readonly TimeSpan CallBudget = TimeSpan.FromSeconds(85);
+
+    // A retry with less than this left could not finish even a warm search
+    // (about 10 s) plus its playback postread; it is not started.
+    internal static readonly TimeSpan MinimumRetryBudget = TimeSpan.FromSeconds(30);
 
     internal SpotifyDesktopAdapter()
         : this(new ExternalProcessRunner(), Path.Combine(
@@ -22,7 +40,8 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
         IExternalProcessRunner runner,
         string? scriptPath = null,
         string? controlScriptPath = null,
-        Func<string, bool>? processExists = null)
+        Func<string, bool>? processExists = null,
+        TimeProvider? time = null)
     {
         _runner = runner ?? throw new ArgumentNullException(nameof(runner));
         _scriptPath = scriptPath ?? "SpotifyDesktopAutomation.ps1";
@@ -30,6 +49,7 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
         // Test doubles drive the script with fixture output; only the product
         // constructor looks for the real client.
         _processExists = processExists ?? (static _ => true);
+        _time = time ?? TimeProvider.System;
     }
 
     public bool CanHandle(string operation) => operation is
@@ -59,6 +79,8 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
         if (provider != "spotify") return ExternalJson.Failure(operation, "media_provider_not_supported");
         if (!File.Exists(_scriptPath)) return ExternalJson.Failure(operation, "spotify_uia_script_missing");
         var effectBoundary = new ExternalEffectBoundary();
+        long started = _time.GetTimestamp();
+        TimeSpan processBudget = ScriptBudget;
         try
         {
             for (int attempt = 0; attempt < 2; attempt++)
@@ -69,14 +91,7 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
                     ["-NoProfile", "-NonInteractive", "-STA", "-File", _scriptPath,
                         Convert.ToBase64String(Encoding.UTF8.GetBytes(title)),
                         exactSelection ? "exact" : "query"],
-                    // The script has bounded 12 s discovery, 10 s search
-                    // convergence, 12 s detail discovery and 15 s playback
-                    // postread stages. The process budget must cover that
-                    // verified path instead of aborting midway through it.
-                    // M86: the script's single re-press of a press that left
-                    // no trace happens inside the 15 s postread, so the
-                    // budget is unchanged.
-                    TimeSpan.FromSeconds(55),
+                    processBudget,
                     cancellationToken).ConfigureAwait(false);
                 string? line = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
                     .LastOrDefault();
@@ -91,11 +106,18 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
                     string error = response.RootElement.TryGetProperty("error", out JsonElement errorValue)
                         ? errorValue.GetString() ?? "spotify_exact_selection_not_verified"
                         : "spotify_exact_selection_not_verified";
+                    TimeSpan retryBudget = CallBudget
+                        - _time.GetElapsedTime(started)
+                        - TimeSpan.FromMilliseconds(400);
                     if (attempt == 0
                         && exactSelection
                         && !effect
-                        && IsRetryableExactDiscoveryError(error))
+                        && IsRetryableExactDiscoveryError(error)
+                        && retryBudget >= MinimumRetryBudget)
                     {
+                        // M169: the retry gets only what is left of the call
+                        // budget, never a second full script budget.
+                        processBudget = retryBudget < ScriptBudget ? retryBudget : ScriptBudget;
                         // The child process exposes no cheaper readiness
                         // predicate after a terminal discovery failure. Keep
                         // this single bounded backoff instead of issuing a

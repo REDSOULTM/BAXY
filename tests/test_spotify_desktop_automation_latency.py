@@ -27,10 +27,10 @@ def _between(start: str, end: str) -> str:
 
 def test_spotify_polling_is_bounded_by_the_original_terminal_horizons() -> None:
     # MUSIC1755 (e64890997): the search page gets 12 s (it was 6 s); the other
-    # horizons are the original ones.
+    # horizons are the original ones. M169: 20 s only while nothing is playable.
     assert "$searchDeadline=(Get-Date).AddMilliseconds(12500)" in SOURCE
     assert "$foregroundDeadline=(Get-Date).AddMilliseconds(250)" in SOURCE
-    assert "$searchPageDeadline=(Get-Date).AddSeconds(12)" in SOURCE
+    assert "$searchPageDeadline=$searchedAt.AddSeconds((Get-BaxySpotifySearchPageSeconds $true))" in SOURCE
     assert "$detailDeadline=(Get-Date).AddSeconds(12)" in SOURCE
     assert "$deadline=(Get-Date).AddSeconds(15)" in SOURCE
 
@@ -70,7 +70,7 @@ def test_spotify_success_paths_observe_before_their_first_poll() -> None:
     )
 
     search_page = _between(
-        "$searchPageDeadline=(Get-Date).AddSeconds(12)",
+        "$searchPageDeadline=$searchedAt.AddSeconds((Get-BaxySpotifySearchPageSeconds $true))",
         "if(-not $searchPageReady",
     )
     assert search_page.index(".FindAll(") < search_page.index(
@@ -104,7 +104,7 @@ def test_query_generic_play_cannot_exit_early_without_current_search_value() -> 
     assert "return $value" in value_probe
 
     search_page = _between(
-        "$searchPageDeadline=(Get-Date).AddSeconds(12)",
+        "$searchPageDeadline=$searchedAt.AddSeconds((Get-BaxySpotifySearchPageSeconds $true))",
         "if(-not $searchPageReady -and $null -ne $searchObservationError)",
     )
     value_read = "$querySearchValue=Read-BaxySpotifySearchValue $search"
@@ -237,6 +237,27 @@ _CASES = {
         f"Test-BaxySpotifyNear {_rect(110, 240)} {_rect(100, 230)}", True),
     "near_rejects_player_bar": (
         f"Test-BaxySpotifyNear {_rect(600, 900)} {_rect(100, 230)}", False),
+    # M169 (v5a-devG/devI «salsa», «Soda Stereo», «reggaetón», «música para
+    # cocinar»): a client still building its accessibility tree showed the search
+    # combo but nothing playable under it for the whole 12 s.
+    "warm_discovery_ends_on_the_combo": (
+        f"Test-BaxySpotifyContentExposed {_F} {_F}", True),
+    "cold_discovery_waits_for_a_playable_control": (
+        f"Test-BaxySpotifyContentExposed {_T} {_F}", False),
+    "cold_discovery_ends_once_content_is_exposed": (
+        f"Test-BaxySpotifyContentExposed {_T} {_T}", True),
+    "search_page_with_something_playable_keeps_12_s": (
+        f"Get-BaxySpotifySearchPageSeconds {_T}", 12),
+    "search_page_with_nothing_playable_gets_20_s": (
+        f"Get-BaxySpotifySearchPageSeconds {_F}", 20),
+    "research_after_8_s_with_nothing_playable": (
+        f"Test-BaxySpotifyResearch 1 8200 {_F}", True),
+    "no_research_before_8_s": (
+        f"Test-BaxySpotifyResearch 1 7600 {_F}", False),
+    "no_research_once_something_is_playable": (
+        f"Test-BaxySpotifyResearch 1 9000 {_T}", False),
+    "research_only_once": (
+        f"Test-BaxySpotifyResearch 2 15000 {_F}", False),
 }
 
 
@@ -281,3 +302,39 @@ def test_spotify_press_is_bounded_and_counted_before_the_second_click() -> None:
     # The re-press stays inside the original 15 s postread horizon.
     assert "$deadline=(Get-Date).AddSeconds(15)" in SOURCE
     assert "presses=$presses" in SOURCE
+
+
+def test_spotify_cold_wait_and_research_stay_before_any_press() -> None:
+    # M169: the cold/warm reading happens before this request launches the
+    # client, and a warm client still ends discovery on the combo alone.
+    startup = _between(
+        "# M169: a client with no window yet",
+        "if($null -eq $process){throw 'spotify_window_missing'}",
+    )
+    assert startup.index("$coldStart=") < startup.index("Start-Process 'spotify:'")
+    assert "$_.StartTime -lt $settledSince" in startup
+    assert startup.count("Test-BaxySpotifyContentExposed $coldStart $playableSeen") == 2
+    # The discovery horizon is unchanged: the cold wait lives inside it.
+    assert "$searchDeadline=(Get-Date).AddMilliseconds(12500)" in startup
+
+    search_page = _between(
+        "$searchPageDeadline=$searchedAt.AddSeconds((Get-BaxySpotifySearchPageSeconds $true))",
+        "if(-not $searchPageReady -and $null -ne $searchObservationError)",
+    )
+    research = search_page[search_page.index("Test-BaxySpotifyResearch"):]
+    # Counted before navigating: never a third search; the same URI as the first.
+    assert research.index("$searches=2") < research.index("Start-Process $searchUri")
+    assert SOURCE.count("Start-Process $searchUri") == 2
+    # The horizon follows what the last observation saw, and never moves on an
+    # observation that failed.
+    assert (
+        "$searchPageDeadline=$searchedAt.AddSeconds((Get-BaxySpotifySearchPageSeconds $searchSnapshotReady))"
+        in search_page
+    )
+    assert search_page.index("if($null -eq $searchObservationError){") < search_page.index(
+        "Get-BaxySpotifySearchPageSeconds $searchSnapshotReady"
+    )
+    # Every press comes after the search page wait.
+    assert SOURCE.index("Start-Process $searchUri") < SOURCE.index("$effect=$true")
+    # Failures say how many searches ran and whether the client was cold.
+    assert "error='spotify_exact_result_not_found';searches=$searches;coldStart=$coldStart" in SOURCE
