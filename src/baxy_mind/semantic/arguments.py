@@ -17,10 +17,14 @@ from urllib.parse import urlencode, urlsplit
 from .. import effect_intent
 from . import lexicon as semantic_lexicon
 from .catalog import GameCatalogIndex, resolve_game_catalog_app_id
+from .decider import _edit_distance, _introduced_spans, _numbers_said
+from .dialogue import followup
 from .files import _TEXT_FILE_EXTENSIONS, files_named_in_reply
 from .grammar import titled_note_with_content
 from .notes import agenda_event_request, new_list_title, said_repetition, stated_event_reminder, task_completion_title
 from .patterns import (
+    _MUSIC_GENERIC_WORDS,
+    _MUSIC_QUERY_FILLER,
     application_shown_media_name,
     resolve_application_catalog_app_id,
     resolve_application_installed_name,
@@ -2497,16 +2501,34 @@ def due_before_said_moment(
     if len(due_clocks) == 1:
         if (due_clocks[0].hour % 12, due_clocks[0].minute) != (advance.clock.hour % 12, advance.clock.minute):
             return None
-        event = _canonical_due_utc(raw_due, context, now_utc=now_utc)
+        moment, moment_context = raw_due, context
     elif not due_clocks and folded_due.strip() and " ".join(folded_due.split()) in effect_intent._fold(advance.phrase):
         # «una hora» or «an hour before» copied as the moment: the moment is the event's, less that.
-        event = _canonical_due_utc(advance.moment, said, now_utc=now_utc)
+        moment, moment_context = advance.moment, said
     else:
         return None
+    event = _canonical_due_utc(moment, moment_context, now_utc=now_utc)
     if event is None:
         return None
     now = (now_utc or datetime.now(timezone.utc)).astimezone(timezone.utc)
     due = datetime.fromisoformat(event.replace("Z", "+00:00")) - timedelta(minutes=advance.minutes)
+    said_on = effect_intent._fold(f"{moment} {moment_context}")
+    local_now = now_utc if now_utc is not None else datetime.now().astimezone()
+    if (
+        due <= now + timedelta(seconds=5)
+        and not advance.clock.resolved
+        and spoken_date(said_on) is None
+        and effect_intent.spoken_day(said_on, local_now.weekday()) == (0, 1)
+    ):
+        # M165 (DEV-H v4y H-s047 «¿me podrías poner una alarma una hora antes de las 9?» at 20:52 → «¿A qué hora…?»):
+        # an hour said without its part of the day nor a day is the next time it comes (D61) whose advance is still
+        # ahead — at 20:52 the 9 of tomorrow morning, rung at 8 — never a passed moment asked back. A clock with its
+        # part of the day, or a day said, keeps asking (that moment is the one the person placed).
+        later = _canonical_due_utc(
+            moment, moment_context, now_utc=local_now + timedelta(minutes=advance.minutes),
+        )
+        if later is not None:
+            due = datetime.fromisoformat(later.replace("Z", "+00:00")) - timedelta(minutes=advance.minutes)
     folded_title = effect_intent._fold(title) if isinstance(title, str) else ""
     if advance.title and (
         not folded_title
@@ -2705,6 +2727,136 @@ def corrected_song_title(message: str, previous_request: str, previous_reply: st
         if _fold_text(quoted).strip() and _fold_text(quoted).strip() in _fold_text(title):
             return quoted.strip()
     return title.strip()
+
+
+# M166 (DEV-H v4w H-w22-t2 «esa no pone bailando solo» after «El Detenido» of Los Bunkers, restated «Pon otra canción
+# de Los Bunkers en Spotify.» → Spotify looked for «otra canción de Los Bunkers» and another song played; v4y the same
+# row restated «Pon en Spotify «Los Bunkers - Bailando Solo»» → the exact title held the artist and Spotify showed
+# nothing): what the person's own message names to play, its title and its artist, is looked up as the person said it.
+# The message is read on its own once the rejection of what plays («esa no», «no, esa no», «not that one») is set
+# aside; the decided value stays when it keeps every word the person named (it may add the artist the conversation
+# said) and brings no name nobody said. An exact title is the song's title alone: one with words the message did not
+# say («Los Bunkers - …») is the person's title. A message that names no title («otra de él», «la en vivo», «la última
+# de Rosalía», «algo más movido») leaves the decided value as it is.
+_REJECTED_PLAYING = re.compile(
+    r"^(?:(?:no|nop|nah)\s*[,.]?\s*)?(?:(?:esa|esta|ese|este|eso)(?:\s+(?:cancion|tema|song|track|one))?\s+no|"
+    r"not\s+(?:that|this)(?:\s+(?:one|song|track))?|(?:that|this)(?:\s+(?:one|song|track))?\s+no)\b[\s,.:;!]*"
+)
+_NAMED_FIELDS = ("query", "title")
+_QUERY_FILLER = re.compile(_MUSIC_QUERY_FILLER)
+_NAMED_CLAUSE_END = re.compile(r"\s*[,;]\s*|\s+(?:mientras|while|porque|because)\s+", re.IGNORECASE)
+_NOT_A_NAME = frozenset(
+    "el|ella|ellos|ellas|eso|esa|ese|esto|esta|este|him|her|them|it|they|he|she|su|sus|his|their|version|versiones|"
+    "vivo|live|acustica|acustico|acoustic|estudio|studio|remix|remasterizada|remasterizado|remastered|unplugged|cover|"
+    "karaoke|instrumental|original|disco|album|cd|single|sencillo|que|which|that|pa".split("|")
+)
+
+
+def _named_words(text: str) -> list[str]:
+    """The words of ``text`` that name music: no article, music noun, courtesy, pointer, version or time word."""
+
+    return [
+        word for word in re.findall(r"[a-z0-9ñ]+", _fold_text(text))
+        if len(word) >= 2 and word not in _MUSIC_GENERIC_WORDS and word not in _NOT_A_NAME
+        and _QUERY_FILLER.fullmatch(word) is None
+    ]
+
+
+def music_named_in_message(operation: str, message: str) -> dict[str, str]:
+    """The query or title the person's own message names to play (see above), as they said it; empty when it names
+    none."""
+
+    said = followup(message).said
+    while True:
+        rejected = _REJECTED_PLAYING.match(_fold_text(said))
+        if rejected is None or not rejected.end():
+            break
+        said = followup(said[rejected.end():]).said
+    read = _explicit_arguments_from_evidence(operation, said) if said else None
+    if not isinstance(read, dict):
+        return {}
+    named = {}
+    for field in _NAMED_FIELDS:
+        value = read.get(field)
+        if not isinstance(value, str):
+            continue
+        # DEV-F F-w28-t4 «ponme algo de lo-fi pa concentrarme, tengo que terminar el informe de la u»: what follows a
+        # comma or a «mientras/porque» is the person's situation, not what to play.
+        value = _NAMED_CLAUSE_END.split(value, maxsplit=1)[0].strip(" .")
+        if _named_words(value):
+            named[field] = value
+    return named
+
+
+def _word_kept(word: str, kept: list[str], numbers: set) -> bool:
+    if _numbers_said(word) and _numbers_said(word) <= numbers:
+        return True
+    return any(
+        other == word
+        or (min(len(other), len(word)) >= 2 and (other.startswith(word) or word.startswith(other)) and word.isdigit())
+        or (min(len(other), len(word)) >= 4 and _edit_distance(other, word) <= max(1, min(len(other), len(word)) // 3))
+        for other in kept
+    )
+
+
+# A name in the decided value: capitalised words, joined by «de/del/y/&» («Los Bunkers», «Men I Trust»).
+_DECIDED_NAME = re.compile(
+    r"(?<![\w'’])[A-ZÁÉÍÓÚÑ][\w'’.&-]*(?:\s+(?:[A-ZÁÉÍÓÚÑ][\w'’.&-]*|(?:de|del|y|&)(?=\s+[A-ZÁÉÍÓÚÑ])))*"
+)
+
+
+def _with_the_artist_said_before(person: str, value: str, earlier: Iterable[str]) -> str:
+    """``person``'s query with the name the decided ``value`` adds to it when the person said that name earlier in
+    the conversation («bailando solo» + «Los Bunkers» of «…cualquier tema de los bunkers…»); ``person`` otherwise."""
+
+    earlier_words = re.findall(r"[a-z0-9ñ]+", _fold_text(" ".join(earlier)))
+    person_words = re.findall(r"[a-z0-9ñ]+", _fold_text(person))
+    for found in _DECIDED_NAME.finditer(value):
+        words = _named_words(found.group(0))
+        if (
+            words
+            and not all(_word_kept(word, person_words, set()) for word in words)
+            and all(_word_kept(word, earlier_words, set()) for word in words)
+        ):
+            return f"{person} {found.group(0)}"
+    return person
+
+
+def as_the_person_named(
+    operation: str,
+    arguments: dict[str, Any],
+    message: str,
+    conversation: Iterable[str],
+    earlier: Iterable[str] = (),
+) -> dict[str, Any]:
+    """``arguments`` with the query or title the person's message names in place of a decided one that lost a word
+    of it, brought a name nobody said, or (an exact title) holds words the message did not say (see above). A query
+    keeps the artist the decided one adds when the person said it in an ``earlier`` message of theirs."""
+
+    named = music_named_in_message(operation, message)
+    if not named:
+        return arguments
+    earlier = [str(line or "") for line in earlier]
+    said = [str(message or ""), *(str(line or "") for line in conversation)]
+    message_words = re.findall(r"[a-z0-9ñ]+", _fold_text(message))
+    message_numbers = _numbers_said(_fold_text(message))
+    result = dict(arguments)
+    for field, person in named.items():
+        value = arguments.get(field)
+        if not isinstance(value, str) or not value.strip() or _fold_text(value).strip() == _fold_text(person):
+            continue
+        kept = re.findall(r"[a-z0-9ñ]+", _fold_text(value))
+        exact = operation == "media.play.exact"
+        # An exact title said in lower case keeps its artist («bohemian rapsodi de queen»): the song's own title
+        # («Bohemian Rhapsody») loses nothing of it while it keeps one of its words.
+        lost = not (any if exact else all)(
+            _word_kept(word, kept, _numbers_said(_fold_text(value))) for word in _named_words(person)
+        )
+        unsaid = bool(_introduced_spans(value, said, [], datetime.now()))
+        beyond = exact and not all(_word_kept(word, message_words, message_numbers) for word in _named_words(value))
+        if lost or unsaid or beyond:
+            result[field] = person if exact or unsaid else _with_the_artist_said_before(person, value, earlier)
+    return result
 
 
 # M111 (DEV-F v4d F-s020 «… creo que se llamaba cotizacion algo»): the name a file is said to have, up to four words,

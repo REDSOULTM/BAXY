@@ -229,7 +229,10 @@ def score_script(turns_path: pathlib.Path, profile: pathlib.Path, reviews: dict[
         verdict = "bien" if ok else "mal"
         if ok and (turn.get("check") or {}).get("manual"):
             review = reviews.get(str(number))
-            verdict = review["verdict"] if review and review.get("reply") == final else "revisar"
+            # A turn may carry several reviewed wordings of the same verified act (``replies``, D76 t21: «He cerrado
+            # las ventanas de Edge…» after «confirmo»); any other wording is reviewed again.
+            reviewed = [review.get("reply"), *review.get("replies", [])] if review else []
+            verdict = review["verdict"] if review and final in reviewed else "revisar"
         table.append(
             {
                 "n": number,

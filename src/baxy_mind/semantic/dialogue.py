@@ -1312,6 +1312,57 @@ def _reply_figure(reply: str, said_before: Iterable[str]) -> str | None:
     return new.pop() if len(new) == 1 else None
 
 
+def _without_moment(folded: str) -> str:
+    """``folded`` with its clocks, days and lengths taken out."""
+
+    for clock in spoken_clocks(folded):
+        folded = folded.replace(clock.literal, " ")
+    return re.sub(rf"\b(?:{_DAY}|{_RELATIVE_DURATION_PATTERN})\b", " ", folded)
+
+
+def _all_pointed(folded: str) -> bool:
+    """The reminder is all «eso»: the order to remind of what is pointed at, and around it only when, how or to whom."""
+
+    pointed = _POINTED_REMINDER.search(folded)
+    if pointed is None:
+        return False
+    rest = _without_moment(folded[: pointed.start()] + " " + folded[pointed.end():])
+    return all(word in _AROUND_A_POINTED_REMINDER for word in _WORD.findall(rest))
+
+
+# M165 (DEV-F v4y F-w48-t4 «órale, pues recuérdame eso el domingo a las 3 de la tarde» after a forecast that failed →
+# titled «Recuérdame el domingo a las 3 de la tarde.»; DEV-G v4y G-w19-t4, where the decider's «Recuérdame en 5:40 de
+# la tarde.» stood over «recuérdame salir a las 17:40»): an order to remind or to ring and its moment, with nothing it
+# is for, says no title. The words such an order is made of, beside those around a pointed reminder.
+_REMINDER_ORDER_ONLY = frozenset(
+    """
+    recuerdame recuerda recordame recorda recuerdamelo recordamelo recuerdamela avisame avisa avisamelo acuerdame
+    acordame acordamelo recordar avisar remind reminder reminders recordatorio recordatorios aviso alarma alarmas alarm
+    alarms ping eso esto aquello that this it lo pone poneme crea creame programa programame haz hazme add create make
+    about sobre que to enero febrero marzo abril mayo junio julio agosto septiembre setiembre octubre noviembre
+    diciembre january february march april may june july august september october november december
+    """.split()
+)
+
+
+def says_no_reminder_title(text: str) -> bool:
+    """``text`` (a title, or a request) says only an order to remind or ring and when it rings: «Recuérdame el domingo
+    a las 3 de la tarde.», «Recuérdame en 5:40 de la tarde.», «Remind me»; never what it is for."""
+
+    words = _WORD.findall(_without_moment(_fold(" ".join(str(text or "").split()))))
+    return all(word.isdecimal() or word in _AROUND_A_POINTED_REMINDER or word in _REMINDER_ORDER_ONLY for word in words)
+
+
+def pointed_reminder_unsaid(text: str, reply: str | None, title: str) -> bool:
+    """M165: the reminder ``text`` is all «eso», BAXY's last ``reply`` advised nothing it could point at, and the
+    ``title`` read for it says only the order and its moment: what it is for is to be asked, never the order repeated
+    as its title."""
+
+    return _all_pointed(_fold(" ".join(str(text or "").split()))) and advised_action(reply) is None and (
+        says_no_reminder_title(title)
+    )
+
+
 def pointed_reminder_title(
     text: str, reply: str | None, title: str, said_before: Iterable[str] = (),
 ) -> str | None:
@@ -1320,21 +1371,15 @@ def pointed_reminder_title(
 
     folded = _fold(" ".join(str(text or "").split()))
     folded_title = _fold(title)
-    pointed = _POINTED_REMINDER.search(folded)
-    if pointed is not None:
-        rest = folded[: pointed.start()] + " " + folded[pointed.end():]
-        for clock in spoken_clocks(rest):
-            rest = rest.replace(clock.literal, " ")
-        rest = re.sub(rf"\b(?:{_DAY}|{_RELATIVE_DURATION_PATTERN})\b", " ", rest)
-        if all(word in _AROUND_A_POINTED_REMINDER for word in _WORD.findall(rest)):
-            action = advised_action(reply)
-            if action is None:
-                return None
-            words = [word for word in _WORD.findall(_fold(action)) if len(word) >= 4 and word not in _STOPWORDS]
-            content = words[1:] or words
-            if content and any(re.search(rf"\b{re.escape(word[:5])}", folded_title) for word in content):
-                return None
-            return action
+    if _all_pointed(folded):
+        action = advised_action(reply)
+        if action is None:
+            return None
+        words = [word for word in _WORD.findall(_fold(action)) if len(word) >= 4 and word not in _STOPWORDS]
+        content = words[1:] or words
+        if content and any(re.search(rf"\b{re.escape(word[:5])}", folded_title) for word in content):
+            return None
+        return action
     if not _REMINDER_ORDER.search(folded) or not _POINTED_OBJECT.search(folded):
         return None
     figure = _reply_figure(reply or "", [text, *said_before])

@@ -3,7 +3,10 @@
   "21": {
    "verdict": "bien",
    "reply": "He cerrado la ventana de YouTube y la de restaurar páginas en Edge.",
-   "head": "5761e1ab"
+   "head": "5761e1ab",
+   "replies": [
+    "He cerrado las ventanas de Edge que estaban abiertas."
+   ]
   },
   "16": {
    "verdict": "bien",

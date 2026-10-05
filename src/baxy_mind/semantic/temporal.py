@@ -532,6 +532,11 @@ def anchored_offset_request(text: str, reply: str | None, earlier: Iterable[str]
     found = _ANCHORED_OFFSET.search(folded)
     if found is None or len(folded) != len(said):
         return None
+    if said_advance(said) is not None:
+        # M165 (DEV-I v4y I-w20-t3 «tambien tengo una reunion a las 9, recuerdamelo 15 minutos antes de eso» after «He
+        # cambiado la alarma de mañana a las 08:00.» → counted to 07:45): «eso» points at the moment the same message
+        # just said, which ``said_advance`` reads; BAXY's last answer is not what it counts from.
+        return None
     named = found.group("named")
     if named is not None:
         if named in _NOT_A_POINTED_THING:
@@ -2798,13 +2803,19 @@ def answered_advance_request(
 ) -> str | None:
     """«recuérdame salir a las 17:40» for «salgo sobre las 6 de la tarde» answering «¿A qué hora tienes pensado
     salir?» about «vale, pues recuérdamelo veinte minutos antes de salir» (``pending``, the person's request BAXY's
-    question was about). None unless the reply's last question asks when, the request asks to be reminded or woken with
+    question was about). None unless the reply's last question asks when or offers no clock of its own (M165), the
+    request asks to be reminded or woken with
     one count before something named after it and no clock of its own, and the answer says one clock, at most one day,
     and neither another count nor an order of its own («avísame a las 5» is the notification's own clock). A clock
     without its part of the day is the next time it comes (D61) when no day is said; with a day it is left alone."""
 
     question = " ".join(str(reply or "").split())
-    if not question.endswith("?") or _ASKS_WHEN.search(_fold(re.split(r"(?<=[.!?])\s+", question)[-1])) is None:
+    asked = _fold(re.split(r"(?<=[.!?])\s+", question)[-1])
+    # M165 (DEV-G v4y G-w19-t4 «pues salgo sobre las 6 de la tarde, así que calcula desde ahí» after BAXY asked «¿Te
+    # gustaría que te lo recuerde en ese momento?» instead of when → set at 18:00): a question about the request that
+    # offers no clock of its own is answered with the moment of what the count is from, as one asking when; one that
+    # offers a clock («¿te aviso a las 6?») is answered with the notification's own.
+    if not question.endswith("?") or (_ASKS_WHEN.search(asked) is None and spoken_clocks(asked)):
         return None
     request = " ".join(str(pending or "").split())
     folded_request = _same_length_fold(request)

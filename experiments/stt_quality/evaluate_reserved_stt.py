@@ -272,8 +272,11 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 comprensión natural: repin tras M161 (2026-10-04).
 # C03 M163: re-pin tras convertir lo dicho en la charla (quantities, knowledge, __main__).
 # C03 comprensión natural: repin tras M164 (2026-10-05).
+# C03 comprensión natural: repin tras las respuestas revisadas del guion (2026-10-05).
+# C03 comprensión natural: repin tras M166 (2026-10-05).
+# C03 comprensión natural: repin tras M165 (2026-10-05).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "52ff79c951f59ca5906df9232356579f664bddbd5eadb7b3135b2eff5f710037"
+    "2bdfc460812f41162aafb6f5fee5a7bc6af934a86f13057e611e31f69824931d"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
