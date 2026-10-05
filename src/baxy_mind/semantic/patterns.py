@@ -8756,9 +8756,11 @@ def _strict_catalog_request(
                 r"install|installation|instalar|instalarse|ready|list[oa])\b"
             ),
             "streaming.play.named": (
-                r"\b(?:pon|ponme|poneme|pone|put|play|start|reproduce|ver|watch|find|encuentra|encuentras)\b"
+                # M171 (DEV-H v5a H-s074 «ponle bluey en disney plus a la sofi»): «ponle/ponles/ponele» is «pon».
+                r"\b(?:pon|ponme|poneme|pone|ponles?|poneles?|put|play|start|reproduce|ver|watch|find|encuentra|"
+                r"encuentras)\b"
                 r".{0,120}\b" + _NETFLIX_SPELLED + r"\b|\b" + _NETFLIX_SPELLED + r"\b.{0,120}"
-                r"\b(?:pon|ponme|poneme|pone|put|play|start|reproduce|ver|watch)\b"
+                r"\b(?:pon|ponme|poneme|pone|ponles?|poneles?|put|play|start|reproduce|ver|watch)\b"
             ),
         }
         action_contracts_grounded = all(
@@ -9826,7 +9828,10 @@ def _strict_catalog_request(
             # misma operación ya daba «ver» y «watch» por formas legítimas de
             # pedirla, y esta cabeza las rechazaba. La asimetría entre las dos
             # listas era el defecto; «quiero ver …» resolvía por otro camino.
-            r"^(?:reproduce|play|pon|ponme|poneme|pone|put\s+on|busca|find|inicia|start|encuentra|encuentras|"
+            # M171 (DEV-H v5a H-s074 «baxy ponle bluey en disney plus a la sofi» → «Eso no lo hago»): «ponle»,
+            # «ponles», «ponele» llevan el clítico de para quién se pone; siguen siendo poner.
+            r"^(?:reproduce|play|pon|ponme|poneme|pone|ponles?|poneles?|put\s+on|busca|find|inicia|start|encuentra|"
+            r"encuentras|"
             r"localiza|locate|ver|watch)\b",
         )
         and _has(
