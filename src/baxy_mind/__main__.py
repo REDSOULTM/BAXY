@@ -3303,6 +3303,23 @@ def _completes_previous_request(
 _OUTPUT_LEVEL_OPERATIONS = ("audio.volume", "audio.volume.adjust", "system.settings.adjust", "system.settings.set")
 
 
+def _asks_application_volume(
+    text: str,
+    available_operations: tuple[str, ...],
+    application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
+) -> bool:
+    """M167: the request raises or lowers one application's own volume («súbele a spotify»), read or asked."""
+
+    try:
+        found = (
+            resolve_explicit_clarification_intent(text, available_operations, application_names),
+            resolve_explicit_effects(text, available_operations, application_names),
+        )
+    except (ValueError, TypeError):
+        return False
+    return any(read is not None and "audio.app.volume.adjust" in read.operations for read in found)
+
+
 def _stated_argument_fields(operation: str, objective: str, schema: dict[str, object]) -> tuple[str, ...]:
     """Required fields the request already settles, so the question for the rest never asks them again.
 
@@ -5589,9 +5606,27 @@ def _context_decided_result(
         # M113 (DEV-F v4d F-w45-t4 «scratch the garlic knots one» after «Done, 12-minute timer for the garlic knots.» →
         # task.delete): the notification BAXY just reported setting, taken back by what it is for, is the latest one.
         offered, offered_read = taken_back, taken_back_read
+    said_before_by_person = _prior_user_texts(history, text)
+    level_answered = (
+        semantic_levels.answered_level_request(
+            text, context.last_reply, said_before_by_person[-1], said_before_by_person[-2::-1],
+        )
+        if said_before_by_person and offered_read is None
+        else None
+    )
+    level_answered_read = (
+        resolve_explicit_effects(level_answered, available_operations) if level_answered is not None else None
+    )
+    if level_answered_read is not None and (
+        not set(level_answered_read.operations) <= set(_OUTPUT_LEVEL_OPERATIONS)
+        or _asks_application_volume(said_before_by_person[-1], available_operations, application_names)
+    ):
+        # The volume of one application keeps its own completion (AUDIO1787) and the decider.
+        level_answered_read = None
     read_before_decider = (
         closing is not None
         or offered_read is not None
+        or level_answered_read is not None
         or (placed_read is not None and placed_read.operations == ("system.time",))
     )
     if closing is not None:
@@ -5603,6 +5638,15 @@ def _context_decided_result(
         # request.
         decided = semantic_decider.ContextDecision(
             request=str(offered), decision="action", operations=tuple(offered_read.operations), question="",
+        )
+    elif level_answered_read is not None:
+        # M167 (exception to D58, the question was BAXY's; DEV-I v4y I-w15-t3 «unos 15 nomás» right after «¿Cuánto le
+        # subo?» → the decider moved the song 15 seconds on): the amount (or the level) that answers BAXY's own «how
+        # much do I raise or lower it?» is that change, of the level the person asked about, read as one request
+        # (``semantic.levels.answered_level_request``). A question about seconds or moving forward is not this one.
+        decided = semantic_decider.ContextDecision(
+            request=str(level_answered), decision="action", operations=tuple(level_answered_read.operations),
+            question="",
         )
     elif read_before_decider:
         # M84 (DEV-D v3o D-w02-t2 «y si allá son las 10 de la mañana acá qué hora es» after «qué hora es en madrid» →
@@ -5728,6 +5772,50 @@ def _context_decided_result(
         decided = semantic_decider.ContextDecision(
             request=text, decision="action", operations=("media.status",), question="",
         )
+    said_level = semantic_levels.read(text) if decided.decision in {"action", "clarify"} else None
+    if (
+        said_level is not None
+        and (said_level.direction is not None or said_level.target is not None)
+        and (
+            "media.seek.relative" in decided.operations
+            or (
+                decided.decision == "clarify"
+                and not decided.operations
+                and semantic_levels.names_position(decided.request)
+            )
+        )
+        and not semantic_levels.names_position(text)
+    ):
+        # M167 (owner rule H0027 and the level readers; DEV-G v4y G-w21-t2 «súbele un poco a esa» with the salsa playlist
+        # playing → restated «Adelanta un poco la canción.» and asked «¿Cuántos segundos la adelanto?»; D-w18-t2 «can
+        # you bajarle un poco» → «¿Cuántos segundos retrocedo?»; G-w21-t3 «subile 10, con eso ya me sirve» → the song
+        # moved 10 seconds on): raising or lowering («súbele», «bájale», «turn it up») is the level, never the position
+        # of what plays; moving it is «adelántala», «retrocede», «skip ahead». With the amount said it is that change;
+        # without it, only the amount is asked (no default step).
+        setting = (
+            said_level.setting
+            or semantic_levels.setting_of(said_before_by_person[-1] if said_before_by_person else None)
+            or semantic_levels.VOLUME
+        )
+        if said_level.amount is None and said_level.target is None:
+            asked_level = (
+                ("system.settings.adjust",) if setting == semantic_levels.BRIGHTNESS else ("audio.volume.adjust",)
+            )
+            if set(asked_level) <= set(available_operations):
+                try:
+                    question = llm.formulate_explicit_clarification_question(text, asked_level, ("amount",))
+                except (ValueError, RuntimeError):
+                    question = ""
+                decided = semantic_decider.ContextDecision(
+                    request=text, decision="clarify", operations=asked_level, question=question,
+                )
+        else:
+            level_request = said_level.request(setting)
+            level_read = resolve_explicit_effects(level_request, available_operations)
+            if level_read is not None and set(level_read.operations) <= set(_OUTPUT_LEVEL_OPERATIONS):
+                decided = semantic_decider.ContextDecision(
+                    request=level_request, decision="action", operations=tuple(level_read.operations), question="",
+                )
     if (
         "window.resolve" in available_operations
         and (decided.decision in {"talk", "clarify"} or set(decided.operations) <= _SHOWN_MEDIA_READS)
