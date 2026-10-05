@@ -2497,16 +2497,34 @@ def due_before_said_moment(
     if len(due_clocks) == 1:
         if (due_clocks[0].hour % 12, due_clocks[0].minute) != (advance.clock.hour % 12, advance.clock.minute):
             return None
-        event = _canonical_due_utc(raw_due, context, now_utc=now_utc)
+        moment, moment_context = raw_due, context
     elif not due_clocks and folded_due.strip() and " ".join(folded_due.split()) in effect_intent._fold(advance.phrase):
         # «una hora» or «an hour before» copied as the moment: the moment is the event's, less that.
-        event = _canonical_due_utc(advance.moment, said, now_utc=now_utc)
+        moment, moment_context = advance.moment, said
     else:
         return None
+    event = _canonical_due_utc(moment, moment_context, now_utc=now_utc)
     if event is None:
         return None
     now = (now_utc or datetime.now(timezone.utc)).astimezone(timezone.utc)
     due = datetime.fromisoformat(event.replace("Z", "+00:00")) - timedelta(minutes=advance.minutes)
+    said_on = effect_intent._fold(f"{moment} {moment_context}")
+    local_now = now_utc if now_utc is not None else datetime.now().astimezone()
+    if (
+        due <= now + timedelta(seconds=5)
+        and not advance.clock.resolved
+        and spoken_date(said_on) is None
+        and effect_intent.spoken_day(said_on, local_now.weekday()) == (0, 1)
+    ):
+        # M165 (DEV-H v4y H-s047 «¿me podrías poner una alarma una hora antes de las 9?» at 20:52 → «¿A qué hora…?»):
+        # an hour said without its part of the day nor a day is the next time it comes (D61) whose advance is still
+        # ahead — at 20:52 the 9 of tomorrow morning, rung at 8 — never a passed moment asked back. A clock with its
+        # part of the day, or a day said, keeps asking (that moment is the one the person placed).
+        later = _canonical_due_utc(
+            moment, moment_context, now_utc=local_now + timedelta(minutes=advance.minutes),
+        )
+        if later is not None:
+            due = datetime.fromisoformat(later.replace("Z", "+00:00")) - timedelta(minutes=advance.minutes)
     folded_title = effect_intent._fold(title) if isinstance(title, str) else ""
     if advance.title and (
         not folded_title
