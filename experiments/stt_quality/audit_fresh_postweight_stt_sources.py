@@ -264,8 +264,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # C03 comprensión natural: repin tras traer el puntuador D71–D78 de main (2026-10-05).
 # repin tras M171
 # C03 M172: re-pin after the media-title suffix and observed-repeat fix.
+# C03 M173: re-pin tras mover el aviso que BAXY acaba de poner (2026-10-05).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "c867a264b8c9c891a29cca67d620c028a2a32c21dd374e59012a336d960f7f9d"
+    "4043d77011f12fd8571f8435c48bd22eb7559b2ce0bf2c01d679cc14d792f91d"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
