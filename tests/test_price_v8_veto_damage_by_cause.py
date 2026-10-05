@@ -269,9 +269,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 M159: repin tras la ventana que no cabe en media pantalla (llm.py).
 # C03 comprensión natural: repin tras M160 (2026-10-04).
 # C03 M162: re-pin tras la cuenta sobre lo dicho y la diferencia horaria con aquí.
+# C03 M164 (2026-10-05): re-pin tras los lectores de G e I.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "c754dce0e93fdd229ccf6207db154e130e428ce54c2ad8ec5ade1957f5693635"
+        "e5a38f39b59d83ca7270e80b44389df54ea5bed2c2fe9c7f86f282c955195a02"
     ),
     "src/baxy_mind/llm.py": (
         "d61fde606798cfb6959e02e6daa33def583db4a99edcf67d78ffe15d7dadd599"
