@@ -2599,6 +2599,36 @@ def clock_named_cancellation(text: str, restated: str = "") -> str | None:
     return f"cancela {noun} de {'la' if dial.startswith('1:') else 'las'} {dial}"
 
 
+def names_another_notice(text: str, old: datetime, new: datetime | None = None) -> bool:
+    """M173: whether ``text`` names an alarm or reminder by a clock other than its ``old`` one (local) — «y la de las 7
+    pásala a las 8», «Cambia la alarma de las 7 a las 8.», «move the 7 o'clock one to 8» right after BAXY set one at
+    6:30 move another one, not that one. «la de las 7», «the 7 o'clock one» say which one is meant; «la alarma a las
+    8», «the alarm for 8» may say the ``new`` time as well. The clock as said: a bare 7 is either 7; «las 18:30» is
+    that hour."""
+
+    def same(clock: SpokenClock, moment: datetime | None) -> bool:
+        if moment is None or clock.minute != moment.minute:
+            return False
+        if clock.resolved and not clock.on_the_dial:
+            return clock.hour == moment.hour
+        return clock.hour % 12 == moment.hour % 12
+
+    folded = _same_length_fold(" ".join(str(text or "").split()))
+    named = [
+        (False, re.search(r"\bde\s+las?\s+$", folded[found.start():found.start("clock")]) is not None, found)
+        for found in _SPANISH_CLOCK_NAMED_NOTIFICATION.finditer(folded)
+    ] + [
+        (True, index == 0, found)
+        for index, pattern in enumerate(_ENGLISH_CLOCK_NAMED_NOTIFICATION)
+        for found in pattern.finditer(folded)
+    ]
+    for english, which, found in named:
+        for clock in spoken_clocks(f"{'at' if english else 'a las'} {found.group('clock')}"):
+            if not same(clock, old) and (which or not same(clock, new)):
+                return True
+    return False
+
+
 def _clock_article(clock: str) -> str:
     """«la» before one o'clock, «las» before the others («de la una», «a las 9:00»)."""
 
