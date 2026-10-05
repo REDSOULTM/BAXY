@@ -118,7 +118,7 @@ def test_other_names_respelled_by_the_model_go_as_written() -> None:
 
 
 def test_what_must_not_change() -> None:
-    # Said as it is, or another artist altogether: the model's value stays.
+    # Said as it is: the model's value stays.
     arguments, _ = _arguments(
         "media.play.query", PLAY_QUERY, ["pon algo de mon laferte en spotify"],
         "Pon algo de Mon Laferte en Spotify.", (("provider", "Spotify"), ("query", "Mon Laferte")),
@@ -128,7 +128,9 @@ def test_what_must_not_change() -> None:
         "media.play.query", PLAY_QUERY, ["pon algo de soda stereo en spotify"],
         "Pon algo de Gustavo Cerati en Spotify.", (("provider", "Spotify"), ("query", "Gustavo Cerati")),
     )
-    assert arguments["query"] == "Gustavo Cerati"
+    # M166: another artist altogether is no respelling, but an artist nobody said is not looked up: the artist the
+    # person named is (``semantic.arguments.as_the_person_named``; was «Gustavo Cerati»).
+    assert arguments["query"] == "soda stereo"
     # An application keeps the catalog's name the readers chose for the person's spelling (M127); a web search, a
     # note and a reminder keep the model's words.
     said = _history(["abreme el exel"])

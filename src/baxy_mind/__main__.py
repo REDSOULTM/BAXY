@@ -235,6 +235,7 @@ from .semantic.arguments import (
     _fully_enumerated_note_create_arguments,
     _presentation_arguments,
     _select_referenced_predecessor,
+    as_the_person_named,
     closes_the_active_window,
     conversation_file_folder,
     conversation_pdf,
@@ -3485,6 +3486,9 @@ def _as_the_person_spelled(operation: str, arguments: Any, person: str, history:
     if not isinstance(arguments, dict) or not operation.startswith(_AS_SPELLED_LOOKUPS):
         return arguments
     said = _conversation_grounding_source(person, history).splitlines()
+    # M166 (DEV-H v4w H-w22-t2 «esa no pone bailando solo» → query «otra canción de Los Bunkers»): the title and the
+    # artist the person's message names go as the person said them (``semantic.arguments.as_the_person_named``).
+    arguments = as_the_person_named(operation, arguments, person, said[1:], _prior_user_texts(history, person))
     respelled = dict(arguments)
     for name in _AS_SPELLED_FIELDS & set(arguments):
         if isinstance(arguments[name], str):
