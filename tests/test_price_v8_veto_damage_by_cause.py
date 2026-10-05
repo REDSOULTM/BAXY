@@ -274,12 +274,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 M166: la música que se pide lleva el título y el artista que dijo la persona (semantic.arguments.as_the_person_named).
 # C03 comprensión natural: repin tras M165 (2026-10-05).
 # C03 M167: repin de identidad tras M167
+# C03 comprensión natural: repin tras M168 (2026-10-05).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "dcaaa32d0be39041b6e79c535a288394498eacf9b12797dd8efbd72be6fdc7b5"
+        "f038afe0d247b01a50a842741700bcc2ec61db8418fa7327944d13b6e53ddd50"
     ),
     "src/baxy_mind/llm.py": (
-        "d61fde606798cfb6959e02e6daa33def583db4a99edcf67d78ffe15d7dadd599"
+        "746a7e4b04574396c5047c970aca2695e3836c57c21435cd21ba08a6d9a147ca"
     ),
 }
 
