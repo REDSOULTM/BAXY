@@ -268,7 +268,10 @@ _SPOKEN_CLOCK = re.compile(
     rf"(?P<hour>{_CLOCK_HOUR})(?P<minutes>{_CLOCK_MINUTES})?(?P<oclock>{_O_CLOCK})?"
     rf"(?:\s*(?P<period>{_CLOCK_PERIOD}))?(?=\s|$|[,;:.?!])"
     # «a las dos horas», «at five minutes»: a duration is not a clock time.
-    r"(?!\s+(?:minutos?|minutes?|horas?|hours?|dias?|days?|segundos?|seconds?)\b)"
+    # M168 (D77, ESPN's kick-off said back «Chile juega el martes a las 23:30 hora local», «a las 19:30 horas» → read
+    # 23:00 and 19:00, and «una hora antes de eso» counted from them): minutes written after a colon make a clock, and
+    # «hora(s)» after it names the clock, not a length.
+    r"(?!(?<!:[0-5][0-9])\s+(?:minutos?|minutes?|horas?|hours?|dias?|days?|segundos?|seconds?)\b)"
 )
 
 
@@ -466,11 +469,23 @@ _OFFSET_UNIT = r"(?P<unit>horas?|oras?|hours?|hrs?|h|minutos?|minutes?|mins?|min
 # Thursday at 19:00 → «¿A qué hora es la junta?»; F-w33-t2 «Set an alarm for half an hour before kick-off» after
 # «…kick-off 15:00…» → «When would you like the alarm to go off?»): a thing named with its article, or bare, points at
 # the moment of the last message of the conversation that names it.
+# M168 (D77; DEV-I v4y I-w12-t4 «ponem una alarma una hora antes» and I-w29-t3 «put a reminder on an hour ahead of
+# tip-off…» after the kick-off BAXY gave → asked): «ahead (of)» is «before», and a length before or after with nothing
+# after it but the end of the message counts from the one moment BAXY just gave, as «antes de eso» does.
 _ANCHORED_OFFSET = re.compile(
-    rf"\b{_OFFSET_AMOUNT}\s+{_OFFSET_UNIT}\s+(?P<sign>antes|despues|before|after|earlier|later)"
-    r"(?:\s+(?:de|d|del|than|of))?\s+(?:(?:eso|esto|that|it|then)\b|(?:ese|esa|este|esta|that|the)\s+[a-z]+\b|"
-    r"(?:(?P<article>el|la|los|las|al|mi|my)\s+)?(?P<named>[a-z]{3,}(?:-[a-z]+)?)\b)"
+    rf"\b{_OFFSET_AMOUNT}\s+{_OFFSET_UNIT}\s+(?P<sign>antes|despues|before|after|earlier|later|ahead)"
+    r"(?:(?:\s+(?:de|d|del|than|of))?\s+(?:(?:eso|esto|that|it|then)\b|(?:ese|esa|este|esta|that|the)\s+[a-z]+\b|"
+    r"(?:(?P<article>el|la|los|las|al|mi|my)\s+)?(?P<named>[a-z]{3,}(?:-[a-z]+)?)\b)|(?=\s*[.!?]*\s*$))"
 )
+# M168: the start of a match, named («antes del partido», «before kick-off», «ahead of tip-off»), is the moment of the
+# newest line that tells a match (a team plays, a kick-off) with one clock; BAXY's own report of a notice it set («Listo,
+# alarma el sábado a las 18:30 para el partido») tells when that notice rings, not when the match starts.
+_MATCH_START_WORDS = frozenset({"partido", "match", "game", "kick", "kick-off", "kickoff", "tip", "tip-off", "tipoff"})
+_TELLS_A_MATCH = re.compile(
+    r"\b(?:partido|juega|juegan|jugara|jugaran|recibe|reciben|visita|visitan|match|game|plays?|playing|hosts?|"
+    r"kick-?off|tip-?off)\b"
+)
+_TELLS_A_NOTICE = re.compile(r"\b(?:alarma|recordatorio|aviso|alarm|reminder)\b")
 _OFFSET_NUMBERS = {
     "una": 1, "un": 1, "a": 1, "an": 1, "one": 1, "dos": 2, "two": 2, "tres": 3, "three": 3, "cuatro": 4, "four": 4,
     "cinco": 5, "five": 5, "diez": 10, "ten": 10, "quince": 15, "fifteen": 15, "veinte": 20, "twenty": 20,
@@ -538,17 +553,36 @@ def anchored_offset_request(text: str, reply: str | None, earlier: Iterable[str]
         # just said, which ``said_advance`` reads; BAXY's last answer is not what it counts from.
         return None
     named = found.group("named")
+    # Bare: the length and its sign end the match, nothing pointed at after them.
+    bare = found.group(0).split()[-1] == found.group("sign")
+    if bare and (
+        # M168: bare, only a notice asked for, counted before or after (never «earlier», «later»: a notice moved).
+        found.group("sign") in {"earlier", "later"}
+        or not re.search(r"\b(?:alarmas?|recordatorios?|recuerd|record|avis|alarms?|reminders?|remind)", folded)
+    ):
+        return None
     if named is not None:
         if named in _NOT_A_POINTED_THING:
             return None
-        reply = next(
-            (
-                line for line in (reply, *earlier)
-                if line and re.search(rf"\b{re.escape(named)}", _fold(line))
-                and _anchor_clock(_fold(" ".join(str(line).split()))) is not None
-            ),
-            None,
-        )
+        if named in _MATCH_START_WORDS:
+            # M168: the match's start is told by the newest line that tells a match, not by a notice set for it.
+            reply = next(
+                (
+                    line for line in (reply, *earlier)
+                    if line and _TELLS_A_MATCH.search(_fold(line)) and not _TELLS_A_NOTICE.search(_fold(line))
+                    and _anchor_clock(_fold(" ".join(str(line).split()))) is not None
+                ),
+                None,
+            )
+        else:
+            reply = next(
+                (
+                    line for line in (reply, *earlier)
+                    if line and re.search(rf"\b{re.escape(named)}", _fold(line))
+                    and _anchor_clock(_fold(" ".join(str(line).split()))) is not None
+                ),
+                None,
+            )
     if not reply:
         return None
     minutes = _offset_minutes(found)
@@ -557,7 +591,7 @@ def anchored_offset_request(text: str, reply: str | None, earlier: Iterable[str]
     anchor = _anchor_clock(folded_answer)
     if minutes is None or anchor is None:
         return None
-    sign = -1 if found.group("sign") in {"antes", "before", "earlier"} else 1
+    sign = -1 if found.group("sign") in {"antes", "before", "earlier", "ahead"} else 1
     moment = anchor.hour * 60 + anchor.minute + sign * minutes
     if not 0 <= moment < 24 * 60:
         return None

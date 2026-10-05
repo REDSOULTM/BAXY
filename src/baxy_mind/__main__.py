@@ -5957,17 +5957,29 @@ def _context_decided_result(
         # folder.» → asked): «it» is the one file BAXY just named; it is opened, not asked about.
         decided = pointed_file
     # M110: the thing named («la junta», «kick-off») may have its moment further back in the conversation.
-    anchored = semantic_temporal.anchored_offset_request(
-        text, context.last_reply, said_before,
-        # M113 (DEV-F v4d F-w18-t3 «Remind me the day before the first one's due, nine in the morning»): days counted
-        # from a date said earlier in the conversation.
-    ) or semantic_temporal.anchored_day_request(text, context.last_reply, said_before) or (
+    counted = semantic_temporal.anchored_offset_request(text, context.last_reply, said_before)
+    # M113 (DEV-F v4d F-w18-t3 «Remind me the day before the first one's due, nine in the morning»): days counted from a
+    # date said earlier in the conversation.
+    anchored = counted or semantic_temporal.anchored_day_request(text, context.last_reply, said_before) or (
         # M148 (DEV-G v4r G-w19-t4 «pues salgo sobre las 6 de la tarde…» after «recuérdamelo veinte minutos antes de
         # salir» → «¿A qué hora tienes pensado salir?» → set at 18:00): the moment the answer gives, less the advance the
         # request asked, is when it rings.
         semantic_temporal.answered_advance_request(text, context.pending_request, context.last_reply)
     )
     anchored_read =resolve_explicit_effects(anchored, available_operations) if anchored is not None else None
+    if (
+        anchored_read is None
+        and counted is not None
+        and anchored == counted
+        and decided.decision == "action"
+        and decided.operations
+        and set(decided.operations) <= {"notification.schedule", "reminder.create"}
+    ):
+        # M168 (D77; DEV-I v4y I-w12-t4 «ponem una alarma una hora antes», I-w29-t3 «put a reminder on an hour ahead of
+        # tip-off…» after the kick-off BAXY read from ESPN): the readers do not read the order as written («ponem», «put
+        # a reminder»), and the decider chose the notice; the moment is still the count from the moment BAXY gave, never
+        # the model's own sum.
+        anchored_read = EffectIntent(tuple(decided.operations))
     if (
         anchored_read is not None
         and set(anchored_read.operations) <= _ANCHORED_SCHEDULE_OPERATIONS
