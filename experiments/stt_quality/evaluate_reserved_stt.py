@@ -280,8 +280,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 comprensión natural: repin tras M170 (2026-10-05).
 # C03 comprensión natural: repin tras traer el puntuador D71–D78 de main (2026-10-05).
 # repin tras M171
+# C03 M172: re-pin after the media-title suffix and observed-repeat fix.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "c9d6c8d7afa0832053be26aafbb7026fe99955bfcb9e5df77887763971dfd23c"
+    "c867a264b8c9c891a29cca67d620c028a2a32c21dd374e59012a336d960f7f9d"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

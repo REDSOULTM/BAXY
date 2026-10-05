@@ -310,7 +310,7 @@ internal static class UserMessagePolicy
         string judgedText = codeAsked ? vocabularyText : modelText;
         if (LooksLikeMachineSlotAsk(FoldForPolicy(vocabularyText))
             || LooksLikeRestatingDefinitionAsk(FoldForPolicy(vocabularyText))
-            || HasRepeatedWord(judgedText)
+            || HasRepeatedWord(judgedText, ObservedRepeatedWords(draft.Source))
             || ContainsPersonMetadiscourse(FoldForPolicy(modelText))
             || ContainsInternalCode(
                 ObservedResponseLiterals.WithoutObservedIdentifiers(vocabularyText, draft.Source),
@@ -1492,8 +1492,14 @@ internal static class UserMessagePolicy
     /// passed it. A stutter is the same word twice as written: «ñ» is a letter of its own and «esta está» are two
     /// words, so the text is only lowercased, never stripped of its marks. Twin: llm.compose_visible_defect (the
     /// repeated-word check over the casefolded vocabulary).
+    /// M172 (DEV-I v5b I-s047 «ponme algo de Mon Laferte en el spotify» → «Ahora se está reproduciendo la canción
+    /// «Mon Laferte - Mi Buen Amor - Desde El Teatro Fru Fru» en Spotify.», refused as internal_code and the turn ended
+    /// in ⚠): a word the verified result observed already repeated (<paramref name="observed"/>) is data, not a stutter.
     /// </summary>
-    private static bool HasRepeatedWord(string text)
+    private static bool HasRepeatedWord(string text, HashSet<string>? observed = null) =>
+        RepeatedWords(text).Any(word => observed?.Contains(word) is not true);
+
+    private static IEnumerable<string> RepeatedWords(string text)
     {
         string folded = text.ToLowerInvariant();
         Match? previous = null;
@@ -1511,13 +1517,11 @@ internal static class UserMessagePolicy
                 && string.Equals(word.Value, previous.Value, StringComparison.Ordinal)
                 && string.IsNullOrWhiteSpace(folded[(previous.Index + previous.Length)..word.Index]))
             {
-                return true;
+                yield return word.Value;
             }
 
             previous = word;
         }
-
-        return false;
     }
 
     private static bool InventsNamedTimeZone(string userText, string reply)
@@ -2350,17 +2354,37 @@ internal static class UserMessagePolicy
     private static HashSet<string> ObservedStringWords(string source)
     {
         var words = new HashSet<string>(StringComparer.Ordinal);
+        VisitObservedStrings(source, text =>
+        {
+            foreach (Match word in Regex.Matches(
+                FoldForPolicy(text), @"[a-zñáéíóúü]{8,}", RegexOptions.CultureInvariant))
+            {
+                words.Add(word.Value);
+            }
+        });
+        return words;
+    }
+
+    // M172 (DEV-I v5b I-s047, DEV-G v4x/v5b G-w14-t1): the words a verified result observed already repeated, as
+    // HasRepeatedWord reads them («Mi Buen Amor - Desde El Teatro Fru Fru» → «fru»). Twin: llm._observed_repeated_words.
+    private static HashSet<string> ObservedRepeatedWords(string source)
+    {
+        var words = new HashSet<string>(StringComparer.Ordinal);
+        VisitObservedStrings(source, text => words.UnionWith(RepeatedWords(text)));
+        return words;
+    }
+
+    private static void VisitObservedStrings(string source, Action<string> visit)
+    {
         if (TryReadJson(source, out JsonElement root)
             && root.TryGetProperty("verified", out JsonElement verified) && verified.ValueKind == JsonValueKind.True
             && root.TryGetProperty("observed", out JsonElement observed))
         {
-            CollectObservedWords(observed, words, 0);
+            VisitObservedStrings(observed, visit, 0);
         }
-
-        return words;
     }
 
-    private static void CollectObservedWords(JsonElement node, HashSet<string> words, int depth)
+    private static void VisitObservedStrings(JsonElement node, Action<string> visit, int depth)
     {
         if (depth > 6)
         {
@@ -2369,22 +2393,18 @@ internal static class UserMessagePolicy
         switch (node.ValueKind)
         {
             case JsonValueKind.String:
-                foreach (Match word in Regex.Matches(
-                    FoldForPolicy(node.GetString()!), @"[a-zñáéíóúü]{8,}", RegexOptions.CultureInvariant))
-                {
-                    words.Add(word.Value);
-                }
+                visit(node.GetString()!);
                 break;
             case JsonValueKind.Object:
                 foreach (JsonProperty property in node.EnumerateObject())
                 {
-                    CollectObservedWords(property.Value, words, depth + 1);
+                    VisitObservedStrings(property.Value, visit, depth + 1);
                 }
                 break;
             case JsonValueKind.Array:
                 foreach (JsonElement item in node.EnumerateArray())
                 {
-                    CollectObservedWords(item, words, depth + 1);
+                    VisitObservedStrings(item, visit, depth + 1);
                 }
                 break;
         }
