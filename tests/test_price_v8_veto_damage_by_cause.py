@@ -272,9 +272,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 M163: re-pin tras convertir lo dicho en la charla (quantities, knowledge, __main__).
 # C03 comprensión natural: repin tras M164 (2026-10-05).
 # C03 M166: la música que se pide lleva el título y el artista que dijo la persona (semantic.arguments.as_the_person_named).
+# C03 comprensión natural: repin tras M165 (2026-10-05).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "55bdd98f90533013234b3da2fa261a650285507a01b0b561a5fc342f62e42cfd"
+        "2240dbba12e689bf75a1e6a09c8d8468a55e7d88babeee8ebd6864fa6775b940"
     ),
     "src/baxy_mind/llm.py": (
         "d61fde606798cfb6959e02e6daa33def583db4a99edcf67d78ffe15d7dadd599"

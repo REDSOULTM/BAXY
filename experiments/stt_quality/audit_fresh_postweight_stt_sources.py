@@ -257,8 +257,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # C03 comprensión natural: repin tras M164 (2026-10-05).
 # C03 comprensión natural: repin tras las respuestas revisadas del guion (2026-10-05).
 # C03 comprensión natural: repin tras M166 (2026-10-05).
+# C03 comprensión natural: repin tras M165 (2026-10-05).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "b038002eece5f622d8b1048ff35785bcacca1a9e703d7c84af3114724092c90d"
+    "2bdfc460812f41162aafb6f5fee5a7bc6af934a86f13057e611e31f69824931d"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
