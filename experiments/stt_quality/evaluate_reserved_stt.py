@@ -282,8 +282,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # repin tras M171
 # C03 M172: re-pin after the media-title suffix and observed-repeat fix.
 # repin tras M175
+# C03 comprensión natural: repin tras M174 (2026-10-05).
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "5558721bab31faf96fcde3d824a3ee736c45b6592df9ad12da11f1817baf7ab3"
+    "fd96c188f3979e8772f7ed80dc74113d511f9ea0b412178b3519ec0a3528edc9"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

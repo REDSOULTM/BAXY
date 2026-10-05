@@ -279,9 +279,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # repin tras M171
 # C03 M172: re-pin after the media-title suffix and observed-repeat fix.
 # repin tras M175
+# C03 comprensión natural: repin tras M174 (2026-10-05).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "4bef2240730b9ee4b0517ff217c5f72b5712d83b576eacdeffda9cbab3227b34"
+        "baf9b18c3d5c26a287816527822c040eaa52aadda66b782ed6886b95e174eaad"
     ),
     "src/baxy_mind/llm.py": (
         "e72bcbfed0e372c13c0d21c0531d251905799247503f97b92ea2ff8f42fd429a"
