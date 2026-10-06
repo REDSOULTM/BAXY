@@ -993,3 +993,21 @@ cuenta. v5b: DEV-E +2 (264 → 266), DEV-G +1; v4z +0.
 5. **Medición con historial escrito y el saludo delante** (como en la App): el lastre de código casi desapareció en
    G/H/I (0–2). En DEV-E quedan 29 fallos persistentes y unos 5 que dependen de la corrida; el ruido entre dos medidas
    del mismo código es de ±2 turnos.
+
+## D80. v5e, v5f (M177–M179) y el FINAL-2 por decisión del dueño (2026-10-06 11:15)
+1. **v5e** (M176 sobre v5d): DEV-E 266 (estricta 253; 1 arreglado, 3 rotos frente a v5d). Como el resto de v5e sólo
+   medía M176, la cadena se detuvo antes del conjunto siguiente (la App no había arrancado).
+2. **v5f** (main 99d7d146 = v5e + M177 una aclaración nunca lleva operaciones de efecto —la App la rechazaba y
+   respondía «mi mente no está disponible»— y el sí o el nivel que acepta un ajuste ofrecido; M178 «N antes de» que
+   cruza medianoche y la fecha inventada tras un día de la semana dicho; M179 búsquedas y títulos que no son límites,
+   seguimientos web con el tema nuevo). Pruebas: pytest verde (la primera pasada falló por 4 ficheros de datos
+   ignorados que faltaban en el worktree nuevo; los 39 ids pasan con ellos), Integración 4 091, Kernel 194.
+   - DEV-E: **268 / 266** (estricta 255 / 253). Seis medidas seguidas (v5c–v5f) entre 266 y 268: la meta de 269 no
+     se alcanzó.
+   - DEV-F 90,7 % (v5d 89,6), DEV-D 95,2 (94,9), DEV-I 95,0 (94,0), DEV-G 94,7 (95,3), DEV-H 96,7 (97,3). Las bajas
+     de G y H son «súbele un poco a esa» / «subile un toque» → el decisor pasa de canción (ya en v5b/v5c): **M180**
+     lo arregla (sin cambios en las 742) y queda en `opus/m180-subele-no-es-saltar`, fuera de la corrida del FINAL-2.
+   - Batería: reserva 90,0 / 94,0 % (0/0), 742 y capa A sin cambios, DEV-C 255/301 (= v5d), cien 100/100, held-out
+     29/30, guion 52/60 + 5 por revisar, VRAM pico por proceso 3 764–3 796 MiB.
+3. **Decisión del dueño (≈ 11:10):** correr el FINAL-2 ahora, una sola vez, con v5f, y entregar a las 13:00, en vez
+   de otra ronda. Corrida `window/final2-once`, desde las 11:16.

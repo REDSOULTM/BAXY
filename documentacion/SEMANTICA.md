@@ -1,6 +1,7 @@
 # La semántica de BAXY — cómo se entiende un mensaje
 
-Borrador vivo de la Fase 3.5 (2026-09-23; caminos y medición actualizados con la Fase 3.5b, 2026-09-26). Se lee en diez minutos. Si una sección dice «hoy» es el mapa verificado del
+Borrador vivo de la Fase 3.5 (2026-09-23; caminos y medición actualizados con la Fase 3.5b, 2026-09-26, y con su
+segunda vuelta, 2026-10-06: sección «Segunda vuelta»). Se lee en diez minutos. Si una sección dice «hoy» es el mapa verificado del
 código; si dice «destino» es a dónde se está migrando (`src/baxy_mind/semantic/`). Meta vigente:
 `artifacts/comprobaciones/C03/META_SEMANTICA_TOTAL_2026-09-22.md`.
 
@@ -58,6 +59,32 @@ decisor en contexto (en conversación: lectores de conversación > decisor). Gua
 (`operation_domain_is_grounded`), conservación de la misión compuesta, relevancia, argumentos literales,
 presentación, límite fuera del mundo.
 
+## Segunda vuelta (goal v3, 2026-09-28 → 2026-10-06)
+
+El orden de los caminos no cambió; cambió quién manda dentro de una conversación y qué se mide. Detalle por
+mecanismo (M42–M180) y por decisión (D32–D80): `artifacts/comprobaciones/C03/DECISIONES_COMPRENSION_2026-09-25.md`.
+
+- **BAXY ayuda al decisor, nunca es un lastre** (dueño, D58). Cada lector o guarda que corre después del decisor se
+  midió contra el decisor solo (historial escrito, con el saludo de BAXY delante como en la App); los que restaban
+  se estrecharon o se quitaron. Un lector sólo reemplaza al decisor cuando prueba el mensaje entero (M155); la
+  excepción es la seguridad: «no lo envíes» deja un borrador y nunca un envío.
+- **Lectores de conversación antes del decisor**, cada uno sobre lo que BAXY acaba de decir o preguntar: la hora
+  que el decisor inventa y nadie dijo se pregunta (M110); la respuesta a «¿cuánto le subo?» (M167) y el sí o el
+  nivel que acepta un ajuste que BAXY ofreció (M177); «súbele un toque» nunca es pasar de canción (M180, en su rama);
+  mover o cancelar el aviso que BAXY acaba de poner (M113, M145, M158, M173); «N antes de <evento dicho>» desde la
+  hora que dio BAXY, también cuando la cuenta cruza medianoche (M152, M165, M178). El estado de diálogo
+  (`DialogueState`) guarda el último aviso puesto y el último tema buscado («y el técnico de ellos» → el equipo
+  buscado, M179).
+- **Una aclaración nunca lleva operaciones de efecto** (M177): la App rechaza esa decisión y respondía «mi mente no
+  está disponible». La operación viaja sólo como intención.
+- **Límites que no lo son** (M171, M179): un pedido cuyo verbo es algo que BAXY hace (buscar sitios, reproducir un
+  título) no es límite por traer un detalle que BAXY no controla (subtítulos, «por la Roma Norte»).
+- **Datos con fuente**: búsqueda automática sin claves (D32), divisas (Frankfurter, M154), horarios de partidos (API
+  pública de ESPN, D77); lo fechado, las cifras y las recetas se buscan antes de afirmar (D35).
+- **Cómo se puntúa** (dueño): la cifra estricta se informa siempre; la que cuenta suma D61 (aceptadas revisadas y
+  D35), D71 (lo hecho con otras palabras), D73 (una pregunta publicada donde el oro acepta preguntar) y D78 (el aviso
+  que suena en la hora que dio BAXY menos la antelación pedida).
+
 ## El hueco de diálogo (clase 1, commit b280a84c)
 
 Un turno deja como mucho un hueco. `dialogue_slot.dependency` dice por qué el mensaje lo necesita:
@@ -90,6 +117,10 @@ con antecedente es el objeto de ese antecedente, nunca «lo que esté delante».
   vez) de la Fase 3.5b: sueltos y conversaciones con historial fijo, oro de sala limpia auditado, sólo decisión y
   argumentos clave. `--decider-adapter` mide el LoRA en el producto; `comprension-f1/lora/` entrena y evalúa el
   decisor aislado (receta y ajustes `full1`…`full5` en `DECISIONES_COMPRENSION_2026-09-25.md`, D13–D24; el producto usa `full3`).
+- `scripts/comprension_window.py` — los mismos conjuntos en la App real (conductor, ventana guardia, audio y brillo
+  restaurados, VRAM por proceso): `turns` → corrida → `records` → `comprension_eval.py score` → `review` (paquete
+  para el revisor independiente). Conjuntos de la segunda vuelta: DEV-C…DEV-I (iterables salvo DEV-E, sellado: sólo
+  agregados) y FINAL-2 (sellado, una sola corrida en la App).
 - `scripts/semantic_corpus.py` — corpus por capas del histórico de todos los BAXY (filtros de idioma y destinatario,
   oráculo proyectado a familias) y puntuación por tipo de fallo. Todo lo que contiene texto del dueño es privado
   (`%LOCALAPPDATA%\BAXY\semantic-corpus-v1`). Capa A = lo dicho de verdad a BAXY (encuesta de 742 y registro real);
