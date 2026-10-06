@@ -35,7 +35,7 @@ os.environ.setdefault("MKL_NUM_THREADS", "4")
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
 from . import protocol
-from . import effect_intent
+from . import computer_use, effect_intent
 from .semantic import decider as semantic_decider
 from .semantic import dialogue as dialogue_slot
 from .semantic import knowledge as semantic_knowledge
@@ -320,6 +320,7 @@ _BLOCKING_REQUEST_TYPES = frozenset(
     {
         "arguments",
         "catalog.configure",
+        "computer.use.step",
         "message.compose",
         "narrate",
         "plan",
@@ -4219,6 +4220,12 @@ def _ground_explicit_arguments(
             explicit = {**explicit, "location": there}
     if explicit is None:
         return None
+    if operation == "mission.computer.use":
+        # Computer use: the application is the catalog's display name, the goal
+        # is normalized («calculá» → «calcular») and the success check is a
+        # grammar of the reader's own; none of them is a literal the person
+        # must have spelled. The reader is deterministic, never the model.
+        return explicit if validate_json_schema_instance(explicit, schema) else None
     if operation == "notification.schedule" and "recurrence" in explicit:
         # The repeating-event reader owns kind and recurrence (enum values the person need not
         # spell); the title is the person's words and the moment is read back by the clock reader.
@@ -9724,6 +9731,7 @@ def _run_sidecar(
                     # below the 22 s desktop transport SLA.
                     "turn.decide": TURN_DECIDE_NORMAL_BUDGET_SECONDS,
                     "plan.ground": 28.0,
+                    "computer.use.step": 30.0,
                     "plan": 55.0,
                     "narrate": 18.0,
                     "message.compose": compose_budget,
@@ -10395,6 +10403,42 @@ def _run_sidecar(
                         "id": request_id,
                         "operation": operation,
                         "arguments": arguments,
+                    }
+                )
+            elif kind == "computer.use.step":
+                # Computer use (CONTRATO_VISTA_ACCION.md §4.4): one step over the
+                # compact view, strict JSON at temperature 0, checked against the
+                # view without the model before it reaches the shell.
+                if llm is None:
+                    raise RuntimeError("LLM no disponible")
+                view = message.get("view") if isinstance(message.get("view"), dict) else {}
+                history = [
+                    step for step in (message.get("history") or []) if isinstance(step, dict)
+                ]
+                decision = computer_use.decide_step(
+                    llm,
+                    objective=str(message.get("objective", "")),
+                    goal=str(message.get("goal", "")),
+                    application=(
+                        str(message.get("application"))
+                        if message.get("application") else None
+                    ),
+                    success_check=(
+                        str(message.get("successCheck"))
+                        if message.get("successCheck") else None
+                    ),
+                    view=view,
+                    history=history,
+                    budget_left=int(message.get("budgetLeft") or 0),
+                    application_names=application_catalog,
+                )
+                write_request_message(
+                    {
+                        "type": computer_use.STEP_RESULT,
+                        "id": request_id,
+                        "operation": decision["operation"],
+                        "arguments": decision["arguments"],
+                        "reason": decision.get("reason", ""),
                     }
                 )
             elif kind == "arguments":

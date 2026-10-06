@@ -60,6 +60,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new WindowsInventoryAdapter(),
             new WindowsDesktopInteractionAdapter(),
             new WindowsVisibleControlAdapter(),
+            new WindowsScrollAdapter(),
             new WindowsKnownFileAdapter(root),
             new WindowsSandboxNamedFileAdapter(root),
             new WindowsKnownBackupAdapter(root),
@@ -215,6 +216,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             "input.text.type" => "focused_window_text_input_required",
             "input.visible.click" => "visible_uia_control_required",
             "input.visible.controls" => "visible_uia_control_required",
+            "input.scroll" => "visible_window_surface_required",
             "streaming.navigate" or "streaming.play.named" =>
                 "streaming_authenticated_session_required",
             "web.search" => "web_search_provider_not_configured",

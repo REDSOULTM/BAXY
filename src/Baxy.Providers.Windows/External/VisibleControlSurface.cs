@@ -8,10 +8,41 @@ internal static partial class VisibleControlSurface
     internal static async ValueTask<CapturedWindow?> CaptureForegroundAsync(
         CancellationToken cancellationToken)
     {
+        // M132, measured live: the opened client's updater closed while its
+        // label was looked for, the front fell to the person's editor, and
+        // the word was read and pressed there. A click bound to the opened
+        // application reads only that application's window.
+        if (RequiredWindow.Value is var required and not 0)
+            return ForegroundIs(required) ? await CaptureAsync(required, cancellationToken).ConfigureAwait(false) : null;
+        nint hwnd = await ResolveForegroundAsync(cancellationToken).ConfigureAwait(false);
+        return hwnd == 0
+            ? null
+            : await CaptureAsync(hwnd, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// The window a person acts on right now: the root of the foreground
+    /// window, or the topmost foreign window when the foreground is ours or
+    /// has no usable surface. The compact view, the click and the scroll all
+    /// resolve the window here, so they always mean the same one.
+    /// </summary>
+    internal static async ValueTask<nint> ResolveForegroundAsync(
+        CancellationToken cancellationToken)
+    {
         cancellationToken.ThrowIfCancellationRequested();
         nint hwnd = GetForegroundWindow();
+        // While a window is changing hands (an application was just brought to
+        // the front) the foreground is briefly nobody's: wait a little, then
+        // take the topmost foreign window rather than answering «no window».
+        for (int attempt = 0; hwnd == 0 && attempt < 6; attempt++)
+        {
+            await Task.Delay(200, cancellationToken).ConfigureAwait(false);
+            hwnd = GetForegroundWindow();
+        }
         if (hwnd == 0)
-            return null;
+            hwnd = TopmostForeignWindow();
+        if (hwnd == 0)
+            return 0;
         // UI1395: a freshly launched UWP app is fronted by its CoreWindow
         // (calculatorapp.exe, no top-level window of its own) and, once a
         // control is invoked, by its ApplicationFrameHost frame. The frame is
@@ -37,24 +68,230 @@ internal static partial class VisibleControlSurface
         // the topmost window that is not BAXY: when the foreground is ours or
         // has no usable surface, take that window and bring it to the front,
         // because the click lands on whatever is on top.
-        // M132, measured live: the opened client's updater closed while its
-        // label was looked for, the front fell to the person's editor, and
-        // the word was read and pressed there. A click bound to the opened
-        // application reads only that application's window.
-        if (RequiredWindow.Value != 0)
-            return hwnd == RequiredWindow.Value ? await CaptureAsync(hwnd, cancellationToken).ConfigureAwait(false) : null;
         _ = GetWindowThreadProcessId(hwnd, out uint foregroundProcess);
-        if (foregroundProcess == unchecked((uint)Environment.ProcessId) || !HasUsableSurface(hwnd))
+        // The desktop itself (Progman / WorkerW, «Program Manager») and the
+        // taskbar are never the surface a person acts on: when nothing owns the
+        // foreground the act lands on the topmost application window.
+        if (foregroundProcess == unchecked((uint)Environment.ProcessId) || !HasUsableSurface(hwnd)
+            || IsShellSurface(hwnd))
         {
             nint candidate = TopmostForeignWindow();
             if (candidate != 0)
             {
-                _ = SetForegroundWindow(candidate);
+                BringToFront(candidate);
                 await Task.Delay(250, cancellationToken).ConfigureAwait(false);
                 hwnd = candidate;
             }
         }
-        return await CaptureAsync(hwnd, cancellationToken).ConfigureAwait(false);
+
+        return hwnd;
+    }
+
+    /// <summary>
+    /// The window of one process: its largest visible top-level window, or the
+    /// ApplicationFrameHost frame hosting it (a UWP app such as the Calculator
+    /// has no top-level window of its own). Brought to the front so keys and
+    /// clicks land on it; 0 when the process shows nothing.
+    /// </summary>
+    internal static async ValueTask<nint> ResolveProcessWindowAsync(
+        int processId,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        nint found = 0;
+        for (int attempt = 0; found == 0 && attempt < 8; attempt++)
+        {
+            if (attempt > 0)
+                await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+            found = LargestTopLevelWindow(processId);
+            if (found == 0 || !HasUsableSurface(found))
+                found = FrameHosting(unchecked((uint)processId));
+        }
+
+        if (found == 0)
+            return 0;
+        if (GetForegroundWindow() != found)
+        {
+            BringToFront(found);
+            await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+        }
+
+        return found;
+    }
+
+    /// <summary>
+    /// The topmost visible window whose title names the application: the
+    /// mission's target when its process is unknown (app.open did not verify,
+    /// or the application was already there). Brought to the front; 0 when no
+    /// window is titled that way. Title matching is generic: the folded
+    /// application name inside the folded title.
+    /// </summary>
+    internal static async ValueTask<nint> ResolveTitledWindowAsync(
+        string application,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        string wanted = FoldTitle(application);
+        if (wanted.Length == 0)
+            return 0;
+        nint found = 0;
+        uint self = unchecked((uint)Environment.ProcessId);
+        EnumWindowsProc callback = (window, _) =>
+        {
+            if (!IsWindowVisible(window) || GetAncestor(window, 3) != window)
+                return true;
+            if ((GetWindowLongPtrW(window, -20).ToInt64() & 0x80) != 0)
+                return true;
+            GetWindowThreadProcessId(window, out uint owner);
+            if (owner == 0 || owner == self || !HasUsableSurface(window))
+                return true;
+            if (!FoldTitle(WindowTitle(window)).Contains(wanted, StringComparison.Ordinal))
+                return true;
+            found = window;
+            return false;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        if (found == 0)
+            return 0;
+        if (GetForegroundWindow() != found)
+        {
+            BringToFront(found);
+            await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+        }
+
+        return found;
+    }
+
+    /// <summary>
+    /// The root window of another process drawn over the centre of this one,
+    /// or 0 when the window is what a person sees there. Measured: a fullscreen
+    /// video player on top of a settings page and of a game launcher; the view read the player
+    /// and a click would have landed on it.
+    /// </summary>
+    internal static nint CoveringWindow(nint hwnd)
+    {
+        if (!TryBounds(hwnd, out int left, out int top, out int right, out int bottom))
+            return 0;
+        var centre = new Point((left + right) / 2, (top + bottom) / 2);
+        nint hit = WindowFromPoint(centre);
+        if (hit == 0)
+            return 0;
+        nint root = GetAncestor(hit, 2);
+        if (root == 0)
+            root = hit;
+        if (root == hwnd)
+            return 0;
+        _ = GetWindowThreadProcessId(root, out uint coverOwner);
+        _ = GetWindowThreadProcessId(hwnd, out uint owner);
+        // A window of the same process (a dialog, a menu, a popup) and this
+        // product's own window are not covers.
+        if (coverOwner == owner || coverOwner == unchecked((uint)Environment.ProcessId))
+            return 0;
+        return root;
+    }
+
+    internal static string FoldTitle(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
+        string decomposed = value.Normalize(System.Text.NormalizationForm.FormD);
+        var builder = new System.Text.StringBuilder(decomposed.Length);
+        bool pendingSpace = false;
+        foreach (char character in decomposed)
+        {
+            if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(character)
+                == System.Globalization.UnicodeCategory.NonSpacingMark)
+            {
+                continue;
+            }
+
+            if (char.IsWhiteSpace(character))
+            {
+                pendingSpace = builder.Length > 0;
+                continue;
+            }
+
+            if (pendingSpace)
+            {
+                builder.Append(' ');
+                pendingSpace = false;
+            }
+
+            builder.Append(char.ToLowerInvariant(character));
+        }
+
+        return builder.ToString();
+    }
+
+    private static nint FrameHosting(uint processId)
+    {
+        nint frame = 0;
+        EnumWindowsProc callback = (window, outerParameter) =>
+        {
+            if (!IsWindowVisible(window) || ClassName(window) != "ApplicationFrameWindow")
+                return true;
+            bool hosts = false;
+            EnumWindowsProc children = (child, innerParameter) =>
+            {
+                GetWindowThreadProcessId(child, out uint owner);
+                if (owner == processId)
+                {
+                    hosts = true;
+                    return false;
+                }
+
+                return true;
+            };
+            _ = EnumChildWindows(window, children, nint.Zero);
+            if (!hosts)
+                return true;
+            frame = window;
+            return false;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        return frame;
+    }
+
+    private static bool IsShellSurface(nint window)
+    {
+        string className = ClassName(window);
+        return className is "Progman" or "WorkerW" or "Shell_TrayWnd" or "Shell_SecondaryTrayWnd";
+    }
+
+    internal static string ClassName(nint window)
+    {
+        var buffer = new char[128];
+        int copied = GetClassNameW(window, buffer, buffer.Length);
+        return copied <= 0 ? string.Empty : new string(buffer, 0, copied);
+    }
+
+    /// <summary>
+    /// Brings a window to the front the way the messaging adapter does: attached
+    /// to the input of the thread that owns the foreground, so Windows accepts
+    /// the request from this background process (a plain SetForegroundWindow is
+    /// refused and the typed keys would go elsewhere).
+    /// </summary>
+    internal static bool BringToFront(nint window)
+    {
+        nint foreground = GetForegroundWindow();
+        uint foregroundThread = GetWindowThreadProcessId(foreground, out _);
+        uint currentThread = GetCurrentThreadId();
+        bool attached = foregroundThread != 0
+            && currentThread != foregroundThread
+            && AttachThreadInput(currentThread, foregroundThread, true);
+        try
+        {
+            if (IsIconic(window))
+                _ = ShowWindow(window, 9);
+            _ = BringWindowToTop(window);
+            _ = SetForegroundWindow(window);
+            return GetForegroundWindow() == window;
+        }
+        finally
+        {
+            if (attached)
+                _ = AttachThreadInput(currentThread, foregroundThread, false);
+        }
     }
 
     private static readonly AsyncLocal<nint> RequiredWindow = new();
@@ -83,11 +320,12 @@ internal static partial class VisibleControlSurface
         public void Dispose() => RequiredWindow.Value = previous;
     }
 
-    private static async ValueTask<CapturedWindow?> CaptureAsync(
+    internal static async ValueTask<CapturedWindow?> CaptureAsync(
         nint hwnd,
         CancellationToken cancellationToken)
     {
-        if (!TryBounds(hwnd, out int left, out int top, out _, out _))
+        cancellationToken.ThrowIfCancellationRequested();
+        if (hwnd == 0 || !TryBounds(hwnd, out int left, out int top, out _, out _))
             return null;
         string directory = Path.Combine(Path.GetTempPath(), "baxy-visible-control");
         var provider = new WindowsScreenshotProvider(directory);
@@ -380,28 +618,6 @@ internal static partial class VisibleControlSurface
         return covered;
     }
 
-    // A background process may not take the foreground by itself; joined to the input of the thread that holds
-    // it, the request is honoured (the same handoff app.open asks for).
-    private static void BringToFront(nint window)
-    {
-        nint foreground = GetForegroundWindow();
-        uint current = GetCurrentThreadId();
-        uint holder = foreground == 0 ? 0 : GetWindowThreadProcessId(foreground, out _);
-        bool attached = holder != 0 && holder != current && AttachThreadInput(current, holder, true);
-        try
-        {
-            if (IsIconic(window))
-                _ = ShowWindowAsync(window, 9);
-            _ = BringWindowToTop(window);
-            _ = SetForegroundWindow(window);
-        }
-        finally
-        {
-            if (attached)
-                _ = AttachThreadInput(current, holder, false);
-        }
-    }
-
     // A click bound to the opened application lands only while its window is still the one in front.
     internal static bool MayPress() =>
         RequiredWindow.Value == 0 || ForegroundIs(RequiredWindow.Value);
@@ -422,7 +638,35 @@ internal static partial class VisibleControlSurface
         catch (UnauthorizedAccessException) { }
     }
 
-    private static bool TryBounds(nint hwnd, out int left, out int top, out int right, out int bottom)
+    internal static bool IsAlive(nint hwnd) => hwnd != 0 && IsWindow(hwnd) && IsWindowVisible(hwnd);
+
+    internal static string WindowTitle(nint hwnd)
+    {
+        int length = GetWindowTextLengthW(hwnd);
+        if (length <= 0)
+            return string.Empty;
+        var buffer = new char[Math.Min(length, 512) + 1];
+        int copied = GetWindowTextW(hwnd, buffer, buffer.Length);
+        return copied <= 0 ? string.Empty : new string(buffer, 0, copied);
+    }
+
+    internal static (int ProcessId, string ProcessName) WindowProcess(nint hwnd)
+    {
+        _ = GetWindowThreadProcessId(hwnd, out uint processId);
+        if (processId == 0)
+            return (0, string.Empty);
+        try
+        {
+            using var process = System.Diagnostics.Process.GetProcessById(unchecked((int)processId));
+            return (unchecked((int)processId), process.ProcessName);
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
+        {
+            return (unchecked((int)processId), string.Empty);
+        }
+    }
+
+    internal static bool TryBounds(nint hwnd, out int left, out int top, out int right, out int bottom)
     {
         left = top = right = bottom = 0;
         if (DwmGetWindowAttribute(hwnd, 9, out Rect rect, Marshal.SizeOf<Rect>()) != 0
@@ -518,6 +762,31 @@ internal static partial class VisibleControlSurface
     [LibraryImport("user32.dll")]
     private static partial int GetWindowTextLengthW(nint hwnd);
 
+    [LibraryImport("user32.dll", StringMarshalling = StringMarshalling.Utf16)]
+    private static partial int GetClassNameW(nint hwnd, [Out] char[] text, int count);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool AttachThreadInput(uint idAttach, uint idAttachTo, [MarshalAs(UnmanagedType.Bool)] bool attach);
+
+    [LibraryImport("kernel32.dll")]
+    private static partial uint GetCurrentThreadId();
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool BringWindowToTop(nint hwnd);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool ShowWindow(nint hwnd, int command);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool IsIconic(nint hwnd);
+
+    [LibraryImport("user32.dll", StringMarshalling = StringMarshalling.Utf16)]
+    private static partial int GetWindowTextW(nint hwnd, [Out] char[] text, int count);
+
     [LibraryImport("user32.dll")]
     private static partial nint GetWindowLongPtrW(nint hwnd, int index);
 
@@ -531,13 +800,31 @@ internal static partial class VisibleControlSurface
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool EnumChildWindows(nint parent, EnumWindowsProc callback, nint lParam);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool IsWindowVisible(nint window);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool IsWindow(nint window);
 
     [LibraryImport("user32.dll")]
     private static partial uint GetWindowThreadProcessId(nint window, out uint processId);
 
     [LibraryImport("user32.dll")]
     private static partial nint GetForegroundWindow();
+
+    [LibraryImport("user32.dll")]
+    private static partial nint WindowFromPoint(Point point);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct Point(int x, int y)
+    {
+        public int X = x;
+        public int Y = y;
+    }
 
     [LibraryImport("user32.dll")]
     private static partial nint GetAncestor(nint hwnd, uint flags);
@@ -587,26 +874,6 @@ internal static partial class VisibleControlSurface
     [LibraryImport("kernel32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool CloseHandle(nint handle);
-
-    [LibraryImport("kernel32.dll")]
-    private static partial uint GetCurrentThreadId();
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool AttachThreadInput(
-        uint attach, uint attachTo, [MarshalAs(UnmanagedType.Bool)] bool doAttach);
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool BringWindowToTop(nint window);
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool ShowWindowAsync(nint window, int command);
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool IsIconic(nint window);
 
     internal readonly record struct OpenedSurface(nint Window, bool Drawn);
 

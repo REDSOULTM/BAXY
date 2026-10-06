@@ -1,7 +1,7 @@
 [CmdletBinding(DefaultParameterSetName='Key')]
 param(
     [Parameter(Mandatory=$true,ParameterSetName='Key',Position=0)]
-    [ValidateSet('alt_tab','arrow_down','arrow_left','arrow_right','arrow_up','backspace','context_menu','control','ctrl_l','ctrl_shift_escape','ctrl_v','delete','end','enter','escape','home','page_down','page_up','shift','space','tab','win')]
+    [ValidateSet('alt_tab','arrow_down','arrow_left','arrow_right','arrow_up','backspace','context_menu','control','ctrl_a','ctrl_c','ctrl_f','ctrl_k','ctrl_l','ctrl_shift_escape','ctrl_t','ctrl_v','ctrl_w','ctrl_z','delete','end','enter','escape','f5','home','page_down','page_up','shift','space','tab','win')]
     [string]$Key,
     [Parameter(Mandatory=$true,ParameterSetName='Pointer')]
     [ValidateSet('click','move_center','scroll_down')]
@@ -215,7 +215,7 @@ public static class BaxyKeyInput {
     $virtualKeys=@{
         arrow_down=0x28; arrow_left=0x25; arrow_right=0x27; arrow_up=0x26
         backspace=0x08; context_menu=0x5D; control=0x11; delete=0x2E; end=0x23
-        enter=0x0D; escape=0x1B; home=0x24; page_down=0x22; page_up=0x21
+        enter=0x0D; escape=0x1B; f5=0x74; home=0x24; page_down=0x22; page_up=0x21
         shift=0x10; space=0x20; tab=0x09; win=0x5B
     }
     $before=[BaxyKeyInput]::GetForegroundWindow()
@@ -235,6 +235,17 @@ public static class BaxyKeyInput {
             ctrl_l=[uint16[]]@(0x11,0x4C)
             ctrl_shift_escape=[uint16[]]@(0x11,0x10,0x1B)
             ctrl_v=[uint16[]]@(0x11,0x56)
+            # Motor de computer use (CONTRATO_VISTA_ACCION.md §2): los atajos que una
+            # persona usa en cualquier app —seleccionar todo, copiar, buscar, paleta
+            # de comandos, pestaña nueva, cerrar pestaña, deshacer—. Ninguno cierra
+            # una ventana ni un proceso.
+            ctrl_a=[uint16[]]@(0x11,0x41)
+            ctrl_c=[uint16[]]@(0x11,0x43)
+            ctrl_f=[uint16[]]@(0x11,0x46)
+            ctrl_k=[uint16[]]@(0x11,0x4B)
+            ctrl_t=[uint16[]]@(0x11,0x54)
+            ctrl_w=[uint16[]]@(0x11,0x57)
+            ctrl_z=[uint16[]]@(0x11,0x5A)
         }
         $isChord=$chords.ContainsKey($Key)
         $expected=$(if($isChord){$chords[$Key].Length*2}else{2})

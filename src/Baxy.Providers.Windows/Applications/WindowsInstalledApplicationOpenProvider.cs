@@ -1212,7 +1212,11 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                             : null;
                     nint window = ownedWindows is null
                         ? process.MainWindowHandle : ownedWindows.FirstOrDefault();
-                    if (window == 0 || !IsWindowVisible(window))
+                    // Computer use (CU1959, measured on Configuración): a packaged
+                    // app suspended in the background keeps a «visible» CoreWindow
+                    // that DWM cloaks; nobody sees it, so it is not a running window
+                    // to reuse — the launch below activates the app and its frame.
+                    if (window == 0 || !IsWindowVisible(window) || IsCloaked(window))
                     {
                         continue;
                     }
@@ -1607,7 +1611,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         bool complete = true;
         EnumWindowsProc callback = (window, _) =>
         {
-            if (!IsWindowVisible(window))
+            if (!IsWindowVisible(window) || IsCloaked(window))
                 return true;
             GetWindowThreadProcessId(window, out uint owner);
             if (owner != unchecked((uint)processId))
@@ -1700,6 +1704,14 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool IsWindowVisible(nint window);
+
+    // DWMWA_CLOAKED (14): a window the shell hides (a suspended packaged app,
+    // a window on another virtual desktop) reports visible and is not.
+    private static bool IsCloaked(nint window) =>
+        DwmGetWindowAttribute(window, 14, out int cloaked, sizeof(int)) == 0 && cloaked != 0;
+
+    [LibraryImport("dwmapi.dll")]
+    private static partial int DwmGetWindowAttribute(nint window, int attribute, out int value, int size);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]

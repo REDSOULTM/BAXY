@@ -34,8 +34,10 @@ public sealed class MvpExternalCatalogMatrixTests
     ];
 
     // + las trece herramientas tipadas de la auditoría semántica REOPEN1957/1993 (audio.app.volume.set, Fase 8,
-    // se registra en Program.cs junto a audio.app.volume.adjust, fuera de esta lista).
-    private const int ExpectedExternalHandlers = 85 + 17 + 13;
+    // se registra en Program.cs junto a audio.app.volume.adjust, fuera de esta lista)
+    // + 1: input.scroll, la primitiva de desplazamiento del motor de computer use
+    // (CONTRATO_VISTA_ACCION.md §2), verificada por el cambio de superficie.
+    private const int ExpectedExternalHandlers = 85 + 17 + 13 + 1;
     private static readonly JsonSerializerOptions EvidenceJsonOptions = new()
     {
         WriteIndented = true,

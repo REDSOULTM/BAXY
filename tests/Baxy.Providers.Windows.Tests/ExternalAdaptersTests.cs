@@ -1209,145 +1209,16 @@ public sealed class ExternalAdaptersTests
         });
     }
 
-    [Test]
-    public async Task VisibleButtonClickRequiresUiaPostreadThatTheControlChanged()
-    {
-        using TemporaryDirectory temporary = new();
-        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
-        await File.WriteAllTextAsync(script, "# fixture");
-        var runner = new CapturingProcessRunner(
-            "{\"version\":1,\"ok\":true,\"effectObserved\":true," +
-            "\"error\":\"\",\"name\":\"Aceptar\",\"controlIdentity\":\"1.2.3\"," +
-            "\"absentOrDisabled\":true,\"authority\":\"windows_uia_invoke_postread\"}");
-        var adapter = new WindowsVisibleControlAdapter(runner, script);
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "input.visible.click", Json("""{"label":"aceptar"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(receipt.EffectObserved, Is.True);
-            Assert.That(receipt.Result?.GetProperty("absentOrDisabled").GetBoolean(), Is.True);
-            Assert.That(runner.Arguments, Does.Contain("-LabelBase64"));
-        });
-    }
-
-    [Test]
-    public async Task VisibleClickAcceptsASelectedControlPostread()
-    {
-        using TemporaryDirectory temporary = new();
-        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
-        await File.WriteAllTextAsync(script, "# fixture");
-        var runner = new CapturingProcessRunner(
-            "{\"version\":1,\"ok\":true,\"effectObserved\":true," +
-            "\"error\":\"\",\"name\":\"Library\",\"controlIdentity\":\"1.2.3\"," +
-            "\"absentOrDisabled\":false,\"selected\":true,\"surfaceChanged\":false," +
-            "\"cascadeStage\":\"uia\",\"authority\":\"windows_uia_invoke_postread\"}");
-        var adapter = new WindowsVisibleControlAdapter(runner, script);
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "input.visible.click", Json("""{"label":"Library"}"""),
-            CancellationToken.None);
-
-        Assert.That(receipt.Verified, Is.True);
-        Assert.That(receipt.Result?.GetProperty("selected").GetBoolean(), Is.True);
-    }
-
-    [Test]
-    public async Task VisibleClickCascadeSkipsOcrAndVisionWhenUiaFindsTheControl()
-    {
-        using TemporaryDirectory temporary = new();
-        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
-        await File.WriteAllTextAsync(script, "# fixture");
-        var runner = new CapturingProcessRunner(
-            "{\"version\":1,\"ok\":true,\"effectObserved\":true," +
-            "\"error\":\"\",\"name\":\"Aceptar\",\"controlIdentity\":\"1.2.3\"," +
-            "\"absentOrDisabled\":true,\"selected\":false,\"surfaceChanged\":false}");
-        var ocr = new CountingLocator("ocr", hit: true);
-        var vision = new CountingLocator("vision", hit: true);
-        var adapter = new WindowsVisibleControlAdapter(runner, script, ocr, vision);
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "input.visible.click", Json("""{"label":"aceptar"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(ocr.Calls, Is.Zero);
-            Assert.That(vision.Calls, Is.Zero);
-        });
-    }
-
-    [Test]
-    public async Task VisibleClickCascadeUsesOcrWhenUiaExposesNothing()
-    {
-        using TemporaryDirectory temporary = new();
-        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
-        await File.WriteAllTextAsync(script, "# fixture");
-        var runner = new CapturingProcessRunner(
-            "{\"version\":1,\"ok\":false,\"effectObserved\":false," +
-            "\"error\":\"visible_button_not_found\",\"name\":\"\"," +
-            "\"controlIdentity\":\"\",\"absentOrDisabled\":false}");
-        var ocr = new CountingLocator("ocr", hit: true);
-        var vision = new CountingLocator("vision", hit: true);
-        var adapter = new WindowsVisibleControlAdapter(runner, script, ocr, vision);
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "input.visible.click", Json("""{"label":"Library"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(receipt.Result?.GetProperty("cascadeStage").GetString(), Is.EqualTo("ocr"));
-            Assert.That(ocr.Calls, Is.EqualTo(1));
-            Assert.That(vision.Calls, Is.Zero);
-        });
-    }
-
-    [Test]
-    public async Task VisibleClickCascadeUsesVisionOnlyAfterUiaAndOcrMiss()
-    {
-        using TemporaryDirectory temporary = new();
-        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
-        await File.WriteAllTextAsync(script, "# fixture");
-        var runner = new CapturingProcessRunner(
-            "{\"version\":1,\"ok\":false,\"effectObserved\":false," +
-            "\"error\":\"visible_button_not_found\",\"name\":\"\"," +
-            "\"controlIdentity\":\"\",\"absentOrDisabled\":false}");
-        var ocr = new CountingLocator("ocr", hit: false);
-        var vision = new CountingLocator("vision", hit: true);
-        var adapter = new WindowsVisibleControlAdapter(runner, script, ocr, vision);
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "input.visible.click", Json("""{"label":"Library"}"""),
-            CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.True);
-            Assert.That(receipt.Result?.GetProperty("cascadeStage").GetString(), Is.EqualTo("vision"));
-            Assert.That(ocr.Calls, Is.EqualTo(1));
-            Assert.That(vision.Calls, Is.EqualTo(1));
-        });
-    }
-
     // M132 (owner script t36 «abre steam y ve a la biblioteca», launched cold): the click after an opening waits for
     // the opened application's own window, never looks at another one meanwhile, and then finds the label on it.
     [Test]
     public async Task VisibleClickAfterALaunchWaitsForTheOpenedWindowBeforeLooking()
     {
-        using TemporaryDirectory temporary = new();
-        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
-        await File.WriteAllTextAsync(script, "# fixture");
-        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
         var focus = new ScriptedFocus(launched: true, windowAfter: 3);
         var ocr = new CountingLocator("ocr", hit: true, hitFromCall: 2);
         var adapter = new WindowsVisibleControlAdapter(
-            runner, script, ocr, vision: null, focus, ShortTiming);
+            worker, ocr, vision: null, focus, ShortTiming);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"biblioteca"}"""),
@@ -1359,7 +1230,7 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Result?.GetProperty("cascadeStage").GetString(), Is.EqualTo("ocr"));
             // Three answers «no window yet», then two looks on the opened window.
             Assert.That(focus.FrontCalls, Is.EqualTo(5));
-            Assert.That(runner.Calls, Is.EqualTo(2));
+            Assert.That(worker.Commands.Count, Is.EqualTo(2));
             Assert.That(ocr.Calls, Is.EqualTo(2));
         });
     }
@@ -1367,14 +1238,11 @@ public sealed class ExternalAdaptersTests
     [Test]
     public async Task VisibleClickAfterALaunchWhoseWindowNeverShowsPressesNothingElsewhere()
     {
-        using TemporaryDirectory temporary = new();
-        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
-        await File.WriteAllTextAsync(script, "# fixture");
-        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
         var focus = new ScriptedFocus(launched: true, windowAfter: int.MaxValue);
         var ocr = new CountingLocator("ocr", hit: true);
         var adapter = new WindowsVisibleControlAdapter(
-            runner, script, ocr, vision: null, focus, ShortTiming);
+            worker, ocr, vision: null, focus, ShortTiming);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"biblioteca"}"""),
@@ -1385,7 +1253,7 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
-            Assert.That(runner.Calls, Is.Zero);
+            Assert.That(worker.Commands.Count, Is.Zero);
             Assert.That(ocr.Calls, Is.Zero);
         });
     }
@@ -1393,14 +1261,11 @@ public sealed class ExternalAdaptersTests
     [Test]
     public async Task VisibleClickOnTheOpenedWindowStopsLookingAfterTheOpenedLabelBudget()
     {
-        using TemporaryDirectory temporary = new();
-        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
-        await File.WriteAllTextAsync(script, "# fixture");
-        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
         var focus = new ScriptedFocus(launched: false, windowAfter: 0);
         var ocr = new CountingLocator("ocr", hit: false);
         var adapter = new WindowsVisibleControlAdapter(
-            runner, script, ocr, vision: null, focus, ShortTiming);
+            worker, ocr, vision: null, focus, ShortTiming);
         var clock = Stopwatch.StartNew();
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -1411,7 +1276,7 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
-            Assert.That(runner.Calls, Is.GreaterThan(1));
+            Assert.That(worker.Commands.Count, Is.GreaterThan(1));
             Assert.That(clock.Elapsed, Is.GreaterThanOrEqualTo(ShortTiming.OpenedLabel));
             Assert.That(clock.Elapsed, Is.LessThan(TimeSpan.FromSeconds(5)));
             // An application that was already running is not waited on to draw.
@@ -1424,14 +1289,11 @@ public sealed class ExternalAdaptersTests
     [Test]
     public async Task VisibleClickAfterALaunchDoesNotLookWhileThePageIsBlank()
     {
-        using TemporaryDirectory temporary = new();
-        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
-        await File.WriteAllTextAsync(script, "# fixture");
-        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
         var focus = new ScriptedFocus(launched: true, windowAfter: 1, drawnAfter: 4);
         var ocr = new CountingLocator("ocr", hit: true);
         var adapter = new WindowsVisibleControlAdapter(
-            runner, script, ocr, vision: null, focus, ShortTiming);
+            worker, ocr, vision: null, focus, ShortTiming);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"biblioteca"}"""),
@@ -1442,7 +1304,7 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.True);
             Assert.That(focus.FrontCalls, Is.EqualTo(5));
             Assert.That(focus.JudgedDrawn, Is.All.True);
-            Assert.That(runner.Calls, Is.EqualTo(1));
+            Assert.That(worker.Commands.Count, Is.EqualTo(1));
             Assert.That(ocr.Calls, Is.EqualTo(1));
         });
     }
@@ -1450,15 +1312,12 @@ public sealed class ExternalAdaptersTests
     [Test]
     public async Task VisibleClickAfterALaunchLooksAnywayOnceTheSettlingTimeHasPassed()
     {
-        using TemporaryDirectory temporary = new();
-        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
-        await File.WriteAllTextAsync(script, "# fixture");
-        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
         // A page that never stops looking blank (a plain dark application) is looked at after the settling time.
         var focus = new ScriptedFocus(launched: true, windowAfter: 0, drawnAfter: int.MaxValue);
         var ocr = new CountingLocator("ocr", hit: true);
         var adapter = new WindowsVisibleControlAdapter(
-            runner, script, ocr, vision: null, focus, ShortTiming);
+            worker, ocr, vision: null, focus, ShortTiming);
         var clock = Stopwatch.StartNew();
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -1469,22 +1328,19 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.True);
             Assert.That(clock.Elapsed, Is.GreaterThanOrEqualTo(ShortTiming.LaunchSurface - TimeSpan.FromMilliseconds(50)));
-            Assert.That(runner.Calls, Is.EqualTo(1));
+            Assert.That(worker.Commands.Count, Is.EqualTo(1));
         });
     }
 
     [Test]
     public async Task VisibleClickConfirmedLongAfterTheOpeningLooksAtOnce()
     {
-        using TemporaryDirectory temporary = new();
-        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
-        await File.WriteAllTextAsync(script, "# fixture");
-        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
         var focus = new ScriptedFocus(
             launched: true, windowAfter: 0, drawnAfter: int.MaxValue, noted: TimeSpan.FromSeconds(60));
         var ocr = new CountingLocator("ocr", hit: true);
         var adapter = new WindowsVisibleControlAdapter(
-            runner, script, ocr, vision: null, focus, ShortTiming);
+            worker, ocr, vision: null, focus, ShortTiming);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"biblioteca"}"""),
@@ -1494,7 +1350,7 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.True);
             Assert.That(focus.FrontCalls, Is.EqualTo(1));
-            Assert.That(runner.Calls, Is.EqualTo(1));
+            Assert.That(worker.Commands.Count, Is.EqualTo(1));
         });
     }
 
@@ -1503,31 +1359,25 @@ public sealed class ExternalAdaptersTests
     [Test]
     public async Task VisibleClickAfterAnOpeningIsBoundToTheOpenedWindow()
     {
-        using TemporaryDirectory temporary = new();
-        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
-        await File.WriteAllTextAsync(script, "# fixture");
-        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
         var focus = new ScriptedFocus(launched: false, windowAfter: 0);
         var adapter = new WindowsVisibleControlAdapter(
-            runner, script, ocr: null, vision: null, focus, ShortTiming);
+            worker, ocr: null, vision: null, focus, ShortTiming);
 
         _ = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"biblioteca"}"""),
             CancellationToken.None);
 
-        Assert.That(runner.LastArguments, Is.SupersetOf(new[] { "-WindowHandle", "77" }));
+        Assert.That(worker.Commands[^1], Does.Contain("\"hwnd\":77"));
     }
 
     [Test]
     public async Task VisibleClickDoesNotReadAnotherWindowWhenTheOpenedOneLostTheFront()
     {
-        using TemporaryDirectory temporary = new();
-        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
-        await File.WriteAllTextAsync(script, "# fixture");
-        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
         var focus = new ScriptedFocus(launched: false, windowAfter: 0, holds: false);
         var adapter = new WindowsVisibleControlAdapter(
-            runner, script, ocr: null, vision: null, focus, ShortTiming);
+            worker, ocr: null, vision: null, focus, ShortTiming);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"biblioteca"}"""),
@@ -1535,7 +1385,7 @@ public sealed class ExternalAdaptersTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(runner.Calls, Is.Zero);
+            Assert.That(worker.Commands.Count, Is.Zero);
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
         });
@@ -1578,12 +1428,9 @@ public sealed class ExternalAdaptersTests
     [Test]
     public async Task VisibleClickWithoutAnOpeningAnswersNotFoundWithinSeconds()
     {
-        using TemporaryDirectory temporary = new();
-        string script = Path.Combine(temporary.Path, "DesktopClickVisible.ps1");
-        await File.WriteAllTextAsync(script, "# fixture");
-        var runner = new SequencedProcessRunner([NotFoundByUia]);
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
         var ocr = new CountingLocator("ocr", hit: false);
-        var adapter = new WindowsVisibleControlAdapter(runner, script, ocr, vision: null);
+        var adapter = new WindowsVisibleControlAdapter(worker, ocr, vision: null);
         var clock = Stopwatch.StartNew();
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -1594,7 +1441,7 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
-            Assert.That(runner.Calls, Is.InRange(2, 3));
+            Assert.That(worker.Commands.Count, Is.InRange(2, 3));
             Assert.That(clock.Elapsed, Is.LessThan(TimeSpan.FromSeconds(8)));
             Assert.That(VisibleClickTiming.Default.SettledLabel, Is.LessThanOrEqualTo(TimeSpan.FromSeconds(3)));
             Assert.That(VisibleClickTiming.Default.OpenedLabel, Is.LessThanOrEqualTo(TimeSpan.FromSeconds(10)));

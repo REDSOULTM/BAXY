@@ -15,7 +15,7 @@ from fractions import Fraction
 from typing import Any, Iterable
 from urllib.parse import urlencode, urlsplit
 
-from .. import effect_intent
+from .. import computer_use, effect_intent
 from . import lexicon as semantic_lexicon
 from .catalog import GameCatalogIndex, resolve_game_catalog_app_id
 from .decider import _edit_distance, _introduced_spans, _numbers_said
@@ -926,6 +926,12 @@ def _explicit_arguments_from_evidence(
         """Remove unquoted clause punctuation that is not part of a literal."""
 
         return value.strip().rstrip(".!?").rstrip()
+
+    if operation == "mission.computer.use":
+        # Computer use: application, goal and the deterministic success check
+        # come from the request itself (CONTRATO_VISTA_ACCION.md §4.1, §6).
+        mission = computer_use.mission_request(evidence, application_names)
+        return mission.arguments() if mission is not None else None
 
     if operation == "browser.control":
         return (effect_intent.browser_back_arguments(evidence)

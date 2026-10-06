@@ -57,7 +57,16 @@ public sealed class ProductCatalogTests
         "web.news.headlines",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 14;
+
+    // Motor de computer use (plan post-goal Fase 4, D21; CONTRATO_VISTA_ACCION.md):
+    // el desplazamiento verificado por superficie y la misión general del shell.
+    internal static readonly string[] ComputerUseAdditions =
+    [
+        "input.scroll",
+        "mission.computer.use",
+    ];
+
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2;
 
     internal const int ExpectedTools = ExpectedDescriptors - 1;
 
@@ -112,7 +121,7 @@ public sealed class ProductCatalogTests
                 Is.SupersetOf(C03CatalogAdditions));
             Assert.That(
                 descriptors.Select(static descriptor => descriptor.Name),
-                Is.SupersetOf(Reopen1993CatalogAdditions));
+                Is.SupersetOf(Reopen1993CatalogAdditions).And.SupersetOf(ComputerUseAdditions));
             Assert.That(
                 descriptors.Select(static descriptor => descriptor.Name),
                 Is.EqualTo(descriptors.Select(static descriptor => descriptor.Name)
