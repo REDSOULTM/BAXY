@@ -21,18 +21,31 @@ public sealed class M107SueloAccionesTests
     {
         "success" => new JsonObject
         {
-            ["kind"] = "operation", ["operation"] = operation, ["polarity"] = "success", ["verified"] = true,
-            ["succeeded"] = true, ["observed"] = new JsonObject { ["version"] = 1 },
+            ["kind"] = "operation",
+            ["operation"] = operation,
+            ["polarity"] = "success",
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = new JsonObject { ["version"] = 1 },
         },
         "failure" => new JsonObject
         {
-            ["kind"] = "operation", ["operation"] = operation, ["polarity"] = "failure", ["verified"] = false,
-            ["succeeded"] = false, ["error"] = "provider_failed",
+            ["kind"] = "operation",
+            ["operation"] = operation,
+            ["polarity"] = "failure",
+            ["verified"] = false,
+            ["succeeded"] = false,
+            ["error"] = "provider_failed",
         },
         _ => new JsonObject
         {
-            ["kind"] = "operation", ["operation"] = operation, ["polarity"] = "failure", ["verified"] = false,
-            ["succeeded"] = false, ["error"] = "verification_failed", ["effectUncertain"] = true,
+            ["kind"] = "operation",
+            ["operation"] = operation,
+            ["polarity"] = "failure",
+            ["verified"] = false,
+            ["succeeded"] = false,
+            ["error"] = "verification_failed",
+            ["effectUncertain"] = true,
         },
     };
 
@@ -161,19 +174,29 @@ public sealed class M107SueloAccionesTests
     private static string Moved(DateTimeOffset due) =>
         new JsonObject
         {
-            ["kind"] = "status", ["polarity"] = "success", ["cause"] = "mission_completed", ["stepCount"] = 2,
+            ["kind"] = "status",
+            ["polarity"] = "success",
+            ["cause"] = "mission_completed",
+            ["stepCount"] = 2,
             ["steps"] = new JsonArray(
                 """{"kind":"operation","operation":"notification.cancel.latest","polarity":"success","verified":true,"succeeded":true,"observed":{"version":1,"kind":"reminder","taskName":"BAXY-Reminder-1","canceled":true,"authority":"windows_task_scheduler_absence_postread"},"readOnly":false}""",
                 new JsonObject
                 {
-                    ["kind"] = "operation", ["operation"] = "notification.schedule", ["polarity"] = "success",
-                    ["verified"] = true, ["succeeded"] = true, ["readOnly"] = false,
+                    ["kind"] = "operation",
+                    ["operation"] = "notification.schedule",
+                    ["polarity"] = "success",
+                    ["verified"] = true,
+                    ["succeeded"] = true,
+                    ["readOnly"] = false,
                     ["observed"] = new JsonObject
                     {
-                        ["version"] = 1, ["kind"] = "reminder", ["title"] = "estirar las piernas",
+                        ["version"] = 1,
+                        ["kind"] = "reminder",
+                        ["title"] = "estirar las piernas",
                         ["dueUtc"] = due.UtcDateTime.ToString("O", CultureInfo.InvariantCulture),
                         ["nextRunUtc"] = due.UtcDateTime.ToString("O", CultureInfo.InvariantCulture),
-                        ["taskName"] = "BAXY-Reminder-2", ["authority"] = "windows_task_scheduler_postread",
+                        ["taskName"] = "BAXY-Reminder-2",
+                        ["authority"] = "windows_task_scheduler_postread",
                     },
                 }.ToJsonString()),
             ["completedRequest"] = "cancela el recordatorio «estirar las piernas» y ponlo de nuevo dentro de una hora",

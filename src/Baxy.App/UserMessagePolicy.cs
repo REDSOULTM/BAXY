@@ -2127,8 +2127,16 @@ internal static class UserMessagePolicy
 
     private static readonly Dictionary<string, string> SpanishFutureStems = new(StringComparer.Ordinal)
     {
-        ["hacer"] = "har", ["poner"] = "pondr", ["decir"] = "dir", ["salir"] = "saldr", ["tener"] = "tendr",
-        ["venir"] = "vendr", ["querer"] = "querr", ["saber"] = "sabr", ["deshacer"] = "deshar", ["rehacer"] = "rehar",
+        ["hacer"] = "har",
+        ["poner"] = "pondr",
+        ["decir"] = "dir",
+        ["salir"] = "saldr",
+        ["tener"] = "tendr",
+        ["venir"] = "vendr",
+        ["querer"] = "querr",
+        ["saber"] = "sabr",
+        ["deshacer"] = "deshar",
+        ["rehacer"] = "rehar",
         ["reponer"] = "repondr",
     };
 

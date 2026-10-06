@@ -6,8 +6,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from baxy_mind import effect_intent
-from baxy_mind.__main__ import _ground_explicit_arguments, _prepare_turn_result
-from baxy_mind.planner import PlannerCatalog
+from baxy_mind.__main__ import _ground_explicit_arguments
 
 
 APPS = ("Steam", "Spotify", "Órbita 23", "Bloc de notas")

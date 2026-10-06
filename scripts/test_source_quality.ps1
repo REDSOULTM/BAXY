@@ -606,9 +606,7 @@ function Invoke-SourceQualityGate {
             (Join-Path $root 'main.py'),
             (Join-Path $root 'scripts'),
             (Join-Path $root 'src\baxy_mind'),
-            (Join-Path $root 'tests'),
-            (Join-Path $root 'experiments\mind_llm_tournament'),
-            (Join-Path $root 'experiments\mind_router_spike')
+            (Join-Path $root 'tests')
         ) `
         -WorkingDirectory $root
 

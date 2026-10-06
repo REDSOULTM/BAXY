@@ -4,7 +4,6 @@ import copy
 import json
 import sys
 import threading
-import time
 from collections import OrderedDict
 from collections.abc import Callable
 from concurrent.futures import Future
@@ -20,7 +19,6 @@ from baxy_mind import __main__ as mind_main
 from baxy_mind import effect_intent as effect_intent_module
 from baxy_mind import llm as llm_module
 from baxy_mind import protocol
-from baxy_mind.semantic import conversation as semantic_conversation
 from baxy_mind.semantic.conversation import _reads_as_an_observation
 from baxy_mind.first_signal import PendingTurnSignal
 from baxy_mind.__main__ import (
@@ -69,8 +67,6 @@ from baxy_mind.effect_intent import (
     build_game_catalog_index,
 )
 from baxy_mind.llm import (
-    RESPONSE_LANGUAGE_PROMPT,
-    SEMANTIC_EFFECT_GUARD_PROMPT,
     DirectArgumentExtraction,
     LlmRuntime,
     _compact_structured_grammar,

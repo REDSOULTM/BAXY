@@ -27,18 +27,28 @@ public sealed class M153LecturaSinRespuestaTests
         {
             tasks.Add(new JsonObject
             {
-                ["taskId"] = $"id{index}", ["title"] = titles[index], ["completed"] = index == completedIndex,
-                ["deleted"] = false, ["updatedAtUtc"] = "2026-10-03T09:31:50.4692362+00:00", ["version"] = 1,
+                ["taskId"] = $"id{index}",
+                ["title"] = titles[index],
+                ["completed"] = index == completedIndex,
+                ["deleted"] = false,
+                ["updatedAtUtc"] = "2026-10-03T09:31:50.4692362+00:00",
+                ["version"] = 1,
             });
         }
 
         return new JsonObject
         {
-            ["kind"] = "operation", ["operation"] = "task.list", ["polarity"] = "success", ["verified"] = true,
+            ["kind"] = "operation",
+            ["operation"] = "task.list",
+            ["polarity"] = "success",
+            ["verified"] = true,
             ["succeeded"] = true,
             ["observed"] = new JsonObject
             {
-                ["tasks"] = tasks, ["count"] = titles.Length, ["mode"] = "tasks", ["limit"] = 20,
+                ["tasks"] = tasks,
+                ["count"] = titles.Length,
+                ["mode"] = "tasks",
+                ["limit"] = 20,
             },
         }.ToJsonString();
     }
@@ -109,12 +119,21 @@ public sealed class M153LecturaSinRespuestaTests
         string due = new DateTimeOffset(localDue).UtcDateTime.ToString("O", System.Globalization.CultureInfo.InvariantCulture);
         return new JsonObject
         {
-            ["kind"] = "operation", ["operation"] = "notification.schedule", ["polarity"] = "success",
-            ["verified"] = true, ["succeeded"] = true,
+            ["kind"] = "operation",
+            ["operation"] = "notification.schedule",
+            ["polarity"] = "success",
+            ["verified"] = true,
+            ["succeeded"] = true,
             ["observed"] = new JsonObject
             {
-                ["version"] = 1, ["kind"] = kind, ["title"] = title, ["dueUtc"] = due, ["taskName"] = "BAXY-Reminder-1",
-                ["state"] = "Ready", ["nextRunUtc"] = due, ["authority"] = "windows_task_scheduler_postread",
+                ["version"] = 1,
+                ["kind"] = kind,
+                ["title"] = title,
+                ["dueUtc"] = due,
+                ["taskName"] = "BAXY-Reminder-1",
+                ["state"] = "Ready",
+                ["nextRunUtc"] = due,
+                ["authority"] = "windows_task_scheduler_postread",
             },
         }.ToJsonString();
     }

@@ -33,7 +33,7 @@ import threading
 import time
 import unicodedata
 import urllib.request
-from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
+from concurrent.futures import Future
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
@@ -93,7 +93,6 @@ from .llm_transport import (
     post_chat_completion,
 )
 from .planner import (
-    required_predecessors,
     skeleton_schema,
     validate_json_schema_instance,
 )
@@ -24879,7 +24878,7 @@ class LlmRuntime:
                 )
             elif asked is not None and page_servings is None:
                 system += (
-                    f" The recipe does not say how many it serves: say so in a few words and keep its quantities."
+                    " The recipe does not say how many it serves: say so in a few words and keep its quantities."
                     if english
                     else " La receta no dice para cuántas personas es: dilo en pocas palabras y deja sus cantidades."
                 )
