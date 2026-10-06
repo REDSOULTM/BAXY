@@ -286,8 +286,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 comprensión natural: repin tras M173 (2026-10-05).
 # C03 comprensión natural: repin tras M176 (sin M176b) (2026-10-05).
 # C03 M178: re-pin after the midnight-crossing count and the weekday-kept fidelity trim.
+# repin tras M178+M179
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "690c9abf1bf51082249b97159f1b6992acce9df6067b90ea2ea82c3c097eb9c6"
+    "77037771761f6302cfd275c93054fb692670533a542cadfc4ceae44f8b5369a4"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5
