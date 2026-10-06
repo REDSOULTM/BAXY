@@ -11,6 +11,7 @@ from __future__ import annotations
 import re
 import unicodedata
 from datetime import date, datetime, time as datetime_time, timedelta, timezone
+from fractions import Fraction
 from typing import Any, Iterable
 from urllib.parse import urlencode, urlsplit
 
@@ -2314,6 +2315,45 @@ def _fully_enumerated_note_create_arguments(
     return tuple(arguments)
 
 
+_DURATION_UNIT_MINUTES = (("dia", 24 * 60), ("day", 24 * 60), ("h", 60))
+
+
+def relative_duration_minutes(value: str) -> Fraction | None:
+    """The minutes of one relative length as ``grammar._RELATIVE_DURATION_PATTERN`` reads it: «10 minutos», «2h»,
+    «25-minute», «media hora», M176 «una hora y media» (90), «hora y cuarto» (75), «un minuto y medio» (1.5), «un cuarto
+    de hora» (15), «tres cuartos de hora» (45), «an hour and a half» (90). None for anything else, for a count out of
+    1–1440 and for more than a year of days."""
+
+    said = " ".join(effect_intent._fold(str(value or "")).replace("-", " ").split())
+    if re.fullmatch(r"media hora|half an? hour", said):
+        return Fraction(30)
+    quarter = re.fullmatch(r"(?:(?P<count>un|una|tres|a|three) )?(?:cuartos? de hora|quarters? of an hour)", said)
+    if quarter is not None:
+        return Fraction(45 if quarter.group("count") in {"tres", "three"} else 15)
+    found = re.fullmatch(
+        rf"(?P<number>{_TEMPORAL_NUMBER_PATTERN}|an?)? ?(?P<unit>{effect_intent._RELATIVE_DURATION_UNIT})"
+        r"(?: (?:y|and) (?:a )?(?P<fraction>media|medio|half|cuarto|quarter))?",
+        said,
+    )
+    if found is None:
+        return None
+    if found.group("number") is None and not (found.group("fraction") and found.group("unit").startswith("hora")):
+        # A unit alone is a length only as «hora y media» / «hora y cuarto».
+        return None
+    number = found.group("number")
+    amount = 1 if number in {None, "a", "an"} else _temporal_number(number)
+    if amount is None or not 1 <= amount <= 24 * 60:
+        return None
+    unit = found.group("unit")
+    per_unit = next((minutes for prefix, minutes in _DURATION_UNIT_MINUTES if unit.startswith(prefix)), 1)
+    if per_unit == 24 * 60 and amount > 365:
+        return None
+    fraction = {"media": Fraction(1, 2), "medio": Fraction(1, 2), "half": Fraction(1, 2)}.get(
+        found.group("fraction") or "", Fraction(1, 4) if found.group("fraction") else Fraction(0),
+    )
+    return (amount + fraction) * per_unit
+
+
 def _canonical_due_utc(
     value: str,
     context: str = "",
@@ -2341,35 +2381,19 @@ def _canonical_due_utc(
 
     folded_value = effect_intent._fold(raw)
     relative = re.fullmatch(
-        rf"(?:(?:en|in|dentro de|within)\s+)?"
-        r"(?:(?P<half>media\s+hora|half\s+an?\s+hour)|"
-        rf"(?P<number>{_TEMPORAL_NUMBER_PATTERN})[\s-]*"
-        rf"(?P<unit>{effect_intent._RELATIVE_DURATION_UNIT}))"
+        r"(?:(?:en|in|dentro de|within)\s+)?(?P<duration>\S.*?)"
         r"(?:\s+mas)?(?:\s+(?:from now|desde ahora))?",
         folded_value,
         re.IGNORECASE,
     )
-    if relative is not None:
+    minutes = relative_duration_minutes(relative.group("duration")) if relative is not None else None
+    if minutes is not None:
         if context and re.search(
             re.escape(folded_value) + _OFFSET_FROM_ANOTHER_MOMENT, effect_intent._fold(context),
         ):
             # M76 (DEV-D v3l D-w02-t3): «media hora» copied out of «media hora antes de eso» is not from now.
             return None
-        if relative.group("half"):
-            amount, unit = 30, "minutes"
-        else:
-            amount = _temporal_number(relative.group("number"))
-            unit = relative.group("unit")
-        if amount is None or not 1 <= amount <= 24 * 60:
-            return None
-        if unit.startswith(("day", "dia")):
-            if amount > 365:
-                return None
-            delta = timedelta(days=amount)
-        elif unit.startswith(("hour", "hora", "h")):
-            delta = timedelta(hours=amount)
-        else:
-            delta = timedelta(minutes=amount)
+        delta = timedelta(seconds=float(minutes * 60))
         due = now + delta
         if due.microsecond:
             # The Windows Task Scheduler registers whole seconds only (TIME1139

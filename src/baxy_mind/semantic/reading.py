@@ -206,6 +206,33 @@ def _wished_notice_request(
     return resolve(f"{head} {found.group('rest')}")
 
 
+# M176 (probe «i feel like watching the witcher on netflix» → social talk, «tengo ganas de ver coco en disney+», «me
+# tinca ver la serie bridgerton en netflix» → left to the decider): the wish to watch something on a streaming service
+# is the order to put it on there. Folded.
+_WISHED_VIEWING = re.compile(
+    r"^(?:(?P<es>(?:yo\s+)?(?:tengo|ando\s+con|estoy\s+con)\s+(?:(?:muchas|unas|tremendas)\s+)?ganas\s+de\s+ver|"
+    r"(?:que|q)\s+ganas\s+de\s+ver|me\s+muero\s+de\s+ganas\s+de\s+ver|"
+    r"(?:me|se\s+me)\s+(?:tinca|antoja|apetece|provoca|gustaria|encantaria|late)\s+ver)|"
+    r"(?P<en>i\s+(?:really\s+)?feel\s+like(?:\s+watching)?|i'?m\s+in\s+the\s+mood\s+(?:for|to\s+watch)|"
+    r"i'?d\s+(?:really\s+)?(?:love|like)\s+to\s+watch|i\s+(?:really\s+)?wanna\s+watch))\s+"
+    r"(?:(?:some|a\s+bit\s+of|un\s+poco\s+de|algo\s+de)\s+)?(?P<rest>\S.*)$"
+)
+
+
+def _wished_viewing_request(
+    objective: str,
+    resolve: Callable[[str], EffectIntent | None],
+) -> EffectIntent | None:
+    """«i feel like watching the witcher on netflix», «tengo ganas de ver coco en disney+» read as «play the witcher on
+    netflix», «pon coco en disney+» (see above); only when that order is the streaming play."""
+
+    found = _WISHED_VIEWING.match(_fold(_without_address(objective) or objective).strip(" ¿?¡!.,"))
+    if found is None:
+        return None
+    effects = resolve(f"{'play' if found.group('en') else 'pon'} {found.group('rest')}")
+    return effects if effects is not None and effects.operations == ("streaming.play.named",) else None
+
+
 def _player_opened_to_play_request(
     objective: str,
     resolve: Callable[[str], EffectIntent | None],
@@ -450,6 +477,7 @@ def utterance_form(
         ("desired_media", _desired_media_request),
         ("mailbox_opened", _mailbox_opened_to_read),
         ("wished_notice", _wished_notice_request),
+        ("wished_viewing", _wished_viewing_request),
         ("player_opened_to_play", _player_opened_to_play_request),
         ("imperative_rewrite", _imperative_rewrite_request),
     ):

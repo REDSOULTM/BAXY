@@ -198,6 +198,9 @@ def _unresolved_input_kind(
             r"nombre|whatsapp|discord|telegram|window|file|note|chat|message|document|field)\b",
             folded,
         )
+        # M176 (probe «ponle bluey a la nena en disney», «ponle peppa pig a los niños en netflix» → «¿Necesitas algo?»):
+        # a show put on a streaming service for someone is put there, not text with nowhere to go.
+        and not re.search(rf"\b(?:en|on)\s+{effect_intent._NETFLIX_SPELLED}(?!\w)", folded)
     ):
         return "deictic_text"
     if (

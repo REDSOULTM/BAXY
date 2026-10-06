@@ -92,11 +92,20 @@ _TEMPORAL_NUMBER_PATTERN = (
 # One relative duration as people type it: «10 minutos», «2min», «2 h»,
 # «media hora», «half an hour». Shared by every temporal reader so a compact
 # form cannot pass one reader and fail the next (TIME1138, TIME1187).
-_RELATIVE_DURATION_UNIT = r"(?:minutos?|minutes?|mins?|min|horas?|hours?|hrs?|h|dias?|days?)"
+# M176 (probe «avísame en 20 minutitos» asked when): the diminutive is the same minutes.
+_RELATIVE_DURATION_UNIT = r"(?:minutitos?|minutos?|minutes?|mins?|min|horas?|hours?|hrs?|h|dias?|days?)"
 
 
+# M176 (probe «avísame en una hora y media que tengo que salir» → in one hour, titled «y media que tengo que salir»;
+# «pon un timer de un cuarto de hora», «remind me in an hour to take my pills» asked when): a length with its half or
+# quarter after it, a quarter of an hour and «an hour» are lengths too. ``arguments.relative_duration_minutes`` reads
+# every form this pattern takes.
+_DURATION_FRACTION = r"(?:\s+y\s+(?:media|medio|cuarto)|\s+and\s+a\s+(?:half|quarter))"
 _RELATIVE_DURATION_PATTERN = (
-    rf"(?:{_TEMPORAL_NUMBER_PATTERN}\s*{_RELATIVE_DURATION_UNIT}|media\s+hora|half\s+an?\s+hour)"
+    rf"(?:{_TEMPORAL_NUMBER_PATTERN}\s*{_RELATIVE_DURATION_UNIT}{_DURATION_FRACTION}?|"
+    rf"horas?\s+y\s+(?:media|cuarto)|an?\s+(?:hour|minute){_DURATION_FRACTION}?|"
+    r"(?:(?:un|una|tres)\s+)?cuartos?\s+de\s+hora|(?:a\s+|three\s+)?quarters?\s+of\s+an\s+hour|"
+    r"media\s+hora|half\s+an?\s+hour)"
 )
 
 
