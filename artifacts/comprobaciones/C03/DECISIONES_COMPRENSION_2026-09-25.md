@@ -1011,3 +1011,11 @@ cuenta. v5b: DEV-E +2 (264 → 266), DEV-G +1; v4z +0.
      29/30, guion 52/60 + 5 por revisar, VRAM pico por proceso 3 764–3 796 MiB.
 3. **Decisión del dueño (≈ 11:10):** correr el FINAL-2 ahora, una sola vez, con v5f, y entregar a las 13:00, en vez
    de otra ronda. Corrida `window/final2-once`, desde las 11:16.
+
+## D81. FINAL-2, una sola corrida en la App real: cierre de la segunda vuelta (2026-10-06 ~12:00)
+Corrida `window/final2-once` (v5f, 99d7d146), 338 turnos, 11:16–11:37. Automática **281/338 = 83,1 %** (estricta
+278 = 82,2 %; sueltos 78,4, conversación 85,9, seguimientos 79,4). Revisor independiente (dos agentes, mitades
+cortadas entre conversaciones, `brief/REVISOR_FINAL.md`): **229/338 = 67,8 %**, inventados 14, repreguntas 12, ⚠
+4 = 1,2 % (18 más por la ruta de error con respuesta publicada). VRAM pico 3 792 MiB; latencia p50 1,97 s. El goal v3
+no se cumple (85 / 90); frente al FINAL del 28-09, +10,9 puntos de revisor y +8,8 de automática. Informe:
+`COMPRENSION_NATURAL_2026-10-06.md`.
