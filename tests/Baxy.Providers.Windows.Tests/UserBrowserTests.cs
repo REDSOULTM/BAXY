@@ -453,12 +453,143 @@ public sealed class UserBrowserTests
 
         Assert.Multiple(() =>
         {
+            Assert.That(platform.Opened, Is.EqualTo(new[] { "https://www.disneyplus.com/browse/search" }));
             Assert.That(platform.PageSteps, Is.EqualTo(new[] { (11, "Daredevil", true) }));
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.EffectMayHaveOccurred, Is.True);
             Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.StreamingPlaybackUnconfirmed));
         });
     }
+
+    [Test]
+    public async Task HboMaxSearchesInTheAddressAndIsVerifiedByTheSessionOfTheTitle()
+    {
+        // Opera GX 2026-10-06: «pon The Last of Us en HBO Max» → search/result?q=, card, «Ver The Last of Us, …»,
+        // and the browser's one media session turns from what it had into «The Last of Us» playing.
+        var platform = new FakePlatform(OperaGx)
+        {
+            AddressOf = _ => "play.hbomax.com/search/result?q=The+Last+of+Us",
+            PageStep = new UserBrowserPageStep(true, "play_invoked", "The Last of Us"),
+        };
+        var before = new UserMediaSession("Opera GXStable", "Daredevil | Disney+", string.Empty, "paused");
+        platform.SessionsBeforeOpen = [before];
+        platform.WindowsAfterOpen = [new(11, "Buscar: The Last of Us • HBO Max - Opera")];
+        platform.SessionsAfterOpen = [[before], [before], [new("Opera GXStable", "The Last of Us", string.Empty, "playing")]];
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "streaming.play.named", Json("""{"service":"hbo_max","title":"the last of us"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(platform.Opened, Is.EqualTo(new[] { "https://play.hbomax.com/search/result?q=the+last+of+us" }));
+            Assert.That(platform.PageSteps, Is.EqualTo(new[] { (11, "the last of us", false) }));
+            Assert.That(receipt.Result?.GetProperty("title").GetString(), Is.EqualTo("The Last of Us"));
+            Assert.That(receipt.Result?.GetProperty("sessionTitle").GetString(), Is.EqualTo("The Last of Us"));
+            Assert.That(receipt.Result?.GetProperty("service").GetString(), Is.EqualTo("hbo_max"));
+            Assert.That(platform.Played, Is.Empty);
+            Assert.That(harness.Edge.StreamingCalls, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task ATitleThePersonHadPausedIsNotTakenForTheOneJustAskedFor()
+    {
+        // Opera keeps one media session for the whole browser: «Bluey | Disney+» paused in another tab is theirs.
+        var platform = new FakePlatform(OperaGx)
+        {
+            AddressOf = _ => "www.disneyplus.com/browse/search",
+            PageStep = new UserBrowserPageStep(true, "play_invoked", "Bluey"),
+        };
+        var theirs = new UserMediaSession("Opera GXStable", "Bluey | Disney+", string.Empty, "paused");
+        platform.SessionsBeforeOpen = [theirs];
+        platform.WindowsAfterOpen = [new(11, "Búsqueda | Disney+ - Opera")];
+        platform.SessionsAfterOpen = [[theirs]];
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "streaming.play.named", Json("""{"service":"disney_plus","title":"Bluey"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.StreamingPlaybackUnconfirmed));
+            Assert.That(platform.Played, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task AWhoIsWatchingGateIsLeftToThePerson()
+    {
+        var platform = new FakePlatform(OperaGx)
+        {
+            AddressOf = _ => "play.hbomax.com/search/result?q=Superman",
+            PageStep = new UserBrowserPageStep(false, "profile", string.Empty),
+        };
+        platform.WindowsAfterOpen = [new(11, "HBO Max - Opera")];
+        platform.SessionsAfterOpen = [[new("Opera GXStable", "Tráiler", string.Empty, "playing")]];
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "streaming.play.named", Json("""{"service":"hbo_max","title":"Superman"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.StreamingProfileChoice));
+            Assert.That(harness.Edge.StreamingCalls, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task HboMaxSigningInOnItsOwnAuthHostIsSaidAsSuch()
+    {
+        int reads = 0;
+        var platform = new FakePlatform(OperaGx)
+        {
+            AddressOf = _ => ++reads == 1 ? "play.hbomax.com/search/result?q=Dune" : "auth.hbomax.com/login",
+        };
+        platform.WindowsAfterOpen = [new(11, "HBO Max - Opera")];
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "streaming.play.named", Json("""{"service":"hbo_max","title":"Dune"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("hbo_max_authentication_required"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(platform.PageSteps, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task HboMaxIsNeverOpenedInTheProductBrowser()
+    {
+        var platform = new FakePlatform(null);
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "streaming.play.named", Json("""{"service":"hbo_max","title":"Dune"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(WebBrowserAdapter.HboMaxNeedsDefaultBrowser));
+            Assert.That(harness.Edge.StreamingCalls + harness.Edge.NavigateCalls, Is.Zero);
+        });
+    }
+
+    [TestCase("play.hbomax.com", true)]
+    [TestCase("auth.hbomax.com", true)]
+    [TestCase("play.max.com", true)]
+    [TestCase("maxhbo.com", false)]
+    public void HboMaxHostsBelongToTheService(string host, bool belongs) =>
+        Assert.That(WebBrowserAdapter.HostMatchesService(host, "hbo_max"), Is.EqualTo(belongs));
 
     [Test]
     public async Task AStreamingServiceAskingToSignInIsSaidAsSuch()

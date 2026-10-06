@@ -22,6 +22,9 @@ from baxy_mind import llm
         ("user_browser_tabs_not_automatable", "nothing was done"),
         ("user_browser_not_running", "web browser is not open"),
         ("user_browser_page_unreadable", "could not be read right now"),
+        ("user_browser_streaming_profile_choice", "does not choose a profile"),
+        ("hbo_max_needs_default_browser", "only in the person's own web browser"),
+        ("hbo_max_authentication_required", "HBO Max asks to sign in"),
     ],
 )
 def test_user_browser_codes_have_their_fact(code: str, words: str) -> None:

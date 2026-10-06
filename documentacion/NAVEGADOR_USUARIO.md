@@ -74,14 +74,8 @@ tomar el navegador.
    - **Streaming con recurso** (`streaming.navigate`): como la navegación, más
      una segunda lectura a los 2,5 s para ver si el servicio redirigió a
      iniciar sesión (`streaming_authentication_required`).
-   - **Título en streaming** (`streaming.play.named`, Netflix y Disney+): se
-     abre la búsqueda en la sesión de la persona (Netflix `search?q=`;
-     Disney+ `es-419/browse/search` y el título escrito en su buscador con UI
-     Automation `ValuePattern`), se pulsa con `InvokePattern` el elemento cuyo
-     nombre es el título y luego el control «Reproducir / Ver ahora /
-     Continuar / Play». Lo que prueba la reproducción es una sesión SMTC
-     **nueva** del navegador en `Playing`, no lo que diga el guion. Si no:
-     incierto (`user_browser_streaming_playback_unconfirmed`).
+   - **Título en streaming** (`streaming.play.named`, Netflix, Disney+ y HBO
+     Max): ver «Streaming en la sesión de la persona» más abajo.
    - **Controlar lo que suena** (pausa, siguiente, volver, adelantar, «qué
      suena»): ya iba por SMTC (`WindowsMediaSessionAdapter`, primero en la
      cadena), así que controla la sesión de Opera sin cambios.
@@ -96,6 +90,82 @@ tomar el navegador.
    cuando una medición apunta `BAXY_CDP_ENDPOINT` a su propio navegador
    (fixture). Un enlace ya abierto en el navegador de la persona no se repite
    en Edge.
+
+### Streaming en la sesión de la persona (Disney+ y HBO Max, 2026-10-06)
+
+El dueño: «Disney y HBO deberían de funcionar». Tiene las dos sesiones
+iniciadas en Opera GX; Netflix no tiene sesión en este PC.
+
+| Servicio | Se abre | Título | Reproducir |
+|---|---|---|---|
+| Netflix | `netflix.com/search?q=<título>` | elemento cuyo nombre es el título | «Reproducir / Play…» |
+| Disney+ | `disneyplus.com/browse/search` (sin `es-419`: redirige al idioma de la cuenta) y el título escrito en su buscador (`ValuePattern.SetValue`) | tarjeta «Coco Clasificación: 0+. Estreno: 2017…» (`Hyperlink` a `/browse/entity-<uuid>`) | «VER AHORA» o «CONTINUAR» (`Hyperlink` a `/play/<id>`) |
+| HBO Max | `play.hbomax.com/search/result?q=<título>` (la URL que escribe su propio buscador) | tarjeta «The Last of Us. Fila 1 de 9…» (título entre aislantes bidi U+2066–2069) | «Ver The Last of Us, Temporada 1…» o «Reanudar Superman…» (`Button`) |
+
+- **Elegir la tarjeta** (guion `PagePlay`, igual en cualquier Chromium: sólo
+  nombres accesibles de la página): se quitan los caracteres de formato, se
+  pliegan tildes y mayúsculas y se ordena: el nombre (o su primer tramo
+  aislado) **es** el título; empieza por el título seguido de espacio, coma o
+  punto; empieza por él y sigue como otro título («Daredevil: Born Again»,
+  «Cocoon»); sólo lo contiene («Menú de Superman»). Gana la primera de la
+  mejor clase.
+- **Reproducir**: «reproducir, ver ahora, continuar, reanudar, play, watch
+  now, resume, continue watching», o un verbo de ver seguido del título («Ver
+  The Last of Us, …»); nunca un nombre con «tráiler/avance/teaser/mi lista».
+- **Verificación**: Opera tiene **una** sesión SMTC para todo el navegador
+  (`OperaSoftware.OperaGXWebBrowser…`), que cambia de título según lo que
+  suena. Prueba = esa sesión con el título pedido (Disney+ la titula «Bluey |
+  Disney+», HBO Max «The Last of Us») o con un título que no tenía, en
+  `Playing`. Lo que ya estaba igual antes (mismo título, mismo estado: algo
+  que la persona tenía en pausa en otra pestaña) no cuenta ni se pulsa. HBO
+  Max tardó 12–15 s desde el botón hasta `Playing`: la espera es de 30 s.
+  Si el guion no llegó a pulsar reproducir, el resultado es incierto en el
+  acto: lo que suene entonces (el tráiler de una ficha) no es lo pedido.
+- **«¿Quién está viendo?»**: si la página muestra esa pregunta (o «Who's
+  watching?»), el guion se para y el resultado es
+  `user_browser_streaming_profile_choice` (efecto posible, nada reproducido):
+  la página queda abierta y la persona elige su perfil. No se elige perfil por
+  ella, tampoco cuando hay uno solo (no se puede contar perfiles de forma
+  fiable por UIA en los tres servicios). En las cuentas del dueño ni Disney+
+  ni HBO Max lo mostraron.
+- **Inicio de sesión**: la dirección se relee a los 2,5 s en cualquier host
+  del servicio (HBO Max inicia sesión en `auth.hbomax.com`):
+  `disney_authentication_required`, `hbo_max_authentication_required`.
+- **HBO Max sin navegador predeterminado**: no se abre en el Edge del
+  producto (no tiene la sesión de la persona ni ruta propia):
+  `hbo_max_needs_default_browser`, nada hecho.
+- **Árbol UIA «roto» de Opera GX** (tras abrir una pestaña de Acceso Rápido,
+  `LiveBackgroundView` deja un primer hijo muerto y `FindAll` desde la ventana
+  devuelve 0): `PagePlay` y `Address` recorren los hijos desde el último
+  (`GetLastChild` + `GetPreviousSibling`) cuando `GetFirstChild` falla, y
+  `PagePlay` busca el documento con ese recorrido y hace `FindAll` desde él.
+  Probado en vivo en ese estado.
+- **Ruta directa, descartada**: en Disney+ el `/play/<id>` de una película es
+  el mismo uuid de su ficha, pero el de una serie es el del episodio, y los
+  dos ids sólo se ven en la página. La API GraphQL de JustWatch da fichas sin
+  sesión, pero no es oficial, manda el título a un tercero y la búsqueda del
+  propio servicio ya acierta en 3–5 s; no se añade.
+- **Mente**: «en HBO Max», «en HBOMax», «en HBO» → `hbo_max` (lectores de
+  `semantic/media.py`, `semantic/arguments.py`, `streaming_service_named`, los
+  alias del planificador y el catálogo llano del decisor). «Max» a secas
+  **no**: «pon el brillo en max» sería un título en HBO Max.
+  `streaming.navigate` acepta direcciones de `hbomax.com`/`max.com`.
+
+**En vivo, Opera GX del dueño, 2026-10-06** (App por `run_baxy_conductor.ps1`,
+perfil nuevo por turno, sonido silenciado y restaurado, cada video pausado
+por SMTC al acabar; turno = de la frase al final publicado):
+
+| Turno | Resultado | Respuesta | Tiempo |
+|---|---|---|---|
+| «pon Bluey en Disney Plus» | verificado, sesión «Bluey \| Disney+» `Playing` | «No, Bluey ya está reproduciéndose en Disney+ en este momento.» (perfil con un turno anterior incierto) | 20 s |
+| «pon Daredevil en Disney» | verificado, «Daredevil \| Disney+» (la serie de 2015, «CONTINUAR») | «Puse a reproducir en streaming «Daredevil»: se está reproduciendo.» | 22 s |
+| «quiero ver Coco en Disney+» | verificado, «Coco \| Disney+» («VER AHORA») | «Ya estás reproduciendo Coco en Disney+ en tu navegador Opera GX.» | 21 s |
+| «pon The Last of Us en HBO Max» | verificado, «The Last of Us» | «Ya está reproduciendo The Last of Us en HBO Max.» | 24 s |
+| «ponme la película Superman en HBO» | verificado, «Superman» («Reanudar Superman…») | «Se ha iniciado la reproducción de la película "Superman" en HBO Max.» | 28 s |
+| «pon Zorblax Quintavera en HBO Max» | incierto, nada suena | «No se pudo confirmar que Zorblax Quintavera esté reproduciéndose en HBO Max porque la página se abrió en tu navegador con tu sesión iniciada, pero no se verificó que el título comenzara a sonar.» | 41 s |
+
+Cada turno deja su pestaña abierta en el Opera de la persona (no se cierran
+pestañas por ella).
 
 ### Qué se pierde en el navegador de la persona (y sigue en CDP)
 
@@ -122,8 +192,9 @@ tomar el navegador.
 - La verificación por DOM (`video.currentTime` avanzando, recarga de un
   reproductor atascado) pasa a SMTC: prueba que algo suena con ese título, no
   el segundo exacto.
-- Netflix con «¿Quién está viendo?»: no se elige perfil por la persona; la
-  búsqueda queda abierta y el resultado es incierto.
+- «¿Quién está viendo?» (Netflix, Disney+, HBO Max): no se elige perfil por
+  la persona; la página queda abierta y se dice (ver «Streaming en la sesión
+  de la persona»).
 - `browser.navigate.named` a la **misma familia** que el predeterminado (p. ej.
   «ábrelo en Opera GX») abre en la sesión de la persona; a otra familia sigue
   con el perfil privado de ese navegador.
@@ -154,7 +225,10 @@ elegido. Las sesiones SMTC se leen como ya hacía `media.status`.
   honestas tras una página en el navegador de la persona.
 - `.../NamedBrowserAdapter.cs` — el navegador nombrado que es el
   predeterminado abre en la sesión de la persona.
-- `src/baxy_mind/llm.py` — hechos de causa para los cuatro códigos nuevos.
+- `src/baxy_mind/llm.py` — hechos de causa para los códigos nuevos
+  (`user_browser_*`, `hbo_max_*`); `data/operation_floor.v1.json`, las
+  frases de suelo de `hbo_max_authentication_required` y
+  `user_browser_streaming_profile_choice`.
 
 ## Verificación
 
@@ -165,8 +239,13 @@ elegido. Las sesiones SMTC se leen como ya hacía `media.status`.
   `BAXY_CDP_ENDPOINT`), YouTube por SMTC, pulsar `Play` sólo en la sesión del
   título, no tocar la sesión en pausa de la persona, operaciones de pestaña
   honestas, Netflix y Disney+ (búsqueda escrita), inicio de sesión pedido,
-  `streaming.navigate`, navegación nombrada a la familia predeterminada.
+  `streaming.navigate`, navegación nombrada a la familia predeterminada; y
+  desde 2026-10-06 HBO Max (búsqueda en la dirección, sesión del título),
+  inicio de sesión en `auth.hbomax.com`, HBO Max nunca en el Edge del
+  producto, «¿Quién está viendo?» dejado a la persona y un título que la
+  persona tenía en pausa no tomado por el pedido.
 - `tests/test_m122_user_browser_facts.py`: hechos de causa.
+- `tests/test_nav_hbo_max_service.py`: lectores de HBO Max en la mente.
 - Manual, 2026-10-02, con un Edge **propio y desechable** (perfil temporal,
   cerrado después por su PID): el guion de dirección leyó
   `https://example.com` en 1,2 s; el guion de página pulsó por UIA el enlace
@@ -198,13 +277,14 @@ elegido. Las sesiones SMTC se leen como ya hacía `media.status`.
 
 ## Pendiente
 
-- Netflix/Disney+ en Opera con la cuenta del dueño: los nombres accesibles de
-  fichas y botones están tomados de lo medido por CDP en VIDEO1947/1919, no
-  comprobados por UIA en Opera.
-- HBO Max no es servicio del catálogo de `streaming.play.named` ni de
-  `streaming.navigate`; cuando el pedido llega como `browser.navigate` ya abre
-  en Opera, con la sesión. Añadirlo al catálogo es decisión aparte (catálogo,
-  mente y decisor entrenado).
+- Netflix en Opera: sin sesión en este PC; sus nombres accesibles siguen
+  tomados de lo medido por CDP en VIDEO1919, no comprobados por UIA.
+- «¿Quién está viendo?»: no comprobado en vivo (las cuentas del dueño no lo
+  muestran); el guion lo reconoce por el texto de la pregunta.
+- Un título que el servicio escribe distinto de como se pidió («house of the
+  dragon» frente a «La Casa del Dragón») no se elige: queda incierto con la
+  búsqueda abierta. El decisor entrenado no vio HBO Max al entrenarse; lo
+  reciben los lectores y la línea de su catálogo.
 - Pestañas del navegador de la persona (atrás, recargar, cerrar pestaña) por
   teclado a su ventana, verificadas por la lectura de dirección.
 - Instrumentos de medición que dependían de Edge: deben exportar

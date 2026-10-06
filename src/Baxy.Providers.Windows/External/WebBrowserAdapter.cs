@@ -347,7 +347,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     {
         string service = ExternalJson.RequiredString(arguments, "service");
         string title = ExternalJson.RequiredString(arguments, "title").Trim();
-        if (service is not ("netflix" or "disney_plus") || title.Length == 0)
+        if (service is not ("netflix" or "disney_plus" or "hbo_max") || title.Length == 0)
             return ExternalJson.Failure(operation, "streaming_named_argument_invalid");
         if (_userBrowser?.Resolve() is { } userBrowser
             && await _userBrowser.PlayStreamingNamedAsync(
@@ -357,6 +357,10 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             UseUserBrowser();
             return started;
         }
+        // HBO Max only plays where the person is signed in: the product's own browser has no session of theirs and no
+        // route of its own for it, so nothing is opened there.
+        if (service == "hbo_max")
+            return ExternalJson.FailureBeforeEffect(operation, HboMaxNeedsDefaultBrowser);
         UseProductBrowser();
         effectBoundary.Cross(cancellationToken);
         CdpStreamingPlaybackResult playback = service == "disney_plus"
@@ -1445,12 +1449,17 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _sessionContext?.Activate(_browser);
     }
 
+    internal const string HboMaxNeedsDefaultBrowser = "hbo_max_needs_default_browser";
+
     internal static bool HostMatchesService(string host, string service)
     {
         string[] suffixes = service switch
         {
             "netflix" => ["netflix.com"],
             "disney_plus" => ["disneyplus.com"],
+            // HBO Max (Chile, 2026-10-06) plays on play.hbomax.com and signs in on auth.hbomax.com; max.com was its
+            // name in 2024-2025 and still redirects.
+            "hbo_max" => ["hbomax.com", "max.com"],
             "prime_video" => ["primevideo.com", "amazon.com"],
             "youtube" => ["youtube.com", "youtu.be"],
             _ => [],

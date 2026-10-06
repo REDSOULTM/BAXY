@@ -5930,6 +5930,15 @@ _CAUSE_FACT = {
         "the streaming service was opened in the person's own web browser, with their signed-in session, but it "
         "could not be confirmed that the title started playing; say that plainly and that they can pick it there"
     ),
+    # 2026-10-06 (owner: «Disney y HBO deberían de funcionar»): a «who's watching?» gate is the person's own choice.
+    "user_browser_streaming_profile_choice": (
+        "the streaming service opened in the person's own web browser and asks who is watching; the assistant does "
+        "not choose a profile for them, so nothing was played: they can pick their profile there and ask again"
+    ),
+    "hbo_max_needs_default_browser": (
+        "HBO Max is played only in the person's own web browser, where they are signed in, and no default web "
+        "browser could be used on this PC, so nothing was played"
+    ),
     "user_browser_tabs_not_automatable": (
         "the person's tabs are in their own web browser, where the assistant opens pages, reads them and controls "
         "what plays, but cannot yet move through its tabs (back, reload, close), so nothing was done"
@@ -6003,6 +6012,7 @@ _CAUSE_FACT = {
     # ambiguous», and the drafts narrated that jargon. What is known is that the service asks to sign in.
     "netflix_authentication_required": "Netflix asks to sign in on this PC, so nothing was played",
     "disney_authentication_required": "Disney+ asks to sign in on this PC, so nothing was played",
+    "hbo_max_authentication_required": "HBO Max asks to sign in on this PC, so nothing was played",
     "streaming_authentication_required": "the streaming service asks to sign in on this PC, so nothing was played",
     # M60 (DEV-D w10-t6 v3d «Diez» → media.seek.relative): the typed cause fell back to «external effect ambiguous»
     # and the three drafts narrated that jargon («La operación de búsqueda relativa…»).
