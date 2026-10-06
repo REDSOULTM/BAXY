@@ -6158,6 +6158,55 @@ def _desired_music_query_raw(text: str) -> str | None:
     return query
 
 
+# M176: the order to play music, said in the person's words: an imperative (``_NAMED_MUSIC_PLAY_VERB``, below) or a
+# wish to hear it.
+_SAID_MUSIC_OTHER_HEAD = (
+    r"put\s+on|throw\s+on|"
+    r"(?:quiero|necesito|i\s+want\s+to|i\s+wanna|i\s+need\s+to)\s+(?:escuchar|oir|oír|listen\s+to|hear)"
+)
+_SAID_MUSIC_PARTITIVE = re.compile(
+    r"^(?:(?:algo|un\s+poco|unas?|unos?)\s+de\s+|some\s+|(?:something|algo)\s+(?=\w)|a\s+(?:bit|little)\s+of\s+)",
+    re.IGNORECASE,
+)
+_SAID_MUSIC_REASON = re.compile(r"\s*,?\s+(?:que|q|porque|pq|xq|because|since|cuz|cause)\s+", re.IGNORECASE)
+_SAID_MUSIC_VOCATIVE = re.compile(
+    r"(?:\s*,?\s+(?:po|pe|che|wn|weon|guey|güey|wey|bro|parce|tio|tío|mano|loco|pues|porfa|porfis|please|pls|plz|"
+    r"por\s+favor))+$",
+    re.IGNORECASE,
+)
+
+
+def said_music_query(text: str) -> str | None:
+    """M176 (probe «pon música clásica para concentrarme», «play jazz for dinner», «play the beatles»: the readers
+    chose a Spotify search but the arguments grounded none, so the turn asked what to play): the music an order names,
+    in the person's words after the verb, with what it is for kept (D59.4) and a partitive, a reason after «que» and a
+    vocative left out. None when nothing beyond music nouns, courtesy or a purpose is named («pon música»,
+    ``_music_clause_names_content``): that is still asked."""
+
+    body = _request_body_surface(text).strip()
+    found = re.fullmatch(
+        rf"(?:{_NAMED_MUSIC_PLAY_VERB}|{_SAID_MUSIC_OTHER_HEAD})\s+(?P<query>\S.*?)[\s.!?]*", body, re.IGNORECASE,
+    )
+    if found is None or not _music_clause_names_content(body):
+        return None
+    query = _SAID_MUSIC_VOCATIVE.sub("", found.group("query").strip(" ,;:")).strip(" ,;:")
+    query = _SAID_MUSIC_PARTITIVE.sub("", query).strip()
+    if all(word in _MUSIC_GENERIC_WORDS for word in re.findall(r"[a-z0-9ñ]+", _MUSIC_PURPOSE.sub(" ", _fold(query)))):
+        # «play something to relax»: with «something» gone only the purpose is left, which names no music.
+        return None
+    reason = _SAID_MUSIC_REASON.search(query)
+    if reason is not None and _music_clause_names_content(query[: reason.start()]):
+        # «pon algo alegre que ando triste»: why it is wanted is not what to play.
+        query = query[: reason.start()].strip(" ,")
+    if not 1 <= len(query.split()) <= 12 or _has(
+        _fold(query),
+        r"\b(?:youtube|spotify|video|videos|pelicula|peli|serie|movie|film|episodio|episode|alarmas?|alarms?|"
+        r"timers?|temporizador(?:es)?|volumen|volume)\b",
+    ):
+        return None
+    return query
+
+
 # Uso real 2026-09-23 «play song aces high», «alexa play song over the rainbow»,
 # «play reggae music»: the music noun came with what to play and the turn still
 # asked for it. A song noun followed by its title, or a music noun with its own
@@ -7296,6 +7345,11 @@ def _has_contradictory_correction(
     )
 
 
+# M174/M176: the person's own task store named where something is written down: «pendiente(s)», «my to-do(s)», «la
+# to-do list». A bare «todo» is Spanish «everything» and stays out.
+_OWN_TASK_STORE = r"\bpendientes?\b|\bto-dos?\b|\b(?:mi|mis|tu|tus|la|my|your|the)\s+to\s+dos?\b"
+
+
 def _review_local_data_effects(
     matches: list[tuple[int, int, str]],
     folded: str,
@@ -7311,7 +7365,9 @@ def _review_local_data_effects(
         and not _has(folded, r"\b(?:notas?|notes?|tareas?|tasks?|recordatorios?|reminders?)\b")
         # M174 (DEV-H v5c H-w30-t1 «anota en mis pendientes pagar la luz» → a note «anota en mis pendientes pagar la
         # luz» beside the task): the person's pendientes are their tasks (owner D59: never a note unless it is said).
-        and not _has(folded, r"\bpendientes\b")
+        # M176 (probe «anota de pendiente ir al notario» → a note beside the task, «anota en mi to-do: pagar netflix» →
+        # a note alone): one pendiente, and the person's to-do, are their tasks too.
+        and not _has(folded, _OWN_TASK_STORE)
         # «anota este evento en mi calendario»: written on the calendar, not in a note.
         and not _has(folded, _CALENDAR_PLACE)
     ):

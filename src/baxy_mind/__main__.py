@@ -74,6 +74,7 @@ from .semantic.patterns import (
     list_entries_said_before,
     names_a_kind_of_music,
     output_level_request,
+    said_music_query,
 )
 from .semantic.web import (
     asks_for_information,
@@ -6794,6 +6795,9 @@ def _direct_arguments_result(
             extracted = partial_explicit_arguments(
                 operation, objective, tool["function"]["parameters"],
             ) or None
+        if extracted is None and operation == "media.play.query" and said_music_query(objective) is not None:
+            # M176: an abstention on music named in words no reader grounds keeps the words it was named with (below).
+            extracted = {"provider": "spotify", "query": said_music_query(objective)}
         decided_arguments = _with_decided_arguments(
             operation,
             str(message.get("text", "")),
@@ -6812,6 +6816,15 @@ def _direct_arguments_result(
             trusted_source=objective_source if decided_arguments is None else said,
             **language_argument,
         )
+    if arguments is None and operation == "media.play.query":
+        # M176 (probe «pon música clásica para concentrarme», «play jazz for dinner», «play the beatles» → «¿Qué quieres
+        # escuchar?»): the readers chose the search for music named in words no reader grounds, and the extraction gave
+        # nothing that grounds either (an abstention takes them above, before any question is written); the words the
+        # person named it with are the query. A value the extraction grounded stays (D58).
+        named = said_music_query(person) or said_music_query(objective)
+        candidate = {"provider": "spotify", "query": named}
+        if named is not None and validate_json_schema_instance(candidate, tool["function"]["parameters"]):
+            arguments, question = candidate, ""
     arguments = _with_conversation_place(
         operation, arguments, message.get("history"), tool["function"]["parameters"],
     )
