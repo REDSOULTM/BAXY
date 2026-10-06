@@ -42,6 +42,33 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
         operation is "media.control" or "media.seek.relative" or "media.play.exact"
             or "media.play.query" or "media.status";
 
+    private string? _assistantSource;
+
+    /// <summary>The media session of the last playback BAXY verified (its SMTC source).</summary>
+    internal void RememberAssistantPlayback(string sourceAppUserModelId) =>
+        Volatile.Write(ref _assistantSource, sourceAppUserModelId);
+
+    /// <summary>
+    /// The session an unnamed media request means when BAXY played something itself: that session while it plays, or
+    /// while it is paused and nothing else plays (so «sigue» resumes it). Otherwise null: Windows' current session.
+    /// </summary>
+    internal static string? PreferAssistantSession(
+        IReadOnlyList<(string Source, bool Playing, bool Paused)> sessions,
+        string? assistantSource)
+    {
+        if (string.IsNullOrEmpty(assistantSource))
+            return null;
+        (string Source, bool Playing, bool Paused)? own = sessions
+            .Where(candidate => string.Equals(candidate.Source, assistantSource, StringComparison.Ordinal))
+            .Select(candidate => ((string, bool, bool)?)candidate)
+            .FirstOrDefault();
+        if (own is null)
+            return null;
+        bool otherPlaying = sessions.Any(candidate =>
+            candidate.Playing && !string.Equals(candidate.Source, assistantSource, StringComparison.Ordinal));
+        return own.Value.Playing || (own.Value.Paused && !otherPlaying) ? own.Value.Source : null;
+    }
+
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,
         JsonElement arguments,
@@ -79,6 +106,21 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                     }
                 }
                 session ??= sessions.Count > 0 ? sessions[0] : null;
+                // Owner's live check 2026-10-06: Spotify kept playing while BAXY played a YouTube video in Opera
+                // GX, Windows still named Spotify as the current session, and «para la música» paused Spotify.
+                // What BAXY itself just played answers an unnamed media request while it is the one playing.
+                string? preferred = PreferAssistantSession(
+                    sessions.Select(candidate => (candidate.SourceAppUserModelId,
+                        candidate.GetPlaybackInfo().PlaybackStatus
+                            == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing,
+                        candidate.GetPlaybackInfo().PlaybackStatus
+                            == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused)).ToArray(),
+                    Volatile.Read(ref _assistantSource));
+                if (preferred is not null)
+                {
+                    session = sessions.First(candidate =>
+                        string.Equals(candidate.SourceAppUserModelId, preferred, StringComparison.Ordinal));
+                }
                 if (arguments.TryGetProperty("sourceApp", out JsonElement sourceAppValue)
                     && sourceAppValue.ValueKind == JsonValueKind.String
                     && !string.IsNullOrWhiteSpace(sourceAppValue.GetString()))
