@@ -288,8 +288,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 M178: re-pin after the midnight-crossing count and the weekday-kept fidelity trim.
 # repin tras M178+M179
 # repin tras M177+M178+M179
+# C03 M180: subir o bajar lo que suena nunca es pasar de canción.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "20365b21880293adefaca93fd393590a3b79ea737f608006215e8ad79fede09c"
+    "1a92ec690939553f8edd771c8219e02bf212133da940048933503fcaa40d7eca"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

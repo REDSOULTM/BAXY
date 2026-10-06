@@ -284,9 +284,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 comprensión natural: repin tras M176 (sin M176b) (2026-10-05).
 # C03 M179: re-pin tras búsquedas locales, títulos con detalle y seguimientos web.
 # repin tras M177+M178+M179
+# C03 M180: subir o bajar lo que suena nunca es pasar de canción.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "17de47cc57bd9067f9f35ec7e9121492197fa1e8789bdc05f7ce2fd9b0e29abc"
+        "43896ec35e6c09fd9caeb4fcabccfab23f39983b847d6498b64d9d4e460627a0"
     ),
     "src/baxy_mind/llm.py": (
         "e72bcbfed0e372c13c0d21c0531d251905799247503f97b92ea2ff8f42fd429a"
