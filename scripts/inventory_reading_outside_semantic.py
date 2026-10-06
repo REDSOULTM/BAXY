@@ -78,7 +78,6 @@ _TRANSFORMS = frozenset({
 
 # (file, function) -> {parameter or local: label}, where the name says less than the code does.
 SEEDS: dict[tuple[str, str], dict[str, str]] = {
-    ("historical_intents.py", "HistoricalIntentRegistry.__init__"): {"rows": OTHER},
     ("voice.py", "WakePhraseMatcher.__init__"): {"aliases": OTHER},
     ("voice_output.py", "_clean_text"): {"value": BAXY},
     ("window_prose_facts.py", "_inventory_identity_counts.process_annotation"): {"match": BAXY},
@@ -173,7 +172,6 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
         "WORDING", "the question BAXY writes must not echo the person's words (echo check); the kind of input "
         "was read by semantic.guards"),
     # ------------------------------------------------ other mind modules
-    ("first_signal.py", "_snippet"): ("WORDING", "the request quoted in the fixture's progress line"),
     ("planner.py", "_tokens"): ("GROUNDING", _GROUNDING),
     ("planner.py", "_grounding_tokens"): ("GROUNDING", _GROUNDING),
     ("planner.py", "_value_is_grounded"): ("GROUNDING", _GROUNDING),
@@ -185,11 +183,6 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
         "before any reading; decides no intention (module contract)"),
     ("corrector.py", "unintelligible_input"): (
         "INPUT", "the noise check of the ear's repair, consumed by semantic.guards; decides no intention"),
-    ("asr_fusion.py", "_exhaustive_report_language"): (
-        "INPUT", "selection between ASR hypotheses; the product does not import asr_fusion (tests and a "
-        "revalidation script do): a candidate for APLAZADOS, not a reader of the turn"),
-    ("asr_fusion.py", "_terminal_status_effect"): (
-        "INPUT", "selection between ASR hypotheses (not imported by the product)"),
     ("voice.py", "WakePhraseMatcher.strip"): ("INPUT", _WAKE),
     ("wake_cascade.py", "normalize_lexical_transcript"): ("INPUT", _WAKE),
     ("wake_verifier.py", "lexical_words"): ("INPUT", _WAKE),

@@ -16,7 +16,7 @@ from __future__ import annotations
 import pytest
 
 from baxy_mind.effect_intent import resolve_explicit_effects
-from baxy_mind.tools.router_bank_sources import ABSTAIN_POOLS, POSITIVE_POOLS
+from router_bank_pools import ABSTAIN_POOLS, POSITIVE_POOLS
 from scripts.measure_mind_budget import TURN_TEXTS
 
 

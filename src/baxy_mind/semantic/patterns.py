@@ -2723,17 +2723,6 @@ def known_unsupported_effect_request(
     )
 
 
-def resolve_explicit_clarification(
-    text: str,
-    available_operations: Iterable[str],
-) -> str | None:
-    """Return the single certain operation of an incomplete effect, if any."""
-
-    intent = resolve_explicit_clarification_intent(text, available_operations)
-    return (
-        intent.operation if intent is not None and len(intent.operations) == 1 else None
-    )
-
 
 _TEMPORAL_NUMBER_WORDS = {
     "one": 1,
@@ -12170,47 +12159,6 @@ def _catalog_report_clauses(text: str) -> tuple[str, ...] | None:
         if clause.strip()
     )
 
-
-def compound_retrieval_clauses(text: str) -> tuple[str, ...]:
-    """Split an apparent sequence for advisory per-clause retrieval only.
-
-    This deliberately grants no intent or operation authority. Speech
-    recognizers routinely remove punctuation around ``después``/``then`` or
-    leave a standalone ``check`` fragment; the strict effect grammar must keep
-    rejecting those ambiguous forms, while retrieval may still offer each
-    clause's authenticated family to the constrained model.
-    """
-
-    folded = _strip_request_envelope(_fold(re.sub(r"[\r\n]+", " . ", str(text))))
-    strict = _catalog_report_clauses(folded)
-    if strict is not None and 2 <= len(strict) <= 8:
-        return strict
-    parts = re.split(
-        r"\s*(?:[.;!?]+\s*)?(?:\b(?:y\s+despues|and\s+then|"
-        r"despues(?!\s+(?:de|del)\b)|then|afterwards)\b)"
-        r"\s*[,;:.!?]*\s*(?:check\b\s*[,;:.!?]*\s*)?",
-        folded,
-        flags=re.IGNORECASE,
-    )
-    clauses: list[str] = []
-    for part in parts:
-        clause = re.sub(
-            r"^check\b\s*[,;:.!?]*\s*",
-            "",
-            part.strip(" \t\r\n,;:.!?"),
-            flags=re.IGNORECASE,
-        )
-        clause = re.sub(
-            r"[,;:.!?]*\s*(?:devolviendo|returning)\s+"
-            r"(?:cada|each)\s+(?:resultado|result)\s+"
-            r"(?:por\s+separado|separately)[\s.!?]*$",
-            "",
-            clause,
-            flags=re.IGNORECASE,
-        ).strip(" \t\r\n,;:.!?")
-        if clause and re.search(r"\w", clause, re.UNICODE):
-            clauses.append(clause)
-    return tuple(clauses) if 2 <= len(clauses) <= 8 else ()
 
 
 def _catalog_report_composition(

@@ -36,8 +36,7 @@ PALABRAS_ES = re.compile(
     u'encontré)\\b')
 REGEXISH = re.compile(r'[\^\$\|\[\]]')
 
-FICHEROS_DE_ENTRADA = ('/llm.py', '/semantic/decider.py', '/router_bank_sources.py',
-                       '/public_turn_corpus.py', '/semantic/request.py',
+FICHEROS_DE_ENTRADA = ('/llm.py', '/semantic/decider.py', '/semantic/request.py',
                        '/UserMessagePhrases.cs')
 
 
