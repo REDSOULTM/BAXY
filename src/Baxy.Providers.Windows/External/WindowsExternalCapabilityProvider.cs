@@ -160,6 +160,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                 || receipt.EffectObserved
                 || receipt.EffectMayHaveOccurred)
             {
+                RememberAssistantPlayback(operation, receipt);
                 return receipt;
             }
             // Tanda 5: a failure that read its player's state (Result: the YouTube tab's video was not playing) is
@@ -261,6 +262,25 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             _ => "external_operation_not_supported",
         };
         return new ExternalCapabilityReceipt(operation, false, false, null, error);
+    }
+
+    /// <summary>A verified playback BAXY started tells the media session adapter which session is its own.</summary>
+    private void RememberAssistantPlayback(string operation, ExternalCapabilityReceipt receipt)
+    {
+        if (!receipt.Verified
+            || operation is not ("media.play.youtube" or "media.play.exact" or "media.play.query"
+                or "streaming.play.named")
+            || receipt.Result is not { ValueKind: JsonValueKind.Object } result
+            || !result.TryGetProperty("sourceAppUserModelId", out JsonElement source)
+            || source.ValueKind != JsonValueKind.String
+            || string.IsNullOrWhiteSpace(source.GetString()))
+        {
+            return;
+        }
+        foreach (WindowsMediaSessionAdapter media in _adapters.OfType<WindowsMediaSessionAdapter>())
+        {
+            media.RememberAssistantPlayback(source.GetString()!);
+        }
     }
 
     private static bool ProcessExists(string name)

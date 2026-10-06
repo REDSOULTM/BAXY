@@ -99,12 +99,26 @@ tomar el navegador.
 
 ### Qué se pierde en el navegador de la persona (y sigue en CDP)
 
-- `browser.page.read`, `browser.tabs.list` y `browser.control` (atrás,
-  recargar, desplazar, nueva pestaña, cerrar pestañas, pantalla completa) no
-  tienen CDP allí. Tras una página abierta en el navegador de la persona
-  responden `user_browser_tabs_not_automatable` (nada hecho), en vez de actuar
-  sobre un Edge que la persona no está mirando. Una navegación nombrada a
-  otro navegador o una vuelta a Edge recupera esas operaciones.
+- **2026-10-06 (dueño: «todo lo que sea abrir un navegador… con el navegador
+  predeterminado»):** `browser.page.read` y `browser.tabs.list` leen **siempre**
+  el navegador de la persona (antes sólo si BAXY acababa de abrir ahí una
+  página; si no, caían al Edge del producto). UI Automation sobre la ventana
+  de delante: las pestañas son `TabItem` con `SelectionItemPattern` (Opera GX:
+  `TabViewGx`), la página es el `Document` con `AutomationId` `RootWebArea`
+  (aparece tras la primera consulta) leído con `TextPattern`. Sin ventana:
+  `user_browser_not_running`; sin lectura: `user_browser_page_unreadable`. Los
+  guiones escriben UTF-8 (`[Console]::OutputEncoding`): antes las tildes
+  llegaban rotas y las citas de la página no coincidían. Probado en vivo con
+  Opera GX: «qué pestañas tengo abiertas» y «léeme lo que dice la página».
+- `browser.control` (atrás, recargar, desplazar, nueva pestaña, cerrar
+  pestañas, pantalla completa) responde `user_browser_tabs_not_automatable`
+  (nada hecho) siempre que hay navegador predeterminado, nunca actúa sobre un
+  Edge que la persona no mira. Con atajos de teclado funcionaría (en vivo:
+  Ctrl+T y Ctrl+W llegaron a Opera GX desde segundo plano), pero el «toque de
+  Alt» que da el primer plano abre el menú de Opera y, tras esa prueba, el
+  árbol de accesibilidad de Opera GX quedó cortado (`LiveBackgroundView`,
+  `ElementNotAvailable`) hasta cerrarlo. No se activa sin una forma fiable de
+  recuperarse.
 - La verificación por DOM (`video.currentTime` avanzando, recarga de un
   reproductor atascado) pasa a SMTC: prueba que algo suena con ese título, no
   el segundo exacto.

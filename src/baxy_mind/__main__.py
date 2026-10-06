@@ -5931,6 +5931,11 @@ def _context_decided_result(
         and (said_level.direction is not None or said_level.target is not None)
         and (
             "media.seek.relative" in decided.operations
+            # M180 (DEV-G v5b/v5c/v5f G-w21-t2 «súbele un poco a esa» and DEV-H v5f H-w21-t3 «subile un toque», music
+            # playing → restated «Pasa a la siguiente canción.» and the song changed): the transport (play, pause, next,
+            # previous) never raises or lowers anything. A message the level reader reads whole names no song to skip
+            # to; skipping is «pasa a la siguiente», «ponle otra», «skip this one», which it never reads.
+            or decided.operations == ("media.control",)
             or (
                 decided.decision == "clarify"
                 and not decided.operations

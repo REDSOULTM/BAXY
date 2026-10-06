@@ -72,12 +72,13 @@ _SCREEN_ONLY_VERB = re.compile(r"(?:brighten|dim|aclar|ilumin|oscurec|darken)")
 # «bájale poquito», «súbele tantito»: the diminutive said without its article is the same small amount. Tanda
 # 3, a brightness lowered «un nivel»: a step («un nivel», «a notch», «dos niveles») gives the
 # direction and no amount either, since how much a step is was never said.
+# M180: «súbele un tris» is the same small amount as «un toque» (no amount said).
 STEP_NOUN = (
     r"(?:nivel(?:es)?|paso(?:s)?|escalon(?:es)?|rayita(?:s)?|raya(?:s)?|notch(?:es)?|levels?|steps?|ticks?)"
 )
 _STEP_COUNT = r"(?:un\s+par\s+de|un|una|uno|dos|tres|cuatro|cinco|one|two|three|four|five|\d)"
 _RELATIVE = (
-    r"(?:(?:un\s+)?(?:poquito|poquitito|tantito|pelin)(?:\s+mas)?|un\s+(?:poco|toque|cacho|chin)(?:\s+mas)?|"
+    r"(?:(?:un\s+)?(?:poquito|poquitito|tantito|pelin)(?:\s+mas)?|un\s+(?:poco|toque|cacho|chin|tris)(?:\s+mas)?|"
     rf"(?:(?:en|by)\s+)?{_STEP_COUNT}\s+{STEP_NOUN}(?:\s+(?:mas|more))?|"
     r"algo(?:\s+mas)?|bastante|mucho|mas|"
     # «a notch», «a level»: English «a» is one step; Spanish «a nivel 8» names a target (Fase 3.5b DEV).

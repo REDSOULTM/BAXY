@@ -62,7 +62,7 @@ presentación, límite fuera del mundo.
 ## Segunda vuelta (goal v3, 2026-09-28 → 2026-10-06)
 
 El orden de los caminos no cambió; cambió quién manda dentro de una conversación y qué se mide. Detalle por
-mecanismo (M42–M180) y por decisión (D32–D80): `artifacts/comprobaciones/C03/DECISIONES_COMPRENSION_2026-09-25.md`.
+mecanismo (M42–M180) y por decisión (D32–D82): `artifacts/comprobaciones/C03/DECISIONES_COMPRENSION_2026-09-25.md` (en el archivo fuera del repo desde el 2026-10-06).
 
 - **BAXY ayuda al decisor, nunca es un lastre** (dueño, D58). Cada lector o guarda que corre después del decisor se
   midió contra el decisor solo (historial escrito, con el saludo de BAXY delante como en la App); los que restaban
@@ -70,7 +70,7 @@ mecanismo (M42–M180) y por decisión (D32–D80): `artifacts/comprobaciones/C0
   excepción es la seguridad: «no lo envíes» deja un borrador y nunca un envío.
 - **Lectores de conversación antes del decisor**, cada uno sobre lo que BAXY acaba de decir o preguntar: la hora
   que el decisor inventa y nadie dijo se pregunta (M110); la respuesta a «¿cuánto le subo?» (M167) y el sí o el
-  nivel que acepta un ajuste que BAXY ofreció (M177); «súbele un toque» nunca es pasar de canción (M180, en su rama);
+  nivel que acepta un ajuste que BAXY ofreció (M177); «súbele un toque» nunca es pasar de canción (M180);
   mover o cancelar el aviso que BAXY acaba de poner (M113, M145, M158, M173); «N antes de <evento dicho>» desde la
   hora que dio BAXY, también cuando la cuenta cruza medianoche (M152, M165, M178). El estado de diálogo
   (`DialogueState`) guarda el último aviso puesto y el último tema buscado («y el técnico de ellos» → el equipo
