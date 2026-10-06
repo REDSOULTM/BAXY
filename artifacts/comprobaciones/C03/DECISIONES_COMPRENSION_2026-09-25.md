@@ -1019,3 +1019,22 @@ cortadas entre conversaciones, `brief/REVISOR_FINAL.md`): **229/338 = 67,8 %**, 
 4 = 1,2 % (18 más por la ruta de error con respuesta publicada). VRAM pico 3 792 MiB; latencia p50 1,97 s. El goal v3
 no se cumple (85 / 90); frente al FINAL del 28-09, +10,9 puntos de revisor y +8,8 de automática. Informe:
 `COMPRENSION_NATURAL_2026-10-06.md`.
+
+## D82. Metas fijadas en lo alcanzado (dueño, 2026-10-06 ~12:15)
+El dueño cierra la fase con las metas puestas en lo medido («planta la meta en lo que has llegado a conseguir»),
+para seguir con otros temas de BAXY. Quedan así; lo medido no cambia, cambia la vara:
+
+| meta | antes | ahora | medido |
+|---|---|---|---|
+| DEV-E automática | ≥ 90 % | **≥ 89 %** | 89,6 % (268/299) |
+| FINAL-2 automática | ≥ 90 % | **≥ 83 %** | 83,1 % |
+| FINAL-2 revisor | ≥ 85 % | **≥ 67 %** | 67,8 % |
+| repreguntas | 0 | **≤ 4 % de los turnos** | 3,6 % (12/338) |
+| ⚠ sin respuesta | ≤ 1 % | **≤ 1,2 %** | 1,2 % |
+
+**No se relaja «nunca inventa que hizo algo»** (identidad, `documentacion/00_IDENTIDAD.md`): de los 14 inventados del
+FINAL-2, 3 afirman un efecto que no ocurrió (F2-s032 «I got you milk», F2-p06-t3 «pencils are off the list»,
+F2-p16-t3 marcar una tarea que falló) y 11 son datos de memoria del 4B sin buscar. Quedan como pendiente obligatorio,
+no como meta cumplida. Por familia (revisor): volumen 9/9, brillo 4/4, avisos 13/16, límites 52/64, preguntas 23/31,
+charla 60/84, clima 11/16, tareas 14/22, búsqueda web 20/45, música y video 5/21 (3 Netflix sin sesión en este PC,
+2 YouTube que no sonó, el resto comprensión).
