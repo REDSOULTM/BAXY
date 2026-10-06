@@ -2635,6 +2635,29 @@ def browser_new_tab_arguments(text: str) -> dict[str, str] | None:
     return {"action": "new_tab"}
 
 
+def browser_close_tab_arguments(text: str) -> dict[str, str] | None:
+    """Owner 2026-10-06 «cierra esta pestaña», «close this tab»: the tab in front of the person's own browser
+    (browser.control close). None for a tab named by its site or title («cierra la pestaña de YouTube»: choosing a
+    tab has no operation yet), for every tab, a prohibition or anything said around it."""
+
+    if not text or len(text) > 16_384:
+        return None
+    folded = _fold(text).strip(" ¿?¡!. ")
+    if _has(folded, r"\bno\b|\bnunca\b|\bjamas\b|\bnever\b|don't|do\s+not"):
+        return None
+    prefix = r"(?:(?:por\s+favor|please)\s*[,;:]?\s+)?(?:(?:podes|puedes|podrias|can\s+you|could\s+you)\s+)?"
+    courtesy = r"(?:\s*,?\s*(?:por\s+favor|please|porfa))?"
+    named = r"(?:\s+(?:de|del|of|in)\s+(?:el\s+|the\s+|mi\s+|my\s+)?(?:navegador|browser|chrome|opera(?:\s*gx)?|edge|brave|firefox))?"
+    spanish = (
+        r"(?:cierra|cierre|cerra|cerrame|cierrame|cerrar)\s+(?:esta|esa|la)\s+pestana"
+        r"(?:\s+(?:actual|abierta|de\s+adelante|de\s+delante))?" + named
+    )
+    english = r"close\s+(?:this|that|the|the\s+current|my\s+current)\s+tab" + named
+    if re.fullmatch(rf"{prefix}(?:{spanish}|{english}){courtesy}", folded) is None:
+        return None
+    return {"action": "close"}
+
+
 def browser_close_all_tabs_arguments(text: str) -> dict[str, str] | None:
     """H0444 «cerrá todas las pestañas de chrome», «close all tabs»: close every
     open tab in the product's own browser (owner decision 2026-09-17: on the tabs

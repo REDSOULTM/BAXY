@@ -208,3 +208,35 @@ def test_a_tab_step_tells_the_tab_that_closed_and_the_one_now_in_front() -> None
         "closedTab": "Example Domain",
         "activeTab": "Despacito - YouTube",
     }
+
+
+@pytest.mark.parametrize(
+    ("text", "action"),
+    [
+        ("cierra esta pestaña", "close"),
+        ("Cierra la pestaña, por favor", "close"),
+        ("close this tab", "close"),
+        ("cierra la pestaña de YouTube", None),
+        ("no cierres esta pestaña", None),
+        ("cierra todas las pestañas", None),
+    ],
+)
+def test_the_tab_in_front_is_closed_and_a_named_tab_stays_a_limit(text: str, action: str | None) -> None:
+    """Owner 2026-10-06: «cierra esta pestaña» acts on the person's browser; a tab named by its site still has no
+    operation (choosing a tab is not in the catalog) and stays a plain limit."""
+
+    import json
+    from pathlib import Path
+
+    from baxy_mind.semantic import patterns
+    from baxy_mind.semantic.web import browser_close_tab_arguments
+
+    catalog = Path(__file__).resolve().parents[1] / "src" / "baxy_mind" / "data" / "decider_catalog.es.v1.json"
+    operations = list(json.loads(catalog.read_text(encoding="utf-8")))
+    arguments = browser_close_tab_arguments(text)
+
+    assert (arguments or {}).get("action") == action
+    if action == "close":
+        assert not patterns.known_unsupported_effect_request(text, operations)
+    if text == "cierra la pestaña de YouTube":
+        assert patterns.known_unsupported_effect_request(text, operations)
