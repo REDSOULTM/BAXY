@@ -4,6 +4,20 @@ Misión corta. Objetivo: que BAXY haga **cualquier paso dentro de una app o una 
 con un solo motor general, sin código por aplicación. Se construye sobre lo que ya está estable; no se rehace
 nada que funcione.
 
+## 0. Rápido, ante todo (orden del dueño)
+**Termina lo antes posible.** El dueño quiere esto en horas, no en días:
+- Nada de campañas de medición, tandas selladas, conjuntos DEV ni investigaciones largas: la verificación es
+  probar las misiones del §2.3 en vivo y la compuerta Full al final. Lee sólo lo que necesites para el paso que
+  estás dando.
+- Paraleliza: subagentes en worktrees propios para lo independiente (p. ej. fusión y conflictos / enrutado en la
+  mente / misiones en vivo), mientras compilas o corren pruebas. Nunca esperes sin hacer nada.
+- Decide tú con el criterio por defecto razonable y sigue; pregunta al dueño sólo si de verdad bloquea.
+- Pruebas por nivel (`AGENTS.md`): sólo las del tema mientras trabajas; la Full una vez al final (y otra si
+  algo cambió después).
+- Un arreglo por fallo concreto, el mínimo que lo resuelva de forma general; nada de refactorizaciones ni
+  mejoras que el cierre no pida.
+- Informes cortos, con cifras; ni diarios ni documentos largos.
+
 Repositorio `C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo`, base `codex/kiro-goal-c03` (HEAD estable:
 limpieza, auditoría de código, semántica C03 cerrada, navegador predeterminado con pestañas, Disney+ y HBO Max;
 Full verde). Antes de nada lee `AGENTS.md`, `documentacion/00_IDENTIDAD.md`, `documentacion/SEMANTICA.md`
