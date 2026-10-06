@@ -5931,8 +5931,15 @@ _CAUSE_FACT = {
         "could not be confirmed that the title started playing; say that plainly and that they can pick it there"
     ),
     "user_browser_tabs_not_automatable": (
-        "the page is open in the person's own web browser, where the assistant opens pages and controls what plays "
-        "but cannot read or move through its tabs, so nothing was done"
+        "the person's tabs are in their own web browser, where the assistant opens pages, reads them and controls "
+        "what plays, but cannot yet move through its tabs (back, reload, close), so nothing was done"
+    ),
+    # Owner 2026-10-06: «the page» and «the tabs» are always the person's own browser, never one the assistant keeps.
+    "user_browser_not_running": (
+        "the person's web browser is not open, so there is no page or tab to read; nothing was done"
+    ),
+    "user_browser_page_unreadable": (
+        "the page or the tabs in the person's own web browser could not be read right now; nothing was done"
     ),
     "smtc_postcondition_not_verified": (
         "the player did not reach the requested state, so the change is not confirmed"
@@ -8712,6 +8719,13 @@ def _told_result_final(situation: dict, payload: dict, user_text: str, language:
     english = language == "en"
     operation = str(situation.get("operation") or payload.get("operation") or "")
     seen = payload.get("seen") if isinstance(payload.get("seen"), dict) else {}
+    if (
+        operation == "browser.page.read"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+        and (page_final := _page_read_final(seen, english))
+    ):
+        return page_final
     if situation.get("verified") is not True or situation.get("succeeded") is not True:
         reason = situation.get("reason")
         if isinstance(reason, str) and reason.lstrip().startswith("{"):
@@ -9834,6 +9848,29 @@ def _written_file_after_listing(payload: dict) -> str | None:
     return None
 
 
+def _page_read_final(seen: dict, english: bool) -> str:
+    """Owner's live check 2026-10-06 «léeme lo que dice la página» (Opera GX): when every draft was vetoed the reply was
+    only «Leí la página «GX Corner».». What the page says is told as read: its first real sentence, quoted."""
+
+    title = str(seen.get("title") or "").strip()
+    lead = str(seen.get("lead") or "")
+    lines = [line.strip() for line in lead.splitlines() if "«" not in line and "»" not in line]
+    # A sentence of the page (8 words or more, ended as a sentence), else its longest line of prose: menus and
+    # section labels are short lines without an end.
+    sentences = [line for line in lines if len(line.split()) >= 8 and line[-1:] in {".", "!", "?"}]
+    prose = sorted((line for line in lines if len(line.split()) >= 6), key=len, reverse=True)
+    sentence = sentences[0] if sentences else (prose[0] if prose else "")
+    if not sentence:
+        return ""
+    if len(sentence) > 240:
+        sentence = sentence[:240].rsplit(" ", 1)[0].rstrip(" ,;:")
+    sentence = sentence.rstrip(".")
+    named = f" «{title}»" if title and "«" not in title and "»" not in title and len(title) <= 120 else ""
+    if english:
+        return f"I read the page{named}. It says: «{sentence}»."
+    return f"Leí la página{named}. Dice: «{sentence}»."
+
+
 def _page_read_in_payload(payload: dict) -> dict | None:
     """The projected page («seen» with a lead) of a verified browser.page.read."""
 
@@ -9890,7 +9927,15 @@ def _page_read_quote_defect(text: str, seen: dict) -> str:
     for quoted in re.findall(r'[«"“]([^»"”]{1,4096})[»"”]', text):
         quoted_any = True
         candidate = re.sub(r"\s+", " ", _reading_fold(quoted.strip().rstrip(".,;:…"))).strip()
-        if candidate and candidate not in lead and candidate != title:
+        if not candidate or candidate in lead or candidate == title:
+            continue
+        # Owner's live check 2026-10-06: a page's headline and its next line, quoted together and joined by a period
+        # («…la serie Bayonetta. El presidente de PlatinumGames…»), are both on the page; each piece is checked.
+        pieces = [
+            re.sub(r"\s+", " ", piece.strip(" .,;:…")).strip()
+            for piece in re.split(r"(?<=[.!?…])\s+|…", candidate)
+        ]
+        if not all(piece in lead for piece in pieces if piece):
             return "page_unquoted_passage"
     if not quoted_any:
         return "page_missing_quote"
@@ -17702,11 +17747,25 @@ def compose_visible_defect(
                     and situation.get("verified") is True
                     and situation.get("succeeded") is True
                 )
+                # Owner's live check 2026-10-06 «léeme lo que dice la página» (Opera GX): a page's title is the name
+                # of the page, not a record's title; «En GX Corner se informa que…» names it, and three right
+                # summaries died here for not saying «título».
+                and not (
+                    operation == "browser.page.read"
+                    and situation.get("verified") is True
+                    and situation.get("succeeded") is True
+                )
                 and not re.search(r"nota|note|t[íi]tulo|title", folded)
             ):
                 return "missing_name"
             if not (isinstance(app_name, str) and app_name.strip()) and re.search(
                 r"abiert|\bis open\b|cerrad|\bis closed\b", folded
+            ) and not (
+                # «léeme la página que tengo abierta» → «La página abierta es GX Corner y dice: …» describes the page
+                # the person asked about, not an application opened or closed (owner's live check 2026-10-06).
+                operation == "browser.page.read"
+                and situation.get("verified") is True
+                and situation.get("succeeded") is True
             ):
                 return "extra_claim"
             if re.match(

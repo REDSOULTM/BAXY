@@ -173,7 +173,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         string action = ExternalJson.RequiredString(arguments, "action");
-        if (UserBrowserHoldsThePage)
+        // Owner 2026-10-06: the person's tabs are in their own browser; a browser BAXY keeps aside is never the
+        // answer to «cierra la pestaña» or «vuelve atrás». Moving through those tabs is not automated there yet.
+        if (UserBrowserHoldsThePage || _userBrowser?.Resolve() is not null)
             return ExternalJson.FailureBeforeEffect(operation, UserBrowserTabsNotAutomatable);
         CdpBrowserSession browser = _sessionContext?.Active ?? _browser;
         effectBoundary.Cross(cancellationToken);
@@ -228,8 +230,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     {
         int maximumCharacters = Math.Clamp(
             ExternalJson.OptionalInt(arguments, "maximumCharacters", 12_000), 256, 32_768);
-        if (UserBrowserHoldsThePage)
-            return ExternalJson.FailureBeforeEffect(operation, UserBrowserTabsNotAutomatable);
+        if (_userBrowser?.Resolve() is { } userBrowser)
+            return await _userBrowser.ReadPageAsync(operation, userBrowser, maximumCharacters, cancellationToken)
+                .ConfigureAwait(false);
         CdpBrowserSession browser = _sessionContext?.Active ?? _browser;
         CdpPageReadResult page = await browser.ReadPageAsync(maximumCharacters, cancellationToken)
             .ConfigureAwait(false);
@@ -255,8 +258,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 20), 1, 50);
-        if (UserBrowserHoldsThePage)
-            return ExternalJson.FailureBeforeEffect(operation, UserBrowserTabsNotAutomatable);
+        if (_userBrowser?.Resolve() is { } userBrowser)
+            return await _userBrowser.ListTabsAsync(operation, userBrowser, limit, cancellationToken)
+                .ConfigureAwait(false);
         CdpBrowserSession browser = _sessionContext?.Active ?? _browser;
         CdpBrowserTabsResult tabs = await browser.ListTabsAsync(limit, cancellationToken)
             .ConfigureAwait(false);

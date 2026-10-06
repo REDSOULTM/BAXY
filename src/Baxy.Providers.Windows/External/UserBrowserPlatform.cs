@@ -17,6 +17,10 @@ internal sealed record UserMediaSession(
 /// <summary>What the page step did inside the person's browser: the last step reached and the name it acted on.</summary>
 internal sealed record UserBrowserPageStep(bool PlayInvoked, string Step, string Chosen);
 
+internal sealed record UserBrowserTab(string Title, bool Selected);
+
+internal sealed record UserBrowserPageText(string Title, string Text, bool Truncated);
+
 /// <summary>
 /// Everything the user-browser surface touches on the PC. The production
 /// implementation opens links the way the shell does, reads top-level window
@@ -42,6 +46,13 @@ internal interface IUserBrowserPlatform
     /// <summary>Picks the named title on a streaming page shown in the window and presses its play control.</summary>
     ValueTask<UserBrowserPageStep> StartTitleInPageAsync(
         nint window, string title, bool typeSearch, CancellationToken cancellationToken);
+
+    /// <summary>The window's tabs (title, selected), or null when UI Automation cannot read its tab strip.</summary>
+    ValueTask<IReadOnlyList<UserBrowserTab>?> ReadTabsAsync(nint window, CancellationToken cancellationToken);
+
+    /// <summary>The title and visible text of the page the window shows, or null when it cannot be read.</summary>
+    ValueTask<UserBrowserPageText?> ReadPageTextAsync(
+        nint window, int maximumCharacters, CancellationToken cancellationToken);
 
     ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken);
 }
@@ -212,6 +223,50 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
         string chosen = value.TryGetProperty("chosen", out JsonElement chosenValue)
             && chosenValue.ValueKind == JsonValueKind.String ? chosenValue.GetString() ?? string.Empty : string.Empty;
         return new UserBrowserPageStep(played, step, chosen);
+    }
+
+    public async ValueTask<IReadOnlyList<UserBrowserTab>?> ReadTabsAsync(
+        nint window, CancellationToken cancellationToken)
+    {
+        JsonElement? result = await RunScriptAsync(
+            UserBrowserScripts.Tabs,
+            [window.ToString(System.Globalization.CultureInfo.InvariantCulture)],
+            TimeSpan.FromSeconds(10),
+            cancellationToken).ConfigureAwait(false);
+        if (result is not { } value
+            || !value.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True
+            || !value.TryGetProperty("tabs", out JsonElement tabs) || tabs.ValueKind != JsonValueKind.Array)
+            return null;
+        var read = new List<UserBrowserTab>();
+        foreach (JsonElement tab in tabs.EnumerateArray())
+        {
+            string title = tab.TryGetProperty("title", out JsonElement name) && name.ValueKind == JsonValueKind.String
+                ? name.GetString() ?? string.Empty
+                : string.Empty;
+            bool selected = tab.TryGetProperty("selected", out JsonElement flag) && flag.ValueKind == JsonValueKind.True;
+            read.Add(new UserBrowserTab(title, selected));
+        }
+        return read;
+    }
+
+    public async ValueTask<UserBrowserPageText?> ReadPageTextAsync(
+        nint window, int maximumCharacters, CancellationToken cancellationToken)
+    {
+        JsonElement? result = await RunScriptAsync(
+            UserBrowserScripts.PageText,
+            [
+                window.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                maximumCharacters.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            ],
+            TimeSpan.FromSeconds(20),
+            cancellationToken).ConfigureAwait(false);
+        if (result is not { } value
+            || !value.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True)
+            return null;
+        string Read(string property) => value.TryGetProperty(property, out JsonElement field)
+            && field.ValueKind == JsonValueKind.String ? field.GetString() ?? string.Empty : string.Empty;
+        bool truncated = value.TryGetProperty("truncated", out JsonElement cut) && cut.ValueKind == JsonValueKind.True;
+        return new UserBrowserPageText(Read("title"), Read("text"), truncated);
     }
 
     public ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken) =>

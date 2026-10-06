@@ -209,6 +209,86 @@ internal sealed class UserBrowserSurface
         return true;
     }
 
+    internal const string BrowserNotRunning = "user_browser_not_running";
+    internal const string PageUnreadable = "user_browser_page_unreadable";
+    internal const string PageAuthority = "user_browser_uia_page_text";
+    internal const string TabsAuthority = "user_browser_uia_tab_strip";
+
+    /// <summary>
+    /// Owner 2026-10-06: what the person asks of «the page» or «the tabs» is about their own browser, never about a
+    /// browser BAXY keeps aside. The front window of their browser is read through UI Automation: the page's title and
+    /// visible text (its RootWebArea document), nothing else of the browser.
+    /// </summary>
+    internal async ValueTask<ExternalCapabilityReceipt> ReadPageAsync(
+        string operation,
+        UserBrowserIdentity browser,
+        int maximumCharacters,
+        CancellationToken cancellationToken)
+    {
+        UserBrowserWindow? window = FrontWindow(browser);
+        if (window is null)
+            return ExternalJson.FailureBeforeEffect(operation, BrowserNotRunning);
+        UserBrowserPageText? page = await _platform.ReadPageTextAsync(
+            window.Handle, maximumCharacters, cancellationToken).ConfigureAwait(false);
+        if (page is null)
+            return ExternalJson.FailureBeforeEffect(operation, PageUnreadable);
+        string? address = await _platform.ReadAddressAsync(window.Handle, cancellationToken).ConfigureAwait(false);
+        return ExternalJson.Success(operation, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("url", address ?? string.Empty);
+            writer.WriteString("title", page.Title);
+            writer.WriteString("text", page.Text);
+            writer.WriteBoolean("truncated", page.Truncated);
+            writer.WriteString("browser", browser.DisplayName);
+            writer.WriteString("authority", PageAuthority);
+            writer.WriteEndObject();
+        }), effectObserved: false);
+    }
+
+    /// <summary>The tabs of the front window of the person's browser, read from its tab strip.</summary>
+    internal async ValueTask<ExternalCapabilityReceipt> ListTabsAsync(
+        string operation,
+        UserBrowserIdentity browser,
+        int limit,
+        CancellationToken cancellationToken)
+    {
+        UserBrowserWindow? window = FrontWindow(browser);
+        if (window is null)
+            return ExternalJson.FailureBeforeEffect(operation, BrowserNotRunning);
+        IReadOnlyList<UserBrowserTab>? tabs = await _platform.ReadTabsAsync(window.Handle, cancellationToken)
+            .ConfigureAwait(false);
+        if (tabs is null || tabs.Count == 0)
+            return ExternalJson.FailureBeforeEffect(operation, PageUnreadable);
+        return ExternalJson.Success(operation, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteNumber("count", tabs.Count);
+            writer.WriteBoolean("truncated", tabs.Count > limit);
+            writer.WriteStartArray("tabs");
+            foreach (UserBrowserTab tab in tabs.Take(limit))
+            {
+                writer.WriteStartObject();
+                writer.WriteString("title", tab.Title);
+                writer.WriteBoolean("active", tab.Selected);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteString("browser", browser.DisplayName);
+            writer.WriteString("authority", TabsAuthority);
+            writer.WriteEndObject();
+        }), effectObserved: false);
+    }
+
+    /// <summary>The browser window the person sees on top (windows come in z-order), if the browser runs at all.</summary>
+    private UserBrowserWindow? FrontWindow(UserBrowserIdentity browser)
+    {
+        IReadOnlyList<UserBrowserWindow> windows = _platform.ListWindows(browser.ProcessName);
+        return windows.Count > 0 ? windows[0] : null;
+    }
+
     private Dictionary<nint, string> WindowTitles(UserBrowserIdentity browser) =>
         _platform.ListWindows(browser.ProcessName)
             .GroupBy(window => window.Handle)

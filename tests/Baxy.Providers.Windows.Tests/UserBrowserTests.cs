@@ -297,28 +297,115 @@ public sealed class UserBrowserTests
     }
 
     [Test]
-    public async Task TabsOfThePersonsBrowserAreNotReadThroughTheProductBrowser()
+    public async Task PageAndTabsAreReadFromThePersonsBrowserNeverFromTheProductBrowser()
     {
-        var platform = new FakePlatform(OperaGx) { AddressOf = _ => "wikipedia.org/" };
-        platform.WindowsAfterOpen = [new(11, "Wikipedia - Opera")];
+        var platform = new FakePlatform(OperaGx)
+        {
+            AddressOf = _ => "https://es.wikipedia.org/wiki/Valpara%C3%ADso",
+            PageText = new UserBrowserPageText("Curicó - Wikipedia", "Curicó es una ciudad…", false),
+            Tabs = [new("Curicó - Wikipedia", true), new("Gmail", false), new("YouTube", false)],
+        };
         var context = new CdpBrowserSessionContext();
         using Harness harness = new(platform, context: context);
 
-        ExternalCapabilityReceipt navigation = await harness.Adapter.InvokeAsync(
-            "browser.navigate", Json("""{"url":"https://wikipedia.org/"}"""), CancellationToken.None);
         ExternalCapabilityReceipt page = await harness.Adapter.InvokeAsync(
             "browser.page.read", Json("""{"maximumCharacters":2000}"""), CancellationToken.None);
+        ExternalCapabilityReceipt tabs = await harness.Adapter.InvokeAsync(
+            "browser.tabs.list", Json("""{"limit":2}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(page.Verified, Is.True);
+            Assert.That(page.EffectObserved, Is.False);
+            Assert.That(page.Result?.GetProperty("title").GetString(), Is.EqualTo("Curicó - Wikipedia"));
+            Assert.That(page.Result?.GetProperty("text").GetString(), Is.EqualTo("Curicó es una ciudad…"));
+            Assert.That(page.Result?.GetProperty("url").GetString(),
+                Is.EqualTo("https://es.wikipedia.org/wiki/Valpara%C3%ADso"));
+            Assert.That(page.Result?.GetProperty("authority").GetString(), Is.EqualTo(UserBrowserSurface.PageAuthority));
+            Assert.That(page.Result?.GetProperty("browser").GetString(), Is.EqualTo("Opera GX"));
+            Assert.That(platform.PageReads, Is.EqualTo(new[] { (11, 2000) }));
+            Assert.That(tabs.Verified, Is.True);
+            Assert.That(tabs.Result?.GetProperty("count").GetInt32(), Is.EqualTo(3));
+            Assert.That(tabs.Result?.GetProperty("truncated").GetBoolean(), Is.True);
+            Assert.That(tabs.Result?.GetProperty("tabs").GetArrayLength(), Is.EqualTo(2));
+            Assert.That(tabs.Result?.GetProperty("tabs")[0].GetProperty("active").GetBoolean(), Is.True);
+            Assert.That(harness.Edge.ReadCalls, Is.Zero);
+            Assert.That(context.Active, Is.Null);
+        });
+    }
+
+    [Test]
+    public async Task MovingThroughThePersonsTabsNeverFallsBackToTheProductBrowser()
+    {
+        var platform = new FakePlatform(OperaGx);
+        var context = new CdpBrowserSessionContext();
+        using Harness harness = new(platform, context: context);
+
         ExternalCapabilityReceipt control = await harness.Adapter.InvokeAsync(
             "browser.control", Json("""{"action":"reload"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
-            Assert.That(navigation.Verified, Is.True);
-            Assert.That(page.ErrorCode, Is.EqualTo(WebBrowserAdapter.UserBrowserTabsNotAutomatable));
             Assert.That(control.ErrorCode, Is.EqualTo(WebBrowserAdapter.UserBrowserTabsNotAutomatable));
-            Assert.That(page.EffectMayHaveOccurred || control.EffectMayHaveOccurred, Is.False);
-            Assert.That(harness.Edge.ReadCalls, Is.Zero);
+            Assert.That(control.EffectObserved || control.EffectMayHaveOccurred, Is.False);
+            Assert.That(platform.Opened, Is.Empty);
             Assert.That(context.Active, Is.Null);
+        });
+    }
+
+    [Test]
+    public async Task NothingIsReadWhenThePersonsBrowserIsClosed()
+    {
+        var platform = new FakePlatform(OperaGx) { WindowsBeforeOpen = [] };
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt page = await harness.Adapter.InvokeAsync(
+            "browser.page.read", Json("""{"maximumCharacters":2000}"""), CancellationToken.None);
+        ExternalCapabilityReceipt tabs = await harness.Adapter.InvokeAsync(
+            "browser.tabs.list", Json("""{"limit":20}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(page.ErrorCode, Is.EqualTo(UserBrowserSurface.BrowserNotRunning));
+            Assert.That(tabs.ErrorCode, Is.EqualTo(UserBrowserSurface.BrowserNotRunning));
+            Assert.That(harness.Edge.ReadCalls, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task APageThatCannotBeReadIsSaidAsSuch()
+    {
+        var platform = new FakePlatform(OperaGx);
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt page = await harness.Adapter.InvokeAsync(
+            "browser.page.read", Json("""{"maximumCharacters":2000}"""), CancellationToken.None);
+        ExternalCapabilityReceipt tabs = await harness.Adapter.InvokeAsync(
+            "browser.tabs.list", Json("""{"limit":20}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(page.ErrorCode, Is.EqualTo(UserBrowserSurface.PageUnreadable));
+            Assert.That(tabs.ErrorCode, Is.EqualTo(UserBrowserSurface.PageUnreadable));
+            Assert.That(page.EffectMayHaveOccurred, Is.False);
+            Assert.That(harness.Edge.ReadCalls, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task TheProductBrowserIsReadOnlyWhenAMeasurementAsksForIt()
+    {
+        var platform = new FakePlatform(OperaGx);
+        using Harness harness = new(platform, new Dictionary<string, string> { ["BAXY_BROWSER"] = "product" });
+
+        ExternalCapabilityReceipt page = await harness.Adapter.InvokeAsync(
+            "browser.page.read", Json("""{"maximumCharacters":2000}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(page.Verified, Is.True);
+            Assert.That(harness.Edge.ReadCalls, Is.EqualTo(1));
+            Assert.That(platform.PageReads, Is.Empty);
         });
     }
 
@@ -508,6 +595,9 @@ public sealed class UserBrowserTests
         internal List<UserMediaSession> Played { get; } = [];
         internal List<(int, string, bool)> PageSteps { get; } = [];
         internal int AddressReads { get; private set; }
+        internal UserBrowserPageText? PageText { get; init; }
+        internal IReadOnlyList<UserBrowserTab>? Tabs { get; init; }
+        internal List<(int, int)> PageReads { get; } = [];
 
         public UserBrowserIdentity? ResolveDefault() => identity;
 
@@ -554,6 +644,16 @@ public sealed class UserBrowserTests
         {
             PageSteps.Add(((int)window, title, typeSearch));
             return ValueTask.FromResult(PageStep);
+        }
+
+        public ValueTask<IReadOnlyList<UserBrowserTab>?> ReadTabsAsync(nint window, CancellationToken cancellationToken) =>
+            ValueTask.FromResult(Tabs);
+
+        public ValueTask<UserBrowserPageText?> ReadPageTextAsync(
+            nint window, int maximumCharacters, CancellationToken cancellationToken)
+        {
+            PageReads.Add(((int)window, maximumCharacters));
+            return ValueTask.FromResult(PageText);
         }
 
         public ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken) => ValueTask.CompletedTask;
