@@ -969,3 +969,27 @@ informando): un aviso de una conversación, con la operación bien decidida, cue
 que dio la respuesta anterior de BAXY en esa conversación vivida menos la única antelación que pidió la persona («media
 hora antes», «20 minutes before», «una hora antes»). Sin antelación, con dos horas en la respuesta o con otra hora, no
 cuenta. v5b: DEV-E +2 (264 → 266), DEV-G +1; v4z +0.
+
+## D79. Rondas v5a–v5d, dos apagados y M163–M176 (2026-10-05 23:45)
+1. **Apagados.** 01:11, batería crítica bajo carga con el cargador puesto (Kernel-Power 524); 10:32, cierre inesperado
+   tras errores del controlador de NVIDIA (nvlddmkm 153) durante horas de carga. Guarda `power_wait.sh` antes de cada
+   trabajo de GPU: batería ≥ 40 % (si no, carga hasta 70 %), GPU ≤ 65 °C, 60 s de respiro y 10 min de pausa si el
+   controlador dio errores en la última media hora. Sin más apagados desde entonces.
+2. **Spotify en frío.** Tras el reinicio, Spotify ya no estaba abierto y BAXY lo arrancaba en cada conversación: su
+   árbol de accesibilidad tarda minutos en exponerse y fallaba la mitad de las búsquedas (19 de 43 en v5a). Para medir
+   se deja Spotify abierto, como antes; M169 lo arregla en el producto (espera adaptativa en frío, un reenvío acotado).
+3. **Mecanismos** (todos con barrido de la ruta vieja y la nueva sobre F/G/H/D/I y las 742, sin cambios en las 742):
+   M163 conversión de unidades de lo dicho; M164 lectores de G/I; M165 avisos (la hora de «alarm for N» se
+   descartaba); M166 música con el título dicho; M167 respuesta a «¿cuánto le subo?»; M168 horarios ESPN (D77); M169
+   Spotify en frío; M170 «mañana a las 8:45»; M171 límites falsos («ponle Bluey en Disney Plus», «night light»); M172
+   títulos con sufijo («Fru Fru») que dejaban ⚠; M173 mover el aviso recién puesto; M174 listas = tareas; M175
+   temporizador de un paso de la receta; M176 lectores de primer turno sondeados con 432 frases propias. **M176b**
+   («pon algo para dormir» → música) queda en su rama: invertía una regla de la tanda 4 que el dueño no decidió.
+4. **Cifras** (con D61/D71/D73/D78; estricta entre paréntesis):
+   - DEV-E: v5a 265, v5a2 265, v5b 266 (253), v5c 267 / 266, **v5d 268 / 266** (255 / 253).
+   - v5d: DEV-H 97,3 %, DEV-G 95,3 %, DEV-D 94,9 %, DEV-I 94,0 %, DEV-F 89,6 %.
+   - Batería (v5c): reserva 90,0 / 94,0 %, 742 sin cambios, cien 100/100, held-out 29/30, guion 52/60 (las bajas son
+     del entorno: Steam sin la ficha en pantalla, una búsqueda vacía).
+5. **Medición con historial escrito y el saludo delante** (como en la App): el lastre de código casi desapareció en
+   G/H/I (0–2). En DEV-E quedan 29 fallos persistentes y unos 5 que dependen de la corrida; el ruido entre dos medidas
+   del mismo código es de ±2 turnos.
