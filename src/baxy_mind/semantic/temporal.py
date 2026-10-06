@@ -541,12 +541,14 @@ def _anchor_clock(folded_reply: str) -> SpokenClock | None:
     return here[0] if len(here) == 1 else None
 
 
-def anchored_offset_request(text: str, reply: str | None, earlier: Iterable[str] = ()) -> str | None:
+def anchored_offset_request(
+    text: str, reply: str | None, earlier: Iterable[str] = (), *, today: date | None = None,
+) -> str | None:
     """``text`` with «<duration> antes/después de eso» replaced by the moment it names, counted from the one moment
     ``reply`` (BAXY's last answer) gave, in the day it gave; None when the message counts from nothing pointed at, or
-    the reply gives no single moment, or the count leaves that day. A thing named by its article or bare («antes de la
-    junta», «before kick-off») is counted from the newest of ``reply`` and ``earlier`` (the conversation before it,
-    newest first) that names it with one moment."""
+    the reply gives no single moment, or the count leaves that day and the reply named no one day to move (M178). A
+    thing named by its article or bare («antes de la junta», «before kick-off») is counted from the newest of ``reply``
+    and ``earlier`` (the conversation before it, newest first) that names it with one moment."""
 
     said = " ".join(str(text or "").split())
     folded = _fold(said)
@@ -599,8 +601,16 @@ def anchored_offset_request(text: str, reply: str | None, earlier: Iterable[str]
         return None
     sign = -1 if found.group("sign") in {"antes", "before", "earlier", "ahead"} else 1
     moment = anchor.hour * 60 + anchor.minute + sign * minutes
+    # M178 (DEV-D v5b–v5d D-w08-t3 «ponme recordatorio una ora antes d ese partido» after «América juega contra
+    # Monterrey el domingo 11 de octubre de 2026 a las 00:10 hora local.» → «¿Te gustaría que te envíe un recordatorio
+    # una hora antes del partido?»): a count that crosses midnight lands on the day before (or after) the one BAXY
+    # named; that day is moved with it, never dropped. With no day named, which one is meant is not known.
+    shift = 0
     if not 0 <= moment < 24 * 60:
-        return None
+        if minutes >= 24 * 60:
+            return None
+        shift = -1 if moment < 0 else 1
+        moment %= 24 * 60
     days = {match.group(0).strip() for match in _ANCHOR_DAY.finditer(folded_answer)}
     if len(days) > 1:
         return None
@@ -610,6 +620,28 @@ def anchored_offset_request(text: str, reply: str | None, earlier: Iterable[str]
         day = (answer if len(answer) == len(folded_answer) else folded_answer)[start:start + len(next(iter(days)))]
     spanish = _has(folded, r"\b(?:ponme|pon|pone|poneme|recuerdame|recordame|avisame|antes|despues|alarma|recordatorio|"
                            r"de|el|la|una)\b")
+    if shift:
+        if not days:
+            return None
+        today = today or datetime.now().astimezone().date()
+        named_on = task_due_date(next(iter(days)), today=today)
+        if named_on is None:
+            return None
+        moved = date.fromisoformat(named_on) + timedelta(days=shift)
+        if moved < today:
+            return None
+        try:
+            coming = date(today.year, moved.month, moved.day)
+            if coming < today:
+                coming = date(today.year + 1, moved.month, moved.day)
+        except ValueError:
+            coming = None
+        # The year is said only when that day's next coming is not the one moved to (``anchored_day_request``).
+        year = "" if coming == moved else (f" de {moved.year}" if spanish else f" {moved.year}")
+        day = (
+            f"{moved.day} de {_SPANISH_MONTHS[moved.month - 1]}{year}" if spanish
+            else f"on {moved.day} {_ENGLISH_MONTHS[moved.month - 1]}{year}"
+        )
     clock = f"{moment // 60:02d}:{moment % 60:02d}"
     when = (f"{day} a las {clock}" if spanish else f"{day} at {clock}").strip()
     if spanish and day and not re.match(r"(?i)(?:el|este|hoy|mañana|manana|pasado)\b", day):
