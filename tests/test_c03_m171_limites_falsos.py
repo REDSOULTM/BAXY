@@ -13,11 +13,10 @@ reader proves the order (the pattern of M123/M131/M138; an exception to D58 beca
   (M78, ``_served_surface_reread``) never tried it. It is now re-read as said when the decider's own restatement reads
   as that same order.
 
-Limits that stay: G-w03-t3 «no, la temporada 2, el primer episodio» (streaming.play.named takes a service and a title,
-and the provider plays the series where Netflix resumes it: no season or episode is chosen, so the limit is true);
-D-p19-t1 «…After the Wedding with Spanish subtitles on.» (no service is named, so no reader proves an order; choosing
-subtitles is no operation); an Uber, the lights of the house, food ordered; and a message whose restatement reads as
-another operation.
+Limits that stay: an Uber, the lights of the house, food ordered; and a message whose restatement reads as another
+operation. M179 (2026-10-06) superseded two limits M171 kept: G-w03-t3 «no, la temporada 2, el primer episodio» and
+D-p19-t1 «…After the Wedding with Spanish subtitles on.» are orders to play a title whose season, episode or subtitles
+are a detail BAXY does not control, never a limit (``test_c03_m179_busqueda_local_y_seguimientos_web``).
 
 Every phrasing beyond the rows is our own; nothing here depends on the clock.
 """
@@ -38,13 +37,6 @@ W03_I = [
     "turn off las luces del living",
     "Eso no lo hago: apagar las luces del living.",
     "ugh ok, then al menos ponme el night light en el notebook pa no quemarme los ojos",
-]
-W03_G = [
-    "oye, pide un uber pa las 8 to the airport",
-    "Eso no lo hago: pedir un Uber para ir al aeropuerto.",
-    "ok ok, entonces pon Stranger Things en Netflix",
-    "No se pudo poner Stranger Things en Netflix porque la plataforma pide iniciar sesión en este PC.",
-    "no, la temporada 2, el primer episodio",
 ]
 
 
@@ -158,11 +150,6 @@ def test_the_night_light_is_switched_on() -> None:
 @pytest.mark.parametrize(
     ("said", "restated"),
     [
-        # G-w03-t3: no season or episode is chosen by streaming.play.named; the message leans on the conversation.
-        (W03_G, "Pon la temporada 2 del primer episodio de Stranger Things en Netflix."),
-        # D-p19-t1: no service named, and subtitles are chosen by no operation.
-        (["I'd like to watch a movie called After the Wedding with Spanish subtitles on."],
-         "Play the movie After the Wedding with Spanish subtitles."),
         # The restatement reads as another order than the message: the decider meant something else.
         (W03_I, "Pon música relajante."),
         # The lights of the house, an Uber, food: no reader proves them.
