@@ -2832,6 +2832,48 @@ def asks_what_a_cinema_shows(text: str) -> bool:
     return found is not None and re.match(_LANGUAGE_NAME, raw[found.end() - 1:]) is None
 
 
+# M179 (DEV-F v5b–v5d F-w16-t2 «sí, órale, búscame unas por la Roma Norte» after «¿me puedes pedir unos tacos al
+# pastor por Rappi?» → restated «Busca unos tacos al pastor por Rappi en Roma Norte.», a limit → «Eso no lo hago:
+# buscar tacos al pastor en Roma Norte.»): an order whose verb is to search, for a kind of public place or food in a
+# place the person names, is a web search, whatever service the conversation named before; the order is never a
+# limit because of a detail BAXY does not control. A ride or a car («búscame un taxi para ir a casa», «find me an uber
+# to the liberty bell») is no place, and searching with ordering, buying or booking in the same message is that
+# transaction. Folded.
+_SEARCH_ORDER_LEAD = (
+    r"^[¿¡\s]*(?:(?:si|sip|ok|okay|okey|vale|dale|orale|sale|va|bueno|ya|pues|entonces|oye|che|baxy|porfa|yes|yeah|"
+    r"yep|sure|alright|then|so|please|and|y|go\s+ahead|adelante|claro|obvio|de\s+una|perfecto|genial|great|cool)\b"
+    r"[\s,.:!]*)*"
+    r"(?:(?:me\s+)?(?:puedes|podes|podrias|can\s+you|could\s+you|would\s+you)\s+)?"
+)
+_SEARCH_ORDER = re.compile(
+    _SEARCH_ORDER_LEAD
+    + r"(?:busca(?:me|nos|las|los)?|buscar(?:me|nos)?|busqu\w+|encuentra(?:me|nos)?|encontra(?:me|nos)|"
+    r"search(?:\s+for)?|find(?:\s+me)?|look\s+(?:for|up))\b"
+)
+_PLACE_SAID = (
+    r"\b(?:en|por|in|around|near|cerca\s+de|alrededor\s+de)\s+(?!favor\b|internet\b|(?:la\s+)?(?:web|red)\b|google\b)"
+    r"(?:(?:el|la|los|las|the)\s+)?[a-z]"
+)
+_TRANSACTION = (
+    r"\b(?:pid\w*|pedir\w*|ordena\w*|order\w*|compr\w*|buy\w*|reserv\w*|book\w*|encarg\w*|deliver\w*|traeme|"
+    r"traenos|manda\w*|send\w*)\b"
+)
+
+
+def searches_places_somewhere(text: str, restated: str) -> bool:
+    """The message orders a search, said in a place, for a kind of public place or food the message or the decider's
+    restatement of it names (see above); nothing of the person's, and no transaction asked with it."""
+
+    folded = _fold(str(text or ""))
+    return (
+        _SEARCH_ORDER.match(folded) is not None
+        and _has(folded, _PLACE_SAID)
+        and (_has(folded, _PUBLIC_PLACE) or _has(_fold(str(restated or "")), _PUBLIC_PLACE))
+        and not _has(folded, _TRANSACTION)
+        and not names_own_data(text)
+    )
+
+
 # Uso real tanda 4c «en qué lugares puedo pedir comida para llevar cerca» and «dime que esta pasando en mi ciudad»
 # were searched without the place and found portals and news of another country. Near the person is near this
 # PC: the search carries this PC's city (``nearby``; only the city name leaves, read from the PC's public

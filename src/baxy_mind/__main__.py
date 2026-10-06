@@ -88,6 +88,7 @@ from .semantic.web import (
     place_fixed_by_conversation,
     place_query_in_conversation,
     search_has_typed_reads,
+    searches_places_somewhere,
     typed_read_over_search,
 )
 from .semantic.windows import said_snap_side, start_menu_request
@@ -249,6 +250,8 @@ from .semantic.arguments import (
     names_spotify,
     partial_explicit_arguments,
     reminder_title_without_que,
+    watch_named_title,
+    watched_elsewhere,
     window_snap_plan_split,
     window_snap_side_for_step,
 )
@@ -2709,6 +2712,22 @@ def _served_surface_reread(
                 and set(said.effects.operations) == set(decided_reading.effects.operations)
             ):
                 candidates.append(objective)
+        restated_reading = read(restated) if restated else None
+        if (
+            restated_reading is not None
+            and restated_reading.effects is not None
+            and tuple(restated_reading.effects.operations) == ("streaming.play.named",)
+            and not watched_elsewhere(restated)
+            and not watched_elsewhere(objective)
+        ):
+            # M179 (DEV-G v5a–v5d G-w03-t3 «no, la temporada 2, el primer episodio» after «pon Stranger Things en
+            # Netflix» → the decider's «Pon la temporada 2 del primer episodio de Stranger Things en Netflix.», a
+            # limit → «Eso no lo hago»; DEV-H v5a H-s074 the same with «para Sofía»): a restatement the readers prove
+            # as playing a title on its service is the order the person gave; the season, the episode or who it is
+            # for are details of it, never a limit. Only that operation: a restatement read as anything else (an alarm moved to the
+            # phone, a pizza ordered from the nearest shop) keeps the limit, and so does a title put on the TV or
+            # another device, which BAXY does not reach (``semantic.arguments.watched_elsewhere``).
+            candidates.append(restated)
     canonical = None
     for candidate in dict.fromkeys(text for text in candidates if text):
         reading = read(candidate)
@@ -5957,6 +5976,17 @@ def _context_decided_result(
         decided = semantic_decider.ContextDecision(
             fidelity.request, decided.decision, decided.operations, decided.question, decided.arguments,
         )
+    new_thing = (
+        semantic_decider.followup_thing_kept(decided.request, text, antecedent or "")
+        if decided.decision == "action" and decided.operations == ("web.search",)
+        else None
+    )
+    if new_thing is not None:
+        # M179 (DEV-I v5a–v5d I-w17-t2 «¿y la libra, cómo anda?» after the dollar → restated «¿Cómo está el dólar hoy,
+        # por favor?» and the dollar searched again): what a follow-up names new takes the place of what the request
+        # before asked about; the rest of that request (today, the country, the team) stays. The decider's own values
+        # were about the old thing and are not kept: the query is read from this request.
+        decided = semantic_decider.ContextDecision(new_thing, "action", ("web.search",), decided.question)
     edited_draft = (
         effect_intent.edited_draft_request(text, list(_prior_user_texts(history, text)))
         if decided.decision != "action" and "message.draft" in available_operations
@@ -6220,6 +6250,28 @@ def _context_decided_result(
         # M99 (DEV-D v3x D-p28-t1 «I want to watch a movie at Century 25 Union Landing…» → «I cannot order or buy
         # movies…»): what a cinema shows is looked up; the limit was about buying, which nobody asked.
         decided = semantic_decider.ContextDecision(request=text, decision="action", operations=("web.search",), question="")
+    if decided.decision == "limit" and "web.search" in available_operations and searches_places_somewhere(
+        text, decided.request,
+    ):
+        # M179 (DEV-F v5b–v5d F-w16-t2 «sí, órale, búscame unas por la Roma Norte» after «¿me puedes pedir unos tacos al
+        # pastor por Rappi?» → restated «Busca unos tacos al pastor por Rappi en Roma Norte.» → «Eso no lo hago: buscar
+        # tacos al pastor en Roma Norte.»): an order to search for a kind of place in a place said is looked up; the
+        # service the conversation named before is a detail of it, never a limit of the search.
+        decided = semantic_decider.ContextDecision(
+            request=decided.request or text, decision="action", operations=("web.search",), question="",
+        )
+    if (
+        decided.decision == "limit"
+        and "streaming.play.named" in available_operations
+        and watch_named_title(text) is not None
+    ):
+        # M179 (DEV-D v5a–v5d D-p19-t1 «I'd like to watch a movie called After the Wedding with Spanish subtitles on.» →
+        # «I do not provide movies with subtitles.»): a film or a series the person names to watch is played; how it
+        # is watched (subtitles, dubbing) is a detail, never the reason to refuse it. Its title is read from the
+        # restatement (``semantic.arguments.partial_explicit_arguments``) and a service not said is asked.
+        decided = semantic_decider.ContextDecision(
+            request=decided.request or text, decision="action", operations=("streaming.play.named",), question="",
+        )
     converted = (
         currency_conversion_request(text, decided.request, context.last_reply or "", antecedent or "")
         if decided.decision == "talk" and "web.search" in available_operations and not asks_for_code(text)
@@ -6444,6 +6496,25 @@ def _retimed_conversation_notice(
         if moved is not None:
             return moved
     return None
+
+
+def _third_party_named(
+    result: dict[str, Any],
+    message: dict[str, Any],
+    dialogue_state: dialogue_slot.DialogueState | None,
+) -> dict[str, Any]:
+    """M179 (DEV-I v5a/v5c/v5d I-w26-t5 «oye y el tecnico de ellos quien es ahora» four turns after «a que hora juega
+    chile el martes» → «¿Quién es el técnico de ellos ahora?» searched as said, and the coach of the Tigres answered):
+    the third party of a search the decider left as «de ellos / their» is the one name of what this conversation last
+    searched (``semantic.decider.with_the_searched_name``). The objective is what the arguments step reads the query
+    from; the decider's values were for the pronoun and are not remembered for this one."""
+
+    if dialogue_state is None or result.get("kind") != "action" or result.get("operation") != "web.search":
+        return result
+    named = semantic_decider.with_the_searched_name(
+        str(result.get("objective") or ""), str(message.get("text", "")), dialogue_state.searched_topic(),
+    )
+    return result if named is None else {**result, "objective": named}
 
 
 def _own_notice_moved(
@@ -6951,18 +7022,24 @@ def _prepare_turn_result(
             return _moved_notification_result(message, moved, dialogue_state.moving_operations())
         # M145: a cancellation at the clock of the notification this conversation set is of that one.
         # M173: a planned move of the notice the last turn set moves that one, by how it was set.
-        return _own_notice_moved(
-            _own_notification_cancellation(
-                _decide_turn_result(
+        # M179: the third party of a search («de ellos») is the one named in what this conversation last searched.
+        return _third_party_named(
+            _own_notice_moved(
+                _own_notification_cancellation(
+                    _decide_turn_result(
+                        message,
+                        llm=llm,
+                        planner_catalog=planner_catalog,
+                        encoder=encoder,
+                        tool_by_name=tool_by_name,
+                        application_names=application_names,
+                        game_catalog=game_catalog,
+                        on_signal=on_signal,
+                        in_conversation=True,
+                    ),
                     message,
-                    llm=llm,
-                    planner_catalog=planner_catalog,
-                    encoder=encoder,
-                    tool_by_name=tool_by_name,
-                    application_names=application_names,
-                    game_catalog=game_catalog,
-                    on_signal=on_signal,
-                    in_conversation=True,
+                    dialogue_state,
+                    tool_by_name,
                 ),
                 message,
                 dialogue_state,
@@ -6970,7 +7047,6 @@ def _prepare_turn_result(
             ),
             message,
             dialogue_state,
-            tool_by_name,
         )
     rearmed = _rearm_in_context(
         message,
