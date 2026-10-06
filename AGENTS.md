@@ -12,7 +12,9 @@ trabajo**. Nada de lo que escribas va allí.
 
 Los once goals de producto y la Fase 3.5 (comprensión) están cerrados; su evidencia
 salió del repositorio el 2026-10-06 (ver «Buscar antes de leer»). El último estado
-medido está en `documentacion/SEMANTICA.md` («Segunda vuelta»).
+medido está en `documentacion/SEMANTICA.md` («Segunda vuelta»). El paso siguiente, el
+motor de *computer use* (Fase 4), está en la rama `fable/computer-use-engine` (base
+2026-09-20, sin integrar: choca en ~13 ficheros con el trabajo de comprensión posterior).
 
 **Si te han dado un goal, ésa es tu única instrucción.** Este fichero no te dice qué
 hacer, sólo dónde estás y cómo moverte. Si no te han dado ninguno, pregunta al dueño.
