@@ -282,9 +282,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 comprensión natural: repin tras M174 (2026-10-05).
 # C03 comprensión natural: repin tras M173 (2026-10-05).
 # C03 comprensión natural: repin tras M176 (sin M176b) (2026-10-05).
+# C03 M177: re-pin tras el valor del ajuste ofrecido (2026-10-06).
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "83623e7b921619820b7c570a6549707309c8c91b113fe3e45425b0beea2f11d4"
+        "8775d09a9dae2dc07c1c1fdebe1c9140c54fc60e7fe031303641c1a00b6172e2"
     ),
     "src/baxy_mind/llm.py": (
         "e72bcbfed0e372c13c0d21c0531d251905799247503f97b92ea2ff8f42fd429a"
