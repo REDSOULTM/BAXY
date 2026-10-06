@@ -274,6 +274,8 @@ from .semantic.web import (  # noqa: F401 - moved to baxy_mind.semantic.web; cal
     browser_back_arguments,
     browser_new_tab_arguments,
     browser_close_all_tabs_arguments,
+    browser_close_tab_arguments,
+    browser_page_step_arguments,
     _historical_note_search_request,
     _stored_note_search_query,
     _nominal_reminder_lookup_title,

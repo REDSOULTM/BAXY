@@ -12,17 +12,19 @@ namespace Baxy.Providers.Windows.External;
 /// Chromium 136, so CDP on the person's browser would mean restarting it with
 /// another profile; this surface never does that (documentacion/NAVEGADOR_USUARIO.md).
 /// </summary>
-internal sealed class UserBrowserSurface
+internal sealed partial class UserBrowserSurface
 {
     internal const string NavigationUnconfirmed = "user_browser_navigation_unconfirmed";
     internal const string PlaybackUnconfirmed = "user_browser_playback_unconfirmed";
     internal const string StreamingPlaybackUnconfirmed = "user_browser_streaming_playback_unconfirmed";
+    internal const string StreamingProfileChoice = "user_browser_streaming_profile_choice";
     internal const string AddressAuthority = "user_browser_uia_address_postread";
 
     private static readonly TimeSpan Poll = TimeSpan.FromMilliseconds(250);
     private const int NavigationPolls = 40;
     private const int PlaybackPolls = 60;
-    private const int StreamingPolls = 80;
+    // HBO Max took 12-15 s from its play control to a playing session (Opera GX, 2026-10-06).
+    private const int StreamingPolls = 120;
     private const int AddressReads = 3;
     private const int PausedPollsBeforePlay = 8;
 
@@ -60,8 +62,8 @@ internal sealed class UserBrowserSurface
         Dictionary<nint, string> before = WindowTitles(browser);
         if (!TryOpen(target, effectBoundary, cancellationToken))
             return null;
-        PageObservation seen = await ObserveNavigationAsync(browser, target, before, cancellationToken)
-            .ConfigureAwait(false);
+        PageObservation seen = await ObserveNavigationAsync(
+            browser, address => SameSite(target, address), before, cancellationToken).ConfigureAwait(false);
         if (seen.Address is null)
             return ExternalJson.FailureAfterEffect(operation, NavigationUnconfirmed);
         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
@@ -88,11 +90,14 @@ internal sealed class UserBrowserSurface
         Dictionary<nint, string> before = WindowTitles(browser);
         if (!TryOpen(target, effectBoundary, cancellationToken))
             return null;
-        PageObservation seen = await ObserveNavigationAsync(browser, target, before, cancellationToken)
+        Func<Uri, bool> ofService = address => SameSite(target, address)
+            || WebBrowserAdapter.HostMatchesService(address.Host, service);
+        PageObservation seen = await ObserveNavigationAsync(browser, ofService, before, cancellationToken)
             .ConfigureAwait(false);
         if (seen.Address is null)
             return ExternalJson.FailureAfterEffect(operation, NavigationUnconfirmed);
-        Uri landed = await SettledAddressAsync(seen.Address, seen.Window, cancellationToken).ConfigureAwait(false);
+        Uri landed = await SettledAddressAsync(seen.Address, seen.Window, ofService, cancellationToken)
+            .ConfigureAwait(false);
         if (!WebBrowserAdapter.HostMatchesService(landed.Host, service))
             return ExternalJson.Failure(operation, "streaming_redirect_left_service", true);
         if (AsksToSignIn(landed))
@@ -149,31 +154,34 @@ internal sealed class UserBrowserSurface
         ExternalEffectBoundary effectBoundary,
         CancellationToken cancellationToken)
     {
-        // Netflix takes the title in its search address. Disney+ has no such
-        // parameter: its search page gets the title typed into its own field
-        // (VIDEO1947 measured the same route in the product browser).
-        bool netflix = service == "netflix";
-        Uri search = netflix
-            ? new Uri("https://www.netflix.com/search?q=" + Uri.EscapeDataString(title))
-            : new Uri("https://www.disneyplus.com/es-419/browse/search");
+        StreamingSearch search = SearchFor(service, title);
         IReadOnlyList<UserMediaSession> sessionsBefore = await _platform.ReadMediaSessionsAsync(cancellationToken)
             .ConfigureAwait(false);
         Dictionary<nint, string> windowsBefore = WindowTitles(browser);
-        if (!TryOpen(search, effectBoundary, cancellationToken))
+        if (!TryOpen(search.Address, effectBoundary, cancellationToken))
             return null;
-        PageObservation seen = await ObserveNavigationAsync(browser, search, windowsBefore, cancellationToken)
+        Func<Uri, bool> ofService = address => SameSite(search.Address, address)
+            || WebBrowserAdapter.HostMatchesService(address.Host, service);
+        PageObservation seen = await ObserveNavigationAsync(browser, ofService, windowsBefore, cancellationToken)
             .ConfigureAwait(false);
         if (seen.Address is null)
             return ExternalJson.FailureAfterEffect(operation, StreamingPlaybackUnconfirmed);
-        Uri landed = await SettledAddressAsync(seen.Address, seen.Window, cancellationToken).ConfigureAwait(false);
+        Uri landed = await SettledAddressAsync(seen.Address, seen.Window, ofService, cancellationToken)
+            .ConfigureAwait(false);
         if (AsksToSignIn(landed))
-            return ExternalJson.Failure(
-                operation, netflix ? "netflix_authentication_required" : "disney_authentication_required", true);
+            return ExternalJson.Failure(operation, search.SignInCode, true);
         UserBrowserPageStep step = await _platform.StartTitleInPageAsync(
-            seen.Window, title, typeSearch: !netflix, cancellationToken).ConfigureAwait(false);
-        string wanted = step.Chosen.Length > 0 ? step.Chosen : title;
+            seen.Window, title, search.TypeTitle, cancellationToken).ConfigureAwait(false);
+        // "Who's watching?" is the person's choice: the page stays open on it and nothing is picked for them.
+        if (step.Step == "profile")
+            return ExternalJson.FailureAfterEffect(operation, StreamingProfileChoice);
+        // No play control pressed: whatever plays now (a detail page's own trailer) is not the title asked for.
+        if (!step.PlayInvoked)
+            return ExternalJson.FailureAfterEffect(operation, StreamingPlaybackUnconfirmed);
+        // The session is matched against the title asked for: Disney+ names it "Bluey | Disney+", HBO Max "The Last
+        // of Us", while a card's own name runs on ("Coco Clasificación: 0+...").
         UserMediaSession? playing = await AwaitPlaybackAsync(
-            browser, wanted, sessionsBefore, StreamingPolls, cancellationToken, anyNewBrowserSession: true)
+            browser, title, sessionsBefore, StreamingPolls, cancellationToken, anyNewBrowserSession: true)
             .ConfigureAwait(false);
         if (playing is null)
             return ExternalJson.FailureAfterEffect(operation, StreamingPlaybackUnconfirmed);
@@ -183,6 +191,7 @@ internal sealed class UserBrowserSurface
             writer.WriteNumber("version", 1);
             writer.WriteString("service", service);
             writer.WriteString("title", step.Chosen.Length > 0 ? step.Chosen : title);
+            writer.WriteString("sessionTitle", playing.Title);
             writer.WriteString("browser", browser.DisplayName);
             writer.WriteString("sourceAppUserModelId", playing.SourceAppUserModelId);
             writer.WriteString("playbackStatus", "playing");
@@ -190,6 +199,25 @@ internal sealed class UserBrowserSurface
             writer.WriteEndObject();
         }));
     }
+
+    private sealed record StreamingSearch(Uri Address, bool TypeTitle, string SignInCode);
+
+    /// <summary>
+    /// Where each service searches in the person's session. Netflix and HBO Max take the title in the address
+    /// (HBO Max's own search writes <c>search/result?q=</c>); Disney+ has no such parameter, so its search page gets
+    /// the title typed into its own field. Disney+'s address carries no locale: the account's language decides.
+    /// </summary>
+    private static StreamingSearch SearchFor(string service, string title) => service switch
+    {
+        "netflix" => new(
+            new Uri("https://www.netflix.com/search?q=" + Uri.EscapeDataString(title)),
+            false, "netflix_authentication_required"),
+        "hbo_max" => new(
+            new Uri("https://play.hbomax.com/search/result?q="
+                + Uri.EscapeDataString(title).Replace("%20", "+", StringComparison.Ordinal)),
+            false, "hbo_max_authentication_required"),
+        _ => new(new Uri("https://www.disneyplus.com/browse/search"), true, "disney_authentication_required"),
+    };
 
     private bool TryOpen(Uri target, ExternalEffectBoundary effectBoundary, CancellationToken cancellationToken)
     {
@@ -257,9 +285,9 @@ internal sealed class UserBrowserSurface
         UserBrowserWindow? window = FrontWindow(browser);
         if (window is null)
             return ExternalJson.FailureBeforeEffect(operation, BrowserNotRunning);
-        IReadOnlyList<UserBrowserTab>? tabs = await _platform.ReadTabsAsync(window.Handle, cancellationToken)
-            .ConfigureAwait(false);
-        if (tabs is null || tabs.Count == 0)
+        UserBrowserFrame? frame = await ReadFrameAsync(window.Handle, cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<UserBrowserTab> tabs = frame?.Tabs ?? [];
+        if (tabs.Count == 0)
             return ExternalJson.FailureBeforeEffect(operation, PageUnreadable);
         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
         {
@@ -299,13 +327,13 @@ internal sealed class UserBrowserSurface
     /// <summary>
     /// After the link is opened, a window of the person's browser changes (a new
     /// tab is active, or a new window appears). Its address field is read and
-    /// only its site is compared with the one opened; an address of another site
-    /// is never reported. With no readable address of that site the navigation
-    /// stays unconfirmed.
+    /// only its site is compared with the one opened (for a streaming service,
+    /// any of its hosts); an address of another site is never reported. With
+    /// no readable address of that site the navigation stays unconfirmed.
     /// </summary>
     private async ValueTask<PageObservation> ObserveNavigationAsync(
         UserBrowserIdentity browser,
-        Uri target,
+        Func<Uri, bool> opened,
         Dictionary<nint, string> before,
         CancellationToken cancellationToken)
     {
@@ -330,7 +358,7 @@ internal sealed class UserBrowserSurface
                 reads++;
                 string? text = await _platform.ReadAddressAsync(window.Handle, cancellationToken)
                     .ConfigureAwait(false);
-                if (TryAddress(text, out Uri? observed) && SameSite(target, observed))
+                if (TryAddress(text, out Uri? observed) && opened(observed))
                     return new(observed, window.Handle);
             }
         }
@@ -338,11 +366,12 @@ internal sealed class UserBrowserSurface
     }
 
     /// <summary>The address a moment later: a service that asks to sign in redirects after the first paint.</summary>
-    private async ValueTask<Uri> SettledAddressAsync(Uri first, nint window, CancellationToken cancellationToken)
+    private async ValueTask<Uri> SettledAddressAsync(
+        Uri first, nint window, Func<Uri, bool> ofService, CancellationToken cancellationToken)
     {
         await _platform.DelayAsync(TimeSpan.FromMilliseconds(2_500), cancellationToken).ConfigureAwait(false);
         string? text = await _platform.ReadAddressAsync(window, cancellationToken).ConfigureAwait(false);
-        return TryAddress(text, out Uri? later) && SameSite(first, later) ? later : first;
+        return TryAddress(text, out Uri? later) && (SameSite(first, later) || ofService(later)) ? later : first;
     }
 
     private async ValueTask<UserMediaSession?> AwaitPlaybackAsync(
@@ -397,7 +426,8 @@ internal sealed class UserBrowserSurface
         if (expectedTitle.Length > 0)
         {
             UserMediaSession? titled = sessions
-                .Where(session => TitlesMatch(session.Title, expectedTitle))
+                .Where(session => TitlesMatch(session.Title, expectedTitle)
+                    && !(anyNewBrowserSession && AlreadyThere(session, before)))
                 .OrderByDescending(session => browser.OwnsMediaSession(session.SourceAppUserModelId))
                 .ThenByDescending(session => session.PlaybackStatus == "playing")
                 .FirstOrDefault();
@@ -417,6 +447,16 @@ internal sealed class UserBrowserSurface
             .OrderByDescending(session => session.PlaybackStatus == "playing")
             .FirstOrDefault();
     }
+
+    /// <summary>
+    /// The same session, title and state as before the page was opened: a title the person had paused in another
+    /// tab (Opera keeps one media session for the whole browser) is not what the new page started.
+    /// </summary>
+    private static bool AlreadyThere(UserMediaSession session, IReadOnlyList<UserMediaSession> before) =>
+        before.Any(earlier => string.Equals(earlier.SourceAppUserModelId, session.SourceAppUserModelId,
+                StringComparison.Ordinal)
+            && string.Equals(earlier.Title, session.Title, StringComparison.Ordinal)
+            && string.Equals(earlier.PlaybackStatus, session.PlaybackStatus, StringComparison.Ordinal));
 
     internal static bool TitlesMatch(string observed, string expected)
     {

@@ -334,22 +334,249 @@ public sealed class UserBrowserTests
         });
     }
 
+    private static readonly UserBrowserIdentity Chrome = new(
+        "ChromeHTML", "chrome", "Google Chrome", @"C:\Program Files\Google\Chrome\Application\chrome.exe");
+
+    private static UserBrowserFrame Frame(
+        string page, int tabs = 3, bool? back = true, string address = "https://example.com/", double scroll = -1) =>
+        new(
+            [.. Enumerable.Range(0, tabs).Select(index => new UserBrowserTab(
+                index == tabs - 1 ? "Mine" : "Theirs " + index, index == tabs - 1, true, 0.1 + index * 0.1, 0.02))],
+            back,
+            address,
+            page,
+            "Mine",
+            scroll);
+
+    private static async Task<ExternalCapabilityReceipt> Control(Harness harness, string action) =>
+        await harness.Adapter.InvokeAsync(
+            "browser.control", Json("{\"action\":\"" + action + "\"}"), CancellationToken.None);
+
     [Test]
-    public async Task MovingThroughThePersonsTabsNeverFallsBackToTheProductBrowser()
+    public async Task BackIsAWindowCommandToThePersonsBrowserVerifiedByAnotherPage()
     {
         var platform = new FakePlatform(OperaGx);
+        platform.Frames.AddRange([Frame("doc-1"), Frame("doc-1"), Frame("doc-2", address: "https://example.org/")]);
         var context = new CdpBrowserSessionContext();
         using Harness harness = new(platform, context: context);
 
-        ExternalCapabilityReceipt control = await harness.Adapter.InvokeAsync(
-            "browser.control", Json("""{"action":"reload"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt control = await Control(harness, "back");
 
         Assert.Multiple(() =>
         {
-            Assert.That(control.ErrorCode, Is.EqualTo(WebBrowserAdapter.UserBrowserTabsNotAutomatable));
-            Assert.That(control.EffectObserved || control.EffectMayHaveOccurred, Is.False);
+            Assert.That(control.Verified, Is.True);
+            Assert.That(control.EffectObserved, Is.True);
+            Assert.That(platform.AppCommands, Is.EqualTo(new[] { UserBrowserSurface.AppCommandBack }));
+            Assert.That(control.Result?.GetProperty("observedState").GetString(), Is.EqualTo("went_back"));
+            Assert.That(control.Result?.GetProperty("browser").GetString(), Is.EqualTo("Opera GX"));
+            Assert.That(control.Result?.GetProperty("authority").GetString(),
+                Is.EqualTo(UserBrowserSurface.FrameAuthority));
             Assert.That(platform.Opened, Is.Empty);
-            Assert.That(context.Active, Is.Null);
+            Assert.That(context.Active, Is.Null, "the product browser is never used for the person's tabs");
+        });
+    }
+
+    [Test]
+    public async Task BackWithNoHistoryDoesNothingAndSaysSo()
+    {
+        var platform = new FakePlatform(OperaGx);
+        platform.Frames.Add(Frame("doc-1", back: false));
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt control = await Control(harness, "back");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(control.ErrorCode, Is.EqualTo(UserBrowserSurface.HistoryStart));
+            Assert.That(control.EffectObserved || control.EffectMayHaveOccurred, Is.False);
+            Assert.That(platform.AppCommands, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task AReloadIsSeenAsANewDocumentAndNoChangeIsUnconfirmed()
+    {
+        var reloads = new FakePlatform(OperaGx);
+        reloads.Frames.AddRange([Frame("doc-1"), Frame("doc-1"), Frame("doc-9")]);
+        var stuck = new FakePlatform(OperaGx);
+        stuck.Frames.Add(Frame("doc-1"));
+        using Harness first = new(reloads);
+        using Harness second = new(stuck);
+
+        ExternalCapabilityReceipt reloaded = await Control(first, "reload");
+        ExternalCapabilityReceipt unconfirmed = await Control(second, "reload");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(reloaded.Verified, Is.True);
+            Assert.That(reloads.AppCommands, Is.EqualTo(new[] { UserBrowserSurface.AppCommandRefresh }));
+            Assert.That(reloaded.Result?.GetProperty("observedState").GetString(), Is.EqualTo("reloaded"));
+            Assert.That(unconfirmed.Verified, Is.False);
+            Assert.That(unconfirmed.EffectMayHaveOccurred, Is.True);
+            Assert.That(unconfirmed.ErrorCode, Is.EqualTo(UserBrowserSurface.TabStepUnconfirmed));
+        });
+    }
+
+    [Test]
+    public async Task OperaGetsItsNewTabButtonPressedAndChromeItsOwnCommand()
+    {
+        var opera = new FakePlatform(OperaGx);
+        opera.Frames.AddRange([Frame("doc-1", tabs: 3), Frame("doc-2", tabs: 4)]);
+        var chrome = new FakePlatform(Chrome);
+        chrome.Frames.AddRange([Frame("doc-1", tabs: 2), Frame("doc-2", tabs: 3)]);
+        using Harness inOpera = new(opera);
+        using Harness inChrome = new(chrome);
+
+        ExternalCapabilityReceipt operaTab = await Control(inOpera, "new_tab");
+        ExternalCapabilityReceipt chromeTab = await Control(inChrome, "new_tab");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(operaTab.Verified, Is.True);
+            Assert.That(opera.BrowserCommands, Is.Empty, "Opera runs no IDC_* message: no wait for one");
+            Assert.That(opera.Acts, Is.EqualTo(new[] { "new_tab" }));
+            Assert.That(operaTab.Result?.GetProperty("observedState").GetString(), Is.EqualTo("tab_opened"));
+            Assert.That(operaTab.Result?.GetProperty("tabCount").GetInt32(), Is.EqualTo(4));
+            Assert.That(chromeTab.Verified, Is.True);
+            Assert.That(chrome.BrowserCommands, Is.EqualTo(new[] { UserBrowserSurface.BrowserCommandNewTab }));
+            Assert.That(chrome.Acts, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task TheActiveTabIsClosedWhereItIsAndSeenAsOneTabLess()
+    {
+        var opera = new FakePlatform(OperaGx);
+        opera.Frames.AddRange([Frame("doc-1", tabs: 3), Frame("doc-1", tabs: 3), Frame("doc-7", tabs: 2)]);
+        var chrome = new FakePlatform(Chrome);
+        chrome.Frames.AddRange([Frame("doc-1", tabs: 3), Frame("doc-7", tabs: 2)]);
+        using Harness inOpera = new(opera);
+        using Harness inChrome = new(chrome);
+
+        ExternalCapabilityReceipt operaClose = await Control(inOpera, "close");
+        ExternalCapabilityReceipt chromeClose = await Control(inChrome, "close");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(operaClose.Verified, Is.True);
+            Assert.That(opera.MiddleClicks, Is.EqualTo(new[] { (0.30000000000000004, 0.02) }),
+                "the click goes to the active tab's own place");
+            Assert.That(operaClose.Result?.GetProperty("observedState").GetString(), Is.EqualTo("tab_closed"));
+            Assert.That(operaClose.Result?.GetProperty("closedTab").GetString(), Is.EqualTo("Mine"));
+            Assert.That(operaClose.Result?.GetProperty("tabCount").GetInt32(), Is.EqualTo(2));
+            Assert.That(chromeClose.Verified, Is.True);
+            Assert.That(chrome.BrowserCommands, Is.EqualTo(new[] { UserBrowserSurface.BrowserCommandCloseTab }));
+            Assert.That(chrome.MiddleClicks, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task ATabThatMovedIsNeverClickedAndTheLastTabIsKept()
+    {
+        var moved = new FakePlatform(OperaGx);
+        UserBrowserFrame switched = Frame("doc-3", tabs: 3) with
+        {
+            Tabs = [new("Theirs 0", true, true, 0.1, 0.02), new("Theirs 1", false, true, 0.2, 0.02), new("Mine", false, true, 0.3, 0.02)],
+        };
+        moved.Frames.AddRange([Frame("doc-1", tabs: 3), switched]);
+        var single = new FakePlatform(OperaGx);
+        single.Frames.Add(Frame("doc-1", tabs: 1));
+        using Harness first = new(moved);
+        using Harness second = new(single);
+
+        ExternalCapabilityReceipt notClicked = await Control(first, "close");
+        ExternalCapabilityReceipt kept = await Control(second, "close");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(notClicked.Verified, Is.False);
+            Assert.That(notClicked.EffectMayHaveOccurred, Is.False, "nothing was posted");
+            Assert.That(notClicked.ErrorCode, Is.EqualTo(UserBrowserSurface.TabStepUnavailable));
+            Assert.That(moved.MiddleClicks, Is.Empty);
+            Assert.That(kept.ErrorCode, Is.EqualTo(UserBrowserSurface.LastTabKept));
+            Assert.That(kept.EffectMayHaveOccurred, Is.False);
+            Assert.That(single.MiddleClicks, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task ClosingEveryTabOfThePersonsBrowserIsNotDone()
+    {
+        var platform = new FakePlatform(OperaGx) { Tabs = [new("Mine", true), new("Theirs", false)] };
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt control = await Control(harness, "close_all");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(control.ErrorCode, Is.EqualTo(UserBrowserSurface.CloseAllDeclined));
+            Assert.That(control.EffectObserved || control.EffectMayHaveOccurred, Is.False);
+            Assert.That(platform.MiddleClicks, Is.Empty);
+            Assert.That(platform.FrameReads, Is.Zero);
+            Assert.That(harness.Edge.ReadCalls, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task ScrollingIsReadBackFromThePageAndAnEndMovesNothing()
+    {
+        var scrolls = new FakePlatform(OperaGx) { ActResult = _ => new UserBrowserAct("scrolled", 0, 21.04) };
+        var ends = new FakePlatform(OperaGx) { ActResult = _ => new UserBrowserAct("boundary", 100, 100) };
+        using Harness first = new(scrolls);
+        using Harness second = new(ends);
+
+        ExternalCapabilityReceipt down = await Control(first, "scroll_down");
+        ExternalCapabilityReceipt end = await Control(second, "scroll_down");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(down.Verified, Is.True);
+            Assert.That(down.EffectObserved, Is.True);
+            Assert.That(scrolls.Acts, Is.EqualTo(new[] { "scroll_down" }));
+            Assert.That(down.Result?.GetProperty("scrollPercent").GetDouble(), Is.EqualTo(21.0));
+            Assert.That(end.ErrorCode, Is.EqualTo(UserBrowserSurface.ScrollBoundary));
+            Assert.That(end.EffectObserved || end.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
+    [Test]
+    public async Task FullScreenIsTheWindowCoveringItsMonitor()
+    {
+        var goes = new FakePlatform(OperaGx);
+        goes.Covers.AddRange([false, false, true]);
+        var missing = new FakePlatform(OperaGx) { ActResult = _ => new UserBrowserAct("fullscreen_control_not_found", -1, -1) };
+        using Harness first = new(goes);
+        using Harness second = new(missing);
+
+        ExternalCapabilityReceipt full = await Control(first, "fullscreen_video");
+        ExternalCapabilityReceipt none = await Control(second, "fullscreen_video");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(full.Verified, Is.True);
+            Assert.That(full.Result?.GetProperty("observedState").GetString(), Is.EqualTo("fullscreen"));
+            Assert.That(none.ErrorCode, Is.EqualTo(UserBrowserSurface.FullscreenControlMissing));
+            Assert.That(none.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
+    [Test]
+    public void TheFrameReadKeepsATabStripOfOneAndTheBackButtonState()
+    {
+        using JsonDocument one = JsonDocument.Parse(
+            """{"version":1,"ok":true,"tabs":{"title":"Solo","selected":true,"shown":true,"x":0.2,"y":0.01},"back":"disabled","address":"example.com","page":{"id":"42.1","title":"Solo","scroll":12.5}}""");
+        using JsonDocument none = JsonDocument.Parse("""{"version":1,"ok":false,"tabs":[],"error":"tab_strip_not_found"}""");
+
+        UserBrowserFrame? frame = WindowsUserBrowserPlatform.ParseFrame(one.RootElement);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(frame?.Tabs, Has.Count.EqualTo(1));
+            Assert.That(frame?.Tabs[0], Is.EqualTo(new UserBrowserTab("Solo", true, true, 0.2, 0.01)));
+            Assert.That(frame?.BackEnabled, Is.False);
+            Assert.That(frame?.PageId, Is.EqualTo("42.1"));
+            Assert.That(frame?.Scroll, Is.EqualTo(12.5));
+            Assert.That(WindowsUserBrowserPlatform.ParseFrame(none.RootElement), Is.Null);
         });
     }
 
@@ -453,12 +680,143 @@ public sealed class UserBrowserTests
 
         Assert.Multiple(() =>
         {
+            Assert.That(platform.Opened, Is.EqualTo(new[] { "https://www.disneyplus.com/browse/search" }));
             Assert.That(platform.PageSteps, Is.EqualTo(new[] { (11, "Daredevil", true) }));
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.EffectMayHaveOccurred, Is.True);
             Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.StreamingPlaybackUnconfirmed));
         });
     }
+
+    [Test]
+    public async Task HboMaxSearchesInTheAddressAndIsVerifiedByTheSessionOfTheTitle()
+    {
+        // Opera GX 2026-10-06: «pon The Last of Us en HBO Max» → search/result?q=, card, «Ver The Last of Us, …»,
+        // and the browser's one media session turns from what it had into «The Last of Us» playing.
+        var platform = new FakePlatform(OperaGx)
+        {
+            AddressOf = _ => "play.hbomax.com/search/result?q=The+Last+of+Us",
+            PageStep = new UserBrowserPageStep(true, "play_invoked", "The Last of Us"),
+        };
+        var before = new UserMediaSession("Opera GXStable", "Daredevil | Disney+", string.Empty, "paused");
+        platform.SessionsBeforeOpen = [before];
+        platform.WindowsAfterOpen = [new(11, "Buscar: The Last of Us • HBO Max - Opera")];
+        platform.SessionsAfterOpen = [[before], [before], [new("Opera GXStable", "The Last of Us", string.Empty, "playing")]];
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "streaming.play.named", Json("""{"service":"hbo_max","title":"the last of us"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(platform.Opened, Is.EqualTo(new[] { "https://play.hbomax.com/search/result?q=the+last+of+us" }));
+            Assert.That(platform.PageSteps, Is.EqualTo(new[] { (11, "the last of us", false) }));
+            Assert.That(receipt.Result?.GetProperty("title").GetString(), Is.EqualTo("The Last of Us"));
+            Assert.That(receipt.Result?.GetProperty("sessionTitle").GetString(), Is.EqualTo("The Last of Us"));
+            Assert.That(receipt.Result?.GetProperty("service").GetString(), Is.EqualTo("hbo_max"));
+            Assert.That(platform.Played, Is.Empty);
+            Assert.That(harness.Edge.StreamingCalls, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task ATitleThePersonHadPausedIsNotTakenForTheOneJustAskedFor()
+    {
+        // Opera keeps one media session for the whole browser: «Bluey | Disney+» paused in another tab is theirs.
+        var platform = new FakePlatform(OperaGx)
+        {
+            AddressOf = _ => "www.disneyplus.com/browse/search",
+            PageStep = new UserBrowserPageStep(true, "play_invoked", "Bluey"),
+        };
+        var theirs = new UserMediaSession("Opera GXStable", "Bluey | Disney+", string.Empty, "paused");
+        platform.SessionsBeforeOpen = [theirs];
+        platform.WindowsAfterOpen = [new(11, "Búsqueda | Disney+ - Opera")];
+        platform.SessionsAfterOpen = [[theirs]];
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "streaming.play.named", Json("""{"service":"disney_plus","title":"Bluey"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.StreamingPlaybackUnconfirmed));
+            Assert.That(platform.Played, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task AWhoIsWatchingGateIsLeftToThePerson()
+    {
+        var platform = new FakePlatform(OperaGx)
+        {
+            AddressOf = _ => "play.hbomax.com/search/result?q=Superman",
+            PageStep = new UserBrowserPageStep(false, "profile", string.Empty),
+        };
+        platform.WindowsAfterOpen = [new(11, "HBO Max - Opera")];
+        platform.SessionsAfterOpen = [[new("Opera GXStable", "Tráiler", string.Empty, "playing")]];
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "streaming.play.named", Json("""{"service":"hbo_max","title":"Superman"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.StreamingProfileChoice));
+            Assert.That(harness.Edge.StreamingCalls, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task HboMaxSigningInOnItsOwnAuthHostIsSaidAsSuch()
+    {
+        int reads = 0;
+        var platform = new FakePlatform(OperaGx)
+        {
+            AddressOf = _ => ++reads == 1 ? "play.hbomax.com/search/result?q=Dune" : "auth.hbomax.com/login",
+        };
+        platform.WindowsAfterOpen = [new(11, "HBO Max - Opera")];
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "streaming.play.named", Json("""{"service":"hbo_max","title":"Dune"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("hbo_max_authentication_required"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(platform.PageSteps, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task HboMaxIsNeverOpenedInTheProductBrowser()
+    {
+        var platform = new FakePlatform(null);
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "streaming.play.named", Json("""{"service":"hbo_max","title":"Dune"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(WebBrowserAdapter.HboMaxNeedsDefaultBrowser));
+            Assert.That(harness.Edge.StreamingCalls + harness.Edge.NavigateCalls, Is.Zero);
+        });
+    }
+
+    [TestCase("play.hbomax.com", true)]
+    [TestCase("auth.hbomax.com", true)]
+    [TestCase("play.max.com", true)]
+    [TestCase("maxhbo.com", false)]
+    public void HboMaxHostsBelongToTheService(string host, bool belongs) =>
+        Assert.That(WebBrowserAdapter.HostMatchesService(host, "hbo_max"), Is.EqualTo(belongs));
 
     [Test]
     public async Task AStreamingServiceAskingToSignInIsSaidAsSuch()
@@ -610,7 +968,7 @@ public sealed class UserBrowserTests
         }
 
         public IReadOnlyList<UserBrowserWindow> ListWindows(string processName) =>
-            processName == "opera"
+            processName == identity?.ProcessName
                 ? (_opened ? WindowsAfterOpen ?? WindowsBeforeOpen : WindowsBeforeOpen)
                 : [];
 
@@ -646,8 +1004,63 @@ public sealed class UserBrowserTests
             return ValueTask.FromResult(PageStep);
         }
 
-        public ValueTask<IReadOnlyList<UserBrowserTab>?> ReadTabsAsync(nint window, CancellationToken cancellationToken) =>
-            ValueTask.FromResult(Tabs);
+        /// <summary>Frames read in turn (the last one stays); without them, a frame made of <see cref="Tabs"/>.</summary>
+        internal List<UserBrowserFrame?> Frames { get; } = [];
+        internal int FrameReads { get; private set; }
+        internal List<int> AppCommands { get; } = [];
+        internal List<int> BrowserCommands { get; } = [];
+        internal List<(double, double)> MiddleClicks { get; } = [];
+        internal List<string> Acts { get; } = [];
+        internal Func<string, UserBrowserAct> ActResult { get; init; } = _ => new UserBrowserAct("invoked", -1, -1);
+        internal Action? OnMessage { get; init; }
+        internal List<bool> Covers { get; } = [];
+
+        public ValueTask<UserBrowserFrame?> ReadFrameAsync(nint window, CancellationToken cancellationToken)
+        {
+            FrameReads++;
+            if (Frames.Count == 0)
+                return ValueTask.FromResult(Tabs is null ? null : new UserBrowserFrame(Tabs, true, "", "doc-1", "", -1));
+            UserBrowserFrame? current = Frames[0];
+            if (Frames.Count > 1)
+                Frames.RemoveAt(0);
+            return ValueTask.FromResult(current);
+        }
+
+        public bool PostAppCommand(nint window, int command)
+        {
+            AppCommands.Add(command);
+            OnMessage?.Invoke();
+            return true;
+        }
+
+        public bool PostBrowserCommand(nint window, int command)
+        {
+            BrowserCommands.Add(command);
+            OnMessage?.Invoke();
+            return true;
+        }
+
+        public bool PostMiddleClick(nint window, double x, double y)
+        {
+            MiddleClicks.Add((x, y));
+            OnMessage?.Invoke();
+            return true;
+        }
+
+        public ValueTask<UserBrowserAct> ActAsync(nint window, string action, CancellationToken cancellationToken)
+        {
+            Acts.Add(action);
+            OnMessage?.Invoke();
+            return ValueTask.FromResult(ActResult(action));
+        }
+
+        public bool CoversMonitor(nint window)
+        {
+            bool current = Covers.Count > 0 && Covers[0];
+            if (Covers.Count > 1)
+                Covers.RemoveAt(0);
+            return current;
+        }
 
         public ValueTask<UserBrowserPageText?> ReadPageTextAsync(
             nint window, int maximumCharacters, CancellationToken cancellationToken)

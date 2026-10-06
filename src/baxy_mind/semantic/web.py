@@ -2635,6 +2635,78 @@ def browser_new_tab_arguments(text: str) -> dict[str, str] | None:
     return {"action": "new_tab"}
 
 
+def browser_page_step_arguments(text: str) -> dict[str, str] | None:
+    """Owner 2026-10-06 (the person's own browser): the short orders over the page in front — «vuelve atrás»,
+    «recarga la página», «baja la página», «sube un poco la página», «pon el video en pantalla completa». Each names
+    the page, the video or a history word: «baja un poco» alone is still the volume's question, and a document's page
+    («baja la página del PDF») is not the browser's."""
+
+    if not text or len(text) > 16_384:
+        return None
+    folded = _fold(text).strip(" ¿?¡!. ")
+    if _has(folded, r"\bno\b|\bnunca\b|\bjamas\b|\bnever\b|don't|do\s+not|\b(?:pdf|documento|document|libro|word|excel)\b"):
+        return None
+    prefix = (
+        r"(?:(?:por\s+favor|please)\s*[,;:]?\s+)?"
+        r"(?:(?:podes|puedes|podrias|can\s+you|could\s+you)\s+)?"
+    )
+    courtesy = r"(?:\s*,?\s*(?:por\s+favor|please|porfa))?"
+    browser = r"(?:\s+(?:en\s+(?:el|mi|este)\s+navegador|in\s+(?:the|my|this)\s+browser))?"
+    page = r"(?:la\s+|esta\s+)?(?:pagina|web|pestana)(?:\s+(?:web|actual))?"
+    bit = r"(?:\s+un\s+poco|\s+(?:a\s+)?(?:bit|little))?"
+    steps = {
+        "back": (
+            r"(?:vuelve|volve|regresa|retrocede|ve|anda)\s+(?:hacia\s+)?atras(?:\s+en\s+" + page + r")?|atras|"
+            r"go\s+back(?:\s+(?:a\s+)?page)?"
+        ),
+        "reload": (
+            r"(?:recarga|recargame|refresca|refrescame|actualiza)\s+" + page + r"|"
+            r"(?:reload|refresh)(?:\s+(?:the|this)\s+(?:page|tab))?"
+        ),
+        # Scrolling names the page: «scroll down a bit» or «desplázate hacia abajo» alone is the pointer's wheel over
+        # whatever is in front (input.pointer.control).
+        "scroll_down": (
+            r"(?:baja|bajame|desplaza|desplazate|deslizate|scrollea)" + bit + r"\s+(?:(?:hacia\s+abajo\s+)?(?:en\s+|por\s+)?)?"
+            + page + bit + r"|scroll\s+down" + bit + r"\s+(?:on\s+|in\s+)?(?:the|this)\s+page"
+        ),
+        "scroll_up": (
+            r"(?:sube|subeme|desplaza|desplazate|deslizate|scrollea)" + bit + r"\s+(?:(?:hacia\s+arriba\s+)?(?:en\s+|por\s+)?)?"
+            + page + bit + r"|scroll\s+up" + bit + r"\s+(?:on\s+|in\s+)?(?:the|this)\s+page"
+        ),
+        "fullscreen_video": (
+            r"(?:pon|ponme|pone|deja|dejame)\s+(?:el\s+|este\s+)?(?:video|reproductor)\s+(?:en\s+)?pantalla\s+completa|"
+            r"(?:make\s+)?(?:the\s+|this\s+)?video\s+full\s*screen|full\s*screen\s+(?:the\s+)?video"
+        ),
+    }
+    for action, words in steps.items():
+        if re.fullmatch(rf"{prefix}(?:{words}){browser}{courtesy}", folded) is not None:
+            return {"action": action}
+    return None
+
+
+def browser_close_tab_arguments(text: str) -> dict[str, str] | None:
+    """Owner 2026-10-06 «cierra esta pestaña», «close this tab»: the tab in front of the person's own browser
+    (browser.control close). None for a tab named by its site or title («cierra la pestaña de YouTube»: choosing a
+    tab has no operation yet), for every tab, a prohibition or anything said around it."""
+
+    if not text or len(text) > 16_384:
+        return None
+    folded = _fold(text).strip(" ¿?¡!. ")
+    if _has(folded, r"\bno\b|\bnunca\b|\bjamas\b|\bnever\b|don't|do\s+not"):
+        return None
+    prefix = r"(?:(?:por\s+favor|please)\s*[,;:]?\s+)?(?:(?:podes|puedes|podrias|can\s+you|could\s+you)\s+)?"
+    courtesy = r"(?:\s*,?\s*(?:por\s+favor|please|porfa))?"
+    named = r"(?:\s+(?:de|del|of|in)\s+(?:el\s+|the\s+|mi\s+|my\s+)?(?:navegador|browser|chrome|opera(?:\s*gx)?|edge|brave|firefox))?"
+    spanish = (
+        r"(?:cierra|cierre|cerra|cerrame|cierrame|cerrar)\s+(?:esta|esa|la)\s+pestana"
+        r"(?:\s+(?:actual|abierta|de\s+adelante|de\s+delante))?" + named
+    )
+    english = r"close\s+(?:this|that|the|the\s+current|my\s+current)\s+tab" + named
+    if re.fullmatch(rf"{prefix}(?:{spanish}|{english}){courtesy}", folded) is None:
+        return None
+    return {"action": "close"}
+
+
 def browser_close_all_tabs_arguments(text: str) -> dict[str, str] | None:
     """H0444 «cerrá todas las pestañas de chrome», «close all tabs»: close every
     open tab in the product's own browser (owner decision 2026-09-17: on the tabs
