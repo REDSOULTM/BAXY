@@ -1,5 +1,0 @@
-{
-  "TimeCreated": "2026-09-06T22:49:27.5433062-03:00",
-  "Id": 1000,
-  "Message": "Nombre de aplicación con errores: python.exe, versión: 3.12.10150.1013, marca de tiempo: 0x67f515a7\r\nNombre del módulo con errores: unknown, versión: 0.0.0.0, marca de tiempo: 0x00000000\r\nCódigo de excepción: 0xc0000005\r\nDesplazamiento con errores: 0x0000024525f60700\r\nId. de proceso con errores: 0x5B40\r\nTiempo de inicio de aplicación con errores: 0x1DD3E6AEC43F526\r\nRuta de aplicación con errores: C:\\Users\\usuario\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\r\nRuta de módulo con errores: unknown\r\nId. de informe: 5ae64360-a3a7-4eef-847e-ebe622c4e010\r\nNombre completo del paquete con errores: \r\nId. de aplicación relacionado con el paquete con errores: "
-}

@@ -1,9 +1,0 @@
-# Aclaración 1109 — preservar los papeles al pedir un dato
-
-Integrado para medición: el prompt existente de formulate_explicit_clarification_question precisa que BAXY pregunta al usuario y conserva ejecutor, destinatario y autor del contenido. AGENDA1108 pidió al usuario despertar al asistente; H0137 en1104 puso al asistente como destinatario del recordatorio. La operación y la información temporal se reconocían, pero la pregunta invertía los papeles.
-
-Raíz leyó propuesta, hunk completo, revisión, identidad, caller y generador. La primera desviación textual está en los terminales publicados; no hay un draft crudo capturado en esas dos corridas. El caller y validador devuelven la pregunta sin reescribirla. No se introduce un filtro posterior, un slot, una respuesta visible fija ni un presupuesto distinto. Se conservan JSON como datos, idioma, autocorrección, claves exactas y prohibición de afirmar ejecución.
-
-Fuente llm.py anterior 8993a12644146d8dd2d37943dd2847c6dc18217890e3f637d317bc2c43018f79; nueva 4eef7c43fd584adb31a8685a8a433c4a44acf7f02ae0d53ead4ed600abffbd79, verificada después de aplicar. Patch privado C:/Users/usuario/AppData/Local/BAXY/C03-clarification1109-repair/source.patch SHA256 62d68970cb00d8da0896eea017ddcef7d684d4bc5880dab9ec46e64eee402c48; identidad e2b5474367175310b57c42e6dff036180cd98e6a04f800c20824cc9fa0ddd716. git apply --check y aplicación EXIT0; un hunk, once líneas añadidas y una retirada. Sin tests o compilación por instrucción del dueño.
-
-AGENDA1110 medirá cuatro alarmas y el recordatorio H0137 con cuatro variantes pertinentes. AGENDA1108 quedó adjudicado antes de editar: un aprobado, un fallido, nueve sin ejecutar, cero créditos. Registro intacto: 198/742 cubiertos, 544 abiertos, 0 no aplican; al menos 72 altas en 24 h, 0/35 categorías cerradas. Fuente1107 se conserva. DIALOGUE1098 no está integrado; su propuesta y panel1106 requieren rebase/resellado con este nuevo hash antes de medirlos.

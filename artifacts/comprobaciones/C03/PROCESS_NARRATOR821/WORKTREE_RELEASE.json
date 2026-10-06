@@ -1,9 +1,0 @@
-{
-  "utc": "2026-09-11T07:11:21.558290+00:00",
-  "worktree": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-list-count821",
-  "removed": true,
-  "verified_matching_snapshots": "WORKTREE_CHECK.json",
-  "command": "git worktree remove --force C:/Users/usuario/AppData/Local/BAXY/C03-list-count821",
-  "collected_exit_code": 0,
-  "chunk": "ba0517"
-}

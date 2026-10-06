@@ -1,7 +1,0 @@
-{
-  "timeUtc": "2026-09-10T04:45:56.8373781Z",
-  "pid": 29164,
-  "parentPid": 8768,
-  "reason": "Invalid run interrupted: candidate4 seal failed updating source fingerprint before this run was mistakenly started. No acceptance.",
-  "commandLine": "\"C:\\Users\\usuario\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe\" -Command \"try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}\n$c03Exit=1; try { & .\\scripts\\test_source_quality.ps1 -Mode Full *> \\\"$env:TEMP/c03-window-vocabulary705-full3.log\\\"; $c03Exit=$LASTEXITCODE } catch { $_ | Out-String | Add-Content -LiteralPath \\\"$env:TEMP/c03-window-vocabulary705-full3.log\\\"; $c03Exit=1 } finally { [ordered]@{finished_utc=[DateTime]::UtcNow.ToString('o');exit_code=$c03Exit} | ConvertTo-Json | Set-Content -LiteralPath \\\"$env:TEMP/c03-window-vocabulary705-full3-exit.json\\\" -Encoding utf8 }; Get-Content -LiteralPath \\\"$env:TEMP/c03-window-vocabulary705-full3.log\\\" -Tail 20; exit $c03Exit\""
-}

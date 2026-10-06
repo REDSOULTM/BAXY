@@ -1,7 +1,0 @@
-{
-  "bridgeExact": true,
-  "samples": 25600,
-  "nativeImpulsePeakLagSamples": 128,
-  "bridgeDelaySamples": 128,
-  "totalRawPairDelaySamples": 256
-}

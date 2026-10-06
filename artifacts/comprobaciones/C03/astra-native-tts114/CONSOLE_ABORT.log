@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scratchpad\c03-native-tts114.py", line 68, in <module>
-    print(json.dumps(row, ensure_ascii=False), flush=True)
-  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u026a' in position 50: character maps to <undefined>

@@ -1,4 +1,0 @@
-perfil persistente: C:\Users\usuario\AppData\Local\BAXY\comprobaciones-c03-qwen8-sentences
-Runtime registrado: C:\Users\usuario\AppData\Local\BAXYRuntime\mind-runtime-v1.json
-commit: 2bf3d4c5406b7bf1c230f7cbb0b2c3de6d74fc49
-conductor: D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.exe --conductor --profile=C:\Users\usuario\AppData\Local\BAXY\comprobaciones-c03-qwen8-sentences --timeout-ms=120000 --commit=2bf3d4c5406b7bf1c230f7cbb0b2c3de6d74fc49 --capture=D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\artifacts\comprobaciones\C03\astra-qwen8-sentences --turns-file=D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\artifacts\comprobaciones\C03\astra-qwen8-sentences.turns.jsonl

@@ -1,3 +1,0 @@
-﻿  (warmup: router hot)
-
-CANARY PASS: 63/63 = 100.0%

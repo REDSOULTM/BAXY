@@ -1,9 +1,0 @@
-Collecting lingua-language-detector
-  Downloading lingua_language_detector-2.2.0-cp312-cp312-win_amd64.whl.metadata (32 kB)
-Downloading lingua_language_detector-2.2.0-cp312-cp312-win_amd64.whl (170.1 MB)
-   ---------------------------------------- 170.1/170.1 MB 8.5 MB/s  0:00:20
-Installing collected packages: lingua-language-detector
-Successfully installed lingua-language-detector-2.2.0
-
-[notice] A new release of pip is available: 26.1.2 -> 26.2.1
-[notice] To update, run: C:\Users\usuario\AppData\Local\BAXYRuntime\python\mind-runtime-v1\Scripts\python.exe -m pip install --upgrade pip

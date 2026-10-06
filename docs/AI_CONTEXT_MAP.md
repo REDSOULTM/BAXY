@@ -28,7 +28,7 @@ dice tu goal.
 
 | Síntoma | Mira |
 |---|---|
-| La petición va a la operación equivocada | `src/baxy_mind/router.py`, `semantic_family_arbiter.py`, alias del catálogo; corridas en `artifacts/development/goal03*` |
+| La petición va a la operación equivocada | `src/baxy_mind/router.py`, `semantic_family_arbiter.py`, alias del catálogo |
 | «Dice que lo hizo» y no pasó | Handler en `src/Baxy.Core/Operations/` + postlectura del provider. Invariantes 2 y 3 |
 | Confirmación aceptada para otra cosa | `src/Baxy.Kernel/Mission/InMemoryConfirmationAuthority.cs`. Invariante 4 |
 | Frase fija en pantalla | `grep` de `"[A-ZÁÉÍÓÚ][^"]{15,}"` en `src/Baxy.App` y `src/Baxy.FieldUi/src`. Invariante 5 |
@@ -50,38 +50,24 @@ Fast = fuente PowerShell + ruff + compileall + eslint + tsc(app,node) + dotnet f
 + build Release. Full = Fast + suites .NET + pytest completo.
 Nivel 4 (publish, hardware, ciclo instalado) **no** está dentro de Full.
 
-## Qué directorios son ruido por defecto
+## Qué hay en el árbol (limpieza del 2026-10-06)
 
-| Ruta | Ficheros | Regla |
-|---|---|---|
-| `artifacts/` | 2.938 | Evidencia fechada de una corrida concreta. Se abre con ruta exacta, nunca se recorre |
-| `artifacts/_trazas_locales/` | 47 | Trazas crudas de corridas que ningún documento cita. Ignorada por Git; no es evidencia citable |
-| `biblioteca/` | 1.352 | Las cuatro escrituras anteriores. Entrada única: `biblioteca/00_INDICE.md`. Ver skill `evidencia-baxy` |
-| `experiments/` | 879 | Investigación. No entra al runtime por existir |
-| `documentacion/1x_*_CORTE_*.md`, `2x_*.md` | — | Cortes históricos: evidencia, no instrucción |
-| `contexto/` | 41 | Snapshot del intento anterior. Los ADR (`04_arquitectura/ADR/`) siguen vigentes; el resto está fechado |
-| `bin/`, `obj/`, `__pycache__/`, `.ruff_cache/`, `.pytest_cache/` | — | Generados. Nunca se editan ni se leen |
+El repositorio sólo guarda lo que BAXY necesita: `src/`, sus pruebas, los scripts de build, instalación,
+runtime y medición, `runtime_wheels/` (ruedas propias de STT y AEC) y la documentación vigente. La evidencia
+histórica (corridas, corpus, la biblioteca de los BAXY anteriores, experimentos, goals cerrados) salió a
+`..\BAXY-archivo-2026-10-06\` (fuera del repo, con su `LEEME.md`) y sigue en el historial de Git. Una ruta `artifacts/…`, `biblioteca/…`, `experiments/…`, `contexto/…` o
+`documentacion/sprints/…` citada en un documento anterior vive ahí con la misma ruta relativa.
 
-`src/Baxy.FieldUi/dist/` está versionado a propósito: artefacto visual sellado por
-ADR-0008.
+| Ruta | Regla |
+|---|---|
+| `bin/`, `obj/`, `__pycache__/`, `.ruff_cache/`, `.pytest_cache/` | Generados. Nunca se editan ni se leen |
+| `src/Baxy.FieldUi/node_modules/` | Dependencias de la GUI. Nunca se recorren |
+| `src/Baxy.FieldUi/dist/` | Versionado a propósito: artefacto visual sellado por ADR-0008 |
 
 ## Ficheros que no se leen enteros
 
-60 ficheros versionados pasan de 1 MB; 706 pasan de 100 KB. Los peores:
-
-```
-tests/data/historical_messages.jsonl                    69 MB
-artifacts/corpus_cutoff/source_manifest.json            16 MB
-tests/data/historical_message_mapping.jsonl             16 MB
-artifacts/development/r207_cross_encoder_pairs.jsonl    11 MB
-artifacts/research/functiongemma_training_corpus.v3.jsonl  11 MB
-tests/data/historical_missions.jsonl                     5 MB
-tests/data/turn_evidence_public_holdout.v1.jsonl         3 MB
-```
-
-`read_file` por rango, `grep` por clave, y `Get-Content -TotalCount 3` para ver la
-forma de un JSONL. Nunca el fichero entero.
-Comprobar tamaño antes de abrir: `git ls-tree -r -l HEAD -- ruta`.
+Comprobar tamaño antes de abrir: `git ls-tree -r -l HEAD -- ruta`. `read_file` por rango, `grep` por clave,
+y `Get-Content -TotalCount 3` para ver la forma de un JSONL. Nunca un fichero grande entero.
 
 ## Dónde vive el conocimiento profundo
 
@@ -99,8 +85,8 @@ Todo esto es **carga bajo demanda**: no lo leas salvo que la tarea lo pida.
 | Baseline vigente, deuda, hotspots | `documentacion/01_ARQUITECTURA/REGISTRO_DE_MANTENIBILIDAD.md` |
 | Topología del producto activo | `documentacion/01_ARQUITECTURA/MAPA_DEL_SISTEMA.md` |
 | Piezas sustituibles y qué medición decide | `documentacion/03_COSTURAS.md` |
-| Fronteras aceptadas (ADR) | `contexto/04_arquitectura/ADR/` |
-| Qué se midió y **se rechazó** | `documentacion/01_ARQUITECTURA/REGISTRO_DE_MANTENIBILIDAD.md` + biblioteca |
+| Fronteras aceptadas (ADR) | `documentacion/ADR/` |
+| Qué se midió y **se rechazó** | `documentacion/01_ARQUITECTURA/REGISTRO_DE_MANTENIBILIDAD.md`; el detalle, en el archivo |
 | Lo que se ve y no se persigue | `documentacion/APLAZADOS.md` |
 
 ## Reglas de mantenimiento de este fichero

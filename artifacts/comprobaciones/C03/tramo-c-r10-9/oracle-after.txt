@@ -1,5 +1,0 @@
-﻿local=2026-09-05 06:08:46
-utc=2026-09-05T10:08:46.5438487Z
-offsetMinutes=-240
-injection=
-exit=0

@@ -10,13 +10,12 @@ trabajo**. Nada de lo que escribas va allí.
 
 ## Qué haces aquí
 
-El trabajo está en **once goals de producto** y la recuperación histórica 09.5, en
-`documentacion/sprints/`. Cada prompt ejecutable se lanza en una sesión nueva, se
-pega entero, y corre hasta cumplirse.
+Los once goals de producto y la Fase 3.5 (comprensión) están cerrados; su evidencia
+salió del repositorio el 2026-10-06 (ver «Buscar antes de leer»). El último estado
+medido está en `documentacion/SEMANTICA.md` («Segunda vuelta»).
 
 **Si te han dado un goal, ésa es tu única instrucción.** Este fichero no te dice qué
-hacer, sólo dónde estás y cómo moverte. Si no te han dado ninguno, empieza por
-[`documentacion/sprints/00_INDICE.md`](documentacion/sprints/00_INDICE.md).
+hacer, sólo dónde estás y cómo moverte. Si no te han dado ninguno, pregunta al dueño.
 
 ## Los dos documentos que mandan
 
@@ -33,9 +32,7 @@ lo anotas en `documentacion/APLAZADOS.md`.
 
 ## Las cinco leyes
 
-Aquí en corto; enteras, con su porqué, en
-[`documentacion/sprints/00_INDICE.md`](documentacion/sprints/00_INDICE.md) y dentro de
-cada goal.
+Aquí en corto; enteras, con su porqué, dentro de cada goal.
 
 1. **Hereda primero, estado del arte después, construye al final.**
 2. **Nada de sobreingeniería.** Si añades una capa, retira la que sustituye.
@@ -116,9 +113,8 @@ Detalle por ownership y matriz de pruebas: `GUIA_AGENTES_IA/05_VALIDACION_SEGURI
 
 ## Buscar antes de leer
 
-El árbol tiene ~6.400 ficheros versionados, y **la mayoría es evidencia histórica, no
-código**: una búsqueda sin acotar devuelve ~1.800 ficheros donde el código dueño son
-174. Ámbito por defecto: **`src tests scripts main.py`**.
+El árbol sólo guarda lo que BAXY necesita (~1.200 ficheros versionados). Ámbito por
+defecto: **`src tests scripts main.py`**.
 
 - Localiza con la tool `grep` —es ripgrep por dentro— acotada a ese ámbito, y **lee
   sólo el rango** con `read_file`, no el fichero entero. Para una operación pública
@@ -126,21 +122,17 @@ código**: una búsqueda sin acotar devuelve ~1.800 ficheros donde el código du
 - En la shell **no existe `rg`**: es PowerShell. `run_terminal_command` se reserva para
   lo que de verdad necesita shell —git, pytest, dotnet, procesos—, no para leer ni
   buscar.
-- `artifacts/`, `biblioteca/` y `experiments/` **se abren con ruta exacta, nunca se
-  recorren** — son 5.200 ficheros de evidencia fechada.
-- Antes de abrir una línea de investigación, busca en la biblioteca: 1.350 documentos
-  de las cuatro escrituras anteriores, con rechazos ya medidos. Es la ley 1. El
-  procedimiento para hacerlo sin inundar el contexto está en la skill
-  **`evidencia-baxy`**.
+- La evidencia histórica (corridas, corpus, la biblioteca de los cuatro BAXY
+  anteriores con sus rechazos medidos, experimentos, goals cerrados) está **fuera del
+  repositorio**, en `..\BAXY-archivo-2026-10-06\` (léase su `LEEME.md`), y en el
+  historial de Git. Antes de abrir una línea de investigación, busca ahí: es la ley 1.
+  Una ruta `artifacts/…`, `biblioteca/…` o `experiments/…` citada en un documento
+  vive ahí con la misma ruta relativa. Se abre con ruta exacta, nunca se recorre.
 
 ## Ficheros que no se leen enteros
 
-60 ficheros versionados pasan de 1 MB. Abrir uno entero cuesta la sesión:
-
-- `tests/data/historical_messages.jsonl` — 69 MB
-- `artifacts/corpus_cutoff/source_manifest.json` — 16 MB
-- `tests/data/historical_message_mapping.jsonl` — 16 MB
-- `artifacts/development/*.jsonl`, `artifacts/fixes/*.json` — hasta 11 MB
+Los datos de prueba grandes (`tests/data/*.jsonl`) y `src/Baxy.FieldUi/dist/`
+cuestan la sesión si se abren enteros.
 
 Comprueba el tamaño antes de abrir: `git ls-tree -r -l HEAD -- ruta`. Con JSONL, lee
 las primeras líneas con `read_file` y cuenta con `grep`; con JSON grande, `grep` por
@@ -159,7 +151,7 @@ Pide una señal pequeña primero y sube el detalle sólo si hace falta.
 - Salida enorme e imprevisible: redirígela a un fichero temporal fuera del árbol y
   consúltala con `grep`. No la traigas entera al contexto.
 - `git log --oneline -10`, `git diff --stat` antes de `git diff`.
-- Nunca `git status` sin `--short`, ni recorrer `artifacts/` o `biblioteca/`.
+- Nunca `git status` sin `--short`, ni recorrer `node_modules/` o el archivo.
 
 Pero no ocultes lo que necesitas para diagnosticar: si un fallo no se explica con la
 señal corta, sube el detalle de ese fallo concreto, no de la suite entera.
@@ -168,8 +160,8 @@ señal corta, sube el detalle de ese fallo concreto, no de la suite entera.
 
 Por defecto, **no**. `spawn_subagent` arranca una sesión hija que **hereda tu modelo**:
 paga contexto y razonamiento otra vez para volver con un informe que además tienes que
-leer. El intento anterior de este proyecto gastó 322 sesiones de subagente
-(`documentacion/agentes/INDICE.md`): ahí está la advertencia.
+leer. El intento anterior de este proyecto gastó 322 sesiones de subagente: ahí está la
+advertencia.
 
 Delega sólo cuando se cumplan las tres: (a) es **exploración de sólo lectura** y
 acotada, (b) el resultado cabe en rutas + rangos + conclusión, (c) traerlo al hilo

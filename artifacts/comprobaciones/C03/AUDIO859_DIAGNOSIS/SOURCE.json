@@ -1,9 +1,0 @@
-{
-  "utc": "2026-09-11T13:29:59.063527+00:00",
-  "report": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio859-diagnosis\\REPORT.md",
-  "sha256": "8faa074c5f407523e530b90adafb3397ca5c252c0291335cdf9e4f7a65ab06ed",
-  "first_failed_boundary": "public arguments dispatcher after successful explicit_effects decision",
-  "candidate": "a46cc65318f29839ef8f5de83f698ca551b68a9a",
-  "product_credit": 0,
-  "followup": "860: test and repair existing public schema/grounding boundary"
-}

@@ -1,9 +1,0 @@
-{
-  "utc": "2026-09-08T00:00:13.396350+00:00",
-  "method": "Same verified MainWindowViewModel.Messages chain as281. Official SOS dumpobj supplies stringLength, readmemory supplies raw bytes at the SOS-confirmed firstChar offset0xC; decode strict UTF16LE, check length. CreatedAt layout from SOS: offsetMinutes at0 and DateTime._dateData at8. Read only121 active collection entries.",
-  "priorFailure": "281 stopped before exporting because SOS dumpobj rendered welcome length42 while managed stringLength46. It dropped non-ASCII characters. No lossy transcript accepted.",
-  "count": 121,
-  "privateDirectory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-owner264-heap280",
-  "pixelCapture": false,
-  "freshAcceptance": false
-}

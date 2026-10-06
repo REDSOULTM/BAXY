@@ -1,1 +1,0 @@
-source_quality_preflight_failed: quality_ruff_version_mismatch (expected 'ruff 0.15.22', reported 'C:\Users\usuario\AppData\Local\BAXYRuntime\python\mind-runtime-v1\Scripts\python.exe: No module named ruff')

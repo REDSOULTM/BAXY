@@ -1,1 +1,0 @@
-Timers/alarms/routines rule: use notification(...) for local timers, alarms, reminders and immediate notifications. Use routine(...) when the user asks for a reusable automation or a sequence to run now/later.
