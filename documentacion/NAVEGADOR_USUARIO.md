@@ -180,15 +180,8 @@ pestañas por ella).
   guiones escriben UTF-8 (`[Console]::OutputEncoding`): antes las tildes
   llegaban rotas y las citas de la página no coincidían. Probado en vivo con
   Opera GX: «qué pestañas tengo abiertas» y «léeme lo que dice la página».
-- `browser.control` (atrás, recargar, desplazar, nueva pestaña, cerrar
-  pestañas, pantalla completa) responde `user_browser_tabs_not_automatable`
-  (nada hecho) siempre que hay navegador predeterminado, nunca actúa sobre un
-  Edge que la persona no mira. Con atajos de teclado funcionaría (en vivo:
-  Ctrl+T y Ctrl+W llegaron a Opera GX desde segundo plano), pero el «toque de
-  Alt» que da el primer plano abre el menú de Opera y, tras esa prueba, el
-  árbol de accesibilidad de Opera GX quedó cortado (`LiveBackgroundView`,
-  `ElementNotAvailable`) hasta cerrarlo. No se activa sin una forma fiable de
-  recuperarse.
+- `browser.control` actúa en el navegador de la persona (sección
+  «Pestañas», abajo); nunca en un Edge que la persona no mira.
 - La verificación por DOM (`video.currentTime` avanzando, recarga de un
   reproductor atascado) pasa a SMTC: prueba que algo suena con ese título, no
   el segundo exacto.
@@ -198,6 +191,78 @@ pestañas por ella).
 - `browser.navigate.named` a la **misma familia** que el predeterminado (p. ej.
   «ábrelo en Opera GX») abre en la sesión de la persona; a otra familia sigue
   con el perfil privado de ese navegador.
+
+### Pestañas (`browser.control` y `browser.tabs.list`, 2026-10-06)
+
+El dueño: «lo de mover pestañas y conteo de pestañas… que el Baxi no se limite».
+Cada paso va a la ventana de delante del navegador predeterminado (la primera
+en orden Z), sin teclado, sin menú y sin el toque de Alt —por mensaje de
+ventana cuando el navegador lo atiende, si no por un patrón de UI Automation
+(que puede traer el navegador al frente)—, y se verifica
+**leyendo otra vez el marco** con UI Automation (guion `Frame`: pestañas con
+su título, si está seleccionada y su centro como fracción de la ventana; botón
+atrás habilitado o no; campo de dirección; el documento `RootWebArea` de la
+pestaña activa con su `RuntimeId` y su desplazamiento). Lo que no se ve cambiar
+queda **incierto** (`user_browser_tab_step_unconfirmed`, efecto posible).
+
+| Acción | Cómo | Prueba de que ocurrió |
+|---|---|---|
+| `back` | `WM_APPCOMMAND` `BROWSER_BACKWARD` (1) | otro documento o dirección; con el botón atrás deshabilitado: `user_browser_history_start`, nada enviado |
+| `reload` | `WM_APPCOMMAND` `BROWSER_REFRESH` (3) | `RuntimeId` del documento nuevo (medido: cambia al recargar, no entre lecturas) |
+| `new_tab` | Chromium: `WM_COMMAND IDC_NEW_TAB` (34014); Firefox: `APPCOMMAND_NEW`; Opera: `Invoke` del botón de la tira (`GxAddTabButton`; Chrome `NewTabButton`) | una pestaña más |
+| `close` | Chromium: `WM_COMMAND IDC_CLOSE_TAB` (34015); Firefox: `APPCOMMAND_CLOSE`; Opera: clic central publicado (`WM_MBUTTONDOWN/UP`) en el centro de la pestaña activa, sólo si sigue siendo la misma y está en pantalla | una pestaña menos (`closedTab`, `activeTab`) |
+| `scroll_down`/`scroll_up` | `ScrollPattern` del documento (si no desplaza, su primer elemento que desplace en vertical), una pantalla (`LargeIncrement`) | el porcentaje leído después; en el borde: `user_browser_scroll_boundary`, nada movido |
+| `fullscreen_video` | `Invoke` del botón de la página cuyo nombre empieza por «Pantalla completa»/«Full screen» (Blink lo toma como gesto de la persona) | la ventana cubre su monitor |
+| `close_all` | **no se hace** (`user_browser_close_all_declined`) | — |
+
+- **La última pestaña se conserva** (`user_browser_last_tab_kept`): cerrarla
+  cierra la ventana de la persona.
+- **`close_all`**: en el navegador de la persona cerraría su sesión entera
+  (formularios a medias, páginas con sesión). `RiskPolicy` no pide
+  confirmación para `browser.control` (`low_reversible`) y la confirmación se
+  liga a la operación, no al argumento; hacerlo sin preguntar sería
+  destructivo, así que no se hace y se ofrece cerrar la pestaña de delante.
+  Si el dueño lo quiere con confirmación, hace falta que la política distinga
+  `action=close_all` (decisión aparte, ver «Pendiente»).
+- **Ir a una pestaña por su nombre** («ve a la pestaña de YouTube»): el
+  catálogo no tiene la operación (`browser.control` no lleva título). Se
+  propone `browser.tab.select {title}` (`low_reversible`): `SelectionItemPattern.Select`
+  del `TabItem` cuyo título coincide (o `IDC_SELECT_TAB_0..7` en Chromium),
+  verificado por la pestaña seleccionada. No se añadió.
+- **Conteo** (`browser.tabs.list`): la mente recibe `tabCount`, los títulos en
+  orden, `activeTab` y `tabsPerSite` (cuántas pestañas comparten el sitio que
+  el título nombra tras su último « - », « | » o « • », sin aislantes bidi ni
+  espacios duros), contados por el código; una
+  guarda (`_tab_listing_fact_defect`) rechaza un número que la lectura no dio
+  («tres videos de YouTube» con dos), y si todo borrador cae se dicen la cuenta
+  y los títulos leídos. Lo que lee CDP (Edge del producto) no cambia.
+- **En la mente**, los lectores de `semantic/web.py` dan la acción sin pasar
+  por el modelo: `browser_close_tab_arguments` («cierra esta pestaña»; «cierra
+  la pestaña de YouTube» sigue siendo un límite) y `browser_page_step_arguments`
+  («vuelve atrás», «recarga la página», «baja/sube la página», «pon el video en
+  pantalla completa»). «Baja un poco» a secas sigue siendo la pregunta del
+  volumen y «scroll down a bit» sin página, la rueda del puntero
+  (`input.pointer.control`).
+
+Lo específico de **Opera GX** (medido 2026-10-06 sobre el Opera de la
+persona, sólo con pestañas abiertas por la prueba):
+- Atiende `WM_APPCOMMAND` atrás/adelante/recargar, pero **no** `WM_COMMAND`
+  ni `WM_SYSCOMMAND` con `IDC_*` ni `APPCOMMAND_NEW/CLOSE` (no usa el
+  `BrowserView` de Chrome). Por eso la pestaña nueva es el botón y el cierre,
+  el clic central; no se espera un mensaje que no llegará.
+- Ids de vista de Chromium como `AutomationId`: atrás `view_1001`, adelante
+  `view_1002`, recargar `view_1003` (el botón atrás de Opera sólo ofrece
+  `ExpandCollapsePattern`; su estado habilitado sí sirve).
+- **El árbol «roto» lo causa el Acceso Rápido** (la página de pestaña nueva
+  con fondo vivo), no el toque de Alt: desde que se muestra, el primer hijo de
+  `LiveBackgroundView` está muerto (`GetFirstChild` y `FindAll` desde la raíz
+  fallan; `FindAll` da 0) aunque se cierre esa pestaña. El último hijo
+  (`WindowDecoratorGx`) contiene la tira de pestañas, la barra y la página: los
+  guiones `Address`, `Frame`, `Act` y `PageText` recorren los hijos desde el
+  final cuando el recorrido hacia delante falla, y la lectura vuelve sin tocar
+  el navegador. `PagePlay` (streaming) busca con `FindAll` desde la raíz y no
+  tiene ese arreglo.
+- Las pestañas en «islas» (`TabGroupViewGx`) también son `TabItem` y cuentan.
 
 ### Privacidad
 
@@ -229,10 +294,16 @@ elegido. Las sesiones SMTC se leen como ya hacía `media.status`.
   (`user_browser_*`, `hbo_max_*`); `data/operation_floor.v1.json`, las
   frases de suelo de `hbo_max_authentication_required` y
   `user_browser_streaming_profile_choice`.
+- `.../UserBrowserTabs.cs` — `browser.control` en el navegador de la persona
+  (mensajes de ventana, guiones `Frame`/`Act`, verificación por relectura);
+  `UserBrowserPlatform.cs` publica `WM_APPCOMMAND`/`WM_COMMAND`, el clic
+  central y mira si la ventana cubre su monitor. En la mente,
+  `_project_tab_listing`, `_tab_listing_fact_defect` y `_tab_listing_final`
+  (`llm.py`) y los hechos de causa de los códigos de pestaña.
 
 ## Verificación
 
-- `tests/Baxy.Providers.Windows.Tests/UserBrowserTests.cs` (24, con
+- `tests/Baxy.Providers.Windows.Tests/UserBrowserTests.cs` (37, con
   plataforma falsa): detección por `ProgId`, apertura y lectura del sitio,
   dirección de otro sitio nunca reportada, incierto sin lectura, respaldo
   Edge (fallo de lanzamiento, sin predeterminado, `BAXY_BROWSER=product`,
@@ -246,6 +317,19 @@ elegido. Las sesiones SMTC se leen como ya hacía `media.status`.
   persona tenía en pausa no tomado por el pedido.
 - `tests/test_m122_user_browser_facts.py`: hechos de causa.
 - `tests/test_nav_hbo_max_service.py`: lectores de HBO Max en la mente.
+- `tests/test_m122_user_browser_facts.py`: hechos de causa; conteo de
+  pestañas (proyección, guarda «tres videos de YouTube», final de suelo,
+  títulos de HBO Max), lectores de «cierra esta pestaña», «vuelve atrás»,
+  «recarga la página», «baja/sube la página», «pon el video en pantalla
+  completa», y que cada frase de suelo de pestañas pasa el juez de respuestas.
+- `UserBrowserTests` (pestañas, plataforma falsa): atrás por `WM_APPCOMMAND`
+  verificado por otro documento; sin historial no se envía nada; recarga por
+  documento nuevo e incierta sin él; Opera pulsa su botón y Chrome recibe
+  `IDC_NEW_TAB`; cierre por clic central en el sitio de la pestaña activa
+  (Opera) o `IDC_CLOSE_TAB` (Chrome); una pestaña que cambió no se pulsa; la
+  última se conserva; `close_all` no lee ni toca nada; desplazamiento leído de
+  vuelta y borde; pantalla completa por la ventana que cubre el monitor;
+  lectura del marco con una sola pestaña (`ConvertTo-Json`).
 - Manual, 2026-10-02, con un Edge **propio y desechable** (perfil temporal,
   cerrado después por su PID): el guion de dirección leyó
   `https://example.com` en 1,2 s; el guion de página pulsó por UIA el enlace
@@ -274,6 +358,34 @@ elegido. Las sesiones SMTC se leen como ya hacía `media.status`.
     nombre empieza el título de la ventana.
   - Quedó abierto Opera GX con las pestañas de la comprobación (example.com,
     iana.org, duck.ai y dos videos de YouTube en pausa); no se cerró nada.
+- **Pestañas en el Opera GX de la persona, 2026-10-06 18:30–19:10**, App real
+  (`run_baxy_conductor.ps1`, mente del worktree), Opera abierto por la persona
+  con 15–16 pestañas; sólo se cerraron pestañas abiertas por la prueba
+  (comprobado antes de cada cierre por el título de la pestaña activa):
+  - «cuántas pestañas tengo abiertas» → «Tienes 15 pestañas abiertas en Opera
+    GX, de las cuales 7 son de Disney+…» (contado aparte: 15 y 7, correcto).
+  - «baja un poco la página» → «He bajado la página.» (iana.org: 0 → 100 %);
+    «sube la página» → «He subido la página.» (100 → 0 %).
+  - «recarga la página» → recargada (el `RuntimeId` del documento cambió).
+  - «vuelve atrás» → volvió de iana.org a example.com; en una pestaña recién
+    abierta: «No se pudo volver atrás porque la pestaña del navegador no tiene
+    una página anterior…» (botón atrás deshabilitado, nada enviado).
+  - «abre una pestaña nueva» → «Abrí una pestaña nueva en el navegador.»
+    (16 → 17, Acceso Rápido delante); también tras «cuántas pestañas…» en la
+    misma conversación.
+  - «cierra esta pestaña» (tres veces, sobre pestañas de la prueba) → «He
+    cerrado la pestaña de Acceso Rápido…» (17 → 16), «…de Example Domain…».
+  - «cierra todas las pestañas» → «No pude cerrarlas todas: eso cerraría tu
+    navegador entero con todas tus páginas. Puedo cerrar la pestaña que tienes
+    delante.» (nada cerrado).
+  - «pon el video en pantalla completa» (YouTube propio, sonido del sistema
+    silenciado y restaurado a 60 %) → la ventana pasó de `-9,-9,1929,1029` a
+    `0,0,1920,1080`, verificado. Se salió con Esc y se cerró la pestaña.
+  - Opera estuvo en primer plano durante toda la prueba (el conductor no tiene
+    ventana): que los mensajes no roben el primer plano está medido por la
+    investigación en Chrome/Edge, no aquí; que las acciones UIA (botón de
+    pestaña nueva, `ScrollPattern`, botón de pantalla completa) traigan Opera
+    al frente, sin medir.
 
 ## Pendiente
 
@@ -285,8 +397,12 @@ elegido. Las sesiones SMTC se leen como ya hacía `media.status`.
   dragon» frente a «La Casa del Dragón») no se elige: queda incierto con la
   búsqueda abierta. El decisor entrenado no vio HBO Max al entrenarse; lo
   reciben los lectores y la línea de su catálogo.
-- Pestañas del navegador de la persona (atrás, recargar, cerrar pestaña) por
-  teclado a su ventana, verificadas por la lectura de dirección.
+- Pestañas: ir a una pestaña por su nombre (propuesta `browser.tab.select`,
+  sección «Pestañas») y `close_all` con confirmación ligada a
+  `action=close_all` (hoy no se hace) son decisiones del dueño. El primer
+  plano tras una acción UIA (botón de pestaña nueva en Opera, `ScrollPattern`,
+  botón de pantalla completa) no está medido en Opera: la investigación lo vio
+  traer Chrome/Edge al frente.
 - Instrumentos de medición que dependían de Edge: deben exportar
   `BAXY_BROWSER=product` (o su `BAXY_CDP_ENDPOINT`) para conservar el
   aislamiento.

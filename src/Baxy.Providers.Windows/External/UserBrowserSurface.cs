@@ -12,7 +12,7 @@ namespace Baxy.Providers.Windows.External;
 /// Chromium 136, so CDP on the person's browser would mean restarting it with
 /// another profile; this surface never does that (documentacion/NAVEGADOR_USUARIO.md).
 /// </summary>
-internal sealed class UserBrowserSurface
+internal sealed partial class UserBrowserSurface
 {
     internal const string NavigationUnconfirmed = "user_browser_navigation_unconfirmed";
     internal const string PlaybackUnconfirmed = "user_browser_playback_unconfirmed";
@@ -285,9 +285,9 @@ internal sealed class UserBrowserSurface
         UserBrowserWindow? window = FrontWindow(browser);
         if (window is null)
             return ExternalJson.FailureBeforeEffect(operation, BrowserNotRunning);
-        IReadOnlyList<UserBrowserTab>? tabs = await _platform.ReadTabsAsync(window.Handle, cancellationToken)
-            .ConfigureAwait(false);
-        if (tabs is null || tabs.Count == 0)
+        UserBrowserFrame? frame = await ReadFrameAsync(window.Handle, cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<UserBrowserTab> tabs = frame?.Tabs ?? [];
+        if (tabs.Count == 0)
             return ExternalJson.FailureBeforeEffect(operation, PageUnreadable);
         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
         {

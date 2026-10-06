@@ -5940,8 +5940,37 @@ _CAUSE_FACT = {
         "browser could be used on this PC, so nothing was played"
     ),
     "user_browser_tabs_not_automatable": (
-        "the person's tabs are in their own web browser, where the assistant opens pages, reads them and controls "
-        "what plays, but cannot yet move through its tabs (back, reload, close), so nothing was done"
+        "the person's tabs are in their own web browser, which the assistant could not reach for this step, "
+        "so nothing was done"
+    ),
+    # Owner 2026-10-06 («lo de mover pestañas… que el Baxi no se limite»): browser.control acts on the person's own
+    # browser; what it could not do or could not confirm there is told as such.
+    "user_browser_tab_step_unconfirmed": (
+        "the step was sent to the person's own web browser, but afterwards its tabs and page did not show the change, "
+        "so it is not confirmed; say it may not have happened and that they can check it there"
+    ),
+    "user_browser_tab_step_unavailable": (
+        "the person's own web browser did not offer a way to do that step right now (the tab was not on screen or "
+        "its control was not found), so nothing was done"
+    ),
+    "user_browser_last_tab_kept": (
+        "that is the only tab open in the person's web browser and closing it would close the whole browser window, "
+        "so it was left open; nothing was done"
+    ),
+    "user_browser_close_all_declined": (
+        "closing every tab would close the person's whole browser with all their open pages and signed-in sessions, "
+        "so the assistant does not do it in one step; nothing was closed, and it can close the tab they are on, one "
+        "at a time"
+    ),
+    "user_browser_fullscreen_control_missing": (
+        "the page open in the person's web browser has no video full-screen control, so nothing was done"
+    ),
+    "user_browser_history_start": (
+        "the tab in front of the person's web browser has no previous page to go back to, so nothing was done"
+    ),
+    "user_browser_scroll_boundary": (
+        "the page in front of the person's web browser is already at that end (or does not scroll), so it did not "
+        "move; nothing was done"
     ),
     # Owner 2026-10-06: «the page» and «the tabs» are always the person's own browser, never one the assistant keeps.
     "user_browser_not_running": (
@@ -7760,11 +7789,15 @@ def _compose_situation_payload(
         elif operation == "browser.control":
             # BROWSER1493 «abrí una pestaña nueva»: the target id is an
             # internal identifier; the person needs the action and its state.
+            # In the person's own browser (owner 2026-10-06) the tab that closed and the tab now in front are what
+            # the person sees change.
             visible_seen = {
                 key: visible_seen[key]
-                for key in ("action", "observedState")
+                for key in ("action", "observedState", "closedTab", "activeTab")
                 if isinstance(visible_seen.get(key), str)
             }
+        elif operation == "browser.tabs.list":
+            visible_seen = _project_tab_listing(visible_seen)
         elif operation in ("capture.screenshot", "capture.active.window"):
             # SCREEN1399 H0093 «sacá un screenshot»: the receipt's captureId,
             # sha256 and timestamp were narrated («con el ID capture_…») and the
@@ -8390,6 +8423,26 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
                 "and do not say it was already open. Address the person naturally "
                 "in their language."
             )
+        browser_step_example = {
+            "went_back": "Volví a la página anterior",
+            "reloaded": "Recargué la página",
+            "scrolled": "Bajé la página" if _merged_observed(situation).get("action") == "scroll_down" else "Subí la página",
+            "tab_closed": "Cerré la pestaña",
+            "fullscreen": "Puse el video en pantalla completa",
+        }.get(str(_merged_observed(situation).get("observedState") or ""))
+        if (
+            situation.get("operation") == "browser.control"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and browser_step_example
+        ):
+            # Live check 2026-10-06 (the person's Opera GX): «El video ya está en pantalla completa» read as if it
+            # already was, «Has vuelto a la página…» as if the person did it. The assistant did it, just now.
+            bits.append(
+                "You have just done this step yourself in the person's web browser and read the result back: say it "
+                f"in the past, as yours, in one short sentence (for example «{browser_step_example}»). Never say it "
+                "already was so, and never say the person did it. Address the person naturally in their language."
+            )
         if (
             situation.get("operation") == "browser.control"
             and situation.get("verified") is True
@@ -8736,6 +8789,13 @@ def _told_result_final(situation: dict, payload: dict, user_text: str, language:
         and (page_final := _page_read_final(seen, english))
     ):
         return page_final
+    if (
+        operation == "browser.tabs.list"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+        and (tabs_final := _tab_listing_final(seen, english))
+    ):
+        return tabs_final
     if situation.get("verified") is not True or situation.get("succeeded") is not True:
         reason = situation.get("reason")
         if isinstance(reason, str) and reason.lstrip().startswith("{"):
@@ -9856,6 +9916,125 @@ def _written_file_after_listing(payload: dict) -> str | None:
             name = seen.get("name") if isinstance(seen, dict) else None
             return name.strip() if isinstance(name, str) and name.strip() else None
     return None
+
+
+# Owner's live check 2026-10-06 «cuántas pestañas tengo abiertas» (Opera GX): with five tabs, two of them YouTube
+# videos, the reply said «tres videos de YouTube». A tab title names its site after its last dash or bar («Despacito -
+# YouTube», «Inicio | BancoEstado», «Buscar • HBO Max»); a title that is only a site's name («YouTube») is that site's
+# page too.
+_TAB_TITLE_SITE = re.compile(r"\s[-–—|•·]\s+([^-–—|•·]{2,40})$")
+# HBO Max writes «HBO\xa0Max» and wraps titles in bidi isolates (U+2068…U+2069): read as a person sees them.
+_TAB_TITLE_INVISIBLE = re.compile("[‎‏⁦-⁩]")
+
+
+def _tab_title(value: object) -> str:
+    return " ".join(_TAB_TITLE_INVISIBLE.sub("", str(value or "")).replace("\xa0", " ").split())
+
+
+def _tab_site(title: str) -> str:
+    match = _TAB_TITLE_SITE.search(title.strip())
+    site = match.group(1).strip() if match else ""
+    return site if site and len(site.split()) <= 3 else ""
+
+
+def _tab_site_counts(titles: list[str]) -> dict[str, int]:
+    sites = {site for site in map(_tab_site, titles) if site}
+    per_site: dict[str, int] = {}
+    for title in titles:
+        site = _tab_site(title) or (title if title in sites else "")
+        if site:
+            per_site[site] = per_site.get(site, 0) + 1
+    return per_site
+
+
+def _project_tab_listing(seen: dict) -> dict:
+    """The person's tabs as the composer gets them: the count, the titles in order, the active one, and how many tabs
+    each site holds when two or more share it — counted here from the tab strip, never left to the model."""
+
+    tabs = [tab for tab in seen.get("tabs") or [] if isinstance(tab, dict)]
+    titles = [_tab_title(tab.get("title")) for tab in tabs]
+    count = seen.get("count") if type(seen.get("count")) is int else len(titles)
+    per_site = _tab_site_counts(titles)
+    projected: dict = {"tabCount": count, "titles": titles}
+    active = next((title for tab, title in zip(tabs, titles) if tab.get("active") is True), "")
+    if active:
+        projected["activeTab"] = active
+    shared = {site: number for site, number in per_site.items() if number >= 2}
+    if shared:
+        projected["tabsPerSite"] = shared
+    if count > len(titles):
+        projected["moreNotShown"] = count - len(titles)
+    if isinstance(seen.get("browser"), str) and seen["browser"]:
+        projected["browser"] = seen["browser"]
+    return projected
+
+
+def _tab_listing_fact_defect(text: str, payload: dict) -> str:
+    """Every figure of a tab listing reply is one the listing gives: the tab count, a site's count, the rest after a
+    site, or a number inside a title. «Tres videos de YouTube» over two is invented."""
+
+    if payload.get("operation") != "browser.tabs.list":
+        return ""
+    seen = payload.get("seen")
+    if not isinstance(seen, dict) or type(seen.get("tabCount")) is not int:
+        return ""
+    count = seen["tabCount"]
+    titles = [title for title in seen.get("titles") or [] if isinstance(title, str)]
+    per_site = seen.get("tabsPerSite") if isinstance(seen.get("tabsPerSite"), dict) else {}
+    # One tab of a site, or none, is a count the titles show without a figure of their own.
+    allowed = {0, 1, count, len(titles), *(n for n in per_site.values() if type(n) is int)}
+    allowed |= {count - n for n in per_site.values() if type(n) is int}
+    if type(seen.get("moreNotShown")) is int:
+        allowed.add(seen["moreNotShown"])
+    for title in titles:
+        allowed |= {int(number) for number in re.findall(r"\d+", title) if len(number) <= 6}
+        allowed |= {int(_REPORT_COUNT_WORDS[match["count"]]) for match in _REPORT_COUNT.finditer(_reading_fold(title))}
+    without_titles = text
+    for title in sorted(titles, key=len, reverse=True):
+        if title:
+            without_titles = without_titles.replace(title, " ")
+    # A figure tied to a site («tres videos de YouTube», «2 pestañas de Gmail») is that site's own count.
+    folded = _reading_fold(without_titles)
+    for site, number in _tab_site_counts(titles).items():
+        tied = re.compile(
+            r"(?<![\w.,])(?P<n>\d+|" + "|".join(sorted(_REPORT_COUNT_WORDS, key=len, reverse=True))
+            + r")\s+(?:[\w-]+\s+){0,3}?(?:de|del|en|of|on|from)\s+" + re.escape(_reading_fold(site)) + r"(?!\w)"
+        )
+        for match in tied.finditer(folded):
+            said = match["n"]
+            value = int(said) if said.isdigit() else int(_REPORT_COUNT_WORDS[said])
+            if value != number:
+                return "invented_number"
+    for number in _REPORT_NUMBER.findall(without_titles):
+        if number.isdigit() and int(number) not in allowed:
+            return "invented_number"
+    for match in _REPORT_COUNT.finditer(_reading_fold(without_titles)):
+        if int(_REPORT_COUNT_WORDS[match["count"]]) not in allowed:
+            return "invented_number"
+    return ""
+
+
+def _tab_listing_final(seen: dict, english: bool) -> str:
+    """When every draft failed: the count and the titles, as read."""
+
+    count = seen.get("tabCount")
+    titles = [title for title in seen.get("titles") or [] if isinstance(title, str) and title]
+    if type(count) is not int or not titles or any("«" in title or "»" in title for title in titles):
+        return ""
+    browser = seen.get("browser") if isinstance(seen.get("browser"), str) else ""
+    shown = titles[:12]
+    joiner = " and " if english else " y "
+    listed = (", ".join(f"«{t}»" for t in shown[:-1]) + joiner + f"«{shown[-1]}»") if len(shown) > 1 else f"«{shown[0]}»"
+    rest = count - len(shown)
+    if english:
+        where = f" in {browser}" if browser else ""
+        noun = "tab" if count == 1 else "tabs"
+        more = f", and {rest} more" if rest > 0 else ""
+        return f"You have {count} {noun} open{where}: {listed}{more}."
+    where = f" en {browser}" if browser else ""
+    noun = "pestaña abierta" if count == 1 else "pestañas abiertas"
+    more = f", y {rest} más" if rest > 0 else ""
+    return f"Tienes {count} {noun}{where}: {listed}{more}."
 
 
 def _page_read_final(seen: dict, english: bool) -> str:
@@ -14685,6 +14864,9 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "", *, said:
     wifi_place_defect = _wifi_place_fact_defect(text, payload)
     if wifi_place_defect:
         return wifi_place_defect
+    tab_defect = _tab_listing_fact_defect(text, payload)
+    if tab_defect:
+        return tab_defect
     if payload.get("operation") == "filesystem.explorer.count" and isinstance(seen, dict) and type(seen.get("count")) is int:
         # REOPEN1957 H0701: the figure and the folder's name are the facts; any
         # other number is invented.
@@ -26286,6 +26468,24 @@ class LlmRuntime:
                 "(seen.filesInFolder son los archivos que tiene en total), leída de la ventana del "
                 "Explorador que está delante. Di la cantidad y nombrá esa carpeta, en una oración corta; "
                 "sin otros números."
+            )
+        if (
+            visible_situation.get("operation") == "browser.tabs.list"
+            and isinstance(visible_situation.get("seen"), dict)
+            and type(visible_situation["seen"].get("tabCount")) is int
+        ):
+            # Owner's live check 2026-10-06: five tabs, two of them YouTube videos, told as «tres videos de
+            # YouTube». The figures are counted by the code; the model copies them.
+            instruct(
+                "\nseen.tabCount is how many tabs the person's browser has open, seen.titles their titles in "
+                "order, seen.activeTab the one in front, and seen.tabsPerSite how many tabs share a site. Use "
+                "only those figures, never a count of your own: say seen.tabCount, and for a site the number in "
+                "seen.tabsPerSite (or one, for a single title)."
+                if response_language == "en"
+                else "\nseen.tabCount es cuántas pestañas tiene abiertas el navegador de la persona, seen.titles "
+                "sus títulos en orden, seen.activeTab la que está delante y seen.tabsPerSite cuántas pestañas "
+                "comparten un sitio. Usa sólo esas cifras, nunca una cuenta tuya: di seen.tabCount, y para un "
+                "sitio el número de seen.tabsPerSite (o una, si es un solo título)."
             )
         if visible_situation.get("operation") in {"file.compress", "file.open", "desktop.wallpaper.set", "web.download"} and isinstance(visible_situation.get("seen"), dict):
             # REOPEN1957 H0542/H0459/H0077: each file tool leaves its own

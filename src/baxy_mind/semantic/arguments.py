@@ -930,7 +930,9 @@ def _explicit_arguments_from_evidence(
     if operation == "browser.control":
         return (effect_intent.browser_back_arguments(evidence)
                 or effect_intent.browser_new_tab_arguments(evidence)
-                or effect_intent.browser_close_all_tabs_arguments(evidence))
+                or effect_intent.browser_close_all_tabs_arguments(evidence)
+                or effect_intent.browser_close_tab_arguments(evidence)
+                or effect_intent.browser_page_step_arguments(evidence))
 
     if operation == "system.status":
         return _explicit_system_status_scope(evidence)

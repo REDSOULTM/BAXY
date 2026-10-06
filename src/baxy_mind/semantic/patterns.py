@@ -19,7 +19,7 @@ from .intent import EffectIntent, _entity_key, _is_negated_match, _append, _appe
 from .catalog import ApplicationCatalogIndex, GameCatalogIndex, build_game_catalog_index, _authenticated_game_target, resolve_game_catalog_app_id, _application_name_key, build_application_catalog_index, _catalog_alias_key, _installed_game_named, installed_game_title
 from .temporal import said_advance, _CALENDAR_MONTH_TOKEN, _CLOCK_TIME_SELECTOR, _BOUNDED_TEMPORAL_SELECTOR, alarm_for_hour, spoken_clock, clock_elsewhere, other_place_clock_question, notification_change, plural_alarm_cancellation
 from .media import _youtube_search_query, youtube_play_query, _direct_media_discovery_or_play_request, _named_browser_music_request, _NETFLIX_SPELLED, _underspecified_video_request, _title_case_media_title, _media_transport_action, _resume_existing_media, _REMOVABLE_MEDIA, _bare_spoken_number_media_query, radio_station_query, spoken_media_order, MUSIC_GENRE, _RADIO_PLAY, own_recent_listening_request, purpose_music_query
-from .web import asks_for_information, public_opinion_query, record_fact_query, _public_route_lookup_request, _public_calendar_fact_lookup_request, _WEATHER_WORDS, _weather_lookup_query, _research_question_query, _public_live_lookup_request, _public_product_correction_lookup_request, _public_commerce_lookup_request, _FILESYSTEM_OBJECT_NOUN, operation_identity_is_a_near_miss, curiosity_request, web_image_request, _NAVIGATION_CLIENT, client_navigation_target, _authenticated_application_identity_conflict, _browser_page_domain, browser_back_arguments, browser_new_tab_arguments, browser_close_all_tabs_arguments, _historical_note_search_request, _stored_note_search_query, _nominal_reminder_lookup_title, _location_recommendation_request, _NAMED_BROWSER_SITE_REQUEST, _installed_browser_search_query, _completed_browser_search_pronoun_request, _NAMED_PUBLIC_SITE, _review_web_and_browser_effects, web_download_request, NAMED_CDP_BROWSERS, _named_browser_match, _named_browser, public_event_subject, cinema_listing, asks_to_watch_the_news
+from .web import asks_for_information, public_opinion_query, record_fact_query, _public_route_lookup_request, _public_calendar_fact_lookup_request, _WEATHER_WORDS, _weather_lookup_query, _research_question_query, _public_live_lookup_request, _public_product_correction_lookup_request, _public_commerce_lookup_request, _FILESYSTEM_OBJECT_NOUN, operation_identity_is_a_near_miss, curiosity_request, web_image_request, _NAVIGATION_CLIENT, client_navigation_target, _authenticated_application_identity_conflict, _browser_page_domain, browser_back_arguments, browser_new_tab_arguments, browser_close_all_tabs_arguments, browser_close_tab_arguments, browser_page_step_arguments, _historical_note_search_request, _stored_note_search_query, _nominal_reminder_lookup_title, _location_recommendation_request, _NAMED_BROWSER_SITE_REQUEST, _installed_browser_search_query, _completed_browser_search_pronoun_request, _NAMED_PUBLIC_SITE, _review_web_and_browser_effects, web_download_request, NAMED_CDP_BROWSERS, _named_browser_match, _named_browser, public_event_subject, cinema_listing, asks_to_watch_the_news
 from .files import _pdf_summary_request, _file_trash_request, process_report_file_request, _file_creation_request, known_folder_file_path, _current_directory_file_count, _DUPLICATE_FILES, _known_folder_recent_listing, _known_folder_listing_request, _review_file_and_game_effects, folder_txt_zip_open_mission, open_named_file_request, _office_document_roundtrip_intent
 from .games import _corrected_game_launch_title, _edit_distance, near_catalog_game_candidates, steam_library_verb, steam_library_title, _steam_install_status_intent, _steam_install_cancel_active_intent, _steam_catalog_list_intent
 from .network import _direct_current_time_request, _direct_process_inventory_request, _local_internet_connection_query, _DATIVE_STATE_OPENING, _HARDWARE_MODEL_OPENING, _bluetooth_state_question, wifi_place_request, wifi_radio_set_request, _wifi_scan_question, _wifi_state_question, _review_system_and_network_effects, _wifi_email_intent
@@ -2561,7 +2561,9 @@ def known_unsupported_effect_request(
             # partial close still has no operation and stays a plain limit.
             _has(folded, r"\b(?:cierra|cerra|cerrar|cerrame|cierrame|close)\b")
             and _has(folded, r"\b(?:pestanas?|tabs?)\b")
-            and browser_close_all_tabs_arguments(text) is None,
+            and browser_close_all_tabs_arguments(text) is None
+            # Owner 2026-10-06: the tab in front closes in the person's browser (browser.control close).
+            and browser_close_tab_arguments(text) is None,
             {"browser.tab.close"},
         ),
         (
@@ -7627,6 +7629,8 @@ def _is_direct_request(text: str) -> bool:
         browser_back_arguments(text) is not None
         or browser_new_tab_arguments(text) is not None
         or browser_close_all_tabs_arguments(text) is not None
+        or browser_close_tab_arguments(text) is not None
+        or browser_page_step_arguments(text) is not None
         or _direct_process_inventory_request(text)
         or _explicit_google_search_query(text) is not None
         or _resume_existing_media(text)
@@ -13074,6 +13078,12 @@ def _resolve_clause_effects(
     if "browser.control" in available and browser_close_all_tabs_arguments(text) is not None:
         # BROWSER1841 «cerrá todas las pestañas»: close every open tab in the
         # product's own browser, verified by their absence.
+        return EffectIntent(("browser.control",), (text,))
+    if "browser.control" in available and browser_close_tab_arguments(text) is not None:
+        # Owner 2026-10-06 «cierra esta pestaña»: the tab in front of the person's browser, seen as one tab less.
+        return EffectIntent(("browser.control",), (text,))
+    if "browser.control" in available and browser_page_step_arguments(text) is not None:
+        # Owner 2026-10-06: back, reload, scroll and full screen over the page in front of the person's browser.
         return EffectIntent(("browser.control",), (text,))
     if "browser.control" in available and browser_back_arguments(text) is not None:
         # A complete history request is not a destination to search.
