@@ -174,8 +174,11 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     {
         string action = ExternalJson.RequiredString(arguments, "action");
         // Owner 2026-10-06: the person's tabs are in their own browser; a browser BAXY keeps aside is never the
-        // answer to «cierra la pestaña» or «vuelve atrás». Moving through those tabs is not automated there yet.
-        if (UserBrowserHoldsThePage || _userBrowser?.Resolve() is not null)
+        // answer to «cierra la pestaña» or «vuelve atrás».
+        if (_userBrowser?.Resolve() is { } userBrowser)
+            return await _userBrowser.ControlAsync(operation, userBrowser, action, effectBoundary, cancellationToken)
+                .ConfigureAwait(false);
+        if (UserBrowserHoldsThePage)
             return ExternalJson.FailureBeforeEffect(operation, UserBrowserTabsNotAutomatable);
         CdpBrowserSession browser = _sessionContext?.Active ?? _browser;
         effectBoundary.Cross(cancellationToken);

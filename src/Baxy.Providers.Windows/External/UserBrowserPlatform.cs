@@ -17,7 +17,29 @@ internal sealed record UserMediaSession(
 /// <summary>What the page step did inside the person's browser: the last step reached and the name it acted on.</summary>
 internal sealed record UserBrowserPageStep(bool PlayInvoked, string Step, string Chosen);
 
-internal sealed record UserBrowserTab(string Title, bool Selected);
+/// <summary>
+/// A tab of the person's browser. <paramref name="X"/> and <paramref name="Y"/> are its centre as a fraction of the
+/// window (independent of the display scale of whoever reads it); <paramref name="Shown"/> is false when it is off
+/// screen (minimized window, scrolled tab strip) and has no place to be pointed at.
+/// </summary>
+internal sealed record UserBrowserTab(string Title, bool Selected, bool Shown = false, double X = 0, double Y = 0);
+
+/// <summary>
+/// One read of the browser frame: its tabs, whether the back button is enabled (null when no back button was found),
+/// the address field, and the page document of the active tab. <paramref name="PageId"/> is the document's UI
+/// Automation runtime id, which changes when the tab reloads or leaves the page; <paramref name="Scroll"/> is its
+/// vertical position in percent, or -1 when the document itself does not scroll.
+/// </summary>
+internal sealed record UserBrowserFrame(
+    IReadOnlyList<UserBrowserTab> Tabs,
+    bool? BackEnabled,
+    string Address,
+    string PageId,
+    string PageTitle,
+    double Scroll);
+
+/// <summary>What a UI Automation step inside the frame or the page did (see UserBrowserScripts.Act).</summary>
+internal sealed record UserBrowserAct(string Step, double Before, double After);
 
 internal sealed record UserBrowserPageText(string Title, string Text, bool Truncated);
 
@@ -47,8 +69,32 @@ internal interface IUserBrowserPlatform
     ValueTask<UserBrowserPageStep> StartTitleInPageAsync(
         nint window, string title, bool typeSearch, CancellationToken cancellationToken);
 
-    /// <summary>The window's tabs (title, selected), or null when UI Automation cannot read its tab strip.</summary>
-    ValueTask<IReadOnlyList<UserBrowserTab>?> ReadTabsAsync(nint window, CancellationToken cancellationToken);
+    /// <summary>The window's frame (tabs, back button, address, page document), or null when its tab strip cannot be read.</summary>
+    ValueTask<UserBrowserFrame?> ReadFrameAsync(nint window, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Posts a WM_APPCOMMAND to the window (back, forward, reload): Chromium runs it on the active tab whatever window
+    /// has the foreground, with no key and no menu. False when the message could not be posted.
+    /// </summary>
+    bool PostAppCommand(nint window, int command);
+
+    /// <summary>
+    /// Posts a WM_COMMAND with a Chromium browser command id (IDC_NEW_TAB, IDC_CLOSE_TAB…): Chrome, Edge and Brave run
+    /// it as their menu would, without the foreground. False when the message could not be posted.
+    /// </summary>
+    bool PostBrowserCommand(nint window, int command);
+
+    /// <summary>
+    /// Posts a middle click at a point of the window given as a fraction of it (a tab's centre): Chromium closes the
+    /// tab under it, without the foreground. False when the message could not be posted.
+    /// </summary>
+    bool PostMiddleClick(nint window, double x, double y);
+
+    /// <summary>Runs a UI Automation step in the window: new_tab, scroll_down, scroll_up or fullscreen_video.</summary>
+    ValueTask<UserBrowserAct> ActAsync(nint window, string action, CancellationToken cancellationToken);
+
+    /// <summary>Whether the window covers its whole monitor (a video in full screen), taskbar included.</summary>
+    bool CoversMonitor(nint window);
 
     /// <summary>The title and visible text of the page the window shows, or null when it cannot be read.</summary>
     ValueTask<UserBrowserPageText?> ReadPageTextAsync(
@@ -225,29 +271,112 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
         return new UserBrowserPageStep(played, step, chosen);
     }
 
-    public async ValueTask<IReadOnlyList<UserBrowserTab>?> ReadTabsAsync(
-        nint window, CancellationToken cancellationToken)
+    public async ValueTask<UserBrowserFrame?> ReadFrameAsync(nint window, CancellationToken cancellationToken)
     {
         JsonElement? result = await RunScriptAsync(
-            UserBrowserScripts.Tabs,
+            UserBrowserScripts.Frame,
             [window.ToString(System.Globalization.CultureInfo.InvariantCulture)],
             TimeSpan.FromSeconds(10),
             cancellationToken).ConfigureAwait(false);
-        if (result is not { } value
-            || !value.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True
-            || !value.TryGetProperty("tabs", out JsonElement tabs) || tabs.ValueKind != JsonValueKind.Array)
-            return null;
-        var read = new List<UserBrowserTab>();
-        foreach (JsonElement tab in tabs.EnumerateArray())
-        {
-            string title = tab.TryGetProperty("title", out JsonElement name) && name.ValueKind == JsonValueKind.String
-                ? name.GetString() ?? string.Empty
-                : string.Empty;
-            bool selected = tab.TryGetProperty("selected", out JsonElement flag) && flag.ValueKind == JsonValueKind.True;
-            read.Add(new UserBrowserTab(title, selected));
-        }
-        return read;
+        return result is { } value ? ParseFrame(value) : null;
     }
+
+    internal static UserBrowserFrame? ParseFrame(JsonElement value)
+    {
+        if (!value.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True
+            || !value.TryGetProperty("tabs", out JsonElement tabs))
+            return null;
+        // ConvertTo-Json writes a one-element array as the element itself.
+        IEnumerable<JsonElement> items = tabs.ValueKind switch
+        {
+            JsonValueKind.Array => tabs.EnumerateArray(),
+            JsonValueKind.Object => [tabs],
+            _ => [],
+        };
+        var read = new List<UserBrowserTab>();
+        foreach (JsonElement tab in items)
+        {
+            read.Add(new UserBrowserTab(
+                Text(tab, "title"),
+                tab.TryGetProperty("selected", out JsonElement flag) && flag.ValueKind == JsonValueKind.True,
+                tab.TryGetProperty("shown", out JsonElement shown) && shown.ValueKind == JsonValueKind.True,
+                Number(tab, "x"),
+                Number(tab, "y")));
+        }
+        if (read.Count == 0)
+            return null;
+        string back = Text(value, "back");
+        JsonElement page = value.TryGetProperty("page", out JsonElement found) && found.ValueKind == JsonValueKind.Object
+            ? found
+            : default;
+        bool hasPage = page.ValueKind == JsonValueKind.Object;
+        return new UserBrowserFrame(
+            read,
+            back switch { "enabled" => true, "disabled" => false, _ => null },
+            Text(value, "address"),
+            hasPage ? Text(page, "id") : string.Empty,
+            hasPage ? Text(page, "title") : string.Empty,
+            hasPage ? Number(page, "scroll", -1) : -1);
+    }
+
+    public bool PostAppCommand(nint window, int command) =>
+        window != nint.Zero
+        && PostMessage(window, WmAppCommand, window, (nint)(command << 16));
+
+    public bool PostBrowserCommand(nint window, int command) =>
+        window != nint.Zero
+        && PostMessage(window, WmCommand, (nint)command, nint.Zero);
+
+    public bool PostMiddleClick(nint window, double x, double y)
+    {
+        if (window == nint.Zero || x is <= 0 or >= 1 || y is <= 0 or >= 1 || !GetWindowRect(window, out Rect frame))
+            return false;
+        var point = new Point
+        {
+            X = frame.Left + (int)Math.Round((frame.Right - frame.Left) * x),
+            Y = frame.Top + (int)Math.Round((frame.Bottom - frame.Top) * y),
+        };
+        if (!ScreenToClient(window, ref point))
+            return false;
+        nint position = (nint)(((point.Y & 0xFFFF) << 16) | (point.X & 0xFFFF));
+        // The pointer passes over the tab first, as a hand would, then the middle button goes down and up on it.
+        return PostMessage(window, WmMouseMove, nint.Zero, position)
+            && PostMessage(window, WmMiddleButtonDown, MiddleButton, position)
+            && PostMessage(window, WmMiddleButtonUp, nint.Zero, position);
+    }
+
+    public async ValueTask<UserBrowserAct> ActAsync(nint window, string action, CancellationToken cancellationToken)
+    {
+        JsonElement? result = await RunScriptAsync(
+            UserBrowserScripts.Act,
+            [window.ToString(System.Globalization.CultureInfo.InvariantCulture), action],
+            TimeSpan.FromSeconds(20),
+            cancellationToken).ConfigureAwait(false);
+        return result is { } value
+            ? new UserBrowserAct(Text(value, "step"), Number(value, "before", -1), Number(value, "after", -1))
+            : new UserBrowserAct("script_failed", -1, -1);
+    }
+
+    public bool CoversMonitor(nint window)
+    {
+        if (window == nint.Zero || !GetWindowRect(window, out Rect frame))
+            return false;
+        nint monitor = MonitorFromWindow(window, MonitorDefaultToNearest);
+        var info = new MonitorInfo { Size = Marshal.SizeOf<MonitorInfo>() };
+        return monitor != nint.Zero && GetMonitorInfo(monitor, ref info)
+            && frame.Left <= info.Monitor.Left && frame.Top <= info.Monitor.Top
+            && frame.Right >= info.Monitor.Right && frame.Bottom >= info.Monitor.Bottom;
+    }
+
+    private static string Text(JsonElement value, string property) =>
+        value.TryGetProperty(property, out JsonElement field) && field.ValueKind == JsonValueKind.String
+            ? field.GetString() ?? string.Empty
+            : string.Empty;
+
+    private static double Number(JsonElement value, string property, double fallback = 0) =>
+        value.TryGetProperty(property, out JsonElement field) && field.ValueKind == JsonValueKind.Number
+            ? field.GetDouble()
+            : fallback;
 
     public async ValueTask<UserBrowserPageText?> ReadPageTextAsync(
         nint window, int maximumCharacters, CancellationToken cancellationToken)
@@ -340,4 +469,56 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
 
     [LibraryImport("user32.dll")]
     private static partial uint GetWindowThreadProcessId(nint window, out uint processId);
+
+    private const uint WmAppCommand = 0x0319;
+    private const uint WmCommand = 0x0111;
+    private const uint WmMouseMove = 0x0200;
+    private const uint WmMiddleButtonDown = 0x0207;
+    private const uint WmMiddleButtonUp = 0x0208;
+    private const nint MiddleButton = 0x0010;
+    private const uint MonitorDefaultToNearest = 2;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct Rect
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct Point
+    {
+        public int X;
+        public int Y;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct MonitorInfo
+    {
+        public int Size;
+        public Rect Monitor;
+        public Rect Work;
+        public uint Flags;
+    }
+
+    [LibraryImport("user32.dll", EntryPoint = "PostMessageW", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool PostMessage(nint window, uint message, nint wParam, nint lParam);
+
+    [LibraryImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetWindowRect(nint window, out Rect rect);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool ScreenToClient(nint window, ref Point point);
+
+    [LibraryImport("user32.dll")]
+    private static partial nint MonitorFromWindow(nint window, uint flags);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetMonitorInfoW")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetMonitorInfo(nint monitor, ref MonitorInfo info);
 }
