@@ -157,9 +157,11 @@ def _named_browser_music_request(text: str) -> tuple[str, str | None] | None:
 # es cerrado y una tolerancia genérica leería «Netflix» donde se dijo otra cosa.
 # VIDEO1947: Disney+ joins the closed streaming catalog; the same short, closed
 # alternation of misspellings (the owner's ear, not another service).
+# 2026-10-06 (owner: «Disney y HBO deberían de funcionar»): HBO Max joins it as «HBO Max», «HBOMax» or «HBO»; a bare
+# «Max» is not read as the service («ponlo al max», «el brillo en max» are a level, not a title on HBO Max).
 _NETFLIX_SPELLED = (
     r"(?:netflix|nerflix|netlix|netfix|netflis|neflix|netflx|netflex|nexflix|"
-    r"disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|dinsey|dizney|east\s*plus)"
+    r"disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|dinsey|dizney|east\s*plus|hbo\s*max|hbomax|hbo)"
 )
 
 

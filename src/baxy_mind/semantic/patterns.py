@@ -4310,11 +4310,13 @@ def _clarification_intent_of(
 
 
 def streaming_service_named(text: str) -> str:
-    """The catalog value of the streaming service the text names: disney_plus or netflix."""
+    """The catalog value of the streaming service the text names: disney_plus, hbo_max or netflix."""
 
     folded = _fold(text)
     if _has(folded, r"\b(?:disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|dinsey|dizney|east\s*plus)\b"):
         return "disney_plus"
+    if _has(folded, r"\b(?:hbo\s*max|hbomax|hbo)\b"):
+        return "hbo_max"
     return "netflix"
 
 

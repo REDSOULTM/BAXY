@@ -1328,6 +1328,7 @@ def _explicit_arguments_from_evidence(
         services = {
             service
             for service, suffixes in (
+                ("hbo_max", ("hbomax.com", "max.com")),
                 ("netflix", ("netflix.com",)),
                 ("prime_video", ("primevideo.com", "amazon.com")),
                 ("youtube", ("youtube.com", "youtu.be")),
@@ -2712,7 +2713,7 @@ def watch_named_title(text: str) -> str | None:
 # The services of streaming.play.named, as the reader of a named title spells them (VIDEO1921, VIDEO1947).
 _STREAMING_SERVICE_WORD = (
     r"(?:netflix|nerflix|netlix|netfix|netflis|neflix|netflx|netflex|nexflix|disney\s*\+|disney\s*plus|disneyplus|"
-    r"disney|dysney|disne|dinsey|dizney)"
+    r"disney|dysney|disne|dinsey|dizney|hbo\s*max|hbomax|hbo)"
 )
 _STREAMING_SERVICE_SAID = re.compile(rf"\b{_STREAMING_SERVICE_WORD}\b", re.IGNORECASE)
 _STREAMING_PLAY_HEAD = (

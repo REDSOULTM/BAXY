@@ -1584,7 +1584,7 @@ public static class ProductCatalog
             Schema(
                 [
                     String("resourceUri", maximumUtf8Bytes: 2_048, nonWhitespace: true),
-                    String("service", values: ["netflix", "prime_video", "youtube"]),
+                    String("service", values: ["hbo_max", "netflix", "prime_video", "youtube"]),
                 ],
                 ["resourceUri", "service"]),
             OperationRisks.ExternalCommunication,
@@ -1599,14 +1599,16 @@ public static class ProductCatalog
                     // PlayReady path on this PC (MediaFoundation 0x8004CD…) and
                     // plays with Widevine when the page sees a Chrome user agent;
                     // the provider sets that override on the Disney+ target only.
-                    String("service", values: ["disney_plus", "netflix"]),
+                    // 2026-10-06: HBO Max joins them, played in the person's default
+                    // browser with their session (documentacion/NAVEGADOR_USUARIO.md).
+                    String("service", values: ["disney_plus", "hbo_max", "netflix"]),
                     String("title", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
                 ["service", "title"]),
             OperationRisks.ExternalCommunication,
             "streaming.play.named.netflix.cdp.video.progress.v1",
             ToolExposure.Public,
-            "Busca y reproduce un título en una sesión autenticada de Netflix o Disney+ y verifica que el video avanza."),
+            "Busca y reproduce un título en una sesión autenticada de Netflix, Disney+ o HBO Max y verifica que el video avanza."),
         Descriptor(
             "system.application.crash.diagnose",
             Schema(
