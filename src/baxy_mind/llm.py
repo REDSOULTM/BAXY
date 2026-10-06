@@ -5956,6 +5956,13 @@ _CAUSE_FACT = {
     "user_browser_fullscreen_control_missing": (
         "the page open in the person's web browser has no video full-screen control, so nothing was done"
     ),
+    "user_browser_history_start": (
+        "the tab in front of the person's web browser has no previous page to go back to, so nothing was done"
+    ),
+    "user_browser_scroll_boundary": (
+        "the page in front of the person's web browser is already at that end (or does not scroll), so it did not "
+        "move; nothing was done"
+    ),
     # Owner 2026-10-06: «the page» and «the tabs» are always the person's own browser, never one the assistant keeps.
     "user_browser_not_running": (
         "the person's web browser is not open, so there is no page or tab to read; nothing was done"

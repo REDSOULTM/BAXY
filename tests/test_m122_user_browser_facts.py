@@ -27,6 +27,8 @@ from baxy_mind import llm
         ("user_browser_last_tab_kept", "would close the whole browser window"),
         ("user_browser_close_all_declined", "nothing was closed"),
         ("user_browser_fullscreen_control_missing", "no video full-screen control"),
+        ("user_browser_history_start", "no previous page"),
+        ("user_browser_scroll_boundary", "already at that end"),
     ],
 )
 def test_user_browser_codes_have_their_fact(code: str, words: str) -> None:
@@ -240,3 +242,80 @@ def test_the_tab_in_front_is_closed_and_a_named_tab_stays_a_limit(text: str, act
         assert not patterns.known_unsupported_effect_request(text, operations)
     if text == "cierra la pestaña de YouTube":
         assert patterns.known_unsupported_effect_request(text, operations)
+
+
+@pytest.mark.parametrize(
+    ("text", "action"),
+    [
+        ("vuelve atrás", "back"),
+        ("atrás", "back"),
+        ("go back", "back"),
+        ("recarga la página", "reload"),
+        ("refresh", "reload"),
+        ("baja un poco la página", "scroll_down"),
+        ("desplázate hacia abajo en la página", "scroll_down"),
+        ("scroll down a bit on the page", "scroll_down"),
+        # Without the page, scrolling is the pointer's wheel over whatever is in front (input.pointer.control).
+        ("scroll down a bit", None),
+        ("desplázate hacia abajo", None),
+        ("sube la página", "scroll_up"),
+        ("pon el video en pantalla completa", "fullscreen_video"),
+        # «baja un poco» alone is still the volume's question; a document's page is not the browser's.
+        ("baja un poco", None),
+        ("sube el volumen", None),
+        ("baja la página del pdf", None),
+        ("no recargues la página", None),
+    ],
+)
+def test_the_short_orders_over_the_page_in_front_are_read(text: str, action: str | None) -> None:
+    from baxy_mind.semantic.web import browser_page_step_arguments
+
+    assert (browser_page_step_arguments(text) or {}).get("action") == action
+
+
+def test_closing_every_tab_of_the_persons_browser_is_said_as_not_done() -> None:
+    situation = {
+        "kind": "operation",
+        "operation": "browser.control",
+        "polarity": "failure",
+        "verified": False,
+        "succeeded": False,
+        "error": "user_browser_close_all_declined",
+    }
+
+    final = llm._told_result_final(situation, {}, "cierra todas las pestañas", "es")
+
+    assert final.startswith("No pude cerrarlas todas")
+    assert "Puedo cerrar la pestaña que tienes delante" in final
+
+
+@pytest.mark.parametrize(
+    ("code", "said"),
+    [
+        ("user_browser_close_all_declined", "cierra todas las pestañas"),
+        ("user_browser_last_tab_kept", "cierra esta pestaña"),
+        ("user_browser_tab_step_unconfirmed", "recarga la página"),
+        ("user_browser_fullscreen_control_missing", "pon el video en pantalla completa"),
+        ("user_browser_history_start", "vuelve atrás"),
+        ("user_browser_scroll_boundary", "baja un poco la página"),
+    ],
+)
+def test_each_tab_failure_floor_passes_the_reply_judge(code: str, said: str) -> None:
+    """Live check 2026-10-06: «cierra todas las pestañas» ended with no reply at all, because the floor sentence
+    («…tus páginas abiertas…») read as claiming something open and the App filtered it."""
+
+    import json
+
+    situation = {
+        "kind": "operation",
+        "operation": "browser.control",
+        "polarity": "failure",
+        "verified": False,
+        "succeeded": False,
+        "error": code,
+        "operationAttempted": True,
+    }
+    final = llm._told_result_final(situation, {}, said, "es")
+
+    assert final
+    assert llm.compose_visible_defect(final, "error", said, {"situation": json.dumps(situation)}) == ""

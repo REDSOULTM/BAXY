@@ -15,6 +15,8 @@ internal sealed partial class UserBrowserSurface
     internal const string LastTabKept = "user_browser_last_tab_kept";
     internal const string CloseAllDeclined = "user_browser_close_all_declined";
     internal const string FullscreenControlMissing = "user_browser_fullscreen_control_missing";
+    internal const string HistoryStart = "user_browser_history_start";
+    internal const string ScrollBoundary = "user_browser_scroll_boundary";
     internal const string FrameAuthority = "user_browser_uia_frame_postread";
 
     // WM_APPCOMMAND commands (winuser.h) and Chromium browser command ids (chrome/app/chrome_command_ids.h).
@@ -77,7 +79,7 @@ internal sealed partial class UserBrowserSurface
             return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
         bool back = command == AppCommandBack;
         if (back && before.BackEnabled == false)
-            return Done(step, "history_start", before, effectObserved: false);
+            return ExternalJson.FailureBeforeEffect(step.Operation, HistoryStart);
         if (!_platform.PostAppCommand(step.Window, command))
             return ExternalJson.FailureBeforeEffect(step.Operation, TabStepUnavailable);
         step.Boundary.Cross(CancellationToken.None);
@@ -88,7 +90,7 @@ internal sealed partial class UserBrowserSurface
             cancellationToken).ConfigureAwait(false);
         return after is null
             ? ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed)
-            : Done(step, back ? "went_back" : "reloaded", after, effectObserved: true);
+            : Done(step, back ? "went_back" : "reloaded", after);
     }
 
     /// <summary>
@@ -118,7 +120,7 @@ internal sealed partial class UserBrowserSurface
         }
         return after is null
             ? ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed)
-            : Done(step, "tab_opened", after, effectObserved: true);
+            : Done(step, "tab_opened", after);
     }
 
     /// <summary>
@@ -162,7 +164,7 @@ internal sealed partial class UserBrowserSurface
             return step.Boundary.WasCrossed
                 ? ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed)
                 : ExternalJson.FailureBeforeEffect(step.Operation, TabStepUnavailable);
-        return Done(step, "tab_closed", after, effectObserved: true, closed: active.Title);
+        return Done(step, "tab_closed", after, closed: active.Title);
     }
 
     /// <summary>A screen down or up with the page's ScrollPattern; the position read back is the proof.</summary>
@@ -173,9 +175,9 @@ internal sealed partial class UserBrowserSurface
             .ConfigureAwait(false);
         return scrolled.Step switch
         {
-            "scrolled" => Done(step, "scrolled", null, effectObserved: true, position: scrolled.After),
-            // Already at the end (or a page that does not scroll): nothing to move, as the product browser says.
-            "boundary" or "not_scrollable" => Done(step, "scroll_boundary", null, effectObserved: false),
+            "scrolled" => Done(step, "scrolled", null, position: scrolled.After),
+            // Already at that end, or a page that does not scroll: nothing moved, and it is said so.
+            "boundary" or "not_scrollable" => ExternalJson.FailureBeforeEffect(step.Operation, ScrollBoundary),
             "unmoved" => ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed),
             _ => ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable),
         };
@@ -200,7 +202,7 @@ internal sealed partial class UserBrowserSurface
         {
             await _platform.DelayAsync(Poll, cancellationToken).ConfigureAwait(false);
             if (_platform.CoversMonitor(step.Window))
-                return Done(step, "fullscreen", null, effectObserved: true);
+                return Done(step, "fullscreen", null);
         }
         return ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed);
     }
@@ -245,7 +247,6 @@ internal sealed partial class UserBrowserSurface
         TabStep step,
         string observedState,
         UserBrowserFrame? frame,
-        bool effectObserved,
         string? closed = null,
         double? position = null) =>
         ExternalJson.Success(step.Operation, ExternalJson.Create(writer =>
@@ -267,5 +268,5 @@ internal sealed partial class UserBrowserSurface
                 writer.WriteNumber("scrollPercent", Math.Round(percent, 1));
             writer.WriteString("authority", FrameAuthority);
             writer.WriteEndObject();
-        }), effectObserved);
+        }));
 }

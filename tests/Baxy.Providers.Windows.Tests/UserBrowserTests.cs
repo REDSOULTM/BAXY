@@ -387,9 +387,8 @@ public sealed class UserBrowserTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(control.Verified, Is.True);
-            Assert.That(control.EffectObserved, Is.False);
-            Assert.That(control.Result?.GetProperty("observedState").GetString(), Is.EqualTo("history_start"));
+            Assert.That(control.ErrorCode, Is.EqualTo(UserBrowserSurface.HistoryStart));
+            Assert.That(control.EffectObserved || control.EffectMayHaveOccurred, Is.False);
             Assert.That(platform.AppCommands, Is.Empty);
         });
     }
@@ -535,9 +534,8 @@ public sealed class UserBrowserTests
             Assert.That(down.EffectObserved, Is.True);
             Assert.That(scrolls.Acts, Is.EqualTo(new[] { "scroll_down" }));
             Assert.That(down.Result?.GetProperty("scrollPercent").GetDouble(), Is.EqualTo(21.0));
-            Assert.That(end.Verified, Is.True);
-            Assert.That(end.EffectObserved, Is.False);
-            Assert.That(end.Result?.GetProperty("observedState").GetString(), Is.EqualTo("scroll_boundary"));
+            Assert.That(end.ErrorCode, Is.EqualTo(UserBrowserSurface.ScrollBoundary));
+            Assert.That(end.EffectObserved || end.EffectMayHaveOccurred, Is.False);
         });
     }
 
