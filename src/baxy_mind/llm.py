@@ -9890,8 +9890,15 @@ def _written_file_after_listing(payload: dict) -> str | None:
 
 # Owner's live check 2026-10-06 «cuántas pestañas tengo abiertas» (Opera GX): with five tabs, two of them YouTube
 # videos, the reply said «tres videos de YouTube». A tab title names its site after its last dash or bar («Despacito -
-# YouTube», «Inicio | BancoEstado»); a title that is only a site's name («YouTube») is that site's page too.
-_TAB_TITLE_SITE = re.compile(r"\s[-–—|]\s+([^-–—|]{2,40})$")
+# YouTube», «Inicio | BancoEstado», «Buscar • HBO Max»); a title that is only a site's name («YouTube») is that site's
+# page too.
+_TAB_TITLE_SITE = re.compile(r"\s[-–—|•·]\s+([^-–—|•·]{2,40})$")
+# HBO Max writes «HBO\xa0Max» and wraps titles in bidi isolates (U+2068…U+2069): read as a person sees them.
+_TAB_TITLE_INVISIBLE = re.compile("[‎‏⁦-⁩]")
+
+
+def _tab_title(value: object) -> str:
+    return " ".join(_TAB_TITLE_INVISIBLE.sub("", str(value or "")).replace("\xa0", " ").split())
 
 
 def _tab_site(title: str) -> str:
@@ -9915,7 +9922,7 @@ def _project_tab_listing(seen: dict) -> dict:
     each site holds when two or more share it — counted here from the tab strip, never left to the model."""
 
     tabs = [tab for tab in seen.get("tabs") or [] if isinstance(tab, dict)]
-    titles = [str(tab.get("title") or "").strip() for tab in tabs]
+    titles = [_tab_title(tab.get("title")) for tab in tabs]
     count = seen.get("count") if type(seen.get("count")) is int else len(titles)
     per_site = _tab_site_counts(titles)
     projected: dict = {"tabCount": count, "titles": titles}

@@ -319,3 +319,27 @@ def test_each_tab_failure_floor_passes_the_reply_judge(code: str, said: str) -> 
 
     assert final
     assert llm.compose_visible_defect(final, "error", said, {"situation": json.dumps(situation)}) == ""
+
+
+def test_streaming_tabs_are_grouped_as_a_person_reads_their_titles() -> None:
+    """Live read 2026-10-06 in Opera GX: Disney+ titles end in « | Disney+», HBO Max ones in « • HBO Max» wrapped in
+    bidi isolates, and HBO Max's home is «HBO\xa0Max»."""
+
+    seen = llm._project_tab_listing(
+        {
+            "count": 5,
+            "tabs": [
+                {"title": "Daredevil | Disney+", "active": False},
+                {"title": "Coco | Disney+", "active": False},
+                {"title": "⁨When You're Lost in the Darkness⁩ • HBO Max", "active": True},
+                {"title": "HBO\xa0Max", "active": False},
+                {"title": "⁨Buscar: Zorblax%20Quintavera⁩ • HBO Max", "active": False},
+            ],
+        }
+    )
+
+    assert seen["tabsPerSite"] == {"Disney+": 2, "HBO Max": 3}
+    assert seen["activeTab"] == "When You're Lost in the Darkness • HBO Max"
+    payload = {"operation": "browser.tabs.list", "seen": seen}
+    assert llm._payload_fact_defect("Tienes 5 pestañas: dos de Disney+ y tres de HBO Max.", payload) == ""
+    assert llm._payload_fact_defect("Tienes 5 pestañas, cuatro de HBO Max.", payload) == "invented_number"
