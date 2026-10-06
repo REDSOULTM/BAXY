@@ -19,12 +19,10 @@ from baxy_mind.planner import (
     MAX_SHORTLIST_OPERATIONS,
     MAX_PLAN_STEPS,
     PlanProposal,
-    ProposedStep,
     PlannerCatalog,
     PlannerContractError,
     attach_arguments,
     normalize_grounded_arguments,
-    plan_structure_signature,
     validate_argument_grounding,
     validate_json_schema_instance,
     validate_skeleton,
@@ -3709,29 +3707,6 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
             with self.subTest(raw=raw), self.assertRaises(ValueError):
                 validate_missing_argument_clarification(raw, expected)
 
-    def test_direct_argument_extraction_distinguishes_abstention_from_fault(self):
-        operation_tool = tool(
-            "app.open",
-            "Abre una aplicación.",
-            properties={"appId": {"type": "string", "x-nonWhitespace": True}},
-            required=["appId"],
-        )
-        abstaining = object.__new__(LlmRuntime)
-        abstaining._post = lambda payload: {
-            "choices": [
-                {
-                    "message": {
-                        "content": json.dumps({"grounded": False, "arguments": None})
-                    }
-                }
-            ]
-        }
-        self.assertIsNone(abstaining.extract_arguments("abre eso", operation_tool))
-
-        malformed = object.__new__(LlmRuntime)
-        malformed._post = lambda payload: {"choices": [{"message": {"content": "{"}}]}
-        with self.assertRaises(ValueError):
-            malformed.extract_arguments("abre eso", operation_tool)
 
     def test_direct_argument_contract_preserves_open_string_literal_and_provenance(
         self,
@@ -4508,42 +4483,6 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
                     "additionalProperties": False,
                 },
             )
-
-
-class PlannerConsensusTests(unittest.TestCase):
-    def test_structure_consensus_ignores_cosmetic_ids_but_not_dependencies(self):
-        first = PlanProposal(
-            "plan",
-            "",
-            (
-                ProposedStep("capture", "app.open", "one", (), "literal"),
-                ProposedStep("volume", "audio.volume", "two", ("capture",), "literal"),
-            ),
-        )
-        renamed = PlanProposal(
-            "plan",
-            "",
-            (
-                ProposedStep("one", "app.open", "different", (), "literal"),
-                ProposedStep("two", "audio.volume", "different", ("one",), "literal"),
-            ),
-        )
-        independent = PlanProposal(
-            "plan",
-            "",
-            (
-                ProposedStep("one", "app.open", "different", (), "literal"),
-                ProposedStep("two", "audio.volume", "different", (), "literal"),
-            ),
-        )
-        self.assertEqual(
-            plan_structure_signature(first),
-            plan_structure_signature(renamed),
-        )
-        self.assertNotEqual(
-            plan_structure_signature(first),
-            plan_structure_signature(independent),
-        )
 
 
 class PlannerGroundingNormalizationTests(unittest.TestCase):

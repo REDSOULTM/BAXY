@@ -9,7 +9,6 @@ from baxy_mind.effect_intent import (
     CompoundEffectContract,
     build_application_catalog_index,
     build_game_catalog_index,
-    compound_retrieval_clauses,
     conversation_only_content_request,
     explicit_negative_constraint,
     effect_request_is_authoritative,
@@ -19,13 +18,20 @@ from baxy_mind.effect_intent import (
     unsupported_live_machine_query,
     operation_domain_is_grounded,
     operation_identity_is_a_near_miss,
-    resolve_explicit_clarification,
     resolve_explicit_clarification_intent,
     resolve_explicit_effects,
     resolve_application_catalog_app_id,
     resolve_game_catalog_app_id,
     unresolved_compound_contract,
 )
+
+
+def resolve_explicit_clarification(text: str, available_operations) -> str | None:
+    """The single certain operation of an incomplete effect (the product reads it through
+    ``resolve_explicit_clarification_intent``; the wrapper left the product in the 2026-10-06 audit)."""
+
+    intent = resolve_explicit_clarification_intent(text, available_operations)
+    return intent.operation if intent is not None and len(intent.operations) == 1 else None
 
 
 @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
@@ -369,22 +375,6 @@ def test_volume_domain_modifiers_are_invariant_to_clause_punctuation() -> None:
         assert not _volume_domain(text)
 
 
-def test_compound_retrieval_clauses_tolerates_voice_punctuation_loss() -> None:
-    text = (
-        "hazme este chequeo por partes la salud global del sistema "
-        "después las copias recuperables después la distribución del teclado "
-        "devolviendo cada resultado por separado"
-    )
-
-    assert compound_retrieval_clauses(text) == (
-        "la salud global del sistema",
-        "las copias recuperables",
-        "la distribucion del teclado",
-    )
-
-
-def test_compound_retrieval_clauses_does_not_split_temporal_after_of() -> None:
-    assert compound_retrieval_clauses("revisa el correo después del almuerzo") == ()
 
 
 @pytest.mark.parametrize(

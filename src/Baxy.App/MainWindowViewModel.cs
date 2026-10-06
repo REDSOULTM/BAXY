@@ -30,7 +30,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _isListening;
     private bool _isWakeListening;
     private bool _isVoiceSpeaking;
-    private bool _resumeWakeAfterDirect;
     private bool _isMicAvailable;
     private MemoryOperationProtector? _memoryProtector;
     private readonly MemoryTurnSession _memoryTurns;
@@ -1637,55 +1636,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             ? "Desactivar la escucha por «Baxy»"
             : "Escuchar en segundo plano y activarse solo al oír «Baxy»";
 
-    /// <summary>
-    /// Alterna la escucha de voz. La transcripción entra por la MISMA puerta
-    /// de misión que el texto (MissionInput con fuente VoiceTranscript).
-    /// </summary>
-    public async Task ToggleVoiceAsync(CancellationToken cancellationToken)
-    {
-        MindSidecarClient? mind = _mindClient;
-        if (mind is null || !mind.IsReady)
-        {
-            return;
-        }
-
-        if (IsListening)
-        {
-            bool resumed = _resumeWakeAfterDirect
-                && await mind.VoiceStartAsync(
-                    "wake",
-                    TimeSpan.FromSeconds(60),
-                    cancellationToken);
-            if (!resumed)
-            {
-                _ = await mind.VoiceStopAsync(TimeSpan.FromSeconds(10), cancellationToken);
-            }
-
-            _resumeWakeAfterDirect = false;
-            IsListening = false;
-            IsWakeListening = resumed;
-            StatusDescription = resumed ? "Esperando «Baxy»" : "BAXY disponible";
-            return;
-        }
-
-        _resumeWakeAfterDirect = IsWakeListening;
-        bool started = await mind.VoiceStartAsync(
-            "direct",
-            TimeSpan.FromSeconds(60),
-            cancellationToken);
-        if (started)
-        {
-            IsMicAvailable = true;
-            IsListening = true;
-            IsWakeListening = false;
-            StatusDescription = "Escuchando";
-        }
-        else
-        {
-            IsMicAvailable = false;
-        }
-    }
-
     public async Task ToggleWakeVoiceAsync(CancellationToken cancellationToken)
     {
         if (Interlocked.CompareExchange(ref _voiceCommandBusy, 1, 0) != 0)
@@ -1717,7 +1667,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             IsWakeListening = false;
             IsListening = false;
             IsVoiceSpeaking = false;
-            _resumeWakeAfterDirect = false;
             StatusDescription = "BAXY disponible";
             return;
         }
@@ -1824,7 +1773,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             IsListening = false;
             IsWakeListening = true;
             IsVoiceSpeaking = false;
-            _resumeWakeAfterDirect = false;
             StatusDescription = "Esperando «Baxy»";
             return true;
         }
@@ -1842,7 +1790,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             IsListening = false;
             IsWakeListening = false;
             IsVoiceSpeaking = false;
-            _resumeWakeAfterDirect = false;
             StatusDescription = "BAXY disponible";
         }
 
@@ -1871,7 +1818,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         IsListening = true;
         IsWakeListening = false;
         IsVoiceSpeaking = false;
-        _resumeWakeAfterDirect = true;
         StatusDescription = "Escuchando";
         return true;
     }

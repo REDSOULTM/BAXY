@@ -823,24 +823,6 @@ def attach_arguments(
     return PlanProposal("plan", "", tuple(steps))
 
 
-def plan_structure_signature(proposal: PlanProposal) -> tuple[Any, ...]:
-    """Compare reviewed plans without trusting cosmetic IDs or prose."""
-
-    if proposal.kind != "plan":
-        return (proposal.kind,)
-    positions = {step.step_id: index for index, step in enumerate(proposal.steps)}
-    return (
-        "plan",
-        *(
-            (
-                step.operation,
-                tuple(positions[dependency] for dependency in step.depends_on),
-                step.arguments_mode,
-            )
-            for step in proposal.steps
-        ),
-    )
-
 
 def validate_json_schema_instance(value: Any, schema: dict[str, Any]) -> bool:
     """Valida el subconjunto cerrado publicado por ``ProductCatalog``."""

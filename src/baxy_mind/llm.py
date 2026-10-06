@@ -24697,28 +24697,6 @@ class LlmRuntime:
             )
         )
 
-    def extract_arguments(
-        self, text: str, tool: dict, temperature: float = 0.1
-    ) -> dict | None:
-        """Extrae argumentos para una tool YA decidida por el router.
-
-        La envoltura constreñida separa abstención semántica de error técnico.
-        Sólo una abstención explícita devuelve ``None``; un fallo de formato o
-        runtime se propaga y nunca se convierte en una pregunta al usuario.
-        """
-        del temperature  # retained for source compatibility
-        function = tool["function"]
-        schema = function["parameters"]
-        instructions = (
-            f"Extrae los argumentos JSON para la operación "
-            f"'{function['canonical_name']}' ({function.get('description', '')}) a partir "
-            "del pedido del usuario. Interpreta números escritos con palabras. "
-            "No inventes valores ausentes."
-        )
-        try:
-            return self._extract_schema_object(text, instructions, schema)
-        except ArgumentGroundingAbstention:
-            return None
 
     def compose_presentation_slides(self, topic: str, count: int) -> list[str]:
         """REOPEN1957 H0188: `count` slides about `topic`, each a string whose

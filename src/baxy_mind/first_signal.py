@@ -9,17 +9,14 @@ When verification denies, the person reads the correction.
 
 from __future__ import annotations
 
-import re
 import threading
 import time
 from typing import Any, Callable
 
-from .semantic.request import response_language
 
 SILENCE_BUDGET_SECONDS = 3.0
 # First hito after last visible output: strictly over 3 s, before a 1 s
 # pulse would next tick at 4 s.
-MILESTONE_DUE_SECONDS = SILENCE_BUDGET_SECONDS + 0.01
 # Emit before the primary model work: that call alone was measured at ~2.5 s
 # wall on this tree's model path, already next to the silence bar.
 EARLY_SIGNAL_THRESHOLD_SECONDS = 1.5
@@ -34,7 +31,6 @@ PATH_RECOGNIZER = "explicit_effects"
 PATH_CLOSED_CONVERSATION = "explicit_conversation"
 PATH_MODEL = "model"
 KIND_EARLY = "early"
-KIND_MILESTONE = "hito"
 
 _PATH_COST_SECONDS = {
     PATH_RECOGNIZER: 0.07,
@@ -57,75 +53,6 @@ def should_emit_early(path: str, step_count: int = 1) -> bool:
     return estimate_turn_seconds(path, step_count) >= EARLY_SIGNAL_THRESHOLD_SECONDS
 
 
-def should_emit_milestone(
-    last_visible_at: float | None,
-    now: float,
-    *,
-    budget: float = SILENCE_BUDGET_SECONDS,
-) -> bool:
-    """A gap strictly greater than the budget with no BAXY output needs a hito."""
-
-    if last_visible_at is None:
-        return False
-    try:
-        gap = float(now) - float(last_visible_at)
-        ceiling = float(budget)
-    except (TypeError, ValueError):
-        return False
-    return gap > ceiling
-
-
-def _snippet(text: str) -> str:
-    collapsed = re.sub(r"\s+", " ", (text or "").strip())
-    collapsed = collapsed.strip(" \t.,;:¡!¿?")
-    if len(collapsed) <= _SNIPPET_CHARS:
-        return collapsed
-    clipped = collapsed[:_SNIPPET_CHARS]
-    if " " in clipped:
-        clipped = clipped.rsplit(" ", 1)[0]
-    return clipped.strip(" \t.,;:¡!¿?")
-
-
-def formulate_progress(
-    user_text: str,
-    *,
-    kind: str = KIND_EARLY,
-    step: int = 0,
-    total: int = 0,
-    language: str | None = None,
-) -> str:
-    """Formulated in-progress prose for this request. Never a result claim. Its language is the request's
-    (``semantic.request.response_language``, the single reader; this module kept its own until 2026-09-25)."""
-
-    lang = language or response_language(user_text)
-    snippet = _snippet(user_text)
-    if lang == "en":
-        if kind == KIND_MILESTONE and total > 1 and step > 0:
-            body = f"Still working on step {step} of {total}"
-            if snippet:
-                body = f"{body}: {snippet}"
-            return f"{body}."
-        if snippet:
-            return f"Still working on {snippet}."
-        return "Still working."
-    if kind == KIND_MILESTONE and total > 1 and step > 0:
-        body = f"Sigo en el paso {step} de {total}"
-        if snippet:
-            body = f"{body}: {snippet}"
-        return f"{body}."
-    if snippet:
-        return f"Sigo con {snippet}."
-    return "Sigo."
-
-
-def visible_after_verification(in_progress: str, correction: str) -> str:
-    """Retire the in-progress line. The person reads the verified correction."""
-
-    del in_progress
-    text = (correction or "").strip()
-    if not text:
-        raise ValueError("correction required")
-    return text
 
 
 def turn_signal_payload(

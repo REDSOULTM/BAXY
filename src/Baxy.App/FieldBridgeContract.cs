@@ -361,12 +361,4 @@ internal static class FieldBridgeContract
         return revision;
     }
 
-    internal static JsonObject CreateContractAnnouncement() => StampEnvelope(
-        new JsonObject
-        {
-            ["channel"] = Channel,
-            ["kind"] = ContractKind,
-            ["revision"] = NativeRevision,
-        },
-        LegacyReaderRevision);
 }

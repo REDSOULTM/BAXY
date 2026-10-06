@@ -1324,7 +1324,7 @@ def test_social_shortcut_never_overrides_a_recognized_effect(text: str) -> None:
     intent, so no member of the social vocabulary may also name an effect."""
 
     assert effect_intent_module.resolve_explicit_effects(text, (), ()) is None
-    assert effect_intent_module.resolve_explicit_clarification(text, ()) is None
+    assert effect_intent_module.resolve_explicit_clarification_intent(text, ()) is None
 
 
 @pytest.mark.parametrize(

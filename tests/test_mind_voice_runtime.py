@@ -25,7 +25,6 @@ from baxy_mind.voice import (
     _lexical_wake_fallback_enabled,
     _streaming_stt_enabled,
     _wake_activity_onset_sample,
-    _wake_turn_start_sample,
     resolve_streaming_stt_directory,
     resolve_stt_directory,
 )
@@ -215,14 +214,6 @@ def test_mismatched_verifier_cannot_lower_direct_stage1_threshold(
     assert (  # noqa: SLF001
         engine._wake_verifier_error == "wake_verifier_stage1_contract_mismatch"
     )
-
-
-def test_wake_turn_start_ignores_old_history_and_keeps_context() -> None:
-    flags = [True] * 4 + [False] * 24 + [True] * 10 + [False] * 3
-
-    start = _wake_turn_start_sample(flags, frame_samples=512)
-
-    assert start == 20 * 512
 
 
 def test_wake_activity_onset_uses_low_vad_threshold_and_ctc_alignment() -> None:

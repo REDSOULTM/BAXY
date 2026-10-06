@@ -816,20 +816,6 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         }
     }
 
-    public async Task<JsonObject?> ExtractArgumentsAsync(
-        string operation,
-        string text,
-        TimeSpan timeout,
-        CancellationToken cancellationToken)
-    {
-        MindArgumentResult? result = await ExtractArgumentResultAsync(
-            operation,
-            text,
-            timeout,
-            cancellationToken).ConfigureAwait(false);
-        return result?.Arguments;
-    }
-
     internal static MindArgumentResult? ParseArgumentResult(
         JsonObject? reply,
         string expectedOperation)

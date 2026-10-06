@@ -12,11 +12,11 @@ namespace Baxy.Integration.Tests;
 public sealed class MainWindowShellContractTests
 {
     private const string HistoricalCommit = "4a83f2d082d6b0fec8297e801b96a0da620b059e";
-    // Resealed for M53 (goal v3 step 6, owner's D35): the activity row shows a small «fuente»
-    // link under a consulted answer and keeps the message's lines (types.ts, ActivityPanel.tsx,
-    // prototype.css and the rebuilt dist). Previous seal: 99FF9838C07CE32F…B2CA657.
+    // Resealed for the 2026-10-06 code audit: BottomBar.tsx, TopBar.tsx and ParticleCluster.tsx (no
+    // importer) and prototype.css.prereskin.bak left the source; the dist is unchanged. Previous seal:
+    // 88415FD01574BA0B…3355C7C1 (M53).
     private const string CurrentFieldTreeSha256 =
-        "88415FD01574BA0B7285440B0E2C6944D0A812F51BED75EC0D8A9C103355C7C1";
+        "D8C30F3D8213AA9285B570DC2B6C6855691269AD08CE3B2463153CBFD83D6351";
     private static readonly XNamespace XamlNamespace =
         "http://schemas.microsoft.com/winfx/2006/xaml";
 
@@ -52,7 +52,7 @@ public sealed class MainWindowShellContractTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(files, Has.Length.EqualTo(38));
+            Assert.That(files, Has.Length.EqualTo(34));
             Assert.That(ComputeTreeSha256(root), Is.EqualTo(CurrentFieldTreeSha256));
             Assert.That(origin, Does.Contain(HistoricalCommit));
             Assert.That(app, Does.Contain("<SubstratePanel"));
