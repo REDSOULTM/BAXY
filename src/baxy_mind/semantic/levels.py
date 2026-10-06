@@ -273,9 +273,19 @@ class Level:
     amount: int | None
     target: int | None
 
-    def request(self, setting: str) -> str:
-        """The canonical request the ordinary volume and brightness readers read."""
+    def request(self, setting: str, english: bool = False) -> str:
+        """The canonical request the ordinary volume and brightness readers read.
 
+        M177 (DEV-I v5b–v5d I-w34-t2 «25» after «How much should I lower it?» → «El volumen se ha ajustado a 25…»): the
+        request is what the result is worded against, so it is said in the person's language; ``english`` gives the
+        English form, which the same readers read the same way."""
+
+        if english:
+            noun = "the brightness" if setting == BRIGHTNESS else "the volume"
+            if self.target is not None:
+                return f"set {noun} to {self.target}"
+            way = "up" if self.direction == "up" else "down"
+            return f"turn {noun} {way} by {self.amount}" if self.amount is not None else f"turn {noun} {way}"
         noun = "el brillo" if setting == BRIGHTNESS else "el volumen"
         if self.target is not None:
             return f"pon {noun} al {self.target}"
@@ -588,6 +598,7 @@ def names_position(text: str | None) -> bool:
 
 def answered_level_request(
     text: str, reply: str | None, pending: str | None, earlier: list[str] | tuple[str, ...] = (),
+    *, english: bool = False,
 ) -> str | None:
     """M167: the request an answer to BAXY's «¿cuánto le subo?» makes («sube el volumen en 15»), or None.
 
@@ -625,7 +636,146 @@ def answered_level_request(
         found.setting or setting_of(question) or setting_of(pending)
         or next(filter(None, map(setting_of, list(earlier)[:2])), None) or VOLUME
     )
-    return Level(setting, direction, found.amount, found.target).request(setting)
+    return Level(setting, direction, found.amount, found.target).request(setting, english)
+
+
+# M177 (DEV-F F-w32-t2 «ya po, dale» after «¿Bajo el brillo al 40 para que dure más?», F-w04-t2 «yeah drop it to 40»
+# after «Want me to dim the screen to save battery?», F-w52-t2 «sí, dale, bájalo a 30» after «¿Te bajo el brillo para
+# que aguante más?»): BAXY's own offer to raise, lower or set the volume or the brightness, and the person's yes, the
+# level they say, or both. The offer is the last question of the reply, in the first person of BAXY («¿bajo…?», «¿te
+# subo…?», «¿quieres que baje…?», «want me to dim…?», «shall I turn … down?»), and names the volume or the screen.
+_OFFER_ES_VERB = (
+    r"(?:bajo|subo|pongo|dejo|aumento|reduzco|atenuo|oscurezco|aclaro|"
+    r"baje|suba|ponga|deje|aumente|reduzca|atenue|oscurezca|aclare)"
+)
+_OFFER_EN_VERB = r"(?:dim|lower|raise|brighten|darken|turn|drop|bring|reduce|increase|set|put|knock|crank)"
+_OFFER = re.compile(
+    rf"(?:^|\b(?:te|le|se|lo|la)\s+|\bquier[ea]s?\s+que\s+(?:te\s+|le\s+)?(?:lo\s+|la\s+)?)(?:lo\s+|la\s+)?"
+    rf"{_OFFER_ES_VERB}\b|"
+    rf"\b(?:(?:shall|should|can|may)\s+i|want\s+me\s+to|would\s+you\s+like\s+me\s+to|how\s+about\s+i)\s+"
+    rf"{_OFFER_EN_VERB}\b"
+)
+# The setting is named by its own noun, or by the screen and the verbs only the screen takes; music or a song offered
+# («¿pongo música?») is no level.
+_OFFER_NOUNS = (
+    (BRIGHTNESS, re.compile(
+        r"\b(?:brillo|brightness|luminosidad|pantalla|screen|display|monitor|dim|brighten|darken|oscurec\w*|atenu\w*)\b"
+    )),
+    (VOLUME, re.compile(r"\b(?:volumen|volume|sonido|sound|audio)\b")),
+)
+# «¿Le bajo el volumen a Spotify?», «want me to turn Chrome's volume down?»: the volume of something else (one
+# application's has its own operation and completion, AUDIO1787) is not the PC's.
+_OFFER_OTHER_VOLUME = re.compile(
+    r"\b(?:volumen|volume|sonido|sound|audio)\s+(?:de|del|a|al|en|of|in|on|for)\s+(?!(?:(?:la|el|tu|su|este|esta|the|"
+    r"your|this)\s+)?(?:pc|computador\w*|compu|equipo|sistema|laptop|notebook|computer|musica|music|cancion|song|"
+    r"\d|un\b|una\b))|\b(?!(?:the|your|this)\b)\w+'s\s+(?:volume|sound|audio)\b"
+)
+_OFFER_DOWN = re.compile(r"\b(?:dim|darken|oscurec\w*|atenu\w*)\b")
+_OFFER_UP = re.compile(r"\b(?:brighten|aclar[oe])\b")
+_OFFER_TARGET = re.compile(
+    rf"\b(?:a|al|hasta(?:\s+el)?|to|at)\s+(?:(?:el|the|un)\s+)?(?:(?P<target>\d{{1,3}})\b|(?P<extreme>{_EXTREME})\b)"
+)
+_OFFER_AMOUNT = re.compile(r"\b(?:en|by)\s+(?:un\s+)?(?P<amount>\d{1,3})\b")
+# The yes to the offer, with what people say around it («ya po, dale», «sí, dale», «yeah», «go ahead»).
+_YES = (
+    r"(?:si|sip|simon|dale|ya|po|ok|okay|okey|oki|claro|bueno|vale|va|listo|obvio|porfa|por\s+favor|hagale|hazlo|"
+    r"hacelo|adelante|de\s+una|perfecto|yes|yeah|yep|yup|sure|please|alright|all\s+right|go\s+on|go\s+ahead|do\s+it|"
+    r"go\s+for\s+it|sounds\s+good|perfect)"
+)
+_YES_OPENING = re.compile(rf"(?:{_YES}(?:\s+|$))+")
+# «drop it to 40», «take it down to 30», «bring it up to 60», «set it to 40»: the level said of what BAXY offered, with
+# a pronoun the ordinary readers leave to their antecedent. A setting verb takes a bare number as where it ends.
+_POINTED_LEVEL = re.compile(
+    rf"(?:(?P<down>drop|lower|dim|cut|knock|darken)|(?P<up>raise|brighten|bump|crank|pump)|"
+    rf"(?P<set>set|put|make|leave|get|go|move)|take|bring|turn)"
+    rf"(?:\s+(?:it|that|this|them))?(?:\s+(?:(?P<pup>up)|(?P<pdown>{_DOWN_PARTICLE})))?"
+    rf"\s+(?:{_TARGET}|(?P<by>by\s+)?(?P<amount>{_NUMBER})(?:\s*{_UNIT})?)"
+)
+_BARE_LEVEL_VERB = re.compile(rf"(?P<up>{_UP})|(?P<down>{_DOWN})|{_SET}")
+
+
+def accepted_level_offer(text: str, reply: str | None) -> Level | None:
+    """M177: the level change a yes (or a level) to BAXY's offer of one makes, with its setting, or None.
+
+    Only when BAXY's last reply ends offering to raise, lower or set the volume or the brightness (``_OFFER``), not
+    asking how much (that is ``answered_level_request``), and the message is only a yes, a level said of it, or both.
+    The setting is the offer's; the level the person says wins over the offer's, and with neither the change has no
+    amount (the owner's rule asks it; no default step). A message that names another setting, says no, or asks for
+    anything else is no answer to the offer."""
+
+    said = " ".join(str(reply or "").split())
+    if not said.endswith("?"):
+        return None
+    question = " ".join(re.sub(r"[¿?¡!.,;:]+", " ", fold(re.split(r"(?<=[.!?])\s+", said)[-1])).split())
+    if (
+        _OFFER.search(question) is None
+        or _ASKS_AMOUNT.search(question) is not None
+        or _ASKS_LEVEL.search(question) is not None
+        or _POSITION.search(question) is not None
+    ):
+        return None
+    named = {setting for setting, noun in _OFFER_NOUNS if noun.search(question)}
+    if len(named) != 1 or _OFFER_OTHER_VOLUME.search(question) is not None:
+        return None
+    setting = named.pop()
+    up = _ASKED_UP.search(question) is not None or _OFFER_UP.search(question) is not None
+    down = _ASKED_DOWN.search(question) is not None or _OFFER_DOWN.search(question) is not None
+    if up and down:
+        return None
+    direction = "up" if up else "down" if down else None
+    numbers = re.findall(r"\b\d{1,3}\b", question)
+    offered_target, offered_amount = _OFFER_TARGET.search(question), _OFFER_AMOUNT.search(question)
+    if len(numbers) > 1 or (numbers and offered_target is None and offered_amount is None):
+        # A number the offer says of something else («para que dure 2 horas») is no level of it.
+        return None
+    if offered_target is not None:
+        extreme = offered_target.group("extreme")
+        offered = Level(setting, direction, None, _EXTREMES[extreme] if extreme else int(offered_target.group("target")))
+    else:
+        offered = Level(
+            setting, direction, int(offered_amount.group("amount")) if offered_amount is not None else None, None,
+        )
+    if (offered.target or 0) > 100 or (offered.amount or 0) > 100:
+        return None
+    if offered.direction is None and offered.target is None and offered.amount is None:
+        # «¿Pongo el volumen?» offers no change to say yes to.
+        return None
+    cleaned = _clean(text)
+    yes = _YES_OPENING.match(cleaned)
+    rest = cleaned[yes.end():].strip() if yes is not None else cleaned
+    if not rest:
+        return offered if yes is not None else None
+    found = answer(rest)
+    if found is not None:
+        # Tanda 8: a bare number after a question that does not ask how much is where the level ends.
+        if found.amount is not None and not answers_with_amount(said, rest):
+            found = Level(None, None, None, found.amount)
+    else:
+        found = read(rest)
+    bare = _BARE_LEVEL_VERB.fullmatch(rest) if found is None else None
+    if bare is not None:
+        # «sí, bájalo»: the yes said with the offer's own verb.
+        found = Level(None, "up" if bare.group("up") else "down" if bare.group("down") else None, None, None)
+    if found is None:
+        pointed = _POINTED_LEVEL.fullmatch(rest)
+        quantity = _quantity(pointed) if pointed is not None else None
+        if pointed is None or quantity is None:
+            return None
+        amount, target = quantity
+        if amount is not None and pointed.group("set") and not pointed.group("by"):
+            amount, target = None, amount
+        found = Level(
+            None,
+            "down" if pointed.group("down") or pointed.group("pdown")
+            else "up" if pointed.group("up") or pointed.group("pup") else None,
+            amount,
+            target,
+        )
+    if found.setting not in (None, setting):
+        return None
+    if found.amount is None and found.target is None:
+        return Level(setting, found.direction or offered.direction, offered.amount, offered.target)
+    return Level(setting, found.direction or offered.direction, found.amount, found.target)
 
 
 def setting_of(text: str | None) -> str | None:

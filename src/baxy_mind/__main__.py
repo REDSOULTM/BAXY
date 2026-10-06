@@ -5695,9 +5695,16 @@ def _context_decided_result(
         # task.delete): the notification BAXY just reported setting, taken back by what it is for, is the latest one.
         offered, offered_read = taken_back, taken_back_read
     said_before_by_person = _prior_user_texts(history, text)
+    # M177 (DEV-I v5b–v5d I-w34-t2 «25» after «How much should I lower it?» → «El volumen se ha ajustado a 25…»): a level
+    # request read here is said in the person's language (an answer with none of its own keeps the conversation's), since
+    # the result is worded against it.
+    level_in_english = (
+        _read_reply_language(text, history) or _decisive_request_language(context.last_reply or "")
+    ) == "en"
     level_answered = (
         semantic_levels.answered_level_request(
             text, context.last_reply, said_before_by_person[-1], said_before_by_person[-2::-1],
+            english=level_in_english,
         )
         if said_before_by_person and offered_read is None
         else None
@@ -5711,10 +5718,45 @@ def _context_decided_result(
     ):
         # The volume of one application keeps its own completion (AUDIO1787) and the decider.
         level_answered_read = None
+    level_offer = (
+        semantic_levels.accepted_level_offer(text, context.last_reply)
+        if closing is None and offered_read is None and level_answered_read is None
+        else None
+    )
+    if level_offer is not None and _asks_application_volume(
+        context.last_reply or "", available_operations, application_names,
+    ):
+        # BAXY offered one application's volume: its own completion and the decider (AUDIO1787).
+        level_offer = None
+    level_offer_request = (
+        level_offer.request(str(level_offer.setting), level_in_english) if level_offer is not None else None
+    )
+    level_offer_read = (
+        resolve_explicit_effects(level_offer_request, available_operations)
+        if level_offer is not None and (level_offer.amount is not None or level_offer.target is not None)
+        else None
+    )
+    if level_offer_read is not None and not set(level_offer_read.operations) <= set(_OUTPUT_LEVEL_OPERATIONS):
+        level_offer_read = None
+    level_offer_asked: tuple[str, ...] | None = None
+    if (
+        level_offer is not None
+        and level_offer.amount is None
+        and level_offer.target is None
+        and level_offer.direction is not None
+    ):
+        level_offer_asked = (
+            ("system.settings.adjust",) if level_offer.setting == semantic_levels.BRIGHTNESS
+            else ("audio.volume.adjust",)
+        )
+        if not set(level_offer_asked) <= set(available_operations):
+            level_offer_asked = None
     read_before_decider = (
         closing is not None
         or offered_read is not None
         or level_answered_read is not None
+        or level_offer_read is not None
+        or level_offer_asked is not None
         or (placed_read is not None and placed_read.operations == ("system.time",))
     )
     if closing is not None:
@@ -5735,6 +5777,29 @@ def _context_decided_result(
         decided = semantic_decider.ContextDecision(
             request=str(level_answered), decision="action", operations=tuple(level_answered_read.operations),
             question="",
+        )
+    elif level_offer_read is not None:
+        # M177 (exception to D58, the offer was BAXY's; DEV-F F-w32-t2 «ya po, dale» after «¿Bajo el brillo al 40 para
+        # que dure más?», F-w04-t2 «yeah drop it to 40» after «Want me to dim the screen to save battery?», F-w52-t2 «sí,
+        # dale, bájalo a 30» after «¿Te bajo el brillo para que aguante más?»; the App's decider read a battery drained
+        # to 40, files downloaded or nothing): the yes, or the level said, to BAXY's own offer to raise, lower or set the
+        # volume or the brightness is that change of that setting, with the level the person said, else the offer's
+        # (``semantic.levels.accepted_level_offer``). Nothing nobody named (the battery, a download) is its object.
+        decided = semantic_decider.ContextDecision(
+            request=str(level_offer_request), decision="action", operations=tuple(level_offer_read.operations),
+            question="",
+        )
+    elif level_offer_asked is not None:
+        # M177: a yes to BAXY's offer that says no amount, to an offer that said none («¿Te bajo el brillo?» → «dale»),
+        # asks only the amount, of that setting (owner rule H0027: no default step).
+        try:
+            question = llm.formulate_explicit_clarification_question(
+                str(level_offer_request), level_offer_asked, ("amount",),
+            )
+        except (ValueError, RuntimeError):
+            question = ""
+        decided = semantic_decider.ContextDecision(
+            request=str(level_offer_request), decision="clarify", operations=level_offer_asked, question=question,
         )
     elif read_before_decider:
         # M84 (DEV-D v3o D-w02-t2 «y si allá son las 10 de la mañana acá qué hora es» after «qué hora es en madrid» →
@@ -5898,7 +5963,7 @@ def _context_decided_result(
                     request=text, decision="clarify", operations=asked_level, question=question,
                 )
         else:
-            level_request = said_level.request(setting)
+            level_request = said_level.request(setting, level_in_english)
             level_read = resolve_explicit_effects(level_request, available_operations)
             if level_read is not None and set(level_read.operations) <= set(_OUTPUT_LEVEL_OPERATIONS):
                 decided = semantic_decider.ContextDecision(
@@ -6388,6 +6453,11 @@ def _context_decided_result(
                 raise PlannerContractError("aclaración del decisor inválida")
         result["kind"] = "clarify"
         result["question"] = question
+        # M177 (DEV-D v5b–v5d D-w18-t2 «can you bajarle un poco», DEV-G v5d G-w21-t2 «súbele un poco a esa» → «No puedo
+        # bajarle nada porque mi mente no está disponible.»; also v5d H-w32-t4, I-w32-t3): a question carries the
+        # operations it is about as its intent only; it has no effect, and the shell's contract (``MindSidecarClient``)
+        # refuses a clarification with effects as no decision at all. M144, M100 and M167 ask with operations.
+        result["effectOperations"] = []
     else:
         if decided.decision == "limit" and on_limit is not None:
             # M78: the decider's restatement (after the fidelity check) is re-read with the message.

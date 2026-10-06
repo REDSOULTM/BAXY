@@ -169,13 +169,14 @@ JAZZ = ("play some jazz on spotify", "Now playing «Take Five» by The Dave Brub
         # DEV-G v4y G-w21-t3 and DEV-D v4y D-w18-t3 with the question their written history asks.
         (_said(*SALSA, "súbele un poco a esa", "¿Cuánto le subo?"), "subile 10, con eso ya me sirve",
          _decided("Adelanta 10 segundos la canción.", "action", SEEK), "sube el volumen en 10", "volumen en 10"),
+        # M177: «like 15» is said in English, so the request the result is worded against is too.
         (_said(*LOFI, "can you bajarle un poco", "¿Cuánto le bajo?"), "like 15",
-         _decided("Retrocede 15 segundos la canción.", "action", SEEK), "baja el volumen en 15", "volumen en 15"),
+         _decided("Retrocede 15 segundos la canción.", "action", SEEK), "turn the volume down by 15", "volumen en 15"),
         # Our own words: another hedge, the other language.
         (_said(*SALSA, "bájale un toque", "¿Cuánto le bajo?"), "unos 20 más o menos",
          _decided("Retrocede 20 segundos la canción.", "action", SEEK), "baja el volumen en 20", "volumen en 20"),
         (_said(*JAZZ, "turn it up a bit", "How much should I turn it up?"), "like 10, that'll do",
-         _decided("Skip ahead 10 seconds in the song.", "action", SEEK), "sube el volumen en 10", "volumen en 10"),
+         _decided("Skip ahead 10 seconds in the song.", "action", SEEK), "turn the volume up by 10", "volumen en 10"),
     ],
 )
 def test_the_amount_that_answers_how_much_is_that_volume_change(
@@ -192,10 +193,11 @@ def test_the_amount_that_answers_how_much_is_that_volume_change(
     ("question", "operation", "objective"),
     [
         # The row (DEV-I v4y I-w34-t2): «how much» asks an amount (Tanda 8), as the App did.
-        ("How much should I lower it?", "audio.volume.adjust", "baja el volumen en 25"),
+        # M177 (v5b–v5d «El volumen se ha ajustado a 25…»): «25» keeps the language of the request it answers.
+        ("How much should I lower it?", "audio.volume.adjust", "turn the volume down by 25"),
         # Its written history asks a level: where it ends.
-        ("Sure, down to what level?", "audio.volume", "pon el volumen al 25"),
-        ("¿A cuánto lo bajo?", "audio.volume", "pon el volumen al 25"),
+        ("Sure, down to what level?", "audio.volume", "set the volume to 25"),
+        ("¿A cuánto lo bajo?", "audio.volume", "set the volume to 25"),
     ],
 )
 def test_the_question_says_whether_the_number_is_an_amount_or_a_level(
@@ -254,7 +256,7 @@ def test_raising_what_plays_without_an_amount_asks_the_volume_amount(
         (_said(*SALSA), "bájale 10 a esta rola", _decided("Retrocede 10 segundos la canción.", "action", SEEK),
          "baja el volumen en 10"),
         (_said(*JAZZ), "turn the track down 10", _decided("Rewind the track 10 seconds.", "action", SEEK),
-         "baja el volumen en 10"),
+         "turn the volume down by 10"),
     ],
 )
 def test_raising_or_lowering_with_an_amount_is_the_volume_not_the_position(
