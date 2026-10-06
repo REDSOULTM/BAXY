@@ -211,3 +211,6 @@ historical_missions.jsonl
 historical_message_mapping.jsonl
 turn_evidence_runtime.v1.jsonl
 goal10_[nmc]10.v1.jsonl
+
+# temporary dirs of scripts/lock_python_dependencies.ps1
+.runtime-lock-*/

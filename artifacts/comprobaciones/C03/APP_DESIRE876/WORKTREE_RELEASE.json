@@ -1,9 +1,0 @@
-{
-  "removedAfterRootIntegration": true,
-  "patchPreserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-app-desire876-proposal\\repair.patch",
-  "target": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-app-desire876-worktree",
-  "changedFiles": [
-    " M src/baxy_mind/effect_intent.py"
-  ],
-  "sourceSha256": "054cde79b6cbc0356676e4507b43a21def717dee015bba8fc728766c21c260f4"
-}

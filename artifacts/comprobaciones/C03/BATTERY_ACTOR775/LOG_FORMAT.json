@@ -1,6 +1,0 @@
-{
-  "original_private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-battery-values776-private\\owners-language-fixture-error-original.log",
-  "original_sha256": "4d3a7a02244d857b4f1fec34ef5004586566a230dec4f0874bef89cf11f7866e",
-  "published_sha256": "4e7e5d94fc386cdd0fc257d0393c1957cbf3edfc86d31346e7f96b941bc430ff",
-  "change": "Only trailing whitespace removed from16 pytest blank E-lines; full preformat log preserved privately. No source or verdict change."
-}

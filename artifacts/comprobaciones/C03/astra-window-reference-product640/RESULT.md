@@ -1,9 +1,0 @@
-# Fuente638 adoptada — identidad empaquetada y conteo real
-
-636 enlaza procesos empaquetados mediante el AUMID de Windows y distingue errores de consulta de ausencia.637 confirma Notepad abierto.638 conserva todos los handles visibles con área positiva y enfoca el handle seleccionado sin sustituirlo por la ventana más grande. Se retira LargestTopLevelWindow; no otra capa, modelo ni respuesta fija. Sólo C# y pruebas de su provider.
-
-Validación638:513pass Providers,0omisiones agregadas y4opt-in impresas aparte;46pass integración/0omisiones;51focales, incluida una prueba Win32 que fallaba al perder una de dos ventanas. Fast exit0/Release11,89s. Full630 sigue como línea base anterior, no Full638 ni cierreC03.639:11/12 finales; los conteos coinciden con instantáneas Win32 idénticas antes/después. El estado Notepad había cambiado a cerrado antes de esa tanda; se registra el cambio sin atribuirlo a un actor.
-
-640 amplía a20casos y acredita14. WhatsApp abierto se verifica correctamente por identidad empaquetada en ambos idiomas. La cantidad española de Steam se lee y responde2. Persisten cuatro fallos de seguimiento: And Spotify?, Is it open now?, Y Steam? y Esa aplicación… pierden el contexto; el último además incluye exactly. El foco inglés sigue clasificado mixed. La cantidad inglesa coincide con la lectura española anterior, pero request94 elige conversation/knowledge sin una nueva observación tipada: no se acusa una cifra inventada, pero tampoco se acredita una consulta actual. H0040 sigue abierto;25cubiertos/717abiertos/0NA.
-
-Recursos640:3497,559MiB GPU/2412,738MiB RAM;85,828s, sin infracciones. No UI/voz conjunta.639:3497,559/1894,625MiB;77,313s incluyen NativeAOT. La variación de RAM depende de la sesión/carga; no se presenta como mínimo global. Fuente638 se adopta por las lecturas verificadas y pruebas dueñas; los defectos de contexto/idioma se conservan como pendientes de C03.

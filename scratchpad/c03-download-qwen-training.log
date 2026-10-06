@@ -1,3 +1,0 @@
-{"phase": "download", "files": 10, "bytes": 8060896487}
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-{"phase": "verified", "files": 10, "elapsedSeconds": 109.95}

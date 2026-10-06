@@ -1,9 +1,0 @@
-
-[1m[96m======================================================
-   CARTER - PROBE COMPLETO DE HERRAMIENTAS
-======================================================[0m
-
-[2mReadiness guardado en C:\Users\usuario\Desktop\ETC\Programacion\Carter OS AI\Carter_v2\probe_environment_readiness.json[0m
-
-Construyendo engine...
-Engine listo.

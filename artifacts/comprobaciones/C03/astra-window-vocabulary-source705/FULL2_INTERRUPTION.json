@@ -1,7 +1,0 @@
-{
-  "timeUtc": "2026-09-10T04:30:41.2531430Z",
-  "pid": 31636,
-  "parentPid": 34024,
-  "commandLine": "\"C:\\Users\\usuario\\.dotnet\\dotnet.exe\" test \"D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\Baxy.slnx\" -c Release --no-build -m:1 --nologo",
-  "reason": "Intentional interruption: candidate705 token boundary defect demonstrated; Full2 already has startup failures. Not a completed validation."
-}

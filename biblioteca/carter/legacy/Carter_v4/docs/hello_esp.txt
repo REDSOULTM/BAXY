@@ -1,1 +1,0 @@
-¡Hola mundo! Este archivo tiene caracteres españoles: café, naïve, párrafo con ñ, á, é, í, ó, ú.

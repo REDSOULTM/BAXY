@@ -1,1 +1,0 @@
-Este es un texto con caracteres españoles: ñ, á, é, ü, ò, í, ó, ü.

@@ -1,9 +1,0 @@
-# Producto582 — topología cubierta; dos fallos de uso CPU conservados
-
-Fuente581 publicada1dc8b33dcd60cc1dcc99586d51ac108f7e127ba5.17 finales sin cortes,15 correctos y dos fallos. Las seis variantes de H0007 dan modelo/conteos/sujeto correctos: nuevo requisito cubierto, apoyado por fixtures573/580 con otros valores y modelos. Encuesta13 cubiertos/729 abiertos/0NA; original742/rev1248 intacto. H0065 sigue abierto: «Esto computadora está usando el 22,5% de la CPU» rompe gramática aun con el perfil cualificado. H0350 sigue abierto: «Tengo un uso del50 por ciento de CPU» pasa una guarda de actor incompleta. Los demás usos y los cuatro controles de nombre/identidad/hora-audio/red son correctos. No presentar una corrección de sujeto como calidad completa.
-
-Reparaciones efectivas native8/11/13/22: mismos hechos, borrador rechazado, feedback y Qwen0,7/0,8/k20/min0/presence0/repeat1/seed0; native11 demuestra que el fallo gramatical no se debe a un perfil omitido. Nombres sintéticos sólo en perfil aislado, sin persistencia permanente. GPU3499,559MiB/RAM2475,281MiB,45,375s. Sin UI/voz ni consumo conjunto final.
-
-Fuente581 dueñas2156pass+121subtests/0skip; focalCPU46+STT12pass/1skip ambiental; Fast verde, Release1,76s. Full final pendiente. Main5f572ee intacto. No decisión del dueño pendiente, BAXY manual cerrado, goal activo.
-
-Siguiente: tras los intentos de instrucciones558/559 y reparación578–582, contrastar estrategia de razonamiento acotado9B con capturas reales sin cambiar sus instrucciones.567 tenía razonamiento ilimitado y no dio finales antes del timeout; no repetirlo ni inferir incapacidad semántica. Medir límite efectivo y calidad/recursos antes de adoptar. Continúan resto de encuesta/ocho rutas, UI real, loopback íntegro/AEC separado, consumo conjunto, aceptación y Full final. C08 humano sólo evidencia/reanudación.

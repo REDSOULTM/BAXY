@@ -1,9 +1,0 @@
-{
-  "target": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-app-identity883-worktree",
-  "sourceSha256": "875911e24697a08417389d18b761568ae89680d60fa5dc1f3cfc5defd5e365fa",
-  "patchPreserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-app-identity883-proposal\\repair.patch",
-  "changedFiles": [
-    " M src/baxy_mind/__main__.py"
-  ],
-  "removedAfterRootIntegration": true
-}

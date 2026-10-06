@@ -1,9 +1,0 @@
-{
-  "target": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-app-alias871-worktree",
-  "changedFiles": [
-    " M src/baxy_mind/effect_intent.py"
-  ],
-  "sourceSha256": "0204584361572737f1aadf6dda5f9526679691467d313fc1d71a1b57f009af0d",
-  "patchPreserved": "C:/Users/usuario/AppData/Local/BAXY/C03-app-alias871-proposal/repair.patch",
-  "removedAfterRootIntegration": true
-}

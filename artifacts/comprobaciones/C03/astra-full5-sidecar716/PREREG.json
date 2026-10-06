@@ -1,9 +1,0 @@
-{
-  "utc": "2026-09-10T07:08:46.476017+00:00",
-  "source_test_sha256": "4ac312b869624d261e047521bc918d9ff025194d8c9186dd9b5fae5a8959656d",
-  "child_script_sha256": "545fb9ad777e36164a6593aa8bfafe6b9c02b20beab2878f2cb0fc126694dfb9",
-  "python": "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
-  "py_spy_sha256": "6e83ab095f40453742d01a2719a178f308534015da519ec0659d2584139dc995",
-  "deadline_seconds": 3.0,
-  "method": "Exact child script from failing test AST. Keep stdin open. Wait3s unchanged; only after a deadline failure capture a stack before disposing this owned child. A late exit remains a failed deadline. No locals, model inference or product source changes."
-}
