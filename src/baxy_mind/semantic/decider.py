@@ -689,6 +689,38 @@ def _trimmed(request: str, spans: list[tuple[int, int, str]]) -> str | None:
     return result if len(content) >= 2 else None
 
 
+# M178 (DEV-F v5d F-w46-t4 «a las 5 y 40» after «bueno, poneme una alarma para ese día bien temprano», the day being
+# the Saturday of the forecasts, restated «Pon una alarma el sábado 26 de octubre a las 5:40.» → the person's «a las 5
+# y 40» was the objective and «¿Cuándo y qué quieres que recuerde la alarma?» was asked): a date nobody said written
+# right after a weekday that was said is the model's reckoning of that weekday; the weekday stays, the date goes.
+_WEEKDAY_BEFORE_A_DATE = re.compile(
+    rf"\b(?P<weekday>{'|'.join(name for names in _WEEKDAYS for name in names)})\s*,?\s*(?:(?:the|el)\s+)?$"
+)
+
+
+def _said_weekday_without_its_date(request: str, spans: list[tuple[int, int, str]], said: list[str]) -> str | None:
+    """``request`` without each date of ``spans`` that follows a weekday said in ``said`` («el sábado 26 de octubre» →
+    «el sábado»); None when no span is such a date."""
+
+    folded_request = fold_in_place(request)
+    said_words = set(re.findall(r"[a-z]+", fold("\n".join(said))))
+    dates = {(start, end) for start, end, _, _ in _dates(folded_request)}
+    result = request
+    dropped = False
+    for start, end, _ in sorted(spans, reverse=True):
+        if (start, end) not in dates:
+            continue
+        before = _WEEKDAY_BEFORE_A_DATE.search(folded_request[:start])
+        if before is None or before.group("weekday") not in said_words:
+            continue
+        # The comma or article between the weekday and the date goes with the date.
+        result = result[:before.end("weekday")] + result[end:]
+        dropped = True
+    if not dropped:
+        return None
+    return re.sub(r"\s+([?.!,;:])", r"\1", " ".join(result.split()))
+
+
 def faithful_request(
     request: str,
     text: str,
@@ -725,6 +757,13 @@ def faithful_request(
     if not spans:
         return Fidelity(request)
     introduced = tuple(dict.fromkeys(what for _, _, what in spans))
+    weekday_kept = _said_weekday_without_its_date(request, spans, said)
+    if (
+        weekday_kept is not None
+        and not _introduced_spans(weekday_kept, said, lines, now)
+        and _numbers_said(fold(text), articles=False) <= _numbers_said(fold(weekday_kept))
+    ):
+        return Fidelity(weekday_kept, introduced, "trimmed")
     trimmed = _trimmed(request, spans)
     if (
         trimmed is not None
