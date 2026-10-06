@@ -882,3 +882,87 @@ def _with_the_conversation_name(
             return " ".join((request[:start] + names[-1] + request[end:]).split())
     return None
 
+
+
+# M179 (DEV-I v5a–v5d I-w17-t2 «¿y la libra, cómo anda?» after «¿podrías decirme cómo está el dólar hoy, por favor?» →
+# restated «¿Cómo está el dólar hoy, por favor?», searched, «No encontré información sobre el tipo de cambio del dólar
+# hoy.»): a follow-up that names a new thing with its article («¿y la libra…?», «and the Celtics?») asks the same as the
+# request before about that thing. A restatement without it asked the old thing again. Folded, one character for one.
+_NEW_THING_FOLLOWUP = re.compile(
+    r"^[¿¡\s]*(?:(?:oye|che|bueno|ok|okay|okey|ah|oh|mira|hey|baxy|ya|pues|vale|dale)\b[\s,.:]*)*"
+    r"(?:y|and|(?:and\s+)?(?:what|how)\s+about|y\s+que\s+tal(?:\s+(?:con|de))?)\s+"
+    r"(?P<thing>(?:el|la|los|las|the)\s+[a-z][a-z'’-]{2,})(?=[\s,.;:?!]|$)"
+)
+# What follows an article without naming a thing: «y el del Banco Nación», «y el otro», «and the next one».
+_NOT_A_THING = frozenset(
+    "del que otro otra otros otras mismo misma resto demas siguiente proximo proxima ultimo ultima primero primera "
+    "segundo segunda tercero tercera other others rest same next last first second third one ones".split()
+)
+_ARTICLE_AND_NOUN = re.compile(r"\b(?:el|la|los|las|the)\s+(?P<noun>[a-z][a-z-]{2,})(?P<possessive>['’]s?)?(?![\w'’-])")
+
+
+def _stem_said(word: str, said: str) -> bool:
+    """``word`` (folded) is a word of ``said`` (folded) by its first five letters."""
+
+    return word[:5] in {other[:5] for other in re.findall(r"[a-z0-9]+", said)}
+
+
+def followup_thing_kept(request: str, text: str, antecedent: str) -> str | None:
+    """The restatement with the new thing a follow-up names (see above) where the old one stood; None when the
+    restatement keeps the new thing, the message is not such a follow-up, or the old thing is not one article and noun
+    of the restatement that the request before said and this message does not."""
+
+    said = " ".join(str(text or "").split())
+    folded_said = fold_in_place(said)
+    found = _NEW_THING_FOLLOWUP.match(folded_said)
+    if found is None:
+        return None
+    thing = said[found.start("thing"):found.end("thing")]
+    noun = folded_said[found.start("thing"):found.end("thing")].split()[-1]
+    if noun in _NOT_A_THING:
+        return None
+    restated = " ".join(str(request or "").split())
+    folded_restated = fold_in_place(restated)
+    before = fold_in_place(antecedent)
+    if not restated or not before.strip() or _stem_said(noun, folded_restated):
+        return None
+    old = [
+        place for place in _ARTICLE_AND_NOUN.finditer(folded_restated)
+        if _stem_said(place.group("noun"), before) and not _stem_said(place.group("noun"), folded_said)
+    ]
+    if len(old) != 1:
+        return None
+    place = old[0]
+    return restated[:place.start()] + thing + restated[place.end("noun"):]
+
+
+# M179 (DEV-I v5a/v5c/v5d I-w26-t5 «oye y el tecnico de ellos quien es ahora» four turns after «a que hora juega chile
+# el martes» → restated «¿Quién es el técnico de ellos ahora?», searched as said, and another team's coach answered):
+# «ellos», «their», said of a third party the person and BAXY were talking about, is the one name of the topic this
+# conversation last searched («¿A qué hora juega Chile el martes?»). Only when the person said the pronoun too, the
+# restatement kept it and names nobody, and that topic names exactly one name.
+_THIRD_PARTY = re.compile(r"\b(?P<phrase>de\s+(?:ellos|ellas)|their)\b")
+
+
+def with_the_searched_name(request: str, text: str, topic: str | None) -> str | None:
+    """The restatement with «de ellos / their» said by the name of the last topic searched (see above), or None."""
+
+    restated = " ".join(str(request or "").split())
+    folded_restated = fold_in_place(restated)
+    pronouns = list(_THIRD_PARTY.finditer(folded_restated))
+    if (
+        len(pronouns) != 1
+        or not topic
+        or re.search(r"\b(?:ellos|ellas|their|they|them)\b", fold(text)) is None
+        or _conversation_names(f". {restated}")
+    ):
+        return None
+    names = _conversation_names(f". {topic}")
+    if len(set(names)) != 1:
+        return None
+    name, found = names[0], pronouns[0]
+    if found.group("phrase") == "their":
+        said = f"{name}'" if name.endswith("s") else f"{name}'s"
+    else:
+        said = f"{restated[found.start():found.start() + 2]} {name}"
+    return restated[:found.start()] + said + restated[found.end():]

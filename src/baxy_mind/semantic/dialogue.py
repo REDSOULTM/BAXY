@@ -1947,6 +1947,11 @@ class DialogueState:
             return None
         return f"busca en la web {topic}" if spanish(text) else f"search the web for {topic}"
 
+    def searched_topic(self) -> str | None:
+        """M179: what this conversation last searched, as the search verified it; None with nothing searched."""
+
+        return self._facts.get("topic")
+
     def accepted_alarm_cancellation(self, text: str) -> str | None:
         """D39 (owner, 2026-09-29): after «cancela las alarmas» BAXY read the alarms and asked whether to cancel them
         all; a yes is the cancellation of each alarm read (its verified local clock), as one request the readers read.

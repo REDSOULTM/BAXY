@@ -2682,6 +2682,31 @@ _WATCH_NAMED_TITLE = re.compile(
     r"(?:\s+(?:with|con)\s+[^.!?]*)?[\s.!?]*$",
     re.IGNORECASE,
 )
+# M179 (DEV-D v5a–v5d D-p19-t1, the same message → the decider's «Play the movie After the Wedding with Spanish
+# subtitles.» as a limit, «I do not provide movies with subtitles.»): a film or a series named to watch is an order to
+# play it; how it is watched (its subtitles, its dubbing, with whom) is a detail BAXY does not control, never the
+# reason to refuse the order. A screen, a device or a cinema named is where it is watched, which BAXY does not reach.
+_WATCHED_ELSEWHERE = re.compile(
+    r"\b(?:tv|tele|teles|television|televisor|smart\s*tv|celular|phone|movil|tablet|ipad|chromecast|cine|cines|"
+    r"cinema|theat(?:er|re)s?|proyector|projector|consola|console|xbox|playstation|ps[45])\b"
+)
+
+
+def watched_elsewhere(text: str) -> bool:
+    """The text names a screen, a device or a cinema to watch something on (see above)."""
+
+    return _WATCHED_ELSEWHERE.search(effect_intent._fold(str(text or ""))) is not None
+
+
+def watch_named_title(text: str) -> str | None:
+    """The title of the film or series the message names to watch or play, with no service said or with one
+    (see above); None when it names none, or names a screen, a device or a cinema to watch it on."""
+
+    said = " ".join(str(text or "").split())
+    found = _WATCH_NAMED_TITLE.match(said)
+    if found is None or watched_elsewhere(said):
+        return None
+    return found.group("title").strip("\"'«»“” ") or None
 
 
 # The services of streaming.play.named, as the reader of a named title spells them (VIDEO1921, VIDEO1947).
