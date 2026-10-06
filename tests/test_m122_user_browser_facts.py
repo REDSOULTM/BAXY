@@ -343,3 +343,21 @@ def test_streaming_tabs_are_grouped_as_a_person_reads_their_titles() -> None:
     payload = {"operation": "browser.tabs.list", "seen": seen}
     assert llm._payload_fact_defect("Tienes 5 pestañas: dos de Disney+ y tres de HBO Max.", payload) == ""
     assert llm._payload_fact_defect("Tienes 5 pestañas, cuatro de HBO Max.", payload) == "invented_number"
+
+
+def test_a_tab_step_is_told_as_done_by_the_assistant_just_now() -> None:
+    """Live check 2026-10-06: «El video ya está en pantalla completa» read as if it already was."""
+
+    situation = {
+        "kind": "operation",
+        "operation": "browser.control",
+        "polarity": "success",
+        "verified": True,
+        "succeeded": True,
+        "observed": {"version": 1, "action": "fullscreen_video", "observedState": "fullscreen", "browser": "Opera GX"},
+    }
+
+    instruction = llm._compose_shape_instruction(situation, "es", "pon el video en pantalla completa")
+
+    assert "«Puse el video en pantalla completa»" in instruction
+    assert "Never say it already was so" in instruction

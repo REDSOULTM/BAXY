@@ -8413,6 +8413,26 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
                 "and do not say it was already open. Address the person naturally "
                 "in their language."
             )
+        browser_step_example = {
+            "went_back": "Volví a la página anterior",
+            "reloaded": "Recargué la página",
+            "scrolled": "Bajé la página" if _merged_observed(situation).get("action") == "scroll_down" else "Subí la página",
+            "tab_closed": "Cerré la pestaña",
+            "fullscreen": "Puse el video en pantalla completa",
+        }.get(str(_merged_observed(situation).get("observedState") or ""))
+        if (
+            situation.get("operation") == "browser.control"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and browser_step_example
+        ):
+            # Live check 2026-10-06 (the person's Opera GX): «El video ya está en pantalla completa» read as if it
+            # already was, «Has vuelto a la página…» as if the person did it. The assistant did it, just now.
+            bits.append(
+                "You have just done this step yourself in the person's web browser and read the result back: say it "
+                f"in the past, as yours, in one short sentence (for example «{browser_step_example}»). Never say it "
+                "already was so, and never say the person did it. Address the person naturally in their language."
+            )
         if (
             situation.get("operation") == "browser.control"
             and situation.get("verified") is True
