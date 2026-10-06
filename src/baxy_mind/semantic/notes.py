@@ -845,6 +845,9 @@ def _reminder_has_actionable_due(folded: str) -> bool:
 
     return bool(
         _has(folded, _CLOCK_TIME_SELECTOR)
+        # M176 (probe «remind me at half past 7 to call mom», «set an alarm for quarter to eight», «wake me up at half
+        # six» asked when): the clock the shared reader hears, English minutes before the hour too, is the moment.
+        or spoken_clock(folded) is not None
         or _has(
             folded,
             r"\b(?:(?:en|in|dentro de|within)\s+)?"

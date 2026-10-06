@@ -220,9 +220,12 @@ _CLOCK_MINUTES = (
 # The part of the day said after the hour. «a. m.» keeps its dots optional and
 # needs the «m» to end a word, so «a mi casa» is never a morning. The accented
 # spellings let a reader of the person's own text use it too.
+# M176 (probe «ponme una alarma a las 12 del día», «alarm at 12 noon» → set at midnight): «del día» is the daytime and
+# «noon» names noon; «del día siguiente» is a day, not a part of it.
 _CLOCK_PERIOD = (
     r"(?:a\.?\s*m\b\.?|p\.?\s*m\b\.?|de\s+la\s+(?:ma[nñ]ana|madrugada|tarde|noche)|"
-    r"del?\s+mediod[ií]a|in\s+the\s+(?:morning|afternoon|evening)|at\s+night)"
+    r"del?\s+mediod[ií]a|del\s+d[ií]a\b(?!\s+siguiente)|noon\b|midday\b|"
+    r"in\s+the\s+(?:morning|afternoon|evening)|at\s+night)"
 )
 # The part of the day said elsewhere in the request («esta tarde a las cinco»,
 # «mañana por la mañana a las siete»).
@@ -357,8 +360,11 @@ def _read_clock(found: re.Match[str], folded: str) -> SpokenClock | None:
             period = "noche" if meal.group("night") else "manana" if meal.group("morning") else "tarde"
     if re.search(r"^a\.?\s*m|manana|madrugada|morning", period):
         return SpokenClock(literal, hour % 12, minute, True)
-    if "mediodia" in period:
+    if re.search(r"mediodia|noon|midday", period):
         return SpokenClock(literal, 12 if hour == 12 else hour + 12, minute, True)
+    if re.search(r"\bdia\b", period):
+        # M176: «las 12 del día» is noon, «las 10 del día» the morning, «las 3 del día» the afternoon.
+        return SpokenClock(literal, hour if hour >= 7 else hour + 12, minute, True)
     if re.search(r"noche|night|evening", period) and (hour == 12 or hour <= 4):
         # «las doce de la noche» is midnight; «la una de la noche» is 1:00.
         return SpokenClock(literal, hour % 12, minute, True)
