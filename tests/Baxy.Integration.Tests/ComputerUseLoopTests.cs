@@ -571,4 +571,115 @@ public sealed class ComputerUseLoopTests
             Assert.That(ComputerUseMission.PageNotExposed(Browser(pageShown: true)), Is.False);
         });
     }
+
+    // A learned procedure stored for (application, goal), as an earlier run left it.
+    private ComputerUseProcedures Learned(string application, string goal, params JsonObject[] steps)
+    {
+        string path = Path.Combine(_root, "procedures.v1.json");
+        var document = new JsonObject
+        {
+            ["version"] = 1,
+            ["procedures"] = new JsonObject
+            {
+                [ComputerUseProcedures.Key(application, goal)] = new JsonObject
+                {
+                    ["application"] = application,
+                    ["goal"] = goal,
+                    ["steps"] = new JsonArray([.. steps.Select(step => (JsonNode?)step)]),
+                    ["successCheck"] = null,
+                    ["runs"] = 3,
+                    ["replays"] = 0,
+                },
+            },
+        };
+        File.WriteAllText(path, document.ToJsonString());
+        return new ComputerUseProcedures(path);
+    }
+
+    private static JsonObject LearnedStep(string operation, JsonObject arguments) =>
+        new() { ["operation"] = operation, ["arguments"] = arguments, ["expect"] = "surfaceChanged" };
+
+    // Measured live 2026-10-07 (v2-s13): the application already in front, its learned app.open changed nothing and the
+    // replayed click on a label of an earlier screen failed; the mission ended «la pantalla dejó de cambiar» with no
+    // decision of the routine or the model. A deviated replay hands the mission over on a fresh count, and the stale
+    // procedure is forgotten.
+    [Test]
+    public async Task AFailedLearnedStepHandsTheMissionToTheRoutineAndTheProcedureIsForgotten()
+    {
+        bool arrived = false;
+        var harness = new Harness
+        {
+            Screen = _ => arrived
+                ? Window("Canal - Chat", "chat", 7, true, [Control(0, "Button", "Buscar"), Control(1, "TreeItem", "Canal", "selected")])
+                : Window("Inicio - Chat", "chat", 7, true, [Control(0, "Button", "Buscar"), Control(1, "ListItem", "Tarjeta antigua")]),
+            Mind = _ => Step("input.visible.click", new JsonObject { ["label"] = "Buscar" }),
+        };
+        harness.Receipt = (operation, arguments) =>
+        {
+            if (operation == "app.open")
+            {
+                return new JsonObject { ["processId"] = 7, ["alreadyRunning"] = true };
+            }
+
+            if ((string?)arguments["label"] == "Tarjeta antigua")
+            {
+                return null!;
+            }
+
+            arrived = true;
+            return new JsonObject { ["surfaceChanged"] = true };
+        };
+        ComputerUseProcedures procedures = Learned("Chat", "ir a canal",
+            LearnedStep("app.open", new JsonObject { ["appId"] = "Chat" }),
+            LearnedStep("input.visible.click", new JsonObject { ["label"] = "Tarjeta antigua" }));
+        var arguments = new JsonObject { ["goal"] = "ir a canal", ["application"] = "Chat", ["successCheck"] = "control:canal:selected" };
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root, procedures), Execution("en Chat andá al canal", arguments), arguments, CancellationToken.None);
+
+        JsonObject observed = Observed(result);
+        JsonArray steps = observed["steps"]!.AsArray();
+        Assert.Multiple(() =>
+        {
+            Assert.That((bool?)observed["reached"], Is.True, (string?)observed["stoppedBy"]);
+            Assert.That(harness.Acts.Select(act => act.Operation),
+                Is.EqualTo(new[] { "app.open", "input.visible.click", "input.visible.click" }));
+            Assert.That(steps.Select(step => (string?)step!["source"]), Is.EqualTo(new[] { "procedure", "procedure", "model" }));
+            Assert.That(harness.Requests, Has.Count.EqualTo(1), "the routine and the model decide once the replay deviated");
+            Assert.That((bool?)harness.Requests[0].History[^1]!["ok"], Is.False);
+            Assert.That(procedures.Find("Chat", "ir a canal"), Is.Null, "a replay that deviated is not kept");
+            Assert.That(new ComputerUseProcedures(Path.Combine(_root, "procedures.v1.json")).Find("Chat", "ir a canal"), Is.Null);
+        });
+    }
+
+    [Test]
+    public async Task AProcedureWhoseReplayDidNotReachTheGoalIsForgottenOneThatNeverRanIsKept()
+    {
+        var failing = new Harness
+        {
+            Screen = _ => Window("Inicio - Chat", "chat", 7, true, [Control(0, "Button", "Ajustes"), Control(1, "Button", "Ayuda")]),
+            Mind = _ => Step("none", new JsonObject()),
+        };
+        ComputerUseProcedures procedures = Learned("Chat", "ir a perfil",
+            LearnedStep("input.visible.click", new JsonObject { ["label"] = "Ajustes" }));
+        var arguments = new JsonObject { ["goal"] = "ir a perfil", ["application"] = "Chat", ["successCheck"] = "control:perfil:selected" };
+
+        ComputerUseMission.Result failed = await ComputerUseMission.RunAsync(
+            failing.Context(_root, procedures), Execution("en Chat andá al perfil", arguments), arguments, CancellationToken.None);
+
+        var blind = new Harness { Screen = _ => null };
+        ComputerUseProcedures kept = Learned("Chat", "ir a perfil",
+            LearnedStep("input.visible.click", new JsonObject { ["label"] = "Ajustes" }));
+        ComputerUseMission.Result unseen = await ComputerUseMission.RunAsync(
+            blind.Context(_root, kept), Execution("en Chat andá al perfil", arguments), arguments, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((bool?)Observed(failed)["reached"], Is.False);
+            Assert.That(failing.Acts, Has.Count.EqualTo(1), "the learned click was replayed");
+            Assert.That(procedures.Find("Chat", "ir a perfil"), Is.Null);
+            Assert.That((string?)Observed(unseen)["stoppedBy"], Is.EqualTo("computer_use_view_unavailable"));
+            Assert.That(kept.Find("Chat", "ir a perfil"), Is.Not.Null, "a procedure that never ran is no evidence against it");
+        });
+    }
 }

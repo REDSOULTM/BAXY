@@ -265,9 +265,7 @@ internal static class ComputerUseMission
                     {
                         // A learned sequence that stopped changing the screen is abandoned, not the mission: from
                         // here the routine and the model decide (measured: a stale Steam procedure ended the mission).
-                        state["procedureDeviated"] = true;
-                        state["procedureIndex"] = -1;
-                        state["unchangedViews"] = 0;
+                        AbandonProcedure(state);
                         unchanged = 0;
                     }
 
@@ -425,8 +423,7 @@ internal static class ComputerUseMission
                                 $"step.{steps.Count}.{ShellTrace.SanitizeLabel(decision.Operation)}.no_progress");
                             if (fromProcedure)
                             {
-                                state["procedureDeviated"] = true;
-                                state["procedureIndex"] = -1;
+                                AbandonProcedure(state);
                             }
 
                             continue;
@@ -475,9 +472,8 @@ internal static class ComputerUseMission
 
                         if ((bool?)record["ok"] != true && fromProcedure)
                         {
-                            // The learned sequence deviated: from here on the model decides.
-                            state["procedureDeviated"] = true;
-                            state["procedureIndex"] = -1;
+                            // The learned sequence deviated: from here on the routine and the model decide.
+                            AbandonProcedure(state);
                         }
 
                         state["elapsedMs"] = alreadyElapsed + stopwatch.ElapsedMilliseconds;
@@ -714,9 +710,17 @@ internal static class ComputerUseMission
             };
             subgoal["procedure"] = context.Procedures.Learn(learning, own);
         }
-        else if ((string?)state["procedureKey"] is { Length: > 0 })
+        else if ((string?)state["procedureKey"] is { Length: > 0 } key)
         {
-            subgoal["procedure"] = (bool?)state["procedureDeviated"] == true ? "deviated" : "abandoned";
+            bool deviated = (bool?)state["procedureDeviated"] == true;
+            subgoal["procedure"] = deviated ? "deviated" : "abandoned";
+            // A learned sequence is kept only while it keeps reaching its goal: one that deviated, or whose replayed
+            // steps did not reach it, is forgotten and the next run decides afresh (measured live 2026-10-07: stale
+            // procedures learned from earlier screens replayed the same failing click run after run).
+            if (deviated || own.Any(node => node is JsonObject step && (string?)step["source"] == "procedure"))
+            {
+                context.Procedures.Forget(key);
+            }
         }
     }
 
@@ -729,6 +733,20 @@ internal static class ComputerUseMission
         }
 
         return own;
+    }
+
+    /// <summary>
+    /// A learned sequence that deviated (a replayed step failed, went round, or stopped changing the screen) is
+    /// abandoned, not the mission: from here the routine and the model decide, and the screens the replay left
+    /// unchanged are not counted against them. Measured live (Discord, 2026-10-07): an app.open of the window already
+    /// in front and a replayed click that failed made two unchanged screens, and the mission ended «la pantalla dejó
+    /// de cambiar» before the routine could look the channel up.
+    /// </summary>
+    internal static void AbandonProcedure(JsonObject state)
+    {
+        state["procedureDeviated"] = true;
+        state["procedureIndex"] = -1;
+        state["unchangedViews"] = 0;
     }
 
     private static bool NextProcedureOpens(JsonObject state) =>
@@ -2308,7 +2326,11 @@ internal sealed class ComputerUseProcedures
             // Contract §5: only a mission reached without failed steps is learned. Measured on Steam: the failed
             // click had opened the menu and was dropped; the step left («Chrome Legacy Window») was meaningless.
             // An opening that did not verify (a UWP app hosted by its frame) is not a failed step: it is skipped.
-            outcome = "none";
+            // The procedure whose replay deviated on the way is not kept either: it would fail the same way again.
+            outcome = (string?)state["procedureKey"] == key && (bool?)state["procedureDeviated"] == true
+                && procedures.Remove(key)
+                    ? "forgotten"
+                    : "none";
         }
         else
         {
@@ -2370,6 +2392,16 @@ internal sealed class ComputerUseProcedures
 
         Save(document);
         return outcome;
+    }
+
+    /// <summary>Drops the procedure stored under <paramref name="key"/>, if any.</summary>
+    internal void Forget(string key)
+    {
+        JsonObject document = Load();
+        if (document["procedures"] is JsonObject procedures && procedures.Remove(key))
+        {
+            Save(document);
+        }
     }
 
     private JsonObject Load()
