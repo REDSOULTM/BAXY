@@ -1088,7 +1088,7 @@ def _destination(goal: str | None) -> str:
 # The refusals the model gets one more try at, with the refusal in front of it (contract §4.4).
 _RETRIED = frozenset({
     "label_not_visible", "evidence_not_visible", "already_open", "application_unknown", "control_covers_window",
-    "no_progress", "opens_elsewhere",
+    "no_progress", "opens_elsewhere", "changes_a_setting",
 })
 # A control that opens another tab or window: the mission's window would stop being the one in front (measured on
 # Opera: the model clicked «Nueva pestaña» while searching a page and the mission went on in an empty tab).
@@ -1098,6 +1098,17 @@ _OPENS_ELSEWHERE = re.compile(
 _ELSEWHERE_WORDS = re.compile(r"\b(?:pestana|ventana|tab|window)s?\b")
 # A control this much of its window is the window's body (a document, a web view, a canvas), not a place to go.
 _COVERS_WINDOW = 0.8
+
+
+_SWITCH_KINDS = frozenset({"CheckBox", "RadioButton", "ToggleButton", "Slider"})
+
+
+def _is_switch(control: dict) -> bool:
+    """A control that sets something when pressed: a check box, a radio button, a toggle or a slider, or any control
+    shown on/off/checked."""
+
+    state = str(control.get("state") or "").split()
+    return control.get("kind") in _SWITCH_KINDS or any(word in {"on", "off", "checked", "unchecked"} for word in state)
 
 
 def validate_decision(
@@ -1195,6 +1206,10 @@ def _checked_act(
         clicked = str(control.get("name") or label) if control is not None else label
         if _OPENS_ELSEWHERE.search(fold(clicked)) and not _ELSEWHERE_WORDS.search(fold(goal)):
             return _none(f"«{clicked[:40]}» abre otra pestaña o ventana y el objetivo no lo pide", code="opens_elsewhere")
+        if control is not None and _destination(goal) and _is_switch(control):
+            # Going somewhere never changes a setting on the way (measured on Settings: looking for «Colores» the
+            # model clicked «Invertir colores» of the Magnifier).
+            return _none(f"«{clicked[:40]}» cambia un ajuste y el objetivo sólo pide ir a un lugar", code="changes_a_setting")
         if control is not None:
             arguments: dict[str, object] = {"label": str(control.get("name") or label)}
             if isinstance(control.get("i"), int):

@@ -1026,3 +1026,25 @@ def test_a_search_field_holding_old_text_is_selected_whole_before_typing() -> No
     assert first["arguments"] == {"key": "ctrl_a"}
     selected = [_ok(1, "input.key.press", key="ctrl_a")]
     assert computer_use.deterministic_step(goal="ir a colores", view=settings, history=selected)["arguments"] == {"text": "colores"}
+
+
+def test_going_somewhere_never_presses_a_switch() -> None:
+    # Measured on Settings: looking for «Colores» the model clicked «Invertir colores» of the Magnifier.
+    view = {
+        "window": {"title": "Configuración", "process": "SystemSettings"},
+        "controls": [
+            {"i": 0, "kind": "Button", "name": "Invertir colores", "state": "off"},
+            {"i": 1, "kind": "CheckBox", "name": "Invertir colores de la lupa"},
+            {"i": 2, "kind": "ListItem", "name": "Colores"},
+        ],
+        "text": {},
+    }
+    for index, label in ((0, "Invertir colores"), (1, "Invertir colores de la lupa")):
+        refused = computer_use.validate_decision(
+            {"act": "click", "i": index}, view=view, last_failed=None, application_names=(), history=[], goal="ir a colores",
+        )
+        assert refused["operation"] == "none", label
+    allowed = computer_use.validate_decision(
+        {"act": "click", "i": 2}, view=view, last_failed=None, application_names=(), history=[], goal="ir a colores",
+    )
+    assert allowed["operation"] == "input.visible.click"

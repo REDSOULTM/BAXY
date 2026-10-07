@@ -1774,7 +1774,7 @@ internal static class ComputerUseSuccessCheck
         // for the channel while the Friends page was open).
         if (ComputerUseMission.ActionableCount(view) > 1)
         {
-            return ALastClickOpened(rest, view, steps);
+            return ALastClickOpened(rest, view, steps) || HeaderNames(view, rest);
         }
 
         if (AddressNames(view, rest))
@@ -1879,6 +1879,37 @@ internal static class ComputerUseSuccessCheck
         }
 
         return false;
+    }
+
+    // The page's own header names the place: a control called exactly that at the top of the window and nowhere in its
+    // body or side (measured on Settings: on Colores, «Colores» is the last link of the header «Personalización >
+    // Colores»; on Personalización it is a card in the body, which does not count).
+    private static bool HeaderNames(JsonObject view, string place)
+    {
+        string target = Fold(place);
+        if (target.Length < 3 || view["controls"] is not JsonArray controls)
+        {
+            return false;
+        }
+
+        bool inHeader = false;
+        foreach (JsonObject control in controls.OfType<JsonObject>())
+        {
+            if (Fold((string?)control["name"]) != target)
+            {
+                continue;
+            }
+
+            string zone = (string?)control["zone"] ?? string.Empty;
+            if (!zone.StartsWith('T') || (string?)control["kind"] is not ("Text" or "Button" or "Hyperlink"))
+            {
+                return false;
+            }
+
+            inHeader = true;
+        }
+
+        return inHeader;
     }
 
     // The folded names of the listed controls, the window a click is measured against.

@@ -342,6 +342,28 @@ public sealed class ComputerUseMissionTests
     }
 
     [Test]
+    public void ThePagesOwnHeaderNamesWhereTheWindowIs()
+    {
+        JsonObject colors = View("""
+            {"window": {"title": "Configuración"}, "controls": [
+              {"i": 0, "kind": "ListItem", "name": "Personalización", "state": "selected", "zone": "L"},
+              {"i": 1, "kind": "Button", "name": "Personalización", "zone": "T"}, {"i": 2, "kind": "Button", "name": "Colores", "zone": "T"},
+              {"i": 3, "kind": "ComboBox", "name": "Elige tu modo", "zone": "R"}]}
+            """);
+        JsonObject personalization = View("""
+            {"window": {"title": "Configuración"}, "controls": [
+              {"i": 0, "kind": "ListItem", "name": "Personalización", "state": "selected", "zone": "L"},
+              {"i": 1, "kind": "Text", "name": "Personalización", "zone": "T"}, {"i": 2, "kind": "ListItem", "name": "Colores", "zone": "C"},
+              {"i": 3, "kind": "Text", "name": "Colores", "zone": "C"}]}
+            """);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", colors, [], out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", personalization, [], out _), Is.False);
+        });
+    }
+
+    [Test]
     public void AShellWithAnAddressBarAndPanesIsNothingToActOn()
     {
         JsonObject starting = View("""
