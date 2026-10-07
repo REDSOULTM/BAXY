@@ -383,6 +383,15 @@ def _mission_takes_over(
 
     if intent is not None and set(intent.operations) <= MISSION_SUBSUMES:
         return True
+    # Live 2026-10-07 (r21): «en Configuración andá a Personalización y decime qué tema está activo» read the closing
+    # question alone as a status of the PC («tema» → media.status: «no hay nada reproduciéndose»). A status the
+    # question alone reads is the question the mission's final answers from the window it reached.
+    _goal, marked, question = str(getattr(mission, "goal", "")).partition(_missions_question_mark())
+    if marked and question and intent is not None:
+        asked = _resolve_clause_effects(question, available, application_names, game_catalog)
+        answered = {operation for operation in (asked.operations if asked else ()) if operation.endswith(".status")}
+        if answered and set(intent.operations) <= MISSION_SUBSUMES | answered:
+            return True
     steps = getattr(mission, "steps", ())
     if steps:
         # A chain of steps inside applications («andá a la biblioteca en Steam y después a general en Discord») is
@@ -410,6 +419,14 @@ def _mission_takes_over(
         return True
     inner = _resolve_clause_effects(clause, available, application_names, game_catalog)
     return inner is None or set(inner.operations) <= MISSION_SUBSUMES
+
+
+def _missions_question_mark() -> str:
+    """The mark between a mission's sub-goals and its closing question (missions.QUESTION_MARK)."""
+
+    from . import missions as _missions
+
+    return _missions.QUESTION_MARK
 
 
 def _computer_use_mission_is_direct(text: str) -> bool:
