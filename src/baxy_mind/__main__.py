@@ -7219,6 +7219,22 @@ def _engine_for_an_unserved_order(
     return tried
 
 
+def _self_contained_mission(
+    objective: str,
+    explicit_intent: EffectIntent | None,
+    application_names: tuple[str, ...] | ApplicationCatalogIndex,
+) -> bool:
+    """The message names an installed application and reads alone as a step inside it: in a conversation its own
+    reading is the turn, not the contextual decider's (a follow-up without the application still goes to the decider,
+    Fase 3.5b F4)."""
+
+    return (
+        explicit_intent is not None
+        and explicit_intent.operations == ("mission.computer.use",)
+        and getattr(semantic_missions.mission_request(objective, application_names), "application", None) is not None
+    )
+
+
 def _decide_turn_result(
     message: dict[str, Any],
     *,
@@ -7996,7 +8012,15 @@ def _decide_turn_result(
                 decided_beforehand=searched,
             )
     decider_confirmed = decided_beforehand is not None and explicit_conversation_decision is not None
-    if explicit_conversation_decision is None and (explicit_intent is None or in_conversation):
+    # Live 2026-10-07 (warm session «en el Reloj andá a Alarma» → «en el Reloj andá a Cronómetro» → «en Configuración
+    # andá a Bluetooth…» → «en la calculadora calculá 9 por 8»): after the first turn every message went to the
+    # contextual decider, which chose a lone click or the typed calculation and failed. A message that names an
+    # installed application and reads alone as a step inside it needs no context: its own reading is the turn.
+    self_contained_mission = (
+        in_conversation and decided_beforehand is None
+        and _self_contained_mission(objective, explicit_intent, application_names)
+    )
+    if explicit_conversation_decision is None and (explicit_intent is None or (in_conversation and not self_contained_mission)):
         # No reader proved this message, or it follows earlier turns and no conversation reader kept it:
         # the contextual decider decides it (Fase 3.5b F4), not the shortlist, the native selector and
         # the gates.

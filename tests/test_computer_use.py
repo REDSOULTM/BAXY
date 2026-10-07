@@ -1096,3 +1096,17 @@ def test_what_was_typed_is_never_the_evidence_of_arriving() -> None:
         goal="buscar Cuphead",
     )
     assert refused["operation"] == "none"
+
+
+def test_an_order_that_names_its_application_needs_no_context() -> None:
+    # Live 2026-10-07: in a warm session every order after the first went to the contextual decider (a lone click, the
+    # typed calculation) and failed; an order naming its application reads alone.
+    from baxy_mind import __main__ as sidecar
+    from baxy_mind.effect_intent import EffectIntent
+
+    apps = ("Reloj", "Calculadora", "Configuración")
+    mission = EffectIntent(("mission.computer.use",), ("x",))
+    assert sidecar._self_contained_mission("en el Reloj andá a Cronómetro", mission, apps)
+    assert sidecar._self_contained_mission("en la calculadora calculá 9 por 8", mission, apps)
+    assert not sidecar._self_contained_mission("y ahora andá a configuración", mission, apps)
+    assert not sidecar._self_contained_mission("en el Reloj andá a Cronómetro", None, apps)
