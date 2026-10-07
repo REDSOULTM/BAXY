@@ -103,8 +103,36 @@ STEP_GRAMMAR = "\n".join([
 ])
 
 
-def compact_view_text(view: dict, limit_controls: int = 60, limit_lines: int = 40) -> str:
-    """The view as the model reads it: one short line per control, then the text by zone."""
+_SHOWN_CONTROLS = 30
+
+
+def _ranked_controls(controls: list, goal: str | None, limit: int) -> list:
+    """The controls the model is shown when there are more than ``limit``: the ones whose names share words with the
+    goal, then the focused, selected and search-like ones, then the rest in screen order (measured: a Discord view of
+    250 controls cut at the first 60 hid the server that held the target). The view's own order is kept."""
+
+    if len(controls) <= limit:
+        return controls
+    wanted = {word for word in fold(goal or "").split() if len(word) >= 3}
+
+    def weight(position: int, control: object) -> tuple[int, int]:
+        if not isinstance(control, dict):
+            return (9, position)
+        name = fold(control.get("name"))
+        state = str(control.get("state") or "")
+        if wanted and any(word in name for word in wanted):
+            return (0, position)
+        if "focused" in state or "selected" in state or _SEARCH_NAME.search(name):
+            return (1, position)
+        return (2, position)
+
+    chosen = sorted(range(len(controls)), key=lambda position: weight(position, controls[position]))[:limit]
+    return [controls[position] for position in sorted(chosen)]
+
+
+def compact_view_text(view: dict, limit_controls: int = _SHOWN_CONTROLS, limit_lines: int = 40, goal: str | None = None) -> str:
+    """The view as the model reads it: one short line per control (the ones that matter for the goal when there are
+    many, with how many were left out), then the text by zone."""
 
     lines: list[str] = []
     window = view.get("window") if isinstance(view, dict) else None
@@ -121,8 +149,9 @@ def compact_view_text(view: dict, limit_controls: int = 60, limit_lines: int = 4
             )
     controls = view.get("controls") if isinstance(view, dict) else None
     if isinstance(controls, list):
-        lines.append("controles:")
-        for control in controls[:limit_controls]:
+        shown = _ranked_controls(controls, goal, limit_controls)
+        lines.append("controles:" if len(shown) == len(controls) else f"controles ({len(shown)} de {len(controls)}):")
+        for control in shown:
             if not isinstance(control, dict):
                 continue
             bits = [str(control.get("i")), str(control.get("kind") or ""), "«" + str(control.get("name") or "")[:60] + "»"]
@@ -706,7 +735,7 @@ def decide_step(
         + (f"\nSe cumple cuando: {success_check}" if success_check else "")
         + f"\nPasos que quedan: {budget_left}\n"
         + ("Historial:\n" + "\n".join(_history_line(step) for step in history[-6:]) + "\n" if history else "")
-        + "Vista:\n" + compact_view_text(view)
+        + "Vista:\n" + compact_view_text(view, goal=goal)
     )
     payload = {
         "messages": [
