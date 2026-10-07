@@ -214,7 +214,8 @@ function Get-Toggle($el){
 # (medido: VS Code 154 controles 2,2 s -> menos de 1 s).
 $script:Cache=New-Object System.Windows.Automation.CacheRequest
 foreach($prop in @($AE::NameProperty,$AE::ControlTypeProperty,$AE::IsOffscreenProperty,$AE::BoundingRectangleProperty,
-                   $AE::HasKeyboardFocusProperty,$AE::IsPasswordProperty,$AE::IsEnabledProperty,$AE::RuntimeIdProperty)){ $script:Cache.Add($prop) }
+                   $AE::HasKeyboardFocusProperty,$AE::IsPasswordProperty,$AE::IsEnabledProperty,$AE::RuntimeIdProperty,
+                   $AE::ItemTypeProperty)){ $script:Cache.Add($prop) }
 foreach($pat in @([System.Windows.Automation.TogglePattern]::Pattern,[System.Windows.Automation.SelectionItemPattern]::Pattern,
                   [System.Windows.Automation.ExpandCollapsePattern]::Pattern,[System.Windows.Automation.ValuePattern]::Pattern,
                   [System.Windows.Automation.RangeValuePattern]::Pattern)){ $script:Cache.Add($pat) }
@@ -303,7 +304,12 @@ function Do-View($request){
       }
       $total++
       $id=Get-Id $item
-      $entry=@{ kind=$kind; name=$name; id=$id; state=$stateInfo.state; value=$stateInfo.value; rect=$rect; repeated=0 }
+      # Lo que la aplicacion dice que es un elemento de lista o arbol (una carpeta, un acceso directo, una aplicacion).
+      $itemType=''
+      if($kind -eq 'ListItem' -or $kind -eq 'DataItem' -or $kind -eq 'TreeItem'){
+        try { $itemType=[string]$item.Cached.ItemType; if($null -eq $itemType){ $itemType='' } else { $itemType=($itemType -replace '\s+',' ').Trim() } } catch { $itemType='' }
+      }
+      $entry=@{ kind=$kind; name=$name; id=$id; state=$stateInfo.state; value=$stateInfo.value; itemType=$itemType; rect=$rect; repeated=0 }
       $seen[$key]=$entry
       if($Actionable -contains $kind){ [void]$primary.Add($entry) } else { [void]$secondary.Add($entry) }
       if($stateInfo.state -match '\bfocused\b' -and $null -eq $focused){ $focused=$entry }
@@ -317,7 +323,7 @@ function Do-View($request){
   $ordered=@()
   $position=0
   foreach($entry in $controls){
-    $ordered+=@([pscustomobject]@{ i=$position; kind=$entry.kind; name=$entry.name; id=$entry.id; state=$entry.state; value=$entry.value; rect=$entry.rect; repeated=$entry.repeated })
+    $ordered+=@([pscustomobject]@{ i=$position; kind=$entry.kind; name=$entry.name; id=$entry.id; state=$entry.state; value=$entry.value; itemType=$entry.itemType; rect=$entry.rect; repeated=$entry.repeated })
     $position++
   }
   $focusedOut=$null

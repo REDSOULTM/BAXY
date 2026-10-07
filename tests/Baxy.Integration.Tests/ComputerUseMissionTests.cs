@@ -1179,6 +1179,196 @@ public sealed class ComputerUseMissionTests
         }
     }
 
+    private const string ExplorerSearchResults = """
+        {"window": {"title": "imagenes - Resultados de la búsqueda en Trabajo - Explorador de archivos", "process": "explorer",
+                    "focused": {"kind": "ListItem", "name": "Imágenes", "value": null}},
+         "controls": [{"i": 0, "kind": "TabItem", "name": "imagenes - Resultados de la búsqueda en Trabajo", "state": "selected"},
+                      {"i": 1, "kind": "Edit", "name": "Buscar en Trabajo", "state": "", "value": "imagenes"},
+                      {"i": 2, "kind": "ListItem", "name": "Imágenes", "state": "selected focused", "zone": "C"}],
+         "text": {}}
+        """;
+
+    private static JsonArray SearchedInTrabajo(params JsonObject[] after)
+    {
+        var steps = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["label"] = "Buscar en Trabajo", ["ok"] = true },
+            new JsonObject { ["step"] = 2, ["operation"] = "input.text.type", ["text"] = "imagenes", ["into"] = "Buscar en Trabajo", ["ok"] = true },
+            new JsonObject { ["step"] = 3, ["operation"] = "input.key.press", ["key"] = "enter", ["ok"] = true },
+        };
+        foreach (JsonObject step in after)
+        {
+            steps.Add(step);
+        }
+
+        return steps;
+    }
+
+    // Review 2026-10-07: the tab of the results, selected after «imagenes» was searched, is the query's echo for
+    // «current» as it is for «selected».
+    [Test]
+    public void TheCurrentTabOfASearchStillEchoingIsNotThePlace()
+    {
+        JsonObject results = View(ExplorerSearchResults);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:imagenes:current", results, SearchedInTrabajo(), out string? by), Is.False, by);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:imagenes:current", results, [], out _), Is.True,
+                "nothing typed: the tab is what the window shows");
+        });
+    }
+
+    // Review 2026-10-07: a click on the result named like the place only selected it; the window still shows the
+    // results titled by the query.
+    [Test]
+    public void AClickThatOnlySelectedTheResultNamedLikeThePlaceIsNoArrival()
+    {
+        JsonObject results = View(ExplorerSearchResults);
+        JsonObject Click(bool selected, string kind) => new()
+        {
+            ["step"] = 4, ["operation"] = "input.visible.click", ["label"] = "Imágenes", ["ok"] = true,
+            ["selected"] = selected, ["kind"] = kind,
+        };
+        JsonObject arrived = View("""
+            {"window": {"title": "Imágenes - Explorador de archivos", "process": "explorer",
+                        "focused": {"kind": "Pane", "name": "Imágenes", "value": null}},
+             "controls": [{"i": 0, "kind": "TabItem", "name": "Imágenes", "state": "selected"},
+                          {"i": 1, "kind": "Edit", "name": "Buscar en Imágenes", "state": "", "value": ""}], "text": {}}
+            """);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("title:imagenes", results, SearchedInTrabajo(Click(true, "ListItem")), out _), Is.False,
+                "the receipt says the click only selected the item");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("title:imagenes", results, SearchedInTrabajo(Click(false, "ListItem")), out _), Is.False,
+                "a content item clicked is selected, not opened");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("title:imagenes", arrived, SearchedInTrabajo(Click(false, "ListItem")), out _), Is.True,
+                "once the place opened its search box no longer holds the query");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("title:imagenes", arrived, SearchedInTrabajo(Click(false, "Button")), out _), Is.True);
+        });
+    }
+
+    // Safety review 2026-10-07: a learned Enter, space or Delete is not replayed on its recorded target (a control of
+    // another run's view); the mind decides that step on the current view, and the replay goes on after it.
+    [TestCase("enter")]
+    [TestCase("Space")]
+    [TestCase("delete")]
+    public void ALearnedKeyThatActsOnTheFocusedItemIsHandedToTheMind(string key)
+    {
+        var state = new JsonObject
+        {
+            ["procedureIndex"] = 0,
+            ["procedureSteps"] = new JsonObject
+            {
+                ["steps"] = new JsonArray
+                {
+                    new JsonObject
+                    {
+                        ["operation"] = "input.key.press",
+                        ["arguments"] = new JsonObject { ["key"] = key, ["target"] = "Informe final" },
+                    },
+                    new JsonObject
+                    {
+                        ["operation"] = "input.key.press",
+                        ["arguments"] = new JsonObject { ["key"] = "tab" },
+                    },
+                },
+            },
+        };
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseMission.NextProcedureStep(state, 0), Is.Null);
+            Assert.That((int?)state["procedureIndex"], Is.EqualTo(1));
+            Assert.That(ComputerUseMission.NextProcedureStep(state, 1)?.Operation, Is.EqualTo("input.key.press"),
+                "the replay goes on after the step the mind took");
+        });
+    }
+
+    [Test]
+    public void ALearnedKeyThatActsOnTheFocusedItemKeepsNoTarget()
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "baxy-cu-procedures-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            var procedures = new ComputerUseProcedures(Path.Combine(directory, "procedures.v1.json"));
+            var state = new JsonObject { ["goal"] = "abrir el informe", ["application"] = "Archivos" };
+            var steps = new JsonArray
+            {
+                new JsonObject { ["step"] = 1, ["operation"] = "input.key.press", ["key"] = "enter", ["target"] = "Informe final", ["ok"] = true, ["source"] = "model" },
+                new JsonObject { ["step"] = 2, ["operation"] = "input.key.press", ["key"] = "tab", ["target"] = "Lista", ["ok"] = true, ["source"] = "model" },
+            };
+            Assert.That(procedures.Learn(state, steps), Is.EqualTo("learned"));
+            JsonArray recorded = procedures.Find("Archivos", "abrir el informe")!["steps"]!.AsArray();
+            Assert.Multiple(() =>
+            {
+                Assert.That(recorded[0]!["arguments"]!["target"], Is.Null);
+                Assert.That((string?)recorded[0]!["arguments"]!["key"], Is.EqualTo("enter"));
+                Assert.That((string?)recorded[1]!["arguments"]!["target"], Is.EqualTo("Lista"));
+            });
+        }
+        finally
+        {
+            if (Directory.Exists(directory))
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+    }
+
+    // Safety review 2026-10-07: a click or a scroll, like a key or a text, never goes to a window that is not the named
+    // application's (BAXY's own, another one that came up meanwhile).
+    [TestCase("input.visible.click")]
+    [TestCase("input.scroll")]
+    [TestCase("input.key.press")]
+    public void APointerStepOnAWindowThatIsNotTheApplicationIsRefused(string operation)
+    {
+        JsonObject other = View("""{"window": {"title": "BAXY", "process": "Baxy.App", "processId": 77, "hwnd": 9}}""");
+        JsonObject requested = View("""{"window": {"title": "Calculadora", "process": "x", "processId": 55, "hwnd": 8, "requested": true}}""");
+        JsonObject owned = View("""{"window": {"title": "Calculadora", "process": "x", "processId": 55, "hwnd": 8}}""");
+        var state = new JsonObject { ["processId"] = 55 };
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseMission.BindToMissionWindow(operation, new JsonObject(), other, state, "Calculadora"), Is.False);
+            Assert.That(ComputerUseMission.BindToMissionWindow(operation, new JsonObject(), requested, new JsonObject(), "Calculadora"), Is.True);
+            Assert.That(ComputerUseMission.BindToMissionWindow(operation, new JsonObject(), owned, state, "Calculadora"), Is.True);
+            Assert.That(ComputerUseMission.BindToMissionWindow(operation, new JsonObject(), other, state, null), Is.True,
+                "no application named: the step goes to the window in front");
+        });
+    }
+
+    [Test]
+    public void APointerStepIsNotBoundToAWindowHandle()
+    {
+        JsonObject owned = View("""{"window": {"title": "Calculadora", "processId": 55, "hwnd": 8}}""");
+        var click = new JsonObject { ["label"] = "Igual" };
+        var key = new JsonObject { ["key"] = "enter" };
+        ComputerUseMission.BindToMissionWindow("input.visible.click", click, owned, new JsonObject { ["processId"] = 55 }, "Calculadora");
+        ComputerUseMission.BindToMissionWindow("input.key.press", key, owned, new JsonObject { ["processId"] = 55 }, "Calculadora");
+        Assert.Multiple(() =>
+        {
+            Assert.That(click["window"], Is.Null);
+            Assert.That((long?)key["window"], Is.EqualTo(8L));
+        });
+    }
+
+    // The type of a list or tree item the provider reports (a folder, a shortcut) reaches the mind.
+    [Test]
+    public void TheItemTypeOfAControlReachesTheMind()
+    {
+        JsonObject compact = ComputerUseMission.CompactForTheMind(View("""
+            {"window": {"title": "Trabajo"},
+             "controls": [{"i": 0, "kind": "ListItem", "name": "Imágenes", "state": "", "itemType": "Carpeta de archivos"},
+                          {"i": 1, "kind": "ListItem", "name": "notas.txt", "state": "", "itemType": ""},
+                          {"i": 2, "kind": "Button", "name": "Atrás", "state": ""}]}
+            """));
+        JsonArray controls = compact["controls"]!.AsArray();
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)controls[0]!["itemType"], Is.EqualTo("Carpeta de archivos"));
+            Assert.That(controls[1]!.AsObject().ContainsKey("itemType"), Is.False);
+            Assert.That(controls[2]!.AsObject().ContainsKey("itemType"), Is.False);
+        });
+    }
+
     [TestCase("Steam", "Ir a la biblioteca", "steam|ir a la biblioteca")]
     [TestCase("steam", "por favor ir a la biblioteca.", "steam|ir a la biblioteca")]
     [TestCase(null, "Activá el modo avión", "|activa el modo avion")]
