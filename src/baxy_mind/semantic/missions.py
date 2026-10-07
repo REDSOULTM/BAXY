@@ -555,8 +555,18 @@ _SELECT_NOUN_BEFORE = re.compile(
 _SELECT_NOUN_AFTER = re.compile(r"\s+(?:color|colour|tool|option|button|boton)$")
 
 
+# The marks that delimit a name said or written between quotes («Sistema», "Sistema", “Sistema”, 'Sistema').
+_QUOTE_MARKS = " \"'«»“”‘’"
+
+
+def _unquoted(name: str) -> str:
+    """A name without the quotes and spaces around it: the quotes delimit the name, the window never shows them."""
+
+    return name.strip(_QUOTE_MARKS).strip()
+
+
 def _select_target(what: str) -> str:
-    target = _SELECT_NOUN_BEFORE.sub("", what.strip(" \"'«»“”"), count=1)
+    target = _SELECT_NOUN_BEFORE.sub("", _unquoted(what), count=1)
     return _SELECT_NOUN_AFTER.sub("", target).strip()
 
 
@@ -778,11 +788,11 @@ def _read_act(folded: str) -> tuple[str, str | None] | None:
         return mode
     on = _TOGGLE_ON_CLAUSE.match(folded)
     if on is not None and not _has_deictic_only(on.group("target")) and not re.match(_ORDINAL, on.group("target")):
-        target = on.group("target").strip()
+        target = _unquoted(on.group("target"))
         return f"activar {target}", _with_alternatives(target, ("control:{}:on",))
     off = _TOGGLE_OFF_CLAUSE.match(folded)
     if off is not None and not _has_deictic_only(off.group("target")):
-        target = off.group("target").strip()
+        target = _unquoted(off.group("target"))
         return f"desactivar {target}", _with_alternatives(target, ("control:{}:off",))
     if _NEW_TAB_CLAUSE.match(folded) is not None:
         return "apretar ctrl t", "stepDone:input.key.press:ctrl_t"
@@ -795,7 +805,7 @@ def _read_act(folded: str) -> tuple[str, str | None] | None:
         if place is None:
             continue
         # «ve a la biblioteca y escribí hola»: the place ends where the next clause of doing begins.
-        target = _segments(place.group("target"))[0].strip(" \"'«»")
+        target = _unquoted(_segments(place.group("target"))[0])
         address = _ADDRESS.fullmatch(target)
         if address is not None:
             if place.re is _NAVIGATE_CLAUSE:
@@ -866,6 +876,11 @@ def read_clause(clause: str) -> tuple[str, str | None] | None:
         _TOUCH_HEAD.sub("haz clic en ", doing, count=1)
     )
     if label is not None:
+        # «haz clic en «Sistema»» (measured 2026-10-07: the context decider's rewrite of «y después a Sistema» quoted
+        # the name; the quoted name matched no control, so the loop searched for «sistema» with its quotes and
+        # failed): quotes delimit the name, they are no part of it.
+        label = _unquoted(label)
+    if label:
         return f"hacer clic en {label}", _with_alternatives(label, ("stepDone:input.visible.click:{}",)) or None
     return doing, None
 
@@ -1031,12 +1046,16 @@ def _orders_undoing_or_paying(folded: str) -> bool:
 
 # «… y decime si el modo es claro u oscuro», «and tell me what it says»: a question about what the window shows at
 # the end. It is no sub-goal: the mission's final answers it from the last view (computer_use.project_seen).
+# A verb of telling also asks with the thing alone (measured 2026-10-07: «… después a Sonido y decime el volumen» was
+# left unread, so the whole request went to the engine as one free goal and the model stopped on the first page);
+# looking at or checking a thing («mirá el video», «check the box») is a doing, never a question.
 _QUESTION_TAIL = re.compile(
     r"(?:\s*[,;.]\s*(?:(?:y|and)\s+)?|\s+(?:y|and)\s+|\s+(?=(?:despues|luego|then|entonces)\s))"
     r"(?:(?:despues|luego|then|entonces|al\s+final|finally)\s+)?"
-    r"(?P<question>(?:decime|dime|digame|deci|contame|cuentame|avisame|fijate|mira|mirame|tell\s+me|let\s+me\s+know|"
+    r"(?P<question>(?:(?:decime|dime|digame|deci|contame|cuentame|avisame|fijate|mira|mirame|tell\s+me|let\s+me\s+know|"
     r"show\s+me|check)\s+(?:si|que|cual|cuales|cuanto|cuanta|cuantos|cuantas|como|donde|cuando|quien|whether|if|what|"
-    r"which|how|where|when|who)\b.*)$"
+    r"which|how|where|when|who)"
+    r"|(?:decime|dime|digame|deci|contame|cuentame|tell\s+me|read\s+me)\s+(?:el|la|los|las|lo\s+que|the|my)(?=\s+\S))\b.*)$"
 )
 # The mark between the sub-goals and the question in a mission's goal (computer_use.project_seen reads it).
 QUESTION_MARK = "; y responder: "
