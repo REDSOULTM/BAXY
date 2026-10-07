@@ -110,5 +110,60 @@ def _situation(seen: dict) -> dict:
 def test_the_composer_gate_vetoes_an_ungrounded_mission_final() -> None:
     facts = {"situation": _situation(BLUETOOTH)}
     said = "en Configuración andá a Bluetooth"
-    assert compose_visible_defect("Abrazé a la sección de Bluetooth.", "status", said, facts) == "unknown_word"
-    assert compose_visible_defect("Llegué a Bluetooth y dispositivos.", "status", said, facts) != "unknown_word"
+    # «Abrazé» is told as misspelled_act first (voice_register lane); «busco» was never observed.
+    draft = "Llegué a la sección de Bluetooth, donde busco la opción."
+    assert compose_visible_defect(draft, "status", said, facts) == "ungrounded_word"
+    assert compose_visible_defect("Llegué a Bluetooth y dispositivos.", "status", said, facts) != "ungrounded_word"
+
+
+NOTEPAD = {
+    "goal": "pegar el texto",
+    "reached": True,
+    "stepsDone": ["trajo la aplicación al frente", "tecla ctrl+v"],
+    "windowTitle": "Sin título: Bloc de notas",
+    "application": "Bloc de notas",
+}
+STEAM = {
+    "goal": "ir a biblioteca",
+    "reached": True,
+    "stepsDone": ["clic en «biblioteca»"],
+    "windowTitle": "Steam",
+    "application": "Steam",
+    "screen": {"lines": ["NSTALADO", "BATMAN"]},
+}
+
+
+@pytest.mark.parametrize(
+    ("seen", "said", "draft"),
+    [
+        # cu-r17: the preterite of the request's own verb is BAXY's act, though the stem match cannot reach it.
+        (NOTEPAD, "en el Bloc de notas pegalo", "Pegué el texto en el Bloc de notas."),
+        (NOTEPAD, "copiá el texto y cerrá el Bloc de notas", "Copié el texto y cerré el Bloc de notas."),
+        (NOTEPAD, "borrá el texto del Bloc de notas", "Borré el texto del Bloc de notas."),
+        (NOTEPAD, "guardar el Bloc de notas", "Guardé el Bloc de notas."),
+        (NOTEPAD, "buscá pegar en el Bloc de notas", "Busqué pegar en el Bloc de notas."),
+        # Common function words.
+        (NOTEPAD, "pegá el texto", "Ya pegué el texto, el Bloc de notas todavía estaba abierto y no quedó nada más."),
+        # An English reply names a Spanish screen state in English.
+        (BLUETOOTH, "in Settings go to Bluetooth", "I'm in Bluetooth y dispositivos; the Xbox Wireless Controller is paired."),
+        # What an application holds, by its kind.
+        (STEAM, "en Steam andá a la biblioteca", "Ya estoy en la biblioteca de Steam, con los juegos instalados."),
+        (STEAM, "in Steam go to the library", "I'm in the Steam library, where your games are listed."),
+    ],
+)
+def test_baxys_own_acts_states_and_kinds_are_grounded(seen, said, draft) -> None:
+    assert computer_use.ungrounded_word(folded(draft), seen, said) is None
+
+
+@pytest.mark.parametrize(
+    ("seen", "said", "draft", "word"),
+    [
+        # The English state words ground only an English reply, and only from a state the screen shows.
+        (BLUETOOTH, "en Configuración andá a Bluetooth", "Estoy en Bluetooth y dispositivos, todo paired.", "paired"),
+        (DOWNLOADS, "in File Explorer go to Downloads", "I'm in the Downloads folder, everything is paired.", "everything"),
+        # A kind belongs to its own application only.
+        (CALC, "abrí la calculadora y calculá 37 por 12", "Calculé 37 por 12 y veo los juegos.", "juegos"),
+    ],
+)
+def test_state_words_and_kinds_stay_in_their_lane(seen, said, draft, word) -> None:
+    assert computer_use.ungrounded_word(folded(draft), seen, said) == word

@@ -2552,6 +2552,67 @@ def _own_words() -> tuple[frozenset[str], int]:
     return frozenset(words), int(data["stemLength"])
 
 
+@lru_cache(maxsize=1)
+def _language_words() -> tuple[frozenset[str], frozenset[str], dict[str, tuple[str, ...]]]:
+    """The Spanish and English function words (to tell an English reply) and the es→en screen-state map."""
+
+    data = json.loads(_WORDS_DATA.read_text(encoding="utf-8"))
+    spanish = frozenset(fold(word) for word in data["function"]["es"])
+    english = frozenset(fold(word) for word in data["function"]["en"])
+    listed = data.get("screenStates") or {}
+    states = {fold(word): tuple(fold(item) for item in said) for word, said in listed.items()}
+    return spanish - english, english - spanish, states
+
+
+@lru_cache(maxsize=1)
+def _application_kinds() -> dict[str, frozenset[str]]:
+    data = json.loads(_WORDS_DATA.read_text(encoding="utf-8"))
+    listed = data.get("applicationKinds") or {}
+    return {fold(name): frozenset(fold(word) for word in words) for name, words in listed.items()}
+
+
+def _kinds_of(seen: dict) -> set[str]:
+    """The words that name what the mission's applications hold («juegos» in Steam, «disco» in the File Explorer)."""
+
+    kinds = _application_kinds()
+    subgoals = [item for item in seen.get("subgoals") or () if isinstance(item, dict)]
+    names = [seen.get("application"), *(item.get("application") for item in subgoals)]
+    return {word for name in names if isinstance(name, str) for word in kinds.get(fold(name).strip(), ())}
+
+
+# cu-r17 (voice audit 2026-10-07: «Pegué el texto» from «pegalo», «Cerré la ventana» from «cerrala»): the stem match
+# cannot reach a short preterite from the request's imperative, so each imperative or infinitive of the request also
+# grounds its own first-person preterite: «copiá» → «copié», «pegalo» → «pegué», «buscá» → «busqué», «abrí» → «abrí»,
+# «mové» → «moví», «guardar» → «guardé».
+_ENCLITIC = re.compile(r"(?:selos|selas|selo|sela|los|las|les|lo|la|le|me|nos)$")
+
+
+def _preterites(word: str) -> set[str]:
+    forms: set[str] = set()
+    bare = word[:-1] if word.endswith("r") and len(word) > 3 else word
+    stripped = _ENCLITIC.sub("", bare)
+    for base in {bare, stripped}:
+        if len(base) < 3:
+            continue
+        if base.endswith("a"):
+            stem = base[:-1]
+            if stem.endswith("c"):
+                stem = stem[:-1] + "qu"
+            elif stem.endswith("g"):
+                stem = stem[:-1] + "gu"
+            elif stem.endswith("z"):
+                stem = stem[:-1] + "c"
+            forms.add(stem + "e")
+        elif base.endswith(("e", "i")):
+            forms.add(base[:-1] + "i")
+    return forms
+
+
+def _reply_is_english(words: list[str]) -> bool:
+    spanish, english, _ = _language_words()
+    return sum(word in english for word in words) > sum(word in spanish for word in words)
+
+
 def _fact_strings(value: object) -> Iterable[str]:
     if isinstance(value, str):
         yield value
@@ -2570,15 +2631,23 @@ def _folded_words(value: object) -> list[str]:
 def ungrounded_word(folded_reply: str, seen: dict, said: str = "") -> str | None:
     """The first word of a mission final that neither the facts (seen, the person's words) nor BAXY's own vocabulary
     hold; a word sharing its first ``stemLength`` letters with a fact word is the same word in another form
-    («calculé» from «calculá»). None when every word is grounded."""
+    («calculé» from «calculá»), the preterite of a request verb is BAXY's own act («pegué» from «pegalo»), and an
+    English reply may name a Spanish screen state in English («paired» for «Emparejado»). None when every word is
+    grounded."""
 
     own, stem_length = _own_words()
     facts: set[str] = set()
     for text in (*_fact_strings(seen), said):
         facts.update(_folded_words(text))
     stems = {word[:stem_length] for word in facts if len(word) >= stem_length}
-    for word in _folded_words(folded_reply):
-        if word in own or word in facts:
+    derived = {form for word in _folded_words(said) for form in _preterites(word)} | _kinds_of(seen)
+    reply = _folded_words(folded_reply)
+    if _reply_is_english(reply):
+        # cu-r17 (x4 «Windows (light)» from «Windows (claro)»): an English reply names a Spanish screen state in English.
+        states = _language_words()[2]
+        derived.update(said_en for word in facts for said_en in states.get(word, ()))
+    for word in reply:
+        if word in own or word in facts or word in derived:
             continue
         if len(word) >= stem_length and word[:stem_length] in stems:
             continue
