@@ -123,6 +123,13 @@ internal static class ComputerUseMission
         bool procedureStepBroke = false;
         ShellTraceSink.Record(ShellTraceScopes.Turn, traceId, "computer_use.start",
             $"budget.{budget}.steps_done.{steps.Count}.subgoals.{plan.Count}");
+        for (int item = 0; item < plan.Count; item++)
+        {
+            // How many alternatives each sub-goal's check carries («none»: only the model's cited evidence can end it).
+            string? planned = (string?)plan[item]?["successCheck"];
+            ShellTraceSink.Record(ShellTraceScopes.Turn, traceId, "computer_use.plan",
+                $"subgoal.{item + 1}.check.{(string.IsNullOrWhiteSpace(planned) ? "none" : "terms." + planned.Split('|').Length)}");
+        }
 
         while (true)
         {
