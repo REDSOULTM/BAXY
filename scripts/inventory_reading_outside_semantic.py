@@ -243,6 +243,15 @@ APP_METHODS: dict[tuple[str, str], tuple[str, str]] = {
     ("ComputerUseMission.cs", "CountAtom"): (
         "GROUNDING", "parses the «count:<kind> <op> N» atom of the success check that semantic.missions wrote and "
         "counts the view's controls; the person's words are not read here"),
+    # cu-r16: the floor of a mission tells its parts from the goals semantic.missions wrote (data «computerUse.parts»).
+    ("OperationFloor.cs", "PartMatch"): (
+        "GROUNDING", "splits a goal that semantic.missions wrote («ir a X», «escribir X») into its object, to say it "
+        "back from the facts; the person's words are not read here"),
+    ("OperationFloor.cs", "PartObject"): (
+        "GROUNDING", "trims the quotes and spaces of a goal's object or a typed step's text to compare it literally"),
+    ("OperationFloor.cs", "CalculationShown"): (
+        "GROUNDING", "the expression of a «calcular E» goal is evaluated and its value looked for, literally, in what "
+        "the window shows; the person's words are not read here"),
     # M116: a failed step's facts carry its grounded arguments; this only shapes an argument value for display.
     ("AttemptedArguments.cs", "Said"): (
         "GROUNDING", "a grounded argument value shown as the person would say it: no ids, URL host/path only, a path's "
