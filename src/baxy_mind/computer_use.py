@@ -36,6 +36,7 @@ import unicodedata
 from typing import Any, Iterable
 
 from . import effect_intent, operation_floor
+from .semantic.colours import changes_the_tool, colour_shades, is_basic_colour, screen_language, shade_of
 from .semantic.missions import (
     BROWSER_CATEGORY,
     KEYS,
@@ -711,7 +712,15 @@ def deterministic_step(
     # Going to a place looks among the controls that are not switches first («Bluetooth» as a switch and as the
     # navigation item: the item is the place).
     among = _without_switches(seen) if placing else seen
-    control = next((found for name in names if (found := find_control(among, name, kind=kind)) is not None), None)
+    colour = wanted == "selected" and kind is None and is_basic_colour(target)
+    if colour:
+        # A colour is its swatch's whole name: «azul» is never «Gris azulado», «rojo» never «Rojo oscuro» nor
+        # «Color 1: Rojo» (live e2), and never a tool that picks colours from the canvas.
+        control = _swatch(among, names)
+        if control is None:
+            return _colour_step(view, history, names, target, _tried)
+    else:
+        control = next((found for name in names if (found := find_control(among, name, kind=kind)) is not None), None)
     if control is None and placing:
         control = next((found for name in names if (found := find_control(seen, name, kind=kind)) is not None), None)
     if control is not None and placing and _is_switch(control):
@@ -873,6 +882,62 @@ def _placing_goal(goal: str | None) -> bool:
 # leave out the rest of the window's tree.
 _LISTED_CONTROLS = 60
 REASON_BY_NAME = "el objetivo lo nombra y la vista no lo lista: lo busco por su nombre en toda la ventana"
+REASON_SHADE = "la ventana no tiene ese color por su nombre: elijo su tono más cercano"
+
+
+def colour_goal(goal: str | None) -> str | None:
+    """The basic colour a goal «seleccionar X» chooses («azul», «blue»), or None for any other goal."""
+
+    parsed = _goal_target(goal or "")
+    if parsed is None or parsed[1] != "selected" or parsed[3] is not None:
+        return None
+    return parsed[2] if is_basic_colour(parsed[2]) else None
+
+
+def _swatch(view: dict, names: Iterable[str]) -> dict | None:
+    """The one listed control whose whole name is one of ``names`` (a colour's swatch), never a tool that picks
+    colours; None when there is none or more than one."""
+
+    wanted = {fold(name) for name in names if fold(name)}
+    controls = view.get("controls") if isinstance(view, dict) else None
+    found = [
+        control for control in (controls if isinstance(controls, list) else [])
+        if isinstance(control, dict) and fold(control.get("name")) in wanted and not changes_the_tool(control.get("name"))
+    ]
+    return found[0] if len(found) == 1 else None
+
+
+def _colour_step(view: dict, history: list[dict], names: tuple[str, ...], target: str, tried: Iterable[str]) -> dict[str, object] | None:
+    """A colour the listing does not carry by its name: the name by label alone first (beyond the listed controls),
+    then the closest of its shades the view lists, then each of its shades by label alone, closest first, in the
+    window's language when its names tell it (measured on Paint: no «Azul», «Añil» is the blue of the palette). Each
+    label once per sub-goal; the label keeps the written spelling, which the click matches whole."""
+
+    lines = {fold(line) for line in _view_lines(view)}
+    written = next((name for name in names if fold(name) in lines), None)
+    if written is not None and not _steps_ok(history, "input.visible.click", label=written):
+        # Written on screen whole, outside the accessible tree: its label, which the click's cascade finds.
+        return {"operation": "input.visible.click", "arguments": {"label": written}, "reason": "el objetivo lo dice"}
+    by_name = _unlisted_name_click(view, history, names, tried)
+    if by_name is not None:
+        return by_name
+    clicked = {
+        str(step.get("label") or "").casefold() for step in history
+        if isinstance(step, dict) and step.get("operation") == "input.visible.click"
+    } | {str(label).casefold() for label in tried}
+    controls = view.get("controls") if isinstance(view, dict) else None
+    listed = [str(control.get("name") or "") for control in controls if isinstance(control, dict)] if isinstance(controls, list) else []
+    language = screen_language([*listed, *_view_lines(view)])
+    shades = [shade for shade in colour_shades(target, language) if shade.casefold() not in clicked]
+    for shade in shades:
+        swatch = _swatch(view, (shade,))
+        if swatch is not None and str(swatch.get("name") or "").casefold() not in clicked:
+            if "selected" in str(swatch.get("state") or "").split():
+                return None
+            return _click(swatch, REASON_SHADE)
+    if not _lists_part_of_the_tree(view) or not shades:
+        return None
+    return {"operation": "input.visible.click", "arguments": {"label": shades[0]}, "reason": REASON_SHADE}
 
 
 def _lists_part_of_the_tree(view: dict) -> bool:
@@ -1762,7 +1827,7 @@ def _destination(goal: str | None) -> str:
 # The refusals the model gets one more try at, with the refusal in front of it (contract §4.4).
 _RETRIED = frozenset({
     "label_not_visible", "evidence_not_visible", "already_open", "application_unknown", "control_covers_window",
-    "no_progress", "opens_elsewhere", "changes_a_setting",
+    "no_progress", "opens_elsewhere", "changes_a_setting", "changes_the_tool",
 })
 # A control that opens another tab or window: the mission's window would stop being the one in front (measured on
 # Opera: the model clicked «Nueva pestaña» while searching a page and the mission went on in an empty tab).
@@ -1902,6 +1967,10 @@ def _checked_act(
         named_explicitly = fold(goal or "").startswith("hacer clic en ") and (
             label_names(_goal_target(goal or "")[2] if _goal_target(goal or "") else "", clicked)
         )
+        if colour_goal(goal) is not None and changes_the_tool(clicked):
+            # Choosing a colour never picks a tool (live e2: the model clicked «Selector de colores», the eyedropper,
+            # and the canvas's next click would have picked a colour from the drawing instead).
+            return _none(f"«{clicked[:40]}» cambia de herramienta y el objetivo es elegir un color", code="changes_the_tool")
         if control is not None and _placing_goal(goal) and _is_switch(control) and not named_explicitly:
             # Going somewhere never changes a setting on the way (measured on Settings: looking for «Colores» the
             # model clicked «Invertir colores» of the Magnifier).
@@ -2064,6 +2133,9 @@ def project_seen(observed: dict, language: str) -> dict[str, object]:
         seen["evidence"] = observed.get("evidence")
     if observed.get("satisfiedBy"):
         seen["satisfiedBy"] = observed.get("satisfiedBy")
+    shade = _chosen_shade(goal, done) if seen["reached"] else None
+    if shade is not None:
+        seen["chosenShade"] = shade
     if isinstance(observed.get("screen"), dict):
         seen["screen"] = observed.get("screen")
     cover = window.get("coveredBy")
@@ -2093,6 +2165,23 @@ def project_seen(observed: dict, language: str) -> dict[str, object]:
         if unreached is not None:
             seen["firstUnreached"] = unreached["goal"]
     return seen
+
+
+def _chosen_shade(goal: object, done: list[dict]) -> dict[str, str] | None:
+    """{asked, chosen}: the colour the goal chose and the swatch clicked for it when that swatch is one of its shades
+    («Añil» for «azul»), from the last verified click; None otherwise."""
+
+    asked = colour_goal(goal) if isinstance(goal, str) else None
+    if asked is None:
+        return None
+    for step in reversed(done):
+        if step.get("operation") != "input.visible.click":
+            continue
+        for value in (step.get("name"), step.get("label")):
+            if isinstance(value, str) and shade_of(asked, value):
+                return {"asked": asked, "chosen": " ".join(value.split())}
+        return None
+    return None
 
 
 def compose_instruction(seen: dict, language: str) -> str:
@@ -2184,6 +2273,12 @@ def _result_instruction(seen: dict) -> str:
                 "When the goal asked for a calculation, a number or a value, lead with it, said exactly as the matching "
                 "entry of seen.screen.numbers or seen.screen.values writes it; do not list the other lines of the window. "
             )
+            + (
+                "The window had no colour named seen.chosenShade.asked: you chose its closest shade, the swatch "
+                "seen.chosenShade.chosen. Say that swatch's name exactly as written and that it is the asked colour of "
+                "the palette (as in «Elegí Añil, el azul de la paleta»); never say you chose a swatch named "
+                "seen.chosenShade.asked. " if seen.get("chosenShade") else ""
+            )
             + "seen.joined says whether a voice channel or call was joined: say you joined only if it is true. Never "
             "add steps, times or results that are not in seen: a time or a date only as seen.screen writes it, never "
             "the part of the day (morning, afternoon, a.m., p.m.) unless it is written there."
@@ -2231,6 +2326,10 @@ def mission_defect(folded_reply: str, seen: dict) -> str | None:
             return "subgoal_claimed"
     if _invented_meridiem(folded_reply, seen):
         return "extra_claim"
+    shade = seen.get("chosenShade")
+    if isinstance(shade, dict) and fold(shade.get("chosen")) not in folded_reply:
+        # «Listo, elegí el azul» when the palette had no «Azul» and «Añil» was clicked: the swatch is named.
+        return "shade_unnamed"
     if _only_went_somewhere(seen) and _claims_a_change(folded_reply):
         return "extra_claim"
     return None
@@ -2345,6 +2444,11 @@ def floor_sentence(observed: dict, english: bool, succeeded: bool) -> str:
     ]
     app = _floor_name(seen.get("application")) or _floor_name(seen.get("windowTitle"))
     if succeeded and seen.get("reached") is True:
+        shade = seen.get("chosenShade")
+        if isinstance(shade, dict) and "shade" in said and _floor_name(shade.get("chosen")):
+            # The colour in the final's language («blue» said to a Spanish final is «azul»).
+            asked = next(iter(colour_shades(shade.get("asked"), "en" if english else "es")), str(shade.get("asked")))
+            return said["shade"].format(chosen=_floor_name(shade.get("chosen")), asked=asked.casefold()) + "."
         goals = [item.get("goal") for item in seen.get("subgoals") or () if isinstance(item, dict)] or [seen.get("goal")]
         place = _place_of(goals[-1], names)
         if place:

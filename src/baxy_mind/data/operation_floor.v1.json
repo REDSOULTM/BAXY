@@ -74,8 +74,8 @@
  },
  "computerUse": {
   "source": "Live 2026-10-07 (v2-v9, v2-u7, v2-n5): the floor of a computer-use mission, read by the mind (computer_use.floor_sentence). A place reached is said as the window writes it; a mission not done says what was not reached and the typed cause.",
-  "es": {"place": "Listo, estoy en {place}", "app": "Listo, lo hice en {app}", "notPlace": "No pude llegar a {place}", "notApp": "No pude hacerlo en {app}", "not": "No pude hacerlo", "cause": "{head}: {cause}"},
-  "en": {"place": "Done, I'm in {place}", "app": "Done, I did it in {app}", "notPlace": "I couldn't get to {place}", "notApp": "I couldn't do it in {app}", "not": "I couldn't do it", "cause": "{head}: {cause}"}
+  "es": {"place": "Listo, estoy en {place}", "shade": "Listo, elegí {chosen}, el {asked} de la paleta", "app": "Listo, lo hice en {app}", "notPlace": "No pude llegar a {place}", "notApp": "No pude hacerlo en {app}", "not": "No pude hacerlo", "cause": "{head}: {cause}"},
+  "en": {"place": "Done, I'm in {place}", "shade": "Done, I picked {chosen}, the {asked} of the palette", "app": "Done, I did it in {app}", "notPlace": "I couldn't get to {place}", "notApp": "I couldn't do it in {app}", "not": "I couldn't do it", "cause": "{head}: {cause}"}
  },
  "compositionFailures": {
   "clarification": {"es": "Todavía no hice nada: me falta un dato y no supe preguntártelo bien. ¿Me lo dices con un poco más de detalle?", "en": "I haven't done anything yet: something is missing and I couldn't word the question. Could you tell me with a bit more detail?"},

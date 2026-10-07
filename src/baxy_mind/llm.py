@@ -28390,6 +28390,12 @@ class LlmRuntime:
                     "correcto («el cierre de Edge»); nunca un participio como sustantivo."
                 ),
                 "wrong_language": "Same language as the request.",
+                # cu-r8 (live e2): the palette had no swatch by the colour's name and its closest shade was chosen.
+                "shade_unnamed": (
+                    "Name the swatch you chose exactly as seen.chosenShade.chosen writes it, as the shade of the colour asked."
+                    if response_language == "en"
+                    else "Nombra la muestra que elegiste tal como la escribe seen.chosenShade.chosen, como el tono del color pedido."
+                ),
                 "joined_claimed": (
                     "You did NOT join or open the channel: say you found it and ask whether the person wants you to join; never say you joined or entered."
                     if response_language == "en"
