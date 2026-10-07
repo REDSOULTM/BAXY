@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from typing import Any, Iterable
 
 from . import effect_intent
@@ -321,32 +322,141 @@ def _focused_is_password(view: dict) -> bool:
 
 
 _COMPOSER_NAME = re.compile(r"\b(?:mensaj|message|chat|escrib|say\s+something|type\s+a\s+message|conversa)")
+# What Enter or space may send from: a message box, and a reply, comment, post or send box or button.
+_SENDING_NAME = re.compile(
+    r"\b(?:mensaj|message|chat|escrib|say\s+something|type\s+a\s+message|conversa|respon|reply|coment|comment|"
+    r"publica|post\b|tweet|envia|send\b)"
+)
+# The name the view gives a text field that has none of its own: «(edit)», «(document)».
+_UNNAMED_FIELD = re.compile(r"^(?:\((?:edit|document)\))?$")
+_EDITABLE_KINDS = frozenset({"Edit", "Document", "ComboBox"})
 
 
 def _composer_with_text(view: dict) -> bool:
-    """Enter over a message composer that holds text reaches a person (contract §2.1)."""
+    """Whether Enter (or space) on the focused control may hand something to a person (contract §2.1), so the step
+    is marked ``message_composer`` and RiskPolicy asks first. Conservative by design (safety review 2026-10-07):
+
+    * a focused control named like a message, chat, reply, comment or send box asks, unless it exposes a value and
+      that value is empty (nothing to send);
+    * a focused text field with no name of its own that does not expose its value asks too: what it is and what it
+      holds cannot be read, and in a chat that is the message box (measured: Discord's editor exposes no value);
+    * free: a search or address field (named so), a document editor that exposes its value (Notepad), and a window
+      with no focused editable (a calculator's buttons).
+    """
 
     focused = _focused(view)
     if focused is None:
         return False
     name = fold(focused.get("name"))
-    if _COMPOSER_NAME.search(name) is None:
-        return False
-    # A message box whose content the screen does not expose (measured: Discord's editor has no value) may hold the
-    # text just typed: Enter there is sending, and is asked first.
     value = focused.get("value")
-    return value is None or bool(str(value).strip())
+    if _SENDING_NAME.search(name) is not None and not _SEARCH_NAME.search(name) and not _ADDRESS_NAME.search(name):
+        # A message box whose content the screen does not expose may hold the text just typed: Enter there sends.
+        return value is None or bool(str(value).strip())
+    return str(focused.get("kind")) in _EDITABLE_KINDS and _UNNAMED_FIELD.match(name) is not None and value is None
+
+
+def _focused_is_text_field(view: dict) -> bool:
+    focused = _focused(view)
+    if focused is not None and str(focused.get("kind")) in _EDITABLE_KINDS:
+        return True
+    controls = view.get("controls") if isinstance(view, dict) else None
+    return isinstance(controls, list) and any(
+        isinstance(control, dict) and "focused" in str(control.get("state") or "").split()
+        and str(control.get("kind")) in _EDITABLE_KINDS
+        for control in controls
+    )
+
+
+def key_arguments(key: str, view: dict) -> dict[str, object]:
+    """The arguments of a key press with the target RiskPolicy reads: Enter or space on a possible message composer
+    is ``message_composer`` (it asks); Delete on a text field is ``text_field`` (it erases characters; anywhere else it
+    deletes what is selected, and RiskPolicy asks)."""
+
+    arguments: dict[str, object] = {"key": key}
+    if key in {"enter", "space"} and _composer_with_text(view):
+        arguments["target"] = "message_composer"
+    elif key == "delete" and _focused_is_text_field(view):
+        arguments["target"] = "text_field"
+    return arguments
+
+
+# Line breaks, tabs and other control characters in a typed text are keys of their own: a line break in a chat box
+# sends what was written without anyone asking. A typed step carries one line.
+_TYPED_BREAKS = re.compile(r"[\x00-\x1f\x7f\x85\u2028\u2029]+")
+
+
+def typed_text(text: str) -> str:
+    return _TYPED_BREAKS.sub(" ", text)
+
+
+# The windows where the person's own work and BAXY live: never taken for another application. Each is adopted only
+# when the request names that very application (the words on the right).
+_PROTECTED_PROCESSES: dict[str, frozenset[str]] = {
+    "code": frozenset({"code", "vs code", "vscode", "visual studio code"}),
+    "code - insiders": frozenset({"code insiders", "visual studio code insiders"}),
+    "devenv": frozenset({"visual studio", "devenv"}),
+    "windowsterminal": frozenset({"terminal", "windows terminal"}),
+    "openconsole": frozenset({"terminal", "windows terminal"}),
+    "powershell": frozenset({"powershell", "windows powershell"}),
+    "pwsh": frozenset({"powershell", "pwsh"}),
+    "cmd": frozenset({"cmd", "simbolo del sistema", "command prompt"}),
+    "conhost": frozenset({"cmd", "simbolo del sistema", "command prompt", "consola"}),
+    "baxy": frozenset({"baxy"}),
+    "baxy-core": frozenset({"baxy"}),
+}
+_GENERIC_APPLICATION_WORDS = frozenset({
+    "the", "los", "las", "navegador", "browser", "google", "microsoft", "mozilla", "app", "aplicacion",
+})
+
+
+def _window_fold(value: object) -> str:
+    """fold without format characters (Edge writes «Microsoft\u200b Edge» in its titles)."""
+
+    return fold("".join(character for character in str(value or "") if unicodedata.category(character) != "Cf"))
+
+
+def _process_key(process: object) -> str:
+    folded = _window_fold(process)
+    return folded[:-4] if folded.endswith(".exe") else folded
+
+
+def protected_process(process: object, application: str | None) -> bool:
+    """A developer's or BAXY's own window (an editor, a terminal, a console, BAXY) that the request did not name."""
+
+    names = _PROTECTED_PROCESSES.get(_process_key(process))
+    return names is not None and _window_fold(application) not in names
+
+
+def _title_names(title: object, application: str) -> bool:
+    """The application named as whole words in the title's last « - » segment, where windows put their own name
+    («SteamLocalAdapter.cs - BAXY - Visual Studio Code» names Visual Studio Code, never Steam). A title with no
+    separator is the application's name itself («Steam», «Calculadora»)."""
+
+    segment = re.split(r"\s+[-\u2013\u2014|]\s+", _window_fold(title))[-1].strip()
+    wanted = _window_fold(application)
+    return bool(segment) and bool(wanted) and re.search(rf"(?<!\w){re.escape(wanted)}(?!\w)", segment) is not None
 
 
 def application_is_in_front(view: dict, application: str | None) -> bool:
+    """Whether the window of the view is the application's: the provider resolved it for the application
+    (``requested``), its process is the application's executable, or its title names it in its last segment. Never a
+    developer's or BAXY's own window unless that is what was named (safety review 2026-10-07)."""
+
     if not application:
         return True
     window = view.get("window") if isinstance(view, dict) else None
     if not isinstance(window, dict):
         return False
-    haystack = fold(window.get("title")) + " " + fold(window.get("process"))
-    tokens = [token for token in fold(application).split() if len(token) >= 3 and token not in {"the", "los", "las", "navegador", "browser", "google", "microsoft", "mozilla"}]
-    return any(token in haystack for token in tokens) if tokens else fold(application) in haystack
+    process = _process_key(window.get("process"))
+    if protected_process(process, application):
+        return False
+    if window.get("requested") is True:
+        return True
+    tokens = [token for token in _window_fold(application).split() if len(token) >= 3 and token not in _GENERIC_APPLICATION_WORDS]
+    joined = "".join(_window_fold(application).split())
+    if process and (process == joined or process in tokens):
+        return True
+    return _title_names(window.get("title"), application) or any(_title_names(window.get("title"), token) for token in tokens)
 
 
 _CALC_TRANSLATE = str.maketrans({"×": "*", "x": "*", "X": "*", "÷": "/", "−": "-", ",": "."})
@@ -398,10 +508,7 @@ def deterministic_step(
     if folded_goal.startswith("apretar "):
         key = _key_from_words(folded_goal[len("apretar "):])
         if key is not None and not _steps_ok(history, "input.key.press", key=key):
-            arguments: dict[str, object] = {"key": key}
-            if key == "enter" and _composer_with_text(view):
-                arguments["target"] = "message_composer"
-            return {"operation": "input.key.press", "arguments": arguments, "reason": reason}
+            return {"operation": "input.key.press", "arguments": key_arguments(key, view), "reason": reason}
         return None
     if folded_goal.startswith("calcular "):
         expression = _expression_for_typing(goal[len("calcular "):])
@@ -410,10 +517,10 @@ def deterministic_step(
         if not _steps_ok(history, "input.text.type"):
             return {"operation": "input.text.type", "arguments": {"text": expression}, "reason": reason}
         if not _steps_ok(history, "input.key.press", key="enter"):
-            return {"operation": "input.key.press", "arguments": {"key": "enter"}, "reason": reason}
+            return {"operation": "input.key.press", "arguments": key_arguments("enter", view), "reason": reason}
         return None
     if folded_goal.startswith("escribir "):
-        text = goal[len("escribir "):].strip()
+        text = typed_text(goal[len("escribir "):]).strip()
         if not text or _steps_ok(history, "input.text.type") or _focused_is_password(view):
             return None
         field = _place_to_type(view, history)
@@ -427,13 +534,13 @@ def deterministic_step(
         return {"operation": "input.text.type", "arguments": {"text": text}, "reason": reason}
     if folded_goal.startswith("ir a la direccion "):
         # «andá a es.wikipedia.org»: the browser's address bar, the address, Enter.
-        address = goal[len("ir a la direccion "):].strip()
+        address = typed_text(goal[len("ir a la direccion "):]).strip()
         if not _steps_ok(history, "input.key.press", key="ctrl_l"):
             return {"operation": "input.key.press", "arguments": {"key": "ctrl_l"}, "reason": reason}
         if not _steps_ok(history, "input.text.type"):
             return {"operation": "input.text.type", "arguments": {"text": address}, "reason": reason}
         if not _steps_ok(history, "input.key.press", key="enter"):
-            return {"operation": "input.key.press", "arguments": {"key": "enter"}, "reason": reason}
+            return {"operation": "input.key.press", "arguments": key_arguments("enter", view), "reason": reason}
         return None
     if folded_goal.startswith("buscar "):
         # «buscá Hades»: the window's own search (field, button or shortcut), the name, then Enter to submit it.
@@ -442,11 +549,8 @@ def deterministic_step(
             step = _find_step(target, view, history)
             return None if step is None or step.get("operation") == "input.scroll" else step
         if not _steps_ok(history, "input.key.press", key="enter") and not _focused_is_password(view):
-            enter: dict[str, object] = {"key": "enter"}
-            if _composer_with_text(view):
-                # The name went into a message box: Enter there would send it, so RiskPolicy asks first.
-                enter["target"] = "message_composer"
-            return {"operation": "input.key.press", "arguments": enter, "reason": reason}
+            # The name went into a message box: Enter there would send it, so RiskPolicy asks first.
+            return {"operation": "input.key.press", "arguments": key_arguments("enter", view), "reason": reason}
         return None
     for head, wanted in (
         ("ir a ", None), ("hacer clic en ", None), ("activar ", "on"), ("desactivar ", "off"), ("seleccionar ", "selected"),
@@ -619,7 +723,7 @@ def _click(control: dict, reason: str) -> dict[str, object]:
 
 
 def _type(target: str) -> dict[str, object]:
-    return {"operation": "input.text.type", "arguments": {"text": target}, "reason": _REASON_FIND}
+    return {"operation": "input.text.type", "arguments": {"text": typed_text(target)}, "reason": _REASON_FIND}
 
 
 def _key(key: str) -> dict[str, object]:
@@ -993,7 +1097,7 @@ def _checked_act(
             return _guard_repeat({"operation": "input.visible.click", "arguments": {"label": label}, "reason": why}, last_failed)
         return _none(f"«{label[:40]}» no está en la vista", code="label_not_visible")
     if act == "type":
-        text = str(raw.get("text") or "")
+        text = typed_text(str(raw.get("text") or ""))
         if not text.strip():
             return _none("no hay texto que escribir")
         if _focused_is_password(view):
@@ -1003,10 +1107,7 @@ def _checked_act(
         key = str(raw.get("key") or "")
         if key not in KEYS:
             return _none("tecla fuera del catálogo")
-        arguments = {"key": key}
-        if key == "enter" and _composer_with_text(view):
-            arguments["target"] = "message_composer"
-        return _guard_repeat({"operation": "input.key.press", "arguments": arguments, "reason": why}, last_failed)
+        return _guard_repeat({"operation": "input.key.press", "arguments": key_arguments(key, view), "reason": why}, last_failed)
     if act == "scroll":
         direction = str(raw.get("direction") or "down")
         if direction not in {"down", "up"}:
@@ -1072,6 +1173,10 @@ _STOP_CAUSES: dict[str, dict[str, str]] = {
     "computer_use_step_failed": {"es": "un paso no se pudo hacer", "en": "a step could not be done"},
     "computer_use_step_arguments_invalid": {"es": "el paso elegido no era válido", "en": "the chosen step was not valid"},
     "computer_use_window_covered": {"es": "otra ventana tapa la aplicación", "en": "another window covers the application"},
+    "computer_use_window_not_application": {
+        "es": "la ventana de delante no era la de la aplicación, así que no pulsé ni escribí nada en ella",
+        "en": "the window in front was not the application's, so I pressed and typed nothing there",
+    },
     "computer_use_window_elevated": {
         "es": "esa aplicación corre como administrador y Windows no deja que otra aplicación la controle",
         "en": "that application runs as administrator and Windows does not let another application control it",

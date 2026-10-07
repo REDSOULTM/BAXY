@@ -22,6 +22,11 @@ namespace Baxy.Kernel.Policy;
 /// en modo normal, ligada a esa misma invocación. Igual una invocación cuyo argumento cierra de una vez todo lo
 /// que la persona tiene abierto en una superficie (todas las pestañas de su
 /// navegador): pierde su sesión, aunque la operación con otro argumento no.
+/// Revisión de seguridad 2026-10-07: el verbo de enviar, reenviar, invitar o
+/// responder abre la etiqueta sea lo que sea lo que siga; un verbo destructivo
+/// (no guardar, descartar, mover a la papelera, quitar, vaciar, limpiar,
+/// eliminar, desinstalar) cuenta en cualquier lugar de una etiqueta corta; y
+/// Suprimir fuera de un campo de texto borra lo seleccionado, así que pregunta.
 /// </summary>
 public static partial class RiskPolicy
 {
@@ -108,12 +113,10 @@ public static partial class RiskPolicy
                     && label.ValueKind == JsonValueKind.String
                     && LabelReachesAPerson(label.GetString());
             case "input.key.press":
-                return arguments.TryGetProperty("key", out JsonElement key)
-                    && key.ValueKind == JsonValueKind.String
-                    && key.GetString() is "enter"
-                    && arguments.TryGetProperty("target", out JsonElement target)
-                    && target.ValueKind == JsonValueKind.String
-                    && target.GetString() is "message_composer";
+                // Enter, and space on a focused send or reply control, hand what was written to someone when the
+                // step declares it lands on a message composer (the mind labels it from the focused control).
+                return KeyOf(arguments) is "enter" or "space"
+                    && TargetOf(arguments) is "message_composer";
             default:
                 return false;
         }
@@ -124,13 +127,52 @@ public static partial class RiskPolicy
     /// paying (checkout, place order) and deleting or uninstalling. Read from
     /// the label the step names, bilingual, never naming an application.
     /// </summary>
-    public static bool CannotBeUndone(string? operation, JsonElement arguments) =>
-        string.Equals(operation, "input.visible.click", StringComparison.Ordinal)
-        && arguments.ValueKind == JsonValueKind.Object
-        && arguments.TryGetProperty("label", out JsonElement label)
-        && label.ValueKind == JsonValueKind.String
-        && !string.IsNullOrWhiteSpace(label.GetString())
-        && IrreversibleAct().IsMatch(Fold(label.GetString()!));
+    public static bool CannotBeUndone(string? operation, JsonElement arguments)
+    {
+        if (arguments.ValueKind != JsonValueKind.Object)
+        {
+            return false;
+        }
+
+        // The Delete key outside a text field deletes what is selected (a file to the bin, a message, an item of a
+        // list). Fail-closed: it asks unless the step declares the keyboard is on a text field, where it only
+        // erases characters.
+        if (string.Equals(operation, "input.key.press", StringComparison.Ordinal))
+        {
+            return KeyOf(arguments) is "delete" && TargetOf(arguments) is not "text_field";
+        }
+
+        return string.Equals(operation, "input.visible.click", StringComparison.Ordinal)
+            && arguments.TryGetProperty("label", out JsonElement label)
+            && label.ValueKind == JsonValueKind.String
+            && LabelCannotBeUndone(label.GetString());
+    }
+
+    /// <summary>
+    /// A label that commits what cannot be taken back: buying or paying anywhere, or a destructive verb anywhere in
+    /// a short label (six words or fewer: a button or a menu entry, not a sentence that mentions deleting).
+    /// </summary>
+    internal static bool LabelCannotBeUndone(string? label)
+    {
+        if (string.IsNullOrWhiteSpace(label))
+        {
+            return false;
+        }
+
+        string folded = Fold(label);
+        return IrreversibleAct().IsMatch(folded)
+            || (folded.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length <= 6 && DestructiveVerb().IsMatch(folded));
+    }
+
+    private static string? KeyOf(JsonElement arguments) =>
+        arguments.TryGetProperty("key", out JsonElement key) && key.ValueKind == JsonValueKind.String
+            ? key.GetString()
+            : null;
+
+    private static string? TargetOf(JsonElement arguments) =>
+        arguments.TryGetProperty("target", out JsonElement target) && target.ValueKind == JsonValueKind.String
+            ? target.GetString()
+            : null;
 
     /// <summary>
     /// Whether this exact invocation closes, in one step, everything the person
@@ -160,7 +202,7 @@ public static partial class RiskPolicy
         }
 
         string folded = Fold(label);
-        return VoiceOrCall().IsMatch(folded) || SendButton().IsMatch(folded) || PublicAct().IsMatch(folded);
+        return VoiceOrCall().IsMatch(folded) || SendAct().IsMatch(folded) || PublicAct().IsMatch(folded);
     }
 
     /// <summary>A click whose label joins a voice channel, a call or a meeting: others hear or see the person from then on.</summary>
@@ -175,21 +217,30 @@ public static partial class RiskPolicy
         return VoiceOrCall().IsMatch(folded) || JoinVerb().IsMatch(folded);
     }
 
+    // Lower case, without accents, without format characters (a zero-width space or a direction mark inside a label
+    // must not hide its verb) and without a trailing shortcut hint («Enviar (Ctrl+Enter)», «Delete (Supr)»).
     private static string Fold(string value)
     {
         string form = value.Normalize(System.Text.NormalizationForm.FormD).ToLowerInvariant();
         var builder = new System.Text.StringBuilder(form.Length);
         foreach (char character in form)
         {
-            if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(character)
-                != System.Globalization.UnicodeCategory.NonSpacingMark)
+            System.Globalization.UnicodeCategory category = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(character);
+            if (category is not (System.Globalization.UnicodeCategory.NonSpacingMark
+                or System.Globalization.UnicodeCategory.Format))
             {
                 builder.Append(character);
             }
         }
 
-        return string.Join(' ', builder.ToString().Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+        string folded = string.Join(' ', builder.ToString().Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+        return ShortcutHint().Replace(folded, string.Empty).Trim();
     }
+
+    [GeneratedRegex(
+        @"\s*[(\[](?:ctrl|control|ctl|alt|shift|mayus|mayusculas|supr|del|enter|intro|cmd|win)\b[^)\]]*[)\]]$",
+        RegexOptions.CultureInvariant)]
+    private static partial Regex ShortcutHint();
 
     // «canal de voz», «voice channel», «llamar», «llamada», «call», «unirse a la
     // llamada», «join call», «join voice», «videollamada», «video call».
@@ -198,12 +249,13 @@ public static partial class RiskPolicy
         RegexOptions.CultureInvariant)]
     private static partial Regex VoiceOrCall();
 
-    // The control that hands a written message to someone: «Enviar», «Send»,
-    // «Enviar mensaje», «Send message», alone or as the first words.
+    // The control that hands something to someone, named by its verb as the first word whatever follows: «Enviar»,
+    // «Send», «Enviar a Ron92», «Send Friend Request», «Reenviar», «Forward», «Invitar», «Invite», «Responder»,
+    // «Reply all». A noun that only shares the stem («Enviados», «Invitaciones», «Forwarding») does not.
     [GeneratedRegex(
-        @"^(?:enviar|send)(?:\s+(?:mensaje|message|ahora|now))?$",
+        @"^(?:enviar|envia|enviale|mandar|manda|send|reenviar|reenvia|forward|invitar|invita|invite|responder|responde|reply)\b",
         RegexOptions.CultureInvariant)]
-    private static partial Regex SendButton();
+    private static partial Regex SendAct();
 
     // The control that puts the person's words or presence in front of others,
     // named by its verb as the first word of the label and at most three more
@@ -227,4 +279,14 @@ public static partial class RiskPolicy
         @"^(?:comprar|buy|pagar|pay|eliminar|elimina|borrar|borra|delete|desinstalar|desinstala|uninstall)(?:\s+\S+){0,3}$|\b(?:checkout|check\s+out|finalizar\s+(?:la\s+)?compra|realizar\s+(?:el\s+)?pedido|place\s+(?:your\s+)?order|confirmar\s+(?:la\s+)?compra|confirm\s+purchase)\b",
         RegexOptions.CultureInvariant)]
     private static partial Regex IrreversibleAct();
+
+    // A destructive verb anywhere in a short label: not saving, discarding, closing without saving, moving to the
+    // bin, removing, emptying, clearing, deleting, uninstalling («No guardar», «Don't save», «Descartar cambios»,
+    // «Mover a la papelera», «Vaciar papelera de reciclaje», «Empty Recycle Bin», «Quitar de la biblioteca»,
+    // «Remove», «Limpiar historial», «Clear all»). Only verb forms count: «Eliminados», «Deleted items» or
+    // «Papelera de reciclaje» name a place, not an act.
+    [GeneratedRegex(
+        @"\b(?:no\s+guardar|no\s+guardes|don'?t\s+save|do\s+not\s+save|descartar|descarta|discard|cerrar\s+sin\s+guardar|close\s+without\s+saving|mover\s+a\s+(?:la\s+)?papelera|move\s+to\s+(?:the\s+)?(?:trash|bin|recycle\s+bin)|quitar|quita|remove|vaciar|vacia|empty|limpiar|limpia|clear|eliminar|elimina|delete|borrar|borra|desinstalar|desinstala|uninstall)\b",
+        RegexOptions.CultureInvariant)]
+    private static partial Regex DestructiveVerb();
 }

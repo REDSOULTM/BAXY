@@ -863,8 +863,14 @@ public static class ProductCatalog
                 ]),
                 // El bucle de computer use declara cuándo Enter cae sobre un
                 // compositor de mensajes con texto: esa pulsación llega a una
-                // persona y el Kernel la confirma en modo normal (§2.1).
-                String("target", types: NullableString, values: ["message_composer"]),
+                // persona y el Kernel la confirma en modo normal (§2.1). Suprimir
+                // pregunta salvo que el paso declare que el teclado está en un
+                // campo de texto (text_field): fuera de uno borra lo seleccionado.
+                String("target", types: NullableString, values: ["message_composer", "text_field"]),
+                // La ventana de la misión (el hwnd de su última vista): la tecla
+                // va sólo a ella; si no está delante y no se la puede traer, nada
+                // se envía.
+                Integer("window", 1, uint.MaxValue, types: NullableInteger),
             ], ["key"]),
             OperationRisks.LowReversible,
             "input.key.press.win32.sendinput.accepted.v1",
@@ -925,7 +931,14 @@ public static class ProductCatalog
             "Selecciona todo en el control enfocado de la ventana activa y verifica la seleccion mediante UI Automation."),
         Descriptor(
             "input.text.type",
-            Schema([String("text", maximumUtf8Bytes: 8_192, nonWhitespace: true)], ["text"]),
+            Schema(
+                [
+                    String("text", maximumUtf8Bytes: 8_192, nonWhitespace: true),
+                    // La ventana de la misión: el texto se escribe sólo mientras
+                    // ella está delante; si deja de estarlo, se para.
+                    Integer("window", 1, uint.MaxValue, types: NullableInteger),
+                ],
+                ["text"]),
             OperationRisks.PrivacySensitive,
             "input.text.type.win32.sendinput.accepted.v1",
             ToolExposure.Public,

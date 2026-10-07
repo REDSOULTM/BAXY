@@ -335,6 +335,12 @@ internal static class ComputerUseMission
 
                         JsonObject stepArguments = decision.Arguments.DeepClone() as JsonObject ?? new JsonObject();
                         stepArguments.Remove("evidence");
+                        if (!BindToMissionWindow(decision.Operation, stepArguments, lastView, state, application))
+                        {
+                            errorCode = "computer_use_window_not_application";
+                            break;
+                        }
+
                         if (!MindPlanBoundary.ArgumentsSatisfyExactSchema(decision.Operation, stepArguments))
                         {
                             errorCode = "computer_use_step_arguments_invalid";
@@ -735,6 +741,33 @@ internal static class ComputerUseMission
 
         state["procedureIndex"] = index + 1;
         return new MindComputerUseStep(operation, arguments.DeepClone() as JsonObject ?? new JsonObject(), "procedure");
+    }
+
+    /// <summary>
+    /// Safety review 2026-10-07: a key or a text goes to the mission's window, never to whatever holds the front when
+    /// it is sent (the person's editor, BAXY itself, a window that came up meanwhile). The step names the window its
+    /// decision was made on (the hwnd of the last view) and the provider brings it to the front or sends nothing,
+    /// also when the step was confirmed first and BAXY's own window is in front after the «sí». When the mission
+    /// names an application and that view is not its window (resolved for it, or of its known process), nothing is
+    /// pressed or typed: false.
+    /// </summary>
+    internal static bool BindToMissionWindow(
+        string operation,
+        JsonObject arguments,
+        JsonObject? view,
+        JsonObject state,
+        string? application)
+    {
+        if (operation is not ("input.key.press" or "input.text.type"))
+            return true;
+        JsonObject? window = view?["window"] as JsonObject;
+        if (application is { Length: > 0 }
+            && !((bool?)window?["requested"] == true
+                || (int?)state["processId"] is > 0 and int owner && (int?)window?["processId"] == owner))
+            return false;
+        if ((long?)window?["hwnd"] is > 0 and long hwnd)
+            arguments["window"] = hwnd;
+        return true;
     }
 
     /// <summary>
@@ -1257,6 +1290,12 @@ internal static class ComputerUseMission
                 ["process"] = window["process"]?.DeepClone(),
                 ["focused"] = window["focused"]?.DeepClone(),
             };
+            if ((bool?)window["requested"] == true)
+            {
+                // The provider resolved this window for the application (its process, its titled window): the mind
+                // takes it as the application in front.
+                compact["window"]!["requested"] = true;
+            }
         }
 
         var controls = new JsonArray();

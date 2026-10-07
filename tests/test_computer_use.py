@@ -797,3 +797,103 @@ def test_find_clicks_a_written_search_box_when_the_window_has_no_tree_then_types
     assert step["arguments"] == {"label": "Buscar un chat o iniciar uno nuevo"}
     clicked = [_ok(1, "input.visible.click", label="Buscar un chat o iniciar uno nuevo")]
     assert computer_use.deterministic_step(goal="ir a ron92", view=written, history=clicked)["arguments"] == {"text": "ron92"}
+
+
+# ------------------------------------------------- revisión de seguridad 2026-10-07
+
+def _key_act(key: str) -> dict:
+    return {"act": "key", "i": -1, "label": "", "text": "", "key": key, "direction": "", "application": "", "evidence": "", "why": ""}
+
+
+def test_an_editor_whose_title_mentions_the_application_is_never_taken_for_it() -> None:
+    editor = {"window": {"title": "SteamLocalAdapter.cs - BAXY Definitivo - Visual Studio Code", "process": "Code"}}
+    assert not computer_use.application_is_in_front(editor, "Steam")
+    # Not even when the provider says it resolved it: a developer's or BAXY's own window is not the application.
+    assert not computer_use.application_is_in_front({"window": {**editor["window"], "requested": True}}, "Steam")
+    assert not computer_use.application_is_in_front({"window": {"title": "Steam - Windows PowerShell", "process": "powershell"}}, "Steam")
+    assert not computer_use.application_is_in_front({"window": {"title": "BAXY", "process": "Baxy"}}, "Steam")
+    # The title names the application only in its last segment, as whole words.
+    assert not computer_use.application_is_in_front({"window": {"title": "Steam - Bloc de notas", "process": "Notepad"}}, "Steam")
+    assert not computer_use.application_is_in_front({"window": {"title": "Steamworks", "process": "x"}}, "Steam")
+    assert computer_use.application_is_in_front({"window": {"title": "Ron92 - Discord", "process": "Update"}}, "Discord")
+    assert computer_use.application_is_in_front({"window": {"title": "Inicio - Personal - Microsoft​ Edge", "process": "msedge"}}, "Microsoft Edge")
+    assert computer_use.application_is_in_front({"window": {"title": "Artista - Canción", "process": "Spotify"}}, "Spotify")
+    # Named on purpose, the editor is the application.
+    assert computer_use.application_is_in_front(editor, "Visual Studio Code")
+
+
+def test_enter_and_space_on_a_possible_message_box_are_marked_and_free_where_nothing_is_sent() -> None:
+    def view(focused: dict | None) -> dict:
+        return {"window": {"title": "App", "process": "app", "focused": focused}, "controls": [], "text": {}}
+
+    asked = (
+        {"kind": "Edit", "name": "Responder a Ron92"},
+        {"kind": "Button", "name": "Send"},
+        {"kind": "Document", "name": "(document)"},
+        {"kind": "Edit", "name": "(edit)", "value": None},
+    )
+    for focused in asked:
+        for key in ("enter", "space"):
+            step = computer_use.validate_decision(_key_act(key), view=view(focused), last_failed=None, application_names=APPS)
+            assert step["arguments"] == {"key": key, "target": "message_composer"}, (focused, key)
+    free = (
+        None,  # a calculator: no focused editable
+        {"kind": "Edit", "name": "Buscar", "value": "hades"},
+        {"kind": "Edit", "name": "Barra de direcciones y de búsqueda", "value": "es.wikipedia.org"},
+        {"kind": "Document", "name": "Editor de texto", "value": "lista: pan"},
+        {"kind": "Document", "name": "(document)", "value": "lista: pan"},
+        {"kind": "Edit", "name": "Enviar mensaje a @Ron92", "value": ""},
+    )
+    for focused in free:
+        step = computer_use.validate_decision(_key_act("enter"), view=view(focused), last_failed=None, application_names=APPS)
+        assert step["arguments"] == {"key": "enter"}, focused
+    # «calcular»: Enter on the Calculator's buttons stays free.
+    calc = {"window": {"title": "Calculadora", "process": "CalculatorApp", "focused": None}, "controls": [{"i": 0, "kind": "Button", "name": "Uno"}], "text": {}}
+    typed = [{"operation": "input.text.type", "ok": True, "text": "2+2"}]
+    assert computer_use.deterministic_step(goal="calcular 2+2", view=calc, history=typed)["arguments"] == {"key": "enter"}
+
+
+def test_delete_is_marked_as_a_text_field_only_when_the_keyboard_is_on_one() -> None:
+    on_field = {"window": {"title": "App", "focused": {"kind": "Edit", "name": "Nombre", "value": "x"}}, "controls": [], "text": {}}
+    on_list = {"window": {"title": "Descargas", "focused": {"kind": "ListItem", "name": "informe.pdf"}}, "controls": [], "text": {}}
+    assert computer_use.validate_decision(_key_act("delete"), view=on_field, last_failed=None, application_names=APPS)["arguments"] == {"key": "delete", "target": "text_field"}
+    assert computer_use.validate_decision(_key_act("delete"), view=on_list, last_failed=None, application_names=APPS)["arguments"] == {"key": "delete"}
+
+
+def test_a_typed_step_carries_one_line_without_tabs() -> None:
+    raw = {"act": "type", "i": -1, "label": "", "text": "hola\nchau\r\n\tfin", "key": "", "direction": "", "application": "", "evidence": "", "why": ""}
+    step = computer_use.validate_decision(raw, view={"window": {"title": "App"}, "controls": [], "text": {}}, last_failed=None, application_names=APPS)
+    assert step["operation"] == "input.text.type"
+    assert step["arguments"]["text"] == "hola chau fin"
+    blank = {**raw, "text": "\n\t\r\n"}
+    assert computer_use.validate_decision(blank, view={"window": {"title": "App"}, "controls": [], "text": {}}, last_failed=None, application_names=APPS)["operation"] == "none"
+
+
+def test_no_way_into_the_engine_takes_an_undoing_paying_or_leaving_goal() -> None:
+    apps = ("Discord", "Steam", "Spotify", "Paint", "Explorador de archivos")
+    never = (
+        "en Discord quitá a Ron92 de mis amigos",
+        "sacá a Cotele del servidor",
+        "en el explorador mandá informe.pdf a la papelera",
+        "move the report to the trash",
+        "descartá los cambios en Paint",
+        "en Spotify cancelá la suscripción",
+        "unsubscribe from this channel",
+        "suscribime al canal de Ron92",
+        "alquilá la película en Steam",
+        "doná 5 dólares en Steam",
+        "vendé mis cromos en Steam",
+        "restablecé la configuración de Discord",
+        "limpiá el historial de Steam",
+        "vaciá la papelera de reciclaje",
+        "empty the recycle bin",
+        "en Discord salí del servidor de BAXY",
+        "leave the server in Discord",
+    )
+    for said in never:
+        assert not missions.engine_can_try(said, apps), said
+        # The decider choosing the engine itself gets no arguments for it either.
+        assert missions.free_form_arguments(said, apps) is None, said
+        assert missions.mission_request(said, apps) is None, said
+    for said in ("en Paint dibujá un círculo", "sacá una captura de pantalla en Paint", "en el explorador creá una carpeta vacía"):
+        assert missions.free_form_arguments(said, apps) is not None, said

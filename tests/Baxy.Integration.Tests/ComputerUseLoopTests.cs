@@ -437,4 +437,64 @@ public sealed class ComputerUseLoopTests
             Assert.That(AskedText(harness.Looks[1]), Is.False, "the wait for the window reads no text");
         });
     }
+
+    // Safety review 2026-10-07: a key or a text goes to the window the step was decided on, named in its arguments so
+    // the provider brings it to the front or sends nothing (also after a «sí», with BAXY's own window in front).
+    [Test]
+    public async Task KeysAndTextNameTheWindowOfTheViewTheyWereDecidedOn()
+    {
+        var harness = new Harness
+        {
+            Screen = _ =>
+            {
+                JsonObject view = Window("Sin título - Bloc de notas", "Notepad", 31, true, [Control(0, "Document", "Editor de texto", "focused", "")]);
+                view["window"]!["hwnd"] = 4660;
+                return view;
+            },
+        };
+        harness.Mind = request => harness.Acts.Count == 0
+            ? Step("input.text.type", new JsonObject { ["text"] = "hola" })
+            : Step("input.key.press", new JsonObject { ["key"] = "enter" });
+        var arguments = new JsonObject
+        {
+            ["goal"] = "escribir hola",
+            ["application"] = "Bloc de notas",
+            ["successCheck"] = "stepDone:input.key.press:enter",
+        };
+
+        await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("en el bloc de notas escribí hola", arguments), arguments, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(harness.Acts.Select(act => act.Operation), Is.EqualTo(new[] { "input.text.type", "input.key.press" }));
+            Assert.That(harness.Acts.Select(act => (long?)act.Arguments["window"]), Is.All.EqualTo(4660L));
+        });
+    }
+
+    [Test]
+    public async Task NothingIsTypedInAWindowThatIsNotTheNamedApplication()
+    {
+        var harness = new Harness
+        {
+            // The application's window was not found: the view fell back to what is in front, the person's editor.
+            Screen = _ =>
+            {
+                JsonObject view = Window("SteamLocalAdapter.cs - BAXY - Visual Studio Code", "Code", 77, false, [Control(0, "Document", "(document)", "focused")]);
+                view["window"]!["hwnd"] = 999;
+                return view;
+            },
+            Mind = _ => Step("input.text.type", new JsonObject { ["text"] = "hola" }),
+        };
+        var arguments = new JsonObject { ["goal"] = "escribir hola", ["application"] = "Steam" };
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("en Steam escribí hola", arguments), arguments, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(harness.Acts, Is.Empty);
+            Assert.That((string?)Observed(result)["stoppedBy"], Is.EqualTo("computer_use_window_not_application"));
+        });
+    }
 }
