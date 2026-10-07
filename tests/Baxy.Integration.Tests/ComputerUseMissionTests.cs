@@ -219,8 +219,12 @@ public sealed class ComputerUseMissionTests
             {
                 new JsonObject { ["step"] = 1, ["operation"] = "app.open", ["appId"] = "Steam", ["ok"] = true, ["source"] = "model" },
                 new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["label"] = "Biblioteca", ["index"] = 1, ["ok"] = true, ["surfaceChanged"] = true, ["source"] = "model" },
-                new JsonObject { ["step"] = 3, ["operation"] = "input.scroll", ["direction"] = "down", ["ok"] = false, ["source"] = "model" },
             };
+            // Contract §5 (measured on Steam: a dropped failed click left a meaningless procedure): a mission with a
+            // failed step is not learned; an opening that did not verify does not count as failed.
+            var withAFailure = (JsonArray)steps.DeepClone();
+            withAFailure.Add(new JsonObject { ["step"] = 3, ["operation"] = "input.scroll", ["direction"] = "down", ["ok"] = false, ["source"] = "model" });
+            Assert.That(procedures.Learn(state, withAFailure), Is.EqualTo("none"));
 
             Assert.That(procedures.Learn(state, steps), Is.EqualTo("learned"));
 
@@ -230,7 +234,7 @@ public sealed class ComputerUseMissionTests
             JsonArray recorded = found!["steps"]!.AsArray();
             Assert.Multiple(() =>
             {
-                Assert.That(recorded, Has.Count.EqualTo(2), "only verified steps are kept");
+                Assert.That(recorded, Has.Count.EqualTo(2));
                 Assert.That((string?)recorded[1]!["operation"], Is.EqualTo("input.visible.click"));
                 Assert.That((string?)recorded[1]!["arguments"]!["label"], Is.EqualTo("Biblioteca"));
                 Assert.That(recorded[1]!["arguments"]!["index"], Is.Null, "an index belongs to one view, never to a procedure");

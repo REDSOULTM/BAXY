@@ -186,7 +186,12 @@ internal static class ComputerUseMission
             // Remember before deciding: a learned procedure is replayed step by
             // step with each primitive's own verification; the model only comes
             // back when the replay deviates.
-            MindComputerUseStep? decision = NextProcedureStep(state, steps.Count);
+            // A learned step is replayed only on the application's own window (or when it opens it): measured, the
+            // Calculator's procedure starts by typing, which would land on whatever window is in front.
+            bool onTheApplication = (bool?)lastView["window"]?["requested"] == true || (int?)state["processId"] is > 0;
+            MindComputerUseStep? decision = onTheApplication || NextProcedureOpens(state)
+                ? NextProcedureStep(state, steps.Count)
+                : null;
             bool fromProcedure = decision is not null;
             if (decision is null)
             {
@@ -403,6 +408,11 @@ internal static class ComputerUseMission
 
         return state;
     }
+
+    private static bool NextProcedureOpens(JsonObject state) =>
+        (int?)state["procedureIndex"] is int index && index >= 0
+        && state["procedureSteps"]?["steps"] is JsonArray recorded && index < recorded.Count
+        && (string?)recorded[index]?["operation"] == "app.open";
 
     private static MindComputerUseStep? NextProcedureStep(JsonObject state, int stepsDone)
     {
@@ -1246,6 +1256,14 @@ internal sealed class ComputerUseProcedures
             existing["lastReplayMs"] = (long?)state["elapsedMs"] ?? 0;
             existing["lastReplayUtc"] = DateTimeOffset.UtcNow.ToString("O", CultureInfo.InvariantCulture);
             outcome = "replayed";
+        }
+        else if (steps.Any(node => node is JsonObject step && (bool?)step["ok"] != true
+            && (string?)step["operation"] != "app.open"))
+        {
+            // Contract §5: only a mission reached without failed steps is learned. Measured on Steam: the failed
+            // click had opened the menu and was dropped; the step left («Chrome Legacy Window») was meaningless.
+            // An opening that did not verify (a UWP app hosted by its frame) is not a failed step: it is skipped.
+            outcome = "none";
         }
         else
         {
