@@ -35,8 +35,19 @@ public sealed class ComputerUseNamedLineageTests
                {"name":"Azul","key":"","ancestors":[],"rect":{"x":30,"y":0,"w":20,"h":20}}],
               [{"name":"Rojo","key":"7.1","ancestors":["7.0"],"select":true},
                {"name":"Red","key":"7.2","ancestors":["7.1","7.0"],"invoke":true}],
-              [{"name":"Buscar","key":"7.1","ancestors":["7.0"],"invoke":true},
-               {"name":"Buscar","key":"7.2","ancestors":["7.1","7.0"],"edit":true}]
+              [{"name":"Buscar","key":"7.1","ancestors":["7.0"],"invoke":true,"kind":"Group"},
+               {"name":"Buscar","key":"7.2","ancestors":["7.1","7.0"],"edit":true,"kind":"Edit"}],
+              [{"name":"Buscar","key":"7.1","ancestors":["7.0"],"invoke":true,"kind":"ComboBox"},
+               {"name":"Buscar","key":"7.2","ancestors":["7.1","7.0"],"edit":true,"kind":"Edit"}],
+              [{"name":"informe.txt","key":"7.1","ancestors":["7.0"],"invoke":true,"select":true,"kind":"ListItem"},
+               {"name":"informe.txt","key":"7.2","ancestors":["7.1","7.0"],"edit":true,"kind":"Edit"}],
+              [{"name":"informe.txt","key":"7.1","ancestors":["7.0"],"select":true,"kind":"DataItem"},
+               {"name":"informe.txt","key":"7.2","ancestors":["7.1","7.0"],"edit":true,"kind":"Edit"}],
+              [{"name":"Documentos","key":"7.1","ancestors":["7.0"],"invoke":true,"select":true,"kind":"TreeItem"},
+               {"name":"Documentos","key":"7.2","ancestors":["7.1","7.0"],"edit":true,"kind":"Edit"}],
+              [{"name":"Buscar","key":"7.0","ancestors":["1"],"kind":"ListItem","select":true},
+               {"name":"Buscar","key":"7.1","ancestors":["7.0","1"],"invoke":true,"kind":"Group"},
+               {"name":"Buscar","key":"7.2","ancestors":["7.1","7.0","1"],"edit":true,"kind":"Edit"}]
             ]
             """;
         string answer = RunRule(worker, cases);
@@ -50,6 +61,13 @@ public sealed class ComputerUseNamedLineageTests
             "-1", // rectangles apart: separate controls
             "-1", // different names are never collapsed
             "1",  // a search box's field inside its same-named Group that invokes: the field takes the click
+            "1",  // the same inside a ComboBox
+            // Explorer's details view: a file's rename field inside its row is never clicked (the click would start
+            // a rename and the next typing would rename the file); the row keeps the old choice.
+            "0",  // a ListItem that invokes
+            "0",  // a DataItem that only selects
+            "0",  // a TreeItem
+            "1",  // a Group inside a row with the same name: the row rules the field out, the Group invokes
         }));
     }
 

@@ -5409,9 +5409,14 @@ def _decider_left_the_step(
     """Live v2-x12: the decider closed «ahora ponela en modo científica» (after «abrí la calculadora») as a limit, and
     the engine ran the bare words in no window. A step inside the conversation's application
     (``semantic.missions.follow_up_in_application``) is that mission unless the decider chose a typed operation (D21)
-    or already restated it as a mission in that same application (its words stand, v2-s13)."""
+    or already restated it as a mission in that same application (its words stand, v2-s13). A question, a talk answer
+    or a limit that asks something is the decider's to give (review r10): only an action or a bare limit is replaced."""
 
-    if decided.decision != "action" or not decided.operations:
+    if decided.decision == "limit":
+        return not decided.question.strip()
+    if decided.decision != "action":
+        return False
+    if not decided.operations:
         return True
     if not set(decided.operations) <= MISSION_SUBSUMES | {"mission.computer.use"}:
         return False

@@ -356,25 +356,36 @@ function Test-Contains($outer,$inner){
 # objetivo: el que se invoca, si no el que se selecciona, si no el mas
 # interior. Devuelve su posicion, o -1 si son controles separados (ambiguo).
 # Cada entrada: name, key (RuntimeId), ancestors (RuntimeId de sus
-# antecesores; vacio si no se pudo leer), rect (x,y,w,h o nulo), invoke, select.
+# antecesores; vacio si no se pudo leer), rect (x,y,w,h o nulo), invoke, select,
+# edit (toma texto) y kind (su ControlType: Group, ListItem...).
 function Select-LineageOne($entries){
   $list=@($entries)
   if($list.Count -lt 2){ return ($list.Count-1) }
   $first=[string]$list[0].name
   foreach($entry in $list){ if(-not [string]::Equals([string]$entry.name,$first,[StringComparison]::OrdinalIgnoreCase)){ return -1 } }
   $depth=New-Object int[] $list.Count
+  $holders=@{}
+  for($i=0;$i -lt $list.Count;$i++){ $holders[$i]=@() }
   for($i=0;$i -lt $list.Count;$i++){
     for($j=$i+1;$j -lt $list.Count;$j++){
       $ij=Test-Contains $list[$i] $list[$j]; $ji=Test-Contains $list[$j] $list[$i]
       if(-not $ij -and -not $ji){ return -1 }
-      if($ij){ $depth[$j]++ }
-      if($ji){ $depth[$i]++ }
+      if($ij){ $depth[$j]++; $holders[$j]+=@($i) }
+      if($ji){ $depth[$i]++; $holders[$i]+=@($j) }
     }
   }
   $all=@(0..($list.Count-1))
   # A field that takes text inside a same-named control that invokes (a search box's Edit inside its Group) is what a
   # person clicks: measured on a store's search, the Group took the click and the field never got the keyboard.
-  $pool=@($all | Where-Object { $list[$_].invoke -or $list[$_].edit })
+  # Only inside a box (Group, Pane, Custom, ComboBox): in a row of Explorer's details view (ListItem, DataItem,
+  # TreeItem) the same-named Edit is the rename field, and clicking it would let the next typing rename the file.
+  $boxes=@('Group','Pane','Custom','ComboBox')
+  $fields=@($all | Where-Object {
+    $k=$_
+    $list[$k].edit -and $holders[$k].Count -gt 0 -and
+      @($holders[$k] | Where-Object { $boxes -notcontains [string]$list[$_].kind }).Count -eq 0
+  })
+  $pool=@($all | Where-Object { $list[$_].invoke -or $fields -contains $_ })
   if($pool.Count -eq 0){ $pool=@($all | Where-Object { $list[$_].select }) }
   if($pool.Count -eq 0){ $pool=$all }
   $best=$pool[0]
@@ -392,9 +403,9 @@ function Get-LineageEntry($el){
   $invoke=$false;$select=$false
   try { $invoke=$el.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$pattern) } catch {}
   try { $select=$el.TryGetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern,[ref]$pattern) } catch {}
-  $edit=$false
-  try { $edit=($el.Current.ControlType -eq [System.Windows.Automation.ControlType]::Edit) } catch {}
-  return @{ name=(Get-Name $el); key=(Get-Id $el); ancestors=$ancestors; rect=(Get-Rect $el); invoke=$invoke; select=$select; edit=$edit }
+  $kind=''
+  try { $kind=([string]$el.Current.ControlType.ProgrammaticName) -replace '^ControlType\.','' } catch {}
+  return @{ name=(Get-Name $el); key=(Get-Id $el); ancestors=$ancestors; rect=(Get-Rect $el); invoke=$invoke; select=$select; edit=($kind -eq 'Edit'); kind=$kind }
 }
 # Los controles con ese nombre; sin ninguno igual, los que lo llevan como
 # palabras (el clic solo sigue si es uno). Los iguales de una sola linea de

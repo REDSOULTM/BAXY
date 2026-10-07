@@ -1489,7 +1489,7 @@ public sealed class ExternalAdaptersTests
         int samples = 0;
         var adapter = new WindowsVisibleControlAdapter(
             worker, ocr, vision: null, timing: StillTiming,
-            surfaceHash: _ => { samples++; return ValueTask.FromResult<string?>("same"); });
+            surfaceHash: (_, _) => { samples++; return ValueTask.FromResult<string?>("same"); });
         var clock = Stopwatch.StartNew();
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -1519,7 +1519,7 @@ public sealed class ExternalAdaptersTests
         int samples = 0;
         var adapter = new WindowsVisibleControlAdapter(
             worker, ocr, vision: null, timing: StillTiming,
-            surfaceHash: _ => ValueTask.FromResult<string?>("frame" + samples++));
+            surfaceHash: (_, _) => ValueTask.FromResult<string?>("frame" + samples++));
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"biblioteca"}"""),
@@ -1541,7 +1541,7 @@ public sealed class ExternalAdaptersTests
         var ocr = new CountingLocator("ocr", hit: false);
         var adapter = new WindowsVisibleControlAdapter(
             worker, ocr, vision: null, timing: StillTiming,
-            surfaceHash: _ => ValueTask.FromResult<string?>(null));
+            surfaceHash: (_, _) => ValueTask.FromResult<string?>(null));
         var clock = Stopwatch.StartNew();
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -1553,6 +1553,61 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
             Assert.That(worker.Commands.Count, Is.GreaterThanOrEqualTo(2));
             Assert.That(clock.Elapsed, Is.GreaterThanOrEqualTo(StillTiming.Interval));
+        });
+    }
+
+    // Review r10: the window watched is the one the look read and the click targets (the hwnd sent to the worker),
+    // never whatever holds the front while the click waits.
+    [Test]
+    public async Task VisibleClickWatchesTheWindowItsLookRead()
+    {
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
+        var watched = new List<nint>();
+        var adapter = new WindowsVisibleControlAdapter(
+            worker, new CountingLocator("ocr", hit: false), vision: null, timing: StillTiming,
+            surfaceHash: (window, _) => { watched.Add(window); return ValueTask.FromResult<string?>("same"); });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"crash bandicoot"}"""),
+            CancellationToken.None);
+
+        Assume.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"), "a window in front to look at");
+        long looked = JsonDocument.Parse(worker.Commands[0]).RootElement.GetProperty("hwnd").GetInt64();
+        Assert.Multiple(() =>
+        {
+            Assert.That(looked, Is.Not.Zero);
+            Assert.That(watched, Is.Not.Empty);
+            Assert.That(watched, Is.All.EqualTo((nint)looked));
+        });
+    }
+
+    // Review r10: a page the previous click navigated to may still be loading behind a still frame; the first click
+    // after a click that changed the screen keeps the full wait, the one after it answers after one still look.
+    [Test]
+    public async Task VisibleClickAfterAScreenChangeKeepsTheFullWait()
+    {
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
+        var adapter = new WindowsVisibleControlAdapter(
+            worker, new CountingLocator("ocr", hit: true, hitFromCall: 1) { HitsUpTo = 1 }, vision: null,
+            timing: StillTiming, surfaceHash: (_, _) => ValueTask.FromResult<string?>("same"));
+
+        ExternalCapabilityReceipt navigated = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"biblioteca"}"""), CancellationToken.None);
+        Assume.That(navigated.Verified, Is.True);
+        int before = worker.Commands.Count;
+        ExternalCapabilityReceipt next = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"crash bandicoot"}"""), CancellationToken.None);
+        int afterChange = worker.Commands.Count - before;
+        before = worker.Commands.Count;
+        ExternalCapabilityReceipt still = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"crash bandicoot"}"""), CancellationToken.None);
+
+        Assume.That(next.ErrorCode, Is.EqualTo("visible_button_not_found"), "a window in front to look at");
+        Assert.Multiple(() =>
+        {
+            Assert.That(afterChange, Is.GreaterThanOrEqualTo(2));
+            Assert.That(still.ErrorCode, Is.EqualTo("visible_button_not_found"));
+            Assert.That(worker.Commands.Count - before, Is.EqualTo(1));
         });
     }
 
@@ -5081,6 +5136,9 @@ public sealed class ExternalAdaptersTests
 
         internal int Calls { get; private set; }
 
+        // The last call that hits (none: every call from _hitFromCall on).
+        internal int HitsUpTo { get; init; } = int.MaxValue;
+
         public string Stage { get; }
 
         public ValueTask<ExternalCapabilityReceipt?> TryClickAsync(
@@ -5089,7 +5147,7 @@ public sealed class ExternalAdaptersTests
             CancellationToken cancellationToken)
         {
             Calls++;
-            if (!_hit || Calls < _hitFromCall)
+            if (!_hit || Calls < _hitFromCall || Calls > HitsUpTo)
                 return ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
             JsonElement result = JsonSerializer.SerializeToElement(new
             {
