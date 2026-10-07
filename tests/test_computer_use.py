@@ -1462,3 +1462,12 @@ def test_a_file_views_delete_command_does_not_stop_opening_the_chosen_folder() -
     clicked = [{"step": 1, "operation": "input.visible.click", "label": "Descargas", "index": 5, "ok": True}]
     step = computer_use.deterministic_step(goal="ir a descargas", view=view, history=clicked)
     assert step is not None and step["operation"] == "input.key.press" and step["arguments"].get("key") == "enter"
+
+
+def test_a_sentence_that_mentions_the_place_is_not_the_place() -> None:
+    view = {"window": {"title": "Configuración"}, "controls": [
+        {"i": 0, "kind": "Text", "name": "Usa un servidor proxy para conexiones Ethernet o Wi-Fi. Esta configuración no se aplica a conexiones VPN."},
+        {"i": 1, "kind": "ListItem", "name": "Proxy"},
+    ], "text": {}}
+    assert computer_use.find_control(view, "wi-fi") is None
+    assert computer_use.find_control(view, "proxy")["i"] == 1

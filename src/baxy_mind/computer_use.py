@@ -254,6 +254,12 @@ def label_names(label: str, name: str) -> bool:
     return allowed > 0 and _edit_distance(needle, haystack, allowed) <= allowed
 
 
+def _short_name(name: str, label: str) -> bool:
+    """A control's name short enough to be what it names: at most six words beyond the label's own."""
+
+    return len(fold(name).split()) <= len(fold(label).split()) + 6
+
+
 def find_control(view: dict, label: str, index: int | None = None, kind: str | None = None) -> dict | None:
     """The one control the label (and index, when given; of that kind, when given) names; None when absent or
     ambiguous."""
@@ -273,7 +279,12 @@ def find_control(view: dict, label: str, index: int | None = None, kind: str | N
     exact = [control for control in controls if fold(control.get("name")) == fold(label)]
     if len(exact) == 1:
         return exact[0]
-    loose = [control for control in controls if label_names(label, str(control.get("name") or ""))]
+    # A sentence that merely mentions the name is no place (measured on Settings: «Usa un servidor proxy para conexiones
+    # Ethernet o Wi-Fi…» was clicked for «Wi-Fi» on a PC without one): containment counts in short names only.
+    loose = [
+        control for control in controls
+        if label_names(label, str(control.get("name") or "")) and _short_name(str(control.get("name") or ""), label)
+    ]
     if len(loose) == 1:
         return loose[0]
     if len(loose) > 1:
