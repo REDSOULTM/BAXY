@@ -548,6 +548,7 @@ def deterministic_step(
     view: dict,
     history: list[dict],
     application: str | None = None,
+    _tried: tuple[str, ...] = (),
 ) -> dict[str, object] | None:
     """The step the goal itself dictates when the view shows it (contract §4.2):
     a key to press, a text or an expression to type, a named control to click
@@ -575,7 +576,10 @@ def deterministic_step(
             # App's newTextAfterClick, never the failed look's newText (stale or empty).
             after_click = view.get("newTextAfterClick")
             retry_view = {**view, "newText": after_click if isinstance(after_click, list) else []}
-            retried = deterministic_step(goal=goal, view=retry_view, history=history[:-1], application=application)
+            # A click on the goal's own name by label alone that found nothing stays tried: the next name (the other
+            # language's) is the step, never the same name once more.
+            tried = (*_tried, str(last.get("label") or "")) if not isinstance(last.get("index"), int) else _tried
+            retried = deterministic_step(goal=goal, view=retry_view, history=history[:-1], application=application, _tried=tried)
             if retried is None or retried.get("operation") != "input.visible.click":
                 return retried
             arguments = retried.get("arguments") or {}
@@ -734,6 +738,10 @@ def deterministic_step(
         ) if kind is None else None
         if wanted in (None, "selected") and written is not None and not _steps_ok(history, "input.visible.click", label=written):
             return {"operation": "input.visible.click", "arguments": {"label": written}, "reason": reason}
+        if written is None and kind is None and wanted in (None, "selected"):
+            unlisted = _unlisted_name_click(view, history, names, _tried)
+            if unlisted is not None:
+                return unlisted
         # Not on screen: looked up the way any window offers (search field, quick switcher, find, the list).
         return _find_step(target, view, history, navigate=navigate) if searching and written is None else None
     states = str(control.get("state") or "").split()
@@ -783,6 +791,47 @@ def _placing_goal(goal: str | None) -> bool:
         return True
     parsed = _goal_target(goal or "") if folded.startswith("hacer clic en ") else None
     return parsed is not None and parsed[3] not in _SWITCH_KINDS
+
+
+# How many controls the App lists in a view (its ``limit``); a view without ``controlCount`` that lists this many may
+# leave out the rest of the window's tree.
+_LISTED_CONTROLS = 60
+REASON_BY_NAME = "el objetivo lo nombra y la vista no lo lista: lo busco por su nombre en toda la ventana"
+
+
+def _lists_part_of_the_tree(view: dict) -> bool:
+    """The view lists only part of the window's controls: ``controlCount`` (all the tree holds) above the listed ones,
+    or, without it, the listing full at the App's limit."""
+
+    controls = view.get("controls") if isinstance(view, dict) else None
+    listed = len(controls) if isinstance(controls, list) else 0
+    count = view.get("controlCount") if isinstance(view, dict) else None
+    if isinstance(count, int) and not isinstance(count, bool):
+        return count > listed
+    return listed >= _LISTED_CONTROLS
+
+
+def _unlisted_name_click(view: dict, history: list[dict], names: Iterable[str], tried: Iterable[str] = ()) -> dict[str, object] | None:
+    """A click by label alone (no index) on the goal's own name, the person's word first and then its other names,
+    when the view lists only part of the window and neither a listed control nor a written line carries it: the
+    click resolves the label against the whole tree (measured on Paint: the palette's colours lie beyond the 60
+    listed controls, and the model clicked the colour picker tool and a shape instead). Each name once per sub-goal,
+    failed or not; never a name that removes something."""
+
+    if not _lists_part_of_the_tree(view):
+        return None
+    clicked = {
+        fold(step.get("label")) for step in history
+        if isinstance(step, dict) and step.get("operation") == "input.visible.click"
+    } | {fold(label) for label in tried}
+    names = tuple(dict.fromkeys(str(name).strip() for name in names if str(name).strip()))
+    if any(_REMOVAL_NAME.search(fold(name)) or _OPENS_ELSEWHERE.search(fold(name)) for name in names):
+        return None
+    for name in names:
+        if fold(name) in clicked:
+            continue
+        return {"operation": "input.visible.click", "arguments": {"label": name}, "reason": REASON_BY_NAME}
+    return None
 
 
 def _without_switches(view: dict) -> dict:
