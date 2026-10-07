@@ -43,6 +43,7 @@ from .semantic.missions import (
     fold,
     gender_twin,
     label_alternatives,
+    mode_named as _mode_named,
 )
 
 OPERATION = "mission.computer.use"
@@ -708,18 +709,6 @@ def _names_a_switch(view: dict, line: str) -> bool:
         and label_names(str(control.get("name") or ""), line) and label_names(line, str(control.get("name") or ""))
         for control in (controls if isinstance(controls, list) else [])
     )
-
-
-_MODE_AROUND = re.compile(r"^(?:modo|vista|mode|view)\s+(?:de\s+)?(?P<before>\S.*)$|^(?P<after>\S.*?)\s+(?:mode|view)$")
-
-
-def _mode_named(target: str) -> str | None:
-    """«modo científico» → «científico», «scientific mode» → «scientific»: the mode a toggle goal names, or None."""
-
-    found = _MODE_AROUND.match(fold(target).strip())
-    if found is None:
-        return None
-    return (found.group("before") or found.group("after") or "").strip() or None
 
 
 # ------------------------------------------------------------- buscar el destino

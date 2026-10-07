@@ -359,7 +359,7 @@ def test_searching_types_in_the_windows_search_then_submits() -> None:
 def test_an_address_is_the_bar_the_address_delete_and_enter() -> None:
     # Delete drops the page of the history the bar completes the address with (measured on Opera: Enter went to
     # «…/wiki/Curicó»); ctrl_l put the keyboard on the bar, so it erases characters there and is not asked.
-    view = {"window": {"title": "Opera"}, "controls": [], "text": {}}
+    view = {"window": {"title": "Opera", "focused": {"kind": "Edit", "name": "Campo de dirección", "value": ""}}, "controls": [], "text": {}}
     history: list[dict] = []
     for wanted in (
         {"key": "ctrl_l"}, {"text": "es.wikipedia.org"}, {"key": "delete", "target": "text_field"}, {"key": "enter"},

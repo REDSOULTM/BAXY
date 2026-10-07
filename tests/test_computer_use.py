@@ -1131,15 +1131,15 @@ def test_switching_to_a_mode_reads_as_choosing_it_with_a_check_the_window_can_sh
         assert arguments["goal"] in {"ir a cientifica", "ir a cientifico", "ir a scientific"}, said
         name = arguments["goal"][len("ir a "):]
         # The mode's header after the switch («Modo de calculadora Científica») names it; title and selection do not.
-        assert f"stepDone:input.visible.click:{name}&control:{name}" in arguments["successCheck"].split("|"), said
+        assert f"header:{name}" in arguments["successCheck"].split("|"), said
     # The other gender of the adjective is the same mode («el modo científico», «Calculadora Científica»).
-    assert "stepDone:input.visible.click:cientifica&control:cientifica" in _mission(
+    assert "header:cientifica" in _mission(
         "en la calculadora cambiá al modo científico"
     )["successCheck"].split("|")
     put = _mission("en la calculadora poné el modo científico")
     assert put["goal"] == "activar modo cientifico"
     assert put["successCheck"].startswith("control:modo cientifico:on|")
-    assert "stepDone:input.visible.click:cientifica&control:cientifica" in put["successCheck"].split("|")
+    assert "header:cientifica" in put["successCheck"].split("|")
     # A tab is still a tab, and «poner» without a mode word is no mode.
     assert missions.mission_request("in Chrome switch to the Gmail tab", APPS).goal.startswith("ir a la pesta")
     assert missions.mission_request("en la calculadora poné la científica", APPS).goal != "ir a cientifica"
