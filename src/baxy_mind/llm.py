@@ -8845,12 +8845,14 @@ COMPUTER_USE_VOICE_LENGTH_EN = " One short sentence of 18 words or fewer."
 # question answers it in the final, with the value the window wrote, or says it could not see it.
 COMPUTER_USE_VOICE_QUESTION_ES = (
     " La persona preguntó «{question}»: tu frase responde eso primero, con el valor tal como lo escribe la ventana "
-    "(seen.screen, seen.evidence); si la ventana no lo muestra, di que no lo pude ver. Nombrar el lugar o la "
+    "(seen.screen, seen.evidence), como dato y no como lugar («El volumen está en 60.», «El modo es Oscuro.»; nunca "
+    "«Llegué al volumen…»); si la ventana no lo muestra, di que no lo pude ver. Nombrar el lugar o la "
     "aplicación no es la respuesta."
 )
 COMPUTER_USE_VOICE_QUESTION_EN = (
     " The person asked «{question}»: your sentence answers that first, with the value as the window writes it "
-    "(seen.screen, seen.evidence); if the window does not show it, say you could not see it. Naming the place or the "
+    "(seen.screen, seen.evidence), as a fact and not as a place («The volume is at 60.», «The mode is Dark.»; never "
+    "«I went to the volume…»); if the window does not show it, say you could not see it. Naming the place or the "
     "app is not the answer."
 )
 
