@@ -252,6 +252,11 @@ internal static class OperationFloor
             cause = T((JsonObject)data["coveredBy"]!, language).Replace("{window}", coveredBy, StringComparison.Ordinal);
         }
 
+        if (stoppedBy == "computer_use_place_not_found" && FloorName(observed["missingPlace"], data) is { Length: > 0 } missing)
+        {
+            cause = T((JsonObject)data["placeNotFound"]!, language).Replace("{place}", Quoted(missing), StringComparison.Ordinal);
+        }
+
         return cause.Trim().Length > 0
             ? T(said, "cause").Replace("{head}", head, StringComparison.Ordinal)
                 .Replace("{cause}", cause, StringComparison.Ordinal)
@@ -279,6 +284,16 @@ internal static class OperationFloor
             && Decoded(situation["reason"]) is JsonObject reason && Text(reason, "operation") == Operation
             ? reason
             : null;
+    }
+
+    /// <summary>The X of a goal «ir a X» (data «computerUse.placeGoal»), or empty when the goal is no place.</summary>
+    internal static string PlaceAsked(string? goal)
+    {
+        var data = (JsonObject)Data.Value["computerUse"]!;
+        return goal is null || goal.Contains(T(data, "questionMark"), StringComparison.Ordinal)
+            || PlaceGoal.Value.Match(goal.Trim()) is not { Success: true } found
+            ? string.Empty
+            : FloorName(JsonValue.Create(found.Groups[1].Value), data);
     }
 
     // The place a goal «ir a X» went to, spelled as the window wrote it when one of its names is X.

@@ -2337,6 +2337,14 @@ def project_seen(observed: dict, language: str) -> dict[str, object]:
             seen["stoppedBecause"] = operation_floor.floor_data()["computerUse"]["coveredBy"][
                 "en" if language == "en" else "es"
             ].format(window=seen["coveredBy"])
+        missing = _floor_name(observed.get("missingPlace"))
+        if observed.get("stoppedBy") == "computer_use_place_not_found" and missing:
+            # Searched by name in the window and not found (live n5: «Wi-Fi» on a PC without Wi-Fi).
+            floor = operation_floor.floor_data()
+            lang = "en" if language == "en" else "es"
+            seen["stoppedBecause"] = floor["computerUse"]["placeNotFound"][lang].format(
+                place=floor["templates"][lang]["quote"].format(value=missing)
+            )
     if observed.get("procedure") in {"replayed", "learned", "relearned"}:
         seen["procedure"] = observed.get("procedure")
     raw_subgoals = observed.get("subgoals")
@@ -2517,7 +2525,85 @@ def mission_defect(folded_reply: str, seen: dict) -> str | None:
         return "shade_unnamed"
     if _only_went_somewhere(seen) and _claims_a_change(folded_reply, seen):
         return "extra_claim"
+    if _claims_a_containment(folded_reply, seen):
+        return "extra_claim"
+    if _NEW_STATE_CLAIM.search(folded_reply) and not _toggles_something(seen):
+        return "extra_claim"
     return None
+
+
+# Live 2026-10-07 (v2-a2 «en el Reloj andá a Temporizador y después en Configuración andá a Aplicaciones» → «Estoy en
+# Configuración de Aplicaciones dentro de la app Reloj.»; v2-a4 «… andá a Documentos y después a Descargas» → «Estoy en
+# la carpeta de Descargas dentro de Documentos»): «X dentro de Y» puts a place of the mission inside another place or
+# another application. The facts only say which application each place was reached in: X inside its own application
+# passes, X inside anything else of the mission was never observed.
+_CONTAINER = re.compile(r"\s+(?:dentro\s+del?|adentro\s+del?|inside(?:\s+of)?|within|in|en)\s+")
+_CONTAINER_FILLER = re.compile(
+    r"^(?:(?:el|la|los|las|the)\s+)?(?:(?:app|aplicacion|carpeta|ventana|seccion|pestana|pagina|folder|application|"
+    r"window|section|tab|page)\s+(?:(?:de|del|of)\s+)?(?:(?:el|la|los|las|the)\s+)?)?"
+)
+
+
+def _mission_places(seen: dict) -> dict[str, str]:
+    """Each place a goal «ir a X» reached, folded, with the folded application it was reached in."""
+
+    app = fold(seen.get("application")) if isinstance(seen.get("application"), str) else ""
+    parts = [
+        (item.get("goal"), item.get("application")) for item in seen.get("subgoals") or () if isinstance(item, dict)
+    ] or [(part, None) for part in str(seen.get("goal") or "").split(";")]
+    places: dict[str, str] = {}
+    for goal, where in parts:
+        found = _PLACE_GOAL.match(re.sub(r"^\s*luego\s+", "", goal.strip())) if isinstance(goal, str) else None
+        name = fold(_BIDI_MARKS.sub("", found.group(1))).strip(" .") if found is not None else ""
+        if name:
+            places[name] = fold(where) if isinstance(where, str) and where.strip() else app
+    return places
+
+
+def _claims_a_containment(folded_reply: str, seen: dict) -> bool:
+    places = _mission_places(seen)
+    apps = {
+        fold(name) for name in (seen.get("application"), *(
+            item.get("application") for item in seen.get("subgoals") or () if isinstance(item, dict)
+        )) if isinstance(name, str) and name.strip()
+    }
+    names = sorted({*places, *apps} - {""}, key=len, reverse=True)
+    if len(names) < 2:
+        return False
+    for found in _CONTAINER.finditer(folded_reply):
+        before, after = folded_reply[:found.start()], _CONTAINER_FILLER.sub("", folded_reply[found.end():])
+        outer = next((name for name in names if re.match(rf"{re.escape(name)}\b", after)), None)
+        inner = next((name for name in names if re.search(rf"\b{re.escape(name)}$", before)), None)
+        if outer is None or inner is None or inner == outer:
+            continue
+        if outer in apps and places.get(inner) == outer:
+            continue
+        return True
+    return False
+
+
+# Live 2026-10-07 (v2-a12 «en Configuración buscá Bluetooth» → «Ya busqué Bluetooth en Configuración y ahora está
+# activado.»): a state said as the result of «ahora» tells a switch the mission never flipped. «Bluetooth está activado»
+# describing the window stays allowed; only a mission whose goals switch something may say what it is «ahora».
+_STATE_WORD = r"(?:activad[oa]s?|desactivad[oa]s?|encendid[oa]s?|apagad[oa]s?|prendid[oa]s?|activ[oa]s?|inactiv[oa]s?)"
+_NEW_STATE_CLAIM = re.compile(
+    rf"\bahora\s+(?:\w+\s+){{0,3}}?(?:ya\s+)?(?:esta|estan|queda|quedan|quedo|quedaron|sigue)\s+(?:ahora\s+)?{_STATE_WORD}\b|"
+    rf"\b(?:esta|estan|queda|quedan|quedo|quedaron)\s+ahora\s+{_STATE_WORD}\b|"
+    r"\bnow\s+(?:\w+\s+){0,3}?(?:is|it's|are|they're)\s+(?:now\s+)?(?:on|off|enabled|disabled|active|inactive)\b|"
+    r"\b(?:is|it's|are|they're)\s+now\s+(?:on|off|enabled|disabled|active|inactive)\b"
+)
+_TOGGLE_GOAL = re.compile(
+    r"^(?:activar|desactivar|encender|apagar|prender|alternar|cambiar|poner|hacer\s+clic|turn|enable|disable|toggle|"
+    r"switch|click)\b"
+)
+
+
+def _toggles_something(seen: dict) -> bool:
+    goals = [item.get("goal") for item in seen.get("subgoals") or () if isinstance(item, dict)] + [seen.get("goal")]
+    return any(
+        _TOGGLE_GOAL.match(re.sub(r"^\s*luego\s+", "", fold(part).strip()))
+        for goal in goals if isinstance(goal, str) for part in goal.split(";")
+    )
 
 
 # Live 2026-10-07 (v2-v9 «en el Reloj andá a Reloj mundial», v2-u7/v2-w1 «… andá a Alarma»): a clock the window shows is

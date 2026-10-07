@@ -292,6 +292,83 @@
    "en": "I couldn't get to «Wi-Fi»: the screen stopped changing after what I did."
   },
   {
+   "id": "cu-failed-place-not-found",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_place_not_found",
+     "observed": {
+      "goal": "ir a red e internet; luego ir a wi-fi",
+      "application": "Configuración",
+      "reached": false,
+      "steps": [
+       {
+        "step": 1,
+        "operation": "input.visible.click",
+        "label": "Red e Internet",
+        "ok": true,
+        "name": "Red e Internet",
+        "selected": true,
+        "changed": true
+       },
+       {
+        "step": 2,
+        "operation": "input.visible.click",
+        "label": "wi-fi",
+        "ok": true,
+        "name": "Wi-Fi",
+        "changed": true
+       },
+       {
+        "step": 3,
+        "operation": "input.text.type",
+        "into": "Cuadro de búsqueda, Buscar una opción",
+        "text": "wi-fi",
+        "ok": true,
+        "changed": true
+       }
+      ],
+      "window": {
+       "title": "Configuración",
+       "process": "ApplicationFrameHost"
+      },
+      "joined": false,
+      "screen": {
+       "title": "Configuración",
+       "lines": [
+        "Proxy"
+       ]
+      },
+      "stoppedBy": "computer_use_place_not_found",
+      "subgoals": [
+       {
+        "goal": "ir a red e internet",
+        "application": "Configuración",
+        "reached": true
+       },
+       {
+        "goal": "ir a wi-fi",
+        "application": "Configuración",
+        "reached": false
+       }
+      ],
+      "missingPlace": "Wi-Fi"
+     }
+    }
+   },
+   "es": "No pude llegar a «Wi-Fi»: no encontré «Wi-Fi» en esta ventana; puede que este equipo no lo tenga.",
+   "en": "I couldn't get to «Wi-Fi»: I did not find «Wi-Fi» in this window; this computer may not have it."
+  },
+  {
    "id": "cu-failed-untyped",
    "situation": {
     "kind": "failure",

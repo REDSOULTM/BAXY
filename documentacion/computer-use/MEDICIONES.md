@@ -341,3 +341,14 @@ mundial en inglés, buscar WhatsApp en la Store, modo programador, conversación
 Bluetooth en Configuración). Falló a3 «open Settings, go to Accessibility and then to Text size»: «Text size» no tenía
 su nombre en español en la tabla de alias; añadido como dato, a3 llega en 5,7 s (11/11). Ningún clic de cuenta ni
 interruptor no pedido en el lote (revisado en el journal).
+
+### Lote ciego b y ronda 15 (12:05–12:17)
+
+Seis órdenes nuevas (Bloc de notas con «escribí:», Personalización → Temas, «144 divided by 12» en inglés, Reloj
+mundial → Alarma, Steam tienda → comunidad, texto y azul en Paint): **6/6 a la primera**. Ronda 15: vetos de voz para
+«X dentro de Y» entre lugares o apps distintos de la misión y para «ahora está activado» sin ningún interruptor
+pulsado (a4 sale «Ya estoy en la carpeta de Descargas.»); n5 dice ahora la causa real («no encontré esa opción en la
+ventana actual») en vez de «la pantalla se quedó quieta».
+
+Pendiente de voz (modelo 4B, en vivo 12:15): a2 añadió «donde busco la opción de Wi-Fi», tomado de un turno anterior
+del mismo perfil; a12 dijo «Abrazé» por «Llegué». La misión y la verificación fueron correctas en ambos.
