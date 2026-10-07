@@ -155,8 +155,8 @@ Win32, UWP, Electron, canvas).
 | Acto | Operación | Argumentos | Postlectura (qué prueba el efecto) |
 |---|---|---|---|
 | pulsar | `input.visible.click` | `label` (obligatorio), `index?` (de la vista), `controlId?` (RuntimeId de la vista) | `selected` \| `absentOrDisabled` \| `surfaceChanged`; con índice/id, el nombre del control debe coincidir con `label` |
-| escribir | `input.text.type` | `text` | SendInput aceptado + el control enfocado no es `password` |
-| tecla | `input.key.press` | `key` (enum cerrado, ahora con combos `ctrl_a ctrl_c ctrl_f ctrl_k ctrl_t ctrl_w ctrl_z f5`), `target?` (`message_composer`) | SendInput aceptado |
+| escribir | `input.text.type` | `text`, `window?` (la ventana de la misión, v2) | SendInput aceptado + el control enfocado no es `password`; en una misión, el campo muestra el texto (§7) |
+| tecla | `input.key.press` | `key` (enum cerrado, ahora con combos `ctrl_a ctrl_c ctrl_f ctrl_k ctrl_t ctrl_w ctrl_z f5`), `target?` (`message_composer` \| `text_field`), `window?` (la ventana de la misión, v2) | SendInput aceptado en esa ventana delante |
 | desplazar | `input.scroll` | `direction` (`down`\|`up`), `amount` (1..10) | hash de superficie cambió; si no, `scroll_surface_unchanged` |
 | abrir / traer al frente | `app.open` | `appId` del catálogo instalado | proceso vivo + ventana visible + foco (reutiliza la instancia que ya corre) |
 | enfocar ventana | `window.focus` | `windowId` (de `window.resolve`) | identidad + foreground |
@@ -185,7 +185,9 @@ con los argumentos delante:
 |---|---|---|
 | clic, tecla, texto, scroll, abrir | directo | D3: pulsar y escribir en apps no destruye |
 | clic cuyo `label` nombra un **canal de voz / llamada** (`canal de voz`, `voice channel`, `llamar`, `call`, `unirse a la llamada`, `join call`) | **confirma** | D15: alguien te oye; «voz pregunta antes y se queda» |
-| clic cuyo `label` es **enviar** (`enviar`, `send`) o `enter` con `target: message_composer` | **confirma** | llega a una persona (misma regla que `message.send`) |
+| clic cuyo `label` **empieza** por enviar, reenviar, invitar o responder (`send`, `forward`, `invite`, `reply`), o `enter`/`space` con `target: message_composer` | **confirma** | llega a una persona (misma regla que `message.send`) |
+| clic cuyo `label` (≤ 6 palabras) lleva un verbo destructivo (no guardar, descartar, papelera, quitar, vaciar, limpiar, eliminar, desinstalar) o comprar/pagar en cualquier etiqueta | **confirma** | no se deshace (revisión de seguridad v2) |
+| `delete` sin `target: text_field` | **confirma** | fuera de un campo de texto borra lo seleccionado |
 | bypass | todo directo | identidad §«dos modos» |
 
 La regla vive en `RiskPolicy.Evaluate(risk, mode, operation, arguments)`: el Kernel decide
@@ -517,17 +519,43 @@ estado se publica como «acting»).
 **Escribir y enviar.** El texto va con la grafía que dijo la persona, sin comillas. Sin foco en un campo de texto,
 primero se pulsa el campo de mensaje o el único editable. «mandalo / envialo / send it» es el acto enviar: Enter con
 `target: message_composer`, que `RiskPolicy` confirma siempre; un Enter en un campo de mensaje cuyo contenido la
-pantalla no expone (`value` nulo, distinto de `""`) también cuenta como envío y se pregunta antes.
+pantalla no expone (`value` nulo, distinto de `""`) también cuenta como envío y se pregunta antes. Un buscador que
+ya tiene otro texto se selecciona entero (`ctrl_a`) antes de escribir. Un paso de escritura es una sola línea.
+
+**Seguridad v2 (revisión 2026-10-07).**
+- La ventana de la aplicación es la que el provider resolvió para ella (`requested`), la de su ejecutable o la que
+  lleva su nombre como palabras enteras en el último segmento « - » del título; nunca VS Code, Visual Studio, un
+  editor, una terminal, una consola o BAXY si la persona no los nombró.
+- `input.key.press` e `input.text.type` llevan `window` (el hwnd de la vista sobre la que se decidieron): el provider
+  la trae al frente o no envía nada, también al confirmar un paso tras el «sí» con BAXY delante; escribir se para si
+  la ventana pierde el frente o se cancela; un texto con salto de línea o tabulador se rechaza. Si la misión nombra
+  una aplicación y la vista no es su ventana, nada se pulsa ni se escribe (`computer_use_window_not_application`).
+- Enter o espacio sobre enviar/responder/comentar, o sobre un campo sin nombre que no expone su valor, llevan
+  `target: message_composer`; Suprimir sobre un campo de texto lleva `target: text_field` (§2.1).
+- Ninguna entrada al motor (lector, objetivo libre, último recurso) toma una meta de quitar, descartar, tirar a la
+  papelera, cancelar o contratar una suscripción, alquilar, donar, vender, restablecer, limpiar, vaciar o salir de un
+  servidor, además de las de borrar, formatear, desinstalar, comprar o pagar.
+- Ir a un lugar nunca pulsa un interruptor (casilla, opción, conmutador, deslizador o un control on/off):
+  `changes_a_setting`.
 
 **Guardas.**
 - Sin clics sobre un control que cubre ≥ 80 % de la ventana (`control_covers_window`); el modelo no repite por
   tercera vez un acto que no hizo aparecer texto nuevo (`no_progress`), y el bucle marca fallido un acto ya hecho
   desde la misma pantalla cuando la pantalla vuelve a ella (`computer_use_no_progress`).
 - `page:` sólo juzga ventanas sin árbol de accesibilidad (≤ 1 control: CEF, canvas); donde hay controles, llegar es el
-  lugar seleccionado o en el título. Cuenta sólo un clic verificado que nombra el destino (o la entrada del menú que
-  abrió), medido contra el texto de la vista **justo antes de ese clic**: llega si cambió más de la mitad de las
-  líneas, o si la ventana quedó exactamente igual (un clic en el nombre del lugar que no cambia nada: ya estaba ahí).
-- El eco de lo que BAXY escribió (un buscador o su sugerencia) nunca cumple `control:X`: no prueba llegada.
+  lugar seleccionado, en el título, en el encabezado de la página (un texto, botón o vínculo con ese nombre exacto en
+  la zona superior y en ningún otro sitio: «Personalización > Colores») o un clic verificado en el control que lo
+  nombra o lo abre («Abre Tu biblioteca») tras el que la ventana cambió (≥ 40 % de controles nuevos) sin que la
+  selección se moviera a otro elemento (un valor elegido dentro de la página alcanzada no cuenta como movida). En
+  `page:` cuenta sólo un clic verificado que nombra el destino (o la entrada del menú que abrió), medido contra el
+  texto de la vista **justo antes de ese clic**: llega si cambió más de la mitad de las líneas. Una ventana que quedó
+  igual tras el clic **no** es llegada (la página puede no estar dibujada todavía); un lugar ya abierto lo dice su
+  selección, su título o, sin árbol, su dirección escrita.
+- Lo tecleado se juzga en pantalla, nunca por los recibos de las teclas: el campo enfocado que expone su valor debe
+  mostrarlo; un valor cortado (120 caracteres) es desconocido. El eco de lo que BAXY escribió (un buscador o su
+  sugerencia) nunca cumple `control:X`, y lo que un campo contiene no prueba llegada.
+- Un clic aprendido (procedimiento) se fija al único control de la vista actual con su nombre y se pulsa por
+  identidad; tras un clic fallido el paso del objetivo se busca de nuevo en la vista, nunca el mismo acto.
 - Las ventanas del shell (escritorio, barra de tareas) nunca son la ventana de una aplicación.
 - Una app abierta en frío se vuelve a mirar hasta 10 s mientras la ventana cambie o parezca de arranque (≤ 1 control
   accionable —un marco, un panel o una barra de dirección de sólo lectura no cuentan— y ≤ 5 líneas).

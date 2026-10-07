@@ -74,28 +74,85 @@ fallaba por un solo acto por pedido, sin búsqueda dentro de la app ni objetivos
 | Texto con la grafía dicha; «mandalo» es enviar; cursor en el campo antes de escribir; el eco no prueba llegada; tecleo por carácter | 2e06fa28 |
 | Enviar lo escrito siempre se pregunta antes (Enter en un campo de mensaje ilegible cuenta como envío) | 3ae1dc88 |
 | Tecleo a 3 ms por carácter (luego 35 ms: 5ac16f90) | e04bc54b |
-| Un clic en el nombre del lugar que deja la ventana igual: ya estaba ahí | e4254ef6 |
+| Un clic en el nombre del lugar que deja la ventana igual: ya estaba ahí (retirado en la revisión: 8f61d456) | e4254ef6 |
+| Una ventana elevada encontrada es la app abierta (`QueryFullProcessImageName`; s06: 30 s → ~1 s) | d3939711 |
+| La dirección escrita de una página sin árbol nombra dónde está (Steam en store.steampowered.com) | 4149e598 |
+| Composición fallida: frase honesta en el idioma de la persona, no «⚠ (código)» | 43060a1e, ecb80d30 |
+| «andá a Documentos y creá una carpeta llamada X» por la ruta tipada (c3) | 14b8e238, f311d3be |
+| Lector de misiones: crear, renombrar, buscar, elegir, reproducir, copiar/pegar, direcciones, cada una con su comprobación; segunda tanda no vista 28/28; verbo con pronombre no se pega al nombre | 5937a9f8, d58dccbf, 19eacf1f, 46702f23 |
+| Capturas de ventana en memoria (75 → 8 ms); abrir una ventana de un proceso que ya corría no es un lanzamiento (s04) | c0123a16 |
+| El eco de lo tecleado sólo descarta un control si se tecleó en una búsqueda o una dirección | ee5b5c18 |
+| Un clic por identidad prueba que la app abierta está dibujada (u3: 26 s → sin espera); arranque medido por lo accionable (Spotify) | 9c3f600d, c19115cd |
+| Un clic verificado en el control que abre el lugar llega a él («Abre Tu biblioteca», Spotify) | f00da879 |
+
+### Seguridad v2
+
+Revisión de seguridad del 2026-10-07, sobre lo que el motor puede pulsar o escribir sin que la persona lo vea venir.
+
+| Cambio | Commit |
+|---|---|
+| La ventana de la aplicación se reconoce por su proceso, su ejecutable o el último segmento « - » del título como palabras enteras; nunca VS Code, Visual Studio, un editor, una terminal, una consola o BAXY no nombrados (medido: «SteamLocalAdapter.cs - … - Visual Studio Code» era la primera ventana titulada «Steam») | fdd0b381, 2a98304a |
+| Teclas y texto atados a la ventana de la misión (`window`): el provider la trae al frente o no envía nada, también al confirmar tras el «sí» con BAXY delante; escribir se para si la ventana pierde el frente o se cancela; si la vista no es la ventana de la app nombrada, nada se pulsa ni se escribe (`computer_use_window_not_application`); un texto con salto de línea o tabulador se rechaza | 4e60cbec, 2cc6bd9a |
+| Enter o espacio sobre enviar/responder/comentar, o sobre un campo sin nombre que no expone su valor, llevan `target: message_composer` y preguntan; Suprimir sólo va directo con `target: text_field`, fuera de un campo de texto pregunta | 2a98304a, f54d657a |
+| `RiskPolicy`: enviar, reenviar, invitar o responder abren la etiqueta sea lo que siga; un verbo destructivo (no guardar, descartar, papelera, quitar, vaciar, limpiar, eliminar, desinstalar) en una etiqueta de ≤ 6 palabras pregunta; las etiquetas se pliegan sin caracteres de formato ni la pista «(Ctrl+…)» | f54d657a |
+| Ninguna entrada al motor (lector, objetivo libre del decisor, último recurso) toma una meta que quita, descarta, tira a la papelera, cancela o contrata una suscripción, alquila, dona, vende, restablece, limpia, vacía o sale de un servidor | 29ef7ca9 |
+| Ir a un lugar nunca pulsa un interruptor (casilla, opción, conmutador, deslizador, o un control on/off): `changes_a_setting` (medido: buscando «Colores» el modelo pulsó «Invertir colores» de la Lupa) | 72093a4a |
+| El modelo no pulsa un control que abre otra pestaña o ventana si el objetivo no lo pide (`opens_elsewhere`) | 15920d7f |
+
+### Correcciones de la revisión
+
+Falsos éxitos y esperas halladas al repasar el banco; cada una con su prueba de unidad.
+
+| Cambio | Commit |
+|---|---|
+| Lo tecleado se juzga en pantalla, nunca por los recibos de las teclas; un valor cortado (120 caracteres) es desconocido; lo que un campo contiene no prueba llegada; una ventana igual tras el clic no es llegada (la página puede no estar dibujada aún) | 8f61d456 |
+| Tecleo a 35 ms por carácter (medido en el Bloc de notas de Windows 11: a 3 ms «lista: pan» salía «lista:nnnn», a 20 ms «lista:ppan», desde 25 ms íntegro); «escribí X» sólo cuenta si el campo muestra X | 5ac16f90, 4e60cbec |
+| Llegar por un clic exige que la página cambie (≥ 40 % de controles nuevos) y que la selección no se haya movido a otro elemento (s04: «Imágenes» elegida; c5: tarjeta «Colores» con Personalización a la vista); un valor elegido dentro de la página alcanzada no la desmiente | c40a2658, 13b62ac3 |
+| El encabezado de la página nombra dónde está (Configuración: «Personalización > Colores») | 72093a4a |
+| Clics aprendidos fijados por identidad al único control de la vista con su nombre (u7 Reloj → Alarma: 30 s → 0,3 s); tras un clic fallido el paso se busca de nuevo por identidad, nunca el mismo acto; el menú que abrió el clic en el lugar sigue valiendo | c40a2658, b05e5b3b, e63c00a1, 66c9e6e0 |
+| Navegador: la dirección se confirma con Supr antes de Enter (autocompletado del historial, c4); la búsqueda y los resultados son los de la página, no la búsqueda de pestañas ni los marcadores del marco; sin `ctrl_k`; la mente recibe los rectángulos y una página que aún carga se vuelve a mirar (6 × 400 ms) | 15920d7f, 02cc24cb |
+| Un buscador con texto previo se selecciona entero (`ctrl_a`) antes de escribir (Configuración: «colorespantalla») | 13b62ac3 |
+| El final ve primero los valores y estados elegidos que comparten palabras con lo pedido, el valor antes que el ítem (c5: «Oscuro») | 3151339b, c40a2658 |
+| Ventanas sin árbol: el buscador escrito se pulsa por su línea OCR (WhatsApp); los botones de la barra de título no son contenido; una app que arranca se espera hasta 20 s y la postlectura del clic por texto mira hasta 1,5 s (Epic) | 3151339b, 35cef19d, bfba63d0 |
+| Crear o renombrar exige el nombre entero (`control:=X`) y lo tecleado; buscar exige un Enter o un clic en la sugerencia; «poné la primera», un clic que reproduce | c061bcdb, a4d5fb10 |
 
 ### Banco en vivo (última corrida de cada caso; verificación independiente)
 
-Turno = `latency_ms` del final; misión y modelo = `computer_use.end`. Detalle, corridas anteriores y comparación con
-la fase 4: `MEDICIONES.md` §«v2».
+Misión = `ms` de `computer_use.end`; turno = `latency_ms` del final. El primer turno de cada corrida incluye el
+arranque en frío de la App (≈ 5–8 s de bienvenida); en caliente, turno ≈ decisión 0,5–0,7 s + misión + final 1–2 s.
+Pedidos completos, corridas anteriores y comparación con la fase 4: `MEDICIONES.md` §«v2».
 
-| Caso | Pedido | Resultado | Turno | Misión (modelo) | Antes (fase 4) |
-|---|---|---|---|---|---|
-| s01 | en la calculadora calculá 37*12 (cerrada) | **logrado** — pantalla «444» | 4,4 s | 2,5 s (18 ms), 3 pasos | turno 41 s |
-| s02 | en el Reloj andá a Cronómetro | **logrado** — Cronómetro seleccionado | 4,6 s | 2,6 s (3 ms), 1 paso | turno 34,9 s |
-| s03 | en Configuración andá a Bluetooth y dispositivos | **logrado** — ítem seleccionado | 3,3 s | 1,5 s (4 ms), 1 paso | — |
-| s04 | en el Explorador de archivos andá a Descargas | **logrado** — Shell en Downloads | 6,4 s | 3,5 s (5 ms), 1 paso | — |
-| s05 | en el Panel de control abrí Programas | **logrado** — título «Programas» | 4,7 s | 2,9 s (12 ms), 2 pasos | 7,5 s («Sistema y seguridad») |
-| s06 | en el Administrador de tareas andá a Rendimiento | **límite honesto** — app elevada, dicho con esa causa | 33,6 s | ≈31,5 s, 1 paso | — |
-| s07 | abrí Paint y elegí la herramienta Texto | **logrado** — «Texto» activo (plan tipado, no misión) | 6,5 s | — | — |
-| s11 | en Discord andá al canal Cotele → «no» | **logrado** — BUSCAR halló el canal, preguntó antes de unirse; no se unió | 6,8 s a la pregunta | ≈3,1 s (0 ms), 3 pasos + el confirmado | motor falló; ruta tipada 17,2 s |
-| s12 | en Steam andá a la biblioteca | **logrado** — captura: BIBLIOTECA | 5,5 s | 3,8 s (662 ms), 2 pasos | turno 11,2 s, misión 9,3 s |
-| s14 | en Discord mandale a Ron92 "prueba BAXY 14" → «no» | **logrado** — preguntó antes de enviar; no se envió (ruta tipada) | 9,7 s a la pregunta | — | — |
-| c1 | abrí el Bloc de notas, escribí "lista: pan", apretá Enter y escribí "leche" | **fallido** — quedó «lista:nnnnleche» y se dio por logrado; en arreglo | 7,9 s | 3,2 s (0 ms), 4 pasos | — |
-| c3 | en el Explorador de archivos andá a Documentos y creá una carpeta llamada baxy-prueba | **fallido** — el plan no llega a la misión (`internal_code;retry_exhausted`); en arreglo | 8,5 s | — | — |
-| c6 | en Discord abrí el chat con Ron92, escribí "prueba BAXY C6" y mandalo → «sí» | **logrado** — preguntó antes de enviar; enviado con el «sí» | 3,4 s a la pregunta | 1,8 s (5 ms), 2 pasos | — |
-| c7 | en Discord andá al canal Cotele y después en Steam andá a la tienda → «no» | **fallido** — falso negativo en Steam (ya estaba en la Tienda); arreglado en e4254ef6, **re-corrida pendiente** | 11,2 s | ≈9,2 s (1,0 s), 6 pasos | — |
+| Caso | Pedido | Resultado | Misión / turno | Antes |
+|---|---|---|---|---|
+| s01 | Calculadora 37*12 (cerrada) | **logrado** — «444» | 3,1 / 8,7 s (App en frío) | fase 4: turno 41 s |
+| s02 | Reloj → Cronómetro | **logrado** | 2,3 / 4,2 s | fase 4: turno 34,9 s |
+| s03 | Configuración → Bluetooth y dispositivos | **logrado** (ya estaba) | 0,4 / 2,4 s | — |
+| s04 | Explorador → Descargas | **logrado** | 12,7 / 15,4 s | éxito falso, corregido |
+| s05 | Panel de control → Programas | **logrado** | 2,9 / 4,9 s | fase 4: 7,5 s («Sistema y seguridad») |
+| s06 | Administrador de tareas → Rendimiento | **límite honesto** — ventana de administrador | 4,5 s | 34 s |
+| s07 | Paint → herramienta Texto | **logrado** | 3,9 / 6,1 s | — |
+| s11 | Discord → canal Cotele | **logrado** | 1,0 / 2,9 s | fase 4: el motor falló; ruta tipada 17,2 s |
+| s12 | Steam → biblioteca | **logrado** | 3,4 / 5,5 s | fase 4: turno 11,2 s |
+| s14 | Discord «mandale a Ron92 …» → «no» | **logrado** — pregunta antes de enviar; «no» cancela | — | — |
+| c1 | Bloc de notas «lista: pan», Enter, «leche» | **logrado** — texto verificado en el editor | 4,1 / 6,7 s | lista corrupta dada por lograda |
+| c2 | Calculadora 12*12 → copiar → pegar en el Bloc de notas | **logrado** — «144» en el editor | 6,1 / 8,5 s | — |
+| c3 | Explorador → Documentos y crear carpeta baxy-prueba | **logrado** (ruta tipada) | 3,3 s | el plan no llegaba |
+| c4 | Opera: pestaña nueva → es.wikipedia.org → buscar Ñuñoa → Historia | **fallido** — 2/4 sub-objetivos (autocompletado de la barra); arreglo integrado sin probar en vivo | — | — |
+| c5 | Configuración → Personalización → Colores + «decime si el modo es claro u oscuro» | **logrado** — «Oscuro» | 2,3 / 4,9 s | — |
+| c6 | Discord chat Ron92, escribir y mandar → «sí» | **logrado** — pregunta; «sí» envía | — | — |
+| c7 | Discord canal Cotele y después Steam tienda | **logrado** | 6,4 / 8,0 s | falso negativo |
+| u1 | Spotify → biblioteca | **logrado** | 19,3 / 22,5 s (Spotify en frío) | — |
+| u2 | Microsoft Store → Juegos | **logrado** | 14,2 s (vista UIA de 4 s) | — |
+| u3 | Fotos → Favoritos | **logrado** | 4,8 / 6,8 s | — |
+| u4 | Epic Games → biblioteca | **fallido** — pantalla de carga larga, clic por texto sin efecto | — | — |
+| u5 | Excel → libro en blanco | **logrado** | 12 s | — |
+| u6 | WhatsApp → un chat | **fallido** — el texto no llega al buscador | — | — |
+| u7 | Reloj → Alarma | **logrado** | 3,0 / 4,7 s | 33 s (clic aprendido sin identidad) |
+| u8 | Configuración → Sistema → Pantalla | **logrado** | 4,4 / 6,1 s | — |
+| u9 | Spotify «go to Search» (inglés) | **logrado** | 8,7 / 10,7 s | — |
 
-Pendiente: re-correr c7 sobre e4254ef6; arreglar y re-correr c1 (contenido escrito) y c3 (camino del plan).
+Total del banco principal: **21/24 correctos** (s06 cuenta como límite honesto correcto), 3 fallos (c4, u4, u6).
+Corpus del lector: 165 órdenes es/en → 161 misiones verificables + 4 cubiertas por la ruta tipada (D21).
+
+Pendiente: re-correr c4 en vivo con el Supr de la barra de direcciones; Epic (u4: carga larga) y WhatsApp (u6: el
+texto no llega al buscador) quedan como límites medidos.
