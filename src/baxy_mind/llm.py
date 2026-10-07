@@ -18543,6 +18543,17 @@ def compose_visible_defect(
     calendar = _calendar_contradiction(stripped, user_text, _reply_calendar_moment(_situation_from_facts(facts)))
     if calendar:
         return calendar
+    if kind == "operation" and situation.get("operation") == "mission.computer.use":
+        # cu-r16: every word of a mission final comes from the facts, the person's words or BAXY's own vocabulary.
+        # Judged after the named vetoes, so a draft with one of them is told that one first.
+        from . import computer_use as _computer_use
+
+        if _computer_use.ungrounded_word(
+            _accent_folded_with_punctuation(stripped),
+            _computer_use.project_seen(_merged_observed(situation), "es"),
+            " ".join(part for part in (user_text, said) if part),
+        ) is not None:
+            return "unknown_word"
     # M62 (v3e2-final F-p07-t4 «Have a great day, BAXY!»): BAXY never calls the person by its own name. Judged last,
     # so a draft with another defect is told that one first.
     return "person_called_baxy" if visible_reply_calls_the_person_baxy(stripped) else ""
@@ -28575,6 +28586,14 @@ class LlmRuntime:
                     "Name the swatch you chose exactly as seen.chosenShade.chosen writes it, as the shade of the colour asked."
                     if response_language == "en"
                     else "Nombra la muestra que elegiste tal como la escribe seen.chosenShade.chosen, como el tono del color pedido."
+                ),
+                # cu-r16 (voice audit 2026-10-07: «Abrazé a la sección…», «Ya estamos en…», «mis playlists»).
+                "unknown_word": (
+                    "Use only words from seen and the person's request, in your own first person singular "
+                    "(«I got to…», «I chose…», «I typed…»)."
+                    if response_language == "en"
+                    else "Usá sólo palabras de seen y del pedido, en tu primera persona singular "
+                    "(«Llegué a…», «Elegí…», «Escribí…»)."
                 ),
                 "joined_claimed": (
                     "You did NOT join or open the channel: say you found it and ask whether the person wants you to join; never say you joined or entered."

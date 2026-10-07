@@ -33,6 +33,8 @@ from __future__ import annotations
 import json
 import re
 import unicodedata
+from functools import lru_cache
+from pathlib import Path
 from typing import Any, Iterable
 
 from . import effect_intent, operation_floor
@@ -2529,6 +2531,57 @@ def mission_defect(folded_reply: str, seen: dict) -> str | None:
         return "extra_claim"
     if _NEW_STATE_CLAIM.search(folded_reply) and not _toggles_something(seen):
         return "extra_claim"
+    return None
+
+
+# cu-r16 (voice audit 2026-10-07: «Abrazé a la sección de Bluetooth», «donde busco la opción de Wi-Fi», «Ya estamos
+# en…», «mis playlists»): every word of a mission final comes from the turn's facts or from BAXY's own small vocabulary
+# of arrival, act and function words (data/computer_use_words.v1.json). A word from neither was never observed.
+_WORDS_DATA = Path(__file__).resolve().parent / "data" / "computer_use_words.v1.json"
+_WORD = re.compile(r"[a-z0-9]+")
+
+
+@lru_cache(maxsize=1)
+def _own_words() -> tuple[frozenset[str], int]:
+    data = json.loads(_WORDS_DATA.read_text(encoding="utf-8"))
+    words: set[str] = set()
+    for family in ("function", "own"):
+        for listed in data[family].values():
+            words.update(fold(word) for word in listed)
+    return frozenset(words), int(data["stemLength"])
+
+
+def _fact_strings(value: object) -> Iterable[str]:
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for item in value.values():
+            yield from _fact_strings(item)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            yield from _fact_strings(item)
+
+
+def _folded_words(value: object) -> list[str]:
+    return _WORD.findall(fold(value))
+
+
+def ungrounded_word(folded_reply: str, seen: dict, said: str = "") -> str | None:
+    """The first word of a mission final that neither the facts (seen, the person's words) nor BAXY's own vocabulary
+    hold; a word sharing its first ``stemLength`` letters with a fact word is the same word in another form
+    («calculé» from «calculá»). None when every word is grounded."""
+
+    own, stem_length = _own_words()
+    facts: set[str] = set()
+    for text in (*_fact_strings(seen), said):
+        facts.update(_folded_words(text))
+    stems = {word[:stem_length] for word in facts if len(word) >= stem_length}
+    for word in _folded_words(folded_reply):
+        if word in own or word in facts:
+            continue
+        if len(word) >= stem_length and word[:stem_length] in stems:
+            continue
+        return word
     return None
 
 
