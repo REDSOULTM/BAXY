@@ -529,7 +529,8 @@ def _explorer_view(*, title: str, item_zone: str, selected: bool) -> dict:
         "window": {"title": title, "process": "explorer"},
         "controls": [
             {"i": 0, "kind": "TreeItem", "name": "Descargas", "zone": "L"},
-            {"i": 1, "kind": "ListItem", "name": "Descargas", "zone": item_zone, "state": "selected" if selected else ""},
+            {"i": 1, "kind": "ListItem", "name": "Descargas", "zone": item_zone, "state": "selected" if selected else "",
+             "itemType": "Carpeta de archivos"},
             {"i": 2, "kind": "ListItem", "name": "Documentos", "zone": "T"},
             {"i": 3, "kind": "Edit", "name": "Buscar en Inicio", "zone": "TR"},
         ],

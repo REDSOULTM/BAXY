@@ -77,11 +77,11 @@ def test_a_name_inside_a_message_does_not_make_the_place_ambiguous() -> None:
     assert computer_use._controls_naming(discord, ("general",), None, True) == 0
 
 
-def _programs_view(item_name: str, *, extra: list[dict] | None = None) -> dict:
+def _programs_view(item_name: str, *, extra: list[dict] | None = None, item_type: str = "") -> dict:
     return {
         "window": {"title": "Inicio - Explorador de archivos", "process": "explorer"},
         "controls": [
-            {"i": 0, "kind": "ListItem", "name": item_name, "zone": "C", "state": "selected"},
+            {"i": 0, "kind": "ListItem", "name": item_name, "zone": "C", "state": "selected", "itemType": item_type},
             {"i": 1, "kind": "ListItem", "name": "Documentos", "zone": "C"},
             *(extra or []),
         ],
@@ -96,16 +96,17 @@ def test_enter_is_never_the_default_on_a_file_that_runs_or_where_removal_is_offe
     assert computer_use.deterministic_step(goal="ir a Juego.lnk", view=_programs_view("Juego.lnk"), history=shortcut) is None
     # A list of programs with «Desinstalar» on offer: the step is the model's.
     chosen = [_ok(1, "input.visible.click", label="Hades", index=0)]
-    programs = _programs_view("Hades", extra=[{"i": 2, "kind": "Button", "name": "Desinstalar"}])
+    programs = _programs_view("Hades", extra=[{"i": 2, "kind": "Button", "name": "Desinstalar"}], item_type="Carpeta de archivos")
     assert computer_use.deterministic_step(goal="ir a hades", view=programs, history=chosen) is None
     # A plain folder in a view without removal keeps its Enter; «Borradores» is no removal.
-    folder = _programs_view("Hades", extra=[{"i": 2, "kind": "Button", "name": "Borradores"}])
+    folder = _programs_view("Hades", extra=[{"i": 2, "kind": "Button", "name": "Borradores"}], item_type="Carpeta de archivos")
     step = computer_use.deterministic_step(goal="ir a hades", view=folder, history=chosen)
     assert step is not None and step["operation"] == "input.key.press" and step["arguments"] == {"key": "enter"}
 
 
 def test_a_tile_in_the_left_column_is_content_when_its_row_goes_on_out_of_it() -> None:
-    tile = {"i": 0, "kind": "ListItem", "name": "Descargas", "zone": "L", "rect": _rect(10, 200, 120, 100), "state": "selected"}
+    tile = {"i": 0, "kind": "ListItem", "name": "Descargas", "zone": "L", "rect": _rect(10, 200, 120, 100), "state": "selected",
+            "itemType": "Carpeta de archivos"}
     neighbour = {"i": 1, "kind": "ListItem", "name": "Documentos", "zone": "C", "rect": _rect(400, 220, 120, 100)}
     lower = {"i": 1, "kind": "ListItem", "name": "Documentos", "zone": "C", "rect": _rect(400, 320, 120, 100)}
     grid = {"window": {"title": "Inicio - Explorador de archivos", "process": "explorer"}, "controls": [tile, neighbour]}
