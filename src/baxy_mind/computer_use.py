@@ -541,7 +541,12 @@ def deterministic_step(
             arguments = retried.get("arguments") or {}
             same_index = isinstance(arguments, dict) and arguments.get("index") is not None and arguments.get("index") == last.get("index")
             same_label = isinstance(arguments, dict) and arguments.get("index") is None and fold(arguments.get("label")) == fold(last.get("label"))
-            return None if same_index or same_label else retried
+            if same_index or same_label:
+                # The goal's own control is the one that failed (measured on Discord: «Cotele» clicked, nothing
+                # changed): the place is looked up the way the window offers, as a person would.
+                destination = _destination(goal)
+                return _find_step(destination, view, history) if destination else None
+            return retried
     reason = "el objetivo lo dice"
     if folded_goal == "enviar":
         # «… y mandalo»: sending what was written is Enter in the message box, always marked so RiskPolicy asks first

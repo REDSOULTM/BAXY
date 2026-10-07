@@ -287,7 +287,10 @@ def test_deterministic_steps_follow_the_goal_family_and_the_view() -> None:
     failed = [{"step": 1, "operation": "input.visible.click", "label": "Biblioteca", "ok": False}]
     assert computer_use.deterministic_step(goal="ir a la biblioteca", view=VIEW, history=failed)["arguments"] == {"label": "Biblioteca", "index": 1}
     failed_again = [{"step": 1, "operation": "input.visible.click", "label": "Biblioteca", "index": 1, "ok": False}]
-    assert computer_use.deterministic_step(goal="ir a la biblioteca", view=VIEW, history=failed_again) is None
+    # The same act failed again: the place is looked up instead (the window's search), never clicked once more.
+    again = computer_use.deterministic_step(goal="ir a la biblioteca", view=VIEW, history=failed_again)
+    assert again is not None and again["arguments"] != {"label": "Biblioteca", "index": 1}
+    assert again["arguments"].get("text") in (None, "biblioteca")
     toggle_view = {"window": {"title": "Configuración"}, "controls": [{"i": 4, "kind": "Button", "name": "Modo avión", "state": "off"}], "text": {}}
     on = computer_use.deterministic_step(goal="activar modo avion", view=toggle_view, history=[])
     assert on["arguments"] == {"label": "Modo avión", "index": 4}
@@ -1069,7 +1072,8 @@ def test_after_a_failed_learned_click_the_goal_step_is_found_again_by_identity()
     step = computer_use.deterministic_step(goal="ir a sistema", view=view, history=failed)
     assert step is not None and step["arguments"] == {"label": "Sistema", "index": 7}
     again = [{"step": 1, "operation": "input.visible.click", "label": "Sistema", "index": 7, "ok": False}]
-    assert computer_use.deterministic_step(goal="ir a sistema", view=view, history=again) is None
+    looked_up = computer_use.deterministic_step(goal="ir a sistema", view=view, history=again)
+    assert looked_up is None or looked_up["arguments"] != {"label": "Sistema", "index": 7}
 
 
 def test_a_menu_with_ocr_noise_still_gives_its_first_entry_and_the_window_body_is_never_clicked() -> None:
@@ -1426,3 +1430,18 @@ def test_a_search_button_that_opened_its_box_is_typed_into() -> None:
                 "surfaceChanged": True}]
     step = computer_use.deterministic_step(goal="ir a cotele", view=view, history=clicked)
     assert step is not None and step["operation"] == "input.text.type" and step["arguments"] == {"text": "cotele"}
+
+
+def test_when_the_places_own_control_failed_the_place_is_looked_up() -> None:
+    view = {
+        "window": {"title": "Discord", "process": "Discord", "focused": None},
+        "controls": [
+            {"i": 2, "kind": "TreeItem", "name": "Cotele"},
+            {"i": 3, "kind": "Button", "name": "Buscar o iniciar una conversación"},
+        ],
+        "text": {},
+    }
+    failed = [{"step": 1, "operation": "input.visible.click", "label": "Cotele", "index": 2, "ok": False,
+               "error": "visible_button_postread_unchanged"}]
+    step = computer_use.deterministic_step(goal="ir a cotele", view=view, history=failed)
+    assert step is not None and step["arguments"].get("label") == "Buscar o iniciar una conversación"
