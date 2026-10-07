@@ -684,7 +684,7 @@ internal static partial class VisibleControlSurface
         return Elevated(processId) != false;
     }
 
-    private static bool? Elevated(int processId)
+    internal static bool? Elevated(int processId)
     {
         nint process = OpenProcess(0x1000, false, unchecked((uint)processId));
         if (process == 0)
