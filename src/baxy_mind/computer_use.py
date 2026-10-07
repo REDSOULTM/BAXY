@@ -533,12 +533,17 @@ def deterministic_step(
             return {"operation": "input.visible.click", "arguments": arguments, "reason": "pongo el cursor donde se escribe"}
         return {"operation": "input.text.type", "arguments": {"text": text}, "reason": reason}
     if folded_goal.startswith("ir a la direccion "):
-        # «andá a es.wikipedia.org»: the browser's address bar, the address, Enter.
+        # «andá a es.wikipedia.org»: the browser's address bar, the address, Delete, Enter. The bar completes what is
+        # typed with a page of the history, selected after the caret (measured on Opera: «es.wikipedia.org» became
+        # «…/wiki/Curicó» and Enter went there); Delete drops that completion and nothing else.
         address = typed_text(goal[len("ir a la direccion "):]).strip()
         if not _steps_ok(history, "input.key.press", key="ctrl_l"):
             return {"operation": "input.key.press", "arguments": {"key": "ctrl_l"}, "reason": reason}
         if not _steps_ok(history, "input.text.type"):
             return {"operation": "input.text.type", "arguments": {"text": address}, "reason": reason}
+        if not _steps_ok(history, "input.key.press", key="delete"):
+            # ctrl_l put the keyboard on the address field: Delete erases characters there, never a selected item.
+            return {"operation": "input.key.press", "arguments": {"key": "delete", "target": "text_field"}, "reason": reason}
         if not _steps_ok(history, "input.key.press", key="enter"):
             return {"operation": "input.key.press", "arguments": key_arguments("enter", view), "reason": reason}
         return None
@@ -609,6 +614,9 @@ _SEARCH_NAME = re.compile(
     r"\b(?:busc\w*|busqueda|search\w*|find|filtr\w*|filter\w*|a donde quieres ir|ir a|go to|jump to|quick switcher)\b"
 )
 _ADDRESS_NAME = re.compile(r"\b(?:direccion\w*|address|url)\b")
+# What a browser's address field holds on a site: «https://es.wikipedia.org/…», «es.wikipedia.org/wiki/…» (a folder
+# path or «Este equipo > Descargas» is a file explorer's).
+_WEB_ADDRESS = re.compile(r"^(?:https?://)?(?:[\w-]+\.)+[^\W\d_]{2,}(?::\d+)?(?:[/?#]|$)")
 _SEARCH_KINDS = ("Edit", "ComboBox", "Button", "ListItem")
 _FIELD_KINDS = frozenset({"Edit", "ComboBox"})
 # What a search shows its results as, best first; the field itself is never a result.
@@ -690,8 +698,67 @@ def _focused_field(view: dict) -> dict | None:
     return None
 
 
+def _web_browser(view: dict) -> bool:
+    """The window is a web browser showing a site: a field named as the address holds a web address."""
+
+    controls = view.get("controls") if isinstance(view, dict) else None
+    focused = _focused(view)
+    candidates = [*(controls if isinstance(controls, list) else []), *([focused] if focused is not None else [])]
+    return any(
+        isinstance(control, dict) and control.get("kind") in _FIELD_KINDS
+        and _ADDRESS_NAME.search(fold(control.get("name"))) is not None
+        and _WEB_ADDRESS.match(str(control.get("value") or "").strip()) is not None
+        for control in candidates
+    )
+
+
+def _area(rect: object) -> float:
+    try:
+        return max(float(rect["w"]), 0.0) * max(float(rect["h"]), 0.0)  # type: ignore[index]
+    except (KeyError, TypeError, ValueError):
+        return 0.0
+
+
+def _page(view: dict) -> dict | None:
+    """The web page in a browser's view: its largest document, when it is the size of a page (a quarter of the
+    window; 200×150 without the window's rectangle). None while the page is not exposed (measured on Opera loading:
+    only a 22×22 «Cargando…» document beside the frame)."""
+
+    controls = view.get("controls") if isinstance(view, dict) else None
+    documents = [
+        control for control in (controls if isinstance(controls, list) else [])
+        if isinstance(control, dict) and control.get("kind") == "Document" and _area(control.get("rect")) > 0
+    ]
+    if not documents:
+        return None
+    page = max(documents, key=lambda control: _area(control.get("rect")))
+    rect = page["rect"]
+    window = view.get("window") if isinstance(view, dict) else None
+    window_area = _area(window.get("rect")) if isinstance(window, dict) else 0.0
+    if window_area > 0:
+        return page if _area(rect) >= window_area / 4 else None
+    return page if float(rect["w"]) >= 200 and float(rect["h"]) >= 150 else None
+
+
+def _of_the_page(view: dict, control: dict) -> bool:
+    """A control is the window's own unless the window is a web browser: there only what lies inside the page and
+    comes after it in the tree is the page's. The tab strip's «Buscar pestañas», the bookmarks and the side bar lie
+    outside it; the browser's own pop-ups (its tab search) are drawn over it but listed before it (measured on Opera)."""
+
+    controls = view.get("controls") if isinstance(view, dict) else None
+    if not _web_browser(view) or not any(isinstance(item, dict) and item.get("rect") for item in controls or []):
+        # Not a browser, or a view without rectangles: nothing tells the frame from the page.
+        return True
+    page = _page(view)
+    if page is None or not _inside(control.get("rect"), page.get("rect")):
+        return False
+    position, page_position = control.get("i"), page.get("i")
+    return not (isinstance(position, int) and isinstance(page_position, int)) or position > page_position
+
+
 def _search_affordance(view: dict, history: list[dict]) -> dict | None:
-    """The search field or button of the window not used yet in this sub-goal, fields first."""
+    """The search field or button of the window not used yet in this sub-goal, fields first; in a web browser, the
+    page's own (measured on Opera: the tab search was clicked and «Ñuñoa» typed into it)."""
 
     controls = view.get("controls") if isinstance(view, dict) else None
     if not isinstance(controls, list):
@@ -700,10 +767,14 @@ def _search_affordance(view: dict, history: list[dict]) -> dict | None:
         control for control in controls
         if isinstance(control, dict) and control.get("kind") in _SEARCH_KINDS and _is_search_field(control)
         and not _steps_ok(history, "input.visible.click", label=str(control.get("name") or ""))
+        and _of_the_page(view, control)
     ]
     found.sort(key=lambda control: _SEARCH_KINDS.index(str(control.get("kind"))))
     if found:
         return found[0]
+    if _web_browser(view):
+        # The written lines of a browser mix the frame with the page (OCR has no tree to tell them apart).
+        return None
     # A window that exposes no tree still writes its search box (measured on WhatsApp: «Buscar un chat o iniciar uno
     # nuevo» read by OCR, nothing in UIA): the written line is clicked like the field.
     written = [
@@ -741,11 +812,15 @@ def _result_naming(view: dict, target: str, history: list[dict]) -> dict[str, ob
         if isinstance(control, dict) and control.get("kind") not in _FIELD_KINDS and control.get("kind") != "Document"
         and label_names(target, str(control.get("name") or ""))
         and not _steps_ok(history, "input.visible.click", label=str(control.get("name") or ""))
+        and _of_the_page(view, control)
     ]
     if named:
+        # A result first (a list item, a link…), and among the results the one that is exactly the name: «Ñuñoa del
+        # Mar» before «Festival de Ñuñoa», never the place whose name only contains it.
         named.sort(key=lambda control: (
-            _RESULT_KINDS.index(str(control.get("kind"))) if control.get("kind") in _RESULT_KINDS else len(_RESULT_KINDS),
+            control.get("kind") not in _RESULT_KINDS,
             fold(control.get("name")) != fold(target),
+            _RESULT_KINDS.index(str(control.get("kind"))) if control.get("kind") in _RESULT_KINDS else len(_RESULT_KINDS),
         ))
         return _click(named[0], "el resultado de la búsqueda")
     # A line equal to the typed name is the field's own echo as often as a result; the new lines first.
@@ -801,7 +876,9 @@ def _find_step(target: str, view: dict, history: list[dict]) -> dict[str, object
         affordance = _search_affordance(view, history)
         if affordance is not None:
             return _click(affordance, _REASON_FIND)
-    for key in _SEARCH_KEYS:
+    # In a web browser ctrl_k searches the web from the address bar, not the page: only the page's find (ctrl_f).
+    keys = ("ctrl_f",) if _web_browser(view) else _SEARCH_KEYS
+    for key in keys:
         if not any(step.get("operation") == "input.key.press" and step.get("key") == key for step in history):
             return _key(key)
     return _scroll_step(view, history)
@@ -989,8 +1066,14 @@ def _destination(goal: str | None) -> str:
 # The refusals the model gets one more try at, with the refusal in front of it (contract §4.4).
 _RETRIED = frozenset({
     "label_not_visible", "evidence_not_visible", "already_open", "application_unknown", "control_covers_window",
-    "no_progress",
+    "no_progress", "opens_elsewhere",
 })
+# A control that opens another tab or window: the mission's window would stop being the one in front (measured on
+# Opera: the model clicked «Nueva pestaña» while searching a page and the mission went on in an empty tab).
+_OPENS_ELSEWHERE = re.compile(
+    r"\b(?:(?:nueva|nuevo|new)\s+(?:pestana|ventana|tab|window)|(?:pestana|ventana)\s+nueva|open\s+in\s+new)\b"
+)
+_ELSEWHERE_WORDS = re.compile(r"\b(?:pestana|ventana|tab|window)s?\b")
 # A control this much of its window is the window's body (a document, a web view, a canvas), not a place to go.
 _COVERS_WINDOW = 0.8
 
@@ -1087,6 +1170,9 @@ def _checked_act(
         if not label:
             return _none("el clic no nombra ningún control")
         control = find_control(view, label, index)
+        clicked = str(control.get("name") or label) if control is not None else label
+        if _OPENS_ELSEWHERE.search(fold(clicked)) and not _ELSEWHERE_WORDS.search(fold(goal)):
+            return _none(f"«{clicked[:40]}» abre otra pestaña o ventana y el objetivo no lo pide", code="opens_elsewhere")
         if control is not None:
             arguments: dict[str, object] = {"label": str(control.get("name") or label)}
             if isinstance(control.get("i"), int):
