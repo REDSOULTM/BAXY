@@ -789,6 +789,9 @@ def decide_step(
     ``application`` and ``success_check`` are the current sub-goal's
     (``subgoal`` of ``subgoal_count``, 0-based) and ``history`` its steps."""
 
+    # «… y decime si está activado» rides on a single mission's goal for the final to answer; the steps are the
+    # goal's, never the question's («escribir hola; y responder: …» types «hola»).
+    goal = goal.split(QUESTION_MARK, 1)[0]
     # Deterministic first: the application named by the request is not in
     # front and nothing was done yet → bring it to the front (app.open reuses a
     # running window). No model needed for what the request already says.

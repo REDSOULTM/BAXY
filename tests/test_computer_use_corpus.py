@@ -303,7 +303,11 @@ def test_a_new_tab_an_address_a_search_and_a_section_of_the_page() -> None:
     ]
     assert steps[0][2] == "stepDone:input.key.press:ctrl_t"
     assert steps[1][2] == "title:wikipedia"
-    assert steps[2][2].startswith("title:nunoa|")
+    # The page titled with the name counts once this sub-goal submitted the search (a title that said it already does
+    # not).
+    assert steps[2][2].split("|")[:2] == [
+        "title:nunoa&stepDone:input.key.press:enter", "title:nunoa&stepDone:input.visible.click:nunoa",
+    ]
     assert "stepDone:input.visible.click:historia" in steps[3][2].split("|")
 
 
@@ -312,9 +316,12 @@ def test_a_closing_question_is_split_off_and_answered_by_the_final() -> None:
     mission = missions.mission_request(said, APPS)
     assert [step.goal for step in mission.steps] == ["ir a personalizacion", "ir a colores"]
     assert mission.goal.endswith(missions.QUESTION_MARK + "decime si el modo es claro u oscuro")
-    # A single clause with a question is one sub-goal, so the question rides on the goal and not on the step.
+    # A single clause with a question stays a single mission (its own budget, not a chain link's thirty seconds):
+    # the question rides on the goal, and the loop's steps read the goal without it.
     single = missions.mission_request("en Configuración andá a Colores y decime si el modo es claro u oscuro", APPS)
-    assert [step.goal for step in single.steps] == ["ir a colores"]
+    assert single.steps == () and "steps" not in single.arguments()
+    assert single.goal == "ir a colores" + missions.QUESTION_MARK + "decime si el modo es claro u oscuro"
+    assert single.success_check.startswith("control:colores:selected|")
     seen = computer_use.project_seen({"goal": mission.goal, "reached": True, "steps": []}, "es")
     assert seen["goal"] == "ir a personalizacion; luego ir a colores"
     assert seen["question"] == "decime si el modo es claro u oscuro"
@@ -325,9 +332,11 @@ def test_a_closing_question_is_split_off_and_answered_by_the_final() -> None:
 
 def test_created_and_renamed_items_keep_their_names_as_said() -> None:
     created = missions.mission_request("en el Explorador creá una carpeta llamada Fotos Viejas", APPS)
-    assert (created.goal, created.success_check) == ("crear carpeta Fotos Viejas", "control:fotos viejas")
+    assert (created.goal, created.success_check) == (
+        "crear carpeta Fotos Viejas", "control:=fotos viejas&stepDone:input.text.type:fotos viejas",
+    )
     renamed = missions.mission_request("en el Explorador renombrá la carpeta Borrador a Final", APPS)
-    assert (renamed.goal, renamed.success_check) == ("renombrar Borrador a Final", "control:final")
+    assert (renamed.goal, renamed.success_check) == ("renombrar Borrador a Final", "control:=final&stepDone:input.text.type:final")
 
 
 _VIEW_SEARCH = {
@@ -377,3 +386,65 @@ def test_every_mission_of_the_corpus_grounds_against_the_catalog_schema() -> Non
         if _ground_explicit_arguments("mission.computer.use", text, CHAIN_SCHEMA, APPS) is None
     ]
     assert ungrounded == []
+
+
+# --- revisión 2026-10-07: comprobaciones que pasaban en la primera mirada, y lecturas que perdían lo dicho
+
+
+def _check(text: str) -> str:
+    mission = missions.mission_request(text, APPS)
+    assert mission is not None and mission.success_check, text
+    return mission.success_check
+
+
+def test_a_created_or_renamed_item_is_its_whole_name_typed_in_this_sub_goal() -> None:
+    # The old #general, or «informe2» holding «informe», was there at the first look: neither is the item made.
+    assert _check("en Discord creá un canal llamado general") == "control:=general&stepDone:input.text.type:general"
+    assert _check("en el Explorador renombrá informe2 a informe") == "control:=informe&stepDone:input.text.type:informe"
+
+
+def test_a_search_is_never_the_title_alone() -> None:
+    # A window already titled «Duki» before the search is no search done.
+    for term in _check("en Spotify buscá Duki").split("|"):
+        assert "stepDone:" in term, term
+
+
+def test_playing_needs_an_act_that_started_it_not_any_click() -> None:
+    alone = _check("en Spotify poné la primera").split("|")
+    assert all(not term.endswith("stepDone:input.visible.click") and not term.endswith("stepDone:input.key.press")
+               for term in alone), alone
+    assert "control:pausa&stepDone:input.visible.click:reproducir" in alone
+    assert "control:pausa&stepDone:input.key.press:enter" in alone
+    # After a search, the result clicked carries the name searched.
+    played = _steps("en Spotify buscá Duki y poné la primera")[1][2].split("|")
+    assert "control:pausa&stepDone:input.visible.click:duki" in played
+
+
+def test_touching_a_word_that_is_also_a_place_clicks_the_place() -> None:
+    assert missions.read_clause("tocá Inicio")[0] == "hacer clic en inicio"
+    assert "stepDone:input.visible.click:inicio" in missions.read_clause("tocá Inicio")[1].split("|")
+    assert missions.read_clause("tap Home")[0] == "hacer clic en home"
+    # The key when the key is said, or with a verb that only presses.
+    assert missions.read_clause("tocá la tecla Inicio") == ("apretar inicio", "stepDone:input.key.press:home")
+    assert missions.read_clause("apretá inicio") == ("apretar inicio", "stepDone:input.key.press:home")
+    assert missions.read_clause("dale enter") == ("apretar enter", "stepDone:input.key.press:enter")
+
+
+def test_the_loop_reads_a_single_missions_goal_without_its_question() -> None:
+    view = {"window": {"title": "Bloc de notas", "focused": {"kind": "Document", "name": "Editor de texto", "value": ""}},
+            "controls": [{"i": 0, "kind": "Document", "name": "Editor de texto"}], "text": {}}
+    goal = "escribir Hola" + missions.QUESTION_MARK + "decime qué dice"
+    step = computer_use.decide_step(None, objective=goal, goal=goal, application=None, success_check=None, view=view,
+                                    history=[], budget_left=5, application_names=())
+    assert step["arguments"] == {"text": "Hola"}
+
+
+def test_a_check_names_what_was_said_as_the_shell_folds_it() -> None:
+    # The reader folds «Straße» to «strasse»; the shell (FormD, ToLowerInvariant) to «straße».
+    assert missions.check_fold("Straße Ñandú") == "straße nandu"
+    assert _check("en el Explorador creá una carpeta llamada Straße") == "control:=straße&stepDone:input.text.type:straße"
+
+
+def test_the_text_keeps_its_capitals_across_double_spaces_and_line_breaks() -> None:
+    assert missions.mission_request("en el bloc de notas escribí  Hola  Mundo", APPS).goal == "escribir Hola Mundo"
+    assert missions.mission_request("en el bloc de notas escribí Hola\nMundo", APPS).goal == "escribir Hola Mundo"
