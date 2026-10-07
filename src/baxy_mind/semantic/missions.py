@@ -1219,6 +1219,100 @@ def free_form_arguments(
     return arguments
 
 
+# «y ahora», «and now», «después»: the spoken link of a follow-up to the turn before it, no part of its clause.
+_FOLLOW_UP_LINK = re.compile(
+    r"^\s*(?:(?:y|e|and)\s+)?(?:(?:ahora|luego|despues|después|entonces|tambien|también|now|then|also)\s+)?"
+    r"(?:mismo\s+)?(?:,\s*)?",
+    re.IGNORECASE,
+)
+
+
+def _in_application_step(
+    text: str,
+    available_operations: tuple[str, ...],
+    catalog: effect_intent.ApplicationCatalogIndex,
+) -> str | None:
+    """«ahora ponela en modo científica», «and switch it to dark mode», «y ahora andá a configuración»: the follow-up's
+    clause (its link dropped, as said) when it reads alone as a checked step inside an application and names none;
+    None otherwise. A step the reader reads without a check («subí el volumen» is a bare doing), one a typed operation
+    serves on its own (the airplane mode, an application opened) or one that names a site is not one."""
+
+    from .patterns import MISSION_SUBSUMES, resolve_explicit_effects
+
+    body = text[_FOLLOW_UP_LINK.match(text).end():].strip()  # type: ignore[union-attr]
+    read = read_clause(body) if body else None
+    if read is None or read[1] is None:
+        return None
+    folded = fold(body)
+    if _ADDRESS.search(folded) is not None or (
+        catalog.occurrence_pattern is not None and catalog.occurrence_pattern.search(folded) is not None
+    ):
+        return None
+    typed = resolve_explicit_effects(body, available_operations, catalog)
+    operations = set(typed.operations) if typed is not None else set()
+    if operations <= MISSION_SUBSUMES - {"app.open"}:
+        return body
+    # «andá a configuración» read alone as a site searched and opened: with an application in the conversation and
+    # no address said, the place is the application's (live v2-s13).
+    if operations <= {"web.search", "browser.navigate"} and read[0].startswith("ir a "):
+        return body
+    return None
+
+
+def follow_up_in_application(
+    text: str,
+    prior_requests: Iterable[str],
+    available_operations: Iterable[str],
+    application_names: Iterable[str] | effect_intent.ApplicationCatalogIndex,
+    *,
+    english: bool = False,
+) -> str | None:
+    """Live v2-x12 «abrí la calculadora» → «ahora ponela en modo científica» (failed: the decider closed it as a limit
+    and the engine ran the bare words in no application, «no vi ningún control»). A follow-up that names no
+    application and reads alone as a checked step inside one happens in the application the conversation is in: the
+    one the person's last request opened or worked in (``prior_requests``, oldest first; earlier steps of the same
+    kind are passed over back to it). It comes back as the one-turn order «en <app>, <step>», read by the same
+    mission reader with the same checks. None when the conversation is in no application, when a request of another
+    kind came after it, or when the follow-up names an application of its own (that one is read as said)."""
+
+    from .patterns import resolve_explicit_effects
+
+    operations = tuple(available_operations)
+    catalog = effect_intent.build_application_catalog_index(application_names)
+    if (
+        "mission.computer.use" not in operations
+        or catalog.occurrence_pattern is None
+        or mission_request(text, catalog) is not None
+    ):
+        return None
+    step = _in_application_step(text, operations, catalog)
+    if step is None:
+        return None
+    application = None
+    for said in reversed(tuple(prior_requests)):
+        earlier = mission_request(said, catalog)
+        if earlier is not None:
+            # A chain ends in the application of its last step.
+            application = (earlier.steps[-1].application if earlier.steps else None) or earlier.application
+            break
+        read = resolve_explicit_effects(said, operations, catalog)
+        opened = [evidence for operation, evidence in zip(read.operations, read.evidence) if operation == "app.open"] if (
+            read is not None
+        ) else []
+        if opened:
+            # Two applications opened at once: which one «ponela» means is the decider's to ask.
+            application = catalog_application(opened[0], catalog) if len(opened) == 1 else None
+            break
+        if read is not None and _in_application_step(said, operations, catalog) is None:
+            # Something else was done after the application: the conversation is no longer in it.
+            return None
+    if application is None or application == BROWSER_CATEGORY:
+        return None
+    request = f"{'in' if english else 'en'} {application}, {step}"
+    restated = mission_request(request, catalog)
+    return request if restated is not None and restated.application == application and restated.success_check else None
+
+
 def _bare_tab(folded: str) -> tuple[str, str] | None:
     bare = re.sub(rf"^{_BROWSER_CATEGORY_PLACE}\s*[,;:]?\s+|\s+{_BROWSER_CATEGORY_PLACE}(?=[\s.!?]*$)", "", folded, count=1)
     for reading in _clause_readings(bare.strip(" ,;:.!?")):

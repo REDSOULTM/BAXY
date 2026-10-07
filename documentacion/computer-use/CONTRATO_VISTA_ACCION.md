@@ -621,7 +621,7 @@ propia misión, no la del decisor de contexto (`_self_contained_mission`: en cal
 o el cálculo tipado y fallaba). Un seguimiento sin aplicación sigue yendo al decisor; si su reformulación («Haz clic
 en Configuración en Discord.») la lee el lector como un paso dentro de una aplicación y el decisor eligió una primitiva
 de la misión (`MISSION_SUBSUMES`), el turno es `mission.computer.use` con esa reformulación como objetivo; una
-operación tipada elegida por el decisor conserva su ruta (D21). La aplicación es la dicha tras el último «en» («hacé
+operación tipada elegida por el decisor conserva su ruta (D21). Un seguimiento que no nombra aplicación y se lee solo como un paso con comprobación dentro de una («ahora ponela en modo científica», «and switch it to dark mode») ocurre en la aplicación en la que está la conversación —la que abrió o en la que trabajó el último pedido de la persona— como la orden de un turno «en <app>, <paso>», con las mismas comprobaciones del lector (`follow_up_in_application`; en caliente, v2-x12: el decisor lo cerró como límite y el motor corrió las palabras sueltas sin aplicación). Si el decisor eligió una operación tipada, ésa manda; sin aplicación en la conversación, con otro pedido en medio o con dos aplicaciones abiertas, decide él. La aplicación es la dicha tras el último «en» («hacé
 clic en Ajustes en Steam»), y ese corte sólo enmarca cláusulas de lugar (ir a, hacer clic, seleccionar, activar,
 desactivar): «escribí Cuphead en el buscador en Steam» escribe «Cuphead».
 
