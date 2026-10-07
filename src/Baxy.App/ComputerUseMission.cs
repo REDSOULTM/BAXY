@@ -366,6 +366,15 @@ internal static class ComputerUseMission
                                 ComputerUseSuccessCheck.TextLines(lastView);
                             state["textBeforeClick"] = clickTexts;
                         }
+                        if (decision.Operation == "input.text.type"
+                            && lastView?["window"]?["focused"] is JsonObject typedInto)
+                        {
+                            // Where the text went: typed into a search it echoes in the suggestions; typed into a
+                            // name box (a folder being created or renamed) it is the item's own name (check atom
+                            // control:).
+                            record["into"] = (string?)typedInto["name"] ?? string.Empty;
+                        }
+
                         if (chained)
                         {
                             record["subgoal"] = index;
@@ -1434,11 +1443,12 @@ internal static class ComputerUseSuccessCheck
                         state = rest[(split + 1)..];
                     }
 
-                    // What BAXY itself typed (a search box, its suggestion echoing the query) never proves arriving
-                    // (measured: the Explorer search echo passed for a folder that was never created).
+                    // What BAXY itself typed into a search or an address bar (its suggestions echo the query) never
+                    // proves arriving (measured: the Explorer search echo passed for a folder that was never
+                    // created). A name typed into the box of an item being created or renamed is that item's name.
                     var typed = new HashSet<string>(
                         steps.OfType<JsonObject>()
-                            .Where(step => (string?)step["operation"] == "input.text.type")
+                            .Where(step => (string?)step["operation"] == "input.text.type" && EchoesItsQuery(step))
                             .Select(step => Fold((string?)step["text"])),
                         StringComparer.Ordinal);
                     return FindControls(view, name).Any(control =>
@@ -1566,6 +1576,14 @@ internal static class ComputerUseSuccessCheck
 
         return null;
     }
+
+    // A field whose name says it looks something up (or holds an address); a field of unknown name counts as one.
+    private static readonly System.Text.RegularExpressions.Regex QueryField = new(
+        @"\b(?:busc\w*|busqueda|search\w*|find|filtr\w*|filter\w*|a donde quieres ir|ir a|go to|jump to|quick switcher|direcc\w*|address|url)\b",
+        System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    private static bool EchoesItsQuery(JsonObject typedStep) =>
+        (string?)typedStep["into"] is not { Length: > 0 } into || QueryField.IsMatch(Fold(into));
 
     internal static JsonArray TextLines(JsonObject view)
     {
