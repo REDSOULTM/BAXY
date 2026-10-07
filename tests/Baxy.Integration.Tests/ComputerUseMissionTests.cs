@@ -261,7 +261,10 @@ public sealed class ComputerUseMissionTests
         {
             Assert.That(ComputerUseSuccessCheck.Evaluate("page:tienda|page:store", store, [], out _), Is.True);
             Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca|page:library", store, [], out _), Is.False);
-            Assert.That(ComputerUseSuccessCheck.Evaluate("page:steam", store, [], out _), Is.False, "whole words of the address only");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:comunidad|page:community", View("""
+                {"window": {"title": "Steam"}, "controls": [], "text": {"TL": ["TIENDA BIBLIOTECA COMUNIDAD", "https://steamcommunity.com/id/alguien/"]}}
+                """), [], out _), Is.True, "a host word that ends with the place");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:unit", store, [], out _), Is.False, "short places need a whole word");
         });
     }
 

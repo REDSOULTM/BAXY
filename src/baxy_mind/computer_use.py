@@ -973,11 +973,14 @@ def _menu_opened_by(view: dict, history: list[dict], target: str, goal: str = ""
     if not (label_names(target, clicked) or label_names(clicked, target)):
         return None
     # A menu's entries are short new lines; the OCR also rereads, garbled, the long lines the menu now covers.
+    # OCR noise (a cut word, an address, a mark) is not an entry: an entry is a short run of real words.
     appeared = [
         str(line).strip() for line in (view.get("newText") or [])
         if str(line).strip() and len(str(line).split()) <= 3 and len(str(line)) <= 30
+        and re.fullmatch(r"[^\W\d_][\w'’.-]*(?:\s+[\w'’.-]+){0,2}", str(line).strip()) is not None
+        and "://" not in str(line) and len(fold(line).replace(" ", "")) >= 3
     ]
-    if not 1 < len(appeared) <= 6:
+    if not 1 < len(appeared) <= 8:
         return None
     entries = [
         entry for entry in appeared
@@ -1147,9 +1150,17 @@ def _covers_window(view: dict, arguments: object) -> bool:
     window = view.get("window") if isinstance(view, dict) else None
     controls = view.get("controls") if isinstance(view, dict) else None
     index = arguments.get("index") if isinstance(arguments, dict) else None
-    if not isinstance(window, dict) or not isinstance(controls, list) or not isinstance(index, int):
+    label = str(arguments.get("label") or "") if isinstance(arguments, dict) else ""
+    if not isinstance(window, dict) or not isinstance(controls, list):
         return False
-    control = next((item for item in controls if isinstance(item, dict) and item.get("i") == index), None)
+    if isinstance(index, int):
+        control = next((item for item in controls if isinstance(item, dict) and item.get("i") == index), None)
+    else:
+        # A click by label alone on the name of the window's body (measured on a web view: «Chrome Legacy Window»,
+        # the only control of the tree) is the same click.
+        control = next((item for item in controls if isinstance(item, dict) and label and fold(item.get("name")) == fold(label)), None)
+        if control is not None and control.get("kind") not in {"Pane", "Document", "Window", "Custom", "Group"}:
+            return False
     outer, inner = window.get("rect"), control.get("rect") if control is not None else None
     if not isinstance(outer, dict) or not isinstance(inner, dict):
         return False

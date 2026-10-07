@@ -1969,8 +1969,11 @@ internal static class ComputerUseSuccessCheck
                 continue;
             }
 
+            // A word of the address, or a host word that ends or begins with the place («steamcommunity»: community).
             if (address.Split(['.', '/', '-', '_', '?', '=', '&', '#'], StringSplitOptions.RemoveEmptyEntries)
-                .Contains(target, StringComparer.Ordinal))
+                .Any(word => word == target
+                    || (target.Length >= 5 && word.Length > target.Length
+                        && (word.EndsWith(target, StringComparison.Ordinal) || word.StartsWith(target, StringComparison.Ordinal)))))
             {
                 return true;
             }

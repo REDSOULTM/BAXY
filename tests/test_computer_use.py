@@ -1067,3 +1067,22 @@ def test_after_a_failed_learned_click_the_goal_step_is_found_again_by_identity()
     assert step is not None and step["arguments"] == {"label": "Sistema", "index": 7}
     again = [{"step": 1, "operation": "input.visible.click", "label": "Sistema", "index": 7, "ok": False}]
     assert computer_use.deterministic_step(goal="ir a sistema", view=view, history=again) is None
+
+
+def test_a_menu_with_ocr_noise_still_gives_its_first_entry_and_the_window_body_is_never_clicked() -> None:
+    # Measured on Steam: «COMUNIDAD» opened its menu among OCR noise; the model then clicked the web view itself.
+    menu = {
+        "window": {"title": "Steam", "process": "steamwebhelper", "focused": None,
+                   "rect": {"x": 0, "y": 0, "w": 1000, "h": 800}},
+        "controls": [{"i": 0, "kind": "Pane", "name": "Chrome Legacy Window", "rect": {"x": 0, "y": 0, "w": 1000, "h": 800}}],
+        "newText": ["https://steamcommunity.com/id/x/", "Actividad", "Perfil", "Amigos", "Grupos", "Contenido", "Insignias", "_ SOUL.TM", ".RED"],
+        "text": {"TL": ["TIENDA BIBLIOTECA COMUNIDAD", "Actividad", "Perfil"]},
+    }
+    clicked = [_ok(1, "input.visible.click", label="COMUNIDAD")]
+    step = computer_use.deterministic_step(goal="ir a comunidad", view=menu, history=clicked)
+    assert step is not None and step["arguments"].get("label") == "Actividad"
+    refused = computer_use.validate_decision(
+        {"act": "click", "label": "Chrome Legacy Window"}, view=menu, last_failed=None, application_names=(),
+        history=clicked, goal="ir a comunidad",
+    )
+    assert refused["operation"] == "none"
