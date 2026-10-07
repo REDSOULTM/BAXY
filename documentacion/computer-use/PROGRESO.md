@@ -116,6 +116,66 @@ Falsos éxitos y esperas halladas al repasar el banco; cada una con su prueba de
 | Ventanas sin árbol: el buscador escrito se pulsa por su línea OCR (WhatsApp); los botones de la barra de título no son contenido; una app que arranca se espera hasta 20 s y la postlectura del clic por texto mira hasta 1,5 s (Epic) | 3151339b, 35cef19d, bfba63d0 |
 | Crear o renombrar exige el nombre entero (`control:=X`) y lo tecleado; buscar exige un Enter o un clic en la sugerencia; «poné la primera», un clic que reproduce | c061bcdb, a4d5fb10 |
 
+### Rondas de revisión adversarial (2–4) y corridas en caliente
+
+Tras el banco, tres rondas de revisión adversarial (agentes en paralelo por pieza: App, mente, lector, provider;
+ramas `fable/cu-w-*`, `cu-x-*`, `cu-y-*`, `cu-z-*`) más los arreglos de corridas en vivo (n2, n8, s13 y una sesión en
+caliente de cuatro órdenes seguidas). Contrato al día: `CONTRATO_VISTA_ACCION.md` §4.3 («Eco de la consulta»), §5 y §7.
+
+**Éxitos falsos cerrados**
+
+| Cambio | Commit |
+|---|---|
+| Un lugar nombrado sólo por una consulta escrita y no enviada no es llegada; enviada, sigue siendo eco mientras su cuadro la conserve y ningún clic haya ido de los resultados al lugar (Explorador n8: «imagenes - Resultados de la búsqueda en ETC» pasaba por Imágenes) | c33f77c8, ca7ed74f |
+| El eco de la búsqueda vale para `control:X:current`, `title:`, `page:` y las citas del modelo; un clic que sólo seleccionó un resultado no sale de ellos; la búsqueda como meta sólo con resultados en pantalla (`SearchResultsProve`: un `stepDone` junto a `title:`/`text:`) | f3eaa93a, b85a3287, 2c7554ec, 830a1799 |
+| Lo tecleado nunca es evidencia de haber llegado (Steam: «Cuphead» del buscador citado) | d0c571ad, 286a18da |
+| Un clic verificado posterior en otro lugar deshace la llegada por clic (Steam: la tienda pasaba por la biblioteca); tras el clic en el lugar sólo es entrada de menú un rótulo que no estaba escrito antes | d0c571ad, f3eaa93a |
+| «ir a X» es `control:X:current`: un ítem de contenido sólo elegido (Descargas en el Inicio del Explorador) no es llegar; un mosaico de la columna izquierda es contenido si su fila sigue fuera de ella | 3c160e45, 2c7554ec, 364783b9 |
+| La cabecera de la página sólo en la zona T/TL, último control de su fila y tras un clic verificado o con el título nombrándolo; nuevo átomo `header:X` (un Text arriba que apareció tras el clic que nombra X) para los modos | f3eaa93a, 2c7554ec |
+| Un modo se comprueba por selección, título, página o cabecera, nunca por un clic sobre su nombre (pasaba al pulsar la tarjeta «cotele», la carpeta Descargas o el ajuste «dark»); un modo que ninguna ventana ofrece por nombre («modo avión») sólo por su interruptor encendido | 835b85f1, 017d4f31 |
+| Un elemento «<lugar> <aplicación>» es el lugar (Calculadora: «Científica Calculadora») | 2a5aa710 |
+| Una frase que sólo menciona el lugar no es el lugar (Configuración: la descripción del proxy por «Wi-Fi»); sólo en textos, no en títulos de pestaña | 5ca2653a, 49b7ed8e |
+| Un nombre con «&» se comprueba por una pieza (la más larga ≥ 4 si la dijo la persona: «Q&A», «AT&T»); un check vacío no es ningún check | 3c160e45, 017d4f31 |
+| Procedimientos: un paso aprendido que falla deja la misión a la rutina y al modelo; se olvida el que se desvió o topó con una pantalla que no respondió, se conserva ante causas ajenas (vista no disponible, ventana tapada o elevada) | 4ee7b195, f3eaa93a, 2c7554ec |
+
+**Seguridad**
+
+| Cambio | Commit |
+|---|---|
+| Clic y desplazamiento también atados a la ventana de la aplicación nombrada (antes sólo teclas y texto); nunca VS Code, consolas ni BAXY (revisión anterior) | b85a3287 |
+| Enter, espacio o Supr aprendidos no se repiten con su destino grabado: los decide la mente sobre la vista actual | b85a3287 |
+| Enter sobre un elemento de contenido elegido sólo si su `itemType` (nuevo en la vista, `DesktopUiaWorker`) o la celda «Carpeta de archivos» / «File folder» dentro de su fila dicen carpeta; nunca un archivo que se ejecuta (`.reg .hta .scr .cpl .jar .com .pif` sumados), ni con una desinstalación a la vista, ni sobre un elemento que se llama quitar/eliminar | 364783b9, 830a1799, 5504fbd6, 899039f1 |
+| Supr sólo en la barra de direcciones del paso «ir a la dirección», armado desde la vista | 286a18da |
+| Ningún interruptor en metas de lugar (ir a, buscar, hacer clic sin tipo), tampoco en los pasos sin modelo ni por su nombre escrito; los botones «Alternar…» / «Toggle…» son interruptores (Calculadora: DEG→RAD); sólo un «hacé clic en X» que nombra el interruptor lo pulsa | 286a18da, 2a5aa710, 5504fbd6, 899039f1 |
+| Enter o espacio tras escribir con el foco ilegible (ninguno, `Pane`, `Custom`: WhatsApp) preguntan; «buscar X» + Enter va sin pregunta sólo si el campo con el teclado es una búsqueda; «apretá enter» con el foco ilegible pregunta | 5504fbd6, 899039f1 |
+| Menús sin clic a ciegas: la entrada que nombra el objetivo, la página propia del lugar o la primera sólo con el menú en el árbol; nunca una que actúa (jugar, instalar, enviar…); ruido de OCR no es entrada; nunca el cuerpo de la ventana por su nombre | 653a0ba5, 5504fbd6 |
+| Las metas destructivas siguen fuera de todo camino al motor (lector, objetivo libre, último recurso) | 29ef7ca9 (sin cambios) |
+
+**Universalidad**
+
+| Cambio | Commit |
+|---|---|
+| Los modos detrás de la navegación: BUSCAR pulsa «Abrir navegación» / «Open Navigation» / «Más opciones» antes de los atajos a ciegas («Menú» o «More» solos no); «cambiá a X», «pasá al modo X», «switch to X mode» (live n2: Calculadora → Científica) | 185e5bdb, 286a18da, 835b85f1 |
+| Las apps de Windows por su nombre inglés y con «app» («the Clock app»); ~60 pares de lugares en ambos idiomas; el modelo elige el control por su significado | 3c160e45 |
+| «la vista de X» va a X; nombres con «&»; fuera de los alias las palabras de menú que son actos | 017d4f31 |
+| Un elemento de contenido elegido se abre con Enter (con las condiciones de Seguridad) | 3c160e45 |
+| En una conversación, una orden que nombra su aplicación y se lee sola es su misión, no la del decisor de contexto (sesión en caliente) | 2782fdf6 |
+| Un seguimiento que el decisor reformula dentro de la aplicación es la misión, no un clic suelto; la aplicación es la dicha tras el último «en» (v2-s13) | 3271304d, 32012164, 835b85f1 |
+| Si el control del propio lugar falló, el lugar se busca como lo ofrece la ventana (sólo nombres sin tipo); un botón de búsqueda que abrió su cuadro se escribe (Discord: buscador rápido) | 264f59fc, a4cfabc6, 5504fbd6 |
+| Dos controles con el nombre: el único ítem de navegación es el lugar; si no, se busca | 286a18da, 5504fbd6 |
+| Cuadrícula frente a navegación por tamaño: sólo un mosaico del mismo tamaño (±25 %) hace contenido (Reloj: «Alarma» junto a las alarmas de la página) | 755f4433 |
+| Sin árbol, una palabra del host que empieza o termina con el lugar lo nombra (steamcommunity) | 653a0ba5 |
+| Provider: el cursor en píxeles físicos (a 125 % el clic caía tres filas más abajo) y la ventana de un proceso siempre visible y usable (`ChooseProcessWindow`) | 00263487, f3eaa93a |
+
+**Velocidad y voz**
+
+| Cambio | Commit |
+|---|---|
+| Tecleo a 35 ms por carácter, medido (ver «Correcciones de la revisión») | 5ac16f90 |
+| Vistas atadas al proceso sin ocho reintentos sobre el marco oculto de explorer.exe (~1,8 s por vista en n8) | 00263487 |
+| El final con la voz de BAXY (00_IDENTIDAD): una frase, primera persona, el estado observable; el fallo plano con su causa | d32e03b9, 286a18da |
+| El final de «ir a X» nunca dice que puso o cambió algo (Reloj: «Alarma» contada como alarma puesta) | e6c8001f |
+
 ### Banco en vivo (última corrida de cada caso; verificación independiente)
 
 Misión = `ms` de `computer_use.end`; turno = `latency_ms` del final. El primer turno de cada corrida incluye el
@@ -154,5 +214,7 @@ Pedidos completos, corridas anteriores y comparación con la fase 4: `MEDICIONES
 Total del banco principal (24 casos; u2 y u5 son extras que pasaron en su primera corrida): **21/24 correctos** (s06 cuenta como límite honesto correcto), 3 fallos (c4, u4, u6).
 Corpus del lector: 165 órdenes es/en → 161 misiones verificables + 4 cubiertas por la ruta tipada (D21).
 
-Pendiente: re-correr c4 en vivo con el Supr de la barra de direcciones; Epic (u4: carga larga) y WhatsApp (u6: el
-texto no llega al buscador) quedan como límites medidos.
+Esta tabla es la de la primera revisión. c4 se volvió a correr en vivo a las 04:30 con el Supr de la barra de
+direcciones (cadena de 4 sub-objetivos, 28 s). El banco final de 38 casos tras las rondas 2–4, con la compuerta Full,
+está en `MEDICIONES.md` §«v2 — banco final (rondas 2–4)». Epic (u4: carga larga) y WhatsApp (u6: el texto no llega
+al buscador) quedaban como límites medidos.
