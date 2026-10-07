@@ -1163,7 +1163,7 @@ def _read_mission(folded: str, text: str, catalog: effect_intent.ApplicationCata
         if key is None:
             continue
         clause = clause.strip(" ,;:")
-        if len(_segments(clause)) > 1:
+        if len(_segments(clause, catalog)) > 1:
             # Several clauses the chain could not read: one of them is no doing it knows, so none is read alone.
             continue
         # «abre Steam y decime la hora»: the second clause must be doing inside
@@ -1377,16 +1377,30 @@ _BARE_OPEN = re.compile(
 )
 
 
-def _starts_clause(segment: str) -> bool:
+def _starts_clause(segment: str, catalog: effect_intent.ApplicationCatalogIndex | None = None) -> bool:
     segment = segment.strip(" ,;:.!?")
     if not segment:
         return False
     if _BARE_OPEN.match(segment) is not None or _pronoun_family(segment) is not None or read_clause(segment) is not None:
         return True
-    return any(read_clause(clause) is not None for _, clause in _app_frames(segment, longer_names=False))
+    return any(read_clause(clause) is not None for _, clause in _clause_frames(segment, catalog))
 
 
-def _segments(folded: str) -> list[str]:
+def _clause_frames(
+    segment: str, catalog: effect_intent.ApplicationCatalogIndex | None
+) -> Iterable[tuple[str, str]]:
+    """The (application, clause) splits of one clause: one-word names always; a name of several words («en el
+    Explorador de archivos andá a Descargas») only when the catalog knows it (measured 2026-10-07, y5: the chain
+    left «… y después a Imágenes» glued to the first place because «explorador» alone framed nothing)."""
+
+    yield from _app_frames(segment, longer_names=False)
+    if catalog is not None:
+        for application, clause in _app_frames(segment):
+            if len(application.split()) > 1 and _catalog_key(application, catalog) is not None:
+                yield application, clause
+
+
+def _segments(folded: str, catalog: effect_intent.ApplicationCatalogIndex | None = None) -> list[str]:
     """The clauses of doing a request chains, in order; the whole text when it says one."""
 
     pieces: list[str] = []
@@ -1403,13 +1417,13 @@ def _segments(folded: str) -> list[str]:
         return pieces
     merged = [pieces[0]]
     for joiner, piece in zip(joiners, pieces[1:]):
-        if _starts_clause(piece):
+        if _starts_clause(piece, catalog):
             merged.append(piece)
             continue
-        elliptic = _elliptic(piece, joiner, merged[-1])
+        elliptic = _elliptic(piece, joiner, merged[-1], catalog)
         if elliptic is not None:
             merged.append(elliptic)
-        elif (_VERB_AND_OBJECT.match(piece) or _CLITIC_ORDER.match(piece)) and _family(merged[-1]) is not None:
+        elif (_VERB_AND_OBJECT.match(piece) or _CLITIC_ORDER.match(piece)) and _family(merged[-1], catalog) is not None:
             # «andá a la biblioteca y dibujá a Batman»: an order the readers do not know is no part of a place's
             # name; kept apart, it leaves the chain unread (the decider's) instead of glued into the place.
             merged.append(piece)
@@ -1432,12 +1446,14 @@ _ARTICLE_OBJECT = re.compile(r"^(?:el|la|los|las|the)\s+\S")
 _BARE_NAME = re.compile(r"^[a-z0-9][a-z0-9.+-]*(?:\s+[a-z0-9][a-z0-9.+-]*){0,2}$")
 
 
-def _elliptic(piece: str, joiner: str, previous: str) -> str | None:
+def _elliptic(
+    piece: str, joiner: str, previous: str, catalog: effect_intent.ApplicationCatalogIndex | None = None
+) -> str | None:
     """The clause a piece says with the previous clause's verb left out: «andá a la biblioteca y después a general»,
     «elegí el lápiz y después el color rojo», «hacé clic en Insertar y después en Tabla», «go to System, then
     Display». None when the piece is not such an object, or the previous clause is no go-to, choice or click."""
 
-    family = _family(previous)
+    family = _family(previous, catalog)
     piece = piece.strip(" ,;:.!?")
     sequenced = _SEQUENCER.search(joiner) is not None
     candidates: list[str] = []
@@ -1453,12 +1469,12 @@ def _elliptic(piece: str, joiner: str, previous: str) -> str | None:
     return next((candidate for candidate in candidates if _starts_clause(candidate)), None)
 
 
-def _family(segment: str) -> str | None:
+def _family(segment: str, catalog: effect_intent.ApplicationCatalogIndex | None = None) -> str | None:
     """The goal head of the act a clause says (``ir a ``, ``seleccionar ``, ``hacer clic en ``, ``buscar ``), or
     None."""
 
     segment = segment.strip(" ,;:.!?")
-    reads = (read_clause(segment), *(read_clause(clause) for _, clause in _app_frames(segment, longer_names=False)))
+    reads = (read_clause(segment), *(read_clause(clause) for _, clause in _clause_frames(segment, catalog)))
     for read in reads:
         if read is None:
             continue
@@ -1526,7 +1542,7 @@ def _chained_request(folded: str, catalog: effect_intent.ApplicationCatalogIndex
     («buscá Hades y abrilo») acts on what the previous clause named. None for a single clause (today's reading
     stays), for a clause that is not doing, or with no application named at all."""
 
-    segments = _segments(folded)
+    segments = _segments(folded, catalog)
     if len(segments) < 2 or any(effect_intent._is_negative_effect_clause(segment) for segment in segments):
         return None
     steps: list[MissionStep] = []
