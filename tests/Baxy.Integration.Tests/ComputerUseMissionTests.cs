@@ -221,6 +221,26 @@ public sealed class ComputerUseMissionTests
     }
 
     [Test]
+    public void AShellWithAnAddressBarAndPanesIsNothingToActOn()
+    {
+        JsonObject starting = View("""
+            {"window": {"title": "Spotify"}, "controls": [
+              {"i": 0, "kind": "Edit", "name": "Address and search bar", "state": "readonly", "value": "xpui.app.spotify.com/index.html"},
+              {"i": 1, "kind": "Pane", "name": "Spotify"}, {"i": 2, "kind": "Pane", "name": "Spotify"}],
+             "text": {"TR": ["x"]}}
+            """);
+        JsonObject loaded = View("""
+            {"window": {"title": "Spotify"}, "controls": [
+              {"i": 0, "kind": "Button", "name": "Inicio"}, {"i": 1, "kind": "Button", "name": "Tu biblioteca"}]}
+            """);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseMission.ActionableCount(starting), Is.EqualTo(0));
+            Assert.That(ComputerUseMission.ActionableCount(loaded), Is.EqualTo(2));
+        });
+    }
+
+    [Test]
     public void TypingCountsOnlyWhenTheFocusedFieldShowsTheTextOrDoesNotExposeIt()
     {
         JsonArray typed = [new JsonObject { ["step"] = 2, ["operation"] = "input.text.type", ["ok"] = true, ["text"] = "lista: pan" }];

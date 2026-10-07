@@ -844,7 +844,7 @@ internal static class ComputerUseMission
     }
 
     // A window of an application launched moment ago is still starting while it is not the same window for a second
-    // look or still reads like a splash (≤1 control and ≤5 written lines, read with OCR).
+    // look or still reads like a splash (≤1 control to act on and ≤5 written lines, read with OCR).
     private static bool StillStarting(JsonObject state, JsonObject view, TimeSpan waited)
     {
         long hwnd = (long?)view["window"]?["hwnd"] ?? 0;
@@ -860,8 +860,15 @@ internal static class ComputerUseMission
             return true;
         }
 
-        return ControlCount(view) <= 1 && TextCount(view) <= 5;
+        return ActionableCount(view) <= 1 && TextCount(view) <= 5;
     }
+
+    // Controls a person could act on: a frame, a pane or a read-only address bar is the shell an application draws
+    // before its content (measured on Spotify starting: an address bar and two panes, «x» the only written line).
+    internal static int ActionableCount(JsonObject view) =>
+        (view["controls"] as JsonArray)?.Count(node => node is JsonObject control
+            && (string?)control["kind"] is not ("Pane" or "Window" or "Document" or "Group" or "Custom" or "TitleBar" or "Image" or "Text")
+            && !((string?)control["state"] ?? string.Empty).Contains("readonly", StringComparison.Ordinal)) ?? 0;
 
     private static bool ShowsTheApplication(JsonObject state, JsonObject view) =>
         view["window"] is JsonObject window
@@ -1525,7 +1532,7 @@ internal static class ComputerUseSuccessCheck
         // Only a window without an accessible tree (CEF, canvas) is judged by its written text; where controls exist,
         // arriving is the place selected or titled (measured on Discord: «Cotele» written in an activity card passed
         // for the channel while the Friends page was open).
-        if ((view["controls"] as JsonArray)?.Count > 1)
+        if (ComputerUseMission.ActionableCount(view) > 1)
         {
             return false;
         }
