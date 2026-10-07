@@ -377,3 +377,12 @@ En vivo tras las rondas: lote ciego c 12/12 con 9 finales deterministas; banco a
 (s06 y n5 son límites honestos; s12 y c17 son Steam ya en la biblioteca, sin árbol para probar la llegada, y fallan
 honestamente). Suites completas: pytest 19 219 (un fallo de censo, corregido), Integración 2602, Providers 1039.
 Pendiente menor: un seguimiento de modo todavía dice «elegí la Científica Calculadora» (el nombre crudo del control).
+
+### Rondas 20–21 y lote ciego d (14:50–15:15)
+
+Lote ciego d, diez órdenes nuevas: 9/10 a la primera. d1 «en Configuración andá a Personalización y decime qué
+tema está activo» fue a la ruta de música («tema» = canción) en vez de al motor; ahora la misión con pregunta gana
+(7eb2b09ea) y responde «el tema activo es Windows (claro)». Un modo elegido por su lugar sale determinista («Listo,
+estoy en «Científica».»). En Steam, cuando ya estaba en la biblioteca y la pantalla no puede probarlo, el final lo
+dice con honestidad: «Parece que ya estabas en «Biblioteca», pero no pude confirmarlo en la pantalla.» pytest
+completo 19 254 sin fallos; Integración de computer use y suelo 202.
