@@ -286,6 +286,66 @@ public sealed class ComputerUseMissionTests
         });
     }
 
+    // Live 2026-10-07 (v2-s12, v2-c17): Steam already on its library, the learned click on «BIBLIOTECA» only opened its
+    // menu under it. Not arriving (the same reads on another page whose word only opened a menu), but said honestly as
+    // «parece que ya estabas»; a click on another word, a page that changed, a covered window or a tree never are.
+    [Test]
+    public void AClickOnThePlacesOwnNameThatOnlyOpensItsMenuIsProbablyAlreadyThereNeverArrived()
+    {
+        string[] library = ["TIENDA", "BIBLIOTECA", "COMUNIDAD", "Esta semana", "Juegos recientes", "Todos (324)", "Cuphead",
+            "Hades", "Celeste", "Hollow Knight", "Instalado localmente", "Favoritos"];
+        JsonObject Look(IEnumerable<string> lines, string? extra = null)
+        {
+            var text = new JsonArray([.. lines.Select(line => (JsonNode?)JsonValue.Create(line))]);
+            var view = new JsonObject
+            {
+                ["window"] = new JsonObject { ["title"] = "Steam" },
+                ["controls"] = new JsonArray(new JsonObject { ["i"] = 0, ["kind"] = "Document", ["name"] = "Steam" }),
+                ["text"] = new JsonObject { ["TL"] = text },
+            };
+            if (extra is not null)
+            {
+                view["window"]!["coveredBy"] = new JsonObject { ["title"] = extra };
+            }
+
+            return view;
+        }
+
+        JsonArray Click(string label) =>
+        [
+            new JsonObject { ["step"] = 1, ["operation"] = "app.open", ["ok"] = true },
+            new JsonObject { ["step"] = 2, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = label },
+        ];
+        var state = new JsonObject
+        {
+            ["textBeforeClick"] = new JsonObject { ["2"] = ComputerUseSuccessCheck.TextLines(Look(library)) },
+        };
+        JsonObject menuOpen = Look([.. library, "Página principal", "Colecciones", "Descargas"]);
+        JsonObject elsewhere = Look(["TIENDA", "BIBLIOTECA", "COMUNIDAD", "Destacados", "Ofertas especiales", "Explorar por categoría",
+            "Lista de deseados", "Novedades", "Más vendidos", "Juegos gratuitos", "Página principal", "Colecciones"]);
+        JsonObject tree = Look([.. library, "Página principal"]);
+        tree["controls"] = new JsonArray(
+            new JsonObject { ["i"] = 0, ["kind"] = "Button", ["name"] = "Biblioteca" },
+            new JsonObject { ["i"] = 1, ["kind"] = "Button", ["name"] = "Tienda" });
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.ClickedPlaceLeftPageAsIs("Biblioteca", Click("biblioteca"), menuOpen, state), Is.True);
+            Assert.That(ComputerUseSuccessCheck.ClickedPlaceLeftPageAsIs("Biblioteca", Click("biblioteca"), Look(library), state), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:biblioteca", menuOpen, Click("biblioteca"), out _), Is.False,
+                "never told as arrived");
+            Assert.That(ComputerUseSuccessCheck.ClickedPlaceLeftPageAsIs("Biblioteca", Click("tienda"), menuOpen, state), Is.False,
+                "another word clicked");
+            Assert.That(ComputerUseSuccessCheck.ClickedPlaceLeftPageAsIs("Biblioteca", Click("biblioteca"), elsewhere, state), Is.False,
+                "the page changed");
+            Assert.That(ComputerUseSuccessCheck.ClickedPlaceLeftPageAsIs("Biblioteca", Click("biblioteca"), Look(library, "Bloc de notas"), state), Is.False,
+                "a covered window");
+            Assert.That(ComputerUseSuccessCheck.ClickedPlaceLeftPageAsIs("Biblioteca", Click("biblioteca"), tree, state), Is.False,
+                "a window with a tree");
+            Assert.That(ComputerUseSuccessCheck.ClickedPlaceLeftPageAsIs("Biblioteca", Click("biblioteca"), menuOpen, new JsonObject()), Is.False,
+                "the text before the click unknown");
+        });
+    }
+
     [Test]
     public void TypedTextIsNeverJudgedOnReceiptsAloneAndACutValueIsUnknown()
     {

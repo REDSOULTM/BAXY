@@ -243,6 +243,13 @@ internal static class OperationFloor
                 ? T(said, "notApp").Replace("{app}", Quoted(app), StringComparison.Ordinal)
                 : T(said, "not");
         string? stoppedBy = Text(observed, "stoppedBy");
+        if (stoppedBy == "computer_use_already_there_unconfirmed" && place.Length > 0)
+        {
+            // The click on the place's own name left the window as it was (live v2-s12: Steam already on its library):
+            // probably there already, never told as arrived.
+            return T((JsonObject)data["alreadyThere"]!, language).Replace("{place}", Quoted(place), StringComparison.Ordinal);
+        }
+
         if (stoppedBy is null || (data["causes"] as JsonObject)?[stoppedBy] is not JsonObject causes)
         {
             // An untyped stop code is never said as prose.
