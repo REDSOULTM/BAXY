@@ -1619,4 +1619,21 @@ public sealed class ComputerUseMissionTests
             Assert.That(ComputerUseSuccessCheck.RefusedClicks(steps, new JsonObject { ["label"] = "Buscar" }), Is.EqualTo(0));
         });
     }
+
+    // Live y9: a learned «mouse» typed right after Settings opened with its search box focused was replayed onto the
+    // side list; a learned text is replayed only where the keyboard is in a field.
+    [Test]
+    public void ALearnedTextIsReplayedOnlyWhereTheKeyboardIsInAField()
+    {
+        static JsonObject Focused(string kind) => View(
+            "{\"window\": {\"title\": \"Ajustes\", \"focused\": {\"kind\": \"" + kind + "\", \"name\": \"x\"}}, \"controls\": []}");
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseMission.FocusTakesText(Focused("Edit")), Is.True);
+            Assert.That(ComputerUseMission.FocusTakesText(Focused("Document")), Is.True);
+            Assert.That(ComputerUseMission.FocusTakesText(Focused("ListItem")), Is.False);
+            Assert.That(ComputerUseMission.FocusTakesText(Focused("Button")), Is.False);
+            Assert.That(ComputerUseMission.FocusTakesText(View("{\"window\": {\"title\": \"Sin árbol\"}, \"controls\": []}")), Is.True);
+        });
+    }
 }

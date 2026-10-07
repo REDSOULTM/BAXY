@@ -332,6 +332,14 @@ internal static class ComputerUseMission
                     MindComputerUseStep? decision = onTheApplication || NextProcedureOpens(state)
                         ? IdentifyOnView(NextProcedureStep(state, done), lastView)
                         : null;
+                    if (decision is { Operation: "input.text.type" } && !FocusTakesText(lastView))
+                    {
+                        // A learned text is typed only where the keyboard is in a field (live y9: «mouse» learned right
+                        // after Settings opened with its search box focused was replayed onto the side list).
+                        AbandonProcedure(state);
+                        decision = null;
+                    }
+
                     bool fromProcedure = decision is not null;
                     procedureStepBroke = fromProcedure;
                     if (decision is null)
@@ -966,6 +974,12 @@ internal static class ComputerUseMission
     // A learned click names its control only by label (indices change between runs): it is pinned to the control of
     // the current view that carries that name, so the press goes by identity. Measured: a replayed «Alarma» click by
     // label right after opening the Clock waited 30 s for the application to finish drawing, by index it took 0.3 s.
+    // The focused element takes typed text: a field, a document or an editable box. A view that does not say where
+    // the keyboard is (a window without an accessible tree) says nothing either way.
+    internal static bool FocusTakesText(JsonObject? view) =>
+        view?["window"]?["focused"] is not JsonObject focused
+        || (string?)focused["kind"] is "Edit" or "Document" or "ComboBox" or "Text";
+
     internal static MindComputerUseStep? IdentifyOnView(MindComputerUseStep? step, JsonObject? view)
     {
         if (step is null || step.Operation != "input.visible.click" || step.Arguments["index"] is not null
