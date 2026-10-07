@@ -93,8 +93,10 @@
    "computer_use_window_not_application": {"es": "la ventana de delante no era la de la aplicación, así que no pulsé ni escribí nada en ella", "en": "the window in front was not the application's, so I pressed and typed nothing there"},
    "computer_use_search_focus_unproven": {"es": "no pude comprobar que el cuadro de búsqueda tomara el teclado, así que no escribí nada", "en": "I could not confirm that the search box took the keyboard, so I typed nothing"},
    "computer_use_window_elevated": {"es": "esa aplicación corre como administrador y Windows no deja que otra aplicación la controle", "en": "that application runs as administrator and Windows does not let another application control it"},
-   "computer_use_place_not_found": {"es": "no lo encontré en esta ventana; puede que este equipo no lo tenga", "en": "I did not find it in this window; this computer may not have it"}
+   "computer_use_place_not_found": {"es": "no lo encontré en esta ventana; puede que este equipo no lo tenga", "en": "I did not find it in this window; this computer may not have it"},
+   "computer_use_already_there_unconfirmed": {"es": "parece que ya estaba ahí, pero no pude confirmarlo en la pantalla", "en": "it looks like it was already there, but I couldn't confirm it on the screen"}
   },
+  "alreadyThere": {"source": "Live 2026-10-07 (v2-s12, v2-c17): Steam already on its library, the learned click on «BIBLIOTECA» only opened its menu and the page stayed as it was. Said when the last verified click was on the place's own name and the window's text stayed the same; never told as arrived.", "es": "Parece que ya estabas en {place}, pero no pude confirmarlo en la pantalla", "en": "It looks like you were already in {place}, but I couldn't confirm it on the screen"},
   "coveredBy": {"es": "la ventana «{window}» tapa la aplicación", "en": "the window «{window}» covers the application"},
   "placeNotFound": {"es": "no encontré {place} en esta ventana; puede que este equipo no lo tenga", "en": "I did not find {place} in this window; this computer may not have it"},
   "answer": {
@@ -118,6 +120,9 @@
    "search": "^buscar\\s+(.+)$",
    "calculate": "^calcular\\s+([0-9][0-9\\s.,()+*/×÷x-]*[0-9)])$",
    "key": "^apretar\\s+\\S.*$",
+   "modeSource": "Live 2026-10-07 (cu-r20): «ahora ponela en modo científica» (goal «activar modo cientifico») ended «Llegué a la Calculadora y elegí la Científica Calculadora.»: a mode reached by choosing it, never by a switch, is told as the place the window writes, without the application's name.",
+   "mode": "^(?:activar|poner)\\s+(?:el\\s+)?modo\\s+(.+)$",
+   "switchKinds": ["CheckBox", "RadioButton", "ToggleButton", "Slider"],
    "capsWord": 5,
    "operators": {"*": "×", "x": "×", "X": "×", "×": "×", "/": "÷", "÷": "÷", "+": "+", "-": "-"},
    "es": {"places": "pasé por {places}", "placesIn": "pasé por {places} en {app}", "lastPlace": "ya estoy en {place}", "lastPlaceIn": "ya estoy en {place} de {app}", "select": "elegí {items}", "shadeItem": "{chosen}, el {asked} de la paleta", "type": "escribí {texts} en {app}", "search": "busqué {query} en {app}", "calculate": "calculé {expression} = {value}", "calculateAlone": "Listo: {expression} = {value}", "clauses": "Listo, {clauses}"},

@@ -1484,6 +1484,175 @@
    },
    "es": "Listo, estoy en «Tienda».",
    "en": "Done, I'm in «Tienda»."
+  },
+  {
+   "id": "cu-parts-mode-chosen",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "activar modo cientifico",
+     "application": "Calculadora",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "label": "Abrir navegación",
+       "ok": true,
+       "name": "Abrir navegación",
+       "kind": "Button",
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Científica Calculadora",
+       "ok": true,
+       "name": "Científica Calculadora",
+       "kind": "ListItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculadora",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Calculadora",
+      "values": [
+       {
+        "name": "Científica Calculadora",
+        "state": "selected"
+       }
+      ],
+      "lines": [
+       "Modo de calculadora Científica",
+       "0"
+      ]
+     }
+    }
+   },
+   "es": "Listo, estoy en «Científica».",
+   "en": "Done, I'm in «Científica»."
+  },
+  {
+   "id": "cu-parts-mode-chosen-english",
+   "situation": {
+    "kind": "operation",
+    "operation": "mission.computer.use",
+    "polarity": "success",
+    "verified": true,
+    "succeeded": true,
+    "observed": {
+     "goal": "poner modo scientific",
+     "application": "Calculator",
+     "reached": true,
+     "steps": [
+      {
+       "step": 1,
+       "operation": "input.visible.click",
+       "label": "Abrir navegación",
+       "ok": true,
+       "name": "Abrir navegación",
+       "kind": "Button",
+       "changed": true
+      },
+      {
+       "step": 2,
+       "operation": "input.visible.click",
+       "label": "Scientific Calculator",
+       "ok": true,
+       "name": "Scientific Calculator",
+       "kind": "ListItem",
+       "selected": true,
+       "changed": true
+      }
+     ],
+     "window": {
+      "title": "Calculator",
+      "process": "ApplicationFrameHost"
+     },
+     "joined": false,
+     "screen": {
+      "title": "Calculator",
+      "values": [
+       {
+        "name": "Scientific Calculator",
+        "state": "selected"
+       }
+      ],
+      "lines": [
+       "Scientific Calculator mode",
+       "0"
+      ]
+     }
+    }
+   },
+   "es": "Listo, estoy en «Scientific».",
+   "en": "Done, I'm in «Scientific»."
+  },
+  {
+   "id": "cu-failed-already-there",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_already_there_unconfirmed",
+     "observed": {
+      "goal": "ir a biblioteca",
+      "application": "Steam",
+      "reached": false,
+      "steps": [
+       {
+        "step": 1,
+        "operation": "app.open",
+        "appId": "Steam",
+        "ok": true,
+        "changed": true
+       },
+       {
+        "step": 2,
+        "operation": "input.visible.click",
+        "label": "biblioteca",
+        "ok": true,
+        "name": "BIBLIOTECA",
+        "cascadeStage": "ocr",
+        "changed": true
+       }
+      ],
+      "window": {
+       "title": "Steam",
+       "process": "steamwebhelper"
+      },
+      "joined": false,
+      "screen": {
+       "title": "Steam",
+       "lines": [
+        "BIBLIOTECA",
+        "Colecciones",
+        "Descargas"
+       ]
+      },
+      "stoppedBy": "computer_use_already_there_unconfirmed"
+     }
+    }
+   },
+   "es": "Parece que ya estabas en «Biblioteca», pero no pude confirmarlo en la pantalla.",
+   "en": "It looks like you were already in «Biblioteca», but I couldn't confirm it on the screen."
   }
  ]
 }
