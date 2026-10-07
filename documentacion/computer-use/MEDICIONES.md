@@ -148,3 +148,21 @@ El tecleo pasó después a 35 ms por carácter (5ac16f90): un texto de *n* carac
 - Una app que corre como administrador no deja leer ni pulsar sus controles a un BAXY sin elevar: se dice con esa
   causa en 4,5 s (s06).
 - Vistas lentas: la Microsoft Store tarda 4 s en dar su árbol UIA (u2); Spotify en frío, 19 s de misión (u1).
+
+## v2 — banco final (rondas 2–4)
+
+Mismo montaje, sobre la rama con las tres rondas de revisión adversarial y los arreglos de las corridas en caliente
+(`PROGRESO.md` §«Rondas de revisión adversarial (2–4) y corridas en caliente»). Mismas definiciones de *misión* y
+*turno*; verificación independiente.
+
+<!-- BANCO_FINAL -->
+
+### Medido antes del banco final
+
+| Medida | Resultado |
+|---|---|
+| Sesión en caliente w1 (4 órdenes seguidas en la misma conversación) | 6,6 s (incluye el arranque), 2,2 s, 2,0 s y 5,6 s |
+| c4 Opera: pestaña nueva → es.wikipedia.org → buscar Ñuñoa → sección Historia (04:30, en vivo) | cadena de 4 sub-objetivos en 28 s |
+| Tecleo carácter a carácter | 35 ms por carácter (medido en el Bloc de notas: íntegro desde 25 ms) |
+| Compuerta Full, suites .NET | verde: Integration 2486, Providers 1028, Setup 477, Kernel 307 |
+| Compuerta Full, pytest | 18 811; sólo quedaba pendiente el censo, que luego se corrigió |
