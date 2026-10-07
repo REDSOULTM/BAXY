@@ -66,9 +66,11 @@ _EXTRA_ALIASES: tuple[tuple[frozenset[str], tuple[str, ...]], ...] = (
 )
 
 
+# «cambiá a descargas», «pasá al canal general», «switch over to general»: changing to a place that names no mode
+# (``_read_mode`` reads the modes) is going there.
 _NAVIGATE_HEAD = (
-    r"(?:ve|vete|ir|anda|andate|entra|entrale|metete|navega|llevame|go|navigate|switch|"
-    r"cambia|cambiate|take\s+me|abri|abre|open)"
+    r"(?:ve|vete|ir|anda|andate|entra|entrale|metete|navega|llevame|go|navigate|switch(?:\s+over)?|change|"
+    r"cambia|cambiate|pasa|pasate|take\s+me|abri|abre|open)"
 )
 # «el chat con Ron92», «la conversación con Ana», «el canal de voz de X»: a generic place noun before the name is not the
 # name (measured: «abrí el chat con Ron92» searched Discord for «chat con ron92»).
@@ -160,6 +162,13 @@ _CLAUSE_VERB = (
 )
 
 
+# The modes a window offers by their own name, said with no mode word («cambiá a científica», «switch to
+# scientific»): choosing one is a mode reading (``_read_mode``) whose check needs the window to name it.
+_MODE_NAMES: tuple[frozenset[str], ...] = (
+    frozenset({"cientifica", "scientific"}), frozenset({"conversor", "converter"}),
+    frozenset({"estandar", "standard"}), frozenset({"grafica", "graphing"}),
+    frozenset({"programador", "programmer"}),
+)
 # The same place of a window said in the other language («go to the library» on a Spanish Steam, «andá a
 # configuración» on an English app): a check also accepts the names the window may carry instead. Names only, no
 # application; the application tables below and in the catalog add theirs.
@@ -184,6 +193,8 @@ _LABEL_ALIASES: tuple[frozenset[str], ...] = (
     frozenset({"buscar", "search"}), frozenset({"canciones", "songs"}), frozenset({"imagenes", "pictures"}),
     frozenset({"calendario", "calendar"}), frozenset({"insertar", "insert"}), frozenset({"tabla", "table"}),
     frozenset({"elementos enviados", "sent items"}), frozenset({"escala", "scale"}),
+    # The modes a window offers by name: «cambiá a científica» on an English calculator.
+    *_MODE_NAMES,
     # Colours and drawing tools, said in either language («elegí el rojo» on an English Paint).
     frozenset({"rojo", "red"}), frozenset({"azul", "blue"}), frozenset({"verde", "green"}),
     frozenset({"amarillo", "yellow"}), frozenset({"negro", "black"}), frozenset({"blanco", "white"}),
@@ -488,7 +499,8 @@ def _select_check(target: str) -> str:
 # «cambiá a científica», «pasá a la vista compacta», «poné el modo científico», «switch to scientific mode», «set it
 # to dark mode»: choosing one of the modes or views a window offers, often behind its navigation or menu button.
 # «poner» and «set»/«put» take the mode word («poné la música» is no mode); «cambiar», «pasar», «switch» and «change»
-# do not need it.
+# choose a mode only with the mode word or a mode's own name (``_MODE_NAMES``): «cambiá a descargas», «pasá al canal
+# general» go to a place, which the navigate reader reads.
 _MODE_WORD = r"(?:modo|vista|mode|view)"
 _MODE_CLAUSE = re.compile(
     r"^(?:(?P<put>pon|pone|poneme|ponele|ponela|ponelo|ponla|ponlo|set|put)(?:\s+(?:it|la|lo))?\s+(?:(?:en|in|to|into|a|al)\s+)?"
@@ -497,6 +509,8 @@ _MODE_CLAUSE = re.compile(
     rf"(?:(?:el|la|the|un|una|a)\s+)?(?:(?P<before>{_MODE_WORD})\s+(?:de\s+)?(?:(?:el|la)\s+)?)?"
     rf"(?P<name>[a-z0-9][a-z0-9 .+-]{{0,40}}?)(?:\s+(?P<after>{_MODE_WORD}))?[\s.!?]*$"
 )
+# «modo científico», «scientific mode», «vista previa»: a goal's target that names a mode by the mode word.
+_MODE_AROUND = re.compile(rf"^{_MODE_WORD}\s+(?:de\s+)?(?:(?:el|la)\s+)?(?P<before>\S.*)$|^(?P<after>\S.*?)\s+(?:mode|view)$")
 # The endings of a Spanish adjective said in either gender: the person says «el modo científico» and the window
 # names it after its own feminine noun («Calculadora Científica»).
 _GENDERED_ADJECTIVE = re.compile(r"^[a-z]{2,}(?:ic|iv|ad|id|os)[oa]$")
@@ -504,7 +518,10 @@ _GENDERED_ADJECTIVE = re.compile(r"^[a-z]{2,}(?:ic|iv|ad|id|os)[oa]$")
 
 def gender_twin(name: str) -> str | None:
     """«científico» → «cientifica», «automática» → «automatico»: a one-word adjective in the other gender, folded;
-    None for anything else (a noun such as «inicio» keeps its one form)."""
+    None for anything else (a noun such as «inicio» keeps its one form).
+
+    Only a mode's name has two genders on screen (``mode_names``): a place keeps the gender said («partido» is no
+    «partida»), so callers ask it only for a name ``mode_named`` read as a mode."""
 
     folded = fold(name)
     if _GENDERED_ADJECTIVE.match(folded) is None:
@@ -512,38 +529,73 @@ def gender_twin(name: str) -> str | None:
     return folded[:-1] + ("a" if folded[-1] == "o" else "o")
 
 
-def _mode_names(name: str) -> tuple[str, ...]:
-    """The names a chosen mode may carry on screen: as said, its other-language names and its other gender."""
+def _is_mode_name(name: str) -> bool:
+    """«científica», «científico», «standard»: the own name of a mode a window offers, in either gender."""
+
+    key = fold(name).strip()
+    twin = gender_twin(key)
+    return any(key in group or (twin is not None and twin in group) for group in _MODE_NAMES)
+
+
+def mode_named(target: str) -> str | None:
+    """The mode a goal's target names, or None when it names a place: «modo científico» → «cientifico», «scientific
+    mode» → «scientific», «cientifica» (a mode's own name) → «cientifica»; «descargas», «partido» → None.
+
+    The mind asks it before looking a mode up by its other names (``mode_names``, the other gender among them)."""
+
+    key = fold(target).strip(" \"'«».!?")
+    found = _MODE_AROUND.match(key)
+    if found is not None and found.group("before") and key.startswith(("vista ", "view ")):
+        # «vista previa»: the view word is part of its name (``_read_mode``).
+        return key
+    if found is not None:
+        return (found.group("before") or found.group("after") or "").strip() or None
+    return key if key and _is_mode_name(key) else None
+
+
+def mode_names(name: str) -> tuple[str, ...]:
+    """The names a chosen mode may carry on screen: as said, its other-language names, its other gender and that
+    gender's other-language names («científico» → «cientifico», «cientifica», «scientific»)."""
 
     twin = gender_twin(name)
-    found = (fold(name), *label_alternatives(name), *((twin,) if twin else ()))
+    found = (fold(name), *label_alternatives(name), *((twin, *label_alternatives(twin)) if twin else ()))
     return tuple(dict.fromkeys(found))
 
 
 def _mode_check(name: str) -> str:
-    """Chosen is the mode's item selected, the window titled with it, its page, or a verified click on a control
-    naming it after which a control still names it (measured on the Calculator: after «Científica Calculadora» in its
-    navigation the header reads «Modo de calculadora Científica»; title and selection do not change)."""
+    """Chosen is the mode's item selected, the window titled with it, its page, or its header: a text at the top of
+    the window that names it and appeared after the verified click on it (``header:X``, measured on the Calculator:
+    after «Científica Calculadora» in its navigation the header reads «Modo de calculadora Científica»; title and
+    selection do not change). A click alone on something that names it is no proof: a card, a folder or a channel
+    that holds the word is clicked as well."""
 
-    atoms = ("control:{}:selected", "title:{}", "page:{}", "stepDone:input.visible.click:{}&control:{}")
-    return "|".join(atom.replace("{}", alias) for alias in _mode_names(name) for atom in atoms)
+    atoms = ("control:{}:selected", "title:{}", "page:{}", "header:{}")
+    return "|".join(atom.replace("{}", alias) for alias in mode_names(name) for atom in atoms)
 
 
 def _read_mode(folded: str) -> tuple[str, str | None] | None:
     mode = _MODE_CLAUSE.match(folded)
     if mode is None or _tab_named(folded) is not None:
         return None
-    worded = mode.group("before") or mode.group("after")
+    before, after = mode.group("before"), mode.group("after")
     # «cambiá a científica y calculá 2+2»: the mode ends where the next clause of doing begins.
     name = _segments(mode.group("name"))[0].strip(" \"'«»")
-    if not name or _has_deictic_only(name) or (mode.group("put") and not worded):
+    if not name or _has_deictic_only(name):
         return None
+    if not (before or after) and (mode.group("put") or not _is_mode_name(name)):
+        # No mode said: «cambiá a descargas», «pasá al canal general» are places (the navigate reader's).
+        return None
+    # «la vista previa», «the view menu»: a view is named with its word, which stays part of the name.
+    shown = f"{before} {name}" if before in {"vista", "view"} else name
     if mode.group("put"):
         # «poné el modo avión»: a switch named after the mode is turned on where there is one; elsewhere the mode is
-        # chosen like any other (computer_use reads «activar modo X» so).
-        said = f"{mode.group('before')} {name}" if mode.group("before") else f"{name} {mode.group('after')}"
-        return f"activar {said}", _with_alternatives(said, ("control:{}:on",)) + "|" + _mode_check(name)
-    return f"ir a {name}", _mode_check(name)
+        # chosen like any other (computer_use reads «activar modo X» so). Only a mode a window offers by name may
+        # also show chosen: the page of a switch («Modo avión» in the settings) is selected and titled with it
+        # while the switch stays off.
+        said = f"{before} {name}" if before else f"{name} {after}"
+        switched = _with_alternatives(said, ("control:{}:on",))
+        return f"activar {said}", (switched + "|" + _mode_check(shown)) if _is_mode_name(name) else switched
+    return f"ir a {shown}", _mode_check(shown)
 
 
 def _read_act(folded: str) -> tuple[str, str | None] | None:
@@ -1260,6 +1312,10 @@ def _open_step(application: str) -> MissionStep:
 _LEADING_SEQUENCER = re.compile(r"^(?:(?:y|and)\s+)?(?:luego|despues|entonces|then|after\s+that)\s+(?:de\s+eso\s+)?")
 
 
+# The goals whose clause may name a place inside the application before the application itself.
+_PLACE_GOALS = ("ir a ", "hacer clic en ", "seleccionar ", "activar ", "desactivar ")
+
+
 def _app_frames(folded: str, *, longer_names: bool = True) -> Iterable[tuple[str, str]]:
     """The (application, clause) splits the request frames say; ``longer_names`` also tries names of several words
     after «en», which only the catalog can tell from a statement («en la mañana tengo que ir al banco»)."""
@@ -1273,9 +1329,14 @@ def _app_frames(folded: str, *, longer_names: bool = True) -> Iterable[tuple[str
         if pattern is _APP_FRAME_BACK:
             # «hacé clic en Ajustes en Steam»: the application is after the last «en», the clause keeps the place it
             # names (the first «en» split gave «ajustes en steam» as the application).
+            # Only a clause that goes, clicks, chooses or switches names a place before it: «escribí Cuphead en el
+            # buscador en Steam» types «Cuphead», never «Cuphead en el buscador».
             last = _APP_FRAME_BACK_LAST.match(folded)
             if last is not None and last.group("app") != found.group("app"):
-                yield last.group("app"), _LEADING_SEQUENCER.sub("", last.group("clause"), count=1)
+                last_clause = _LEADING_SEQUENCER.sub("", last.group("clause"), count=1)
+                read = read_clause(last_clause)
+                if read is not None and read[0].startswith(_PLACE_GOALS):
+                    yield last.group("app"), last_clause
         if longer_names and pattern is _APP_FRAME_FRONT:
             # «en el bloc de notas escribí hola»: a name of several words ends where the clause begins.
             words = clause.split()
