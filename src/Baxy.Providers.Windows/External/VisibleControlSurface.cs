@@ -189,7 +189,7 @@ internal static partial class VisibleControlSurface
         if (!TryBounds(hwnd, out int left, out int top, out int right, out int bottom))
             return 0;
         var centre = new Point((left + right) / 2, (top + bottom) / 2);
-        nint hit = WindowFromPoint(centre);
+        nint hit = InPhysicalPixels(() => WindowFromPoint(centre));
         if (hit == 0)
             return 0;
         nint root = GetAncestor(hit, 2);
@@ -771,10 +771,35 @@ internal static partial class VisibleControlSurface
 
     internal static void Click(int screenX, int screenY)
     {
-        _ = SetCursorPos(screenX, screenY);
+        _ = PointAt(screenX, screenY);
         mouse_event(0x0002, 0, 0, 0, 0);
         mouse_event(0x0004, 0, 0, 0, 0);
     }
+
+    /// <summary>
+    /// The cursor placed on a point of the screen in physical pixels, the unit of every point the views hold (the
+    /// capture, the window bounds from the compositor, the accessible tree's rectangles). This process is not DPI
+    /// aware: a point set without a per-monitor context is scaled by the monitor's factor (measured 2026-10-07 at
+    /// 125 %: a word read at y=440 in a folder window's side list was clicked at y=550, three rows lower, and the
+    /// window opened another folder).
+    /// </summary>
+    internal static bool PointAt(int screenX, int screenY) => InPhysicalPixels(() => SetCursorPos(screenX, screenY));
+
+    internal static T InPhysicalPixels<T>(Func<T> act)
+    {
+        nint previous = SetThreadDpiAwarenessContext(PerMonitorAwareV2);
+        try
+        {
+            return act();
+        }
+        finally
+        {
+            if (previous != 0)
+                _ = SetThreadDpiAwarenessContext(previous);
+        }
+    }
+
+    private static readonly nint PerMonitorAwareV2 = -4;
 
     /// <summary>
     /// Whether a window's process runs with more rights than this one (an elevated app such as Task Manager):
@@ -875,7 +900,7 @@ internal static partial class VisibleControlSurface
         public int Bottom;
     }
 
-    private static nint LargestTopLevelWindow(int processId)
+    internal static nint LargestTopLevelWindow(int processId)
     {
         nint best = 0;
         long bestArea = 0;
@@ -888,8 +913,10 @@ internal static partial class VisibleControlSurface
                 return true;
             // Measured live: a File Explorer window belongs to explorer.exe, which also owns the desktop and the
             // taskbar; the desktop is the largest of them and is always covered. Shell surfaces are never the
-            // window of an application.
-            if (IsShellSurface(window) || !GetWindowRect(window, out Rect rect))
+            // window of an application. Nor is a window nobody can see: explorer.exe also holds a cloaked, untitled
+            // frame larger than the folder window (2026-10-07), and taking it made every look bound to the process
+            // wait out its eight retries (≈1.8 s) before finding the folder window by its title.
+            if (IsShellSurface(window) || !HasUsableSurface(window) || !GetWindowRect(window, out Rect rect))
                 return true;
             long area = (long)Math.Max(0, rect.Right - rect.Left)
                 * Math.Max(0, rect.Bottom - rect.Top);
@@ -904,7 +931,7 @@ internal static partial class VisibleControlSurface
         return best;
     }
 
-    private static bool HasUsableSurface(nint window)
+    internal static bool HasUsableSurface(nint window)
     {
         if (!IsWindowVisible(window) || GetWindowTextLengthW(window) == 0)
             return false;
@@ -1024,6 +1051,9 @@ internal static partial class VisibleControlSurface
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool SetCursorPos(int x, int y);
+
+    [LibraryImport("user32.dll")]
+    private static partial nint SetThreadDpiAwarenessContext(nint context);
 
     [LibraryImport("user32.dll")]
     private static partial void mouse_event(

@@ -6,8 +6,8 @@ namespace Baxy.Providers.Windows.Tests;
 /// <summary>
 /// Which window a computer-use mission takes for its application while the application's process is unknown
 /// (safety review 2026-10-07): the executable first, else the application named in the title's last segment as
-/// whole words; never an editor, a terminal, a console or BAXY that the request did not name. Pure rules, nothing on
-/// the desktop is read.
+/// whole words; never an editor, a terminal, a console or BAXY that the request did not name. Pure rules; the last
+/// test only reads the list of windows, nothing on the desktop is touched.
 /// </summary>
 [TestFixture]
 public sealed class ComputerUseWindowIdentityTests
@@ -51,5 +51,33 @@ public sealed class ComputerUseWindowIdentityTests
     public void AnEditorATerminalOrBaxyIsTheApplicationOnlyWhenNamed(string process, string application, bool protectedFrom)
     {
         Assert.That(VisibleControlSurface.ProtectedFrom(process, application), Is.EqualTo(protectedFrom));
+    }
+
+    // A process's window is one a person can see: never a cloaked or untitled frame it also holds (the shell's
+    // explorer.exe holds one larger than its folder windows; taking it made every look bound to the process wait out
+    // its retries, ≈1.8 s each). Only reads the window list.
+    [Test]
+    public void TheLargestWindowOfAProcessIsAlwaysOneWithAUsableSurface()
+    {
+        int[] owners = System.Diagnostics.Process.GetProcesses()
+            .Select(process =>
+            {
+                using (process)
+                {
+                    return process.Id;
+                }
+            })
+            .ToArray();
+        Assert.Multiple(() =>
+        {
+            foreach (int owner in owners)
+            {
+                nint window = VisibleControlSurface.LargestTopLevelWindow(owner);
+                if (window != 0)
+                {
+                    Assert.That(VisibleControlSurface.HasUsableSurface(window), Is.True, $"process {owner}");
+                }
+            }
+        });
     }
 }

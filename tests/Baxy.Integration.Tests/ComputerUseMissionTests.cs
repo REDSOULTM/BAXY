@@ -482,6 +482,62 @@ public sealed class ComputerUseMissionTests
         });
     }
 
+    // Live case n8 (2026-10-07): «andá a Imágenes» typed «imagenes» into the folder's search box and stopped there; the
+    // window's title and its selected tab echoed the query and the mission said it had arrived.
+    [Test]
+    public void APlaceNamedOnlyByAnUnsubmittedQueryIsNotReached()
+    {
+        const string Check = "control:Imágenes:selected|title:Imágenes|page:Imágenes";
+        JsonObject results = View("""
+            {"window": {"title": "imagenes - Resultados de la búsqueda en Trabajo - Explorador de archivos", "process": "explorer",
+                        "focused": {"kind": "Edit", "name": "Buscar en Trabajo", "value": "imagenes"}},
+             "controls": [{"i": 0, "kind": "TabItem", "name": "imagenes - Resultados de la búsqueda en Trabajo", "state": "selected"},
+                          {"i": 1, "kind": "Edit", "name": "Buscar en Trabajo", "state": "focused", "value": "imagenes"},
+                          {"i": 2, "kind": "ListItem", "name": "Imagenes viejas", "state": ""}],
+             "text": {}}
+            """);
+        JsonObject arrived = View("""
+            {"window": {"title": "Imágenes - Explorador de archivos", "process": "explorer",
+                        "focused": {"kind": "Pane", "name": "Imágenes", "value": null}},
+             "controls": [{"i": 0, "kind": "TabItem", "name": "Imágenes", "state": "selected"}], "text": {}}
+            """);
+        JsonArray Steps(string into, params JsonObject[] after)
+        {
+            var steps = new JsonArray
+            {
+                new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["label"] = into, ["ok"] = true },
+                new JsonObject { ["step"] = 2, ["operation"] = "input.text.type", ["text"] = "imagenes", ["into"] = into, ["ok"] = true },
+            };
+            foreach (JsonObject step in after)
+            {
+                steps.Add(step);
+            }
+
+            return steps;
+        }
+
+        JsonObject Enter() => new() { ["step"] = 3, ["operation"] = "input.key.press", ["key"] = "enter", ["ok"] = true };
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate(Check, results, Steps("Buscar en Trabajo"), out string? by), Is.False, by);
+            Assert.That(ComputerUseSuccessCheck.Evaluate(Check, results, Steps("Buscar en Trabajo",
+                new JsonObject { ["step"] = 3, ["operation"] = "input.key.press", ["key"] = "down", ["ok"] = true }), out _), Is.False,
+                "a key that moves inside the suggestions submits nothing");
+            Assert.That(ComputerUseSuccessCheck.Evaluate(Check, results, Steps("Buscar en Trabajo", Enter()), out _), Is.False,
+                "a search entered lists what matches; it is not the place");
+            Assert.That(ComputerUseSuccessCheck.Evaluate(Check, arrived, Steps("Buscar en Trabajo", Enter(),
+                new JsonObject { ["step"] = 4, ["operation"] = "input.visible.click", ["label"] = "Imágenes", ["ok"] = true }), out _),
+                Is.True, "a click from the results to the place by its name went there");
+            Assert.That(ComputerUseSuccessCheck.Evaluate(Check, arrived, Steps("Barra de direcciones", Enter()), out _), Is.True,
+                "the address typed and entered leads to the place it names");
+            Assert.That(ComputerUseSuccessCheck.Evaluate(Check, arrived, Steps("Buscar en Trabajo", Enter()), out _), Is.True,
+                "a search whose Enter opened the place is titled by the place, not by the query");
+            Assert.That(ComputerUseSuccessCheck.Evaluate(Check, arrived, [], out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("title:imagenes&stepDone:input.key.press:enter", results,
+                Steps("Buscar en Trabajo", Enter()), out _), Is.True, "a search submitted is titled by what it searched");
+        });
+    }
+
     [Test]
     public void StepDoneNeedsAVerifiedStepOfThatOperationAndArgument()
     {
