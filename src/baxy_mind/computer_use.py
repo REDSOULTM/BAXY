@@ -1807,7 +1807,10 @@ _MIXED = (
     "For a part that went somewhere or read a value, confirm the state the window shows now; for a part that pressed "
     "a key or typed, say only that it is done in that app, never what it caused; never the clicks, keys or steps; "
 )
-_NO_META = "never mention the mission, the evidence, the check, the screen or the view as such. "
+_NO_META = (
+    "never mention the mission, the evidence, the check, the screen or the view as such. A goal «ir a X» only went to "
+    "X: never say you set, created, started, turned on or changed anything there. "
+)
 _ACT_ONLY_GOAL = re.compile(r"^(?:apretar|escribir|enviar)\b")
 
 
