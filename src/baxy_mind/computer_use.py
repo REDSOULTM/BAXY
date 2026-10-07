@@ -36,6 +36,7 @@ from typing import Any, Iterable
 from . import effect_intent
 from .semantic.missions import (
     KEYS,
+    QUESTION_MARK,
     _key_from_words,
     fold,
     label_alternatives,
@@ -424,7 +425,32 @@ def deterministic_step(
                 arguments["index"] = field["i"]
             return {"operation": "input.visible.click", "arguments": arguments, "reason": "pongo el cursor donde se escribe"}
         return {"operation": "input.text.type", "arguments": {"text": text}, "reason": reason}
-    for head, wanted in (("ir a ", None), ("hacer clic en ", None), ("activar ", "on"), ("desactivar ", "off")):
+    if folded_goal.startswith("ir a la direccion "):
+        # «andá a es.wikipedia.org»: the browser's address bar, the address, Enter.
+        address = goal[len("ir a la direccion "):].strip()
+        if not _steps_ok(history, "input.key.press", key="ctrl_l"):
+            return {"operation": "input.key.press", "arguments": {"key": "ctrl_l"}, "reason": reason}
+        if not _steps_ok(history, "input.text.type"):
+            return {"operation": "input.text.type", "arguments": {"text": address}, "reason": reason}
+        if not _steps_ok(history, "input.key.press", key="enter"):
+            return {"operation": "input.key.press", "arguments": {"key": "enter"}, "reason": reason}
+        return None
+    if folded_goal.startswith("buscar "):
+        # «buscá Hades»: the window's own search (field, button or shortcut), the name, then Enter to submit it.
+        target = goal[len("buscar "):].strip()
+        if not _typed_target(history, target):
+            step = _find_step(target, view, history)
+            return None if step is None or step.get("operation") == "input.scroll" else step
+        if not _steps_ok(history, "input.key.press", key="enter") and not _focused_is_password(view):
+            enter: dict[str, object] = {"key": "enter"}
+            if _composer_with_text(view):
+                # The name went into a message box: Enter there would send it, so RiskPolicy asks first.
+                enter["target"] = "message_composer"
+            return {"operation": "input.key.press", "arguments": enter, "reason": reason}
+        return None
+    for head, wanted in (
+        ("ir a ", None), ("hacer clic en ", None), ("activar ", "on"), ("desactivar ", "off"), ("seleccionar ", "selected"),
+    ):
         if not folded_goal.startswith(head):
             continue
         target = re.sub(r"^(?:el|la|los|las|the|al|a\s+la|a\s+los|a\s+las)\s+", "", goal[len(head):].strip(), flags=re.IGNORECASE)
@@ -452,11 +478,13 @@ def deterministic_step(
             # the navigation only in the OCR lines): the word written on screen is clicked by its label, and the
             # click's cascade (UIA → OCR → vision) finds where it is.
             written = next((name for name in names if _text_line_with(view, name) is not None), None) if kind is None else None
-            if wanted is None and written is not None and not _steps_ok(history, "input.visible.click", label=written):
+            if wanted in (None, "selected") and written is not None and not _steps_ok(history, "input.visible.click", label=written):
                 return {"operation": "input.visible.click", "arguments": {"label": written}, "reason": reason}
             # Not on screen: looked up the way any window offers (search field, quick switcher, find, the list).
             return _find_step(target, view, history) if searching and written is None else None
-        if wanted is not None and wanted in str(control.get("state") or "").split():
+        states = str(control.get("state") or "").split()
+        if wanted is not None and (wanted in states or (wanted == "selected" and "on" in states)):
+            # Already so; a tool or a colour chosen shows as selected or pressed.
             return None
         if _steps_ok(history, "input.visible.click", label=str(control.get("name") or "")):
             # Clicked and not there yet (measured on Discord: the name was written in an activity card, not the
@@ -1045,13 +1073,20 @@ def project_seen(observed: dict, language: str) -> dict[str, object]:
     failed = [step for step in steps if isinstance(step, dict) and step.get("ok") is not True]
     raw_window = observed.get("window")
     window: dict[str, Any] = raw_window if isinstance(raw_window, dict) else {}
+    goal = observed.get("goal")
+    question = None
+    if isinstance(goal, str) and QUESTION_MARK in goal:
+        # «… y decime si el modo es claro u oscuro»: the person's question about the window at the end.
+        goal, question = goal.split(QUESTION_MARK, 1)
     seen: dict[str, object] = {
-        "goal": observed.get("goal"),
+        "goal": goal,
         "reached": observed.get("reached") is True,
         "stepsDone": [describe_step(step, language) for step in done][:8],
         "windowTitle": window.get("title"),
         "joined": observed.get("joined") is True,
     }
+    if question:
+        seen["question"] = question
     if observed.get("application"):
         seen["application"] = observed.get("application")
     if failed:
@@ -1093,6 +1128,20 @@ def project_seen(observed: dict, language: str) -> dict[str, object]:
 
 def compose_instruction(seen: dict, language: str) -> str:
     del language
+    return _question_instruction(seen) + _result_instruction(seen)
+
+
+def _question_instruction(seen: dict) -> str:
+    if not seen.get("question"):
+        return ""
+    return (
+        "seen.question is what the person asked about the window once the mission was done: answer it FIRST, "
+        "only from seen.screen and seen.evidence, quoting what is written there; when they do not show the answer, "
+        "or the mission did not reach its goal, say you could not see it, never guess. Then: "
+    )
+
+
+def _result_instruction(seen: dict) -> str:
     if seen.get("subgoals"):
         chained = (
             "This result is a computer-use mission of several parts done in order: seen.subgoals lists each part "
@@ -1176,7 +1225,8 @@ def mission_defect(folded_reply: str, seen: dict) -> str | None:
 
 # The goal heads the mission reader writes (semantic.missions), so a part's object is what is left after them.
 _GOAL_HEAD = re.compile(
-    r"^(?:ir\s+a\s+la\s+pestana|ir\s+a|hacer\s+clic\s+en|activar|desactivar|apretar|calcular|escribir|abrir)\s+"
+    r"^(?:ir\s+a\s+la\s+pestana|ir\s+a\s+la\s+direccion|ir\s+a|hacer\s+clic\s+en|activar|desactivar|apretar|calcular|"
+    r"escribir|abrir|buscar|seleccionar|reproducir|crear\s+\S+|renombrar(?:\s+.+?)?\s+a)\s+"
 )
 _PART_NEGATION = re.compile(
     r"\b(?:no|not|ni|sin|nunca|never|cannot|couldn'?t|didn'?t|can'?t|wasn'?t|todavia|aun|pendiente|falta\w*|fallo|failed)\b"

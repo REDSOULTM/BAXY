@@ -99,8 +99,8 @@ _TOGGLE_OFF_CLAUSE = re.compile(
     r"turn\s+off|disable|switch\s+off|saca)\s+(?:(?:el|la|los|las|the)\s+)?(?P<target>\S.{0,60}?)[\s.!?]*$"
 )
 _CALCULATE_CLAUSE = re.compile(
-    r"^(?:calcula|calculame|calcular|computa|resuelve|resolve|multiplica|suma|resta|divide|"
-    r"calculate|compute|solve|work\s+out)(?:me)?\s+(?:cuanto\s+(?:es|da|vale)\s+|how\s+much\s+is\s+|what\s+is\s+)?"
+    r"^(?:calcula|calculame|calcular|computa|resuelve|resolve|multiplica|multiplicar|suma|sumar|resta|restar|divide|dividi|"
+    r"dividir|calculate|compute|solve|work\s+out|multiply|add|subtract)(?:me)?\s+(?:cuanto\s+(?:es|da|vale)\s+|how\s+much\s+is\s+|what\s+is\s+)?"
     r"(?P<expr>[0-9][0-9\s.,+\-*/x×÷^%()=]*[0-9)])[\s.!?]*$"
 )
 _TYPE_CLAUSE = re.compile(
@@ -174,6 +174,20 @@ _LABEL_ALIASES: tuple[frozenset[str], ...] = (
     frozenset({"actualizaciones", "updates"}), frozenset({"aplicaciones", "apps"}),
     frozenset({"sistema", "system"}), frozenset({"personalizacion", "personalization"}),
     frozenset({"dispositivos", "devices"}), frozenset({"servidores", "servers"}),
+    frozenset({"buscar", "search"}), frozenset({"canciones", "songs"}), frozenset({"imagenes", "pictures"}),
+    frozenset({"calendario", "calendar"}), frozenset({"insertar", "insert"}), frozenset({"tabla", "table"}),
+    frozenset({"elementos enviados", "sent items"}), frozenset({"escala", "scale"}),
+    # Colours and drawing tools, said in either language («elegí el rojo» on an English Paint).
+    frozenset({"rojo", "red"}), frozenset({"azul", "blue"}), frozenset({"verde", "green"}),
+    frozenset({"amarillo", "yellow"}), frozenset({"negro", "black"}), frozenset({"blanco", "white"}),
+    frozenset({"naranja", "orange"}), frozenset({"violeta", "morado", "purple", "violet"}),
+    frozenset({"rosa", "rosado", "pink"}), frozenset({"gris", "gray", "grey"}), frozenset({"marron", "brown"}),
+    frozenset({"lapiz", "pencil"}), frozenset({"pincel", "pinceles", "brush", "brushes"}),
+    frozenset({"goma", "goma de borrar", "borrador", "eraser"}),
+    frozenset({"balde de pintura", "bote de pintura", "relleno", "rellenar", "fill"}),
+    frozenset({"rectangulo", "rectangle"}), frozenset({"texto", "text"}), frozenset({"linea", "line"}),
+    frozenset({"circulo", "elipse", "ovalo", "circle", "ellipse", "oval"}),
+    frozenset({"selector de color", "cuentagotas", "color picker"}),
 )
 
 
@@ -258,7 +272,11 @@ def _catalog_key(candidate: str, catalog: effect_intent.ApplicationCatalogIndex)
                     return name
     # «abre Steam»: the catalog name itself, or one catalog name that starts with it.
     starts = [entry_key for entry_key in catalog.keys if entry_key.startswith(key + " ") or entry_key == key]
-    return starts[0] if len(starts) == 1 else None
+    if len(starts) == 1:
+        return starts[0]
+    # «Teams» for «Microsoft Teams»: the one catalog name that ends with it.
+    ends = [entry_key for entry_key in catalog.keys if entry_key.endswith(" " + key)] if not starts else []
+    return ends[0] if len(ends) == 1 else None
 
 
 def _display_name(key: str, catalog: effect_intent.ApplicationCatalogIndex) -> str:
@@ -322,6 +340,120 @@ _SEND_CLAUSE = re.compile(
 )
 
 
+# What a copy or a paste acts on when it is said: the result, the text, the number shown («copiá el resultado»).
+_WHAT_IS_SHOWN = (
+    r"(?:it|that|this|eso|esto|todo|all|(?:el|la|the)\s+(?:resultado|result|texto|text|numero|number|valor|value|"
+    r"respuesta|answer|link|enlace|url|direccion|address))"
+)
+# The edits every window takes from the keyboard: «seleccioná todo», «copialo», «pegá», «deshacé», «select all».
+_SHORTCUT_CLAUSES: tuple[tuple[re.Pattern[str], str, tuple[str, ...]], ...] = (
+    (re.compile(r"^(?:selecciona|seleccionar|seleccione|marca|select|highlight)\s+(?:todo(?:\s+el\s+texto)?|all(?:\s+the\s+text)?|everything)$"), "ctrl a", ()),
+    (re.compile(rf"^(?:copia|copialo|copiala|copiar|copiarlo|copy)(?:\s+{_WHAT_IS_SHOWN})?$"), "ctrl c", ("copiar", "copy")),
+    (re.compile(rf"^(?:pega|pegalo|pegala|pegar|pegarlo|paste)(?:\s+{_WHAT_IS_SHOWN})?(?:\s+(?:aca|aqui|here))?$"), "ctrl v", ("pegar", "paste")),
+    (re.compile(r"^(?:deshace|deshaz|deshacer|deshacelo|undo)(?:\s+(?:it|that|eso|lo\s+ultimo|the\s+last\s+(?:thing|change)))?$"), "ctrl z", ("deshacer", "undo")),
+)
+# «12 por 7», «345 más 12», «100 entre 4», «12 times 7», «6 by 7»: the operation said with words, as its sign.
+_SPOKEN_OPERATORS: tuple[tuple[str, str], ...] = (
+    (r"multiplicad[oa]\s+por|multiplied\s+by|por|times|x", "×"),
+    (r"dividid[oa]\s+(?:por|entre)|divided\s+by|entre|over", "÷"),
+    (r"mas|plus", "+"),
+    (r"menos|minus", "-"),
+)
+_CALCULATE_HEAD = re.compile(
+    r"^(?:(?P<times>multiplica|multiplicar|multiplicame|multiply)|(?P<split>divide|dividi|dividir|dividime)|"
+    r"(?P<sum>suma|sumar|sumame|add)|(?P<less>resta|restar|subtract))\b"
+)
+
+
+def _spoken_expression(folded: str) -> str:
+    """The clause with the operations said in words between two numbers written as their signs; «y», «and», «by»
+    follow the verb that said which operation («sumá 45 y 30», «multiply 6 by 7»)."""
+
+    head = _CALCULATE_HEAD.match(folded)
+    pairs = list(_SPOKEN_OPERATORS)
+    if head is not None:
+        sign = {"times": "×", "split": "÷", "sum": "+", "less": "-"}[head.lastgroup or "sum"]
+        pairs.append((r"y|and|by|con|with|to" if sign in "×÷+" else r"de|from", sign))
+    for words, sign in pairs:
+        folded = re.sub(rf"(?<=\d)\s+(?:{words})\s+(?=\d)", f" {sign} ", folded)
+    return folded
+
+
+# «poné la primera», «reproducí el primer resultado», «play the first one»: what a search just listed, by its place.
+_ORDINAL = r"(?:primer[oa]?|segund[oa]|tercer[oa]?|ultim[oa]|first|second|third|last|1st|2nd|3rd)"
+_PLAY_HEAD = r"(?:pone|pon|poneme|ponele|reproduci|reproduce|reproducir|reproducime|toca|tocame|play|start\s+playing|dale\s+play\s+a)"
+_PLAY_ORDINAL_CLAUSE = re.compile(
+    rf"^{_PLAY_HEAD}\s+(?P<what>(?:(?:la|el|lo|the)\s+)?{_ORDINAL}"
+    r"(?:\s+(?:cancion|tema|resultado|video|episodio|capitulo|opcion|one|song|track|result|video|episode|option))?)"
+    r"(?:\s+(?:que\s+(?:aparezca|aparece|salga|sale)|de\s+(?:la\s+lista|los\s+resultados)|on\s+the\s+list|"
+    r"in\s+the\s+results|that\s+(?:shows\s+up|appears)))?$"
+)
+# Playing shows as the player's pause control, after a click or a key of this sub-goal (something already playing
+# before it does not count).
+_PLAYING_CHECK = "|".join(
+    f"control:{pause}&stepDone:{operation}"
+    for pause in ("pausa", "pause")
+    for operation in ("input.visible.click", "input.key.press")
+)
+# The kinds of things a person creates or renames by name inside an application.
+_ITEM_KIND = (
+    r"(?:subcarpeta|carpeta|archivo|documento|fichero|nota|lista\s+de\s+reproduccion|lista|playlist|hoja\s+de\s+calculo|"
+    r"hoja|canal|grupo|servidor|evento|tarea|presentacion|proyecto|album|directorio|"
+    r"subfolder|folder|file|document|note|list|spreadsheet|sheet|channel|group|server|event|task|presentation|"
+    r"project|album|directory)"
+)
+_NAMING = (
+    r"(?:que\s+se\s+llame|llamad[oa]|con\s+(?:el\s+)?nombre(?:\s+de)?|de\s+nombre|titulad[oa]|"
+    r"named|called|titled|with\s+the\s+name)"
+)
+# «creá una carpeta llamada X», «create a new folder named X», «hacé la carpeta X».
+_CREATE_CLAUSE = re.compile(
+    r"^(?:crea|crear|creame|crea\s+me|haz|hace|hacer|hazme|haceme|genera|generar|agrega|agregar|anadi|anade|anadir|"
+    r"create|make|add|new)\s+"
+    r"(?:(?P<article>un|una|otro|otra|a|an|another|la|el|the)\s+)?(?:(?:nuev[oa]|new)\s+)?(?P<kind>" + _ITEM_KIND + r")"
+    r"(?:\s+(?:nuev[oa]|new))?\s+(?:(?P<naming>" + _NAMING + r")\s+)?[\"'«“]?(?P<name>[^\s\"'«».,;!?]\S{0,79}?(?:\s+\S+){0,5}?)[\"'»”]?[\s.!?]*$"
+)
+# «renombrá la carpeta X a Y», «cambiale el nombre a X por Y», «rename X to Y», «renombralo a Y».
+_RENAME_CLAUSE = re.compile(
+    r"^(?:renombra|renombrar|renombrale|renombre|rename|cambia(?:le)?\s+el\s+nombre|change\s+the\s+name)"
+    r"(?P<pronoun>lo|la|\s+it)?"
+    r"(?:\s+(?:de|del|a|al|of))?\s+"
+    r"(?:(?:(?:el|la|los|las|the|this|esta|este|mi|my)\s+)?(?:" + _ITEM_KIND + r"\s+)?(?:(?:el|la|the)\s+)?"
+    r"[\"'«“]?(?P<old>\S.{0,80}?)[\"'»”]?\s+)??"
+    r"(?:a|al|como|por|to|as|into)\s+[\"'«“]?(?P<new>\S.{0,80}?)[\"'»”]?[\s.!?]*$"
+)
+# «buscá a Duki», «buscá Hades», «search for Queen», «look up X»: typing a name in the window's own search.
+_SEARCH_CLAUSE = re.compile(
+    r"^(?:busca|buscar|buscame|buscale|busque|search(?:\s+for)?|search\s+up|find(?:\s+me)?|look\s+(?:up|for)|"
+    r"encontra|encuentra|encontrar)\s+(?:(?:a|al)\s+)?(?P<what>\S.{0,80}?)[\s.!?]*$"
+)
+_SEARCH_NOUN = (
+    r"(?:(?:el|la|los|las|the|mi|my)\s+)?"
+    r"(?:(?:cancion|tema|juego|pelicula|serie|video|archivo|documento|contacto|usuario|artista|album|"
+    r"song|track|game|movie|show|video|file|document|contact|user|artist|album)\s+(?:de\s+|del\s+)?)?"
+)
+# «elegí el lápiz», «seleccioná el color rojo», «pick the red color», «choose the fill tool»: a tool, a colour or an
+# option of the window, chosen by clicking it.
+_SELECT_CLAUSE = re.compile(
+    r"^(?:selecciona|seleccionar|seleccione|elegi|elige|elegir|escogi|escoge|escoger|agarra|usa|usar|"
+    r"select|choose|pick|use)\s+(?P<what>\S.{0,60}?)[\s.!?]*$"
+)
+_SELECT_NOUN_BEFORE = re.compile(
+    r"^(?:(?:el|la|los|las|the|un|una|a|an)\s+)?(?:(?:color|colour|herramienta|tool|opcion|option)\s+(?:de\s+(?:la\s+|el\s+)?)?)?"
+)
+_SELECT_NOUN_AFTER = re.compile(r"\s+(?:color|colour|tool|option|button|boton)$")
+
+
+def _select_target(what: str) -> str:
+    target = _SELECT_NOUN_BEFORE.sub("", what.strip(" \"'«»“”"), count=1)
+    return _SELECT_NOUN_AFTER.sub("", target).strip()
+
+
+def _select_check(target: str) -> str:
+    # Chosen is the control selected or pressed; where the window says neither, the verified click on it.
+    return _with_alternatives(target, ("control:{}:selected", "control:{}:on", "stepDone:input.visible.click:{}"))
+
+
 def _read_act(folded: str) -> tuple[str, str | None] | None:
     if _SEND_CLAUSE.match(folded) is not None:
         return "enviar", "stepDone:input.key.press:enter"
@@ -330,7 +462,40 @@ def _read_act(folded: str) -> tuple[str, str | None] | None:
         catalog_key = _key_from_words(key.group("key"))
         if catalog_key is not None:
             return f"apretar {key.group('key').strip()}", f"stepDone:input.key.press:{catalog_key}"
-    calculate = _CALCULATE_CLAUSE.match(folded)
+    for shortcut, keys, labels in _SHORTCUT_CLAUSES:
+        if shortcut.match(folded) is not None:
+            # The key, or the window's own control for the same edit.
+            check = "|".join((f"stepDone:input.key.press:{keys.replace(' ', '_')}",
+                              *(f"stepDone:input.visible.click:{label}" for label in labels)))
+            return f"apretar {keys}", check
+    played = _PLAY_ORDINAL_CLAUSE.match(folded)
+    if played is not None:
+        return f"reproducir {played.group('what')}", _PLAYING_CHECK
+    created = _CREATE_CLAUSE.match(folded)
+    if created is not None and (created.group("naming") or created.group("article") in {"la", "el", "the"}):
+        name = created.group("name").strip(" \"'«»“”")
+        if name and fold(name) not in {"nueva", "nuevo", "new", "vacia", "vacio", "empty"}:
+            # The item named appears among the window's controls (never the field the name was typed in).
+            return f"crear {created.group('kind')} {name}", f"control:{name}"
+    renamed = _RENAME_CLAUSE.match(folded)
+    if renamed is not None:
+        old = (renamed.group("old") or "").strip(" \"'«»“”")
+        new = renamed.group("new").strip(" \"'«»“”")
+        if new and not _has_deictic_only(new):
+            return (f"renombrar {old} a {new}" if old else f"renombrar a {new}"), f"control:{new}"
+    searched = _SEARCH_CLAUSE.match(folded)
+    if searched is not None:
+        what = re.sub(rf"^{_SEARCH_NOUN}", "", searched.group("what"), count=1).strip(" \"'«»“”")
+        if what and not _has_deictic_only(what):
+            # Searched is the page titled with the name (a site's search goes to it), or the name typed in this
+            # sub-goal and submitted while it is on screen (the window's results).
+            return f"buscar {what}", f"title:{what}|stepDone:input.text.type&stepDone:input.key.press:enter&text:{what}"
+    selected = _SELECT_CLAUSE.match(folded)
+    if selected is not None:
+        target = _select_target(selected.group("what"))
+        if target and not _has_deictic_only(target):
+            return f"seleccionar {target}", _select_check(target)
+    calculate = _CALCULATE_CLAUSE.match(_spoken_expression(folded))
     if calculate is not None:
         expression = " ".join(calculate.group("expr").split())
         return (
@@ -338,40 +503,62 @@ def _read_act(folded: str) -> tuple[str, str | None] | None:
             "stepDone:input.key.press:enter|stepDone:input.visible.click:igual|stepDone:input.visible.click:=|stepDone:input.text.type:=",
         )
     on = _TOGGLE_ON_CLAUSE.match(folded)
-    if on is not None and not _has_deictic_only(on.group("target")):
+    if on is not None and not _has_deictic_only(on.group("target")) and not re.match(_ORDINAL, on.group("target")):
         target = on.group("target").strip()
         return f"activar {target}", _with_alternatives(target, ("control:{}:on",))
     off = _TOGGLE_OFF_CLAUSE.match(folded)
     if off is not None and not _has_deictic_only(off.group("target")):
         target = off.group("target").strip()
         return f"desactivar {target}", _with_alternatives(target, ("control:{}:off",))
+    if _NEW_TAB_CLAUSE.match(folded) is not None:
+        return "apretar ctrl t", "stepDone:input.key.press:ctrl_t"
     tab = _tab_named(folded)
     if tab is not None:
         # The selected tab whose title holds the name (the shell matches a control's name by containment), or
         # the browser's window title, which is the title of the tab in front.
         return f"ir a la pestaña {tab}", f"control:{tab}:selected|title:{tab}"
-    navigate = _NAVIGATE_CLAUSE.match(folded)
-    if navigate is not None:
+    for place in (_NAVIGATE_CLAUSE.match(folded), _OPEN_INSIDE_CLAUSE.match(folded)):
+        if place is None:
+            continue
         # «ve a la biblioteca y escribí hola»: the place ends where the next clause of doing begins.
-        target = _segments(navigate.group("target"))[0].strip(" \"'«»")
-        if target and not re.search(r"https?://|\b(?:[a-z0-9-]+\.)+[a-z]{2,63}\b", target):
-            return (
-                f"ir a {target}",
-                _with_alternatives(target, ("control:{}:selected", "title:{}", "page:{}")),
-            )
-    opened = _OPEN_INSIDE_CLAUSE.match(folded)
-    if opened is not None:
-        # «en el Panel de control abrí Programas»: opening a place inside the application is going to it.
-        target = _segments(opened.group("target"))[0].strip(" \"'«»")
+        target = _segments(place.group("target"))[0].strip(" \"'«»")
+        address = _ADDRESS.fullmatch(target)
+        if address is not None:
+            if place.re is _NAVIGATE_CLAUSE:
+                # «andá a es.wikipedia.org»: the address typed in the browser's bar; arrived is the site in the title.
+                return f"ir a la direccion {target}", f"title:{_site_name(address.group('host'))}"
+            continue
+        target = _ENGLISH_PLACE_AFTER.sub("", target)
         if target:
-            return (
-                f"ir a {target}",
-                _with_alternatives(target, ("control:{}:selected", "title:{}", "page:{}")),
-            )
+            atoms = ["control:{}:selected", "title:{}", "page:{}"]
+            if _SECTION_WORD.search(place.group(0)[: place.start("target")]):
+                # A section of a page is reached by its link: the verified click on it is arriving.
+                atoms.append("stepDone:input.visible.click:{}")
+            return f"ir a {target}", _with_alternatives(target, atoms)
     typed = _TYPE_CLAUSE.match(folded)
     if typed is not None:
         return f"escribir {typed.group('text').strip()}", "stepDone:input.text.type"
     return None
+
+
+# «abrí una pestaña nueva», «open a new tab»: the browser's own key for it.
+_NEW_TAB_CLAUSE = re.compile(
+    r"^(?:abri|abre|abrir|abrime|open|crea|create)\s+(?:(?:una|otra|a|another)\s+)?(?:(?:nueva|new)\s+)?"
+    r"(?:pestana|tab|solapa)(?:\s+(?:nueva|new))?$"
+)
+_ADDRESS = re.compile(r"(?:https?://)?(?P<host>(?:[a-z0-9-]+\.)+[a-z]{2,63})(?:/\S*)?")
+_SECTION_WORD = re.compile(r"\b(?:seccion|section|apartado)\b")
+# «the music channel», «the Pictures folder»: the English place noun after the name is not the name.
+_ENGLISH_PLACE_AFTER = re.compile(r"(?<=\S)\s+(?:channel|folder|server|section|menu|chat|room|page)$")
+
+
+def _site_name(host: str) -> str:
+    """«es.wikipedia.org» → «wikipedia»: the label a site's pages carry in their titles."""
+
+    labels = [label for label in host.split(".") if label != "www"]
+    if len(labels) > 2 and labels[-2] in {"co", "com", "org", "net", "gov", "gob", "edu", "ac"}:
+        return labels[-3]
+    return labels[-2] if len(labels) >= 2 else labels[0]
 
 
 def read_clause(clause: str) -> tuple[str, str | None] | None:
@@ -398,10 +585,16 @@ def read_clause(clause: str) -> tuple[str, str | None] | None:
         doing = folded
     elif _names_nothing(doing):
         return None
-    label = effect_intent._visible_click_label(doing, allow_navigate=True)
+    label = effect_intent._visible_click_label(doing, allow_navigate=True) or effect_intent._visible_click_label(
+        _TOUCH_HEAD.sub("haz clic en ", doing, count=1)
+    )
     if label is not None:
         return f"hacer clic en {label}", _with_alternatives(label, ("stepDone:input.visible.click:{}",))
     return doing, None
+
+
+# «tocá Comunidad», «tap Join»: touching a control is clicking it.
+_TOUCH_HEAD = re.compile(r"^(?:toca|tocale|toque|tap(?:\s+on)?|clickea|clica|clicka|pincha)\s+(?:(?:en|on)\s+)?")
 
 
 def _has_deictic_only(target: str) -> bool:
@@ -418,26 +611,61 @@ def _names_nothing(reading: str) -> bool:
     return clitic is not None and _head_is(head[: clitic.start()], _CLAUSE_VERB)
 
 
-def _as_said(goal: str, said: str) -> str:
-    """«escribir X»: X as the person wrote it (case, accents) and without the quotes that delimit it (measured:
-    «escribí "leche"» typed the quotes, and the folded reading would type «hola mundo» for «Hola Mundo»)."""
+# The goals whose tail is the person's own literal: typed, searched, a name given to what is created or renamed.
+_LITERAL_GOAL = re.compile(
+    r"^(?P<head>escribir |buscar |crear " + _ITEM_KIND + r" |renombrar (?:(?P<old>.+?) )?a )(?P<literal>.+)$"
+)
 
-    if not goal.startswith("escribir "):
-        return goal
-    wanted = goal[len("escribir "):].strip()
+
+def _restore(wanted: str, said: str) -> str:
+    """The folded piece ``wanted`` as the person wrote it in ``said`` (case, accents), without delimiting quotes."""
+
     folded_chars: list[str] = []
     origin: list[int] = []
     for position, character in enumerate(said):
         for piece in fold(character) or (" " if character.isspace() else ""):
             folded_chars.append(piece)
             origin.append(position)
-    folded_said = "".join(folded_chars)
-    start = folded_said.find(wanted)
+    start = "".join(folded_chars).find(wanted)
     if start < 0:
-        return "escribir " + wanted.strip("\"'«»“”")
+        return wanted.strip("\"'«»“”")
     end = start + len(wanted) - 1
-    original = said[origin[start]:origin[end] + 1]
-    return "escribir " + original.strip().strip("\"'«»“”").strip()
+    return said[origin[start]:origin[end] + 1].strip().strip("\"'«»“”").strip()
+
+
+def _as_said(goal: str, said: str) -> str:
+    """«escribir X», «buscar X», «crear carpeta X», «renombrar X a Y»: X and Y as the person wrote them (case,
+    accents) and without the quotes that delimit them (measured: «escribí "leche"» typed the quotes, and the folded
+    reading would type «hola mundo» for «Hola Mundo»)."""
+
+    found = _LITERAL_GOAL.match(goal)
+    if found is None:
+        return goal
+    head = found.group("head")
+    if found.group("old"):
+        head = f"renombrar {_restore(found.group('old'), said)} a "
+    return head + _restore(found.group("literal").strip(), said)
+
+
+# An undoing or paying act said anywhere in the request: never read as a mission (owner's rule; RiskPolicy asks for
+# such a step, and a whole goal of that kind is not handed to the screen loop).
+_UNDOING_OR_PAYING_ACT = re.compile(
+    r"\b(?:borra|borrala|borralo|borralas|borralos|borrar|borre|borrame|elimina|eliminala|eliminalo|eliminar|elimine|"
+    r"vaciar|vacia\s+(?:la|el|los|las)|formatea|formatear|formatealo|desinstala|desinstalar|desinstalalo|desinstale|"
+    r"compra|compralo|comprala|comprar|comprame|compre|paga|pagalo|pagala|pagar|pague|transferi|transferir|transfiere|"
+    r"delete|remove|uninstall|format|buy|purchase|pay|wipe|erase)\b"
+)
+# «… y decime si el modo es claro u oscuro», «and tell me what it says»: a question about what the window shows at
+# the end. It is no sub-goal: the mission's final answers it from the last view (computer_use.project_seen).
+_QUESTION_TAIL = re.compile(
+    r"(?:\s*[,;.]\s*(?:(?:y|and)\s+)?|\s+(?:y|and)\s+|\s+(?=(?:despues|luego|then|entonces)\s))"
+    r"(?:(?:despues|luego|then|entonces|al\s+final|finally)\s+)?"
+    r"(?P<question>(?:decime|dime|digame|deci|contame|cuentame|avisame|fijate|mira|mirame|tell\s+me|let\s+me\s+know|"
+    r"show\s+me|check)\s+(?:si|que|cual|cuales|cuanto|cuanta|cuantos|cuantas|como|donde|cuando|quien|whether|if|what|"
+    r"which|how|where|when|who)\b.*)$"
+)
+# The mark between the sub-goals and the question in a mission's goal (computer_use.project_seen reads it).
+QUESTION_MARK = "; y responder: "
 
 
 def mission_request(
@@ -446,7 +674,9 @@ def mission_request(
 ) -> MissionRequest | None:
     """«en <app> <hacé X>», «abre <app> y <hacé X>», «<hacé X> en <app>»,
     «andá a la pestaña de X» → the mission, or None. Closing every tab is not a
-    mission: it is browser.control close_all, confirmed (RiskPolicy)."""
+    mission: it is browser.control close_all, confirmed (RiskPolicy). A closing
+    question about what the window shows («… y decime si está activado») goes
+    with the goal, for the final to answer from the last view."""
 
     if not text or len(text) > 2048:
         return None
@@ -454,8 +684,23 @@ def mission_request(
     if catalog.occurrence_pattern is None:
         return None
     folded = effect_intent._strip_request_envelope(fold(re.sub(r"[\r\n]+", " . ", text))).strip()
-    if not folded or effect_intent._is_negative_effect_clause(folded):
+    if not folded or effect_intent._is_negative_effect_clause(folded) or _UNDOING_OR_PAYING_ACT.search(folded):
         return None
+    asked = _QUESTION_TAIL.search(folded)
+    question = None
+    if asked is not None and asked.start() > 0:
+        question = _restore(asked.group("question").strip(" .!?"), text)
+        folded = folded[: asked.start()].strip(" ,;.")
+    mission = _read_mission(folded, text, catalog)
+    if mission is None or question is None:
+        return mission
+    steps = mission.steps or (MissionStep(mission.application, mission.goal, mission.success_check, mission.clause),)
+    goal = "; luego ".join(step.goal for step in steps).encode("utf-8")[:400].decode("utf-8", "ignore")
+    tail = (QUESTION_MARK + question).encode("utf-8")[:100].decode("utf-8", "ignore")
+    return replace(mission, goal=goal + tail, steps=steps)
+
+
+def _read_mission(folded: str, text: str, catalog: effect_intent.ApplicationCatalogIndex) -> MissionRequest | None:
     chained = _chained_request(folded, catalog)
     if chained is not None:
         steps = tuple(replace(step, goal=_as_said(step.goal, text)) for step in chained.steps)
@@ -466,6 +711,9 @@ def mission_request(
         if key is None:
             continue
         clause = clause.strip(" ,;:")
+        if len(_segments(clause)) > 1:
+            # Several clauses the chain could not read: one of them is no doing it knows, so none is read alone.
+            continue
         # «abre Steam y decime la hora»: the second clause must be doing inside
         # the app; a catalog read elsewhere is not a mission.
         read = read_clause(clause)
@@ -578,7 +826,7 @@ def _starts_clause(segment: str) -> bool:
     segment = segment.strip(" ,;:.!?")
     if not segment:
         return False
-    if _BARE_OPEN.match(segment) is not None or read_clause(segment) is not None:
+    if _BARE_OPEN.match(segment) is not None or _pronoun_family(segment) is not None or read_clause(segment) is not None:
         return True
     return any(read_clause(clause) is not None for _, clause in _app_frames(segment, longer_names=False))
 
@@ -602,28 +850,112 @@ def _segments(folded: str) -> list[str]:
     for joiner, piece in zip(joiners, pieces[1:]):
         if _starts_clause(piece):
             merged.append(piece)
-        elif _ELLIPTIC_PLACE.match(piece) and _goes_to(merged[-1]) and _starts_clause(f"ve {piece}"):
-            # «andá a la biblioteca en Steam y después a general en Discord»: the going is said once.
-            merged.append(f"ve {piece}")
+            continue
+        elliptic = _elliptic(piece, joiner, merged[-1])
+        if elliptic is not None:
+            merged.append(elliptic)
+        elif _VERB_AND_OBJECT.match(piece) and _family(merged[-1]) is not None:
+            # «andá a la biblioteca y dibujá a Batman»: an order the readers do not know is no part of a place's
+            # name; kept apart, it leaves the chain unread (the decider's) instead of glued into the place.
+            merged.append(piece)
         else:
             merged[-1] += joiner + piece
     return [segment.strip(" ,;") for segment in merged]
 
 
 _ELLIPTIC_PLACE = re.compile(r"(?:a|al|hacia|to)\s+\S")
+# A word followed by its object («dibujá a Batman», «descargá el juego», «draw a circle»): said like an order.
+_VERB_AND_OBJECT = re.compile(
+    r"^[a-z]{3,}\s+(?:a|al|el|la|los|las|un|una|unos|unas|mi|mis|tu|que|con|lo|le|me|the|an|my|your|it|me|to)\s+\S"
+)
+_SEQUENCER = re.compile(r"\b(?:luego|despues|entonces|then|after\s+that)\b")
+# «… y después el color rojo», «then the red color»: an object said with its article, the verb said once before.
+_ARTICLE_OBJECT = re.compile(r"^(?:el|la|los|las|the)\s+\S")
+# «go to System, then Display», «then downloads»: a bare name of at most three words.
+_BARE_NAME = re.compile(r"^[a-z0-9][a-z0-9.+-]*(?:\s+[a-z0-9][a-z0-9.+-]*){0,2}$")
 
 
-def _goes_to(segment: str) -> bool:
+def _elliptic(piece: str, joiner: str, previous: str) -> str | None:
+    """The clause a piece says with the previous clause's verb left out: «andá a la biblioteca y después a general»,
+    «elegí el lápiz y después el color rojo», «hacé clic en Insertar y después en Tabla», «go to System, then
+    Display». None when the piece is not such an object, or the previous clause is no go-to, choice or click."""
+
+    family = _family(previous)
+    piece = piece.strip(" ,;:.!?")
+    sequenced = _SEQUENCER.search(joiner) is not None
+    candidates: list[str] = []
+    if family == "ir a ":
+        if _ELLIPTIC_PLACE.match(piece):
+            candidates.append(f"ve {piece}")
+        elif sequenced and (_ARTICLE_OBJECT.match(piece) or _BARE_NAME.match(piece)):
+            candidates.append(f"ve a {piece}")
+    elif family == "seleccionar " and sequenced and (_ARTICLE_OBJECT.match(piece) or _BARE_NAME.match(piece)):
+        candidates.append(f"selecciona {piece}")
+    elif family == "hacer clic en " and sequenced:
+        candidates.append("haz clic en " + re.sub(r"^(?:en|on)\s+", "", piece))
+    return next((candidate for candidate in candidates if _starts_clause(candidate)), None)
+
+
+def _family(segment: str) -> str | None:
+    """The goal head of the act a clause says (``ir a ``, ``seleccionar ``, ``hacer clic en ``), or None."""
+
     segment = segment.strip(" ,;:.!?")
     reads = (read_clause(segment), *(read_clause(clause) for _, clause in _app_frames(segment, longer_names=False)))
-    return any(read is not None and read[0].startswith("ir a ") for read in reads)
+    for read in reads:
+        if read is None:
+            continue
+        for head in ("ir a la pestaña ", "ir a la direccion ", "ir a ", "seleccionar ", "hacer clic en "):
+            if read[0].startswith(head):
+                return None if head in {"ir a la pestaña ", "ir a la direccion "} else head
+    return None
+
+
+# «abrilo», «activala», «ponelo», «open it», «turn it on»: the object is what the previous clause named.
+_PRONOUN_CLAUSE = re.compile(
+    r"^(?P<verb>[a-z]+?)(?:me|le|se)?(?:lo|la|los|las)$"
+    r"|^(?P<english>open|play|select|choose|pick|enable|disable|activate|start|turn\s+on|turn\s+off)\s+(?:it|that|this|them)$"
+    r"|^turn\s+(?:it|that|this|them)\s+(?P<turn>on|off)$"
+)
+_PRONOUN_FAMILIES: tuple[tuple[str, frozenset[str]], ...] = (
+    ("open", frozenset({"abri", "abre", "abrir", "open"})),
+    ("on", frozenset({"activa", "activar", "prende", "prender", "enciende", "encende", "encender", "habilita",
+                      "habilitar", "enable", "activate", "turn on", "on"})),
+    ("off", frozenset({"desactiva", "desactivar", "apaga", "apagar", "deshabilita", "deshabilitar", "disable",
+                       "turn off", "off"})),
+    ("play", frozenset({"pone", "pon", "poner", "reproduci", "reproduce", "reproducir", "play", "start"})),
+    ("select", frozenset({"selecciona", "seleccionar", "elegi", "elige", "elegir", "escogi", "escoge", "escoger",
+                          "select", "choose", "pick"})),
+)
+
+
+def _pronoun_family(segment: str) -> str | None:
+    found = _PRONOUN_CLAUSE.match(segment.strip(" ,;:.!?"))
+    if found is None:
+        return None
+    verb = " ".join((found.group("verb") or found.group("english") or found.group("turn") or "").split())
+    return next((family for family, verbs in _PRONOUN_FAMILIES if verb in verbs), None)
+
+
+def _pronoun_read(family: str, referent: str) -> tuple[str, str | None] | None:
+    if family == "play":
+        return f"reproducir {referent}", _PLAYING_CHECK
+    said = {"open": "abri", "on": "activa", "off": "desactiva", "select": "selecciona"}[family]
+    return read_clause(f"{said} {referent}")
+
+
+# The goal heads whose tail names the thing a pronoun of the next clause stands for.
+_REFERENT_GOAL = re.compile(
+    r"^(?:ir a la pestaña |ir a la direccion |ir a |buscar |crear " + _ITEM_KIND + r" |renombrar (?:.+? )?a |"
+    r"seleccionar |activar |desactivar |hacer clic en |reproducir )(?P<object>.+)$"
+)
 
 
 def _chained_request(folded: str, catalog: effect_intent.ApplicationCatalogIndex) -> MissionRequest | None:
     """«abre Steam y andá a la biblioteca, y después en Discord andá a general» → one mission whose ``steps`` are
     the sub-goals in order (contract §4.1). The application is carried forward and switches where a clause names
-    another one; each sub-goal has its own goal and check (``read_clause``). None for a single clause (today's
-    reading stays), for a clause that is not doing, or with no application named at all."""
+    another one; each sub-goal has its own goal and check (``read_clause``); a clause whose object is a pronoun
+    («buscá Hades y abrilo») acts on what the previous clause named. None for a single clause (today's reading
+    stays), for a clause that is not doing, or with no application named at all."""
 
     segments = _segments(folded)
     if len(segments) < 2 or any(effect_intent._is_negative_effect_clause(segment) for segment in segments):
@@ -631,6 +963,7 @@ def _chained_request(folded: str, catalog: effect_intent.ApplicationCatalogIndex
     steps: list[MissionStep] = []
     current: str | None = None
     opened: str | None = None
+    referent: str | None = None
     for segment in segments:
         segment = segment.strip(" ,;:.!?")
         bare = _BARE_OPEN.match(segment)
@@ -640,7 +973,8 @@ def _chained_request(folded: str, catalog: effect_intent.ApplicationCatalogIndex
                 steps.append(_open_step(opened))
             current = opened = _display_name(bare_key, catalog)
             continue
-        framed = next(
+        family = _pronoun_family(segment)
+        framed = None if family is not None else next(
             (
                 (_display_name(key, catalog), clause.strip(" ,;:"), read)
                 for application, clause in _app_frames(segment)
@@ -652,7 +986,10 @@ def _chained_request(folded: str, catalog: effect_intent.ApplicationCatalogIndex
         if framed is not None:
             application, clause, read = framed
         else:
-            read = read_clause(segment)
+            if family is not None:
+                read = _pronoun_read(family, referent) if referent is not None else None
+            else:
+                read = read_clause(segment)
             if read is None:
                 return None
             application, clause = current, segment
@@ -664,6 +1001,9 @@ def _chained_request(folded: str, catalog: effect_intent.ApplicationCatalogIndex
         opened = None
         current = application
         steps.append(MissionStep(application, goal, check, clause))
+        named = _REFERENT_GOAL.match(goal)
+        if named is not None:
+            referent = named.group("object")
     if opened is not None:
         steps.append(_open_step(opened))
     doing = [step for step in steps if not step.goal.startswith("abrir ")]
@@ -684,6 +1024,10 @@ def _open_step(application: str) -> MissionStep:
     return MissionStep(application, f"abrir {application}", f"title:{application}|process:{application}")
 
 
+# «abrí Paint y después elegí el lápiz»: the sequencer after the coordinator is no part of the clause.
+_LEADING_SEQUENCER = re.compile(r"^(?:(?:y|and)\s+)?(?:luego|despues|entonces|then|after\s+that)\s+(?:de\s+eso\s+)?")
+
+
 def _app_frames(folded: str, *, longer_names: bool = True) -> Iterable[tuple[str, str]]:
     """The (application, clause) splits the request frames say; ``longer_names`` also tries names of several words
     after «en», which only the catalog can tell from a statement («en la mañana tengo que ir al banco»)."""
@@ -692,10 +1036,11 @@ def _app_frames(folded: str, *, longer_names: bool = True) -> Iterable[tuple[str
         found = pattern.match(folded)
         if found is None:
             continue
-        yield found.group("app"), found.group("clause")
+        clause = _LEADING_SEQUENCER.sub("", found.group("clause"), count=1)
+        yield found.group("app"), clause
         if longer_names and pattern is _APP_FRAME_FRONT:
             # «en el bloc de notas escribí hola»: a name of several words ends where the clause begins.
-            words = found.group("clause").split()
+            words = clause.split()
             for count in range(1, min(len(words), 4)):
                 yield f"{found.group('app')} {' '.join(words[:count])}", " ".join(words[count:])
 
@@ -723,9 +1068,12 @@ def engine_can_try(
         return False
     # The turn already read it as a request (it was closed as a limit, not as talk); here only what the engine
     # must not try is kept out.
+    stripped = effect_intent._strip_request_envelope(folded)
     if (
         effect_intent.out_of_world_request(text)
-        or effect_intent._is_negative_effect_clause(effect_intent._strip_request_envelope(folded))
+        or effect_intent._is_negative_effect_clause(stripped)
+        # «en Discord no escribas nada»: the prohibition said after the application.
+        or any(effect_intent._is_negative_effect_clause(clause) for _, clause in _app_frames(stripped, longer_names=False))
         or asks_for_information(text)
         or _DESTRUCTIVE_OR_PAYING.search(folded)
     ):

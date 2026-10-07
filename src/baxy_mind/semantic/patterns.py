@@ -390,9 +390,16 @@ def _mission_takes_over(
         # its route (D21), and a clause the reader cannot check leaves the turn to the decider.
         if any(step.success_check is None for step in steps):
             return False
-        return intent is None or len(intent.operations) < len(steps)
+        # The mission's own primitives in the typed reading are its steps said one by one; only the other typed
+        # operations can cover a sub-goal (measured: «… go to Desktop and create a new folder called tasks» read as
+        # open + click + a task to remember).
+        return intent is None or len(set(intent.operations) - _MISSION_SUBSUMES) < len(steps)
     if intent is not None:
-        return False
+        # «en la calculadora multiplicá 15 por 3»: a calculation said inside the application is done in it; the
+        # typed evaluation does not show it there.
+        return set(intent.operations) <= {"calculator.expression.evaluate"} and str(
+            getattr(mission, "goal", "")
+        ).startswith("calcular ")
     if getattr(mission, "success_check", None) is None:
         return False
     clause = getattr(mission, "clause", "")
