@@ -55,29 +55,41 @@ public sealed class ComputerUseWindowIdentityTests
 
     // A process's window is one a person can see: never a cloaked or untitled frame it also holds (the shell's
     // explorer.exe holds one larger than its folder windows; taking it made every look bound to the process wait out
-    // its retries, ≈1.8 s each). Only reads the window list.
+    // its retries, ≈1.8 s each). Pure rule over synthetic window records.
     [Test]
-    public void TheLargestWindowOfAProcessIsAlwaysOneWithAUsableSurface()
+    public void AProcessWindowIsNeverALargerFrameWithoutAUsableSurface()
     {
-        int[] owners = System.Diagnostics.Process.GetProcesses()
-            .Select(process =>
-            {
-                using (process)
-                {
-                    return process.Id;
-                }
-            })
-            .ToArray();
+        VisibleControlSurface.TopLevelWindow[] windows =
+        [
+            new(10, 7, Usable: false, Area: 3_000_000),
+            new(11, 7, Usable: true, Area: 800_000),
+            new(12, 9, Usable: true, Area: 5_000_000),
+        ];
         Assert.Multiple(() =>
         {
-            foreach (int owner in owners)
-            {
-                nint window = VisibleControlSurface.LargestTopLevelWindow(owner);
-                if (window != 0)
-                {
-                    Assert.That(VisibleControlSurface.HasUsableSurface(window), Is.True, $"process {owner}");
-                }
-            }
+            Assert.That(VisibleControlSurface.ChooseProcessWindow(windows, 7, front: 0), Is.EqualTo((nint)11));
+            Assert.That(VisibleControlSurface.ChooseProcessWindow(windows, 7, front: 10), Is.EqualTo((nint)11),
+                "a front window without a surface gives way to the usable one");
+            Assert.That(VisibleControlSurface.ChooseProcessWindow(windows, 8, front: 0), Is.EqualTo((nint)0));
+        });
+    }
+
+    // File Explorer with two folder windows open: the one the person brought to the front is the one, even when the
+    // other is larger; another process's window in front does not count.
+    [Test]
+    public void TheProcessWindowInFrontIsTakenOverALargerOne()
+    {
+        VisibleControlSurface.TopLevelWindow[] windows =
+        [
+            new(20, 4, Usable: true, Area: 2_000_000),
+            new(21, 4, Usable: true, Area: 600_000),
+            new(22, 5, Usable: true, Area: 900_000),
+        ];
+        Assert.Multiple(() =>
+        {
+            Assert.That(VisibleControlSurface.ChooseProcessWindow(windows, 4, front: 21), Is.EqualTo((nint)21));
+            Assert.That(VisibleControlSurface.ChooseProcessWindow(windows, 4, front: 22), Is.EqualTo((nint)20));
+            Assert.That(VisibleControlSurface.ChooseProcessWindow(windows, 4, front: 0), Is.EqualTo((nint)20));
         });
     }
 }

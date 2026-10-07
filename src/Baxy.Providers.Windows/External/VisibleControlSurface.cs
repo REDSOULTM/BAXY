@@ -55,10 +55,13 @@ internal static partial class VisibleControlSurface
         }
         else
         {
+            // The window in front stays the one, when it has a surface; only
+            // a front window without one gives way to the process's largest
+            // usable window (File Explorer with several folder windows open).
             _ = GetWindowThreadProcessId(hwnd, out uint processId);
-            nint largest = LargestTopLevelWindow(unchecked((int)processId));
-            if (largest != 0)
-                hwnd = largest;
+            nint chosen = ProcessWindow(unchecked((int)processId), hwnd);
+            if (chosen != 0)
+                hwnd = chosen;
         }
         // UI1735: two Chromium-based launchers replace their start-up
         // window with their main window a few seconds after app.open verified
@@ -88,7 +91,8 @@ internal static partial class VisibleControlSurface
     }
 
     /// <summary>
-    /// The window of one process: its largest visible top-level window, or the
+    /// The window of one process: the one in front when it is the process's and
+    /// has a usable surface, else its largest usable top-level window, or the
     /// ApplicationFrameHost frame hosting it (a UWP app such as the Calculator
     /// has no top-level window of its own). Brought to the front so keys and
     /// clicks land on it; 0 when the process shows nothing.
@@ -103,7 +107,8 @@ internal static partial class VisibleControlSurface
         {
             if (attempt > 0)
                 await Task.Delay(250, cancellationToken).ConfigureAwait(false);
-            found = LargestTopLevelWindow(processId);
+            nint front = GetForegroundWindow();
+            found = ProcessWindow(processId, front == 0 ? 0 : GetAncestor(front, 2));
             if (found == 0 || !HasUsableSurface(found))
                 found = FrameHosting(unchecked((uint)processId));
         }
@@ -900,35 +905,64 @@ internal static partial class VisibleControlSurface
         public int Bottom;
     }
 
-    internal static nint LargestTopLevelWindow(int processId)
+    /// <summary>A top-level window as the choice of a process's window reads it.</summary>
+    internal readonly record struct TopLevelWindow(nint Window, uint ProcessId, bool Usable, long Area);
+
+    /// <summary>
+    /// The window of <paramref name="processId"/> a person acts on: the one in
+    /// front (<paramref name="front"/>, a root window) when it is the
+    /// process's and usable, else the process's largest usable window; 0 when
+    /// it has none. Usable is visible, titled, uncloaked, of a real size and
+    /// not a shell surface. Measured live: explorer.exe holds the desktop, the
+    /// taskbar and a cloaked untitled frame larger than its folder windows
+    /// (taking it made every look bound to the process wait out its eight
+    /// retries, ≈1.8 s), and with two folder windows open the largest is not
+    /// necessarily the one the person is looking at.
+    /// </summary>
+    internal static nint ChooseProcessWindow(IEnumerable<TopLevelWindow> windows, uint processId, nint front)
     {
         nint best = 0;
         long bestArea = 0;
+        foreach (TopLevelWindow window in windows)
+        {
+            if (window.ProcessId != processId || !window.Usable)
+                continue;
+            if (front != 0 && window.Window == front)
+                return window.Window;
+            if (window.Area > bestArea)
+            {
+                bestArea = window.Area;
+                best = window.Window;
+            }
+        }
+        return best;
+    }
+
+    internal static nint LargestTopLevelWindow(int processId) => ProcessWindow(processId, 0);
+
+    internal static nint ProcessWindow(int processId, nint front) =>
+        ChooseProcessWindow(TopLevelWindowsOf(unchecked((uint)processId)), unchecked((uint)processId), front);
+
+    private static List<TopLevelWindow> TopLevelWindowsOf(uint processId)
+    {
+        var windows = new List<TopLevelWindow>();
         EnumWindowsProc callback = (window, _) =>
         {
             if (!IsWindowVisible(window))
                 return true;
             GetWindowThreadProcessId(window, out uint owner);
-            if (owner != unchecked((uint)processId))
+            if (owner != processId)
                 return true;
-            // Measured live: a File Explorer window belongs to explorer.exe, which also owns the desktop and the
-            // taskbar; the desktop is the largest of them and is always covered. Shell surfaces are never the
-            // window of an application. Nor is a window nobody can see: explorer.exe also holds a cloaked, untitled
-            // frame larger than the folder window (2026-10-07), and taking it made every look bound to the process
-            // wait out its eight retries (≈1.8 s) before finding the folder window by its title.
-            if (IsShellSurface(window) || !HasUsableSurface(window) || !GetWindowRect(window, out Rect rect))
-                return true;
-            long area = (long)Math.Max(0, rect.Right - rect.Left)
-                * Math.Max(0, rect.Bottom - rect.Top);
-            if (area > bestArea)
-            {
-                bestArea = area;
-                best = window;
-            }
+            Rect rect = default;
+            bool usable = !IsShellSurface(window) && HasUsableSurface(window) && GetWindowRect(window, out rect);
+            long area = usable
+                ? (long)Math.Max(0, rect.Right - rect.Left) * Math.Max(0, rect.Bottom - rect.Top)
+                : 0;
+            windows.Add(new TopLevelWindow(window, owner, usable, area));
             return true;
         };
         _ = EnumWindows(callback, nint.Zero);
-        return best;
+        return windows;
     }
 
     internal static bool HasUsableSurface(nint window)
