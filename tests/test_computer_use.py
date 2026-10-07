@@ -741,3 +741,27 @@ def test_a_chained_result_is_told_part_by_part_and_never_claims_an_unreached_par
     assert "seen.firstUnreached" in computer_use.compose_instruction(seen, "es")
     assert computer_use.mission_defect("fui a la biblioteca de steam y despues a general en discord.", seen) == "subgoal_claimed"
     assert computer_use.mission_defect("fui a la biblioteca de steam, pero no pude llegar a general: no vi con que seguir.", seen) is None
+
+
+def test_an_unserved_order_about_the_pc_is_tried_by_the_engine() -> None:
+    apps = ("Discord", "Steam", "Spotify", "Paint")
+    for said in ("en Paint dibujá un círculo", "activá el modo oscuro de Discord", "ordená mi escritorio"):
+        assert missions.engine_can_try(said, apps), said
+    # Never a question, a place outside the PC, a prohibition, or an undoing or paying goal.
+    for said in ("¿qué hora es?", "andá a Marte", "no abras Steam", "borrá todos mis archivos", "comprá Hades en Steam"):
+        assert not missions.engine_can_try(said, apps), said
+
+
+def test_the_turn_hands_an_unserved_order_to_the_engine() -> None:
+    from baxy_mind.__main__ import _engine_for_an_unserved_order
+
+    limit = {"type": "turn.result", "id": "t", "kind": "conversation", "conversationKind": "unsupported",
+             "effectOperations": [], "intentOperations": [], "reply": "", "question": ""}
+    tools = {"mission.computer.use": {}}
+    tried = _engine_for_an_unserved_order(limit, {"id": "t", "text": "en Paint dibujá un círculo"}, tools, ("Paint",))
+    assert tried["kind"] == "plan" and tried["effectOperations"] == ["mission.computer.use"]
+    assert tried["objective"] == "en Paint dibujá un círculo"
+    kept = _engine_for_an_unserved_order(limit, {"id": "t", "text": "borrá todos mis archivos"}, tools, ("Paint",))
+    assert kept is limit
+    talk = {**limit, "conversationKind": "talk"}
+    assert _engine_for_an_unserved_order(talk, {"id": "t", "text": "en Paint dibujá un círculo"}, tools, ("Paint",)) is talk

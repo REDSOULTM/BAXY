@@ -7171,6 +7171,54 @@ def _prepare_turn_result(
     return result
 
 
+def _engine_for_an_unserved_order(
+    turn_result: dict[str, Any],
+    message: dict[str, Any],
+    tool_by_name: dict[str, dict],
+    application_names: tuple[str, ...] | ApplicationCatalogIndex,
+) -> dict[str, Any]:
+    """Owner 2026-10-07: a direct order about the PC that the turn closed as a limit is handed to the computer-use
+    engine (the person's words are its goal; semantic.missions.engine_can_try), the way a person would try it on
+    the screen. Every step it takes is still policed: what reaches a person or destroys is confirmed."""
+
+    if (
+        turn_result.get("kind") != "conversation"
+        or turn_result.get("conversationKind") != "unsupported"
+        or turn_result.get("effectOperations")
+        or "mission.computer.use" not in tool_by_name
+    ):
+        return turn_result
+    text = str(turn_result.get("objective") or message.get("text") or "")
+    if not semantic_missions.engine_can_try(text, application_names):
+        return turn_result
+    tried = {
+        "type": "turn.result",
+        "id": message.get("id"),
+        "kind": "plan",
+        "operation": None,
+        "intentOperations": ["mission.computer.use"],
+        "effectOperations": ["mission.computer.use"],
+        "question": "",
+        "reply": "",
+        "objective": text,
+    }
+    if turn_result.get("responseLanguage"):
+        tried["responseLanguage"] = turn_result["responseLanguage"]
+    _append_turn_audit(
+        {
+            "schema": "baxy.mind-turn-audit.v1",
+            "request_id": message.get("id"),
+            "phase": "final",
+            "decision_path": "engine_for_unserved_order",
+            "raw_decision": {"mode": "action", "request": text, "effect_operations": ["mission.computer.use"]},
+            "stages": [],
+            "final": {"kind": "plan", "intent_operations": ["mission.computer.use"],
+                      "effect_operations": ["mission.computer.use"]},
+        }
+    )
+    return tried
+
+
 def _decide_turn_result(
     message: dict[str, Any],
     *,
@@ -9949,6 +9997,7 @@ def _run_sidecar(
                         failure_kinds=tuple(turn_failure_kinds),
                         conversation_kinds=tuple(turn_failure_conversation_kinds),
                     )
+                turn_result = _engine_for_an_unserved_order(turn_result, message, tool_by_name, application_catalog)
                 # The request this turn decided is the last one now; its operations (the effects, or those a
                 # question is about) wait for their verified results (message.compose).
                 dialogue_state.expect(

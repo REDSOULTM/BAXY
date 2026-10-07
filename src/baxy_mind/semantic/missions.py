@@ -644,3 +644,36 @@ def _app_frames(folded: str, *, longer_names: bool = True) -> Iterable[tuple[str
             words = found.group("clause").split()
             for count in range(1, min(len(words), 4)):
                 yield f"{found.group('app')} {' '.join(words[:count])}", " ".join(words[count:])
+
+
+# What the engine never tries on its own when no operation serves the request: undoing or paying (owner's rule:
+# destructive or paying steps are asked for; a whole goal of that kind is not handed to the screen loop).
+_DESTRUCTIVE_OR_PAYING = re.compile(
+    r"(?:^|\s)(?:borr|elimin|formate|desinstal|compr|pag|transfer|vaci|delete|remove|uninstall|format|buy|"
+    r"purchase|pay|wipe|erase)\w*"
+)
+
+
+def engine_can_try(
+    text: str,
+    application_names: Iterable[str] | effect_intent.ApplicationCatalogIndex,
+) -> bool:
+    """Owner 2026-10-07 («que use el PC como yo»): a direct order about the PC that no operation serves is tried by
+    the computer-use engine with the person's own words as its goal, instead of being told as a limit. Not for a
+    question, a place outside this PC's world, a prohibition, or a destructive or paying goal."""
+
+    from .web import asks_for_information
+
+    folded = fold(text)
+    if not folded or len(folded) > 300 or "?" in text or "¿" in text:
+        return False
+    # The turn already read it as a request (it was closed as a limit, not as talk); here only what the engine
+    # must not try is kept out.
+    if (
+        effect_intent.out_of_world_request(text)
+        or effect_intent._is_negative_effect_clause(effect_intent._strip_request_envelope(folded))
+        or asks_for_information(text)
+        or _DESTRUCTIVE_OR_PAYING.search(folded)
+    ):
+        return False
+    return free_form_arguments(text, application_names) is not None
