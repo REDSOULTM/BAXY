@@ -359,6 +359,37 @@ def _completed_missing_message_text_request(
     return completed if message_draft_request(completed) is not None else None
 
 
+# The primitives a computer-use mission does itself, and the channel read it replaces: a typed route made only of
+# these is the mission's own steps said one by one, so the mission takes over.
+_MISSION_SUBSUMES = frozenset({
+    "app.open", "client.channel.locate", "input.key.press", "input.text.type", "input.visible.click",
+    "input.visible.controls", "window.focus",
+})
+
+
+def _mission_takes_over(
+    mission: object,
+    intent: EffectIntent | None,
+    available: tuple[str, ...],
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+    game_catalog: Iterable[tuple[str, str, str]] | GameCatalogIndex,
+) -> bool:
+    """A mission wins over a typed reading made only of its own primitives. With no typed reading it wins only when
+    the clause is an act the reader knows how to check (go to, press, calculate, switch, type, click) and is not
+    itself a catalog request («en Discord activá el micrófono»: the microphone); a loose verb («en Spotify baja el
+    volumen», «en WhatsApp escribile a Ron92 hola») is left to the decider, which also has the mission."""
+
+    if intent is not None:
+        return set(intent.operations) <= _MISSION_SUBSUMES
+    if getattr(mission, "success_check", None) is None:
+        return False
+    clause = getattr(mission, "clause", "")
+    if not clause:
+        return True
+    inner = _resolve_clause_effects(clause, available, application_names, game_catalog)
+    return inner is None or set(inner.operations) <= _MISSION_SUBSUMES
+
+
 def _computer_use_mission_is_direct(text: str) -> bool:
     """«en <app> apretá enter», «abre Steam y ve a la biblioteca», «cerrá todas las pestañas de chrome»: an app
     frame with a doing clause is a request."""
@@ -12673,9 +12704,23 @@ def resolve_explicit_effects(
         # Tanda 4f: «programé un temporizador de diez minutos» is what the person did, not the formal order
         # «programe» its folded form reads as; telling it asks for nothing.
         return None
+    mission = None
+    if "mission.computer.use" in available:
+        from .. import computer_use as _computer_use
+
+        mission = _computer_use.mission_request(text, application_names)
+        if mission is not None and mission.names_a_tab:
+            # «ve a la pestaña de YouTube»: going to a tab is a step inside the browser no typed operation takes.
+            return EffectIntent(("mission.computer.use",), (text,))
+        available = tuple(operation for operation in available if operation != "mission.computer.use")
     intent = _resolve_clause_effects(
         text, available, application_names, game_catalog, previous_user_text=previous_user_text,
     )
+    if mission is not None and _mission_takes_over(mission, intent, available, application_names, game_catalog):
+        # Computer use (CONTRATO_VISTA_ACCION.md §6): what the catalog already does goes straight to its typed
+        # operation (it is verified better than the screen, D21); a step inside an application that only the
+        # loose primitives reach —open, look, click, type, press— is one mission of the general engine.
+        return EffectIntent(("mission.computer.use",), (text,))
     if intent is not None and "message.send" in intent.operations and asks_not_to_send(text):
         # M155 (safety; DEV-I v4u I-s061 «write a WhatsApp to Callum saying … but leave it for me to send» → sent): a
         # message the person orders not to send is never read as sent. Left written in its client when the readers
@@ -12929,15 +12974,6 @@ def _resolve_clause_effects(
         # MUSIC1827 «open Edge and play some music»: which music is asked first
         # (clarification), not an open-and-play mission with «some music».
         return None
-    if "mission.computer.use" in available:
-        # Computer use (CONTRATO_VISTA_ACCION.md §6): doing something inside a named, installed application —going
-        # to a channel or a section, pressing a key, switching a setting, closing the tabs of a named browser,
-        # calculating— is one mission of the general engine, before any per-app route. client.channel.locate stays
-        # as the reserve read when the mission operation is not served.
-        from .. import computer_use as _computer_use
-
-        if _computer_use.mission_request(text, authenticated_applications) is not None:
-            return EffectIntent(("mission.computer.use",), (text,))
     channel_request = client_channel_request(text)
     if "client.channel.locate" in available and channel_request is not None and channel_request[0] == "discord":
         # DISCORD1839: the channel is located and the person asked before any join.

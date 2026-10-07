@@ -46,8 +46,9 @@ def test_the_six_cu1959_missions_read_as_one_engine_mission() -> None:
     assert discord["goal"] == "ir a cotele"
     assert discord["successCheck"] == "stepDone:input.visible.click:cotele|control:cotele:selected|title:cotele"
 
-    tabs = _mission("cerrá todas las pestañas de chrome")
-    assert tabs == {"application": "Google Chrome", "goal": "cerrar todas las pestañas", "successCheck": "count:TabItem<=1"}
+    # Closing every tab is browser.control close_all (confirmed by RiskPolicy), never a mission of loose keys.
+    tabs = resolve_explicit_effects("cerrá todas las pestañas de chrome", AVAILABLE, application_names=APPS)
+    assert tabs is not None and tabs.operations == ("browser.control",)
 
     steam = _mission("abre Steam y ve a la biblioteca")
     assert steam["application"] == "Steam"
@@ -69,7 +70,6 @@ def test_the_six_cu1959_missions_read_as_one_engine_mission() -> None:
 def test_english_and_variant_phrasings_read_the_same_missions() -> None:
     assert _mission("Go to Cotele in Discord")["goal"] == "ir a cotele"
     assert _mission("Open Steam and go to the library")["goal"] in {"ir a the library", "ir a library"}
-    assert _mission("close all tabs in chrome")["successCheck"] == "count:TabItem<=1"
     assert _mission("In Discord press enter")["successCheck"] == "stepDone:input.key.press:enter"
     assert _mission("abrí configuración y desactivá el modo avión")["successCheck"] == "control:modo avion:off"
 
@@ -288,10 +288,6 @@ def test_deterministic_steps_follow_the_goal_family_and_the_view() -> None:
     assert on["arguments"] == {"label": "Modo avión", "index": 4}
     already = {"window": {"title": "Configuración"}, "controls": [{"i": 4, "kind": "Button", "name": "Modo avión", "state": "on"}], "text": {}}
     assert computer_use.deterministic_step(goal="activar modo avion", view=already, history=[]) is None
-    tabs_view = {"window": {"title": "Chrome"}, "controls": [{"i": 0, "kind": "TabItem", "name": "Nueva pestaña", "repeated": 2}], "text": {}}
-    assert computer_use.deterministic_step(goal="cerrar todas las pestañas", view=tabs_view, history=[])["arguments"] == {"key": "ctrl_w"}
-    one_tab = {"window": {"title": "Chrome"}, "controls": [{"i": 0, "kind": "TabItem", "name": "Nueva pestaña"}], "text": {}}
-    assert computer_use.deterministic_step(goal="cerrar todas las pestañas", view=one_tab, history=[]) is None
 
 
 def test_a_failed_open_with_the_application_in_front_does_not_stop_the_dictated_steps() -> None:
@@ -390,10 +386,11 @@ def test_a_doing_clause_reads_in_any_person() -> None:
         ("en Paint marque la casilla", "marca la casilla"),
         ("in Paint pick the red color", "pick the red color"),
     ):
-        arguments = _mission_in(said)
+        # The reader reads the act; with no check of its own the route is the decider's (test below).
+        arguments = computer_use.mission_request(said, MORE_APPS).arguments()
         assert arguments["application"] == "Paint" and arguments["goal"] == goal, said
     assert _mission_in("en Steam vaya a la tienda")["goal"] == "ir a tienda"
-    assert _mission_in("en Steam ir a la tienda")["goal"] == "ir a tienda"
+    assert computer_use.mission_request("en Steam ir a la tienda", MORE_APPS).goal == "ir a tienda"
     assert _mission_in("en Discord pulse enter")["successCheck"] == "stepDone:input.key.press:enter"
     assert _mission_in("en la calculadora calcule 12x7")["goal"] == "calcular 12x7"
     assert _mission_in("en Configuración active el modo avión")["successCheck"] == "control:modo avion:on"
@@ -441,3 +438,35 @@ def test_a_tab_is_clicked_by_a_part_of_its_title() -> None:
     assert computer_use.find_control(view, "youtube", kind="TabItem")["i"] == 1
     clicked = [{"step": 1, "operation": "input.visible.click", "label": "Rick Astley - Never Gonna Give You Up - YouTube", "ok": True}]
     assert computer_use.deterministic_step(goal="ir a la pestaña youtube", view=view, history=clicked) is None
+
+
+TYPED = WEB | {"system.settings.set", "audio.microphone.mute", "audio.volume.adjust", "message.send",
+               "message.recipient.resolve", "streaming.play.named", "game.install"}
+
+
+def _route(text: str) -> tuple[str, ...] | None:
+    intent = resolve_explicit_effects(text, TYPED, application_names=(*MORE_APPS, "Spotify", "WhatsApp"))
+    return intent.operations if intent is not None else None
+
+
+def test_what_the_catalog_already_does_keeps_its_typed_operation() -> None:
+    # D21: a typed operation Windows verifies better than the screen wins over the engine.
+    assert _route("abrí Configuración y activá el modo avión") == ("system.settings.set",)
+    assert _route("pon Bohemian Rhapsody en Spotify") == ("media.play.query",)
+    assert _route("busca gatos en google") == ("browser.navigate",)
+    # The clause inside the app is itself a catalog request: no mission.
+    assert _route("en Discord activá el micrófono") != ("mission.computer.use",)
+
+
+def test_a_loose_verb_inside_an_app_is_left_to_the_decider() -> None:
+    assert _route("en Spotify baja el volumen") is None
+    assert _route("en WhatsApp escribile a Ron92 hola") is None
+    assert _route("en Paint elegí el color rojo") is None
+
+
+def test_the_mission_takes_over_its_own_primitives() -> None:
+    # Once a typed reading of open + click / channel locate: those are the mission's own steps.
+    assert _route("ve a Cotele en Discord") == ("mission.computer.use",)
+    assert _route("abre Steam y ve a la biblioteca") == ("mission.computer.use",)
+    assert _route("abrí el bloc de notas y escribí hola mundo") == ("mission.computer.use",)
+    assert _route("ve a la pestaña de YouTube") == ("mission.computer.use",)

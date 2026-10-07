@@ -44,8 +44,10 @@ Contrato de verificación `input.visible.controls.windows.uia.snapshot.v2`.
                                 // que la misión acaba de abrir. Se trae al frente.
   "application": "Configuración" // opcional; sin processId, la ventana visible cuyo título
                                 // contiene ese nombre (plegado: minúsculas sin tildes) es la
-                                // superficie y se trae al frente. Sin ninguna de las dos, la
-                                // ventana en primer plano.
+                                // superficie y se trae al frente. La categoría «navegador» /
+                                // «browser» es la ventana delantera del navegador predeterminado
+                                // de la persona (UserBrowser*), aunque haya processId. Sin
+                                // ninguna, la ventana en primer plano.
 }
 ```
 
@@ -69,7 +71,9 @@ pedida, pero un clic caería sobre la que la tapa. La misión se detiene con
     "hwnd": 460248,
     "rect": {"x": 100, "y": 80, "w": 640, "h": 720},
     "focused": {"i": 7, "kind": "Edit", "name": "Búsqueda", "value": ""},
-    "coveredBy": {"title": "Película - PotPlayer", "process": "PotPlayerMini64"}  // solo si otra la tapa
+    "coveredBy": {"title": "Película - PotPlayer", "process": "PotPlayerMini64"}, // solo si otra la tapa
+    "requested": true              // la ventana se halló por la aplicación pedida (proceso, título o
+                                   // navegador de la persona), no por estar delante: la App adopta su pid
   },
   "controls": [
     {
@@ -240,8 +244,8 @@ Presupuesto de tiempo fijo: 90 s de misión; cada vista ≤ 30 s, cada primitiva
 
 1. **Mirar.** `input.visible.controls {includeText: true}` (con `waitForLabel` cuando el
    paso anterior esperaba una etiqueta). La ventana es la del proceso que la misión ya
-   conoce (`processId`, tomado del `app.open` que hizo o de la primera vista cuyo título
-   nombró la aplicación) o, hasta entonces, la titulada como `application`; sin aplicación,
+   conoce (`processId`, tomado del `app.open` que hizo o de la primera vista con
+   `window.requested`) o, hasta entonces, la de `application` (§1.1); sin aplicación,
    la del primer plano. Si `successCheck` ya se cumple → fin; si la vista trae
    `window.coveredBy`, la misión para (`computer_use_window_covered`).
 2. **Recordar.** Si hay un procedimiento guardado para `(application, goal normalizado)`
@@ -252,8 +256,8 @@ Presupuesto de tiempo fijo: 90 s de misión; cada vista ≤ 30 s, cada primitiva
    `app.open`; «apretar <tecla>» → esa tecla; «calcular <expr>» → escribir la expresión y
    Enter; «escribir <texto>» → escribirlo; «ir a / hacer clic en <X>» → clic en el control
    que se llama X si está en la vista; «activar/desactivar <X>» → clic en ese control si su
-   estado no es ya el pedido; «cerrar todas las pestañas» → `ctrl_w` mientras haya más de
-   una `TabItem`. Un paso que acaba de fallar nunca se repite: lo que sigue lo decide el
+   estado no es ya el pedido; «ir a la pestaña X» → clic en la `TabItem` cuyo título
+   contiene X (el tipo de control nombrado en el objetivo acota la búsqueda). Un paso que acaba de fallar nunca se repite: lo que sigue lo decide el
    modelo, con JSON estricto y temperatura 0 (medido en la Calculadora: el modelo pulsando
    dígito a dígito agotó los 90 s; con el paso dictado la misión son dos pasos).
 4. **Actuar.** La primitiva va al Kernel como operación con sus argumentos; el Kernel
@@ -299,7 +303,7 @@ Ejemplos de las seis misiones de CU1959:
 | Pedido | `successCheck` |
 |---|---|
 | ve a Cotele en Discord | `title:Cotele\|control:Cotele:selected\|text:Voz conectada` |
-| cerrá todas las pestañas de chrome | `process:chrome&count:TabItem<=1` |
+| ve a la pestaña de YouTube | `control:youtube:selected\|title:youtube` (aplicación «navegador») |
 | abre Steam y ve a la biblioteca | `process:steam&(control:Biblioteca:selected\|text:Biblioteca)` — el paréntesis no existe: se escribe `process:steam&control:Biblioteca:selected\|process:steam&text:Biblioteca` |
 | en Discord apretá enter | `process:Discord` + el paso `key:enter` verificado (`stepDone:key:enter`) |
 | abrí Configuración y activá el modo avión | `control:Modo avión:on` |
@@ -446,9 +450,21 @@ Ruta: `<data root>/computer-use/procedures.v1.json` (el data root privado del sh
 ## 6. Lo que este contrato no decide
 
 - La **lectura del pedido** (qué frases van a `mission.computer.use`) es de la mente
-  (`effect_intent`): «en <app> <hacé X>», «abre <app> y <hacé X>», «cerrá todas las
-  pestañas de <navegador>», «<hacé X> en <app>». Una petición con operación tipada que
-  Windows verifica mejor que la pantalla (ficheros, radios, manifiestos, COM) sigue yendo a
-  su operación (D21).
+  (`computer_use.mission_request`, decidido en `semantic/patterns.resolve_explicit_effects`):
+  «en <app> <hacé X>», «abre <app> y <hacé X>», «<hacé X> en <app>», en cualquier persona
+  (tú, vos, usted, infinitivo, inglés), y «andá a la pestaña de X» (aplicación «navegador»).
+  Prioridad, por la forma del pedido y nunca por una lista de apps:
+  1. ir a una pestaña → misión;
+  2. si los lectores dan una operación tipada, gana ella (D21: ficheros, radios, música,
+     búsquedas, Windows lo verifica mejor que la pantalla) salvo que sea sólo primitivas que
+     la misión hace por sí misma (`app.open`, `input.visible.*`, `input.text.type`,
+     `input.key.press`, `window.focus`, `client.channel.locate`);
+  3. sin lectura tipada, la misión gana sólo si la cláusula es un acto con comprobación de
+     éxito propia (ir a, tecla, calcular, activar/desactivar, escribir, clic) y no es ella
+     misma un pedido del catálogo («activá el micrófono»); un verbo suelto («en Spotify baja
+     el volumen») queda para el decisor, que también tiene la misión entre sus herramientas.
+- **Cerrar todas las pestañas** no es una misión: es `browser.control {action: close_all}`,
+  que `RiskPolicy` confirma por su argumento y que cierra la pestaña activa una a una hasta
+  dejar una, releyendo el marco tras cada cierre (`documentacion/NAVEGADOR_USUARIO.md`).
 - Los **modelos de visión** (§3.4) y su decisión con números.
 - La **política de cierre** de lo que la misión abrió: nada se cierra al terminar (D16).

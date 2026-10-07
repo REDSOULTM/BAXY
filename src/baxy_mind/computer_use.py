@@ -3,8 +3,8 @@
 Tres responsabilidades, ninguna sabe de una aplicación concreta:
 
 1. **Leer el pedido** (`mission_request`): «en <app> <hacé X>», «abre <app> y
-   <hacé X>», «<hacé X> en <app>», «cerrá todas las pestañas de <navegador>»,
-   «andá a la pestaña de X» → una misión ``mission.computer.use`` con
+   <hacé X>», «<hacé X> en <app>», «andá a la pestaña
+   de X» → una misión ``mission.computer.use`` con
    aplicación, objetivo y la comprobación de éxito determinista (§4.3). La
    aplicación tiene que estar en el catálogo de Inicio, o ser la categoría
    «navegador» (el navegador predeterminado de la persona) cuando sólo se nombra
@@ -81,7 +81,6 @@ _EXTRA_ALIASES: tuple[tuple[frozenset[str], tuple[str, ...]], ...] = (
      ("calculadora", "calculator")),
 )
 
-_BROWSER_WORD = r"(?:chrome|google\s+chrome|opera(?:\s*gx)?|edge|microsoft\s+edge|brave|firefox|mozilla\s+firefox)"
 
 _NAVIGATE_HEAD = (
     r"(?:ve|vete|ir|anda|andate|entra|entrale|metete|navega|llevame|go|navigate|switch|"
@@ -125,12 +124,6 @@ _APP_FRAME_OPEN = re.compile(
     r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?(?:abri|abre|abrime|abra|open|launch|lanza|ejecuta|inicia|start)\s+"
     r"(?:(?:la|el|the)\s+)?(?P<app>[a-z0-9][a-z0-9 .+-]{1,40}?)\s*(?:,|\s+y\s+|\s+and\s+|\s+y\s+luego\s+|\s+and\s+then\s+|\s+then\s+|\s+luego\s+|\s+despues\s+)\s*(?P<clause>.+)$"
 )
-_CLOSE_TABS = re.compile(
-    r"^(?:(?:por\s+favor|please)\s*[,;:]?\s*)?(?:(?:podes|puedes|podrias|can\s+you|could\s+you)\s+)?"
-    r"(?:cierra|cierre|cerra|cerrame|cierrame|cerrar|close)\s+(?:todas\s+|all\s+)?(?:las\s+|the\s+|my\s+|mis\s+)?"
-    r"(?:pestanas|tabs)(?:\s+abiertas|\s+open)?\s+(?:de|del|of|in|en)\s+(?:el\s+|the\s+|mi\s+|my\s+)?"
-    rf"(?:navegador\s+|browser\s+)?(?P<browser>{_BROWSER_WORD})(?:\s*,?\s*(?:por\s+favor|please|porfa))?[\s.!?]*$"
-)
 # Going to a tab by what it shows: «andá a la pestaña de YouTube», «go to the YouTube tab», «switch to the tab
 # with YouTube». The tab is named by a part of its title.
 _TAB_WORD = r"(?:pestana|tab|solapa)"
@@ -170,6 +163,12 @@ class MissionRequest:
     application: str | None
     goal: str
     success_check: str | None
+    # The person's clause of doing inside the application («baja el volumen»), empty for a tab named alone.
+    clause: str = ""
+
+    @property
+    def names_a_tab(self) -> bool:
+        return self.goal.startswith("ir a la pestaña ")
 
     def arguments(self) -> dict[str, object]:
         arguments: dict[str, object] = {"goal": self.goal}
@@ -346,8 +345,8 @@ def mission_request(
     application_names: Iterable[str] | effect_intent.ApplicationCatalogIndex,
 ) -> MissionRequest | None:
     """«en <app> <hacé X>», «abre <app> y <hacé X>», «<hacé X> en <app>»,
-    «cerrá todas las pestañas de <navegador>», «andá a la pestaña de X» → the
-    mission, or None."""
+    «andá a la pestaña de X» → the mission, or None. Closing every tab is not a
+    mission: it is browser.control close_all, confirmed (RiskPolicy)."""
 
     if not text or len(text) > 2048:
         return None
@@ -357,12 +356,6 @@ def mission_request(
     folded = effect_intent._strip_request_envelope(fold(re.sub(r"[\r\n]+", " . ", text))).strip()
     if not folded or effect_intent._is_negative_effect_clause(folded):
         return None
-    tabs = _CLOSE_TABS.match(folded)
-    if tabs is not None:
-        key = _catalog_key(tabs.group("browser"), catalog)
-        if key is None:
-            return None
-        return MissionRequest(_display_name(key, catalog), "cerrar todas las pestañas", "count:TabItem<=1")
     for application, clause in _app_frames(folded):
         key = _catalog_key(application, catalog)
         if key is None:
@@ -374,7 +367,7 @@ def mission_request(
         if read is None:
             continue
         goal, check = read
-        return MissionRequest(_display_name(key, catalog), goal, check)
+        return MissionRequest(_display_name(key, catalog), goal, check, clause)
     # A tab named with no browser, or with the category alone («en el navegador»): the person's default browser
     # (a named browser above wins).
     tab = _bare_tab(folded)
@@ -395,10 +388,10 @@ def _bare_tab(folded: str) -> tuple[str, str] | None:
 
 def mission_clause_is_direct(text: str) -> bool:
     """Speech-act gate (effect_intent._is_direct_request): an app frame with a
-    doing clause, a close-all-tabs order on a named browser, or going to a tab."""
+    doing clause, or going to a tab."""
 
     folded = effect_intent._strip_request_envelope(fold(text)).strip()
-    if _CLOSE_TABS.match(folded) is not None or _bare_tab(folded) is not None:
+    if _bare_tab(folded) is not None:
         return True
     return any(read_clause(clause) is not None for _, clause in _app_frames(folded, longer_names=False))
 
@@ -724,14 +717,6 @@ def deterministic_step(
         if text and not _steps_ok(history, "input.text.type") and not _focused_is_password(view):
             return {"operation": "input.text.type", "arguments": {"text": text}, "reason": reason}
         return None
-    if folded_goal == "cerrar todas las pestanas":
-        tabs = 0
-        for control in view.get("controls") or []:
-            if isinstance(control, dict) and str(control.get("kind")) == "TabItem":
-                tabs += 1 + int(control.get("repeated") or 0)
-        if tabs > 1:
-            return {"operation": "input.key.press", "arguments": {"key": "ctrl_w"}, "reason": f"quedan {tabs} pestañas"}
-        return None
     for head, wanted in (("ir a ", None), ("hacer clic en ", None), ("activar ", "on"), ("desactivar ", "off")):
         if not folded_goal.startswith(head):
             continue
@@ -997,16 +982,19 @@ def compose_instruction(seen: dict, language: str) -> str:
             "at the end (seen.screen.numbers: the controls and lines carrying a number, such as a display or a "
             "counter; seen.screen.values: its fields; seen.screen.lines: a few lines). When the goal asked for a "
             "calculation, a number or a value, quote the matching entry of seen.screen.numbers exactly; do not "
-            "list the other lines of the window. Say in one or two sentences, in "
-            "the person's language and in the past tense, what you did and what you saw; quote seen.evidence "
+            "list the other lines of the window. Say in one short sentence, in "
+            "the person's language, in the FIRST PERSON (you are the one who acted: «Abrí…», «Fui a…», «Calculé…», "
+            "never «Abrió…» nor «BAXY…») and in the past tense, what you did and what you saw; when the goal was a "
+            "result, lead with it («12 × 7 da 84»); quote seen.evidence "
             "exactly when it exists. seen.joined says whether a voice channel or call was joined: say you "
             "joined only if it is true. Never add steps, times or results that are not in seen."
         )
     return (
         "This result is a computer-use mission that did NOT reach its goal: seen.goal is what was asked, "
         "seen.stepsDone what was done before stopping, seen.stepsFailed what could not be done, "
-        "seen.stoppedBecause the cause in the person's words. Say in one or two sentences, in the person's "
-        "language, what was done and that the goal was not reached, giving seen.stoppedBecause as the "
+        "seen.stoppedBecause the cause in the person's words. Say in one or two short sentences, in the person's "
+        "language and in the FIRST PERSON (you are the one who acted: «Abrí…», «No encontré…»), what was done and "
+        "that the goal was not reached, giving seen.stoppedBecause as the "
         "cause (reword it lightly, never say «operación» or «operation»). Never say it succeeded and never "
         "invent a cause that is not in seen."
     )
