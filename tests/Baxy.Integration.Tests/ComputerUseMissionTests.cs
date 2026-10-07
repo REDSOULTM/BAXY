@@ -646,6 +646,21 @@ public sealed class ComputerUseMissionTests
     }
 
     [Test]
+    public void AnItemNamedWithItsApplicationAfterThePlaceIsThePlace()
+    {
+        JsonObject scientific = View("""
+            {"window": {"title": "Calculadora"}, "controls": [
+              {"i": 0, "kind": "Button", "name": "Abrir navegación", "zone": "TL"}, {"i": 1, "kind": "Button", "name": "Alternar grados", "zone": "L"},
+              {"i": 2, "kind": "Button", "name": "Notación científica", "zone": "L"}, {"i": 3, "kind": "Button", "name": "Seno", "zone": "C"},
+              {"i": 4, "kind": "Button", "name": "Coseno", "zone": "C"}]}
+            """);
+        scientific["selectedBeforeClick"] = new JsonObject { ["3"] = new JsonArray("estandar calculadora") };
+        scientific["controlsBeforeClick"] = new JsonObject { ["3"] = new JsonArray("cerrar navegacion", "estandar calculadora", "cientifica calculadora", "graficar calculadora") };
+        JsonArray clicked = [new JsonObject { ["step"] = 3, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Científica Calculadora" }];
+        Assert.That(ComputerUseSuccessCheck.Evaluate("page:cientifica", scientific, clicked, out _), Is.True);
+    }
+
+    [Test]
     public void AShellWithAnAddressBarAndPanesIsNothingToActOn()
     {
         JsonObject starting = View("""

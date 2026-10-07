@@ -1403,3 +1403,12 @@ def test_a_key_or_typing_final_says_it_is_done_and_a_place_final_confirms_the_wi
         {"goal": "x", "reached": False, "subgoals": [{"goal": "ir a general", "reached": True}, {"goal": "escribir hola", "reached": False}]}, "es",
     )
     assert "at most TWO short sentences" in unreached
+
+
+def test_a_button_named_as_switching_is_never_pressed_on_the_way_to_a_place() -> None:
+    # Measured on the Calculator: going to «Científica» the model pressed «Alternar grados» and DEG became RAD.
+    view = {"window": {"title": "Calculadora"}, "controls": [{"i": 0, "kind": "Button", "name": "Alternar grados"}], "text": {}}
+    refused = computer_use.validate_decision(
+        {"act": "click", "i": 0}, view=view, last_failed=None, application_names=(), history=[], goal="ir a cientifica",
+    )
+    assert refused["operation"] == "none"

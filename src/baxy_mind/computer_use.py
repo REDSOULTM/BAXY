@@ -1347,7 +1347,10 @@ def _is_switch(control: dict) -> bool:
     shown on/off/checked."""
 
     state = str(control.get("state") or "").split()
-    return control.get("kind") in _SWITCH_KINDS or any(word in {"on", "off", "checked", "unchecked"} for word in state)
+    # A button named as the act of switching («Alternar grados», «Toggle units») switches even without a state
+    # (measured on the Calculator: going to «Científica» the model pressed «Alternar grados» and DEG became RAD).
+    toggles = re.match(r"(?:alternar|cambiar entre|toggle|switch between)\b", fold(control.get("name"))) is not None
+    return control.get("kind") in _SWITCH_KINDS or toggles or any(word in {"on", "off", "checked", "unchecked"} for word in state)
 
 
 def validate_decision(

@@ -1942,7 +1942,7 @@ internal static class ComputerUseSuccessCheck
                 return false;
             }
 
-            string label = WithoutOpening(Fold((string?)step["label"]));
+            string label = WithoutAppName(WithoutOpening(Fold((string?)step["label"])), view);
             if (label != target)
             {
                 return false;
@@ -2096,6 +2096,27 @@ internal static class ComputerUseSuccessCheck
             && Fold((string?)control["name"]) is { Length: > 0 } name
             && name.Contains(target, StringComparison.Ordinal)
             && !seenBefore.Contains(name));
+    }
+
+    // An item named «<place> <application>» (WinUI lists: «Científica Calculadora» in the Calculator's navigation) is
+    // the place: the window's own name after it is the application's label, not part of the place.
+    private static string WithoutAppName(string label, JsonObject view)
+    {
+        string title = Fold((string?)view["window"]?["title"]);
+        if (title.Length < 3)
+        {
+            return label;
+        }
+
+        foreach (string word in title.Split([' ', '-', '|', ':'], StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (word.Length >= 4 && label.Length > word.Length + 1 && label.EndsWith(" " + word, StringComparison.Ordinal))
+            {
+                return label[..^(word.Length + 1)];
+            }
+        }
+
+        return label;
     }
 
     // The folded names of the listed controls, the window a click is measured against.
