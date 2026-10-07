@@ -1511,4 +1511,112 @@ public sealed class ComputerUseMissionTests
             Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.key.press:enter&text:FAVORITOS", onlyTheBox, steps, out _), Is.True);
         });
     }
+
+    // Spotify's web player as read at x7 (2026-10-07): the search box focused, with its recent searches, after the
+    // click on «Buscar»; the frame's read-only «Address and search bar» never counts.
+    private static JsonObject SearchView(string focusedKind, string focusedName, string? focusAtStart, string state = "expanded focused")
+    {
+        JsonObject view = View("""
+            {"window": {"title": "Spotify Premium", "process": "Spotify", "focused": null},
+             "controls": [
+               {"i": 0, "kind": "Edit", "name": "Address and search bar", "state": "readonly", "value": "xpui.app.spotify.com/index.html"},
+               {"i": 1, "kind": "Button", "name": "Buscar", "state": ""},
+               {"i": 2, "kind": "ComboBox", "name": "¿Qué quieres reproducir?", "state": ""},
+               {"i": 3, "kind": "Hyperlink", "name": "Viva Latino", "state": "readonly"}
+             ]}
+            """);
+        view["window"]!["focused"] = new JsonObject { ["kind"] = focusedKind, ["name"] = focusedName, ["value"] = "" };
+        foreach (JsonObject control in ((JsonArray)view["controls"]!).OfType<JsonObject>())
+        {
+            if ((string?)control["name"] == focusedName)
+            {
+                control["state"] = state;
+            }
+        }
+
+        if (focusAtStart is not null)
+        {
+            view["focusAtStart"] = focusAtStart;
+        }
+
+        return view;
+    }
+
+    [Test]
+    public void TheSearchIsReachedWhenThisMissionPutsTheKeyboardInItsField()
+    {
+        const string check = "control:search:current|title:search|control:buscar:current|title:buscar|focus:search";
+        var clicked = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Buscar" },
+        };
+        var findKey = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = false, ["label"] = "Address and search bar" },
+            new JsonObject { ["step"] = 2, ["operation"] = "input.key.press", ["ok"] = true, ["key"] = "ctrl_f" },
+        };
+        JsonObject arrived = SearchView("ComboBox", "¿Qué quieres reproducir?", "Document|spotify");
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, arrived, clicked, out string? by), Is.True);
+            Assert.That(by, Is.EqualTo("focus:search"));
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, arrived, findKey, out _), Is.True);
+        });
+    }
+
+    [Test]
+    public void ASearchBoxShownOrFocusedWithoutThisMissionOrHoldingTypedTextIsNoArrival()
+    {
+        const string check = "focus:search";
+        var clicked = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Buscar" },
+        };
+        var typed = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Buscar" },
+            new JsonObject { ["step"] = 2, ["operation"] = "input.text.type", ["ok"] = true, ["text"] = "search" },
+        };
+        var otherClick = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Inicio" },
+        };
+        var scrolled = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Buscar" },
+            new JsonObject { ["step"] = 2, ["operation"] = "input.scroll", ["ok"] = true, ["direction"] = "down" },
+        };
+        Assert.Multiple(() =>
+        {
+            // Present on every page, never focused: no arrival.
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, SearchView("Document", "Spotify", "Document|spotify", "collapsed"), clicked, out _), Is.False);
+            // It had the keyboard at the first look: not brought there by this mission.
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, SearchView("ComboBox", "¿Qué quieres reproducir?", "ComboBox|¿que quieres reproducir?"), clicked, out _), Is.False);
+            // No first look known: no proof.
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, SearchView("ComboBox", "¿Qué quieres reproducir?", null), clicked, out _), Is.False);
+            // Text typed into it: an echo, never arriving.
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, SearchView("ComboBox", "¿Qué quieres reproducir?", "Document|spotify"), typed, out _), Is.False);
+            // The last verified act was not toward the search.
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, SearchView("ComboBox", "¿Qué quieres reproducir?", "Document|spotify"), otherClick, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, SearchView("ComboBox", "¿Qué quieres reproducir?", "Document|spotify"), scrolled, out _), Is.False);
+            // The read-only address field is never the search.
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, SearchView("Edit", "Address and search bar", "Document|spotify", "readonly focused"), clicked, out _), Is.False);
+        });
+    }
+
+    [Test]
+    public void AClickRefusedTwiceInTheSubgoalIsCountedWhateverCameBetween()
+    {
+        var steps = new JsonArray
+        {
+            new JsonObject { ["operation"] = "input.visible.click", ["ok"] = false, ["label"] = "Address and search bar", ["index"] = 0 },
+            new JsonObject { ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "Buscar" },
+            new JsonObject { ["operation"] = "input.visible.click", ["ok"] = false, ["label"] = "address and search bar", ["index"] = 2 },
+        };
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.RefusedClicks(steps, new JsonObject { ["label"] = "Address and search bar" }), Is.EqualTo(2));
+            Assert.That(ComputerUseSuccessCheck.RefusedClicks(steps, new JsonObject { ["label"] = "Buscar" }), Is.EqualTo(0));
+        });
+    }
 }
