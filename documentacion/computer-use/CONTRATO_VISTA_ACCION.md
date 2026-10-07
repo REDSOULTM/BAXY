@@ -505,3 +505,32 @@ arrancar el core; sin etiquetas de progreso escritas por el LLM durante una misi
 app; una app recién lanzada se espera hasta que deja su ventana de arranque; una ventana de administrador
 (`window.elevated`) para la misión con esa causa; `RiskPolicy` confirma también publicar, responder, comentar,
 compartir, unirse, comprar, pagar, borrar y desinstalar.
+
+**Lectura del pedido v2 (`semantic/missions.py`).** Cada cláusula de hacer trae su comprobación determinista; una
+cadena con una cláusula sin comprobación sigue siendo del decisor. Familias y comprobación:
+
+| Cláusula | Objetivo | `successCheck` |
+|---|---|---|
+| creá una carpeta llamada X / create a folder named X | `crear carpeta X` | `control:X` |
+| renombrá A a B / rename A to B | `renombrar A a B` | `control:B` |
+| elegí el lápiz / el color rojo / pick the red color | `seleccionar X` | `control:X:selected\|control:X:on\|stepDone:input.visible.click:X` (+ nombres en el otro idioma) |
+| buscá X / search for X | `buscar X` | `title:X\|stepDone:input.text.type&stepDone:input.key.press:enter&text:X` |
+| poné la primera / play the first one / ponelo | `reproducir …` | `control:pausa&stepDone:input.visible.click` (y `pause`, y con tecla) |
+| copiá / pegá / deshacé / seleccioná todo | `apretar ctrl c` … | la tecla o el clic en su control |
+| abrí una pestaña nueva | `apretar ctrl t` | `stepDone:input.key.press:ctrl_t` |
+| andá a es.wikipedia.org | `ir a la direccion …` (ctrl_l, texto, Enter) | `title:wikipedia` |
+| abrí la sección Historia | `ir a historia` | lo de `ir a` + el clic verificado en la sección |
+| calculá 12 por 7 / multiply 6 by 7 | `calcular 12 × 7` | la de calcular |
+
+En una cadena el verbo puede decirse una vez («elegí el lápiz y después el color rojo», «go to System, then
+Display», «hacé clic en Insertar y después en Tabla»), un pronombre o un lugar genérico retoma lo último nombrado
+(«buscá Hades y abrilo», «creá la carpeta X y entrá», «buscá a Mamá y abrí el chat»), una cláusula que nombra otra
+aplicación cambia la del paso («… y pegalo en el Bloc de notas») y una pregunta final («… y decime si el modo es
+claro u oscuro») no es sub-objetivo: va al final del `goal` tras `; y responder: ` y el final la contesta sólo con
+`seen.screen`/`seen.evidence`. Nunca es misión un pedido que ordena borrar, vaciar, formatear, desinstalar, comprar
+o pagar (lo tecleado no cuenta). Tipado contra motor: en una cadena sólo las operaciones tipadas que no son
+primitivas del motor cubren sub-objetivos; un cálculo dicho dentro de una aplicación se hace en ella.
+
+El paso de tecleo guarda en qué campo se escribió (`into`); el átomo `control:` descarta lo tecleado sólo si se
+tecleó en una búsqueda, una barra de direcciones o un campo sin nombre (el eco de sus sugerencias), no el nombre
+escrito en la caja de un elemento que se crea o se renombra. Corpus: `tests/test_computer_use_corpus.py`.

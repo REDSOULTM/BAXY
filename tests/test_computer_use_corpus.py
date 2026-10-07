@@ -364,3 +364,14 @@ def test_choosing_clicks_the_tool_until_it_shows_selected() -> None:
     assert computer_use.deterministic_step(goal="seleccionar red", view=view, history=[])["arguments"]["label"] == "Rojo"
     chosen = {**view, "controls": [{"i": 0, "kind": "RadioButton", "name": "Lápiz", "state": "on"}]}
     assert computer_use.deterministic_step(goal="seleccionar lapiz", view=chosen, history=[]) is None
+
+
+def test_every_mission_of_the_corpus_grounds_against_the_catalog_schema() -> None:
+    from baxy_mind.__main__ import _ground_explicit_arguments
+    from test_computer_use import CHAIN_SCHEMA
+
+    ungrounded = [
+        text for text, _ in MISSIONS
+        if _ground_explicit_arguments("mission.computer.use", text, CHAIN_SCHEMA, APPS) is None
+    ]
+    assert ungrounded == []
