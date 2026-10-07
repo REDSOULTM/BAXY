@@ -119,6 +119,19 @@ public sealed class OperationRegistryTests
     [TestCase("input.key.press", """{"key":"enter","target":"message_composer"}""", PolicyDecision.RequireConfirmation)]
     [TestCase("input.key.press", """{"key":"enter"}""", PolicyDecision.Allow)]
     [TestCase("input.key.press", """{"key":"escape","target":"message_composer"}""", PolicyDecision.Allow)]
+    // Safety review 2026-10-07: the send verb opens the label whatever follows it, a shortcut hint or a format
+    // character does not hide it, and space on a composer's send control sends like Enter.
+    [TestCase("input.key.press", """{"key":"space","target":"message_composer"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Enviar a Ron92"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Send Friend Request"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Reenviar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Forward"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Invitar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Invite people to this server"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Enviar (Ctrl+Enter)"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"En\u200Bviar"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Enviados"}""", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", """{"label":"Invitaciones"}""", PolicyDecision.Allow)]
     public void Normal_mode_asks_when_the_exact_step_reaches_another_person(
         string operation,
         string arguments,
@@ -153,6 +166,27 @@ public sealed class OperationRegistryTests
     [TestCase("Delete", true)]
     [TestCase("Desinstalar", true)]
     [TestCase("Uninstall", true)]
+    // Safety review 2026-10-07: a destructive verb anywhere in a short label, the Delete key outside a text field.
+    [TestCase("No guardar", true)]
+    [TestCase("Don't save", true)]
+    [TestCase("Descartar cambios", true)]
+    [TestCase("Discard", true)]
+    [TestCase("Cerrar sin guardar", true)]
+    [TestCase("Mover a la papelera", true)]
+    [TestCase("Move to Trash", true)]
+    [TestCase("Vaciar papelera de reciclaje", true)]
+    [TestCase("Empty Recycle Bin", true)]
+    [TestCase("Quitar", true)]
+    [TestCase("Quitar de la biblioteca", true)]
+    [TestCase("Remove", true)]
+    [TestCase("Limpiar", true)]
+    [TestCase("Clear all", true)]
+    [TestCase("Archivo: eliminar", true)]
+    [TestCase("Delete (Supr)", true)]
+    [TestCase("Eli\u200Bminar", true)]
+    [TestCase("Elementos eliminados", false)]
+    [TestCase("Deleted items", false)]
+    [TestCase("You can remove any of these items from your list later", false)]
     [TestCase("Carrito de compras", false)]
     [TestCase("Payment methods", false)]
     [TestCase("Papelera de reciclaje", false)]
@@ -170,6 +204,25 @@ public sealed class OperationRegistryTests
                     ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, "input.visible.click", document.RootElement),
                 Is.EqualTo(asks ? PolicyDecision.RequireConfirmation : PolicyDecision.Allow));
             Assert.That(RiskPolicy.CannotBeUndone("input.key.press", document.RootElement), Is.False);
+        });
+    }
+
+    [TestCase("""{"key":"delete"}""", true)]
+    [TestCase("""{"key":"delete","target":"message_composer"}""", true)]
+    [TestCase("""{"key":"delete","target":"text_field"}""", false)]
+    [TestCase("""{"key":"backspace"}""", false)]
+    public void The_delete_key_asks_unless_the_keyboard_is_on_a_text_field(string arguments, bool asks)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.key.press");
+        using JsonDocument document = JsonDocument.Parse(arguments);
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperationArgumentValidator.IsValid(document.RootElement, descriptor.ArgumentsSchema), Is.True);
+            Assert.That(RiskPolicy.CannotBeUndone("input.key.press", document.RootElement), Is.EqualTo(asks));
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, "input.key.press", document.RootElement),
+                Is.EqualTo(asks ? PolicyDecision.RequireConfirmation : PolicyDecision.Allow));
         });
     }
 
