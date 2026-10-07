@@ -332,3 +332,12 @@ a mano de la cuenta tras comprobar el botón «Eliminar … de Tu biblioteca». 
 cuenta (seguir, guardar, me gusta, suscribirse, obtener o instalar) se hace si el objetivo no lo pide; un lugar que se
 llama así («Tus me gusta», «Liked Songs») sigue siendo un lugar. La corrida de z7 posterior no tuvo ningún clic de ese
 tipo.
+
+### Lote ciego a (11:48–12:00)
+
+Once órdenes nuevas centradas en cadenas y conversación: **10/11 a la primera** (Calculadora → Bloc de notas con el
+resultado, Reloj → Configuración, Documentos → Descargas, goma y negro en Paint, Word en blanco → Insertar, Reloj
+mundial en inglés, buscar WhatsApp en la Store, modo programador, conversación de tres turnos hasta Ethernet, buscar
+Bluetooth en Configuración). Falló a3 «open Settings, go to Accessibility and then to Text size»: «Text size» no tenía
+su nombre en español en la tabla de alias; añadido como dato, a3 llega en 5,7 s (11/11). Ningún clic de cuenta ni
+interruptor no pedido en el lote (revisado en el journal).
