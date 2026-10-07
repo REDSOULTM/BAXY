@@ -185,7 +185,7 @@ public sealed class ComputerUseMissionTests
     }
 
     [Test]
-    public void AClickOnThePlaceThatLeavesTheWindowAsItWasMeansThePlaceWasAlreadyOpen()
+    public void AClickOnThePlaceThatLeavesTheWindowAsItWasIsNotProofOfArriving()
     {
         JsonArray clicked = [new JsonObject { ["step"] = 5, ["operation"] = "input.visible.click", ["ok"] = true, ["label"] = "TIENDA" }];
         JsonObject store = View("""
@@ -200,9 +200,34 @@ public sealed class ComputerUseMissionTests
         menu["textBeforeClick"] = new JsonObject { ["5"] = ComputerUseSuccessCheck.TextLines(store) };
         Assert.Multiple(() =>
         {
-            Assert.That(ComputerUseSuccessCheck.Evaluate("page:tienda", store, clicked, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:tienda", store, clicked, out _), Is.False, "the page reached may not be drawn yet");
             Assert.That(ComputerUseSuccessCheck.Evaluate("page:tienda", menu, clicked, out _), Is.False, "one new line is a menu, not the place");
         });
+    }
+
+    [Test]
+    public void TypedTextIsNeverJudgedOnReceiptsAloneAndACutValueIsUnknown()
+    {
+        JsonArray typed = [new JsonObject { ["step"] = 2, ["operation"] = "input.text.type", ["ok"] = true, ["text"] = "lista: pan" }];
+        JsonObject cut = View("""
+            {"window": {"title": "Bloc de notas", "focused": {"kind": "Document", "name": "Editor de texto", "value": "VALUE"}}, "controls": []}
+            """);
+        cut["window"]!["focused"]!["value"] = new string('a', 120);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.EvaluateReceipts("stepDone:input.text.type", typed, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.EvaluateReceipts("stepDone:input.key.press:enter", typed, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.text.type", cut, typed, out _), Is.True);
+        });
+    }
+
+    [Test]
+    public void WhatAFieldHoldsIsNotWhereTheWindowWent()
+    {
+        JsonObject typedOnly = View("""
+            {"window": {"title": "Discord"}, "controls": [{"i": 0, "kind": "Edit", "name": "Nombre del canal", "value": "pruebas"}]}
+            """);
+        Assert.That(ComputerUseSuccessCheck.ViewContains(typedOnly, "pruebas"), Is.False);
     }
 
     [Test]

@@ -1403,7 +1403,7 @@ internal static class ComputerUseSuccessCheck
         {
             string[] atoms = term.Split('&', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             if (atoms.Length > 0
-                && atoms.All(atom => ReceiptAtoms.Contains(AtomKind(atom)) && Atom(atom, nothingSeen, steps)))
+                && atoms.All(atom => ReceiptAtoms.Contains(AtomKind(atom)) && !JudgedOnScreen(atom) && Atom(atom, nothingSeen, steps)))
             {
                 satisfiedBy = term;
                 return true;
@@ -1412,6 +1412,11 @@ internal static class ComputerUseSuccessCheck
 
         return false;
     }
+
+    // Typed text is a receipt only when the field cannot show it: whether it arrived is read on the next look
+    // (TypedTextShows), never from the keys Windows accepted.
+    private static bool JudgedOnScreen(string atom) =>
+        atom.Trim().StartsWith("stepDone:input.text.type", StringComparison.OrdinalIgnoreCase);
 
     private static string AtomKind(string atom)
     {
@@ -1530,8 +1535,11 @@ internal static class ComputerUseSuccessCheck
             return true;
         }
 
-        return Fold(held).Contains(typed, StringComparison.Ordinal);
+        // The worker cuts a value at 120 characters: a cut value cannot show text typed at its end.
+        return held.Length >= TypedValueCut || Fold(held).Contains(typed, StringComparison.Ordinal);
     }
+
+    private const int TypedValueCut = 120;
 
     // «ir a X» on a window drawn without an accessible tree (CEF, Electron, canvas; measured on Steam): X is still on
     // screen, a verified click went there, and most of the written text is new against the first look of the
@@ -1571,11 +1579,10 @@ internal static class ComputerUseSuccessCheck
             return false;
         }
 
+        // A window left exactly as it was is not proof of being there: the page reached may not be drawn yet when the
+        // next look comes (≈150 ms); a place already open is told by its address (AddressNames).
         int kept = current.Count(line => baseline.Contains((string?)line ?? string.Empty));
-        // A click on the place's own name that leaves the window exactly as it was: the place was already open
-        // (measured on Steam: the store was in front, «TIENDA» clicked twice and the mission ended unchanged).
-        bool alreadyThere = kept == current.Count && baseline.Count == current.Count;
-        return alreadyThere || kept * 2 < current.Count;
+        return kept * 2 < current.Count;
     }
 
     // Where controls exist, the last verified click went to a control named as the place itself, or as the act of
@@ -1791,9 +1798,11 @@ internal static class ComputerUseSuccessCheck
         {
             foreach (JsonNode? node in controls)
             {
+                // What a field holds is what was typed into it (the echo), never where the window went.
+                bool field = (string?)node?["kind"] is "Edit" or "ComboBox" or "Document";
                 if (node is JsonObject control
                     && (Fold((string?)control["name"]).Contains(folded, StringComparison.Ordinal)
-                        || Fold((string?)control["value"]).Contains(folded, StringComparison.Ordinal)))
+                        || (!field && Fold((string?)control["value"]).Contains(folded, StringComparison.Ordinal))))
                 {
                     return true;
                 }
