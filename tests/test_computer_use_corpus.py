@@ -365,6 +365,72 @@ def test_a_closing_question_is_split_off_and_answered_by_the_final() -> None:
     assert missions.mission_request("en el bloc de notas escribí decime si venís", APPS).goal == "escribir decime si venís"
 
 
+def test_a_closing_question_may_name_the_thing_alone() -> None:
+    # Live v3 2026-10-07: «decime el volumen» (no «si»/«qué») left the request unread; the engine got the whole sentence
+    # as one free goal and the model stopped on the first page.
+    said = "en Configuración andá a Sistema, después a Sonido y decime el volumen"
+    mission = missions.mission_request(said, APPS)
+    assert mission is not None and mission.application == "Configuración"
+    assert [step.goal for step in mission.steps] == ["ir a sistema", "ir a sonido"]
+    assert all(step.success_check.startswith(f"control:{name}:current|") for step, name in zip(mission.steps, ("sistema", "sonido")))
+    assert mission.goal.endswith(missions.QUESTION_MARK + "decime el volumen")
+    english = missions.mission_request("in Settings go to System, then Sound and tell me the volume", APPS)
+    assert english is not None and english.goal.endswith(missions.QUESTION_MARK + "tell me the volume")
+    # Counter-cases: typed words stay typed (no joiner), and looking at a thing is a doing, never a question.
+    assert missions.mission_request("en el bloc de notas escribí decime el volumen", APPS).goal == "escribir decime el volumen"
+    watched = missions.mission_request("en Steam buscá Hades y mirá el video", APPS)
+    assert watched is None or missions.QUESTION_MARK not in watched.goal
+
+
+def test_quotes_around_a_name_are_no_part_of_it() -> None:
+    # Live v11 2026-10-07: the context decider rewrote «y después a Sistema» as «En Configuración, haz clic en
+    # «Sistema».»; the quoted name matched no control and the loop searched for «sistema» with its quotes.
+    for said in ("En Configuración, haz clic en «Sistema».", 'En Configuración, haz clic en "Sistema".',
+                 "En Configuración, haz clic en “Sistema”."):
+        mission = missions.mission_request(said, APPS)
+        assert mission.goal == "hacer clic en sistema", said
+        assert mission.success_check.split("|")[0] == "stepDone:input.visible.click:sistema"
+    chain = missions.mission_request("En Configuración, haz clic en «Bluetooth y dispositivos» y después en «Sistema».", APPS)
+    assert [step.goal for step in chain.steps] == ["hacer clic en bluetooth y dispositivos", "hacer clic en sistema"]
+    assert missions.mission_request("En Configuración, ve a «Sistema».", APPS).goal == "ir a sistema"
+    assert missions.mission_request("En Configuración, activa «Bluetooth».", APPS).goal == "activar bluetooth"
+    assert missions.mission_request("En Configuración, desactiva «Bluetooth».", APPS).goal == "desactivar bluetooth"
+    # A name with an apostrophe inside keeps it.
+    assert missions.mission_request("en Steam hacé clic en Assassin's Creed", APPS).goal == "hacer clic en assassin's creed"
+
+
+# The Settings window of live v3/v11 (2026-10-07): «Sistema» is the title bar's system menu, its menu bar and the
+# navigation item.
+_SETTINGS_VIEW = {
+    "window": {"title": "Configuración", "process": "ApplicationFrameHost", "requested": True,
+               "rect": {"x": 58, "y": 0, "w": 1282, "h": 1002},
+               "focused": {"kind": "ListItem", "name": "Bluetooth y dispositivos"}},
+    "controls": [
+        {"i": 0, "kind": "MenuItem", "name": "Sistema", "state": "collapsed"},
+        {"i": 1, "kind": "Button", "name": "Cerrar Configuración", "zone": "TR"},
+        {"i": 2, "kind": "Edit", "name": "Cuadro de búsqueda, Buscar una opción", "zone": "T", "value": "wi-fi"},
+        {"i": 3, "kind": "ListItem", "name": "Inicio", "zone": "TL"},
+        {"i": 4, "kind": "ListItem", "name": "Sistema", "zone": "TL"},
+        {"i": 5, "kind": "ListItem", "name": "Bluetooth y dispositivos", "state": "selected focused", "zone": "TL"},
+        {"i": 6, "kind": "ListItem", "name": "Red e Internet", "zone": "L"},
+        {"i": 7, "kind": "Button", "name": "Bluetooth y dispositivos", "zone": "T"},
+        {"i": 8, "kind": "Button", "name": "Bluetooth", "state": "on", "zone": "R"},
+        {"i": 9, "kind": "MenuBar", "name": "Sistema"},
+        {"i": 10, "kind": "Text", "name": "Bluetooth y dispositivos", "zone": "T"},
+    ],
+    "text": {},
+}
+
+
+def test_a_follow_up_click_on_a_navigation_place_clicks_the_navigation_item() -> None:
+    goal = missions.mission_request("En Configuración, haz clic en «Sistema».", APPS).goal
+    step = computer_use.deterministic_step(goal=goal, view=_SETTINGS_VIEW, history=[], application="Configuración")
+    assert step == {"operation": "input.visible.click", "arguments": {"label": "Sistema", "index": 4}, "reason": "el objetivo lo dice"}
+    # The same for going there, the v3 chain's first sub-goal.
+    step = computer_use.deterministic_step(goal="ir a sistema", view=_SETTINGS_VIEW, history=[], application="Configuración")
+    assert step is not None and step["arguments"].get("index") == 4
+
+
 def test_created_and_renamed_items_keep_their_names_as_said() -> None:
     created = missions.mission_request("en el Explorador creá una carpeta llamada Fotos Viejas", APPS)
     assert (created.goal, created.success_check) == (

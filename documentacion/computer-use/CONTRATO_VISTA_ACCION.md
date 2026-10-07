@@ -703,6 +703,9 @@ disculpa; en una cadena no lograda, primero lo que no se pudo y su causa, despu�
   el `done` del modelo que cita lo escrito (o lo contiene, salvo en «escribir») se rechaza en la mente
   (`evidence_not_visible`) y en la
   App (§4.3, eco de la consulta); Steam citaba «Cuphead» del buscador de la tienda.
+  Tampoco cumple `stepDone:input.visible.click:X` un clic en un texto, campo o documento que repite dentro de una
+  frase más larga lo que el sub-objetivo tecleó antes en una búsqueda («No hay resultados para «X»»,
+  `ClickEchoesQuery`; medido en Configuración, v11 2026-10-07); un resultado o un ítem sí.
 - Un clic aprendido (procedimiento) se fija al único control de la vista actual con su nombre y se pulsa por
   identidad; tras un clic fallido el paso del objetivo se busca de nuevo en la vista, nunca el mismo acto.
 - Las ventanas del shell (escritorio, barra de tareas) nunca son la ventana de una aplicación.
@@ -744,8 +747,10 @@ En una cadena el verbo puede decirse una vez («elegí el lápiz y después el c
 Display», «hacé clic en Insertar y después en Tabla»), un pronombre o un lugar genérico retoma lo último nombrado
 («buscá Hades y abrilo», «creá la carpeta X y entrá», «buscá a Mamá y abrí el chat»), una cláusula que nombra otra
 aplicación cambia la del paso («… y pegalo en el Bloc de notas») y una pregunta final («… y decime si el modo es
-claro u oscuro») no es sub-objetivo: va al final del `goal` tras `; y responder: ` y el final la contesta sólo con
-`seen.screen`/`seen.evidence`. Nunca es misión un pedido que ordena borrar, vaciar, formatear, desinstalar, comprar
+claro u oscuro», y con un verbo de decir también la cosa sola: «… y decime el volumen», «and tell me the volume»)
+no es sub-objetivo: va al final del `goal` tras `; y responder: ` y el final la contesta sólo con
+`seen.screen`/`seen.evidence`. Las comillas que delimitan un nombre («haz clic en «Sistema»», la reformulación
+del decisor de contexto) no son parte de él. Nunca es misión un pedido que ordena borrar, vaciar, formatear, desinstalar, comprar
 o pagar (lo tecleado no cuenta). Tipado contra motor: en una cadena sólo las operaciones tipadas que no son
 primitivas del motor cubren sub-objetivos; un cálculo dicho dentro de una aplicación se hace en ella.
 

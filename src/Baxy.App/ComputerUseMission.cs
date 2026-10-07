@@ -1894,11 +1894,28 @@ internal static class ComputerUseSuccessCheck
                     // that shape as the colour chosen). A bare «=» is the equals key's own name.
                     bool wholeLabel = operation == "input.visible.click" && argument is { Length: > 1 } && argument[0] == '=';
                     argument = wholeLabel ? argument![1..] : argument;
+                    // What this sub-goal typed so far into a search, an address bar or a field with no name.
+                    var queries = new List<string>();
                     foreach (JsonNode? node in steps)
                     {
+                        if (node is JsonObject typing && (bool?)typing["ok"] == true
+                            && (string?)typing["operation"] == "input.text.type" && EchoesItsQuery(typing)
+                            && Fold((string?)typing["text"]).Trim(QuoteMarks) is { Length: > 0 } query)
+                        {
+                            queries.Add(query);
+                        }
+
                         if (node is not JsonObject step || (bool?)step["ok"] != true
                             || (string?)step["operation"] != operation)
                         {
+                            continue;
+                        }
+
+                        if (operation == "input.visible.click" && ClickEchoesQuery(step, queries))
+                        {
+                            // A text that repeats what BAXY typed («No hay resultados para «X»») is no control named
+                            // X (measured 2026-10-07 on Settings: a click on that message passed «hacer clic en X»
+                            // and the mission learned it as the way there).
                             continue;
                         }
 
@@ -2554,6 +2571,29 @@ internal static class ComputerUseSuccessCheck
 
     private static bool EchoesItsQuery(JsonObject typedStep) =>
         (string?)typedStep["into"] is not { Length: > 0 } into || SearchBox.IsMatch(Fold(into)) || AddressBox.IsMatch(Fold(into));
+
+    // The marks that delimit a query typed between quotes.
+    private static readonly char[] QuoteMarks = ['"', '\'', '«', '»', '“', '”', '‘', '’', ' '];
+
+    // The kinds that only show words (a message, a field): never a result or an item a person clicks to get somewhere.
+    private static readonly HashSet<string> WordsOnlyKinds = new(StringComparer.Ordinal) { "Text", "Edit", "ComboBox", "Document" };
+
+    /// <summary>
+    /// A verified click on a control that only shows words and holds a query typed before it inside a longer text
+    /// («No hay resultados para «sistema»», «Resultados de sistema»): the window repeating the query, not the control
+    /// that is named so. A result or an item (any other kind), and a text that is the query itself, still count.
+    /// </summary>
+    internal static bool ClickEchoesQuery(JsonObject click, IReadOnlyList<string> queries)
+    {
+        if (queries.Count == 0 || (string?)click["kind"] is not { } kind || !WordsOnlyKinds.Contains(kind))
+        {
+            return false;
+        }
+
+        string name = Fold((string?)click["name"] ?? (string?)click["label"]);
+        string bare = name.Trim(QuoteMarks);
+        return queries.Any(query => bare != query && name.Contains(query, StringComparison.Ordinal));
+    }
 
     internal static JsonArray TextLines(JsonObject view)
     {

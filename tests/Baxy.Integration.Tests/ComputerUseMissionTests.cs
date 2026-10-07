@@ -1024,6 +1024,54 @@ public sealed class ComputerUseMissionTests
         });
     }
 
+    // Live v11 2026-10-07 on Settings: «hacer clic en «bluetooth y dispositivos»» typed the name into the search box and
+    // clicked the message «No hay resultados para «bluetooth y dispositivos»»; the containment of the click atom passed
+    // it and the mission learned that click as the way there.
+    [Test]
+    public void AClickOnATextThatRepeatsTheTypedQueryIsNoClickOnThatName()
+    {
+        JsonObject view = View("""{"window": {"title": "Configuración", "process": "ApplicationFrameHost"}, "controls": [], "text": {}}""");
+        JsonObject Typed(string text) => new()
+        {
+            ["operation"] = "input.text.type",
+            ["text"] = text,
+            ["into"] = "Cuadro de búsqueda, Buscar una opción",
+            ["ok"] = true,
+        };
+        JsonObject Click(string name, string kind) => new()
+        {
+            ["operation"] = "input.visible.click",
+            ["label"] = name,
+            ["name"] = name,
+            ["kind"] = kind,
+            ["ok"] = true,
+        };
+        JsonArray echo = new() { Typed("«bluetooth y dispositivos»"), Click("No hay resultados para «bluetooth y dispositivos»", "Text") };
+        JsonArray plain = new() { Typed("sistema"), Click("No hay resultados para «sistema»", "Text") };
+        // Counter-cases: a result (an item) that holds the query, the result that is the query, the navigation item
+        // clicked with nothing typed, and a message clicked when nothing was typed into a search.
+        JsonArray result = new() { Typed("sistema"), Click("Sistema", "ListItem") };
+        JsonArray resultText = new() { Typed("sistema"), Click("Sistema", "Text") };
+        JsonArray longerResult = new() { Typed("sonido"), Click("Configuración de sonido", "ListItem") };
+        JsonArray item = new() { Click("Bluetooth y dispositivos", "ListItem") };
+        JsonArray untyped = new() { Click("Sistema y seguridad", "Text") };
+        JsonArray typedAfter = new() { Click("Sistema y seguridad", "Text"), Typed("sistema") };
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:«bluetooth y dispositivos»", view, echo, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:bluetooth y dispositivos", view, echo, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:sistema", view, plain, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:=sistema", view, plain, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.EvaluateReceipts("stepDone:input.visible.click:sistema", plain, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:sistema", view, result, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:sistema", view, resultText, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:sonido", view, longerResult, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:bluetooth y dispositivos", view, item, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:sistema", view, untyped, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:sistema", view, typedAfter, out _), Is.True);
+        });
+    }
+
     // «stepDone:input.visible.click:=red»: the clicked name holds the word whole. Measured on Paint: «red» inside
     // «Rectángulo redondeado» passed a click on that shape as the colour chosen. A bare «=» stays the equals key.
     [Test]
