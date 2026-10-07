@@ -386,6 +386,18 @@ internal static class ComputerUseMission
                     {
                         if (decision.Operation == "none" || !Primitives.Contains(decision.Operation))
                         {
+                            // A screen torn down by the act just taken and not built again yet is no screen without a
+                            // step (measured 2026-10-07 on a store: 185 ms after Enter its results page listed 17 of
+                            // 52 controls, a placeholder layout, and the model rightly saw nothing to press). Once
+                            // per act, looked at again, bounded, while it is redrawn; then the loop decides anew.
+                            if (decision.Operation == "none" && string.IsNullOrEmpty(decision.Code)
+                                && await RedrawnAfterActAsync(context, state, steps, start, application, lastView, signature, cancellationToken)
+                                    .ConfigureAwait(true))
+                            {
+                                ShellTraceSink.Record(ShellTraceScopes.Turn, traceId, "computer_use.redrawn", $"step.{steps.Count}");
+                                continue;
+                            }
+
                             // The application is on its start page with no document open and the place asked lives in
                             // one (measured on Excel and Word: their tabs exist only with a document): said as such.
                             // A search box written on screen that did not prove it took the keyboard: nothing was typed.
@@ -496,6 +508,9 @@ internal static class ComputerUseMission
                             continue;
                         }
 
+                        // How much the screen listed when this act was taken: a look after it that lists less shows a
+                        // screen torn down (RedrawnAfterActAsync).
+                        state["actFromControls"] = lastView is null ? 0 : ControlCount(lastView);
                         context.SetStatus($"Paso {steps.Count + 1}: {Describe(decision.Operation, stepArguments)}");
                         PreparedOperation prepared = context.Registry.GetOrAdd(new RoutedOperation(decision.Operation, stepArguments));
                         var stepWatch = Stopwatch.StartNew();
@@ -1162,6 +1177,60 @@ internal static class ComputerUseMission
 
     internal const int PageLooks = 6;
     internal static readonly TimeSpan PageLookInterval = TimeSpan.FromMilliseconds(400);
+
+    // The model saw no step on a look taken right after a verified act that changed the screen, and that look lists
+    // fewer controls than the screen the act was taken from: the act tore the screen down (a page being replaced) and
+    // it may not be drawn yet. Once per act, it is looked at again every PageLookInterval, at most PageLooks times,
+    // until it changes and then holds still; true when it changed, so the loop looks and decides again.
+    private static async Task<bool> RedrawnAfterActAsync(
+        Context context,
+        JsonObject state,
+        JsonArray steps,
+        int start,
+        string? application,
+        JsonObject seen,
+        string seenSignature,
+        CancellationToken cancellationToken)
+    {
+        if (steps.Count <= start || steps[^1] is not JsonObject act
+            || (bool?)act["ok"] != true || (bool?)act["changed"] != true
+            || (int?)state["redrawnAfterStep"] == steps.Count
+            || ControlCount(seen) >= ((int?)state["actFromControls"] ?? 0))
+        {
+            return false;
+        }
+
+        state["redrawnAfterStep"] = steps.Count;
+        // The signature of a window without an accessible tree is its text: it is read the same way here.
+        bool includeText = ControlCount(seen) <= 1;
+        string previous = seenSignature;
+        bool changed = false;
+        for (int looks = 0; looks < PageLooks; looks++)
+        {
+            await context.Delay(PageLookInterval, cancellationToken).ConfigureAwait(true);
+            JsonObject? view = await ReadViewAsync(context, state, application, includeText, cancellationToken).ConfigureAwait(true);
+            if (view is null)
+            {
+                break;
+            }
+
+            string signature = ViewSignature(view);
+            if (string.Equals(signature, previous, StringComparison.Ordinal))
+            {
+                if (changed)
+                {
+                    break;
+                }
+
+                continue;
+            }
+
+            changed = true;
+            previous = signature;
+        }
+
+        return changed;
+    }
     private static readonly System.Text.RegularExpressions.Regex WebAddress = new(
         @"^(?:https?://)?(?:[\w-]+\.)+[^\W\d_]{2,}(?::\d+)?(?:[/?#]|$)",
         System.Text.RegularExpressions.RegexOptions.CultureInvariant);

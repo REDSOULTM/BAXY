@@ -517,6 +517,128 @@ public sealed class ComputerUseLoopTests
         });
     }
 
+    // Measured 2026-10-07 on a store: 185 ms after Enter in its search box the results page listed 17 of 52 controls
+    // (a placeholder layout) and the model rightly saw no step; the mission ended there instead of waiting for it.
+    private static JsonObject SearchBox() => Window("Tienda", "store", 21, true,
+    [
+        Control(0, "Edit", "Buscar", "focused", "Spotify"), Control(1, "ListItem", "spotify"), Control(2, "ListItem", "spotify lite"),
+        Control(3, "Button", "Perfil de usuario"), Control(4, "ListItem", "Inicio", "selected"), Control(5, "ListItem", "Juegos"),
+    ], "Tienda", "Inicio", "Juegos");
+
+    private static JsonObject TornDown() => Window("Tienda", "store", 21, true,
+        [Control(0, "Button", "Perfil de usuario", "focused"), Control(1, "Custom", "SearchPageLayout"), Control(2, "Text", "placeholder text")],
+        "Tienda");
+
+    private static JsonObject Results() => Window("Tienda", "store", 21, true,
+    [
+        Control(0, "Edit", "Buscar", "", "Spotify"), Control(1, "ListItem", "Spotify: musica y podcasts Aplicacion"),
+        Control(2, "Button", "Obtener"), Control(3, "Button", "Perfil de usuario"), Control(4, "ListItem", "Inicio", "selected"),
+    ], "Tienda", "Spotify: musica y podcasts", "Obtener");
+
+    private static readonly JsonObject SearchArguments = new()
+    {
+        ["goal"] = "buscar Spotify",
+        ["application"] = "Tienda",
+        ["successCheck"] = "stepDone:input.key.press:enter&text:podcasts",
+    };
+
+    [Test]
+    public async Task AScreenTornDownByTheActIsLookedAtAgainUntilItIsRedrawnBeforeSayingThereIsNoStep()
+    {
+        bool entered = false;
+        int looksAfterEnter = 0;
+        var harness = new Harness
+        {
+            Screen = _ => !entered ? SearchBox() : looksAfterEnter++ < 2 ? TornDown() : Results(),
+            Mind = request => request.View["controls"]!.AsArray().Any(control => (string?)control!["kind"] == "Edit")
+                ? Step("input.key.press", new JsonObject { ["key"] = "enter" })
+                : Step("none", new JsonObject()),
+        };
+        harness.Receipt = (_, _) =>
+        {
+            entered = true;
+            return new JsonObject();
+        };
+        JsonObject arguments = SearchArguments.DeepClone().AsObject();
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("en la tienda buscá Spotify", arguments), arguments, CancellationToken.None);
+
+        JsonObject observed = Observed(result);
+        Assert.Multiple(() =>
+        {
+            Assert.That((bool?)observed["reached"], Is.True, (string?)observed["stoppedBy"]);
+            Assert.That(harness.Acts, Has.Count.EqualTo(1), "only the Enter is acted; the wait presses nothing");
+            Assert.That(harness.Requests, Has.Count.EqualTo(2), "the model is asked once on the torn-down screen");
+            Assert.That(harness.Delays.Count(delay => delay == ComputerUseMission.PageLookInterval), Is.LessThanOrEqualTo(ComputerUseMission.PageLooks));
+        });
+    }
+
+    [Test]
+    public async Task AScreenThatDidNotShrinkAfterTheActIsNotWaitedForWhenTheModelSeesNoStep()
+    {
+        bool entered = false;
+        var harness = new Harness
+        {
+            // After the act the screen lists as much as before: nothing was torn down, the model's «none» stands.
+            Screen = _ => !entered ? SearchBox() : Window("Tienda", "store", 21, true,
+            [
+                Control(0, "Edit", "Buscar", "", "Spotify"), Control(1, "Text", "Sin conexión"), Control(2, "Button", "Reintentar"),
+                Control(3, "Button", "Perfil de usuario"), Control(4, "ListItem", "Inicio", "selected"), Control(5, "ListItem", "Juegos"),
+            ], "Tienda", "Sin conexión"),
+            Mind = request => request.History.Count == 0
+                ? Step("input.key.press", new JsonObject { ["key"] = "enter" })
+                : Step("none", new JsonObject()),
+        };
+        harness.Receipt = (_, _) =>
+        {
+            entered = true;
+            return new JsonObject();
+        };
+        JsonObject arguments = SearchArguments.DeepClone().AsObject();
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("en la tienda buscá Spotify", arguments), arguments, CancellationToken.None);
+
+        JsonObject observed = Observed(result);
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)observed["stoppedBy"], Is.EqualTo("computer_use_no_step_visible"));
+            Assert.That(harness.Delays, Does.Not.Contain(ComputerUseMission.PageLookInterval));
+            Assert.That(harness.Looks, Has.Count.EqualTo(2));
+        });
+    }
+
+    [Test]
+    public async Task AScreenTornDownThatIsNeverRedrawnIsWaitedForOnceBoundedAndThenTheModelsNoneStands()
+    {
+        bool entered = false;
+        var harness = new Harness
+        {
+            Screen = _ => !entered ? SearchBox() : TornDown(),
+            Mind = request => request.History.Count == 0
+                ? Step("input.key.press", new JsonObject { ["key"] = "enter" })
+                : Step("none", new JsonObject()),
+        };
+        harness.Receipt = (_, _) =>
+        {
+            entered = true;
+            return new JsonObject();
+        };
+        JsonObject arguments = SearchArguments.DeepClone().AsObject();
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("en la tienda buscá Spotify", arguments), arguments, CancellationToken.None);
+
+        JsonObject observed = Observed(result);
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)observed["stoppedBy"], Is.EqualTo("computer_use_no_step_visible"));
+            Assert.That(harness.Requests, Has.Count.EqualTo(2), "the model is not asked again on a screen that did not change");
+            Assert.That(harness.Delays.Count(delay => delay == ComputerUseMission.PageLookInterval), Is.EqualTo(ComputerUseMission.PageLooks));
+        });
+    }
+
     // Measured on Steam: the editor in front before app.open is not the application; the page reached is measured
     // against the application's own first look, after a bounded wait that ends as soon as its window shows.
     [Test]
