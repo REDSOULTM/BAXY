@@ -142,7 +142,6 @@ public sealed class FieldProductHonestTerminalTests
     [TestCase("clarification", "en el Explorador de archivos andá a Documentos y creá una carpeta llamada baxy-prueba", false)]
     [TestCase("clarification", "in File Explorer go to Documents and create a folder named baxy-test", true)]
     [TestCase("status", "What time is it?", true)]
-    [TestCase("conversation", "¿qué me recomendás para cenar?", false)]
     public void FailedCompositionLeavesTheFloorSentenceNotTheDiagnostic(string intent, string userText, bool english)
     {
         var pending = new PendingModelMessage(
@@ -156,6 +155,18 @@ public sealed class FieldProductHonestTerminalTests
             Assert.That(line, Is.Not.Empty);
             Assert.That(line, Does.Not.Contain("internal_code").And.Not.Contain("retry_exhausted").And.Not.Contain("⚠"));
         });
+    }
+
+    // Owner's M75 ruling: a turn that did nothing keeps its ⚠ marker; only a question still to ask and a result have
+    // a floor sentence.
+    [Test]
+    public void AFailedConversationKeepsTheMarker()
+    {
+        var pending = new PendingModelMessage(
+            new UserMessageDraft("{}", "conversation", null), "¿qué me recomendás para cenar?", new JsonObject(), "t0");
+
+        Assert.That(MainWindowViewModel.CompositionFailureFallback(pending, "internal_code;retry_exhausted"),
+            Is.EqualTo("⚠ (internal_code;retry_exhausted)"));
     }
 
     [TestCase(false)]

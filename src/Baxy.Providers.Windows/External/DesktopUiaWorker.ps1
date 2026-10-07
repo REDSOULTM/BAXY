@@ -1,4 +1,4 @@
-# Worker UIA persistente del motor de computer use (CONTRATO_VISTA_ACCION.md §1, §2).
+﻿# Worker UIA persistente del motor de computer use (CONTRATO_VISTA_ACCION.md §1, §2).
 #
 # Una sola carga de UIAutomationClient y de Add-Type por vida del proceso: la
 # herencia (gemma4_agent, uia_fast.py) midio 243 ms de spawn mas 385 ms de
@@ -180,7 +180,7 @@ function Invoke-NamedControl($el){
     if($ec.Current.ExpandCollapseState -eq [System.Windows.Automation.ExpandCollapseState]::Expanded){ $ec.Collapse() } else { $ec.Expand() }
     return 'expand'
   }
-  # Chromium/Electron items often expose no pattern and no clickable point (measured: a Discord server in its
+  # Chromium/Electron items often expose no pattern and no clickable point (measured: a messaging client's server in its
   # sidebar): a person clicks the middle of what they see, so does this.
   $x=$null; $y=$null
   try { $point=$el.GetClickablePoint(); $x=[int]$point.X; $y=[int]$point.Y } catch {

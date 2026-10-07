@@ -74,8 +74,7 @@
  },
  "compositionFailures": {
   "clarification": {"es": "Todavía no hice nada: me falta un dato y no supe preguntártelo bien. ¿Me lo dices con un poco más de detalle?", "en": "I haven't done anything yet: something is missing and I couldn't word the question. Could you tell me with a bit more detail?"},
-  "result": {"es": "No pude contarte cómo salió lo que pediste.", "en": "I couldn't put into words how your request turned out."},
-  "default": {"es": "No me salió una respuesta que pueda darte. ¿Me lo dices de otra forma?", "en": "I couldn't come up with an answer I can give you. Could you say it another way?"}
+  "result": {"es": "No pude contarte cómo salió lo que pediste.", "en": "I couldn't put into words how your request turned out."}
  },
  "byline": {"key": "artist", "es": " de {value}", "en": " by {value}"},
  "facts": [{"key": "playbackStatus", "values": {"playing": {"es": "se está reproduciendo", "en": "it is playing"}, "paused": {"es": "está en pausa", "en": "it is paused"}, "stopped": {"es": "está detenido", "en": "it is stopped"}}}],

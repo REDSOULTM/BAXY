@@ -99,7 +99,7 @@ def test_the_plain_creation_and_open_readings_are_unchanged() -> None:
 
 def test_the_failed_composition_line_is_not_a_reply_of_baxy_for_the_decider() -> None:
     lines = operation_floor.floor_data()["compositionFailures"]
-    assert set(lines) == {"clarification", "result", "default"}
+    assert set(lines) == {"clarification", "result"}  # a turn that did nothing keeps its ⚠ (owner, M75)
     for line in lines.values():
         assert line["es"] and line["en"]
         assert "⚠" not in line["es"] + line["en"]
