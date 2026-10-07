@@ -657,7 +657,22 @@ _UNDOING_OR_PAYING_ACT = re.compile(
     r"vaciar|vacia\s+(?:la|el|los|las)|formatea|formatear|formatealo|desinstala|desinstalar|desinstalalo|desinstale|"
     r"compra|compralo|comprala|comprar|comprame|compre|paga|pagalo|pagala|pagar|pague|transferi|transferir|transfiere|"
     r"delete|remove|uninstall|format|buy|purchase|pay|wipe|erase)\b"
+    # Safety review 2026-10-07: removing, discarding, the bin, subscriptions, renting, donating, selling, resetting,
+    # clearing, emptying and leaving a server or a group. «sacá» only as «sacá(lo) de» or «sacá a alguien de»: alone it takes a
+    # screenshot. «vacía» only imperative before an article (after a noun it is «una carpeta vacía»).
+    r"|\b(?:quita|quitar|quitalo|quitala|quitalos|quitalas|quite|quitame|saca(?:lo|la|los|las)?\s+(?:a\s+\S+(?:\s+\S+)?\s+)?(?:de|del)|"
+    r"papelera|trash|recycle\s+bin|descarta|descartar|descartalo|descartala|descarte|discard|"
+    r"cancela(?:r)?\s+(?:(?:la|mi|el)\s+)?(?:suscripcion|subscripcion|membresia|plan)|unsubscribe|"
+    r"cancel\s+(?:(?:my|the)\s+)?(?:subscription|membership|plan)|"
+    r"suscribime|suscribirme|suscribite|suscribete|suscribirse|suscribirte|subscribe|"
+    r"alquila|alquilar|alquilalo|alquilala|rent|dona|donar|donale|donate|vende|vender|vendelo|vendela|sell|"
+    r"restablece|restablecer|restablecelo|resetea|resetear|reset|limpia|limpiar|limpialo|limpiala|clear|"
+    r"empty\s+(?:the|my|your|trash|recycle|bin)|"
+    r"(?:sali|salir|salite|salirme|abandona|abandonar|leave)\s+(?:(?:del|de|el|la|this|the)\s+)?"
+    r"(?:servidor|server|grupo|group|canal|channel))\b"
 )
+
+
 def _orders_undoing_or_paying(folded: str) -> bool:
     """An undoing or paying act in a clause of the request; what a clause types is the person's text, not an act
     («type buy milk»)."""
@@ -770,6 +785,10 @@ def free_form_arguments(
 
     goal = " ".join(str(text or "").split()).strip(" .!?¡¿")
     if not goal or len(goal.encode("utf-8")) > 512:
+        return None
+    # Every way into the engine with the person's own words (the decider's choice, an unserved order) keeps out an
+    # undoing or paying goal, the same rule as the mission reader (safety review 2026-10-07).
+    if _orders_undoing_or_paying(fold(goal)):
         return None
     arguments: dict[str, object] = {"goal": goal}
     catalog = effect_intent.build_application_catalog_index(application_names)
@@ -1090,7 +1109,12 @@ def _app_frames(folded: str, *, longer_names: bool = True) -> Iterable[tuple[str
 # destructive or paying steps are asked for; a whole goal of that kind is not handed to the screen loop).
 _DESTRUCTIVE_OR_PAYING = re.compile(
     r"(?:^|\s)(?:borr|elimin|formate|desinstal|compr|pag|transfer|vaci|delete|remove|uninstall|format|buy|"
-    r"purchase|pay|wipe|erase)\w*"
+    r"purchase|pay|wipe|erase|quit|descart|discard|papelera|trash|unsubscri|suscrib|subscrib|alquil|rent|donat|"
+    r"sell|vend|restablec|reset|limpi|clear|empt)\w*"
+    r"|(?:^|\s)(?:dona|donar|donale|saca(?:lo|la|los|las)?\s+(?:a\s+\S+(?:\s+\S+)?\s+)?(?:de|del))\b"
+    r"|(?:^|\s)(?:cancela\w*|cancel)\s+(?:(?:la|mi|el|my|the)\s+)?(?:suscripcion|subscripcion|subscription|membresia|membership|plan)"
+    r"|(?:^|\s)(?:sali|salir|salite|salirme|abandon\w*|leave)\s+(?:(?:del|de|el|la|this|the)\s+)?"
+    r"(?:servidor|server|grupo|group|canal|channel)\b"
 )
 
 

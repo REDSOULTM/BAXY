@@ -853,3 +853,33 @@ def test_a_typed_step_carries_one_line_without_tabs() -> None:
     assert step["arguments"]["text"] == "hola chau fin"
     blank = {**raw, "text": "\n\t\r\n"}
     assert computer_use.validate_decision(blank, view={"window": {"title": "App"}, "controls": [], "text": {}}, last_failed=None, application_names=APPS)["operation"] == "none"
+
+
+def test_no_way_into_the_engine_takes_an_undoing_paying_or_leaving_goal() -> None:
+    apps = ("Discord", "Steam", "Spotify", "Paint", "Explorador de archivos")
+    never = (
+        "en Discord quitá a Ron92 de mis amigos",
+        "sacá a Cotele del servidor",
+        "en el explorador mandá informe.pdf a la papelera",
+        "move the report to the trash",
+        "descartá los cambios en Paint",
+        "en Spotify cancelá la suscripción",
+        "unsubscribe from this channel",
+        "suscribime al canal de Ron92",
+        "alquilá la película en Steam",
+        "doná 5 dólares en Steam",
+        "vendé mis cromos en Steam",
+        "restablecé la configuración de Discord",
+        "limpiá el historial de Steam",
+        "vaciá la papelera de reciclaje",
+        "empty the recycle bin",
+        "en Discord salí del servidor de BAXY",
+        "leave the server in Discord",
+    )
+    for said in never:
+        assert not missions.engine_can_try(said, apps), said
+        # The decider choosing the engine itself gets no arguments for it either.
+        assert missions.free_form_arguments(said, apps) is None, said
+        assert missions.mission_request(said, apps) is None, said
+    for said in ("en Paint dibujá un círculo", "sacá una captura de pantalla en Paint", "en el explorador creá una carpeta vacía"):
+        assert missions.free_form_arguments(said, apps) is not None, said
