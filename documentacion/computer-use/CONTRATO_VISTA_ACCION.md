@@ -739,7 +739,7 @@ cadena con una cláusula sin comprobación sigue siendo del decisor. Familias y 
 | creá una carpeta llamada X / create a folder named X | `crear carpeta X` | `control:=X&stepDone:input.text.type:X` |
 | renombrá A a B / rename A to B | `renombrar A a B` | `control:=B&stepDone:input.text.type:B` |
 | andá a X / go to X | `ir a X` | `control:X:current\|title:X\|page:X` (+ nombres en el otro idioma); un clic que sólo eligió un elemento de contenido sigue con Enter |
-| elegí el lápiz / el color rojo / pick the red color | `seleccionar X` | `control:=X:selected\|control:=X:on\|stepDone:input.visible.click:=X` (+ nombres en el otro idioma) |
+| elegí el lápiz / el color rojo / pick the red color | `seleccionar X` | `control:=X:selected\|control:=X:on\|stepDone:input.visible.click:=X` (+ nombres en el otro idioma); un color básico suma `stepDone:input.visible.click:=T` por cada tono de su familia (`semantic/colours.py`: azul → añil, índigo, turquesa…), porque una paleta puede no tenerlo por su nombre |
 | buscá X / search for X | `buscar X` | `title:X&stepDone:input.key.press:enter\|title:X&stepDone:input.visible.click:X\|stepDone:input.text.type&stepDone:input.key.press:enter&text:X` (los resultados en pantalla son la meta) |
 | cambiá a científica / pasá a la vista X / switch to X mode | `ir a X` | `control:X:selected\|title:X\|page:X\|header:X` (+ nombres en el otro idioma y el otro género) |
 | poné el modo X / set it to X mode | `activar modo X` | `control:modo X:on` + la de arriba si X es un modo con nombre propio; si no, `control:X:selected` |

@@ -19,6 +19,7 @@ from typing import Iterable
 
 from .. import effect_intent
 from .catalog import _CATALOG_NAME_ALIASES, application_name_without_frame
+from .colours import colour_check_words, is_basic_colour
 from .grammar import _head_is, imperative_rewrites
 
 # The application a mission names when the person names only a tab: the shell
@@ -585,7 +586,18 @@ def _select_check(target: str) -> str:
     # Chosen is the control selected or pressed; where the window says neither, the verified click on it. The name
     # whole (``=``): measured on Paint, «red» inside «Rectángulo redondeado» passed a click on that shape as the colour
     # chosen, and the mission learned that click as the way to choose red.
-    return _with_alternatives(target, ("control:={}:selected", "control:={}:on", "stepDone:input.visible.click:={}"))
+    check = _with_alternatives(target, ("control:={}:selected", "control:={}:on", "stepDone:input.visible.click:={}"))
+    if not is_basic_colour(target):
+        return check
+    # A basic colour the window's palette does not carry by that name (measured on Paint: no «Azul», only «Añil»):
+    # a click on one of its shades, whole, is the colour chosen, the closest first while the check fits.
+    covered = [fold(target), *label_alternatives(target)]
+    for word in colour_check_words(target, covered):
+        atom = f"stepDone:input.visible.click:={word}"
+        if len(f"{check}|{atom}".encode("utf-8")) > _CHECK_BYTES:
+            break
+        check = f"{check}|{atom}"
+    return check
 
 
 # «cambiá a científica», «pasá a la vista compacta», «poné el modo científico», «switch to scientific mode», «set it
