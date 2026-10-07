@@ -40,7 +40,7 @@ def test_changing_to_a_place_or_a_mode_is_never_proved_by_a_click_on_its_name() 
 
 
 def test_a_mode_said_by_its_word_or_its_name_shows_in_the_header() -> None:
-    assert "header:dark" in _terms("en Configuración switch to dark mode")
+    assert "control:dark:selected" in _terms("en Configuración switch to dark mode")
     scientific = _terms("en la calculadora cambiá a científica")
     assert {"header:cientifica", "header:scientific", "header:cientifico"} <= set(scientific)
     assert "header:standard" in _terms("en la calculadora pasate a la estándar")
@@ -57,7 +57,7 @@ def test_a_place_with_no_mode_said_has_no_header() -> None:
 def test_putting_a_switch_mode_on_is_the_switch_on_only() -> None:
     # The settings page «Modo avión» is selected and titled with it while the switch stays off.
     assert _mission("en Configuración poné el modo avión").success_check == (
-        "control:modo avion:on|control:airplane mode:on|control:modo de avion:on"
+        "control:modo avion:on|control:airplane mode:on|control:modo de avion:on|control:avion:selected"
     )
     put = _terms("en la calculadora poné el modo científico")
     assert put[0] == "control:modo cientifico:on"

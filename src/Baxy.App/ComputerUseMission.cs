@@ -742,8 +742,20 @@ internal static class ComputerUseMission
             state["lastText"] = currentText.DeepClone();
         }
 
-        if (done > 0 && steps[^1] is JsonObject last
-            && (string?)last["operation"] == "input.visible.click" && (bool?)last["ok"] == true
+        // The last verified step of the sub-goal, with only failed steps after it (a learned click that failed after
+        // the click that opened a menu leaves that menu the thing to read).
+        JsonObject? last = null;
+        for (int position = steps.Count - 1; position >= start && position >= 0; position--)
+        {
+            if (steps[position] is JsonObject candidate && (bool?)candidate["ok"] == true)
+            {
+                last = candidate;
+                break;
+            }
+        }
+
+        if (done > 0 && last is not null
+            && (string?)last["operation"] == "input.visible.click"
             && ((int?)last["step"] ?? steps.Count) is int clickStep)
         {
             // Every look until the next step measures the click's effect against the text seen right before it: the
@@ -2399,11 +2411,16 @@ internal static class ComputerUseSuccessCheck
     /// («title:pdf&stepDone:input.key.press:enter»), so the results titled by the query are what it wants (the same
     /// reading <see cref="Evaluate"/> gives each term).
     /// </summary>
+    // The goal is the search itself: a term both submits it (a step done) and reads the results on screen (title: or
+    // text:). A receipt-only term («stepDone:input.visible.click:X» of a choice) is no search.
     internal static bool SearchResultsProve(string? check) =>
         !string.IsNullOrWhiteSpace(check)
         && check.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Any(term => term.Split('&', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .Any(atom => AtomKind(atom) == "stepdone"));
+            .Any(term =>
+            {
+                string[] atoms = term.Split('&', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                return atoms.Any(atom => AtomKind(atom) == "stepdone") && atoms.Any(atom => AtomKind(atom) is "title" or "text");
+            });
 
     private static bool AFieldHolds(JsonObject view, string? typed)
     {

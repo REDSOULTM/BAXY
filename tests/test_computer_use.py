@@ -1445,3 +1445,20 @@ def test_when_the_places_own_control_failed_the_place_is_looked_up() -> None:
                "error": "visible_button_postread_unchanged"}]
     step = computer_use.deterministic_step(goal="ir a cotele", view=view, history=failed)
     assert step is not None and step["arguments"].get("label") == "Buscar o iniciar una conversación"
+
+
+def test_a_file_views_delete_command_does_not_stop_opening_the_chosen_folder() -> None:
+    # Explorer always shows «Eliminar (Supr)» in its command bar: only an uninstall offered, or a chosen item that runs
+    # or removes, keeps the Enter from being pressed.
+    view = {
+        "window": {"title": "Inicio - Explorador de archivos", "process": "explorer"},
+        "controls": [
+            {"i": 1, "kind": "Button", "name": "Eliminar (Supr)", "zone": "T"},
+            {"i": 5, "kind": "ListItem", "name": "Descargas", "state": "selected", "zone": "C",
+             "rect": {"x": 600, "y": 300, "w": 120, "h": 40}},
+        ],
+        "text": {},
+    }
+    clicked = [{"step": 1, "operation": "input.visible.click", "label": "Descargas", "index": 5, "ok": True}]
+    step = computer_use.deterministic_step(goal="ir a descargas", view=view, history=clicked)
+    assert step is not None and step["operation"] == "input.key.press" and step["arguments"].get("key") == "enter"

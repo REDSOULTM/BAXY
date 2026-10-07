@@ -655,7 +655,7 @@ def deterministic_step(
             # in the Home view); a person then presses Enter. Enter on a list item sends nothing to anyone. Never on
             # a file that runs or in a view that offers to remove what is chosen (a list of programs): there Enter
             # may start or uninstall something, so the step is the model's.
-            if _runs_when_opened(chosen) or _offers_removal(view):
+            if _runs_when_opened(chosen) or _offers_uninstall(view) or _REMOVAL_NAME.search(fold(chosen.get("name"))):
                 return None
             return {"operation": "input.key.press", "arguments": key_arguments("enter", view),
                     "reason": "el clic sólo eligió el elemento: Enter lo abre"}
@@ -817,10 +817,15 @@ _REMOVAL_NAME = re.compile(
 _RUNS_WHEN_OPENED = re.compile(r"\.(?:exe|msi|bat|cmd|ps1|vbs|js|lnk|appx|msix)(?!\w)")
 
 
-def _offers_removal(view: dict) -> bool:
+# Only an uninstall offered by the window vetoes Enter on a chosen item (a list of programs); delete-like commands are
+# on every file view (Explorer's «Eliminar (Supr)») and only count when they are the chosen item's own name.
+_UNINSTALL_NAME = re.compile(r"(?<!\w)(?:desinstal\w*|uninstall\w*)(?!\w)")
+
+
+def _offers_uninstall(view: dict) -> bool:
     controls = view.get("controls") if isinstance(view, dict) else None
     return any(
-        isinstance(control, dict) and _REMOVAL_NAME.search(fold(control.get("name"))) is not None
+        isinstance(control, dict) and _UNINSTALL_NAME.search(fold(control.get("name"))) is not None
         for control in (controls if isinstance(controls, list) else ())
     )
 
