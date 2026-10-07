@@ -2843,7 +2843,7 @@ def _ip_list_request(folded: str) -> bool:
 
 _DIRECTORY_CREATION_REQUEST = re.compile(
     r"^[¿?¡!\s]*(?:cre[aá]|crear|cre[aá]me|create|haz|hac[eé]|hazme|make)(?:me)?\s+"
-    r"(?:(?:una|un|a|the)\s+)?(?:carpeta|directorio|folder|directory)"
+    r"(?:(?:una|un|a|the)\s+)?(?:(?:nueva|new)\s+)?(?:carpeta|directorio|folder|directory)(?:\s+nuev[ao])?"
     rf"(?:\s+(?:en|on|in|dentro\s+de|inside)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder_a>{_KNOWN_FOLDER_WORDS}))?"
     r"\s+(?:llamad[oa]|named|called|con\s+(?:el\s+)?nombre)\s+(?P<name>\"[^\"]+\"|'[^']+'|\S+?)"
     rf"(?:\s+(?:en|on|in|dentro\s+de|inside)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder_b>{_KNOWN_FOLDER_WORDS}))?"
@@ -2856,6 +2856,65 @@ def _directory_creation_request(text: str) -> re.Match[str] | None:
     """Match one literal folder creation with a name."""
 
     return _DIRECTORY_CREATION_REQUEST.match(text.strip())
+
+
+# Live 2026-10-07 «en el Explorador de archivos andá a Documentos y creá una carpeta llamada baxy-prueba»: the decider
+# planned folder.open + create.directory, no reader read either clause, the model's extraction left the folder out
+# and the question it asked («¿en qué carpeta…?») was vetoed (machine_slot_ask) until the turn ended in ⚠. Going to a
+# known folder and creating a named folder there is two catalog effects: the folder opened, and the new folder made
+# inside it unless the creation names another. Read on the surface (case-insensitive) so the name keeps its letters.
+_EXPLORER_PLACE = r"(?:(?:el|the)\s+)?(?:explorador(?:\s+de\s+archivos)?|file\s+explorer|explorer)"
+_KNOWN_FOLDER_SURFACE = r"(?:escritorio|desktop|descargas|downloads|documentos|documents)"
+_KNOWN_FOLDER_NAVIGATION = (
+    r"[¿?¡!\s]*(?:(?:por\s+favor|please)\s*,?\s*)?"
+    rf"(?:(?:en|in|desde|from)\s+{_EXPLORER_PLACE}\s*,?\s+)?"
+    r"(?:abr[eií]|abr[ií]me|abrir|and[aá]|ve|vete|v[aá]|ir|entr[aá]|naveg[aá]|pas[aá]|open|go|navigate|head|switch)"
+    r"(?:\s+(?:a|al|en|hasta|to|into|over\s+to))?"
+    r"(?:\s+(?:la|el|mi|mis|my|the))?"
+    r"(?:\s+(?:carpeta|folder|directorio)(?:\s+(?:de|of))?)?"
+    r"(?:\s+(?:la|el|mis|my|the))?"
+    rf"\s+(?P<folder>{_KNOWN_FOLDER_SURFACE})"
+    r"(?:\s+(?:folder|carpeta))?"
+    rf"(?:\s+(?:en|in|on|with|desde|from)\s+{_EXPLORER_PLACE})?"
+)
+_FOLDER_THEN_DIRECTORY = re.compile(
+    rf"^(?P<open>{_KNOWN_FOLDER_NAVIGATION})"
+    r"\s*(?:,\s*|\s+)(?:(?:y|and)\s+)?(?:(?:luego|despu[eé]s|then|ah[ií]|all[ií]|there)\s*,?\s+)?"
+    r"(?P<create>\S.*)$",
+    re.IGNORECASE,
+)
+
+
+@dataclass(frozen=True, slots=True)
+class FolderThenDirectory:
+    """«andá a Documentos y creá una carpeta llamada X»: the folder gone to and the creation said after it."""
+
+    folder: str
+    open_clause: str
+    creation: re.Match[str]
+
+    @property
+    def creation_folder(self) -> str:
+        """The catalog root of the new folder: the one the creation names, else the one gone to."""
+
+        named = self.creation.group("folder_a") or self.creation.group("folder_b")
+        return _KNOWN_FOLDER_ENUM[_fold(named)] if named else self.folder
+
+
+def folder_then_directory_request(text: str) -> FolderThenDirectory | None:
+    """Going to a known folder, then creating a named folder (es/en, File Explorer named or not); None otherwise."""
+
+    match = _FOLDER_THEN_DIRECTORY.match(text.strip())
+    if match is None:
+        return None
+    creation = _directory_creation_request(match.group("create"))
+    if creation is None:
+        return None
+    return FolderThenDirectory(
+        _KNOWN_FOLDER_ENUM[_fold(match.group("folder"))],
+        match.group("open").strip(" \t,;"),
+        creation,
+    )
 
 
 _REMINDER_IDIOM = re.compile(
@@ -13368,6 +13427,15 @@ def _resolve_clause_effects(
         # is the sensitive write (confirmation). The raw text is the evidence so
         # the literal keeps its case and accents.
         return EffectIntent(("clipboard.write.text",), (text,))
+    if {"filesystem.folder.open", "filesystem.create.directory"} <= available:
+        said = next((form for form in (text, folded) if folder_then_directory_request(form) is not None), None)
+        if said is not None:
+            # Live 2026-10-07: the folder gone to is opened; the creation clause is read with what came before it,
+            # so the new folder is made inside the one opened (``FolderThenDirectory.creation_folder``).
+            gone_to = folder_then_directory_request(said)
+            return EffectIntent(
+                ("filesystem.folder.open", "filesystem.create.directory"), (gone_to.open_clause, said.strip()),
+            )
     if (
         "filesystem.create.directory" in available
         and _directory_creation_request(folded) is not None

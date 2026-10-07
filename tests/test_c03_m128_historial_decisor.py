@@ -90,7 +90,11 @@ def test_what_baxy_or_the_person_said_is_kept_even_with_the_sign() -> None:
 
 def test_the_marker_is_the_one_the_app_writes() -> None:
     source = (ROOT / "src" / "Baxy.App" / "MainWindowViewModel.cs").read_text(encoding="utf-8")
-    assert 'CompositionFailureFallback(string failure) =>\n        "⚠ (" + failure + ")";' in source.replace("\r\n", "\n")
+    source = source.replace("\r\n", "\n")
+    # Live 2026-10-07: the App writes the floor's compositionFailures line, the marker only when the data has none;
+    # the decider drops both (``decider._is_composition_failure``).
+    assert "OperationFloor.CompositionFailureSentence(" in source
+    assert '?? "⚠ (" + failure + ")";' in source
 
 
 class _Runtime(LlmRuntime):

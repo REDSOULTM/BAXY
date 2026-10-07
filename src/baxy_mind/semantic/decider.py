@@ -112,6 +112,22 @@ ARGUMENT_VALUE_CHARACTERS = 120
 _COMPOSITION_FAILURE_MARKER = re.compile(r"⚠ \([^()\n]+\)")
 
 
+@functools.cache
+def _composition_failure_lines() -> frozenset[str]:
+    """Live 2026-10-07: the App now leaves the operation floor's data line in the marker's place
+    (``compositionFailures``); it is the App's line, not BAXY's reply either."""
+
+    from ..operation_floor import floor_data
+
+    return frozenset(
+        text for line in floor_data().get("compositionFailures", {}).values() for text in line.values()
+    )
+
+
+def _is_composition_failure(content: str) -> bool:
+    return _COMPOSITION_FAILURE_MARKER.fullmatch(content) is not None or content in _composition_failure_lines()
+
+
 @dataclass(frozen=True, slots=True)
 class ContextDecision:
     request: str
@@ -229,7 +245,7 @@ def messages(system: str, text: str, history: list[dict[str, str]] | None) -> li
     prior = [
         turn for turn in (history or [])
         if turn.get("role") in {"user", "assistant"} and turn.get("content")
-        and not (turn.get("role") == "assistant" and _COMPOSITION_FAILURE_MARKER.fullmatch(str(turn["content"])))
+        and not (turn.get("role") == "assistant" and _is_composition_failure(str(turn["content"])))
     ]
     prior = prior[next((index for index, turn in enumerate(prior) if turn.get("role") == "user"), len(prior)):]
     if prior and prior[-1].get("role") == "user" and prior[-1].get("content") == text:
