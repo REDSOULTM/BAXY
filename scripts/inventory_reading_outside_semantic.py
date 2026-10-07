@@ -195,6 +195,9 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
         "a name only narrow which control of the view it names"),
     ("computer_use.py", "_destination"): (
         "GROUNDING", "the place of a sub-goal semantic.missions wrote («ir a X»), its article dropped"),
+    ("computer_use.py", "_unlisted_name_click"): (
+        "GROUNDING", "the names of a sub-goal semantic.missions wrote, tried by label on the window; a name that "
+        "removes or opens elsewhere is never clicked unseen"),
     ("computer_use.py", "_echoes_typing"): (
         "GROUNDING", "a cited evidence that repeats what BAXY typed in the sub-goal is its own echo, never arrival"),
     ("computer_use.py", "typed_text"): (

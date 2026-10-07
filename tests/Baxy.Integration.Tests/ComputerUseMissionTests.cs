@@ -1024,6 +1024,30 @@ public sealed class ComputerUseMissionTests
         });
     }
 
+    // «stepDone:input.visible.click:=red»: the clicked name holds the word whole. Measured on Paint: «red» inside
+    // «Rectángulo redondeado» passed a click on that shape as the colour chosen. A bare «=» stays the equals key.
+    [Test]
+    public void AWholeNameClickAtomIgnoresAWordInsideALongerOne()
+    {
+        JsonObject view = View("""{"window": {"title": "Dibujo", "process": "dibujo"}, "controls": [], "text": {}}""");
+        JsonArray shape = new() { new JsonObject { ["operation"] = "input.visible.click", ["label"] = "Rectángulo redondeado", ["ok"] = true } };
+        JsonArray colour = new() { new JsonObject { ["operation"] = "input.visible.click", ["label"] = "red", ["name"] = "Red", ["ok"] = true } };
+        JsonArray darker = new() { new JsonObject { ["operation"] = "input.visible.click", ["label"] = "Rojo oscuro", ["ok"] = true } };
+        JsonArray equals = new() { new JsonObject { ["operation"] = "input.visible.click", ["label"] = "=", ["ok"] = true } };
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:red", view, shape, out _), Is.True, "contains, as before");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:=red", view, shape, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:=red", view, colour, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:=rojo", view, darker, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.visible.click:=", view, equals, out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:=red:on", View("""
+                {"window": {"title": "Dibujo", "process": "dibujo"},
+                 "controls": [{"i": 0, "kind": "Button", "name": "Rectángulo redondeado", "state": "on"}], "text": {}}
+                """), [], out _), Is.False);
+        });
+    }
+
     [Test]
     public void TheMindReceivesIndicesNamesStatesZonesColoursRectanglesAndTextButNoIdentitiesOrHashes()
     {
@@ -1044,6 +1068,8 @@ public sealed class ComputerUseMissionTests
             Assert.That((int?)compact["controls"]![0]!["rect"]!["w"], Is.EqualTo(60));
             Assert.That(compact["controls"]![2]!["rect"], Is.Null);
             Assert.That((string?)compact["text"]!["C"]![0], Is.EqualTo("12 × 7 ="));
+            // How many controls the tree holds: a name beyond the listing is told from one the window lacks.
+            Assert.That((int?)compact["controlCount"], Is.EqualTo(4));
         });
     }
 
