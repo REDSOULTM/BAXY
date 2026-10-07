@@ -656,6 +656,9 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
                         writer.WriteNull("value");
                     else
                         writer.WriteString("value", control.Value);
+                    // What a list, grid or tree item is as its application reports it (a folder, a shortcut).
+                    if (control.ItemType.Length > 0)
+                        writer.WriteString("itemType", control.ItemType);
                     if (control.RectValue is { } rect)
                         WriteRect(writer, "rect", rect);
                     else
@@ -766,6 +769,7 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
                     && value.ValueKind == JsonValueKind.String
                         ? value.GetString()
                         : null,
+                ItemType = ReadString(item, "itemType"),
                 RectValue = rect,
                 Repeated = ReadInt(item, "repeated"),
             });
@@ -1177,6 +1181,7 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         internal string Id { get; set; } = string.Empty;
         internal string State { get; set; } = string.Empty;
         internal string? Value { get; set; }
+        internal string ItemType { get; set; } = string.Empty;
         internal Rect? RectValue { get; set; }
         internal int Repeated { get; set; }
         internal string Zone { get; set; } = string.Empty;

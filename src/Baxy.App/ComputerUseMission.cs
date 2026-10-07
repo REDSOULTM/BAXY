@@ -836,7 +836,7 @@ internal static class ComputerUseMission
         && state["procedureSteps"]?["steps"] is JsonArray recorded && index < recorded.Count
         && (string?)recorded[index]?["operation"] == "app.open";
 
-    private static MindComputerUseStep? NextProcedureStep(JsonObject state, int stepsDone)
+    internal static MindComputerUseStep? NextProcedureStep(JsonObject state, int stepsDone)
     {
         if ((int?)state["procedureIndex"] is not { } index || index < 0
             || state["procedureSteps"] is not JsonObject procedure
@@ -856,8 +856,21 @@ internal static class ComputerUseMission
         }
 
         state["procedureIndex"] = index + 1;
+        if (ActsOnTheFocusedItem(operation, (string?)arguments["key"]))
+        {
+            // Safety review 2026-10-07: an Enter, a space or a Delete acts on whatever holds the focus now, which is
+            // not what held it when the step was learned (its recorded target named a control of another view). The
+            // step is handed to the mind, which decides it on the current view; the replay goes on after it.
+            return null;
+        }
+
         return new MindComputerUseStep(operation, arguments.DeepClone() as JsonObject ?? new JsonObject(), "procedure");
     }
+
+    // A key that activates, toggles or deletes the focused item.
+    internal static bool ActsOnTheFocusedItem(string? operation, string? key) =>
+        operation == "input.key.press"
+        && ComputerUseSuccessCheck.Fold(key).Trim() is "enter" or "return" or "space" or "spacebar" or "delete" or "del" or "supr";
 
     // A learned click names its control only by label (indices change between runs): it is pinned to the control of
     // the current view that carries that name, so the press goes by identity. Measured: a replayed «Alarma» click by
@@ -899,14 +912,15 @@ internal static class ComputerUseMission
         JsonObject state,
         string? application)
     {
-        if (operation is not ("input.key.press" or "input.text.type"))
+        if (operation is not ("input.key.press" or "input.text.type" or "input.visible.click" or "input.scroll"))
             return true;
         JsonObject? window = view?["window"] as JsonObject;
         if (application is { Length: > 0 }
             && !((bool?)window?["requested"] == true
                 || (int?)state["processId"] is > 0 and int owner && (int?)window?["processId"] == owner))
             return false;
-        if ((long?)window?["hwnd"] is > 0 and long hwnd)
+        // A click or a scroll goes by the control of that view; only a key or a text is bound to its window here.
+        if (operation is "input.key.press" or "input.text.type" && (long?)window?["hwnd"] is > 0 and long hwnd)
             arguments["window"] = hwnd;
         return true;
     }
@@ -1212,7 +1226,7 @@ internal static class ComputerUseMission
 
         if (response.Result is { ValueKind: JsonValueKind.Object } result)
         {
-            foreach (string key in new[] { "cascadeStage", "surfaceChanged", "absentOrDisabled", "selected", "toggled", "processId", "name", "alreadyRunning", "windowTitle" })
+            foreach (string key in new[] { "cascadeStage", "surfaceChanged", "absentOrDisabled", "selected", "toggled", "processId", "name", "kind", "alreadyRunning", "windowTitle" })
             {
                 if (result.TryGetProperty(key, out JsonElement value)
                     && value.ValueKind is JsonValueKind.String or JsonValueKind.True
@@ -1544,6 +1558,13 @@ internal static class ComputerUseMission
                     item["value"] = value.Length > 40 ? value[..40] : value;
                 }
 
+                if ((string?)control["itemType"] is { Length: > 0 } itemType)
+                {
+                    // What the item is, as the application says it (a folder, a shortcut, an application): the mind
+                    // tells a place from a file by it.
+                    item["itemType"] = itemType;
+                }
+
                 if ((string?)control["zone"] is { Length: > 0 } zone)
                 {
                     item["zone"] = zone;
@@ -1787,7 +1808,9 @@ internal static class ComputerUseSuccessCheck
                             .Where(step => (string?)step["operation"] == "input.text.type" && EchoesItsQuery(step))
                             .Select(step => Fold((string?)step["text"])),
                         StringComparer.Ordinal);
-                    if (state == "selected" && QueryEchoNames(name, view, steps, searchResultsProve))
+                    // A tab selected or current that bears the query is the same echo (measured on Explorer: the tab
+                    // «imagenes - Resultados de la búsqueda en Trabajo» passed control:imagenes:current).
+                    if ((state is "selected" or "current") && QueryEchoNames(name, view, steps, searchResultsProve))
                     {
                         return false;
                     }
@@ -2351,8 +2374,11 @@ internal static class ComputerUseSuccessCheck
             {
                 case "input.visible.click":
                     // Only a click on the place itself, by its name (or the act of opening it), went there: an item
-                    // that merely holds the name («Imágenes viejas» among the results) is one of the matches.
-                    if (WithoutOpening(Fold((string?)step["label"])) == target)
+                    // that merely holds the name («Imágenes viejas» among the results) is one of the matches. A click
+                    // that only selected an item of the results (its receipt says selected, or it pressed a content
+                    // item) left the results in front: measured on Explorer, «Imágenes» selected in the list while
+                    // the window stayed «imagenes - Resultados de la búsqueda en Trabajo».
+                    if (WithoutOpening(Fold((string?)step["label"])) == target && !OnlySelected(step))
                     {
                         return false;
                     }
@@ -2375,6 +2401,13 @@ internal static class ComputerUseSuccessCheck
 
         return false;
     }
+
+    // A click whose receipt says it only selected its control, or that pressed an item of a list, tree or grid (a
+    // content item: selecting is what a single click does to it), did not go anywhere. Had it opened the place, the
+    // search box no longer holds the query and the echo ends there anyway.
+    private static bool OnlySelected(JsonObject step) =>
+        (bool?)step["selected"] == true
+        || (string?)step["kind"] is "ListItem" or "DataItem" or "TreeItem";
 
     /// <summary>
     /// The evidence the model cites for «done» is only the echo of what this sub-goal typed: the citation is the typed
@@ -2748,9 +2781,12 @@ internal sealed class ComputerUseProcedures
                 }
 
                 var arguments = new JsonObject();
+                // The target of an Enter, a space or a Delete named a control of that run's view: never kept (the
+                // replay hands that step to the mind).
+                bool focusedKey = ComputerUseMission.ActsOnTheFocusedItem((string?)step["operation"], (string?)step["key"]);
                 foreach (string field in new[] { "label", "index", "text", "key", "target", "direction", "amount", "appId" })
                 {
-                    if (step[field] is JsonNode value && field != "index")
+                    if (step[field] is JsonNode value && field != "index" && !(focusedKey && field == "target"))
                     {
                         arguments[field] = value.DeepClone();
                     }
