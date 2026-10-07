@@ -223,33 +223,65 @@ internal static partial class VisibleControlSurface
         return builder.ToString();
     }
 
-    private static nint FrameHosting(uint processId)
+    /// <summary>
+    /// The visible ApplicationFrameHost frame that hosts this process (a packaged app such as the Calculator, the
+    /// Clock or Settings draws inside a frame of another process and has no top-level window of its own); 0 when
+    /// none shows it. A cloaked frame (a suspended app) is not on screen.
+    /// </summary>
+    internal static nint FrameHosting(uint processId)
     {
         nint frame = 0;
         EnumWindowsProc callback = (window, outerParameter) =>
         {
-            if (!IsWindowVisible(window) || ClassName(window) != "ApplicationFrameWindow")
-                return true;
-            bool hosts = false;
-            EnumWindowsProc children = (child, innerParameter) =>
-            {
-                GetWindowThreadProcessId(child, out uint owner);
-                if (owner == processId)
-                {
-                    hosts = true;
-                    return false;
-                }
-
-                return true;
-            };
-            _ = EnumChildWindows(window, children, nint.Zero);
-            if (!hosts)
+            if (!IsVisibleFrame(window) || !FrameHosts(window, owner => owner == processId))
                 return true;
             frame = window;
             return false;
         };
         _ = EnumWindows(callback, nint.Zero);
         return frame;
+    }
+
+    /// <summary>Every visible frame by the process it hosts, read in one pass over the desktop.</summary>
+    internal static Dictionary<uint, nint> HostedFrames()
+    {
+        var frames = new Dictionary<uint, nint>();
+        EnumWindowsProc callback = (window, outerParameter) =>
+        {
+            if (!IsVisibleFrame(window))
+                return true;
+            _ = FrameHosts(window, owner =>
+            {
+                frames.TryAdd(owner, window);
+                return false;
+            });
+            return true;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        return frames;
+    }
+
+    private static bool IsVisibleFrame(nint window) =>
+        IsWindowVisible(window) && ClassName(window) == "ApplicationFrameWindow"
+        && !(DwmGetWindowAttribute(window, 14, out int cloaked, sizeof(int)) == 0 && cloaked != 0);
+
+    private static bool FrameHosts(nint frame, Func<uint, bool> hosted)
+    {
+        _ = GetWindowThreadProcessId(frame, out uint host);
+        bool hosts = false;
+        EnumWindowsProc children = (child, innerParameter) =>
+        {
+            GetWindowThreadProcessId(child, out uint owner);
+            if (owner != host && hosted(owner))
+            {
+                hosts = true;
+                return false;
+            }
+
+            return true;
+        };
+        _ = EnumChildWindows(frame, children, nint.Zero);
+        return hosts;
     }
 
     private static bool IsShellSurface(nint window)
@@ -571,7 +603,9 @@ internal static partial class VisibleControlSurface
             if (GetAncestor(window, 3) != window || (GetWindowLongPtrW(window, -20).ToInt64() & 0x80) != 0)
                 return true;
             _ = GetWindowThreadProcessId(window, out uint owner);
-            if (!family.Contains(owner) || !HasUsableSurface(window))
+            // A packaged app opened is drawn inside the frame that hosts it (its own process has no top-level window).
+            bool owned = family.Contains(owner) || (IsVisibleFrame(window) && FrameHosts(window, family.Contains));
+            if (!owned || !HasUsableSurface(window))
                 return true;
             if (!TryBounds(window, out int left, out int top, out int right, out int bottom))
                 return true;

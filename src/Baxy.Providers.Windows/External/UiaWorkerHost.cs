@@ -19,6 +19,9 @@ internal interface IUiaWorker
         string commandJson,
         TimeSpan timeout,
         CancellationToken cancellationToken);
+
+    /// <summary>Starts the worker ahead of the first command; a worker that cannot start is left to that command.</summary>
+    ValueTask PrewarmAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
 }
 
 /// <summary>
@@ -32,6 +35,7 @@ internal sealed class UiaWorkerHost : IUiaWorker, IDisposable
 {
     private static readonly TimeSpan StartupBudget = TimeSpan.FromSeconds(20);
     private readonly string _script;
+    private readonly string[] _workerArguments;
     private readonly SemaphoreSlim _gate = new(1, 1);
     private Process? _process;
     private bool _disposed;
@@ -41,9 +45,10 @@ internal sealed class UiaWorkerHost : IUiaWorker, IDisposable
     {
     }
 
-    internal UiaWorkerHost(string script)
+    internal UiaWorkerHost(string script, params string[] workerArguments)
     {
         _script = script ?? throw new ArgumentNullException(nameof(script));
+        _workerArguments = workerArguments ?? [];
     }
 
     internal bool ScriptExists => File.Exists(_script);
@@ -95,6 +100,29 @@ internal sealed class UiaWorkerHost : IUiaWorker, IDisposable
         }
     }
 
+    public async ValueTask PrewarmAsync(CancellationToken cancellationToken)
+    {
+        if (_disposed)
+            return;
+        try
+        {
+            await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (ObjectDisposedException)
+        {
+            return;
+        }
+
+        try
+        {
+            _ = await EnsureStartedAsync(cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
     private async ValueTask<Process?> EnsureStartedAsync(CancellationToken cancellationToken)
     {
         if (_process is { HasExited: false })
@@ -114,6 +142,8 @@ internal sealed class UiaWorkerHost : IUiaWorker, IDisposable
             StandardErrorEncoding = Encoding.UTF8,
         };
         foreach (string argument in new[] { "-NoProfile", "-NonInteractive", "-STA", "-ExecutionPolicy", "Bypass", "-File", _script })
+            start.ArgumentList.Add(argument);
+        foreach (string argument in _workerArguments)
             start.ArgumentList.Add(argument);
         Process? process;
         try
