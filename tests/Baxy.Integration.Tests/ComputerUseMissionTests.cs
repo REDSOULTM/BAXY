@@ -440,7 +440,7 @@ public sealed class ComputerUseMissionTests
     }
 
     [Test]
-    public void TheMindReceivesIndicesNamesStatesZonesColoursAndTextButNoIdentitiesOrHashes()
+    public void TheMindReceivesIndicesNamesStatesZonesColoursRectanglesAndTextButNoIdentitiesOrHashes()
     {
         JsonObject compact = ComputerUseMission.CompactForTheMind(View(SteamView));
         string serialized = compact.ToJsonString();
@@ -454,7 +454,10 @@ public sealed class ComputerUseMissionTests
             Assert.That((int?)compact["controls"]![2]!["repeated"], Is.EqualTo(2));
             Assert.That(serialized, Does.Not.Contain("\"id\""));
             Assert.That(serialized, Does.Not.Contain("surface"));
-            Assert.That(serialized, Does.Not.Contain("rect"));
+            // The rectangles are the mind's geometry (never printed in the model's prompt).
+            Assert.That((int?)compact["window"]!["rect"]!["w"], Is.EqualTo(800));
+            Assert.That((int?)compact["controls"]![0]!["rect"]!["w"], Is.EqualTo(60));
+            Assert.That(compact["controls"]![2]!["rect"], Is.Null);
             Assert.That((string?)compact["text"]!["C"]![0], Is.EqualTo("12 × 7 ="));
         });
     }

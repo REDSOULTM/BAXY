@@ -323,7 +323,7 @@ Petición del shell (JSONL, mismo canal que `plan.ground`):
   "goal": "ir a la biblioteca",
   "application": "Steam",
   "successCheck": "…",
-  "view": { …§1.2, sin surface/elapsedMs/rect… },
+  "view": { …§1.2, sin surface/elapsedMs/id; con rect, que la mente usa y el prompt del modelo no imprime… },
   "history": [ {"step": 1, "operation": "app.open", "applicationName": "Steam", "ok": true},
                {"step": 2, "operation": "input.visible.click", "label": "Tienda", "ok": true, "changed": true} ],
   "budgetLeft": 10
@@ -550,7 +550,7 @@ cadena con una cláusula sin comprobación sigue siendo del decisor. Familias y 
 | poné la primera / play the first one / ponelo | `reproducir …` | `control:pausa&stepDone:input.visible.click` (y `pause`, y con tecla) |
 | copiá / pegá / deshacé / seleccioná todo | `apretar ctrl c` … | la tecla o el clic en su control |
 | abrí una pestaña nueva | `apretar ctrl t` | `stepDone:input.key.press:ctrl_t` |
-| andá a es.wikipedia.org | `ir a la direccion …` (ctrl_l, texto, Enter) | `title:wikipedia` |
+| andá a es.wikipedia.org | `ir a la direccion …` (ctrl_l, texto, Supr, Enter: Supr quita la página del historial con que la barra completa la dirección) | `title:wikipedia` |
 | abrí la sección Historia | `ir a historia` | lo de `ir a` + el clic verificado en la sección |
 | calculá 12 por 7 / multiply 6 by 7 | `calcular 12 × 7` | la de calcular |
 
@@ -566,3 +566,10 @@ primitivas del motor cubren sub-objetivos; un cálculo dicho dentro de una aplic
 El paso de tecleo guarda en qué campo se escribió (`into`); el átomo `control:` descarta lo tecleado sólo si se
 tecleó en una búsqueda, una barra de direcciones o un campo sin nombre (el eco de sus sugerencias), no el nombre
 escrito en la caja de un elemento que se crea o se renombra. Corpus: `tests/test_computer_use_corpus.py`.
+
+En un navegador (un campo de dirección que contiene una dirección web) la búsqueda y sus resultados son los de la
+página: controles dentro del documento más grande y listados después de él; la pestaña de búsqueda de pestañas, los
+marcadores y la barra lateral son del marco, y `ctrl_k` (la búsqueda web de la barra) no se usa, sólo `ctrl_f`. Mientras
+la página no está expuesta (ningún documento de un cuarto de la ventana) la App vuelve a mirar, hasta 6 veces cada
+400 ms, una sola vez por título. El modelo no puede pulsar un control que abre otra pestaña o ventana si el objetivo
+no lo pide (`opens_elsewhere`).

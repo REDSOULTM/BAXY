@@ -497,4 +497,78 @@ public sealed class ComputerUseLoopTests
             Assert.That((string?)Observed(result)["stoppedBy"], Is.EqualTo("computer_use_window_not_application"));
         });
     }
+
+    // A browser on a site (the address field holds a web address), with or without its page exposed: the frame's
+    // controls, and the page a document the size of the window's body (synthetic, shaped like Opera on 2026-10-07).
+    private static JsonObject Browser(bool pageShown)
+    {
+        string page = pageShown
+            ? """
+              {"i": 3, "kind": "Document", "name": "Ciudad - Wikipedia", "state": "readonly", "rect": {"x": 53, "y": 136, "w": 1519, "h": 825}},
+              {"i": 4, "kind": "Edit", "name": "Buscar en Wikipedia", "value": "", "rect": {"x": 435, "y": 157, "w": 506, "h": 41}}
+              """
+            : """{"i": 3, "kind": "Document", "name": "Cargando…", "rect": {"x": 106, "y": 13, "w": 22, "h": 22}}""";
+        return (JsonObject)JsonNode.Parse($$$"""
+            {
+              "window": {"title": "es.wikipedia.org/wiki/Ciudad - Navegador", "process": "browser", "processId": 40, "requested": true,
+                         "rect": {"x": 0, "y": 0, "w": 1575, "h": 965}},
+              "controls": [
+                {"i": 0, "kind": "Button", "name": "Buscar pestañas", "rect": {"x": 1426, "y": 5, "w": 37, "h": 37}},
+                {"i": 1, "kind": "Edit", "name": "Campo de dirección", "value": "https://es.wikipedia.org/wiki/Ciudad", "rect": {"x": 211, "y": 54, "w": 969, "h": 37}},
+                {"i": 2, "kind": "Button", "name": "Nueva pestaña", "rect": {"x": 344, "y": 13, "w": 22, "h": 22}},
+                {{{page}}}
+              ]
+            }
+            """)!;
+    }
+
+    [Test]
+    public async Task ALookAtABrowserWaitsBoundedUntilItsPageIsExposedAndTheMindGetsTheRectangles()
+    {
+        var arguments = new JsonObject
+        {
+            ["goal"] = "buscar Ciudad",
+            ["application"] = "Opera",
+            ["successCheck"] = "stepDone:input.visible.click:buscar en wikipedia",
+        };
+        int looks = 0;
+        var loading = new Harness
+        {
+            Screen = _ => Browser(pageShown: ++looks > 2),
+            Mind = _ => Step("input.visible.click", new JsonObject { ["label"] = "Buscar en Wikipedia", ["index"] = 4 }),
+        };
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            loading.Context(_root), Execution("buscá Ciudad", arguments), arguments, CancellationToken.None);
+
+        // A page that never comes is waited for a bounded number of looks, once for that title; then the mind decides
+        // on what is there.
+        var never = new Harness
+        {
+            Screen = _ => Browser(pageShown: false),
+            Mind = _ => Step("input.visible.click", new JsonObject { ["label"] = "Campo de dirección", ["index"] = 1 }),
+            Receipt = static (_, _) => new JsonObject { ["surfaceChanged"] = true },
+        };
+        var twice = new JsonObject
+        {
+            ["goal"] = "buscar Ciudad",
+            ["application"] = "Opera",
+            ["successCheck"] = "text:nunca",
+            ["budgetSteps"] = 2,
+        };
+        await ComputerUseMission.RunAsync(never.Context(_root), Execution("buscá Ciudad", twice), twice, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((bool?)Observed(result)["reached"], Is.True);
+            Assert.That(loading.Delays.Count(delay => delay == ComputerUseMission.PageLookInterval), Is.EqualTo(2));
+            JsonObject seen = loading.Requests[0].View;
+            Assert.That(seen["controls"]!.AsArray().Any(node => (string?)node!["name"] == "Buscar en Wikipedia"), Is.True);
+            Assert.That((int?)seen["window"]!["rect"]!["w"], Is.EqualTo(1575));
+            Assert.That((int?)seen["controls"]![3]!["rect"]!["h"], Is.EqualTo(825));
+            Assert.That(never.Requests, Has.Count.EqualTo(2));
+            Assert.That(never.Delays.Count(delay => delay == ComputerUseMission.PageLookInterval), Is.EqualTo(ComputerUseMission.PageLooks));
+            Assert.That(ComputerUseMission.PageNotExposed(Browser(pageShown: true)), Is.False);
+        });
+    }
 }

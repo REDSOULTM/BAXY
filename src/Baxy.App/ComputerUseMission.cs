@@ -883,7 +883,78 @@ internal static class ComputerUseMission
             }
         }
 
-        return await ReadViewAsync(context, state, application, includeText, cancellationToken).ConfigureAwait(true);
+        JsonObject? view = await ReadViewAsync(context, state, application, includeText, cancellationToken).ConfigureAwait(true);
+        // A web page still loading shows only the browser's frame (measured on Opera right after Enter: the tab
+        // strip's search was taken for the page's): the look is repeated, bounded, until the page is exposed. A page
+        // that did not come once is not waited for again while the title stays the same.
+        string? title = (string?)view?["window"]?["title"];
+        if (view is null || !PageNotExposed(view) || string.Equals(title, (string?)state["pageNotExposed"], StringComparison.Ordinal))
+        {
+            return view;
+        }
+
+        for (int looks = 0; looks < PageLooks && PageNotExposed(view); looks++)
+        {
+            await context.Delay(PageLookInterval, cancellationToken).ConfigureAwait(true);
+            view = await ReadViewAsync(context, state, application, includeText, cancellationToken).ConfigureAwait(true) ?? view;
+        }
+
+        if (PageNotExposed(view))
+        {
+            state["pageNotExposed"] = (string?)view["window"]?["title"];
+        }
+
+        return view;
+    }
+
+    internal const int PageLooks = 6;
+    internal static readonly TimeSpan PageLookInterval = TimeSpan.FromMilliseconds(400);
+    private static readonly System.Text.RegularExpressions.Regex WebAddress = new(
+        @"^(?:https?://)?(?:[\w-]+\.)+[^\W\d_]{2,}(?::\d+)?(?:[/?#]|$)",
+        System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    // A browser showing a site (a field named as the address holds a web address) whose page is not exposed yet: no
+    // document the size of a page (a quarter of the window) in the view.
+    internal static bool PageNotExposed(JsonObject view)
+    {
+        if (view["controls"] is not JsonArray controls || view["window"]?["rect"] is not JsonObject windowRect)
+        {
+            return false;
+        }
+
+        bool browser = controls.Any(node => node is JsonObject control
+            && (string?)control["kind"] is "Edit" or "ComboBox"
+            && ComputerUseSuccessCheck.Fold((string?)control["name"]).Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Any(word => word.StartsWith("direccion", StringComparison.Ordinal) || word is "address" or "url")
+            && WebAddress.IsMatch(((string?)control["value"] ?? string.Empty).Trim()));
+        if (!browser)
+        {
+            return false;
+        }
+
+        double windowArea = Area(windowRect);
+        return windowArea > 0 && !controls.Any(node => node is JsonObject control
+            && (string?)control["kind"] == "Document"
+            && control["rect"] is JsonObject rect
+            && Area(rect) >= windowArea / 4);
+    }
+
+    private static double Area(JsonObject rect) => Math.Max(Number(rect["w"]), 0) * Math.Max(Number(rect["h"]), 0);
+
+    // A rectangle read from the provider holds JSON numbers; one built in memory may hold ints.
+    private static double Number(JsonNode? node)
+    {
+        if (node is not JsonValue value)
+        {
+            return 0;
+        }
+
+        if (value.TryGetValue(out double real))
+        {
+            return real;
+        }
+
+        return value.TryGetValue(out int whole) ? whole : 0;
     }
 
     // A window of an application launched moment ago is still starting while it is not the same window for a second
@@ -1284,10 +1355,13 @@ internal static class ComputerUseMission
         var compact = new JsonObject();
         if (view["window"] is JsonObject window)
         {
+            // The rectangles are the mind's geometry (a control covering the window, the list holding the items, a
+            // browser's page apart from its frame); the model's prompt does not print them.
             compact["window"] = new JsonObject
             {
                 ["title"] = window["title"]?.DeepClone(),
                 ["process"] = window["process"]?.DeepClone(),
+                ["rect"] = window["rect"]?.DeepClone(),
                 ["focused"] = window["focused"]?.DeepClone(),
             };
             if ((bool?)window["requested"] == true)
@@ -1337,6 +1411,11 @@ internal static class ComputerUseMission
                 if (control["repeated"] is JsonValue repeated)
                 {
                     item["repeated"] = repeated.DeepClone();
+                }
+
+                if (control["rect"] is JsonObject rect)
+                {
+                    item["rect"] = rect.DeepClone();
                 }
 
                 controls.Add((JsonNode?)item);
