@@ -80,12 +80,14 @@ public sealed class ComputerUseLoopTests
 
         private static OperationResponse Respond(PreparedOperation prepared, JsonObject? result)
         {
-            bool ok = result is not null;
-            using JsonDocument document = JsonDocument.Parse((result ?? new JsonObject()).ToJsonString());
+            // A receipt «failWith» answers the act as failed with that error (a label not found).
+            string? failWith = (string?)result?["failWith"];
+            bool ok = result is not null && failWith is null;
+            using JsonDocument document = JsonDocument.Parse((ok ? result! : new JsonObject()).ToJsonString());
             return new OperationResponse(
                 ProtocolTypes.OperationResponse, prepared.InvocationId, prepared.MissionId, prepared.InvocationId,
                 ok ? OperationStatuses.Completed : OperationStatuses.Failed, "{}", ok, false,
-                document.RootElement.Clone(), ok ? null : "view_unavailable");
+                document.RootElement.Clone(), ok ? null : failWith ?? "view_unavailable");
         }
     }
 
@@ -295,6 +297,41 @@ public sealed class ComputerUseLoopTests
             Assert.That((bool?)Observed(result)["reached"], Is.True);
             Assert.That(harness.Looks.Select(look => (string?)look["application"]),
                 Is.EqualTo(new[] { "Steam", "Steam", "Bloc de notas", "Bloc de notas" }));
+        });
+    }
+
+    // Live e2 («pick the blue color» on a palette without «Azul»): «blue» and «azul» were not found and the mission
+    // stopped as «the screen stopped changing» before the palette's own shade was tried. A click that found nothing
+    // is no act that left the screen unchanged.
+    [Test]
+    public async Task LabelsNotFoundDoNotCountAsActsThatLeftTheScreenUnchanged()
+    {
+        var harness = new Harness
+        {
+            Screen = _ => Window("Sin título - Dibujo", "dibujo", 12, true, [Control(0, "Button", "Lápiz")]),
+        };
+        harness.Mind = request => Step("input.visible.click", new JsonObject
+        {
+            ["label"] = request.History.Count switch { 0 => "blue", 1 => "azul", _ => "Añil" },
+        });
+        harness.Receipt = (_, arguments) => (string?)arguments["label"] is "blue" or "azul"
+            ? new JsonObject { ["failWith"] = "visible_button_not_found" }
+            : new JsonObject { ["name"] = "Añil", ["kind"] = "ListItem", ["surfaceChanged"] = true };
+        var arguments = new JsonObject
+        {
+            ["goal"] = "seleccionar blue",
+            ["application"] = "Dibujo",
+            ["successCheck"] = "stepDone:input.visible.click:=blue|stepDone:input.visible.click:=azul|stepDone:input.visible.click:=anil",
+        };
+
+        ComputerUseMission.Result result = await ComputerUseMission.RunAsync(
+            harness.Context(_root), Execution("pick the blue color", arguments), arguments, CancellationToken.None);
+
+        JsonObject observed = Observed(result);
+        Assert.Multiple(() =>
+        {
+            Assert.That((bool?)observed["reached"], Is.True);
+            Assert.That((int?)observed["stepCount"], Is.EqualTo(3));
         });
     }
 

@@ -281,8 +281,13 @@ internal static class ComputerUseMission
                     }
 
                     string signature = ViewSignature(lastView);
+                    // A click that found nothing to press changed nothing by nature: it is no act that «stopped changing
+                    // the screen» (live e2: «blue» and «azul» not found ended the mission before the palette's «Añil»).
+                    bool lastFoundNothing = steps.Count > start && steps[^1] is JsonObject lastStep
+                        && (bool?)lastStep["ok"] != true
+                        && (string?)lastStep["error"] is "visible_button_not_found" or "visible_control_label_mismatch";
                     int unchanged = string.Equals(signature, (string?)state["lastSignature"], StringComparison.Ordinal)
-                        ? ((int?)state["unchangedViews"] ?? 0) + 1
+                        ? ((int?)state["unchangedViews"] ?? 0) + (lastFoundNothing ? 0 : 1)
                         : 0;
                     state["lastSignature"] = signature;
                     state["unchangedViews"] = unchanged;
