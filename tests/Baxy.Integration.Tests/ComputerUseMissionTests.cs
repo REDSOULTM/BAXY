@@ -96,6 +96,52 @@ public sealed class ComputerUseMissionTests
         });
     }
 
+    // Explorer's Home on a maximized window (measured 2026-10-07): the first tiles of a row of folders sit in the left
+    // third, the next ones in the centre; a tile merely selected there is content, not the place shown. A side list has
+    // nothing beside it in its row; without rectangles the zone alone decides.
+    [Test]
+    public void ATileInTheLeftColumnIsContentWhenItsRowGoesOnOutOfIt()
+    {
+        JsonObject home = View("""
+            {"window": {"title": "Inicio - Explorador de archivos", "process": "explorer", "processId": 7},
+             "controls": [
+               {"i": 0, "kind": "TreeItem", "name": "Inicio", "state": "selected", "zone": "L", "rect": {"x": 0, "y": 150, "w": 250, "h": 30}},
+               {"i": 1, "kind": "ListItem", "name": "Escritorio", "state": "", "zone": "L", "rect": {"x": 300, "y": 200, "w": 180, "h": 100}},
+               {"i": 2, "kind": "ListItem", "name": "Descargas", "state": "selected", "zone": "L", "rect": {"x": 500, "y": 200, "w": 180, "h": 100}},
+               {"i": 3, "kind": "ListItem", "name": "Documentos", "state": "", "zone": "C", "rect": {"x": 700, "y": 200, "w": 180, "h": 100}},
+               {"i": 4, "kind": "ListItem", "name": "Imágenes", "state": "", "zone": "C", "rect": {"x": 900, "y": 205, "w": 180, "h": 100}}
+             ]}
+            """);
+        JsonObject settings = View("""
+            {"window": {"title": "Configuración", "process": "systemsettings", "processId": 9},
+             "controls": [
+               {"i": 0, "kind": "ListItem", "name": "Sistema", "state": "", "zone": "L", "rect": {"x": 0, "y": 150, "w": 250, "h": 40}},
+               {"i": 1, "kind": "ListItem", "name": "Personalización", "state": "selected", "zone": "L", "rect": {"x": 0, "y": 200, "w": 250, "h": 40}},
+               {"i": 2, "kind": "ListItem", "name": "Fondo", "state": "", "zone": "C", "rect": {"x": 300, "y": 300, "w": 600, "h": 60}},
+               {"i": 3, "kind": "ListItem", "name": "Colores", "state": "", "zone": "C", "rect": {"x": 300, "y": 380, "w": 600, "h": 60}}
+             ]}
+            """);
+        JsonObject withoutRects = View("""
+            {"window": {"title": "Reloj", "process": "applicationframehost", "processId": 8},
+             "controls": [
+               {"i": 0, "kind": "ListItem", "name": "Cronómetro", "state": "selected", "zone": "L"},
+               {"i": 1, "kind": "ListItem", "name": "Alarma", "state": "", "zone": "C"}
+             ]}
+            """);
+        var homeControls = (JsonArray)home["controls"]!;
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:descargas:current", home, [], out _), Is.False,
+                "a tile selected in a grid that starts in the left third is not the place shown");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:descargas:selected", home, [], out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:inicio:current", home, [], out _), Is.True);
+            Assert.That(ComputerUseSuccessCheck.IsContentItem((JsonObject)homeControls[1]!, homeControls), Is.True);
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:personalizacion:current", settings, [], out _), Is.True,
+                "a side list with nothing beside it in its row is navigation");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("control:cronometro:current", withoutRects, [], out _), Is.True);
+        });
+    }
+
     [Test]
     public void ALongTabTitleIsNamedByTheSiteItEndsWith()
     {
@@ -421,8 +467,12 @@ public sealed class ComputerUseMissionTests
                 "a click that did not verify brought nothing");
             Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", Colors("Colores - Configuración", "T", false), [], out _), Is.True,
                 "the title names the place");
-            Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", Colors("Configuración", "TL", false), clicked, out _), Is.False,
-                "a toolbar in a top corner is not the header");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", Colors("Configuración", "TL", false), clicked, out _), Is.True,
+                "a lone heading of a maximized window lands in TL");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", Colors("Configuración", "TL", true), clicked, out _), Is.False,
+                "a toolbar in TL has more controls to its right");
+            Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", Colors("Configuración", "TR", false), clicked, out _), Is.False,
+                "the toolbars of TR are never the header");
             Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", Colors("Configuración", "T", true), clicked, out _), Is.False,
                 "a control with more to its right is a tab or a tool, not where the header ends");
             Assert.That(ComputerUseSuccessCheck.Evaluate("page:colores", personalization, clicked, out _), Is.False);
@@ -557,6 +607,39 @@ public sealed class ComputerUseMissionTests
         });
     }
 
+    // «buscá pdf en Descargas»: the sub-goal is the search itself (its check also asks for the act), so its results
+    // titled by the query are its evidence, not an echo; a sub-goal that wants the place still rejects them.
+    [Test]
+    public void ASearchGoalTakesItsResultsAsEvidence()
+    {
+        JsonObject results = View("""
+            {"window": {"title": "pdf - Resultados de la búsqueda en Descargas - Explorador de archivos", "process": "explorer",
+                        "focused": {"kind": "Edit", "name": "Buscar en Descargas", "value": "pdf"}},
+             "controls": [{"i": 0, "kind": "TabItem", "name": "pdf - Resultados de la búsqueda en Descargas", "state": "selected"},
+                          {"i": 1, "kind": "Edit", "name": "Buscar en Descargas", "state": "focused", "value": "pdf"}],
+             "text": {}}
+            """);
+        var steps = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["label"] = "Buscar en Descargas", ["ok"] = true },
+            new JsonObject { ["step"] = 2, ["operation"] = "input.text.type", ["text"] = "pdf", ["into"] = "Buscar en Descargas", ["ok"] = true },
+            new JsonObject { ["step"] = 3, ["operation"] = "input.key.press", ["key"] = "enter", ["ok"] = true },
+        };
+        const string cited = "pdf - Resultados de la búsqueda en Descargas";
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.SearchResultsProve("title:pdf&stepDone:input.key.press:enter"), Is.True);
+            Assert.That(ComputerUseSuccessCheck.SearchResultsProve("title:Descargas | control:pdf:selected"), Is.False);
+            Assert.That(ComputerUseSuccessCheck.SearchResultsProve(null), Is.False);
+            Assert.That(ComputerUseSuccessCheck.CitationEchoesQuery(cited, results, steps,
+                ComputerUseSuccessCheck.SearchResultsProve("title:pdf&stepDone:input.key.press:enter")), Is.False);
+            Assert.That(ComputerUseSuccessCheck.CitationEchoesQuery(cited, results, steps,
+                ComputerUseSuccessCheck.SearchResultsProve("title:pdf")), Is.True);
+            Assert.That(ComputerUseSuccessCheck.CitationEchoesQuery("pdf", results, steps, searchResultsProve: true), Is.True,
+                "the bare query is its own echo");
+        });
+    }
+
     // Every view the mind receives carries what the sub-goal's last verified click made appear (the look right after
     // it), kept while the screen stays and forgotten with the sub-goal.
     [Test]
@@ -623,6 +706,60 @@ public sealed class ComputerUseMissionTests
             new JsonObject { ["step"] = 1, ["operation"] = "app.open", ["ok"] = true, ["source"] = replayed ? "procedure" : "model" },
         };
         Assert.That(ComputerUseMission.ForgetsProcedure(deviated, errorCode, steps), Is.EqualTo(forgotten));
+    }
+
+    // A procedure whose own step broke the loop (its arguments no longer fit, its window is not the application, it
+    // could not be sent) breaks again when replayed: it is forgotten; so is any sub-goal stopped on invalid arguments.
+    [TestCase("computer_use_step_arguments_invalid", false, true)]
+    [TestCase("computer_use_window_not_application", true, true)]
+    [TestCase("computer_use_step_failed", true, true)]
+    [TestCase("computer_use_window_not_application", false, false)]
+    [TestCase("computer_use_step_failed", false, false)]
+    public void AProcedureWhoseStepBrokeTheLoopIsForgotten(string errorCode, bool procedureStepBroke, bool forgotten)
+    {
+        var steps = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "app.open", ["ok"] = true, ["source"] = "model" },
+        };
+        Assert.That(ComputerUseMission.ForgetsProcedure(false, errorCode, steps, procedureStepBroke), Is.EqualTo(forgotten));
+    }
+
+    // The first look after a click can come before its effect is drawn: every look until the next step measures what
+    // appeared against the text seen right before the click, and the next step keeps the last measure.
+    [Test]
+    public void WhatAClickMadeAppearIsMeasuredAgainstTheTextBeforeItOnEveryLook()
+    {
+        static JsonObject Look(params string[] lines) =>
+            new() { ["text"] = new JsonObject { ["C"] = new JsonArray([.. lines.Select(line => (JsonNode?)JsonValue.Create(line))]) } };
+        static string[] After(JsonObject view) =>
+            [.. ((JsonArray)view["newTextAfterClick"]!).Select(node => (string?)node ?? string.Empty)];
+
+        var state = new JsonObject
+        {
+            ["subgoals"] = new JsonArray(new JsonObject { ["goal"] = "abrir el menu" }),
+            ["steps"] = new JsonArray(),
+        };
+        var steps = (JsonArray)state["steps"]!;
+        void Note(JsonObject view) =>
+            ComputerUseMission.NoteWhatAppeared(state, view, ComputerUseSuccessCheck.TextLines(view), steps, 0);
+
+        JsonObject first = Look("Archivo", "Editar");
+        Note(first);
+        state["textBeforeClick"] = new JsonObject { ["1"] = ComputerUseSuccessCheck.TextLines(first) };
+        steps.Add(new JsonObject { ["step"] = 1, ["operation"] = "input.visible.click", ["label"] = "Archivo", ["ok"] = true });
+        JsonObject tooSoon = Look("Archivo", "Editar");
+        Note(tooSoon);
+        JsonObject drawn = Look("Archivo", "Editar", "Abrir", "Guardar");
+        Note(drawn);
+        steps.Add(new JsonObject { ["step"] = 2, ["operation"] = "input.key.press", ["key"] = "down", ["ok"] = true });
+        JsonObject afterNextStep = Look("Archivo", "Editar", "Abrir", "Guardar", "Reciente");
+        Note(afterNextStep);
+        Assert.Multiple(() =>
+        {
+            Assert.That(After(tooSoon), Is.Empty, "the effect is not drawn yet");
+            Assert.That(After(drawn), Is.EqualTo(new[] { "abrir", "guardar" }), "a later look finds it");
+            Assert.That(After(afterNextStep), Is.EqualTo(new[] { "abrir", "guardar" }), "the next step keeps the last measure");
+        });
     }
 
     [Test]

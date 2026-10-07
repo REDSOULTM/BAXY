@@ -119,12 +119,15 @@ internal static class ComputerUseMission
         JsonObject? lastView = null;
         // The last view of the sub-goal at hand: what decides whether the next look needs the OCR text.
         JsonObject? subgoalView = null;
+        // The step decided in this pass came from the learned procedure: a stop that follows in the same pass is its.
+        bool procedureStepBroke = false;
         ShellTraceSink.Record(ShellTraceScopes.Turn, traceId, "computer_use.start",
             $"budget.{budget}.steps_done.{steps.Count}.subgoals.{plan.Count}");
 
         while (true)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            procedureStepBroke = false;
             int index = (int?)state["subgoal"] ?? 0;
             JsonObject current = (JsonObject)plan[index]!;
             string goal = (string?)current["goal"] ?? execution.Objective;
@@ -275,6 +278,7 @@ internal static class ComputerUseMission
                         ? IdentifyOnView(NextProcedureStep(state, done), lastView)
                         : null;
                     bool fromProcedure = decision is not null;
+                    procedureStepBroke = fromProcedure;
                     if (decision is null)
                     {
                         context.SetStatus($"Paso {steps.Count + 1}: decidiendo");
@@ -309,7 +313,8 @@ internal static class ComputerUseMission
 
                         // What this sub-goal typed is on screen because it was typed (the search box's echo), never
                         // proof of arriving (measured on Steam: «Cuphead» typed in the store search cited as found).
-                        bool echo = ComputerUseSuccessCheck.CitationEchoesQuery(cited, lastView, SubgoalSteps(steps, start));
+                        bool echo = ComputerUseSuccessCheck.CitationEchoesQuery(
+                            cited, lastView, SubgoalSteps(steps, start), ComputerUseSuccessCheck.SearchResultsProve(successCheck));
                         if (cited.Length > 0 && !echo && ComputerUseSuccessCheck.ViewContains(lastView, cited))
                         {
                             subgoalReached = true;
@@ -515,7 +520,7 @@ internal static class ComputerUseMission
         {
             int failedIndex = (int?)state["subgoal"] ?? 0;
             CloseSubgoal(context, state, (JsonObject)plan[failedIndex]!, steps, (int?)state["subgoalStart"] ?? 0,
-                reached: false, satisfiedBy: null, errorCode);
+                reached: false, satisfiedBy: null, errorCode, procedureStepBroke);
         }
 
         JsonObject observed = Observed(state, steps, reached, satisfiedBy, evidence, errorCode, lastView);
@@ -676,7 +681,7 @@ internal static class ComputerUseMission
     // a reached sub-goal is learned (or counted as replayed) under its own key.
     private static void CloseSubgoal(
         Context context, JsonObject state, JsonObject subgoal, JsonArray steps, int start, bool reached, string? satisfiedBy,
-        string? errorCode = null)
+        string? errorCode = null, bool procedureStepBroke = false)
     {
         JsonArray own = SubgoalSteps(steps, start);
         subgoal["reached"] = reached;
@@ -705,7 +710,7 @@ internal static class ComputerUseMission
         {
             bool deviated = (bool?)state["procedureDeviated"] == true;
             subgoal["procedure"] = deviated ? "deviated" : "abandoned";
-            if (ForgetsProcedure(deviated, errorCode, own))
+            if (ForgetsProcedure(deviated, errorCode, own, procedureStepBroke))
             {
                 context.Procedures.Forget(key);
             }
@@ -714,9 +719,10 @@ internal static class ComputerUseMission
 
     /// <summary>
     /// What the last act made appear (a menu it opened, a page it loaded), read apart by the mind: <c>newText</c>
-    /// against the previous look, and <c>newTextAfterClick</c>, what the look right after the sub-goal's last verified
-    /// click found new. The second is kept in the state from that look on (later looks of the same screen find nothing
-    /// new, the click's effect is still what it was) and every view carries it, empty when no verified click was seen.
+    /// against the previous look, and <c>newTextAfterClick</c>, what is on screen now and was not right before the
+    /// sub-goal's last verified click (at most 12 lines). It is measured again on every look until the next step, then
+    /// kept in the state (the click's effect is still what it was), and every view carries it, empty when no verified
+    /// click was seen.
     /// </summary>
     internal static void NoteWhatAppeared(JsonObject state, JsonObject view, JsonArray currentText, JsonArray steps, int start)
     {
@@ -738,12 +744,27 @@ internal static class ComputerUseMission
 
         if (done > 0 && steps[^1] is JsonObject last
             && (string?)last["operation"] == "input.visible.click" && (bool?)last["ok"] == true
-            && ((int?)last["step"] ?? steps.Count) is int clickStep
-            && (int?)state["newTextAfterClickStep"] != clickStep)
+            && ((int?)last["step"] ?? steps.Count) is int clickStep)
         {
-            // The first look after this click: what it found new is the click's effect.
-            state["newTextAfterClickStep"] = clickStep;
-            state["newTextAfterClick"] = view["newText"] is JsonArray appeared ? appeared.DeepClone() : new JsonArray();
+            // Every look until the next step measures the click's effect against the text seen right before it: the
+            // first look can come before the effect is drawn (a menu, a page still loading), a later one finds it.
+            if (currentText.Count > 0
+                && state["textBeforeClick"]?[clickStep.ToString(CultureInfo.InvariantCulture)] is JsonArray { Count: > 0 } beforeClick)
+            {
+                var before = new HashSet<string>(beforeClick.Select(line => (string?)line ?? string.Empty), StringComparer.Ordinal);
+                state["newTextAfterClickStep"] = clickStep;
+                state["newTextAfterClick"] = new JsonArray([.. currentText
+                    .Select(line => (string?)line ?? string.Empty)
+                    .Where(line => !before.Contains(line))
+                    .Take(12)
+                    .Select(line => (JsonNode?)JsonValue.Create(line))]);
+            }
+            else if ((int?)state["newTextAfterClickStep"] != clickStep)
+            {
+                // The text before the click is unknown: the first look after it says what it found new.
+                state["newTextAfterClickStep"] = clickStep;
+                state["newTextAfterClick"] = view["newText"] is JsonArray appeared ? appeared.DeepClone() : new JsonArray();
+            }
         }
 
         view["newTextAfterClick"] = state["newTextAfterClick"] is JsonArray kept ? kept.DeepClone() : new JsonArray();
@@ -760,12 +781,16 @@ internal static class ComputerUseMission
     /// <summary>
     /// A learned sequence is kept only while it keeps reaching its goal: one that deviated, or whose replayed steps met
     /// a screen that did not answer them, is forgotten and the next run decides afresh (measured live 2026-10-07: stale
-    /// procedures learned from earlier screens replayed the same failing click run after run). A stop that says
-    /// nothing about the sequence (the view unavailable, the window covered or elevated, the model not answering, a
-    /// step that could not be sent) keeps it.
+    /// procedures learned from earlier screens replayed the same failing click run after run). So is one whose own
+    /// step broke the loop (<paramref name="procedureStepBroke"/>: its arguments no longer fit, its window is not the
+    /// application, it could not be sent) or whose recorded arguments are invalid: replayed again it breaks again. A
+    /// stop that says nothing about the sequence (the view unavailable, the window covered or elevated, the model not
+    /// answering, a model's step that could not be sent) keeps it.
     /// </summary>
-    internal static bool ForgetsProcedure(bool deviated, string? errorCode, JsonArray subgoalSteps) =>
+    internal static bool ForgetsProcedure(bool deviated, string? errorCode, JsonArray subgoalSteps, bool procedureStepBroke = false) =>
         deviated
+        || procedureStepBroke
+        || errorCode == "computer_use_step_arguments_invalid"
         || (errorCode is not null && ScreenStops.Contains(errorCode)
             && subgoalSteps.Any(node => node is JsonObject step && (string?)step["source"] == "procedure"));
 
@@ -1759,7 +1784,7 @@ internal static class ComputerUseSuccessCheck
                         (string?)control["kind"] is not ("Edit" or "ComboBox" or "Document")
                         && !typed.Contains(Fold((string?)control["name"]))
                         && (!whole || NamesWhole(Fold((string?)control["name"]), Fold(name)))
-                        && (state is null || HasState(control, state)));
+                        && (state is null || HasState(control, state, view["controls"] as JsonArray)));
                 }
             case "value":
                 {
@@ -1824,20 +1849,46 @@ internal static class ComputerUseSuccessCheck
     // «current» is the place the window shows now: the item chosen in its navigation (a side list or tree, a tab). An
     // item merely selected in a content list is not (measured on Explorer: one click on the «Descargas» folder of the
     // Home view selects it and opens nothing; Enter or a double click opens it).
-    private static bool HasState(JsonObject control, string state)
+    private static bool HasState(JsonObject control, string state, JsonArray? controls)
     {
         string[] states = Fold((string?)control["state"]).Split(' ');
         return state == "current"
-            ? states.Contains("selected") && !IsContentItem(control)
+            ? states.Contains("selected") && !IsContentItem(control, controls)
             : states.Contains(state);
     }
 
     // A ListItem or DataItem out of the window's left column (zones L, TL, BL), where content views list their items
-    // and navigation lists never sit.
-    internal static bool IsContentItem(JsonObject control) =>
-        (string?)control["kind"] is "ListItem" or "DataItem"
-        && (string?)control["zone"] is { Length: > 0 } zone
-        && !zone.EndsWith('L');
+    // and navigation lists never sit; or one in that column that shares its row with another item out of it: a tile of
+    // a content grid that starts in the left third (measured on Explorer's Home, maximized: «Escritorio» and
+    // «Descargas» are the first tiles of the row whose next tiles sit in the centre; large icons in a narrow window).
+    // A side list has no item beside it. Same row: the vertical middles within half the item's height. Without
+    // rectangles the zone alone decides.
+    internal static bool IsContentItem(JsonObject control, JsonArray? controls = null)
+    {
+        if ((string?)control["kind"] is not ("ListItem" or "DataItem") || (string?)control["zone"] is not { Length: > 0 } zone)
+        {
+            return false;
+        }
+
+        if (!zone.EndsWith('L'))
+        {
+            return true;
+        }
+
+        if (controls is null || control["rect"] is not JsonObject rect || Number(rect["h"]) <= 0)
+        {
+            return false;
+        }
+
+        double middle = Number(rect["y"]) + (Number(rect["h"]) / 2);
+        double reach = Number(rect["h"]) / 2;
+        return controls.OfType<JsonObject>().Any(other =>
+            !ReferenceEquals(other, control)
+            && (string?)other["kind"] is "ListItem" or "DataItem"
+            && (string?)other["zone"] is { Length: > 0 } otherZone && !otherZone.EndsWith('L')
+            && other["rect"] is JsonObject otherRect && Number(otherRect["h"]) > 0
+            && Math.Abs(Number(otherRect["y"]) + (Number(otherRect["h"]) / 2) - middle) <= reach);
+    }
 
     // The text a typing step sent, seen in the focused field when that field shows its content; a field that does
     // not expose it (measured: Discord's editor) cannot be read and the accepted keys stand.
@@ -1982,9 +2033,10 @@ internal static class ComputerUseSuccessCheck
 
     // The page's own header names the place: a control called exactly that at the top of the window and nowhere in its
     // body or side (measured on Settings: on Colores, «Colores» is the last link of the header «Personalización >
-    // Colores»; on Personalización it is a card in the body, which does not count). Only the header's own zone (T, not
-    // the toolbars of TL/TR), only the last item of its row (a breadcrumb ends where the window is; a tab strip or a
-    // toolbar has more controls to its right), and only once something brought the window there in this sub-goal (a
+    // Colores»; on Personalización it is a card in the body, which does not count). Only the header's own zone (T, or
+    // TL where a lone heading of a maximized window lands; never the toolbars of TR), only the last item of its row (a
+    // breadcrumb ends where the window is; a tab strip or a toolbar has more controls to its right), and only once
+    // something brought the window there in this sub-goal (a
     // verified click) or the window's title names the place: the first look of a sub-goal is not an arrival.
     private static bool HeaderNames(JsonObject view, string place, JsonArray steps)
     {
@@ -2010,7 +2062,7 @@ internal static class ComputerUseSuccessCheck
                 continue;
             }
 
-            if ((string?)control["zone"] != "T" || (string?)control["kind"] is not ("Text" or "Button" or "Hyperlink")
+            if ((string?)control["zone"] is not ("T" or "TL") || (string?)control["kind"] is not ("Text" or "Button" or "Hyperlink")
                 || !LastOfItsRow(control, controls))
             {
                 return false;
@@ -2317,7 +2369,7 @@ internal static class ComputerUseSuccessCheck
     /// text itself, or holds it while the query still echoes (<see cref="QueryEchoNames"/>: measured on Explorer, «imagenes
     /// - Resultados de la búsqueda en ETC» cited after «imagenes» was searched and nothing went from the results).
     /// </summary>
-    internal static bool CitationEchoesQuery(string? cited, JsonObject view, JsonArray subgoalSteps)
+    internal static bool CitationEchoesQuery(string? cited, JsonObject view, JsonArray subgoalSteps, bool searchResultsProve = false)
     {
         string citation = Fold(cited).Trim(' ', '«', '»', '"', '\'');
         if (citation.Length == 0)
@@ -2333,7 +2385,7 @@ internal static class ComputerUseSuccessCheck
             }
 
             if (citation.Equals(typed, StringComparison.Ordinal)
-                || (citation.Contains(typed, StringComparison.Ordinal) && QueryEchoNames(typed, view, subgoalSteps, searchResultsProve: false)))
+                || (citation.Contains(typed, StringComparison.Ordinal) && QueryEchoNames(typed, view, subgoalSteps, searchResultsProve)))
             {
                 return true;
             }
@@ -2341,6 +2393,17 @@ internal static class ComputerUseSuccessCheck
 
         return false;
     }
+
+    /// <summary>
+    /// The sub-goal asks for the act of searching itself: a term of its check also asks for a step done
+    /// («title:pdf&stepDone:input.key.press:enter»), so the results titled by the query are what it wants (the same
+    /// reading <see cref="Evaluate"/> gives each term).
+    /// </summary>
+    internal static bool SearchResultsProve(string? check) =>
+        !string.IsNullOrWhiteSpace(check)
+        && check.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Any(term => term.Split('&', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Any(atom => AtomKind(atom) == "stepdone"));
 
     private static bool AFieldHolds(JsonObject view, string? typed)
     {
