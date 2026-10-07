@@ -253,7 +253,15 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
             ExternalCapabilityReceipt identified = await InvokeUiaAsync(
                 operation, label, controlId, 0, cancellationToken).ConfigureAwait(false);
             if (identified.ErrorCode != "visible_control_identity_stale")
+            {
+                // A control of the view pressed by its identity: the application opened is drawn and answering, so a
+                // later click by label does not wait for it to finish opening. v2-u3 «abrí Fotos y andá a Carpetas»:
+                // the search field was pressed by identity 2 s after the opening, and the next click by label still
+                // waited 26 s for the dark gallery to stop looking blank.
+                if (identified.EffectObserved)
+                    _ = _focus.TakeOpened();
                 return identified;
+            }
             // The control moved or was redrawn since the view: the ordinary
             // cascade by label, which is what the reviewer saw, takes over.
         }
