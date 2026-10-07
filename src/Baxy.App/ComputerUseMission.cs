@@ -630,6 +630,18 @@ internal static class ComputerUseMission
                 errorCode = "computer_use_place_not_found";
                 state["missingPlace"] = SpelledAsSeen(asked, steps);
             }
+            else if (errorCode is "computer_use_no_step_visible" or "computer_use_surface_unchanged"
+                    or "computer_use_evidence_not_visible" or "computer_use_repeated_step" or "computer_use_budget_exhausted"
+                && lastView is not null
+                && OperationFloor.PlaceAsked((string?)plan[failedIndex]?["goal"]) is { Length: > 0 } there
+                && ComputerUseSuccessCheck.ClickedPlaceLeftPageAsIs(
+                    there, SubgoalSteps(steps, (int?)state["subgoalStart"] ?? 0), lastView, state))
+            {
+                // The click on the place's own name left the page as it was (live v2-s12: Steam already on its
+                // library, the learned click only opened its menu): said as probably there, never as arrived. Not a
+                // screen stop: the learned sequence is kept (it is right whenever the window is elsewhere).
+                errorCode = "computer_use_already_there_unconfirmed";
+            }
 
             CloseSubgoal(context, state, (JsonObject)plan[failedIndex]!, steps, (int?)state["subgoalStart"] ?? 0,
                 reached: false, satisfiedBy: null, errorCode, procedureStepBroke);
@@ -2315,6 +2327,43 @@ internal static class ComputerUseSuccessCheck
         // next look comes (≈150 ms); a place already open is told by its address (AddressNames).
         int kept = current.Count(line => baseline.Contains((string?)line ?? string.Empty));
         return kept * 2 < current.Count;
+    }
+
+    /// <summary>
+    /// A window without an accessible tree whose last verified step in the sub-goal was a click on the place's own name
+    /// («BIBLIOTECA» for «ir a biblioteca»), the name still written on screen, and the text kept what it showed right
+    /// before that click (at most a menu opened under it, ≥ 80 % of the lines the same): the window was probably on the
+    /// place already (live 2026-10-07 v2-s12, v2-c17: Steam on its library, the learned click only opened the menu).
+    /// Never proof of arriving (a click that only opens a word's menu on another page reads the same): only the honest
+    /// stop «parece que ya estabas en X, pero no pude confirmarlo». A covered window never passes.
+    /// </summary>
+    internal static bool ClickedPlaceLeftPageAsIs(string place, JsonArray subgoalSteps, JsonObject view, JsonObject state)
+    {
+        string target = Fold(place);
+        if (target.Length < 3 || ComputerUseMission.ActionableCount(view) > 1
+            || view["window"]?["coveredBy"] is JsonObject || !ViewContains(view, place))
+        {
+            return false;
+        }
+
+        JsonObject? last = subgoalSteps.OfType<JsonObject>().LastOrDefault(step => (bool?)step["ok"] == true);
+        if (last is null || (string?)last["operation"] != "input.visible.click"
+            || WithoutAppName(WithoutOpening(Fold((string?)last["label"])), view) != target
+            || (int?)last["step"] is not int clickStep
+            || state["textBeforeClick"]?[clickStep.ToString(CultureInfo.InvariantCulture)] is not JsonArray before)
+        {
+            return false;
+        }
+
+        var baseline = new HashSet<string>(before.Select(line => (string?)line ?? string.Empty), StringComparer.Ordinal);
+        JsonArray current = TextLines(view);
+        if (baseline.Count < 5 || current.Count < 5)
+        {
+            return false;
+        }
+
+        int kept = current.Count(line => baseline.Contains((string?)line ?? string.Empty));
+        return kept * 10 >= current.Count * 8;
     }
 
     // Where controls exist, the last verified click went to a control named as the place itself, or as the act of

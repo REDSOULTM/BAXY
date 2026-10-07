@@ -3378,6 +3378,11 @@ def floor_sentence(observed: dict, english: bool, succeeded: bool) -> str:
         # A verified result that does not say it reached anything is never told as a failure.
         return ""
     place = _place_of(seen.get("firstUnreached") or seen.get("goal"), names)
+    if place and str(observed.get("stoppedBy") or "") == "computer_use_already_there_unconfirmed":
+        # The click on the place's own name left the window as it was (live v2-s12: Steam already on its library):
+        # probably there already, never told as arrived.
+        return data["computerUse"]["alreadyThere"]["en" if english else "es"].format(
+            place=quote.format(value=place)) + "."
     if place:
         head = said["notPlace"].format(place=quote.format(value=place))
     elif app:

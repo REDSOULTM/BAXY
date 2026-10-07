@@ -1595,7 +1595,62 @@
     }
    },
    "es": "Listo, estoy en «Scientific».",
-   "en": "Done, I'm in «Scientific»."
+   "en": "Done, I'm in «Scientific».",
+   "id": "cu-failed-already-there",
+   "situation": {
+    "kind": "failure",
+    "polarity": "failure",
+    "cause": "mission_failed",
+    "stepCount": 0,
+    "steps": [],
+    "reason": {
+     "kind": "operation",
+     "operation": "mission.computer.use",
+     "polarity": "failure",
+     "verified": false,
+     "succeeded": false,
+     "error": "computer_use_already_there_unconfirmed",
+     "observed": {
+      "goal": "ir a biblioteca",
+      "application": "Steam",
+      "reached": false,
+      "steps": [
+       {
+        "step": 1,
+        "operation": "app.open",
+        "appId": "Steam",
+        "ok": true,
+        "changed": true
+       },
+       {
+        "step": 2,
+        "operation": "input.visible.click",
+        "label": "biblioteca",
+        "ok": true,
+        "name": "BIBLIOTECA",
+        "cascadeStage": "ocr",
+        "changed": true
+       }
+      ],
+      "window": {
+       "title": "Steam",
+       "process": "steamwebhelper"
+      },
+      "joined": false,
+      "screen": {
+       "title": "Steam",
+       "lines": [
+        "BIBLIOTECA",
+        "Colecciones",
+        "Descargas"
+       ]
+      },
+      "stoppedBy": "computer_use_already_there_unconfirmed"
+     }
+    }
+   },
+   "es": "Parece que ya estabas en «Biblioteca», pero no pude confirmarlo en la pantalla.",
+   "en": "It looks like you were already in «Biblioteca», but I couldn't confirm it on the screen."
   }
  ]
 }
