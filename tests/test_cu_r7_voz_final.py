@@ -106,7 +106,11 @@ def test_a_clock_the_window_wrote_is_observed_even_with_bidi_marks() -> None:
     assert _defect("Ya estoy en la pantalla del reloj mundial, que marca las 7:58.", WORLD_CLOCK, said=said) == ""
     assert _defect("Estoy en la sección de Reloj mundial y ahora se muestra la hora de 7:58.", WORLD_CLOCK) == ""
     assert _defect("Ya estoy en la pantalla de la alarma, que dice 7:00.", ALARM) == ""
-    assert _defect("He abierto la pestaña de la alarma en el reloj y se muestra la hora de 7:00.", ALARM) == ""
+    assert _defect("Abrí la pestaña de la alarma en el reloj y se muestra la hora de 7:00.", ALARM) == ""
+    # Voice audit 2026-10-07: the same clock told in the peninsular perfect is not BAXY's Chilean voice.
+    assert _defect("He abierto la pestaña de la alarma en el reloj y se muestra la hora de 7:00.", ALARM) == (
+        "peninsular_perfect"
+    )
 
 
 def test_a_clock_the_window_did_not_write_is_still_invented() -> None:

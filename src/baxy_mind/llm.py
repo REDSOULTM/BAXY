@@ -51,6 +51,7 @@ from .semantic import decider as semantic_decider
 from .semantic import knowledge as semantic_knowledge
 from .semantic import quantities as semantic_quantities
 from .semantic import web as semantic_web
+from .semantic import voice_register as semantic_voice_register
 from .semantic.grammar import spoken_number_request
 from .semantic.network import (
     asks_calendar_part, calendar_parts_asked, days_until_asked, hours_until_asked, present_calendar_question,
@@ -16356,6 +16357,25 @@ _NO_TIMER_SAID = re.compile(
 )
 
 
+def own_voice_defect(text: str, said: str = "", *, act_report: bool = False, preterite_floor: bool = False) -> str:
+    """A report of BAXY's own act that is not said in BAXY's voice (voice audit 2026-10-07): a misspelled first person
+    preterite («Abrazé», «Andé»), the first person plural for what BAXY alone did («Ya estamos en…») or the
+    peninsular perfect for a just-done act («Ya he entrado en…»). ``said`` holds the person's and the screen's words,
+    which are theirs. The plural is judged only in the report of a verified act (``act_report``), where nobody but
+    BAXY acted; elsewhere «estamos en la misma zona horaria» is the person and BAXY together. The perfect is vetoed
+    only where a preterite floor stands behind the retries
+    (``preterite_floor``: the computer-use mission); elsewhere «He guardado la nota» is still published. Returns the
+    defect, or ""."""
+
+    if semantic_voice_register.misspelled_own_preterite(text, said):
+        return "misspelled_act"
+    if act_report and semantic_voice_register.tells_own_act_in_plural(text):
+        return "plural_own_act"
+    if preterite_floor and semantic_voice_register.tells_own_act_in_peninsular_perfect(text):
+        return "peninsular_perfect"
+    return ""
+
+
 def compose_visible_defect(
     text: str,
     intent: str,
@@ -16435,6 +16455,14 @@ def compose_visible_defect(
         if intent == "status" and _verified_effect(reported) and tells_own_act_as_the_persons(stripped):
             # Live 2026-10-07 (y5, x12): «Has abierto…», «Has iniciado…» — BAXY's verified act told as the person's.
             return "action_attributed_to_user"
+        heard = f"{user_text} {said or ''} {json.dumps(facts, ensure_ascii=False, default=str)}"
+        if voice_defect := own_voice_defect(
+            stripped,
+            heard,
+            act_report=intent == "status" and _verified_effect(reported),
+            preterite_floor=reported.get("operation") == "mission.computer.use",
+        ):
+            return voice_defect
     if re.search(r"</?think>", stripped, re.IGNORECASE) is not None:
         return "internal_code"
     if "el mensaje es" in stripped.casefold():
@@ -29503,6 +29531,24 @@ class LlmRuntime:
                     "The date is read from this PC's clock: state it plainly, without «I think» or «maybe»."
                     if response_language == "en"
                     else "La fecha se leyó del reloj de este PC: dila sin «creo» ni «quizás»."
+                ),
+                # Voice audit 2026-10-07: BAXY's own act, in its own voice.
+                "misspelled_act": (
+                    "A word was misspelled: say what you did with plain, correctly spelled words."
+                    if response_language == "en"
+                    else "Una palabra quedó mal escrita: di lo que hiciste en pretérito, bien escrito («Llegué», "
+                    "«Busqué», «Abrí»)."
+                ),
+                "plural_own_act": (
+                    "You alone did it: say it in the first person singular («I»), never «we»."
+                    if response_language == "en"
+                    else "Lo hiciste tú solo: dilo en primera persona singular («Llegué», «Estoy»), nunca «estamos»."
+                ),
+                "peninsular_perfect": (
+                    "Say what you just did in the simple past."
+                    if response_language == "en"
+                    else "Di lo que acabas de hacer en pretérito simple («Entré», «Abrí», «Encontré»), "
+                    "no con «he»."
                 ),
             }.get(defect, "")
 
