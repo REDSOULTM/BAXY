@@ -343,9 +343,13 @@ internal static class ComputerUseMission
                         {
                             // The application is on its start page with no document open and the place asked lives in
                             // one (measured on Excel and Word: their tabs exist only with a document): said as such.
-                            errorCode = decision.Code == "no_document_open"
-                                ? "computer_use_no_document_open"
-                                : "computer_use_no_step_visible";
+                            // A search box written on screen that did not prove it took the keyboard: nothing was typed.
+                            errorCode = decision.Code switch
+                            {
+                                "no_document_open" => "computer_use_no_document_open",
+                                "search_focus_unproven" => "computer_use_search_focus_unproven",
+                                _ => "computer_use_no_step_visible",
+                            };
                             state["stopReason"] = decision.Reason;
                             break;
                         }
@@ -1821,7 +1825,8 @@ internal static class ComputerUseSuccessCheck
         switch (kind)
         {
             case "text":
-                return ViewContains(view, rest);
+                // A search's own proof reads its results, never only the box that repeats the query.
+                return ViewContains(view, rest) && !(searchResultsProve && OnlyTheQueryShows(rest, view, steps));
             case "title":
                 return view["window"] is JsonObject titled
                     && Fold((string?)titled["title"]).Contains(Fold(rest), StringComparison.Ordinal)
@@ -2543,6 +2548,31 @@ internal static class ComputerUseSuccessCheck
                 string[] atoms = term.Split('&', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                 return atoms.Any(atom => AtomKind(atom) == "stepdone") && atoms.Any(atom => AtomKind(atom) is "title" or "text");
             });
+
+    /// <summary>
+    /// The text a search's check reads is what the sub-goal typed into that search, and it shows in one place only: the
+    /// box repeating the query (a field's value never counts; a box drawn without a tree is one written line). A result
+    /// shows it somewhere else too (a list line, a control, the title); measured on Steam's library, a box drawn without
+    /// a tree holds «Cuphead» whether the library has it or not.
+    /// </summary>
+    internal static bool OnlyTheQueryShows(string needle, JsonObject view, JsonArray steps)
+    {
+        string folded = Fold(needle).Trim(QuoteMarks);
+        if (folded.Length == 0 || !steps.OfType<JsonObject>().Any(step => (bool?)step["ok"] == true
+            && (string?)step["operation"] == "input.text.type" && EchoesItsQuery(step)
+            && Fold((string?)step["text"]).Trim(QuoteMarks).Contains(folded, StringComparison.Ordinal)))
+        {
+            return false;
+        }
+
+        int places = view["window"] is JsonObject window && Fold((string?)window["title"]).Contains(folded, StringComparison.Ordinal) ? 1 : 0;
+        places += (view["controls"] as JsonArray ?? []).OfType<JsonObject>()
+            .Count(control => (string?)control["kind"] is not ("Edit" or "ComboBox" or "Document")
+                && (Fold((string?)control["name"]).Contains(folded, StringComparison.Ordinal)
+                    || Fold((string?)control["value"]).Contains(folded, StringComparison.Ordinal)));
+        places += TextLines(view).Count(line => Fold((string?)line).Contains(folded, StringComparison.Ordinal));
+        return places < 2;
+    }
 
     private static bool AFieldHolds(JsonObject view, string? typed)
     {

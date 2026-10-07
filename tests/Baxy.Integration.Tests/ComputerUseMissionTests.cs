@@ -1454,4 +1454,34 @@ public sealed class ComputerUseMissionTests
     {
         Assert.That(ComputerUseProcedures.Key(application, goal), Is.EqualTo(expected));
     }
+
+    [Test]
+    public void ASearchTypedIntoABoxDrawnWithoutATreeIsProvedByItsResultsNeverByTheBoxAlone()
+    {
+        // Measured on Steam's library: the box holds «Cuphead» whether the library has it or not.
+        const string check = "stepDone:input.text.type&stepDone:input.key.press:enter&text:Cuphead";
+        var steps = new JsonArray
+        {
+            new JsonObject { ["step"] = 1, ["operation"] = "input.key.press", ["ok"] = true, ["key"] = "ctrl_f" },
+            new JsonObject { ["step"] = 2, ["operation"] = "input.text.type", ["ok"] = true, ["text"] = "Cuphead" },
+            new JsonObject { ["step"] = 3, ["operation"] = "input.key.press", ["ok"] = true, ["key"] = "enter" },
+        };
+        JsonObject onlyTheBox = View("""
+            {"window": {"title": "Steam", "process": "steamwebhelper", "focused": null},
+             "controls": [{"i": 0, "kind": "Pane", "name": "Chrome Legacy Window"}],
+             "text": {"TL": ["Juegos y Software", "Q Cuphead", "FAVORITOS (0)"]}}
+            """);
+        JsonObject withResult = View("""
+            {"window": {"title": "Steam", "process": "steamwebhelper", "focused": null},
+             "controls": [{"i": 0, "kind": "Pane", "name": "Chrome Legacy Window"}],
+             "text": {"TL": ["Juegos y Software", "Q Cuphead", "FAVORITOS (1)"], "L": ["Cuphead"]}}
+            """);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, onlyTheBox, steps, out _), Is.False);
+            Assert.That(ComputerUseSuccessCheck.Evaluate(check, withResult, steps, out _), Is.True);
+            // Text that was never typed reads the screen as before.
+            Assert.That(ComputerUseSuccessCheck.Evaluate("stepDone:input.key.press:enter&text:FAVORITOS", onlyTheBox, steps, out _), Is.True);
+        });
+    }
 }
