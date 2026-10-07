@@ -488,11 +488,21 @@ no se logró.
 
 **BUSCAR (universal, sin modelo, `computer_use._find_step`).** Si el destino no está en la vista: el campo o botón
 de búsqueda visible (léxico bilingüe) → escribir el destino → clic en el resultado que lo nombra (nunca Enter: un
-canal de voz sigue siendo un clic que `RiskPolicy` confirma); si no hay, `ctrl_k` y `ctrl_f` (sólo si aparece un
+canal de voz sigue siendo un clic que `RiskPolicy` confirma); si no hay, el botón de navegación o menú de la ventana
+aún no usado («Abrir navegación», «Open Navigation», «Menú», «Más opciones», «Main menu»; por su nombre entero,
+`Button`/`MenuItem`/`SplitButton`, nunca un interruptor ni uno ya `expanded`) y el destino se busca entre lo que
+apareció (los modos de la Calculadora, live n2); después `ctrl_k` y `ctrl_f` (sólo si aparece un
 campo con foco; si no, Escape); después desplazar hasta tres veces la lista con más ítems (`input.scroll {index}`:
 `ScrollPattern` de ese control o la rueda en su centro); sólo entonces el modelo. Un clic en algo visible que nombra
 el destino sin llegar (una tarjeta con su nombre) no cierra BUSCAR: sigue con el buscador. Un menú abierto por el
-clic en el destino elige la entrada que nombra el objetivo.
+clic en el destino elige la entrada que nombra el objetivo. Ir a un lugar nunca pulsa el interruptor que lleva su
+nombre.
+
+**Modos.** «cambiá a científica», «pasá a la vista X», «cambiá al modo X», «switch to X (mode)» se leen `ir a X`;
+«poné el modo X», «set it to X mode», `activar modo X` (el interruptor así llamado si existe; si no, se elige el
+modo como un lugar). La comprobación acepta, además de selección, título y página, un clic verificado en un control
+que nombra X seguido de un control que aún lo nombra (la Calculadora no cambia título ni selección: su cabecera dice
+«Modo de calculadora Científica»). El adjetivo vale en los dos géneros («modo científico» / «Científica»).
 
 **Objetivos libres.** Cuando el decisor elige el motor para un pedido que el lector no sabe partir,
 `semantic.missions.free_form_arguments` usa las palabras de la persona tal cual como `goal` (≤ 512 bytes) y, como
