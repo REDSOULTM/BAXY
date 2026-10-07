@@ -548,7 +548,8 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
                     : string.Empty;
             if (title.Length == 0)
                 title = VisibleControlSurface.WindowTitle(hwnd);
-            (int ownerProcessId, string processName) = VisibleControlSurface.WindowProcess(hwnd);
+            // A packaged app's frame names the app it hosts, never the frame host every packaged app shares.
+            (int ownerProcessId, string processName) = VisibleControlSurface.ViewProcess(hwnd);
             VisibleControlSurface.TryBounds(hwnd, out int left, out int top, out int right, out int bottom);
             var windowRect = new Rect(left, top, right - left, bottom - top);
 

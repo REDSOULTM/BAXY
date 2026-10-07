@@ -74,6 +74,28 @@ public sealed class ComputerUseWindowIdentityTests
         });
     }
 
+    // Review 2026-10-07: two packaged apps (Settings, the Store) drawn in two frames of the same ApplicationFrameHost.
+    // Bound to the shared host's pid, a look took whichever frame was in front; bound to the hosted app, its frame
+    // stays the mission's whatever is in front. The shared host itself is never a process to bind to.
+    [Test]
+    public void TwoFramesOfTheSameHostKeepTheMissionOnItsOwn()
+    {
+        VisibleControlSurface.TopLevelWindow[] hostWindows =
+        [
+            new(30, 3, Usable: true, Area: 900_000),
+            new(31, 3, Usable: true, Area: 1_200_000),
+        ];
+        Assert.Multiple(() =>
+        {
+            Assert.That(VisibleControlSurface.ChooseProcessWindow(hostWindows, 3, front: 31), Is.EqualTo((nint)31),
+                "the shared host's pid follows the front: the reason it is never recorded");
+            Assert.That(VisibleControlSurface.ChooseProcessWindow([], 40, front: 31, frame: 30), Is.EqualTo((nint)30));
+            Assert.That(VisibleControlSurface.IsSharedFrameHost("ApplicationFrameHost"), Is.True);
+            Assert.That(VisibleControlSurface.IsSharedFrameHost("applicationframehost"), Is.True);
+            Assert.That(VisibleControlSurface.IsSharedFrameHost("SystemSettings"), Is.False);
+        });
+    }
+
     // File Explorer with two folder windows open: the one the person brought to the front is the one, even when the
     // other is larger; another process's window in front does not count.
     [Test]

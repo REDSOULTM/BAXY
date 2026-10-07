@@ -12,6 +12,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import pytest
+
 from baxy_mind import computer_use
 from baxy_mind.effect_intent import resolve_explicit_effects
 from baxy_mind.semantic import missions
@@ -380,6 +382,31 @@ def test_a_closing_question_may_name_the_thing_alone() -> None:
     assert missions.mission_request("en el bloc de notas escribí decime el volumen", APPS).goal == "escribir decime el volumen"
     watched = missions.mission_request("en Steam buscá Hades y mirá el video", APPS)
     assert watched is None or missions.QUESTION_MARK not in watched.goal
+
+
+@pytest.mark.parametrize(
+    "said",
+    [
+        'en el bloc de notas escribí "pasá por lo de Ana y decime el horario"',
+        "en el bloc de notas escribí «pasá por lo de Ana y decime el horario»",
+        "en el bloc de notas escribí: pasá por lo de Ana y decime el horario",
+        'in Notepad type "call Ana and tell me the time"',
+    ],
+)
+def test_a_question_inside_the_text_to_type_is_typed_never_split_off(said) -> None:
+    # Review 2026-10-07: the closing question was read inside the dictated text, and only «pasá por lo de Ana» was typed.
+    mission = missions.mission_request(said, APPS)
+
+    assert mission is not None and missions.QUESTION_MARK not in mission.goal
+    assert mission.goal.endswith(("y decime el horario", "and tell me the time"))
+    assert mission.success_check == "stepDone:input.text.type"
+
+
+def test_a_question_after_the_closed_quote_is_still_a_question() -> None:
+    mission = missions.mission_request("en el bloc de notas escribí «pasá y decime el horario» y decime qué dice", APPS)
+
+    assert mission is not None
+    assert mission.goal == "escribir pasá y decime el horario" + missions.QUESTION_MARK + "decime qué dice"
 
 
 def test_quotes_around_a_name_are_no_part_of_it() -> None:

@@ -123,20 +123,29 @@ def test_the_live_failure_is_decided_without_the_model() -> None:
     assert decision["code"] == computer_use.EXPECTS_TITLE_CHANGE
 
 
-def test_a_blank_item_without_the_keyboard_is_clicked_once_then_entered_when_it_has_it() -> None:
+def test_a_blank_item_without_the_keyboard_is_clicked_once_and_never_acted_on_again() -> None:
     view = _start_page(blank_state="")
     first = _step(view=view)
     assert first is not None and first["operation"] == "input.visible.click"
     assert first["arguments"] == {"label": "Libro en blanco", "index": 6}
     assert first["code"] == computer_use.EXPECTS_TITLE_CHANGE
 
+    # Review 2026-10-07: the click may have created the document already (its window slow to come); an Enter after it
+    # could create a second one. The start page still there after the wait is said, never acted on again.
     clicked = [*OPENED, {"step": 2, "operation": "input.visible.click", "label": "Libro en blanco", "index": 6, "ok": True}]
-    # The click only chose it and gave it the keyboard: Enter creates it.
-    second = _step(view=_start_page(), history=clicked)
-    assert second is not None and second["operation"] == "input.key.press"
-    # The click chose it without the keyboard: nothing more is guessed, the cause is said.
-    third = _step(view=view, history=clicked)
-    assert third is not None and third["operation"] == "none" and third["code"] == computer_use.NO_DOCUMENT_OPEN
+    for after in (_step(view=_start_page(), history=clicked), _step(view=view, history=clicked)):
+        assert after is not None and after["operation"] == "none" and after["code"] == computer_use.NO_DOCUMENT_OPEN
+
+
+def test_enter_only_when_the_focused_element_is_the_offer_itself() -> None:
+    # The offer's own state says focused, but the window's focus is elsewhere (another list item): a click, not Enter.
+    view = _start_page()
+    view["window"]["focused"] = {"kind": "ListItem", "name": "Inicio", "value": None}
+
+    step = _step(view=view)
+
+    assert step is not None and step["operation"] == "input.visible.click"
+    assert step["arguments"]["label"] == "Libro en blanco"
 
 
 def test_once_the_document_is_open_the_tab_is_clicked() -> None:
@@ -200,6 +209,61 @@ def test_a_recent_file_named_like_a_blank_one_is_not_an_offer() -> None:
     assert _step(view=view) is None
 
 
+def _explorer_folder(*, with_list: bool = True, with_type: bool = True, with_headers: bool = False) -> dict:
+    """File Explorer on «Descargas», extensions hidden: the person's file «Documento en blanco» has the keyboard."""
+
+    item = _control(3, "ListItem", "Documento en blanco", "selected focused", (300, 220, 600, 24))
+    if with_type:
+        item["itemType"] = "Documento de Microsoft Word"
+    controls = [
+        _control(0, "TabItem", "Descargas", "selected", (10, 5, 200, 30)),
+        _control(1, "TreeItem", "Escritorio", "", (10, 200, 200, 24)),
+        _control(2, "ListItem", "Factura marzo", "", (300, 196, 600, 24)),
+        item,
+    ]
+    if with_headers:
+        controls += [_control(10, "HeaderItem", "Nombre", "", (300, 170, 200, 24)),
+                     _control(11, "HeaderItem", "Fecha de modificación", "", (500, 170, 200, 24))]
+    if with_list:
+        controls.append(_control(12, "List", "Vista de elementos", "", (290, 160, 900, 700)))
+    return {
+        "window": {"title": "Descargas", "process": "explorer", "processId": 4242, "requested": True,
+                   "rect": {"x": 0, "y": 0, "w": 1200, "h": 900},
+                   "focused": {"kind": "ListItem", "name": "Documento en blanco", "value": None}},
+        "controls": controls,
+        "controlCount": len(controls),
+    }
+
+
+@pytest.mark.parametrize(
+    ("with_list", "with_type", "with_headers"),
+    [(True, True, False), (True, False, False), (False, True, False), (False, False, True)],
+)
+def test_a_file_named_like_a_blank_offer_in_a_folder_is_never_entered(with_list, with_type, with_headers) -> None:
+    # Review 2026-10-07: in File Explorer, «andá a la pestaña Imágenes» on «Descargas» pressed Enter on the person's
+    # file «Documento en blanco» (the recent-files guard only saw a list called «Recientes»). An offer is accepted only
+    # outside every list but the offers' own, and never in a view that shows files (item types, file columns).
+    view = _explorer_folder(with_list=with_list, with_type=with_type, with_headers=with_headers)
+
+    step = _step(
+        "ir a la pestaña imagenes", view=view, history=[], objective="en el explorador de archivos andá a la pestaña Imágenes",
+        application="Explorador de archivos",
+    )
+
+    assert step is None or step.get("code") not in {computer_use.EXPECTS_TITLE_CHANGE, computer_use.NO_DOCUMENT_OPEN}
+    assert step is None or step["operation"] != "input.key.press"
+
+
+def test_an_offer_inside_an_unnamed_kind_of_list_is_no_offer() -> None:
+    # The recent files' list carries no «Recientes» name (or it was cut from the capped view): its item is no offer.
+    view = _start_page()
+    view["controls"] = [control for control in view["controls"] if control["name"] != "Libro en blanco"]
+    view["controls"].append(_control(20, "ListItem", "Documento en blanco", "", (158, 716, 1039, 70)))
+    view["controls"].append(_control(21, "List", "Elementos", "", (158, 500, 1039, 400)))
+
+    assert _step(view=view) is None
+
+
 def test_two_blank_offers_are_not_guessed_between() -> None:
     view = _start_page()
     view["controls"].append(_control(20, "ListItem", "Presentación en blanco 4:3", "", (430, 177, 225, 190)))
@@ -256,6 +320,26 @@ def test_names_a_blank_item(name, expected) -> None:
 )
 def test_names_a_file(objective, expected) -> None:
     assert missions.names_a_file(objective) is expected
+
+
+@pytest.mark.parametrize(
+    ("objective", "application", "expected"),
+    [
+        ("en el explorador de archivos andá a la pestaña Imágenes", "Explorador de archivos", False),
+        ("in File Explorer go to the Pictures tab", "Explorador de archivos", False),
+        ("en el explorador de archivos abrí el archivo informe", "Explorador de archivos", True),
+        ("en Word andá al documento de la tesis", "Word", True),
+    ],
+)
+def test_the_applications_own_name_names_no_file(objective, application, expected) -> None:
+    # Review 2026-10-07: «archivos» inside «explorador de archivos» stopped an Explorer tab goal as «no document open».
+    assert missions.names_a_file(objective, application) is expected
+
+
+@pytest.mark.parametrize(("name", "expected"), [("Plantillas", True), ("Nueva", True), ("Templates", True),
+                                                ("Vista de elementos", False), ("Recientes", False)])
+def test_names_a_templates_list(name, expected) -> None:
+    assert missions.names_a_templates_list(name) is expected
 
 
 @pytest.mark.parametrize(("name", "expected"), [("Recientes", True), ("Compartidos conmigo", True), ("Recent", True),

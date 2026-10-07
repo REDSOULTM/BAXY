@@ -47,6 +47,8 @@ from .semantic.missions import (
     mode_named as _mode_named,
     names_a_blank_item,
     names_a_file,
+    names_a_file_column,
+    names_a_templates_list,
     names_own_files_list,
 )
 
@@ -727,7 +729,7 @@ def deterministic_step(
     if control is None and kind == "TabItem" and wanted is None and _window_fold(application) != _window_fold(BROWSER_CATEGORY):
         # A tab of an editor's workspace exists only with a document open; on the start page a person first creates
         # the blank one it offers (live v5/v6: Excel and Word opened on «Libro/Documento en blanco» and recent files).
-        started = _start_page_step(view, history, objective)
+        started = _start_page_step(view, history, objective, application)
         if started is not None:
             return started
     carrying = _controls_carrying(seen, names, kind, placing) if control is None and wanted is None else []
@@ -788,30 +790,57 @@ def _title_names_a_document(title: object) -> bool:
     return re.search(r"\s+[-–—|]\s+", _window_fold(title)) is not None
 
 
+# The containers whose items are things the window holds (files, rows, nodes): an offer to create is accepted inside
+# one only when the container is named as the offers to create («Plantillas», «Nueva»).
+_ITEM_CONTAINER_KINDS = frozenset({"List", "DataGrid", "Table", "Tree"})
+
+
+def _shows_files(controls: list[dict]) -> bool:
+    """A file manager's content view: items that expose their type (Explorer's «Documento de Microsoft Word») or the
+    columns of one («Tamaño», «Fecha de modificación»). Nothing in it is an offer to create."""
+
+    return any(
+        control.get("itemType") or (str(control.get("kind")) == "HeaderItem" and names_a_file_column(control.get("name")))
+        for control in controls
+    )
+
+
 def _blank_item(view: dict) -> dict | None:
     """The one control of the view named as an offer to create a new empty item («Documento en blanco», «Blank
-    workbook»): an actionable kind, never a switch, never inside a list of the person's own files (a recent file may be
-    called «Plantilla en blanco»). None when there is none or more than one (which one would be a guess)."""
+    workbook»): an actionable kind, never a switch, never in a file manager's content view and never inside a list,
+    grid or tree other than the offers' own («Plantillas», «Nueva»): a recent file, or a file in a folder, may be called
+    «Plantilla en blanco» or «Documento en blanco», and the lists of recent files are not always in the (capped) view.
+    None when there is none or more than one (which one would be a guess)."""
 
     controls = [control for control in view.get("controls") or [] if isinstance(control, dict)]
+    if _shows_files(controls):
+        return None
     own_lists = [
         control.get("rect") for control in controls
         if str(control.get("kind")) in {"List", "Group", "Pane", "DataGrid", "Table", "Tree"} and names_own_files_list(control.get("name"))
     ]
+    containers = [control for control in controls if str(control.get("kind")) in _ITEM_CONTAINER_KINDS]
     offers = [
         control for control in controls
         if str(control.get("kind")) in _OFFER_KINDS and not _is_switch(control) and names_a_blank_item(control.get("name"))
         and not any(_inside(control.get("rect"), rect) for rect in own_lists)
+        and all(
+            names_a_templates_list(container.get("name")) for container in containers
+            if container is not control and _inside(control.get("rect"), container.get("rect"))
+        )
     ]
     return offers[0] if len(offers) == 1 else None
 
 
-def _start_page_step(view: dict, history: list[dict], objective: str | None) -> dict[str, object] | None:
+def _start_page_step(
+    view: dict, history: list[dict], objective: str | None, application: str | None = None,
+) -> dict[str, object] | None:
     """A tab of the editor was asked and the window is a start page: no document named in its title, one offer to
-    create a blank item. A person creates the blank item first, then goes to the tab: Enter on the offer when it has
-    the keyboard (the start page gives it the focus), else one click on it. Creating an unsaved blank document is
-    reversible and touches no file; never when the person named a file of their own (opening a recent one is theirs to
-    say), and never twice: a start page still there after the creation is said as such, without more clicks."""
+    create a blank item. A person creates the blank item first, then goes to the tab: Enter when the focused element is
+    the offer itself, else one click on it. Creating an unsaved blank document is reversible and touches no file;
+    never when the person named a file of their own (opening a recent one is theirs to say), and never twice: once the
+    offer was pressed or clicked, a start page still there is said as such, without another step that could create a
+    second one."""
 
     window = view.get("window") if isinstance(view, dict) else None
     if not isinstance(window, dict) or _title_names_a_document(window.get("title")):
@@ -819,19 +848,22 @@ def _start_page_step(view: dict, history: list[dict], objective: str | None) -> 
     offer = _blank_item(view)
     if offer is None:
         return None
-    if names_a_file(objective) or _steps_ok(history, "input.key.press", key="enter"):
-        return _none(REASON_NO_DOCUMENT, code=NO_DOCUMENT_OPEN)
     name = fold(offer.get("name"))
-    focused = _focused(view)
-    has_keyboard = "focused" in str(offer.get("state") or "").split() or (
-        focused is not None and fold(focused.get("name")) == name and str(focused.get("kind")) == str(offer.get("kind"))
+    acted = _steps_ok(history, "input.key.press", key="enter") or any(
+        fold(step.get("label")) == name for step in history if step.get("operation") == "input.visible.click"
     )
-    if has_keyboard:
+    if names_a_file(objective, application) or acted:
+        return _none(REASON_NO_DOCUMENT, code=NO_DOCUMENT_OPEN)
+    focused = _focused(view)
+    is_the_offer = (
+        focused is not None and fold(focused.get("name")) == name and str(focused.get("kind")) == str(offer.get("kind"))
+        and not offer.get("repeated")
+        and (not isinstance(focused.get("i"), int) or not isinstance(offer.get("i"), int) or focused["i"] == offer["i"])
+    )
+    if is_the_offer:
         return {"operation": "input.key.press", "arguments": key_arguments("enter", view, history),
                 "reason": REASON_CREATE_BLANK, "code": EXPECTS_TITLE_CHANGE}
-    if not any(fold(step.get("label")) == name for step in history if step.get("operation") == "input.visible.click"):
-        return {**_click(offer, REASON_CREATE_BLANK), "code": EXPECTS_TITLE_CHANGE}
-    return _none(REASON_NO_DOCUMENT, code=NO_DOCUMENT_OPEN)
+    return {**_click(offer, REASON_CREATE_BLANK), "code": EXPECTS_TITLE_CHANGE}
 
 
 # The goals that name a control, with the state each one wants (None: a place to go or a control to press).

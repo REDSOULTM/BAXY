@@ -1413,6 +1413,33 @@ public sealed class ComputerUseMissionTests
         });
     }
 
+    // Review 2026-10-07: a running packaged app found by its title showed the ApplicationFrameHost frame, and the
+    // frame host's pid (shared by Settings, the Store, the Calculator) was adopted; a later look could take the Store's
+    // frame and keys were allowed there. The shared host is never adopted; the provider names the hosted app instead,
+    // so two frames of the same host keep apart.
+    [Test]
+    public void TheSharedFrameHostIsNeverTheMissionsProcess()
+    {
+        var byHost = new JsonObject();
+        ComputerUseMission.AdoptWindow(byHost, "Configuración", View("""
+            {"window": {"title": "Configuración", "process": "ApplicationFrameHost", "processId": 3, "hwnd": 30, "requested": true}}
+            """));
+        var byHosted = new JsonObject();
+        ComputerUseMission.AdoptWindow(byHosted, "Configuración", View("""
+            {"window": {"title": "Configuración", "process": "SystemSettings", "processId": 40, "hwnd": 30, "requested": true}}
+            """));
+        JsonObject store = View("""{"window": {"title": "Microsoft Store", "process": "WinStore.App", "processId": 41, "hwnd": 31}}""");
+        JsonObject settings = View("""{"window": {"title": "Configuración", "process": "SystemSettings", "processId": 40, "hwnd": 30}}""");
+        Assert.Multiple(() =>
+        {
+            Assert.That(byHost["processId"], Is.Null, "the frame host every packaged app shares is no app's process");
+            Assert.That((int?)byHosted["processId"], Is.EqualTo(40));
+            Assert.That(ComputerUseMission.BindToMissionWindow("input.key.press", new JsonObject(), store, byHosted, "Configuración"), Is.False,
+                "another packaged app's frame of the same host gets no key");
+            Assert.That(ComputerUseMission.BindToMissionWindow("input.key.press", new JsonObject(), settings, byHosted, "Configuración"), Is.True);
+        });
+    }
+
     [Test]
     public void APointerStepIsNotBoundToAWindowHandle()
     {
