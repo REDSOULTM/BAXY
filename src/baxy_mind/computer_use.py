@@ -1633,7 +1633,11 @@ def _is_switch(control: dict) -> bool:
     state = str(control.get("state") or "").split()
     # A button named as the act of switching («Alternar grados», «Toggle units») switches even without a state
     # (measured on the Calculator: going to «Científica» the model pressed «Alternar grados» and DEG became RAD).
-    toggles = re.match(r"(?:alternar|cambiar entre|toggle|switch between)\b", fold(control.get("name"))) is not None
+    name = fold(control.get("name"))
+    # «Alternar navegación» / «Toggle navigation» opens a menu: it shows places, it sets nothing.
+    toggles = re.match(r"(?:alternar|cambiar entre|toggle|switch between)\b", name) is not None and re.search(
+        r"\b(?:navegacion|navigation|menu|panel|pane|barra lateral|sidebar)\b", name
+    ) is None
     return control.get("kind") in _SWITCH_KINDS or toggles or any(word in {"on", "off", "checked", "unchecked"} for word in state)
 
 
