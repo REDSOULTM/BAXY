@@ -405,10 +405,29 @@ def _key_from_words(words: str) -> str | None:
     return None
 
 
+# «volvé a estándar», «regresá al modo científico», «go back to standard», «switch back to Home»: going back to a mode or
+# a place is changing to it (the mode reader and the navigate reader read «cambiá a X»). «volvé a abrir X» says the
+# order again («volver a» + an infinitive), never a place: it stays as said.
+_RETURN_CLAUSE = re.compile(
+    r"^(?:volve|volver|vuelve|vuelva|volvete|volvamos|regresa|regresar|regresate|regrese|retorna|retornar|"
+    r"go\s+back|get\s+back|switch\s+back|change\s+back|head\s+back)\s+(?P<to>(?:a|al|to|into|en|in)\s+\S.*)$"
+)
+# «volvé a abrir X», «volvé a intentarlo después»: an infinitive with more said after it is the order again.
+_INFINITIVE_ORDER = re.compile(r"[a-z]+(?:ar|er|ir)(?:lo|la|los|las|le|les|me|te|se)?\b(?!\s*$)")
+
+
 def _clause_readings(folded: str) -> tuple[str, ...]:
     """The clause as said and with its order as the tú/voseo imperative the readers read («seleccione»,
-    «elegir», «pulse» → grammar.imperative_rewrites over this module's verbs)."""
+    «elegir», «pulse» → grammar.imperative_rewrites over this module's verbs); a going back as the change it is
+    (``_RETURN_CLAUSE``)."""
 
+    returned = _RETURN_CLAUSE.match(folded)
+    if returned is not None:
+        to = returned.group("to")
+        rest = re.sub(r"^(?:a|al|to|into|en|in)\s+", "", to)
+        # Only «a» takes the infinitive: «volvé al lugar anterior» is a place.
+        if not _is_doing(rest) and not (to.startswith("a ") and _INFINITIVE_ORDER.match(rest) is not None):
+            folded = f"cambia {returned.group('to')}"
     return (folded, *imperative_rewrites(folded, _CLAUSE_VERB))
 
 
@@ -1150,6 +1169,7 @@ def _read_mission(folded: str, text: str, catalog: effect_intent.ApplicationCata
     framed = _FRAME_COMMA.match(folded)
     if framed is not None and _catalog_key(framed.group("app"), catalog) is not None:
         folded = framed.group("frame") + " " + folded[framed.end():]
+    folded = _going_to_application_opens_it(folded, catalog)
     chained = _chained_request(folded, catalog)
     if chained is not None:
         steps = tuple(
@@ -1180,6 +1200,23 @@ def _read_mission(folded: str, text: str, catalog: effect_intent.ApplicationCata
         goal, check = tab
         return MissionRequest(BROWSER_CATEGORY, goal, _check_as_said(check, text))
     return None
+
+
+def _going_to_application_opens_it(folded: str, catalog: effect_intent.ApplicationCatalogIndex) -> str:
+    """«go to Settings, then Bluetooth & devices», «andá a Configuración y después a Sistema»: the first clause goes
+    to an application named whole, before any other clause, so it opens it («abrí Configuración, …»; measured
+    2026-10-07: the request went unread and the plan's app.open «Settings» was ambiguous). A single clause stays as
+    said (going to an application alone is no mission)."""
+
+    segments = _segments(folded)
+    if len(segments) < 2:
+        return folded
+    went = _NAVIGATE_CLAUSE.match(segments[0])
+    if went is None or _catalog_key(went.group("target"), catalog) is None:
+        return folded
+    # The next clauses as the chain read them («then Bluetooth & devices» → «ve a bluetooth & devices»: the verb
+    # said once, for both).
+    return ", ".join((f"abri {went.group('target')}", *segments[1:]))
 
 
 _NAMED_PLACE = re.compile(
@@ -1424,7 +1461,7 @@ _SEQUENCER = re.compile(r"\b(?:luego|despues|entonces|then|after\s+that)\b")
 # «… y después el color rojo», «then the red color»: an object said with its article, the verb said once before.
 _ARTICLE_OBJECT = re.compile(r"^(?:el|la|los|las|the)\s+\S")
 # «go to System, then Display», «then downloads»: a bare name of at most three words.
-_BARE_NAME = re.compile(r"^[a-z0-9][a-z0-9.+-]*(?:\s+[a-z0-9][a-z0-9.+-]*){0,2}$")
+_BARE_NAME = re.compile(r"^[a-z0-9][a-z0-9.+-]*(?:\s+(?:&\s+)?[a-z0-9][a-z0-9.+-]*){0,2}$")
 
 
 def _elliptic(piece: str, joiner: str, previous: str) -> str | None:
